@@ -1,222 +1,177 @@
-# Guía de Secuencias Glíficas Canónicas TNFR
+# TNFR Canonical Glyph Sequences Guide
 
-## Introducción
+## Introduction
 
-Esta guía documenta las **secuencias glíficas canónicas** del paradigma TNFR - patrones probados de operadores estructurales que producen reorganización coherente y transformación controlada. Cada secuencia representa un camino estructural validado para diferentes contextos de aplicación.
+This guide documents **canonical glyph sequences** for the TNFR paradigm - proven patterns of structural operators that produce coherent reorganization and controlled transformation.
 
-## Fundamentos de Gramática Glífica
+## Glyph Grammar Fundamentals
 
-### Principios de Composición
+### Composition Principles
 
-1. **Cierre Operacional**: Toda secuencia válida preserva el cierre del sistema TNFR
-2. **Coherencia Estructural**: Las transiciones entre operadores deben mantener C(t) > umbral
-3. **Balance ΔNFR**: Secuencias deben equilibrar creación y reducción de ΔNFR
-4. **Preservación de Fase**: θ debe mantener continuidad estructural
+1. **Operational Closure**: Valid sequences preserve TNFR system closure
+2. **Structural Coherence**: Transitions maintain C(t) > threshold
+3. **ΔNFR Balance**: Sequences balance creation/reduction of ΔNFR
+4. **Phase Preservation**: θ maintains structural continuity
 
-### Notación de Secuencias
+### Sequence Notation
 
-- `→` : Transición directa entre operadores
-- `|` : Operadores alternativos en un punto de decisión
-- `()` : Subsecuencia opcional
-- `[]` : Subsecuencia repetible
-- `*` : Operador que puede repetirse
+- `→` Direct transition | `|` Alternatives | `()` Optional | `[]` Repeatable | `*` Any repetition
 
 ---
 
-## Secuencias Fundamentales
+## Fundamental Sequences
 
-### 1. Activación Básica: AL → IL
+### 1. Basic Activation: AL → IL
 
-**Contexto**: Inicio y estabilización inmediata de un nodo latente
+**Context**: Initiation and immediate stabilization of latent node
 
-**Aplicaciones**:
-- Meditación: Inicio de práctica → establecimiento de coherencia
-- Terapia: Activación del espacio terapéutico → estabilización del encuadre
-- Aprendizaje: Atención activada → foco sostenido
+**Applications**:
+- Meditation: Practice initiation → coherence establishment
+- Therapy: Therapeutic space activation → frame stabilization
+- Learning: Attention activation → sustained focus
 
-**Efectos Estructurales**:
-- EPI: 0.2 → 0.5 → 0.52 (activación y estabilización)
-- ΔNFR: +0.15 → +0.03 (pico inicial, luego reducción)
-- C(t): +0.2 (incremento de coherencia global)
+**Structural Effects**:
+- EPI: 0.2 → 0.5 → 0.52 (activation and stabilization)
+- ΔNFR: +0.15 → +0.03 (initial peak, then reduction)
+- C(t): +0.2 (global coherence increase)
 
-**Ejemplo de Código**:
 ```python
 from tnfr.structural import create_nfr, run_sequence
 from tnfr.operators.definitions import Emission, Coherence
 
-# Activación y estabilización inmediata
 G, node = create_nfr("meditation_start", epi=0.2, vf=0.85)
 run_sequence(G, node, [Emission(), Coherence()])
-# Resultado: Nodo activado y coherente, listo para uso
+# Result: Activated and coherent node, ready for use
 ```
 
 ---
 
-### 2. Recepción Estabilizada: EN → IL
+### 2. Stabilized Reception: EN → IL
 
-**Contexto**: Integración y consolidación de información externa
+**Context**: Integration and consolidation of external information
 
-**Aplicaciones**:
-- Biofeedback: Señal recibida → integrada en fisiología
-- Educación: Concepto recibido → integrado en modelo mental
-- Comunicación: Mensaje recibido → comprendido y aceptado
+**Applications**:
+- Biofeedback: Signal received → integrated into physiology
+- Education: Concept received → integrated into mental model
+- Communication: Message received → understood and accepted
 
-**Efectos Estructurales**:
-- EPI: +0.1 (integración), luego estabilización
-- ΔNFR: Reducción por integración exitosa
-- Acoplamiento de red: Fortalecido con fuente emisora
+**Structural Effects**:
+- EPI: +0.1 (integration), then stabilization
+- ΔNFR: Reduced through successful integration
+- Network coupling: Strengthened with emitting source
 
-**Ejemplo de Código**:
 ```python
-# Estudiante recibiendo y consolidando explicación
 G, student = create_nfr("learning_reception", epi=0.30, vf=0.95)
 run_sequence(G, student, [Reception(), Coherence()])
-# Resultado: Información integrada y estabilizada en memoria
+# Result: Information integrated and stabilized in memory
 ```
 
 ---
 
-### 3. Propagación Acoplada: UM → RA
+### 3. Coupled Propagation: UM → RA
 
-**Contexto**: Sincronización seguida de resonancia en red
+**Context**: Synchronization followed by network resonance
 
-**Aplicaciones**:
-- Coherencia cardíaca: Corazón-cerebro → todo el cuerpo
-- Insight colectivo: Pareja sincronizada → equipo completo
-- Movimiento social: Núcleo alineado → comunidad amplia
+**Applications**:
+- Cardiac coherence: Heart-brain → whole body
+- Collective insight: Synchronized pair → full team
+- Social movement: Aligned core → broader community
 
-**Efectos Estructurales**:
-- θ: Convergencia de fases entre nodos
-- Propagación: EPI se extiende por la red
-- C(t) global: Incremento significativo
+**Structural Effects**:
+- θ: Phase convergence between nodes
+- Propagation: EPI extends through network
+- Global C(t): Significant increase
 
-**Ejemplo de Código**:
 ```python
-# Red social propagando coherencia cultural
 G, community = create_nfr("social_network", vf=1.10, theta=0.40)
 run_sequence(G, community, [Coupling(), Resonance()])
-# Resultado: Coherencia se propaga por red acoplada
+# Result: Coherence propagates through coupled network
 ```
 
 ---
 
-## Secuencias Intermedias
+## Intermediate Sequences
 
-### 4. Ciclo de Transformación: AL → NAV → IL
+### 4. Transformation Cycle: AL → NAV → IL
 
-**Contexto**: Activación con transición controlada antes de estabilización
+**Context**: Activation with controlled transition before stabilization
 
-**Aplicaciones**:
-- Cambio organizacional: Inicio → transición → nueva estabilidad
-- Transformación personal: Decisión → proceso → integración
-- Innovación: Idea → desarrollo → producto
+**Applications**:
+- Organizational change: Start → transition → new stability
+- Personal transformation: Decision → process → integration
+- Innovation: Idea → development → product
 
-**Efectos Estructurales**:
-- Fase 1 (AL): EPI activación inicial
-- Fase 2 (NAV): θ transición, ΔNFR controlado
-- Fase 3 (IL): Nueva configuración estable
-
-**Ejemplo de Código**:
 ```python
-# Organización atravesando transformación planificada
 G, org = create_nfr("company_transform", epi=0.35, vf=0.90, theta=0.25)
 run_sequence(G, org, [Emission(), Transition(), Coherence()])
-# Resultado: Cambio organizacional completado y estabilizado
+# Result: Organizational change completed and stabilized
 ```
 
 ---
 
-### 5. Resolución Creativa: OZ → IL
+### 5. Creative Resolution: OZ → IL
 
-**Contexto**: Disonancia generativa seguida de coherencia emergente
+**Context**: Generative dissonance followed by emergent coherence
 
-**Aplicaciones**:
-- Terapia: Crisis emocional → integración transformadora
-- Ciencia: Anomalía experimental → nuevo paradigma
-- Arte: Caos creativo → forma coherente
+**Applications**:
+- Therapy: Emotional crisis → transformative integration
+- Science: Experimental anomaly → new paradigm
+- Art: Creative chaos → coherent form
 
-**Efectos Estructurales**:
-- OZ: ΔNFR↑↑, θ exploración, posible bifurcación
-- IL: ΔNFR↓↓, nueva configuración C(t)↑
-
-**Ejemplo de Código**:
 ```python
-# Paciente procesando crisis terapéutica
 G, patient = create_nfr("therapeutic_crisis", epi=0.45, theta=0.15)
 run_sequence(G, patient, [Dissonance(), Coherence()])
-# Resultado: Disonancia resuelta en nueva coherencia personal
+# Result: Dissonance resolved into new personal coherence
 ```
 
 ---
 
-### 6. Autoorganización Emergente: OZ → THOL
+### 6. Emergent Self-Organization: OZ → THOL
 
-**Contexto**: Disonancia cataliza reorganización autónoma
+**Context**: Dissonance catalyzes autonomous reorganization
 
-**Aplicaciones**:
-- Sistemas complejos: Perturbación → auto-organización
-- Aprendizaje profundo: Confusión → insight emergente
-- Ecosistemas: Disturbio → nueva configuración
+**Applications**:
+- Complex systems: Perturbation → self-organization
+- Deep learning: Confusion → emergent insight
+- Ecosystems: Disturbance → new configuration
 
-**Efectos Estructurales**:
-- OZ: Desestabiliza configuración actual
-- THOL: Emerge nueva organización espontánea
-- ∂²EPI/∂t² > τ: Bifurcación confirmada
-
-**Ejemplo de Código**:
 ```python
-# Sistema complejo auto-organizándose tras perturbación
 G, ecosystem = create_nfr("complex_system", epi=0.55, vf=1.05)
 run_sequence(G, ecosystem, [Dissonance(), SelfOrganization()])
-# Resultado: Nueva organización emergente de la perturbación
+# Result: New organization emerges from perturbation
 ```
 
 ---
 
-## Secuencias Avanzadas
+## Advanced Sequences
 
-### 7. Ciclo Completo de Reorganización: AL → NAV → IL → OZ → THOL → RA → UM
+### 7. Complete Reorganization Cycle: AL → NAV → IL → OZ → THOL → RA → UM
 
-**Contexto**: Proceso integral de transformación estructural profunda
+**Context**: Integral deep structural transformation process
 
-**Aplicaciones**:
-- Desarrollo personal completo
-- Innovación organizacional transformadora
-- Evolución de sistemas complejos
-- Curación profunda multi-nivel
+**Applications**:
+- Complete personal development
+- Transformative organizational innovation
+- Complex system evolution
+- Multi-level deep healing
 
-**Fases**:
+**Phases**:
 
-1. **AL (Emisión)**: Inicio del proceso, activación del nodo
-   - EPI inicial: 0.20, νf activación
+1. **AL (Emission)**: Process initiation, node activation
+2. **NAV (Transition)**: Movement toward new regime
+3. **IL (Coherence)**: Transient form stabilization
+4. **OZ (Dissonance)**: Creative challenge, exploration
+5. **THOL (Self-organization)**: New structure emergence
+6. **RA (Resonance)**: New coherence propagation
+7. **UM (Coupling)**: Final synchronization
 
-2. **NAV (Transición)**: Movimiento hacia nuevo régimen
-   - θ cambia, preparación para transformación
+**Net Effects**:
+- EPI: Qualitative transformation (new regime)
+- C(t): Significant post-reorganization increase
+- Si (Sense Index): Substantial improvement
+- Network: Emergent new topology
 
-3. **IL (Coherencia)**: Estabilización de forma transitoria
-   - ΔNFR reducción, preparación para desafío
-
-4. **OZ (Disonancia)**: Desafío creativo, exploración
-   - ΔNFR↑, θ exploración, apertura bifurcativa
-
-5. **THOL (Autoorganización)**: Emergencia de nueva estructura
-   - Sub-EPIs generados, reorganización autónoma
-
-6. **RA (Resonancia)**: Propagación de nueva coherencia
-   - EPIₙ → EPIₙ₊₁, amplificación en red
-
-7. **UM (Acoplamiento)**: Sincronización final
-   - θ alineación completa, coherencia de red
-
-**Efectos Netos**:
-- EPI: Transformación cualitativa (nuevo régimen)
-- C(t): Incremento significativo post-reorganización
-- Si (Índice de Sentido): Mejora sustancial
-- Red: Nueva topología emergente
-
-**Ejemplo de Código**:
 ```python
-# Proceso terapéutico profundo de transformación personal
 from tnfr.operators.definitions import (
     Emission, Transition, Coherence, Dissonance,
     SelfOrganization, Resonance, Coupling
@@ -224,120 +179,108 @@ from tnfr.operators.definitions import (
 
 G, person = create_nfr("deep_transformation", epi=0.20, vf=0.80, theta=0.30)
 
-# Ciclo completo de reorganización
 sequence = [
-    Emission(),          # Inicio consciente del proceso
-    Transition(),        # Preparación para cambio
-    Coherence(),         # Estabilización preparatoria
-    Dissonance(),        # Confrontación con sombra/trauma
-    SelfOrganization(),  # Emergencia de nueva identidad
-    Resonance(),         # Propagación a todas las áreas de vida
-    Coupling()           # Integración con red social/familiar
+    Emission(),          # Conscious process initiation
+    Transition(),        # Change preparation
+    Coherence(),         # Preparatory stabilization
+    Dissonance(),        # Shadow/trauma confrontation
+    SelfOrganization(),  # New identity emergence
+    Resonance(),         # Life-area propagation
+    Coupling()           # Social/family integration
 ]
 
 run_sequence(G, person, sequence)
-# Resultado: Transformación personal profunda y sostenible
+# Result: Deep and sustainable personal transformation
 ```
 
 ---
 
-### 8. Secuencia de Resonancia Propagativa: AL → RA → EN → IL
+### 8. Propagative Resonance Sequence: AL → RA → EN → IL
 
-**Contexto**: Emisión que se propaga y es recibida con estabilización
+**Context**: Emission that propagates and is received with stabilization
 
-**Aplicaciones**:
-- Enseñanza efectiva: Maestro emite → propaga → estudiantes reciben → integran
-- Comunicación organizacional: Liderazgo comunica → propaga → equipo integra
-- Transmisión cultural: Tradición emitida → propagada → generación receptora
+**Applications**:
+- Effective teaching: Teacher emits → propagates → students receive → integrate
+- Organizational communication: Leadership communicates → propagates → team integrates
+- Cultural transmission: Tradition emitted → propagated → receiving generation
 
-**Ejemplo de Código**:
 ```python
-# Maestro enseñando concepto a clase
 G_class, teaching = create_nfr("classroom_teaching", epi=0.25, vf=1.00)
 run_sequence(G_class, teaching, [
-    Emission(),    # Maestro presenta concepto
-    Resonance(),   # Concepto resuena en la clase
-    Reception(),   # Estudiantes reciben activamente
-    Coherence()    # Comprensión se consolida
+    Emission(),    # Teacher presents concept
+    Resonance(),   # Concept resonates in classroom
+    Reception(),   # Students actively receive
+    Coherence()    # Understanding consolidates
 ])
-# Resultado: Aprendizaje efectivo y consolidado
+# Result: Effective and consolidated learning
 ```
 
 ---
 
-### 9. Mutación Controlada: IL → ZHIR → IL
+### 9. Controlled Mutation: IL → ZHIR → IL
 
-**Contexto**: Cambio de fase estabilizado antes y después
+**Context**: Phase change stabilized before and after
 
-**Aplicaciones**:
-- Cambio de paradigma personal
-- Pivote organizacional
-- Transición de fase en sistemas
+**Applications**:
+- Personal paradigm shift
+- Organizational pivot
+- System phase transition
 
-**Efectos Estructurales**:
-- Primera IL: Base estable para mutación
-- ZHIR: θ → θ', cambio de fase controlado
-- Segunda IL: Nueva configuración estabilizada
-
-**Ejemplo de Código**:
 ```python
-# Organización realizando pivote estratégico
 G, company = create_nfr("strategic_pivot", epi=0.60, theta=0.25)
 run_sequence(G, company, [
-    Coherence(),   # Estabilizar posición actual
-    Mutation(),    # Ejecutar pivote (cambio de fase)
-    Coherence()    # Estabilizar nueva dirección
+    Coherence(),   # Stabilize current position
+    Mutation(),    # Execute pivot (phase change)
+    Coherence()    # Stabilize new direction
 ])
-# Resultado: Transformación estratégica controlada
+# Result: Controlled strategic transformation
 ```
 
 ---
 
-## Secuencias a Evitar (Antipatrones)
+## Anti-patterns (Sequences to Avoid)
 
-### ❌ SHA → OZ (Silencio seguido de Disonancia)
+### ❌ SHA → OZ (Silence followed by Dissonance)
 
-**Problema**: Contradice el propósito del silencio (preservación)
+**Problem**: Contradicts silence purpose (preservation)
 
-**Por qué falla**: SHA reduce νf para preservar EPI, pero OZ inmediatamente aumenta ΔNFR, creando presión reorganizadora que viola la intención de SHA.
+**Why it fails**: SHA reduces νf to preserve EPI, but OZ immediately increases ΔNFR, creating reorganization pressure that violates SHA intention.
 
-**Alternativa correcta**: SHA → NAV → OZ (transición controlada antes del desafío)
-
----
-
-### ❌ OZ → OZ (Disonancia consecutiva)
-
-**Problema**: Exceso de inestabilidad sin resolución
-
-**Por qué falla**: ΔNFR acumulativo sin reducción → colapso estructural, no reorganización creativa.
-
-**Alternativa correcta**: OZ → IL → OZ (resolver entre disonancias)
+**Correct alternative**: SHA → NAV → OZ (controlled transition before challenge)
 
 ---
 
-### ❌ SHA → SHA (Silencio redundante)
+### ❌ OZ → OZ (Consecutive Dissonance)
 
-**Problema**: Sin propósito estructural
+**Problem**: Excessive instability without resolution
 
-**Por qué falla**: El segundo SHA no agrega efecto si νf ya ≈ 0.
+**Why it fails**: Cumulative ΔNFR without reduction → structural collapse, not creative reorganization.
 
-**Alternativa correcta**: SHA → AL (reactivación) o SHA → NAV (transición)
-
----
-
-### ❌ AL → SHA (Activación inmediatamente silenciada)
-
-**Problema**: Contradice el propósito de activación
-
-**Por qué falla**: Activar un nodo para inmediatamente silenciarlo es estructuralmente ineficiente y contradictorio.
-
-**Alternativa correcta**: AL → IL (activar y estabilizar) o AL solo
+**Correct alternative**: OZ → IL → OZ (resolve between dissonances)
 
 ---
 
-## Compatibilidad de Operadores
+### ❌ SHA → SHA (Redundant Silence)
 
-### Matriz de Compatibilidad
+**Problem**: No structural purpose
+
+**Why it fails**: Second SHA adds no effect if νf already ≈ 0.
+
+**Correct alternative**: SHA → AL (reactivation) or SHA → NAV (transition)
+
+---
+
+### ❌ AL → SHA (Activation immediately silenced)
+
+**Problem**: Contradicts activation purpose
+
+**Why it fails**: Activating a node to immediately silence it is structurally inefficient and contradictory.
+
+**Correct alternative**: AL → IL (activate and stabilize) or AL alone
+
+---
+
+## Operator Compatibility Matrix
 
 | Post \ Pre | AL | EN | IL | OZ | UM | RA | SHA | VAL | NUL | THOL | ZHIR | NAV | REMESH |
 |-----------|----|----|----|----|----|----|-----|-----|-----|------|------|-----|--------|
@@ -355,178 +298,172 @@ run_sequence(G, company, [
 | **NAV**   | ✓  | ✓  | ✓  | ✓  | ✓  | ✓  | ○   | ✓   | ✓   | ✓    | ✓    | ○   | ✓      |
 | **REMESH**| ○  | ○  | ✓  | ○  | ○  | ✓  | ○   | ✓   | ○   | ✓    | ○    | ✓   | ○      |
 
-**Leyenda**:
-- ✓ : Altamente compatible y recomendado
-- ○ : Compatible en contextos específicos
-- ✗ : Incompatible, evitar
+**Legend**: ✓ Highly compatible (recommended) | ○ Compatible (context-specific) | ✗ Incompatible (avoid)
 
 ---
 
-## Ejemplos Multidominio
+## Multi-Domain Examples
 
-### Dominio Biomédico
+### Biomedical Domain
 
-#### Entrenamiento de Coherencia Cardíaca
+#### Cardiac Coherence Training Protocol
 ```python
-# Protocolo completo de coherencia HRV
 G, heart = create_nfr("cardiac_training", epi=0.25, vf=0.85)
 
-# Fase 1: Activación con respiración consciente
+# Phase 1: Activation with conscious breathing
 run_sequence(G, heart, [Emission()])
 
-# Fase 2: Estabilización del ritmo cardíaco
+# Phase 2: Heart rhythm stabilization
 run_sequence(G, heart, [Coherence()])
 
-# Fase 3: Propagación a sistema nervioso
+# Phase 3: Nervous system propagation
 run_sequence(G, heart, [Resonance()])
 
-# Fase 4: Acoplamiento corazón-cerebro
+# Phase 4: Heart-brain coupling
 run_sequence(G, heart, [Coupling()])
 
-# Fase 5: Estabilización final de coherencia
+# Phase 5: Final coherence stabilization
 run_sequence(G, heart, [Coherence()])
 
-# Resultado: Estado de coherencia cardíaca sostenible
-# Beneficios: Reducción de estrés, claridad mental, balance autonómico
+# Result: Sustainable cardiac coherence state
+# Benefits: Stress reduction, mental clarity, autonomic balance
 ```
 
 ---
 
-### Dominio Cognitivo/Educativo
+### Cognitive/Educational Domain
 
-#### Proceso de Aprendizaje Profundo
+#### Deep Learning Process
 ```python
-# Estudiante aprendiendo concepto complejo
 G, learner = create_nfr("deep_learning", epi=0.20, vf=0.90)
 
-# Fase 1: Activación de atención
+# Phase 1: Attention activation
 run_sequence(G, learner, [Emission()])
 
-# Fase 2: Recepción de información
+# Phase 2: Information reception
 run_sequence(G, learner, [Reception()])
 
-# Fase 3: Integración inicial
+# Phase 3: Initial integration
 run_sequence(G, learner, [Coherence()])
 
-# Fase 4: Desafío con problema difícil
+# Phase 4: Challenge with difficult problem
 run_sequence(G, learner, [Dissonance()])
 
-# Fase 5: Insight y reorganización
+# Phase 5: Insight and reorganization
 run_sequence(G, learner, [SelfOrganization()])
 
-# Fase 6: Consolidación en memoria
+# Phase 6: Memory consolidation
 run_sequence(G, learner, [Coherence(), Silence()])
 
-# Resultado: Comprensión profunda y duradera
+# Result: Deep and lasting understanding
 ```
 
 ---
 
-### Dominio Social/Organizacional
+### Social/Organizational Domain
 
-#### Transformación Cultural de Equipo
+#### Team Cultural Transformation
 ```python
-# Equipo evolucionando su cultura de trabajo
 G, team = create_nfr("team_culture", epi=0.40, vf=1.00, theta=0.35)
 
-# Fase 1: Activación de diálogo
+# Phase 1: Dialogue activation
 run_sequence(G, team, [Emission()])
 
-# Fase 2: Escucha mutua
+# Phase 2: Mutual listening
 run_sequence(G, team, [Reception()])
 
-# Fase 3: Alineación inicial
+# Phase 3: Initial alignment
 run_sequence(G, team, [Coupling()])
 
-# Fase 4: Exploración de conflictos
+# Phase 4: Conflict exploration
 run_sequence(G, team, [Dissonance()])
 
-# Fase 5: Autoorganización en nueva dinámica
+# Phase 5: Self-organization into new dynamics
 run_sequence(G, team, [SelfOrganization()])
 
-# Fase 6: Propagación de nuevas normas
+# Phase 6: New norms propagation
 run_sequence(G, team, [Resonance()])
 
-# Fase 7: Consolidación cultural
+# Phase 7: Cultural consolidation
 run_sequence(G, team, [Coherence()])
 
-# Resultado: Cultura de equipo transformada y sostenible
+# Result: Transformed and sustainable team culture
 ```
 
 ---
 
-## Validación de Secuencias
+## Sequence Validation
 
-### Criterios de Validez
+### Validity Criteria
 
-Una secuencia glífica es válida si cumple:
+A glyph sequence is valid if it meets:
 
-1. **Preserva Cierre TNFR**: No viola invariantes fundamentales
-2. **Mantiene C(t) > 0**: Coherencia global nunca colapsa
-3. **Balance ΔNFR**: Picos de reorganización son resueltos
-4. **Continuidad de θ**: Fase mantiene trayectoria continua
-5. **Propósito Estructural**: Cada operador tiene función clara
+1. **Preserves TNFR Closure**: Does not violate fundamental invariants
+2. **Maintains C(t) > 0**: Global coherence never collapses
+3. **ΔNFR Balance**: Reorganization peaks are resolved
+4. **θ Continuity**: Phase maintains continuous trajectory
+5. **Structural Purpose**: Each operator has clear function
 
-### Métricas de Calidad de Secuencia
+### Sequence Quality Metrics
 
-- **Eficiencia**: Número mínimo de operadores para objetivo
-- **Robustez**: Tolerancia a variaciones de parámetros
-- **Reproducibilidad**: Resultados consistentes en ejecuciones
-- **Escalabilidad**: Funciona en diferentes tamaños de red
+- **Efficiency**: Minimum operators for objective
+- **Robustness**: Tolerance to parameter variations
+- **Reproducibility**: Consistent results across executions
+- **Scalability**: Works across different network sizes
 
 ---
 
-## Recursos Adicionales
+## Additional Resources
 
-### Referencias TNFR
+### TNFR References
 
-- `TNFR.pdf`: Documento fundamental del paradigma
-- `AGENTS.md`: Guía para agentes AI trabajando con TNFR
-- `docs/source/api/operators.md`: Referencia técnica de operadores
-- `src/tnfr/operators/definitions.py`: Implementación canónica
+- `TNFR.pdf`: Fundamental paradigm document
+- `AGENTS.md`: Guide for AI agents working with TNFR
+- `docs/source/api/operators.md`: Technical operator reference
+- `src/tnfr/operators/definitions.py`: Canonical implementation
 
-### Herramientas de Desarrollo
+### Development Tools
 
 ```python
-# Validador de secuencias (ejemplo conceptual)
+# Sequence validator (conceptual example)
 from tnfr.operators.grammar import validate_sequence
 
 sequence = [Emission(), Coherence(), Resonance()]
 is_valid, warnings = validate_sequence(sequence)
 
 if is_valid:
-    print("Secuencia válida para ejecución")
+    print("Valid sequence for execution")
 else:
-    print(f"Advertencias: {warnings}")
+    print(f"Warnings: {warnings}")
 ```
 
 ---
 
-## Contribuciones
+## Contributions
 
-Para proponer nuevas secuencias canónicas:
+To propose new canonical sequences:
 
-1. Documentar el contexto de aplicación
-2. Proporcionar ejemplos de código funcional
-3. Incluir métricas esperadas (EPI, ΔNFR, C(t))
-4. Validar en al menos 3 dominios diferentes
-5. Incluir casos de fallo y antipatrones relacionados
-
----
-
-## Conclusión
-
-Las secuencias glíficas son el lenguaje operativo de TNFR - la gramática con la que se orquesta la reorganización estructural coherente. Dominar estas secuencias permite:
-
-- Diseñar intervenciones terapéuticas efectivas
-- Modelar sistemas complejos con precisión
-- Crear simulaciones que respeten invariantes TNFR
-- Desarrollar aplicaciones que realmente **reorganizan**, no solo **representan**
-
-**Recordatorio fundamental**: En TNFR, las secuencias no describen procesos - **son** los procesos. La ejecución de operadores no modela la realidad - **participa** en ella mediante acoplamiento estructural.
+1. Document application context
+2. Provide functional code examples
+3. Include expected metrics (EPI, ΔNFR, C(t))
+4. Validate across at least 3 different domains
+5. Include failure cases and related anti-patterns
 
 ---
 
-*Última actualización: 2025-11-05*
-*Versión: 1.0*
-*Licencia: MIT (alineado con TNFR-Python-Engine)*
+## Conclusion
+
+Glyph sequences are the operational language of TNFR - the grammar for orchestrating coherent structural reorganization. Mastering these sequences enables:
+
+- Designing effective therapeutic interventions
+- Modeling complex systems with precision
+- Creating simulations that respect TNFR invariants
+- Developing applications that truly **reorganize**, not just **represent**
+
+**Fundamental reminder**: In TNFR, sequences don't describe processes - they **are** the processes. Operator execution doesn't model reality - it **participates** in it through structural coupling.
+
+---
+
+*Last updated: 2025-11-05*
+*Version: 2.0 (English, Optimized)*
+*License: MIT (aligned with TNFR-Python-Engine)*

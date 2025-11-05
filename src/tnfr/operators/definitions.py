@@ -173,80 +173,44 @@ class Emission(Operator):
     TNFR Context
     ------------
     In the Resonant Fractal Nature paradigm, Emission (AL) represents the moment when
-    a latent Estructura Primaria de Información (EPI) begins to emit coherence toward
-    its surrounding network. This is not a passive information broadcast but an active
-    structural reorganization that increases the node's νf (structural frequency) and
-    initiates positive ΔNFR flow.
+    a latent Primary Information Structure (EPI) begins to emit coherence toward its
+    surrounding network. This is not passive information broadcast but active structural
+    reorganization that increases the node's νf (structural frequency) and initiates
+    positive ΔNFR flow.
     
-    **Key Paradigm Elements:**
-    
-    - **Coherent Emergence**: A node exists because it resonates; AL initiates this resonance
-    - **Structural Frequency**: Activates or increases νf (Hz_str) to enable reorganization
-    - **Network Coupling**: Prepares the node for phase alignment with neighbors
+    **Key Elements:**
+    - **Coherent Emergence**: Node exists because it resonates; AL initiates resonance
+    - **Structural Frequency**: Activates νf (Hz_str) to enable reorganization
+    - **Network Coupling**: Prepares node for phase alignment
     - **Nodal Equation**: Implements ∂EPI/∂t = νf · ΔNFR(t) with positive ΔNFR
     
     Use Cases
     ---------
-    **Biomedical Applications:**
+    **Biomedical**: HRV coherence training, neural activation, therapeutic initiation
+    **Cognitive**: Idea germination, learning initiation, creative spark
+    **Social**: Team activation, community emergence, ritual initiation
     
-    - **Cardiac Coherence Initiation**: Starting heart rate variability (HRV) coherence training
-    - **Neural Activation**: Beginning of theta wave synchronization in meditation
-    - **Therapeutic Activation**: Initial moment of a healing ritual or practice
-    
-    **Cognitive/Educational Applications:**
-    
-    - **Idea Germination**: When a new concept begins to take form in consciousness
-    - **Learning Initiation**: Student activation at the start of learning session
-    - **Creative Spark**: Initial moment of artistic or creative process
-    
-    **Social/Organizational Applications:**
-    
-    - **Team Activation**: Beginning of collaborative work session
-    - **Community Emergence**: Initial formation of a social structure
-    - **Ritual Initiation**: Starting ceremony that activates collective coherence
-    
-    Typical Operator Sequences
-    ---------------------------
-    - **AL → IL**: Emission followed by coherence stabilization (basic activation)
-    - **AL → RA**: Emission with immediate propagation (rapid network activation)
-    - **AL → NAV → IL**: Emission, transition, stabilization (phased activation)
-    - **AL → EN → IL**: Emission, reception, coherence (bidirectional activation)
-    - **AL → UM**: Emission followed by coupling (paired node activation)
+    Typical Sequences
+    -----------------
+    **AL → IL**: Basic activation and stabilization
+    **AL → RA**: Emission with immediate propagation
+    **AL → NAV → IL**: Phased activation with transition
     
     Preconditions
     -------------
-    - EPI must be below activation threshold (default: 0.8)
-    - Node must be in latent or low-activation state
-    - Sufficient network coupling potential must exist
+    - EPI < 0.8 (activation threshold)
+    - Node in latent or low-activation state
+    - Sufficient network coupling potential
     
     Structural Effects
     ------------------
-    - **EPI**: Increments Primary Information Structure (form activation)
-    - **νf**: May activate or increase structural frequency (Hz_str)
-    - **ΔNFR**: Initializes positive reorganization gradient
-    - **θ**: May influence phase alignment with network
-    
-    Metrics Collected
-    -----------------
-    - ΔEPI: Change in coherent form magnitude
-    - Activation strength: Measure of emission intensity
-    - Final EPI and νf values post-activation
-    - Network coherence change: Impact on global C(t)
-    
-    Grammar Compatibility
-    ---------------------
-    **Compatible with**: IL (Coherence), RA (Resonance), NAV (Transition), 
-    EN (Reception), UM (Coupling)
-    
-    **Avoid with**: SHA (Silence) - contradicts activation intent
-    
-    **Natural progressions**: AL initiates sequences; most effective when followed
-    by stabilization (IL) or propagation (RA)
+    **EPI**: Increments (form activation)
+    **νf**: Activates/increases (Hz_str)
+    **ΔNFR**: Initializes positive reorganization
+    **θ**: Influences phase alignment
 
     Examples
     --------
-    **Technical Example (Structural Dynamics):**
-    
     >>> from tnfr.constants import DNFR_PRIMARY, EPI_PRIMARY, VF_PRIMARY
     >>> from tnfr.dynamics import set_delta_nfr_hook
     >>> from tnfr.structural import create_nfr, run_sequence
@@ -265,30 +229,10 @@ class Emission(Operator):
     >>> round(G.nodes[node][VF_PRIMARY], 2)
     1.02
     
-    **Contextual Example (Therapeutic Activation):**
-    
-    >>> # Simulating cardiac coherence training initiation
-    >>> G_heart, heart = create_nfr("cardiac_system", epi=0.2, vf=0.8)
-    >>> # Low initial coherence, moderate frequency
-    >>> # AL: Begin coherence practice (breath awareness)
-    >>> run_sequence(G_heart, heart, [Emission()])
-    >>> # Result: EPI increases as heart enters coherent state
-    >>> # νf activates, ΔNFR becomes positive, preparing for IL stabilization
-    
-    **Contextual Example (Educational Activation):**
-    
-    >>> # Student beginning learning session
-    >>> G_student, student = create_nfr("learning_node", epi=0.15, vf=0.9)
-    >>> # Latent state with good frequency potential
-    >>> # AL: Teacher introduces new concept, student attention activates
-    >>> run_sequence(G_student, student, [Emission()])
-    >>> # Result: Cognitive structures begin to reorganize
-    >>> # Student's mental EPI starts forming around new concept
-    
     See Also
     --------
     Coherence : Stabilizes emitted structures
-    Resonance : Propagates emitted coherence through network
+    Resonance : Propagates emitted coherence
     Reception : Receives external emissions
     """
 
@@ -320,7 +264,7 @@ class Reception(Operator):
     active structural process that reorganizes the node to accommodate and stabilize
     external resonant patterns while reducing ΔNFR through integration.
     
-    **Key Paradigm Elements:**
+    **Key Elements:**
     
     - **Active Integration**: Receiving is reorganizing, not passive storage
     - **ΔNFR Reduction**: Integration reduces reorganization pressure
@@ -329,25 +273,25 @@ class Reception(Operator):
     
     Use Cases
     ---------
-    **Biomedical Applications:**
+    **Biomedical**:
     
     - **Biofeedback Reception**: Integrating external coherence signals (e.g., HRV monitoring)
     - **Therapeutic Resonance**: Patient receiving therapist's coherent presence
     - **Neural Synchronization**: Brain regions receiving and integrating signals
     
-    **Cognitive/Educational Applications:**
+    **Cognitive**:
     
     - **Learning Reception**: Student integrating teacher's explanations
     - **Concept Integration**: Mind receiving and structuring new information
     - **Attention Anchoring**: Consciousness stabilizing around received stimuli
     
-    **Social/Organizational Applications:**
+    **Social**:
     
     - **Communication Reception**: Team member integrating collaborative input
     - **Cultural Integration**: Individual receiving and adopting social patterns
     - **Empathic Reception**: Receiving and resonating with others' emotional states
     
-    Typical Operator Sequences
+    Typical Sequences
     ---------------------------
     - **AL → EN**: Emission followed by reception (bidirectional activation)
     - **EN → IL**: Reception followed by coherence (stabilized integration)
@@ -368,14 +312,14 @@ class Reception(Operator):
     - **θ**: May align toward emitting nodes' phase
     - **Network coupling**: Strengthens connections to coherence sources
     
-    Metrics Collected
+    Metrics
     -----------------
     - ΔEPI: Magnitude of integrated external coherence
     - ΔNFR reduction: Measure of stabilization effectiveness
     - Integration efficiency: Ratio of received to integrated coherence
     - Phase alignment: Degree of synchronization with sources
     
-    Grammar Compatibility
+    Compatibility
     ---------------------
     **Compatible with**: IL (Coherence), THOL (Self-organization), UM (Coupling),
     RA (Resonance), NAV (Transition)
@@ -387,7 +331,7 @@ class Reception(Operator):
 
     Examples
     --------
-    **Technical Example (Structural Dynamics):**
+    **Technical Example:**
     
     >>> from tnfr.constants import DNFR_PRIMARY, EPI_PRIMARY
     >>> from tnfr.dynamics import set_delta_nfr_hook
@@ -407,7 +351,7 @@ class Reception(Operator):
     >>> round(G.nodes[node][DNFR_PRIMARY], 2)
     0.06
     
-    **Contextual Example (Biofeedback Integration):**
+    **Example (Biofeedback Integration):**
     
     >>> # Patient receiving HRV biofeedback during therapy
     >>> G_patient, patient = create_nfr("patient_biofeedback", epi=0.30, vf=1.0)
@@ -416,7 +360,7 @@ class Reception(Operator):
     >>> # Result: External biofeedback signal anchors into patient's physiology
     >>> # ΔNFR reduces as system stabilizes around received pattern
     
-    **Contextual Example (Educational Integration):**
+    **Example (Educational Integration):**
     
     >>> # Student receiving and integrating new mathematical concept
     >>> G_learning, learner = create_nfr("student_mind", epi=0.25, vf=0.95)
@@ -460,7 +404,7 @@ class Coherence(Operator):
     effectively "sealing" structural forms into stable configurations. This is the primary
     operator for maintaining nodal equation balance: ∂EPI/∂t → 0 as ΔNFR → 0.
     
-    **Key Paradigm Elements:**
+    **Key Elements:**
     
     - **Structural Stabilization**: Reduces reorganization pressure (ΔNFR)
     - **Coherence Amplification**: Increases global C(t) through local stability
@@ -469,28 +413,28 @@ class Coherence(Operator):
     
     Use Cases
     ---------
-    **Biomedical Applications:**
+    **Biomedical**:
     
     - **Cardiac Coherence**: Stabilizing heart rate variability patterns
     - **Neural Coherence**: Maintaining synchronized brain wave states
     - **Homeostatic Balance**: Stabilizing physiological regulatory systems
     - **Therapeutic Integration**: Consolidating healing states post-intervention
     
-    **Cognitive/Educational Applications:**
+    **Cognitive**:
     
     - **Concept Consolidation**: Stabilizing newly learned information
     - **Mental Clarity**: Reducing cognitive noise and confusion
     - **Focus Maintenance**: Sustaining attention on coherent thought patterns
     - **Memory Formation**: Consolidating experience into stable memories
     
-    **Social/Organizational Applications:**
+    **Social**:
     
     - **Team Alignment**: Stabilizing collaborative working patterns
     - **Cultural Coherence**: Maintaining shared values and practices
     - **Ritual Completion**: Sealing ceremonial transformations
     - **Group Synchrony**: Stabilizing collective resonance states
     
-    Typical Operator Sequences
+    Typical Sequences
     ---------------------------
     - **AL → IL**: Emission stabilized immediately (safe activation)
     - **EN → IL**: Reception consolidated (stable integration)
@@ -513,14 +457,14 @@ class Coherence(Operator):
     - **νf**: May slightly increase as stability enables higher frequency
     - **θ**: Aligns with network phase (phase locking)
     
-    Metrics Collected
+    Metrics
     -----------------
     - ΔNFR reduction: Primary metric of stabilization success
     - C(t) increase: Global coherence improvement
     - Phase alignment: Degree of network synchronization
     - EPI stability: Variance reduction in form over time
     
-    Grammar Compatibility
+    Compatibility
     ---------------------
     **Compatible with**: ALL operators - IL is universally stabilizing
     
@@ -532,7 +476,7 @@ class Coherence(Operator):
 
     Examples
     --------
-    **Technical Example (Structural Dynamics):**
+    **Technical Example:**
     
     >>> from tnfr.constants import DNFR_PRIMARY, EPI_PRIMARY, VF_PRIMARY
     >>> from tnfr.dynamics import set_delta_nfr_hook
@@ -555,7 +499,7 @@ class Coherence(Operator):
     >>> round(G.nodes[node][DNFR_PRIMARY], 2)
     0.05
     
-    **Contextual Example (Cardiac Coherence Training):**
+    **Example (Cardiac Coherence Training):**
     
     >>> # Stabilizing heart rhythm after breath-focus activation
     >>> G_heart, heart = create_nfr("cardiac_rhythm", epi=0.50, vf=1.10)
@@ -565,7 +509,7 @@ class Coherence(Operator):
     >>> # Result: HRV pattern stabilizes, ΔNFR reduces significantly
     >>> # Patient enters sustained coherent state
     
-    **Contextual Example (Learning Consolidation):**
+    **Example (Learning Consolidation):**
     
     >>> # Student consolidating newly understood concept
     >>> G_study, mind = create_nfr("student_understanding", epi=0.45, vf=1.05)
@@ -575,7 +519,7 @@ class Coherence(Operator):
     >>> # Result: Knowledge structure stabilizes, confusion (ΔNFR) reduces
     >>> # Concept becomes part of stable mental model
     
-    **Contextual Example (Team Alignment):**
+    **Example (Team Alignment):**
     
     >>> # Collaborative team stabilizing after creative brainstorm
     >>> G_team, group = create_nfr("team_consensus", epi=0.55, vf=1.00)
@@ -620,7 +564,7 @@ class Dissonance(Operator):
     coherence, controlled dissonance enables evolution, mutation, and creative reorganization.
     When ∂²EPI/∂t² > τ, bifurcation occurs, spawning new structural possibilities.
     
-    **Key Paradigm Elements:**
+    **Key Elements:**
     
     - **Creative Instability**: Necessary for transformation and evolution
     - **Bifurcation Trigger**: When ΔNFR exceeds thresholds, new forms emerge
@@ -629,28 +573,28 @@ class Dissonance(Operator):
     
     Use Cases
     ---------
-    **Biomedical Applications:**
+    **Biomedical**:
     
     - **Hormetic Stress**: Controlled physiological challenge (cold exposure, fasting)
     - **Therapeutic Crisis**: Necessary discomfort in healing process
     - **Immune Challenge**: Controlled pathogen exposure for adaptation
     - **Neural Plasticity**: Learning-induced temporary destabilization
     
-    **Cognitive/Educational Applications:**
+    **Cognitive**:
     
     - **Cognitive Dissonance**: Challenging existing beliefs for growth
     - **Creative Problem-Solving**: Introducing paradoxes to spark insight
     - **Socratic Method**: Questioning to destabilize and rebuild understanding
     - **Conceptual Conflict**: Encountering contradictions that force reorganization
     
-    **Social/Organizational Applications:**
+    **Social**:
     
     - **Constructive Conflict**: Productive disagreement in teams
     - **Organizational Change**: Disrupting status quo to enable transformation
     - **Cultural Evolution**: Introducing new ideas that challenge norms
     - **Innovation Pressure**: Market disruption forcing adaptation
     
-    Typical Operator Sequences
+    Typical Sequences
     ---------------------------
     - **OZ → IL**: Dissonance resolved into new coherence (creative resolution)
     - **OZ → THOL**: Dissonance triggering self-organization (emergent order)
@@ -674,14 +618,14 @@ class Dissonance(Operator):
     - **νf**: Often increases as system responds to challenge
     - **Bifurcation risk**: ∂²EPI/∂t² may exceed τ
     
-    Metrics Collected
+    Metrics
     -----------------
     - ΔNFR increase: Magnitude of introduced instability
     - Phase shift (Δθ): Degree of phase exploration
     - Bifurcation events: Count of structural splits
     - Recovery time: Time to return to coherence (with IL)
     
-    Grammar Compatibility
+    Compatibility
     ---------------------
     **Compatible with**: IL (resolution), THOL (organization), NAV (transition),
     ZHIR (mutation)
@@ -693,7 +637,7 @@ class Dissonance(Operator):
 
     Examples
     --------
-    **Technical Example (Structural Dynamics):**
+    **Technical Example:**
     
     >>> from tnfr.constants import DNFR_PRIMARY, THETA_PRIMARY
     >>> from tnfr.dynamics import set_delta_nfr_hook
@@ -713,7 +657,7 @@ class Dissonance(Operator):
     >>> round(G.nodes[node][THETA_PRIMARY], 2)
     0.25
     
-    **Contextual Example (Therapeutic Challenge):**
+    **Example (Therapeutic Challenge):**
     
     >>> # Patient confronting difficult emotions in therapy
     >>> G_therapy, patient = create_nfr("emotional_processing", epi=0.40, theta=0.10)
@@ -724,7 +668,7 @@ class Dissonance(Operator):
     >>> # Phase shifts as old patterns destabilize
     >>> # Prepares for THOL (new understanding) or IL (integration)
     
-    **Contextual Example (Educational Challenge):**
+    **Example (Educational Challenge):**
     
     >>> # Student encountering paradox that challenges understanding
     >>> G_learning, student = create_nfr("conceptual_framework", epi=0.50, theta=0.15)
@@ -735,7 +679,7 @@ class Dissonance(Operator):
     >>> # Existing mental model destabilizes
     >>> # Enables THOL (conceptual reorganization) or ZHIR (paradigm shift)
     
-    **Contextual Example (Organizational Innovation):**
+    **Example (Organizational Innovation):**
     
     >>> # Company facing market disruption
     >>> G_org, company = create_nfr("business_model", epi=0.60, theta=0.20)
@@ -781,7 +725,7 @@ class Coupling(Operator):
     resonance that enables coordinated reorganization and shared coherence. Coupling is
     essential for network-level coherence and collective structural dynamics.
     
-    **Key Paradigm Elements:**
+    **Key Elements:**
     
     - **Phase Synchronization**: Nodes align their θ values for resonance
     - **Bidirectional Flow**: Coupling enables mutual influence and coherence sharing
@@ -790,28 +734,28 @@ class Coupling(Operator):
     
     Use Cases
     ---------
-    **Biomedical Applications:**
+    **Biomedical**:
     
     - **Heart-Brain Coupling**: Synchronizing cardiac and neural rhythms
     - **Respiratory-Cardiac Coherence**: Breath-heart rate variability coupling
     - **Interpersonal Synchrony**: Physiological attunement between people
     - **Neural Network Coupling**: Synchronized firing patterns across brain regions
     
-    **Cognitive/Educational Applications:**
+    **Cognitive**:
     
     - **Conceptual Integration**: Linking related ideas into coherent frameworks
     - **Teacher-Student Attunement**: Pedagogical resonance and rapport
     - **Collaborative Thinking**: Shared mental models in teams
     - **Memory Association**: Coupling related memories for retrieval
     
-    **Social/Organizational Applications:**
+    **Social**:
     
     - **Team Bonding**: Creating synchronized group dynamics
     - **Cultural Transmission**: Coupling individual to collective patterns
     - **Communication Channels**: Establishing mutual understanding
     - **Network Effects**: Value creation through connection density
     
-    Typical Operator Sequences
+    Typical Sequences
     ---------------------------
     - **UM → RA**: Coupling followed by resonance propagation
     - **AL → UM**: Emission followed by coupling (paired activation)
@@ -833,14 +777,14 @@ class Coupling(Operator):
     - **Network structure**: Creates or strengthens edges
     - **Collective EPI**: Enables emergent shared structures
     
-    Metrics Collected
+    Metrics
     -----------------
     - Phase alignment: |θᵢ - θⱼ| reduction
     - Coupling strength: Magnitude of mutual influence
     - Network density: Number of active couplings
     - Collective coherence: C(t) at network level
     
-    Grammar Compatibility
+    Compatibility
     ---------------------
     **Compatible with**: RA (Resonance), IL (Coherence), THOL (Self-organization),
     EN (Reception), AL (Emission)
@@ -852,7 +796,7 @@ class Coupling(Operator):
 
     Examples
     --------
-    **Technical Example (Structural Dynamics):**
+    **Technical Example:**
     
     >>> from tnfr.constants import DNFR_PRIMARY, THETA_PRIMARY, VF_PRIMARY
     >>> from tnfr.dynamics import set_delta_nfr_hook
@@ -874,7 +818,7 @@ class Coupling(Operator):
     >>> round(G.nodes[node][DNFR_PRIMARY], 2)
     0.02
     
-    **Contextual Example (Heart-Brain Coherence):**
+    **Example (Heart-Brain Coherence):**
     
     >>> # Coupling cardiac and neural rhythms during meditation
     >>> G_body, heart_brain = create_nfr("heart_brain_system", vf=1.20, theta=0.50)
@@ -885,7 +829,7 @@ class Coupling(Operator):
     >>> # Heart and brain enter coupled coherent state
     >>> # Creates platform for RA (coherence propagation to body)
     
-    **Contextual Example (Collaborative Learning):**
+    **Example (Collaborative Learning):**
     
     >>> # Students forming shared understanding in group work
     >>> G_group, team = create_nfr("study_group", vf=1.10, theta=0.45)
@@ -931,7 +875,7 @@ class Resonance(Operator):
     network, increasing collective νf and global C(t). RA embodies the fundamental TNFR
     principle: structural patterns propagate through resonance, not mechanical transfer.
     
-    **Key Paradigm Elements:**
+    **Key Elements:**
     
     - **Identity Preservation**: Propagated EPI maintains structural integrity
     - **Amplification**: Coherence strengthens through resonant networks
@@ -940,28 +884,28 @@ class Resonance(Operator):
     
     Use Cases
     ---------
-    **Biomedical Applications:**
+    **Biomedical**:
     
     - **Coherence Propagation**: HRV coherence spreading through nervous system
     - **Neural Cascade**: Synchronized firing spreading across brain networks
     - **Immune Response**: Coordinated cellular activation across tissue
     - **Healing Waves**: Therapeutic effects propagating through body systems
     
-    **Cognitive/Educational Applications:**
+    **Cognitive**:
     
     - **Insight Spread**: Understanding cascading through conceptual network
     - **Aha Moment**: Sudden coherence propagating across mental model
     - **Cultural Memes**: Ideas resonating and spreading through population
     - **Knowledge Transfer**: Expertise propagating through learning networks
     
-    **Social/Organizational Applications:**
+    **Social**:
     
     - **Collective Enthusiasm**: Energy spreading through group
     - **Social Movements**: Coherent values propagating through networks
     - **Innovation Diffusion**: Ideas spreading through organizations
     - **Market Resonance**: Trends amplifying through economic networks
     
-    Typical Operator Sequences
+    Typical Sequences
     ---------------------------
     - **UM → RA**: Coupling followed by propagation (network activation)
     - **AL → RA**: Emission followed by propagation (broadcast pattern)
@@ -984,14 +928,14 @@ class Resonance(Operator):
     - **ΔNFR**: May slightly increase initially, then stabilize
     - **Phase alignment**: Strengthens across propagation path
     
-    Metrics Collected
+    Metrics
     -----------------
     - Propagation distance: Number of nodes reached
     - Amplification factor: Coherence gain through network
     - Network C(t): Global coherence increase
     - Propagation speed: Rate of coherence spread
     
-    Grammar Compatibility
+    Compatibility
     ---------------------
     **Compatible with**: UM (Coupling), IL (Coherence), EN (Reception),
     AL (Emission), THOL (Self-organization)
@@ -1003,7 +947,7 @@ class Resonance(Operator):
 
     Examples
     --------
-    **Technical Example (Structural Dynamics):**
+    **Technical Example:**
     
     >>> from tnfr.constants import DNFR_PRIMARY, VF_PRIMARY
     >>> from tnfr.dynamics import set_delta_nfr_hook
@@ -1022,7 +966,7 @@ class Resonance(Operator):
     >>> round(G.nodes[node][DNFR_PRIMARY], 2)
     0.03
     
-    **Contextual Example (Cardiac Coherence Spread):**
+    **Example (Cardiac Coherence Spread):**
     
     >>> # Heart coherence propagating to entire nervous system
     >>> G_body, heart = create_nfr("cardiac_source", vf=0.90, epi=0.60)
@@ -1033,7 +977,7 @@ class Resonance(Operator):
     >>> # Whole body enters resonant coherent state
     >>> # Enables healing, relaxation, optimal function
     
-    **Contextual Example (Insight Cascade):**
+    **Example (Insight Cascade):**
     
     >>> # Understanding suddenly spreading through mental model
     >>> G_mind, insight = create_nfr("conceptual_breakthrough", vf=1.05, epi=0.55)
@@ -1044,7 +988,7 @@ class Resonance(Operator):
     >>> # "Aha!" moment as coherence spreads through mental network
     >>> # Previously disconnected ideas suddenly align
     
-    **Contextual Example (Social Movement):**
+    **Example (Social Movement):**
     
     >>> # Idea resonating through social network
     >>> G_social, movement = create_nfr("cultural_idea", vf=0.95, epi=0.50)
@@ -1090,7 +1034,7 @@ class Silence(Operator):
     the current EPI form intact, preventing reorganization. SHA is essential for memory,
     consolidation, and maintaining structural identity during network turbulence.
     
-    **Key Paradigm Elements:**
+    **Key Elements:**
     
     - **Frequency Suppression**: Reduces νf to near-zero (structural pause)
     - **Form Preservation**: EPI remains unchanged despite external pressures
@@ -1099,28 +1043,28 @@ class Silence(Operator):
     
     Use Cases
     ---------
-    **Biomedical Applications:**
+    **Biomedical**:
     
     - **Rest and Recovery**: Physiological downregulation for healing
     - **Sleep Consolidation**: Memory formation through structural pause
     - **Meditation States**: Conscious reduction of mental reorganization
     - **Trauma Containment**: Protective numbing of overwhelming activation
     
-    **Cognitive/Educational Applications:**
+    **Cognitive**:
     
     - **Memory Storage**: Consolidating learning through reduced interference
     - **Incubation Period**: Letting problems "rest" before insight
     - **Attention Rest**: Recovery from cognitive load
     - **Knowledge Preservation**: Maintaining expertise without active use
     
-    **Social/Organizational Applications:**
+    **Social**:
     
     - **Strategic Pause**: Deliberate non-action in conflict
     - **Cultural Preservation**: Maintaining traditions without active practice
     - **Organizational Stability**: Resisting change pressure
     - **Waiting Strategy**: Preserving position until conditions favor action
     
-    Typical Operator Sequences
+    Typical Sequences
     ---------------------------
     - **IL → SHA**: Stabilize then preserve (long-term memory)
     - **SHA → AL**: Silence broken by reactivation (awakening)
@@ -1144,14 +1088,14 @@ class Silence(Operator):
     - **θ**: Maintained but not actively synchronized
     - **Network influence**: Minimal during silence
     
-    Metrics Collected
+    Metrics
     -----------------
     - νf reduction: Degree of frequency suppression
     - EPI stability: Variance over silence period (should be ~0)
     - Silence duration: Time in latent state
     - Preservation effectiveness: EPI integrity post-silence
     
-    Grammar Compatibility
+    Compatibility
     ---------------------
     **Compatible with**: IL (Coherence before silence), NAV (Transition from silence),
     AL (Reactivation from silence)
@@ -1163,7 +1107,7 @@ class Silence(Operator):
 
     Examples
     --------
-    **Technical Example (Structural Dynamics):**
+    **Technical Example:**
     
     >>> from tnfr.constants import DNFR_PRIMARY, EPI_PRIMARY, VF_PRIMARY
     >>> from tnfr.dynamics import set_delta_nfr_hook
@@ -1181,7 +1125,7 @@ class Silence(Operator):
     >>> round(G.nodes[node][VF_PRIMARY], 2)
     0.02
     
-    **Contextual Example (Sleep Consolidation):**
+    **Example (Sleep Consolidation):**
     
     >>> # Memory consolidation during sleep
     >>> G_memory, memory_trace = create_nfr("learned_pattern", epi=0.51, vf=1.00)
@@ -1192,7 +1136,7 @@ class Silence(Operator):
     >>> # νf drops to near-zero, prevents interference
     >>> # Memory consolidates through structural silence
     
-    **Contextual Example (Meditative Rest):**
+    **Example (Meditative Rest):**
     
     >>> # Consciousness entering deep meditation
     >>> G_mind, awareness = create_nfr("mental_state", epi=0.48, vf=0.95)
@@ -1203,7 +1147,7 @@ class Silence(Operator):
     >>> # Awareness EPI maintained without elaboration
     >>> # Restful alertness through structural silence
     
-    **Contextual Example (Organizational Pause):**
+    **Example (Organizational Pause):**
     
     >>> # Company maintaining position during market uncertainty
     >>> G_company, strategy = create_nfr("business_position", epi=0.55, vf=1.10)
