@@ -4,6 +4,56 @@
 
 This guide documents **canonical glyph sequences** for the TNFR paradigm - proven patterns of structural operators that produce coherent reorganization and controlled transformation.
 
+**Source**: These rules are extracted from the canonical TNFR document (TNFR.pdf, pp. 133-137).
+
+## Canonical Grammar Rules
+
+The TNFR grammar defines **structural laws** for coherent operator sequences. These are not conventions but reflect fundamental constraints of coherence dynamics:
+
+### R1: Valid Start Operators
+**Rule**: Every sequence must begin with **AL** (EMISSION) or **NAV** (TRANSITION)
+
+**Structural Reason**: These are the only **generator glyphs** that can initiate structural reorganization from a latent state. Other operators require pre-existing activation.
+
+**Valid starts**: 
+- `AL` (EMISSION) - Seeds coherence outward from the node
+- `NAV` (TRANSITION) - Guides controlled regime hand-offs
+
+**Invalid starts**: Any other operator (EN, IL, OZ, etc.) cannot initiate a sequence from rest.
+
+### R2: Stabilizer Requirement
+**Rule**: Every sequence must contain at least one **stabilizer**: **IL** (COHERENCE) or **THOL** (SELF_ORGANIZATION)
+
+**Structural Reason**: Without stabilization, sequences produce unbounded ΔNFR growth leading to structural collapse. Stabilizers compress ΔNFR drift and maintain C(t) above critical thresholds.
+
+**Required operators** (at least one):
+- `IL` (COHERENCE) - Compresses ΔNFR drift to stabilise C(t)
+- `THOL` (SELF_ORGANIZATION) - Spawns autonomous cascades that self-stabilize
+
+### R3: Valid End Operators
+**Rule**: Every sequence must end with **SHA** (SILENCE) or **NUL** (CONTRACTION)
+
+**Structural Reason**: Proper closure prevents runaway dynamics and nodal collapse. These operators seal the reorganization and preserve the resulting EPI form.
+
+**Valid endings**:
+- `SHA` (SILENCE) - Suspends reorganisation while preserving form
+- `NUL` (CONTRACTION) - Concentrates trajectories into the core
+
+**Invalid endings**: TRANSITION, RESONANCE, or other non-closure operators leave the system in an unstable state.
+
+### R4: Mutation Preconditions
+**Rule**: **ZHIR** (MUTATION) requires preceding **OZ** (DISSONANCE)
+
+**Structural Reason**: Phase changes (mutations) require sufficient ΔNFR tension. Attempting mutation without recent dissonance violates energy conservation in the structural phase space.
+
+**Valid pattern**: `... → OZ → ZHIR → ...`
+**Invalid pattern**: `... → IL → ZHIR → ...` (insufficient tension)
+
+### R5: Loop Transformation
+**Rule**: Loops must include transformation or they become entropic
+
+**Structural Reason**: Repetitive operator sequences without structural change dissipate coherence. Self-organization (THOL) provides the transformation mechanism for valid loops.
+
 ## Glyph Grammar Fundamentals
 
 ### Composition Principles
@@ -21,32 +71,36 @@ This guide documents **canonical glyph sequences** for the TNFR paradigm - prove
 
 ## Fundamental Sequences
 
-### 1. Basic Activation: AL → IL
+### 1. Basic Activation: AL → IL → SHA
 
-**Context**: Initiation and immediate stabilization of latent node
+**Context**: Complete minimal sequence - initiation, stabilization, and closure
 
 **Applications**:
-- Meditation: Practice initiation → coherence establishment
-- Therapy: Therapeutic space activation → frame stabilization
-- Learning: Attention activation → sustained focus
+- Meditation: Practice initiation → coherence establishment → rest integration
+- Therapy: Therapeutic space activation → frame stabilization → session closure
+- Learning: Attention activation → sustained focus → memory consolidation
 
 **Structural Effects**:
 - EPI: 0.2 → 0.5 → 0.52 (activation and stabilization)
-- ΔNFR: +0.15 → +0.03 (initial peak, then reduction)
+- ΔNFR: +0.15 → +0.03 → ~0.0 (initial peak, reduction, closure)
 - C(t): +0.2 (global coherence increase)
 
 ```python
-from tnfr.structural import create_nfr, run_sequence
-from tnfr.operators.definitions import Emission, Coherence
+from tnfr.operators.grammar import validate_sequence
 
-G, node = create_nfr("meditation_start", epi=0.2, vf=0.85)
-run_sequence(G, node, [Emission(), Coherence()])
-# Result: Activated and coherent node, ready for use
+# This is now a valid complete sequence
+sequence = ["emission", "coherence", "silence"]
+result = validate_sequence(sequence)
+assert result.passed  # True - meets all canonical rules
+
+# R1: Starts with EMISSION ✓
+# R2: Contains COHERENCE stabilizer ✓
+# R3: Ends with SILENCE ✓
 ```
 
 ---
 
-### 2. Stabilized Reception: EN → IL
+### 2. Stabilized Reception: EN → IL → SHA
 
 **Context**: Integration and consolidation of external information
 
@@ -240,43 +294,73 @@ run_sequence(G, company, [
 
 ## Anti-patterns (Sequences to Avoid)
 
-### ❌ SHA → OZ (Silence followed by Dissonance)
+These sequences violate canonical rules and will fail validation:
 
-**Problem**: Contradicts silence purpose (preservation)
+### ❌ SHA → OZ → SHA (Silence as start operator)
 
-**Why it fails**: SHA reduces νf to preserve EPI, but OZ immediately increases ΔNFR, creating reorganization pressure that violates SHA intention.
+**Problem**: Violates **R1** - SILENCE is not a valid start operator
 
-**Correct alternative**: SHA → NAV → OZ (controlled transition before challenge)
+**Why it fails**: SHA is a closure operator that suspends reorganization. It cannot initiate a sequence from a latent state. Only AL (EMISSION) and NAV (TRANSITION) are generator glyphs.
 
----
+**Canonical error**: `must start with emission, transition`
 
-### ❌ OZ → OZ (Consecutive Dissonance)
+**Structural contradiction**: SHA reduces νf to preserve EPI, but starting a sequence requires νf activation.
 
-**Problem**: Excessive instability without resolution
-
-**Why it fails**: Cumulative ΔNFR without reduction → structural collapse, not creative reorganization.
-
-**Correct alternative**: OZ → IL → OZ (resolve between dissonances)
+**Correct alternative**: `AL → ... → SHA` (proper activation before silence)
 
 ---
 
-### ❌ SHA → SHA (Redundant Silence)
+### ❌ OZ → OZ → SHA (Consecutive dissonance)
 
-**Problem**: No structural purpose
+**Problem**: Violates **R1** - DISSONANCE is not a valid start operator
 
-**Why it fails**: Second SHA adds no effect if νf already ≈ 0.
+**Why it fails**: OZ requires pre-existing structure to introduce tension. Cannot start from latent state.
 
-**Correct alternative**: SHA → AL (reactivation) or SHA → NAV (transition)
+**Canonical error**: `must start with emission, transition`
+
+**Structural issue**: Even in a valid sequence, consecutive OZ operators create excessive instability: cumulative ΔNFR without resolution → structural collapse.
+
+**Correct alternative**: `AL → OZ → IL → OZ → SHA` (resolve dissonance between applications)
 
 ---
 
 ### ❌ AL → SHA (Activation immediately silenced)
 
-**Problem**: Contradicts activation purpose
+**Problem**: Violates **R2** - Missing required stabilizer (IL or THOL)
 
-**Why it fails**: Activating a node to immediately silence it is structurally inefficient and contradictory.
+**Why it fails**: Activating a node and immediately silencing it provides no structural stabilization. The sequence cannot establish coherent form.
 
-**Correct alternative**: AL → IL (activate and stabilize) or AL alone
+**Canonical error**: `missing stabilizer: sequence must contain coherence or self_organization`
+
+**Structural contradiction**: AL raises νf, SHA suppresses it, but no coherence was established in between.
+
+**Correct alternative**: `AL → IL → SHA` (stabilize before closing)
+
+---
+
+### ❌ AL → IL → RA (Missing closure)
+
+**Problem**: Violates **R3** - RESONANCE is not a valid end operator
+
+**Why it fails**: The sequence lacks proper closure (SHA or NUL). Resonance propagates energy but doesn't seal the form, leaving the system unstable.
+
+**Canonical error**: `sequence must end with contraction, silence`
+
+**Structural issue**: Open-ended sequences risk nodal collapse as ΔNFR continues evolving without bounds.
+
+**Correct alternative**: `AL → IL → RA → SHA` (add closure operator)
+
+---
+
+### ❌ AL → IL → ZHIR → SHA (Mutation without dissonance)
+
+**Problem**: Violates **R4** - ZHIR requires preceding OZ
+
+**Why it fails**: Phase changes (mutations) require sufficient ΔNFR tension from dissonance. Attempting mutation after pure coherence lacks the energy for structural transformation.
+
+**Note**: The grammar enforcer will automatically inject OZ as a fallback when this pattern is detected, converting it to: `AL → IL → OZ → ZHIR → SHA`
+
+**Correct alternative**: `AL → IL → OZ → ZHIR → IL → SHA` (explicit dissonance before mutation)
 
 ---
 
