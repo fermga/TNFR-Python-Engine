@@ -100,18 +100,40 @@ class Operator:
         if validate_preconditions and G.graph.get("VALIDATE_OPERATOR_PRECONDITIONS", False):
             self._validate_preconditions(G, node)
         
-        # Optional metrics collection (capture state before)
+        # Capture state before operator application for metrics and validation
         collect_metrics = kw.get("collect_metrics", False) or G.graph.get("COLLECT_OPERATOR_METRICS", False)
-        metrics_before = None
-        if collect_metrics:
-            metrics_before = self._capture_state(G, node)
+        validate_equation = kw.get("validate_nodal_equation", False) or G.graph.get("VALIDATE_NODAL_EQUATION", False)
+        
+        state_before = None
+        if collect_metrics or validate_equation:
+            state_before = self._capture_state(G, node)
         
         from . import apply_glyph_with_grammar
         apply_glyph_with_grammar(G, [node], self.glyph, kw.get("window"))
         
+        # Optional nodal equation validation (∂EPI/∂t = νf · ΔNFR(t))
+        if validate_equation and state_before is not None:
+            from .nodal_equation import validate_nodal_equation
+            from ..alias import get_attr
+            from ..constants.aliases import ALIAS_EPI
+            
+            dt = float(kw.get("dt", 1.0))  # Time step, default 1.0 for discrete ops
+            strict = G.graph.get("NODAL_EQUATION_STRICT", False)
+            epi_after = float(get_attr(G.nodes[node], ALIAS_EPI, 0.0))
+            
+            validate_nodal_equation(
+                G,
+                node,
+                epi_before=state_before["epi"],
+                epi_after=epi_after,
+                dt=dt,
+                operator_name=self.name,
+                strict=strict,
+            )
+        
         # Optional metrics collection (capture state after and compute)
-        if collect_metrics and metrics_before is not None:
-            metrics = self._collect_metrics(G, node, metrics_before)
+        if collect_metrics and state_before is not None:
+            metrics = self._collect_metrics(G, node, state_before)
             # Store metrics in graph for retrieval
             if "operator_metrics" not in G.graph:
                 G.graph["operator_metrics"] = []
@@ -124,6 +146,36 @@ class Operator:
         Base implementation does nothing.
         """
         pass
+    
+    def _get_node_attr(self, G: TNFRGraph, node: Any, attr_name: str) -> float:
+        """Get node attribute value.
+        
+        Parameters
+        ----------
+        G : TNFRGraph
+            Graph containing the node
+        node : Any
+            Node identifier
+        attr_name : str
+            Attribute name ("epi", "vf", "dnfr", "theta")
+            
+        Returns
+        -------
+        float
+            Attribute value
+        """
+        from ..alias import get_attr
+        from ..constants.aliases import ALIAS_EPI, ALIAS_VF, ALIAS_DNFR, ALIAS_THETA
+        
+        alias_map = {
+            "epi": ALIAS_EPI,
+            "vf": ALIAS_VF,
+            "dnfr": ALIAS_DNFR,
+            "theta": ALIAS_THETA,
+        }
+        
+        aliases = alias_map.get(attr_name, (attr_name,))
+        return float(get_attr(G.nodes[node], aliases, 0.0))
     
     def _capture_state(self, G: TNFRGraph, node: Any) -> dict[str, Any]:
         """Capture node state before operator application.

@@ -15,12 +15,21 @@ from __future__ import annotations
 
 import math
 import re
+import warnings
 from typing import Any, Mapping
 
 import networkx as nx
 
 from ..constants import DEFAULTS
 from ..types import Glyph, TNFRGraph
+
+# Check HzStr availability once at module level
+_HZ_STR_AVAILABLE = False
+try:
+    from ..operators.structural_units import HzStr
+    _HZ_STR_AVAILABLE = True
+except ImportError:
+    HzStr = None  # type: ignore[assignment, misc]
 
 __all__ = [
     "ValidationError",
@@ -186,18 +195,22 @@ def validate_vf_value(
     value: Any,
     *,
     config: Mapping[str, Any] | None = None,
+    enforce_hz_str: bool = False,
 ) -> float:
     """Validate νf (structural frequency) value in Hz_str units.
 
     Structural frequency represents the reorganization rate and must be
-    positive and within canonical bounds.
+    positive and within canonical bounds. Optionally enforces Hz_str type.
 
     Parameters
     ----------
     value : Any
-        νf value to validate. Must be a real number.
+        νf value to validate. Can be numeric or HzStr instance.
     config : Mapping[str, Any] | None
         Graph configuration containing VF_MIN and VF_MAX bounds.
+    enforce_hz_str : bool, default False
+        If True, warns when value is not a HzStr instance (encourages
+        canonical unit usage without breaking existing code).
 
     Returns
     -------
@@ -217,7 +230,24 @@ def validate_vf_value(
     Traceback (most recent call last):
         ...
     ValidationError: νf must be non-negative, got -0.5
+    
+    Notes
+    -----
+    When enforce_hz_str is True and value is not a HzStr instance, logs a
+    warning to encourage canonical unit usage but still accepts the value.
     """
+    # Accept HzStr instances (canonical form)
+    if _HZ_STR_AVAILABLE and HzStr is not None and isinstance(value, HzStr):
+        value = float(value)  # Extract numeric value
+    elif enforce_hz_str and _HZ_STR_AVAILABLE:
+        # Log warning but don't raise (soft enforcement for migration)
+        warnings.warn(
+            f"νf should use Hz_str units for TNFR canonical compliance. "
+            f"Got {type(value).__name__} instead.",
+            UserWarning,
+            stacklevel=2,
+        )
+    
     if not isinstance(value, (int, float)):
         raise ValidationError(
             f"νf must be numeric, got {type(value).__name__}",
@@ -466,12 +496,18 @@ def validate_node_id(value: Any) -> Any:
 
 
 def validate_glyph(value: Any) -> Glyph:
-    """Validate Glyph enumeration value.
+    """Validate Glyph enumeration value or structural operator name.
+
+    Accepts both Glyph codes (e.g., "AL", "IL") and structural operator names
+    (e.g., "emission", "coherence") following TNFR canonical grammar.
 
     Parameters
     ----------
     value : Any
-        Value to validate as a Glyph.
+        Value to validate as a Glyph. Can be:
+        - A Glyph enum instance (e.g., Glyph.AL)
+        - A glyph code string (e.g., "AL", "IL")
+        - A structural operator name (e.g., "emission", "coherence")
 
     Returns
     -------
@@ -481,13 +517,15 @@ def validate_glyph(value: Any) -> Glyph:
     Raises
     ------
     ValidationError
-        If value is not a valid Glyph.
+        If value is not a valid Glyph or structural operator name.
 
     Examples
     --------
     >>> validate_glyph(Glyph.AL)
     <Glyph.AL: 'AL'>
     >>> validate_glyph("AL")
+    <Glyph.AL: 'AL'>
+    >>> validate_glyph("emission")
     <Glyph.AL: 'AL'>
     >>> validate_glyph("INVALID")
     Traceback (most recent call last):
@@ -498,16 +536,27 @@ def validate_glyph(value: Any) -> Glyph:
         return value
 
     if isinstance(value, str):
+        # Try direct Glyph code first
         try:
             return Glyph(value)
         except ValueError:
+            pass
+        
+        # Try structural operator name mapping
+        try:
+            from ..operators.grammar import function_name_to_glyph
+            glyph = function_name_to_glyph(value)
+            if glyph is not None:
+                return glyph
+        except Exception:
+            # If grammar module import fails, continue to error
             pass
 
     raise ValidationError(
         f"Invalid glyph value: {value!r}",
         parameter="glyph",
         value=value,
-        constraint="valid Glyph enumeration",
+        constraint="valid Glyph enumeration or structural operator name",
     )
 
 
