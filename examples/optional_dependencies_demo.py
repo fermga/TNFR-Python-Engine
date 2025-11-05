@@ -6,14 +6,17 @@ while providing informative error messages and type checking compatibility.
 
 Installation
 ------------
-# Minimal installation (core only)
+# Minimal installation (core includes NumPy, NetworkX, Cachetools)
 pip install tnfr
 
 # With visualization support
-pip install tnfr[viz]
+pip install tnfr[viz-basic]
 
-# With numpy for accelerated computations
-pip install tnfr[numpy]
+# With JAX backend
+pip install tnfr[compute-jax]
+
+# With PyTorch backend  
+pip install tnfr[compute-torch]
 """
 
 from __future__ import annotations

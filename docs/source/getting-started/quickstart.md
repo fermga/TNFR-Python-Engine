@@ -15,14 +15,33 @@ Install the engine from PyPI. Python 3.9 or newer is required.
 pip install tnfr
 ```
 
-Optional extras:
+This installs the core dependencies including NumPy, NetworkX, and Cachetools.
 
-- NumPy: `pip install tnfr[numpy]`
-- JAX: `pip install tnfr[jax]`
-- PyTorch: `pip install tnfr[torch]`
-- YAML: `pip install tnfr[yaml]`
-- orjson (faster JSON serialization): `pip install tnfr[orjson]`
-- All extras: `pip install tnfr[numpy,yaml,orjson]`
+### Optional extras
+
+Install optional computational backends and features:
+
+- **Computational backends:**
+  - JAX backend: `pip install tnfr[compute-jax]`
+  - PyTorch backend: `pip install tnfr[compute-torch]`
+- **Visualization:**
+  - Basic plotting: `pip install tnfr[viz-basic]`
+- **Serialization:**
+  - YAML support: `pip install tnfr[yaml]`
+  - Fast JSON with orjson: `pip install tnfr[orjson]`
+  - Both: `pip install tnfr[serialization]`
+- **Development:**
+  - Minimal dev environment: `pip install tnfr[dev-minimal]`
+  - Full dev environment: `pip install tnfr[dev-full]`
+- **Testing:**
+  - Unit tests only: `pip install tnfr[test-unit]`
+  - All test tools: `pip install tnfr[test-all]`
+
+**Legacy aliases** (for compatibility):
+- `tnfr[numpy]` - NumPy is now core, this installs no additional packages
+- `tnfr[jax]` - Alias for `tnfr[compute-jax]`
+- `tnfr[torch]` - Alias for `tnfr[compute-torch]`
+- `tnfr[viz]` - Alias for `tnfr[viz-basic]`
 
 When `orjson` is unavailable the engine falls back to Python's built-in `json` module.
 
