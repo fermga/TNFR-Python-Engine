@@ -7,6 +7,7 @@ import pytest
 import tnfr.dynamics.selectors as selectors
 from tnfr.constants import inject_defaults
 from tnfr.config.operator_names import (
+    COHERENCE,
     DISSONANCE,
     MUTATION,
     RECEPTION,
@@ -27,12 +28,19 @@ from tnfr.validation import (
 from tnfr.validation import record_grammar_violation as _record_violation
 
 def test_compatibility_fallback(graph_canon):
+    """Test compatibility transitions according to canonical TNFR grammar.
+    
+    After AL (emission), IL (coherence) is now valid according to the
+    canonical compatibility table. Previously this would fallback to EN,
+    but the updated grammar (issue #X) explicitly lists AL → IL as compatible.
+    """
     G = graph_canon()
     G.add_node(0)
     inject_defaults(G)
     nd = G.nodes[0]
     nd["glyph_history"] = deque([Glyph.AL])
-    assert glyph_function_name(enforce_canonical_grammar(G, 0, Glyph.IL)) == RECEPTION
+    # AL → IL is now compatible according to canonical TNFR grammar
+    assert glyph_function_name(enforce_canonical_grammar(G, 0, Glyph.IL)) == COHERENCE
 
 def test_precondition_oz_to_zhir(graph_canon):
     """Test oz-to-zhir fallback behavior.
@@ -207,7 +215,8 @@ def test_canonical_enforcement_with_string_history(graph_canon):
     result = _choose_glyph(G, 0, selector, True, h_al, h_en, 10, 10)
 
     assert isinstance(result, str)
-    assert glyph_function_name(result) == RECEPTION
+    # AL → IL is now compatible according to canonical TNFR grammar
+    assert glyph_function_name(result) == COHERENCE
 
 def test_lag_counters_enforced(graph_canon):
     G = graph_canon()
