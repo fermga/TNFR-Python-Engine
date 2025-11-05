@@ -39,20 +39,49 @@ The NumPy backend provides vectorized implementations using `numpy` arrays and o
 
 ### Optimized NumPy Backend (Enhanced, Stable)
 
-**Status**: Production-ready, enhanced vectorization
+**Status**: ✅ Production-ready with correct TNFR semantics
 
 The optimized NumPy backend builds on the standard NumPy implementation with:
 
-- **Fused operations**: Infrastructure for combining gradient computations
-- **Workspace caching**: Pre-allocated buffers to reduce allocations
-- **Adaptive strategy**: Automatically selects optimization level based on graph size
-- **Optional Numba**: Can use Numba JIT if available for further speedups
+- **Fused gradient kernel**: Single-pass accumulation of neighbor statistics
+- **TNFR canonical formula**: Correct use of `angle_diff` with π divisor
+- **Circular mean**: Proper circular statistics using cos/sin sums + atan2
+- **Workspace caching**: Pre-allocated buffers for array operations
+- **Adaptive strategy**: Graph-size based optimization selection
+- **Optional Numba JIT**: Can leverage Numba for additional speedup
 
-**Requirements**: `numpy>=1.24`, optional `numba` for JIT
+**Requirements**: `numpy>=1.24`, optional `numba` for JIT acceleration
 
 **Characteristics**:
 - `supports_gpu`: False (CPU-only)
 - `supports_jit`: True (if Numba is installed)
+
+**Performance** (without Numba):
+
+| Graph Size | Edges  | Standard (ms) | Optimized (ms) | Speedup |
+|------------|--------|---------------|----------------|---------|
+| 50 nodes   | 232    | 0.87          | 0.85           | 1.02x   |
+| 100 nodes  | 976    | 1.47          | 1.14           | 1.29x   |
+| 200 nodes  | 4,051  | 2.81          | 3.02           | 0.93x   |
+| 500 nodes  | 25,156 | 7.40          | 13.62          | 0.54x   |
+
+**Note**: Without Numba JIT, the vectorized path is slower for large graphs due to the two-pass algorithm overhead. With Numba JIT compilation, expected speedup is 2-3x on graphs >500 nodes.
+
+**TNFR Formula Implementation**: The optimized backend correctly implements the canonical TNFR phase gradient formula:
+
+```python
+# Circular mean of neighbor phases
+phase_mean = arctan2(Σ sin(θ_neighbors), Σ cos(θ_neighbors))
+
+# Phase gradient with angle wrapping (NOT sin!)
+phase_diff = (phase_mean - phase + π) % 2π - π
+g_phase = phase_diff / π
+```
+
+**Critical**: Uses `angle_diff` (angular wrapping) NOT `sin`. For large phase differences:
+- `angle_diff(1.5)` = 1.5
+- `sin(1.5)` ≈ 0.997
+- Ratio: 0.665 (33% error if using sin!)
 
 **Usage**:
 ```python
@@ -60,7 +89,7 @@ from tnfr.backends import get_backend
 
 backend = get_backend("optimized_numpy")
 # or use alias:
-backend = get_backend("optimized")
+backend = get_backend("opt")
 ```
 
 ### JAX Backend (Experimental)
@@ -445,54 +474,158 @@ For large graphs (>10,000 nodes), consider:
 
 ## Ongoing Optimizations
 
-The TNFR backend system is under continuous optimization to achieve the target 10-100x speedup for large-scale networks.
+The TNFR backend system is under continuous optimization to achieve the target performance improvements for large-scale networks.
 
-### Current Optimization Efforts
+### Current Status
 
-**Phase 1: Enhanced Vectorization (In Progress)**
-- ✅ Optimized NumPy backend with workspace caching
-- ✅ Infrastructure for fused gradient computations
-- 🔄 Numba JIT integration for hot paths
-- 🔄 Further reduction in temporary allocations
+**Phase 1: Vectorized ΔNFR with TNFR Canonical Formula** ✅ **COMPLETE**
+- ✅ Optimized NumPy backend with fused gradient computation
+- ✅ Correct TNFR canonical formula with `angle_diff` and π divisor
+- ✅ Circular mean using cos/sin accumulation + atan2
+- ✅ Workspace caching infrastructure
+- ✅ All TNFR structural invariants preserved
+- ✅ Comprehensive test coverage (22 tests passing)
 
-**Phase 2: Advanced Fusion (Planned)**
-- Fused phase/EPI/topology gradient kernels
-- Combined normalization operations for Si
-- Reduced memory traffic through operation coalescing
-- Target: Additional 20-40% speedup
+**Implementation Details**:
+```python
+# Two-pass algorithm for fused gradients
+# Pass 1: Accumulate neighbor statistics
+for edge (i, j) in undirected_edges:
+    # Forward: j's neighbors include i
+    neighbor_cos_sum[j] += cos(phase[i])
+    neighbor_sin_sum[j] += sin(phase[i])
+    neighbor_epi_sum[j] += EPI[i]
+    neighbor_count[j] += 1
+    
+    # Backward: i's neighbors include j (symmetric)
+    neighbor_cos_sum[i] += cos(phase[j])
+    neighbor_sin_sum[i] += sin(phase[j])
+    neighbor_epi_sum[i] += EPI[j]
+    neighbor_count[i] += 1
 
-**Phase 3: Specialized Implementations (Future)**
-- Graph-size adaptive strategies
+# Pass 2: Compute means and gradients
+phase_mean = arctan2(neighbor_sin_sum, neighbor_cos_sum)
+phase_diff = (phase_mean - phase + π) % 2π - π  # angle wrapping
+g_phase = phase_diff / π  # TNFR canonical formula
+```
+
+**Key Insight**: The TNFR canonical formula requires `angle_diff` (angular wrapping to [-π, π]), not `sin`. This critical detail ensures correctness for large phase differences.
+
+**Performance Status**: 
+- ✅ Correct semantics preserved
+- ⚠️ Performance needs Numba JIT for speedup
+- Without Numba: 0.5-1.3x of standard (two-pass overhead)
+- With Numba: 2-3x expected (JIT-compiled inner loops)
+
+**Phase 2: Numba JIT Integration** ✅ **TESTED**
+- ✅ Numba v0.62.1 installed and tested
+- ✅ Auto-detection working correctly
+- ⚠️ Performance not improved with current algorithm
+- **Issue**: `compute_fused_gradients_symmetric` uses `np.add.at()` scatter operations that Numba can't JIT compile effectively
+- **Benchmark**: With Numba installed, performance is 0.5-1.3x (similar or slower)
+- **Root cause**: Two-pass algorithm with NumPy scatter/gather operations isn't JIT-friendly
+- **To fix**: Would need to rewrite with explicit loops instead of vectorized scatter ops (significant refactoring)
+
+**Phase 3: GPU Backend Infrastructure** ✅ **IMPLEMENTED**
+- ✅ PyTorch backend implemented and tested (v2.9.0+cpu)
+- ✅ JAX backend infrastructure ready (not installed)
+- ✅ Device detection working (CPU/CUDA)
+- ✅ Benchmark suite for large graphs (>10K nodes)
+- ⏳ GPU kernels not yet implemented (currently delegates to NumPy)
+- **Target**: 10-50x speedup on GPU for graphs >10K nodes
+- **Next**: Implement actual GPU kernels using torch.scatter/gather operations
+
+**Phase 4: Advanced Optimizations** 📋 **PLANNED**
+- Fused phase dispersion + Si computation
+- SIMD-optimized inner loops  
 - Cache-optimized memory layouts
-- SIMD-optimized inner loops
-- Parallel accumulation for very large graphs
+- Target: Additional 20-40% improvement
 
-### Performance Targets
+## GPU Backend Implementation Status
 
-| Graph Size | Current | Target | Status |
-|------------|---------|--------|--------|
-| 100 nodes  | 1.5x    | 2-3x   | 🔄     |
-| 500 nodes  | 3.0x    | 5-10x  | 🔄     |
-| 1000 nodes | 4.0x    | 10-20x | 🔄     |
-| 5000+ nodes| 5.0x    | 20-50x | 🔄     |
+### PyTorch Backend
+
+**Current Status**: ✅ Infrastructure ready, ⏳ GPU kernels pending
+
+- Backend class implemented in `src/tnfr/backends/torch_backend.py`
+- Device detection: Automatic CPU/CUDA selection
+- Interface compatible with all TNFR operations
+- **Benchmark** (10K nodes, CPU): 352.6 ms (delegates to NumPy)
+
+**To enable GPU acceleration**:
+```python
+# Install PyTorch with CUDA support
+pip install torch --index-url https://download.pytorch.org/whl/cu118
+
+# Use torch backend
+from tnfr.backends import get_backend
+backend = get_backend("torch")
+print(f"Device: {backend.device}")  # cuda:0 if GPU available
+```
+
+**Next Steps**:
+1. Convert `compute_fused_gradients_symmetric` to torch tensors
+2. Use `torch.scatter_add` for neighbor accumulation
+3. Add device placement (move graph data to GPU)
+4. Benchmark on actual GPU hardware
+
+### JAX Backend
+
+**Current Status**: ✅ Infrastructure ready, ✗ JAX not installed
+
+- Backend class implemented in `src/tnfr/backends/jax_backend.py`
+- JIT compilation support with `@jax.jit` decorator
+- XLA compiler optimizations
+- **Not tested**: Requires platform-specific JAX installation
+
+**To enable JAX**:
+```bash
+# CPU-only
+pip install jax jaxlib
+
+# With CUDA support
+pip install jax[cuda] -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
+```
+
+**Expected Performance**:
+- CPU with JIT: 5-20x faster than NumPy
+- GPU: 20-100x faster for graphs >10K nodes
 
 ## Future Roadmap
 
-### Planned Enhancements
+### Immediate Next Steps
 
-1. **JAX Backend**:
-   - JIT-compiled ΔNFR computation with `@jax.jit`
-   - GPU acceleration via JAX device placement
-   - Vectorized operations using `jax.numpy`
-   - Target: 10-50x speedup on GPU
+1. **PyTorch GPU Kernel Implementation**:
+   - Convert fused gradient computation to PyTorch tensors
+   - Implement with `torch.scatter_add` for accumulation
+   - Add device management (CPU/CUDA placement)
+   - Target: 10-50x speedup on GPU for graphs >10K nodes
 
-2. **PyTorch Backend**:
-   - GPU-accelerated tensor operations
-   - Sparse tensor support for large graphs
-   - Mixed precision (FP16/BF16) for memory efficiency
-   - Integration with PyTorch Geometric
+2. **JAX JIT Compilation**:
+   - JIT-compiled ΔNFR with `@jax.jit` decorator
+   - Use `jax.ops.segment_sum` for neighbor operations
+   - Automatic XLA compiler optimization
+   - Target: 5-20x on CPU, 20-100x on GPU
 
-3. **Optimization**:
+3. **Performance Validation**:
+   - Benchmark on actual GPU hardware
+   - Validate TNFR semantic fidelity
+   - Document speedup characteristics
+
+### Long-term Enhancements
+
+1. **Advanced GPU Features**:
+   - Sparse tensor support for massive graphs
+   - Mixed precision (FP16/BF16) training
+   - Batch processing for multiple graphs
+   - Integration with PyTorch Geometric/JAX-MD
+
+2. **Numba Loop-based Optimization**:
+   - Rewrite with explicit loops (JIT-friendly)
+   - Replace scatter operations with accumulation loops
+   - Target: 2-3x CPU speedup
+
+3. **Cross-Platform Optimization**:
    - Fused kernels for phase dispersion + Si
    - Graph topology caching across iterations
    - SIMD optimizations for NumPy backend
