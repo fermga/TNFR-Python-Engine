@@ -194,14 +194,8 @@ class OptimizedNumPyBackend(TNFRBackend):
                 profile=profile,
             )
         else:
-            # Use standard implementation (fused kernel integration is future work)
-            # The current vectorized implementation already uses many of these optimizations
-            from ..dynamics.dnfr import default_compute_delta_nfr
-            
-            if profile is not None:
-                profile["dnfr_optimization"] = "enhanced_vectorization"
-            
-            default_compute_delta_nfr(
+            # Use vectorized fused gradient computation for large graphs
+            self._compute_delta_nfr_vectorized(
                 graph,
                 cache_size=cache_size,
                 n_jobs=n_jobs,
@@ -273,6 +267,123 @@ class OptimizedNumPyBackend(TNFRBackend):
             chunk_size=chunk_size,
             profile=profile,
         )
+    
+    def _compute_delta_nfr_vectorized(
+        self,
+        graph: TNFRGraph,
+        *,
+        cache_size: int | None = 1,
+        n_jobs: int | None = None,
+        profile: MutableMapping[str, float] | None = None,
+    ) -> None:
+        """Compute ΔNFR using vectorized fused gradient operations.
+        
+        This method implements the optimized vectorized path using fused
+        gradient computation from dynamics.fused_dnfr module.
+        
+        Parameters
+        ----------
+        graph : TNFRGraph
+            Graph with TNFR node attributes
+        cache_size : int or None, optional
+            Maximum cached configurations
+        n_jobs : int or None, optional
+            Ignored (vectorization doesn't use multiprocessing)
+        profile : MutableMapping[str, float] or None, optional
+            Profiling metrics dictionary
+        """
+        from time import perf_counter
+        from ..dynamics.fused_dnfr import (
+            compute_fused_gradients,
+            apply_vf_scaling,
+        )
+        from ..alias import get_attr, set_dnfr
+        from ..constants.aliases import ALIAS_EPI, ALIAS_VF
+        
+        if profile is not None:
+            profile["dnfr_optimization"] = "vectorized_fused"
+        
+        # Configure and normalize ΔNFR weights using standard mechanism
+        from ..metrics.common import merge_and_normalize_weights
+        
+        weights_dict = merge_and_normalize_weights(
+            graph, "DNFR_WEIGHTS", ("phase", "epi", "vf", "topo"), default=0.0
+        )
+        
+        # Convert to the format expected by fused_dnfr
+        weights = {
+            "w_phase": weights_dict.get("phase", 0.0),
+            "w_epi": weights_dict.get("epi", 0.0),
+            "w_vf": weights_dict.get("vf", 0.0),
+            "w_topo": weights_dict.get("topo", 0.0),
+        }
+        
+        # Build node list and index mapping
+        t0 = perf_counter()
+        nodes = list(graph.nodes())
+        n_nodes = len(nodes)
+        node_to_idx = {node: idx for idx, node in enumerate(nodes)}
+        
+        # Extract node attributes as arrays
+        phase = self._np.zeros(n_nodes, dtype=float)
+        epi = self._np.zeros(n_nodes, dtype=float)
+        vf = self._np.zeros(n_nodes, dtype=float)
+        
+        for idx, node in enumerate(nodes):
+            phase[idx] = float(graph.nodes[node].get("phase", 0.0))
+            epi[idx] = float(get_attr(graph.nodes[node], ALIAS_EPI, 0.0))
+            vf[idx] = float(get_attr(graph.nodes[node], ALIAS_VF, 1.0))
+        
+        # Build edge arrays
+        edges = list(graph.edges())
+        n_edges = len(edges)
+        
+        if n_edges == 0:
+            # No edges, all ΔNFR values are 0
+            for node in nodes:
+                set_dnfr(graph, node, 0.0)
+            if profile is not None:
+                profile["dnfr_fused_compute"] = 0.0
+                profile["dnfr_workspace_alloc"] = perf_counter() - t0
+            return
+        
+        edge_src = self._np.zeros(n_edges, dtype=int)
+        edge_dst = self._np.zeros(n_edges, dtype=int)
+        
+        for idx, (u, v) in enumerate(edges):
+            edge_src[idx] = node_to_idx[u]
+            edge_dst[idx] = node_to_idx[v]
+        
+        t1 = perf_counter()
+        if profile is not None:
+            profile["dnfr_workspace_alloc"] = t1 - t0
+        
+        # Compute fused gradients
+        t2 = perf_counter()
+        delta_nfr = compute_fused_gradients(
+            edge_src=edge_src,
+            edge_dst=edge_dst,
+            phase=phase,
+            epi=epi,
+            vf=vf,
+            weights=weights,
+            np=self._np,
+        )
+        
+        # Apply structural frequency scaling (νf · ΔNFR)
+        apply_vf_scaling(delta_nfr=delta_nfr, vf=vf, np=self._np)
+        
+        t3 = perf_counter()
+        if profile is not None:
+            profile["dnfr_fused_compute"] = t3 - t2
+        
+        # Write results back to graph
+        for idx, node in enumerate(nodes):
+            set_dnfr(graph, node, float(delta_nfr[idx]))
+        
+        # Update graph metadata
+        graph.graph["DNFR_WEIGHTS"] = weights
+        graph.graph["DNFR_HOOK"] = "OptimizedNumPyBackend.compute_delta_nfr"
     
     def clear_cache(self) -> None:
         """Clear workspace cache to free memory.
