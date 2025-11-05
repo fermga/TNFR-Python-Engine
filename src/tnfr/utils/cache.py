@@ -3515,6 +3515,12 @@ def _generate_cache_key(
     -------
     str
         Cache key string.
+        
+    Notes
+    -----
+    Uses MD5 for hashing (acceptable for cache keys, not security).
+    Graph objects use id() which is session-specific - cache is cleared
+    between sessions, so this is deterministic within a session.
     """
     # Build key components
     key_parts = [func_name]
@@ -3524,7 +3530,7 @@ def _generate_cache_key(
         if hasattr(arg, '__name__'):  # For graph objects, use name
             key_parts.append(f"graph:{arg.__name__}")
         elif hasattr(arg, 'graph'):  # NetworkX graphs have .graph attribute
-            # Use graph id for identity
+            # Use graph id for identity (session-specific, cache cleared between sessions)
             key_parts.append(f"graph:{id(arg)}")
         else:
             # For simple types, include value
@@ -3535,7 +3541,7 @@ def _generate_cache_key(
         v = kwargs[k]
         key_parts.append(f"{k}={v}")
     
-    # Create deterministic hash
+    # Create deterministic hash (MD5 is acceptable for non-security cache keys)
     key_str = "|".join(key_parts)
     return hashlib.md5(key_str.encode()).hexdigest()
 
