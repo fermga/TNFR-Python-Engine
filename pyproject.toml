@@ -43,13 +43,14 @@ serialization = ["pyyaml>=6.0,<7.0", "orjson>=3,<4"]
 # Visualization
 viz-basic = ["matplotlib>=3.7,<4.0"]
 
-# Legacy compatibility aliases
-numpy = ["numpy>=1.24,<3.0"]  # Now in core; kept for compatibility
-jax = ["tnfr[compute-jax]"]
-torch = ["tnfr[compute-torch]"]
+# Legacy compatibility aliases (for backward compatibility with existing workflows)
+# Note: numpy is now a core dependency, so this extra installs nothing additional
+numpy = []  # Empty - numpy is now in core dependencies
+jax = ["jax>=0.4,<1.0"]
+torch = ["torch>=2.1,<3.0"]
 yaml = ["pyyaml>=6.0,<7.0"]
 orjson = ["orjson>=3,<4"]
-viz = ["tnfr[viz-basic]"]
+viz = ["matplotlib>=3.7,<4.0"]
 docs = [
   "sphinx>=7.2",
   "sphinx-autodoc-typehints>=1.25",
@@ -84,10 +85,33 @@ test-quality = [
   "vulture>=2,<3",
 ]
 test-all = [
-  "tnfr[test-unit,test-property,test-performance,test-parallel,test-quality]",
+  "pytest>=7,<9",
+  "pytest-cov>=4,<6",
+  "pytest-timeout>=2,<3",
+  "hypothesis>=6,<7",
+  "hypothesis-networkx>=0.3,<1.0",
+  "pytest-benchmark>=4,<5",
+  "pytest-xdist>=3,<4",
+  "pydocstyle>=6,<7",
+  "flake8>=5,<8",
+  "flake8-pyproject>=1.2,<2.0",
+  "vulture>=2,<3",
   "matplotlib>=3.7,<4.0",
 ]
-test = ["tnfr[test-all]"]  # Legacy alias
+test = [  # Legacy alias
+  "pytest>=7,<9",
+  "pytest-cov>=4,<6",
+  "pytest-timeout>=2,<3",
+  "hypothesis>=6,<7",
+  "hypothesis-networkx>=0.3,<1.0",
+  "pytest-benchmark>=4,<5",
+  "pytest-xdist>=3,<4",
+  "pydocstyle>=6,<7",
+  "flake8>=5,<8",
+  "flake8-pyproject>=1.2,<2.0",
+  "vulture>=2,<3",
+  "matplotlib>=3.7,<4.0",
+]
 
 # Type checking
 typecheck = [
@@ -100,11 +124,28 @@ typecheck = [
 dev-minimal = [
   "mypy>=1.8,<2.0",
   "black>=23,<25",
-  "tnfr[test-unit]",
+  "pytest>=7,<9",
+  "pytest-cov>=4,<6",
+  "pytest-timeout>=2,<3",
 ]
 dev-full = [
-  "tnfr[test-all,viz-basic,compute-jax,typecheck]",
+  "pytest>=7,<9",
+  "pytest-cov>=4,<6",
+  "pytest-timeout>=2,<3",
+  "hypothesis>=6,<7",
+  "hypothesis-networkx>=0.3,<1.0",
+  "pytest-benchmark>=4,<5",
+  "pytest-xdist>=3,<4",
+  "pydocstyle>=6,<7",
+  "flake8>=5,<8",
+  "flake8-pyproject>=1.2,<2.0",
   "vulture>=2,<3",
+  "matplotlib>=3.7,<4.0",
+  "jax>=0.4,<1.0",
+  "mypy>=1.8,<2.0",
+  "pyright>=1.1.350,<1.2.0",
+  "networkx-stubs>=0.0.1",
+  "types-cachetools>=6.0.0.0",
 ]
 
 # Release tooling
