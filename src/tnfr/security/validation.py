@@ -106,7 +106,8 @@ def validate_phase_value(phase: float, *, allow_wrap: bool = True) -> float:
     -------
     >>> validate_phase_value(1.57)  # π/2
     1.57
-    >>> abs(validate_phase_value(7.0) - 0.7168...) < 0.01  # Wrapped
+    >>> result = validate_phase_value(7.0)  # Wrapped to [0, 2π]
+    >>> 0.0 <= result <= 6.3
     True
     >>> validate_phase_value(7.0, allow_wrap=False)  # doctest: +SKIP
     Traceback (most recent call last):

@@ -482,8 +482,8 @@ def execute_parameterized_query(
 
     # Basic validation: check for suspicious patterns
     if "'" in query or '"' in query:
-        # Allow quoted identifiers but warn about potential issues
-        if not all(
+        # Allow quoted identifiers if query has standard SQL keywords
+        if not any(
             keyword in query.upper()
             for keyword in ["SELECT", "INSERT", "UPDATE", "DELETE"]
         ):
