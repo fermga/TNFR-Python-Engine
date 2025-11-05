@@ -321,20 +321,95 @@ class StructuredFileError(Exception):
         super().__init__(_format_structured_file_error(path, original))
         self.path = path
 
-def read_structured_file(path: Path) -> Any:
-    """Read a JSON, YAML or TOML file and return parsed data."""
+def read_structured_file(
+    path: Path | str,
+    *,
+    base_dir: Path | str | None = None,
+    allowed_extensions: tuple[str, ...] | None = (".json", ".yaml", ".yml", ".toml"),
+) -> Any:
+    """Read a JSON, YAML or TOML file and return parsed data.
 
-    suffix = path.suffix.lower()
+    This function includes path traversal protection. When ``base_dir`` is
+    provided, the resolved path must stay within that directory.
+
+    Parameters
+    ----------
+    path : Path | str
+        Path to the structured file to read.
+    base_dir : Path | str | None, optional
+        Base directory to restrict file access. If provided, the resolved
+        path must stay within this directory (prevents path traversal).
+    allowed_extensions : tuple[str, ...] | None, optional
+        Tuple of allowed file extensions. Default is JSON, YAML, and TOML.
+        Pass None to allow any extension (not recommended for user input).
+
+    Returns
+    -------
+    Any
+        Parsed data from the file.
+
+    Raises
+    ------
+    StructuredFileError
+        If the file cannot be read or parsed.
+    ValueError
+        If the path is invalid or contains unsafe patterns.
+    PathTraversalError
+        If path traversal is detected.
+
+    Examples
+    --------
+    >>> from pathlib import Path
+    >>> # Read config file with path validation
+    >>> data = read_structured_file("config.json")  # doctest: +SKIP
+    
+    >>> # Read with base directory restriction
+    >>> data = read_structured_file(
+    ...     "settings.yaml",
+    ...     base_dir="/home/user/configs"
+    ... )  # doctest: +SKIP
+    """
+    # Import here to avoid circular dependency
+    from ..security import resolve_safe_path, validate_file_path, PathTraversalError
+
+    # Validate and resolve the path
+    try:
+        if base_dir is not None:
+            # Resolve path within base directory (prevents traversal)
+            validated_path = resolve_safe_path(
+                path,
+                base_dir,
+                must_exist=True,
+                allowed_extensions=allowed_extensions,
+            )
+        else:
+            # Validate path without base directory restriction
+            path_obj = Path(path) if not isinstance(path, Path) else path
+            validated_path = validate_file_path(
+                path_obj,
+                allow_absolute=True,
+                allowed_extensions=allowed_extensions,
+            ).resolve()
+            
+            # Check existence
+            if not validated_path.exists():
+                raise FileNotFoundError(f"File not found: {validated_path}")
+    except (ValueError, PathTraversalError) as e:
+        raise StructuredFileError(Path(path), e) from e
+    except FileNotFoundError as e:
+        raise StructuredFileError(Path(path), e) from e
+
+    suffix = validated_path.suffix.lower()
     try:
         parser = _get_parser(suffix)
     except ValueError as e:
-        raise StructuredFileError(path, e) from e
+        raise StructuredFileError(validated_path, e) from e
     try:
-        text = path.read_text(encoding="utf-8")
+        text = validated_path.read_text(encoding="utf-8")
         return parser(text)
     except Exception as e:
         if _is_structured_error(e):
-            raise StructuredFileError(path, e) from e
+            raise StructuredFileError(validated_path, e) from e
         raise
 
 def safe_write(
@@ -345,9 +420,13 @@ def safe_write(
     encoding: str | None = "utf-8",
     atomic: bool = True,
     sync: bool | None = None,
+    base_dir: str | Path | None = None,
     **open_kwargs: Any,
 ) -> None:
     """Write to ``path`` ensuring parent directory exists and handle errors.
+
+    This function includes path traversal protection. When ``base_dir`` is
+    provided, the resolved path must stay within that directory.
 
     Parameters
     ----------
@@ -370,9 +449,40 @@ def safe_write(
     sync:
         When ``True`` flushes and fsyncs the file descriptor after writing.
         ``None`` uses ``atomic`` to determine syncing behaviour.
-    """
+    base_dir:
+        Optional base directory to restrict file writes. If provided, the
+        resolved path must stay within this directory (prevents path traversal).
 
-    path = Path(path)
+    Raises
+    ------
+    ValueError
+        If the path is invalid or contains unsafe patterns.
+    PathTraversalError
+        If path traversal is detected when base_dir is provided.
+    """
+    # Import here to avoid circular dependency
+    from ..security import resolve_safe_path, validate_file_path, PathTraversalError
+
+    # Validate and resolve the path
+    try:
+        if base_dir is not None:
+            # Resolve path within base directory (prevents traversal)
+            validated_path = resolve_safe_path(
+                path,
+                base_dir,
+                must_exist=False,
+            )
+        else:
+            # Validate path without base directory restriction
+            path_obj = Path(path) if not isinstance(path, Path) else path
+            validated_path = validate_file_path(
+                path_obj,
+                allow_absolute=True,
+            ).resolve()
+    except (ValueError, PathTraversalError) as e:
+        raise type(e)(f"Invalid path {path!r}: {e}") from e
+
+    path = validated_path
     path.parent.mkdir(parents=True, exist_ok=True)
     open_params = dict(mode=mode, **open_kwargs)
     if "b" not in mode and encoding is not None:

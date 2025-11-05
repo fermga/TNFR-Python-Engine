@@ -578,11 +578,23 @@ class ShelveCacheLayer(CacheLayer):
         validator: Callable[[bytes, bytes], bool] | None = None,
         require_signature: bool = False,
     ) -> None:
-        self._path = path
+        # Validate cache file path to prevent path traversal
+        from ..security import validate_file_path
+        
+        try:
+            validated_path = validate_file_path(
+                path,
+                allow_absolute=True,
+                allowed_extensions=None,  # Shelve creates multiple files with various extensions
+            )
+            self._path = str(validated_path)
+        except (ValueError, Exception) as e:
+            raise ValueError(f"Invalid cache path {path!r}: {e}") from e
+        
         self._flag = flag
         self._protocol = pickle.HIGHEST_PROTOCOL if protocol is None else protocol
         # shelve module inherently uses pickle for serialization; security risks documented in class docstring
-        self._shelf = shelve.open(path, flag=flag, protocol=self._protocol, writeback=writeback)  # nosec B301
+        self._shelf = shelve.open(self._path, flag=flag, protocol=self._protocol, writeback=writeback)  # nosec B301
         self._lock = threading.RLock()
         self._signer = signer
         self._validator = validator

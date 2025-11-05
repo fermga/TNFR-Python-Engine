@@ -37,7 +37,10 @@ from .database import (
 )
 from .subprocess import (
     CommandValidationError,
+    PathTraversalError,
+    resolve_safe_path,
     run_command_safely,
+    validate_file_path,
     validate_git_ref,
     validate_path_safe,
     validate_version_string,
@@ -57,8 +60,11 @@ __all__ = (
     "validate_phase_value",
     "validate_structural_frequency",
     "CommandValidationError",
+    "PathTraversalError",
     "run_command_safely",
     "validate_git_ref",
     "validate_path_safe",
+    "validate_file_path",
+    "resolve_safe_path",
     "validate_version_string",
 )

@@ -18,6 +18,8 @@ def _write_csv(
     path: str,
     headers: Sequence[str],
     rows: Iterable[Sequence[object]],
+    *,
+    output_dir: str | None = None,
 ) -> None:
     def _write(f: TextIO) -> None:
         writer = csv.writer(f)
@@ -25,7 +27,7 @@ def _write_csv(
         for row in rows:
             writer.writerow(row)
 
-    safe_write(path, _write, newline="")
+    safe_write(path, _write, newline="", base_dir=output_dir)
 
 def _iter_glif_rows(
     glyph: Mapping[str, Sequence[float]],
@@ -39,8 +41,36 @@ def _iter_glif_rows(
     for i, t in enumerate(ts):
         yield [t] + [col[i] for col in cols]
 
-def export_metrics(G: Graph, base_path: str, fmt: str = "csv") -> None:
-    """Dump glyphogram and σ(t) trace to compact CSV or JSON files."""
+def export_metrics(
+    G: Graph,
+    base_path: str,
+    fmt: str = "csv",
+    *,
+    output_dir: str | None = None,
+) -> None:
+    """Dump glyphogram and σ(t) trace to compact CSV or JSON files.
+
+    Parameters
+    ----------
+    G : Graph
+        The TNFR graph containing metrics to export.
+    base_path : str
+        Base filename for exported files (without extension).
+    fmt : str, default='csv'
+        Export format: 'csv' or 'json'.
+    output_dir : str | None, optional
+        Output directory to restrict exports. If provided, all exports
+        must stay within this directory (prevents path traversal).
+
+    Raises
+    ------
+    ValueError
+        If the path is invalid or format is unsupported.
+    PathTraversalError
+        If path traversal is detected when output_dir is provided.
+    """
+    from pathlib import Path
+    
     hist = ensure_history(G)
     glyph = glyphogram_series(G)
     sigma_x = hist.get("sense_sigma_x", [])
@@ -130,7 +160,7 @@ def export_metrics(G: Graph, base_path: str, fmt: str = "csv") -> None:
                 )
             )
         for suffix, headers, rows in specs:
-            _write_csv(base_path + suffix, headers, rows)
+            _write_csv(base_path + suffix, headers, rows, output_dir=output_dir)
     else:
         data = {
             "glyphogram": glyph,
@@ -143,4 +173,4 @@ def export_metrics(G: Graph, base_path: str, fmt: str = "csv") -> None:
         def _write_json(f: TextIO) -> None:
             f.write(json_dumps(data))
 
-        safe_write(json_path, _write_json)
+        safe_write(json_path, _write_json, base_dir=output_dir)

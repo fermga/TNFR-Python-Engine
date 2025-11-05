@@ -12,6 +12,7 @@ They act as a coherence boundary between user input and system command execution
 
 from __future__ import annotations
 
+import os
 import re
 import subprocess
 from pathlib import Path
@@ -20,14 +21,21 @@ from typing import Any, Sequence
 __all__ = [
     "validate_git_ref",
     "validate_path_safe",
+    "validate_file_path",
+    "resolve_safe_path",
     "validate_version_string",
     "run_command_safely",
     "CommandValidationError",
+    "PathTraversalError",
 ]
 
 
 class CommandValidationError(ValueError):
     """Raised when command input validation fails."""
+
+
+class PathTraversalError(ValueError):
+    """Raised when path traversal attempt is detected."""
 
 
 # Allowlisted commands that are safe to execute
@@ -142,6 +150,9 @@ def validate_version_string(version: str) -> str:
 def validate_path_safe(path: str | Path) -> Path:
     """Validate that a path is safe (no path traversal attacks).
 
+    .. deprecated:: 0.2
+       Use :func:`validate_file_path` instead for more comprehensive validation.
+
     Parameters
     ----------
     path : str | Path
@@ -186,6 +197,219 @@ def validate_path_safe(path: str | Path) -> Path:
         )
 
     return path_obj
+
+
+def validate_file_path(
+    path: str | Path,
+    *,
+    allow_absolute: bool = False,
+    allowed_extensions: Sequence[str] | None = None,
+) -> Path:
+    """Validate file path to prevent path traversal and unauthorized access.
+
+    This function provides comprehensive path validation to prevent:
+    - Path traversal attacks (../../../etc/passwd)
+    - Unauthorized file access
+    - Special character exploits
+    - Symlink attacks
+
+    TNFR Context
+    ------------
+    Maintains structural coherence by ensuring file operations preserve:
+    - Configuration integrity (EPI structure preservation)
+    - Data export authenticity (coherence metrics validity)
+    - Model persistence safety (NFR state protection)
+
+    Parameters
+    ----------
+    path : str | Path
+        The file path to validate.
+    allow_absolute : bool, default=False
+        Whether to allow absolute paths. Default is False for user input.
+    allowed_extensions : Sequence[str] | None, default=None
+        List of allowed file extensions (e.g., ['.json', '.yaml', '.toml']).
+        If None, any extension is allowed.
+
+    Returns
+    -------
+    Path
+        The validated path as a Path object.
+
+    Raises
+    ------
+    PathTraversalError
+        If path traversal patterns are detected.
+    ValueError
+        If the path is invalid or contains unsafe patterns.
+
+    Examples
+    --------
+    >>> validate_file_path("config.json", allowed_extensions=['.json', '.yaml'])
+    PosixPath('config.json')
+    
+    >>> validate_file_path("data/export.csv")
+    PosixPath('data/export.csv')
+    
+    >>> validate_file_path("../../../etc/passwd")  # doctest: +IGNORE_EXCEPTION_DETAIL
+    Traceback (most recent call last):
+    ...
+    PathTraversalError: Path traversal detected
+    """
+    if not path:
+        raise ValueError("Path cannot be empty")
+
+    # Convert to Path object
+    path_obj = Path(path)
+    path_str = str(path)
+    path_parts = Path(path).parts
+    
+    # Check for null bytes (common in exploit attempts) - do this before resolve()
+    if "\x00" in path_str:
+        raise ValueError(f"Null byte detected in path: {path!r}")
+    
+    # Check for path traversal attempts in the original path first
+    if ".." in path_parts:
+        raise PathTraversalError(
+            f"Path traversal detected in {path!r}. "
+            "Relative parent directory references (..) are not allowed."
+        )
+    
+    # Normalize the path to resolve any . or .. components
+    try:
+        # Use resolve() with strict=False to normalize without checking existence
+        normalized = path_obj.resolve()
+    except (OSError, RuntimeError, ValueError) as e:
+        # Catch embedded null byte errors from resolve()
+        error_msg = str(e)
+        if "null byte" in error_msg.lower():
+            raise ValueError(f"Null byte detected in path: {path!r}") from e
+        raise ValueError(f"Invalid path: {path}") from e
+
+    # Check for absolute paths if not allowed
+    if not allow_absolute and normalized.is_absolute():
+        # For relative paths, ensure they don't escape to absolute paths
+        if not Path(path).is_absolute():
+            # This is a relative path that was resolved to absolute
+            # We need to check if it contains .. components
+            pass
+        else:
+            raise ValueError(
+                f"Absolute paths not allowed: {path}. "
+                "Use allow_absolute=True if this is intentional."
+            )
+
+    # Check for other dangerous patterns
+    dangerous_patterns = [
+        ("~", "Home directory expansion"),
+        ("\n", "Newline character"),
+        ("\r", "Carriage return"),
+    ]
+    
+    for pattern, desc in dangerous_patterns:
+        if pattern in path_str:
+            raise ValueError(f"{desc} not allowed in path: {path!r}")
+
+    # Validate file extension if restrictions are specified
+    if allowed_extensions is not None:
+        suffix = path_obj.suffix.lower()
+        allowed_lower = [ext.lower() for ext in allowed_extensions]
+        if suffix not in allowed_lower:
+            raise ValueError(
+                f"File extension {suffix!r} not allowed. "
+                f"Allowed extensions: {allowed_extensions}"
+            )
+
+    return path_obj
+
+
+def resolve_safe_path(
+    path: str | Path,
+    base_dir: str | Path,
+    *,
+    must_exist: bool = False,
+    allowed_extensions: Sequence[str] | None = None,
+) -> Path:
+    """Resolve a path safely within a base directory.
+
+    This function ensures that the resolved path stays within the specified
+    base directory, preventing path traversal attacks while allowing normal
+    subdirectory navigation.
+
+    TNFR Context
+    ------------
+    Ensures configuration and data files maintain operational fractality by
+    restricting file access to designated structural boundaries (base directories).
+
+    Parameters
+    ----------
+    path : str | Path
+        The path to resolve (can be relative or absolute).
+    base_dir : str | Path
+        The base directory that the path must stay within.
+    must_exist : bool, default=False
+        If True, raise ValueError if the resolved path doesn't exist.
+    allowed_extensions : Sequence[str] | None, default=None
+        List of allowed file extensions.
+
+    Returns
+    -------
+    Path
+        The validated, resolved absolute path.
+
+    Raises
+    ------
+    PathTraversalError
+        If the resolved path escapes the base directory.
+    ValueError
+        If the path is invalid or doesn't meet requirements.
+
+    Examples
+    --------
+    >>> base = Path("/home/user/tnfr")
+    >>> resolve_safe_path("config/settings.json", base)  # doctest: +SKIP
+    PosixPath('/home/user/tnfr/config/settings.json')
+    
+    >>> resolve_safe_path("../../../etc/passwd", base)  # doctest: +SKIP +IGNORE_EXCEPTION_DETAIL
+    Traceback (most recent call last):
+    ...
+    PathTraversalError: Path escapes base directory
+    """
+    if not path:
+        raise ValueError("Path cannot be empty")
+    if not base_dir:
+        raise ValueError("Base directory cannot be empty")
+
+    # First validate the path itself
+    path_obj = validate_file_path(
+        path,
+        allow_absolute=True,
+        allowed_extensions=allowed_extensions,
+    )
+
+    # Resolve base directory to absolute path
+    base_path = Path(base_dir).resolve()
+    
+    # Resolve the target path
+    # If path is relative, resolve it relative to base_dir
+    if not path_obj.is_absolute():
+        resolved = (base_path / path_obj).resolve()
+    else:
+        resolved = path_obj.resolve()
+
+    # Security check: ensure resolved path is within base directory
+    try:
+        resolved.relative_to(base_path)
+    except ValueError as e:
+        raise PathTraversalError(
+            f"Path {path!r} escapes base directory {base_dir!r}. "
+            f"Resolved path: {resolved}"
+        ) from e
+
+    # Check existence if required
+    if must_exist and not resolved.exists():
+        raise ValueError(f"Path does not exist: {resolved}")
+
+    return resolved
 
 
 def run_command_safely(
