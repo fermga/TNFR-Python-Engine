@@ -432,14 +432,14 @@ class NodeNX(NodeProtocol):
         graphs with repeated node access patterns.
         """
         cache_key = "_node_cache_weak" if use_weak_cache else "_node_cache"
-        
+
         # Fast path: lock-free read for cache hit (common case)
         cache = G.graph.get(cache_key)
         if cache is not None:
             node = cache.get(n)
             if node is not None:
                 return node
-        
+
         # Slow path: need to create node or initialize cache
         # Use per-node lock for finer granularity and reduced contention
         lock = get_lock(f"node_nx_{id(G)}_{n}_{cache_key}")
@@ -450,7 +450,7 @@ class NodeNX(NodeProtocol):
                 node = cache.get(n)
                 if node is not None:
                     return node
-            
+
             # Initialize cache if needed
             if cache is None:
                 # Use a separate lock for cache initialization to avoid deadlocks
@@ -464,22 +464,22 @@ class NodeNX(NodeProtocol):
                         else:
                             cache = {}
                         G.graph[cache_key] = cache
-            
+
             # Check again after cache initialization
             node = cache.get(n)
             if node is not None:
                 return node
-            
+
             # Create node - use a sentinel to prevent __init__ from adding to cache
             G.graph["_creating_node"] = True
             try:
                 node = cls(G, n)
             finally:
                 G.graph.pop("_creating_node", None)
-            
+
             # Add to requested cache only
             cache[n] = node
-            
+
             return node
 
     def neighbors(self) -> Iterable[NodeId]:
