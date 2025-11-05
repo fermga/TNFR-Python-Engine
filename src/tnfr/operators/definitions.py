@@ -73,8 +73,10 @@ class Operator:
             Identifier or object representing the target node within ``G``.
         **kw : Any
             Additional keyword arguments forwarded to the grammar layer.
-            Supported keys include ``window`` to constrain the grammar window
-            affected by the operator application.
+            Supported keys include:
+            - ``window``: constrain the grammar window
+            - ``validate_preconditions``: enable/disable precondition checks (default: True)
+            - ``collect_metrics``: enable/disable metrics collection (default: False)
 
         Raises
         ------
@@ -92,9 +94,69 @@ class Operator:
         """
         if self.glyph is None:
             raise NotImplementedError("Operator without assigned glyph")
+        
+        # Optional precondition validation
+        validate_preconditions = kw.get("validate_preconditions", True)
+        if validate_preconditions and G.graph.get("VALIDATE_OPERATOR_PRECONDITIONS", False):
+            self._validate_preconditions(G, node)
+        
+        # Optional metrics collection (capture state before)
+        collect_metrics = kw.get("collect_metrics", False) or G.graph.get("COLLECT_OPERATOR_METRICS", False)
+        metrics_before = None
+        if collect_metrics:
+            metrics_before = self._capture_state(G, node)
+        
         from . import apply_glyph_with_grammar
-
         apply_glyph_with_grammar(G, [node], self.glyph, kw.get("window"))
+        
+        # Optional metrics collection (capture state after and compute)
+        if collect_metrics and metrics_before is not None:
+            metrics = self._collect_metrics(G, node, metrics_before)
+            # Store metrics in graph for retrieval
+            if "operator_metrics" not in G.graph:
+                G.graph["operator_metrics"] = []
+            G.graph["operator_metrics"].append(metrics)
+    
+    def _validate_preconditions(self, G: TNFRGraph, node: Any) -> None:
+        """Validate operator-specific preconditions.
+        
+        Override in subclasses to implement specific validation logic.
+        Base implementation does nothing.
+        """
+        pass
+    
+    def _capture_state(self, G: TNFRGraph, node: Any) -> dict[str, Any]:
+        """Capture node state before operator application.
+        
+        Returns dict with relevant state for metrics computation.
+        """
+        from ..alias import get_attr
+        from ..constants.aliases import ALIAS_EPI, ALIAS_VF, ALIAS_DNFR, ALIAS_THETA
+        
+        return {
+            "epi": float(get_attr(G.nodes[node], ALIAS_EPI, 0.0)),
+            "vf": float(get_attr(G.nodes[node], ALIAS_VF, 0.0)),
+            "dnfr": float(get_attr(G.nodes[node], ALIAS_DNFR, 0.0)),
+            "theta": float(get_attr(G.nodes[node], ALIAS_THETA, 0.0)),
+        }
+    
+    def _collect_metrics(self, G: TNFRGraph, node: Any, state_before: dict[str, Any]) -> dict[str, Any]:
+        """Collect operator-specific metrics.
+        
+        Override in subclasses to implement specific metrics.
+        Base implementation returns basic state change.
+        """
+        from ..alias import get_attr
+        from ..constants.aliases import ALIAS_EPI, ALIAS_VF, ALIAS_DNFR, ALIAS_THETA
+        
+        return {
+            "operator": self.name,
+            "glyph": self.glyph.value if self.glyph else None,
+            "delta_epi": float(get_attr(G.nodes[node], ALIAS_EPI, 0.0)) - state_before["epi"],
+            "delta_vf": float(get_attr(G.nodes[node], ALIAS_VF, 0.0)) - state_before["vf"],
+            "delta_dnfr": float(get_attr(G.nodes[node], ALIAS_DNFR, 0.0)) - state_before["dnfr"],
+            "delta_theta": float(get_attr(G.nodes[node], ALIAS_THETA, 0.0)) - state_before["theta"],
+        }
 
 @register_operator
 class Emission(Operator):
@@ -102,6 +164,23 @@ class Emission(Operator):
 
     Activates structural symbol ``AL`` to initialise outward resonance around a
     nascent node.
+    
+    Preconditions
+    -------------
+    - EPI must be below activation threshold (default: 0.8)
+    - Node must be in latent or low-activation state
+    
+    Structural Effects
+    ------------------
+    - Increments EPI (Primary Information Structure)
+    - May activate structural frequency (νf)
+    - Initializes ΔNFR for reorganization
+    
+    Metrics Collected
+    -----------------
+    - ΔEPI: Change in coherent form
+    - Activation strength
+    - Final EPI and νf values
 
     Examples
     --------
@@ -127,6 +206,16 @@ class Emission(Operator):
     __slots__ = ()
     name: ClassVar[str] = EMISSION
     glyph: ClassVar[Glyph] = Glyph.AL
+    
+    def _validate_preconditions(self, G: TNFRGraph, node: Any) -> None:
+        """Validate AL-specific preconditions."""
+        from .preconditions import validate_emission
+        validate_emission(G, node)
+    
+    def _collect_metrics(self, G: TNFRGraph, node: Any, state_before: dict[str, Any]) -> dict[str, Any]:
+        """Collect AL-specific metrics."""
+        from .metrics import emission_metrics
+        return emission_metrics(G, node, state_before["epi"], state_before["vf"])
 
 @register_operator
 class Reception(Operator):
@@ -158,6 +247,16 @@ class Reception(Operator):
     __slots__ = ()
     name: ClassVar[str] = RECEPTION
     glyph: ClassVar[Glyph] = Glyph.EN
+    
+    def _validate_preconditions(self, G: TNFRGraph, node: Any) -> None:
+        """Validate EN-specific preconditions."""
+        from .preconditions import validate_reception
+        validate_reception(G, node)
+    
+    def _collect_metrics(self, G: TNFRGraph, node: Any, state_before: dict[str, Any]) -> dict[str, Any]:
+        """Collect EN-specific metrics."""
+        from .metrics import reception_metrics
+        return reception_metrics(G, node, state_before["epi"])
 
 @register_operator
 class Coherence(Operator):
@@ -192,6 +291,16 @@ class Coherence(Operator):
     __slots__ = ()
     name: ClassVar[str] = COHERENCE
     glyph: ClassVar[Glyph] = Glyph.IL
+    
+    def _validate_preconditions(self, G: TNFRGraph, node: Any) -> None:
+        """Validate IL-specific preconditions."""
+        from .preconditions import validate_coherence
+        validate_coherence(G, node)
+    
+    def _collect_metrics(self, G: TNFRGraph, node: Any, state_before: dict[str, Any]) -> dict[str, Any]:
+        """Collect IL-specific metrics."""
+        from .metrics import coherence_metrics
+        return coherence_metrics(G, node, state_before["dnfr"])
 
 @register_operator
 class Dissonance(Operator):
@@ -223,6 +332,16 @@ class Dissonance(Operator):
     __slots__ = ()
     name: ClassVar[str] = DISSONANCE
     glyph: ClassVar[Glyph] = Glyph.OZ
+    
+    def _validate_preconditions(self, G: TNFRGraph, node: Any) -> None:
+        """Validate OZ-specific preconditions."""
+        from .preconditions import validate_dissonance
+        validate_dissonance(G, node)
+    
+    def _collect_metrics(self, G: TNFRGraph, node: Any, state_before: dict[str, Any]) -> dict[str, Any]:
+        """Collect OZ-specific metrics."""
+        from .metrics import dissonance_metrics
+        return dissonance_metrics(G, node, state_before["dnfr"], state_before["theta"])
 
 @register_operator
 class Coupling(Operator):
@@ -256,6 +375,16 @@ class Coupling(Operator):
     __slots__ = ()
     name: ClassVar[str] = COUPLING
     glyph: ClassVar[Glyph] = Glyph.UM
+    
+    def _validate_preconditions(self, G: TNFRGraph, node: Any) -> None:
+        """Validate UM-specific preconditions."""
+        from .preconditions import validate_coupling
+        validate_coupling(G, node)
+    
+    def _collect_metrics(self, G: TNFRGraph, node: Any, state_before: dict[str, Any]) -> dict[str, Any]:
+        """Collect UM-specific metrics."""
+        from .metrics import coupling_metrics
+        return coupling_metrics(G, node, state_before["theta"])
 
 @register_operator
 class Resonance(Operator):
@@ -287,6 +416,16 @@ class Resonance(Operator):
     __slots__ = ()
     name: ClassVar[str] = RESONANCE
     glyph: ClassVar[Glyph] = Glyph.RA
+    
+    def _validate_preconditions(self, G: TNFRGraph, node: Any) -> None:
+        """Validate RA-specific preconditions."""
+        from .preconditions import validate_resonance
+        validate_resonance(G, node)
+    
+    def _collect_metrics(self, G: TNFRGraph, node: Any, state_before: dict[str, Any]) -> dict[str, Any]:
+        """Collect RA-specific metrics."""
+        from .metrics import resonance_metrics
+        return resonance_metrics(G, node, state_before["epi"])
 
 @register_operator
 class Silence(Operator):
@@ -316,6 +455,16 @@ class Silence(Operator):
     __slots__ = ()
     name: ClassVar[str] = SILENCE
     glyph: ClassVar[Glyph] = Glyph.SHA
+    
+    def _validate_preconditions(self, G: TNFRGraph, node: Any) -> None:
+        """Validate SHA-specific preconditions."""
+        from .preconditions import validate_silence
+        validate_silence(G, node)
+    
+    def _collect_metrics(self, G: TNFRGraph, node: Any, state_before: dict[str, Any]) -> dict[str, Any]:
+        """Collect SHA-specific metrics."""
+        from .metrics import silence_metrics
+        return silence_metrics(G, node, state_before["vf"], state_before["epi"])
 
 @register_operator
 class Expansion(Operator):
@@ -347,6 +496,16 @@ class Expansion(Operator):
     __slots__ = ()
     name: ClassVar[str] = EXPANSION
     glyph: ClassVar[Glyph] = Glyph.VAL
+    
+    def _validate_preconditions(self, G: TNFRGraph, node: Any) -> None:
+        """Validate VAL-specific preconditions."""
+        from .preconditions import validate_expansion
+        validate_expansion(G, node)
+    
+    def _collect_metrics(self, G: TNFRGraph, node: Any, state_before: dict[str, Any]) -> dict[str, Any]:
+        """Collect VAL-specific metrics."""
+        from .metrics import expansion_metrics
+        return expansion_metrics(G, node, state_before["vf"], state_before["epi"])
 
 @register_operator
 class Contraction(Operator):
@@ -381,6 +540,16 @@ class Contraction(Operator):
     __slots__ = ()
     name: ClassVar[str] = CONTRACTION
     glyph: ClassVar[Glyph] = Glyph.NUL
+    
+    def _validate_preconditions(self, G: TNFRGraph, node: Any) -> None:
+        """Validate NUL-specific preconditions."""
+        from .preconditions import validate_contraction
+        validate_contraction(G, node)
+    
+    def _collect_metrics(self, G: TNFRGraph, node: Any, state_before: dict[str, Any]) -> dict[str, Any]:
+        """Collect NUL-specific metrics."""
+        from .metrics import contraction_metrics
+        return contraction_metrics(G, node, state_before["vf"], state_before["epi"])
 
 @register_operator
 class SelfOrganization(Operator):
@@ -411,6 +580,16 @@ class SelfOrganization(Operator):
     __slots__ = ()
     name: ClassVar[str] = SELF_ORGANIZATION
     glyph: ClassVar[Glyph] = Glyph.THOL
+    
+    def _validate_preconditions(self, G: TNFRGraph, node: Any) -> None:
+        """Validate THOL-specific preconditions."""
+        from .preconditions import validate_self_organization
+        validate_self_organization(G, node)
+    
+    def _collect_metrics(self, G: TNFRGraph, node: Any, state_before: dict[str, Any]) -> dict[str, Any]:
+        """Collect THOL-specific metrics."""
+        from .metrics import self_organization_metrics
+        return self_organization_metrics(G, node, state_before["epi"], state_before["vf"])
 
 @register_operator
 class Mutation(Operator):
@@ -441,6 +620,16 @@ class Mutation(Operator):
     __slots__ = ()
     name: ClassVar[str] = MUTATION
     glyph: ClassVar[Glyph] = Glyph.ZHIR
+    
+    def _validate_preconditions(self, G: TNFRGraph, node: Any) -> None:
+        """Validate ZHIR-specific preconditions."""
+        from .preconditions import validate_mutation
+        validate_mutation(G, node)
+    
+    def _collect_metrics(self, G: TNFRGraph, node: Any, state_before: dict[str, Any]) -> dict[str, Any]:
+        """Collect ZHIR-specific metrics."""
+        from .metrics import mutation_metrics
+        return mutation_metrics(G, node, state_before["theta"], state_before["epi"])
 
 @register_operator
 class Transition(Operator):
@@ -474,6 +663,16 @@ class Transition(Operator):
     __slots__ = ()
     name: ClassVar[str] = TRANSITION
     glyph: ClassVar[Glyph] = Glyph.NAV
+    
+    def _validate_preconditions(self, G: TNFRGraph, node: Any) -> None:
+        """Validate NAV-specific preconditions."""
+        from .preconditions import validate_transition
+        validate_transition(G, node)
+    
+    def _collect_metrics(self, G: TNFRGraph, node: Any, state_before: dict[str, Any]) -> dict[str, Any]:
+        """Collect NAV-specific metrics."""
+        from .metrics import transition_metrics
+        return transition_metrics(G, node, state_before["dnfr"], state_before["vf"], state_before["theta"])
 
 @register_operator
 class Recursivity(Operator):
@@ -505,3 +704,13 @@ class Recursivity(Operator):
     __slots__ = ()
     name: ClassVar[str] = RECURSIVITY
     glyph: ClassVar[Glyph] = Glyph.REMESH
+    
+    def _validate_preconditions(self, G: TNFRGraph, node: Any) -> None:
+        """Validate REMESH-specific preconditions."""
+        from .preconditions import validate_recursivity
+        validate_recursivity(G, node)
+    
+    def _collect_metrics(self, G: TNFRGraph, node: Any, state_before: dict[str, Any]) -> dict[str, Any]:
+        """Collect REMESH-specific metrics."""
+        from .metrics import recursivity_metrics
+        return recursivity_metrics(G, node, state_before["epi"], state_before["vf"])
