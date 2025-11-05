@@ -336,6 +336,13 @@ except ImportError as exc:
     logger.warning("NumPy backend unavailable: %s", exc)
 
 try:
+    from . import optimized_numpy
+    register_backend("optimized_numpy", optimized_numpy.OptimizedNumPyBackend)
+    register_backend("optimized", optimized_numpy.OptimizedNumPyBackend)
+except ImportError as exc:
+    logger.debug("Optimized NumPy backend not available: %s", exc)
+
+try:
     from . import jax_backend
     register_backend("jax", jax_backend.JAXBackend)
 except ImportError as exc:

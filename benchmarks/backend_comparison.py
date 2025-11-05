@@ -200,7 +200,13 @@ def main() -> None:
     if args.backends:
         backends_to_test = args.backends
     else:
-        backends_to_test = sorted(available.keys())
+        # Default to numpy and optimized_numpy for meaningful comparison
+        backends_to_test = ["numpy", "optimized_numpy"]
+        # Add other backends if explicitly requested
+        for backend in sorted(available.keys()):
+            if backend not in backends_to_test and backend != "optimized":
+                # Skip 'optimized' alias to avoid duplication
+                backends_to_test.append(backend)
     
     print("Available backends:", ", ".join(sorted(available.keys())))
     print("Testing backends:", ", ".join(backends_to_test))
