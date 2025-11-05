@@ -476,7 +476,11 @@ class _SequenceAutomaton:
             self._validate_transition(self._canonical[index - 1], canonical, index, token)
 
     def _validate_transition(self, prev: str, curr: str, index: int, token: str) -> None:
-        """Validate that curr is compatible after prev using canonical compatibility tables."""
+        """Validate that curr is compatible after prev using canonical compatibility tables.
+        
+        Note: Import is done inside the method to avoid circular dependency between
+        grammar and compatibility modules.
+        """
         from ..validation.compatibility import _STRUCTURAL_COMPAT_TABLE
         
         # Only validate if prev is also a known operator
@@ -685,7 +689,10 @@ class StructuralPattern(Enum):
     UNKNOWN = "unknown"  # Unclassified pattern
 
 # Structural frequency matrix (νf): Hz_str categories per operator
-# Used for phase/frequency compatibility validation
+# Used for phase/frequency compatibility validation (future enhancement)
+# NOTE: These constants are defined here as part of the canonical grammar specification
+# but are not yet actively used in validation. They provide the foundation for
+# future phase/frequency coherence validation (§3 Phase check in AGENTS.md)
 STRUCTURAL_FREQUENCIES: dict[str, str] = {
     EMISSION: "alta",        # AL: inicio reorganización (high)
     RECEPTION: "media",      # EN: captura estructural (medium)

@@ -93,7 +93,7 @@ class TestR3FinalizationOperators:
         assert result.passed
 
     def test_valid_end_with_recursivity(self):
-        """Ending with REMESH (recursivity) is valid."""
+        """Ending with RECURSIVITY is valid (REMESH glyph, NAV/transition operator)."""
         result = validate_sequence([EMISSION, RECEPTION, COHERENCE, RESONANCE, RECURSIVITY])
         assert result.passed
 
