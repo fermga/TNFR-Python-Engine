@@ -106,12 +106,15 @@ from .utils.cache import (
     TNFRHierarchicalCache,
     CacheLevel,
     CacheEntry,
-)
-
-# Decorators, invalidation, and persistence (still in caching/ for now)
-from .caching import (
     cache_tnfr_computation,
     invalidate_function_cache,
+    get_global_cache,
+    set_global_cache,
+    reset_global_cache,
+)
+
+# Invalidation and persistence (still in caching/ for now)
+from .caching import (
     GraphChangeTracker,
     track_node_property_update,
     PersistentTNFRCache,
