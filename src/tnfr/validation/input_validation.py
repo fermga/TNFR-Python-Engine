@@ -186,18 +186,22 @@ def validate_vf_value(
     value: Any,
     *,
     config: Mapping[str, Any] | None = None,
+    enforce_hz_str: bool = False,
 ) -> float:
     """Validate νf (structural frequency) value in Hz_str units.
 
     Structural frequency represents the reorganization rate and must be
-    positive and within canonical bounds.
+    positive and within canonical bounds. Optionally enforces Hz_str type.
 
     Parameters
     ----------
     value : Any
-        νf value to validate. Must be a real number.
+        νf value to validate. Can be numeric or HzStr instance.
     config : Mapping[str, Any] | None
         Graph configuration containing VF_MIN and VF_MAX bounds.
+    enforce_hz_str : bool, default False
+        If True, warns when value is not a HzStr instance (encourages
+        canonical unit usage without breaking existing code).
 
     Returns
     -------
@@ -217,7 +221,29 @@ def validate_vf_value(
     Traceback (most recent call last):
         ...
     ValidationError: νf must be non-negative, got -0.5
+    
+    Notes
+    -----
+    When enforce_hz_str is True and value is not a HzStr instance, logs a
+    warning to encourage canonical unit usage but still accepts the value.
     """
+    # Accept HzStr instances (canonical form)
+    try:
+        from ..operators.structural_units import HzStr
+        if isinstance(value, HzStr):
+            value = float(value)  # Extract numeric value
+        elif enforce_hz_str:
+            # Log warning but don't raise (soft enforcement for migration)
+            import warnings
+            warnings.warn(
+                f"νf should use Hz_str units for TNFR canonical compliance. "
+                f"Got {type(value).__name__} instead.",
+                UserWarning,
+                stacklevel=2,
+            )
+    except ImportError:
+        pass  # HzStr not available, skip check
+    
     if not isinstance(value, (int, float)):
         raise ValidationError(
             f"νf must be numeric, got {type(value).__name__}",
