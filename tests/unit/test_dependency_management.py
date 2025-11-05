@@ -10,9 +10,12 @@ This module validates:
 from __future__ import annotations
 
 import sys
-from importlib.metadata import version, PackageNotFoundError
-from packaging.version import Version
 import pytest
+
+
+def parse_version(version_string: str) -> tuple[int, ...]:
+    """Parse a version string into a tuple of integers for comparison."""
+    return tuple(int(x) for x in version_string.split('.')[:3])
 
 
 class TestCoreDependencies:
@@ -64,9 +67,9 @@ class TestVersionConstraints:
         """NumPy version should be >= 1.24 and < 3.0."""
         try:
             import numpy
-            np_version = Version(numpy.__version__)
-            assert np_version >= Version("1.24")
-            assert np_version < Version("3.0")
+            np_version = parse_version(numpy.__version__)
+            assert np_version >= (1, 24, 0)
+            assert np_version < (3, 0, 0)
         except ImportError:
             pytest.skip("NumPy not installed")
     
@@ -74,9 +77,9 @@ class TestVersionConstraints:
         """NetworkX version should be >= 2.6 and < 4.0."""
         try:
             import networkx
-            nx_version = Version(networkx.__version__)
-            assert nx_version >= Version("2.6")
-            assert nx_version < Version("4.0")
+            nx_version = parse_version(networkx.__version__)
+            assert nx_version >= (2, 6, 0)
+            assert nx_version < (4, 0, 0)
         except ImportError:
             pytest.skip("NetworkX not installed")
     
@@ -84,9 +87,9 @@ class TestVersionConstraints:
         """Cachetools version should be >= 5.0 and < 7.0."""
         try:
             import cachetools
-            ct_version = Version(cachetools.__version__)
-            assert ct_version >= Version("5.0")
-            assert ct_version < Version("7.0")
+            ct_version = parse_version(cachetools.__version__)
+            assert ct_version >= (5, 0, 0)
+            assert ct_version < (7, 0, 0)
         except ImportError:
             pytest.skip("Cachetools not installed")
 
