@@ -65,7 +65,7 @@ from ..metrics.sense_index import compute_Si
 from ..operators import apply_glyph
 from ..types import GlyphCode
 from ..utils import get_numpy
-from . import coordination, dnfr, integrators
+from . import canonical, coordination, dnfr, integrators
 from .adaptation import adapt_vf_by_coherence
 from .aliases import (
     ALIAS_D2EPI,
@@ -74,6 +74,12 @@ from .aliases import (
     ALIAS_EPI,
     ALIAS_SI,
     ALIAS_VF,
+)
+from .canonical import (
+    NodalEquationResult,
+    compute_canonical_nodal_derivative,
+    validate_nodal_gradient,
+    validate_structural_frequency,
 )
 from .coordination import coordinate_global_local_phase
 from .dnfr import (
@@ -126,6 +132,7 @@ from .selectors import (
 )
 
 __all__ = (
+    "canonical",
     "coordination",
     "dnfr",
     "integrators",
@@ -167,6 +174,10 @@ __all__ = (
     "adapt_vf_by_coherence",
     "coordinate_global_local_phase",
     "compute_Si",
+    "compute_canonical_nodal_derivative",
+    "NodalEquationResult",
+    "validate_nodal_gradient",
+    "validate_structural_frequency",
     "default_compute_delta_nfr",
     "default_glyph_selector",
     "dnfr_epi_vf_mixed",
