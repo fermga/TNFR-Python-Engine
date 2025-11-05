@@ -6,6 +6,7 @@ import json
 import os
 from collections.abc import Iterable, MutableMapping
 from copy import deepcopy
+from enum import Enum
 from importlib import resources
 from json import JSONDecodeError
 from types import MappingProxyType
@@ -58,8 +59,13 @@ __all__ = [
     "MutationPreconditionError",
     "TholClosureError",
     "TransitionCompatibilityError",
+    "MutationWithoutDissonanceError",
+    "IncompatibleSequenceError",
+    "IncompleteEncapsulationError",
+    "MissingStabilizerError",
     "SequenceSyntaxError",
     "SequenceValidationResult",
+    "StructuralPattern",
     "record_grammar_violation",
     "_gram_state",
     "apply_glyph_with_grammar",
@@ -397,6 +403,9 @@ class _SequenceAutomaton:
         "_seen_intermediate",
         "_open_thol",
         "_unknown_tokens",
+        "_found_dissonance",
+        "_found_stabilizer",
+        "_detected_pattern",
     )
 
     def __init__(self) -> None:
@@ -406,6 +415,9 @@ class _SequenceAutomaton:
         self._seen_intermediate = False
         self._open_thol = False
         self._unknown_tokens: list[tuple[int, str]] = []
+        self._found_dissonance = False  # Track OZ for R4
+        self._found_stabilizer = False  # Track IL or THOL for R2
+        self._detected_pattern: StructuralPattern = StructuralPattern.UNKNOWN
 
     def run(self, names: Sequence[str]) -> None:
         if not names:
@@ -421,20 +433,67 @@ class _SequenceAutomaton:
         self._canonical.append(canonical)
         if canonical not in OPERATORS:
             self._unknown_tokens.append((index, token))
+        
+        # R1: Validate start (already implemented)
         if index == 0:
             if canonical not in VALID_START_OPERATORS:
                 expected = _format_token_group(_CANONICAL_START)
                 raise SequenceSyntaxError(index=index, token=token, message=f"must start with {expected}")
+        
+        # Track state for various rules
         if canonical == RECEPTION and not self._found_reception:
             self._found_reception = True
         elif self._found_reception and canonical == COHERENCE and not self._found_coherence:
             self._found_coherence = True
         elif self._found_coherence and canonical in INTERMEDIATE_OPERATORS:
             self._seen_intermediate = True
+        
+        # R2: Track stabilizers (IL or THOL)
+        if canonical in {COHERENCE, SELF_ORGANIZATION}:
+            self._found_stabilizer = True
+        
+        # R4: Track dissonance before mutation
+        if canonical == DISSONANCE:
+            self._found_dissonance = True
+        elif canonical == MUTATION:
+            # ZHIR must be preceded by OZ in recent history
+            if not self._found_dissonance:
+                raise SequenceSyntaxError(
+                    index=index,
+                    token=token,
+                    message=f"{operator_display_name(MUTATION)} requires preceding {operator_display_name(DISSONANCE)} (no mutation without dissonance)",
+                )
+        
+        # Track THOL state
         if canonical == SELF_ORGANIZATION:
             self._open_thol = True
         elif self._open_thol and canonical in SELF_ORGANIZATION_CLOSURES:
             self._open_thol = False
+        
+        # Validate sequential compatibility if not first token
+        # Only validate if both prev and current are known operators
+        if index > 0 and canonical in OPERATORS:
+            self._validate_transition(self._canonical[index - 1], canonical, index, token)
+
+    def _validate_transition(self, prev: str, curr: str, index: int, token: str) -> None:
+        """Validate that curr is compatible after prev using canonical compatibility tables.
+        
+        Note: Import is done inside the method to avoid circular dependency between
+        grammar and compatibility modules.
+        """
+        from ..validation.compatibility import _STRUCTURAL_COMPAT_TABLE
+        
+        # Only validate if prev is also a known operator
+        if prev not in OPERATORS:
+            return
+        
+        allowed = _STRUCTURAL_COMPAT_TABLE.get(prev)
+        if allowed is not None and curr not in allowed:
+            raise SequenceSyntaxError(
+                index=index,
+                token=token,
+                message=f"{operator_display_name(curr)} incompatible after {operator_display_name(prev)}",
+            )
 
     def _finalize(self, names: Sequence[str]) -> None:
         if self._unknown_tokens:
@@ -445,6 +504,15 @@ class _SequenceAutomaton:
                 token=first_token,
                 message=f"unknown tokens: {ordered}",
             )
+        
+        # R2: Must contain at least one stabilizer
+        if not self._found_stabilizer:
+            raise SequenceSyntaxError(
+                index=-1,
+                token=None,
+                message=f"missing required stabilizer ({operator_display_name(COHERENCE)} or {operator_display_name(SELF_ORGANIZATION)})",
+            )
+        
         if not (self._found_reception and self._found_coherence):
             raise SequenceSyntaxError(
                 index=-1,
@@ -458,6 +526,8 @@ class _SequenceAutomaton:
                 token=None,
                 message=f"missing {intermediate} segment",
             )
+        
+        # R3: Must end with terminator
         if self._canonical[-1] not in VALID_END_OPERATORS:
             cierre = _format_token_group(_CANONICAL_END)
             raise SequenceSyntaxError(
@@ -465,16 +535,51 @@ class _SequenceAutomaton:
                 token=names[-1],
                 message=f"sequence must end with {cierre}",
             )
+        
         if self._open_thol:
             raise SequenceSyntaxError(
                 index=len(names) - 1,
                 token=names[-1],
                 message=f"{operator_display_name(SELF_ORGANIZATION)} block without closure",
             )
+        
+        # Detect structural pattern
+        self._detected_pattern = self._detect_pattern()
+
+    def _detect_pattern(self) -> StructuralPattern:
+        """Detect the structural pattern type of the sequence."""
+        seq = self._canonical
+        
+        # Hierarchical: contains THOL
+        if SELF_ORGANIZATION in seq:
+            return StructuralPattern.HIERARCHICAL
+        
+        # Bifurcated: OZ followed by ZHIR or NUL (implies branching logic)
+        for i in range(len(seq) - 1):
+            if seq[i] == DISSONANCE and seq[i + 1] in {MUTATION, CONTRACTION}:
+                return StructuralPattern.BIFURCATED
+        
+        # Cyclic: contains NAV and revisits similar operators (regenerative)
+        if seq.count(TRANSITION) >= 2:
+            return StructuralPattern.CYCLIC
+        
+        # Fractal: NAV with coupling or recursivity (recursive patterns)
+        if TRANSITION in seq and (COUPLING in seq or RECURSIVITY in seq):
+            return StructuralPattern.FRACTAL
+        
+        # Linear: simple progression without complex patterns
+        if len(seq) <= 5 and DISSONANCE not in seq and MUTATION not in seq:
+            return StructuralPattern.LINEAR
+        
+        return StructuralPattern.UNKNOWN
 
     @property
     def canonical(self) -> tuple[str, ...]:
         return tuple(self._canonical)
+    
+    @property
+    def detected_pattern(self) -> StructuralPattern:
+        return self._detected_pattern
 
     def metadata(self) -> Mapping[str, object]:
         return {
@@ -483,6 +588,9 @@ class _SequenceAutomaton:
             "has_intermediate": self._seen_intermediate,
             "open_thol": self._open_thol,
             "unknown_tokens": frozenset(token for _, token in self._unknown_tokens),
+            "has_dissonance": self._found_dissonance,
+            "has_stabilizer": self._found_stabilizer,
+            "detected_pattern": self._detected_pattern.value,
         }
 
 _MISSING = object()
@@ -557,6 +665,57 @@ class TholClosureError(StructuralGrammarError):
 
 class TransitionCompatibilityError(StructuralGrammarError):
     """Transition attempted that violates canonical compatibility tables."""
+
+class MutationWithoutDissonanceError(StructuralGrammarError):
+    """ZHIR applied without OZ precedent (R4 violation)."""
+
+class IncompatibleSequenceError(StructuralGrammarError):
+    """Sequence violates canonical compatibility rules."""
+
+class IncompleteEncapsulationError(StructuralGrammarError):
+    """THOL without valid internal sequence."""
+
+class MissingStabilizerError(StructuralGrammarError):
+    """Sequence missing required stabilizer (IL or THOL) - R2 violation."""
+
+class StructuralPattern(Enum):
+    """Typology of structural patterns in operator sequences."""
+    
+    LINEAR = "linear"  # AL → IL → RA → SHA
+    HIERARCHICAL = "hierarchical"  # THOL[...]
+    FRACTAL = "fractal"  # NAV → IL → UM → NAV (recursive)
+    CYCLIC = "cyclic"  # ... → NAV → THOL → ... (regenerative)
+    BIFURCATED = "bifurcated"  # OZ → {ZHIR | NUL} (branching)
+    UNKNOWN = "unknown"  # Unclassified pattern
+
+# Structural frequency matrix (νf): Hz_str categories per operator
+# Used for phase/frequency compatibility validation (future enhancement)
+# NOTE: These constants are defined here as part of the canonical grammar specification
+# but are not yet actively used in validation. They provide the foundation for
+# future phase/frequency coherence validation (§3 Phase check in AGENTS.md)
+STRUCTURAL_FREQUENCIES: dict[str, str] = {
+    EMISSION: "alta",        # AL: inicio reorganización (high)
+    RECEPTION: "media",      # EN: captura estructural (medium)
+    COHERENCE: "media",      # IL: estabilización (medium)
+    DISSONANCE: "alta",      # OZ: tensión (high)
+    COUPLING: "media",       # UM: acoplamiento (medium)
+    RESONANCE: "alta",       # RA: amplificación (high)
+    SILENCE: "cero",         # SHA: pausa (zero/suspended)
+    EXPANSION: "media",      # VAL: exploración volumétrica (medium)
+    CONTRACTION: "alta",     # NUL: concentración (high)
+    SELF_ORGANIZATION: "media",  # THOL: cascadas autónomas (medium)
+    MUTATION: "alta",        # ZHIR: pivote de umbral (high)
+    TRANSITION: "media",     # NAV: hand-off controlado (medium)
+    RECURSIVITY: "media",    # REMESH: eco fractal (medium)
+}
+
+# Frequency compatibility: operators with harmonic frequencies can transition
+FREQUENCY_COMPATIBLE: dict[str, set[str]] = {
+    "alta": {"alta", "media"},     # High can transition to high or medium
+    "media": {"media", "alta", "cero"},  # Medium can transition to any
+    "cero": {"alta", "media"},     # Zero (silence) can restart with high or medium
+}
+
 
 def _record_grammar_violation(
     G: TNFRGraph, node: NodeId, error: StructuralGrammarError, *, stage: str
