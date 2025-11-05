@@ -45,7 +45,14 @@ from .mathematics import (
     make_coherence_operator,
     make_frequency_operator,
 )
-from tnfr.validation import NFRValidator, validate_sequence
+from tnfr.validation import (
+    NFRValidator,
+    validate_sequence,
+    TNFRValidator as InvariantValidator,
+    SequenceSemanticValidator,
+    InvariantSeverity,
+    validation_config,
+)
 from .operators.definitions import (
     Coherence,
     Contraction,
@@ -588,6 +595,12 @@ def run_sequence(G: TNFRGraph, node: NodeId, ops: Iterable[Operator]) -> None:
     ops_list = list(ops)
     names = [op.name for op in ops_list]
 
+    # Initialize validators (reuse global instances for performance)
+    if not hasattr(run_sequence, "_invariant_validator"):
+        run_sequence._invariant_validator = InvariantValidator()  # type: ignore[attr-defined]
+    if not hasattr(run_sequence, "_semantic_validator"):
+        run_sequence._semantic_validator = SequenceSemanticValidator()  # type: ignore[attr-defined]
+
     # Skip validation for empty sequences (TNFR: empty sequence is structural identity)
     if names:
         outcome = validate_sequence(names)
@@ -595,11 +608,75 @@ def run_sequence(G: TNFRGraph, node: NodeId, ops: Iterable[Operator]) -> None:
             summary_message = outcome.summary.get("message", "validation failed")
             raise ValueError(f"Invalid sequence: {summary_message}")
 
+        # Semantic validation of sequence (if enabled)
+        if validation_config.enable_semantic_validation:
+            semantic_violations = run_sequence._semantic_validator.validate_semantic_sequence(names)  # type: ignore[attr-defined]
+            if semantic_violations:
+                # Filter by configured settings
+                error_violations = [
+                    v
+                    for v in semantic_violations
+                    if v.severity == InvariantSeverity.ERROR
+                    or v.severity == InvariantSeverity.CRITICAL
+                ]
+                warning_violations = [
+                    v
+                    for v in semantic_violations
+                    if v.severity == InvariantSeverity.WARNING
+                ]
+
+                # Always raise on errors
+                if error_violations:
+                    report = run_sequence._invariant_validator.generate_report(error_violations)  # type: ignore[attr-defined]
+                    raise ValueError(f"Semantic sequence violations:\n{report}")
+
+                # Show warnings if allowed
+                if warning_violations and validation_config.allow_semantic_warnings:
+                    report = run_sequence._invariant_validator.generate_report(warning_violations)  # type: ignore[attr-defined]
+                    print(f"⚠️  Semantic sequence warnings:\n{report}")
+
+    # Pre-execution invariant validation (if enabled)
+    if validation_config.validate_invariants:
+        try:
+            run_sequence._invariant_validator.validate_and_raise(  # type: ignore[attr-defined]
+                G, validation_config.min_severity
+            )
+        except Exception as e:
+            # If validation fails, provide context but don't block if it's just warnings
+            if validation_config.min_severity != InvariantSeverity.WARNING:
+                raise
+
     for op in ops_list:
+        # Mark last operator for tracking (for Invariant 1)
+        if not hasattr(G, "_last_operator_applied"):
+            G._last_operator_applied = None  # type: ignore[attr-defined]
+        G._last_operator_applied = op.name  # type: ignore[attr-defined]
+
         op(G, node)
         if callable(compute):
             compute(G)
+
+        # Per-step validation (expensive, only if configured)
+        if validation_config.validate_each_step and validation_config.validate_invariants:
+            violations = run_sequence._invariant_validator.validate_graph(  # type: ignore[attr-defined]
+                G, InvariantSeverity.ERROR
+            )
+            if violations:
+                report = run_sequence._invariant_validator.generate_report(violations)  # type: ignore[attr-defined]
+                raise ValueError(f"Invariant violations after {op.name}:\n{report}")
+
         # ``update_epi_via_nodal_equation`` was previously invoked here to
         # recalculate the EPI value after each operator. The responsibility for
         # updating EPI now lies with the dynamics hook configured in
         # ``compute_delta_nfr`` or with external callers.
+
+    # Post-execution invariant validation (if enabled)
+    if validation_config.validate_invariants:
+        try:
+            run_sequence._invariant_validator.validate_and_raise(  # type: ignore[attr-defined]
+                G, validation_config.min_severity
+            )
+        except Exception as e:
+            # If validation fails, provide context but don't block if it's just warnings
+            if validation_config.min_severity != InvariantSeverity.WARNING:
+                raise
