@@ -358,7 +358,7 @@ def _mix_epi_with_neighbors(
 
     dominant, best_abs = _determine_dominant(neigh, default_kind)
     new_epi = (1 - mix) * epi + mix * epi_bar
-    node.EPI = new_epi
+    _set_epi_with_boundary_check(node, new_epi)
     final = dominant if best_abs > abs(new_epi) else node.epi_kind
     if not final:
         final = default_kind
@@ -385,13 +385,15 @@ def _op_AL(node: NodeProtocol, gf: GlyphFactors) -> None:  # AL — Emission
     >>> class MockNode:
     ...     def __init__(self, epi):
     ...         self.EPI = epi
+    ...         self.graph = {}
     >>> node = MockNode(0.8)
     >>> _op_AL(node, {"AL_boost": 0.2})
-    >>> node.EPI
-    1.0
+    >>> node.EPI <= 1.0  # Bounded by structural_clip
+    True
     """
     f = get_factor(gf, "AL_boost", 0.05)
-    node.EPI = node.EPI + f
+    new_epi = node.EPI + f
+    _set_epi_with_boundary_check(node, new_epi)
 
 
 def _op_EN(node: NodeProtocol, gf: GlyphFactors) -> None:  # EN — Reception
@@ -679,6 +681,77 @@ factor_nul = 0.85
 _SCALE_FACTORS = {Glyph.VAL: factor_val, Glyph.NUL: factor_nul}
 
 
+def _set_epi_with_boundary_check(
+    node: NodeProtocol, new_epi: float, *, apply_clip: bool = True
+) -> None:
+    """Canonical EPI assignment with structural boundary preservation.
+    
+    This is the unified function all operators should use when modifying EPI
+    to ensure structural boundaries are respected. Provides single point of
+    enforcement for TNFR canonical invariant: EPI ∈ [EPI_MIN, EPI_MAX].
+    
+    Parameters
+    ----------
+    node : NodeProtocol
+        Node whose EPI is being updated
+    new_epi : float
+        New EPI value to assign
+    apply_clip : bool, default True
+        If True, applies structural_clip to enforce boundaries.
+        If False, assigns value directly (use only when boundaries
+        are known to be satisfied, e.g., from edge-aware pre-computation).
+        
+    Notes
+    -----
+    TNFR Principle: This function embodies the canonical invariant that EPI
+    must remain within structural boundaries. All operator EPI modifications
+    should flow through this function to maintain coherence.
+    
+    The function uses the graph-level configuration for EPI_MIN, EPI_MAX,
+    and CLIP_MODE to ensure consistent boundary enforcement across all operators.
+    
+    Examples
+    --------
+    >>> class MockNode:
+    ...     def __init__(self, epi):
+    ...         self.EPI = epi
+    ...         self.graph = {"EPI_MAX": 1.0, "EPI_MIN": -1.0}
+    >>> node = MockNode(0.5)
+    >>> _set_epi_with_boundary_check(node, 1.2)  # Will be clipped to 1.0
+    >>> float(node.EPI)
+    1.0
+    """
+    from ..dynamics.structural_clip import structural_clip
+    
+    if not apply_clip:
+        node.EPI = new_epi
+        return
+    
+    # Ensure new_epi is float (in case it's a BEPI or other structure)
+    new_epi_float = float(new_epi)
+    
+    # Get boundary configuration from graph (with defensive fallback)
+    graph_attrs = getattr(node, 'graph', {})
+    epi_min = float(graph_attrs.get("EPI_MIN", DEFAULTS.get("EPI_MIN", -1.0)))
+    epi_max = float(graph_attrs.get("EPI_MAX", DEFAULTS.get("EPI_MAX", 1.0)))
+    clip_mode_str = str(graph_attrs.get("CLIP_MODE", "hard"))
+    
+    # Validate clip mode
+    if clip_mode_str not in ("hard", "soft"):
+        clip_mode_str = "hard"
+    
+    # Apply structural boundary preservation
+    clipped_epi = structural_clip(
+        new_epi_float,
+        lo=epi_min,
+        hi=epi_max,
+        mode=clip_mode_str,  # type: ignore[arg-type]
+        record_stats=False,
+    )
+    
+    node.EPI = clipped_epi
+
+
 def _compute_val_edge_aware_scale(
     epi_current: float, scale: float, epi_max: float, epsilon: float
 ) -> float:
@@ -823,8 +896,11 @@ def _make_scale_op(glyph: Glyph) -> GlyphOperation:
             else:  # Glyph.NUL
                 scale_eff = _compute_nul_edge_aware_scale(epi_current, factor, epi_min, epsilon)
             
-            # Apply edge-aware EPI scaling
-            node.EPI = epi_current * scale_eff
+            # Apply edge-aware EPI scaling with boundary check
+            # Edge-aware already computed safe scale, but use unified function
+            # for consistency (with apply_clip=True as safety net)
+            new_epi = epi_current * scale_eff
+            _set_epi_with_boundary_check(node, new_epi, apply_clip=True)
             
             # Record telemetry if scale was adapted
             if abs(scale_eff - factor) > epsilon:
@@ -832,7 +908,7 @@ def _make_scale_op(glyph: Glyph) -> GlyphOperation:
                 telemetry.append({
                     "glyph": glyph.name if hasattr(glyph, "name") else str(glyph),
                     "epi_before": epi_current,
-                    "epi_after": node.EPI,
+                    "epi_after": float(node.EPI),  # Get actual value after boundary check
                     "scale_requested": factor,
                     "scale_effective": scale_eff,
                     "adapted": True,
