@@ -34,6 +34,9 @@ from ..config.operator_names import (
     EXPANSION,
     VALID_END_OPERATORS,
     VALID_START_OPERATORS,
+    DESTABILIZERS,
+    TRANSFORMERS,
+    BIFURCATION_WINDOW,
     canonical_operator_name,
     operator_display_name,
 )
@@ -435,6 +438,7 @@ class _SequenceAutomaton:
         "_found_dissonance",
         "_found_stabilizer",
         "_detected_pattern",
+        "_bifurcation_context",
     )
 
     def __init__(self) -> None:
@@ -447,6 +451,7 @@ class _SequenceAutomaton:
         self._found_dissonance = False  # Track OZ for R4
         self._found_stabilizer = False  # Track IL or THOL for R2
         self._detected_pattern: StructuralPattern = StructuralPattern.UNKNOWN
+        self._bifurcation_context: list[tuple[str, int]] = []  # Track (operator, index) for destabilizers
 
     def run(self, names: Sequence[str]) -> None:
         if not names:
@@ -489,17 +494,29 @@ class _SequenceAutomaton:
         if canonical in {COHERENCE, SELF_ORGANIZATION}:
             self._found_stabilizer = True
 
-        # R4: Track dissonance before mutation
-        if canonical == DISSONANCE:
-            self._found_dissonance = True
-        elif canonical == MUTATION:
-            # ZHIR must be preceded by OZ in recent history
-            if not self._found_dissonance:
+        # R4: Track destabilizers for bifurcation control (expanded from just OZ)
+        if canonical in DESTABILIZERS:
+            self._bifurcation_context.append((canonical, index))
+            # Maintain only the window size to optimize memory
+            if len(self._bifurcation_context) > BIFURCATION_WINDOW:
+                self._bifurcation_context.pop(0)
+        
+        # R4: Validate transformers (ZHIR/THOL) require recent destabilizer
+        if canonical in TRANSFORMERS:
+            if not self._has_recent_destabilizer(index):
+                destab_names = ", ".join(operator_display_name(d) for d in sorted(DESTABILIZERS))
                 raise SequenceSyntaxError(
                     index=index,
                     token=token,
-                    message=f"{operator_display_name(MUTATION)} requires preceding {operator_display_name(DISSONANCE)} (no mutation without dissonance)",
+                    message=(
+                        f"{operator_display_name(canonical)} requires destabilizer "
+                        f"({destab_names}) in previous {BIFURCATION_WINDOW} operators"
+                    ),
                 )
+        
+        # Legacy: Keep tracking dissonance for backward compatibility with existing code
+        if canonical == DISSONANCE:
+            self._found_dissonance = True
 
         # Track THOL state
         if canonical == SELF_ORGANIZATION:
@@ -558,6 +575,25 @@ class _SequenceAutomaton:
                 operator_display_name(curr),
                 index,
             )
+
+    def _has_recent_destabilizer(self, current_index: int) -> bool:
+        """Check if a destabilizer exists within the bifurcation window.
+        
+        Parameters
+        ----------
+        current_index : int
+            Current position in the sequence
+            
+        Returns
+        -------
+        bool
+            True if a destabilizer was found in the previous BIFURCATION_WINDOW operators
+        """
+        window_start = max(0, current_index - BIFURCATION_WINDOW)
+        return any(
+            window_start <= dest_index < current_index
+            for _, dest_index in self._bifurcation_context
+        )
 
     def _finalize(self, names: Sequence[str]) -> None:
         if self._unknown_tokens:

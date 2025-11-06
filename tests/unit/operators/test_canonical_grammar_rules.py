@@ -64,8 +64,9 @@ class TestR2RequiredStabilizer:
 
     def test_valid_with_self_organization_stabilizer(self):
         """Sequence with THOL (self_organization) as stabilizer is valid."""
+        # Updated: THOL now requires destabilizer (R4 evolved rule)
         result = validate_sequence(
-            [EMISSION, RECEPTION, SELF_ORGANIZATION, COHERENCE, RESONANCE, SILENCE]
+            [EMISSION, RECEPTION, COHERENCE, DISSONANCE, SELF_ORGANIZATION, SILENCE]
         )
         assert result.passed
         assert result.metadata["has_stabilizer"]
@@ -197,13 +198,14 @@ class TestValidCanonicalSequences:
     def test_self_organization_sequence(self):
         """Test: THOL[AL → OZ → ZHIR → IL] → RA → SHA."""
         # Simplified: THOL followed by operators and closure
+        # Updated: Added OZ before THOL (R4 evolved rule requires destabilizer)
         result = validate_sequence(
             [
                 EMISSION,
                 RECEPTION,
                 COHERENCE,
-                SELF_ORGANIZATION,
                 DISSONANCE,
+                SELF_ORGANIZATION,
                 MUTATION,
                 COHERENCE,
                 SILENCE,
@@ -247,8 +249,9 @@ class TestStructuralPatternDetection:
 
     def test_detect_hierarchical_pattern(self):
         """Sequences with THOL should be detected as hierarchical."""
+        # Updated: Added DISSONANCE before THOL (R4 evolved rule requires destabilizer)
         result = validate_sequence(
-            [EMISSION, RECEPTION, SELF_ORGANIZATION, COHERENCE, RESONANCE, SILENCE]
+            [EMISSION, RECEPTION, COHERENCE, DISSONANCE, SELF_ORGANIZATION, SILENCE]
         )
         assert result.passed
         assert (
