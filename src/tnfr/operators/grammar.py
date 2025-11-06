@@ -649,31 +649,15 @@ class _SequenceAutomaton:
         self._detected_pattern = self._detect_pattern()
 
     def _detect_pattern(self) -> StructuralPattern:
-        """Detect the structural pattern type of the sequence."""
-        seq = self._canonical
-
-        # Hierarchical: contains THOL
-        if SELF_ORGANIZATION in seq:
-            return StructuralPattern.HIERARCHICAL
-
-        # Bifurcated: OZ followed by ZHIR or NUL (implies branching logic)
-        for i in range(len(seq) - 1):
-            if seq[i] == DISSONANCE and seq[i + 1] in {MUTATION, CONTRACTION}:
-                return StructuralPattern.BIFURCATED
-
-        # Cyclic: contains NAV and revisits similar operators (regenerative)
-        if seq.count(TRANSITION) >= 2:
-            return StructuralPattern.CYCLIC
-
-        # Fractal: NAV with coupling or recursivity (recursive patterns)
-        if TRANSITION in seq and (COUPLING in seq or RECURSIVITY in seq):
-            return StructuralPattern.FRACTAL
-
-        # Linear: simple progression without complex patterns
-        if len(seq) <= 5 and DISSONANCE not in seq and MUTATION not in seq:
-            return StructuralPattern.LINEAR
-
-        return StructuralPattern.UNKNOWN
+        """Detect the structural pattern type of the sequence.
+        
+        Uses advanced pattern detection to identify domain-specific and
+        meta-patterns, falling back to basic pattern detection when needed.
+        """
+        from .patterns import AdvancedPatternDetector
+        
+        detector = AdvancedPatternDetector()
+        return detector.detect_pattern(self._canonical)
 
     @property
     def canonical(self) -> tuple[str, ...]:
@@ -792,14 +776,38 @@ class MissingStabilizerError(StructuralGrammarError):
 
 
 class StructuralPattern(Enum):
-    """Typology of structural patterns in operator sequences."""
+    """Unified typology of structural patterns in operator sequences.
+    
+    All patterns are equal - no hierarchies or priorities. Detection uses
+    pattern signatures to identify the best match based on specificity
+    and coverage of the sequence.
+    """
 
-    LINEAR = "linear"  # AL → IL → RA → SHA
-    HIERARCHICAL = "hierarchical"  # THOL[...]
-    FRACTAL = "fractal"  # NAV → IL → UM → NAV (recursive)
-    CYCLIC = "cyclic"  # ... → NAV → THOL → ... (regenerative)
-    BIFURCATED = "bifurcated"  # OZ → {ZHIR | NUL} (branching)
-    UNKNOWN = "unknown"  # Unclassified pattern
+    # Fundamental structural patterns
+    LINEAR = "linear"  # Simple progression: AL → IL → RA → SHA
+    HIERARCHICAL = "hierarchical"  # Self-organization: THOL[...]
+    FRACTAL = "fractal"  # Recursive structure: NAV → IL → UM → NAV
+    CYCLIC = "cyclic"  # Regenerative loops: multiple NAV
+    BIFURCATED = "bifurcated"  # Branching: OZ → {ZHIR | NUL}
+    
+    # Domain-specific applied patterns
+    THERAPEUTIC = "therapeutic"  # Healing: EN→AL→IL→OZ→THOL→IL
+    EDUCATIONAL = "educational"  # Learning: EN→AL→IL→VAL→OZ→ZHIR
+    ORGANIZATIONAL = "organizational"  # Evolution: NAV→AL→EN→UM→RA→OZ→THOL
+    CREATIVE = "creative"  # Artistic: SHA→AL→VAL→OZ→ZHIR→THOL
+    REGENERATIVE = "regenerative"  # Self-sustaining: IL→RA→VAL→SHA→NAV→AL
+    
+    # Compositional patterns
+    BOOTSTRAP = "bootstrap"  # Initialization: AL→UM→IL
+    EXPLORE = "explore"  # Exploration: OZ→ZHIR→IL
+    STABILIZE = "stabilize"  # Consolidation: *→IL→{SHA|RA}
+    RESONATE = "resonate"  # Amplification: RA→UM→RA
+    COMPRESS = "compress"  # Simplification: NUL→IL→SHA
+    
+    # Structural complexity
+    COMPLEX = "complex"  # Multiple patterns combined
+    MINIMAL = "minimal"  # Single or very few operators
+    UNKNOWN = "unknown"  # Unclassified
 
 
 # Structural frequency matrix (νf): Hz_str categories per operator
