@@ -1,8 +1,37 @@
 """Unified validation interface consolidating grammar, graph and spectral checks.
 
-This package re-exports the canonical grammar helpers and runtime validators so
-downstream code can rely on ``tnfr.validation`` as the single import path for
-structural validation primitives.
+RECOMMENDED: Use TNFRValidator for unified validation pipeline
+==============================================================
+
+The TNFRValidator class provides a single entry point for all TNFR validation
+operations, consolidating input validation, graph validation, invariant checking,
+operator preconditions, and runtime validation into one coherent API.
+
+Example Usage::
+
+    from tnfr.validation import TNFRValidator
+    
+    validator = TNFRValidator()
+    
+    # Comprehensive validation in one call
+    result = validator.validate(
+        graph=G,
+        epi=0.5,
+        vf=1.0,
+        include_invariants=True,
+    )
+    
+    if not result['passed']:
+        print(f"Validation failed: {result['errors']}")
+
+For detailed migration guide, see UNIFIED_VALIDATION_PIPELINE.md
+
+Legacy API
+==========
+
+This package also re-exports individual validation functions for backward
+compatibility, but these may be deprecated in future versions. New code should
+use TNFRValidator instead.
 """
 
 from __future__ import annotations
