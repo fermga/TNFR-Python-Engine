@@ -66,6 +66,7 @@ GlyphFactors = dict[str, Any]
 GlyphOperation = Callable[["NodeProtocol", GlyphFactors], None]
 
 from .grammar import apply_glyph_with_grammar  # noqa: E402
+from .health_analyzer import SequenceHealthAnalyzer, SequenceHealthMetrics  # noqa: E402
 
 __all__ = [
     "JitterCache",
@@ -85,6 +86,8 @@ __all__ = [
     "OPERATORS",
     "discover_operators",
     "get_operator_class",
+    "SequenceHealthMetrics",
+    "SequenceHealthAnalyzer",
 ]
 
 __all__.extend(_DEFINITION_EXPORTS.keys())
