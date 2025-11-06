@@ -19,6 +19,7 @@ from tnfr.alias import get_attr
 from tnfr.constants import DEFAULTS
 from tnfr.glyph_history import ensure_history
 
+
 class _RecordingIntegrator(integrators.AbstractIntegrator):
     def __init__(self, recorded: dict[str, Any]):
         self._recorded = recorded
@@ -33,6 +34,7 @@ class _RecordingIntegrator(integrators.AbstractIntegrator):
         n_jobs=None,
     ) -> None:
         self._recorded["integrator"] = n_jobs
+
 
 def test_run_with_zero_steps_is_noop(monkeypatch, graph_canon):
     """``steps=0`` should short-circuit without mutating state."""
@@ -57,6 +59,7 @@ def test_run_with_zero_steps_is_noop(monkeypatch, graph_canon):
     assert list(stable_series) == [0.1, 0.2]
     assert G.graph["STOP_EARLY"] is stop_cfg
     assert G.graph["STOP_EARLY"] == stop_cfg_before
+
 
 def test_run_stops_early_with_historydict(monkeypatch, graph_canon):
     """STOP_EARLY should break once the stability window stays above the limit."""
@@ -86,6 +89,7 @@ def test_run_stops_early_with_historydict(monkeypatch, graph_canon):
     series = hist.get("stable_frac")
     assert isinstance(series, deque)
     assert list(series)[-2:] == [0.95, 0.95]
+
 
 def test_run_stops_early_with_seed_deque(monkeypatch, graph_canon):
     """A seeded deque should remain intact when STOP_EARLY halts the loop."""
@@ -118,6 +122,7 @@ def test_run_stops_early_with_seed_deque(monkeypatch, graph_canon):
     assert isinstance(series, deque)
     assert len(series) == 4
     assert list(series)[-2:] == [0.95, 0.95]
+
 
 def test_run_stop_early_tolerates_non_iterable_history(monkeypatch, graph_canon):
     """STOP_EARLY loop should handle non-iterable ``stable_frac`` seeds."""
@@ -154,6 +159,7 @@ def test_run_stop_early_tolerates_non_iterable_history(monkeypatch, graph_canon)
     assert series is not None
     assert list(series)[-2:] == [0.95, 0.95]
 
+
 def test_run_stop_early_filters_non_numeric_series(monkeypatch, graph_canon):
     """Non-numeric history entries should not satisfy STOP_EARLY thresholds."""
 
@@ -182,6 +188,7 @@ def test_run_stop_early_filters_non_numeric_series(monkeypatch, graph_canon):
     assert list(series)[:3] == seeded_series
     assert list(series)[-2:] == [0.95, 0.95]
 
+
 @pytest.mark.parametrize("window", [0, -1])
 def test_run_stop_early_min_window(monkeypatch, graph_canon, window):
     """STOP_EARLY windows <= 0 should still require at least one iteration."""
@@ -204,6 +211,7 @@ def test_run_stop_early_min_window(monkeypatch, graph_canon, window):
     # The guard should prevent an empty window from triggering an early stop,
     # so the loop executes all requested iterations (a full window's worth).
     assert call_count == 3
+
 
 def test_step_preserves_since_mappings(monkeypatch, graph_canon):
     """``since_*`` history entries should stay as mappings when bounded."""
@@ -245,6 +253,7 @@ def test_step_preserves_since_mappings(monkeypatch, graph_canon):
     assert isinstance(since_en, dict)
     assert since_al[0] == 1
     assert since_en[0] == 1
+
 
 def test_step_respects_n_jobs_overrides(monkeypatch, graph_canon):
     """Explicit ``n_jobs`` overrides should reach every parallel component."""
@@ -321,6 +330,7 @@ def test_step_respects_n_jobs_overrides(monkeypatch, graph_canon):
         "vf": 7,
     }
 
+
 def test_step_defaults_to_graph_jobs(monkeypatch, graph_canon):
     """Graph attributes remain the fallback when overrides are missing."""
 
@@ -386,6 +396,7 @@ def test_step_defaults_to_graph_jobs(monkeypatch, graph_canon):
         "vf": None,
     }
 
+
 def test_update_nodes_clamps_out_of_range_values(monkeypatch, graph_canon):
     """Nodes are clamped to canonical EPI and νf bounds during updates."""
 
@@ -396,7 +407,9 @@ def test_update_nodes_clamps_out_of_range_values(monkeypatch, graph_canon):
     G.add_node(node_id, EPI=epi_hi, nu_f=vf_lo)
 
     monkeypatch.setattr(runtime, "_prepare_dnfr", lambda *args, **kwargs: None)
-    monkeypatch.setattr(selectors, "_apply_selector", lambda *_args, **_kwargs: object())
+    monkeypatch.setattr(
+        selectors, "_apply_selector", lambda *_args, **_kwargs: object()
+    )
     monkeypatch.setattr(selectors, "_apply_glyphs", lambda *_args, **_kwargs: None)
 
     class _NoOpIntegrator(integrators.AbstractIntegrator):
@@ -439,6 +452,7 @@ def test_update_nodes_clamps_out_of_range_values(monkeypatch, graph_canon):
     assert clamped_epi == pytest.approx(float(DEFAULTS["EPI_MAX"]))
     assert clamped_vf == pytest.approx(float(DEFAULTS["VF_MIN"]))
 
+
 def test_run_reuses_normalized_n_jobs(monkeypatch, graph_canon):
     """``run`` should normalize ``n_jobs`` once and reuse it across steps."""
 
@@ -466,6 +480,7 @@ def test_run_reuses_normalized_n_jobs(monkeypatch, graph_canon):
     assert seen[0] is seen[1]
     assert seen[0] == {"DNFR": "2", "VF_ADAPT": 3}
 
+
 def test_run_rejects_negative_steps(graph_canon):
     """Negative step counts should be rejected explicitly."""
 
@@ -473,6 +488,7 @@ def test_run_rejects_negative_steps(graph_canon):
 
     with pytest.raises(ValueError, match="must be non-negative"):
         runtime.run(G, steps=-1)
+
 
 def test_run_negative_steps_preserve_stop_state_and_history(graph_canon):
     """Rejecting negative steps must leave STOP_EARLY state and history untouched."""

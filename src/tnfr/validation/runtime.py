@@ -40,13 +40,19 @@ __all__ = (
     "validate_canon",
 )
 
+
 def _max_bepi_magnitude(value: Any) -> float:
     element = ensure_bepi(value)
     mags = [
-        float(np.max(np.abs(element.f_continuous))) if element.f_continuous.size else 0.0,
+        (
+            float(np.max(np.abs(element.f_continuous)))
+            if element.f_continuous.size
+            else 0.0
+        ),
         float(np.max(np.abs(element.a_discrete))) if element.a_discrete.size else 0.0,
     ]
     return float(max(mags)) if mags else 0.0
+
 
 def _clamp_component(values: Any, lower: float, upper: float) -> np.ndarray:
     array = np.asarray(values, dtype=np.complex128)
@@ -63,6 +69,7 @@ def _clamp_component(values: Any, lower: float, upper: float) -> np.ndarray:
             result[below] = array[below] * (lower / magnitudes[below])
     return result
 
+
 def _clamp_bepi(value: Any, lower: float, upper: float) -> Any:
     element = ensure_bepi(value)
     clamped_cont = _clamp_component(element.f_continuous, lower, upper)
@@ -70,6 +77,7 @@ def _clamp_bepi(value: Any, lower: float, upper: float) -> Any:
     return ensure_bepi(
         {"continuous": clamped_cont, "discrete": clamped_disc, "grid": element.x_grid}
     )
+
 
 def _log_clamp(
     hist: HistoryLog,
@@ -81,6 +89,7 @@ def _log_clamp(
 ) -> None:
     if value < lo or value > hi:
         hist.append({"node": node, "attr": attr, "value": float(value)})
+
 
 def apply_canonical_clamps(
     nd: MutableMapping[str, Any],
@@ -134,7 +143,9 @@ def apply_canonical_clamps(
         clamped_value = float(clamp(original_scalar_value, eps_min, eps_max))
         set_attr_generic(nd, ALIAS_EPI, clamped_value, conv=lambda obj: obj)
     else:
-        set_attr_generic(nd, ALIAS_EPI, serialize_bepi(clamped_epi), conv=lambda obj: obj)
+        set_attr_generic(
+            nd, ALIAS_EPI, serialize_bepi(clamped_epi), conv=lambda obj: obj
+        )
 
     vf_val = float(clamp(vf, vf_min, vf_max))
     if G is not None and node is not None:
@@ -148,6 +159,7 @@ def apply_canonical_clamps(
             set_theta(G, node, new_th)
         else:
             set_theta_attr(nd, new_th)
+
 
 class GraphCanonicalValidator(Validator[TNFRGraph]):
     """Validator enforcing canonical runtime contracts on TNFR graphs."""
@@ -189,7 +201,9 @@ class GraphCanonicalValidator(Validator[TNFRGraph]):
             mapping = cast(MutableMapping[str, Any], data)
             before = {
                 "EPI": _max_bepi_magnitude(
-                    get_attr(mapping, ALIAS_EPI, ZERO_BEPI_STORAGE, conv=lambda obj: obj)
+                    get_attr(
+                        mapping, ALIAS_EPI, ZERO_BEPI_STORAGE, conv=lambda obj: obj
+                    )
                 ),
                 "VF": float(get_attr(mapping, ALIAS_VF, 0.0)),
                 "THETA": float(get_theta_attr(mapping, 0.0) or 0.0),
@@ -197,7 +211,9 @@ class GraphCanonicalValidator(Validator[TNFRGraph]):
             apply_canonical_clamps(mapping, subject, cast(NodeId, node))
             after = {
                 "EPI": _max_bepi_magnitude(
-                    get_attr(mapping, ALIAS_EPI, ZERO_BEPI_STORAGE, conv=lambda obj: obj)
+                    get_attr(
+                        mapping, ALIAS_EPI, ZERO_BEPI_STORAGE, conv=lambda obj: obj
+                    )
                 ),
                 "VF": float(get_attr(mapping, ALIAS_VF, 0.0)),
                 "THETA": float(get_theta_attr(mapping, 0.0) or 0.0),
@@ -254,6 +270,7 @@ class GraphCanonicalValidator(Validator[TNFRGraph]):
         if isinstance(errors, (list, tuple)):
             return "Graph canonical validation errors: " + ", ".join(map(str, errors))
         return f"Graph canonical validation error: {errors}"
+
 
 def validate_canon(G: TNFRGraph) -> ValidationOutcome[TNFRGraph]:
     """Validate ``G`` using :class:`GraphCanonicalValidator`."""

@@ -13,6 +13,7 @@ from tnfr.node import NodeNX
 from tnfr.validation.graph import run_validators
 from tnfr.validation.runtime import GraphCanonicalValidator
 
+
 def _make_bepi() -> BEPIElement:
     return BEPIElement(
         (1.0 + 0.0j, 0.2 + 0.3j, -0.5 + 0.1j),
@@ -20,13 +21,17 @@ def _make_bepi() -> BEPIElement:
         (0.0, 0.5, 1.0),
     )
 
+
 def _configure_bounds(graph: nx.Graph, *, epi_max: float = 1.0) -> None:
-    graph.graph.update({
-        "EPI_MIN": 0.0,
-        "EPI_MAX": epi_max,
-        "VF_MIN": 0.0,
-        "VF_MAX": 3.0,
-    })
+    graph.graph.update(
+        {
+            "EPI_MIN": 0.0,
+            "EPI_MAX": epi_max,
+            "VF_MIN": 0.0,
+            "VF_MAX": 3.0,
+        }
+    )
+
 
 def test_nodenx_epi_roundtrip_serializes_bepi() -> None:
     graph = nx.Graph()
@@ -47,6 +52,7 @@ def test_nodenx_epi_roundtrip_serializes_bepi() -> None:
     np.testing.assert_allclose(roundtrip.a_discrete, element.a_discrete)
     np.testing.assert_allclose(roundtrip.x_grid, element.x_grid)
 
+
 def test_graph_validators_accept_bepi_payload() -> None:
     graph = nx.Graph()
     _configure_bounds(graph, epi_max=2.0)
@@ -56,6 +62,7 @@ def test_graph_validators_accept_bepi_payload() -> None:
     node.vf = 1.5
 
     run_validators(graph)
+
 
 def test_graph_validators_reject_malformed_bepi() -> None:
     graph = nx.Graph()
@@ -71,6 +78,7 @@ def test_graph_validators_reject_malformed_bepi() -> None:
 
     with pytest.raises(ValueError):
         run_validators(graph)
+
 
 def test_runtime_validator_clamps_bepi_components() -> None:
     graph = nx.Graph()
@@ -94,6 +102,7 @@ def test_runtime_validator_clamps_bepi_components() -> None:
     assert np.max(np.abs(clamped.f_continuous)) <= 0.4 + 1e-12
     assert np.max(np.abs(clamped.a_discrete)) <= 0.4 + 1e-12
 
+
 def test_bepi_pickle_serialization() -> None:
     """Test BEPIElement pickle serialization preserves structural integrity."""
     import pickle
@@ -111,6 +120,7 @@ def test_bepi_pickle_serialization() -> None:
 
     # Verify it's still a valid BEPIElement
     assert isinstance(restored, BEPIElement)
+
 
 def test_bepi_json_serialization() -> None:
     """Test BEPIElement JSON serialization via serialize_bepi_json helper."""
@@ -135,6 +145,7 @@ def test_bepi_json_serialization() -> None:
     np.testing.assert_allclose(restored.a_discrete, element.a_discrete)
     np.testing.assert_allclose(restored.x_grid, element.x_grid)
 
+
 def test_bepi_yaml_serialization() -> None:
     """Test BEPIElement YAML serialization via serialize_bepi_json helper."""
     yaml = pytest.importorskip("yaml")
@@ -156,6 +167,7 @@ def test_bepi_yaml_serialization() -> None:
     np.testing.assert_allclose(restored.f_continuous, element.f_continuous)
     np.testing.assert_allclose(restored.a_discrete, element.a_discrete)
     np.testing.assert_allclose(restored.x_grid, element.x_grid)
+
 
 def test_bepi_nested_serialization_preserves_fractality() -> None:
     """Test nested BEPI structures preserve operational fractality (invariant #7)."""

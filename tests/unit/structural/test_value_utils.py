@@ -6,6 +6,7 @@ import pytest
 
 from tnfr.utils import convert_value
 
+
 def test_convert_value_logs_debug_by_default(caplog):
     def conv(_):
         raise ValueError("bad")
@@ -16,6 +17,7 @@ def test_convert_value_logs_debug_by_default(caplog):
     assert not ok and result is None
     assert len(caplog.records) == 1
     assert caplog.records[0].levelno == logging.DEBUG
+
 
 def test_convert_value_logs_custom_level(caplog):
     def conv(_):
@@ -28,6 +30,7 @@ def test_convert_value_logs_custom_level(caplog):
     assert len(caplog.records) == 1
     assert caplog.records[0].levelno == logging.INFO
 
+
 def test_convert_value_strict_propagates(caplog):
     def conv(_):
         raise ValueError("bad")
@@ -38,6 +41,7 @@ def test_convert_value_strict_propagates(caplog):
 
     assert not caplog.records
 
+
 def test_convert_value_rejects_non_finite(caplog):
     def conv(_):
         return float("nan")
@@ -46,4 +50,6 @@ def test_convert_value_rejects_non_finite(caplog):
         ok, result = convert_value("x", conv, key="foo")
 
     assert not ok and result is None
-    assert any("Non-finite value for 'foo'" in record.getMessage() for record in caplog.records)
+    assert any(
+        "Non-finite value for 'foo'" in record.getMessage() for record in caplog.records
+    )

@@ -13,13 +13,17 @@ from tnfr.constants import merge_overrides
 from tnfr.dynamics.runtime import _run_after_callbacks
 from tnfr.telemetry.nu_f import ensure_nu_f_telemetry, record_nu_f_window
 
-def _compute_expected_ci(rate: float, total_duration: float, confidence: float) -> tuple[float, float]:
+
+def _compute_expected_ci(
+    rate: float, total_duration: float, confidence: float
+) -> tuple[float, float]:
     variance = rate / total_duration
     std_error = math.sqrt(variance)
     z = NormalDist().inv_cdf(0.5 + confidence / 2.0)
     lower = max(rate - z * std_error, 0.0)
     upper = rate + z * std_error
     return lower, upper
+
 
 def test_nu_f_poisson_snapshot_matches_mle(structural_rng, graph_canon) -> None:
     """Simulated Poisson counts must match the νf MLE and CI estimates."""
@@ -61,6 +65,7 @@ def test_nu_f_poisson_snapshot_matches_mle(structural_rng, graph_canon) -> None:
     assert snapshot.ci_lower_hz == pytest.approx(expected_lower * bridge)
     assert snapshot.ci_upper_hz == pytest.approx(expected_upper * bridge)
 
+
 def test_nu_f_zero_counts_retains_zero_rate(graph_canon) -> None:
     """Zero reorganisations should yield zero rate and symmetric intervals."""
 
@@ -76,6 +81,7 @@ def test_nu_f_zero_counts_retains_zero_rate(graph_canon) -> None:
     assert snapshot.rate_hz == pytest.approx(0.0)
     assert snapshot.ci_lower_hz == pytest.approx(0.0)
     assert snapshot.ci_upper_hz == pytest.approx(0.0)
+
 
 def test_nu_f_history_survives_runtime_summary(graph_canon) -> None:
     """History snapshots must remain accessible alongside runtime summaries."""
@@ -116,6 +122,7 @@ def test_nu_f_history_survives_runtime_summary(graph_canon) -> None:
     assert len(history_final) == 3
 
     assert telemetry.get("nu_f") is summary
+
 
 def test_custom_confidence_level_survives_repeated_ensure(graph_canon) -> None:
     """Custom νf confidence levels must persist across repeated ensures."""

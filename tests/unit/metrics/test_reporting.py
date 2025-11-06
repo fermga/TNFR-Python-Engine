@@ -13,11 +13,13 @@ from tnfr.metrics.reporting import (
     latency_series,
 )
 
+
 def _graph_with_history(graph_canon, history):
     G = graph_canon()
     hist = ensure_history(G)
     hist.update(history)
     return G
+
 
 def test_tg_global_normalization_and_raw(graph_canon):
     G = _graph_with_history(
@@ -34,6 +36,7 @@ def test_tg_global_normalization_and_raw(graph_canon):
     assert raw["AL"] == 2.0
     assert raw["EN"] == 1.0
     assert raw["IL"] == 0.0
+
 
 def test_tg_by_node_copies_runs_and_computes_means(graph_canon):
     runs = {"AL": [1.0, 3.0], "EN": [2.0]}
@@ -52,6 +55,7 @@ def test_tg_by_node_copies_runs_and_computes_means(graph_canon):
     assert raw_runs["AL"] == [1.0, 3.0]
     updated_means = Tg_by_node(G, 0, normalize=True)
     assert updated_means["AL"] == pytest.approx((1.0 + 3.0 + 9.0) / 3.0)
+
 
 def test_latency_and_glyphogram_series_index_fallback(graph_canon):
     G = _graph_with_history(
@@ -79,6 +83,7 @@ def test_latency_and_glyphogram_series_index_fallback(graph_canon):
     G_empty = graph_canon()
     glyph_empty = glyphogram_series(G_empty)
     assert glyph_empty == {"t": []}
+
 
 def test_glyph_top_validates_k_and_returns_largest(graph_canon):
     G = _graph_with_history(

@@ -10,22 +10,26 @@ from tnfr.utils import (
     stable_json,
 )
 
+
 def build_graph(graph_canon):
     G = graph_canon()
     G.add_node(("foo", 1))
     G.add_node(("foo", 2))
     return G
 
+
 def test_node_set_checksum_object_stable(graph_canon):
     checksum1 = node_set_checksum(build_graph(graph_canon))
     checksum2 = node_set_checksum(build_graph(graph_canon))
     assert checksum1 == checksum2
+
 
 def _sorting_key(node):
     try:
         return stable_json(node)
     except TypeError:
         return repr(node)
+
 
 def _reference_checksum(G):
     nodes = sorted(G.nodes(), key=_sorting_key)
@@ -35,16 +39,19 @@ def _reference_checksum(G):
         hasher.update(d)
     return hasher.hexdigest()
 
+
 def test_node_set_checksum_compatibility(graph_canon):
     G = graph_canon()
     G.add_nodes_from([1, 2, 3])
     assert node_set_checksum(G) == _reference_checksum(G)
+
 
 def test_node_set_checksum_iterable_equivalence(graph_canon):
     G = graph_canon()
     G.add_nodes_from([3, 1, 2])
     gen = (n for n in G.nodes())
     assert node_set_checksum(G, gen) == node_set_checksum(G)
+
 
 def test_node_set_checksum_presorted_performance(graph_canon):
     G = graph_canon()
@@ -57,11 +64,13 @@ def test_node_set_checksum_presorted_performance(graph_canon):
     )
     assert t_presorted <= t_unsorted * 3.0
 
+
 def test_node_set_checksum_no_store_does_not_cache(graph_canon):
     G = graph_canon()
     G.add_nodes_from([1, 2])
     node_set_checksum(G, store=False)
     assert NODE_SET_CHECKSUM_KEY not in G.graph
+
 
 def test_node_set_checksum_cache_token_is_prefix(graph_canon):
     G = graph_canon()
@@ -73,6 +82,7 @@ def test_node_set_checksum_cache_token_is_prefix(graph_canon):
     assert len(token) == 16
     assert nodes_snapshot == frozenset(G.nodes())
 
+
 def test_node_set_checksum_uses_cached_result_without_rehash(graph_canon):
     G = graph_canon()
     G.add_nodes_from([1, 2])
@@ -80,6 +90,7 @@ def test_node_set_checksum_uses_cached_result_without_rehash(graph_canon):
     with patch("tnfr.utils.cache._node_repr_digest") as mock_digest:
         assert node_set_checksum(G) == G.graph[NODE_SET_CHECKSUM_KEY][1]
         mock_digest.assert_not_called()
+
 
 def test_increment_edge_version_clears_node_repr_cache(graph_canon):
     nxG = graph_canon()

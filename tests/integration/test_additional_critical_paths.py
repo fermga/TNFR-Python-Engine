@@ -39,6 +39,7 @@ from tests.helpers.fixtures import seed_graph_factory  # noqa: F401
 # Operator Composition and Closure Tests
 # ============================================================================
 
+
 def test_operator_closure_under_addition() -> None:
     """Verify operator closure: sum of Hermitian operators is Hermitian."""
     dim = 5
@@ -58,6 +59,7 @@ def test_operator_closure_under_addition() -> None:
     eigenvalues = np.linalg.eigvalsh(op_sum)
     assert np.all(np.isfinite(eigenvalues))
 
+
 def test_operator_closure_under_scaling() -> None:
     """Verify operator closure: scalar multiple of Hermitian operator is Hermitian."""
     dim = 4
@@ -71,11 +73,16 @@ def test_operator_closure_under_scaling() -> None:
         scaled_op = scalar * op
 
         # Must remain Hermitian
-        assert np.allclose(scaled_op, scaled_op.conj().T), f"Not Hermitian for scalar={scalar}"
+        assert np.allclose(
+            scaled_op, scaled_op.conj().T
+        ), f"Not Hermitian for scalar={scalar}"
 
         # Eigenvalues must be real
         eigenvalues = np.linalg.eigvalsh(scaled_op)
-        assert np.all(np.isfinite(eigenvalues)), f"Non-finite eigenvalues for scalar={scalar}"
+        assert np.all(
+            np.isfinite(eigenvalues)
+        ), f"Non-finite eigenvalues for scalar={scalar}"
+
 
 def test_operator_closure_under_commutator() -> None:
     """Verify commutator [A,B] = AB - BA is anti-Hermitian for Hermitian A,B."""
@@ -91,6 +98,7 @@ def test_operator_closure_under_commutator() -> None:
 
     # Must be anti-Hermitian: [A,B]† = -[A,B]
     assert np.allclose(commutator, -commutator.conj().T)
+
 
 def test_operator_composition_preserves_finite_values() -> None:
     """Verify operator products maintain finite values."""
@@ -111,9 +119,11 @@ def test_operator_composition_preserves_finite_values() -> None:
     eigenvalues = np.linalg.eigvals(product)
     assert np.all(np.isfinite(eigenvalues))
 
+
 # ============================================================================
 # Extreme Network Topology Tests
 # ============================================================================
+
 
 @pytest.mark.parametrize("num_nodes", [5, 10, 20])
 def test_fully_connected_network_dnfr_conservation(num_nodes) -> None:
@@ -135,6 +145,7 @@ def test_fully_connected_network_dnfr_conservation(num_nodes) -> None:
     # ΔNFR must be conserved even on complete graphs
     assert_dnfr_balanced(graph, abs_tol=0.1)
 
+
 @pytest.mark.parametrize("num_nodes", [10, 20, 30])
 def test_sparse_network_dnfr_conservation(num_nodes) -> None:
     """Verify ΔNFR conservation on very sparse networks."""
@@ -154,6 +165,7 @@ def test_sparse_network_dnfr_conservation(num_nodes) -> None:
 
     # For sparse graphs, use more lenient tolerance due to potential disconnected components
     assert_dnfr_balanced(graph, abs_tol=1.0)
+
 
 @pytest.mark.parametrize("num_leaves", [5, 10, 15])
 def test_star_topology_dnfr_consistency(num_leaves) -> None:
@@ -183,6 +195,7 @@ def test_star_topology_dnfr_consistency(num_leaves) -> None:
     for node in graph.nodes():
         dnfr_val = graph.nodes[node][DNFR_PRIMARY]
         assert math.isfinite(dnfr_val), f"Node {node} has non-finite ΔNFR: {dnfr_val}"
+
 
 def test_disconnected_components_dnfr_behavior() -> None:
     """Verify ΔNFR computation handles disconnected components correctly."""
@@ -217,9 +230,11 @@ def test_disconnected_components_dnfr_behavior() -> None:
     # Isolated nodes should have ΔNFR = 0 (no neighbors)
     assert abs(graph.nodes[7][DNFR_PRIMARY]) < 1e-9
 
+
 # ============================================================================
 # Nodal Validator Boundary Conditions
 # ============================================================================
+
 
 def test_nodal_validator_moderate_epi_range(seed_graph_factory) -> None:
     """Verify validators handle moderate range of EPI values correctly."""
@@ -239,6 +254,7 @@ def test_nodal_validator_moderate_epi_range(seed_graph_factory) -> None:
     for node in graph.nodes():
         assert math.isfinite(graph.nodes[node][DNFR_PRIMARY])
 
+
 def test_nodal_validator_moderate_vf_range(seed_graph_factory) -> None:
     """Verify validators handle moderate range of νf values correctly."""
     graph = seed_graph_factory(num_nodes=8, edge_probability=0.4, seed=1414)
@@ -257,6 +273,7 @@ def test_nodal_validator_moderate_vf_range(seed_graph_factory) -> None:
     for node in graph.nodes():
         assert math.isfinite(graph.nodes[node][DNFR_PRIMARY])
 
+
 def test_nodal_validator_phase_boundary_wrapping(seed_graph_factory) -> None:
     """Verify phase values are properly wrapped to [-π, π]."""
     graph = seed_graph_factory(num_nodes=6, edge_probability=0.5, seed=1515)
@@ -267,8 +284,8 @@ def test_nodal_validator_phase_boundary_wrapping(seed_graph_factory) -> None:
         -3 * math.pi,  # Should wrap to π
         -2 * math.pi,  # Should wrap to 0
         0.0,
-        3 * math.pi,   # Should wrap to π
-        4 * math.pi,   # Should wrap to 0
+        3 * math.pi,  # Should wrap to π
+        4 * math.pi,  # Should wrap to 0
     ]
 
     for idx, node in enumerate(graph.nodes()):
@@ -281,9 +298,11 @@ def test_nodal_validator_phase_boundary_wrapping(seed_graph_factory) -> None:
         # Verify it's in correct range
         assert -math.pi <= graph.nodes[node][THETA_KEY] <= math.pi
 
+
 # ============================================================================
 # Integration Tests: Operator Generation + Runtime
 # ============================================================================
+
 
 def test_integration_operator_to_runtime(seed_graph_factory) -> None:
     """Verify operators generated can be used in runtime dynamics."""
@@ -304,6 +323,7 @@ def test_integration_operator_to_runtime(seed_graph_factory) -> None:
     # Verify ΔNFR conservation
     assert_dnfr_balanced(graph, abs_tol=0.1)
 
+
 def test_integration_coherence_operator_with_dynamics(seed_graph_factory) -> None:
     """Verify coherence operators integrate with network dynamics."""
     dim = 6
@@ -323,6 +343,7 @@ def test_integration_coherence_operator_with_dynamics(seed_graph_factory) -> Non
 
     # Verify conservation
     assert_dnfr_balanced(graph, abs_tol=0.1)
+
 
 def test_integration_frequency_operator_with_dynamics(seed_graph_factory) -> None:
     """Verify frequency operators integrate with network dynamics."""
@@ -345,9 +366,11 @@ def test_integration_frequency_operator_with_dynamics(seed_graph_factory) -> Non
     # Verify conservation
     assert_dnfr_balanced(graph, abs_tol=0.1)
 
+
 # ============================================================================
 # Multi-Operator Interaction Tests
 # ============================================================================
+
 
 def test_multi_operator_interaction_maintains_conservation(seed_graph_factory) -> None:
     """Verify ΔNFR conservation with multiple operator applications."""
@@ -365,8 +388,11 @@ def test_multi_operator_interaction_maintains_conservation(seed_graph_factory) -
     dnfr_epi_vf_mixed(graph)
     assert_dnfr_balanced(graph, abs_tol=0.1)
 
+
 @pytest.mark.parametrize("num_iterations", [1, 5, 10])
-def test_iterative_operator_application_stability(seed_graph_factory, num_iterations) -> None:
+def test_iterative_operator_application_stability(
+    seed_graph_factory, num_iterations
+) -> None:
     """Verify stability under repeated operator applications."""
     graph = seed_graph_factory(num_nodes=10, edge_probability=0.3, seed=2020)
 

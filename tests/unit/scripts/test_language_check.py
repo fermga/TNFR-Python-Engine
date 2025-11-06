@@ -11,7 +11,9 @@ _language_check = importlib.util.module_from_spec(_spec)
 sys.modules.setdefault("tnfr_language_check", _language_check)
 _spec.loader.exec_module(_language_check)
 
-DATA_MODULE_PATH = Path(__file__).resolve().parents[3] / "scripts" / "language_policy_data.py"
+DATA_MODULE_PATH = (
+    Path(__file__).resolve().parents[3] / "scripts" / "language_policy_data.py"
+)
 _data_spec = importlib.util.spec_from_file_location(
     "tnfr_language_policy_data", DATA_MODULE_PATH
 )
@@ -32,6 +34,7 @@ _RECENT_KEYWORD_CODES = (
     (112, 111, 114, 95, 100, 101, 102, 101, 99, 116, 111),
 )
 
+
 def test_default_policy_contains_recent_tokens() -> None:
     expected = {
         token.lower()
@@ -42,12 +45,11 @@ def test_default_policy_contains_recent_tokens() -> None:
     }
     assert expected.issubset(policy_tokens)
 
+
 def test_scan_file_flags_recent_keyword(tmp_path) -> None:
     repo_root = tmp_path
     sample = repo_root / "snippet.txt"
-    keyword = _language_policy_data.decode_keyword_codes(
-        (_RECENT_KEYWORD_CODES[0],)
-    )[0]
+    keyword = _language_policy_data.decode_keyword_codes((_RECENT_KEYWORD_CODES[0],))[0]
     sample.write_text(f"Line with {keyword} token", encoding="utf-8")
 
     violations = _language_check._scan_file(  # type: ignore[attr-defined]

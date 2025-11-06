@@ -102,7 +102,7 @@ class TestTNFRConfigValidation:
     def test_validate_config_checks_all_bounds(self):
         """Test that validate_config checks all structural invariants."""
         config = TNFRConfig()
-        
+
         valid_config = {
             "VF_MIN": 0.0,
             "VF_MAX": 10.0,
@@ -116,7 +116,7 @@ class TestTNFRConfigValidation:
     def test_validate_config_rejects_invalid_vf_bounds(self):
         """Test that validate_config rejects invalid νf bounds."""
         config = TNFRConfig()
-        
+
         invalid_config = {
             "VF_MIN": -1.0,  # Invalid: negative
             "VF_MAX": 10.0,
@@ -127,7 +127,7 @@ class TestTNFRConfigValidation:
     def test_validate_config_rejects_invalid_epi_bounds(self):
         """Test that validate_config rejects invalid EPI bounds."""
         config = TNFRConfig()
-        
+
         invalid_config = {
             "EPI_MIN": 1.0,
             "EPI_MAX": -1.0,  # Invalid: max < min
@@ -138,13 +138,13 @@ class TestTNFRConfigValidation:
     def test_validate_config_rejects_non_positive_dt(self):
         """Test that validate_config rejects non-positive DT."""
         config = TNFRConfig()
-        
+
         invalid_config = {
             "DT": 0.0,  # Invalid: must be > 0
         }
         with pytest.raises(TNFRConfigError, match="DT.*must be > 0"):
             config.validate_config(invalid_config)
-        
+
         invalid_config = {
             "DT": -1.0,  # Invalid: negative
         }
@@ -154,7 +154,7 @@ class TestTNFRConfigValidation:
     def test_validation_can_be_disabled(self):
         """Test that validation can be disabled."""
         config = TNFRConfig(validate_invariants=False)
-        
+
         # These should all pass with validation disabled
         assert config.validate_vf_bounds(vf_min=-10.0) is True
         assert config.validate_theta_bounds(theta=100.0, theta_wrap=False) is True
@@ -167,7 +167,7 @@ class TestTNFRConfigUsage:
     def test_create_with_defaults(self):
         """Test creating TNFRConfig with defaults."""
         from tnfr.config import DEFAULTS
-        
+
         config = TNFRConfig(defaults=DEFAULTS)
         assert config._defaults == DEFAULTS
 
@@ -175,21 +175,21 @@ class TestTNFRConfigUsage:
         """Test get_param_with_fallback method."""
         defaults = {"DT": 1.0, "VF_MIN": 0.0}
         config = TNFRConfig(defaults=defaults)
-        
+
         # Get from graph
         G_graph = {"DT": 0.5}
         assert config.get_param_with_fallback(G_graph, "DT") == 0.5
-        
+
         # Get from defaults
         assert config.get_param_with_fallback(G_graph, "VF_MIN") == 0.0
-        
+
         # Get with fallback
         assert config.get_param_with_fallback(G_graph, "UNKNOWN", default=42) == 42
 
     def test_get_param_with_fallback_raises_on_missing(self):
         """Test that get_param_with_fallback raises on missing key."""
         config = TNFRConfig(defaults={})
-        
+
         with pytest.raises(KeyError, match="not found"):
             config.get_param_with_fallback({}, "MISSING")
 
@@ -197,10 +197,10 @@ class TestTNFRConfigUsage:
         """Test that mutable defaults are deep copied."""
         defaults = {"MUTABLE_DICT": {"key": "value"}}
         config = TNFRConfig(defaults=defaults)
-        
+
         result1 = config.get_param_with_fallback({}, "MUTABLE_DICT")
         result2 = config.get_param_with_fallback({}, "MUTABLE_DICT")
-        
+
         # Should be different objects (deep copied)
         assert result1 is not result2
         assert result1 == result2
@@ -208,10 +208,10 @@ class TestTNFRConfigUsage:
     def test_inject_defaults_validates_config(self):
         """Test that inject_defaults validates configuration."""
         import networkx as nx
-        
+
         config = TNFRConfig(validate_invariants=True)
         G = nx.Graph()
-        
+
         valid_defaults = {"DT": 1.0, "VF_MIN": 0.0}
         config.inject_defaults(G, defaults=valid_defaults)
         assert G.graph["DT"] == 1.0
@@ -220,10 +220,10 @@ class TestTNFRConfigUsage:
     def test_inject_defaults_rejects_invalid_config(self):
         """Test that inject_defaults rejects invalid configuration."""
         import networkx as nx
-        
+
         config = TNFRConfig(validate_invariants=True)
         G = nx.Graph()
-        
+
         invalid_defaults = {"VF_MIN": -1.0}  # Invalid
         with pytest.raises(TNFRConfigError):
             config.inject_defaults(G, defaults=invalid_defaults)
@@ -231,10 +231,10 @@ class TestTNFRConfigUsage:
     def test_inject_defaults_with_validation_disabled(self):
         """Test inject_defaults with validation disabled."""
         import networkx as nx
-        
+
         config = TNFRConfig(validate_invariants=False)
         G = nx.Graph()
-        
+
         # Should accept even invalid config
         invalid_defaults = {"VF_MIN": -1.0}
         config.inject_defaults(G, defaults=invalid_defaults)
@@ -247,7 +247,7 @@ class TestTNFRConfigAliases:
     def test_get_aliases_returns_correct_aliases(self):
         """Test that get_aliases returns correct alias tuples."""
         from tnfr.config import get_aliases
-        
+
         vf_aliases = get_aliases("VF")
         assert "νf" in vf_aliases
         assert "nu_f" in vf_aliases
@@ -256,7 +256,7 @@ class TestTNFRConfigAliases:
     def test_primary_aliases_are_unicode(self):
         """Test that primary aliases use Unicode symbols."""
         from tnfr.config import VF_PRIMARY, THETA_PRIMARY, DNFR_PRIMARY
-        
+
         assert VF_PRIMARY == "νf"
         assert THETA_PRIMARY == "theta"
         assert DNFR_PRIMARY == "ΔNFR"
@@ -276,7 +276,7 @@ class TestTNFRConfigAliases:
             dSI_PRIMARY,
             dVF_PRIMARY,
         )
-        
+
         # Just verify they all exist and are strings
         assert isinstance(VF_PRIMARY, str)
         assert isinstance(THETA_PRIMARY, str)
@@ -297,7 +297,7 @@ class TestTNFRConfigStateTokens:
     def test_normalise_state_token_accepts_canonical(self):
         """Test that canonical state tokens are accepted."""
         from tnfr.config import normalise_state_token
-        
+
         assert normalise_state_token("stable") == "stable"
         assert normalise_state_token("transition") == "transition"
         assert normalise_state_token("dissonant") == "dissonant"
@@ -305,24 +305,24 @@ class TestTNFRConfigStateTokens:
     def test_normalise_state_token_handles_case(self):
         """Test that state token normalization handles case."""
         from tnfr.config import normalise_state_token
-        
+
         assert normalise_state_token("STABLE") == "stable"
         assert normalise_state_token("Transition") == "transition"
 
     def test_normalise_state_token_rejects_invalid(self):
         """Test that invalid state tokens are rejected."""
         from tnfr.config import normalise_state_token
-        
+
         with pytest.raises(ValueError, match="must be one of"):
             normalise_state_token("invalid")
-        
+
         with pytest.raises(TypeError):
             normalise_state_token(123)  # type: ignore
 
     def test_canonical_state_tokens_is_frozenset(self):
         """Test that CANONICAL_STATE_TOKENS is a frozenset."""
         from tnfr.config import CANONICAL_STATE_TOKENS
-        
+
         assert isinstance(CANONICAL_STATE_TOKENS, frozenset)
         assert "stable" in CANONICAL_STATE_TOKENS
         assert "transition" in CANONICAL_STATE_TOKENS

@@ -6,6 +6,7 @@ import pytest
 
 from tnfr.alias import AliasAccessor, _alias_cache
 
+
 class CountingDict(dict):
     """Dictionary that counts membership checks for cache verification."""
 
@@ -17,6 +18,7 @@ class CountingDict(dict):
         self.contains_calls += 1
         return super().__contains__(item)
 
+
 @pytest.fixture(scope="module", autouse=True)
 def clear_alias_cache():
     """Reset the global alias tuple cache around the module tests."""
@@ -25,11 +27,13 @@ def clear_alias_cache():
     yield
     _alias_cache.cache_clear()
 
+
 @pytest.fixture
 def accessor() -> AliasAccessor[int]:
     """Provide a fresh ``AliasAccessor`` instance for each test."""
 
     return AliasAccessor(int)
+
 
 @pytest.mark.parametrize("use_instance", [False, True])
 def test_accessor_get_and_set_work_with_functions_and_object(
@@ -45,17 +49,23 @@ def test_accessor_get_and_set_work_with_functions_and_object(
             return accessor.set(d, aliases, value)
 
     else:
-        getter = lambda d, aliases, *, default=None: AliasAccessor(int).get(d, aliases, default=default)  # noqa: E731
-        setter = lambda d, aliases, value: AliasAccessor(int).set(d, aliases, value)  # noqa: E731
+        getter = lambda d, aliases, *, default=None: AliasAccessor(int).get(
+            d, aliases, default=default
+        )  # noqa: E731
+        setter = lambda d, aliases, value: AliasAccessor(int).set(
+            d, aliases, value
+        )  # noqa: E731
 
     data = {"a": "1"}
     assert getter(data, ("a", "b"), default=None) == 1
     setter(data, ("b", "c"), "2")
     assert getter(data, ("b", "c"), default=None) == 2
 
+
 def test_accessor_get_uses_default_value() -> None:
     acc = AliasAccessor(int, default=7)
     assert acc.get({}, ("x", "y")) == 7
+
 
 @pytest.mark.parametrize("operation", ["get", "set"])
 def test_alias_tuple_cache_reuses_validated_aliases(
@@ -82,6 +92,7 @@ def test_alias_tuple_cache_reuses_validated_aliases(
 
     assert info2.hits == info1.hits + 1
     assert info2.misses == info1.misses
+
 
 @pytest.mark.parametrize(
     "operation, mutate, expected_second",
@@ -115,6 +126,7 @@ def test_key_cache_limits_membership_checks(
         accessor.set(data, aliases, "2")
 
     assert data.contains_calls == expected_second
+
 
 @pytest.mark.parametrize("max_workers", [1, 16])
 def test_key_cache_threadsafe(accessor: AliasAccessor[int], max_workers: int) -> None:

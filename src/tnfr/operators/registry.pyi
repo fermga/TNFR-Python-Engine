@@ -1,6 +1,6 @@
 from .definitions import Operator
 
-__all__ = ['OPERATORS', 'register_operator', 'discover_operators', 'get_operator_class']
+__all__ = ["OPERATORS", "register_operator", "discover_operators", "get_operator_class"]
 
 OPERATORS: dict[str, type[Operator]]
 

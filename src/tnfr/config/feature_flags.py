@@ -9,6 +9,7 @@ from typing import Iterator
 
 __all__ = ("MathFeatureFlags", "get_flags", "context_flags")
 
+
 @dataclass(frozen=True)
 class MathFeatureFlags:
     """Toggle optional mathematical behaviours in the engine."""
@@ -18,11 +19,13 @@ class MathFeatureFlags:
     log_performance: bool = False
     math_backend: str = "numpy"
 
+
 _TRUE_VALUES = {"1", "true", "on", "yes", "y", "t"}
 _FALSE_VALUES = {"0", "false", "off", "no", "n", "f"}
 
 _BASE_FLAGS: MathFeatureFlags | None = None
 _FLAGS_STACK: list[MathFeatureFlags] = []
+
 
 def _parse_env_flag(name: str, default: bool) -> bool:
     value = os.getenv(name)
@@ -35,6 +38,7 @@ def _parse_env_flag(name: str, default: bool) -> bool:
         return False
     return default
 
+
 def _load_base_flags() -> MathFeatureFlags:
     global _BASE_FLAGS
     if _BASE_FLAGS is None:
@@ -44,13 +48,12 @@ def _load_base_flags() -> MathFeatureFlags:
             enable_math_validation=_parse_env_flag(
                 "TNFR_ENABLE_MATH_VALIDATION", False
             ),
-            enable_math_dynamics=_parse_env_flag(
-                "TNFR_ENABLE_MATH_DYNAMICS", False
-            ),
+            enable_math_dynamics=_parse_env_flag("TNFR_ENABLE_MATH_DYNAMICS", False),
             log_performance=_parse_env_flag("TNFR_LOG_PERF", False),
             math_backend=backend_choice or "numpy",
         )
     return _BASE_FLAGS
+
 
 def get_flags() -> MathFeatureFlags:
     """Return the currently active feature flags."""
@@ -58,6 +61,7 @@ def get_flags() -> MathFeatureFlags:
     if _FLAGS_STACK:
         return _FLAGS_STACK[-1]
     return _load_base_flags()
+
 
 @contextmanager
 def context_flags(**overrides: bool) -> Iterator[MathFeatureFlags]:

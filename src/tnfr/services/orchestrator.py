@@ -19,7 +19,7 @@ Execute a sequence with default services:
 >>> from tnfr.core.container import TNFRContainer
 >>> from tnfr.services.orchestrator import TNFROrchestrator
 >>> from tnfr.structural import create_nfr
->>> 
+>>>
 >>> container = TNFRContainer.create_default()
 >>> orchestrator = TNFROrchestrator.from_container(container)
 >>> G, node = create_nfr("seed", epi=1.0, vf=2.0)
@@ -32,7 +32,7 @@ Execute with custom services:
 ...         print(f"Validating {seq}")
 ...     def validate_graph_state(self, graph):
 ...         pass
->>> 
+>>>
 >>> container = TNFRContainer()
 >>> container.register_singleton(ValidationService, CustomValidator())
 >>> # ... register other services
@@ -58,12 +58,12 @@ __all__ = ("TNFROrchestrator",)
 
 class TNFROrchestrator:
     """Orchestrates TNFR sequence execution with separated responsibilities.
-    
+
     The orchestrator coordinates validation, execution, dynamics updates, and
     telemetry collection without directly implementing any of these concerns.
     Each responsibility is delegated to a specialized service, enabling
     flexible composition and testing.
-    
+
     Attributes
     ----------
     _validator : ValidationService
@@ -74,17 +74,17 @@ class TNFROrchestrator:
         Service for computing ΔNFR and integrating nodal equation.
     _telemetry : TelemetryCollector
         Service for collecting metrics and traces.
-        
+
     Examples
     --------
     Create orchestrator with dependency injection:
-    
+
     >>> from tnfr.core.container import TNFRContainer
     >>> container = TNFRContainer.create_default()
     >>> orch = TNFROrchestrator.from_container(container)
-    
+
     Execute a validated sequence:
-    
+
     >>> from tnfr.structural import create_nfr
     >>> G, node = create_nfr("test", epi=1.0, vf=1.0)
     >>> orch.execute_sequence(G, node, ["emission", "coherence"])
@@ -98,7 +98,7 @@ class TNFROrchestrator:
         telemetry: TelemetryCollector,
     ):
         """Initialize orchestrator with injected services.
-        
+
         Parameters
         ----------
         validator : ValidationService
@@ -118,17 +118,17 @@ class TNFROrchestrator:
     @classmethod
     def from_container(cls, container) -> TNFROrchestrator:
         """Create orchestrator from dependency injection container.
-        
+
         Parameters
         ----------
         container : TNFRContainer
             Container with registered services.
-            
+
         Returns
         -------
         TNFROrchestrator
             Configured orchestrator instance.
-            
+
         Examples
         --------
         >>> from tnfr.core.container import TNFRContainer
@@ -158,14 +158,14 @@ class TNFROrchestrator:
         enable_telemetry: bool = False,
     ) -> None:
         """Execute operator sequence with separated responsibilities.
-        
+
         This method coordinates the full execution pipeline:
         1. Validate sequence against TNFR grammar
         2. Convert tokens to operator instances
         3. Apply each operator with telemetry (optional)
         4. Update ΔNFR after each operator
         5. Integrate nodal equation
-        
+
         Parameters
         ----------
         graph : TNFRGraph
@@ -176,29 +176,29 @@ class TNFROrchestrator:
             Operator tokens or instances to apply.
         enable_telemetry : bool, optional
             Whether to capture detailed telemetry traces. Default is False.
-            
+
         Raises
         ------
         ValueError
             When sequence validation fails or operators are unknown.
-            
+
         Examples
         --------
         Execute with string tokens:
-        
+
         >>> from tnfr.structural import create_nfr
         >>> G, n = create_nfr("node1", epi=1.0)
         >>> orch = TNFROrchestrator.from_container(container)
         >>> orch.execute_sequence(G, n, ["emission", "coherence"])
-        
+
         Execute with telemetry enabled:
-        
+
         >>> orch.execute_sequence(G, n, ["emission"], enable_telemetry=True)
         >>> # Check transitions in G.graph["_trace_transitions"]
         """
         # Convert sequence to list and extract operator tokens
         ops_list = list(sequence)
-        
+
         # Separate tokens from Operator instances
         tokens = []
         operator_instances = []
@@ -263,20 +263,20 @@ class TNFROrchestrator:
 
     def validate_only(self, sequence: list[str]) -> None:
         """Validate sequence without executing.
-        
+
         This method is useful for pre-flight checks before committing to
         execution.
-        
+
         Parameters
         ----------
         sequence : list of str
             Operator tokens to validate.
-            
+
         Raises
         ------
         ValueError
             When sequence violates grammar rules.
-            
+
         Examples
         --------
         >>> orch.validate_only(["emission", "coherence"])  # OK
@@ -286,17 +286,17 @@ class TNFROrchestrator:
 
     def get_coherence(self, graph: TNFRGraph) -> float:
         """Get current coherence C(t) from telemetry service.
-        
+
         Parameters
         ----------
         graph : TNFRGraph
             Graph to measure.
-            
+
         Returns
         -------
         float
             Current coherence value.
-            
+
         Examples
         --------
         >>> coherence = orch.get_coherence(G)
@@ -306,17 +306,17 @@ class TNFROrchestrator:
 
     def get_sense_index(self, graph: TNFRGraph) -> dict:
         """Get sense index Si from telemetry service.
-        
+
         Parameters
         ----------
         graph : TNFRGraph
             Graph to measure.
-            
+
         Returns
         -------
         dict
             Sense index metrics.
-            
+
         Examples
         --------
         >>> si_metrics = orch.get_sense_index(G)

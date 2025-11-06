@@ -18,6 +18,7 @@ from ..utils import edge_version_cache, get_numpy
 
 __all__ = ("TrigCache", "compute_theta_trig", "get_trig_cache", "_compute_trig_python")
 
+
 @dataclass(slots=True)
 class TrigCache:
     """Container for cached trigonometric values per node."""
@@ -34,6 +35,7 @@ class TrigCache:
     edge_src: Any | None = None
     edge_dst: Any | None = None
 
+
 def _iter_theta_pairs(
     nodes: Iterable[tuple[Any, NodeAttrMap | float]],
 ) -> Iterable[tuple[Any, float]]:
@@ -44,6 +46,7 @@ def _iter_theta_pairs(
             yield n, get_theta_attr(data, 0.0) or 0.0
         else:
             yield n, float(data)
+
 
 def _compute_trig_python(
     nodes: Iterable[tuple[Any, NodeAttrMap | float]],
@@ -84,6 +87,7 @@ def _compute_trig_python(
         edge_src=None,
         edge_dst=None,
     )
+
 
 def compute_theta_trig(
     nodes: Iterable[tuple[Any, NodeAttrMap | float]],
@@ -137,10 +141,12 @@ def compute_theta_trig(
         edge_dst=None,
     )
 
+
 def _build_trig_cache(G: GraphLike, np: Any | None = None) -> TrigCache:
     """Construct trigonometric cache for ``G``."""
 
     return compute_theta_trig(G.nodes(data=True), np=np)
+
 
 def get_trig_cache(
     G: GraphLike,
@@ -210,11 +216,13 @@ def get_trig_cache(
                 return trig
     return trig
 
+
 def _theta_checksum(theta: float) -> bytes:
     """Return a deterministic checksum for ``theta``."""
 
     packed = struct.pack("!d", float(theta))
     return hashlib.blake2b(packed, digest_size=8).digest()
+
 
 def _graph_theta_checksums(G: GraphLike) -> dict[Any, bytes]:
     """Return checksum snapshot of the graph's current ``θ`` values."""

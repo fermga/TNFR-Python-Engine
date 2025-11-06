@@ -9,6 +9,7 @@ from ..types import (
     TNFRGraph,
     ValidatorFunc,
 )
+
 NodeData = NodeAttrMap
 AliasSequence = Sequence[str]
 

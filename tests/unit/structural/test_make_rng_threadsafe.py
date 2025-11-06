@@ -5,6 +5,7 @@ from tnfr import rng as rng_mod
 from tnfr.constants import DEFAULTS
 from tnfr.rng import clear_rng_cache, make_rng
 
+
 def test_make_rng_thread_safety(monkeypatch):
     monkeypatch.setattr(rng_mod, "DEFAULTS", dict(DEFAULTS))
     monkeypatch.setitem(rng_mod.DEFAULTS, "JITTER_CACHE_SIZE", 4)
@@ -27,6 +28,7 @@ def test_make_rng_thread_safety(monkeypatch):
 
     assert len(results) == 20
     assert all(seq == results[0] for seq in results)
+
 
 def test_no_lock_when_cache_disabled(monkeypatch):
     monkeypatch.setattr(rng_mod, "_CACHE_MAXSIZE", 0)

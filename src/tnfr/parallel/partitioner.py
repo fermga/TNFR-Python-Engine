@@ -15,6 +15,7 @@ if TYPE_CHECKING:  # pragma: no cover
 
 try:
     import numpy as np
+
     HAS_NUMPY = True
 except ImportError:
     np = None  # type: ignore
@@ -22,6 +23,7 @@ except ImportError:
 
 try:
     from scipy.spatial import KDTree
+
     HAS_SCIPY = True
 except ImportError:
     HAS_SCIPY = False
@@ -90,9 +92,7 @@ class FractalPartitioner:
         self._kdtree = None
         self._node_index_map = None
 
-    def partition_network(
-        self, graph: TNFRGraph
-    ) -> List[Tuple[Set[Any], TNFRGraph]]:
+    def partition_network(self, graph: TNFRGraph) -> List[Tuple[Set[Any], TNFRGraph]]:
         """Partition network into coherent subgraphs.
 
         Parameters
@@ -111,7 +111,7 @@ class FractalPartitioner:
         - Communities formed by resonance (not just topology)
         - Phase coherence preserved within partitions
         - Frequency alignment respected
-        
+
         Uses spatial indexing for O(n log n) complexity when available.
         Adapts partition size based on network density when adaptive=True.
         """
@@ -159,21 +159,21 @@ class FractalPartitioner:
 
     def _compute_adaptive_partition_size(self, graph: TNFRGraph) -> int:
         """Compute optimal partition size based on network characteristics.
-        
+
         Adapts partition size based on:
         - Network density (sparse vs dense)
         - Clustering coefficient (community structure)
         - Total network size
-        
+
         Returns
         -------
         int
             Recommended partition size for this network
         """
         import networkx as nx
-        
+
         n_nodes = len(graph)
-        
+
         # Base size from configuration or defaults
         if self.max_partition_size:
             base_size = self.max_partition_size
@@ -185,10 +185,10 @@ class FractalPartitioner:
                 base_size = 100
             else:
                 base_size = 200
-        
+
         # Adjust based on density
         density = nx.density(graph)
-        
+
         if density > 0.5:
             # Dense networks: smaller partitions reduce communication overhead
             size_multiplier = 0.5
@@ -198,7 +198,7 @@ class FractalPartitioner:
         else:
             # Sparse networks: larger partitions okay
             size_multiplier = 1.5
-        
+
         # Adjust based on clustering
         try:
             avg_clustering = nx.average_clustering(graph)
@@ -211,46 +211,52 @@ class FractalPartitioner:
         except:
             # If clustering calculation fails, skip adjustment
             pass
-        
+
         adapted_size = int(base_size * size_multiplier)
         # Ensure reasonable bounds
         return max(10, min(adapted_size, 500))
 
     def _build_spatial_index(self, graph: TNFRGraph) -> None:
         """Build KDTree spatial index for O(n log n) neighbor finding.
-        
+
         Constructs a 2D spatial index using (νf, phase) coordinates
         to enable fast nearest-neighbor queries.
         """
         if not HAS_SCIPY or not HAS_NUMPY:
             return
-        
+
         nodes = list(graph.nodes())
         if len(nodes) == 0:
             return
-        
+
         # Extract νf and phase coordinates
-        def _get_node_attr(node_id: Any, alias: tuple, fallback_key: str, default: float) -> float:
+        def _get_node_attr(
+            node_id: Any, alias: tuple, fallback_key: str, default: float
+        ) -> float:
             """Get node attribute via TNFR alias or direct access."""
-            return float(get_attr(graph.nodes[node_id], alias, None) or 
-                        graph.nodes[node_id].get(fallback_key, default))
-        
-        coords = np.array([
+            return float(
+                get_attr(graph.nodes[node_id], alias, None)
+                or graph.nodes[node_id].get(fallback_key, default)
+            )
+
+        coords = np.array(
             [
-                _get_node_attr(node, ALIAS_VF, "vf", 1.0),
-                _get_node_attr(node, ALIAS_THETA, "phase", 0.0)
+                [
+                    _get_node_attr(node, ALIAS_VF, "vf", 1.0),
+                    _get_node_attr(node, ALIAS_THETA, "phase", 0.0),
+                ]
+                for node in nodes
             ]
-            for node in nodes
-        ])
-        
+        )
+
         # Normalize coordinates for better distance metrics
         # νf: normalize by mean
         if coords[:, 0].std() > 0:
             coords[:, 0] = (coords[:, 0] - coords[:, 0].mean()) / coords[:, 0].std()
-        
+
         # phase: wrap to [-π, π] for periodicity
         coords[:, 1] = np.arctan2(np.sin(coords[:, 1]), np.cos(coords[:, 1]))
-        
+
         # Build KDTree
         self._kdtree = KDTree(coords)
         self._node_index_map = {i: node for i, node in enumerate(nodes)}
@@ -259,9 +265,9 @@ class FractalPartitioner:
         self, graph: TNFRGraph, seed: Any, available: Set[Any], k: int = 20
     ) -> List[Any]:
         """Find k nearest coherent neighbors using spatial index.
-        
+
         Uses KDTree for O(log n) nearest neighbor finding instead of O(n).
-        
+
         Parameters
         ----------
         graph : TNFRGraph
@@ -272,7 +278,7 @@ class FractalPartitioner:
             Available nodes to consider
         k : int
             Number of nearest neighbors to find
-            
+
         Returns
         -------
         List[Any]
@@ -281,23 +287,22 @@ class FractalPartitioner:
         if self._kdtree is None or self._node_index_map is None:
             # Fallback to graph neighbors
             return list(set(graph.neighbors(seed)) & available)
-        
+
         # Find seed index
         seed_idx = None
         for idx, node in self._node_index_map.items():
             if node == seed:
                 seed_idx = idx
                 break
-        
+
         if seed_idx is None:
             return []
-        
+
         # Query k nearest neighbors (k+1 to exclude seed itself)
         distances, indices = self._kdtree.query(
-            self._kdtree.data[seed_idx], 
-            k=min(k + 1, len(self._node_index_map))
+            self._kdtree.data[seed_idx], k=min(k + 1, len(self._node_index_map))
         )
-        
+
         # Filter to available nodes and exclude seed
         neighbors = []
         for idx in indices:
@@ -306,7 +311,7 @@ class FractalPartitioner:
             node = self._node_index_map[idx]
             if node in available:
                 neighbors.append(node)
-        
+
         return neighbors
 
     def _detect_tnfr_communities(self, graph: TNFRGraph) -> List[Set[Any]]:
@@ -345,19 +350,19 @@ class FractalPartitioner:
         -------
         Set[Any]
             Set of nodes forming a coherent community
-            
+
         Notes
         -----
         Uses spatial indexing for O(log n) neighbor finding when available,
         falling back to O(n) graph neighbors otherwise.
         """
         community = {seed}
-        
+
         # Use spatial index if available for faster neighbor finding
         if self.use_spatial_index and self._kdtree is not None:
-            candidates = set(self._find_coherent_neighbors_spatial(
-                graph, seed, available, k=50
-            ))
+            candidates = set(
+                self._find_coherent_neighbors_spatial(graph, seed, available, k=50)
+            )
         else:
             neighbors = graph.neighbors(seed)
             candidates = set(neighbors) & available
@@ -379,15 +384,17 @@ class FractalPartitioner:
             if best_coherence > self.coherence_threshold:
                 community.add(best_candidate)
                 candidates.remove(best_candidate)
-                
+
                 # Add new neighbors as candidates
                 if self.use_spatial_index and self._kdtree is not None:
-                    new_neighbors = set(self._find_coherent_neighbors_spatial(
-                        graph, best_candidate, available, k=50
-                    ))
+                    new_neighbors = set(
+                        self._find_coherent_neighbors_spatial(
+                            graph, best_candidate, available, k=50
+                        )
+                    )
                 else:
                     new_neighbors = set(graph.neighbors(best_candidate)) & available
-                    
+
                 candidates.update(new_neighbors - community)
             else:
                 break  # No more coherent candidates
@@ -418,10 +425,14 @@ class FractalPartitioner:
         if not community:
             return 0.0
 
-        def _get_node_attr(node_id: Any, alias: tuple, fallback_key: str, default: float) -> float:
+        def _get_node_attr(
+            node_id: Any, alias: tuple, fallback_key: str, default: float
+        ) -> float:
             """Get node attribute via TNFR alias or direct access."""
-            return float(get_attr(graph.nodes[node_id], alias, None) or 
-                        graph.nodes[node_id].get(fallback_key, default))
+            return float(
+                get_attr(graph.nodes[node_id], alias, None)
+                or graph.nodes[node_id].get(fallback_key, default)
+            )
 
         candidate_vf = _get_node_attr(candidate, ALIAS_VF, "vf", 1.0)
         candidate_phase = _get_node_attr(candidate, ALIAS_THETA, "phase", 0.0)

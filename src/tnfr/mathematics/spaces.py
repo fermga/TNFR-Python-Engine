@@ -1,4 +1,5 @@
 """Mathematical spaces supporting the TNFR canonical paradigm."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -7,6 +8,7 @@ from typing import Callable, Sequence
 import numpy as np
 
 from .epi import BEPIElement, _EPIValidators
+
 
 @dataclass(frozen=True)
 class HilbertSpace:
@@ -41,7 +43,9 @@ class HilbertSpace:
         return vector
 
     def inner_product(
-        self, vector_a: Sequence[complex] | np.ndarray, vector_b: Sequence[complex] | np.ndarray
+        self,
+        vector_a: Sequence[complex] | np.ndarray,
+        vector_b: Sequence[complex] | np.ndarray,
     ) -> complex:
         """Compute the sesquilinear inner product ``⟨a, b⟩``."""
 
@@ -63,7 +67,9 @@ class HilbertSpace:
 
         return np.isclose(self.norm(vector), 1.0, atol=atol)
 
-    def _validate_basis(self, basis: Sequence[Sequence[complex] | np.ndarray]) -> np.ndarray:
+    def _validate_basis(
+        self, basis: Sequence[Sequence[complex] | np.ndarray]
+    ) -> np.ndarray:
         basis_list = list(basis)
         if len(basis_list) == 0:
             raise ValueError("An orthonormal basis must contain at least one vector.")
@@ -90,6 +96,7 @@ class HilbertSpace:
         basis_matrix = self._validate_basis(basis)
         coefficients = basis_matrix.conj() @ vec
         return coefficients.astype(self.dtype, copy=False)
+
 
 class BanachSpaceEPI(_EPIValidators):
     r"""Banach space for :math:`C^0([0, 1],\mathbb{C}) \oplus \ell^2(\mathbb{N})`.
@@ -193,7 +200,9 @@ class BanachSpaceEPI(_EPIValidators):
         """Compute the tensor product against a :class:`HilbertSpace` vector."""
 
         raw_vector = hilbert_space.basis[0] if vector is None else vector
-        hilbert_vector = hilbert_space._as_vector(raw_vector)  # pylint: disable=protected-access
+        hilbert_vector = hilbert_space._as_vector(
+            raw_vector
+        )  # pylint: disable=protected-access
         return element.tensor(hilbert_vector)
 
     def compute_coherence_functional(
@@ -203,7 +212,9 @@ class BanachSpaceEPI(_EPIValidators):
     ) -> float:
         r"""Approximate :math:`\int |f'|^2 dx / (1 + \int |f|^2 dx)`."""
 
-        f_array, _, grid = self.validate_domain(f_continuous, np.array([0.0], dtype=np.complex128), x_grid)
+        f_array, _, grid = self.validate_domain(
+            f_continuous, np.array([0.0], dtype=np.complex128), x_grid
+        )
         if grid is None:
             raise ValueError("x_grid must be provided for coherence evaluations.")
 

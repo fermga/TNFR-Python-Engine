@@ -17,8 +17,10 @@ from tnfr.utils.io import StructuredFileError
 
 yaml = pytest.importorskip("yaml")
 
+
 def _step_noop(G):
     G.graph["_t"] = G.graph.get("_t", 0.0) + 1.0
+
 
 def test_play_unknown_operation_raises(monkeypatch, graph_canon):
     monkeypatch.delitem(HANDLERS, OpTag.GLYPH, raising=False)
@@ -28,6 +30,7 @@ def test_play_unknown_operation_raises(monkeypatch, graph_canon):
 
     with pytest.raises(ValueError, match="Unknown operation"):
         play(G, seq(Glyph.AL), step_fn=_step_noop)
+
 
 def test_play_uses_default_step(monkeypatch, graph_canon):
     G = graph_canon()
@@ -49,12 +52,15 @@ def test_play_uses_default_step(monkeypatch, graph_canon):
 
     play(G, program)
 
-    expected_steps = sum(payload if op is OpTag.WAIT else 1 for op, payload in flattened)
+    expected_steps = sum(
+        payload if op is OpTag.WAIT else 1 for op, payload in flattened
+    )
     assert len(calls) == expected_steps
 
     trace = list(G.graph["history"]["program_trace"])
     assert [entry["op"] for entry in trace] == [OpTag.GLYPH.name]
     assert trace[0]["g"] == Glyph.AL.value
+
 
 def test_play_records_program_trace_with_block_and_wait(graph_canon):
     G = graph_canon()
@@ -66,6 +72,7 @@ def test_play_records_program_trace_with_block_and_wait(graph_canon):
     assert [e["op"] for e in trace] == ["GLYPH", "WAIT", "THOL", "GLYPH", "GLYPH"]
     assert trace[2]["g"] == Glyph.THOL.value
     assert trace[4]["g"] == Glyph.NUL.value  # Auto-close glyph
+
 
 def test_play_records_progressive_time_with_custom_step(graph_canon):
     G = graph_canon()
@@ -88,6 +95,7 @@ def test_play_records_progressive_time_with_custom_step(graph_canon):
 
     assert len(invocation_times) == 4
     assert invocation_times == pytest.approx([delta, delta * 2, delta * 3, delta * 4])
+
 
 @pytest.mark.parametrize(
     "seed",
@@ -131,6 +139,7 @@ def test_play_normalizes_program_trace_container(graph_canon, seed):
     expected_legacy_tail = preserved[-preserve_count:]
     assert trace_items[:preserve_count] == expected_legacy_tail
 
+
 def test_play_reuses_existing_program_trace(graph_canon):
     G = graph_canon()
     G.add_node(1)
@@ -155,6 +164,7 @@ def test_play_reuses_existing_program_trace(graph_canon):
     suffix_length = min(len(ops), len(expected_ops))
     assert ops[-suffix_length:] == expected_ops[-suffix_length:]
 
+
 def test_wait_logs_sanitized_steps(graph_canon):
     G = graph_canon()
     G.add_node(1)
@@ -162,6 +172,7 @@ def test_wait_logs_sanitized_steps(graph_canon):
     trace = G.graph["history"]["program_trace"]
     assert [e["op"] for e in trace] == ["WAIT"]
     assert trace[0]["k"] == 1
+
 
 def test_wait_clamps_non_positive_steps():
     zero_wait = wait(0)
@@ -171,6 +182,7 @@ def test_wait_clamps_non_positive_steps():
     assert zero_wait.steps == 1
     assert negative_wait.steps == 1
     assert positive_wait.steps == 2
+
 
 def test_flatten_wait_sanitizes_steps(monkeypatch):
     program = seq(WAIT(-2.5), WAIT(2.4))
@@ -194,6 +206,7 @@ def test_flatten_wait_sanitizes_steps(monkeypatch):
     assert len(calls) == 1
     assert not isinstance(calls[0], Collection)
 
+
 def test_flatten_accepts_wait_subclass():
     class CustomWait(WAIT):
         pass
@@ -202,9 +215,11 @@ def test_flatten_accepts_wait_subclass():
     ops = compile_sequence(program)
     assert ops == [(OpTag.WAIT, 3)]
 
+
 def test_compile_sequence_rejects_non_iterable():
     with pytest.raises(TypeError, match="is not iterable"):
         compile_sequence(object())
+
 
 def test_compile_sequence_emits_thol_force_close_sha():
     program = [THOL(body=[Glyph.AL], force_close=Glyph.SHA)]
@@ -212,10 +227,11 @@ def test_compile_sequence_emits_thol_force_close_sha():
     assert ops[0] == (OpTag.THOL, Glyph.THOL.value)
     assert ops[-1] == (OpTag.GLYPH, Glyph.SHA.value)
 
+
 def test_play_handles_deeply_nested_blocks(graph_canon):
     G = graph_canon()
     G.add_node(1)
-    
+
     # Disable repeat checking to allow deeply nested THOL blocks
     # This test is focused on recursion handling, not grammar compliance
     grammar_cfg = G.graph.setdefault("GRAMMAR", {})
@@ -243,6 +259,7 @@ def test_play_handles_deeply_nested_blocks(graph_canon):
     # All entries in the trace should be glyphs (NUL) since there are more closures than maxlen
     assert all(entry.get("g") == Glyph.NUL.value for entry in trace)
 
+
 def test_target_persists_across_wait(graph_canon):
     G = graph_canon()
     G.add_nodes_from([1, 2])
@@ -258,6 +275,7 @@ def test_target_persists_across_wait(graph_canon):
     assert list(G.nodes[1]["glyph_history"]) == [Glyph.AL.value]
     assert list(G.nodes[2]["glyph_history"]) == [Glyph.AL.value]
 
+
 def test_target_empty_selection_records_zero_count(graph_canon):
     G = graph_canon()
     G.add_nodes_from([1, 2, 3])
@@ -272,6 +290,7 @@ def test_target_empty_selection_records_zero_count(graph_canon):
         history = G.nodes[node].get("glyph_history")
         if history is not None:
             assert list(history) == []
+
 
 def test_target_generator_materializes_selection(graph_canon):
     G = graph_canon()
@@ -290,6 +309,7 @@ def test_target_generator_materializes_selection(graph_canon):
     assert list(G.nodes["n2"]["glyph_history"]) == [Glyph.AL.value]
     assert "glyph_history" not in G.nodes["n3"]
 
+
 @pytest.mark.parametrize(
     "exc_factory",
     [
@@ -303,7 +323,9 @@ def test_target_generator_materializes_selection(graph_canon):
         ),
     ],
 )
-def test_load_sequence_errors_raise_system_exit(monkeypatch, caplog, tmp_path, exc_factory):
+def test_load_sequence_errors_raise_system_exit(
+    monkeypatch, caplog, tmp_path, exc_factory
+):
     target_path = tmp_path / "program.yaml"
     target_path.write_text("[]", encoding="utf-8")
 
@@ -329,6 +351,7 @@ def test_load_sequence_errors_raise_system_exit(monkeypatch, caplog, tmp_path, e
     logged_messages = [record.getMessage() for record in caplog.records]
     assert expected_message in logged_messages
 
+
 def test_target_accepts_string(graph_canon):
     G = graph_canon()
     # Add nodes that would be mistakenly targeted if the string were iterated
@@ -337,6 +360,7 @@ def test_target_accepts_string(graph_canon):
     assert list(G.nodes["node1"]["glyph_history"]) == [Glyph.AL.value]
     for c in "node1":
         assert "glyph_history" not in G.nodes[c]
+
 
 def test_target_accepts_bytes(graph_canon):
     G = graph_canon()
@@ -348,6 +372,7 @@ def test_target_accepts_bytes(graph_canon):
     for code in codes:
         assert "glyph_history" not in G.nodes[code]
 
+
 def test_handle_target_reuses_sequence(graph_canon):
     G = graph_canon()
     G.add_nodes_from([1, 2])
@@ -357,6 +382,7 @@ def test_handle_target_reuses_sequence(graph_canon):
     curr = handler(G, TARGET(nodes), None, trace, _step_noop)
     assert curr is nodes
 
+
 def test_handle_target_materializes_non_sequence(graph_canon):
     G = graph_canon()
     G.add_nodes_from([1, 2])
@@ -365,6 +391,7 @@ def test_handle_target_materializes_non_sequence(graph_canon):
     handler = HANDLERS[OpTag.TARGET]
     curr = handler(G, TARGET(nodes_view), None, trace, _step_noop)
     assert isinstance(curr, tuple)
+
 
 def test_handle_thol_none_payload_records_fallback(graph_canon):
     G = graph_canon()
@@ -379,6 +406,7 @@ def test_handle_thol_none_payload_records_fallback(graph_canon):
     entry = trace[0]
     assert entry["op"] == OpTag.THOL.name
     assert entry["g"] == Glyph.THOL.value
+
 
 def test_load_sequence_json_yaml(tmp_path):
     data = [
@@ -397,6 +425,7 @@ def test_load_sequence_json_yaml(tmp_path):
     assert _load_sequence(jpath) == expected
     assert _load_sequence(ypath) == expected
 
+
 def test_load_sequence_repeated_calls(tmp_path):
     data = [
         "AL",
@@ -411,6 +440,7 @@ def test_load_sequence_repeated_calls(tmp_path):
     for _ in range(5):
         assert _load_sequence(path) == expected
 
+
 @pytest.mark.parametrize("bad", ["SHA", 123])
 def test_block_force_close_invalid_type_raises(graph_canon, bad):
     G = graph_canon()
@@ -418,6 +448,7 @@ def test_block_force_close_invalid_type_raises(graph_canon, bad):
     program = seq(block(Glyph.AL, close=bad))
     with pytest.raises(ValueError):
         play(G, program, step_fn=_step_noop)
+
 
 def test_flatten_nested_blocks_preserves_order():
     program = seq(
@@ -443,6 +474,7 @@ def test_flatten_nested_blocks_preserves_order():
     ]
     assert ops == expected
 
+
 class NoReverseSeq(Sequence):
     def __init__(self, data):
         self._data = data
@@ -453,10 +485,12 @@ class NoReverseSeq(Sequence):
     def __getitem__(self, idx):
         return self._data[idx]
 
+
 def test_flatten_accepts_sequence_without_reversed():
     program = NoReverseSeq([Glyph.AL, Glyph.OZ])
     ops = compile_sequence(program)
     assert ops == [(OpTag.GLYPH, Glyph.AL.value), (OpTag.GLYPH, Glyph.OZ.value)]
+
 
 def test_flatten_plain_sequence_skips_materialization(monkeypatch):
     # Test that plain sequences compile correctly
@@ -467,6 +501,7 @@ def test_flatten_plain_sequence_skips_materialization(monkeypatch):
         (OpTag.GLYPH, Glyph.RA.value),
     ]
 
+
 def test_flatten_enforces_limit_for_iterables():
     def token_stream():
         yield Glyph.AL
@@ -476,6 +511,7 @@ def test_flatten_enforces_limit_for_iterables():
 
     with pytest.raises(ValueError, match=r"Iterable produced 4 items, exceeds limit 3"):
         compile_sequence(token_stream(), max_materialize=3)
+
 
 def test_compile_sequence_zero_materialize_stops_iteration():
     events: list[str] = []
@@ -489,6 +525,7 @@ def test_compile_sequence_zero_materialize_stops_iteration():
     assert ops == []
     assert events == []
 
+
 def test_parse_program_tokens_handles_empty_iterable():
     def token_stream():
         if False:
@@ -496,6 +533,7 @@ def test_parse_program_tokens_handles_empty_iterable():
 
     tokens = flatten_module.parse_program_tokens(token_stream(), max_materialize=3)
     assert tokens == []
+
 
 def test_parse_program_tokens_enforces_limit_for_iterables():
     def token_stream():
@@ -507,9 +545,11 @@ def test_parse_program_tokens_enforces_limit_for_iterables():
     with pytest.raises(ValueError, match=r"Iterable produced 4 items, exceeds limit 3"):
         flatten_module.parse_program_tokens(token_stream(), max_materialize=3)
 
+
 def test_thol_repeat_lt_one_raises():
     with pytest.raises(ValueError, match="repeat must be ≥1"):
         compile_sequence([THOL(body=[], repeat=0)])
+
 
 def test_flatten_rejects_unsupported_token_type():
     class CustomTarget(TARGET):
@@ -521,6 +561,7 @@ def test_flatten_rejects_unsupported_token_type():
 
     with pytest.raises(TypeError, match="Unsupported token"):
         compile_sequence([object()])
+
 
 def test_thol_evaluator_multiple_repeats():
     ops = compile_sequence([THOL(body=[Glyph.AL, Glyph.RA], repeat=3)])
@@ -538,10 +579,12 @@ def test_thol_evaluator_multiple_repeats():
         (OpTag.GLYPH, Glyph.NUL.value),  # Auto-close after third repeat
     ]
 
+
 def test_thol_evaluator_body_limit_error_message():
     body = (Glyph.AL for _ in range(5))
     with pytest.raises(ValueError, match="THOL body exceeds max_materialize=3"):
         compile_sequence([THOL(body=body)], max_materialize=3)
+
 
 def test_thol_recursive_expansion():
     inner = THOL(body=[Glyph.RA], repeat=2)
@@ -560,9 +603,11 @@ def test_thol_recursive_expansion():
         (OpTag.GLYPH, Glyph.NUL.value),  # Auto-close for outer block
     ]
 
+
 def test_compile_sequence_rejects_noncanonical_glyph():
     with pytest.raises(ValueError, match="Non-canonical glyph"):
         compile_sequence(["NOT_CANON"])
+
 
 @pytest.mark.parametrize(
     "bad, message",

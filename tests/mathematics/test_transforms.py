@@ -10,6 +10,7 @@ np = pytest.importorskip("numpy")
 
 from tnfr.mathematics import BEPIElement, evaluate_coherence_transform, transforms
 
+
 @pytest.mark.parametrize(
     "callable_obj",
     [
@@ -34,12 +35,14 @@ def test_contracts_pending_implementation(callable_obj: Callable[..., object]) -
     for fragment in ("phase", "2"):
         assert fragment in message
 
+
 def test_ensure_coherence_monotonicity_accepts_increasing_values() -> None:
     report = transforms.ensure_coherence_monotonicity([0.5, 0.6, 0.8])
 
     assert report.is_monotonic
     assert report.violations == ()
     assert tuple(report.coherence_values) == (0.5, 0.6, 0.8)
+
 
 def test_ensure_coherence_monotonicity_processes_bepi_sequence() -> None:
     grid = np.linspace(0.0, 1.0, 4)
@@ -59,9 +62,14 @@ def test_ensure_coherence_monotonicity_processes_bepi_sequence() -> None:
     assert len(report.coherence_values) == 3
     assert report.coherence_values[0] < report.coherence_values[-1]
 
-def test_ensure_coherence_monotonicity_detects_drop_and_logs(caplog: pytest.LogCaptureFixture) -> None:
+
+def test_ensure_coherence_monotonicity_detects_drop_and_logs(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
     with caplog.at_level("WARNING"):
-        report = transforms.ensure_coherence_monotonicity([1.0, 0.92, 0.95], tolerated_drop=0.03)
+        report = transforms.ensure_coherence_monotonicity(
+            [1.0, 0.92, 0.95], tolerated_drop=0.03
+        )
 
     assert not report.is_monotonic
     assert report.violations
@@ -70,11 +78,15 @@ def test_ensure_coherence_monotonicity_detects_drop_and_logs(caplog: pytest.LogC
     assert first.drop == pytest.approx(0.08)
     assert "coherence drop" in caplog.text.lower()
 
+
 def test_ensure_coherence_monotonicity_flags_plateau_when_forbidden() -> None:
-    report = transforms.ensure_coherence_monotonicity([1.0, 1.0, 1.02], allow_plateaus=False)
+    report = transforms.ensure_coherence_monotonicity(
+        [1.0, 1.0, 1.02], allow_plateaus=False
+    )
 
     assert not report.is_monotonic
     assert report.violations[0].kind == "plateau"
+
 
 def test_coherence_transform_evaluator_validates_kappa() -> None:
     grid = np.linspace(0.0, 1.0, 4)
@@ -92,9 +104,13 @@ def test_coherence_transform_evaluator_validates_kappa() -> None:
     assert result.coherence_after >= result.coherence_before
 
     ratio = result.ratio
-    failing = evaluate_coherence_transform(element, lift, kappa=ratio + 1e-6, tolerance=0.0)
+    failing = evaluate_coherence_transform(
+        element, lift, kappa=ratio + 1e-6, tolerance=0.0
+    )
     assert not failing.satisfied
     assert failing.deficit > 0
 
-    forgiving = evaluate_coherence_transform(element, lift, kappa=ratio + 1e-6, tolerance=1e-3)
+    forgiving = evaluate_coherence_transform(
+        element, lift, kappa=ratio + 1e-6, tolerance=1e-3
+    )
     assert forgiving.satisfied

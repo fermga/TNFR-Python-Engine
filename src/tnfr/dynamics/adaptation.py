@@ -16,6 +16,7 @@ from .aliases import ALIAS_DNFR, ALIAS_SI, ALIAS_VF
 
 __all__ = ("adapt_vf_by_coherence",)
 
+
 def _vf_adapt_chunk(
     args: tuple[list[tuple[Any, int, tuple[int, ...]]], tuple[float, ...], float],
 ) -> list[tuple[Any, float]]:
@@ -31,6 +32,7 @@ def _vf_adapt_chunk(
             mean = vf
         updates.append((node, vf + mu * (mean - vf)))
     return updates
+
 
 def adapt_vf_by_coherence(G: TNFRGraph, n_jobs: int | None = None) -> None:
     """Synchronise νf to the neighbour mean once ΔNFR and Si stay coherent.

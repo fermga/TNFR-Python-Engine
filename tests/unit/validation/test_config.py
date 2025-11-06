@@ -4,7 +4,12 @@ import math
 
 import pytest
 
-from tnfr.validation import InvariantSeverity, ValidationConfig, configure_validation, validation_config
+from tnfr.validation import (
+    InvariantSeverity,
+    ValidationConfig,
+    configure_validation,
+    validation_config,
+)
 
 
 class TestValidationConfig:
@@ -46,7 +51,9 @@ class TestValidationConfig:
             )
 
             assert validation_config.validate_invariants == (not original_invariants)
-            assert validation_config.enable_semantic_validation == (not original_semantic)
+            assert validation_config.enable_semantic_validation == (
+                not original_semantic
+            )
         finally:
             # Restore original values
             configure_validation(

@@ -23,8 +23,10 @@ from tnfr.structural import Dissonance, create_nfr, run_sequence
 from tnfr.types import Glyph
 from tnfr.utils import angle_diff
 
+
 def test_glyph_operations_complete():
     assert set(operators.GLYPH_OPERATIONS) == set(Glyph)
+
 
 def test_dissonance_operator_increases_dnfr_and_tracks_phase(
     monkeypatch: pytest.MonkeyPatch,
@@ -80,6 +82,7 @@ def test_dissonance_operator_increases_dnfr_and_tracks_phase(
     assert history is not None and history
     assert Glyph(history[-1]) == Glyph.OZ
 
+
 def test_random_jitter_deterministic(graph_canon):
     reset_jitter_manager()
     G = graph_canon()
@@ -96,6 +99,7 @@ def test_random_jitter_deterministic(graph_canon):
     j4 = random_jitter(n0, 0.5)
     assert [j3, j4] == [j1, j2]
 
+
 def test_random_jitter_missing_nodenx(monkeypatch):
     reset_jitter_manager()
     node = SimpleNamespace(G=SimpleNamespace(graph={}))
@@ -107,6 +111,7 @@ def test_random_jitter_missing_nodenx(monkeypatch):
         random_jitter(node, 0.1)
 
     assert not hasattr(node, "_noise_uid")
+
 
 def test_jitter_cache_metrics(graph_canon):
     reset_jitter_manager()
@@ -125,11 +130,13 @@ def test_jitter_cache_metrics(graph_canon):
     assert after.misses - before.misses == 1
     assert after.hits - before.hits == 1
 
+
 def test_random_jitter_zero_amplitude(graph_canon):
     G = graph_canon()
     G.add_node(0)
     n0 = NodeNX(G, 0)
     assert random_jitter(n0, 0.0) == 0.0
+
 
 def test_random_jitter_negative_amplitude(graph_canon):
     G = graph_canon()
@@ -137,6 +144,7 @@ def test_random_jitter_negative_amplitude(graph_canon):
     n0 = NodeNX(G, 0)
     with pytest.raises(ValueError):
         random_jitter(n0, -0.1)
+
 
 def test_rng_cache_disabled_with_size_zero(graph_canon):
     from tnfr.constants import DEFAULTS
@@ -152,6 +160,7 @@ def test_rng_cache_disabled_with_size_zero(graph_canon):
     assert j1 == j2
     set_cache_maxsize(DEFAULTS["JITTER_CACHE_SIZE"])
 
+
 def test_jitter_seq_purges_old_entries():
     reset_jitter_manager()
     manager = operators.get_jitter_manager()
@@ -164,6 +173,7 @@ def test_jitter_seq_purges_old_entries():
     assert len(manager.seq) == 4
     assert first_key not in manager.seq
 
+
 def test_jitter_manager_respects_custom_max_entries():
     reset_jitter_manager()
     manager = operators.get_jitter_manager()
@@ -172,6 +182,7 @@ def test_jitter_manager_respects_custom_max_entries():
     manager.setup(force=True)
     assert manager.settings["max_entries"] == 8
 
+
 def test_jitter_manager_setup_override_size():
     reset_jitter_manager()
     manager = operators.get_jitter_manager()
@@ -179,6 +190,7 @@ def test_jitter_manager_setup_override_size():
     assert manager.settings["max_entries"] == 5
     manager.setup(max_entries=7)
     assert manager.settings["max_entries"] == 7
+
 
 def test_jitter_manager_clear_resets_state():
     reset_jitter_manager()
@@ -190,6 +202,7 @@ def test_jitter_manager_clear_resets_state():
     assert len(manager.seq) == 3
     manager.clear()
     assert len(manager.seq) == 0
+
 
 def test_get_neighbor_epi_without_graph_preserves_state():
     neigh = [
@@ -203,6 +216,7 @@ def test_get_neighbor_epi_without_graph_preserves_state():
     assert result == neigh
     assert epi_bar == pytest.approx(3.0)
     assert node.EPI == pytest.approx(1.0)
+
 
 def test_get_neighbor_epi_with_graph_returns_wrapped_nodes(graph_canon):
     G = graph_canon()
@@ -220,6 +234,7 @@ def test_get_neighbor_epi_with_graph_returns_wrapped_nodes(graph_canon):
     assert epi_bar == pytest.approx(3.0)
     assert node.EPI == pytest.approx(1.0)
 
+
 def test_get_neighbor_epi_no_neighbors_returns_defaults(graph_canon):
     G = graph_canon()
     G.add_node(0, EPI=1.5)
@@ -230,6 +245,7 @@ def test_get_neighbor_epi_no_neighbors_returns_defaults(graph_canon):
     assert neighbors == []
     assert epi_bar == pytest.approx(1.5)
     assert node.EPI == pytest.approx(1.5)
+
 
 def test_get_neighbor_epi_without_epi_alias_returns_empty(graph_canon):
     G = graph_canon()
@@ -243,6 +259,7 @@ def test_get_neighbor_epi_without_epi_alias_returns_empty(graph_canon):
     assert neighbors == []
     assert epi_bar == pytest.approx(2.0)
     assert node.EPI == pytest.approx(2.0)
+
 
 def test_um_candidate_subset_proximity(graph_canon):
     G = graph_canon()
@@ -260,6 +277,7 @@ def test_um_candidate_subset_proximity(graph_canon):
     assert G.has_edge(0, 1)
     assert G.has_edge(0, 2)
     assert not G.has_edge(0, 3)
+
 
 def test_um_candidate_iter_missing_nodenx(monkeypatch):
     class DummyNode:
@@ -279,6 +297,7 @@ def test_um_candidate_iter_missing_nodenx(monkeypatch):
     with pytest.raises(ImportError, match="NodeNX is unavailable"):
         list(_um_candidate_iter(node))
 
+
 def test_mix_epi_with_neighbors_prefers_higher_epi():
     neigh = [
         SimpleNamespace(EPI=-3.0, epi_kind="n1"),
@@ -291,6 +310,7 @@ def test_mix_epi_with_neighbors_prefers_higher_epi():
     assert dominant == "n1"
     assert node.epi_kind == "n1"
 
+
 def test_mix_epi_with_neighbors_returns_node_kind_on_tie():
     neigh = [SimpleNamespace(EPI=1.0, epi_kind="n1")]
     node = SimpleNamespace(EPI=1.0, epi_kind="self", neighbors=lambda: neigh)
@@ -300,6 +320,7 @@ def test_mix_epi_with_neighbors_returns_node_kind_on_tie():
     assert dominant == "self"
     assert node.epi_kind == "self"
 
+
 def test_mix_epi_with_neighbors_no_neighbors():
     node = SimpleNamespace(EPI=1.0, epi_kind="self", neighbors=lambda: [])
     epi_bar, dominant = _mix_epi_with_neighbors(node, 0.25, "EN")
@@ -307,6 +328,7 @@ def test_mix_epi_with_neighbors_no_neighbors():
     assert node.EPI == pytest.approx(1.0)
     assert dominant == "EN"
     assert node.epi_kind == "EN"
+
 
 def test_um_coupling_wraps_phases_near_pi_boundary(graph_canon):
     G = graph_canon()

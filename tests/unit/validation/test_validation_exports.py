@@ -36,4 +36,6 @@ def test_validation_all_includes_runtime_exports() -> None:
     assert not missing, f"validation exports missing: {sorted(missing)}"
 
     for name in expected_exports:
-        assert hasattr(validation, name), f"{name} should be accessible on tnfr.validation"
+        assert hasattr(
+            validation, name
+        ), f"{name} should be accessible on tnfr.validation"

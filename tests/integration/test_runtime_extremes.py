@@ -16,6 +16,7 @@ from tnfr.glyph_history import ensure_history
 from tnfr.metrics import register_metrics_callbacks
 from tnfr.structural import create_nfr
 
+
 class _FixedStepIntegrator(integrators.AbstractIntegrator):
     """Integrator that advances time deterministically without altering EPI."""
 
@@ -48,6 +49,7 @@ class _FixedStepIntegrator(integrators.AbstractIntegrator):
 
         graph.graph["_t"] = current_t + dt_step
 
+
 def _stable_delta(graph, *, n_jobs=None):
     """ΔNFR hook that keeps nodal derivatives near zero for stability."""
 
@@ -59,6 +61,7 @@ def _stable_delta(graph, *, n_jobs=None):
         set_attr(data, alias_depi, 0.0)
         set_attr(data, ALIAS_SI, 0.98)
         set_attr(data, ALIAS_VF, float(get_attr(data, ALIAS_VF, 1.0)))
+
 
 def test_runtime_run_triggers_remesh_and_stop_early():
     """Runtime should remesh once and honour STOP_EARLY gating with telemetry."""
@@ -72,12 +75,14 @@ def test_runtime_run_triggers_remesh_and_stop_early():
     G.graph["HISTORY_MAXLEN"] = 0
     G.graph.setdefault("GLYPH_FACTORS", {}).pop("REMESH_alpha", None)
     metrics_cfg = G.graph.setdefault("METRICS", {})
-    metrics_cfg.update({
-        "enabled": True,
-        "verbosity": "detailed",
-        "attach_coherence_hooks": True,
-        "attach_diagnosis_hooks": False,
-    })
+    metrics_cfg.update(
+        {
+            "enabled": True,
+            "verbosity": "detailed",
+            "attach_coherence_hooks": True,
+            "attach_diagnosis_hooks": False,
+        }
+    )
 
     nodes: list[str] = []
     for idx in range(4):
@@ -131,7 +136,9 @@ def test_runtime_run_triggers_remesh_and_stop_early():
     assert integrator.calls == 3, "STOP_EARLY should halt after the stability window"
     assert len(hist.get("C_steps", [])) == integrator.calls
     assert len(hist.get("stable_frac", [])) == stable_seed_len + integrator.calls
-    assert hist["stable_frac"][-integrator.calls:] == pytest.approx([1.0] * integrator.calls)
+    assert hist["stable_frac"][-integrator.calls :] == pytest.approx(
+        [1.0] * integrator.calls
+    )
     assert len(hist.get("phase_sync", [])) == integrator.calls
     assert len(hist.get("kuramoto_R", [])) == integrator.calls
     assert len(hist.get("glyph_load_disr", [])) == integrator.calls
@@ -157,8 +164,12 @@ def test_runtime_run_triggers_remesh_and_stop_early():
     runtime.run(G, steps=5, dt=dt)
 
     hist = ensure_history(G)
-    assert integrator.calls == 4, "A single extra step should run before STOP_EARLY triggers again"
-    assert len(hist.get("remesh_events", [])) == 1, "Cooldown should block additional remeshes"
+    assert (
+        integrator.calls == 4
+    ), "A single extra step should run before STOP_EARLY triggers again"
+    assert (
+        len(hist.get("remesh_events", [])) == 1
+    ), "Cooldown should block additional remeshes"
     assert len(hist.get("stable_frac", [])) == stable_seed_len + integrator.calls
     assert G.graph["_last_remesh_step"] == remesh_step
     assert G.graph["_last_remesh_ts"] == remesh_ts

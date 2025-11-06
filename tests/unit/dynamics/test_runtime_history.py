@@ -8,6 +8,7 @@ from tnfr.constants import EPI_PRIMARY, get_param
 from tnfr.dynamics.runtime import _update_epi_hist
 from tnfr.structural import create_nfr
 
+
 def _build_graph():
     """Create a small graph with multiple TNFR nodes for history tests."""
 
@@ -15,6 +16,7 @@ def _build_graph():
     for idx in range(1, 4):
         create_nfr(f"n{idx}", epi=0.0, vf=1.0, graph=G)
     return G
+
 
 def _set_epi_snapshot(G, base: float) -> dict[str, float]:
     """Assign deterministic EPI values and return the expected snapshot map."""
@@ -26,11 +28,13 @@ def _set_epi_snapshot(G, base: float) -> dict[str, float]:
         snapshot[node] = value
     return snapshot
 
+
 def _expected_maxlen(G) -> int:
     tau_g = int(get_param(G, "REMESH_TAU_GLOBAL"))
     tau_l = int(get_param(G, "REMESH_TAU_LOCAL"))
     tau = max(tau_g, tau_l)
     return max(2 * tau + 5, 64)
+
 
 def test_update_epi_hist_rebuilds_history() -> None:
     """Ensure ``_update_epi_hist`` normalises the history buffer."""

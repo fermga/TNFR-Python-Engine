@@ -33,6 +33,7 @@ except Exception:
 
 from .glyph_history import HistoryDict as _HistoryDict
 from .tokens import Token
+
 __all__: tuple[str, ...] = (
     "TNFRGraph",
     "Graph",
@@ -115,12 +116,17 @@ Node: TypeAlias = NodeId
 NodeInitAttrMap: TypeAlias = MutableMapping[str, float]
 NodeAttrMap: TypeAlias = Mapping[str, Any]
 GammaSpec: TypeAlias = Mapping[str, Any]
+
 class BEPIProtocol(Protocol): ...
 
 EPIValue: TypeAlias = BEPIProtocol
 ZERO_BEPI_STORAGE: dict[str, tuple[complex, ...] | tuple[float, ...]]
+
 def ensure_bepi(value: Any) -> "BEPIElement": ...
-def serialize_bepi(value: Any) -> dict[str, tuple[complex, ...] | tuple[float, ...]]: ...
+def serialize_bepi(
+    value: Any,
+) -> dict[str, tuple[complex, ...] | tuple[float, ...]]: ...
+
 DeltaNFR: TypeAlias = float
 SecondDerivativeEPI: TypeAlias = float
 Phase: TypeAlias = float
@@ -146,15 +152,12 @@ class _SigmaVectorRequired(TypedDict):
     angle: float
     n: int
 
-
 class _SigmaVectorOptional(TypedDict, total=False):
     glyph: str
     w: float
     t: float
 
-
 class SigmaVector(_SigmaVectorRequired, _SigmaVectorOptional): ...
-
 
 class SigmaTrace(TypedDict):
     t: list[float]
@@ -162,7 +165,6 @@ class SigmaTrace(TypedDict):
     sigma_y: list[float]
     mag: list[float]
     angle: list[float]
-
 
 FloatArray: TypeAlias = np.ndarray
 FloatMatrix: TypeAlias = np.ndarray
@@ -193,11 +195,9 @@ class _NodeViewLike(Protocol):
     def __call__(self, data: bool = ...) -> Iterable[Any]: ...
     def __getitem__(self, node: Any) -> Mapping[str, Any]: ...
 
-
 class _EdgeViewLike(Protocol):
     def __iter__(self) -> Iterable[Any]: ...
     def __call__(self, data: bool = ...) -> Iterable[Any]: ...
-
 
 class GraphLike(Protocol):
     graph: MutableMapping[str, Any]
@@ -238,12 +238,10 @@ class Glyph(str, Enum):
 GlyphCode: TypeAlias = Glyph | str
 GlyphLoadDistribution: TypeAlias = dict[Glyph | str, float]
 
-
 class _SelectorLifecycle(Protocol):
     def __call__(self, graph: TNFRGraph, node: NodeId) -> GlyphCode: ...
     def prepare(self, graph: TNFRGraph, nodes: Sequence[NodeId]) -> None: ...
     def select(self, graph: TNFRGraph, node: NodeId) -> GlyphCode: ...
-
 
 GlyphSelector: TypeAlias = Callable[[TNFRGraph, NodeId], GlyphCode] | _SelectorLifecycle
 SelectorPreselectionMetrics: TypeAlias = Mapping[Any, SelectorMetrics]
@@ -272,9 +270,9 @@ class TraceMetadata(TypedDict, total=False):
 class TraceSnapshot(TraceMetadata, total=False):
     t: float
     phase: str
+
 HistoryState: TypeAlias = _HistoryDict | dict[str, Any]
 TraceCallback: TypeAlias = Callable[[TNFRGraph, dict[str, Any]], None]
-
 
 class CallbackError(TypedDict):
     event: str
@@ -283,7 +281,6 @@ class CallbackError(TypedDict):
     traceback: str
     fn: str
     name: str | None
-
 
 DiagnosisNodeData: TypeAlias = Mapping[str, Any]
 DiagnosisSharedState: TypeAlias = Mapping[str, Any]

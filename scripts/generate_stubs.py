@@ -81,6 +81,7 @@ def find_outdated_stubs(src_dir: Path, tolerance_seconds: float = 1.0) -> list[P
 
     return outdated
 
+
 def generate_stubs(files: list[Path], src_dir: Path, dry_run: bool = False) -> int:
     """Generate stub files using mypy stubgen.
 
@@ -231,9 +232,7 @@ def main() -> int:
         print("\nMissing stub files:")
         for py_file in missing:
             print(f"  - {py_file}")
-        print(
-            "\nRun 'python scripts/generate_stubs.py' to generate missing stubs"
-        )
+        print("\nRun 'python scripts/generate_stubs.py' to generate missing stubs")
         return 1
 
     generated = generate_stubs(missing, src_dir, dry_run=args.dry_run)

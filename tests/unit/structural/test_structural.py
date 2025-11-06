@@ -45,6 +45,7 @@ from tnfr.structural import (
 )
 from tnfr.validation import ValidationOutcome
 
+
 def _outcome_stub(names: list[str] | tuple[str, ...]) -> SequenceValidationResult:
     sequence = tuple(names)
     return SequenceValidationResult(
@@ -55,12 +56,14 @@ def _outcome_stub(names: list[str] | tuple[str, ...]) -> SequenceValidationResul
         metadata={},
     )
 
+
 def test_create_nfr_basic() -> None:
     G, n = create_nfr("node", epi=0.1, vf=2.0, theta=0.3)
     assert isinstance(G, nx.Graph)
     assert n in G
     nd = G.nodes[n]
     assert nd[EPI_PRIMARY] == 0.1
+
 
 def test_create_nfr_installs_default_dnfr_hook() -> None:
     G, _ = create_nfr("seed-default")
@@ -69,10 +72,13 @@ def test_create_nfr_installs_default_dnfr_hook() -> None:
     assert callable(hook)
     assert G.graph["_dnfr_hook_name"] == "dnfr_epi_vf_mixed"
 
+
 def test_create_nfr_accepts_custom_dnfr_hook() -> None:
     calls: list[tuple[nx.Graph, int | None]] = []
 
-    def stub(graph: nx.Graph, *, n_jobs: int | None = None) -> None:  # pragma: no cover - signature only
+    def stub(
+        graph: nx.Graph, *, n_jobs: int | None = None
+    ) -> None:  # pragma: no cover - signature only
         calls.append((graph, n_jobs))
 
     G, _ = create_nfr("seed-custom", dnfr_hook=stub)
@@ -82,6 +88,7 @@ def test_create_nfr_accepts_custom_dnfr_hook() -> None:
     assert calls == [(G, 5)]
     assert hook.__name__ == stub.__name__
     assert G.graph["_dnfr_hook_name"] == stub.__name__
+
 
 def test_sequence_validation_and_run() -> None:
     G, n = create_nfr("x")
@@ -95,6 +102,7 @@ def test_sequence_validation_and_run() -> None:
     run_sequence(G, n, ops)
     assert EPI_PRIMARY in G.nodes[n]
 
+
 def test_run_sequence_triggers_dnfr_hook_every_operator(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -102,7 +110,9 @@ def test_run_sequence_triggers_dnfr_hook_every_operator(
     ops = [Emission(), Reception(), Coherence()]
     call_counter = {"count": 0}
 
-    def stub(graph: nx.Graph, *, n_jobs: int | None = None) -> None:  # pragma: no cover - signature only
+    def stub(
+        graph: nx.Graph, *, n_jobs: int | None = None
+    ) -> None:  # pragma: no cover - signature only
         del n_jobs
         call_counter["count"] += 1
 
@@ -113,6 +123,7 @@ def test_run_sequence_triggers_dnfr_hook_every_operator(
 
     assert call_counter["count"] == len(ops)
 
+
 def test_invalid_sequence() -> None:
     ops = [Reception(), Coherence(), Silence()]
     names = [op.name for op in ops]
@@ -122,6 +133,7 @@ def test_invalid_sequence() -> None:
     G, n = create_nfr("y")
     with pytest.raises(ValueError):
         run_sequence(G, n, ops)
+
 
 def test_thol_requires_closure() -> None:
     names = [
@@ -136,6 +148,7 @@ def test_thol_requires_closure() -> None:
     assert not outcome.passed
     assert operator_display_name(SELF_ORGANIZATION) in outcome.summary["message"]
 
+
 def test_validate_sequence_rejects_unknown_tokens() -> None:
     names = [
         EMISSION,
@@ -149,11 +162,13 @@ def test_validate_sequence_rejects_unknown_tokens() -> None:
     assert not outcome.passed
     assert "unknown tokens" in outcome.summary["message"]
 
+
 def test_validate_sequence_requires_names_argument() -> None:
     with pytest.raises(TypeError) as excinfo:
         validate_sequence()
 
     assert "missing required argument" in str(excinfo.value)
+
 
 def test_validate_sequence_rejects_empty_sequence() -> None:
     outcome = validate_sequence([])
@@ -161,11 +176,13 @@ def test_validate_sequence_rejects_empty_sequence() -> None:
     assert not outcome.passed
     assert outcome.summary["message"] == "empty sequence"
 
+
 def test_validate_sequence_requires_string_tokens() -> None:
     outcome = validate_sequence([EMISSION, RECEPTION, 101])
 
     assert not outcome.passed
     assert outcome.summary["message"] == "tokens must be str"
+
 
 def test_thol_closed_by_silence() -> None:
     ops = [
@@ -180,6 +197,7 @@ def test_thol_closed_by_silence() -> None:
     outcome = validate_sequence(names)
     assert outcome.passed, outcome.summary["message"]
 
+
 def test_sequence_rejects_trailing_tokens() -> None:
     names = [
         EMISSION,
@@ -192,6 +210,7 @@ def test_sequence_rejects_trailing_tokens() -> None:
     outcome = validate_sequence(names)
     assert not outcome.passed
 
+
 def test_sequence_accepts_english_tokens() -> None:
     names = [
         EMISSION,
@@ -203,11 +222,13 @@ def test_sequence_accepts_english_tokens() -> None:
     outcome = validate_sequence(names)
     assert outcome.passed, outcome.summary["message"]
 
+
 def test_validate_sequence_rejects_legacy_keyword() -> None:
     with pytest.raises(TypeError) as excinfo:
         validate_sequence(legacy_names=[EMISSION, RECEPTION, COHERENCE])
 
     assert "unexpected keyword argument" in str(excinfo.value)
+
 
 def test_operator_base_types_exposed() -> None:
     for cls in (
@@ -227,6 +248,7 @@ def test_operator_base_types_exposed() -> None:
     ):
         assert issubclass(cls, Operator)
 
+
 def test_operator_requires_glyph_assignment(graph_canon) -> None:
     class GlyphlessOperator(Operator):
         glyph = None
@@ -241,7 +263,10 @@ def test_operator_requires_glyph_assignment(graph_canon) -> None:
 
     assert str(excinfo.value) == "Operator without assigned glyph"
 
-def test_create_math_nfr_records_metrics(structural_tolerances: dict[str, float]) -> None:
+
+def test_create_math_nfr_records_metrics(
+    structural_tolerances: dict[str, float],
+) -> None:
     G, node = create_math_nfr(
         "math-node",
         epi=0.42,
@@ -310,6 +335,7 @@ def test_create_math_nfr_records_metrics(structural_tolerances: dict[str, float]
     assert context["coherence_operator"] is math_cfg["coherence_operator"]
     assert context["frequency_operator"] is math_cfg["frequency_operator"]
     assert context["coherence_threshold"] == metrics["coherence_threshold"]
+
 
 def test_create_math_nfr_merges_existing_math_config() -> None:
     base_graph = nx.Graph()

@@ -2,6 +2,7 @@
 
 from tnfr.alias import set_attr_generic
 
+
 def test_set_attr_allows_none_conversion():
     """``set_attr_generic`` must allow ``None`` values."""
     d = {}

@@ -42,17 +42,16 @@ def normalize_materialize_limit(max_materialize: int | None) -> int | None: ...
 def ensure_collection(
     it: Iterable[T],
     *,
-    max_materialize: int | None = ..., 
-    error_msg: str | None = ..., 
-    return_view: Literal[False] = ..., 
+    max_materialize: int | None = ...,
+    error_msg: str | None = ...,
+    return_view: Literal[False] = ...,
 ) -> Collection[T]: ...
-
 @overload
 def ensure_collection(
     it: Iterable[T],
     *,
-    max_materialize: int | None = ..., 
-    error_msg: str | None = ..., 
+    max_materialize: int | None = ...,
+    error_msg: str | None = ...,
     return_view: Literal[True],
 ) -> tuple[Collection[T], Iterable[T]]: ...
 def normalize_weights(

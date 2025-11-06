@@ -25,22 +25,22 @@ MIN_STRUCTURAL_FREQUENCY = 0.0
 
 class HzStr:
     """Structural frequency in Hz_str (structural hertz) units.
-    
+
     Hz_str represents the rate of structural reorganization, not physical
     frequency. It measures how rapidly a node's Primary Information Structure
     (EPI) evolves according to the nodal equation:
-    
+
         ∂EPI/∂t = νf · ΔNFR(t)
-    
+
     Where νf is the structural frequency in Hz_str units.
-    
+
     Attributes
     ----------
     value : float
         Magnitude of the structural frequency
     unit : str
         Always "Hz_str" to maintain unit clarity
-        
+
     Notes
     -----
     Hz_str is distinct from physical Hz (cycles per second). It represents
@@ -48,17 +48,17 @@ class HzStr:
     Conversion from physical Hz depends on the domain context (biological,
     quantum, social, etc.).
     """
-    
+
     __slots__ = ("value", "unit")
-    
+
     def __init__(self, value: float) -> None:
         """Initialize structural frequency.
-        
+
         Parameters
         ----------
         value : float
             Structural frequency magnitude (must be non-negative)
-            
+
         Raises
         ------
         ValueError
@@ -70,19 +70,19 @@ class HzStr:
             )
         self.value = float(value)
         self.unit = "Hz_str"
-    
+
     def __float__(self) -> float:
         """Convert to float for numerical operations."""
         return self.value
-    
+
     def __repr__(self) -> str:
         """String representation."""
         return f"HzStr({self.value})"
-    
+
     def __str__(self) -> str:
         """Human-readable string."""
         return f"{self.value} Hz_str"
-    
+
     def __eq__(self, other: Any) -> bool:
         """Equality comparison."""
         if isinstance(other, HzStr):
@@ -90,7 +90,7 @@ class HzStr:
         if isinstance(other, (int, float)):
             return abs(self.value - float(other)) < 1e-10
         return NotImplemented
-    
+
     def __lt__(self, other: Any) -> bool:
         """Less than comparison."""
         if isinstance(other, HzStr):
@@ -98,7 +98,7 @@ class HzStr:
         if isinstance(other, (int, float)):
             return self.value < float(other)
         return NotImplemented
-    
+
     def __le__(self, other: Any) -> bool:
         """Less than or equal comparison."""
         if isinstance(other, HzStr):
@@ -106,7 +106,7 @@ class HzStr:
         if isinstance(other, (int, float)):
             return self.value <= float(other)
         return NotImplemented
-    
+
     def __gt__(self, other: Any) -> bool:
         """Greater than comparison."""
         if isinstance(other, HzStr):
@@ -114,7 +114,7 @@ class HzStr:
         if isinstance(other, (int, float)):
             return self.value > float(other)
         return NotImplemented
-    
+
     def __ge__(self, other: Any) -> bool:
         """Greater than or equal comparison."""
         if isinstance(other, HzStr):
@@ -122,7 +122,7 @@ class HzStr:
         if isinstance(other, (int, float)):
             return self.value >= float(other)
         return NotImplemented
-    
+
     def __add__(self, other: Any) -> HzStr:
         """Addition."""
         if isinstance(other, HzStr):
@@ -130,11 +130,11 @@ class HzStr:
         if isinstance(other, (int, float)):
             return HzStr(self.value + float(other))
         return NotImplemented
-    
+
     def __radd__(self, other: Any) -> HzStr:
         """Right addition."""
         return self.__add__(other)
-    
+
     def __sub__(self, other: Any) -> HzStr:
         """Subtraction."""
         if isinstance(other, HzStr):
@@ -142,16 +142,16 @@ class HzStr:
         if isinstance(other, (int, float)):
             return HzStr(self.value - float(other))
         return NotImplemented
-    
+
     def __rsub__(self, other: Any) -> HzStr:
         """Right subtraction."""
         if isinstance(other, (int, float)):
             return HzStr(float(other) - self.value)
         return NotImplemented
-    
+
     def __mul__(self, other: Any) -> Union[HzStr, float]:
         """Multiplication.
-        
+
         When multiplied by another HzStr or dimensionless number, returns HzStr.
         When multiplied by ΔNFR (dimensionless), returns float (∂EPI/∂t rate).
         """
@@ -161,11 +161,11 @@ class HzStr:
             # This is typically νf · ΔNFR in nodal equation
             return self.value * float(other)
         return NotImplemented
-    
+
     def __rmul__(self, other: Any) -> Union[HzStr, float]:
         """Right multiplication."""
         return self.__mul__(other)
-    
+
     def __truediv__(self, other: Any) -> HzStr:
         """Division."""
         if isinstance(other, HzStr):
@@ -177,7 +177,7 @@ class HzStr:
                 )
             return HzStr(self.value / float(other))
         return NotImplemented
-    
+
     def __hash__(self) -> int:
         """Hash for use in sets/dicts."""
         return hash((self.value, self.unit))
@@ -189,17 +189,17 @@ StructuralFrequency = HzStr
 
 def ensure_hz_str(value: Union[float, HzStr]) -> HzStr:
     """Ensure value is in Hz_str units.
-    
+
     Parameters
     ----------
     value : float or HzStr
         Value to convert to Hz_str
-        
+
     Returns
     -------
     HzStr
         Value as structural frequency
-        
+
     Examples
     --------
     >>> ensure_hz_str(1.5)
@@ -217,11 +217,11 @@ def hz_to_hz_str(
     context: str = "default",
 ) -> HzStr:
     """Convert physical Hz to structural Hz_str with domain-specific scaling.
-    
+
     Different physical domains have different relationships between physical
     frequency and structural reorganization rate. This function provides
     context-aware conversion factors.
-    
+
     Parameters
     ----------
     hz_value : float
@@ -233,12 +233,12 @@ def hz_to_hz_str(
         - "quantum": Quantum systems (faster structural reorganization)
         - "social": Social systems (much slower structural reorganization)
         - "neural": Neural systems (moderate structural reorganization)
-        
+
     Returns
     -------
     HzStr
         Structural frequency in Hz_str units
-        
+
     Notes
     -----
     Conversion factors are based on typical timescales in each domain:
@@ -246,7 +246,7 @@ def hz_to_hz_str(
     - Quantum: 1e12 (1 Hz physical → 1 THz_str)
     - Social: 1e-6 (1 MHz physical → 1 Hz_str)
     - Neural: 1.0 (1 Hz physical → 1 Hz_str, matched to firing rates)
-    
+
     Examples
     --------
     >>> hz_to_hz_str(10.0, "biological")
@@ -261,8 +261,8 @@ def hz_to_hz_str(
         "social": 1e-6,
         "neural": 1.0,
     }
-    
+
     factor = CONVERSION_FACTORS.get(context, 1.0)
     hz_str_value = hz_value * factor
-    
+
     return HzStr(hz_str_value)

@@ -56,7 +56,7 @@ __all__ = (
 @runtime_checkable
 class OperatorRegistry(Protocol):
     """Interface for registering and retrieving structural operators.
-    
+
     The operator registry maintains the mapping between operator tokens
     (strings or Glyph codes) and their concrete implementations. It ensures
     that only canonical operators are accessible during sequence execution.
@@ -64,17 +64,17 @@ class OperatorRegistry(Protocol):
 
     def get_operator(self, token: str) -> Operator:
         """Retrieve operator implementation for the given token.
-        
+
         Parameters
         ----------
         token : str
             Operator identifier (e.g., "emission", "coherence").
-            
+
         Returns
         -------
         Operator
             The structural operator implementation.
-            
+
         Raises
         ------
         KeyError
@@ -84,7 +84,7 @@ class OperatorRegistry(Protocol):
 
     def register_operator(self, operator: Operator) -> None:
         """Register a structural operator implementation.
-        
+
         Parameters
         ----------
         operator : Operator
@@ -96,7 +96,7 @@ class OperatorRegistry(Protocol):
 @runtime_checkable
 class ValidationService(Protocol):
     """Interface for validating sequences and graph states.
-    
+
     The validation service guards TNFR invariants by checking operator
     sequences against grammar rules and ensuring graph states remain within
     canonical bounds (νf, phase, ΔNFR ranges).
@@ -104,12 +104,12 @@ class ValidationService(Protocol):
 
     def validate_sequence(self, sequence: list[str]) -> None:
         """Validate an operator sequence against TNFR grammar.
-        
+
         Parameters
         ----------
         sequence : list of str
             Operator tokens to validate as a trajectory.
-            
+
         Raises
         ------
         ValueError
@@ -119,12 +119,12 @@ class ValidationService(Protocol):
 
     def validate_graph_state(self, graph: TNFRGraph) -> None:
         """Validate graph state against structural invariants.
-        
+
         Parameters
         ----------
         graph : TNFRGraph
             Graph whose node attributes (EPI, νf, θ, ΔNFR) are validated.
-            
+
         Raises
         ------
         ValueError
@@ -136,7 +136,7 @@ class ValidationService(Protocol):
 @runtime_checkable
 class DynamicsEngine(Protocol):
     """Interface for computing ΔNFR and integrating the nodal equation.
-    
+
     The dynamics engine orchestrates the temporal evolution of nodes by
     computing internal reorganization gradients (ΔNFR), integrating the
     nodal equation ∂EPI/∂t = νf · ΔNFR(t), and coordinating phase coupling
@@ -145,10 +145,10 @@ class DynamicsEngine(Protocol):
 
     def update_delta_nfr(self, graph: TNFRGraph) -> None:
         """Compute and update ΔNFR for all nodes in the graph.
-        
+
         This method implements the canonical ΔNFR computation using
         configured hooks (e.g., dnfr_epi_vf_mixed, dnfr_laplacian).
-        
+
         Parameters
         ----------
         graph : TNFRGraph
@@ -158,11 +158,11 @@ class DynamicsEngine(Protocol):
 
     def integrate_nodal_equation(self, graph: TNFRGraph) -> None:
         """Integrate the nodal equation to update EPI, νf, and phase.
-        
+
         This method applies the canonical integrator to advance EPI based on
         the structural frequency and ΔNFR gradient, while optionally
         adapting νf and coordinating phase synchrony.
-        
+
         Parameters
         ----------
         graph : TNFRGraph
@@ -172,10 +172,10 @@ class DynamicsEngine(Protocol):
 
     def coordinate_phase_coupling(self, graph: TNFRGraph) -> None:
         """Coordinate phase synchronization across coupled nodes.
-        
+
         This method ensures that phase relationships between connected nodes
         respect resonance conditions and structural coupling strength.
-        
+
         Parameters
         ----------
         graph : TNFRGraph
@@ -190,12 +190,12 @@ class TraceContext(Protocol):
 
     def capture_state(self, graph: TNFRGraph) -> dict[str, Any]:
         """Capture current graph state for telemetry.
-        
+
         Parameters
         ----------
         graph : TNFRGraph
             Graph whose state is captured.
-            
+
         Returns
         -------
         dict
@@ -210,7 +210,7 @@ class TraceContext(Protocol):
         post_state: dict[str, Any],
     ) -> None:
         """Record operator transition in telemetry traces.
-        
+
         Parameters
         ----------
         operator_token : str
@@ -226,7 +226,7 @@ class TraceContext(Protocol):
 @runtime_checkable
 class TelemetryCollector(Protocol):
     """Interface for collecting telemetry and structural traces.
-    
+
     The telemetry collector measures coherence (C(t)), sense index (Si),
     and captures structural traces documenting how operators reorganize
     the network over time.
@@ -234,12 +234,12 @@ class TelemetryCollector(Protocol):
 
     def trace_context(self, graph: TNFRGraph) -> TraceContext:
         """Create a trace context for capturing operator effects.
-        
+
         Parameters
         ----------
         graph : TNFRGraph
             Graph being traced.
-            
+
         Returns
         -------
         TraceContext
@@ -249,12 +249,12 @@ class TelemetryCollector(Protocol):
 
     def compute_coherence(self, graph: TNFRGraph) -> float:
         """Compute total coherence C(t) across the network.
-        
+
         Parameters
         ----------
         graph : TNFRGraph
             Graph whose coherence is measured.
-            
+
         Returns
         -------
         float
@@ -265,12 +265,12 @@ class TelemetryCollector(Protocol):
 
     def compute_sense_index(self, graph: TNFRGraph) -> dict[str, Any]:
         """Compute sense index (Si) measuring reorganization capacity.
-        
+
         Parameters
         ----------
         graph : TNFRGraph
             Graph whose sense index is computed.
-            
+
         Returns
         -------
         dict

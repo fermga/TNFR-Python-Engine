@@ -38,11 +38,17 @@ __all__ = [
     "recursivity_metrics",
 ]
 
-def _get_node_attr(G: TNFRGraph, node: NodeId, aliases: tuple[str, ...], default: float = 0.0) -> float:
+
+def _get_node_attr(
+    G: TNFRGraph, node: NodeId, aliases: tuple[str, ...], default: float = 0.0
+) -> float:
     """Get node attribute using alias fallback."""
     return float(get_attr(G.nodes[node], aliases, default))
 
-def emission_metrics(G: TNFRGraph, node: NodeId, epi_before: float, vf_before: float) -> dict[str, Any]:
+
+def emission_metrics(
+    G: TNFRGraph, node: NodeId, epi_before: float, vf_before: float
+) -> dict[str, Any]:
     """AL - Emission metrics: ΔEPI, activation time, resonance radius.
 
     Parameters
@@ -76,6 +82,7 @@ def emission_metrics(G: TNFRGraph, node: NodeId, epi_before: float, vf_before: f
         "activation_strength": epi_after - epi_before,
         "is_activated": epi_after > 0.5,  # Configurable threshold
     }
+
 
 def reception_metrics(G: TNFRGraph, node: NodeId, epi_before: float) -> dict[str, Any]:
     """EN - Reception metrics: EPI integration, neighbor influence.
@@ -114,6 +121,7 @@ def reception_metrics(G: TNFRGraph, node: NodeId, epi_before: float) -> dict[str
         "integration_strength": abs(epi_after - epi_before),
     }
 
+
 def coherence_metrics(G: TNFRGraph, node: NodeId, dnfr_before: float) -> dict[str, Any]:
     """IL - Coherence metrics: ΔC(t), stability gain, ΔNFR reduction.
 
@@ -146,7 +154,10 @@ def coherence_metrics(G: TNFRGraph, node: NodeId, dnfr_before: float) -> dict[st
         "is_stabilized": abs(dnfr_after) < 0.1,  # Configurable threshold
     }
 
-def dissonance_metrics(G: TNFRGraph, node: NodeId, dnfr_before: float, theta_before: float) -> dict[str, Any]:
+
+def dissonance_metrics(
+    G: TNFRGraph, node: NodeId, dnfr_before: float, theta_before: float
+) -> dict[str, Any]:
     """OZ - Dissonance metrics: ΔNFR increase, bifurcation risk, phase shift.
 
     Parameters
@@ -183,6 +194,7 @@ def dissonance_metrics(G: TNFRGraph, node: NodeId, dnfr_before: float, theta_bef
         "dissonance_level": abs(dnfr_after),
     }
 
+
 def coupling_metrics(G: TNFRGraph, node: NodeId, theta_before: float) -> dict[str, Any]:
     """UM - Coupling metrics: phase alignment, link formation, synchrony.
 
@@ -201,7 +213,7 @@ def coupling_metrics(G: TNFRGraph, node: NodeId, theta_before: float) -> dict[st
         Coupling-specific metrics including phase synchronization
     """
     import math
-    
+
     theta_after = _get_node_attr(G, node, ALIAS_THETA)
     neighbors = list(G.neighbors(node))
     neighbor_count = len(neighbors)
@@ -224,6 +236,7 @@ def coupling_metrics(G: TNFRGraph, node: NodeId, theta_before: float) -> dict[st
         "mean_neighbor_phase": mean_neighbor_phase,
         "phase_alignment": max(0.0, phase_alignment),
     }
+
 
 def resonance_metrics(G: TNFRGraph, node: NodeId, epi_before: float) -> dict[str, Any]:
     """RA - Resonance metrics: EPI propagation, affected neighbors, resonance strength.
@@ -263,10 +276,14 @@ def resonance_metrics(G: TNFRGraph, node: NodeId, epi_before: float) -> dict[str
         "neighbor_count": neighbor_count,
         "neighbor_epi_mean": neighbor_epi_mean,
         "resonance_strength": resonance_strength,
-        "propagation_successful": neighbor_count > 0 and abs(epi_after - neighbor_epi_mean) < 0.5,
+        "propagation_successful": neighbor_count > 0
+        and abs(epi_after - neighbor_epi_mean) < 0.5,
     }
 
-def silence_metrics(G: TNFRGraph, node: NodeId, vf_before: float, epi_before: float) -> dict[str, Any]:
+
+def silence_metrics(
+    G: TNFRGraph, node: NodeId, vf_before: float, epi_before: float
+) -> dict[str, Any]:
     """SHA - Silence metrics: νf reduction, EPI preservation.
 
     Parameters
@@ -298,7 +315,10 @@ def silence_metrics(G: TNFRGraph, node: NodeId, vf_before: float, epi_before: fl
         "is_silent": vf_after < 0.1,  # Configurable threshold
     }
 
-def expansion_metrics(G: TNFRGraph, node: NodeId, vf_before: float, epi_before: float) -> dict[str, Any]:
+
+def expansion_metrics(
+    G: TNFRGraph, node: NodeId, vf_before: float, epi_before: float
+) -> dict[str, Any]:
     """VAL - Expansion metrics: νf increase, volume exploration.
 
     Parameters
@@ -330,7 +350,10 @@ def expansion_metrics(G: TNFRGraph, node: NodeId, vf_before: float, epi_before: 
         "expansion_factor": vf_after / vf_before if vf_before > 0 else 1.0,
     }
 
-def contraction_metrics(G: TNFRGraph, node: NodeId, vf_before: float, epi_before: float) -> dict[str, Any]:
+
+def contraction_metrics(
+    G: TNFRGraph, node: NodeId, vf_before: float, epi_before: float
+) -> dict[str, Any]:
     """NUL - Contraction metrics: νf decrease, core concentration.
 
     Parameters
@@ -364,7 +387,10 @@ def contraction_metrics(G: TNFRGraph, node: NodeId, vf_before: float, epi_before
         "contraction_factor": vf_after / vf_before if vf_before > 0 else 1.0,
     }
 
-def self_organization_metrics(G: TNFRGraph, node: NodeId, epi_before: float, vf_before: float) -> dict[str, Any]:
+
+def self_organization_metrics(
+    G: TNFRGraph, node: NodeId, epi_before: float, vf_before: float
+) -> dict[str, Any]:
     """THOL - Self-organization metrics: nested EPI generation, cascade formation.
 
     Parameters
@@ -404,7 +430,10 @@ def self_organization_metrics(G: TNFRGraph, node: NodeId, epi_before: float, vf_
         "cascade_active": abs(d2epi) > 0.1,  # Configurable threshold
     }
 
-def mutation_metrics(G: TNFRGraph, node: NodeId, theta_before: float, epi_before: float) -> dict[str, Any]:
+
+def mutation_metrics(
+    G: TNFRGraph, node: NodeId, theta_before: float, epi_before: float
+) -> dict[str, Any]:
     """ZHIR - Mutation metrics: phase transition, structural regime change.
 
     Parameters
@@ -436,7 +465,14 @@ def mutation_metrics(G: TNFRGraph, node: NodeId, theta_before: float, epi_before
         "phase_change": abs(theta_after - theta_before) > 0.5,  # Configurable threshold
     }
 
-def transition_metrics(G: TNFRGraph, node: NodeId, dnfr_before: float, vf_before: float, theta_before: float) -> dict[str, Any]:
+
+def transition_metrics(
+    G: TNFRGraph,
+    node: NodeId,
+    dnfr_before: float,
+    vf_before: float,
+    theta_before: float,
+) -> dict[str, Any]:
     """NAV - Transition metrics: regime handoff, ΔNFR rebalancing.
 
     Parameters
@@ -475,7 +511,10 @@ def transition_metrics(G: TNFRGraph, node: NodeId, dnfr_before: float, vf_before
         "transition_complete": abs(dnfr_after) < abs(vf_after),
     }
 
-def recursivity_metrics(G: TNFRGraph, node: NodeId, epi_before: float, vf_before: float) -> dict[str, Any]:
+
+def recursivity_metrics(
+    G: TNFRGraph, node: NodeId, epi_before: float, vf_before: float
+) -> dict[str, Any]:
     """REMESH - Recursivity metrics: fractal propagation, multi-scale coherence.
 
     Parameters

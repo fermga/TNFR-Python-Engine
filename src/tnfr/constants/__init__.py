@@ -90,4 +90,3 @@ __all__ = (
     "normalise_state_token",
     "ensure_node_offset_map",
 )
-

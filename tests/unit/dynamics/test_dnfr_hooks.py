@@ -14,6 +14,7 @@ ALIAS_EPI = get_aliases("EPI")
 ALIAS_VF = get_aliases("VF")
 ALIAS_DNFR = get_aliases("DNFR")
 
+
 def test_dnfr_phase_only_computes_gradient(graph_canon):
     G = graph_canon()
     G.add_edge(0, 1)
@@ -22,6 +23,7 @@ def test_dnfr_phase_only_computes_gradient(graph_canon):
     dnfr_phase_only(G)
     assert get_attr(G.nodes[0], ALIAS_DNFR, 0.0) == 0.5
     assert get_attr(G.nodes[1], ALIAS_DNFR, 0.0) == -0.5
+
 
 def test_dnfr_epi_vf_mixed_sets_average(graph_canon):
     G = graph_canon()
@@ -34,6 +36,7 @@ def test_dnfr_epi_vf_mixed_sets_average(graph_canon):
     assert get_attr(G.nodes[0], ALIAS_DNFR, 1.0) == 0.0
     assert get_attr(G.nodes[1], ALIAS_DNFR, 1.0) == 0.0
 
+
 def test_dnfr_laplacian_respects_weights(graph_canon):
     G = graph_canon()
     G.add_edge(0, 1)
@@ -43,6 +46,7 @@ def test_dnfr_laplacian_respects_weights(graph_canon):
     dnfr_laplacian(G)
     assert get_attr(G.nodes[0], ALIAS_DNFR, 0.0) == -1.0
     assert get_attr(G.nodes[1], ALIAS_DNFR, 0.0) == 1.0
+
 
 def test_dnfr_phase_only_parallel_matches_serial(graph_canon, monkeypatch):
     G_serial = graph_canon()
@@ -68,6 +72,7 @@ def test_dnfr_phase_only_parallel_matches_serial(graph_canon, monkeypatch):
 
     assert parallel == serial
 
+
 def test_set_delta_nfr_hook_forwards_jobs(graph_canon):
     G = graph_canon()
     recorded: list[int | None] = []
@@ -80,6 +85,7 @@ def test_set_delta_nfr_hook_forwards_jobs(graph_canon):
     compute(G, n_jobs=3)
     assert recorded == [3]
 
+
 def test_set_delta_nfr_hook_ignores_jobs_when_missing(graph_canon):
     G = graph_canon()
     calls: list[bool] = []
@@ -91,6 +97,7 @@ def test_set_delta_nfr_hook_ignores_jobs_when_missing(graph_canon):
     compute = G.graph["compute_delta_nfr"]
     compute(G, n_jobs=5)
     assert calls == [True]
+
 
 def test_set_delta_nfr_hook_records_note(graph_canon):
     G = graph_canon()

@@ -7,9 +7,13 @@ import pytest
 
 from tnfr.mathematics import CoherenceOperator, HilbertSpace
 from tnfr.mathematics.backend import ensure_array, ensure_numpy, get_backend
-from tnfr.mathematics.dynamics import ContractiveDynamicsEngine, MathematicalDynamicsEngine
+from tnfr.mathematics.dynamics import (
+    ContractiveDynamicsEngine,
+    MathematicalDynamicsEngine,
+)
 
 _BACKEND_NAMES = ("numpy", "jax", "torch")
+
 
 def _require_backend(name: str) -> object:
     backend = get_backend(name)
@@ -17,11 +21,15 @@ def _require_backend(name: str) -> object:
         pytest.skip(f"Backend '{name}' is unavailable; installed: {backend.name!r}.")
     return backend
 
+
 def _to_numpy(value: object, *, backend: object) -> np.ndarray:
     return np.asarray(ensure_numpy(value, backend=backend))
 
+
 @pytest.mark.parametrize("backend_name", _BACKEND_NAMES)
-def test_coherence_operator_matches_numpy(backend_name: str, structural_tolerances: dict[str, float]) -> None:
+def test_coherence_operator_matches_numpy(
+    backend_name: str, structural_tolerances: dict[str, float]
+) -> None:
     """Coherence operators must agree across available numerical backends."""
 
     backend = _require_backend(backend_name)
@@ -45,7 +53,14 @@ def test_coherence_operator_matches_numpy(backend_name: str, structural_toleranc
         rtol=structural_tolerances["rtol"],
         atol=structural_tolerances["atol"],
     )
-    assert pytest.approx(reference.c_min, rel=structural_tolerances["rtol"], abs=structural_tolerances["atol"]) == operator.c_min
+    assert (
+        pytest.approx(
+            reference.c_min,
+            rel=structural_tolerances["rtol"],
+            abs=structural_tolerances["atol"],
+        )
+        == operator.c_min
+    )
 
     expectation_backend = operator.expectation(state)
     expectation_reference = reference.expectation(state)
@@ -55,15 +70,20 @@ def test_coherence_operator_matches_numpy(backend_name: str, structural_toleranc
         abs=structural_tolerances["atol"],
     )
 
+
 @pytest.mark.parametrize("backend_name", _BACKEND_NAMES)
-def test_mathematical_dynamics_matches_numpy(backend_name: str, structural_tolerances: dict[str, float]) -> None:
+def test_mathematical_dynamics_matches_numpy(
+    backend_name: str, structural_tolerances: dict[str, float]
+) -> None:
     """Unitary trajectories should be backend agnostic within tolerance."""
 
     backend = _require_backend(backend_name)
     reference_backend = get_backend("numpy")
 
     hilbert = HilbertSpace(dimension=2)
-    generator = np.array([[1.0, 0.25 - 0.15j], [0.25 + 0.15j, -0.5]], dtype=np.complex128)
+    generator = np.array(
+        [[1.0, 0.25 - 0.15j], [0.25 + 0.15j, -0.5]], dtype=np.complex128
+    )
     state = np.array([0.8 + 0.1j, 0.3 - 0.2j], dtype=np.complex128)
 
     reference_engine = MathematicalDynamicsEngine(
@@ -89,8 +109,11 @@ def test_mathematical_dynamics_matches_numpy(backend_name: str, structural_toler
         atol=structural_tolerances["atol"],
     )
 
+
 @pytest.mark.parametrize("backend_name", _BACKEND_NAMES)
-def test_contractive_dynamics_matches_numpy(backend_name: str, structural_tolerances: dict[str, float]) -> None:
+def test_contractive_dynamics_matches_numpy(
+    backend_name: str, structural_tolerances: dict[str, float]
+) -> None:
     """Contractive trajectories should remain invariant across backends."""
 
     backend = _require_backend(backend_name)
@@ -127,6 +150,7 @@ def test_contractive_dynamics_matches_numpy(backend_name: str, structural_tolera
         rel=structural_tolerances["rtol"],
         abs=structural_tolerances["atol"],
     )
+
 
 def test_torch_backend_handles_numpy_complex_dtype() -> None:
     """Torch backend must convert NumPy dtypes into ``torch.dtype`` instances."""

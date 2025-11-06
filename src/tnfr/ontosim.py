@@ -20,6 +20,7 @@ if TYPE_CHECKING:  # pragma: no cover
 # High-level API exports
 __all__ = ("prepare_network", "step", "run")
 
+
 def prepare_network(
     G: "nx.Graph",
     *,
@@ -117,6 +118,7 @@ def prepare_network(
         init_node_attrs(G, override=True)
     return G
 
+
 def step(
     G: "nx.Graph",
     *,
@@ -127,6 +129,7 @@ def step(
     """Advance the ontosim runtime by a single step."""
 
     _step(G, dt=dt, use_Si=use_Si, apply_glyphs=apply_glyphs)
+
 
 def run(
     G: "nx.Graph",

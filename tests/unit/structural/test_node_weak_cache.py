@@ -7,6 +7,7 @@ import pytest
 
 from tnfr.node import NodeNX
 
+
 def test_node_weak_cache_releases_unused_instances():
     """Verify that use_weak_cache=True allows garbage collection of NodeNX instances."""
     pytest.importorskip("networkx")
@@ -14,8 +15,18 @@ def test_node_weak_cache_releases_unused_instances():
 
     # Create a graph
     G = nx.Graph()
-    G.add_node(0, theta=0.0, vf=1.0, EPI={"continuous": (0.5,), "discrete": (), "grid": (0.0, 1.0)})
-    G.add_node(1, theta=0.1, vf=1.0, EPI={"continuous": (0.6,), "discrete": (), "grid": (0.0, 1.0)})
+    G.add_node(
+        0,
+        theta=0.0,
+        vf=1.0,
+        EPI={"continuous": (0.5,), "discrete": (), "grid": (0.0, 1.0)},
+    )
+    G.add_node(
+        1,
+        theta=0.1,
+        vf=1.0,
+        EPI={"continuous": (0.6,), "discrete": (), "grid": (0.0, 1.0)},
+    )
 
     # Get node with weak cache
     node0 = NodeNX.from_graph(G, 0, use_weak_cache=True)
@@ -44,6 +55,7 @@ def test_node_weak_cache_releases_unused_instances():
     node0_new = NodeNX.from_graph(G, 0, use_weak_cache=True)
     assert node0_new.n == 0
 
+
 def test_node_strong_cache_retains_instances():
     """Verify that default (strong) cache retains NodeNX instances."""
     pytest.importorskip("networkx")
@@ -51,7 +63,12 @@ def test_node_strong_cache_retains_instances():
 
     # Create a graph
     G = nx.Graph()
-    G.add_node(0, theta=0.0, vf=1.0, EPI={"continuous": (0.5,), "discrete": (), "grid": (0.0, 1.0)})
+    G.add_node(
+        0,
+        theta=0.0,
+        vf=1.0,
+        EPI={"continuous": (0.5,), "discrete": (), "grid": (0.0, 1.0)},
+    )
 
     # Get node with strong cache (default)
     node0 = NodeNX.from_graph(G, 0)
@@ -74,6 +91,7 @@ def test_node_strong_cache_retains_instances():
     node0_again = NodeNX.from_graph(G, 0)
     assert weak_ref() is node0_again
 
+
 def test_node_cache_separate_strong_and_weak():
     """Verify that strong and weak caches are independent."""
     pytest.importorskip("networkx")
@@ -81,7 +99,12 @@ def test_node_cache_separate_strong_and_weak():
 
     # Create a graph
     G = nx.Graph()
-    G.add_node(0, theta=0.0, vf=1.0, EPI={"continuous": (0.5,), "discrete": (), "grid": (0.0, 1.0)})
+    G.add_node(
+        0,
+        theta=0.0,
+        vf=1.0,
+        EPI={"continuous": (0.5,), "discrete": (), "grid": (0.0, 1.0)},
+    )
 
     # Get node with strong cache
     node_strong = NodeNX.from_graph(G, 0, use_weak_cache=False)
@@ -96,6 +119,7 @@ def test_node_cache_separate_strong_and_weak():
     assert "_node_cache" in G.graph
     assert "_node_cache_weak" in G.graph
 
+
 def test_node_weak_cache_reuses_live_instance():
     """Verify that weak cache returns the same instance when it's still alive."""
     pytest.importorskip("networkx")
@@ -103,7 +127,12 @@ def test_node_weak_cache_reuses_live_instance():
 
     # Create a graph
     G = nx.Graph()
-    G.add_node(0, theta=0.0, vf=1.0, EPI={"continuous": (0.5,), "discrete": (), "grid": (0.0, 1.0)})
+    G.add_node(
+        0,
+        theta=0.0,
+        vf=1.0,
+        EPI={"continuous": (0.5,), "discrete": (), "grid": (0.0, 1.0)},
+    )
 
     # Get node with weak cache
     node0_first = NodeNX.from_graph(G, 0, use_weak_cache=True)

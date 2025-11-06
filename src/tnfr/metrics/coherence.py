@@ -58,6 +58,7 @@ logger = get_logger(__name__)
 
 GLYPH_LOAD_STABILIZERS_KEY = "glyph_load_stabilizers"
 
+
 @dataclass
 class SimilarityInputs:
     """Similarity inputs and optional trigonometric caches."""
@@ -68,6 +69,7 @@ class SimilarityInputs:
     si_vals: Sequence[float]
     cos_vals: Sequence[float] | None = None
     sin_vals: Sequence[float] | None = None
+
 
 CoherenceMatrixDense = list[list[float]]
 CoherenceMatrixSparse = list[tuple[int, int, float]]
@@ -106,6 +108,8 @@ StabilityChunkResult = tuple[
 MetricValue: TypeAlias = CoherenceMetric
 MetricProvider = Callable[[], MetricValue]
 MetricRecord: TypeAlias = tuple[MetricValue | MetricProvider, str]
+
+
 def _compute_wij_phase_epi_vf_si_vectorized(
     epi: FloatArray,
     vf: FloatArray,
@@ -132,6 +136,7 @@ def _compute_wij_phase_epi_vf_si_vectorized(
     s_vf = 1.0 - np.abs(vf[:, None] - vf[None, :]) / vf_range
     s_si = 1.0 - np.abs(si[:, None] - si[None, :])
     return s_phase, s_epi, s_vf, s_si
+
 
 def compute_wij_phase_epi_vf_si(
     inputs: SimilarityInputs,
@@ -203,6 +208,7 @@ def compute_wij_phase_epi_vf_si(
     s_si = 1.0 - abs(si_vals[i] - si_vals[j])
     return s_phase, s_epi, s_vf, s_si
 
+
 def _combine_similarity(
     s_phase: ScalarOrArray,
     s_epi: ScalarOrArray,
@@ -218,6 +224,7 @@ def _combine_similarity(
     if np is not None:
         return cast(FloatArray, np.clip(wij, 0.0, 1.0))
     return clamp01(wij)
+
 
 def _wij_components_weights(
     G: TNFRGraph,
@@ -261,6 +268,7 @@ def _wij_components_weights(
     vf_w = wnorm["vf"]
     si_w = wnorm["si"]
     return s_phase, s_epi, s_vf, s_si, phase_w, epi_w, vf_w, si_w
+
 
 def _wij_vectorized(
     G: TNFRGraph,
@@ -306,6 +314,7 @@ def _wij_vectorized(
         np.fill_diagonal(wij_matrix, 0.0)
     return wij_matrix
 
+
 def _compute_wij_value_raw(
     i: int,
     j: int,
@@ -332,13 +341,16 @@ def _compute_wij_value_raw(
     wij = phase_w * s_phase + epi_w * s_epi + vf_w * s_vf + si_w * s_si
     return clamp01(wij)
 
+
 _PARALLEL_WIJ_DATA: ParallelWijPayload | None = None
+
 
 def _init_parallel_wij(data: ParallelWijPayload) -> None:
     """Store immutable state for parallel ``wij`` computation."""
 
     global _PARALLEL_WIJ_DATA
     _PARALLEL_WIJ_DATA = data
+
 
 def _parallel_wij_worker(
     pairs: Sequence[tuple[int, int]],
@@ -378,6 +390,7 @@ def _parallel_wij_worker(
         )
         for i, j in pairs
     ]
+
 
 def _wij_loops(
     G: TNFRGraph,
@@ -496,6 +509,7 @@ def _wij_loops(
                 wij[i][j] = wij[j][i] = value
     return wij
 
+
 def _compute_stats(
     values: Iterable[float] | Any,
     row_sum: Iterable[float] | Any,
@@ -540,6 +554,7 @@ def _compute_stats(
         Wi = [float(row_arr[i]) / denom for i in range(n)]
     return min_val, max_val, mean_val, Wi, count_val
 
+
 def _coherence_numpy(
     wij: Any,
     mode: str,
@@ -563,6 +578,7 @@ def _coherence_numpy(
         W = [(int(i), int(j), float(wij[i, j])) for i, j in zip(idx[0], idx[1])]
     return n, values, row_sum, W
 
+
 def _coherence_python_worker(
     args: tuple[Sequence[Sequence[float]], int, str, float],
 ) -> tuple[int, list[float], list[float], CoherenceMatrixSparse]:
@@ -584,6 +600,7 @@ def _coherence_python_worker(
         row_sum.append(total)
 
     return start, values, row_sum, sparse
+
 
 def _coherence_python(
     wij: Sequence[Sequence[float]],
@@ -664,6 +681,7 @@ def _coherence_python(
     )
     return n, values, row_sum, sparse_result
 
+
 def _finalize_wij(
     G: TNFRGraph,
     nodes: Sequence[NodeId],
@@ -708,6 +726,7 @@ def _finalize_wij(
     append_metric(hist, cfg.get("Wi_history_key", "W_i"), Wi)
     append_metric(hist, cfg.get("stats_history_key", "W_stats"), stats)
     return list(nodes), W
+
 
 def coherence_matrix(
     G: TNFRGraph,
@@ -837,6 +856,7 @@ def coherence_matrix(
         n_jobs=parallel_jobs if not use_np else 1,
     )
 
+
 def local_phase_sync_weighted(
     G: TNFRGraph,
     n: NodeId,
@@ -943,6 +963,7 @@ def local_phase_sync_weighted(
 
     return abs(num / den) if den else 0.0
 
+
 def local_phase_sync(G: TNFRGraph, n: NodeId) -> float:
     """Compute unweighted local phase synchronization for node ``n``."""
     nodes, W = coherence_matrix(G)
@@ -950,12 +971,14 @@ def local_phase_sync(G: TNFRGraph, n: NodeId) -> float:
         return 0.0
     return local_phase_sync_weighted(G, n, nodes_order=nodes, W_row=W)
 
+
 def _coherence_step(G: TNFRGraph, ctx: dict[str, Any] | None = None) -> None:
     del ctx
 
     if not get_param(G, "COHERENCE").get("enabled", True):
         return
     coherence_matrix(G)
+
 
 def register_coherence_callbacks(G: TNFRGraph) -> None:
     """Attach coherence matrix maintenance to the ``AFTER_STEP`` event."""
@@ -967,9 +990,11 @@ def register_coherence_callbacks(G: TNFRGraph) -> None:
         name="coherence_step",
     )
 
+
 # ---------------------------------------------------------------------------
 # Coherence and observer-related metric updates
 # ---------------------------------------------------------------------------
+
 
 def _record_metrics(
     hist: HistoryState,
@@ -985,6 +1010,7 @@ def _record_metrics(
             append_metric(metrics, key, provider())
         else:
             append_metric(metrics, key, payload)
+
 
 def _update_coherence(G: TNFRGraph, hist: HistoryState) -> None:
     """Update network coherence and related means."""
@@ -1008,6 +1034,7 @@ def _update_coherence(G: TNFRGraph, hist: HistoryState) -> None:
         wbar = sum(cs[-w:]) / w
         _record_metrics(hist, (wbar, "W_bar"))
 
+
 def _update_phase_sync(G: TNFRGraph, hist: HistoryState) -> None:
     """Capture phase synchrony and Kuramoto order."""
 
@@ -1018,6 +1045,7 @@ def _update_phase_sync(G: TNFRGraph, hist: HistoryState) -> None:
         (ps, "phase_sync"),
         (ko, "kuramoto_R"),
     )
+
 
 def _update_sigma(G: TNFRGraph, hist: HistoryState) -> None:
     """Record glyph load and associated Σ⃗ vector."""
@@ -1049,6 +1077,7 @@ def _update_sigma(G: TNFRGraph, hist: HistoryState) -> None:
         (sig.get("mag", 0.0), "sense_sigma_mag"),
         (sig.get("angle", 0.0), "sense_sigma_angle"),
     )
+
 
 def _stability_chunk_worker(args: StabilityChunkArgs) -> StabilityChunkResult:
     """Compute stability aggregates for a chunk of nodes."""
@@ -1109,6 +1138,7 @@ def _stability_chunk_worker(args: StabilityChunkArgs) -> StabilityChunkResult:
         dvf_dt_vals,
         B_vals,
     )
+
 
 def _track_stability(
     G: TNFRGraph,
@@ -1352,6 +1382,7 @@ def _track_stability(
         set_attr(nd, ALIAS_DVF, dvf_dt_val)
         set_attr(nd, ALIAS_D2VF, float(B_vals_all[idx]))
 
+
 def _si_chunk_stats(
     values: Sequence[float], si_hi: float, si_lo: float
 ) -> tuple[float, int, int, int]:
@@ -1375,6 +1406,7 @@ def _si_chunk_stats(
         if s <= si_lo:
             lo_count += 1
     return total, count, hi_count, lo_count
+
 
 def _aggregate_si(
     G: TNFRGraph,

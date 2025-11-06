@@ -29,6 +29,7 @@ ALIAS_EPI = get_aliases("EPI")
 ALIAS_VF = get_aliases("VF")
 ALIAS_DNFR = get_aliases("DNFR")
 
+
 def _create_test_graph(size=5, seed=42):
     """Create a deterministic test graph with TNFR node attributes."""
     import random
@@ -47,6 +48,7 @@ def _create_test_graph(size=5, seed=42):
     }
     return G
 
+
 def test_backend_detection_with_numpy_available():
     """Verify backend detection correctly identifies NumPy availability."""
     np = pytest.importorskip("numpy")
@@ -57,6 +59,7 @@ def test_backend_detection_with_numpy_available():
     assert "nodes" in data
     assert "cache" in data
     assert data["cache"] is not None
+
 
 def test_backend_detection_without_numpy(monkeypatch):
     """Verify backend falls back gracefully when NumPy is unavailable."""
@@ -71,6 +74,7 @@ def test_backend_detection_without_numpy(monkeypatch):
     assert data.get("dnfr_path_decision") == "fallback"
     assert "nodes" in data
     assert "cache" in data
+
 
 def test_dnfr_semantics_preserved_across_backends():
     """
@@ -94,6 +98,7 @@ def test_dnfr_semantics_preserved_across_backends():
 
     # ΔNFR values must be numerically equivalent
     np.testing.assert_allclose(dnfr_numpy, dnfr_fallback, rtol=1e-10)
+
 
 def test_determinism_with_seed_across_backends():
     """
@@ -126,6 +131,7 @@ def test_determinism_with_seed_across_backends():
     np.testing.assert_allclose(dnfr1, dnfr2, rtol=1e-15)
     np.testing.assert_allclose(dnfr1, dnfr3, rtol=1e-10)
 
+
 def test_cache_initialization_consistent_across_backends():
     """
     Validate cache factory initialization patterns.
@@ -157,6 +163,7 @@ def test_cache_initialization_consistent_across_backends():
     assert hasattr(cache2, "epi")
     assert hasattr(cache2, "vf")
     assert hasattr(cache2, "idx")
+
 
 def test_fallback_activates_with_cached_numpy_buffers(monkeypatch):
     """
@@ -215,6 +222,7 @@ def test_fallback_activates_with_cached_numpy_buffers(monkeypatch):
     # Results should be consistent
     np.testing.assert_allclose(baseline_dnfr, fallback_dnfr, rtol=1e-10)
 
+
 def test_fallback_handles_missing_numpy_module(monkeypatch):
     """
     Test fallback when both get_numpy() returns None AND numpy is not in sys.modules.
@@ -246,6 +254,7 @@ def test_fallback_handles_missing_numpy_module(monkeypatch):
     assert all(isinstance(v, float) for v in dnfr_values)
     assert len(dnfr_values) == G.number_of_nodes()
 
+
 def test_cache_refresh_consistency_after_backend_change():
     """
     Validate that cache refresh maintains consistency when backend changes.
@@ -273,6 +282,7 @@ def test_cache_refresh_consistency_after_backend_change():
 
     # Results should be consistent despite backend change
     np.testing.assert_allclose(dnfr1, dnfr2, rtol=1e-10)
+
 
 def test_sparse_vs_dense_path_decision_consistency():
     """
@@ -323,6 +333,7 @@ def test_sparse_vs_dense_path_decision_consistency():
     assert all(isinstance(v, float) for v in dnfr_sparse)
     assert all(isinstance(v, float) for v in dnfr_dense)
 
+
 def test_dnfr_path_decision_persists_in_telemetry():
     """
     Validate that path decision information is correctly recorded for telemetry.
@@ -339,6 +350,7 @@ def test_dnfr_path_decision_persists_in_telemetry():
 
     assert "dnfr_path" in profile
     assert profile["dnfr_path"] in ["vectorized", "fallback"]
+
 
 def test_fallback_validates_numpy_module_attributes():
     """
@@ -428,6 +440,7 @@ def test_fallback_validates_numpy_module_attributes():
         valid_fallback_dnfr = list(collect_attr(G, G.nodes, ALIAS_DNFR, 0.0))
         # With valid numpy, results should match baseline
         np.testing.assert_allclose(valid_fallback_dnfr, baseline_dnfr, rtol=1e-10)
+
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])

@@ -14,7 +14,13 @@ from tnfr.mathematics import (
     make_frequency_operator,
 )
 from tnfr.node import NodeNX
-from tnfr.operators.definitions import Coherence, Emission, Reception, Resonance, Transition
+from tnfr.operators.definitions import (
+    Coherence,
+    Emission,
+    Reception,
+    Resonance,
+    Transition,
+)
 from tnfr.structural import create_nfr
 
 from tests.helpers.compare_classical import (
@@ -22,6 +28,7 @@ from tests.helpers.compare_classical import (
     math_sequence_summary,
 )
 from tests.helpers.mathematics import build_node_with_operators, make_dynamics_engine
+
 
 @pytest.mark.parametrize(
     "ops",
@@ -34,7 +41,9 @@ def test_run_sequence_with_validation_reports_metrics(ops):
     node, hilbert, validator = build_node_with_operators()
     result = node.run_sequence_with_validation(ops)
 
-    assert set(result).issuperset({"pre_state", "post_state", "pre_metrics", "post_metrics", "validation"})
+    assert set(result).issuperset(
+        {"pre_state", "post_state", "pre_metrics", "post_metrics", "validation"}
+    )
     assert result["pre_metrics"]["normalized"] is True
     assert result["post_metrics"]["normalized"] is True
     frequency_positive = result["post_metrics"].get("frequency_positive")
@@ -47,6 +56,7 @@ def test_run_sequence_with_validation_reports_metrics(ops):
     assert validation["passed"] is True
     assert "report" in validation
 
+
 def test_run_sequence_with_validation_respects_frequency_override():
     node, _, _ = build_node_with_operators(frequency_value=None)
     outcome = node.run_sequence_with_validation(
@@ -54,6 +64,7 @@ def test_run_sequence_with_validation_respects_frequency_override():
     )
     assert "frequency_positive" not in outcome["post_metrics"]
     assert outcome["validation"] is None
+
 
 def test_run_sequence_with_validation_logging_respects_flags(caplog):
     node, _, _ = build_node_with_operators()
@@ -79,6 +90,7 @@ def test_run_sequence_with_validation_logging_respects_flags(caplog):
     assert node_records[0].message.startswith("node_metrics.pre")
     assert node_records[1].message.startswith("node_metrics.post")
 
+
 def test_run_sequence_validation_summary_aligns_with_metrics():
     node, _, _ = build_node_with_operators()
     result = node.run_sequence_with_validation(list(DEFAULT_ACCEPTANCE_OPS))
@@ -94,7 +106,10 @@ def test_run_sequence_validation_summary_aligns_with_metrics():
     freq_metric = summary["frequency"]
     assert isinstance(freq_metric, dict)
     assert freq_metric["value"] == pytest.approx(post_metrics["frequency_expectation"])
-    assert freq_metric["projection_passed"] is post_metrics["frequency_projection_passed"]
+    assert (
+        freq_metric["projection_passed"] is post_metrics["frequency_projection_passed"]
+    )
+
 
 def test_mathematical_dynamics_engine_matches_analytic_solution():
     hilbert = HilbertSpace(2)
@@ -108,6 +123,7 @@ def test_mathematical_dynamics_engine_matches_analytic_solution():
     assert trajectory.shape == (3, 2)
     assert np.allclose(trajectory[0], state)
 
+
 def test_mathematical_dynamics_engine_direct_instantiation_step():
     hilbert = HilbertSpace(2)
     generator = np.diag([1.0, -1.0])
@@ -119,6 +135,7 @@ def test_mathematical_dynamics_engine_direct_instantiation_step():
     expected = np.array([-1.0j, 0.0 + 0j])
     assert np.allclose(evolved, expected)
 
+
 def test_mathematical_dynamics_engine_reproducibility_without_rng():
     hilbert = HilbertSpace(3)
     generator = np.diag([0.2, -0.1, 0.05])
@@ -129,17 +146,23 @@ def test_mathematical_dynamics_engine_reproducibility_without_rng():
     second = engine.evolve(state, steps=4, dt=0.3)
     assert np.allclose(first, second)
 
+
 def test_mathematical_dynamics_engine_matches_scipy_when_available():
     pytest.importorskip("scipy.linalg")
     hilbert = HilbertSpace(2)
     generator = np.array([[0.3, 0.0], [0.0, -0.3]], dtype=np.complex128)
-    numpy_engine = make_dynamics_engine(generator, hilbert_space=hilbert, use_scipy=False)
-    scipy_engine = make_dynamics_engine(generator, hilbert_space=hilbert, use_scipy=True)
+    numpy_engine = make_dynamics_engine(
+        generator, hilbert_space=hilbert, use_scipy=False
+    )
+    scipy_engine = make_dynamics_engine(
+        generator, hilbert_space=hilbert, use_scipy=True
+    )
 
     state = np.array([np.sqrt(0.5) + 0j, np.sqrt(0.5) + 0j])
     numpy_step = numpy_engine.step(state, dt=0.5)
     scipy_step = scipy_engine.step(state, dt=0.5)
     assert np.allclose(numpy_step, scipy_step)
+
 
 def test_operator_factory_wiring_creates_valid_node():
     G, node_id = create_nfr("factory-node")
@@ -165,13 +188,18 @@ def test_operator_factory_wiring_creates_valid_node():
         enable_math_validation=True,
     )
 
-    summary = node.run_sequence_with_validation(list(DEFAULT_ACCEPTANCE_OPS), enable_validation=True)
+    summary = node.run_sequence_with_validation(
+        list(DEFAULT_ACCEPTANCE_OPS), enable_validation=True
+    )
     assert summary["validation"]["passed"] is True
+
 
 def test_run_sequence_with_validation_is_reproducible_with_seed():
     summary_one, node_one = math_sequence_summary(DEFAULT_ACCEPTANCE_OPS, rng_seed=2024)
     summary_two, node_two = math_sequence_summary(DEFAULT_ACCEPTANCE_OPS, rng_seed=2024)
-    summary_three, _node_three = math_sequence_summary(DEFAULT_ACCEPTANCE_OPS, rng_seed=2025)
+    summary_three, _node_three = math_sequence_summary(
+        DEFAULT_ACCEPTANCE_OPS, rng_seed=2025
+    )
 
     np.testing.assert_allclose(summary_one["pre_state"], summary_two["pre_state"])
     np.testing.assert_allclose(summary_one["post_state"], summary_two["post_state"])
@@ -185,6 +213,7 @@ def test_run_sequence_with_validation_is_reproducible_with_seed():
     assert graph_one is not graph_two
     assert set(graph_one.nodes) == set(graph_two.nodes)
 
+
 def test_run_sequence_with_validation_accepts_generator_instance():
     rng = np.random.default_rng(1337)
     summary_one, node_one = math_sequence_summary(DEFAULT_ACCEPTANCE_OPS, rng=rng)
@@ -196,6 +225,7 @@ def test_run_sequence_with_validation_accepts_generator_instance():
     assert summary_one["validation"] == summary_two["validation"]
 
     assert node_one is not node_two
+
 
 def test_new_modules_import_without_cycles():
     for module in (

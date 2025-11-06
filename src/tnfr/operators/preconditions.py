@@ -32,6 +32,7 @@ __all__ = [
     "validate_recursivity",
 ]
 
+
 class OperatorPreconditionError(Exception):
     """Raised when an operator's preconditions are not met."""
 
@@ -49,9 +50,13 @@ class OperatorPreconditionError(Exception):
         self.reason = reason
         super().__init__(f"{operator}: {reason}")
 
-def _get_node_attr(G: TNFRGraph, node: NodeId, aliases: tuple[str, ...], default: float = 0.0) -> float:
+
+def _get_node_attr(
+    G: TNFRGraph, node: NodeId, aliases: tuple[str, ...], default: float = 0.0
+) -> float:
     """Get node attribute using alias fallback."""
     return float(get_attr(G.nodes[node], aliases, default))
+
 
 def validate_emission(G: TNFRGraph, node: NodeId) -> None:
     """AL - Emission requires node in latent or low activation state.
@@ -74,9 +79,9 @@ def validate_emission(G: TNFRGraph, node: NodeId) -> None:
     max_epi = float(G.graph.get("AL_MAX_EPI_FOR_EMISSION", 0.8))
     if epi >= max_epi:
         raise OperatorPreconditionError(
-            "Emission",
-            f"Node already active (EPI={epi:.3f} >= {max_epi:.3f})"
+            "Emission", f"Node already active (EPI={epi:.3f} >= {max_epi:.3f})"
         )
+
 
 def validate_reception(G: TNFRGraph, node: NodeId) -> None:
     """EN - Reception requires node to have neighbors to receive from.
@@ -96,9 +101,9 @@ def validate_reception(G: TNFRGraph, node: NodeId) -> None:
     neighbors = list(G.neighbors(node))
     if not neighbors:
         raise OperatorPreconditionError(
-            "Reception",
-            "Node has no neighbors to receive energy from"
+            "Reception", "Node has no neighbors to receive energy from"
         )
+
 
 def validate_coherence(G: TNFRGraph, node: NodeId) -> None:
     """IL - Coherence requires significant ΔNFR to stabilize.
@@ -114,7 +119,7 @@ def validate_coherence(G: TNFRGraph, node: NodeId) -> None:
     ------
     OperatorPreconditionError
         If |ΔNFR| is already near zero (nothing meaningful to stabilize)
-    
+
     Notes
     -----
     Coherence acts on the absolute magnitude of ΔNFR, reducing structural
@@ -126,8 +131,9 @@ def validate_coherence(G: TNFRGraph, node: NodeId) -> None:
     if abs(dnfr) < min_dnfr:
         raise OperatorPreconditionError(
             "Coherence",
-            f"ΔNFR already minimal (|ΔNFR|={abs(dnfr):.3e} < {min_dnfr:.3e})"
+            f"ΔNFR already minimal (|ΔNFR|={abs(dnfr):.3e} < {min_dnfr:.3e})",
         )
+
 
 def validate_dissonance(G: TNFRGraph, node: NodeId) -> None:
     """OZ - Dissonance requires vf > 0 to generate meaningful dissonance.
@@ -148,9 +154,9 @@ def validate_dissonance(G: TNFRGraph, node: NodeId) -> None:
     min_vf = float(G.graph.get("OZ_MIN_VF", 0.01))
     if vf < min_vf:
         raise OperatorPreconditionError(
-            "Dissonance",
-            f"Structural frequency too low (νf={vf:.3f} < {min_vf:.3f})"
+            "Dissonance", f"Structural frequency too low (νf={vf:.3f} < {min_vf:.3f})"
         )
+
 
 def validate_coupling(G: TNFRGraph, node: NodeId) -> None:
     """UM - Coupling requires node to have potential coupling targets.
@@ -171,9 +177,9 @@ def validate_coupling(G: TNFRGraph, node: NodeId) -> None:
     # Only fail if graph has no other nodes at all
     if G.number_of_nodes() <= 1:
         raise OperatorPreconditionError(
-            "Coupling",
-            "Graph has no other nodes to couple with"
+            "Coupling", "Graph has no other nodes to couple with"
         )
+
 
 def validate_resonance(G: TNFRGraph, node: NodeId) -> None:
     """RA - Resonance requires neighbors to propagate energy.
@@ -193,9 +199,9 @@ def validate_resonance(G: TNFRGraph, node: NodeId) -> None:
     neighbors = list(G.neighbors(node))
     if not neighbors:
         raise OperatorPreconditionError(
-            "Resonance",
-            "Node has no neighbors for resonance propagation"
+            "Resonance", "Node has no neighbors for resonance propagation"
         )
+
 
 def validate_silence(G: TNFRGraph, node: NodeId) -> None:
     """SHA - Silence requires vf > 0 to reduce.
@@ -217,8 +223,9 @@ def validate_silence(G: TNFRGraph, node: NodeId) -> None:
     if vf < min_vf:
         raise OperatorPreconditionError(
             "Silence",
-            f"Structural frequency already minimal (νf={vf:.3f} < {min_vf:.3f})"
+            f"Structural frequency already minimal (νf={vf:.3f} < {min_vf:.3f})",
         )
+
 
 def validate_expansion(G: TNFRGraph, node: NodeId) -> None:
     """VAL - Expansion requires vf below maximum threshold.
@@ -240,8 +247,9 @@ def validate_expansion(G: TNFRGraph, node: NodeId) -> None:
     if vf >= max_vf:
         raise OperatorPreconditionError(
             "Expansion",
-            f"Structural frequency at maximum (νf={vf:.3f} >= {max_vf:.3f})"
+            f"Structural frequency at maximum (νf={vf:.3f} >= {max_vf:.3f})",
         )
+
 
 def validate_contraction(G: TNFRGraph, node: NodeId) -> None:
     """NUL - Contraction requires vf > minimum to reduce.
@@ -263,8 +271,9 @@ def validate_contraction(G: TNFRGraph, node: NodeId) -> None:
     if vf <= min_vf:
         raise OperatorPreconditionError(
             "Contraction",
-            f"Structural frequency at minimum (νf={vf:.3f} <= {min_vf:.3f})"
+            f"Structural frequency at minimum (νf={vf:.3f} <= {min_vf:.3f})",
         )
+
 
 def validate_self_organization(G: TNFRGraph, node: NodeId) -> None:
     """THOL - Self-organization requires minimum EPI and d2EPI.
@@ -286,8 +295,9 @@ def validate_self_organization(G: TNFRGraph, node: NodeId) -> None:
     if epi < min_epi:
         raise OperatorPreconditionError(
             "Self-organization",
-            f"EPI too low for nested structures (EPI={epi:.3f} < {min_epi:.3f})"
+            f"EPI too low for nested structures (EPI={epi:.3f} < {min_epi:.3f})",
         )
+
 
 def validate_mutation(G: TNFRGraph, node: NodeId) -> None:
     """ZHIR - Mutation requires node to be in valid structural state.
@@ -310,8 +320,9 @@ def validate_mutation(G: TNFRGraph, node: NodeId) -> None:
     if vf < min_vf:
         raise OperatorPreconditionError(
             "Mutation",
-            f"Structural frequency too low for mutation (νf={vf:.3f} < {min_vf:.3f})"
+            f"Structural frequency too low for mutation (νf={vf:.3f} < {min_vf:.3f})",
         )
+
 
 def validate_transition(G: TNFRGraph, node: NodeId) -> None:
     """NAV - Transition requires ΔNFR and vf for controlled handoff.
@@ -333,8 +344,9 @@ def validate_transition(G: TNFRGraph, node: NodeId) -> None:
     if vf < min_vf:
         raise OperatorPreconditionError(
             "Transition",
-            f"Structural frequency too low for transition (νf={vf:.3f} < {min_vf:.3f})"
+            f"Structural frequency too low for transition (νf={vf:.3f} < {min_vf:.3f})",
         )
+
 
 def validate_recursivity(G: TNFRGraph, node: NodeId) -> None:
     """REMESH - Recursivity requires global network coherence threshold.
@@ -356,5 +368,5 @@ def validate_recursivity(G: TNFRGraph, node: NodeId) -> None:
     if G.number_of_nodes() < min_nodes:
         raise OperatorPreconditionError(
             "Recursivity",
-            f"Network too small for remesh (n={G.number_of_nodes()} < {min_nodes})"
+            f"Network too small for remesh (n={G.number_of_nodes()} < {min_nodes})",
         )

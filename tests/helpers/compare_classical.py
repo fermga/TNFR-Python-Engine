@@ -1,4 +1,5 @@
 """Helpers comparing classical runtime traces with the math integration layer."""
+
 from __future__ import annotations
 
 from collections.abc import Iterable, Mapping
@@ -8,10 +9,17 @@ import numpy as np
 
 from tnfr.constants import DNFR_PRIMARY, EPI_PRIMARY, THETA_PRIMARY, VF_PRIMARY
 from tnfr.node import NodeNX, add_edge
-from tnfr.operators.definitions import Coherence, Emission, Reception, Resonance, Transition
+from tnfr.operators.definitions import (
+    Coherence,
+    Emission,
+    Reception,
+    Resonance,
+    Transition,
+)
 from tnfr.structural import create_nfr, run_sequence
 
 from .mathematics import build_node_with_operators
+
 
 def classical_operator_snapshot(
     ops: Iterable[Any],
@@ -64,6 +72,7 @@ def classical_operator_snapshot(
 
     return {"classic-seed": _payload(primary), "classic-partner": _payload(partner)}
 
+
 def math_sequence_summary(
     ops: Iterable[Any],
     *,
@@ -102,6 +111,7 @@ def math_sequence_summary(
         list(ops), enable_validation=True, rng=effective_rng
     )
     return summary, node
+
 
 DEFAULT_ACCEPTANCE_OPS = (
     Emission(),

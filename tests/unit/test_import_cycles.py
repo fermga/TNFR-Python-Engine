@@ -18,6 +18,7 @@ import pytest
 
 from tests.utils import clear_test_module
 
+
 def test_no_circular_imports_utils_package():
     """Verify no circular import cycles in utils package.
 
@@ -38,6 +39,7 @@ def test_no_circular_imports_utils_package():
     # If we reach here without ImportError, no cycles exist
     assert True, "All utils modules imported successfully without cycles"
 
+
 def test_callback_utils_compatibility_shim():
     """Verify callback_utils emits deprecation warning and redirects properly.
 
@@ -50,18 +52,19 @@ def test_callback_utils_compatibility_shim():
     import importlib  # noqa: F401
 
     # Clear the module from cache to force reimport
-    clear_test_module('tnfr.callback_utils')
+    clear_test_module("tnfr.callback_utils")
 
     # Also clear utils.callbacks since callback_utils imports from it
-    clear_test_module('tnfr.utils.callbacks')
+    clear_test_module("tnfr.utils.callbacks")
 
     with pytest.warns(DeprecationWarning, match="callback_utils.*deprecated"):
         import tnfr.callback_utils
 
         # Verify shim properly exports main symbols
-        assert hasattr(tnfr.callback_utils, 'CallbackManager')
-        assert hasattr(tnfr.callback_utils, 'CallbackEvent')
-        assert hasattr(tnfr.callback_utils, 'callback_manager')
+        assert hasattr(tnfr.callback_utils, "CallbackManager")
+        assert hasattr(tnfr.callback_utils, "CallbackEvent")
+        assert hasattr(tnfr.callback_utils, "callback_manager")
+
 
 def test_type_checking_imports_isolated():
     """Verify TYPE_CHECKING guards prevent runtime imports.
@@ -76,12 +79,15 @@ def test_type_checking_imports_isolated():
 
     # CacheManager should NOT be in init's runtime namespace
     # (it's only imported under TYPE_CHECKING)
-    assert not hasattr(init, 'CacheManager'), \
-        "CacheManager should not be in init namespace at runtime"
+    assert not hasattr(
+        init, "CacheManager"
+    ), "CacheManager should not be in init namespace at runtime"
 
     # But we can still import it from cache
     from tnfr.utils.cache import CacheManager
+
     assert CacheManager is not None
+
 
 def get_module_imports(module_path: Path) -> Set[str]:
     """Extract all TNFR imports from a Python module.
@@ -93,7 +99,7 @@ def get_module_imports(module_path: Path) -> Set[str]:
         Set of imported TNFR module names (e.g., 'tnfr.utils.cache')
     """
     try:
-        with open(module_path, 'r', encoding='utf-8') as f:
+        with open(module_path, "r", encoding="utf-8") as f:
             tree = ast.parse(f.read(), filename=str(module_path))
     except SyntaxError:
         return set()
@@ -103,16 +109,17 @@ def get_module_imports(module_path: Path) -> Set[str]:
     for node in ast.walk(tree):
         if isinstance(node, ast.Import):
             for alias in node.names:
-                if alias.name.startswith('tnfr'):
+                if alias.name.startswith("tnfr"):
                     imports.add(alias.name)
         elif isinstance(node, ast.ImportFrom):
-            if node.module and node.module.startswith('tnfr'):
+            if node.module and node.module.startswith("tnfr"):
                 imports.add(node.module)
             elif node.level > 0:
                 # Relative import - mark for manual review
-                imports.add('_relative_import')
+                imports.add("_relative_import")
 
     return imports
+
 
 def test_numeric_module_has_no_tnfr_imports():
     """Verify numeric.py (Layer 2) does not import from higher layers.
@@ -129,10 +136,12 @@ def test_numeric_module_has_no_tnfr_imports():
     imports = get_module_imports(module_path)
 
     # Filter out relative imports (those are within utils package)
-    tnfr_imports = [imp for imp in imports if not imp.startswith('_')]
+    tnfr_imports = [imp for imp in imports if not imp.startswith("_")]
 
-    assert len(tnfr_imports) == 0, \
-        f"numeric.py should have no TNFR imports, found: {tnfr_imports}"
+    assert (
+        len(tnfr_imports) == 0
+    ), f"numeric.py should have no TNFR imports, found: {tnfr_imports}"
+
 
 def test_chunks_module_has_no_tnfr_imports():
     """Verify chunks.py (Layer 2) does not import from higher layers.
@@ -148,10 +157,12 @@ def test_chunks_module_has_no_tnfr_imports():
     imports = get_module_imports(module_path)
 
     # Filter out relative imports
-    tnfr_imports = [imp for imp in imports if not imp.startswith('_')]
+    tnfr_imports = [imp for imp in imports if not imp.startswith("_")]
 
-    assert len(tnfr_imports) == 0, \
-        f"chunks.py should have no TNFR imports, found: {tnfr_imports}"
+    assert (
+        len(tnfr_imports) == 0
+    ), f"chunks.py should have no TNFR imports, found: {tnfr_imports}"
+
 
 def test_utils_layer_hierarchy():
     """Verify utils modules respect dependency layer hierarchy.
@@ -177,13 +188,14 @@ def test_utils_layer_hierarchy():
     # Extract just the module names from relative imports
     # Acceptable: init, numeric
     # Not acceptable: cache, callbacks
-    forbidden = ['cache', 'callbacks']
+    forbidden = ["cache", "callbacks"]
 
-    violations = [imp for imp in imports
-                  if any(f in imp for f in forbidden)]
+    violations = [imp for imp in imports if any(f in imp for f in forbidden)]
 
-    assert len(violations) == 0, \
-        f"data.py should not import from {forbidden}, found: {violations}"
+    assert (
+        len(violations) == 0
+    ), f"data.py should not import from {forbidden}, found: {violations}"
+
 
 def test_all_utils_modules_importable():
     """Verify all utils modules can be imported individually.
@@ -195,14 +207,14 @@ def test_all_utils_modules_importable():
     TNFR Invariants: #4 (Operator closure), #8 (Controlled determinism)
     """
     utils_modules = [
-        'tnfr.utils.cache',
-        'tnfr.utils.callbacks',
-        'tnfr.utils.chunks',
-        'tnfr.utils.data',
-        'tnfr.utils.graph',
-        'tnfr.utils.init',
-        'tnfr.utils.io',
-        'tnfr.utils.numeric',
+        "tnfr.utils.cache",
+        "tnfr.utils.callbacks",
+        "tnfr.utils.chunks",
+        "tnfr.utils.data",
+        "tnfr.utils.graph",
+        "tnfr.utils.init",
+        "tnfr.utils.io",
+        "tnfr.utils.numeric",
     ]
 
     for module_name in utils_modules:
@@ -214,6 +226,7 @@ def test_all_utils_modules_importable():
             __import__(module_name)
         except ImportError as e:
             pytest.fail(f"Failed to import {module_name}: {e}")
+
 
 def test_utils_init_exports_match_submodules():
     """Verify utils.__init__ properly re-exports submodule APIs.
@@ -230,21 +243,30 @@ def test_utils_init_exports_match_submodules():
     import tnfr.utils.callbacks
 
     # Key functions should be accessible from both paths
-    assert hasattr(tnfr.utils, 'cached_node_list')
-    assert hasattr(tnfr.utils.cache, 'cached_node_list')
+    assert hasattr(tnfr.utils, "cached_node_list")
+    assert hasattr(tnfr.utils.cache, "cached_node_list")
     assert callable(tnfr.utils.cached_node_list)
     assert callable(tnfr.utils.cache.cached_node_list)
 
-    assert hasattr(tnfr.utils, 'CallbackManager')
-    assert hasattr(tnfr.utils.callbacks, 'CallbackManager')
+    assert hasattr(tnfr.utils, "CallbackManager")
+    assert hasattr(tnfr.utils.callbacks, "CallbackManager")
     # Verify they're the same class by checking isinstance
-    assert isinstance(tnfr.utils.CallbackManager, type), \
-        "CallbackManager should be a class"
-    assert isinstance(tnfr.utils.callbacks.CallbackManager, type), \
-        "CallbackManager should be a class"
+    assert isinstance(
+        tnfr.utils.CallbackManager, type
+    ), "CallbackManager should be a class"
+    assert isinstance(
+        tnfr.utils.callbacks.CallbackManager, type
+    ), "CallbackManager should be a class"
     # Verify same name and module
-    assert tnfr.utils.CallbackManager.__name__ == tnfr.utils.callbacks.CallbackManager.__name__
-    assert tnfr.utils.CallbackManager.__module__ == tnfr.utils.callbacks.CallbackManager.__module__
+    assert (
+        tnfr.utils.CallbackManager.__name__
+        == tnfr.utils.callbacks.CallbackManager.__name__
+    )
+    assert (
+        tnfr.utils.CallbackManager.__module__
+        == tnfr.utils.callbacks.CallbackManager.__module__
+    )
+
 
 def test_no_import_star_in_utils():
     """Verify utils modules don't use 'from X import *'.
@@ -259,34 +281,35 @@ def test_no_import_star_in_utils():
     import tnfr.utils  # noqa: F401
 
     # Get the utils package directory from the imported module
-    utils_init = importlib.util.find_spec('tnfr.utils')
+    utils_init = importlib.util.find_spec("tnfr.utils")
     if utils_init is None or utils_init.origin is None:
         pytest.skip("Could not locate tnfr.utils package")
 
     utils_dir = Path(utils_init.origin).parent
 
-    for py_file in utils_dir.glob('*.py'):
-        if py_file.name.startswith('_'):
+    for py_file in utils_dir.glob("*.py"):
+        if py_file.name.startswith("_"):
             continue
 
-        with open(py_file, 'r', encoding='utf-8') as f:
+        with open(py_file, "r", encoding="utf-8") as f:
             content = f.read()
 
         # Check for 'import *' patterns
-        if 'import *' in content:
+        if "import *" in content:
             # Parse to verify it's an actual import statement
             try:
                 tree = ast.parse(content)
                 for node in ast.walk(tree):
                     if isinstance(node, ast.ImportFrom):
                         for alias in node.names:
-                            if alias.name == '*':
+                            if alias.name == "*":
                                 pytest.fail(
                                     f"{py_file.name} uses 'from {node.module} import *' "
                                     "which should be avoided"
                                 )
             except SyntaxError:
                 pass
+
 
 def test_utils_package_stability():
     """Verify utils package can be imported multiple times without side effects.
@@ -304,6 +327,7 @@ def test_utils_package_stability():
 
     # Reimport (this is a no-op in Python, but verifies no import-time side effects)
     import importlib
+
     importlib.reload(tnfr.utils)
 
     # Verify state unchanged
@@ -316,5 +340,6 @@ def test_utils_package_stability():
     # Note: Some attributes may be added (e.g., from importlib machinery),
     # but none should be removed
 
-if __name__ == '__main__':
-    pytest.main([__file__, '-v'])
+
+if __name__ == "__main__":
+    pytest.main([__file__, "-v"])

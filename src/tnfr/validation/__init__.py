@@ -10,9 +10,9 @@ operator preconditions, and runtime validation into one coherent API.
 Example Usage::
 
     from tnfr.validation import TNFRValidator
-    
+
     validator = TNFRValidator()
-    
+
     # Comprehensive validation in one call
     result = validator.validate(
         graph=G,
@@ -20,7 +20,7 @@ Example Usage::
         vf=1.0,
         include_invariants=True,
     )
-    
+
     if not result['passed']:
         print(f"Validation failed: {result['errors']}")
 
@@ -41,6 +41,7 @@ from typing import Any, Generic, Mapping, Protocol, TypeVar, runtime_checkable
 
 SubjectT = TypeVar("SubjectT")
 
+
 @dataclass(slots=True)
 class ValidationOutcome(Generic[SubjectT]):
     """Result emitted by all canonical TNFR validators."""
@@ -57,22 +58,30 @@ class ValidationOutcome(Generic[SubjectT]):
     artifacts: Mapping[str, Any] | None = None
     """Optional artefacts (e.g. clamped nodes, normalised vectors)."""
 
+
 @runtime_checkable
 class Validator(Protocol[SubjectT]):
     """Contract implemented by runtime and spectral validators."""
 
-    def validate(self, subject: SubjectT, /, **kwargs: Any) -> ValidationOutcome[SubjectT]:
+    def validate(
+        self, subject: SubjectT, /, **kwargs: Any
+    ) -> ValidationOutcome[SubjectT]:
         """Validate ``subject`` returning a :class:`ValidationOutcome`."""
 
     def report(self, outcome: "ValidationOutcome[SubjectT]") -> str:
         """Produce a concise textual explanation for ``outcome``."""
+
 
 from .compatibility import CANON_COMPAT, CANON_FALLBACK  # noqa: F401
 from ..operators import grammar as _grammar
 from ..types import Glyph
 from .graph import GRAPH_VALIDATORS, run_validators  # noqa: F401
 from .window import validate_window  # noqa: F401
-from .runtime import GraphCanonicalValidator, apply_canonical_clamps, validate_canon  # noqa: F401
+from .runtime import (
+    GraphCanonicalValidator,
+    apply_canonical_clamps,
+    validate_canon,
+)  # noqa: F401
 from .rules import coerce_glyph, get_norm, glyph_fallback, normalized_dnfr  # noqa: F401
 from .soft_filters import (  # noqa: F401
     acceleration_norm,
@@ -119,6 +128,7 @@ from .config import (  # noqa: F401
     validation_config,
     configure_validation,
 )
+
 _GRAMMAR_EXPORTS = tuple(getattr(_grammar, "__all__", ()))
 
 globals().update({name: getattr(_grammar, name) for name in _GRAMMAR_EXPORTS})
@@ -178,6 +188,7 @@ __all__ = _GRAMMAR_EXPORTS + _RUNTIME_EXPORTS
 
 _ENFORCE_CANONICAL_GRAMMAR = _grammar.enforce_canonical_grammar
 
+
 def enforce_canonical_grammar(
     G: Any,
     n: Any,
@@ -197,6 +208,7 @@ def enforce_canonical_grammar(
         if translated is not None:
             return translated
     return result
+
 
 def __getattr__(name: str) -> Any:
     if name == "NFRValidator":

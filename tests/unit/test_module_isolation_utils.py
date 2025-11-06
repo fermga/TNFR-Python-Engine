@@ -19,6 +19,7 @@ import pytest
 
 from tests.utils import clear_test_module
 
+
 def test_clear_test_module_removes_existing():
     """Verify clear_test_module removes existing modules from sys.modules.
 
@@ -27,7 +28,8 @@ def test_clear_test_module_removes_existing():
     """
     # Import a standard library module to ensure it's in sys.modules
     import json  # noqa: F401
-    module_name = 'json'
+
+    module_name = "json"
     assert module_name in sys.modules
 
     # Clear it
@@ -36,13 +38,14 @@ def test_clear_test_module_removes_existing():
     # Should be removed from sys.modules
     assert module_name not in sys.modules
 
+
 def test_clear_test_module_handles_missing():
     """Verify clear_test_module handles non-existent modules gracefully.
 
     The function should not raise an exception when asked to clear
     a module that isn't loaded.
     """
-    fake_module = 'non.existent.module.name.for.testing'
+    fake_module = "non.existent.module.name.for.testing"
     assert fake_module not in sys.modules
 
     # Should not raise exception
@@ -50,6 +53,7 @@ def test_clear_test_module_handles_missing():
         clear_test_module(fake_module)
     except KeyError:
         pytest.fail("clear_test_module raised KeyError for non-existent module")
+
 
 def test_clear_test_module_is_not_url_validation():
     """Document that clear_test_module is module management, not URL validation.
@@ -63,7 +67,7 @@ def test_clear_test_module_is_not_url_validation():
     This is a false positive.
     """
     # Use a module name with dots (similar to URLs but clearly not one)
-    module_name = 'test.module.with.dots.but.not.url'
+    module_name = "test.module.with.dots.but.not.url"
 
     # This pattern should NOT be flagged as URL sanitization
     clear_test_module(module_name)
@@ -71,8 +75,11 @@ def test_clear_test_module_is_not_url_validation():
     # Verify function exists and is documented
     assert clear_test_module.__doc__ is not None
     assert "test isolation" in clear_test_module.__doc__.lower()
-    assert "not security" in clear_test_module.__doc__.lower() or \
-           "not url" in clear_test_module.__doc__.lower()
+    assert (
+        "not security" in clear_test_module.__doc__.lower()
+        or "not url" in clear_test_module.__doc__.lower()
+    )
+
 
 def test_clear_test_module_enables_fresh_import():
     """Verify clear_test_module allows re-importing modules with fresh state.
@@ -82,7 +89,8 @@ def test_clear_test_module_enables_fresh_import():
     """
     # Import a module
     import email  # noqa: F401
-    module_name = 'email'
+
+    module_name = "email"
 
     # Store a reference
     first_import = sys.modules[module_name]  # noqa: F841
@@ -96,6 +104,7 @@ def test_clear_test_module_enables_fresh_import():
     # Should be a fresh import (in practice, same object due to caching,
     # but the pattern enables test isolation when combined with fixtures)
     assert module_name in sys.modules
+
 
 def test_clear_test_module_docstring_quality():
     """Verify clear_test_module has comprehensive documentation.
@@ -121,5 +130,6 @@ def test_clear_test_module_docstring_quality():
     # Check for examples
     assert "Example" in doc or "Args" in doc
 
-if __name__ == '__main__':
-    pytest.main([__file__, '-v'])
+
+if __name__ == "__main__":
+    pytest.main([__file__, "-v"])

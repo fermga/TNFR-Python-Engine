@@ -33,6 +33,7 @@ from ..utils import edge_version_cache, get_graph
 
 __all__ = ("ensure_numpy_buffers",)
 
+
 def ensure_numpy_buffers(
     G: GraphLike,
     *,

@@ -18,9 +18,11 @@ class TestOptimizations:
             G_dense.nodes[node]["vf"] = 1.0
             G_dense.nodes[node]["phase"] = 0.0
 
-        partitioner_adaptive = FractalPartitioner(adaptive=True, max_partition_size=None)
+        partitioner_adaptive = FractalPartitioner(
+            adaptive=True, max_partition_size=None
+        )
         partitions_dense = partitioner_adaptive.partition_network(G_dense)
-        
+
         # Adaptive partitioning should create partitions
         assert len(partitions_dense) >= 1
 
@@ -31,7 +33,7 @@ class TestOptimizations:
             G_sparse.nodes[node]["phase"] = 0.0
 
         partitions_sparse = partitioner_adaptive.partition_network(G_sparse)
-        
+
         # Should handle sparse networks too
         assert len(partitions_sparse) >= 1
 
@@ -46,21 +48,19 @@ class TestOptimizations:
 
         # With spatial indexing
         partitioner_spatial = FractalPartitioner(
-            use_spatial_index=True,
-            max_partition_size=50
+            use_spatial_index=True, max_partition_size=50
         )
         partitions_spatial = partitioner_spatial.partition_network(G)
-        
+
         # Should create partitions
         assert len(partitions_spatial) > 0
 
         # Without spatial indexing
         partitioner_no_spatial = FractalPartitioner(
-            use_spatial_index=False,
-            max_partition_size=50
+            use_spatial_index=False, max_partition_size=50
         )
         partitions_no_spatial = partitioner_no_spatial.partition_network(G)
-        
+
         # Should also work without spatial indexing
         assert len(partitions_no_spatial) > 0
 
@@ -70,7 +70,7 @@ class TestOptimizations:
 
         # Create engine with cache-aware distribution
         engine = TNFRParallelEngine(max_workers=4, cache_aware=True)
-        
+
         # Create mock partitions
         G = nx.erdos_renyi_graph(100, 0.1)
         for node in G.nodes():
@@ -78,19 +78,17 @@ class TestOptimizations:
             G.nodes[node]["phase"] = 0.0
 
         from tnfr.parallel.partitioner import FractalPartitioner
+
         partitioner = FractalPartitioner(max_partition_size=20)
         partitions = partitioner.partition_network(G)
-        
+
         # Test work distribution
         if len(partitions) > 0:
-            work_chunks = engine._distribute_work_cache_aware(
-                partitions, 
-                num_workers=4
-            )
-            
+            work_chunks = engine._distribute_work_cache_aware(partitions, num_workers=4)
+
             # Should distribute work across workers
             assert len(work_chunks) == 4
-            
+
             # All partitions should be assigned
             total_assigned = sum(len(chunk) for chunk in work_chunks)
             assert total_assigned == len(partitions)
@@ -100,7 +98,7 @@ class TestOptimizations:
         from tnfr.parallel import TNFRGPUEngine
 
         engine = TNFRGPUEngine(backend="numpy")
-        
+
         # Create small test graph
         G = nx.Graph([(0, 1), (1, 2), (2, 3)])
         for node in G.nodes():
@@ -110,7 +108,7 @@ class TestOptimizations:
 
         # Compute ΔNFR
         result = engine.compute_delta_nfr_from_graph(G)
-        
+
         # Should return results for all nodes
         assert len(result) == 4
         assert all(isinstance(v, float) for v in result.values())
@@ -119,6 +117,7 @@ class TestOptimizations:
         """Test GPU engine with JAX backend (if available)."""
         try:
             import jax
+
             HAS_JAX = True
         except ImportError:
             HAS_JAX = False
@@ -127,9 +126,9 @@ class TestOptimizations:
             pytest.skip("JAX not available")
 
         from tnfr.parallel import TNFRGPUEngine
-        
+
         engine = TNFRGPUEngine(backend="jax")
-        
+
         # Create test graph
         G = nx.Graph([(0, 1), (1, 2)])
         for node in G.nodes():
@@ -147,7 +146,7 @@ class TestOptimizations:
 
         # Create distributed engine (will fallback without Ray/Dask)
         engine = TNFRDistributedEngine(backend="auto")
-        
+
         # Create small test network
         G = nx.Graph()
         G.add_edges_from([(0, 1), (1, 2), (2, 3)])
@@ -158,7 +157,7 @@ class TestOptimizations:
 
         # Compute Si using distributed engine
         result = engine.compute_si_distributed(G, chunk_size=2)
-        
+
         # Should return results
         assert "si_values" in result
         assert "backend" in result
@@ -169,15 +168,12 @@ class TestOptimizations:
         from tnfr.parallel import TNFRDistributedEngine
 
         engine = TNFRDistributedEngine(backend="auto")
-        
+
         # Simulate small network
         result = engine.simulate_large_network(
-            node_count=50,
-            edge_probability=0.1,
-            operator_sequences=[],
-            chunk_size=10
+            node_count=50, edge_probability=0.1, operator_sequences=[], chunk_size=10
         )
-        
+
         # Should return results with statistics
         assert "si_values" in result
         assert "network_stats" in result
@@ -190,7 +186,7 @@ class TestOptimizations:
             TNFRParallelEngine,
             TNFRGPUEngine,
             TNFRDistributedEngine,
-            TNFRAutoScaler
+            TNFRAutoScaler,
         )
 
         # Create test network
@@ -203,10 +199,7 @@ class TestOptimizations:
             G.nodes[node]["nu_f"] = 1.0
 
         # Test adaptive partitioner with spatial indexing
-        partitioner = FractalPartitioner(
-            adaptive=True,
-            use_spatial_index=True
-        )
+        partitioner = FractalPartitioner(adaptive=True, use_spatial_index=True)
         partitions = partitioner.partition_network(G)
         assert len(partitions) > 0
 

@@ -8,6 +8,7 @@ np = pytest.importorskip("numpy")
 
 from tnfr.metrics.diagnosis import _coherence_matrix_to_numpy
 
+
 class TestCoherenceMatrixToNumpy:
     """Behavioural tests for ``_coherence_matrix_to_numpy``."""
 

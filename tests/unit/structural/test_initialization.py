@@ -14,6 +14,7 @@ from tnfr.initialization import init_node_attrs
 ALIAS_VF = get_aliases("VF")
 ALIAS_THETA = get_aliases("THETA")
 
+
 def test_init_node_attrs_reproducible():
     seed = 123
     G1 = nx.path_graph(5)
@@ -33,6 +34,7 @@ def test_init_node_attrs_reproducible():
     }
 
     assert attrs1 == attrs2
+
 
 def test_init_node_attrs_reversed_uniform_bounds():
     seed = 2024
@@ -64,6 +66,7 @@ def test_init_node_attrs_reversed_uniform_bounds():
 
     assert vfs1 == vfs2
 
+
 def test_init_node_attrs_alias_access():
     G = nx.path_graph(2)
     inject_defaults(G)
@@ -75,9 +78,10 @@ def test_init_node_attrs_alias_access():
         assert get_attr(d_ascii, ALIAS_VF, 0.0) == d[VF_KEY]
         assert get_attr(d_ascii, ALIAS_THETA, 0.0) == d[THETA_KEY]
 
+
 def test_init_node_attrs_clamping_collapses_invalid_range():
     """Test that when INIT_VF_MIN/MAX are outside VF_MIN/MAX, clamping works correctly.
-    
+
     When INIT_VF_MIN=0.0, INIT_VF_MAX=0.0 but VF_MIN=0.5, after clamping
     the range would be [0.5, 0.0] which is invalid. The initialization
     should collapse this to [0.5, 0.5] and generate vf=0.5 for all nodes.
@@ -97,7 +101,7 @@ def test_init_node_attrs_clamping_collapses_invalid_range():
     )
     init_node_attrs(G)
     vfs = [d[VF_KEY] for _, d in G.nodes(data=True)]
-    
+
     # All values should be exactly 0.5 (the collapsed uniform range)
     assert all(vf == 0.5 for vf in vfs), f"Expected all vf=0.5, got {vfs}"
     # All values should respect VF_MIN

@@ -97,9 +97,7 @@ def benchmark_configuration(
             vectorized_samples.append(_measure_run(vector_graph))
 
     density = sum(densities) / len(densities) if densities else 0.0
-    vectorized_stats = (
-        _summarise(vectorized_samples) if vectorized_samples else None
-    )
+    vectorized_stats = _summarise(vectorized_samples) if vectorized_samples else None
     fallback_stats = _summarise(fallback_samples)
 
     return BenchmarkResult(

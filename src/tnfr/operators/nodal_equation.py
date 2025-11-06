@@ -32,7 +32,7 @@ DEFAULT_NODAL_EQUATION_TOLERANCE = 1e-3
 
 class NodalEquationViolation(Exception):
     """Raised when operator application violates the nodal equation.
-    
+
     The nodal equation ∂EPI/∂t = νf · ΔNFR(t) is the fundamental equation
     governing node evolution in TNFR. Violations indicate non-canonical
     structural transformations.
@@ -66,7 +66,7 @@ class NodalEquationViolation(Exception):
         self.expected_depi_dt = expected_depi_dt
         self.tolerance = tolerance
         self.details = details or {}
-        
+
         error = abs(measured_depi_dt - expected_depi_dt)
         super().__init__(
             f"Nodal equation violation in {operator}: "
@@ -76,29 +76,31 @@ class NodalEquationViolation(Exception):
         )
 
 
-def _get_node_attr(G: TNFRGraph, node: NodeId, aliases: tuple[str, ...], default: float = 0.0) -> float:
+def _get_node_attr(
+    G: TNFRGraph, node: NodeId, aliases: tuple[str, ...], default: float = 0.0
+) -> float:
     """Get node attribute using alias fallback."""
     return float(get_attr(G.nodes[node], aliases, default))
 
 
 def compute_expected_depi_dt(G: TNFRGraph, node: NodeId) -> float:
     """Compute expected ∂EPI/∂t from current νf and ΔNFR values.
-    
+
     Implements the canonical TNFR nodal equation:
         ∂EPI/∂t = νf · ΔNFR(t)
-    
+
     Parameters
     ----------
     G : TNFRGraph
         Graph containing the node
     node : NodeId
         Node to compute expected rate for
-        
+
     Returns
     -------
     float
         Expected rate of EPI change (∂EPI/∂t)
-        
+
     Notes
     -----
     The structural frequency (νf) is in Hz_str (structural hertz) units,
@@ -122,12 +124,12 @@ def validate_nodal_equation(
     strict: bool = False,
 ) -> bool:
     """Validate that EPI change respects the nodal equation.
-    
+
     Verifies that the change in EPI between before and after states
     matches the prediction from the nodal equation:
-    
+
         ∂EPI/∂t = νf · ΔNFR(t)
-    
+
     Parameters
     ----------
     G : TNFRGraph
@@ -148,25 +150,25 @@ def validate_nodal_equation(
     strict : bool, default False
         If True, raises NodalEquationViolation on failure.
         If False, returns validation result without raising.
-        
+
     Returns
     -------
     bool
         True if equation is satisfied within tolerance, False otherwise
-        
+
     Raises
     ------
     NodalEquationViolation
         If strict=True and validation fails
-        
+
     Notes
     -----
     The nodal equation is validated using the post-transformation νf and ΔNFR
     values, as these represent the structural state after the operator effect.
-    
+
     For discrete operator applications, dt is typically 1.0, making the
     validation equivalent to: (epi_after - epi_before) ≈ νf_after · ΔNFR_after
-    
+
     Examples
     --------
     >>> from tnfr.structural import create_nfr
@@ -178,23 +180,25 @@ def validate_nodal_equation(
     """
     if tolerance is None:
         # Try graph configuration first, then use default constant
-        tolerance = float(G.graph.get("NODAL_EQUATION_TOLERANCE", DEFAULT_NODAL_EQUATION_TOLERANCE))
-    
+        tolerance = float(
+            G.graph.get("NODAL_EQUATION_TOLERANCE", DEFAULT_NODAL_EQUATION_TOLERANCE)
+        )
+
     # Measured rate of EPI change
     measured_depi_dt = (epi_after - epi_before) / dt if dt > 0 else 0.0
-    
+
     # Expected rate from nodal equation: νf · ΔNFR
     # Use post-transformation values as they represent the new structural state
     expected_depi_dt = compute_expected_depi_dt(G, node)
-    
+
     # Check if equation is satisfied within tolerance
     error = abs(measured_depi_dt - expected_depi_dt)
     is_valid = error <= tolerance
-    
+
     if not is_valid and strict:
         vf = _get_node_attr(G, node, ALIAS_VF)
         dnfr = _get_node_attr(G, node, ALIAS_DNFR)
-        
+
         raise NodalEquationViolation(
             operator=operator_name,
             measured_depi_dt=measured_depi_dt,
@@ -209,5 +213,5 @@ def validate_nodal_equation(
                 "error": error,
             },
         )
-    
+
     return is_valid

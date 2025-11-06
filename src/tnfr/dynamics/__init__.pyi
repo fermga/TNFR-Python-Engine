@@ -1,6 +1,7 @@
 from typing import Any, Literal, Sequence
 
 from tnfr.types import GlyphCode, TNFRGraph
+
 __all__: tuple[str, ...]
 
 dnfr: Any
@@ -73,4 +74,3 @@ def update_epi_via_nodal_equation(
     method: Literal["euler", "rk4"] | None = ...,
     n_jobs: int | None = ...,
 ) -> None: ...
-

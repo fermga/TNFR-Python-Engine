@@ -183,15 +183,18 @@ def test_nested_dict_mutations(graph_canon):
     assert refreshed["stable"]["persist"] == 5
 
 
-@pytest.mark.parametrize("config_key", [
-    "DIAGNOSIS",
-    "COHERENCE",
-    "SIGMA",
-    "TRACE",
-    "GRAMMAR",
-    "DNFR_WEIGHTS",
-    "SI_WEIGHTS",
-])
+@pytest.mark.parametrize(
+    "config_key",
+    [
+        "DIAGNOSIS",
+        "COHERENCE",
+        "SIGMA",
+        "TRACE",
+        "GRAMMAR",
+        "DNFR_WEIGHTS",
+        "SI_WEIGHTS",
+    ],
+)
 def test_all_dict_configs_are_mutable_mappings(graph_canon, config_key):
     """Verify all dictionary-type configurations support MutableMapping."""
     G = graph_canon()
@@ -199,9 +202,9 @@ def test_all_dict_configs_are_mutable_mappings(graph_canon, config_key):
     config = get_param(G, config_key)
 
     if isinstance(config, dict):
-        assert isinstance(config, MutableMapping), (
-            f"{config_key} should be a MutableMapping"
-        )
+        assert isinstance(
+            config, MutableMapping
+        ), f"{config_key} should be a MutableMapping"
 
         # Test basic mutation
         config["test_key"] = "test_value"

@@ -6,4 +6,3 @@ from typing import Any
 __all__: tuple[str, ...]
 
 def last_glyph(nd: Mapping[str, Any]) -> str | None: ...
-

@@ -21,6 +21,7 @@ from .strategies import (
     phase_neighbourhoods,
 )
 
+
 def _wrap_angle(angle: float) -> float:
     """Normalise ``angle`` to the principal value in ``[-π, π]``.
 
@@ -30,6 +31,7 @@ def _wrap_angle(angle: float) -> float:
     """
 
     return math.atan2(math.sin(angle), math.cos(angle))
+
 
 @PROPERTY_TEST_SETTINGS
 @given(
@@ -70,6 +72,7 @@ def test_neighbor_phase_mean_list_rotates_by_constant(
     delta = _wrap_angle(rotated_mean - base_mean - rotation)
     assert math.isclose(delta, 0.0, abs_tol=1e-9)
 
+
 @PROPERTY_TEST_SETTINGS
 @given(
     data=st.data(),
@@ -100,6 +103,7 @@ def test_neighbor_phase_mean_list_invariant_to_permutation(
 
     assert math.isclose(_wrap_angle(permuted_mean - base_mean), 0.0, abs_tol=1e-9)
 
+
 @PROPERTY_TEST_SETTINGS
 @given(neighbourhood=phase_neighbourhoods(min_neighbours=0, max_neighbours=0))
 def test_neighbor_phase_mean_list_respects_fallback(
@@ -122,6 +126,7 @@ def test_neighbor_phase_mean_list_respects_fallback(
 
     assert math.isclose(first, neighbourhood.fallback, abs_tol=0.0)
     assert math.isclose(second, neighbourhood.fallback, abs_tol=0.0)
+
 
 @PROPERTY_TEST_SETTINGS
 @given(scenario=phase_bulk_scenarios())

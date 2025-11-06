@@ -36,7 +36,7 @@ class TestCanonicalNodalEquation:
             delta_nfr=0.4,
             validate_units=False,
         )
-        
+
         assert result.derivative == pytest.approx(1.5 * 0.4)
         assert result.nu_f == 1.5
         assert result.delta_nfr == 0.4
@@ -49,7 +49,7 @@ class TestCanonicalNodalEquation:
             delta_nfr=-0.5,
             validate_units=True,
         )
-        
+
         assert result.derivative == pytest.approx(-1.0)
         assert result.validated is True
 
@@ -60,7 +60,7 @@ class TestCanonicalNodalEquation:
             delta_nfr=0.8,
             validate_units=True,
         )
-        
+
         assert result.derivative == pytest.approx(0.0)
         assert result.nu_f == 0.0
 
@@ -71,7 +71,7 @@ class TestCanonicalNodalEquation:
             delta_nfr=0.0,
             validate_units=True,
         )
-        
+
         assert result.derivative == pytest.approx(0.0)
         assert result.delta_nfr == 0.0
 
@@ -82,7 +82,7 @@ class TestCanonicalNodalEquation:
             delta_nfr=-0.3,
             validate_units=True,
         )
-        
+
         assert result.derivative == pytest.approx(-0.3)
         assert result.derivative < 0
 
@@ -93,7 +93,7 @@ class TestCanonicalNodalEquation:
             delta_nfr=0.3,
             validate_units=True,
         )
-        
+
         assert result.derivative == pytest.approx(0.3)
         assert result.derivative > 0
 
@@ -104,7 +104,7 @@ class TestCanonicalNodalEquation:
             delta_nfr=50.0,
             validate_units=True,
         )
-        
+
         assert result.derivative == pytest.approx(5000.0)
 
     def test_small_values_preserve_precision(self):
@@ -114,7 +114,7 @@ class TestCanonicalNodalEquation:
             delta_nfr=0.002,
             validate_units=True,
         )
-        
+
         assert result.derivative == pytest.approx(0.000002)
 
 
@@ -145,7 +145,7 @@ class TestStructuralFrequencyValidation:
         """Infinite frequency is not physically meaningful."""
         with pytest.raises(ValueError, match="finite"):
             validate_structural_frequency(float("inf"))
-        
+
         with pytest.raises(ValueError, match="finite"):
             validate_structural_frequency(float("-inf"))
 
@@ -153,7 +153,7 @@ class TestStructuralFrequencyValidation:
         """Non-numeric types should be rejected with TypeError."""
         with pytest.raises(TypeError, match="numeric"):
             validate_structural_frequency(None)  # type: ignore
-        
+
         with pytest.raises(TypeError, match="numeric"):
             validate_structural_frequency(object())  # type: ignore
 
@@ -161,13 +161,13 @@ class TestStructuralFrequencyValidation:
         """Invalid numeric strings should be rejected with ValueError."""
         with pytest.raises(ValueError, match="valid number"):
             validate_structural_frequency("invalid")  # type: ignore
-        
+
         with pytest.raises(ValueError, match="valid number"):
             validate_structural_frequency("not a number")  # type: ignore
 
     def test_accepts_numeric_strings(self):
         """Numeric strings are coerced to float (Python float() behavior).
-        
+
         Note: The function accepts any input that Python's float() can convert,
         including strings. While the type annotation says float, this follows
         Python's duck typing convention where float() performs conversion.
@@ -210,7 +210,7 @@ class TestNodalGradientValidation:
         """Infinite gradient is not physically meaningful."""
         with pytest.raises(ValueError, match="finite"):
             validate_nodal_gradient(float("inf"))
-        
+
         with pytest.raises(ValueError, match="finite"):
             validate_nodal_gradient(float("-inf"))
 
@@ -218,7 +218,7 @@ class TestNodalGradientValidation:
         """Non-numeric types should be rejected with TypeError."""
         with pytest.raises(TypeError, match="numeric"):
             validate_nodal_gradient(None)  # type: ignore
-        
+
         with pytest.raises(TypeError, match="numeric"):
             validate_nodal_gradient(object())  # type: ignore
 
@@ -226,13 +226,13 @@ class TestNodalGradientValidation:
         """Invalid numeric strings should be rejected with ValueError."""
         with pytest.raises(ValueError, match="valid number"):
             validate_nodal_gradient("invalid")  # type: ignore
-        
+
         with pytest.raises(ValueError, match="valid number"):
             validate_nodal_gradient("not a number")  # type: ignore
 
     def test_accepts_numeric_strings(self):
         """Numeric strings are coerced to float (Python float() behavior).
-        
+
         Note: The function accepts any input that Python's float() can convert,
         including strings. While the type annotation says float, this follows
         Python's duck typing convention where float() performs conversion.
@@ -259,7 +259,7 @@ class TestNodalEquationResult:
             delta_nfr=0.75,
             validated=True,
         )
-        
+
         assert result.derivative == 1.5
         assert result.nu_f == 2.0
         assert result.delta_nfr == 0.75
@@ -268,7 +268,7 @@ class TestNodalEquationResult:
     def test_result_is_immutable(self):
         """Result should be immutable (NamedTuple property)."""
         result = NodalEquationResult(1.0, 2.0, 0.5, True)
-        
+
         with pytest.raises(AttributeError):
             result.derivative = 2.0  # type: ignore
 
@@ -281,7 +281,7 @@ class TestCanonicalEquationInvariants:
         # Apply equation twice (composition)
         result1 = compute_canonical_nodal_derivative(1.0, 0.5)
         result2 = compute_canonical_nodal_derivative(1.0, result1.derivative)
-        
+
         # Both should be valid
         assert isinstance(result1.derivative, float)
         assert isinstance(result2.derivative, float)
@@ -292,7 +292,7 @@ class TestCanonicalEquationInvariants:
         """νf=0 should freeze evolution (silence operator)."""
         result = compute_canonical_nodal_derivative(0.0, 0.5)
         assert result.derivative == 0.0
-        
+
         result = compute_canonical_nodal_derivative(0.0, -0.8)
         assert result.derivative == 0.0
 
@@ -305,7 +305,7 @@ class TestCanonicalEquationInvariants:
         """ΔNFR sign should determine expansion vs contraction."""
         expansion = compute_canonical_nodal_derivative(1.0, 0.5)
         contraction = compute_canonical_nodal_derivative(1.0, -0.5)
-        
+
         assert expansion.derivative > 0  # Expansion
         assert contraction.derivative < 0  # Contraction
         assert abs(expansion.derivative) == abs(contraction.derivative)
@@ -315,7 +315,7 @@ class TestCanonicalEquationInvariants:
         base = compute_canonical_nodal_derivative(1.0, 0.5)
         scaled_freq = compute_canonical_nodal_derivative(2.0, 0.5)
         scaled_grad = compute_canonical_nodal_derivative(1.0, 1.0)
-        
+
         assert scaled_freq.derivative == pytest.approx(2 * base.derivative)
         assert scaled_grad.derivative == pytest.approx(2 * base.derivative)
 
@@ -329,9 +329,9 @@ class TestIntegrationWithExistingCode:
         vf = 1.5
         dnfr = 0.4
         expected = vf * dnfr
-        
+
         result = compute_canonical_nodal_derivative(vf, dnfr, validate_units=False)
-        
+
         assert result.derivative == pytest.approx(expected)
 
     def test_canonical_function_is_drop_in_replacement(self):
@@ -344,7 +344,7 @@ class TestIntegrationWithExistingCode:
             (1.5, 0.0),
             (0.8, -0.3),
         ]
-        
+
         for vf, dnfr in test_cases:
             inline_result = vf * dnfr
             canonical_result = compute_canonical_nodal_derivative(

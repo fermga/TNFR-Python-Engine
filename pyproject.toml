@@ -187,10 +187,10 @@ prerelease = false
 [tool.semantic_release.changelog]
 template_dir = "meta/semantic_release/templates"
 mode = "update"
-changelog_file = ""
 
 [tool.semantic_release.changelog.default_templates]
 mask_initial_release = true
+changelog_file = ""
 
 [tool.semantic_release.commit_parser_options]
 minor_tags = ["feat", "structure"]
@@ -212,7 +212,7 @@ skip = ["benchmarks"]
 
 [tool.flake8]
 max-line-length = 88
-ignore = ["E501", "W503"]
+ignore = ["E501", "W503", "E203"]
 exclude = ["benchmarks/"]
 
 [tool.pydocstyle]

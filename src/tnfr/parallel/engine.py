@@ -67,27 +67,25 @@ class TNFRParallelEngine:
     ):
         if max_workers is None:
             max_workers = cpu_count()
-        
+
         self.max_workers = max_workers
         self.execution_mode = execution_mode
         self.cache_aware = cache_aware
         self.partitioner = FractalPartitioner(max_partition_size=partition_size)
 
-    def _distribute_work_cache_aware(
-        self, partitions: list, num_workers: int
-    ) -> list:
+    def _distribute_work_cache_aware(self, partitions: list, num_workers: int) -> list:
         """Distribute work across workers in a cache-aware manner.
-        
+
         Groups related partitions together to improve cache locality
         and reduce cache misses during parallel execution.
-        
+
         Parameters
         ----------
         partitions : list
             List of work partitions to distribute
         num_workers : int
             Number of worker processes/threads
-            
+
         Returns
         -------
         list
@@ -99,10 +97,10 @@ class TNFRParallelEngine:
             for i, partition in enumerate(partitions):
                 chunks[i % num_workers].append(partition)
             return chunks
-        
+
         # Cache-aware distribution: group spatially nearby partitions
         # This reduces cache misses when processing related nodes
-        
+
         # Sort partitions by their "center" (average νf of nodes)
         def partition_center(partition_info):
             node_set, subgraph = partition_info
@@ -111,30 +109,33 @@ class TNFRParallelEngine:
             try:
                 from ..alias import get_attr
                 from ..constants.aliases import ALIAS_VF
+
                 vf_sum = sum(
-                    float(get_attr(subgraph.nodes[n], ALIAS_VF, None) or
-                          subgraph.nodes[n].get("vf", 1.0))
+                    float(
+                        get_attr(subgraph.nodes[n], ALIAS_VF, None)
+                        or subgraph.nodes[n].get("vf", 1.0)
+                    )
                     for n in node_set
                 )
                 return vf_sum / len(node_set)
             except:
                 return 0.0
-        
+
         sorted_partitions = sorted(partitions, key=partition_center)
-        
+
         # Distribute sorted partitions in contiguous blocks
         # This ensures workers process spatially nearby partitions
         chunks = [[] for _ in range(num_workers)]
         chunk_size = len(sorted_partitions) // num_workers
         remainder = len(sorted_partitions) % num_workers
-        
+
         start_idx = 0
         for worker_id in range(num_workers):
             # Give some workers an extra partition to handle remainder
             end_idx = start_idx + chunk_size + (1 if worker_id < remainder else 0)
             chunks[worker_id] = sorted_partitions[start_idx:end_idx]
             start_idx = end_idx
-        
+
         return chunks
 
     def compute_delta_nfr_parallel(

@@ -18,7 +18,9 @@ def test_default_validation_service_validates_sequence():
     service = DefaultValidationService()
 
     # Valid canonical sequence should not raise
-    service.validate_sequence(["emission", "reception", "coherence", "coupling", "resonance", "silence"])
+    service.validate_sequence(
+        ["emission", "reception", "coherence", "coupling", "resonance", "silence"]
+    )
 
     # Invalid sequence should raise
     with pytest.raises(ValueError, match="Invalid sequence"):
@@ -65,6 +67,7 @@ def test_default_dynamics_engine_updates_delta_nfr():
 
     # ΔNFR should be updated (check node has dnfr attribute)
     from tnfr.constants import DNFR_PRIMARY
+
     assert DNFR_PRIMARY in G.nodes[node]
 
 
@@ -120,6 +123,7 @@ def test_default_telemetry_trace_context():
 
         # Simulate state change
         from tnfr.constants import EPI_PRIMARY
+
         G.nodes[node][EPI_PRIMARY] = 1.5
 
         post_state = tracer.capture_state(G)

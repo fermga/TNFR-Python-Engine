@@ -19,6 +19,7 @@ SELECTOR_THRESHOLD_DEFAULTS: Mapping[str, float] = MappingProxyType(
     }
 )
 
+
 @dataclass(frozen=True, slots=True)
 class CoreDefaults:
     """Default parameters for the core engine.
@@ -123,6 +124,7 @@ class CoreDefaults:
     PROGRAM_TRACE_MAXLEN: int = 50
     HISTORY_MAXLEN: int = 0
 
+
 @dataclass(frozen=True, slots=True)
 class RemeshDefaults:
     """Default parameters for the remeshing subsystem.
@@ -150,6 +152,7 @@ class RemeshDefaults:
     REMESH_TAU_LOCAL: int = 4
     REMESH_ALPHA: float = 0.5
     REMESH_ALPHA_HARD: bool = False
+
 
 _core_defaults = asdict(CoreDefaults())
 _remesh_defaults = asdict(RemeshDefaults())

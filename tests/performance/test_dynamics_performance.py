@@ -42,6 +42,7 @@ DNFR_WEIGHTS = {
     "topo": 0.1,
 }
 
+
 def _seed_graph(
     num_nodes: int = 160, edge_probability: float = 0.35, *, seed: int = 42
 ) -> nx.Graph:
@@ -53,12 +54,14 @@ def _seed_graph(
     graph.graph["DNFR_WEIGHTS"] = dict(DNFR_WEIGHTS)
     return graph
 
+
 def _naive_prepare(graph: nx.Graph):
     nodes, _ = cached_nodes_and_A(graph, cache_size=1)
     theta = collect_attr(graph, nodes, ALIAS_THETA, 0.0)
     epi = collect_attr(graph, nodes, ALIAS_EPI, 0.0)
     vf = collect_attr(graph, nodes, ALIAS_VF, 0.0)
     return theta, epi, vf
+
 
 def _legacy_numpy_stack_accumulation(graph, data, *, buffers):
     x, y, epi_sum, vf_sum, count, deg_sum, _ = buffers
@@ -149,11 +152,13 @@ def _legacy_numpy_stack_accumulation(graph, data, *, buffers):
         deg_array,
     )
 
+
 def _measure(runtime_fn: Callable[[], None], loops: int) -> float:
     start = time.perf_counter()
     for _ in range(loops):
         runtime_fn()
     return time.perf_counter() - start
+
 
 def test_default_compute_delta_nfr_vectorized_is_faster_and_equivalent():
     base_graph = _seed_graph()
@@ -183,10 +188,10 @@ def test_default_compute_delta_nfr_vectorized_is_faster_and_equivalent():
         for n in vectorized_graph.nodes
     ]
     fallback_dnfr = [
-        get_attr(fallback_graph.nodes[n], ALIAS_DNFR, 0.0)
-        for n in fallback_graph.nodes
+        get_attr(fallback_graph.nodes[n], ALIAS_DNFR, 0.0) for n in fallback_graph.nodes
     ]
     npt.assert_allclose(vector_dnfr, fallback_dnfr, rtol=1e-9, atol=1e-9)
+
 
 def test_broadcast_neighbor_accumulator_stays_faster_and_correct(monkeypatch):
     base_graph = _seed_graph(num_nodes=220, edge_probability=0.4, seed=20250217)
@@ -235,14 +240,19 @@ def test_broadcast_neighbor_accumulator_stays_faster_and_correct(monkeypatch):
         if vec_arr is None or loop_arr is None:
             assert vec_arr is loop_arr is None
         else:
-            npt.assert_allclose(vec_arr, np.asarray(loop_arr, dtype=float), rtol=1e-9, atol=1e-9)
+            npt.assert_allclose(
+                vec_arr, np.asarray(loop_arr, dtype=float), rtol=1e-9, atol=1e-9
+            )
 
     vec_deg = vector_result[-1]
     loop_deg = loop_result[-1]
     if vec_deg is None or loop_deg is None:
         assert vec_deg is loop_deg is None
     else:
-        npt.assert_allclose(vec_deg, np.asarray(loop_deg, dtype=float), rtol=1e-9, atol=1e-9)
+        npt.assert_allclose(
+            vec_deg, np.asarray(loop_deg, dtype=float), rtol=1e-9, atol=1e-9
+        )
+
 
 def test_broadcast_accumulator_bincount_fast_path_matches_python(monkeypatch):
     graph = _seed_graph(num_nodes=180, edge_probability=0.45, seed=314159)
@@ -349,6 +359,7 @@ def test_broadcast_accumulator_bincount_fast_path_matches_python(monkeypatch):
     if cache is not None:
         assert cache.neighbor_edge_values_np is None
 
+
 def test_prepare_dnfr_data_stays_faster_than_naive_collector():
     graph_opt = _seed_graph(seed=7)
     graph_naive = graph_opt.copy()
@@ -372,6 +383,7 @@ def test_prepare_dnfr_data_stays_faster_than_naive_collector():
     npt.assert_allclose(optimized_data["theta"], theta, rtol=0.0, atol=0.0)
     npt.assert_allclose(optimized_data["epi"], epi, rtol=0.0, atol=0.0)
     npt.assert_allclose(optimized_data["vf"], vf, rtol=0.0, atol=0.0)
+
 
 def test_neighbor_accumulation_numpy_outperforms_stack_strategy():
     graph_modern = _seed_graph(seed=9)

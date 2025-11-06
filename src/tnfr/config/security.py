@@ -125,7 +125,7 @@ def load_pypi_credentials() -> dict[str, str | None]:
     Use API tokens instead of passwords:
     - PYPI_USERNAME=__token__
     - PYPI_PASSWORD=pypi-XXXXXXXXXXXXXXXXXXXX...
-    
+
     Note: Example uses 'XXX' pattern to avoid triggering security scanners.
     Actual PyPI tokens follow format: pypi-AgEIcHlwaS5vcmcC...
 
@@ -217,15 +217,15 @@ def load_redis_config(validate_url: bool = True) -> dict[str, Any]:
     """
     # Check if full URL is provided
     redis_url = get_env_variable("REDIS_URL", default=None)
-    
+
     if redis_url:
         # Validate URL if requested
         if validate_url:
             SecureCredentialValidator.validate_redis_url(redis_url)
-        
+
         # Parse URL to extract components
         parsed = urlparse(redis_url)
-        
+
         return {
             "host": parsed.hostname or "localhost",
             "port": parsed.port or 6379,
@@ -234,7 +234,7 @@ def load_redis_config(validate_url: bool = True) -> dict[str, Any]:
             "ssl": parsed.scheme == "rediss",
             "url": redis_url,
         }
-    
+
     # Load from individual variables
     host = get_env_variable("REDIS_HOST", default="localhost")
     port_str = get_env_variable("REDIS_PORT", default="6379")
@@ -246,7 +246,7 @@ def load_redis_config(validate_url: bool = True) -> dict[str, Any]:
         port = int(port_str)
     except ValueError:
         raise ConfigurationError(f"REDIS_PORT must be an integer, got: {port_str}")
-    
+
     # Validate port range
     if not (1 <= port <= 65535):
         raise ConfigurationError(f"REDIS_PORT must be between 1 and 65535, got: {port}")
@@ -257,7 +257,7 @@ def load_redis_config(validate_url: bool = True) -> dict[str, Any]:
         raise ConfigurationError(f"REDIS_DB must be an integer, got: {db_str}")
 
     use_tls = use_tls_str.lower() in ("true", "1", "yes", "on")
-    
+
     # Construct URL for validation
     if validate_url:
         scheme = "rediss" if use_tls else "redis"
@@ -387,7 +387,7 @@ def validate_no_hardcoded_secrets(value: str) -> bool:
 
 class SecureCredentialValidator:
     """Robust credential and configuration validator.
-    
+
     Validates credentials and configuration with strict security criteria
     following TNFR principles of structural coherence and stability.
     """
@@ -399,27 +399,27 @@ class SecureCredentialValidator:
     @staticmethod
     def validate_redis_url(url: str) -> bool:
         """Validate Redis URL with strict security criteria.
-        
+
         Parameters
         ----------
         url : str
             Redis URL to validate.
-            
+
         Returns
         -------
         bool
             True if URL is valid.
-            
+
         Raises
         ------
         ValueError
             If URL fails validation checks.
-            
+
         Examples
         --------
         >>> SecureCredentialValidator.validate_redis_url("redis://localhost:6379/0")
         True
-        
+
         >>> SecureCredentialValidator.validate_redis_url("http://evil.com")
         Traceback (most recent call last):
             ...
@@ -457,17 +457,17 @@ class SecureCredentialValidator:
     @staticmethod
     def sanitize_for_logging(url: str) -> str:
         """Sanitize URL for safe logging (hide credentials).
-        
+
         Parameters
         ----------
         url : str
             URL that may contain credentials.
-            
+
         Returns
         -------
         str
             Sanitized URL with credentials masked.
-            
+
         Examples
         --------
         >>> SecureCredentialValidator.sanitize_for_logging(
@@ -480,7 +480,7 @@ class SecureCredentialValidator:
 
         try:
             parsed = urlparse(url)
-            
+
             # Check if parsing actually succeeded
             if not parsed.scheme and not parsed.netloc:
                 # This is not a valid URL
@@ -500,7 +500,7 @@ class SecureCredentialValidator:
                     netloc = f"{username}:***@{hostinfo}"
                 else:
                     netloc = f"***@{hostinfo}"
-            
+
             sanitized = parsed._replace(netloc=netloc)
             return urlunparse(sanitized)
 
@@ -509,19 +509,19 @@ class SecureCredentialValidator:
     @staticmethod
     def validate_secret_strength(secret: str | bytes, min_length: int = 8) -> bool:
         """Validate that a secret meets minimum strength requirements.
-        
+
         Parameters
         ----------
         secret : str or bytes
             The secret to validate.
         min_length : int, default=8
             Minimum required length.
-            
+
         Returns
         -------
         bool
             True if secret is strong enough.
-            
+
         Raises
         ------
         ValueError
@@ -536,24 +536,20 @@ class SecureCredentialValidator:
 
         # Check for common weak passwords first (before length check)
         # This provides more specific error messages
-        weak_passwords = [
-            "password", "123456", "admin", "secret", "test", "changeme"
-        ]
+        weak_passwords = ["password", "123456", "admin", "secret", "test", "changeme"]
         if secret_str.lower() in weak_passwords:
             raise ValueError("Secret matches a known weak password")
 
         # Then check length
         if length < min_length:
-            raise ValueError(
-                f"Secret too short: {length} < {min_length} (minimum)"
-            )
+            raise ValueError(f"Secret too short: {length} < {min_length} (minimum)")
 
         return True
 
 
 class SecureSecretManager:
     """Secure secret management with automatic memory cleanup.
-    
+
     Manages secrets in memory with secure cleanup to prevent exposure
     through memory dumps. Implements structural coherence principles
     by ensuring secrets maintain integrity throughout their lifecycle.
@@ -566,7 +562,7 @@ class SecureSecretManager:
 
     def store_secret(self, key: str, secret: bytes | str) -> None:
         """Store a secret securely.
-        
+
         Parameters
         ----------
         key : str
@@ -584,12 +580,12 @@ class SecureSecretManager:
 
     def get_secret(self, key: str) -> bytes:
         """Get a secret with access tracking.
-        
+
         Parameters
         ----------
         key : str
             Secret identifier.
-            
+
         Returns
         -------
         bytes
@@ -604,7 +600,7 @@ class SecureSecretManager:
 
     def clear_secret(self, key: str) -> None:
         """Clear a secret from memory securely.
-        
+
         Parameters
         ----------
         key : str
@@ -624,7 +620,7 @@ class SecureSecretManager:
 
     def get_access_log(self) -> list[tuple[str, float]]:
         """Get access log for auditing.
-        
+
         Returns
         -------
         list of tuples
@@ -639,7 +635,7 @@ class SecureSecretManager:
 
 class CredentialRotationManager:
     """Manages credential rotation with TTL support.
-    
+
     Implements structural reorganization principle by managing
     credential lifecycle and triggering rotation when coherence
     (validity period) decreases.
@@ -651,7 +647,7 @@ class CredentialRotationManager:
         warning_threshold: timedelta = timedelta(hours=2),
     ) -> None:
         """Initialize rotation manager.
-        
+
         Parameters
         ----------
         rotation_interval : timedelta, default=24 hours
@@ -670,7 +666,7 @@ class CredentialRotationManager:
         rotation_callback: Optional[Callable[[], None]] = None,
     ) -> None:
         """Register a credential for rotation tracking.
-        
+
         Parameters
         ----------
         credential_key : str
@@ -684,12 +680,12 @@ class CredentialRotationManager:
 
     def needs_rotation(self, credential_key: str) -> bool:
         """Check if credential needs rotation.
-        
+
         Parameters
         ----------
         credential_key : str
             Credential identifier.
-            
+
         Returns
         -------
         bool
@@ -703,12 +699,12 @@ class CredentialRotationManager:
 
     def needs_warning(self, credential_key: str) -> bool:
         """Check if credential is nearing expiration.
-        
+
         Parameters
         ----------
         credential_key : str
             Credential identifier.
-            
+
         Returns
         -------
         bool
@@ -723,12 +719,12 @@ class CredentialRotationManager:
 
     def rotate_if_needed(self, credential_key: str) -> bool:
         """Rotate credential if needed.
-        
+
         Parameters
         ----------
         credential_key : str
             Credential identifier.
-            
+
         Returns
         -------
         bool
@@ -744,12 +740,12 @@ class CredentialRotationManager:
 
     def get_credential_age(self, credential_key: str) -> timedelta | None:
         """Get age of credential.
-        
+
         Parameters
         ----------
         credential_key : str
             Credential identifier.
-            
+
         Returns
         -------
         timedelta or None
@@ -763,24 +759,42 @@ class CredentialRotationManager:
 
 class SecurityAuditor:
     """Security auditor for configuration and environment.
-    
+
     Implements diagnostic nodal analysis to identify security
     coherence issues and dissonances in configuration.
     """
 
-    SENSITIVE_PATTERNS = frozenset([
-        "password", "secret", "key", "token", "credential",
-        "api_key", "apikey", "auth", "private"
-    ])
+    SENSITIVE_PATTERNS = frozenset(
+        [
+            "password",
+            "secret",
+            "key",
+            "token",
+            "credential",
+            "api_key",
+            "apikey",
+            "auth",
+            "private",
+        ]
+    )
 
-    WEAK_VALUES = frozenset([
-        "password", "123456", "admin", "secret", "test",
-        "changeme", "default", "root", "toor"
-    ])
+    WEAK_VALUES = frozenset(
+        [
+            "password",
+            "123456",
+            "admin",
+            "secret",
+            "test",
+            "changeme",
+            "default",
+            "root",
+            "toor",
+        ]
+    )
 
     def audit_environment_variables(self) -> list[str]:
         """Audit environment variables for security issues.
-        
+
         Returns
         -------
         list of str
@@ -794,8 +808,7 @@ class SecurityAuditor:
 
             # Check if this is a sensitive variable
             is_sensitive = any(
-                pattern in var_name_lower
-                for pattern in self.SENSITIVE_PATTERNS
+                pattern in var_name_lower for pattern in self.SENSITIVE_PATTERNS
             )
 
             if is_sensitive:
@@ -813,15 +826,13 @@ class SecurityAuditor:
 
                 # Check if secret looks like a placeholder
                 if var_value in ["your-secret", "your-token", "changeme", "..."]:
-                    issues.append(
-                        f"Placeholder value detected in: {var_name}"
-                    )
+                    issues.append(f"Placeholder value detected in: {var_name}")
 
         return issues
 
     def check_redis_config_security(self) -> list[str]:
         """Check Redis configuration for security issues.
-        
+
         Returns
         -------
         list of str
@@ -843,7 +854,7 @@ class SecurityAuditor:
 
     def check_cache_secret_security(self) -> list[str]:
         """Check cache secret configuration.
-        
+
         Returns
         -------
         list of str
@@ -870,7 +881,7 @@ class SecurityAuditor:
 
     def run_full_audit(self) -> dict[str, list[str]]:
         """Run complete security audit.
-        
+
         Returns
         -------
         dict
@@ -890,7 +901,7 @@ _global_rotation_manager: Optional[CredentialRotationManager] = None
 
 def get_secret_manager() -> SecureSecretManager:
     """Get global secret manager instance.
-    
+
     Returns
     -------
     SecureSecretManager
@@ -904,7 +915,7 @@ def get_secret_manager() -> SecureSecretManager:
 
 def get_rotation_manager() -> CredentialRotationManager:
     """Get global rotation manager instance.
-    
+
     Returns
     -------
     CredentialRotationManager
@@ -914,4 +925,3 @@ def get_rotation_manager() -> CredentialRotationManager:
     if _global_rotation_manager is None:
         _global_rotation_manager = CredentialRotationManager()
     return _global_rotation_manager
-

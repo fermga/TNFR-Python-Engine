@@ -40,11 +40,11 @@ __all__ = [
 
 class TNFRValidator:
     """Unified TNFR Validation Pipeline.
-    
+
     This class serves as the single entry point for all TNFR validation operations,
     consolidating scattered validation logic into a coherent pipeline that enforces
     all canonical TNFR invariants.
-    
+
     Features
     --------
     - Validates 10 canonical TNFR invariants
@@ -54,23 +54,23 @@ class TNFRValidator:
     - Operator precondition checking
     - Comprehensive reporting (text, JSON, HTML)
     - Optional result caching for performance
-    
+
     Examples
     --------
     >>> validator = TNFRValidator()
     >>> violations = validator.validate_graph(graph)
     >>> if violations:
     ...     print(validator.generate_report(violations))
-    
+
     >>> # Validate inputs before operator application
     >>> validator.validate_inputs(epi=0.5, vf=1.0, theta=0.0, config=G.graph)
-    
+
     >>> # Validate operator preconditions
     >>> validator.validate_operator_preconditions(G, node, "emission")
     """
 
     def __init__(
-        self, 
+        self,
         phase_coupling_threshold: float | None = None,
         enable_input_validation: bool = True,
         enable_graph_validation: bool = True,
@@ -111,12 +111,12 @@ class TNFRValidator:
             self._invariant_validators.append(Invariant5_ExplicitPhaseChecks())
 
         self._custom_validators: list[TNFRInvariant] = []
-        
+
         # Validation pipeline configuration
         self._enable_input_validation = enable_input_validation
         self._enable_graph_validation = enable_graph_validation
         self._enable_runtime_validation = enable_runtime_validation
-        
+
         # Cache for validation results (graph_id -> violations)
         self._validation_cache: dict[int, list[InvariantViolation]] = {}
         self._cache_enabled = False
@@ -130,10 +130,10 @@ class TNFRValidator:
             Custom validator implementing TNFRInvariant interface.
         """
         self._custom_validators.append(validator)
-    
+
     def enable_cache(self, enabled: bool = True) -> None:
         """Enable or disable validation result caching.
-        
+
         Parameters
         ----------
         enabled : bool
@@ -142,11 +142,11 @@ class TNFRValidator:
         self._cache_enabled = enabled
         if not enabled:
             self._validation_cache.clear()
-    
+
     def clear_cache(self) -> None:
         """Clear the validation result cache."""
         self._validation_cache.clear()
-    
+
     def validate(
         self,
         graph: TNFRGraph | None = None,
@@ -163,11 +163,11 @@ class TNFRValidator:
         raise_on_error: bool = False,
     ) -> dict[str, Any]:
         """Comprehensive unified validation pipeline (single entry point).
-        
+
         This method provides a single entry point for all TNFR validation needs,
         consolidating input validation, graph validation, invariant checking,
         and operator preconditions into one call.
-        
+
         Parameters
         ----------
         graph : TNFRGraph, optional
@@ -192,7 +192,7 @@ class TNFRValidator:
             Include runtime canonical validation (default: False).
         raise_on_error : bool, optional
             Whether to raise on first error (default: False).
-        
+
         Returns
         -------
         dict[str, Any]
@@ -204,7 +204,7 @@ class TNFRValidator:
             - 'invariants': list - Invariant violations
             - 'operator_preconditions': bool - Operator precondition status
             - 'errors': list - Any errors encountered
-        
+
         Examples
         --------
         >>> validator = TNFRValidator()
@@ -217,7 +217,7 @@ class TNFRValidator:
         ... )
         >>> if not result['passed']:
         ...     print(f"Validation failed: {result['errors']}")
-        
+
         >>> # Validate operator preconditions
         >>> result = validator.validate(
         ...     graph=G,
@@ -229,21 +229,21 @@ class TNFRValidator:
         ...     pass
         """
         results: dict[str, Any] = {
-            'passed': True,
-            'inputs': {},
-            'graph_structure': None,
-            'runtime': None,
-            'invariants': [],
-            'operator_preconditions': None,
-            'errors': [],
+            "passed": True,
+            "inputs": {},
+            "graph_structure": None,
+            "runtime": None,
+            "invariants": [],
+            "operator_preconditions": None,
+            "errors": [],
         }
-        
+
         config = graph.graph if graph is not None else None
-        
+
         # Input validation
         if epi is not None or vf is not None or theta is not None or dnfr is not None:
             try:
-                results['inputs'] = self.validate_inputs(
+                results["inputs"] = self.validate_inputs(
                     epi=epi,
                     vf=vf,
                     theta=theta,
@@ -252,53 +252,57 @@ class TNFRValidator:
                     config=config,
                     raise_on_error=raise_on_error,
                 )
-                if 'error' in results['inputs']:
-                    results['passed'] = False
-                    results['errors'].append(f"Input validation: {results['inputs']['error']}")
+                if "error" in results["inputs"]:
+                    results["passed"] = False
+                    results["errors"].append(
+                        f"Input validation: {results['inputs']['error']}"
+                    )
             except Exception as e:
-                results['passed'] = False
-                results['errors'].append(f"Input validation failed: {str(e)}")
+                results["passed"] = False
+                results["errors"].append(f"Input validation failed: {str(e)}")
                 if raise_on_error:
                     raise
-        
+
         # Graph validation
         if graph is not None:
             # Graph structure validation
             if include_graph_structure:
                 try:
-                    results['graph_structure'] = self.validate_graph_structure(
+                    results["graph_structure"] = self.validate_graph_structure(
                         graph,
                         raise_on_error=raise_on_error,
                     )
-                    if not results['graph_structure'].get('passed', False):
-                        results['passed'] = False
-                        results['errors'].append(
+                    if not results["graph_structure"].get("passed", False):
+                        results["passed"] = False
+                        results["errors"].append(
                             f"Graph structure: {results['graph_structure'].get('error', 'Failed')}"
                         )
                 except Exception as e:
-                    results['passed'] = False
-                    results['errors'].append(f"Graph structure validation failed: {str(e)}")
+                    results["passed"] = False
+                    results["errors"].append(
+                        f"Graph structure validation failed: {str(e)}"
+                    )
                     if raise_on_error:
                         raise
-            
+
             # Runtime canonical validation
             if include_runtime:
                 try:
-                    results['runtime'] = self.validate_runtime_canonical(
+                    results["runtime"] = self.validate_runtime_canonical(
                         graph,
                         raise_on_error=raise_on_error,
                     )
-                    if not results['runtime'].get('passed', False):
-                        results['passed'] = False
-                        results['errors'].append(
+                    if not results["runtime"].get("passed", False):
+                        results["passed"] = False
+                        results["errors"].append(
                             f"Runtime validation: {results['runtime'].get('error', 'Failed')}"
                         )
                 except Exception as e:
-                    results['passed'] = False
-                    results['errors'].append(f"Runtime validation failed: {str(e)}")
+                    results["passed"] = False
+                    results["errors"].append(f"Runtime validation failed: {str(e)}")
                     if raise_on_error:
                         raise
-            
+
             # Invariant validation
             if include_invariants:
                 try:
@@ -307,46 +311,52 @@ class TNFRValidator:
                         include_graph_validation=False,  # Already done above
                         include_runtime_validation=False,  # Already done above
                     )
-                    results['invariants'] = violations
+                    results["invariants"] = violations
                     if violations:
                         # Check if there are any ERROR or CRITICAL violations
                         critical_violations = [
-                            v for v in violations
-                            if v.severity in (InvariantSeverity.ERROR, InvariantSeverity.CRITICAL)
+                            v
+                            for v in violations
+                            if v.severity
+                            in (InvariantSeverity.ERROR, InvariantSeverity.CRITICAL)
                         ]
                         if critical_violations:
-                            results['passed'] = False
-                            results['errors'].append(
+                            results["passed"] = False
+                            results["errors"].append(
                                 f"{len(critical_violations)} critical invariant violations found"
                             )
                 except Exception as e:
-                    results['passed'] = False
-                    results['errors'].append(f"Invariant validation failed: {str(e)}")
+                    results["passed"] = False
+                    results["errors"].append(f"Invariant validation failed: {str(e)}")
                     if raise_on_error:
                         raise
-            
+
             # Operator preconditions validation
             if operator is not None and node_id is not None:
                 try:
-                    results['operator_preconditions'] = self.validate_operator_preconditions(
-                        graph,
-                        node_id,
-                        operator,
-                        raise_on_error=raise_on_error,
+                    results["operator_preconditions"] = (
+                        self.validate_operator_preconditions(
+                            graph,
+                            node_id,
+                            operator,
+                            raise_on_error=raise_on_error,
+                        )
                     )
-                    if not results['operator_preconditions']:
-                        results['passed'] = False
-                        results['errors'].append(
+                    if not results["operator_preconditions"]:
+                        results["passed"] = False
+                        results["errors"].append(
                             f"Operator '{operator}' preconditions not met for node {node_id}"
                         )
                 except Exception as e:
-                    results['passed'] = False
-                    results['errors'].append(f"Operator precondition validation failed: {str(e)}")
+                    results["passed"] = False
+                    results["errors"].append(
+                        f"Operator precondition validation failed: {str(e)}"
+                    )
                     if raise_on_error:
                         raise
-        
+
         return results
-    
+
     def validate_inputs(
         self,
         *,
@@ -361,10 +371,10 @@ class TNFRValidator:
         raise_on_error: bool = True,
     ) -> dict[str, Any]:
         """Validate structural operator inputs.
-        
+
         This method consolidates input validation for all TNFR structural parameters,
         enforcing type safety, bounds checking, and security constraints.
-        
+
         Parameters
         ----------
         epi : Any, optional
@@ -385,18 +395,18 @@ class TNFRValidator:
             Configuration for bounds checking.
         raise_on_error : bool, optional
             Whether to raise exception on validation failure (default: True).
-        
+
         Returns
         -------
         dict[str, Any]
             Dictionary with validation results for each parameter.
             Keys: parameter names, Values: validation status or validated values.
-        
+
         Raises
         ------
         ValidationError
             If any validation fails and raise_on_error is True.
-        
+
         Examples
         --------
         >>> validator = TNFRValidator()
@@ -405,7 +415,7 @@ class TNFRValidator:
         """
         if not self._enable_input_validation:
             return {}
-        
+
         from .input_validation import (
             validate_epi_value,
             validate_vf_value,
@@ -415,38 +425,38 @@ class TNFRValidator:
             validate_glyph,
             validate_tnfr_graph,
         )
-        
+
         results = {}
-        
+
         try:
             if epi is not None:
-                results['epi'] = validate_epi_value(epi, config=config)
-            
+                results["epi"] = validate_epi_value(epi, config=config)
+
             if vf is not None:
-                results['vf'] = validate_vf_value(vf, config=config)
-            
+                results["vf"] = validate_vf_value(vf, config=config)
+
             if theta is not None:
-                results['theta'] = validate_theta_value(theta)
-            
+                results["theta"] = validate_theta_value(theta)
+
             if dnfr is not None:
-                results['dnfr'] = validate_dnfr_value(dnfr, config=config)
-            
+                results["dnfr"] = validate_dnfr_value(dnfr, config=config)
+
             if node_id is not None:
-                results['node_id'] = validate_node_id(node_id)
-            
+                results["node_id"] = validate_node_id(node_id)
+
             if glyph is not None:
-                results['glyph'] = validate_glyph(glyph)
-            
+                results["glyph"] = validate_glyph(glyph)
+
             if graph is not None:
-                results['graph'] = validate_tnfr_graph(graph)
-        
+                results["graph"] = validate_tnfr_graph(graph)
+
         except Exception as e:
             if raise_on_error:
                 raise
-            results['error'] = str(e)
-        
+            results["error"] = str(e)
+
         return results
-    
+
     def validate_operator_preconditions(
         self,
         graph: TNFRGraph,
@@ -455,10 +465,10 @@ class TNFRValidator:
         raise_on_error: bool = True,
     ) -> bool:
         """Validate operator preconditions before application.
-        
+
         Each TNFR structural operator has specific requirements that must be met
         before execution to maintain structural invariants.
-        
+
         Parameters
         ----------
         graph : TNFRGraph
@@ -469,17 +479,17 @@ class TNFRValidator:
             Name of the operator to validate (e.g., "emission", "coherence").
         raise_on_error : bool, optional
             Whether to raise exception on failure (default: True).
-        
+
         Returns
         -------
         bool
             True if preconditions are met, False otherwise.
-        
+
         Raises
         ------
         OperatorPreconditionError
             If preconditions are not met and raise_on_error is True.
-        
+
         Examples
         --------
         >>> validator = TNFRValidator()
@@ -488,7 +498,7 @@ class TNFRValidator:
         ...     pass
         """
         from ..operators import preconditions
-        
+
         validator_map = {
             "emission": preconditions.validate_emission,
             "reception": preconditions.validate_reception,
@@ -504,13 +514,13 @@ class TNFRValidator:
             "transition": preconditions.validate_transition,
             "recursivity": preconditions.validate_recursivity,
         }
-        
+
         validator_func = validator_map.get(operator.lower())
         if validator_func is None:
             if raise_on_error:
                 raise ValueError(f"Unknown operator: {operator}")
             return False
-        
+
         try:
             validator_func(graph, node)
             return True
@@ -518,32 +528,32 @@ class TNFRValidator:
             if raise_on_error:
                 raise
             return False
-    
+
     def validate_graph_structure(
         self,
         graph: TNFRGraph,
         raise_on_error: bool = True,
     ) -> dict[str, Any]:
         """Validate graph structure and coherence.
-        
+
         Performs structural validation including:
         - Node attribute completeness
         - EPI bounds and grid uniformity
         - Structural frequency ranges
         - Coherence metrics
-        
+
         Parameters
         ----------
         graph : TNFRGraph
             Graph to validate.
         raise_on_error : bool, optional
             Whether to raise exception on failure (default: True).
-        
+
         Returns
         -------
         dict[str, Any]
             Validation results including passed checks and any errors.
-        
+
         Raises
         ------
         ValueError
@@ -551,9 +561,9 @@ class TNFRValidator:
         """
         if not self._enable_graph_validation:
             return {"passed": True, "message": "Graph validation disabled"}
-        
+
         from .graph import run_validators
-        
+
         try:
             run_validators(graph)
             return {"passed": True, "message": "Graph structure valid"}
@@ -561,28 +571,28 @@ class TNFRValidator:
             if raise_on_error:
                 raise
             return {"passed": False, "error": str(e)}
-    
+
     def validate_runtime_canonical(
         self,
         graph: TNFRGraph,
         raise_on_error: bool = True,
     ) -> dict[str, Any]:
         """Validate runtime canonical constraints.
-        
+
         Applies canonical clamps and validates graph contracts at runtime.
-        
+
         Parameters
         ----------
         graph : TNFRGraph
             Graph to validate.
         raise_on_error : bool, optional
             Whether to raise exception on failure (default: True).
-        
+
         Returns
         -------
         dict[str, Any]
             Validation results.
-        
+
         Raises
         ------
         Exception
@@ -590,9 +600,9 @@ class TNFRValidator:
         """
         if not self._enable_runtime_validation:
             return {"passed": True, "message": "Runtime validation disabled"}
-        
+
         from .runtime import validate_canon
-        
+
         try:
             outcome = validate_canon(graph)
             return {
@@ -614,7 +624,7 @@ class TNFRValidator:
         include_runtime_validation: bool = False,
     ) -> list[InvariantViolation]:
         """Validate graph against all TNFR invariants (unified pipeline).
-        
+
         This is the main entry point for comprehensive graph validation,
         integrating all validation layers:
         - Invariant validation (10 canonical TNFR invariants)
@@ -638,7 +648,7 @@ class TNFRValidator:
         -------
         list[InvariantViolation]
             List of detected violations.
-            
+
         Examples
         --------
         >>> validator = TNFRValidator()
@@ -657,7 +667,7 @@ class TNFRValidator:
                 return all_violations
 
         all_violations: list[InvariantViolation] = []
-        
+
         # Run graph structure validation if enabled
         if include_graph_validation and self._enable_graph_validation:
             try:
@@ -680,7 +690,7 @@ class TNFRValidator:
                         suggestion="Check graph structure validator implementation",
                     )
                 )
-        
+
         # Run runtime canonical validation if enabled
         if include_runtime_validation and self._enable_runtime_validation:
             try:
@@ -823,9 +833,7 @@ class TNFRValidator:
                     if violation.node_id:
                         report_lines.append(f"    Node: {violation.node_id}")
                     if violation.expected_value and violation.actual_value:
-                        report_lines.append(
-                            f"    Expected: {violation.expected_value}"
-                        )
+                        report_lines.append(f"    Expected: {violation.expected_value}")
                         report_lines.append(f"    Actual: {violation.actual_value}")
                     if violation.suggestion:
                         report_lines.append(
@@ -834,53 +842,76 @@ class TNFRValidator:
                     report_lines.append("")
 
         return "\n".join(report_lines)
-    
+
     def export_to_json(self, violations: list[InvariantViolation]) -> str:
         """Export violations to JSON format.
-        
+
         Parameters
         ----------
         violations : list[InvariantViolation]
             List of violations to export.
-        
+
         Returns
         -------
         str
             JSON-formatted string of violations.
         """
         import json
-        
+
         violations_data = []
         for v in violations:
-            violations_data.append({
-                "invariant_id": v.invariant_id,
-                "severity": v.severity.value,
-                "description": v.description,
-                "node_id": v.node_id,
-                "expected_value": str(v.expected_value) if v.expected_value else None,
-                "actual_value": str(v.actual_value) if v.actual_value else None,
-                "suggestion": v.suggestion,
-            })
-        
-        return json.dumps({
-            "total_violations": len(violations),
-            "by_severity": {
-                InvariantSeverity.CRITICAL.value: len([v for v in violations if v.severity == InvariantSeverity.CRITICAL]),
-                InvariantSeverity.ERROR.value: len([v for v in violations if v.severity == InvariantSeverity.ERROR]),
-                InvariantSeverity.WARNING.value: len([v for v in violations if v.severity == InvariantSeverity.WARNING]),
-                InvariantSeverity.INFO.value: len([v for v in violations if v.severity == InvariantSeverity.INFO]),
+            violations_data.append(
+                {
+                    "invariant_id": v.invariant_id,
+                    "severity": v.severity.value,
+                    "description": v.description,
+                    "node_id": v.node_id,
+                    "expected_value": (
+                        str(v.expected_value) if v.expected_value else None
+                    ),
+                    "actual_value": str(v.actual_value) if v.actual_value else None,
+                    "suggestion": v.suggestion,
+                }
+            )
+
+        return json.dumps(
+            {
+                "total_violations": len(violations),
+                "by_severity": {
+                    InvariantSeverity.CRITICAL.value: len(
+                        [
+                            v
+                            for v in violations
+                            if v.severity == InvariantSeverity.CRITICAL
+                        ]
+                    ),
+                    InvariantSeverity.ERROR.value: len(
+                        [v for v in violations if v.severity == InvariantSeverity.ERROR]
+                    ),
+                    InvariantSeverity.WARNING.value: len(
+                        [
+                            v
+                            for v in violations
+                            if v.severity == InvariantSeverity.WARNING
+                        ]
+                    ),
+                    InvariantSeverity.INFO.value: len(
+                        [v for v in violations if v.severity == InvariantSeverity.INFO]
+                    ),
+                },
+                "violations": violations_data,
             },
-            "violations": violations_data
-        }, indent=2)
-    
+            indent=2,
+        )
+
     def export_to_html(self, violations: list[InvariantViolation]) -> str:
         """Export violations to HTML format.
-        
+
         Parameters
         ----------
         violations : list[InvariantViolation]
             List of violations to export.
-        
+
         Returns
         -------
         str
@@ -903,22 +934,23 @@ class TNFRValidator:
             </body>
             </html>
             """
-        
+
         # Group by severity
         by_severity: dict[InvariantSeverity, list[InvariantViolation]] = {}
         for v in violations:
             if v.severity not in by_severity:
                 by_severity[v.severity] = []
             by_severity[v.severity].append(v)
-        
+
         severity_colors = {
             InvariantSeverity.INFO: "#17a2b8",
             InvariantSeverity.WARNING: "#ffc107",
             InvariantSeverity.ERROR: "#dc3545",
             InvariantSeverity.CRITICAL: "#6f42c1",
         }
-        
-        html_parts = ["""
+
+        html_parts = [
+            """
         <!DOCTYPE html>
         <html>
         <head>
@@ -940,52 +972,81 @@ class TNFRValidator:
             <div class="summary">
                 <h2>Summary</h2>
                 <p><strong>Total Violations:</strong> {{}}</p>
-        """.format(len(violations))]
-        
-        for severity in [InvariantSeverity.CRITICAL, InvariantSeverity.ERROR, InvariantSeverity.WARNING, InvariantSeverity.INFO]:
+        """.format(
+                len(violations)
+            )
+        ]
+
+        for severity in [
+            InvariantSeverity.CRITICAL,
+            InvariantSeverity.ERROR,
+            InvariantSeverity.WARNING,
+            InvariantSeverity.INFO,
+        ]:
             count = len(by_severity.get(severity, []))
             if count > 0:
-                html_parts.append(f'<p><strong>{severity.value.upper()}:</strong> {count}</p>')
-        
+                html_parts.append(
+                    f"<p><strong>{severity.value.upper()}:</strong> {count}</p>"
+                )
+
         html_parts.append("</div>")
-        
-        for severity in [InvariantSeverity.CRITICAL, InvariantSeverity.ERROR, InvariantSeverity.WARNING, InvariantSeverity.INFO]:
+
+        for severity in [
+            InvariantSeverity.CRITICAL,
+            InvariantSeverity.ERROR,
+            InvariantSeverity.WARNING,
+            InvariantSeverity.INFO,
+        ]:
             if severity in by_severity:
                 color = severity_colors[severity]
-                html_parts.append(f"""
+                html_parts.append(
+                    f"""
                 <div class="severity-section">
                     <div class="severity-header" style="color: {color};">
                         {severity.value.upper()} ({len(by_severity[severity])})
                     </div>
-                """)
-                
+                """
+                )
+
                 for violation in by_severity[severity]:
-                    html_parts.append(f"""
+                    html_parts.append(
+                        f"""
                     <div class="violation" style="border-left-color: {color};">
                         <div class="violation-title">
                             Invariant #{violation.invariant_id}: {violation.description}
                         </div>
-                    """)
-                    
+                    """
+                    )
+
                     if violation.node_id:
-                        html_parts.append(f'<div class="violation-detail"><strong>Node:</strong> {violation.node_id}</div>')
-                    
+                        html_parts.append(
+                            f'<div class="violation-detail"><strong>Node:</strong> {violation.node_id}</div>'
+                        )
+
                     if violation.expected_value and violation.actual_value:
-                        html_parts.append(f'<div class="violation-detail"><strong>Expected:</strong> {violation.expected_value}</div>')
-                        html_parts.append(f'<div class="violation-detail"><strong>Actual:</strong> {violation.actual_value}</div>')
-                    
+                        html_parts.append(
+                            f'<div class="violation-detail"><strong>Expected:</strong> {violation.expected_value}</div>'
+                        )
+                        html_parts.append(
+                            f'<div class="violation-detail"><strong>Actual:</strong> {violation.actual_value}</div>'
+                        )
+
                     if violation.suggestion:
-                        html_parts.append(f'<div class="suggestion">💡 <strong>Suggestion:</strong> {violation.suggestion}</div>')
-                    
+                        html_parts.append(
+                            f'<div class="suggestion">💡 <strong>Suggestion:</strong> {violation.suggestion}</div>'
+                        )
+
                     html_parts.append("</div>")
-                
+
                 html_parts.append("</div>")
-        
-        html_parts.append("""
+
+        html_parts.append(
+            """
         </body>
         </html>
-        """)
-        
+        """
+        )
+
         return "".join(html_parts)
 
 
@@ -1000,50 +1061,73 @@ class TNFRValidationError(Exception):
 
     def export_to_json(self, violations: list[InvariantViolation]) -> str:
         """Export violations to JSON format.
-        
+
         Parameters
         ----------
         violations : list[InvariantViolation]
             List of violations to export.
-        
+
         Returns
         -------
         str
             JSON-formatted string of violations.
         """
         import json
-        
+
         violations_data = []
         for v in violations:
-            violations_data.append({
-                "invariant_id": v.invariant_id,
-                "severity": v.severity.value,
-                "description": v.description,
-                "node_id": v.node_id,
-                "expected_value": str(v.expected_value) if v.expected_value else None,
-                "actual_value": str(v.actual_value) if v.actual_value else None,
-                "suggestion": v.suggestion,
-            })
-        
-        return json.dumps({
-            "total_violations": len(violations),
-            "by_severity": {
-                InvariantSeverity.CRITICAL.value: len([v for v in violations if v.severity == InvariantSeverity.CRITICAL]),
-                InvariantSeverity.ERROR.value: len([v for v in violations if v.severity == InvariantSeverity.ERROR]),
-                InvariantSeverity.WARNING.value: len([v for v in violations if v.severity == InvariantSeverity.WARNING]),
-                InvariantSeverity.INFO.value: len([v for v in violations if v.severity == InvariantSeverity.INFO]),
+            violations_data.append(
+                {
+                    "invariant_id": v.invariant_id,
+                    "severity": v.severity.value,
+                    "description": v.description,
+                    "node_id": v.node_id,
+                    "expected_value": (
+                        str(v.expected_value) if v.expected_value else None
+                    ),
+                    "actual_value": str(v.actual_value) if v.actual_value else None,
+                    "suggestion": v.suggestion,
+                }
+            )
+
+        return json.dumps(
+            {
+                "total_violations": len(violations),
+                "by_severity": {
+                    InvariantSeverity.CRITICAL.value: len(
+                        [
+                            v
+                            for v in violations
+                            if v.severity == InvariantSeverity.CRITICAL
+                        ]
+                    ),
+                    InvariantSeverity.ERROR.value: len(
+                        [v for v in violations if v.severity == InvariantSeverity.ERROR]
+                    ),
+                    InvariantSeverity.WARNING.value: len(
+                        [
+                            v
+                            for v in violations
+                            if v.severity == InvariantSeverity.WARNING
+                        ]
+                    ),
+                    InvariantSeverity.INFO.value: len(
+                        [v for v in violations if v.severity == InvariantSeverity.INFO]
+                    ),
+                },
+                "violations": violations_data,
             },
-            "violations": violations_data
-        }, indent=2)
-    
+            indent=2,
+        )
+
     def export_to_html(self, violations: list[InvariantViolation]) -> str:
         """Export violations to HTML format.
-        
+
         Parameters
         ----------
         violations : list[InvariantViolation]
             List of violations to export.
-        
+
         Returns
         -------
         str
@@ -1066,22 +1150,23 @@ class TNFRValidationError(Exception):
             </body>
             </html>
             """
-        
+
         # Group by severity
         by_severity: dict[InvariantSeverity, list[InvariantViolation]] = {}
         for v in violations:
             if v.severity not in by_severity:
                 by_severity[v.severity] = []
             by_severity[v.severity].append(v)
-        
+
         severity_colors = {
             InvariantSeverity.INFO: "#17a2b8",
             InvariantSeverity.WARNING: "#ffc107",
             InvariantSeverity.ERROR: "#dc3545",
             InvariantSeverity.CRITICAL: "#6f42c1",
         }
-        
-        html_parts = ["""
+
+        html_parts = [
+            """
         <!DOCTYPE html>
         <html>
         <head>
@@ -1103,50 +1188,79 @@ class TNFRValidationError(Exception):
             <div class="summary">
                 <h2>Summary</h2>
                 <p><strong>Total Violations:</strong> {}</p>
-        """.format(len(violations))]
-        
-        for severity in [InvariantSeverity.CRITICAL, InvariantSeverity.ERROR, InvariantSeverity.WARNING, InvariantSeverity.INFO]:
+        """.format(
+                len(violations)
+            )
+        ]
+
+        for severity in [
+            InvariantSeverity.CRITICAL,
+            InvariantSeverity.ERROR,
+            InvariantSeverity.WARNING,
+            InvariantSeverity.INFO,
+        ]:
             count = len(by_severity.get(severity, []))
             if count > 0:
-                html_parts.append(f'<p><strong>{severity.value.upper()}:</strong> {count}</p>')
-        
+                html_parts.append(
+                    f"<p><strong>{severity.value.upper()}:</strong> {count}</p>"
+                )
+
         html_parts.append("</div>")
-        
-        for severity in [InvariantSeverity.CRITICAL, InvariantSeverity.ERROR, InvariantSeverity.WARNING, InvariantSeverity.INFO]:
+
+        for severity in [
+            InvariantSeverity.CRITICAL,
+            InvariantSeverity.ERROR,
+            InvariantSeverity.WARNING,
+            InvariantSeverity.INFO,
+        ]:
             if severity in by_severity:
                 color = severity_colors[severity]
-                html_parts.append(f"""
+                html_parts.append(
+                    f"""
                 <div class="severity-section">
                     <div class="severity-header" style="color: {color};">
                         {severity.value.upper()} ({len(by_severity[severity])})
                     </div>
-                """)
-                
+                """
+                )
+
                 for violation in by_severity[severity]:
-                    html_parts.append(f"""
+                    html_parts.append(
+                        f"""
                     <div class="violation" style="border-left-color: {color};">
                         <div class="violation-title">
                             Invariant #{violation.invariant_id}: {violation.description}
                         </div>
-                    """)
-                    
+                    """
+                    )
+
                     if violation.node_id:
-                        html_parts.append(f'<div class="violation-detail"><strong>Node:</strong> {violation.node_id}</div>')
-                    
+                        html_parts.append(
+                            f'<div class="violation-detail"><strong>Node:</strong> {violation.node_id}</div>'
+                        )
+
                     if violation.expected_value and violation.actual_value:
-                        html_parts.append(f'<div class="violation-detail"><strong>Expected:</strong> {violation.expected_value}</div>')
-                        html_parts.append(f'<div class="violation-detail"><strong>Actual:</strong> {violation.actual_value}</div>')
-                    
+                        html_parts.append(
+                            f'<div class="violation-detail"><strong>Expected:</strong> {violation.expected_value}</div>'
+                        )
+                        html_parts.append(
+                            f'<div class="violation-detail"><strong>Actual:</strong> {violation.actual_value}</div>'
+                        )
+
                     if violation.suggestion:
-                        html_parts.append(f'<div class="suggestion">💡 <strong>Suggestion:</strong> {violation.suggestion}</div>')
-                    
+                        html_parts.append(
+                            f'<div class="suggestion">💡 <strong>Suggestion:</strong> {violation.suggestion}</div>'
+                        )
+
                     html_parts.append("</div>")
-                
+
                 html_parts.append("</div>")
-        
-        html_parts.append("""
+
+        html_parts.append(
+            """
         </body>
         </html>
-        """)
-        
+        """
+        )
+
         return "".join(html_parts)

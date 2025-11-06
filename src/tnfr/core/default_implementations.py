@@ -35,19 +35,19 @@ __all__ = (
 
 class DefaultValidationService:
     """Default implementation of ValidationService using tnfr.validation.
-    
+
     This implementation wraps the existing validation infrastructure to
     provide the ValidationService interface without modifying existing code.
     """
 
     def validate_sequence(self, sequence: list[str]) -> None:
         """Validate operator sequence using canonical grammar rules.
-        
+
         Parameters
         ----------
         sequence : list of str
             Operator tokens to validate.
-            
+
         Raises
         ------
         ValueError
@@ -63,12 +63,12 @@ class DefaultValidationService:
 
     def validate_graph_state(self, graph: TNFRGraph) -> None:
         """Validate graph state using canonical validators.
-        
+
         Parameters
         ----------
         graph : TNFRGraph
             Graph to validate.
-            
+
         Raises
         ------
         ValueError
@@ -82,24 +82,24 @@ class DefaultValidationService:
 
 class DefaultOperatorRegistry:
     """Default implementation of OperatorRegistry using tnfr.operators.
-    
+
     This implementation wraps the global OPERATORS registry to provide
     the OperatorRegistry interface.
     """
 
     def get_operator(self, token: str) -> Operator:
         """Retrieve operator by token from global registry.
-        
+
         Parameters
         ----------
         token : str
             Operator identifier.
-            
+
         Returns
         -------
         Operator
             The structural operator implementation (class, not instance).
-            
+
         Raises
         ------
         KeyError
@@ -112,7 +112,7 @@ class DefaultOperatorRegistry:
 
     def register_operator(self, operator: Operator) -> None:
         """Register operator in global registry.
-        
+
         Parameters
         ----------
         operator : Operator
@@ -126,14 +126,14 @@ class DefaultOperatorRegistry:
 
 class DefaultDynamicsEngine:
     """Default implementation of DynamicsEngine using tnfr.dynamics.
-    
+
     This implementation wraps existing dynamics functions to provide
     the DynamicsEngine interface.
     """
 
     def update_delta_nfr(self, graph: TNFRGraph) -> None:
         """Compute ΔNFR using configured hook.
-        
+
         Parameters
         ----------
         graph : TNFRGraph
@@ -146,7 +146,7 @@ class DefaultDynamicsEngine:
 
     def integrate_nodal_equation(self, graph: TNFRGraph) -> None:
         """Integrate nodal equation to update EPI.
-        
+
         Parameters
         ----------
         graph : TNFRGraph
@@ -160,7 +160,7 @@ class DefaultDynamicsEngine:
 
     def coordinate_phase_coupling(self, graph: TNFRGraph) -> None:
         """Coordinate phase synchronization.
-        
+
         Parameters
         ----------
         graph : TNFRGraph
@@ -174,14 +174,14 @@ class DefaultDynamicsEngine:
 
 class DefaultTraceContext:
     """Default trace context for telemetry collection.
-    
+
     This context manager captures graph state before and after operator
     application, recording transitions for structural analysis.
     """
 
     def __init__(self, graph: TNFRGraph):
         """Initialize trace context.
-        
+
         Parameters
         ----------
         graph : TNFRGraph
@@ -199,7 +199,7 @@ class DefaultTraceContext:
         # Save transitions when exiting context
         self._save_transitions()
         return False
-    
+
     def _save_transitions(self) -> None:
         """Save transitions to graph metadata."""
         if self.transitions:
@@ -210,12 +210,12 @@ class DefaultTraceContext:
 
     def capture_state(self, graph: TNFRGraph) -> dict[str, Any]:
         """Capture current graph state.
-        
+
         Parameters
         ----------
         graph : TNFRGraph
             Graph to capture.
-            
+
         Returns
         -------
         dict
@@ -227,7 +227,9 @@ class DefaultTraceContext:
         return {
             "coherence": compute_coherence(graph),
             "node_count": graph.number_of_nodes(),
-            "edge_count": graph.number_of_edges() if hasattr(graph, "number_of_edges") else 0,
+            "edge_count": (
+                graph.number_of_edges() if hasattr(graph, "number_of_edges") else 0
+            ),
         }
 
     def record_transition(
@@ -237,7 +239,7 @@ class DefaultTraceContext:
         post_state: dict[str, Any],
     ) -> None:
         """Record operator transition.
-        
+
         Parameters
         ----------
         operator_token : str
@@ -259,7 +261,7 @@ class DefaultTraceContext:
 
 class DefaultTelemetryCollector:
     """Default implementation of TelemetryCollector using tnfr.metrics.
-    
+
     This implementation wraps existing metrics functions to provide
     the TelemetryCollector interface.
     """
@@ -267,12 +269,12 @@ class DefaultTelemetryCollector:
     @contextmanager
     def trace_context(self, graph: TNFRGraph):
         """Create trace context for operator execution.
-        
+
         Parameters
         ----------
         graph : TNFRGraph
             Graph being traced.
-            
+
         Yields
         ------
         DefaultTraceContext
@@ -287,12 +289,12 @@ class DefaultTelemetryCollector:
 
     def compute_coherence(self, graph: TNFRGraph) -> float:
         """Compute global coherence C(t).
-        
+
         Parameters
         ----------
         graph : TNFRGraph
             Graph to measure.
-            
+
         Returns
         -------
         float
@@ -304,12 +306,12 @@ class DefaultTelemetryCollector:
 
     def compute_sense_index(self, graph: TNFRGraph) -> dict[str, Any]:
         """Compute sense index Si.
-        
+
         Parameters
         ----------
         graph : TNFRGraph
             Graph to measure.
-            
+
         Returns
         -------
         dict
@@ -318,7 +320,7 @@ class DefaultTelemetryCollector:
         from ..metrics.sense_index import compute_Si
 
         result = compute_Si(graph)
-        
+
         # Ensure we return a dict
         if isinstance(result, dict):
             return result

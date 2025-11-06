@@ -122,6 +122,7 @@ if TYPE_CHECKING:  # pragma: no cover - import-time typing hook
 
     from .glyph_history import HistoryDict as _HistoryDict
     from .tokens import Token as _Token
+
     TNFRGraph: TypeAlias = nx.Graph
 else:  # pragma: no cover - runtime fallback without networkx
     TNFRGraph: TypeAlias = Any
@@ -157,6 +158,7 @@ NodeAttrMap: TypeAlias = Mapping[str, Any]
 GammaSpec: TypeAlias = Mapping[str, Any]
 #: Mapping describing Γ evaluation parameters for a node or graph.
 
+
 @runtime_checkable
 class BEPIProtocol(Protocol):
     """Structural contract describing BEPI-compatible values."""
@@ -178,6 +180,7 @@ class BEPIProtocol(Protocol):
         spectral_transform: Callable[[np.ndarray], np.ndarray] | None = None,
     ) -> Any: ...
 
+
 EPIValue: TypeAlias = BEPIProtocol
 #: BEPI Primary Information Structure carried by a node.
 
@@ -188,6 +191,7 @@ ZERO_BEPI_STORAGE: dict[str, tuple[complex, ...] | tuple[float, ...]] = {
 }
 """Canonical zero element used as fallback when EPI data is missing."""
 
+
 def _is_scalar(value: Any) -> bool:
     scalar_types: tuple[type[Any], ...]
     np_scalar = getattr(np, "generic", None)
@@ -196,6 +200,7 @@ def _is_scalar(value: Any) -> bool:
     else:
         scalar_types = (int, float, complex, Real, np_scalar)
     return isinstance(value, scalar_types)
+
 
 def ensure_bepi(value: Any) -> "BEPIElement":
     """Normalise arbitrary inputs into a :class:`~tnfr.mathematics.BEPIElement`."""
@@ -214,7 +219,9 @@ def ensure_bepi(value: Any) -> "BEPIElement":
             grid = value["grid"]
         except KeyError as exc:  # pragma: no cover - defensive
             missing = exc.args[0]
-            raise ValueError(f"Missing '{missing}' key for BEPI serialization.") from exc
+            raise ValueError(
+                f"Missing '{missing}' key for BEPI serialization."
+            ) from exc
         return _BEPIElement(continuous, discrete, grid)
     if isinstance(value, Sequence) and not isinstance(value, (str, bytes, bytearray)):
         if len(value) != 3:
@@ -222,6 +229,7 @@ def ensure_bepi(value: Any) -> "BEPIElement":
         continuous, discrete, grid = value
         return _BEPIElement(continuous, discrete, grid)
     raise TypeError(f"Unsupported BEPI value type: {type(value)!r}")
+
 
 def serialize_bepi(value: Any) -> dict[str, tuple[complex, ...] | tuple[float, ...]]:
     """Serialise a BEPI element into canonical ``continuous/discrete/grid`` tuples."""
@@ -231,6 +239,7 @@ def serialize_bepi(value: Any) -> dict[str, tuple[complex, ...] | tuple[float, .
     discrete = tuple(complex(v) for v in element.a_discrete.tolist())
     grid = tuple(float(v) for v in element.x_grid.tolist())
     return {"continuous": continuous, "discrete": discrete, "grid": grid}
+
 
 def serialize_bepi_json(value: Any) -> dict[str, list[dict[str, float]] | list[float]]:
     """Serialize a BEPI element into JSON-compatible format.
@@ -272,7 +281,10 @@ def serialize_bepi_json(value: Any) -> dict[str, list[dict[str, float]] | list[f
 
     return {"continuous": continuous, "discrete": discrete, "grid": grid}
 
-def deserialize_bepi_json(data: dict[str, list[dict[str, float]] | list[float]]) -> "BEPIElement":
+
+def deserialize_bepi_json(
+    data: dict[str, list[dict[str, float]] | list[float]],
+) -> "BEPIElement":
     """Deserialize a BEPI element from JSON-compatible format.
 
     Reconstructs complex numbers from dicts with 'real' and 'imag' keys.
@@ -310,6 +322,7 @@ def deserialize_bepi_json(data: dict[str, list[dict[str, float]] | list[float]])
     grid = data["grid"]
 
     return _BEPIElement(continuous, discrete, grid)
+
 
 DeltaNFR: TypeAlias = float
 #: Scalar internal reorganisation driver ΔNFR applied to a node.
@@ -365,6 +378,7 @@ protocol, enabling dict-like operations such as ``.get()``, ``__setitem__``,
 and ``.update()`` for runtime configuration adjustments.
 """
 
+
 class _SigmaVectorRequired(TypedDict):
     """Mandatory components for a σ-vector in the sense plane."""
 
@@ -374,6 +388,7 @@ class _SigmaVectorRequired(TypedDict):
     angle: float
     n: int
 
+
 class _SigmaVectorOptional(TypedDict, total=False):
     """Optional metadata captured when tracking σ-vectors."""
 
@@ -381,8 +396,10 @@ class _SigmaVectorOptional(TypedDict, total=False):
     w: float
     t: float
 
+
 class SigmaVector(_SigmaVectorRequired, _SigmaVectorOptional):
     """Typed dictionary describing σ-vector telemetry."""
+
 
 class SigmaTrace(TypedDict):
     """Time-aligned σ(t) trace exported alongside glyphograms."""
@@ -392,6 +409,7 @@ class SigmaTrace(TypedDict):
     sigma_y: list[float]
     mag: list[float]
     angle: list[float]
+
 
 class SelectorThresholds(TypedDict):
     """Normalised thresholds applied by the glyph selector."""
@@ -403,6 +421,7 @@ class SelectorThresholds(TypedDict):
     accel_hi: float
     accel_lo: float
 
+
 class SelectorWeights(TypedDict):
     """Normalised weights controlling selector scoring."""
 
@@ -410,11 +429,13 @@ class SelectorWeights(TypedDict):
     w_dnfr: float
     w_accel: float
 
+
 SelectorMetrics: TypeAlias = tuple[float, float, float]
 """Tuple grouping normalised Si, |ΔNFR| and acceleration values."""
 
 SelectorNorms: TypeAlias = Mapping[str, float]
 """Mapping storing maxima used to normalise selector metrics."""
+
 
 @runtime_checkable
 class _DeltaNFRHookProtocol(Protocol):
@@ -440,8 +461,10 @@ class _DeltaNFRHookProtocol(Protocol):
         **kwargs: Any,
     ) -> None: ...
 
+
 DeltaNFRHook: TypeAlias = _DeltaNFRHookProtocol
 #: Callable hook invoked to compute ΔNFR for a :data:`TNFRGraph`.
+
 
 @runtime_checkable
 class _NodeViewLike(Protocol):
@@ -515,6 +538,7 @@ class GraphLike(Protocol):
 
         ...
 
+
 @runtime_checkable
 class IntegratorProtocol(Protocol):
     """Interface describing configurable nodal equation integrators.
@@ -537,6 +561,7 @@ class IntegratorProtocol(Protocol):
         """Advance the nodal equation for ``graph`` using integrator configuration."""
 
         ...
+
 
 class Glyph(str, Enum):
     """Canonical TNFR structural symbols (glyphs).
@@ -563,11 +588,13 @@ class Glyph(str, Enum):
     NAV = "NAV"
     REMESH = "REMESH"
 
+
 GlyphCode: TypeAlias = Glyph | str
 """Structural operator symbol (glyph) identifier accepted by selector pipelines and grammars."""
 
 GlyphLoadDistribution: TypeAlias = dict[Glyph | str, float]
 """Normalised load proportions keyed by structural operator symbol (glyph) or aggregate labels."""
+
 
 @runtime_checkable
 class _SelectorLifecycle(Protocol):
@@ -585,9 +612,8 @@ class _SelectorLifecycle(Protocol):
 
     def select(self, graph: TNFRGraph, node: NodeId) -> GlyphCode: ...
 
-GlyphSelector: TypeAlias = (
-    Callable[[TNFRGraph, NodeId], GlyphCode] | _SelectorLifecycle
-)
+
+GlyphSelector: TypeAlias = Callable[[TNFRGraph, NodeId], GlyphCode] | _SelectorLifecycle
 """Selector callable or object returning the structural operator symbol (glyph) to apply for a node."""
 
 SelectorPreselectionMetrics: TypeAlias = Mapping[Any, SelectorMetrics]
@@ -611,6 +637,7 @@ TraceFieldMap: TypeAlias = Mapping[str, "TraceFieldFn"]
 TraceFieldRegistry: TypeAlias = dict[str, dict[str, "TraceFieldFn"]]
 #: Registry grouping trace field producers by capture phase.
 
+
 class TraceMetadata(TypedDict, total=False):
     """Metadata captured by trace field producers across phases."""
 
@@ -626,14 +653,17 @@ class TraceMetadata(TypedDict, total=False):
     sigma: Mapping[str, float]
     glyphs: Mapping[str, int]
 
+
 class TraceSnapshot(TraceMetadata, total=False):
     """Trace metadata snapshot recorded in TNFR history."""
 
     t: float
     phase: str
 
+
 HistoryState: TypeAlias = _HistoryDict | dict[str, Any]
 #: History container used to accumulate glyph metrics and logs for the graph.
+
 
 class CallbackError(TypedDict):
     """Metadata captured for a failed callback invocation."""
@@ -644,6 +674,7 @@ class CallbackError(TypedDict):
     traceback: str
     fn: str
     name: str | None
+
 
 TraceCallback: TypeAlias = Callable[[TNFRGraph, dict[str, Any]], None]
 #: Callback signature used by :func:`tnfr.trace.register_trace`.
@@ -712,6 +743,7 @@ GlyphMetricsHistory: TypeAlias = MutableMapping[str, GlyphMetricsHistoryValue]
 MetricsListHistory: TypeAlias = MutableMapping[str, list[Any]]
 """Mapping associating glyph metric identifiers with time series."""
 
+
 class RemeshMeta(TypedDict, total=False):
     """Event metadata persisted after applying REMESH coherence operators."""
 
@@ -728,6 +760,7 @@ class RemeshMeta(TypedDict, total=False):
     stable_frac_last: float
     phase_sync_last: float
     glyph_disr_last: float
+
 
 class ParallelWijPayload(TypedDict):
     """Container for broadcasting Wij coherence components to worker pools."""

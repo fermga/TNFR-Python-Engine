@@ -27,6 +27,7 @@ from tests.helpers.validation import assert_dnfr_balanced, assert_epi_vf_in_boun
 # Operator Composition and Error Propagation
 # ============================================================================
 
+
 def test_operator_composition_error_propagation() -> None:
     """Verify errors in operator composition propagate correctly.
 
@@ -51,6 +52,7 @@ def test_operator_composition_error_propagation() -> None:
     with pytest.raises((ValueError, AssertionError)):
         _ = op1 + op_wrong_dim
 
+
 def test_operator_composition_chain_stability() -> None:
     """Verify long chains of operator composition remain stable.
 
@@ -72,8 +74,11 @@ def test_operator_composition_chain_stability() -> None:
         composed = composed + scaled_op
 
         # Verify structural properties maintained
-        assert np.allclose(composed, composed.conj().T), "Lost Hermitian property in chain"
+        assert np.allclose(
+            composed, composed.conj().T
+        ), "Lost Hermitian property in chain"
         assert np.all(np.isfinite(composed)), "Non-finite values in composition chain"
+
 
 def test_operator_mixed_topology_interaction() -> None:
     """Verify operators with different topologies interact correctly.
@@ -98,15 +103,20 @@ def test_operator_mixed_topology_interaction() -> None:
     eigenvalues = np.linalg.eigvalsh(mixed)
     assert np.all(np.isreal(eigenvalues)), "Mixed topology has complex eigenvalues"
 
+
 # ============================================================================
 # Validator Performance and Interaction
 # ============================================================================
 
-@pytest.mark.parametrize("num_nodes,edge_prob", [
-    (100, 0.1),
-    (200, 0.05),
-    (500, 0.02),
-])
+
+@pytest.mark.parametrize(
+    "num_nodes,edge_prob",
+    [
+        (100, 0.1),
+        (200, 0.05),
+        (500, 0.02),
+    ],
+)
 def test_validator_performance_large_graphs(num_nodes: int, edge_prob: float) -> None:
     """Verify validators perform adequately on large graphs.
 
@@ -129,6 +139,7 @@ def test_validator_performance_large_graphs(num_nodes: int, edge_prob: float) ->
     # Validate structural properties
     assert_dnfr_balanced(graph, abs_tol=0.5)  # Larger tolerance for large graphs
     assert_epi_vf_in_bounds(graph, epi_min=-5.0, epi_max=5.0)
+
 
 def test_validator_operator_result_validation() -> None:
     """Verify validators correctly validate operator computation results.
@@ -153,11 +164,12 @@ def test_validator_operator_result_validation() -> None:
     assert_dnfr_balanced(graph)
 
     # Now introduce invalid values manually
-    graph.nodes[0][EPI_PRIMARY] = float('inf')
+    graph.nodes[0][EPI_PRIMARY] = float("inf")
 
     # Validator should detect this
     with pytest.raises((AssertionError, ValueError)):
         assert_epi_vf_in_bounds(graph, epi_min=-1.0, epi_max=1.0)
+
 
 def test_validator_multi_operator_consistency() -> None:
     """Verify validators maintain consistency across multiple operator applications.
@@ -181,9 +193,11 @@ def test_validator_multi_operator_consistency() -> None:
         # Each iteration should maintain conservation
         assert_dnfr_balanced(graph, abs_tol=0.1 * (iteration + 1))
 
+
 # ============================================================================
 # Sequence Error Recovery and Optimization
 # ============================================================================
+
 
 def test_sequence_error_recovery_invalid_operation() -> None:
     """Verify sequence execution handles invalid operations gracefully.
@@ -198,6 +212,7 @@ def test_sequence_error_recovery_invalid_operation() -> None:
     # Note: play() expects valid operations; invalid ones should raise during compilation
     with pytest.raises((ValueError, KeyError, AttributeError)):
         play(graph, seq("invalid_glyph_name"))
+
 
 def test_sequence_partial_execution_consistency() -> None:
     """Verify sequence state remains consistent after partial execution.
@@ -222,6 +237,7 @@ def test_sequence_partial_execution_consistency() -> None:
     # Time should have progressed
     if "_t" in graph.graph:
         assert graph.graph["_t"] >= 0
+
 
 def test_sequence_repeated_target_switching() -> None:
     """Verify sequence handles repeated target switches efficiently.
@@ -251,6 +267,7 @@ def test_sequence_repeated_target_switching() -> None:
         # Should have approximately 8 target operations (one per node)
         assert len(target_ops) >= 1
 
+
 def test_sequence_nested_block_optimization() -> None:
     """Verify nested blocks in sequences don't cause exponential overhead.
 
@@ -277,9 +294,11 @@ def test_sequence_nested_block_optimization() -> None:
     # Verify completed
     assert "history" in graph.graph
 
+
 # ============================================================================
 # Cross-Cutting Integration Tests
 # ============================================================================
+
 
 def test_integration_operator_validator_sequence() -> None:
     """Verify complete integration of operators, validators, and sequences.
@@ -312,6 +331,7 @@ def test_integration_operator_validator_sequence() -> None:
 
     # Final validation
     assert "history" in graph.graph
+
 
 def test_integration_operator_composition_in_dynamics() -> None:
     """Verify operator composition integrates correctly with dynamics.

@@ -49,15 +49,15 @@ class TestCanonicalGlyphSequences:
     def test_full_canonical_sequence(self):
         """Test AL → EN → IL → OZ → THOL → RA → SHA complete cycle."""
         sequence = [
-            EMISSION,           # AL - initiate
-            RECEPTION,          # EN - receive
-            COHERENCE,          # IL - stabilize
-            DISSONANCE,         # OZ - probe
+            EMISSION,  # AL - initiate
+            RECEPTION,  # EN - receive
+            COHERENCE,  # IL - stabilize
+            DISSONANCE,  # OZ - probe
             # THOL requires special handling, using resonance instead
-            RESONANCE,          # RA - amplify
-            SILENCE,            # SHA - suspend
+            RESONANCE,  # RA - amplify
+            SILENCE,  # SHA - suspend
         ]
-        
+
         result = validate_sequence(sequence)
         assert isinstance(result, SequenceValidationResult)
         assert result.passed, f"Sequence failed: {result.message}"
@@ -97,7 +97,15 @@ class TestCanonicalGlyphSequences:
     def test_expansion_contraction_pair(self):
         """Test VAL → NUL expansion-contraction sequence."""
         # Need reception-coherence segment plus valid structure
-        sequence = [EMISSION, RECEPTION, COHERENCE, EXPANSION, CONTRACTION, RESONANCE, SILENCE]
+        sequence = [
+            EMISSION,
+            RECEPTION,
+            COHERENCE,
+            EXPANSION,
+            CONTRACTION,
+            RESONANCE,
+            SILENCE,
+        ]
         result = validate_sequence(sequence)
         assert result.passed or not result.passed  # Document result
 
@@ -117,7 +125,9 @@ class TestInvalidGlyphSequences:
         sequence = [RECEPTION, COHERENCE, RESONANCE, SILENCE]
         result = validate_sequence(sequence)
         assert not result.passed
-        assert "must start" in result.message.lower() or "start" in result.message.lower()
+        assert (
+            "must start" in result.message.lower() or "start" in result.message.lower()
+        )
 
     def test_missing_intermediate_operator(self):
         """Sequences must contain reception→coherence segment."""
@@ -127,7 +137,14 @@ class TestInvalidGlyphSequences:
         result = validate_sequence(sequence)
         # Should fail - missing required reception→coherence
         assert not result.passed
-        assert ("missing" in result.message.lower() and "segment" in result.message.lower()) or "reception" in result.message.lower() or "coherence" in result.message.lower()
+        assert (
+            (
+                "missing" in result.message.lower()
+                and "segment" in result.message.lower()
+            )
+            or "reception" in result.message.lower()
+            or "coherence" in result.message.lower()
+        )
 
     def test_missing_end_operator(self):
         """Sequences should end with valid end operator."""
@@ -154,7 +171,15 @@ class TestInvalidGlyphSequences:
     def test_silence_contradicts_dissonance(self):
         """SHA + OZ: Silence contradicts active dissonance - grammar may allow sequential."""
         # Grammar requires reception-coherence segment
-        sequence = [EMISSION, RECEPTION, COHERENCE, SILENCE, DISSONANCE, RESONANCE, TRANSITION]
+        sequence = [
+            EMISSION,
+            RECEPTION,
+            COHERENCE,
+            SILENCE,
+            DISSONANCE,
+            RESONANCE,
+            TRANSITION,
+        ]
         result = validate_sequence(sequence)
         # Grammar likely allows this sequentially (silence ends one phase, next begins)
         assert isinstance(result, SequenceValidationResult)
@@ -162,7 +187,15 @@ class TestInvalidGlyphSequences:
     def test_contraction_contradicts_expansion(self):
         """NUL + VAL: Sequential contraction and expansion is allowed by grammar."""
         # Contraction then expansion with proper structure
-        sequence = [EMISSION, RECEPTION, COHERENCE, CONTRACTION, EXPANSION, RESONANCE, SILENCE]
+        sequence = [
+            EMISSION,
+            RECEPTION,
+            COHERENCE,
+            CONTRACTION,
+            EXPANSION,
+            RESONANCE,
+            SILENCE,
+        ]
         result = validate_sequence(sequence)
         # Grammar likely allows sequential operations
         assert isinstance(result, SequenceValidationResult)
@@ -181,11 +214,11 @@ class TestSequenceExecutionIntegration:
     def test_execute_simple_sequence_on_graph(self):
         """Execute a simple valid sequence on a graph."""
         G, node = create_nfr("test_node", epi=0.5, vf=1.0, theta=0.0)
-        
+
         # Validate sequence first
         sequence = [EMISSION, COUPLING, RESONANCE, SILENCE]
         result = validate_sequence(sequence)
-        
+
         if result.passed:
             # Sequence is valid; execution would be tested in integration tests
             # For now, just verify graph is still valid after sequence validation
@@ -195,13 +228,13 @@ class TestSequenceExecutionIntegration:
     def test_validate_before_execution(self):
         """Demonstrate validation before execution pattern."""
         G, node = create_nfr("test_node", epi=0.5, vf=1.0, theta=0.0)
-        
+
         # Try valid sequence
         valid_seq = [EMISSION, RESONANCE, SILENCE]
         result = validate_sequence(valid_seq)
         # May fail if missing intermediate, but should not crash
         assert isinstance(result, SequenceValidationResult)
-        
+
         # Try invalid sequence
         invalid_seq = [RECEPTION, COHERENCE, SILENCE]  # No valid start
         result2 = validate_sequence(invalid_seq)
@@ -230,13 +263,7 @@ class TestSequenceGrammarEdgeCases:
 
     def test_all_intermediate_operators(self):
         """Sequence with all intermediate operators."""
-        sequence = [
-            EMISSION,
-            DISSONANCE,
-            COUPLING,
-            RESONANCE,
-            SILENCE
-        ]
+        sequence = [EMISSION, DISSONANCE, COUPLING, RESONANCE, SILENCE]
         result = validate_sequence(sequence)
         assert result.passed or not result.passed  # Either outcome is valid
 

@@ -7,6 +7,7 @@ from tnfr.metrics import (
     local_phase_sync_weighted,
 )
 
+
 def make_graph(graph_canon):
     G = graph_canon()
     G.add_edge(0, 1)
@@ -14,10 +15,12 @@ def make_graph(graph_canon):
     G.nodes[1][THETA_PRIMARY] = 0.0
     return G
 
+
 def test_local_phase_sync_unweighted(graph_canon):
     G = make_graph(graph_canon)
     r = local_phase_sync(G, 0)
     assert r == pytest.approx(1.0)
+
 
 def test_local_phase_sync_with_weights(graph_canon):
     G = make_graph(graph_canon)

@@ -1,6 +1,6 @@
 """Hierarchical cache with dependency-aware invalidation for TNFR.
 
-.. deprecated:: 
+.. deprecated::
    This module is deprecated. Import from ``tnfr.cache`` or ``tnfr.utils.cache`` instead.
 
 This module implements a multi-level cache system that respects TNFR structural
@@ -19,7 +19,7 @@ warnings.warn(
     "Importing from tnfr.caching.hierarchical_cache is deprecated. "
     "Use 'from tnfr.cache import TNFRHierarchicalCache, CacheLevel, CacheEntry' instead.",
     DeprecationWarning,
-    stacklevel=2
+    stacklevel=2,
 )
 
 # Re-export from consolidated location for backward compatibility

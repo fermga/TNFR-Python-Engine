@@ -14,6 +14,7 @@ from tnfr.constants import get_aliases, inject_defaults
 from tnfr.dynamics import coordination as coordination_module
 from tnfr.dynamics.coordination import coordinate_global_local_phase
 
+
 class _RecordingExecutor:
     """ProcessPoolExecutor stand-in that records chunk payloads for inspection."""
 
@@ -33,11 +34,13 @@ class _RecordingExecutor:
             self.chunks.append(item)
             yield func(item)
 
+
 _RECORDED_EXECUTORS: list[_RecordingExecutor] = []
 
 ALIAS_THETA = get_aliases("THETA")
 
 pytestmark = [pytest.mark.slow, pytest.mark.stress]
+
 
 def _build_reproducible_graph(*, seed: int, nodes: int, probability: float) -> nx.Graph:
     """Return a deterministic TNFR graph with canonical theta assignments."""
@@ -54,6 +57,7 @@ def _build_reproducible_graph(*, seed: int, nodes: int, probability: float) -> n
 
     return graph
 
+
 def _snapshot_theta(graph: nx.Graph) -> dict[int, float]:
     """Return a copy of the theta map ensuring all values are finite."""
 
@@ -66,8 +70,11 @@ def _snapshot_theta(graph: nx.Graph) -> dict[int, float]:
         snapshot[int(node)] = value
     return snapshot
 
+
 @pytest.mark.timeout(30)
-def test_coordinate_phase_parallel_matches_sequential(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_coordinate_phase_parallel_matches_sequential(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """Parallel coordination without NumPy must match sequential results quickly."""
 
     seed = 2601
@@ -75,7 +82,9 @@ def test_coordinate_phase_parallel_matches_sequential(monkeypatch: pytest.Monkey
     probability = 0.065
     workers = 4
 
-    base_graph = _build_reproducible_graph(seed=seed, nodes=node_count, probability=probability)
+    base_graph = _build_reproducible_graph(
+        seed=seed, nodes=node_count, probability=probability
+    )
 
     sequential_graph = copy.deepcopy(base_graph)
     parallel_graph = copy.deepcopy(base_graph)
@@ -99,9 +108,7 @@ def test_coordinate_phase_parallel_matches_sequential(monkeypatch: pytest.Monkey
         recorded_resolve_calls.append((chunk_size, total_items, dict(kwargs)))
         return original_resolve(chunk_size, total_items, **kwargs)
 
-    monkeypatch.setattr(
-        coordination_module, "resolve_chunk_size", tracking_resolve
-    )
+    monkeypatch.setattr(coordination_module, "resolve_chunk_size", tracking_resolve)
 
     coordinate_global_local_phase(parallel_graph, n_jobs=workers)
     elapsed = time.perf_counter() - start

@@ -1,4 +1,5 @@
 """Runtime helpers capturing TNFR spectral performance metrics."""
+
 from __future__ import annotations
 
 from typing import Any, Sequence
@@ -22,6 +23,7 @@ __all__ = [
 
 LOGGER = get_logger(__name__)
 
+
 def _as_vector(
     state: Sequence[complex] | np.ndarray,
     *,
@@ -30,24 +32,32 @@ def _as_vector(
 ) -> Any:
     resolved_backend = backend or get_backend()
     vector = ensure_array(state, dtype=np.complex128, backend=resolved_backend)
-    if getattr(vector, "ndim", len(getattr(vector, "shape", ()))) != 1 or vector.shape[0] != dimension:
+    if (
+        getattr(vector, "ndim", len(getattr(vector, "shape", ()))) != 1
+        or vector.shape[0] != dimension
+    ):
         raise ValueError(
             "State vector dimension mismatch: "
             f"expected ({dimension},), received {vector.shape!r}."
         )
     return vector
 
+
 def _resolve_operator_backend(operator: CoherenceOperator) -> tuple[Any, Any]:
     backend = getattr(operator, "backend", None) or get_backend()
     matrix_backend = getattr(operator, "_matrix_backend", None)
     if matrix_backend is None:
-        matrix_backend = ensure_array(operator.matrix, dtype=np.complex128, backend=backend)
+        matrix_backend = ensure_array(
+            operator.matrix, dtype=np.complex128, backend=backend
+        )
     return backend, matrix_backend
+
 
 def _maybe_log(metric: str, payload: dict[str, object]) -> None:
     if not get_flags().log_performance:
         return
     LOGGER.debug("%s: %s", metric, payload)
+
 
 def normalized(
     state: Sequence[complex] | np.ndarray,
@@ -66,6 +76,7 @@ def normalized(
     _maybe_log("normalized", {"label": label, "norm": norm, "passed": passed})
     return passed, float(norm)
 
+
 def coherence_expectation(
     state: Sequence[complex] | np.ndarray,
     operator: CoherenceOperator,
@@ -76,6 +87,7 @@ def coherence_expectation(
     """Return the coherence expectation value for ``state``."""
 
     return float(operator.expectation(state, normalise=normalise, atol=atol))
+
 
 def coherence(
     state: Sequence[complex] | np.ndarray,
@@ -96,6 +108,7 @@ def coherence(
     )
     return passed, value
 
+
 def frequency_expectation(
     state: Sequence[complex] | np.ndarray,
     operator: FrequencyOperator,
@@ -106,6 +119,7 @@ def frequency_expectation(
     """Return the structural frequency projection for ``state``."""
 
     return float(operator.project_frequency(state, normalise=normalise, atol=atol))
+
 
 def frequency_positive(
     state: Sequence[complex] | np.ndarray,
@@ -134,6 +148,7 @@ def frequency_positive(
     _maybe_log("frequency_positive", {"label": label, **summary})
     return summary
 
+
 def stable_unitary(
     state: Sequence[complex] | np.ndarray,
     operator: CoherenceOperator,
@@ -155,9 +170,13 @@ def stable_unitary(
         vector = vector / norm
     generator = -1j * matrix_backend
     unitary = backend.matrix_exp(generator)
-    evolved_backend = backend.matmul(unitary, vector[..., None]).reshape((hilbert_space.dimension,))
+    evolved_backend = backend.matmul(unitary, vector[..., None]).reshape(
+        (hilbert_space.dimension,)
+    )
     evolved = np.asarray(ensure_numpy(evolved_backend, backend=backend))
     norm_after = hilbert_space.norm(evolved)
     passed = bool(np.isclose(norm_after, 1.0, atol=atol))
-    _maybe_log("stable_unitary", {"label": label, "norm_after": norm_after, "passed": passed})
+    _maybe_log(
+        "stable_unitary", {"label": label, "norm_after": norm_after, "passed": passed}
+    )
     return passed, float(norm_after)

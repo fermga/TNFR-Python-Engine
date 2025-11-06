@@ -10,7 +10,10 @@ import pytest
 
 from tnfr.cli import main
 
-def test_cli_run_invokes_runtime_with_overrides(monkeypatch: pytest.MonkeyPatch) -> None:
+
+def test_cli_run_invokes_runtime_with_overrides(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """Ensure ``tnfr run`` forwards overrides to the runtime entry point."""
 
     build_args: dict[str, Any] = {}
@@ -108,6 +111,7 @@ def test_cli_run_invokes_runtime_with_overrides(monkeypatch: pytest.MonkeyPatch)
         "n_jobs": {"dnfr_n_jobs": 3},
     }
 
+
 def test_cli_run_handles_degenerate_stop_early(
     monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
 ) -> None:
@@ -137,12 +141,15 @@ def test_cli_run_handles_degenerate_stop_early(
         return result_graph
 
     monkeypatch.setattr(execution_mod, "run_program", spy_run_program)
+
     def fake_register_callbacks(graph: nx.Graph) -> None:
         hist = graph.graph.setdefault("history", {})
         hist.setdefault("program_trace", [])
         hist.setdefault("trace_meta", [])
 
-    monkeypatch.setattr("tnfr.cli.execution.register_callbacks_and_observer", fake_register_callbacks)
+    monkeypatch.setattr(
+        "tnfr.cli.execution.register_callbacks_and_observer", fake_register_callbacks
+    )
     monkeypatch.setattr("tnfr.cli.execution._log_run_summaries", lambda *_, **__: None)
 
     caplog.set_level("INFO")

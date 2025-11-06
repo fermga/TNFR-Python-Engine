@@ -11,7 +11,10 @@ import numpy as np
 
 from tnfr.mathematics import HilbertSpace
 from tnfr.mathematics.backend import get_backend
-from tnfr.mathematics.dynamics import ContractiveDynamicsEngine, MathematicalDynamicsEngine
+from tnfr.mathematics.dynamics import (
+    ContractiveDynamicsEngine,
+    MathematicalDynamicsEngine,
+)
 from tnfr.utils import json_dumps
 
 DEFAULT_SIZES = (2, 4, 8, 16)
@@ -152,7 +155,9 @@ def _time_callable(func: Callable[[], None], repeats: int) -> list[float]:
     return measurements
 
 
-def _prepare_problems(rng: np.random.Generator, dims: Iterable[int]) -> dict[int, dict[str, np.ndarray]]:
+def _prepare_problems(
+    rng: np.random.Generator, dims: Iterable[int]
+) -> dict[int, dict[str, np.ndarray]]:
     problems: dict[int, dict[str, np.ndarray]] = {}
     for dim in dims:
         state = _random_state(rng, dim)
@@ -177,7 +182,9 @@ def _benchmark_unitary(
     repeats: int,
 ) -> list[float]:
     hilbert = HilbertSpace(dimension=dim)
-    engine = MathematicalDynamicsEngine(generator, hilbert, backend=backend, use_scipy=False)
+    engine = MathematicalDynamicsEngine(
+        generator, hilbert, backend=backend, use_scipy=False
+    )
     state_backend = backend.as_array(state)
 
     def _run() -> None:
@@ -197,7 +204,9 @@ def _benchmark_contractive(
     repeats: int,
 ) -> list[float]:
     hilbert = HilbertSpace(dimension=dim)
-    engine = ContractiveDynamicsEngine(generator, hilbert, backend=backend, use_scipy=False)
+    engine = ContractiveDynamicsEngine(
+        generator, hilbert, backend=backend, use_scipy=False
+    )
     density_backend = backend.as_array(density)
 
     def _run() -> None:
@@ -210,7 +219,14 @@ def _format_seconds(value: float) -> str:
     return f"{value * 1000:.3f} ms"
 
 
-def _print_table(title: str, dims: Iterable[int], backends: list[str], table: dict[str, dict[int, float]], *, suffix: str = "s") -> None:
+def _print_table(
+    title: str,
+    dims: Iterable[int],
+    backends: list[str],
+    table: dict[str, dict[int, float]],
+    *,
+    suffix: str = "s",
+) -> None:
     header = "| dim | " + " | ".join(backends) + " |"
     separator = "| --- | " + " | ".join("---" for _ in backends) + " |"
     print(f"\n{title}")
@@ -223,7 +239,9 @@ def _print_table(title: str, dims: Iterable[int], backends: list[str], table: di
             if value is None or not np.isfinite(value):
                 cells.append("—")
             else:
-                cells.append(f"{value:.3f} {suffix}" if suffix == "x" else _format_seconds(value))
+                cells.append(
+                    f"{value:.3f} {suffix}" if suffix == "x" else _format_seconds(value)
+                )
         print("| " + " | ".join(cells) + " |")
 
 
@@ -290,14 +308,18 @@ def main() -> None:
         for dim, timing in backend_means.items():
             base = baseline_unitary.get(dim)
             speedup_unitary[name][dim] = (
-                float(base / timing) if base is not None and timing > 0 else float("nan")
+                float(base / timing)
+                if base is not None and timing > 0
+                else float("nan")
             )
     for name, backend_means in mean_contractive.items():
         speedup_contractive[name] = {}
         for dim, timing in backend_means.items():
             base = baseline_contractive.get(dim)
             speedup_contractive[name][dim] = (
-                float(base / timing) if base is not None and timing > 0 else float("nan")
+                float(base / timing)
+                if base is not None and timing > 0
+                else float("nan")
             )
 
     metadata = {
@@ -321,10 +343,25 @@ def main() -> None:
         print(f"\nSaved results to {args.output}")
 
     backend_labels = [name for name, _ in backends]
-    _print_table("Unitary evolution (mean time per run)", dims, backend_labels, mean_unitary)
-    _print_table("Contractive evolution (mean time per run)", dims, backend_labels, mean_contractive)
-    _print_table("Unitary speed-up vs NumPy", dims, backend_labels, speedup_unitary, suffix="x")
-    _print_table("Contractive speed-up vs NumPy", dims, backend_labels, speedup_contractive, suffix="x")
+    _print_table(
+        "Unitary evolution (mean time per run)", dims, backend_labels, mean_unitary
+    )
+    _print_table(
+        "Contractive evolution (mean time per run)",
+        dims,
+        backend_labels,
+        mean_contractive,
+    )
+    _print_table(
+        "Unitary speed-up vs NumPy", dims, backend_labels, speedup_unitary, suffix="x"
+    )
+    _print_table(
+        "Contractive speed-up vs NumPy",
+        dims,
+        backend_labels,
+        speedup_contractive,
+        suffix="x",
+    )
 
 
 if __name__ == "__main__":

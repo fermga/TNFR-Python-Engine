@@ -3,6 +3,7 @@ from types import MappingProxyType
 from tnfr.metrics.common import ensure_neighbors_map
 from tnfr.utils import increment_edge_version
 
+
 def test_neighbors_map_reuses_proxy(graph_canon):
     G = graph_canon()
     G.add_edge(1, 2)

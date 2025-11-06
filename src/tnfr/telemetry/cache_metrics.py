@@ -27,6 +27,7 @@ __all__ = (
     "publish_graph_cache_metrics",
 )
 
+
 @dataclass(frozen=True)
 class CacheMetricsSnapshot:
     """Structured cache metrics enriched with ratios and latency estimates."""
@@ -83,6 +84,7 @@ class CacheMetricsSnapshot:
             "avg_latency": self.avg_latency,
         }
 
+
 class CacheTelemetryPublisher:
     """Metrics publisher broadcasting cache counters to observability channels."""
 
@@ -95,9 +97,9 @@ class CacheTelemetryPublisher:
         latency_alert: float = 0.1,
     ) -> None:
         self._logger = logger or get_logger("tnfr.telemetry.cache")
-        self._graph_ref: weakref.ReferenceType[
-            "TNFRGraph | Graph | MutableMapping[str, Any]"
-        ] | None = None
+        self._graph_ref: (
+            weakref.ReferenceType["TNFRGraph | Graph | MutableMapping[str, Any]"] | None
+        ) = None
         self._hit_ratio_alert = float(hit_ratio_alert)
         self._latency_alert = float(latency_alert)
         self.attach_graph(graph)
@@ -174,7 +176,9 @@ class CacheTelemetryPublisher:
             ctx = {"cache": name, "metrics": payload}
             callback_manager.invoke_callbacks(graph, CallbackEvent.CACHE_METRICS, ctx)
 
+
 _PUBLISHER_ATTR = "_tnfr_cache_metrics_publisher"
+
 
 def ensure_cache_metrics_publisher(
     manager: CacheManager,
@@ -200,6 +204,7 @@ def ensure_cache_metrics_publisher(
         if graph is not None:
             publisher.attach_graph(graph)
     return publisher
+
 
 def publish_graph_cache_metrics(
     graph: "TNFRGraph | Graph | MutableMapping[str, Any]",

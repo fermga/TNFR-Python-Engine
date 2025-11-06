@@ -15,6 +15,7 @@ from tnfr.dynamics import integrators as integrators_mod
 
 pytestmark = pytest.mark.slow
 
+
 def _build_graph_and_increments(
     method: str,
     *,
@@ -54,11 +55,13 @@ def _build_graph_and_increments(
     dt_step = 0.05
     return graph, dt_step, increments
 
+
 def _measure(runtime_fn: Callable[[], None], loops: int) -> float:
     start = time.perf_counter()
     for _ in range(loops):
         runtime_fn()
     return time.perf_counter() - start
+
 
 @pytest.mark.parametrize("method", ["euler", "rk4"])
 def test_apply_increments_numpy_branch_is_faster(monkeypatch, method):

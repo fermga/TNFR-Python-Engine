@@ -19,6 +19,7 @@ from tnfr.mathematics.operators_factory import (
 )
 from tests.helpers.base import parametrized_operator_dimension  # noqa: F401
 
+
 def test_build_delta_nfr_parameter_validation_combinations() -> None:
     """Verify operator factory validates parameter combinations correctly."""
     dim = 4
@@ -34,6 +35,7 @@ def test_build_delta_nfr_parameter_validation_combinations() -> None:
         operator = build_delta_nfr(dim, **config)
         assert operator.shape == (dim, dim)
         assert np.allclose(operator, operator.conj().T)
+
 
 def test_build_delta_nfr_invalid_parameter_combinations() -> None:
     """Verify operator factory rejects invalid parameter combinations."""
@@ -51,6 +53,7 @@ def test_build_delta_nfr_invalid_parameter_combinations() -> None:
     with pytest.raises((ValueError, KeyError)):
         build_delta_nfr(dim, topology="invalid_topology_name")
 
+
 def test_build_delta_nfr_preserves_structure_under_parameter_scaling() -> None:
     """Verify operator maintains structural properties under parameter variations."""
     dim = 4
@@ -64,12 +67,15 @@ def test_build_delta_nfr_preserves_structure_under_parameter_scaling() -> None:
         operator = build_delta_nfr(dim, scale=scale, rng=rng)
 
         # Structural properties must hold regardless of scale
-        assert np.allclose(operator, operator.conj().T), f"Not Hermitian at scale={scale}"
+        assert np.allclose(
+            operator, operator.conj().T
+        ), f"Not Hermitian at scale={scale}"
         assert np.all(np.isfinite(operator)), f"Non-finite values at scale={scale}"
 
         # Eigenvalues should be real
         eigenvalues = np.linalg.eigvalsh(operator)
         assert np.all(np.isreal(eigenvalues)), f"Complex eigenvalues at scale={scale}"
+
 
 def test_build_delta_nfr_frequency_parameter_boundary_conditions() -> None:
     """Verify operator generation handles frequency boundary conditions."""
@@ -92,6 +98,7 @@ def test_build_delta_nfr_frequency_parameter_boundary_conditions() -> None:
     op_neg = build_delta_nfr(dim, nu_f=-1.0)
     assert np.all(np.isfinite(op_neg))
 
+
 def test_operator_composition_hermitian_closure() -> None:
     """Verify composed operators maintain Hermitian property."""
     dim = 4
@@ -109,7 +116,10 @@ def test_operator_composition_hermitian_closure() -> None:
     eigenvalues = np.linalg.eigvalsh(composed)
     assert np.all(np.isreal(eigenvalues))
 
-def test_operator_factory_dimension_consistency(parametrized_operator_dimension) -> None:
+
+def test_operator_factory_dimension_consistency(
+    parametrized_operator_dimension,
+) -> None:
     """Verify operators maintain dimension consistency across factory methods."""
     dim = parametrized_operator_dimension
 
@@ -126,6 +136,7 @@ def test_operator_factory_dimension_consistency(parametrized_operator_dimension)
     freq_op = make_frequency_operator(np.diag(spectrum))
     assert freq_op.matrix.shape == (dim, dim)
 
+
 def test_operator_factory_error_propagation() -> None:
     """Verify operator factories properly propagate errors."""
     dim = 4
@@ -137,6 +148,7 @@ def test_operator_factory_error_propagation() -> None:
 
     # make_coherence_operator should handle invalid spectrum gracefully
     # (Currently accepts eigenvalues as input)
+
 
 def test_operator_reproducibility_across_sessions() -> None:
     """Verify operator generation is reproducible across different sessions."""
@@ -154,14 +166,19 @@ def test_operator_reproducibility_across_sessions() -> None:
     # Should be identical
     assert np.allclose(op1, op2), "Operators not reproducible"
 
+
 def test_operator_topology_structural_differences() -> None:
     """Verify different topologies produce structurally distinct operators."""
     dim = 5
     seed = 999
 
     # Create separate RNG instances instead of manipulating state
-    op_laplacian = build_delta_nfr(dim, topology="laplacian", rng=np.random.default_rng(seed=seed))
-    op_adjacency = build_delta_nfr(dim, topology="adjacency", rng=np.random.default_rng(seed=seed))
+    op_laplacian = build_delta_nfr(
+        dim, topology="laplacian", rng=np.random.default_rng(seed=seed)
+    )
+    op_adjacency = build_delta_nfr(
+        dim, topology="adjacency", rng=np.random.default_rng(seed=seed)
+    )
 
     # Both should be valid Hermitian operators
     assert np.allclose(op_laplacian, op_laplacian.conj().T)
@@ -169,6 +186,7 @@ def test_operator_topology_structural_differences() -> None:
 
     # But generally should have different structures (unless extremely unlikely)
     # We verify both are valid rather than asserting difference
+
 
 def test_operator_numerical_stability_extreme_parameters() -> None:
     """Verify numerical stability with extreme parameter combinations."""
@@ -187,6 +205,7 @@ def test_operator_numerical_stability_extreme_parameters() -> None:
         assert np.all(np.isfinite(op)), f"Non-finite with config {config}"
         assert np.allclose(op, op.conj().T), f"Not Hermitian with config {config}"
 
+
 def test_operator_eigenspectrum_properties() -> None:
     """Verify eigenspectrum properties of generated operators."""
     dim = 6
@@ -202,6 +221,7 @@ def test_operator_eigenspectrum_properties() -> None:
 
     # Should have exactly dim eigenvalues
     assert len(eigenvalues) == dim
+
 
 def test_operator_matrix_properties_under_scaling() -> None:
     """Verify matrix properties are preserved under different scalings."""
@@ -226,6 +246,7 @@ def test_operator_matrix_properties_under_scaling() -> None:
     norm_scaled = np.linalg.norm(scaled_op)
     assert norm_scaled >= norm_base * 0.9  # Allow some tolerance for randomness
 
+
 def test_operator_generation_thread_safety() -> None:
     """Verify operator generation produces consistent results in sequential calls."""
     dim = 4
@@ -242,16 +263,21 @@ def test_operator_generation_thread_safety() -> None:
     for i in range(1, len(operators)):
         assert np.allclose(operators[0], operators[i])
 
+
 # ============================================================================
 # ADDITIONAL CRITICAL PATH COVERAGE FOR OPERATOR GENERATION
 # ============================================================================
 
-@pytest.mark.parametrize("dim,nu_f,scale", [
-    (2, 0.001, 0.01),  # Very small parameters
-    (3, 100.0, 10.0),   # Very large parameters
-    (5, 0.5, 1e-6),     # Mixed scales
-    (8, 1e3, 1e-3),     # Extreme ratio
-])
+
+@pytest.mark.parametrize(
+    "dim,nu_f,scale",
+    [
+        (2, 0.001, 0.01),  # Very small parameters
+        (3, 100.0, 10.0),  # Very large parameters
+        (5, 0.5, 1e-6),  # Mixed scales
+        (8, 1e3, 1e-3),  # Extreme ratio
+    ],
+)
 def test_operator_generation_extreme_parameter_ranges(dim, nu_f, scale) -> None:
     """Test operator generation with extreme but valid parameter ranges.
 
@@ -268,6 +294,7 @@ def test_operator_generation_extreme_parameter_ranges(dim, nu_f, scale) -> None:
     # Verify eigenspectrum is real (consequence of Hermitian)
     eigenvalues = np.linalg.eigvalsh(operator)
     assert np.all(np.isreal(eigenvalues))
+
 
 @pytest.mark.parametrize("topology_type", ["laplacian", "adjacency"])
 def test_operator_generation_with_different_topologies(topology_type) -> None:
@@ -293,6 +320,7 @@ def test_operator_generation_with_different_topologies(topology_type) -> None:
         row_sums = np.sum(operator, axis=1)
         assert np.allclose(row_sums, 0.0, atol=1e-10)
 
+
 def test_operator_composition_maintains_closure() -> None:
     """Test that operator composition maintains structural closure.
 
@@ -314,11 +342,15 @@ def test_operator_composition_maintains_closure() -> None:
     # Commutator of two Hermitian operators is anti-Hermitian
     assert np.allclose(commutator, -commutator.conj().T)
 
-@pytest.mark.parametrize("nu_f_values", [
-    [0.1, 0.2, 0.3],
-    [1.0, 2.0, 3.0],
-    [0.5, 1.0, 1.5],
-])
+
+@pytest.mark.parametrize(
+    "nu_f_values",
+    [
+        [0.1, 0.2, 0.3],
+        [1.0, 2.0, 3.0],
+        [0.5, 1.0, 1.5],
+    ],
+)
 def test_operator_generation_frequency_scaling_consistency(nu_f_values) -> None:
     """Test that frequency scaling maintains consistent structural behavior.
 
@@ -338,8 +370,9 @@ def test_operator_generation_frequency_scaling_consistency(nu_f_values) -> None:
     # Larger frequency should generally lead to larger operator norms
     # (allowing tolerance for stochastic generation)
     for i in range(len(norms) - 1):
-        if nu_f_values[i+1] > nu_f_values[i]:
-            assert norms[i+1] >= norms[i] * 0.8  # Relaxed check for robustness
+        if nu_f_values[i + 1] > nu_f_values[i]:
+            assert norms[i + 1] >= norms[i] * 0.8  # Relaxed check for robustness
+
 
 def test_operator_zero_frequency_boundary() -> None:
     """Test operator generation at zero frequency boundary condition.

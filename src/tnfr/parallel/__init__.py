@@ -7,7 +7,7 @@ implementations preserve the canonical nodal equation and operator closure.
 Key components:
 - FractalPartitioner: Partitions networks using coherence-based communities
 - TNFRParallelEngine: Multiprocessing/threading engine for medium networks
-- TNFRDistributedEngine: Optional Ray/Dask backend for massive networks  
+- TNFRDistributedEngine: Optional Ray/Dask backend for massive networks
 - TNFRGPUEngine: Optional GPU acceleration via JAX/CuPy
 - TNFRAutoScaler: Recommends optimal execution strategy
 - ParallelExecutionMonitor: Real-time performance tracking
@@ -40,6 +40,7 @@ __all__ = (
 # Optional distributed backends
 try:
     from .distributed import TNFRDistributedEngine
+
     __all__ = __all__ + ("TNFRDistributedEngine",)
 except ImportError:
     pass
@@ -47,6 +48,7 @@ except ImportError:
 # Optional GPU backend
 try:
     from .gpu_engine import TNFRGPUEngine
+
     __all__ = __all__ + ("TNFRGPUEngine",)
 except ImportError:
     pass

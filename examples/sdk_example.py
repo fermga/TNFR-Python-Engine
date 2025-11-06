@@ -8,7 +8,8 @@ from tnfr.sdk import TNFRNetwork, TNFRTemplates, TNFRExperimentBuilder
 
 # Suppress warnings for cleaner output
 import warnings
-warnings.filterwarnings('ignore')
+
+warnings.filterwarnings("ignore")
 
 print("=" * 70)
 print("TNFR SDK Example: Simplified Network Creation and Analysis")
@@ -19,11 +20,12 @@ print("\n1. Creating a network with the fluent API:")
 print("-" * 70)
 
 network = TNFRNetwork("example_network")
-results = (network
-           .add_nodes(15, random_seed=42)
-           .connect_nodes(0.3, "random")
-           .apply_sequence("basic_activation", repeat=3)
-           .measure())
+results = (
+    network.add_nodes(15, random_seed=42)
+    .connect_nodes(0.3, "random")
+    .apply_sequence("basic_activation", repeat=3)
+    .measure()
+)
 
 print(results.summary())
 
@@ -33,42 +35,36 @@ print("-" * 70)
 
 print("\nA) Social Network Simulation:")
 social_results = TNFRTemplates.social_network_simulation(
-    people=25,
-    simulation_steps=10,
-    random_seed=42
+    people=25, simulation_steps=10, random_seed=42
 )
 print(f"  • Coherence: {social_results.coherence:.3f}")
 print(f"  • Nodes: {len(social_results.sense_indices)}")
-print(f"  • Avg Sense Index: {sum(social_results.sense_indices.values()) / len(social_results.sense_indices):.3f}")
+print(
+    f"  • Avg Sense Index: {sum(social_results.sense_indices.values()) / len(social_results.sense_indices):.3f}"
+)
 
 print("\nB) Neural Network Model:")
 neural_results = TNFRTemplates.neural_network_model(
-    neurons=30,
-    activation_cycles=15,
-    random_seed=42
+    neurons=30, activation_cycles=15, random_seed=42
 )
 print(f"  • Coherence: {neural_results.coherence:.3f}")
 print(f"  • Neurons: {len(neural_results.sense_indices)}")
-print(f"  • Avg Sense Index: {sum(neural_results.sense_indices.values()) / len(neural_results.sense_indices):.3f}")
+print(
+    f"  • Avg Sense Index: {sum(neural_results.sense_indices.values()) / len(neural_results.sense_indices):.3f}"
+)
 
 # Example 3: Using experiment builders
 print("\n3. Using experiment builders:")
 print("-" * 70)
 
 print("\nA) Small-World Study:")
-sw_results = TNFRExperimentBuilder.small_world_study(
-    nodes=20,
-    steps=5,
-    random_seed=42
-)
+sw_results = TNFRExperimentBuilder.small_world_study(nodes=20, steps=5, random_seed=42)
 print(f"  • Coherence: {sw_results.coherence:.3f}")
 print(f"  • Network size: {len(sw_results.sense_indices)} nodes")
 
 print("\nB) Topology Comparison:")
 comparison = TNFRExperimentBuilder.compare_topologies(
-    node_count=20,
-    steps=5,
-    random_seed=42
+    node_count=20, steps=5, random_seed=42
 )
 for topology, results in comparison.items():
     print(f"  • {topology:12s}: C(t) = {results.coherence:.3f}")
@@ -78,12 +74,13 @@ print("\n4. Custom workflow with method chaining:")
 print("-" * 70)
 
 custom_network = TNFRNetwork("custom_workflow")
-custom_results = (custom_network
-                  .add_nodes(12, vf_range=(0.4, 0.8), random_seed=42)
-                  .connect_nodes(0.4, "ring")
-                  .apply_sequence("network_sync", repeat=2)
-                  .apply_sequence("consolidation", repeat=3)
-                  .measure())
+custom_results = (
+    custom_network.add_nodes(12, vf_range=(0.4, 0.8), random_seed=42)
+    .connect_nodes(0.4, "ring")
+    .apply_sequence("network_sync", repeat=2)
+    .apply_sequence("consolidation", repeat=3)
+    .measure()
+)
 
 print(f"  • Final Coherence: {custom_results.coherence:.3f}")
 print(f"  • Avg νf: {custom_results.avg_vf:.3f} Hz_str")

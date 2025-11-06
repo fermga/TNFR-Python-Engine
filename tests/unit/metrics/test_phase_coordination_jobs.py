@@ -16,6 +16,7 @@ from tnfr.constants import get_aliases
 
 ALIAS_THETA = get_aliases("THETA")
 
+
 class _NoOpIntegrator(integrators.AbstractIntegrator):
     def integrate(
         self,
@@ -28,6 +29,7 @@ class _NoOpIntegrator(integrators.AbstractIntegrator):
     ) -> None:
         return None
 
+
 def _build_ring_graph(graph_factory, *, seed: int = 0, size: int = 8):
     rng = random.Random(seed)
     G = graph_factory()
@@ -38,6 +40,7 @@ def _build_ring_graph(graph_factory, *, seed: int = 0, size: int = 8):
     for idx in nodes:
         G.add_edge(idx, (idx + 1) % size)
     return G
+
 
 def test_update_nodes_forwards_phase_jobs(monkeypatch, graph_canon):
     G = graph_canon()
@@ -70,6 +73,7 @@ def test_update_nodes_forwards_phase_jobs(monkeypatch, graph_canon):
 
     assert captured["n_jobs"] == 3
 
+
 @pytest.mark.parametrize("phase_jobs", [None, 3])
 def test_coordinate_phase_parallel_matches_serial(monkeypatch, graph_canon, phase_jobs):
     graph_factory = graph_canon
@@ -89,8 +93,11 @@ def test_coordinate_phase_parallel_matches_serial(monkeypatch, graph_canon, phas
         th_parallel = get_attr(parallel.nodes[node], ALIAS_THETA, 0.0)
         assert th_parallel == pytest.approx(th_serial)
 
+
 @pytest.mark.parametrize("bad_jobs", ["three", 1])
-def test_coordinate_phase_invalid_jobs_stay_sequential(monkeypatch, graph_canon, bad_jobs):
+def test_coordinate_phase_invalid_jobs_stay_sequential(
+    monkeypatch, graph_canon, bad_jobs
+):
     graph_factory = graph_canon
 
     monkeypatch.setattr(coordination, "get_numpy", lambda: None)
@@ -119,6 +126,7 @@ def test_coordinate_phase_invalid_jobs_stay_sequential(monkeypatch, graph_canon,
     for node, expected in expected_thetas.items():
         assert get_attr(target.nodes[node], ALIAS_THETA, 0.0) == pytest.approx(expected)
 
+
 def test_coordinate_phase_empty_graph_keeps_history(monkeypatch, graph_canon):
     monkeypatch.setattr(coordination, "get_numpy", lambda: None)
 
@@ -138,7 +146,9 @@ def test_coordinate_phase_empty_graph_keeps_history(monkeypatch, graph_canon):
         for key, value in history.items()
         if key in {"phase_state", "phase_R", "phase_disr"}
     }
-    k_lengths = {key: len(value) for key, value in history.items() if key.startswith("phase_k")}
+    k_lengths = {
+        key: len(value) for key, value in history.items() if key.startswith("phase_k")
+    }
 
     coordination.coordinate_global_local_phase(graph)
 
@@ -147,6 +157,7 @@ def test_coordinate_phase_empty_graph_keeps_history(monkeypatch, graph_canon):
         assert list(history[key]) == snapshot
     for key, length in k_lengths.items():
         assert len(history[key]) == length + 1
+
 
 class _FakeArray(list):
     def __init__(self, iterable=()):
@@ -183,6 +194,7 @@ class _FakeArray(list):
     def __rmul__(self, other):
         return self.__mul__(other)
 
+
 class _FakeNumPy:
     def fromiter(self, iterable, dtype=float):
         return _FakeArray(iterable)
@@ -203,6 +215,7 @@ class _FakeNumPy:
         if isinstance(array, _FakeArray):
             return _FakeArray(math.sin(item) for item in array)
         return math.sin(array)
+
 
 @pytest.mark.parametrize("numpy_present", [False, True])
 def test_coordinate_phase_overrides_and_adaptive_history(
@@ -280,6 +293,7 @@ def test_coordinate_phase_overrides_and_adaptive_history(
     assert history["phase_kG"][-1] == pytest.approx(graph.graph["PHASE_K_GLOBAL"])
     assert len(history["phase_kL"]) == initial_kL_len + 2
     assert history["phase_kL"][-1] == pytest.approx(graph.graph["PHASE_K_LOCAL"])
+
 
 def test_coordinate_phase_handles_desynced_trig_cache(monkeypatch, graph_canon):
     graph = graph_canon()
@@ -382,6 +396,7 @@ def test_coordinate_phase_handles_desynced_trig_cache(monkeypatch, graph_canon):
     assert history["phase_kG"][-1] == pytest.approx(kG)
     assert len(history["phase_kL"]) == kL_len + 1
     assert history["phase_kL"][-1] == pytest.approx(graph.graph["PHASE_K_LOCAL"])
+
 
 @pytest.mark.parametrize(
     "state,kG_start,kL_start,expected_kG,expected_kL",

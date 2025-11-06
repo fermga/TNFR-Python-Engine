@@ -27,6 +27,7 @@ from ..types import Glyph, TNFRGraph
 _HZ_STR_AVAILABLE = False
 try:
     from ..operators.structural_units import HzStr
+
     _HZ_STR_AVAILABLE = True
 except ImportError:
     HzStr = None  # type: ignore[assignment, misc]
@@ -66,7 +67,7 @@ class ValidationError(ValueError):
 
 def _get_bound(config: Mapping[str, Any] | None, key: str, default: float) -> float:
     """Retrieve a numeric bound from configuration or DEFAULTS.
-    
+
     Parameters
     ----------
     config : Mapping[str, Any] | None
@@ -75,12 +76,12 @@ def _get_bound(config: Mapping[str, Any] | None, key: str, default: float) -> fl
         Configuration key (e.g., "EPI_MIN", "VF_MAX").
     default : float
         Fallback value when key is not in config or DEFAULTS.
-        
+
     Returns
     -------
     float
         The configured bound or default value.
-        
+
     Notes
     -----
     DEFAULTS is a mapping defined in tnfr.constants containing canonical
@@ -230,7 +231,7 @@ def validate_vf_value(
     Traceback (most recent call last):
         ...
     ValidationError: νf must be non-negative, got -0.5
-    
+
     Notes
     -----
     When enforce_hz_str is True and value is not a HzStr instance, logs a
@@ -247,7 +248,7 @@ def validate_vf_value(
             UserWarning,
             stacklevel=2,
         )
-    
+
     if not isinstance(value, (int, float)):
         raise ValidationError(
             f"νf must be numeric, got {type(value).__name__}",
@@ -541,10 +542,11 @@ def validate_glyph(value: Any) -> Glyph:
             return Glyph(value)
         except ValueError:
             pass
-        
+
         # Try structural operator name mapping
         try:
             from ..operators.grammar import function_name_to_glyph
+
             glyph = function_name_to_glyph(value)
             if glyph is not None:
                 return glyph

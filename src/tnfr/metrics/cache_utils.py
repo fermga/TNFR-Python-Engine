@@ -22,6 +22,7 @@ __all__ = (
 
 logger = logging.getLogger(__name__)
 
+
 class CacheStats:
     """Aggregate cache statistics for telemetry and profiling."""
 
@@ -37,9 +38,7 @@ class CacheStats:
         self.misses = misses
         self.evictions = evictions
         self.total_accesses = hits + misses
-        self.hit_rate = (
-            hits / self.total_accesses if self.total_accesses > 0 else 0.0
-        )
+        self.hit_rate = hits / self.total_accesses if self.total_accesses > 0 else 0.0
 
     def __repr__(self) -> str:
         return (
@@ -54,6 +53,7 @@ class CacheStats:
             misses=self.misses + other.misses,
             evictions=self.evictions + other.evictions,
         )
+
 
 def get_cache_config(
     G: GraphLike,
@@ -88,6 +88,7 @@ def get_cache_config(
     if not isinstance(config, Mapping):
         return {}
     return dict(config)
+
 
 def configure_hot_path_caches(
     G: GraphLike,
@@ -144,6 +145,7 @@ def configure_hot_path_caches(
 
     if coherence_cache_size is not None:
         config["coherence_cache_size"] = int(coherence_cache_size)
+
 
 def log_cache_metrics(
     G: GraphLike,

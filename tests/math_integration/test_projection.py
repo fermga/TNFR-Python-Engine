@@ -8,6 +8,7 @@ from tnfr.mathematics import BasicStateProjector, HilbertSpace
 from tnfr.node import NodeNX
 from tnfr.structural import create_nfr
 
+
 def test_basic_state_projector_shapes_and_normalisation() -> None:
     projector = BasicStateProjector()
 
@@ -18,6 +19,7 @@ def test_basic_state_projector_shapes_and_normalisation() -> None:
     assert np.iscomplexobj(vector)
     assert np.isclose(np.linalg.norm(vector), 1.0)
 
+
 def test_basic_state_projector_is_deterministic_without_rng() -> None:
     projector = BasicStateProjector()
 
@@ -25,6 +27,7 @@ def test_basic_state_projector_is_deterministic_without_rng() -> None:
     second = projector(epi=0.9, nu_f=0.5, theta=1.1, dim=4)
 
     assert np.array_equal(first, second)
+
 
 def test_basic_state_projector_rng_reproducibility() -> None:
     projector = BasicStateProjector()
@@ -42,6 +45,7 @@ def test_basic_state_projector_rng_reproducibility() -> None:
     vec3 = projector(epi=0.2, nu_f=1.3, theta=0.7, dim=5, rng=rng3)
 
     assert not np.allclose(vec1, vec3)
+
 
 class KeywordOnlyDimProjector:
     """Projector requiring ``dim`` to be provided as a keyword argument."""
@@ -61,6 +65,7 @@ class KeywordOnlyDimProjector:
     ) -> np.ndarray:
         self.calls.append((epi, nu_f, theta, dim))
         return self._base(epi=epi, nu_f=nu_f, theta=theta, dim=dim, rng=rng)
+
 
 def test_run_sequence_with_validation_supports_keyword_only_projector() -> None:
     projector = KeywordOnlyDimProjector()

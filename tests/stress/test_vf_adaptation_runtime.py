@@ -22,6 +22,7 @@ ALIAS_DNFR = get_aliases("DNFR")
 
 pytestmark = [pytest.mark.slow, pytest.mark.stress]
 
+
 def _prepare_graph(
     *,
     node_count: int,
@@ -48,6 +49,7 @@ def _prepare_graph(
         data["stable_count"] = tau - 1
 
     return graph
+
 
 @pytest.mark.timeout(30)
 def test_adapt_vf_by_coherence_large_graph_consistent_across_workers() -> None:

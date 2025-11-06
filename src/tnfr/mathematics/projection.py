@@ -16,6 +16,7 @@ else:  # pragma: no cover - runtime fallback without numpy.typing
 
 __all__ = ["StateProjector", "BasicStateProjector"]
 
+
 @runtime_checkable
 class StateProjector(Protocol):
     """Protocol describing state projection callables.
@@ -36,6 +37,7 @@ class StateProjector(Protocol):
     ) -> ComplexVector:
         """Return a normalised TNFR state vector for the provided parameters."""
 
+
 @dataclass(slots=True)
 class BasicStateProjector:
     """Canonical projector building deterministic TNFR state vectors.
@@ -49,7 +51,9 @@ class BasicStateProjector:
     dissonance while preserving determinism when a seed is provided.
     """
 
-    dtype: np.dtype[np.complexfloating[np.float64, np.float64]] = np.dtype(np.complex128)
+    dtype: np.dtype[np.complexfloating[np.float64, np.float64]] = np.dtype(
+        np.complex128
+    )
     atol: float = 1e-12
 
     def __call__(

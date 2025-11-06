@@ -139,9 +139,7 @@ class TestSecureQueryBuilder:
         """Test SELECT with WHERE clause."""
         builder = SecureQueryBuilder()
         query, params = (
-            builder.select("nfr_nodes", ["id", "nu_f"])
-            .where("nu_f > ?", 0.5)
-            .build()
+            builder.select("nfr_nodes", ["id", "nu_f"]).where("nu_f > ?", 0.5).build()
         )
 
         assert query == "SELECT id, nu_f FROM nfr_nodes WHERE nu_f > ?"
@@ -164,9 +162,7 @@ class TestSecureQueryBuilder:
         """Test SELECT with ORDER BY clause."""
         builder = SecureQueryBuilder()
         query, params = (
-            builder.select("nfr_nodes", ["id", "nu_f"])
-            .order_by("nu_f", "DESC")
-            .build()
+            builder.select("nfr_nodes", ["id", "nu_f"]).order_by("nu_f", "DESC").build()
         )
 
         assert query == "SELECT id, nu_f FROM nfr_nodes ORDER BY nu_f DESC"
@@ -175,9 +171,7 @@ class TestSecureQueryBuilder:
     def test_select_with_limit(self) -> None:
         """Test SELECT with LIMIT clause."""
         builder = SecureQueryBuilder()
-        query, params = (
-            builder.select("nfr_nodes", ["id"]).limit(10).build()
-        )
+        query, params = builder.select("nfr_nodes", ["id"]).limit(10).build()
 
         assert query == "SELECT id FROM nfr_nodes LIMIT 10"
         assert params == []
@@ -226,11 +220,7 @@ class TestSecureQueryBuilder:
     def test_delete_query(self) -> None:
         """Test building a DELETE query."""
         builder = SecureQueryBuilder()
-        query, params = (
-            builder.delete("nfr_nodes")
-            .where("nu_f < ?", 0.1)
-            .build()
-        )
+        query, params = builder.delete("nfr_nodes").where("nu_f < ?", 0.1).build()
 
         assert query == "DELETE FROM nfr_nodes WHERE nu_f < ?"
         assert params == [0.1]
@@ -307,17 +297,14 @@ class TestExecuteParameterizedQuery:
     def test_valid_query(self) -> None:
         """Test that valid parameterized queries are accepted."""
         # Should not raise
-        execute_parameterized_query(
-            "SELECT * FROM nfr_nodes WHERE nu_f > ?",
-            [0.5]
-        )
+        execute_parameterized_query("SELECT * FROM nfr_nodes WHERE nu_f > ?", [0.5])
 
     def test_param_count_validation(self) -> None:
         """Test that parameter count is validated."""
         with pytest.raises(SQLInjectionError, match="placeholders"):
             execute_parameterized_query(
                 "SELECT * FROM nfr_nodes WHERE nu_f > ? AND phase < ?",
-                [0.5]  # Missing one parameter
+                [0.5],  # Missing one parameter
             )
 
     def test_no_params_needed(self) -> None:
@@ -330,8 +317,7 @@ class TestExecuteParameterizedQuery:
         # Note: This is a basic check, real implementations should be more sophisticated
         # Queries with SELECT/INSERT/UPDATE/DELETE are allowed to have quotes
         execute_parameterized_query(
-            "SELECT name FROM users WHERE name = ?",
-            ["O'Brien"]
+            "SELECT name FROM users WHERE name = ?", ["O'Brien"]
         )
 
 
@@ -392,10 +378,7 @@ class TestSecurityIntegration:
         # Update node structural frequency
         builder = SecureQueryBuilder()
         query, params = (
-            builder.update("nfr_nodes")
-            .set(nu_f=0.8)
-            .where("id = ?", 123)
-            .build()
+            builder.update("nfr_nodes").set(nu_f=0.8).where("id = ?", 123).build()
         )
         assert "UPDATE nfr_nodes" in query
         assert "SET nu_f = ?" in query

@@ -7,6 +7,4 @@ clear migration hint.
 
 from __future__ import annotations
 
-raise ImportError(
-    "`tnfr.io` was removed. Import helpers from `tnfr.utils.io` instead."
-)
+raise ImportError("`tnfr.io` was removed. Import helpers from `tnfr.utils.io` instead.")

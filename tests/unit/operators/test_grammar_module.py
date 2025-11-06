@@ -36,8 +36,10 @@ from tnfr.validation import (
 )
 from tnfr.types import Glyph
 
+
 def _canonical_sequence() -> list[str]:
     return [EMISSION, RECEPTION, COHERENCE, RESONANCE, SILENCE]
+
 
 def test_validate_sequence_success() -> None:
     result = validate_sequence(_canonical_sequence())
@@ -51,20 +53,24 @@ def test_validate_sequence_success() -> None:
     assert result.metadata["unknown_tokens"] == frozenset()
     assert result.summary["tokens"] == tuple(_canonical_sequence())
 
+
 def test_validate_sequence_via_keyword_argument() -> None:
     result = validate_sequence(names=_canonical_sequence())
     assert result.passed
     assert result.metadata["has_intermediate"]
+
 
 def test_validate_sequence_rejects_missing_argument() -> None:
     with pytest.raises(TypeError) as excinfo:
         validate_sequence()
     assert "missing required argument" in str(excinfo.value)
 
+
 def test_validate_sequence_rejects_unexpected_keyword() -> None:
     with pytest.raises(TypeError) as excinfo:
         validate_sequence(_canonical_sequence(), legacy=True)
     assert "unexpected keyword" in str(excinfo.value)
+
 
 def test_validate_sequence_requires_string_tokens() -> None:
     result = validate_sequence([EMISSION, RECEPTION, 42])
@@ -73,10 +79,12 @@ def test_validate_sequence_requires_string_tokens() -> None:
     assert result.error is not None
     assert result.summary["error"]["index"] == 2
 
+
 def test_validate_sequence_requires_valid_start() -> None:
     result = validate_sequence([RECEPTION, COHERENCE, RESONANCE, SILENCE])
     assert not result.passed
     assert "must start" in result.message
+
 
 def test_validate_sequence_requires_intermediate_segment() -> None:
     result = validate_sequence([EMISSION, RECEPTION, COHERENCE, SILENCE])
@@ -85,11 +93,13 @@ def test_validate_sequence_requires_intermediate_segment() -> None:
     assert result.metadata["has_reception"]
     assert result.metadata["has_coherence"]
 
+
 def test_validate_sequence_requires_known_tokens() -> None:
     result = validate_sequence([*_canonical_sequence(), "unknown"])
     assert not result.passed
     assert "unknown tokens" in result.message
     assert "unknown" in result.message
+
 
 def test_validate_sequence_reports_first_unknown_token_index() -> None:
     probe = [EMISSION, "UNKNOWN", RECEPTION, COHERENCE, RESONANCE, SILENCE]
@@ -98,6 +108,7 @@ def test_validate_sequence_reports_first_unknown_token_index() -> None:
     assert result.summary["error"]["index"] == 1
     assert result.summary["error"]["token"] == "UNKNOWN"
 
+
 def test_validate_sequence_requires_thol_closure() -> None:
     result = validate_sequence(
         [EMISSION, RECEPTION, COHERENCE, SELF_ORGANIZATION, RESONANCE, TRANSITION]
@@ -105,15 +116,17 @@ def test_validate_sequence_requires_thol_closure() -> None:
     assert not result.passed
     assert operator_display_name(SELF_ORGANIZATION) in result.message
 
+
 def test_parse_sequence_returns_result() -> None:
     parsed = parse_sequence(_canonical_sequence())
     assert parsed.passed
     assert parsed.subject == tuple(_canonical_sequence())
     assert parsed.metadata["has_intermediate"]
 
+
 def test_parse_sequence_propagates_errors() -> None:
     """Test that parse_sequence raises appropriate errors for invalid sequences.
-    
+
     With enhanced compatibility validation, the error may be caught as either:
     - "incompatible" transition (if transition rules fail first)
     - "missing" segment (if the sequence reaches finalization)
@@ -124,6 +137,7 @@ def test_parse_sequence_propagates_errors() -> None:
     error_msg = str(excinfo.value)
     assert "missing" in error_msg or "incompatible" in error_msg
 
+
 def _make_graph() -> nx.Graph:
     G = nx.Graph()
     G.add_node(0)
@@ -131,6 +145,7 @@ def _make_graph() -> nx.Graph:
     nd = G.nodes[0]
     nd.setdefault("glyph_history", deque())
     return G
+
 
 def test_grammar_context_isolates_default_configurations() -> None:
     g1 = nx.Graph()
@@ -146,11 +161,13 @@ def test_grammar_context_isolates_default_configurations() -> None:
     assert ctx_two.cfg_soft["fallbacks"]["ZHIR"] == default_value
     assert DEFAULTS["GRAMMAR"]["fallbacks"]["ZHIR"] == default_value
 
+
 def test_enforce_canonical_grammar_skips_unknown_tokens() -> None:
     G = _make_graph()
     ctx = GrammarContext.from_graph(G)
     result = enforce_canonical_grammar(G, 0, "UNKNOWN", ctx)
     assert result == "UNKNOWN"
+
 
 def test_enforce_canonical_grammar_returns_structural_name_for_text_input() -> None:
     G = _make_graph()
@@ -159,6 +176,7 @@ def test_enforce_canonical_grammar_returns_structural_name_for_text_input() -> N
     result = enforce_canonical_grammar(G, 0, EMISSION, ctx)
 
     assert result == EMISSION
+
 
 def test_enforce_canonical_grammar_respects_thol_state() -> None:
     G = _make_graph()
@@ -178,6 +196,7 @@ def test_enforce_canonical_grammar_respects_thol_state() -> None:
     assert err.context["si"] == pytest.approx(nd["Si"])
     assert err.context["si_high"] == pytest.approx(expected_si_high)
 
+
 def test_enforce_canonical_grammar_prefers_silence_when_si_high() -> None:
     G = _make_graph()
     ctx = GrammarContext.from_graph(G)
@@ -194,6 +213,7 @@ def test_enforce_canonical_grammar_prefers_silence_when_si_high() -> None:
     result = enforce_canonical_grammar(G, 0, Glyph.NUL, ctx)
 
     assert result == Glyph.SHA
+
 
 def test_enforce_canonical_grammar_prefers_contraction_when_si_low() -> None:
     G = _make_graph()
@@ -212,6 +232,7 @@ def test_enforce_canonical_grammar_prefers_contraction_when_si_low() -> None:
 
     assert result == Glyph.NUL
 
+
 def test_enforce_canonical_grammar_accepts_canonical_strings() -> None:
     G = _make_graph()
     ctx = GrammarContext.from_graph(G)
@@ -229,9 +250,10 @@ def test_enforce_canonical_grammar_accepts_canonical_strings() -> None:
     err = excinfo.value
     assert err.order[-1] == RECEPTION
 
+
 def test_mutation_precondition_error_uses_structural_order() -> None:
     """Test that mutation fallback uses correct structural labels.
-    
+
     When mutation is attempted without prerequisites, the grammar enforcer
     returns DISSONANCE as fallback. This test verifies the fallback is
     applied correctly with structural semantics preserved.
@@ -248,8 +270,8 @@ def test_mutation_precondition_error_uses_structural_order() -> None:
     # Should return DISSONANCE fallback instead of raising error
     result = enforce_canonical_grammar(G, 0, Glyph.ZHIR, ctx)
     result_name = glyph_function_name(result)
-    assert result_name == DISSONANCE, \
-        f"Expected DISSONANCE fallback, got {result_name}"
+    assert result_name == DISSONANCE, f"Expected DISSONANCE fallback, got {result_name}"
+
 
 def test_thol_closure_error_uses_structural_order() -> None:
     G = _make_graph()
@@ -271,6 +293,7 @@ def test_thol_closure_error_uses_structural_order() -> None:
     assert err.order == (SELF_ORGANIZATION, EMISSION, RECEPTION)
     assert err.candidate == RECEPTION
 
+
 def test_on_applied_glyph_canonical_strings_toggle_thol_state() -> None:
     G = _make_graph()
     on_applied_glyph(G, 0, SELF_ORGANIZATION)
@@ -282,7 +305,10 @@ def test_on_applied_glyph_canonical_strings_toggle_thol_state() -> None:
     assert not st["thol_open"]
     assert st["thol_len"] == 0
 
-def test_apply_glyph_with_grammar_invokes_apply(monkeypatch: pytest.MonkeyPatch) -> None:
+
+def test_apply_glyph_with_grammar_invokes_apply(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     G = _make_graph()
     captured: dict[str, object] = {}
 
@@ -302,6 +328,7 @@ def test_apply_glyph_with_grammar_invokes_apply(monkeypatch: pytest.MonkeyPatch)
     assert captured["args"][2] == Glyph.AL
     assert captured["args"][3] == 7
 
+
 def test_apply_glyph_with_grammar_accepts_glyph_instances() -> None:
     G = _make_graph()
 
@@ -309,6 +336,7 @@ def test_apply_glyph_with_grammar_accepts_glyph_instances() -> None:
 
     history = tuple(G.nodes[0]["glyph_history"])
     assert history[-1] == Glyph.AL.value
+
 
 def test_apply_glyph_with_grammar_translates_canonical_strings() -> None:
     G = _make_graph()
@@ -318,16 +346,19 @@ def test_apply_glyph_with_grammar_translates_canonical_strings() -> None:
     history = tuple(G.nodes[0]["glyph_history"])
     assert history[-1] == Glyph.AL.value
 
+
 def test_repeat_window_error_uses_structural_names() -> None:
     G = _make_graph()
     nd = G.nodes[0]
     nd["glyph_history"].extend([Glyph.AL.value])
     grammar_cfg = G.graph.setdefault("GRAMMAR", {})
-    grammar_cfg.update({
-        "window": 2,
-        "avoid_repeats": [Glyph.AL.value],
-        "fallbacks": {Glyph.AL.value: Glyph.AL.value},
-    })
+    grammar_cfg.update(
+        {
+            "window": 2,
+            "avoid_repeats": [Glyph.AL.value],
+            "fallbacks": {Glyph.AL.value: Glyph.AL.value},
+        }
+    )
 
     with pytest.raises(RepeatWindowError) as excinfo:
         apply_glyph_with_grammar(G, [0], Glyph.AL)
@@ -344,6 +375,7 @@ def test_repeat_window_error_uses_structural_names() -> None:
     assert telemetry["order"][-1] == EMISSION
     history = telemetry["context"]["history"]
     assert tuple(history) == (EMISSION,)
+
 
 def test_apply_glyph_with_grammar_canonical_string_violation() -> None:
     G = _make_graph()

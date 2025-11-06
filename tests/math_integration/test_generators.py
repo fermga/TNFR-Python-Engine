@@ -9,11 +9,13 @@ See:
 - tests/README_TEST_OPTIMIZATION.md for usage guidelines
 - tests/TEST_CONSOLIDATION_SUMMARY.md for detailed consolidation mapping
 """
+
 from __future__ import annotations
 
 import numpy as np
 
 from tnfr.mathematics import build_delta_nfr
+
 
 def _expected_ring_adjacency(dim: int) -> np.ndarray:
     """Compute expected ring adjacency matrix for baseline validation."""
@@ -25,6 +27,7 @@ def _expected_ring_adjacency(dim: int) -> np.ndarray:
     adjacency[indices, (indices + 1) % dim] = 1.0
     adjacency[(indices + 1) % dim, indices] = 1.0
     return adjacency
+
 
 def test_build_delta_nfr_scaling_matches_ring_baselines():
     """Verify ΔNFR operator scaling matches expected ring topology baselines.

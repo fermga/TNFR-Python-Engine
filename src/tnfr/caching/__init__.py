@@ -1,15 +1,15 @@
 """Intelligent hierarchical caching system for TNFR operations.
 
-.. deprecated:: 
+.. deprecated::
    The ``tnfr.caching`` package is deprecated and will be removed in a future version.
    Please use ``tnfr.cache`` or ``tnfr.utils.cache`` instead for all caching functionality.
-   
+
    Migration guide:
-   
+
    - ``from tnfr.caching import TNFRHierarchicalCache`` → ``from tnfr.cache import TNFRHierarchicalCache``
    - ``from tnfr.caching import CacheLevel`` → ``from tnfr.cache import CacheLevel``
    - ``from tnfr.caching import cache_tnfr_computation`` → ``from tnfr.cache import cache_tnfr_computation``
-   
+
    All functionality remains available through ``tnfr.cache`` with identical APIs.
 
 This module provides a sophisticated caching infrastructure that respects TNFR
@@ -78,7 +78,7 @@ warnings.warn(
     "Please use 'tnfr.cache' instead. All functionality is available through tnfr.cache "
     "with identical APIs. See migration guide in documentation.",
     DeprecationWarning,
-    stacklevel=2
+    stacklevel=2,
 )
 
 # Import from consolidated location (utils.cache) for compatibility

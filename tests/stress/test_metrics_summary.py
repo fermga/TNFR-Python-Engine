@@ -12,11 +12,13 @@ import pytest
 try:  # pragma: no cover - optional plugin detection
     pytest.mark.timeout  # Check if timeout marker exists
 except ImportError:  # pragma: no cover - fallback when plugin missing
+
     def timeout_mark(_: float):
         def decorator(func):
             return func
 
         return decorator
+
 else:  # pragma: no cover - executed when plugin available
     timeout_mark = pytest.mark.timeout
 
@@ -27,6 +29,7 @@ from tnfr.metrics.reporting import build_metrics_summary
 
 pytestmark = [pytest.mark.slow, pytest.mark.stress]
 
+
 class SeededMetrics(NamedTuple):
     """Container storing seeded graph data and expected aggregates."""
 
@@ -35,6 +38,7 @@ class SeededMetrics(NamedTuple):
     latency_mean: float
     glyphogram_series: dict[str, list[float]]
     rose_totals: dict[str, int]
+
 
 def _seed_metrics_graph(
     *,
@@ -109,6 +113,7 @@ def _seed_metrics_graph(
         rose_totals=rose_totals,
     )
 
+
 @timeout_mark(30)
 def test_build_metrics_summary_handles_large_histories() -> None:
     """``build_metrics_summary`` must stay fast and accurate on large histories."""
@@ -157,6 +162,8 @@ def test_build_metrics_summary_handles_large_histories() -> None:
     )
     assert trimmed_has_latency_repeat is True
     assert trimmed_summary_repeat == trimmed_summary
-    assert trimmed_summary_repeat["latency_mean"] == pytest.approx(summary["latency_mean"])
+    assert trimmed_summary_repeat["latency_mean"] == pytest.approx(
+        summary["latency_mean"]
+    )
     assert trimmed_summary_repeat["Tg_global"] == summary["Tg_global"]
     assert trimmed_summary_repeat["rose"] == summary["rose"]

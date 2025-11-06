@@ -21,6 +21,7 @@ ALIAS_SI = get_aliases("SI")
 ALIAS_DNFR = get_aliases("DNFR")
 ALIAS_THETA = get_aliases("THETA")
 
+
 def _build_ring_graph(graph_factory, *, size: int = 6) -> "nx.Graph":
     G = graph_factory()
     for idx in range(size):
@@ -35,11 +36,13 @@ def _build_ring_graph(graph_factory, *, size: int = 6) -> "nx.Graph":
         G.add_edge(idx, (idx + 1) % size)
     return G
 
+
 def _capture_diagnostics(G, *, jobs: int | None) -> dict:
     hist = ensure_history(G)
     key = get_param(G, "DIAGNOSIS").get("history_key", "nodal_diag")
     _diagnosis_step(G, n_jobs=jobs)
     return hist[key][-1]
+
 
 @pytest.fixture
 def graph_with_mixed_case_history(graph_canon):
@@ -54,6 +57,7 @@ def graph_with_mixed_case_history(graph_canon):
     graph.graph.setdefault("history", {})[key] = [snapshot]
     return graph, key, snapshot, placeholder
 
+
 @contextmanager
 def numpy_disabled(monkeypatch):
     from tnfr.metrics import diagnosis as diagnosis_module
@@ -61,6 +65,7 @@ def numpy_disabled(monkeypatch):
     with monkeypatch.context() as ctx:
         ctx.setattr(diagnosis_module, "get_numpy", lambda: None)
         yield
+
 
 @pytest.mark.parametrize("workers", [None, 3])
 def test_parallel_diagnosis_matches_serial(graph_canon, workers):
@@ -71,6 +76,7 @@ def test_parallel_diagnosis_matches_serial(graph_canon, workers):
     parallel = _capture_diagnostics(parallel_graph, jobs=workers)
 
     assert parallel == baseline
+
 
 def test_diagnosis_vectorized_matches_python(graph_canon, monkeypatch):
     pytest.importorskip("numpy")
@@ -93,6 +99,7 @@ def test_diagnosis_vectorized_matches_python(graph_canon, monkeypatch):
             else:
                 assert observed[key] == value
 
+
 def test_diagnosis_python_parallel_without_numpy(graph_canon, monkeypatch):
     serial_graph = _build_ring_graph(graph_canon)
     parallel_graph = _build_ring_graph(graph_canon)
@@ -107,9 +114,7 @@ def test_diagnosis_python_parallel_without_numpy(graph_canon, monkeypatch):
             resolve_calls.append((chunk_size, total_items, dict(kwargs)))
             return original_resolve(chunk_size, total_items, **kwargs)
 
-        monkeypatch.setattr(
-            diagnosis_module, "resolve_chunk_size", tracking_resolve
-        )
+        monkeypatch.setattr(diagnosis_module, "resolve_chunk_size", tracking_resolve)
 
         baseline = _capture_diagnostics(serial_graph, jobs=1)
         parallel = _capture_diagnostics(parallel_graph, jobs=3)
@@ -123,6 +128,7 @@ def test_diagnosis_python_parallel_without_numpy(graph_canon, monkeypatch):
         assert chunk_size == expected_chunk
         assert total_items == expected_total
         assert kwargs.get("minimum") == 1
+
 
 def test_diagnosis_skips_symmetry_when_disabled(graph_canon, monkeypatch):
     graph = _build_ring_graph(graph_canon, size=3)
@@ -149,6 +155,7 @@ def test_diagnosis_skips_symmetry_when_disabled(graph_canon, monkeypatch):
     for payload in snapshot.values():
         assert payload["symmetry"] is None
 
+
 def test_existing_history_states_are_canonicalised(graph_with_mixed_case_history):
     graph, key, snapshot, placeholder = graph_with_mixed_case_history
 
@@ -157,6 +164,7 @@ def test_existing_history_states_are_canonicalised(graph_with_mixed_case_history
     assert snapshot[0]["state"] == "stable"
     assert snapshot[1]["state"] == "dissonant"
     assert snapshot[2] is placeholder
+
 
 @pytest.mark.parametrize("bad_jobs", ["not-int", 0, -3])
 def test_diagnosis_invalid_jobs_fall_back_to_serial(graph_canon, monkeypatch, bad_jobs):
@@ -169,7 +177,9 @@ def test_diagnosis_invalid_jobs_fall_back_to_serial(graph_canon, monkeypatch, ba
 
     class _FailingExecutor:
         def __init__(self, *args, **kwargs):  # noqa: D401 - context manager protocol
-            raise AssertionError("ProcessPoolExecutor should not be used for invalid n_jobs")
+            raise AssertionError(
+                "ProcessPoolExecutor should not be used for invalid n_jobs"
+            )
 
     monkeypatch.setattr(
         "tnfr.metrics.diagnosis.ProcessPoolExecutor",

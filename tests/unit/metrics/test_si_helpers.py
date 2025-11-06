@@ -19,6 +19,7 @@ ALIAS_VF = get_aliases("VF")
 
 TRIG_SENTINEL_KEYS = ("_cos_th", "_sin_th", "_thetas", "_trig_cache")
 
+
 def test_get_si_weights_normalization(graph_canon):
     G = graph_canon()
     G.graph["SI_WEIGHTS"] = {"alpha": 2, "beta": 1, "gamma": 1}
@@ -35,6 +36,7 @@ def test_get_si_weights_normalization(graph_canon):
         "dSi_ddnfr_norm": -gamma,
     }
 
+
 def test_get_si_weights_rejects_unknown_sensitivity_keys(graph_canon):
     G = graph_canon()
     G.graph["_Si_sensitivity"] = {
@@ -47,6 +49,7 @@ def test_get_si_weights_rejects_unknown_sensitivity_keys(graph_canon):
 
     assert f"unexpected key(s): {DEPRECATED_SI_SENSITIVITY_KEY}" in str(excinfo.value)
 
+
 def test_si_sensitivity_field_rejects_unknown_key(graph_canon):
     G = graph_canon()
     G.graph["_Si_sensitivity"] = {
@@ -58,6 +61,7 @@ def test_si_sensitivity_field_rejects_unknown_key(graph_canon):
 
     assert f"unexpected key(s): {DEPRECATED_SI_SENSITIVITY_KEY}" in str(excinfo.value)
 
+
 def test_si_sensitivity_field_handles_new_key(graph_canon):
     G = graph_canon()
     G.graph["_Si_sensitivity"] = {
@@ -66,6 +70,7 @@ def test_si_sensitivity_field_handles_new_key(graph_canon):
 
     data = _si_sensitivity_field(G)
     assert data == {"si_sensitivity": {"dSi_dphase_disp": -0.75}}
+
 
 def test_get_trig_cache(graph_canon):
     G = graph_canon()
@@ -79,6 +84,7 @@ def test_get_trig_cache(graph_canon):
     assert cos_th[2] == pytest.approx(0.0, abs=1e-8)
     assert sin_th[2] == pytest.approx(1.0)
     assert thetas[2] == pytest.approx(math.pi / 2)
+
 
 def test_get_trig_cache_invalidation_on_version(graph_canon):
     G = graph_canon()
@@ -101,6 +107,7 @@ def test_get_trig_cache_invalidation_on_version(graph_canon):
     assert 1 in trig3.cos and 1 not in trig1.cos
     assert G.graph.get("_trig_version", 0) == version
 
+
 def test_get_trig_cache_invalidation_on_phase_change(graph_canon):
     G = graph_canon()
     G.add_edge(1, 2)
@@ -118,6 +125,7 @@ def test_get_trig_cache_invalidation_on_phase_change(graph_canon):
     trig2 = get_trig_cache(G)
     assert trig2 is not trig1
     assert trig2.theta[1] == pytest.approx(math.pi / 2)
+
 
 def test_compute_Si_node(graph_canon):
     G = graph_canon()
@@ -141,6 +149,7 @@ def test_compute_Si_node(graph_canon):
     assert Si == pytest.approx(0.7)
     assert get_attr(G.nodes[1], ALIAS_SI, 0.0) == pytest.approx(0.7)
 
+
 def test_compute_Si_node_unknown_keyword(graph_canon):
     G = graph_canon()
     nd = {ALIAS_VF[0]: 0.5, ALIAS_DNFR[0]: 0.2}
@@ -158,7 +167,6 @@ def test_compute_Si_node_unknown_keyword(graph_canon):
             inplace=False,
         )
 
-    assert (
-        f"Unexpected keyword argument(s): {DEPRECATED_SI_COMPUTE_ARG}"
-        in str(excinfo.value)
+    assert f"Unexpected keyword argument(s): {DEPRECATED_SI_COMPUTE_ARG}" in str(
+        excinfo.value
     )

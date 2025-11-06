@@ -8,6 +8,7 @@ from tnfr.metrics.trig import (
     neighbor_phase_mean_list,
 )
 
+
 def test_neighbor_phase_mean_core_missing_trig():
     neigh = [1, 2, 3]
     cos_th = {1: 1.0, 2: 0.0}
@@ -19,6 +20,7 @@ def test_neighbor_phase_mean_core_missing_trig():
     assert _neighbor_phase_mean_core(
         [3], cos_th, sin_th, np=None, fallback=0.5
     ) == pytest.approx(0.5)
+
 
 def test_neighbor_phase_mean_list_delegates_generic(monkeypatch):
     neigh = [1]
@@ -34,6 +36,7 @@ def test_neighbor_phase_mean_list_delegates_generic(monkeypatch):
     result = neighbor_phase_mean_list(neigh, cos_th, sin_th, np=None, fallback=0.0)
     assert result == pytest.approx(1.23)
     assert captured["args"] == (neigh, cos_th, sin_th, None, 0.0)
+
 
 def test_neighbor_phase_mean_generic_uses_cached_numpy(monkeypatch):
     calls = 0
@@ -84,6 +87,7 @@ def test_neighbor_phase_mean_generic_uses_cached_numpy(monkeypatch):
     assert captured_np == [fake_np]
     assert result == pytest.approx(math.pi / 4)
 
+
 def _build_branch_cut_trig_maps():
     left_offset = 0.01
     right_offset = 0.02
@@ -95,6 +99,7 @@ def _build_branch_cut_trig_maps():
     sin_map = {key: math.sin(angle) for key, angle in angles.items()}
     expected_midpoint = -math.pi + 0.5 * (right_offset - left_offset)
     return ["left", "right"], cos_map, sin_map, expected_midpoint
+
 
 def test_neighbor_phase_mean_list_branch_cut_numpy(monkeypatch):
     neigh, cos_map, sin_map, expected_midpoint = _build_branch_cut_trig_maps()
@@ -125,6 +130,7 @@ def test_neighbor_phase_mean_list_branch_cut_numpy(monkeypatch):
 
     assert abs(result) > math.pi / 2
     assert result == pytest.approx(expected_midpoint)
+
 
 def test_neighbor_phase_mean_list_branch_cut_python(monkeypatch):
     neigh, cos_map, sin_map, expected_midpoint = _build_branch_cut_trig_maps()

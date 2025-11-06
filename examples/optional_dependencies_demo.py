@@ -15,7 +15,7 @@ pip install tnfr[viz-basic]
 # With JAX backend
 pip install tnfr[compute-jax]
 
-# With PyTorch backend  
+# With PyTorch backend
 pip install tnfr[compute-torch]
 """
 
@@ -97,9 +97,7 @@ def demo_compat_layer() -> None:
 
     # Demonstrate type checking compatibility
     print("Type checking compatibility:")
-    print(
-        "The compat layer allows code to type-check even without optional packages."
-    )
+    print("The compat layer allows code to type-check even without optional packages.")
     print("Example:")
     print("  from typing import TYPE_CHECKING")
     print("  if TYPE_CHECKING:")
@@ -134,9 +132,7 @@ def demo_compat_layer() -> None:
 
     print("\n" + "=" * 60 + "\n")
     print("Demo complete!")
-    print(
-        "\nTo install optional dependencies: pip install tnfr[numpy,viz,yaml,orjson]"
-    )
+    print("\nTo install optional dependencies: pip install tnfr[numpy,viz,yaml,orjson]")
 
 
 if __name__ == "__main__":

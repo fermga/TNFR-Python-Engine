@@ -1,4 +1,5 @@
 """ΔNFR generator construction utilities."""
+
 from __future__ import annotations
 
 from typing import Final, Sequence
@@ -12,6 +13,7 @@ __all__ = ["build_delta_nfr", "build_lindblad_delta_nfr"]
 
 _TOPOLOGIES: Final[set[str]] = {"laplacian", "adjacency"}
 
+
 def _ring_adjacency(dim: int) -> np.ndarray:
     """Return the adjacency matrix for a coherent ring topology."""
 
@@ -24,12 +26,14 @@ def _ring_adjacency(dim: int) -> np.ndarray:
     adjacency[(indices + 1) % dim, indices] = 1.0
     return adjacency
 
+
 def _laplacian_from_adjacency(adjacency: np.ndarray) -> np.ndarray:
     """Construct a Laplacian operator from an adjacency matrix."""
 
     degrees = adjacency.sum(axis=1)
     laplacian = np.diag(degrees) - adjacency
     return laplacian
+
 
 def _hermitian_noise(dim: int, rng: Generator) -> np.ndarray:
     """Generate a Hermitian noise matrix with reproducible statistics."""
@@ -38,6 +42,7 @@ def _hermitian_noise(dim: int, rng: Generator) -> np.ndarray:
     imag = rng.standard_normal((dim, dim))
     noise = real + 1j * imag
     return 0.5 * (noise + noise.conj().T)
+
 
 def _as_square_matrix(
     matrix: Sequence[Sequence[complex]] | np.ndarray,
@@ -55,6 +60,7 @@ def _as_square_matrix(
             f"{label} dimension mismatch: expected {expected_dim}, received {array.shape[0]}."
         )
     return array
+
 
 def build_delta_nfr(
     dim: int,
@@ -87,7 +93,9 @@ def build_delta_nfr(
 
     if topology not in _TOPOLOGIES:
         allowed = ", ".join(sorted(_TOPOLOGIES))
-        raise ValueError(f"Unknown ΔNFR topology: {topology}. Expected one of: {allowed}.")
+        raise ValueError(
+            f"Unknown ΔNFR topology: {topology}. Expected one of: {allowed}."
+        )
 
     adjacency = _ring_adjacency(dim)
     if topology == "laplacian":
@@ -101,15 +109,21 @@ def build_delta_nfr(
         noise = _hermitian_noise(dim, rng)
         matrix = matrix + (1.0 / np.sqrt(dim)) * noise
 
-    matrix *= (nu_f * scale)
+    matrix *= nu_f * scale
     hermitian = 0.5 * (matrix + matrix.conj().T)
     backend = get_backend()
-    return np.asarray(ensure_numpy(ensure_array(hermitian, backend=backend), backend=backend), dtype=np.complex128)
+    return np.asarray(
+        ensure_numpy(ensure_array(hermitian, backend=backend), backend=backend),
+        dtype=np.complex128,
+    )
+
 
 def build_lindblad_delta_nfr(
     *,
     hamiltonian: Sequence[Sequence[complex]] | np.ndarray | None = None,
-    collapse_operators: Sequence[Sequence[Sequence[complex]] | np.ndarray] | None = None,
+    collapse_operators: (
+        Sequence[Sequence[Sequence[complex]] | np.ndarray] | None
+    ) = None,
     dim: int | None = None,
     nu_f: float = 1.0,
     scale: float = 1.0,
@@ -157,7 +171,9 @@ def build_lindblad_delta_nfr(
         hermitian = _as_square_matrix(hamiltonian, label="hamiltonian")
         inferred_dim = hermitian.shape[0]
     elif operators:
-        inferred_dim = _as_square_matrix(operators[0], label="collapse operator[0]").shape[0]
+        inferred_dim = _as_square_matrix(
+            operators[0], label="collapse operator[0]"
+        ).shape[0]
 
     if inferred_dim is None:
         raise ValueError("dim must be supplied when no operators are provided.")
@@ -176,12 +192,18 @@ def build_lindblad_delta_nfr(
     if hamiltonian is None:
         hermitian = np.zeros((dimension, dimension), dtype=np.complex128)
     else:
-        hermitian = _as_square_matrix(hamiltonian, expected_dim=dimension, label="hamiltonian")
+        hermitian = _as_square_matrix(
+            hamiltonian, expected_dim=dimension, label="hamiltonian"
+        )
         if not np.allclose(hermitian, hermitian.conj().T, atol=atol):
-            raise ValueError("Hamiltonian component must be Hermitian within tolerance.")
+            raise ValueError(
+                "Hamiltonian component must be Hermitian within tolerance."
+            )
 
     dissipators = [
-        _as_square_matrix(operator, expected_dim=dimension, label=f"collapse operator[{index}]")
+        _as_square_matrix(
+            operator, expected_dim=dimension, label=f"collapse operator[{index}]"
+        )
         for index, operator in enumerate(operators)
     ]
 
@@ -194,13 +216,15 @@ def build_lindblad_delta_nfr(
         liouvillian -= 0.5 * np.kron(identity, adjoint_product)
         liouvillian -= 0.5 * np.kron(adjoint_product.T, identity)
 
-    liouvillian *= (nu_f * scale)
+    liouvillian *= nu_f * scale
 
     if ensure_trace_preserving:
         identity_vec = identity.reshape(dimension * dimension, order="F")
         left_residual = identity_vec.conj().T @ liouvillian
         if not np.allclose(left_residual, np.zeros_like(left_residual), atol=10 * atol):
-            raise ValueError("Lindblad generator must preserve the trace of density operators.")
+            raise ValueError(
+                "Lindblad generator must preserve the trace of density operators."
+            )
 
     backend = get_backend()
     liouvillian_backend = ensure_array(liouvillian, backend=backend)
@@ -213,4 +237,6 @@ def build_lindblad_delta_nfr(
                 "Lindblad generator is not contractive: spectrum has positive real components."
             )
 
-    return np.asarray(ensure_numpy(liouvillian_backend, backend=backend), dtype=np.complex128)
+    return np.asarray(
+        ensure_numpy(liouvillian_backend, backend=backend), dtype=np.complex128
+    )

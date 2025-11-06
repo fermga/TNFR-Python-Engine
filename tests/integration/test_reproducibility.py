@@ -9,12 +9,14 @@ from pathlib import Path
 
 import pytest
 
+
 @pytest.fixture
 def temp_output_dir(tmp_path: Path) -> Path:
     """Create a temporary directory for test outputs."""
     output_dir = tmp_path / "artifacts"
     output_dir.mkdir()
     return output_dir
+
 
 @pytest.fixture
 def reproducibility_script() -> Path:
@@ -27,7 +29,12 @@ def reproducibility_script() -> Path:
         current = current.parent
 
     # Fallback to relative path if not found
-    return Path(__file__).parent.parent.parent / "scripts" / "run_reproducible_benchmarks.py"
+    return (
+        Path(__file__).parent.parent.parent
+        / "scripts"
+        / "run_reproducible_benchmarks.py"
+    )
+
 
 def test_reproducibility_script_runs_successfully(
     temp_output_dir: Path,
@@ -39,9 +46,12 @@ def test_reproducibility_script_runs_successfully(
         [
             sys.executable,
             str(reproducibility_script),
-            "--benchmarks", "comprehensive_cache_profiler",
-            "--seed", "42",
-            "--output-dir", str(temp_output_dir),
+            "--benchmarks",
+            "comprehensive_cache_profiler",
+            "--seed",
+            "42",
+            "--output-dir",
+            str(temp_output_dir),
         ],
         capture_output=True,
         text=True,
@@ -69,6 +79,7 @@ def test_reproducibility_script_runs_successfully(
     assert "checksums" in benchmark_result
     assert len(benchmark_result["checksums"]) > 0
 
+
 def test_reproducibility_script_verify_mode(
     temp_output_dir: Path,
     reproducibility_script: Path,
@@ -79,9 +90,12 @@ def test_reproducibility_script_verify_mode(
         [
             sys.executable,
             str(reproducibility_script),
-            "--benchmarks", "comprehensive_cache_profiler",
-            "--seed", "123",
-            "--output-dir", str(temp_output_dir),
+            "--benchmarks",
+            "comprehensive_cache_profiler",
+            "--seed",
+            "123",
+            "--output-dir",
+            str(temp_output_dir),
         ],
         check=True,
         capture_output=True,
@@ -96,7 +110,8 @@ def test_reproducibility_script_verify_mode(
         [
             sys.executable,
             str(reproducibility_script),
-            "--verify", str(manifest_path),
+            "--verify",
+            str(manifest_path),
         ],
         capture_output=True,
         text=True,
@@ -105,6 +120,7 @@ def test_reproducibility_script_verify_mode(
 
     assert result.returncode == 0, f"Verification failed: {result.stderr}"
     assert "Verified" in result.stdout
+
 
 def test_reproducibility_script_handles_missing_benchmark(
     temp_output_dir: Path,
@@ -116,9 +132,12 @@ def test_reproducibility_script_handles_missing_benchmark(
         [
             sys.executable,
             str(reproducibility_script),
-            "--benchmarks", "comprehensive_cache_profiler",
-            "--seed", "42",
-            "--output-dir", str(temp_output_dir),
+            "--benchmarks",
+            "comprehensive_cache_profiler",
+            "--seed",
+            "42",
+            "--output-dir",
+            str(temp_output_dir),
         ],
         capture_output=True,
         text=True,

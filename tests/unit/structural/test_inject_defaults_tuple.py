@@ -2,6 +2,7 @@
 
 from tnfr.constants import DEFAULTS, inject_defaults
 
+
 def test_mutating_graph_tuple_does_not_affect_defaults(monkeypatch, graph_canon):
     tup = ([1], {"a": 1})
     new_defaults = DEFAULTS | {"_test_tuple": tup}

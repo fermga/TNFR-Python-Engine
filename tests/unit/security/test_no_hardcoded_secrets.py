@@ -65,17 +65,16 @@ class TestNoHardcodedSecrets:
                 # Skip files that can't be read
                 continue
 
-        assert not violations, (
-            f"Found potential hardcoded GitHub tokens in:\n"
-            + "\n".join(f"  {path}: {matches}" for path, matches in violations)
+        assert (
+            not violations
+        ), f"Found potential hardcoded GitHub tokens in:\n" + "\n".join(
+            f"  {path}: {matches}" for path, matches in violations
         )
 
     def test_no_hardcoded_pypi_tokens(self, source_files):
         """Verify no hardcoded PyPI tokens in source code."""
         # Pattern for PyPI tokens - comprehensive to catch all variants
-        pypi_token_pattern = re.compile(
-            r"pypi-[a-zA-Z0-9+/=_-]+", re.IGNORECASE
-        )
+        pypi_token_pattern = re.compile(r"pypi-[a-zA-Z0-9+/=_-]+", re.IGNORECASE)
 
         violations = []
         for file_path in source_files:
@@ -84,15 +83,16 @@ class TestNoHardcodedSecrets:
                 matches = pypi_token_pattern.findall(content)
                 if matches:
                     # Filter out placeholder patterns (all X's or clearly fake)
-                    real_matches = [m for m in matches if 'X' * 10 not in m]
+                    real_matches = [m for m in matches if "X" * 10 not in m]
                     if real_matches:
                         violations.append((file_path, real_matches))
             except Exception:
                 continue
 
-        assert not violations, (
-            f"Found potential hardcoded PyPI tokens in:\n"
-            + "\n".join(f"  {path}: {matches}" for path, matches in violations)
+        assert (
+            not violations
+        ), f"Found potential hardcoded PyPI tokens in:\n" + "\n".join(
+            f"  {path}: {matches}" for path, matches in violations
         )
 
     def test_no_suspicious_long_strings(self, source_files):
@@ -100,9 +100,7 @@ class TestNoHardcodedSecrets:
         # Pattern for long alphanumeric strings (potential secrets)
         # At least 32 characters of base64-like content
         # Using non-capturing groups for quotes for efficiency
-        suspicious_pattern = re.compile(
-            r'(?:["\'])([a-zA-Z0-9+/=_-]{32,})(?:["\'])'
-        )
+        suspicious_pattern = re.compile(r'(?:["\'])([a-zA-Z0-9+/=_-]{32,})(?:["\'])')
 
         # Allowed patterns (version strings, hashes, etc.)
         allowed_patterns = [
@@ -117,13 +115,19 @@ class TestNoHardcodedSecrets:
             try:
                 content = file_path.read_text(encoding="utf-8")
                 # Skip certain files by exact name matching
-                if file_path.name in [".env.example", "_version.py", "_generated_version.py"]:
+                if file_path.name in [
+                    ".env.example",
+                    "_version.py",
+                    "_generated_version.py",
+                ]:
                     continue
 
                 for match in suspicious_pattern.finditer(content):
                     string_value = match.group(1)
                     # Check if it matches allowed patterns
-                    if any(re.match(pattern, string_value) for pattern in allowed_patterns):
+                    if any(
+                        re.match(pattern, string_value) for pattern in allowed_patterns
+                    ):
                         continue
                     # Skip common non-secret strings
                     if string_value.isupper():  # Environment variable names
@@ -132,15 +136,18 @@ class TestNoHardcodedSecrets:
                         continue
 
                     # Get context (line number)
-                    line_num = content[:match.start()].count("\n") + 1
+                    line_num = content[: match.start()].count("\n") + 1
                     violations.append((file_path, line_num, string_value[:20] + "..."))
             except Exception:
                 continue
 
         # This test warns but doesn't fail to avoid false positives
         if violations:
-            message = "Found suspicious long strings (potential secrets):\n" + "\n".join(
-                f"  {path}:{line}: {value}" for path, line, value in violations[:10]
+            message = (
+                "Found suspicious long strings (potential secrets):\n"
+                + "\n".join(
+                    f"  {path}:{line}: {value}" for path, line, value in violations[:10]
+                )
             )
             pytest.skip(f"Review needed: {message}")
 
@@ -159,9 +166,9 @@ class TestNoHardcodedSecrets:
 
         content = env_example_path.read_text(encoding="utf-8")
         # Check that it has placeholder values, not real secrets
-        assert "your-" in content.lower() or "..." in content, (
-            ".env.example should contain placeholders, not real values"
-        )
+        assert (
+            "your-" in content.lower() or "..." in content
+        ), ".env.example should contain placeholders, not real values"
 
     def test_no_actual_env_file_in_repo(self, repo_root):
         """Verify that .env file is not committed to repository."""
@@ -170,7 +177,9 @@ class TestNoHardcodedSecrets:
         # This test might pass in development environments where .env exists
         # but is gitignored
         if env_path.exists():
-            pytest.skip(".env file exists (likely in development, should be gitignored)")
+            pytest.skip(
+                ".env file exists (likely in development, should be gitignored)"
+            )
 
 
 class TestConfigurationUtilities:
@@ -234,7 +243,13 @@ class TestConfigurationUtilities:
     def test_load_redis_config_defaults(self, monkeypatch):
         """Test loading Redis config with defaults."""
         # Clear all Redis environment variables
-        for key in ["REDIS_HOST", "REDIS_PORT", "REDIS_PASSWORD", "REDIS_DB", "REDIS_USE_TLS"]:
+        for key in [
+            "REDIS_HOST",
+            "REDIS_PORT",
+            "REDIS_PASSWORD",
+            "REDIS_DB",
+            "REDIS_USE_TLS",
+        ]:
             monkeypatch.delenv(key, raising=False)
 
         config = load_redis_config()
@@ -329,8 +344,7 @@ class TestSecurityDocumentation:
         found_keywords = [kw for kw in keywords if kw.lower() in content.lower()]
 
         assert len(found_keywords) >= 3, (
-            f"SECURITY.md should discuss secret management. "
-            f"Found: {found_keywords}"
+            f"SECURITY.md should discuss secret management. " f"Found: {found_keywords}"
         )
 
     def test_env_example_has_documentation(self, repo_root):
@@ -339,11 +353,11 @@ class TestSecurityDocumentation:
         content = env_example.read_text(encoding="utf-8")
 
         # Check for security warnings
-        assert "never commit" in content.lower() or "do not commit" in content.lower(), (
-            ".env.example should warn about not committing credentials"
-        )
+        assert (
+            "never commit" in content.lower() or "do not commit" in content.lower()
+        ), ".env.example should warn about not committing credentials"
 
         # Check for security best practices
-        assert "api token" in content.lower() or "token" in content.lower(), (
-            ".env.example should mention using API tokens"
-        )
+        assert (
+            "api token" in content.lower() or "token" in content.lower()
+        ), ".env.example should mention using API tokens"

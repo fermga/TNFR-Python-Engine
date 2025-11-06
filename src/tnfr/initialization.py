@@ -16,6 +16,7 @@ if TYPE_CHECKING:  # pragma: no cover
 
 __all__ = ("InitParams", "init_node_attrs")
 
+
 @dataclass
 class InitParams:
     """Parameters governing node initialisation."""
@@ -58,6 +59,7 @@ class InitParams:
             epi_val=get_graph_param(G, "INIT_EPI_VALUE"),
         )
 
+
 def _init_phase(
     nd: NodeInitAttrMap,
     rng: random.Random,
@@ -76,6 +78,7 @@ def _init_phase(
             nd[THETA_KEY] = 0.0
         else:
             nd.setdefault(THETA_KEY, 0.0)
+
 
 def _init_vf(
     nd: NodeInitAttrMap,
@@ -112,6 +115,7 @@ def _init_vf(
     if override or VF_KEY not in nd:
         nd[VF_KEY] = vf
 
+
 def _init_si_epi(
     nd: NodeInitAttrMap,
     rng: random.Random,
@@ -128,6 +132,7 @@ def _init_si_epi(
     si = rng.uniform(si_min, si_max)
     if override or "Si" not in nd:
         nd["Si"] = si
+
 
 def init_node_attrs(G: "nx.Graph", *, override: bool = True) -> "nx.Graph":
     """Initialise EPI, θ, νf and Si on the nodes of ``G``.

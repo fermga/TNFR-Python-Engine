@@ -19,6 +19,7 @@ from tnfr.types import Glyph
 
 ALIAS_EPI = get_aliases("EPI")
 
+
 @pytest.fixture
 def G_small():
     G = nx.cycle_graph(8)
@@ -29,9 +30,11 @@ def G_small():
     _metrics_step(G, ctx=None)
     return G
 
+
 def _repeat_steps(G, k: int):
     for _ in range(k):
         step(G)
+
 
 def test_clamps_numeric_stability(G_small):
     _repeat_steps(G_small, 50)
@@ -42,6 +45,7 @@ def test_clamps_numeric_stability(G_small):
         assert math.isfinite(x)
         assert x >= epi_min - 1e-6
         assert x <= epi_max + 1e-6
+
 
 def test_conservation_under_IL_SHA(G_small):
     for n in G_small.nodes():
@@ -65,6 +69,7 @@ def test_conservation_under_IL_SHA(G_small):
     for n in G_small.nodes():
         assert abs(epi1[n] - epi0[n]) < 5e-3
         assert abs(epi2[n] - epi1[n]) < 5e-2
+
 
 def test_remesh_cooldown_if_present(G_small):
     cooldown = G_small.graph.get(

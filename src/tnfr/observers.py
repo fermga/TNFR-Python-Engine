@@ -44,6 +44,7 @@ logger = get_logger(__name__)
 DEFAULT_GLYPH_LOAD_SPAN = 50
 DEFAULT_WBAR_SPAN = 25
 
+
 # -------------------------
 # Standard Γ(R) observer
 # -------------------------
@@ -51,6 +52,7 @@ def _std_log(kind: str, G: TNFRGraph, ctx: Mapping[str, object]) -> None:
     """Store compact events in ``history['events']``."""
     h = ensure_history(G)
     append_metric(h, "events", (kind, dict(ctx)))
+
 
 _STD_CALLBACKS = {
     CallbackEvent.BEFORE_STEP.value: partial(_std_log, "before"),
@@ -61,12 +63,14 @@ _STD_CALLBACKS = {
 
 _REORG_STATE_KEY = "_std_observer_reorg"
 
+
 def _resolve_reorg_state(G: TNFRGraph) -> dict[str, object]:
     state = G.graph.get(_REORG_STATE_KEY)
     if not isinstance(state, dict):
         state = {}
         G.graph[_REORG_STATE_KEY] = state
     return state
+
 
 def _before_step_reorg(G: TNFRGraph, ctx: Mapping[str, object] | None) -> None:
     """Capture structural time metadata before the step starts."""
@@ -85,6 +89,7 @@ def _before_step_reorg(G: TNFRGraph, ctx: Mapping[str, object] | None) -> None:
         state["dt"] = float(dt_raw) if dt_raw is not None else None
     except (TypeError, ValueError):
         state["dt"] = None
+
 
 def _after_step_reorg(G: TNFRGraph, ctx: Mapping[str, object] | None) -> None:
     """Record the reorganisation window for νf telemetry."""
@@ -140,6 +145,7 @@ def _after_step_reorg(G: TNFRGraph, ctx: Mapping[str, object] | None) -> None:
     state["last_end_t"] = end_t
     state["step"] = None
 
+
 def attach_standard_observer(G: TNFRGraph) -> TNFRGraph:
     """Register standard callbacks: before_step, after_step, on_remesh."""
     if G.graph.get("_STD_OBSERVER"):
@@ -162,9 +168,11 @@ def attach_standard_observer(G: TNFRGraph) -> TNFRGraph:
     G.graph["_STD_OBSERVER"] = "attached"
     return G
 
+
 def _ensure_nodes(G: TNFRGraph) -> bool:
     """Return ``True`` when the graph has nodes."""
     return bool(G.number_of_nodes())
+
 
 def kuramoto_metrics(G: TNFRGraph) -> tuple[float, float]:
     """Return Kuramoto order ``R`` and mean phase ``ψ``.
@@ -173,6 +181,7 @@ def kuramoto_metrics(G: TNFRGraph) -> tuple[float, float]:
     once per invocation.
     """
     return kuramoto_R_psi(G)
+
 
 def phase_sync(
     G: TNFRGraph,
@@ -203,6 +212,7 @@ def phase_sync(
             var = 0.0
     return 1.0 / (1.0 + var)
 
+
 def kuramoto_order(
     G: TNFRGraph, R: float | None = None, psi: float | None = None
 ) -> float:
@@ -212,6 +222,7 @@ def kuramoto_order(
     if R is None or psi is None:
         R, psi = kuramoto_metrics(G)
     return float(R)
+
 
 def glyph_load(G: TNFRGraph, window: int | None = None) -> GlyphLoadDistribution:
     """Return distribution of structural operators applied in the network.
@@ -244,6 +255,7 @@ def glyph_load(G: TNFRGraph, window: int | None = None) -> GlyphLoadDistribution
         glyph_dist[glyph_key] = value
     glyph_dist["_count"] = float(count)
     return glyph_dist
+
 
 def wbar(G: TNFRGraph, window: int | None = None) -> float:
     """Return W̄ = mean of ``C(t)`` over a recent window.

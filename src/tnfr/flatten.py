@@ -16,6 +16,7 @@ __all__ = [
     "parse_program_tokens",
 ]
 
+
 @dataclass
 class TholFrame:
     """Execution frame used to evaluate nested THOL blocks."""
@@ -24,6 +25,7 @@ class TholFrame:
     index: int
     remaining: int
     closing: Glyph | None
+
 
 def _iter_source(
     seq: Iterable[Token] | Sequence[Token] | Any,
@@ -38,6 +40,7 @@ def _iter_source(
         return_view=True,
     )
     return view
+
 
 def _push_thol_frame(
     frames: list[TholFrame],
@@ -74,6 +77,7 @@ def _push_thol_frame(
             closing=closing,
         )
     )
+
 
 class THOLEvaluator:
     """Generator that expands a :class:`THOL` block lazily."""
@@ -126,11 +130,13 @@ class THOLEvaluator:
                     return cl
         raise StopIteration
 
+
 def _flatten_target(
     item: TARGET,
     ops: list[tuple[OpTag, Any]],
 ) -> None:
     ops.append((OpTag.TARGET, item))
+
 
 def _flatten_wait(
     item: WAIT,
@@ -138,6 +144,7 @@ def _flatten_wait(
 ) -> None:
     steps = max(1, int(getattr(item, "steps", 1)))
     ops.append((OpTag.WAIT, steps))
+
 
 def _flatten_glyph(
     item: Glyph | str,
@@ -148,12 +155,14 @@ def _flatten_glyph(
         raise ValueError(f"Non-canonical glyph: {g}")
     ops.append((OpTag.GLYPH, g))
 
+
 _TOKEN_DISPATCH: dict[type, Callable[[Any, list[tuple[OpTag, Any]]], None]] = {
     TARGET: _flatten_target,
     WAIT: _flatten_wait,
     Glyph: _flatten_glyph,
     str: _flatten_glyph,
 }
+
 
 def _coerce_mapping_token(
     mapping: Mapping[str, Any],
@@ -190,6 +199,7 @@ def _coerce_mapping_token(
     repeat = int(value.get("repeat", 1))
     return THOL(body=body, repeat=repeat, force_close=close)
 
+
 def parse_program_tokens(
     obj: Iterable[Any] | Sequence[Any] | Any,
     *,
@@ -216,6 +226,7 @@ def parse_program_tokens(
             continue
         raise TypeError(f"Unsupported token: {item!r}")
     return tokens
+
 
 def _flatten(
     seq: Iterable[Token] | Sequence[Token] | Any,

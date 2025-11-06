@@ -11,8 +11,9 @@ class TestParallelExecutionMonitor:
         """Test that monitor classes can be imported."""
         from tnfr.parallel.monitoring import (
             ParallelExecutionMonitor,
-            PerformanceMetrics
+            PerformanceMetrics,
         )
+
         assert ParallelExecutionMonitor is not None
         assert PerformanceMetrics is not None
 
@@ -29,22 +30,19 @@ class TestParallelExecutionMonitor:
         from tnfr.parallel import ParallelExecutionMonitor
 
         monitor = ParallelExecutionMonitor()
-        
+
         # Start monitoring
         monitor.start_monitoring(expected_nodes=100, workers=2)
         assert monitor._current_metrics is not None
         assert monitor._current_metrics["expected_nodes"] == 100
         assert monitor._current_metrics["workers"] == 2
-        
+
         # Simulate some work
         time.sleep(0.1)
-        
+
         # Stop monitoring
-        metrics = monitor.stop_monitoring(
-            final_coherence=0.85,
-            initial_coherence=0.75
-        )
-        
+        metrics = monitor.stop_monitoring(final_coherence=0.85, initial_coherence=0.75)
+
         assert metrics.nodes_processed == 100
         assert metrics.workers_used == 2
         assert metrics.duration_seconds > 0
@@ -57,10 +55,7 @@ class TestParallelExecutionMonitor:
         monitor = ParallelExecutionMonitor()
         monitor.start_monitoring(expected_nodes=50, workers=1)
         time.sleep(0.05)
-        metrics = monitor.stop_monitoring(
-            final_coherence=0.9,
-            initial_coherence=0.8
-        )
+        metrics = monitor.stop_monitoring(final_coherence=0.9, initial_coherence=0.8)
 
         # Check all expected attributes exist
         assert hasattr(metrics, "start_time")
@@ -82,10 +77,7 @@ class TestParallelExecutionMonitor:
         monitor = ParallelExecutionMonitor()
         monitor.start_monitoring(expected_nodes=1000, workers=4)
         time.sleep(0.1)  # Simulate work
-        metrics = monitor.stop_monitoring(
-            final_coherence=0.9,
-            initial_coherence=0.8
-        )
+        metrics = monitor.stop_monitoring(final_coherence=0.9, initial_coherence=0.8)
 
         # Should have reasonable throughput
         assert metrics.operations_per_second > 0
@@ -97,20 +89,19 @@ class TestParallelExecutionMonitor:
         from tnfr.parallel import ParallelExecutionMonitor
 
         monitor = ParallelExecutionMonitor()
-        
+
         # Run multiple monitoring sessions
         for i in range(3):
             monitor.start_monitoring(expected_nodes=100 * (i + 1), workers=2)
             time.sleep(0.01)
             monitor.stop_monitoring(
-                final_coherence=0.8 + i * 0.05,
-                initial_coherence=0.7
+                final_coherence=0.8 + i * 0.05, initial_coherence=0.7
             )
-        
+
         # Should have all three in history
         history = monitor.history
         assert len(history) == 3
-        
+
         # Check that history is properly ordered
         for i, metrics in enumerate(history):
             assert metrics.nodes_processed == 100 * (i + 1)
@@ -120,21 +111,18 @@ class TestParallelExecutionMonitor:
         from tnfr.parallel import ParallelExecutionMonitor
 
         monitor = ParallelExecutionMonitor()
-        
+
         # No history initially - should return empty history message
         suggestions = monitor.get_optimization_suggestions()
         assert len(suggestions) == 1
         # Check for expected behavior rather than specific message text
         assert len(monitor.history) == 0
-        
+
         # Add some execution
         monitor.start_monitoring(expected_nodes=100, workers=2)
         time.sleep(0.05)
-        metrics = monitor.stop_monitoring(
-            final_coherence=0.9,
-            initial_coherence=0.8
-        )
-        
+        metrics = monitor.stop_monitoring(final_coherence=0.9, initial_coherence=0.8)
+
         # Should now have suggestions based on performance
         suggestions = monitor.get_optimization_suggestions()
         assert len(suggestions) > 0
@@ -144,12 +132,9 @@ class TestParallelExecutionMonitor:
         from tnfr.parallel import ParallelExecutionMonitor
 
         monitor = ParallelExecutionMonitor()
-        
+
         with pytest.raises(RuntimeError, match="not started"):
-            monitor.stop_monitoring(
-                final_coherence=0.9,
-                initial_coherence=0.8
-            )
+            monitor.stop_monitoring(final_coherence=0.9, initial_coherence=0.8)
 
     def test_performance_metrics_dataclass(self):
         """Test PerformanceMetrics dataclass."""
@@ -166,7 +151,7 @@ class TestParallelExecutionMonitor:
             operations_per_second=100.0,
             coherence_improvement=0.15,
             parallelization_efficiency=0.85,
-            memory_efficiency=2.0
+            memory_efficiency=2.0,
         )
 
         assert metrics.duration_seconds == 10.0

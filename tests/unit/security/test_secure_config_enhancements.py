@@ -76,7 +76,7 @@ class TestSecureCredentialValidator:
         """Test URL sanitization hides passwords."""
         url = "redis://user:secret_password@localhost:6379/0"
         sanitized = SecureCredentialValidator.sanitize_for_logging(url)
-        
+
         assert "secret_password" not in sanitized
         assert "***" in sanitized
         assert "localhost" in sanitized
@@ -122,10 +122,13 @@ class TestSecureCredentialValidator:
     def test_validate_secret_strength_custom_length(self):
         """Test secret validation with custom minimum length."""
         secret = "medium"
-        
+
         # Should pass with lower threshold
-        assert SecureCredentialValidator.validate_secret_strength(secret, min_length=4) is True
-        
+        assert (
+            SecureCredentialValidator.validate_secret_strength(secret, min_length=4)
+            is True
+        )
+
         # Should fail with higher threshold
         with pytest.raises(ValueError, match="Secret too short"):
             SecureCredentialValidator.validate_secret_strength(secret, min_length=20)
@@ -138,7 +141,7 @@ class TestSecureSecretManager:
         """Test storing and retrieving secrets."""
         manager = SecureSecretManager()
         manager.store_secret("test_key", b"test_secret")
-        
+
         retrieved = manager.get_secret("test_key")
         assert retrieved == b"test_secret"
 
@@ -146,7 +149,7 @@ class TestSecureSecretManager:
         """Test storing secret as string."""
         manager = SecureSecretManager()
         manager.store_secret("str_key", "string_secret")
-        
+
         retrieved = manager.get_secret("str_key")
         assert retrieved == b"string_secret"
 
@@ -159,7 +162,7 @@ class TestSecureSecretManager:
         """Test clearing a secret."""
         manager = SecureSecretManager()
         manager.store_secret("clear_me", b"sensitive")
-        
+
         manager.clear_secret("clear_me")
         assert manager.get_secret("clear_me") == b""
 
@@ -173,9 +176,9 @@ class TestSecureSecretManager:
         manager = SecureSecretManager()
         manager.store_secret("key1", b"secret1")
         manager.store_secret("key2", b"secret2")
-        
+
         manager.clear_all()
-        
+
         assert manager.get_secret("key1") == b""
         assert manager.get_secret("key2") == b""
 
@@ -183,12 +186,12 @@ class TestSecureSecretManager:
         """Test access logging."""
         manager = SecureSecretManager()
         manager.store_secret("logged", b"secret")
-        
+
         # Access the secret a few times
         manager.get_secret("logged")
         time.sleep(0.01)
         manager.get_secret("logged")
-        
+
         log = manager.get_access_log()
         assert len(log) >= 2
         assert all(key == "logged" for key, _ in log)
@@ -198,10 +201,10 @@ class TestSecureSecretManager:
         """Test that get_secret returns a copy, not reference."""
         manager = SecureSecretManager()
         manager.store_secret("original", b"secret")
-        
+
         retrieved1 = manager.get_secret("original")
         retrieved2 = manager.get_secret("original")
-        
+
         # Both should be equal but not the same object
         assert retrieved1 == retrieved2
         assert retrieved1 is not retrieved2
@@ -210,10 +213,10 @@ class TestSecureSecretManager:
         """Test secrets are cleared on manager destruction."""
         manager = SecureSecretManager()
         manager.store_secret("temp", b"will_be_cleared")
-        
+
         # Trigger destruction
         del manager
-        
+
         # Create new manager - old secrets should not leak
         new_manager = SecureSecretManager()
         assert new_manager.get_secret("temp") == b""
@@ -226,7 +229,7 @@ class TestCredentialRotationManager:
         """Test registering a credential."""
         manager = CredentialRotationManager()
         manager.register_credential("api_key")
-        
+
         # Should not need rotation immediately after registration
         assert manager.needs_rotation("api_key") is False
 
@@ -238,17 +241,15 @@ class TestCredentialRotationManager:
     def test_needs_rotation_after_interval(self):
         """Test rotation needed after interval passes."""
         # Use very short interval for testing
-        manager = CredentialRotationManager(
-            rotation_interval=timedelta(seconds=0.1)
-        )
+        manager = CredentialRotationManager(rotation_interval=timedelta(seconds=0.1))
         manager.register_credential("short_lived")
-        
+
         # Should not need rotation immediately
         assert manager.needs_rotation("short_lived") is False
-        
+
         # Wait for interval to pass
         time.sleep(0.15)
-        
+
         # Now should need rotation
         assert manager.needs_rotation("short_lived") is True
 
@@ -259,46 +260,42 @@ class TestCredentialRotationManager:
             warning_threshold=timedelta(seconds=0.5),
         )
         manager.register_credential("warn_me")
-        
+
         # Should not need warning immediately
         assert manager.needs_warning("warn_me") is False
-        
+
         # Wait until warning threshold
         time.sleep(0.6)
-        
+
         # Should trigger warning but not rotation
         assert manager.needs_warning("warn_me") is True
         assert manager.needs_rotation("warn_me") is False
 
     def test_rotate_if_needed_no_callback(self):
         """Test rotation without callback."""
-        manager = CredentialRotationManager(
-            rotation_interval=timedelta(seconds=0.1)
-        )
+        manager = CredentialRotationManager(rotation_interval=timedelta(seconds=0.1))
         manager.register_credential("simple")
-        
+
         time.sleep(0.15)
-        
+
         # Should perform rotation
         assert manager.rotate_if_needed("simple") is True
-        
+
         # After rotation, should not need rotation again
         assert manager.needs_rotation("simple") is False
 
     def test_rotate_if_needed_with_callback(self):
         """Test rotation calls callback."""
         callback_called = []
-        
+
         def rotation_callback():
             callback_called.append(True)
-        
-        manager = CredentialRotationManager(
-            rotation_interval=timedelta(seconds=0.1)
-        )
+
+        manager = CredentialRotationManager(rotation_interval=timedelta(seconds=0.1))
         manager.register_credential("with_callback", rotation_callback)
-        
+
         time.sleep(0.15)
-        
+
         # Should call callback during rotation
         manager.rotate_if_needed("with_callback")
         assert len(callback_called) == 1
@@ -307,9 +304,9 @@ class TestCredentialRotationManager:
         """Test getting credential age."""
         manager = CredentialRotationManager()
         manager.register_credential("aged")
-        
+
         time.sleep(0.1)
-        
+
         age = manager.get_credential_age("aged")
         assert age is not None
         assert age.total_seconds() >= 0.1
@@ -326,38 +323,38 @@ class TestSecurityAuditor:
     def test_audit_environment_variables_weak_value(self, monkeypatch):
         """Test auditor detects weak values in sensitive variables."""
         monkeypatch.setenv("API_PASSWORD", "password")
-        
+
         auditor = SecurityAuditor()
         issues = auditor.audit_environment_variables()
-        
+
         assert any("weak" in issue.lower() for issue in issues)
 
     def test_audit_environment_variables_short_secret(self, monkeypatch):
         """Test auditor detects short secrets."""
         monkeypatch.setenv("API_KEY", "short")
-        
+
         auditor = SecurityAuditor()
         issues = auditor.audit_environment_variables()
-        
+
         assert any("too short" in issue.lower() for issue in issues)
 
     def test_audit_environment_variables_placeholder(self, monkeypatch):
         """Test auditor detects placeholder values."""
         monkeypatch.setenv("API_TOKEN", "your-token")
-        
+
         auditor = SecurityAuditor()
         issues = auditor.audit_environment_variables()
-        
+
         assert any("placeholder" in issue.lower() for issue in issues)
 
     def test_audit_environment_variables_clean(self, monkeypatch):
         """Test auditor with proper configuration."""
         # Set strong secrets
         monkeypatch.setenv("API_KEY", "strong-secret-key-value-here")
-        
+
         auditor = SecurityAuditor()
         issues = auditor.audit_environment_variables()
-        
+
         # Should not report issues for strong secrets
         api_key_issues = [i for i in issues if "API_KEY" in i]
         assert len(api_key_issues) == 0
@@ -365,47 +362,47 @@ class TestSecurityAuditor:
     def test_check_redis_config_security_no_password(self, monkeypatch):
         """Test auditor detects missing Redis password."""
         monkeypatch.delenv("REDIS_PASSWORD", raising=False)
-        
+
         auditor = SecurityAuditor()
         issues = auditor.check_redis_config_security()
-        
+
         assert any("authentication disabled" in issue.lower() for issue in issues)
 
     def test_check_redis_config_security_no_tls(self, monkeypatch):
         """Test auditor detects disabled TLS."""
         monkeypatch.setenv("REDIS_USE_TLS", "false")
-        
+
         auditor = SecurityAuditor()
         issues = auditor.check_redis_config_security()
-        
+
         assert any("unencrypted" in issue.lower() for issue in issues)
 
     def test_check_cache_secret_security_not_set(self, monkeypatch):
         """Test auditor detects missing cache secret."""
         monkeypatch.delenv("TNFR_CACHE_SECRET", raising=False)
-        
+
         auditor = SecurityAuditor()
         issues = auditor.check_cache_secret_security()
-        
+
         assert any("not set" in issue.lower() for issue in issues)
 
     def test_check_cache_secret_security_too_short(self, monkeypatch):
         """Test auditor detects short cache secret."""
         # 10 hex chars = 5 bytes (too short)
         monkeypatch.setenv("TNFR_CACHE_SECRET", "0123456789")
-        
+
         auditor = SecurityAuditor()
         issues = auditor.check_cache_secret_security()
-        
+
         assert any("too short" in issue.lower() for issue in issues)
 
     def test_check_cache_secret_security_invalid_hex(self, monkeypatch):
         """Test auditor detects invalid hex in cache secret."""
         monkeypatch.setenv("TNFR_CACHE_SECRET", "not-valid-hex")
-        
+
         auditor = SecurityAuditor()
         issues = auditor.check_cache_secret_security()
-        
+
         assert any("not valid hex" in issue.lower() for issue in issues)
 
     def test_run_full_audit(self, monkeypatch):
@@ -413,14 +410,14 @@ class TestSecurityAuditor:
         monkeypatch.setenv("API_PASSWORD", "weak")
         monkeypatch.delenv("REDIS_PASSWORD", raising=False)
         monkeypatch.delenv("TNFR_CACHE_SECRET", raising=False)
-        
+
         auditor = SecurityAuditor()
         results = auditor.run_full_audit()
-        
+
         assert "environment_variables" in results
         assert "redis_config" in results
         assert "cache_secret" in results
-        
+
         # Should have findings in all categories
         assert len(results["environment_variables"]) > 0
         assert len(results["redis_config"]) > 0
@@ -433,9 +430,9 @@ class TestLoadRedisConfigEnhancements:
     def test_load_redis_config_from_url(self, monkeypatch):
         """Test loading Redis config from REDIS_URL."""
         monkeypatch.setenv("REDIS_URL", "redis://localhost:6379/0")
-        
+
         config = load_redis_config()
-        
+
         assert config["host"] == "localhost"
         assert config["port"] == 6379
         assert config["db"] == 0
@@ -444,18 +441,18 @@ class TestLoadRedisConfigEnhancements:
     def test_load_redis_config_url_with_auth(self, monkeypatch):
         """Test loading Redis URL with authentication."""
         monkeypatch.setenv("REDIS_URL", "redis://:mypassword@localhost:6379/1")
-        
+
         config = load_redis_config()
-        
+
         assert config["password"] == "mypassword"
         assert config["db"] == 1
 
     def test_load_redis_config_url_with_tls(self, monkeypatch):
         """Test loading Redis URL with TLS."""
         monkeypatch.setenv("REDIS_URL", "rediss://secure.redis.com:6380/0")
-        
+
         config = load_redis_config()
-        
+
         assert config["host"] == "secure.redis.com"
         assert config["port"] == 6380
         assert config["ssl"] is True
@@ -463,7 +460,7 @@ class TestLoadRedisConfigEnhancements:
     def test_load_redis_config_url_validation_fails(self, monkeypatch):
         """Test that invalid URLs are rejected."""
         monkeypatch.setenv("REDIS_URL", "http://not-redis:6379")
-        
+
         with pytest.raises(ValueError, match="Unsupported scheme"):
             load_redis_config()
 
@@ -471,7 +468,7 @@ class TestLoadRedisConfigEnhancements:
         """Test that invalid port ranges are rejected."""
         monkeypatch.setenv("REDIS_PORT", "99999")
         monkeypatch.delenv("REDIS_URL", raising=False)
-        
+
         with pytest.raises(ConfigurationError, match="must be between"):
             load_redis_config()
 
@@ -479,7 +476,7 @@ class TestLoadRedisConfigEnhancements:
         """Test disabling URL validation."""
         # This would normally fail validation
         monkeypatch.setenv("REDIS_URL", "http://localhost:6379")
-        
+
         # Should not raise when validation is disabled
         config = load_redis_config(validate_url=False)
         assert config is not None
@@ -492,7 +489,7 @@ class TestGlobalInstances:
         """Test getting global secret manager."""
         manager1 = get_secret_manager()
         manager2 = get_secret_manager()
-        
+
         # Should return same instance
         assert manager1 is manager2
 
@@ -500,6 +497,6 @@ class TestGlobalInstances:
         """Test getting global rotation manager."""
         manager1 = get_rotation_manager()
         manager2 = get_rotation_manager()
-        
+
         # Should return same instance
         assert manager1 is manager2

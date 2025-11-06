@@ -93,7 +93,7 @@ def _numpy_override(enabled: bool):
 
 def _dump_stats(profile: cProfile.Profile, path: Path, *, fmt: str, sort: str) -> None:
     """Persist profiling results using the requested ``fmt``.
-    
+
     Uses the documented ``.stats`` attribute of ``pstats.Stats`` to extract
     raw profiling data. The ``.stats`` dict maps function identifiers
     ``(filename, lineno, func)`` to statistics tuples

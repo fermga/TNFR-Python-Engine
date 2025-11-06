@@ -14,18 +14,23 @@ from tnfr.constants import inject_defaults, DNFR_PRIMARY, EPI_PRIMARY, VF_PRIMAR
 from tnfr.execution import play, seq, wait, target, block, compile_sequence
 from tnfr.tokens import Glyph, OpTag
 
+
 @pytest.fixture
 def graph_canon():
     """Create a canonical test graph."""
+
     def _create():
         G = nx.Graph()
         inject_defaults(G)
         return G
+
     return _create
+
 
 def _step_noop(graph):
     """Simple step function that advances time without side effects."""
     graph.graph["_t"] = graph.graph.get("_t", 0.0) + 1.0
+
 
 def test_compile_sequence_nested_blocks() -> None:
     """Verify compile_sequence handles nested block structures."""
@@ -43,6 +48,7 @@ def test_compile_sequence_nested_blocks() -> None:
     assert OpTag.GLYPH in op_tags
     assert OpTag.WAIT in op_tags
 
+
 def test_compile_sequence_multiple_targets() -> None:
     """Verify compile_sequence handles multiple target operations."""
     sequence = seq(
@@ -58,11 +64,13 @@ def test_compile_sequence_multiple_targets() -> None:
     target_ops = [op for op in compiled if op[0] == OpTag.TARGET]
     assert len(target_ops) == 2
 
+
 def test_compile_sequence_empty_blocks() -> None:
     """Verify compile_sequence handles empty blocks gracefully."""
     # Empty sequence
     compiled = compile_sequence(seq())
     assert len(compiled) == 0
+
 
 def test_compile_sequence_single_operations() -> None:
     """Verify compile_sequence handles single operations correctly."""
@@ -81,6 +89,7 @@ def test_compile_sequence_single_operations() -> None:
     assert len(compiled_target) == 1
     assert compiled_target[0][0] == OpTag.TARGET
 
+
 def test_compile_sequence_long_chains() -> None:
     """Verify compile_sequence handles long operation chains."""
     # Create long sequence
@@ -95,6 +104,7 @@ def test_compile_sequence_long_chains() -> None:
     # Should have many operations
     assert len(compiled) >= 20
 
+
 def test_compile_sequence_repeated_blocks() -> None:
     """Verify compile_sequence handles repeated blocks correctly."""
     sequence = seq(
@@ -108,6 +118,7 @@ def test_compile_sequence_repeated_blocks() -> None:
     assert OpTag.THOL in op_tags
     assert OpTag.GLYPH in op_tags
 
+
 def test_run_sequence_empty_graph(graph_canon) -> None:
     """Verify run_sequence handles empty graph."""
     G = graph_canon()
@@ -118,20 +129,25 @@ def test_run_sequence_empty_graph(graph_canon) -> None:
     # Should complete without error
     assert "history" in G.graph
 
+
 def test_run_sequence_single_node(graph_canon) -> None:
     """Verify run_sequence handles single node graph."""
     G = graph_canon()
-    G.add_node(0, **{
-        EPI_PRIMARY: 0.5,
-        VF_PRIMARY: 1.0,
-        DNFR_PRIMARY: 0.0,
-    })
+    G.add_node(
+        0,
+        **{
+            EPI_PRIMARY: 0.5,
+            VF_PRIMARY: 1.0,
+            DNFR_PRIMARY: 0.0,
+        },
+    )
 
     play(G, seq(wait(2)), step_fn=_step_noop)
 
     # Should complete and create trace
     assert "history" in G.graph
     assert "program_trace" in G.graph["history"]
+
 
 def test_run_sequence_multiple_wait_operations(graph_canon) -> None:
     """Verify run_sequence handles multiple wait operations."""
@@ -151,6 +167,7 @@ def test_run_sequence_multiple_wait_operations(graph_canon) -> None:
 
     # Should have 3 wait entries
     assert len(wait_entries) == 3
+
 
 def test_run_sequence_target_switching(graph_canon) -> None:
     """Verify run_sequence handles target switching correctly."""
@@ -172,6 +189,7 @@ def test_run_sequence_target_switching(graph_canon) -> None:
     # Should have 2 target operations
     assert len(target_entries) == 2
 
+
 def test_run_sequence_wait_zero_clamping(graph_canon) -> None:
     """Verify wait(0) is clamped to minimum of 1 step."""
     G = graph_canon()
@@ -185,6 +203,7 @@ def test_run_sequence_wait_zero_clamping(graph_canon) -> None:
 
     # Should have executed at least 1 step
     assert all(e["k"] >= 1 for e in wait_entries)
+
 
 def test_run_sequence_wait_negative_clamping(graph_canon) -> None:
     """Verify negative wait values are handled gracefully."""
@@ -200,6 +219,7 @@ def test_run_sequence_wait_negative_clamping(graph_canon) -> None:
     # Should clamp to minimum of 1
     assert all(e["k"] >= 1 for e in wait_entries)
 
+
 def test_run_sequence_target_none_selects_all(graph_canon) -> None:
     """Verify target(None) selects all nodes."""
     G = graph_canon()
@@ -214,6 +234,7 @@ def test_run_sequence_target_none_selects_all(graph_canon) -> None:
     assert len(target_entries) == 1
     assert target_entries[0]["n"] == 5
 
+
 def test_run_sequence_target_empty_list(graph_canon) -> None:
     """Verify target([]) handles empty target list."""
     G = graph_canon()
@@ -224,6 +245,7 @@ def test_run_sequence_target_empty_list(graph_canon) -> None:
 
     # Should complete without error
     assert "history" in G.graph
+
 
 def test_run_sequence_target_single_node(graph_canon) -> None:
     """Verify target([node]) selects single node."""
@@ -238,6 +260,7 @@ def test_run_sequence_target_single_node(graph_canon) -> None:
     # Should target 1 node
     assert len(target_entries) == 1
     assert target_entries[0]["n"] == 1
+
 
 def test_run_sequence_interleaved_operations(graph_canon) -> None:
     """Verify interleaved wait and target operations."""
@@ -264,6 +287,7 @@ def test_run_sequence_interleaved_operations(graph_canon) -> None:
     assert target_count == 3
     assert wait_count == 3
 
+
 def test_run_sequence_time_progression(graph_canon) -> None:
     """Verify time progresses correctly during sequence execution."""
     G = graph_canon()
@@ -275,6 +299,7 @@ def test_run_sequence_time_progression(graph_canon) -> None:
     # Time should have advanced
     final_time = G.graph.get("_t", 0.0)
     assert final_time > 0.0
+
 
 def test_run_sequence_trace_ordering(graph_canon) -> None:
     """Verify trace entries maintain execution order."""
@@ -303,14 +328,18 @@ def test_run_sequence_trace_ordering(graph_canon) -> None:
     assert len(target_indices) == 2
     assert len(wait_indices) >= 2
 
+
 def test_run_sequence_consistent_state(graph_canon) -> None:
     """Verify graph state remains consistent after execution."""
     G = graph_canon()
-    G.add_node(0, **{
-        EPI_PRIMARY: 0.5,
-        VF_PRIMARY: 1.0,
-        DNFR_PRIMARY: 0.0,
-    })
+    G.add_node(
+        0,
+        **{
+            EPI_PRIMARY: 0.5,
+            VF_PRIMARY: 1.0,
+            DNFR_PRIMARY: 0.0,
+        },
+    )
 
     initial_epi = G.nodes[0][EPI_PRIMARY]
     initial_vf = G.nodes[0][VF_PRIMARY]
@@ -320,6 +349,7 @@ def test_run_sequence_consistent_state(graph_canon) -> None:
     # With noop step function, node attributes shouldn't change
     assert G.nodes[0][EPI_PRIMARY] == initial_epi
     assert G.nodes[0][VF_PRIMARY] == initial_vf
+
 
 def test_compile_sequence_deterministic() -> None:
     """Verify compile_sequence is deterministic."""
@@ -343,6 +373,7 @@ def test_compile_sequence_deterministic() -> None:
         # that don't implement __eq__, but operation tag equality ensures
         # structural determinism
 
+
 def test_compile_sequence_preserves_structure() -> None:
     """Verify compile_sequence preserves operation structure."""
     sequence = seq(
@@ -361,9 +392,11 @@ def test_compile_sequence_preserves_structure() -> None:
     assert compiled[1][0] == OpTag.GLYPH
     assert compiled[2][0] == OpTag.WAIT
 
+
 # ============================================================================
 # ADDITIONAL CRITICAL PATH COVERAGE FOR RUN SEQUENCE TRAJECTORIES
 # ============================================================================
+
 
 @pytest.mark.parametrize("nesting_depth", [2, 3, 4])
 def test_compile_sequence_deeply_nested_blocks(nesting_depth) -> None:
@@ -372,6 +405,7 @@ def test_compile_sequence_deeply_nested_blocks(nesting_depth) -> None:
     Critical path: ensures proper compilation of nested structures.
     Note: Tests compilation only to avoid THOL grammar validation.
     """
+
     # Create nested structure
     def create_nested_block(depth):
         if depth == 1:
@@ -392,12 +426,18 @@ def test_compile_sequence_deeply_nested_blocks(nesting_depth) -> None:
     assert thol_count >= nesting_depth
     assert wait_count >= nesting_depth
 
-@pytest.mark.parametrize("num_targets,num_operations", [
-    (2, 5),
-    (3, 10),
-    (5, 15),
-])
-def test_run_sequence_multiple_target_switches(graph_canon, num_targets, num_operations) -> None:
+
+@pytest.mark.parametrize(
+    "num_targets,num_operations",
+    [
+        (2, 5),
+        (3, 10),
+        (5, 15),
+    ],
+)
+def test_run_sequence_multiple_target_switches(
+    graph_canon, num_targets, num_operations
+) -> None:
     """Test run_sequence with multiple rapid target switches.
 
     Adds coverage for complex target switching patterns.
@@ -419,6 +459,7 @@ def test_run_sequence_multiple_target_switches(graph_canon, num_targets, num_ope
     target_entries = [e for e in trace if e["op"] == "TARGET"]
 
     assert len(target_entries) == num_operations
+
 
 def test_run_sequence_mixed_operation_types(graph_canon) -> None:
     """Test run_sequence with complex mixing of operation types.
@@ -449,11 +490,15 @@ def test_run_sequence_mixed_operation_types(graph_canon) -> None:
     assert "WAIT" in op_types
     assert "THOL" in op_types  # From block
 
-@pytest.mark.parametrize("wait_values", [
-    [1, 2, 3, 4, 5],
-    [10, 5, 15, 2, 8],
-    [1, 1, 1, 1, 1],
-])
+
+@pytest.mark.parametrize(
+    "wait_values",
+    [
+        [1, 2, 3, 4, 5],
+        [10, 5, 15, 2, 8],
+        [1, 1, 1, 1, 1],
+    ],
+)
 def test_run_sequence_variable_wait_durations(graph_canon, wait_values) -> None:
     """Test run_sequence with varying wait durations.
 
@@ -474,6 +519,7 @@ def test_run_sequence_variable_wait_durations(graph_canon, wait_values) -> None:
     # Verify wait values recorded
     recorded_waits = [e["k"] for e in wait_entries]
     assert recorded_waits == wait_values
+
 
 def test_run_sequence_time_accumulation_consistency(graph_canon) -> None:
     """Test that time accumulates consistently through sequence execution.
@@ -498,7 +544,8 @@ def test_run_sequence_time_accumulation_consistency(graph_canon) -> None:
     if len(times) > 1:
         # Times should be monotonically increasing
         for i in range(len(times) - 1):
-            assert times[i+1] >= times[i]
+            assert times[i + 1] >= times[i]
+
 
 def test_compile_sequence_with_empty_blocks(graph_canon) -> None:
     """Test compile_sequence handles empty blocks correctly.
@@ -518,6 +565,7 @@ def test_compile_sequence_with_empty_blocks(graph_canon) -> None:
     op_tags = [op[0] for op in compiled]
     assert OpTag.TARGET in op_tags
     assert OpTag.WAIT in op_tags
+
 
 def test_run_sequence_interleaved_targets_and_waits(graph_canon) -> None:
     """Test run_sequence with tightly interleaved targets and waits.

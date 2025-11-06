@@ -66,11 +66,13 @@ IntegratorMethod: TypeAlias = Literal["euler", "rk4"]
 
 _PARALLEL_GRAPH: TNFRGraph | None = None
 
+
 def _gamma_worker_init(graph: TNFRGraph) -> None:
     """Initialise process-local graph reference for Γ evaluation."""
 
     global _PARALLEL_GRAPH
     _PARALLEL_GRAPH = graph
+
 
 def _gamma_worker(task: tuple[list[NodeId], float]) -> list[tuple[NodeId, float]]:
     """Evaluate Γ for ``task`` chunk using process-local graph."""
@@ -79,6 +81,7 @@ def _gamma_worker(task: tuple[list[NodeId], float]) -> list[tuple[NodeId, float]
     if _PARALLEL_GRAPH is None:
         raise RuntimeError("Parallel Γ worker initialised without graph reference")
     return [(node, float(eval_gamma(_PARALLEL_GRAPH, node, t))) for node in chunk]
+
 
 def _normalise_jobs(n_jobs: int | None, total: int) -> int | None:
     """Return an effective worker count respecting serial fallbacks."""
@@ -93,11 +96,13 @@ def _normalise_jobs(n_jobs: int | None, total: int) -> int | None:
         return None
     return max(1, min(workers, total))
 
+
 def _chunk_nodes(nodes: list[NodeId], chunk_size: int) -> Iterable[list[NodeId]]:
     """Yield deterministic chunks from ``nodes`` respecting insertion order."""
 
     for idx in range(0, len(nodes), chunk_size):
         yield nodes[idx : idx + chunk_size]
+
 
 def _apply_increment_chunk(
     chunk: list[tuple[NodeId, float, float, tuple[float, ...]]],
@@ -122,6 +127,7 @@ def _apply_increment_chunk(
         results.append((node, (float(epi), float(dEPI_dt), float(d2epi))))
 
     return results
+
 
 def _evaluate_gamma_map(
     G: TNFRGraph,
@@ -157,6 +163,7 @@ def _evaluate_gamma_map(
             for node, value in fut.result():
                 results[node] = value
     return results
+
 
 def prepare_integration_params(
     G: TNFRGraph,
@@ -208,6 +215,7 @@ def prepare_integration_params(
     dt_step = dt / steps if steps else 0.0
 
     return dt_step, steps, t, cast(Literal["euler", "rk4"], method_value)
+
 
 def _apply_increments(
     G: TNFRGraph,
@@ -306,6 +314,7 @@ def _apply_increments(
 
     return {node: results[node] for node in nodes}
 
+
 def _collect_nodal_increments(
     G: TNFRGraph,
     gamma_maps: tuple[GammaMap, ...],
@@ -315,28 +324,28 @@ def _collect_nodal_increments(
     """Combine node base state with staged Γ contributions.
 
     Implements the canonical TNFR nodal equation in two parts:
-    
-    1. **Base term** (canonical equation): 
+
+    1. **Base term** (canonical equation):
        base = vf * dnfr  →  ∂EPI/∂t = νf · ΔNFR(t)
-       
+
        This is the fundamental TNFR equation where:
          - vf (νf): structural frequency in Hz_str
          - dnfr (ΔNFR): nodal gradient (reorganization operator)
          - base: instantaneous rate of EPI evolution
-    
+
     2. **Network coupling term**:
        Γi(R) from gamma_maps - optional Kuramoto order parameter
-    
+
     The full extended equation is: ∂EPI/∂t = νf·ΔNFR(t) + Γi(R)
-    
+
     Args:
         G: TNFR graph with node attributes vf and dnfr
         gamma_maps: Staged Γ evaluations (1 for Euler, 4 for RK4)
         method: Integration method ('euler' or 'rk4')
-    
+
     Returns:
         Mapping of nodes to staged integration increments
-    
+
     Notes:
         - Line 321 implements the canonical nodal equation explicitly
         - Units: vf in Hz_str, dnfr dimensionless, base in Hz_str
@@ -403,6 +412,7 @@ def _collect_nodal_increments(
 
     return increments
 
+
 def _build_gamma_increments(
     G: TNFRGraph,
     dt_step: float,
@@ -451,6 +461,7 @@ def _build_gamma_increments(
 
     return _collect_nodal_increments(G, gamma_maps, method=method)
 
+
 def _integrate_euler(
     G: TNFRGraph,
     dt_step: float,
@@ -473,6 +484,7 @@ def _integrate_euler(
         method="euler",
         n_jobs=n_jobs,
     )
+
 
 def _integrate_rk4(
     G: TNFRGraph,
@@ -497,6 +509,7 @@ def _integrate_rk4(
         n_jobs=n_jobs,
     )
 
+
 class AbstractIntegrator(ABC):
     """Abstract base class encapsulating nodal equation integration."""
 
@@ -511,6 +524,7 @@ class AbstractIntegrator(ABC):
         n_jobs: int | None,
     ) -> None:
         """Advance ``graph`` coherence states according to the nodal equation."""
+
 
 class DefaultIntegrator(AbstractIntegrator):
     """Explicit integrator combining Euler and RK4 step implementations."""
@@ -557,6 +571,7 @@ class DefaultIntegrator(AbstractIntegrator):
 
         graph.graph["_t"] = t_local
 
+
 def update_epi_via_nodal_equation(
     G: TNFRGraph,
     *,
@@ -589,6 +604,7 @@ def update_epi_via_nodal_equation(
         n_jobs=n_jobs,
     )
 
+
 def _node_state(nd: dict[str, Any]) -> tuple[float, float, float, float]:
     """Return common node state attributes for canonical equation evaluation.
 
@@ -597,16 +613,16 @@ def _node_state(nd: dict[str, Any]) -> tuple[float, float, float, float]:
       - ΔNFR (dnfr): Nodal gradient (reorganization operator)
       - dEPI/dt (previous): Last computed EPI derivative
       - EPI (current): Current Primary Information Structure
-    
+
     These variables are used in the canonical nodal equation:
         ∂EPI/∂t = νf · ΔNFR(t)
-    
+
     Args:
         nd: Node data dictionary containing TNFR attributes
-    
+
     Returns:
         Tuple of (vf, dnfr, dEPI_dt_prev, epi_i) with 0.0 defaults
-    
+
     Notes:
         - vf alias maps to VF, frequency, or structural_frequency
         - dnfr alias maps to DNFR, delta_nfr, or reorganization_gradient

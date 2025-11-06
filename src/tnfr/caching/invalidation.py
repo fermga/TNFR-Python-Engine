@@ -1,6 +1,6 @@
 """Graph change tracking for intelligent cache invalidation.
 
-.. deprecated:: 
+.. deprecated::
    This module is deprecated. Import from ``tnfr.cache`` or ``tnfr.utils.cache`` instead.
 
 This module provides hooks to track structural changes in TNFR graphs and
@@ -15,7 +15,7 @@ warnings.warn(
     "Importing from tnfr.caching.invalidation is deprecated. "
     "Use 'from tnfr.cache import GraphChangeTracker, track_node_property_update' instead.",
     DeprecationWarning,
-    stacklevel=2
+    stacklevel=2,
 )
 
 # Re-export from consolidated location for backward compatibility

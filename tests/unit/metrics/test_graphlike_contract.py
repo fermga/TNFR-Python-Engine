@@ -5,7 +5,11 @@ from typing import Any, Iterable
 
 import pytest
 
-from tnfr.metrics.common import compute_coherence, ensure_neighbors_map, merge_graph_weights
+from tnfr.metrics.common import (
+    compute_coherence,
+    ensure_neighbors_map,
+    merge_graph_weights,
+)
 
 
 class _MockNodeView:
