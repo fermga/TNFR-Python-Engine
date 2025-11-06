@@ -667,6 +667,7 @@ except ImportError:
 6. **Learn the API**:
    - [API Overview](../api/overview.md) - Package architecture
    - [Structural Operators](../api/operators.md) - Detailed operator reference
+   - [Operators Visual Guide](../api/OPERATORS_VISUAL_GUIDE.md) - Visual diagrams and interactive examples
    - [Telemetry Guide](../api/telemetry.md) - Metrics and traces
 
 7. **See complete examples**:

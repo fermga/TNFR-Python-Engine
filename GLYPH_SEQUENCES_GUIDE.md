@@ -4,6 +4,8 @@
 
 This guide documents **canonical glyph sequences** for the TNFR paradigm - proven patterns of structural operators that produce coherent reorganization and controlled transformation.
 
+> **📖 Visual Companion**: See [docs/source/api/OPERATORS_VISUAL_GUIDE.md](docs/source/api/OPERATORS_VISUAL_GUIDE.md) for comprehensive visual documentation with ASCII diagrams, detailed explanations, and interactive examples for all 13 operators.
+
 ## Glyph Grammar Fundamentals
 
 ### Composition Principles

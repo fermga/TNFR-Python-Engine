@@ -4,6 +4,8 @@
 
 This guide provides a comprehensive reference for TNFR's 13 canonical structural operators. These operators are the **only valid way** to modify networks in TNFR, ensuring all changes are traceable, coherent, and reproducible.
 
+> **📖 Visual Guide**: For detailed visual explanations with ASCII diagrams, flow charts, and interactive examples, see the [Operators Visual Guide](../api/OPERATORS_VISUAL_GUIDE.md).
+
 ## Overview
 
 Structural operators are **resonant transformations** that reorganize coherence while preserving TNFR invariants. Think of them as **musical gestures** rather than mechanical operations - each operator creates a specific type of structural change that respects the natural resonance of the system.
