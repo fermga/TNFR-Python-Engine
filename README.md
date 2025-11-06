@@ -198,7 +198,7 @@ See [SECURITY.md](SECURITY.md) for detailed information on secret management, cr
 
 ## Migration Notes
 
-- **Si dispersion keys:** Ensure graph payloads and configuration files use the canonical `dSi_dphase_disp` attribute for Si dispersion sensitivity before upgrading. The runtime now raises :class:`ValueError` listing any unexpected sensitivity keys, and :func:`tnfr.metrics.sense_index.compute_Si_node` rejects unknown keyword arguments.
+- **Si dispersion keys:** Ensure graph payloads and configuration files use the canonical `dSi_dphase_disp` attribute for Si dispersion sensitivity before upgrading. The runtime now raises `ValueError` listing any unexpected sensitivity keys, and `tnfr.metrics.sense_index.compute_Si_node` rejects unknown keyword arguments.
 - Refer to the [release notes](docs/source/releases.md#1100-si-dispersion-legacy-keys-removed) for a migration snippet that rewrites stored graphs in place prior to running the new version.
 
 ## License
@@ -212,4 +212,4 @@ Released under the [MIT License](LICENSE.md). Cite the TNFR paradigm when publis
 1. **Beginners** → Run `examples/hello_world.py` and then `from tnfr.tutorials import hello_tnfr; hello_tnfr()`
 2. **Users** → Read [QUICKSTART_NEW.md](docs/source/getting-started/QUICKSTART_NEW.md) and experiment with domain tutorials
 3. **Developers** → See [ARCHITECTURE.md](ARCHITECTURE.md), [GLOSSARY.md](GLOSSARY.md), and the [API Overview](docs/source/api/overview.md)
-4. **Researchers** → Study [TNFR.pdf](TNFR.pdf) and the [Mathematical Foundations](docs/source/theory/00_overview.ipynb)
+4. **Researchers** → Study [TNFR.pdf](TNFR.pdf) and the [Theoretical Overview Notebook](docs/source/theory/00_overview.ipynb)
