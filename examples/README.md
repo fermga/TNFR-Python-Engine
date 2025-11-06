@@ -17,6 +17,40 @@ All examples have been optimized using Grammar 2.0 features for improved structu
 - Harmonic frequency transitions following Grammar 2.0 principles
 - Educational comments explaining optimization patterns
 
+## 🌱 Domain-Specific Applications
+
+### Therapeutic Domain Examples
+
+**[domain_applications/](domain_applications/)** - Specialized therapeutic patterns demonstrating TNFR in healing and personal transformation contexts.
+
+**Available modules:**
+- **[therapeutic_patterns.py](domain_applications/therapeutic_patterns.py)** - 5 validated therapeutic sequences (avg health: 0.800)
+  - Crisis intervention, process therapy, regenerative healing, insight integration, relapse prevention
+- **[therapeutic_case_studies.py](domain_applications/therapeutic_case_studies.py)** - 4 clinical case studies (avg health: 0.786)
+  - Trauma recovery, addiction healing, depression emergence, relationship repair
+- **[therapeutic_optimization.py](domain_applications/therapeutic_optimization.py)** - Comparative analysis and optimization
+  - Speed vs. depth trade-offs, intensity calibration, strategy selection, modality comparison
+
+**Quick start:**
+```bash
+# View all therapeutic patterns with validation
+python examples/domain_applications/therapeutic_patterns.py
+
+# Explore clinical case studies
+python examples/domain_applications/therapeutic_case_studies.py
+
+# Run comparative optimization analysis
+python examples/domain_applications/therapeutic_optimization.py
+```
+
+See **[README_THERAPEUTIC.md](domain_applications/README_THERAPEUTIC.md)** for comprehensive documentation on therapeutic applications, including:
+- Clinical interpretation of structural operators
+- Pattern selection guidance
+- Health metrics for therapeutic contexts
+- Structural frequency considerations in healing
+
+**Validation status:** ✅ All sequences >0.75 health, compliant with Grammar 2.0 (R1-R5 rules)
+
 ## Quick Start Examples
 
 ### hello_world.py
