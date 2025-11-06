@@ -573,6 +573,30 @@ class TestEdgeCases:
         assert result is True, "Should handle exact boundary"
         assert epi_actual == 1.0, "Should remain at boundary"
 
+    def test_invalid_clip_mode_falls_back_to_hard(self):
+        """Invalid CLIP_MODE should fall back to 'hard' mode."""
+        G, node = _create_test_nfr(
+            epi=0.95, vf=1.0, dnfr=0.2, CLIP_MODE="invalid_mode"
+        )
+
+        epi_before = 0.95
+        dt = 1.0
+
+        # Clip intervenes
+        epi_theoretical = epi_before + (1.0 * 0.2 * dt)
+        # Should use 'hard' mode as fallback
+        epi_actual = structural_clip(epi_theoretical, -1.0, 1.0, mode="hard")
+
+        # Update node
+        G.nodes[node][EPI_PRIMARY] = epi_actual
+
+        # Should still validate correctly with fallback
+        result = validate_nodal_equation(
+            G, node, epi_before, epi_actual, dt, operator_name="test", clip_aware=True
+        )
+
+        assert result is True, "Should handle invalid clip_mode gracefully"
+
 
 class TestExceptionDetails:
     """Test exception details in strict mode."""
@@ -639,4 +663,5 @@ class TestExceptionDetails:
         details = exc_info.value.details
         assert "clip_aware" in details
         assert details["clip_aware"] is False
-        assert "epi_theoretical" not in details  # Classic mode doesn't compute this
+        # Classic mode should not include clip-specific fields in details
+        assert "clip_intervened" not in details

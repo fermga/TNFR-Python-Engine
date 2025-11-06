@@ -229,9 +229,14 @@ def validate_nodal_equation(
         # Compute theoretical EPI based on nodal equation
         epi_theoretical = epi_before + (expected_depi_dt * dt)
 
+        # Validate and normalize clip_mode
+        clip_mode_str = str(clip_mode).lower()
+        if clip_mode_str not in ("hard", "soft"):
+            clip_mode_str = "hard"  # Default to safe fallback
+
         # Apply structural_clip to get expected EPI (what the operator should produce)
         epi_expected = structural_clip(
-            epi_theoretical, lo=epi_min, hi=epi_max, mode=clip_mode
+            epi_theoretical, lo=epi_min, hi=epi_max, mode=clip_mode_str  # type: ignore[arg-type]
         )
 
         # Validate against clipped expected value
