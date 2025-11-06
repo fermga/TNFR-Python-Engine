@@ -649,31 +649,15 @@ class _SequenceAutomaton:
         self._detected_pattern = self._detect_pattern()
 
     def _detect_pattern(self) -> StructuralPattern:
-        """Detect the structural pattern type of the sequence."""
-        seq = self._canonical
-
-        # Hierarchical: contains THOL
-        if SELF_ORGANIZATION in seq:
-            return StructuralPattern.HIERARCHICAL
-
-        # Bifurcated: OZ followed by ZHIR or NUL (implies branching logic)
-        for i in range(len(seq) - 1):
-            if seq[i] == DISSONANCE and seq[i + 1] in {MUTATION, CONTRACTION}:
-                return StructuralPattern.BIFURCATED
-
-        # Cyclic: contains NAV and revisits similar operators (regenerative)
-        if seq.count(TRANSITION) >= 2:
-            return StructuralPattern.CYCLIC
-
-        # Fractal: NAV with coupling or recursivity (recursive patterns)
-        if TRANSITION in seq and (COUPLING in seq or RECURSIVITY in seq):
-            return StructuralPattern.FRACTAL
-
-        # Linear: simple progression without complex patterns
-        if len(seq) <= 5 and DISSONANCE not in seq and MUTATION not in seq:
-            return StructuralPattern.LINEAR
-
-        return StructuralPattern.UNKNOWN
+        """Detect the structural pattern type of the sequence.
+        
+        Uses advanced pattern detection to identify domain-specific and
+        meta-patterns, falling back to basic pattern detection when needed.
+        """
+        from .patterns import AdvancedPatternDetector
+        
+        detector = AdvancedPatternDetector()
+        return detector.detect_pattern(self._canonical)
 
     @property
     def canonical(self) -> tuple[str, ...]:
@@ -792,13 +776,34 @@ class MissingStabilizerError(StructuralGrammarError):
 
 
 class StructuralPattern(Enum):
-    """Typology of structural patterns in operator sequences."""
+    """Typology of structural patterns in operator sequences.
+    
+    Basic patterns represent fundamental structural trajectories.
+    Advanced patterns capture domain-specific sequences from TNFR applications.
+    Meta-patterns identify common compositional components.
+    """
 
+    # Basic patterns (foundational)
     LINEAR = "linear"  # AL → IL → RA → SHA
     HIERARCHICAL = "hierarchical"  # THOL[...]
     FRACTAL = "fractal"  # NAV → IL → UM → NAV (recursive)
     CYCLIC = "cyclic"  # ... → NAV → THOL → ... (regenerative)
     BIFURCATED = "bifurcated"  # OZ → {ZHIR | NUL} (branching)
+    
+    # Advanced patterns (domain-specific)
+    THERAPEUTIC = "therapeutic"  # EN→AL→IL→OZ→THOL→IL→SHA→NAV (healing process)
+    EDUCATIONAL = "educational"  # EN→AL→IL→VAL→OZ→ZHIR→NAV→IL→RA→REMESH (learning)
+    ORGANIZATIONAL = "organizational"  # NAV→AL→EN→UM→RA→OZ→THOL→IL→VAL→REMESH (institutional evolution)
+    CREATIVE = "creative"  # SHA→AL→VAL→OZ→ZHIR→THOL→RA→IL→REMESH (artistic process)
+    REGENERATIVE = "regenerative"  # IL→RA→VAL→SHA→NAV→AL→EN→UM→IL (self-sustaining cycle)
+    
+    # Meta-patterns (compositional components)
+    BOOTSTRAP = "bootstrap"  # AL→UM→IL (rapid initialization)
+    EXPLORE = "explore"  # OZ→ZHIR→IL (controlled exploration)
+    STABILIZE = "stabilize"  # *→IL→{SHA|RA} (termination/consolidation)
+    
+    # Catch-all
+    COMPLEX = "complex"  # Sequences >8 ops with multiple patterns
     UNKNOWN = "unknown"  # Unclassified pattern
 
 
