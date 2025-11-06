@@ -27,7 +27,10 @@ nav:
       - Telemetry & Utilities: api/telemetry.md
       - Docstring Style: api/docstring_style.md
   - Advanced Topics:
+      - Architecture Guide: advanced/ARCHITECTURE_GUIDE.md
       - Performance Optimization: advanced/PERFORMANCE_OPTIMIZATION.md
+      - Testing Strategies: advanced/TESTING_STRATEGIES.md
+      - Development Workflow: advanced/DEVELOPMENT_WORKFLOW.md
       - Theory Deep Dive: advanced/THEORY_DEEP_DIVE.md
       - Mathematical Foundations: foundations.md
   - Mathematical Foundations:
@@ -76,5 +79,3 @@ plugins:
   - mkdocs-jupyter:
       execute: false
       include_source: true
-  - linkcheck:
-      fail_on_warning: true

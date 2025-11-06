@@ -86,7 +86,7 @@ submitting changes.
 ## Factory patterns and type stubs
 
 When creating factory functions for operators, generators, or mathematical
-constructs, follow the patterns documented in [FACTORY_PATTERNS.md](docs/FACTORY_PATTERNS.md).
+constructs, follow the patterns documented in the [Architecture Guide](docs/source/advanced/ARCHITECTURE_GUIDE.md).
 Key principles:
 
 - Use `make_*` prefix for operator factories that return concrete instances
@@ -94,11 +94,10 @@ Key principles:
 - Include full type annotations and generate corresponding `.pyi` stubs
 - Validate inputs and verify structural invariants after construction
 
-**Quick Reference Guides:**
-- [Factory Quick Reference](docs/FACTORY_QUICK_REFERENCE.md) - Templates and common patterns
-- [Factory Patterns Guide](docs/FACTORY_PATTERNS.md) - Comprehensive design patterns
-- [Factory Inventory](docs/FACTORY_INVENTORY_2025.md) - Complete inventory of all factories
-- [Stub Automation Workflow](docs/STUB_AUTOMATION.md) - Detailed automation guide
+**Comprehensive Guides:**
+- [Architecture Guide](docs/source/advanced/ARCHITECTURE_GUIDE.md) - Factory patterns, type stubs, and dependencies
+- [Testing Strategies](docs/source/advanced/TESTING_STRATEGIES.md) - Testing best practices and stub automation
+- [Development Workflow](docs/source/advanced/DEVELOPMENT_WORKFLOW.md) - Complete contributor guide
 
 ### Stub Generation and Synchronization
 
@@ -119,8 +118,9 @@ commits to proceed. When you modify a `.py` file:
 3. Review the generated stub for accuracy
 4. Commit both `.py` and `.pyi` files together
 
-See [Stub Automation Workflow](docs/STUB_AUTOMATION.md) for complete documentation on the
-automated stub generation system, including troubleshooting and advanced usage.
+See [Architecture Guide - Type Stub Automation](docs/source/advanced/ARCHITECTURE_GUIDE.md#type-stub-automation) 
+and [Testing Strategies - Type Stub Testing](docs/source/advanced/TESTING_STRATEGIES.md#type-stub-testing) for 
+complete documentation on the automated stub generation system, including troubleshooting and advanced usage.
 
 ## Commit message format
 

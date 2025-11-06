@@ -685,9 +685,9 @@ except ImportError:
 ### Related Documentation:
 - **[Math Backends](../getting-started/math-backends.md)** - Backend configuration details
 - **[Scalability Guide](../../SCALABILITY.md)** - Scaling to very large networks
-- **[Factory Patterns](../../FACTORY_PATTERNS.md)** - Detailed factory documentation
-- **[Cache Optimization](../../CACHE_OPTIMIZATION.md)** - Cache implementation details
-- **[Dependency Analysis](../../DEPENDENCY_ANALYSIS.md)** - Module dependencies
+- **[Architecture Guide](ARCHITECTURE_GUIDE.md)** - Factory patterns and dependency analysis
+- **[Testing Strategies](TESTING_STRATEGIES.md)** - Test optimization and automation
+- **[Development Workflow](DEVELOPMENT_WORKFLOW.md)** - Contributing and CI/CD practices
 
 ### External Resources:
 - [JAX Documentation](https://jax.readthedocs.io/)
