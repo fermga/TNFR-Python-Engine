@@ -33,7 +33,7 @@ if TYPE_CHECKING:
 try:  # pragma: no cover - optional dependency for typing only
     import numpy as np
 except Exception:  # pragma: no cover - graceful fallback when NumPy is missing
-    np = SimpleNamespace(ndarray=Any, float_=float)  # type: ignore[assignment]
+    np = SimpleNamespace(ndarray=Any, float64=float)  # type: ignore[assignment]
 
 if TYPE_CHECKING:  # pragma: no cover - import-time typing hook
     try:
@@ -130,8 +130,8 @@ else:  # pragma: no cover - runtime fallback without networkx
 #: Graph container storing TNFR nodes, edges and their coherence telemetry.
 
 if TYPE_CHECKING:
-    FloatArray: TypeAlias = npt.NDArray[np.float_]
-    FloatMatrix: TypeAlias = npt.NDArray[np.float_]
+    FloatArray: TypeAlias = npt.NDArray[np.float64]
+    FloatMatrix: TypeAlias = npt.NDArray[np.float64]
 else:  # pragma: no cover - runtime fallback without NumPy
     FloatArray: TypeAlias = Any
     FloatMatrix: TypeAlias = Any
