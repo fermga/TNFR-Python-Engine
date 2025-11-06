@@ -12,8 +12,22 @@ Demonstrates how TNFR metrics guide therapeutic decision-making.
 
 from typing import Dict, List, Tuple
 from tnfr.operators.grammar import validate_sequence_with_health
-from tnfr.operators.health_analyzer import SequenceHealthAnalyzer, SequenceHealthMetrics
-from tnfr.config.operator_names import *
+from tnfr.operators.health_analyzer import SequenceHealthAnalyzer
+from tnfr.config.operator_names import (
+    COHERENCE,
+    CONTRACTION,
+    COUPLING,
+    DISSONANCE,
+    EMISSION,
+    EXPANSION,
+    MUTATION,
+    RECEPTION,
+    RECURSIVITY,
+    RESONANCE,
+    SELF_ORGANIZATION,
+    SILENCE,
+    TRANSITION,
+)
 
 
 # =============================================================================
@@ -39,7 +53,6 @@ def compare_sequences(
     Dict[str, Dict]
         Comparison results with metrics and recommendations
     """
-    analyzer = SequenceHealthAnalyzer()
     results = {}
     
     print(f"\n{'=' * 70}")

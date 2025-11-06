@@ -347,7 +347,6 @@ def validate_all_patterns():
     }
     
     results = {}
-    analyzer = SequenceHealthAnalyzer()
     
     for name, sequence in patterns.items():
         passed = validate_pattern(name, sequence)
