@@ -238,7 +238,7 @@ class Glyph(str, Enum):
     REMESH = "REMESH"
 
 GlyphCode: TypeAlias = Union[Glyph, str]
-GlyphLoadDistribution: TypeAlias = Union[dict[Glyph, str, float]]
+GlyphLoadDistribution: TypeAlias = dict[Union[Glyph, str], float]
 
 class _SelectorLifecycle(Protocol):
     def __call__(self, graph: TNFRGraph, node: NodeId) -> GlyphCode: ...
@@ -247,7 +247,7 @@ class _SelectorLifecycle(Protocol):
 
 GlyphSelector: TypeAlias = Union[Callable[[TNFRGraph, NodeId], GlyphCode], _SelectorLifecycle]
 SelectorPreselectionMetrics: TypeAlias = Mapping[Any, SelectorMetrics]
-SelectorPreselectionChoices: TypeAlias = Union[Mapping[Any, Glyph, str]]
+SelectorPreselectionChoices: TypeAlias = Mapping[Any, Union[Glyph, str]]
 SelectorPreselectionPayload: TypeAlias = tuple[
     SelectorPreselectionMetrics,
     SelectorPreselectionChoices,
@@ -297,7 +297,7 @@ DnfrCacheVectors: TypeAlias = tuple[
     np.ndarray | None,
     np.ndarray | None,
 ]
-DnfrVectorMap: TypeAlias = Union[dict[str, np.ndarray, None]]
+DnfrVectorMap: TypeAlias = dict[str, Union[np.ndarray, None]]
 NeighborStats: TypeAlias = tuple[
     Sequence[float],
     Sequence[float],
