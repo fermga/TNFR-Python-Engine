@@ -776,35 +776,38 @@ class MissingStabilizerError(StructuralGrammarError):
 
 
 class StructuralPattern(Enum):
-    """Typology of structural patterns in operator sequences.
+    """Unified typology of structural patterns in operator sequences.
     
-    Basic patterns represent fundamental structural trajectories.
-    Advanced patterns capture domain-specific sequences from TNFR applications.
-    Meta-patterns identify common compositional components.
+    All patterns are equal - no hierarchies or priorities. Detection uses
+    pattern signatures to identify the best match based on specificity
+    and coverage of the sequence.
     """
 
-    # Basic patterns (foundational)
-    LINEAR = "linear"  # AL → IL → RA → SHA
-    HIERARCHICAL = "hierarchical"  # THOL[...]
-    FRACTAL = "fractal"  # NAV → IL → UM → NAV (recursive)
-    CYCLIC = "cyclic"  # ... → NAV → THOL → ... (regenerative)
-    BIFURCATED = "bifurcated"  # OZ → {ZHIR | NUL} (branching)
+    # Fundamental structural patterns
+    LINEAR = "linear"  # Simple progression: AL → IL → RA → SHA
+    HIERARCHICAL = "hierarchical"  # Self-organization: THOL[...]
+    FRACTAL = "fractal"  # Recursive structure: NAV → IL → UM → NAV
+    CYCLIC = "cyclic"  # Regenerative loops: multiple NAV
+    BIFURCATED = "bifurcated"  # Branching: OZ → {ZHIR | NUL}
     
-    # Advanced patterns (domain-specific)
-    THERAPEUTIC = "therapeutic"  # EN→AL→IL→OZ→THOL→IL→SHA→NAV (healing process)
-    EDUCATIONAL = "educational"  # EN→AL→IL→VAL→OZ→ZHIR→NAV→IL→RA→REMESH (learning)
-    ORGANIZATIONAL = "organizational"  # NAV→AL→EN→UM→RA→OZ→THOL→IL→VAL→REMESH (institutional evolution)
-    CREATIVE = "creative"  # SHA→AL→VAL→OZ→ZHIR→THOL→RA→IL→REMESH (artistic process)
-    REGENERATIVE = "regenerative"  # IL→RA→VAL→SHA→NAV→AL→EN→UM→IL (self-sustaining cycle)
+    # Domain-specific applied patterns
+    THERAPEUTIC = "therapeutic"  # Healing: EN→AL→IL→OZ→THOL→IL
+    EDUCATIONAL = "educational"  # Learning: EN→AL→IL→VAL→OZ→ZHIR
+    ORGANIZATIONAL = "organizational"  # Evolution: NAV→AL→EN→UM→RA→OZ→THOL
+    CREATIVE = "creative"  # Artistic: SHA→AL→VAL→OZ→ZHIR→THOL
+    REGENERATIVE = "regenerative"  # Self-sustaining: IL→RA→VAL→SHA→NAV→AL
     
-    # Meta-patterns (compositional components)
-    BOOTSTRAP = "bootstrap"  # AL→UM→IL (rapid initialization)
-    EXPLORE = "explore"  # OZ→ZHIR→IL (controlled exploration)
-    STABILIZE = "stabilize"  # *→IL→{SHA|RA} (termination/consolidation)
+    # Compositional patterns
+    BOOTSTRAP = "bootstrap"  # Initialization: AL→UM→IL
+    EXPLORE = "explore"  # Exploration: OZ→ZHIR→IL
+    STABILIZE = "stabilize"  # Consolidation: *→IL→{SHA|RA}
+    RESONATE = "resonate"  # Amplification: RA→UM→RA
+    COMPRESS = "compress"  # Simplification: NUL→IL→SHA
     
-    # Catch-all
-    COMPLEX = "complex"  # Sequences >8 ops with multiple patterns
-    UNKNOWN = "unknown"  # Unclassified pattern
+    # Structural complexity
+    COMPLEX = "complex"  # Multiple patterns combined
+    MINIMAL = "minimal"  # Single or very few operators
+    UNKNOWN = "unknown"  # Unclassified
 
 
 # Structural frequency matrix (νf): Hz_str categories per operator
