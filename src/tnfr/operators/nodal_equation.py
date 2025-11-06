@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     from ..types import NodeId, TNFRGraph
 
 from ..alias import get_attr
-from ..constants.aliases import ALIAS_EPI, ALIAS_VF, ALIAS_DNFR
+from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_VF
 
 __all__ = [
     "NodalEquationViolation",
