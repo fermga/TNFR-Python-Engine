@@ -1,5 +1,18 @@
 name: Dependency Vulnerability Audit
 
+# This workflow scans all installed Python dependencies for known security vulnerabilities
+# using pip-audit, which checks against the Python Packaging Advisory Database (PyPA).
+#
+# Runs on:
+# - Every push to main/master
+# - Every pull request to main/master  
+# - Weekly schedule (every Monday at 5 AM UTC)
+#
+# Outputs:
+# - JSON report artifact (pip-audit-report) for detailed analysis
+# - Human-readable report in workflow logs
+# - Fails the build if vulnerabilities are detected
+
 on:
   push:
     branches:
@@ -47,11 +60,19 @@ jobs:
           SITE_PACKAGES=$(python -c "import sysconfig; print(sysconfig.get_path('purelib'))")
           echo "site-packages=$SITE_PACKAGES" >> "$GITHUB_OUTPUT"
 
-      - name: Run pip-audit
+      - name: Run pip-audit (JSON report)
         id: pip_audit
         continue-on-error: true
         run: |
           pipx run pip-audit --progress-spinner off --format json --output pip-audit.json --path "${{ steps.python_site.outputs.site-packages }}"
+
+      - name: Run pip-audit (Human-readable output)
+        if: always()
+        continue-on-error: true
+        run: |
+          echo "::group::pip-audit human-readable report"
+          pipx run pip-audit --progress-spinner off --path "${{ steps.python_site.outputs.site-packages }}" || true
+          echo "::endgroup::"
 
       - name: Upload pip-audit report
         if: always() && hashFiles('pip-audit.json') != ''

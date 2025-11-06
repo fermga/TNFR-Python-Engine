@@ -295,6 +295,47 @@ raw Spanish text.
 Make sure to honor the patterns in `.gitignore` so that dependency and build
 artifacts (e.g., `node_modules/` or `dist/`) are not committed.
 
+## Security practices
+
+### Dependency vulnerability scanning
+
+Before submitting pull requests that update dependencies, run the security audit to ensure no known vulnerabilities are introduced:
+
+```bash
+# Quick scan (human-readable output)
+make security-audit
+
+# Or run directly
+./scripts/run_pip_audit.sh
+
+# Generate JSON report for detailed analysis
+make security-audit-json
+```
+
+The automated pip-audit workflow runs on:
+- Every push to main/master branches
+- Every pull request
+- Weekly schedule (Monday at 5 AM UTC)
+
+**When pip-audit detects vulnerabilities:**
+
+1. Review the report (check workflow artifacts or local JSON output)
+2. Assess if the vulnerability affects TNFR's usage
+3. Update the vulnerable dependency in `pyproject.toml` to a safe version
+4. Run tests to ensure compatibility: `./scripts/run_tests.sh`
+5. Document the security fix in your changelog fragment
+
+See [SECURITY.md](SECURITY.md) for the complete security update process, including:
+- How to interpret pip-audit results
+- Example workflow for fixing vulnerabilities
+- Integration with Dependabot
+- Secure cache configuration
+- SQL injection prevention utilities
+
+**Why pip-audit is not in pre-commit hooks:**
+
+pip-audit queries the PyPA advisory database over the network and can take 5-30 seconds, which would slow down developer workflow. The automated CI/CD scanning ensures security checks happen before merge without impacting local development velocity.
+
 ## Architectural conventions
 
 - **Add new structural operators** under `src/tnfr/operators/` and register

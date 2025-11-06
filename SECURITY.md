@@ -317,9 +317,105 @@ If you're using `ShelveCacheLayer` or `RedisCacheLayer` without signatures:
 
 ### Dependency Management
 
-- All dependencies are regularly scanned with `pip-audit`
-- Dependabot is enabled for automatic dependency updates
-- Security updates are applied promptly
+All project dependencies are continuously monitored for security vulnerabilities using automated tools and processes.
+
+#### pip-audit: Automated Dependency Vulnerability Scanning
+
+**What is pip-audit?**
+
+`pip-audit` is a tool that scans Python dependencies for known security vulnerabilities by checking them against the Python Packaging Advisory Database (PyPA).
+
+**Automated Scanning Schedule:**
+
+- **On every push** to main/master branches
+- **On every pull request** to main/master branches
+- **Weekly scheduled scan** (every Monday at 5 AM UTC)
+
+**How to Run pip-audit Locally:**
+
+```bash
+# Install pip-audit
+pip install pip-audit
+
+# Install project dependencies
+pip install -e .[all]
+
+# Scan installed packages in your environment
+pip-audit
+
+# Or scan a specific site-packages directory
+SITE_PACKAGES=$(python -c "import sysconfig; print(sysconfig.get_path('purelib'))")
+pip-audit --path "$SITE_PACKAGES"
+```
+
+**Understanding pip-audit Results:**
+
+When vulnerabilities are found, pip-audit reports:
+- **Package name and version**: The vulnerable dependency
+- **Vulnerability ID**: GHSA-*, PYSEC-*, or CVE identifier
+- **Fix versions**: The version(s) that resolve the vulnerability
+- **Severity**: Critical, High, Medium, or Low (when available)
+
+**Security Update Process:**
+
+When pip-audit detects vulnerabilities in the CI/CD pipeline:
+
+1. **Automatic Detection**: The pip-audit workflow runs and uploads a JSON report as an artifact
+2. **Review**: Maintainers review the `pip-audit-report` artifact from the workflow run
+3. **Assessment**: Evaluate if the vulnerability affects TNFR's use case:
+   - Check if the vulnerable code path is actually used by TNFR
+   - Assess the severity and exploitability in TNFR's context
+   - Review available fixes and their compatibility
+4. **Resolution Options**:
+   - **Update dependency**: Update to the fixed version in `pyproject.toml`
+   - **Pin to safe version**: If latest version causes breaking changes, pin to nearest safe version
+   - **Document exception**: If the vulnerability doesn't affect TNFR, document why in a security review
+   - **Find alternatives**: Consider replacing the dependency if no safe version exists
+5. **Testing**: Run full test suite to ensure the update doesn't break functionality
+6. **Document**: Update changelog with security fix information
+
+**Example Workflow for Fixing a Vulnerability:**
+
+```bash
+# 1. Review the pip-audit report (download from GitHub Actions artifacts)
+cat pip-audit.json
+
+# 2. Update the vulnerable dependency in pyproject.toml
+# For example, if networkx 2.6 is vulnerable and 3.0 fixes it:
+# Change: "networkx>=2.6,<3.0"
+# To:     "networkx>=3.0,<4.0"
+
+# 3. Update your local environment
+pip install -e .[all]
+
+# 4. Run pip-audit again to verify the fix
+pip-audit
+
+# 5. Run the test suite
+pytest
+
+# 6. Commit and create a pull request
+git add pyproject.toml
+git commit -m "fix: update networkx to resolve GHSA-xxxx-xxxx-xxxx"
+git push origin fix/update-networkx
+```
+
+**Why pip-audit is NOT in pre-commit hooks:**
+
+While pip-audit is valuable for CI/CD, it is **not included in pre-commit hooks** because:
+- It requires network access to query the PyPA advisory database
+- It can be slow (5-30 seconds depending on network and number of packages)
+- It would slow down developer workflow for every commit
+- The automated CI/CD scanning catches issues before merge
+
+**Dependabot Integration:**
+
+In addition to pip-audit, Dependabot is enabled to:
+- Automatically create pull requests for dependency updates
+- Monitor dependencies for security advisories
+- Suggest version updates with changelogs
+
+Both tools work together to ensure dependencies remain secure and up-to-date.
 
 ### Static Analysis
 
