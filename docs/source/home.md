@@ -7,8 +7,9 @@ theory.
 
 ## Quick References for New Contributors
 
+- **[README.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/README.md)** – Start here! Accessible introduction to TNFR with quick installation and first steps.
 - **[GLOSSARY.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/GLOSSARY.md)** – Unified glossary of TNFR variables, operators, and
-  canonical concepts. Start here to understand EPI, νf, ΔNFR, and structural operators.
+  canonical concepts. Essential reference for understanding EPI, νf, ΔNFR, and structural operators.
 - **[GLYPH_SEQUENCES_GUIDE.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/GLYPH_SEQUENCES_GUIDE.md)** – Examples of common structural
   operator sequences with expected behaviors and metrics.
 
