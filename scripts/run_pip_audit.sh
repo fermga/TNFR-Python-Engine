@@ -48,7 +48,8 @@ while [[ $# -gt 0 ]]; do
             shift
             ;;
         --help|-h)
-            sed -n '2,20p' "$0" | sed 's/^# //'
+            # Extract help from comments between line 2 and the first line that doesn't start with #
+            awk '/^# /{if(NR>1)print substr($0,3)}; /^[^#]/{exit}' "$0"
             exit 0
             ;;
         *)
@@ -65,7 +66,14 @@ echo -e "${BLUE}=== TNFR Python Engine - Dependency Vulnerability Audit ===${NC}
 if ! command -v pip-audit &> /dev/null; then
     if [ "$INSTALL_AUDIT" = true ]; then
         echo -e "${YELLOW}Installing pip-audit...${NC}"
-        python -m pip install --user pip-audit
+        # Check if we're in a virtual environment
+        if [ -n "$VIRTUAL_ENV" ] || [ -n "$CONDA_DEFAULT_ENV" ]; then
+            # In virtual environment, install without --user
+            python -m pip install pip-audit
+        else
+            # Outside virtual environment, use --user to avoid system-wide installation
+            python -m pip install --user pip-audit
+        fi
         echo -e "${GREEN}pip-audit installed successfully${NC}\n"
     else
         echo -e "${RED}Error: pip-audit is not installed${NC}"
@@ -80,15 +88,17 @@ SITE_PACKAGES=$(python -c "import sysconfig; print(sysconfig.get_path('purelib')
 echo -e "${BLUE}Scanning installed packages in:${NC} $SITE_PACKAGES\n"
 
 # Run pip-audit
+OUTPUT_FILE="pip-audit-$(date +%s)-$$.json"
+
 if [ "$JSON_OUTPUT" = true ]; then
     echo -e "${BLUE}Running pip-audit (JSON output)...${NC}\n"
-    if pip-audit --progress-spinner off --format json --output pip-audit.json --path "$SITE_PACKAGES"; then
+    if pip-audit --progress-spinner off --format json --output "$OUTPUT_FILE" --path "$SITE_PACKAGES"; then
         echo -e "\n${GREEN}✓ No vulnerabilities found${NC}"
-        echo -e "${BLUE}JSON report saved to:${NC} pip-audit.json"
+        echo -e "${BLUE}JSON report saved to:${NC} $OUTPUT_FILE"
         exit 0
     else
         echo -e "\n${RED}✗ Vulnerabilities detected${NC}"
-        echo -e "${BLUE}JSON report saved to:${NC} pip-audit.json"
+        echo -e "${BLUE}JSON report saved to:${NC} $OUTPUT_FILE"
         echo -e "\n${YELLOW}Review the report and update vulnerable dependencies in pyproject.toml${NC}"
         echo -e "${YELLOW}See SECURITY.md for the security update process${NC}"
         exit 1

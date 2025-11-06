@@ -32,6 +32,6 @@ profiles/
 bandit.json
 bandit-fixed.json
 bandit.sarif
-pip-audit.json
+pip-audit*.json
 semgrep.json
 semgrep.sarif
