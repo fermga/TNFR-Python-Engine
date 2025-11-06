@@ -272,7 +272,7 @@ PYTHONPATH=src python benchmarks/comprehensive_cache_profiler.py \
 - `sense_index`: 0.7% hit rate, 100% buffer reuse (expected - creates new structural arrays)
 - `dnfr_laplacian`: 0.0% hit rate, 100% buffer reuse (by design - stateless gradients)
 
-For detailed analysis see `docs/CACHE_OPTIMIZATION_ANALYSIS.md`.
+For detailed analysis see `docs/CACHE_OPTIMIZATION_ANALYSIS.md` and `ARCHITECTURE.md`.
 
 **Usage Examples:**
 

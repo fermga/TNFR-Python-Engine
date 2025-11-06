@@ -9,7 +9,7 @@ theory.
 
 - **[GLOSSARY.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/GLOSSARY.md)** – Unified glossary of TNFR variables, operators, and
   canonical concepts. Start here to understand EPI, νf, ΔNFR, and structural operators.
-- **[RESONANT_TRAJECTORIES.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/RESONANT_TRAJECTORIES.md)** – Examples of common structural
+- **[GLYPH_SEQUENCES_GUIDE.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/GLYPH_SEQUENCES_GUIDE.md)** – Examples of common structural
   operator sequences with expected behaviors and metrics.
 
 ## Documentation map

@@ -343,7 +343,7 @@ def coherence(node):
 
 - **Total Tests**: 1772
 - **Passing**: 1751 (98.8%)
-- **Failing**: 21 (pre-existing, documented in PRE_EXISTING_FAILURES.md)
+- **Failing**: 21 (pre-existing, documented in TESTING.md)
 - **New Failures**: 0 ✅
 
 ### Performance Impact
@@ -377,6 +377,6 @@ The module dependency structure is well-organized with clear separation of conce
 1. `AGENTS.md` - TNFR canonical invariants and agent instructions
 2. `TNFR.pdf` - Base paradigm document
 3. `docs/API_CONTRACTS.md` - Operator contracts and invariants (NEW)
-4. `PRE_EXISTING_FAILURES.md` - Known test failures (unchanged by this work)
+4. `TESTING.md` - Test strategy and known test issues
 5. `src/tnfr/utils/` - Utility module implementation
 6. `src/tnfr/operators/` - Structural operator implementation
