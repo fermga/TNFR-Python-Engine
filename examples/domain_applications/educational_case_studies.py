@@ -370,17 +370,17 @@ def case_creative_writing():
     2. Receive inspiration and ideas (EN)
     3. Initial structure and outline (IL)
     4. Expand into creative exploration (VAL)
-    5. Connect plot threads and themes (UM)
+    5. Stabilize draft structure (IL)
     6. Encounter structural weaknesses (OZ)
     7. Self-organize narrative coherence (THOL)
-    8. Transition through major revision (NAV)
-    9. Stabilize refined manuscript (IL)
+    8. Connect plot threads and themes (UM)
+    9. Transition through major revision (NAV)
     10. Reflect and prepare for publication (SHA)
     
     Structural Sequence
     -------------------
-    emission → reception → coherence → expansion → coupling
-    → dissonance → self_organization → transition → coherence → silence
+    emission → reception → coherence → expansion → coherence
+    → dissonance → self_organization → coupling → transition → silence
     
     Expected Outcomes
     -----------------
