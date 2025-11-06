@@ -230,8 +230,8 @@ def test_stabilize_pattern_with_resonance():
 def test_complex_pattern_detection():
     """Test detection of complex patterns (>8 ops with multiple sub-patterns).
     
-    Note: Sequences with THOL are always HIERARCHICAL for backward compatibility,
-    regardless of length or complexity.
+    Note: With coherence weighting, FRACTAL (weight 2.0) may win over BIFURCATED
+    (weight 2.0) or COMPLEX (weight 1.5) depending on match quality.
     """
     detector = AdvancedPatternDetector()
     # Long sequence with multiple patterns but no THOL
@@ -248,8 +248,8 @@ def test_complex_pattern_detection():
         RECURSIVITY,
     ]
     pattern = detector.detect_pattern(sequence)
-    # Should be COMPLEX (length >8, no THOL, multiple patterns) or BIFURCATED
-    assert pattern in {StructuralPattern.COMPLEX, StructuralPattern.BIFURCATED}
+    # Should be one of the high-coherence patterns
+    assert pattern in {StructuralPattern.COMPLEX, StructuralPattern.BIFURCATED, StructuralPattern.FRACTAL}
 
 
 # Basic pattern fallback tests ---------------------------------------------
@@ -544,7 +544,11 @@ def test_partial_pattern_matching():
 
 
 def test_multiple_patterns_in_long_sequence():
-    """Test detection when multiple patterns exist in one sequence."""
+    """Test detection when multiple patterns exist in one sequence.
+    
+    With coherence weighting, FRACTAL (weight 2.0) or BIFURCATED (weight 2.0)
+    may win over compositional patterns (weight 1.0).
+    """
     detector = AdvancedPatternDetector()
     # Contains both bootstrap and explore patterns
     sequence = [
@@ -558,11 +562,12 @@ def test_multiple_patterns_in_long_sequence():
         TRANSITION,
     ]
     pattern = detector.detect_pattern(sequence)
-    # OZ→ZHIR is BIFURCATED (higher priority), but also has BOOTSTRAP
+    # Multiple valid patterns, coherence weighting determines winner
     assert pattern in {
         StructuralPattern.BOOTSTRAP,
         StructuralPattern.BIFURCATED,
         StructuralPattern.EXPLORE,
+        StructuralPattern.FRACTAL,
         StructuralPattern.COMPLEX,
     }
 

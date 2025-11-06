@@ -1,9 +1,12 @@
 """Advanced pattern detection for structural operator sequences.
 
-This module provides unified pattern detection without hierarchies. All patterns
-are scored based on how well they match the sequence, and the best match is
-returned. This approach is simpler, more extensible, and aligns with TNFR's
-principle of avoiding artificial hierarchies.
+This module provides unified pattern detection using coherence-weighted scoring.
+All patterns are evaluated independently, but their match scores are weighted by
+their structural coherence level. This respects TNFR's principle that emergent
+patterns (with self-organization, phase transitions) have fundamentally higher
+structural complexity than simple compositional patterns.
+
+Coherence weights reflect observable structural depth, not arbitrary rankings.
 """
 
 from __future__ import annotations
@@ -33,23 +36,59 @@ __all__ = ["AdvancedPatternDetector"]
 
 
 class AdvancedPatternDetector:
-    """Unified pattern detector using match scoring instead of hierarchies.
+    """Pattern detector using coherence-weighted scoring.
     
-    Each pattern is evaluated independently, and the pattern with the highest
-    match score is returned. This treats all patterns equally and makes the
-    system easily extensible with new patterns.
+    Each pattern is evaluated independently and scored based on match quality.
+    The final score is weighted by the pattern's structural coherence level,
+    which reflects observable complexity (emergence, self-organization, phase
+    transitions) rather than arbitrary ranking.
+    
+    This allows: weak match with emergent pattern > strong match with simple pattern,
+    while still enabling perfect simple matches to win over weak emergent matches.
     """
 
+    # Coherence weights based on structural complexity (not arbitrary hierarchy)
+    # These reflect measurable properties: emergence, nested structure, phase transitions
+    COHERENCE_WEIGHTS = {
+        # Level 3: Emergent self-organizing patterns (highest structural depth)
+        "THERAPEUTIC": 3.0,      # Full healing cycle with controlled crisis resolution
+        "EDUCATIONAL": 3.0,       # Complete transformative learning with phase shift
+        "ORGANIZATIONAL": 3.0,    # Institutional evolution with emergent reorganization
+        "CREATIVE": 3.0,          # Artistic emergence through self-organization
+        "REGENERATIVE": 3.0,      # Self-sustaining cycle with autonomous renewal
+        
+        # Level 2: Structural transformations (medium complexity)
+        "HIERARCHICAL": 2.0,      # Self-organization creates nested structure
+        "BIFURCATED": 2.0,        # Phase transition (OZ→ZHIR) branches possibility space
+        "FRACTAL": 2.0,           # Recursive structure across scales
+        "CYCLIC": 2.0,            # Regenerative loops with multiple state transitions
+        
+        # Level 1: Compositional patterns (building blocks)
+        "BOOTSTRAP": 1.0,         # Initialization sequence
+        "EXPLORE": 1.0,           # Controlled exploration
+        "STABILIZE": 1.0,         # Consolidation ending
+        "RESONATE": 1.0,          # Amplification through coupling
+        "COMPRESS": 1.0,          # Simplification sequence
+        
+        # Level 0: Simple patterns
+        "LINEAR": 0.5,            # Basic progression without transformation
+        "MINIMAL": 0.5,           # Single or very few operators
+        
+        # Special cases
+        "COMPLEX": 1.5,           # Multiple patterns combined
+        "UNKNOWN": 0.1,           # Fallback for unclassified sequences
+    }
+
     def __init__(self) -> None:
-        """Initialize the unified pattern detector with all pattern signatures."""
+        """Initialize the coherence-weighted pattern detector."""
         # Pattern signatures: each pattern maps to a list of operator subsequences
         # that characterize it, along with required/optional operators
         self._patterns = {
             # Fundamental patterns
             "LINEAR": {
-                "subsequences": [],
                 "max_length": 5,
                 "excludes": {DISSONANCE, MUTATION, SELF_ORGANIZATION},
+                "min_score": 0.1,  # Base score for matching criteria
             },
             "HIERARCHICAL": {
                 "requires": {SELF_ORGANIZATION},
@@ -109,10 +148,14 @@ class AdvancedPatternDetector:
             "COMPRESS": {
                 "subsequences": [[CONTRACTION, COHERENCE, SILENCE]],
             },
+            "MINIMAL": {
+                "max_length": 1,
+                "min_score": 0.1,
+            },
         }
 
     def detect_pattern(self, sequence: Sequence[str]) -> StructuralPattern:
-        """Detect the best matching pattern using unified scoring.
+        """Detect the best matching pattern using coherence-weighted scoring.
         
         Parameters
         ----------
@@ -122,32 +165,76 @@ class AdvancedPatternDetector:
         Returns
         -------
         StructuralPattern
-            The pattern with the highest match score.
+            The pattern with the highest coherence-weighted score.
+            
+        Notes
+        -----
+        All patterns are evaluated and scored independently. The final score for
+        each pattern is: match_score * coherence_weight.
+        
+        This means:
+        - A weak match (0.3) with an emergent pattern (weight 3.0) scores 0.9
+        - A strong match (0.4) with a compositional pattern (weight 1.0) scores 0.4
+        - The emergent pattern wins, respecting structural depth
+        
+        However:
+        - A perfect match (0.8) with LINEAR (weight 0.5) scores 0.4
+        - A weak match (0.3) with THERAPEUTIC (weight 3.0) scores 0.9
+        - THERAPEUTIC wins, but if LINEAR had 1.0 match, it would score 0.5 and still lose
+        - This is correct: even a perfect simple pattern has less structural depth
         """
         from .grammar import StructuralPattern
         
         if not sequence:
-            return StructuralPattern.MINIMAL
-        
-        if len(sequence) == 1:
-            return StructuralPattern.MINIMAL
-        
-        # Score all patterns
-        scores = {}
-        for pattern_name, criteria in self._patterns.items():
-            score = self._score_pattern(sequence, criteria)
-            if score > 0:
-                scores[pattern_name] = score
-        
-        # Handle COMPLEX: long sequences with multiple good matches
-        if len(sequence) > 8 and len(scores) >= 3:
-            return StructuralPattern.COMPLEX
-        
-        # Return best match or UNKNOWN
-        if not scores:
             return StructuralPattern.UNKNOWN
         
-        best_pattern = max(scores, key=scores.get)
+        # Score all patterns with coherence weighting
+        weighted_scores = {}
+        raw_scores = {}
+        for pattern_name, criteria in self._patterns.items():
+            raw_score = self._score_pattern(sequence, criteria)
+            if raw_score > 0:
+                weight = self.COHERENCE_WEIGHTS.get(pattern_name, 1.0)
+                weighted_scores[pattern_name] = raw_score * weight
+                raw_scores[pattern_name] = raw_score
+        
+        # Handle COMPLEX: long sequences with multiple good raw matches
+        # But NOT if we have a clear domain pattern match
+        if len(sequence) > 8 and len(raw_scores) >= 3:
+            # Check if we have a strong domain pattern match (even if weighted)
+            domain_patterns = ["THERAPEUTIC", "EDUCATIONAL", "ORGANIZATIONAL", "CREATIVE", "REGENERATIVE"]
+            domain_weighted_scores = {
+                p: weighted_scores.get(p, 0)
+                for p in domain_patterns
+                if p in weighted_scores
+            }
+            if domain_weighted_scores:
+                max_domain_score = max(domain_weighted_scores.values())
+                # If a domain pattern has the highest weighted score, don't mark as COMPLEX
+                if max_domain_score == max(weighted_scores.values()):
+                    pass  # Let it fall through to return the best pattern
+                else:
+                    # Check if we have diverse high-coherence patterns
+                    high_coherence_patterns = [
+                        p for p, s in raw_scores.items()
+                        if s > 0.3 and self.COHERENCE_WEIGHTS.get(p, 1.0) >= 2.0
+                    ]
+                    if len(high_coherence_patterns) >= 2:
+                        return StructuralPattern.COMPLEX
+            else:
+                # No domain patterns, check for general complexity
+                high_coherence_patterns = [
+                    p for p, s in raw_scores.items()
+                    if s > 0.3 and self.COHERENCE_WEIGHTS.get(p, 1.0) >= 2.0
+                ]
+                if len(high_coherence_patterns) >= 2:
+                    return StructuralPattern.COMPLEX
+        
+        # Return best weighted match or UNKNOWN
+        if not weighted_scores:
+            return StructuralPattern.UNKNOWN
+        
+        best_pattern = max(weighted_scores, key=weighted_scores.get)
         return StructuralPattern[best_pattern]
 
     def _score_pattern(
@@ -220,6 +307,10 @@ class AdvancedPatternDetector:
             if len(sequence) > criteria["max_length"]:
                 return 0.0  # Too long
         
+        # Add base score if pattern has min_score (e.g., for LINEAR)
+        if "min_score" in criteria:
+            score += criteria["min_score"]
+        
         return score
 
     def analyze_sequence_composition(
@@ -236,8 +327,10 @@ class AdvancedPatternDetector:
         -------
         Mapping[str, Any]
             Analysis containing:
-            - primary_pattern: Best matching pattern
-            - pattern_scores: All patterns with their scores
+            - primary_pattern: Best matching pattern (coherence-weighted)
+            - pattern_scores: Raw match scores for all patterns
+            - weighted_scores: Coherence-weighted scores for all patterns
+            - coherence_weights: The weight applied to each pattern
             - components: List of identified sub-patterns
             - complexity_score: Measure of sequence complexity (0.0-1.0)
             - domain_suitability: Scores for different application domains
@@ -245,18 +338,23 @@ class AdvancedPatternDetector:
         """
         primary = self.detect_pattern(sequence)
         
-        # Get scores for all patterns
+        # Get raw and weighted scores for all patterns
         pattern_scores = {}
+        weighted_scores = {}
         for pattern_name, criteria in self._patterns.items():
-            score = self._score_pattern(sequence, criteria)
-            if score > 0:
-                pattern_scores[pattern_name] = score
+            raw_score = self._score_pattern(sequence, criteria)
+            if raw_score > 0:
+                pattern_scores[pattern_name] = raw_score
+                weight = self.COHERENCE_WEIGHTS.get(pattern_name, 1.0)
+                weighted_scores[pattern_name] = raw_score * weight
         
         components = self._identify_components(sequence)
         
         return {
             "primary_pattern": primary.value,
             "pattern_scores": pattern_scores,
+            "weighted_scores": weighted_scores,
+            "coherence_weights": dict(self.COHERENCE_WEIGHTS),
             "components": components,
             "complexity_score": self._calculate_complexity(sequence),
             "domain_suitability": self._assess_domain_fit(sequence),
@@ -291,14 +389,28 @@ class AdvancedPatternDetector:
         return False
 
     def _identify_components(self, seq: Sequence[str]) -> list[str]:
-        """Identify all pattern components present in the sequence."""
+        """Identify all pattern components present in the sequence.
+        
+        Components are identified based on partial matches OR presence of
+        characteristic subsequences, even if the full pattern doesn't match.
+        """
         components = []
         
-        # Check each pattern for partial matches
+        # Check each pattern for partial matches (score > 0 but not dominant)
         for pattern_name, criteria in self._patterns.items():
             score = self._score_pattern(seq, criteria)
             if 0 < score < 0.8:  # Partial match
                 components.append(pattern_name.lower())
+        
+        # Also check for characteristic subsequences even if pattern doesn't fully match
+        # (e.g., BOOTSTRAP subsequence in a long sequence)
+        bootstrap_seq = [EMISSION, COUPLING, COHERENCE]
+        if self._contains_subsequence(seq, bootstrap_seq) and "bootstrap" not in components:
+            components.append("bootstrap")
+        
+        explore_seq = [DISSONANCE, MUTATION, COHERENCE]
+        if self._contains_subsequence(seq, explore_seq) and "explore" not in components:
+            components.append("explore")
         
         # Add structural indicators
         if DISSONANCE in seq:
