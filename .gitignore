@@ -16,6 +16,7 @@ src/tnfr/_generated_version.py
 .hypothesis/
 cover/
 *.cover
+.coverage
 coverage.xml
 .tox/
 *.log
