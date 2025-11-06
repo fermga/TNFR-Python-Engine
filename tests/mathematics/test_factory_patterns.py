@@ -18,6 +18,7 @@ from tnfr.mathematics.operators_factory import (
     make_frequency_operator,
 )
 
+
 class TestFactoryNamingConventions:
     """Verify factory functions follow naming conventions."""
 
@@ -34,6 +35,7 @@ class TestFactoryNamingConventions:
         assert build_delta_nfr.__name__.startswith("build_")
         assert hasattr(build_lindblad_delta_nfr, "__name__")
         assert build_lindblad_delta_nfr.__name__.startswith("build_")
+
 
 class TestFactoryInputValidation:
     """Verify factory functions validate inputs properly."""
@@ -83,6 +85,7 @@ class TestFactoryInputValidation:
         """Generator factory should reject unknown topologies."""
         with pytest.raises(ValueError, match="Unknown.*topology"):
             build_delta_nfr(dim=4, topology="invalid_topology")
+
 
 class TestFactoryStructuralVerification:
     """Verify factories enforce structural invariants."""
@@ -134,6 +137,7 @@ class TestFactoryStructuralVerification:
         left_action = identity_vec.conj().T @ lindblad
         np.testing.assert_allclose(left_action, 0.0, atol=1e-8)
 
+
 class TestFactoryReproducibility:
     """Verify factories produce deterministic outputs with seeds."""
 
@@ -158,6 +162,7 @@ class TestFactoryReproducibility:
         # Should be different (with very high probability)
         assert not np.allclose(delta1, delta2)
 
+
 class TestFactoryBackendIntegration:
     """Verify factories work with different backends."""
 
@@ -174,6 +179,7 @@ class TestFactoryBackendIntegration:
         delta_nfr = build_delta_nfr(dim=4)
         assert isinstance(delta_nfr, np.ndarray)
         assert delta_nfr.dtype == np.complex128
+
 
 class TestFactoryKeywordArguments:
     """Verify factories use keyword-only arguments appropriately."""
@@ -197,6 +203,7 @@ class TestFactoryKeywordArguments:
         # This should also work with explicit keywords
         delta_nfr = build_delta_nfr(dim=4, topology="laplacian")
         assert delta_nfr.shape == (4, 4)
+
 
 class TestFactoryDocumentation:
     """Verify factories have proper documentation."""

@@ -25,17 +25,60 @@ __all__ = ["CANON_COMPAT", "CANON_FALLBACK"]
 # Canonical compatibilities (allowed next operators) expressed via structural names
 _STRUCTURAL_COMPAT: dict[str, set[str]] = {
     # Opening / initiation
-    EMISSION: {RECEPTION, RESONANCE, TRANSITION, EXPANSION, COUPLING, COHERENCE, DISSONANCE},
+    EMISSION: {
+        RECEPTION,
+        RESONANCE,
+        TRANSITION,
+        EXPANSION,
+        COUPLING,
+        COHERENCE,
+        DISSONANCE,
+    },
     RECEPTION: {COHERENCE, COUPLING, RESONANCE, SELF_ORGANIZATION},
     # Stabilisation / diffusion / coupling
-    COHERENCE: {RESONANCE, EXPANSION, COUPLING, SILENCE, MUTATION, TRANSITION, CONTRACTION, DISSONANCE, SELF_ORGANIZATION, RECURSIVITY},
+    COHERENCE: {
+        RESONANCE,
+        EXPANSION,
+        COUPLING,
+        SILENCE,
+        MUTATION,
+        TRANSITION,
+        CONTRACTION,
+        DISSONANCE,
+        SELF_ORGANIZATION,
+        RECURSIVITY,
+    },
     COUPLING: {RESONANCE, COHERENCE, EXPANSION, TRANSITION, SILENCE},
-    RESONANCE: {COHERENCE, EXPANSION, COUPLING, TRANSITION, SILENCE, EMISSION, RECURSIVITY},
+    RESONANCE: {
+        COHERENCE,
+        EXPANSION,
+        COUPLING,
+        TRANSITION,
+        SILENCE,
+        EMISSION,
+        RECURSIVITY,
+    },
     EXPANSION: {COUPLING, RESONANCE, COHERENCE, TRANSITION},
     # Dissonance → transition → mutation
-    DISSONANCE: {MUTATION, TRANSITION, SELF_ORGANIZATION, CONTRACTION, RESONANCE, DISSONANCE, RECURSIVITY},
+    DISSONANCE: {
+        MUTATION,
+        TRANSITION,
+        SELF_ORGANIZATION,
+        CONTRACTION,
+        RESONANCE,
+        DISSONANCE,
+        RECURSIVITY,
+    },
     MUTATION: {COHERENCE, TRANSITION, SILENCE},
-    TRANSITION: {DISSONANCE, MUTATION, RESONANCE, COHERENCE, COUPLING, SILENCE, TRANSITION},
+    TRANSITION: {
+        DISSONANCE,
+        MUTATION,
+        RESONANCE,
+        COHERENCE,
+        COUPLING,
+        SILENCE,
+        TRANSITION,
+    },
     # Closures / latent states
     SILENCE: {EMISSION, RECEPTION},
     CONTRACTION: {EMISSION, COHERENCE},
@@ -54,11 +97,13 @@ _STRUCTURAL_COMPAT: dict[str, set[str]] = {
     },
 }
 
+
 def _name_to_glyph(name: str) -> Glyph:
     glyph = _grammar.function_name_to_glyph(name)
     if glyph is None:
         raise KeyError(f"No glyph mapped to structural operator '{name}'")
     return glyph
+
 
 def _translate_structural() -> tuple[dict[Glyph, set[Glyph]], dict[Glyph, Glyph]]:
     compat: dict[Glyph, set[Glyph]] = {}
@@ -69,6 +114,7 @@ def _translate_structural() -> tuple[dict[Glyph, set[Glyph]], dict[Glyph, Glyph]
     for src, target in _STRUCTURAL_FALLBACK.items():
         fallback[_name_to_glyph(src)] = _name_to_glyph(target)
     return compat, fallback
+
 
 # Canonical fallbacks when a transition is not allowed (structural names)
 _STRUCTURAL_FALLBACK: dict[str, str] = {

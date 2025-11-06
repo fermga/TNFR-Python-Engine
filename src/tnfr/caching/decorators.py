@@ -1,6 +1,6 @@
 """Decorators for transparent caching of TNFR computations.
 
-.. deprecated:: 
+.. deprecated::
    This module is deprecated. Import from ``tnfr.cache`` or ``tnfr.utils.cache`` instead.
 
 This module provides decorator-based caching that integrates seamlessly with
@@ -16,7 +16,7 @@ warnings.warn(
     "Importing from tnfr.caching.decorators is deprecated. "
     "Use 'from tnfr.cache import cache_tnfr_computation, invalidate_function_cache' instead.",
     DeprecationWarning,
-    stacklevel=2
+    stacklevel=2,
 )
 
 # Re-export from consolidated location for backward compatibility

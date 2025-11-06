@@ -11,7 +11,6 @@ class TNFRExperimentBuilder:
         steps: int = 10,
         random_seed: Optional[int] = None,
     ) -> NetworkResults: ...
-    
     @staticmethod
     def synchronization_study(
         nodes: int = 30,
@@ -19,7 +18,6 @@ class TNFRExperimentBuilder:
         steps: int = 20,
         random_seed: Optional[int] = None,
     ) -> NetworkResults: ...
-    
     @staticmethod
     def creativity_emergence(
         nodes: int = 20,
@@ -27,7 +25,6 @@ class TNFRExperimentBuilder:
         steps: int = 15,
         random_seed: Optional[int] = None,
     ) -> NetworkResults: ...
-    
     @staticmethod
     def compare_topologies(
         node_count: int = 40,
@@ -35,7 +32,6 @@ class TNFRExperimentBuilder:
         topologies: Optional[List[str]] = None,
         random_seed: Optional[int] = None,
     ) -> Dict[str, NetworkResults]: ...
-    
     @staticmethod
     def phase_transition_study(
         nodes: int = 50,
@@ -45,7 +41,6 @@ class TNFRExperimentBuilder:
         coupling_levels: int = 5,
         random_seed: Optional[int] = None,
     ) -> Dict[float, NetworkResults]: ...
-    
     @staticmethod
     def resilience_study(
         nodes: int = 40,

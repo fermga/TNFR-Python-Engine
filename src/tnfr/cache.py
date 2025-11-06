@@ -9,23 +9,23 @@ Quick Start
 For basic caching with metrics and persistence layers::
 
     from tnfr.cache import CacheManager, build_cache_manager
-    
+
     # Create a cache manager with default settings
     manager = build_cache_manager()
-    
+
     # Register a named cache
     manager.register("my_cache", lambda: {})
-    
+
     # Get and use the cache
     cache = manager.get("my_cache")
 
 For advanced hierarchical caching with dependency tracking::
 
     from tnfr.cache import TNFRHierarchicalCache, CacheLevel
-    
+
     # Create hierarchical cache
     cache = TNFRHierarchicalCache(max_memory_mb=256)
-    
+
     # Store with dependencies
     cache.set(
         "metric_key",
@@ -33,7 +33,7 @@ For advanced hierarchical caching with dependency tracking::
         level=CacheLevel.DERIVED_METRICS,
         dependencies={'graph_topology', 'node_properties'}
     )
-    
+
     # Selective invalidation
     cache.invalidate_by_dependency('graph_topology')
 
@@ -41,7 +41,7 @@ For graph-specific caching::
 
     from tnfr.cache import configure_graph_cache_limits
     import networkx as nx
-    
+
     G = nx.Graph()
     configure_graph_cache_limits(
         G,
@@ -69,18 +69,15 @@ from .utils.cache import (
     InstrumentedLRUCache,
     ManagedLRUCache,
     EdgeCacheManager,
-    
     # Configuration and stats
     CacheCapacityConfig,
     CacheStatistics,
-    
     # Factory functions
     build_cache_manager,
     create_hmac_signer,
     create_hmac_validator,
     create_secure_shelve_layer,
     create_secure_redis_layer,
-    
     # Graph-specific helpers
     configure_graph_cache_limits,
     configure_global_cache_layers,
@@ -90,12 +87,10 @@ from .utils.cache import (
     cached_nodes_and_A,
     increment_edge_version,
     edge_version_update,
-    
     # ΔNFR caching
     DnfrCache,
     DnfrPrepState,
     new_dnfr_cache,
-    
     # Security
     SecurityError,
     SecurityWarning,
@@ -134,19 +129,16 @@ __all__ = [
     "InstrumentedLRUCache",
     "ManagedLRUCache",
     "EdgeCacheManager",
-    
     # Configuration and stats
     "CacheCapacityConfig",
     "CacheStatistics",
     "CacheStats",
-    
     # Factory functions
     "build_cache_manager",
     "create_hmac_signer",
     "create_hmac_validator",
     "create_secure_shelve_layer",
     "create_secure_redis_layer",
-    
     # Graph-specific helpers
     "configure_graph_cache_limits",
     "configure_global_cache_layers",
@@ -159,24 +151,20 @@ __all__ = [
     "get_cache_config",
     "configure_hot_path_caches",
     "log_cache_metrics",
-    
     # ΔNFR caching
     "DnfrCache",
     "DnfrPrepState",
     "new_dnfr_cache",
-    
     # Hierarchical cache
     "TNFRHierarchicalCache",
     "CacheLevel",
     "CacheEntry",
     "cache_tnfr_computation",
     "invalidate_function_cache",
-    
     # Change tracking
     "GraphChangeTracker",
     "track_node_property_update",
     "PersistentTNFRCache",
-    
     # Security
     "SecurityError",
     "SecurityWarning",

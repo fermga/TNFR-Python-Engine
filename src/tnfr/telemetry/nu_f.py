@@ -33,6 +33,7 @@ __all__ = (
     "record_nu_f_window",
 )
 
+
 @dataclass(frozen=True)
 class NuFWindow:
     """Discrete reorganisation observations captured over a time window."""
@@ -100,6 +101,7 @@ class NuFWindow:
             "end": float(self.end) if self.end is not None else None,
         }
 
+
 @dataclass(frozen=True)
 class NuFSnapshot:
     """Aggregate νf estimates computed from recorded windows."""
@@ -135,6 +137,7 @@ class NuFSnapshot:
             "ci_upper_hz": self.ci_upper_hz,
         }
 
+
 class NuFTelemetryAccumulator:
     """Accumulate reorganisation telemetry and produce νf estimates."""
 
@@ -159,9 +162,9 @@ class NuFTelemetryAccumulator:
         self._windows: Deque[NuFWindow] = deque()
         self._total_reorganisations = 0
         self._total_duration = 0.0
-        self._graph_ref: weakref.ReferenceType[
-            GraphLike | MutableMapping[str, Any]
-        ] | None = None
+        self._graph_ref: (
+            weakref.ReferenceType[GraphLike | MutableMapping[str, Any]] | None
+        ) = None
         self.attach_graph(graph)
 
     @property
@@ -182,9 +185,7 @@ class NuFTelemetryAccumulator:
 
         return self._window_limit
 
-    def attach_graph(
-        self, graph: GraphLike | MutableMapping[str, Any] | None
-    ) -> None:
+    def attach_graph(self, graph: GraphLike | MutableMapping[str, Any] | None) -> None:
         """Attach ``graph`` for unit conversions and telemetry persistence."""
 
         if graph is None:
@@ -282,9 +283,7 @@ class NuFTelemetryAccumulator:
             rate_hz_str = total_reorganisations / total_duration
             variance_hz_str = rate_hz_str / total_duration
             std_error = math.sqrt(variance_hz_str)
-            z = self._normal_dist().inv_cdf(
-                0.5 + (self._confidence_level / 2.0)
-            )
+            z = self._normal_dist().inv_cdf(0.5 + (self._confidence_level / 2.0))
             ci_lower_str = max(rate_hz_str - z * std_error, 0.0)
             ci_upper_str = rate_hz_str + z * std_error
             confidence_level = self._confidence_level
@@ -343,7 +342,9 @@ class NuFTelemetryAccumulator:
         if self._history_limit is not None and len(history) > self._history_limit:
             del history[: len(history) - self._history_limit]
 
+
 _ACCUMULATOR_KEY = "_tnfr_nu_f_accumulator"
+
 
 def ensure_nu_f_telemetry(
     graph: GraphLike,
@@ -366,10 +367,14 @@ def ensure_nu_f_telemetry(
     replace = False
     if isinstance(accumulator, NuFTelemetryAccumulator):
         if (
-            confidence_level is not None
-            and abs(accumulator.confidence_level - confidence_level) > 1e-12
-        ) or (history_limit is not None and accumulator.history_limit != history_limit) or (
-            window_limit is not None and accumulator.window_limit != window_limit
+            (
+                confidence_level is not None
+                and abs(accumulator.confidence_level - confidence_level) > 1e-12
+            )
+            or (
+                history_limit is not None and accumulator.history_limit != history_limit
+            )
+            or (window_limit is not None and accumulator.window_limit != window_limit)
         ):
             replace = True
     if not isinstance(accumulator, NuFTelemetryAccumulator) or replace:
@@ -384,6 +389,7 @@ def ensure_nu_f_telemetry(
     else:
         accumulator.attach_graph(graph)
     return accumulator
+
 
 def record_nu_f_window(
     graph: GraphLike,

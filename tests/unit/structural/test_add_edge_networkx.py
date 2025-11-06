@@ -3,6 +3,7 @@ import pytest
 
 from tnfr.node import add_edge
 
+
 def test_add_edge_adds_weight_and_version():
     graph = nx.Graph()
     graph.add_nodes_from([1, 2])
@@ -12,6 +13,7 @@ def test_add_edge_adds_weight_and_version():
     assert graph.has_edge(1, 2)
     assert pytest.approx(graph[1][2]["weight"]) == 2.5
     assert graph.graph.get("_edge_version", 0) >= 1
+
 
 def test_add_edge_preserves_weight_by_default():
     graph = nx.Graph()
@@ -25,6 +27,7 @@ def test_add_edge_preserves_weight_by_default():
     assert pytest.approx(graph[1][2]["weight"]) == 1.0
     assert graph.graph.get("_edge_version") == first_version
 
+
 def test_add_edge_overwrite_updates_weight():
     graph = nx.Graph()
     graph.add_nodes_from([1, 2])
@@ -36,6 +39,7 @@ def test_add_edge_overwrite_updates_weight():
     assert pytest.approx(graph[1][2]["weight"]) == 2.0
     assert graph.graph.get("_edge_version") == first_version + 1
 
+
 def test_add_edge_self_loop_ignored():
     graph = nx.Graph()
     graph.add_node(1)
@@ -44,6 +48,7 @@ def test_add_edge_self_loop_ignored():
 
     assert graph.number_of_edges() == 0
     assert "_edge_version" not in graph.graph
+
 
 def test_add_edge_rejects_non_graph_type():
     with pytest.raises(TypeError):

@@ -15,7 +15,6 @@ __all__ = (
     "record_nu_f_window",
 )
 
-
 @dataclass
 class NuFWindow:
     reorganisations: int
@@ -24,12 +23,11 @@ class NuFWindow:
     end: float | None = ...
 
     def __post_init__(self) -> None: ...
-
     @classmethod
-    def from_bounds(cls, reorganisations: int, start: float, end: float) -> NuFWindow: ...
-
+    def from_bounds(
+        cls, reorganisations: int, start: float, end: float
+    ) -> NuFWindow: ...
     def as_payload(self) -> Mapping[str, float | int | None]: ...
-
 
 @dataclass
 class NuFSnapshot:
@@ -48,7 +46,6 @@ class NuFSnapshot:
 
     def as_payload(self) -> dict[str, Any]: ...
 
-
 class NuFTelemetryAccumulator:
     _windows: deque[NuFWindow]
 
@@ -60,27 +57,21 @@ class NuFTelemetryAccumulator:
         window_limit: int | None = ...,
         graph: GraphLike | MutableMapping[str, Any] | None = ...,
     ) -> None: ...
-
     @property
     def confidence_level(self) -> float: ...
-
     @property
     def history_limit(self) -> int | None: ...
-
     @property
     def window_limit(self) -> int | None: ...
-
     def attach_graph(
         self, graph: GraphLike | MutableMapping[str, Any] | None
     ) -> None: ...
-
     def record_window(
         self,
         window: NuFWindow,
         *,
         graph: GraphLike | MutableMapping[str, Any] | None = ...,
     ) -> NuFSnapshot: ...
-
     def record_counts(
         self,
         reorganisations: int,
@@ -90,15 +81,12 @@ class NuFTelemetryAccumulator:
         end: float | None = ...,
         graph: GraphLike | MutableMapping[str, Any] | None = ...,
     ) -> NuFSnapshot: ...
-
     def reset(self) -> None: ...
-
     def snapshot(
         self,
         *,
         graph: GraphLike | MutableMapping[str, Any] | None = ...,
     ) -> NuFSnapshot: ...
-
 
 def ensure_nu_f_telemetry(
     graph: GraphLike,
@@ -107,8 +95,6 @@ def ensure_nu_f_telemetry(
     history_limit: int | None = ...,
     window_limit: int | None = ...,
 ) -> NuFTelemetryAccumulator: ...
-
-
 def record_nu_f_window(
     graph: GraphLike,
     reorganisations: int,
@@ -120,4 +106,3 @@ def record_nu_f_window(
     history_limit: int | None = ...,
     window_limit: int | None = ...,
 ) -> NuFSnapshot: ...
-

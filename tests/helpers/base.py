@@ -20,6 +20,7 @@ from tests.helpers.validation import (
     assert_epi_vf_in_bounds,
 )
 
+
 class BaseStructuralTest(abc.ABC):
     """Base class for structural validation tests.
 
@@ -54,6 +55,7 @@ class BaseStructuralTest(abc.ABC):
         """Verify ΔNFR conservation holds for the test graph."""
         graph = self.create_test_graph(**graph_params)
         from tnfr.dynamics import dnfr_epi_vf_mixed
+
         dnfr_epi_vf_mixed(graph)
         assert_dnfr_balanced(graph)
 
@@ -69,6 +71,7 @@ class BaseStructuralTest(abc.ABC):
             data[DNFR_PRIMARY] = 0.0
 
         from tnfr.dynamics import dnfr_epi_vf_mixed
+
         dnfr_epi_vf_mixed(graph)
         assert_dnfr_homogeneous_stable(graph)
 
@@ -86,6 +89,7 @@ class BaseStructuralTest(abc.ABC):
             vf_min=vf_min,
             vf_max=vf_max,
         )
+
 
 class BaseOperatorTest(abc.ABC):
     """Base class for operator generation and validation tests.
@@ -121,6 +125,7 @@ class BaseOperatorTest(abc.ABC):
     def assert_hermitian(self, operator: Any, atol: float = 1e-9) -> None:
         """Assert operator is Hermitian (self-adjoint)."""
         import numpy as np
+
         if hasattr(operator, "matrix"):
             matrix = operator.matrix
         else:
@@ -130,6 +135,7 @@ class BaseOperatorTest(abc.ABC):
     def assert_finite_values(self, operator: Any) -> None:
         """Assert operator contains only finite values."""
         import numpy as np
+
         if hasattr(operator, "matrix"):
             matrix = operator.matrix
         else:
@@ -139,6 +145,7 @@ class BaseOperatorTest(abc.ABC):
     def assert_real_eigenvalues(self, operator: Any, atol: float = 1e-9) -> None:
         """Assert operator eigenvalues are real (characteristic of Hermitian)."""
         import numpy as np
+
         if hasattr(operator, "eigenvalues"):
             eigenvalues = operator.eigenvalues
         else:
@@ -148,6 +155,7 @@ class BaseOperatorTest(abc.ABC):
                 matrix = operator
             eigenvalues = np.linalg.eigvalsh(matrix)
         assert np.all(np.isreal(eigenvalues)), "Eigenvalues not real"
+
 
 class BaseValidatorTest(abc.ABC):
     """Base class for nodal and network validator tests.
@@ -174,6 +182,7 @@ class BaseValidatorTest(abc.ABC):
     ) -> None:
         """Assert node attributes are finite."""
         import math
+
         for attr in attrs_to_check:
             value = graph.nodes[node].get(attr, 0.0)
             assert math.isfinite(value), f"Attribute {attr} not finite: {value}"
@@ -186,38 +195,49 @@ class BaseValidatorTest(abc.ABC):
     ) -> None:
         """Assert phase value is in [-π, π]."""
         import math
+
         phase = graph.nodes[node].get(phase_key, 0.0)
         assert -math.pi <= phase <= math.pi, f"Phase {phase} out of range"
 
+
 # Parametrized fixtures for common test scenarios
-@pytest.fixture(params=[
-    {"num_nodes": 5, "edge_probability": 0.3, "seed": 42},
-    {"num_nodes": 10, "edge_probability": 0.4, "seed": 123},
-    {"num_nodes": 20, "edge_probability": 0.2, "seed": 456},
-])
+@pytest.fixture(
+    params=[
+        {"num_nodes": 5, "edge_probability": 0.3, "seed": 42},
+        {"num_nodes": 10, "edge_probability": 0.4, "seed": 123},
+        {"num_nodes": 20, "edge_probability": 0.2, "seed": 456},
+    ]
+)
 def parametrized_graph_config(request):
     """Parametrized graph configurations for reducing test redundancy."""
     return request.param
 
-@pytest.fixture(params=[
-    {"epi_value": 0.0, "vf_value": 1.0},
-    {"epi_value": 0.5, "vf_value": 1.5},
-    {"epi_value": -0.3, "vf_value": 0.8},
-])
+
+@pytest.fixture(
+    params=[
+        {"epi_value": 0.0, "vf_value": 1.0},
+        {"epi_value": 0.5, "vf_value": 1.5},
+        {"epi_value": -0.3, "vf_value": 0.8},
+    ]
+)
 def parametrized_homogeneous_config(request):
     """Parametrized homogeneous configurations for reducing test redundancy."""
     return request.param
+
 
 @pytest.fixture(params=[2, 3, 4, 5, 8])
 def parametrized_operator_dimension(request):
     """Parametrized operator dimensions for reducing test redundancy."""
     return request.param
 
-@pytest.fixture(params=[
-    {"topology": "laplacian", "nu_f": 1.0, "scale": 1.0},
-    {"topology": "adjacency", "nu_f": 2.0, "scale": 0.5},
-    {"topology": "laplacian", "nu_f": 0.5, "scale": 2.0},
-])
+
+@pytest.fixture(
+    params=[
+        {"topology": "laplacian", "nu_f": 1.0, "scale": 1.0},
+        {"topology": "adjacency", "nu_f": 2.0, "scale": 0.5},
+        {"topology": "laplacian", "nu_f": 0.5, "scale": 2.0},
+    ]
+)
 def parametrized_operator_config(request):
     """Parametrized operator configurations for reducing test redundancy."""
     return request.param

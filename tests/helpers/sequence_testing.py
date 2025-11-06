@@ -13,6 +13,7 @@ import pytest
 
 from tnfr.constants import DNFR_PRIMARY, EPI_PRIMARY, VF_PRIMARY, inject_defaults
 
+
 @pytest.fixture
 def graph_factory() -> Callable[[], nx.Graph]:
     """Factory for creating canonical test graphs with TNFR defaults.
@@ -29,12 +30,15 @@ def graph_factory() -> Callable[[], nx.Graph]:
     ...     G.add_nodes_from([0, 1, 2])
     ...     # Test with G
     """
+
     def _create() -> nx.Graph:
         """Create a graph with TNFR structural defaults."""
         G = nx.Graph()
         inject_defaults(G)
         return G
+
     return _create
+
 
 @pytest.fixture
 def step_noop() -> Callable[[nx.Graph], None]:
@@ -52,10 +56,13 @@ def step_noop() -> Callable[[nx.Graph], None]:
     ...     G.add_node(0)
     ...     play(G, seq(wait(1)), step_fn=step_noop)
     """
+
     def _step(graph: nx.Graph) -> None:
         """Advance time by 1.0 without modifying node state."""
         graph.graph["_t"] = graph.graph.get("_t", 0.0) + 1.0
+
     return _step
+
 
 def assert_trace_has_operations(
     graph: nx.Graph,
@@ -89,6 +96,7 @@ def assert_trace_has_operations(
     for op in expected_ops:
         assert op in trace_ops, f"Operation {op} not found in trace"
 
+
 def assert_trace_length(
     graph: nx.Graph,
     expected_length: int | None = None,
@@ -119,12 +127,15 @@ def assert_trace_length(
     trace = list(graph.graph["history"]["program_trace"])
 
     if expected_length is not None:
-        assert len(trace) == expected_length, \
-            f"Expected trace length {expected_length}, got {len(trace)}"
+        assert (
+            len(trace) == expected_length
+        ), f"Expected trace length {expected_length}, got {len(trace)}"
 
     if min_length is not None:
-        assert len(trace) >= min_length, \
-            f"Expected minimum trace length {min_length}, got {len(trace)}"
+        assert (
+            len(trace) >= min_length
+        ), f"Expected minimum trace length {min_length}, got {len(trace)}"
+
 
 def assert_time_progression(graph: nx.Graph) -> None:
     """Assert program trace shows monotonic time progression.
@@ -150,8 +161,10 @@ def assert_time_progression(graph: nx.Graph) -> None:
     times = [e.get("t", 0.0) for e in trace]
 
     for i in range(len(times) - 1):
-        assert times[i] <= times[i+1], \
-            f"Time not monotonic: t[{i}]={times[i]} > t[{i+1}]={times[i+1]}"
+        assert (
+            times[i] <= times[i + 1]
+        ), f"Time not monotonic: t[{i}]={times[i]} > t[{i+1}]={times[i+1]}"
+
 
 def count_trace_operations(
     graph: nx.Graph,
@@ -181,6 +194,7 @@ def count_trace_operations(
     trace = list(graph.graph["history"]["program_trace"])
 
     return sum(1 for e in trace if e["op"] == operation)
+
 
 def create_test_graph_with_nodes(
     num_nodes: int,
@@ -213,10 +227,13 @@ def create_test_graph_with_nodes(
     inject_defaults(G)
 
     for i in range(num_nodes):
-        G.add_node(i, **{
-            EPI_PRIMARY: epi_value,
-            VF_PRIMARY: vf_value,
-            DNFR_PRIMARY: 0.0,
-        })
+        G.add_node(
+            i,
+            **{
+                EPI_PRIMARY: epi_value,
+                VF_PRIMARY: vf_value,
+                DNFR_PRIMARY: 0.0,
+            },
+        )
 
     return G

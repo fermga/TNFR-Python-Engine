@@ -40,6 +40,7 @@ ChunkArgs = tuple[
 
 __all__ = ("coordinate_global_local_phase",)
 
+
 def _ensure_hist_deque(
     hist: MutableMapping[str, Any], key: str, maxlen: int
 ) -> deque[_DequeT]:
@@ -51,6 +52,7 @@ def _ensure_hist_deque(
         hist[key] = dq
     return cast("deque[_DequeT]", dq)
 
+
 def _read_adaptive_params(
     g: Mapping[str, Any],
 ) -> tuple[Mapping[str, Any], float, float]:
@@ -60,6 +62,7 @@ def _read_adaptive_params(
     kG = float(g.get("PHASE_K_GLOBAL", DEFAULTS["PHASE_K_GLOBAL"]))
     kL = float(g.get("PHASE_K_LOCAL", DEFAULTS["PHASE_K_LOCAL"]))
     return cast(Mapping[str, Any], cfg), kG, kL
+
 
 def _compute_state(G: TNFRGraph, cfg: Mapping[str, Any]) -> tuple[str, float, float]:
     """Return the canonical network state and supporting metrics."""
@@ -79,6 +82,7 @@ def _compute_state(G: TNFRGraph, cfg: Mapping[str, Any]) -> tuple[str, float, fl
     else:
         state = STATE_TRANSITION
     return state, float(R), disr
+
 
 def _smooth_adjust_k(
     kG: float, kL: float, state: str, cfg: Mapping[str, Any]
@@ -112,6 +116,7 @@ def _smooth_adjust_k(
 
     return _step(kG, kG_t, kG_min, kG_max), _step(kL, kL_t, kL_min, kL_max)
 
+
 def _phase_adjust_chunk(args: ChunkArgs) -> list[tuple[NodeId, Phase]]:
     """Return coordinated phase updates for the provided chunk."""
 
@@ -143,6 +148,7 @@ def _phase_adjust_chunk(args: ChunkArgs) -> list[tuple[NodeId, Phase]]:
         dL = angle_diff(thL, th)
         updates.append((node, cast(Phase, th + kG * dG + kL * dL)))
     return updates
+
 
 def coordinate_global_local_phase(
     G: TNFRGraph,

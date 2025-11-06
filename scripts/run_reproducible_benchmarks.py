@@ -93,7 +93,7 @@ def run_benchmark(
     # Validate benchmark name to prevent injection
     if name not in BENCHMARK_CONFIGS:
         return {"status": "skipped", "reason": "invalid benchmark name"}
-    
+
     script_path = Path(config["script"])
     if not script_path.exists():
         print(f"Warning: Benchmark script {script_path} not found, skipping.")
@@ -102,42 +102,42 @@ def run_benchmark(
     # Prepare output file/directory
     output_suffix = config.get("output_suffix", ".json")
     output_path = output_dir / f"{name}_seed{seed}{output_suffix}"
-    
+
     # Build command - all arguments are validated strings
     cmd = [
         sys.executable,
         str(script_path),
         *[str(arg) for arg in config["args"]],
     ]
-    
+
     # Add seed if supported
     if config.get("supports_seed", True):
         cmd.extend(["--seed", str(seed)])
-    
+
     # Add extra args if specified
     if "extra_args" in config:
         cmd.extend([str(arg) for arg in config["extra_args"]])
-    
+
     # Add output argument if benchmark supports it
     output_arg = config.get("output_arg")
     if output_arg:
         cmd.extend([str(output_arg), str(output_path)])
-    
+
     if verbose:
         print(f"Running: {' '.join(cmd)}")
-    
+
     try:
         # Set PYTHONPATH to include src directory
         env = os.environ.copy()
         env["PYTHONPATH"] = str(Path.cwd() / "src")
-        
+
         result = run_command_safely(
             cmd,
             check=False,
             timeout=300,  # 5 minute timeout
             env=env,
         )
-        
+
         if result.returncode != 0:
             print(f"Error running {name}:")
             print(result.stderr)
@@ -146,11 +146,11 @@ def run_benchmark(
                 "returncode": result.returncode,
                 "stderr": result.stderr[:MAX_STDERR_LENGTH],  # First N chars
             }
-        
+
         # Compute checksum based on output format
         checksums = {}
         output_files = []
-        
+
         output_format = config.get("output_format", "none")
         if output_format == "dir" and output_path.exists() and output_path.is_dir():
             # Directory output: checksum all JSON files
@@ -163,21 +163,23 @@ def run_benchmark(
             filename = output_path.name
             checksums[filename] = compute_checksum(output_path)
             output_files.append(str(output_path))
-        
+
         # If no output file was created, save stdout
         if not output_files and result.stdout:
             stdout_file = output_dir / f"{name}_seed{seed}_stdout.txt"
             stdout_file.write_text(result.stdout)
             checksums["stdout.txt"] = compute_checksum(stdout_file)
             output_files.append(str(stdout_file))
-        
+
         return {
             "status": "success",
             "output_files": output_files,
             "checksums": checksums,
-            "stdout_preview": result.stdout[-MAX_STDOUT_PREVIEW_LENGTH:] if verbose else "",
+            "stdout_preview": (
+                result.stdout[-MAX_STDOUT_PREVIEW_LENGTH:] if verbose else ""
+            ),
         }
-    
+
     except subprocess.TimeoutExpired:
         return {"status": "timeout"}
     except Exception as e:
@@ -220,43 +222,42 @@ def main() -> int:
         help="Verify checksums against an existing manifest file",
     )
     parser.add_argument(
-        "-v", "--verbose",
+        "-v",
+        "--verbose",
         action="store_true",
         help="Verbose output",
     )
-    
+
     args = parser.parse_args()
-    
+
     # Verify mode
     if args.verify:
         return verify_manifest(args.verify, args.verbose)
-    
+
     # Create output directory
     args.output_dir.mkdir(parents=True, exist_ok=True)
-    
+
     # Determine which benchmarks to run
     benchmarks_to_run = (
-        list(BENCHMARK_CONFIGS.keys())
-        if "all" in args.benchmarks
-        else args.benchmarks
+        list(BENCHMARK_CONFIGS.keys()) if "all" in args.benchmarks else args.benchmarks
     )
-    
+
     # Run benchmarks
     print(f"Running {len(benchmarks_to_run)} benchmark(s) with seed={args.seed}")
     results: dict[str, Any] = {
         "seed": args.seed,
         "benchmarks": {},
     }
-    
+
     for name in benchmarks_to_run:
         print(f"\n[{name}]")
         config = BENCHMARK_CONFIGS[name]
         result = run_benchmark(name, config, args.output_dir, args.seed, args.verbose)
         results["benchmarks"][name] = result
-        
+
         status_symbol = "✓" if result["status"] == "success" else "✗"
         print(f"{status_symbol} {result['status']}")
-        
+
         if result["status"] == "success":
             checksums = result.get("checksums", {})
             if checksums:
@@ -265,20 +266,20 @@ def main() -> int:
                     print(f"    {name_part}: {checksum[:16]}...")
                 if len(checksums) > 3:
                     print(f"    ... and {len(checksums) - 3} more")
-    
+
     # Save manifest
     manifest_path = args.manifest or (args.output_dir / "manifest.json")
     with open(manifest_path, "w") as f:
         json.dump(results, f, indent=2)
-    
+
     print(f"\nManifest saved to: {manifest_path}")
-    
+
     # Count successes
     successes = sum(
         1 for r in results["benchmarks"].values() if r["status"] == "success"
     )
     print(f"Successfully ran {successes}/{len(benchmarks_to_run)} benchmarks")
-    
+
     return 0 if successes == len(benchmarks_to_run) else 1
 
 
@@ -287,24 +288,24 @@ def verify_manifest(manifest_path: Path, verbose: bool = False) -> int:
     if not manifest_path.exists():
         print(f"Error: Manifest file {manifest_path} not found")
         return 1
-    
+
     with open(manifest_path) as f:
         manifest = json.load(f)
-    
+
     print(f"Verifying checksums from: {manifest_path}")
     print(f"Manifest seed: {manifest.get('seed', 'unknown')}")
-    
+
     mismatches = []
     missing = []
     verified = 0
-    
+
     for benchmark_name, result in manifest.get("benchmarks", {}).items():
         if result.get("status") != "success":
             continue
-        
+
         checksums = result.get("checksums", {})
         output_files = result.get("output_files", [])
-        
+
         for file_name, expected_checksum in checksums.items():
             # Find the actual file by matching filename
             actual_file = None
@@ -313,12 +314,12 @@ def verify_manifest(manifest_path: Path, verbose: bool = False) -> int:
                 if file_path.name == file_name or file_path.name.endswith(file_name):
                     actual_file = file_path
                     break
-            
+
             if not actual_file or not actual_file.exists():
                 missing.append(f"{benchmark_name}/{file_name}")
                 print(f"✗ {benchmark_name}/{file_name}: file missing")
                 continue
-            
+
             actual_checksum = compute_checksum(actual_file)
             if actual_checksum == expected_checksum:
                 verified += 1
@@ -330,14 +331,14 @@ def verify_manifest(manifest_path: Path, verbose: bool = False) -> int:
                 if verbose:
                     print(f"  Expected: {expected_checksum}")
                     print(f"  Actual:   {actual_checksum}")
-    
+
     print(f"\nVerified {verified} checksum(s)")
-    
+
     if mismatches:
         print(f"Mismatches: {', '.join(mismatches)}")
     if missing:
         print(f"Missing files: {', '.join(missing)}")
-    
+
     return 0 if not (mismatches or missing) else 1
 
 

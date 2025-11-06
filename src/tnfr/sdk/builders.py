@@ -33,15 +33,15 @@ __all__ = ["TNFRExperimentBuilder"]
 
 class TNFRExperimentBuilder:
     """Builder pattern for standard TNFR experiments.
-    
+
     This class provides static methods that implement common experimental
     patterns in TNFR research. Each method configures and runs a complete
     experiment, returning structured results for analysis.
-    
+
     Builders are more flexible than templates, allowing researchers to
     control specific parameters while handling boilerplate setup.
     """
-    
+
     @staticmethod
     def small_world_study(
         nodes: int = 50,
@@ -50,11 +50,11 @@ class TNFRExperimentBuilder:
         random_seed: Optional[int] = None,
     ) -> NetworkResults:
         """Study small-world network properties with TNFR dynamics.
-        
+
         Creates a Watts-Strogatz small-world network and evolves it through
         TNFR operator sequences to study how small-world topology affects
         coherence and synchronization.
-        
+
         Parameters
         ----------
         nodes : int, default=50
@@ -65,12 +65,12 @@ class TNFRExperimentBuilder:
             Number of activation steps to apply.
         random_seed : int, optional
             Random seed for reproducibility.
-        
+
         Returns
         -------
         NetworkResults
             Complete results including coherence and sense indices.
-        
+
         Examples
         --------
         >>> results = TNFRExperimentBuilder.small_world_study(
@@ -81,13 +81,14 @@ class TNFRExperimentBuilder:
         network = TNFRNetwork("small_world_study")
         if random_seed is not None:
             network._config.random_seed = random_seed
-        
-        return (network
-                .add_nodes(nodes)
-                .connect_nodes(rewiring_prob, "small_world")
-                .apply_sequence("basic_activation", repeat=steps)
-                .measure())
-    
+
+        return (
+            network.add_nodes(nodes)
+            .connect_nodes(rewiring_prob, "small_world")
+            .apply_sequence("basic_activation", repeat=steps)
+            .measure()
+        )
+
     @staticmethod
     def synchronization_study(
         nodes: int = 30,
@@ -96,11 +97,11 @@ class TNFRExperimentBuilder:
         random_seed: Optional[int] = None,
     ) -> NetworkResults:
         """Study synchronization in densely coupled TNFR networks.
-        
+
         Creates a network with similar structural frequencies (within TNFR
         bounds) and dense coupling, then applies synchronization sequences
         to study phase locking and coherence emergence.
-        
+
         Parameters
         ----------
         nodes : int, default=30
@@ -111,12 +112,12 @@ class TNFRExperimentBuilder:
             Number of synchronization steps.
         random_seed : int, optional
             Random seed for reproducibility.
-        
+
         Returns
         -------
         NetworkResults
             Results showing synchronization metrics.
-        
+
         Examples
         --------
         >>> results = TNFRExperimentBuilder.synchronization_study(
@@ -128,11 +129,11 @@ class TNFRExperimentBuilder:
         network = TNFRNetwork("sync_study")
         if random_seed is not None:
             network._config.random_seed = random_seed
-        
+
         # Similar frequencies promote synchronization (within bounds: 0.6-0.9)
         network.add_nodes(nodes, vf_range=(0.6, 0.9))
         network.connect_nodes(coupling_strength, "random")
-        
+
         # Multi-phase synchronization protocol
         for step in range(steps):
             if step < 5:
@@ -144,9 +145,9 @@ class TNFRExperimentBuilder:
             else:
                 # Consolidation
                 network.apply_sequence("consolidation")
-        
+
         return network.measure()
-    
+
     @staticmethod
     def creativity_emergence(
         nodes: int = 20,
@@ -155,11 +156,11 @@ class TNFRExperimentBuilder:
         random_seed: Optional[int] = None,
     ) -> NetworkResults:
         """Study creative emergence through controlled mutation.
-        
+
         Models creative processes by starting with diverse frequencies
         and applying mutation operators to study how new coherent forms
         emerge from structural reorganization.
-        
+
         Parameters
         ----------
         nodes : int, default=20
@@ -170,12 +171,12 @@ class TNFRExperimentBuilder:
             Number of creative mutation cycles.
         random_seed : int, optional
             Random seed for reproducibility.
-        
+
         Returns
         -------
         NetworkResults
             Results showing creative coherence emergence.
-        
+
         Examples
         --------
         >>> results = TNFRExperimentBuilder.creativity_emergence(nodes=25)
@@ -184,13 +185,14 @@ class TNFRExperimentBuilder:
         network = TNFRNetwork("creativity_study")
         if random_seed is not None:
             network._config.random_seed = random_seed
-        
-        return (network
-                .add_nodes(nodes, vf_range=(0.2, 0.8))  # High diversity
-                .connect_nodes(0.2, "ring")  # Conservative connectivity
-                .apply_sequence("creative_mutation", repeat=steps)
-                .measure())
-    
+
+        return (
+            network.add_nodes(nodes, vf_range=(0.2, 0.8))  # High diversity
+            .connect_nodes(0.2, "ring")  # Conservative connectivity
+            .apply_sequence("creative_mutation", repeat=steps)
+            .measure()
+        )
+
     @staticmethod
     def compare_topologies(
         node_count: int = 40,
@@ -199,11 +201,11 @@ class TNFRExperimentBuilder:
         random_seed: Optional[int] = None,
     ) -> Dict[str, NetworkResults]:
         """Compare TNFR dynamics across different network topologies.
-        
+
         Creates multiple networks with identical node properties but
         different topological structures, then compares their evolution
         under the same operator sequences.
-        
+
         Parameters
         ----------
         node_count : int, default=40
@@ -215,12 +217,12 @@ class TNFRExperimentBuilder:
             ["random", "ring", "small_world"].
         random_seed : int, optional
             Random seed for reproducibility across all networks.
-        
+
         Returns
         -------
         Dict[str, NetworkResults]
             Dictionary mapping topology names to their results.
-        
+
         Examples
         --------
         >>> comparison = TNFRExperimentBuilder.compare_topologies(
@@ -231,22 +233,22 @@ class TNFRExperimentBuilder:
         """
         if topologies is None:
             topologies = ["random", "ring", "small_world"]
-        
+
         results = {}
-        
+
         for topology in topologies:
             network = TNFRNetwork(f"topology_study_{topology}")
             if random_seed is not None:
                 network._config.random_seed = random_seed
-            
+
             network.add_nodes(node_count)
             network.connect_nodes(0.3, topology)
             network.apply_sequence("basic_activation", repeat=steps)
-            
+
             results[topology] = network.measure()
-        
+
         return results
-    
+
     @staticmethod
     def phase_transition_study(
         nodes: int = 50,
@@ -257,11 +259,11 @@ class TNFRExperimentBuilder:
         random_seed: Optional[int] = None,
     ) -> Dict[float, NetworkResults]:
         """Study phase transitions by varying coupling strength.
-        
+
         Investigates how network coherence changes as coupling strength
         increases, potentially revealing critical phase transitions in
         TNFR network dynamics.
-        
+
         Parameters
         ----------
         nodes : int, default=50
@@ -276,12 +278,12 @@ class TNFRExperimentBuilder:
             Number of coupling levels to test.
         random_seed : int, optional
             Random seed for reproducibility.
-        
+
         Returns
         -------
         Dict[float, NetworkResults]
             Mapping from coupling strength to network results.
-        
+
         Examples
         --------
         >>> transition = TNFRExperimentBuilder.phase_transition_study(nodes=60)
@@ -289,23 +291,23 @@ class TNFRExperimentBuilder:
         ...     print(f"Coupling {coupling:.2f}: C(t)={res.coherence:.3f}")
         """
         import numpy as np
-        
+
         coupling_values = np.linspace(initial_coupling, final_coupling, coupling_levels)
         results = {}
-        
+
         for coupling in coupling_values:
             network = TNFRNetwork(f"phase_study_{coupling:.2f}")
             if random_seed is not None:
                 network._config.random_seed = random_seed
-            
+
             network.add_nodes(nodes)
             network.connect_nodes(float(coupling), "random")
             network.apply_sequence("network_sync", repeat=steps_per_level)
-            
+
             results[float(coupling)] = network.measure()
-        
+
         return results
-    
+
     @staticmethod
     def resilience_study(
         nodes: int = 40,
@@ -315,11 +317,11 @@ class TNFRExperimentBuilder:
         random_seed: Optional[int] = None,
     ) -> Dict[str, NetworkResults]:
         """Study network resilience to perturbations.
-        
+
         Establishes a stable network, applies dissonance perturbations,
         then measures recovery through stabilization sequences. Reveals
         network resilience properties.
-        
+
         Parameters
         ----------
         nodes : int, default=40
@@ -332,12 +334,12 @@ class TNFRExperimentBuilder:
             Steps to observe recovery.
         random_seed : int, optional
             Random seed for reproducibility.
-        
+
         Returns
         -------
         Dict[str, NetworkResults]
             Results at 'initial', 'perturbed', and 'recovered' states.
-        
+
         Examples
         --------
         >>> resilience = TNFRExperimentBuilder.resilience_study(nodes=50)
@@ -348,21 +350,21 @@ class TNFRExperimentBuilder:
         network = TNFRNetwork("resilience_study")
         if random_seed is not None:
             network._config.random_seed = random_seed
-        
+
         results = {}
-        
+
         # Phase 1: Establish stable network
         network.add_nodes(nodes)
         network.connect_nodes(0.3, "small_world")
         network.apply_sequence("stabilization", repeat=initial_steps)
-        results['initial'] = network.measure()
-        
+        results["initial"] = network.measure()
+
         # Phase 2: Apply perturbation
         network.apply_sequence("creative_mutation", repeat=perturbation_steps)
-        results['perturbed'] = network.measure()
-        
+        results["perturbed"] = network.measure()
+
         # Phase 3: Recovery
         network.apply_sequence("stabilization", repeat=recovery_steps)
-        results['recovered'] = network.measure()
-        
+        results["recovered"] = network.measure()
+
         return results

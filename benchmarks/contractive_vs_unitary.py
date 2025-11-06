@@ -1,4 +1,5 @@
 """Compare unitary vs. contractive ΔNFR evolution on small Hilbert spaces."""
+
 from __future__ import annotations
 
 import argparse

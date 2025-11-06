@@ -19,9 +19,9 @@ class TestPstatsStatsAttributes:
         profile.enable()
         _ = sum(range(100))
         profile.disable()
-        
+
         stats_obj = pstats.Stats(profile)
-        
+
         # The .stats attribute should exist
         assert hasattr(stats_obj, "stats")
         assert isinstance(stats_obj.stats, dict)
@@ -32,14 +32,14 @@ class TestPstatsStatsAttributes:
         profile.enable()
         _ = sum(range(100))
         profile.disable()
-        
+
         stats_obj = pstats.Stats(profile)
-        
+
         # Each entry should be (filename, lineno, func) -> (stats_tuple)
         for key, value in stats_obj.stats.items():
             assert isinstance(key, tuple)
             assert len(key) == 3  # (filename, lineno, func)
-            
+
             assert isinstance(value, tuple)
             assert len(value) == 5  # (cc, nc, tt, ct, callers)
 
@@ -47,31 +47,39 @@ class TestPstatsStatsAttributes:
         """Validate the iteration pattern used in compute_si_profile.py."""
         profile = cProfile.Profile()
         profile.enable()
-        
+
         def test_function():
             return sum(range(100))
-        
+
         result = test_function()
         profile.disable()
-        
+
         stats_obj = pstats.Stats(profile)
-        
+
         # This is the pattern used in benchmarks/compute_si_profile.py:112
         rows = []
-        for (filename, lineno, func), (cc, nc, tt, ct, callers) in stats_obj.stats.items():
-            rows.append({
-                "function": func,
-                "file": filename,
-                "line": lineno,
-                "callcount": cc,
-                "reccallcount": nc,
-                "totaltime": tt,
-                "cumtime": ct,
-            })
-        
+        for (filename, lineno, func), (
+            cc,
+            nc,
+            tt,
+            ct,
+            callers,
+        ) in stats_obj.stats.items():
+            rows.append(
+                {
+                    "function": func,
+                    "file": filename,
+                    "line": lineno,
+                    "callcount": cc,
+                    "reccallcount": nc,
+                    "totaltime": tt,
+                    "cumtime": ct,
+                }
+            )
+
         # Should have collected some rows
         assert len(rows) > 0
-        
+
         # Verify structure
         for row in rows:
             assert "function" in row
@@ -88,9 +96,9 @@ class TestPstatsStatsAttributes:
         profile.enable()
         _ = sum(range(100))
         profile.disable()
-        
+
         stats_obj = pstats.Stats(profile)
-        
+
         # Documented methods that benchmarks might use
         assert hasattr(stats_obj, "sort_stats")
         assert hasattr(stats_obj, "dump_stats")
@@ -106,28 +114,36 @@ class TestBenchmarkStatsUsagePatterns:
         """Demonstrate safe pattern for extracting stats data."""
         profile = cProfile.Profile()
         profile.enable()
-        
+
         def sample_func():
-            return [i ** 2 for i in range(50)]
-        
+            return [i**2 for i in range(50)]
+
         result = sample_func()
         profile.disable()
-        
+
         stats_obj = pstats.Stats(profile)
-        
+
         # Safe pattern: extract specific data
         def extract_function_stats(stats, target_func_name):
             """Extract stats for a specific function."""
             results = []
-            for (filename, lineno, func), (cc, nc, tt, ct, callers) in stats.stats.items():
+            for (filename, lineno, func), (
+                cc,
+                nc,
+                tt,
+                ct,
+                callers,
+            ) in stats.stats.items():
                 if func == target_func_name:
-                    results.append({
-                        "callcount": cc,
-                        "totaltime": tt,
-                        "cumtime": ct,
-                    })
+                    results.append(
+                        {
+                            "callcount": cc,
+                            "totaltime": tt,
+                            "cumtime": ct,
+                        }
+                    )
             return results
-        
+
         # This should work without errors
         sample_stats = extract_function_stats(stats_obj, "sample_func")
         assert isinstance(sample_stats, list)
@@ -138,12 +154,12 @@ class TestBenchmarkStatsUsagePatterns:
         profile.enable()
         _ = sum(range(100))
         profile.disable()
-        
+
         stats_obj = pstats.Stats(profile)
-        
+
         # Sort by cumulative time (common pattern in benchmarks)
         stats_obj.sort_stats("cumtime")
-        
+
         # After sorting, .stats should still be accessible
         assert hasattr(stats_obj, "stats")
         assert isinstance(stats_obj.stats, dict)
@@ -154,9 +170,9 @@ class TestStatsDocumentation:
 
     def test_stats_attribute_is_documented(self):
         """The .stats attribute is part of pstats.Stats public API.
-        
+
         From Python docs:
-        The .stats attribute is a dictionary mapping function info to 
+        The .stats attribute is a dictionary mapping function info to
         (cc, nc, tt, ct, callers) where:
         - cc: call count
         - nc: number of recursive calls
@@ -168,15 +184,15 @@ class TestStatsDocumentation:
         profile.enable()
         _ = sum(range(10))
         profile.disable()
-        
+
         stats_obj = pstats.Stats(profile)
-        
+
         # Document what .stats contains - get first item efficiently
         if stats_obj.stats:
             key, value = next(iter(stats_obj.stats.items()))
             filename, lineno, func = key
             cc, nc, tt, ct, callers = value
-            
+
             assert isinstance(filename, str)
             assert isinstance(lineno, int)
             assert isinstance(func, str)

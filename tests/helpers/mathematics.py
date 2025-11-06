@@ -1,4 +1,5 @@
 """Helpers for assembling mathematical fixtures in integration tests."""
+
 from __future__ import annotations
 
 from typing import Sequence
@@ -15,6 +16,7 @@ from tnfr.mathematics import (
 )
 from tnfr.node import NodeNX
 from tnfr.structural import create_nfr
+
 
 def build_node_with_operators(
     *,
@@ -58,6 +60,7 @@ def build_node_with_operators(
         enable_math_validation=enable_validation,
     )
     return node, hilbert, validator
+
 
 def make_dynamics_engine(
     generator: Sequence[Sequence[complex]] | np.ndarray,

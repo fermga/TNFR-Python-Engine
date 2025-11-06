@@ -116,9 +116,11 @@ def _count_graph_nodes(graph: Any) -> int:
         return len(nodes_view)  # type: ignore[arg-type]
     return len(tuple(nodes_view))
 
+
 def _save_json(path: str, data: Any) -> None:
     payload = json_dumps(data, ensure_ascii=False, indent=2, default=list)
     safe_write(path, lambda f: f.write(payload))
+
 
 def _attach_callbacks(G: "nx.Graph") -> None:
     register_sigma_callback(G)
@@ -130,6 +132,7 @@ def _attach_callbacks(G: "nx.Graph") -> None:
     history.setdefault("trace_meta", [])
     _metrics_step(G, ctx=None)
 
+
 def _persist_history(G: "nx.Graph", args: argparse.Namespace) -> None:
     if getattr(args, "save_history", None) or getattr(
         args, "export_history_base", None
@@ -140,6 +143,7 @@ def _persist_history(G: "nx.Graph", args: argparse.Namespace) -> None:
         if getattr(args, "export_history_base", None):
             export_metrics(G, args.export_history_base, fmt=args.export_format)
 
+
 def _to_float_array(values: Sequence[float] | None, *, name: str) -> np.ndarray | None:
     if values is None:
         return None
@@ -148,9 +152,8 @@ def _to_float_array(values: Sequence[float] | None, *, name: str) -> np.ndarray 
         raise ValueError(f"{name} must be a one-dimensional sequence of numbers")
     return array
 
-def _resolve_math_dimension(
-    args: argparse.Namespace, fallback: int
-) -> int:
+
+def _resolve_math_dimension(args: argparse.Namespace, fallback: int) -> int:
     dimension = getattr(args, "math_dimension", None)
     candidate_lengths: list[int] = []
     for attr in (
@@ -180,6 +183,7 @@ def _resolve_math_dimension(
     if dimension is None or dimension <= 0:
         raise ValueError("Hilbert space dimension must be a positive integer")
     return int(dimension)
+
 
 def _build_math_engine_config(
     G: "nx.Graph", args: argparse.Namespace
@@ -271,6 +275,7 @@ def _build_math_engine_config(
         "generator_matrix": generator_matrix,
     }
 
+
 def _configure_math_engine(G: "nx.Graph", args: argparse.Namespace) -> None:
     if not getattr(args, "math_engine", False):
         G.graph.pop("MATH_ENGINE", None)
@@ -281,6 +286,7 @@ def _configure_math_engine(G: "nx.Graph", args: argparse.Namespace) -> None:
         logger.error("Math engine configuration error: %s", exc)
         raise SystemExit(1) from exc
     G.graph["MATH_ENGINE"] = config
+
 
 def build_basic_graph(args: argparse.Namespace) -> "nx.Graph":
     """Construct the base graph topology described by CLI ``args``."""
@@ -311,6 +317,7 @@ def build_basic_graph(args: argparse.Namespace) -> "nx.Graph":
     if seed is not None:
         G.graph["RANDOM_SEED"] = int(seed)
     return G
+
 
 def apply_cli_config(G: "nx.Graph", args: argparse.Namespace) -> None:
     """Apply CLI overrides from ``args`` to graph-level configuration."""
@@ -396,11 +403,13 @@ def apply_cli_config(G: "nx.Graph", args: argparse.Namespace) -> None:
         next_cfg.setdefault("enabled", True)
         G.graph["STOP_EARLY"] = next_cfg
 
+
 def register_callbacks_and_observer(G: "nx.Graph") -> None:
     """Attach callbacks and validators required for CLI runs."""
 
     _attach_callbacks(G)
     validate_canon(G)
+
 
 def _build_graph_from_args(args: argparse.Namespace) -> "nx.Graph":
     G = build_basic_graph(args)
@@ -411,6 +420,7 @@ def _build_graph_from_args(args: argparse.Namespace) -> "nx.Graph":
     register_callbacks_and_observer(G)
     _configure_math_engine(G, args)
     return G
+
 
 def _load_sequence(path: Path) -> ProgramTokens:
     try:
@@ -425,6 +435,7 @@ def _load_sequence(path: Path) -> ProgramTokens:
     if isinstance(data, Mapping) and "sequence" in data:
         data = data["sequence"]
     return parse_program_tokens(data)
+
 
 def resolve_program(
     args: argparse.Namespace, default: Optional[ProgramTokens] = None
@@ -449,6 +460,7 @@ def resolve_program(
     if getattr(args, "sequence_file", None):
         return _load_sequence(Path(args.sequence_file))
     return default
+
 
 def run_program(
     G: Optional["nx.Graph"],
@@ -486,6 +498,7 @@ def run_program(
     _persist_history(G, args)
     return G
 
+
 def _run_cli_program(
     args: argparse.Namespace,
     *,
@@ -504,6 +517,7 @@ def _run_cli_program(
         code = exc.code if isinstance(exc.code, int) else 1
         return code or 1, None
     return 0, result_graph
+
 
 def _log_math_engine_summary(G: "nx.Graph") -> None:
     math_cfg = G.graph.get("MATH_ENGINE")
@@ -560,7 +574,9 @@ def _log_math_engine_summary(G: "nx.Graph") -> None:
             )
         )
         theta = float(data.get("theta", 0.0))
-        state = state_projector(epi=epi, nu_f=nu_f, theta=theta, dim=hilbert_space.dimension)
+        state = state_projector(
+            epi=epi, nu_f=nu_f, theta=theta, dim=hilbert_space.dimension
+        )
         norm_values.append(float(hilbert_space.norm(state)))
         outcome = validator.validate(
             state,
@@ -581,7 +597,9 @@ def _log_math_engine_summary(G: "nx.Graph") -> None:
             frequency_flags.append(bool(frequency_summary.get("passed", False)))
             frequency_values.append(float(frequency_summary.get("value", 0.0)))
             if frequency_spectrum_min is None and "spectrum_min" in frequency_summary:
-                frequency_spectrum_min = float(frequency_summary.get("spectrum_min", 0.0))
+                frequency_spectrum_min = float(
+                    frequency_summary.get("spectrum_min", 0.0)
+                )
 
     if norm_values:
         logger.info(
@@ -614,6 +632,7 @@ def _log_math_engine_summary(G: "nx.Graph") -> None:
                 min(frequency_values),
             )
 
+
 def _log_run_summaries(G: "nx.Graph", args: argparse.Namespace) -> None:
     cfg_coh = G.graph.get("COHERENCE", METRIC_DEFAULTS["COHERENCE"])
     cfg_diag = G.graph.get("DIAGNOSIS", METRIC_DEFAULTS["DIAGNOSIS"])
@@ -642,6 +661,7 @@ def _log_run_summaries(G: "nx.Graph", args: argparse.Namespace) -> None:
 
     _log_math_engine_summary(G)
 
+
 def cmd_run(args: argparse.Namespace) -> int:
     """Execute ``tnfr run`` returning the exit status."""
 
@@ -653,6 +673,7 @@ def cmd_run(args: argparse.Namespace) -> int:
         _log_run_summaries(graph, args)
     return 0
 
+
 def cmd_sequence(args: argparse.Namespace) -> int:
     """Execute ``tnfr sequence`` returning the exit status."""
 
@@ -661,6 +682,7 @@ def cmd_sequence(args: argparse.Namespace) -> int:
         return 1
     code, _ = _run_cli_program(args, default_program=get_preset(CANONICAL_PRESET_NAME))
     return code
+
 
 def cmd_metrics(args: argparse.Namespace) -> int:
     """Execute ``tnfr metrics`` returning the exit status."""
@@ -680,6 +702,7 @@ def cmd_metrics(args: argparse.Namespace) -> int:
     else:
         logger.info("%s", json_dumps(out))
     return 0
+
 
 def cmd_profile_si(args: argparse.Namespace) -> int:
     """Execute ``tnfr profile-si`` returning the exit status."""
@@ -701,6 +724,7 @@ def cmd_profile_si(args: argparse.Namespace) -> int:
         sort=str(args.sort),
     )
     return 0
+
 
 def cmd_profile_pipeline(args: argparse.Namespace) -> int:
     """Execute ``tnfr profile-pipeline`` returning the exit status."""
@@ -736,6 +760,7 @@ def cmd_profile_pipeline(args: argparse.Namespace) -> int:
     )
     return 0
 
+
 def cmd_math_run(args: argparse.Namespace) -> int:
     """Execute ``tnfr math.run`` returning the exit status.
 
@@ -760,6 +785,7 @@ def cmd_math_run(args: argparse.Namespace) -> int:
         _log_run_summaries(graph, args)
         logger.info("[MATH.RUN] Mathematical dynamics validation completed")
     return 0
+
 
 def cmd_epi_validate(args: argparse.Namespace) -> int:
     """Execute ``tnfr epi.validate`` returning the exit status.

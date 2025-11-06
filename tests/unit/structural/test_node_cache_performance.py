@@ -78,7 +78,9 @@ def test_parallel_access_has_low_contention(graph_with_nodes):
     # Parallel access should not have significant overhead
     # With lock-free reads, parallel should be close to sequential speed
     time_per_access = (end - start) / (8 * 100 * 50)
-    assert time_per_access < 2e-6, f"Parallel access too slow: {time_per_access * 1e6:.2f} µs"
+    assert (
+        time_per_access < 2e-6
+    ), f"Parallel access too slow: {time_per_access * 1e6:.2f} µs"
 
 
 def test_no_duplicate_node_instances_sequential(graph_with_nodes):

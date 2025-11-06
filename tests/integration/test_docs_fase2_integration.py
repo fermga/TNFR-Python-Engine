@@ -1,8 +1,10 @@
 """Smoke test for the Fase 2 integration documentation doctest."""
+
 from __future__ import annotations
 
 import doctest
 from pathlib import Path
+
 
 def test_fase2_integration_doc_executes() -> None:
     doc_path = Path("docs/source/fase2_integration.md")

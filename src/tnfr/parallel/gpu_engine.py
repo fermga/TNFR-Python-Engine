@@ -13,6 +13,7 @@ from typing import Any, Optional
 # Check for optional GPU backends
 try:
     import cupy as cp
+
     HAS_CUPY = True
 except ImportError:
     HAS_CUPY = False
@@ -22,6 +23,7 @@ try:
     import jax
     import jax.numpy as jnp
     from jax import jit
+
     HAS_JAX = True
 except ImportError:
     HAS_JAX = False
@@ -77,13 +79,9 @@ class TNFRGPUEngine:
                 return "numpy"  # Fallback
 
         if backend == "jax" and not HAS_JAX:
-            raise ImportError(
-                "JAX not available. Install with: pip install jax[cuda]"
-            )
+            raise ImportError("JAX not available. Install with: pip install jax[cuda]")
         if backend == "cupy" and not HAS_CUPY:
-            raise ImportError(
-                "CuPy not available. Install with: pip install cupy"
-            )
+            raise ImportError("CuPy not available. Install with: pip install cupy")
 
         return backend
 
@@ -135,10 +133,10 @@ class TNFRGPUEngine:
         self, adj_matrix: Any, epi_vec: Any, vf_vec: Any, phase_vec: Any
     ) -> Any:
         """JAX implementation with JIT compilation for GPU acceleration.
-        
+
         Implements vectorized ΔNFR computation using JAX for automatic
         GPU acceleration and JIT compilation.
-        
+
         Parameters
         ----------
         adj_matrix : array-like
@@ -149,17 +147,17 @@ class TNFRGPUEngine:
             Structural frequencies (N,)
         phase_vec : array-like
             Phase values (N,)
-            
+
         Returns
         -------
         jax.numpy.ndarray
             ΔNFR values for all nodes
-            
+
         Notes
         -----
         Uses the canonical TNFR nodal equation:
         ∂EPI/∂t = νf · ΔNFR(t)
-        
+
         ΔNFR is computed from:
         - Topological gradient (EPI differences with neighbors)
         - Phase gradient (phase synchronization)
@@ -167,13 +165,13 @@ class TNFRGPUEngine:
         """
         if not HAS_JAX:
             raise ImportError("JAX required for GPU acceleration")
-        
+
         # Convert inputs to JAX arrays
         adj = jnp.asarray(adj_matrix)
         epi = jnp.asarray(epi_vec)
         vf = jnp.asarray(vf_vec)
         phase = jnp.asarray(phase_vec)
-        
+
         # Define JIT-compiled ΔNFR computation
         @jit
         def compute_dnfr_vectorized(adj, epi, vf, phase):
@@ -182,42 +180,42 @@ class TNFRGPUEngine:
             # epi_diff[i,j] = epi[j] - epi[i]
             epi_diff = epi[None, :] - epi[:, None]  # (N, N) matrix
             topo_gradient = jnp.sum(adj * epi_diff, axis=1)  # (N,) vector
-            
+
             # Phase gradient: phase difference with neighbors
             # phase_diff[i,j] = sin(phase[j] - phase[i])
             phase_diff = jnp.sin(phase[None, :] - phase[:, None])  # (N, N)
             phase_gradient = jnp.sum(adj * phase_diff, axis=1)  # (N,)
-            
+
             # Normalize by degree (number of neighbors)
             degree = jnp.sum(adj, axis=1)
             # Avoid division by zero
             degree_safe = jnp.where(degree > 0, degree, 1.0)
-            
+
             topo_gradient = topo_gradient / degree_safe
             phase_gradient = phase_gradient / degree_safe
-            
+
             # Combine gradients with TNFR weights
             # Emphasize topological structure (0.7) over phase (0.3)
             combined_gradient = 0.7 * topo_gradient + 0.3 * phase_gradient
-            
+
             # Apply structural frequency modulation (canonical equation)
             delta_nfr = vf * combined_gradient
-            
+
             return delta_nfr
-        
+
         # Execute JIT-compiled computation (GPU accelerated if available)
         result = compute_dnfr_vectorized(adj, epi, vf, phase)
-        
+
         return result
 
     def _compute_delta_nfr_cupy(
         self, adj_matrix: Any, epi_vec: Any, vf_vec: Any, phase_vec: Any
     ) -> Any:
         """CuPy implementation for CUDA GPUs.
-        
+
         Implements vectorized ΔNFR computation using CuPy for CUDA GPU
         acceleration with NumPy-compatible interface.
-        
+
         Parameters
         ----------
         adj_matrix : array-like
@@ -228,7 +226,7 @@ class TNFRGPUEngine:
             Structural frequencies (N,)
         phase_vec : array-like
             Phase values (N,)
-            
+
         Returns
         -------
         cupy.ndarray
@@ -236,43 +234,43 @@ class TNFRGPUEngine:
         """
         if not HAS_CUPY:
             raise ImportError("CuPy required for CUDA GPU acceleration")
-        
+
         # Transfer to GPU
         adj = cp.asarray(adj_matrix)
         epi = cp.asarray(epi_vec)
         vf = cp.asarray(vf_vec)
         phase = cp.asarray(phase_vec)
-        
+
         # Topological gradient (vectorized on GPU)
         epi_diff = epi[None, :] - epi[:, None]
         topo_gradient = cp.sum(adj * epi_diff, axis=1)
-        
+
         # Phase gradient (vectorized on GPU)
         phase_diff = cp.sin(phase[None, :] - phase[:, None])
         phase_gradient = cp.sum(adj * phase_diff, axis=1)
-        
+
         # Normalize by degree
         degree = cp.sum(adj, axis=1)
         degree_safe = cp.where(degree > 0, degree, 1.0)
-        
+
         topo_gradient = topo_gradient / degree_safe
         phase_gradient = phase_gradient / degree_safe
-        
+
         # Combine with TNFR weights
         combined_gradient = 0.7 * topo_gradient + 0.3 * phase_gradient
-        
+
         # Apply structural frequency
         delta_nfr = vf * combined_gradient
-        
+
         return delta_nfr
 
     def _compute_delta_nfr_numpy(
         self, adj_matrix: Any, epi_vec: Any, vf_vec: Any, phase_vec: Any
     ) -> Any:
         """NumPy fallback implementation (CPU-only).
-        
+
         Provides CPU-based vectorized computation when GPU is unavailable.
-        
+
         Parameters
         ----------
         adj_matrix : array-like
@@ -283,7 +281,7 @@ class TNFRGPUEngine:
             Structural frequencies (N,)
         phase_vec : array-like
             Phase values (N,)
-            
+
         Returns
         -------
         numpy.ndarray
@@ -293,52 +291,52 @@ class TNFRGPUEngine:
             import numpy as np
         except ImportError:
             raise ImportError("NumPy required for CPU computation")
-        
+
         # Convert to numpy arrays
         adj = np.asarray(adj_matrix)
         epi = np.asarray(epi_vec)
         vf = np.asarray(vf_vec)
         phase = np.asarray(phase_vec)
-        
+
         # Topological gradient
         epi_diff = epi[None, :] - epi[:, None]
         topo_gradient = np.sum(adj * epi_diff, axis=1)
-        
+
         # Phase gradient
         phase_diff = np.sin(phase[None, :] - phase[:, None])
         phase_gradient = np.sum(adj * phase_diff, axis=1)
-        
+
         # Normalize by degree
         degree = np.sum(adj, axis=1)
         degree_safe = np.where(degree > 0, degree, 1.0)
-        
+
         topo_gradient = topo_gradient / degree_safe
         phase_gradient = phase_gradient / degree_safe
-        
+
         # Combine with TNFR weights
         combined_gradient = 0.7 * topo_gradient + 0.3 * phase_gradient
-        
+
         # Apply structural frequency
         delta_nfr = vf * combined_gradient
-        
+
         return delta_nfr
 
     def compute_delta_nfr_from_graph(self, graph: Any) -> Dict[Any, float]:
         """Compute ΔNFR directly from a TNFR graph using GPU acceleration.
-        
+
         Convenience method that extracts matrices from graph and computes
         ΔNFR using GPU backend.
-        
+
         Parameters
         ----------
         graph : TNFRGraph
             Network graph with TNFR attributes
-            
+
         Returns
         -------
         Dict[Any, float]
             Mapping from node IDs to ΔNFR values
-            
+
         Examples
         --------
         >>> import networkx as nx
@@ -354,15 +352,16 @@ class TNFRGPUEngine:
         True
         """
         import networkx as nx
+
         try:
             import numpy as np
         except ImportError:
             raise ImportError("NumPy required for graph processing")
-        
+
         # Extract node list (maintain order)
         nodes = list(graph.nodes())
         node_to_idx = {node: idx for idx, node in enumerate(nodes)}
-        
+
         # Build adjacency matrix
         n = len(nodes)
         adj_matrix = np.zeros((n, n))
@@ -371,32 +370,36 @@ class TNFRGPUEngine:
             idx_j = node_to_idx[j]
             adj_matrix[idx_i, idx_j] = 1.0
             adj_matrix[idx_j, idx_i] = 1.0  # Undirected
-        
+
         # Extract node attributes
         def get_attr(node, attr_names, default):
             """Get attribute with fallbacks."""
-            for name in attr_names if isinstance(attr_names, (list, tuple)) else [attr_names]:
+            for name in (
+                attr_names if isinstance(attr_names, (list, tuple)) else [attr_names]
+            ):
                 if name in graph.nodes[node]:
                     return float(graph.nodes[node][name])
             return default
-        
-        epi_vec = np.array([get_attr(node, ['epi', 'EPI'], 0.5) for node in nodes])
-        vf_vec = np.array([get_attr(node, ['nu_f', 'vf', 'νf'], 1.0) for node in nodes])
-        phase_vec = np.array([get_attr(node, ['phase', 'theta'], 0.0) for node in nodes])
-        
+
+        epi_vec = np.array([get_attr(node, ["epi", "EPI"], 0.5) for node in nodes])
+        vf_vec = np.array([get_attr(node, ["nu_f", "vf", "νf"], 1.0) for node in nodes])
+        phase_vec = np.array(
+            [get_attr(node, ["phase", "theta"], 0.0) for node in nodes]
+        )
+
         # Compute ΔNFR using GPU
         delta_nfr_array = self.compute_delta_nfr_gpu(
             adj_matrix, epi_vec, vf_vec, phase_vec
         )
-        
+
         # Convert back to dictionary
         if self.backend == "cupy" and HAS_CUPY:
             delta_nfr_array = cp.asnumpy(delta_nfr_array)  # Transfer from GPU
         elif self.backend == "jax" and HAS_JAX:
             delta_nfr_array = np.array(delta_nfr_array)  # Convert from JAX
-        
+
         result = {node: float(delta_nfr_array[idx]) for idx, node in enumerate(nodes)}
-        
+
         return result
 
     @property

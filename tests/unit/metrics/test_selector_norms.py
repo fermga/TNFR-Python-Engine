@@ -7,6 +7,7 @@ from tnfr.dynamics import (
     step,
 )
 
+
 def _make_graph(graph_canon):
     G = graph_canon()
     G.add_nodes_from([0, 1])
@@ -16,6 +17,7 @@ def _make_graph(graph_canon):
     G.graph["SELECTOR_THRESHOLDS"] = dict(SELECTOR_THRESHOLD_DEFAULTS)
     return G
 
+
 def test_default_selector_computes_norms(graph_canon):
     G = _make_graph(graph_canon)
     G.graph["glyph_selector"] = default_glyph_selector
@@ -23,6 +25,7 @@ def test_default_selector_computes_norms(graph_canon):
     assert "_sel_norms" in G.graph
     assert "dnfr_max" in G.graph["_sel_norms"]
     assert "accel_max" in G.graph["_sel_norms"]
+
 
 def test_parametric_selector_computes_norms(graph_canon):
     G = _make_graph(graph_canon)

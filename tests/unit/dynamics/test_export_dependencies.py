@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import pytest
 
+
 def test_prepare_network_dependencies():
     from tnfr import EXPORT_DEPENDENCIES
 
@@ -21,6 +22,7 @@ def test_prepare_network_dependencies():
     assert set(prepare_manifest["submodules"]) == expected
     assert prepare_manifest["third_party"] == ("networkx",)
 
+
 def test_dynamics_helpers_dependencies():
     from tnfr import EXPORT_DEPENDENCIES
 
@@ -31,6 +33,7 @@ def test_dynamics_helpers_dependencies():
         deps = EXPORT_DEPENDENCIES[helper]
         assert set(deps["submodules"]) == expected_submodules
         assert deps["third_party"] == expected_third_party
+
 
 def test_structural_helpers_dependencies():
     from tnfr import EXPORT_DEPENDENCIES
@@ -53,6 +56,7 @@ def test_structural_helpers_dependencies():
     math_deps = EXPORT_DEPENDENCIES["create_math_nfr"]
     assert set(math_deps["submodules"]) == base_submodules | {"tnfr.mathematics"}
     assert math_deps["third_party"] == ("networkx", "numpy")
+
 
 def test_manifest_validator_catches_mismatches(monkeypatch):
     import tnfr

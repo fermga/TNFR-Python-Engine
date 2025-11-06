@@ -1,4 +1,5 @@
 """Spectral dynamics helpers driven by ΔNFR generators."""
+
 from __future__ import annotations
 
 from dataclasses import field
@@ -16,6 +17,7 @@ except Exception:  # pragma: no cover - SciPy not installed
     _scipy_expm = None
 
 __all__ = ["MathematicalDynamicsEngine", "ContractiveDynamicsEngine"]
+
 
 def _has_backend_matrix_exp(backend: MathematicsBackend) -> bool:
     """Return ``True`` when ``backend`` exposes a usable ``matrix_exp``."""
@@ -35,6 +37,7 @@ def _has_backend_matrix_exp(backend: MathematicsBackend) -> bool:
         return False
     return True
 
+
 def _as_matrix(
     matrix: Sequence[Sequence[complex]] | np.ndarray | Any,
     *,
@@ -46,17 +49,23 @@ def _as_matrix(
         raise ValueError("Generator matrix must be square.")
     return arr
 
-def _is_hermitian(matrix: Any, *, atol: float = 1e-9, backend: MathematicsBackend) -> bool:
+
+def _is_hermitian(
+    matrix: Any, *, atol: float = 1e-9, backend: MathematicsBackend
+) -> bool:
     matrix_np = ensure_numpy(matrix, backend=backend)
     return bool(np.allclose(matrix_np, matrix_np.conj().T, atol=atol))
+
 
 def _vectorize_density(matrix: Any, *, backend: MathematicsBackend) -> Any:
     arr = ensure_array(matrix, dtype=np.complex128, backend=backend)
     return arr.transpose(1, 0).reshape((-1,))
 
+
 def _devectorize_density(vector: Any, dim: int, *, backend: MathematicsBackend) -> Any:
     arr = ensure_array(vector, dtype=np.complex128, backend=backend)
     return arr.reshape((dim, dim)).transpose(1, 0)
+
 
 class TraceValue(NamedTuple):
     """Container for trace evaluations in both backend and NumPy space."""
@@ -64,10 +73,12 @@ class TraceValue(NamedTuple):
     backend: Any
     numpy: complex
 
+
 def _trace(matrix: Any, *, backend: MathematicsBackend) -> TraceValue:
     traced_backend = backend.einsum("ii->", matrix)
     traced_numpy = complex(np.asarray(ensure_numpy(traced_backend, backend=backend)))
     return TraceValue(traced_backend, traced_numpy)
+
 
 @dataclass(slots=True)
 class MathematicalDynamicsEngine:
@@ -153,7 +164,9 @@ class MathematicalDynamicsEngine:
         evolved = self.backend.matmul(unitary, vector)
         if normalize:
             norm_backend = self.backend.norm(evolved)
-            norm_numpy = float(np.asarray(ensure_numpy(norm_backend, backend=self.backend)))
+            norm_numpy = float(
+                np.asarray(ensure_numpy(norm_backend, backend=self.backend))
+            )
             if np.isclose(norm_numpy, 0.0, atol=self.atol):
                 raise ValueError("Cannot normalise a null state vector.")
             evolved = evolved / norm_backend
@@ -182,6 +195,7 @@ class MathematicalDynamicsEngine:
             current = self.step(current, dt=dt, normalize=normalize)
             trajectory.append(current)
         return self.backend.stack(trajectory, axis=0)
+
 
 @dataclass(slots=True)
 class ContractiveDynamicsEngine:
@@ -319,7 +333,9 @@ class ContractiveDynamicsEngine:
             trace_backend = trace_value.backend / dim
             centered = matrix - trace_backend * self._identity_backend
             initial_norm_backend = self.backend.norm(centered, ord="fro")
-            initial_norm = float(np.asarray(ensure_numpy(initial_norm_backend, backend=self.backend)))
+            initial_norm = float(
+                np.asarray(ensure_numpy(initial_norm_backend, backend=self.backend))
+            )
 
         vector = _vectorize_density(matrix, backend=self.backend)
         propagator = self._propagator_backend(dt)
@@ -341,7 +357,9 @@ class ContractiveDynamicsEngine:
             trace_backend = trace_value.backend / dim
             centered = evolved - trace_backend * self._identity_backend
             evolved_norm_backend = self.backend.norm(centered, ord="fro")
-            evolved_norm = float(np.asarray(ensure_numpy(evolved_norm_backend, backend=self.backend)))
+            evolved_norm = float(
+                np.asarray(ensure_numpy(evolved_norm_backend, backend=self.backend))
+            )
             self._last_contractivity_gap = initial_norm - evolved_norm
             if raise_on_violation and self._last_contractivity_gap < -5 * self.atol:
                 raise ValueError(

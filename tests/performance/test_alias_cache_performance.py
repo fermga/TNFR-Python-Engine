@@ -23,6 +23,7 @@ ALIAS_THETA = get_aliases("THETA")
 ALIAS_VF = get_aliases("VF")
 ALIAS_MAP = {"_vfmax": ALIAS_VF}
 
+
 def _seed_graph(
     num_nodes: int = 280, edge_probability: float = 0.2, *, seed: int = 33
 ) -> nx.Graph:
@@ -32,11 +33,13 @@ def _seed_graph(
         set_attr(graph.nodes[node], ALIAS_VF, 0.0)
     return graph
 
+
 def _measure(callback, loops: int) -> float:
     start = time.perf_counter()
     for _ in range(loops):
         callback()
     return time.perf_counter() - start
+
 
 def test_collect_attr_numpy_vectorization_is_significantly_faster():
     np = pytest.importorskip("numpy")
@@ -72,6 +75,7 @@ def test_collect_attr_numpy_vectorization_is_significantly_faster():
         dtype=float,
     )
     npt.assert_allclose(fast_values, slow_values, rtol=0.0, atol=0.0)
+
 
 def test_set_attr_with_max_cache_beats_full_recompute():
     graph_cached = _seed_graph(seed=57)

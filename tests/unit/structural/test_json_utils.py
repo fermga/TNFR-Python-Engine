@@ -7,6 +7,7 @@ import tnfr.utils.init as import_utils
 
 from ...utils import clear_orjson_cache
 
+
 class DummyOrjson:
     OPT_SORT_KEYS = 1
 
@@ -14,12 +15,14 @@ class DummyOrjson:
     def dumps(obj, option=0, default=None):
         return b"{}"
 
+
 def _reset_json_utils(monkeypatch, module):
     monkeypatch.setattr(
         json_utils, "cached_import", lambda name, attr=None, **kwargs: module
     )
     clear_orjson_cache()
     import_utils.prune_failed_imports()
+
 
 def test_lazy_orjson_import(monkeypatch):
     calls = {"n": 0}
@@ -37,6 +40,7 @@ def test_lazy_orjson_import(monkeypatch):
     json_utils.json_dumps({})
     assert calls["n"] == 2
 
+
 def test_warns_once_per_combo(monkeypatch, caplog):
     monkeypatch.setattr(json_utils, "cached_import", lambda *a, **k: DummyOrjson())
     clear_orjson_cache()
@@ -46,6 +50,7 @@ def test_warns_once_per_combo(monkeypatch, caplog):
             json_utils.json_dumps({}, ensure_ascii=False)
 
     assert sum("ignored" in r.message for r in caplog.records) == 1
+
 
 def test_warns_for_each_combo(monkeypatch, caplog):
     monkeypatch.setattr(json_utils, "cached_import", lambda *a, **k: DummyOrjson())
@@ -58,11 +63,13 @@ def test_warns_for_each_combo(monkeypatch, caplog):
 
     assert sum("ignored" in r.message for r in caplog.records) == 2
 
+
 def test_json_dumps_returns_str_by_default():
     data = {"a": 1, "b": [1, 2, 3]}
     result = json_utils.json_dumps(data)
     assert isinstance(result, str)
     assert result == json_utils.json_dumps(data, to_bytes=False)
+
 
 def test_json_dumps_without_orjson(monkeypatch, caplog):
     clear_orjson_cache()
@@ -83,6 +90,7 @@ def test_json_dumps_without_orjson(monkeypatch, caplog):
     assert result == b'{"a":1}'
     assert any("Failed to import module 'orjson'" in r.message for r in caplog.records)
 
+
 def test_json_dumps_with_orjson_warns(monkeypatch, caplog):
     _reset_json_utils(monkeypatch, DummyOrjson())
 
@@ -90,6 +98,7 @@ def test_json_dumps_with_orjson_warns(monkeypatch, caplog):
         json_utils.json_dumps({"a": 1}, ensure_ascii=False)
         json_utils.json_dumps({"a": 1}, ensure_ascii=False)
     assert sum("ignored" in r.message for r in caplog.records) == 1
+
 
 @pytest.mark.parametrize(
     ("kwargs", "message"),
@@ -110,6 +119,7 @@ def test_json_dumps_invalid_params(monkeypatch, kwargs, message):
     with pytest.raises(TypeError, match=message):
         json_utils.json_dumps({}, **kwargs)
 
+
 def test_params_passed_to_std(monkeypatch):
     _reset_json_utils(monkeypatch, None)
 
@@ -125,6 +135,7 @@ def test_params_passed_to_std(monkeypatch):
     assert captured["params"].sort_keys is False
     assert captured["params"].ensure_ascii is True
 
+
 def test_params_passed_to_orjson(monkeypatch):
     _reset_json_utils(monkeypatch, DummyOrjson())
 
@@ -139,6 +150,7 @@ def test_params_passed_to_orjson(monkeypatch):
     assert isinstance(captured["params"], json_utils.JsonDumpsParams)
     assert captured["params"].sort_keys is False
     assert captured["params"].ensure_ascii is True
+
 
 def test_default_params_reused(monkeypatch):
     _reset_json_utils(monkeypatch, None)

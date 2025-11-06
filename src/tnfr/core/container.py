@@ -34,16 +34,16 @@ __all__ = ("TNFRContainer",)
 
 class TNFRContainer:
     """Dependency injection container for TNFR engine components.
-    
+
     The container manages the lifecycle of engine services, allowing
     registration of singletons (reused instances) or factories (fresh
     instances on each request). This enables flexible configuration without
     coupling client code to specific implementations.
-    
+
     Examples
     --------
     Basic usage with singleton registration:
-    
+
     >>> from tnfr.core.interfaces import ValidationService
     >>> class MyValidator:
     ...     def validate_sequence(self, seq):
@@ -53,9 +53,9 @@ class TNFRContainer:
     >>> container = TNFRContainer()
     >>> container.register_singleton(ValidationService, MyValidator())
     >>> validator = container.get(ValidationService)
-    
+
     Factory registration for per-request instances:
-    
+
     >>> container.register_factory(ValidationService, MyValidator)
     >>> v1 = container.get(ValidationService)
     >>> v2 = container.get(ValidationService)
@@ -71,17 +71,17 @@ class TNFRContainer:
 
     def register_singleton(self, interface: type[T], implementation: T) -> None:
         """Register an implementation as a singleton.
-        
+
         The provided instance will be cached and returned for all subsequent
         requests for this interface.
-        
+
         Parameters
         ----------
         interface : type
             The interface or abstract type to register against.
         implementation : T
             The concrete instance to return for this interface.
-            
+
         Examples
         --------
         >>> container = TNFRContainer()
@@ -95,18 +95,18 @@ class TNFRContainer:
         self, interface: type[T], factory_func: Callable[[], T]
     ) -> None:
         """Register a factory function for creating instances.
-        
+
         The factory will be called each time the interface is requested,
         allowing fresh instances or cached instances depending on the
         factory implementation.
-        
+
         Parameters
         ----------
         interface : type
             The interface or abstract type to register against.
         factory_func : callable
             Function that creates and returns an instance of the interface.
-            
+
         Examples
         --------
         >>> container = TNFRContainer()
@@ -117,25 +117,25 @@ class TNFRContainer:
 
     def get(self, interface: type[T]) -> T:
         """Retrieve an instance implementing the specified interface.
-        
+
         For singleton registrations, returns the cached instance. For factory
         registrations, calls the factory to produce an instance.
-        
+
         Parameters
         ----------
         interface : type
             The interface type to resolve.
-            
+
         Returns
         -------
         T
             Instance implementing the interface.
-            
+
         Raises
         ------
         ValueError
             When no factory is registered for the interface.
-            
+
         Examples
         --------
         >>> container = TNFRContainer()
@@ -155,21 +155,21 @@ class TNFRContainer:
 
         # Call factory
         instance = self._factories[interface]()
-        
+
         # Cache only if registered as singleton
         if self._is_singleton.get(interface, False):
             self._instances[interface] = instance
-        
+
         return instance
 
     def has(self, interface: type) -> bool:
         """Check if an interface has a registered factory.
-        
+
         Parameters
         ----------
         interface : type
             The interface type to check.
-            
+
         Returns
         -------
         bool
@@ -180,22 +180,22 @@ class TNFRContainer:
     @classmethod
     def create_default(cls) -> TNFRContainer:
         """Create a container with default TNFR implementations.
-        
+
         This factory method registers the standard implementations of all
         core interfaces, making it easy to get started with the TNFR engine
         without manual configuration.
-        
+
         Returns
         -------
         TNFRContainer
             Container configured with default implementations.
-            
+
         Examples
         --------
         >>> container = TNFRContainer.create_default()
         >>> validator = container.get(ValidationService)
         >>> # Use validator with default implementation
-        
+
         Notes
         -----
         The default implementations are imported lazily to avoid circular

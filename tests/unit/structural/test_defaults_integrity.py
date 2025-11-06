@@ -6,14 +6,17 @@ import pytest
 
 from tnfr.constants import DEFAULT_SECTIONS, DEFAULTS
 
+
 def test_defaults_is_union_of_parts():
     expected = dict(ChainMap(*reversed(tuple(DEFAULT_SECTIONS.values()))))
     assert DEFAULTS == expected
+
 
 def test_defaults_contains_submodule_parts():
     for part in DEFAULT_SECTIONS.values():
         for k, v in part.items():
             assert DEFAULTS[k] == v
+
 
 def test_defaults_is_immutable():
     with pytest.raises(TypeError):

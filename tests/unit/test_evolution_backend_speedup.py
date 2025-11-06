@@ -6,9 +6,11 @@ import pytest
 
 from benchmarks import evolution_backend_speedup as benchmark_module
 
+
 class _DummyBackend:
     def __init__(self, name: str) -> None:
         self.name = name
+
 
 @pytest.mark.parametrize(
     "requested, expected_names, expected_numpy_calls",

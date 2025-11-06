@@ -80,6 +80,7 @@ __all__ = [
     "register_backend",
 ]
 
+
 def __getattr__(name: str) -> object:
     if name == "NFRValidator":
         warnings.warn(

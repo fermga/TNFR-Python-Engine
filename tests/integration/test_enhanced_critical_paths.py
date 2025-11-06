@@ -16,7 +16,13 @@ import networkx as nx
 
 np = pytest.importorskip("numpy")
 
-from tnfr.constants import DNFR_PRIMARY, EPI_PRIMARY, VF_PRIMARY, THETA_KEY, inject_defaults
+from tnfr.constants import (
+    DNFR_PRIMARY,
+    EPI_PRIMARY,
+    VF_PRIMARY,
+    THETA_KEY,
+    inject_defaults,
+)
 from tnfr.mathematics.generators import build_delta_nfr
 from tnfr.execution import seq, wait, target, block, compile_sequence
 from tnfr.tokens import OpTag
@@ -30,15 +36,19 @@ from tests.helpers.fixtures import seed_graph_factory  # noqa: F401
 # Operator Generation - Advanced Parameter Validation
 # ============================================================================
 
-@pytest.mark.parametrize("dim,nu_f,scale", [
-    (3, 0.0, 1.0),      # Zero frequency
-    (3, 1e-10, 1.0),    # Near-zero frequency
-    (3, 1e6, 1.0),      # Very large frequency
-    (3, 1.0, 1e-10),    # Near-zero scale
-    (3, 1.0, 1e6),      # Very large scale
-    (3, 1e-10, 1e-10),  # Both near-zero
-    (3, 1e6, 1e6),      # Both very large
-])
+
+@pytest.mark.parametrize(
+    "dim,nu_f,scale",
+    [
+        (3, 0.0, 1.0),  # Zero frequency
+        (3, 1e-10, 1.0),  # Near-zero frequency
+        (3, 1e6, 1.0),  # Very large frequency
+        (3, 1.0, 1e-10),  # Near-zero scale
+        (3, 1.0, 1e6),  # Very large scale
+        (3, 1e-10, 1e-10),  # Both near-zero
+        (3, 1e6, 1e6),  # Both very large
+    ],
+)
 def test_operator_generation_extreme_parameters(dim, nu_f, scale) -> None:
     """Test operator generation with extreme parameter combinations.
 
@@ -56,10 +66,14 @@ def test_operator_generation_extreme_parameters(dim, nu_f, scale) -> None:
     # Must have correct dimension
     assert dnfr_matrix.shape == (dim, dim)
 
-@pytest.mark.parametrize("topology1,topology2", [
-    ("laplacian", "adjacency"),
-    ("adjacency", "laplacian"),
-])
+
+@pytest.mark.parametrize(
+    "topology1,topology2",
+    [
+        ("laplacian", "adjacency"),
+        ("adjacency", "laplacian"),
+    ],
+)
 def test_operator_generation_topology_independence(topology1, topology2) -> None:
     """Test that different topologies produce structurally valid but distinct operators.
 
@@ -86,7 +100,8 @@ def test_operator_generation_topology_independence(topology1, topology2) -> None
     assert np.all(np.isreal(eigs1))
     assert np.all(np.isreal(eigs2))
 
-@pytest.mark.parametrize("seed_val", [0, 1, 42, 999, 2**31-1])
+
+@pytest.mark.parametrize("seed_val", [0, 1, 42, 999, 2**31 - 1])
 def test_operator_generation_seed_reproducibility(seed_val) -> None:
     """Test operator generation reproducibility across various seed values.
 
@@ -105,17 +120,22 @@ def test_operator_generation_seed_reproducibility(seed_val) -> None:
     # Use rtol for platform-independent comparison
     assert np.allclose(matrix1, matrix2, rtol=1e-14, atol=1e-15)
 
+
 # ============================================================================
 # Nodal Validators - Multi-Scale Scenarios
 # ============================================================================
 
-@pytest.mark.parametrize("num_nodes,edge_prob", [
-    (5, 0.2),      # Sparse small network
-    (10, 0.5),     # Medium density
-    (20, 0.8),     # Dense network
-    (50, 0.1),     # Large sparse network
-    (100, 0.05),   # Very large sparse network
-])
+
+@pytest.mark.parametrize(
+    "num_nodes,edge_prob",
+    [
+        (5, 0.2),  # Sparse small network
+        (10, 0.5),  # Medium density
+        (20, 0.8),  # Dense network
+        (50, 0.1),  # Large sparse network
+        (100, 0.05),  # Very large sparse network
+    ],
+)
 def test_nodal_validator_multi_scale_bounds(num_nodes, edge_prob) -> None:
     """Test nodal validators maintain EPI/νf bounds across multiple scales.
 
@@ -128,19 +148,23 @@ def test_nodal_validator_multi_scale_bounds(num_nodes, edge_prob) -> None:
     # Initialize with values spanning expected ranges
     for i, (node, data) in enumerate(graph.nodes(data=True)):
         data[EPI_PRIMARY] = -1.0 + 2.0 * (i / num_nodes)  # Range [-1, 1]
-        data[VF_PRIMARY] = 0.5 + 1.0 * (i / num_nodes)    # Range [0.5, 1.5]
+        data[VF_PRIMARY] = 0.5 + 1.0 * (i / num_nodes)  # Range [0.5, 1.5]
         data[DNFR_PRIMARY] = 0.0
 
     # Verify bounds are maintained
     assert_epi_vf_in_bounds(graph, epi_min=-1.5, epi_max=1.5, vf_min=0.0, vf_max=2.0)
 
-@pytest.mark.parametrize("phase_variation", [
-    0.0,           # All synchronized
-    math.pi / 4,   # Small variation
-    math.pi / 2,   # Medium variation
-    math.pi,       # Large variation
-    2 * math.pi,   # Full cycle variation
-])
+
+@pytest.mark.parametrize(
+    "phase_variation",
+    [
+        0.0,  # All synchronized
+        math.pi / 4,  # Small variation
+        math.pi / 2,  # Medium variation
+        math.pi,  # Large variation
+        2 * math.pi,  # Full cycle variation
+    ],
+)
 def test_nodal_validator_phase_wrapping_multi_scale(phase_variation) -> None:
     """Test phase wrapping validation across different phase distributions.
 
@@ -162,11 +186,15 @@ def test_nodal_validator_phase_wrapping_multi_scale(phase_variation) -> None:
         wrapped = math.atan2(math.sin(phase), math.cos(phase))
         assert -math.pi <= wrapped <= math.pi
 
-@pytest.mark.parametrize("connectivity", [
-    "connected",
-    "disconnected",
-    "isolated_nodes",
-])
+
+@pytest.mark.parametrize(
+    "connectivity",
+    [
+        "connected",
+        "disconnected",
+        "isolated_nodes",
+    ],
+)
 def test_nodal_validator_network_topology_variants(connectivity) -> None:
     """Test nodal validators handle different network topologies correctly.
 
@@ -199,9 +227,11 @@ def test_nodal_validator_network_topology_variants(connectivity) -> None:
     # Should handle all topologies without error
     assert_epi_vf_in_bounds(graph, epi_min=-1.0, epi_max=1.0)
 
+
 # ============================================================================
 # run_sequence - Complex Trajectory Patterns
 # ============================================================================
+
 
 def test_run_sequence_deep_nesting() -> None:
     """Test deeply nested block structures in sequences.
@@ -213,14 +243,7 @@ def test_run_sequence_deep_nesting() -> None:
     from tnfr.tokens import Glyph
 
     sequence = seq(
-        block(
-            block(
-                block(Glyph.SHA, repeat=1),
-                repeat=1
-            ),
-            repeat=1
-        ),
-        wait(1)
+        block(block(block(Glyph.SHA, repeat=1), repeat=1), repeat=1), wait(1)
     )
 
     compiled = compile_sequence(sequence)
@@ -228,6 +251,7 @@ def test_run_sequence_deep_nesting() -> None:
     # Should compile without error
     assert compiled is not None
     assert len(compiled) > 0
+
 
 def test_run_sequence_alternating_targets() -> None:
     """Test sequences with rapidly alternating target selections.
@@ -253,6 +277,7 @@ def test_run_sequence_alternating_targets() -> None:
     # Should have correct number of target operations
     target_ops = [op for op in compiled if op[0] == OpTag.TARGET]
     assert len(target_ops) == 4
+
 
 def test_run_sequence_mixed_wait_durations() -> None:
     """Test sequences with varying wait operation durations.
@@ -282,6 +307,7 @@ def test_run_sequence_mixed_wait_durations() -> None:
     assert len(wait_ops) == 4
     assert wait_values == [1, 5, 10, 2]
 
+
 @pytest.mark.parametrize("repeat_count", [1, 2, 5, 10])
 def test_run_sequence_variable_repeat_counts(repeat_count) -> None:
     """Test block operations with varying repeat counts.
@@ -300,6 +326,7 @@ def test_run_sequence_variable_repeat_counts(repeat_count) -> None:
 
     # Should have correct structure
     assert len(compiled) > 0
+
 
 def test_run_sequence_empty_target_lists() -> None:
     """Test sequence handling of various empty/None target configurations.
@@ -325,9 +352,11 @@ def test_run_sequence_empty_target_lists() -> None:
     compiled2 = compile_sequence(sequence2)
     assert compiled2 is not None
 
+
 # ============================================================================
 # Cross-cutting Critical Paths
 # ============================================================================
+
 
 def test_operator_validator_integration(seed_graph_factory) -> None:
     """Test integration between operator generation and node validators.
@@ -348,6 +377,7 @@ def test_operator_validator_integration(seed_graph_factory) -> None:
     # Verify graph maintains bounds
     assert_epi_vf_in_bounds(graph, epi_min=-2.0, epi_max=2.0)
 
+
 @pytest.mark.parametrize("num_nodes", [5, 10, 20, 50])
 def test_multi_scale_trajectory_consistency(seed_graph_factory, num_nodes) -> None:
     """Test trajectory consistency across different network scales.
@@ -358,11 +388,7 @@ def test_multi_scale_trajectory_consistency(seed_graph_factory, num_nodes) -> No
     """
     from tnfr.dynamics import dnfr_epi_vf_mixed
 
-    graph = seed_graph_factory(
-        num_nodes=num_nodes,
-        edge_probability=0.3,
-        seed=42
-    )
+    graph = seed_graph_factory(num_nodes=num_nodes, edge_probability=0.3, seed=42)
 
     # Apply dynamics
     dnfr_epi_vf_mixed(graph)

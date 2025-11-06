@@ -33,6 +33,7 @@ _ALIAS_MAP = {
     "VF": ALIAS_VF,
 }
 
+
 @pytest.mark.parametrize("key, alias", sorted(_ALIAS_MAP.items()))
 def test_alias_constants_match_registry(key: str, alias: tuple[str, ...]) -> None:
     """Alias constants must match the canonical registry entries."""

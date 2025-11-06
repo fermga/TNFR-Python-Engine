@@ -10,6 +10,7 @@ from tnfr.utils import (
     configure_graph_cache_limits,
 )
 
+
 def test_configure_limits_store_snapshot(graph_canon) -> None:
     G = graph_canon()
     overrides = {DNFR_PREP_STATE_KEY: 17, "custom": None}
@@ -33,6 +34,7 @@ def test_configure_limits_store_snapshot(graph_canon) -> None:
     assert manager.get_capacity(DNFR_PREP_STATE_KEY) == 17
     assert manager.get_capacity("unregistered") == 256
 
+
 def test_manager_reloads_persisted_limits(graph_canon) -> None:
     G = graph_canon()
     overrides = {DNFR_PREP_STATE_KEY: 9}
@@ -48,6 +50,7 @@ def test_manager_reloads_persisted_limits(graph_canon) -> None:
     assert reloaded_manager.get_capacity(DNFR_PREP_STATE_KEY) == 9
     assert reloaded_manager.get_capacity("other") == 64
 
+
 def test_manager_ignores_non_mapping_config(graph_canon) -> None:
     G = graph_canon()
 
@@ -59,4 +62,7 @@ def test_manager_ignores_non_mapping_config(graph_canon) -> None:
 
     reloaded_manager = _graph_cache_manager(G.graph)
     assert reloaded_manager.export_config() == baseline_snapshot
-    assert reloaded_manager.get_capacity(DNFR_PREP_STATE_KEY) == baseline_snapshot.default_capacity
+    assert (
+        reloaded_manager.get_capacity(DNFR_PREP_STATE_KEY)
+        == baseline_snapshot.default_capacity
+    )

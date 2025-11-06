@@ -13,6 +13,7 @@ if TYPE_CHECKING:  # pragma: no cover - only for type checkers
 
 __all__ = ("load_config", "apply_config")
 
+
 def load_config(
     path: str | Path,
     *,
@@ -48,6 +49,7 @@ def load_config(
         raise ValueError("Configuration file must contain an object")
     return data
 
+
 def apply_config(
     G: "nx.Graph",
     path: str | Path,
@@ -70,6 +72,6 @@ def apply_config(
     """
     # Import inject_defaults locally to avoid circular import
     from . import inject_defaults
-    
+
     cfg = load_config(path, base_dir=base_dir)
     inject_defaults(G, cfg, override=True)

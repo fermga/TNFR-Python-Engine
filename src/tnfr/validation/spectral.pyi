@@ -6,7 +6,6 @@ from ..mathematics.operators import CoherenceOperator, FrequencyOperator
 from ..mathematics.spaces import HilbertSpace
 from . import ValidationOutcome, Validator
 
-
 class NFRValidator(Validator[np.ndarray]):
     hilbert_space: HilbertSpace
     coherence_operator: CoherenceOperator
@@ -23,7 +22,6 @@ class NFRValidator(Validator[np.ndarray]):
         frequency_operator: FrequencyOperator | None = ...,
         atol: float = ...,
     ) -> None: ...
-
     def validate(
         self,
         subject: Sequence[complex] | np.ndarray,
@@ -31,16 +29,12 @@ class NFRValidator(Validator[np.ndarray]):
         *,
         enforce_frequency_positivity: bool | None = ...,
     ) -> ValidationOutcome[np.ndarray]: ...  # type: ignore[override]
-
     def validate_state(
         self,
         state: Sequence[complex] | np.ndarray,
         *,
         enforce_frequency_positivity: bool | None = ...,
     ) -> tuple[bool, Mapping[str, Any]]: ...
-
     def report(self, outcome: ValidationOutcome[np.ndarray]) -> str: ...
 
-
 __all__ = ("NFRValidator",)
-

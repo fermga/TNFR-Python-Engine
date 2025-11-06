@@ -10,6 +10,7 @@ import pytest
 
 from tnfr.cli import execution
 
+
 class RecordingLogger:
     """Record log messages while forwarding them to a base logger."""
 
@@ -22,7 +23,10 @@ class RecordingLogger:
         self.records.append(formatted)
         self._base.info(msg, *args, **kwargs)
 
-def make_graph(*, coherence_enabled: bool = True, diagnosis_enabled: bool = True) -> nx.Graph:
+
+def make_graph(
+    *, coherence_enabled: bool = True, diagnosis_enabled: bool = True
+) -> nx.Graph:
     graph = nx.Graph()
     graph.graph["HISTORY_MAXLEN"] = 0
     graph.graph["COHERENCE"] = {
@@ -47,6 +51,7 @@ def make_graph(*, coherence_enabled: bool = True, diagnosis_enabled: bool = True
         ],
     }
     return graph
+
 
 @pytest.mark.parametrize(
     ("coherence_enabled", "diagnosis_enabled", "expected_messages"),
@@ -105,6 +110,7 @@ def test_log_run_summaries_history_logging_toggled(
     assert glyph_calls == []
     assert recorder.records == expected_messages
     assert caplog.messages == expected_messages
+
 
 @pytest.mark.parametrize("summary_limit", [5, 0, -1])
 def test_log_run_summaries_summary_limit_passthrough(

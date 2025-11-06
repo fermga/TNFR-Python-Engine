@@ -14,6 +14,7 @@ from pathlib import Path
 from collections import defaultdict
 from typing import Dict, List, Tuple
 
+
 def extract_test_functions(filepath: Path) -> List[Tuple[str, int]]:
     """Extract test function names and line numbers from a file.
 
@@ -28,12 +29,13 @@ def extract_test_functions(filepath: Path) -> List[Tuple[str, int]]:
         List of (test_name, line_number) tuples
     """
     tests = []
-    with open(filepath, 'r') as f:
+    with open(filepath, "r") as f:
         for line_num, line in enumerate(f, 1):
-            match = re.match(r'^def (test_\w+)\(', line.strip())
+            match = re.match(r"^def (test_\w+)\(", line.strip())
             if match:
                 tests.append((match.group(1), line_num))
     return tests
+
 
 def find_similar_tests(test_dirs: List[Path]) -> Dict[str, List[Tuple[Path, str, int]]]:
     """Find tests with similar names across directories.
@@ -50,15 +52,15 @@ def find_similar_tests(test_dirs: List[Path]) -> Dict[str, List[Tuple[Path, str,
     """
     # Common patterns that indicate potential redundancy
     patterns = [
-        'conservation',
-        'hermitian',
-        'operator.*dimension',
-        'validator.*bounds',
-        'homogeneous.*stability',
-        'dnfr.*balanced',
-        'phase.*sync',
-        'topology',
-        'composition',
+        "conservation",
+        "hermitian",
+        "operator.*dimension",
+        "validator.*bounds",
+        "homogeneous.*stability",
+        "dnfr.*balanced",
+        "phase.*sync",
+        "topology",
+        "composition",
     ]
 
     similar_tests = defaultdict(list)
@@ -76,6 +78,7 @@ def find_similar_tests(test_dirs: List[Path]) -> Dict[str, List[Tuple[Path, str,
                         similar_tests[pattern].append((test_file, test_name, line_num))
 
     return similar_tests
+
 
 def analyze_redundancy():
     """Analyze test redundancy and print report."""
@@ -117,7 +120,8 @@ def analyze_redundancy():
     print("\n" + "=" * 80)
     print("RECOMMENDATIONS")
     print("=" * 80)
-    print("""
+    print(
+        """
 Based on analysis:
 
 1. Tests with similar names in different directories may be redundant IF:
@@ -134,7 +138,9 @@ Based on analysis:
    - Use parametrized fixtures in shared helpers
    - Document what each test consolidates
    - Keep property/stress tests separate (different purpose)
-    """)
+    """
+    )
+
 
 if __name__ == "__main__":
     analyze_redundancy()

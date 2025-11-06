@@ -18,6 +18,7 @@ from weakref import WeakValueDictionary
 _locks: WeakValueDictionary[str, threading.Lock] = WeakValueDictionary()
 _REGISTRY_LOCK = threading.Lock()
 
+
 def get_lock(name: str) -> threading.Lock:
     """Return a re-usable lock identified by ``name``.
 
@@ -31,5 +32,6 @@ def get_lock(name: str) -> threading.Lock:
             lock = threading.Lock()
             _locks[name] = lock
     return lock
+
 
 __all__ = ["get_lock"]

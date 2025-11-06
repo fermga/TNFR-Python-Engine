@@ -1,11 +1,19 @@
 """Golden snapshots validating the classical runtime remains stable."""
+
 from __future__ import annotations
 
 import pytest
 
-from tnfr.operators.definitions import Coherence, Emission, Reception, Resonance, Transition
+from tnfr.operators.definitions import (
+    Coherence,
+    Emission,
+    Reception,
+    Resonance,
+    Transition,
+)
 
 from tests.helpers.compare_classical import classical_operator_snapshot
+
 
 def test_classic_runtime_sequence_matches_golden_snapshot() -> None:
     ops = [Emission(), Reception(), Coherence(), Resonance(), Transition()]

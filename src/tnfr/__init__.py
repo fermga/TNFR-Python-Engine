@@ -131,6 +131,7 @@ except PackageNotFoundError:  # pragma: no cover - fallback tested explicitly
 
     __version__ = _fallback_version
 
+
 def _is_internal_import_error(exc: ImportError) -> bool:
     missing_name = getattr(exc, "name", None) or ""
     if missing_name.startswith("tnfr"):
@@ -156,6 +157,7 @@ def _is_internal_import_error(exc: ImportError) -> bool:
 
     return False
 
+
 def _missing_dependency(
     name: str, exc: ImportError, *, module: str | None = None
 ) -> Callable[..., NoReturn]:
@@ -175,10 +177,13 @@ def _missing_dependency(
     }
     return _stub
 
+
 _MISSING_EXPORTS: dict[str, dict[str, Any]] = {}
+
 
 class ExportDependencyError(RuntimeError):
     """Raised when the export dependency manifest is inconsistent."""
+
 
 def _validate_export_dependencies() -> None:
     """Ensure exported helpers and their manifest entries stay in sync."""
@@ -240,6 +245,7 @@ def _validate_export_dependencies() -> None:
             "Invalid TNFR export dependency manifest:\n- " + "\n- ".join(issues)
         )
 
+
 def _assign_exports(module: str, names: tuple[str, ...]) -> bool:
     try:  # pragma: no cover - exercised in import tests
         mod = import_module(f".{module}", __name__)
@@ -258,12 +264,14 @@ def _assign_exports(module: str, names: tuple[str, ...]) -> bool:
             globals()[export_name] = getattr(mod, export_name)
         return True
 
+
 def __getattr__(name: str) -> Any:
     """Lazy load SDK components and handle missing dependencies."""
     # SDK exports - lazy loaded to avoid circular dependencies
     if name == "TNFRNetwork":
         try:
             from .sdk.fluent import TNFRNetwork
+
             globals()[name] = TNFRNetwork
             return TNFRNetwork
         except ImportError as exc:
@@ -275,6 +283,7 @@ def __getattr__(name: str) -> Any:
     elif name == "TNFRTemplates":
         try:
             from .sdk.templates import TNFRTemplates
+
             globals()[name] = TNFRTemplates
             return TNFRTemplates
         except ImportError as exc:
@@ -286,6 +295,7 @@ def __getattr__(name: str) -> Any:
     elif name == "TNFRExperimentBuilder":
         try:
             from .sdk.builders import TNFRExperimentBuilder
+
             globals()[name] = TNFRExperimentBuilder
             return TNFRExperimentBuilder
         except ImportError as exc:
@@ -294,8 +304,9 @@ def __getattr__(name: str) -> Any:
             stub = _missing_dependency(name, exc, module="sdk.builders")
             globals()[name] = stub
             return stub
-    
+
     raise AttributeError(f"module 'tnfr' has no attribute '{name}'")
+
 
 _assign_exports("dynamics", ("step", "run"))
 
@@ -306,6 +317,7 @@ _HAS_STRUCTURAL_EXPORTS = _assign_exports(
 )
 
 _assign_exports("units", ("get_hz_bridge", "hz_str_to_hz", "hz_to_hz_str"))
+
 
 def _emit_missing_dependency_warning() -> None:
     if not _MISSING_EXPORTS:
@@ -319,6 +331,7 @@ def _emit_missing_dependency_warning() -> None:
         ImportWarning,
         stacklevel=2,
     )
+
 
 _emit_missing_dependency_warning()
 
@@ -342,7 +355,12 @@ if _HAS_STRUCTURAL_EXPORTS:
 
 # Add SDK exports to dependency manifest for validation
 EXPORT_DEPENDENCIES["TNFRNetwork"] = {
-    "submodules": ("tnfr.sdk.fluent", "tnfr.structural", "tnfr.metrics", "tnfr.validation"),
+    "submodules": (
+        "tnfr.sdk.fluent",
+        "tnfr.structural",
+        "tnfr.metrics",
+        "tnfr.validation",
+    ),
     "third_party": ("networkx",),
 }
 EXPORT_DEPENDENCIES["TNFRTemplates"] = {

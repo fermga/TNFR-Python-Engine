@@ -25,6 +25,7 @@ __all__ = (
     "_get_vf_dnfr_max",
 )
 
+
 def compute_coherence(
     G: GraphLike, *, return_means: bool = False
 ) -> float | tuple[float, float, float]:
@@ -53,6 +54,7 @@ def compute_coherence(
     coherence = 1.0 / (1.0 + dnfr_mean + depi_mean)
     return (coherence, dnfr_mean, depi_mean) if return_means else coherence
 
+
 def ensure_neighbors_map(G: GraphLike) -> Mapping[Any, Sequence[Any]]:
     """Return cached neighbors list keyed by node as a read-only mapping."""
 
@@ -61,6 +63,7 @@ def ensure_neighbors_map(G: GraphLike) -> Mapping[Any, Sequence[Any]]:
 
     return edge_version_cache(G, "_neighbors", builder)
 
+
 def merge_graph_weights(G: GraphLike, key: str) -> dict[str, float]:
     """Merge default weights for ``key`` with any graph overrides."""
 
@@ -68,6 +71,7 @@ def merge_graph_weights(G: GraphLike, key: str) -> dict[str, float]:
     if overrides is None or not isinstance(overrides, Mapping):
         overrides = {}
     return {**DEFAULTS[key], **overrides}
+
 
 def merge_and_normalize_weights(
     G: GraphLike,
@@ -88,12 +92,14 @@ def merge_and_normalize_weights(
         warn_once=True,
     )
 
+
 def compute_dnfr_accel_max(G: GraphLike) -> dict[str, float]:
     """Compute absolute maxima of |ΔNFR| and |d²EPI/dt²|."""
 
     return multi_recompute_abs_max(
         G, {"dnfr_max": ALIAS_DNFR, "accel_max": ALIAS_D2EPI}
     )
+
 
 def normalize_dnfr(nd: NodeAttrMap, max_val: float) -> float:
     """Normalise ``|ΔNFR|`` using ``max_val``."""
@@ -102,6 +108,7 @@ def normalize_dnfr(nd: NodeAttrMap, max_val: float) -> float:
         return 0.0
     val = abs(get_attr(nd, ALIAS_DNFR, 0.0))
     return clamp01(val / max_val)
+
 
 def min_max_range(
     values: Iterable[float], *, default: tuple[float, float] = (0.0, 0.0)
@@ -121,6 +128,7 @@ def min_max_range(
             max_val = val
     return min_val, max_val
 
+
 def _get_vf_dnfr_max(G: GraphLike) -> tuple[float, float]:
     """Ensure and return absolute maxima for ``νf`` and ``ΔNFR``."""
 
@@ -137,6 +145,7 @@ def _get_vf_dnfr_max(G: GraphLike) -> tuple[float, float]:
     vfmax = 1.0 if vfmax == 0 else vfmax
     dnfrmax = 1.0 if dnfrmax == 0 else dnfrmax
     return float(vfmax), float(dnfrmax)
+
 
 def _coerce_jobs(raw_jobs: Any | None) -> int | None:
     """Normalise parallel job hints shared by metrics modules."""

@@ -48,9 +48,10 @@ def _initialize_graph(
 ) -> nx.Graph:
     """Create a test graph with initialized node attributes."""
     import random
+
     rng = random.Random(seed)
     G = nx.erdos_renyi_graph(node_count, edge_probability, seed=seed)
-    
+
     # Initialize node attributes for TNFR
     for node in G.nodes():
         set_attr(G.nodes[node], ALIAS_THETA, rng.random() * 6.28318)
@@ -58,7 +59,7 @@ def _initialize_graph(
         set_attr(G.nodes[node], ALIAS_VF, rng.random())
         G.nodes[node]["nu_f"] = rng.random()
         G.nodes[node]["delta_nfr"] = rng.random() * 0.1
-    
+
     return G
 
 
@@ -84,7 +85,7 @@ def _get_cache_snapshot(G: nx.Graph) -> dict[str, Any]:
                     else 0.0
                 ),
             }
-            
+
             if hasattr(cache_manager, "iter_metrics"):
                 for name, stats in cache_manager.iter_metrics():
                     total = stats.hits + stats.misses
@@ -109,7 +110,8 @@ def _get_cache_snapshot(G: nx.Graph) -> dict[str, Any]:
                         "misses": edge_aggregate.misses,
                         "evictions": edge_aggregate.evictions,
                         "hit_rate": (
-                            edge_aggregate.hits / (edge_aggregate.hits + edge_aggregate.misses)
+                            edge_aggregate.hits
+                            / (edge_aggregate.hits + edge_aggregate.misses)
                             if (edge_aggregate.hits + edge_aggregate.misses) > 0
                             else 0.0
                         ),
@@ -126,31 +128,39 @@ def _compute_delta(before: dict[str, Any], after: dict[str, Any]) -> dict[str, A
         "aggregate": {},
         "by_cache": {},
     }
-    
+
     # Aggregate delta
     for key in ["hits", "misses", "evictions"]:
-        delta["aggregate"][key] = after["aggregate"].get(key, 0) - before["aggregate"].get(key, 0)
-    
+        delta["aggregate"][key] = after["aggregate"].get(key, 0) - before[
+            "aggregate"
+        ].get(key, 0)
+
     total = delta["aggregate"]["hits"] + delta["aggregate"]["misses"]
     delta["aggregate"]["hit_rate"] = (
         delta["aggregate"]["hits"] / total if total > 0 else 0.0
     )
-    
+
     # Per-cache delta
     all_caches = set(before["by_cache"].keys()) | set(after["by_cache"].keys())
     for cache_name in all_caches:
-        before_cache = before["by_cache"].get(cache_name, {"hits": 0, "misses": 0, "evictions": 0})
-        after_cache = after["by_cache"].get(cache_name, {"hits": 0, "misses": 0, "evictions": 0})
-        
+        before_cache = before["by_cache"].get(
+            cache_name, {"hits": 0, "misses": 0, "evictions": 0}
+        )
+        after_cache = after["by_cache"].get(
+            cache_name, {"hits": 0, "misses": 0, "evictions": 0}
+        )
+
         cache_delta = {}
         for key in ["hits", "misses", "evictions"]:
             cache_delta[key] = after_cache.get(key, 0) - before_cache.get(key, 0)
-        
+
         cache_total = cache_delta["hits"] + cache_delta["misses"]
-        cache_delta["hit_rate"] = cache_delta["hits"] / cache_total if cache_total > 0 else 0.0
-        
+        cache_delta["hit_rate"] = (
+            cache_delta["hits"] / cache_total if cache_total > 0 else 0.0
+        )
+
         delta["by_cache"][cache_name] = cache_delta
-    
+
     return delta
 
 
@@ -164,7 +174,7 @@ def profile_hot_paths(
     output_path: Path | None = None,
 ) -> dict[str, Any]:
     """Profile cache behavior across hot paths for multiple simulation steps.
-    
+
     Parameters
     ----------
     node_count : int
@@ -179,7 +189,7 @@ def profile_hot_paths(
         Maximum entries for buffer caches.
     output_path : Path or None, optional
         Path to write JSON report. If None, only returns data.
-    
+
     Returns
     -------
     dict[str, Any]
@@ -191,23 +201,23 @@ def profile_hot_paths(
         edge_probability=edge_probability,
         seed=seed,
     )
-    
+
     print(f"Configuring caches: buffer_max_entries={buffer_cache_size}")
     configure_hot_path_caches(G, buffer_max_entries=buffer_cache_size)
-    
+
     # Warm up caches
     print("Warming up caches...")
     compute_Si(G, inplace=True)
     default_compute_delta_nfr(G)
     coherence_matrix(G)
-    
+
     # Profile each hot path
     hot_paths = {
         "sense_index": lambda: compute_Si(G, inplace=True),
         "dnfr_laplacian": lambda: dnfr_laplacian(G),
         "coherence_matrix": lambda: coherence_matrix(G),
     }
-    
+
     results: dict[str, Any] = {
         "configuration": {
             "node_count": node_count,
@@ -225,56 +235,66 @@ def profile_hot_paths(
             "overall_hit_rate": 0.0,
         },
     }
-    
+
     for path_name, compute_fn in hot_paths.items():
         print(f"\nProfiling {path_name}...")
         step_metrics = []
-        
+
         for step in range(steps):
             before = _get_cache_snapshot(G)
-            
+
             start = perf_counter()
             compute_fn()
             elapsed = perf_counter() - start
-            
+
             after = _get_cache_snapshot(G)
             delta = _compute_delta(before, after)
-            
-            step_metrics.append({
-                "step": step,
-                "elapsed_ms": elapsed * 1000,
-                "cache_delta": delta,
-            })
-            
+
+            step_metrics.append(
+                {
+                    "step": step,
+                    "elapsed_ms": elapsed * 1000,
+                    "cache_delta": delta,
+                }
+            )
+
             if step % max(1, steps // 10) == 0:
                 hit_rate = delta["aggregate"]["hit_rate"] * 100
                 print(f"  Step {step}: {elapsed*1000:.2f}ms, hit_rate={hit_rate:.1f}%")
-        
+
         # Aggregate metrics for this hot path
         total_hits = sum(m["cache_delta"]["aggregate"]["hits"] for m in step_metrics)
-        total_misses = sum(m["cache_delta"]["aggregate"]["misses"] for m in step_metrics)
-        total_evictions = sum(m["cache_delta"]["aggregate"]["evictions"] for m in step_metrics)
+        total_misses = sum(
+            m["cache_delta"]["aggregate"]["misses"] for m in step_metrics
+        )
+        total_evictions = sum(
+            m["cache_delta"]["aggregate"]["evictions"] for m in step_metrics
+        )
         avg_elapsed = sum(m["elapsed_ms"] for m in step_metrics) / len(step_metrics)
-        
+
         results["hot_paths"][path_name] = {
             "total_hits": total_hits,
             "total_misses": total_misses,
             "total_evictions": total_evictions,
-            "hit_rate": total_hits / (total_hits + total_misses) if (total_hits + total_misses) > 0 else 0.0,
+            "hit_rate": (
+                total_hits / (total_hits + total_misses)
+                if (total_hits + total_misses) > 0
+                else 0.0
+            ),
             "avg_elapsed_ms": avg_elapsed,
             "steps": step_metrics,
         }
-        
+
         results["summary"]["total_hits"] += total_hits
         results["summary"]["total_misses"] += total_misses
         results["summary"]["total_evictions"] += total_evictions
-    
+
     # Compute overall hit rate
     total = results["summary"]["total_hits"] + results["summary"]["total_misses"]
     results["summary"]["overall_hit_rate"] = (
         results["summary"]["total_hits"] / total if total > 0 else 0.0
     )
-    
+
     # Print summary
     print("\n" + "=" * 70)
     print("CACHE PROFILING SUMMARY")
@@ -292,12 +312,12 @@ def profile_hot_paths(
         print(f"    Hit Rate: {metrics['hit_rate']*100:.1f}%")
         print(f"    Avg Time: {metrics['avg_elapsed_ms']:.2f}ms")
         print(f"    Evictions: {metrics['total_evictions']}")
-    
+
     if output_path is not None:
         output_path.parent.mkdir(parents=True, exist_ok=True)
         output_path.write_text(json_dumps(results, indent=2, ensure_ascii=False))
         print(f"\nDetailed report written to: {output_path}")
-    
+
     return results
 
 
@@ -342,9 +362,9 @@ def main() -> None:
         default=None,
         help="Path to write JSON report (default: print only)",
     )
-    
+
     args = parser.parse_args()
-    
+
     profile_hot_paths(
         node_count=args.nodes,
         edge_probability=args.edge_probability,

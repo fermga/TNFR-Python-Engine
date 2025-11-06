@@ -29,18 +29,18 @@ ALIAS_DNFR = get_aliases("DNFR")
 @dataclass(slots=True)
 class BackendBenchmark:
     """Container for backend benchmark results."""
-    
+
     backend_name: str
     num_nodes: int
     edge_probability: float
     dnfr_times: list[float]
     si_times: list[float]
-    
+
     @property
     def dnfr_median(self) -> float:
         """Median ΔNFR computation time."""
         return statistics.median(self.dnfr_times) if self.dnfr_times else 0.0
-    
+
     @property
     def si_median(self) -> float:
         """Median Si computation time."""
@@ -64,37 +64,37 @@ def benchmark_backend(
     repeats: int,
 ) -> BackendBenchmark:
     """Benchmark a single backend configuration."""
-    
+
     try:
         backend = get_backend(backend_name)
     except (ValueError, RuntimeError) as exc:
         print(f"  Skipping {backend_name}: {exc}")
         return BackendBenchmark(backend_name, num_nodes, edge_probability, [], [])
-    
+
     dnfr_times = []
     si_times = []
-    
+
     for i in range(repeats):
         # Create fresh graph for each repeat
         G = _build_graph(num_nodes, edge_probability, seed=42 + i)
-        
+
         # Benchmark ΔNFR computation
         start = time.perf_counter()
         backend.compute_delta_nfr(G)
         dnfr_time = time.perf_counter() - start
         dnfr_times.append(dnfr_time)
-        
+
         # Ensure ΔNFR values exist for Si computation
         for node in G.nodes():
             if ALIAS_DNFR not in G.nodes[node]:
                 G.nodes[node][ALIAS_DNFR] = 0.0
-        
+
         # Benchmark Si computation
         start = time.perf_counter()
         backend.compute_si(G, inplace=True)
         si_time = time.perf_counter() - start
         si_times.append(si_time)
-    
+
     return BackendBenchmark(
         backend_name,
         num_nodes,
@@ -106,44 +106,44 @@ def benchmark_backend(
 
 def print_results(results: list[BackendBenchmark]) -> None:
     """Print formatted benchmark results."""
-    
+
     if not results:
         print("No results to display.")
         return
-    
+
     # Group by node count
     by_nodes: dict[int, list[BackendBenchmark]] = {}
     for result in results:
         by_nodes.setdefault(result.num_nodes, []).append(result)
-    
+
     print("\n" + "=" * 80)
     print("TNFR Backend Performance Comparison")
     print("=" * 80)
-    
+
     for num_nodes in sorted(by_nodes.keys()):
         group = by_nodes[num_nodes]
-        
+
         print(f"\nNodes: {num_nodes}")
         print("-" * 80)
         print(f"{'Backend':<12} {'ΔNFR (ms)':<15} {'Si (ms)':<15} {'Total (ms)':<15}")
         print("-" * 80)
-        
+
         for result in group:
             if not result.dnfr_times:
                 print(f"{result.backend_name:<12} {'N/A':<15} {'N/A':<15} {'N/A':<15}")
                 continue
-            
+
             dnfr_ms = result.dnfr_median * 1000
             si_ms = result.si_median * 1000
             total_ms = dnfr_ms + si_ms
-            
+
             print(
                 f"{result.backend_name:<12} "
                 f"{dnfr_ms:>8.3f}        "
                 f"{si_ms:>8.3f}        "
                 f"{total_ms:>8.3f}"
             )
-        
+
         # Calculate speedups relative to slowest backend
         valid_results = [r for r in group if r.dnfr_times]
         if len(valid_results) > 1:
@@ -152,18 +152,17 @@ def print_results(results: list[BackendBenchmark]) -> None:
             for result in valid_results:
                 if result is slowest:
                     continue
-                speedup = (
-                    (slowest.dnfr_median + slowest.si_median)
-                    / (result.dnfr_median + result.si_median)
+                speedup = (slowest.dnfr_median + slowest.si_median) / (
+                    result.dnfr_median + result.si_median
                 )
                 print(f"  {result.backend_name}: {speedup:.2f}x")
-    
+
     print("\n" + "=" * 80)
 
 
 def main() -> None:
     """Run backend comparison benchmark."""
-    
+
     parser = argparse.ArgumentParser(
         description="Benchmark TNFR backend implementations",
     )
@@ -192,9 +191,9 @@ def main() -> None:
         default=None,
         help="Specific backends to test (default: all available)",
     )
-    
+
     args = parser.parse_args()
-    
+
     # Determine which backends to test
     available = available_backends()
     if args.backends:
@@ -207,15 +206,15 @@ def main() -> None:
             if backend not in backends_to_test and backend != "optimized":
                 # Skip 'optimized' alias to avoid duplication
                 backends_to_test.append(backend)
-    
+
     print("Available backends:", ", ".join(sorted(available.keys())))
     print("Testing backends:", ", ".join(backends_to_test))
     print(f"Edge probability: {args.edge_probability}")
     print(f"Repeats per configuration: {args.repeats}")
     print()
-    
+
     results = []
-    
+
     for num_nodes in args.nodes:
         print(f"Benchmarking {num_nodes} nodes...")
         for backend_name in backends_to_test:
@@ -226,7 +225,7 @@ def main() -> None:
                 args.repeats,
             )
             results.append(result)
-    
+
     print_results(results)
 
 

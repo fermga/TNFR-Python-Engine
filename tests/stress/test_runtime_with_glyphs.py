@@ -14,11 +14,13 @@ pytest.importorskip("numpy")
 try:  # pragma: no cover - optional plugin detection
     pytest.mark.timeout  # Check if timeout marker exists
 except ImportError:  # pragma: no cover - fallback when plugin missing
+
     def timeout_mark(_: float):
         def decorator(func):
             return func
 
         return decorator
+
 else:  # pragma: no cover - executed when plugin available
     timeout_mark = pytest.mark.timeout
 
@@ -36,6 +38,7 @@ ALIAS_SI = get_aliases("SI")
 ALIAS_DNFR = get_aliases("DNFR")
 
 pytestmark = [pytest.mark.slow, pytest.mark.stress]
+
 
 def _seed_glyph_runtime_graph(
     *,
@@ -75,6 +78,7 @@ def _seed_glyph_runtime_graph(
         set_attr(data, ALIAS_DNFR, dnfr)
 
     return graph
+
 
 @timeout_mark(30)
 def test_runtime_run_glyph_pipeline_history_is_finite() -> None:

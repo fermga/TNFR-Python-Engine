@@ -7,6 +7,7 @@ from tnfr.callback_utils import (
     callback_manager,
 )
 
+
 def test_callback_error_list_resets_limit(graph_canon):
     G = graph_canon()
 
@@ -29,6 +30,7 @@ def test_callback_error_list_resets_limit(graph_canon):
         assert len(err_list) == 1
     finally:
         callback_manager.set_callback_error_limit(prev)
+
 
 def test_set_callback_error_limit_rejects_non_positive():
     prev = callback_manager.get_callback_error_limit()

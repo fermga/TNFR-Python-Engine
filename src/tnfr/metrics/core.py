@@ -69,6 +69,7 @@ __all__ = [
     "glyph_top",
 ]
 
+
 class MetricsVerbositySpec(NamedTuple):
     """Runtime configuration for metrics verbosity tiers."""
 
@@ -81,9 +82,11 @@ class MetricsVerbositySpec(NamedTuple):
     attach_diagnosis_hooks: bool
     enable_nu_f: bool
 
+
 METRICS_VERBOSITY_DEFAULT = TELEMETRY_VERBOSITY_DEFAULT
 
 _METRICS_VERBOSITY_PRESETS: dict[str, MetricsVerbositySpec] = {}
+
 
 def _register_metrics_preset(spec: MetricsVerbositySpec) -> None:
     if spec.name not in TELEMETRY_VERBOSITY_LEVELS:
@@ -95,6 +98,7 @@ def _register_metrics_preset(spec: MetricsVerbositySpec) -> None:
             )
         )
     _METRICS_VERBOSITY_PRESETS[spec.name] = spec
+
 
 _register_metrics_preset(
     MetricsVerbositySpec(
@@ -149,6 +153,7 @@ _METRICS_NU_F_HISTORY_KEYS = (
     "nu_f_ci_upper_hz",
 )
 
+
 def _update_nu_f_snapshot(
     G: TNFRGraph,
     hist: MutableMapping[str, Any],
@@ -185,6 +190,7 @@ def _update_nu_f_snapshot(
 
     G.graph["_nu_f_snapshot_payload"] = payload
 
+
 def _resolve_metrics_verbosity(cfg: Mapping[str, Any]) -> MetricsVerbositySpec:
     """Return the preset matching ``cfg['verbosity']``."""
 
@@ -199,6 +205,7 @@ def _resolve_metrics_verbosity(cfg: Mapping[str, Any]) -> MetricsVerbositySpec:
         METRICS_VERBOSITY_DEFAULT,
     )
     return _METRICS_VERBOSITY_PRESETS[METRICS_VERBOSITY_DEFAULT]
+
 
 def _metrics_step(G: TNFRGraph, ctx: dict[str, Any] | None = None) -> None:
     """Update operational TNFR metrics per step."""
@@ -290,6 +297,7 @@ def _metrics_step(G: TNFRGraph, ctx: dict[str, Any] | None = None) -> None:
             cfg,
             n_jobs=metrics_jobs,
         )
+
 
 def register_metrics_callbacks(G: TNFRGraph) -> None:
     """Attach canonical metrics callbacks according to graph configuration."""

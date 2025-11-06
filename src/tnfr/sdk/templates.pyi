@@ -11,7 +11,6 @@ class TNFRTemplates:
         simulation_steps: int = 20,
         random_seed: Optional[int] = None,
     ) -> NetworkResults: ...
-    
     @staticmethod
     def neural_network_model(
         neurons: int = 100,
@@ -19,7 +18,6 @@ class TNFRTemplates:
         activation_cycles: int = 30,
         random_seed: Optional[int] = None,
     ) -> NetworkResults: ...
-    
     @staticmethod
     def ecosystem_dynamics(
         species: int = 25,
@@ -27,7 +25,6 @@ class TNFRTemplates:
         evolution_steps: int = 50,
         random_seed: Optional[int] = None,
     ) -> NetworkResults: ...
-    
     @staticmethod
     def creative_process_model(
         ideas: int = 15,
@@ -35,7 +32,6 @@ class TNFRTemplates:
         development_cycles: int = 12,
         random_seed: Optional[int] = None,
     ) -> NetworkResults: ...
-    
     @staticmethod
     def organizational_network(
         agents: int = 40,

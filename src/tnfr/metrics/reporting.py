@@ -25,6 +25,7 @@ __all__ = [
 # Reporting functions
 # ---------------------------------------------------------------------------
 
+
 def Tg_global(G: TNFRGraph, normalize: bool = True) -> dict[str, float]:
     """Total glyph dwell time per class."""
 
@@ -39,6 +40,7 @@ def Tg_global(G: TNFRGraph, normalize: bool = True) -> dict[str, float]:
 
     for_each_glyph(add)
     return out
+
 
 def Tg_by_node(
     G: TNFRGraph, n: NodeId, normalize: bool = False
@@ -64,6 +66,7 @@ def Tg_by_node(
     for_each_glyph(add)
     return mean_out
 
+
 def latency_series(G: TNFRGraph) -> dict[str, list[float]]:
     """Return latency samples as ``{"t": [...], "value": [...]}``."""
 
@@ -73,6 +76,7 @@ def latency_series(G: TNFRGraph) -> dict[str, list[float]]:
         "t": [float(x.get("t", i)) for i, x in enumerate(xs)],
         "value": [float(x.get("value", 0.0)) for x in xs],
     }
+
 
 def glyphogram_series(G: TNFRGraph) -> dict[str, list[float]]:
     """Return glyphogram time series keyed by glyph label."""
@@ -91,6 +95,7 @@ def glyphogram_series(G: TNFRGraph) -> dict[str, list[float]]:
     for_each_glyph(add)
     return out
 
+
 def glyph_top(G: TNFRGraph, k: int = 3) -> list[tuple[str, float]]:
     """Top-k structural operators by ``Tg_global`` fraction."""
 
@@ -99,6 +104,7 @@ def glyph_top(G: TNFRGraph, k: int = 3) -> list[tuple[str, float]]:
         raise ValueError("k must be a positive integer")
     tg = Tg_global(G, normalize=True)
     return nlargest(k, tg.items(), key=lambda kv: kv[1])
+
 
 def build_metrics_summary(
     G: TNFRGraph, *, series_limit: int | None = None

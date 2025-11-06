@@ -6,12 +6,14 @@ from tnfr.alias import set_attr
 from tnfr.dynamics import selectors
 from tnfr.glyph_history import ensure_history
 
+
 def _configure_basic_graph(graph_canon) -> tuple:
     G = graph_canon()
     G.graph["GRAMMAR_CANON"] = {"enabled": False}
     G.graph["AL_MAX_LAG"] = 10
     G.graph["EN_MAX_LAG"] = 10
     return G, (selectors.ALIAS_SI, selectors.ALIAS_DNFR, selectors.ALIAS_D2EPI)
+
 
 def _inject_nodes(
     G,
@@ -26,6 +28,7 @@ def _inject_nodes(
         set_attr(nd, dnfr_alias, dnfr)
         set_attr(nd, accel_alias, accel)
 
+
 def test_default_selector_prepare_uses_preselection(graph_canon):
     G, aliases = _configure_basic_graph(graph_canon)
     G.graph["SELECTOR_THRESHOLDS"] = {"si_hi": 0.7, "si_lo": 0.3, "dnfr_hi": 0.5}
@@ -37,6 +40,7 @@ def test_default_selector_prepare_uses_preselection(graph_canon):
 
     assert selector.select(G, 0) == "IL"
     assert selector.select(G, 1) == "OZ"
+
 
 def test_apply_selector_supports_custom_instance(monkeypatch, graph_canon):
     class CustomSelector(selectors.AbstractSelector):
@@ -77,6 +81,7 @@ def test_apply_selector_supports_custom_instance(monkeypatch, graph_canon):
     assert custom.prepared_nodes == [0, 1]
     assert custom.calls == [0, 1]
     assert applied == [(0, "RA"), (1, "RA")]
+
 
 def test_apply_selector_instantiates_selector_class(graph_canon):
     G, aliases = _configure_basic_graph(graph_canon)

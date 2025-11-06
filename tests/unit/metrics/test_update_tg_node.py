@@ -4,6 +4,7 @@ from collections import defaultdict
 from tnfr.glyph_history import push_glyph
 from tnfr.metrics.glyph_timing import GlyphTiming, _update_tg_node
 
+
 def test_update_tg_node_accumulates_and_resets():
     nd = {}
     push_glyph(nd, "A", window=5)
@@ -20,6 +21,7 @@ def test_update_tg_node_accumulates_and_resets():
     st = nd["_Tg"]
     assert isinstance(st, GlyphTiming)
     assert st.curr == "B" and st.run == 2.0
+
 
 def test_update_tg_node_no_float_call(monkeypatch):
     nd = {}

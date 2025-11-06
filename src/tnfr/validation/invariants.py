@@ -117,7 +117,11 @@ class Invariant1_EPIOnlyThroughOperators(TNFRInvariant):
                         epi_value = epi_value[0]
                     if isinstance(epi_value, complex):
                         epi_value = abs(epi_value)
-                    current_epi = float(epi_value) if isinstance(epi_value, (int, float, complex)) else 0.0
+                    current_epi = (
+                        float(epi_value)
+                        if isinstance(epi_value, (int, float, complex))
+                        else 0.0
+                    )
                 else:
                     # Skip validation for complex structures we can't interpret
                     continue
@@ -185,10 +189,14 @@ class Invariant1_EPIOnlyThroughOperators(TNFRInvariant):
                     epi_val = epi_val[0]
                 if isinstance(epi_val, complex):
                     epi_val = abs(epi_val)
-                epi_value = float(epi_val) if isinstance(epi_val, (int, float, complex)) else 0.0
+                epi_value = (
+                    float(epi_val)
+                    if isinstance(epi_val, (int, float, complex))
+                    else 0.0
+                )
             elif isinstance(epi_value, complex):
                 epi_value = abs(epi_value)
-            
+
             self._previous_epi_values[node_id] = epi_value
 
         return violations
@@ -624,9 +632,7 @@ class Invariant9_StructuralMetrics(TNFRInvariant):
         if hasattr(graph, "graph"):
             config = graph.graph
             has_coherence_metric = (
-                "coherence" in config
-                or "C_t" in config
-                or "total_coherence" in config
+                "coherence" in config or "C_t" in config or "total_coherence" in config
             )
 
             if not has_coherence_metric:

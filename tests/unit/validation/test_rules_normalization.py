@@ -13,6 +13,7 @@ from tnfr.validation import GrammarContext, glyph_function_name, rules
 from tnfr.validation.soft_filters import acceleration_norm
 from tnfr.validation.compatibility import CANON_FALLBACK
 
+
 @pytest.fixture
 def seeded_context(graph_canon):
     """Return a grammar context with a single seeded node."""
@@ -76,7 +77,7 @@ def test_glyph_fallback_prefers_custom_and_canon():
 
     assert glyph_function_name(rules.glyph_fallback("OZ", fallbacks)) == EXPANSION
     assert glyph_function_name(rules.glyph_fallback("RA", fallbacks)) == COHERENCE
-    assert glyph_function_name(rules.glyph_fallback("SHA", fallbacks)) == glyph_function_name(
-        CANON_FALLBACK[Glyph.SHA]
-    )
+    assert glyph_function_name(
+        rules.glyph_fallback("SHA", fallbacks)
+    ) == glyph_function_name(CANON_FALLBACK[Glyph.SHA])
     assert rules.glyph_fallback("??", fallbacks) == "??"

@@ -69,10 +69,11 @@ except ImportError:
 
 ensure_node_offset_map = _ensure_node_offset_map
 
+
 # Legacy function wrappers that use TNFRConfig internally
 def inject_defaults(G, defaults=None, override=False):
     """Inject defaults into graph (backward compatible wrapper).
-    
+
     Uses TNFRConfig internally for validation.
     """
     config = TNFRConfig(defaults=defaults or DEFAULTS, validate_invariants=True)
@@ -81,14 +82,14 @@ def inject_defaults(G, defaults=None, override=False):
 
 def merge_overrides(G, **overrides):
     """Apply specific overrides to graph configuration.
-    
+
     Parameters
     ----------
     G : GraphLike
         The graph whose configuration should be updated.
     **overrides
         Keyword arguments mapping parameter names to new values.
-    
+
     Raises
     ------
     KeyError
@@ -98,7 +99,7 @@ def merge_overrides(G, **overrides):
     from ..immutable import _is_immutable
     from ..types import TNFRConfigValue
     from typing import cast
-    
+
     for key, value in overrides.items():
         if key not in DEFAULTS:
             raise KeyError(f"Unknown parameter: '{key}'")
@@ -111,19 +112,19 @@ def merge_overrides(G, **overrides):
 
 def get_param(G, key: str):
     """Retrieve parameter from graph or defaults.
-    
+
     Parameters
     ----------
     G : GraphLike
         Graph containing configuration.
     key : str
         Parameter name.
-    
+
     Returns
     -------
     TNFRConfigValue
         Configuration value.
-    
+
     Raises
     ------
     KeyError
@@ -138,7 +139,7 @@ def get_param(G, key: str):
 
 def get_graph_param(G, key: str, cast_fn=float):
     """Return parameter from graph applying cast function.
-    
+
     Parameters
     ----------
     G : GraphLike
@@ -147,7 +148,7 @@ def get_graph_param(G, key: str, cast_fn=float):
         Parameter name.
     cast_fn : callable, default=float
         Function to cast value (e.g., float, int, bool).
-    
+
     Returns
     -------
     Any

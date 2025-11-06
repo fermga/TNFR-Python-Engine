@@ -40,7 +40,9 @@ class TestValidationIntegration:
         G, node = create_nfr("test_node", epi=0.5, vf=1.0, theta=0.0)
 
         # Valid grammar sequence
-        run_sequence(G, node, [Emission(), Reception(), Coherence(), Resonance(), Recursivity()])
+        run_sequence(
+            G, node, [Emission(), Reception(), Coherence(), Resonance(), Recursivity()]
+        )
 
         # Node should still exist and have valid attributes
         assert node in G.nodes()
@@ -52,7 +54,16 @@ class TestValidationIntegration:
         # Excessive dissonance (3 in a row) triggers error - must follow grammar
         with pytest.raises(ValueError, match="Semantic sequence violations"):
             run_sequence(
-                G, node, [Emission(), Reception(), Coherence(), Dissonance(), Dissonance(), Dissonance()]
+                G,
+                node,
+                [
+                    Emission(),
+                    Reception(),
+                    Coherence(),
+                    Dissonance(),
+                    Dissonance(),
+                    Dissonance(),
+                ],
             )
 
     def test_run_sequence_allows_valid_dissonance(self):
@@ -60,7 +71,18 @@ class TestValidationIntegration:
         G, node = create_nfr("test_node", epi=0.5, vf=1.0, theta=0.0)
 
         # Two dissonances should be fine
-        run_sequence(G, node, [Emission(), Reception(), Coherence(), Dissonance(), Dissonance(), Recursivity()])
+        run_sequence(
+            G,
+            node,
+            [
+                Emission(),
+                Reception(),
+                Coherence(),
+                Dissonance(),
+                Dissonance(),
+                Recursivity(),
+            ],
+        )
 
     def test_validation_can_be_disabled(self):
         """Test that validation can be disabled via config."""
@@ -91,7 +113,16 @@ class TestValidationIntegration:
 
             # Excessive dissonance should not raise error when semantic validation is off
             run_sequence(
-                G, node, [Emission(), Reception(), Coherence(), Dissonance(), Dissonance(), Dissonance()]
+                G,
+                node,
+                [
+                    Emission(),
+                    Reception(),
+                    Coherence(),
+                    Dissonance(),
+                    Dissonance(),
+                    Dissonance(),
+                ],
             )
 
         finally:
@@ -112,7 +143,9 @@ class TestValidationIntegration:
         G, node = create_nfr("test_node", epi=0.5, vf=1.0, theta=0.0)
 
         # Transition after dissonance should be fine
-        run_sequence(G, node, [Emission(), Reception(), Coherence(), Dissonance(), Transition()])
+        run_sequence(
+            G, node, [Emission(), Reception(), Coherence(), Dissonance(), Transition()]
+        )
 
     def test_operator_tracking(self):
         """Test that operator tracking works for invariant 1."""
@@ -158,7 +191,9 @@ class TestValidationIntegration:
 
             # Should also run (no errors in valid graph)
             G2, node2 = create_nfr("test_node2", epi=0.5, vf=1.0, theta=0.0)
-            run_sequence(G2, node2, [Emission(), Reception(), Coherence(), Recursivity()])
+            run_sequence(
+                G2, node2, [Emission(), Reception(), Coherence(), Recursivity()]
+            )
 
         finally:
             # Restore original severity

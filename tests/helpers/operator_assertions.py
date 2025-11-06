@@ -12,6 +12,7 @@ import pytest
 
 np = pytest.importorskip("numpy")
 
+
 def assert_operator_hermitian(
     operator: Any,
     *,
@@ -43,8 +44,10 @@ def assert_operator_hermitian(
     """
     matrix = _extract_matrix(operator)
 
-    assert np.allclose(matrix, matrix.conj().T, atol=atol, rtol=rtol), \
-        "Operator is not Hermitian: O† ≠ O"
+    assert np.allclose(
+        matrix, matrix.conj().T, atol=atol, rtol=rtol
+    ), "Operator is not Hermitian: O† ≠ O"
+
 
 def assert_operator_positive_semidefinite(
     operator: Any,
@@ -76,8 +79,10 @@ def assert_operator_positive_semidefinite(
     eigenvalues = np.linalg.eigvalsh(matrix)
 
     min_eigenvalue = eigenvalues.min()
-    assert min_eigenvalue >= -atol, \
-        f"Operator has negative eigenvalue: λ_min = {min_eigenvalue}"
+    assert (
+        min_eigenvalue >= -atol
+    ), f"Operator has negative eigenvalue: λ_min = {min_eigenvalue}"
+
 
 def assert_eigenvalues_real(
     operator: Any,
@@ -109,8 +114,8 @@ def assert_eigenvalues_real(
     eigenvalues = np.linalg.eigvals(matrix)
 
     max_imag = np.abs(eigenvalues.imag).max()
-    assert max_imag < atol, \
-        f"Eigenvalues not real: max |Im(λ)| = {max_imag}"
+    assert max_imag < atol, f"Eigenvalues not real: max |Im(λ)| = {max_imag}"
+
 
 def assert_operator_finite(operator: Any) -> None:
     """Assert that operator contains only finite values.
@@ -134,8 +139,10 @@ def assert_operator_finite(operator: Any) -> None:
     """
     matrix = _extract_matrix(operator)
 
-    assert np.all(np.isfinite(matrix)), \
-        "Operator contains non-finite values (NaN or Inf)"
+    assert np.all(
+        np.isfinite(matrix)
+    ), "Operator contains non-finite values (NaN or Inf)"
+
 
 def assert_operator_dimension(
     operator: Any,
@@ -162,8 +169,11 @@ def assert_operator_dimension(
     """
     matrix = _extract_matrix(operator)
 
-    assert matrix.shape == (expected_dimension, expected_dimension), \
-        f"Expected {expected_dimension}×{expected_dimension}, got {matrix.shape}"
+    assert matrix.shape == (
+        expected_dimension,
+        expected_dimension,
+    ), f"Expected {expected_dimension}×{expected_dimension}, got {matrix.shape}"
+
 
 def assert_spectral_properties(
     operator: Any,
@@ -199,16 +209,20 @@ def assert_spectral_properties(
     eigenvalues = np.linalg.eigvalsh(matrix)
 
     if num_eigenvalues is not None:
-        assert len(eigenvalues) == num_eigenvalues, \
-            f"Expected {num_eigenvalues} eigenvalues, got {len(eigenvalues)}"
+        assert (
+            len(eigenvalues) == num_eigenvalues
+        ), f"Expected {num_eigenvalues} eigenvalues, got {len(eigenvalues)}"
 
     if min_eigenvalue is not None:
-        assert eigenvalues.min() >= min_eigenvalue, \
-            f"Minimum eigenvalue {eigenvalues.min()} < {min_eigenvalue}"
+        assert (
+            eigenvalues.min() >= min_eigenvalue
+        ), f"Minimum eigenvalue {eigenvalues.min()} < {min_eigenvalue}"
 
     if max_eigenvalue is not None:
-        assert eigenvalues.max() <= max_eigenvalue, \
-            f"Maximum eigenvalue {eigenvalues.max()} > {max_eigenvalue}"
+        assert (
+            eigenvalues.max() <= max_eigenvalue
+        ), f"Maximum eigenvalue {eigenvalues.max()} > {max_eigenvalue}"
+
 
 def assert_operators_close(
     operator1: Any,
@@ -242,11 +256,14 @@ def assert_operators_close(
     matrix1 = _extract_matrix(operator1)
     matrix2 = _extract_matrix(operator2)
 
-    assert matrix1.shape == matrix2.shape, \
-        f"Shape mismatch: {matrix1.shape} vs {matrix2.shape}"
+    assert (
+        matrix1.shape == matrix2.shape
+    ), f"Shape mismatch: {matrix1.shape} vs {matrix2.shape}"
 
-    assert np.allclose(matrix1, matrix2, atol=atol, rtol=rtol), \
-        "Operators are not close"
+    assert np.allclose(
+        matrix1, matrix2, atol=atol, rtol=rtol
+    ), "Operators are not close"
+
 
 def assert_commutator_properties(
     operator1: Any,
@@ -282,18 +299,21 @@ def assert_commutator_properties(
     commutator = matrix1 @ matrix2 - matrix2 @ matrix1
 
     # Commutator should be finite
-    assert np.all(np.isfinite(commutator)), \
-        "Commutator contains non-finite values"
+    assert np.all(np.isfinite(commutator)), "Commutator contains non-finite values"
 
     # Commutator of Hermitian operators is anti-Hermitian: [A,B]† = -[A,B]
     if is_hermitian1 and is_hermitian2:
         # Skip expensive Hermitian check if caller confirms
-        assert np.allclose(commutator.conj().T, -commutator, atol=1e-9), \
-            "Commutator of Hermitian operators should be anti-Hermitian"
-    elif (np.allclose(matrix1, matrix1.conj().T, atol=1e-9) and
-          np.allclose(matrix2, matrix2.conj().T, atol=1e-9)):
-        assert np.allclose(commutator.conj().T, -commutator, atol=1e-9), \
-            "Commutator of Hermitian operators should be anti-Hermitian"
+        assert np.allclose(
+            commutator.conj().T, -commutator, atol=1e-9
+        ), "Commutator of Hermitian operators should be anti-Hermitian"
+    elif np.allclose(matrix1, matrix1.conj().T, atol=1e-9) and np.allclose(
+        matrix2, matrix2.conj().T, atol=1e-9
+    ):
+        assert np.allclose(
+            commutator.conj().T, -commutator, atol=1e-9
+        ), "Commutator of Hermitian operators should be anti-Hermitian"
+
 
 def get_spectral_bandwidth(operator: Any) -> float:
     """Compute spectral bandwidth (max eigenvalue - min eigenvalue).
@@ -318,6 +338,7 @@ def get_spectral_bandwidth(operator: Any) -> float:
     eigenvalues = np.linalg.eigvalsh(matrix)
 
     return float(eigenvalues.max() - eigenvalues.min())
+
 
 def _extract_matrix(operator: Any) -> np.ndarray:
     """Extract matrix from operator object or array.

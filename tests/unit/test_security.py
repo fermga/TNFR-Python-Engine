@@ -47,7 +47,7 @@ class TestValidateGitRef:
         """Test that path traversal patterns are rejected."""
         with pytest.raises(CommandValidationError, match="path traversal"):
             validate_git_ref("../etc/passwd")
-        
+
         with pytest.raises(CommandValidationError, match="path traversal"):
             validate_git_ref("foo/../bar")
 
@@ -55,7 +55,7 @@ class TestValidateGitRef:
         """Test that absolute paths are rejected."""
         with pytest.raises(CommandValidationError, match="path traversal"):
             validate_git_ref("/etc/passwd")
-        
+
         with pytest.raises(CommandValidationError, match="Invalid git reference"):
             validate_git_ref("~/secrets")
 
@@ -63,10 +63,10 @@ class TestValidateGitRef:
         """Test that invalid characters are rejected."""
         with pytest.raises(CommandValidationError, match="Invalid git reference"):
             validate_git_ref("branch; rm -rf /")
-        
+
         with pytest.raises(CommandValidationError, match="Invalid git reference"):
             validate_git_ref("branch$malicious")
-        
+
         with pytest.raises(CommandValidationError, match="Invalid git reference"):
             validate_git_ref("branch`whoami`")
 
@@ -90,10 +90,10 @@ class TestValidateVersionString:
         """Test that invalid version strings are rejected."""
         with pytest.raises(CommandValidationError, match="Invalid version"):
             validate_version_string("1.0")
-        
+
         with pytest.raises(CommandValidationError, match="Invalid version"):
             validate_version_string("not-a-version")
-        
+
         with pytest.raises(CommandValidationError, match="Invalid version"):
             validate_version_string("1.0.0; rm -rf /")
 
@@ -120,7 +120,7 @@ class TestValidatePathSafe:
         """Test that absolute paths are rejected."""
         with pytest.raises(CommandValidationError, match="Absolute paths not allowed"):
             validate_path_safe("/etc/passwd")
-        
+
         with pytest.raises(CommandValidationError, match="Absolute paths not allowed"):
             validate_path_safe("/tmp/exploit")
 
@@ -128,7 +128,7 @@ class TestValidatePathSafe:
         """Test that path traversal is rejected."""
         with pytest.raises(CommandValidationError, match="Path traversal not allowed"):
             validate_path_safe("../etc/passwd")
-        
+
         with pytest.raises(CommandValidationError, match="Path traversal not allowed"):
             validate_path_safe("foo/../../../etc/passwd")
 
@@ -136,7 +136,7 @@ class TestValidatePathSafe:
         """Test that paths with invalid characters are rejected."""
         with pytest.raises(CommandValidationError, match="invalid characters"):
             validate_path_safe("path; rm -rf /")
-        
+
         with pytest.raises(CommandValidationError, match="invalid characters"):
             validate_path_safe("path$var")
 
@@ -153,8 +153,7 @@ class TestRunCommandSafely:
     def test_executes_python_command(self) -> None:
         """Test that Python commands execute successfully."""
         result = run_command_safely(
-            [sys.executable, "-c", "print('hello')"],
-            check=True
+            [sys.executable, "-c", "print('hello')"], check=True
         )
         assert result.returncode == 0
         assert "hello" in result.stdout
@@ -163,7 +162,7 @@ class TestRunCommandSafely:
         """Test that non-allowlisted commands are rejected."""
         with pytest.raises(CommandValidationError, match="not in allowlist"):
             run_command_safely(["curl", "http://example.com"], check=True)
-        
+
         with pytest.raises(CommandValidationError, match="not in allowlist"):
             run_command_safely(["wget", "http://example.com"], check=True)
 
@@ -181,10 +180,7 @@ class TestRunCommandSafely:
         """Test that commands never use shell=True."""
         # This test verifies the function signature and implementation
         # don't allow shell=True by checking that command injection doesn't work
-        result = run_command_safely(
-            ["git", "--version; echo injected"],
-            check=False
-        )
+        result = run_command_safely(["git", "--version; echo injected"], check=False)
         # If shell were True, "injected" would appear in output
         # With shell=False, git treats the entire string as one argument and fails
         assert result.returncode != 0
@@ -196,30 +192,23 @@ class TestRunCommandSafely:
             run_command_safely(
                 [sys.executable, "-c", "import time; time.sleep(10)"],
                 timeout=1,
-                check=False
+                check=False,
             )
 
     def test_check_parameter_raises_on_failure(self) -> None:
         """Test that check=True raises on non-zero exit."""
         with pytest.raises(subprocess.CalledProcessError):
-            run_command_safely(
-                ["git", "invalid-subcommand"],
-                check=True
-            )
+            run_command_safely(["git", "invalid-subcommand"], check=True)
 
     def test_check_false_returns_error_code(self) -> None:
         """Test that check=False returns error code without raising."""
-        result = run_command_safely(
-            ["git", "invalid-subcommand"],
-            check=False
-        )
+        result = run_command_safely(["git", "invalid-subcommand"], check=False)
         assert result.returncode != 0
 
     def test_captures_output(self) -> None:
         """Test that output is captured correctly."""
         result = run_command_safely(
-            [sys.executable, "-c", "print('test output')"],
-            check=True
+            [sys.executable, "-c", "print('test output')"], check=True
         )
         assert "test output" in result.stdout
 
@@ -227,12 +216,8 @@ class TestRunCommandSafely:
         """Test that cwd parameter is respected."""
         test_file = tmp_path / "test.txt"
         test_file.write_text("test content")
-        
-        result = run_command_safely(
-            ["git", "init"],
-            cwd=str(tmp_path),
-            check=True
-        )
+
+        result = run_command_safely(["git", "init"], cwd=str(tmp_path), check=True)
         assert result.returncode == 0
         assert (tmp_path / ".git").exists()
 

@@ -21,11 +21,13 @@ from tnfr.sense import (
 )
 from tnfr.types import Glyph
 
+
 def _make_graph(graph_canon):
     G = graph_canon()
     G.add_node(0, glyph_history=[Glyph.AL.value], Si=1.0, EPI=2.0)
     G.add_node(1, Si=0.3, EPI=1.5)
     return G
+
 
 class FakeArray:
     def __init__(self, values):
@@ -42,6 +44,7 @@ class FakeArray:
     @property
     def imag(self):
         return [z.imag for z in self._values]
+
 
 class FakeNumPy:
     complex128 = "complex128"
@@ -66,6 +69,7 @@ class FakeNumPy:
         self.calls["arctan2"] += 1
         return math.atan2(y, x)
 
+
 def test_sigma_vector_node_paths(graph_canon):
     G = _make_graph(graph_canon)
     sv_si = sigma_vector_node(G, 0)
@@ -75,6 +79,7 @@ def test_sigma_vector_node_paths(graph_canon):
     sv_epi = sigma_vector_node(G, 0, weight_mode="EPI")
     assert sv_epi["w"] == 2.0
     assert sv_epi["mag"] == pytest.approx(2 * sv_si["mag"])
+
 
 def test_sigma_vector_node_zero_si_preserves_phase(graph_canon):
     G = _make_graph(graph_canon)
@@ -87,6 +92,7 @@ def test_sigma_vector_node_zero_si_preserves_phase(graph_canon):
     assert sv["angle"] == pytest.approx(expected_angle)
     assert -math.pi <= sv["angle"] <= math.pi
 
+
 def test_sigma_vector_node_default_weight_for_unknown_mode(graph_canon):
     G = _make_graph(graph_canon)
 
@@ -96,6 +102,7 @@ def test_sigma_vector_node_default_weight_for_unknown_mode(graph_canon):
     assert sv["mag"] == pytest.approx(1.0)
     assert -math.pi <= sv["angle"] <= math.pi
 
+
 def test_sigma_vector_from_graph_paths(graph_canon):
     G = _make_graph(graph_canon)
     sv_si = sigma_vector_from_graph(G)
@@ -103,6 +110,7 @@ def test_sigma_vector_from_graph_paths(graph_canon):
     assert sv_si["n"] == 1
     assert sv_epi["n"] == 1
     assert sv_epi["mag"] == pytest.approx(2 * sv_si["mag"])
+
 
 def test_sigma_vector_from_graph_rejects_non_graph(graph_canon):
     with pytest.raises(TypeError, match="requires a networkx.Graph"):
@@ -112,6 +120,7 @@ def test_sigma_vector_from_graph_rejects_non_graph(graph_canon):
     G = _make_graph(graph_canon)
     vec = sigma_vector_from_graph(G)
     assert vec["n"] == 1
+
 
 def _sigma_vector_from_graph_naive(G, weight_mode: str = "Si"):
     """Reference implementation recomputing ``glyph_unit(g) * w`` at each step."""
@@ -125,6 +134,7 @@ def _sigma_vector_from_graph_naive(G, weight_mode: str = "Si"):
     vectors = (glyph_unit(g) * float(w) for g, w in pairs)
     vec = _sigma_from_iterable(vectors)
     return vec
+
 
 def test_sigma_vector_from_graph_matches_naive(graph_canon):
     """The optimized version matches the naive computation and is not slower."""
@@ -147,19 +157,23 @@ def test_sigma_vector_from_graph_matches_naive(graph_canon):
         assert vec_opt[key] == pytest.approx(vec_ref[key])
     assert t_opt <= t_ref * 2
 
+
 def test_sigma_from_iterable_rejects_str():
     with pytest.raises(TypeError, match="real or complex"):
         _sigma_from_iterable("abc")
 
+
 def test_sigma_from_iterable_rejects_bytes():
     with pytest.raises(TypeError, match="real or complex"):
         _sigma_from_iterable(b"\x01\x02")
+
 
 def test_sigma_from_iterable_accepts_reals():
     vec = _sigma_from_iterable([1.0, 3.0])
     assert vec["n"] == 2
     assert vec["x"] == pytest.approx(2.0)
     assert vec["y"] == pytest.approx(0.0)
+
 
 def test_sigma_from_iterable_vectorized_complex(monkeypatch):
     fake_np = FakeNumPy()
@@ -183,6 +197,7 @@ def test_sigma_from_iterable_vectorized_complex(monkeypatch):
     assert fake_np.calls["hypot"] == 1
     assert fake_np.calls["arctan2"] == 1
 
+
 def test_sigma_from_iterable_vectorized_empty(monkeypatch):
     fake_np = FakeNumPy()
     monkeypatch.setattr("tnfr.sense.get_numpy", lambda: fake_np)
@@ -196,6 +211,7 @@ def test_sigma_from_iterable_vectorized_empty(monkeypatch):
     assert fake_np.calls["mean"] == 0
     assert fake_np.calls["hypot"] == 0
     assert fake_np.calls["arctan2"] == 0
+
 
 def test_sigma_from_iterable_large_generator_efficient():
     N = 100_000
@@ -217,11 +233,13 @@ def test_sigma_from_iterable_large_generator_efficient():
     assert counter == N
     assert elapsed < 2.0
 
+
 def test_unknown_glyph_raises():
     with pytest.raises(KeyError):
         glyph_angle("ZZ")
     with pytest.raises(KeyError):
         glyph_unit("ZZ")
+
 
 def test_sigma_rose_valid_and_invalid_steps(graph_canon):
     G = graph_canon()
@@ -238,6 +256,7 @@ def test_sigma_rose_valid_and_invalid_steps(graph_canon):
     with pytest.raises(ValueError):
         sigma_rose(G, steps=-1)
 
+
 def test_push_sigma_snapshot_disabled_skips_history(graph_canon):
     G = _make_graph(graph_canon)
     G.graph["SIGMA"] = dict(G.graph["SIGMA"], enabled=False)
@@ -250,6 +269,7 @@ def test_push_sigma_snapshot_disabled_skips_history(graph_canon):
     assert G.graph["history"] is hist
     assert list(hist) == ["untouched"]
     assert hist["untouched"] is sentinel_list
+
 
 def test_push_sigma_snapshot_applies_smoothing(graph_canon):
     G = _make_graph(graph_canon)
@@ -290,6 +310,7 @@ def test_push_sigma_snapshot_applies_smoothing(graph_canon):
     assert len(counts) == original_counts_len + 1
     assert counts[-1]["t"] == pytest.approx(current_time)
 
+
 def test_push_sigma_snapshot_records_per_node_traces(graph_canon):
     G = graph_canon()
     G.graph["SIGMA"] = dict(G.graph["SIGMA"], enabled=True, per_node=True)
@@ -321,6 +342,7 @@ def test_push_sigma_snapshot_records_per_node_traces(graph_canon):
     assert counts_entry["t"] == pytest.approx(7.0)
     assert counts_entry[Glyph.EN.value] == 1
     assert counts_entry[Glyph.IL.value] == 1
+
 
 def test_register_sigma_callback_attaches_after_step(graph_canon):
     G = graph_canon()

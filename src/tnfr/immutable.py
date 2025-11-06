@@ -44,6 +44,7 @@ FrozenSnapshot: TypeAlias = (
 )
 """Union describing the immutable snapshot returned by :func:`_freeze`."""
 
+
 @contextmanager
 def _cycle_guard(value: Any, seen: set[int] | None = None) -> Iterator[set[int]]:
     """Context manager that detects reference cycles during freezing."""
@@ -58,6 +59,7 @@ def _cycle_guard(value: Any, seen: set[int] | None = None) -> Iterator[set[int]]
     finally:
         seen.remove(obj_id)
 
+
 def _check_cycle(
     func: Callable[[Any, set[int] | None], FrozenSnapshot],
 ) -> Callable[[Any, set[int] | None], FrozenSnapshot]:
@@ -70,12 +72,14 @@ def _check_cycle(
 
     return wrapper
 
+
 def _freeze_dataclass(value: Any, seen: set[int]) -> FrozenTaggedMapping:
     params = getattr(type(value), "__dataclass_params__", None)
     frozen = bool(params and params.frozen)
     data = asdict(value)
     tag = "mapping" if frozen else "dict"
     return (tag, tuple((k, _freeze(v, seen)) for k, v in data.items()))
+
 
 @singledispatch
 @_check_cycle
@@ -88,6 +92,7 @@ def _freeze(value: Any, seen: set[int] | None = None) -> FrozenSnapshot:
         return value
     raise TypeError
 
+
 @_freeze.register(tuple)
 @_check_cycle
 def _freeze_tuple(
@@ -96,10 +101,12 @@ def _freeze_tuple(
     assert seen is not None
     return tuple(_freeze(v, seen) for v in value)
 
+
 def _freeze_iterable(
     container: Iterable[Any], tag: str, seen: set[int]
 ) -> FrozenTaggedCollection:
     return (tag, tuple(_freeze(v, seen) for v in container))
+
 
 def _freeze_iterable_with_tag(
     value: Iterable[Any], seen: set[int] | None = None, *, tag: str
@@ -107,11 +114,13 @@ def _freeze_iterable_with_tag(
     assert seen is not None
     return _freeze_iterable(value, tag, seen)
 
+
 def _register_iterable(cls: type, tag: str) -> None:
     handler = _check_cycle(partial(_freeze_iterable_with_tag, tag=tag))
     _freeze.register(cls)(
         cast(Callable[[Any, set[int] | None], FrozenSnapshot], handler)
     )
+
 
 for _cls, _tag in (
     (list, "list"),
@@ -120,6 +129,7 @@ for _cls, _tag in (
     (bytearray, "bytearray"),
 ):
     _register_iterable(_cls, _tag)
+
 
 @_freeze.register(Mapping)
 @_check_cycle
@@ -130,8 +140,10 @@ def _freeze_mapping(
     tag = "dict" if hasattr(value, "__setitem__") else "mapping"
     return (tag, tuple((k, _freeze(v, seen)) for k, v in value.items()))
 
+
 def _all_immutable(iterable: Iterable[Any]) -> bool:
     return all(_is_immutable_inner(v) for v in iterable)
+
 
 # Dispatch table kept immutable to avoid accidental mutation.
 ImmutableTagHandler: TypeAlias = Callable[[tuple[Any, ...]], bool]
@@ -147,12 +159,14 @@ _IMMUTABLE_TAG_DISPATCH: Mapping[str, ImmutableTagHandler] = MappingProxyType(
     }
 )
 
+
 @lru_cache(maxsize=1024)
 @singledispatch
 def _is_immutable_inner(value: Any) -> bool:
     """Return ``True`` when ``value`` belongs to the canonical immutable set."""
 
     return type(value) in IMMUTABLE_SIMPLE
+
 
 @_is_immutable_inner.register(tuple)
 def _is_immutable_inner_tuple(value: tuple[Any, ...]) -> bool:  # noqa: F401
@@ -162,12 +176,15 @@ def _is_immutable_inner_tuple(value: tuple[Any, ...]) -> bool:  # noqa: F401
             return handler(value)
     return _all_immutable(value)
 
+
 @_is_immutable_inner.register(frozenset)
 def _is_immutable_inner_frozenset(value: frozenset[Any]) -> bool:  # noqa: F401
     return _all_immutable(value)
 
+
 _IMMUTABLE_CACHE: weakref.WeakKeyDictionary[Any, bool] = weakref.WeakKeyDictionary()
 _IMMUTABLE_CACHE_LOCK = threading.Lock()
+
 
 def _is_immutable(value: Any) -> bool:
     """Check recursively if ``value`` is immutable with caching."""
@@ -191,6 +208,7 @@ def _is_immutable(value: Any) -> bool:
             pass  # Value is unhashable, cannot cache
 
     return result
+
 
 __all__ = (
     "_freeze",

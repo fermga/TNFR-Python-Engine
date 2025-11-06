@@ -19,13 +19,13 @@ from cachetools import LRUCache
 
 from ..types import GraphLike, NodeId, TimingContext, TNFRGraph
 
-
 K = TypeVar("K", bound=Hashable)
 V = TypeVar("V")
 T = TypeVar("T")
 
 class SecurityError(RuntimeError):
     """Raised when a cache payload fails hardened validation."""
+
     ...
 
 @dataclass(frozen=True)
@@ -84,7 +84,7 @@ class CacheManager:
         name: str,
         factory: Callable[[], Any],
         *,
-        lock_factory: Callable[[], threading.Lock | threading.RLock] | None = ..., 
+        lock_factory: Callable[[], threading.Lock | threading.RLock] | None = ...,
         reset: Callable[[Any], Any] | None = ...,
         create: bool = ...,
         encoder: Callable[[Any], Any] | None = ...,
@@ -255,7 +255,6 @@ __all__ = (
     "ScopedCounterCache",
 )
 
-
 NODE_SET_CHECKSUM_KEY: str
 _GRAPH_CACHE_LAYERS_KEY: str
 DNFR_PREP_STATE_KEY: str
@@ -316,22 +315,18 @@ class DnfrCache:
     neighbor_accum_signature: Any | None
     neighbor_edge_values_np: Any | None
 
-
 class EdgeCacheState:
     cache: MutableMapping[Hashable, Any]
     locks: defaultdict[Hashable, threading.RLock]
     max_entries: int | None
     dirty: bool
 
-
 def new_dnfr_cache() -> DnfrCache: ...
-
 
 class DnfrPrepState:
     cache: DnfrCache
     cache_lock: threading.RLock
     vector_lock: threading.RLock
-
 
 class EdgeCacheManager:
     _STATE_KEY: str
@@ -410,17 +405,14 @@ def cached_nodes_and_A(
 ) -> tuple[tuple[Any, ...], Any]: ...
 def edge_version_update(G: TNFRGraph) -> ContextManager[None]: ...
 
-
 class _SeedCacheState:
     cache: InstrumentedLRUCache[tuple[int, int], int] | None
     maxsize: int
-
 
 class _CounterState(Generic[K]):
     cache: InstrumentedLRUCache[K, int]
     locks: dict[K, threading.RLock]
     max_entries: int
-
 
 class _SeedHashCache(MutableMapping[tuple[int, int], int]):
     _state_key: str
@@ -446,7 +438,6 @@ class _SeedHashCache(MutableMapping[tuple[int, int], int]):
     @property
     def data(self) -> InstrumentedLRUCache[tuple[int, int], int] | None: ...
 
-
 class ScopedCounterCache(Generic[K]):
     _state_key: str
 
@@ -455,10 +446,12 @@ class ScopedCounterCache(Generic[K]):
         name: str,
         max_entries: int | None = ...,
         *,
-        manager: CacheManager | None = ..., 
+        manager: CacheManager | None = ...,
         default_max_entries: int = ...,
     ) -> None: ...
-    def configure(self, *, force: bool = ..., max_entries: int | None = ...) -> None: ...
+    def configure(
+        self, *, force: bool = ..., max_entries: int | None = ...
+    ) -> None: ...
     def clear(self) -> None: ...
     def bump(self, key: K) -> int: ...
     def __len__(self) -> int: ...
@@ -473,4 +466,5 @@ class ScopedCounterCache(Generic[K]):
 
 # Internal symbols used by utils.__init__.py
 _GRAPH_CACHE_MANAGER_KEY: str
+
 def _graph_cache_manager(graph: MutableMapping[str, Any]) -> CacheManager: ...

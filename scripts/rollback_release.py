@@ -24,7 +24,12 @@ _REPO_ROOT = _SCRIPT_DIR.parent
 if str(_REPO_ROOT / "src") not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT / "src"))
 
-from tnfr.security import run_command_safely, validate_git_ref, validate_version_string, CommandValidationError
+from tnfr.security import (
+    run_command_safely,
+    validate_git_ref,
+    validate_version_string,
+    CommandValidationError,
+)
 
 
 _LOG_FORMAT = "%(levelname)s: %(message)s"
@@ -77,7 +82,9 @@ def _previous_tag(current_tag: str) -> Optional[str]:
     try:
         index = tags.index(current_tag)
     except ValueError as exc:  # pragma: no cover - defensive
-        raise RollbackError(f"Tag {current_tag} is not present in this repository") from exc
+        raise RollbackError(
+            f"Tag {current_tag} is not present in this repository"
+        ) from exc
     if index + 1 < len(tags):
         return tags[index + 1]
     return None
@@ -120,7 +127,9 @@ def _yank_from_pypi(
 
 def _delete_tags(*, version_tag: str, dry_run: bool) -> None:
     _run_command(["git", "tag", "-d", version_tag], dry_run=dry_run)
-    _run_command(["git", "push", "origin", f":refs/tags/{version_tag}"], dry_run=dry_run)
+    _run_command(
+        ["git", "push", "origin", f":refs/tags/{version_tag}"], dry_run=dry_run
+    )
 
 
 def _delete_github_release(*, version_tag: str, dry_run: bool) -> None:
@@ -154,7 +163,9 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="Rollback a TNFR release by yanking PyPI artefacts and cleaning up tags.",
     )
-    parser.add_argument("--version", required=True, help="Semantic version to revoke (e.g. 16.0.0)")
+    parser.add_argument(
+        "--version", required=True, help="Semantic version to revoke (e.g. 16.0.0)"
+    )
     parser.add_argument(
         "--package-name",
         default="tnfr",
@@ -180,7 +191,11 @@ def build_parser() -> argparse.ArgumentParser:
         default="Rollback triggered to preserve TNFR coherence",
         help="Comment recorded with the yank operation.",
     )
-    parser.add_argument("--dry-run", action="store_true", help="Print the plan without executing commands.")
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Print the plan without executing commands.",
+    )
     parser.add_argument(
         "--confirm",
         action="store_true",
@@ -224,14 +239,14 @@ def main(argv: Optional[list[str]] = None) -> int:
         return 1
 
     tag = f"v{version}"
-    
+
     # Validate tag as a git ref
     try:
         validate_git_ref(tag)
     except CommandValidationError as exc:
         logging.error("Invalid tag format: %s", exc)
         return 1
-    
+
     logging.info("Preparing rollback for %s", tag)
 
     if not args.confirm and not args.dry_run:
@@ -240,7 +255,9 @@ def main(argv: Optional[list[str]] = None) -> int:
             return 0
 
     if not args.skip_yank:
-        logging.info("Yanking %s %s from %s", args.package_name, version, args.pypi_repository)
+        logging.info(
+            "Yanking %s %s from %s", args.package_name, version, args.pypi_repository
+        )
         _yank_from_pypi(
             package=args.package_name,
             version=version,

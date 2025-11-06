@@ -39,15 +39,17 @@ class PathTraversalError(ValueError):
 
 
 # Allowlisted commands that are safe to execute
-ALLOWED_COMMANDS = frozenset({
-    "git",
-    "python",
-    "python3",
-    "stubgen",
-    "gh",
-    "pip",
-    "twine",
-})
+ALLOWED_COMMANDS = frozenset(
+    {
+        "git",
+        "python",
+        "python3",
+        "stubgen",
+        "gh",
+        "pip",
+        "twine",
+    }
+)
 
 # Pattern for valid git refs (branches, tags, commit SHAs)
 GIT_REF_PATTERN = re.compile(r"^[a-zA-Z0-9/_\-\.]+$")
@@ -186,15 +188,11 @@ def validate_path_safe(path: str | Path) -> Path:
 
     # Check for path traversal
     if ".." in path_obj.parts:
-        raise CommandValidationError(
-            f"Path traversal not allowed: {path_str!r}"
-        )
+        raise CommandValidationError(f"Path traversal not allowed: {path_str!r}")
 
     # Check for special characters that could be exploited
     if not SAFE_PATH_PATTERN.match(path_str):
-        raise CommandValidationError(
-            f"Path contains invalid characters: {path_str!r}"
-        )
+        raise CommandValidationError(f"Path contains invalid characters: {path_str!r}")
 
     return path_obj
 
@@ -246,10 +244,10 @@ def validate_file_path(
     --------
     >>> validate_file_path("config.json", allowed_extensions=['.json', '.yaml'])
     PosixPath('config.json')
-    
+
     >>> validate_file_path("data/export.csv")
     PosixPath('data/export.csv')
-    
+
     >>> validate_file_path("../../../etc/passwd")  # doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
     ...
@@ -262,18 +260,18 @@ def validate_file_path(
     path_obj = Path(path)
     path_str = str(path)
     path_parts = Path(path).parts
-    
+
     # Check for null bytes (common in exploit attempts) - do this before resolve()
     if "\x00" in path_str:
         raise ValueError(f"Null byte detected in path: {path!r}")
-    
+
     # Check for path traversal attempts in the original path first
     if ".." in path_parts:
         raise PathTraversalError(
             f"Path traversal detected in {path!r}. "
             "Relative parent directory references (..) are not allowed."
         )
-    
+
     # Normalize the path to resolve any . or .. components
     try:
         # Use resolve() with strict=False to normalize without checking existence
@@ -304,7 +302,7 @@ def validate_file_path(
         ("\n", "Newline character"),
         ("\r", "Carriage return"),
     ]
-    
+
     for pattern, desc in dangerous_patterns:
         if pattern in path_str:
             raise ValueError(f"{desc} not allowed in path: {path!r}")
@@ -368,7 +366,7 @@ def resolve_safe_path(
     >>> base = Path("/home/user/tnfr")
     >>> resolve_safe_path("config/settings.json", base)  # doctest: +SKIP
     PosixPath('/home/user/tnfr/config/settings.json')
-    
+
     >>> resolve_safe_path("../../../etc/passwd", base)  # doctest: +SKIP +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
     ...
@@ -388,7 +386,7 @@ def resolve_safe_path(
 
     # Resolve base directory to absolute path
     base_path = Path(base_dir).resolve()
-    
+
     # Resolve the target path
     # If path is relative, resolve it relative to base_dir
     if not path_obj.is_absolute():

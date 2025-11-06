@@ -4,8 +4,10 @@ import warnings
 import tnfr.utils.init as utils_init
 from tnfr.utils.init import IMPORT_LOG, _warn_failure
 
+
 def _clear_warned():
     IMPORT_LOG.clear()
+
 
 def test_warn_failure_warns_only(caplog):
     _clear_warned()
@@ -15,6 +17,7 @@ def test_warn_failure_warns_only(caplog):
             _warn_failure("mod_warn", None, ImportError("boom"))
         assert len(w) == 1
         assert not caplog.records
+
 
 def test_warn_failure_logs_only(caplog):
     _clear_warned()
@@ -26,6 +29,7 @@ def test_warn_failure_logs_only(caplog):
         assert len(caplog.records) == 1
         assert "mod_log" in caplog.records[0].message
 
+
 def test_warn_failure_both(caplog):
     _clear_warned()
     with caplog.at_level(logging.WARNING):
@@ -35,6 +39,7 @@ def test_warn_failure_both(caplog):
         assert len(w) == 1
         assert len(caplog.records) == 1
         assert "mod_both" in caplog.records[0].message
+
 
 def test_warn_failure_uses_emit_map():
     called: list[str] = []

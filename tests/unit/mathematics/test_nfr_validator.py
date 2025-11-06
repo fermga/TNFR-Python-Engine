@@ -12,6 +12,7 @@ from tnfr.mathematics.runtime import (
 from tnfr.validation import ValidationOutcome
 from tnfr.validation.spectral import NFRValidator
 
+
 def _make_simple_validator(coherence_threshold: float = 0.25) -> NFRValidator:
     hilbert = HilbertSpace(dimension=2)
     coherence = CoherenceOperator([[0.5, 0.0], [0.0, 1.0]])
@@ -22,6 +23,7 @@ def _make_simple_validator(coherence_threshold: float = 0.25) -> NFRValidator:
         coherence_threshold=coherence_threshold,
         frequency_operator=frequency,
     )
+
 
 def test_validator_successful_state_passes_all_checks() -> None:
     validator = _make_simple_validator(coherence_threshold=0.25)
@@ -38,6 +40,7 @@ def test_validator_successful_state_passes_all_checks() -> None:
     assert validator.report(outcome) == "All validation checks passed."
     assert validator.validate_state(state) == (True, summary)
 
+
 def test_validator_detects_normalization_failure() -> None:
     validator = _make_simple_validator()
     state = np.array([2.0, 0.0], dtype=np.complex128)
@@ -49,6 +52,7 @@ def test_validator_detects_normalization_failure() -> None:
     assert "normalization" in validator.report(outcome)
     assert validator.validate_state(state) == (False, summary)
 
+
 def test_validator_detects_coherence_threshold_breach() -> None:
     validator = _make_simple_validator(coherence_threshold=0.9)
     state = np.array([1.0, 0.0], dtype=np.complex128)
@@ -59,6 +63,7 @@ def test_validator_detects_coherence_threshold_breach() -> None:
     assert summary["coherence"]["passed"] is False
     assert "coherence threshold" in validator.report(outcome)
     assert validator.validate_state(state) == (False, summary)
+
 
 def test_validator_frequency_positivity_optional() -> None:
     hilbert = HilbertSpace(dimension=2)
@@ -78,6 +83,7 @@ def test_validator_frequency_positivity_optional() -> None:
         outcome.summary,
     )
 
+
 def test_validator_frequency_negativity_flagged() -> None:
     validator = _make_simple_validator()
     negative_frequency = FrequencyOperator([-0.4, 0.1])
@@ -90,6 +96,7 @@ def test_validator_frequency_negativity_flagged() -> None:
     assert summary["frequency"]["passed"] is False
     assert "frequency positivity" in validator.report(outcome)
     assert validator.validate_state(state) == (False, summary)
+
 
 def test_validator_summary_matches_runtime_helpers() -> None:
     validator = _make_simple_validator()

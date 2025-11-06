@@ -34,7 +34,12 @@ class SequenceSemanticValidator:
             },
             "invalid_transition_sequence": {
                 "pattern": ["transition"],
-                "not_preceded_by": ["dissonance", "mutation", "resonance", "transition"],
+                "not_preceded_by": [
+                    "dissonance",
+                    "mutation",
+                    "resonance",
+                    "transition",
+                ],
                 "severity": InvariantSeverity.ERROR,
                 "message": "Transition requires structural perturbation (dissonance, mutation) or coherent propagation (resonance)",
             },
@@ -134,7 +139,9 @@ class SequenceSemanticValidator:
                             invariant_id=0,
                             severity=rule["severity"],
                             description=f"Semantic rule violation: {rule['message']}",
-                            suggestion=rule.get("suggestion", "Review operator sequence"),
+                            suggestion=rule.get(
+                                "suggestion", "Review operator sequence"
+                            ),
                         )
                     )
                     continue

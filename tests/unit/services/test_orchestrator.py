@@ -16,7 +16,7 @@ CANONICAL_SEQUENCE = [
     "coupling",
     "dissonance",
     "resonance",
-    "silence"
+    "silence",
 ]
 
 
@@ -59,13 +59,28 @@ def test_orchestrator_execute_sequence_with_operators():
 
     # Import operator classes
     from tnfr.operators.definitions import (
-        Emission, Reception, Coherence, Coupling, Dissonance, Resonance, Silence
+        Emission,
+        Reception,
+        Coherence,
+        Coupling,
+        Dissonance,
+        Resonance,
+        Silence,
     )
 
     # Execute with operator instances (canonical sequence)
     orchestrator.execute_sequence(
-        G, node, 
-        [Emission(), Reception(), Coherence(), Coupling(), Dissonance(), Resonance(), Silence()]
+        G,
+        node,
+        [
+            Emission(),
+            Reception(),
+            Coherence(),
+            Coupling(),
+            Dissonance(),
+            Resonance(),
+            Silence(),
+        ],
     )
 
     # Should have executed successfully
@@ -151,59 +166,62 @@ def test_orchestrator_empty_sequence():
 
 def test_orchestrator_separation_of_concerns():
     """Verify orchestrator maintains separation of concerns."""
-    
+
     # Mock services to track calls
     class MockValidator:
         def __init__(self):
             self.validated = []
-        
+
         def validate_sequence(self, seq):
             self.validated.append(seq)
-        
+
         def validate_graph_state(self, graph):
             pass
-    
+
     class MockRegistry:
         def get_operator(self, token):
             from tnfr.operators.definitions import Emission
+
             return Emission  # Return class, not instance
-        
+
         def register_operator(self, op):
             pass
-    
+
     class MockDynamics:
         def __init__(self):
             self.dnfr_updated = 0
-        
+
         def update_delta_nfr(self, graph):
             self.dnfr_updated += 1
-        
+
         def integrate_nodal_equation(self, graph):
             pass
-        
+
         def coordinate_phase_coupling(self, graph):
             pass
-    
+
     class MockTelemetry:
         def trace_context(self, graph):
             from contextlib import contextmanager
+
             @contextmanager
             def ctx():
                 yield self
+
             return ctx()
-        
+
         def capture_state(self, graph):
             return {}
-        
+
         def record_transition(self, token, pre, post):
             pass
-        
+
         def compute_coherence(self, graph):
             return 1.0
-        
+
         def compute_sense_index(self, graph):
             return {"Si": 0.5}
-    
+
     # Create orchestrator with mocks
     validator = MockValidator()
     dynamics = MockDynamics()
@@ -213,12 +231,12 @@ def test_orchestrator_separation_of_concerns():
         dynamics=dynamics,
         telemetry=MockTelemetry(),
     )
-    
+
     G, node = create_nfr("test", epi=1.0, vf=1.0)
-    
+
     # Execute sequence
     orchestrator.execute_sequence(G, node, ["emission"])
-    
+
     # Verify each service was called
     assert len(validator.validated) == 1
     assert validator.validated[0] == ["emission"]

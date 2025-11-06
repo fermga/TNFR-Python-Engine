@@ -18,15 +18,18 @@ _ORJSON_PARAMS_MSG = "'ensure_ascii', 'separators', 'cls' and extra kwargs are i
 
 _warn_ignored_params_once = warn_once(logger, _ORJSON_PARAMS_MSG)
 
+
 def clear_orjson_param_warnings() -> None:
     """Reset cached warnings for ignored :mod:`orjson` parameters."""
 
     _warn_ignored_params_once.clear()
 
+
 def _format_ignored_params(combo: frozenset[str]) -> str:
     """Return a stable representation for ignored parameter combinations."""
 
     return "{" + ", ".join(map(repr, sorted(combo))) + "}"
+
 
 @dataclass(frozen=True)
 class JsonDumpsParams:
@@ -39,7 +42,9 @@ class JsonDumpsParams:
     cls: type[json.JSONEncoder] | None = None
     to_bytes: bool = False
 
+
 DEFAULT_PARAMS = JsonDumpsParams()
+
 
 def _collect_ignored_params(
     params: JsonDumpsParams, extra_kwargs: dict[str, Any]
@@ -57,6 +62,7 @@ def _collect_ignored_params(
         ignored.update(extra_kwargs.keys())
     return frozenset(ignored)
 
+
 def _json_dumps_orjson(
     orjson: Any,
     obj: Any,
@@ -72,6 +78,7 @@ def _json_dumps_orjson(
     option = orjson.OPT_SORT_KEYS if params.sort_keys else 0
     data = orjson.dumps(obj, option=option, default=params.default)
     return data if params.to_bytes else data.decode("utf-8")
+
 
 def _json_dumps_std(
     obj: Any,
@@ -90,6 +97,7 @@ def _json_dumps_std(
         **kwargs,
     )
     return result if not params.to_bytes else result.encode("utf-8")
+
 
 def json_dumps(
     obj: Any,
@@ -143,8 +151,10 @@ def json_dumps(
         return _json_dumps_orjson(orjson, obj, params, **kwargs)
     return _json_dumps_std(obj, params, **kwargs)
 
+
 def _raise_import_error(name: str, *_: Any, **__: Any) -> Any:
     raise ImportError(f"{name} is not installed")
+
 
 _MISSING_TOML_ERROR = type(
     "MissingTOMLDependencyError",
@@ -158,10 +168,12 @@ _MISSING_YAML_ERROR = type(
     {"__doc__": "Fallback error used when pyyaml is missing."},
 )
 
+
 def _resolve_lazy(value: Any) -> Any:
     if isinstance(value, LazyImportProxy):
         return value.resolve()
     return value
+
 
 class _LazyBool:
     __slots__ = ("_value",)
@@ -171,6 +183,7 @@ class _LazyBool:
 
     def __bool__(self) -> bool:
         return _resolve_lazy(self._value) is not None
+
 
 _TOMLI_MODULE = cached_import("tomli", emit="log", lazy=True)
 tomllib = cached_import(
@@ -229,15 +242,18 @@ _YAML_SAFE_LOAD: Callable[[str], Any] = cached_import(
     fallback=partial(_raise_import_error, "pyyaml"),
 )
 
+
 def _parse_yaml(text: str) -> Any:
     """Parse YAML ``text`` using ``safe_load`` if available."""
 
     return _YAML_SAFE_LOAD(text)
 
+
 def _parse_toml(text: str) -> Any:
     """Parse TOML ``text`` using ``tomllib`` or ``tomli``."""
 
     return _TOML_LOADS(text)
+
 
 PARSERS = {
     ".json": json.loads,
@@ -246,11 +262,13 @@ PARSERS = {
     ".toml": _parse_toml,
 }
 
+
 def _get_parser(suffix: str) -> Callable[[str], Any]:
     try:
         return PARSERS[suffix]
     except KeyError as exc:
         raise ValueError(f"Unsupported suffix: {suffix}") from exc
+
 
 _BASE_ERROR_MESSAGES: dict[type[BaseException], str] = {
     OSError: "Could not read {path}: {e}",
@@ -259,11 +277,13 @@ _BASE_ERROR_MESSAGES: dict[type[BaseException], str] = {
     ImportError: "Missing dependency parsing {path}: {e}",
 }
 
+
 def _resolve_exception_type(candidate: Any) -> type[BaseException] | None:
     resolved = _resolve_lazy(candidate)
     if isinstance(resolved, type) and issubclass(resolved, BaseException):
         return resolved
     return None
+
 
 _OPTIONAL_ERROR_MESSAGE_FACTORIES: tuple[
     tuple[Callable[[], type[BaseException] | None], str],
@@ -286,6 +306,7 @@ _BASE_STRUCTURED_EXCEPTIONS = (
     ImportError,
 )
 
+
 def _iter_optional_exceptions() -> list[type[BaseException]]:
     errors: list[type[BaseException]] = []
     for resolver, _ in _OPTIONAL_ERROR_MESSAGE_FACTORIES:
@@ -294,6 +315,7 @@ def _iter_optional_exceptions() -> list[type[BaseException]]:
             errors.append(exc_type)
     return errors
 
+
 def _is_structured_error(exc: Exception) -> bool:
     if isinstance(exc, _BASE_STRUCTURED_EXCEPTIONS):
         return True
@@ -301,6 +323,7 @@ def _is_structured_error(exc: Exception) -> bool:
         if isinstance(exc, optional_exc):
             return True
     return False
+
 
 def _format_structured_file_error(path: Path, e: Exception) -> str:
     for exc, msg in _BASE_ERROR_MESSAGES.items():
@@ -314,12 +337,14 @@ def _format_structured_file_error(path: Path, e: Exception) -> str:
 
     return f"Error parsing {path}: {e}"
 
+
 class StructuredFileError(Exception):
     """Error while reading or parsing a structured file."""
 
     def __init__(self, path: Path, original: Exception) -> None:
         super().__init__(_format_structured_file_error(path, original))
         self.path = path
+
 
 def read_structured_file(
     path: Path | str,
@@ -362,7 +387,7 @@ def read_structured_file(
     >>> from pathlib import Path
     >>> # Read config file with path validation
     >>> data = read_structured_file("config.json")  # doctest: +SKIP
-    
+
     >>> # Read with base directory restriction
     >>> data = read_structured_file(
     ...     "settings.yaml",
@@ -390,7 +415,7 @@ def read_structured_file(
                 allow_absolute=True,
                 allowed_extensions=allowed_extensions,
             ).resolve()
-            
+
             # Check existence
             if not validated_path.exists():
                 raise FileNotFoundError(f"File not found: {validated_path}")
@@ -411,6 +436,7 @@ def read_structured_file(
         if _is_structured_error(e):
             raise StructuredFileError(validated_path, e) from e
         raise
+
 
 def safe_write(
     path: str | Path,
@@ -518,6 +544,7 @@ def safe_write(
     finally:
         if tmp_path is not None:
             tmp_path.unlink(missing_ok=True)
+
 
 __all__ = (
     "JsonDumpsParams",

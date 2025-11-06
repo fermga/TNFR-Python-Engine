@@ -33,6 +33,7 @@ _seed_hash_cache = _SeedHashCache(
     default_maxsize=_DEFAULT_CACHE_MAXSIZE,
 )
 
+
 def _compute_seed_hash(seed_int: int, key_int: int) -> int:
     seed_bytes = struct.pack(
         ">QQ",
@@ -41,9 +42,11 @@ def _compute_seed_hash(seed_int: int, key_int: int) -> int:
     )
     return int.from_bytes(hashlib.blake2b(seed_bytes, digest_size=8).digest(), "big")
 
+
 @cached(cache=_seed_hash_cache, lock=_RNG_LOCK)
 def _cached_seed_hash(seed_int: int, key_int: int) -> int:
     return _compute_seed_hash(seed_int, key_int)
+
 
 def seed_hash(seed_int: int, key_int: int) -> int:
     """Return a 64-bit hash derived from ``seed_int`` and ``key_int``."""
@@ -52,8 +55,10 @@ def seed_hash(seed_int: int, key_int: int) -> int:
         return _compute_seed_hash(seed_int, key_int)
     return _cached_seed_hash(seed_int, key_int)
 
+
 seed_hash.cache_clear = cast(Any, _cached_seed_hash).cache_clear  # type: ignore[attr-defined]
 seed_hash.cache = _seed_hash_cache  # type: ignore[attr-defined]
+
 
 def _sync_cache_size(G: TNFRGraph | GraphLike | None) -> None:
     """Synchronise cache size with ``G`` when needed."""
@@ -66,6 +71,7 @@ def _sync_cache_size(G: TNFRGraph | GraphLike | None) -> None:
         if size != _seed_hash_cache.maxsize:
             _seed_hash_cache.configure(size)
             _CACHE_MAXSIZE = _seed_hash_cache.maxsize
+
 
 def make_rng(
     seed: int, key: int, G: TNFRGraph | GraphLike | None = None
@@ -103,15 +109,18 @@ def make_rng(
     key_int = int(key)
     return random.Random(seed_hash(seed_int, key_int))
 
+
 def clear_rng_cache() -> None:
     """Clear cached seed hashes."""
     if _seed_hash_cache.maxsize <= 0 or not _seed_hash_cache.enabled:
         return
     seed_hash.cache_clear()  # type: ignore[attr-defined]
 
+
 def get_cache_maxsize(G: TNFRGraph | GraphLike) -> int:
     """Return RNG cache maximum size for ``G``."""
     return int(get_param(G, "JITTER_CACHE_SIZE"))
+
 
 def cache_enabled(G: TNFRGraph | GraphLike | None = None) -> bool:
     """Return ``True`` if RNG caching is enabled.
@@ -126,15 +135,18 @@ def cache_enabled(G: TNFRGraph | GraphLike | None = None) -> bool:
         _sync_cache_size(G)
     return _seed_hash_cache.maxsize > 0
 
+
 def base_seed(G: TNFRGraph | GraphLike) -> int:
     """Return base RNG seed stored in ``G.graph``."""
     graph = get_graph(G)
     return int(graph.get("RANDOM_SEED", 0))
 
+
 def _rng_for_step(seed: int, step: int) -> random.Random:
     """Return deterministic RNG for a simulation ``step``."""
 
     return make_rng(seed, step)
+
 
 def set_cache_maxsize(size: int) -> None:
     """Update RNG cache maximum size.
@@ -152,6 +164,7 @@ def set_cache_maxsize(size: int) -> None:
         _seed_hash_cache.configure(new_size)
         _CACHE_MAXSIZE = _seed_hash_cache.maxsize
     _CACHE_LOCKED = new_size != _DEFAULT_CACHE_MAXSIZE
+
 
 __all__ = (
     "seed_hash",

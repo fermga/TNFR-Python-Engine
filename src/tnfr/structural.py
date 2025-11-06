@@ -74,12 +74,15 @@ from .types import DeltaNFRHook, NodeId, TNFRGraph
 
 try:  # pragma: no cover - optional dependency path exercised in CI extras
     import numpy as np
-except ImportError:  # pragma: no cover - optional dependency path exercised in CI extras
+except (
+    ImportError
+):  # pragma: no cover - optional dependency path exercised in CI extras
     np = None  # type: ignore[assignment]
 
 # ---------------------------------------------------------------------------
 # 1) NFR factory
 # ---------------------------------------------------------------------------
+
 
 def create_nfr(
     name: str,
@@ -198,6 +201,7 @@ def create_nfr(
     set_delta_nfr_hook(G, dnfr_hook)
     return G, name
 
+
 def _resolve_dimension(
     G: TNFRGraph,
     *,
@@ -228,6 +232,7 @@ def _resolve_dimension(
         raise ValueError("Hilbert space dimension must be positive.")
     return resolved
 
+
 def _ensure_coherence_operator(
     *,
     operator: CoherenceOperator | None,
@@ -247,6 +252,7 @@ def _ensure_coherence_operator(
     if c_min is not None:
         kwargs["c_min"] = float(c_min)
     return make_coherence_operator(dimension, **kwargs)
+
 
 def _ensure_frequency_operator(
     *,
@@ -268,6 +274,7 @@ def _ensure_frequency_operator(
         matrix = np.diag(diag_array)
     return make_frequency_operator(np.asarray(matrix, dtype=np.complex128))
 
+
 def _ensure_generator_matrix(
     *,
     dimension: int,
@@ -281,6 +288,7 @@ def _ensure_generator_matrix(
     if diag_array.shape[0] != int(dimension):
         raise ValueError("Generator diagonal size must match Hilbert dimension.")
     return np.diag(diag_array)
+
 
 def create_math_nfr(
     name: str,
@@ -359,7 +367,9 @@ def create_math_nfr(
     """
 
     if np is None:
-        raise ImportError("create_math_nfr requires NumPy; install the 'tnfr[math]' extras.")
+        raise ImportError(
+            "create_math_nfr requires NumPy; install the 'tnfr[math]' extras."
+        )
 
     G, node = create_nfr(
         name,
@@ -442,29 +452,37 @@ def create_math_nfr(
     math_metrics = {
         "norm": norm_value,
         "normalized": bool(summary.get("normalized", False)),
-        "coherence_value": float(coherence_summary.get("value", 0.0))
-        if isinstance(coherence_summary, Mapping)
-        else 0.0,
-        "coherence_threshold": float(
-            coherence_summary.get("threshold", threshold)
-        )
-        if isinstance(coherence_summary, Mapping)
-        else threshold,
-        "coherence_passed": bool(coherence_summary.get("passed", False))
-        if isinstance(coherence_summary, Mapping)
-        else False,
-        "frequency_value": float(frequency_summary.get("value", 0.0))
-        if isinstance(frequency_summary, Mapping)
-        else 0.0,
-        "frequency_passed": bool(frequency_summary.get("passed", False))
-        if isinstance(frequency_summary, Mapping)
-        else True,
-        "frequency_spectrum_min": float(
-            frequency_summary.get("spectrum_min", 0.0)
-        )
-        if isinstance(frequency_summary, Mapping)
-        and "spectrum_min" in frequency_summary
-        else None,
+        "coherence_value": (
+            float(coherence_summary.get("value", 0.0))
+            if isinstance(coherence_summary, Mapping)
+            else 0.0
+        ),
+        "coherence_threshold": (
+            float(coherence_summary.get("threshold", threshold))
+            if isinstance(coherence_summary, Mapping)
+            else threshold
+        ),
+        "coherence_passed": (
+            bool(coherence_summary.get("passed", False))
+            if isinstance(coherence_summary, Mapping)
+            else False
+        ),
+        "frequency_value": (
+            float(frequency_summary.get("value", 0.0))
+            if isinstance(frequency_summary, Mapping)
+            else 0.0
+        ),
+        "frequency_passed": (
+            bool(frequency_summary.get("passed", False))
+            if isinstance(frequency_summary, Mapping)
+            else True
+        ),
+        "frequency_spectrum_min": (
+            float(frequency_summary.get("spectrum_min", 0.0))
+            if isinstance(frequency_summary, Mapping)
+            and "spectrum_min" in frequency_summary
+            else None
+        ),
         "unitary_passed": bool(
             summary.get("unitary_stability", {}).get("passed", False)
         ),
@@ -502,6 +520,7 @@ def create_math_nfr(
 
     return G, node
 
+
 __all__ = (
     "create_nfr",
     "create_math_nfr",
@@ -523,6 +542,7 @@ __all__ = (
     "validate_sequence",
     "run_sequence",
 )
+
 
 def run_sequence(G: TNFRGraph, node: NodeId, ops: Iterable[Operator]) -> None:
     """Drive structural sequences that rebalance EPI, νf, phase and ΔNFR.
@@ -657,7 +677,10 @@ def run_sequence(G: TNFRGraph, node: NodeId, ops: Iterable[Operator]) -> None:
             compute(G)
 
         # Per-step validation (expensive, only if configured)
-        if validation_config.validate_each_step and validation_config.validate_invariants:
+        if (
+            validation_config.validate_each_step
+            and validation_config.validate_invariants
+        ):
             violations = run_sequence._invariant_validator.validate_graph(  # type: ignore[attr-defined]
                 G, InvariantSeverity.ERROR
             )

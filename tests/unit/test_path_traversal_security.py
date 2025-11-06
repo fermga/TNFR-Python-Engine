@@ -84,8 +84,7 @@ class TestValidateFilePath:
     def test_allowed_extensions_json(self):
         """Test file extension validation."""
         result = validate_file_path(
-            "config.json",
-            allowed_extensions=[".json", ".yaml"]
+            "config.json", allowed_extensions=[".json", ".yaml"]
         )
         assert result.suffix == ".json"
 
@@ -93,16 +92,12 @@ class TestValidateFilePath:
         """Test rejection of disallowed file extensions."""
         with pytest.raises(ValueError, match="File extension.*not allowed"):
             validate_file_path(
-                "malicious.exe",
-                allowed_extensions=[".json", ".yaml", ".toml"]
+                "malicious.exe", allowed_extensions=[".json", ".yaml", ".toml"]
             )
 
     def test_case_insensitive_extensions(self):
         """Test that extension matching is case-insensitive."""
-        result = validate_file_path(
-            "config.JSON",
-            allowed_extensions=[".json"]
-        )
+        result = validate_file_path("config.JSON", allowed_extensions=[".json"])
         assert result.suffix.lower() == ".json"
 
     def test_path_object_input(self):
@@ -120,7 +115,7 @@ class TestResolveSafePath:
         """Test resolving a relative path within base directory."""
         base_dir = tmp_path / "configs"
         base_dir.mkdir()
-        
+
         result = resolve_safe_path("settings.json", base_dir)
         assert result.is_absolute()
         assert result.parent == base_dir
@@ -129,7 +124,7 @@ class TestResolveSafePath:
         """Test resolving paths with subdirectories."""
         base_dir = tmp_path / "data"
         base_dir.mkdir()
-        
+
         result = resolve_safe_path("exports/metrics.csv", base_dir)
         assert result.is_absolute()
         assert result.parent.name == "exports"
@@ -140,16 +135,18 @@ class TestResolveSafePath:
         """Test rejection of paths that escape base directory."""
         base_dir = tmp_path / "configs"
         base_dir.mkdir()
-        
+
         # Should raise PathTraversalError (either during validate or resolve check)
-        with pytest.raises(PathTraversalError, match="(escapes base directory|Path traversal detected)"):
+        with pytest.raises(
+            PathTraversalError, match="(escapes base directory|Path traversal detected)"
+        ):
             resolve_safe_path("../../../etc/passwd", base_dir)
 
     def test_reject_absolute_path_outside_base(self, tmp_path):
         """Test rejection of absolute paths outside base directory."""
         base_dir = tmp_path / "configs"
         base_dir.mkdir()
-        
+
         with pytest.raises(PathTraversalError, match="escapes base directory"):
             resolve_safe_path("/etc/passwd", base_dir)
 
@@ -157,15 +154,15 @@ class TestResolveSafePath:
         """Test the must_exist flag."""
         base_dir = tmp_path / "configs"
         base_dir.mkdir()
-        
+
         # Should fail when file doesn't exist
         with pytest.raises(ValueError, match="Path does not exist"):
             resolve_safe_path("nonexistent.json", base_dir, must_exist=True)
-        
+
         # Should succeed when file exists
         test_file = base_dir / "existing.json"
         test_file.write_text("{}")
-        
+
         result = resolve_safe_path("existing.json", base_dir, must_exist=True)
         assert result.exists()
 
@@ -173,7 +170,7 @@ class TestResolveSafePath:
         """Test rejection of empty path."""
         base_dir = tmp_path / "configs"
         base_dir.mkdir()
-        
+
         with pytest.raises(ValueError, match="Path cannot be empty"):
             resolve_safe_path("", base_dir)
 
@@ -186,33 +183,29 @@ class TestResolveSafePath:
         """Test file extension restrictions."""
         base_dir = tmp_path / "data"
         base_dir.mkdir()
-        
+
         result = resolve_safe_path(
-            "export.csv",
-            base_dir,
-            allowed_extensions=[".csv", ".json"]
+            "export.csv", base_dir, allowed_extensions=[".csv", ".json"]
         )
         assert result.suffix == ".csv"
-        
+
         with pytest.raises(ValueError, match="File extension.*not allowed"):
             resolve_safe_path(
-                "malicious.exe",
-                base_dir,
-                allowed_extensions=[".csv", ".json"]
+                "malicious.exe", base_dir, allowed_extensions=[".csv", ".json"]
             )
 
     def test_symlink_within_base(self, tmp_path):
         """Test that symlinks within base directory are allowed."""
         base_dir = tmp_path / "data"
         base_dir.mkdir()
-        
+
         # Create a file and symlink to it within base_dir
         real_file = base_dir / "real.json"
         real_file.write_text("{}")
-        
+
         link_file = base_dir / "link.json"
         link_file.symlink_to(real_file)
-        
+
         result = resolve_safe_path("link.json", base_dir)
         assert result.is_absolute()
         # The resolved path should still be within base_dir
@@ -230,7 +223,7 @@ class TestBackwardCompatibility:
     def test_validate_path_safe_rejects_traversal(self):
         """Test that old function still rejects path traversal."""
         from tnfr.security import CommandValidationError
-        
+
         with pytest.raises(CommandValidationError, match="Path traversal"):
             validate_path_safe("../../../etc/passwd")
 
@@ -243,19 +236,19 @@ class TestIntegrationScenarios:
         # Create config directory structure
         config_dir = tmp_path / "configs"
         config_dir.mkdir()
-        
+
         # Create a valid config file
         config_file = config_dir / "settings.yaml"
         config_file.write_text("key: value\n")
-        
+
         # Resolve with base directory restriction
         result = resolve_safe_path(
             "settings.yaml",
             config_dir,
             must_exist=True,
-            allowed_extensions=[".yaml", ".json", ".toml"]
+            allowed_extensions=[".yaml", ".json", ".toml"],
         )
-        
+
         assert result.exists()
         assert result.parent == config_dir
 
@@ -264,15 +257,15 @@ class TestIntegrationScenarios:
         # Create export directory
         export_dir = tmp_path / "exports"
         export_dir.mkdir()
-        
+
         # Validate export path with subdirectory
         result = resolve_safe_path(
             "metrics/glyphogram.csv",
             export_dir,
             must_exist=False,
-            allowed_extensions=[".csv", ".json"]
+            allowed_extensions=[".csv", ".json"],
         )
-        
+
         assert result.is_absolute()
         assert result.name == "glyphogram.csv"
         # Verify it's within export_dir
@@ -282,14 +275,14 @@ class TestIntegrationScenarios:
         """Test cache file path validation."""
         cache_dir = tmp_path / "cache"
         cache_dir.mkdir()
-        
+
         # Cache files can have various extensions
         result = resolve_safe_path(
             "coherence.db",
             cache_dir,
             must_exist=False,
         )
-        
+
         assert result.is_absolute()
         assert result.parent == cache_dir
 
@@ -297,14 +290,14 @@ class TestIntegrationScenarios:
         """Test visualization save path validation."""
         viz_dir = tmp_path / "visualizations"
         viz_dir.mkdir()
-        
+
         # Visualizations can be various image formats
         result = resolve_safe_path(
             "phase_sync.png",
             viz_dir,
             must_exist=False,
         )
-        
+
         assert result.is_absolute()
         assert result.parent == viz_dir
 
@@ -312,14 +305,14 @@ class TestIntegrationScenarios:
         """Test that nested directories can be safely validated."""
         base_dir = tmp_path / "data"
         base_dir.mkdir()
-        
+
         # Validate a deeply nested path
         result = resolve_safe_path(
             "exports/2024/01/metrics.json",
             base_dir,
             must_exist=False,
         )
-        
+
         assert result.is_absolute()
         # Verify all parts are within base_dir
         result.relative_to(base_dir)  # Should not raise
@@ -359,10 +352,10 @@ class TestEdgeCases:
         """Test handling of very long paths."""
         base_dir = tmp_path / "data"
         base_dir.mkdir()
-        
+
         # Create a path with many nested directories
         long_path = "/".join([f"level{i}" for i in range(20)]) + "/file.txt"
-        
+
         result = resolve_safe_path(long_path, base_dir, must_exist=False)
         assert result.is_absolute()
         # Should still be within base_dir

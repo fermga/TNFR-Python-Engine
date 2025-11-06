@@ -23,11 +23,13 @@ from tnfr.mathematics.operators_factory import (
     make_frequency_operator,
 )
 
+
 # Parametrized operator dimensions
 @pytest.fixture(params=[2, 3, 4, 5, 8])
 def unified_dimension(request):
     """Unified dimension parameter consolidating multiple dimension tests."""
     return request.param
+
 
 # Parametrized operator topologies
 @pytest.fixture(params=["laplacian", "adjacency"])
@@ -35,11 +37,13 @@ def unified_topology(request):
     """Unified topology parameter consolidating topology tests."""
     return request.param
 
+
 # Parametrized operator scales
 @pytest.fixture(params=[0.1, 1.0, 2.0, 10.0])
 def unified_scale(request):
     """Unified scale parameter consolidating scale tests."""
     return request.param
+
 
 def test_build_delta_nfr_hermitian_unified(unified_dimension) -> None:
     """Unified test verifying operators are Hermitian.
@@ -54,6 +58,7 @@ def test_build_delta_nfr_hermitian_unified(unified_dimension) -> None:
     # Hermitian operators should equal their conjugate transpose
     assert np.allclose(dnfr_matrix, dnfr_matrix.conj().T)
 
+
 def test_build_delta_nfr_dimension_consistency_unified(unified_dimension) -> None:
     """Unified test verifying operator dimensions.
 
@@ -64,6 +69,7 @@ def test_build_delta_nfr_dimension_consistency_unified(unified_dimension) -> Non
     dim = unified_dimension
     dnfr_matrix = build_delta_nfr(dim)
     assert dnfr_matrix.shape == (dim, dim)
+
 
 def test_build_delta_nfr_topology_unified(unified_dimension, unified_topology) -> None:
     """Unified test verifying different topologies produce valid operators.
@@ -88,6 +94,7 @@ def test_build_delta_nfr_topology_unified(unified_dimension, unified_topology) -
     assert np.allclose(dnfr_matrix, dnfr_matrix.conj().T)
     assert dnfr_matrix.shape == (dim, dim)
 
+
 def test_build_delta_nfr_scale_unified(unified_dimension, unified_scale) -> None:
     """Unified test verifying scale parameter effects.
 
@@ -106,6 +113,7 @@ def test_build_delta_nfr_scale_unified(unified_dimension, unified_scale) -> None
     assert np.allclose(dnfr_matrix, dnfr_matrix.conj().T)
     assert np.all(np.isfinite(dnfr_matrix))
 
+
 @pytest.mark.parametrize("nu_f", [0.0, 0.5, 1.0, 2.5, 10.0])
 def test_build_delta_nfr_frequency_unified(unified_dimension, nu_f) -> None:
     """Unified test verifying frequency parameter handling.
@@ -123,6 +131,7 @@ def test_build_delta_nfr_frequency_unified(unified_dimension, nu_f) -> None:
     assert np.allclose(dnfr_matrix, dnfr_matrix.conj().T)
     assert np.all(np.isfinite(dnfr_matrix))
 
+
 def test_build_delta_nfr_eigenvalues_real_unified(unified_dimension) -> None:
     """Unified test verifying eigenvalues are real.
 
@@ -139,6 +148,7 @@ def test_build_delta_nfr_eigenvalues_real_unified(unified_dimension) -> None:
     assert np.all(np.isreal(eigenvalues))
     assert len(eigenvalues) == dim
 
+
 def test_build_delta_nfr_finite_values_unified(unified_dimension) -> None:
     """Unified test verifying operators contain finite values.
 
@@ -150,6 +160,7 @@ def test_build_delta_nfr_finite_values_unified(unified_dimension) -> None:
     dnfr_matrix = build_delta_nfr(dim)
 
     assert np.all(np.isfinite(dnfr_matrix))
+
 
 def test_build_delta_nfr_reproducibility_unified() -> None:
     """Unified test verifying reproducibility with seeds.
@@ -169,6 +180,7 @@ def test_build_delta_nfr_reproducibility_unified() -> None:
     # Should produce identical operators with same seed
     assert np.allclose(matrix1, matrix2)
 
+
 def test_build_delta_nfr_different_seeds_unified() -> None:
     """Unified test verifying different seeds produce different results.
 
@@ -185,6 +197,7 @@ def test_build_delta_nfr_different_seeds_unified() -> None:
     # Should produce different operators with different seeds
     assert not np.allclose(matrix1, matrix2)
 
+
 @pytest.mark.parametrize("invalid_dim", [0, -1, -5])
 def test_build_delta_nfr_rejects_invalid_dimension_unified(invalid_dim) -> None:
     """Unified test verifying invalid dimensions are rejected.
@@ -195,10 +208,12 @@ def test_build_delta_nfr_rejects_invalid_dimension_unified(invalid_dim) -> None:
     with pytest.raises((ValueError, TypeError, AssertionError)):
         build_delta_nfr(invalid_dim)
 
+
 def test_build_delta_nfr_rejects_invalid_topology_unified() -> None:
     """Unified test verifying invalid topologies are rejected."""
     with pytest.raises((ValueError, KeyError)):
         build_delta_nfr(4, topology="unknown_topology")
+
 
 def test_coherence_operator_hermitian_unified() -> None:
     """Unified test for coherence operator Hermitian property.
@@ -211,12 +226,14 @@ def test_coherence_operator_hermitian_unified() -> None:
     # Should be Hermitian
     assert operator.is_hermitian()
 
+
 def test_coherence_operator_positive_semidefinite_unified() -> None:
     """Unified test for coherence operator positive semidefiniteness."""
     matrix = np.array([[2.0, 1.0 - 1.0j], [1.0 + 1.0j, 3.0]], dtype=np.complex128)
     operator = CoherenceOperator(matrix)
 
     assert operator.is_positive_semidefinite()
+
 
 def test_coherence_operator_rejects_non_hermitian_unified() -> None:
     """Unified test verifying non-Hermitian matrices are rejected.
@@ -228,6 +245,7 @@ def test_coherence_operator_rejects_non_hermitian_unified() -> None:
     with pytest.raises(ValueError):
         CoherenceOperator(matrix)
 
+
 def test_frequency_operator_positive_spectrum_unified() -> None:
     """Unified test for frequency operator with positive spectrum."""
     operator = FrequencyOperator([0.5, 1.5, 3.0])
@@ -236,10 +254,12 @@ def test_frequency_operator_positive_spectrum_unified() -> None:
     assert spectrum.dtype == float
     assert np.all(spectrum >= 0)
 
+
 def test_frequency_operator_negative_spectrum_detected_unified() -> None:
     """Unified test verifying negative spectrum detection."""
     operator = FrequencyOperator([-0.5, 0.5])
     assert not operator.is_positive_semidefinite()
+
 
 def test_make_coherence_operator_from_spectrum_unified() -> None:
     """Unified test for coherence operator factory."""
@@ -249,6 +269,7 @@ def test_make_coherence_operator_from_spectrum_unified() -> None:
     np.testing.assert_allclose(operator.matrix, np.diag([0.2, 0.3, 0.4]))
     assert operator.is_positive_semidefinite()
 
+
 def test_make_frequency_operator_rejects_negative_eigenvalues_unified() -> None:
     """Unified test for frequency operator validation."""
     matrix = np.array([[1.0, 0.0], [0.0, -0.5]], dtype=np.complex128)
@@ -256,11 +277,15 @@ def test_make_frequency_operator_rejects_negative_eigenvalues_unified() -> None:
     with pytest.raises(ValueError, match="positive semidefinite"):
         make_frequency_operator(matrix)
 
-@pytest.mark.parametrize("combined_params", [
-    {"topology": "laplacian", "nu_f": 1.0, "scale": 1.0},
-    {"topology": "adjacency", "nu_f": 2.0, "scale": 0.5},
-    {"topology": "laplacian", "nu_f": 0.5, "scale": 2.0},
-])
+
+@pytest.mark.parametrize(
+    "combined_params",
+    [
+        {"topology": "laplacian", "nu_f": 1.0, "scale": 1.0},
+        {"topology": "adjacency", "nu_f": 2.0, "scale": 0.5},
+        {"topology": "laplacian", "nu_f": 0.5, "scale": 2.0},
+    ],
+)
 def test_build_delta_nfr_combined_parameters_unified(combined_params) -> None:
     """Unified test for combined parameter configurations.
 
@@ -280,6 +305,7 @@ def test_build_delta_nfr_combined_parameters_unified(combined_params) -> None:
     # Eigenvalues should be real
     eigenvalues = np.linalg.eigvalsh(dnfr_matrix)
     assert np.all(np.isreal(eigenvalues))
+
 
 def test_build_delta_nfr_orthogonality_preserved_unified(unified_dimension) -> None:
     """Unified test verifying eigenvector orthogonality.

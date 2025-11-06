@@ -11,6 +11,7 @@ from typing import Any, Dict, List, Optional
 
 try:
     import psutil
+
     HAS_PSUTIL = True
 except ImportError:
     HAS_PSUTIL = False
@@ -88,6 +89,7 @@ class ParallelExecutionMonitor:
         if HAS_PSUTIL:
             try:
                 import psutil
+
                 self._process = psutil.Process()
             except Exception:
                 self._process = None
@@ -114,7 +116,9 @@ class ParallelExecutionMonitor:
         if self._process:
             try:
                 mem_info = self._process.memory_info()
-                self._current_metrics["memory_samples"].append(mem_info.rss / 1024 / 1024)
+                self._current_metrics["memory_samples"].append(
+                    mem_info.rss / 1024 / 1024
+                )
                 self._current_metrics["cpu_samples"].append(self._process.cpu_percent())
             except Exception:
                 pass
@@ -146,7 +150,9 @@ class ParallelExecutionMonitor:
         if self._process:
             try:
                 mem_info = self._process.memory_info()
-                self._current_metrics["memory_samples"].append(mem_info.rss / 1024 / 1024)
+                self._current_metrics["memory_samples"].append(
+                    mem_info.rss / 1024 / 1024
+                )
                 self._current_metrics["cpu_samples"].append(self._process.cpu_percent())
             except Exception:
                 pass
@@ -172,7 +178,11 @@ class ParallelExecutionMonitor:
         # If we're using N workers, we expect ~N * 100% CPU in ideal case
         expected_cpu = workers * 100.0
         actual_speedup = (avg_cpu / 100.0) if expected_cpu > 0 else 1.0
-        parallelization_eff = min(1.0, actual_speedup / theoretical_speedup) if theoretical_speedup > 0 else 0.0
+        parallelization_eff = (
+            min(1.0, actual_speedup / theoretical_speedup)
+            if theoretical_speedup > 0
+            else 0.0
+        )
 
         # Memory efficiency: nodes per MB
         memory_eff = nodes / peak_memory if peak_memory > 0 else 0.0
@@ -224,8 +234,7 @@ class ParallelExecutionMonitor:
 
         if latest.operations_per_second < 100:
             suggestions.append(
-                "📈 Low throughput - consider GPU backend or algorithm "
-                "optimization"
+                "📈 Low throughput - consider GPU backend or algorithm " "optimization"
             )
 
         if not suggestions:

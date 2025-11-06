@@ -39,37 +39,48 @@ from tests.helpers.fixtures import seed_graph_factory  # noqa: F401
 # PARAMETRIZED FIXTURES FOR CONSOLIDATED TESTING
 # ============================================================================
 
-@pytest.fixture(params=[
-    {"dimension": 2, "nu_f": 0.1, "scale": 0.5},
-    {"dimension": 3, "nu_f": 1.0, "scale": 1.0},
-    {"dimension": 5, "nu_f": 2.0, "scale": 2.0},
-    {"dimension": 8, "nu_f": 5.0, "scale": 0.1},
-])
+
+@pytest.fixture(
+    params=[
+        {"dimension": 2, "nu_f": 0.1, "scale": 0.5},
+        {"dimension": 3, "nu_f": 1.0, "scale": 1.0},
+        {"dimension": 5, "nu_f": 2.0, "scale": 2.0},
+        {"dimension": 8, "nu_f": 5.0, "scale": 0.1},
+    ]
+)
 def parametrized_operator_config(request):
     """Parametrized operator configurations for testing multiple scenarios."""
     return request.param
 
-@pytest.fixture(params=[
-    {"epi_range": (-0.1, 0.1), "vf_range": (0.9, 1.1)},
-    {"epi_range": (-1.0, 1.0), "vf_range": (0.5, 2.0)},
-    {"epi_range": (-2.0, 2.0), "vf_range": (0.1, 5.0)},
-])
+
+@pytest.fixture(
+    params=[
+        {"epi_range": (-0.1, 0.1), "vf_range": (0.9, 1.1)},
+        {"epi_range": (-1.0, 1.0), "vf_range": (0.5, 2.0)},
+        {"epi_range": (-2.0, 2.0), "vf_range": (0.1, 5.0)},
+    ]
+)
 def parametrized_validator_bounds(request):
     """Parametrized validator boundary configurations."""
     return request.param
 
-@pytest.fixture(params=[
-    {"num_nodes": 5, "edge_prob": 0.3},
-    {"num_nodes": 10, "edge_prob": 0.5},
-    {"num_nodes": 20, "edge_prob": 0.7},
-])
+
+@pytest.fixture(
+    params=[
+        {"num_nodes": 5, "edge_prob": 0.3},
+        {"num_nodes": 10, "edge_prob": 0.5},
+        {"num_nodes": 20, "edge_prob": 0.7},
+    ]
+)
 def parametrized_graph_scale(request):
     """Parametrized graph scales for multi-scale testing."""
     return request.param
 
+
 # ============================================================================
 # OPERATOR GENERATION: CONSOLIDATED CRITICAL PATHS
 # ============================================================================
+
 
 def test_operator_generation_parameter_combinations(parametrized_operator_config):
     """Test operator generation across parameter combinations (unifies multiple tests).
@@ -100,6 +111,7 @@ def test_operator_generation_parameter_combinations(parametrized_operator_config
     eigenvalues = np.linalg.eigvalsh(operator)
     assert np.all(np.isfinite(eigenvalues))
 
+
 @pytest.mark.parametrize("topology", ["laplacian", "adjacency"])
 def test_operator_generation_topology_unified(topology: str):
     """Test both topologies in single parametrized test.
@@ -122,6 +134,7 @@ def test_operator_generation_topology_unified(topology: str):
         # Allow some noise but should be structured
         assert np.all(np.isfinite(row_sums))
 
+
 @pytest.mark.parametrize("seed_value", [0, 42, 123, 999])
 def test_operator_generation_reproducibility_unified(seed_value: int):
     """Test reproducibility across multiple seeds in single parametrized test.
@@ -143,11 +156,13 @@ def test_operator_generation_reproducibility_unified(seed_value: int):
     # Should differ
     assert not np.allclose(op1, op_different)
 
+
 @pytest.mark.parametrize("invalid_dim", [0, -1, -5])
 def test_operator_generation_invalid_dimension(invalid_dim: int):
     """Test dimension validation (consolidated)."""
     with pytest.raises(ValueError):
         build_delta_nfr(invalid_dim)
+
 
 def test_operator_generation_spectral_properties():
     """Test comprehensive spectral properties of generated operators.
@@ -171,9 +186,11 @@ def test_operator_generation_spectral_properties():
     assert np.isfinite(bandwidth)
     assert bandwidth >= 0
 
+
 # ============================================================================
 # NODAL VALIDATORS: CONSOLIDATED CRITICAL PATHS
 # ============================================================================
+
 
 def test_nodal_validator_bounds_unified(
     seed_graph_factory,
@@ -211,7 +228,10 @@ def test_nodal_validator_bounds_unified(
         vf_max=vf_max,
     )
 
-@pytest.mark.parametrize("phase_value", [0.0, math.pi/4, math.pi/2, math.pi, 2*math.pi])
+
+@pytest.mark.parametrize(
+    "phase_value", [0.0, math.pi / 4, math.pi / 2, math.pi, 2 * math.pi]
+)
 def test_nodal_validator_phase_wrapping_unified(phase_value: float):
     """Test phase wrapping across multiple values (consolidated).
 
@@ -225,6 +245,7 @@ def test_nodal_validator_phase_wrapping_unified(phase_value: float):
 
     # Verify wrapping to canonical range
     assert -math.pi <= wrapped <= math.pi
+
 
 def test_nodal_validator_multi_scale_consistency(
     seed_graph_factory,
@@ -254,7 +275,10 @@ def test_nodal_validator_multi_scale_consistency(
         assert EPI_PRIMARY in data
         assert VF_PRIMARY in data
         assert DNFR_PRIMARY in data
-        assert all(math.isfinite(data[key]) for key in [EPI_PRIMARY, VF_PRIMARY, DNFR_PRIMARY])
+        assert all(
+            math.isfinite(data[key]) for key in [EPI_PRIMARY, VF_PRIMARY, DNFR_PRIMARY]
+        )
+
 
 def test_nodal_validator_disconnected_components():
     """Test validator behavior with disconnected graph components.
@@ -281,6 +305,7 @@ def test_nodal_validator_disconnected_components():
     # Each component should conserve ΔNFR independently
     assert_dnfr_balanced(graph)
 
+
 def test_nodal_validator_isolated_nodes():
     """Test validator behavior with isolated nodes.
 
@@ -305,22 +330,28 @@ def test_nodal_validator_isolated_nodes():
     for _, data in graph.nodes(data=True):
         assert math.isclose(data[DNFR_PRIMARY], 0.0, abs_tol=1e-9)
 
+
 # ============================================================================
 # RUN SEQUENCE: CONSOLIDATED CRITICAL PATHS
 # ============================================================================
 
+
 @pytest.fixture
 def graph_canon():
     """Create canonical test graph."""
+
     def _create():
         G = nx.Graph()
         inject_defaults(G)
         return G
+
     return _create
+
 
 def _step_noop(graph):
     """Simple step function for testing."""
     graph.graph["_t"] = graph.graph.get("_t", 0.0) + 1.0
+
 
 def test_run_sequence_compilation_unified(graph_canon):
     """Test sequence compilation with multiple operation types (consolidated).
@@ -346,18 +377,21 @@ def test_run_sequence_compilation_unified(graph_canon):
     assert compiled_target[0][0] == OpTag.TARGET
 
     # Test compound sequence
-    compiled_compound = compile_sequence(seq(
-        target([0]),
-        Glyph.SHA,
-        wait(2),
-        block(Glyph.AL, repeat=2),
-    ))
+    compiled_compound = compile_sequence(
+        seq(
+            target([0]),
+            Glyph.SHA,
+            wait(2),
+            block(Glyph.AL, repeat=2),
+        )
+    )
 
     op_tags = [op[0] for op in compiled_compound]
     assert OpTag.TARGET in op_tags
     assert OpTag.GLYPH in op_tags
     assert OpTag.WAIT in op_tags
     assert OpTag.THOL in op_tags
+
 
 @pytest.mark.parametrize("wait_value", [0, -1, -10])
 def test_run_sequence_wait_clamping_unified(graph_canon, wait_value: int):
@@ -380,6 +414,7 @@ def test_run_sequence_wait_clamping_unified(graph_canon, wait_value: int):
     # Should have executed at least 1 step
     assert all(e["k"] >= 1 for e in wait_entries)
 
+
 def test_run_sequence_target_variations(graph_canon):
     """Test target operation with different selections (consolidated).
 
@@ -389,18 +424,23 @@ def test_run_sequence_target_variations(graph_canon):
     G.add_nodes_from([0, 1, 2, 3])
 
     # Test multiple targets
-    play(G, seq(
-        target([0, 1]),
-        wait(1),
-        target([2, 3]),
-        wait(1),
-    ), step_fn=_step_noop)
+    play(
+        G,
+        seq(
+            target([0, 1]),
+            wait(1),
+            target([2, 3]),
+            wait(1),
+        ),
+        step_fn=_step_noop,
+    )
 
     trace = list(G.graph["history"]["program_trace"])
     target_entries = [e for e in trace if e["op"] == "TARGET"]
 
     # Should have 2 target operations
     assert len(target_entries) == 2
+
 
 @pytest.mark.parametrize("num_operations", [1, 5, 10, 20])
 def test_run_sequence_long_chains(graph_canon, num_operations: int):
@@ -425,6 +465,7 @@ def test_run_sequence_long_chains(graph_canon, num_operations: int):
     # Should have executed all operations
     assert len(wait_entries) == num_operations
 
+
 def test_run_sequence_empty_variations(graph_canon):
     """Test sequence execution with empty variations.
 
@@ -440,6 +481,7 @@ def test_run_sequence_empty_variations(graph_canon):
     G2 = graph_canon()
     play(G2, seq(wait(1)), step_fn=_step_noop)
     assert "history" in G2.graph
+
 
 def test_run_sequence_trace_consistency():
     """Test program trace consistency and ordering.
@@ -466,11 +508,13 @@ def test_run_sequence_trace_consistency():
 
     # Check that time progresses monotonically
     times = [e.get("t", 0.0) for e in trace]
-    assert all(times[i] <= times[i+1] for i in range(len(times)-1))
+    assert all(times[i] <= times[i + 1] for i in range(len(times) - 1))
+
 
 # ============================================================================
 # INTEGRATION: CROSS-CUTTING CRITICAL PATHS
 # ============================================================================
+
 
 def test_integration_operator_to_validator():
     """Test integration between operator generation and validation.
@@ -493,6 +537,7 @@ def test_integration_operator_to_validator():
     # Should be compatible
     assert len(graph.nodes) == operator.shape[0]
 
+
 def test_integration_validator_to_sequence(seed_graph_factory):
     """Test integration between validator and sequence execution.
 
@@ -510,6 +555,7 @@ def test_integration_validator_to_sequence(seed_graph_factory):
     # Verify trace was created
     assert "history" in graph.graph
     assert "program_trace" in graph.graph["history"]
+
 
 def test_integration_multi_operator_composition():
     """Test composition of multiple operators.

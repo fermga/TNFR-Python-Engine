@@ -69,10 +69,12 @@ COMMON_ARG_SPECS: tuple[ArgSpec, ...] = (
     spec("--stop-early-fraction", type=float),
 )
 
+
 def add_arg_specs(parser: argparse._ActionsContainer, specs: Iterable[ArgSpec]) -> None:
     """Register arguments from ``specs`` on ``parser``."""
     for opt, kwargs in specs:
         parser.add_argument(opt, **kwargs)
+
 
 def _args_to_dict(args: argparse.Namespace, prefix: str) -> dict[str, Any]:
     """Extract arguments matching a prefix."""
@@ -82,23 +84,28 @@ def _args_to_dict(args: argparse.Namespace, prefix: str) -> dict[str, Any]:
         if k.startswith(prefix) and v is not None
     }
 
+
 def add_common_args(parser: argparse.ArgumentParser) -> None:
     """Add arguments shared across subcommands."""
     add_arg_specs(parser, COMMON_ARG_SPECS)
+
 
 def add_grammar_args(parser: argparse.ArgumentParser) -> None:
     """Add grammar and structural operator hysteresis options."""
     group = parser.add_argument_group("Grammar")
     add_arg_specs(group, GRAMMAR_ARG_SPECS)
 
+
 def add_grammar_selector_args(parser: argparse.ArgumentParser) -> None:
     """Add grammar options and structural operator selector."""
     add_grammar_args(parser)
     parser.add_argument("--selector", choices=["basic", "param"], default="basic")
 
+
 def add_history_export_args(parser: argparse.ArgumentParser) -> None:
     """Add arguments to save or export history."""
     add_arg_specs(parser, HISTORY_ARG_SPECS)
+
 
 def add_canon_toggle(parser: argparse.ArgumentParser) -> None:
     """Add option to disable canonical grammar."""
@@ -109,6 +116,7 @@ def add_canon_toggle(parser: argparse.ArgumentParser) -> None:
         default=True,
         help="Disable canonical grammar",
     )
+
 
 def _add_run_parser(sub: argparse._SubParsersAction) -> None:
     """Configure the ``run`` subcommand."""
@@ -216,6 +224,7 @@ def _add_run_parser(sub: argparse._SubParsersAction) -> None:
 
     p_run.set_defaults(func=cmd_run)
 
+
 def _add_sequence_parser(sub: argparse._SubParsersAction) -> None:
     """Configure the ``sequence`` subcommand."""
     from .execution import cmd_sequence
@@ -240,6 +249,7 @@ def _add_sequence_parser(sub: argparse._SubParsersAction) -> None:
     add_grammar_args(p_seq)
     p_seq.set_defaults(func=cmd_sequence)
 
+
 def _add_metrics_parser(sub: argparse._SubParsersAction) -> None:
     """Configure the ``metrics`` subcommand."""
     from .execution import cmd_metrics
@@ -261,6 +271,7 @@ def _add_metrics_parser(sub: argparse._SubParsersAction) -> None:
     )
     p_met.set_defaults(func=cmd_metrics)
 
+
 def _add_profile_parser(sub: argparse._SubParsersAction) -> None:
     """Configure the ``profile-si`` subcommand."""
 
@@ -277,6 +288,7 @@ def _add_profile_parser(sub: argparse._SubParsersAction) -> None:
     p_prof.add_argument("--format", choices=("pstats", "json"), default="pstats")
     p_prof.add_argument("--sort", choices=("cumtime", "tottime"), default="cumtime")
     p_prof.set_defaults(func=cmd_profile_si)
+
 
 def _add_profile_pipeline_parser(sub: argparse._SubParsersAction) -> None:
     """Configure the ``profile-pipeline`` subcommand."""
@@ -343,6 +355,7 @@ def _add_profile_pipeline_parser(sub: argparse._SubParsersAction) -> None:
         help="Worker counts forwarded to G.graph['DNFR_N_JOBS']; use 'auto' for defaults",
     )
     p_profile.set_defaults(func=cmd_profile_pipeline)
+
 
 def _add_math_run_parser(sub: argparse._SubParsersAction) -> None:
     """Configure the ``math.run`` subcommand."""
@@ -415,6 +428,7 @@ def _add_math_run_parser(sub: argparse._SubParsersAction) -> None:
     )
 
     p_math.set_defaults(func=cmd_math_run)
+
 
 def _add_epi_validate_parser(sub: argparse._SubParsersAction) -> None:
     """Configure the ``epi.validate`` subcommand."""

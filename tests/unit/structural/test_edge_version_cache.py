@@ -9,6 +9,7 @@ from tnfr.utils import (
     increment_edge_version,
 )
 
+
 @pytest.fixture
 def graph_and_manager(graph_canon):
     """Return a factory that builds a graph and its cache manager."""
@@ -19,6 +20,7 @@ def graph_and_manager(graph_canon):
         return G, manager
 
     return _factory
+
 
 def test_edge_version_cache_disable(graph_and_manager):
     G, _ = graph_and_manager()
@@ -35,6 +37,7 @@ def test_edge_version_cache_disable(graph_and_manager):
     assert calls == 2
     assert first is not second
     assert "_edge_version_cache" not in G.graph
+
 
 def test_edge_version_cache_limit(graph_and_manager):
     G, manager = graph_and_manager()
@@ -59,6 +62,7 @@ def test_edge_version_cache_limit(graph_and_manager):
     assert stats.evictions - baseline.evictions == 1
     assert record_eviction.call_count == 1
     assert record_eviction.call_args.kwargs == {"track_metrics": False}
+
 
 @pytest.mark.parametrize("max_entries", [2, None])
 def test_edge_version_cache_lock_cleanup(graph_and_manager, max_entries):
@@ -92,6 +96,7 @@ def test_edge_version_cache_lock_cleanup(graph_and_manager, max_entries):
         assert len(cache) <= max_entries
         assert set(locks) == set(cache)
 
+
 def test_edge_version_cache_manager(graph_and_manager):
     G, _ = graph_and_manager()
     assert "_edge_cache_manager" not in G.graph
@@ -103,6 +108,7 @@ def test_edge_version_cache_manager(graph_and_manager):
 
     edge_version_cache(G, "b", lambda: 2)
     assert G.graph.get("_edge_cache_manager") is manager
+
 
 def test_edge_version_cache_reentrant(graph_and_manager):
     G, _ = graph_and_manager()
@@ -117,6 +123,7 @@ def test_edge_version_cache_reentrant(graph_and_manager):
 
     assert edge_version_cache(G, "k", builder) == "ok"
     assert calls == ["outer", "inner"]
+
 
 def test_edge_version_cache_thread_safety(graph_and_manager):
     G, _ = graph_and_manager()
@@ -145,6 +152,7 @@ def test_edge_version_cache_thread_safety(graph_and_manager):
     assert second is not first
     assert calls > calls_after_first
 
+
 def test_edge_version_cache_metrics(graph_and_manager):
     G, manager = graph_and_manager()
     calls = 0
@@ -161,6 +169,7 @@ def test_edge_version_cache_metrics(graph_and_manager):
     assert stats.misses == 1
     assert stats.hits == 1
     assert stats.evictions == 0
+
 
 def test_edge_version_cache_version_bump_metrics(graph_and_manager):
     G, manager = graph_and_manager()

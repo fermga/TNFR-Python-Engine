@@ -12,7 +12,13 @@ import pytest
 hypothesis = pytest.importorskip("hypothesis")
 from hypothesis import given, strategies as st
 
-from tnfr.constants import DNFR_PRIMARY, EPI_PRIMARY, THETA_KEY, VF_PRIMARY, dEPI_PRIMARY
+from tnfr.constants import (
+    DNFR_PRIMARY,
+    EPI_PRIMARY,
+    THETA_KEY,
+    VF_PRIMARY,
+    dEPI_PRIMARY,
+)
 from tnfr.dynamics import dnfr_epi_vf_mixed, dnfr_phase_only
 from tnfr.metrics.common import compute_coherence
 from tests.helpers.validation import (
@@ -32,6 +38,7 @@ from .strategies import (
     two_cluster_graphs,
 )
 
+
 def _expected_dnfr_mixed(graph, node) -> float:
     """Return the analytic ΔNFR expected from ``dnfr_epi_vf_mixed``."""
 
@@ -40,13 +47,14 @@ def _expected_dnfr_mixed(graph, node) -> float:
         return 0.0
     epi_val = float(graph.nodes[node][EPI_PRIMARY])
     vf_val = float(graph.nodes[node][VF_PRIMARY])
-    epi_avg = sum(
-        float(graph.nodes[neigh][EPI_PRIMARY]) for neigh in neighbors
-    ) / len(neighbors)
-    vf_avg = sum(
-        float(graph.nodes[neigh][VF_PRIMARY]) for neigh in neighbors
-    ) / len(neighbors)
+    epi_avg = sum(float(graph.nodes[neigh][EPI_PRIMARY]) for neigh in neighbors) / len(
+        neighbors
+    )
+    vf_avg = sum(float(graph.nodes[neigh][VF_PRIMARY]) for neigh in neighbors) / len(
+        neighbors
+    )
     return 0.5 * (epi_avg - epi_val) + 0.5 * (vf_avg - vf_val)
+
 
 @PROPERTY_TEST_SETTINGS
 @given(graph=homogeneous_graphs())
@@ -57,6 +65,7 @@ def test_dnfr_epi_vf_mixed_stable_on_homogeneous(graph) -> None:
 
     # Use shared validation helper for consistency with integration tests
     assert_dnfr_homogeneous_stable(graph)
+
 
 @PROPERTY_TEST_SETTINGS
 @given(clustered=two_cluster_graphs())
@@ -85,6 +94,7 @@ def test_dnfr_epi_vf_mixed_balances_clusters(clustered: ClusteredGraph) -> None:
     if len(cluster_signatures) == 2:
         # Cluster signatures should oppose or cancel depending on the gradient.
         assert cluster_signatures[0] * cluster_signatures[1] <= 0.0
+
 
 @PROPERTY_TEST_SETTINGS
 @given(
@@ -130,6 +140,7 @@ def test_dnfr_epi_vf_mixed_invariant_under_relabel(data, graph) -> None:
     permuted_values = get_dnfr_values(permuted_graph)
     assert_dnfr_lists_close(base_values, permuted_values)
 
+
 def _apply_noise(
     base_graph,
     noise_scale: float,
@@ -139,9 +150,14 @@ def _apply_noise(
     for (node, data), (noise_dnfr, noise_depi) in zip(
         graph.nodes(data=True), noise_pairs
     ):
-        data[DNFR_PRIMARY] = float(data.get(DNFR_PRIMARY, 0.0)) + noise_scale * noise_dnfr
-        data[dEPI_PRIMARY] = float(data.get(dEPI_PRIMARY, 0.0)) + noise_scale * noise_depi
+        data[DNFR_PRIMARY] = (
+            float(data.get(DNFR_PRIMARY, 0.0)) + noise_scale * noise_dnfr
+        )
+        data[dEPI_PRIMARY] = (
+            float(data.get(dEPI_PRIMARY, 0.0)) + noise_scale * noise_depi
+        )
     return graph
+
 
 @PROPERTY_TEST_SETTINGS
 @given(
@@ -155,8 +171,12 @@ def test_compute_coherence_decreases_with_noise(data, graph) -> None:
 
     noise_pair = data.draw(
         st.tuples(
-            st.floats(min_value=0.0, max_value=0.5, allow_nan=False, allow_infinity=False),
-            st.floats(min_value=0.0, max_value=0.5, allow_nan=False, allow_infinity=False),
+            st.floats(
+                min_value=0.0, max_value=0.5, allow_nan=False, allow_infinity=False
+            ),
+            st.floats(
+                min_value=0.0, max_value=0.5, allow_nan=False, allow_infinity=False
+            ),
         ),
         label="noise_pair",
     )
@@ -203,6 +223,7 @@ def test_compute_coherence_decreases_with_noise(data, graph) -> None:
     assert base_coherence + tol >= small_coherence
     assert small_coherence + tol >= large_coherence
 
+
 @PROPERTY_TEST_SETTINGS
 @given(
     graph=prepare_network(min_nodes=2, max_nodes=8, connected=True),
@@ -224,6 +245,7 @@ def test_dnfr_phase_only_stable_on_synchronised(graph, phase) -> None:
 
     # Use shared validation helper for consistency
     assert_dnfr_homogeneous_stable(graph)
+
 
 @PROPERTY_TEST_SETTINGS
 @given(data=st.data())

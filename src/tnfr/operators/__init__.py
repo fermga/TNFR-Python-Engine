@@ -89,6 +89,7 @@ __all__ = [
 
 __all__.extend(_DEFINITION_EXPORTS.keys())
 
+
 def get_glyph_factors(node: NodeProtocol) -> GlyphFactors:
     """Fetch glyph tuning factors for a node.
 
@@ -124,6 +125,7 @@ def get_glyph_factors(node: NodeProtocol) -> GlyphFactors:
     """
     return node.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"].copy())
 
+
 def get_factor(gf: GlyphFactors, key: str, default: float) -> float:
     """Return a glyph factor as ``float`` with a default fallback.
 
@@ -141,7 +143,7 @@ def get_factor(gf: GlyphFactors, key: str, default: float) -> float:
     -------
     float
         The resolved factor converted to ``float``.
-        
+
     Notes
     -----
     This function performs defensive validation to ensure numeric safety.
@@ -169,9 +171,11 @@ def get_factor(gf: GlyphFactors, key: str, default: float) -> float:
         return default
     return value
 
+
 # -------------------------
 # Glyphs (local operators)
 # -------------------------
+
 
 def get_neighbor_epi(node: NodeProtocol) -> tuple[list[NodeProtocol], EPIValue]:
     """Collect neighbour nodes and their mean EPI.
@@ -253,6 +257,7 @@ def get_neighbor_epi(node: NodeProtocol) -> tuple[list[NodeProtocol], EPIValue]:
 
     return neigh, epi_bar
 
+
 def _determine_dominant(
     neigh: list[NodeProtocol], default_kind: str
 ) -> tuple[str, float]:
@@ -295,6 +300,7 @@ def _determine_dominant(
     if not best_kind:
         return default_kind, 0.0
     return best_kind, best_abs
+
 
 def _mix_epi_with_neighbors(
     node: NodeProtocol, mix: float, default_glyph: Glyph | str
@@ -356,6 +362,7 @@ def _mix_epi_with_neighbors(
     node.epi_kind = final
     return epi_bar, final
 
+
 def _op_AL(node: NodeProtocol, gf: GlyphFactors) -> None:  # AL — Emission
     """Amplify the node EPI via the Emission glyph.
 
@@ -382,6 +389,7 @@ def _op_AL(node: NodeProtocol, gf: GlyphFactors) -> None:  # AL — Emission
     """
     f = get_factor(gf, "AL_boost", 0.05)
     node.EPI = node.EPI + f
+
 
 def _op_EN(node: NodeProtocol, gf: GlyphFactors) -> None:  # EN — Reception
     """Mix the node EPI with the neighbour field via Reception.
@@ -415,6 +423,7 @@ def _op_EN(node: NodeProtocol, gf: GlyphFactors) -> None:  # EN — Reception
     mix = get_factor(gf, "EN_mix", 0.25)
     _mix_epi_with_neighbors(node, mix, Glyph.EN)
 
+
 def _op_IL(node: NodeProtocol, gf: GlyphFactors) -> None:  # IL — Coherence
     """Dampen ΔNFR magnitudes through the Coherence glyph.
 
@@ -441,6 +450,7 @@ def _op_IL(node: NodeProtocol, gf: GlyphFactors) -> None:  # IL — Coherence
     """
     factor = get_factor(gf, "IL_dnfr_factor", 0.7)
     node.dnfr = factor * getattr(node, "dnfr", 0.0)
+
 
 def _op_OZ(node: NodeProtocol, gf: GlyphFactors) -> None:  # OZ — Dissonance
     """Excite ΔNFR through the Dissonance glyph.
@@ -478,6 +488,7 @@ def _op_OZ(node: NodeProtocol, gf: GlyphFactors) -> None:  # OZ — Dissonance
     else:
         node.dnfr = factor * dnfr if abs(dnfr) > 1e-9 else 0.1
 
+
 def _um_candidate_iter(node: NodeProtocol) -> Iterator[NodeProtocol]:
     sample_ids = node.graph.get("_node_sample")
     if sample_ids is not None and hasattr(node, "G"):
@@ -492,6 +503,7 @@ def _um_candidate_iter(node: NodeProtocol) -> Iterator[NodeProtocol]:
         if same or node.has_edge(j):
             continue
         yield j
+
 
 def _um_select_candidates(
     node: NodeProtocol,
@@ -521,6 +533,7 @@ def _um_select_candidates(
         rng.shuffle(reservoir)
 
     return reservoir
+
 
 def _op_UM(node: NodeProtocol, gf: GlyphFactors) -> None:  # UM — Coupling
     """Align node phase with neighbours and optionally create links.
@@ -595,6 +608,7 @@ def _op_UM(node: NodeProtocol, gf: GlyphFactors) -> None:  # UM — Coupling
             if compat >= thr:
                 node.add_edge(j, compat)
 
+
 def _op_RA(node: NodeProtocol, gf: GlyphFactors) -> None:  # RA — Resonance
     """Diffuse EPI to the node through the Resonance glyph.
 
@@ -628,6 +642,7 @@ def _op_RA(node: NodeProtocol, gf: GlyphFactors) -> None:  # RA — Resonance
     diff = get_factor(gf, "RA_epi_diff", 0.15)
     _mix_epi_with_neighbors(node, diff, Glyph.RA)
 
+
 def _op_SHA(node: NodeProtocol, gf: GlyphFactors) -> None:  # SHA — Silence
     """Reduce νf while preserving EPI, ΔNFR, and phase.
 
@@ -655,9 +670,11 @@ def _op_SHA(node: NodeProtocol, gf: GlyphFactors) -> None:  # SHA — Silence
     factor = get_factor(gf, "SHA_vf_factor", 0.85)
     node.vf = factor * node.vf
 
+
 factor_val = 1.15
 factor_nul = 0.85
 _SCALE_FACTORS = {Glyph.VAL: factor_val, Glyph.NUL: factor_nul}
+
 
 def _op_scale(node: NodeProtocol, factor: float) -> None:
     """Scale νf with the provided factor.
@@ -671,6 +688,7 @@ def _op_scale(node: NodeProtocol, factor: float) -> None:
     """
     node.vf *= factor
 
+
 def _make_scale_op(glyph: Glyph) -> GlyphOperation:
     def _op(node: NodeProtocol, gf: GlyphFactors) -> None:
         key = "VAL_scale" if glyph is Glyph.VAL else "NUL_scale"
@@ -678,8 +696,7 @@ def _make_scale_op(glyph: Glyph) -> GlyphOperation:
         factor = get_factor(gf, key, default)
         _op_scale(node, factor)
 
-    _op.__doc__ = (
-        """{} glyph scales νf to modulate expansion or contraction.
+    _op.__doc__ = """{} glyph scales νf to modulate expansion or contraction.
 
         VAL (expansion) increases νf, whereas NUL (contraction) decreases it.
         EPI, ΔNFR, and phase remain fixed, isolating the change to temporal
@@ -703,9 +720,11 @@ def _make_scale_op(glyph: Glyph) -> GlyphOperation:
         >>> op(node, {{"VAL_scale": 1.5}})
         >>> node.vf
         1.5
-        """.format(glyph.name)
+        """.format(
+        glyph.name
     )
     return _op
+
 
 def _op_THOL(node: NodeProtocol, gf: GlyphFactors) -> None:  # THOL — Self-organization
     """Inject curvature from ``d2EPI`` into ΔNFR to trigger self-organization.
@@ -734,6 +753,7 @@ def _op_THOL(node: NodeProtocol, gf: GlyphFactors) -> None:  # THOL — Self-org
     a = get_factor(gf, "THOL_accel", 0.10)
     node.dnfr = node.dnfr + a * getattr(node, "d2EPI", 0.0)
 
+
 def _op_ZHIR(node: NodeProtocol, gf: GlyphFactors) -> None:  # ZHIR — Mutation
     """Shift phase by a fixed offset to enact mutation.
 
@@ -760,6 +780,7 @@ def _op_ZHIR(node: NodeProtocol, gf: GlyphFactors) -> None:  # ZHIR — Mutation
     """
     shift = get_factor(gf, "ZHIR_theta_shift", math.pi / 2)
     node.theta = node.theta + shift
+
 
 def _op_NAV(node: NodeProtocol, gf: GlyphFactors) -> None:  # NAV — Transition
     """Rebalance ΔNFR towards νf while permitting jitter.
@@ -804,6 +825,7 @@ def _op_NAV(node: NodeProtocol, gf: GlyphFactors) -> None:  # NAV — Transition
         jitter = j * (1 if base >= 0 else -1)
     node.dnfr = base + jitter
 
+
 def _op_REMESH(
     node: NodeProtocol, gf: GlyphFactors | None = None
 ) -> None:  # REMESH — advisory
@@ -846,6 +868,7 @@ def _op_REMESH(
         node.graph["_remesh_warn_step"] = step_idx
     return
 
+
 # -------------------------
 # Dispatcher
 # -------------------------
@@ -866,6 +889,7 @@ GLYPH_OPERATIONS: dict[Glyph, GlyphOperation] = {
     Glyph.REMESH: _op_REMESH,
 }
 
+
 def apply_glyph_obj(
     node: NodeProtocol, glyph: Glyph | str, *, window: int | None = None
 ) -> None:
@@ -878,7 +902,11 @@ def apply_glyph_obj(
     try:
         if not isinstance(glyph, Glyph):
             validated_glyph = validate_glyph(glyph)
-            glyph = validated_glyph.value if isinstance(validated_glyph, Glyph) else str(glyph)
+            glyph = (
+                validated_glyph.value
+                if isinstance(validated_glyph, Glyph)
+                else str(glyph)
+            )
         else:
             glyph = glyph.value
     except ValidationError as e:
@@ -931,19 +959,24 @@ def apply_glyph_obj(
     glyph_history.push_glyph(node._glyph_storage(), g.value, window)
     node.epi_kind = g.value
 
+
 def apply_glyph(
     G: TNFRGraph, n: NodeId, glyph: Glyph | str, *, window: int | None = None
 ) -> None:
     """Adapter to operate on ``networkx`` graphs."""
-    from ..validation.input_validation import ValidationError, validate_node_id, validate_tnfr_graph
-    
+    from ..validation.input_validation import (
+        ValidationError,
+        validate_node_id,
+        validate_tnfr_graph,
+    )
+
     # Validate graph and node parameters
     try:
         validate_tnfr_graph(G)
         validate_node_id(n)
     except ValidationError as e:
         raise ValueError(f"Invalid parameters for apply_glyph: {e}") from e
-    
+
     NodeNX = get_nodenx()
     if NodeNX is None:
         raise ImportError("NodeNX is unavailable")

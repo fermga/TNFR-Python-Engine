@@ -12,19 +12,20 @@ from matplotlib.figure import Figure
 
 PathLike = str | Path
 
+
 def _normalise_path(save_path: PathLike | None) -> Path | None:
     """Normalize and validate a save path for visualization exports.
-    
+
     Parameters
     ----------
     save_path : str | Path | None
         Path where the visualization should be saved, or None.
-    
+
     Returns
     -------
     Path | None
         Validated and resolved path, or None if save_path is None.
-    
+
     Raises
     ------
     ValueError
@@ -32,10 +33,10 @@ def _normalise_path(save_path: PathLike | None) -> Path | None:
     """
     if save_path is None:
         return None
-    
+
     # Import security utilities
     from ..security import validate_file_path, PathTraversalError
-    
+
     # Validate the path (allow absolute paths for save operations)
     try:
         validated = validate_file_path(
@@ -48,13 +49,17 @@ def _normalise_path(save_path: PathLike | None) -> Path | None:
     except (ValueError, PathTraversalError) as e:
         raise ValueError(f"Invalid save path {save_path!r}: {e}") from e
 
-def _prepare_metadata(base: Mapping[str, str] | None = None, **entries: float | str) -> MutableMapping[str, str]:
+
+def _prepare_metadata(
+    base: Mapping[str, str] | None = None, **entries: float | str
+) -> MutableMapping[str, str]:
     metadata: MutableMapping[str, str] = {"engine": "TNFR"}
     if base is not None:
         metadata.update(base)
     for key, value in entries.items():
         metadata[key] = str(value)
     return metadata
+
 
 def plot_coherence_matrix(
     coherence_matrix: np.ndarray,
@@ -126,6 +131,7 @@ def plot_coherence_matrix(
         )
 
     return fig, ax
+
 
 def plot_phase_sync(
     phase_paths: np.ndarray,
@@ -204,6 +210,7 @@ def plot_phase_sync(
         )
 
     return fig, ax
+
 
 def plot_spectrum_path(
     frequencies: np.ndarray,

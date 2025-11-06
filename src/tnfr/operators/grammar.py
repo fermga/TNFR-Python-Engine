@@ -108,9 +108,14 @@ GLYPH_TO_FUNCTION: dict[Glyph, str] = {
     Glyph.REMESH: RECURSIVITY,  # Recursivity — echoes patterns across nested EPIs.
 }
 
-FUNCTION_TO_GLYPH: dict[str, Glyph] = {name: glyph for glyph, name in GLYPH_TO_FUNCTION.items()}
+FUNCTION_TO_GLYPH: dict[str, Glyph] = {
+    name: glyph for glyph, name in GLYPH_TO_FUNCTION.items()
+}
 
-def glyph_function_name(val: Glyph | str | None, *, default: str | None = None) -> str | None:
+
+def glyph_function_name(
+    val: Glyph | str | None, *, default: str | None = None
+) -> str | None:
     """Return the structural operator name corresponding to ``val``.
 
     Parameters
@@ -133,7 +138,10 @@ def glyph_function_name(val: Glyph | str | None, *, default: str | None = None) 
     else:
         return GLYPH_TO_FUNCTION.get(glyph, default)
 
-def function_name_to_glyph(val: str | Glyph | None, *, default: Glyph | None = None) -> Glyph | None:
+
+def function_name_to_glyph(
+    val: str | Glyph | None, *, default: Glyph | None = None
+) -> Glyph | None:
     """Return the :class:`Glyph` associated with the structural identifier ``val``."""
 
     if val is None:
@@ -145,6 +153,7 @@ def function_name_to_glyph(val: str | Glyph | None, *, default: Glyph | None = N
     except (TypeError, ValueError):
         canon = canonical_operator_name(str(val))
         return FUNCTION_TO_GLYPH.get(canon, default)
+
 
 @dataclass(slots=True)
 class GrammarContext:
@@ -190,8 +199,10 @@ class GrammarContext:
             norms=G.graph.get("_sel_norms") or {},
         )
 
+
 def _gram_state(nd: dict[str, Any]) -> dict[str, Any]:
     return nd.setdefault("_GRAM", {"thol_open": False, "thol_len": 0})
+
 
 class GrammarConfigurationError(ValueError):
     """Raised when grammar configuration violates the bundled JSON schema."""
@@ -211,6 +222,7 @@ class GrammarConfigurationError(ValueError):
         self.messages = tuple(messages)
         self.details = tuple(details or ())
 
+
 def _validation_env_flag() -> bool | None:
     flag = os.environ.get("TNFR_GRAMMAR_VALIDATE")
     if flag is None:
@@ -222,7 +234,10 @@ def _validation_env_flag() -> bool | None:
         return True
     return None
 
-def _ensure_schema_validators() -> tuple[Draft7Validator | None, Draft7Validator | None] | None:
+
+def _ensure_schema_validators() -> (
+    tuple[Draft7Validator | None, Draft7Validator | None] | None
+):
     global _SCHEMA_LOAD_ERROR, _SOFT_VALIDATOR, _CANON_VALIDATOR
     if _SOFT_VALIDATOR is not None or _CANON_VALIDATOR is not None:
         return _SOFT_VALIDATOR, _CANON_VALIDATOR
@@ -232,7 +247,9 @@ def _ensure_schema_validators() -> tuple[Draft7Validator | None, Draft7Validator
         _SCHEMA_LOAD_ERROR = "jsonschema package is not installed"
         return None
     try:
-        schema_text = resources.files("tnfr.schemas").joinpath("grammar.json").read_text("utf-8")
+        schema_text = (
+            resources.files("tnfr.schemas").joinpath("grammar.json").read_text("utf-8")
+        )
     except FileNotFoundError:
         _SCHEMA_LOAD_ERROR = "grammar schema resource not found"
         return None
@@ -272,10 +289,14 @@ def _ensure_schema_validators() -> tuple[Draft7Validator | None, Draft7Validator
         return None
     return _SOFT_VALIDATOR, _CANON_VALIDATOR
 
+
 def _format_validation_error(err: Any) -> str:
-    path = "".join(f"[{p}]" if isinstance(p, int) else f".{p}" for p in err.absolute_path)
+    path = "".join(
+        f"[{p}]" if isinstance(p, int) else f".{p}" for p in err.absolute_path
+    )
     path = path.lstrip(".") or "<root>"
     return f"{path}: {err.message}"
+
 
 def _validate_grammar_configs(ctx: GrammarContext) -> None:
     flag = _validation_env_flag()
@@ -334,6 +355,7 @@ def _validate_grammar_configs(ctx: GrammarContext) -> None:
         details=issues,
     )
 
+
 class SequenceSyntaxError(ValueError):
     """Raised when an operator sequence violates the canonical grammar."""
 
@@ -347,6 +369,7 @@ class SequenceSyntaxError(ValueError):
 
     def __str__(self) -> str:  # pragma: no cover - delegated to ValueError
         return self.message
+
 
 class SequenceValidationResult(ValidationOutcome[tuple[str, ...]]):
     """Structured report emitted by :func:`validate_sequence`."""
@@ -388,12 +411,15 @@ class SequenceValidationResult(ValidationOutcome[tuple[str, ...]]):
         self.metadata = metadata_view
         self.error = error
 
+
 _CANONICAL_START = tuple(sorted(VALID_START_OPERATORS))
 _CANONICAL_INTERMEDIATE = tuple(sorted(INTERMEDIATE_OPERATORS))
 _CANONICAL_END = tuple(sorted(VALID_END_OPERATORS))
 
+
 def _format_token_group(tokens: Sequence[str]) -> str:
     return ", ".join(operator_display_name(token) for token in tokens)
+
 
 class _SequenceAutomaton:
     __slots__ = (
@@ -428,30 +454,38 @@ class _SequenceAutomaton:
 
     def _consume(self, token: str, index: int) -> None:
         if not isinstance(token, str):
-            raise SequenceSyntaxError(index=index, token=token, message="tokens must be str")
+            raise SequenceSyntaxError(
+                index=index, token=token, message="tokens must be str"
+            )
         canonical = canonical_operator_name(token)
         self._canonical.append(canonical)
         if canonical not in OPERATORS:
             self._unknown_tokens.append((index, token))
-        
+
         # R1: Validate start (already implemented)
         if index == 0:
             if canonical not in VALID_START_OPERATORS:
                 expected = _format_token_group(_CANONICAL_START)
-                raise SequenceSyntaxError(index=index, token=token, message=f"must start with {expected}")
-        
+                raise SequenceSyntaxError(
+                    index=index, token=token, message=f"must start with {expected}"
+                )
+
         # Track state for various rules
         if canonical == RECEPTION and not self._found_reception:
             self._found_reception = True
-        elif self._found_reception and canonical == COHERENCE and not self._found_coherence:
+        elif (
+            self._found_reception
+            and canonical == COHERENCE
+            and not self._found_coherence
+        ):
             self._found_coherence = True
         elif self._found_coherence and canonical in INTERMEDIATE_OPERATORS:
             self._seen_intermediate = True
-        
+
         # R2: Track stabilizers (IL or THOL)
         if canonical in {COHERENCE, SELF_ORGANIZATION}:
             self._found_stabilizer = True
-        
+
         # R4: Track dissonance before mutation
         if canonical == DISSONANCE:
             self._found_dissonance = True
@@ -463,30 +497,34 @@ class _SequenceAutomaton:
                     token=token,
                     message=f"{operator_display_name(MUTATION)} requires preceding {operator_display_name(DISSONANCE)} (no mutation without dissonance)",
                 )
-        
+
         # Track THOL state
         if canonical == SELF_ORGANIZATION:
             self._open_thol = True
         elif self._open_thol and canonical in SELF_ORGANIZATION_CLOSURES:
             self._open_thol = False
-        
+
         # Validate sequential compatibility if not first token
         # Only validate if both prev and current are known operators
         if index > 0 and canonical in OPERATORS:
-            self._validate_transition(self._canonical[index - 1], canonical, index, token)
+            self._validate_transition(
+                self._canonical[index - 1], canonical, index, token
+            )
 
-    def _validate_transition(self, prev: str, curr: str, index: int, token: str) -> None:
+    def _validate_transition(
+        self, prev: str, curr: str, index: int, token: str
+    ) -> None:
         """Validate that curr is compatible after prev using canonical compatibility tables.
-        
+
         Note: Import is done inside the method to avoid circular dependency between
         grammar and compatibility modules.
         """
         from ..validation.compatibility import _STRUCTURAL_COMPAT_TABLE
-        
+
         # Only validate if prev is also a known operator
         if prev not in OPERATORS:
             return
-        
+
         allowed = _STRUCTURAL_COMPAT_TABLE.get(prev)
         if allowed is not None and curr not in allowed:
             raise SequenceSyntaxError(
@@ -504,7 +542,7 @@ class _SequenceAutomaton:
                 token=first_token,
                 message=f"unknown tokens: {ordered}",
             )
-        
+
         # R2: Must contain at least one stabilizer
         if not self._found_stabilizer:
             raise SequenceSyntaxError(
@@ -512,7 +550,7 @@ class _SequenceAutomaton:
                 token=None,
                 message=f"missing required stabilizer ({operator_display_name(COHERENCE)} or {operator_display_name(SELF_ORGANIZATION)})",
             )
-        
+
         if not (self._found_reception and self._found_coherence):
             raise SequenceSyntaxError(
                 index=-1,
@@ -522,7 +560,7 @@ class _SequenceAutomaton:
         # NOTE: Intermediate operator check removed - COHERENCE provides sufficient
         # structural transformation for valid TNFR sequences. The requirement for
         # explicit DISSONANCE/COUPLING/RESONANCE was overly restrictive.
-        
+
         # R3: Must end with terminator
         if self._canonical[-1] not in VALID_END_OPERATORS:
             cierre = _format_token_group(_CANONICAL_END)
@@ -531,48 +569,48 @@ class _SequenceAutomaton:
                 token=names[-1],
                 message=f"sequence must end with {cierre}",
             )
-        
+
         if self._open_thol:
             raise SequenceSyntaxError(
                 index=len(names) - 1,
                 token=names[-1],
                 message=f"{operator_display_name(SELF_ORGANIZATION)} block without closure",
             )
-        
+
         # Detect structural pattern
         self._detected_pattern = self._detect_pattern()
 
     def _detect_pattern(self) -> StructuralPattern:
         """Detect the structural pattern type of the sequence."""
         seq = self._canonical
-        
+
         # Hierarchical: contains THOL
         if SELF_ORGANIZATION in seq:
             return StructuralPattern.HIERARCHICAL
-        
+
         # Bifurcated: OZ followed by ZHIR or NUL (implies branching logic)
         for i in range(len(seq) - 1):
             if seq[i] == DISSONANCE and seq[i + 1] in {MUTATION, CONTRACTION}:
                 return StructuralPattern.BIFURCATED
-        
+
         # Cyclic: contains NAV and revisits similar operators (regenerative)
         if seq.count(TRANSITION) >= 2:
             return StructuralPattern.CYCLIC
-        
+
         # Fractal: NAV with coupling or recursivity (recursive patterns)
         if TRANSITION in seq and (COUPLING in seq or RECURSIVITY in seq):
             return StructuralPattern.FRACTAL
-        
+
         # Linear: simple progression without complex patterns
         if len(seq) <= 5 and DISSONANCE not in seq and MUTATION not in seq:
             return StructuralPattern.LINEAR
-        
+
         return StructuralPattern.UNKNOWN
 
     @property
     def canonical(self) -> tuple[str, ...]:
         return tuple(self._canonical)
-    
+
     @property
     def detected_pattern(self) -> StructuralPattern:
         return self._detected_pattern
@@ -589,7 +627,9 @@ class _SequenceAutomaton:
             "detected_pattern": self._detected_pattern.value,
         }
 
+
 _MISSING = object()
+
 
 class StructuralGrammarError(RuntimeError):
     """Raised when canonical grammar invariants are violated."""
@@ -650,33 +690,42 @@ class StructuralGrammarError(RuntimeError):
             payload["context"] = dict(self.context)
         return payload
 
+
 class RepeatWindowError(StructuralGrammarError):
     """Repeated glyph within the configured hysteresis window."""
+
 
 class MutationPreconditionError(StructuralGrammarError):
     """Mutation attempted without satisfying canonical dissonance requirements."""
 
+
 class TholClosureError(StructuralGrammarError):
     """THOL block reached closure conditions without a canonical terminator."""
+
 
 class TransitionCompatibilityError(StructuralGrammarError):
     """Transition attempted that violates canonical compatibility tables."""
 
+
 class MutationWithoutDissonanceError(StructuralGrammarError):
     """ZHIR applied without OZ precedent (R4 violation)."""
+
 
 class IncompatibleSequenceError(StructuralGrammarError):
     """Sequence violates canonical compatibility rules."""
 
+
 class IncompleteEncapsulationError(StructuralGrammarError):
     """THOL without valid internal sequence."""
+
 
 class MissingStabilizerError(StructuralGrammarError):
     """Sequence missing required stabilizer (IL or THOL) - R2 violation."""
 
+
 class StructuralPattern(Enum):
     """Typology of structural patterns in operator sequences."""
-    
+
     LINEAR = "linear"  # AL → IL → RA → SHA
     HIERARCHICAL = "hierarchical"  # THOL[...]
     FRACTAL = "fractal"  # NAV → IL → UM → NAV (recursive)
@@ -684,32 +733,33 @@ class StructuralPattern(Enum):
     BIFURCATED = "bifurcated"  # OZ → {ZHIR | NUL} (branching)
     UNKNOWN = "unknown"  # Unclassified pattern
 
+
 # Structural frequency matrix (νf): Hz_str categories per operator
 # Used for phase/frequency compatibility validation (future enhancement)
 # NOTE: These constants are defined here as part of the canonical grammar specification
 # but are not yet actively used in validation. They provide the foundation for
 # future phase/frequency coherence validation (§3 Phase check in AGENTS.md)
 STRUCTURAL_FREQUENCIES: dict[str, str] = {
-    EMISSION: "alta",        # AL: inicio reorganización (high)
-    RECEPTION: "media",      # EN: captura estructural (medium)
-    COHERENCE: "media",      # IL: estabilización (medium)
-    DISSONANCE: "alta",      # OZ: tensión (high)
-    COUPLING: "media",       # UM: acoplamiento (medium)
-    RESONANCE: "alta",       # RA: amplificación (high)
-    SILENCE: "cero",         # SHA: pausa (zero/suspended)
-    EXPANSION: "media",      # VAL: exploración volumétrica (medium)
-    CONTRACTION: "alta",     # NUL: concentración (high)
+    EMISSION: "alta",  # AL: inicio reorganización (high)
+    RECEPTION: "media",  # EN: captura estructural (medium)
+    COHERENCE: "media",  # IL: estabilización (medium)
+    DISSONANCE: "alta",  # OZ: tensión (high)
+    COUPLING: "media",  # UM: acoplamiento (medium)
+    RESONANCE: "alta",  # RA: amplificación (high)
+    SILENCE: "cero",  # SHA: pausa (zero/suspended)
+    EXPANSION: "media",  # VAL: exploración volumétrica (medium)
+    CONTRACTION: "alta",  # NUL: concentración (high)
     SELF_ORGANIZATION: "media",  # THOL: cascadas autónomas (medium)
-    MUTATION: "alta",        # ZHIR: pivote de umbral (high)
-    TRANSITION: "media",     # NAV: hand-off controlado (medium)
-    RECURSIVITY: "media",    # REMESH: eco fractal (medium)
+    MUTATION: "alta",  # ZHIR: pivote de umbral (high)
+    TRANSITION: "media",  # NAV: hand-off controlado (medium)
+    RECURSIVITY: "media",  # REMESH: eco fractal (medium)
 }
 
 # Frequency compatibility: operators with harmonic frequencies can transition
 FREQUENCY_COMPATIBLE: dict[str, set[str]] = {
-    "alta": {"alta", "media"},     # High can transition to high or medium
+    "alta": {"alta", "media"},  # High can transition to high or medium
     "media": {"media", "alta", "cero"},  # Medium can transition to any
-    "cero": {"alta", "media"},     # Zero (silence) can restart with high or medium
+    "cero": {"alta", "media"},  # Zero (silence) can restart with high or medium
 }
 
 
@@ -729,8 +779,13 @@ def _record_grammar_violation(
     payload = {"node": node, "stage": stage, **error.to_payload()}
     channel.append(payload)
     logger.warning(
-        "grammar violation on node %s during %s: %s", node, stage, payload, exc_info=error
+        "grammar violation on node %s during %s: %s",
+        node,
+        stage,
+        payload,
+        exc_info=error,
     )
+
 
 def record_grammar_violation(
     G: TNFRGraph, node: NodeId, error: StructuralGrammarError, *, stage: str
@@ -738,6 +793,7 @@ def record_grammar_violation(
     """Public shim for recording grammar violations with telemetry hooks intact."""
 
     _record_grammar_violation(G, node, error, stage=stage)
+
 
 def _analyse_sequence(names: Iterable[str]) -> SequenceValidationResult:
     names_list = list(names)
@@ -758,6 +814,7 @@ def _analyse_sequence(names: Iterable[str]) -> SequenceValidationResult:
         error=error,
     )
 
+
 def validate_sequence(
     names: Iterable[str] | object = _MISSING, **kwargs: object
 ) -> ValidationOutcome[tuple[str, ...]]:
@@ -770,6 +827,7 @@ def validate_sequence(
         raise TypeError("validate_sequence() missing required argument: 'names'")
     return _analyse_sequence(names)
 
+
 def parse_sequence(names: Iterable[str]) -> SequenceValidationResult:
     result = _analyse_sequence(names)
     if not result.passed:
@@ -777,6 +835,7 @@ def parse_sequence(names: Iterable[str]) -> SequenceValidationResult:
             raise result.error
         raise SequenceSyntaxError(index=-1, token=None, message=result.message)
     return result
+
 
 def enforce_canonical_grammar(
     G: TNFRGraph,
@@ -830,6 +889,7 @@ def enforce_canonical_grammar(
         return str(cand)
     return coerced_final if isinstance(coerced_final, Glyph) else cand
 
+
 def on_applied_glyph(G: TNFRGraph, n: NodeId, applied: Glyph | str) -> None:
     nd = G.nodes[n]
     st = _gram_state(nd)
@@ -841,6 +901,7 @@ def on_applied_glyph(G: TNFRGraph, n: NodeId, applied: Glyph | str) -> None:
     elif glyph in (Glyph.SHA, Glyph.NUL):
         st["thol_open"] = False
         st["thol_len"] = 0
+
 
 def apply_glyph_with_grammar(
     G: TNFRGraph,

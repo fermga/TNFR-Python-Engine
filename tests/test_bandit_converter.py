@@ -11,6 +11,7 @@ from typing import Any, Dict
 
 # Import converter functions
 import sys
+
 tools_path = Path(__file__).parent.parent / "tools"
 sys.path.insert(0, str(tools_path))
 
@@ -19,6 +20,7 @@ from bandit_to_sarif import (
     convert_severity,
     convert_confidence,
 )
+
 
 @pytest.fixture
 def minimal_bandit_json() -> Dict[str, Any]:
@@ -35,7 +37,7 @@ def minimal_bandit_json() -> Dict[str, Any]:
                 "CONFIDENCE.HIGH": 1,
                 "SEVERITY.HIGH": 1,
                 "loc": 100,
-                "nosec": 0
+                "nosec": 0,
             }
         },
         "results": [
@@ -51,10 +53,11 @@ def minimal_bandit_json() -> Dict[str, Any]:
                 "line_range": [5],
                 "more_info": "https://bandit.readthedocs.io/en/latest/blacklists/blacklist_imports.html#b403-import-pickle",
                 "test_id": "B403",
-                "test_name": "blacklist"
+                "test_name": "blacklist",
             }
-        ]
+        ],
     }
+
 
 @pytest.fixture
 def empty_bandit_json() -> Dict[str, Any]:
@@ -66,14 +69,10 @@ def empty_bandit_json() -> Dict[str, Any]:
     return {
         "errors": [],
         "generated_at": "2024-01-01T00:00:00Z",
-        "metrics": {
-            "_totals": {
-                "loc": 100,
-                "nosec": 0
-            }
-        },
-        "results": []
+        "metrics": {"_totals": {"loc": 100, "nosec": 0}},
+        "results": [],
     }
+
 
 @pytest.fixture
 def multi_severity_bandit_json() -> Dict[str, Any]:
@@ -94,7 +93,7 @@ def multi_severity_bandit_json() -> Dict[str, Any]:
                 "issue_text": "Low severity issue",
                 "line_number": 10,
                 "test_id": "B101",
-                "test_name": "assert_used"
+                "test_name": "assert_used",
             },
             {
                 "filename": "src/test2.py",
@@ -103,7 +102,7 @@ def multi_severity_bandit_json() -> Dict[str, Any]:
                 "issue_text": "Medium severity issue",
                 "line_number": 20,
                 "test_id": "B201",
-                "test_name": "flask_debug_true"
+                "test_name": "flask_debug_true",
             },
             {
                 "filename": "src/test3.py",
@@ -112,10 +111,11 @@ def multi_severity_bandit_json() -> Dict[str, Any]:
                 "issue_text": "High severity issue",
                 "line_number": 30,
                 "test_id": "B301",
-                "test_name": "pickle"
-            }
-        ]
+                "test_name": "pickle",
+            },
+        ],
     }
+
 
 class TestSeverityConversion:
     """Test severity level conversion from Bandit to SARIF."""
@@ -142,6 +142,7 @@ class TestSeverityConversion:
         assert convert_severity("MeDiUm") == "warning"
         assert convert_severity("high") == "error"
 
+
 class TestConfidenceConversion:
     """Test confidence level conversion from Bandit to descriptive text."""
 
@@ -160,6 +161,7 @@ class TestConfidenceConversion:
     def test_convert_unknown_confidence(self):
         """Test unknown confidence handling."""
         assert convert_confidence("UNKNOWN") == "Unknown confidence"
+
 
 class TestBanditToSARIF:
     """Test complete Bandit JSON to SARIF conversion."""
@@ -212,9 +214,9 @@ class TestBanditToSARIF:
         assert len(results) == 3
 
         # Check severity mapping
-        assert results[0]["level"] == "note"      # LOW
-        assert results[1]["level"] == "warning"   # MEDIUM
-        assert results[2]["level"] == "error"     # HIGH
+        assert results[0]["level"] == "note"  # LOW
+        assert results[1]["level"] == "warning"  # MEDIUM
+        assert results[2]["level"] == "error"  # HIGH
 
         # Check confidence mapping
         assert results[0]["properties"]["confidence"] == "High confidence"
@@ -268,16 +270,19 @@ class TestBanditToSARIF:
         run = sarif["runs"][0]
         assert run["columnKind"] == "utf16CodeUnits"
 
+
 class TestEdgeCases:
     """Test edge cases and error handling."""
 
     def test_missing_optional_fields(self):
         """Test handling of missing optional fields in Bandit JSON."""
         minimal_result = {
-            "results": [{
-                "test_id": "B000",
-                "line_number": 1,
-            }]
+            "results": [
+                {
+                    "test_id": "B000",
+                    "line_number": 1,
+                }
+            ]
         }
 
         sarif = bandit_to_sarif(minimal_result)

@@ -14,6 +14,7 @@ from pathlib import Path
 
 import pytest
 
+
 class TestVenvPermissionFix:
     """Test suite for virtual environment permission fixing script."""
 
@@ -82,9 +83,13 @@ class TestVenvPermissionFix:
         semgrep_path = bin_dir / "semgrep"
 
         assert python_path.exists(), "Mock python must exist"
-        assert not os.access(python_path, os.X_OK), "Mock python should not be executable initially"
+        assert not os.access(
+            python_path, os.X_OK
+        ), "Mock python should not be executable initially"
         assert semgrep_path.exists(), "Mock semgrep must exist"
-        assert not os.access(semgrep_path, os.X_OK), "Mock semgrep should not be executable initially"
+        assert not os.access(
+            semgrep_path, os.X_OK
+        ), "Mock semgrep should not be executable initially"
 
         # Run the fix script
         result = subprocess.run(
@@ -99,8 +104,12 @@ class TestVenvPermissionFix:
         assert "Done" in result.stdout, "Script should report completion"
 
         # Verify files are now executable
-        assert os.access(python_path, os.X_OK), "Mock python should be executable after fix"
-        assert os.access(semgrep_path, os.X_OK), "Mock semgrep should be executable after fix"
+        assert os.access(
+            python_path, os.X_OK
+        ), "Mock python should be executable after fix"
+        assert os.access(
+            semgrep_path, os.X_OK
+        ), "Mock semgrep should be executable after fix"
 
         # Verify all files in bin are executable
         for exe_path in bin_dir.iterdir():
@@ -142,7 +151,9 @@ class TestVenvPermissionFix:
         python_path = bin_dir / "python"
         assert os.access(python_path, os.X_OK), "Files should remain executable"
 
-    def test_script_handles_missing_venv(self, tmp_path: Path, fix_script_path: Path) -> None:
+    def test_script_handles_missing_venv(
+        self, tmp_path: Path, fix_script_path: Path
+    ) -> None:
         """Test that the script handles missing venv directory gracefully.
 
         This test:
@@ -162,7 +173,9 @@ class TestVenvPermissionFix:
         # Should fail but not crash
         assert result.returncode != 0, "Script should fail for missing venv"
         output_lower = result.stdout.lower()
-        assert "error" in output_lower or "not found" in output_lower, "Should report error"
+        assert (
+            "error" in output_lower or "not found" in output_lower
+        ), "Should report error"
 
     def test_script_logs_actions(
         self, temp_venv_structure: Path, fix_script_path: Path
@@ -186,7 +199,9 @@ class TestVenvPermissionFix:
         output = result.stdout
         assert "Checking virtual environment" in output, "Should log checking message"
         assert "file(s) needing execute permissions" in output, "Should report count"
-        assert "python is executable" in output or "python3 is executable" in output, "Should verify key executables"
+        assert (
+            "python is executable" in output or "python3 is executable" in output
+        ), "Should verify key executables"
         assert "Done" in output, "Should report completion"
 
     def test_script_verifies_key_executables(

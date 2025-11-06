@@ -10,6 +10,7 @@ class TestFractalPartitioner:
     def test_import(self):
         """Test that FractalPartitioner can be imported."""
         from tnfr.parallel import FractalPartitioner
+
         assert FractalPartitioner is not None
 
     def test_basic_partition(self):
@@ -19,7 +20,7 @@ class TestFractalPartitioner:
         # Create simple test network with varying frequencies to force partitioning
         G = nx.Graph()
         G.add_edges_from([("a", "b"), ("b", "c"), ("c", "d")])
-        
+
         # Add varying TNFR attributes to encourage multiple partitions
         G.nodes["a"]["vf"] = 1.0
         G.nodes["a"]["phase"] = 0.0
@@ -35,7 +36,7 @@ class TestFractalPartitioner:
 
         # Should have at least one partition
         assert len(partitions) > 0
-        
+
         # Each partition should be a tuple of (node_set, subgraph)
         for node_set, subgraph in partitions:
             assert isinstance(node_set, set)
@@ -58,7 +59,7 @@ class TestFractalPartitioner:
 
         # Create network with two distinct coherence groups
         G = nx.Graph()
-        
+
         # Group 1: high frequency, phase 0
         G.add_edges_from([("a1", "a2"), ("a2", "a3")])
         G.nodes["a1"]["vf"] = 2.0
@@ -80,10 +81,7 @@ class TestFractalPartitioner:
         # Bridge between groups
         G.add_edge("a3", "b1")
 
-        partitioner = FractalPartitioner(
-            max_partition_size=10,
-            coherence_threshold=0.5
-        )
+        partitioner = FractalPartitioner(max_partition_size=10, coherence_threshold=0.5)
         partitions = partitioner.partition_network(G)
 
         # Should create separate partitions for coherent groups
@@ -123,16 +121,12 @@ class TestFractalPartitioner:
         G.nodes["c"]["phase"] = 0.0
 
         partitioner = FractalPartitioner()
-        
+
         # Same frequency and phase should have high coherence
-        coherence_similar = partitioner._compute_community_coherence(
-            G, {"a"}, "b"
-        )
+        coherence_similar = partitioner._compute_community_coherence(G, {"a"}, "b")
         assert coherence_similar > 0.8  # Should be close to 1.0
 
         # Very different frequency should lower coherence significantly
-        coherence_different = partitioner._compute_community_coherence(
-            G, {"a"}, "c"
-        )
+        coherence_different = partitioner._compute_community_coherence(G, {"a"}, "c")
         # With vf diff of 9, coherence should be notably lower
         assert coherence_different < coherence_similar

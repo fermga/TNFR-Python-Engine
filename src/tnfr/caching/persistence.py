@@ -1,6 +1,6 @@
 """Persistent cache with disk-backed storage for expensive TNFR computations.
 
-.. deprecated:: 
+.. deprecated::
    This module is deprecated. Import from ``tnfr.cache`` or ``tnfr.utils.cache`` instead.
 
 This module provides optional persistence for cache entries, allowing
@@ -15,7 +15,7 @@ warnings.warn(
     "Importing from tnfr.caching.persistence is deprecated. "
     "Use 'from tnfr.cache import PersistentTNFRCache' instead.",
     DeprecationWarning,
-    stacklevel=2
+    stacklevel=2,
 )
 
 # Re-export from consolidated location for backward compatibility

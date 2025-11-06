@@ -8,9 +8,11 @@ np = pytest.importorskip("numpy")
 
 from tnfr.mathematics import BEPIElement, BanachSpaceEPI, HilbertSpace
 
+
 @pytest.fixture()
 def sample_grid() -> np.ndarray:
     return np.linspace(0.0, 1.0, 4)
+
 
 @pytest.fixture()
 def sample_elements(sample_grid: np.ndarray) -> tuple[BEPIElement, BEPIElement]:
@@ -26,7 +28,10 @@ def sample_elements(sample_grid: np.ndarray) -> tuple[BEPIElement, BEPIElement]:
     )
     return first, second
 
-def test_direct_sum_preserves_norm_structure(sample_elements: tuple[BEPIElement, BEPIElement]) -> None:
+
+def test_direct_sum_preserves_norm_structure(
+    sample_elements: tuple[BEPIElement, BEPIElement],
+) -> None:
     space = BanachSpaceEPI()
     element_a, element_b = sample_elements
 
@@ -53,13 +58,18 @@ def test_direct_sum_preserves_norm_structure(sample_elements: tuple[BEPIElement,
     )
     assert combined_norm == pytest.approx(expected_norm)
 
-def test_adjoint_inverts_phase(sample_elements: tuple[BEPIElement, BEPIElement]) -> None:
+
+def test_adjoint_inverts_phase(
+    sample_elements: tuple[BEPIElement, BEPIElement],
+) -> None:
     space = BanachSpaceEPI()
     element_a, _ = sample_elements
 
     adjoint = space.adjoint(element_a)
 
-    np.testing.assert_allclose(adjoint.f_continuous, np.conjugate(element_a.f_continuous))
+    np.testing.assert_allclose(
+        adjoint.f_continuous, np.conjugate(element_a.f_continuous)
+    )
     np.testing.assert_allclose(adjoint.a_discrete, np.conjugate(element_a.a_discrete))
 
     original_norm = space.coherence_norm(
@@ -74,7 +84,10 @@ def test_adjoint_inverts_phase(sample_elements: tuple[BEPIElement, BEPIElement])
     )
     assert original_norm == pytest.approx(adjoint_norm)
 
-def test_tensor_with_hilbert_matches_outer_product(sample_elements: tuple[BEPIElement, BEPIElement]) -> None:
+
+def test_tensor_with_hilbert_matches_outer_product(
+    sample_elements: tuple[BEPIElement, BEPIElement],
+) -> None:
     element_a, _ = sample_elements
     hilbert = HilbertSpace(dimension=2)
     vector = np.array([1.0 + 0.0j, 1.0j], dtype=hilbert.dtype)
@@ -86,7 +99,10 @@ def test_tensor_with_hilbert_matches_outer_product(sample_elements: tuple[BEPIEl
     np.testing.assert_allclose(tensor, expected)
     np.testing.assert_allclose(via_space, expected)
 
-def test_compose_applies_componentwise(sample_elements: tuple[BEPIElement, BEPIElement]) -> None:
+
+def test_compose_applies_componentwise(
+    sample_elements: tuple[BEPIElement, BEPIElement],
+) -> None:
     space = BanachSpaceEPI()
     element_a, _ = sample_elements
 
@@ -110,6 +126,7 @@ def test_compose_applies_componentwise(sample_elements: tuple[BEPIElement, BEPIE
         x_grid=element_a.x_grid,
     )
     assert scaled_norm == pytest.approx(manual_norm)
+
 
 def test_zero_and_basis_factories(sample_grid: np.ndarray) -> None:
     space = BanachSpaceEPI()
@@ -135,11 +152,12 @@ def test_zero_and_basis_factories(sample_grid: np.ndarray) -> None:
     np.testing.assert_allclose(combined.f_continuous, basis.f_continuous)
     np.testing.assert_allclose(combined.a_discrete, basis.a_discrete)
 
+
 def test_bepi_sequence_forms_cauchy(sample_grid: np.ndarray) -> None:
     space = BanachSpaceEPI()
 
     def partial_weight(order: int) -> float:
-        return sum(0.5 ** k for k in range(order + 1))
+        return sum(0.5**k for k in range(order + 1))
 
     def make_element(order: int) -> BEPIElement:
         weight = partial_weight(order)
@@ -167,7 +185,10 @@ def test_bepi_sequence_forms_cauchy(sample_grid: np.ndarray) -> None:
     ]
 
     assert distances_to_limit[-1] < 0.08
-    assert all(earlier >= later for earlier, later in zip(distances_to_limit, distances_to_limit[1:]))
+    assert all(
+        earlier >= later
+        for earlier, later in zip(distances_to_limit, distances_to_limit[1:])
+    )
 
     tail_bounds = []
     for start in range(4, len(sequence) - 1):

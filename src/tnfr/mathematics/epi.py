@@ -1,4 +1,5 @@
 """EPI elements and algebraic helpers for the TNFR Banach space."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -15,13 +16,16 @@ __all__ = [
     "evaluate_coherence_transform",
 ]
 
+
 class _EPIValidators:
     """Shared validation helpers for EPI Banach constructions."""
 
     _complex_dtype = np.complex128
 
     @staticmethod
-    def _as_array(values: Sequence[complex] | np.ndarray, *, dtype: np.dtype) -> np.ndarray:
+    def _as_array(
+        values: Sequence[complex] | np.ndarray, *, dtype: np.dtype
+    ) -> np.ndarray:
         array = np.asarray(values, dtype=dtype)
         if array.ndim != 1:
             raise ValueError("Inputs must be one-dimensional arrays.")
@@ -30,7 +34,9 @@ class _EPIValidators:
         return array
 
     @classmethod
-    def _validate_grid(cls, grid: Sequence[float] | np.ndarray, expected_size: int) -> np.ndarray:
+    def _validate_grid(
+        cls, grid: Sequence[float] | np.ndarray, expected_size: int
+    ) -> np.ndarray:
         array = np.asarray(grid, dtype=float)
         if array.ndim != 1:
             raise ValueError("x_grid must be one-dimensional.")
@@ -66,6 +72,7 @@ class _EPIValidators:
         grid_array = cls._validate_grid(x_grid, f_array.size)
         return f_array, a_array, grid_array
 
+
 @dataclass(frozen=True)
 class BEPIElement(_EPIValidators):
     r"""Concrete :math:`C^0([0,1]) \oplus \ell^2` element with TNFR operations."""
@@ -75,7 +82,9 @@ class BEPIElement(_EPIValidators):
     x_grid: Sequence[float] | np.ndarray
 
     def __post_init__(self) -> None:
-        f_array, a_array, grid = self.validate_domain(self.f_continuous, self.a_discrete, self.x_grid)
+        f_array, a_array, grid = self.validate_domain(
+            self.f_continuous, self.a_discrete, self.x_grid
+        )
         if grid is None:
             raise ValueError("x_grid is mandatory for BEPIElement instances.")
         object.__setattr__(self, "f_continuous", f_array)
@@ -94,7 +103,11 @@ class BEPIElement(_EPIValidators):
         """Return the algebraic direct sum ``self ⊕ other``."""
 
         self._assert_compatible(other)
-        return BEPIElement(self.f_continuous + other.f_continuous, self.a_discrete + other.a_discrete, self.x_grid)
+        return BEPIElement(
+            self.f_continuous + other.f_continuous,
+            self.a_discrete + other.a_discrete,
+            self.x_grid,
+        )
 
     def tensor(self, vector: Sequence[complex] | np.ndarray) -> np.ndarray:
         """Return the tensor product between the discrete tail and a Hilbert vector."""
@@ -105,10 +118,14 @@ class BEPIElement(_EPIValidators):
     def adjoint(self) -> BEPIElement:
         """Return the conjugate element representing the ``*`` operation."""
 
-        return BEPIElement(np.conjugate(self.f_continuous), np.conjugate(self.a_discrete), self.x_grid)
+        return BEPIElement(
+            np.conjugate(self.f_continuous), np.conjugate(self.a_discrete), self.x_grid
+        )
 
     @staticmethod
-    def _apply_transform(transform: Callable[[np.ndarray], np.ndarray], values: np.ndarray) -> np.ndarray:
+    def _apply_transform(
+        transform: Callable[[np.ndarray], np.ndarray], values: np.ndarray
+    ) -> np.ndarray:
         result = np.asarray(transform(values), dtype=np.complex128)
         if result.shape != values.shape:
             raise ValueError("Transforms must preserve the element shape.")
@@ -160,15 +177,15 @@ class BEPIElement(_EPIValidators):
             "grid": tuple(grid),
         }
 
-    def __setstate__(self, state: dict[str, tuple[complex, ...] | tuple[float, ...]]) -> None:
+    def __setstate__(
+        self, state: dict[str, tuple[complex, ...] | tuple[float, ...]]
+    ) -> None:
         """Deserialize BEPIElement from a dict representation.
 
         Restores the structural integrity by validating and converting back to numpy arrays.
         """
         f_array, a_array, grid = self.validate_domain(
-            state["continuous"],
-            state["discrete"],
-            state["grid"]
+            state["continuous"], state["discrete"], state["grid"]
         )
         if grid is None:
             raise ValueError("x_grid is mandatory for BEPIElement instances.")
@@ -182,9 +199,7 @@ class BEPIElement(_EPIValidators):
             # Scalar addition: broadcast to all components
             scalar = complex(other)
             return BEPIElement(
-                self.f_continuous + scalar,
-                self.a_discrete + scalar,
-                self.x_grid
+                self.f_continuous + scalar, self.a_discrete + scalar, self.x_grid
             )
         elif isinstance(other, BEPIElement):
             # Element addition: use direct_sum
@@ -200,16 +215,14 @@ class BEPIElement(_EPIValidators):
         if isinstance(other, (int, float)):
             scalar = complex(other)
             return BEPIElement(
-                self.f_continuous - scalar,
-                self.a_discrete - scalar,
-                self.x_grid
+                self.f_continuous - scalar, self.a_discrete - scalar, self.x_grid
             )
         elif isinstance(other, BEPIElement):
             self._assert_compatible(other)
             return BEPIElement(
                 self.f_continuous - other.f_continuous,
                 self.a_discrete - other.a_discrete,
-                self.x_grid
+                self.x_grid,
             )
         return NotImplemented
 
@@ -218,9 +231,7 @@ class BEPIElement(_EPIValidators):
         if isinstance(other, (int, float)):
             scalar = complex(other)
             return BEPIElement(
-                scalar - self.f_continuous,
-                scalar - self.a_discrete,
-                self.x_grid
+                scalar - self.f_continuous, scalar - self.a_discrete, self.x_grid
             )
         return NotImplemented
 
@@ -229,9 +240,7 @@ class BEPIElement(_EPIValidators):
         if isinstance(other, (int, float)):
             scalar = complex(other)
             return BEPIElement(
-                self.f_continuous * scalar,
-                self.a_discrete * scalar,
-                self.x_grid
+                self.f_continuous * scalar, self.a_discrete * scalar, self.x_grid
             )
         return NotImplemented
 
@@ -246,9 +255,7 @@ class BEPIElement(_EPIValidators):
             if scalar == 0:
                 raise ZeroDivisionError("Cannot divide BEPIElement by zero")
             return BEPIElement(
-                self.f_continuous / scalar,
-                self.a_discrete / scalar,
-                self.x_grid
+                self.f_continuous / scalar, self.a_discrete / scalar, self.x_grid
             )
         return NotImplemented
 
@@ -259,8 +266,12 @@ class BEPIElement(_EPIValidators):
         """
         if isinstance(other, BEPIElement):
             return (
-                np.allclose(self.f_continuous, other.f_continuous, rtol=1e-12, atol=1e-12)
-                and np.allclose(self.a_discrete, other.a_discrete, rtol=1e-12, atol=1e-12)
+                np.allclose(
+                    self.f_continuous, other.f_continuous, rtol=1e-12, atol=1e-12
+                )
+                and np.allclose(
+                    self.a_discrete, other.a_discrete, rtol=1e-12, atol=1e-12
+                )
                 and np.allclose(self.x_grid, other.x_grid, rtol=1e-12, atol=1e-12)
             )
         elif isinstance(other, (int, float)):
@@ -268,6 +279,7 @@ class BEPIElement(_EPIValidators):
             # Use consistent tolerance with element comparisons
             return abs(self._max_magnitude() - float(other)) < 1e-12
         return NotImplemented
+
 
 @dataclass(frozen=True)
 class CoherenceEvaluation:
@@ -283,6 +295,7 @@ class CoherenceEvaluation:
     required: float
     deficit: float
     ratio: float
+
 
 def evaluate_coherence_transform(
     element: BEPIElement,

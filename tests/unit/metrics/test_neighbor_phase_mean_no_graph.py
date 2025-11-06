@@ -4,8 +4,10 @@ from tnfr.alias import set_attr
 from tnfr.constants import get_aliases
 from tnfr.metrics.trig import neighbor_phase_mean
 
+
 class DummyNeighbor:
     pass
+
 
 class DummyNode:
     def __init__(self):
@@ -15,10 +17,12 @@ class DummyNode:
     def neighbors(self):
         return self._neigh
 
+
 def test_neighbor_phase_mean_requires_graph():
     node = DummyNode()
     with pytest.raises(TypeError):
         neighbor_phase_mean(node)
+
 
 def test_neighbor_phase_mean_uses_generic(monkeypatch, graph_canon):
     ALIAS_THETA = get_aliases("THETA")

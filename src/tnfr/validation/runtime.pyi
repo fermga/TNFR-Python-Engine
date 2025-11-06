@@ -11,21 +11,16 @@ class GraphCanonicalValidator(Validator[TNFRGraph]):
         recompute_frequency_maxima: bool = ...,
         enforce_graph_validators: bool = ...,
     ) -> None: ...
-
-    def validate(self, subject: TNFRGraph, /, **kwargs: Any) -> ValidationOutcome[TNFRGraph]: ...
-
+    def validate(
+        self, subject: TNFRGraph, /, **kwargs: Any
+    ) -> ValidationOutcome[TNFRGraph]: ...
     def report(self, outcome: ValidationOutcome[TNFRGraph]) -> str: ...
-
 
 def apply_canonical_clamps(
     nd: MutableMapping[str, Any],
     G: TNFRGraph | None = ...,
     node: NodeId | None = ...,
 ) -> None: ...
-
-
 def validate_canon(G: TNFRGraph) -> ValidationOutcome[TNFRGraph]: ...
 
-
 __all__: tuple[str, ...]
-

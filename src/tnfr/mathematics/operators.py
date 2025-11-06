@@ -1,4 +1,5 @@
 """Spectral operators modelling coherence and frequency dynamics."""
+
 from __future__ import annotations
 
 from dataclasses import field
@@ -23,6 +24,7 @@ __all__ = ["CoherenceOperator", "FrequencyOperator"]
 DEFAULT_C_MIN: float = 0.1
 _C_MIN_UNSET = object()
 
+
 def _as_complex_vector(
     vector: Sequence[complex] | np.ndarray | Any,
     *,
@@ -32,6 +34,7 @@ def _as_complex_vector(
     if getattr(arr, "ndim", len(getattr(arr, "shape", ()))) != 1:
         raise ValueError("Vector input must be one-dimensional.")
     return arr
+
 
 def _as_complex_matrix(
     matrix: Sequence[Sequence[complex]] | np.ndarray | Any,
@@ -44,10 +47,12 @@ def _as_complex_matrix(
         raise ValueError("Operator matrix must be square.")
     return arr
 
+
 def _make_diagonal(values: Any, *, backend: MathematicsBackend) -> Any:
     dim = int(getattr(values, "shape")[0])
     identity = ensure_array(np.eye(dim, dtype=np.complex128), backend=backend)
     return backend.einsum("i,ij->ij", values, identity)
+
 
 @dataclass(slots=True)
 class CoherenceOperator:
@@ -97,7 +102,9 @@ class CoherenceOperator:
             eigenvalues_backend = eigvals_backend
         else:
             matrix_backend = _as_complex_matrix(operand, backend=resolved_backend)
-            if ensure_hermitian and not self._check_hermitian(matrix_backend, atol=atol, backend=resolved_backend):
+            if ensure_hermitian and not self._check_hermitian(
+                matrix_backend, atol=atol, backend=resolved_backend
+            ):
                 raise ValueError("Coherence operator must be Hermitian.")
             if ensure_hermitian:
                 eigenvalues_backend, _ = resolved_backend.eigh(matrix_backend)
@@ -128,7 +135,9 @@ class CoherenceOperator:
     def is_hermitian(self, *, atol: float = 1e-9) -> bool:
         """Return ``True`` when the operator matches its adjoint."""
 
-        return self._check_hermitian(self._matrix_backend, atol=atol, backend=self.backend)
+        return self._check_hermitian(
+            self._matrix_backend, atol=atol, backend=self.backend
+        )
 
     def is_positive_semidefinite(self, *, atol: float = 1e-9) -> bool:
         """Check that all eigenvalues are non-negative within ``atol``."""
@@ -184,6 +193,7 @@ class CoherenceOperator:
         if np.iscomplexobj(real_expectation):
             raise ValueError("Expectation remained complex after coercion.")
         return float(real_expectation)
+
 
 class FrequencyOperator(CoherenceOperator):
     """Operator encoding the structural frequency distribution.

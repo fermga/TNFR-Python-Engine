@@ -8,6 +8,7 @@ import pytest
 from tnfr.cli import execution
 from tnfr.validation import ValidationOutcome
 
+
 @pytest.fixture(name="callback_names")
 def _callback_names() -> tuple[str, ...]:
     return (
@@ -17,6 +18,7 @@ def _callback_names() -> tuple[str, ...]:
         "_metrics_step",
         "validate_canon",
     )
+
 
 @pytest.mark.parametrize("graph_factory", [nx.Graph])
 def test_register_callbacks_and_observer_invokes_all(

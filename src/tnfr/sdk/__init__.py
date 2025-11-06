@@ -52,11 +52,13 @@ __all__ = [
     "suggest_sequence_for_goal",
 ]
 
+
 # Lazy imports to avoid circular dependencies and optional dependency issues
 def __getattr__(name: str):
     """Lazy load SDK components."""
     if name == "TNFRNetwork" or name == "NetworkConfig" or name == "NetworkResults":
         from .fluent import TNFRNetwork, NetworkConfig, NetworkResults
+
         if name == "TNFRNetwork":
             return TNFRNetwork
         elif name == "NetworkConfig":
@@ -65,9 +67,11 @@ def __getattr__(name: str):
             return NetworkResults
     elif name == "TNFRTemplates":
         from .templates import TNFRTemplates
+
         return TNFRTemplates
     elif name == "TNFRExperimentBuilder":
         from .builders import TNFRExperimentBuilder
+
         return TNFRExperimentBuilder
     elif name in [
         "compare_networks",
@@ -85,6 +89,7 @@ def __getattr__(name: str):
             format_comparison_table,
             suggest_sequence_for_goal,
         )
+
         mapping = {
             "compare_networks": compare_networks,
             "compute_network_statistics": compute_network_statistics,

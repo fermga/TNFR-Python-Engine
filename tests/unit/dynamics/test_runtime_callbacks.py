@@ -9,6 +9,7 @@ from tnfr.dynamics.runtime import _run_after_callbacks, _run_before_callbacks
 from tnfr.glyph_history import ensure_history
 from tnfr.structural import create_nfr
 
+
 def test_run_after_callbacks_exposes_latest_history_metrics() -> None:
     """Registered AFTER_STEP callbacks should see the latest history values."""
 
@@ -46,6 +47,7 @@ def test_run_after_callbacks_exposes_latest_history_metrics() -> None:
             "Si_mean": 0.27,
         }
     ]
+
 
 def test_run_before_callbacks_provides_execution_context() -> None:
     """Registered BEFORE_STEP callbacks should receive the execution context."""

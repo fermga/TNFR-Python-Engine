@@ -50,12 +50,13 @@ __all__ = [
 
 logger = get_logger(__name__)
 
+
 class TNFRBackend(ABC):
     """Base class for TNFR computation backends.
-    
+
     All backends must implement the core computational methods while
     preserving TNFR structural semantics and the canonical nodal equation.
-    
+
     Structural Invariants
     ---------------------
     1. ΔNFR semantics: sign and magnitude must modulate reorganization rate
@@ -63,7 +64,7 @@ class TNFRBackend(ABC):
     3. Operator closure: all transformations map to valid TNFR states
     4. Determinism: computations must be reproducible with fixed seeds
     5. Si stability: sense index must correlate with network coherence
-    
+
     Attributes
     ----------
     name : str
@@ -73,23 +74,23 @@ class TNFRBackend(ABC):
     supports_jit : bool
         Whether this backend supports JIT compilation
     """
-    
+
     @property
     @abstractmethod
     def name(self) -> str:
         """Return the backend identifier."""
         ...
-    
+
     @property
     def supports_gpu(self) -> bool:
         """Return True if this backend can use GPU acceleration."""
         return False
-    
+
     @property
     def supports_jit(self) -> bool:
         """Return True if this backend supports JIT compilation."""
         return False
-    
+
     @abstractmethod
     def compute_delta_nfr(
         self,
@@ -100,12 +101,12 @@ class TNFRBackend(ABC):
         profile: MutableMapping[str, float] | None = None,
     ) -> None:
         """Compute ΔNFR for all nodes in the graph.
-        
+
         This method must preserve the canonical ΔNFR computation semantics:
         - Weighted combination of phase, EPI, νf, and topology gradients
         - Proper phase dispersion calculation via neighbor phase means
         - Coherent handling of isolated nodes (ΔNFR = 0)
-        
+
         Parameters
         ----------
         graph : TNFRGraph
@@ -116,14 +117,14 @@ class TNFRBackend(ABC):
             Parallelism hint for backends that support it
         profile : MutableMapping[str, float] or None, optional
             Dict to accumulate timing metrics for profiling
-        
+
         Notes
         -----
         The computation must write ΔNFR values back to nodes using the
         appropriate alias and maintain consistency with graph metadata.
         """
         ...
-    
+
     @abstractmethod
     def compute_si(
         self,
@@ -135,10 +136,10 @@ class TNFRBackend(ABC):
         profile: MutableMapping[str, Any] | None = None,
     ) -> dict[Any, float] | Any:
         """Compute the sense index (Si) for all nodes.
-        
+
         Si blends structural frequency (νf), phase alignment, and ΔNFR
         attenuation according to the weights configured in graph metadata.
-        
+
         Parameters
         ----------
         graph : TNFRGraph
@@ -151,12 +152,12 @@ class TNFRBackend(ABC):
             Batch size for chunked processing
         profile : MutableMapping[str, Any] or None, optional
             Dict to accumulate timing and execution path metrics
-        
+
         Returns
         -------
         dict[Any, float] or numpy.ndarray
             Node-to-Si mapping or array of Si values
-        
+
         Notes
         -----
         The Si computation must respect the structural sensitivity weights
@@ -174,14 +175,14 @@ _CURRENT_BACKEND: str | None = None
 
 def register_backend(name: str, backend_class: type[TNFRBackend]) -> None:
     """Register a TNFR backend implementation.
-    
+
     Parameters
     ----------
     name : str
         Backend identifier (will be normalized to lowercase)
     backend_class : type[TNFRBackend]
         Backend class implementing the TNFRBackend interface
-    
+
     Raises
     ------
     ValueError
@@ -192,51 +193,51 @@ def register_backend(name: str, backend_class: type[TNFRBackend]) -> None:
     name_lower = name.lower().strip()
     if not name_lower:
         raise ValueError("Backend name cannot be empty")
-    
+
     if name_lower in _BACKEND_REGISTRY:
         raise ValueError(f"Backend '{name}' is already registered")
-    
+
     if not issubclass(backend_class, TNFRBackend):
         raise TypeError(
             f"Backend class must inherit from TNFRBackend, got {backend_class}"
         )
-    
+
     _BACKEND_REGISTRY[name_lower] = backend_class
     logger.debug("Registered TNFR backend: %s", name)
 
 
 def get_backend(name: str | None = None) -> TNFRBackend:
     """Get a TNFR backend instance by name.
-    
+
     Resolution order:
     1. Explicit `name` parameter
     2. Previously set backend via set_backend()
     3. TNFR_BACKEND environment variable
     4. Default backend ("numpy")
-    
+
     Parameters
     ----------
     name : str or None, optional
         Backend name to retrieve. If None, uses resolution order above.
-    
+
     Returns
     -------
     TNFRBackend
         Backend instance ready for computation
-    
+
     Raises
     ------
     ValueError
         If the requested backend is not registered
     RuntimeError
         If backend initialization fails
-    
+
     Examples
     --------
     >>> backend = get_backend("numpy")
     >>> backend.name
     'numpy'
-    
+
     >>> import os
     >>> os.environ["TNFR_BACKEND"] = "numpy"
     >>> backend = get_backend()
@@ -244,27 +245,25 @@ def get_backend(name: str | None = None) -> TNFRBackend:
     'numpy'
     """
     global _CURRENT_BACKEND
-    
+
     # Resolve backend name
     if name is None:
         if _CURRENT_BACKEND is not None:
             name = _CURRENT_BACKEND
         else:
             name = os.environ.get("TNFR_BACKEND", _DEFAULT_BACKEND)
-    
+
     name_lower = name.lower().strip()
-    
+
     # Return cached instance if available
     if name_lower in _BACKEND_CACHE:
         return _BACKEND_CACHE[name_lower]
-    
+
     # Get backend class from registry
     if name_lower not in _BACKEND_REGISTRY:
         available = ", ".join(sorted(_BACKEND_REGISTRY.keys()))
-        raise ValueError(
-            f"Unknown backend '{name}'. Available backends: {available}"
-        )
-    
+        raise ValueError(f"Unknown backend '{name}'. Available backends: {available}")
+
     # Instantiate backend
     backend_class = _BACKEND_REGISTRY[name_lower]
     try:
@@ -273,24 +272,22 @@ def get_backend(name: str | None = None) -> TNFRBackend:
         logger.info("Initialized TNFR backend: %s", name_lower)
         return backend
     except Exception as exc:
-        raise RuntimeError(
-            f"Failed to initialize backend '{name}': {exc}"
-        ) from exc
+        raise RuntimeError(f"Failed to initialize backend '{name}': {exc}") from exc
 
 
 def set_backend(name: str) -> None:
     """Set the default TNFR backend for subsequent operations.
-    
+
     Parameters
     ----------
     name : str
         Backend name to set as default
-    
+
     Raises
     ------
     ValueError
         If the backend name is not registered
-    
+
     Examples
     --------
     >>> set_backend("numpy")
@@ -298,26 +295,24 @@ def set_backend(name: str) -> None:
     'numpy'
     """
     global _CURRENT_BACKEND
-    
+
     name_lower = name.lower().strip()
     if name_lower not in _BACKEND_REGISTRY:
         available = ", ".join(sorted(_BACKEND_REGISTRY.keys()))
-        raise ValueError(
-            f"Unknown backend '{name}'. Available backends: {available}"
-        )
-    
+        raise ValueError(f"Unknown backend '{name}'. Available backends: {available}")
+
     _CURRENT_BACKEND = name_lower
     logger.info("Set default TNFR backend to: %s", name_lower)
 
 
 def available_backends() -> Mapping[str, type[TNFRBackend]]:
     """Return mapping of registered backend names to their classes.
-    
+
     Returns
     -------
     Mapping[str, type[TNFRBackend]]
         Read-only view of registered backends
-    
+
     Examples
     --------
     >>> backends = available_backends()
@@ -331,12 +326,14 @@ def available_backends() -> Mapping[str, type[TNFRBackend]]:
 # This is done at module level to ensure backends are available immediately
 try:
     from . import numpy_backend
+
     register_backend("numpy", numpy_backend.NumPyBackend)
 except ImportError as exc:
     logger.warning("NumPy backend unavailable: %s", exc)
 
 try:
     from . import optimized_numpy
+
     register_backend("optimized_numpy", optimized_numpy.OptimizedNumPyBackend)
     register_backend("optimized", optimized_numpy.OptimizedNumPyBackend)
 except ImportError as exc:
@@ -344,12 +341,14 @@ except ImportError as exc:
 
 try:
     from . import jax_backend
+
     register_backend("jax", jax_backend.JAXBackend)
 except ImportError as exc:
     logger.debug("JAX backend not available (optional dependency): %s", exc)
 
 try:
     from . import torch_backend
+
     register_backend("torch", torch_backend.TorchBackend)
 except ImportError as exc:
     logger.debug("PyTorch backend not available (optional dependency): %s", exc)

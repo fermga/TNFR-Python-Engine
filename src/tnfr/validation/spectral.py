@@ -19,6 +19,7 @@ from . import ValidationOutcome, Validator
 
 __all__ = ("NFRValidator",)
 
+
 @dataclass(slots=True)
 class NFRValidator(Validator[np.ndarray]):
     """Validate spectral states against TNFR canonical invariants."""
@@ -72,7 +73,9 @@ class NFRValidator(Validator[np.ndarray]):
             }
             frequency_summary.pop("enforce", None)
         elif enforce_frequency_positivity:
-            raise ValueError("Frequency positivity enforcement requested without operator.")
+            raise ValueError(
+                "Frequency positivity enforcement requested without operator."
+            )
 
         unitary_passed, unitary_norm = runtime_stable_unitary(
             normalised_vector,
@@ -96,7 +99,9 @@ class NFRValidator(Validator[np.ndarray]):
             },
         }
 
-        overall = bool(normalized_passed and coherence_passed and freq_ok and unitary_passed)
+        overall = bool(
+            normalized_passed and coherence_passed and freq_ok and unitary_passed
+        )
         return overall, summary, normalised_vector
 
     def validate(
@@ -145,7 +150,9 @@ class NFRValidator(Validator[np.ndarray]):
             failed_checks.append("coherence threshold")
 
         frequency_summary = summary.get("frequency")
-        if isinstance(frequency_summary, Mapping) and not frequency_summary.get("passed", False):
+        if isinstance(frequency_summary, Mapping) and not frequency_summary.get(
+            "passed", False
+        ):
             failed_checks.append("frequency positivity")
 
         unitary_summary = summary.get("unitary_stability", {})

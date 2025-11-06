@@ -10,7 +10,6 @@ def auto_chunk_size(
     approx_bytes_per_item: int = ...,
     clamp_to: int | None = ...,
 ) -> int: ...
-
 def resolve_chunk_size(
     chunk_size: int | None,
     total_items: int,

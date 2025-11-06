@@ -2,7 +2,7 @@ from contextlib import contextmanager
 from dataclasses import dataclass
 from typing import Iterator
 
-__all__ = ['MathFeatureFlags', 'get_flags', 'context_flags']
+__all__ = ["MathFeatureFlags", "get_flags", "context_flags"]
 
 @dataclass(frozen=True)
 class MathFeatureFlags:

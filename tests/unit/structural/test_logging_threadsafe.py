@@ -2,6 +2,7 @@ import logging
 import sys
 from concurrent.futures import ThreadPoolExecutor
 
+
 def reimport_logging_utils():
     """Re-import logging_utils to ensure fresh module state.
 
@@ -11,16 +12,20 @@ def reimport_logging_utils():
     """
     global logging_utils
     # Re-import module instead of reload to handle test isolation
-    if 'tnfr.utils.init' in sys.modules:
-        del sys.modules['tnfr.utils.init']
+    if "tnfr.utils.init" in sys.modules:
+        del sys.modules["tnfr.utils.init"]
     import tnfr.utils.init as logging_utils
+
     return logging_utils
+
 
 # Import after defining reimport function
 import tnfr.utils.init as logging_utils
 
+
 def _worker():
     logging_utils.get_logger("test_logger")
+
 
 def test_get_logger_threadsafe():
     root = logging.getLogger()
@@ -29,6 +34,7 @@ def test_get_logger_threadsafe():
     with ThreadPoolExecutor(max_workers=32) as ex:
         list(ex.map(lambda _: _worker(), range(64)))
     assert len(root.handlers) == 1
+
 
 def test_get_logger_preserves_existing_level():
     root = logging.getLogger()
@@ -39,6 +45,7 @@ def test_get_logger_preserves_existing_level():
     assert root.level == logging.ERROR
     root.setLevel(logging.WARNING)
 
+
 def test_get_logger_sets_level_when_notset():
     root = logging.getLogger()
     root.handlers.clear()
@@ -47,6 +54,7 @@ def test_get_logger_sets_level_when_notset():
     logging_utils.get_logger("test_logger")
     assert root.level == logging.INFO
     root.setLevel(logging.WARNING)
+
 
 def test_get_logger_multiple_calls_do_not_reconfigure_root():
     root = logging.getLogger()

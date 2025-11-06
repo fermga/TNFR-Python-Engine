@@ -47,15 +47,18 @@ INTERMEDIATE_OPERATORS = frozenset({DISSONANCE, COUPLING, RESONANCE})
 VALID_END_OPERATORS = frozenset({SILENCE, TRANSITION, RECURSIVITY, DISSONANCE})
 SELF_ORGANIZATION_CLOSURES = frozenset({SILENCE, CONTRACTION})
 
+
 def canonical_operator_name(name: str) -> str:
     """Return the canonical operator token for ``name``."""
 
     return name
 
+
 def operator_display_name(name: str) -> str:
     """Return the display label for ``name`` (currently the canonical token)."""
 
     return canonical_operator_name(name)
+
 
 __all__ = [
     "EMISSION",
@@ -81,6 +84,7 @@ __all__ = [
     "canonical_operator_name",
     "operator_display_name",
 ]
+
 
 def __getattr__(name: str) -> Any:
     """Provide a consistent ``AttributeError`` when names are missing."""

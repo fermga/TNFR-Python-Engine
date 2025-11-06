@@ -69,6 +69,7 @@ def test_plot_phase_sync_exports_metadata(tmp_path, monkeypatch):
     assert float(kwargs["metadata"]["nu_f_hz_str"]) == 2.5
     fig.clf()
 
+
 def test_plot_spectrum_path_exports_metadata(tmp_path, monkeypatch):
     save_spy = _patch_savefig(monkeypatch)
     frequencies = np.array([0.5, 1.0, 1.5])

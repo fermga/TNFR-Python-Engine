@@ -13,6 +13,7 @@ if TYPE_CHECKING:  # pragma: no cover - type checking only
 
 OPERATORS: dict[str, type["Operator"]] = {}
 
+
 def register_operator(cls: type["Operator"]) -> type["Operator"]:
     """Register ``cls`` under its declared ``name`` in :data:`OPERATORS`."""
 
@@ -29,6 +30,7 @@ def register_operator(cls: type["Operator"]) -> type["Operator"]:
     OPERATORS[name] = cls
     return cls
 
+
 def get_operator_class(name: str) -> type["Operator"]:
     """Return the operator class registered for ``name`` or its canonical alias."""
 
@@ -42,6 +44,7 @@ def get_operator_class(name: str) -> type["Operator"]:
             return OPERATORS[canonical]
         except KeyError as exc:  # pragma: no cover - defensive branch
             raise KeyError(name) from exc
+
 
 def discover_operators() -> None:
     """Import all operator submodules so their decorators run."""
@@ -61,6 +64,7 @@ def discover_operators() -> None:
         importlib.import_module(module_info.name)
 
     setattr(package, "_operators_discovered", True)
+
 
 __all__ = (
     "OPERATORS",

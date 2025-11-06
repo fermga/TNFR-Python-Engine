@@ -21,35 +21,37 @@ from ..validation import (
 
 def load_graph(filepath: str) -> nx.Graph:
     """Load a graph from file.
-    
+
     Parameters
     ----------
     filepath : str
         Path to graph file (supports .graphml, .gml, .json).
-    
+
     Returns
     -------
     nx.Graph
         Loaded graph.
     """
     filepath_obj = Path(filepath)
-    
+
     if not filepath_obj.exists():
         raise FileNotFoundError(f"Graph file not found: {filepath}")
-    
+
     # Determine format from extension
     ext = filepath_obj.suffix.lower()
-    
+
     if ext == ".graphml":
         return nx.read_graphml(filepath)
     elif ext == ".gml":
         return nx.read_gml(filepath)
     elif ext == ".json":
-        with open(filepath, 'r') as f:
+        with open(filepath, "r") as f:
             data = json.load(f)
         return nx.node_link_graph(data)
     else:
-        raise ValueError(f"Unsupported graph format: {ext}. Use .graphml, .gml, or .json")
+        raise ValueError(
+            f"Unsupported graph format: {ext}. Use .graphml, .gml, or .json"
+        )
 
 
 def main():
@@ -73,59 +75,53 @@ Examples:
   
   # Enable caching for multiple validations
   tnfr-validate graph.graphml --cache
-        """
+        """,
     )
-    
+
     parser.add_argument(
-        "graph_file",
-        help="Path to graph file (.graphml, .gml, or .json)"
+        "graph_file", help="Path to graph file (.graphml, .gml, or .json)"
     )
-    
+
     parser.add_argument(
         "--format",
         choices=["text", "json", "html"],
         default="text",
-        help="Output format (default: text)"
+        help="Output format (default: text)",
     )
-    
+
     parser.add_argument(
-        "--output", "-o",
-        help="Output file (default: stdout for text, or auto-generated for json/html)"
+        "--output",
+        "-o",
+        help="Output file (default: stdout for text, or auto-generated for json/html)",
     )
-    
+
     parser.add_argument(
         "--min-severity",
         choices=["info", "warning", "error", "critical"],
         default="error",
-        help="Minimum severity to report (default: error)"
+        help="Minimum severity to report (default: error)",
     )
-    
+
     parser.add_argument(
-        "--cache",
-        action="store_true",
-        help="Enable validation result caching"
+        "--cache", action="store_true", help="Enable validation result caching"
     )
-    
+
     parser.add_argument(
         "--no-semantic",
         action="store_true",
-        help="Disable semantic sequence validation"
+        help="Disable semantic sequence validation",
     )
-    
+
     parser.add_argument(
         "--phase-threshold",
         type=float,
-        help="Phase coupling threshold in radians (default: π/2)"
+        help="Phase coupling threshold in radians (default: π/2)",
     )
-    
-    parser.add_argument(
-        "--verbose", "-v",
-        action="store_true",
-        help="Verbose output"
-    )
-    
+
+    parser.add_argument("--verbose", "-v", action="store_true", help="Verbose output")
+
     args = parser.parse_args()
-    
+
     # Configure validation
     severity_map = {
         "info": InvariantSeverity.INFO,
@@ -133,38 +129,40 @@ Examples:
         "error": InvariantSeverity.ERROR,
         "critical": InvariantSeverity.CRITICAL,
     }
-    
+
     configure_validation(
         validate_invariants=True,
         enable_semantic_validation=not args.no_semantic,
         min_severity=severity_map[args.min_severity],
     )
-    
+
     if args.verbose:
         print(f"Loading graph from: {args.graph_file}")
-    
+
     try:
         # Load graph
         graph = load_graph(args.graph_file)
-        
+
         if args.verbose:
-            print(f"Graph loaded: {graph.number_of_nodes()} nodes, {graph.number_of_edges()} edges")
-        
+            print(
+                f"Graph loaded: {graph.number_of_nodes()} nodes, {graph.number_of_edges()} edges"
+            )
+
         # Create validator
         if args.phase_threshold:
             validator = TNFRValidator(phase_coupling_threshold=args.phase_threshold)
         else:
             validator = TNFRValidator()
-        
+
         if args.cache:
             validator.enable_cache(True)
-        
+
         # Validate
         if args.verbose:
             print("Running TNFR validation...")
-        
+
         violations = validator.validate_graph(graph)
-        
+
         # Generate output
         if args.format == "text":
             output = validator.generate_report(violations)
@@ -172,17 +170,17 @@ Examples:
             output = validator.export_to_json(violations)
         elif args.format == "html":
             output = validator.export_to_html(violations)
-        
+
         # Write output
         if args.output:
             output_path = Path(args.output)
-            with open(output_path, 'w') as f:
+            with open(output_path, "w") as f:
                 f.write(output)
             print(f"Report written to: {output_path}")
         else:
             # Print to stdout
             print(output)
-        
+
         # Exit code based on violations
         if violations:
             # Check if there are any ERROR or CRITICAL violations
@@ -193,11 +191,12 @@ Examples:
             sys.exit(1 if has_errors else 0)
         else:
             sys.exit(0)
-    
+
     except Exception as e:
         print(f"Error: {e}", file=sys.stderr)
         if args.verbose:
             import traceback
+
             traceback.print_exc()
         sys.exit(2)
 

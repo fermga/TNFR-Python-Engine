@@ -1,6 +1,18 @@
 from _typeshed import Incomplete
 
-__all__ = ['ALIAS_VF', 'ALIAS_THETA', 'ALIAS_DNFR', 'ALIAS_EPI', 'ALIAS_EPI_KIND', 'ALIAS_SI', 'ALIAS_DEPI', 'ALIAS_D2EPI', 'ALIAS_DVF', 'ALIAS_D2VF', 'ALIAS_DSI']
+__all__ = [
+    "ALIAS_VF",
+    "ALIAS_THETA",
+    "ALIAS_DNFR",
+    "ALIAS_EPI",
+    "ALIAS_EPI_KIND",
+    "ALIAS_SI",
+    "ALIAS_DEPI",
+    "ALIAS_D2EPI",
+    "ALIAS_DVF",
+    "ALIAS_D2VF",
+    "ALIAS_DSI",
+]
 
 ALIAS_VF: Incomplete
 ALIAS_THETA: Incomplete

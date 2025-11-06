@@ -10,13 +10,8 @@ __all__ = (
     "soft_grammar_filters",
 )
 
-
 def acceleration_norm(ctx: GrammarContext, nd: Mapping[str, Any]) -> float: ...
-
-
 def check_repeats(ctx: GrammarContext, n: Any, cand: Glyph | str) -> Glyph | str: ...
-
-
 def maybe_force(
     ctx: GrammarContext,
     n: Any,
@@ -25,8 +20,6 @@ def maybe_force(
     accessor: Callable[[GrammarContext, Mapping[str, Any]], float],
     key: str,
 ) -> Glyph | str: ...
-
-
 def soft_grammar_filters(
     ctx: GrammarContext,
     n: Any,

@@ -64,13 +64,13 @@ def dataclass(
     slots=False,
 ):
     """Compatibility wrapper for @dataclass supporting Python 3.9+.
-    
+
     On Python 3.10+, passes all parameters including ``slots`` to dataclass.
     On Python 3.9, silently ignores ``slots`` parameter since it's not supported.
-    
+
     This allows code to use ``slots=True`` for performance benefits on newer
     Python versions while maintaining backward compatibility with 3.9.
-    
+
     Parameters
     ----------
     cls : type, optional
@@ -93,12 +93,12 @@ def dataclass(
         Make all fields keyword-only.
     slots : bool, default False
         Generate __slots__ (Python 3.10+ only, ignored on 3.9).
-    
+
     Returns
     -------
     type
         Decorated dataclass.
-    
+
     Examples
     --------
     >>> from tnfr.compat.dataclass import dataclass
@@ -107,7 +107,7 @@ def dataclass(
     ...     x: float
     ...     y: float
     """
-    
+
     # Build kwargs based on Python version
     kwargs = {
         "init": init,
@@ -117,17 +117,17 @@ def dataclass(
         "unsafe_hash": unsafe_hash,
         "frozen": frozen,
     }
-    
+
     # Add parameters supported in Python 3.10+
     if sys.version_info >= (3, 10):
         kwargs["match_args"] = match_args
         kwargs["kw_only"] = kw_only
         kwargs["slots"] = slots
-    
+
     # Handle decorator with and without parentheses
     def wrap(c):
         return _dataclass(c, **kwargs)
-    
+
     if cls is None:
         # Called with parentheses: @dataclass(...)
         return wrap

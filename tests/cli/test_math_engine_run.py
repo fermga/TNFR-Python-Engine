@@ -11,6 +11,7 @@ from tnfr.constants import VF_PRIMARY
 from tnfr.metrics.core import _update_nu_f_snapshot
 from tnfr.telemetry.nu_f import ensure_nu_f_telemetry
 
+
 def test_math_engine_cli_preserves_classic_metrics(
     monkeypatch: pytest.MonkeyPatch, capfd: pytest.CaptureFixture[str]
 ) -> None:
@@ -176,8 +177,12 @@ def test_math_engine_cli_preserves_classic_metrics(
     assert history["nu_f_ci_upper_hz_str"][-1] == pytest.approx(
         nu_f_summary["ci_hz_str"]["upper"]
     )
-    assert history["nu_f_ci_lower_hz"][-1] == pytest.approx(nu_f_summary["ci_hz"]["lower"])
-    assert history["nu_f_ci_upper_hz"][-1] == pytest.approx(nu_f_summary["ci_hz"]["upper"])
+    assert history["nu_f_ci_lower_hz"][-1] == pytest.approx(
+        nu_f_summary["ci_hz"]["lower"]
+    )
+    assert history["nu_f_ci_upper_hz"][-1] == pytest.approx(
+        nu_f_summary["ci_hz"]["upper"]
+    )
 
     math_cfg = math_snapshot["math_cfg"]
     assert math_cfg is not None and math_cfg.get("enabled")
@@ -205,7 +210,9 @@ def test_math_engine_cli_preserves_classic_metrics(
         if isinstance(summary, dict) and "value" in summary:
             projected_freq_values.append(float(summary["value"]))
 
-    assert projected_freq_values, "validator should supply frequency values for comparison"
+    assert (
+        projected_freq_values
+    ), "validator should supply frequency values for comparison"
     expected_min = min(projected_freq_values)
     assert reported_mins[0] == pytest.approx(expected_min)
     assert expected_min > 0.0

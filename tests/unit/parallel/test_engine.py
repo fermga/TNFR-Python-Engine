@@ -10,6 +10,7 @@ class TestTNFRParallelEngine:
     def test_import(self):
         """Test that TNFRParallelEngine can be imported."""
         from tnfr.parallel import TNFRParallelEngine
+
         assert TNFRParallelEngine is not None
 
     def test_engine_initialization(self):
@@ -54,7 +55,7 @@ class TestTNFRParallelEngine:
         # Create test network
         G = nx.Graph()
         G.add_edges_from([("a", "b"), ("b", "c"), ("c", "d")])
-        
+
         # Initialize with TNFR attributes
         for node in G.nodes():
             G.nodes[node]["vf"] = 1.0
@@ -63,14 +64,14 @@ class TestTNFRParallelEngine:
             G.nodes[node]["delta_nfr"] = 0.0
 
         engine = TNFRParallelEngine(max_workers=2)
-        
+
         # Should execute without error
         result = engine.compute_delta_nfr_parallel(G)
-        
+
         # Should return dict with all nodes
         assert isinstance(result, dict)
         assert set(result.keys()) == set(G.nodes())
-        
+
         # All values should be floats
         for value in result.values():
             assert isinstance(value, float)
@@ -82,7 +83,7 @@ class TestTNFRParallelEngine:
         # Create test network
         G = nx.Graph()
         G.add_edges_from([("a", "b"), ("b", "c")])
-        
+
         # Initialize with TNFR attributes
         for node in G.nodes():
             G.nodes[node]["nu_f"] = 1.0  # Si uses "nu_f" alias
@@ -90,14 +91,14 @@ class TestTNFRParallelEngine:
             G.nodes[node]["delta_nfr"] = 0.0
 
         engine = TNFRParallelEngine(max_workers=2)
-        
+
         # Should execute without error
         result = engine.compute_si_parallel(G)
-        
+
         # Should return dict with all nodes
         assert isinstance(result, dict)
         assert set(result.keys()) == set(G.nodes())
-        
+
         # All values should be floats
         for value in result.values():
             assert isinstance(value, float)
@@ -109,7 +110,7 @@ class TestTNFRParallelEngine:
 
         # Use existing TNFR infrastructure
         G, node = create_nfr("test", epi=0.5, vf=1.0)
-        
+
         # Add more nodes
         G.add_node("n2", epi=0.6, vf=1.1, phase=0.1, delta_nfr=0.0)
         G.add_node("n3", epi=0.4, vf=0.9, phase=0.2, delta_nfr=0.0)
@@ -117,7 +118,7 @@ class TestTNFRParallelEngine:
         G.add_edge("n2", "n3")
 
         engine = TNFRParallelEngine(max_workers=2)
-        
+
         # Should work with existing graph structure
         result = engine.compute_delta_nfr_parallel(G)
         assert len(result) == 3

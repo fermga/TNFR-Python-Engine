@@ -18,7 +18,7 @@ class TestTNFRValidator:
 
     def test_valid_graph_passes(self):
         """Test that a valid graph passes all invariants (no ERROR or CRITICAL violations).
-        
+
         A minimal graph with just node attributes may have WARNING violations
         for missing graph-level attributes (ΔNFR hook, history, seed, C(t)),
         but should have no ERROR or CRITICAL violations.
@@ -30,7 +30,7 @@ class TestTNFRValidator:
         violations = validator.validate_graph(G)
 
         # Should have no ERROR or CRITICAL violations (warnings are acceptable)
-        errors = [v for v in violations if v.severity.value in ('error', 'critical')]
+        errors = [v for v in violations if v.severity.value in ("error", "critical")]
         assert len(errors) == 0
 
     def test_invalid_graph_detects_violations(self):
@@ -82,7 +82,9 @@ class TestTNFRValidator:
         assert len(all_violations) > 0
 
         # Filter only warnings
-        warnings = validator.validate_graph(G, severity_filter=InvariantSeverity.WARNING)
+        warnings = validator.validate_graph(
+            G, severity_filter=InvariantSeverity.WARNING
+        )
         assert len(warnings) > 0
         assert all(v.severity == InvariantSeverity.WARNING for v in warnings)
 
@@ -101,7 +103,9 @@ class TestTNFRValidator:
     def test_generate_report_with_violations(self):
         """Test report generation with violations."""
         G = nx.Graph()
-        G.add_node("node1", **{EPI_PRIMARY: 2.0, VF_PRIMARY: -1.0, THETA_PRIMARY: float("inf")})
+        G.add_node(
+            "node1", **{EPI_PRIMARY: 2.0, VF_PRIMARY: -1.0, THETA_PRIMARY: float("inf")}
+        )
 
         validator = TNFRValidator()
         violations = validator.validate_graph(G)
@@ -149,18 +153,24 @@ class TestTNFRValidator:
         """Test custom phase coupling threshold."""
         G = nx.Graph()
         G.add_node("node1", **{EPI_PRIMARY: 0.5, VF_PRIMARY: 1.0, THETA_PRIMARY: 0.0})
-        G.add_node("node2", **{EPI_PRIMARY: 0.5, VF_PRIMARY: 1.0, THETA_PRIMARY: 2.0})  # Larger phase diff
+        G.add_node(
+            "node2", **{EPI_PRIMARY: 0.5, VF_PRIMARY: 1.0, THETA_PRIMARY: 2.0}
+        )  # Larger phase diff
         G.add_edge("node1", "node2")
 
         # Default threshold (π/2 ≈ 1.57), phase diff of 2.0 should trigger warning
         validator_default = TNFRValidator()
         violations_default = validator_default.validate_graph(G)
-        warnings_default = [v for v in violations_default if v.severity == InvariantSeverity.WARNING]
+        warnings_default = [
+            v for v in violations_default if v.severity == InvariantSeverity.WARNING
+        ]
 
         # Lenient threshold (π), phase diff of 2.0 should not trigger warning
         validator_lenient = TNFRValidator(phase_coupling_threshold=math.pi)
         violations_lenient = validator_lenient.validate_graph(G)
-        warnings_lenient = [v for v in violations_lenient if v.severity == InvariantSeverity.WARNING]
+        warnings_lenient = [
+            v for v in violations_lenient if v.severity == InvariantSeverity.WARNING
+        ]
 
         # Lenient should have fewer warnings
         assert len(warnings_lenient) < len(warnings_default)
@@ -170,7 +180,9 @@ class TestTNFRValidator:
         G = nx.Graph()
         G.add_node("node1", **{EPI_PRIMARY: 0.5, VF_PRIMARY: 1.0, THETA_PRIMARY: 0.0})
         G.add_node("node2", **{EPI_PRIMARY: 0.6, VF_PRIMARY: 2.0, THETA_PRIMARY: 1.0})
-        G.add_node("node3", **{EPI_PRIMARY: 2.0, VF_PRIMARY: 1.0, THETA_PRIMARY: 0.0})  # Invalid EPI
+        G.add_node(
+            "node3", **{EPI_PRIMARY: 2.0, VF_PRIMARY: 1.0, THETA_PRIMARY: 0.0}
+        )  # Invalid EPI
 
         validator = TNFRValidator()
         violations = validator.validate_graph(G)
@@ -200,5 +212,9 @@ class TestTNFRValidator:
         violations = validator.validate_graph(G)
 
         # Should have a critical violation about validator failure
-        critical_violations = [v for v in violations if v.severity == InvariantSeverity.CRITICAL]
-        assert any("Validator execution failed" in v.description for v in critical_violations)
+        critical_violations = [
+            v for v in violations if v.severity == InvariantSeverity.CRITICAL
+        ]
+        assert any(
+            "Validator execution failed" in v.description for v in critical_violations
+        )

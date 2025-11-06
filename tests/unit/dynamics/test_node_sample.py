@@ -13,12 +13,14 @@ from tnfr.dynamics import _update_node_sample, step
 from tnfr.rng import clear_rng_cache
 from tnfr.utils import cached_node_list, cached_nodes_and_A, increment_edge_version
 
+
 def _build_graph(n, graph_canon=None):
     G = graph_canon() if graph_canon is not None else nx.Graph()
     inject_defaults(G)
     for i in range(n):
         G.add_node(i, theta=0.0, EPI=0.0)
     return G
+
 
 def test_node_sample_large_graph(graph_canon):
     G = _build_graph(80, graph_canon)
@@ -29,6 +31,7 @@ def test_node_sample_large_graph(graph_canon):
     assert len(sample) == 10
     assert set(sample).issubset(set(G.nodes()))
 
+
 def test_node_sample_small_graph(graph_canon):
     G = _build_graph(20, graph_canon)
     G.graph["UM_CANDIDATE_COUNT"] = 5
@@ -36,6 +39,7 @@ def test_node_sample_small_graph(graph_canon):
     sample = G.graph.get("_node_sample")
     assert not isinstance(sample, list)
     assert len(sample) == len(G.nodes())
+
 
 def test_node_sample_threshold_graph_uses_candidate_count(graph_canon):
     clear_rng_cache()
@@ -57,6 +61,7 @@ def test_node_sample_threshold_graph_uses_candidate_count(graph_canon):
 
     assert sample1 == sample2
 
+
 def test_node_sample_immutable_after_graph_change(graph_canon):
     G = _build_graph(20, graph_canon)
     _update_node_sample(G, step=0)
@@ -64,6 +69,7 @@ def test_node_sample_immutable_after_graph_change(graph_canon):
     G.add_node(99)
     assert len(sample) == 20
     assert 99 not in sample
+
 
 def test_node_sample_deterministic_with_seed(graph_canon):
     clear_rng_cache()
@@ -81,6 +87,7 @@ def test_node_sample_deterministic_with_seed(graph_canon):
     sample2 = G2.graph["_node_sample"]
 
     assert sample1 == sample2
+
 
 def test_node_sample_adjacency_cache_tracks_mutations(graph_canon):
     pytest.importorskip("numpy")
@@ -112,6 +119,7 @@ def test_node_sample_adjacency_cache_tracks_mutations(graph_canon):
     assert nodes4 is nodes3
     assert A4 is A3
 
+
 def _run_sample_with_hashseed(hashseed):
     code = r"""
 import json, sys
@@ -142,10 +150,12 @@ json.dump(G.graph["_node_sample"], sys.stdout)
     )
     return json.loads(result.stdout)
 
+
 def test_node_sample_deterministic_across_hashseed():
     out1 = _run_sample_with_hashseed(1)
     out2 = _run_sample_with_hashseed(2)
     assert out1 == out2
+
 
 @pytest.mark.parametrize(
     "candidate_count",
@@ -156,7 +166,9 @@ def test_node_sample_deterministic_across_hashseed():
         pytest.param(120, id="exceeds-node-count"),
     ],
 )
-def test_node_sample_returns_cached_nodes_when_sampling_disabled(candidate_count, graph_canon):
+def test_node_sample_returns_cached_nodes_when_sampling_disabled(
+    candidate_count, graph_canon
+):
     clear_rng_cache()
     G = _build_graph(80, graph_canon)
     G.graph["RANDOM_SEED"] = 2024

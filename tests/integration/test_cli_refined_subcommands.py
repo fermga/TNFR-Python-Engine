@@ -9,6 +9,7 @@ import pytest
 
 from tnfr.cli import main
 
+
 class TestMathRunSubcommand:
     """Tests for the ``tnfr math.run`` subcommand."""
 
@@ -26,12 +27,17 @@ class TestMathRunSubcommand:
 
     def test_math_run_basic_execution(self, capsys):
         """Test basic math.run execution with minimal parameters."""
-        rc = main([
-            "math.run",
-            "--nodes", "3",
-            "--steps", "2",
-            "--topology", "ring",
-        ])
+        rc = main(
+            [
+                "math.run",
+                "--nodes",
+                "3",
+                "--steps",
+                "2",
+                "--topology",
+                "ring",
+            ]
+        )
         assert rc == 0
 
         captured = capsys.readouterr()
@@ -39,12 +45,17 @@ class TestMathRunSubcommand:
 
     def test_math_run_with_preset(self, capsys):
         """Test math.run with a preset."""
-        rc = main([
-            "math.run",
-            "--preset", "resonant_bootstrap",
-            "--nodes", "3",
-            "--steps", "2",
-        ])
+        rc = main(
+            [
+                "math.run",
+                "--preset",
+                "resonant_bootstrap",
+                "--nodes",
+                "3",
+                "--steps",
+                "2",
+            ]
+        )
         assert rc == 0
 
         captured = capsys.readouterr()
@@ -53,36 +64,53 @@ class TestMathRunSubcommand:
 
     def test_math_run_with_dimension(self, capsys):
         """Test math.run with custom Hilbert dimension."""
-        rc = main([
-            "math.run",
-            "--nodes", "3",
-            "--steps", "2",
-            "--math-dimension", "5",
-        ])
+        rc = main(
+            [
+                "math.run",
+                "--nodes",
+                "3",
+                "--steps",
+                "2",
+                "--math-dimension",
+                "5",
+            ]
+        )
         assert rc == 0
 
     def test_math_run_with_coherence_spectrum(self, capsys):
         """Test math.run with custom coherence spectrum."""
-        rc = main([
-            "math.run",
-            "--nodes", "3",
-            "--steps", "2",
-            "--math-coherence-spectrum", "1.0", "0.8", "0.6",
-        ])
+        rc = main(
+            [
+                "math.run",
+                "--nodes",
+                "3",
+                "--steps",
+                "2",
+                "--math-coherence-spectrum",
+                "1.0",
+                "0.8",
+                "0.6",
+            ]
+        )
         assert rc == 0
 
     def test_math_run_invalid_preset(self, capsys):
         """Test math.run with invalid preset shows error."""
-        rc = main([
-            "math.run",
-            "--preset", "nonexistent_preset",
-            "--nodes", "3",
-        ])
+        rc = main(
+            [
+                "math.run",
+                "--preset",
+                "nonexistent_preset",
+                "--nodes",
+                "3",
+            ]
+        )
         assert rc == 1
 
         captured = capsys.readouterr()
         assert "Unknown preset" in captured.out
         assert "Available presets" in captured.out
+
 
 class TestEpiValidateSubcommand:
     """Tests for the ``tnfr epi.validate`` subcommand."""
@@ -103,12 +131,17 @@ class TestEpiValidateSubcommand:
 
     def test_epi_validate_basic_execution(self, capsys):
         """Test basic epi.validate execution."""
-        rc = main([
-            "epi.validate",
-            "--nodes", "3",
-            "--steps", "2",
-            "--topology", "ring",
-        ])
+        rc = main(
+            [
+                "epi.validate",
+                "--nodes",
+                "3",
+                "--steps",
+                "2",
+                "--topology",
+                "ring",
+            ]
+        )
         # Should pass validation
         assert rc == 0
 
@@ -118,12 +151,17 @@ class TestEpiValidateSubcommand:
 
     def test_epi_validate_with_preset(self, capsys):
         """Test epi.validate with a preset."""
-        rc = main([
-            "epi.validate",
-            "--preset", "resonant_bootstrap",
-            "--nodes", "3",
-            "--steps", "2",
-        ])
+        rc = main(
+            [
+                "epi.validate",
+                "--preset",
+                "resonant_bootstrap",
+                "--nodes",
+                "3",
+                "--steps",
+                "2",
+            ]
+        )
         assert rc == 0
 
         captured = capsys.readouterr()
@@ -131,12 +169,17 @@ class TestEpiValidateSubcommand:
 
     def test_epi_validate_with_tolerance(self, capsys):
         """Test epi.validate with custom tolerance."""
-        rc = main([
-            "epi.validate",
-            "--nodes", "3",
-            "--steps", "2",
-            "--tolerance", "1e-8",
-        ])
+        rc = main(
+            [
+                "epi.validate",
+                "--nodes",
+                "3",
+                "--steps",
+                "2",
+                "--tolerance",
+                "1e-8",
+            ]
+        )
         assert rc == 0
 
         captured = capsys.readouterr()
@@ -144,25 +187,37 @@ class TestEpiValidateSubcommand:
 
     def test_epi_validate_checks_coherence(self, capsys):
         """Test that epi.validate reports coherence checks."""
-        rc = main([
-            "epi.validate",
-            "--nodes", "5",
-            "--steps", "3",
-            "--check-coherence",
-        ])
+        rc = main(
+            [
+                "epi.validate",
+                "--nodes",
+                "5",
+                "--steps",
+                "3",
+                "--check-coherence",
+            ]
+        )
         assert rc == 0
 
         captured = capsys.readouterr()
-        assert "Coherence" in captured.out or "[PASS]" in captured.out or "[SKIP]" in captured.out
+        assert (
+            "Coherence" in captured.out
+            or "[PASS]" in captured.out
+            or "[SKIP]" in captured.out
+        )
 
     def test_epi_validate_checks_frequency(self, capsys):
         """Test that epi.validate reports frequency checks."""
-        rc = main([
-            "epi.validate",
-            "--nodes", "5",
-            "--steps", "3",
-            "--check-frequency",
-        ])
+        rc = main(
+            [
+                "epi.validate",
+                "--nodes",
+                "5",
+                "--steps",
+                "3",
+                "--check-frequency",
+            ]
+        )
         assert rc == 0
 
         captured = capsys.readouterr()
@@ -172,14 +227,18 @@ class TestEpiValidateSubcommand:
 
     def test_epi_validate_invalid_preset(self, capsys):
         """Test epi.validate with invalid preset shows error."""
-        rc = main([
-            "epi.validate",
-            "--preset", "invalid_preset_name",
-        ])
+        rc = main(
+            [
+                "epi.validate",
+                "--preset",
+                "invalid_preset_name",
+            ]
+        )
         assert rc == 1
 
         captured = capsys.readouterr()
         assert "Unknown preset" in captured.out
+
 
 class TestEnhancedHelp:
     """Tests for enhanced CLI help messages."""
@@ -218,6 +277,7 @@ class TestEnhancedHelp:
         captured = capsys.readouterr()
         assert "Available presets" in captured.out
         assert "resonant_bootstrap" in captured.out
+
 
 class TestYAMLPresets:
     """Tests for YAML preset files."""
@@ -282,8 +342,13 @@ class TestYAMLPresets:
 
             metadata = data["metadata"]
             assert "name" in metadata, f"{yaml_file.name} metadata should have name"
-            assert "description" in metadata, f"{yaml_file.name} metadata should have description"
-            assert "operators" in metadata, f"{yaml_file.name} metadata should have operators"
+            assert (
+                "description" in metadata
+            ), f"{yaml_file.name} metadata should have description"
+            assert (
+                "operators" in metadata
+            ), f"{yaml_file.name} metadata should have operators"
+
 
 class TestCLIStdoutStderrCapture:
     """Tests specifically for stdout/stderr capture as requested."""
@@ -307,11 +372,15 @@ class TestCLIStdoutStderrCapture:
 
     def test_math_run_output_captured(self, capsys):
         """Test that math.run output is captured."""
-        rc = main([
-            "math.run",
-            "--nodes", "3",
-            "--steps", "1",
-        ])
+        rc = main(
+            [
+                "math.run",
+                "--nodes",
+                "3",
+                "--steps",
+                "1",
+            ]
+        )
         assert rc == 0
 
         captured = capsys.readouterr()
@@ -320,11 +389,15 @@ class TestCLIStdoutStderrCapture:
 
     def test_epi_validate_output_captured(self, capsys):
         """Test that epi.validate output is captured."""
-        rc = main([
-            "epi.validate",
-            "--nodes", "3",
-            "--steps", "1",
-        ])
+        rc = main(
+            [
+                "epi.validate",
+                "--nodes",
+                "3",
+                "--steps",
+                "1",
+            ]
+        )
         assert rc == 0
 
         captured = capsys.readouterr()
@@ -344,6 +417,7 @@ class TestCLIStdoutStderrCapture:
             assert len(captured.out) > 0, f"{subcmd} --help should produce output"
             assert "usage:" in captured.out.lower()
 
+
 class TestCLIIntegrationScenarios:
     """Integration tests for realistic CLI usage scenarios."""
 
@@ -359,23 +433,32 @@ sequence:
         yaml_file = tmp_path / "test_sequence.yaml"
         yaml_file.write_text(yaml_content, encoding="utf-8")
 
-        rc = main([
-            "sequence",
-            "--sequence-file", str(yaml_file),
-            "--nodes", "3",
-        ])
+        rc = main(
+            [
+                "sequence",
+                "--sequence-file",
+                str(yaml_file),
+                "--nodes",
+                "3",
+            ]
+        )
         assert rc == 0
 
     def test_math_run_exports_history(self, tmp_path, capsys):
         """Test that math.run can export history."""
         history_file = tmp_path / "history.json"
 
-        rc = main([
-            "math.run",
-            "--nodes", "3",
-            "--steps", "2",
-            "--save-history", str(history_file),
-        ])
+        rc = main(
+            [
+                "math.run",
+                "--nodes",
+                "3",
+                "--steps",
+                "2",
+                "--save-history",
+                str(history_file),
+            ]
+        )
         assert rc == 0
 
         # Check that history file was created
@@ -391,12 +474,17 @@ sequence:
         topologies = ["ring", "complete"]
 
         for topo in topologies:
-            rc = main([
-                "epi.validate",
-                "--nodes", "4",
-                "--topology", topo,
-                "--steps", "2",
-            ])
+            rc = main(
+                [
+                    "epi.validate",
+                    "--nodes",
+                    "4",
+                    "--topology",
+                    topo,
+                    "--steps",
+                    "2",
+                ]
+            )
             assert rc == 0, f"Validation should pass for {topo} topology"
 
             captured = capsys.readouterr()
@@ -406,12 +494,17 @@ sequence:
         """Test that metrics command still works alongside new commands."""
         metrics_file = tmp_path / "metrics.json"
 
-        rc = main([
-            "metrics",
-            "--nodes", "3",
-            "--steps", "5",
-            "--save", str(metrics_file),
-        ])
+        rc = main(
+            [
+                "metrics",
+                "--nodes",
+                "3",
+                "--steps",
+                "5",
+                "--save",
+                str(metrics_file),
+            ]
+        )
         assert rc == 0
 
         assert metrics_file.exists()

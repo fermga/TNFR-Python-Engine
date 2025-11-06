@@ -4,6 +4,7 @@ import pytest
 
 from tnfr.dynamics import runtime
 
+
 def test_run_validators_invokes_utils(monkeypatch, graph_canon):
     """Ensure ``_run_validators`` delegates to ``tnfr.validation.run_validators``."""
 
@@ -18,6 +19,7 @@ def test_run_validators_invokes_utils(monkeypatch, graph_canon):
     runtime._run_validators(G)
 
     assert called_with["graph"] is G
+
 
 def test_run_validators_propagates_exceptions(monkeypatch, graph_canon):
     """Exceptions raised by validators should propagate to callers."""

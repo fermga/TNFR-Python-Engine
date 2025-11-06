@@ -71,14 +71,25 @@ ALIAS_DNFR = get_aliases("DNFR")
 _TRIG_CACHE_KEYS = ("_cos_th", "_sin_th", "_thetas", "_trig_cache")
 
 _TARGET_FUNCTIONS: Mapping[str, tuple[str, str]] = {
-    "tnfr.metrics.sense_index.compute_Si": ("tnfr/metrics/sense_index.py", "compute_Si"),
-    "tnfr.dynamics.dnfr._prepare_dnfr_data": ("tnfr/dynamics/dnfr.py", "_prepare_dnfr_data"),
-    "tnfr.dynamics.dnfr._compute_dnfr_common": ("tnfr/dynamics/dnfr.py", "_compute_dnfr_common"),
+    "tnfr.metrics.sense_index.compute_Si": (
+        "tnfr/metrics/sense_index.py",
+        "compute_Si",
+    ),
+    "tnfr.dynamics.dnfr._prepare_dnfr_data": (
+        "tnfr/dynamics/dnfr.py",
+        "_prepare_dnfr_data",
+    ),
+    "tnfr.dynamics.dnfr._compute_dnfr_common": (
+        "tnfr/dynamics/dnfr.py",
+        "_compute_dnfr_common",
+    ),
     "tnfr.dynamics.dnfr.default_compute_delta_nfr": (
         "tnfr/dynamics/dnfr.py",
         "default_compute_delta_nfr",
     ),
 }
+
+
 def _format_config_value(value: int | None) -> str:
     """Human-friendly rendering for configuration values."""
 
@@ -218,7 +229,7 @@ def _numpy_override(enabled: bool):
 
 def _extract_target_stats(stats: pstats.Stats) -> dict[str, dict[str, float | int]]:
     """Collect cumulative data for the primary operators.
-    
+
     Uses the documented ``.stats`` attribute from ``pstats.Stats`` to extract
     profiling data for target functions. The ``.stats`` dict is part of the
     public pstats API and maps function info to timing tuples.
@@ -318,7 +329,8 @@ def _extract_cache_metrics(graph: nx.Graph) -> dict[str, Any]:
                         "misses": edge_aggregate.misses,
                         "evictions": edge_aggregate.evictions,
                         "hit_rate": (
-                            edge_aggregate.hits / (edge_aggregate.hits + edge_aggregate.misses)
+                            edge_aggregate.hits
+                            / (edge_aggregate.hits + edge_aggregate.misses)
                             if (edge_aggregate.hits + edge_aggregate.misses) > 0
                             else 0.0
                         ),
@@ -345,7 +357,7 @@ def _dump_profile_outputs(
     sort: str,
 ) -> None:
     """Persist profiling artefacts in ``.pstats`` and JSON formats.
-    
+
     Extracts timing data from the ``pstats.Stats.stats`` attribute, which is
     part of the documented pstats API for accessing raw profiling data.
     """
@@ -376,16 +388,13 @@ def _dump_profile_outputs(
         for name, values in operator_timings.items()
     }
     si_totals = {
-        name: float(total)
-        for name, total in si_breakdown.get("totals", {}).items()
+        name: float(total) for name, total in si_breakdown.get("totals", {}).items()
     }
     si_per_loop = {
-        name: float(value)
-        for name, value in si_breakdown.get("per_loop", {}).items()
+        name: float(value) for name, value in si_breakdown.get("per_loop", {}).items()
     }
     si_path_counts = {
-        name: int(count)
-        for name, count in si_breakdown.get("path_counts", {}).items()
+        name: int(count) for name, count in si_breakdown.get("path_counts", {}).items()
     }
 
     dnfr_sections = {}
@@ -501,7 +510,9 @@ def _run_pipeline(
         else 0
     )
     metadata["si_workers_effective"] = _coerce_si_jobs(configuration.get("si_workers"))
-    metadata["dnfr_workers_effective"] = _resolve_parallel_jobs(dnfr_workers, node_total)
+    metadata["dnfr_workers_effective"] = _resolve_parallel_jobs(
+        dnfr_workers, node_total
+    )
     metadata["node_count"] = node_total
     metadata["edge_count"] = edge_total
 
@@ -558,13 +569,16 @@ def _run_pipeline(
                 )
                 neighbor_elapsed = perf_counter() - neighbor_start
                 dnfr_profile_stage.setdefault("dnfr_neighbor_accumulation", 0.0)
-                dnfr_profile_stage["dnfr_neighbor_accumulation"] = float(
-                    dnfr_profile_stage.get("dnfr_neighbor_accumulation", 0.0)
-                ) + neighbor_elapsed
+                dnfr_profile_stage["dnfr_neighbor_accumulation"] = (
+                    float(dnfr_profile_stage.get("dnfr_neighbor_accumulation", 0.0))
+                    + neighbor_elapsed
+                )
 
                 if resolved_neighbor_chunk_size is None:
                     resolved_neighbor_chunk_size = data.get("neighbor_chunk_size")
-                    metadata["dnfr_neighbor_chunk_hint"] = data.get("neighbor_chunk_hint")
+                    metadata["dnfr_neighbor_chunk_hint"] = data.get(
+                        "neighbor_chunk_hint"
+                    )
 
                 start = perf_counter()
                 if neighbor_stats is not None:
@@ -687,12 +701,16 @@ def profile_full_pipeline(
     modes.append(("fallback", False))
 
     si_chunk_options = tuple(si_chunk_sizes) if si_chunk_sizes is not None else (None,)
-    dnfr_chunk_options = tuple(dnfr_chunk_sizes) if dnfr_chunk_sizes is not None else (None,)
+    dnfr_chunk_options = (
+        tuple(dnfr_chunk_sizes) if dnfr_chunk_sizes is not None else (None,)
+    )
     si_worker_options = tuple(si_workers) if si_workers is not None else (None,)
     dnfr_worker_options = tuple(dnfr_workers) if dnfr_workers is not None else (None,)
 
     configurations = list(
-        product(si_chunk_options, dnfr_chunk_options, si_worker_options, dnfr_worker_options)
+        product(
+            si_chunk_options, dnfr_chunk_options, si_worker_options, dnfr_worker_options
+        )
     )
     if not configurations:
         configurations = [(None, None, None, None)]
@@ -743,12 +761,14 @@ def profile_full_pipeline(
                 dnfr_workers=dnfr_jobs,
             )
 
-            profile, timings, metadata, si_details, dnfr_details, cache_metrics = _run_pipeline(
-                graph=graph,
-                vectorized=vectorized,
-                loops=loops,
-                dnfr_workers=dnfr_jobs,
-                configuration=configuration,
+            profile, timings, metadata, si_details, dnfr_details, cache_metrics = (
+                _run_pipeline(
+                    graph=graph,
+                    vectorized=vectorized,
+                    loops=loops,
+                    dnfr_workers=dnfr_jobs,
+                    configuration=configuration,
+                )
             )
 
             metadata = {
@@ -782,9 +802,13 @@ def profile_full_pipeline(
                 f"per_loop={si_details['per_loop'].get(name, 0.0):.6f}s"
                 for name in sorted(si_details.get("totals", {}))
             ]
-            path_summary = ", ".join(
-                f"{key}={value}" for key, value in si_details.get("path_counts", {}).items()
-            ) or "none"
+            path_summary = (
+                ", ".join(
+                    f"{key}={value}"
+                    for key, value in si_details.get("path_counts", {}).items()
+                )
+                or "none"
+            )
             print(
                 "Stored {label} profiles for {config_label} at {pstats_path} and {json_path}".format(
                     label=label,
@@ -815,12 +839,20 @@ def profile_full_pipeline(
 
             manual_lines = _format_dnfr_lines(manual_dnfr)
             default_lines = _format_dnfr_lines(default_dnfr)
-            manual_paths = ", ".join(
-                f"{key}={value}" for key, value in manual_dnfr.get("path_counts", {}).items()
-            ) or "none"
-            default_paths = ", ".join(
-                f"{key}={value}" for key, value in default_dnfr.get("path_counts", {}).items()
-            ) or "none"
+            manual_paths = (
+                ", ".join(
+                    f"{key}={value}"
+                    for key, value in manual_dnfr.get("path_counts", {}).items()
+                )
+                or "none"
+            )
+            default_paths = (
+                ", ".join(
+                    f"{key}={value}"
+                    for key, value in default_dnfr.get("path_counts", {}).items()
+                )
+                or "none"
+            )
 
             print("ΔNFR manual stages breakdown:")
             for line in manual_lines:

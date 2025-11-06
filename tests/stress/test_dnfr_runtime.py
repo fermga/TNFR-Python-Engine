@@ -26,6 +26,7 @@ ALIAS_DNFR = get_aliases("DNFR")
 
 pytestmark = [pytest.mark.slow, pytest.mark.stress]
 
+
 def _bias_gradient(
     G: nx.Graph,
     node: int,
@@ -35,6 +36,7 @@ def _bias_gradient(
 
     return 1.0
 
+
 def _degree_gradient(
     G: nx.Graph,
     node: int,
@@ -43,6 +45,7 @@ def _degree_gradient(
     """Return the structural degree contribution for ``node``."""
 
     return float(G.degree(node))
+
 
 def _seed_graph(
     *,
@@ -71,12 +74,14 @@ def _seed_graph(
 
     return graph
 
+
 def _sum_dnfr(graph: nx.Graph) -> float:
     """Return the total ΔNFR across the nodes of ``graph``."""
 
     return sum(
         float(get_attr(data, ALIAS_DNFR, 0.0)) for _, data in graph.nodes(data=True)
     )
+
 
 @pytest.mark.timeout(30)
 def test_default_compute_delta_nfr_large_graph_consistent() -> None:
@@ -86,8 +91,12 @@ def test_default_compute_delta_nfr_large_graph_consistent() -> None:
     edge_probability = 0.18
     seed = 4201
 
-    cached_graph = _seed_graph(num_nodes=node_count, edge_probability=edge_probability, seed=seed)
-    uncached_graph = _seed_graph(num_nodes=node_count, edge_probability=edge_probability, seed=seed)
+    cached_graph = _seed_graph(
+        num_nodes=node_count, edge_probability=edge_probability, seed=seed
+    )
+    uncached_graph = _seed_graph(
+        num_nodes=node_count, edge_probability=edge_probability, seed=seed
+    )
 
     start_cached = time.perf_counter()
     default_compute_delta_nfr(cached_graph, cache_size=128)
@@ -104,6 +113,7 @@ def test_default_compute_delta_nfr_large_graph_consistent() -> None:
     dnfr_uncached = _sum_dnfr(uncached_graph)
 
     assert dnfr_uncached == pytest.approx(dnfr_cached, rel=0.0, abs=1e-9)
+
 
 @pytest.mark.timeout(30)
 def test_runtime_run_long_trajectory_history_integrity() -> None:
@@ -137,9 +147,12 @@ def test_runtime_run_long_trajectory_history_integrity() -> None:
     dnfr_total = _sum_dnfr(graph)
     assert math.isfinite(dnfr_total)
 
+
 @pytest.mark.slow
 @pytest.mark.timeout(30)
-def test_apply_dnfr_hook_parallel_python_matches_serial(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_apply_dnfr_hook_parallel_python_matches_serial(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """Parallel ΔNFR hook execution must match the serial reference assignments."""
 
     node_count = 640

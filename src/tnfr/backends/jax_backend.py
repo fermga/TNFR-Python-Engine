@@ -31,17 +31,17 @@ from ..types import TNFRGraph
 
 class JAXBackend(TNFRBackend):
     """JIT-compiled JAX implementation of TNFR kernels (Experimental).
-    
+
     This backend provides a foundation for JIT-optimized TNFR computations
     using JAX. Current implementation delegates to NumPy backend while
     maintaining interface compatibility for future JIT implementations.
-    
+
     Future optimizations planned:
     - JIT-compiled ΔNFR computation with @jax.jit
     - Vectorized operations using jax.numpy
     - GPU acceleration via JAX device placement
     - Automatic differentiation for sensitivity analysis
-    
+
     Attributes
     ----------
     name : str
@@ -50,19 +50,20 @@ class JAXBackend(TNFRBackend):
         True (JAX supports GPU acceleration)
     supports_jit : bool
         True (JAX provides JIT compilation)
-    
+
     Notes
     -----
     Requires JAX to be installed: `pip install jax jaxlib`
-    
+
     For GPU support, install appropriate JAX GPU build for your platform.
     """
-    
+
     def __init__(self) -> None:
         """Initialize JAX backend."""
         try:
             import jax
             import jax.numpy as jnp
+
             self._jax = jax
             self._jnp = jnp
         except ImportError as exc:
@@ -70,22 +71,22 @@ class JAXBackend(TNFRBackend):
                 "JAX backend requires jax to be installed. "
                 "Install with: pip install jax jaxlib"
             ) from exc
-    
+
     @property
     def name(self) -> str:
         """Return the backend identifier."""
         return "jax"
-    
+
     @property
     def supports_gpu(self) -> bool:
         """JAX supports GPU acceleration."""
         return True
-    
+
     @property
     def supports_jit(self) -> bool:
         """JAX supports JIT compilation."""
         return True
-    
+
     def compute_delta_nfr(
         self,
         graph: TNFRGraph,
@@ -95,13 +96,13 @@ class JAXBackend(TNFRBackend):
         profile: MutableMapping[str, float] | None = None,
     ) -> None:
         """Compute ΔNFR using JAX backend.
-        
+
         **Current implementation**: Delegates to NumPy backend while maintaining
         interface compatibility.
-        
+
         **Planned**: JIT-compiled vectorized computation using jax.numpy with
         automatic XLA optimization and optional GPU acceleration.
-        
+
         Parameters
         ----------
         graph : TNFRGraph
@@ -116,14 +117,14 @@ class JAXBackend(TNFRBackend):
         # TODO: Implement JIT-compiled JAX version
         # For now, delegate to NumPy backend
         from ..dynamics.dnfr import default_compute_delta_nfr
-        
+
         default_compute_delta_nfr(
             graph,
             cache_size=cache_size,
             n_jobs=n_jobs,
             profile=profile,
         )
-    
+
     def compute_si(
         self,
         graph: TNFRGraph,
@@ -134,13 +135,13 @@ class JAXBackend(TNFRBackend):
         profile: MutableMapping[str, Any] | None = None,
     ) -> dict[Any, float] | Any:
         """Compute sense index using JAX backend.
-        
+
         **Current implementation**: Delegates to NumPy backend while maintaining
         interface compatibility.
-        
+
         **Planned**: JIT-compiled vectorized Si computation using jax.numpy with
         optimized phase dispersion and normalization kernels.
-        
+
         Parameters
         ----------
         graph : TNFRGraph
@@ -153,7 +154,7 @@ class JAXBackend(TNFRBackend):
             Chunk size hint (currently passed to NumPy backend)
         profile : MutableMapping[str, Any] or None, optional
             Dict to collect timing metrics
-        
+
         Returns
         -------
         dict[Any, float] or numpy.ndarray
@@ -162,7 +163,7 @@ class JAXBackend(TNFRBackend):
         # TODO: Implement JIT-compiled JAX version
         # For now, delegate to NumPy backend
         from ..metrics.sense_index import compute_Si
-        
+
         return compute_Si(
             graph,
             inplace=inplace,

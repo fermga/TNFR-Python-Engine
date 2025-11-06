@@ -6,9 +6,11 @@ import pytest
 
 from tnfr.cli import execution
 
+
 @pytest.fixture()
 def cli_args() -> argparse.Namespace:
     return argparse.Namespace()
+
 
 def test_run_cli_program_returns_one_when_resolve_program_exits_with_zero(
     monkeypatch: pytest.MonkeyPatch,
@@ -27,6 +29,7 @@ def test_run_cli_program_returns_one_when_resolve_program_exits_with_zero(
 
     assert result == (1, None)
 
+
 def test_run_cli_program_returns_one_when_resolve_program_exits_with_message(
     monkeypatch: pytest.MonkeyPatch,
     cli_args: argparse.Namespace,
@@ -43,6 +46,7 @@ def test_run_cli_program_returns_one_when_resolve_program_exits_with_message(
     result = execution._run_cli_program(cli_args)
 
     assert result == (1, None)
+
 
 def test_run_cli_program_returns_one_when_run_program_exits_with_zero(
     monkeypatch: pytest.MonkeyPatch,
@@ -62,6 +66,7 @@ def test_run_cli_program_returns_one_when_run_program_exits_with_zero(
     result = execution._run_cli_program(cli_args)
 
     assert result == (1, None)
+
 
 def test_run_cli_program_returns_one_when_run_program_exits_with_message(
     monkeypatch: pytest.MonkeyPatch,

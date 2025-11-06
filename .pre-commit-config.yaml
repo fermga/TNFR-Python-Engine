@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/psf/black
-    rev: 24.3.0
+    rev: 25.9.0
     hooks:
       - id: black
         args: ["--config=pyproject.toml"]
@@ -25,7 +25,7 @@ repos:
         files: ^src/tnfr/.*\.py$
       - id: check-bandit-format
         name: Check for invalid bandit -f sarif usage
-        entry: bash -c 'if grep -r "bandit.*-f sarif" .github/workflows/ scripts/ 2>/dev/null; then echo "ERROR: bandit does not support SARIF format. Use -f json instead."; exit 1; fi'
+        entry: bash -c 'if grep -r "bandit.*-f sarif" .github/workflows/ scripts/ 2>/dev/null; then echo "ERROR - bandit does not support SARIF format. Use -f json instead."; exit 1; fi'
         language: system
         pass_filenames: false
         files: ^(\.github/workflows/|scripts/|tools/).*\.(yml|yaml|sh|py)$

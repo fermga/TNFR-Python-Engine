@@ -35,7 +35,9 @@ class TestR1StartOperators:
 
     def test_valid_start_with_recursivity(self):
         """NAV (recursivity/transition) is a valid start operator."""
-        result = validate_sequence([RECURSIVITY, RECEPTION, COHERENCE, RESONANCE, SILENCE])
+        result = validate_sequence(
+            [RECURSIVITY, RECEPTION, COHERENCE, RESONANCE, SILENCE]
+        )
         assert result.passed
 
     def test_invalid_start_with_reception(self):
@@ -89,23 +91,31 @@ class TestR3FinalizationOperators:
 
     def test_valid_end_with_transition(self):
         """Ending with NAV (transition) is valid."""
-        result = validate_sequence([EMISSION, RECEPTION, COHERENCE, RESONANCE, TRANSITION])
+        result = validate_sequence(
+            [EMISSION, RECEPTION, COHERENCE, RESONANCE, TRANSITION]
+        )
         assert result.passed
 
     def test_valid_end_with_recursivity(self):
         """Ending with RECURSIVITY is valid (REMESH glyph, NAV/transition operator)."""
-        result = validate_sequence([EMISSION, RECEPTION, COHERENCE, RESONANCE, RECURSIVITY])
+        result = validate_sequence(
+            [EMISSION, RECEPTION, COHERENCE, RESONANCE, RECURSIVITY]
+        )
         assert result.passed
 
     def test_invalid_end_with_emission(self):
         """Ending with AL (emission) is invalid."""
-        result = validate_sequence([EMISSION, RECEPTION, COHERENCE, RESONANCE, EMISSION])
+        result = validate_sequence(
+            [EMISSION, RECEPTION, COHERENCE, RESONANCE, EMISSION]
+        )
         assert not result.passed
         assert "must end" in result.message.lower()
 
     def test_invalid_end_with_coherence(self):
         """Ending with IL (coherence) is invalid."""
-        result = validate_sequence([EMISSION, RECEPTION, COHERENCE, RESONANCE, COHERENCE])
+        result = validate_sequence(
+            [EMISSION, RECEPTION, COHERENCE, RESONANCE, COHERENCE]
+        )
         assert not result.passed
         assert "must end" in result.message.lower()
 
@@ -125,7 +135,7 @@ class TestR4MutationRequiresDissonance:
         """ZHIR (mutation) without OZ precedent should fail."""
         with pytest.raises(SequenceSyntaxError) as excinfo:
             parse_sequence([EMISSION, RECEPTION, COHERENCE, MUTATION, SILENCE])
-        
+
         error = excinfo.value
         assert "mutation" in error.message.lower()
         assert "dissonance" in error.message.lower()
@@ -151,7 +161,7 @@ class TestR5CompatibilityRules:
             parse_sequence(
                 [EMISSION, RECEPTION, COHERENCE, SILENCE, DISSONANCE, MUTATION, SILENCE]
             )
-        
+
         error = excinfo.value
         assert "incompatible" in error.message.lower()
 
@@ -162,7 +172,7 @@ class TestR5CompatibilityRules:
             parse_sequence(
                 [EMISSION, RECEPTION, COHERENCE, EXPANSION, CONTRACTION, SILENCE]
             )
-        
+
         error = excinfo.value
         assert "incompatible" in error.message.lower()
 
@@ -200,7 +210,9 @@ class TestValidCanonicalSequences:
             ]
         )
         assert result.passed
-        assert result.metadata["detected_pattern"] == StructuralPattern.HIERARCHICAL.value
+        assert (
+            result.metadata["detected_pattern"] == StructuralPattern.HIERARCHICAL.value
+        )
 
     def test_cyclic_regenerative_sequence(self):
         """Test: NAV → AL → IL → RA → NAV → THOL (ciclo regenerativo)."""
@@ -239,7 +251,9 @@ class TestStructuralPatternDetection:
             [EMISSION, RECEPTION, SELF_ORGANIZATION, COHERENCE, RESONANCE, SILENCE]
         )
         assert result.passed
-        assert result.metadata["detected_pattern"] == StructuralPattern.HIERARCHICAL.value
+        assert (
+            result.metadata["detected_pattern"] == StructuralPattern.HIERARCHICAL.value
+        )
 
     def test_detect_bifurcated_pattern(self):
         """OZ → ZHIR sequences should be detected as bifurcated."""
@@ -280,14 +294,14 @@ class TestInvalidSequences:
         """Empty sequence should fail."""
         with pytest.raises(SequenceSyntaxError) as excinfo:
             parse_sequence([])
-        
+
         assert "empty" in excinfo.value.message.lower()
 
     def test_mutation_without_dissonance_at_start(self):
         """Mutation at the start without prior dissonance should fail."""
         with pytest.raises(SequenceSyntaxError) as excinfo:
             parse_sequence([EMISSION, MUTATION, COHERENCE, SILENCE])
-        
+
         error = excinfo.value
         assert "mutation" in error.message.lower()
         assert "dissonance" in error.message.lower()

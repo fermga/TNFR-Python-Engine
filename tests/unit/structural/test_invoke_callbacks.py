@@ -5,6 +5,7 @@ import pytest
 
 from tnfr.callback_utils import CallbackEvent, callback_manager
 
+
 def test_invoke_callbacks_preserves_context(graph_canon):
     G = graph_canon()
 
@@ -17,6 +18,7 @@ def test_invoke_callbacks_preserves_context(graph_canon):
     callback_manager.invoke_callbacks(G, CallbackEvent.BEFORE_STEP, ctx)
 
     assert ctx["called"] == 1
+
 
 def test_invoke_callbacks_records_networkx_error(graph_canon):
     G = graph_canon()
@@ -36,6 +38,7 @@ def test_invoke_callbacks_records_networkx_error(graph_canon):
     assert err["event"] == CallbackEvent.BEFORE_STEP.value
     assert err["step"] == 5
     assert "NetworkXError" in err["error"]
+
 
 def test_invoke_callbacks_strict_re_raises(graph_canon):
     G = graph_canon()

@@ -8,6 +8,7 @@ from typing import Final
 
 __all__ = ["__version__"]
 
+
 def _read_version() -> str:
     """Resolve the published package version while preserving TNFR invariants."""
 
@@ -43,5 +44,6 @@ def _read_version() -> str:
             pass  # No version found via setuptools_scm
 
     return "0.0.0"
+
 
 __version__: Final[str] = _read_version()

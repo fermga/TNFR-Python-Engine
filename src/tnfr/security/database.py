@@ -361,9 +361,7 @@ class SecureQueryBuilder:
         """
         # Validate that condition doesn't contain suspicious patterns
         if ";" in condition or "--" in condition or "/*" in condition:
-            raise SQLInjectionError(
-                "WHERE condition contains suspicious SQL patterns"
-            )
+            raise SQLInjectionError("WHERE condition contains suspicious SQL patterns")
 
         # Count expected placeholders
         expected_params = condition.count("?")
@@ -373,7 +371,9 @@ class SecureQueryBuilder:
                 f"got {len(values)}"
             )
 
-        prefix = "WHERE" if not any("WHERE" in part for part in self._query_parts) else "AND"
+        prefix = (
+            "WHERE" if not any("WHERE" in part for part in self._query_parts) else "AND"
+        )
         self._query_parts.append(f"{prefix} {condition}")
         self._params.extend(values)
         return self

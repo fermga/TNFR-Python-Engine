@@ -15,7 +15,7 @@ __all__ = (
 
 class NodalEquationResult(NamedTuple):
     """Result of canonical nodal equation evaluation."""
-    
+
     derivative: float
     nu_f: float
     delta_nfr: float
