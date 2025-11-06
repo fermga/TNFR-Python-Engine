@@ -94,6 +94,11 @@ from .dnfr import (
     dnfr_phase_only,
     set_delta_nfr_hook,
 )
+from .dynamic_limits import (
+    DynamicLimits,
+    DynamicLimitsConfig,
+    compute_dynamic_limits,
+)
 from .integrators import (
     AbstractIntegrator,
     DefaultIntegrator,
@@ -193,4 +198,7 @@ __all__ = (
     "set_delta_nfr_hook",
     "step",
     "update_epi_via_nodal_equation",
+    "DynamicLimits",
+    "DynamicLimitsConfig",
+    "compute_dynamic_limits",
 )
