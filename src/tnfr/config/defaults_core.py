@@ -85,7 +85,11 @@ class CoreDefaults:
             "UM_theta_push": 0.25,
             "RA_epi_diff": 0.15,
             "SHA_vf_factor": 0.85,
-            "VAL_scale": 1.15,
+            # Conservative scaling (1.05) prevents EPI overflow near boundaries
+            # while maintaining meaningful expansion capacity. Critical threshold:
+            # EPI ≥ 1.0/1.05 ≈ 0.952 (vs previous 1.0/1.15 ≈ 0.870).
+            # This preserves structural identity at boundary (EPI_MAX as identity frontier).
+            "VAL_scale": 1.05,
             "NUL_scale": 0.85,
             "THOL_accel": 0.10,
             "ZHIR_theta_shift": 1.57079632679,
