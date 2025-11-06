@@ -25,7 +25,10 @@ from ..config.operator_names import (
     SILENCE,
     TRANSITION,
 )
-from ..config.constants import STABILIZERS
+
+# Define stabilizers using canonical operator names (not glyph codes)
+# These operators provide structural stability in TNFR sequences
+_STABILIZERS_SET = frozenset([COHERENCE, SELF_ORGANIZATION, SILENCE, RESONANCE, COUPLING])
 
 __all__ = [
     "REGENERATORS",
@@ -233,9 +236,9 @@ class CycleDetector:
     def _count_stabilizers(self, segment: Sequence[str]) -> int:
         """Count stabilizing operators in a sequence segment.
         
-        Uses STABILIZERS from config.constants (IL, RA, UM, SHA).
+        Uses canonical operator names: coherence, self_organization, silence, resonance, coupling.
         """
-        return sum(1 for op in segment if op in STABILIZERS)
+        return sum(1 for op in segment if op in _STABILIZERS_SET)
     
     def _calculate_balance(self, sequence: Sequence[str]) -> float:
         """Calculate structural balance score (0.0-1.0).
@@ -333,7 +336,7 @@ class CycleDetector:
         
         # 6. Bonus for cyclic closure (starts and ends with stabilizers)
         if len(sequence) >= 2:
-            if sequence[0] in STABILIZERS and sequence[-1] in STABILIZERS:
+            if sequence[0] in _STABILIZERS_SET and sequence[-1] in _STABILIZERS_SET:
                 score += 0.10
         
         return min(1.0, score)
