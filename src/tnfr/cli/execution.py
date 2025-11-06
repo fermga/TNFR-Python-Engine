@@ -34,10 +34,10 @@ from ..mathematics import (
     FrequencyOperator,
     HilbertSpace,
     MathematicalDynamicsEngine,
-    NFRValidator,
     make_coherence_operator,
     make_frequency_operator,
 )
+from ..validation import NFRValidator
 from ..metrics import (
     build_metrics_summary,
     export_metrics,
