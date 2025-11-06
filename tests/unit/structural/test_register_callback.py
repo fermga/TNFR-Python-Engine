@@ -4,7 +4,7 @@ import logging
 
 import pytest
 
-from tnfr.callback_utils import (
+from tnfr.utils.callbacks import (
     CallbackEvent,
     CallbackSpec,
     callback_manager,

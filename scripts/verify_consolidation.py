@@ -80,38 +80,37 @@ def verify_validation_exports() -> tuple[bool, str]:
         return False, f"Failed to import tnfr.validation: {e}"
 
 
-def verify_legacy_cache_fails() -> tuple[bool, str]:
-    """Verify legacy tnfr.cache raises ImportError."""
+def verify_cache_import_path() -> tuple[bool, str]:
+    """Verify tnfr.cache is the correct import path for caching."""
     try:
         from tnfr import cache
-
-        return False, "❌ tnfr.cache should raise ImportError but didn't"
+        
+        # Verify cache exports expected symbols
+        expected = ["TNFRHierarchicalCache", "CacheLevel", "cache_tnfr_computation"]
+        missing = [name for name in expected if not hasattr(cache, name)]
+        
+        if missing:
+            return False, f"❌ tnfr.cache missing exports: {', '.join(missing)}"
+        
+        return True, "✅ tnfr.cache properly exports caching functionality"
     except ImportError as e:
-        if "tnfr.utils.cache" in str(e):
-            return True, "✅ Legacy tnfr.cache properly raises ImportError"
-        return False, f"❌ tnfr.cache ImportError missing migration message: {e}"
+        return False, f"❌ Failed to import tnfr.cache: {e}"
 
 
-def verify_callback_utils_deprecated() -> tuple[bool, str]:
-    """Verify tnfr.callback_utils emits deprecation warning."""
+def verify_callback_utils_removed() -> tuple[bool, str]:
+    """Verify tnfr.callback_utils module has been removed."""
     try:
-        with warnings.catch_warnings(record=True) as w:
-            warnings.simplefilter("always")
-            from tnfr import callback_utils
-
-            if not w:
-                return False, "❌ tnfr.callback_utils should emit DeprecationWarning"
-
-            if not issubclass(w[0].category, DeprecationWarning):
-                return False, f"❌ Wrong warning type: {w[0].category}"
-
-            if "tnfr.utils" not in str(w[0].message):
-                return False, f"❌ Warning missing migration path: {w[0].message}"
-
-            return True, "✅ tnfr.callback_utils emits proper DeprecationWarning"
-
+        import importlib.util
+        spec = importlib.util.find_spec("tnfr.callback_utils")
+        if spec is not None:
+            return False, "❌ tnfr.callback_utils should be removed but still exists"
+        
+        # Verify functionality is available via tnfr.utils.callbacks
+        from tnfr.utils import CallbackEvent, CallbackManager, callback_manager
+        return True, "✅ tnfr.callback_utils removed, functionality in tnfr.utils.callbacks"
+    
     except Exception as e:
-        return False, f"Failed to test callback_utils: {e}"
+        return False, f"Failed to verify callback_utils removal: {e}"
 
 
 def verify_no_duplicate_converters() -> tuple[bool, str]:
@@ -162,8 +161,8 @@ def main() -> int:
     checks = [
         ("Utils exports", verify_utils_exports),
         ("Validation exports", verify_validation_exports),
-        ("Legacy cache fails", verify_legacy_cache_fails),
-        ("Callback utils deprecated", verify_callback_utils_deprecated),
+        ("Cache import path", verify_cache_import_path),
+        ("Callback utils removed", verify_callback_utils_removed),
         ("No duplicate converters", verify_no_duplicate_converters),
         ("CLI utils scoped", verify_cli_utils_scoped),
     ]

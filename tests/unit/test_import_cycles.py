@@ -40,30 +40,26 @@ def test_no_circular_imports_utils_package():
     assert True, "All utils modules imported successfully without cycles"
 
 
-def test_callback_utils_compatibility_shim():
-    """Verify callback_utils emits deprecation warning and redirects properly.
+def test_callback_utils_removed():
+    """Verify callback_utils module has been removed.
 
-    Structural Function: Transition - managed deprecation path
+    Structural Function: Transition - completed deprecation removal
     TNFR Invariants: #8 (Controlled determinism)
-
-    Note: This test uses importlib.reload to ensure the deprecation warning
-    is emitted even if the module was already imported.
+    
+    The functionality is now available only through tnfr.utils.callbacks.
     """
-    import importlib  # noqa: F401
-
-    # Clear the module from cache to force reimport
-    clear_test_module("tnfr.callback_utils")
-
-    # Also clear utils.callbacks since callback_utils imports from it
-    clear_test_module("tnfr.utils.callbacks")
-
-    with pytest.warns(DeprecationWarning, match="callback_utils.*deprecated"):
-        import tnfr.callback_utils
-
-        # Verify shim properly exports main symbols
-        assert hasattr(tnfr.callback_utils, "CallbackManager")
-        assert hasattr(tnfr.callback_utils, "CallbackEvent")
-        assert hasattr(tnfr.callback_utils, "callback_manager")
+    import importlib.util
+    
+    # Verify the module doesn't exist
+    spec = importlib.util.find_spec("tnfr.callback_utils")
+    assert spec is None, "tnfr.callback_utils should be removed"
+    
+    # Verify functionality is available via the correct path
+    from tnfr.utils.callbacks import CallbackManager, CallbackEvent, callback_manager
+    
+    assert CallbackManager is not None
+    assert CallbackEvent is not None
+    assert callback_manager is not None
 
 
 def test_type_checking_imports_isolated():

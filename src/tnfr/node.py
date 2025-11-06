@@ -48,9 +48,9 @@ from .mathematics import (
     CoherenceOperator,
     FrequencyOperator,
     HilbertSpace,
-    NFRValidator,
     StateProjector,
 )
+from .validation import NFRValidator
 from .mathematics.operators_factory import (
     make_coherence_operator,
     make_frequency_operator,

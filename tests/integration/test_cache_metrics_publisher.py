@@ -7,7 +7,7 @@ import logging
 import networkx as nx
 import pytest
 
-from tnfr.callback_utils import CallbackEvent, callback_manager
+from tnfr.utils.callbacks import CallbackEvent, callback_manager
 from tnfr.constants import inject_defaults
 from tnfr.telemetry import publish_graph_cache_metrics
 from tnfr.utils import edge_version_cache

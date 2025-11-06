@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from tnfr.caching import CacheLevel, PersistentTNFRCache
+from tnfr.cache import CacheLevel, PersistentTNFRCache
 
 
 class TestPersistentTNFRCache:

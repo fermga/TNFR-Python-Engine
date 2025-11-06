@@ -8,7 +8,7 @@ import pytest
 
 import tnfr.utils.init as utils_init
 from tnfr.alias import set_attr
-from tnfr.callback_utils import CallbackEvent
+from tnfr.utils.callbacks import CallbackEvent
 from tnfr.config.constants import ANGLE_MAP
 from tnfr.constants import get_aliases
 from tnfr.gamma import kuramoto_R_psi

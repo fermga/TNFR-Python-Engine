@@ -76,41 +76,40 @@ def test_cli_arguments_parser_functions():
         assert callable(func), f"arguments.{func_name} should be callable"
 
 
-def test_callback_utils_exports():
-    """Verify callback_utils exports all declared symbols.
+def test_callback_utils_backward_compatibility_removed():
+    """Verify callback_utils module has been removed.
 
-    Structural Function: Transition - validates deprecation shim exports
+    Structural Function: Transition - validates deprecation removal
     TNFR Invariants: #4 (Operator closure), #8 (Controlled determinism)
     """
-    import warnings
-
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore", DeprecationWarning)
-        from tnfr import callback_utils
-
+    import sys
+    
+    # The module should no longer exist
+    # Note: We don't actually import it because it doesn't exist anymore
+    # Just verify that the functionality is available via the correct path
+    from tnfr.utils import callbacks
+    
     # Verify __all__ exists and is a tuple
     assert hasattr(
-        callback_utils, "__all__"
-    ), "callback_utils module should define __all__"
-
-    # Verify all symbols in __all__ are actually importable
+        callbacks, "__all__"
+    ), "callbacks module should define __all__"
+    
+    # Verify all symbols are actually importable from the correct location
     expected_symbols = [
         "CallbackEvent",
         "CallbackManager",
         "callback_manager",
         "CallbackError",
         "CallbackSpec",
-        "_normalize_callbacks",
-        "_normalize_callback_entry",
     ]
-
+    
     for symbol in expected_symbols:
         assert (
-            symbol in callback_utils.__all__
-        ), f"callback_utils.__all__ should include '{symbol}'"
+            symbol in callbacks.__all__
+        ), f"callbacks.__all__ should include '{symbol}'"
         assert hasattr(
-            callback_utils, symbol
-        ), f"callback_utils should export '{symbol}'"
+            callbacks, symbol
+        ), f"callbacks should export '{symbol}'"
 
 
 def test_utils_callbacks_exports():
@@ -317,8 +316,6 @@ def test_cross_module_import_consistency():
     Structural Function: Resonance - validates API propagation paths
     TNFR Invariants: #4 (Operator closure), #7 (Operational fractality)
     """
-    import warnings
-
     # Test 1: CallbackManager accessible via multiple paths
     from tnfr.utils import CallbackManager as CM1
     from tnfr.utils.callbacks import CallbackManager as CM2
@@ -326,18 +323,6 @@ def test_cross_module_import_consistency():
     assert (
         CM1 is CM2
     ), "CallbackManager should be same object via utils and utils.callbacks"
-
-    # callback_utils is a compatibility shim, so we just verify it exports the right type
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore", DeprecationWarning)
-        from tnfr.callback_utils import CallbackManager as CM3
-
-    assert (
-        CM3.__name__ == "CallbackManager"
-    ), "callback_utils.CallbackManager should have correct name"
-    assert (
-        CM3.__module__ == "tnfr.utils.callbacks"
-    ), "callback_utils.CallbackManager should come from tnfr.utils.callbacks"
 
     # Test 2: coerce_glyph accessible via validation
     from tnfr.validation import coerce_glyph as cg1
@@ -366,8 +351,6 @@ def test_no_missing_stub_symbols():
     Structural Function: Coherence - validates stub/implementation consistency
     TNFR Invariants: #8 (Controlled determinism)
     """
-    import warnings
-
     # Test cli exports match stub
     from tnfr.cli import (
         main,
@@ -404,17 +387,6 @@ def test_no_missing_stub_symbols():
         normalized_dnfr,
         validate_canon,
     )
-
-    # Test callback_utils exports match stub (with deprecation warning suppressed)
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore", DeprecationWarning)
-        from tnfr.callback_utils import (
-            CallbackEvent as CB_Event,
-            CallbackManager as CB_Manager,
-            callback_manager as cb_mgr,
-            CallbackError,
-            CallbackSpec as CB_Spec,
-        )
 
     # If we reach here, all imports succeeded
     assert True, "All stub-declared symbols are importable"

@@ -2,7 +2,7 @@ from collections import deque
 
 import pytest
 
-from tnfr.callback_utils import (
+from tnfr.utils.callbacks import (
     CallbackEvent,
     callback_manager,
 )
