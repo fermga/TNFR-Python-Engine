@@ -62,7 +62,12 @@ __all__ = (
     "DynamicLimits",
     "DynamicLimitsConfig",
     "compute_dynamic_limits",
+    "DEFAULT_SI_FALLBACK",
 )
+
+# Default fallback value for sense index when nodes have no Si attribute
+# This represents a "neutral" sense index - neither high stability nor instability
+DEFAULT_SI_FALLBACK = 0.5
 
 
 @dataclass(frozen=True)
@@ -185,11 +190,11 @@ def compute_dynamic_limits(
     
     # Compute average sense index
     np_module = get_numpy()
-    si_values = collect_attr(G, G.nodes, ALIAS_SI, 0.5, np=np_module)
+    si_values = collect_attr(G, G.nodes, ALIAS_SI, DEFAULT_SI_FALLBACK, np=np_module)
     if np_module is not None:
         Si_avg = float(np_module.mean(si_values))
     else:
-        Si_avg = sum(si_values) / len(si_values) if si_values else 0.5
+        Si_avg = sum(si_values) / len(si_values) if si_values else DEFAULT_SI_FALLBACK
     
     # Compute Kuramoto order parameter
     R_kuramoto = kuramoto_order(G)

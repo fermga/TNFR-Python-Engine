@@ -15,6 +15,12 @@ from tnfr.dynamics.dynamic_limits import (
     compute_dynamic_limits,
 )
 
+# Coherence thresholds for interpreting network states
+# Based on TNFR theory: C(t) measures global coherence from 0 (chaos) to 1 (perfect)
+COHERENCE_HIGH = 0.7  # High coherence: strong self-organization
+COHERENCE_LOW = 0.5  # Low coherence: weak self-organization
+COHERENCE_CHAOTIC = 0.42  # Chaotic: very weak self-organization
+
 
 class TestDynamicLimitsConfig:
     """Test configuration dataclass for dynamic limits."""
@@ -138,8 +144,8 @@ class TestCoherenceBasedExpansion:
         # Should expand beyond base limit due to high coherence
         assert limits.epi_max_effective > 1.0
         
-        # Coherence should be high
-        assert limits.coherence > 0.7
+        # Coherence should be high (above COHERENCE_HIGH threshold)
+        assert limits.coherence > COHERENCE_HIGH
         assert limits.coherence_factor > 0.5
     
     def test_low_coherence_keeps_base_limit(self):
@@ -162,8 +168,8 @@ class TestCoherenceBasedExpansion:
         # Should stay close to base limit
         assert limits.epi_max_effective < 1.5
         
-        # Coherence should be lower (relaxed threshold for realistic values)
-        assert limits.coherence <= 0.5
+        # Coherence should be lower (at or below COHERENCE_LOW threshold)
+        assert limits.coherence <= COHERENCE_LOW
     
     def test_expansion_respects_maximum_factor(self):
         """Expansion should not exceed max_expansion_factor."""
@@ -423,8 +429,8 @@ class TestComparisonWithStaticLimits:
         # Should stay near base limits
         assert limits.epi_max_effective < 1.3
         
-        # Should reflect low coherence (relaxed threshold for realistic values)
-        assert limits.coherence <= 0.42
+        # Should reflect low coherence (at or below COHERENCE_CHAOTIC threshold)
+        assert limits.coherence <= COHERENCE_CHAOTIC
 
 
 class TestEdgeCases:
