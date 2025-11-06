@@ -47,6 +47,11 @@ INTERMEDIATE_OPERATORS = frozenset({DISSONANCE, COUPLING, RESONANCE})
 VALID_END_OPERATORS = frozenset({SILENCE, TRANSITION, RECURSIVITY, DISSONANCE})
 SELF_ORGANIZATION_CLOSURES = frozenset({SILENCE, CONTRACTION})
 
+# R4 Bifurcation control: operators that enable structural transformations
+DESTABILIZERS = frozenset({DISSONANCE, TRANSITION, EXPANSION})  # OZ, NAV, VAL
+TRANSFORMERS = frozenset({MUTATION, SELF_ORGANIZATION})  # ZHIR, THOL
+BIFURCATION_WINDOW = 3  # Search window for destabilizer precedent
+
 
 def canonical_operator_name(name: str) -> str:
     """Return the canonical operator token for ``name``."""
@@ -81,6 +86,9 @@ __all__ = [
     "INTERMEDIATE_OPERATORS",
     "VALID_END_OPERATORS",
     "SELF_ORGANIZATION_CLOSURES",
+    "DESTABILIZERS",
+    "TRANSFORMERS",
+    "BIFURCATION_WINDOW",
     "canonical_operator_name",
     "operator_display_name",
 ]
