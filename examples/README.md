@@ -51,6 +51,39 @@ See **[README_THERAPEUTIC.md](domain_applications/README_THERAPEUTIC.md)** for c
 
 **Validation status:** ✅ All sequences >0.75 health, compliant with Grammar 2.0 (R1-R5 rules)
 
+### Educational Domain Examples
+
+**[domain_applications/](domain_applications/)** - Specialized educational patterns demonstrating TNFR in learning and cognitive development contexts.
+
+**Available modules:**
+- **[educational_patterns.py](domain_applications/educational_patterns.py)** - 5 validated educational sequences (avg health: 0.815)
+  - Conceptual breakthrough, competency development, knowledge spiral, practice mastery, collaborative learning
+- **[educational_case_studies.py](domain_applications/educational_case_studies.py)** - 5 pedagogical case studies (avg health: 0.854)
+  - Mathematics learning, language acquisition, scientific method, skill mastery, creative writing
+- **[educational_optimization.py](domain_applications/educational_optimization.py)** - Comparative analysis and optimization
+  - Instruction approaches, practice structures, feedback timing, assessment strategies
+
+**Quick start:**
+```bash
+# View all educational patterns with validation
+python examples/domain_applications/educational_patterns.py
+
+# Explore pedagogical case studies
+python examples/domain_applications/educational_case_studies.py
+
+# Run comparative optimization analysis
+python examples/domain_applications/educational_optimization.py
+```
+
+See **[README_EDUCATIONAL.md](domain_applications/README_EDUCATIONAL.md)** for comprehensive documentation on educational applications, including:
+- Pedagogical interpretation of structural operators
+- Pattern selection for different learning goals
+- Health metrics for educational contexts
+- Structural frequency considerations in learning
+
+**Validation status:** ✅ All sequences >0.75 health, compliant with Grammar 2.0 (R1-R5 rules)
+
+
 ## Quick Start Examples
 
 ### hello_world.py
