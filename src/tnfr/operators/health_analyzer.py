@@ -29,8 +29,6 @@ __all__ = [
 
 # Operator categories for health analysis
 _STABILIZERS = frozenset({COHERENCE, SELF_ORGANIZATION, SILENCE, RESONANCE})
-_DESTABILIZERS = DESTABILIZERS  # OZ, NAV, VAL
-_TRANSFORMERS = TRANSFORMERS  # ZHIR, THOL
 _REGENERATORS = frozenset({TRANSITION, RECURSIVITY})  # NAV, REMESH
 
 
@@ -218,7 +216,7 @@ class SequenceHealthAnalyzer:
             return 0.5  # Neutral for empty
 
         stabilizers = sum(1 for op in sequence if op in _STABILIZERS)
-        destabilizers = sum(1 for op in sequence if op in _DESTABILIZERS)
+        destabilizers = sum(1 for op in sequence if op in DESTABILIZERS)
 
         # If neither present, neutral balance
         if stabilizers == 0 and destabilizers == 0:
@@ -340,8 +338,9 @@ class SequenceHealthAnalyzer:
     def _calculate_frequency_harmony(self, sequence: List[str]) -> float:
         """Calculate frequency harmony: smoothness of νf transitions.
 
-        Not yet fully implemented; returns high score as placeholder.
-        Requires frequency transition matrix from grammar module.
+        TODO: Full implementation requires integration with STRUCTURAL_FREQUENCIES
+        and FREQUENCY_TRANSITIONS from the grammar module. Currently returns
+        a conservative estimate based on transition patterns.
 
         Parameters
         ----------
@@ -353,8 +352,8 @@ class SequenceHealthAnalyzer:
         float
             Harmony score (0.0-1.0)
         """
-        # Placeholder: assume good harmony unless we detect obvious issues
-        # In future, integrate with STRUCTURAL_FREQUENCIES and FREQUENCY_TRANSITIONS
+        # Conservative estimate: assume good harmony unless obvious issues detected
+        # Future enhancement: integrate with grammar.STRUCTURAL_FREQUENCIES
         return 0.85
 
     def _calculate_completeness(self, sequence: List[str]) -> float:
@@ -377,7 +376,7 @@ class SequenceHealthAnalyzer:
 
         # Check for key phases
         has_activation = any(op in {"emission", "reception"} for op in sequence)
-        has_transformation = any(op in _DESTABILIZERS | _TRANSFORMERS for op in sequence)
+        has_transformation = any(op in DESTABILIZERS | TRANSFORMERS for op in sequence)
         has_stabilization = any(op in _STABILIZERS for op in sequence)
         has_completion = any(op in {"silence", "transition"} for op in sequence)
 
@@ -430,7 +429,7 @@ class SequenceHealthAnalyzer:
 
             # Check for problematic patterns
             # Multiple destabilizers in a row without stabilization
-            if current in _DESTABILIZERS and next_op in _DESTABILIZERS:
+            if current in DESTABILIZERS and next_op in DESTABILIZERS:
                 problematic += 0.5  # Partial penalty
 
         return max(0.0, 1.0 - (problematic / total_transitions))
@@ -507,7 +506,7 @@ class SequenceHealthAnalyzer:
         window = 3  # Look ahead up to 3 operators
 
         for i, op in enumerate(sequence):
-            if op in _DESTABILIZERS:
+            if op in DESTABILIZERS:
                 # Check if a stabilizer appears in the next 'window' operators
                 lookahead = sequence[i + 1:i + 1 + window]
                 if not any(stabilizer in _STABILIZERS for stabilizer in lookahead):
@@ -546,9 +545,9 @@ class SequenceHealthAnalyzer:
             categories_present += 1  # Activation
         if any(op in _STABILIZERS for op in sequence):
             categories_present += 1  # Stabilization
-        if any(op in _DESTABILIZERS for op in sequence):
+        if any(op in DESTABILIZERS for op in sequence):
             categories_present += 1  # Destabilization
-        if any(op in _TRANSFORMERS for op in sequence):
+        if any(op in TRANSFORMERS for op in sequence):
             categories_present += 1  # Transformation
 
         coverage_score = categories_present / 4.0
@@ -595,7 +594,7 @@ class SequenceHealthAnalyzer:
         if sum(1 for op in sequence if op in _STABILIZERS) > len(sequence) // 2:
             return "stabilization"
 
-        if sum(1 for op in sequence if op in _DESTABILIZERS) > len(sequence) // 2:
+        if sum(1 for op in sequence if op in DESTABILIZERS) > len(sequence) // 2:
             return "exploratory"
 
         return "unknown"

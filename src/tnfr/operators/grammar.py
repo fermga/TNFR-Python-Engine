@@ -15,6 +15,7 @@ from typing import TYPE_CHECKING, Any, Mapping, Optional, Sequence
 
 if TYPE_CHECKING:
     from ..node import NodeProtocol
+    from .health_analyzer import SequenceHealthMetrics
 
 from ..compat.dataclass import dataclass
 from ..config.operator_names import (
@@ -397,7 +398,7 @@ class SequenceValidationResult(ValidationOutcome[tuple[str, ...]]):
         message: str,
         metadata: Mapping[str, object],
         error: SequenceSyntaxError | None = None,
-        health_metrics: Optional[Any] = None,
+        health_metrics: Optional["SequenceHealthMetrics"] = None,
     ) -> None:
         tokens_tuple = tuple(tokens)
         canonical_tuple = tuple(canonical_tokens)
