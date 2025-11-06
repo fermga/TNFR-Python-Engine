@@ -426,7 +426,7 @@ class TNFRValidator:
                 results['vf'] = validate_vf_value(vf, config=config)
             
             if theta is not None:
-                results['theta'] = validate_theta_value(theta, config=config)
+                results['theta'] = validate_theta_value(theta)
             
             if dnfr is not None:
                 results['dnfr'] = validate_dnfr_value(dnfr, config=config)
