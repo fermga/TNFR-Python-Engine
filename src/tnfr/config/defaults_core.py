@@ -36,6 +36,8 @@ class CoreDefaults:
     VF_MIN: float = 0.0
     VF_MAX: float = 10.0
     THETA_WRAP: bool = True
+    CLIP_MODE: str = "hard"
+    CLIP_SOFT_K: float = 3.0
     DNFR_WEIGHTS: dict[str, float] = field(
         default_factory=lambda: {
             "phase": 0.34,

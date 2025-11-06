@@ -217,6 +217,67 @@ Runtime functions coordinate clamps, selectors, and job overrides to keep simula
 
 Together these layers ensure every structural change maps back to the TNFR grammar, preserves unit semantics, and leaves behind a telemetry trail suitable for coherence analysis.
 
+## Structural Boundary Preservation
+
+TNFR maintains strict structural boundaries to preserve coherence and ensure that the Primary Information Structure (EPI) remains within valid ranges. This prevents numerical precision issues from violating structural invariants during operator application and integration.
+
+### The structural_clip Function
+
+The `structural_clip` function in `tnfr.dynamics.structural_clip` implements canonical TNFR boundary enforcement with two modes:
+
+- **Hard mode** (default): Classic clamping for immediate stability. Values outside [EPI_MIN, EPI_MAX] are clamped to the nearest boundary. Fast and ensures strict bounds.
+- **Soft mode**: Smooth hyperbolic tangent mapping that preserves derivative continuity. Values are smoothly compressed near boundaries using a sigmoid function, controlled by the `CLIP_SOFT_K` steepness parameter.
+
+### Integration Point
+
+Structural clipping is automatically applied during nodal equation integration in `DefaultIntegrator.integrate()`. After computing the new EPI value via the canonical equation `∂EPI/∂t = νf · ΔNFR(t)`, the integrator applies `structural_clip` before updating node attributes:
+
+```python
+# In src/tnfr/dynamics/integrators.py, line ~565
+epi_clipped = structural_clip(
+    epi, 
+    lo=epi_min,  # From graph config or DEFAULTS
+    hi=epi_max,  # From graph config or DEFAULTS
+    mode=clip_mode,  # "hard" (default) or "soft"
+    k=clip_k,  # Steepness for soft mode (default: 3.0)
+)
+```
+
+### Configuration
+
+Structural boundary behavior is configured via graph-level parameters:
+
+- `EPI_MIN`: Lower boundary for EPI (default: -1.0)
+- `EPI_MAX`: Upper boundary for EPI (default: 1.0)
+- `CLIP_MODE`: Clipping mode, either "hard" or "soft" (default: "hard")
+- `CLIP_SOFT_K`: Steepness parameter for soft mode (default: 3.0)
+
+### Critical Use Cases
+
+This mechanism solves the VAL/NUL operator boundary issue documented in the issue tracker:
+
+1. **VAL (Expansion) overflow**: When EPI ≥ 0.869565 and VAL_scale=1.15, a single integration step could push EPI above 1.0. `structural_clip` ensures EPI ≤ EPI_MAX.
+2. **NUL (Contraction) underflow**: Symmetric case for negative EPI values. `structural_clip` ensures EPI ≥ EPI_MIN.
+3. **Repeated operator applications**: Multiple VAL or NUL applications in sequence maintain boundaries through consistent clipping.
+
+### Telemetry (Optional)
+
+The `structural_clip` function supports optional telemetry via `StructuralClipStats`, which tracks:
+- Number of hard and soft clip interventions
+- Maximum and average deltas applied
+- Total adjustments made
+
+This telemetry is disabled by default for performance but can be enabled via `record_stats=True` for debugging and tuning.
+
+### TNFR Principles
+
+Structural boundary preservation aligns with core TNFR principles:
+
+- **Coherence preservation**: Boundaries define valid structural space; clipping prevents fragmentation
+- **Operator closure**: All operators must produce valid EPI values within structural bounds
+- **Structural continuity**: Soft mode preserves smooth derivatives for gradient-based analysis
+- **Reproducibility**: Deterministic clipping ensures identical results across runs
+
 ## Test isolation and module management
 
 ### Module clearing pattern for test independence
