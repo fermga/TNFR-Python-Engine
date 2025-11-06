@@ -520,7 +520,7 @@ backend.compute_si(G)
 
 ## Next Steps
 
-1. **Read** [OPTIMIZATION_GUIDE.md](OPTIMIZATION_GUIDE.md) for detailed backend information
+1. **Read** [OPTIMIZATION_GUIDE.md](./OPTIMIZATION_GUIDE.md) for detailed backend information
 2. **Run** [examples/optimization_quickstart.py](../examples/optimization_quickstart.py) for practical examples
 3. **Benchmark** your specific workload with [examples/backend_performance_comparison.py](../examples/backend_performance_comparison.py)
 4. **Configure** your graphs for optimal performance
@@ -528,9 +528,9 @@ backend.compute_si(G)
 
 ## Support
 
-- **Documentation**: [OPTIMIZATION_GUIDE.md](OPTIMIZATION_GUIDE.md)
-- **Examples**: `examples/optimization_*.py`
-- **Backend API**: `src/tnfr/backends/__init__.py`
+- **Documentation**: [OPTIMIZATION_GUIDE.md](./OPTIMIZATION_GUIDE.md)
+- **Examples**: [examples/optimization_quickstart.py](../examples/optimization_quickstart.py), [examples/backend_performance_comparison.py](../examples/backend_performance_comparison.py)
+- **Backend API**: [src/tnfr/backends](../src/tnfr/backends/)
 - **Issues**: Report problems or questions on GitHub
 
 ## Summary

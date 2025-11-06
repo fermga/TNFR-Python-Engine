@@ -464,7 +464,7 @@ assert np.allclose(dnfr1, dnfr2, rtol=1e-6)
 
 ## References
 
-- [Backend API Reference](../src/tnfr/backends/__init__.py)
-- [ΔNFR Implementation](../src/tnfr/dynamics/dnfr.py)
-- [Si Implementation](../src/tnfr/metrics/sense_index.py)
-- [Coherence Matrix](../src/tnfr/metrics/coherence.py)
+- [Backend API Reference](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/backends/__init__.py) - Backend system implementation
+- [ΔNFR Implementation](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/dynamics/dnfr.py) - Core ΔNFR optimizations
+- [Si Implementation](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/metrics/sense_index.py) - Sense index computation
+- [Coherence Matrix](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/metrics/coherence.py) - Coherence computation
