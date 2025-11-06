@@ -221,19 +221,19 @@ def get_organizational_transformation_sequence():
         Validated operator sequence for organizational transformation
     """
     return [
-        EMISSION,           # AL: Comunicación de visión/objetivos
-        RECEPTION,          # EN: Recepción y adopción por equipo
-        COUPLING,           # UM: Sincronización de esfuerzos
-        RESONANCE,          # RA: Amplificación de momentum positivo
+        EMISSION,           # AL: Communication of vision/objectives
+        RECEPTION,          # EN: Reception and adoption by team
+        COUPLING,           # UM: Synchronization of efforts
+        RESONANCE,          # RA: Amplification of positive momentum
         TRANSITION,         # NAV: Navigate to implementation
-        DISSONANCE,         # OZ: Resistencias y tensiones emergentes
-        SELF_ORGANIZATION,  # THOL: Reorganización estructural autónoma
+        DISSONANCE,         # OZ: Resistances and emergent tensions
+        SELF_ORGANIZATION,  # THOL: Autonomous structural reorganization
         SILENCE,            # SHA: Integration (closes THOL)
         EMISSION,           # AL: Re-energize
-        COHERENCE,          # IL: Nueva estabilidad organizacional
-        EXPANSION,          # VAL: Escalado de la transformación
+        COHERENCE,          # IL: New organizational stability
+        EXPANSION,          # VAL: Scaling the transformation
         COHERENCE,          # IL: Final consolidation
-        RECURSIVITY,        # REMESH: Consolidación en cultura organizacional
+        RECURSIVITY,        # REMESH: Consolidation into organizational culture
     ]
 
 
