@@ -129,6 +129,8 @@ class CoreDefaults:
     VALIDATORS_STRICT: bool = False
     PROGRAM_TRACE_MAXLEN: int = 50
     HISTORY_MAXLEN: int = 0
+    NODAL_EQUATION_CLIP_AWARE: bool = True
+    NODAL_EQUATION_TOLERANCE: float = 1e-9
 
 
 @dataclass(frozen=True, slots=True)
