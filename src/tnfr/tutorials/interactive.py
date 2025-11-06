@@ -521,19 +521,18 @@ def social_network_example(interactive: bool = True, random_seed: int = 42) -> d
     
     _explain(
         "We'll simulate a scenario with:\n"
-        "  Phase A: Initial debate (dissonance)\n"
-        "  Phase B: Opinion evolution (mutation)\n"
-        "  Phase C: Consensus building (resonance)\n\n"
-        "First, let's have an intense debate (dissonance):",
+        "  Phase A: Basic activation and debate\n"
+        "  Phase B: Opinion evolution (creative mutation)\n"
+        "  Phase C: Consensus building (stabilization)\n\n"
+        "First, let's activate the social network:",
         pause
     )
     
-    print("    >>> network.apply_sequence('exploration', repeat=3)\n")
-    network.apply_sequence("exploration", repeat=3)
+    print("    >>> network.apply_sequence('basic_activation', repeat=3)\n")
+    network.apply_sequence("basic_activation", repeat=3)
     
     _explain(
-        "✓ Completed debate phase with opinion exploration\n"
-        "  (emission → dissonance → reception → coherence → resonance → transition)",
+        "✓ Completed initial social interaction phase",
         pause
     )
     
@@ -542,10 +541,10 @@ def social_network_example(interactive: bool = True, random_seed: int = 42) -> d
         pause * 0.5
     )
     
-    print("    >>> network.apply_sequence('creative_mutation', repeat=2)")
+    print("    >>> network.apply_sequence('network_sync', repeat=2)")
     print("    >>> network.apply_sequence('stabilization', repeat=3)\n")
     
-    network.apply_sequence("creative_mutation", repeat=2)
+    network.apply_sequence("network_sync", repeat=2)
     network.apply_sequence("stabilization", repeat=3)
     
     _explain("✓ Opinions evolved and group stabilized", pause * 0.5)
@@ -911,3 +910,335 @@ def run_all_tutorials(interactive: bool = True, random_seed: int = 42) -> dict:
     print("\n" + "="*70 + "\n")
     
     return results
+
+
+def team_communication_example(interactive: bool = True, random_seed: int = 42) -> dict:
+    """Team communication comparison example using TNFR.
+    
+    This example demonstrates how to model and optimize team communication
+    patterns using different network topologies. It's the hands-on version
+    of the tutorial in INTERACTIVE_TUTORIAL.md Part 3.
+    
+    Concepts demonstrated:
+    - Comparing network topologies (random, ring, small-world)
+    - Measuring communication effectiveness via coherence
+    - Optimizing team structure
+    - Interpreting individual node metrics
+    
+    Parameters
+    ----------
+    interactive : bool, default=True
+        If True, pauses between sections for reading.
+    random_seed : int, default=42
+        Random seed for reproducibility.
+        
+    Returns
+    -------
+    dict
+        Results for each team structure with analysis.
+        
+    Examples
+    --------
+    >>> from tnfr.tutorials import team_communication_example
+    >>> results = team_communication_example()
+    >>> print(f"Best structure: {results['best_structure']}")
+    
+    Notes
+    -----
+    This tutorial demonstrates practical application of TNFR to
+    organizational design and communication optimization.
+    """
+    if not _HAS_SDK:
+        print("Error: SDK not available. Install with: pip install tnfr")
+        return {}
+    
+    pause = 1.5 if interactive else 0
+    
+    _print_section("TNFR Tutorial: Team Communication 👥")
+    
+    _explain(
+        "In this example, we'll compare different team communication structures\n"
+        "and identify which topology creates the most coherent organization.\n\n"
+        "We'll model:\n"
+        "  • Team members as nodes\n"
+        "  • Communication relationships as connections\n"
+        "  • Information flow as operator sequences\n"
+        "  • Team alignment as coherence C(t)",
+        pause
+    )
+    
+    _print_subsection("Step 1: Create Three Team Structures")
+    
+    _explain(
+        "We'll create 8-person teams with different topologies:\n"
+        "  1. Random - Organic, unstructured\n"
+        "  2. Ring - Linear communication chain\n"
+        "  3. Small-World - Mix of local and distant connections",
+        pause
+    )
+    
+    print("    >>> random_team = TNFRNetwork('random_team')")
+    print("    >>> random_team.add_nodes(8, random_seed=42)")
+    print("    >>> random_team.connect_nodes(0.3, 'random')\n")
+    
+    random_team = TNFRNetwork("random_team")
+    random_team.add_nodes(8, random_seed=random_seed)
+    random_team.connect_nodes(0.3, "random")
+    
+    print("    >>> ring_team = TNFRNetwork('ring_team')")
+    print("    >>> ring_team.add_nodes(8, random_seed=42)")
+    print("    >>> ring_team.connect_nodes(connection_pattern='ring')\n")
+    
+    ring_team = TNFRNetwork("ring_team")
+    ring_team.add_nodes(8, random_seed=random_seed)
+    ring_team.connect_nodes(connection_pattern="ring")
+    
+    print("    >>> sw_team = TNFRNetwork('small_world_team')")
+    print("    >>> sw_team.add_nodes(8, random_seed=42)")
+    print("    >>> sw_team.connect_nodes(0.15, 'small_world')\n")
+    
+    sw_team = TNFRNetwork("small_world_team")
+    sw_team.add_nodes(8, random_seed=random_seed)
+    sw_team.connect_nodes(0.15, "small_world")
+    
+    _explain(
+        f"✓ Created 3 team structures:\n"
+        f"  - Random: {random_team.get_edge_count()} connections\n"
+        f"  - Ring: {ring_team.get_edge_count()} connections\n"
+        f"  - Small-world: {sw_team.get_edge_count()} connections",
+        pause
+    )
+    
+    _print_subsection("Step 2: Simulate Communication")
+    
+    _explain(
+        "Now we'll apply the same communication sequence to all teams\n"
+        "and measure which structure achieves better alignment:",
+        pause
+    )
+    
+    print("    >>> for team in [random_team, ring_team, sw_team]:")
+    print("    ...     team.apply_sequence('network_sync', repeat=5)\n")
+    
+    random_team.apply_sequence("network_sync", repeat=5)
+    ring_team.apply_sequence("network_sync", repeat=5)
+    sw_team.apply_sequence("network_sync", repeat=5)
+    
+    _explain("✓ Applied 5 communication cycles to each team", pause * 0.5)
+    
+    _print_subsection("Step 3: Compare Results")
+    
+    random_results = random_team.measure()
+    ring_results = ring_team.measure()
+    sw_results = sw_team.measure()
+    
+    print("    Communication Effectiveness:\n")
+    print(f"    Random Team:")
+    print(f"      - Coherence: {random_results.coherence:.3f}")
+    print(f"      - Density: {random_team.get_density():.3f}\n")
+    
+    print(f"    Ring Team:")
+    print(f"      - Coherence: {ring_results.coherence:.3f}")
+    print(f"      - Density: {ring_team.get_density():.3f}\n")
+    
+    print(f"    Small-World Team:")
+    print(f"      - Coherence: {sw_results.coherence:.3f}")
+    print(f"      - Density: {sw_team.get_density():.3f}\n")
+    
+    teams = {
+        "Random": random_results.coherence,
+        "Ring": ring_results.coherence,
+        "Small-World": sw_results.coherence
+    }
+    best_team = max(teams, key=teams.get)
+    
+    _explain(
+        f"🏆 Most coherent team structure: {best_team}\n\n"
+        f"Interpretation:\n"
+        f"  The {best_team} topology achieved highest coherence ({teams[best_team]:.3f}),\n"
+        f"  indicating better information synchronization across the team.",
+        pause
+    )
+    
+    _print_section("Team Communication Tutorial Complete! 👥")
+    
+    return {
+        "random": {"coherence": random_results.coherence, "density": random_team.get_density()},
+        "ring": {"coherence": ring_results.coherence, "density": ring_team.get_density()},
+        "small_world": {"coherence": sw_results.coherence, "density": sw_team.get_density()},
+        "best_structure": best_team,
+        "results": {
+            "random": random_results,
+            "ring": ring_results,
+            "small_world": sw_results,
+        }
+    }
+
+
+def adaptive_ai_example(interactive: bool = True, random_seed: int = 42) -> dict:
+    """Adaptive AI system example using TNFR.
+    
+    This tutorial demonstrates how TNFR can model learning and adaptation
+    through resonance rather than traditional gradient descent. It shows
+    structural learning principles.
+    
+    Concepts demonstrated:
+    - Learning as coherence increase (not error minimization)
+    - Adaptation via structural reorganization
+    - Memory as stable EPI patterns
+    - Context sensitivity via phase coupling
+    
+    Parameters
+    ----------
+    interactive : bool, default=True
+        If True, pauses between sections for reading.
+    random_seed : int, default=42
+        Random seed for reproducibility.
+        
+    Returns
+    -------
+    dict
+        Learning trajectory and final system state.
+        
+    Examples
+    --------
+    >>> from tnfr.tutorials import adaptive_ai_example
+    >>> results = adaptive_ai_example()
+    >>> print(f"Learning improvement: {results['improvement']:.1f}%")
+    
+    Notes
+    -----
+    This demonstrates TNFR's alternative to traditional ML:
+    - No backpropagation or gradient descent
+    - Learning through resonance and structural operators
+    - Maintains coherence throughout adaptation
+    """
+    if not _HAS_SDK:
+        print("Error: SDK not available. Install with: pip install tnfr")
+        return {}
+    
+    pause = 1.5 if interactive else 0
+    
+    _print_section("TNFR Tutorial: Adaptive AI System 🤖")
+    
+    _explain(
+        "In this example, we'll model a learning system using TNFR principles.\n"
+        "Unlike traditional ML, learning happens through structural resonance,\n"
+        "not gradient descent.\n\n"
+        "TNFR Learning Model:\n"
+        "  • Nodes = Processing units (like neurons, but resonant)\n"
+        "  • Coherence increase = Learning (not error reduction)\n"
+        "  • Mutation operator = Exploration\n"
+        "  • Resonance operator = Pattern consolidation",
+        pause
+    )
+    
+    _print_subsection("Step 1: Create Initial 'Naive' System")
+    
+    _explain(
+        "We start with an unorganized network representing\n"
+        "a system before training:",
+        pause
+    )
+    
+    print("    >>> naive_system = TNFRNetwork('learning_system')")
+    print("    >>> naive_system.add_nodes(15, random_seed=42)")
+    print("    >>> naive_system.connect_nodes(0.25, 'random')  # Sparse connections\n")
+    
+    naive_system = TNFRNetwork("learning_system")
+    naive_system.add_nodes(15, random_seed=random_seed)
+    naive_system.connect_nodes(0.25, "random")
+    
+    print("    >>> naive_system.apply_sequence('basic_activation', repeat=2)")
+    print("    >>> initial_state = naive_system.measure()\n")
+    
+    naive_system.apply_sequence("basic_activation", repeat=2)
+    initial_state = naive_system.measure()
+    
+    initial_coherence = initial_state.coherence
+    
+    _explain(
+        f"Initial system state (before learning):\n"
+        f"  • Coherence: {initial_coherence:.3f}\n"
+        f"  • This represents an 'untrained' system",
+        pause
+    )
+    
+    _print_subsection("Step 2: 'Training' via Structural Reorganization")
+    
+    _explain(
+        "Training in TNFR means applying sequences that increase coherence:\n"
+        "  1. Exploration (mutation + dissonance)\n"
+        "  2. Consolidation (coherence + resonance)\n"
+        "  3. Repeat until convergence\n\n"
+        "This is fundamentally different from backpropagation!",
+        pause
+    )
+    
+    print("    >>> # Training loop")
+    print("    >>> for epoch in range(3):")
+    print("    ...     naive_system.apply_sequence('network_sync', repeat=2)")
+    print("    ...     naive_system.apply_sequence('consolidation', repeat=3)\n")
+    
+    coherence_trajectory = [initial_coherence]
+    
+    for epoch in range(3):
+        naive_system.apply_sequence("network_sync", repeat=2)
+        naive_system.apply_sequence("consolidation", repeat=3)
+        epoch_results = naive_system.measure()
+        coherence_trajectory.append(epoch_results.coherence)
+        if interactive:
+            print(f"    Epoch {epoch+1}: C(t) = {epoch_results.coherence:.3f}")
+    
+    print()
+    
+    _print_subsection("Step 3: Evaluate Learning")
+    
+    final_state = naive_system.measure()
+    final_coherence = final_state.coherence
+    improvement = ((final_coherence - initial_coherence) / initial_coherence) * 100
+    
+    _explain(
+        f"Learning Results:\n"
+        f"  • Initial coherence: {initial_coherence:.3f}\n"
+        f"  • Final coherence: {final_coherence:.3f}\n"
+        f"  • Improvement: {improvement:+.1f}%\n\n"
+        f"Interpretation:\n"
+        f"  The system 'learned' by increasing its internal coherence.\n"
+        f"  Higher coherence = Better organized = More 'trained'\n\n"
+        f"  This demonstrates learning as structural reorganization,\n"
+        f"  not as weight optimization!",
+        pause
+    )
+    
+    _print_subsection("Step 4: TNFR vs Traditional ML")
+    
+    _explain(
+        "Key Differences:\n\n"
+        "Traditional ML (backprop):\n"
+        "  • Minimize error/loss\n"
+        "  • Adjust weights via gradients\n"
+        "  • Fixed architecture\n\n"
+        "TNFR Adaptive Systems:\n"
+        "  • Maximize coherence\n"
+        "  • Reorganize structure via operators\n"
+        "  • Dynamic, self-organizing architecture\n\n"
+        "Both work, but TNFR preserves structural meaning throughout.",
+        pause
+    )
+    
+    _print_section("Adaptive AI Tutorial Complete! 🤖")
+    
+    return {
+        "initial_coherence": initial_coherence,
+        "final_coherence": final_coherence,
+        "improvement": improvement,
+        "coherence_trajectory": coherence_trajectory,
+        "final_state": final_state,
+        "interpretation": (
+            f"System improved coherence by {improvement:.1f}% through "
+            f"structural reorganization, demonstrating learning without "
+            f"traditional gradient descent."
+        )
+    }
+
