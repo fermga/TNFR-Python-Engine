@@ -33,7 +33,7 @@ if TYPE_CHECKING:
 try:  # pragma: no cover - optional dependency for typing only
     import numpy as np
 except Exception:  # pragma: no cover - graceful fallback when NumPy is missing
-    np = SimpleNamespace(ndarray=Any, float_=float)  # type: ignore[assignment]
+    np = SimpleNamespace(ndarray=Any, float64=float)  # type: ignore[assignment]
 
 if TYPE_CHECKING:  # pragma: no cover - import-time typing hook
     try:
