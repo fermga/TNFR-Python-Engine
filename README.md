@@ -25,8 +25,38 @@ Install from PyPI (Python ≥ 3.9):
 pip install tnfr
 ```
 
-Then follow the [quickstart guide](docs/source/getting-started/quickstart.md) for Python and CLI
-walkthroughs plus optional dependency caching helpers.
+### Your First TNFR Network (3 lines!)
+
+```python
+from tnfr.sdk import TNFRNetwork
+
+network = TNFRNetwork("hello_world")
+results = network.add_nodes(10).connect_nodes(0.3, "random").apply_sequence("basic_activation", repeat=3).measure()
+print(results.summary())
+```
+
+🎉 **That's it!** You just created, activated, and measured a TNFR network.
+
+### Interactive Tutorials
+
+Learn TNFR interactively in 5 minutes:
+
+```python
+from tnfr.tutorials import hello_tnfr
+hello_tnfr()  # Guided tour of TNFR concepts
+```
+
+Or try domain-specific examples:
+- `biological_example()` - Cell communication model
+- `social_network_example()` - Social dynamics
+- `technology_example()` - Distributed systems
+
+### Full Documentation
+
+- 🚀 [**NEW Quick Start Guide**](docs/source/getting-started/QUICKSTART_NEW.md) - Get running in 5 minutes!
+- 📚 [Original Quickstart](docs/source/getting-started/quickstart.md) - Python and CLI walkthroughs
+- 🎓 [Interactive Tutorials](src/tnfr/tutorials/README.md) - Learn by doing
+- 💡 [Hello World Example](examples/hello_world.py) - Simplest possible example
 
 ## CLI profiling helpers
 
