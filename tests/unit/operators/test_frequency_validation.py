@@ -238,7 +238,8 @@ class TestBackwardCompatibility:
         # These are examples from test_canonical_grammar_rules.py
         assert validate_sequence([EMISSION, RECEPTION, COHERENCE, RESONANCE, SILENCE]).passed
         assert validate_sequence([EMISSION, RECEPTION, COHERENCE, DISSONANCE, MUTATION, TRANSITION]).passed
-        assert validate_sequence([EMISSION, RECEPTION, SELF_ORGANIZATION, COHERENCE, RESONANCE, SILENCE]).passed
+        # Updated: THOL now requires destabilizer (R4 evolved)
+        assert validate_sequence([EMISSION, RECEPTION, COHERENCE, DISSONANCE, SELF_ORGANIZATION, SILENCE]).passed
 
     def test_frequency_warnings_do_not_break_sequences(self):
         """Frequency validation generates warnings, not errors."""

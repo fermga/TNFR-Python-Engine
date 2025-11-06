@@ -86,12 +86,17 @@ def test_validate_sequence_requires_valid_start() -> None:
     assert "must start" in result.message
 
 
-def test_validate_sequence_requires_intermediate_segment() -> None:
+def test_validate_sequence_accepts_simple_sequences() -> None:
+    """Simple sequences without intermediate operators are now valid.
+    
+    NOTE: The requirement for explicit intermediate operators (DISSONANCE/COUPLING/RESONANCE)
+    was removed as overly restrictive. COHERENCE provides sufficient structural transformation.
+    """
     result = validate_sequence([EMISSION, RECEPTION, COHERENCE, SILENCE])
-    assert not result.passed
-    assert "missing" in result.message
+    assert result.passed
     assert result.metadata["has_reception"]
     assert result.metadata["has_coherence"]
+    assert not result.metadata["has_intermediate"]  # No intermediate, but still valid
 
 
 def test_validate_sequence_requires_known_tokens() -> None:

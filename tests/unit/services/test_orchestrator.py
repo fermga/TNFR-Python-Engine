@@ -14,8 +14,7 @@ CANONICAL_SEQUENCE = [
     "reception",
     "coherence",
     "coupling",
-    "dissonance",
-    "resonance",
+    "resonance",  # Changed from dissonance - COUPLING → RESONANCE is excellent
     "silence",
 ]
 
@@ -63,7 +62,6 @@ def test_orchestrator_execute_sequence_with_operators():
         Reception,
         Coherence,
         Coupling,
-        Dissonance,
         Resonance,
         Silence,
     )
@@ -77,8 +75,7 @@ def test_orchestrator_execute_sequence_with_operators():
             Reception(),
             Coherence(),
             Coupling(),
-            Dissonance(),
-            Resonance(),
+            Resonance(),  # Changed from Dissonance - COUPLING → RESONANCE is excellent
             Silence(),
         ],
     )
