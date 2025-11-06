@@ -75,8 +75,11 @@ __all__ = [
     "validate_sequence",
     "FUNCTION_TO_GLYPH",
     "GLYPH_TO_FUNCTION",
+    "STRUCTURAL_FREQUENCIES",
+    "FREQUENCY_TRANSITIONS",
     "glyph_function_name",
     "function_name_to_glyph",
+    "validate_frequency_transition",
 ]
 
 logger = get_logger(__name__)
@@ -525,6 +528,15 @@ class _SequenceAutomaton:
         if prev not in OPERATORS:
             return
 
+        # R5: Validate structural frequency transitions (warnings only)
+        freq_valid, freq_msg = validate_frequency_transition(prev, curr)
+        if not freq_valid:
+            logger.warning(
+                "R5 frequency transition warning at position %d: %s",
+                index,
+                freq_msg,
+            )
+
         allowed = _STRUCTURAL_COMPAT_TABLE.get(prev)
         if allowed is not None and curr not in allowed:
             raise SequenceSyntaxError(
@@ -735,32 +747,87 @@ class StructuralPattern(Enum):
 
 
 # Structural frequency matrix (νf): Hz_str categories per operator
-# Used for phase/frequency compatibility validation (future enhancement)
-# NOTE: These constants are defined here as part of the canonical grammar specification
-# but are not yet actively used in validation. They provide the foundation for
-# future phase/frequency coherence validation (§3 Phase check in AGENTS.md)
+# R5: HARMONIC_FREQUENCIES validation (now active)
+# Maps each operator to its structural frequency level following TNFR canonical theory.
+# - high: Operators that initiate, amplify, concentrate, or pivot structure
+# - medium: Operators that capture, stabilize, couple, or organize  
+# - zero: Operators that suspend reorganization while preserving form
 STRUCTURAL_FREQUENCIES: dict[str, str] = {
-    EMISSION: "alta",  # AL: inicio reorganización (high)
-    RECEPTION: "media",  # EN: captura estructural (medium)
-    COHERENCE: "media",  # IL: estabilización (medium)
-    DISSONANCE: "alta",  # OZ: tensión (high)
-    COUPLING: "media",  # UM: acoplamiento (medium)
-    RESONANCE: "alta",  # RA: amplificación (high)
-    SILENCE: "cero",  # SHA: pausa (zero/suspended)
-    EXPANSION: "media",  # VAL: exploración volumétrica (medium)
-    CONTRACTION: "alta",  # NUL: concentración (high)
-    SELF_ORGANIZATION: "media",  # THOL: cascadas autónomas (medium)
-    MUTATION: "alta",  # ZHIR: pivote de umbral (high)
-    TRANSITION: "media",  # NAV: hand-off controlado (medium)
-    RECURSIVITY: "media",  # REMESH: eco fractal (medium)
+    EMISSION: "high",  # AL: initiation/reorganization
+    RECEPTION: "medium",  # EN: structural capture
+    COHERENCE: "medium",  # IL: stabilization
+    DISSONANCE: "high",  # OZ: tension
+    COUPLING: "medium",  # UM: coupling
+    RESONANCE: "high",  # RA: amplification
+    SILENCE: "zero",  # SHA: pause (suspended)
+    EXPANSION: "medium",  # VAL: volumetric exploration
+    CONTRACTION: "high",  # NUL: concentration
+    SELF_ORGANIZATION: "medium",  # THOL: autonomous cascades
+    MUTATION: "high",  # ZHIR: threshold pivot
+    TRANSITION: "medium",  # NAV: controlled hand-off
+    RECURSIVITY: "medium",  # REMESH: fractal echo
 }
 
 # Frequency compatibility: operators with harmonic frequencies can transition
-FREQUENCY_COMPATIBLE: dict[str, set[str]] = {
-    "alta": {"alta", "media"},  # High can transition to high or medium
-    "media": {"media", "alta", "cero"},  # Medium can transition to any
-    "cero": {"alta", "media"},  # Zero (silence) can restart with high or medium
+# Valid transitions preserve structural coherence:
+# - high ↔ medium: High energy can stabilize or stabilized can amplify
+# - medium ↔ zero: Stabilized can pause or resume from pause  
+# - high ↔ high: High energy can chain directly
+# Invalid: zero → high (cannot jump from pause to high without intermediate stabilization)
+FREQUENCY_TRANSITIONS: dict[str, set[str]] = {
+    "high": {"high", "medium"},
+    "medium": {"high", "medium", "zero"},
+    "zero": {"medium"},  # Must transition through medium before high
 }
+
+
+def validate_frequency_transition(prev_operator: str, next_operator: str) -> tuple[bool, str]:
+    """Validate structural frequency transition between consecutive operators (R5 rule).
+
+    Parameters
+    ----------
+    prev_operator : str
+        Previous operator in canonical form (e.g., "emission", "coherence").
+    next_operator : str
+        Next operator in canonical form (e.g., "dissonance", "resonance").
+
+    Returns
+    -------
+    tuple[bool, str]
+        (is_valid, message) where is_valid indicates if transition respects frequency
+        harmonics, and message provides context when invalid.
+
+    Notes
+    -----
+    Structural frequency transitions follow TNFR canonical rules:
+    - High ↔ Medium: Bidirectional, natural energy exchange
+    - Medium ↔ Zero: Stabilization can pause, pause can resume
+    - High ↔ High: High energy operators can chain directly
+    - **Invalid**: Zero → High without Medium intermediary
+
+    This validation generates warnings (not errors) to maintain flexibility while
+    alerting users to potentially incoherent structural transitions.
+    """
+    # Get frequency levels for both operators
+    prev_freq = STRUCTURAL_FREQUENCIES.get(prev_operator)
+    next_freq = STRUCTURAL_FREQUENCIES.get(next_operator)
+
+    # If either operator is unknown, skip validation (compatibility handles this)
+    if prev_freq is None or next_freq is None:
+        return True, ""
+
+    # Check if transition is allowed
+    allowed_targets = FREQUENCY_TRANSITIONS.get(prev_freq, set())
+    if next_freq not in allowed_targets:
+        prev_display = operator_display_name(prev_operator)
+        next_display = operator_display_name(next_operator)
+        return (
+            False,
+            f"Incoherent frequency transition: {prev_display} ({prev_freq}) → {next_display} ({next_freq}). "
+            f"Valid transitions from {prev_freq}: {', '.join(sorted(allowed_targets))}",
+        )
+
+    return True, ""
 
 
 def _record_grammar_violation(
