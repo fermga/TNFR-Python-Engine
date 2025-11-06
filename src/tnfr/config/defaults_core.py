@@ -87,7 +87,7 @@ class CoreDefaults:
             "SHA_vf_factor": 0.85,
             # Conservative scaling (1.05) prevents EPI overflow near boundaries
             # while maintaining meaningful expansion capacity. Critical threshold:
-            # EPI ≥ 1.0/1.05 ≈ 0.952 (vs previous 1.0/1.15 ≈ 0.870).
+            # EPI × 1.05 = 1.0 when EPI ≈ 0.952 (vs previous threshold ≈ 0.870).
             # This preserves structural identity at boundary (EPI_MAX as identity frontier).
             "VAL_scale": 1.05,
             "NUL_scale": 0.85,
