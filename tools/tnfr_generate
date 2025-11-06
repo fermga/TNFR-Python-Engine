@@ -25,7 +25,10 @@ from __future__ import annotations
 
 import argparse
 import sys
-from typing import NoReturn
+from typing import TYPE_CHECKING, NoReturn
+
+if TYPE_CHECKING:
+    from tnfr.tools.sequence_generator import GenerationResult
 
 
 def main() -> int | NoReturn:
@@ -206,24 +209,24 @@ def _parse_sequence(sequence_str: str) -> list[str]:
     return [op.strip() for op in sequence_str.split(",")]
 
 
-def _print_result(result: object, args: argparse.Namespace) -> None:
+def _print_result(result: GenerationResult, args: argparse.Namespace) -> None:  # type: ignore[name-defined]
     """Print generation result based on format option."""
     if args.quiet:
-        print(",".join(result.sequence))  # type: ignore[attr-defined]
+        print(",".join(result.sequence))
         return
 
     if args.format == "json":
         import json
 
         output = {
-            "sequence": result.sequence,  # type: ignore[attr-defined]
-            "health_score": result.health_score,  # type: ignore[attr-defined]
-            "detected_pattern": result.detected_pattern,  # type: ignore[attr-defined]
-            "domain": result.domain,  # type: ignore[attr-defined]
-            "objective": result.objective,  # type: ignore[attr-defined]
-            "method": result.method,  # type: ignore[attr-defined]
-            "recommendations": result.recommendations,  # type: ignore[attr-defined]
-            "metadata": result.metadata,  # type: ignore[attr-defined]
+            "sequence": result.sequence,
+            "health_score": result.health_score,
+            "detected_pattern": result.detected_pattern,
+            "domain": result.domain,
+            "objective": result.objective,
+            "method": result.method,
+            "recommendations": result.recommendations,
+            "metadata": result.metadata,
         }
         print(json.dumps(output, indent=2))
 
@@ -231,30 +234,30 @@ def _print_result(result: object, args: argparse.Namespace) -> None:
         print("=" * 70)
         print("GENERATED SEQUENCE")
         print("=" * 70)
-        print(f"Sequence: {' → '.join(result.sequence)}")  # type: ignore[attr-defined]
-        print(f"Health Score: {result.health_score:.2f}")  # type: ignore[attr-defined]
-        print(f"Detected Pattern: {result.detected_pattern}")  # type: ignore[attr-defined]
-        if result.domain:  # type: ignore[attr-defined]
-            print(f"Domain: {result.domain}")  # type: ignore[attr-defined]
-        if result.objective:  # type: ignore[attr-defined]
-            print(f"Objective: {result.objective}")  # type: ignore[attr-defined]
-        print(f"Method: {result.method}")  # type: ignore[attr-defined]
+        print(f"Sequence: {' → '.join(result.sequence)}")
+        print(f"Health Score: {result.health_score:.2f}")
+        print(f"Detected Pattern: {result.detected_pattern}")
+        if result.domain:
+            print(f"Domain: {result.domain}")
+        if result.objective:
+            print(f"Objective: {result.objective}")
+        print(f"Method: {result.method}")
 
-        if result.recommendations:  # type: ignore[attr-defined]
+        if result.recommendations:
             print("\nRecommendations:")
-            for i, rec in enumerate(result.recommendations, 1):  # type: ignore[attr-defined]
+            for i, rec in enumerate(result.recommendations, 1):
                 print(f"  {i}. {rec}")
 
-        if result.metadata:  # type: ignore[attr-defined]
+        if result.metadata:
             print("\nMetadata:")
-            for key, value in result.metadata.items():  # type: ignore[attr-defined]
+            for key, value in result.metadata.items():
                 print(f"  {key}: {value}")
 
     else:  # compact
-        print(f"Sequence: {','.join(result.sequence)}")  # type: ignore[attr-defined]
-        print(f"Health: {result.health_score:.2f}, Pattern: {result.detected_pattern}")  # type: ignore[attr-defined]
-        if result.recommendations:  # type: ignore[attr-defined]
-            print(f"Recommendations: {len(result.recommendations)} suggestion(s)")  # type: ignore[attr-defined]
+        print(f"Sequence: {','.join(result.sequence)}")
+        print(f"Health: {result.health_score:.2f}, Pattern: {result.detected_pattern}")
+        if result.recommendations:
+            print(f"Recommendations: {len(result.recommendations)} suggestion(s)")
 
 
 def _print_improvement(

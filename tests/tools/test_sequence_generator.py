@@ -494,14 +494,17 @@ class TestPatternAccuracy:
             result = generator.generate_for_pattern(pattern, min_health=0.60)
             
             # Verify basic properties
-            assert result.sequence is not None
-            assert len(result.sequence) >= 3
+            assert result.sequence is not None, f"Failed to generate sequence for {pattern}"
+            assert len(result.sequence) >= 3, f"Sequence too short for {pattern}"
             
             # Pattern matching is complex and depends on many factors
-            # Just verify we get a recognized pattern
+            # Just verify we get a recognized pattern (not UNKNOWN for non-trivial sequences)
             detected = detector.detect_pattern(result.sequence)
-            # Should not be UNKNOWN or MINIMAL for most cases
-            assert detected.value not in ["UNKNOWN"] or len(result.sequence) <= 3
+            # Should not be UNKNOWN unless sequence is very short
+            if len(result.sequence) > 3:
+                assert detected.value != "UNKNOWN", (
+                    f"Generated sequence for {pattern} resulted in UNKNOWN pattern: {result.sequence}"
+                )
 
 
 # =============================================================================

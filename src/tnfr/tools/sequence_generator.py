@@ -626,10 +626,10 @@ class ContextualSequenceGenerator:
         detected = self.pattern_detector.detect_pattern(sequence)
         return detected.value == pattern_name
 
-    def _get_pattern_signature(self, pattern_name: str) -> dict[str, object]:
+    def _get_pattern_signature(self, pattern_name: str) -> dict[str, list[str]]:
         """Get characteristic signature for a structural pattern."""
         # Pattern signatures mapping pattern names to operator combinations
-        signatures = {
+        signatures: dict[str, dict[str, list[str]]] = {
             "BOOTSTRAP": {
                 "core": [EMISSION, COUPLING, COHERENCE],
                 "optional": [RECEPTION, SILENCE],
@@ -701,22 +701,22 @@ class ContextualSequenceGenerator:
                 "avoid": [],
             }
 
-        return signatures[pattern_name]  # type: ignore[return-value]
+        return signatures[pattern_name]
 
     def _build_from_signature(
-        self, signature: dict[str, object], max_length: int
+        self, signature: dict[str, list[str]], max_length: int
     ) -> list[str]:
         """Build sequence from pattern signature."""
-        core = signature["core"]  # type: ignore[index]
-        optional = signature.get("optional", [])  # type: ignore[union-attr]
+        core = signature["core"]
+        optional = signature.get("optional", [])
 
         # Start with core
-        sequence = list(core)  # type: ignore[arg-type]
+        sequence = list(core)
 
         # Add optional operators if room and improves health
         remaining = max_length - len(sequence)
         if remaining > 0 and optional:
-            for op in optional:  # type: ignore[union-attr]
+            for op in optional:
                 if len(sequence) < max_length:
                     # Try to insert at compatible position
                     for i in range(len(sequence) + 1):
@@ -724,15 +724,15 @@ class ContextualSequenceGenerator:
                         next_op = sequence[i] if i < len(sequence) else None
 
                         if prev is None or get_compatibility_level(
-                            prev, op  # type: ignore[arg-type]
+                            prev, op
                         ) in (CompatibilityLevel.EXCELLENT, CompatibilityLevel.GOOD):
                             if next_op is None or get_compatibility_level(
-                                op, next_op  # type: ignore[arg-type]
+                                op, next_op
                             ) in (
                                 CompatibilityLevel.EXCELLENT,
                                 CompatibilityLevel.GOOD,
                             ):
-                                sequence.insert(i, op)  # type: ignore[arg-type]
+                                sequence.insert(i, op)
                                 break
 
         return sequence[:max_length]
@@ -828,7 +828,10 @@ class ContextualSequenceGenerator:
             )
 
         # Identify added operators
-        added = [op for op in improved if op not in original or improved.count(op) > original.count(op)]
+        from collections import Counter
+        original_counts = Counter(original)
+        improved_counts = Counter(improved)
+        added = [op for op in improved_counts if improved_counts[op] > original_counts.get(op, 0)]
         if added:
             recommendations.append(f"Added operators: {', '.join(set(added))}")
 
