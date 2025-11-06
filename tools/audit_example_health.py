@@ -213,7 +213,10 @@ def print_summary(results: Dict[str, List[Dict]]) -> None:
     
     print(f"\nTotal sequences found: {total_sequences}")
     print(f"Sequences needing optimization (health < 0.7): {needs_optimization}")
-    print(f"Optimization rate: {needs_optimization/total_sequences*100:.1f}%")
+    if total_sequences > 0:
+        print(f"Optimization rate: {needs_optimization/total_sequences*100:.1f}%")
+    else:
+        print(f"Optimization rate: N/A (no sequences found)")
     
     print("\n" + "-"*80)
     print("SEQUENCES NEEDING OPTIMIZATION")
