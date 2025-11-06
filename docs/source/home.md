@@ -7,7 +7,8 @@ theory.
 
 ## Quick References for New Contributors
 
-- **[README.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/README.md)** – Start here! Accessible introduction to TNFR with quick installation and first steps.
+- **[TNFR Fundamental Concepts](getting-started/TNFR_CONCEPTS.md)** – **START HERE** if you're new to TNFR! Understand the paradigm in 10 minutes with accessible explanations, visual analogies, and practical examples.
+- **[README.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/README.md)** – Accessible introduction to TNFR with quick installation and first steps.
 - **[GLOSSARY.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/GLOSSARY.md)** – Unified glossary of TNFR variables, operators, and
   canonical concepts. Essential reference for understanding EPI, νf, ΔNFR, and structural operators.
 - **[GLYPH_SEQUENCES_GUIDE.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/GLYPH_SEQUENCES_GUIDE.md)** – Examples of common structural
@@ -15,8 +16,8 @@ theory.
 
 ## Documentation map
 
-- **Getting started** – begin with the practical [Quickstart](getting-started/quickstart.md) to
-  spin up a TNFR node, then review the [migrating guide](getting-started/migrating-remesh-window.md)
+- **Getting started** – **NEW:** Read the [TNFR Fundamental Concepts](getting-started/TNFR_CONCEPTS.md) guide first to understand the paradigm! Then follow the practical [Quickstart](getting-started/quickstart.md) to
+  spin up a TNFR node, or review the [migrating guide](getting-started/migrating-remesh-window.md)
   if you are coming from Remesh Window.
 - **API reference** – consult the [overview](api/overview.md) plus the focused guides on
   [structural operators](api/operators.md) and [telemetry utilities](api/telemetry.md) when you need
@@ -37,6 +38,7 @@ theory.
     assumptions or reproduce the derivations behind telemetry outputs.
 
 !!! tip "Quick-start pathways"
+    * **New to TNFR?** Read the [TNFR Fundamental Concepts](getting-started/TNFR_CONCEPTS.md) guide to understand the paradigm first (10 minutes).
     * For implementers: follow the [Quickstart](getting-started/quickstart.md) to configure
       dependencies, initialize a seed, and run your first coherence sweep.
     * For theorists: the [Mathematical Quick Start](foundations.md) bridges the primer notebooks with

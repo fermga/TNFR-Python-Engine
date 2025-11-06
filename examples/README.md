@@ -2,6 +2,8 @@
 
 This directory contains Jupyter notebooks demonstrating TNFR (Resonant Fractal Nature Theory) concepts and computations.
 
+> **New to TNFR?** Start with the [TNFR Fundamental Concepts Guide](../docs/source/getting-started/TNFR_CONCEPTS.md) to understand the paradigm before diving into examples.
+
 ## Academic Notebooks (Minimal Systems)
 
 These notebooks provide didactic examples using minimal 2×2 systems, computing fundamental TNFR structural metrics.
