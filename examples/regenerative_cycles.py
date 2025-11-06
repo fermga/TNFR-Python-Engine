@@ -217,7 +217,7 @@ def show_regenerator_info():
     print("REGENERATORS AND CYCLE TYPES")
     print("="*70)
     
-    print("\nRegenerat operators (enable self-sustaining cycles):")
+    print("\nRegenerator operators (enable self-sustaining cycles):")
     for regen in REGENERATORS:
         print(f"  • {regen}")
     

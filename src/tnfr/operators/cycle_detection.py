@@ -27,7 +27,10 @@ from ..config.operator_names import (
 )
 
 # Define stabilizers using canonical operator names (not glyph codes)
-# These operators provide structural stability in TNFR sequences
+# These operators provide structural stability in TNFR sequences.
+# Note: This uses canonical names (coherence, resonance, etc.) rather than
+# glyph codes (IL, RA, etc.) from config.constants.STABILIZERS to match
+# the sequence validation format throughout the system.
 _STABILIZERS_SET = frozenset([COHERENCE, SELF_ORGANIZATION, SILENCE, RESONANCE, COUPLING])
 
 __all__ = [
@@ -82,8 +85,9 @@ class CycleDetector:
     - Must achieve minimum structural health score (>0.6)
     - Validates balance, diversity, and coherence
     
-    Note: Reuses existing system constants (STABILIZERS from config.constants)
-    and pattern analysis functions from patterns.py to avoid duplication.
+    Note: Uses _STABILIZERS_SET with canonical operator names to match
+    the sequence validation format. Reuses pattern detector methods for
+    balance, diversity, and health calculations to avoid code duplication.
     """
 
     # Minimum health score for valid regenerative cycle
@@ -245,7 +249,7 @@ class CycleDetector:
         
         Reuses the existing pattern detector's health calculation approach
         but adapted for cycle-specific validation. Balance measures equilibrium
-        between stabilizing operators (from STABILIZERS constant).
+        between stabilizing operators.
         """
         from .patterns import AdvancedPatternDetector
         
