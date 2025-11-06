@@ -9,7 +9,7 @@ from collections.abc import (
     Sequence,
 )
 from enum import Enum
-from typing import Any, Callable, ContextManager, Iterable, Protocol, TypedDict, cast, Union
+from typing import Any, Callable, ContextManager, Iterable, Protocol, TypedDict, Union, cast
 
 from ._compat import TypeAlias
 
@@ -143,9 +143,9 @@ ArgSpec: TypeAlias = tuple[str, Mapping[str, Any]]
 
 TNFRConfigScalar: TypeAlias = Union[bool, int, float, str, None]
 TNFRConfigSequence: TypeAlias = Sequence[TNFRConfigScalar]
-TNFRConfigValue: TypeAlias = (
-    TNFRConfigScalar | TNFRConfigSequence | MutableMapping[str, "TNFRConfigValue"]
-)
+TNFRConfigValue: TypeAlias = Union[
+    TNFRConfigScalar, TNFRConfigSequence, MutableMapping[str, "TNFRConfigValue"]
+]
 
 class _SigmaVectorRequired(TypedDict):
     x: float
