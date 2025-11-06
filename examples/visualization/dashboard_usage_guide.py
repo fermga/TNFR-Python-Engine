@@ -2,10 +2,22 @@
 
 This guide demonstrates practical usage patterns for the visualization dashboard,
 including health monitoring, optimization workflows, and educational scenarios.
+
+Note: This example uses /tmp for output paths for simplicity. In production code,
+use tempfile.gettempdir() or allow users to specify output directories for
+cross-platform compatibility.
 """
+
+import tempfile
+from pathlib import Path
 
 from tnfr.visualization import SequenceVisualizer
 from tnfr.operators.grammar import validate_sequence_with_health
+
+
+# Use system temp directory for cross-platform compatibility
+OUTPUT_BASE = Path(tempfile.gettempdir()) / "tnfr_dashboard_guide"
+OUTPUT_BASE.mkdir(parents=True, exist_ok=True)
 
 
 def health_monitoring_example():
@@ -36,7 +48,7 @@ def health_monitoring_example():
             # Generate dashboard for detailed analysis
             fig, axes = visualizer.plot_health_dashboard(
                 health,
-                save_path=f"/tmp/health_monitor_{iteration_name.replace(' ', '_')}.png"
+                save_path=f"OUTPUT_BASE / "health_monitor_{iteration_name.replace(' ', '_')}.png")
             )
             print(f"  Dashboard saved for detailed review")
         else:
@@ -89,17 +101,17 @@ def optimization_workflow_example():
     print("\nGenerating comparison visualizations...")
     fig1, ax1 = visualizer.plot_sequence_flow(
         current, health_metrics=health_current,
-        save_path="/tmp/optimization_current_flow.png"
+        save_path="OUTPUT_BASE / "optimization_current_flow.png")
     )
     fig2, ax2 = visualizer.plot_sequence_flow(
         optimized, health_metrics=health_optimized,
-        save_path="/tmp/optimization_optimized_flow.png"
+        save_path="OUTPUT_BASE / "optimization_optimized_flow.png")
     )
     print("✓ Flow diagrams saved")
     
     fig3, axes3 = visualizer.plot_health_dashboard(
         health_optimized,
-        save_path="/tmp/optimization_dashboard.png"
+        save_path="OUTPUT_BASE / "optimization_dashboard.png")
     )
     print("✓ Health dashboard saved")
 
@@ -150,20 +162,20 @@ def educational_example():
             fig1, ax1 = visualizer.plot_sequence_flow(
                 pattern_info['sequence'],
                 health_metrics=health,
-                save_path=f"/tmp/edu_{safe_name}_flow.png"
+                save_path=f"OUTPUT_BASE / "edu_{safe_name}_flow.png")
             )
             
             # Pattern analysis
             fig2, ax2 = visualizer.plot_pattern_analysis(
                 pattern_info['sequence'],
                 pattern=health.dominant_pattern,
-                save_path=f"/tmp/edu_{safe_name}_pattern.png"
+                save_path=f"OUTPUT_BASE / "edu_{safe_name}_pattern.png")
             )
             
             # Frequency timeline
             fig3, ax3 = visualizer.plot_frequency_timeline(
                 pattern_info['sequence'],
-                save_path=f"/tmp/edu_{safe_name}_timeline.png"
+                save_path=f"OUTPUT_BASE / "edu_{safe_name}_timeline.png")
             )
             
             print(f"✓ Visualizations saved for {pattern_name}")
@@ -202,21 +214,21 @@ def debugging_example():
         fig1, ax1 = visualizer.plot_sequence_flow(
             problematic,
             health_metrics=health,
-            save_path="/tmp/debug_flow.png"
+            save_path="OUTPUT_BASE / "debug_flow.png")
         )
         print("✓ Flow diagram (check arrow colors for transition issues)")
         
         # Timeline shows frequency problems
         fig2, ax2 = visualizer.plot_frequency_timeline(
             problematic,
-            save_path="/tmp/debug_timeline.png"
+            save_path="OUTPUT_BASE / "debug_timeline.png")
         )
         print("✓ Frequency timeline (check for invalid transitions)")
         
         # Dashboard quantifies the issues
         fig3, axes3 = visualizer.plot_health_dashboard(
             health,
-            save_path="/tmp/debug_dashboard.png"
+            save_path="OUTPUT_BASE / "debug_dashboard.png")
         )
         print("✓ Health dashboard (low metrics highlighted)")
     else:
@@ -240,7 +252,7 @@ def main():
     print("\n" + "="*70)
     print("All examples complete!")
     print("="*70)
-    print("\nVisualization files saved to /tmp/")
+    print(f"\nVisualization files saved to {OUTPUT_BASE}")
     print("\nKey Takeaways:")
     print("  • Use flow diagrams to spot transition issues")
     print("  • Use dashboards for comprehensive health assessment")

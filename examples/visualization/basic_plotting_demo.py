@@ -7,8 +7,17 @@ This example shows how to create the four main visualization types:
 4. Frequency timelines
 """
 
+import tempfile
+from pathlib import Path
+
 from tnfr.visualization import SequenceVisualizer
 from tnfr.operators.grammar import validate_sequence_with_health
+
+
+# Use system temp directory for cross-platform compatibility
+OUTPUT_DIR = Path(tempfile.gettempdir()) / "tnfr_viz_demo"
+OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+
 
 def main():
     """Run basic visualization examples."""
@@ -50,34 +59,34 @@ def main():
         fig1, ax1 = visualizer.plot_sequence_flow(
             sequence, 
             health_metrics=health,
-            save_path=f"/tmp/{name}_flow.png"
+            save_path=str(OUTPUT_DIR / f"{name}_flow.png")
         )
-        print(f"   Saved to: /tmp/{name}_flow.png")
+        print(f"   Saved to: {OUTPUT_DIR / f'{name}_flow.png'}")
         
         # 2. Health Dashboard
         print("📊 Generating health dashboard...")
         fig2, axes2 = visualizer.plot_health_dashboard(
             health,
-            save_path=f"/tmp/{name}_dashboard.png"
+            save_path=str(OUTPUT_DIR / f"{name}_dashboard.png")
         )
-        print(f"   Saved to: /tmp/{name}_dashboard.png")
+        print(f"   Saved to: {OUTPUT_DIR / f'{name}_dashboard.png'}")
         
         # 3. Pattern Analysis
         print("📊 Generating pattern analysis...")
         fig3, ax3 = visualizer.plot_pattern_analysis(
             sequence,
             pattern=health.dominant_pattern,
-            save_path=f"/tmp/{name}_pattern.png"
+            save_path=str(OUTPUT_DIR / f"{name}_pattern.png")
         )
-        print(f"   Saved to: /tmp/{name}_pattern.png")
+        print(f"   Saved to: {OUTPUT_DIR / f'{name}_pattern.png'}")
         
         # 4. Frequency Timeline
         print("📊 Generating frequency timeline...")
         fig4, ax4 = visualizer.plot_frequency_timeline(
             sequence,
-            save_path=f"/tmp/{name}_timeline.png"
+            save_path=str(OUTPUT_DIR / f"{name}_timeline.png")
         )
-        print(f"   Saved to: /tmp/{name}_timeline.png")
+        print(f"   Saved to: {OUTPUT_DIR / f'{name}_timeline.png'}")
         
         # Show recommendations if any
         if health.recommendations:
@@ -88,7 +97,7 @@ def main():
     print(f"\n{'='*60}")
     print("All visualizations complete!")
     print(f"{'='*60}")
-    print("\nVisualization files saved to /tmp/")
+    print(f"\nVisualization files saved to {OUTPUT_DIR}")
     print("You can view them with any image viewer.")
 
 

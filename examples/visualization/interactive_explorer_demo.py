@@ -5,12 +5,18 @@ programmatically for batch analysis and comparison.
 """
 
 import sys
+import tempfile
 from pathlib import Path
 
 # Add tools to path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from tools.sequence_explorer import InteractiveSequenceExplorer
+
+
+# Use system temp directory for cross-platform compatibility
+OUTPUT_BASE = Path(tempfile.gettempdir()) / "tnfr_explorer_demo"
+OUTPUT_BASE.mkdir(parents=True, exist_ok=True)
 
 
 def demo_single_exploration():
@@ -25,10 +31,8 @@ def demo_single_exploration():
     sequence = ["emission", "reception", "coherence", "dissonance", 
                 "self_organization", "coherence", "silence"]
     
-    explorer.explore_sequence(
-        sequence,
-        output_dir="/tmp/demo_therapeutic",
-    )
+    output_dir = OUTPUT_BASE / "therapeutic"
+    explorer.explore_sequence(sequence, output_dir=str(output_dir))
 
 
 def demo_sequence_comparison():
@@ -53,11 +57,8 @@ def demo_sequence_comparison():
         "Activation + Mutation",
     ]
     
-    explorer.compare_sequences(
-        sequences,
-        labels=labels,
-        output_dir="/tmp/demo_comparison",
-    )
+    output_dir = OUTPUT_BASE / "comparison"
+    explorer.compare_sequences(sequences, labels=labels, output_dir=str(output_dir))
 
 
 def demo_pattern_variations():
@@ -83,10 +84,8 @@ def demo_pattern_variations():
         print(f"Analyzing {pattern_name} Pattern")
         print(f"{'─'*70}")
         
-        explorer.explore_sequence(
-            sequence,
-            output_dir=f"/tmp/demo_pattern_{pattern_name.lower()}",
-        )
+        output_dir = OUTPUT_BASE / f"pattern_{pattern_name.lower()}"
+        explorer.explore_sequence(sequence, output_dir=str(output_dir))
 
 
 def main():
@@ -105,7 +104,7 @@ def main():
     print("\n" + "="*70)
     print("All demonstrations complete!")
     print("="*70)
-    print("\nCheck /tmp/demo_* directories for visualizations.")
+    print(f"\nCheck {OUTPUT_BASE} for visualizations.")
 
 
 if __name__ == "__main__":

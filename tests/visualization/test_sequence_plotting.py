@@ -242,7 +242,8 @@ class TestVisualizationPerformance:
         fig, ax = viz.plot_sequence_flow(sequence)
         duration = time.time() - start
         
-        # Should complete in under 5 seconds
+        # Should complete in under 5 seconds on typical hardware
+        # This is a conservative estimate; most systems should complete in <1s
         assert duration < 5.0
         assert fig is not None
 

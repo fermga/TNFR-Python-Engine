@@ -21,6 +21,7 @@ Examples:
 
 import argparse
 import sys
+import tempfile
 from pathlib import Path
 from typing import List, Optional
 
@@ -48,7 +49,7 @@ class InteractiveSequenceExplorer:
     def explore_sequence(
         self, 
         sequence: List[str],
-        output_dir: str = "/tmp",
+        output_dir: Optional[str] = None,
         show_plots: bool = False,
     ) -> None:
         """Explore and analyze a single sequence comprehensively.
@@ -58,10 +59,13 @@ class InteractiveSequenceExplorer:
         sequence : List[str]
             Sequence of operator names to analyze
         output_dir : str, optional
-            Directory to save visualizations, by default "/tmp"
+            Directory to save visualizations. If None, uses system temp directory.
         show_plots : bool, optional
             Whether to show plots interactively, by default False
         """
+        if output_dir is None:
+            output_dir = tempfile.gettempdir()
+        
         print(f"\n{'='*70}")
         print(f"TNFR Sequence Analysis")
         print(f"{'='*70}")
@@ -152,7 +156,7 @@ class InteractiveSequenceExplorer:
         self,
         sequences: List[List[str]],
         labels: Optional[List[str]] = None,
-        output_dir: str = "/tmp",
+        output_dir: Optional[str] = None,
     ) -> None:
         """Compare multiple sequences side-by-side.
         
@@ -163,8 +167,11 @@ class InteractiveSequenceExplorer:
         labels : List[str], optional
             Labels for each sequence
         output_dir : str, optional
-            Directory to save comparison visualizations
+            Directory to save comparison visualizations. If None, uses system temp directory.
         """
+        if output_dir is None:
+            output_dir = tempfile.gettempdir()
+        
         if not sequences:
             print("No sequences to compare.")
             return
@@ -297,8 +304,8 @@ def main():
     
     parser.add_argument(
         "--output",
-        default="/tmp",
-        help="Output directory for visualizations (default: /tmp)",
+        default=None,
+        help="Output directory for visualizations (default: system temp directory)",
     )
     
     args = parser.parse_args()

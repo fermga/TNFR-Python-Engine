@@ -357,7 +357,25 @@ class SequenceVisualizer:
         ax_radar.grid(True)
         
         # --- Bar Chart ---
-        benchmarks = [0.7, 0.6, 0.7, 0.6, 0.8, 0.7, 0.9]  # Ideal benchmarks
+        # Define benchmark values for ideal sequences
+        # These represent canonical TNFR targets for well-formed sequences
+        BENCHMARK_COHERENCE = 0.7
+        BENCHMARK_BALANCE = 0.6
+        BENCHMARK_SUSTAINABILITY = 0.7
+        BENCHMARK_EFFICIENCY = 0.6
+        BENCHMARK_FREQUENCY = 0.8
+        BENCHMARK_COMPLETENESS = 0.7
+        BENCHMARK_SMOOTHNESS = 0.9
+        
+        benchmarks = [
+            BENCHMARK_COHERENCE,
+            BENCHMARK_BALANCE,
+            BENCHMARK_SUSTAINABILITY,
+            BENCHMARK_EFFICIENCY,
+            BENCHMARK_FREQUENCY,
+            BENCHMARK_COMPLETENESS,
+            BENCHMARK_SMOOTHNESS,
+        ]
         x_pos = np.arange(num_vars)
         width = 0.35
         
