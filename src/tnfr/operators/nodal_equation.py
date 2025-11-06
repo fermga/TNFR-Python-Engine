@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     from ..types import NodeId, TNFRGraph
 
 from ..alias import get_attr
-from ..constants.aliases import ALIAS_EPI, ALIAS_VF, ALIAS_DNFR
+from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_VF
 
 __all__ = [
     "NodalEquationViolation",
@@ -28,6 +28,7 @@ __all__ = [
 
 # Default tolerance for nodal equation validation
 DEFAULT_NODAL_EQUATION_TOLERANCE = 1e-3
+DEFAULT_NODAL_EQUATION_CLIP_AWARE = True
 
 
 class NodalEquationViolation(Exception):
@@ -122,6 +123,7 @@ def validate_nodal_equation(
     operator_name: str = "unknown",
     tolerance: float | None = None,
     strict: bool = False,
+    clip_aware: bool | None = None,
 ) -> bool:
     """Validate that EPI change respects the nodal equation.
 
@@ -150,6 +152,11 @@ def validate_nodal_equation(
     strict : bool, default False
         If True, raises NodalEquationViolation on failure.
         If False, returns validation result without raising.
+    clip_aware : bool, optional
+        If True, validates using structural_clip to account for boundary
+        preservation: EPI_expected = structural_clip(EPI_theoretical).
+        If False, uses classic mode without clip adjustment.
+        If None, uses graph configuration or default (True).
 
     Returns
     -------
@@ -169,6 +176,19 @@ def validate_nodal_equation(
     For discrete operator applications, dt is typically 1.0, making the
     validation equivalent to: (epi_after - epi_before) ≈ νf_after · ΔNFR_after
 
+    **Clip-aware mode** (default): When structural_clip intervenes to preserve
+    boundaries, the actual EPI differs from the theoretical prediction. This
+    mode accounts for boundary preservation by applying structural_clip to the
+    theoretical value before comparison:
+
+        EPI_expected = structural_clip(EPI_before + νf · ΔNFR · dt)
+
+    This ensures validation passes when clip interventions are legitimate parts
+    of the operator's structural boundary preservation.
+
+    **Classic mode** (clip_aware=False): Validates without clip adjustment,
+    useful for detecting when unexpected clipping occurs.
+
     Examples
     --------
     >>> from tnfr.structural import create_nfr
@@ -184,6 +204,12 @@ def validate_nodal_equation(
             G.graph.get("NODAL_EQUATION_TOLERANCE", DEFAULT_NODAL_EQUATION_TOLERANCE)
         )
 
+    if clip_aware is None:
+        # Try graph configuration first, then use default
+        clip_aware = G.graph.get(
+            "NODAL_EQUATION_CLIP_AWARE", DEFAULT_NODAL_EQUATION_CLIP_AWARE
+        )
+
     # Measured rate of EPI change
     measured_depi_dt = (epi_after - epi_before) / dt if dt > 0 else 0.0
 
@@ -191,27 +217,77 @@ def validate_nodal_equation(
     # Use post-transformation values as they represent the new structural state
     expected_depi_dt = compute_expected_depi_dt(G, node)
 
-    # Check if equation is satisfied within tolerance
-    error = abs(measured_depi_dt - expected_depi_dt)
-    is_valid = error <= tolerance
+    if clip_aware:
+        # Clip-aware mode: apply structural_clip to theoretical EPI before comparison
+        from ..dynamics.structural_clip import structural_clip
 
-    if not is_valid and strict:
-        vf = _get_node_attr(G, node, ALIAS_VF)
-        dnfr = _get_node_attr(G, node, ALIAS_DNFR)
+        # Get structural boundaries from graph configuration
+        epi_min = float(G.graph.get("EPI_MIN", -1.0))
+        epi_max = float(G.graph.get("EPI_MAX", 1.0))
+        clip_mode = G.graph.get("CLIP_MODE", "hard")
 
-        raise NodalEquationViolation(
-            operator=operator_name,
-            measured_depi_dt=measured_depi_dt,
-            expected_depi_dt=expected_depi_dt,
-            tolerance=tolerance,
-            details={
-                "epi_before": epi_before,
-                "epi_after": epi_after,
-                "dt": dt,
-                "vf": vf,
-                "dnfr": dnfr,
-                "error": error,
-            },
+        # Compute theoretical EPI based on nodal equation
+        epi_theoretical = epi_before + (expected_depi_dt * dt)
+
+        # Validate and normalize clip_mode
+        clip_mode_str = str(clip_mode).lower()
+        if clip_mode_str not in ("hard", "soft"):
+            clip_mode_str = "hard"  # Default to safe fallback
+
+        # Apply structural_clip to get expected EPI (what the operator should produce)
+        epi_expected = structural_clip(
+            epi_theoretical, lo=epi_min, hi=epi_max, mode=clip_mode_str  # type: ignore[arg-type]
         )
+
+        # Validate against clipped expected value
+        error = abs(epi_after - epi_expected)
+        is_valid = error <= tolerance
+
+        if not is_valid and strict:
+            vf = _get_node_attr(G, node, ALIAS_VF)
+            dnfr = _get_node_attr(G, node, ALIAS_DNFR)
+
+            raise NodalEquationViolation(
+                operator=operator_name,
+                measured_depi_dt=measured_depi_dt,
+                expected_depi_dt=expected_depi_dt,
+                tolerance=tolerance,
+                details={
+                    "epi_before": epi_before,
+                    "epi_after": epi_after,
+                    "epi_theoretical": epi_theoretical,
+                    "epi_expected": epi_expected,
+                    "dt": dt,
+                    "vf": vf,
+                    "dnfr": dnfr,
+                    "error": error,
+                    "clip_aware": True,
+                    "clip_intervened": abs(epi_theoretical - epi_expected) > 1e-10,
+                },
+            )
+    else:
+        # Classic mode: validate rate of change directly
+        error = abs(measured_depi_dt - expected_depi_dt)
+        is_valid = error <= tolerance
+
+        if not is_valid and strict:
+            vf = _get_node_attr(G, node, ALIAS_VF)
+            dnfr = _get_node_attr(G, node, ALIAS_DNFR)
+
+            raise NodalEquationViolation(
+                operator=operator_name,
+                measured_depi_dt=measured_depi_dt,
+                expected_depi_dt=expected_depi_dt,
+                tolerance=tolerance,
+                details={
+                    "epi_before": epi_before,
+                    "epi_after": epi_after,
+                    "dt": dt,
+                    "vf": vf,
+                    "dnfr": dnfr,
+                    "error": error,
+                    "clip_aware": False,
+                },
+            )
 
     return is_valid
