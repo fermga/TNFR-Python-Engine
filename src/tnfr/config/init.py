@@ -6,7 +6,6 @@ from collections.abc import Mapping
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
-from ..constants import inject_defaults
 from ..utils import read_structured_file
 
 if TYPE_CHECKING:  # pragma: no cover - only for type checkers
@@ -57,7 +56,7 @@ def apply_config(
 ) -> None:
     """Inject parameters from ``path`` into ``G.graph``.
 
-    Reuses :func:`tnfr.constants.inject_defaults` to keep canonical default
+    Uses inject_defaults from this module to keep canonical default
     semantics.
 
     Parameters
@@ -69,5 +68,8 @@ def apply_config(
     base_dir : str | Path | None, optional
         Base directory to restrict config file access.
     """
+    # Import inject_defaults locally to avoid circular import
+    from . import inject_defaults
+    
     cfg = load_config(path, base_dir=base_dir)
     inject_defaults(G, cfg, override=True)

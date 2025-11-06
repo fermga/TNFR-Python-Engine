@@ -516,3 +516,4 @@ The failures are primarily in:
 - Test infrastructure and golden snapshots
 
 Each category has been analyzed with recommended approaches that prioritize TNFR structural fidelity over code convenience.
+test_apply_canonical_clamps_updates_mapping_without_graph
