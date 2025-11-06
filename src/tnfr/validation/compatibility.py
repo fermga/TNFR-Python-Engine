@@ -76,56 +76,56 @@ GRADUATED_COMPATIBILITY: dict[str, dict[str, list[str]]] = {
         "excellent": [COHERENCE, COUPLING, SELF_ORGANIZATION],  # Anchoring → stabilization/linking/autonomous cascades
         "good": [RESONANCE],  # Amplification after receiving
         "caution": [],
-        "avoid": [SILENCE, EMISSION, DISSONANCE, EXPANSION, CONTRACTION, MUTATION, TRANSITION, RECURSIVITY],
+        "avoid": [SILENCE, EMISSION, DISSONANCE, EXPANSION, CONTRACTION, MUTATION, TRANSITION, RECURSIVITY, RECEPTION],
     },
     # COHERENCE (IL) - Compresses ΔNFR drift to stabilize C(t)
     COHERENCE: {
         "excellent": [RESONANCE, EXPANSION, COUPLING],  # Stability → amplification/exploration/linking
         "good": [SILENCE, TRANSITION, CONTRACTION, SELF_ORGANIZATION, RECURSIVITY],  # Valid progressions
         "caution": [MUTATION, DISSONANCE],  # Post-stabilization tension/mutation needs context
-        "avoid": [EMISSION, RECEPTION],  # Cannot re-initiate or re-anchor after stabilizing
+        "avoid": [EMISSION, RECEPTION, COHERENCE],  # Cannot re-initiate, re-anchor, or re-stabilize
     },
     # DISSONANCE (OZ) - Injects controlled tension for probes
     DISSONANCE: {
         "excellent": [MUTATION, TRANSITION, SELF_ORGANIZATION],  # Tension → transformation/handoff/reorganization
-        "good": [CONTRACTION, RESONANCE, RECURSIVITY],  # Concentration, amplification, fractal echo
+        "good": [CONTRACTION, RESONANCE, RECURSIVITY, COHERENCE],  # Concentration, amplification, fractal echo, stabilization
         "caution": [DISSONANCE],  # Repeated dissonance needs careful management
-        "avoid": [SILENCE, EMISSION, RECEPTION, COHERENCE, COUPLING, EXPANSION],
+        "avoid": [SILENCE, EMISSION, RECEPTION, COUPLING, EXPANSION],
     },
     # COUPLING (UM) - Synchronizes bidirectional coherence links
     COUPLING: {
         "excellent": [RESONANCE, COHERENCE, EXPANSION],  # Linking → amplification/stabilization/exploration
         "good": [TRANSITION, SILENCE],  # Handoff or pause after coupling
         "caution": [],
-        "avoid": [EMISSION, RECEPTION, DISSONANCE, CONTRACTION, MUTATION, SELF_ORGANIZATION, RECURSIVITY],
+        "avoid": [EMISSION, RECEPTION, DISSONANCE, CONTRACTION, MUTATION, SELF_ORGANIZATION, RECURSIVITY, COUPLING],
     },
     # RESONANCE (RA) - Amplifies aligned structural frequency
     RESONANCE: {
         "excellent": [COHERENCE, EXPANSION, COUPLING],  # Amplification → stabilization/exploration/linking
         "good": [TRANSITION, SILENCE, EMISSION, RECURSIVITY],  # Handoff, pause, re-initiation, fractal echo
         "caution": [],
-        "avoid": [RECEPTION, DISSONANCE, CONTRACTION, MUTATION, SELF_ORGANIZATION],
+        "avoid": [RECEPTION, DISSONANCE, CONTRACTION, MUTATION, SELF_ORGANIZATION, RESONANCE],
     },
     # SILENCE (SHA) - Suspends reorganization while preserving form
     SILENCE: {
         "excellent": [EMISSION, RECEPTION],  # Resume from pause → initiation or anchoring
         "good": [],
         "caution": [],
-        "avoid": [COHERENCE, DISSONANCE, COUPLING, RESONANCE, EXPANSION, CONTRACTION, MUTATION, TRANSITION, SELF_ORGANIZATION, RECURSIVITY],
+        "avoid": [COHERENCE, DISSONANCE, COUPLING, RESONANCE, EXPANSION, CONTRACTION, MUTATION, TRANSITION, SELF_ORGANIZATION, RECURSIVITY, SILENCE],
     },
     # EXPANSION (VAL) - Dilates structure to explore volume
     EXPANSION: {
         "excellent": [COUPLING, RESONANCE, COHERENCE],  # Exploration → linking/amplification/stabilization
         "good": [TRANSITION],  # Handoff after expansion
         "caution": [],
-        "avoid": [EMISSION, RECEPTION, DISSONANCE, SILENCE, CONTRACTION, MUTATION, SELF_ORGANIZATION, RECURSIVITY],
+        "avoid": [EMISSION, RECEPTION, DISSONANCE, SILENCE, CONTRACTION, MUTATION, SELF_ORGANIZATION, RECURSIVITY, EXPANSION],
     },
     # CONTRACTION (NUL) - Concentrates trajectories into core
     CONTRACTION: {
         "excellent": [EMISSION, COHERENCE],  # Concentration → re-initiation or stabilization
         "good": [],
         "caution": [],
-        "avoid": [RECEPTION, DISSONANCE, COUPLING, RESONANCE, SILENCE, EXPANSION, MUTATION, TRANSITION, SELF_ORGANIZATION, RECURSIVITY],
+        "avoid": [RECEPTION, DISSONANCE, COUPLING, RESONANCE, SILENCE, EXPANSION, MUTATION, TRANSITION, SELF_ORGANIZATION, RECURSIVITY, CONTRACTION],
     },
     # SELF_ORGANIZATION (THOL) - Spawns autonomous cascades
     SELF_ORGANIZATION: {
