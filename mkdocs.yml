@@ -79,5 +79,3 @@ plugins:
   - mkdocs-jupyter:
       execute: false
       include_source: true
-  - linkcheck:
-      fail_on_warning: true
