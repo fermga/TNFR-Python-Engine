@@ -1,7 +1,7 @@
 """Examples of regenerative cycles in TNFR.
 
 This module demonstrates three types of self-sustaining regenerative cycles
-as described in the R5_CICLOS_REGENERATIVOS implementation:
+as described in the R5_REGENERATIVE_CYCLES implementation:
 
 1. **Organizational Cycle**: Institutional evolution with autonomous renewal
 2. **Educational Cycle**: Lifelong learning with fractal application
@@ -237,7 +237,7 @@ def main():
     """Run all regenerative cycle examples."""
     print("\n" + "#"*70)
     print("# TNFR REGENERATIVE CYCLES EXAMPLES")
-    print("# R5_CICLOS_REGENERATIVOS Implementation")
+    print("# R5_REGENERATIVE_CYCLES Implementation")
     print("#"*70)
     
     show_regenerator_info()

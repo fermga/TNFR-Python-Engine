@@ -1,6 +1,6 @@
 """Cycle detection and validation for regenerative TNFR sequences.
 
-This module implements R5_CICLOS_REGENERATIVOS validation, ensuring that
+This module implements R5_REGENERATIVE_CYCLES validation, ensuring that
 regenerative cycles are structurally valid and self-sustaining according
 to TNFR canonical principles.
 """
@@ -79,7 +79,7 @@ class CycleAnalysis:
 class CycleDetector:
     """Detects and validates regenerative cycles in TNFR sequences.
     
-    Implements R5_CICLOS_REGENERATIVOS validation rules:
+    Implements R5_REGENERATIVE_CYCLES validation rules:
     - Cycles must have minimum length (MIN_CYCLE_LENGTH)
     - Must include stabilizers before AND after regenerator
     - Must achieve minimum structural health score (>0.6)

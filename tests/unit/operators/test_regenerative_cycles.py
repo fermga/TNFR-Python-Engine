@@ -1,6 +1,6 @@
 """Tests for R5: Regenerative Cycle Validation.
 
-This test suite validates the R5_CICLOS_REGENERATIVOS implementation,
+This test suite validates the R5_REGENERATIVE_CYCLES implementation,
 ensuring that regenerative cycles meet TNFR structural requirements.
 """
 
