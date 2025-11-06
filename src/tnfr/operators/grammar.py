@@ -84,6 +84,10 @@ __all__ = [
     "glyph_function_name",
     "function_name_to_glyph",
     "validate_frequency_transition",
+    "REGENERATORS",
+    "MIN_CYCLE_LENGTH",
+    "MAX_CYCLE_LENGTH",
+    "CycleType",
 ]
 
 logger = get_logger(__name__)
@@ -647,6 +651,43 @@ class _SequenceAutomaton:
 
         # Detect structural pattern
         self._detected_pattern = self._detect_pattern()
+        
+        # R5: Validate regenerative cycles if pattern is REGENERATIVE
+        if self._detected_pattern == StructuralPattern.REGENERATIVE:
+            self._validate_regenerative_cycle()
+
+    def _validate_regenerative_cycle(self) -> None:
+        """Validate regenerative cycle structural requirements (R5).
+        
+        Uses CycleDetector to ensure the sequence meets minimum standards
+        for self-sustaining regenerative behavior.
+        """
+        from .cycle_detection import CycleDetector
+        
+        detector = CycleDetector()
+        analysis = detector.analyze_full_cycle(self._canonical)
+        
+        if not analysis.is_valid_regenerative:
+            # Build informative error message
+            reason_messages = {
+                "too_short": f"cycle too short (minimum {MIN_CYCLE_LENGTH} operators)",
+                "too_long": f"cycle too long (maximum {MAX_CYCLE_LENGTH} operators)",
+                "no_regenerator": f"no regenerator found ({', '.join(REGENERATORS)})",
+                "no_stabilization": "missing stabilizers before and/or after regenerator",
+                "low_health_score": f"cycle health score {analysis.health_score:.2f} below threshold {CycleDetector.MIN_HEALTH_SCORE}",
+                "no_valid_cycle": "no valid regenerative cycle structure detected",
+            }
+            
+            message = reason_messages.get(
+                analysis.reason,
+                f"invalid regenerative cycle: {analysis.reason}"
+            )
+            
+            raise SequenceSyntaxError(
+                index=-1,
+                token=None,
+                message=f"R5 regenerative cycle validation failed: {message}",
+            )
 
     def _detect_pattern(self) -> StructuralPattern:
         """Detect the structural pattern type of the sequence.
@@ -892,6 +933,15 @@ def validate_frequency_transition(prev_operator: str, next_operator: str) -> tup
         )
 
     return True, ""
+
+
+# R5: Regenerative cycle constants and types (from cycle_detection module)
+from .cycle_detection import (
+    REGENERATORS,
+    MIN_CYCLE_LENGTH,
+    MAX_CYCLE_LENGTH,
+    CycleType,
+)
 
 
 def _record_grammar_violation(
