@@ -183,10 +183,49 @@ make reproduce-verify    # Verify checksums
 
 ### Security and Release Management
 
+- `run_pip_audit.sh` - Run pip-audit to scan for dependency vulnerabilities
 - `check_changelog.py` - Validate changelog format
 - `rollback_release.py` - Rollback failed releases
 - `post_security_summary.py` - Post security scan results
 - `generate_security_dashboard.py` - Generate security reports
+
+#### Dependency Vulnerability Scanning (`run_pip_audit.sh`)
+
+Scans installed Python dependencies for known security vulnerabilities using pip-audit.
+
+**Purpose:**
+- Detect vulnerable dependencies before they reach production
+- Provide early feedback to developers during local development
+- Match the behavior of the CI/CD pipeline's security scanning
+
+**Usage:**
+
+```bash
+# Run basic audit
+./scripts/run_pip_audit.sh
+
+# Install pip-audit and run audit
+./scripts/run_pip_audit.sh --install
+
+# Generate JSON report for detailed analysis
+./scripts/run_pip_audit.sh --json
+
+# Show help
+./scripts/run_pip_audit.sh --help
+```
+
+**When to Use:**
+- Before submitting a pull request that updates dependencies
+- After installing new dependencies locally
+- When investigating security alerts from CI/CD
+- During security review processes
+
+**Integration:**
+- Mimics the `.github/workflows/pip-audit.yml` workflow behavior
+- Scans the same site-packages directory as the CI/CD pipeline
+- Provides both human-readable and JSON output formats
+
+See [SECURITY.md](../SECURITY.md) for the complete security update process.
 
 ### Code Quality
 

@@ -1,4 +1,4 @@
-.PHONY: docs stubs stubs-check stubs-check-sync stubs-sync verify-refs verify-refs-verbose reproduce reproduce-verify help
+.PHONY: docs stubs stubs-check stubs-check-sync stubs-sync verify-refs verify-refs-verbose reproduce reproduce-verify security-audit security-audit-json help
 
 help:
 	@echo "Available targets:"
@@ -11,6 +11,8 @@ help:
 	@echo "  verify-refs-verbose - Verify internal references with verbose output"
 	@echo "  reproduce           - Run benchmarks with deterministic seeds and generate checksums"
 	@echo "  reproduce-verify    - Verify checksums against existing manifest"
+	@echo "  security-audit      - Run pip-audit to scan for dependency vulnerabilities"
+	@echo "  security-audit-json - Run pip-audit and generate JSON report"
 
 docs:
 	@sphinx-build -b html docs/source docs/_build/html
@@ -46,3 +48,11 @@ reproduce:
 reproduce-verify:
 	@echo "Verifying checksums against manifest..."
 	@python scripts/run_reproducible_benchmarks.py --verify artifacts/manifest.json
+
+security-audit:
+	@echo "Running pip-audit to scan for dependency vulnerabilities..."
+	@./scripts/run_pip_audit.sh
+
+security-audit-json:
+	@echo "Running pip-audit and generating JSON report..."
+	@./scripts/run_pip_audit.sh --json
