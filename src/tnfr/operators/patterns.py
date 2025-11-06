@@ -72,10 +72,11 @@ class AdvancedPatternDetector:
         -----
         Detection proceeds in priority order:
         1. Domain-specific patterns (exact or partial matches)
-        2. Meta-patterns (compositional components)
-        3. Basic patterns (fallback to existing detection)
-        4. COMPLEX for long sequences with multiple patterns
-        5. UNKNOWN for unclassified sequences
+        2. Basic patterns with high specificity (HIERARCHICAL, BIFURCATED)
+        3. Meta-patterns (compositional components)
+        4. Other basic patterns (CYCLIC, FRACTAL, LINEAR)
+        5. COMPLEX for long sequences with multiple patterns
+        6. UNKNOWN for unclassified sequences
         """
         from .grammar import StructuralPattern
         
@@ -91,6 +92,16 @@ class AdvancedPatternDetector:
         if self._is_regenerative_pattern(sequence):
             return StructuralPattern.REGENERATIVE
         
+        # High-specificity basic patterns (before meta-patterns for backward compatibility)
+        # HIERARCHICAL: contains THOL
+        if SELF_ORGANIZATION in sequence:
+            return StructuralPattern.HIERARCHICAL
+        
+        # BIFURCATED: OZ followed by ZHIR or NUL
+        for i in range(len(sequence) - 1):
+            if sequence[i] == DISSONANCE and sequence[i + 1] in {MUTATION, CONTRACTION}:
+                return StructuralPattern.BIFURCATED
+        
         # Meta-patterns (medium priority)
         if self._is_bootstrap_pattern(sequence):
             return StructuralPattern.BOOTSTRAP
@@ -103,8 +114,8 @@ class AdvancedPatternDetector:
         if len(sequence) > 8 and self._has_multiple_subpatterns(sequence):
             return StructuralPattern.COMPLEX
         
-        # Fall back to basic pattern detection (existing logic)
-        return self._detect_basic_pattern(sequence)
+        # Remaining basic patterns (CYCLIC, FRACTAL, LINEAR)
+        return self._detect_remaining_basic_patterns(sequence)
 
     def analyze_sequence_composition(
         self, sequence: Sequence[str]
@@ -235,6 +246,33 @@ class AdvancedPatternDetector:
         for i in range(len(seq) - 1):
             if seq[i] == DISSONANCE and seq[i + 1] in {MUTATION, CONTRACTION}:
                 return StructuralPattern.BIFURCATED
+        
+        # Cyclic: multiple NAV transitions
+        if seq.count(TRANSITION) >= 2:
+            return StructuralPattern.CYCLIC
+        
+        # Fractal: NAV with coupling or recursivity
+        if TRANSITION in seq and (COUPLING in seq or RECURSIVITY in seq):
+            return StructuralPattern.FRACTAL
+        
+        # Linear: simple progression without complexity
+        if len(seq) <= 5 and DISSONANCE not in seq and MUTATION not in seq:
+            return StructuralPattern.LINEAR
+        
+        return StructuralPattern.UNKNOWN
+
+    def _detect_remaining_basic_patterns(self, seq: Sequence[str]) -> StructuralPattern:
+        """Detect remaining basic patterns (CYCLIC, FRACTAL, LINEAR, UNKNOWN).
+        
+        Used after domain-specific, HIERARCHICAL, BIFURCATED, and meta-patterns
+        have been checked. This ensures proper priority ordering while maintaining
+        backward compatibility.
+        """
+        from .grammar import StructuralPattern
+        
+        # Handle empty sequences
+        if not seq:
+            return StructuralPattern.UNKNOWN
         
         # Cyclic: multiple NAV transitions
         if seq.count(TRANSITION) >= 2:
