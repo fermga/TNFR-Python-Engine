@@ -72,7 +72,13 @@ class Validator(Protocol[SubjectT]):
         """Produce a concise textual explanation for ``outcome``."""
 
 
-from .compatibility import CANON_COMPAT, CANON_FALLBACK  # noqa: F401
+from .compatibility import (  # noqa: F401
+    CANON_COMPAT,
+    CANON_FALLBACK,
+    CompatibilityLevel,
+    GRADUATED_COMPATIBILITY,
+    get_compatibility_level,
+)
 from ..operators import grammar as _grammar
 from ..types import Glyph
 from .graph import GRAPH_VALIDATORS, run_validators  # noqa: F401
