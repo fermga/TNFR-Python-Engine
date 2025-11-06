@@ -4,6 +4,8 @@
 
 This guide will help you create your first TNFR network and understand the basics. No deep theoretical knowledge required - we'll explain as we go.
 
+> **Want to understand the theory first?** → See [TNFR Fundamental Concepts](TNFR_CONCEPTS.md) for a comprehensive introduction to the paradigm (10 minutes).
+
 ## What is TNFR?
 
 **TNFR (Teoría de la Naturaleza Fractal Resonante)** is a paradigm for modeling systems as networks of resonating nodes. Think of it like this:
@@ -18,6 +20,8 @@ This guide will help you create your first TNFR network and understand the basic
 - **νf (nu-f)**: How fast a node vibrates (in Hz_str units)
 - **C(t)**: Network coherence (stability measure)
 - **Si**: Sense index (how well a node can adapt)
+
+> **For detailed explanations**, see [TNFR Fundamental Concepts](TNFR_CONCEPTS.md).
 
 ## Installation
 

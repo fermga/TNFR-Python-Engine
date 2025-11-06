@@ -65,15 +65,19 @@ Or try domain-specific examples:
 
 ## Key Concepts
 
-Before diving deeper, familiarize yourself with these fundamental terms:
+**New to TNFR?** 👉 Start with the [**TNFR Fundamental Concepts Guide**](docs/source/getting-started/TNFR_CONCEPTS.md) - understand the paradigm in 10 minutes!
 
-### Resonant Fractal Node (NFR)
+### Quick Reference
+
+Before diving deeper, here's a brief overview of fundamental terms:
+
+#### Resonant Fractal Node (NFR)
 Minimum unit of structural coherence in the network. Each node has:
 - **EPI**: Primary Information Structure (its coherent "shape")
 - **νf**: Structural frequency (reorganization rate, in Hz_str)
 - **Phase φ**: Synchrony with other nodes in the network
 
-### Structural Operators
+#### Structural Operators
 Functions that reorganize nodes coherently (13 canonical operators):
 - **Emission/Reception**: Initiate and capture resonant patterns
 - **Coherence/Dissonance**: Stabilize or destabilize structures
@@ -81,23 +85,26 @@ Functions that reorganize nodes coherently (13 canonical operators):
 - **Self-organization**: Creates emergent sub-structures
 - [See complete list in GLOSSARY.md](GLOSSARY.md#structural-operators)
 
-### Coherence Metrics
+#### Coherence Metrics
 - **C(t)**: Total network coherence at time t
 - **Si**: Sense index (capacity to generate stable reorganization)
 - **ΔNFR**: Internal reorganization operator
 
-### Fundamental Nodal Equation
+#### Fundamental Nodal Equation
 ```
 ∂EPI / ∂t = νf · ΔNFR(t)
 ```
 This equation governs how the structure (EPI) of each node evolves according to its frequency (νf) and reorganization gradient (ΔNFR).
 
-**📖 For complete definitions**: See [GLOSSARY.md](GLOSSARY.md) for all terms, variables, and operators.
+**📖 For deeper understanding**: 
+- [TNFR Fundamental Concepts](docs/source/getting-started/TNFR_CONCEPTS.md) - Comprehensive introduction to the paradigm
+- [GLOSSARY.md](GLOSSARY.md) - Complete reference of all terms, variables, and operators
 
 ## Technical Documentation
 
 ### User Guides
 
+- 📘 [**TNFR Fundamental Concepts**](docs/source/getting-started/TNFR_CONCEPTS.md) - **START HERE** - Understand the paradigm in 10 minutes!
 - 🚀 [**NEW Quick Start Guide**](docs/source/getting-started/QUICKSTART_NEW.md) - Get started in 5 minutes!
 - 📚 [Original Quickstart](docs/source/getting-started/quickstart.md) - Python and CLI walkthroughs
 - 🎓 [Interactive Tutorials](src/tnfr/tutorials/README.md) - Learn by doing
@@ -209,7 +216,8 @@ Released under the [MIT License](LICENSE.md). Cite the TNFR paradigm when publis
 
 ## Getting Started - Suggested Progression
 
-1. **Beginners** → Run `examples/hello_world.py` and then `from tnfr.tutorials import hello_tnfr; hello_tnfr()`
-2. **Users** → Read [QUICKSTART_NEW.md](docs/source/getting-started/QUICKSTART_NEW.md) and experiment with domain tutorials
-3. **Developers** → See [ARCHITECTURE.md](ARCHITECTURE.md), [GLOSSARY.md](GLOSSARY.md), and the [API Overview](docs/source/api/overview.md)
-4. **Researchers** → Study [TNFR.pdf](TNFR.pdf) and the [Theoretical Overview Notebook](docs/source/theory/00_overview.ipynb)
+1. **New to TNFR?** → Read [TNFR Fundamental Concepts](docs/source/getting-started/TNFR_CONCEPTS.md) to understand the paradigm (10 minutes)
+2. **Beginners** → Run `examples/hello_world.py` and then `from tnfr.tutorials import hello_tnfr; hello_tnfr()`
+3. **Users** → Read [QUICKSTART_NEW.md](docs/source/getting-started/QUICKSTART_NEW.md) and experiment with domain tutorials
+4. **Developers** → See [ARCHITECTURE.md](ARCHITECTURE.md), [GLOSSARY.md](GLOSSARY.md), and the [API Overview](docs/source/api/overview.md)
+5. **Researchers** → Study [TNFR.pdf](TNFR.pdf) and the [Theoretical Overview Notebook](docs/source/theory/00_overview.ipynb)
