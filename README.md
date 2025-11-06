@@ -60,8 +60,12 @@ hello_tnfr()  # Guided tour of TNFR concepts
 
 Or try domain-specific examples:
 - `biological_example()` - Cell communication model
-- `social_network_example()` - Social dynamics
+- `social_network_example()` - Social dynamics  
 - `technology_example()` - Distributed systems
+- `team_communication_example()` - Team structure optimization
+- `adaptive_ai_example()` - Learning through resonance
+
+📘 **Want a structured learning path?** See the full [**Interactive Tutorial**](docs/source/getting-started/INTERACTIVE_TUTORIAL.md) (60 minutes from zero to first application)
 
 ## Key Concepts
 

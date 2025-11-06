@@ -20,6 +20,8 @@ __all__ = [
     "biological_example",
     "social_network_example",
     "technology_example",
+    "team_communication_example",
+    "adaptive_ai_example",
     "run_all_tutorials",
 ]
 
@@ -28,5 +30,7 @@ from .interactive import (
     biological_example,
     social_network_example,
     technology_example,
+    team_communication_example,
+    adaptive_ai_example,
     run_all_tutorials,
 )

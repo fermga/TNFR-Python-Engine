@@ -14,6 +14,7 @@ This site curates the canonical TNFR knowledge base, API contracts, and structur
    :caption: Getting started
 
    Quickstart <getting-started/quickstart>
+   Interactive Tutorial <getting-started/INTERACTIVE_TUTORIAL>
    Mathematics backends <getting-started/math-backends>
    Quick Start (Mathematics) <foundations>
    Migrating from Remesh Window <getting-started/migrating-remesh-window>
