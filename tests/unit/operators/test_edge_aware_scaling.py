@@ -146,14 +146,14 @@ class TestVALOperatorEdgeAware:
         G = nx.DiGraph()
         G.add_node("n1", **{EPI_PRIMARY: 0.5, VF_PRIMARY: 1.0})
         G.graph["EDGE_AWARE_ENABLED"] = True
-        G.graph["VAL_scale"] = 1.15
+        G.graph["VAL_scale"] = 1.05
         
         node = NodeNX.from_graph(G, "n1")
         op = GLYPH_OPERATIONS[Glyph.VAL]
         op(node, G.graph.get("GLYPH_FACTORS", {}))
         
         # νf should be scaled
-        assert abs(node.vf - 1.15) < 1e-9
+        assert abs(node.vf - 1.05) < 1e-9
 
     def test_val_scales_epi_with_edge_aware_enabled(self):
         """VAL should scale EPI when edge-aware is enabled."""
