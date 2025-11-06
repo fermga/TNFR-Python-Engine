@@ -178,7 +178,7 @@ All factories preserve TNFR invariants:
 29 passed, 1 warning in 0.16s
 ```
 
-All factory-related tests pass. Pre-existing failures in other areas are documented in `PRE_EXISTING_FAILURES.md` and are unrelated to factory patterns.
+All factory-related tests pass. Pre-existing failures in other areas are documented in `TESTING.md` and are unrelated to factory patterns.
 
 ## Build System Improvements
 
@@ -256,5 +256,5 @@ With comprehensive CI/CD automation in place, future drift will be caught automa
 
 - [FACTORY_PATTERNS.md](FACTORY_PATTERNS.md) - Canonical factory pattern guidelines
 - [AGENTS.md](../AGENTS.md) - TNFR structural invariants
-- [PRE_EXISTING_FAILURES.md](../PRE_EXISTING_FAILURES.md) - Known test issues
+- [TESTING.md](../TESTING.md) - Test strategy and known issues
 - [stubgen documentation](https://mypy.readthedocs.io/en/stable/stubgen.html)

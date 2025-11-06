@@ -286,7 +286,7 @@ pytest tests/unit/sdk/ -v
 For detailed documentation on TNFR theory and canonical implementation:
 - See `AGENTS.md` for TNFR fundamentals
 - See `tnfr.pdf` for complete theoretical framework
-- See `SDK_IMPLEMENTATION_SUMMARY.md` for implementation details
+- See `ARCHITECTURE.md` for system architecture and SDK integration
 
 ## Contributing
 

@@ -221,7 +221,7 @@ With cache size 256:
 
 The existing cache infrastructure is already well-documented:
 - ✅ `docs/CACHING_STRATEGY.md` (326 lines) - comprehensive catalog
-- ✅ `CACHE_OPTIMIZATION_SUMMARY.md` - previous optimization work
+- ✅ `ARCHITECTURE.md` - cache architecture section
 - ✅ Module docstrings in `buffer_cache.py`, `cache_utils.py`
 - ✅ Test suite with 30 cache-specific tests
 
@@ -378,7 +378,7 @@ configure_hot_path_caches(
 ## References
 
 - `docs/CACHING_STRATEGY.md` - Complete cache pattern catalog
-- `CACHE_OPTIMIZATION_SUMMARY.md` - Previous optimization work
+- `ARCHITECTURE.md` - Architecture guide with cache design
 - `src/tnfr/metrics/buffer_cache.py` - Buffer allocation implementation
 - `src/tnfr/metrics/cache_utils.py` - Cache configuration utilities
 - `src/tnfr/utils/cache.py` - Core cache infrastructure
