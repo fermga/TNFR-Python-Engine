@@ -6,7 +6,7 @@ dependency-aware invalidation for TNFR computations.
 
 import time
 import networkx as nx
-from tnfr.caching import (
+from tnfr.cache import (
     TNFRHierarchicalCache,
     CacheLevel,
     cache_tnfr_computation,

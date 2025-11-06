@@ -6,7 +6,7 @@ from types import ModuleType
 import pytest
 
 from tnfr.alias import get_attr, set_attr
-from tnfr.callback_utils import CallbackEvent, callback_manager
+from tnfr.utils.callbacks import CallbackEvent, callback_manager
 from tnfr.constants import get_aliases, get_param, inject_defaults
 from tnfr.glyph_history import ensure_history
 from tnfr.operators import apply_remesh_if_globally_stable

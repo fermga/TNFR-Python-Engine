@@ -4,12 +4,10 @@ from __future__ import annotations
 
 import pytest
 
-from tnfr.caching import (
+from tnfr.cache import (
     CacheLevel,
     TNFRHierarchicalCache,
     cache_tnfr_computation,
-)
-from tnfr.caching.decorators import (
     get_global_cache,
     set_global_cache,
     invalidate_function_cache,

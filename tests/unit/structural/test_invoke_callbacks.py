@@ -3,7 +3,7 @@
 import networkx as nx
 import pytest
 
-from tnfr.callback_utils import CallbackEvent, callback_manager
+from tnfr.utils.callbacks import CallbackEvent, callback_manager
 
 
 def test_invoke_callbacks_preserves_context(graph_canon):

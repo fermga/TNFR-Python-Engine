@@ -5,7 +5,7 @@ from types import MappingProxyType
 import pytest
 
 from tnfr import trace
-from tnfr.callback_utils import CallbackEvent, callback_manager
+from tnfr.utils.callbacks import CallbackEvent, callback_manager
 from tnfr.telemetry.verbosity import (
     TELEMETRY_VERBOSITY_DEFAULT,
     TELEMETRY_VERBOSITY_LEVELS,

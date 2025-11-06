@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from tnfr.caching import CacheLevel, CacheEntry, TNFRHierarchicalCache
+from tnfr.cache import CacheLevel, CacheEntry, TNFRHierarchicalCache
 
 
 class TestCacheLevel:

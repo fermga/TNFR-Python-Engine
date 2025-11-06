@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections import deque
 
-from tnfr.callback_utils import CallbackEvent, callback_manager
+from tnfr.utils.callbacks import CallbackEvent, callback_manager
 from tnfr.dynamics.runtime import _run_after_callbacks, _run_before_callbacks
 from tnfr.glyph_history import ensure_history
 from tnfr.structural import create_nfr

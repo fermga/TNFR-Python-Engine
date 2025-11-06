@@ -1,6 +1,6 @@
 """Tests for `_ensure_callbacks` behavior."""
 
-from tnfr.callback_utils import (
+from tnfr.utils.callbacks import (
     CallbackEvent,
     _normalize_callbacks,
     callback_manager,

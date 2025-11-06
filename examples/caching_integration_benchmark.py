@@ -10,7 +10,7 @@ import time
 from typing import Any
 import networkx as nx
 
-from tnfr.caching import (
+from tnfr.cache import (
     TNFRHierarchicalCache,
     CacheLevel,
     cache_tnfr_computation,

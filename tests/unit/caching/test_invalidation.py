@@ -11,8 +11,12 @@ try:
 except ImportError:
     HAS_NETWORKX = False
 
-from tnfr.caching import CacheLevel, TNFRHierarchicalCache, GraphChangeTracker
-from tnfr.caching.invalidation import track_node_property_update
+from tnfr.cache import (
+    CacheLevel,
+    TNFRHierarchicalCache,
+    GraphChangeTracker,
+    track_node_property_update,
+)
 
 
 @pytest.mark.skipif(not HAS_NETWORKX, reason="NetworkX required")

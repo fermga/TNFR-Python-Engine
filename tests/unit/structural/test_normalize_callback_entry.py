@@ -1,6 +1,6 @@
 """Unit tests for ``_normalize_callback_entry`` handling of sequence inputs."""
 
-from tnfr.callback_utils import CallbackSpec, _normalize_callback_entry
+from tnfr.utils.callbacks import CallbackSpec, _normalize_callback_entry
 
 
 def dummy_cb(G, ctx):

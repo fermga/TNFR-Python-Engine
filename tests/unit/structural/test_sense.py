@@ -5,7 +5,7 @@ import time
 
 import pytest
 
-from tnfr.callback_utils import CallbackEvent, callback_manager
+from tnfr.utils.callbacks import CallbackEvent, callback_manager
 from tnfr.glyph_history import ensure_history
 from tnfr.sense import (
     _node_weight,
