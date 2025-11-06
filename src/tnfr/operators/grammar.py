@@ -15,6 +15,7 @@ from typing import TYPE_CHECKING, Any, Mapping, Optional, Sequence
 
 if TYPE_CHECKING:
     from ..node import NodeProtocol
+    from .health_analyzer import SequenceHealthMetrics
 
 from ..compat.dataclass import dataclass
 from ..config.operator_names import (
@@ -77,6 +78,7 @@ __all__ = [
     "on_applied_glyph",
     "parse_sequence",
     "validate_sequence",
+    "validate_sequence_with_health",
     "FUNCTION_TO_GLYPH",
     "GLYPH_TO_FUNCTION",
     "STRUCTURAL_FREQUENCIES",
@@ -385,7 +387,7 @@ class SequenceSyntaxError(ValueError):
 class SequenceValidationResult(ValidationOutcome[tuple[str, ...]]):
     """Structured report emitted by :func:`validate_sequence`."""
 
-    __slots__ = ("tokens", "canonical_tokens", "message", "metadata", "error")
+    __slots__ = ("tokens", "canonical_tokens", "message", "metadata", "error", "health_metrics")
 
     def __init__(
         self,
@@ -396,6 +398,7 @@ class SequenceValidationResult(ValidationOutcome[tuple[str, ...]]):
         message: str,
         metadata: Mapping[str, object],
         error: SequenceSyntaxError | None = None,
+        health_metrics: Optional["SequenceHealthMetrics"] = None,
     ) -> None:
         tokens_tuple = tuple(tokens)
         canonical_tuple = tuple(canonical_tokens)
@@ -421,6 +424,7 @@ class SequenceValidationResult(ValidationOutcome[tuple[str, ...]]):
         self.message = message
         self.metadata = metadata_view
         self.error = error
+        self.health_metrics = health_metrics
 
 
 _CANONICAL_START = tuple(sorted(VALID_START_OPERATORS))
@@ -1007,6 +1011,74 @@ def validate_sequence(
     if names is _MISSING:
         raise TypeError("validate_sequence() missing required argument: 'names'")
     return _analyse_sequence(names)
+
+
+def validate_sequence_with_health(
+    names: Iterable[str] | object = _MISSING, **kwargs: object
+) -> SequenceValidationResult:
+    """Validate a sequence and include structural health metrics.
+    
+    This is an enhanced version of :func:`validate_sequence` that additionally
+    computes comprehensive health metrics for valid sequences. The metrics
+    provide quantitative assessment of sequence quality: coherence, balance,
+    sustainability, and efficiency.
+    
+    Parameters
+    ----------
+    names : Iterable[str]
+        Sequence of operator names to validate and analyze.
+    
+    Returns
+    -------
+    SequenceValidationResult
+        Validation result with ``health_metrics`` field populated for valid sequences.
+    
+    Examples
+    --------
+    >>> from tnfr.operators.grammar import validate_sequence_with_health
+    >>> result = validate_sequence_with_health(["emission", "reception", "coherence", "silence"])
+    >>> result.passed
+    True
+    >>> result.health_metrics.overall_health > 0.7
+    True
+    >>> result.health_metrics.dominant_pattern
+    'activation'
+    
+    Notes
+    -----
+    Health metrics are only computed for sequences that pass validation.
+    Invalid sequences will have ``health_metrics=None``.
+    """
+    if kwargs:
+        unexpected = ", ".join(sorted(kwargs))
+        raise TypeError(
+            f"validate_sequence_with_health() got unexpected keyword argument(s): {unexpected}"
+        )
+    if names is _MISSING:
+        raise TypeError("validate_sequence_with_health() missing required argument: 'names'")
+    
+    # First, perform standard validation
+    result = _analyse_sequence(names)
+    
+    # If validation passed, compute health metrics
+    if result.passed:
+        from .health_analyzer import SequenceHealthAnalyzer
+        
+        analyzer = SequenceHealthAnalyzer()
+        health = analyzer.analyze_health(list(names))
+        
+        # Create new result with health metrics
+        result = SequenceValidationResult(
+            tokens=result.tokens,
+            canonical_tokens=result.canonical_tokens,
+            passed=result.passed,
+            message=result.message,
+            metadata=result.metadata,
+            error=result.error,
+            health_metrics=health,
+        )
+    
+    return result
 
 
 def parse_sequence(names: Iterable[str]) -> SequenceValidationResult:
