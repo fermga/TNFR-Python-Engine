@@ -241,7 +241,7 @@ class TNFRValidator:
         config = graph.graph if graph is not None else None
         
         # Input validation
-        if any([epi is not None, vf is not None, theta is not None, dnfr is not None]):
+        if epi is not None or vf is not None or theta is not None or dnfr is not None:
             try:
                 results['inputs'] = self.validate_inputs(
                     epi=epi,
