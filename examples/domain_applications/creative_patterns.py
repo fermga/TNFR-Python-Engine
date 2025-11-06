@@ -40,8 +40,8 @@ def get_artistic_creation_sequence():
     
     Context: Full artistic creation cycle emphasizing TNFR creative principles:
     silence as fertile contemplative space (via coupling pauses), dissonance as
-    productive tension, mutation as artistic breakthrough, and self-organization
-    as autonomous form-finding.
+    productive tension, mutation as artistic breakthrough, and recursivity for
+    fractal deepening.
     
     Structural flow:
     1. EMISSION (AL): Creative impulse, artistic intention emerges
@@ -51,9 +51,9 @@ def get_artistic_creation_sequence():
     5. COHERENCE (IL): Stabilize exploration
     6. DISSONANCE (OZ): Creative tension, productive conflict, aesthetic challenge
     7. MUTATION (ZHIR): Artistic breakthrough, key creative insight
-    8. SELF_ORGANIZATION (THOL): Autonomous structuring of work, piece finds form
+    8. COHERENCE (IL): Integrate breakthrough insights
     9. RESONANCE (RA): Amplify successful elements, repeat motifs
-    10. COHERENCE (IL): Integration and refinement of all elements
+    10. COHERENCE (IL): Further integration and refinement
     11. COUPLING (UM): Final integration and synchronization
     12. SILENCE (SHA): Contemplative consolidation pause
     
@@ -83,9 +83,9 @@ def get_artistic_creation_sequence():
         COHERENCE,          # IL: Stabilize exploration
         DISSONANCE,         # OZ: Creative tension, productive conflict
         MUTATION,           # ZHIR: Artistic breakthrough, key insight
-        SELF_ORGANIZATION,  # THOL: Autonomous structuring emerges from breakthrough
+        COHERENCE,          # IL: Integrate breakthrough insights
         RESONANCE,          # RA: Amplify successful elements
-        COHERENCE,          # IL: Integration and refinement
+        COHERENCE,          # IL: Further integration and refinement
         COUPLING,           # UM: Final integration and synchronization
         SILENCE,            # SHA: Contemplative consolidation pause
     ]
@@ -189,8 +189,8 @@ def get_innovation_cycle_sequence():
         COHERENCE,          # IL: Stabilize exploration
         DISSONANCE,         # OZ: Identify limitations/opportunities
         MUTATION,           # ZHIR: Innovation breakthrough
-        SELF_ORGANIZATION,  # THOL: Autonomous development emerges from breakthrough
-        COHERENCE,          # IL: Stabilize innovation structure
+        COHERENCE,          # IL: Integrate breakthrough insights
+        RESONANCE,          # RA: Amplify innovation potential
         TRANSITION,         # NAV: Transition to implementation (regenerator)
     ]
 
@@ -242,7 +242,7 @@ def get_creative_flow_sequence():
         COHERENCE,          # IL: Maintain focus and structure
         DISSONANCE,         # OZ: Creative challenge
         MUTATION,           # ZHIR: Micro-breakthroughs
-        TRANSITION,         # NAV: Transition to deeper flow
+        COHERENCE,          # IL: Reintegrate and continue
         RECURSIVITY,        # REMESH: Deepen engagement fractal
     ]
 
