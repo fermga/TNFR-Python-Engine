@@ -14,8 +14,9 @@ from tnfr.dynamics import update_epi_via_nodal_equation
 def test_val_expansion_respects_epi_max():
     """Test that VAL operator with high EPI values respects EPI_MAX boundary.
     
-    This is the critical case from the issue: EPI close to 1.0 with VAL_scale=1.15
+    This is the critical case: EPI close to 1.0 with VAL_scale=1.05
     should not push EPI above EPI_MAX=1.0 after integration.
+    The conservative scale (1.05 vs old 1.15) provides better numerical stability.
     """
     # Create a node with EPI close to the critical threshold
     G, node = create_nfr("test_val", epi=0.95, vf=1.0)
@@ -23,8 +24,8 @@ def test_val_expansion_respects_epi_max():
     # Set initial dnfr to enable evolution
     G.nodes[node]["DNFR"] = 0.1
     
-    # Set VAL_scale to the default 1.15
-    G.graph["GLYPH_FACTORS"] = {"VAL_scale": 1.15}
+    # Set VAL_scale to the default 1.05
+    G.graph["GLYPH_FACTORS"] = {"VAL_scale": 1.05}
     
     # Apply VAL (Expansion) operator
     val_op = Expansion()
@@ -67,7 +68,7 @@ def test_repeated_val_applications_stay_bounded():
     """Test that repeated VAL applications don't accumulate to overflow."""
     G, node = create_nfr("test_repeated_val", epi=0.8, vf=1.0)
     G.nodes[node]["DNFR"] = 0.05
-    G.graph["GLYPH_FACTORS"] = {"VAL_scale": 1.15}
+    G.graph["GLYPH_FACTORS"] = {"VAL_scale": 1.05}
     
     # Apply VAL multiple times
     val_op = Expansion()
@@ -83,7 +84,7 @@ def test_val_nul_sequence_maintains_bounds():
     """Test that alternating VAL and NUL operators maintain boundaries."""
     G, node = create_nfr("test_val_nul_seq", epi=0.9, vf=1.0)
     G.nodes[node]["DNFR"] = 0.08
-    G.graph["GLYPH_FACTORS"] = {"VAL_scale": 1.15, "NUL_scale": 0.85}
+    G.graph["GLYPH_FACTORS"] = {"VAL_scale": 1.05, "NUL_scale": 0.85}
     
     val_op = Expansion()
     nul_op = Contraction()
@@ -105,7 +106,7 @@ def test_soft_mode_clip_configuration():
     # Enable soft clipping mode
     G.graph["CLIP_MODE"] = "soft"
     G.graph["CLIP_SOFT_K"] = 5.0
-    G.graph["GLYPH_FACTORS"] = {"VAL_scale": 1.15}
+    G.graph["GLYPH_FACTORS"] = {"VAL_scale": 1.05}
     
     val_op = Expansion()
     val_op(G, node)
@@ -126,7 +127,7 @@ def test_custom_epi_bounds_respected():
     # Set custom bounds (narrower range)
     G.graph["EPI_MIN"] = -0.5
     G.graph["EPI_MAX"] = 0.5
-    G.graph["GLYPH_FACTORS"] = {"VAL_scale": 1.15}
+    G.graph["GLYPH_FACTORS"] = {"VAL_scale": 1.05}
     
     val_op = Expansion()
     val_op(G, node)

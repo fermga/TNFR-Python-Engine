@@ -256,9 +256,9 @@ Structural boundary behavior is configured via graph-level parameters:
 
 This mechanism solves the VAL/NUL operator boundary issue documented in the issue tracker:
 
-1. **VAL (Expansion) overflow**: When EPI ≥ 0.869565 and VAL_scale=1.15, a single integration step could push EPI above 1.0. `structural_clip` ensures EPI ≤ EPI_MAX.
+1. **VAL (Expansion) overflow**: With the conservative VAL_scale=1.05, the critical threshold is EPI ≥ 0.952381 (vs previous 0.869565 with VAL_scale=1.15). This 8.7% reduction in scale factor significantly improves numerical stability while maintaining meaningful expansion capacity. `structural_clip` provides secondary protection ensuring EPI ≤ EPI_MAX.
 2. **NUL (Contraction) underflow**: Symmetric case for negative EPI values. `structural_clip` ensures EPI ≥ EPI_MIN.
-3. **Repeated operator applications**: Multiple VAL or NUL applications in sequence maintain boundaries through consistent clipping.
+3. **Repeated operator applications**: Multiple VAL or NUL applications in sequence maintain boundaries through consistent clipping. Note that TNFR canonical grammar prevents consecutive VAL→VAL transitions (high→high), requiring intermediate consolidation operators (RA, IL, UM) to preserve structural coherence.
 
 ### Telemetry (Optional)
 

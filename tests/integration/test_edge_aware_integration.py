@@ -54,7 +54,7 @@ class TestEdgeAwareWithIntegration:
         # Apply VAL operator
         node = NodeNX.from_graph(G, node_id)
         val_op = GLYPH_OPERATIONS[Glyph.VAL]
-        val_op(node, {"VAL_scale": 1.15})
+        val_op(node, {"VAL_scale": 1.05})
         
         # EPI should be scaled with edge-awareness immediately
         epi_after_val = get_epi(G, node_id)
@@ -80,7 +80,7 @@ class TestEdgeAwareWithIntegration:
         # Apply VAL operator
         node = NodeNX.from_graph(G, node_id)
         val_op = GLYPH_OPERATIONS[Glyph.VAL]
-        val_op(node, {"VAL_scale": 1.15})
+        val_op(node, {"VAL_scale": 1.05})
         
         # vf scaled but EPI unchanged by operator
         epi_after_val = get_epi(G, node_id)
@@ -107,7 +107,7 @@ class TestEdgeAwareWithIntegration:
         val_op = GLYPH_OPERATIONS[Glyph.VAL]
         
         for _ in range(3):
-            val_op(node, {"VAL_scale": 1.15})
+            val_op(node, {"VAL_scale": 1.05})
             
             # Should stay within bounds
             assert get_epi(G, node_id) <= 1.0
@@ -141,7 +141,7 @@ class TestEdgeAwareWithIntegration:
         
         # Apply sequence with dynamics steps
         for _ in range(3):
-            val_op(node, {"VAL_scale": 1.15})
+            val_op(node, {"VAL_scale": 1.05})
             assert -1.0 <= get_epi(G, node_id) <= 1.0
             
             step(G, dt=0.3)
@@ -170,7 +170,7 @@ class TestEdgeAwareVsStructuralClip:
         
         # Apply VAL and run multiple steps
         for _ in range(5):
-            val_op(node1, {"VAL_scale": 1.15})
+            val_op(node1, {"VAL_scale": 1.05})
             step(G1, dt=0.5)
         
         # With edge-aware disabled, structural_clip must work hard
@@ -186,7 +186,7 @@ class TestEdgeAwareVsStructuralClip:
         
         # Apply VAL and run multiple steps
         for _ in range(5):
-            val_op(node2, {"VAL_scale": 1.15})
+            val_op(node2, {"VAL_scale": 1.05})
             step(G2, dt=0.5)
         
         # Both should have valid EPI
@@ -211,7 +211,7 @@ class TestEdgeAwareVsStructuralClip:
         
         # Apply VAL multiple times and track EPI progression
         for _ in range(10):
-            val_op(node, {"VAL_scale": 1.15})
+            val_op(node, {"VAL_scale": 1.05})
             step(G, dt=0.3)
             epi_history.append(get_epi(G, node_id))
         

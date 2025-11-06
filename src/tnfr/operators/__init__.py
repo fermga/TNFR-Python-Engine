@@ -676,7 +676,7 @@ def _op_SHA(node: NodeProtocol, gf: GlyphFactors) -> None:  # SHA — Silence
     node.vf = factor * node.vf
 
 
-factor_val = 1.15
+factor_val = 1.05  # Conservative scale prevents EPI overflow near boundaries
 factor_nul = 0.85
 _SCALE_FACTORS = {Glyph.VAL: factor_val, Glyph.NUL: factor_nul}
 
@@ -766,7 +766,7 @@ def _compute_val_edge_aware_scale(
     epi_current : float
         Current EPI value
     scale : float
-        Desired expansion scale factor (e.g., VAL_scale = 1.15)
+        Desired expansion scale factor (e.g., VAL_scale = 1.05)
     epi_max : float
         Upper EPI boundary (typically 1.0)
     epsilon : float
@@ -786,12 +786,12 @@ def _compute_val_edge_aware_scale(
     Examples
     --------
     >>> # Normal case: EPI far from boundary
-    >>> _compute_val_edge_aware_scale(0.5, 1.15, 1.0, 1e-12)
-    1.15
+    >>> _compute_val_edge_aware_scale(0.5, 1.05, 1.0, 1e-12)
+    1.05
     
     >>> # Edge case: EPI near boundary, scale adapts
-    >>> scale = _compute_val_edge_aware_scale(0.95, 1.15, 1.0, 1e-12)
-    >>> abs(scale - 1.0526) < 0.001  # Roughly 1.0/0.95
+    >>> scale = _compute_val_edge_aware_scale(0.96, 1.05, 1.0, 1e-12)
+    >>> abs(scale - 1.0417) < 0.001  # Roughly 1.0/0.96
     True
     """
     abs_epi = abs(epi_current)
@@ -942,11 +942,11 @@ def _make_scale_op(glyph: Glyph) -> GlyphOperation:
         ...         self.vf = vf
         ...         self.EPI = epi
         ...         self.graph = {{"EDGE_AWARE_ENABLED": True, "EPI_MAX": 1.0}}
-        >>> node = MockNode(1.0, 0.95)
+        >>> node = MockNode(1.0, 0.96)
         >>> op = _make_scale_op(Glyph.VAL)
-        >>> op(node, {{"VAL_scale": 1.15}})
+        >>> op(node, {{"VAL_scale": 1.05}})
         >>> node.vf  # νf scaled normally
-        1.15
+        1.05
         >>> node.EPI <= 1.0  # EPI kept within bounds
         True
         """.format(

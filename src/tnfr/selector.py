@@ -19,7 +19,7 @@ if TYPE_CHECKING:  # pragma: no cover
     import networkx as nx
 
 from .constants import DEFAULTS
-from .constants.core import SELECTOR_THRESHOLD_DEFAULTS
+from .config.defaults_core import SELECTOR_THRESHOLD_DEFAULTS
 from .utils import clamp01
 from .metrics.common import compute_dnfr_accel_max
 from .types import SelectorNorms, SelectorThresholds, SelectorWeights
