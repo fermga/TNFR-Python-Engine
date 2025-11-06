@@ -491,8 +491,8 @@ def get_compress_adaptive_pattern():
     
     Context: Compression that explores multiple simplification paths
     before selecting the most coherent. Uses mutation to test different
-    compression strategies. Note: EXPANSION must be followed by COHERENCE
-    before DISSONANCE per canonical rules.
+    compression strategies. Note: EXPANSION→COHERENCE and CONTRACTION→COHERENCE
+    are required per canonical rules before DISSONANCE/MUTATION.
     
     Structural flow:
     1. EMISSION (AL): Seed adaptive compression (canonical start)
@@ -502,10 +502,12 @@ def get_compress_adaptive_pattern():
     5. COHERENCE (IL): Stabilize expansion (canonical requirement)
     6. DISSONANCE (OZ): Explore compression tensions
     7. CONTRACTION (NUL): First compression attempt
-    8. MUTATION (ZHIR): Try alternative compression path
-    9. CONTRACTION (NUL): Select best compression
-    10. COHERENCE (IL): Stabilize compressed form
-    11. SILENCE (SHA): Lock essential state
+    8. COHERENCE (IL): Stabilize compression (required after NUL)
+    9. MUTATION (ZHIR): Try alternative compression path
+    10. COHERENCE (IL): Stabilize mutation (required after ZHIR)
+    11. CONTRACTION (NUL): Select best compression
+    12. COHERENCE (IL): Stabilize compressed form
+    13. SILENCE (SHA): Lock essential state
     
     Expected metrics:
     - Health score: > 0.65 (moderate with exploration)
@@ -653,7 +655,7 @@ def get_complex_full_cycle_pattern():
         TRANSITION,          # NAV: Navigate to final state
         COHERENCE,           # IL: Final stability
         RECURSIVITY,         # REMESH: Fractal consolidation
-        COHERENCE,           # IL: Stabilize recursion (required after REMESH)
+        COHERENCE,           # IL: Stabilize recursion (canonical: REMESH→COHERENCE or REMESH→TRANSITION)
         SILENCE              # SHA: Complete closure
     ]
 
