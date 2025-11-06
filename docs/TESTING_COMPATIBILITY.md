@@ -80,11 +80,11 @@ These are project-specific refactorings and do not affect pytest functionality.
 
 ### Current Setup
 The CI workflow (`.github/workflows/ci.yml`) uses:
-- Python versions: 3.9, 3.10, 3.11, 3.12
+- Python versions: 3.9, 3.10, 3.11, 3.12, 3.13
 - All test dependencies are installed via `pip install .[test,numpy,yaml,orjson]`
 
 ### Verified Compatibility
-Pytest 8.x works correctly on all supported Python versions (3.9-3.12).
+Pytest 8.x works correctly on all supported Python versions (3.9-3.13).
 
 ## Recommendations
 
