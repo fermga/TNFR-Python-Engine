@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import numpy as np
 from .backend import MathematicsBackend
 from .spaces import HilbertSpace
@@ -10,7 +12,7 @@ class TraceValue(NamedTuple):
     backend: Any
     numpy: complex
 
-@dataclass(slots=True)
+@dataclass
 class MathematicalDynamicsEngine:
     generator: np.ndarray
     hilbert_space: HilbertSpace
@@ -41,7 +43,7 @@ class MathematicalDynamicsEngine:
         normalize: bool = True,
     ) -> Any: ...
 
-@dataclass(slots=True)
+@dataclass
 class ContractiveDynamicsEngine:
     generator: np.ndarray
     hilbert_space: HilbertSpace

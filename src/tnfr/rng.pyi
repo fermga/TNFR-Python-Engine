@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import random
 from .types import GraphLike, TNFRGraph
 from .utils import ScopedCounterCache as ScopedCounterCache

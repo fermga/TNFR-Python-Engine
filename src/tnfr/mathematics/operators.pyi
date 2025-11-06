@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import numpy as np
 from .backend import MathematicsBackend
 from dataclasses import dataclass, field
@@ -9,7 +11,7 @@ __all__ = ["CoherenceOperator", "FrequencyOperator"]
 ComplexMatrix = npt.NDArray[np.complexfloating[np.float64, np.float64]]
 ComplexVector = npt.NDArray[np.complexfloating[np.float64, np.float64]]
 
-@dataclass(slots=True)
+@dataclass
 class CoherenceOperator:
     matrix: ComplexMatrix
     eigenvalues: ComplexVector

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import abc
 from ..selector import _selector_parallel_jobs as _selector_parallel_jobs
 from ..types import (
@@ -37,7 +39,7 @@ class AbstractSelector(ABC, metaclass=abc.ABCMeta):
     def __call__(self, graph: TNFRGraph, node: NodeId) -> GlyphCode: ...
 
 def _configure_selector_weights(G: TNFRGraph) -> Mapping[str, float]: ...
-@dataclass(slots=True)
+@dataclass
 class _SelectorPreselection:
     kind: str
     metrics: Mapping[Any, tuple[float, float, float]]

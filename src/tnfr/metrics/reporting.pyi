@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from ..types import NodeId, TNFRGraph
 
 __all__ = [

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import numpy as np
 from .epi import BEPIElement as BEPIElement, _EPIValidators
 from dataclasses import dataclass

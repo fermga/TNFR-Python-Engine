@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Any, Mapping, Sequence
 
 __all__: Any
@@ -16,7 +18,6 @@ StatisticsError: Any
 TNFRGraph: Any
 TRANSITION: Any
 VF_KEY: Any
-annotations: Any
 append_metric: Any
 callback_manager: Any
 clamp01: Any

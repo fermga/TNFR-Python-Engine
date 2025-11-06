@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import numpy as np
 from .operators import CoherenceOperator, FrequencyOperator
 from .spaces import HilbertSpace
