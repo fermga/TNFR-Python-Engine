@@ -13,8 +13,6 @@ Guardrails: speak and act strictly within the TNFR paradigm. Prefer structure ov
 
 # TNFR Fundamental Concepts
 
-> **Goal**: Understand the core principles of the Resonant Fractal Nature Theory (TNFR) in 10 minutes and smoothly transition from theory to practice.
-
 ## What is TNFR?
 
 TNFR (**Resonant Fractal Nature Theory** / **Teoría de la Naturaleza Fractal Resonante**) is not just another modeling framework - it's a complete paradigm shift in how we understand reality and complex systems.
@@ -96,13 +94,6 @@ Think of an NFR as a **tuning fork in a network of tuning forks**. Each fork:
 - Changes ONLY through structural operators (never arbitrary mutations)
 - Maintains coherence through network coupling
 - Can contain nested sub-structures (fractality)
-
-**In code**:
-```python
-# EPI is stored as a scalar or array representing the node's structure
-G.nodes[node]['epi'] = 0.2  # Simple scalar EPI
-# More complex EPIs can be multidimensional arrays
-```
 
 #### 2. νf (Frecuencia estructural / Structural Frequency)
 
