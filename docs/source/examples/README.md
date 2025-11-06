@@ -6,10 +6,13 @@ Runnable examples illustrate how the TNFR engine orchestrates canonical operator
 
 ## Quick Navigation
 
+- **[Use Cases Guide](USE_CASES_GUIDE.md)** - **NEW!** Domain mappings and operator selection guide
 - **[Getting Started Examples](#basic-examples)** - Simple, educational examples
 - **[Domain Examples](#domain-examples)** - Biology, social, technical applications
 - **[Advanced Examples](#advanced-examples)** - Complex operator sequences
 - **[CLI Examples](#cli-examples)** - Command-line interface usage
+
+> 📘 **New to TNFR applications?** Start with the **[Use Cases Guide](USE_CASES_GUIDE.md)** to understand when and how to use different operators for your domain!
 
 ---
 
@@ -59,33 +62,114 @@ python docs/source/examples/optical_cavity_feedback.py
 
 ## Domain Examples
 
-### Biological Systems
+### Biological Cell Communication
 
-**File**: Available in main [`examples/`](../../../examples/) directory
+**File**: [`biological_coherence_example.py`](biological_coherence_example.py)
 
-Examples include:
-- Cell communication networks
-- Neural synchronization
-- Metabolic pathways
+**Summary**: Models how cells in a tissue coordinate responses through chemical signaling. Demonstrates cell-to-cell communication using emission/reception operators, gap junction formation via coupling, and tissue organization through coherence metrics.
 
 **Key Concepts**:
-- Coupling between biological agents
-- Phase synchronization in living systems
-- Self-organization in biology
+- Emission operator (chemical signal secretion)
+- Reception operator (receptor binding)
+- Coupling operator (gap junctions, cell contacts)
+- Coherence as tissue organization
+- Sense index as cell responsiveness
 
-### Social Networks
+**Run**:
+```bash
+python docs/source/examples/biological_coherence_example.py
+```
 
-**File**: Available in main [`examples/`](../../../examples/) directory
+**Learn**: How TNFR models biological systems with cellular communication and tissue formation.
 
-Examples include:
-- Group dynamics
-- Opinion formation
-- Community emergence
+---
+
+### Social Network Information Dynamics
+
+**File**: [`social_network_dynamics.py`](social_network_dynamics.py)
+
+**Summary**: Models information propagation and opinion formation in social networks. Demonstrates how individuals (nodes) interact, debate (dissonance), evolve opinions (mutation), and reach consensus (coherence).
 
 **Key Concepts**:
-- Social coupling and influence
-- Collective coherence
-- Network fragmentation and healing
+- Nodes as individuals in a social network
+- Resonance operator (consensus building, viral spread)
+- Dissonance operator (conflict, debate, diverse opinions)
+- Mutation operator (opinion evolution)
+- Coherence as group cohesion
+
+**Run**:
+```bash
+python docs/source/examples/social_network_dynamics.py
+```
+
+**Learn**: How TNFR analyzes social dynamics, consensus formation, and network stability vs. change.
+
+---
+
+### Adaptive AI Self-Organization
+
+**File**: [`adaptive_ai_system.py`](adaptive_ai_system.py)
+
+**Summary**: Models an AI system that learns through structural reorganization rather than gradient descent. Demonstrates how intelligent agents self-organize and adapt using TNFR operators.
+
+**Key Concepts**:
+- Nodes as intelligent agents
+- SelfOrganization operator (THOL) for autonomous structuring
+- Learning as coherence increase (not error minimization)
+- Structural adaptation without backpropagation
+
+**Run**:
+```bash
+python docs/source/examples/adaptive_ai_system.py
+```
+
+**Learn**: TNFR's alternative paradigm for learning and adaptation in AI systems.
+
+---
+
+### Supply Chain Resilience Under Disruption
+
+**File**: [`supply_chain_resilience.py`](supply_chain_resilience.py)
+
+**Summary**: Models an adaptive supply chain responding to external disruptions. Demonstrates how suppliers and distributors reorganize using mutation operators to maintain system coherence.
+
+**Key Concepts**:
+- Nodes as supply chain facilities (suppliers, warehouses, distributors)
+- Mutation operator (ZHIR) for adaptive reconfiguration
+- Dissonance as disruption/shock
+- Resilience metrics through sense index
+- Recovery patterns and system adaptation
+
+**Run**:
+```bash
+python docs/source/examples/supply_chain_resilience.py
+```
+
+**Learn**: How TNFR models business resilience and adaptive logistics networks.
+
+---
+
+### Urban Traffic Flow Optimization
+
+**File**: [`urban_traffic_flow.py`](urban_traffic_flow.py)
+
+**Summary**: Models urban traffic grid with adaptive signal coordination. Demonstrates traffic flow optimization by treating intersections as nodes and using transition operators for signal timing.
+
+**Key Concepts**:
+- Intersections as nodes, traffic flow as coherence
+- Transition operator (NAV) for coordinated signal changes
+- Dissonance minimization (congestion reduction)
+- Dynamic adaptation to traffic patterns
+- Green wave propagation through resonance
+
+**Run**:
+```bash
+python docs/source/examples/urban_traffic_flow.py
+```
+
+**Learn**: How TNFR applies to urban planning and intelligent transportation systems.
+
+---
 
 ### Technical Systems
 
