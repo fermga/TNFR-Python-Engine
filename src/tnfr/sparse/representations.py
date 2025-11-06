@@ -301,20 +301,15 @@ class SparseTNFRGraph:
         """Initialize graph with random Erdős-Rényi structure and attributes."""
         rng = np.random.RandomState(seed)
         
-        # Generate random edges
-        expected_edges = int(self.node_count * (self.node_count - 1) * self.expected_density / 2)
-        edges_added = 0
-        max_attempts = expected_edges * 3  # Avoid infinite loop
-        attempts = 0
+        # Generate random edges efficiently using NetworkX
+        import networkx as nx
+        G_temp = nx.erdos_renyi_graph(self.node_count, self.expected_density, seed=seed)
         
-        while edges_added < expected_edges and attempts < max_attempts:
-            u = rng.randint(0, self.node_count)
-            v = rng.randint(0, self.node_count)
-            if u != v and self.adjacency[u, v] == 0:
-                weight = rng.uniform(0.5, 1.0)
-                self.add_edge(u, v, weight)
-                edges_added += 1
-            attempts += 1
+        # Copy edges to sparse matrix
+        for u, v in G_temp.edges():
+            weight = rng.uniform(0.5, 1.0)
+            self.adjacency[u, v] = weight
+            self.adjacency[v, u] = weight
         
         # Initialize node attributes
         for node_id in range(self.node_count):
@@ -382,11 +377,14 @@ class SparseTNFRGraph:
                 node_phase = all_phases[node_id]
                 
                 # Get neighbors via sparse row
-                neighbor_indices = adj_csr[node_id].nonzero()[1]
+                row_start = adj_csr.indptr[node_id]
+                row_end = adj_csr.indptr[node_id + 1]
+                neighbor_indices = adj_csr.indices[row_start:row_end]
                 
                 if len(neighbor_indices) > 0:
                     neighbor_phases = all_phases[neighbor_indices]
-                    neighbor_weights = np.array(adj_csr[node_id, neighbor_indices].todense()).flatten()
+                    # Use sparse data directly (more efficient)
+                    neighbor_weights = adj_csr.data[row_start:row_end]
                     
                     # Phase differences
                     phase_diffs = np.sin(node_phase - neighbor_phases)

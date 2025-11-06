@@ -338,10 +338,13 @@ class TestParallelExecution:
         result_parallel = net_parallel.evolve_multiscale(dt=0.1, steps=3)
         result_sequential = net_sequential.evolve_multiscale(dt=0.1, steps=3)
         
-        # Results should be similar (within tolerance due to floating point)
+        # Results should be very similar (allow small tolerance for
+        # thread timing differences, but they should be nearly identical)
+        # Note: Due to ThreadPoolExecutor scheduling, there may be minor
+        # differences in floating point operations order
         assert abs(
             result_parallel.total_coherence - result_sequential.total_coherence
-        ) < 0.1
+        ) < 0.01  # Tighter tolerance
 
 
 class TestAPIUsability:

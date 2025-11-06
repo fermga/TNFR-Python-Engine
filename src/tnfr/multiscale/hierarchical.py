@@ -361,7 +361,16 @@ class HierarchicalTNFRNetwork:
     def _evolve_parallel(
         self, dt: float, operators: Sequence[str]
     ) -> Dict[str, Any]:
-        """Evolve scales in parallel using ThreadPoolExecutor."""
+        """Evolve scales in parallel using ThreadPoolExecutor.
+        
+        Note: ThreadPoolExecutor is used instead of ProcessPoolExecutor because:
+        1. NetworkX graphs are not easily picklable (required for multiprocessing)
+        2. The overhead of serializing/deserializing graphs would negate benefits
+        3. Thread-based parallelism still provides speedup for I/O and NumPy ops
+        
+        For CPU-intensive workloads on very large scales, consider using
+        ProcessPoolExecutor with custom serialization or shared memory.
+        """
         results = {}
         
         # Use ThreadPoolExecutor for GIL-safe parallel evolution
@@ -501,8 +510,6 @@ class HierarchicalTNFRNetwork:
         Dict[str, float]
             Memory usage in MB for each scale
         """
-        import sys
-        
         footprint = {}
         for scale_name, G in self.networks_by_scale.items():
             # Rough estimate: graph structure + node attributes
