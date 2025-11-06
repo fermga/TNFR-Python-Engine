@@ -23,6 +23,7 @@ nav:
   - API Reference:
       - Overview: api/overview.md
       - Structural Operators: api/operators.md
+      - Operators Visual Guide: api/OPERATORS_VISUAL_GUIDE.md
       - Telemetry & Utilities: api/telemetry.md
       - Docstring Style: api/docstring_style.md
   - Advanced Topics:
