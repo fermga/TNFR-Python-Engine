@@ -266,6 +266,7 @@ _STRUCTURAL_FALLBACK: dict[str, str] = {
     COUPLING: RESONANCE,
     EXPANSION: RESONANCE,
     MUTATION: COHERENCE,
+    RECURSIVITY: COHERENCE,  # Fractal echo → stabilization
 }
 
 CANON_COMPAT, CANON_FALLBACK = _translate_structural()
