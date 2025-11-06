@@ -6,14 +6,29 @@ docs_dir: docs/source
 site_dir: site
 nav:
   - Home: home.md
-  - Getting started:
-      - Quickstart: getting-started/quickstart.md
-      - Quick Start (Mathematics): foundations.md
+  - Getting Started:
+      - Welcome to TNFR: getting-started/README.md
+      - Quickstart Tutorial: getting-started/quickstart.md
+      - Core Concepts: getting-started/TNFR_CONCEPTS.md
+      - Interactive Tutorial: getting-started/INTERACTIVE_TUTORIAL.md
+      - FAQ: getting-started/FAQ.md
+      - Math Backends: getting-started/math-backends.md
+      - Optional Dependencies: getting-started/optional-dependencies.md
       - Migrating from Remesh Window: getting-started/migrating-remesh-window.md
-  - API:
+  - User Guide:
+      - Operators Guide: user-guide/OPERATORS_GUIDE.md
+      - Metrics Interpretation: user-guide/METRICS_INTERPRETATION.md
+      - Troubleshooting: user-guide/TROUBLESHOOTING.md
+  - Examples: examples/README.md
+  - API Reference:
       - Overview: api/overview.md
-      - Structural operators: api/operators.md
-      - Telemetry & utilities: api/telemetry.md
+      - Structural Operators: api/operators.md
+      - Telemetry & Utilities: api/telemetry.md
+      - Docstring Style: api/docstring_style.md
+  - Advanced Topics:
+      - Performance Optimization: advanced/PERFORMANCE_OPTIMIZATION.md
+      - Theory Deep Dive: advanced/THEORY_DEEP_DIVE.md
+      - Mathematical Foundations: foundations.md
   - Mathematical Foundations:
       - Overview: theory/00_overview.ipynb
       - Primers:
@@ -23,19 +38,19 @@ nav:
           - Coherence metrics walkthrough: theory/04_coherence_metrics_walkthrough.ipynb
           - Sense index calibration: theory/05_sense_index_calibration.ipynb
           - Recursivity cascades: theory/06_recursivity_cascades.ipynb
-      - Operators & validators:
+      - Operators & Validators:
           - Hilbert space ℋ_NFR: theory/01_hilbert_space_h_nfr.ipynb
           - Coherence operator Ĉ: theory/02_coherence_operator_hatC.ipynb
           - Frequency operator Ĵ: theory/03_frequency_operator_hatJ.ipynb
           - NFR validator & metrics: theory/04_nfr_validator_and_metrics.ipynb
           - Unitary dynamics & ΔNFR: theory/05_unitary_dynamics_and_delta_nfr.ipynb
-  - Examples: examples/README.md
   - Security:
       - Monitoring: security/monitoring.md
-      - Dependency auditing: security/dependency-auditing.md
+      - Dependency Auditing: security/dependency-auditing.md
       - CodeQL: security/codeql.md
       - Dependabot: security/dependabot.md
-  - Releases: releases.md
+  - Project Info:
+      - Releases: releases.md
 theme:
   name: material
   features:
