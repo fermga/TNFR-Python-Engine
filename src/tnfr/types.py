@@ -130,8 +130,8 @@ else:  # pragma: no cover - runtime fallback without networkx
 #: Graph container storing TNFR nodes, edges and their coherence telemetry.
 
 if TYPE_CHECKING:
-    FloatArray: TypeAlias = npt.NDArray[np.float_]
-    FloatMatrix: TypeAlias = npt.NDArray[np.float_]
+    FloatArray: TypeAlias = npt.NDArray[np.float64]
+    FloatMatrix: TypeAlias = npt.NDArray[np.float64]
 else:  # pragma: no cover - runtime fallback without NumPy
     FloatArray: TypeAlias = Any
     FloatMatrix: TypeAlias = Any
