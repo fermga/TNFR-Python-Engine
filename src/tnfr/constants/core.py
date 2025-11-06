@@ -123,6 +123,8 @@ class CoreDefaults:
     VALIDATORS_STRICT: bool = False
     PROGRAM_TRACE_MAXLEN: int = 50
     HISTORY_MAXLEN: int = 0
+    EDGE_AWARE_EPSILON: float = 1e-12
+    EDGE_AWARE_ENABLED: bool = True
 
 
 @dataclass(frozen=True, slots=True)

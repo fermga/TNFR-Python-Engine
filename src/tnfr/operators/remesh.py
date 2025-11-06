@@ -128,6 +128,7 @@ def _log_remesh_event(G: CommunityGraph, meta: RemeshMeta) -> None:
 def apply_network_remesh(G: CommunityGraph) -> None:
     """Network-scale REMESH using ``_epi_hist`` with multi-scale memory."""
     from ..glyph_history import current_step_idx, ensure_history
+    from ..dynamics.structural_clip import structural_clip
 
     nx, _ = _get_networkx_modules()
     tau_g = int(get_param(G, "REMESH_TAU_GLOBAL"))
@@ -144,6 +145,14 @@ def apply_network_remesh(G: CommunityGraph) -> None:
 
     topo_hash = _snapshot_topology(G, nx)
     epi_mean_before, epi_checksum_before = _snapshot_epi(G)
+    
+    # Get EPI bounds for structural preservation
+    epi_min = float(G.graph.get("EPI_MIN", DEFAULTS.get("EPI_MIN", -1.0)))
+    epi_max = float(G.graph.get("EPI_MAX", DEFAULTS.get("EPI_MAX", 1.0)))
+    clip_mode_str = str(G.graph.get("CLIP_MODE", "hard"))
+    if clip_mode_str not in ("hard", "soft"):
+        clip_mode_str = "hard"
+    clip_mode = clip_mode_str  # type: ignore[assignment]
 
     for n, nd in G.nodes(data=True):
         epi_now = _as_float(get_attr(nd, ALIAS_EPI, 0.0))
@@ -155,7 +164,10 @@ def apply_network_remesh(G: CommunityGraph) -> None:
         )
         mixed = (1 - alpha) * epi_now + alpha * epi_old_l
         mixed = (1 - alpha) * mixed + alpha * epi_old_g
-        set_attr(nd, ALIAS_EPI, mixed)
+        
+        # Apply structural boundary preservation to prevent overflow
+        mixed_clipped = structural_clip(mixed, lo=epi_min, hi=epi_max, mode=clip_mode)
+        set_attr(nd, ALIAS_EPI, mixed_clipped)
 
     epi_mean_after, epi_checksum_after = _snapshot_epi(G)
 
