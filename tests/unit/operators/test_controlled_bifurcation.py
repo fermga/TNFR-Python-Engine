@@ -4,7 +4,6 @@ This module tests the evolved R4 rule that requires ZHIR/THOL (transformers)
 to be preceded by OZ/NAV/VAL (destabilizers) within a window of 3 operators.
 
 References:
-    - Issue: fermga/TNFR-Python-Engine#[issue_number]
     - Theory: TNFR PDF "Bifurcación y emergencia", "Glifos de la emergencia"
 """
 
@@ -133,21 +132,9 @@ class TestBifurcationWindow:
 
     def test_destabilizer_within_window_3_steps(self):
         """Destabilizer 3 steps before transformer (max window)."""
-        # Want: destabilizer exactly 3 steps before ZHIR
-        # Use: COHERENCE → DISSONANCE (caution, allowed)
-        # Sequence: AL EN IL IL OZ IL RA IL ZHIR
-        # Indices:   0  1  2  3  4  5  6  7   8
-        # From 8 (ZHIR), window is max(0,8-3)=5 to 7, indices 5,6,7
-        # OZ at 4 is NOT in window!
-        # Simpler: AL EN IL OZ IL RA IL ZHIR
-        # Indices:  0  1  2  3  4  5  6   7
-        # From 7 (ZHIR), window is 4,5,6 - OZ at 3 NOT in window
-        # Try: AL EN IL RA IL OZ IL IL ZHIR (but IL→IL invalid)
-        # Better approach: use only 2 operators between OZ and ZHIR
-        # AL EN IL OZ IL IL ZHIR - but IL→IL invalid
-        # Use RA: AL EN IL OZ RA IL ZHIR
-        # Indices: 0  1  2  3  4  5   6
-        # From 6, window is 3,4,5 - OZ at 3 IS at boundary (exactly 3 back!)
+        # Sequence: AL EN IL OZ RA IL ZHIR SHA
+        # OZ at index 3, ZHIR at index 6 = 3 operators between (IL, RA, IL)
+        # This is at the maximum edge of the BIFURCATION_WINDOW
         result = validate_sequence(
             [EMISSION, RECEPTION, COHERENCE, DISSONANCE, RESONANCE, COHERENCE, MUTATION, SILENCE]
         )
@@ -156,9 +143,10 @@ class TestBifurcationWindow:
     def test_destabilizer_beyond_window_fails(self):
         """Destabilizer more than 3 steps before transformer should fail."""
         with pytest.raises(SequenceSyntaxError) as excinfo:
-            # OZ at index 3, ZHIR at index 7 = 4 steps apart
+            # OZ at index 3, operators at 4,5,6,7, ZHIR at index 8 = 5 steps apart (beyond window)
+            # Use valid transitions: OZ → IL → RA → IL → RA → IL → ZHIR
             parse_sequence(
-                [EMISSION, RECEPTION, COHERENCE, DISSONANCE, COHERENCE, RESONANCE, COUPLING, MUTATION, SILENCE]
+                [EMISSION, RECEPTION, COHERENCE, DISSONANCE, COHERENCE, RESONANCE, COHERENCE, RESONANCE, COHERENCE, MUTATION, SILENCE]
             )
         
         error = excinfo.value

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import os
+from collections import deque
 from collections.abc import Iterable, MutableMapping
 from copy import deepcopy
 from enum import Enum
@@ -451,7 +452,8 @@ class _SequenceAutomaton:
         self._found_dissonance = False  # Track OZ for R4
         self._found_stabilizer = False  # Track IL or THOL for R2
         self._detected_pattern: StructuralPattern = StructuralPattern.UNKNOWN
-        self._bifurcation_context: list[tuple[str, int]] = []  # Track (operator, index) for destabilizers
+        # Use deque with maxlen for efficient O(1) append and automatic size management
+        self._bifurcation_context: deque[tuple[str, int]] = deque(maxlen=BIFURCATION_WINDOW)
 
     def run(self, names: Sequence[str]) -> None:
         if not names:
@@ -496,10 +498,8 @@ class _SequenceAutomaton:
 
         # R4: Track destabilizers for bifurcation control (expanded from just OZ)
         if canonical in DESTABILIZERS:
+            # Deque automatically maintains window size (BIFURCATION_WINDOW)
             self._bifurcation_context.append((canonical, index))
-            # Maintain only the window size to optimize memory
-            if len(self._bifurcation_context) > BIFURCATION_WINDOW:
-                self._bifurcation_context.pop(0)
         
         # R4: Validate transformers (ZHIR/THOL) require recent destabilizer
         if canonical in TRANSFORMERS:
@@ -588,6 +588,12 @@ class _SequenceAutomaton:
         -------
         bool
             True if a destabilizer was found in the previous BIFURCATION_WINDOW operators
+            
+        Notes
+        -----
+        The `_bifurcation_context` deque stores only destabilizers (not all operators),
+        so we must check that stored destabilizers are within BIFURCATION_WINDOW steps
+        of the current index.
         """
         window_start = max(0, current_index - BIFURCATION_WINDOW)
         return any(
