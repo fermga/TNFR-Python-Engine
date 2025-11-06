@@ -44,6 +44,7 @@ from ..gamma import _get_gamma_spec, eval_gamma
 from ..types import NodeId, TNFRGraph
 from ..utils import get_numpy, resolve_chunk_size
 from .canonical import compute_canonical_nodal_derivative
+from .structural_clip import structural_clip
 
 __all__ = (
     "AbstractIntegrator",
@@ -561,7 +562,23 @@ class DefaultIntegrator(AbstractIntegrator):
             for n, (epi, dEPI_dt, d2epi) in updates.items():
                 nd = graph.nodes[n]
                 epi_kind = get_attr_str(nd, ALIAS_EPI_KIND, "")
-                set_attr(nd, ALIAS_EPI, epi)
+                
+                # Apply structural boundary preservation
+                epi_min = float(graph.graph.get("EPI_MIN", DEFAULTS.get("EPI_MIN", -1.0)))
+                epi_max = float(graph.graph.get("EPI_MAX", DEFAULTS.get("EPI_MAX", 1.0)))
+                clip_mode = str(graph.graph.get("CLIP_MODE", "hard"))
+                clip_k = float(graph.graph.get("CLIP_SOFT_K", 3.0))
+                
+                epi_clipped = structural_clip(
+                    epi, 
+                    lo=epi_min, 
+                    hi=epi_max, 
+                    mode=clip_mode,  # type: ignore[arg-type]
+                    k=clip_k,
+                    record_stats=False,
+                )
+                
+                set_attr(nd, ALIAS_EPI, epi_clipped)
                 if epi_kind:
                     set_attr_str(nd, ALIAS_EPI_KIND, epi_kind)
                 set_attr(nd, ALIAS_DEPI, dEPI_dt)

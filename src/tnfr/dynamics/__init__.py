@@ -105,6 +105,12 @@ from .integrators import (
     prepare_integration_params,
     update_epi_via_nodal_equation,
 )
+from .structural_clip import (
+    structural_clip,
+    StructuralClipStats,
+    get_clip_stats,
+    reset_clip_stats,
+)
 from .runtime import (
     _maybe_remesh,
     _normalize_job_overrides,
@@ -201,4 +207,8 @@ __all__ = (
     "DynamicLimits",
     "DynamicLimitsConfig",
     "compute_dynamic_limits",
+    "structural_clip",
+    "StructuralClipStats",
+    "get_clip_stats",
+    "reset_clip_stats",
 )
