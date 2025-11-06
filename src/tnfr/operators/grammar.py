@@ -517,12 +517,17 @@ class _SequenceAutomaton:
     def _validate_transition(
         self, prev: str, curr: str, index: int, token: str
     ) -> None:
-        """Validate that curr is compatible after prev using canonical compatibility tables.
+        """Validate that curr is compatible after prev using graduated compatibility levels.
+
+        Uses the graduated compatibility matrix to provide more nuanced feedback:
+        - EXCELLENT and GOOD: Pass silently
+        - CAUTION: Log warning but allow transition
+        - AVOID: Raise SequenceSyntaxError
 
         Note: Import is done inside the method to avoid circular dependency between
         grammar and compatibility modules.
         """
-        from ..validation.compatibility import _STRUCTURAL_COMPAT_TABLE
+        from ..validation.compatibility import CompatibilityLevel, get_compatibility_level
 
         # Only validate if prev is also a known operator
         if prev not in OPERATORS:
@@ -537,12 +542,21 @@ class _SequenceAutomaton:
                 freq_msg,
             )
 
-        allowed = _STRUCTURAL_COMPAT_TABLE.get(prev)
-        if allowed is not None and curr not in allowed:
+        # Get graduated compatibility level
+        level = get_compatibility_level(prev, curr)
+
+        if level == CompatibilityLevel.AVOID:
             raise SequenceSyntaxError(
                 index=index,
                 token=token,
                 message=f"{operator_display_name(curr)} incompatible after {operator_display_name(prev)}",
+            )
+        elif level == CompatibilityLevel.CAUTION:
+            logger.warning(
+                "Caution: %s → %s transition at position %d requires careful context validation",
+                operator_display_name(prev),
+                operator_display_name(curr),
+                index,
             )
 
     def _finalize(self, names: Sequence[str]) -> None:
