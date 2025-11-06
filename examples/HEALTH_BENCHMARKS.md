@@ -24,16 +24,16 @@ All sequences analyzed using `SequenceHealthAnalyzer` with Grammar 2.0 features:
 
 | Version | Sequence | Health | Pattern | Notes |
 |---------|----------|--------|---------|-------|
-| **Before** | `emission → reception → coherence → silence` | 0.66 | activation | Imbalanced, missing amplification |
-| **After** | `emission → reception → coherence → resonance → silence` | 0.85 | activation | Added resonance for amplification |
+| **Before** | `emission → reception → coherence → silence` | 0.66 | activation | Imbalanced, no destabilizers |
+| **After** | `emission → reception → coherence → expansion → resonance → silence` | 0.79 | activation | Added expansion for balance |
 
 **Improvements**:
-- Overall health: +0.19 (+28.8%)
-- Balance score: 0.00 → 0.67
+- Overall health: +0.13 (+19.7%)
+- Balance score: 0.00 → 0.33
 - Sustainability: 0.80 → 0.80 (maintained)
 - Pattern completeness: 0.75 → 0.75 (maintained)
 
-**Rationale**: Adding `resonance` after `coherence` amplifies the coherent structure before entering the sustainable silence state, improving balance without compromising sustainability.
+**Rationale**: Adding `expansion` (a destabilizer) provides structural balance by introducing controlled growth forces alongside the stabilizers. This creates a more dynamic and realistic activation pattern.
 
 ---
 
@@ -43,16 +43,16 @@ All sequences analyzed using `SequenceHealthAnalyzer` with Grammar 2.0 features:
 
 | Version | Sequence | Health | Pattern | Notes |
 |---------|----------|--------|---------|-------|
-| **Before** | `emission → reception → coherence → resonance → recursivity` | 0.61 | activation | Doesn't end with stabilizer |
-| **After** | `emission → reception → coherence → coupling → resonance → recursivity` | 0.73 | regenerative | Added coupling for network sync |
+| **Before** | `emission → reception → coherence → resonance → recursivity` | 0.61 | activation | No destabilizers, imbalanced |
+| **After** | `emission → reception → coherence → expansion → resonance → recursivity` | 0.76 | regenerative | Added expansion for balance |
 
 **Improvements**:
-- Overall health: +0.12 (+19.7%)
+- Overall health: +0.15 (+24.6%)
 - Balance score: 0.00 → 0.50
 - Sustainability: 0.60 → 0.70
-- Network synchronization: explicit coupling added
+- Pattern: activation → regenerative
 
-**Rationale**: Added `coupling` before `resonance` to establish network synchronization, making the sequence suitable for multi-node scenarios. Recursivity remains as valid closure.
+**Rationale**: Added `expansion` to create balance between stabilizing and destabilizing forces. This makes the sequence suitable for recursive consolidation with growth potential.
 
 ---
 
@@ -62,16 +62,16 @@ All sequences analyzed using `SequenceHealthAnalyzer` with Grammar 2.0 features:
 
 | Version | Sequence | Health | Pattern | Notes |
 |---------|----------|--------|---------|-------|
-| **Before** | `emission → reception → coherence → coupling → resonance → silence` | 0.68 | activation | Good but can be better |
-| **After** | `emission → reception → coherence → coupling → resonance → transition` | 0.76 | regenerative | Changed ending to transition |
+| **Before** | `emission → reception → coherence → coupling → resonance → silence` | 0.68 | activation | No destabilizers |
+| **After** | `emission → reception → coherence → coupling → resonance → transition` | 0.77 | regenerative | Changed ending to transition |
 
 **Improvements**:
-- Overall health: +0.08 (+11.8%)
+- Overall health: +0.09 (+13.2%)
+- Balance score: 0.00 → 0.50
 - Pattern: activation → regenerative
-- Sustainability: 0.70 → 0.80
 - Regenerative capability: added transition operator
 
-**Rationale**: Changed final operator from `silence` to `transition` to enable regenerative cycles while maintaining all structural phases. Transition provides valid closure with transformative potential.
+**Rationale**: Changed final operator from `silence` to `transition` to enable regenerative cycles while maintaining coupling for network synchronization. Transition provides valid closure with transformative potential.
 
 ---
 
@@ -81,16 +81,16 @@ All sequences analyzed using `SequenceHealthAnalyzer` with Grammar 2.0 features:
 
 | Version | Sequence | Health | Pattern | Notes |
 |---------|----------|--------|---------|-------|
-| **Before** | `recursivity → reception → coherence → resonance → silence` | 0.69 | unknown | Imbalanced, weak pattern |
-| **After** | `recursivity → reception → coherence → coupling → resonance → silence` | 0.77 | regenerative | Added coupling for balance |
+| **Before** | `recursivity → reception → coherence → resonance → silence` | 0.69 | stabilization | No destabilizers |
+| **After** | `recursivity → reception → coherence → expansion → resonance → coherence → silence` | 0.80 | stabilization | Added expansion, extra coherence |
 
 **Improvements**:
-- Overall health: +0.08 (+11.6%)
-- Pattern: unknown → regenerative
-- Balance score: 0.00 → 0.50
-- Network effects: explicit coupling
+- Overall health: +0.11 (+15.9%)
+- Balance score: 0.00 → 0.25
+- Pattern: stabilization (maintained)
+- Sustainability improved with final coherence
 
-**Rationale**: Added `coupling` to improve balance and enable network-wide consolidation. Recursivity start remains valid for fractal operations.
+**Rationale**: Added `expansion` for structural balance and an additional `coherence` after resonance to re-stabilize before silence. Creates a more complete consolidation cycle.
 
 ---
 
@@ -154,16 +154,17 @@ operators = ["THOL"]  # Self-organization only
 
 **After**:
 ```python
-operators = ["emission", "self_organization", "coherence"]  # Complete pattern
-# Health: 0.78 (good structural pattern)
+operators = ["emission", "reception", "self_organization", "coherence", "silence"]
+# Health: 0.71 (good structural pattern)
 ```
 
 **Improvements**:
 - Single operator → complete pattern
-- Health: N/A → 0.78
-- Added activation and stabilization phases
+- Health: N/A → 0.71
+- Added activation, reception and stabilization phases
+- Proper closure with silence
 
-**Rationale**: Multi-scale operations benefit from complete patterns that include initiation, transformation, and stabilization.
+**Rationale**: Multi-scale operations benefit from complete patterns that include initiation, reception, transformation, and stabilization. Single operator was insufficient for complex multi-scale dynamics.
 
 ---
 
@@ -171,7 +172,7 @@ operators = ["emission", "self_organization", "coherence"]  # Complete pattern
 
 **Sequence 1** (Already optimal):
 ```python
-sequence = ["emission", "reception", "coherence", "resonance", "silence"]
+sequence = ["emission", "reception", "coherence", "expansion", "resonance", "silence"]
 # Health: 0.79 (good)
 ```
 
@@ -180,7 +181,7 @@ sequence = ["emission", "reception", "coherence", "resonance", "silence"]
 | Version | Sequence | Health | Pattern | Notes |
 |---------|----------|--------|---------|-------|
 | **Before** | `emission → reception → coherence → coupling → resonance → silence` | 0.68 | activation | Suboptimal |
-| **After** | `emission → reception → coherence → coupling → resonance → transition` | 0.76 | regenerative | Better closure |
+| **After** | `emission → reception → coherence → coupling → resonance → transition` | 0.77 | regenerative | Better closure |
 
 ---
 
@@ -220,56 +221,52 @@ Updated to include new comparative examples showing before/after optimizations. 
 
 | Metric | Before | After | Improvement |
 |--------|--------|-------|-------------|
-| **Sequences analyzed** | 14 | 14 | - |
+| **Sequences analyzed** | 16 | 16 | - |
 | **Needing optimization** | 9 | 0 | -9 (-100%) |
-| **Average health (all)** | 0.707 | 0.803 | +0.096 (+13.6%) |
-| **Average health (optimized)** | 0.656 | 0.785 | +0.129 (+19.7%) |
-| **Below threshold (< 0.7)** | 9 (64%) | 0 (0%) | -9 |
-| **Good (0.7-0.84)** | 4 (29%) | 9 (64%) | +5 |
-| **Excellent (≥ 0.85)** | 1 (7%) | 5 (36%) | +4 |
+| **Average health (all)** | 0.706 | 0.783 | +0.077 (+10.9%) |
+| **Average health (optimized)** | 0.656 | 0.773 | +0.117 (+17.8%) |
+| **Below threshold (< 0.7)** | 9 (56%) | 0 (0%) | -9 |
+| **Good (0.7-0.79)** | 3 (19%) | 10 (63%) | +7 |
+| **Excellent (≥ 0.80)** | 4 (25%) | 6 (37%) | +2 |
 
 ### Health Distribution
 
 **Before optimization**:
 ```
-0.60-0.64: ██ (2 sequences)
-0.65-0.69: ████ (5 sequences)  
-0.70-0.74: ███ (2 sequences)
-0.75-0.79: ██ (1 sequence)
-0.80-0.84: ██ (1 sequence)
-0.85-0.89: ███ (3 sequences)
+0.59-0.62: █ (2 sequences)
+0.63-0.66: ██ (2 sequences)
+0.67-0.69: ███ (5 sequences)  
+0.70-0.79: ██ (3 sequences)
+0.80-0.89: ████ (4 sequences)
 ```
 
 **After optimization**:
 ```
-0.70-0.74: ██ (2 sequences)
-0.75-0.79: ████ (4 sequences)  
-0.80-0.84: ███ (3 sequences)
-0.85-0.89: ████ (4 sequences)
-0.90+:     ██ (1 sequence)
+0.71-0.79: ██████████ (10 sequences)  
+0.80-0.89: ██████ (6 sequences)
 ```
 
 ## Key Optimization Patterns Applied
 
-### Pattern A: Add Resonance (+0.15-0.20 health)
-Used in: `basic_activation`, `multiscale_network_demo`
+### Pattern A: Add Expansion for Balance (+0.13-0.15 health)
+Used in: `basic_activation`, `stabilization`, `consolidation`
 
-Amplifies coherent structures before sustainable states.
+Introduces controlled destabilizing forces (expansion) to balance the stabilizers, creating more realistic and dynamic structural evolution.
 
-### Pattern B: Add Coupling (+0.08-0.12 health)
-Used in: `stabilization`, `consolidation`
-
-Enables network synchronization in multi-node scenarios.
-
-### Pattern C: Change Closure Operator (+0.05-0.10 health)
+### Pattern B: Change Closure to Transition (+0.09 health)
 Used in: `network_sync`, `modular_architecture_demo`
 
-Switching to `transition` enables regenerative capability.
+Switching to `transition` enables regenerative cycles while maintaining structural closure.
 
-### Pattern D: Complete Pattern Structure (+0.10-0.15 health)
+### Pattern C: Add Reception Phase (+0.10+ health)
 Used in: `multiscale_network_demo`
 
-Adding missing phases improves completeness and recognition.
+Completing the activation pattern with proper reception phase improves pattern recognition and health.
+
+### Pattern D: Add Stabilization After Growth (+0.11 health)
+Used in: `consolidation`
+
+Adding coherence after expansion provides re-stabilization, creating a complete growth-consolidation cycle.
 
 ## Validation Results
 

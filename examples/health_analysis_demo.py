@@ -219,11 +219,62 @@ def example_7_long_sequence_analysis():
     print(f"Sustainability forecast: {'Sustainable' if health.sustainability_index > 0.7 else 'May degrade'}")
 
 
+def example_8_grammar_2_optimization():
+    """Example 8: Before/after Grammar 2.0 optimization."""
+    print("\n" + "=" * 70)
+    print("EXAMPLE 8: Grammar 2.0 Optimization Comparison")
+    print("=" * 70)
+    
+    print("\nDemonstrating optimization patterns from Grammar 2.0...")
+    
+    # Case 1: Adding expansion for balance
+    print("\n--- Case 1: Adding expansion for balance ---")
+    before = [EMISSION, RECEPTION, COHERENCE, RESONANCE, SILENCE]
+    after = [EMISSION, RECEPTION, COHERENCE, EXPANSION, RESONANCE, SILENCE]
+    
+    analyzer = SequenceHealthAnalyzer()
+    health_before = analyzer.analyze_health(before)
+    health_after = analyzer.analyze_health(after)
+    
+    print(f"BEFORE:  {' → '.join(before)}")
+    print(f"  Health: {health_before.overall_health:.3f} (balance: {health_before.balance_score:.2f})")
+    print(f"  Issue: {health_before.recommendations[0] if health_before.recommendations else 'None'}")
+    
+    print(f"\nAFTER:   {' → '.join(after)}")
+    print(f"  Health: {health_after.overall_health:.3f} (balance: {health_after.balance_score:.2f})")
+    print(f"  Improvement: +{health_after.overall_health - health_before.overall_health:.3f} (+{(health_after.overall_health - health_before.overall_health)/health_before.overall_health*100:.1f}%)")
+    
+    # Case 2: Changing closure for regenerative capability
+    print("\n--- Case 2: Changing closure for regenerative capability ---")
+    before2 = [EMISSION, RECEPTION, COHERENCE, COUPLING, RESONANCE, SILENCE]
+    after2 = [EMISSION, RECEPTION, COHERENCE, COUPLING, RESONANCE, TRANSITION]
+    
+    health_before2 = analyzer.analyze_health(before2)
+    health_after2 = analyzer.analyze_health(after2)
+    
+    print(f"BEFORE:  {' → '.join(before2)}")
+    print(f"  Health: {health_before2.overall_health:.3f} (pattern: {health_before2.dominant_pattern})")
+    
+    print(f"\nAFTER:   {' → '.join(after2)}")
+    print(f"  Health: {health_after2.overall_health:.3f} (pattern: {health_after2.dominant_pattern})")
+    print(f"  Improvement: +{health_after2.overall_health - health_before2.overall_health:.3f} (+{(health_after2.overall_health - health_before2.overall_health)/health_before2.overall_health*100:.1f}%)")
+    print(f"  Pattern change: {health_before2.dominant_pattern} → {health_after2.dominant_pattern}")
+    
+    # Summary
+    print("\n--- Optimization Summary ---")
+    print("Key Grammar 2.0 patterns demonstrated:")
+    print("  1. Add expansion/dissonance for balance (stabilizers ≈ destabilizers)")
+    print("  2. Use transition for regenerative capability")
+    print("  3. Maintain harmonic frequency transitions")
+    print("  4. Target health ≥ 0.70 (good) or ≥ 0.85 (excellent)")
+
+
 def main():
     """Run all examples."""
     print("\n" + "=" * 70)
     print("TNFR Sequence Health Analysis Demonstration")
     print("Evaluating structural quality of operator sequences")
+    print("With Grammar 2.0 optimizations")
     print("=" * 70)
     
     example_1_basic_activation()
@@ -233,6 +284,7 @@ def main():
     example_5_comparison()
     example_6_validation_integration()
     example_7_long_sequence_analysis()
+    example_8_grammar_2_optimization()
     
     print("\n" + "=" * 70)
     print("Demonstration Complete")
@@ -242,6 +294,9 @@ def main():
     print("- Use validate_sequence_with_health() for integrated validation + health analysis")
     print("- Compare alternatives to select the most coherent structural pattern")
     print("- Recommendations guide optimization of suboptimal sequences")
+    print("- Grammar 2.0 optimizations: balance forces, use regenerative operators")
+    print("- Target: health ≥ 0.70 for production sequences")
+    print("\nSee examples/OPTIMIZATION_GUIDE.md for detailed optimization patterns")
     print("=" * 70)
 
 
