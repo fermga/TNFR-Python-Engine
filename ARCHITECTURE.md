@@ -217,6 +217,84 @@ Runtime functions coordinate clamps, selectors, and job overrides to keep simula
 
 Together these layers ensure every structural change maps back to the TNFR grammar, preserves unit semantics, and leaves behind a telemetry trail suitable for coherence analysis.
 
+## Numerical Stability and Boundary Protection
+
+### TNFR Structural Boundaries
+
+In TNFR, the EPI range [-1.0, 1.0] represents the **structural container** of node identity. Boundaries are not arbitrary restrictions but intrinsic limits that preserve coherence:
+
+- **EPI_MAX = 1.0**: Maximum structural expansion before identity fragmentation
+- **EPI_MIN = -1.0**: Maximum structural contraction before identity collapse
+
+These boundaries define the **operational space** within which a node maintains its structural identity. Exceeding them does not simply produce "out of range" values—it represents a transition beyond the node's capacity to maintain coherent form.
+
+### Boundary Protection System
+
+The engine implements a **three-layer protection system** that progressively enforces structural boundaries while preserving TNFR operational principles:
+
+1. **Conservative constants**: Reduced expansion factors that naturally stay within bounds
+2. **Edge-aware scaling**: Operators dynamically adapt their magnitude near boundaries  
+3. **Structural clipping**: Unified boundary enforcement preserving continuity
+
+This layered approach embodies the TNFR principle that **operators are the only paths for change**—boundaries are maintained through operational awareness, not post-hoc corrections.
+
+#### Layer 1: Conservative Constants
+
+The `VAL_scale` parameter controls expansion rate for the VAL (expansion) operator:
+
+- **Current value**: 1.05 (reduced from previous 1.15)
+- **Critical threshold**: EPI ≥ 0.952381 (vs previous 0.869565)
+- **Rationale**: 8.7% reduction in scale factor improves numerical stability while maintaining meaningful expansion capacity
+
+This conservative value means that single VAL applications rarely approach boundaries under normal operation, reducing the need for downstream interventions.
+
+#### Layer 2: Edge-aware Scaling
+
+Operators dynamically adapt near boundaries through **edge-aware scaling**, which adjusts the effective scale factor based on proximity to structural limits:
+
+**VAL (Expansion) edge-awareness**:
+```python
+scale_eff = min(VAL_scale, EPI_MAX / max(abs(EPI_current), ε))
+```
+
+This ensures that `EPI_current * scale_eff ≤ EPI_MAX`, providing a **gradual approach** to boundaries without overshoot.
+
+**NUL (Contraction) edge-awareness**:
+```python
+if EPI_current < 0:
+    scale_eff = min(NUL_scale, abs(EPI_MIN / min(EPI_current, -ε)))
+else:
+    scale_eff = NUL_scale  # Normal contraction (always safe with scale < 1.0)
+```
+
+For negative EPI values approaching EPI_MIN, the scale is adapted to prevent underflow.
+
+**Configuration**:
+- `EDGE_AWARE_ENABLED`: Enable/disable edge-aware scaling (default: `True`)
+- `EDGE_AWARE_EPSILON`: Small value to prevent division by zero (default: `1e-12`)
+
+**Telemetry**: When scale adaptation occurs, the engine records intervention metadata in `graph["edge_aware_interventions"]`, tracking:
+- Glyph name (VAL/NUL)
+- EPI before/after
+- Requested vs. effective scale
+- Adaptation flag
+
+#### Layer 3: Structural Clipping
+
+The `structural_clip()` function provides the final enforcement layer, applied during nodal equation integration. See the "Structural Boundary Preservation" section below for detailed documentation.
+
+### TNFR Principles Alignment
+
+This three-layer system preserves core TNFR principles:
+
+- **Operator closure**: All operators produce valid EPI values within structural bounds
+- **Coherence preservation**: Boundaries define valid structural space; violations represent identity loss
+- **Structural continuity**: Edge-aware scaling provides smooth approach to limits
+- **Operational fractality**: Boundary awareness operates at all scales
+- **Reproducibility**: Deterministic adaptation ensures identical results across runs
+
+The key insight is that **boundary protection is integrated into the operational fabric**, not imposed externally. Operators "know" about boundaries and adapt accordingly, maintaining the TNFR principle that structure emerges from resonance, not constraint.
+
 ## Structural Boundary Preservation
 
 TNFR maintains strict structural boundaries to preserve coherence and ensure that the Primary Information Structure (EPI) remains within valid ranges. This prevents numerical precision issues from violating structural invariants during operator application and integration.
