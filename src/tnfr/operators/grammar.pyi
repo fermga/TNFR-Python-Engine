@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from ..types import Glyph, NodeId, TNFRGraph
 from ..node import NodeProtocol
 from ..validation import ValidationOutcome
@@ -38,7 +40,7 @@ def glyph_function_name(
 def function_name_to_glyph(
     val: str | Glyph | None, *, default: Glyph | None = None
 ) -> Glyph | None: ...
-@dataclass(slots=True)
+@dataclass
 class GrammarContext:
     G: TNFRGraph
     cfg_soft: dict[str, Any]

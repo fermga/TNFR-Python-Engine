@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Final
 
 DEFAULT_APPROX_BYTES_PER_ITEM: Final[int]

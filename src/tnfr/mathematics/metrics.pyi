@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import numpy as np
 from .operators import CoherenceOperator
 from typing import Sequence

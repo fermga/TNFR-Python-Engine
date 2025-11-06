@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from .epi import BEPIElement
 from .spaces import BanachSpaceEPI
 from dataclasses import dataclass

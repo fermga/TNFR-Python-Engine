@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import numpy as np
 from dataclasses import dataclass
 from typing import Protocol
@@ -17,7 +19,7 @@ class StateProjector(Protocol):
         rng: np.random.Generator | None = None,
     ) -> ComplexVector: ...
 
-@dataclass(slots=True)
+@dataclass
 class BasicStateProjector:
     dtype: np.dtype[np.complexfloating[np.float64, np.float64]] = ...
     atol: float = ...

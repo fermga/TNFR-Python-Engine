@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import networkx as nx
 from ..types import CallbackError as CallbackError
 from _typeshed import Incomplete

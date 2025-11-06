@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Any, Literal, Sequence
 
 from tnfr.types import GlyphCode, TNFRGraph

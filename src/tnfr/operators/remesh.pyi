@@ -1,4 +1,8 @@
-from typing import Any, TypeAlias
+from __future__ import annotations
+
+from typing import Any
+
+from .._compat import TypeAlias
 
 __all__ = [
     "apply_network_remesh",

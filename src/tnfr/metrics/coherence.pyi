@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from .._compat import TypeAlias as TypeAlias
 from ..alias import (
     collect_attr as collect_attr,

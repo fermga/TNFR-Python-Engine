@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from collections.abc import (
     Hashable,
     Iterable,
@@ -7,7 +9,7 @@ from collections.abc import (
     Sequence,
 )
 from enum import Enum
-from typing import Any, Callable, ContextManager, Iterable, Protocol, TypedDict, cast
+from typing import Any, Callable, ContextManager, Iterable, Protocol, TypedDict, Union, cast
 
 from ._compat import TypeAlias
 
@@ -139,11 +141,11 @@ PresetTokens: TypeAlias = Sequence[Token]
 ProgramTokens: TypeAlias = Sequence[Token]
 ArgSpec: TypeAlias = tuple[str, Mapping[str, Any]]
 
-TNFRConfigScalar: TypeAlias = bool | int | float | str | None
+TNFRConfigScalar: TypeAlias = Union[bool, int, float, str, None]
 TNFRConfigSequence: TypeAlias = Sequence[TNFRConfigScalar]
-TNFRConfigValue: TypeAlias = (
-    TNFRConfigScalar | TNFRConfigSequence | MutableMapping[str, "TNFRConfigValue"]
-)
+TNFRConfigValue: TypeAlias = Union[
+    TNFRConfigScalar, TNFRConfigSequence, MutableMapping[str, "TNFRConfigValue"]
+]
 
 class _SigmaVectorRequired(TypedDict):
     x: float
@@ -235,17 +237,17 @@ class Glyph(str, Enum):
     NAV = "NAV"
     REMESH = "REMESH"
 
-GlyphCode: TypeAlias = Glyph | str
-GlyphLoadDistribution: TypeAlias = dict[Glyph | str, float]
+GlyphCode: TypeAlias = Union[Glyph, str]
+GlyphLoadDistribution: TypeAlias = dict[Union[Glyph, str], float]
 
 class _SelectorLifecycle(Protocol):
     def __call__(self, graph: TNFRGraph, node: NodeId) -> GlyphCode: ...
     def prepare(self, graph: TNFRGraph, nodes: Sequence[NodeId]) -> None: ...
     def select(self, graph: TNFRGraph, node: NodeId) -> GlyphCode: ...
 
-GlyphSelector: TypeAlias = Callable[[TNFRGraph, NodeId], GlyphCode] | _SelectorLifecycle
+GlyphSelector: TypeAlias = Union[Callable[[TNFRGraph, NodeId], GlyphCode], _SelectorLifecycle]
 SelectorPreselectionMetrics: TypeAlias = Mapping[Any, SelectorMetrics]
-SelectorPreselectionChoices: TypeAlias = Mapping[Any, Glyph | str]
+SelectorPreselectionChoices: TypeAlias = Mapping[Any, Union[Glyph, str]]
 SelectorPreselectionPayload: TypeAlias = tuple[
     SelectorPreselectionMetrics,
     SelectorPreselectionChoices,
@@ -271,7 +273,7 @@ class TraceSnapshot(TraceMetadata, total=False):
     t: float
     phase: str
 
-HistoryState: TypeAlias = _HistoryDict | dict[str, Any]
+HistoryState: TypeAlias = Union[_HistoryDict, dict[str, Any]]
 TraceCallback: TypeAlias = Callable[[TNFRGraph, dict[str, Any]], None]
 
 class CallbackError(TypedDict):
@@ -295,7 +297,7 @@ DnfrCacheVectors: TypeAlias = tuple[
     np.ndarray | None,
     np.ndarray | None,
 ]
-DnfrVectorMap: TypeAlias = dict[str, np.ndarray | None]
+DnfrVectorMap: TypeAlias = dict[str, Union[np.ndarray, None]]
 NeighborStats: TypeAlias = tuple[
     Sequence[float],
     Sequence[float],
@@ -312,7 +314,7 @@ GlyphTimingByNode: TypeAlias = MutableMapping[
     Any, MutableMapping[str, MutableSequence[float]]
 ]
 GlyphCounts: TypeAlias = Mapping[str, int]
-GlyphMetricsHistoryValue: TypeAlias = MutableMapping[Any, Any] | MutableSequence[Any]
+GlyphMetricsHistoryValue: TypeAlias = Union[MutableMapping[Any, Any], MutableSequence[Any]]
 GlyphMetricsHistory: TypeAlias = MutableMapping[str, GlyphMetricsHistoryValue]
 MetricsListHistory: TypeAlias = MutableMapping[str, list[Any]]
 

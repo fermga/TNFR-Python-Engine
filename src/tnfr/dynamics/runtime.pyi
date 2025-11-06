@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from ..types import HistoryState, TNFRGraph
 from .aliases import (
     ALIAS_DNFR as ALIAS_DNFR,

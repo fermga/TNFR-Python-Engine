@@ -1,18 +1,20 @@
-from typing import Any, Callable, Iterator, Mapping
+from __future__ import annotations
+
+from typing import Any, Callable, Iterator, Mapping, Union
 
 from ._compat import TypeAlias
 
-FrozenPrimitive: TypeAlias = int | float | complex | str | bool | bytes | None
+FrozenPrimitive: TypeAlias = Union[int, float, complex, str, bool, bytes, None]
 FrozenCollectionItems: TypeAlias = tuple["FrozenSnapshot", ...]
 FrozenMappingItems: TypeAlias = tuple[tuple[Any, "FrozenSnapshot"], ...]
 FrozenTaggedCollection: TypeAlias = tuple[str, FrozenCollectionItems]
 FrozenTaggedMapping: TypeAlias = tuple[str, FrozenMappingItems]
-FrozenSnapshot: TypeAlias = (
-    FrozenPrimitive
-    | FrozenCollectionItems
-    | FrozenTaggedCollection
-    | FrozenTaggedMapping
-)
+FrozenSnapshot: TypeAlias = Union[
+    FrozenPrimitive,
+    FrozenCollectionItems,
+    FrozenTaggedCollection,
+    FrozenTaggedMapping,
+]
 ImmutableTagHandler: TypeAlias = Callable[[tuple[Any, ...]], bool]
 
 __all__: tuple[str, ...]
