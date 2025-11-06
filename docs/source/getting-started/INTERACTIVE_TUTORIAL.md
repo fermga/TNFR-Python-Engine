@@ -215,7 +215,7 @@ random_team.connect_nodes(0.3, "random")  # 30% connections
 # Structure 2: Ring (linear communication chain)
 ring_team = TNFRNetwork("ring_team")
 ring_team.add_nodes(8, random_seed=42)
-ring_team.connect_nodes(pattern="ring")  # Each person talks to next
+ring_team.connect_nodes(connection_pattern="ring")  # Each person talks to next
 
 # Structure 3: Small-world (modern organizations)
 sw_team = TNFRNetwork("small_world_team")

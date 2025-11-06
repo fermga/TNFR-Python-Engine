@@ -537,14 +537,14 @@ def social_network_example(interactive: bool = True, random_seed: int = 42) -> d
     )
     
     _explain(
-        "\nNow, let's allow opinions to evolve and reach consensus:",
+        "\nNow, let's allow opinions to synchronize and reach consensus:",
         pause * 0.5
     )
     
-    print("    >>> network.apply_sequence('network_sync', repeat=2)")
+    print("    >>> network.apply_sequence('basic_activation', repeat=2)")
     print("    >>> network.apply_sequence('stabilization', repeat=3)\n")
     
-    network.apply_sequence("network_sync", repeat=2)
+    network.apply_sequence("basic_activation", repeat=2)
     network.apply_sequence("stabilization", repeat=3)
     
     _explain("✓ Opinions evolved and group stabilized", pause * 0.5)
@@ -979,11 +979,11 @@ def team_communication_example(interactive: bool = True, random_seed: int = 42) 
     
     print("    >>> random_team = TNFRNetwork('random_team')")
     print("    >>> random_team.add_nodes(8, random_seed=42)")
-    print("    >>> random_team.connect_nodes(0.3, 'random')\n")
+    print("    >>> random_team.connect_nodes(0.3, connection_pattern='random')\n")
     
     random_team = TNFRNetwork("random_team")
     random_team.add_nodes(8, random_seed=random_seed)
-    random_team.connect_nodes(0.3, "random")
+    random_team.connect_nodes(0.3, connection_pattern="random")
     
     print("    >>> ring_team = TNFRNetwork('ring_team')")
     print("    >>> ring_team.add_nodes(8, random_seed=42)")
@@ -995,11 +995,11 @@ def team_communication_example(interactive: bool = True, random_seed: int = 42) 
     
     print("    >>> sw_team = TNFRNetwork('small_world_team')")
     print("    >>> sw_team.add_nodes(8, random_seed=42)")
-    print("    >>> sw_team.connect_nodes(0.15, 'small_world')\n")
+    print("    >>> sw_team.connect_nodes(0.15, connection_pattern='small_world')\n")
     
     sw_team = TNFRNetwork("small_world_team")
     sw_team.add_nodes(8, random_seed=random_seed)
-    sw_team.connect_nodes(0.15, "small_world")
+    sw_team.connect_nodes(0.15, connection_pattern="small_world")
     
     _explain(
         f"✓ Created 3 team structures:\n"

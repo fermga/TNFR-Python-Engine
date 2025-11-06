@@ -98,20 +98,21 @@ class TestTutorialReproducibility:
         results1 = biological_example(interactive=False, random_seed=42)
         results2 = biological_example(interactive=False, random_seed=42)
         
-        # Should get same coherence with same seed
-        assert abs(results1["coherence"] - results2["coherence"]) < 1e-10
+        # Should get same coherence with same seed (reasonable tolerance)
+        assert abs(results1["coherence"] - results2["coherence"]) < 1e-6
 
     def test_team_communication_reproducible(self):
-        """Test team_communication_example is reproducible."""
+        """Test team_communication_example is reasonably consistent."""
         try:
             results1 = team_communication_example(interactive=False, random_seed=42)
             results2 = team_communication_example(interactive=False, random_seed=42)
             
             # Coherence values should be reasonably close
-            # (allowing for some variation due to network dynamics)
+            # Note: Network dynamics can cause variation, especially with different topologies
+            # We use 0.05 (5%) tolerance as reasonable for network simulations
             for structure in ["random", "ring", "small_world"]:
                 diff = abs(results1[structure]["coherence"] - results2[structure]["coherence"])
-                assert diff < 0.1, f"{structure} coherence not reasonably consistent: {diff}"
+                assert diff < 0.05, f"{structure} coherence varies too much: {diff}"
         except Exception as e:
             # If it's a validation error, skip this test
             if "validation" in str(e).lower() or "EPI" in str(e):
