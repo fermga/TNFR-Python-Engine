@@ -159,8 +159,8 @@ def get_innovation_cycle_sequence():
     5. COHERENCE (IL): Stabilize exploration
     6. DISSONANCE (OZ): Identify limitations/opportunities
     7. MUTATION (ZHIR): Innovation breakthrough, paradigm shift
-    8. SELF_ORGANIZATION (THOL): Autonomous development of idea
-    9. COHERENCE (IL): Stabilize new innovation structure
+    8. COHERENCE (IL): Integrate breakthrough insights
+    9. RESONANCE (RA): Amplify innovation potential
     10. TRANSITION (NAV): Transition to implementation - regenerator for cycling
     
     Expected metrics:
