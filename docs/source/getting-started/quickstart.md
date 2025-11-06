@@ -213,6 +213,8 @@ Use the English preset identifiers when invoking `--preset` from the CLI:
 
 ## Next steps
 
+- **New to TNFR?** Start with the [Interactive Tutorial](INTERACTIVE_TUTORIAL.md) for a hands-on,
+  step-by-step introduction (60 minutes).
 - Explore the [examples](../examples/README.md) for multi-node scenarios and CLI workflows.
 - Review the [API overview](../api/overview.md) before extending operator pipelines.
 - Consult the [telemetry and utilities](../api/telemetry.md) guide to instrument your
