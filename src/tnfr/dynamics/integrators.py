@@ -566,14 +566,18 @@ class DefaultIntegrator(AbstractIntegrator):
                 # Apply structural boundary preservation
                 epi_min = float(graph.graph.get("EPI_MIN", DEFAULTS.get("EPI_MIN", -1.0)))
                 epi_max = float(graph.graph.get("EPI_MAX", DEFAULTS.get("EPI_MAX", 1.0)))
-                clip_mode = str(graph.graph.get("CLIP_MODE", "hard"))
+                clip_mode_str = str(graph.graph.get("CLIP_MODE", "hard"))
+                # Validate clip mode and cast to proper type
+                if clip_mode_str not in ("hard", "soft"):
+                    clip_mode_str = "hard"
+                clip_mode: Literal["hard", "soft"] = clip_mode_str  # type: ignore[assignment]
                 clip_k = float(graph.graph.get("CLIP_SOFT_K", 3.0))
                 
                 epi_clipped = structural_clip(
                     epi, 
                     lo=epi_min, 
                     hi=epi_max, 
-                    mode=clip_mode,  # type: ignore[arg-type]
+                    mode=clip_mode,
                     k=clip_k,
                     record_stats=False,
                 )

@@ -50,7 +50,7 @@ class TestStructuralClipHardMode:
         assert structural_clip(-0.5, 0.0, 5.0, mode="hard") == 0.0
         assert structural_clip(2.5, 0.0, 5.0, mode="hard") == 2.5
     
-    def test_critical_vAL_expansion_case(self):
+    def test_critical_VAL_expansion_case(self):
         """Test the critical case mentioned in issue: EPI=0.95 with VAL_scale=1.15.
         
         After VAL application, EPI could become 0.95 * (some factor based on vf and dnfr).

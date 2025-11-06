@@ -177,10 +177,13 @@ def structural_clip(
         working_hi = hi + margin
         
         # Normalize to [-1, 1] for tanh
-        if working_hi == working_lo:
-            normalized = 0.0
-        else:
-            normalized = 2.0 * (value - (working_lo + working_hi) / 2.0) / (working_hi - working_lo)
+        # Check for zero-width range after extension (shouldn't happen with lo != hi)
+        range_width = working_hi - working_lo
+        if abs(range_width) < 1e-10:
+            # Degenerate case: return midpoint
+            return (lo + hi) / 2.0
+        
+        normalized = 2.0 * (value - (working_lo + working_hi) / 2.0) / range_width
         
         # Apply tanh with steepness k for smooth S-curve
         # tanh maps R → (-1, 1), scaled by k to control steepness
