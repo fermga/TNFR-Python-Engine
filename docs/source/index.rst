@@ -1,44 +1,98 @@
 TNFR Python Engine documentation
 ================================
 
-This site curates the canonical TNFR knowledge base, API contracts, and structural notebooks.
+Welcome to the canonical TNFR (Resonant Fractal Nature Theory) Python Engine documentation.
 
-.. toctree::
-   :maxdepth: 1
-   :caption: Home
+**New to TNFR?** Start with the `Getting Started Guide <getting-started/README.html>`_.
 
-   Overview <home>
+**Already familiar?** Jump to `User Guide <user-guide/OPERATORS_GUIDE.html>`_ or `API Reference <api/overview.html>`_.
+
+Navigation Hub
+--------------
+
+🚀 **For Beginners** (5-30 minutes)
+   ➤ :doc:`What is TNFR? <getting-started/README>`
+   
+   ➤ :doc:`Quick Tutorial <getting-started/quickstart>`
+   
+   ➤ :doc:`Core Concepts <getting-started/TNFR_CONCEPTS>`
+   
+   ➤ :doc:`FAQ <getting-started/FAQ>`
+
+📚 **For Users** (Building Applications)
+   ➤ :doc:`Operators Guide <user-guide/OPERATORS_GUIDE>`
+   
+   ➤ :doc:`Metrics Interpretation <user-guide/METRICS_INTERPRETATION>`
+   
+   ➤ :doc:`Troubleshooting <user-guide/TROUBLESHOOTING>`
+   
+   ➤ :doc:`Examples <examples/README>`
+
+🔧 **For Developers** (Advanced Topics)
+   ➤ :doc:`Performance Optimization <advanced/PERFORMANCE_OPTIMIZATION>`
+   
+   ➤ :doc:`Theory Deep Dive <advanced/THEORY_DEEP_DIVE>`
+   
+   ➤ :doc:`API Reference <api/overview>`
+
+📖 **Complete Table of Contents**
 
 .. toctree::
    :maxdepth: 2
-   :caption: Getting started
+   :caption: Getting Started
 
-   Quickstart <getting-started/quickstart>
+   Welcome to TNFR <getting-started/README>
+   Quickstart Tutorial <getting-started/quickstart>
+   Core Concepts <getting-started/TNFR_CONCEPTS>
    Interactive Tutorial <getting-started/INTERACTIVE_TUTORIAL>
+   FAQ <getting-started/FAQ>
    Mathematics backends <getting-started/math-backends>
-   Quick Start (Mathematics) <foundations>
+   Optional Dependencies <getting-started/optional-dependencies>
    Migrating from Remesh Window <getting-started/migrating-remesh-window>
-   How to reproduce TNFR results <how_to_reproduce_results>
+   
+.. toctree::
+   :maxdepth: 2
+   :caption: User Guide
+   
+   Operators Guide <user-guide/OPERATORS_GUIDE>
+   Metrics Interpretation <user-guide/METRICS_INTERPRETATION>
+   Troubleshooting <user-guide/TROUBLESHOOTING>
 
 .. toctree::
    :maxdepth: 2
-   :caption: API
+   :caption: Examples
+   
+   Example Catalog <examples/README>
 
-   Overview <api/overview>
+.. toctree::
+   :maxdepth: 2
+   :caption: API Reference
+
+   API Overview <api/overview>
    Symbol map <api/api_mapping>
    Structural operators <api/operators>
    Canonical validators <api/canonical_validators>
    Telemetry & utilities <api/telemetry>
+   Docstring style <api/docstring_style>
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Advanced Topics
+   
+   Performance Optimization <advanced/PERFORMANCE_OPTIMIZATION>
+   Theory Deep Dive <advanced/THEORY_DEEP_DIVE>
+   Mathematical Foundations <foundations>
+   How to Reproduce Results <how_to_reproduce_results>
 
 .. toctree::
    :maxdepth: 1
-   :caption: Mathematical foundations
+   :caption: Mathematical Foundations
 
-   Overview <theory/00_overview>
+   Theory Overview <theory/00_overview>
 
 .. toctree::
    :maxdepth: 1
-   :caption: Mathematical foundations ▸ Primers
+   :caption: Mathematical Foundations ▸ Primers
 
    Structural frequency primer <theory/01_structural_frequency_primer>
    Phase synchrony lattices <theory/02_phase_synchrony_lattices>
@@ -49,19 +103,13 @@ This site curates the canonical TNFR knowledge base, API contracts, and structur
 
 .. toctree::
    :maxdepth: 1
-   :caption: Mathematical foundations ▸ Operators & validators
+   :caption: Mathematical Foundations ▸ Operators & Validators
 
    Hilbert space ℋ_NFR <theory/01_hilbert_space_h_nfr>
    Coherence operator Ĉ <theory/02_coherence_operator_hatC>
    Frequency operator Ĵ <theory/03_frequency_operator_hatJ>
    NFR validator & metrics <theory/04_nfr_validator_and_metrics>
    Unitary dynamics & ΔNFR <theory/05_unitary_dynamics_and_delta_nfr>
-
-.. toctree::
-   :maxdepth: 1
-   :caption: Examples
-
-   examples/README
 
 .. toctree::
    :maxdepth: 1
@@ -74,13 +122,8 @@ This site curates the canonical TNFR knowledge base, API contracts, and structur
 
 .. toctree::
    :maxdepth: 1
-   :caption: Releases
+   :caption: Project Info
 
-   releases
-
-.. toctree::
-   :maxdepth: 1
-   :caption: Appendices
-
-   API docstring style <api/docstring_style>
-   Phase-2 integration checklist <fase2_integration>
+   Releases <releases>
+   Phase-2 integration <fase2_integration>
+   Home <home>
