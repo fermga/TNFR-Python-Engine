@@ -188,7 +188,8 @@ class TestOperatorMetrics:
         assert metrics["operator"] == "Dissonance"
         assert metrics["glyph"] == "OZ"
         assert "dnfr_increase" in metrics
-        assert "bifurcation_risk" in metrics
+        # bifurcation_risk renamed to bifurcation_active in enhanced metrics
+        assert "bifurcation_active" in metrics
         assert metrics["dnfr_increase"] == pytest.approx(0.15)
 
     def test_resonance_metrics_with_neighbors(self):
