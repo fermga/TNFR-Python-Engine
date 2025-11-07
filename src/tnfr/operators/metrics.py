@@ -49,7 +49,13 @@ def _get_node_attr(
 def emission_metrics(
     G: TNFRGraph, node: NodeId, epi_before: float, vf_before: float
 ) -> dict[str, Any]:
-    """AL - Emission metrics: ΔEPI, activation time, resonance radius.
+    """AL - Emission metrics with structural fidelity indicators.
+
+    Collects emission-specific metrics that reflect canonical AL effects:
+    - EPI: Increments (form activation)
+    - vf: Activates/increases (Hz_str)
+    - DELTA_NFR: Initializes positive reorganization
+    - theta: Influences phase alignment
 
     Parameters
     ----------
@@ -65,22 +71,73 @@ def emission_metrics(
     Returns
     -------
     dict
-        Emission-specific metrics including EPI delta and activation indicators
+        Emission-specific metrics including:
+        - Core deltas (delta_epi, delta_vf, dnfr_initialized, theta_current)
+        - AL-specific quality indicators:
+          - emission_quality: "valid" if both EPI and νf increased, else "weak"
+          - activation_from_latency: True if node was latent (EPI < 0.3)
+          - form_emergence_magnitude: Absolute EPI increment
+          - frequency_activation: True if νf increased
+          - reorganization_positive: True if ΔNFR > 0
+        - Traceability markers:
+          - emission_timestamp: ISO UTC timestamp of activation
+          - irreversibility_marker: True if node was activated
     """
+    from ..constants.aliases import ALIAS_EMISSION_TIMESTAMP
+
     epi_after = _get_node_attr(G, node, ALIAS_EPI)
     vf_after = _get_node_attr(G, node, ALIAS_VF)
     dnfr = _get_node_attr(G, node, ALIAS_DNFR)
+    theta = _get_node_attr(G, node, ALIAS_THETA)
+
+    # Fetch emission timestamp using alias system
+    emission_timestamp = None
+    try:
+        from ..alias import get_attr_str
+
+        emission_timestamp = get_attr_str(
+            G.nodes[node], ALIAS_EMISSION_TIMESTAMP, default=None
+        )
+    except Exception:
+        # Fallback if alias system unavailable
+        emission_timestamp = G.nodes[node].get("emission_timestamp")
+
+    # Compute deltas
+    delta_epi = epi_after - epi_before
+    delta_vf = vf_after - vf_before
+
+    # AL-specific quality indicators
+    emission_quality = "valid" if (delta_epi > 0 and delta_vf > 0) else "weak"
+    activation_from_latency = epi_before < 0.3  # Latency threshold
+    frequency_activation = delta_vf > 0
+    reorganization_positive = dnfr > 0
+
+    # Irreversibility marker
+    irreversibility_marker = G.nodes[node].get("_emission_activated", False)
 
     return {
         "operator": "Emission",
         "glyph": "AL",
-        "delta_epi": epi_after - epi_before,
-        "delta_vf": vf_after - vf_before,
+        # Core metrics (existing)
+        "delta_epi": delta_epi,
+        "delta_vf": delta_vf,
+        "dnfr_initialized": dnfr,
+        "theta_current": theta,
+        # Legacy compatibility
         "epi_final": epi_after,
         "vf_final": vf_after,
         "dnfr_final": dnfr,
-        "activation_strength": epi_after - epi_before,
-        "is_activated": epi_after > 0.5,  # Configurable threshold
+        "activation_strength": delta_epi,
+        "is_activated": epi_after > 0.5,
+        # AL-specific (NEW)
+        "emission_quality": emission_quality,
+        "activation_from_latency": activation_from_latency,
+        "form_emergence_magnitude": delta_epi,
+        "frequency_activation": frequency_activation,
+        "reorganization_positive": reorganization_positive,
+        # Traceability (NEW)
+        "emission_timestamp": emission_timestamp,
+        "irreversibility_marker": irreversibility_marker,
     }
 
 
