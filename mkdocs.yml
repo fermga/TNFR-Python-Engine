@@ -42,6 +42,8 @@ nav:
           - Coherence metrics walkthrough: theory/04_coherence_metrics_walkthrough.ipynb
           - Sense index calibration: theory/05_sense_index_calibration.ipynb
           - Recursivity cascades: theory/06_recursivity_cascades.ipynb
+      - Emergence of Physics:
+          - Classical Mechanics: theory/07_emergence_classical_mechanics.md
       - Operators & Validators:
           - Hilbert space ℋ_NFR: theory/01_hilbert_space_h_nfr.ipynb
           - Coherence operator Ĉ: theory/02_coherence_operator_hatC.ipynb
