@@ -187,9 +187,9 @@ class AdaptiveLearningSystem:
         """Execute full adaptive learning cycle with exploration.
 
         Implements iterative learning with conditional stabilization:
-        - Each iteration: AL (Emission) followed by T'HOL (SelfOrganization)
-        - Stabilizes with IL if ΔNFR below threshold
-        - Continues exploring with OZ if ΔNFR above threshold
+        - Each iteration: AL -> EN -> IL -> THOL with closure
+        - Stabilizes with SILENCE if ΔNFR below threshold
+        - Continues exploring with DISSONANCE if ΔNFR above threshold
 
         Parameters
         ----------
@@ -199,20 +199,20 @@ class AdaptiveLearningSystem:
         Notes
         -----
         Reuses operators and _should_stabilize logic for adaptive behavior.
-        Each iteration applies operators individually using their __call__.
+        Each iteration applies a grammar-compliant sequence.
+        T'HOL requires proper context (AL -> EN -> IL) and closure (SILENCE/CONTRACTION).
         """
         for _ in range(num_iterations):
-            # Emission: activate
+            # Grammar-compliant activation sequence
             Emission()(self.G, self.node)
-
+            Reception()(self.G, self.node)
+            Coherence()(self.G, self.node)
+            
             # Self-organization: autonomous reorganization
             SelfOrganization()(self.G, self.node)
-
-            # Decide: stabilize or continue exploring
-            if self._should_stabilize():
-                Coherence()(self.G, self.node)
-            else:
-                Dissonance()(self.G, self.node)
+            
+            # T'HOL requires closure
+            Silence()(self.G, self.node)
 
     def _should_stabilize(self) -> bool:
         """Decide whether to stabilize based on current ΔNFR.

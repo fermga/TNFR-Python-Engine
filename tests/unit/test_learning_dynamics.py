@@ -157,8 +157,8 @@ def test_learning_efficiency_with_ops():
     """Test efficiency after applying operators."""
     G, node = create_nfr("learner", epi=0.3, vf=1.0)
     G.nodes[node]["epi_initial"] = 0.3
-    # Apply grammar-compliant sequence with stabilizer
-    run_sequence(G, node, [Emission(), Reception(), Coherence()])
+    # Apply grammar-compliant sequence with terminal operator
+    run_sequence(G, node, [Emission(), Reception(), Coherence(), Silence()])
     efficiency = compute_learning_efficiency(G, node)
     assert efficiency >= 0.0
 

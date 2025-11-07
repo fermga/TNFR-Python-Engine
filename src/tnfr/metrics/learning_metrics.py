@@ -139,12 +139,15 @@ def compute_learning_plasticity(
     if window > 0 and len(history) > window:
         history = history[-window:]
     
+    # Convert glyphs to operator names using canonical function
+    operator_names = glyph_history_to_operator_names(history)
+    
     # Count plastic operators: those that enable reorganization
     plastic_ops = {DISSONANCE, SELF_ORGANIZATION, MUTATION}
-    plastic_count = sum(1 for glyph in history if glyph in plastic_ops)
+    plastic_count = sum(1 for op_name in operator_names if op_name in plastic_ops)
     
     # Normalize by history length
-    return plastic_count / max(len(history), 1)
+    return plastic_count / max(len(operator_names), 1)
 
 
 def compute_consolidation_index(
@@ -206,12 +209,15 @@ def compute_consolidation_index(
     if window > 0 and len(history) > window:
         history = history[-window:]
     
+    # Convert glyphs to operator names using canonical function
+    operator_names = glyph_history_to_operator_names(history)
+    
     # Count stable operators: those that consolidate structure
     stable_ops = {COHERENCE, SILENCE, RECURSIVITY}
-    stable_count = sum(1 for glyph in history if glyph in stable_ops)
+    stable_count = sum(1 for op_name in operator_names if op_name in stable_ops)
     
     # Normalize by history length
-    return stable_count / max(len(history), 1)
+    return stable_count / max(len(operator_names), 1)
 
 
 def compute_learning_efficiency(
