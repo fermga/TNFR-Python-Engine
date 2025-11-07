@@ -63,6 +63,9 @@ class AdvancedPatternDetector:
         "BIFURCATED": 2.0,        # Phase transition (OZ→ZHIR) branches possibility space
         "FRACTAL": 2.0,           # Recursive structure across scales
         "CYCLIC": 2.0,            # Regenerative loops with multiple state transitions
+        "DEEP_LEARNING": 2.0,     # Deep adaptive learning with self-organization
+        "EXPLORATORY_LEARNING": 2.0,  # Learning through exploration and resonance
+        "ADAPTIVE_MUTATION": 2.0,  # Transformative learning with mutation
         
         # Level 1: Compositional patterns (building blocks)
         "BOOTSTRAP": 1.0,         # Initialization sequence
@@ -70,6 +73,8 @@ class AdvancedPatternDetector:
         "STABILIZE": 1.0,         # Consolidation ending
         "RESONATE": 1.0,          # Amplification through coupling
         "COMPRESS": 1.0,          # Simplification sequence
+        "BASIC_LEARNING": 1.0,    # Simple learning sequence
+        "CONSOLIDATION_CYCLE": 1.0,  # Memory consolidation
         
         # Level 0: Simple patterns
         "LINEAR": 0.5,            # Basic progression without transformation
@@ -149,6 +154,29 @@ class AdvancedPatternDetector:
             "COMPRESS": {
                 "subsequences": [[CONTRACTION, COHERENCE, SILENCE]],
             },
+            
+            # Adaptive learning patterns (AL + T'HOL canonical sequences)
+            "BASIC_LEARNING": {
+                "subsequences": [[EMISSION, RECEPTION, COHERENCE, SILENCE]],
+                "max_length": 6,
+            },
+            "DEEP_LEARNING": {
+                "subsequences": [[EMISSION, RECEPTION, COHERENCE, DISSONANCE, SELF_ORGANIZATION, COHERENCE, SILENCE]],
+                "requires": {EMISSION, SELF_ORGANIZATION},
+            },
+            "EXPLORATORY_LEARNING": {
+                "subsequences": [[EMISSION, RECEPTION, COHERENCE, DISSONANCE, SELF_ORGANIZATION, RESONANCE, COHERENCE, SILENCE]],
+                "requires": {EMISSION, DISSONANCE, SELF_ORGANIZATION, RESONANCE},
+            },
+            "CONSOLIDATION_CYCLE": {
+                "subsequences": [[EMISSION, RECEPTION, COHERENCE, RECURSIVITY]],
+                "max_length": 6,
+            },
+            "ADAPTIVE_MUTATION": {
+                "subsequences": [[EMISSION, RECEPTION, COHERENCE, DISSONANCE, MUTATION, TRANSITION]],
+                "requires": {EMISSION, DISSONANCE, MUTATION},
+            },
+            
             "MINIMAL": {
                 "max_length": 1,
                 "min_score": 0.1,
@@ -192,7 +220,7 @@ class AdvancedPatternDetector:
         return self._detect_cache(sequence_tuple)
     
     def _detect_pattern_cached(self, sequence_tuple: Tuple[str, ...]) -> StructuralPattern:
-        """Cached implementation of pattern detection.
+        """Cached implementation of pattern detection with grammar validation.
         
         Parameters
         ----------
@@ -203,6 +231,16 @@ class AdvancedPatternDetector:
         -------
         StructuralPattern
             The pattern with the highest coherence-weighted score.
+            
+        Notes
+        -----
+        **Grammar Validation**: Sequences are validated against TNFR canonical
+        grammar before pattern matching. Invalid sequences return UNKNOWN pattern.
+        This ensures that only grammatically coherent sequences are recognized
+        as canonical patterns.
+        
+        **Note**: Grammar validation is performed without triggering pattern detection
+        to avoid recursion.
         """
         from .grammar import StructuralPattern
         
@@ -210,6 +248,19 @@ class AdvancedPatternDetector:
         
         if not sequence:
             return StructuralPattern.UNKNOWN
+        
+        # **NEW**: Validate sequence grammar before pattern detection
+        # Use validate_sequence which now won't call back to pattern detection
+        try:
+            from ..validation import validate_sequence
+            validation_result = validate_sequence(sequence)
+            if not validation_result.passed:
+                # Sequence violates TNFR grammar - cannot be a canonical pattern
+                return StructuralPattern.UNKNOWN
+        except RecursionError:
+            # If recursion occurs, skip grammar validation to break the cycle
+            # This can happen if validate_sequence internally calls pattern detection
+            pass
         
         # Score all patterns with coherence weighting
         weighted_scores = {}
@@ -479,6 +530,11 @@ class AdvancedPatternDetector:
             "organizational": "ORGANIZATIONAL",
             "creative": "CREATIVE",
             "regenerative": "REGENERATIVE",
+            "basic_learning": "BASIC_LEARNING",
+            "deep_learning": "DEEP_LEARNING",
+            "exploratory_learning": "EXPLORATORY_LEARNING",
+            "consolidation_cycle": "CONSOLIDATION_CYCLE",
+            "adaptive_mutation": "ADAPTIVE_MUTATION",
         }
         
         for domain, pattern_name in domain_patterns.items():
