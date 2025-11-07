@@ -11,7 +11,8 @@ Coherence weights reflect observable structural depth, not arbitrary rankings.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Mapping, Sequence
+from functools import lru_cache
+from typing import TYPE_CHECKING, Any, Mapping, Sequence, Tuple
 
 if TYPE_CHECKING:
     from .grammar import StructuralPattern
@@ -80,7 +81,7 @@ class AdvancedPatternDetector:
     }
 
     def __init__(self) -> None:
-        """Initialize the coherence-weighted pattern detector."""
+        """Initialize the coherence-weighted pattern detector with caching."""
         # Pattern signatures: each pattern maps to a list of operator subsequences
         # that characterize it, along with required/optional operators
         self._patterns = {
@@ -153,6 +154,9 @@ class AdvancedPatternDetector:
                 "min_score": 0.1,
             },
         }
+        
+        # Cache for pattern detection results (maxsize=256 to cache common sequences)
+        self._detect_cache = lru_cache(maxsize=256)(self._detect_pattern_cached)
 
     def detect_pattern(self, sequence: Sequence[str]) -> StructuralPattern:
         """Detect the best matching pattern using coherence-weighted scoring.
@@ -183,7 +187,26 @@ class AdvancedPatternDetector:
         - THERAPEUTIC wins, but if LINEAR had 1.0 match, it would score 0.5 and still lose
         - This is correct: even a perfect simple pattern has less structural depth
         """
+        # Convert to tuple for caching (sequences must be hashable)
+        sequence_tuple = tuple(sequence) if not isinstance(sequence, tuple) else sequence
+        return self._detect_cache(sequence_tuple)
+    
+    def _detect_pattern_cached(self, sequence_tuple: Tuple[str, ...]) -> StructuralPattern:
+        """Cached implementation of pattern detection.
+        
+        Parameters
+        ----------
+        sequence_tuple : Tuple[str, ...]
+            Immutable sequence of canonical operator names.
+            
+        Returns
+        -------
+        StructuralPattern
+            The pattern with the highest coherence-weighted score.
+        """
         from .grammar import StructuralPattern
+        
+        sequence = list(sequence_tuple)
         
         if not sequence:
             return StructuralPattern.UNKNOWN
