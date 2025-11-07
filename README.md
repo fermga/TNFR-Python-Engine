@@ -168,9 +168,15 @@ Observable Classical Mechanics
 - **Conservation Laws**: Network symmetries preserve structural quantities
 
 **Documentation**:
+- **[📘 N-Body Classical Mechanics Guide](docs/TNFR_CLASSICAL_NBODY.md)** — **Complete formal reference** (variable mappings, conservation laws, validation protocols, code examples)
 - [Classical Mechanics from TNFR](docs/source/theory/07_emergence_classical_mechanics.md) — Complete derivation from nodal equation
 - [Euler-Lagrange Correspondence](docs/source/theory/08_classical_mechanics_euler_lagrange.md) — Variational formulation
 - [Numerical Validation](docs/source/theory/09_classical_mechanics_numerical_validation.md) — Computational verification
+
+**Practical Examples**:
+- `examples/domain_applications/nbody_gravitational.py` — Two-body orbits, three-body systems
+- `examples/nbody_quantitative_validation.py` — Full validation suite (6 canonical experiments)
+- `tests/validation/test_nbody_validation.py` — Automated test suite
 
 This demonstrates **classical mechanics as a natural expression of coherent structural dynamics** in the observable, deterministic regime.
 
