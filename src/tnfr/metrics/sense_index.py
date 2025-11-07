@@ -1,17 +1,110 @@
-"""Sense index helpers for coherence monitoring.
+r"""Sense Index computation for TNFR networks.
 
-This module implements the Sense index (Si) as a structural telemetry channel
-that blends three signals: the node's structural frequency ``νf`` (how quickly
-it reorganises), its phase coupling with neighbours (whether it stays locked to
-their resonance), and the damping imposed by ``ΔNFR`` (internal reorganisation
-pressure). By combining these contributions we can monitor how each node
-maintains coherence inside a TNFR graph and surface whether the network is
-favouring rapid reorganisation, synchrony, or ΔNFR attenuation.
+The **Sense Index** (:math:`\text{Si}`) quantifies a node's capacity for stable
+structural reorganization. It blends three structural signals: frequency :math:`\nu_f`
+(reorganization rate), phase coupling :math:`\theta` (network synchrony), and
+reorganization pressure :math:`\Delta\text{NFR}`.
+
+Mathematical Foundation
+-----------------------
+
+The Sense Index is defined as a weighted combination:
+
+.. math::
+    \text{Si} = \alpha \cdot \nu_{f,\text{norm}} 
+              + \beta \cdot (1 - \text{disp}_\theta) 
+              + \gamma \cdot (1 - |\Delta\text{NFR}|_{\text{norm}})
+
+**Component definitions**:
+
+1. **Normalized frequency** :math:`\nu_{f,\text{norm}}`:
+   
+   .. math::
+       \nu_{f,\text{norm}} = \frac{|\nu_f|}{\nu_{f,\max}}
+   
+   Measures how fast a node reorganizes relative to network maximum.
+   Range: [0, 1] where 1 = maximum reorganization rate.
+
+2. **Phase dispersion** :math:`\text{disp}_\theta`:
+   
+   .. math::
+       \text{disp}_\theta = \frac{|\theta - \bar{\theta}|}{\pi}
+   
+   where :math:`\bar{\theta}` is the circular mean of neighbor phases:
+   
+   .. math::
+       \bar{\theta} = \text{atan2}\left(\sum_{j \in N(i)} \sin\theta_j, \sum_{j \in N(i)} \cos\theta_j\right)
+   
+   Measures phase misalignment with neighbors.
+   Range: [0, 1] where 0 = perfect synchrony, 1 = maximum dispersion.
+
+3. **Normalized reorganization magnitude** :math:`|\Delta\text{NFR}|_{\text{norm}}`:
+   
+   .. math::
+       |\Delta\text{NFR}|_{\text{norm}} = \frac{|\Delta\text{NFR}|}{\Delta\text{NFR}_{\max}}
+   
+   Measures structural pressure relative to network maximum.
+   Range: [0, 1] where 0 = equilibrium, 1 = maximum pressure.
+
+**Structural weights**:
+
+- :math:`\alpha`: Frequency weight (default: 0.4) - emphasizes reorganization capacity
+- :math:`\beta`: Phase weight (default: 0.3) - emphasizes network synchrony  
+- :math:`\gamma`: ΔNFR weight (default: 0.3) - emphasizes pressure damping
+- Constraint: :math:`\alpha + \beta + \gamma = 1`
+
+**Final clamping**: :math:`\text{Si}_{\text{final}} = \max(0, \min(1, \text{Si}))`
+
+Physical Interpretation
+------------------------
+
+**High Si (> 0.7)**: 
+- Node reorganizes efficiently (:math:`\nu_f` high)
+- Stays synchronized with network (:math:`\text{disp}_\theta` low)
+- Experiences manageable pressure (:math:`|\Delta\text{NFR}|` low)
+- **Implication**: Stable, well-integrated node
+
+**Low Si (< 0.3)**:
+- Slow reorganization OR high phase dispersion OR high pressure
+- **Implication**: Risk of structural instability or network decoupling
+
+**Moderate Si (0.3-0.7)**:
+- Trade-offs between frequency, synchrony, and pressure
+- **Implication**: Balanced state, monitor for bifurcation
+
+Implementation Map
+------------------
+
+**Core Functions**:
+
+- :func:`compute_Si` : Network-wide Si computation (vectorized when possible)
+- :func:`compute_Si_node` : Single-node Si calculation
+- :func:`get_Si_weights` : Extract or default Si weights from graph
+
+**Helper Functions**:
+
+- :func:`_compute_si_python_chunk` : Parallel worker for chunked computation
+- :func:`_SiStructuralCache` : Cache for aligned :math:`\nu_f` and :math:`\Delta\text{NFR}` arrays
+
+**Performance**:
+
+- Uses NumPy vectorization for networks with >10 nodes
+- Parallel computation for networks with >1000 nodes
+- Trigonometric caching to avoid redundant phase calculations
+
+Theoretical References
+----------------------
+
+See the following for complete derivation:
+
+- **Mathematical Foundations**: `docs/source/theory/mathematical_foundations.md`
+- **Worked Example**: `docs/source/examples/worked_examples.md` Example 1 (full walkthrough)
+- **Style Guide**: `docs/source/style_guide.md` for notation conventions
 
 Examples
 --------
-Build a minimal resonance graph where Si highlights how the structural weights
-steer the interpretation of coherence.
+
+**Basic network-wide computation**:
 
 >>> import networkx as nx
 >>> from tnfr.metrics.sense_index import compute_Si
@@ -24,11 +117,60 @@ steer the interpretation of coherence.
 >>> round(result["sensor"], 3), round(result["relay"], 3)
 (0.767, 0.857)
 
-The heavier ``alpha`` weight privileges the ``sensor`` node's fast ``νf`` even
-though it suffers a larger ``ΔNFR``. Conversely, the ``relay`` keeps Si high
-thanks to a calmer ``ΔNFR`` profile despite slower frequency, illustrating how
-Si exposes the trade-off between structural cadence, phase alignment, and
-internal reorganisation pressure.
+The heavier :math:`\alpha` weight privileges the sensor's fast :math:`\nu_f` even
+though it suffers larger :math:`\Delta\text{NFR}`. The relay keeps Si high thanks
+to calmer :math:`\Delta\text{NFR}` despite slower frequency.
+
+**Single-node computation**:
+
+>>> from tnfr.metrics.sense_index import compute_Si_node
+>>> node_attrs = {
+...     "nu_f": 0.8,
+...     "delta_nfr": 0.2,
+...     "phase": 0.5,
+...     "neighbors": [{"phase": 0.4}, {"phase": 0.6}]
+... }
+>>> Si = compute_Si_node(
+...     "node_id",
+...     node_attrs,
+...     alpha=0.4, beta=0.3, gamma=0.3,
+...     vfmax=1.0, dnfrmax=1.0,
+...     phase_dispersion=0.0,  # Already computed
+...     inplace=False
+... )
+>>> 0.8 < Si < 0.9  # High stability
+True
+
+**In-place update**:
+
+>>> G = nx.Graph()
+>>> G.add_node("a", nu_f=0.8, delta_nfr=0.2, phase=0.0)
+>>> compute_Si(G, inplace=True)  # Writes to G.nodes[n]['Si']
+>>> "Si" in G.nodes["a"]
+True
+
+See Also
+--------
+
+coherence.compute_coherence : Total network coherence :math:`C(t)`
+coherence.coherence_matrix : Coherence operator approximation :math:`W \approx \hat{C}`
+observers.kuramoto_order : Kuramoto order parameter for phase synchrony
+observers.phase_sync : Phase synchronization metrics
+
+Notes
+-----
+
+**Sensitivity analysis**: 
+
+The module can compute partial derivatives :math:`\frac{\partial \text{Si}}{\partial x}`
+for :math:`x \in \{\nu_{f,\text{norm}}, \text{disp}_\theta, |\Delta\text{NFR}|_{\text{norm}}\}`
+when `return_sensitivities=True` is passed to `compute_Si`.
+
+**Edge cases**:
+
+- If a node has no neighbors, :math:`\bar{\theta} = \theta` (zero dispersion)
+- If :math:`\nu_{f,\max} = 0`, normalization defaults to 0 (frozen network)
+- If :math:`\Delta\text{NFR}_{\max} = 0`, normalization defaults to 0 (equilibrium network)
 """
 
 from __future__ import annotations
