@@ -256,8 +256,8 @@ class Grammar20Benchmarks:
         detector = CycleDetector()
 
         for seq in REGENERATIVE_SEQUENCES:
-            # Find regenerator positions
-            regenerators = {"transition", "recursivity", "silence"}
+            # Find regenerator positions (per health_analyzer._REGENERATORS)
+            regenerators = {"transition", "recursivity"}
             regenerator_indices = [i for i, op in enumerate(seq) if op in regenerators]
 
             if not regenerator_indices:

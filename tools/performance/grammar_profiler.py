@@ -174,7 +174,7 @@ class Grammar20Profiler:
         print("  - Cycle detection...")
         cycle_detector = CycleDetector()
         cycle_times = []
-        regenerators = {"transition", "recursivity", "silence"}
+        regenerators = {"transition", "recursivity"}  # Silence is not a regenerator
         for seq in sequences:
             # Find regenerator positions
             regenerator_indices = [
@@ -214,56 +214,6 @@ class Grammar20Profiler:
         )
 
         print("Profiling complete!\n")
-        return self.report
-
-    def profile_by_sequence_length(
-        self, min_length: int = 3, max_length: int = 15, step: int = 2
-    ) -> PerformanceReport:
-        """Profile performance across different sequence lengths.
-
-        Parameters
-        ----------
-        min_length : int, default=3
-            Minimum sequence length to test
-        max_length : int, default=15
-            Maximum sequence length to test
-        step : int, default=2
-            Step size for length increments
-
-        Returns
-        -------
-        PerformanceReport
-            Performance report by sequence length
-        """
-        print("Profiling by sequence length...")
-
-        from tnfr.validation.sequence_generator import generate_valid_sequences
-
-        for length in range(min_length, max_length + 1, step):
-            print(f"  - Length {length}...")
-
-            # Generate test sequences of this length
-            sequences = list(generate_valid_sequences(length, count=10))
-
-            if not sequences:
-                continue
-
-            # Profile health analysis for this length
-            analyzer = SequenceHealthAnalyzer()
-            times = []
-            for seq in sequences:
-                for _ in range(50):  # Fewer iterations per length
-                    start = perf_counter()
-                    analyzer.analyze_health(seq)
-                    times.append(perf_counter() - start)
-
-            self.report.add_metric(
-                f"Health Analysis (length={length})",
-                times,
-                {"sequence_length": length, "test_sequences": len(sequences)},
-            )
-
-        print("Length profiling complete!\n")
         return self.report
 
     def identify_bottlenecks(self) -> List[Tuple[str, float]]:

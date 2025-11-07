@@ -61,7 +61,7 @@ The profiler complements the benchmark suite in `benchmarks/grammar_2_0_benchmar
 
 ## Performance Targets
 
-From issue #XXXX, Grammar 2.0 should meet these performance targets:
+From the performance optimization requirements, Grammar 2.0 should meet these performance targets:
 
 | Component | Target | Current | Status |
 |-----------|--------|---------|--------|

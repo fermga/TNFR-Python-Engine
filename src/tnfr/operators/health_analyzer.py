@@ -631,11 +631,6 @@ class SequenceHealthAnalyzer:
 
         return unresolved
 
-    def _assess_pattern_value(self, sequence: List[str]) -> float:
-        """Legacy method kept for backward compatibility - calls optimized version."""
-        unique_count = len(set(sequence))
-        return self._assess_pattern_value_optimized(sequence, unique_count)
-
     def _assess_pattern_value_optimized(
         self, sequence: List[str], unique_count: int
     ) -> float:
