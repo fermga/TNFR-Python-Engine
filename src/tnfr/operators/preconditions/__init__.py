@@ -177,6 +177,9 @@ def diagnose_coherence_readiness(G: "TNFRGraph", node: "NodeId") -> dict:
 
 def validate_dissonance(G: "TNFRGraph", node: "NodeId") -> None:
     """OZ - Dissonance requires vf > 0 to generate meaningful dissonance.
+    
+    Also detects bifurcation readiness when ∂²EPI/∂t² > τ, enabling
+    alternative structural paths (ZHIR, NUL, IL, THOL).
 
     Parameters
     ----------
@@ -189,12 +192,72 @@ def validate_dissonance(G: "TNFRGraph", node: "NodeId") -> None:
     ------
     OperatorPreconditionError
         If structural frequency is too low for dissonance to be effective
+        
+    Notes
+    -----
+    When bifurcation threshold is exceeded, sets node['_bifurcation_ready'] = True
+    and logs the event for telemetry. This enables downstream operators to
+    respond to OZ-induced structural acceleration.
     """
+    import logging
+    import warnings
+    
+    logger = logging.getLogger(__name__)
+    
     vf = _get_node_attr(G, node, ALIAS_VF)
     min_vf = float(G.graph.get("OZ_MIN_VF", 0.01))
     if vf < min_vf:
         raise OperatorPreconditionError(
             "Dissonance", f"Structural frequency too low (νf={vf:.3f} < {min_vf:.3f})"
+        )
+    
+    # Check bifurcation readiness using existing THOL infrastructure
+    # Reuse _compute_epi_acceleration from SelfOrganization
+    from ..definitions import SelfOrganization
+    
+    thol_instance = SelfOrganization()
+    d2_epi = thol_instance._compute_epi_acceleration(G, node)
+    
+    # Get bifurcation threshold
+    tau = float(G.graph.get("BIFURCATION_THRESHOLD_TAU", 0.5))
+    
+    # Store d²EPI for telemetry (using existing ALIAS_D2EPI)
+    from ...constants.aliases import ALIAS_D2EPI
+    from ...alias import set_attr
+    set_attr(G.nodes[node], ALIAS_D2EPI, d2_epi)
+    
+    # Check if bifurcation threshold exceeded
+    if d2_epi > tau:
+        # Mark node as bifurcation-ready
+        G.nodes[node]["_bifurcation_ready"] = True
+        logger.info(
+            f"Node {node}: bifurcation threshold exceeded "
+            f"(∂²EPI/∂t²={d2_epi:.3f} > τ={tau}). "
+            f"Alternative structural paths enabled."
+        )
+    else:
+        # Clear flag if previously set
+        G.nodes[node]["_bifurcation_ready"] = False
+    
+    # Additional checks for OZ preconditions
+    epi = _get_node_attr(G, node, ALIAS_EPI)
+    dnfr = _get_node_attr(G, node, ALIAS_DNFR)
+    
+    # Warn if EPI too low to withstand dissonance
+    min_epi = float(G.graph.get("OZ_MIN_EPI", 0.2))
+    if epi < min_epi:
+        raise OperatorPreconditionError(
+            "Dissonance",
+            f"EPI too low to withstand dissonance (EPI={epi:.3f} < {min_epi:.3f})"
+        )
+    
+    # Warn if ΔNFR already critically high
+    max_dnfr = float(G.graph.get("OZ_MAX_DNFR", 0.8))
+    if abs(dnfr) > max_dnfr:
+        warnings.warn(
+            f"Applying OZ with high ΔNFR (|ΔNFR|={abs(dnfr):.3f}) may cause collapse. "
+            f"Consider IL (Coherence) before OZ.",
+            stacklevel=3
         )
 
 
