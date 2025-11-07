@@ -21,13 +21,11 @@ from pathlib import Path
 from tnfr.dynamics.nbody import NBodySystem
 
 
-# Reproducibility
+# Global seed constant for documentation
 SEED = 42
-np.random.seed(SEED)
 
 # Output directory
 OUTPUT_DIR = Path("validation_outputs")
-OUTPUT_DIR.mkdir(exist_ok=True)
 
 
 def experiment_1_harmonic_mass_scaling():
@@ -458,6 +456,12 @@ def experiment_6_coherence_metrics():
 
 def main():
     """Run full validation suite."""
+    # Set reproducibility seed
+    np.random.seed(SEED)
+    
+    # Create output directory
+    OUTPUT_DIR.mkdir(exist_ok=True)
+    
     print("\n" + "="*70)
     print("TNFR N-BODY QUANTITATIVE VALIDATION SUITE")
     print("="*70)
