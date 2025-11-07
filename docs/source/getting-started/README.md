@@ -98,7 +98,7 @@ print(f"Network coherence: {C_t:.3f}")
 ### 🎓 **For Advanced Users**
 1. **[Performance Optimization](../advanced/PERFORMANCE_OPTIMIZATION.md)** - Speed up your networks
 2. **[Math Backends](math-backends.md)** - GPU acceleration
-3. **[Theory Deep Dive](../advanced/THEORY_DEEP_DIVE.md)** - Mathematical foundations
+3. **[Mathematical Foundations](../theory/mathematical_foundations.md)** - ⭐ **CANONICAL MATH SOURCE** - Complete derivation
 
 ## Learning Paths
 
@@ -114,7 +114,7 @@ Quickstart → TNFR Concepts → User Guide → Examples → API Reference
 
 ### Path 3: Theory-First (2-3 hours)
 ```
-TNFR Concepts → Theory Deep Dive → Mathematical Foundations → Examples
+TNFR Concepts → Mathematical Foundations → Math Notebooks → Examples
 ```
 
 ## Key Resources

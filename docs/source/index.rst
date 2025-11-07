@@ -31,7 +31,9 @@ Navigation Hub
 🔧 **For Developers** (Advanced Topics)
    ➤ :doc:`Performance Optimization <advanced/PERFORMANCE_OPTIMIZATION>`
    
-   ➤ :doc:`Theory Deep Dive <advanced/THEORY_DEEP_DIVE>`
+   ➤ :doc:`Mathematical Foundations <theory/mathematical_foundations>` ⭐ **CANONICAL MATH SOURCE**
+   
+   ➤ :doc:`Theory Deep Dive <advanced/THEORY_DEEP_DIVE>` (deprecated)
    
    ➤ :doc:`API Reference <api/overview>`
 
@@ -81,13 +83,14 @@ Navigation Hub
    
    Performance Optimization <advanced/PERFORMANCE_OPTIMIZATION>
    Theory Deep Dive <advanced/THEORY_DEEP_DIVE>
-   Mathematical Foundations <foundations>
+   Foundations (Implementation) <foundations>
    How to Reproduce Results <how_to_reproduce_results>
 
 .. toctree::
    :maxdepth: 1
    :caption: Mathematical Foundations
 
+   ⭐ Unified Mathematical Foundations <theory/mathematical_foundations>
    Theory Overview <theory/00_overview>
 
 .. toctree::

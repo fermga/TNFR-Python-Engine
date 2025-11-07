@@ -896,4 +896,4 @@ In these cases:
 
 ---
 
-**Next**: Explore [Theory Deep Dive](THEORY_DEEP_DIVE.md) for mathematical foundations →
+**Next**: Explore [Mathematical Foundations](../theory/mathematical_foundations.md) for rigorous mathematical derivations →
