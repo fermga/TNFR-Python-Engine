@@ -67,6 +67,7 @@ from ..types import GlyphCode
 from ..utils import get_numpy
 from . import canonical, coordination, dnfr, integrators, metabolism
 from .adaptation import adapt_vf_by_coherence
+from .bifurcation import get_bifurcation_paths
 from .aliases import (
     ALIAS_D2EPI,
     ALIAS_DNFR,
@@ -152,6 +153,8 @@ __all__ = (
     "dnfr",
     "integrators",
     "metabolism",
+    # Bifurcation dynamics
+    "get_bifurcation_paths",
     "ALIAS_D2EPI",
     "ALIAS_DNFR",
     "ALIAS_DSI",
@@ -220,4 +223,5 @@ __all__ = (
     "StructuralFeedbackLoop",
     "AdaptiveSequenceSelector",
     "StructuralHomeostasis",
+    "get_bifurcation_paths",
 )
