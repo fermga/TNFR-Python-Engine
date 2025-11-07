@@ -1419,7 +1419,16 @@ class SelfOrganization(Operator):
 
     TNFR Context: Self-organization (THOL) embodies emergence - when ∂²EPI/∂t² > τ, the
     system bifurcates and generates new sub-EPIs that organize coherently without external
-    direction. THOL is the engine of complexity and novelty in TNFR.
+    direction. THOL is the engine of complexity and novelty in TNFR. This is not just
+    autoorganization but **structural metabolism**: T'HOL reorganizes experience into
+    structure without external instruction.
+
+    **Canonical Characteristics:**
+
+    - **Bifurcation nodal**: When ∂²EPI/∂t² > τ, spawns new sub-EPIs
+    - **Autonomous reorganization**: No external control, self-directed
+    - **Vibrational metabolism**: Digests external experience into internal structure
+    - **Complexity emergence**: Engine of novelty and evolution in TNFR
 
     Use Cases: Emergence processes, bifurcation events, creative reorganization, complex
     system evolution, spontaneous order generation.
@@ -1456,6 +1465,127 @@ class SelfOrganization(Operator):
     __slots__ = ()
     name: ClassVar[str] = SELF_ORGANIZATION
     glyph: ClassVar[Glyph] = Glyph.THOL
+
+    def __call__(self, G: TNFRGraph, node: Any, **kw: Any) -> None:
+        """Apply T'HOL with bifurcation logic.
+
+        If ∂²EPI/∂t² > τ, generates sub-EPIs through bifurcation.
+
+        Parameters
+        ----------
+        G : TNFRGraph
+            Graph storing TNFR nodes
+        node : Any
+            Target node identifier
+        **kw : Any
+            Additional parameters including:
+            - tau: Bifurcation threshold (default from graph config or 0.1)
+            - validate_preconditions: Enable precondition checks (default True)
+            - collect_metrics: Enable metrics collection (default False)
+        """
+        # Compute structural acceleration before base operator
+        d2_epi = self._compute_epi_acceleration(G, node)
+
+        # Get bifurcation threshold (tau) from kwargs or graph config
+        tau = kw.get("tau")
+        if tau is None:
+            tau = float(G.graph.get("THOL_BIFURCATION_THRESHOLD", 0.1))
+
+        # Apply base operator (includes glyph application and metrics)
+        super().__call__(G, node, **kw)
+
+        # Bifurcate if acceleration exceeds threshold
+        if d2_epi > tau:
+            self._spawn_sub_epi(G, node, d2_epi=d2_epi, tau=tau)
+
+    def _compute_epi_acceleration(self, G: TNFRGraph, node: Any) -> float:
+        """Calculate ∂²EPI/∂t² from node's EPI history.
+
+        Uses finite difference approximation: d²EPI/dt² ≈ (ΔEPI_t - ΔEPI_{t-1})
+
+        Parameters
+        ----------
+        G : TNFRGraph
+            Graph containing the node
+        node : Any
+            Node identifier
+
+        Returns
+        -------
+        float
+            Magnitude of EPI acceleration (always non-negative)
+        """
+        from ..alias import get_attr
+        from ..constants.aliases import ALIAS_EPI
+
+        # Get EPI history (maintained by node for temporal analysis)
+        history = G.nodes[node].get("epi_history", [])
+
+        # Need at least 3 points for second derivative
+        if len(history) < 3:
+            return 0.0
+
+        # Finite difference: d²EPI/dt² ≈ (EPI_t - 2*EPI_{t-1} + EPI_{t-2})
+        epi_t = float(history[-1])
+        epi_t1 = float(history[-2])
+        epi_t2 = float(history[-3])
+
+        d2_epi = epi_t - 2.0 * epi_t1 + epi_t2
+
+        return abs(d2_epi)
+
+    def _spawn_sub_epi(
+        self, G: TNFRGraph, node: Any, d2_epi: float, tau: float
+    ) -> None:
+        """Generate sub-EPI through bifurcation.
+
+        When acceleration exceeds threshold, creates nested sub-structure
+        that inherits properties from parent while maintaining operational
+        fractality.
+
+        Parameters
+        ----------
+        G : TNFRGraph
+            Graph containing the node
+        node : Any
+            Node identifier
+        d2_epi : float
+            Current EPI acceleration
+        tau : float
+            Bifurcation threshold that was exceeded
+        """
+        from ..alias import get_attr, set_attr
+        from ..constants.aliases import ALIAS_EPI, ALIAS_VF
+
+        # Get current node state
+        parent_epi = float(get_attr(G.nodes[node], ALIAS_EPI, 0.0))
+        parent_vf = float(get_attr(G.nodes[node], ALIAS_VF, 1.0))
+
+        # Calculate sub-EPI magnitude (proportional to parent but smaller)
+        # Scaling factor: 0.25 (25% of parent) is canonical for first-order bifurcation
+        sub_epi_value = parent_epi * 0.25
+
+        # Store sub-EPI in node's sub_epis list
+        sub_epis = G.nodes[node].get("sub_epis", [])
+
+        # Get current timestamp from glyph history length
+        timestamp = len(G.nodes[node].get("glyph_history", []))
+
+        sub_epis.append(
+            {
+                "epi": sub_epi_value,
+                "vf": parent_vf,
+                "timestamp": timestamp,
+                "d2_epi": d2_epi,
+                "tau": tau,
+            }
+        )
+        G.nodes[node]["sub_epis"] = sub_epis
+
+        # Increment parent EPI by emergence contribution (10% of sub-EPI)
+        # This reflects that bifurcation increases total structural complexity
+        new_epi = parent_epi + sub_epi_value * 0.1
+        set_attr(G.nodes[node], ALIAS_EPI, new_epi)
 
     def _validate_preconditions(self, G: TNFRGraph, node: Any) -> None:
         """Validate THOL-specific preconditions."""

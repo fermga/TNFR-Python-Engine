@@ -19,6 +19,12 @@ from .diagnosis import (
     dissonance_events,
     register_diagnosis_callbacks,
 )
+from .emergence import (
+    compute_bifurcation_rate,
+    compute_emergence_index,
+    compute_metabolic_efficiency,
+    compute_structural_complexity,
+)
 from .export import export_metrics
 from .learning_metrics import (
     compute_consolidation_index,
@@ -58,4 +64,8 @@ __all__ = (
     "compute_consolidation_index",
     "compute_learning_efficiency",
     "glyph_history_to_operator_names",
+    "compute_structural_complexity",
+    "compute_bifurcation_rate",
+    "compute_metabolic_efficiency",
+    "compute_emergence_index",
 )

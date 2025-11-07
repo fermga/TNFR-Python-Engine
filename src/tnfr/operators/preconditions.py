@@ -276,7 +276,10 @@ def validate_contraction(G: TNFRGraph, node: NodeId) -> None:
 
 
 def validate_self_organization(G: TNFRGraph, node: NodeId) -> None:
-    """THOL - Self-organization requires minimum EPI and d2EPI.
+    """THOL - Self-organization requires minimum EPI, positive ΔNFR, and connectivity.
+
+    T'HOL implements structural metabolism and bifurcation. Preconditions ensure
+    sufficient structure and reorganization pressure for self-organization.
 
     Parameters
     ----------
@@ -288,14 +291,37 @@ def validate_self_organization(G: TNFRGraph, node: NodeId) -> None:
     Raises
     ------
     OperatorPreconditionError
-        If EPI is too low for self-organization to spawn nested structures
+        If EPI is too low for bifurcation, or if ΔNFR is non-positive
+
+    Warnings
+    --------
+    Warns if node is isolated - bifurcation may not propagate through network
     """
+    import warnings
+
     epi = _get_node_attr(G, node, ALIAS_EPI)
-    min_epi = float(G.graph.get("THOL_MIN_EPI", 0.3))
+    dnfr = _get_node_attr(G, node, ALIAS_DNFR)
+
+    # EPI must be sufficient for bifurcation
+    min_epi = float(G.graph.get("THOL_MIN_EPI", 0.2))
     if epi < min_epi:
         raise OperatorPreconditionError(
             "Self-organization",
-            f"EPI too low for nested structures (EPI={epi:.3f} < {min_epi:.3f})",
+            f"EPI too low for bifurcation (EPI={epi:.3f} < {min_epi:.3f})",
+        )
+
+    # ΔNFR must be positive (reorganization pressure required)
+    if dnfr <= 0:
+        raise OperatorPreconditionError(
+            "Self-organization",
+            f"ΔNFR non-positive, no reorganization pressure (ΔNFR={dnfr:.3f})",
+        )
+
+    # Warn if node is isolated (bifurcation won't propagate)
+    if G.degree(node) == 0:
+        warnings.warn(
+            f"Node {node} is isolated - bifurcation may not propagate through network",
+            stacklevel=3,
         )
 
 
