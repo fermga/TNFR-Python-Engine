@@ -43,6 +43,7 @@ __all__ = [
     "NetworkResults",
     "TNFRTemplates",
     "TNFRExperimentBuilder",
+    "TNFRAdaptiveSystem",
     # Utilities
     "compare_networks",
     "compute_network_statistics",
@@ -73,6 +74,10 @@ def __getattr__(name: str):
         from .builders import TNFRExperimentBuilder
 
         return TNFRExperimentBuilder
+    elif name == "TNFRAdaptiveSystem":
+        from .adaptive_system import TNFRAdaptiveSystem
+
+        return TNFRAdaptiveSystem
     elif name in [
         "compare_networks",
         "compute_network_statistics",
