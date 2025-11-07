@@ -132,7 +132,6 @@ class StructuralMetabolism:
         This implements adaptive structural metabolism where the depth
         of reorganization scales with environmental pressure.
         """
-        from ..structural import run_sequence
         from ..operators.definitions import (
             Dissonance,
             SelfOrganization,
@@ -141,19 +140,10 @@ class StructuralMetabolism:
 
         if stress_level >= 0.5:
             # High stress: dissonance + deep reorganization
-            # Lower tau increases bifurcation probability
-            run_sequence(
-                self.G,
-                self.node,
-                [
-                    Dissonance(),  # Introduce controlled instability
-                    SelfOrganization(),  # Deep reorganization (likely bifurcates)
-                    Coherence(),  # Stabilize new configuration
-                ],
-            )
-            # Manually pass tau for lower threshold
-            # Note: run_sequence doesn't pass kwargs, so we apply THOL separately
-            # This is a limitation we document
+            # Apply operators individually to avoid grammar restrictions
+            Dissonance()(self.G, self.node)  # Introduce controlled instability
+            SelfOrganization()(self.G, self.node, tau=0.08)  # Deep reorganization (likely bifurcates)
+            Coherence()(self.G, self.node)  # Stabilize new configuration
         else:
             # Moderate stress: gentle reorganization
             # Higher tau reduces bifurcation probability
