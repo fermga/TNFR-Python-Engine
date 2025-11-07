@@ -1191,3 +1191,12 @@ This document provides:
 **Author**: TNFR Python Engine Team  
 **Last Updated**: 2025-11-07  
 **License**: MIT (see repository LICENSE.md)
+
+---
+
+## Related Documentation
+
+- ← Previous: [Euler-Lagrange Correspondence](08_classical_mechanics_euler_lagrange.md) — Variational formulation
+- ← Start: [Classical Mechanics from TNFR](07_emergence_classical_mechanics.md) — Newton's laws derivation
+- ↑ Back to: [Theory Index](README.md)
+- ⭐ Foundation: [Mathematical Foundations](mathematical_foundations.md) — Complete TNFR formalism

@@ -1,0 +1,10 @@
+- Added classical mechanics emergence documentation series demonstrating how observable physics emerges from TNFR coherence dynamics.
+- Introduced `docs/source/theory/07_emergence_classical_mechanics.md` with complete derivation of Newton's laws from nodal equation.
+- Added `docs/source/theory/08_classical_mechanics_euler_lagrange.md` showing Euler-Lagrange correspondence and variational formulation.
+- Included `docs/source/theory/09_classical_mechanics_numerical_validation.md` with six computational validation experiments.
+- Created `docs/source/theory/README.md` navigation guide for theory documentation with learning paths.
+- Updated `docs/source/index.rst` with new "Classical Mechanics Emergence" section in table of contents.
+- Enhanced `README.md` with classical mechanics emergence section explaining mass (`m = 1/νf`), force (`F = -∇U`), and conservation laws.
+- Extended `docs/DOCUMENTATION_INDEX.md` to include classical mechanics documentation entries.
+- Augmented `examples/README.md` with classical mechanics validation section referencing computational experiments.
+- Added cross-links between all classical mechanics documents for easy navigation.

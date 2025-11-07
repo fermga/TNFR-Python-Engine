@@ -91,6 +91,14 @@ Navigation Hub
 
 .. toctree::
    :maxdepth: 1
+   :caption: Classical Mechanics Emergence
+
+   Classical mechanics from TNFR <theory/07_emergence_classical_mechanics>
+   Euler-Lagrange correspondence <theory/08_classical_mechanics_euler_lagrange>
+   Numerical validation <theory/09_classical_mechanics_numerical_validation>
+
+.. toctree::
+   :maxdepth: 1
    :caption: Interactive Theory Notebooks
 
    Structural frequency primer <theory/01_structural_frequency_primer>
