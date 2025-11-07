@@ -40,6 +40,7 @@ ALIASES: dict[str, tuple[str, ...]] = {
     "DVF": ("dνf_dt", "dvf_dt", "dnu_dt", "dvf"),
     "D2VF": ("d2νf_dt2", "d2vf_dt2", "d2nu_dt2", "B"),
     "DSI": ("δSi", "delta_Si", "dSi"),
+    "EMISSION_TIMESTAMP": ("emission_timestamp", "emission_t", "t_al"),
 }
 
 
