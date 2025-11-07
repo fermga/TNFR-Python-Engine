@@ -21,6 +21,7 @@ from ..types import Glyph
 
 __all__ = [
     "get_bifurcation_paths",
+    "compute_bifurcation_score",
 ]
 
 
@@ -104,3 +105,128 @@ def get_bifurcation_paths(G: "TNFRGraph", node: "NodeId") -> list["Glyph"]:
         paths.append(Glyph.THOL)
     
     return paths
+
+
+def compute_bifurcation_score(
+    d2epi: float,
+    dnfr: float,
+    vf: float,
+    epi: float,
+    tau: float = 0.5,
+) -> float:
+    """Compute quantitative bifurcation potential [0,1].
+    
+    Integrates multiple structural indicators to assess bifurcation readiness.
+    According to TNFR canonical theory (§2.3.3, R4), bifurcation occurs when
+    ∂²EPI/∂t² > τ (acceleration exceeds threshold). This function extends that
+    binary condition into a continuous score that accounts for multiple factors.
+    
+    Parameters
+    ----------
+    d2epi : float
+        Structural acceleration (∂²EPI/∂t²). Primary indicator of bifurcation.
+        When |d2epi| > τ, the system enters a bifurcation state enabling
+        multiple reorganization trajectories.
+    dnfr : float
+        Internal reorganization operator (ΔNFR). Magnitude indicates instability
+        level. Higher |ΔNFR| means stronger reorganization pressure.
+    vf : float
+        Structural frequency (νf) in Hz_str units. Determines capacity to respond
+        to bifurcation. Higher νf enables faster reorganization along new paths.
+    epi : float
+        Primary Information Structure. Provides structural substrate for
+        bifurcation. Higher EPI indicates more material to reorganize.
+    tau : float, default 0.5
+        Bifurcation acceleration threshold. When |d2epi| > tau, bifurcation
+        becomes active. Default 0.5 is the canonical TNFR threshold.
+        
+    Returns
+    -------
+    float
+        Bifurcation score in range [0.0, 1.0]:
+        - 0.0 = no bifurcation potential (stable)
+        - 0.5 = bifurcation threshold (critical)
+        - 1.0 = maximal bifurcation readiness (multiple paths viable)
+        
+    Notes
+    -----
+    The bifurcation score is a weighted combination of four factors:
+    
+    1. **Acceleration factor** (40%): |∂²EPI/∂t²| / τ
+       Primary indicator. Measures how close the system is to or beyond
+       the bifurcation threshold.
+       
+    2. **Instability factor** (30%): |ΔNFR|
+       Secondary indicator. Measures reorganization pressure that drives
+       bifurcation exploration.
+       
+    3. **Capacity factor** (20%): νf / 2.0
+       Measures structural reorganization capacity. Higher νf enables faster
+       response to bifurcation opportunities.
+       
+    4. **Substrate factor** (10%): EPI / 0.8
+       Measures available structural material. Higher EPI provides more
+       degrees of freedom for bifurcation paths.
+       
+    Formula:
+        score = 0.4 * accel + 0.3 * instability + 0.2 * capacity + 0.1 * substrate
+        
+    All factors are normalized to [0, 1] and clipped before combination.
+    
+    Examples
+    --------
+    >>> from tnfr.dynamics.bifurcation import compute_bifurcation_score
+    >>> 
+    >>> # Low bifurcation potential (stable state)
+    >>> score = compute_bifurcation_score(
+    ...     d2epi=0.1,  # Low acceleration
+    ...     dnfr=0.05,  # Low instability
+    ...     vf=0.5,     # Moderate capacity
+    ...     epi=0.3,    # Low substrate
+    ... )
+    >>> assert score < 0.3  # Low score
+    >>> 
+    >>> # High bifurcation potential (critical state)
+    >>> score = compute_bifurcation_score(
+    ...     d2epi=0.7,  # High acceleration (> tau)
+    ...     dnfr=0.6,   # High instability
+    ...     vf=1.8,     # High capacity
+    ...     epi=0.7,    # High substrate
+    ... )
+    >>> assert score > 0.7  # High score
+    
+    See Also
+    --------
+    get_bifurcation_paths : Determine viable operators after bifurcation
+    tnfr.operators.metrics.dissonance_metrics : Uses score in OZ metrics
+    """
+    from ..utils import get_numpy
+    
+    np = get_numpy()
+    
+    # 1. Acceleration factor (primary indicator)
+    # Normalized by tau threshold
+    accel_factor = min(abs(d2epi) / tau, 1.0) if tau > 0 else 0.0
+    
+    # 2. Instability factor (secondary indicator)
+    # Already dimensionless, clip to [0, 1]
+    instability_factor = min(abs(dnfr), 1.0)
+    
+    # 3. Capacity factor (reorganization capability)
+    # Normalize by 2.0 (typical high νf value)
+    capacity_factor = min(vf / 2.0, 1.0) if vf >= 0 else 0.0
+    
+    # 4. Substrate factor (structural material available)
+    # Normalize by 0.8 (typical high EPI value)
+    substrate_factor = min(epi / 0.8, 1.0) if epi >= 0 else 0.0
+    
+    # Weighted combination (percentages sum to 100%)
+    score = (
+        0.4 * accel_factor +      # 40% - primary
+        0.3 * instability_factor + # 30% - secondary
+        0.2 * capacity_factor +    # 20% - capability
+        0.1 * substrate_factor     # 10% - material
+    )
+    
+    # Ensure result is in [0, 1] range
+    return float(np.clip(score, 0.0, 1.0))
