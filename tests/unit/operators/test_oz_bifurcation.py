@@ -24,11 +24,14 @@ class TestOZBifurcationDetection:
         """OZ without EPI history does not trigger bifurcation."""
         G, node = create_nfr("test", epi=0.5, vf=1.0)
         
+        # Enable precondition validation
+        G.graph["VALIDATE_OPERATOR_PRECONDITIONS"] = True
+        
         # Set positive ΔNFR for precondition
         G.nodes[node][DNFR_PRIMARY] = 0.1
         
         # Apply OZ with precondition validation
-        Dissonance()(G, node, validate_preconditions=True)
+        Dissonance()(G, node)
         
         # Verify no bifurcation flag set
         assert not G.nodes[node].get("_bifurcation_ready", False)
@@ -37,13 +40,16 @@ class TestOZBifurcationDetection:
         """OZ with < 3 history points does not trigger bifurcation."""
         G, node = create_nfr("test", epi=0.5, vf=1.0)
         
+        # Enable precondition validation
+        G.graph["VALIDATE_OPERATOR_PRECONDITIONS"] = True
+        
         # Set positive ΔNFR
         G.nodes[node][DNFR_PRIMARY] = 0.1
         
         # Only 2 history points (need 3 for second derivative)
         G.nodes[node]["epi_history"] = [0.3, 0.4]
         
-        Dissonance()(G, node, validate_preconditions=True)
+        Dissonance()(G, node)
         
         # Verify no bifurcation detected
         assert not G.nodes[node].get("_bifurcation_ready", False)
@@ -51,6 +57,9 @@ class TestOZBifurcationDetection:
     def test_oz_no_bifurcation_below_threshold(self):
         """OZ with low acceleration (< τ) does not trigger bifurcation."""
         G, node = create_nfr("test", epi=0.5, vf=1.0)
+        
+        # Enable precondition validation
+        G.graph["VALIDATE_OPERATOR_PRECONDITIONS"] = True
         
         # Set positive ΔNFR
         G.nodes[node][DNFR_PRIMARY] = 0.1
@@ -62,7 +71,7 @@ class TestOZBifurcationDetection:
         # High threshold
         G.graph["BIFURCATION_THRESHOLD_TAU"] = 0.8
         
-        Dissonance()(G, node, validate_preconditions=True)
+        Dissonance()(G, node)
         
         # Verify no bifurcation (acceleration too low)
         assert not G.nodes[node].get("_bifurcation_ready", False)
@@ -70,6 +79,9 @@ class TestOZBifurcationDetection:
     def test_oz_bifurcation_above_threshold(self):
         """OZ with high acceleration (> τ) triggers bifurcation."""
         G, node = create_nfr("test", epi=0.5, vf=1.0)
+        
+        # Enable precondition validation
+        G.graph["VALIDATE_OPERATOR_PRECONDITIONS"] = True
         
         # Set positive ΔNFR
         G.nodes[node][DNFR_PRIMARY] = 0.2
@@ -81,7 +93,7 @@ class TestOZBifurcationDetection:
         # Low threshold to trigger bifurcation
         G.graph["BIFURCATION_THRESHOLD_TAU"] = 0.08
         
-        Dissonance()(G, node, validate_preconditions=True)
+        Dissonance()(G, node)
         
         # Verify bifurcation detected
         assert G.nodes[node].get("_bifurcation_ready", False)
@@ -94,11 +106,14 @@ class TestOZBifurcationDetection:
         """OZ stores ∂²EPI/∂t² for telemetry."""
         G, node = create_nfr("test", epi=0.5, vf=1.0)
         
+        # Enable precondition validation
+        G.graph["VALIDATE_OPERATOR_PRECONDITIONS"] = True
+        
         G.nodes[node][DNFR_PRIMARY] = 0.2
         G.nodes[node]["epi_history"] = [0.3, 0.45, 0.7]
         G.graph["BIFURCATION_THRESHOLD_TAU"] = 0.08
         
-        Dissonance()(G, node, validate_preconditions=True)
+        Dissonance()(G, node)
         
         # Verify d²EPI stored using canonical alias
         d2_epi = G.nodes[node].get(ALIAS_D2EPI[0])
@@ -110,16 +125,22 @@ class TestOZBifurcationDetection:
         """OZ requires minimum EPI to withstand dissonance."""
         G, node = create_nfr("test", epi=0.1, vf=1.0)
         
+        # Enable precondition validation
+        G.graph["VALIDATE_OPERATOR_PRECONDITIONS"] = True
+        
         # Set minimum EPI threshold
         G.graph["OZ_MIN_EPI"] = 0.2
         
         # Should raise precondition error
         with pytest.raises(OperatorPreconditionError, match="EPI too low"):
-            Dissonance()(G, node, validate_preconditions=True)
+            Dissonance()(G, node)
 
     def test_oz_precondition_warns_high_dnfr(self):
         """OZ warns when ΔNFR already critically high."""
         G, node = create_nfr("test", epi=0.5, vf=1.0)
+        
+        # Enable precondition validation
+        G.graph["VALIDATE_OPERATOR_PRECONDITIONS"] = True
         
         # Set critically high ΔNFR
         G.nodes[node][DNFR_PRIMARY] = 0.85
@@ -127,7 +148,7 @@ class TestOZBifurcationDetection:
         
         # Should warn but not raise
         with pytest.warns(UserWarning, match="high ΔNFR"):
-            Dissonance()(G, node, validate_preconditions=True)
+            Dissonance()(G, node)
 
 
 class TestBifurcationPaths:
@@ -240,13 +261,16 @@ class TestOZBifurcationIntegration:
         """OZ → ZHIR bifurcation path (mutation)."""
         G, node = create_nfr("oz_zhir", epi=0.6, vf=1.2)
         
+        # Enable precondition validation
+        G.graph["VALIDATE_OPERATOR_PRECONDITIONS"] = True
+        
         # Set up bifurcation conditions
         G.nodes[node][DNFR_PRIMARY] = 0.2
         G.nodes[node]["epi_history"] = [0.4, 0.5, 0.7]
         G.graph["BIFURCATION_THRESHOLD_TAU"] = 0.08
         
-        # Apply OZ to create bifurcation
-        run_sequence(G, node, [Dissonance()], validate_preconditions=True)
+        # Apply OZ directly (not via run_sequence, to avoid grammar validation)
+        Dissonance()(G, node)
         
         # Verify bifurcation detected
         assert G.nodes[node].get("_bifurcation_ready", False)
@@ -256,19 +280,22 @@ class TestOZBifurcationIntegration:
         assert Glyph.ZHIR in paths
         
         # ZHIR should execute successfully
-        run_sequence(G, node, [Mutation()])  # Should not raise
+        Mutation()(G, node)  # Should not raise
 
     def test_oz_to_nul_sequence(self):
         """OZ → NUL bifurcation path (collapse to latency)."""
         G, node = create_nfr("oz_nul", epi=0.3, vf=0.8)
+        
+        # Enable precondition validation
+        G.graph["VALIDATE_OPERATOR_PRECONDITIONS"] = True
         
         # Set up bifurcation conditions
         G.nodes[node][DNFR_PRIMARY] = 0.2
         G.nodes[node]["epi_history"] = [0.2, 0.25, 0.35]
         G.graph["BIFURCATION_THRESHOLD_TAU"] = 0.04
         
-        # Apply OZ
-        run_sequence(G, node, [Dissonance()], validate_preconditions=True)
+        # Apply OZ directly
+        Dissonance()(G, node)
         
         # Verify bifurcation
         assert G.nodes[node].get("_bifurcation_ready", False)
@@ -280,8 +307,8 @@ class TestOZBifurcationIntegration:
         # Record EPI before
         epi_before = G.nodes[node][EPI_PRIMARY]
         
-        # Apply NUL
-        run_sequence(G, node, [Contraction()])
+        # Apply NUL directly
+        Contraction()(G, node)
         
         # Verify contraction occurred
         epi_after = G.nodes[node][EPI_PRIMARY]
@@ -292,13 +319,16 @@ class TestOZBifurcationIntegration:
         """OZ → IL bifurcation path (stabilization)."""
         G, node = create_nfr("oz_il", epi=0.5, vf=1.0)
         
+        # Enable precondition validation
+        G.graph["VALIDATE_OPERATOR_PRECONDITIONS"] = True
+        
         # Set up bifurcation
         G.nodes[node][DNFR_PRIMARY] = 0.2
         G.nodes[node]["epi_history"] = [0.3, 0.4, 0.6]
         G.graph["BIFURCATION_THRESHOLD_TAU"] = 0.08
         
-        # Apply OZ
-        run_sequence(G, node, [Dissonance()], validate_preconditions=True)
+        # Apply OZ directly
+        Dissonance()(G, node)
         
         # IL always viable
         paths = get_bifurcation_paths(G, node)
@@ -307,8 +337,8 @@ class TestOZBifurcationIntegration:
         # Record ΔNFR before
         dnfr_before = abs(G.nodes[node][DNFR_PRIMARY])
         
-        # Apply IL to resolve dissonance
-        run_sequence(G, node, [Coherence()])
+        # Apply IL directly to resolve dissonance
+        Coherence()(G, node)
         
         # ΔNFR should reduce (IL effect)
         dnfr_after = abs(G.nodes[node][DNFR_PRIMARY])
@@ -317,6 +347,9 @@ class TestOZBifurcationIntegration:
     def test_oz_to_thol_sequence(self):
         """OZ → THOL bifurcation path (self-organization)."""
         G, node = create_nfr("oz_thol", epi=0.5, vf=1.0)
+        
+        # Enable precondition validation
+        G.graph["VALIDATE_OPERATOR_PRECONDITIONS"] = True
         
         # Add neighbors
         G.add_node("n1", **{EPI_PRIMARY: 0.4, VF_PRIMARY: 1.0})
@@ -330,15 +363,15 @@ class TestOZBifurcationIntegration:
         G.graph["BIFURCATION_THRESHOLD_TAU"] = 0.08
         G.graph["THOL_BIFURCATION_THRESHOLD"] = 0.08
         
-        # Apply OZ
-        run_sequence(G, node, [Dissonance()], validate_preconditions=True)
+        # Apply OZ directly
+        Dissonance()(G, node)
         
         # THOL should be viable
         paths = get_bifurcation_paths(G, node)
         assert Glyph.THOL in paths
         
-        # Apply THOL with same tau for sub-EPI spawning
-        run_sequence(G, node, [SelfOrganization()], tau=0.08)
+        # Apply THOL directly with same tau for sub-EPI spawning
+        SelfOrganization()(G, node, tau=0.08)
         
         # THOL may spawn sub-EPIs if history maintained
         # (depends on THOL implementation and EPI history state)
@@ -368,18 +401,21 @@ class TestBifurcationTelemetry:
         """_bifurcation_ready flag cleared when acceleration drops below τ."""
         G, node = create_nfr("test", epi=0.5, vf=1.0)
         
+        # Enable precondition validation
+        G.graph["VALIDATE_OPERATOR_PRECONDITIONS"] = True
+        
         # First: set bifurcation
         G.nodes[node][DNFR_PRIMARY] = 0.2
         G.nodes[node]["epi_history"] = [0.3, 0.45, 0.7]
         G.graph["BIFURCATION_THRESHOLD_TAU"] = 0.08
         
-        Dissonance()(G, node, validate_preconditions=True)
+        Dissonance()(G, node)
         assert G.nodes[node].get("_bifurcation_ready", False)
         
         # Second: drop below threshold
         G.nodes[node]["epi_history"] = [0.49, 0.50, 0.51]  # Minimal acceleration
         
-        Dissonance()(G, node, validate_preconditions=True)
+        Dissonance()(G, node)
         assert not G.nodes[node].get("_bifurcation_ready", False)
 
 
