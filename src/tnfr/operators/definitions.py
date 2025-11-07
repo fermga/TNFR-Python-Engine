@@ -11,6 +11,7 @@ TNFR 2.0, so downstream code must import these classes directly.
 
 from __future__ import annotations
 
+import warnings
 from typing import Any, ClassVar
 
 from ..config.operator_names import (
@@ -577,9 +578,29 @@ class Reception(Operator):
             Identifier or object representing the target node within ``G``.
         **kw : Any
             Additional keyword arguments:
-            - track_sources (bool): Enable source detection (default: True)
+            - track_sources (bool): Enable source detection (default: True).
+              When enabled, automatically detects emission sources before
+              grammar execution. This is a non-breaking enhancement - existing
+              code continues to work, with source detection adding observability
+              without changing operational semantics.
             - max_distance (int): Maximum network distance for source search (default: 2)
             - Other args forwarded to grammar layer
+
+        Notes
+        -----
+        **Source Detection Behavior (New in This Release)**:
+
+        By default, source detection is enabled (``track_sources=True``). This
+        is a non-breaking change because:
+
+        1. Detection happens BEFORE grammar execution (no operational changes)
+        2. Only adds metadata to nodes (``_reception_sources``)
+        3. Warnings are informational, not errors
+        4. Can be disabled with ``track_sources=False``
+
+        Existing code will see warnings if nodes have no emission sources,
+        which is informational and helps identify network topology issues.
+        To suppress warnings in isolated-node scenarios, set ``track_sources=False``.
         """
         # Detect emission sources BEFORE applying reception
         if kw.get("track_sources", True):
@@ -593,8 +614,6 @@ class Reception(Operator):
 
             # Warn if no compatible sources found
             if not sources:
-                import warnings
-
                 warnings.warn(
                     f"EN warning: Node '{node}' has no detectable emission sources. "
                     f"Reception may not integrate external coherence effectively.",

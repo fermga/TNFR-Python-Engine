@@ -26,9 +26,18 @@ if TYPE_CHECKING:
 
 import math
 
+try:
+    import networkx as nx
+except ImportError:
+    nx = None  # Fallback to neighbor-only detection if networkx unavailable
+
 __all__ = [
     "detect_emission_sources",
 ]
+
+# Active emission threshold: minimum EPI for node to be considered emission source
+# Below this threshold, structural form is too weak to contribute coherence
+ACTIVE_EMISSION_THRESHOLD = 0.2
 
 
 def detect_emission_sources(
@@ -132,13 +141,6 @@ def detect_emission_sources(
 
     sources = []
 
-    # Import networkx for path length calculation
-    try:
-        import networkx as nx
-    except ImportError:
-        # If networkx not available, fall back to immediate neighbors only
-        nx = None
-
     # Scan network for potential sources
     for source in G.nodes():
         if source == receiver_node:
@@ -159,7 +161,7 @@ def detect_emission_sources(
 
         # Check if source is active (has coherent EPI)
         source_epi = float(get_attr(G.nodes[source], ALIAS_EPI, 0.0))
-        if source_epi < 0.2:  # Active emission threshold
+        if source_epi < ACTIVE_EMISSION_THRESHOLD:
             continue
 
         # Calculate phase compatibility
