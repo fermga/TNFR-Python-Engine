@@ -799,6 +799,61 @@ class Coherence(Operator):
     name: ClassVar[str] = COHERENCE
     glyph: ClassVar[Glyph] = Glyph.IL
 
+    def __call__(self, G: TNFRGraph, node: Any, **kw: Any) -> None:
+        """Apply IL with explicit ΔNFR reduction telemetry and control.
+
+        Parameters
+        ----------
+        G : TNFRGraph
+            Graph storing TNFR nodes and structural operator history.
+        node : Any
+            Identifier or object representing the target node within ``G``.
+        **kw : Any
+            Additional keyword arguments forwarded to grammar layer via parent __call__.
+
+        Notes
+        -----
+        This implementation enforces the canonical IL structural effect:
+        ΔNFR → ΔNFR * (1 - ρ) where ρ ≈ 0.3 (30% reduction).
+
+        The reduction is applied by the grammar layer (_op_IL) using IL_dnfr_factor
+        from global glyph factors. This method adds explicit telemetry logging for
+        structural traceability.
+
+        To customize the reduction factor, set GLYPH_FACTORS["IL_dnfr_factor"] in
+        the graph before calling this operator. Default is 0.7 (30% reduction).
+        """
+        from ..alias import get_attr
+        from ..constants.aliases import ALIAS_DNFR
+
+        # Capture ΔNFR before IL application for telemetry
+        dnfr_before = float(get_attr(G.nodes[node], ALIAS_DNFR, 0.0))
+
+        # Delegate to parent __call__ which applies grammar (including _op_IL reduction)
+        super().__call__(G, node, **kw)
+
+        # Capture ΔNFR after IL application for telemetry
+        dnfr_after = float(get_attr(G.nodes[node], ALIAS_DNFR, 0.0))
+
+        # Log reduction in graph metadata for telemetry
+        if "IL_dnfr_reductions" not in G.graph:
+            G.graph["IL_dnfr_reductions"] = []
+
+        # Calculate actual reduction factor from before/after values
+        actual_reduction_factor = (
+            (dnfr_before - dnfr_after) / dnfr_before if dnfr_before > 0 else 0.0
+        )
+
+        G.graph["IL_dnfr_reductions"].append(
+            {
+                "node": node,
+                "before": dnfr_before,
+                "after": dnfr_after,
+                "reduction": dnfr_before - dnfr_after,
+                "reduction_factor": actual_reduction_factor,
+            }
+        )
+
     def _validate_preconditions(self, G: TNFRGraph, node: Any) -> None:
         """Validate IL-specific preconditions."""
         from .preconditions import validate_coherence
