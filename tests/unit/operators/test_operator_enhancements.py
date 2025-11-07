@@ -79,7 +79,8 @@ class TestOperatorPreconditions:
     def test_dissonance_precondition_low_vf(self):
         """OZ - Dissonance should fail if νf too low."""
         G = nx.DiGraph()
-        G.add_node("n1", **{VF_PRIMARY: 0.005, DNFR_PRIMARY: 0.1})
+        # Set sufficient EPI to pass EPI check, but low vf to fail vf check
+        G.add_node("n1", **{VF_PRIMARY: 0.005, DNFR_PRIMARY: 0.1, EPI_PRIMARY: 0.5})
         G.graph["VALIDATE_OPERATOR_PRECONDITIONS"] = True
         G.graph["OZ_MIN_VF"] = 0.01
 

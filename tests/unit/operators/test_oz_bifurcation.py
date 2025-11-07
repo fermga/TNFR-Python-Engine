@@ -131,12 +131,12 @@ class TestOZBifurcationDetection:
         # Set minimum EPI threshold
         G.graph["OZ_MIN_EPI"] = 0.2
         
-        # Should raise precondition error
-        with pytest.raises(OperatorPreconditionError, match="EPI too low"):
+        # Should raise precondition error with new message
+        with pytest.raises(OperatorPreconditionError, match="Insufficient coherence base"):
             Dissonance()(G, node)
 
-    def test_oz_precondition_warns_high_dnfr(self):
-        """OZ warns when ΔNFR already critically high."""
+    def test_oz_precondition_fails_high_dnfr(self):
+        """OZ raises error when ΔNFR already critically high (new behavior)."""
         G, node = create_nfr("test", epi=0.5, vf=1.0)
         
         # Enable precondition validation
@@ -146,8 +146,8 @@ class TestOZBifurcationDetection:
         G.nodes[node][DNFR_PRIMARY] = 0.85
         G.graph["OZ_MAX_DNFR"] = 0.8
         
-        # Should warn but not raise
-        with pytest.warns(UserWarning, match="high ΔNFR"):
+        # Now raises error instead of warning (new behavior in this PR)
+        with pytest.raises(OperatorPreconditionError, match="already critical"):
             Dissonance()(G, node)
 
 
@@ -411,6 +411,9 @@ class TestBifurcationTelemetry:
         
         Dissonance()(G, node)
         assert G.nodes[node].get("_bifurcation_ready", False)
+        
+        # Apply Coherence to resolve the first OZ (avoids overload)
+        Coherence()(G, node)
         
         # Second: drop below threshold
         G.nodes[node]["epi_history"] = [0.49, 0.50, 0.51]  # Minimal acceleration
