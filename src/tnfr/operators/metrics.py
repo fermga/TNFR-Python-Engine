@@ -138,7 +138,11 @@ def emission_metrics(
 
 
 def reception_metrics(G: TNFRGraph, node: NodeId, epi_before: float) -> dict[str, Any]:
-    """EN - Reception metrics: EPI integration, neighbor influence.
+    """EN - Reception metrics: EPI integration, source tracking, integration efficiency.
+
+    Extended metrics for Reception (EN) operator that track emission sources,
+    phase compatibility, and integration efficiency as specified in TNFR.pdf
+    §2.2.1 (EN - Recepción estructural).
 
     Parameters
     ----------
@@ -152,9 +156,21 @@ def reception_metrics(G: TNFRGraph, node: NodeId, epi_before: float) -> dict[str
     Returns
     -------
     dict
-        Reception-specific metrics including neighbor integration
+        Reception-specific metrics including:
+        - Core metrics: delta_epi, epi_final, dnfr_after
+        - Legacy metrics: neighbor_count, neighbor_epi_mean, integration_strength
+        - EN-specific (NEW):
+          - num_sources: Number of detected emission sources
+          - integration_efficiency: Ratio of integrated to available coherence
+          - most_compatible_source: Most phase-compatible source node
+          - phase_compatibility_avg: Average phase compatibility with sources
+          - coherence_received: Total coherence integrated (delta_epi)
+          - stabilization_effective: Whether ΔNFR reduced below threshold
     """
     epi_after = _get_node_attr(G, node, ALIAS_EPI)
+    dnfr_after = _get_node_attr(G, node, ALIAS_DNFR)
+
+    # Legacy neighbor metrics (backward compatibility)
     neighbors = list(G.neighbors(node))
     neighbor_count = len(neighbors)
 
@@ -164,14 +180,51 @@ def reception_metrics(G: TNFRGraph, node: NodeId, epi_before: float) -> dict[str
         neighbor_epi_sum += _get_node_attr(G, n, ALIAS_EPI)
     neighbor_epi_mean = neighbor_epi_sum / neighbor_count if neighbor_count > 0 else 0.0
 
+    # Compute delta EPI (coherence received)
+    delta_epi = epi_after - epi_before
+
+    # EN-specific: Source tracking and integration efficiency
+    sources = G.nodes[node].get("_reception_sources", [])
+    num_sources = len(sources)
+
+    # Calculate total available coherence from sources
+    total_available_coherence = sum(strength for _, _, strength in sources)
+
+    # Integration efficiency: ratio of integrated to available coherence
+    # Only meaningful if coherence was actually available
+    integration_efficiency = (
+        delta_epi / total_available_coherence if total_available_coherence > 0 else 0.0
+    )
+
+    # Most compatible source (first in sorted list)
+    most_compatible_source = sources[0][0] if sources else None
+
+    # Average phase compatibility across all sources
+    phase_compatibility_avg = (
+        sum(compat for _, compat, _ in sources) / num_sources if num_sources > 0 else 0.0
+    )
+
+    # Stabilization effectiveness (ΔNFR reduced?)
+    stabilization_effective = dnfr_after < 0.1
+
     return {
         "operator": "Reception",
         "glyph": "EN",
-        "delta_epi": epi_after - epi_before,
+        # Core metrics
+        "delta_epi": delta_epi,
         "epi_final": epi_after,
+        "dnfr_after": dnfr_after,
+        # Legacy metrics (backward compatibility)
         "neighbor_count": neighbor_count,
         "neighbor_epi_mean": neighbor_epi_mean,
-        "integration_strength": abs(epi_after - epi_before),
+        "integration_strength": abs(delta_epi),
+        # EN-specific (NEW)
+        "num_sources": num_sources,
+        "integration_efficiency": integration_efficiency,
+        "most_compatible_source": most_compatible_source,
+        "phase_compatibility_avg": phase_compatibility_avg,
+        "coherence_received": delta_epi,
+        "stabilization_effective": stabilization_effective,
     }
 
 

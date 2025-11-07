@@ -11,6 +11,7 @@ TNFR 2.0, so downstream code must import these classes directly.
 
 from __future__ import annotations
 
+import warnings
 from typing import Any, ClassVar
 
 from ..config.operator_names import (
@@ -561,6 +562,66 @@ class Reception(Operator):
     __slots__ = ()
     name: ClassVar[str] = RECEPTION
     glyph: ClassVar[Glyph] = Glyph.EN
+
+    def __call__(self, G: TNFRGraph, node: Any, **kw: Any) -> None:
+        """Apply EN with source detection and integration tracking.
+
+        Detects emission sources in the network BEFORE applying reception
+        grammar. This enables active reorganization from external sources
+        as specified in TNFR.pdf §2.2.1 (EN - Recepción estructural).
+
+        Parameters
+        ----------
+        G : TNFRGraph
+            Graph storing TNFR nodes and structural operator history.
+        node : Any
+            Identifier or object representing the target node within ``G``.
+        **kw : Any
+            Additional keyword arguments:
+            - track_sources (bool): Enable source detection (default: True).
+              When enabled, automatically detects emission sources before
+              grammar execution. This is a non-breaking enhancement - existing
+              code continues to work, with source detection adding observability
+              without changing operational semantics.
+            - max_distance (int): Maximum network distance for source search (default: 2)
+            - Other args forwarded to grammar layer
+
+        Notes
+        -----
+        **Source Detection Behavior (New in This Release)**:
+
+        By default, source detection is enabled (``track_sources=True``). This
+        is a non-breaking change because:
+
+        1. Detection happens BEFORE grammar execution (no operational changes)
+        2. Only adds metadata to nodes (``_reception_sources``)
+        3. Warnings are informational, not errors
+        4. Can be disabled with ``track_sources=False``
+
+        Existing code will see warnings if nodes have no emission sources,
+        which is informational and helps identify network topology issues.
+        To suppress warnings in isolated-node scenarios, set ``track_sources=False``.
+        """
+        # Detect emission sources BEFORE applying reception
+        if kw.get("track_sources", True):
+            from .network_analysis.source_detection import detect_emission_sources
+
+            max_distance = kw.get("max_distance", 2)
+            sources = detect_emission_sources(G, node, max_distance=max_distance)
+
+            # Store detected sources in node metadata for metrics and analysis
+            G.nodes[node]["_reception_sources"] = sources
+
+            # Warn if no compatible sources found
+            if not sources:
+                warnings.warn(
+                    f"EN warning: Node '{node}' has no detectable emission sources. "
+                    f"Reception may not integrate external coherence effectively.",
+                    stacklevel=2,
+                )
+
+        # Delegate to parent __call__ which applies grammar
+        super().__call__(G, node, **kw)
 
     def _validate_preconditions(self, G: TNFRGraph, node: Any) -> None:
         """Validate EN-specific preconditions."""
