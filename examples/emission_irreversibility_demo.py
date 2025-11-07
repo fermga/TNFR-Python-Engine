@@ -13,11 +13,14 @@ Key Features Demonstrated:
 - Multiple nodes with independent timestamps
 """
 
+import time
 from datetime import datetime
 
 from tnfr.alias import get_attr_str
+from tnfr.constants import EPI_PRIMARY, VF_PRIMARY
 from tnfr.constants.aliases import ALIAS_EMISSION_TIMESTAMP
-from tnfr.operators.definitions import Emission, Reception, Coherence, Silence
+from tnfr.dynamics import dnfr_epi_vf_mixed, set_delta_nfr_hook
+from tnfr.operators.definitions import Coherence, Emission, Reception, Silence
 from tnfr.structural import create_nfr, run_sequence
 
 
@@ -108,13 +111,9 @@ def demo_multiple_nodes_genealogy():
     print(f"\n✓ Node 'alpha' activated at: {ts1}")
 
     # Small delay
-    import time
     time.sleep(0.05)
 
     # Create second node
-    from tnfr.constants import EPI_PRIMARY, VF_PRIMARY
-    from tnfr.dynamics import set_delta_nfr_hook, dnfr_epi_vf_mixed
-
     G.add_node("node_beta")
     G.nodes["node_beta"][EPI_PRIMARY] = 0.4
     G.nodes["node_beta"][VF_PRIMARY] = 0.8

@@ -15,6 +15,7 @@ Tests verify:
 - Backward compatibility (nodes without metadata)
 """
 
+import time
 from datetime import datetime, timezone
 
 import pytest
@@ -22,8 +23,8 @@ import pytest
 from tnfr.alias import get_attr_str
 from tnfr.constants import DNFR_PRIMARY, EPI_PRIMARY, VF_PRIMARY
 from tnfr.constants.aliases import ALIAS_EMISSION_TIMESTAMP
-from tnfr.dynamics import set_delta_nfr_hook
-from tnfr.operators.definitions import Emission, Reception, Coherence, Silence
+from tnfr.dynamics import dnfr_epi_vf_mixed, set_delta_nfr_hook
+from tnfr.operators.definitions import Coherence, Emission, Reception, Silence
 from tnfr.structural import create_nfr, run_sequence
 
 
@@ -181,7 +182,6 @@ def test_emission_multiple_nodes_independent_timestamps():
     G, node1 = create_nfr("node1", epi=0.2, vf=1.0)
     
     # Create second node properly using create_nfr
-    from tnfr.dynamics import set_delta_nfr_hook, dnfr_epi_vf_mixed
     G.add_node("node2")
     G.nodes["node2"][EPI_PRIMARY] = 0.3
     G.nodes["node2"][VF_PRIMARY] = 0.9
@@ -194,8 +194,6 @@ def test_emission_multiple_nodes_independent_timestamps():
     run_sequence(G, node1, [Emission(), Reception(), Coherence(), Silence()])
 
     # Small delay to ensure different timestamps
-    import time
-
     time.sleep(0.01)
 
     run_sequence(G, "node2", [Emission(), Reception(), Coherence(), Silence()])
