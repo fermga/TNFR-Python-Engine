@@ -257,6 +257,22 @@ class Emission(Operator):
     - **Network Coupling**: Prepares node for phase alignment
     - **Nodal Equation**: Implements ∂EPI/∂t = νf · ΔNFR(t) with positive ΔNFR
 
+    **Structural Irreversibility (TNFR.pdf §2.2.1):**
+    AL is inherently irreversible - once activated, it leaves a persistent structural
+    trace that cannot be undone. Each emission marks "time zero" for the node and
+    establishes genealogical traceability:
+
+    - **emission_timestamp**: ISO 8601 UTC timestamp of first activation
+    - **_emission_activated**: Immutable boolean flag
+    - **_emission_origin**: Preserved original timestamp (never overwritten)
+    - **_structural_lineage**: Genealogical record with:
+      - ``origin``: First emission timestamp
+      - ``activation_count``: Number of AL applications
+      - ``derived_nodes``: List for tracking EPI emergence (future use)
+      - ``parent_emission``: Reference to parent node (future use)
+
+    Re-activation increments ``activation_count`` while preserving original timestamp.
+
     Use Cases
     ---------
     **Biomedical**: HRV coherence training, neural activation, therapeutic initiation
@@ -265,7 +281,7 @@ class Emission(Operator):
 
     Typical Sequences
     -----------------
-    **AL → IL**: Basic activation and stabilization
+    **AL → EN → IL → SHA**: Basic activation with stabilization and silence
     **AL → RA**: Emission with immediate propagation
     **AL → NAV → IL**: Phased activation with transition
 
@@ -287,20 +303,14 @@ class Emission(Operator):
     >>> from tnfr.constants import DNFR_PRIMARY, EPI_PRIMARY, VF_PRIMARY
     >>> from tnfr.dynamics import set_delta_nfr_hook
     >>> from tnfr.structural import create_nfr, run_sequence
-    >>> from tnfr.operators.definitions import Emission
+    >>> from tnfr.operators.definitions import Emission, Reception, Coherence, Silence
     >>> G, node = create_nfr("seed", epi=0.18, vf=1.0)
-    >>> increments = iter([(0.07, 0.02)])
-    >>> def scripted_delta(graph):
-    ...     d_epi, d_vf = next(increments)
-    ...     graph.nodes[node][DNFR_PRIMARY] = d_epi
-    ...     graph.nodes[node][EPI_PRIMARY] += d_epi
-    ...     graph.nodes[node][VF_PRIMARY] += d_vf
-    >>> set_delta_nfr_hook(G, scripted_delta)
-    >>> run_sequence(G, node, [Emission()])
-    >>> round(G.nodes[node][EPI_PRIMARY], 2)
-    0.25
-    >>> round(G.nodes[node][VF_PRIMARY], 2)
-    1.02
+    >>> run_sequence(G, node, [Emission(), Reception(), Coherence(), Silence()])
+    >>> # Verify irreversibility
+    >>> assert G.nodes[node]["_emission_activated"] is True
+    >>> assert "emission_timestamp" in G.nodes[node]
+    >>> print(f"Activated at: {G.nodes[node]['emission_timestamp']}")  # doctest: +SKIP
+    Activated at: 2025-11-07T15:47:10.209731+00:00
 
     See Also
     --------
