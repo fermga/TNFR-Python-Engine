@@ -30,7 +30,7 @@ m = 1/νf
 **Examples**:
 - **Electron**: Very high νf → very low mass (rapid structural response)
 - **Macroscopic object**: Very low νf → high mass (sluggish structural response)
-- **Photon**: νf → ∞ → m = 0 (instantaneous structural adjustment)
+- **Photon**: In the limit νf → ∞, mass m → 0 (instantaneous structural adjustment)
 
 ### 1.3 Force as Coherence Gradient
 
@@ -573,7 +573,7 @@ All TNFR-to-classical mappings must be dimensionally consistent. Here we verify 
 \left[\frac{1}{\nu_f}\right] = \text{time}
 \]
 
-**Problem**: Dimensions don't match directly!
+**Problem**: Dimensions don't match directly.
 
 **Resolution**: The structural frequency νf is not a raw frequency but a **scaled frequency** related to physical frequency by:
 
@@ -747,7 +747,7 @@ This explains why classical mechanics works so well for macroscopic systems whil
 
 Several avenues remain for deeper exploration:
 
-1. **Euler-Lagrange Formulation**: Detailed treatment of variational principles and Hamiltonian mechanics from TNFR (to be covered in `08_classical_mechanics_euler_lagrange.md`).
+1. **Euler-Lagrange Formulation**: Detailed treatment of variational principles and Hamiltonian mechanics from TNFR (to be covered in future documentation).
 
 2. **Statistical Mechanics**: How does thermal behavior emerge from networks of classical nodes? Connection to coherence entropy.
 
@@ -768,10 +768,6 @@ Several avenues remain for deeper exploration:
 **Notebooks Demonstrating Classical Emergence**:
 - `examples/01_unitary_minimal.ipynb` — Time evolution and conservation
 - `examples/02_dissipative_minimal.ipynb` — Damped systems and dissipation
-
-**Future Documentation**:
-- `08_classical_mechanics_euler_lagrange.md` — Variational formulation, Hamilton's equations, canonical transformations
-- `09_statistical_mechanics_emergence.md` — Thermodynamics from NFR networks
 
 ---
 
