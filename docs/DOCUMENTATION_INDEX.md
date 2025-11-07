@@ -16,6 +16,7 @@
 
 ### 👤 For Users  
 → [**Operators Guide**](source/user-guide/OPERATORS_GUIDE.md)  
+→ [**Pattern Cookbook**](PATTERN_COOKBOOK.md) ⭐ **NEW** - Ready-to-use recipes  
 → [Metrics Interpretation](source/user-guide/METRICS_INTERPRETATION.md)  
 → [Troubleshooting](source/user-guide/TROUBLESHOOTING.md)  
 → [Examples Catalog](source/examples/README.md)
@@ -43,6 +44,7 @@
 - **[OPERATORS_GUIDE.md](source/user-guide/OPERATORS_GUIDE.md)** - Complete guide to 13 operators
 - [METRICS_INTERPRETATION.md](source/user-guide/METRICS_INTERPRETATION.md) - Understanding C(t), Si, νf, phase, ΔNFR  
 - [TROUBLESHOOTING.md](source/user-guide/TROUBLESHOOTING.md) - Common problems & solutions
+- **[PATTERN_COOKBOOK.md](PATTERN_COOKBOOK.md)** ⭐ **NEW** - Validated recipes by domain
 
 ### Examples (`source/examples/`)
 - **[README.md](source/examples/README.md)** - Categorized example catalog
