@@ -67,6 +67,7 @@ GlyphOperation = Callable[["NodeProtocol", GlyphFactors], None]
 
 from .grammar import apply_glyph_with_grammar  # noqa: E402
 from .health_analyzer import SequenceHealthAnalyzer, SequenceHealthMetrics  # noqa: E402
+from .hamiltonian import InternalHamiltonian, build_H_coherence, build_H_frequency, build_H_coupling  # noqa: E402
 
 __all__ = [
     "JitterCache",
@@ -88,6 +89,10 @@ __all__ = [
     "get_operator_class",
     "SequenceHealthMetrics",
     "SequenceHealthAnalyzer",
+    "InternalHamiltonian",
+    "build_H_coherence",
+    "build_H_frequency",
+    "build_H_coupling",
 ]
 
 __all__.extend(_DEFINITION_EXPORTS.keys())
