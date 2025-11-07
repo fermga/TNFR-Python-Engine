@@ -1051,3 +1051,201 @@ A: TNFR uses quantum mathematical machinery (Hilbert spaces, Hermitian operators
 **Last updated:** 2025-11-07  
 **Maintained by:** TNFR Core Team  
 **License:** Same as repository (see LICENSE.md)
+
+---
+
+# Appendix: Consolidated Notebook Content
+
+> **📔 DEPRECATION NOTICE**: The content below was extracted from interactive Jupyter notebooks 
+> that previously lived in `docs/source/theory/`. These notebooks have been **deprecated and removed**
+> to maintain a single source of truth for TNFR mathematical formalization.
+>
+> **Rationale**: Consolidating all mathematical content into this unified document ensures:
+> - Single source of truth (no divergence between notebook and markdown)
+> - Easier maintenance and version control
+> - Better searchability and cross-referencing
+> - Reduced duplication and inconsistency
+>
+> **Removed notebooks**:
+> - `00_overview.ipynb` → Content integrated below
+> - `01_hilbert_space_h_nfr.ipynb` → Content integrated below
+> - `03_frequency_operator_hatJ.ipynb` → Content integrated below
+> - `05_unitary_dynamics_and_delta_nfr.ipynb` → Content integrated below
+>
+> For interactive explorations, see the examples in `examples/` directory.
+
+---
+
+## A.1 TNFR Overview (from 00_overview.ipynb)
+
+This section summarises the canonical moving parts of the TNFR (resonant fractal nature theory) paradigm. The focus is on how the Primary Information Structure (EPI), structural frequency (νf) and the internal reorganiser ΔNFR weave together to sustain coherent nodes.
+
+### A.1.1 Canonical Invariants
+
+* **EPI coherence** — the node persists only if the Primary Information Structure tracks the ΔNFR-driven reorganisations.
+* **Structural frequency νf** — expressed in Hz_str; it regulates how rapidly the node adapts to operator inputs.
+* **Phase alignment** — operators must respect phase synchrony to keep resonance valid.
+* **ΔNFR logging** — every structural trajectory must expose the ΔNFR contribution applied at each step.
+
+### A.1.2 Documentation Roadmap
+
+The overview sits at the top of the TNFR documentation tree. The index and quickstart guides map the first hops towards examples and reference notes:
+
+* The documentation index serves as the canonical entry point for theory, operations, and release state.
+* Quickstart onboarding connects the theoretical framing with executable flows.
+* Example playbooks and scenario assets stay aligned with the invariants summarized above.
+* Theory content records the proofs, operator derivations, and validation walkthroughs that expand on each invariant.
+
+The roadmap prioritises filling documentation stubs while keeping each addition tied back to the invariants listed above.
+
+### A.1.3 Opt-in Activation Summary
+
+The engine treats advanced operator stacks (self-organisation cascades, resonance window amplification, and stochastic ΔNFR perturbations) as opt-in features. Builders should:
+
+* Start with the deterministic hooks to anchor ΔNFR semantics.
+* Enable stochastic or multi-node activations explicitly—either through configuration payloads or runtime wiring—so automation retains control of when a node leaves the canonical scripted envelope.
+* Capture telemetry describing why an activation was granted; this includes minimal audit fields (ΔNFR weights, νf, θ) that downstream tooling expects.
+
+See the primer for the design goals behind the opt-in policy and the invariants that must hold once optional activations are enabled.
+
+### A.1.4 Compatibility Guarantees
+
+TNFR follows a semantic versioning contract anchored in reproducible coherence traces. In practice this means:
+
+* **Patch releases** stay API-compatible and are safe to absorb in automation once the release notes are reviewed.
+* **Minor releases** may extend operator surfaces or telemetry, but they advertise migrations in advance through the release ledger.
+* **Major releases** annotate breaking changes with remediation guides.
+
+When building long-lived scripts, pin the `tnfr` version and record the ΔNFR hook signature you depend on so CI replicates the same behaviour after upgrades.
+
+### A.1.5 Computational Cost Notes
+
+Most theoretical examples target fast execution to preserve CI latency budgets. Keep in mind:
+
+* Scripted examples should run in milliseconds and represent the ceiling for per-test smoke budgets.
+* Operator explorations that require eigen-decompositions should batch them carefully—the `numpy.linalg.eigh` primitive is `O(N³)` in the matrix size.
+* Prefer vectorised helpers before reaching for heavier solvers, and gate expensive scans behind explicit benchmark scripts.
+
+Sticking to these constraints keeps the test suite reliable while preserving room for deeper exploration that opts into heavier kernels.
+
+---
+
+## A.2 Hilbert Space H_NFR (from 01_hilbert_space_h_nfr.ipynb)
+
+TNFR spectral states inhabit finite-dimensional Hilbert spaces that combine discrete resonant modes with continuous projections. Working in an orthonormal basis keeps expectation values and norms mechanically stable.
+
+### A.2.1 Canonical Structure
+
+* Vectors live on the Hilbert sphere so coherence operators act predictably.
+* Inner products use the sesquilinear form \(\langle\psi, \phi\rangle\).
+* Projections return coordinates relative to any supplied orthonormal basis.
+
+### A.2.2 Finite \(\ell^2 \otimes L^2\) Realisation
+
+The TNFR engine realises \(H_{\text{NFR}}\) as a finite section of the coupled discrete/continuous spectrum:
+
+* **Discrete component**: `tnfr.mathematics.spaces.HilbertSpace` provides the truncated \(\ell^2\) factor with a canonical orthonormal basis and sesquilinear inner product implemented via `numpy.vdot`.
+* **Continuous component**: `tnfr.mathematics.spaces.BanachSpaceEPI` packages the sampled \(L^2\) continuum and associated coherence functional so that spectral vectors can be paired with continuous envelopes.
+
+Together these classes make the tensor-product section explicit: `HilbertSpace` handles discrete projections, while `BanachSpaceEPI` validates and weights the continuous samples, ensuring the resulting state stays faithful to the \(\ell^2 \otimes L^2\) geometry used throughout the operators.
+
+### A.2.3 Smoke Check: Norms and Expectations
+
+**Key validations**:
+
+1. **Norm homogeneity**: \(\|c\psi\| = |c| \cdot \|\psi\|\)
+2. **Triangle inequality**: \(\|\psi + \phi\| \leq \|\psi\| + \|\phi\|\)
+3. **Projection reconstruction**: Projections onto an orthonormal basis reproduce the original state
+
+These properties are verified in the `HilbertSpace` abstraction using deterministic test vectors.
+
+---
+
+## A.3 Frequency Operator Ĵ (from 03_frequency_operator_hatJ.ipynb)
+
+The frequency operator captures how structural frequency \(\nu_f\) is distributed across spectral modes. Its spectrum must remain non-negative so the projected \(\nu_f\) keeps physical meaning.
+
+### A.3.1 Operator Semantics
+
+* **Hermitian construction** ensures real eigenvalues.
+* **Expectation values** return the effective \(\nu_f\) observed on a state: \(\langle\psi|\hat{J}|\psi\rangle = \nu_{f,\text{eff}}\)
+* **Spectral bandwidth** highlights how widely \(\nu_f\) spreads across modes.
+
+### A.3.2 Mathematical Properties
+
+**Spectrum constraint**:
+\[
+\hat{J} = \sum_i \nu_{f,i} |i\rangle\langle i| \quad \text{where } \nu_{f,i} \geq 0
+\]
+
+**Expectation value**:
+\[
+\nu_{f,\text{eff}} = \langle\psi|\hat{J}|\psi\rangle = \sum_i \nu_{f,i} |\langle i|\psi\rangle|^2
+\]
+
+This ensures the measured frequency is always a weighted average of non-negative eigenvalues.
+
+### A.3.3 Smoke Check: \(\nu_f\) Projection
+
+**Validation steps**:
+
+1. Assemble a diagonal frequency operator \(\hat{J}\) with non-negative eigenvalues
+2. Project a normalized state \(|\psi\rangle\) onto \(\hat{J}\)
+3. Verify that the reported \(\nu_f\) stays within the spectral bounds: \(\min(\nu_{f,i}) \leq \langle\hat{J}\rangle \leq \max(\nu_{f,i})\)
+
+This confirms the physical interpretation of \(\nu_f\) as a structural reorganization rate.
+
+---
+
+## A.4 Unitary Dynamics and ΔNFR (from 05_unitary_dynamics_and_delta_nfr.ipynb)
+
+Unitary flows generated by the coherence operator encode how ΔNFR reorganises the node without breaking normalization. Tracking the induced structural frequency drift keeps the nodal equation balanced.
+
+### A.4.1 Workflow
+
+1. Select a coherence operator \(\hat{C}\) and derive its unitary evolution \(e^{-i\hat{C}t}\).
+2. Propagate a normalized state through the unitary to observe how frequency expectations shift.
+3. Map the observed shift into a deterministic ΔNFR hook.
+4. Execute a short operator sequence and confirm that EPI and \(\nu_f\) reflect the ΔNFR update.
+
+### A.4.2 Mathematical Foundation
+
+**Unitary evolution** (Schrödinger-like):
+\[
+|\psi(t)\rangle = e^{-i\hat{C}t}|\psi(0)\rangle
+\]
+
+**Frequency drift**:
+\[
+\frac{d}{dt}\langle\hat{J}\rangle = \langle\psi(t)|[\hat{C}, \hat{J}]|\psi(t)\rangle
+\]
+
+where \([\hat{C}, \hat{J}] = \hat{C}\hat{J} - \hat{J}\hat{C}\) is the commutator.
+
+**Connection to ΔNFR**:
+
+The frequency drift induced by coherence evolution provides the reorganization gradient:
+\[
+\Delta\text{NFR} \propto \frac{d\langle\hat{J}\rangle}{dt}
+\]
+
+This establishes the link between quantum-inspired dynamics and structural reorganization.
+
+### A.4.3 Smoke Check: Coupling ΔNFR to Unitary Evolution
+
+**Validation procedure**:
+
+1. Compute one-step unitary evolution: \(|\psi(t+\Delta t)\rangle = e^{-i\hat{C}\Delta t}|\psi(t)\rangle\)
+2. Measure frequency projection drift: \(\Delta\nu_f = \langle\psi(t+\Delta t)|\hat{J}|\psi(t+\Delta t)\rangle - \langle\psi(t)|\hat{J}|\psi(t)\rangle\)
+3. Use drift as ΔNFR increment: \(\Delta\text{NFR} = \Delta\nu_f / \Delta t\)
+4. Apply ΔNFR to node and verify consistency with nodal equation:
+   \[
+   \frac{\partial \text{EPI}}{\partial t} \approx \nu_f \cdot \Delta\text{NFR}
+   \]
+
+This validates that the abstract operator formalism connects coherently to the practical nodal evolution.
+
+---
+
+**End of Consolidated Notebook Content**
+
