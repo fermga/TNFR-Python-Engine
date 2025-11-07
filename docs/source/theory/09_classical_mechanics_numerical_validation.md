@@ -350,7 +350,7 @@ m\ddot{q} + \gamma \dot{q} + kq = 0
 - Integration: RK4, \( \Delta t = 0.01 \)
 - Duration: \( T_{\text{sim}} = 50 \)
 
-**TNFR mapping**: \( \gamma \) arises from dissipation matrix \( D = \gamma I \) in Assumption 1 (Section 3 of doc 08).
+**TNFR mapping**: \( \gamma \) arises from dissipation matrix \( D = \gamma I \) in the low-dissonance decomposition (see [08_classical_mechanics_euler_lagrange.md](./08_classical_mechanics_euler_lagrange.md), Section 3, Assumption 1: Low Dissonance).
 
 #### Theoretical Predictions
 
@@ -719,7 +719,7 @@ Generate three heatmaps in \( (F_0, \omega_f) \) space:
 - Compute observables (periods, energies, Lyapunov exponents)
 - Compare numerical results to theoretical predictions
 
-**For production use**: Refer to the full TNFR implementation in `examples/numerical_validation/` which uses:
+**For production use**: Refer to the planned full TNFR implementation in `examples/numerical_validation/` (to be created) which will use:
 - TNFR structural operators (Emission, Coherence, etc.)
 - TNFRNetwork evolution methods
 - Proper coherence monitoring (C(t), Si(t))
@@ -729,7 +729,7 @@ The pseudocode below focuses on the **classical limit** (\( \varepsilon \to 0 \)
 
 ### 6.1 Harmonic Oscillator Validation
 
-**Note**: This is a simplified demonstration showing the classical limit calculation directly. For full TNFR implementation using structural operators, see the complete examples in `examples/numerical_validation/`. This pseudocode illustrates the validation methodology and expected results.
+**Note**: This is a simplified demonstration showing the classical limit calculation directly. For full TNFR implementation using structural operators, see the planned examples in `examples/numerical_validation/` (to be implemented). This pseudocode illustrates the validation methodology and expected results.
 
 ```python
 import numpy as np
@@ -1162,13 +1162,13 @@ This document provides:
 
 ## References
 
-1. **TNFR Foundational Document**: `TNFR.pdf` — Complete paradigm description
-2. **Classical Mechanics Emergence**: `07_emergence_classical_mechanics.md`
-3. **Euler-Lagrange Correspondence**: `08_classical_mechanics_euler_lagrange.md`
-4. **Numerical Recipes**: Press et al. (2007), "Numerical Recipes" (3rd ed.)
-5. **Nonlinear Dynamics**: Strogatz (2015), "Nonlinear Dynamics and Chaos"
-6. **Chaotic Systems**: Ott (2002), "Chaos in Dynamical Systems" (2nd ed.)
-7. **Symplectic Integrators**: Hairer et al. (2006), "Geometric Numerical Integration"
+1. **TNFR Foundational Document**: `TNFR.pdf` (in repository root) — Complete paradigm description
+2. **Classical Mechanics Emergence**: [07_emergence_classical_mechanics.md](./07_emergence_classical_mechanics.md)
+3. **Euler-Lagrange Correspondence**: [08_classical_mechanics_euler_lagrange.md](./08_classical_mechanics_euler_lagrange.md)
+4. **Numerical Recipes**: Press, W.H., Teukolsky, S.A., Vetterling, W.T., & Flannery, B.P. (2007). "Numerical Recipes: The Art of Scientific Computing" (3rd ed.). Cambridge University Press.
+5. **Nonlinear Dynamics**: Strogatz, S.H. (2015). "Nonlinear Dynamics and Chaos: With Applications to Physics, Biology, Chemistry, and Engineering" (2nd ed.). CRC Press.
+6. **Chaotic Systems**: Ott, E. (2002). "Chaos in Dynamical Systems" (2nd ed.). Cambridge University Press.
+7. **Symplectic Integrators**: Hairer, E., Lubich, C., & Wanner, G. (2006). "Geometric Numerical Integration: Structure-Preserving Algorithms for Ordinary Differential Equations" (2nd ed.). Springer.
 
 ---
 
