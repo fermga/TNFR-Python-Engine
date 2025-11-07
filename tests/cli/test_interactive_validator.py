@@ -127,7 +127,6 @@ class TestInteractiveValidator:
 
     def test_display_generated_sequence(self, capsys):
         """Test generated sequence display."""
-        from tnfr.compat.dataclass import dataclass
         from tnfr.tools.sequence_generator import GenerationResult
 
         validator = TNFRInteractiveValidator()

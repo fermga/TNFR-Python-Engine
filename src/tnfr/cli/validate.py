@@ -94,7 +94,7 @@ Examples:
     parser.add_argument(
         "graph_file",
         nargs="?",
-        help="Path to graph file (.graphml, .gml, or .json)",
+        help="Path to graph file (.graphml, .gml, or .json). Required unless using --interactive mode.",
     )
 
     parser.add_argument(
