@@ -36,3 +36,6 @@ bandit.sarif
 pip-audit*.json
 semgrep.json
 semgrep.sarif
+
+# Validation outputs (generated)
+validation_outputs/

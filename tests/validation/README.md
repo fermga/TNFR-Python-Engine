@@ -130,7 +130,7 @@ This ensures:
 
 ## Generated Outputs
 
-All outputs are saved to `validation_outputs/`:
+All outputs are saved to `validation_outputs/` (this directory is in `.gitignore` and will be created when you run the script):
 
 1. `exp1_harmonic_phase_portraits.png` - Phase portraits for different νf
 2. `exp2_conservation_laws.png` - Energy, momentum, angular momentum conservation
@@ -138,6 +138,8 @@ All outputs are saved to `validation_outputs/`:
 4. `exp4_three_body.png` - Three-body trajectories and energy evolution
 5. `exp5_lyapunov.png` - Trajectory divergence and Lyapunov exponent fit
 6. `exp6_coherence.png` - Coherence metrics and energy components
+
+**Note**: The `validation_outputs/` directory is generated when you run the example script and is not tracked in version control.
 
 ## TNFR Canonical Invariants Validated
 

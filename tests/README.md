@@ -2,6 +2,33 @@
 
 This document describes the purpose of tests in the suite that monitor internal debugging, diagnostic features, and performance regressions. Default `pytest` options (such as marker selection and benchmark skipping) are configured in the `[tool.pytest.ini_options]` section of `pyproject.toml`, so invocations without extra flags automatically inherit that configuration.
 
+## Test Organization
+
+- **unit/** - Unit tests for individual modules and components
+- **integration/** - Integration tests for combined functionality
+- **validation/** - Quantitative validation tests against theoretical predictions
+- **performance/** - Performance regression tests
+- **property/** - Property-based tests using Hypothesis
+
+## Quantitative Validation Suite
+
+The **validation/** directory contains comprehensive quantitative validation tests for TNFR n-body dynamics, implementing experiments from `docs/source/theory/09_classical_mechanics_numerical_validation.md`.
+
+See [validation/README.md](validation/README.md) for details on:
+- Running validation tests and example scripts
+- Acceptance criteria and parameters
+- Generated visualization outputs
+- Reproducibility with fixed seeds
+
+Quick start:
+```bash
+# Run validation tests
+pytest tests/validation/ -v -s
+
+# Generate visualizations
+python examples/nbody_quantitative_validation.py
+```
+
 ## Backend selection
 
 Pass `--math-backend=<name>` to `pytest` (or set `TNFR_TEST_MATH_BACKEND`) to exercise the suite under a specific numerical adapter. The flag sets `TNFR_MATH_BACKEND` before modules import and clears cached backend instances, ensuring that optional dependencies such as JAX or PyTorch are only used when explicitly requested.
