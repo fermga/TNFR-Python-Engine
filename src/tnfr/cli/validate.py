@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 """CLI tool for TNFR validation.
 
-This standalone tool validates TNFR graphs from files and generates reports.
+This tool provides two modes:
+1. Graph validation: Validate TNFR graphs from files (original behavior)
+2. Interactive sequence validation: User-friendly sequence validator (new)
 """
 
 import argparse
@@ -57,10 +59,14 @@ def load_graph(filepath: str) -> nx.Graph:
 def main():
     """Main CLI entry point."""
     parser = argparse.ArgumentParser(
-        description="TNFR Validation Tool - Validate graphs against TNFR invariants",
+        description="TNFR Validation Tool - Validate graphs or sequences",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
+  # Interactive sequence validator (NEW!)
+  tnfr-validate --interactive
+  tnfr-validate -i
+  
   # Validate a graph file
   tnfr-validate graph.graphml
   
@@ -79,7 +85,16 @@ Examples:
     )
 
     parser.add_argument(
-        "graph_file", help="Path to graph file (.graphml, .gml, or .json)"
+        "--interactive",
+        "-i",
+        action="store_true",
+        help="Launch interactive sequence validator",
+    )
+
+    parser.add_argument(
+        "graph_file",
+        nargs="?",
+        help="Path to graph file (.graphml, .gml, or .json)",
     )
 
     parser.add_argument(
@@ -120,7 +135,22 @@ Examples:
 
     parser.add_argument("--verbose", "-v", action="store_true", help="Verbose output")
 
+    parser.add_argument(
+        "--seed",
+        type=int,
+        help="Random seed for interactive validator (deterministic generation)",
+    )
+
     args = parser.parse_args()
+
+    # Handle interactive mode
+    if args.interactive:
+        from .interactive_validator import run_interactive_validator
+        return run_interactive_validator(seed=args.seed)
+
+    # Require graph_file for non-interactive mode
+    if not args.graph_file:
+        parser.error("graph_file is required when not using --interactive mode")
 
     # Configure validation
     severity_map = {
