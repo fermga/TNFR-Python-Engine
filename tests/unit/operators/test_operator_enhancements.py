@@ -61,13 +61,20 @@ class TestOperatorPreconditions:
         Reception()(G, "n1", track_sources=False)
 
     def test_coherence_precondition_minimal_dnfr(self):
-        """IL - Coherence should fail if ΔNFR already minimal."""
+        """IL - Coherence should warn if ΔNFR already minimal."""
         G = nx.DiGraph()
-        G.add_node("n1", **{DNFR_PRIMARY: 0.0, EPI_PRIMARY: 0.5})
+        G.add_node("n1", **{DNFR_PRIMARY: 0.0, EPI_PRIMARY: 0.5, VF_PRIMARY: 0.5})
         G.graph["VALIDATE_OPERATOR_PRECONDITIONS"] = True
 
-        with pytest.raises(OperatorPreconditionError, match="already minimal"):
+        # With our strict validation, zero ΔNFR produces a warning, not an error
+        # The node is still valid for coherence (has active EPI and νf)
+        import warnings
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
             Coherence()(G, "n1")
+            # Should have warning about ΔNFR=0 being redundant
+            assert len(w) > 0
+            assert any("ΔNFR=0" in str(warning.message) for warning in w)
 
     def test_dissonance_precondition_low_vf(self):
         """OZ - Dissonance should fail if νf too low."""
