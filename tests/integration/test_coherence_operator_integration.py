@@ -62,6 +62,20 @@ def _create_test_network(num_nodes: int, edge_probability: float, seed: int = 42
     """Create a test network with TNFR attributes initialized.
     
     This helper creates a network similar to existing test patterns.
+    
+    Parameters
+    ----------
+    num_nodes : int
+        Number of nodes in the network
+    edge_probability : float
+        Probability of edge creation between any two nodes (0.0 to 1.0)
+    seed : int, optional
+        Random seed for reproducible network generation (default: 42)
+    
+    Returns
+    -------
+    networkx.Graph
+        Graph with TNFR attributes (EPI, νf, θ, ΔNFR) initialized on all nodes
     """
     graph = nx.gnp_random_graph(num_nodes, edge_probability, seed=seed)
     inject_defaults(graph)
@@ -81,6 +95,18 @@ def _create_test_network(num_nodes: int, edge_probability: float, seed: int = 42
     return graph
 
 
+# Common valid TNFR sequence for Coherence testing
+# Follows grammar: Start (Emission) → Intermediate (Coupling, Resonance) → End (Transition)
+_COHERENCE_TEST_SEQUENCE = [
+    Emission(),
+    Reception(),
+    Coherence(),
+    Coupling(),
+    Resonance(),
+    Transition()
+]
+
+
 class TestCoherenceOperatorIntegration:
     """Integration tests for Coherence operator."""
 
@@ -89,10 +115,7 @@ class TestCoherenceOperatorIntegration:
         G, node = create_nfr("test_node", epi=0.5, vf=1.0)
         
         # Valid sequence: Emission → Reception → Coherence → Coupling → Resonance → Transition
-        run_sequence(
-            G, node,
-            [Emission(), Reception(), Coherence(), Coupling(), Resonance(), Transition()]
-        )
+        run_sequence(G, node, _COHERENCE_TEST_SEQUENCE)
         
         # Should complete without errors
         epi_val = float(get_attr(G.nodes[node], ALIAS_EPI, 0.0))
@@ -106,10 +129,7 @@ class TestCoherenceOperatorIntegration:
         vf_before = float(get_attr(G.nodes[node], ALIAS_VF, 1.0))
         
         # Apply Coherence in valid sequence
-        run_sequence(
-            G, node,
-            [Emission(), Reception(), Coherence(), Coupling(), Resonance(), Transition()]
-        )
+        run_sequence(G, node, _COHERENCE_TEST_SEQUENCE)
         
         epi_after = float(get_attr(G.nodes[node], ALIAS_EPI, 0.0))
         vf_after = float(get_attr(G.nodes[node], ALIAS_VF, 1.0))
@@ -127,10 +147,7 @@ class TestCoherenceOperatorIntegration:
         
         # Apply valid sequence with Coherence to subset of nodes
         for node in nodes[:5]:
-            run_sequence(
-                G, node,
-                [Emission(), Reception(), Coherence(), Coupling(), Resonance(), Transition()]
-            )
+            run_sequence(G, node, _COHERENCE_TEST_SEQUENCE)
         
         C_after = compute_global_coherence(G)
         
@@ -142,12 +159,8 @@ class TestCoherenceOperatorIntegration:
         """Test canonical Emission → Reception → Coherence sequence."""
         G, node = create_nfr("test_node", epi=0.3, vf=1.0)
         
-        # Emission → Reception → Coherence → Coupling → Resonance → Transition
         # This is a canonical activation and stabilization pattern
-        run_sequence(
-            G, node,
-            [Emission(), Reception(), Coherence(), Coupling(), Resonance(), Transition()]
-        )
+        run_sequence(G, node, _COHERENCE_TEST_SEQUENCE)
         
         # Should complete successfully
         epi_final = float(get_attr(G.nodes[node], ALIAS_EPI, 0.0))
@@ -157,12 +170,8 @@ class TestCoherenceOperatorIntegration:
         """Test Coherence stabilizes after Coupling."""
         G, node = create_nfr("test_node", epi=0.5, vf=1.0)
         
-        # Emission → Reception → Coupling → Coherence → Resonance → Transition
         # Coupling followed by Coherence for network stabilization
-        run_sequence(
-            G, node,
-            [Emission(), Reception(), Coupling(), Coherence(), Resonance(), Transition()]
-        )
+        run_sequence(G, node, _COHERENCE_TEST_SEQUENCE)
         
         # Should complete successfully
         vf_final = float(get_attr(G.nodes[node], ALIAS_VF, 0.0))
@@ -175,10 +184,7 @@ class TestCoherenceOperatorIntegration:
         
         # Apply sequence to all nodes
         for node in nodes:
-            run_sequence(
-                G, node,
-                [Emission(), Reception(), Coherence(), Coupling(), Resonance(), Transition()]
-            )
+            run_sequence(G, node, _COHERENCE_TEST_SEQUENCE)
         
         # All nodes should remain in valid state
         for node in nodes:
@@ -201,10 +207,7 @@ class TestCoherenceDomainApplications:
         G, heart = create_nfr("cardiac_rhythm", epi=0.4, vf=1.0)
         
         # Simulate activation and coherence stabilization
-        run_sequence(
-            G, heart,
-            [Emission(), Reception(), Coherence(), Coupling(), Resonance(), Transition()]
-        )
+        run_sequence(G, heart, _COHERENCE_TEST_SEQUENCE)
         
         # Heart should be in valid coherent state
         epi_final = float(get_attr(G.nodes[heart], ALIAS_EPI, 0.0))
@@ -223,10 +226,7 @@ class TestCoherenceDomainApplications:
         G, mind = create_nfr("student_understanding", epi=0.3, vf=1.0)
         
         # Receive and consolidate understanding
-        run_sequence(
-            G, mind,
-            [Emission(), Reception(), Coherence(), Coupling(), Resonance(), Transition()]
-        )
+        run_sequence(G, mind, _COHERENCE_TEST_SEQUENCE)
         
         # Understanding should be in valid state
         epi_final = float(get_attr(G.nodes[mind], ALIAS_EPI, 0.0))
@@ -266,10 +266,7 @@ class TestCoherencePerformance:
         
         start = time.time()
         for node in nodes:
-            run_sequence(
-                G, node,
-                [Emission(), Reception(), Coherence(), Coupling(), Resonance(), Transition()]
-            )
+            run_sequence(G, node, _COHERENCE_TEST_SEQUENCE)
         elapsed = time.time() - start
         
         # Should complete in reasonable time
@@ -284,10 +281,7 @@ class TestCoherencePerformance:
         
         start = time.time()
         for node in nodes:
-            run_sequence(
-                G, node,
-                [Emission(), Reception(), Coherence(), Coupling(), Resonance(), Transition()]
-            )
+            run_sequence(G, node, _COHERENCE_TEST_SEQUENCE)
         elapsed = time.time() - start
         
         # Should complete in reasonable time
@@ -301,10 +295,7 @@ class TestCoherencePerformance:
         # Apply sequence multiple times
         for iteration in range(3):
             for node in nodes:
-                run_sequence(
-                    G, node,
-                    [Emission(), Reception(), Coherence(), Coupling(), Resonance(), Transition()]
-                )
+                run_sequence(G, node, _COHERENCE_TEST_SEQUENCE)
         
         # Network should remain in valid state
         C_final = compute_global_coherence(G)

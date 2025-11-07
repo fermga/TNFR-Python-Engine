@@ -821,14 +821,14 @@ class Coherence(Operator):
         - C_global: Network-wide coherence using C(t) = 1 - (σ_ΔNFR / ΔNFR_max)
         - C_local: Node neighborhood coherence with configurable radius
         
-        Both metrics are stored in G.graph["coherence_tracking"] for analysis.
+        Both metrics are stored in G.graph["IL_coherence_tracking"] for analysis.
 
         **Phase Locking:**
         
         Aligns node phase θ with network neighborhood phase:
         - θ_node → θ_node + α * (θ_network - θ_node)
         - Uses circular mean for proper phase wrap-around handling
-        - Telemetry stored in G.graph["phase_locking"]
+        - Telemetry stored in G.graph["IL_phase_locking"]
 
         To customize the reduction factor, set GLYPH_FACTORS["IL_dnfr_factor"] in
         the graph before calling this operator. Default is 0.7 (30% reduction).
