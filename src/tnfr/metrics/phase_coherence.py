@@ -76,6 +76,7 @@ observers.kuramoto_order : Alternative Kuramoto order parameter implementation
 
 from __future__ import annotations
 
+import cmath
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
@@ -216,7 +217,6 @@ def compute_phase_alignment(G: TNFRGraph, node: Any, radius: int = 1) -> float:
         return float(r)
     else:
         # Pure Python fallback
-        import cmath
         
         # Convert phases to complex exponentials
         complex_phases = [cmath.exp(1j * theta) for theta in phases]
@@ -337,7 +337,6 @@ def compute_global_phase_coherence(G: TNFRGraph) -> float:
         return float(r)
     else:
         # Pure Python fallback
-        import cmath
         
         # Convert phases to complex exponentials
         complex_phases = [cmath.exp(1j * theta) for theta in phases]

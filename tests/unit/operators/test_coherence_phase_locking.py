@@ -31,6 +31,7 @@ monkeypatch to bypass grammar validation for focused unit testing.
 """
 
 import math
+import random
 
 import pytest
 import networkx as nx
@@ -293,7 +294,6 @@ def test_phase_alignment_metric_increases_with_il():
         G.nodes[node][VF_PRIMARY] = 1.0
         G.nodes[node][DNFR_PRIMARY] = 0.1
     
-    # Set random initial phases (low alignment)
     import random
     random.seed(42)
     for node in [0, 1, 2, 3]:

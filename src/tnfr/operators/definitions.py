@@ -11,6 +11,8 @@ TNFR 2.0, so downstream code must import these classes directly.
 
 from __future__ import annotations
 
+import cmath
+import math
 import warnings
 from typing import Any, ClassVar
 
@@ -1023,8 +1025,6 @@ class Coherence(Operator):
             
             # Normalize to [0, 2π]
             theta_new = float(theta_new % (2 * np.pi))
-        else:
-            # Pure Python fallback
             import cmath
             import math
             
