@@ -65,7 +65,7 @@ from ..metrics.sense_index import compute_Si
 from ..operators import apply_glyph
 from ..types import GlyphCode
 from ..utils import get_numpy
-from . import canonical, coordination, dnfr, integrators
+from . import canonical, coordination, dnfr, integrators, metabolism
 from .adaptation import adapt_vf_by_coherence
 from .aliases import (
     ALIAS_D2EPI,
@@ -148,6 +148,7 @@ __all__ = (
     "coordination",
     "dnfr",
     "integrators",
+    "metabolism",
     "ALIAS_D2EPI",
     "ALIAS_DNFR",
     "ALIAS_DSI",
