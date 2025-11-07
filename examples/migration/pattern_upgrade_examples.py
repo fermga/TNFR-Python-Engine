@@ -5,7 +5,7 @@ to more specialized domain-specific patterns in Grammar 2.0.
 """
 
 from tnfr.operators.grammar import validate_sequence_with_health
-from tnfr.operators.patterns import AdvancedPatternDetector, StructuralPattern
+from tnfr.operators.patterns import AdvancedPatternDetector
 from tnfr.config.operator_names import (
     EMISSION, RECEPTION, COHERENCE, DISSONANCE, SILENCE,
     COUPLING, RESONANCE, SELF_ORGANIZATION, TRANSITION,

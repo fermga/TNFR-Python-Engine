@@ -163,18 +163,25 @@ def show_adoption_strategies():
     print("\n🟡 Strategy 2: Progressive (Opt-in Health)")
     print("   Switch to validate_sequence_with_health() for metrics")
     result = validate_sequence_with_health(sequence)
-    print(f"   {' → '.join(sequence)}: Health = {result.health_metrics.overall_health:.2f}")
+    if result.passed and result.health_metrics:
+        print(f"   {' → '.join(sequence)}: Health = {result.health_metrics.overall_health:.2f}")
+    else:
+        print(f"   {' → '.join(sequence)}: {result.passed}")
     
     print("\n🟢 Strategy 3: Advanced (Full Optimization)")
     print("   Use upgrader tools and advanced patterns")
-    from tools.migration.sequence_upgrader import SequenceUpgrader
-    
-    upgrader = SequenceUpgrader(target_health=0.80)
-    upgrade_result = upgrader.upgrade_sequence(sequence)
-    print(f"   Original: {' → '.join(upgrade_result.original_sequence)}")
-    print(f"   Upgraded: {' → '.join(upgrade_result.upgraded_sequence)}")
-    if upgrade_result.upgraded_health:
-        print(f"   Health: {upgrade_result.original_health:.2f} → {upgrade_result.upgraded_health:.2f}")
+    try:
+        from tools.migration.sequence_upgrader import SequenceUpgrader
+        
+        upgrader = SequenceUpgrader(target_health=0.80)
+        upgrade_result = upgrader.upgrade_sequence(sequence)
+        print(f"   Original: {' → '.join(upgrade_result.original_sequence)}")
+        print(f"   Upgraded: {' → '.join(upgrade_result.upgraded_sequence)}")
+        if upgrade_result.upgraded_health:
+            print(f"   Health: {upgrade_result.original_health:.2f} → {upgrade_result.upgraded_health:.2f}")
+    except ImportError:
+        print("   (SequenceUpgrader requires tools.migration package)")
+        print(f"   See tools/migration/sequence_upgrader.py for details")
 
 
 def main():

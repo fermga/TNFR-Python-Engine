@@ -10,7 +10,13 @@ from tnfr.config.operator_names import (
     EMISSION, RECEPTION, COHERENCE, DISSONANCE, SILENCE,
     COUPLING, RESONANCE, SELF_ORGANIZATION, TRANSITION, MUTATION
 )
-from tools.migration.sequence_upgrader import SequenceUpgrader
+
+# Import upgrader if available
+try:
+    from tools.migration.sequence_upgrader import SequenceUpgrader
+    HAS_UPGRADER = True
+except ImportError:
+    HAS_UPGRADER = False
 
 
 def print_health_breakdown(sequence: list, title: str = "Health Analysis"):
@@ -20,13 +26,21 @@ def print_health_breakdown(sequence: list, title: str = "Health Analysis"):
     print("=" * 80)
     print(f"\nSequence: {' → '.join(sequence)}")
     
-    result = validate_sequence_with_health(sequence)
+    try:
+        result = validate_sequence_with_health(sequence)
+    except Exception as e:
+        print(f"\n❌ VALIDATION ERROR: {e}")
+        return None
     
     if not result.passed:
         print(f"\n❌ INVALID: {result.message}")
-        return
+        return None
     
     health = result.health_metrics
+    if not health:
+        print(f"\n⚠️  Health metrics not available")
+        return None
+    
     pattern = result.metadata.get('detected_pattern', 'unknown')
     
     print(f"\n✓ Valid | Pattern: {pattern.upper()}")
@@ -109,24 +123,31 @@ def lesson_2_iterative_optimization():
     sequence = [EMISSION, DISSONANCE]
     health = print_health_breakdown(sequence, "Initial Sequence (Problematic)")
     
+    if not health:
+        print("\n⚠️  Cannot demonstrate optimization on invalid sequence")
+        return
+    
     print("\n--- Step 2: Apply First Recommendation ---")
     print("  Recommendation: Add stabilizer after destabilizer")
     sequence_v2 = [EMISSION, DISSONANCE, COHERENCE]
     health_v2 = print_health_breakdown(sequence_v2, "After Adding COHERENCE")
     
-    print(f"\n  Improvement: {health.overall_health:.2f} → {health_v2.overall_health:.2f} (+{health_v2.overall_health - health.overall_health:.2f})")
+    if health_v2:
+        print(f"\n  Improvement: {health.overall_health:.2f} → {health_v2.overall_health:.2f} (+{health_v2.overall_health - health.overall_health:.2f})")
     
     print("\n--- Step 3: Add Proper Terminator ---")
     print("  Recommendation: End with terminator for sustainability")
     sequence_v3 = [EMISSION, DISSONANCE, COHERENCE, SILENCE]
     health_v3 = print_health_breakdown(sequence_v3, "After Adding SILENCE")
     
-    print(f"\n  Improvement: {health_v2.overall_health:.2f} → {health_v3.overall_health:.2f} (+{health_v3.overall_health - health_v2.overall_health:.2f})")
+    if health_v2 and health_v3:
+        print(f"\n  Improvement: {health_v2.overall_health:.2f} → {health_v3.overall_health:.2f} (+{health_v3.overall_health - health_v2.overall_health:.2f})")
     
-    print("\n✨ Final Result: Transformed problematic sequence into healthy one!")
-    print(f"   Original:  {' → '.join([EMISSION, DISSONANCE])}")
-    print(f"   Optimized: {' → '.join(sequence_v3)}")
-    print(f"   Health: {health.overall_health:.2f} → {health_v3.overall_health:.2f}")
+    if health and health_v3:
+        print("\n✨ Final Result: Transformed problematic sequence into healthy one!")
+        print(f"   Original:  {' → '.join([EMISSION, DISSONANCE])}")
+        print(f"   Optimized: {' → '.join(sequence_v3)}")
+        print(f"   Health: {health.overall_health:.2f} → {health_v3.overall_health:.2f}")
 
 
 def lesson_3_automatic_upgrader():
@@ -134,6 +155,11 @@ def lesson_3_automatic_upgrader():
     print("\n" + "█" * 80)
     print("  LESSON 3: Automatic Sequence Upgrader")
     print("█" * 80)
+    
+    if not HAS_UPGRADER:
+        print("\n⚠️  SequenceUpgrader not available (requires tools.migration package)")
+        print("    See tools/migration/sequence_upgrader.py for installation")
+        return
     
     print("\n📚 The SequenceUpgrader can automatically optimize sequences.")
     
