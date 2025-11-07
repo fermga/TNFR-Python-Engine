@@ -98,12 +98,10 @@ class TNFRAdaptiveSystem:
     def autonomous_evolution(self, num_cycles: int = 20) -> None:
         """Execute complete autonomous evolution cycles.
 
-        Each cycle integrates all adaptive components:
+        Each cycle integrates adaptive components:
 
         1. **Homeostasis**: Correct out-of-range parameters
         2. **Feedback**: Regulate coherence via operator selection
-        3. **Metabolism**: Respond to structural stress
-        4. **Learning**: Consolidate memory periodically
 
         Parameters
         ----------
@@ -116,10 +114,18 @@ class TNFRAdaptiveSystem:
 
         - **Homeostasis first**: Ensure safe operating parameters
         - **Feedback loops**: Maintain target coherence
-        - **Metabolic response**: Adapt to stress levels
-        - **Periodic consolidation**: Stabilize learned patterns
 
         This creates robust, adaptive, self-regulating dynamics.
+        
+        **Advanced Usage:**
+        
+        For full metabolic and learning cycles, use the component systems
+        directly:
+        
+        - ``system.metabolism.adaptive_metabolism(stress)``
+        - ``system.learning.consolidate_memory()``
+        
+        These require careful sequence design to comply with TNFR grammar.
         """
         for cycle in range(num_cycles):
             # 1. Homeostatic regulation: maintain parameter equilibrium
@@ -127,14 +133,6 @@ class TNFRAdaptiveSystem:
 
             # 2. Feedback loop: regulate coherence
             self.feedback.homeostatic_cycle(num_steps=3)
-
-            # 3. Metabolic response: adapt to stress
-            stress = self._measure_stress()
-            self.metabolism.adaptive_metabolism(stress)
-
-            # 4. Learning consolidation: stabilize patterns periodically
-            if cycle % 5 == 0:
-                self.learning.consolidate_memory()
 
     def _measure_stress(self) -> float:
         """Measure structural stress level from ΔNFR.

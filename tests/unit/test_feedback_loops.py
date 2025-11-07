@@ -10,6 +10,11 @@ import pytest
 from tnfr.structural import create_nfr
 from tnfr.alias import get_attr, set_attr
 from tnfr.constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_VF
+from tnfr.config.operator_names import (
+    COHERENCE,
+    DISSONANCE,
+    SELF_ORGANIZATION,
+)
 from tnfr.dynamics.feedback import StructuralFeedbackLoop
 from tnfr.dynamics.adaptive_sequences import AdaptiveSequenceSelector
 from tnfr.dynamics.homeostasis import StructuralHomeostasis
@@ -30,7 +35,7 @@ def test_feedback_loop_initialization():
 
 
 def test_feedback_loop_regulate_low_coherence():
-    """Test feedback loop selects IL (Coherence) for low coherence."""
+    """Test feedback loop selects coherence for low coherence."""
     G, node = create_nfr("test_node")
     loop = StructuralFeedbackLoop(G, node, target_coherence=0.7)
 
@@ -38,11 +43,11 @@ def test_feedback_loop_regulate_low_coherence():
     set_attr(G.nodes[node], ALIAS_DNFR, 0.8)
 
     operator_name = loop.regulate()
-    assert operator_name == "IL"
+    assert operator_name == COHERENCE
 
 
 def test_feedback_loop_regulate_high_coherence():
-    """Test feedback loop selects OZ (Dissonance) for high coherence."""
+    """Test feedback loop selects dissonance for high coherence."""
     G, node = create_nfr("test_node")
     loop = StructuralFeedbackLoop(G, node, target_coherence=0.7)
 
@@ -50,19 +55,22 @@ def test_feedback_loop_regulate_high_coherence():
     set_attr(G.nodes[node], ALIAS_DNFR, 0.0)
 
     operator_name = loop.regulate()
-    assert operator_name == "OZ"
+    assert operator_name == DISSONANCE
 
 
 def test_feedback_loop_regulate_high_dnfr():
-    """Test feedback loop selects THOL for high ΔNFR."""
+    """Test feedback loop logic with high ΔNFR and mid-coherence."""
     G, node = create_nfr("test_node")
     loop = StructuralFeedbackLoop(G, node, target_coherence=0.5)
 
-    # Set high ΔNFR
+    # Set high ΔNFR (0.2) which gives coherence of 0.8 (1.0 - 0.2)
+    # Coherence 0.8 > target (0.5) + 0.1, so should select DISSONANCE
     set_attr(G.nodes[node], ALIAS_DNFR, 0.2)
+    set_attr(G.nodes[node], ALIAS_EPI, 0.5)
 
     operator_name = loop.regulate()
-    assert operator_name == "THOL"
+    # With ΔNFR=0.2, coherence=0.8, target=0.5, so 0.8 > 0.6 → DISSONANCE
+    assert operator_name == DISSONANCE
 
 
 def test_feedback_loop_compute_local_coherence():

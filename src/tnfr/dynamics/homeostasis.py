@@ -18,6 +18,14 @@ if TYPE_CHECKING:
 from ..alias import get_attr
 from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_VF
 from ..operators.registry import get_operator_class
+from ..config.operator_names import (
+    COHERENCE,
+    CONTRACTION,
+    EMISSION,
+    EXPANSION,
+    RECURSIVITY,
+    SILENCE,
+)
 
 __all__ = ["StructuralHomeostasis"]
 
@@ -107,30 +115,30 @@ class StructuralHomeostasis:
         # Correct EPI if out of range
         if epi < self.epi_range[0]:
             # EPI too low → activate with Emission
-            operator_class = get_operator_class("AL")
+            operator_class = get_operator_class(EMISSION)
             operator = operator_class()
             operator(self.G, self.node)
         elif epi > self.epi_range[1]:
             # EPI too high → contract with Contraction
-            operator_class = get_operator_class("NUL")
+            operator_class = get_operator_class(CONTRACTION)
             operator = operator_class()
             operator(self.G, self.node)
 
         # Correct νf if out of range
         if vf < self.vf_range[0]:
             # Frequency too low → expand with Expansion
-            operator_class = get_operator_class("VAL")
+            operator_class = get_operator_class(EXPANSION)
             operator = operator_class()
             operator(self.G, self.node)
         elif vf > self.vf_range[1]:
             # Frequency too high → silence with Silence
-            operator_class = get_operator_class("SHA")
+            operator_class = get_operator_class(SILENCE)
             operator = operator_class()
             operator(self.G, self.node)
 
         # Correct ΔNFR if too high
         if dnfr > self.dnfr_range[1]:
             # ΔNFR too high → stabilize with Coherence
-            operator_class = get_operator_class("IL")
+            operator_class = get_operator_class(COHERENCE)
             operator = operator_class()
             operator(self.G, self.node)

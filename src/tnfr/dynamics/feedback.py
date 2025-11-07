@@ -18,6 +18,13 @@ if TYPE_CHECKING:
 from ..alias import get_attr
 from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_VF
 from ..operators.registry import get_operator_class
+from ..config.operator_names import (
+    COHERENCE,
+    DISSONANCE,
+    EMISSION,
+    SELF_ORGANIZATION,
+    SILENCE,
+)
 
 __all__ = ["StructuralFeedbackLoop"]
 
@@ -118,19 +125,19 @@ class StructuralFeedbackLoop:
         # Structural decision tree
         if coherence < self.target_coherence - 0.2:
             # Very low coherence → stabilize
-            return "IL"
+            return COHERENCE
         elif coherence > self.target_coherence + 0.1:
             # High coherence → explore
-            return "OZ"
+            return DISSONANCE
         elif dnfr > 0.15:
             # High reorganization pressure → self-organize
-            return "THOL"
+            return SELF_ORGANIZATION
         elif epi < 0.3:
             # Low activation → emit
-            return "AL"
+            return EMISSION
         else:
             # Stable state → consolidate
-            return "SHA"
+            return SILENCE
 
     def _compute_local_coherence(self) -> float:
         """Estimate local coherence from ΔNFR.

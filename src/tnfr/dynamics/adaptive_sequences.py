@@ -21,6 +21,19 @@ try:
 except ImportError:
     np = None  # type: ignore[assignment]
 
+from ..config.operator_names import (
+    COHERENCE,
+    DISSONANCE,
+    EMISSION,
+    MUTATION,
+    RECEPTION,
+    RECURSIVITY,
+    RESONANCE,
+    SELF_ORGANIZATION,
+    SILENCE,
+    TRANSITION,
+)
+
 __all__ = ["AdaptiveSequenceSelector"]
 
 
@@ -70,12 +83,13 @@ class AdaptiveSequenceSelector:
         self.node = node
 
         # Canonical operator sequences
+        # Note: Sequences are designed to comply with TNFR grammar rules
         self.sequences: Dict[str, List[str]] = {
-            "basic_activation": ["AL", "IL"],
-            "deep_learning": ["AL", "EN", "OZ", "THOL", "IL"],
-            "exploration": ["AL", "OZ", "THOL", "RA"],
-            "consolidation": ["IL", "SHA", "REMESH"],
-            "mutation": ["IL", "ZHIR", "NAV", "IL"],
+            "basic_activation": [EMISSION, COHERENCE],
+            "deep_learning": [EMISSION, RECEPTION, COHERENCE],
+            "exploration": [EMISSION, DISSONANCE, COHERENCE],
+            "consolidation": [COHERENCE, SILENCE, RECURSIVITY],
+            "mutation": [COHERENCE, MUTATION, TRANSITION, COHERENCE],
         }
 
         # Performance history: sequence_name -> [coherence_gains]
