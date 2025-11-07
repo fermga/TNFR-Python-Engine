@@ -111,11 +111,13 @@ class TestInteractiveValidator:
 
         validator = TNFRInteractiveValidator()
         analyzer = SequenceHealthAnalyzer()
-        
-        health = analyzer.analyze_health(["emission", "reception", "coherence", "silence"])
-        
+
+        health = analyzer.analyze_health(
+            ["emission", "reception", "coherence", "silence"]
+        )
+
         validator._display_health_metrics(health)
-        
+
         captured = capsys.readouterr()
         assert "Health Metrics" in captured.out
         assert "Overall Health:" in captured.out
@@ -127,9 +129,9 @@ class TestInteractiveValidator:
         """Test generated sequence display."""
         from tnfr.compat.dataclass import dataclass
         from tnfr.tools.sequence_generator import GenerationResult
-        
+
         validator = TNFRInteractiveValidator()
-        
+
         result = GenerationResult(
             sequence=["emission", "coherence", "silence"],
             health_score=0.75,
@@ -138,11 +140,11 @@ class TestInteractiveValidator:
             objective="stabilization",
             method="template",
             recommendations=["Good sequence"],
-            metadata={}
+            metadata={},
         )
-        
+
         validator._display_generated_sequence(result)
-        
+
         captured = capsys.readouterr()
         assert "GENERATED SEQUENCE" in captured.out
         assert "emission" in captured.out
@@ -152,21 +154,21 @@ class TestInteractiveValidator:
     def test_ask_yes_no_yes(self, monkeypatch):
         """Test yes/no prompt with yes answer."""
         validator = TNFRInteractiveValidator()
-        
-        monkeypatch.setattr('builtins.input', lambda _: 'y')
+
+        monkeypatch.setattr("builtins.input", lambda _: "y")
         assert validator._ask_yes_no("Continue?") is True
-        
-        monkeypatch.setattr('builtins.input', lambda _: 'yes')
+
+        monkeypatch.setattr("builtins.input", lambda _: "yes")
         assert validator._ask_yes_no("Continue?") is True
 
     def test_ask_yes_no_no(self, monkeypatch):
         """Test yes/no prompt with no answer."""
         validator = TNFRInteractiveValidator()
-        
-        monkeypatch.setattr('builtins.input', lambda _: 'n')
+
+        monkeypatch.setattr("builtins.input", lambda _: "n")
         assert validator._ask_yes_no("Continue?") is False
-        
-        monkeypatch.setattr('builtins.input', lambda _: 'no')
+
+        monkeypatch.setattr("builtins.input", lambda _: "no")
         assert validator._ask_yes_no("Continue?") is False
 
 
@@ -176,13 +178,13 @@ class TestValidationMode:
     def test_validate_valid_sequence(self, monkeypatch, capsys):
         """Test validation of a valid sequence."""
         validator = TNFRInteractiveValidator()
-        
+
         # Simulate user input
         inputs = iter(["emission reception coherence silence"])
-        monkeypatch.setattr('builtins.input', lambda _: next(inputs))
-        
+        monkeypatch.setattr("builtins.input", lambda _: next(inputs))
+
         validator._interactive_validate()
-        
+
         captured = capsys.readouterr()
         assert "VALID SEQUENCE" in captured.out
         assert "Health Metrics" in captured.out
@@ -190,25 +192,25 @@ class TestValidationMode:
     def test_validate_invalid_sequence(self, monkeypatch, capsys):
         """Test validation of an invalid sequence."""
         validator = TNFRInteractiveValidator()
-        
+
         # Invalid - silence can't be first
         inputs = iter(["silence emission"])
-        monkeypatch.setattr('builtins.input', lambda _: next(inputs))
-        
+        monkeypatch.setattr("builtins.input", lambda _: next(inputs))
+
         validator._interactive_validate()
-        
+
         captured = capsys.readouterr()
         assert "INVALID SEQUENCE" in captured.out or "Error" in captured.out
 
     def test_validate_empty_sequence(self, monkeypatch, capsys):
         """Test validation with empty input."""
         validator = TNFRInteractiveValidator()
-        
+
         inputs = iter([""])
-        monkeypatch.setattr('builtins.input', lambda _: next(inputs))
-        
+        monkeypatch.setattr("builtins.input", lambda _: next(inputs))
+
         validator._interactive_validate()
-        
+
         captured = capsys.readouterr()
         assert "Empty sequence" in captured.out
 
@@ -220,7 +222,7 @@ class TestGenerationMode:
         """Test listing available domains."""
         validator = TNFRInteractiveValidator()
         validator._list_domains()
-        
+
         captured = capsys.readouterr()
         assert "Available Domains" in captured.out
         assert "therapeutic" in captured.out.lower()
@@ -228,20 +230,20 @@ class TestGenerationMode:
     def test_list_objectives_valid_domain(self, monkeypatch, capsys):
         """Test listing objectives for valid domain."""
         validator = TNFRInteractiveValidator()
-        
-        monkeypatch.setattr('builtins.input', lambda _: 'therapeutic')
+
+        monkeypatch.setattr("builtins.input", lambda _: "therapeutic")
         validator._list_objectives_for_domain()
-        
+
         captured = capsys.readouterr()
         assert "Objectives" in captured.out
 
     def test_list_objectives_invalid_domain(self, monkeypatch, capsys):
         """Test listing objectives for invalid domain."""
         validator = TNFRInteractiveValidator()
-        
-        monkeypatch.setattr('builtins.input', lambda _: 'nonexistent_domain')
+
+        monkeypatch.setattr("builtins.input", lambda _: "nonexistent_domain")
         validator._list_objectives_for_domain()
-        
+
         captured = capsys.readouterr()
         assert "Unknown domain" in captured.out
 
@@ -249,7 +251,7 @@ class TestGenerationMode:
         """Test pattern explanation display."""
         validator = TNFRInteractiveValidator()
         validator._explain_patterns()
-        
+
         captured = capsys.readouterr()
         assert "Structural Patterns" in captured.out
         assert "BOOTSTRAP" in captured.out
@@ -262,21 +264,21 @@ class TestOptimizationMode:
     def test_display_optimization_result(self, capsys):
         """Test optimization result display."""
         from tnfr.operators.health_analyzer import SequenceHealthAnalyzer
-        
+
         validator = TNFRInteractiveValidator()
         analyzer = SequenceHealthAnalyzer()
-        
+
         current = ["emission", "coherence", "silence"]
         improved = ["emission", "reception", "coherence", "silence"]
-        
+
         current_health = analyzer.analyze_health(current)
         improved_health = analyzer.analyze_health(improved)
         recommendations = ["Added reception for better balance"]
-        
+
         validator._display_optimization_result(
             current, improved, current_health, improved_health, recommendations
         )
-        
+
         captured = capsys.readouterr()
         assert "OPTIMIZATION COMPLETE" in captured.out
         assert "Original:" in captured.out
@@ -291,7 +293,7 @@ class TestDisplayMethods:
         """Test welcome banner display."""
         validator = TNFRInteractiveValidator()
         validator._show_welcome()
-        
+
         captured = capsys.readouterr()
         assert "TNFR Interactive Sequence Validator" in captured.out
         assert "Grammar 2.0" in captured.out
@@ -299,17 +301,17 @@ class TestDisplayMethods:
     def test_show_main_menu(self, monkeypatch):
         """Test main menu display and input."""
         validator = TNFRInteractiveValidator()
-        
-        monkeypatch.setattr('builtins.input', lambda _: 'v')
+
+        monkeypatch.setattr("builtins.input", lambda _: "v")
         choice = validator._show_main_menu()
-        
-        assert choice == 'v'
+
+        assert choice == "v"
 
     def test_show_help(self, capsys):
         """Test help display."""
         validator = TNFRInteractiveValidator()
         validator._show_help()
-        
+
         captured = capsys.readouterr()
         assert "HELP & DOCUMENTATION" in captured.out
         assert "emission" in captured.out
@@ -323,9 +325,9 @@ class TestErrorHandling:
         """Test exception display."""
         validator = TNFRInteractiveValidator()
         error = ValueError("Test error")
-        
+
         validator._display_exception(error)
-        
+
         captured = capsys.readouterr()
         assert "Unexpected error" in captured.out
         assert "Test error" in captured.out
@@ -333,9 +335,9 @@ class TestErrorHandling:
     def test_suggest_fixes(self, capsys):
         """Test fix suggestions display."""
         validator = TNFRInteractiveValidator()
-        
+
         validator._suggest_fixes(["invalid"], None)
-        
+
         captured = capsys.readouterr()
         assert "Suggestions" in captured.out
 
@@ -343,20 +345,18 @@ class TestErrorHandling:
 def test_run_interactive_validator_success(monkeypatch):
     """Test successful interactive validator run."""
     from tnfr.cli.interactive_validator import run_interactive_validator
-    
+
     # Mock to quit immediately
     call_count = [0]
-    
+
     def mock_run_session(self):
         call_count[0] += 1
         self.running = False
-    
+
     monkeypatch.setattr(
-        TNFRInteractiveValidator,
-        'run_interactive_session',
-        mock_run_session
+        TNFRInteractiveValidator, "run_interactive_session", mock_run_session
     )
-    
+
     exit_code = run_interactive_validator()
     assert exit_code == 0
     assert call_count[0] == 1
@@ -365,7 +365,7 @@ def test_run_interactive_validator_success(monkeypatch):
 def test_run_interactive_validator_with_seed():
     """Test validator run with seed parameter."""
     from tnfr.cli.interactive_validator import TNFRInteractiveValidator
-    
+
     validator = TNFRInteractiveValidator(seed=12345)
     assert validator.generator is not None
 

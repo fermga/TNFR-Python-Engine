@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Interactive CLI validator for TNFR operator sequences.
 
-Provides a user-friendly terminal interface for validating, analyzing, 
+Provides a user-friendly terminal interface for validating, analyzing,
 optimizing, and exploring TNFR operator sequences without requiring
 programming knowledge.
 """
@@ -26,11 +26,11 @@ __all__ = ["TNFRInteractiveValidator", "run_interactive_validator"]
 
 class TNFRInteractiveValidator:
     """Interactive validator for TNFR operator sequences.
-    
+
     Provides a conversational interface for users to validate, generate,
     optimize, and explore TNFR operator sequences with real-time feedback
     and visual health metrics.
-    
+
     Examples
     --------
     >>> validator = TNFRInteractiveValidator()
@@ -39,7 +39,7 @@ class TNFRInteractiveValidator:
 
     def __init__(self, seed: Optional[int] = None):
         """Initialize the interactive validator.
-        
+
         Parameters
         ----------
         seed : int, optional
@@ -52,27 +52,27 @@ class TNFRInteractiveValidator:
     def run_interactive_session(self) -> None:
         """Run the main interactive session with menu navigation."""
         self._show_welcome()
-        
+
         while self.running:
             try:
                 choice = self._show_main_menu()
-                
-                if choice == 'v':
+
+                if choice == "v":
                     self._interactive_validate()
-                elif choice == 'g':
+                elif choice == "g":
                     self._interactive_generate()
-                elif choice == 'o':
+                elif choice == "o":
                     self._interactive_optimize()
-                elif choice == 'e':
+                elif choice == "e":
                     self._interactive_explore()
-                elif choice == 'h':
+                elif choice == "h":
                     self._show_help()
-                elif choice == 'q':
+                elif choice == "q":
                     self.running = False
                     print("\nThank you for using TNFR Interactive Validator!")
                 else:
                     print(f"\n⚠ Invalid choice: '{choice}'. Please try again.\n")
-                    
+
             except KeyboardInterrupt:
                 print("\n\n⚠ Interrupted. Returning to main menu...\n")
             except EOFError:
@@ -90,7 +90,7 @@ class TNFRInteractiveValidator:
 
     def _show_main_menu(self) -> str:
         """Show main menu and get user choice.
-        
+
         Returns
         -------
         str
@@ -104,7 +104,7 @@ class TNFRInteractiveValidator:
         print("  [h] Help and documentation")
         print("  [q] Quit")
         print()
-        
+
         choice = input("Select option: ").strip().lower()
         return choice
 
@@ -116,31 +116,31 @@ class TNFRInteractiveValidator:
         print("Enter operators separated by spaces or commas.")
         print("Example: emission reception coherence silence")
         print()
-        
+
         sequence_input = input("Sequence: ").strip()
         if not sequence_input:
             print("⚠ Empty sequence. Returning to menu.\n")
             return
-        
+
         # Parse sequence (handle both space and comma separation)
         sequence = self._parse_sequence_input(sequence_input)
-        
+
         try:
             result = validate_sequence_with_health(sequence)
-            
+
             if result.passed:
                 self._display_success(result, sequence)
-                
+
                 # Suggest improvements if health is moderate
                 if result.health_metrics and result.health_metrics.overall_health < 0.8:
                     self._suggest_improvements(sequence, result.health_metrics)
             else:
                 self._display_error(result)
                 self._suggest_fixes(sequence, result.error)
-                
+
         except Exception as e:
             self._display_exception(e)
-        
+
         print()
 
     def _interactive_generate(self) -> None:
@@ -149,21 +149,21 @@ class TNFRInteractiveValidator:
         print("GENERATE SEQUENCE")
         print("─" * 60)
         print()
-        
+
         # Ask generation mode
         print("Generation mode:")
         print("  [d] By domain and objective")
         print("  [p] By structural pattern")
         print("  [b] Back to main menu")
         print()
-        
+
         mode = input("Select mode: ").strip().lower()
-        
-        if mode == 'b':
+
+        if mode == "b":
             return
-        elif mode == 'd':
+        elif mode == "d":
             self._generate_by_domain()
-        elif mode == 'p':
+        elif mode == "p":
             self._generate_by_pattern()
         else:
             print(f"⚠ Invalid mode: '{mode}'\n")
@@ -176,7 +176,7 @@ class TNFRInteractiveValidator:
         for i, domain in enumerate(domains, 1):
             print(f"  {i}. {domain}")
         print()
-        
+
         try:
             domain_idx = int(input("Select domain (number): ").strip()) - 1
             if domain_idx < 0 or domain_idx >= len(domains):
@@ -186,7 +186,7 @@ class TNFRInteractiveValidator:
         except (ValueError, EOFError):
             print("⚠ Invalid input.\n")
             return
-        
+
         # Select objective
         try:
             objectives = list_objectives(domain)
@@ -194,7 +194,7 @@ class TNFRInteractiveValidator:
             for i, obj in enumerate(objectives, 1):
                 print(f"  {i}. {obj}")
             print()
-            
+
             obj_idx = int(input("Select objective (number, or 0 for any): ").strip())
             if obj_idx == 0:
                 objective = None
@@ -207,21 +207,19 @@ class TNFRInteractiveValidator:
         except (ValueError, EOFError):
             print("⚠ Invalid input.\n")
             return
-        
+
         # Generate
         print("\nGenerating sequence...")
         try:
             result = self.generator.generate_for_context(
-                domain=domain,
-                objective=objective,
-                min_health=0.70
+                domain=domain, objective=objective, min_health=0.70
             )
             self._display_generated_sequence(result)
-            
+
             # Offer to analyze
             if self._ask_yes_no("\nAnalyze this sequence in detail?"):
                 self._analyze_sequence(result.sequence)
-                
+
         except Exception as e:
             print(f"✗ Generation failed: {e}\n")
 
@@ -229,13 +227,19 @@ class TNFRInteractiveValidator:
         """Generate sequence by selecting structural pattern."""
         print("\nCommon structural patterns:")
         patterns = [
-            "BOOTSTRAP", "THERAPEUTIC", "STABILIZE", "REGENERATIVE",
-            "EXPLORATION", "TRANSFORMATIVE", "COUPLING", "SIMPLE"
+            "BOOTSTRAP",
+            "THERAPEUTIC",
+            "STABILIZE",
+            "REGENERATIVE",
+            "EXPLORATION",
+            "TRANSFORMATIVE",
+            "COUPLING",
+            "SIMPLE",
         ]
         for i, pattern in enumerate(patterns, 1):
             print(f"  {i}. {pattern}")
         print()
-        
+
         try:
             pattern_idx = int(input("Select pattern (number): ").strip()) - 1
             if pattern_idx < 0 or pattern_idx >= len(patterns):
@@ -245,16 +249,15 @@ class TNFRInteractiveValidator:
         except (ValueError, EOFError):
             print("⚠ Invalid input.\n")
             return
-        
+
         # Generate
         print(f"\nGenerating {pattern} sequence...")
         try:
             result = self.generator.generate_for_pattern(
-                target_pattern=pattern,
-                min_health=0.70
+                target_pattern=pattern, min_health=0.70
             )
             self._display_generated_sequence(result)
-            
+
         except Exception as e:
             print(f"✗ Generation failed: {e}\n")
 
@@ -265,37 +268,38 @@ class TNFRInteractiveValidator:
         print("─" * 60)
         print("Enter the sequence you want to improve.")
         print()
-        
+
         sequence_input = input("Current sequence: ").strip()
         if not sequence_input:
             print("⚠ Empty sequence. Returning to menu.\n")
             return
-        
+
         current = self._parse_sequence_input(sequence_input)
-        
+
         # Ask for target health
         try:
-            target_input = input("Target health score (0.0-1.0, or Enter for default): ").strip()
+            target_input = input(
+                "Target health score (0.0-1.0, or Enter for default): "
+            ).strip()
             target_health = float(target_input) if target_input else None
         except ValueError:
             print("⚠ Invalid health score. Using default.\n")
             target_health = None
-        
+
         print("\nOptimizing...")
         try:
             improved, recommendations = self.generator.improve_sequence(
-                current,
-                target_health=target_health
+                current, target_health=target_health
             )
-            
+
             # Show results
             current_health = self.analyzer.analyze_health(current)
             improved_health = self.analyzer.analyze_health(improved)
-            
+
             self._display_optimization_result(
                 current, improved, current_health, improved_health, recommendations
             )
-            
+
         except Exception as e:
             print(f"✗ Optimization failed: {e}\n")
 
@@ -310,16 +314,16 @@ class TNFRInteractiveValidator:
         print("  [p] Learn about structural patterns")
         print("  [b] Back to main menu")
         print()
-        
+
         choice = input("Select option: ").strip().lower()
-        
-        if choice == 'd':
+
+        if choice == "d":
             self._list_domains()
-        elif choice == 'o':
+        elif choice == "o":
             self._list_objectives_for_domain()
-        elif choice == 'p':
+        elif choice == "p":
             self._explain_patterns()
-        elif choice == 'b':
+        elif choice == "b":
             return
         else:
             print(f"⚠ Invalid choice: '{choice}'\n")
@@ -362,41 +366,47 @@ class TNFRInteractiveValidator:
     def _parse_sequence_input(self, sequence_input: str) -> list[str]:
         """Parse sequence from user input, handling multiple separators."""
         # Replace commas with spaces and split
-        sequence_input = sequence_input.replace(',', ' ')
+        sequence_input = sequence_input.replace(",", " ")
         return [op.strip() for op in sequence_input.split() if op.strip()]
 
     def _display_success(
-        self,
-        result: SequenceValidationResult,
-        sequence: list[str]
+        self, result: SequenceValidationResult, sequence: list[str]
     ) -> None:
         """Display successful validation with health metrics."""
         print()
         print("✓ VALID SEQUENCE")
         print()
-        
+
         if result.health_metrics:
             self._display_health_metrics(result.health_metrics)
 
     def _display_health_metrics(self, health: SequenceHealthMetrics) -> None:
         """Display health metrics with visual formatting."""
         print("┌─ Health Metrics " + "─" * 41 + "┐")
-        
+
         # Overall health
         icon = self._health_icon(health.overall_health)
         bar = self._health_bar(health.overall_health)
         status = self._health_status(health.overall_health)
-        print(f"│ Overall Health:      {bar} {health.overall_health:.2f} {icon} ({status})")
-        
+        print(
+            f"│ Overall Health:      {bar} {health.overall_health:.2f} {icon} ({status})"
+        )
+
         # Individual metrics
-        print(f"│ Coherence Index:     {self._health_bar(health.coherence_index)} {health.coherence_index:.2f}")
-        print(f"│ Balance Score:       {self._health_bar(health.balance_score)} {health.balance_score:.2f}")
-        print(f"│ Sustainability:      {self._health_bar(health.sustainability_index)} {health.sustainability_index:.2f}")
-        
+        print(
+            f"│ Coherence Index:     {self._health_bar(health.coherence_index)} {health.coherence_index:.2f}"
+        )
+        print(
+            f"│ Balance Score:       {self._health_bar(health.balance_score)} {health.balance_score:.2f}"
+        )
+        print(
+            f"│ Sustainability:      {self._health_bar(health.sustainability_index)} {health.sustainability_index:.2f}"
+        )
+
         # Pattern
         print(f"│ Pattern Detected:    {health.dominant_pattern.upper()}")
         print(f"│ Sequence Length:     {health.sequence_length}")
-        
+
         print("└" + "─" * 58 + "┘")
 
     def _health_bar(self, value: float, width: int = 10) -> str:
@@ -435,14 +445,12 @@ class TNFRInteractiveValidator:
         print()
 
     def _suggest_improvements(
-        self,
-        sequence: list[str],
-        health: SequenceHealthMetrics
+        self, sequence: list[str], health: SequenceHealthMetrics
     ) -> None:
         """Suggest improvements for moderate health sequences."""
         if not health.recommendations:
             return
-        
+
         print()
         print("💡 Recommendations:")
         for i, rec in enumerate(health.recommendations[:3], 1):
@@ -469,14 +477,16 @@ class TNFRInteractiveValidator:
         print("✓ GENERATED SEQUENCE")
         print()
         print(f"Sequence:  {' → '.join(result.sequence)}")
-        print(f"Health:    {result.health_score:.2f} {self._health_icon(result.health_score)}")
+        print(
+            f"Health:    {result.health_score:.2f} {self._health_icon(result.health_score)}"
+        )
         print(f"Pattern:   {result.detected_pattern.upper()}")
-        
+
         if result.domain:
             print(f"Domain:    {result.domain}")
         if result.objective:
             print(f"Objective: {result.objective}")
-        
+
         if result.recommendations:
             print()
             print("💡 Recommendations:")
@@ -489,10 +499,10 @@ class TNFRInteractiveValidator:
         print("\n" + "─" * 60)
         print("DETAILED ANALYSIS")
         print("─" * 60)
-        
+
         health = self.analyzer.analyze_health(sequence)
         self._display_health_metrics(health)
-        
+
         if health.recommendations:
             print()
             print("All Recommendations:")
@@ -506,24 +516,28 @@ class TNFRInteractiveValidator:
         improved: list[str],
         current_health: SequenceHealthMetrics,
         improved_health: SequenceHealthMetrics,
-        recommendations: list[str]
+        recommendations: list[str],
     ) -> None:
         """Display optimization result with before/after comparison."""
         print()
         print("✓ OPTIMIZATION COMPLETE")
         print()
         print(f"Original:  {' → '.join(current)}")
-        print(f"  Health:  {current_health.overall_health:.2f} {self._health_icon(current_health.overall_health)}")
+        print(
+            f"  Health:  {current_health.overall_health:.2f} {self._health_icon(current_health.overall_health)}"
+        )
         print()
         print(f"Improved:  {' → '.join(improved)}")
-        print(f"  Health:  {improved_health.overall_health:.2f} {self._health_icon(improved_health.overall_health)}")
-        
+        print(
+            f"  Health:  {improved_health.overall_health:.2f} {self._health_icon(improved_health.overall_health)}"
+        )
+
         delta = improved_health.overall_health - current_health.overall_health
         if delta > 0:
             print(f"  Delta:   +{delta:.2f} ✓")
         else:
             print(f"  Delta:   {delta:.2f}")
-        
+
         if recommendations:
             print()
             print("Changes made:")
@@ -571,17 +585,17 @@ class TNFRInteractiveValidator:
     def _ask_yes_no(self, prompt: str) -> bool:
         """Ask yes/no question."""
         response = input(f"{prompt} (y/n): ").strip().lower()
-        return response in ('y', 'yes')
+        return response in ("y", "yes")
 
 
 def run_interactive_validator(seed: Optional[int] = None) -> int:
     """Run the interactive validator session.
-    
+
     Parameters
     ----------
     seed : int, optional
         Random seed for deterministic generation.
-    
+
     Returns
     -------
     int
