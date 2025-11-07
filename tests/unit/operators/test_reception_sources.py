@@ -254,7 +254,7 @@ def test_reception_metrics_integration_efficiency_calculation():
 
     # Get stored sources to verify calculation
     sources = G.nodes[receiver]["_reception_sources"]
-    
+
     # If sources were detected, verify efficiency calculation
     if len(sources) > 0:
         _, _, coherence_strength = sources[0]
