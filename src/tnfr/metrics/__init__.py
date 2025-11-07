@@ -20,6 +20,11 @@ from .diagnosis import (
     register_diagnosis_callbacks,
 )
 from .export import export_metrics
+from .learning_metrics import (
+    compute_consolidation_index,
+    compute_learning_efficiency,
+    compute_learning_plasticity,
+)
 from .reporting import (
     Tg_by_node,
     Tg_global,
@@ -48,4 +53,7 @@ __all__ = (
     "configure_hot_path_caches",
     "get_cache_config",
     "log_cache_metrics",
+    "compute_learning_plasticity",
+    "compute_consolidation_index",
+    "compute_learning_efficiency",
 )

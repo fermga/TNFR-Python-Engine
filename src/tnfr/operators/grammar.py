@@ -849,6 +849,13 @@ class StructuralPattern(Enum):
     RESONATE = "resonate"  # Amplification: RA→UM→RA
     COMPRESS = "compress"  # Simplification: NUL→IL→SHA
     
+    # Adaptive learning patterns (AL + T'HOL canonical sequences)
+    BASIC_LEARNING = "basic_learning"  # Simple learning: AL→EN→IL
+    DEEP_LEARNING = "deep_learning"  # Deep learning with crisis: AL→EN→OZ→THOL→IL
+    EXPLORATORY_LEARNING = "exploratory_learning"  # Exploration learning: AL→OZ→THOL→RA→IL
+    CONSOLIDATION_CYCLE = "consolidation_cycle"  # Memory consolidation: IL→SHA→REMESH
+    ADAPTIVE_MUTATION = "adaptive_mutation"  # Transformative learning: EN→OZ→THOL→ZHIR→NAV→IL
+    
     # Structural complexity
     COMPLEX = "complex"  # Multiple patterns combined
     MINIMAL = "minimal"  # Single or very few operators

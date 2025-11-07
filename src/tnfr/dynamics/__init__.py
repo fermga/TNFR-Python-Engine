@@ -105,6 +105,7 @@ from .integrators import (
     prepare_integration_params,
     update_epi_via_nodal_equation,
 )
+from .learning import AdaptiveLearningSystem
 from .structural_clip import (
     structural_clip,
     StructuralClipStats,
@@ -211,4 +212,5 @@ __all__ = (
     "StructuralClipStats",
     "get_clip_stats",
     "reset_clip_stats",
+    "AdaptiveLearningSystem",
 )
