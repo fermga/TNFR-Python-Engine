@@ -15,6 +15,8 @@ __all__ = [
     "VF_BASAL_THRESHOLD",
     "EPSILON_MIN_EMISSION",
     "MIN_NETWORK_DEGREE_COUPLING",
+    "EPI_SATURATION_MAX",
+    "DNFR_RECEPTION_MAX",
 ]
 
 # -------------------------
@@ -38,3 +40,17 @@ EPSILON_MIN_EMISSION: float = 0.1
 # Nodes with degree below this threshold will trigger a warning (not error)
 # as AL can still activate isolated nodes, but coupling will be limited
 MIN_NETWORK_DEGREE_COUPLING: int = 1
+
+# -------------------------
+# EN (Reception) Thresholds
+# -------------------------
+
+# Maximum EPI for reception - EN requires nodes with receptive capacity
+# According to TNFR.pdf §2.2.1, reception integrates external coherence
+# into local structure. If EPI is saturated, node cannot receive more coherence.
+EPI_SATURATION_MAX: float = 0.9
+
+# Maximum DNFR for stable reception - EN requires low dissonance
+# Excessive reorganization pressure prevents effective integration
+# of external coherence. Consider IL (Coherence) first to stabilize.
+DNFR_RECEPTION_MAX: float = 0.15
