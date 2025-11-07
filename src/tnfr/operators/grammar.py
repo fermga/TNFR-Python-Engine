@@ -40,6 +40,10 @@ from ..config.operator_names import (
     DESTABILIZERS,
     TRANSFORMERS,
     BIFURCATION_WINDOW,
+    DESTABILIZERS_STRONG,
+    DESTABILIZERS_MODERATE,
+    DESTABILIZERS_WEAK,
+    BIFURCATION_WINDOWS,
     canonical_operator_name,
     operator_display_name,
 )
@@ -454,6 +458,7 @@ class _SequenceAutomaton:
         "_found_stabilizer",
         "_detected_pattern",
         "_bifurcation_context",
+        "_destabilizer_context",
     )
 
     def __init__(self) -> None:
@@ -463,11 +468,17 @@ class _SequenceAutomaton:
         self._seen_intermediate = False
         self._open_thol = False
         self._unknown_tokens: list[tuple[int, str]] = []
-        self._found_dissonance = False  # Track OZ for R4
+        self._found_dissonance = False  # Legacy: Track OZ for backward compatibility
         self._found_stabilizer = False  # Track IL or THOL for R2
         self._detected_pattern: StructuralPattern = StructuralPattern.UNKNOWN
-        # Use deque with maxlen for efficient O(1) append and automatic size management
+        # Legacy: Use deque with maxlen for backward compatibility
         self._bifurcation_context: deque[tuple[str, int]] = deque(maxlen=BIFURCATION_WINDOW)
+        # R4 Extended: Track destabilizers by intensity level with graduated windows
+        self._destabilizer_context: dict[str, deque[int]] = {
+            'strong': deque(maxlen=BIFURCATION_WINDOWS['strong']),
+            'moderate': deque(maxlen=BIFURCATION_WINDOWS['moderate']),
+            'weak': deque(maxlen=BIFURCATION_WINDOWS['weak']),
+        }
 
     def run(self, names: Sequence[str]) -> None:
         if not names:
@@ -510,21 +521,29 @@ class _SequenceAutomaton:
         if canonical in {COHERENCE, SELF_ORGANIZATION}:
             self._found_stabilizer = True
 
-        # R4: Track destabilizers for bifurcation control (expanded from just OZ)
-        if canonical in DESTABILIZERS:
-            # Deque automatically maintains window size (BIFURCATION_WINDOW)
+        # R4 Extended: Track destabilizers by intensity level
+        if canonical in DESTABILIZERS_STRONG:
+            self._destabilizer_context['strong'].append(index)
+            # Legacy: also populate old context for backward compatibility
             self._bifurcation_context.append((canonical, index))
+        elif canonical in DESTABILIZERS_MODERATE:
+            self._destabilizer_context['moderate'].append(index)
+            # Legacy: also populate old context for backward compatibility
+            self._bifurcation_context.append((canonical, index))
+        elif canonical in DESTABILIZERS_WEAK:
+            self._destabilizer_context['weak'].append(index)
         
-        # R4: Validate transformers (ZHIR/THOL) require recent destabilizer
+        # R4 Extended: Validate transformers (ZHIR/THOL) require recent destabilizer
         if canonical in TRANSFORMERS:
-            if not self._has_recent_destabilizer(index):
-                destab_names = ", ".join(operator_display_name(d) for d in sorted(DESTABILIZERS))
+            if not self._has_graduated_destabilizer(index):
                 raise SequenceSyntaxError(
                     index=index,
                     token=token,
                     message=(
-                        f"{operator_display_name(canonical)} requires destabilizer "
-                        f"({destab_names}) in previous {BIFURCATION_WINDOW} operators"
+                        f"{operator_display_name(canonical)} requires recent destabilizer:\n"
+                        f"  Strong ({operator_display_name(DISSONANCE)}) within {BIFURCATION_WINDOWS['strong']} ops, or\n"
+                        f"  Moderate ({', '.join(operator_display_name(d) for d in sorted(DESTABILIZERS_MODERATE))}) within {BIFURCATION_WINDOWS['moderate']} ops, or\n"
+                        f"  Weak ({operator_display_name(RECEPTION)}) immediately before"
                     ),
                 )
         
@@ -614,6 +633,49 @@ class _SequenceAutomaton:
             window_start <= dest_index < current_index
             for _, dest_index in self._bifurcation_context
         )
+
+    def _has_graduated_destabilizer(self, current_index: int) -> bool:
+        """Check if any level of destabilizer satisfies its window requirement.
+        
+        Parameters
+        ----------
+        current_index : int
+            Current position in the sequence
+            
+        Returns
+        -------
+        bool
+            True if a destabilizer was found within its appropriate window
+            
+        Notes
+        -----
+        This method implements R4 Extended graduated destabilization:
+        - Strong destabilizers (OZ): window of 4 operators
+        - Moderate destabilizers (NAV, VAL): window of 2 operators
+        - Weak destabilizers (EN): must be immediate predecessor (window of 1)
+        
+        The method checks each level in order of window size (largest first)
+        to provide the most permissive validation.
+        """
+        # Check strong destabilizers (longest window = 4)
+        if self._destabilizer_context['strong']:
+            last_strong = self._destabilizer_context['strong'][-1]
+            if current_index - last_strong <= BIFURCATION_WINDOWS['strong']:
+                return True
+        
+        # Check moderate destabilizers (window = 2)
+        if self._destabilizer_context['moderate']:
+            last_moderate = self._destabilizer_context['moderate'][-1]
+            if current_index - last_moderate <= BIFURCATION_WINDOWS['moderate']:
+                return True
+        
+        # Check weak destabilizers (window = 1, must be immediate)
+        if self._destabilizer_context['weak']:
+            last_weak = self._destabilizer_context['weak'][-1]
+            if current_index - last_weak == 1:
+                return True
+        
+        return False
 
     def _finalize(self, names: Sequence[str]) -> None:
         if self._unknown_tokens:
