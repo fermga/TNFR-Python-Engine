@@ -15,9 +15,16 @@ from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from ...types import NodeId, TNFRGraph
+    import logging
 
 from ...alias import get_attr
 from ...constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
+from ...config.operator_names import (
+    DESTABILIZERS_STRONG,
+    DESTABILIZERS_MODERATE,
+    DESTABILIZERS_WEAK,
+    BIFURCATION_WINDOWS,
+)
 
 __all__ = [
     "OperatorPreconditionError",
@@ -383,6 +390,9 @@ def validate_self_organization(G: "TNFRGraph", node: "NodeId") -> None:
 
     T'HOL implements structural metabolism and bifurcation. Preconditions ensure
     sufficient structure and reorganization pressure for self-organization.
+    
+    Also detects and records the destabilizer type that enabled this self-organization
+    for telemetry and structural tracing purposes.
 
     Parameters
     ----------
@@ -399,8 +409,16 @@ def validate_self_organization(G: "TNFRGraph", node: "NodeId") -> None:
     Warnings
     --------
     Warns if node is isolated - bifurcation may not propagate through network
+    
+    Notes
+    -----
+    This function implements R4 Extended telemetry by analyzing the glyph_history
+    to determine which destabilizer (strong/moderate/weak) enabled the self-organization.
     """
+    import logging
     import warnings
+
+    logger = logging.getLogger(__name__)
 
     epi = _get_node_attr(G, node, ALIAS_EPI)
     dnfr = _get_node_attr(G, node, ALIAS_DNFR)
@@ -426,10 +444,111 @@ def validate_self_organization(G: "TNFRGraph", node: "NodeId") -> None:
             f"Node {node} is isolated - bifurcation may not propagate through network",
             stacklevel=3,
         )
+    
+    # R4 Extended: Detect and record destabilizer type for telemetry
+    _record_destabilizer_context(G, node, logger)
+
+
+def _record_destabilizer_context(
+    G: "TNFRGraph", node: "NodeId", logger: "logging.Logger"
+) -> None:
+    """Detect and record which destabilizer enabled the current mutation.
+    
+    This implements R4 Extended telemetry by analyzing the glyph_history
+    to determine which destabilizer type (strong/moderate/weak) is within
+    its appropriate bifurcation window.
+    
+    Parameters
+    ----------
+    G : TNFRGraph
+        Graph containing the node
+    node : NodeId
+        Node being mutated
+    logger : logging.Logger
+        Logger for telemetry output
+        
+    Notes
+    -----
+    The destabilizer context is stored in node['_mutation_context'] for
+    structural tracing and post-hoc analysis. This enables understanding
+    of bifurcation pathways without breaking TNFR structural invariants.
+    """
+    # Get glyph history from node
+    history = G.nodes[node].get('glyph_history', [])
+    if not history:
+        # No history available, mutation enabled by external factors
+        G.nodes[node]['_mutation_context'] = {
+            'destabilizer_type': None,
+            'destabilizer_operator': None,
+            'destabilizer_distance': None,
+            'recent_history': [],
+        }
+        return
+    
+    # Import glyph_function_name to convert glyphs to operator names
+    from ..grammar import glyph_function_name
+    
+    # Get recent history (up to max window size)
+    max_window = BIFURCATION_WINDOWS['strong']
+    recent = list(history)[-max_window:] if len(history) > max_window else list(history)
+    recent_names = [glyph_function_name(g) for g in recent]
+    
+    # Search backwards for destabilizers, checking window constraints
+    destabilizer_found = None
+    destabilizer_type = None
+    destabilizer_distance = None
+    
+    for i, op_name in enumerate(reversed(recent_names)):
+        distance = i + 1  # Distance from mutation (1 = immediate predecessor)
+        
+        # Check strong destabilizers (window = 4)
+        if op_name in DESTABILIZERS_STRONG and distance <= BIFURCATION_WINDOWS['strong']:
+            destabilizer_found = op_name
+            destabilizer_type = 'strong'
+            destabilizer_distance = distance
+            break
+        
+        # Check moderate destabilizers (window = 2)
+        if op_name in DESTABILIZERS_MODERATE and distance <= BIFURCATION_WINDOWS['moderate']:
+            destabilizer_found = op_name
+            destabilizer_type = 'moderate'
+            destabilizer_distance = distance
+            break
+        
+        # Check weak destabilizers (window = 1, immediate only)
+        if op_name in DESTABILIZERS_WEAK and distance == 1:
+            destabilizer_found = op_name
+            destabilizer_type = 'weak'
+            destabilizer_distance = distance
+            break
+    
+    # Store context in node metadata for telemetry
+    context = {
+        'destabilizer_type': destabilizer_type,
+        'destabilizer_operator': destabilizer_found,
+        'destabilizer_distance': destabilizer_distance,
+        'recent_history': recent_names,
+    }
+    G.nodes[node]['_mutation_context'] = context
+    
+    # Log telemetry for structural tracing
+    if destabilizer_found:
+        logger.info(
+            f"Node {node}: ZHIR enabled by {destabilizer_type} destabilizer "
+            f"({destabilizer_found}) at distance {destabilizer_distance}"
+        )
+    else:
+        logger.warning(
+            f"Node {node}: ZHIR without detectable destabilizer in history. "
+            f"Recent operators: {recent_names}"
+        )
 
 
 def validate_mutation(G: "TNFRGraph", node: "NodeId") -> None:
     """ZHIR - Mutation requires node to be in valid structural state.
+    
+    Also detects and records the destabilizer type that enabled this mutation
+    for telemetry and structural tracing purposes.
 
     Parameters
     ----------
@@ -442,7 +561,17 @@ def validate_mutation(G: "TNFRGraph", node: "NodeId") -> None:
     ------
     OperatorPreconditionError
         If node state is unsuitable for mutation
+        
+    Notes
+    -----
+    This function implements R4 Extended telemetry by analyzing the glyph_history
+    to determine which destabilizer (strong/moderate/weak) enabled the mutation.
+    The destabilizer context is stored in node metadata for structural tracing.
     """
+    import logging
+    
+    logger = logging.getLogger(__name__)
+    
     # Mutation is a phase change, require minimum vf for meaningful transition
     vf = _get_node_attr(G, node, ALIAS_VF)
     min_vf = float(G.graph.get("ZHIR_MIN_VF", 0.05))
@@ -451,6 +580,10 @@ def validate_mutation(G: "TNFRGraph", node: "NodeId") -> None:
             "Mutation",
             f"Structural frequency too low for mutation (νf={vf:.3f} < {min_vf:.3f})",
         )
+    
+    # R4 Extended: Detect and record destabilizer type for telemetry
+    # This provides structural traceability for bifurcation events
+    _record_destabilizer_context(G, node, logger)
 
 
 def validate_transition(G: "TNFRGraph", node: "NodeId") -> None:
