@@ -49,6 +49,12 @@ class StructuralHomeostasis:
         Graph containing the regulated node
     node : NodeId
         Identifier of the node to regulate
+    epi_range : tuple[float, float], optional
+        Target EPI range (min, max). Default: (0.4, 0.8)
+    vf_range : tuple[float, float], optional
+        Target νf range (min, max). Default: (0.8, 1.2)
+    dnfr_range : tuple[float, float], optional
+        Target ΔNFR range (min, max). Default: (0.0, 0.15)
 
     Attributes
     ----------
@@ -82,14 +88,21 @@ class StructuralHomeostasis:
     - **High ΔNFR**: Apply IL (Coherence) to stabilize
     """
 
-    def __init__(self, graph: TNFRGraph, node: NodeId) -> None:
+    def __init__(
+        self,
+        graph: TNFRGraph,
+        node: NodeId,
+        epi_range: tuple[float, float] = (0.4, 0.8),
+        vf_range: tuple[float, float] = (0.8, 1.2),
+        dnfr_range: tuple[float, float] = (0.0, 0.15),
+    ) -> None:
         self.G = graph
         self.node = node
 
         # Target ranges for homeostatic regulation
-        self.epi_range = (0.4, 0.8)
-        self.vf_range = (0.8, 1.2)
-        self.dnfr_range = (0.0, 0.15)
+        self.epi_range = epi_range
+        self.vf_range = vf_range
+        self.dnfr_range = dnfr_range
 
     def maintain_equilibrium(self) -> None:
         """Apply corrective operators if parameters exceed target ranges.

@@ -45,6 +45,8 @@ class TNFRAdaptiveSystem:
         Graph containing the evolving node
     node : NodeId
         Identifier of the adaptive node
+    stress_normalization : float, default=0.2
+        ΔNFR value that corresponds to maximum stress (1.0)
 
     Attributes
     ----------
@@ -62,6 +64,8 @@ class TNFRAdaptiveSystem:
         Adaptive learning component
     metabolism : StructuralMetabolism
         Structural metabolism component
+    STRESS_NORM : float
+        Normalization factor for stress measurement
 
     Examples
     --------
@@ -84,9 +88,17 @@ class TNFRAdaptiveSystem:
     This creates self-regulating, adaptive structural dynamics.
     """
 
-    def __init__(self, graph: TNFRGraph, node: NodeId) -> None:
+    STRESS_NORM = 0.2  # ΔNFR value corresponding to maximum stress
+
+    def __init__(
+        self,
+        graph: TNFRGraph,
+        node: NodeId,
+        stress_normalization: float = STRESS_NORM,
+    ) -> None:
         self.G = graph
         self.node = node
+        self.STRESS_NORM = float(stress_normalization)
 
         # Initialize all components
         self.feedback = StructuralFeedbackLoop(graph, node)
@@ -158,5 +170,4 @@ class TNFRAdaptiveSystem:
         """
         dnfr = get_attr(self.G.nodes[self.node], ALIAS_DNFR, 0.0)
         # Normalize ΔNFR to [0, 1] stress level
-        # Assume ΔNFR > 0.2 is maximum stress
-        return min(1.0, abs(dnfr) / 0.2)
+        return min(1.0, abs(dnfr) / self.STRESS_NORM)

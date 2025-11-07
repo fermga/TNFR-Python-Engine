@@ -56,6 +56,14 @@ class StructuralFeedbackLoop:
         Initial bifurcation threshold (adaptive)
     learning_rate : float, default=0.05
         Rate of threshold adaptation
+    coherence_tolerance_low : float, default=0.2
+        Deviation below target that triggers stabilization
+    coherence_tolerance_high : float, default=0.1
+        Deviation above target that triggers exploration
+    dnfr_threshold : float, default=0.15
+        ΔNFR threshold for self-organization
+    epi_threshold : float, default=0.3
+        EPI threshold for emission
 
     Attributes
     ----------
@@ -69,6 +77,14 @@ class StructuralFeedbackLoop:
         Adaptive bifurcation threshold
     learning_rate : float
         Threshold adjustment rate
+    COHERENCE_TOL_LOW : float
+        Lower tolerance for coherence regulation
+    COHERENCE_TOL_HIGH : float
+        Upper tolerance for coherence regulation
+    DNFR_THRESHOLD : float
+        Threshold for self-organization activation
+    EPI_THRESHOLD : float
+        Threshold for emission activation
 
     Examples
     --------
@@ -80,6 +96,12 @@ class StructuralFeedbackLoop:
     >>> loop.homeostatic_cycle(num_steps=5)
     """
 
+    # Regulation thresholds
+    COHERENCE_TOL_LOW = 0.2  # Deviation below target triggers stabilization
+    COHERENCE_TOL_HIGH = 0.1  # Deviation above target triggers exploration
+    DNFR_THRESHOLD = 0.15  # ΔNFR threshold for self-organization
+    EPI_THRESHOLD = 0.3  # EPI threshold for emission
+
     def __init__(
         self,
         graph: TNFRGraph,
@@ -87,12 +109,20 @@ class StructuralFeedbackLoop:
         target_coherence: float = 0.7,
         tau_adaptive: float = 0.1,
         learning_rate: float = 0.05,
+        coherence_tolerance_low: float = COHERENCE_TOL_LOW,
+        coherence_tolerance_high: float = COHERENCE_TOL_HIGH,
+        dnfr_threshold: float = DNFR_THRESHOLD,
+        epi_threshold: float = EPI_THRESHOLD,
     ) -> None:
         self.G = graph
         self.node = node
         self.target_coherence = float(target_coherence)
         self.tau_adaptive = float(tau_adaptive)
         self.learning_rate = float(learning_rate)
+        self.COHERENCE_TOL_LOW = float(coherence_tolerance_low)
+        self.COHERENCE_TOL_HIGH = float(coherence_tolerance_high)
+        self.DNFR_THRESHOLD = float(dnfr_threshold)
+        self.EPI_THRESHOLD = float(epi_threshold)
 
     def regulate(self) -> str:
         """Select appropriate operator based on current structural state.
@@ -123,16 +153,16 @@ class StructuralFeedbackLoop:
         coherence = self._compute_local_coherence()
 
         # Structural decision tree
-        if coherence < self.target_coherence - 0.2:
+        if coherence < self.target_coherence - self.COHERENCE_TOL_LOW:
             # Very low coherence → stabilize
             return COHERENCE
-        elif coherence > self.target_coherence + 0.1:
+        elif coherence > self.target_coherence + self.COHERENCE_TOL_HIGH:
             # High coherence → explore
             return DISSONANCE
-        elif dnfr > 0.15:
+        elif dnfr > self.DNFR_THRESHOLD:
             # High reorganization pressure → self-organize
             return SELF_ORGANIZATION
-        elif epi < 0.3:
+        elif epi < self.EPI_THRESHOLD:
             # Low activation → emit
             return EMISSION
         else:

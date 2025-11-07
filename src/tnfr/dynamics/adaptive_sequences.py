@@ -11,6 +11,7 @@ exploration (try new patterns).
 
 from __future__ import annotations
 
+import random
 from typing import TYPE_CHECKING, Any, Dict, List
 
 if TYPE_CHECKING:
@@ -145,7 +146,6 @@ class AdaptiveSequenceSelector:
         if np is not None:
             random_val = np.random.random()
         else:
-            import random
             random_val = random.random()
 
         if random_val < epsilon:
@@ -153,7 +153,6 @@ class AdaptiveSequenceSelector:
             if np is not None:
                 selected = str(np.random.choice(candidates))
             else:
-                import random
                 selected = random.choice(candidates)
         else:
             # Exploitation: select best-performing sequence
