@@ -68,6 +68,11 @@ from ..utils import get_numpy
 from . import canonical, coordination, dnfr, integrators, metabolism
 from .adaptation import adapt_vf_by_coherence
 from .bifurcation import get_bifurcation_paths, compute_bifurcation_score
+from .propagation import (
+    propagate_dissonance,
+    compute_network_dissonance_field,
+    detect_bifurcation_cascade,
+)
 from .aliases import (
     ALIAS_D2EPI,
     ALIAS_DNFR,
@@ -156,6 +161,10 @@ __all__ = (
     # Bifurcation dynamics
     "get_bifurcation_paths",
     "compute_bifurcation_score",
+    # Propagation dynamics
+    "propagate_dissonance",
+    "compute_network_dissonance_field",
+    "detect_bifurcation_cascade",
     "ALIAS_D2EPI",
     "ALIAS_DNFR",
     "ALIAS_DSI",

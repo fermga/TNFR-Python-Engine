@@ -479,6 +479,41 @@ def dissonance_metrics(
     il_reduction_rate = 0.15
     recovery_estimate = int(abs(dnfr_after) / il_reduction_rate) + 1 if dnfr_after != 0 else 1
     
+    # 7. Propagation analysis (if propagation occurred)
+    propagation_data = {}
+    propagation_events = G.graph.get("_oz_propagation_events", [])
+    if propagation_events:
+        latest_event = propagation_events[-1]
+        if latest_event["source"] == node:
+            propagation_data = {
+                "propagation_occurred": True,
+                "affected_neighbors": latest_event["affected_count"],
+                "propagation_magnitude": latest_event["magnitude"],
+                "affected_nodes": latest_event["affected_nodes"],
+            }
+        else:
+            propagation_data = {"propagation_occurred": False}
+    else:
+        propagation_data = {"propagation_occurred": False}
+    
+    # 8. Compute network dissonance field (if propagation module available)
+    field_data = {}
+    try:
+        from ..dynamics.propagation import compute_network_dissonance_field
+        field = compute_network_dissonance_field(G, node, radius=2)
+        field_data = {
+            "dissonance_field_radius": len(field),
+            "max_field_strength": max(field.values()) if field else 0.0,
+            "mean_field_strength": sum(field.values()) / len(field) if field else 0.0,
+        }
+    except (ImportError, Exception):
+        # Gracefully handle if propagation module not available
+        field_data = {
+            "dissonance_field_radius": 0,
+            "max_field_strength": 0.0,
+            "mean_field_strength": 0.0,
+        }
+    
     return {
         "operator": "Dissonance",
         "glyph": "OZ",
@@ -510,6 +545,10 @@ def dissonance_metrics(
         "recovery_estimate_IL": recovery_estimate,
         "dissonance_level": abs(dnfr_after),
         "critical_dissonance": abs(dnfr_after) > 0.8,
+        
+        # Network propagation
+        **propagation_data,
+        **field_data,
     }
 
 
