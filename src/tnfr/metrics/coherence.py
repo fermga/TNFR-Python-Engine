@@ -1,4 +1,135 @@
-"""Coherence metrics."""
+r"""Coherence metrics for TNFR networks.
+
+This module implements the coherence operator :math:`\hat{C}` and related
+metrics for measuring structural stability in resonant fractal networks.
+
+Mathematical Foundation
+-----------------------
+
+The **coherence operator** :math:`\hat{C}` is a Hermitian operator on the Hilbert
+space :math:`H_{\text{NFR}}` with spectral decomposition:
+
+.. math::
+    \hat{C} = \sum_i \lambda_i |\phi_i\rangle\langle\phi_i|
+
+where :math:`\lambda_i \geq 0` are coherence eigenvalues and :math:`|\phi_i\rangle`
+are coherence eigenstates (maximally stable configurations).
+
+**Properties**:
+
+1. **Hermiticity**: :math:`\hat{C}^\dagger = \hat{C}` (ensures real eigenvalues)
+2. **Positivity**: :math:`\langle\psi|\hat{C}|\psi\rangle \geq 0` (coherence is non-negative)
+3. **Boundedness**: :math:`\|\hat{C}\| \leq M` (prevents runaway growth)
+
+In the discrete node basis :math:`\{|i\rangle\}`, matrix elements are approximated:
+
+.. math::
+    w_{ij} \approx \langle i | \hat{C} | j \rangle
+
+The **total coherence** is computed as the trace:
+
+.. math::
+    C(t) = \text{Tr}(\hat{C}\rho) = \sum_i w_{ii} \rho_i
+
+where :math:`\rho_i` is the density of node :math:`i` (typically uniform: :math:`\rho_i = 1/N`).
+
+Similarity Components
+---------------------
+
+Matrix elements :math:`w_{ij}` are computed from four structural similarity components:
+
+.. math::
+    w_{ij} = w_{\text{phase}} \cdot s_{\text{phase}}(i,j) 
+           + w_{\text{EPI}} \cdot s_{\text{EPI}}(i,j)
+           + w_{\nu_f} \cdot s_{\nu_f}(i,j) 
+           + w_{\text{Si}} \cdot s_{\text{Si}}(i,j)
+
+where:
+
+- :math:`s_{\text{phase}}(i,j) = \frac{1}{2}\left(1 + \cos(\theta_i - \theta_j)\right)` : Phase similarity
+- :math:`s_{\text{EPI}}(i,j) = 1 - \frac{|\text{EPI}_i - \text{EPI}_j|}{\Delta_{\text{EPI}}}` : Structural form similarity
+- :math:`s_{\nu_f}(i,j) = 1 - \frac{|\nu_{f,i} - \nu_{f,j}|}{\Delta_{\nu_f}}` : Frequency similarity
+- :math:`s_{\text{Si}}(i,j) = 1 - |\text{Si}_i - \text{Si}_j|` : Stability similarity
+
+and :math:`w_{\text{phase}}, w_{\text{EPI}}, w_{\nu_f}, w_{\text{Si}}` are structural weights
+(default: 0.25 each).
+
+Implementation Map
+------------------
+
+**Core Functions**:
+
+- :func:`coherence_matrix` : Constructs :math:`W \approx \hat{C}` matrix representation
+- :func:`compute_coherence` : Computes :math:`C(t) = \text{Tr}(\hat{C}\rho)` from graph (imported from `.common`)
+- :func:`compute_wij_phase_epi_vf_si` : Computes similarity components :math:`(s_{\text{phase}}, s_{\text{EPI}}, s_{\nu_f}, s_{\text{Si}})`
+
+**Helper Functions**:
+
+- :func:`_combine_similarity` : Weighted combination: :math:`w_{ij} = \sum_k w_k s_k`
+- :func:`_compute_wij_phase_epi_vf_si_vectorized` : Vectorized computation for all pairs
+- :func:`_wij_vectorized` : Builds full matrix with NumPy acceleration
+- :func:`_wij_sparse` : Builds sparse matrix for large networks
+
+**Parallel Computation**:
+
+- :func:`_coherence_matrix_parallel` : Multi-process matrix construction
+- :func:`_parallel_wij_worker` : Worker function for parallel chunks
+
+Theoretical References
+----------------------
+
+See the following for complete mathematical derivation:
+
+- **Mathematical Foundations**: `docs/source/theory/mathematical_foundations.md` §3.1
+- **Coherence Operator Theory**: Sections 3.1 (operator definition), 3.1.1 (implementation bridge)
+- **Spectral Properties**: Section 3.1 on eigenvalue decomposition
+- **Style Guide**: `docs/source/style_guide.md` for notation conventions
+
+Examples
+--------
+
+**Basic coherence computation**:
+
+>>> import networkx as nx
+>>> from tnfr.metrics.coherence import coherence_matrix
+>>> from tnfr.metrics.common import compute_coherence
+>>> G = nx.Graph()
+>>> G.add_edge("a", "b")
+>>> G.nodes["a"].update({"EPI": 0.5, "nu_f": 0.8, "phase": 0.0, "Si": 0.7})
+>>> G.nodes["b"].update({"EPI": 0.6, "nu_f": 0.7, "phase": 0.1, "Si": 0.8})
+>>> C = compute_coherence(G)
+>>> 0 <= C <= 1
+True
+
+**Matrix representation**:
+
+>>> nodes, W = coherence_matrix(G)
+>>> len(nodes) == 2
+True
+>>> W.shape == (2, 2)  # Assuming numpy backend
+True
+
+**Worked examples** with step-by-step calculations:
+
+See `docs/source/examples/worked_examples.md` Example 2 for detailed coherence
+matrix element computation walkthrough.
+
+Notes
+-----
+
+- Matrix element computation can use different backends (NumPy, JAX, PyTorch)
+- Sparse matrix format is automatically selected for large networks (>1000 nodes)
+- Parallel computation is enabled for networks with >500 nodes by default
+- Trigonometric values are cached to avoid redundant cos/sin evaluations
+
+See Also
+--------
+
+compute_coherence : Total coherence :math:`C(t)` computation
+sense_index.compute_Si : Sense Index :math:`\text{Si}` computation
+observers.kuramoto_order : Kuramoto order parameter :math:`r`
+observers.phase_sync : Phase synchronization metrics
+"""
 
 from __future__ import annotations
 
@@ -150,17 +281,169 @@ def compute_wij_phase_epi_vf_si(
     vf_range: float = 1.0,
     np: ModuleType | None = None,
 ) -> SimilarityComponents | VectorizedComponents:
-    """Compute similarity components for coherence matrix elements.
-
-    Returns four structural similarity components (s_phase, s_epi, s_vf, s_si)
-    that approximate coherence operator matrix elements wᵢⱼ ≈ ⟨i|Ĉ|j⟩.
-
-    Each component normalized to [0, 1] where 1 = maximum similarity.
-
-    See: Mathematical Foundations §3.1.1 for theory-to-code mapping.
-
-    When ``np`` is provided and ``i`` and ``j`` are ``None`` the computation is
-    vectorized returning full matrices for all node pairs.
+    r"""Compute structural similarity components for coherence matrix elements.
+    
+    Returns four similarity components :math:`(s_{\text{phase}}, s_{\text{EPI}}, s_{\nu_f}, s_{\text{Si}})`
+    that approximate coherence operator matrix elements :math:`w_{ij} \approx \langle i | \hat{C} | j \rangle`.
+    
+    Mathematical Foundation
+    -----------------------
+    
+    Each similarity component measures structural resemblance between nodes :math:`i` and :math:`j`
+    in a specific dimension:
+    
+    **Phase similarity** (synchronization):
+    
+    .. math::
+        s_{\text{phase}}(i,j) = \frac{1}{2}\left(1 + \cos(\theta_i - \theta_j)\right)
+    
+    Range: [0, 1] where 1 = perfect synchrony, 0 = anti-phase.
+    
+    **EPI similarity** (structural form):
+    
+    .. math::
+        s_{\text{EPI}}(i,j) = 1 - \frac{|\text{EPI}_i - \text{EPI}_j|}{\Delta_{\text{EPI}}}
+    
+    Range: [0, 1] where 1 = identical structure, 0 = maximally different.
+    
+    **Frequency similarity** (reorganization rate):
+    
+    .. math::
+        s_{\nu_f}(i,j) = 1 - \frac{|\nu_{f,i} - \nu_{f,j}|}{\Delta_{\nu_f}}
+    
+    Range: [0, 1] where 1 = matching frequencies.
+    
+    **Si similarity** (stability):
+    
+    .. math::
+        s_{\text{Si}}(i,j) = 1 - |\text{Si}_i - \text{Si}_j|
+    
+    Range: [0, 1] where 1 = equal reorganization stability.
+    
+    These components are combined via weighted sum to obtain :math:`w_{ij}`:
+    
+    .. math::
+        w_{ij} = w_{\text{phase}} \cdot s_{\text{phase}} + w_{\text{EPI}} \cdot s_{\text{EPI}} 
+               + w_{\nu_f} \cdot s_{\nu_f} + w_{\text{Si}} \cdot s_{\text{Si}}
+    
+    where :math:`w_{ij} \approx \langle i | \hat{C} | j \rangle` (coherence operator matrix element).
+    
+    Parameters
+    ----------
+    inputs : SimilarityInputs
+        Container with structural data:
+        
+        - `th_vals` : Sequence[float] - Phase values :math:`\theta` in radians
+        - `epi_vals` : Sequence[float] - EPI values
+        - `vf_vals` : Sequence[float] - Structural frequencies :math:`\nu_f` in Hz_str
+        - `si_vals` : Sequence[float] - Sense Index values
+        - `cos_vals` : Sequence[float] | None - Precomputed :math:`\cos\theta` (optional cache)
+        - `sin_vals` : Sequence[float] | None - Precomputed :math:`\sin\theta` (optional cache)
+        
+    i : int | None, optional
+        Index of first node for pairwise computation. If None, vectorized mode is used.
+    j : int | None, optional
+        Index of second node for pairwise computation. If None, vectorized mode is used.
+    trig : Any | None, optional
+        Trigonometric cache object with `cos` and `sin` dictionaries. If None, computed on demand.
+    G : TNFRGraph | None, optional
+        Source graph (used to retrieve cached trigonometric values if available).
+    nodes : Sequence[NodeId] | None, optional
+        Node identifiers corresponding to indices in `inputs` arrays.
+    epi_range : float, default=1.0
+        Normalization range :math:`\Delta_{\text{EPI}}` for EPI similarity. 
+        Should be :math:`\text{EPI}_{\max} - \text{EPI}_{\min}`.
+    vf_range : float, default=1.0
+        Normalization range :math:`\Delta_{\nu_f}` for frequency similarity.
+        Should be :math:`\nu_{f,\max} - \nu_{f,\min}`.
+    np : ModuleType | None, optional
+        NumPy-like module (numpy, jax.numpy, torch) for vectorized computation.
+        If provided with `i=None, j=None`, returns vectorized arrays for all pairs.
+    
+    Returns
+    -------
+    SimilarityComponents or VectorizedComponents
+        **Pairwise mode** (i and j provided):
+            tuple of (s_phase, s_epi, s_vf, s_si) : tuple[float, float, float, float]
+            Normalized similarity scores :math:`\in [0,1]` for the pair (i, j).
+        
+        **Vectorized mode** (i=None, j=None, np provided):
+            tuple of (S_phase, S_epi, S_vf, S_si) : tuple[FloatMatrix, FloatMatrix, FloatMatrix, FloatMatrix]
+            Matrices of shape (N, N) containing all pairwise similarities.
+    
+    Raises
+    ------
+    ValueError
+        If pairwise mode is requested (i or j provided) but both are not specified.
+    
+    See Also
+    --------
+    coherence_matrix : Constructs full :math:`W \approx \hat{C}` matrix
+    compute_coherence : Computes :math:`C(t) = \text{Tr}(\hat{C}\rho)`
+    _combine_similarity : Weighted combination of similarity components
+    
+    Notes
+    -----
+    
+    **Performance**:
+    
+    - Vectorized mode (with `np`) is ~10-100x faster for large networks
+    - Trigonometric caching avoids redundant cos/sin evaluations
+    - Use `get_trig_cache(G)` to populate cache before repeated calls
+    
+    **Normalization**:
+    
+    - `epi_range` and `vf_range` should reflect actual network ranges for proper scaling
+    - If ranges are 0, defaults to 1.0 to avoid division by zero
+    - Si similarity uses absolute difference (already bounded to [0,1])
+    
+    References
+    ----------
+    .. [1] Mathematical Foundations, §3.1.1 - Implementation Bridge
+    .. [2] docs/source/theory/mathematical_foundations.md#311-implementation-bridge-theory-to-code
+    .. [3] docs/source/examples/worked_examples.md - Example 2: Coherence Matrix Elements
+    
+    Examples
+    --------
+    
+    **Pairwise computation**:
+    
+    >>> from tnfr.metrics.coherence import compute_wij_phase_epi_vf_si, SimilarityInputs
+    >>> inputs = SimilarityInputs(
+    ...     th_vals=[0.0, 0.1],
+    ...     epi_vals=[0.5, 0.6],
+    ...     vf_vals=[0.8, 0.7],
+    ...     si_vals=[0.7, 0.8]
+    ... )
+    >>> s_phase, s_epi, s_vf, s_si = compute_wij_phase_epi_vf_si(
+    ...     inputs, i=0, j=1, epi_range=1.0, vf_range=1.0
+    ... )
+    >>> 0.9 < s_phase < 1.0  # Nearly synchronized (theta_diff = 0.1 rad)
+    True
+    >>> 0.8 < s_epi < 1.0    # Similar EPI values
+    True
+    
+    **Vectorized computation**:
+    
+    >>> import numpy as np
+    >>> S_phase, S_epi, S_vf, S_si = compute_wij_phase_epi_vf_si(
+    ...     inputs, epi_range=1.0, vf_range=1.0, np=np
+    ... )
+    >>> S_phase.shape  # All pairwise similarities
+    (2, 2)
+    >>> np.allclose(S_phase[0, 1], S_phase[1, 0])  # Symmetric
+    True
+    
+    **With graph and caching**:
+    
+    >>> import networkx as nx
+    >>> from tnfr.metrics.trig_cache import get_trig_cache
+    >>> G = nx.Graph()
+    >>> G.add_edge(0, 1)
+    >>> G.nodes[0].update({"phase": 0.0, "EPI": 0.5, "nu_f": 0.8, "Si": 0.7})
+    >>> G.nodes[1].update({"phase": 0.1, "EPI": 0.6, "nu_f": 0.7, "Si": 0.8})
+    >>> trig = get_trig_cache(G, np=np)  # Precompute cos/sin
+    >>> # ... use trig in repeated calls for efficiency
     """
 
     trig = trig or (get_trig_cache(G, np=np) if G is not None else None)

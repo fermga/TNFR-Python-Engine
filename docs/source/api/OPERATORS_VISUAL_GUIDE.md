@@ -16,7 +16,7 @@ Every structural operator:
 - Maintains **structural coherence** (C(t) remains bounded)
 - Respects **phase alignment** (θ continuity across transformations)
 
-### The Paradigm: "No Representan, Activan"
+### The Paradigm: "They Don't Represent, They Activate"
 
 Traditional approaches **represent** systems as static objects.  
 TNFR operators **activate** dynamic reorganization of coherent patterns.
@@ -52,7 +52,7 @@ Think of operators as **musical gestures** rather than mechanical operations:
 
 ## Operators of Initiation
 
-### AL - Emisión (Emission)
+### AL - Emission
 
 **Function**: Activates an EPI from latent state to active resonance
 
@@ -128,7 +128,7 @@ print(f"νf after AL: {G.nodes[node]['vf']:.2f}")    # ~1.02
 
 ---
 
-### EN - Recepción (Reception)
+### EN - Reception
 
 **Function**: Anchors external coherence into local EPI structure
 
@@ -431,7 +431,7 @@ print(f"Global coherence: {G.graph.get('coherence', 0):.2f}")
 
 ---
 
-### ZHIR - Mutación (Mutation)
+### ZHIR - Mutation
 
 **Function**: Triggers qualitative phase transformation when structural threshold crossed
 
@@ -508,7 +508,7 @@ print(f"EPI after ZHIR: {G.nodes[organism]['epi']:.2f}")  # maintained coherence
 
 ## Operators of Connection
 
-### UM - Acoplamiento (Coupling)
+### UM - Coupling
 
 **Function**: Synchronizes nodes through phase alignment
 
@@ -586,7 +586,7 @@ print(f"Phase difference reduced")
 
 ---
 
-### RA - Resonancia (Resonance)
+### RA - Resonance
 
 **Function**: Propagates coherence patterns through network without loss of identity
 
@@ -668,7 +668,7 @@ print(f"Target2 EPI after RA: {G.nodes[target2]['epi']:.2f}")  # increased
 
 ---
 
-### NAV - Transición (Transition)
+### NAV - Transition
 
 **Function**: Enables controlled movement between structural states along defined pathways
 
@@ -745,7 +745,7 @@ print(f"State: transitioned to next phase")
 
 ## Operators of Modulation
 
-### SHA - Silencio (Silence)
+### SHA - Silence
 
 **Function**: Temporarily freezes structural evolution for observation or synchronization
 
@@ -826,7 +826,7 @@ run_sequence(G, node, [Emission()])
 
 ---
 
-### VAL - Expansión (Expansion)
+### VAL - Expansion
 
 **Function**: Increases structural complexity by scaling EPI dimensionality
 
@@ -901,7 +901,7 @@ print(f"Structural scale expanded")
 
 ---
 
-### NUL - Contracción (Contraction)
+### NUL - Contraction
 
 **Function**: Reduces structural complexity through densification and focusing
 
@@ -976,7 +976,7 @@ print(f"Structural density increased")
 
 ---
 
-### REMESH - Recursividad (Recursivity)
+### REMESH - Recursivity
 
 **Function**: Maintains adaptive memory through nested operator application
 

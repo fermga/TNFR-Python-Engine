@@ -31,11 +31,12 @@ theory.
 - **Releases** – version-by-version summaries in the [release notes](releases.md).
 
 !!! important "Mathematical Foundations"
-    The [Mathematical Foundations overview](theory/00_overview.ipynb) anchors the canonical
-    nodal equation and structural operators. Each primer (structural frequency, phase synchrony,
-    ΔNFR gradient fields, coherence metrics, sense index, and recursivity cascades) expands the
-    derivations used by the engine. Refer back here whenever you need to validate analytical
-    assumptions or reproduce the derivations behind telemetry outputs.
+    The [Mathematical Foundations](theory/mathematical_foundations.md) document is the **single source of truth**
+    for the canonical nodal equation and structural operators. It includes complete derivations,
+    operator formalism, and spectral theory. Interactive notebooks (structural frequency, phase synchrony,
+    ΔNFR gradient fields, coherence metrics, sense index, and recursivity cascades) provide
+    hands-on exploration with visualizations. Refer to the unified foundations document whenever you need
+    to validate analytical assumptions or reproduce the derivations behind telemetry outputs.
 
 !!! tip "Quick-start pathways"
     * **New to TNFR?** Read the [TNFR Fundamental Concepts](getting-started/TNFR_CONCEPTS.md) guide to understand the paradigm first (10 minutes).
