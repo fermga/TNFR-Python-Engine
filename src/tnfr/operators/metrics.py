@@ -12,13 +12,14 @@ from typing import TYPE_CHECKING, Any
 if TYPE_CHECKING:
     from ..types import NodeId, TNFRGraph
 
-from ..alias import get_attr
+from ..alias import get_attr, get_attr_str
 from ..constants.aliases import (
     ALIAS_EPI,
     ALIAS_VF,
     ALIAS_DNFR,
     ALIAS_THETA,
     ALIAS_D2EPI,
+    ALIAS_EMISSION_TIMESTAMP,
 )
 
 __all__ = [
@@ -82,8 +83,6 @@ def emission_metrics(
           - emission_timestamp: ISO UTC timestamp of activation
           - irreversibility_marker: True if node was activated
     """
-    from ..constants.aliases import ALIAS_EMISSION_TIMESTAMP
-
     epi_after = _get_node_attr(G, node, ALIAS_EPI)
     vf_after = _get_node_attr(G, node, ALIAS_VF)
     dnfr = _get_node_attr(G, node, ALIAS_DNFR)
@@ -92,13 +91,11 @@ def emission_metrics(
     # Fetch emission timestamp using alias system
     emission_timestamp = None
     try:
-        from ..alias import get_attr_str
-
         emission_timestamp = get_attr_str(
             G.nodes[node], ALIAS_EMISSION_TIMESTAMP, default=None
         )
-    except Exception:
-        # Fallback if alias system unavailable
+    except (AttributeError, KeyError, ImportError):
+        # Fallback if alias system unavailable or node lacks timestamp
         emission_timestamp = G.nodes[node].get("emission_timestamp")
 
     # Compute deltas
