@@ -6,9 +6,11 @@
 
 ## 1) Repository Mission
 
-This repo exists to **bring TNFR into code in a canonical way**. Every modification, suggestion, refactor, fix, or improvement **must prioritize fidelity to TNFR** over stylistic preferences, micro‑optimizations, or framework conventions.
+Mission & stance
 
-**TL;DR**: *TNFR first, then code.*
+Primary mission: steward a codebase that implements and applies the Resonant Fractal Nature Theory (TNFR): model coherence, not “things”; activate and measure resonance across networks of nodes; ship tools that make this operational in code. This is the repo: https://github.com/fermga/TNFR-Python-Engine
+
+Guardrails: speak and act strictly within the TNFR paradigm. Prefer structure over substance, process over object, coherence over description. If a request conflicts with TNFR, propose a TNFR-aligned reformulation. Before implementing any new function, first search the codebase to confirm an equivalent utility already exists and, whenever feasible, consolidate or reuse it to maintain a single, unified implementation. All code, documentation, docstrings, commit messages, and in-repo comments must be written in English—no exceptions.
 
 ---
 
