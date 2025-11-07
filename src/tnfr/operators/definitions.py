@@ -809,39 +809,25 @@ class Coherence(Operator):
         node : Any
             Identifier or object representing the target node within ``G``.
         **kw : Any
-            Additional keyword arguments:
-            - dnfr_reduction_factor (float): Reduction coefficient ρ ∈ [0, 1],
-              default 0.3 (30% reduction). Maps to IL_dnfr_factor = (1 - ρ).
-              Canonical range is [0.2, 0.5].
-            - Other args forwarded to grammar layer via parent __call__.
+            Additional keyword arguments forwarded to grammar layer via parent __call__.
 
         Notes
         -----
         This implementation enforces the canonical IL structural effect:
-        ΔNFR → ΔNFR * (1 - ρ) where ρ is the reduction factor.
+        ΔNFR → ΔNFR * (1 - ρ) where ρ ≈ 0.3 (30% reduction).
 
-        The reduction is applied by the grammar layer (_op_IL), and this method
-        adds explicit telemetry logging for structural traceability.
+        The reduction is applied by the grammar layer (_op_IL) using IL_dnfr_factor
+        from global glyph factors. This method adds explicit telemetry logging for
+        structural traceability.
+
+        To customize the reduction factor, set GLYPH_FACTORS["IL_dnfr_factor"] in
+        the graph before calling this operator. Default is 0.7 (30% reduction).
         """
         from ..alias import get_attr
         from ..constants.aliases import ALIAS_DNFR
 
         # Capture ΔNFR before IL application for telemetry
         dnfr_before = float(get_attr(G.nodes[node], ALIAS_DNFR, 0.0))
-
-        # Convert dnfr_reduction_factor (ρ) to IL_dnfr_factor (1 - ρ)
-        # if provided by user
-        if "dnfr_reduction_factor" in kw:
-            reduction_factor = kw.pop("dnfr_reduction_factor")
-            # Clamp to canonical range [0.2, 0.5]
-            reduction_factor = max(0.2, min(0.5, reduction_factor))
-            # Convert to IL_dnfr_factor for grammar
-            il_factor = 1.0 - reduction_factor
-            # Note: We can't directly pass this to grammar here because grammar
-            # reads from global factors. So we log it for telemetry but the
-            # actual reduction uses the default IL_dnfr_factor from grammar.
-            # To truly customize, users should set GLYPH_FACTORS in graph.
-            kw.setdefault("_requested_reduction_factor", reduction_factor)
 
         # Delegate to parent __call__ which applies grammar (including _op_IL reduction)
         super().__call__(G, node, **kw)
