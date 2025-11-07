@@ -457,8 +457,10 @@ class InternalHamiltonian:
         
         Raises
         ------
-        AssertionError
+        ValueError
             If the computed operator is not unitary (indicates numerical issues)
+        ImportError
+            If scipy is not installed
         
         Notes
         -----
@@ -470,7 +472,13 @@ class InternalHamiltonian:
         
         Unitarity :math:`U^\dagger U = I` ensures probability conservation.
         """
-        from scipy.linalg import expm
+        try:
+            from scipy.linalg import expm
+        except ImportError as exc:
+            raise ImportError(
+                "scipy is required for time evolution computation. "
+                "Install with: pip install scipy"
+            ) from exc
         
         np = self._np
         
@@ -484,8 +492,10 @@ class InternalHamiltonian:
         
         if not np.allclose(U_dag_U, identity):
             max_error = np.max(np.abs(U_dag_U - identity))
-            raise AssertionError(
-                f"Evolution operator is not unitary: max error = {max_error:.2e}"
+            raise ValueError(
+                f"Evolution operator is not unitary: max error = {max_error:.2e}. "
+                "This indicates numerical instability, possibly due to "
+                "ill-conditioned Hamiltonian or inappropriate time step."
             )
         
         return U_t
@@ -541,6 +551,14 @@ class InternalHamiltonian:
         
         where :math:`\rho_n = |n\rangle\langle n|` is the density matrix for a
         pure state localized on node n.
+        
+        Notes
+        -----
+        
+        The commutator result is anti-Hermitian, so its diagonal elements are
+        purely imaginary in theory. We extract the real part to obtain the ΔNFR
+        observable value. In practice, numerical precision may introduce small
+        real components that represent the actual structural reorganization rate.
         """
         np = self._np
         
@@ -560,7 +578,11 @@ class InternalHamiltonian:
         # ΔNFR operator
         delta_nfr_matrix = (1j / self.hbar_str) * commutator
         
-        # Extract diagonal element for node n (take real part for physical observable)
+        # Extract diagonal element for node n
+        # Note: Take real part to obtain observable. Diagonal elements of the
+        # anti-Hermitian commutator are purely imaginary theoretically; any
+        # nonzero real part comes from numerical precision or represents the
+        # actual structural reorganization rate.
         delta_nfr = float(delta_nfr_matrix[node_idx, node_idx].real)
         
         return delta_nfr
