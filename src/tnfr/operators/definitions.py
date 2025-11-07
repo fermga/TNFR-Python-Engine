@@ -624,10 +624,21 @@ class Reception(Operator):
         super().__call__(G, node, **kw)
 
     def _validate_preconditions(self, G: TNFRGraph, node: Any) -> None:
-        """Validate EN-specific preconditions."""
-        from .preconditions import validate_reception
+        """Validate EN-specific preconditions with strict canonical checks.
 
-        validate_reception(G, node)
+        Implements TNFR.pdf §2.2.1 precondition validation:
+        1. EPI < saturation threshold (receptive capacity available)
+        2. DNFR < threshold (minimal dissonance for stable integration)
+        3. Emission sources check (warning for isolated nodes)
+
+        Raises
+        ------
+        ValueError
+            If EPI too high or DNFR too high for reception
+        """
+        from .preconditions.reception import validate_reception_strict
+
+        validate_reception_strict(G, node)
 
     def _collect_metrics(
         self, G: TNFRGraph, node: Any, state_before: dict[str, Any]
