@@ -667,6 +667,206 @@ class TNFRNetwork:
 
         return self._results
 
+    def apply_canonical_sequence(
+        self,
+        sequence_name: str,
+        node: Optional[int] = None,
+        collect_metrics: bool = True,
+    ) -> TNFRNetwork:
+        """Apply a canonical predefined operator sequence from TNFR theory.
+        
+        Executes one of the 6 archetypal sequences involving OZ (Dissonance)
+        from "El pulso que nos atraviesa" (Table 2.5). These sequences represent
+        validated structural patterns with documented use cases and domain contexts.
+        
+        Parameters
+        ----------
+        sequence_name : str
+            Name of canonical sequence. Available sequences:
+            - 'bifurcated_base': OZ → ZHIR (mutation path)
+            - 'bifurcated_collapse': OZ → NUL (collapse path)
+            - 'therapeutic_protocol': Complete healing cycle
+            - 'theory_system': Epistemological construction
+            - 'full_deployment': Complete reorganization trajectory
+            - 'mod_stabilizer': OZ → ZHIR → IL (reusable macro)
+        node : int, optional
+            Target node ID. If None, applies to the most recently added node.
+        collect_metrics : bool, default=True
+            Whether to collect detailed operator metrics during execution.
+        
+        Returns
+        -------
+        TNFRNetwork
+            Self for method chaining.
+        
+        Raises
+        ------
+        ValueError
+            If sequence_name is not recognized or network has no nodes.
+        
+        Examples
+        --------
+        Apply therapeutic protocol:
+        
+        >>> net = TNFRNetwork("therapy_session")
+        >>> net.add_nodes(1).apply_canonical_sequence("therapeutic_protocol")
+        >>> results = net.measure()
+        >>> print(f"Coherence: {results.coherence:.3f}")
+        
+        Apply MOD_STABILIZER as reusable transformation module:
+        
+        >>> net = TNFRNetwork("modular")
+        >>> net.add_nodes(1)
+        >>> net.apply_canonical_sequence("mod_stabilizer").measure()
+        
+        See Also
+        --------
+        list_canonical_sequences : List available sequences with filters
+        apply_sequence : Apply predefined or custom operator sequences
+        
+        Notes
+        -----
+        Canonical sequences are archetypal patterns from TNFR theory documented
+        in "El pulso que nos atraviesa", Tabla 2.5. Each sequence has been
+        validated for structural coherence and grammar compliance.
+        """
+        if self._graph is None or self._graph.number_of_nodes() == 0:
+            raise ValueError("No nodes in graph. Call add_nodes() first.")
+        
+        # Import canonical sequences registry
+        from ..operators.canonical_patterns import CANONICAL_SEQUENCES
+        
+        if sequence_name not in CANONICAL_SEQUENCES:
+            available = ', '.join(sorted(CANONICAL_SEQUENCES.keys()))
+            raise ValueError(
+                f"Unknown canonical sequence '{sequence_name}'. "
+                f"Available: {available}"
+            )
+        
+        sequence = CANONICAL_SEQUENCES[sequence_name]
+        
+        # Determine target node
+        if node is None:
+            # Use last added node
+            nodes_list = list(self._graph.nodes())
+            target_node = nodes_list[-1] if nodes_list else 0
+        else:
+            target_node = node
+            if target_node not in self._graph.nodes():
+                raise ValueError(f"Node {target_node} not found in network")
+        
+        # Configure metrics collection
+        self._graph.graph['COLLECT_OPERATOR_METRICS'] = collect_metrics
+        
+        # Map glyphs to operator instances
+        from ..operators.definitions import (
+            Emission, Reception, Coherence, Dissonance, Coupling,
+            Resonance, Silence, Expansion, Contraction, SelfOrganization,
+            Mutation, Transition, Recursivity,
+        )
+        from ..types import Glyph
+        
+        glyph_to_operator = {
+            Glyph.AL: Emission(),
+            Glyph.EN: Reception(),
+            Glyph.IL: Coherence(),
+            Glyph.OZ: Dissonance(),
+            Glyph.UM: Coupling(),
+            Glyph.RA: Resonance(),
+            Glyph.SHA: Silence(),
+            Glyph.VAL: Expansion(),
+            Glyph.NUL: Contraction(),
+            Glyph.THOL: SelfOrganization(),
+            Glyph.ZHIR: Mutation(),
+            Glyph.NAV: Transition(),
+            Glyph.REMESH: Recursivity(),
+        }
+        
+        operators = [glyph_to_operator[g] for g in sequence.glyphs]
+        run_sequence(self._graph, target_node, operators)
+        
+        return self
+    
+    def list_canonical_sequences(
+        self,
+        domain: Optional[str] = None,
+        with_oz: bool = False,
+    ) -> Dict[str, Any]:
+        """List available canonical sequences with optional filters.
+        
+        Returns a dictionary of canonical operator sequences from TNFR theory.
+        Sequences can be filtered by domain or by presence of OZ (Dissonance).
+        
+        Parameters
+        ----------
+        domain : str, optional
+            Filter by domain. Options:
+            - 'general': Cross-domain patterns
+            - 'biomedical': Therapeutic and healing sequences
+            - 'cognitive': Epistemological and learning patterns
+            - 'social': Organizational and collective sequences
+        with_oz : bool, default=False
+            If True, only return sequences containing OZ (Dissonance) operator.
+        
+        Returns
+        -------
+        dict
+            Dictionary mapping sequence names to CanonicalSequence objects.
+            Each entry contains: name, glyphs, pattern_type, description,
+            use_cases, domain, and references.
+        
+        Examples
+        --------
+        List all canonical sequences:
+        
+        >>> net = TNFRNetwork("explorer")
+        >>> sequences = net.list_canonical_sequences()
+        >>> for name in sequences:
+        ...     print(name)
+        bifurcated_base
+        bifurcated_collapse
+        therapeutic_protocol
+        theory_system
+        full_deployment
+        mod_stabilizer
+        
+        List only sequences with OZ:
+        
+        >>> oz_sequences = net.list_canonical_sequences(with_oz=True)
+        >>> print(f"Found {len(oz_sequences)} sequences with OZ")
+        Found 6 sequences with OZ
+        
+        List biomedical domain sequences:
+        
+        >>> bio_sequences = net.list_canonical_sequences(domain="biomedical")
+        >>> for name, seq in bio_sequences.items():
+        ...     print(f"{name}: {seq.description[:50]}...")
+        
+        See Also
+        --------
+        apply_canonical_sequence : Apply a canonical sequence to the network
+        """
+        from ..operators.canonical_patterns import CANONICAL_SEQUENCES
+        from ..types import Glyph
+        
+        sequences = CANONICAL_SEQUENCES.copy()
+        
+        # Filter by domain if specified
+        if domain is not None:
+            sequences = {
+                name: seq for name, seq in sequences.items()
+                if seq.domain == domain
+            }
+        
+        # Filter by OZ presence if requested
+        if with_oz:
+            sequences = {
+                name: seq for name, seq in sequences.items()
+                if Glyph.OZ in seq.glyphs
+            }
+        
+        return sequences
+
     def visualize(self, **kwargs: Any) -> TNFRNetwork:
         """Visualize the network with TNFR metrics.
 
