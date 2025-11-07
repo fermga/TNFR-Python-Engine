@@ -1,343 +1,369 @@
 # TNFR Python Engine
 
-## What is TNFR?
+<div align="center">
 
-TNFR (**Resonant Fractal Nature Theory**) models reality as a network of resonant nodes that reorganize structurally through coherence. Imagine cells synchronizing in a living organism: each cell maintains its identity while coordinating behavior with others. TNFR is an operational paradigm with concrete mathematical and computational tools for simulating complex adaptive systems.
+**Model reality as resonant patterns, not isolated objects**
 
-## What is it for?
+[![PyPI](https://img.shields.io/pypi/v/tnfr)](https://pypi.org/project/tnfr/)
+[![Python](https://img.shields.io/pypi/pyversions/tnfr)](https://pypi.org/project/tnfr/)
+[![License](https://img.shields.io/github/license/fermga/TNFR-Python-Engine)](LICENSE.md)
+[![Documentation](https://img.shields.io/badge/docs-latest-brightgreen)](https://tnfr.netlify.app)
 
-TNFR enables modeling and analyzing complex systems where coherent patterns emerge through local interactions:
+[Quick Start](#-quick-start) • [Key Concepts](#-key-concepts) • [Documentation](#-documentation) • [Examples](#-examples) • [Contributing](#-contributing)
 
-- 🧬 **Biology**: Cellular communication networks, neuronal synchronization, protein dynamics
-- 🌐 **Social systems**: Information propagation, community formation, opinion dynamics
-- 🤖 **Artificial Intelligence**: Resonant symbolic systems, structural processing networks
-- 🔬 **Network science**: Structural coherence analysis, emergent pattern detection
-- 🏗️ **Distributed systems**: Decentralized coordination, self-organization
+</div>
 
-**Key advantages**: Operational fractality (patterns scale without losing structure), complete traceability (every reorganization is observable), and guaranteed reproducibility.
+---
 
-## Quick Installation
+## 🌟 What is TNFR?
 
-Install from PyPI (Python ≥ 3.9):
+**TNFR** (**Resonant Fractal Nature Theory** / **Teoría de la Naturaleza Fractal Resonante**) is a paradigm shift in modeling complex systems. Instead of viewing reality as isolated "things" that interact through cause-and-effect, TNFR models it as **coherent patterns that persist through resonance**.
+
+Think of a choir: each singer maintains their unique voice while synchronizing with others to create harmony. When voices resonate, they produce stable, beautiful structures. When they clash, patterns fragment. **TNFR captures this principle mathematically and makes it operational in code.**
+
+### 🎯 Why TNFR?
+
+| Traditional Approach | TNFR Paradigm |
+|---------------------|---------------|
+| Objects exist independently | Patterns exist through resonance |
+| Causality: A causes B | Coherence: A and B co-organize |
+| Static snapshots | Dynamic reorganization |
+| Domain-specific models | Trans-scale, trans-domain |
+
+**Key Advantages:**
+- 🔄 **Operational Fractality**: Patterns scale without losing structure
+- 📊 **Complete Traceability**: Every reorganization is observable
+- 🎯 **Guaranteed Reproducibility**: Same conditions → same outcomes
+- 🌐 **Domain Neutral**: Works from quantum to social systems
+
+### 🚀 Use Cases
+
+- 🧬 **Biology**: Cellular networks, neuronal synchronization, protein dynamics
+- 🌐 **Social Systems**: Information spread, community formation, opinion dynamics
+- 🤖 **AI**: Resonant symbolic systems, emergent learning
+- 🔬 **Network Science**: Structural coherence, pattern detection
+- 🏗️ **Distributed Systems**: Decentralized coordination, self-organization
+
+---
+
+## ⚡ Quick Start
+
+### Installation
 
 ```bash
 pip install tnfr
 ```
 
-### Your First TNFR Network (3 lines!)
+Requires Python ≥ 3.9
+
+### Your First TNFR Network (3 Lines!)
 
 ```python
 from tnfr.sdk import TNFRNetwork
 
-# 1. Create a network with an identifying name
+# Create, activate, and measure a network
 network = TNFRNetwork("hello_world")
-
-# 2. Add 10 nodes and connect them randomly (30% probability)
-#    Then apply a sequence of structural operators 3 times
-#    Finally measure coherence metrics
 results = network.add_nodes(10).connect_nodes(0.3, "random").apply_sequence("basic_activation", repeat=3).measure()
-
-# 3. Display results: coherence C(t), sense index Si, and frequencies νf
 print(results.summary())
 ```
 
-🎉 **That's it!** You just created, activated, and measured a TNFR network.
+🎉 **That's it!** You just created a resonant network.
 
-**What just happened?**
-- `add_nodes(10)`: Creates 10 resonant nodes (like musical notes that can synchronize)
-- `connect_nodes(0.3, "random")`: Connects nodes randomly with 30% probability
-- `apply_sequence("basic_activation", repeat=3)`: Applies structural operators (Emission → Coherence → Resonance) 3 times
-- `measure()`: Calculates total coherence C(t), sense index Si, and other structural metrics
+**What happened?**
+- `add_nodes(10)`: Created 10 nodes that can synchronize
+- `connect_nodes(0.3, "random")`: Connected them (30% probability)
+- `apply_sequence("basic_activation", repeat=3)`: Applied Emission → Coherence → Resonance (3x)
+- `measure()`: Calculated coherence C(t), sense index Si, and structural metrics
 
-### Interactive Tutorials
-
-Learn TNFR interactively in 5 minutes:
+### 🎓 Interactive Learning (5 Minutes)
 
 ```python
 from tnfr.tutorials import hello_tnfr
 hello_tnfr()  # Guided tour of TNFR concepts
 ```
 
-Or try domain-specific examples:
-- `biological_example()` - Cell communication model
-- `social_network_example()` - Social dynamics  
-- `technology_example()` - Distributed systems
-- `team_communication_example()` - Team structure optimization
-- `adaptive_ai_example()` - Learning through resonance
-
-📘 **Want a structured learning path?** See the full [**Interactive Tutorial**](docs/source/getting-started/INTERACTIVE_TUTORIAL.md) (60 minutes from zero to first application)
-
-## Key Concepts
-
-**New to TNFR?** 👉 Start with the [**TNFR Fundamental Concepts Guide**](docs/source/getting-started/TNFR_CONCEPTS.md) - understand the paradigm in 10 minutes!
-
-### Quick Reference
-
-Before diving deeper, here's a brief overview of fundamental terms:
-
-#### Resonant Fractal Node (NFR)
-Minimum unit of structural coherence in the network. Each node has:
-- **EPI**: Primary Information Structure (its coherent "shape")
-- **νf**: Structural frequency (reorganization rate, in Hz_str)
-- **Phase φ**: Synchrony with other nodes in the network
-
-#### Structural Operators
-Functions that reorganize nodes coherently (13 canonical operators):
-- **Emission/Reception**: Initiate and capture resonant patterns
-- **Coherence/Dissonance**: Stabilize or destabilize structures
-- **Resonance**: Propagates coherence without losing EPI identity
-- **Self-organization**: Creates emergent sub-structures
-- [See complete list in GLOSSARY.md](GLOSSARY.md#structural-operators)
-
-#### Coherence Metrics
-- **C(t)**: Total network coherence at time t
-- **Si**: Sense index (capacity to generate stable reorganization)
-- **ΔNFR**: Internal reorganization operator
-
-#### Fundamental Nodal Equation
+**Domain Examples:**
+```python
+from tnfr.tutorials import (
+    biological_example,      # Cell communication
+    social_network_example,  # Social dynamics
+    technology_example,      # Distributed systems
+    adaptive_ai_example,     # Learning through resonance
+)
 ```
-∂EPI / ∂t = νf · ΔNFR(t)
-```
-*Structure changes proportionally to frequency and gradient*
+
+📘 **Structured Learning Path**: See our [**60-Minute Interactive Tutorial**](docs/source/getting-started/INTERACTIVE_TUTORIAL.md)
 
 ---
 
-## ✨ What's New: Grammar 2.0
+## 💡 Key Concepts
 
-TNFR now includes **Grammar 2.0** - an enhanced operator sequence validation system with powerful new capabilities:
+> **New to TNFR?** 👉 [**TNFR Fundamental Concepts Guide**](docs/source/getting-started/TNFR_CONCEPTS.md) - Understand the paradigm in 10 minutes!
 
-### 🎯 Key Features
+### The Nodal Equation
 
-**📊 Health Metrics System** - Quantitative sequence assessment (0.0-1.0 scale):
+At the heart of TNFR is one elegant equation:
+
+```
+∂EPI/∂t = νf · ΔNFR(t)
+```
+
+**What it means:**
+- **EPI**: Primary Information Structure (the "shape" of a node)
+- **νf**: Structural frequency (reorganization rate in Hz_str)
+- **ΔNFR**: Internal reorganization operator (structural gradient)
+
+*Structure changes proportionally to frequency and gradient*
+
+### Three Essential Elements
+
+**1. Resonant Fractal Node (NFR)**
+- Minimum unit of structural coherence
+- Has EPI (form), νf (frequency), φ (phase)
+
+**2. Structural Operators** (13 canonical)
+- **Emission/Reception**: Initiate & capture patterns
+- **Coherence/Dissonance**: Stabilize or destabilize
+- **Resonance**: Propagate without losing identity
+- **Self-organization**: Create emergent structures
+- [See all 13 operators →](GLOSSARY.md#structural-operators)
+
+**3. Coherence Metrics**
+- **C(t)**: Total network coherence [0,1]
+- **Si**: Sense index (reorganization stability)
+- **ΔNFR**: Evolution gradient
+
+---
+
+## 📚 Documentation
+
+### 🎯 Single Source of Truth for Mathematics
+
+**[Mathematical Foundations of TNFR](docs/source/theory/mathematical_foundations.md)** ⭐
+
+This is THE ONLY place where TNFR mathematics is formally defined:
+- Hilbert space H_NFR and Banach space B_EPI
+- Coherence operator Ĉ (spectral theory, proofs)
+- Frequency operator Ĵ and reorganization operator ΔNFR
+- Complete nodal equation derivation
+- **§3.1.1**: Implementation bridge (theory → code)
+
+### 📖 Quick References
+
+- **[GLOSSARY](GLOSSARY.md)** - Operational definitions for code use
+- **[TNFR Concepts](docs/source/getting-started/TNFR_CONCEPTS.md)** - Paradigm introduction
+- **[API Overview](docs/source/api/overview.md)** - Package architecture
+- **[Operator Guide](docs/source/api/operators.md)** - Complete operator reference
+
+### 🎨 Grammar 2.0 (Operator Sequences)
+
+Enhanced validation system for operator sequences:
+
 ```python
 from tnfr.operators.grammar import validate_sequence_with_health
 
 result = validate_sequence_with_health(["emission", "reception", "coherence"])
 print(f"Health: {result.health_metrics.overall_health:.2f}")
-print(f"Balance: {result.health_metrics.balance_score:.2f}")
-print(f"Frequency Harmony: {result.health_metrics.frequency_harmony:.2f}")
+print(f"Pattern: {result.metadata['detected_pattern']}")
 ```
 
-**🎨 18 Structural Patterns** - Comprehensive pattern detection:
-- **Fundamental**: Linear, Hierarchical, Fractal, Cyclic, Bifurcated
-- **Domain-Specific**: Therapeutic, Educational, Organizational, Creative, Regenerative
-- **Compositional**: Bootstrap, Explore, Stabilize, Resonate, Compress
+**Features:**
+- 📊 Health metrics (7 dimensions, 0.0-1.0 scale)
+- 🎨 18 structural patterns (Linear, Fractal, Regenerative, etc.)
+- 🔄 Regenerative cycle detection
+- ⚡ Structural frequencies (Hz_str units)
 
-**🔄 Regenerative Cycles** - Self-sustaining sequences:
-```python
-from tnfr.operators.cycle_detection import CycleDetector
+**Learn More**: [Operator Sequences Guide](GLYPH_SEQUENCES_GUIDE.md) • [Migration Guide 2.0](docs/MIGRATION_GUIDE_2.0.md)
 
-detector = CycleDetector()
-analysis = detector.analyze_potential_cycle(sequence, regenerator_index)
-print(f"Valid regenerative: {analysis.is_valid_regenerative}")
-print(f"Cycle type: {analysis.cycle_type.value}")
-```
+### 🧪 Advanced Topics
 
-**⚡ Structural Frequencies (R5)** - Each operator has defined νf in Hz_str units
-- **High**: Emission, Dissonance, Resonance, Mutation, Contraction
-- **Medium**: Reception, Coherence, Coupling, Expansion, Self-Organization
-- **Zero**: Silence
-
-**🎚️ Graduated Compatibility** - Three-level transition validation:
-- ✅ **Compatible**: Recommended transitions
-- ⚠️ **Caution**: Context-specific (warnings issued)
-- ❌ **Incompatible**: Invalid transitions
-
-### 🚀 Migration Made Easy
-
-**Automated migration tools** help you adopt Grammar 2.0:
-
-```bash
-# Check your code for compatibility issues
-python -m tools.migration.migration_checker your_code.py
-
-# Auto-optimize sequences
-python -m tools.migration.sequence_upgrader emission reception coherence
-```
-
-**Interactive examples** guide you through:
-```bash
-# Before/after comparisons
-python examples/migration/before_after_comparison.py
-
-# Health optimization tutorial
-python examples/migration/health_optimization_tutorial.py
-
-# Pattern upgrade examples
-python examples/migration/pattern_upgrade_examples.py
-```
-
-**📖 Complete migration guide**: [docs/MIGRATION_GUIDE_2.0.md](docs/MIGRATION_GUIDE_2.0.md)
-
-**✅ Backward Compatible**: All existing Grammar 1.0 code continues to work!
-
----
-This equation governs how the structure (EPI) of each node evolves according to its frequency (νf) and reorganization gradient (ΔNFR).
-
-**📖 For deeper understanding**: 
-- [TNFR Fundamental Concepts](docs/source/getting-started/TNFR_CONCEPTS.md) - Comprehensive introduction to the paradigm
-- [GLOSSARY.md](GLOSSARY.md) - Complete reference of all terms, variables, and operators
-
-## What's New: Grammar 2.0
-
-**TNFR Grammar 2.0** introduces advanced capabilities for operator sequence validation and optimization:
-
-### 🎯 Key Features
-
-✨ **Structural Frequencies (R5)**: Each operator has defined frequency (νf) in Hz_str units  
-📊 **Health Metrics**: 7-dimensional quantitative quality assessment (0.0-1.0 scale)  
-🎨 **18 Structural Patterns**: Comprehensive typology from LINEAR to REGENERATIVE  
-🔄 **Regenerative Cycles**: Self-sustaining sequence validation with R5 rules  
-⚖️ **Graduated Compatibility**: Three-level guidance (✓ Compatible / ⚠ Caution / ✗ Incompatible)  
-💡 **Smart Recommendations**: Actionable suggestions for sequence improvement  
-
-### Quick Example
-
-```python
-from tnfr.operators.grammar import validate_sequence_with_health
-
-# Validate with comprehensive health analysis
-result = validate_sequence_with_health([
-    "reception", "emission", "coherence",
-    "dissonance", "self_organization", "coherence"
-])
-
-print(f"Pattern: {result.metadata['detected_pattern']}")  # 'therapeutic'
-print(f"Health: {result.health_metrics.overall_health:.2f}")  # 0.88
-print(f"Balance: {result.health_metrics.balance_score:.2f}")  # 0.85
-print(f"Sustainability: {result.health_metrics.sustainability_index:.2f}")  # 0.90
-
-# Get optimization suggestions
-for rec in result.health_metrics.recommendations:
-    print(f"  • {rec}")
-```
-
-**Learn More**: [Operator Sequences Guide (Grammar 2.0)](GLYPH_SEQUENCES_GUIDE.md) | [Migration Guide](docs/MIGRATION_GUIDE_2.0.md)
+- [ARCHITECTURE.md](ARCHITECTURE.md) - System design & invariants
+- [Backend System](docs/backends.md) - NumPy/JAX/Torch backends
+- [TESTING.md](TESTING.md) - Test strategy & validation
+- [SECURITY.md](SECURITY.md) - Security practices
+- [CONTRIBUTING.md](CONTRIBUTING.md) - Development workflow
 
 ---
 
-## Technical Documentation
+## 🔬 Examples
 
-### User Guides
+### Hello World
 
-- 📘 [**TNFR Fundamental Concepts**](docs/source/getting-started/TNFR_CONCEPTS.md) - **START HERE** - Understand the paradigm in 10 minutes!
-- 🚀 [**NEW Quick Start Guide**](docs/source/getting-started/QUICKSTART_NEW.md) - Get started in 5 minutes!
-- 📚 [Original Quickstart](docs/source/getting-started/quickstart.md) - Python and CLI walkthroughs
-- 🎓 [Interactive Tutorials](src/tnfr/tutorials/README.md) - Learn by doing
-- 💡 [Hello World Example](examples/hello_world.py) - Simplest possible example
+```python
+# examples/hello_world.py
+from tnfr.sdk import TNFRNetwork
 
-### API Reference and Architecture
+network = TNFRNetwork("simple_demo")
+results = (network
+    .add_nodes(5)
+    .connect_nodes(0.5, "random")
+    .apply_sequence("basic_activation")
+    .measure())
 
-- [Documentation Index](docs/source/home.md) — Navigation hub for API chapters and examples
-- [API Overview](docs/source/api/overview.md) — Package map, invariants, and structural data flow
-- [Structural Operators](docs/source/api/operators.md) — Canonical grammar, key concepts, and typical workflows
-- **[Operator Sequences Guide (Grammar 2.0)](GLYPH_SEQUENCES_GUIDE.md)** — **Complete guide** to operator sequences, patterns, and health metrics
-  - [Migration Guide 2.0](docs/MIGRATION_GUIDE_2.0.md) — Upgrading from Grammar 1.0
-  - [Health Metrics Guide](docs/HEALTH_METRICS_GUIDE.md) — Deep dive into 7 health dimensions
-  - [Pattern Reference](docs/PATTERN_REFERENCE.md) — Catalog of all 18 structural patterns
-  - [Troubleshooting](docs/TROUBLESHOOTING.md) — Common issues and solutions
-- [Backend System](docs/backends.md) — Vectorized computation with NumPy/JAX/Torch backends
-- [Telemetry & Utilities](docs/source/api/telemetry.md) — Coherence metrics, trace capture, locking
-- [Examples](docs/source/examples/README.md) — Runnable scenarios, CLI artifacts
+print(f"Coherence: {results.coherence:.3f}")
+print(f"Sense Index: {results.sense_index:.3f}")
+```
 
-### Theoretical and Advanced Resources
+### Biological Network
 
-- [ARCHITECTURE.md](ARCHITECTURE.md) — Orchestration layers and invariant enforcement
-- [TESTING.md](TESTING.md) — Test strategy, organization, and structural fidelity validation
-- [SECURITY.md](SECURITY.md) — Security policy and best practices
-- [CONTRIBUTING.md](CONTRIBUTING.md) — QA battery (`scripts/run_tests.sh`) and review expectations
-- [GLOSSARY.md](GLOSSARY.md) — Unified glossary of TNFR variables, operators, and concepts
-- [Factory Documentation](docs/FACTORY_DOCUMENTATION_INDEX.md) — Comprehensive guide to factory patterns
-- [TNFR.pdf](TNFR.pdf) — Theoretical foundations, structural operators, and paradigm glossary
+```python
+# examples/biological_network.py
+from tnfr.sdk import TNFRNetwork
 
-## CLI Profiling Tools
+# Model cellular communication
+cells = TNFRNetwork("cell_network")
+results = (cells
+    .add_nodes(20, epi_range=(0.8, 1.2))  # Biological variation
+    .connect_nodes(0.3, "scale_free")      # Power-law connectivity
+    .apply_sequence("therapeutic", repeat=5)  # Healing pattern
+    .measure())
 
-Generate Sense Index and ΔNFR profiling artifacts directly from the CLI with the `profile-pipeline` subcommand. This tool reproduces the performance benchmark that captures vectorized and fallback execution traces for the full pipeline:
+print(f"Network health: {results.coherence:.2%}")
+```
+
+### More Examples
+
+- [Dynamic Limits](examples/dynamic_limits_demo.py) - Adaptive thresholds
+- [Multiscale Networks](examples/multiscale_network_demo.py) - Hierarchical structures
+- [Regenerative Cycles](examples/regenerative_cycles.py) - Self-sustaining patterns
+- [Performance Comparison](examples/backend_performance_comparison.py) - Backend benchmarks
+
+📂 **Full Collection**: [examples/](examples/) directory
+
+---
+
+## 🛠️ Development
+
+### Local Setup
+
+```bash
+# Clone repository
+git clone https://github.com/fermga/TNFR-Python-Engine.git
+cd TNFR-Python-Engine
+
+# Install with development dependencies
+pip install -e ".[dev,docs]"
+
+# Run tests
+./scripts/run_tests.sh
+
+# Format code
+./scripts/format.sh
+```
+
+### Documentation Build
+
+```bash
+# Install docs dependencies
+pip install -r docs/requirements.txt
+
+# Build documentation
+make docs
+
+# View locally
+open docs/_build/html/index.html
+```
+
+### Configuration & Secrets
+
+```bash
+# Copy environment template
+cp .env.example .env
+
+# Edit .env with your credentials (never commit this file!)
+# Load with:
+```
+
+```python
+from tnfr.secure_config import load_redis_config, get_cache_secret
+redis_config = load_redis_config()
+```
+
+See [SECURITY.md](SECURITY.md) for best practices.
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions! Here's how to get started:
+
+1. **Understand TNFR**: Read [Mathematical Foundations](docs/source/theory/mathematical_foundations.md)
+2. **Check Invariants**: Follow [AGENTS.md](AGENTS.md) rules
+3. **Write Tests**: Cover all invariants (see [TESTING.md](TESTING.md))
+4. **Run QA**: Execute `./scripts/run_tests.sh`
+5. **Submit PR**: See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines
+
+**Key Principles:**
+- ✅ Preserve canonical invariants
+- ✅ Use structural operators only
+- ✅ Document with references to Mathematical Foundations
+- ✅ Test spectral properties
+
+---
+
+## 📊 CLI Tools
+
+### Profiling Pipeline
 
 ```bash
 tnfr profile-pipeline \
   --nodes 120 --edge-probability 0.28 --loops 3 \
   --si-chunk-sizes auto 48 --dnfr-chunk-sizes auto \
-  --si-workers auto --dnfr-workers auto \
   --output-dir profiles/pipeline
 ```
 
-The command writes `.pstats` and JSON summaries for each configuration/mode pair, making it easy to inspect hot paths with :mod:`pstats`, Snakeviz, or other tools.
-
-## Documentation Build
-
-Netlify now renders the documentation with [Sphinx](https://www.sphinx-doc.org/), so MyST Markdown, doctests, and notebooks share a single pipeline. Reproduce the hosted site locally as follows:
-
-1. Create and activate a virtual environment (e.g., `python -m venv .venv && source .venv/bin/activate`).
-2. Install the documentation toolchain and project extras:
-   `python -m pip install -r docs/requirements.txt && python -m pip install -e .[docs]`.
-3. Execute the doctest suite with `sphinx-build -b doctest docs/source docs/_build/doctest` to ensure structural snippets remain coherent.
-4. Generate the HTML site with `make docs`, which wraps `sphinx-build -b html docs/source docs/_build/html`.
-
-The Netlify build (`netlify.toml`) runs `python -m pip install -r docs/requirements.txt && make docs` and publishes the resulting `docs/_build/html` directory, keeping the hosted documentation aligned with local verification runs.
-
-## Local Development
-
-Use the helper scripts to keep formatting aligned with the canonical configuration and reproduce the quality gate locally:
-
-```bash
-./scripts/format.sh           # Apply Black and isort across src/, tests/, scripts/, and benchmarks/
-./scripts/format.sh --check   # Validate formatting without modifying files
-./scripts/run_tests.sh        # Execute the full QA battery (type checks, tests, coverage, linting)
-```
-
-The formatting helper automatically prefers `poetry run` when a Poetry environment is available and falls back to `python -m` invocations so local runs mirror the tooling invoked in continuous integration.
-
-## Configuration and Secrets Management
-
-TNFR follows security best practices for handling sensitive credentials:
-
-**Quick Start:**
-
-```bash
-# Copy the environment template
-cp .env.example .env
-
-# Edit .env with your credentials (this file is gitignored)
-# Never commit .env files with real credentials!
-```
-
-**Secure Configuration Loading:**
-
-```python
-from tnfr.secure_config import load_redis_config, get_cache_secret
-
-# Load Redis configuration from environment variables
-redis_config = load_redis_config()
-
-# Get cache signing secret for hardened mode
-cache_secret = get_cache_secret()
-```
-
-**Key Principles:**
-
-- All secrets are loaded from environment variables (never hardcoded)
-- `.env.example` provides a template with secure placeholder values
-- Configuration utilities validate and provide helpful error messages
-- Automated tests scan for accidentally hardcoded secrets
-
-See [SECURITY.md](SECURITY.md) for detailed information on secret management, credential rotation, and security best practices.
-
-## Migration Notes
-
-- **Si dispersion keys:** Ensure graph payloads and configuration files use the canonical `dSi_dphase_disp` attribute for Si dispersion sensitivity before upgrading. The runtime now raises `ValueError` listing any unexpected sensitivity keys, and `tnfr.metrics.sense_index.compute_Si_node` rejects unknown keyword arguments.
-- Refer to the [release notes](docs/source/releases.md#1100-si-dispersion-legacy-keys-removed) for a migration snippet that rewrites stored graphs in place prior to running the new version.
-
-## License
-
-Released under the [MIT License](LICENSE.md). Cite the TNFR paradigm when publishing research or derived artifacts based on this engine.
+Generates `.pstats` and JSON summaries for performance analysis.
 
 ---
 
-## Getting Started - Suggested Progression
+## 📖 Learning Path
 
-1. **New to TNFR?** → Read [TNFR Fundamental Concepts](docs/source/getting-started/TNFR_CONCEPTS.md) to understand the paradigm (10 minutes)
-2. **Beginners** → Run `examples/hello_world.py` and then `from tnfr.tutorials import hello_tnfr; hello_tnfr()`
-3. **Users** → Read [QUICKSTART_NEW.md](docs/source/getting-started/QUICKSTART_NEW.md) and experiment with domain tutorials
-4. **Developers** → See [ARCHITECTURE.md](ARCHITECTURE.md), [GLOSSARY.md](GLOSSARY.md), and the [API Overview](docs/source/api/overview.md)
-5. **Researchers** → Study [TNFR.pdf](TNFR.pdf) and the [Theoretical Overview Notebook](docs/source/theory/00_overview.ipynb)
+**Recommended Progression:**
+
+1. **Newcomers** (10 min)
+   - Read [TNFR Concepts](docs/source/getting-started/TNFR_CONCEPTS.md)
+   - Run `hello_tnfr()` tutorial
+
+2. **Beginners** (30 min)
+   - Try [examples/hello_world.py](examples/hello_world.py)
+   - Explore domain examples (biological, social, AI)
+
+3. **Intermediate** (2 hours)
+   - Study [Mathematical Foundations §1-3](docs/source/theory/mathematical_foundations.md)
+   - Read [GLOSSARY](GLOSSARY.md)
+   - Practice with [Interactive Tutorial](docs/source/getting-started/INTERACTIVE_TUTORIAL.md)
+
+4. **Advanced** (ongoing)
+   - Deep dive: [Mathematical Foundations (complete)](docs/source/theory/mathematical_foundations.md)
+   - Architecture: [ARCHITECTURE.md](ARCHITECTURE.md)
+   - Contribute: [CONTRIBUTING.md](CONTRIBUTING.md)
+
+---
+
+## 📜 License
+
+Released under the [MIT License](LICENSE.md).
+
+**Citation**: When publishing research or applications based on TNFR, please cite:
+- This repository: `fermga/TNFR-Python-Engine`
+- Theoretical foundations: [TNFR.pdf](TNFR.pdf)
+- Mathematical formalization: [Mathematical Foundations](docs/source/theory/mathematical_foundations.md)
+
+---
+
+## 🔗 Links
+
+- **Documentation**: https://tnfr.netlify.app
+- **PyPI Package**: https://pypi.org/project/tnfr/
+- **GitHub**: https://github.com/fermga/TNFR-Python-Engine
+- **Issues**: https://github.com/fermga/TNFR-Python-Engine/issues
+
+---
+
+<div align="center">
+
+**Made with ❤️ for researchers, developers, and explorers of complex systems**
+
+*Reality is not made of things—it's made of resonance*
+
+</div>
