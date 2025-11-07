@@ -234,7 +234,7 @@ def example_full_deployment():
 def example_mod_stabilizer():
     """OZ → ZHIR → IL: Reusable transformation module.
 
-    becomes: EN → IL → OZ → ZHIR → IL
+    becomes: REMESH → EN → IL → OZ → ZHIR → IL → REMESH
     
     Domain: General (modular component)
     Use: Encapsulated within THOL or as micro-transformation
@@ -249,19 +249,21 @@ def example_mod_stabilizer():
     print("=" * 70)
     print("\nStructural Function:")
     print("  Macro glífica reutilizable para transformación controlada")
-    print("\nSequence: EN → IL → OZ → ZHIR → IL")
+    print("\nSequence: REMESH → EN → IL → OZ → ZHIR → IL → REMESH")
     print("\nPhases:")
+    print("  REMESH: Activa recursividad")
     print("  EN: Recibe estado actual")
     print("  IL: Estabiliza")
     print("  OZ: Disonancia controlada")
     print("  ZHIR: Mutación estructural")
     print("  IL: Estabilización de nueva forma")
+    print("  REMESH: Cierre recursivo")
     print("\nUse Cases:")
     print("  • Módulo de transformación segura")
     print("  • Componente en secuencias complejas")
     print("  • Bloque de construcción para T'HOL")
     print("\nTheoretical Note:")
-    print("  Este patrón es composable: THOL[EN → IL → OZ → ZHIR → IL]")
+    print("  Este patrón es composable: THOL[REMESH → EN → IL → OZ → ZHIR → IL → REMESH]")
     
     net = TNFRNetwork("modular_transform", NetworkConfig(random_seed=42))
     # Apply transformation module directly

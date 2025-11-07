@@ -195,15 +195,16 @@ FULL_DEPLOYMENT = CanonicalSequence(
 
 MOD_STABILIZER = CanonicalSequence(
     name="mod_stabilizer",
-    glyphs=[Glyph.EN, Glyph.IL, Glyph.OZ, Glyph.ZHIR, Glyph.IL],
+    glyphs=[Glyph.REMESH, Glyph.EN, Glyph.IL, Glyph.OZ, Glyph.ZHIR, Glyph.IL, Glyph.REMESH],
     pattern_type=StructuralPattern.EXPLORE,
     description=(
         "MOD_ESTABILIZADOR: macro glífica para transformación controlada. "
-        "Recibe estado actual (EN), estabiliza (IL), introduce disonancia "
-        "controlada (OZ), muta estructura (ZHIR), estabiliza nueva forma (IL). "
-        "Reutilizable como subunidad modular dentro de secuencias más complejas. "
-        "Representa el patrón mínimo de exploración-transformación-consolidación "
-        "con validación gramática completa (EN → IL)."
+        "Activa recursividad (REMESH), recibe estado actual (EN), estabiliza (IL), "
+        "introduce disonancia controlada (OZ), muta estructura (ZHIR), estabiliza "
+        "nueva forma (IL), cierra con recursividad (REMESH). Reutilizable como "
+        "subunidad modular dentro de secuencias más complejas. Representa el patrón "
+        "mínimo de exploración-transformación-consolidación con validación gramática "
+        "completa (EN → IL) y cierre recursivo."
     ),
     use_cases=[
         "Módulo de transformación segura para composición",
