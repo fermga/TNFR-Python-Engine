@@ -21,6 +21,9 @@ __all__ = [
     "compute_emergence_index",
 ]
 
+# Emergence index calculation constant
+_EMERGENCE_INDEX_EPSILON = 1e-6  # Small value to avoid zero in geometric mean
+
 
 def compute_structural_complexity(G: TNFRGraph, node: NodeId) -> int:
     """Measure structural complexity by counting nested sub-EPIs.
@@ -236,8 +239,11 @@ def compute_emergence_index(G: TNFRGraph, node: NodeId) -> float:
     efficiency = compute_metabolic_efficiency(G, node)
 
     # Geometric mean to avoid dominance by any single factor
-    # Add small epsilon to avoid zero multiplication
-    eps = 1e-6
-    index = ((complexity + eps) * (rate + eps) * (efficiency + eps)) ** (1.0 / 3.0)
+    # Add epsilon to avoid zero multiplication when no bifurcations occurred
+    index = (
+        (complexity + _EMERGENCE_INDEX_EPSILON)
+        * (rate + _EMERGENCE_INDEX_EPSILON)
+        * (efficiency + _EMERGENCE_INDEX_EPSILON)
+    ) ** (1.0 / 3.0)
 
     return index

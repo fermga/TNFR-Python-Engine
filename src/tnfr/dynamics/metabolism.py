@@ -81,19 +81,17 @@ class StructuralMetabolism:
         self.node = node
         self.metabolic_rate = 1.0
 
-    def digest(self, external_stimulus: float = 0.0, tau: float = 0.08) -> None:
-        """Metabolize an external stimulus through complete cycle.
+    def digest(self, tau: float = 0.08) -> None:
+        """Metabolize external stimulus through complete metabolic cycle.
 
         Implements the canonical metabolic sequence: EN → THOL → IL
 
-        1. Reception (EN): Receives external stimulus
+        1. Reception (EN): Receives external stimulus from neighbors
         2. Reorganization (THOL): Autonomously transforms into structure
         3. Stabilization (IL): Consolidates the result
 
         Parameters
         ----------
-        external_stimulus : float
-            Magnitude of external perturbation to metabolize (default 0.0)
         tau : float
             Bifurcation threshold for THOL (default 0.08)
 
@@ -179,12 +177,10 @@ class StructuralMetabolism:
             SelfOrganization()(self.G, self.node, tau=tau)
 
 
-def digest_stimulus(
-    G: TNFRGraph, node: NodeId, stimulus: float = 0.0, tau: float = 0.08
-) -> None:
+def digest_stimulus(G: TNFRGraph, node: NodeId, tau: float = 0.08) -> None:
     """Functional interface for single metabolic cycle.
 
-    Equivalent to `StructuralMetabolism(G, node).digest(stimulus, tau)`.
+    Equivalent to `StructuralMetabolism(G, node).digest(tau)`.
 
     Parameters
     ----------
@@ -192,8 +188,6 @@ def digest_stimulus(
         Graph containing the node
     node : NodeId
         Node identifier
-    stimulus : float
-        External stimulus magnitude
     tau : float
         Bifurcation threshold
 
@@ -202,10 +196,10 @@ def digest_stimulus(
     >>> from tnfr.structural import create_nfr
     >>> from tnfr.dynamics.metabolism import digest_stimulus
     >>> G, node = create_nfr("neuron", epi=0.4, vf=1.2)
-    >>> digest_stimulus(G, node, stimulus=0.2, tau=0.1)  # doctest: +SKIP
+    >>> digest_stimulus(G, node, tau=0.1)  # doctest: +SKIP
     """
     metabolism = StructuralMetabolism(G, node)
-    metabolism.digest(stimulus, tau)
+    metabolism.digest(tau)
 
 
 def adaptive_metabolism(G: TNFRGraph, node: NodeId, stress: float) -> None:

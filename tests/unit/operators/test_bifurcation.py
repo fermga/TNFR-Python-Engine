@@ -74,10 +74,8 @@ class TestBifurcationLogic:
         G.nodes[node][DNFR_PRIMARY] = 0.2
 
         # History with strong acceleration
-        # d²EPI = abs(0.7 - 2*0.5 + 0.3) = abs(0.0) = 0.0? No, let's make it clearer
         # d²EPI = abs(epi_t - 2*epi_{t-1} + epi_{t-2})
-        # For strong acceleration: [0.3, 0.45, 0.7]
-        # d²EPI = abs(0.7 - 2*0.45 + 0.3) = abs(0.1) = 0.1
+        # For [0.3, 0.45, 0.7]: d²EPI = abs(0.7 - 2*0.45 + 0.3) = abs(0.1) = 0.1
         G.nodes[node]["epi_history"] = [0.3, 0.45, 0.7]
 
         # Low threshold to trigger bifurcation

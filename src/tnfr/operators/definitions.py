@@ -48,6 +48,10 @@ __all__ = [
     "Recursivity",
 ]
 
+# T'HOL canonical bifurcation constants
+_THOL_SUB_EPI_SCALING = 0.25  # Sub-EPI is 25% of parent (first-order bifurcation)
+_THOL_EMERGENCE_CONTRIBUTION = 0.1  # Parent EPI increases by 10% of sub-EPI
+
 
 class Operator:
     """Base class for TNFR structural operators.
@@ -1501,7 +1505,9 @@ class SelfOrganization(Operator):
     def _compute_epi_acceleration(self, G: TNFRGraph, node: Any) -> float:
         """Calculate ∂²EPI/∂t² from node's EPI history.
 
-        Uses finite difference approximation: d²EPI/dt² ≈ (ΔEPI_t - ΔEPI_{t-1})
+        Uses finite difference approximation: 
+        d²EPI/dt² ≈ (EPI_t - 2*EPI_{t-1} + EPI_{t-2}) / (Δt)²
+        For unit time steps: d²EPI/dt² ≈ EPI_t - 2*EPI_{t-1} + EPI_{t-2}
 
         Parameters
         ----------
@@ -1561,9 +1567,8 @@ class SelfOrganization(Operator):
         parent_epi = float(get_attr(G.nodes[node], ALIAS_EPI, 0.0))
         parent_vf = float(get_attr(G.nodes[node], ALIAS_VF, 1.0))
 
-        # Calculate sub-EPI magnitude (proportional to parent but smaller)
-        # Scaling factor: 0.25 (25% of parent) is canonical for first-order bifurcation
-        sub_epi_value = parent_epi * 0.25
+        # Calculate sub-EPI magnitude using canonical scaling factor
+        sub_epi_value = parent_epi * _THOL_SUB_EPI_SCALING
 
         # Store sub-EPI in node's sub_epis list
         sub_epis = G.nodes[node].get("sub_epis", [])
@@ -1582,9 +1587,9 @@ class SelfOrganization(Operator):
         )
         G.nodes[node]["sub_epis"] = sub_epis
 
-        # Increment parent EPI by emergence contribution (10% of sub-EPI)
+        # Increment parent EPI using canonical emergence contribution
         # This reflects that bifurcation increases total structural complexity
-        new_epi = parent_epi + sub_epi_value * 0.1
+        new_epi = parent_epi + sub_epi_value * _THOL_EMERGENCE_CONTRIBUTION
         set_attr(G.nodes[node], ALIAS_EPI, new_epi)
 
     def _validate_preconditions(self, G: TNFRGraph, node: Any) -> None:
