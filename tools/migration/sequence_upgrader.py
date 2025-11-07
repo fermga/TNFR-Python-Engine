@@ -72,17 +72,24 @@ class SequenceUpgrader:
     DESTABILIZERS = {"dissonance", "mutation", "contraction"}
     STABILIZERS = {"coherence", "silence", "resonance", "coupling"}
     HIGH_FREQ = {"emission", "dissonance", "resonance", "mutation", "contraction"}
-    MEDIUM_FREQ = {"reception", "coherence", "coupling", "expansion", 
-                   "self_organization", "transition", "recursivity"}
+    MEDIUM_FREQ = {
+        "reception", "coherence", "coupling", "expansion",
+        "self_organization", "transition", "recursivity"
+    }
     ZERO_FREQ = {"silence"}
     
-    def __init__(self, target_health: float = 0.75):
+    # Health thresholds
+    DEFAULT_TARGET_HEALTH = 0.75
+    MIN_HEALTH_THRESHOLD = 0.65
+    
+    def __init__(self, target_health: float = None):
         """Initialize upgrader.
         
         Args:
-            target_health: Target health score for upgrades (0.0-1.0)
+            target_health: Target health score for upgrades (0.0-1.0).
+                          Defaults to DEFAULT_TARGET_HEALTH if not provided.
         """
-        self.target_health = target_health
+        self.target_health = target_health if target_health is not None else self.DEFAULT_TARGET_HEALTH
         self.analyzer = SequenceHealthAnalyzer() if HAS_TNFR else None
     
     def upgrade_sequence(self, sequence: List[str], 
@@ -299,12 +306,16 @@ def main():
         sys.exit(1)
     
     sequence = sys.argv[1:]
-    upgrader = SequenceUpgrader(target_health=0.75)
+    upgrader = SequenceUpgrader()
     
     result = upgrader.upgrade_sequence(sequence)
     print(result.summary())
     
-    sys.exit(0 if result.upgraded_health and result.upgraded_health >= 0.65 else 1)
+    # Exit with success if health meets minimum threshold, if available
+    if result.upgraded_health:
+        sys.exit(0 if result.upgraded_health >= SequenceUpgrader.MIN_HEALTH_THRESHOLD else 1)
+    else:
+        sys.exit(0)
 
 
 if __name__ == "__main__":

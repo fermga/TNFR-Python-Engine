@@ -265,15 +265,22 @@ class MigrationChecker:
         for i, line in enumerate(lines, start=1):
             # Look for pattern name comparisons
             if re.search(r"pattern\s*==\s*['\"]", line):
-                if "result.metadata" not in line:  # Avoid false positives
-                    continue
-                report.issues.append(MigrationIssue(
-                    level=IssueLevel.WARNING,
-                    message="Hard-coded pattern name comparison may break with Grammar 2.0",
-                    line_number=i,
-                    code_snippet=line.strip(),
-                    suggestion="Use pattern categories or check pattern type instead"
-                ))
+                # Avoid flagging lines that are already accessing result.metadata
+                if "result.metadata" in line:
+                    report.issues.append(MigrationIssue(
+                        level=IssueLevel.WARNING,
+                        message="Hard-coded pattern name comparison may break with Grammar 2.0",
+                        line_number=i,
+                        code_snippet=line.strip(),
+                        suggestion="Use pattern categories or check pattern type instead"
+                    ))
+    
+    # Operator names to check for (class constant)
+    COMMON_OPERATORS = {
+        "emission", "reception", "coherence", "silence", "dissonance",
+        "coupling", "resonance", "self_organization", "transition",
+        "mutation", "expansion", "contraction", "recursivity"
+    }
     
     def _extract_sequence_from_list(self, node: ast.List) -> Optional[List[str]]:
         """Extract operator sequence from AST List node."""
@@ -285,8 +292,7 @@ class MigrationChecker:
                 sequence.append(elt.id)
         
         # Only return if it looks like an operator sequence
-        if sequence and any(op.lower() in {"emission", "reception", "coherence", "silence", "dissonance"} 
-                           for op in sequence):
+        if sequence and any(op.lower() in self.COMMON_OPERATORS for op in sequence):
             return sequence
         return None
     
