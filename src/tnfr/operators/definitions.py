@@ -656,14 +656,14 @@ class Reception(Operator):
 
 @register_operator
 class Coherence(Operator):
-    """Coherence structural operator (IL) - Stabilization of structural alignment.
+    """Coherence structural operator - Stabilization of structural alignment.
 
-    Activates structural symbol ``IL`` to compress ΔNFR drift and raise the local C(t),
+    Activates the Coherence operator to compress ΔNFR drift and raise the local C(t),
     reinforcing structural alignment across nodes and stabilizing emergent forms.
 
     TNFR Context
     ------------
-    Coherence (IL) represents the fundamental stabilization process in TNFR. When applied,
+    Coherence represents the fundamental stabilization process in TNFR. When applied,
     it reduces ΔNFR (reorganization pressure) and increases C(t) (global coherence),
     effectively "sealing" structural forms into stable configurations. This is the primary
     operator for maintaining nodal equation balance: ∂EPI/∂t → 0 as ΔNFR → 0.
@@ -700,17 +700,16 @@ class Coherence(Operator):
 
     Typical Sequences
     ---------------------------
-    - **AL → IL**: Emission stabilized immediately (safe activation)
-    - **EN → IL**: Reception consolidated (stable integration)
-    - **IL → ZHIR**: Coherence enabling controlled mutation (stable transformation)
-    - **RA → IL**: Resonance followed by stabilization (propagation consolidation)
-    - **OZ → IL**: Dissonance resolved into new coherence (creative stabilization)
-    - **AL → NAV → IL → OZ → THOL → RA → UM**: Full transformation cycle
+    - **Emission → Reception → Coherence**: Safe activation with stabilization
+    - **Reception → Coherence**: Integrated reception consolidated
+    - **Coherence → Mutation**: Coherence enabling controlled mutation (stable transformation)
+    - **Resonance → Coherence**: Resonance followed by stabilization (propagation consolidation)
+    - **Coupling → Coherence**: Network coupling stabilized into coherent form
 
     Preconditions
     -------------
     - Node must have active EPI (non-zero form)
-    - ΔNFR should be present (though IL reduces it)
+    - ΔNFR should be present (though Coherence reduces it)
     - Sufficient network coupling for phase alignment
 
     Structural Effects
@@ -730,74 +729,62 @@ class Coherence(Operator):
 
     Compatibility
     ---------------------
-    **Compatible with**: ALL operators - IL is universally stabilizing
+    **Compatible with**: ALL operators - Coherence is universally stabilizing
 
-    **Especially effective after**: AL (Emission), EN (Reception), OZ (Dissonance),
-    NAV (Transition)
+    **Especially effective after**: Emission, Reception, Dissonance, Transition
 
-    **Natural progressions**: IL often concludes sequences or prepares for
-    controlled transformation (ZHIR, NAV)
+    **Natural progressions**: Coherence often concludes sequences or prepares for
+    controlled transformation (Mutation, Transition)
 
     Examples
     --------
-    **Technical Example:**
+    **Cardiac Coherence Training:**
 
-    >>> from tnfr.constants import DNFR_PRIMARY, EPI_PRIMARY, VF_PRIMARY
-    >>> from tnfr.dynamics import set_delta_nfr_hook
     >>> from tnfr.structural import create_nfr, run_sequence
-    >>> from tnfr.operators.definitions import Coherence
-    >>> G, node = create_nfr("core", epi=0.50, vf=1.10)
-    >>> G.nodes[node][DNFR_PRIMARY] = 0.08
-    >>> adjustments = iter([(0.03, 0.04, -0.03)])
-    >>> def align(graph):
-    ...     d_epi, d_vf, d_dnfr = next(adjustments)
-    ...     graph.nodes[node][EPI_PRIMARY] += d_epi
-    ...     graph.nodes[node][VF_PRIMARY] += d_vf
-    ...     graph.nodes[node][DNFR_PRIMARY] += d_dnfr
-    >>> set_delta_nfr_hook(G, align)
-    >>> run_sequence(G, node, [Coherence()])
-    >>> round(G.nodes[node][EPI_PRIMARY], 2)
-    0.53
-    >>> round(G.nodes[node][VF_PRIMARY], 2)
-    1.14
-    >>> round(G.nodes[node][DNFR_PRIMARY], 2)
-    0.05
-
-    **Example (Cardiac Coherence Training):**
-
-    >>> # Stabilizing heart rhythm after breath-focus activation
-    >>> G_heart, heart = create_nfr("cardiac_rhythm", epi=0.50, vf=1.10)
-    >>> # Heart activated (AL), now stabilizing coherent pattern
-    >>> # IL: Breath rhythm locks into stable coherent pattern
-    >>> run_sequence(G_heart, heart, [Coherence()])
-    >>> # Result: HRV pattern stabilizes, ΔNFR reduces significantly
+    >>> from tnfr.operators.definitions import Emission, Reception, Coherence, Coupling, Resonance, Transition
+    >>> from tnfr.alias import get_attr
+    >>> from tnfr.constants.aliases import ALIAS_EPI
+    >>> 
+    >>> # Stabilizing heart rhythm during breath-focus training
+    >>> G_heart, heart = create_nfr("cardiac_rhythm", epi=0.40, vf=1.10)
+    >>> 
+    >>> # Valid sequence: Emission → Reception → Coherence → Coupling → Resonance → Transition
+    >>> run_sequence(G_heart, heart, 
+    ...     [Emission(), Reception(), Coherence(), Coupling(), Resonance(), Transition()])
+    >>> 
+    >>> # Result: HRV pattern stabilizes, ΔNFR reduces
+    >>> epi_final = float(get_attr(G_heart.nodes[heart], ALIAS_EPI, 0.0))
     >>> # Patient enters sustained coherent state
 
-    **Example (Learning Consolidation):**
+    **Learning Consolidation:**
 
     >>> # Student consolidating newly understood concept
-    >>> G_study, mind = create_nfr("student_understanding", epi=0.45, vf=1.05)
-    >>> # Concept received (EN), now stabilizing into memory
-    >>> # IL: Mental rehearsal consolidates understanding
-    >>> run_sequence(G_study, mind, [Coherence()])
-    >>> # Result: Knowledge structure stabilizes, confusion (ΔNFR) reduces
+    >>> G_study, mind = create_nfr("student_understanding", epi=0.30, vf=1.05)
+    >>> 
+    >>> # Receive teaching and consolidate understanding
+    >>> run_sequence(G_study, mind,
+    ...     [Emission(), Reception(), Coherence(), Coupling(), Resonance(), Transition()])
+    >>> 
+    >>> # Result: Knowledge structure stabilizes, confusion reduces
     >>> # Concept becomes part of stable mental model
 
-    **Example (Team Alignment):**
+    **Team Alignment:**
 
-    >>> # Collaborative team stabilizing after creative brainstorm
+    >>> # Collaborative team stabilizing after creative session
     >>> G_team, group = create_nfr("team_consensus", epi=0.55, vf=1.00)
-    >>> # Ideas generated (OZ), now building consensus
-    >>> # IL: Team aligns around shared vision
-    >>> run_sequence(G_team, group, [Coherence()])
-    >>> # Result: Group coherence increases, conflicts (ΔNFR) resolve
+    >>> 
+    >>> # Build consensus through coupling and coherence
+    >>> run_sequence(G_team, group,
+    ...     [Emission(), Reception(), Coupling(), Coherence(), Resonance(), Transition()])
+    >>> 
+    >>> # Result: Group coherence increases, conflicts resolve
     >>> # Team operates with unified purpose
 
     See Also
     --------
-    Dissonance : Creates instability that IL later resolves
-    Emission : Often followed by IL for safe activation
-    Mutation : IL enables controlled phase changes
+    Dissonance : Creates instability that Coherence later resolves
+    Emission : Often followed by Coherence for safe activation
+    Mutation : Coherence enables controlled phase changes
     """
 
     __slots__ = ()
@@ -805,7 +792,7 @@ class Coherence(Operator):
     glyph: ClassVar[Glyph] = Glyph.IL
 
     def __call__(self, G: TNFRGraph, node: Any, **kw: Any) -> None:
-        """Apply IL with explicit ΔNFR reduction, C(t) coherence tracking, and phase locking.
+        """Apply Coherence with explicit ΔNFR reduction, C(t) coherence tracking, and phase locking.
 
         Parameters
         ----------
@@ -821,27 +808,27 @@ class Coherence(Operator):
 
         Notes
         -----
-        This implementation enforces the canonical IL structural effect:
+        This implementation enforces the canonical Coherence structural effect:
         ΔNFR → ΔNFR * (1 - ρ) where ρ ≈ 0.3 (30% reduction).
 
-        The reduction is applied by the grammar layer (_op_IL) using IL_dnfr_factor
+        The reduction is applied by the grammar layer using the Coherence dnfr_factor
         from global glyph factors. This method adds explicit telemetry logging for
         structural traceability.
 
         **C(t) Coherence Tracking:**
         
-        Captures global and local coherence before and after IL application:
+        Captures global and local coherence before and after Coherence application:
         - C_global: Network-wide coherence using C(t) = 1 - (σ_ΔNFR / ΔNFR_max)
         - C_local: Node neighborhood coherence with configurable radius
         
-        Both metrics are stored in G.graph["IL_coherence_tracking"] for analysis.
+        Both metrics are stored in G.graph["coherence_tracking"] for analysis.
 
         **Phase Locking:**
         
         Aligns node phase θ with network neighborhood phase:
         - θ_node → θ_node + α * (θ_network - θ_node)
         - Uses circular mean for proper phase wrap-around handling
-        - Telemetry stored in G.graph["IL_phase_locking"]
+        - Telemetry stored in G.graph["phase_locking"]
 
         To customize the reduction factor, set GLYPH_FACTORS["IL_dnfr_factor"] in
         the graph before calling this operator. Default is 0.7 (30% reduction).
@@ -849,14 +836,14 @@ class Coherence(Operator):
         # Import here to avoid circular import
         from ..metrics.coherence import compute_global_coherence, compute_local_coherence
         
-        # Capture C(t) before IL application
+        # Capture C(t) before Coherence application
         C_global_before = compute_global_coherence(G)
         C_local_before = compute_local_coherence(G, node, radius=kw.get("coherence_radius", 1))
 
-        # Capture ΔNFR before IL application for telemetry
+        # Capture ΔNFR before Coherence application for telemetry
         dnfr_before = float(get_attr(G.nodes[node], ALIAS_DNFR, 0.0))
 
-        # Delegate to parent __call__ which applies grammar (including _op_IL reduction)
+        # Delegate to parent __call__ which applies grammar (including Coherence reduction)
         super().__call__(G, node, **kw)
 
         # Apply phase locking after grammar application
