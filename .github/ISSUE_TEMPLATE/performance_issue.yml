@@ -1,0 +1,143 @@
+name: ⚡ Performance Issue
+description: Report performance degradation or optimization opportunity
+title: "[PERF] <Component>: <Brief Description>"
+labels: ["performance", "bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Report Performance Issue
+        
+        Help us identify and fix performance bottlenecks in TNFR.
+        
+        **Before submitting**:
+        - Verify issue exists in latest version
+        - Include reproducible benchmark
+        - Provide profiling data if possible
+        
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      description: How severe is the performance issue?
+      options:
+        - Critical (blocks usage)
+        - High (major slowdown)
+        - Medium (noticeable impact)
+        - Low (minor optimization)
+    validations:
+      required: true
+      
+  - type: input
+    id: component
+    attributes:
+      label: Affected Component
+      description: Which part of TNFR is affected?
+      placeholder: "ΔNFR computation, sense_index, operator sequences..."
+    validations:
+      required: true
+      
+  - type: textarea
+    id: description
+    attributes:
+      label: Performance Issue Description
+      description: What is the performance problem?
+      placeholder: |
+        Computing ΔNFR for large networks (>1000 nodes) takes excessive time,
+        making real-time analysis impractical...
+    validations:
+      required: true
+      
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal Reproduction Case
+      description: Provide code to reproduce the issue
+      placeholder: |
+        ```python
+        import tnfr
+        import networkx as nx
+        
+        # Create large network
+        G = nx.scale_free_graph(1000)
+        
+        # Slow operation
+        import time
+        start = time.time()
+        result = tnfr.compute_dnfr(G, "node_0")
+        elapsed = time.time() - start
+        print(f"Took {elapsed:.2f}s")  # Expected: <1s, Actual: 30s
+        ```
+    validations:
+      required: true
+      
+  - type: textarea
+    id: benchmark_data
+    attributes:
+      label: Benchmark Data
+      description: Timing measurements and comparison data
+      placeholder: |
+        Network size | Current time | Expected time
+        100 nodes    | 0.5s        | 0.1s
+        500 nodes    | 5.2s        | 0.5s
+        1000 nodes   | 30.1s       | 1.0s
+    validations:
+      required: true
+      
+  - type: textarea
+    id: profiling
+    attributes:
+      label: Profiling Data (Optional)
+      description: Output from profiling tools (cProfile, line_profiler, etc.)
+      placeholder: |
+        Top 5 hotspots:
+        1. _compute_phase_sync: 45% time
+        2. _matrix_operations: 30% time
+        3. _validate_coherence: 15% time
+        ...
+      
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: System information
+      placeholder: |
+        - TNFR version: 2.0.0
+        - Python version: 3.11.5
+        - OS: Ubuntu 22.04
+        - CPU: Intel i7-10700K
+        - RAM: 32GB
+    validations:
+      required: true
+      
+  - type: textarea
+    id: workaround
+    attributes:
+      label: Workaround (if any)
+      description: Temporary solution you're using
+      placeholder: "Processing in smaller batches of 100 nodes..."
+      
+  - type: textarea
+    id: suggested_fix
+    attributes:
+      label: Suggested Fix (Optional)
+      description: Ideas for optimization
+      placeholder: |
+        - Cache phase computations
+        - Use vectorized operations
+        - Implement parallel processing
+      
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Issue Checklist
+      description: Please confirm the following
+      options:
+        - label: Issue is reproducible on latest version
+          required: true
+        - label: Minimal reproduction case provided
+          required: true
+        - label: Benchmark data included
+          required: true
+        - label: Environment information complete
+          required: true

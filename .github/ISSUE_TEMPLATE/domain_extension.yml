@@ -1,0 +1,146 @@
+name: 🌐 Domain Extension
+description: Propose a complete extension for a new application domain
+title: "[EXTENSION] <Domain Name>"
+labels: ["enhancement", "extension", "community", "major"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Propose a Domain Extension
+        
+        Submit a complete extension package for a new application domain.
+        
+        **Includes**:
+        - Domain-specific patterns
+        - Specialized health analyzers
+        - Visualization tools (optional)
+        - Cookbook recipes
+        
+  - type: input
+    id: domain_name
+    attributes:
+      label: Domain Name
+      description: Name of the domain (lowercase, underscore-separated)
+      placeholder: "medical_therapy"
+    validations:
+      required: true
+      
+  - type: textarea
+    id: domain_description
+    attributes:
+      label: Domain Description
+      description: What is this domain and why is TNFR valuable here?
+      placeholder: |
+        Medical therapy domain focuses on therapeutic interactions, patient progress
+        tracking, and intervention planning. TNFR provides structured analysis of
+        therapeutic dynamics and healing trajectories...
+    validations:
+      required: true
+      
+  - type: textarea
+    id: patterns
+    attributes:
+      label: Core Patterns
+      description: List the main patterns included in this extension
+      placeholder: |
+        1. therapeutic_alliance: ["emission", "reception", "coherence", "resonance"]
+        2. crisis_intervention: ["dissonance", "silence", "coherence", "stabilization"]
+        3. integration_phase: ["coupling", "self_organization", "expansion"]
+    validations:
+      required: true
+      
+  - type: textarea
+    id: health_analyzers
+    attributes:
+      label: Specialized Health Analyzers
+      description: Describe domain-specific health metrics and analyzers
+      placeholder: |
+        - TherapeuticHealthAnalyzer: measures healing_potential, trauma_safety, alliance_strength
+        - ProgressAnalyzer: tracks patient trajectory over time
+        - InterventionQualityAnalyzer: evaluates intervention effectiveness
+    validations:
+      required: true
+      
+  - type: textarea
+    id: use_cases
+    attributes:
+      label: Target Use Cases
+      description: What real-world problems does this extension solve?
+      placeholder: |
+        - Clinical therapy session planning
+        - Patient progress monitoring
+        - Treatment outcome prediction
+        - Intervention strategy optimization
+    validations:
+      required: true
+      
+  - type: textarea
+    id: cookbook_recipes
+    attributes:
+      label: Cookbook Recipes
+      description: Validated recipes for common domain scenarios
+      placeholder: |
+        - crisis_stabilization: Sequence for acute crisis intervention
+        - trust_building: Pattern for establishing therapeutic trust
+        - breakthrough_facilitation: Sequence for supporting insights
+      
+  - type: textarea
+    id: visualization
+    attributes:
+      label: Visualization Tools (Optional)
+      description: Any domain-specific visualizations?
+      placeholder: |
+        - Therapeutic journey maps
+        - Progress timeline visualizations
+        - Intervention effectiveness charts
+      
+  - type: textarea
+    id: integration
+    attributes:
+      label: External Integrations (Optional)
+      description: Connections to external systems or tools
+      placeholder: |
+        - Electronic Health Records (EHR) integration
+        - Therapy notes parsing
+        - Assessment tools compatibility
+      
+  - type: textarea
+    id: validation_approach
+    attributes:
+      label: Validation Approach
+      description: How will you validate this extension?
+      placeholder: |
+        - Real clinical data testing
+        - Expert practitioner review
+        - Comparative analysis with existing methods
+        - Minimum 20 validated cases per pattern
+    validations:
+      required: true
+      
+  - type: input
+    id: maintainer
+    attributes:
+      label: Proposed Maintainer
+      description: Who will maintain this extension?
+      placeholder: "@username"
+    validations:
+      required: true
+      
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Extension Checklist
+      description: Please confirm the following
+      options:
+        - label: Extension follows TNFRExtension base class structure
+          required: true
+        - label: All patterns achieve health score > 0.75
+          required: true
+        - label: Documentation includes real-world domain mapping
+          required: true
+        - label: Integration tests are included
+          required: true
+        - label: Code follows TNFR canonical conventions
+          required: true
+        - label: I am committed to maintaining this extension
+          required: true
