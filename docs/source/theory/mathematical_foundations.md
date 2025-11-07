@@ -32,7 +32,7 @@ These properties make TNFR particularly suited for domains where emergence, self
 - Complete mathematical foundations (Sections 2-8)
 - Operator formalism and spectral theory (Sections 3-5)
 - Frequently asked questions (Section 9)
-- Consolidated notebook content (Appendix A)
+- Notebook content (Appendix A)
 
 **Related documentation**:
 - **Implementation**: See docstrings in `src/tnfr/metrics/`
@@ -1069,47 +1069,6 @@ A: TNFR uses quantum mathematical machinery (Hilbert spaces, Hermitian operators
 **Last updated:** 2025-11-07  
 **Maintained by:** TNFR Core Team  
 **License:** Same as repository (see LICENSE.md)
-
----
-
-# Appendix: Consolidated Notebook Content
-
-> **📔 DEPRECATION NOTICE**: The content below was extracted from interactive Jupyter notebooks 
-> that previously lived in `docs/source/theory/`. These notebooks have been **deprecated and removed**
-> to maintain a single source of truth for TNFR mathematical formalization.
->
-> **Rationale**: Consolidating all mathematical content into this unified document ensures:
-> - ✅ **No divergence**: Mathematical formulas can't become inconsistent between sources
-> - ✅ **Easier maintenance**: Update equations once, not in multiple places
-> - ✅ **Better searchability**: All theory in one searchable document
-> - ✅ **Version control**: Markdown diffs are clearer than notebook JSON
-> - ✅ **Reduced duplication**: Avoid maintaining parallel explanations
->
-> **Removed notebooks**:
-> - `00_overview.ipynb` → Content in Appendix A.1
-> - `01_hilbert_space_h_nfr.ipynb` → Content in §2.1 + Appendix A.2
-> - `03_frequency_operator_hatJ.ipynb` → Content in §3.2 + Appendix A.3
-> - `05_unitary_dynamics_and_delta_nfr.ipynb` → Content in §3.3 + Appendix A.4
->
-> **Interactive notebooks remain for**:
-> - Computational demonstrations that benefit from inline execution
-> - Parameter sensitivity analysis requiring plots
-> - Step-by-step walkthroughs with intermediate visualizations
-> - Exploratory analysis not yet formalized
->
-> See §1.3 for the complete list of remaining interactive tutorials.
->
-> **Migration Path**: If you referenced deprecated notebooks:
->
-> **Before**:
-> ```markdown
-> See [Hilbert Space notebook](./01_hilbert_space_h_nfr.ipynb) for details.
-> ```
->
-> **After**:
-> ```markdown
-> See [Mathematical Foundations §2.1 and Appendix A.2](./mathematical_foundations.md#21-hilbert-space-h_nfr) for details.
-> ```
 
 ---
 
