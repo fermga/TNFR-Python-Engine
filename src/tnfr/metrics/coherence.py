@@ -150,25 +150,17 @@ def compute_wij_phase_epi_vf_si(
     vf_range: float = 1.0,
     np: ModuleType | None = None,
 ) -> SimilarityComponents | VectorizedComponents:
-    """Return similarity components for nodes ``i`` and ``j``.
+    """Compute similarity components for coherence matrix elements.
 
-    Computes the four structural similarity components that approximate
-    the coherence operator Ĉ matrix elements ⟨i|Ĉ|j⟩:
+    Returns four structural similarity components (s_phase, s_epi, s_vf, s_si)
+    that approximate coherence operator matrix elements wᵢⱼ ≈ ⟨i|Ĉ|j⟩.
 
-    - s_phase: Phase alignment (resonant coupling via cos(θᵢ - θⱼ))
-    - s_epi: EPI congruence (structural form similarity in B_EPI)
-    - s_vf: Frequency compatibility (harmonic resonance proximity)
-    - s_si: Sense index similarity (reorganization stability congruence)
+    Each component normalized to [0, 1] where 1 = maximum similarity.
 
-    Each component is normalized to [0, 1] where 1 indicates maximum similarity.
-
-    Mathematical foundation: These components decompose the abstract construction
-    of Ĉ = Σᵢⱼ w_coherence(i,j)|i⟩⟨j| into computationally tractable factors.
+    See: Mathematical Foundations §3.1.1 for theory-to-code mapping.
 
     When ``np`` is provided and ``i`` and ``j`` are ``None`` the computation is
     vectorized returning full matrices for all node pairs.
-
-    See: Mathematical Foundations §3.1.1 for theory-to-code mapping.
     """
 
     trig = trig or (get_trig_cache(G, np=np) if G is not None else None)
@@ -235,22 +227,11 @@ def _combine_similarity(
     si_w: float,
     np: ModuleType | None = None,
 ) -> ScalarOrArray:
-    """Combine similarity components into coherence weight wᵢⱼ.
+    """Combine similarity components into coherence weight wᵢⱼ ≈ ⟨i|Ĉ|j⟩.
 
-    Implements the weighted combination:
-        wᵢⱼ = w_phase·s_phase + w_epi·s_epi + w_vf·s_vf + w_si·s_si
+    Returns wᵢⱼ ∈ [0, 1] clamped to maintain operator boundedness.
 
-    where wᵢⱼ approximates the coherence operator matrix element ⟨i|Ĉ|j⟩.
-
-    The weights (phase_w, epi_w, vf_w, si_w) are normalized so their sum equals 1,
-    ensuring wᵢⱼ ∈ [0, 1] which maintains operator boundedness ‖Ĉ‖ ≤ M.
-
-    Mathematical foundation: This implements the spectral projection of Ĉ onto
-    the computational basis with configurable emphasis on different structural
-    aspects (phase, EPI, frequency, sense).
-
-    Returns:
-        wᵢⱼ ∈ [0, 1] approximating ⟨i|Ĉ|j⟩
+    See: Mathematical Foundations §3.1.1 for spectral projection details.
     """
     wij = phase_w * s_phase + epi_w * s_epi + vf_w * s_vf + si_w * s_si
     if np is not None:
@@ -766,73 +747,42 @@ def coherence_matrix(
     *,
     n_jobs: int | None = None,
 ) -> tuple[list[NodeId] | None, CoherenceMatrixPayload | None]:
-    """Compute the coherence weight matrix W approximating the Ĉ operator.
+    """Compute coherence matrix W approximating operator Ĉ.
 
-    Mathematical Foundation
-    -----------------------
-    For a network with N nodes, this function computes the matrix W that
-    approximates the coherence operator Ĉ projected onto the computational basis:
+    Returns matrix W where wᵢⱼ ≈ ⟨i|Ĉ|j⟩ computed from structural
+    similarities: phase, EPI, frequency, and sense index.
 
+    Mathematical Foundation:
         Ĉ ≈ Σᵢⱼ wᵢⱼ |i⟩⟨j|
-
-    where each element wᵢⱼ ≈ ⟨i|Ĉ|j⟩ represents the structural coherence
-    weight between nodes i and j.
-
-    Matrix Construction
-    -------------------
-    Each matrix element is computed as:
-
-        wᵢⱼ = w_phase·s_phase + w_epi·s_epi + w_vf·s_vf + w_si·s_si
-
-    where:
-    - s_phase: Phase similarity via 0.5·(1 + cos(θᵢ - θⱼ))
-    - s_epi: EPI similarity via 1 - |EPIᵢ - EPIⱼ|/ΔEPI_max
-    - s_vf: Frequency similarity via 1 - |νfᵢ - νfⱼ|/Δνf_max
-    - s_si: Sense index similarity via 1 - |Siᵢ - Siⱼ|
-
-    Spectral Properties
-    -------------------
-    The computed matrix W satisfies:
-    1. Hermiticity: W = W^T (by construction)
-    2. Positivity: λ(W) ≥ 0 (all eigenvalues non-negative)
-    3. Boundedness: ‖W‖ ≤ 1 (operator norm bounded)
-
-    These properties mirror the theoretical requirements for Ĉ on H_NFR.
+    
+    Matrix W satisfies Hermiticity (W=W^T), element bounds (wᵢⱼ ∈ [0,1]),
+    and provides spectrum σ(Ĉ) via eigenvalues.
 
     Parameters
     ----------
     G:
-        Graph whose nodes encode the structural attributes (θ, EPI, νf, Si).
+        Graph with node attributes: theta, EPI, vf, Si
     use_numpy:
-        When ``True`` the vectorised NumPy implementation is forced. When
-        ``False`` the pure Python fallback is used. ``None`` selects NumPy
-        automatically when available.
+        Force NumPy (True), pure Python (False), or auto-detect (None)
     n_jobs:
-        Maximum worker processes to use for the Python fallback. ``None`` or
-        values less than or equal to one preserve the serial behaviour.
+        Worker processes for Python fallback (None or ≤1 = serial)
 
     Returns
     -------
     nodes:
-        Ordered list of node identifiers matching matrix indexing.
+        Ordered node list matching matrix indexing
     W:
-        Coherence matrix where W[i][j] = wᵢⱼ ≈ ⟨i|Ĉ|j⟩.
-        Format depends on configuration (dense or sparse).
+        Coherence matrix (dense or sparse per configuration)
 
     See Also
     --------
-    compute_coherence : Computes total coherence C(t) = Tr(Wρ)
-    Mathematical Foundations §3.1.1 : Theory-to-code bridge documentation
+    compute_coherence : Computes C(t) = Tr(Ĉρ)  
+    Mathematical Foundations §3.1: Theory + Implementation Bridge
 
     Examples
     --------
-    >>> from tnfr.metrics import coherence_matrix
-    >>> import networkx as nx
-    >>> G = nx.Graph()
-    >>> G.add_node(0, theta=0.0, EPI=1.0, vf=1.0, Si=0.8)
-    >>> G.add_node(1, theta=0.5, EPI=1.2, vf=1.1, Si=0.7)
     >>> nodes, W = coherence_matrix(G)
-    >>> # W[i][j] approximates ⟨i|Ĉ|j⟩
+    >>> # W[i][j] ≈ ⟨i|Ĉ|j⟩ for computational basis
     """
 
     cfg = get_param(G, "COHERENCE")

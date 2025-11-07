@@ -1,322 +1,163 @@
 # TNFR Glossary
 
-Canonical definitions for the Resonant Fractal Nature Theory (TNFR) variables, operators, and concepts. This document serves as a quick reference for contributors and researchers working with the TNFR Python Engine.
+Quick operational reference for the Resonant Fractal Nature Theory (TNFR). This document provides **API-focused definitions for code use only**.
 
-> **📐 For complete mathematical formalization**: See **[Mathematical Foundations of TNFR](docs/source/theory/mathematical_foundations.md)** for rigorous derivations, axioms, and proofs.
+> **📐 SINGLE SOURCE OF TRUTH FOR MATHEMATICS**: 
+> 
+> ### [Mathematical Foundations of TNFR](docs/source/theory/mathematical_foundations.md)
 >
-> **This document** provides **operational definitions** for practical use in code.
+> **All mathematical formalization lives there**: rigorous definitions, derivations, axioms, proofs, spectral theory, operator algebra, Hilbert spaces, and theoretical foundations.
+>
+> **This glossary** contains only **operational quick reference** for developers implementing TNFR networks.
+
+---
 
 ## Core Variables
 
 ### Primary Information Structure (EPI)
 
-**Symbol:** EPI  
-**Type:** Coherent form structure  
-**Description:** The fundamental information-bearing structure in TNFR. EPI is the "shape" of a node that persists through resonance with its environment. It only changes through structural operators (never ad-hoc mutations).
-
-**Key Properties:**
-- Changes only via structural operators
-- Maintains coherence through network coupling
-- Can nest recursively (operational fractality)
-
-**Related Equation:**  
-`∂EPI / ∂t = νf · ΔNFR(t)`
-
----
+**Code:** `G.nodes[n]['EPI']`, `ALIAS_EPI`  
+**What:** Coherent structural form of a node  
+**Rules:** Modified only via structural operators, never directly  
+**API:** `tnfr.structural` operators  
+**Math:** [§2.2 Banach Space B_EPI](docs/source/theory/mathematical_foundations.md#22-banach-space-b_epi)
 
 ### Structural Frequency (νf)
 
-**Symbol:** νf  
-**Units:** Hz_str (structural hertz)  
-**Type:** Reorganization rate  
-**Description:** The intrinsic frequency at which a node reorganizes its information structure. This is NOT a physical frequency but a structural one.
-
-**Key Properties:**
-- Expressed exclusively in Hz_str units
-- Determines rate of EPI evolution
-- Influences node stability and coupling strength
-
-**Typical Range:** Positive real numbers; nodes collapse when νf → 0
-
----
+**Code:** `G.nodes[n]['vf']`, `ALIAS_VF`  
+**Units:** `Hz_str` (structural hertz)  
+**What:** Reorganization rate (positive reals; collapse when →0)  
+**API:** `adapt_vf_by_coherence()`, operators  
+**Math:** [§3.2 Frequency Operator Ĵ](docs/source/theory/mathematical_foundations.md#32-frequency-operator-ĵ)
 
 ### Internal Reorganization Operator (ΔNFR)
 
-**Symbol:** ΔNFR  
-**Type:** Gradient operator  
-**Description:** The internal reorganization operator that drives structural evolution. Its sign and magnitude modulate the reorganization rate.
+**Code:** `G.nodes[n]['dnfr']`, `ALIAS_DNFR`  
+**What:** Structural evolution gradient  
+**Compute:** Via `default_compute_delta_nfr` hook, automatic in `step()`  
+**Math:** [§3.3 Reorganization Operator](docs/source/theory/mathematical_foundations.md#33-reorganization-operator-δnfr)
 
-**Key Properties:**
-- NOT a classical ML "error gradient"
-- Sign indicates expansion (+) or contraction (-)
-- Magnitude scales reorganization intensity
-- Computed from phase, EPI, νf, and topology
+### Phase (φ, θ)
 
-**Computation Hook:** `default_compute_delta_nfr` or custom hooks
-
----
-
-### Phase (φ)
-
-**Symbol:** φ or θ  
-**Type:** Network synchrony parameter  
-**Description:** Represents the relative synchrony of a node with its network neighbors. Essential for valid coupling.
-
-**Key Properties:**
-- Range: [0, 2π) or [-π, π)
-- Must be explicitly verified before coupling
-- Coordinated via global/local phase adaptation (kG/kL)
-
-**Measurement:** Kuramoto order parameter for network-wide phase coherence
-
----
+**Code:** `G.nodes[n]['theta']`, `collect_theta_attr()`  
+**Range:** `[0, 2π)` or `[-π, π)`  
+**What:** Network synchrony parameter  
+**API:** Phase adaptation in dynamics  
+**Math:** [§4 Nodal Equation](docs/source/theory/mathematical_foundations.md#4-the-nodal-equation-complete-derivation)
 
 ### Total Coherence (C(t))
 
-**Symbol:** C(t)  
-**Type:** Stability metric  
-**Description:** Global measure of network stability and structural coherence at time t.
-
-**Key Properties:**
-- Should increase with coherence operators
-- Decreases with dissonance (controlled)
-- Aggregated across all nodes
-
-**Telemetry:** Exposed in metrics and trace callbacks
-
----
+**Code:** `compute_coherence(G)` → float ∈ [0,1]  
+**What:** Global network stability (higher=stable, lower=fragmented)  
+**Math:** [§3.1 Coherence Operator Ĉ](docs/source/theory/mathematical_foundations.md#31-coherence-operator-ĉ)
 
 ### Coherence Operator (Ĉ)
 
-**Symbol:** Ĉ  
-**Type:** Hermitian operator on H_NFR  
-**Description:** Fundamental operator measuring structural stability and pattern persistence. Acts on quantum states |NFR⟩ in Hilbert space H_NFR.
-
-**Mathematical Definition:**
-```
-Ĉ = ∫₀^∞ λ dP_λ = Σᵢ λᵢ |φᵢ⟩⟨φᵢ|
-```
-
-**Key Properties:**
-1. **Hermiticity**: Ĉ† = Ĉ (real eigenvalues)
-2. **Positivity**: ⟨ψ|Ĉ|ψ⟩ ≥ 0 (non-negative coherence)
-3. **Boundedness**: ‖Ĉ‖ ≤ M (controlled stability)
-
-**Computational Implementation:**
-
-In finite networks, Ĉ is approximated by coherence matrix W:
-```
-wᵢⱼ ≈ ⟨i|Ĉ|j⟩
-```
-
-Each matrix element combines structural similarities:
-- Phase alignment (resonant coupling)
-- EPI congruence (structural form)
-- Frequency compatibility (harmonic resonance)
-- Sense index similarity (reorganization stability)
-
-**API:**
-- `coherence_matrix(G)` → (nodes, W) computes the matrix approximation
-- `compute_coherence(G)` → C(t) computes Tr(Ĉρ) ≈ ⟨ψ|Ĉ|ψ⟩
-
-**See Also:**
-- [Mathematical Foundations §3.1](docs/source/theory/mathematical_foundations.md#31-coherence-operator-ĉ) for rigorous formalization
-- [Implementation Bridge §3.1.1](docs/source/theory/mathematical_foundations.md#311-implementation-bridge-theory-to-code) for theory-to-code mapping
-- `src/tnfr/metrics/coherence.py` for implementation details
-
----
+**Code:** `coherence_matrix(G)` → (nodes, W) where `wᵢⱼ ≈ ⟨i|Ĉ|j⟩`  
+**What:** Operator measuring structural stability  
+**Math:** [§3.1 Theory](docs/source/theory/mathematical_foundations.md#31-coherence-operator-ĉ) + [§3.1.1 Implementation](docs/source/theory/mathematical_foundations.md#311-implementation-bridge-theory-to-code)
 
 ### Sense Index (Si)
 
-**Symbol:** Si  
-**Type:** Reorganization stability metric  
-**Description:** Capacity of a node or network to generate stable reorganization patterns. Combines ΔNFR, νf, and phase information.
-
-**Key Properties:**
-- Higher Si indicates more stable reorganization
-- Computed via `compute_Si_node` or network-level aggregation
-- Sensitive to phase dispersion (dSi_dphase_disp)
-
-**Applications:** Early warning for bifurcations, network health monitoring
+**Code:** `G.nodes[n]['Si']`, `ALIAS_SI`, `compute_Si_node()`  
+**Range:** `[0, 1+]`  
+**What:** Reorganization stability capacity  
+**Math:** [Mathematical Foundations - Metrics](docs/source/theory/mathematical_foundations.md)
 
 ---
 
 ## Structural Operators
 
-TNFR defines 13 canonical operators that modify EPI through resonant interactions:
+13 canonical operators that modify EPI through resonant interactions. Each operator has preconditions and postconditions defined in the grammar.
 
-### 1. Emission (AL)
+| Symbol | Name | Effect | Usage |
+|--------|------|--------|-------|
+| AL | Emission | Initiate pattern | Start trajectories |
+| EN | Reception | Integrate external | Network listening |
+| IL | Coherence | Stabilize form | Consolidation |
+| OZ | Dissonance | Controlled instability | Exploration |
+| UM | Coupling | Create links | Network formation |
+| RA | Resonance | Amplify/propagate | Pattern reinforcement |
+| SHA | Silence | Freeze evolution | Observation windows |
+| VAL | Expansion | Increase complexity | Add degrees of freedom |
+| NUL | Contraction | Reduce complexity | Simplification |
+| THOL | Self-organization | Emergent structure | Fractalization |
+| ZHIR | Mutation | Phase transformation | State changes |
+| NAV | Transition | Controlled movement | Trajectory navigation |
+| REMESH | Recursivity | Nested operations | Multi-scale ops |
 
-**Function:** Initiates a resonant pattern  
-**Effect:** Increases νf and positive ΔNFR  
-**Usage:** Start of trajectory sequences
-
----
-
-### 2. Reception (EN)
-
-**Function:** Receives and integrates external patterns  
-**Effect:** Updates EPI based on incoming resonance  
-**Usage:** Network information intake
-
----
-
-### 3. Coherence (IL)
-
-**Function:** Stabilizes structural form  
-**Effect:** Increases C(t), reduces |ΔNFR|  
-**Usage:** Consolidation after changes
+**API:** `tnfr.structural.<OperatorName>()`, `run_sequence(G, node, ops)`  
+**Grammar:** See [CANONICAL_BOUNDARY_PATTERN.md](CANONICAL_BOUNDARY_PATTERN.md)  
+**Math:** [Mathematical Foundations §5](docs/source/theory/mathematical_foundations.md)
 
 ---
 
-### 4. Dissonance (OZ)
+## Invariants (Must Preserve)
 
-**Function:** Introduces controlled instability  
-**Effect:** Increases |ΔNFR|, may trigger bifurcation  
-**Usage:** Exploring new configurations
+From [AGENTS.md](AGENTS.md):
 
----
-
-### 5. Coupling (UM)
-
-**Function:** Creates structural links between nodes  
-**Effect:** Phase synchronization, information exchange  
-**Usage:** Network formation
-
----
-
-### 6. Resonance (RA)
-
-**Function:** Amplifies and propagates patterns  
-**Effect:** Increases effective coupling, preserves EPI identity  
-**Usage:** Pattern reinforcement
+1. **EPI changes only via operators** (no ad-hoc mutations)
+2. **Structural units**: νf in Hz_str only
+3. **ΔNFR semantics**: not a classic ML gradient
+4. **Operator closure**: compositions yield valid states
+5. **Phase check**: explicit verification before coupling
+6. **Node lifecycle**: birth/collapse conditions maintained
+7. **Operational fractality**: EPIs nest without loss of identity
+8. **Controlled determinism**: reproducible (seeds + logs)
+9. **Structural metrics**: C(t), Si exposed in telemetry
+10. **Domain neutrality**: trans-scale, trans-domain
 
 ---
 
-### 7. Silence (SHA)
+## Quick Reference Tables
 
-**Function:** Freezes evolution temporarily  
-**Effect:** νf ≈ 0, EPI unchanged  
-**Usage:** Observation windows, synchronization pauses
+### Variable Summary
 
----
+| Symbol | Code Attribute | Units | Type |
+|--------|----------------|-------|------|
+| EPI | `'EPI'` | — | Coherent form |
+| νf | `'vf'` | Hz_str | Reorganization rate |
+| ΔNFR | `'dnfr'` | — | Gradient |
+| φ, θ | `'theta'` | radians | Synchrony |
+| C(t) | `compute_coherence()` | [0,1] | Stability |
+| Si | `'Si'` | [0,1+] | Stability capacity |
 
-### 8. Expansion (VAL)
+### Common API Patterns
 
-**Function:** Increases structural complexity  
-**Effect:** EPI dimensionality growth  
-**Usage:** Adding degrees of freedom
+```python
+# Access node attributes
+epi = G.nodes[node_id]['EPI']
+vf = G.nodes[node_id]['vf']
+theta = G.nodes[node_id]['theta']
 
----
+# Compute metrics
+C_t = compute_coherence(G)
+nodes, W = coherence_matrix(G)
+Si = compute_Si_node(G, node_id)
 
-### 9. Contraction (NUL)
+# Apply operators
+from tnfr.structural import Emission, Coherence, Resonance
+run_sequence(G, node_id, [Emission(), Coherence(), Resonance()])
 
-**Function:** Reduces structural complexity  
-**Effect:** EPI dimensionality reduction  
-**Usage:** Simplification, projection
-
----
-
-### 10. Self-organization (THOL)
-
-**Function:** Spontaneous pattern formation  
-**Effect:** Creates sub-EPIs while preserving global form  
-**Usage:** Emergent structure formation
-
----
-
-### 11. Mutation (ZHIR)
-
-**Function:** Phase transformation  
-**Effect:** θ → θ' when ΔEPI/Δt > ξ  
-**Usage:** Qualitative state changes
-
----
-
-### 12. Transition (NAV)
-
-**Function:** Movement between structural states  
-**Effect:** Controlled EPI evolution  
-**Usage:** Trajectory navigation
-
----
-
-### 13. Recursivity (REMESH)
-
-**Function:** Nested operator application  
-**Effect:** Maintains operational fractality  
-**Usage:** Multi-scale coherence
-
----
-
-## Canonical Equations
-
-### Nodal Equation
-
-```
-∂EPI / ∂t = νf · ΔNFR(t)
+# Evolution step
+from tnfr.dynamics import step
+step(G, use_Si=True, apply_glyphs=True)
 ```
 
-This is the fundamental equation governing node evolution.
-
-### Phase Coordination
-
-- Global coupling: kG
-- Local coupling: kL
-- Kuramoto order parameter for synchrony measurement
-
-### Coherence Dynamics
-
-- ΔNFR hook: computes reorganization from topology, phase, EPI, νf
-- C(t): aggregated coherence metric
-- Si: derived from ΔNFR stability and phase dispersion
-
 ---
 
-## Node Lifecycle
+## Telemetry & Traces
 
-### Birth Conditions
+Expose in telemetry:
+- `C(t)` - Total coherence
+- `νf` per node - Structural frequency
+- `phase` per node - Synchrony state
+- `Si` per node/network - Sense index
+- `ΔNFR` per node - Reorganization gradient
+- Operator history - Applied transformations
+- Events - Birth, bifurcation, collapse
 
-A node is created when:
-1. Sufficient νf is seeded
-2. Initial coupling exists or can be established
-3. ΔNFR is computable
-
-### Stability
-
-A node remains stable when:
-- νf > threshold
-- |ΔNFR| remains bounded
-- Phase coherence with network maintained
-
-### Collapse Conditions
-
-A node collapses when:
-- Extreme dissonance (|ΔNFR| → ∞)
-- Decoupling from network
-- Frequency failure (νf → 0)
-
----
-
-## Telemetry and Metrics
-
-### Essential Outputs
-
-All simulations should expose:
-- **C(t)**: Total coherence over time
-- **νf**: Structural frequency per node
-- **Phase**: Synchrony state per node
-- **Si**: Sense index (node or network level)
-- **ΔNFR**: Reorganization gradient
-
-### Trace Capture
-
-Use `tnfr.trace.register_trace` to capture:
-- Γ specifications
-- Selector states
-- ΔNFR weights
-- Kuramoto metrics
-- Operator application history
+**API:** `tnfr.utils.callback_manager`, history tracking in `G.graph['_hist']`
 
 ---
 
@@ -334,43 +175,31 @@ TNFR is **trans-scale** and **trans-domain**:
 ## Reproducibility
 
 All simulations must be:
-1. **Seeded:** Use explicit RNG seeds
+1. **Seeded:** Explicit RNG seeds
 2. **Traceable:** Log operators, parameters, states
 3. **Deterministic:** Same seed → same trajectory
 
-**Tools:**
-- RNG scaffolding with named locks
-- Structural history capture
-- Telemetry-aware caches
-
----
-
-## Quick Reference Tables
-
-### Variable Summary
-
-| Symbol | Name | Units | Type |
-|--------|------|-------|------|
-| EPI | Primary Information Structure | — | Coherent form |
-| νf | Structural frequency | Hz_str | Reorganization rate |
-| ΔNFR | Reorganization operator | — | Gradient |
-| φ, θ | Phase | radians | Synchrony |
-| C(t) | Total coherence | — | Stability metric |
-| Si | Sense index | — | Reorganization stability |
-
+**Tools:** RNG scaffolding, structural history, telemetry caches
 
 ---
 
 ## Related Documentation
 
-- **[Mathematical Foundations](docs/source/theory/mathematical_foundations.md)** - ⭐ **CANONICAL MATHEMATICAL SOURCE** - Complete derivations and proofs
-- [AGENTS.md](AGENTS.md) - Detailed AI agent guidelines and invariants
-- [TNFR.pdf](TNFR.pdf) - Original theoretical foundations
-- [Foundations (Implementation)](docs/source/foundations.md) - Runtime/API mathematics guide
+### Mathematical Theory
+- **[Mathematical Foundations](docs/source/theory/mathematical_foundations.md)** ⭐ **SINGLE SOURCE FOR ALL MATH**
+- [TNFR.pdf](TNFR.pdf) - Original theoretical companion
+
+### Implementation
+- [AGENTS.md](AGENTS.md) - AI agent guidelines and invariants
+- [Foundations](docs/source/foundations.md) - Runtime/API guide
 - [API Overview](docs/source/api/overview.md) - Package architecture
 - [Structural Operators](docs/source/api/operators.md) - Operator details
-- [Telemetry Guide](docs/source/api/telemetry.md) - Metrics and traces
 - [Examples](docs/source/examples/README.md) - Runnable scenarios
+
+### Canonical Patterns
+- [CANONICAL_BOUNDARY_PATTERN.md](CANONICAL_BOUNDARY_PATTERN.md) - Operator grammar
+- [CANONICITY_VERIFICATION.md](CANONICITY_VERIFICATION.md) - Validation rules
+- [TESTING.md](TESTING.md) - Test conventions
 
 ---
 
@@ -378,9 +207,10 @@ All simulations must be:
 
 When adding new functionality:
 
-1. Ensure compliance with canonical invariants
-2. Use these terms consistently
-3. Update this glossary if introducing new concepts
-4. Reference these definitions in documentation and code comments
+1. **Verify math**: Check [Mathematical Foundations](docs/source/theory/mathematical_foundations.md)
+2. **Preserve invariants**: Follow [AGENTS.md](AGENTS.md) rules
+3. **Use canonical terms**: Reference this glossary
+4. **Update docs**: If introducing new concepts
+5. **Write tests**: Cover invariants (see [TESTING.md](TESTING.md))
 
 For detailed contribution guidelines, see [CONTRIBUTING.md](CONTRIBUTING.md).
