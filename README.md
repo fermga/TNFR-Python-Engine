@@ -104,6 +104,44 @@ This equation governs how the structure (EPI) of each node evolves according to 
 - [TNFR Fundamental Concepts](docs/source/getting-started/TNFR_CONCEPTS.md) - Comprehensive introduction to the paradigm
 - [GLOSSARY.md](GLOSSARY.md) - Complete reference of all terms, variables, and operators
 
+## What's New: Grammar 2.0
+
+**TNFR Grammar 2.0** introduces advanced capabilities for operator sequence validation and optimization:
+
+### 🎯 Key Features
+
+✨ **Structural Frequencies (R5)**: Each operator has defined frequency (νf) in Hz_str units  
+📊 **Health Metrics**: 7-dimensional quantitative quality assessment (0.0-1.0 scale)  
+🎨 **18 Structural Patterns**: Comprehensive typology from LINEAR to REGENERATIVE  
+🔄 **Regenerative Cycles**: Self-sustaining sequence validation with R5 rules  
+⚖️ **Graduated Compatibility**: Three-level guidance (✓ Compatible / ⚠ Caution / ✗ Incompatible)  
+💡 **Smart Recommendations**: Actionable suggestions for sequence improvement  
+
+### Quick Example
+
+```python
+from tnfr.operators.grammar import validate_sequence_with_health
+
+# Validate with comprehensive health analysis
+result = validate_sequence_with_health([
+    "reception", "emission", "coherence",
+    "dissonance", "self_organization", "coherence"
+])
+
+print(f"Pattern: {result.metadata['detected_pattern']}")  # 'therapeutic'
+print(f"Health: {result.health_metrics.overall_health:.2f}")  # 0.88
+print(f"Balance: {result.health_metrics.balance_score:.2f}")  # 0.85
+print(f"Sustainability: {result.health_metrics.sustainability_index:.2f}")  # 0.90
+
+# Get optimization suggestions
+for rec in result.health_metrics.recommendations:
+    print(f"  • {rec}")
+```
+
+**Learn More**: [Operator Sequences Guide (Grammar 2.0)](GLYPH_SEQUENCES_GUIDE.md) | [Migration Guide](docs/MIGRATION_GUIDE_2.0.md)
+
+---
+
 ## Technical Documentation
 
 ### User Guides
@@ -119,7 +157,11 @@ This equation governs how the structure (EPI) of each node evolves according to 
 - [Documentation Index](docs/source/home.md) — Navigation hub for API chapters and examples
 - [API Overview](docs/source/api/overview.md) — Package map, invariants, and structural data flow
 - [Structural Operators](docs/source/api/operators.md) — Canonical grammar, key concepts, and typical workflows
-- [Glyph Sequences Guide](GLYPH_SEQUENCES_GUIDE.md) — Canonical operator sequences, multi-domain examples
+- **[Operator Sequences Guide (Grammar 2.0)](GLYPH_SEQUENCES_GUIDE.md)** — **Complete guide** to operator sequences, patterns, and health metrics
+  - [Migration Guide 2.0](docs/MIGRATION_GUIDE_2.0.md) — Upgrading from Grammar 1.0
+  - [Health Metrics Guide](docs/HEALTH_METRICS_GUIDE.md) — Deep dive into 7 health dimensions
+  - [Pattern Reference](docs/PATTERN_REFERENCE.md) — Catalog of all 18 structural patterns
+  - [Troubleshooting](docs/TROUBLESHOOTING.md) — Common issues and solutions
 - [Backend System](docs/backends.md) — Vectorized computation with NumPy/JAX/Torch backends
 - [Telemetry & Utilities](docs/source/api/telemetry.md) — Coherence metrics, trace capture, locking
 - [Examples](docs/source/examples/README.md) — Runnable scenarios, CLI artifacts
