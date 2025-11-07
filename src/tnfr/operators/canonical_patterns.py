@@ -117,15 +117,14 @@ BIFURCATED_COLLAPSE = CanonicalSequence(
 
 THERAPEUTIC_PROTOCOL = CanonicalSequence(
     name="therapeutic_protocol",
-    glyphs=[Glyph.AL, Glyph.EN, Glyph.IL, Glyph.UM, Glyph.RA, Glyph.OZ, Glyph.ZHIR, Glyph.IL, Glyph.SHA],
+    glyphs=[Glyph.AL, Glyph.EN, Glyph.IL, Glyph.OZ, Glyph.ZHIR, Glyph.IL, Glyph.RA, Glyph.SHA],
     pattern_type=StructuralPattern.THERAPEUTIC,
     description=(
-        "Protocolo ritual o terapéutico completo: emisión simbólica (AL), "
-        "recepción estabilizadora (EN), coherencia inicial (IL), acoplamiento "
-        "relacional (UM), expansión energética (RA), disonancia creativa como "
+        "Protocolo ritual o terapéutico: emisión simbólica (AL), recepción "
+        "estabilizadora (EN), coherencia inicial (IL), disonancia creativa como "
         "confrontación (OZ), mutación del sujeto (ZHIR), estabilización de la "
-        "nueva forma (IL), entrada en latencia resonante (SHA). "
-        "Ciclo completo de transformación personal o colectiva."
+        "nueva forma (IL), propagación resonante (RA), entrada en latencia (SHA). "
+        "Ciclo de transformación personal o colectiva con resolución creativa."
     ),
     use_cases=[
         "Ceremonias de transformación personal o iniciación",
@@ -144,14 +143,14 @@ THERAPEUTIC_PROTOCOL = CanonicalSequence(
 
 THEORY_SYSTEM = CanonicalSequence(
     name="theory_system",
-    glyphs=[Glyph.NAV, Glyph.AL, Glyph.EN, Glyph.IL, Glyph.OZ, Glyph.ZHIR, Glyph.IL, Glyph.THOL, Glyph.SHA],
+    glyphs=[Glyph.AL, Glyph.EN, Glyph.IL, Glyph.OZ, Glyph.ZHIR, Glyph.IL, Glyph.THOL, Glyph.SHA],
     pattern_type=StructuralPattern.EDUCATIONAL,
     description=(
-        "Sistema de ideas o teoría emergente: nodo mental nace (NAV), emite intuición "
-        "inicial (AL), recibe información (EN), se estabiliza (IL), enfrenta disonancia "
-        "conceptual o paradoja (OZ), muta hacia nuevo paradigma (ZHIR), se estabiliza en "
-        "comprensión coherente (IL), se autoorganiza en sistema teórico (THOL), integra en "
-        "conocimiento encarnado (SHA). Trayectoria completa de construcción epistemológica."
+        "Sistema de ideas o teoría emergente: emisión inicial (AL), recepción de "
+        "información (EN), estabilización (IL), disonancia conceptual o paradoja (OZ), "
+        "mutación hacia nuevo paradigma (ZHIR), estabilización en comprensión coherente (IL), "
+        "autoorganización en sistema teórico (THOL), integración en conocimiento "
+        "encarnado (SHA). Trayectoria de construcción epistemológica."
     ),
     use_cases=[
         "Diseño de marcos epistemológicos o paradigmas científicos",
@@ -170,14 +169,13 @@ THEORY_SYSTEM = CanonicalSequence(
 
 FULL_DEPLOYMENT = CanonicalSequence(
     name="full_deployment",
-    glyphs=[Glyph.NAV, Glyph.AL, Glyph.EN, Glyph.IL, Glyph.OZ, Glyph.ZHIR, Glyph.IL, Glyph.UM, Glyph.RA, Glyph.SHA],
+    glyphs=[Glyph.AL, Glyph.EN, Glyph.IL, Glyph.OZ, Glyph.ZHIR, Glyph.IL, Glyph.RA, Glyph.SHA],
     pattern_type=StructuralPattern.COMPLEX,
     description=(
-        "Trayectoria completa de reorganización nodal: transición de estado (NAV), "
-        "emisión iniciadora (AL), recepción estabilizadora (EN), coherencia inicial (IL), "
-        "disonancia exploradora (OZ), mutación transformativa (ZHIR), estabilización "
-        "coherente (IL), acoplamiento relacional (UM), propagación resonante (RA), "
-        "cierre en latencia (SHA). Secuencia exhaustiva que cubre todas las fases "
+        "Trayectoria completa de reorganización nodal: emisión iniciadora (AL), "
+        "recepción estabilizadora (EN), coherencia inicial (IL), disonancia "
+        "exploradora (OZ), mutación transformativa (ZHIR), estabilización coherente (IL), "
+        "propagación resonante (RA), cierre en latencia (SHA). Secuencia exhaustiva "
         "de reorganización estructural."
     ),
     use_cases=[

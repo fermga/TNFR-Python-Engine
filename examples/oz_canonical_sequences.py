@@ -39,7 +39,7 @@ def example_bifurcated_mutation():
     print("=" * 70)
     print("\nStructural Function:")
     print("  Disonancia crea umbral de bifurcación → mutación transformativa")
-    print("\nSequence: AL → IL → OZ → ZHIR → SHA")
+    print("\nSequence: AL → EN → IL → OZ → ZHIR → IL → SHA")
     print("\nUse Cases:")
     print("  • Intervención terapéutica ante bloqueos")
     print("  • Diseño de sistemas con respuesta adaptativa")
@@ -69,7 +69,7 @@ def example_bifurcated_collapse():
     print("=" * 70)
     print("\nStructural Function:")
     print("  Disonancia → colapso controlado (reset estructural)")
-    print("\nSequence: AL → IL → OZ → NUL → SHA")
+    print("\nSequence: AL → EN → IL → OZ → NUL → IL → SHA")
     print("\nUse Cases:")
     print("  • Reset cognitivo tras sobrecarga")
     print("  • Desinversión organizacional estratégica")
@@ -89,6 +89,8 @@ def example_bifurcated_collapse():
 
 def example_therapeutic_protocol():
     """AL → UM → RA → OZ → ZHIR → IL → SHA
+
+    becomes: AL → EN → IL → OZ → ZHIR → IL → RA → SHA
     
     Domain: Biomedical/Therapeutic
     Use: Healing sessions, personal transformation rituals
@@ -107,15 +109,16 @@ def example_therapeutic_protocol():
     print("=" * 70)
     print("\nStructural Function:")
     print("  Ciclo completo de transformación personal/colectiva")
-    print("\nSequence: AL → UM → RA → OZ → ZHIR → IL → SHA")
+    print("\nSequence: AL → EN → IL → OZ → ZHIR → IL → RA → SHA")
     print("\nPhases:")
     print("  1. AL (Emisión): Inicia campo simbólico")
-    print("  2. UM (Acoplamiento): Genera vínculo relacional")
-    print("  3. RA (Resonancia): Expande como campo energético")
+    print("  2. EN (Recepción): Estabiliza estado")
+    print("  3. IL (Coherencia): Coherencia inicial")
     print("  4. OZ (Disonancia): Introduce tensión creativa (confrontación)")
     print("  5. ZHIR (Mutación): Sujeto se transforma")
     print("  6. IL (Coherencia): Estabiliza nueva forma (integración)")
-    print("  7. SHA (Silencio): Entra en latencia resonante (reposo)")
+    print("  7. RA (Resonancia): Propaga coherencia")
+    print("  8. SHA (Silencio): Entra en latencia resonante (reposo)")
     print("\nUse Cases:")
     print("  • Ceremonias de transformación personal")
     print("  • Sesiones de reestructuración terapéutica")
@@ -124,7 +127,7 @@ def example_therapeutic_protocol():
     net = TNFRNetwork("healing_session", NetworkConfig(random_seed=42))
     net.add_nodes(5)  # Patient + context nodes
     net.connect_nodes(0.4, "random")  # Relational field
-    net.apply_canonical_sequence("therapeutic_protocol", node=0)
+    net.apply_canonical_sequence("therapeutic_protocol")  # Apply to last node
     
     results = net.measure()
     print(f"\n✓ Therapeutic protocol completed")
@@ -137,6 +140,8 @@ def example_therapeutic_protocol():
 
 def example_theory_construction():
     """NAV → AL → OZ → ZHIR → IL → THOL → SHA
+
+    becomes: AL → EN → IL → OZ → ZHIR → IL → THOL → SHA
     
     Domain: Cognitive/Epistemological
     Use: Building conceptual frameworks, theory development
@@ -155,15 +160,16 @@ def example_theory_construction():
     print("=" * 70)
     print("\nStructural Function:")
     print("  Sistema de ideas → teoría emergente coherente")
-    print("\nSequence: NAV → AL → OZ → ZHIR → IL → THOL → SHA")
+    print("\nSequence: AL → EN → IL → OZ → ZHIR → IL → THOL → SHA")
     print("\nPhases:")
-    print("  1. NAV (Transición): Nodo mental emerge")
-    print("  2. AL (Emisión): Intuición inicial emitida")
-    print("  3. OZ (Disonancia): Paradoja/contradicción conceptual")
-    print("  4. ZHIR (Mutación): Cambio de paradigma")
-    print("  5. IL (Coherencia): Comprensión se estabiliza")
-    print("  6. THOL (Autoorganización): Se organiza en teoría")
-    print("  7. SHA (Silencio): Integra en conocimiento encarnado")
+    print("  1. AL (Emisión): Intuición inicial emitida")
+    print("  2. EN (Recepción): Recibe información")
+    print("  3. IL (Coherencia): Se estabiliza")
+    print("  4. OZ (Disonancia): Paradoja/contradicción conceptual")
+    print("  5. ZHIR (Mutación): Cambio de paradigma")
+    print("  6. IL (Coherencia): Comprensión se estabiliza")
+    print("  7. THOL (Autoorganización): Se organiza en teoría")
+    print("  8. SHA (Silencio): Integra en conocimiento encarnado")
     print("\nUse Cases:")
     print("  • Diseño de marcos epistemológicos")
     print("  • Construcción de teorías coherentes")
@@ -172,7 +178,7 @@ def example_theory_construction():
     net = TNFRNetwork("conceptual_framework", NetworkConfig(random_seed=42))
     net.add_nodes(3)  # Concept nodes
     net.connect_nodes(0.3, "ring")
-    net.apply_canonical_sequence("theory_system", node=0)
+    net.apply_canonical_sequence("theory_system")  # Apply to last node
     
     results = net.measure()
     print(f"\n✓ Theory system constructed")
@@ -184,6 +190,8 @@ def example_theory_construction():
 
 def example_full_deployment():
     """NAV → AL → OZ → ZHIR → IL → UM → RA → SHA
+
+    becomes: AL → EN → IL → OZ → ZHIR → IL → RA → SHA
     
     Domain: General
     Use: Complete transformation cycles
@@ -195,14 +203,14 @@ def example_full_deployment():
     print("=" * 70)
     print("\nStructural Function:")
     print("  Trayectoria completa de reorganización nodal")
-    print("\nSequence: NAV → AL → OZ → ZHIR → IL → UM → RA → SHA")
+    print("\nSequence: AL → EN → IL → OZ → ZHIR → IL → RA → SHA")
     print("\nPhases:")
-    print("  NAV: Transición de estado")
     print("  AL: Emisión iniciadora")
+    print("  EN: Recepción estabilizadora")
+    print("  IL: Coherencia inicial")
     print("  OZ: Disonancia exploradora")
     print("  ZHIR: Mutación transformativa")
     print("  IL: Estabilización coherente")
-    print("  UM: Acoplamiento relacional")
     print("  RA: Propagación resonante")
     print("  SHA: Cierre en latencia")
     print("\nUse Cases:")
@@ -213,7 +221,7 @@ def example_full_deployment():
     net = TNFRNetwork("complete_transformation", NetworkConfig(random_seed=42))
     net.add_nodes(5)
     net.connect_nodes(0.5, "small_world")
-    net.apply_canonical_sequence("full_deployment", node=0)
+    net.apply_canonical_sequence("full_deployment")  # Apply to last node
     
     results = net.measure()
     print(f"\n✓ Full deployment completed")
@@ -225,6 +233,8 @@ def example_full_deployment():
 
 def example_mod_stabilizer():
     """OZ → ZHIR → IL: Reusable transformation module.
+
+    becomes: EN → IL → OZ → ZHIR → IL
     
     Domain: General (modular component)
     Use: Encapsulated within THOL or as micro-transformation
@@ -239,8 +249,10 @@ def example_mod_stabilizer():
     print("=" * 70)
     print("\nStructural Function:")
     print("  Macro glífica reutilizable para transformación controlada")
-    print("\nSequence: OZ → ZHIR → IL")
+    print("\nSequence: EN → IL → OZ → ZHIR → IL")
     print("\nPhases:")
+    print("  EN: Recibe estado actual")
+    print("  IL: Estabiliza")
     print("  OZ: Disonancia controlada")
     print("  ZHIR: Mutación estructural")
     print("  IL: Estabilización de nueva forma")
@@ -249,14 +261,11 @@ def example_mod_stabilizer():
     print("  • Componente en secuencias complejas")
     print("  • Bloque de construcción para T'HOL")
     print("\nTheoretical Note:")
-    print("  Este patrón es composable: THOL[OZ → ZHIR → IL]")
+    print("  Este patrón es composable: THOL[EN → IL → OZ → ZHIR → IL]")
     
     net = TNFRNetwork("modular_transform", NetworkConfig(random_seed=42))
-    # First establish base coherence
+    # Apply transformation module directly
     net.add_nodes(1)
-    net.apply_sequence(["emission", "coherence"])
-    
-    # Now apply transformation module
     net.apply_canonical_sequence("mod_stabilizer")
     
     results = net.measure()
