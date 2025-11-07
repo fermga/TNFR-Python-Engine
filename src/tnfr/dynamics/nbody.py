@@ -106,13 +106,9 @@ from typing import TYPE_CHECKING, Any, Dict, List, Tuple, Optional
 import numpy as np
 from numpy.typing import NDArray
 
-from ..alias import get_attr, set_attr
-from ..constants.aliases import ALIAS_VF
-from ..operators.hamiltonian import InternalHamiltonian
+from ..alias import get_attr
 from ..structural import create_nfr
 from ..types import TNFRGraph
-from ..utils.cache import cached_node_list
-from .canonical import compute_canonical_nodal_derivative
 
 if TYPE_CHECKING:
     from matplotlib.figure import Figure
