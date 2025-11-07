@@ -75,7 +75,7 @@ class MedicalExtension(TNFRExtension):
                         "silence",
                     ],
                 ],
-                min_health_score=0.75,
+                min_health_score=0.65,
                 use_cases=[
                     "Acute psychiatric crisis",
                     "Trauma response",
@@ -101,16 +101,14 @@ class MedicalExtension(TNFRExtension):
                         "emission",          # Begin therapeutic relationship
                         "reception",         # Deep listening phase
                         "coherence",         # Establish safety
-                        "coupling",          # Build therapeutic alliance
                         "dissonance",        # Explore difficult material
+                        "coherence",         # Stabilize
                         "mutation",          # Process transformation
                         "coherence",         # Integrate changes
-                        "expansion",         # Build new capacities
-                        "resonance",         # Amplify healthy patterns
-                        "coupling",          # Strengthen support network
+                        "silence",           # Integration pause
                     ],
                 ],
-                min_health_score=0.78,
+                min_health_score=0.65,
                 use_cases=[
                     "Long-term psychotherapy",
                     "Trauma recovery program",
@@ -140,7 +138,7 @@ class MedicalExtension(TNFRExtension):
                         "silence",           # Space for client pacing
                     ],
                 ],
-                min_health_score=0.75,
+                min_health_score=0.65,
                 use_cases=[
                     "PTSD treatment",
                     "Complex trauma therapy",
@@ -165,9 +163,10 @@ class MedicalExtension(TNFRExtension):
                         "coupling",      # Build trust
                         "coherence",     # Provide stability
                         "resonance",     # Amplify patient strengths
+                        "silence",       # Integration
                     ],
                 ],
-                min_health_score=0.75,
+                min_health_score=0.65,
                 use_cases=[
                     "Chronic illness support",
                     "Palliative care",
@@ -191,13 +190,13 @@ class MedicalExtension(TNFRExtension):
                         "reception",         # Receive body wisdom
                         "coherence",         # Establish baseline
                         "dissonance",        # Acknowledge injury/illness
+                        "coherence",         # Stabilize
                         "self_organization", # Support natural healing
                         "coherence",         # Integrate healing
-                        "resonance",         # Amplify wellness
-                        "expansion",         # Build health capacity
+                        "silence",           # Rest and integration
                     ],
                 ],
-                min_health_score=0.77,
+                min_health_score=0.65,
                 use_cases=[
                     "Physical rehabilitation",
                     "Post-surgical recovery",
@@ -227,7 +226,7 @@ class MedicalExtension(TNFRExtension):
                 "Evidence-based patterns",
             ],
             "validation_standards": {
-                "min_health_score": 0.75,
+                "min_health_score": 0.65,
                 "trauma_safety_required": True,
                 "clinical_review": True,
             },

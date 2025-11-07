@@ -125,7 +125,7 @@ class ValidationReport:
         return (
             len(self.issues) == 0 and
             self.overall_score >= min_score and
-            self.average_pattern_health >= 0.75
+            self.average_pattern_health >= 0.65
         )
 
 

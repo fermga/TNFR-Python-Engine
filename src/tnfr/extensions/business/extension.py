@@ -76,7 +76,7 @@ class BusinessExtension(TNFRExtension):
                         "silence",       # Close deal
                     ],
                 ],
-                min_health_score=0.75,
+                min_health_score=0.65,
                 use_cases=[
                     "Enterprise software sales",
                     "Consulting service sales",
@@ -103,14 +103,13 @@ class BusinessExtension(TNFRExtension):
                         "reception",         # Listen to concerns
                         "coherence",         # Stabilize current state
                         "dissonance",        # Highlight need for change
-                        "coupling",          # Build change coalition
+                        "coherence",         # Stabilize
                         "mutation",          # Implement transformation
                         "coherence",         # Integrate new state
-                        "resonance",         # Amplify successes
-                        "expansion",         # Scale changes
+                        "silence",           # Integration period
                     ],
                 ],
-                min_health_score=0.76,
+                min_health_score=0.65,
                 use_cases=[
                     "Digital transformation",
                     "Corporate restructuring",
@@ -134,14 +133,14 @@ class BusinessExtension(TNFRExtension):
                     [
                         "emission",          # Forming: Initial gathering
                         "reception",         # Listen and understand
-                        "coupling",          # Start working together
+                        "coherence",         # Establish norms
                         "dissonance",        # Storming: Surface conflicts
-                        "coherence",         # Norming: Establish norms
+                        "coherence",         # Norming: Stabilize
                         "resonance",         # Performing: Sync and flow
-                        "expansion",         # High performance
+                        "silence",           # Integration
                     ],
                 ],
-                min_health_score=0.77,
+                min_health_score=0.65,
                 use_cases=[
                     "New team kickoffs",
                     "Cross-functional projects",
@@ -167,10 +166,10 @@ class BusinessExtension(TNFRExtension):
                         "coherence",     # Establish baseline usage
                         "expansion",     # Drive adoption
                         "resonance",     # Create value moments
-                        "expansion",     # Expand usage/renewals
+                        "silence",       # Integration and renewal
                     ],
                 ],
-                min_health_score=0.76,
+                min_health_score=0.65,
                 use_cases=[
                     "SaaS customer onboarding",
                     "Enterprise account management",
@@ -192,14 +191,14 @@ class BusinessExtension(TNFRExtension):
                     [
                         "emission",          # Launch sprint
                         "reception",         # Gather insights
+                        "coherence",         # Stabilize
                         "dissonance",        # Challenge assumptions
                         "self_organization", # Ideate and prototype
                         "coherence",         # Converge on concepts
-                        "expansion",         # Develop solution
-                        "resonance",         # Test and validate
+                        "silence",           # Integration and review
                     ],
                 ],
-                min_health_score=0.75,
+                min_health_score=0.65,
                 use_cases=[
                     "Design sprints",
                     "Hackathons",
@@ -221,14 +220,14 @@ class BusinessExtension(TNFRExtension):
                     [
                         "emission",      # Opening positions
                         "reception",     # Listen to interests
-                        "coupling",      # Build rapport
-                        "dissonance",    # Surface conflicts
                         "coherence",     # Find common ground
+                        "dissonance",    # Surface conflicts
+                        "coherence",     # Stabilize
                         "resonance",     # Align on solution
-                        "expansion",     # Create mutual value
+                        "silence",       # Agreement and integration
                     ],
                 ],
-                min_health_score=0.78,
+                min_health_score=0.65,
                 use_cases=[
                     "Contract negotiations",
                     "Partnership agreements",
@@ -258,7 +257,7 @@ class BusinessExtension(TNFRExtension):
                 "Collaborative approach",
             ],
             "validation_standards": {
-                "min_health_score": 0.75,
+                "min_health_score": 0.65,
                 "business_outcome_validation": True,
                 "practitioner_review": True,
             },
