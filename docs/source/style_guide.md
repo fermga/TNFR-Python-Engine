@@ -477,7 +477,7 @@ True
 References
 ----------
 
-.. [1] Formalización Matemática TNFR, Sección 2.1
+.. [1] TNFR Mathematical Formalization, Section 2.1
 .. [2] docs/source/theory/coherence_operator.md
 """
 ```
