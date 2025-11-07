@@ -260,18 +260,18 @@ class AdaptiveLearningSystem:
         run_sequence(self.G, self.node, sequence)
 
     def exploratory_learning_cycle(self) -> None:
-        """Execute exploratory learning with resonance propagation.
+        """Execute exploratory learning with enhanced propagation.
 
         Implements canonical exploratory learning sequence:
-        AL -> EN -> IL -> OZ -> THOL -> RA -> IL -> (SHA or NUL)
+        AL -> EN -> IL -> OZ -> THOL -> IL -> SHA
 
-        The final operator (SHA/SILENCE or NUL/CONTRACTION) is selected by
-        the TNFR grammar based on structural conditions (Si threshold).
+        After self-organization, coherence stabilizes and closes T'HOL,
+        then silence terminates.
 
         Notes
         -----
         Reuses run_sequence with predefined exploratory pattern.
-        Grammar may adaptively select the appropriate THOL closure.
+        This is similar to deep_learning_cycle but focuses on consolidation.
         Supports operational fractality (nested THOL allowed per sec.3.7).
         """
         sequence = [
@@ -280,9 +280,8 @@ class AdaptiveLearningSystem:
             Coherence(),
             Dissonance(),
             SelfOrganization(),
-            Resonance(),
-            Coherence(),
-            Silence(),  # Grammar may replace with Contraction if Si < si_high
+            Coherence(),   # Stabilize and close T'HOL
+            Silence(),     # Terminal operator
         ]
         run_sequence(self.G, self.node, sequence)
 

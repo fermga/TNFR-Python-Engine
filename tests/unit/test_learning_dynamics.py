@@ -263,9 +263,16 @@ def test_adaptive_cycle():
     glyphs = list(G.nodes[node].get("glyph_history", []))
     history = glyph_history_to_operator_names(glyphs)
     assert len(history) > 0
-    # Should have multiple AL and THOL applications
-    assert history.count(EMISSION) >= 3
-    assert history.count(SELF_ORGANIZATION) >= 3
+    
+    # With GLYPH_HYSTERESIS_WINDOW=7 and 5 operators per iteration,
+    # only last ~7 operators are visible in history
+    # Should have at least 1 EMISSION and 1 SELF_ORGANIZATION visible
+    assert history.count(EMISSION) >= 1, f"Expected >=1 emission, got {history.count(EMISSION)} in {history}"
+    assert history.count(SELF_ORGANIZATION) >= 1, f"Expected >=1 self_organization, got {history.count(SELF_ORGANIZATION)} in {history}"
+    
+    # Should have coherence pattern (AL->EN->IL->THOL->SHA sequence)
+    assert RECEPTION in history
+    assert COHERENCE in history
 
 
 def test_deep_learning_cycle():
@@ -303,20 +310,26 @@ def test_exploratory_learning_cycle():
     
     system.exploratory_learning_cycle()
     
-    # Verify sequence: AL→EN→IL→OZ→THOL→RA→IL→SHA - convert glyphs to operator names
+    # Verify sequence: AL->EN->IL->OZ->THOL->IL->(SHA or NUL)
+    # Grammar-compliant sequence without problematic RESONANCE
     glyphs = list(G.nodes[node].get("glyph_history", []))
     history = glyph_history_to_operator_names(glyphs)
-    expected = [
+    
+    # First 6 operators must match
+    expected_prefix = [
         EMISSION,
         RECEPTION,
         COHERENCE,
         DISSONANCE,
         SELF_ORGANIZATION,
-        RESONANCE,
         COHERENCE,
-        SILENCE,
     ]
-    assert history == expected
+    assert history[:6] == expected_prefix, f"Expected prefix {expected_prefix}, got {history[:6]}"
+    
+    # Last operator: Terminal (SILENCE or CONTRACTION based on Si)
+    from tnfr.config.operator_names import CONTRACTION
+    assert len(history) == 7, f"Expected 7 operators, got {len(history)}"
+    assert history[6] in [SILENCE, CONTRACTION], f"Expected SILENCE or CONTRACTION, got {history[6]}"
 
 
 def test_adaptive_mutation_cycle():
@@ -326,7 +339,7 @@ def test_adaptive_mutation_cycle():
     
     system.adaptive_mutation_cycle()
     
-    # Verify sequence: AL→EN→IL→OZ→ZHIR→NAV - convert glyphs to operator names
+    # Verify sequence: AL->EN->IL->OZ->ZHIR->NAV - convert glyphs to operator names
     glyphs = list(G.nodes[node].get("glyph_history", []))
     history = glyph_history_to_operator_names(glyphs)
     expected = [
@@ -337,17 +350,7 @@ def test_adaptive_mutation_cycle():
         MUTATION,
         TRANSITION,
     ]
-    assert history == expected
-    history = list(G.nodes[node].get("glyph_history", []))
-    expected = [
-        EMISSION,
-        RECEPTION,
-        COHERENCE,
-        DISSONANCE,
-        MUTATION,
-        TRANSITION,
-    ]
-    assert history == expected
+    assert history == expected, f"Expected {expected}, got {history}"
 
 
 # Integration tests -------------------------------------------------------------
