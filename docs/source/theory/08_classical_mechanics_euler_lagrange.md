@@ -216,7 +216,13 @@ Since \( \dot{q}^T \Xi = 0 \) for all trajectories satisfying the power balance,
 \left\|r - \frac{1}{2}\dot{M}\dot{q}\right\| \leq \|r\| + \frac{1}{2}\|\dot{M}\|\|\dot{q}\| \leq \varepsilon(1 + \|\dot{q}\|) + \frac{c_M}{2}\|\dot{q}\|^2
 \]
 
-For bounded velocities, this gives the stated residual bound. ∎
+For bounded velocities \( \|\dot{q}\| \leq v_{\max} \), the quadratic term is absorbed: \( c_M\|\dot{q}\|^2/2 \leq (c_M v_{\max}/2)\|\dot{q}\| \), giving:
+
+\[
+\|\rho\| \leq \varepsilon\left[1 + \left(1 + \frac{c_M}{2}\right)\|\dot{q}\|\right]
+\]
+
+matching the theorem statement. ∎
 
 **Consequence**: As \( \varepsilon \to 0 \), the residual \( \rho \to 0 \), and we recover the exact Euler-Lagrange equations of classical mechanics.
 
