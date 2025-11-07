@@ -28,6 +28,48 @@ This document establishes the **formal correspondence** between **TNFR structura
 - Engineers implementing gravitational simulations in TNFR
 - Educators teaching emergence from first principles
 
+### Visual Summary: TNFR → Classical Mechanics Emergence
+
+```
+┌───────────────────────────────────────────────────────────────────┐
+│                    TNFR PARADIGM                                  │
+│                  (Structural Coherence)                           │
+│                                                                   │
+│  Fundamental Equation:  ∂EPI/∂t = νf · ΔNFR(t)                  │
+│                                                                   │
+│  Key Variables:                                                   │
+│    • EPI    → Structural form (coherent configuration)           │
+│    • νf     → Structural frequency (reorganization rate)         │
+│    • ΔNFR   → Reorganization gradient (structural pressure)      │
+│    • θ      → Phase (network synchrony)                          │
+│    • C(t)   → Total coherence (network stability)                │
+└───────────────────────────────────────────────────────────────────┘
+                                ↓
+                    Low-Dissonance Limit (ε → 0)
+                    Network Symmetries Applied
+                                ↓
+┌───────────────────────────────────────────────────────────────────┐
+│               CLASSICAL MECHANICS                                 │
+│              (Observable Dynamics)                                │
+│                                                                   │
+│  Newton's Second Law:  F = ma                                     │
+│                                                                   │
+│  Emergent Variables:                                              │
+│    • q = EPI_q    → Position                                     │
+│    • v = EPI_v    → Velocity                                     │
+│    • m = 1/νf     → Mass (structural inertia)                    │
+│    • F = -∇U      → Force (coherence gradient)                   │
+│    • E = K + U    → Energy (total coherence)                     │
+│                                                                   │
+│  Conservation Laws (from Noether):                                │
+│    ✓ Energy        (time translation symmetry)                    │
+│    ✓ Momentum      (spatial translation symmetry)                 │
+│    ✓ Angular Mom.  (rotational symmetry)                          │
+└───────────────────────────────────────────────────────────────────┘
+```
+
+**Key Insight**: Classical mechanics is not a separate framework—it is TNFR dynamics in the coherent, observable limit.
+
 ---
 
 ## Table of Contents
