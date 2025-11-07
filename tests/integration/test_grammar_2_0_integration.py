@@ -19,7 +19,7 @@ class TestGrammar20Integration:
     """Integration tests for all Grammar 2.0 capabilities."""
 
     def test_full_pipeline_therapeutic_sequence(self):
-        """Pipeline completo: validación → health → pattern → cycle validation."""
+        """Complete pipeline: validation → health → pattern → cycle validation."""
         # Classic therapeutic sequence
         sequence = [
             "emission",

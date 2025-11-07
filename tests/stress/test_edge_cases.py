@@ -202,11 +202,13 @@ class TestEdgeCases:
 
     def test_cycle_detection_edge_cases(self):
         """Test cycle detection with edge case regenerator positions."""
+        from tnfr.operators.cycle_detection import MIN_CYCLE_LENGTH
+        
         cycle_detector = CycleDetector()
 
         # Regenerator at very beginning
         seq1 = ["recursivity"]
-        if len(seq1) >= CycleDetector.MIN_HEALTH_SCORE:  # Use class constant
+        if len(seq1) >= MIN_CYCLE_LENGTH:  # Check minimum cycle length
             analysis1 = cycle_detector.analyze_potential_cycle(seq1, 0)
             assert analysis1 is not None
 
