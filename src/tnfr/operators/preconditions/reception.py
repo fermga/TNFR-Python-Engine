@@ -96,7 +96,8 @@ def validate_reception_strict(G: TNFRGraph, node: Any) -> None:
         raise ValueError(
             f"EN precondition failed: EPI={epi:.3f} >= {epi_threshold:.3f}. "
             f"Node saturated, cannot receive more coherence. "
-            f"Consider IL (Coherence) to stabilize, or NUL (Contraction) to reduce complexity."
+            f"Apply IL (Coherence) first to stabilize and compress structure, "
+            f"or apply NUL (Contraction) to reduce complexity if appropriate."
         )
 
     # Precondition 2: DNFR must be below threshold (minimal dissonance for stable integration)

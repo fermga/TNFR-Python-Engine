@@ -7,6 +7,9 @@ requirements for the Reception (EN) operator:
 2. DNFR < threshold (minimal dissonance for stable integration)
 3. Emission sources availability (warning for isolated nodes)
 
+This follows the same pattern established by AL (Emission) strict validation,
+providing consistent precondition enforcement across structural operators.
+
 The validation can be enabled/disabled via the VALIDATE_OPERATOR_PRECONDITIONS
 graph flag to maintain backward compatibility.
 """
@@ -63,7 +66,7 @@ class TestReceptionStrictPreconditions:
         assert "EPI=0.950" in error_msg
         assert ">= 0.9" in error_msg
         assert "Node saturated" in error_msg
-        assert "Consider IL (Coherence)" in error_msg or "Consider NUL (Contraction)" in error_msg
+        assert "IL (Coherence)" in error_msg or "NUL (Contraction)" in error_msg
 
     def test_validate_reception_strict_fails_at_epi_threshold(self):
         """Validation fails when EPI equals threshold (boundary condition)."""
@@ -457,7 +460,7 @@ class TestReceptionPreconditionsIntegration:
             Reception()(G, node)
 
         error_msg = str(exc_info.value)
-        assert "Consider IL (Coherence)" in error_msg or "Consider NUL (Contraction)" in error_msg
+        assert "IL (Coherence)" in error_msg or "NUL (Contraction)" in error_msg
 
     def test_coupling_suggested_for_isolated_nodes(self):
         """Warning suggests UM (Coupling) for isolated nodes."""
