@@ -562,6 +562,48 @@ class Reception(Operator):
     name: ClassVar[str] = RECEPTION
     glyph: ClassVar[Glyph] = Glyph.EN
 
+    def __call__(self, G: TNFRGraph, node: Any, **kw: Any) -> None:
+        """Apply EN with source detection and integration tracking.
+
+        Detects emission sources in the network BEFORE applying reception
+        grammar. This enables active reorganization from external sources
+        as specified in TNFR.pdf §2.2.1 (EN - Recepción estructural).
+
+        Parameters
+        ----------
+        G : TNFRGraph
+            Graph storing TNFR nodes and structural operator history.
+        node : Any
+            Identifier or object representing the target node within ``G``.
+        **kw : Any
+            Additional keyword arguments:
+            - track_sources (bool): Enable source detection (default: True)
+            - max_distance (int): Maximum network distance for source search (default: 2)
+            - Other args forwarded to grammar layer
+        """
+        # Detect emission sources BEFORE applying reception
+        if kw.get("track_sources", True):
+            from .network_analysis.source_detection import detect_emission_sources
+
+            max_distance = kw.get("max_distance", 2)
+            sources = detect_emission_sources(G, node, max_distance=max_distance)
+
+            # Store detected sources in node metadata for metrics and analysis
+            G.nodes[node]["_reception_sources"] = sources
+
+            # Warn if no compatible sources found
+            if not sources:
+                import warnings
+
+                warnings.warn(
+                    f"EN warning: Node '{node}' has no detectable emission sources. "
+                    f"Reception may not integrate external coherence effectively.",
+                    stacklevel=2,
+                )
+
+        # Delegate to parent __call__ which applies grammar
+        super().__call__(G, node, **kw)
+
     def _validate_preconditions(self, G: TNFRGraph, node: Any) -> None:
         """Validate EN-specific preconditions."""
         from .preconditions import validate_reception
