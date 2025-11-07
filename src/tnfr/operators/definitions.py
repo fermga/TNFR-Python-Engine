@@ -14,6 +14,7 @@ from __future__ import annotations
 import warnings
 from typing import Any, ClassVar
 
+from ..alias import get_attr
 from ..config.operator_names import (
     COHERENCE,
     CONTRACTION,
@@ -29,6 +30,7 @@ from ..config.operator_names import (
     SILENCE,
     TRANSITION,
 )
+from ..constants.aliases import ALIAS_DNFR
 from ..types import Glyph, TNFRGraph
 from .registry import register_operator
 
@@ -800,7 +802,7 @@ class Coherence(Operator):
     glyph: ClassVar[Glyph] = Glyph.IL
 
     def __call__(self, G: TNFRGraph, node: Any, **kw: Any) -> None:
-        """Apply IL with explicit ΔNFR reduction telemetry and control.
+        """Apply IL with explicit ΔNFR reduction and C(t) coherence tracking.
 
         Parameters
         ----------
@@ -810,6 +812,8 @@ class Coherence(Operator):
             Identifier or object representing the target node within ``G``.
         **kw : Any
             Additional keyword arguments forwarded to grammar layer via parent __call__.
+            Special keys:
+            - coherence_radius (int): Radius for local coherence computation (default: 1)
 
         Notes
         -----
@@ -820,11 +824,23 @@ class Coherence(Operator):
         from global glyph factors. This method adds explicit telemetry logging for
         structural traceability.
 
+        **C(t) Coherence Tracking:**
+        
+        Captures global and local coherence before and after IL application:
+        - C_global: Network-wide coherence using C(t) = 1 - (σ_ΔNFR / ΔNFR_max)
+        - C_local: Node neighborhood coherence with configurable radius
+        
+        Both metrics are stored in G.graph["IL_coherence_tracking"] for analysis.
+
         To customize the reduction factor, set GLYPH_FACTORS["IL_dnfr_factor"] in
         the graph before calling this operator. Default is 0.7 (30% reduction).
         """
-        from ..alias import get_attr
-        from ..constants.aliases import ALIAS_DNFR
+        # Import here to avoid circular import
+        from ..metrics.coherence import compute_global_coherence, compute_local_coherence
+        
+        # Capture C(t) before IL application
+        C_global_before = compute_global_coherence(G)
+        C_local_before = compute_local_coherence(G, node, radius=kw.get("coherence_radius", 1))
 
         # Capture ΔNFR before IL application for telemetry
         dnfr_before = float(get_attr(G.nodes[node], ALIAS_DNFR, 0.0))
@@ -832,10 +848,28 @@ class Coherence(Operator):
         # Delegate to parent __call__ which applies grammar (including _op_IL reduction)
         super().__call__(G, node, **kw)
 
+        # Capture C(t) after IL application
+        C_global_after = compute_global_coherence(G)
+        C_local_after = compute_local_coherence(G, node, radius=kw.get("coherence_radius", 1))
+
         # Capture ΔNFR after IL application for telemetry
         dnfr_after = float(get_attr(G.nodes[node], ALIAS_DNFR, 0.0))
 
-        # Log reduction in graph metadata for telemetry
+        # Store C(t) tracking in graph telemetry
+        if "IL_coherence_tracking" not in G.graph:
+            G.graph["IL_coherence_tracking"] = []
+        
+        G.graph["IL_coherence_tracking"].append({
+            "node": node,
+            "C_global_before": C_global_before,
+            "C_global_after": C_global_after,
+            "C_global_delta": C_global_after - C_global_before,
+            "C_local_before": C_local_before,
+            "C_local_after": C_local_after,
+            "C_local_delta": C_local_after - C_local_before,
+        })
+
+        # Log ΔNFR reduction in graph metadata for telemetry
         if "IL_dnfr_reductions" not in G.graph:
             G.graph["IL_dnfr_reductions"] = []
 

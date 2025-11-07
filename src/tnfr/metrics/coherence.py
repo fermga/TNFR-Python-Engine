@@ -1810,3 +1810,204 @@ def _aggregate_si(
             hist["Si_lo_frac"].append(0.0)
     except (KeyError, AttributeError, TypeError) as exc:
         logger.debug("Si aggregation failed: %s", exc)
+
+
+def compute_global_coherence(G: TNFRGraph) -> float:
+    """Compute global coherence C(t) for entire network.
+    
+    C(t) = 1 - (σ_ΔNFR / ΔNFR_max)
+    
+    This is the canonical TNFR coherence metric that measures global structural
+    stability through the dispersion of reorganization pressure (ΔNFR) across
+    the network.
+    
+    Parameters
+    ----------
+    G : TNFRGraph
+        Network graph with nodes containing ΔNFR attributes
+    
+    Returns
+    -------
+    float
+        Global coherence value in [0, 1] where:
+        - 1.0 = perfect coherence (no reorganization pressure variance)
+        - 0.0 = maximum incoherence (extreme ΔNFR dispersion)
+    
+    Notes
+    -----
+    **Mathematical Foundation:**
+    
+    Global coherence quantifies the network's structural stability by measuring
+    how uniformly reorganization pressure is distributed across nodes:
+    
+    - **σ_ΔNFR**: Standard deviation of ΔNFR values measures dispersion
+    - **ΔNFR_max**: Maximum ΔNFR provides normalization scale
+    - **C(t)**: Higher values indicate more uniform structural state
+    
+    **Special Cases:**
+    
+    - Empty network: Returns 1.0 (perfect coherence by definition)
+    - All ΔNFR = 0: Returns 1.0 (no reorganization pressure)
+    - ΔNFR_max = 0: Returns 1.0 (degenerate case, no pressure)
+    
+    **TNFR Context:**
+    
+    C(t) is the primary metric for measuring IL (Coherence) operator
+    effectiveness. When IL is applied, C(t) should increase as ΔNFR
+    becomes more uniformly distributed (ideally all approaching zero).
+    
+    See Also
+    --------
+    compute_local_coherence : Local coherence for node neighborhoods
+    compute_coherence : Alternative coherence metric (legacy)
+    
+    Examples
+    --------
+    >>> import networkx as nx
+    >>> from tnfr.metrics.coherence import compute_global_coherence
+    >>> from tnfr.constants import DNFR_PRIMARY
+    >>> G = nx.Graph()
+    >>> G.add_nodes_from([1, 2, 3])
+    >>> G.nodes[1][DNFR_PRIMARY] = 0.1
+    >>> G.nodes[2][DNFR_PRIMARY] = 0.2
+    >>> G.nodes[3][DNFR_PRIMARY] = 0.15
+    >>> C_global = compute_global_coherence(G)
+    >>> 0.0 <= C_global <= 1.0
+    True
+    """
+    # Collect all ΔNFR values
+    dnfr_values = [
+        float(get_attr(G.nodes[n], ALIAS_DNFR, 0.0))
+        for n in G.nodes()
+    ]
+    
+    if not dnfr_values or all(v == 0 for v in dnfr_values):
+        return 1.0  # Perfect coherence when no reorganization pressure
+    
+    np = get_numpy()
+    if np is not None:
+        dnfr_array = np.array(dnfr_values)
+        sigma_dnfr = float(np.std(dnfr_array))
+        dnfr_max = float(np.max(dnfr_array))
+    else:
+        # Pure Python fallback
+        mean_dnfr = sum(dnfr_values) / len(dnfr_values)
+        variance = sum((v - mean_dnfr) ** 2 for v in dnfr_values) / len(dnfr_values)
+        sigma_dnfr = variance ** 0.5
+        dnfr_max = max(dnfr_values)
+    
+    if dnfr_max == 0:
+        return 1.0
+    
+    C_t = 1.0 - (sigma_dnfr / dnfr_max)
+    
+    # Clamp to [0, 1] to handle numerical edge cases
+    if np is not None:
+        return float(np.clip(C_t, 0.0, 1.0))
+    return max(0.0, min(1.0, C_t))
+
+
+def compute_local_coherence(G: TNFRGraph, node: Any, radius: int = 1) -> float:
+    """Compute local coherence for node and its neighborhood.
+    
+    Local coherence applies the same C(t) formula to a neighborhood subgraph:
+    C_local(t) = 1 - (σ_ΔNFR_local / ΔNFR_max_local)
+    
+    This measures structural stability within a node's local vicinity, useful
+    for identifying coherence gradients and structural weak points in networks.
+    
+    Parameters
+    ----------
+    G : TNFRGraph
+        Network graph
+    node : Any
+        Central node for local coherence computation
+    radius : int, default=1
+        Neighborhood radius:
+        - 1 = immediate neighbors (default)
+        - 2 = neighbors + neighbors-of-neighbors
+        - etc.
+    
+    Returns
+    -------
+    float
+        Local coherence value in [0, 1] where:
+        - 1.0 = perfect local coherence
+        - 0.0 = maximum local incoherence
+    
+    Notes
+    -----
+    **Use Cases:**
+    
+    - **Hotspot Detection**: Identify regions of structural instability
+    - **IL Targeting**: Prioritize nodes needing coherence stabilization
+    - **Network Health**: Monitor local vs. global coherence balance
+    - **Bifurcation Risk**: Low local C(t) may predict structural splits
+    
+    **Radius Selection:**
+    
+    - **radius=1**: Fast, captures immediate structural environment
+    - **radius=2**: Better for mesoscale patterns, slower
+    - **radius>2**: Approaches global coherence, expensive
+    
+    **Special Cases:**
+    
+    - Isolated node (no neighbors): Returns 1.0
+    - All neighborhood ΔNFR = 0: Returns 1.0
+    - Single-node neighborhood: Returns 1.0 (no variance)
+    
+    See Also
+    --------
+    compute_global_coherence : Global network coherence
+    
+    Examples
+    --------
+    >>> import networkx as nx
+    >>> from tnfr.metrics.coherence import compute_local_coherence
+    >>> from tnfr.constants import DNFR_PRIMARY
+    >>> G = nx.Graph()
+    >>> G.add_edges_from([(1, 2), (2, 3), (3, 4)])
+    >>> for n in [1, 2, 3, 4]:
+    ...     G.nodes[n][DNFR_PRIMARY] = 0.1 * n
+    >>> C_local = compute_local_coherence(G, node=2, radius=1)
+    >>> 0.0 <= C_local <= 1.0
+    True
+    """
+    import networkx as nx
+    
+    # Get neighborhood
+    if radius == 1:
+        neighbors = set(G.neighbors(node)) | {node}
+    else:
+        neighbors = set(nx.single_source_shortest_path_length(G, node, cutoff=radius).keys())
+    
+    # Collect ΔNFR for neighborhood
+    dnfr_values = [
+        float(get_attr(G.nodes[n], ALIAS_DNFR, 0.0))
+        for n in neighbors
+    ]
+    
+    if not dnfr_values or all(v == 0 for v in dnfr_values):
+        return 1.0
+    
+    np = get_numpy()
+    if np is not None:
+        dnfr_array = np.array(dnfr_values)
+        sigma_dnfr = float(np.std(dnfr_array))
+        dnfr_max = float(np.max(dnfr_array))
+    else:
+        # Pure Python fallback
+        mean_dnfr = sum(dnfr_values) / len(dnfr_values)
+        variance = sum((v - mean_dnfr) ** 2 for v in dnfr_values) / len(dnfr_values)
+        sigma_dnfr = variance ** 0.5
+        dnfr_max = max(dnfr_values)
+    
+    if dnfr_max == 0:
+        return 1.0
+    
+    C_local = 1.0 - (sigma_dnfr / dnfr_max)
+    
+    # Clamp to [0, 1]
+    if np is not None:
+        return float(np.clip(C_local, 0.0, 1.0))
+    return max(0.0, min(1.0, C_local))
