@@ -1,5 +1,45 @@
 # Migration Guide: TNFR Grammar 1.0 → 2.0
 
+## Quick Start (Choose Your Path)
+
+### 🔵 Conservative: Keep Existing Code
+```python
+# No changes needed - everything still works!
+from tnfr.operators.grammar import validate_sequence
+
+result = validate_sequence(["emission", "reception", "coherence"])
+# ✓ Works exactly as before
+```
+
+### 🟡 Progressive: Opt-in to New Features
+```python
+# Enhanced validation with health metrics
+from tnfr.operators.grammar import validate_sequence_with_health
+
+result = validate_sequence_with_health(["emission", "reception", "coherence"])
+print(f"Health: {result.health_metrics.overall_health:.2f}")
+print(f"Pattern: {result.metadata['detected_pattern']}")
+```
+
+### 🟢 Advanced: Full Grammar 2.0
+```python
+# Automatic optimization + health analysis
+from tools.migration import SequenceUpgrader
+
+upgrader = SequenceUpgrader(target_health=0.80)
+result = upgrader.upgrade_sequence(["emission", "reception"])
+
+print(f"Upgraded: {' → '.join(result.upgraded_sequence)}")
+print(f"Health: {result.upgraded_health:.2f}")
+```
+
+**Run automated migration checker**:
+```bash
+python -m tools.migration.migration_checker your_code.py
+```
+
+---
+
 ## Overview
 
 Grammar 2.0 is a **backward-compatible enhancement** to TNFR operator sequence validation. All previously valid sequences remain valid, with additional warnings, health metrics, and pattern detection capabilities.
@@ -207,7 +247,109 @@ print(result.metadata.get('warnings'))  # Frequency warning
 
 ---
 
+## Migration Tools
+
+Grammar 2.0 includes automated tools to help you migrate your code.
+
+### Migration Checker
+
+Scans your Python code or sequences for potential Grammar 2.0 issues.
+
+**Scan a single file**:
+```bash
+python -m tools.migration.migration_checker your_file.py
+```
+
+**Scan a directory**:
+```bash
+python -m tools.migration.migration_checker your_project/
+```
+
+**Programmatic usage**:
+```python
+from tools.migration import MigrationChecker
+
+checker = MigrationChecker()
+
+# Scan a file
+report = checker.scan_file("my_sequences.py")
+print(report.summary())
+
+# Scan sequences directly
+sequences = [
+    ["emission", "reception", "self_organization"],
+    ["silence", "emission", "coherence"],
+]
+report = checker.scan_sequences(sequences)
+
+if report.has_errors:
+    print("❌ Found critical issues:")
+    for issue in report.issues:
+        if issue.level == IssueLevel.ERROR:
+            print(f"  - {issue.message}")
+            if issue.suggestion:
+                print(f"    Fix: {issue.suggestion}")
+```
+
+**What it detects**:
+- ❌ **Errors**: THOL without destabilizer (must fix)
+- ⚠️ **Warnings**: Frequency jumps, pattern name dependencies
+- ℹ️ **Info**: Opportunities to use health metrics
+
+### Sequence Upgrader
+
+Automatically optimizes sequences for Grammar 2.0.
+
+**Upgrade from command line**:
+```bash
+python -m tools.migration.sequence_upgrader emission reception self_organization
+```
+
+**Programmatic usage**:
+```python
+from tools.migration import SequenceUpgrader
+
+upgrader = SequenceUpgrader(target_health=0.75)
+
+# Upgrade a sequence
+result = upgrader.upgrade_sequence(["emission", "reception", "self_organization"])
+
+print(f"Original:  {' → '.join(result.original_sequence)}")
+print(f"Upgraded:  {' → '.join(result.upgraded_sequence)}")
+print(f"Health: {result.original_health:.2f} → {result.upgraded_health:.2f}")
+
+# See what was improved
+for improvement in result.improvements:
+    print(f"  • {improvement}")
+
+# Iteratively improve to target health
+result = upgrader.improve_to_target(my_sequence, max_iterations=3)
+```
+
+**What it does**:
+- ✅ Fixes THOL validation (adds destabilizers)
+- ✅ Smooths frequency transitions (inserts bridges)
+- ✅ Balances stabilizers/destabilizers
+- ✅ Adds appropriate terminators
+- ✅ Optimizes for target health score
+
+---
+
 ## Migration Steps
+
+### Step 0: Run Migration Tools (Recommended)
+
+**Before making manual changes**, use the automated tools to identify issues:
+
+```bash
+# 1. Check your code for issues
+python -m tools.migration.migration_checker src/
+
+# 2. Review the report and fix critical errors
+
+# 3. Optionally use upgrader for suggestions
+python -m tools.migration.sequence_upgrader your operators here
+```
 
 ### Step 1: Update Validation Calls
 
@@ -582,12 +724,75 @@ if result.health_metrics.overall_health < 0.65:
 
 ---
 
+## Interactive Examples
+
+Learn Grammar 2.0 through hands-on examples in `examples/migration/`:
+
+### 1. Before/After Comparison
+```bash
+python examples/migration/before_after_comparison.py
+```
+
+Shows side-by-side comparisons of sequences before and after Grammar 2.0 upgrades:
+- THOL validation fixes
+- Frequency transition smoothing
+- Operator balance improvements
+- Health optimization
+- Pattern upgrades
+
+### 2. Health Optimization Tutorial
+```bash
+python examples/migration/health_optimization_tutorial.py
+```
+
+Interactive tutorial with 5 lessons:
+1. Understanding health metrics
+2. Iterative optimization process
+3. Using the automatic upgrader
+4. Pattern-aware optimization
+5. Custom optimization strategies
+
+### 3. Pattern Upgrade Examples
+```bash
+python examples/migration/pattern_upgrade_examples.py
+```
+
+Demonstrates pattern evolution:
+- MINIMAL → LINEAR → HIERARCHICAL
+- LINEAR → THERAPEUTIC
+- STABILIZE → EDUCATIONAL
+- HIERARCHICAL → ORGANIZATIONAL
+- CYCLIC → REGENERATIVE
+- Building CREATIVE patterns
+
+### 4. Regenerative Cycles Introduction
+```bash
+python examples/migration/regenerative_cycles_intro.py
+```
+
+Complete tutorial on self-sustaining sequences:
+- Basic regenerative cycles
+- Transformative cycles
+- Common mistakes
+- Design patterns
+- Real-world applications
+
+**Recommended learning path**:
+1. Start with `before_after_comparison.py` to see what changed
+2. Learn optimization in `health_optimization_tutorial.py`
+3. Master patterns in `pattern_upgrade_examples.py`
+4. Advanced topic: `regenerative_cycles_intro.py`
+
+---
+
 ## Resources
 
 - **[GLYPH_SEQUENCES_GUIDE.md](../GLYPH_SEQUENCES_GUIDE.md)**: Complete Grammar 2.0 documentation
 - **[docs/HEALTH_METRICS_GUIDE.md](HEALTH_METRICS_GUIDE.md)**: Deep dive into health metrics
 - **[docs/PATTERN_REFERENCE.md](PATTERN_REFERENCE.md)**: Complete pattern catalog
-- **[examples/domain_applications/](../examples/domain_applications/)**: Updated examples
+- **[examples/domain_applications/](../examples/domain_applications/)**: Domain-specific examples
+- **[examples/migration/](../examples/migration/)**: Migration examples and tutorials
+- **[tools/migration/](../tools/migration/)**: Automated migration tools
 
 ---
 

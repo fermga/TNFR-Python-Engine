@@ -98,6 +98,80 @@ Functions that reorganize nodes coherently (13 canonical operators):
 ```
 ∂EPI / ∂t = νf · ΔNFR(t)
 ```
+*Structure changes proportionally to frequency and gradient*
+
+---
+
+## ✨ What's New: Grammar 2.0
+
+TNFR now includes **Grammar 2.0** - an enhanced operator sequence validation system with powerful new capabilities:
+
+### 🎯 Key Features
+
+**📊 Health Metrics System** - Quantitative sequence assessment (0.0-1.0 scale):
+```python
+from tnfr.operators.grammar import validate_sequence_with_health
+
+result = validate_sequence_with_health(["emission", "reception", "coherence"])
+print(f"Health: {result.health_metrics.overall_health:.2f}")
+print(f"Balance: {result.health_metrics.balance_score:.2f}")
+print(f"Frequency Harmony: {result.health_metrics.frequency_harmony:.2f}")
+```
+
+**🎨 18 Structural Patterns** - Comprehensive pattern detection:
+- **Fundamental**: Linear, Hierarchical, Fractal, Cyclic, Bifurcated
+- **Domain-Specific**: Therapeutic, Educational, Organizational, Creative, Regenerative
+- **Compositional**: Bootstrap, Explore, Stabilize, Resonate, Compress
+
+**🔄 Regenerative Cycles** - Self-sustaining sequences:
+```python
+from tnfr.operators.cycle_detection import CycleDetector
+
+detector = CycleDetector()
+analysis = detector.analyze_potential_cycle(sequence, regenerator_index)
+print(f"Valid regenerative: {analysis.is_valid_regenerative}")
+print(f"Cycle type: {analysis.cycle_type.value}")
+```
+
+**⚡ Structural Frequencies (R5)** - Each operator has defined νf in Hz_str units
+- **High**: Emission, Dissonance, Resonance, Mutation, Contraction
+- **Medium**: Reception, Coherence, Coupling, Expansion, Self-Organization
+- **Zero**: Silence
+
+**🎚️ Graduated Compatibility** - Three-level transition validation:
+- ✅ **Compatible**: Recommended transitions
+- ⚠️ **Caution**: Context-specific (warnings issued)
+- ❌ **Incompatible**: Invalid transitions
+
+### 🚀 Migration Made Easy
+
+**Automated migration tools** help you adopt Grammar 2.0:
+
+```bash
+# Check your code for compatibility issues
+python -m tools.migration.migration_checker your_code.py
+
+# Auto-optimize sequences
+python -m tools.migration.sequence_upgrader emission reception coherence
+```
+
+**Interactive examples** guide you through:
+```bash
+# Before/after comparisons
+python examples/migration/before_after_comparison.py
+
+# Health optimization tutorial
+python examples/migration/health_optimization_tutorial.py
+
+# Pattern upgrade examples
+python examples/migration/pattern_upgrade_examples.py
+```
+
+**📖 Complete migration guide**: [docs/MIGRATION_GUIDE_2.0.md](docs/MIGRATION_GUIDE_2.0.md)
+
+**✅ Backward Compatible**: All existing Grammar 1.0 code continues to work!
+
+---
 This equation governs how the structure (EPI) of each node evolves according to its frequency (νf) and reorganization gradient (ΔNFR).
 
 **📖 For deeper understanding**: 
