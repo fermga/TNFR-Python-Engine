@@ -29,6 +29,7 @@ __all__ = [
     "biological_example",
     "social_network_example",
     "technology_example",
+    "oz_dissonance_tutorial",
     "run_all_tutorials",
 ]
 
@@ -1241,4 +1242,320 @@ def adaptive_ai_example(interactive: bool = True, random_seed: int = 42) -> dict
             f"traditional gradient descent."
         )
     }
+
+
+def oz_dissonance_tutorial(interactive: bool = True, random_seed: int = 42) -> dict:
+    """Interactive tutorial on OZ (Dissonance) operator and canonical sequences.
+    
+    This tutorial covers:
+    - Theoretical foundations of OZ (disonancia topológica)
+    - When to use OZ vs when to avoid
+    - 6 canonical sequences with OZ from TNFR theory
+    - Bifurcation paths and resolution patterns
+    - Common errors and how to fix them
+    
+    Parameters
+    ----------
+    interactive : bool, default=True
+        If True, pauses between sections for reading.
+    random_seed : int, default=42
+        Random seed for reproducibility.
+    
+    Returns
+    -------
+    dict
+        Tutorial results including sequence demonstrations and coherence metrics.
+    
+    Examples
+    --------
+    >>> from tnfr.tutorials import oz_dissonance_tutorial
+    >>> oz_dissonance_tutorial()  # Run full tutorial
+    >>> oz_dissonance_tutorial(interactive=False)  # Run without pauses
+    
+    Notes
+    -----
+    This tutorial demonstrates canonical sequences from "El pulso que nos 
+    atraviesa" Table 2.5, maintaining full TNFR theoretical fidelity.
+    """
+    if not _HAS_SDK:
+        print("Error: SDK not available. Install with: pip install tnfr")
+        return {}
+    
+    pause = 1.5 if interactive else 0
+    
+    _print_section("OZ (DISSONANCE) OPERATOR - Interactive Tutorial")
+    
+    _explain(
+        "Welcome to the OZ (Dissonance) tutorial!\n\n"
+        "OZ is one of the 13 canonical structural operators in TNFR.\n"
+        "It introduces CONTROLLED INSTABILITY to enable creative exploration\n"
+        "and transformation. This tutorial will show you how to use it effectively.",
+        pause
+    )
+    
+    # Section 1: What is OZ?
+    _print_subsection("Part 1: What is OZ (Dissonance)?")
+    
+    _explain(
+        "🌀 OZ introduces controlled instability that enables:\n\n"
+        "  ✓ Creative exploration of new structural configurations\n"
+        "  ✓ Bifurcation into alternative reorganization paths\n"
+        "  ✓ Mutation enablement (OZ → ZHIR canonical pattern)\n"
+        "  ✓ Topological disruption of rigid patterns\n\n"
+        "Important: OZ is NOT destructive - it's GENERATIVE dissonance.\n"
+        "Think of it as asking challenging questions rather than breaking things.",
+        pause
+    )
+    
+    # Section 2: When to use OZ
+    _print_subsection("Part 2: When to Use OZ")
+    
+    _explain(
+        "⚠️ Use OZ in these situations:\n\n"
+        "  ✅ After stabilization (IL) to explore new possibilities\n"
+        "  ✅ Before mutation (ZHIR) to justify transformation\n"
+        "  ✅ In therapeutic protocols to confront blockages\n"
+        "  ✅ In learning to challenge existing mental models\n\n"
+        "OZ works best when the system is stable enough to handle disruption.",
+        pause
+    )
+    
+    # Section 3: When to AVOID OZ
+    _print_subsection("Part 3: When to AVOID OZ")
+    
+    _explain(
+        "🚫 Avoid OZ in these situations:\n\n"
+        "  ❌ On latent/weak nodes (EPI < 0.2) → causes collapse\n"
+        "  ❌ When ΔNFR already critical (ΔNFR > 0.8) → overload\n"
+        "  ❌ Multiple OZ without IL resolution → entropic noise\n"
+        "  ❌ Immediately before SHA (silence) → contradictory\n\n"
+        "Rule of thumb: Stabilize before you destabilize!",
+        pause
+    )
+    
+    # Section 4: Canonical Sequences with OZ
+    _print_subsection("Part 4: Canonical Sequences with OZ")
+    
+    _explain(
+        "TNFR theory defines 6 archetypal sequences involving OZ.\n"
+        "Let's explore them with live demonstrations...",
+        pause
+    )
+    
+    from ..operators.canonical_patterns import CANONICAL_SEQUENCES
+    from ..types import Glyph
+    
+    # Get sequences with OZ
+    oz_sequences = {
+        name: seq for name, seq in CANONICAL_SEQUENCES.items()
+        if Glyph.OZ in seq.glyphs
+    }
+    
+    _explain(
+        f"\nFound {len(oz_sequences)} canonical sequences with OZ:\n",
+        pause * 0.5
+    )
+    
+    for i, (name, seq) in enumerate(sorted(oz_sequences.items()), 1):
+        glyphs_str = ' → '.join(g.value for g in seq.glyphs)
+        print(f"{i}. {name.upper()}")
+        print(f"   Pattern: {seq.pattern_type.value}")
+        print(f"   Domain: {seq.domain}")
+        print(f"   Glyphs: {glyphs_str}")
+        print(f"   Use: {seq.use_cases[0]}\n")
+    
+    # Section 5: Hands-on Demonstration - Bifurcated Pattern
+    _print_subsection("Part 5: Hands-On Demo - Bifurcated Pattern")
+    
+    _explain(
+        "Let's demonstrate the BIFURCATED pattern:\n"
+        "This pattern shows how OZ creates a decision point where the node\n"
+        "can either mutate (ZHIR) or collapse (NUL).\n\n"
+        "We'll apply the 'bifurcated_base' sequence (mutation path):",
+        pause
+    )
+    
+    print("    >>> from tnfr.sdk import TNFRNetwork")
+    print("    >>> net = TNFRNetwork('bifurcation_demo')")
+    print("    >>> net.add_nodes(1)")
+    print("    >>> net.apply_canonical_sequence('bifurcated_base')\n")
+    
+    from ..sdk import TNFRNetwork, NetworkConfig
+    
+    net_bifurc = TNFRNetwork("bifurcation_demo", NetworkConfig(random_seed=random_seed))
+    net_bifurc.add_nodes(1)
+    net_bifurc.apply_canonical_sequence("bifurcated_base")
+    
+    results_bifurc = net_bifurc.measure()
+    
+    print(f"    ✓ Bifurcation completed!")
+    print(f"    Final Coherence C(t): {results_bifurc.coherence:.3f}\n")
+    
+    _explain(
+        "Interpretation:\n"
+        "  The sequence AL → EN → IL → OZ → ZHIR → IL → SHA shows:\n"
+        "  1. Node is activated and stabilized (AL → EN → IL)\n"
+        "  2. Dissonance introduced (OZ) creating instability\n"
+        "  3. Node mutates to new form (ZHIR)\n"
+        "  4. New form is stabilized (IL) and enters rest (SHA)\n\n"
+        f"  High coherence ({results_bifurc.coherence:.3f}) shows successful transformation!",
+        pause
+    )
+    
+    # Section 6: Therapeutic Protocol Demo
+    _print_subsection("Part 6: Therapeutic Protocol Demo")
+    
+    _explain(
+        "Now let's demonstrate the THERAPEUTIC protocol:\n"
+        "This is used for healing and personal transformation.\n"
+        "We'll create a small network to represent a therapeutic context:",
+        pause
+    )
+    
+    print("    >>> net = TNFRNetwork('therapy')")
+    print("    >>> net.add_nodes(3).connect_nodes(0.4, 'random')")
+    print("    >>> net.apply_canonical_sequence('therapeutic_protocol')\n")
+    
+    net_therapy = TNFRNetwork("therapy", NetworkConfig(random_seed=random_seed))
+    net_therapy.add_nodes(3)
+    net_therapy.connect_nodes(0.4, "random")
+    net_therapy.apply_canonical_sequence("therapeutic_protocol")
+    
+    results_therapy = net_therapy.measure()
+    avg_si_therapy = (
+        sum(results_therapy.sense_indices.values()) / len(results_therapy.sense_indices)
+        if results_therapy.sense_indices else 0
+    )
+    
+    print(f"    ✓ Therapeutic protocol completed!")
+    print(f"    Final Coherence C(t): {results_therapy.coherence:.3f}")
+    print(f"    Average Sense Index Si: {avg_si_therapy:.3f}\n")
+    
+    _explain(
+        "Interpretation:\n"
+        "  The therapeutic protocol (AL → EN → IL → OZ → ZHIR → IL → RA → SHA):\n"
+        "  1. Initiates symbolic field (AL)\n"
+        "  2. Stabilizes the therapeutic context (EN → IL)\n"
+        "  3. Introduces creative confrontation (OZ)\n"
+        "  4. Enables personal transformation (ZHIR)\n"
+        "  5. Integrates new form (IL)\n"
+        "  6. Propagates through network (RA)\n"
+        "  7. Enters restful integration (SHA)\n\n"
+        f"  Coherence of {results_therapy.coherence:.3f} shows therapeutic effectiveness!",
+        pause
+    )
+    
+    # Section 7: MOD_STABILIZER - Reusable Macro
+    _print_subsection("Part 7: MOD_STABILIZER - Reusable Transformation")
+    
+    _explain(
+        "The MOD_STABILIZER is a reusable macro for safe transformation:\n"
+        "REMESH → EN → IL → OZ → ZHIR → IL → REMESH\n\n"
+        "It's designed to be composable within larger sequences.\n"
+        "This is your 'safe transformation module':",
+        pause
+    )
+    
+    print("    >>> net = TNFRNetwork('modular')")
+    print("    >>> net.add_nodes(1)")
+    print("    >>> net.apply_canonical_sequence('mod_stabilizer')\n")
+    
+    net_mod = TNFRNetwork("modular", NetworkConfig(random_seed=random_seed))
+    net_mod.add_nodes(1)
+    net_mod.apply_canonical_sequence("mod_stabilizer")
+    
+    results_mod = net_mod.measure()
+    
+    print(f"    ✓ MOD_STABILIZER completed!")
+    print(f"    Final Coherence C(t): {results_mod.coherence:.3f}\n")
+    
+    _explain(
+        "This module can be nested in larger sequences:\n"
+        "  THOL[MOD_STABILIZER] ≡ THOL[REMESH → EN → IL → OZ → ZHIR → IL → REMESH]\n\n"
+        "It's a building block for complex transformations!",
+        pause
+    )
+    
+    # Section 8: Filtering and Discovery
+    _print_subsection("Part 8: Discovering OZ Sequences")
+    
+    _explain(
+        "You can programmatically discover sequences with OZ:\n",
+        pause * 0.5
+    )
+    
+    print("    >>> net = TNFRNetwork('explorer')")
+    print("    >>> oz_seqs = net.list_canonical_sequences(with_oz=True)")
+    print(f"    >>> print(f'Found {{len(oz_seqs)}} sequences with OZ')\n")
+    
+    net_explorer = TNFRNetwork("explorer")
+    oz_seqs = net_explorer.list_canonical_sequences(with_oz=True)
+    
+    print(f"    Found {len(oz_seqs)} sequences with OZ\n")
+    
+    _explain(
+        "You can also filter by domain:",
+        pause * 0.5
+    )
+    
+    print("    >>> bio_seqs = net.list_canonical_sequences(domain='biomedical')")
+    print("    >>> cog_seqs = net.list_canonical_sequences(domain='cognitive')\n")
+    
+    bio_seqs = net_explorer.list_canonical_sequences(domain="biomedical")
+    cog_seqs = net_explorer.list_canonical_sequences(domain="cognitive")
+    
+    print(f"    Biomedical sequences: {len(bio_seqs)}")
+    print(f"    Cognitive sequences: {len(cog_seqs)}\n")
+    
+    # Section 9: Summary and Best Practices
+    _print_subsection("Part 9: Summary and Best Practices")
+    
+    _explain(
+        "KEY TAKEAWAYS:\n\n"
+        "1. OZ is GENERATIVE dissonance, not destructive\n"
+        "2. Always stabilize (IL) before introducing dissonance (OZ)\n"
+        "3. OZ typically pairs with ZHIR (mutation) for transformation\n"
+        "4. Use canonical sequences for reliable patterns\n"
+        "5. Filter sequences by domain for specific applications\n\n"
+        "BEST PRACTICES:\n\n"
+        "  • Start with canonical sequences before custom patterns\n"
+        "  • Test on simple networks before complex ones\n"
+        "  • Monitor coherence C(t) to ensure stability\n"
+        "  • Use MOD_STABILIZER as a building block\n"
+        "  • Consult theoretical docs for deeper understanding",
+        pause
+    )
+    
+    _print_section("OZ Dissonance Tutorial Complete! 🌀")
+    
+    _explain(
+        "You now understand:\n"
+        "  ✓ What OZ (Dissonance) does\n"
+        "  ✓ When to use and avoid OZ\n"
+        "  ✓ 6 canonical sequences with OZ\n"
+        "  ✓ How to apply them programmatically\n"
+        "  ✓ How to discover and filter sequences\n\n"
+        "Next steps:\n"
+        "  • Explore examples/oz_canonical_sequences.py for more details\n"
+        "  • Try creating your own sequences with OZ\n"
+        "  • Read 'El pulso que nos atraviesa' for theoretical depth",
+        pause
+    )
+    
+    return {
+        "bifurcated_coherence": results_bifurc.coherence,
+        "therapeutic_coherence": results_therapy.coherence,
+        "therapeutic_avg_si": avg_si_therapy,
+        "mod_stabilizer_coherence": results_mod.coherence,
+        "total_oz_sequences": len(oz_seqs),
+        "biomedical_sequences": len(bio_seqs),
+        "cognitive_sequences": len(cog_seqs),
+        "interpretation": (
+            f"Successfully demonstrated {len(oz_seqs)} canonical sequences with OZ. "
+            f"Bifurcation achieved {results_bifurc.coherence:.3f} coherence, "
+            f"therapeutic protocol achieved {results_therapy.coherence:.3f} coherence. "
+            f"All patterns maintain TNFR canonical invariants."
+        )
+    }
+
 

@@ -22,6 +22,7 @@ __all__ = [
     "technology_example",
     "team_communication_example",
     "adaptive_ai_example",
+    "oz_dissonance_tutorial",
     "run_all_tutorials",
 ]
 
@@ -32,5 +33,6 @@ from .interactive import (
     technology_example,
     team_communication_example,
     adaptive_ai_example,
+    oz_dissonance_tutorial,
     run_all_tutorials,
 )
