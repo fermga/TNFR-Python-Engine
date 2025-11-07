@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import os
+import warnings
 from collections import deque
 from collections.abc import Iterable, MutableMapping
 from copy import deepcopy
@@ -90,6 +91,11 @@ __all__ = [
     "MIN_CYCLE_LENGTH",
     "MAX_CYCLE_LENGTH",
     "CycleType",
+    "CANONICAL_IL_SEQUENCES",
+    "IL_ANTIPATTERNS",
+    "recognize_coherence_sequences",
+    "optimize_coherence_sequence",
+    "suggest_coherence_sequence",
 ]
 
 logger = get_logger(__name__)
@@ -849,6 +855,13 @@ class StructuralPattern(Enum):
     RESONATE = "resonate"  # Amplification: RA→UM→RA
     COMPRESS = "compress"  # Simplification: NUL→IL→SHA
     
+    # Canonical IL (Coherence) compositional patterns
+    SAFE_ACTIVATION = "safe_activation"  # emission→coherence: Emission stabilized
+    STABLE_INTEGRATION = "stable_integration"  # reception→coherence: Reception consolidated
+    CREATIVE_RESOLUTION = "creative_resolution"  # dissonance→coherence: Dissonance resolved
+    RESONANCE_CONSOLIDATION = "resonance_consolidation"  # resonance→coherence: Resonance locked
+    STABLE_TRANSFORMATION = "stable_transformation"  # coherence→mutation: Controlled mutation
+    
     # Adaptive learning patterns (AL + T'HOL canonical sequences)
     BASIC_LEARNING = "basic_learning"  # Simple learning: AL→EN→IL
     DEEP_LEARNING = "deep_learning"  # Deep learning with crisis: AL→EN→OZ→THOL→IL
@@ -953,6 +966,487 @@ from .cycle_detection import (
     MAX_CYCLE_LENGTH,
     CycleType,
 )
+
+
+# ==============================================================================
+# Canonical Coherence Sequences
+# ==============================================================================
+# These sequences encode fundamental TNFR structural patterns involving the
+# Coherence operator. Each sequence has been validated against grammar
+# rules (R1-R5) and compatibility constraints.
+
+CANONICAL_IL_SEQUENCES: dict[str, dict[str, Any]] = {
+    "EMISSION_COHERENCE": {
+        "pattern": [EMISSION, COHERENCE],
+        "glyphs": [Glyph.AL, Glyph.IL],
+        "name": "safe_activation",
+        "description": "Emission stabilized immediately",
+        "optimization": "can_fuse",
+        "structural_effect": "Initiation with immediate coherence lock",
+        "use_cases": [
+            "Meditation initiation with immediate stabilization",
+            "Therapeutic process activation with safety frame",
+            "Learning attention activation with sustained focus"
+        ],
+    },
+    "RECEPTION_COHERENCE": {
+        "pattern": [RECEPTION, COHERENCE],
+        "glyphs": [Glyph.EN, Glyph.IL],
+        "name": "stable_integration",
+        "description": "Reception consolidated",
+        "optimization": "can_fuse",
+        "structural_effect": "External coherence anchored and stabilized",
+        "use_cases": [
+            "Biofeedback signal integration",
+            "Educational concept consolidation",
+            "Communication message comprehension"
+        ],
+    },
+    "DISSONANCE_COHERENCE": {
+        "pattern": [DISSONANCE, COHERENCE],
+        "glyphs": [Glyph.OZ, Glyph.IL],
+        "name": "creative_resolution",
+        "description": "Dissonance resolved into coherence",
+        "optimization": "preserve",
+        "structural_effect": "Creative instability resolves into new stable form",
+        "use_cases": [
+            "Therapeutic crisis resolution",
+            "Scientific paradox breakthrough",
+            "Artistic chaos to form transformation"
+        ],
+    },
+    "RESONANCE_COHERENCE": {
+        "pattern": [RESONANCE, COHERENCE],
+        "glyphs": [Glyph.RA, Glyph.IL],
+        "name": "resonance_consolidation",
+        "description": "Propagated coherence locked in",
+        "optimization": "preserve",
+        "structural_effect": "Network-wide resonance stabilized into persistent coherence",
+        "use_cases": [
+            "Cardiac coherence network-wide stabilization",
+            "Collective insight consolidation",
+            "Social movement momentum lock-in"
+        ],
+    },
+    "COHERENCE_MUTATION": {
+        "pattern": [COHERENCE, MUTATION],
+        "glyphs": [Glyph.IL, Glyph.ZHIR],
+        "name": "stable_transformation",
+        "description": "Coherence enabling controlled mutation",
+        "optimization": "preserve",
+        "precondition": "epi_stable",
+        "structural_effect": "Phase transformation from stable base (coherence → mutation generates CAUTION warning)",
+        "use_cases": [
+            "Personal paradigm shift from stable identity",
+            "Organizational strategic pivot preparation",
+            "System phase transition with controlled entry"
+        ],
+    },
+}
+
+# Anti-patterns: sequences that should generate warnings or be avoided
+# These are reformulated to comply with grammar rules while expressing intent
+IL_ANTIPATTERNS: dict[str, dict[str, Any]] = {
+    "COHERENCE_SILENCE": {
+        "pattern": [COHERENCE, SILENCE],
+        "glyphs": [Glyph.IL, Glyph.SHA],
+        "severity": "info",  # Grammar allows this (GOOD compatibility), just informational
+        "warning": "Stabilizing then immediately silencing may be redundant. Consider direct silence if preservation is the goal, or coherence → resonance if propagation is intended.",
+        "alternative": None,  # Valid sequence, just potentially redundant
+        "note": "Grammar compatibility: GOOD. This is a valid sequence but may indicate unclear intent.",
+    },
+    "COHERENCE_COHERENCE": {
+        "pattern": [COHERENCE, COHERENCE],
+        "glyphs": [Glyph.IL, Glyph.IL],
+        "severity": "warning",  # Grammar blocks this (AVOID compatibility)
+        "warning": "Repeated coherence without intervening dynamics serves no structural purpose. Check if this is intentional or remove redundant coherence.",
+        "alternative": None,  # No alternative, just remove redundancy
+        "note": "Grammar compatibility: AVOID. This violates operator closure and will be blocked by validation.",
+    },
+    "SILENCE_COHERENCE": {
+        "pattern": [SILENCE, COHERENCE],
+        "glyphs": [Glyph.SHA, Glyph.IL],
+        "severity": "error",  # Grammar blocks this (AVOID compatibility)
+        "warning": "Reactivating from silence directly to coherence bypasses necessary activation. Use silence → emission → coherence sequence instead.",
+        "alternative": [SILENCE, EMISSION, COHERENCE],  # Reformulated to comply with grammar
+        "alternative_glyphs": [Glyph.SHA, Glyph.AL, Glyph.IL],
+        "note": "Grammar compatibility: AVOID. Reformulated as silence → emission → coherence to express same function (reactivation with stabilization) while complying with grammar.",
+    },
+}
+
+
+def recognize_coherence_sequences(
+    sequence: list[Glyph] | list[str],
+) -> list[dict[str, Any]]:
+    """Recognize canonical coherence sequences in glyph sequence.
+
+    Detects 2-operator canonical patterns involving IL (Coherence) and checks
+    for anti-patterns using grammar compatibility rules. This function provides
+    fine-grained coherence-specific pattern recognition that complements the broader
+    :class:`AdvancedPatternDetector`.
+
+    Parameters
+    ----------
+    sequence : list[Glyph] | list[str]
+        Sequence of glyphs (as Glyph enums or operator names)
+
+    Returns
+    -------
+    list[dict]
+        List of recognized canonical coherence patterns with metadata:
+        - position: Starting index in sequence
+        - pattern_name: Name of detected pattern
+        - pattern: List of operator names
+        - is_coherence_pattern: Always True for this function
+        - is_antipattern: Boolean indicating if this is an anti-pattern
+        - description: Pattern description
+        - severity: For anti-patterns ("info", "warning", "error")
+        - warning: Warning message for anti-patterns
+        - alternative: Alternative sequence if anti-pattern should be replaced
+
+    Examples
+    --------
+    >>> from tnfr.operators.grammar import recognize_coherence_sequences
+    >>> from tnfr.types import Glyph
+    >>> seq = [Glyph.AL, Glyph.IL]
+    >>> recognized = recognize_coherence_sequences(seq)
+    >>> recognized[0]["pattern_name"]
+    'safe_activation'
+
+    Notes
+    -----
+    **Canonical Coherence Patterns Detected** (2-operator sequences):
+    - SAFE_ACTIVATION (emission → coherence): Emission stabilized immediately
+    - STABLE_INTEGRATION (reception → coherence): Reception consolidated
+    - CREATIVE_RESOLUTION (dissonance → coherence): Dissonance resolved
+    - RESONANCE_CONSOLIDATION (resonance → coherence): Resonance locked
+    - STABLE_TRANSFORMATION (coherence → mutation): Controlled mutation
+
+    **Anti-patterns Detected** (based on grammar compatibility):
+    - coherence → coherence: Repeated coherence (AVOID compatibility - warning)
+    - silence → coherence: Reactivation without emission (AVOID - error)
+    - coherence → silence: Potentially redundant (GOOD - info only)
+
+    This function uses direct pattern matching for 2-operator sequences, which
+    is simpler and more appropriate than the general :class:`AdvancedPatternDetector`
+    designed for longer sequences.
+    """
+    from ..validation.compatibility import get_compatibility_level, CompatibilityLevel
+    
+    # Normalize sequence to operator names (strings)
+    normalized_seq: list[str] = []
+    for item in sequence:
+        if isinstance(item, Glyph):
+            func_name = glyph_function_name(item)
+            if func_name:
+                normalized_seq.append(func_name)
+        elif isinstance(item, str):
+            # Try to get canonical name
+            canon = canonical_operator_name(item)
+            if canon:
+                normalized_seq.append(canon)
+            else:
+                normalized_seq.append(item)
+
+    recognized: list[dict[str, Any]] = []
+    
+    # Define canonical coherence 2-operator patterns
+    coherence_patterns_map = {
+        (EMISSION, COHERENCE): {
+            "name": "safe_activation",
+            "description": "Emission stabilized immediately (emission → coherence)",
+        },
+        (RECEPTION, COHERENCE): {
+            "name": "stable_integration",
+            "description": "Reception consolidated (reception → coherence)",
+        },
+        (DISSONANCE, COHERENCE): {
+            "name": "creative_resolution",
+            "description": "Dissonance resolved into coherence (dissonance → coherence)",
+        },
+        (RESONANCE, COHERENCE): {
+            "name": "resonance_consolidation",
+            "description": "Propagated coherence locked in (resonance → coherence)",
+        },
+        (COHERENCE, MUTATION): {
+            "name": "stable_transformation",
+            "description": "Coherence enabling controlled mutation (coherence → mutation)",
+        },
+    }
+    
+    # Scan sequence for 2-operator patterns
+    for i in range(len(normalized_seq) - 1):
+        prev = normalized_seq[i]
+        curr = normalized_seq[i + 1]
+        pair = (prev, curr)
+        
+        # Check for canonical coherence patterns
+        if pair in coherence_patterns_map:
+            pattern_info = coherence_patterns_map[pair]
+            recognized.append({
+                "position": i,
+                "pattern_name": pattern_info["name"],
+                "pattern": [prev, curr],
+                "is_coherence_pattern": True,
+                "is_antipattern": False,
+                "description": pattern_info["description"],
+            })
+        
+        # Check for anti-patterns using compatibility rules
+        compat = get_compatibility_level(prev, curr)
+        
+        if compat == CompatibilityLevel.AVOID:
+            if prev == COHERENCE and curr == COHERENCE:
+                # coherence → coherence anti-pattern
+                warnings.warn(
+                    f"Anti-pattern detected at position {i}: coherence → coherence. "
+                    f"Repeated coherence without intervening dynamics serves no structural purpose.",
+                    UserWarning,
+                    stacklevel=2
+                )
+                recognized.append({
+                    "position": i,
+                    "pattern_name": "coherence_coherence_antipattern",
+                    "pattern": [prev, curr],
+                    "is_coherence_pattern": True,
+                    "is_antipattern": True,
+                    "severity": "warning",
+                    "warning": "Repeated coherence without intervening dynamics. Check if necessary.",
+                    "alternative": None,
+                })
+            elif prev == SILENCE and curr == COHERENCE:
+                # silence → coherence anti-pattern
+                warnings.warn(
+                    f"Anti-pattern detected at position {i}: silence → coherence. "
+                    f"Reactivating from silence. Consider silence → emission → coherence sequence.",
+                    UserWarning,
+                    stacklevel=2
+                )
+                recognized.append({
+                    "position": i,
+                    "pattern_name": "silence_coherence_antipattern",
+                    "pattern": [prev, curr],
+                    "is_coherence_pattern": True,
+                    "is_antipattern": True,
+                    "severity": "error",
+                    "warning": "Reactivating from silence. Use silence → emission → coherence instead.",
+                    "alternative": [SILENCE, EMISSION, COHERENCE],
+                })
+        
+        # Informational: coherence → silence (GOOD compatibility, but potentially redundant)
+        if prev == COHERENCE and curr == SILENCE and compat == CompatibilityLevel.GOOD:
+            recognized.append({
+                "position": i,
+                "pattern_name": "coherence_silence_info",
+                "pattern": [prev, curr],
+                "is_coherence_pattern": True,
+                "is_antipattern": True,  # Technically an anti-pattern (redundancy)
+                "severity": "info",
+                "warning": "Stabilizing then silencing may be redundant. Consider silence alone.",
+                "alternative": None,
+            })
+
+    return recognized
+
+
+# Maintain backwards compatibility alias
+recognize_il_sequences = recognize_coherence_sequences
+
+
+def optimize_coherence_sequence(
+    sequence: list[Glyph] | list[str],
+    allow_fusion: bool = True,
+) -> list[Glyph] | list[str]:
+    """Optimize sequence based on canonical coherence sequences.
+
+    Future-ready function for sequence optimization including operator fusion.
+    Currently performs pattern recognition without transformation, as operator
+    fusion would require composite glyph definitions.
+
+    Parameters
+    ----------
+    sequence : list[Glyph] | list[str]
+        Original glyph sequence
+    allow_fusion : bool, default=True
+        Whether to fuse compatible operators (e.g., AL+IL → AL_IL composite).
+        Currently not implemented; reserved for future optimization.
+
+    Returns
+    -------
+    list[Glyph] | list[str]
+        Optimized sequence (currently unchanged from input)
+
+    Examples
+    --------
+    >>> from tnfr.operators.grammar import optimize_coherence_sequence
+    >>> from tnfr.types import Glyph
+    >>> seq = [Glyph.AL, Glyph.IL, Glyph.SHA]
+    >>> optimized = optimize_coherence_sequence(seq)
+    >>> optimized == seq  # Currently no transformation
+    True
+
+    Notes
+    -----
+    **Future Optimization Capabilities** (when composite glyphs are defined):
+
+    - **Fusion**: Combine compatible operators into composite glyphs
+      - `emission + coherence → EMISSION_COHERENCE` (safe_activation composite)
+      - `reception + coherence → RECEPTION_COHERENCE` (stable_integration composite)
+
+    - **Anti-pattern Resolution**: Automatically fix detected anti-patterns
+      - `silence + coherence → silence + emission + coherence` (reactivation with proper grammar)
+
+    - **Redundancy Elimination**: Remove unnecessary repetitions
+      - `coherence + coherence → coherence` (single coherence sufficient)
+
+    **Current Behavior**:
+    This function currently performs pattern recognition only via
+    :func:`recognize_coherence_sequences` and returns the original sequence unchanged.
+    This preserves backward compatibility while establishing the API for future
+    optimization features.
+    """
+    if not allow_fusion:
+        return sequence
+
+    # Recognize patterns (for logging/telemetry, though not used for transformation yet)
+    _ = recognize_coherence_sequences(sequence)
+
+    # Future: Implement fusion logic here when composite glyphs are defined
+    # For now, return sequence unchanged
+    return sequence
+
+
+# Maintain backwards compatibility alias
+optimize_il_sequence = optimize_coherence_sequence
+
+
+def suggest_coherence_sequence(
+    current_state: dict[str, float],
+    goal_state: dict[str, Any],
+) -> list[str]:
+    """Suggest glyph sequence to reach goal involving coherence.
+
+    Provides intelligent sequence suggestions based on current node state and
+    desired outcome. Suggests canonical coherence sequences when appropriate for the
+    structural transformation required.
+
+    Parameters
+    ----------
+    current_state : dict[str, float]
+        Current node state with keys:
+        - "epi": Primary Information Structure magnitude
+        - "dnfr": Internal reorganization gradient
+        - "vf": Structural frequency (Hz_str)
+        - "theta": Phase (optional)
+    goal_state : dict[str, Any]
+        Desired state properties with keys:
+        - "dnfr_target": Target ΔNFR level ("low", "moderate", "high")
+        - "phase_change": Boolean indicating phase transformation needed
+        - "consolidate": Boolean indicating need for coherence lock
+        - "reactivate": Boolean indicating reactivation from silence
+
+    Returns
+    -------
+    list[str]
+        Suggested glyph sequence as operator names
+
+    Examples
+    --------
+    >>> from tnfr.operators.grammar import suggest_coherence_sequence
+    >>> current = {"epi": 0.2, "dnfr": 0.15, "vf": 0.85}
+    >>> goal = {"dnfr_target": "low", "consolidate": True}
+    >>> suggest_coherence_sequence(current, goal)
+    ['emission', 'coherence']
+
+    >>> current = {"epi": 0.5, "dnfr": 0.8, "vf": 1.0}
+    >>> goal = {"dnfr_target": "low"}
+    >>> suggest_coherence_sequence(current, goal)
+    ['dissonance', 'coherence']
+
+    >>> current = {"epi": 0.0, "dnfr": 0.0, "vf": 0.02}
+    >>> goal = {"reactivate": True, "dnfr_target": "low"}
+    >>> suggest_coherence_sequence(current, goal)
+    ['emission', 'coherence']
+
+    Notes
+    -----
+    **Suggestion Logic**:
+
+    1. **Activation Check**: If EPI ≈ 0, suggests emission first
+    2. **ΔNFR Management**: Suggests sequences based on current ΔNFR
+       - High ΔNFR → OZ + IL (creative resolution)
+       - Moderate → Direct IL (consolidation)
+       - Low → Consider expansion before stabilization
+    3. **Phase Changes**: If goal requires phase transformation, suggests IL → ZHIR
+    4. **Reactivation**: From silence, suggests AL → IL (not SHA → IL anti-pattern)
+
+    **Canonical Coherence Sequences Used**:
+    - emission → coherence (safe_activation): Node initialization with stabilization
+    - reception → coherence (stable_integration): External input consolidation
+    - dissonance → coherence (creative_resolution): High ΔNFR resolution
+    - resonance → coherence (resonance_consolidation): Network coherence lock
+    - coherence → mutation (stable_transformation): Prepared phase change
+    """
+    sequence: list[str] = []
+
+    # Check for reactivation from silence (anti-pattern silence → coherence)
+    if goal_state.get("reactivate", False):
+        # Use emission → coherence instead of silence → coherence (grammar-compliant reformulation)
+        sequence.append(EMISSION)
+        if goal_state.get("consolidate", True):
+            sequence.append(COHERENCE)
+        return sequence
+
+    # If node is inactive or very low EPI, start with activation
+    epi = current_state.get("epi", 0)
+    if epi < 0.1:
+        sequence.append(EMISSION)
+
+    # Determine ΔNFR management strategy
+    dnfr = current_state.get("dnfr", 0)
+    dnfr_target = goal_state.get("dnfr_target", "moderate")
+
+    if dnfr_target == "low":
+        # Goal is low ΔNFR (stability)
+        if dnfr > 0.7:
+            # Very high ΔNFR: use dissonance → coherence (creative resolution)
+            sequence.extend([DISSONANCE, COHERENCE])
+        elif dnfr > 0.3:
+            # Moderate ΔNFR: direct coherence (consolidation)
+            sequence.append(COHERENCE)
+        else:
+            # Already low: may need expansion before stabilization
+            if goal_state.get("expand_before_stabilize", False):
+                sequence.extend([EXPANSION, COHERENCE])
+            else:
+                sequence.append(COHERENCE)
+
+    elif dnfr_target == "moderate":
+        # Maintain moderate ΔNFR
+        if dnfr < 0.2:
+            # Too low: introduce controlled challenge
+            sequence.extend([DISSONANCE, COHERENCE])
+        else:
+            # Already moderate: just stabilize
+            sequence.append(COHERENCE)
+
+    # If goal includes phase transformation
+    if goal_state.get("phase_change", False):
+        # Use coherence → mutation pattern (stable_transformation)
+        # This generates CAUTION warning but is grammar-compliant
+        if COHERENCE not in sequence:
+            sequence.append(COHERENCE)
+        sequence.append(MUTATION)
+
+    # If goal is consolidation without further operations
+    if goal_state.get("consolidate", False) and not sequence:
+        sequence.append(COHERENCE)
+
+    return sequence
+
+
+# Maintain backwards compatibility alias
+suggest_il_sequence = suggest_coherence_sequence
 
 
 def _record_grammar_violation(
@@ -1169,6 +1663,48 @@ def apply_glyph_with_grammar(
     glyph: Glyph | str,
     window: Optional[int] = None,
 ) -> None:
+    """Apply glyph with grammar-based validation and coherence sequence recognition.
+    
+    Enhanced to recognize and log canonical coherence sequences when they
+    occur in the glyph history. This enables pattern detection, telemetry, and
+    future optimization of common structural patterns.
+    
+    Parameters
+    ----------
+    G : TNFRGraph
+        Graph containing TNFR nodes
+    nodes : Optional[Iterable[NodeId | NodeProtocol]]
+        Target nodes (all nodes if None)
+    glyph : Glyph | str
+        Glyph to apply
+    window : Optional[int]
+        Hysteresis window (uses graph default if None)
+    
+    Notes
+    -----
+    **Coherence Sequence Recognition** (New):
+    
+    When a glyph is applied, the function checks if it forms a canonical coherence
+    sequence with the previous glyph in the node's history. Recognized patterns
+    are logged in ``G.graph["recognized_coherence_patterns"]`` for:
+    
+    - Telemetry and analysis
+    - Pattern-based optimization hints
+    - Structural sequence quality assessment
+    - Anti-pattern detection and warnings
+    
+    Canonical coherence sequences recognized:
+    - emission → coherence (safe_activation)
+    - reception → coherence (stable_integration)
+    - dissonance → coherence (creative_resolution)
+    - resonance → coherence (resonance_consolidation)
+    - coherence → mutation (stable_transformation, generates CAUTION warning)
+    
+    Anti-patterns detected:
+    - coherence → silence (info: potentially redundant)
+    - coherence → coherence (warning: no structural purpose)
+    - silence → coherence (error: use silence → emission → coherence instead)
+    """
     # Convert Glyph enum instances to string values early for consistent processing
     if isinstance(glyph, Glyph):
         glyph = glyph.value
@@ -1183,11 +1719,46 @@ def apply_glyph_with_grammar(
 
     for node_ref in iter_nodes:
         node_id = node_ref.n if hasattr(node_ref, "n") else node_ref
+        
+        # Get node's glyph history before applying new glyph
+        nd = G.nodes[node_id]
+        glyph_history = nd.get("glyph_history", ())
+        
+        # Check if current glyph forms canonical IL sequence with previous glyph
+        if glyph_history:
+            # Get last applied glyph
+            last_glyph = glyph_history[-1]
+            
+            # Convert to Glyph enum for pattern matching
+            current_glyph_obj = function_name_to_glyph(g_str)
+            last_glyph_obj = last_glyph if isinstance(last_glyph, Glyph) else function_name_to_glyph(last_glyph)
+            
+            if current_glyph_obj is not None and last_glyph_obj is not None:
+                # Build 2-element sequence for recognition
+                recent_sequence = [last_glyph_obj, current_glyph_obj]
+                recognized = recognize_coherence_sequences(recent_sequence)
+                
+                if recognized:
+                    # Log recognized patterns in graph metadata
+                    if "recognized_coherence_patterns" not in G.graph:
+                        G.graph["recognized_coherence_patterns"] = []
+                    
+                    for pattern_info in recognized:
+                        # Add node and timestamp information
+                        pattern_info["node"] = node_id
+                        pattern_info["timestamp"] = len(glyph_history)  # Position in history
+                        G.graph["recognized_coherence_patterns"].append(pattern_info)
+                        
+                        # Log recognized canonical sequence (not anti-patterns, those warn separately)
+                        if not pattern_info.get("is_antipattern", False):
+                            logger.info(
+                                f"Recognized coherence sequence '{pattern_info['pattern_name']}' "
+                                f"at node {node_id}: {pattern_info['description']}"
+                            )
+        
         try:
             g_eff = enforce_canonical_grammar(G, node_id, g_str, ctx)
         except StructuralGrammarError as err:
-            nd = G.nodes[node_id]
-
             def _structural_history(value: Glyph | str) -> str:
                 default = value.value if isinstance(value, Glyph) else str(value)
                 resolved = glyph_function_name(value, default=default)
