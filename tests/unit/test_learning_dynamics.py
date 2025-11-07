@@ -121,8 +121,8 @@ def test_learning_plasticity_empty_history():
 def test_learning_plasticity_with_reorganization():
     """Test plasticity increases with reorganization operators."""
     G, node = create_nfr("learner", epi=0.3, vf=1.0)
-    # Apply operators that increase plasticity
-    run_sequence(G, node, [Dissonance(), SelfOrganization()])
+    # Apply operators that increase plasticity (grammar-compliant sequence)
+    run_sequence(G, node, [Emission(), Reception(), Coherence(), Dissonance(), SelfOrganization(), Silence()])
     plasticity = compute_learning_plasticity(G, node, window=10)
     assert plasticity > 0.0
     assert plasticity <= 1.0
@@ -138,8 +138,8 @@ def test_consolidation_index_empty_history():
 def test_consolidation_index_with_stabilization():
     """Test consolidation increases with stabilization operators."""
     G, node = create_nfr("learner", epi=0.3, vf=1.0)
-    # Apply operators that increase consolidation
-    run_sequence(G, node, [Coherence(), Silence()])
+    # Apply operators that increase consolidation (grammar-compliant sequence)
+    run_sequence(G, node, [Emission(), Reception(), Coherence(), Silence()])
     consolidation = compute_consolidation_index(G, node, window=10)
     assert consolidation > 0.0
     assert consolidation <= 1.0
@@ -157,8 +157,8 @@ def test_learning_efficiency_with_ops():
     """Test efficiency after applying operators."""
     G, node = create_nfr("learner", epi=0.3, vf=1.0)
     G.nodes[node]["epi_initial"] = 0.3
-    # Apply operators
-    run_sequence(G, node, [Emission(), Reception()])
+    # Apply grammar-compliant sequence with stabilizer
+    run_sequence(G, node, [Emission(), Reception(), Coherence()])
     efficiency = compute_learning_efficiency(G, node)
     assert efficiency >= 0.0
 
@@ -167,13 +167,13 @@ def test_plasticity_consolidation_balance():
     """Test that plasticity and consolidation are complementary."""
     G, node = create_nfr("learner", epi=0.3, vf=1.0)
     
-    # Phase 1: High plasticity (reorganization)
-    run_sequence(G, node, [Dissonance(), SelfOrganization()])
+    # Phase 1: High plasticity (reorganization) - grammar-compliant
+    run_sequence(G, node, [Emission(), Reception(), Coherence(), Dissonance(), SelfOrganization(), Silence()])
     plasticity1 = compute_learning_plasticity(G, node, window=10)
     consolidation1 = compute_consolidation_index(G, node, window=10)
     
-    # Phase 2: Add consolidation
-    run_sequence(G, node, [Coherence(), Silence()])
+    # Phase 2: Add more consolidation - grammar-compliant
+    run_sequence(G, node, [Emission(), Reception(), Coherence(), Silence()])
     plasticity2 = compute_learning_plasticity(G, node, window=10)
     consolidation2 = compute_consolidation_index(G, node, window=10)
     
@@ -275,19 +275,25 @@ def test_deep_learning_cycle():
     
     system.deep_learning_cycle()
     
-    # Verify sequence: AL→EN→IL→OZ→THOL→IL→SHA - convert glyphs to operator names
+    # Verify sequence: AL→EN→IL→OZ→THOL→IL→(SHA or NUL) - grammar may choose closure
     glyphs = list(G.nodes[node].get("glyph_history", []))
     history = glyph_history_to_operator_names(glyphs)
-    expected = [
+    
+    # First 6 operators must match exactly
+    expected_prefix = [
         EMISSION,
         RECEPTION,
         COHERENCE,
         DISSONANCE,
         SELF_ORGANIZATION,
         COHERENCE,
-        SILENCE,
     ]
-    assert history == expected
+    assert history[:6] == expected_prefix
+    
+    # Last operator must be valid T'HOL closure (SILENCE or CONTRACTION)
+    from tnfr.config.operator_names import CONTRACTION
+    assert len(history) == 7
+    assert history[6] in [SILENCE, CONTRACTION], f"Expected SILENCE or CONTRACTION, got {history[6]}"
 
 
 def test_exploratory_learning_cycle():
