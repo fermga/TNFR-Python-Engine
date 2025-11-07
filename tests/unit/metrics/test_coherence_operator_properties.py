@@ -23,6 +23,10 @@ import pytest
 from tnfr.metrics.coherence import coherence_matrix
 from tnfr.metrics.common import compute_coherence
 
+# Test tolerance constants
+HERMITICITY_TOL = 1e-10  # Strict tolerance for symmetry checks
+ELEMENT_BOUND_TOL = 1e-6  # Relaxed tolerance for [0,1] bounds due to numerical precision
+
 
 def _extract_dense_matrix(W, n, use_numpy=False):
     """Convert W to dense matrix for testing."""
@@ -78,7 +82,7 @@ def test_coherence_matrix_hermiticity_numpy(graph_canon):
 
     # Test Hermiticity: W should equal W^T
     assert np.allclose(
-        W_dense, W_dense.T, atol=1e-10
+        W_dense, W_dense.T, atol=HERMITICITY_TOL
     ), "Coherence matrix must be Hermitian (symmetric)"
 
 
@@ -105,7 +109,7 @@ def test_coherence_matrix_element_bounds_numpy(graph_canon):
     # Test element bounds: all elements should be in [0, 1]
     # (similarity weights are normalized)
     assert np.all(W_dense >= 0.0), f"Found negative elements in W"
-    assert np.all(W_dense <= 1.0 + 1e-6), f"Found elements > 1 in W"
+    assert np.all(W_dense <= 1.0 + ELEMENT_BOUND_TOL), f"Found elements > 1 in W"
 
 
 def test_coherence_matrix_diagonal_structure(graph_canon):
@@ -137,7 +141,7 @@ def test_coherence_matrix_diagonal_structure(graph_canon):
     # Check that diagonals are in valid range
     diag = np.diag(W_dense)
     assert np.all(diag >= 0.0), "Diagonal elements must be non-negative"
-    assert np.all(diag <= 1.0 + 1e-6), "Diagonal elements must be ≤ 1"
+    assert np.all(diag <= 1.0 + ELEMENT_BOUND_TOL), "Diagonal elements must be ≤ 1"
 
 
 def test_coherence_matrix_similarity_properties(graph_canon):
@@ -228,7 +232,7 @@ def test_coherence_matrix_element_bounds_python(graph_canon):
         for j in range(n):
             w_ij = W_dense[i][j]
             assert (
-                0.0 <= w_ij <= 1.0 + 1e-6
+                0.0 <= w_ij <= 1.0 + ELEMENT_BOUND_TOL
             ), f"Element W[{i}][{j}] = {w_ij} out of bounds [0,1]"
 
 
@@ -256,7 +260,7 @@ def test_coherence_matrix_connectivity(graph_canon):
     W_dense = _extract_dense_matrix(W, n, use_numpy=True)
 
     # Matrix should still be Hermitian
-    assert np.allclose(W_dense, W_dense.T, atol=1e-10)
+    assert np.allclose(W_dense, W_dense.T, atol=HERMITICITY_TOL)
 
 
 def test_coherence_computation_consistency(graph_canon):

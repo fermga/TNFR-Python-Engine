@@ -129,7 +129,7 @@ The theory notebooks complement the unified mathematical foundations document wi
    - Basis vectors
    - Inner product structure
 
-2. **[Coherence Operator Ĉ](../theory/02_coherence_operator_hatC.ipynb)**
+2. **Coherence Operator Ĉ** → See [Mathematical Foundations §3.1](../theory/mathematical_foundations.md#31-coherence-operator-ĉ)
    - Operator construction
    - Spectral properties
    - Measurement interpretation

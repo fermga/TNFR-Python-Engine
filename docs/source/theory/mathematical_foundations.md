@@ -240,7 +240,8 @@ where `Wᵢ = Σⱼ wᵢⱼ / (N-1)` is the normalized row sum, representing nod
 **Code Reference:**
 
 ```python
-from tnfr.metrics import coherence_matrix, compute_coherence
+from tnfr.metrics.coherence import coherence_matrix
+from tnfr.metrics.common import compute_coherence
 
 # Compute W matrix approximating Ĉ
 nodes, W = coherence_matrix(G)
@@ -949,9 +950,9 @@ for _ in range(50):
 9. **docs/source/theory/** notebooks: Interactive tutorials
    - `00_overview.ipynb`: Mathematical foundations overview
    - `01_hilbert_space_h_nfr.ipynb`: H_NFR structure and properties
-   - `02_coherence_operator_hatC.ipynb`: Coherence operator construction
    - `03_frequency_operator_hatJ.ipynb`: Frequency operator details
    - `05_unitary_dynamics_and_delta_nfr.ipynb`: ΔNFR derivation
+   - **Note**: Coherence operator Ĉ is fully documented in §3.1 of this file
 
 ### Related Fields
 

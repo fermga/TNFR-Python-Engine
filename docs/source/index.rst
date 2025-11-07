@@ -109,10 +109,12 @@ Navigation Hub
    :caption: Mathematical Foundations ▸ Operators & Validators
 
    Hilbert space ℋ_NFR <theory/01_hilbert_space_h_nfr>
-   Coherence operator Ĉ <theory/02_coherence_operator_hatC>
    Frequency operator Ĵ <theory/03_frequency_operator_hatJ>
    NFR validator & metrics <theory/04_nfr_validator_and_metrics>
    Unitary dynamics & ΔNFR <theory/05_unitary_dynamics_and_delta_nfr>
+
+.. note::
+   **Coherence operator Ĉ** is now fully documented in :doc:`Mathematical Foundations §3.1 <theory/mathematical_foundations>`
 
 .. toctree::
    :maxdepth: 1
