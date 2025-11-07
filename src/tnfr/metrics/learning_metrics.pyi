@@ -1,8 +1,10 @@
 """Type stubs for learning metrics module."""
 
-from typing import Any
+from typing import Any, Sequence
 
 from ..types import TNFRGraph
+
+def glyph_history_to_operator_names(glyph_history: Sequence[str]) -> list[str]: ...
 
 def compute_learning_plasticity(
     G: TNFRGraph,

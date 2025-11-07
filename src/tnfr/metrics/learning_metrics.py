@@ -9,12 +9,12 @@ All functions reuse canonical utilities from glyph_history and alias modules.
 
 from __future__ import annotations
 
-from typing import Any, Mapping
+from typing import Any, Mapping, Sequence
 
 from ..alias import get_attr
 from ..constants.aliases import ALIAS_EPI, ALIAS_VF, ALIAS_DNFR
 from ..glyph_history import ensure_history, count_glyphs
-from ..types import TNFRGraph
+from ..types import TNFRGraph, Glyph
 from ..config.operator_names import (
     COHERENCE,
     DISSONANCE,
@@ -30,7 +30,54 @@ __all__ = [
     "compute_learning_plasticity",
     "compute_consolidation_index",
     "compute_learning_efficiency",
+    "glyph_history_to_operator_names",
 ]
+
+
+def glyph_history_to_operator_names(glyph_history: Sequence[str]) -> list[str]:
+    """Convert glyph history to operator names for comparison.
+
+    This is a lightweight helper that converts glyphs (e.g., 'AL', 'EN') to
+    canonical operator names (e.g., 'emission', 'reception') using the
+    existing GLYPH_TO_FUNCTION mapping.
+
+    Parameters
+    ----------
+    glyph_history : Sequence[str]
+        Sequence of glyph codes from node's glyph_history.
+
+    Returns
+    -------
+    list[str]
+        List of canonical operator names.
+
+    Notes
+    -----
+    Reuses existing GLYPH_TO_FUNCTION mapping from grammar module.
+    Computational cost is O(n) with n = len(glyph_history), just dict lookups.
+
+    Examples
+    --------
+    >>> from tnfr.metrics.learning_metrics import glyph_history_to_operator_names
+    >>> glyphs = ['AL', 'EN', 'IL']
+    >>> names = glyph_history_to_operator_names(glyphs)
+    >>> names
+    ['emission', 'reception', 'coherence']
+    """
+    from ..operators.grammar import GLYPH_TO_FUNCTION
+    
+    result = []
+    for glyph_str in glyph_history:
+        # Convert string to Glyph enum if needed
+        try:
+            glyph = Glyph(glyph_str)
+            operator_name = GLYPH_TO_FUNCTION.get(glyph, glyph_str.lower())
+            result.append(operator_name)
+        except (ValueError, KeyError):
+            # If glyph is not recognized, keep as-is lowercased
+            result.append(glyph_str.lower())
+    
+    return result
 
 
 def compute_learning_plasticity(

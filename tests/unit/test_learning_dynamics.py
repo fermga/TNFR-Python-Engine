@@ -23,6 +23,7 @@ from tnfr.metrics.learning_metrics import (
     compute_consolidation_index,
     compute_learning_efficiency,
     compute_learning_plasticity,
+    glyph_history_to_operator_names,
 )
 from tnfr.operators.definitions import (
     Coherence,
@@ -203,8 +204,9 @@ def test_learn_from_input_no_dissonance():
     # Stimulus close to current EPI - no dissonance
     system.learn_from_input(stimulus=0.35, consolidate=True)
     
-    # Check that operators were applied
-    history = list(G.nodes[node].get("glyph_history", []))
+    # Check that operators were applied - convert glyphs to operator names
+    glyphs = list(G.nodes[node].get("glyph_history", []))
+    history = glyph_history_to_operator_names(glyphs)
     assert len(history) > 0
     # Should have AL, EN, IL, SHA
     assert EMISSION in history
@@ -221,8 +223,9 @@ def test_learn_from_input_with_dissonance():
     # Stimulus far from current EPI - dissonance
     system.learn_from_input(stimulus=0.9, consolidate=True)
     
-    # Check that operators were applied
-    history = list(G.nodes[node].get("glyph_history", []))
+    # Check that operators were applied - convert glyphs to operator names
+    glyphs = list(G.nodes[node].get("glyph_history", []))
+    history = glyph_history_to_operator_names(glyphs)
     assert len(history) > 0
     # Should have AL, EN, IL, OZ, THOL, IL, SHA
     assert EMISSION in history
@@ -240,8 +243,9 @@ def test_consolidate_memory():
     
     system.consolidate_memory()
     
-    # Check that consolidation operators were applied
-    history = list(G.nodes[node].get("glyph_history", []))
+    # Check that consolidation operators were applied - convert glyphs to operator names
+    glyphs = list(G.nodes[node].get("glyph_history", []))
+    history = glyph_history_to_operator_names(glyphs)
     assert EMISSION in history
     assert RECEPTION in history
     assert COHERENCE in history
@@ -255,8 +259,9 @@ def test_adaptive_cycle():
     
     system.adaptive_cycle(num_iterations=3)
     
-    # Check that operators were applied
-    history = list(G.nodes[node].get("glyph_history", []))
+    # Check that operators were applied - convert glyphs to operator names
+    glyphs = list(G.nodes[node].get("glyph_history", []))
+    history = glyph_history_to_operator_names(glyphs)
     assert len(history) > 0
     # Should have multiple AL and THOL applications
     assert history.count(EMISSION) >= 3
@@ -270,8 +275,9 @@ def test_deep_learning_cycle():
     
     system.deep_learning_cycle()
     
-    # Verify sequence: AL→EN→IL→OZ→THOL→IL→SHA
-    history = list(G.nodes[node].get("glyph_history", []))
+    # Verify sequence: AL→EN→IL→OZ→THOL→IL→SHA - convert glyphs to operator names
+    glyphs = list(G.nodes[node].get("glyph_history", []))
+    history = glyph_history_to_operator_names(glyphs)
     expected = [
         EMISSION,
         RECEPTION,
@@ -291,8 +297,9 @@ def test_exploratory_learning_cycle():
     
     system.exploratory_learning_cycle()
     
-    # Verify sequence: AL→EN→IL→OZ→THOL→RA→IL→SHA
-    history = list(G.nodes[node].get("glyph_history", []))
+    # Verify sequence: AL→EN→IL→OZ→THOL→RA→IL→SHA - convert glyphs to operator names
+    glyphs = list(G.nodes[node].get("glyph_history", []))
+    history = glyph_history_to_operator_names(glyphs)
     expected = [
         EMISSION,
         RECEPTION,
@@ -313,7 +320,18 @@ def test_adaptive_mutation_cycle():
     
     system.adaptive_mutation_cycle()
     
-    # Verify sequence: AL→EN→IL→OZ→ZHIR→NAV
+    # Verify sequence: AL→EN→IL→OZ→ZHIR→NAV - convert glyphs to operator names
+    glyphs = list(G.nodes[node].get("glyph_history", []))
+    history = glyph_history_to_operator_names(glyphs)
+    expected = [
+        EMISSION,
+        RECEPTION,
+        COHERENCE,
+        DISSONANCE,
+        MUTATION,
+        TRANSITION,
+    ]
+    assert history == expected
     history = list(G.nodes[node].get("glyph_history", []))
     expected = [
         EMISSION,

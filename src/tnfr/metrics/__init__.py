@@ -24,6 +24,7 @@ from .learning_metrics import (
     compute_consolidation_index,
     compute_learning_efficiency,
     compute_learning_plasticity,
+    glyph_history_to_operator_names,
 )
 from .reporting import (
     Tg_by_node,
@@ -56,4 +57,5 @@ __all__ = (
     "compute_learning_plasticity",
     "compute_consolidation_index",
     "compute_learning_efficiency",
+    "glyph_history_to_operator_names",
 )
