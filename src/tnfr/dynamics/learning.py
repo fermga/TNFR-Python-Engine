@@ -13,6 +13,7 @@ from ..alias import get_attr
 from ..constants.aliases import ALIAS_EPI, ALIAS_DNFR
 from ..operators.definitions import (
     Coherence,
+    Contraction,
     Dissonance,
     Emission,
     Mutation,
@@ -95,11 +96,13 @@ class AdaptiveLearningSystem:
     ) -> None:
         """Execute learning cycle from external stimulus.
 
-        Implements canonical learning sequence:
+        Implements canonical learning sequence following TNFR grammar:
         - AL (Emission): Activate learning readiness
         - EN (Reception): Receive stimulus
+        - IL (Coherence): Stabilize before dissonance (grammar requirement)
         - OZ (Dissonance): If stimulus is dissonant
         - T'HOL (SelfOrganization): Reorganize if needed
+        - NUL (Contraction): Close T'HOL block (grammar requirement)
         - IL (Coherence): Consolidate if requested
         - SHA (Silence): End sequence properly
 
@@ -114,21 +117,30 @@ class AdaptiveLearningSystem:
         -----
         Reuses run_sequence and existing operators for all transformations.
         Dissonance detection uses current EPI from node attributes.
-        Sequences must end with terminal operators per TNFR grammar.
+        Sequences must follow TNFR grammar rules including T'HOL closure.
+        
+        **Grammar compliance:**
+        
+        - T'HOL (SelfOrganization) blocks require closure with NUL (Contraction) or SHA (Silence)
+        - Dissonance should be preceded by stabilization (Coherence)
         """
         sequence: list[Operator] = [Emission(), Reception()]
 
         # Check if stimulus is dissonant (requires reorganization)
         if self._is_dissonant(stimulus):
-            # For dissonant input, need coherence before dissonance per grammar
-            sequence.append(Coherence())
-            sequence.extend([Dissonance(), SelfOrganization(), Coherence()])
-
-        # Always end with silence per TNFR grammar
-        if consolidate:
-            if not self._is_dissonant(stimulus):
+            # For dissonant input, follow grammar-compliant reorganization
+            # T'HOL block must be closed with SILENCE or CONTRACTION
+            sequence.extend([
+                Coherence(),           # Stabilize before dissonance (grammar)
+                Dissonance(),          # Introduce controlled instability
+                SelfOrganization(),    # Autonomous reorganization
+                Silence(),             # Close T'HOL block and end sequence (grammar requirement)
+            ])
+        else:
+            # Non-dissonant: simpler path with optional consolidation
+            if consolidate:
                 sequence.append(Coherence())
-        sequence.append(Silence())
+            sequence.append(Silence())  # Always end with terminal operator
 
         # Execute using canonical run_sequence
         run_sequence(self.G, self.node, sequence)
