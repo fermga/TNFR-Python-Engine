@@ -1,8 +1,12 @@
 """Precondition validators for TNFR structural operators.
 
 Each operator has specific requirements that must be met before execution
-to maintain TNFR structural invariants. This module provides validators
+to maintain TNFR structural invariants. This package provides validators
 for each of the 13 canonical operators.
+
+The preconditions package has been restructured to support both legacy
+imports (from ..preconditions import validate_*) and new modular imports
+(from ..preconditions.emission import validate_emission_strict).
 """
 
 from __future__ import annotations
@@ -10,10 +14,10 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
-    from ..types import NodeId, TNFRGraph
+    from ...types import NodeId, TNFRGraph
 
-from ..alias import get_attr
-from ..constants.aliases import ALIAS_EPI, ALIAS_VF, ALIAS_DNFR, ALIAS_THETA
+from ...alias import get_attr
+from ...constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
 
 __all__ = [
     "OperatorPreconditionError",
@@ -52,13 +56,13 @@ class OperatorPreconditionError(Exception):
 
 
 def _get_node_attr(
-    G: TNFRGraph, node: NodeId, aliases: tuple[str, ...], default: float = 0.0
+    G: "TNFRGraph", node: "NodeId", aliases: tuple[str, ...], default: float = 0.0
 ) -> float:
     """Get node attribute using alias fallback."""
     return float(get_attr(G.nodes[node], aliases, default))
 
 
-def validate_emission(G: TNFRGraph, node: NodeId) -> None:
+def validate_emission(G: "TNFRGraph", node: "NodeId") -> None:
     """AL - Emission requires node in latent or low activation state.
 
     Parameters
@@ -83,7 +87,7 @@ def validate_emission(G: TNFRGraph, node: NodeId) -> None:
         )
 
 
-def validate_reception(G: TNFRGraph, node: NodeId) -> None:
+def validate_reception(G: "TNFRGraph", node: "NodeId") -> None:
     """EN - Reception requires node to have neighbors to receive from.
 
     Parameters
@@ -105,7 +109,7 @@ def validate_reception(G: TNFRGraph, node: NodeId) -> None:
         )
 
 
-def validate_coherence(G: TNFRGraph, node: NodeId) -> None:
+def validate_coherence(G: "TNFRGraph", node: "NodeId") -> None:
     """IL - Coherence requires significant ΔNFR to stabilize.
 
     Parameters
@@ -135,7 +139,7 @@ def validate_coherence(G: TNFRGraph, node: NodeId) -> None:
         )
 
 
-def validate_dissonance(G: TNFRGraph, node: NodeId) -> None:
+def validate_dissonance(G: "TNFRGraph", node: "NodeId") -> None:
     """OZ - Dissonance requires vf > 0 to generate meaningful dissonance.
 
     Parameters
@@ -158,7 +162,7 @@ def validate_dissonance(G: TNFRGraph, node: NodeId) -> None:
         )
 
 
-def validate_coupling(G: TNFRGraph, node: NodeId) -> None:
+def validate_coupling(G: "TNFRGraph", node: "NodeId") -> None:
     """UM - Coupling requires node to have potential coupling targets.
 
     Parameters
@@ -181,7 +185,7 @@ def validate_coupling(G: TNFRGraph, node: NodeId) -> None:
         )
 
 
-def validate_resonance(G: TNFRGraph, node: NodeId) -> None:
+def validate_resonance(G: "TNFRGraph", node: "NodeId") -> None:
     """RA - Resonance requires neighbors to propagate energy.
 
     Parameters
@@ -203,7 +207,7 @@ def validate_resonance(G: TNFRGraph, node: NodeId) -> None:
         )
 
 
-def validate_silence(G: TNFRGraph, node: NodeId) -> None:
+def validate_silence(G: "TNFRGraph", node: "NodeId") -> None:
     """SHA - Silence requires vf > 0 to reduce.
 
     Parameters
@@ -227,7 +231,7 @@ def validate_silence(G: TNFRGraph, node: NodeId) -> None:
         )
 
 
-def validate_expansion(G: TNFRGraph, node: NodeId) -> None:
+def validate_expansion(G: "TNFRGraph", node: "NodeId") -> None:
     """VAL - Expansion requires vf below maximum threshold.
 
     Parameters
@@ -251,7 +255,7 @@ def validate_expansion(G: TNFRGraph, node: NodeId) -> None:
         )
 
 
-def validate_contraction(G: TNFRGraph, node: NodeId) -> None:
+def validate_contraction(G: "TNFRGraph", node: "NodeId") -> None:
     """NUL - Contraction requires vf > minimum to reduce.
 
     Parameters
@@ -275,7 +279,7 @@ def validate_contraction(G: TNFRGraph, node: NodeId) -> None:
         )
 
 
-def validate_self_organization(G: TNFRGraph, node: NodeId) -> None:
+def validate_self_organization(G: "TNFRGraph", node: "NodeId") -> None:
     """THOL - Self-organization requires minimum EPI, positive ΔNFR, and connectivity.
 
     T'HOL implements structural metabolism and bifurcation. Preconditions ensure
@@ -325,7 +329,7 @@ def validate_self_organization(G: TNFRGraph, node: NodeId) -> None:
         )
 
 
-def validate_mutation(G: TNFRGraph, node: NodeId) -> None:
+def validate_mutation(G: "TNFRGraph", node: "NodeId") -> None:
     """ZHIR - Mutation requires node to be in valid structural state.
 
     Parameters
@@ -350,7 +354,7 @@ def validate_mutation(G: TNFRGraph, node: NodeId) -> None:
         )
 
 
-def validate_transition(G: TNFRGraph, node: NodeId) -> None:
+def validate_transition(G: "TNFRGraph", node: "NodeId") -> None:
     """NAV - Transition requires ΔNFR and vf for controlled handoff.
 
     Parameters
@@ -374,7 +378,7 @@ def validate_transition(G: TNFRGraph, node: NodeId) -> None:
         )
 
 
-def validate_recursivity(G: TNFRGraph, node: NodeId) -> None:
+def validate_recursivity(G: "TNFRGraph", node: "NodeId") -> None:
     """REMESH - Recursivity requires global network coherence threshold.
 
     Parameters
