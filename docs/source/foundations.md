@@ -45,10 +45,10 @@ level operators.
    :func:`~tnfr.mathematics.stable_unitary` to ensure ΔNFR preserves Hilbert
    norms while sustaining positive structural frequency.
 
-The notebooks
-[`theory/00_overview.ipynb`](theory/00_overview.ipynb) and
+See [`theory/mathematical_foundations.md`](theory/mathematical_foundations.md) for
+complete mathematical derivations and
 [`theory/02_phase_synchrony_lattices.ipynb`](theory/02_phase_synchrony_lattices.ipynb)
-replay these steps with expanded derivations and visual telemetry overlays.
+for interactive visualizations with telemetry overlays.
 
 ## 2. Graph-level math engine configuration
 
@@ -273,5 +273,5 @@ metric to control storage costs.
 * Load the lattice notebooks listed above to inspect full ΔNFR evolution
   traces.
 * Refer to [`api/telemetry.md`](api/telemetry.md) for downstream aggregation and
-  to [`theory/00_overview.ipynb`](theory/00_overview.ipynb) for the
+  to [`theory/mathematical_foundations.md`](theory/mathematical_foundations.md) for the
   derivation that ties the Hilbert norms back to ΔNFR coherence envelopes.

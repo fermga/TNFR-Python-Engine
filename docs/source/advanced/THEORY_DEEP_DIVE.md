@@ -124,7 +124,7 @@ The theory notebooks complement the unified mathematical foundations document wi
    - Fractal patterns
 
 ### Operators & Validators (Formal Mathematics)
-1. **[Hilbert Space ℋ_NFR](../theory/01_hilbert_space_h_nfr.ipynb)**
+1. **Hilbert Space ℋ_NFR** → See [Mathematical Foundations §2.1 + Appendix A.2](../theory/mathematical_foundations.md#21-hilbert-space-h_nfr)
    - Space definition
    - Basis vectors
    - Inner product structure
@@ -134,7 +134,7 @@ The theory notebooks complement the unified mathematical foundations document wi
    - Spectral properties
    - Measurement interpretation
 
-3. **[Frequency Operator Ĵ](../theory/03_frequency_operator_hatJ.ipynb)**
+3. **Frequency Operator Ĵ** → See [Mathematical Foundations §3.2 + Appendix A.3](../theory/mathematical_foundations.md#32-frequency-operator-ĵ)
    - Structural frequency operator
    - Eigenvalue interpretation
    - Evolution equations
@@ -144,7 +144,7 @@ The theory notebooks complement the unified mathematical foundations document wi
    - Metric computation
    - Validation algorithms
 
-5. **[Unitary Dynamics & ΔNFR](../theory/05_unitary_dynamics_and_delta_nfr.ipynb)**
+5. **Unitary Dynamics & ΔNFR** → See [Mathematical Foundations §3.3 + Appendix A.4](../theory/mathematical_foundations.md#33-reorganization-operator-δnfr)
    - Evolution operators
    - Conservation laws
    - ΔNFR as generator

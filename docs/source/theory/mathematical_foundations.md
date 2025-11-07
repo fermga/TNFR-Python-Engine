@@ -24,6 +24,42 @@ The mathematical formalism of TNFR provides three critical advantages over tradi
 
 These properties make TNFR particularly suited for domains where emergence, self-organization, and multi-scale coherence are central phenomena.
 
+### 1.3 About This Document
+
+**Status**: This is the **single unified source of truth** for TNFR mathematical formalization.
+
+**What's included**:
+- Complete mathematical foundations (Sections 2-8)
+- Operator formalism and spectral theory (Sections 3-5)
+- Frequently asked questions (Section 9)
+- Consolidated notebook content (Appendix A)
+
+**Notebook consolidation notice**: As of 2025-11-07, interactive Jupyter notebooks containing theoretical derivations have been **deprecated and integrated** into this document to maintain consistency. The following notebooks were removed:
+
+| Removed Notebook | Content Now In |
+|-----------------|----------------|
+| `00_overview.ipynb` | Appendix A.1 |
+| `01_hilbert_space_h_nfr.ipynb` | §2.1 + Appendix A.2 |
+| `03_frequency_operator_hatJ.ipynb` | §3.2 + Appendix A.3 |
+| `05_unitary_dynamics_and_delta_nfr.ipynb` | §3.3 + Appendix A.4 |
+
+**Interactive notebooks remain** for hands-on exploration:
+- `01_structural_frequency_primer.ipynb` - Interactive frequency exploration
+- `02_phase_synchrony_lattices.ipynb` - Phase dynamics visualization  
+- `03_delta_nfr_gradient_fields.ipynb` - ΔNFR field analysis
+- `04_coherence_metrics_walkthrough.ipynb` - Coherence calculation walkthrough
+- `04_nfr_validator_and_metrics.ipynb` - Validation utilities
+- `05_sense_index_calibration.ipynb` - Si calibration guide
+- `06_recursivity_cascades.ipynb` - Recursive operator exploration
+
+These computational notebooks serve different purposes (visualization, parameter sensitivity, interactive demonstrations) and complement this theoretical document.
+
+**Related documentation**:
+- **Implementation**: See docstrings in `src/tnfr/metrics/`
+- **Worked examples**: See `docs/source/examples/worked_examples.md`
+- **Style guide**: See `docs/source/style_guide.md` for notation conventions
+- **Quick reference**: See `GLOSSARY.md` for API-focused definitions
+
 ---
 
 ## 2. Mathematical Spaces
@@ -947,12 +983,14 @@ for _ in range(50):
    )
    ```
 
-9. **docs/source/theory/** notebooks: Interactive tutorials
-   - `00_overview.ipynb`: Mathematical foundations overview
-   - `01_hilbert_space_h_nfr.ipynb`: H_NFR structure and properties
-   - `03_frequency_operator_hatJ.ipynb`: Frequency operator details
-   - `05_unitary_dynamics_and_delta_nfr.ipynb`: ΔNFR derivation
-   - **Note**: Coherence operator Ĉ is fully documented in §3.1 of this file
+9. **Interactive Notebooks**: For hands-on exploration
+   - `01_structural_frequency_primer.ipynb`: Interactive frequency exploration
+   - `02_phase_synchrony_lattices.ipynb`: Phase dynamics visualization
+   - `03_delta_nfr_gradient_fields.ipynb`: ΔNFR field analysis
+   - `04_coherence_metrics_walkthrough.ipynb`: Coherence calculation walkthrough
+   - `05_sense_index_calibration.ipynb`: Si calibration guide
+   - `06_recursivity_cascades.ipynb`: Recursive operator exploration
+   - **Note**: All formal mathematical theory is in this document (§1-8 + Appendix)
 
 ### Related Fields
 
@@ -1061,18 +1099,37 @@ A: TNFR uses quantum mathematical machinery (Hilbert spaces, Hermitian operators
 > to maintain a single source of truth for TNFR mathematical formalization.
 >
 > **Rationale**: Consolidating all mathematical content into this unified document ensures:
-> - Single source of truth (no divergence between notebook and markdown)
-> - Easier maintenance and version control
-> - Better searchability and cross-referencing
-> - Reduced duplication and inconsistency
+> - ✅ **No divergence**: Mathematical formulas can't become inconsistent between sources
+> - ✅ **Easier maintenance**: Update equations once, not in multiple places
+> - ✅ **Better searchability**: All theory in one searchable document
+> - ✅ **Version control**: Markdown diffs are clearer than notebook JSON
+> - ✅ **Reduced duplication**: Avoid maintaining parallel explanations
 >
 > **Removed notebooks**:
-> - `00_overview.ipynb` → Content integrated below
-> - `01_hilbert_space_h_nfr.ipynb` → Content integrated below
-> - `03_frequency_operator_hatJ.ipynb` → Content integrated below
-> - `05_unitary_dynamics_and_delta_nfr.ipynb` → Content integrated below
+> - `00_overview.ipynb` → Content in Appendix A.1
+> - `01_hilbert_space_h_nfr.ipynb` → Content in §2.1 + Appendix A.2
+> - `03_frequency_operator_hatJ.ipynb` → Content in §3.2 + Appendix A.3
+> - `05_unitary_dynamics_and_delta_nfr.ipynb` → Content in §3.3 + Appendix A.4
 >
-> For interactive explorations, see the examples in `examples/` directory.
+> **Interactive notebooks remain for**:
+> - Computational demonstrations that benefit from inline execution
+> - Parameter sensitivity analysis requiring plots
+> - Step-by-step walkthroughs with intermediate visualizations
+> - Exploratory analysis not yet formalized
+>
+> See §1.3 for the complete list of remaining interactive tutorials.
+>
+> **Migration Path**: If you referenced deprecated notebooks:
+>
+> **Before**:
+> ```markdown
+> See [Hilbert Space notebook](./01_hilbert_space_h_nfr.ipynb) for details.
+> ```
+>
+> **After**:
+> ```markdown
+> See [Mathematical Foundations §2.1 and Appendix A.2](./mathematical_foundations.md#21-hilbert-space-h_nfr) for details.
+> ```
 
 ---
 

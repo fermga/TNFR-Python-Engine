@@ -91,7 +91,7 @@ G.nodes[node]['epi'] = 0.2  # Simple scalar EPI
 # More complex EPIs can be multidimensional arrays
 ```
 
-#### 2. νf (Frecuencia estructural / Structural Frequency)
+#### 2. νf (Structural Frequency)
 
 **Symbol**: νf (nu sub f)  
 **Units**: Hz_str (structural hertz)  
@@ -660,7 +660,7 @@ except ImportError:
 5. **Study theoretical foundations**:
    - [foundations.md](../foundations.md) - Mathematical scaffolding
    - [TNFR.pdf](../../../TNFR.pdf) - Complete theoretical framework
-   - [theory/00_overview.ipynb](../theory/00_overview.ipynb) - Theoretical overview notebook
+   - [theory/mathematical_foundations.md](../theory/mathematical_foundations.md) - Complete mathematical formalization
 
 ### Master the Tools
 

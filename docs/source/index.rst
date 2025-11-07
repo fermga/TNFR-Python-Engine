@@ -91,30 +91,22 @@ Navigation Hub
    :caption: Mathematical Foundations
 
    ⭐ Unified Mathematical Foundations <theory/mathematical_foundations>
-   Theory Overview <theory/00_overview>
 
 .. toctree::
    :maxdepth: 1
-   :caption: Mathematical Foundations ▸ Primers
+   :caption: Interactive Theory Notebooks
 
    Structural frequency primer <theory/01_structural_frequency_primer>
    Phase synchrony lattices <theory/02_phase_synchrony_lattices>
    ΔNFR gradient fields <theory/03_delta_nfr_gradient_fields>
    Coherence metrics walkthrough <theory/04_coherence_metrics_walkthrough>
+   NFR validator & metrics <theory/04_nfr_validator_and_metrics>
    Sense index calibration <theory/05_sense_index_calibration>
    Recursivity cascades <theory/06_recursivity_cascades>
 
-.. toctree::
-   :maxdepth: 1
-   :caption: Mathematical Foundations ▸ Operators & Validators
-
-   Hilbert space ℋ_NFR <theory/01_hilbert_space_h_nfr>
-   Frequency operator Ĵ <theory/03_frequency_operator_hatJ>
-   NFR validator & metrics <theory/04_nfr_validator_and_metrics>
-   Unitary dynamics & ΔNFR <theory/05_unitary_dynamics_and_delta_nfr>
-
 .. note::
-   **Coherence operator Ĉ** is now fully documented in :doc:`Mathematical Foundations §3.1 <theory/mathematical_foundations>`
+   **All formal mathematical theory** is documented in :doc:`Mathematical Foundations <theory/mathematical_foundations>`.
+   Interactive notebooks above provide hands-on exploration and visualization.
 
 .. toctree::
    :maxdepth: 1
