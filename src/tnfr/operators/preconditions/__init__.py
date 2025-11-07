@@ -183,7 +183,16 @@ def diagnose_coherence_readiness(G: "TNFRGraph", node: "NodeId") -> dict:
 
 
 def validate_dissonance(G: "TNFRGraph", node: "NodeId") -> None:
-    """OZ - Dissonance requires vf > 0 to generate meaningful dissonance.
+    """OZ - Dissonance requires comprehensive structural preconditions.
+    
+    This function delegates to the strict validation implementation in
+    dissonance.py module, which provides canonical precondition checks:
+    
+    1. Minimum coherence base (EPI >= threshold)
+    2. ΔNFR not critically high (avoid overload)
+    3. Sufficient νf for reorganization response
+    4. No overload pattern (sobrecarga disonante)
+    5. Network connectivity (warning)
     
     Also detects bifurcation readiness when ∂²EPI/∂t² > τ, enabling
     alternative structural paths (ZHIR, NUL, IL, THOL).
@@ -198,25 +207,33 @@ def validate_dissonance(G: "TNFRGraph", node: "NodeId") -> None:
     Raises
     ------
     OperatorPreconditionError
-        If structural frequency is too low for dissonance to be effective
+        If critical preconditions are not met (EPI, ΔNFR, νf, overload)
         
     Notes
     -----
+    For backward compatibility, this function maintains the same signature
+    as the legacy validate_dissonance but now provides enhanced validation.
+    
     When bifurcation threshold is exceeded, sets node['_bifurcation_ready'] = True
-    and logs the event for telemetry. This enables downstream operators to
-    respond to OZ-induced structural acceleration.
+    and logs the event for telemetry.
+    
+    See Also
+    --------
+    tnfr.operators.preconditions.dissonance.validate_dissonance_strict : Full implementation
     """
     import logging
-    import warnings
     
     logger = logging.getLogger(__name__)
     
-    vf = _get_node_attr(G, node, ALIAS_VF)
-    min_vf = float(G.graph.get("OZ_MIN_VF", 0.01))
-    if vf < min_vf:
-        raise OperatorPreconditionError(
-            "Dissonance", f"Structural frequency too low (νf={vf:.3f} < {min_vf:.3f})"
-        )
+    # First, apply strict canonical preconditions
+    # This validates EPI, ΔNFR, νf, overload, and connectivity
+    from .dissonance import validate_dissonance_strict
+    
+    try:
+        validate_dissonance_strict(G, node)
+    except ValueError as e:
+        # Convert ValueError to OperatorPreconditionError for backward compatibility
+        raise OperatorPreconditionError("Dissonance", str(e).replace("OZ precondition failed: ", ""))
     
     # Check bifurcation readiness using existing THOL infrastructure
     # Reuse _compute_epi_acceleration from SelfOrganization
@@ -245,27 +262,6 @@ def validate_dissonance(G: "TNFRGraph", node: "NodeId") -> None:
     else:
         # Clear flag if previously set
         G.nodes[node]["_bifurcation_ready"] = False
-    
-    # Additional checks for OZ preconditions
-    epi = _get_node_attr(G, node, ALIAS_EPI)
-    dnfr = _get_node_attr(G, node, ALIAS_DNFR)
-    
-    # Warn if EPI too low to withstand dissonance
-    min_epi = float(G.graph.get("OZ_MIN_EPI", 0.2))
-    if epi < min_epi:
-        raise OperatorPreconditionError(
-            "Dissonance",
-            f"EPI too low to withstand dissonance (EPI={epi:.3f} < {min_epi:.3f})"
-        )
-    
-    # Warn if ΔNFR already critically high
-    max_dnfr = float(G.graph.get("OZ_MAX_DNFR", 0.8))
-    if abs(dnfr) > max_dnfr:
-        warnings.warn(
-            f"Applying OZ with high ΔNFR (|ΔNFR|={abs(dnfr):.3f}) may cause collapse. "
-            f"Consider IL (Coherence) before OZ.",
-            stacklevel=3
-        )
 
 
 def validate_coupling(G: "TNFRGraph", node: "NodeId") -> None:
