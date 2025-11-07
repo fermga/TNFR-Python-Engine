@@ -714,10 +714,24 @@ Generate three heatmaps in \( (F_0, \omega_f) \) space:
 
 ## 6. Code Examples and Implementation
 
+**Important**: The code examples in this section are **pedagogical pseudocode** demonstrating the validation methodology and classical limit equations. They illustrate how to:
+- Set up validation experiments
+- Compute observables (periods, energies, Lyapunov exponents)
+- Compare numerical results to theoretical predictions
+
+**For production use**: Refer to the full TNFR implementation in `examples/numerical_validation/` which uses:
+- TNFR structural operators (Emission, Coherence, etc.)
+- TNFRNetwork evolution methods
+- Proper coherence monitoring (C(t), Si(t))
+- Structural operator logging and traceability
+
+The pseudocode below focuses on the **classical limit** (\( \varepsilon \to 0 \)) to clearly show the physics being validated.
+
 ### 6.1 Harmonic Oscillator Validation
 
+**Note**: This is a simplified demonstration showing the classical limit calculation directly. For full TNFR implementation using structural operators, see the complete examples in `examples/numerical_validation/`. This pseudocode illustrates the validation methodology and expected results.
+
 ```python
-from tnfr.sdk import TNFRNetwork
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -732,16 +746,17 @@ steps = int(T_sim / dt)
 results = {}
 
 for vf in vf_values:
-    # Create network with single node
-    net = TNFRNetwork(name=f"harmonic_vf_{vf}")
-    net.add_nodes(1, vf=vf)
+    # In full TNFR implementation: create network with single node
+    # and use structural operators to evolve. Here we show the
+    # classical limit equations directly for clarity.
     
     # Define harmonic potential U = 0.5 * k * q^2
     # Force: F = -dU/dq = -k*q
     def force(q):
         return -k * q
     
-    # Verlet integration
+    # Velocity Verlet integration (classical limit)
+    m = 1.0 / vf  # TNFR mass-frequency relation
     q, v = q0, v0
     q_trajectory = []
     t_trajectory = []
@@ -751,11 +766,11 @@ for vf in vf_values:
         q_trajectory.append(q)
         t_trajectory.append(t)
         
-        # Velocity Verlet
-        a = force(q) / (1.0 / vf)  # m = 1/vf
+        # Velocity Verlet algorithm
+        a = force(q) / m
         v_half = v + 0.5 * dt * a
         q = q + dt * v_half
-        a_new = force(q) / (1.0 / vf)
+        a_new = force(q) / m
         v = v_half + 0.5 * dt * a_new
     
     # Measure period from zero crossings
