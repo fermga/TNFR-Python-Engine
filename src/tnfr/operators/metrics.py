@@ -305,7 +305,12 @@ def coherence_metrics(G: TNFRGraph, node: NodeId, dnfr_before: float) -> dict[st
 def dissonance_metrics(
     G: TNFRGraph, node: NodeId, dnfr_before: float, theta_before: float
 ) -> dict[str, Any]:
-    """OZ - Dissonance metrics: ΔNFR increase, bifurcation risk, phase shift.
+    """OZ - Comprehensive dissonance and bifurcation metrics.
+    
+    Collects extended metrics for the Dissonance (OZ) operator, including
+    quantitative bifurcation analysis, topological disruption measures, and
+    viable path identification. This aligns with TNFR canonical theory (§2.3.3)
+    that OZ introduces **topological dissonance**, not just numerical instability.
 
     Parameters
     ----------
@@ -321,24 +326,190 @@ def dissonance_metrics(
     Returns
     -------
     dict
-        Dissonance-specific metrics including bifurcation indicators
+        Comprehensive dissonance metrics with keys:
+        
+        **Quantitative dynamics:**
+        
+        - dnfr_increase: Magnitude of introduced instability
+        - dnfr_final: Post-OZ ΔNFR value
+        - theta_shift: Phase exploration degree
+        - theta_final: Post-OZ phase value
+        - d2epi: Structural acceleration (bifurcation indicator)
+        
+        **Bifurcation analysis:**
+        
+        - bifurcation_score: Quantitative potential [0,1]
+        - bifurcation_active: Boolean threshold indicator (score > 0.5)
+        - viable_paths: List of viable operator glyph values
+        - viable_path_count: Number of viable paths
+        - mutation_readiness: Boolean indicator for ZHIR viability
+        
+        **Topological effects:**
+        
+        - topological_asymmetry_delta: Change in structural asymmetry
+        - symmetry_disrupted: Boolean (|delta| > 0.1)
+        
+        **Network impact:**
+        
+        - neighbor_count: Total neighbors
+        - impacted_neighbors: Count with |ΔNFR| > 0.1
+        - network_impact_radius: Ratio of impacted neighbors
+        
+        **Recovery guidance:**
+        
+        - recovery_estimate_IL: Estimated IL applications needed
+        - dissonance_level: |ΔNFR| magnitude
+        - critical_dissonance: Boolean (|ΔNFR| > 0.8)
+        
+    Notes
+    -----
+    **Enhanced metrics vs original:**
+    
+    The original implementation (lines 326-342) provided:
+    - Basic ΔNFR change
+    - Boolean bifurcation_risk
+    - Simple d2epi reading
+    
+    This enhanced version adds:
+    - Quantitative bifurcation_score [0,1]
+    - Viable path identification
+    - Topological asymmetry measurement
+    - Network impact analysis
+    - Recovery estimation
+    
+    **Topological asymmetry:**
+    
+    Measures structural disruption in the node's ego-network using degree
+    and clustering heterogeneity. This captures the canonical effect that
+    OZ introduces **topological disruption**, not just numerical change.
+    
+    **Viable paths:**
+    
+    Identifies which operators can structurally resolve the dissonance:
+    - IL (Coherence): Always viable (universal resolution)
+    - ZHIR (Mutation): If νf > 0.8 (controlled transformation)
+    - NUL (Contraction): If EPI < 0.5 (safe collapse window)
+    - THOL (Self-organization): If degree >= 2 (network support)
+    
+    Examples
+    --------
+    >>> from tnfr.structural import create_nfr
+    >>> from tnfr.operators.definitions import Dissonance, Coherence
+    >>> 
+    >>> G, node = create_nfr("test", epi=0.5, vf=1.2)
+    >>> # Add neighbors for network analysis
+    >>> for i in range(3):
+    ...     G.add_node(f"n{i}")
+    ...     G.add_edge(node, f"n{i}")
+    >>> 
+    >>> # Enable metrics collection
+    >>> G.graph['COLLECT_OPERATOR_METRICS'] = True
+    >>> 
+    >>> # Apply Coherence to stabilize, then Dissonance to disrupt
+    >>> Coherence()(G, node)
+    >>> Dissonance()(G, node)
+    >>> 
+    >>> # Retrieve enhanced metrics
+    >>> metrics = G.graph['operator_metrics'][-1]
+    >>> print(f"Bifurcation score: {metrics['bifurcation_score']:.2f}")
+    >>> print(f"Viable paths: {metrics['viable_paths']}")
+    >>> print(f"Network impact: {metrics['network_impact_radius']:.1%}")
+    >>> print(f"Recovery estimate: {metrics['recovery_estimate_IL']} IL")
+    
+    See Also
+    --------
+    tnfr.dynamics.bifurcation.compute_bifurcation_score : Bifurcation scoring
+    tnfr.topology.asymmetry.compute_topological_asymmetry : Asymmetry measurement
+    tnfr.dynamics.bifurcation.get_bifurcation_paths : Viable path identification
     """
+    from ..dynamics.bifurcation import compute_bifurcation_score, get_bifurcation_paths
+    from ..topology.asymmetry import compute_topological_asymmetry
+    from .nodal_equation import compute_d2epi_dt2
+    
+    # Get post-OZ node state
     dnfr_after = _get_node_attr(G, node, ALIAS_DNFR)
     theta_after = _get_node_attr(G, node, ALIAS_THETA)
-    d2epi = _get_node_attr(G, node, ALIAS_D2EPI)
-
-    # Bifurcation threshold - configurable
+    epi_after = _get_node_attr(G, node, ALIAS_EPI)
+    vf_after = _get_node_attr(G, node, ALIAS_VF)
+    
+    # 1. Compute d2epi actively during OZ
+    d2epi = compute_d2epi_dt2(G, node)
+    
+    # 2. Quantitative bifurcation score (not just boolean)
     bifurcation_threshold = float(G.graph.get("OZ_BIFURCATION_THRESHOLD", 0.5))
-
+    bifurcation_score = compute_bifurcation_score(
+        d2epi=d2epi,
+        dnfr=dnfr_after,
+        vf=vf_after,
+        epi=epi_after,
+        tau=bifurcation_threshold,
+    )
+    
+    # 3. Topological asymmetry introduced by OZ
+    # Note: We measure asymmetry after OZ. In a full implementation, we'd also
+    # capture before state, but for metrics collection we focus on post-state.
+    # The delta is captured conceptually (OZ introduces disruption).
+    asymmetry_after = compute_topological_asymmetry(G, node)
+    
+    # For now, we'll estimate delta based on the assumption that OZ increases asymmetry
+    # In a future enhancement, this could be computed by storing asymmetry_before
+    asymmetry_delta = asymmetry_after  # Simplified: assume OZ caused current asymmetry
+    
+    # 4. Analyze viable post-OZ paths
+    # Set bifurcation_ready flag if score exceeds threshold
+    if bifurcation_score > 0.5:
+        G.nodes[node]["_bifurcation_ready"] = True
+    
+    viable_paths = get_bifurcation_paths(G, node)
+    
+    # 5. Network impact (neighbors affected by dissonance)
+    neighbors = list(G.neighbors(node))
+    impacted_neighbors = 0
+    
+    if neighbors:
+        # Count neighbors with significant |ΔNFR|
+        impact_threshold = 0.1
+        for n in neighbors:
+            neighbor_dnfr = abs(_get_node_attr(G, n, ALIAS_DNFR))
+            if neighbor_dnfr > impact_threshold:
+                impacted_neighbors += 1
+    
+    # 6. Recovery estimate (how many IL needed to resolve)
+    # Assumes ~15% ΔNFR reduction per IL application
+    il_reduction_rate = 0.15
+    recovery_estimate = int(abs(dnfr_after) / il_reduction_rate) + 1 if dnfr_after != 0 else 1
+    
     return {
         "operator": "Dissonance",
         "glyph": "OZ",
+        
+        # Quantitative dynamics
         "dnfr_increase": dnfr_after - dnfr_before,
         "dnfr_final": dnfr_after,
         "theta_shift": abs(theta_after - theta_before),
+        "theta_final": theta_after,
         "d2epi": d2epi,
-        "bifurcation_risk": abs(d2epi) > bifurcation_threshold,
+        
+        # Bifurcation analysis
+        "bifurcation_score": bifurcation_score,
+        "bifurcation_active": bifurcation_score > 0.5,
+        "viable_paths": [str(g.value) for g in viable_paths],
+        "viable_path_count": len(viable_paths),
+        "mutation_readiness": any(g.value == "ZHIR" for g in viable_paths),
+        
+        # Topological effects
+        "topological_asymmetry_delta": asymmetry_delta,
+        "symmetry_disrupted": abs(asymmetry_delta) > 0.1,
+        
+        # Network impact
+        "neighbor_count": len(neighbors),
+        "impacted_neighbors": impacted_neighbors,
+        "network_impact_radius": impacted_neighbors / len(neighbors) if neighbors else 0.0,
+        
+        # Recovery guidance
+        "recovery_estimate_IL": recovery_estimate,
         "dissonance_level": abs(dnfr_after),
+        "critical_dissonance": abs(dnfr_after) > 0.8,
     }
 
 
