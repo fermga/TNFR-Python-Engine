@@ -1676,7 +1676,7 @@ Operators enabling regenerative cycles:
 - **[MIGRATION_GUIDE_2.0.md](docs/MIGRATION_GUIDE_2.0.md)**: Upgrading from Grammar 1.0
 - **[docs/HEALTH_METRICS_GUIDE.md](docs/HEALTH_METRICS_GUIDE.md)**: Deep dive into health metrics
 - **[docs/PATTERN_REFERENCE.md](docs/PATTERN_REFERENCE.md)**: Complete pattern catalog
-- **[docs/DOMAIN_APPLICATIONS.md](docs/DOMAIN_APPLICATIONS.md)**: Domain-specific usage guides
+- **[docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md)**: Common issues and solutions
 
 ### Implementation
 
