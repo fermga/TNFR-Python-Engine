@@ -231,6 +231,9 @@ def reception_metrics(G: TNFRGraph, node: NodeId, epi_before: float) -> dict[str
 def coherence_metrics(G: TNFRGraph, node: NodeId, dnfr_before: float) -> dict[str, Any]:
     """IL - Coherence metrics: ΔC(t), stability gain, ΔNFR reduction.
 
+    Extended to include ΔNFR reduction percentage and telemetry from the
+    explicit reduction mechanism implemented in the Coherence operator.
+
     Parameters
     ----------
     G : TNFRGraph
@@ -243,16 +246,32 @@ def coherence_metrics(G: TNFRGraph, node: NodeId, dnfr_before: float) -> dict[st
     Returns
     -------
     dict
-        Coherence-specific metrics including stability improvement
+        Coherence-specific metrics including:
+        - dnfr_before: ΔNFR value before operator
+        - dnfr_after: ΔNFR value after operator
+        - dnfr_reduction: Absolute reduction (before - after)
+        - dnfr_reduction_pct: Percentage reduction relative to before
+        - stability_gain: Improvement in stability (reduction of |ΔNFR|)
+        - is_stabilized: Whether node reached stable state (|ΔNFR| < 0.1)
+        - epi_final, vf_final: Final structural state
     """
     dnfr_after = _get_node_attr(G, node, ALIAS_DNFR)
     epi = _get_node_attr(G, node, ALIAS_EPI)
     vf = _get_node_attr(G, node, ALIAS_VF)
 
+    # Compute reduction metrics
+    dnfr_reduction = dnfr_before - dnfr_after
+    dnfr_reduction_pct = (
+        (dnfr_reduction / dnfr_before * 100.0) if dnfr_before > 0 else 0.0
+    )
+
     return {
         "operator": "Coherence",
         "glyph": "IL",
-        "dnfr_reduction": dnfr_before - dnfr_after,
+        "dnfr_before": dnfr_before,
+        "dnfr_after": dnfr_after,
+        "dnfr_reduction": dnfr_reduction,
+        "dnfr_reduction_pct": dnfr_reduction_pct,
         "dnfr_final": dnfr_after,
         "stability_gain": abs(dnfr_before) - abs(dnfr_after),
         "epi_final": epi,
