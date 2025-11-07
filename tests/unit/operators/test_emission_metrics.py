@@ -18,7 +18,6 @@ Tests verify:
 - irreversibility_marker presence
 """
 
-import pytest
 
 from tnfr.operators.definitions import Emission, Reception, Coherence, Silence
 from tnfr.structural import create_nfr, run_sequence
@@ -53,7 +52,7 @@ def test_emission_quality_valid():
     # For valid emission, delta_epi should be positive
     # Note: vf may not always increase depending on the ΔNFR dynamics
     assert metrics["delta_epi"] > 0, "EPI must increase during emission"
-    
+
     # emission_quality is "valid" if both increased, "weak" otherwise
     if metrics["delta_epi"] > 0 and metrics["delta_vf"] > 0:
         assert metrics["emission_quality"] == "valid"
@@ -330,7 +329,7 @@ def test_emission_metrics_structural_consistency():
     assert isinstance(metrics["epi_final"], float)
     assert isinstance(metrics["vf_final"], float)
     assert isinstance(metrics["dnfr_final"], float)
-    
+
     # The delta values should be consistent
     # (We can't compare to final node state since other operators modify it)
     assert metrics["form_emergence_magnitude"] == metrics["delta_epi"]

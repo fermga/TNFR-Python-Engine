@@ -18,7 +18,6 @@ from ..constants.aliases import (
     ALIAS_VF,
     ALIAS_DNFR,
     ALIAS_THETA,
-    ALIAS_SI,
     ALIAS_D2EPI,
 )
 
