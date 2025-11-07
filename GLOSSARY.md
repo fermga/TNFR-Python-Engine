@@ -17,7 +17,9 @@ Quick operational reference for the Resonant Fractal Nature Theory (TNFR). This 
 ### Primary Information Structure (EPI)
 
 **Code:** `G.nodes[n]['EPI']`, `ALIAS_EPI`  
+**Symbol:** \(\text{EPI}\) or \(E\)  
 **What:** Coherent structural form of a node  
+**Space:** \(B_{\text{EPI}}\) (Banach space)  
 **Rules:** Modified only via structural operators, never directly  
 **API:** `tnfr.structural` operators  
 **Math:** [§2.2 Banach Space B_EPI](docs/source/theory/mathematical_foundations.md#22-banach-space-b_epi)
@@ -25,44 +27,83 @@ Quick operational reference for the Resonant Fractal Nature Theory (TNFR). This 
 ### Structural Frequency (νf)
 
 **Code:** `G.nodes[n]['vf']`, `ALIAS_VF`  
-**Units:** `Hz_str` (structural hertz)  
-**What:** Reorganization rate (positive reals; collapse when →0)  
+**Symbol:** \(\nu_f\)  
+**Units:** Hz_str (structural hertz)  
+**Range:** \(\mathbb{R}^+\) (positive reals; node collapse when \(\nu_f \to 0\))  
+**What:** Rate of structural reorganization  
 **API:** `adapt_vf_by_coherence()`, operators  
 **Math:** [§3.2 Frequency Operator Ĵ](docs/source/theory/mathematical_foundations.md#32-frequency-operator-ĵ)
 
 ### Internal Reorganization Operator (ΔNFR)
 
 **Code:** `G.nodes[n]['dnfr']`, `ALIAS_DNFR`  
-**What:** Structural evolution gradient  
+**Symbol:** \(\Delta\text{NFR}\)  
+**What:** Structural evolution gradient (drives reorganization)  
+**Sign:** Positive = expansion, Negative = contraction  
 **Compute:** Via `default_compute_delta_nfr` hook, automatic in `step()`  
 **Math:** [§3.3 Reorganization Operator](docs/source/theory/mathematical_foundations.md#33-reorganization-operator-δnfr)
 
 ### Phase (φ, θ)
 
 **Code:** `G.nodes[n]['theta']`, `collect_theta_attr()`  
-**Range:** `[0, 2π)` or `[-π, π)`  
-**What:** Network synchrony parameter  
+**Symbol:** \(\theta\) or \(\phi\)  
+**Range:** \([0, 2\pi)\) or \([-\pi, \pi)\) radians  
+**What:** Network synchrony parameter (relative timing)  
+**Phase difference:** \(\Delta\theta = \theta_i - \theta_j\)  
 **API:** Phase adaptation in dynamics  
 **Math:** [§4 Nodal Equation](docs/source/theory/mathematical_foundations.md#4-the-nodal-equation-complete-derivation)
 
 ### Total Coherence (C(t))
 
 **Code:** `compute_coherence(G)` → float ∈ [0,1]  
-**What:** Global network stability (higher=stable, lower=fragmented)  
+**Symbol:** \(C(t)\)  
+**Formula:** \(C(t) = \text{Tr}(\hat{C}\rho)\) where \(\hat{C}\) is the coherence operator  
+**Range:** \([0, 1]\) where 1 = perfect coherence, 0 = total fragmentation  
+**What:** Global network stability measure  
 **Math:** [§3.1 Coherence Operator Ĉ](docs/source/theory/mathematical_foundations.md#31-coherence-operator-ĉ)
 
 ### Coherence Operator (Ĉ)
 
-**Code:** `coherence_matrix(G)` → (nodes, W) where `wᵢⱼ ≈ ⟨i|Ĉ|j⟩`  
-**What:** Operator measuring structural stability  
+**Code:** `coherence_matrix(G)` → (nodes, W)  
+**Symbol:** \(\hat{C}\)  
+**Matrix element:** \(w_{ij} \approx \langle i | \hat{C} | j \rangle\)  
+**Properties:** Hermitian (\(\hat{C}^\dagger = \hat{C}\)), positive semi-definite  
+**What:** Operator measuring structural stability between nodes  
 **Math:** [§3.1 Theory](docs/source/theory/mathematical_foundations.md#31-coherence-operator-ĉ) + [§3.1.1 Implementation](docs/source/theory/mathematical_foundations.md#311-implementation-bridge-theory-to-code)
 
 ### Sense Index (Si)
 
 **Code:** `G.nodes[n]['Si']`, `ALIAS_SI`, `compute_Si_node()`  
-**Range:** `[0, 1+]`  
-**What:** Reorganization stability capacity  
+**Symbol:** \(\text{Si}\) (global) or \(S_i\) (node i)  
+**Formula:** \(\text{Si} = \alpha \cdot \nu_{f,\text{norm}} + \beta \cdot (1 - \text{disp}_\theta) + \gamma \cdot (1 - |\Delta\text{NFR}|_{\text{norm}})\)  
+**Range:** \([0, 1^+]\) typically, higher = more stable reorganization  
+**What:** Capacity for stable structural reorganization  
+**Weights:** \(\alpha + \beta + \gamma = 1\) (default: 0.4, 0.3, 0.3)  
 **Math:** [Mathematical Foundations - Metrics](docs/source/theory/mathematical_foundations.md)
+
+---
+
+## The Nodal Equation
+
+**The fundamental equation of TNFR** governs structural evolution:
+
+\[
+\frac{\partial \text{EPI}}{\partial t} = \nu_f \cdot \Delta\text{NFR}(t)
+\]
+
+**Where:**
+- \(\frac{\partial \text{EPI}}{\partial t}\): Rate of change of structure
+- \(\nu_f\): Structural frequency (reorganization rate) in Hz_str
+- \(\Delta\text{NFR}(t)\): Reorganization gradient (driving pressure)
+
+**Interpretation:**
+- Structure changes **only when** both \(\nu_f > 0\) (capacity) and \(\Delta\text{NFR} \neq 0\) (pressure) exist
+- Rate of change is **proportional** to both frequency and gradient
+- When \(\nu_f \to 0\), evolution freezes (node collapse)
+- When \(\Delta\text{NFR} = 0\), structure reaches equilibrium
+
+**Implementation:** See `src/tnfr/dynamics/` for numerical integration  
+**Theory:** [§4 The Nodal Equation](docs/source/theory/mathematical_foundations.md#4-the-nodal-equation-complete-derivation)
 
 ---
 
@@ -113,14 +154,14 @@ From [AGENTS.md](AGENTS.md):
 
 ### Variable Summary
 
-| Symbol | Code Attribute | Units | Type |
-|--------|----------------|-------|------|
-| EPI | `'EPI'` | — | Coherent form |
-| νf | `'vf'` | Hz_str | Reorganization rate |
-| ΔNFR | `'dnfr'` | — | Gradient |
-| φ, θ | `'theta'` | radians | Synchrony |
-| C(t) | `compute_coherence()` | [0,1] | Stability |
-| Si | `'Si'` | [0,1+] | Stability capacity |
+| Symbol | Mathematical | Code Attribute | Units | Range | Type |
+|--------|--------------|----------------|-------|-------|------|
+| \(\text{EPI}\) | Primary Information Structure | `'EPI'` | dimensionless | \(B_{\text{EPI}}\) | Coherent form |
+| \(\nu_f\) | Structural frequency | `'vf'` | Hz_str | \(\mathbb{R}^+\) | Reorganization rate |
+| \(\Delta\text{NFR}\) | Reorganization operator | `'dnfr'` | dimensionless | \(\mathbb{R}\) | Evolution gradient |
+| \(\theta\), \(\phi\) | Phase angle | `'theta'` | radians | \([0, 2\pi)\) | Network synchrony |
+| \(C(t)\) | Total coherence | `compute_coherence()` | dimensionless | \([0, 1]\) | Global stability |
+| \(\text{Si}\) | Sense Index | `'Si'` | dimensionless | \([0, 1^+]\) | Reorganization stability |
 
 ### Common API Patterns
 
