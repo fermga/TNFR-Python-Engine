@@ -67,15 +67,12 @@ class TestEmissionStrictPreconditions:
         assert "Consider NAV (Transition)" in error_msg
 
     def test_validate_emission_strict_fails_at_vf_threshold(self):
-        """Validation fails when νf exactly at threshold (< not <=)."""
+        """Validation passes when νf equals threshold (boundary condition)."""
         G, node = create_nfr("at_threshold", epi=0.2, vf=0.5)
 
-        # At threshold should still be rejected (< not <=)
-        # Actually, the implementation should allow νf = 0.5 since it's >=
-        # Let me verify: the condition is `vf < vf_threshold`, so vf=0.5 should pass
+        # Should succeed: vf=0.5 is not < 0.5 (boundary is inclusive)
         try:
             validate_emission_strict(G, node)
-            # Should succeed since 0.5 is not < 0.5
         except ValueError:
             pytest.fail("Should not raise when vf equals threshold")
 
@@ -306,10 +303,6 @@ class TestEmissionPreconditionsIntegration:
             Emission()(G, node)
 
         assert "Consider IL (Coherence)" in str(exc_info.value)
-
-        # Coherence should work instead (it has different preconditions)
-        # Note: Coherence requires significant ΔNFR, which may not exist
-        # So we don't test actual Coherence application here
 
     def test_coupling_suggested_for_isolated_nodes(self):
         """Warning suggests UM (Coupling) for isolated nodes."""
