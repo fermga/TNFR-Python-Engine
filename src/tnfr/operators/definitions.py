@@ -313,6 +313,89 @@ class Emission(Operator):
     name: ClassVar[str] = EMISSION
     glyph: ClassVar[Glyph] = Glyph.AL
 
+    def __call__(self, G: TNFRGraph, node: Any, **kw: Any) -> None:
+        """Apply AL with structural irreversibility tracking.
+
+        Marks temporal irreversibility before delegating to grammar execution.
+        This ensures every emission leaves a persistent structural trace as
+        required by TNFR.pdf §2.2.1 (AL - Emisión fundacional).
+
+        Parameters
+        ----------
+        G : TNFRGraph
+            Graph storing TNFR nodes and structural operator history.
+        node : Any
+            Identifier or object representing the target node within ``G``.
+        **kw : Any
+            Additional keyword arguments forwarded to the grammar layer.
+        """
+        # Mark structural irreversibility BEFORE grammar execution
+        self._mark_irreversibility(G, node)
+
+        # Delegate to parent __call__ which applies grammar
+        super().__call__(G, node, **kw)
+
+    def _mark_irreversibility(self, G: TNFRGraph, node: Any) -> None:
+        """Mark structural irreversibility for AL operator.
+
+        According to TNFR.pdf §2.2.1, AL (Emission) is structurally irreversible:
+        "Una vez activado, AL reorganiza el campo. No puede deshacerse."
+
+        This method establishes:
+        - Temporal marker: ISO timestamp of first emission
+        - Activation flag: Persistent boolean indicating AL was activated
+        - Structural lineage: Genealogical record for EPI traceability
+
+        Parameters
+        ----------
+        G : TNFRGraph
+            Graph containing the node.
+        node : Any
+            Target node for emission marking.
+
+        Notes
+        -----
+        On first activation:
+        - Sets emission_timestamp (ISO format)
+        - Sets _emission_activated = True (immutable)
+        - Sets _emission_origin (timestamp copy for preservation)
+        - Initializes _structural_lineage dict
+
+        On re-activation:
+        - Preserves original timestamp
+        - Increments activation_count in lineage
+        """
+        from datetime import datetime, timezone
+
+        from ..alias import set_attr_str
+        from ..constants.aliases import ALIAS_EMISSION_TIMESTAMP
+
+        # Check if this is first activation
+        if "_emission_activated" not in G.nodes[node]:
+            # Generate UTC timestamp in ISO format
+            emission_timestamp = datetime.now(timezone.utc).isoformat()
+
+            # Set canonical timestamp using alias system (use set_attr_str for string values)
+            set_attr_str(G.nodes[node], ALIAS_EMISSION_TIMESTAMP, emission_timestamp)
+
+            # Set persistent activation flag (immutable marker)
+            G.nodes[node]["_emission_activated"] = True
+
+            # Preserve origin timestamp (never overwritten)
+            G.nodes[node]["_emission_origin"] = emission_timestamp
+
+            # Initialize structural lineage for genealogical traceability
+            G.nodes[node]["_structural_lineage"] = {
+                "origin": emission_timestamp,
+                "activation_count": 1,
+                "derived_nodes": [],  # Nodes that emerge from this emission
+                "parent_emission": None,  # If derived from another node
+            }
+        else:
+            # Re-activation case: increment counter, preserve original timestamp
+            if "_structural_lineage" in G.nodes[node]:
+                G.nodes[node]["_structural_lineage"]["activation_count"] += 1
+
     def _validate_preconditions(self, G: TNFRGraph, node: Any) -> None:
         """Validate AL-specific preconditions."""
         from .preconditions import validate_emission

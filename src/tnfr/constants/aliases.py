@@ -15,6 +15,7 @@ ALIAS_D2EPI = get_aliases("D2EPI")
 ALIAS_DVF = get_aliases("DVF")
 ALIAS_D2VF = get_aliases("D2VF")
 ALIAS_DSI = get_aliases("DSI")
+ALIAS_EMISSION_TIMESTAMP = get_aliases("EMISSION_TIMESTAMP")
 
 __all__ = [
     "ALIAS_VF",
@@ -28,4 +29,5 @@ __all__ = [
     "ALIAS_DVF",
     "ALIAS_D2VF",
     "ALIAS_DSI",
+    "ALIAS_EMISSION_TIMESTAMP",
 ]
