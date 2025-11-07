@@ -86,6 +86,46 @@ Canonical definitions for the Resonant Fractal Nature Theory (TNFR) variables, o
 
 ---
 
+### Coherence Operator (Ĉ)
+
+**Symbol:** Ĉ  
+**Type:** Hermitian operator on H_NFR  
+**Description:** Fundamental operator measuring structural stability and pattern persistence. Acts on quantum states |NFR⟩ in Hilbert space H_NFR.
+
+**Mathematical Definition:**
+```
+Ĉ = ∫₀^∞ λ dP_λ = Σᵢ λᵢ |φᵢ⟩⟨φᵢ|
+```
+
+**Key Properties:**
+1. **Hermiticity**: Ĉ† = Ĉ (real eigenvalues)
+2. **Positivity**: ⟨ψ|Ĉ|ψ⟩ ≥ 0 (non-negative coherence)
+3. **Boundedness**: ‖Ĉ‖ ≤ M (controlled stability)
+
+**Computational Implementation:**
+
+In finite networks, Ĉ is approximated by coherence matrix W:
+```
+wᵢⱼ ≈ ⟨i|Ĉ|j⟩
+```
+
+Each matrix element combines structural similarities:
+- Phase alignment (resonant coupling)
+- EPI congruence (structural form)
+- Frequency compatibility (harmonic resonance)
+- Sense index similarity (reorganization stability)
+
+**API:**
+- `coherence_matrix(G)` → (nodes, W) computes the matrix approximation
+- `compute_coherence(G)` → C(t) computes Tr(Ĉρ) ≈ ⟨ψ|Ĉ|ψ⟩
+
+**See Also:**
+- [Mathematical Foundations §3.1](docs/source/theory/mathematical_foundations.md#31-coherence-operator-ĉ) for rigorous formalization
+- [Implementation Bridge §3.1.1](docs/source/theory/mathematical_foundations.md#311-implementation-bridge-theory-to-code) for theory-to-code mapping
+- `src/tnfr/metrics/coherence.py` for implementation details
+
+---
+
 ### Sense Index (Si)
 
 **Symbol:** Si  

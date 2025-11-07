@@ -153,15 +153,105 @@ where `w_coherence(i,j)` is the coherence weight between nodes i and j, typicall
 - Phase alignment `cos(φᵢ - φⱼ)`
 - Frequency compatibility `exp(-|νfᵢ - νfⱼ|/σ)`
 
-**Connection to Implementation**: See `src/tnfr/metrics/coherence.py` for computational realizations:
-```python
-def compute_coherence(G, node):
-    """
-    Computes ⟨node|Ĉ|node⟩ from network topology and phase.
-    """
-    # Implementation uses weighted sum over neighbors
-    # with phase and frequency alignment factors
+#### 3.1.1 Implementation Bridge: Theory to Code
+
+The mathematical formalization of Ĉ is realized computationally through the **coherence matrix** W in `src/tnfr/metrics/coherence.py`.
+
+**Matrix Approximation Theorem:**
+
+For a finite network with N nodes, the coherence operator is projected onto the computational basis:
+
 ```
+Ĉ ≈ Σᵢⱼ wᵢⱼ |i⟩⟨j|
+```
+
+where the matrix elements `wᵢⱼ` approximate `⟨i|Ĉ|j⟩` with bounded error:
+
+```
+‖W - Ĉ_N‖ ≤ ε(Δt, N)
+```
+
+**Computational Construction of wᵢⱼ:**
+
+The function `coherence_matrix(G)` computes W where each element is a weighted combination of structural similarities:
+
+```
+wᵢⱼ = w_phase · s_phase + w_epi · s_epi + w_vf · s_vf + w_si · s_si
+```
+
+**Similarity Components** (each component ∈ [0,1]):
+
+1. **s_phase** (Phase similarity): Measures resonant coupling
+   ```
+   s_phase = 0.5 · (1 + cos(θᵢ - θⱼ))
+   ```
+   - Interpretation: Projection of phase vectors in complex plane
+   - Maximum when θᵢ = θⱼ (perfect synchrony)
+   - Implements phase alignment factor from abstract construction
+
+2. **s_epi** (Structural similarity): Measures EPI congruence
+   ```
+   s_epi = 1 - |EPIᵢ - EPIⱼ| / ΔEPI_max
+   ```
+   - Interpretation: Normalized distance in Banach space B_EPI
+   - Maximum when EPIᵢ ≈ EPIⱼ (structural similarity)
+   - Encodes topological proximity at structural level
+
+3. **s_vf** (Frequency similarity): Measures harmonic compatibility
+   ```
+   s_vf = 1 - |νfᵢ - νfⱼ| / Δνf_max
+   ```
+   - Interpretation: Proximity in structural frequency spectrum
+   - Maximum when νfᵢ ≈ νfⱼ (harmonic resonance)
+   - Approximates frequency compatibility factor
+
+4. **s_si** (Sense similarity): Measures reorganization stability congruence
+   ```
+   s_si = 1 - |Siᵢ - Siⱼ|
+   ```
+   - Interpretation: Coherence of reorganization capacities
+   - Maximum when Siᵢ ≈ Siⱼ (matched stability)
+   - Captures higher-order coherence structure
+
+**Spectral Properties Verification:**
+
+The implementation guarantees that W satisfies the theoretical requirements:
+
+1. **Hermiticity**: W = W^T (by construction, wᵢⱼ = wⱼᵢ)
+2. **Positivity**: All eigenvalues λ(W) ≥ 0 (verified in tests)
+3. **Boundedness**: ‖W‖ ≤ 1 (ensured by clamp01 operations)
+
+**Total Coherence Calculation:**
+
+The global coherence C(t) is computed via the trace formula:
+
+```
+C(t) = Tr(W ρ) ≈ ⟨ψ|Ĉ|ψ⟩
+```
+
+where ρ is the density matrix. In the computational basis with uniform distribution:
+
+```
+C(t) = Σᵢ Wᵢ / N
+```
+
+where `Wᵢ = Σⱼ wᵢⱼ / (N-1)` is the normalized row sum, representing node i's coupling strength to the network.
+
+**Code Reference:**
+
+```python
+from tnfr.metrics import coherence_matrix, compute_coherence
+
+# Compute W matrix approximating Ĉ
+nodes, W = coherence_matrix(G)
+# W[i][j] = wᵢⱼ ≈ ⟨i|Ĉ|j⟩
+
+# Compute total coherence C(t) = Tr(Ĉρ)
+C_t = compute_coherence(G)
+# C_t ≈ ⟨ψ|Ĉ|ψ⟩ for network state |ψ⟩
+```
+
+See `tests/unit/metrics/test_coherence_operator_properties.py` for validation of spectral properties.
 
 ### 3.2 Frequency Operator Ĵ
 
