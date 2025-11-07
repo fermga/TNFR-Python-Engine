@@ -6,7 +6,8 @@ canonical TNFR metrics: coherence, balance, sustainability, and efficiency.
 
 from __future__ import annotations
 
-from typing import List
+from functools import lru_cache
+from typing import List, Tuple
 
 from ..compat.dataclass import dataclass
 from ..config.operator_names import (
@@ -89,6 +90,9 @@ class SequenceHealthAnalyzer:
 
     Evaluates sequences along multiple dimensions to provide quantitative
     assessment of structural quality, coherence, and sustainability.
+    
+    Uses caching to optimize repeated analysis of identical sequences,
+    which is common in pattern exploration and batch validation workflows.
 
     Examples
     --------
@@ -103,8 +107,80 @@ class SequenceHealthAnalyzer:
     """
 
     def __init__(self) -> None:
-        """Initialize the health analyzer."""
+        """Initialize the health analyzer with caching support."""
         self._recommendations: List[str] = []
+        # Cache for single-pass analysis results keyed by sequence tuple
+        # Using maxsize=128 to avoid unbounded growth while caching common sequences
+        self._analysis_cache = lru_cache(maxsize=128)(self._compute_single_pass)
+
+    def _compute_single_pass(
+        self, sequence_tuple: Tuple[str, ...]
+    ) -> Tuple[int, int, int, int, int, List[Tuple[str, str]]]:
+        """Compute sequence statistics in a single pass for efficiency.
+        
+        This method scans the sequence once and extracts all the information
+        needed for the various health metrics, avoiding redundant iterations.
+        
+        Parameters
+        ----------
+        sequence_tuple : Tuple[str, ...]
+            Immutable sequence of operators (tuple for hashability in cache).
+            
+        Returns
+        -------
+        Tuple containing:
+            - stabilizer_count: int
+            - destabilizer_count: int
+            - transformer_count: int
+            - regenerator_count: int
+            - unique_ops: int
+            - problematic_transitions: List[(op1, op2)] pairs
+        
+        Notes
+        -----
+        This function is cached using lru_cache to optimize repeated analysis
+        of identical sequences, which is common in batch validation and
+        pattern exploration workflows.
+        """
+        sequence = list(sequence_tuple)
+        
+        # Initialize counters
+        stabilizer_count = 0
+        destabilizer_count = 0
+        transformer_count = 0
+        regenerator_count = 0
+        unique_ops_set = set()
+        problematic_transitions = []
+        
+        # Single pass through sequence
+        for i, op in enumerate(sequence):
+            unique_ops_set.add(op)
+            
+            # Count operator categories
+            if op in _STABILIZERS:
+                stabilizer_count += 1
+            if op in DESTABILIZERS:
+                destabilizer_count += 1
+            if op in TRANSFORMERS:
+                transformer_count += 1
+            if op in _REGENERATORS:
+                regenerator_count += 1
+            
+            # Check transitions
+            if i < len(sequence) - 1:
+                next_op = sequence[i + 1]
+                # Destabilizer → destabilizer is problematic
+                if op in DESTABILIZERS and next_op in DESTABILIZERS:
+                    problematic_transitions.append((op, next_op))
+        
+        return (
+            stabilizer_count,
+            destabilizer_count,
+            transformer_count,
+            regenerator_count,
+            len(unique_ops_set),
+            problematic_transitions,
+        )
 
     def analyze_health(self, sequence: List[str]) -> SequenceHealthMetrics:
         """Perform complete structural health analysis of a sequence.
@@ -127,14 +203,34 @@ class SequenceHealthAnalyzer:
         True
         """
         self._recommendations = []
+        
+        # Use single-pass analysis for efficiency (cached)
+        sequence_tuple = tuple(sequence)
+        analysis = self._analysis_cache(sequence_tuple)
+        
+        # Extract results from single-pass analysis
+        (
+            stabilizer_count,
+            destabilizer_count,
+            transformer_count,
+            regenerator_count,
+            unique_count,
+            problematic_transitions,
+        ) = analysis
 
-        coherence = self._calculate_coherence(sequence)
-        balance = self._calculate_balance(sequence)
-        sustainability = self._calculate_sustainability(sequence)
-        efficiency = self._calculate_efficiency(sequence)
+        coherence = self._calculate_coherence(sequence, problematic_transitions)
+        balance = self._calculate_balance(
+            sequence, stabilizer_count, destabilizer_count
+        )
+        sustainability = self._calculate_sustainability(
+            sequence, stabilizer_count, destabilizer_count, regenerator_count
+        )
+        efficiency = self._calculate_efficiency(sequence, unique_count)
         frequency = self._calculate_frequency_harmony(sequence)
-        completeness = self._calculate_completeness(sequence)
-        smoothness = self._calculate_smoothness(sequence)
+        completeness = self._calculate_completeness(
+            sequence, stabilizer_count, destabilizer_count, transformer_count
+        )
+        smoothness = self._calculate_smoothness(sequence, problematic_transitions)
 
         # Calculate overall health as weighted average
         # Primary metrics weighted more heavily
@@ -164,7 +260,9 @@ class SequenceHealthAnalyzer:
             recommendations=self._recommendations.copy(),
         )
 
-    def _calculate_coherence(self, sequence: List[str]) -> float:
+    def _calculate_coherence(
+        self, sequence: List[str], problematic_transitions: List[Tuple[str, str]]
+    ) -> float:
         """Calculate coherence index: how well the sequence flows.
 
         Factors:
@@ -176,6 +274,8 @@ class SequenceHealthAnalyzer:
         ----------
         sequence : List[str]
             Operator sequence
+        problematic_transitions : List[Tuple[str, str]]
+            Pre-computed list of problematic transition pairs
 
         Returns
         -------
@@ -185,8 +285,14 @@ class SequenceHealthAnalyzer:
         if not sequence:
             return 0.0
 
-        # Transition quality: ratio of valid transitions
-        transition_quality = self._assess_all_transitions(sequence)
+        # Transition quality: use pre-computed problematic transitions
+        if len(sequence) < 2:
+            transition_quality = 1.0
+        else:
+            total_transitions = len(sequence) - 1
+            # Each problematic transition gets 0.5 penalty
+            penalty = len(problematic_transitions) * 0.5
+            transition_quality = max(0.0, 1.0 - (penalty / total_transitions))
 
         # Pattern clarity: does it form a recognizable structure?
         pattern_clarity = self._assess_pattern_clarity(sequence)
@@ -196,7 +302,9 @@ class SequenceHealthAnalyzer:
 
         return (transition_quality + pattern_clarity + structural_closure) / 3.0
 
-    def _calculate_balance(self, sequence: List[str]) -> float:
+    def _calculate_balance(
+        self, sequence: List[str], stabilizer_count: int, destabilizer_count: int
+    ) -> float:
         """Calculate balance score: equilibrium between stabilizers and destabilizers.
 
         Ideal sequences have roughly equal stabilization and transformation forces.
@@ -206,6 +314,10 @@ class SequenceHealthAnalyzer:
         ----------
         sequence : List[str]
             Operator sequence
+        stabilizer_count : int
+            Pre-computed count of stabilizing operators
+        destabilizer_count : int
+            Pre-computed count of destabilizing operators
 
         Returns
         -------
@@ -215,16 +327,13 @@ class SequenceHealthAnalyzer:
         if not sequence:
             return 0.5  # Neutral for empty
 
-        stabilizers = sum(1 for op in sequence if op in _STABILIZERS)
-        destabilizers = sum(1 for op in sequence if op in DESTABILIZERS)
-
         # If neither present, neutral balance
-        if stabilizers == 0 and destabilizers == 0:
+        if stabilizer_count == 0 and destabilizer_count == 0:
             return 0.5
 
         # Calculate ratio: closer to 1.0 means better balance
-        max_count = max(stabilizers, destabilizers)
-        min_count = min(stabilizers, destabilizers)
+        max_count = max(stabilizer_count, destabilizer_count)
+        min_count = min(stabilizer_count, destabilizer_count)
 
         if max_count == 0:
             return 0.5
@@ -232,7 +341,7 @@ class SequenceHealthAnalyzer:
         ratio = min_count / max_count
 
         # Penalize severe imbalance (difference > half the sequence length)
-        imbalance = abs(stabilizers - destabilizers)
+        imbalance = abs(stabilizer_count - destabilizer_count)
         if imbalance > len(sequence) // 2:
             ratio *= 0.7  # Apply penalty
             self._recommendations.append(
@@ -241,7 +350,13 @@ class SequenceHealthAnalyzer:
 
         return ratio
 
-    def _calculate_sustainability(self, sequence: List[str]) -> float:
+    def _calculate_sustainability(
+        self,
+        sequence: List[str],
+        stabilizer_count: int,
+        destabilizer_count: int,
+        regenerator_count: int,
+    ) -> float:
         """Calculate sustainability index: capacity to maintain without collapse.
 
         Factors:
@@ -253,6 +368,12 @@ class SequenceHealthAnalyzer:
         ----------
         sequence : List[str]
             Operator sequence
+        stabilizer_count : int
+            Pre-computed count of stabilizing operators
+        destabilizer_count : int
+            Pre-computed count of destabilizing operators
+        regenerator_count : int
+            Pre-computed count of regenerative operators
 
         Returns
         -------
@@ -287,15 +408,15 @@ class SequenceHealthAnalyzer:
                 )
 
         # Factor 3: Regenerative elements (0.3 points)
-        has_regenerative = any(op in _REGENERATORS for op in sequence)
-        if has_regenerative:
+        # Use pre-computed regenerator count
+        if regenerator_count > 0:
             sustainability += 0.3
         else:
             sustainability += 0.1  # Some credit even without
 
         return min(1.0, sustainability)
 
-    def _calculate_efficiency(self, sequence: List[str]) -> float:
+    def _calculate_efficiency(self, sequence: List[str], unique_count: int) -> float:
         """Calculate complexity efficiency: value achieved relative to length.
 
         Penalizes unnecessarily long sequences that don't provide proportional value.
@@ -304,6 +425,8 @@ class SequenceHealthAnalyzer:
         ----------
         sequence : List[str]
             Operator sequence
+        unique_count : int
+            Pre-computed count of unique operators in sequence
 
         Returns
         -------
@@ -313,8 +436,12 @@ class SequenceHealthAnalyzer:
         if not sequence:
             return 0.0
 
-        # Assess structural value: diversity and balance of operator types
-        pattern_value = self._assess_pattern_value(sequence)
+        # Assess structural value using pre-computed unique count
+        diversity_score = min(1.0, unique_count / 6.0)  # 6+ operators is excellent diversity
+        
+        # Note: We still need to call _assess_pattern_value for category coverage
+        # This is minimal overhead as it's a single pass checking set memberships
+        pattern_value = self._assess_pattern_value_optimized(sequence, unique_count)
 
         # Length penalty: sequences longer than 10 operators get penalized
         # Optimal range is 3-8 operators
@@ -356,7 +483,13 @@ class SequenceHealthAnalyzer:
         # Future enhancement: integrate with grammar.STRUCTURAL_FREQUENCIES
         return 0.85
 
-    def _calculate_completeness(self, sequence: List[str]) -> float:
+    def _calculate_completeness(
+        self,
+        sequence: List[str],
+        stabilizer_count: int,
+        destabilizer_count: int,
+        transformer_count: int,
+    ) -> float:
         """Calculate pattern completeness: how complete the pattern is.
 
         Complete patterns (with activation, transformation, stabilization) score higher.
@@ -365,6 +498,12 @@ class SequenceHealthAnalyzer:
         ----------
         sequence : List[str]
             Operator sequence
+        stabilizer_count : int
+            Pre-computed count of stabilizing operators
+        destabilizer_count : int
+            Pre-computed count of destabilizing operators
+        transformer_count : int
+            Pre-computed count of transforming operators
 
         Returns
         -------
@@ -374,10 +513,10 @@ class SequenceHealthAnalyzer:
         if not sequence:
             return 0.0
 
-        # Check for key phases
+        # Check for key phases using pre-computed counts and minimal checks
         has_activation = any(op in {"emission", "reception"} for op in sequence)
-        has_transformation = any(op in DESTABILIZERS | TRANSFORMERS for op in sequence)
-        has_stabilization = any(op in _STABILIZERS for op in sequence)
+        has_transformation = destabilizer_count > 0 or transformer_count > 0
+        has_stabilization = stabilizer_count > 0
         has_completion = any(op in {"silence", "transition"} for op in sequence)
 
         phase_count = sum([has_activation, has_transformation, has_stabilization, has_completion])
@@ -385,7 +524,9 @@ class SequenceHealthAnalyzer:
         # All 4 phases = 1.0, 3 phases = 0.75, 2 phases = 0.5, 1 phase = 0.25
         return phase_count / 4.0
 
-    def _calculate_smoothness(self, sequence: List[str]) -> float:
+    def _calculate_smoothness(
+        self, sequence: List[str], problematic_transitions: List[Tuple[str, str]]
+    ) -> float:
         """Calculate transition smoothness: quality of operator transitions.
 
         Measures ratio of valid/smooth transitions vs total transitions.
@@ -394,45 +535,21 @@ class SequenceHealthAnalyzer:
         ----------
         sequence : List[str]
             Operator sequence
+        problematic_transitions : List[Tuple[str, str]]
+            Pre-computed list of problematic transition pairs
 
         Returns
         -------
         float
             Smoothness score (0.0-1.0)
         """
-        return self._assess_all_transitions(sequence)
-
-    def _assess_all_transitions(self, sequence: List[str]) -> float:
-        """Assess quality of all transitions in the sequence.
-
-        Parameters
-        ----------
-        sequence : List[str]
-            Operator sequence
-
-        Returns
-        -------
-        float
-            Transition quality ratio (0.0-1.0)
-        """
         if len(sequence) < 2:
             return 1.0  # No transitions to assess
 
-        # Simple heuristic: most transitions are valid in TNFR
-        # Problematic: destabilizer → destabilizer without stabilization
         total_transitions = len(sequence) - 1
-        problematic = 0
-
-        for i in range(len(sequence) - 1):
-            current = sequence[i]
-            next_op = sequence[i + 1]
-
-            # Check for problematic patterns
-            # Multiple destabilizers in a row without stabilization
-            if current in DESTABILIZERS and next_op in DESTABILIZERS:
-                problematic += 0.5  # Partial penalty
-
-        return max(0.0, 1.0 - (problematic / total_transitions))
+        # Each problematic transition gets 0.5 penalty (same as in _calculate_coherence)
+        penalty = len(problematic_transitions) * 0.5
+        return max(0.0, 1.0 - (penalty / total_transitions))
 
     def _assess_pattern_clarity(self, sequence: List[str]) -> float:
         """Assess how clearly the sequence forms a recognizable pattern.
@@ -514,8 +631,10 @@ class SequenceHealthAnalyzer:
 
         return unresolved
 
-    def _assess_pattern_value(self, sequence: List[str]) -> float:
-        """Assess the structural value of the pattern.
+    def _assess_pattern_value_optimized(
+        self, sequence: List[str], unique_count: int
+    ) -> float:
+        """Assess the structural value of the pattern using pre-computed unique count.
 
         Value is higher when:
         - Multiple operator types present (diversity)
@@ -526,6 +645,8 @@ class SequenceHealthAnalyzer:
         ----------
         sequence : List[str]
             Operator sequence
+        unique_count : int
+            Pre-computed count of unique operators in sequence
 
         Returns
         -------
@@ -535,11 +656,11 @@ class SequenceHealthAnalyzer:
         if not sequence:
             return 0.0
 
-        # Diversity: unique operators used
-        unique_count = len(set(sequence))
+        # Diversity: use pre-computed unique count
         diversity_score = min(1.0, unique_count / 6.0)  # 6+ operators is excellent diversity
 
         # Coverage: how many operator categories are represented
+        # This is still a minimal single-pass check
         categories_present = 0
         if any(op in {"emission", "reception"} for op in sequence):
             categories_present += 1  # Activation
