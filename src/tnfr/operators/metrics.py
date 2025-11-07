@@ -231,8 +231,9 @@ def reception_metrics(G: TNFRGraph, node: NodeId, epi_before: float) -> dict[str
 def coherence_metrics(G: TNFRGraph, node: NodeId, dnfr_before: float) -> dict[str, Any]:
     """IL - Coherence metrics: ΔC(t), stability gain, ΔNFR reduction.
 
-    Extended to include ΔNFR reduction percentage and telemetry from the
-    explicit reduction mechanism implemented in the Coherence operator.
+    Extended to include ΔNFR reduction percentage, C(t) coherence metrics,
+    and telemetry from the explicit reduction mechanism implemented in the
+    Coherence operator.
 
     Parameters
     ----------
@@ -253,8 +254,13 @@ def coherence_metrics(G: TNFRGraph, node: NodeId, dnfr_before: float) -> dict[st
         - dnfr_reduction_pct: Percentage reduction relative to before
         - stability_gain: Improvement in stability (reduction of |ΔNFR|)
         - is_stabilized: Whether node reached stable state (|ΔNFR| < 0.1)
+        - C_global: Global network coherence (current)
+        - C_local: Local neighborhood coherence (current)
+        - stabilization_quality: Combined metric (C_local * (1.0 - dnfr_after))
         - epi_final, vf_final: Final structural state
     """
+    from ..metrics.coherence import compute_global_coherence, compute_local_coherence
+    
     dnfr_after = _get_node_attr(G, node, ALIAS_DNFR)
     epi = _get_node_attr(G, node, ALIAS_EPI)
     vf = _get_node_attr(G, node, ALIAS_VF)
@@ -264,6 +270,10 @@ def coherence_metrics(G: TNFRGraph, node: NodeId, dnfr_before: float) -> dict[st
     dnfr_reduction_pct = (
         (dnfr_reduction / dnfr_before * 100.0) if dnfr_before > 0 else 0.0
     )
+    
+    # Compute coherence metrics
+    C_global = compute_global_coherence(G)
+    C_local = compute_local_coherence(G, node)
 
     return {
         "operator": "Coherence",
@@ -274,6 +284,9 @@ def coherence_metrics(G: TNFRGraph, node: NodeId, dnfr_before: float) -> dict[st
         "dnfr_reduction_pct": dnfr_reduction_pct,
         "dnfr_final": dnfr_after,
         "stability_gain": abs(dnfr_before) - abs(dnfr_after),
+        "C_global": C_global,
+        "C_local": C_local,
+        "stabilization_quality": C_local * (1.0 - dnfr_after),  # Combined metric
         "epi_final": epi,
         "vf_final": vf,
         "is_stabilized": abs(dnfr_after) < 0.1,  # Configurable threshold
