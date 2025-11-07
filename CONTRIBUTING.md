@@ -406,3 +406,214 @@ telemetry contracts already documented.
   RNG seeds reproducible to satisfy invariants #8 and #9. Review the
   [Layered responsibilities](ARCHITECTURE.md#layered-responsibilities)
   summary before touching shared state helpers.
+
+---
+
+## Community contributions (Grammar 2.0)
+
+TNFR Grammar 2.0 introduces a **community-driven extension system** for domain-specific patterns, health analyzers, and integrations. Contributors can expand TNFR to new application domains while maintaining canonical invariants.
+
+### Types of community contributions
+
+#### 1. New domain patterns
+
+Submit structural patterns for specific application domains:
+
+- **Medical/Healthcare patterns**: Therapeutic journeys, clinical interventions
+- **Scientific research patterns**: Experimental protocols, methodology sequences
+- **Business process patterns**: Workflow optimization, organizational change
+- **Social/Community patterns**: Group dynamics, collective decision-making
+
+**Requirements**:
+- Health score > 0.75 for all domain examples
+- Minimum 3 validated use cases with real-world mapping
+- Integration tests demonstrating pattern effectiveness
+- Documentation explaining domain context and structural mapping
+
+**How to submit**: Use issue template `.github/ISSUE_TEMPLATE/new_domain_pattern.yml`
+
+#### 2. Domain extensions
+
+Create complete extension packages for new application domains:
+
+```python
+from tnfr.extensions.base import TNFRExtension
+
+class MedicalExtension(TNFRExtension):
+    """Extension for medical/therapeutic applications."""
+    
+    def get_domain_name(self) -> str:
+        return "medical"
+    
+    def get_pattern_definitions(self) -> Dict[str, PatternDefinition]:
+        # Return domain patterns
+        pass
+    
+    def get_health_analyzers(self) -> Dict[str, Type]:
+        # Return specialized analyzers
+        pass
+```
+
+**Requirements**:
+- Follows `TNFRExtension` base class structure
+- All patterns achieve health score > 0.75
+- Domain-specific health analyzers (optional but recommended)
+- Comprehensive documentation with real-world examples
+- Integration tests covering key scenarios
+
+**How to submit**: Use issue template `.github/ISSUE_TEMPLATE/domain_extension.yml`
+
+#### 3. Health metrics extensions
+
+Add specialized metrics for specific domains:
+
+```python
+from tnfr.metrics import SequenceHealthAnalyzer
+
+class TherapeuticHealthAnalyzer(SequenceHealthAnalyzer):
+    """Specialized health analyzer for therapeutic contexts."""
+    
+    def analyze_therapeutic_health(
+        self,
+        sequence: List[str]
+    ) -> Dict[str, float]:
+        # Domain-specific health dimensions
+        healing_potential = self._calculate_healing_potential(sequence)
+        trauma_safety = self._calculate_trauma_safety(sequence)
+        therapeutic_alliance = self._calculate_alliance_strength(sequence)
+        
+        return {
+            "healing_potential": healing_potential,
+            "trauma_safety": trauma_safety,
+            "therapeutic_alliance": therapeutic_alliance,
+        }
+```
+
+**Requirements**:
+- All metrics return values in [0, 1] range
+- Clear domain interpretation for each metric
+- Validation on real-world data
+- Type annotations and docstrings
+
+#### 4. Visualization extensions
+
+Add domain-specific visualizations:
+
+- Therapeutic journey maps
+- Educational learning paths
+- Organizational change timelines
+- Scientific research workflows
+
+**Requirements**:
+- Integrates with existing TNFR visualization framework
+- Respects structural metrics (C(t), Si, phase, νf)
+- Provides clear visual interpretation of domain concepts
+
+#### 5. Integration tools
+
+Build connectors to external systems:
+
+- CRM integration (sales/business sequences)
+- LMS integration (educational sequences)
+- EHR integration (medical/clinical data)
+- Project management tools
+
+**Requirements**:
+- Clean API separation (external system ↔ TNFR)
+- Preserves TNFR structural semantics
+- Handles data validation and error cases
+- Documentation with usage examples
+
+### Extension development guide
+
+**Getting started**:
+
+1. **Study the template**: Review `.github/EXTENSION_TEMPLATE.md`
+2. **Examine examples**: Study reference extensions:
+   - `src/tnfr/extensions/medical/` - Medical/therapeutic domain
+   - `src/tnfr/extensions/business/` - Business process domain
+3. **Create extension structure**:
+   ```
+   src/tnfr/extensions/your_domain/
+   ├── __init__.py              # Extension registration
+   ├── patterns.py              # Domain patterns
+   ├── health_analyzers.py      # Specialized metrics
+   ├── cookbook.py              # Validated recipes
+   └── README.md                # Domain documentation
+   ```
+4. **Implement base class**: Inherit from `TNFRExtension`
+5. **Add tests**: Create `tests/extensions/test_your_domain.py`
+6. **Validate**: Run `python tools/community/extension_validator.py`
+7. **Submit PR**: Use the community PR template
+
+**Quality standards**:
+
+- **Pattern validation**: All examples must achieve health score > 0.75
+- **Use case validation**: Minimum 3 real-world use cases per pattern
+- **Type safety**: Complete type annotations, mypy passes
+- **Documentation**: NumPy-style docstrings, usage examples
+- **Testing**: Integration tests with >80% coverage
+- **TNFR compliance**: Preserves canonical invariants
+
+### Community validation framework
+
+Extensions are validated using automated tools:
+
+```bash
+# Validate extension quality
+python tools/community/extension_validator.py your_domain
+
+# Generate pattern template
+python tools/community/pattern_generator.py your_domain use_case_name
+
+# Check contribution quality
+python tools/community/contribution_checker.py your_pr_number
+```
+
+**Validation criteria**:
+
+1. **Code quality**: Passes linting, type checking, and style checks
+2. **Pattern validation**: All examples meet health score thresholds
+3. **Documentation completeness**: All required sections present
+4. **Test coverage**: Core functionality tested with >80% coverage
+5. **TNFR compliance**: Canonical invariants preserved
+
+### Community support
+
+**Resources**:
+
+- **Extension template**: `.github/EXTENSION_TEMPLATE.md`
+- **Issue templates**: Domain patterns, extensions, performance issues
+- **Example extensions**: Medical and business reference implementations
+- **Documentation**: `docs/extensions/` for detailed guides
+
+**Getting help**:
+
+- Open a discussion in GitHub Discussions for questions
+- Use issue templates for structured submissions
+- Reference example extensions for implementation patterns
+- Review PR template checklist before submitting
+
+**Recognition**:
+
+- Extension maintainers listed in extension documentation
+- Contributor acknowledgments in release notes
+- Domain expert recognition for validated contributions
+
+### Success metrics for community contributions
+
+**Quality targets**:
+
+- 95%+ community PRs pass automated validation
+- Average health score > 0.75 for community patterns
+- Zero breaking changes from community contributions
+- Response time < 48h for community issues
+
+**Growth targets**:
+
+- 10+ community contributors in first 6 months
+- 5+ new domain extensions submitted
+- 50+ new cookbook recipes from community
+- Expanding TNFR to new application domains
+
+---
