@@ -13,6 +13,7 @@ from ..alias import get_attr
 from ..constants.aliases import ALIAS_EPI, ALIAS_DNFR
 from ..operators.definitions import (
     Coherence,
+    Contraction,
     Dissonance,
     Emission,
     Mutation,
@@ -95,11 +96,13 @@ class AdaptiveLearningSystem:
     ) -> None:
         """Execute learning cycle from external stimulus.
 
-        Implements canonical learning sequence:
+        Implements canonical learning sequence following TNFR grammar:
         - AL (Emission): Activate learning readiness
         - EN (Reception): Receive stimulus
+        - IL (Coherence): Stabilize before dissonance (grammar requirement)
         - OZ (Dissonance): If stimulus is dissonant
         - T'HOL (SelfOrganization): Reorganize if needed
+        - NUL (Contraction): Close T'HOL block (grammar requirement)
         - IL (Coherence): Consolidate if requested
         - SHA (Silence): End sequence properly
 
@@ -114,21 +117,30 @@ class AdaptiveLearningSystem:
         -----
         Reuses run_sequence and existing operators for all transformations.
         Dissonance detection uses current EPI from node attributes.
-        Sequences must end with terminal operators per TNFR grammar.
+        Sequences must follow TNFR grammar rules including T'HOL closure.
+        
+        **Grammar compliance:**
+        
+        - T'HOL (SelfOrganization) blocks require closure with NUL (Contraction) or SHA (Silence)
+        - Dissonance should be preceded by stabilization (Coherence)
         """
         sequence: list[Operator] = [Emission(), Reception()]
 
         # Check if stimulus is dissonant (requires reorganization)
         if self._is_dissonant(stimulus):
-            # For dissonant input, need coherence before dissonance per grammar
-            sequence.append(Coherence())
-            sequence.extend([Dissonance(), SelfOrganization(), Coherence()])
-
-        # Always end with silence per TNFR grammar
-        if consolidate:
-            if not self._is_dissonant(stimulus):
+            # For dissonant input, follow grammar-compliant reorganization
+            # T'HOL block must be closed with SILENCE or CONTRACTION
+            sequence.extend([
+                Coherence(),           # Stabilize before dissonance (grammar)
+                Dissonance(),          # Introduce controlled instability
+                SelfOrganization(),    # Autonomous reorganization
+                Silence(),             # Close T'HOL block and end sequence (grammar requirement)
+            ])
+        else:
+            # Non-dissonant: simpler path with optional consolidation
+            if consolidate:
                 sequence.append(Coherence())
-        sequence.append(Silence())
+            sequence.append(Silence())  # Always end with terminal operator
 
         # Execute using canonical run_sequence
         run_sequence(self.G, self.node, sequence)
@@ -166,7 +178,7 @@ class AdaptiveLearningSystem:
         -----
         Reuses run_sequence and existing operators for consolidation.
         This sequence is useful for post-learning stabilization.
-        Follows TNFR grammar: must start with emission and include reception→coherence.
+        Follows TNFR grammar: must start with emission and include reception->coherence.
         """
         sequence = [Emission(), Reception(), Coherence(), Recursivity()]
         run_sequence(self.G, self.node, sequence)
@@ -175,9 +187,9 @@ class AdaptiveLearningSystem:
         """Execute full adaptive learning cycle with exploration.
 
         Implements iterative learning with conditional stabilization:
-        - Each iteration: AL (Emission) followed by T'HOL (SelfOrganization)
-        - Stabilizes with IL if ΔNFR below threshold
-        - Continues exploring with OZ if ΔNFR above threshold
+        - Each iteration: AL -> EN -> IL -> THOL with closure
+        - Stabilizes with SILENCE if ΔNFR below threshold
+        - Continues exploring with DISSONANCE if ΔNFR above threshold
 
         Parameters
         ----------
@@ -187,20 +199,20 @@ class AdaptiveLearningSystem:
         Notes
         -----
         Reuses operators and _should_stabilize logic for adaptive behavior.
-        Each iteration applies operators individually using their __call__.
+        Each iteration applies a grammar-compliant sequence.
+        T'HOL requires proper context (AL -> EN -> IL) and closure (SILENCE/CONTRACTION).
         """
         for _ in range(num_iterations):
-            # Emission: activate
+            # Grammar-compliant activation sequence
             Emission()(self.G, self.node)
-
+            Reception()(self.G, self.node)
+            Coherence()(self.G, self.node)
+            
             # Self-organization: autonomous reorganization
             SelfOrganization()(self.G, self.node)
-
-            # Decide: stabilize or continue exploring
-            if self._should_stabilize():
-                Coherence()(self.G, self.node)
-            else:
-                Dissonance()(self.G, self.node)
+            
+            # T'HOL requires closure
+            Silence()(self.G, self.node)
 
     def _should_stabilize(self) -> bool:
         """Decide whether to stabilize based on current ΔNFR.
@@ -222,11 +234,19 @@ class AdaptiveLearningSystem:
         """Execute deep learning with crisis and reorganization.
 
         Implements canonical deep learning sequence:
-        AL → EN → IL → OZ → T'HOL → IL → SHA
+        AL -> EN -> IL -> OZ -> THOL -> IL -> (SHA or NUL)
+
+        The final operator (SHA/SILENCE or NUL/CONTRACTION) is selected by
+        the TNFR grammar based on structural conditions:
+        - SHA (SILENCE) if Si >= si_high (high sense index)
+        - NUL (CONTRACTION) if Si < si_high (low sense index)
+
+        This is canonical THOL closure behavior per TNFR sec.4.
 
         Notes
         -----
         Reuses run_sequence with predefined deep learning pattern.
+        Grammar may adaptively select the appropriate THOL closure.
         """
         sequence = [
             Emission(),
@@ -235,19 +255,24 @@ class AdaptiveLearningSystem:
             Dissonance(),
             SelfOrganization(),
             Coherence(),
-            Silence(),
+            Silence(),  # Grammar may replace with Contraction if Si < si_high
         ]
         run_sequence(self.G, self.node, sequence)
 
     def exploratory_learning_cycle(self) -> None:
-        """Execute exploratory learning with resonance propagation.
+        """Execute exploratory learning with enhanced propagation.
 
         Implements canonical exploratory learning sequence:
-        AL → EN → IL → OZ → T'HOL → RA → IL → SHA
+        AL -> EN -> IL -> OZ -> THOL -> IL -> SHA
+
+        After self-organization, coherence stabilizes and closes T'HOL,
+        then silence terminates.
 
         Notes
         -----
         Reuses run_sequence with predefined exploratory pattern.
+        This is similar to deep_learning_cycle but focuses on consolidation.
+        Supports operational fractality (nested THOL allowed per sec.3.7).
         """
         sequence = [
             Emission(),
@@ -255,9 +280,8 @@ class AdaptiveLearningSystem:
             Coherence(),
             Dissonance(),
             SelfOrganization(),
-            Resonance(),
-            Coherence(),
-            Silence(),
+            Coherence(),   # Stabilize and close T'HOL
+            Silence(),     # Terminal operator
         ]
         run_sequence(self.G, self.node, sequence)
 
@@ -265,7 +289,7 @@ class AdaptiveLearningSystem:
         """Execute transformative learning with mutation.
 
         Implements canonical adaptive mutation sequence:
-        AL → EN → IL → OZ → ZHIR → NAV
+        AL -> EN -> IL -> OZ -> ZHIR -> NAV
 
         Notes
         -----

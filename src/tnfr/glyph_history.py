@@ -79,16 +79,41 @@ def push_glyph(nd: MutableMapping[str, Any], glyph: str, window: int) -> None:
 def recent_glyph(nd: MutableMapping[str, Any], glyph: str, window: int) -> bool:
     """Return ``True`` if ``glyph`` appeared in last ``window`` emissions.
 
-    ``window`` validation and deque creation are handled by
-    :func:`_ensure_history`. A ``window`` of zero returns ``False`` and
-    leaves ``nd`` unchanged. Negative values raise :class:`ValueError`.
-    """
+    This is a **read-only** operation that checks the existing history without
+    modifying it. If ``window`` is zero, returns ``False``. Negative values
+    raise :class:`ValueError`.
 
-    v_window, hist = _ensure_history(nd, window)
+    Notes
+    -----
+    This function intentionally does NOT call ``_ensure_history`` to avoid
+    accidentally truncating the glyph_history deque when checking with a
+    smaller window than the deque's maxlen. This preserves the canonical
+    principle that reading history should not modify it.
+    
+    Reuses ``validate_window`` and ``ensure_collection`` utilities.
+    """
+    from tnfr.validation.window import validate_window
+
+    v_window = validate_window(window)
     if v_window == 0:
         return False
+
+    # Read existing history without modifying it
+    hist = nd.get("glyph_history")
+    if hist is None:
+        return False
+
     gl = str(glyph)
-    return gl in hist
+    
+    # Use canonical ensure_collection to materialize history
+    try:
+        items = list(ensure_collection(hist, max_materialize=None))
+    except (TypeError, ValueError):
+        return False
+    
+    # Check only the last v_window items
+    recent_items = items[-v_window:] if len(items) > v_window else items
+    return gl in recent_items
 
 
 class HistoryDict(dict[str, Any]):

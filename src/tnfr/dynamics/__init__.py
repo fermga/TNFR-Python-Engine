@@ -106,6 +106,9 @@ from .integrators import (
     update_epi_via_nodal_equation,
 )
 from .learning import AdaptiveLearningSystem
+from .feedback import StructuralFeedbackLoop
+from .adaptive_sequences import AdaptiveSequenceSelector
+from .homeostasis import StructuralHomeostasis
 from .structural_clip import (
     structural_clip,
     StructuralClipStats,
@@ -214,4 +217,7 @@ __all__ = (
     "get_clip_stats",
     "reset_clip_stats",
     "AdaptiveLearningSystem",
+    "StructuralFeedbackLoop",
+    "AdaptiveSequenceSelector",
+    "StructuralHomeostasis",
 )
