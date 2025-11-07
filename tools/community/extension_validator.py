@@ -210,8 +210,8 @@ class ExtensionValidator:
                             pattern_validations[f"{pattern_name}_ex{idx}"] = health_metrics
                     else:
                         pattern_validations[pattern_name] = {"C_t": 0.0, "Si": 0.0}
-        except Exception as e:
-            # If we can't load the extension, note it but don't fail completely
+        except (ImportError, ModuleNotFoundError, AttributeError) as e:
+            # Expected errors during extension loading
             pattern_validations["_load_error"] = {"error": str(e)}
         
         return pattern_validations
@@ -253,14 +253,20 @@ class ExtensionValidator:
         -------
         float
             Coverage percentage (0-100).
+            
+        Notes
+        -----
+        This is a simplified estimate based on test file existence.
+        For accurate coverage, run pytest-cov directly:
+        `pytest --cov=src/tnfr/extensions/{extension_name} tests/extensions/test_{extension_name}.py`
         """
-        # This would integrate with pytest-cov in a real implementation
-        # For now, return a placeholder
+        # Simplified coverage estimate based on test file existence
+        # For production use, integrate with pytest-cov for actual coverage
         test_dir = self.repo_root / "tests" / "extensions"
         test_file = test_dir / f"test_{extension_name}.py"
         
         if test_file.exists():
-            # Estimate coverage based on test file existence
+            # Estimate: test file exists = reasonable coverage
             return 85.0
         else:
             return 0.0

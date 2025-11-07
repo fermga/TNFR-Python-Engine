@@ -200,7 +200,7 @@ class ProcessHealthAnalyzer:
                 # Use clustering coefficient as cohesion proxy
                 avg_clustering = nx.average_clustering(G)
                 cohesion_score = avg_clustering
-            except:
+            except (nx.NetworkXError, ZeroDivisionError):
                 cohesion_score = 0.5
         else:
             cohesion_score = 0.5
