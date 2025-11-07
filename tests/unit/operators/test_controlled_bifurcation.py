@@ -308,12 +308,13 @@ class TestErrorMessages:
         assert any(word in error.message.lower() for word in ["dissonance", "expansion", "transition"])
 
     def test_thol_error_mentions_window_size(self):
-        """Error for THOL should mention the window size."""
+        """Error for THOL should mention the graduated window sizes."""
         with pytest.raises(SequenceSyntaxError) as excinfo:
             parse_sequence([EMISSION, RECEPTION, COHERENCE, SELF_ORGANIZATION, SILENCE])
         
         error = excinfo.value
-        assert "3" in error.message or "previous" in error.message.lower()
+        # With graduated windows, error should mention window sizes (4, 2, or 1)
+        assert any(str(size) in error.message for size in ["4", "2", "1"]) or "previous" in error.message.lower()
 
     def test_error_provides_correct_index(self):
         """Error should point to the transformer that failed."""

@@ -48,9 +48,26 @@ VALID_END_OPERATORS = frozenset({SILENCE, TRANSITION, RECURSIVITY, DISSONANCE})
 SELF_ORGANIZATION_CLOSURES = frozenset({SILENCE, CONTRACTION})
 
 # R4 Bifurcation control: operators that enable structural transformations
+# Legacy single-level destabilizers (for backward compatibility)
 DESTABILIZERS = frozenset({DISSONANCE, TRANSITION, EXPANSION})  # OZ, NAV, VAL
 TRANSFORMERS = frozenset({MUTATION, SELF_ORGANIZATION})  # ZHIR, THOL
-BIFURCATION_WINDOW = 3  # Search window for destabilizer precedent
+BIFURCATION_WINDOW = 3  # Legacy: Search window for destabilizer precedent
+
+# R4 Extended: Graduated destabilizer classification by intensity
+DESTABILIZERS_STRONG = frozenset({DISSONANCE})  # OZ: explicit dissonance
+DESTABILIZERS_MODERATE = frozenset({TRANSITION, EXPANSION})  # NAV, VAL: indirect
+DESTABILIZERS_WEAK = frozenset({RECEPTION})  # EN: latent potential
+
+# All destabilizers (union of all levels)
+DESTABILIZERS_ALL = DESTABILIZERS_STRONG | DESTABILIZERS_MODERATE | DESTABILIZERS_WEAK
+
+# R4 Extended: Bifurcation windows by destabilizer intensity
+# These define how many operators can separate a destabilizer from a transformer
+BIFURCATION_WINDOWS = {
+    'strong': 4,    # OZ permits ZHIR/THOL within 4 operators
+    'moderate': 2,  # NAV/VAL permit ZHIR/THOL within 2 operators
+    'weak': 1,      # EN requires ZHIR/THOL as immediate successor
+}
 
 
 def canonical_operator_name(name: str) -> str:
@@ -89,6 +106,11 @@ __all__ = [
     "DESTABILIZERS",
     "TRANSFORMERS",
     "BIFURCATION_WINDOW",
+    "DESTABILIZERS_STRONG",
+    "DESTABILIZERS_MODERATE",
+    "DESTABILIZERS_WEAK",
+    "DESTABILIZERS_ALL",
+    "BIFURCATION_WINDOWS",
     "canonical_operator_name",
     "operator_display_name",
 ]
