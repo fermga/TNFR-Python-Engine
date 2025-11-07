@@ -407,10 +407,21 @@ class Emission(Operator):
                 G.nodes[node]["_structural_lineage"]["activation_count"] += 1
 
     def _validate_preconditions(self, G: TNFRGraph, node: Any) -> None:
-        """Validate AL-specific preconditions."""
-        from .preconditions import validate_emission
+        """Validate AL-specific preconditions with strict canonical checks.
 
-        validate_emission(G, node)
+        Implements TNFR.pdf §2.2.1 precondition validation:
+        1. EPI < latent threshold (node in nascent/latent state)
+        2. νf > basal threshold (sufficient structural frequency)
+        3. Network connectivity check (warning for isolated nodes)
+
+        Raises
+        ------
+        ValueError
+            If EPI too high or νf too low for emission
+        """
+        from .preconditions.emission import validate_emission_strict
+
+        validate_emission_strict(G, node)
 
     def _collect_metrics(
         self, G: TNFRGraph, node: Any, state_before: dict[str, Any]

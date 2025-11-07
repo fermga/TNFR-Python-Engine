@@ -26,13 +26,14 @@ class TestOperatorPreconditions:
     """Test precondition validation for structural operators."""
 
     def test_emission_precondition_high_epi(self):
-        """AL - Emission should fail if EPI already high."""
+        """AL - Emission should fail if EPI already high (strict validation)."""
         G = nx.DiGraph()
         G.add_node("n1", **{EPI_PRIMARY: 0.9, VF_PRIMARY: 1.0})
         G.graph["VALIDATE_OPERATOR_PRECONDITIONS"] = True
-        G.graph["AL_MAX_EPI_FOR_EMISSION"] = 0.8
+        G.graph["EPI_LATENT_MAX"] = 0.8  # Updated threshold name for strict validation
 
-        with pytest.raises(OperatorPreconditionError, match="already active"):
+        # New strict validation raises ValueError with detailed message
+        with pytest.raises(ValueError, match="AL precondition failed"):
             Emission()(G, "n1")
 
     def test_emission_precondition_low_epi(self):

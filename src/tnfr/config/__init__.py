@@ -34,6 +34,12 @@ from .defaults import (
 )
 from .feature_flags import context_flags, get_flags
 from .init import apply_config, load_config
+from .thresholds import (
+    EPSILON_MIN_EMISSION,
+    EPI_LATENT_MAX,
+    MIN_NETWORK_DEGREE_COUPLING,
+    VF_BASAL_THRESHOLD,
+)
 from .tnfr_config import (
     ALIASES,
     CANONICAL_STATE_TOKENS,
@@ -181,6 +187,11 @@ __all__ = (
     "GRAMMAR_CANON",
     "COHERENCE",
     "DIAGNOSIS",
+    # Operator precondition thresholds
+    "EPI_LATENT_MAX",
+    "VF_BASAL_THRESHOLD",
+    "EPSILON_MIN_EMISSION",
+    "MIN_NETWORK_DEGREE_COUPLING",
     # TNFR semantic aliases
     "ALIASES",
     "VF_KEY",
