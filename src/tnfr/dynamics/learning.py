@@ -178,7 +178,7 @@ class AdaptiveLearningSystem:
         -----
         Reuses run_sequence and existing operators for consolidation.
         This sequence is useful for post-learning stabilization.
-        Follows TNFR grammar: must start with emission and include reception→coherence.
+        Follows TNFR grammar: must start with emission and include reception->coherence.
         """
         sequence = [Emission(), Reception(), Coherence(), Recursivity()]
         run_sequence(self.G, self.node, sequence)
@@ -234,11 +234,19 @@ class AdaptiveLearningSystem:
         """Execute deep learning with crisis and reorganization.
 
         Implements canonical deep learning sequence:
-        AL → EN → IL → OZ → T'HOL → IL → SHA
+        AL -> EN -> IL -> OZ -> THOL -> IL -> (SHA or NUL)
+
+        The final operator (SHA/SILENCE or NUL/CONTRACTION) is selected by
+        the TNFR grammar based on structural conditions:
+        - SHA (SILENCE) if Si >= si_high (high sense index)
+        - NUL (CONTRACTION) if Si < si_high (low sense index)
+
+        This is canonical THOL closure behavior per TNFR sec.4.
 
         Notes
         -----
         Reuses run_sequence with predefined deep learning pattern.
+        Grammar may adaptively select the appropriate THOL closure.
         """
         sequence = [
             Emission(),
@@ -247,7 +255,7 @@ class AdaptiveLearningSystem:
             Dissonance(),
             SelfOrganization(),
             Coherence(),
-            Silence(),
+            Silence(),  # Grammar may replace with Contraction if Si < si_high
         ]
         run_sequence(self.G, self.node, sequence)
 
@@ -255,11 +263,16 @@ class AdaptiveLearningSystem:
         """Execute exploratory learning with resonance propagation.
 
         Implements canonical exploratory learning sequence:
-        AL → EN → IL → OZ → T'HOL → RA → IL → SHA
+        AL -> EN -> IL -> OZ -> THOL -> RA -> IL -> (SHA or NUL)
+
+        The final operator (SHA/SILENCE or NUL/CONTRACTION) is selected by
+        the TNFR grammar based on structural conditions (Si threshold).
 
         Notes
         -----
         Reuses run_sequence with predefined exploratory pattern.
+        Grammar may adaptively select the appropriate THOL closure.
+        Supports operational fractality (nested THOL allowed per sec.3.7).
         """
         sequence = [
             Emission(),
@@ -269,7 +282,7 @@ class AdaptiveLearningSystem:
             SelfOrganization(),
             Resonance(),
             Coherence(),
-            Silence(),
+            Silence(),  # Grammar may replace with Contraction if Si < si_high
         ]
         run_sequence(self.G, self.node, sequence)
 
@@ -277,7 +290,7 @@ class AdaptiveLearningSystem:
         """Execute transformative learning with mutation.
 
         Implements canonical adaptive mutation sequence:
-        AL → EN → IL → OZ → ZHIR → NAV
+        AL -> EN -> IL -> OZ -> ZHIR -> NAV
 
         Notes
         -----
