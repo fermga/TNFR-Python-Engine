@@ -8,6 +8,7 @@ __all__: tuple[str, ...]
 
 dnfr: Any
 integrators: Any
+metabolism: Any
 
 ALIAS_D2EPI: Sequence[str]
 ALIAS_DNFR: Sequence[str]
@@ -19,6 +20,10 @@ ALIAS_VF: Sequence[str]
 AbstractSelector: Any
 DefaultGlyphSelector: Any
 ParametricGlyphSelector: Any
+StructuralFeedbackLoop: Any
+AdaptiveSequenceSelector: Any
+StructuralHomeostasis: Any
+AdaptiveLearningSystem: Any
 _SelectorPreselection: Any
 _apply_glyphs: Any
 _apply_selector: Any
