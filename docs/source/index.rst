@@ -33,8 +33,6 @@ Navigation Hub
    
    ➤ :doc:`Mathematical Foundations <theory/mathematical_foundations>` ⭐ **CANONICAL MATH SOURCE**
    
-   ➤ :doc:`Theory Deep Dive <advanced/THEORY_DEEP_DIVE>` (deprecated)
-   
    ➤ :doc:`API Reference <api/overview>`
 
 📖 **Complete Table of Contents**
@@ -82,7 +80,6 @@ Navigation Hub
    :caption: Advanced Topics
    
    Performance Optimization <advanced/PERFORMANCE_OPTIMIZATION>
-   Theory Deep Dive <advanced/THEORY_DEEP_DIVE>
    Foundations (Implementation) <foundations>
    How to Reproduce Results <how_to_reproduce_results>
 

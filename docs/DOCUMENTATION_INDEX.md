@@ -24,7 +24,6 @@
 ### 💻 For Developers
 → [**Performance Optimization**](source/advanced/PERFORMANCE_OPTIMIZATION.md)  
 → [**Mathematical Foundations**](source/theory/mathematical_foundations.md) ⭐ **CANONICAL MATH SOURCE**  
-→ [Theory Deep Dive](source/advanced/THEORY_DEEP_DIVE.md) (deprecated - redirects to Mathematical Foundations)  
 → [API Reference](source/api/overview.md)  
 → [Contributing](../CONTRIBUTING.md)
 
@@ -59,7 +58,6 @@
 
 ### Advanced Topics (`source/advanced/`)
 - **[PERFORMANCE_OPTIMIZATION.md](source/advanced/PERFORMANCE_OPTIMIZATION.md)** - Backends, caching, factories
-- [THEORY_DEEP_DIVE.md](source/advanced/THEORY_DEEP_DIVE.md) - ⚠️ Deprecated (redirects to Mathematical Foundations)
 
 ### Theory (`source/theory/`)
 - **[mathematical_foundations.md](source/theory/mathematical_foundations.md)** - ⭐ **CANONICAL MATHEMATICAL SOURCE**
