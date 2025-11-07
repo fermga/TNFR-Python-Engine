@@ -34,6 +34,7 @@ __all__ = [
     "validate_mutation",
     "validate_transition",
     "validate_recursivity",
+    "diagnose_coherence_readiness",
 ]
 
 
@@ -110,7 +111,11 @@ def validate_reception(G: "TNFRGraph", node: "NodeId") -> None:
 
 
 def validate_coherence(G: "TNFRGraph", node: "NodeId") -> None:
-    """IL - Coherence requires significant ΔNFR to stabilize.
+    """IL - Coherence requires active EPI, νf, and manageable ΔNFR.
+
+    This function delegates to the strict validation implementation
+    in coherence.py module, which provides comprehensive canonical
+    precondition checks according to TNFR.pdf §2.2.1.
 
     Parameters
     ----------
@@ -121,22 +126,53 @@ def validate_coherence(G: "TNFRGraph", node: "NodeId") -> None:
 
     Raises
     ------
-    OperatorPreconditionError
-        If |ΔNFR| is already near zero (nothing meaningful to stabilize)
+    ValueError
+        If critical preconditions are not met (active EPI, νf, non-saturated state)
+
+    Warnings
+    --------
+    UserWarning
+        For suboptimal conditions (zero ΔNFR, critical ΔNFR, isolated node)
 
     Notes
     -----
-    Coherence acts on the absolute magnitude of ΔNFR, reducing structural
-    instability regardless of sign. We validate that |ΔNFR| > threshold
-    to ensure there is sufficient reorganization to compress.
+    For backward compatibility, this function maintains the same signature
+    as the legacy validate_coherence but now provides enhanced validation.
+    
+    See Also
+    --------
+    tnfr.operators.preconditions.coherence.validate_coherence_strict : Full implementation
     """
-    dnfr = _get_node_attr(G, node, ALIAS_DNFR)
-    min_dnfr = float(G.graph.get("IL_MIN_DNFR", 1e-6))
-    if abs(dnfr) < min_dnfr:
-        raise OperatorPreconditionError(
-            "Coherence",
-            f"ΔNFR already minimal (|ΔNFR|={abs(dnfr):.3e} < {min_dnfr:.3e})",
-        )
+    from .coherence import validate_coherence_strict
+
+    validate_coherence_strict(G, node)
+
+
+def diagnose_coherence_readiness(G: "TNFRGraph", node: "NodeId") -> dict:
+    """Diagnose node readiness for IL (Coherence) operator.
+
+    Provides comprehensive diagnostic report with readiness status and
+    actionable recommendations for IL operator application.
+
+    Parameters
+    ----------
+    G : TNFRGraph
+        Graph containing the node
+    node : NodeId
+        Node to diagnose
+
+    Returns
+    -------
+    dict
+        Diagnostic report with readiness status, check results, values, and recommendations
+
+    See Also
+    --------
+    tnfr.operators.preconditions.coherence.diagnose_coherence_readiness : Full implementation
+    """
+    from .coherence import diagnose_coherence_readiness as _diagnose
+
+    return _diagnose(G, node)
 
 
 def validate_dissonance(G: "TNFRGraph", node: "NodeId") -> None:
