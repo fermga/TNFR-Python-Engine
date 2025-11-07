@@ -719,17 +719,25 @@ Generate three heatmaps in \( (F_0, \omega_f) \) space:
 - Compute observables (periods, energies, Lyapunov exponents)
 - Compare numerical results to theoretical predictions
 
-**For production use**: Refer to the planned full TNFR implementation in `examples/numerical_validation/` (to be created) which will use:
-- TNFR structural operators (Emission, Coherence, etc.)
-- TNFRNetwork evolution methods
-- Proper coherence monitoring (C(t), Si(t))
-- Structural operator logging and traceability
+**Current options for implementation**:
 
-The pseudocode below focuses on the **classical limit** (\( \varepsilon \to 0 \)) to clearly show the physics being validated.
+1. **Use this pseudocode**: Adapt the examples below to your specific TNFR setup. The classical limit equations are standard physics—implement them directly.
+
+2. **Start with existing examples**: See `examples/02_dissipative_minimal.ipynb` for dissipative system patterns and `examples/canonical_equation_demo.py` for basic nodal evolution.
+
+3. **Wait for full suite**: A complete TNFR implementation is planned in `examples/numerical_validation/` (timeline: Q1 2026 or community contribution welcome). This will include:
+   - TNFR structural operators (Emission, Coherence, etc.)
+   - TNFRNetwork evolution methods
+   - Proper coherence monitoring (C(t), Si(t))
+   - Structural operator logging and traceability
+
+The pseudocode below focuses on the **classical limit** (\( \varepsilon \to 0 \)) to clearly show the physics being validated. These examples are self-contained and can be implemented independently.
 
 ### 6.1 Harmonic Oscillator Validation
 
-**Note**: This is a simplified demonstration showing the classical limit calculation directly. For full TNFR implementation using structural operators, see the planned examples in `examples/numerical_validation/` (to be implemented). This pseudocode illustrates the validation methodology and expected results.
+**Note**: This is a self-contained demonstration showing the classical limit calculation directly. You can run this code as-is to validate the \( m = 1/\nu_f \) relationship. For full TNFR implementation using structural operators, see Section 9.1 for planned examples.
+
+This pseudocode illustrates the validation methodology and expected results.
 
 ```python
 import numpy as np
@@ -1068,12 +1076,19 @@ np.random.seed(42)  # reproducible
 - `examples/02_dissipative_minimal.ipynb`: Dissipative systems (relates to Experiment 3)
 
 **To be created** (based on this document):
-- `examples/numerical_validation/harmonic_mass_scaling.py`: Experiment 1
-- `examples/numerical_validation/conservation_laws.py`: Experiment 2
-- `examples/numerical_validation/damped_oscillator.py`: Experiment 3
-- `examples/numerical_validation/duffing_conservative.py`: Experiment 4
-- `examples/numerical_validation/duffing_chaos.py`: Experiment 5
-- `examples/numerical_validation/coupled_oscillators.py`: Experiment 6
+
+| Script | Experiment | Status | Timeline |
+|--------|-----------|--------|----------|
+| `harmonic_mass_scaling.py` | Exp 1: Mass scaling | Planned | Q1 2026 |
+| `conservation_laws.py` | Exp 2: Noether invariants | Planned | Q1 2026 |
+| `damped_oscillator.py` | Exp 3: Dissipation | Planned | Q1 2026 |
+| `duffing_conservative.py` | Exp 4: Nonlinear | Planned | Q1 2026 |
+| `duffing_chaos.py` | Exp 5: Chaos | Planned | Q1 2026 |
+| `coupled_oscillators.py` | Exp 6: Normal modes | Planned | Q1 2026 |
+
+**Community contributions welcome!** These scripts follow the recipes in this document. If you implement any validation experiment, consider submitting a PR.
+
+**In the meantime**: Users can implement these validations using the pseudocode in Section 6. The classical limit equations are standard physics and don't require TNFR-specific infrastructure to validate.
 
 ### 9.2 Running the Validation Suite
 
