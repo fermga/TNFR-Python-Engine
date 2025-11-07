@@ -34,26 +34,6 @@ These properties make TNFR particularly suited for domains where emergence, self
 - Frequently asked questions (Section 9)
 - Consolidated notebook content (Appendix A)
 
-**Notebook consolidation notice**: As of 2025-11-07, interactive Jupyter notebooks containing theoretical derivations have been **deprecated and integrated** into this document to maintain consistency. The following notebooks were removed:
-
-| Removed Notebook | Content Now In |
-|-----------------|----------------|
-| `00_overview.ipynb` | Appendix A.1 |
-| `01_hilbert_space_h_nfr.ipynb` | §2.1 + Appendix A.2 |
-| `03_frequency_operator_hatJ.ipynb` | §3.2 + Appendix A.3 |
-| `05_unitary_dynamics_and_delta_nfr.ipynb` | §3.3 + Appendix A.4 |
-
-**Interactive notebooks remain** for hands-on exploration:
-- `01_structural_frequency_primer.ipynb` - Interactive frequency exploration
-- `02_phase_synchrony_lattices.ipynb` - Phase dynamics visualization  
-- `03_delta_nfr_gradient_fields.ipynb` - ΔNFR field analysis
-- `04_coherence_metrics_walkthrough.ipynb` - Coherence calculation walkthrough
-- `04_nfr_validator_and_metrics.ipynb` - Validation utilities
-- `05_sense_index_calibration.ipynb` - Si calibration guide
-- `06_recursivity_cascades.ipynb` - Recursive operator exploration
-
-These computational notebooks serve different purposes (visualization, parameter sensitivity, interactive demonstrations) and complement this theoretical document.
-
 **Related documentation**:
 - **Implementation**: See docstrings in `src/tnfr/metrics/`
 - **Worked examples**: See `docs/source/examples/worked_examples.md`
