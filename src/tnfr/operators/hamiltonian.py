@@ -391,6 +391,10 @@ class InternalHamiltonian:
         """
         np = self._np
         
+        # Handle empty graph case
+        if self.N == 0:
+            return
+        
         components = [
             ('H_coh', self.H_coh),
             ('H_freq', self.H_freq),
