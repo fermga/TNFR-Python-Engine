@@ -263,17 +263,20 @@ class MigrationChecker:
         lines = content.split('\n')
         
         for i, line in enumerate(lines, start=1):
-            # Look for pattern name comparisons
+            # Look for pattern name comparisons (e.g., pattern == 'activation')
+            # But skip lines that are safely accessing result.metadata
             if re.search(r"pattern\s*==\s*['\"]", line):
-                # Avoid flagging lines that are already accessing result.metadata
-                if "result.metadata" in line:
-                    report.issues.append(MigrationIssue(
-                        level=IssueLevel.WARNING,
-                        message="Hard-coded pattern name comparison may break with Grammar 2.0",
-                        line_number=i,
-                        code_snippet=line.strip(),
-                        suggestion="Use pattern categories or check pattern type instead"
-                    ))
+                # Skip if this is a safe metadata access pattern
+                if "result.metadata" in line or "metadata.get" in line:
+                    continue
+                    
+                report.issues.append(MigrationIssue(
+                    level=IssueLevel.WARNING,
+                    message="Hard-coded pattern name comparison may break with Grammar 2.0",
+                    line_number=i,
+                    code_snippet=line.strip(),
+                    suggestion="Use pattern categories or check pattern type instead"
+                ))
     
     # Operator names to check for (class constant)
     COMMON_OPERATORS = {
