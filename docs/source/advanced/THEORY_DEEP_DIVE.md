@@ -1,8 +1,34 @@
 # Theory Deep Dive: Mathematical Foundations of TNFR
 
+> **⚠️ DEPRECATED**: This document has been superseded by the unified mathematical foundations document.
+> 
+> **Please use**: **[Mathematical Foundations of TNFR](../theory/mathematical_foundations.md)** as the single source of truth for all mathematical formalization.
+>
+> This document remains for historical reference only and will be removed in a future version.
+
+---
+
 [Home](../index.rst) › [Advanced](../advanced/) › Theory Deep Dive
 
-This document provides an in-depth exploration of the mathematical foundations of TNFR (Teoría de la Naturaleza Fractal Resonante / Resonant Fractal Nature Theory).
+**STATUS: DEPRECATED - Redirecting to [Mathematical Foundations](../theory/mathematical_foundations.md)**
+
+---
+
+This document **was** an in-depth exploration of the mathematical foundations of TNFR (Teoría de la Naturaleza Fractal Resonante / Resonant Fractal Nature Theory).
+
+## ⚠️ Migration Notice
+
+All content from this document has been consolidated, expanded, and formally derived in:
+
+👉 **[docs/source/theory/mathematical_foundations.md](../theory/mathematical_foundations.md)**
+
+The new unified document provides:
+- Complete derivation of the nodal equation from first principles
+- Rigorous mathematical spaces (Hilbert, Banach)
+- Formal operator definitions with spectral properties
+- Connections to standard physics (quantum mechanics, thermodynamics)
+- Verifiable properties and computational implementations
+- Worked examples and validation checklists
 
 ## Overview
 
@@ -10,134 +36,61 @@ TNFR is built on rigorous mathematical foundations that extend quantum mechanics
 
 ## Core Mathematical Structures
 
+> **⚠️ All detailed mathematical content has moved to [Mathematical Foundations](../theory/mathematical_foundations.md)**
+
 ### 1. Hilbert Space ℋ_NFR
 
-TNFR operates in a specialized Hilbert space where:
-- States represent coherent patterns (EPI)
-- Operators preserve structural invariants
-- Inner products measure resonance
+For complete mathematical treatment including:
+- Space definition H_NFR = ℓ²(ℕ) ⊗ L²(ℝ)
+- Tensor product structure
+- Physical interpretation
 
-See [Hilbert Space ℋ_NFR](../theory/01_hilbert_space_h_nfr.ipynb) for complete treatment.
+See **[Section 2.1: Hilbert Space H_NFR](../theory/mathematical_foundations.md#21-hilbert-space-h_nfr)** in the unified document.
 
 ### 2. The Nodal Equation
 
-The canonical equation governing TNFR dynamics:
+For complete derivation from first principles:
+- Starting axioms
+- Semigroup generation (Hille-Yosida theorem)
+- Step-by-step projection to EPI space
+- Canonical form: ∂EPI/∂t = νf · ΔNFR(t)
 
-```
-∂EPI/∂t = νf · ΔNFR(t)
-```
-
-Where:
-- **EPI**: Primary Information Structure (coherent form)
-- **νf**: Structural frequency (Hz_str)
-- **ΔNFR**: Internal reorganization gradient
-
-**Interpretation**:
-This is NOT a differential equation in the classical sense. It describes how:
-- Structure evolves through resonance
-- Change is proportional to both capacity (νf) and pressure (ΔNFR)
-- Form is preserved during transformation
+See **[Section 4: The Nodal Equation: Complete Derivation](../theory/mathematical_foundations.md#4-the-nodal-equation-complete-derivation)** in the unified document.
 
 ### 3. Structural Operators as Transformations
 
-The 13 canonical operators form a closed algebra:
+For formal operator definitions and spectral properties:
 
-```
-𝒪 = {Emission, Reception, Coherence, Dissonance, Coupling, 
-     Resonance, Silence, Expansion, Contraction, Self-organization,
-     Mutation, Transition, Recursivity}
-```
-
-**Operator Closure**: For any sequence of operators `σ₁, σ₂, ..., σₙ ∈ 𝒪`:
-```
-σₙ ∘ ... ∘ σ₂ ∘ σ₁(EPI) ∈ ℋ_NFR
-```
-
-The result is always a valid TNFR state.
+See **[Section 3: Fundamental Operators](../theory/mathematical_foundations.md#3-fundamental-operators)** in the unified document.
 
 ### 4. Coherence Metrics
 
-**Total Coherence** C(t) is defined as:
-```
-C(t) = ⟨Ψ(t) | Ĉ | Ψ(t)⟩
-```
+For complete mathematical definitions:
+- Total Coherence C(t) with operator construction
+- Sense Index Si formula and components
+- Verification properties
 
-Where:
-- **Ψ(t)**: Network state at time t
-- **Ĉ**: Coherence operator (Hermitian, positive semi-definite)
-- C(t) ∈ [0, 1]
+See **[Section 3.1: Coherence Operator Ĉ](../theory/mathematical_foundations.md#31-coherence-operator-ĉ)** and **[GLOSSARY.md](../../GLOSSARY.md)** for operational definitions.
 
-See [Coherence Operator Ĉ](../theory/02_coherence_operator_hatC.ipynb).
-
-**Sense Index** Si combines multiple factors:
-```
-Si = f(ΔNFR, νf, φ_var, topology)
-```
-
-Captures the network's capacity for stable reorganization.
-
-See [Sense Index Calibration](../theory/05_sense_index_calibration.ipynb).
+---
 
 ## Advanced Topics
 
-### Unitary Dynamics
+> **⚠️ All advanced mathematical content is now in [Mathematical Foundations](../theory/mathematical_foundations.md)**
 
-TNFR evolution can be described by unitary operators in certain regimes:
+For detailed coverage of:
+- **Unitary Dynamics**: See [Section 6.2](../theory/mathematical_foundations.md#62-unitarity-of-evolution)
+- **Phase Synchrony**: See [GLOSSARY.md - Phase](../../GLOSSARY.md)
+- **Gradient Fields**: See [Section 3.3: ΔNFR](../theory/mathematical_foundations.md#33-reorganization-operator-δnfr)
+- **Recursivity and Fractality**: See [Section 1.2](../theory/mathematical_foundations.md#12-advantages-of-the-formalism)
 
-```
-|Ψ(t + Δt)⟩ = Û(Δt) |Ψ(t)⟩
-```
-
-See [Unitary Dynamics & ΔNFR](../theory/05_unitary_dynamics_and_delta_nfr.ipynb).
-
-### Phase Synchrony
-
-Phase relationships govern coupling:
-
-```
-Φ_sync = ⟨exp(i(φ_j - φ_k))⟩
-```
-
-The Kuramoto order parameter R measures network synchronization:
-
-```
-R = |⟨exp(iφ_j)⟩|
-```
-
-Where R ∈ [0, 1], with R=1 indicating perfect synchrony.
-
-See [Phase Synchrony Lattices](../theory/02_phase_synchrony_lattices.ipynb).
-
-### Gradient Fields
-
-ΔNFR forms a vector field over the network:
-
-```
-ΔNFR: G → ℝ^N
-```
-
-This field drives structural evolution and can be visualized as a potential landscape.
-
-See [ΔNFR Gradient Fields](../theory/03_delta_nfr_gradient_fields.ipynb).
-
-### Recursivity and Fractality
-
-TNFR supports nested structures:
-
-```
-EPI = {sub_EPI₁, sub_EPI₂, ..., sub_EPIₙ}
-```
-
-Each sub-EPI is itself a valid TNFR structure, enabling:
-- Multi-scale analysis
-- Hierarchical organization
-- Self-similar patterns
-
-See [Recursivity Cascades](../theory/06_recursivity_cascades.ipynb).
+---
 
 ## Mathematical Notebooks
 
-For complete mathematical treatments, see the theory notebooks:
+> **Note**: Theory notebooks provide interactive code examples and visualizations. For rigorous mathematical derivations, see [Mathematical Foundations](../theory/mathematical_foundations.md).
+
+The theory notebooks complement the unified mathematical foundations document with executable examples:
 
 ### Primers (Conceptual Foundations)
 1. **[Structural Frequency Primer](../theory/01_structural_frequency_primer.ipynb)**
@@ -198,6 +151,10 @@ For complete mathematical treatments, see the theory notebooks:
 
 ## Theoretical Principles
 
+> **⚠️ For rigorous mathematical treatment of these principles, see [Mathematical Foundations](../theory/mathematical_foundations.md)**
+
+Quick reference to core principles (detailed proofs in unified document):
+
 ### 1. Coherence First
 
 **Principle**: Structures exist through resonance, not substance.
@@ -255,6 +212,10 @@ Coherence preserved at all levels.
 
 ## Connections to Other Theories
 
+> **⚠️ For detailed mathematical connections, see [Section 5: Connections to Standard Physics](../theory/mathematical_foundations.md#5-connections-to-standard-physics)**
+
+Brief overview:
+
 ### Quantum Mechanics
 - TNFR Hilbert space analogous to quantum state space
 - Operators similar to quantum observables
@@ -297,8 +258,10 @@ Coherence preserved at all levels.
 ## Further Reading
 
 ### Primary Sources
-- **[TNFR.pdf](../../TNFR.pdf)** - Complete theoretical document
-- **[Foundations Guide](../foundations.md)** - Conceptual overview
+- **[Mathematical Foundations of TNFR](../theory/mathematical_foundations.md)** - **⭐ CANONICAL SOURCE** - Complete mathematical derivation
+- **[TNFR.pdf](../../TNFR.pdf)** - Original theoretical document
+- **[Foundations Guide](../foundations.md)** - Implementation/API guide
+- **[GLOSSARY.md](../../GLOSSARY.md)** - Operational definitions
 - **[AGENTS.md](../../AGENTS.md)** - Canonical invariants
 
 ### Theory Notebooks
@@ -315,11 +278,12 @@ Coherence preserved at all levels.
 
 ## See Also
 
+- **[Mathematical Foundations](../theory/mathematical_foundations.md)** - **⭐ CANONICAL MATHEMATICAL SOURCE**
 - **[Operators Guide](../user-guide/OPERATORS_GUIDE.md)** - Practical operator usage
 - **[Metrics Interpretation](../user-guide/METRICS_INTERPRETATION.md)** - Understanding metrics
-- **[Foundations](../foundations.md)** - Conceptual introduction
-- **[Theory Notebooks](../theory/)** - Complete mathematical treatments
+- **[Foundations](../foundations.md)** - Implementation guide
+- **[Theory Notebooks](../theory/)** - Interactive examples
 
 ---
 
-**Next**: Explore specific topics in the [Theory Notebooks](../theory/) →
+**⚠️ REMINDER**: This document is deprecated. Use [Mathematical Foundations](../theory/mathematical_foundations.md) as the single source of truth for all TNFR mathematics.

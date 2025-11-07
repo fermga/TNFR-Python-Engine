@@ -23,7 +23,8 @@
 
 ### 💻 For Developers
 → [**Performance Optimization**](source/advanced/PERFORMANCE_OPTIMIZATION.md)  
-→ [Theory Deep Dive](source/advanced/THEORY_DEEP_DIVE.md)  
+→ [**Mathematical Foundations**](source/theory/mathematical_foundations.md) ⭐ **CANONICAL MATH SOURCE**  
+→ [Theory Deep Dive](source/advanced/THEORY_DEEP_DIVE.md) (deprecated - redirects to Mathematical Foundations)  
 → [API Reference](source/api/overview.md)  
 → [Contributing](../CONTRIBUTING.md)
 
@@ -58,10 +59,11 @@
 
 ### Advanced Topics (`source/advanced/`)
 - **[PERFORMANCE_OPTIMIZATION.md](source/advanced/PERFORMANCE_OPTIMIZATION.md)** - Backends, caching, factories
-- [THEORY_DEEP_DIVE.md](source/advanced/THEORY_DEEP_DIVE.md) - Mathematical foundations
+- [THEORY_DEEP_DIVE.md](source/advanced/THEORY_DEEP_DIVE.md) - ⚠️ Deprecated (redirects to Mathematical Foundations)
 
 ### Theory (`source/theory/`)
-- Jupyter notebooks with mathematical foundations
+- **[mathematical_foundations.md](source/theory/mathematical_foundations.md)** - ⭐ **CANONICAL MATHEMATICAL SOURCE**
+- Jupyter notebooks with mathematical examples and visualizations
 - Primers and operator/validator notebooks
 
 ---
@@ -75,7 +77,7 @@
 `Welcome → Concepts → Operators → Examples → API`
 
 **Path 3: Theory-First (3-4 hours)**  
-`Concepts → Theory Deep Dive → Math Notebooks → Examples`
+`Concepts → Mathematical Foundations → Math Notebooks → Examples`
 
 ---
 

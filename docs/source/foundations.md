@@ -1,5 +1,9 @@
 # Foundations — Mathematics scaffold
 
+> **📐 For rigorous mathematical derivations**: See **[Mathematical Foundations of TNFR](theory/mathematical_foundations.md)** for complete axioms, proofs, and formal derivations of the nodal equation.
+>
+> **This document** focuses on the **implementation/API** aspects of the mathematics layer in code.
+
 The mathematics layer exposes the canonical spaces, ΔNFR generators, and
 runtime diagnostics that keep the nodal equation faithful to
 ``∂EPI/∂t = νf · ΔNFR(t)``.  This quick-start walks through the minimal

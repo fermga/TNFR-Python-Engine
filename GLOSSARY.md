@@ -2,6 +2,10 @@
 
 Canonical definitions for the Resonant Fractal Nature Theory (TNFR) variables, operators, and concepts. This document serves as a quick reference for contributors and researchers working with the TNFR Python Engine.
 
+> **📐 For complete mathematical formalization**: See **[Mathematical Foundations of TNFR](docs/source/theory/mathematical_foundations.md)** for rigorous derivations, axioms, and proofs.
+>
+> **This document** provides **operational definitions** for practical use in code.
+
 ## Core Variables
 
 ### Primary Information Structure (EPI)
@@ -319,8 +323,10 @@ All simulations must be:
 
 ## Related Documentation
 
+- **[Mathematical Foundations](docs/source/theory/mathematical_foundations.md)** - ⭐ **CANONICAL MATHEMATICAL SOURCE** - Complete derivations and proofs
 - [AGENTS.md](AGENTS.md) - Detailed AI agent guidelines and invariants
-- [TNFR.pdf](TNFR.pdf) - Complete theoretical foundations
+- [TNFR.pdf](TNFR.pdf) - Original theoretical foundations
+- [Foundations (Implementation)](docs/source/foundations.md) - Runtime/API mathematics guide
 - [API Overview](docs/source/api/overview.md) - Package architecture
 - [Structural Operators](docs/source/api/operators.md) - Operator details
 - [Telemetry Guide](docs/source/api/telemetry.md) - Metrics and traces
