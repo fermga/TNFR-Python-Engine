@@ -1,6 +1,6 @@
 """Unit tests for selector normalization metrics applied during dynamics."""
 
-from tnfr.constants.core import SELECTOR_THRESHOLD_DEFAULTS
+from tnfr.config.defaults_core import SELECTOR_THRESHOLD_DEFAULTS
 from tnfr.dynamics import (
     default_glyph_selector,
     parametric_glyph_selector,

@@ -150,7 +150,14 @@ def compute_wij_phase_epi_vf_si(
     vf_range: float = 1.0,
     np: ModuleType | None = None,
 ) -> SimilarityComponents | VectorizedComponents:
-    """Return similarity components for nodes ``i`` and ``j``.
+    """Compute similarity components for coherence matrix elements.
+
+    Returns four structural similarity components (s_phase, s_epi, s_vf, s_si)
+    that approximate coherence operator matrix elements wᵢⱼ ≈ ⟨i|Ĉ|j⟩.
+
+    Each component normalized to [0, 1] where 1 = maximum similarity.
+
+    See: Mathematical Foundations §3.1.1 for theory-to-code mapping.
 
     When ``np`` is provided and ``i`` and ``j`` are ``None`` the computation is
     vectorized returning full matrices for all node pairs.
@@ -220,6 +227,12 @@ def _combine_similarity(
     si_w: float,
     np: ModuleType | None = None,
 ) -> ScalarOrArray:
+    """Combine similarity components into coherence weight wᵢⱼ ≈ ⟨i|Ĉ|j⟩.
+
+    Returns wᵢⱼ ∈ [0, 1] clamped to maintain operator boundedness.
+
+    See: Mathematical Foundations §3.1.1 for spectral projection details.
+    """
     wij = phase_w * s_phase + epi_w * s_epi + vf_w * s_vf + si_w * s_si
     if np is not None:
         return cast(FloatArray, np.clip(wij, 0.0, 1.0))
@@ -734,19 +747,42 @@ def coherence_matrix(
     *,
     n_jobs: int | None = None,
 ) -> tuple[list[NodeId] | None, CoherenceMatrixPayload | None]:
-    """Compute the coherence weight matrix for ``G``.
+    """Compute coherence matrix W approximating operator Ĉ.
+
+    Returns matrix W where wᵢⱼ ≈ ⟨i|Ĉ|j⟩ computed from structural
+    similarities: phase, EPI, frequency, and sense index.
+
+    Mathematical Foundation:
+        Ĉ ≈ Σᵢⱼ wᵢⱼ |i⟩⟨j|
+    
+    Matrix W satisfies Hermiticity (W=W^T), element bounds (wᵢⱼ ∈ [0,1]),
+    and provides spectrum σ(Ĉ) via eigenvalues.
 
     Parameters
     ----------
     G:
-        Graph whose nodes encode the structural attributes.
+        Graph with node attributes: theta, EPI, vf, Si
     use_numpy:
-        When ``True`` the vectorised NumPy implementation is forced. When
-        ``False`` the pure Python fallback is used. ``None`` selects NumPy
-        automatically when available.
+        Force NumPy (True), pure Python (False), or auto-detect (None)
     n_jobs:
-        Maximum worker processes to use for the Python fallback. ``None`` or
-        values less than or equal to one preserve the serial behaviour.
+        Worker processes for Python fallback (None or ≤1 = serial)
+
+    Returns
+    -------
+    nodes:
+        Ordered node list matching matrix indexing
+    W:
+        Coherence matrix (dense or sparse per configuration)
+
+    See Also
+    --------
+    compute_coherence : Computes C(t) = Tr(Ĉρ)  
+    Mathematical Foundations §3.1: Theory + Implementation Bridge
+
+    Examples
+    --------
+    >>> nodes, W = coherence_matrix(G)
+    >>> # W[i][j] ≈ ⟨i|Ĉ|j⟩ for computational basis
     """
 
     cfg = get_param(G, "COHERENCE")
