@@ -268,6 +268,36 @@ See [docs/source/getting-started/optional-dependencies.md](../docs/source/gettin
 
 See [TNFR.pdf](../TNFR.pdf) for theoretical foundations and [AGENTS.md](../AGENTS.md) for canonical invariants.
 
+## Classical Mechanics Validation
+
+**Computational validation of classical mechanics emergence from TNFR**
+
+TNFR includes comprehensive validation that observable classical mechanics emerges naturally from the nodal equation in the low-dissonance regime (ε → 0).
+
+**Validation Examples**:
+- **`01_unitary_minimal.ipynb`** — Conservation laws (energy, momentum) from network symmetries
+- **`02_dissipative_minimal.ipynb`** — Dissipative dynamics and damping
+
+**Theoretical Framework**:
+- [Classical Mechanics from TNFR](../docs/source/theory/07_emergence_classical_mechanics.md) — Derivation: `m = 1/νf`, `F = -∇U`
+- [Euler-Lagrange Correspondence](../docs/source/theory/08_classical_mechanics_euler_lagrange.md) — Variational formulation
+- [Numerical Validation](../docs/source/theory/09_classical_mechanics_numerical_validation.md) — Six canonical test cases
+
+**Key Results**:
+- Mass scaling `m = 1/νf` validated across harmonic, Duffing, and coupled oscillators
+- Energy conservation < 0.1% error over 10³ periods in conservative systems
+- Bifurcation diagrams and Lyapunov exponents match analytical predictions
+- Normal modes and resonances emerge from NFR network coupling
+
+**Run validation**:
+```bash
+# Interactive notebooks
+jupyter notebook examples/01_unitary_minimal.ipynb
+jupyter notebook examples/02_dissipative_minimal.ipynb
+
+# See full validation suite in documentation
+```
+
 ---
 
 ## Other Notebooks

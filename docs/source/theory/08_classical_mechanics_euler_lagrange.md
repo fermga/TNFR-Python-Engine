@@ -646,3 +646,12 @@ As \( \varepsilon \to 0 \):
 **Author**: TNFR Python Engine Team  
 **Last Updated**: 2025-11-07  
 **License**: MIT (see repository LICENSE.md)
+
+---
+
+## Related Documentation
+
+- ← Previous: [Classical Mechanics from TNFR](07_emergence_classical_mechanics.md) — Newton's laws derivation
+- → Next: [Numerical Validation](09_classical_mechanics_numerical_validation.md) — Computational experiments
+- ↑ Back to: [Theory Index](README.md)
+- ⭐ Foundation: [Mathematical Foundations](mathematical_foundations.md) — Complete TNFR formalism

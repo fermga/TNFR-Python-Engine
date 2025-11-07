@@ -2,20 +2,22 @@
 
 ## 1. Introduction: Classical Mechanics as a Resonant Limit
 
-### 1.1 Position in the Emergence Hierarchy
+### 1.1 Classical Mechanics as Low-Dissonance Coherence
 
-Classical mechanics occupies a unique position in the TNFR emergence hierarchy as the **effective grammar of low-dissonance coherence**. The complete hierarchy unfolds as:
+Classical mechanics emerges naturally from TNFR as the **canonical limit of low-dissonance coherence**. The emergence pathway connects fundamental structural dynamics to observable physics:
 
 ```
-Structural Coherence → NFR Networks → Quantum Mechanics → General Relativity → CLASSICAL MECHANICS
+TNFR Structural Coherence → NFR Networks → Classical Mechanics (Observable Physics)
 ```
 
-While historically, classical mechanics was discovered first, from the TNFR perspective it represents a **highly specialized limit** where:
+From the TNFR perspective, classical mechanics represents the **resonant limit** where:
 
 1. **Structural dissonance is minimal** (ε → 0)
 2. **Phase coherence is nearly perfect** (nodes synchronize strongly)
-3. **Observables become deterministic** (quantum fluctuations collapse to trajectories)
+3. **Observables become deterministic** (trajectories emerge from coherence flow)
 4. **Mass emerges as structural rigidity** (m = 1/νf)
+
+**Key Insight**: Observable deterministic phenomena arise when structural networks achieve sufficient coherence. The familiar equations of Newton, Lagrange, and Hamilton emerge as natural consequences of the nodal equation `∂EPI/∂t = νf · ΔNFR(t)` in this low-dissonance regime.
 
 ### 1.2 The Key Insight: Mass as Inverse Frequency
 
@@ -785,3 +787,11 @@ Several avenues remain for deeper exploration:
 **Author**: TNFR Python Engine Team  
 **Last Updated**: 2025-11-07  
 **License**: MIT (see repository LICENSE.md)
+---
+
+## Related Documentation
+
+- → Next: [Euler-Lagrange Correspondence](08_classical_mechanics_euler_lagrange.md) — Variational formulation
+- → Validation: [Numerical Validation](09_classical_mechanics_numerical_validation.md) — Computational experiments
+- ↑ Back to: [Theory Index](README.md)
+- ⭐ Foundation: [Mathematical Foundations](mathematical_foundations.md) — Complete TNFR formalism

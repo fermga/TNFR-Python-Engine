@@ -148,6 +148,32 @@ This is THE ONLY place where TNFR mathematics is formally defined:
 - Complete nodal equation derivation
 - **§3.1.1**: Implementation bridge (theory → code)
 
+### 🎯 Classical Mechanics Emergence
+
+**TNFR reveals how observable classical physics emerges from structural coherence dynamics**:
+
+```
+TNFR Nodal Equation (∂EPI/∂t = νf · ΔNFR)
+           ↓ 
+    Low-dissonance limit (ε → 0)
+           ↓
+Observable Classical Mechanics
+```
+
+**Key Emergent Phenomena**:
+- **Mass**: `m = 1/νf` (inverse structural frequency) — mass is structural inertia
+- **Force**: `F = -∇U(q)` (coherence potential gradient) — force is stability flow
+- **Newton's Laws**: Natural consequences of the nodal equation at low dissonance
+- **Action Principle**: Coherence optimization over time
+- **Conservation Laws**: Network symmetries preserve structural quantities
+
+**Documentation**:
+- [Classical Mechanics from TNFR](docs/source/theory/07_emergence_classical_mechanics.md) — Complete derivation from nodal equation
+- [Euler-Lagrange Correspondence](docs/source/theory/08_classical_mechanics_euler_lagrange.md) — Variational formulation
+- [Numerical Validation](docs/source/theory/09_classical_mechanics_numerical_validation.md) — Computational verification
+
+This demonstrates **classical mechanics as a natural expression of coherent structural dynamics** in the observable, deterministic regime.
+
 ### 📖 Quick References
 
 - **[GLOSSARY](GLOSSARY.md)** - Operational definitions for code use

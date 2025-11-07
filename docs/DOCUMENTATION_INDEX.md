@@ -61,6 +61,10 @@
 
 ### Theory (`source/theory/`)
 - **[mathematical_foundations.md](source/theory/mathematical_foundations.md)** - ⭐ **CANONICAL MATHEMATICAL SOURCE**
+- **Classical Mechanics Emergence Series:**
+  - [07_emergence_classical_mechanics.md](source/theory/07_emergence_classical_mechanics.md) - Direct derivation from TNFR
+  - [08_classical_mechanics_euler_lagrange.md](source/theory/08_classical_mechanics_euler_lagrange.md) - Variational formulation
+  - [09_classical_mechanics_numerical_validation.md](source/theory/09_classical_mechanics_numerical_validation.md) - Computational validation
 - Jupyter notebooks with mathematical examples and visualizations
 - Primers and operator/validator notebooks
 
