@@ -76,6 +76,13 @@ class AdvancedPatternDetector:
         "BASIC_LEARNING": 1.0,    # Simple learning sequence
         "CONSOLIDATION_CYCLE": 1.0,  # Memory consolidation
         
+        # Canonical IL (Coherence) compositional patterns
+        "SAFE_ACTIVATION": 1.0,   # emission → coherence: Emission stabilized
+        "STABLE_INTEGRATION": 1.0,  # reception → coherence: Reception consolidated
+        "CREATIVE_RESOLUTION": 1.0,  # dissonance → coherence: Dissonance resolved
+        "RESONANCE_CONSOLIDATION": 1.0,  # resonance → coherence: Resonance locked
+        "STABLE_TRANSFORMATION": 1.0,  # coherence → mutation: Controlled mutation
+        
         # Level 0: Simple patterns
         "LINEAR": 0.5,            # Basic progression without transformation
         "MINIMAL": 0.5,           # Single or very few operators
@@ -153,6 +160,36 @@ class AdvancedPatternDetector:
             },
             "COMPRESS": {
                 "subsequences": [[CONTRACTION, COHERENCE, SILENCE]],
+            },
+            
+            # Canonical IL (Coherence) sequences - compositional patterns
+            # These are fundamental 2-operator sequences involving Coherence that appear
+            # frequently in TNFR structural transformations
+            "SAFE_ACTIVATION": {
+                "subsequences": [[EMISSION, COHERENCE]],
+                "max_length": 3,
+                "description": "Emission stabilized immediately (emission → coherence)",
+            },
+            "STABLE_INTEGRATION": {
+                "subsequences": [[RECEPTION, COHERENCE]],
+                "max_length": 3,
+                "description": "Reception consolidated (reception → coherence)",
+            },
+            "CREATIVE_RESOLUTION": {
+                "subsequences": [[DISSONANCE, COHERENCE]],
+                "max_length": 4,
+                "description": "Dissonance resolved into coherence (dissonance → coherence)",
+            },
+            "RESONANCE_CONSOLIDATION": {
+                "subsequences": [[RESONANCE, COHERENCE]],
+                "max_length": 4,
+                "description": "Propagated coherence locked in (resonance → coherence)",
+            },
+            "STABLE_TRANSFORMATION": {
+                "subsequences": [[COHERENCE, MUTATION]],
+                "max_length": 4,
+                "description": "Coherence enabling controlled mutation (coherence → mutation)",
+                "note": "Generates CAUTION warning due to coherence→mutation compatibility level",
             },
             
             # Adaptive learning patterns (AL + T'HOL canonical sequences)
