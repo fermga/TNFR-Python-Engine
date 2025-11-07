@@ -1875,9 +1875,6 @@ def compute_global_coherence(G: TNFRGraph) -> float:
     >>> 0.0 <= C_global <= 1.0
     True
     """
-    from ..alias import get_attr
-    from ..constants.aliases import ALIAS_DNFR
-    
     # Collect all ΔNFR values
     dnfr_values = [
         float(get_attr(G.nodes[n], ALIAS_DNFR, 0.0))
@@ -1977,8 +1974,6 @@ def compute_local_coherence(G: TNFRGraph, node: Any, radius: int = 1) -> float:
     True
     """
     import networkx as nx
-    from ..alias import get_attr
-    from ..constants.aliases import ALIAS_DNFR
     
     # Get neighborhood
     if radius == 1:

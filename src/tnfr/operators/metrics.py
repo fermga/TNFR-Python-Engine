@@ -259,6 +259,7 @@ def coherence_metrics(G: TNFRGraph, node: NodeId, dnfr_before: float) -> dict[st
         - stabilization_quality: Combined metric (C_local * (1.0 - dnfr_after))
         - epi_final, vf_final: Final structural state
     """
+    # Import here to avoid circular import
     from ..metrics.coherence import compute_global_coherence, compute_local_coherence
     
     dnfr_after = _get_node_attr(G, node, ALIAS_DNFR)

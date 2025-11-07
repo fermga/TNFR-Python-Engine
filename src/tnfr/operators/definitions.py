@@ -14,6 +14,7 @@ from __future__ import annotations
 import warnings
 from typing import Any, ClassVar
 
+from ..alias import get_attr
 from ..config.operator_names import (
     COHERENCE,
     CONTRACTION,
@@ -29,6 +30,7 @@ from ..config.operator_names import (
     SILENCE,
     TRANSITION,
 )
+from ..constants.aliases import ALIAS_DNFR
 from ..types import Glyph, TNFRGraph
 from .registry import register_operator
 
@@ -833,12 +835,10 @@ class Coherence(Operator):
         To customize the reduction factor, set GLYPH_FACTORS["IL_dnfr_factor"] in
         the graph before calling this operator. Default is 0.7 (30% reduction).
         """
-        from ..alias import get_attr
-        from ..constants.aliases import ALIAS_DNFR
-
-        # Capture C(t) before IL application
+        # Import here to avoid circular import
         from ..metrics.coherence import compute_global_coherence, compute_local_coherence
         
+        # Capture C(t) before IL application
         C_global_before = compute_global_coherence(G)
         C_local_before = compute_local_coherence(G, node, radius=kw.get("coherence_radius", 1))
 
