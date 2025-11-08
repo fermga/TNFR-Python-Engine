@@ -265,7 +265,26 @@ def validate_dissonance(G: "TNFRGraph", node: "NodeId") -> None:
 
 
 def validate_coupling(G: "TNFRGraph", node: "NodeId") -> None:
-    """UM - Coupling requires node to have potential coupling targets.
+    """UM - Coupling requires active nodes with compatible phases.
+    
+    Validates comprehensive canonical preconditions for the UM (Coupling) operator
+    according to TNFR theory:
+    
+    1. **Graph connectivity**: At least one other node exists for coupling
+    2. **Active EPI**: Node has sufficient structural form (EPI > threshold)
+    3. **Structural frequency**: Node has capacity for synchronization (νf > threshold)
+    4. **Phase compatibility** (optional): At least one neighbor within phase range
+    
+    Configuration Parameters
+    ------------------------
+    UM_MIN_EPI : float, default 0.05
+        Minimum EPI magnitude required for coupling
+    UM_MIN_VF : float, default 0.01
+        Minimum structural frequency required for coupling
+    UM_STRICT_PHASE_CHECK : bool, default False
+        Enable strict phase compatibility checking with existing neighbors
+    UM_MAX_PHASE_DIFF : float, default π/2
+        Maximum phase difference for compatible coupling (radians)
 
     Parameters
     ----------
@@ -277,14 +296,87 @@ def validate_coupling(G: "TNFRGraph", node: "NodeId") -> None:
     Raises
     ------
     OperatorPreconditionError
-        If node is isolated with no potential coupling targets
+        If node state is unsuitable for coupling:
+        - Graph has no other nodes
+        - EPI below threshold
+        - Structural frequency below threshold
+        - No phase-compatible neighbors (when strict checking enabled)
+        
+    Notes
+    -----
+    Phase compatibility check is soft by default (UM_STRICT_PHASE_CHECK=False)
+    since UM can create new links via UM_FUNCTIONAL_LINKS mechanism. Enable
+    strict checking when coupling should only work with existing neighbors.
+    
+    Examples
+    --------
+    >>> from tnfr.structural import create_nfr
+    >>> from tnfr.operators.preconditions import validate_coupling
+    >>> 
+    >>> # Valid node for coupling
+    >>> G, node = create_nfr("active", epi=0.15, vf=0.50)
+    >>> validate_coupling(G, node)  # Passes
+    >>> 
+    >>> # Invalid: EPI too low
+    >>> G, node = create_nfr("inactive", epi=0.02, vf=0.50)
+    >>> validate_coupling(G, node)  # Raises OperatorPreconditionError
+    
+    See Also
+    --------
+    Coupling : UM operator that uses this validation
     """
-    # Coupling can work with existing neighbors or create new links
-    # Only fail if graph has no other nodes at all
+    import math
+    
+    # Basic graph check - at least one other node required
     if G.number_of_nodes() <= 1:
         raise OperatorPreconditionError(
             "Coupling", "Graph has no other nodes to couple with"
         )
+    
+    # Node must be active (non-zero EPI)
+    epi = _get_node_attr(G, node, ALIAS_EPI)
+    min_epi = float(G.graph.get("UM_MIN_EPI", 0.05))
+    if abs(epi) < min_epi:
+        raise OperatorPreconditionError(
+            "Coupling",
+            f"Node EPI too low for coupling (|EPI|={abs(epi):.3f} < {min_epi:.3f})"
+        )
+    
+    # Node must have structural frequency capacity
+    vf = _get_node_attr(G, node, ALIAS_VF)
+    min_vf = float(G.graph.get("UM_MIN_VF", 0.01))
+    if vf < min_vf:
+        raise OperatorPreconditionError(
+            "Coupling",
+            f"Structural frequency too low (νf={vf:.3f} < {min_vf:.3f})"
+        )
+    
+    # Optional: Check if at least some neighbors are phase-compatible
+    # This is a soft check - we don't fail if no neighbors exist yet
+    # since UM can create new links with UM_FUNCTIONAL_LINKS
+    strict_phase = bool(G.graph.get("UM_STRICT_PHASE_CHECK", False))
+    if strict_phase:
+        neighbors = list(G.neighbors(node))
+        if neighbors:
+            from ...utils.numeric import angle_diff
+            
+            theta_i = _get_node_attr(G, node, ALIAS_THETA)
+            max_phase_diff = float(G.graph.get("UM_MAX_PHASE_DIFF", math.pi / 2))
+            
+            # Check if at least one neighbor is phase-compatible
+            has_compatible = False
+            for neighbor in neighbors:
+                theta_j = _get_node_attr(G, neighbor, ALIAS_THETA)
+                phase_diff = abs(angle_diff(theta_i, theta_j))
+                if phase_diff <= max_phase_diff:
+                    has_compatible = True
+                    break
+            
+            if not has_compatible:
+                raise OperatorPreconditionError(
+                    "Coupling",
+                    f"No phase-compatible neighbors (all |Δθ| > {max_phase_diff:.3f})"
+                )
 
 
 def validate_resonance(G: "TNFRGraph", node: "NodeId") -> None:

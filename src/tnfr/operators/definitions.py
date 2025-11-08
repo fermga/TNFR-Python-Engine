@@ -1329,9 +1329,31 @@ class Coupling(Operator):
 
     Preconditions
     -------------
-    - Both nodes must be active (non-zero EPI)
-    - Phase compatibility: |θᵢ - θⱼ| must be within coupling threshold
-    - Sufficient network proximity or connectivity
+    **Canonical Requirements (TNFR Theory)**:
+    
+    1. **Graph connectivity**: At least one other node exists for potential coupling
+    2. **Active EPI**: Node must have sufficient structural form (EPI > threshold)
+       - Default threshold: 0.05 (configurable via ``UM_MIN_EPI``)
+       - Ensures node has coherent structure capable of synchronization
+    3. **Structural frequency**: Node must have capacity for synchronization (νf > threshold)
+       - Default threshold: 0.01 Hz_str (configurable via ``UM_MIN_VF``)
+       - Ensures node can actively respond to coupling dynamics
+    4. **Phase compatibility** (optional): Compatible neighbors within phase range
+       - Enabled via ``UM_STRICT_PHASE_CHECK`` flag (default: False)
+       - Maximum phase difference: π/2 radians (configurable via ``UM_MAX_PHASE_DIFF``)
+       - Soft check by default since UM can create new functional links
+    
+    **Configuration Parameters**:
+    
+    - ``UM_MIN_EPI`` (float, default 0.05): Minimum EPI magnitude for coupling
+    - ``UM_MIN_VF`` (float, default 0.01): Minimum structural frequency for coupling
+    - ``UM_STRICT_PHASE_CHECK`` (bool, default False): Enable phase compatibility checking
+    - ``UM_MAX_PHASE_DIFF`` (float, default π/2): Maximum phase difference for compatibility
+    
+    **Validation Control**:
+    
+    Set ``VALIDATE_OPERATOR_PRECONDITIONS=True`` in graph metadata to enable validation.
+    Validation is backward-compatible and disabled by default to preserve existing behavior.
 
     Structural Effects
     ------------------
