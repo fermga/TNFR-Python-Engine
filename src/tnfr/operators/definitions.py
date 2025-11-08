@@ -1663,10 +1663,15 @@ class Resonance(Operator):
     def _collect_metrics(
         self, G: TNFRGraph, node: Any, state_before: dict[str, Any]
     ) -> dict[str, Any]:
-        """Collect RA-specific metrics."""
+        """Collect RA-specific metrics with canonical νf amplification tracking."""
         from .metrics import resonance_metrics
 
-        return resonance_metrics(G, node, state_before["epi"])
+        return resonance_metrics(
+            G, 
+            node, 
+            state_before["epi"],
+            vf_before=state_before["vf"]  # Include νf for amplification tracking
+        )
 
 
 @register_operator

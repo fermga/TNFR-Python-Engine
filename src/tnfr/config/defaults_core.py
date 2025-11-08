@@ -86,6 +86,8 @@ class CoreDefaults:
             "UM_vf_sync": 0.10,
             "UM_dnfr_reduction": 0.15,
             "RA_epi_diff": 0.15,
+            "RA_vf_amplification": 0.05,
+            "RA_phase_coupling": 0.10,  # Canonical phase alignment strengthening
             "SHA_vf_factor": 0.85,
             # Conservative scaling (1.05) prevents EPI overflow near boundaries
             # while maintaining meaningful expansion capacity. Critical threshold:
