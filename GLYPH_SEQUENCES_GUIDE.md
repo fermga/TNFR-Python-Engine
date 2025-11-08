@@ -387,6 +387,8 @@ run_sequence(G, ecosystem, [Dissonance(), SelfOrganization()])
 # Result: New organization emerges from perturbation
 ```
 
+> **📖 THOL Encapsulation**: SELF_ORGANIZATION creates bifurcation windows that **encapsulate** internal operators. See [docs/THOL_ENCAPSULATION_GUIDE.md](docs/THOL_ENCAPSULATION_GUIDE.md) for complete details on designing sequences with THOL, including empty vs. non-empty windows, nested THOL, and common patterns.
+
 ---
 
 ## Advanced Sequences
