@@ -229,43 +229,16 @@ def _check_thol_closure(
 def _check_compatibility(ctx: "GrammarContext", n, cand: Glyph | str) -> Glyph | str:
     """Verify canonical transition compatibility based on TNFR structural dynamics.
     
-    Uses only canonical mechanisms:
-    1. STRUCTURAL_FREQUENCIES: Each operator's inherent frequency
-    2. FREQUENCY_TRANSITIONS: Physics-based allowed transitions
+    Note: Frequency-based validation (R5) has been removed as it was not a
+    fundamental physical constraint. Only C1-C3 constraints remain:
+    - C1: EXISTENCE & CLOSURE (valid start/end)
+    - C2: BOUNDEDNESS (stabilizers required)
+    - C3: THRESHOLD PHYSICS (bifurcations need context)
     
-    This ensures grammar rules EMERGE NATURALLY from TNFR structure and dynamics
-    rather than being imposed through arbitrary compatibility tables.
+    These are validated in grammar.py, not here. This function now simply
+    allows all transitions - validation happens at sequence level.
     """
-
-    nd = ctx.G.nodes[n]
-    hist = nd.get("glyph_history")
-    prev = hist[-1] if hist else None
-    prev_glyph = coerce_glyph(prev)
-    cand_glyph = coerce_glyph(cand)
-    
-    if isinstance(prev_glyph, Glyph):
-        glyph_to_name, name_to_glyph = _functional_translators()
-        prev_name = glyph_to_name(prev_glyph)
-        if prev_name is None:
-            return cand
-        cand_name = glyph_to_name(cand_glyph if isinstance(cand_glyph, Glyph) else cand)
-        if cand_name is None:
-            return cand
-            
-        # Use ONLY frequency-based validation (canonical TNFR physics)
-        from ..operators import grammar as _grammar
-        
-        is_valid, error_msg = _grammar.validate_frequency_transition(prev_name, cand_name)
-        
-        if not is_valid:
-            order = (prev_name, cand_name)
-            raise _grammar.TransitionCompatibilityError(
-                rule="frequency-transition",
-                candidate=cand_name,
-                message=f"Frequency transition {prev_name} → {cand_name} violates TNFR structural dynamics: {error_msg}",
-                order=order,
-            )
-    
+    # All transitions allowed - validation at sequence level via C1-C3
     return cand
 
 

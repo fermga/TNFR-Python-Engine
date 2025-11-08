@@ -35,7 +35,6 @@ from ..config.operator_names import (
     canonical_operator_name,
     operator_display_name,
 )
-from ..operators.grammar import STRUCTURAL_FREQUENCIES, validate_frequency_transition
 from ..validation.compatibility import CompatibilityLevel, get_compatibility_level
 
 __all__ = ["SequenceVisualizer"]
@@ -208,9 +207,9 @@ class SequenceVisualizer:
             category = _get_operator_category(op)
             node_color = OPERATOR_CATEGORY_COLORS.get(category, "#95a5a6")
             
-            # Get frequency for border styling
-            freq = STRUCTURAL_FREQUENCIES.get(op, "medium")
-            border_width = {"high": 3, "medium": 2, "zero": 1}.get(freq, 2)
+            # Note: Frequency-based styling removed (R5 constraint eliminated)
+            # All operators now use standard border width
+            border_width = 2
             
             # Draw node
             circle = plt.Circle(
@@ -585,15 +584,16 @@ class SequenceVisualizer:
         
         return fig, ax
     
-    def plot_frequency_timeline(
+    def plot_operator_sequence(
         self,
         sequence: List[str],
         save_path: Optional[str] = None,
     ) -> Tuple[Figure, Axes]:
-        """Plot timeline of structural frequencies (νf) through the sequence.
+        """Plot simple timeline of operators through the sequence.
         
-        Shows how structural frequency evolves through the sequence,
-        highlighting valid and invalid transitions.
+        Shows operator progression through the sequence with category-based coloring.
+        Note: Frequency validation (R5) has been removed from TNFR grammar as it
+        was not a fundamental physical constraint.
         
         Parameters
         ----------
@@ -615,69 +615,58 @@ class SequenceVisualizer:
         
         normalized = [canonical_operator_name(op) or op for op in sequence]
         
-        # Map frequency levels to numeric values
-        freq_values = {"high": 3, "medium": 2, "zero": 1}
+        # Map operators to categories for consistent visual grouping
+        categories = [_get_operator_category(op) for op in normalized]
+        category_values = {
+            "generator": 3,
+            "stabilizer": 2, 
+            "transformer": 3,
+            "connector": 2,
+            "closure": 1,
+        }
+        y_values = [category_values.get(cat, 2) for cat in categories]
         
-        # Get frequencies for each operator
-        frequencies = [STRUCTURAL_FREQUENCIES.get(op, "medium") for op in normalized]
-        freq_numeric = [freq_values[f] for f in frequencies]
-        
-        # Check transition validity
-        valid_transitions = []
-        for i in range(len(normalized) - 1):
-            is_valid, _ = validate_frequency_transition(normalized[i], normalized[i + 1])
-            valid_transitions.append(is_valid)
-        
-        # Plot frequency line
+        # Plot operator line
         x_pos = np.arange(len(normalized))
-        ax.plot(x_pos, freq_numeric, marker="o", markersize=10, linewidth=2.5,
-                color="#3498db", label="Frequency trajectory")
+        ax.plot(x_pos, y_values, marker="o", markersize=12, linewidth=2.5,
+                color="#3498db", label="Operator flow", zorder=2)
         
-        # Color segments by transition validity
-        for i in range(len(normalized) - 1):
-            color = "#2ecc71" if valid_transitions[i] else "#e74c3c"
-            ax.plot(
-                [x_pos[i], x_pos[i + 1]],
-                [freq_numeric[i], freq_numeric[i + 1]],
-                linewidth=6, alpha=0.3, color=color
-            )
-        
-        # Annotate operators
-        for i, (op, freq) in enumerate(zip(normalized, frequencies)):
+        # Annotate operators with category colors
+        for i, (op, cat) in enumerate(zip(normalized, categories)):
             display_name = operator_display_name(op) or op
-            y_offset = 0.15 if i % 2 == 0 else -0.15
+            y_offset = 0.2 if i % 2 == 0 else -0.2
             
+            cat_color = OPERATOR_CATEGORY_COLORS.get(cat, "#95a5a6")
             ax.annotate(
                 display_name,
-                xy=(x_pos[i], freq_numeric[i]),
-                xytext=(x_pos[i], freq_numeric[i] + y_offset),
-                ha="center", va="center" if y_offset > 0 else "center",
-                fontsize=9, weight="bold",
-                bbox=dict(boxstyle="round,pad=0.3", facecolor=FREQUENCY_COLORS[freq], alpha=0.7)
+                xy=(x_pos[i], y_values[i]),
+                xytext=(x_pos[i], y_values[i] + y_offset),
+                ha="center", va="center",
+                fontsize=10, weight="bold",
+                bbox=dict(boxstyle="round,pad=0.4", facecolor=cat_color, alpha=0.8, edgecolor="black", linewidth=1.5),
+                zorder=3
             )
         
         # Styling
         ax.set_yticks([1, 2, 3])
-        ax.set_yticklabels(["Zero (SHA)", "Medium", "High"], fontsize=10)
+        ax.set_yticklabels(["Closure", "Moderate", "Intensive"], fontsize=11)
         ax.set_xticks(x_pos)
-        ax.set_xticklabels([f"Op {i+1}" for i in range(len(normalized))], fontsize=9)
-        ax.set_ylabel("Structural Frequency (νf)", fontsize=11, weight="bold")
-        ax.set_xlabel("Sequence Position", fontsize=11, weight="bold")
-        ax.set_title("TNFR Structural Frequency Timeline", fontsize=14, weight="bold", pad=20)
+        ax.set_xticklabels([f"Step {i+1}" for i in range(len(normalized))], fontsize=9)
+        ax.set_ylabel("Operator Intensity", fontsize=12, weight="bold")
+        ax.set_xlabel("Sequence Position", fontsize=12, weight="bold")
+        ax.set_title("TNFR Operator Sequence Timeline", fontsize=14, weight="bold", pad=20)
         ax.grid(axis="y", alpha=0.3, linestyle="--")
         ax.set_ylim(0.5, 3.5)
         
-        # Add legend for transition validity
+        # Add category legend
         legend_elements = [
-            mpatches.Patch(color="#2ecc71", alpha=0.5, label="Valid transition"),
-            mpatches.Patch(color="#e74c3c", alpha=0.5, label="Invalid transition"),
+            mpatches.Patch(color=OPERATOR_CATEGORY_COLORS["generator"], label="Generator"),
+            mpatches.Patch(color=OPERATOR_CATEGORY_COLORS["stabilizer"], label="Stabilizer"),
+            mpatches.Patch(color=OPERATOR_CATEGORY_COLORS["transformer"], label="Transformer"),
+            mpatches.Patch(color=OPERATOR_CATEGORY_COLORS["connector"], label="Connector"),
+            mpatches.Patch(color=OPERATOR_CATEGORY_COLORS["closure"], label="Closure"),
         ]
-        ax.legend(handles=legend_elements, loc="upper right", fontsize=9)
-        
-        # Add frequency zones
-        ax.axhspan(2.5, 3.5, alpha=0.1, color="#e74c3c", label="High energy zone")
-        ax.axhspan(1.5, 2.5, alpha=0.1, color="#3498db", label="Medium zone")
-        ax.axhspan(0.5, 1.5, alpha=0.1, color="#95a5a6", label="Paused zone")
+        ax.legend(handles=legend_elements, loc="upper right", fontsize=9, ncol=2)
         
         plt.tight_layout()
         
