@@ -83,6 +83,7 @@ class CoreDefaults:
             "IL_dnfr_factor": 0.7,
             "OZ_dnfr_factor": 1.3,
             "UM_theta_push": 0.25,
+            "UM_vf_sync": 0.10,
             "RA_epi_diff": 0.15,
             "SHA_vf_factor": 0.85,
             # Conservative scaling (1.05) prevents EPI overflow near boundaries
