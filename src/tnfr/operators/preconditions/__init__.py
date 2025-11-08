@@ -530,10 +530,14 @@ def validate_contraction(G: "TNFRGraph", node: "NodeId") -> None:
 
 
 def validate_self_organization(G: "TNFRGraph", node: "NodeId") -> None:
-    """THOL - Self-organization requires minimum EPI, positive ΔNFR, and connectivity.
+    """THOL - Enhanced validation: connectivity, metabolic context, acceleration.
 
-    T'HOL implements structural metabolism and bifurcation. Preconditions ensure
-    sufficient structure and reorganization pressure for self-organization.
+    Self-organization requires:
+    1. Sufficient EPI for bifurcation
+    2. Positive reorganization pressure (ΔNFR > 0)
+    3. Structural reorganization capacity (νf > 0)
+    4. Network connectivity for metabolism (degree ≥ 1)
+    5. EPI history for acceleration computation (≥3 points)
 
     Also detects and records the destabilizer type that enabled this self-organization
     for telemetry and structural tracing purposes.
@@ -548,26 +552,37 @@ def validate_self_organization(G: "TNFRGraph", node: "NodeId") -> None:
     Raises
     ------
     OperatorPreconditionError
-        If EPI is too low for bifurcation, or if ΔNFR is non-positive
-
-    Warnings
-    --------
-    Warns if node is isolated - bifurcation may not propagate through network
+        If any structural requirement is not met
 
     Notes
     -----
     This function implements R4 Extended telemetry by analyzing the glyph_history
     to determine which destabilizer (strong/moderate/weak) enabled the self-organization.
+
+    Configuration Parameters
+    ------------------------
+    THOL_MIN_EPI : float, default 0.2
+        Minimum EPI for bifurcation
+    THOL_MIN_VF : float, default 0.1
+        Minimum structural frequency for reorganization
+    THOL_MIN_DEGREE : int, default 1
+        Minimum network connectivity
+    THOL_MIN_HISTORY_LENGTH : int, default 3
+        Minimum EPI history for acceleration computation
+    THOL_ALLOW_ISOLATED : bool, default False
+        Allow isolated nodes for internal-only bifurcation
+    THOL_METABOLIC_ENABLED : bool, default True
+        Require metabolic network context
     """
     import logging
-    import warnings
 
     logger = logging.getLogger(__name__)
 
     epi = _get_node_attr(G, node, ALIAS_EPI)
     dnfr = _get_node_attr(G, node, ALIAS_DNFR)
+    vf = _get_node_attr(G, node, ALIAS_VF)
 
-    # EPI must be sufficient for bifurcation
+    # 1. EPI sufficiency
     min_epi = float(G.graph.get("THOL_MIN_EPI", 0.2))
     if epi < min_epi:
         raise OperatorPreconditionError(
@@ -575,19 +590,57 @@ def validate_self_organization(G: "TNFRGraph", node: "NodeId") -> None:
             f"EPI too low for bifurcation (EPI={epi:.3f} < {min_epi:.3f})",
         )
 
-    # ΔNFR must be positive (reorganization pressure required)
+    # 2. Reorganization pressure
     if dnfr <= 0:
         raise OperatorPreconditionError(
             "Self-organization",
             f"ΔNFR non-positive, no reorganization pressure (ΔNFR={dnfr:.3f})",
         )
 
-    # Warn if node is isolated (bifurcation won't propagate)
-    if G.degree(node) == 0:
-        warnings.warn(
-            f"Node {node} is isolated - bifurcation may not propagate through network",
-            stacklevel=3,
+    # 3. Structural frequency validation
+    min_vf = float(G.graph.get("THOL_MIN_VF", 0.1))
+    if vf < min_vf:
+        raise OperatorPreconditionError(
+            "Self-organization",
+            f"Structural frequency too low for reorganization (νf={vf:.3f} < {min_vf:.3f})",
         )
+
+    # 4. Connectivity requirement (ELEVATED FROM WARNING)
+    min_degree = int(G.graph.get("THOL_MIN_DEGREE", 1))
+    node_degree = G.degree(node)
+
+    # Allow isolated THOL if explicitly enabled
+    allow_isolated = bool(G.graph.get("THOL_ALLOW_ISOLATED", False))
+
+    if node_degree < min_degree and not allow_isolated:
+        raise OperatorPreconditionError(
+            "Self-organization",
+            f"Node insufficiently connected for network metabolism "
+            f"(degree={node_degree} < {min_degree}). "
+            f"Set THOL_ALLOW_ISOLATED=True to enable internal-only bifurcation.",
+        )
+
+    # 5. EPI history validation (for d²EPI/dt² computation)
+    epi_history = G.nodes[node].get("epi_history", [])
+    min_history_length = int(G.graph.get("THOL_MIN_HISTORY_LENGTH", 3))
+
+    if len(epi_history) < min_history_length:
+        raise OperatorPreconditionError(
+            "Self-organization",
+            f"Insufficient EPI history for acceleration computation "
+            f"(have {len(epi_history)}, need ≥{min_history_length}). "
+            f"Apply operators to build history before THOL.",
+        )
+
+    # 6. Metabolic context validation (if metabolism enabled)
+    if G.graph.get("THOL_METABOLIC_ENABLED", True):
+        # If network metabolism is expected, verify neighbors exist
+        if node_degree == 0:
+            raise OperatorPreconditionError(
+                "Self-organization",
+                "Metabolic mode enabled but node is isolated. "
+                "Disable THOL_METABOLIC_ENABLED or add network connections.",
+            )
 
     # R4 Extended: Detect and record destabilizer type for telemetry
     _record_destabilizer_context(G, node, logger)
