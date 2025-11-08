@@ -135,6 +135,11 @@ class CoreDefaults:
     HISTORY_MAXLEN: int = 0
     NODAL_EQUATION_CLIP_AWARE: bool = True
     NODAL_EQUATION_TOLERANCE: float = 1e-9
+    # THOL (Self-organization) vibrational metabolism parameters
+    THOL_METABOLIC_ENABLED: bool = True
+    THOL_METABOLIC_GRADIENT_WEIGHT: float = 0.15
+    THOL_METABOLIC_COMPLEXITY_WEIGHT: float = 0.10
+    THOL_BIFURCATION_THRESHOLD: float = 0.1
 
 
 @dataclass(frozen=True, slots=True)
