@@ -133,11 +133,12 @@ This document formalizes the **structural invariants** and **API contracts** for
 - **Postconditions**:
   - `θ_new = θ_old + UM_theta_push * angle_diff(θ_neighbor_mean, θ_old)`
   - `0 ≤ UM_theta_push ≤ 1` (default: 0.25)
-  - **Optional**: If `UM_FUNCTIONAL_LINKS=True`, may add edges based on:
+  - By default (`UM_FUNCTIONAL_LINKS=True`), may add edges based on:
     - Phase similarity: `1 - |Δθ|/π`
     - EPI similarity: `1 - |EPI_i - EPI_j| / (|EPI_i| + |EPI_j| + ε)`
     - Sense index similarity: `1 - |Si_i - Si_j|`
     - Edge added if `compatibility ≥ UM_COMPAT_THRESHOLD` (default: 0.75)
+  - Set `UM_FUNCTIONAL_LINKS=False` to disable link creation (edge case: phase-only sync)
   - `EPI`, `νf`, `ΔNFR` remain unchanged
 - **Structural Effect**: Aligns node phase with neighbor mean, enables structural coupling
 - **TNFR Invariants**:
