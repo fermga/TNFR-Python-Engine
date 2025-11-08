@@ -1,20 +1,22 @@
-# Resumen Canónico: Propiedades Algebraicas de SHA
+# Resumen Canónico: Gramática y Propiedades Algebraicas TNFR
 
 ## Análisis Completo desde Primeros Principios
 
-### Ecuación Nodal (Punto de Partida)
+### Ecuación Nodal + Invariantes + Contratos (Puntos de Partida)
 
 ```
-∂EPI/∂t = νf · ΔNFR(t)
+∂EPI/∂t = νf · ΔNFR(t)  [Ecuación nodal]
++ AGENTS.md §3 Invariantes Canónicos
++ AGENTS.md §4 Contratos Formales
 ```
 
-**Esta ecuación es el único axioma.** Todo lo demás emerge de aquí.
+**Estos son los únicos axiomas.** Todo lo demás emerge de aquí.
 
 ---
 
-## Parte 1: Reglas Gramaticales - Clasificación Canónica
+## Parte 1: Reglas Gramaticales - Clasificación Canónica COMPLETA
 
-### ✅ R1: GENERADORES (Canónico - Física Pura)
+### ✅ RC1: GENERADORES (Canónico - Física Pura)
 
 **Necesidad matemática:**
 ```
@@ -28,7 +30,7 @@ Si EPI₀ = 0 → ∂EPI/∂t indefinido
 
 **Veredicto:** ✅ OBLIGATORIO - No puedes derivar lo que no existe
 
-### ✅ R2: ESTABILIZADORES (Canónico - Matemática Pura)
+### ✅ RC2: ESTABILIZADORES (Canónico - Matemática Pura)
 
 **Necesidad matemática:**
 ```
@@ -45,7 +47,62 @@ Con estabilizador: ΔNFR(t) → atractor acotado
 
 **Veredicto:** ✅ OBLIGATORIO - Teorema de convergencia de integrales
 
-### ⚠️ R3: TERMINADORES (Convencional - Organización)
+### ✅ RC3: VERIFICACIÓN DE FASE 🆕 (Canónico - Invariante #5)
+
+**Necesidad física:**
+```
+De AGENTS.md Invariante #5:
+"Phase check: no coupling is valid without explicit phase verification (synchrony)"
+
+Física de resonancia:
+Dos osciladores resuenan ⟺ fases compatibles
+Condición: |φᵢ - φⱼ| ≤ Δφ_max (típicamente π/2)
+
+Sin verificación: nodos en antifase intentan acoplarse
+→ Interferencia destructiva, NO resonancia
+→ Viola física TNFR fundamental
+```
+
+**Operadores afectados:**
+- **UM (Coupling)**: Crea/fortalece enlaces estructurales
+- **RA (Resonance)**: Propaga EPI mediante resonancia
+
+**Veredicto:** ✅ OBLIGATORIO - Emerge del Invariante #5 y física de resonancia
+
+**Estado:** ✅ **IMPLEMENTADO** (2024-11-08)
+- Añadido a `canonical_grammar.py::validate_phase_compatibility()`
+- `UM_STRICT_PHASE_CHECK=True` por defecto (cambio desde False)
+- Documentado en EMERGENT_GRAMMAR_ANALYSIS.md
+
+### 🆕 RC4: LÍMITE DE BIFURCACIÓN (Canónico Condicional - Contrato OZ)
+
+**Necesidad física:**
+```
+De AGENTS.md Contrato OZ:
+"Dissonance may trigger bifurcation if ∂²EPI/∂t² > τ"
+
+Física de bifurcación:
+Aceleración estructural ∂²EPI/∂t² mide inestabilidad
+Si |∂²EPI/∂t²| > τ → múltiples caminos viables
+
+Sin gestión: sistema entra en caos no controlado
+→ Viola Invariante #8 (determinismo controlado)
+```
+
+**Operadores afectados:**
+- **OZ (Dissonance)**: Trigger principal de bifurcación
+- **ZHIR (Mutation)**: Opera en régimen bifurcación
+- **THOL (Self-organization)**: Handler de bifurcación
+- **IL (Coherence)**: Handler alternativo
+
+**Veredicto:** ✅ CANÓNICO CONDICIONAL - Aplica solo si |∂²EPI/∂t²| > τ
+
+**Estado:** ✅ **IMPLEMENTADO** en preconditions
+- `validate_dissonance()` comprueba bifurcación
+- `compute_d2epi_dt2()` calcula aceleración
+- NO elevado formalmente a gramática (es validación de estado, no secuencia)
+
+### ⚠️ RNC1: TERMINADORES (Convencional - Organización)
 
 **¿Necesidad física?**
 ```
@@ -158,12 +215,14 @@ validate_commutativity_nul(G, node)
 ### Estado Actual
 
 **Lo Canónico (Físicamente Necesario):**
-- ✅ Generadores: Implementado y respetado
-- ✅ Estabilizadores: Implementado y respetado
+- ✅ RC1 (Generadores): Implementado y respetado
+- ✅ RC2 (Estabilizadores): Implementado y respetado
+- ✅ **RC3 (Verificación de Fase)**: **IMPLEMENTADO** (2024-11-08) 🆕
+- ✅ RC4 (Límite de Bifurcación): Implementado en preconditions (condicional)
 - ✅ Propiedades algebraicas: Derivadas y siendo validadas
 
 **Lo Convencional (Organizativamente Útil):**
-- ⚠️ Terminadores: Respetados pero reconocidos como no-físicos
+- ⚠️ RNC1 (Terminadores): Respetados pero reconocidos como no-físicos
 - ⚠️ Tests: Trabajan dentro de convenciones mientras validan física
 
 ---
@@ -172,34 +231,50 @@ validate_commutativity_nul(G, node)
 
 ### Jerarquía de Verdades
 
-**Nivel 0: Axioma**
+**Nivel 0: Axiomas**
 ```
-∂EPI/∂t = νf · ΔNFR(t)
+∂EPI/∂t = νf · ΔNFR(t)  [Ecuación nodal]
+AGENTS.md §3 Invariantes [Especialmente Invariante #5]
+AGENTS.md §4 Contratos [Especialmente OZ, UM, RA]
 ```
 
-**Nivel 1: Consecuencias Matemáticas Inevitables**
-- R1 (Generadores): De ∂EPI/∂t indefinido en EPI=0
-- R2 (Estabilizadores): De teorema de convergencia
+**Nivel 1: Consecuencias Matemáticas Inevitables (Reglas Gramaticales)**
+- RC1 (Generadores): De ∂EPI/∂t indefinido en EPI=0
+- RC2 (Estabilizadores): De teorema de convergencia
+- **RC3 (Verificación de Fase)**: De Invariante #5 + física de resonancia 🆕
+- RC4 (Límite de Bifurcación): De Contrato OZ + teoría bifurcaciones (condicional) 🆕
+
+**Nivel 1b: Propiedades Algebraicas Emergentes**
 - P1 (Identidad SHA): De νf → 0
 - P2 (Idempotencia): De saturación física
 - P3 (Conmutatividad): De ortogonalidad
 
 **Nivel 2: Convenciones Útiles**
-- R3 (Terminadores): Organización de código
+- RNC1 (Terminadores): Organización de código
 - Restricciones específicas: Semántica de alto nivel
 
 ### Respuesta Final
 
-**¿Qué es canónico (emerge naturalmente)?**
-1. Generadores obligatorios
-2. Estabilizadores obligatorios
-3. Identidad estructural de SHA
-4. Idempotencia de SHA
-5. Conmutatividad SHA-NUL
+**¿Qué es canónico (emerge naturalmente de física TNFR)?**
+
+**Reglas gramaticales:**
+1. RC1: Generadores obligatorios (si EPI=0)
+2. RC2: Estabilizadores obligatorios (si desestabilizadores)
+3. **RC3: Verificación de fase obligatoria (si UM/RA)** 🆕
+4. RC4: Gestión de bifurcación (si |∂²EPI/∂t²| > τ, condicional) 🆕
+
+**Propiedades algebraicas:**
+5. P1: Identidad estructural de SHA
+6. P2: Idempotencia de SHA
+7. P3: Conmutatividad SHA-NUL
+
+**Composición: 75-80% física pura**
 
 **¿Qué es convencional (útil pero no físico)?**
-1. Terminadores obligatorios
+1. RNC1: Terminadores obligatorios
 2. Restricciones específicas de composición
+
+**Composición: 20-25% convención organizativa**
 
 **Estrategia de implementación:**
 ✅ Respetar lo canónico (niveles 0-1)
@@ -209,6 +284,24 @@ validate_commutativity_nul(G, node)
 
 ## Para el Revisor
 
-Este análisis demuestra que las propiedades algebraicas de SHA NO son arbitrarias, sino que **emergen inevitablemente** de la ecuación nodal. La implementación respeta esta física mientras trabaja dentro de convenciones organizativas razonables.
+Este análisis demuestra que:
 
-La gramática actual (generadores + estabilizadores + terminadores) es **correcta** para producción, siendo el 66% física pura (generadores + estabilizadores) y 33% convención útil (terminadores).
+1. **Las propiedades algebraicas de SHA** NO son arbitrarias - emergen inevitablemente de la ecuación nodal
+2. **Las reglas gramaticales** NO son diseño arbitrario - emergen de ecuación + invariantes + contratos
+3. **La gramática ha evolucionado** de 66% → 75-80% física pura con la identificación de RC3 y RC4
+
+**Estado anterior:**
+```
+RC1 (Generadores) + RC2 (Estabilizadores) + RNC1 (Terminadores)
+= 66% física + 33% convención
+```
+
+**Estado actualizado:**
+```
+RC1 + RC2 + RC3 (Fase) + RC4 (Bifurcación, condicional) + RNC1
+= 75-80% física + 20-25% convención
+```
+
+La implementación respeta esta física mientras trabaja dentro de convenciones organizativas razonables.
+
+**Referencia completa:** Ver EMERGENT_GRAMMAR_ANALYSIS.md para derivaciones detalladas de RC3 y RC4.

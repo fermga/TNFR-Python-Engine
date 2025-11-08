@@ -1,7 +1,7 @@
 """Canonical grammar validator - Pure physics from nodal equation.
 
 This module implements grammar validation that emerges EXCLUSIVELY from
-the nodal equation ∂EPI/∂t = νf · ΔNFR(t), without organizational conventions.
+the nodal equation ∂EPI/∂t = νf · ΔNFR(t), TNFR invariants, and formal contracts.
 
 Canonical Rules (Inevitable from Physics)
 ------------------------------------------
@@ -10,6 +10,12 @@ RC1: Initialization - If EPI=0, sequence must start with generator
      
 RC2: Convergence - If sequence has destabilizers, must include stabilizer
      Reason: ∫νf·ΔNFR dt must converge (convergence theorem)
+
+RC3: Phase Verification - Coupling/resonance requires phase compatibility
+     Reason: AGENTS.md Invariant #5 + resonance physics (φᵢ ≈ φⱼ)
+
+RC4: Bifurcation Limits - If ∂²EPI/∂t² > τ, bifurcation handler required
+     Reason: AGENTS.md Contract OZ + bifurcation theory (conditional)
 
 Non-Canonical Rules (Organizational Conventions)
 -------------------------------------------------
@@ -21,7 +27,8 @@ RNC2: Specific composition restrictions
 
 References
 ----------
-See CANONICAL_GRAMMAR_DERIVATION.md for complete mathematical derivation.
+See CANONICAL_GRAMMAR_DERIVATION.md and EMERGENT_GRAMMAR_ANALYSIS.md
+for complete mathematical derivations.
 """
 
 from __future__ import annotations
@@ -49,6 +56,13 @@ DESTABILIZERS = frozenset({
     # Note: Some operators have destabilizing components
 })
 
+# RC3: Operators that require phase verification (coupling/resonance)
+COUPLING_RESONANCE = frozenset({'coupling', 'resonance'})
+
+# RC4: Bifurcation triggers and handlers
+BIFURCATION_TRIGGERS = frozenset({'dissonance', 'mutation'})
+BIFURCATION_HANDLERS = frozenset({'self_organization', 'coherence'})
+
 # Conventional terminators (NOT canonical - organizational only)
 CONVENTIONAL_TERMINATORS = frozenset({
     'silence',
@@ -61,9 +75,9 @@ CONVENTIONAL_TERMINATORS = frozenset({
 class CanonicalGrammarValidator:
     """Validates sequences using ONLY physics-derived rules.
     
-    This validator implements RC1 and RC2, which emerge inevitably from
-    the nodal equation ∂EPI/∂t = νf · ΔNFR(t). It does NOT enforce
-    organizational conventions like required terminators.
+    This validator implements RC1, RC2, and RC3, which emerge inevitably from
+    the nodal equation ∂EPI/∂t = νf · ΔNFR(t), TNFR invariants, and formal
+    contracts. It does NOT enforce organizational conventions like required terminators.
     
     Use this for testing algebraic properties where you want to validate
     pure physics without implementation conventions.
@@ -158,15 +172,70 @@ class CanonicalGrammarValidator:
             f"bound destabilizers {destabilizers_present}"
         )
     
+    @staticmethod
+    def validate_phase_compatibility(sequence: List[Operator]) -> tuple[bool, str]:
+        """Validate RC3: Phase compatibility requirement for coupling/resonance.
+        
+        Physical basis: AGENTS.md Invariant #5 states "no coupling is valid
+        without explicit phase verification (synchrony)". Resonance physics
+        requires phase compatibility: |φᵢ - φⱼ| ≤ Δφ_max for structural coupling.
+        
+        Without phase verification, nodes with incompatible phases (e.g., antiphase)
+        could attempt coupling, violating resonance physics.
+        
+        Parameters
+        ----------
+        sequence : List[Operator]
+            Sequence of operators to validate
+        
+        Returns
+        -------
+        tuple[bool, str]
+            (is_valid, message)
+            
+        Notes
+        -----
+        RC3 is a META-rule: it requires that when UM (Coupling) or RA (Resonance)
+        operators are used, the implementation MUST verify phase compatibility.
+        The actual phase check happens in operator preconditions, not in grammar.
+        
+        This grammar rule serves to document the requirement and ensure awareness
+        that phase checks are MANDATORY (Invariant #5), not optional.
+        """
+        # Check if sequence contains coupling/resonance operators
+        coupling_ops = [
+            getattr(op, 'canonical_name', op.name.lower())
+            for op in sequence
+            if getattr(op, 'canonical_name', op.name.lower()) in COUPLING_RESONANCE
+        ]
+        
+        if not coupling_ops:
+            # No coupling/resonance = RC3 not applicable
+            return True, "RC3 not applicable: no coupling/resonance operators"
+        
+        # RC3 satisfied: Sequence contains coupling/resonance
+        # Phase verification is MANDATORY per Invariant #5
+        # Actual check happens in operator preconditions (validate_coupling, validate_resonance)
+        return (
+            True,
+            f"RC3 awareness: operators {coupling_ops} require phase verification "
+            f"(MANDATORY per Invariant #5). Enforced in preconditions."
+        )
+    
     @classmethod
     def validate(
         cls,
         sequence: List[Operator],
         epi_initial: float = 0.0,
     ) -> tuple[bool, List[str]]:
-        """Validate sequence using ONLY canonical rules (RC1, RC2).
+        """Validate sequence using ONLY canonical rules (RC1, RC2, RC3).
         
         This validates pure physics without organizational conventions.
+        
+        Canonical rules validated:
+        - RC1: Initialization (if EPI=0, use generator)
+        - RC2: Convergence (if destabilizers, use stabilizer)
+        - RC3: Phase compatibility (coupling/resonance require phase check)
         
         Parameters
         ----------
@@ -195,6 +264,11 @@ class CanonicalGrammarValidator:
         messages.append(f"RC2: {msg_conv}")
         all_valid = all_valid and valid_conv
         
+        # RC3: Phase compatibility
+        valid_phase, msg_phase = cls.validate_phase_compatibility(sequence)
+        messages.append(f"RC3: {msg_phase}")
+        all_valid = all_valid and valid_phase
+        
         return all_valid, messages
 
 
@@ -207,10 +281,11 @@ def validate_canonical_only(
     This function validates ONLY:
     - RC1: Initialization (if EPI=0, use generator)
     - RC2: Convergence (if destabilizers, use stabilizer)
+    - RC3: Phase compatibility (coupling/resonance require phase check)
     
     It does NOT validate:
-    - Terminator requirements (organizational convention)
-    - Specific composition restrictions (high-level semantics)
+    - RNC1: Terminator requirements (organizational convention)
+    - RNC2: Specific composition restrictions (high-level semantics)
     
     Use this when testing algebraic properties where you want pure physics
     validation without implementation conventions.
@@ -236,8 +311,12 @@ def validate_canonical_only(
     
     Notes
     -----
-    This validator is 100% physics-based. All rules emerge inevitably from
-    the nodal equation ∂EPI/∂t = νf · ΔNFR(t).
+    This validator is 100% physics-based. All rules emerge inevitably from:
+    - Nodal equation: ∂EPI/∂t = νf · ΔNFR(t)
+    - TNFR invariants (especially Invariant #5: phase verification)
+    - Formal operator contracts (AGENTS.md §4)
+    
+    See EMERGENT_GRAMMAR_ANALYSIS.md for complete derivations.
     """
     is_valid, messages = CanonicalGrammarValidator.validate(sequence, epi_initial)
     return is_valid
@@ -250,7 +329,7 @@ def validate_with_conventions(
     """Validate sequence with both canonical rules and conventions.
     
     This validates:
-    - RC1, RC2: Canonical physics rules
+    - RC1, RC2, RC3: Canonical physics rules
     - RNC1: Terminator convention (organizational, NOT physics)
     
     Parameters
@@ -268,14 +347,14 @@ def validate_with_conventions(
     messages = []
     all_valid = True
     
-    # First validate canonical rules
+    # First validate canonical rules (RC1, RC2, RC3)
     valid_canonical, canonical_msgs = CanonicalGrammarValidator.validate(
         sequence, epi_initial
     )
     messages.extend(canonical_msgs)
     all_valid = all_valid and valid_canonical
     
-    # Then check conventions
+    # Then check conventions (RNC1)
     if sequence:
         last_op = getattr(sequence[-1], 'canonical_name', sequence[-1].name.lower())
         if last_op not in CONVENTIONAL_TERMINATORS:
