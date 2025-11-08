@@ -26,7 +26,7 @@ def validate_emission_strict(G: TNFRGraph, node: Any) -> None:
     """Validate strict canonical preconditions for AL (Emission) operator.
 
     According to TNFR.pdf §2.2.1, Emission (AL - Emisión fundacional) requires:
-    
+
     1. **Latent state**: EPI < threshold (node must be in latent or low-activation state)
     2. **Basal frequency**: νf > threshold (sufficient structural frequency for activation)
     3. **Coupling availability**: Network connectivity (warning if isolated)

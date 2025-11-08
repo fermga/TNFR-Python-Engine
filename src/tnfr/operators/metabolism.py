@@ -289,9 +289,7 @@ def propagate_subepi_to_network(
         return []
 
     # Configuration
-    min_coupling_strength = float(
-        G.graph.get("THOL_MIN_COUPLING_FOR_PROPAGATION", 0.5)
-    )
+    min_coupling_strength = float(G.graph.get("THOL_MIN_COUPLING_FOR_PROPAGATION", 0.5))
     attenuation_factor = float(G.graph.get("THOL_PROPAGATION_ATTENUATION", 0.7))
 
     parent_theta = float(get_attr(G.nodes[parent_node], ALIAS_THETA, 0.0))
@@ -309,9 +307,7 @@ def propagate_subepi_to_network(
         # Propagate only if sufficiently coupled
         if coupling_strength >= min_coupling_strength:
             # Attenuate sub-EPI based on distance and coupling
-            attenuated_epi = (
-                sub_epi_magnitude * attenuation_factor * coupling_strength
-            )
+            attenuated_epi = sub_epi_magnitude * attenuation_factor * coupling_strength
 
             # Inject into neighbor's EPI
             neighbor_epi = float(get_attr(G.nodes[neighbor], ALIAS_EPI, 0.0))

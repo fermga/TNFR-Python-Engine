@@ -28,6 +28,7 @@ from ..constants.aliases import ALIAS_EPI
 
 try:
     import networkx as nx
+
     HAS_NETWORKX = True
 except ImportError:
     HAS_NETWORKX = False
@@ -85,10 +86,7 @@ def plot_cascade_propagation(G: TNFRGraph, figsize: tuple[int, int] = (12, 8)):
         bifurcated_nodes.add(prop["source_node"])
 
     # Node colors: red = bifurcated, lightblue = normal
-    node_colors = [
-        "red" if n in bifurcated_nodes else "lightblue"
-        for n in G.nodes
-    ]
+    node_colors = ["red" if n in bifurcated_nodes else "lightblue" for n in G.nodes]
 
     # Node sizes based on EPI magnitude
     node_sizes = []

@@ -157,8 +157,11 @@ class AdaptiveSequenceSelector:
         else:
             # Exploitation: select best-performing sequence
             avg_perf = {
-                k: (sum(self.performance[k]) / len(self.performance[k])
-                    if self.performance[k] else 0.0)
+                k: (
+                    sum(self.performance[k]) / len(self.performance[k])
+                    if self.performance[k]
+                    else 0.0
+                )
                 for k in candidates
             }
             selected = max(avg_perf, key=avg_perf.get)  # type: ignore[arg-type]

@@ -45,10 +45,11 @@ def example_1_feedback_loop():
 
     # Initialize feedback loop with target coherence
     loop = StructuralFeedbackLoop(
-        G, node,
+        G,
+        node,
         target_coherence=0.7,  # Target C(t)
-        tau_adaptive=0.1,      # Initial bifurcation threshold
-        learning_rate=0.05     # Threshold adaptation rate
+        tau_adaptive=0.1,  # Initial bifurcation threshold
+        learning_rate=0.05,  # Threshold adaptation rate
     )
 
     print("\nInitial state:")

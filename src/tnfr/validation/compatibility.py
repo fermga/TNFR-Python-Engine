@@ -33,10 +33,10 @@ __all__ = [
 
 class CompatibilityLevel(Enum):
     """Graduated compatibility levels for structural operator transitions.
-    
+
     Reflects the theoretical richness of TNFR by distinguishing between
     optimal, acceptable, contextual, and incompatible transitions.
-    
+
     Attributes
     ----------
     EXCELLENT : str
@@ -66,129 +66,312 @@ class CompatibilityLevel(Enum):
 GRADUATED_COMPATIBILITY: dict[str, dict[str, list[str]]] = {
     # EMISSION (AL) - Initiates resonant patterns, seeds coherence outward
     EMISSION: {
-        "excellent": [COHERENCE, TRANSITION, RECEPTION],  # Initiation → stabilization/handoff/anchoring
+        "excellent": [
+            COHERENCE,
+            TRANSITION,
+            RECEPTION,
+        ],  # Initiation → stabilization/handoff/anchoring
         "good": [RESONANCE, EXPANSION, COUPLING],  # Amplification, exploration, linking
         "caution": [DISSONANCE],  # Direct tension after initiation requires context
-        "avoid": [SILENCE, EMISSION, MUTATION, CONTRACTION, SELF_ORGANIZATION, RECURSIVITY],
+        "avoid": [
+            SILENCE,
+            EMISSION,
+            MUTATION,
+            CONTRACTION,
+            SELF_ORGANIZATION,
+            RECURSIVITY,
+        ],
     },
     # RECEPTION (EN) - Anchors inbound energy into the EPI
     RECEPTION: {
-        "excellent": [COHERENCE, COUPLING, SELF_ORGANIZATION],  # Anchoring → stabilization/linking/autonomous cascades
+        "excellent": [
+            COHERENCE,
+            COUPLING,
+            SELF_ORGANIZATION,
+        ],  # Anchoring → stabilization/linking/autonomous cascades
         "good": [RESONANCE],  # Amplification after receiving
         "caution": [],
-        "avoid": [SILENCE, EMISSION, DISSONANCE, EXPANSION, CONTRACTION, MUTATION, TRANSITION, RECURSIVITY, RECEPTION],
+        "avoid": [
+            SILENCE,
+            EMISSION,
+            DISSONANCE,
+            EXPANSION,
+            CONTRACTION,
+            MUTATION,
+            TRANSITION,
+            RECURSIVITY,
+            RECEPTION,
+        ],
     },
     # COHERENCE (IL) - Compresses ΔNFR drift to stabilize C(t)
     COHERENCE: {
-        "excellent": [RESONANCE, EXPANSION, COUPLING],  # Stability → amplification/exploration/linking
-        "good": [SILENCE, TRANSITION, CONTRACTION, SELF_ORGANIZATION, RECURSIVITY],  # Valid progressions
-        "caution": [MUTATION, DISSONANCE],  # Post-stabilization tension/mutation needs context
-        "avoid": [EMISSION, RECEPTION, COHERENCE],  # Cannot re-initiate, re-anchor, or re-stabilize
+        "excellent": [
+            RESONANCE,
+            EXPANSION,
+            COUPLING,
+        ],  # Stability → amplification/exploration/linking
+        "good": [
+            SILENCE,
+            TRANSITION,
+            CONTRACTION,
+            SELF_ORGANIZATION,
+            RECURSIVITY,
+        ],  # Valid progressions
+        "caution": [
+            MUTATION,
+            DISSONANCE,
+        ],  # Post-stabilization tension/mutation needs context
+        "avoid": [
+            EMISSION,
+            RECEPTION,
+            COHERENCE,
+        ],  # Cannot re-initiate, re-anchor, or re-stabilize
     },
     # DISSONANCE (OZ) - Injects controlled tension for probes
     DISSONANCE: {
-        "excellent": [MUTATION, TRANSITION, SELF_ORGANIZATION],  # Tension → transformation/handoff/reorganization
-        "good": [CONTRACTION, RESONANCE, RECURSIVITY, COHERENCE],  # Concentration, amplification, fractal echo, stabilization
+        "excellent": [
+            MUTATION,
+            TRANSITION,
+            SELF_ORGANIZATION,
+        ],  # Tension → transformation/handoff/reorganization
+        "good": [
+            CONTRACTION,
+            RESONANCE,
+            RECURSIVITY,
+            COHERENCE,
+        ],  # Concentration, amplification, fractal echo, stabilization
         "caution": [DISSONANCE],  # Repeated dissonance needs careful management
         "avoid": [SILENCE, EMISSION, RECEPTION, COUPLING, EXPANSION],
     },
     # COUPLING (UM) - Synchronizes bidirectional coherence links
     COUPLING: {
-        "excellent": [RESONANCE, COHERENCE, EXPANSION],  # Linking → amplification/stabilization/exploration
+        "excellent": [
+            RESONANCE,
+            COHERENCE,
+            EXPANSION,
+        ],  # Linking → amplification/stabilization/exploration
         "good": [TRANSITION, SILENCE],  # Handoff or pause after coupling
         "caution": [],
-        "avoid": [EMISSION, RECEPTION, DISSONANCE, CONTRACTION, MUTATION, SELF_ORGANIZATION, RECURSIVITY, COUPLING],
+        "avoid": [
+            EMISSION,
+            RECEPTION,
+            DISSONANCE,
+            CONTRACTION,
+            MUTATION,
+            SELF_ORGANIZATION,
+            RECURSIVITY,
+            COUPLING,
+        ],
     },
     # RESONANCE (RA) - Amplifies aligned structural frequency
     RESONANCE: {
-        "excellent": [COHERENCE, EXPANSION, COUPLING],  # Amplification → stabilization/exploration/linking
-        "good": [TRANSITION, SILENCE, EMISSION, RECURSIVITY],  # Handoff, pause, re-initiation, fractal echo
+        "excellent": [
+            COHERENCE,
+            EXPANSION,
+            COUPLING,
+        ],  # Amplification → stabilization/exploration/linking
+        "good": [
+            TRANSITION,
+            SILENCE,
+            EMISSION,
+            RECURSIVITY,
+        ],  # Handoff, pause, re-initiation, fractal echo
         "caution": [],
-        "avoid": [RECEPTION, DISSONANCE, CONTRACTION, MUTATION, SELF_ORGANIZATION, RESONANCE],
+        "avoid": [
+            RECEPTION,
+            DISSONANCE,
+            CONTRACTION,
+            MUTATION,
+            SELF_ORGANIZATION,
+            RESONANCE,
+        ],
     },
     # SILENCE (SHA) - Suspends reorganization while preserving form
     SILENCE: {
-        "excellent": [EMISSION, RECEPTION],  # Resume from pause → initiation or anchoring
+        "excellent": [
+            EMISSION,
+            RECEPTION,
+        ],  # Resume from pause → initiation or anchoring
         "good": [],
         "caution": [],
-        "avoid": [COHERENCE, DISSONANCE, COUPLING, RESONANCE, EXPANSION, CONTRACTION, MUTATION, TRANSITION, SELF_ORGANIZATION, RECURSIVITY, SILENCE],
+        "avoid": [
+            COHERENCE,
+            DISSONANCE,
+            COUPLING,
+            RESONANCE,
+            EXPANSION,
+            CONTRACTION,
+            MUTATION,
+            TRANSITION,
+            SELF_ORGANIZATION,
+            RECURSIVITY,
+            SILENCE,
+        ],
     },
     # EXPANSION (VAL) - Dilates structure to explore volume
     EXPANSION: {
-        "excellent": [COUPLING, RESONANCE, COHERENCE],  # Exploration → linking/amplification/stabilization
+        "excellent": [
+            COUPLING,
+            RESONANCE,
+            COHERENCE,
+        ],  # Exploration → linking/amplification/stabilization
         "good": [TRANSITION],  # Handoff after expansion
         "caution": [],
-        "avoid": [EMISSION, RECEPTION, DISSONANCE, SILENCE, CONTRACTION, MUTATION, SELF_ORGANIZATION, RECURSIVITY, EXPANSION],
+        "avoid": [
+            EMISSION,
+            RECEPTION,
+            DISSONANCE,
+            SILENCE,
+            CONTRACTION,
+            MUTATION,
+            SELF_ORGANIZATION,
+            RECURSIVITY,
+            EXPANSION,
+        ],
     },
     # CONTRACTION (NUL) - Concentrates trajectories into core
     CONTRACTION: {
-        "excellent": [EMISSION, COHERENCE],  # Concentration → re-initiation or stabilization
+        "excellent": [
+            EMISSION,
+            COHERENCE,
+        ],  # Concentration → re-initiation or stabilization
         "good": [],
         "caution": [],
-        "avoid": [RECEPTION, DISSONANCE, COUPLING, RESONANCE, SILENCE, EXPANSION, MUTATION, TRANSITION, SELF_ORGANIZATION, RECURSIVITY, CONTRACTION],
+        "avoid": [
+            RECEPTION,
+            DISSONANCE,
+            COUPLING,
+            RESONANCE,
+            SILENCE,
+            EXPANSION,
+            MUTATION,
+            TRANSITION,
+            SELF_ORGANIZATION,
+            RECURSIVITY,
+            CONTRACTION,
+        ],
     },
     # SELF_ORGANIZATION (THOL) - Spawns autonomous cascades
     SELF_ORGANIZATION: {
-        "excellent": [COHERENCE, COUPLING, RESONANCE],  # Autonomous cascades → stabilization/linking/amplification
-        "good": [DISSONANCE, MUTATION, TRANSITION, SILENCE, CONTRACTION, EMISSION, SELF_ORGANIZATION],  # Nested/sequential self-organization
+        "excellent": [
+            COHERENCE,
+            COUPLING,
+            RESONANCE,
+        ],  # Autonomous cascades → stabilization/linking/amplification
+        "good": [
+            DISSONANCE,
+            MUTATION,
+            TRANSITION,
+            SILENCE,
+            CONTRACTION,
+            EMISSION,
+            SELF_ORGANIZATION,
+        ],  # Nested/sequential self-organization
         "caution": [],
         "avoid": [RECEPTION, EXPANSION, RECURSIVITY],
     },
     # MUTATION (ZHIR) - Pivots node across structural thresholds
     MUTATION: {
-        "excellent": [COHERENCE, TRANSITION, SILENCE],  # Transformation → stabilization/handoff/pause
+        "excellent": [
+            COHERENCE,
+            TRANSITION,
+            SILENCE,
+        ],  # Transformation → stabilization/handoff/pause
         "good": [],
         "caution": [],
-        "avoid": [EMISSION, RECEPTION, DISSONANCE, COUPLING, RESONANCE, EXPANSION, CONTRACTION, MUTATION, SELF_ORGANIZATION, RECURSIVITY],
+        "avoid": [
+            EMISSION,
+            RECEPTION,
+            DISSONANCE,
+            COUPLING,
+            RESONANCE,
+            EXPANSION,
+            CONTRACTION,
+            MUTATION,
+            SELF_ORGANIZATION,
+            RECURSIVITY,
+        ],
     },
     # TRANSITION (NAV) - Guides controlled regime hand-offs
     TRANSITION: {
-        "excellent": [RESONANCE, COHERENCE, COUPLING],  # Handoff → amplification/stabilization/linking
-        "good": [DISSONANCE, MUTATION, SILENCE, TRANSITION],  # Tension, transformation, pause, continued handoff
+        "excellent": [
+            RESONANCE,
+            COHERENCE,
+            COUPLING,
+        ],  # Handoff → amplification/stabilization/linking
+        "good": [
+            DISSONANCE,
+            MUTATION,
+            SILENCE,
+            TRANSITION,
+        ],  # Tension, transformation, pause, continued handoff
         "caution": [],
-        "avoid": [EMISSION, RECEPTION, EXPANSION, CONTRACTION, SELF_ORGANIZATION, RECURSIVITY],
+        "avoid": [
+            EMISSION,
+            RECEPTION,
+            EXPANSION,
+            CONTRACTION,
+            SELF_ORGANIZATION,
+            RECURSIVITY,
+        ],
     },
     # RECURSIVITY (REMESH) - Echoes patterns across nested EPIs
     RECURSIVITY: {
-        "excellent": [COHERENCE, RESONANCE],  # Fractal echo → stabilization/amplification
-        "good": [DISSONANCE, RECEPTION, COUPLING, TRANSITION],  # Tension, anchoring, linking, handoff after recursive pattern
+        "excellent": [
+            COHERENCE,
+            RESONANCE,
+        ],  # Fractal echo → stabilization/amplification
+        "good": [
+            DISSONANCE,
+            RECEPTION,
+            COUPLING,
+            TRANSITION,
+        ],  # Tension, anchoring, linking, handoff after recursive pattern
         "caution": [],
-        "avoid": [EMISSION, SILENCE, EXPANSION, CONTRACTION, MUTATION, SELF_ORGANIZATION, RECURSIVITY],
+        "avoid": [
+            EMISSION,
+            SILENCE,
+            EXPANSION,
+            CONTRACTION,
+            MUTATION,
+            SELF_ORGANIZATION,
+            RECURSIVITY,
+        ],
     },
 }
 
 
 def get_compatibility_level(prev: str, next_op: str) -> CompatibilityLevel:
     """Return the compatibility level between two structural operators.
-    
+
     Parameters
     ----------
     prev : str
         Previous operator in canonical form (e.g., "emission", "coherence").
     next_op : str
         Next operator in canonical form (e.g., "dissonance", "resonance").
-    
+
     Returns
     -------
     CompatibilityLevel
         The graduated compatibility level: EXCELLENT, GOOD, CAUTION, or AVOID.
-    
+
     Examples
     --------
     >>> get_compatibility_level("emission", "coherence")
     CompatibilityLevel.EXCELLENT
-    
+
     >>> get_compatibility_level("emission", "dissonance")
     CompatibilityLevel.CAUTION
-    
+
     >>> get_compatibility_level("silence", "dissonance")
     CompatibilityLevel.AVOID
-    
+
     Notes
     -----
     This function implements the graduated compatibility matrix following TNFR
     canonical theory. Transitions are categorized as:
-    
+
     - EXCELLENT: Optimal structural progression
     - GOOD: Acceptable structural progression
     - CAUTION: Contextually dependent, requires validation
@@ -197,9 +380,9 @@ def get_compatibility_level(prev: str, next_op: str) -> CompatibilityLevel:
     if prev not in GRADUATED_COMPATIBILITY:
         # Unknown operator defaults to AVOID
         return CompatibilityLevel.AVOID
-    
+
     levels = GRADUATED_COMPATIBILITY[prev]
-    
+
     # Check each level in order of preference
     if next_op in levels.get("excellent", []):
         return CompatibilityLevel.EXCELLENT
@@ -215,7 +398,7 @@ def get_compatibility_level(prev: str, next_op: str) -> CompatibilityLevel:
 # This combines excellent, good, and caution levels as "allowed" transitions
 def _generate_binary_compat() -> dict[str, set[str]]:
     """Generate binary compatibility table from graduated matrix.
-    
+
     Combines EXCELLENT, GOOD, and CAUTION levels into a single "allowed" set
     for backward compatibility with existing code that expects binary validation.
     """

@@ -36,7 +36,7 @@ def validate_dissonance_strict(G: TNFRGraph, node: Any) -> None:
     """Validate strict canonical preconditions for OZ (Dissonance) operator.
 
     According to TNFR canonical theory, Dissonance (OZ - Disonancia) requires:
-    
+
     1. **Coherence base**: EPI >= threshold (sufficient structure to withstand disruption)
     2. **ΔNFR safety**: |ΔNFR| < critical (avoid overload/collapse)
     3. **Active νf**: νf >= threshold (capacity to respond to dissonance)
@@ -166,36 +166,36 @@ def validate_dissonance_strict(G: TNFRGraph, node: Any) -> None:
 
 def _validate_oz_no_overload(G: TNFRGraph, node: Any) -> None:
     """Detect and prevent dissonance overload (sobrecarga disonante).
-    
+
     Sobrecarga occurs when multiple OZ operators are applied in succession
     without intervening resolution operators (IL, THOL, NUL). This creates
     entropic loops that violate TNFR structural coherence requirements.
-    
+
     Parameters
     ----------
     G : TNFRGraph
         Graph containing the node
     node : Any
         Node identifier to check for overload
-        
+
     Raises
     ------
     ValueError
         If >= 1 OZ application detected in recent history without resolver
         (since we're about to apply another OZ, that would make it >= 2)
-        
+
     Notes
     -----
     **Resolver operators** that integrate dissonance:
     - coherence (IL): Stabilizes structure, reduces ΔNFR
     - self_organization (THOL): Creates sub-EPIs via bifurcation
     - contraction (NUL): Simplifies structure
-    
+
     This check examines the last 5 operators in glyph_history to detect
     overload patterns. Since validation is called BEFORE the operator is
     applied, if we find >= 1 OZ in history without a resolver, applying
     another OZ would create overload.
-    
+
     References
     ----------
     TNFR.pdf §2.3.6 - Sobrecarga disonante: "acumulación excesiva de OZ sin
@@ -215,9 +215,7 @@ def _validate_oz_no_overload(G: TNFRGraph, node: Any) -> None:
 
     # Count OZ applications in recent history
     oz_count = sum(
-        1
-        for glyph in recent_history
-        if glyph_function_name(glyph) == "dissonance"
+        1 for glyph in recent_history if glyph_function_name(glyph) == "dissonance"
     )
 
     # If >= 1 OZ in history, check for resolver operators

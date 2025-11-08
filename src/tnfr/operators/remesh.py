@@ -145,7 +145,7 @@ def apply_network_remesh(G: CommunityGraph) -> None:
 
     topo_hash = _snapshot_topology(G, nx)
     epi_mean_before, epi_checksum_before = _snapshot_epi(G)
-    
+
     # Get EPI bounds for structural preservation
     epi_min = float(G.graph.get("EPI_MIN", DEFAULTS.get("EPI_MIN", -1.0)))
     epi_max = float(G.graph.get("EPI_MAX", DEFAULTS.get("EPI_MAX", 1.0)))
@@ -164,7 +164,7 @@ def apply_network_remesh(G: CommunityGraph) -> None:
         )
         mixed = (1 - alpha) * epi_now + alpha * epi_old_l
         mixed = (1 - alpha) * mixed + alpha * epi_old_g
-        
+
         # Apply structural boundary preservation to prevent overflow
         mixed_clipped = structural_clip(mixed, lo=epi_min, hi=epi_max, mode=clip_mode)
         set_attr(nd, ALIAS_EPI, mixed_clipped)

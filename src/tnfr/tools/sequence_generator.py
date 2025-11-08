@@ -9,7 +9,7 @@ Examples
 --------
 >>> from tnfr.tools.sequence_generator import ContextualSequenceGenerator
 >>> generator = ContextualSequenceGenerator()
->>> 
+>>>
 >>> # Generate for specific domain and objective
 >>> seq = generator.generate_for_context(
 ...     domain="therapeutic",
@@ -24,7 +24,7 @@ Examples
 ...     target_pattern="BOOTSTRAP",
 ...     min_health=0.70
 ... )
->>> 
+>>>
 >>> # Improve an existing sequence
 >>> current = ["emission", "coherence", "silence"]
 >>> improved, recommendations = generator.improve_sequence(current, target_health=0.80)
@@ -208,9 +208,10 @@ class ContextualSequenceGenerator:
         # Determine objective if not specified
         if objective is None:
             from .domain_templates import list_objectives
+
             objectives = list_objectives(domain)
             objective = objectives[0] if objectives else None
-        
+
         # Get base template
         base_sequence = get_template(domain, objective)
 
@@ -241,9 +242,7 @@ class ContextualSequenceGenerator:
                 )
 
         # Generate variations to meet constraints
-        candidates = self._generate_variations(
-            base_sequence, max_length, count=20
-        )
+        candidates = self._generate_variations(base_sequence, max_length, count=20)
 
         # Filter candidates by constraints
         valid_candidates = []
@@ -258,8 +257,7 @@ class ContextualSequenceGenerator:
         if not valid_candidates:
             # Fallback: return best candidate even if below threshold
             all_with_health = [
-                (seq, self.health_analyzer.analyze_health(seq))
-                for seq in candidates
+                (seq, self.health_analyzer.analyze_health(seq)) for seq in candidates
             ]
             best_seq, best_health = max(
                 all_with_health, key=lambda x: x[1].overall_health
@@ -285,9 +283,7 @@ class ContextualSequenceGenerator:
             )
 
         # Select best valid candidate
-        best_seq, best_health = max(
-            valid_candidates, key=lambda x: x[1].overall_health
-        )
+        best_seq, best_health = max(valid_candidates, key=lambda x: x[1].overall_health)
 
         return GenerationResult(
             sequence=best_seq,
@@ -404,9 +400,7 @@ class ContextualSequenceGenerator:
             )
 
         # Select best valid candidate
-        best_seq, best_health = max(
-            valid_candidates, key=lambda x: x[1].overall_health
-        )
+        best_seq, best_health = max(valid_candidates, key=lambda x: x[1].overall_health)
 
         return GenerationResult(
             sequence=best_seq,
@@ -518,9 +512,7 @@ class ContextualSequenceGenerator:
             variation = base.copy()
 
             # Random modification
-            modification = self._rng.choice(
-                ["insert", "remove", "replace", "extend"]
-            )
+            modification = self._rng.choice(["insert", "remove", "replace", "extend"])
 
             if modification == "insert" and len(variation) < max_length:
                 pos = self._rng.randint(0, len(variation))
@@ -600,11 +592,12 @@ class ContextualSequenceGenerator:
                 if prev and next_op:
                     level_after = get_compatibility_level(prev, op)
                     level_before = get_compatibility_level(op, next_op)
-                    if (
-                        level_after
-                        in (CompatibilityLevel.EXCELLENT, CompatibilityLevel.GOOD)
-                        and level_before
-                        in (CompatibilityLevel.EXCELLENT, CompatibilityLevel.GOOD)
+                    if level_after in (
+                        CompatibilityLevel.EXCELLENT,
+                        CompatibilityLevel.GOOD,
+                    ) and level_before in (
+                        CompatibilityLevel.EXCELLENT,
+                        CompatibilityLevel.GOOD,
                     ):
                         compatible.append(op)
 
@@ -723,9 +716,10 @@ class ContextualSequenceGenerator:
                         prev = sequence[i - 1] if i > 0 else None
                         next_op = sequence[i] if i < len(sequence) else None
 
-                        if prev is None or get_compatibility_level(
-                            prev, op
-                        ) in (CompatibilityLevel.EXCELLENT, CompatibilityLevel.GOOD):
+                        if prev is None or get_compatibility_level(prev, op) in (
+                            CompatibilityLevel.EXCELLENT,
+                            CompatibilityLevel.GOOD,
+                        ):
                             if next_op is None or get_compatibility_level(
                                 op, next_op
                             ) in (
@@ -829,9 +823,14 @@ class ContextualSequenceGenerator:
 
         # Identify added operators
         from collections import Counter
+
         original_counts = Counter(original)
         improved_counts = Counter(improved)
-        added = [op for op in improved_counts if improved_counts[op] > original_counts.get(op, 0)]
+        added = [
+            op
+            for op in improved_counts
+            if improved_counts[op] > original_counts.get(op, 0)
+        ]
         if added:
             recommendations.append(f"Added operators: {', '.join(set(added))}")
 

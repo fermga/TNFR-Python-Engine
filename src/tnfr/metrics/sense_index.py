@@ -11,45 +11,45 @@ Mathematical Foundation
 The Sense Index is defined as a weighted combination:
 
 .. math::
-    \text{Si} = \alpha \cdot \nu_{f,\text{norm}} 
-              + \beta \cdot (1 - \text{disp}_\theta) 
+    \text{Si} = \alpha \cdot \nu_{f,\text{norm}}
+              + \beta \cdot (1 - \text{disp}_\theta)
               + \gamma \cdot (1 - |\Delta\text{NFR}|_{\text{norm}})
 
 **Component definitions**:
 
 1. **Normalized frequency** :math:`\nu_{f,\text{norm}}`:
-   
+
    .. math::
        \nu_{f,\text{norm}} = \frac{|\nu_f|}{\nu_{f,\max}}
-   
+
    Measures how fast a node reorganizes relative to network maximum.
    Range: [0, 1] where 1 = maximum reorganization rate.
 
 2. **Phase dispersion** :math:`\text{disp}_\theta`:
-   
+
    .. math::
        \text{disp}_\theta = \frac{|\theta - \bar{\theta}|}{\pi}
-   
+
    where :math:`\bar{\theta}` is the circular mean of neighbor phases:
-   
+
    .. math::
        \bar{\theta} = \text{atan2}\left(\sum_{j \in N(i)} \sin\theta_j, \sum_{j \in N(i)} \cos\theta_j\right)
-   
+
    Measures phase misalignment with neighbors.
    Range: [0, 1] where 0 = perfect synchrony, 1 = maximum dispersion.
 
 3. **Normalized reorganization magnitude** :math:`|\Delta\text{NFR}|_{\text{norm}}`:
-   
+
    .. math::
        |\Delta\text{NFR}|_{\text{norm}} = \frac{|\Delta\text{NFR}|}{\Delta\text{NFR}_{\max}}
-   
+
    Measures structural pressure relative to network maximum.
    Range: [0, 1] where 0 = equilibrium, 1 = maximum pressure.
 
 **Structural weights**:
 
 - :math:`\alpha`: Frequency weight (default: 0.4) - emphasizes reorganization capacity
-- :math:`\beta`: Phase weight (default: 0.3) - emphasizes network synchrony  
+- :math:`\beta`: Phase weight (default: 0.3) - emphasizes network synchrony
 - :math:`\gamma`: ΔNFR weight (default: 0.3) - emphasizes pressure damping
 - Constraint: :math:`\alpha + \beta + \gamma = 1`
 
@@ -58,7 +58,7 @@ The Sense Index is defined as a weighted combination:
 Physical Interpretation
 ------------------------
 
-**High Si (> 0.7)**: 
+**High Si (> 0.7)**:
 - Node reorganizes efficiently (:math:`\nu_f` high)
 - Stays synchronized with network (:math:`\text{disp}_\theta` low)
 - Experiences manageable pressure (:math:`|\Delta\text{NFR}|` low)
@@ -160,7 +160,7 @@ observers.phase_sync : Phase synchronization metrics
 Notes
 -----
 
-**Sensitivity analysis**: 
+**Sensitivity analysis**:
 
 The module can compute partial derivatives :math:`\frac{\partial \text{Si}}{\partial x}`
 for :math:`x \in \{\nu_{f,\text{norm}}, \text{disp}_\theta, |\Delta\text{NFR}|_{\text{norm}}\}`

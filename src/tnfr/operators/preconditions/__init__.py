@@ -312,7 +312,7 @@ def validate_coupling(G: "TNFRGraph", node: "NodeId") -> None:
     -----
     **IMPORTANT**: Phase compatibility check is now MANDATORY by default
     (UM_STRICT_PHASE_CHECK=True) to align with AGENTS.md Invariant #5 and RC3.
-    
+
     Set UM_STRICT_PHASE_CHECK=False to disable (NOT RECOMMENDED - violates
     canonical physics requirements).
 

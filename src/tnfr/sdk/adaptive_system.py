@@ -128,15 +128,15 @@ class TNFRAdaptiveSystem:
         - **Feedback loops**: Maintain target coherence
 
         This creates robust, adaptive, self-regulating dynamics.
-        
+
         **Advanced Usage:**
-        
+
         For full metabolic and learning cycles, use the component systems
         directly:
-        
+
         - ``system.metabolism.adaptive_metabolism(stress)``
         - ``system.learning.consolidate_memory()``
-        
+
         These require careful sequence design to comply with TNFR grammar.
         """
         for cycle in range(num_cycles):

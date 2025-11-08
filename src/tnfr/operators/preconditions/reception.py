@@ -26,7 +26,7 @@ def validate_reception_strict(G: TNFRGraph, node: Any) -> None:
     """Validate strict canonical preconditions for EN (Reception) operator.
 
     According to TNFR.pdf §2.2.1, Reception (EN - Recepción estructural) requires:
-    
+
     1. **Receptive capacity**: EPI < saturation threshold (node has capacity to receive)
     2. **Minimal dissonance**: DNFR < threshold (low reorganization pressure for stable integration)
     3. **Emission sources**: Network connectivity with active sources (warning if isolated)

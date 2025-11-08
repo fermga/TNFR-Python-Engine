@@ -2847,35 +2847,35 @@ def compute_delta_nfr_hamiltonian(
     profile: MutableMapping[str, float] | None = None,
 ) -> None:
     """Compute ΔNFR using rigorous Hamiltonian commutator formulation.
-    
+
     This is the **canonical** TNFR method that constructs the internal
     Hamiltonian H_int = H_coh + H_freq + H_coupling explicitly and computes
     ΔNFR from the quantum commutator:
-    
+
     .. math::
         \Delta\text{NFR}_n = \\frac{i}{\hbar_{str}} \langle n | [\\hat{H}_{int}, \\rho_n] | n \\rangle
-    
+
     where \\rho_n = |n\\rangle\\langle n| is the density matrix for node n.
-    
+
     Theory
     ------
-    
+
     The internal Hamiltonian governs structural evolution through:
-    
+
     .. math::
         \\frac{\partial \text{EPI}}{\partial t} = \\nu_f \cdot \Delta\text{NFR}(t)
-    
+
     with the reorganization operator defined as:
-    
+
     .. math::
         \Delta\text{NFR} = \\frac{d}{dt} + \\frac{i[\\hat{H}_{int}, \cdot]}{\hbar_{str}}
-    
+
     **Components**:
-    
+
     1. **H_coh**: Coherence potential from structural similarity
     2. **H_freq**: Diagonal frequency operator (νf per node)
     3. **H_coupling**: Network topology-induced interactions
-    
+
     Parameters
     ----------
     G : TNFRGraph
@@ -2890,38 +2890,38 @@ def compute_delta_nfr_hamiltonian(
         where topology changes frequently.
     profile : MutableMapping[str, float] or None, optional
         Mutable mapping that accumulates wall-clock timings:
-        
+
         - ``"hamiltonian_construction"``: Time to build H_int
         - ``"hamiltonian_computation"``: Time to compute all ΔNFR values
         - ``"hamiltonian_write"``: Time to write results to nodes
-    
+
     Notes
     -----
-    
+
     **Advantages over heuristic methods**:
-    
+
     - **Rigorous**: Directly implements TNFR mathematical formalization
     - **Hermitian**: Guarantees real eigenvalues and unitary evolution
     - **Verifiable**: Can compute energy spectrum and eigenstates
     - **Complete**: Accounts for all structural correlations via coherence matrix
-    
+
     **Performance considerations**:
-    
+
     - Complexity: O(N²) for matrix construction, O(N³) for eigendecomposition
     - Recommended for networks with N < 1000 nodes
     - For larger networks, use default_compute_delta_nfr (heuristic, O(E))
-    
+
     **Cache behavior**:
-    
+
     - Hamiltonian is cached if ``cache_hamiltonian=True``
     - Cache is invalidated when node attributes or topology change
     - Uses ``CacheManager`` for consistency with other TNFR computations
-    
+
     Examples
     --------
-    
+
     **Basic usage**:
-    
+
     >>> import networkx as nx
     >>> from tnfr.dynamics.dnfr import compute_delta_nfr_hamiltonian
     >>> G = nx.cycle_graph(10)
@@ -2931,34 +2931,34 @@ def compute_delta_nfr_hamiltonian(
     ...     })
     >>> compute_delta_nfr_hamiltonian(G)
     >>> # ΔNFR values now stored in G.nodes[n]['delta_nfr']
-    
+
     **With profiling**:
-    
+
     >>> profile = {}
     >>> compute_delta_nfr_hamiltonian(G, profile=profile)
     >>> print(f"Construction: {profile['hamiltonian_construction']:.3f}s")
     >>> print(f"Computation: {profile['hamiltonian_computation']:.3f}s")
-    
+
     **Integration with dynamics**:
-    
+
     >>> from tnfr.dynamics import set_delta_nfr_hook
     >>> set_delta_nfr_hook(G, compute_delta_nfr_hamiltonian, name="hamiltonian")
     >>> # Now simulate() will use Hamiltonian-based ΔNFR
-    
+
     See Also
     --------
     tnfr.operators.hamiltonian.InternalHamiltonian : Core Hamiltonian class
     default_compute_delta_nfr : Heuristic O(E) method for large networks
     set_delta_nfr_hook : Register custom ΔNFR computation
-    
+
     References
     ----------
-    
+
     - Mathematical formalization: ``Formalizacion-Matematica-TNFR-Unificada.pdf`` §2.4
     - ΔNFR development: ``Desarrollo-Exhaustivo_-Formalizacion-Matematica-Ri-3.pdf``
     """
     from ..operators.hamiltonian import InternalHamiltonian
-    
+
     # Initialize profiling
     start_timer, stop_timer = _profile_start_stop(
         profile,
@@ -2968,61 +2968,63 @@ def compute_delta_nfr_hamiltonian(
             "hamiltonian_write",
         ),
     )
-    
+
     # Get structural Planck constant
     if hbar_str is None:
-        hbar_str = G.graph.get('HBAR_STR', 1.0)
-    
+        hbar_str = G.graph.get("HBAR_STR", 1.0)
+
     # Check cache for existing Hamiltonian
-    cache_key = '_hamiltonian_cache'
+    cache_key = "_hamiltonian_cache"
     ham = None
-    
+
     if cache_hamiltonian:
         cached_ham = G.graph.get(cache_key)
         # Verify cache validity (node count and checksum)
         if cached_ham is not None:
-            current_checksum = G.graph.get('_dnfr_nodes_checksum')
-            cached_checksum = getattr(cached_ham, '_cache_checksum', None)
-            if (isinstance(cached_ham, InternalHamiltonian) and
-                cached_ham.N == G.number_of_nodes() and
-                current_checksum == cached_checksum):
+            current_checksum = G.graph.get("_dnfr_nodes_checksum")
+            cached_checksum = getattr(cached_ham, "_cache_checksum", None)
+            if (
+                isinstance(cached_ham, InternalHamiltonian)
+                and cached_ham.N == G.number_of_nodes()
+                and current_checksum == cached_checksum
+            ):
                 ham = cached_ham
-    
+
     # Construct Hamiltonian if not cached or invalid
     if ham is None:
         timer = start_timer()
-        
+
         # Get cache manager for integration with existing infrastructure
         manager = _graph_cache_manager(G.graph)
-        
+
         # Build Hamiltonian
         ham = InternalHamiltonian(G, hbar_str=float(hbar_str), cache_manager=manager)
-        
+
         # Cache for reuse
         if cache_hamiltonian:
-            ham._cache_checksum = G.graph.get('_dnfr_nodes_checksum')
+            ham._cache_checksum = G.graph.get("_dnfr_nodes_checksum")
             G.graph[cache_key] = ham
-        
+
         stop_timer("hamiltonian_construction", timer)
-    
+
     # Compute ΔNFR for all nodes
     timer = start_timer()
-    
+
     delta_nfr_values = {}
     for node in ham.nodes:
         delta_nfr = ham.compute_node_delta_nfr(node)
         delta_nfr_values[node] = delta_nfr
-    
+
     stop_timer("hamiltonian_computation", timer)
-    
+
     # Write results to graph nodes
     timer = start_timer()
-    
+
     for node, delta_val in delta_nfr_values.items():
         set_dnfr(G, node, delta_val)
-    
+
     stop_timer("hamiltonian_write", timer)
-    
+
     # Write metadata
     _write_dnfr_metadata(
         G,

@@ -107,7 +107,7 @@ def example_2_metabolic_cycle():
     final_epi = float(get_attr(G.nodes[node], ALIAS_EPI, 0.0))
     print(f"  EPI: {final_epi:.3f}")
     # Get glyph history safely
-    glyph_hist = G.nodes[node].get('glyph_history', [])
+    glyph_hist = G.nodes[node].get("glyph_history", [])
     if glyph_hist and isinstance(glyph_hist, list):
         print(f"  Glyph history: {glyph_hist[-5:]}")  # Last 5 glyphs
 

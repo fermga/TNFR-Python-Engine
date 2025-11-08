@@ -118,9 +118,9 @@ class AdaptiveLearningSystem:
         Reuses run_sequence and existing operators for all transformations.
         Dissonance detection uses current EPI from node attributes.
         Sequences must follow TNFR grammar rules including T'HOL closure.
-        
+
         **Grammar compliance:**
-        
+
         - T'HOL (SelfOrganization) blocks require closure with NUL (Contraction) or SHA (Silence)
         - Dissonance should be preceded by stabilization (Coherence)
         """
@@ -130,12 +130,14 @@ class AdaptiveLearningSystem:
         if self._is_dissonant(stimulus):
             # For dissonant input, follow grammar-compliant reorganization
             # T'HOL block must be closed with SILENCE or CONTRACTION
-            sequence.extend([
-                Coherence(),           # Stabilize before dissonance (grammar)
-                Dissonance(),          # Introduce controlled instability
-                SelfOrganization(),    # Autonomous reorganization
-                Silence(),             # Close T'HOL block and end sequence (grammar requirement)
-            ])
+            sequence.extend(
+                [
+                    Coherence(),  # Stabilize before dissonance (grammar)
+                    Dissonance(),  # Introduce controlled instability
+                    SelfOrganization(),  # Autonomous reorganization
+                    Silence(),  # Close T'HOL block and end sequence (grammar requirement)
+                ]
+            )
         else:
             # Non-dissonant: simpler path with optional consolidation
             if consolidate:
@@ -207,10 +209,10 @@ class AdaptiveLearningSystem:
             Emission()(self.G, self.node)
             Reception()(self.G, self.node)
             Coherence()(self.G, self.node)
-            
+
             # Self-organization: autonomous reorganization
             SelfOrganization()(self.G, self.node)
-            
+
             # T'HOL requires closure
             Silence()(self.G, self.node)
 
@@ -280,8 +282,8 @@ class AdaptiveLearningSystem:
             Coherence(),
             Dissonance(),
             SelfOrganization(),
-            Coherence(),   # Stabilize and close T'HOL
-            Silence(),     # Terminal operator
+            Coherence(),  # Stabilize and close T'HOL
+            Silence(),  # Terminal operator
         ]
         run_sequence(self.G, self.node, sequence)
 

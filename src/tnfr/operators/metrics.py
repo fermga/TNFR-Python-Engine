@@ -201,7 +201,9 @@ def reception_metrics(G: TNFRGraph, node: NodeId, epi_before: float) -> dict[str
 
     # Average phase compatibility across all sources
     phase_compatibility_avg = (
-        sum(compat for _, compat, _ in sources) / num_sources if num_sources > 0 else 0.0
+        sum(compat for _, compat, _ in sources) / num_sources
+        if num_sources > 0
+        else 0.0
     )
 
     # Stabilization effectiveness (ΔNFR reduced?)
@@ -477,7 +479,9 @@ def dissonance_metrics(
     # 6. Recovery estimate (how many IL needed to resolve)
     # Assumes ~15% ΔNFR reduction per IL application
     il_reduction_rate = 0.15
-    recovery_estimate = int(abs(dnfr_after) / il_reduction_rate) + 1 if dnfr_after != 0 else 1
+    recovery_estimate = (
+        int(abs(dnfr_after) / il_reduction_rate) + 1 if dnfr_after != 0 else 1
+    )
 
     # 7. Propagation analysis (if propagation occurred)
     propagation_data = {}
@@ -500,6 +504,7 @@ def dissonance_metrics(
     field_data = {}
     try:
         from ..dynamics.propagation import compute_network_dissonance_field
+
         field = compute_network_dissonance_field(G, node, radius=2)
         field_data = {
             "dissonance_field_radius": len(field),
@@ -517,35 +522,31 @@ def dissonance_metrics(
     return {
         "operator": "Dissonance",
         "glyph": "OZ",
-
         # Quantitative dynamics
         "dnfr_increase": dnfr_after - dnfr_before,
         "dnfr_final": dnfr_after,
         "theta_shift": abs(theta_after - theta_before),
         "theta_final": theta_after,
         "d2epi": d2epi,
-
         # Bifurcation analysis
         "bifurcation_score": bifurcation_score,
         "bifurcation_active": bifurcation_score > 0.5,
         "viable_paths": [str(g.value) for g in viable_paths],
         "viable_path_count": len(viable_paths),
         "mutation_readiness": any(g.value == "ZHIR" for g in viable_paths),
-
         # Topological effects
         "topological_asymmetry_delta": asymmetry_delta,
         "symmetry_disrupted": abs(asymmetry_delta) > 0.1,
-
         # Network impact
         "neighbor_count": len(neighbors),
         "impacted_neighbors": impacted_neighbors,
-        "network_impact_radius": impacted_neighbors / len(neighbors) if neighbors else 0.0,
-
+        "network_impact_radius": (
+            impacted_neighbors / len(neighbors) if neighbors else 0.0
+        ),
         # Recovery guidance
         "recovery_estimate_IL": recovery_estimate,
         "dissonance_level": abs(dnfr_after),
         "critical_dissonance": abs(dnfr_after) > 0.8,
-
         # Network propagation
         **propagation_data,
         **field_data,
@@ -673,46 +674,54 @@ def coupling_metrics(
     # Structural frequency metrics (if vf_before provided)
     if vf_before is not None:
         delta_vf = vf_after - vf_before
-        metrics.update({
-            "delta_vf": delta_vf,
-            "vf_final": vf_after,
-        })
+        metrics.update(
+            {
+                "delta_vf": delta_vf,
+                "vf_final": vf_after,
+            }
+        )
 
     # ΔNFR reduction metrics (if dnfr_before provided)
     if dnfr_before is not None:
         dnfr_reduction = dnfr_before - dnfr_after
         dnfr_reduction_pct = (dnfr_reduction / (abs(dnfr_before) + 1e-9)) * 100.0
         dnfr_stabilization = dnfr_before - dnfr_after  # Positive if stabilized
-        metrics.update({
-            "dnfr_before": dnfr_before,
-            "dnfr_after": dnfr_after,
-            "delta_dnfr": dnfr_after - dnfr_before,
-            "dnfr_reduction": dnfr_reduction,
-            "dnfr_reduction_pct": dnfr_reduction_pct,
-            "dnfr_stabilization": dnfr_stabilization,
-            "dnfr_final": dnfr_after,
-        })
+        metrics.update(
+            {
+                "dnfr_before": dnfr_before,
+                "dnfr_after": dnfr_after,
+                "delta_dnfr": dnfr_after - dnfr_before,
+                "dnfr_reduction": dnfr_reduction,
+                "dnfr_reduction_pct": dnfr_reduction_pct,
+                "dnfr_stabilization": dnfr_stabilization,
+                "dnfr_final": dnfr_after,
+            }
+        )
 
     # EPI invariance verification (if epi_before provided)
     # CRITICAL: UM MUST preserve EPI identity per TNFR canonical theory
     if epi_before is not None:
         epi_after = _get_node_attr(G, node, ALIAS_EPI)
         epi_drift = abs(epi_after - epi_before)
-        metrics.update({
-            "epi_before": epi_before,
-            "epi_after": epi_after,
-            "epi_drift": epi_drift,
-            "epi_preserved": epi_drift < 1e-9,  # Should ALWAYS be True
-        })
+        metrics.update(
+            {
+                "epi_before": epi_before,
+                "epi_after": epi_after,
+                "epi_drift": epi_drift,
+                "epi_preserved": epi_drift < 1e-9,  # Should ALWAYS be True
+            }
+        )
 
     # Edge/network formation metrics (if edges_before provided)
     edges_after = G.degree(node)
     if edges_before is not None:
         new_edges_count = edges_after - edges_before
-        metrics.update({
-            "new_edges_count": new_edges_count,
-            "total_edges": edges_after,
-        })
+        metrics.update(
+            {
+                "new_edges_count": new_edges_count,
+                "total_edges": edges_after,
+            }
+        )
     else:
         # Still provide total_edges even without edges_before
         metrics["total_edges"] = edges_after
@@ -722,7 +731,7 @@ def coupling_metrics(
     for neighbor in neighbors:
         edge_data = G.get_edge_data(node, neighbor)
         if edge_data and isinstance(edge_data, dict):
-            coupling_strength_total += edge_data.get('coupling', 0.0)
+            coupling_strength_total += edge_data.get("coupling", 0.0)
     metrics["coupling_strength_total"] = coupling_strength_total
 
     # Phase dispersion (standard deviation of local phases)
@@ -736,6 +745,7 @@ def coupling_metrics(
     # Local coherence (Kuramoto order parameter of subgraph)
     if neighbor_count > 0:
         from ..metrics.phase_coherence import compute_phase_alignment
+
         local_coherence = compute_phase_alignment(G, node, radius=1)
         metrics["local_coherence"] = local_coherence
     else:
@@ -802,6 +812,7 @@ def resonance_metrics(
 
         # Phase alignment quality (measure coherence with neighbors)
         from ..metrics.phase_coherence import compute_phase_alignment
+
         phase_alignment = compute_phase_alignment(G, node)
     else:
         neighbor_epi_mean = 0.0
@@ -810,7 +821,7 @@ def resonance_metrics(
         phase_alignment = 0.0
 
     # Identity preservation check (sign should be preserved)
-    identity_preserved = (epi_before * epi_after >= 0)
+    identity_preserved = epi_before * epi_after >= 0
 
     return {
         "operator": "Resonance",
@@ -1248,27 +1259,22 @@ def self_organization_metrics(
         "vf_final": vf_after,
         "d2epi": d2epi,
         "dnfr_final": dnfr,
-
         # Bifurcation metrics
         "bifurcation_occurred": nested_epi_count > 0,
         "nested_epi_count": nested_epi_count,
         "d2epi_magnitude": abs(d2epi),
-
         # NEW: Cascade dynamics
         "cascade_depth": cascade_depth,
         "propagation_radius": propagation_radius,
         "cascade_detected": cascade_analysis["is_cascade"],
         "affected_node_count": len(cascade_analysis["affected_nodes"]),
         "total_propagations": cascade_analysis["total_propagations"],
-
         # NEW: Collective coherence
         "subepi_coherence": subepi_coherence,
         "metabolic_activity_index": metabolic_activity,
-
         # NEW: Network emergence indicator
         "network_emergence": (
-            cascade_analysis["is_cascade"]
-            and subepi_coherence > 0.5
+            cascade_analysis["is_cascade"] and subepi_coherence > 0.5
         ),
     }
 

@@ -10,10 +10,10 @@ from tnfr.mathematics import (
     BasicStateProjector,
     HilbertSpace,
     MathematicalDynamicsEngine,
-    NFRValidator,
     make_coherence_operator,
     make_frequency_operator,
 )
+from tnfr.validation import NFRValidator
 from tnfr.node import NodeNX
 from tnfr.structural import create_nfr
 

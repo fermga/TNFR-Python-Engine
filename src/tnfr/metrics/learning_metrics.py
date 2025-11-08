@@ -65,7 +65,7 @@ def glyph_history_to_operator_names(glyph_history: Sequence[str]) -> list[str]:
     ['emission', 'reception', 'coherence']
     """
     from ..operators.grammar import GLYPH_TO_FUNCTION
-    
+
     result = []
     for glyph_str in glyph_history:
         # Convert string to Glyph enum if needed
@@ -76,7 +76,7 @@ def glyph_history_to_operator_names(glyph_history: Sequence[str]) -> list[str]:
         except (ValueError, KeyError):
             # If glyph is not recognized, keep as-is lowercased
             result.append(glyph_str.lower())
-    
+
     return result
 
 
@@ -109,7 +109,7 @@ def compute_learning_plasticity(
     Notes
     -----
     Reuses canonical glyph_history functions for tracking operator emissions.
-    Plasticity operators: OZ (Dissonance), THOL (Self-organization), 
+    Plasticity operators: OZ (Dissonance), THOL (Self-organization),
     ZHIR (Mutation) - these represent structural flexibility.
 
     Examples
@@ -130,22 +130,22 @@ def compute_learning_plasticity(
         return 0.0
 
     # Convert deque to list if needed
-    if hasattr(history, '__iter__'):
+    if hasattr(history, "__iter__"):
         history = list(history)
     else:
         return 0.0
-    
+
     # Limit to window size
     if window > 0 and len(history) > window:
         history = history[-window:]
-    
+
     # Convert glyphs to operator names using canonical function
     operator_names = glyph_history_to_operator_names(history)
-    
+
     # Count plastic operators: those that enable reorganization
     plastic_ops = {DISSONANCE, SELF_ORGANIZATION, MUTATION}
     plastic_count = sum(1 for op_name in operator_names if op_name in plastic_ops)
-    
+
     # Normalize by history length
     return plastic_count / max(len(operator_names), 1)
 
@@ -200,22 +200,22 @@ def compute_consolidation_index(
         return 0.0
 
     # Convert deque to list if needed
-    if hasattr(history, '__iter__'):
+    if hasattr(history, "__iter__"):
         history = list(history)
     else:
         return 0.0
-    
+
     # Limit to window size
     if window > 0 and len(history) > window:
         history = history[-window:]
-    
+
     # Convert glyphs to operator names using canonical function
     operator_names = glyph_history_to_operator_names(history)
-    
+
     # Count stable operators: those that consolidate structure
     stable_ops = {COHERENCE, SILENCE, RECURSIVITY}
     stable_count = sum(1 for op_name in operator_names if op_name in stable_ops)
-    
+
     # Normalize by history length
     return stable_count / max(len(operator_names), 1)
 
@@ -264,17 +264,17 @@ def compute_learning_efficiency(
     """
     # Get current EPI using canonical get_attr
     epi_current = float(get_attr(G.nodes[node], ALIAS_EPI, 0.0))
-    
+
     # Get initial EPI (should be set at node creation)
     epi_initial = G.nodes[node].get("epi_initial", 0.0)
-    
+
     # Get number of operators applied from glyph history
     history = G.nodes[node].get("glyph_history", [])
     num_ops = len(history) if history else 0
-    
+
     if num_ops == 0:
         return 0.0
-    
+
     # Calculate efficiency: total EPI change per operator
     delta_epi = abs(epi_current - epi_initial)
     return delta_epi / num_ops

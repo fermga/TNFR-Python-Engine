@@ -39,10 +39,10 @@ __all__ = [
 
 class CanonicalSequence(NamedTuple):
     """Canonical operator sequence with theoretical metadata.
-    
+
     Represents a validated archetypal sequence from TNFR theory with
     structural pattern classification, use cases, and domain context.
-    
+
     Attributes
     ----------
     name : str
@@ -60,7 +60,7 @@ class CanonicalSequence(NamedTuple):
     references : str
         Theoretical grounding from TNFR documentation
     """
-    
+
     name: str
     glyphs: List[Glyph]
     pattern_type: StructuralPattern
@@ -122,7 +122,17 @@ BIFURCATED_COLLAPSE = CanonicalSequence(
 
 THERAPEUTIC_PROTOCOL = CanonicalSequence(
     name="therapeutic_protocol",
-    glyphs=[Glyph.AL, Glyph.EN, Glyph.IL, Glyph.OZ, Glyph.ZHIR, Glyph.IL, Glyph.RA, Glyph.IL, Glyph.SHA],
+    glyphs=[
+        Glyph.AL,
+        Glyph.EN,
+        Glyph.IL,
+        Glyph.OZ,
+        Glyph.ZHIR,
+        Glyph.IL,
+        Glyph.RA,
+        Glyph.IL,
+        Glyph.SHA,
+    ],
     pattern_type=StructuralPattern.THERAPEUTIC,
     description=(
         "Ritual or therapeutic protocol: symbolic emission (AL), stabilizing "
@@ -149,7 +159,16 @@ THERAPEUTIC_PROTOCOL = CanonicalSequence(
 
 THEORY_SYSTEM = CanonicalSequence(
     name="theory_system",
-    glyphs=[Glyph.AL, Glyph.EN, Glyph.IL, Glyph.OZ, Glyph.ZHIR, Glyph.IL, Glyph.THOL, Glyph.SHA],
+    glyphs=[
+        Glyph.AL,
+        Glyph.EN,
+        Glyph.IL,
+        Glyph.OZ,
+        Glyph.ZHIR,
+        Glyph.IL,
+        Glyph.THOL,
+        Glyph.SHA,
+    ],
     pattern_type=StructuralPattern.EDUCATIONAL,
     description=(
         "Emerging system of ideas or theory: initial emission (AL), information "
@@ -175,7 +194,17 @@ THEORY_SYSTEM = CanonicalSequence(
 
 FULL_DEPLOYMENT = CanonicalSequence(
     name="full_deployment",
-    glyphs=[Glyph.AL, Glyph.EN, Glyph.IL, Glyph.OZ, Glyph.ZHIR, Glyph.IL, Glyph.RA, Glyph.IL, Glyph.SHA],
+    glyphs=[
+        Glyph.AL,
+        Glyph.EN,
+        Glyph.IL,
+        Glyph.OZ,
+        Glyph.ZHIR,
+        Glyph.IL,
+        Glyph.RA,
+        Glyph.IL,
+        Glyph.SHA,
+    ],
     pattern_type=StructuralPattern.COMPLEX,
     description=(
         "Complete nodal reorganization trajectory: initiating emission (AL), "
@@ -309,7 +338,15 @@ PHASE_LOCK = CanonicalSequence(
 
 MOD_STABILIZER = CanonicalSequence(
     name="mod_stabilizer",
-    glyphs=[Glyph.REMESH, Glyph.EN, Glyph.IL, Glyph.OZ, Glyph.ZHIR, Glyph.IL, Glyph.REMESH],
+    glyphs=[
+        Glyph.REMESH,
+        Glyph.EN,
+        Glyph.IL,
+        Glyph.OZ,
+        Glyph.ZHIR,
+        Glyph.IL,
+        Glyph.REMESH,
+    ],
     pattern_type=StructuralPattern.EXPLORE,
     description=(
         "MOD_STABILIZER: glyphic macro for controlled transformation. "

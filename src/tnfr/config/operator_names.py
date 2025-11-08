@@ -120,9 +120,9 @@ DESTABILIZERS_ALL = DESTABILIZERS_STRONG | DESTABILIZERS_MODERATE | DESTABILIZER
 # R4 Extended: Bifurcation windows by destabilizer intensity
 # These define how many operators can separate a destabilizer from a transformer
 BIFURCATION_WINDOWS = {
-    'strong': 4,    # OZ permits ZHIR/THOL within 4 operators
-    'moderate': 2,  # NAV/VAL permit ZHIR/THOL within 2 operators
-    'weak': 1,      # EN requires ZHIR/THOL as immediate successor
+    "strong": 4,  # OZ permits ZHIR/THOL within 4 operators
+    "moderate": 2,  # NAV/VAL permit ZHIR/THOL within 2 operators
+    "weak": 1,  # EN requires ZHIR/THOL as immediate successor
 }
 
 
@@ -175,29 +175,29 @@ __all__ = [
 
 def validate_physics_derivation() -> dict[str, Any]:
     """Validate that operator sets are consistent with TNFR physics derivation.
-    
+
     This function verifies that VALID_START_OPERATORS and VALID_END_OPERATORS
     match what would be derived from first principles using the physics_derivation
     module.
-    
+
     Returns
     -------
     dict[str, Any]
         Validation report with keys:
         - "start_operators_valid": bool
-        - "end_operators_valid": bool  
+        - "end_operators_valid": bool
         - "start_operators_expected": frozenset
         - "start_operators_actual": frozenset
         - "end_operators_expected": frozenset
         - "end_operators_actual": frozenset
         - "discrepancies": list of str
-        
+
     Notes
     -----
     This function is primarily for testing and validation. It ensures that
     any manual updates to VALID_START_OPERATORS or VALID_END_OPERATORS remain
     consistent with TNFR canonical physics.
-    
+
     If discrepancies are found, the function logs warnings but does not raise
     exceptions, allowing for intentional overrides with clear audit trail.
     """
@@ -205,12 +205,12 @@ def validate_physics_derivation() -> dict[str, Any]:
         derive_start_operators_from_physics,
         derive_end_operators_from_physics,
     )
-    
+
     expected_starts = derive_start_operators_from_physics()
     expected_ends = derive_end_operators_from_physics()
-    
+
     discrepancies = []
-    
+
     start_valid = VALID_START_OPERATORS == expected_starts
     if not start_valid:
         missing = expected_starts - VALID_START_OPERATORS
@@ -223,7 +223,7 @@ def validate_physics_derivation() -> dict[str, Any]:
             discrepancies.append(
                 f"VALID_START_OPERATORS contains non-physics operators: {extra}"
             )
-    
+
     end_valid = VALID_END_OPERATORS == expected_ends
     if not end_valid:
         missing = expected_ends - VALID_END_OPERATORS
@@ -236,7 +236,7 @@ def validate_physics_derivation() -> dict[str, Any]:
             discrepancies.append(
                 f"VALID_END_OPERATORS contains non-physics operators: {extra}"
             )
-    
+
     return {
         "start_operators_valid": start_valid,
         "end_operators_valid": end_valid,

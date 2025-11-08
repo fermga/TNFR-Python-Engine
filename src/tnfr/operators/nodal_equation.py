@@ -296,75 +296,75 @@ def validate_nodal_equation(
 
 def compute_d2epi_dt2(G: "TNFRGraph", node: "NodeId") -> float:
     """Compute ∂²EPI/∂t² (structural acceleration).
-    
+
     According to TNFR canonical theory (§2.3.3, R4), bifurcation occurs when
     structural acceleration exceeds threshold τ:
         |∂²EPI/∂t²| > τ → multiple reorganization paths viable
-        
+
     This function computes the second-order time derivative of EPI using
     finite differences from the node's EPI history. The acceleration indicates
     how rapidly the rate of structural change is itself changing, which is
     the key indicator of bifurcation readiness.
-    
+
     Parameters
     ----------
     G : TNFRGraph
         Graph containing the node
     node : NodeId
         Node identifier to compute acceleration for
-        
+
     Returns
     -------
     float
         Structural acceleration ∂²EPI/∂t². Positive values indicate accelerating
         growth, negative values indicate accelerating contraction. Magnitude
         indicates bifurcation potential.
-        
+
     Notes
     -----
     **Computation method:**
-    
+
     Uses second-order finite difference approximation:
         ∂²EPI/∂t² ≈ (EPI_t - 2·EPI_{t-1} + EPI_{t-2}) / Δt²
-        
+
     For discrete operator applications with Δt=1:
         ∂²EPI/∂t² ≈ EPI_t - 2·EPI_{t-1} + EPI_{t-2}
-        
+
     **History requirements:**
-    
+
     Requires at least 3 historical EPI values stored in node's `_epi_history`
     attribute. If insufficient history exists, returns 0.0 (no acceleration).
-    
+
     The computed value is automatically stored in the node's `D2_EPI` attribute
     (using ALIAS_D2EPI aliases) for telemetry and metrics collection.
-    
+
     **Physical interpretation:**
-    
+
     - **d2epi ≈ 0**: Steady structural evolution (constant rate)
     - **d2epi > τ**: Positive acceleration, expanding reorganization
     - **d2epi < -τ**: Negative acceleration, collapsing reorganization
     - **|d2epi| > τ**: Bifurcation active, multiple paths viable
-    
+
     Examples
     --------
     >>> from tnfr.structural import create_nfr
     >>> from tnfr.operators.definitions import Emission, Dissonance
     >>> from tnfr.operators.nodal_equation import compute_d2epi_dt2
-    >>> 
+    >>>
     >>> G, node = create_nfr("test", epi=0.2, vf=1.0)
-    >>> 
+    >>>
     >>> # Build EPI history through operator applications
     >>> Emission()(G, node)  # EPI increases
     >>> Emission()(G, node)  # EPI increases more
     >>> Dissonance()(G, node)  # Introduce instability
-    >>> 
+    >>>
     >>> # Compute acceleration
     >>> d2epi = compute_d2epi_dt2(G, node)
-    >>> 
+    >>>
     >>> # Check if bifurcation threshold exceeded
     >>> tau = G.graph.get("OZ_BIFURCATION_THRESHOLD", 0.5)
     >>> bifurcation_active = abs(d2epi) > tau
-    
+
     See Also
     --------
     tnfr.dynamics.bifurcation.compute_bifurcation_score : Uses d2epi for scoring
@@ -373,23 +373,23 @@ def compute_d2epi_dt2(G: "TNFRGraph", node: "NodeId") -> float:
     """
     # Get EPI history from node
     history = G.nodes[node].get("_epi_history", [])
-    
+
     if len(history) < 3:
         # Insufficient history for second derivative
         # Need at least 3 points: t-2, t-1, t
         return 0.0
-    
+
     # Extract last 3 EPI values
-    epi_t = history[-1]      # Current (most recent)
-    epi_t1 = history[-2]     # One step ago
-    epi_t2 = history[-3]     # Two steps ago
-    
+    epi_t = history[-1]  # Current (most recent)
+    epi_t1 = history[-2]  # One step ago
+    epi_t2 = history[-3]  # Two steps ago
+
     # Second-order finite difference (assuming dt=1 for discrete operators)
     # ∂²EPI/∂t² ≈ (EPI_t - 2·EPI_{t-1} + EPI_{t-2}) / dt²
     # For dt=1: ∂²EPI/∂t² ≈ EPI_t - 2·EPI_{t-1} + EPI_{t-2}
     d2epi = epi_t - 2.0 * epi_t1 + epi_t2
-    
+
     # Store in node for telemetry (using set_attr to handle aliases)
     set_attr(G.nodes[node], ALIAS_D2EPI, d2epi)
-    
+
     return float(d2epi)

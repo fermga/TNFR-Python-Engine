@@ -33,7 +33,7 @@ __all__ = [
 @dataclass
 class RecipeVariation:
     """A variation of a cookbook recipe for specific contexts.
-    
+
     Attributes
     ----------
     name : str
@@ -47,6 +47,7 @@ class RecipeVariation:
     context : str
         When to use this variation
     """
+
     name: str
     description: str
     sequence: List[str]
@@ -57,7 +58,7 @@ class RecipeVariation:
 @dataclass
 class CookbookRecipe:
     """A validated TNFR operator sequence recipe with full context.
-    
+
     Attributes
     ----------
     name : str
@@ -81,6 +82,7 @@ class CookbookRecipe:
     pattern_type : str
         Detected TNFR pattern type
     """
+
     name: str
     domain: str
     sequence: List[str]
@@ -95,10 +97,10 @@ class CookbookRecipe:
 
 class TNFRCookbook:
     """Library of validated TNFR operator sequence recipes.
-    
+
     Provides programmatic access to the pattern cookbook with search,
     filtering, and recommendation capabilities.
-    
+
     Examples
     --------
     >>> cookbook = TNFRCookbook()
@@ -106,24 +108,24 @@ class TNFRCookbook:
     >>> recipe = cookbook.get_recipe("therapeutic", "crisis_intervention")
     >>> print(f"Health: {recipe.health_metrics.overall_health:.3f}")
     Health: 0.786
-    
+
     >>> # List all recipes in domain
     >>> therapeutic = cookbook.list_recipes(domain="therapeutic")
     >>> len(therapeutic)
     5
-    
+
     >>> # Search by keyword
     >>> results = cookbook.search_recipes("team")
     >>> [r.name for r in results]
     ['Team Formation', 'Strategic Planning']
     """
-    
+
     def __init__(self) -> None:
         """Initialize the cookbook with all validated recipes."""
         self._recipes: Dict[str, Dict[str, CookbookRecipe]] = {}
         self._analyzer = SequenceHealthAnalyzer()
         self._load_recipes()
-    
+
     def _load_recipes(self) -> None:
         """Load all recipes from domain pattern modules."""
         # Import domain patterns
@@ -136,121 +138,288 @@ class TNFRCookbook:
             # Fallback for when examples are not in path
             import sys
             from pathlib import Path
-            examples_path = Path(__file__).parent.parent.parent.parent / "examples" / "domain_applications"
+
+            examples_path = (
+                Path(__file__).parent.parent.parent.parent
+                / "examples"
+                / "domain_applications"
+            )
             sys.path.insert(0, str(examples_path))
             import therapeutic_patterns
             import educational_patterns
             import organizational_patterns
             import creative_patterns
-        
+
         # Load therapeutic recipes
-        self._load_domain_recipes("therapeutic", therapeutic_patterns, [
-            ("crisis_intervention", "Crisis Intervention",
-             ["Panic attack management", "Acute grief response", 
-              "Immediate post-trauma stabilization", "Emergency emotional support"],
-             "Immediate stabilization needed, limited time available, high-intensity crisis requiring rapid containment."),
-            ("process_therapy", "Process Therapy",
-             ["Long-term psychotherapy processes", "Personal transformation work",
-              "Complex trauma resolution", "Deep character structure change"],
-             "Deep change required, sufficient time and resources available, client readiness for transformative work established."),
-            ("regenerative_healing", "Regenerative Healing",
-             ["Chronic condition management", "Ongoing recovery processes",
-              "Building resilience patterns", "Preventive mental health work"],
-             "Long-term healing journey, building sustainable coping patterns, emphasis on self-renewal capacity."),
-            ("insight_integration", "Insight Integration",
-             ["Post-breakthrough consolidation", "Integrate therapeutic insights into daily life",
-              "Stabilize sudden understanding or awareness", "Connect insights to behavioral change"],
-             "After significant therapeutic breakthrough, to anchor and propagate new understanding across life domains."),
-            ("relapse_prevention", "Relapse Prevention",
-             ["Addiction recovery maintenance", "Prevent regression after therapy",
-              "Maintain behavioral changes", "Strengthen therapeutic gains"],
-             "Post-treatment phase, building relapse prevention skills, strengthening recovery patterns."),
-        ])
-        
+        self._load_domain_recipes(
+            "therapeutic",
+            therapeutic_patterns,
+            [
+                (
+                    "crisis_intervention",
+                    "Crisis Intervention",
+                    [
+                        "Panic attack management",
+                        "Acute grief response",
+                        "Immediate post-trauma stabilization",
+                        "Emergency emotional support",
+                    ],
+                    "Immediate stabilization needed, limited time available, high-intensity crisis requiring rapid containment.",
+                ),
+                (
+                    "process_therapy",
+                    "Process Therapy",
+                    [
+                        "Long-term psychotherapy processes",
+                        "Personal transformation work",
+                        "Complex trauma resolution",
+                        "Deep character structure change",
+                    ],
+                    "Deep change required, sufficient time and resources available, client readiness for transformative work established.",
+                ),
+                (
+                    "regenerative_healing",
+                    "Regenerative Healing",
+                    [
+                        "Chronic condition management",
+                        "Ongoing recovery processes",
+                        "Building resilience patterns",
+                        "Preventive mental health work",
+                    ],
+                    "Long-term healing journey, building sustainable coping patterns, emphasis on self-renewal capacity.",
+                ),
+                (
+                    "insight_integration",
+                    "Insight Integration",
+                    [
+                        "Post-breakthrough consolidation",
+                        "Integrate therapeutic insights into daily life",
+                        "Stabilize sudden understanding or awareness",
+                        "Connect insights to behavioral change",
+                    ],
+                    "After significant therapeutic breakthrough, to anchor and propagate new understanding across life domains.",
+                ),
+                (
+                    "relapse_prevention",
+                    "Relapse Prevention",
+                    [
+                        "Addiction recovery maintenance",
+                        "Prevent regression after therapy",
+                        "Maintain behavioral changes",
+                        "Strengthen therapeutic gains",
+                    ],
+                    "Post-treatment phase, building relapse prevention skills, strengthening recovery patterns.",
+                ),
+            ],
+        )
+
         # Load educational recipes
-        self._load_domain_recipes("educational", educational_patterns, [
-            ("conceptual_breakthrough", "Conceptual Breakthrough",
-             ["Mathematical concept breakthroughs", "Scientific paradigm shifts",
-              "Language structure insights", "Artistic technique breakthroughs"],
-             "Facilitating 'aha!' moments, paradigm shifts in understanding, sudden insight into complex concepts."),
-            ("competency_development", "Competency Development",
-             ["Sustained learning processes", "Professional skill development",
-              "Complex skill acquisition", "Career-long competency building"],
-             "Long-term skill building, step-by-step mastery progression, comprehensive competency development."),
-            ("knowledge_spiral", "Knowledge Spiral",
-             ["Iterative knowledge deepening cycles", "Research and scholarly inquiry",
-              "Progressive understanding development", "Cumulative learning trajectories"],
-             "Building knowledge over time, spiral curriculum design, regenerative learning cycles."),
-            ("collaborative_learning", "Collaborative Learning",
-             ["Group project work", "Peer tutoring",
-              "Learning communities", "Collaborative knowledge construction"],
-             "Peer learning contexts, group work, social learning environments."),
-            ("practice_mastery", "Practice Mastery",
-             ["Deliberate practice routines", "Skill refinement",
-              "Performance improvement cycles", "Expertise development"],
-             "Focused practice sessions, skill refinement work, performance optimization."),
-        ])
-        
+        self._load_domain_recipes(
+            "educational",
+            educational_patterns,
+            [
+                (
+                    "conceptual_breakthrough",
+                    "Conceptual Breakthrough",
+                    [
+                        "Mathematical concept breakthroughs",
+                        "Scientific paradigm shifts",
+                        "Language structure insights",
+                        "Artistic technique breakthroughs",
+                    ],
+                    "Facilitating 'aha!' moments, paradigm shifts in understanding, sudden insight into complex concepts.",
+                ),
+                (
+                    "competency_development",
+                    "Competency Development",
+                    [
+                        "Sustained learning processes",
+                        "Professional skill development",
+                        "Complex skill acquisition",
+                        "Career-long competency building",
+                    ],
+                    "Long-term skill building, step-by-step mastery progression, comprehensive competency development.",
+                ),
+                (
+                    "knowledge_spiral",
+                    "Knowledge Spiral",
+                    [
+                        "Iterative knowledge deepening cycles",
+                        "Research and scholarly inquiry",
+                        "Progressive understanding development",
+                        "Cumulative learning trajectories",
+                    ],
+                    "Building knowledge over time, spiral curriculum design, regenerative learning cycles.",
+                ),
+                (
+                    "collaborative_learning",
+                    "Collaborative Learning",
+                    [
+                        "Group project work",
+                        "Peer tutoring",
+                        "Learning communities",
+                        "Collaborative knowledge construction",
+                    ],
+                    "Peer learning contexts, group work, social learning environments.",
+                ),
+                (
+                    "practice_mastery",
+                    "Practice Mastery",
+                    [
+                        "Deliberate practice routines",
+                        "Skill refinement",
+                        "Performance improvement cycles",
+                        "Expertise development",
+                    ],
+                    "Focused practice sessions, skill refinement work, performance optimization.",
+                ),
+            ],
+        )
+
         # Load organizational recipes
-        self._load_domain_recipes("organizational", organizational_patterns, [
-            ("crisis_management", "Crisis Management",
-             ["Market disruption response", "Leadership transition crisis",
-              "Operational emergency management", "Reputation crisis containment"],
-             "Immediate organizational crisis, emergency institutional response, acute disruption requiring rapid coordination."),
-            ("team_formation", "Team Formation",
-             ["New team assembly", "Cross-functional project initiation",
-              "Department reorganization", "Merger integration"],
-             "Building new teams, establishing group coherence, creating high-performing collaborative units."),
-            ("strategic_planning", "Strategic Planning",
-             ["Comprehensive strategic planning", "Vision development",
-              "Major transformation initiatives", "Long-term change management"],
-             "Strategic planning processes, long-term organizational transformation, vision-driven institutional evolution."),
-            ("innovation_cycle", "Innovation Cycle",
-             ["Innovation programs", "R&D project cycles",
-              "Product development sprints", "Process innovation"],
-             "Innovation projects from ideation through implementation, systematic innovation programs."),
-            ("organizational_transformation", "Organizational Transformation",
-             ["Major restructuring", "Culture transformation",
-              "Digital transformation", "Business model evolution"],
-             "Comprehensive institutional change, transforming organizational culture and structure, fundamental business model shifts."),
-            ("change_resistance_resolution", "Change Resistance Resolution",
-             ["Overcoming resistance", "Addressing opposition",
-              "Building change adoption", "Managing transition conflicts"],
-             "High resistance to organizational change, need to transform opposition into engagement."),
-        ])
-        
+        self._load_domain_recipes(
+            "organizational",
+            organizational_patterns,
+            [
+                (
+                    "crisis_management",
+                    "Crisis Management",
+                    [
+                        "Market disruption response",
+                        "Leadership transition crisis",
+                        "Operational emergency management",
+                        "Reputation crisis containment",
+                    ],
+                    "Immediate organizational crisis, emergency institutional response, acute disruption requiring rapid coordination.",
+                ),
+                (
+                    "team_formation",
+                    "Team Formation",
+                    [
+                        "New team assembly",
+                        "Cross-functional project initiation",
+                        "Department reorganization",
+                        "Merger integration",
+                    ],
+                    "Building new teams, establishing group coherence, creating high-performing collaborative units.",
+                ),
+                (
+                    "strategic_planning",
+                    "Strategic Planning",
+                    [
+                        "Comprehensive strategic planning",
+                        "Vision development",
+                        "Major transformation initiatives",
+                        "Long-term change management",
+                    ],
+                    "Strategic planning processes, long-term organizational transformation, vision-driven institutional evolution.",
+                ),
+                (
+                    "innovation_cycle",
+                    "Innovation Cycle",
+                    [
+                        "Innovation programs",
+                        "R&D project cycles",
+                        "Product development sprints",
+                        "Process innovation",
+                    ],
+                    "Innovation projects from ideation through implementation, systematic innovation programs.",
+                ),
+                (
+                    "organizational_transformation",
+                    "Organizational Transformation",
+                    [
+                        "Major restructuring",
+                        "Culture transformation",
+                        "Digital transformation",
+                        "Business model evolution",
+                    ],
+                    "Comprehensive institutional change, transforming organizational culture and structure, fundamental business model shifts.",
+                ),
+                (
+                    "change_resistance_resolution",
+                    "Change Resistance Resolution",
+                    [
+                        "Overcoming resistance",
+                        "Addressing opposition",
+                        "Building change adoption",
+                        "Managing transition conflicts",
+                    ],
+                    "High resistance to organizational change, need to transform opposition into engagement.",
+                ),
+            ],
+        )
+
         # Load creative recipes
-        self._load_domain_recipes("creative", creative_patterns, [
-            ("artistic_creation", "Artistic Creation",
-             ["Painting/sculpture creation", "Musical composition",
-              "Novel/screenplay writing", "Choreography", "Architectural design"],
-             "Complete artistic projects, major creative works requiring full creative cycle from impulse through consolidation."),
-            ("design_thinking", "Design Thinking",
-             ["Product design", "Service design",
-              "UX design", "Human-centered innovation", "Design sprints"],
-             "Design thinking processes, human-centered problem solving, empathy-driven innovation."),
-            ("innovation_cycle", "Innovation Cycle",
-             ["Continuous innovation programs", "Product pipelines",
-              "Creative R&D cycles", "Innovation portfolio management"],
-             "Sustained innovation work, regenerative innovation capability building, ongoing creative renewal."),
-            ("creative_flow", "Creative Flow",
-             ["Maintaining creative momentum", "Flow state cultivation",
-              "Sustained artistic practice", "Creative productivity optimization"],
-             "Developing sustained creative practice, maintaining flow states, building creative momentum."),
-            ("creative_block_resolution", "Creative Block Resolution",
-             ["Overcoming writer's block", "Resolving stagnation",
-              "Reinvigorating work", "Breaking through plateaus"],
-             "Stuck in creative process, experiencing creative block, need breakthrough to restart creative flow."),
-        ])
-    
+        self._load_domain_recipes(
+            "creative",
+            creative_patterns,
+            [
+                (
+                    "artistic_creation",
+                    "Artistic Creation",
+                    [
+                        "Painting/sculpture creation",
+                        "Musical composition",
+                        "Novel/screenplay writing",
+                        "Choreography",
+                        "Architectural design",
+                    ],
+                    "Complete artistic projects, major creative works requiring full creative cycle from impulse through consolidation.",
+                ),
+                (
+                    "design_thinking",
+                    "Design Thinking",
+                    [
+                        "Product design",
+                        "Service design",
+                        "UX design",
+                        "Human-centered innovation",
+                        "Design sprints",
+                    ],
+                    "Design thinking processes, human-centered problem solving, empathy-driven innovation.",
+                ),
+                (
+                    "innovation_cycle",
+                    "Innovation Cycle",
+                    [
+                        "Continuous innovation programs",
+                        "Product pipelines",
+                        "Creative R&D cycles",
+                        "Innovation portfolio management",
+                    ],
+                    "Sustained innovation work, regenerative innovation capability building, ongoing creative renewal.",
+                ),
+                (
+                    "creative_flow",
+                    "Creative Flow",
+                    [
+                        "Maintaining creative momentum",
+                        "Flow state cultivation",
+                        "Sustained artistic practice",
+                        "Creative productivity optimization",
+                    ],
+                    "Developing sustained creative practice, maintaining flow states, building creative momentum.",
+                ),
+                (
+                    "creative_block_resolution",
+                    "Creative Block Resolution",
+                    [
+                        "Overcoming writer's block",
+                        "Resolving stagnation",
+                        "Reinvigorating work",
+                        "Breaking through plateaus",
+                    ],
+                    "Stuck in creative process, experiencing creative block, need breakthrough to restart creative flow.",
+                ),
+            ],
+        )
+
     def _load_domain_recipes(
-        self,
-        domain: str,
-        module: Any,
-        recipe_specs: List[tuple]
+        self, domain: str, module: Any, recipe_specs: List[tuple]
     ) -> None:
         """Load recipes for a specific domain.
-        
+
         Parameters
         ----------
         domain : str
@@ -262,23 +431,23 @@ class TNFRCookbook:
         """
         if domain not in self._recipes:
             self._recipes[domain] = {}
-        
+
         for spec in recipe_specs:
             func_suffix, display_name, use_cases, when_to_use = spec
-            
+
             # Get sequence function
             func_name = f"get_{func_suffix}_sequence"
             if not hasattr(module, func_name):
                 continue
-            
+
             func = getattr(module, func_name)
             sequence = func()
-            
+
             # Validate and get health metrics
             result = validate_sequence_with_health(sequence)
             if not result.passed:
                 continue
-            
+
             # Create recipe
             recipe = CookbookRecipe(
                 name=display_name,
@@ -288,33 +457,33 @@ class TNFRCookbook:
                 use_cases=use_cases,
                 when_to_use=when_to_use,
                 structural_flow=[],  # Could be extracted from docstring
-                key_insights=[],     # Could be extracted from docstring
-                variations=[],       # Future enhancement
+                key_insights=[],  # Could be extracted from docstring
+                variations=[],  # Future enhancement
                 pattern_type=result.health_metrics.dominant_pattern,
             )
-            
+
             self._recipes[domain][func_suffix] = recipe
-    
+
     def get_recipe(self, domain: str, use_case: str) -> CookbookRecipe:
         """Get a specific recipe by domain and use case identifier.
-        
+
         Parameters
         ----------
         domain : str
             Domain name: "therapeutic", "educational", "organizational", "creative"
         use_case : str
             Use case identifier (e.g., "crisis_intervention", "team_formation")
-        
+
         Returns
         -------
         CookbookRecipe
             The requested recipe with full context and metrics
-        
+
         Raises
         ------
         KeyError
             If domain or use_case not found
-        
+
         Examples
         --------
         >>> cookbook = TNFRCookbook()
@@ -323,16 +492,18 @@ class TNFRCookbook:
         Crisis Intervention
         """
         if domain not in self._recipes:
-            raise KeyError(f"Domain '{domain}' not found. Available: {list(self._recipes.keys())}")
-        
+            raise KeyError(
+                f"Domain '{domain}' not found. Available: {list(self._recipes.keys())}"
+            )
+
         if use_case not in self._recipes[domain]:
             raise KeyError(
                 f"Use case '{use_case}' not found in '{domain}'. "
                 f"Available: {list(self._recipes[domain].keys())}"
             )
-        
+
         return self._recipes[domain][use_case]
-    
+
     def list_recipes(
         self,
         domain: Optional[str] = None,
@@ -341,7 +512,7 @@ class TNFRCookbook:
         pattern_type: Optional[str] = None,
     ) -> List[CookbookRecipe]:
         """List recipes with optional filtering.
-        
+
         Parameters
         ----------
         domain : str, optional
@@ -352,12 +523,12 @@ class TNFRCookbook:
             Maximum sequence length
         pattern_type : str, optional
             Filter by pattern type (activation, therapeutic, regenerative, etc.)
-        
+
         Returns
         -------
         List[CookbookRecipe]
             Filtered list of recipes
-        
+
         Examples
         --------
         >>> cookbook = TNFRCookbook()
@@ -367,44 +538,44 @@ class TNFRCookbook:
         ['Process Therapy', 'Regenerative Healing']
         """
         results = []
-        
+
         domains = [domain] if domain else list(self._recipes.keys())
-        
+
         for dom in domains:
             if dom not in self._recipes:
                 continue
-            
+
             for recipe in self._recipes[dom].values():
                 # Apply filters
                 if recipe.health_metrics.overall_health < min_health:
                     continue
-                
+
                 if max_length and len(recipe.sequence) > max_length:
                     continue
-                
+
                 if pattern_type and recipe.pattern_type != pattern_type:
                     continue
-                
+
                 results.append(recipe)
-        
+
         # Sort by health score descending
         results.sort(key=lambda r: r.health_metrics.overall_health, reverse=True)
-        
+
         return results
-    
+
     def search_recipes(self, query: str) -> List[CookbookRecipe]:
         """Search recipes by text query across names, use cases, and context.
-        
+
         Parameters
         ----------
         query : str
             Search query string (case-insensitive)
-        
+
         Returns
         -------
         List[CookbookRecipe]
             Recipes matching the query, sorted by relevance
-        
+
         Examples
         --------
         >>> cookbook = TNFRCookbook()
@@ -414,39 +585,41 @@ class TNFRCookbook:
         """
         query_lower = query.lower()
         results = []
-        
+
         for domain_recipes in self._recipes.values():
             for recipe in domain_recipes.values():
                 # Search in name
                 if query_lower in recipe.name.lower():
                     results.append((recipe, 3))  # High relevance
                     continue
-                
+
                 # Search in use cases
                 if any(query_lower in uc.lower() for uc in recipe.use_cases):
                     results.append((recipe, 2))  # Medium relevance
                     continue
-                
+
                 # Search in when_to_use
                 if query_lower in recipe.when_to_use.lower():
                     results.append((recipe, 1))  # Low relevance
                     continue
-        
+
         # Sort by relevance then health
-        results.sort(key=lambda x: (x[1], x[0].health_metrics.overall_health), reverse=True)
-        
+        results.sort(
+            key=lambda x: (x[1], x[0].health_metrics.overall_health), reverse=True
+        )
+
         return [r[0] for r in results]
-    
+
     def recommend_recipe(
         self,
         context: str,
         constraints: Optional[Dict[str, Any]] = None,
     ) -> Optional[CookbookRecipe]:
         """Recommend a recipe based on context description and constraints.
-        
+
         Uses keyword matching and constraint satisfaction to find the best
         matching recipe for the described context.
-        
+
         Parameters
         ----------
         context : str
@@ -457,12 +630,12 @@ class TNFRCookbook:
             - min_health: float - minimum health score
             - domain: str - restrict to specific domain
             - prefer_pattern: str - preferred pattern type
-        
+
         Returns
         -------
         CookbookRecipe or None
             Best matching recipe, or None if no good match found
-        
+
         Examples
         --------
         >>> cookbook = TNFRCookbook()
@@ -474,7 +647,7 @@ class TNFRCookbook:
         'Team Formation'
         """
         constraints = constraints or {}
-        
+
         # Start with all recipes matching constraints
         candidates = self.list_recipes(
             domain=constraints.get("domain"),
@@ -482,62 +655,62 @@ class TNFRCookbook:
             max_length=constraints.get("max_length"),
             pattern_type=constraints.get("prefer_pattern"),
         )
-        
+
         if not candidates:
             return None
-        
+
         # Extract keywords from context
         context_lower = context.lower()
         keywords = set(context_lower.split())
-        
+
         # Score each candidate by keyword overlap
         scored_candidates = []
         for recipe in candidates:
             score = 0
-            
+
             # Check name overlap
             name_words = set(recipe.name.lower().split())
             score += len(keywords & name_words) * 5
-            
+
             # Check use cases overlap
             for use_case in recipe.use_cases:
                 use_case_words = set(use_case.lower().split())
                 score += len(keywords & use_case_words) * 3
-            
+
             # Check when_to_use overlap
             when_words = set(recipe.when_to_use.lower().split())
             score += len(keywords & when_words) * 2
-            
+
             # Boost by health score
             score += recipe.health_metrics.overall_health * 10
-            
+
             scored_candidates.append((recipe, score))
-        
+
         if not scored_candidates:
             return None
-        
+
         # Return highest scoring recipe
         scored_candidates.sort(key=lambda x: x[1], reverse=True)
         return scored_candidates[0][0]
-    
+
     def get_all_domains(self) -> List[str]:
         """Get list of all available domains.
-        
+
         Returns
         -------
         List[str]
             List of domain names
         """
         return list(self._recipes.keys())
-    
+
     def get_domain_summary(self, domain: str) -> Dict[str, Any]:
         """Get summary statistics for a domain.
-        
+
         Parameters
         ----------
         domain : str
             Domain name
-        
+
         Returns
         -------
         Dict[str, Any]
@@ -545,9 +718,9 @@ class TNFRCookbook:
         """
         if domain not in self._recipes:
             raise KeyError(f"Domain '{domain}' not found")
-        
+
         recipes = list(self._recipes[domain].values())
-        
+
         if not recipes:
             return {
                 "domain": domain,
@@ -556,10 +729,10 @@ class TNFRCookbook:
                 "health_range": (0.0, 0.0),
                 "patterns": [],
             }
-        
+
         healths = [r.health_metrics.overall_health for r in recipes]
         patterns = [r.pattern_type for r in recipes]
-        
+
         return {
             "domain": domain,
             "recipe_count": len(recipes),

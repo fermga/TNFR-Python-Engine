@@ -29,7 +29,7 @@ def validate_coherence_strict(G: TNFRGraph, node: Any) -> None:
     """Validate strict canonical preconditions for IL (Coherence) operator.
 
     According to TNFR.pdf §2.2.1, Coherence (IL - Coherencia estructural) requires:
-    
+
     1. **Active EPI**: EPI > 0 (node must have active structural form)
     2. **Non-saturated EPI**: EPI < maximum (leave room for stabilization)
     3. **Active νf**: νf > threshold (sufficient structural frequency)
@@ -190,25 +190,25 @@ def diagnose_coherence_readiness(G: TNFRGraph, node: Any) -> dict:
     -------
     dict
         Diagnostic report with the following structure:
-        
+
         - ``node``: Node identifier
         - ``ready``: bool - Overall readiness (all critical checks passed)
         - ``checks``: dict - Individual check results
-          
+
           - ``epi_active``: bool - EPI > 0
           - ``epi_not_saturated``: bool - EPI < maximum
           - ``vf_active``: bool - νf > 0
           - ``dnfr_present``: bool - ΔNFR > 0 (warning only)
           - ``dnfr_not_critical``: bool - ΔNFR < critical (warning only)
           - ``has_connections``: bool - degree > 0 (warning only)
-        
+
         - ``values``: dict - Current node attribute values
-          
+
           - ``epi``: Current EPI value
           - ``vf``: Current νf value
           - ``dnfr``: Current ΔNFR value
           - ``degree``: Node degree
-        
+
         - ``recommendations``: list[str] - Actionable suggestions
 
     Examples
@@ -265,25 +265,29 @@ def diagnose_coherence_readiness(G: TNFRGraph, node: Any) -> dict:
 
     # Generate recommendations
     recommendations = []
-    
+
     if not checks["epi_active"]:
         recommendations.append("Apply AL (Emission) to activate node")
-    
+
     if checks["epi_active"] and not checks["epi_not_saturated"]:
-        recommendations.append("Apply NUL (Contraction) to consolidate saturated structure")
-    
+        recommendations.append(
+            "Apply NUL (Contraction) to consolidate saturated structure"
+        )
+
     if not checks["vf_active"]:
         recommendations.append("Apply AL (Emission) or NAV (Transition) to activate νf")
-    
+
     if checks["epi_active"] and not checks["dnfr_present"]:
         recommendations.append("⚠ ΔNFR=0 - IL may be redundant")
-    
+
     if checks["dnfr_present"] and not checks["dnfr_not_critical"]:
         recommendations.append("⚠ High ΔNFR - consider OZ (Dissonance) → IL sequence")
-    
+
     if not checks["has_connections"]:
-        recommendations.append("⚠ Isolated node - consider UM (Coupling) to enable phase locking")
-    
+        recommendations.append(
+            "⚠ Isolated node - consider UM (Coupling) to enable phase locking"
+        )
+
     if all_critical_passed:
         recommendations.insert(0, "✓ Node ready for IL (Coherence)")
 

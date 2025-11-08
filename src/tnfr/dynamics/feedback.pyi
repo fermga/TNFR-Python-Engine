@@ -9,7 +9,7 @@ class StructuralFeedbackLoop:
     target_coherence: float
     tau_adaptive: float
     learning_rate: float
-    
+
     def __init__(
         self,
         graph: TNFRGraph,
@@ -18,7 +18,6 @@ class StructuralFeedbackLoop:
         tau_adaptive: float = ...,
         learning_rate: float = ...,
     ) -> None: ...
-    
     def regulate(self) -> str: ...
     def _compute_local_coherence(self) -> float: ...
     def adapt_thresholds(self, performance_metric: float) -> None: ...
