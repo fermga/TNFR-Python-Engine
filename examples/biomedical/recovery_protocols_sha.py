@@ -3,28 +3,20 @@
 This example demonstrates SHA (Silence) in athletic training as a recovery
 mechanism that enables adaptation consolidation.
 
-Protocol: [Training] VAL → OZ → IL → [Recovery] SHA → [Next Session] NAV → AL
-- Training: Expansion + Dissonance + Coherence (stress and adaptation)
-- Recovery: Silence (νf → 0, adaptation consolidates)
-- Next training: Transition + Emission (return with improved baseline)
+Protocol: AL → VAL → OZ → IL → SHA
+- Emission: Training session begins
+- Expansion + Dissonance + Coherence: Stress and acute adaptation
+- SHA: Recovery pause (νf → 0, adaptation consolidates)
 
 Key insight: SHA models the essential recovery phase where reduced activity
-allows physiological adaptations to consolidate - muscle repair, metabolic
-adjustments, and performance gains require structural pause.
+allows physiological adaptations to consolidate.
 
 References:
 - Kellmann, M., et al. (2018). Recovery and Performance in Sport.
 - See: docs/source/examples/SHA_CLINICAL_APPLICATIONS.md, Section 4
 """
 
-from tnfr.operators.definitions import (
-    Expansion,
-    Dissonance,
-    Coherence,
-    Silence,
-    Transition,
-    Emission,
-)
+from tnfr.operators.definitions import Emission, Expansion, Dissonance, Coherence, Silence
 from tnfr.structural import create_nfr, run_sequence
 
 
@@ -39,79 +31,47 @@ def main():
     # Create muscle tissue node
     G, muscle = create_nfr("muscle_tissue", epi=0.50, vf=1.00)
     
-    # === TRAINING PHASE ===
+    # === TRAINING + RECOVERY ===
     print("=" * 70)
-    print("TRAINING PHASE - Controlled Stress Application")
+    print("TRAINING → RECOVERY CYCLE")
     print("=" * 70)
     print()
     
-    print("Protocol: VAL → OZ → IL (Exercise sequence)")
+    print("Protocol: AL → VAL → OZ → IL → SHA")
     print()
     
-    print("Step 1: EXPANSION (VAL) - Intense muscular activation")
+    print("Step 1: EMISSION (AL) - Training session begins")
+    print("  Athlete initiates workout, system activation")
+    print()
+    
+    print("Step 2: EXPANSION (VAL) - Intense muscular activation")
     print("  Activity: High-intensity intervals, heavy resistance")
     print("  Effect: Increased metabolic demand, fiber recruitment")
     print()
     
-    print("Step 2: DISSONANCE (OZ) - Metabolic stress")
+    print("Step 3: DISSONANCE (OZ) - Metabolic stress")
     print("  Markers: Lactate, ROS, microdamage (adaptive stimulus)")
     print("  Signal: Triggers remodeling response")
     print()
     
-    print("Step 3: COHERENCE (IL) - Acute homeostatic response")
+    print("Step 4: COHERENCE (IL) - Acute homeostatic response")
     print("  Process: Immediate compensation, metabolite clearance")
+    print("  Training complete - adaptive stimulus applied")
     print()
     
-    run_sequence(G, muscle, [Expansion(), Dissonance(), Coherence()])
-    
-    print("✓ Training complete - Adaptive stimulus applied")
-    print("  Markers: Elevated HR, temperature, fatigue, glycogen depletion")
-    print()
-    
-    # === RECOVERY PHASE ===
-    print("=" * 70)
-    print("RECOVERY PHASE - SHA Adaptation Consolidation")
-    print("=" * 70)
-    print()
-    
-    print("Step 4: SILENCE (SHA) - Recovery period")
-    print("  Context: 48-72 hour recovery period")
+    print("Step 5: SILENCE (SHA) - Recovery period [48-72 hours]")
     print("  Activities: Sleep, nutrition, light movement")
     print("  Effect: νf → 0 (minimal activity), adaptation emerges")
     print("  Process:")
     print("    • Day 1: Residual soreness, metabolite clearance")
     print("    • Day 2: Deep adaptation (protein synthesis peaks)")
-    print("    • Result: EPI increases (structural improvement)")
+    print("    • Result: Structural improvement for next training")
     print()
     
-    run_sequence(G, muscle, [Silence()])
+    # Execute the complete sequence
+    run_sequence(G, muscle, [Emission(), Expansion(), Dissonance(), Coherence(), Silence()])
     
-    print("✓ Recovery complete - Adaptation consolidated")
-    print("  Changes: Muscle protein synthesis, glycogen supercompensation,")
-    print("           mitochondrial biogenesis, neural efficiency")
-    print()
-    
-    # === NEXT TRAINING ===
-    print("=" * 70)
-    print("NEXT TRAINING SESSION - Adapted Baseline")
-    print("=" * 70)
-    print()
-    
-    print("Protocol: NAV → AL (Return to training)")
-    print()
-    
-    print("Step 5: TRANSITION (NAV) - Recovery → Active")
-    print("  Process: Return to normal training readiness")
-    print()
-    
-    print("Step 6: EMISSION (AL) - Next training begins")
-    print("  Context: Training resumes with adapted system")
-    print("  Expected: Improved baseline capacity")
-    print()
-    
-    run_sequence(G, muscle, [Transition(), Emission()])
-    
-    print("✓ Ready for training - Performance capacity increased")
+    print("✓ Recovery complete - Adaptation consolidated, ready for next training")
     print()
     
     # Training applications
@@ -125,14 +85,8 @@ def main():
     print("  • Low frequency: SHA 72-96h+ (adaptation/taper)")
     print()
     print("Overtraining Prevention:")
-    print("  ⚠ Warning: ΔNFR fails to normalize during SHA")
-    print("  → Intervention: Extend SHA, reduce training load")
-    print("  ✓ Recovery: νf normalizes, ΔNFR < 0.10")
-    print()
-    print("Performance Optimization:")
-    print("  • SHA timing: Match recovery to adaptation timeline")
-    print("  • SHA quality: Lower EPI variance = better recovery")
-    print("  • Return criteria: Low ΔNFR + normalized νf")
+    print("  ⚠ Warning: Inadequate SHA leads to accumulated stress")
+    print("  ✓ Solution: Extend SHA, reduce training load")
     
     # Physiological correlates
     print()
@@ -140,13 +94,11 @@ def main():
     print("PHYSIOLOGICAL CORRELATES")
     print("=" * 70)
     print()
-    print("TNFR Metric → Physiological Marker → Measurement")
+    print("TNFR Metric → Physiological Marker")
     print("-" * 70)
-    print("SHA activation   → Recovery mode        → HRV, resting HR")
-    print("νf reduction     → Metabolic downreg    → VO2, RMR")
-    print("EPI growth       → Structural adaptation → Muscle cross-section")
-    print("ΔNFR normal      → Stress clearance     → Cortisol, CK, IL-6")
-    print("SHA duration     → Recovery time        → Performance tests")
+    print("SHA activation   → Recovery mode (HRV, resting HR)")
+    print("νf reduction     → Metabolic downregulation (VO2, RMR)")
+    print("EPI growth       → Structural adaptation (performance gains)")
     
     print()
     print("=" * 70)
@@ -155,9 +107,8 @@ def main():
     print("\nSHA enables training adaptation through:")
     print("  1. Reduced activity (νf → 0) = metabolic downregulation")
     print("  2. Structure evolution (EPI increases) = adaptation emerges")
-    print("  3. Pressure normalization (ΔNFR decreases) = recovery complete")
     print("\nWithout adequate SHA (recovery), training stress accumulates")
-    print("without adaptation, leading to overtraining and performance decline.")
+    print("without adaptation, leading to overtraining and decline.")
     
     print("\n" + "=" * 70)
     print("PROTOCOL COMPLETE")

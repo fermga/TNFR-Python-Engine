@@ -2194,6 +2194,27 @@ class Silence(Operator):
     Coherence : Often precedes SHA for stable preservation
     Transition : Breaks silence with controlled change
     Emission : Reactivates silenced structures
+    
+    Extended Clinical Documentation
+    --------------------------------
+    For detailed clinical protocols, expected telemetry, physiological correlates,
+    and scientific references, see:
+    
+    **docs/source/examples/SHA_CLINICAL_APPLICATIONS.md**
+    
+    Comprehensive documentation includes:
+    - Cardiac Coherence Training (HRV consolidation)
+    - Trauma Therapy (protective containment)
+    - Sleep & Memory Consolidation (neuroscience applications)
+    - Post-Exercise Recovery (athletic training)
+    - Meditation & Mindfulness (contemplative practices)
+    - Organizational Strategy (strategic pause protocols)
+    
+    **Executable Examples**: examples/biomedical/
+    - cardiac_coherence_sha.py
+    - trauma_containment_sha.py
+    - sleep_consolidation_sha.py
+    - recovery_protocols_sha.py
     """
 
     __slots__ = ()
