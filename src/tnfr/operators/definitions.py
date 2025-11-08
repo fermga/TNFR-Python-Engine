@@ -1426,7 +1426,7 @@ class Coupling(Operator):
         """Collect UM-specific metrics."""
         from .metrics import coupling_metrics
 
-        return coupling_metrics(G, node, state_before["theta"])
+        return coupling_metrics(G, node, state_before["theta"], state_before["dnfr"])
 
 
 @register_operator

@@ -591,15 +591,18 @@ def _op_UM(node: NodeProtocol, gf: GlyphFactors) -> None:  # UM — Coupling
     respecting νf and EPI. When bidirectional mode is enabled (default), both
     the node and its neighbors synchronize their phases mutually. Additionally,
     structural frequency (νf) synchronization causes coupled nodes to converge
-    their reorganization rates. When functional links are enabled it may add
-    edges based on combined phase, EPI, and sense-index similarity.
+    their reorganization rates. Coupling also reduces ΔNFR through mutual
+    stabilization, decreasing reorganization pressure proportional to phase
+    alignment strength. When functional links are enabled it may add edges
+    based on combined phase, EPI, and sense-index similarity.
 
     Parameters
     ----------
     node : NodeProtocol
         Node whose phase and frequency are being synchronised.
     gf : GlyphFactors
-        Provides ``UM_theta_push``, ``UM_vf_sync`` and optional selection parameters.
+        Provides ``UM_theta_push``, ``UM_vf_sync``, ``UM_dnfr_reduction`` and 
+        optional selection parameters.
 
     Notes
     -----
@@ -613,6 +616,11 @@ def _op_UM(node: NodeProtocol, gf: GlyphFactors) -> None:  # UM — Coupling
     structural frequencies (νf). This enables coupled nodes to converge their
     reorganization rates, which is essential for sustained resonance and coherent
     network evolution as described by the nodal equation: ∂EPI/∂t = νf · ΔNFR(t).
+
+    ΔNFR stabilization (UM_STABILIZE_DNFR=True, default) implements the canonical
+    effect where coupling reduces reorganization pressure through mutual stabilization.
+    The reduction is proportional to phase alignment: well-coupled nodes (high phase
+    alignment) experience stronger ΔNFR reduction, promoting structural coherence.
 
     Legacy unidirectional mode (UM_BIDIRECTIONAL=False) only adjusts the node's
     phase towards its neighbors, preserving backward compatibility.
@@ -699,6 +707,37 @@ def _op_UM(node: NodeProtocol, gf: GlyphFactors) -> None:  # UM — Coupling
                 
                 # Gradual convergence towards mean (similar to phase sync)
                 node.vf = vf_i + k_vf * (vf_mean - vf_i)
+
+    # ΔNFR reduction by mutual stabilization
+    # Coupling produces a stabilizing effect that reduces reorganization pressure
+    stabilize_dnfr = bool(node.graph.get("UM_STABILIZE_DNFR", True))
+    
+    if stabilize_dnfr:
+        k_dnfr = get_factor(gf, "UM_dnfr_reduction", 0.15)
+        
+        # Calculate compatibility with neighbors based on phase alignment
+        neighbor_ids = list(node.neighbors())
+        if neighbor_ids:
+            # Get NodeNX wrapper for accessing neighbor attributes
+            NodeNX = get_nodenx()
+            if NodeNX is not None and hasattr(node, "G"):
+                neighbors = [NodeNX.from_graph(node.G, nid) for nid in neighbor_ids]
+                
+                # Compute phase alignments with each neighbor
+                phase_alignments = []
+                for neighbor in neighbors:
+                    dphi = abs(angle_diff(neighbor.theta, node.theta))
+                    # alignment: 1.0 (perfectly aligned) to 0.0 (opposite phases)
+                    alignment = 1.0 - dphi / math.pi
+                    phase_alignments.append(alignment)
+                
+                # Mean alignment represents coupling strength
+                mean_alignment = sum(phase_alignments) / len(phase_alignments)
+                
+                # Reduce ΔNFR proportionally to coupling strength
+                # reduction_factor < 1.0 when well-coupled (high alignment)
+                reduction_factor = 1.0 - (k_dnfr * mean_alignment)
+                node.dnfr = node.dnfr * reduction_factor
 
     if bool(node.graph.get("UM_FUNCTIONAL_LINKS", False)):
         thr = float(
