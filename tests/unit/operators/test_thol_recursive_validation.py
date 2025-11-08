@@ -255,151 +255,104 @@ class TestTholNestedValidation:
 
 
 class TestTholValidAutonomous:
-    """Test valid autonomous THOL subsequences."""
+    """Test valid THOL subsequences following C1-C4 physics."""
 
-    def test_thol_simple_valid(self):
-        """Simple valid THOL: AL → EN → IL → SILENCE."""
+    def test_thol_minimal_valid(self):
+        """Minimal valid THOL: AL → IL → NAV, closed with SHA."""
         valid = [
-            EMISSION,
-            RECEPTION,
-            COHERENCE,
-            DISSONANCE,
-            SELF_ORGANIZATION,
-                EMISSION,  # Valid start (C1)
-                RECEPTION,  # EN for EN→IL segment
-                COHERENCE,  # IL - stabilizer and completes EN→IL
-                SILENCE,  # Valid end operator (C1)
-            SILENCE  # THOL closure
+            EMISSION,  # C1 start
+            COHERENCE,  # C3 stabilizer
+            DISSONANCE,  # Destabilizer for THOL (C4)
+            SELF_ORGANIZATION,  # THOL opening
+                EMISSION,  # C1 start
+                COHERENCE,  # C3 stabilizer
+                TRANSITION,  # C1 valid end (not a THOL closure)
+            SILENCE,  # THOL closure
+            TRANSITION  # Sequence end (different from closure)
         ]
         result = validate_sequence(valid)
         assert result.passed
 
     def test_thol_with_transition_end(self):
-        """Valid THOL ending with NAV (valid end operator)."""
+        """Valid THOL ending with NAV."""
         valid = [
             EMISSION,
-            RECEPTION,
             COHERENCE,
             DISSONANCE,
             SELF_ORGANIZATION,
-                EMISSION,  # Valid start
-                RECEPTION,  # EN→IL segment
-                COHERENCE,  # IL stabilizer
-                RESONANCE,
-                TRANSITION,  # Valid end operator (C1)
-            SILENCE
+                EMISSION,
+                COHERENCE,
+                TRANSITION,  # C1 valid end
+            SILENCE  # THOL closure
         ]
         result = validate_sequence(valid)
         assert result.passed
 
     def test_thol_with_recursivity_end(self):
-        """Valid THOL ending with REMESH (valid end operator)."""
+        """Valid THOL ending with REMESH."""
         valid = [
             EMISSION,
-            RECEPTION,
+            COHERENCE,
+            DISSONANCE,
+            SELF_ORGANIZATION,
+                RECURSIVITY,  # C1 valid start
+                COHERENCE,  # C3 stabilizer
+                RECURSIVITY,  # C1 valid end
+            SILENCE  # THOL closure
+        ]
+        result = validate_sequence(valid)
+        assert result.passed
+
+    def test_thol_with_dissonance_end(self):
+        """Valid THOL ending with OZ (intentional closure)."""
+        valid = [
+            EMISSION,
             COHERENCE,
             DISSONANCE,
             SELF_ORGANIZATION,
                 EMISSION,
-                RECEPTION,
                 COHERENCE,
-                RECURSIVITY,  # Valid end operator (C1)
-            CONTRACTION  # THOL closure with NUL
-        ]
-        result = validate_sequence(valid)
-        assert result.passed
-
-    def test_thol_starting_with_recursivity(self):
-        """Valid THOL starting with REMESH."""
-        valid = [
-            EMISSION,
-            RECEPTION,
-            COHERENCE,
-            DISSONANCE,
-            SELF_ORGANIZATION,
-                RECURSIVITY,  # Valid start (C1)
-                RECEPTION,  # EN→IL segment
-                COHERENCE,  # IL stabilizer
-                SILENCE,  # Valid end
-            SILENCE
-        ]
-        result = validate_sequence(valid)
-        assert result.passed
-
-    def test_thol_starting_with_transition(self):
-        """Valid THOL starting with NAV."""
-        valid = [
-            EMISSION,
-            RECEPTION,
-            COHERENCE,
-            DISSONANCE,
-            SELF_ORGANIZATION,
-                TRANSITION,  # Valid start (C1)
-                RECEPTION,  # EN→IL segment
-                COHERENCE,  # IL stabilizer
-                SILENCE,  # Valid end
-            SILENCE
+                DISSONANCE,  # C1 valid end - preserves tension
+            SILENCE  # THOL closure
         ]
         result = validate_sequence(valid)
         assert result.passed
 
     def test_thol_with_mutation_valid(self):
-        """Valid THOL with ZHIR (has prior IL and recent OZ)."""
+        """Valid THOL with ZHIR (C4: has prior IL and recent OZ)."""
         valid = [
             EMISSION,
-            RECEPTION,
-            COHERENCE,
-            DISSONANCE,
-            SELF_ORGANIZATION,
-                EMISSION,  # Valid start
-                RECEPTION,  # EN→IL segment
-                COHERENCE,  # IL stabilizer + base for ZHIR
-                DISSONANCE,  # Recent destabilizer for ZHIR
-                MUTATION,  # Valid: has both IL and OZ (C4)
-                COHERENCE,  # Stabilize after mutation
-                SILENCE,  # Valid end
-            SILENCE
-        ]
-        result = validate_sequence(valid)
-        assert result.passed
-
-    def test_thol_ending_with_dissonance(self):
-        """Valid THOL ending with OZ (valid end operator - intentional closure)."""
-        valid = [
-            EMISSION,
-            RECEPTION,
             COHERENCE,
             DISSONANCE,
             SELF_ORGANIZATION,
                 EMISSION,
-                RECEPTION,
-                COHERENCE,
-                DISSONANCE,  # Valid end operator (C1) - preserves tension
-            SILENCE
+                COHERENCE,  # C4: Prior IL for ZHIR
+                DISSONANCE,  # C4: Recent destabilizer for ZHIR
+                MUTATION,  # Valid: satisfies C4
+                COHERENCE,  # C3: Stabilizer
+                SILENCE,  # C1: Valid end
+            SILENCE  # THOL closure
         ]
         result = validate_sequence(valid)
         assert result.passed
 
-    def test_thol_recursive_closure(self):
-        """Valid THOL ending with nested THOL (fractal closure)."""
+    def test_thol_nested_valid(self):
+        """Nested THOL blocks (operational fractality)."""
         valid = [
             EMISSION,
-            RECEPTION,
             COHERENCE,
             DISSONANCE,
-            SELF_ORGANIZATION,
+            SELF_ORGANIZATION,  # Level 1
                 EMISSION,
-                RECEPTION,
                 COHERENCE,
                 DISSONANCE,
-                SELF_ORGANIZATION,  # Nested THOL
+                SELF_ORGANIZATION,  # Level 2 (nested)
                     EMISSION,
-                    RECEPTION,
                     COHERENCE,
-                    SILENCE,  # Inner subsequence ends validly
-                SILENCE,  # Close nested THOL
-                TRANSITION,  # Outer subsequence ends validly
-            SILENCE  # Close outer THOL
+                    SILENCE,  # Level 2 ends validly
+                SILENCE,  # Close Level 2 THOL
+                TRANSITION,  # Level 1 subsequence ends validly
+            SILENCE  # Close Level 1 THOL
         ]
         result = validate_sequence(valid)
         assert result.passed

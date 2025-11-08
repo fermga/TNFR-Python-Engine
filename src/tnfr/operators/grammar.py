@@ -1242,13 +1242,19 @@ class _SequenceAutomaton:
                 message=f"C1: sequence must end with {cierre} (EXISTENCE & CLOSURE constraint)",
             )
 
-        # C1.3: Reception→Coherence segment (structural foundation)
-        if not (self._found_reception and self._found_coherence):
-            raise SequenceSyntaxError(
-                index=-1,
-                token=None,
-                message=f"C1: missing {RECEPTION}→{COHERENCE} segment (structural foundation required)",
-            )
+        # NOTE: C1.3 Reception→Coherence segment validation removed
+        # This requirement does NOT derive from the 4 physical constraints (C1-C4).
+        # It was a heuristic for "structural foundation" but is not canonical.
+        # Sequences are valid if they satisfy C1 (start/end), C2 (continuity),
+        # C3 (stabilizer), and C4 (threshold physics) - nothing more.
+        #
+        # Removed validation:
+        # if not (self._found_reception and self._found_coherence):
+        #     raise SequenceSyntaxError(
+        #         index=-1,
+        #         token=None,
+        #         message=f"C1: missing {RECEPTION}→{COHERENCE} segment (structural foundation required)",
+        #     )
 
         # ═══════════════════════════════════════════════════════════════════
         # C3: BOUNDEDNESS
