@@ -1,4 +1,41 @@
-"""Canonical grammar and sequence validation for structural operators."""
+"""Canonical grammar and sequence validation for structural operators.
+
+This module enforces TNFR canonical grammar rules (R1-R5) to ensure that
+operator sequences respect the fundamental physics of the nodal equation:
+
+    ∂EPI/∂t = νf · ΔNFR(t)
+
+Grammar Rules (R1-R5)
+---------------------
+R1: Start operators - Must be able to generate or activate EPI
+R2: Stabilizer requirement - Must contain IL (coherence) or THOL (self-organization)
+R3: End operators - Must stabilize reorganization or achieve operational closure
+R4: Bifurcation control - Transformers (ZHIR/THOL) require recent destabilizer
+R5: Frequency transitions - Must respect structural frequency harmonics
+
+Physics-Based Operator Derivation
+----------------------------------
+Unlike earlier versions with arbitrary operator lists, VALID_START_OPERATORS
+and VALID_END_OPERATORS are now derived from TNFR physical principles:
+
+Start operators can:
+- Generate EPI from null state (emission)
+- Activate latent/dormant EPI (recursivity, transition)
+
+End operators can:
+- Stabilize reorganization: ∂EPI/∂t → 0 (silence)
+- Achieve operational closure (transition, recursivity, dissonance)
+
+For detailed physics derivation, see:
+- src/tnfr/config/physics_derivation.py - Derivation functions
+- src/tnfr/config/operator_names.py - Physics rationale
+
+References
+----------
+TNFR.pdf: Section 2.1 (Nodal Equation)
+AGENTS.md: Section 3 (Canonical Invariants)
+"""
+
 
 from __future__ import annotations
 
@@ -445,6 +482,12 @@ class SequenceValidationResult(ValidationOutcome[tuple[str, ...]]):
         self.health_metrics = health_metrics
 
 
+# Canonical operator sets are derived from TNFR physics principles.
+# See src/tnfr/config/physics_derivation.py for detailed derivation logic
+# and src/tnfr/config/operator_names.py for the physics-based rationale.
+#
+# VALID_START_OPERATORS: Operators that can generate EPI from null or activate latent EPI
+# VALID_END_OPERATORS: Operators that stabilize reorganization (∂EPI/∂t → 0) or achieve closure
 _CANONICAL_START = tuple(sorted(VALID_START_OPERATORS))
 _CANONICAL_INTERMEDIATE = tuple(sorted(INTERMEDIATE_OPERATORS))
 _CANONICAL_END = tuple(sorted(VALID_END_OPERATORS))
