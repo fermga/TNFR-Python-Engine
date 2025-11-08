@@ -29,6 +29,11 @@ __all__ = [
     "THEORY_SYSTEM",
     "FULL_DEPLOYMENT",
     "MOD_STABILIZER",
+    # New variants unlocked by high → zero frequency transition
+    "CONTAINED_CRISIS",
+    "RESONANCE_PEAK_HOLD",
+    "MINIMAL_COMPRESSION",
+    "PHASE_LOCK",
 ]
 
 
@@ -191,6 +196,114 @@ FULL_DEPLOYMENT = CanonicalSequence(
 
 
 # ============================================================================
+# New Canonical Variants: Direct high → zero Termination
+# Unlocked by frequency transition update allowing high → zero for SHA
+# ============================================================================
+
+CONTAINED_CRISIS = CanonicalSequence(
+    name="contained_crisis",
+    glyphs=[Glyph.AL, Glyph.EN, Glyph.IL, Glyph.OZ, Glyph.SHA],
+    pattern_type=StructuralPattern.THERAPEUTIC,
+    description=(
+        "Direct crisis containment: dissonance immediately preserved without processing. "
+        "OZ creates ΔNFR ↑ (tension, exploration), SHA immediately contains via νf → 0, "
+        "preserving tension in suspended state for later resolution. This is the canonical "
+        "'contained dissonance' pattern: trauma held safely, conflict postponed, tension "
+        "preserved. Essential for trauma first response, emergency pause, and protective freeze "
+        "when immediate processing would overwhelm the system."
+    ),
+    use_cases=[
+        "Trauma containment (immediate safety response without processing)",
+        "Crisis management (pause before system overwhelm)",
+        "Strategic hold (preserve tension for optimal timing)",
+        "Protective freeze (contain instability temporarily)",
+        "Emergency stop (halt exploration when risk detected)",
+    ],
+    domain="therapeutic",
+    references=(
+        "SHA Grammar Validation Issue: OZ → SHA as valid therapeutic pattern. "
+        "Frequency transition update: high → zero for containment/termination."
+    ),
+)
+
+RESONANCE_PEAK_HOLD = CanonicalSequence(
+    name="resonance_peak_hold",
+    glyphs=[Glyph.AL, Glyph.EN, Glyph.IL, Glyph.RA, Glyph.SHA],
+    pattern_type=StructuralPattern.RESONATE,
+    description=(
+        "Peak state preservation: amplified resonance frozen at maximum coherence. "
+        "RA amplifies network coherence (high C(t), increased νf), SHA suspends dynamics "
+        "(νf → 0) while preserving peak state, creating 'resonance memory'. Used for "
+        "flow state capture, optimal pattern preservation, and network snapshots. The "
+        "amplified coherence is held in latent form for later reactivation without decay."
+    ),
+    use_cases=[
+        "Flow state preservation (hold peak performance)",
+        "Peak coherence memory (capture optimal synchronization)",
+        "Network snapshot (freeze synchronized state)",
+        "Resonance consolidation (lock amplified pattern)",
+        "Optimal moment capture (preserve heightened state)",
+    ],
+    domain="cognitive",
+    references=(
+        "Frequency transition update: high → zero enables direct RA → SHA termination. "
+        "Memory consolidation pattern for peak states."
+    ),
+)
+
+MINIMAL_COMPRESSION = CanonicalSequence(
+    name="minimal_compression",
+    glyphs=[Glyph.AL, Glyph.EN, Glyph.IL, Glyph.NUL, Glyph.SHA],
+    pattern_type=StructuralPattern.COMPRESS,
+    description=(
+        "Compressed latency: structure reduced to essential form and preserved. "
+        "NUL concentrates EPI to core (contraction, high νf), SHA immediately freezes "
+        "minimal form (νf → 0), creating efficient storage. Distills pattern to fundamentals "
+        "then preserves in latent state. Used for information compression, core essence "
+        "extraction, and efficient memory storage of essential structure only."
+    ),
+    use_cases=[
+        "Information compression (minimal viable form)",
+        "Core essence extraction (distill to fundamentals)",
+        "Efficient storage (compact representation)",
+        "Essential pattern hold (preserve only critical structure)",
+        "Minimal memory (reduce before suspend)",
+    ],
+    domain="cognitive",
+    references=(
+        "Frequency transition update: high → zero enables direct NUL → SHA termination. "
+        "Compression-then-freeze pattern for efficient storage."
+    ),
+)
+
+PHASE_LOCK = CanonicalSequence(
+    name="phase_lock",
+    glyphs=[Glyph.AL, Glyph.EN, Glyph.IL, Glyph.OZ, Glyph.ZHIR, Glyph.SHA],
+    pattern_type=StructuralPattern.BIFURCATED,
+    description=(
+        "Phase transition hold: mutation immediately locked without stabilization. "
+        "OZ creates bifurcation threshold (ΔNFR ↑), ZHIR pivots phase θ (high νf), "
+        "SHA immediately locks new phase (νf → 0) before potential regression. Preserves "
+        "transformed state in latent form, preventing return to previous configuration. "
+        "Used for identity consolidation, paradigm shift memory, and transformation lock. "
+        "Simpler than full ZHIR → IL → SHA when immediate preservation desired."
+    ),
+    use_cases=[
+        "Identity shift hold (lock new configuration)",
+        "Phase memory (preserve transformed state)",
+        "Mutation consolidation (hold before integration)",
+        "Paradigm capture (freeze new perspective)",
+        "Transformation lock (prevent regression)",
+    ],
+    domain="cognitive",
+    references=(
+        "Frequency transition update: high → zero enables direct ZHIR → SHA termination. "
+        "Immediate phase lock pattern without intermediate stabilization."
+    ),
+)
+
+
+# ============================================================================
 # MOD_STABILIZER: Reusable Glyphic Macro
 # ============================================================================
 
@@ -231,6 +344,11 @@ CANONICAL_SEQUENCES: Dict[str, CanonicalSequence] = {
         THEORY_SYSTEM,
         FULL_DEPLOYMENT,
         MOD_STABILIZER,
+        # New variants unlocked by high → zero frequency transition
+        CONTAINED_CRISIS,
+        RESONANCE_PEAK_HOLD,
+        MINIMAL_COMPRESSION,
+        PHASE_LOCK,
     ]
 }
 """Registry of all canonical operator sequences.
