@@ -16,7 +16,7 @@ def test_get_factor_returns_float():
 
 
 def test_op_al_uses_factor():
-    node = SimpleNamespace(EPI=1.0, graph={})
+    node = SimpleNamespace(EPI=1.0, graph={"EPI_MAX": 2.0})
     gf = {"AL_boost": "0.2"}
     operators._op_AL(node, gf)
     assert node.EPI == pytest.approx(1.2)
@@ -27,7 +27,7 @@ def test_op_en_uses_mix():
     node = SimpleNamespace(
         EPI=1.0,
         epi_kind="self",
-        graph={},
+        graph={"EPI_MAX": 20.0},
         neighbors=lambda: [neigh],
     )
     gf = {"EN_mix": "0.5"}
@@ -73,6 +73,7 @@ def test_op_oz_ignores_noise_with_non_positive_sigma():
 
 def test_op_um_uses_theta_push(graph_canon):
     G = graph_canon()
+    G.graph["UM_BIDIRECTIONAL"] = False  # Use legacy unidirectional mode for this test
     G.add_node(0, **{"theta": 0.0, "EPI": 0.0, "Si": 0.0})
     G.add_node(1, **{"theta": 1.0, "EPI": 0.0, "Si": 0.0})
     G.add_edge(0, 1)
@@ -87,7 +88,7 @@ def test_op_ra_uses_diff():
     node = SimpleNamespace(
         EPI=0.0,
         epi_kind="",
-        graph={},
+        graph={"EPI_MAX": 20.0},
         neighbors=lambda: [neigh],
     )
     gf = {"RA_epi_diff": "0.5"}
@@ -104,14 +105,14 @@ def test_op_sha_uses_factor():
 
 
 def test_scale_ops_use_factor_val():
-    node = SimpleNamespace(vf=3.0, graph={})
+    node = SimpleNamespace(vf=3.0, EPI=1.0, graph={"EDGE_AWARE_ENABLED": False})
     gf = {"VAL_scale": "2.0"}
     operators.GLYPH_OPERATIONS[Glyph.VAL](node, gf)
     assert node.vf == pytest.approx(6.0)
 
 
 def test_scale_ops_use_factor_nul():
-    node = SimpleNamespace(vf=3.0, graph={})
+    node = SimpleNamespace(vf=3.0, EPI=1.0, graph={"EDGE_AWARE_ENABLED": False})
     gf = {"NUL_scale": "0.5"}
     operators.GLYPH_OPERATIONS[Glyph.NUL](node, gf)
     assert node.vf == pytest.approx(1.5)
