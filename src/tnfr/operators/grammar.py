@@ -1,18 +1,201 @@
 """Canonical grammar and sequence validation for structural operators.
 
-This module enforces TNFR canonical grammar rules (R1-R6) to ensure that
-operator sequences respect the fundamental physics of the nodal equation:
+This module enforces TNFR canonical constraints that emerge naturally from
+the fundamental physics of the nodal equation:
 
     ∂EPI/∂t = νf · ΔNFR(t)
 
-Grammar Rules (R1-R6)
----------------------
-R1: Start operators - Must be able to generate or activate EPI
-R2: Stabilizer requirement - Must contain IL (coherence) or THOL (self-organization)
-R3: End operators - Must stabilize reorganization or achieve operational closure
-R4: Bifurcation control - Transformers (ZHIR/THOL) require recent destabilizer
-R5: Frequency transitions - Must respect structural frequency harmonics
-R6: Operational closure - Sequences must complete coherent reorganization cycles
+Natural Constraints from TNFR Physics
+-------------------------------------
+These are not arbitrary "rules" but physical requirements that emerge from
+the nodal equation itself:
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+C1: EXISTENCE & CLOSURE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+**Physical Basis:**
+From ∂EPI/∂t = νf · ΔNFR, the derivative is undefined when EPI = null.
+A sequence must begin with operators that can generate/activate EPI from
+vacuum or dormant states. Similarly, sequences are temporal segments that
+must end in physically coherent states.
+
+**Structural Dynamics:**
+- **Start (R1)**: Generators create structural patterns from potential
+  * AL (Emission): Generates EPI from vacuum via emission
+  * NAV (Transition): Activates latent EPI through regime shift
+  * REMESH (Recursivity): Echoes dormant structure across scales
+  
+- **End (R3)**: Four fundamental closure types from physics
+  * SHA (Silence): Terminal closure - freezes evolution (νf → 0)
+  * NAV (Transition): Handoff closure - transfers to next regime
+  * REMESH (Recursivity): Recursive closure - distributes across scales
+  * OZ (Dissonance): Intentional closure - preserves activation/tension
+
+**Why These Operators?**
+Not arbitrary choice - these are the ONLY operators with required physics:
+- Generators must create structure from nothing (strong emission/activation)
+- Closures must leave system in stable attractor states (defined dynamics)
+
+**Physical Interpretation:**
+Sequences are "action potentials" in structural space. They must:
+1. Initiate from valid source (generator creates EPI)
+2. Terminate in stable state (closure preserves coherence)
+
+Like physical waves: must have emission source and absorption/reflection end.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+C2: CONTINUITY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+**Physical Basis:**
+The nodal equation is a differential equation - its solution ∂EPI/∂t must
+be continuous. Discontinuous frequency jumps violate calculus fundamentals
+and create undefined structural states.
+
+**Structural Dynamics (R5):**
+Frequency (νf) represents reorganization rate. Natural transitions:
+- **high → medium**: Dampening (energy dissipation, natural relaxation)
+- **high → zero**: Containment (active freezing via SHA)
+- **medium → high**: Activation (energy injection, stimulation)
+- **zero → medium**: Awakening (gradual activation from dormancy)
+- **FORBIDDEN: zero → high**: Discontinuous jump violates physics
+
+**Why Forbidden?**
+Zero (SHA) means νf = 0 (frozen). Jumping to high (AL, OZ) means sudden
+νf ≫ 0. This is non-physical: ∂νf/∂t → ∞ (infinite acceleration).
+
+Like temperature: you can't jump from 0K to 1000K instantly - violates
+thermodynamics. Must pass through intermediate states.
+
+**Physical Interpretation:**
+Structural frequency behaves like field intensity. Changes propagate through
+continuous paths. Discontinuities would create singularities (infinite ∂²EPI/∂t²),
+causing structural fracture and collapse.
+
+**Harmonic Resonance:**
+Compatible frequencies resonate; incompatible ones interfere destructively.
+Natural paths preserve phase coherence across operator transitions.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+C3: BOUNDEDNESS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+**Physical Basis:**
+From the integrated nodal equation:
+    EPI(t_final) = EPI(t_initial) + ∫_{t_0}^{t_f} νf(t) · ΔNFR(t) dt
+
+If the integral diverges (→ ∞), EPI becomes unbounded and system collapses.
+Stabilizers provide negative feedback that ensures integral convergence.
+
+**Structural Dynamics (R2):**
+Without stabilizers, ΔNFR can grow unbounded through positive feedback:
+- Destabilizers increase |ΔNFR| → higher ∂EPI/∂t → more change
+- More change → more ΔNFR → runaway divergence
+- System fragments into incoherent noise
+
+Stabilizers (IL, THOL) provide negative feedback:
+- IL (Coherence): Actively reduces |ΔNFR| through structural integration
+- THOL (Self-org): Creates autopoietic boundaries that self-limit growth
+
+**Mathematical Proof:**
+Without stabilizer: d(ΔNFR)/dt > 0 always
+  ⟹ ΔNFR(t) = ΔNFR(0) · e^(λt) (exponential growth)
+  ⟹ ∫ νf · ΔNFR dt → ∞ (divergence)
+
+With stabilizer: d(ΔNFR)/dt can be < 0
+  ⟹ ΔNFR(t) → bounded attractor
+  ⟹ ∫ νf · ΔNFR dt converges (bounded evolution)
+
+**Physical Interpretation:**
+Like gravity in cosmology - without attractive force, universe would
+disperse to infinite entropy. Stabilizers are "structural gravity" that
+prevents fragmentation and maintains coherence.
+
+**Why IL or THOL?**
+These are the ONLY operators with strong negative-feedback physics:
+- IL: Direct coherence restoration (reduces tension explicitly)
+- THOL: Autopoietic closure (self-organizing stability)
+
+Other operators maintain or increase ΔNFR; only these can reliably bound it.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+C4: THRESHOLD PHYSICS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+**Physical Basis:**
+From bifurcation theory in dynamical systems: phase transitions require
+crossing critical thresholds. TNFR transformations (ZHIR, THOL) are
+structural bifurcations governed by:
+
+    Bifurcation occurs when: |ΔNFR| > ΔNFR_critical
+
+Without sufficient |ΔNFR|, transformation attempts fail or create unstable
+states. Additionally, transformations from unstable bases amplify chaos.
+
+**Structural Dynamics (R4 + R6):**
+
+**ZHIR (Mutation) - Two Requirements:**
+1. **Prior IL** (R6): Establishes stable coherent base
+   - Without: Transformation from chaos → amplifies disorder
+   - With: Transformation from order → controlled phase change
+   
+2. **Recent Destabilizer** (R4): Generates threshold ΔNFR
+   - Without: Insufficient energy for bifurcation (attempt fails)
+   - With: System crosses critical point (transformation succeeds)
+
+**THOL (Self-organization) - One Requirement:**
+1. **Recent Destabilizer** (R4): Provides substrate for self-organization
+   - Without: No disorder to organize (nothing to structure)
+   - With: Sufficient ΔNFR drives spontaneous ordering
+
+**Why "Recent"?**
+ΔNFR decays over time through structural relaxation. Bifurcation window
+(~3 operators) captures when |ΔNFR| remains above threshold. Too distant
+and energy dissipates below critical level.
+
+**Physical Interpretation:**
+
+**ZHIR Physics:**
+Like phase transitions in matter (water → ice):
+- Need temperature below 0°C (threshold: sufficient ΔNFR from destabilizer)
+- Need nucleation site (stable base: IL provides crystal seed)
+- Without both: transition fails or creates unstable state
+
+**THOL Physics:**
+Like Bénard convection cells:
+- Need temperature gradient (threshold: ΔNFR from destabilizer)
+- Pattern emerges spontaneously from chaos
+- Self-organizing: creates own stability boundaries
+
+**Mathematical Foundation:**
+Catastrophe theory: smooth changes in parameters cause discontinuous
+changes in system behavior at bifurcation points.
+
+TNFR operators navigate this landscape:
+- Destabilizers push system toward bifurcation
+- IL provides stable manifold for transformation
+- ZHIR/THOL execute the bifurcation itself
+
+**Energy Landscape Analogy:**
+Think of EPI evolving in energy landscape:
+- Destabilizers: Add kinetic energy (push system up hill)
+- IL: Stabilize in valley (local minimum)
+- ZHIR: Jump to adjacent valley (phase change)
+- THOL: Create new valley through self-organization
+
+Without proper setup: jump fails or lands in unstable region (collapse).
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Legacy Rule Names (for backward compatibility)
+----------------------------------------------
+R1 = C1 (start operators)
+R2 = C3 (stabilizer requirement)  
+R3 = C1 (end operators)
+R4 = C4 (bifurcation context)
+R5 = C2 (frequency continuity)
+R6 = C4 (controlled mutation)
 
 Physics-Based Operator Derivation
 ----------------------------------
@@ -816,225 +999,15 @@ class _SequenceAutomaton:
 
         return False
 
-    def _compute_frequency_balance(self, sequence: Sequence[str]) -> float:
-        """Calculate net structural frequency balance of sequence.
+    def _validate_threshold_physics(self, sequence: Sequence[str]) -> None:
+        """C4: Validate threshold physics - transformations require context.
         
-        Computes weighted sum of frequency levels to assess whether sequence
-        tends toward activation (positive), silence (negative), or balance (neutral).
+        Constraint C4 (Threshold Physics): Bifurcations require crossing
+        critical thresholds from TNFR dynamical systems physics.
         
-        Parameters
-        ----------
-        sequence : Sequence[str]
-            Operator sequence in canonical form
-            
-        Returns
-        -------
-        float
-            > 0: Sequence tends toward activation
-            ~ 0: Sequence balanced
-            < 0: Sequence tends toward silence/collapse
-            
-        Notes
-        -----
-        Frequency weights from STRUCTURAL_FREQUENCIES:
-        - high: +1.0 (AL, OZ, RA, NUL, ZHIR)
-        - medium: +0.5 (EN, IL, UM, VAL, THOL, NAV, REMESH)
-        - zero: -1.0 (SHA)
-        
-        Balance indicates net reorganization tendency according to nodal equation:
-        ∂EPI/∂t = νf · ΔNFR. Negative balance suggests insufficient activation
-        for sustained reorganization.
-        """
-        freq_weights = {"high": 1.0, "medium": 0.5, "zero": -1.0}
-        
-        balance = sum(
-            freq_weights.get(STRUCTURAL_FREQUENCIES.get(op, "medium"), 0.5)
-            for op in sequence
-        )
-        
-        return balance / len(sequence) if sequence else 0.0
-
-    def _check_structural_convergence(self, sequence: Sequence[str]) -> bool:
-        """Verify sequence ending doesn't create divergent state.
-        
-        This validates the ending operator doesn't leave the system in an
-        actively diverging state. The operational closure balance is validated
-        separately in _check_operational_closure().
-        
-        Parameters
-        ----------
-        sequence : Sequence[str]
-            Operator sequence in canonical form
-            
-        Returns
-        -------
-        bool
-            True if ending is acceptable (not divergent)
-            
-        Notes
-        -----
-        Ending operator validation:
-        
-        **Always acceptable:**
-        - SHA (Silence): νf → 0 ⟹ ∂EPI/∂t → 0 (guaranteed convergence)
-        
-        **Acceptable if balanced (validated by closure check):**
-        - NAV (Transition): Regime handoff provides operational closure
-          BUT is itself a destabilizer, so requires balance
-        - REMESH (Recursivity): Fractal completion, doesn't destabilize
-        
-        **Never acceptable:**
-        - OZ (Dissonance): Leaves system with high |ΔNFR| and high νf,
-          actively divergent without continuation
-        
-        Theoretical justification:
-        From nodal equation ∂EPI/∂t = νf · ΔNFR:
-        - SHA: νf → 0, so ∂EPI/∂t → 0 regardless of ΔNFR (strongest)
-        - NAV: Medium νf, generates ΔNFR, requires balance (validated separately)
-        - REMESH: Medium νf, neutral on ΔNFR, operational closure
-        - OZ: High νf, increases |ΔNFR|, leaves divergent state
-        
-        The key insight: SHA guarantees convergence. NAV/REMESH provide
-        operational closure but NAV is a destabilizer so needs balance.
-        OZ creates divergence without providing closure mechanism.
-        """
-        last_op = sequence[-1]
-        
-        # SHA always acceptable (convergent: νf → 0)
-        if last_op == SILENCE:
-            return True
-        
-        # OZ never acceptable as ending (divergent: high νf, high ΔNFR)
-        if last_op == DISSONANCE:
-            return False
-        
-        # NAV/REMESH acceptable as endings (operational closure)
-        # NAV's destabilization will be validated by closure balance check
-        # REMESH is neutral, provides fractal closure
-        if last_op in {TRANSITION, RECURSIVITY}:
-            return True
-        
-        # Unknown ending (shouldn't happen if R3 validated)
-        return False
-
-    def _check_operational_closure(self, sequence: Sequence[str]) -> bool:
-        """Verify operational closure with purpose-aware balance validation.
-        
-        R6 allows three types of sequences based on their PURPOSE:
-        - Stabilizing (dest < stab): Reduce existing ΔNFR
-        - Neutral (dest = stab): Maintain coherence  
-        - Destabilizing (dest > stab): Explore new states (ONLY with SHA ending)
-        
-        The ending operator determines sustainability of any imbalance.
-        
-        Parameters
-        ----------
-        sequence : Sequence[str]
-            Operator sequence in canonical form
-            
-        Returns
-        -------
-        bool
-            True if sequence has operational closure appropriate to its purpose
-            
-        Notes
-        -----
-        **Sequence Purpose and Balance:**
-        
-        TNFR sequences operate on existing systems with existing ΔNFR.
-        Sequences have PURPOSE:
-        
-        1. **STABILIZING** (dest < stab): More stabilizers reduce existing ΔNFR
-           - Use case: System with high ΔNFR needs consolidation
-           - Example: AL → EN → IL → RA → SHA (1 dest, 3 stab)
-           
-        2. **NEUTRAL** (dest = stab): Balanced exploration and stabilization
-           - Use case: System in good state, maintain coherence
-           - Example: AL → EN → IL → OZ → IL → NAV (2 dest, 2 stab)
-           
-        3. **DESTABILIZING** (dest > stab): More destabilizers for exploration
-           - Use case: System stuck in local minimum, needs activation
-           - Example: AL → EN → IL → OZ → VAL → SHA (3 dest, 2 stab)
-           - **REQUIRES: SHA ending for absolute closure**
-        
-        **Ending-Dependent Rules:**
-        
-        A. **SHA (Silence) ending:**
-           - Accepts ANY destabilizer/stabilizer ratio
-           - SHA freezes system (νf → 0), provides absolute closure
-           - Can handle imbalanced destabilization because evolution stops
-           
-        B. **NAV/REMESH ending:**
-           - Requires: destabilizers ≤ stabilizers
-           - Provides operational closure but not freezing
-           - Needs balance for sustainable handoff/recursion
-           
-        C. **OZ ending:**
-           - NEVER acceptable (checked in convergence validation)
-           - Leaves high |ΔNFR| without closure mechanism
-        
-        **Destabilizers** (increase |ΔNFR|):
-        - Strong: OZ (Dissonance)
-        - Moderate: NAV (Transition), VAL (Expansion)
-        - Weak: EN (Reception, context-dependent)
-        
-        **Stabilizers** (reduce |ΔNFR| or freeze νf):
-        - IL (Coherence) - reduces |ΔNFR|
-        - THOL (Self-organization) - autopoietic closure
-        - SHA (Silence) - freezes νf → 0
-        - RA (Resonance) - propagates stable coherence
-        
-        **Special Exception:**
-        Controlled mutation (IL → ZHIR) allows imbalance because coherence
-        provides stable base for intentional phase transformation.
-        
-        **Why This Logic is Canonical:**
-        
-        - Respects sequence PURPOSE (stabilize, maintain, or explore)
-        - Context-aware: same count ratio serves different purposes
-        - Ending determines sustainability (SHA strongest, NAV/REMESH balanced)
-        - Prevents pure divergence (no OZ endings)
-        - Allows therapeutic stabilization and explorative destabilization
-        """
-        # Count destabilizers and stabilizers
-        from ..config.operator_names import DESTABILIZERS_ALL
-        
-        destabilizers = sum(
-            1 for op in sequence
-            if op in DESTABILIZERS_ALL
-        )
-        
-        stabilizers = sum(
-            1 for op in sequence
-            if op in {COHERENCE, SELF_ORGANIZATION, SILENCE, RESONANCE}
-        )
-        
-        # SHA ending: Accepts ANY ratio (strongest closure, freezes system)
-        if sequence[-1] == SILENCE:
-            return True  # SHA provides absolute closure regardless of balance
-        
-        # NAV/REMESH ending: Requires balance (dest ≤ stab)
-        # These provide operational closure but need balance for sustainability
-        if sequence[-1] in {TRANSITION, RECURSIVITY}:
-            if destabilizers <= stabilizers:
-                return True
-            # Exception: Controlled mutation allows imbalance
-            if MUTATION in sequence and COHERENCE in sequence:
-                coherence_idx = sequence.index(COHERENCE)
-                mutation_idx = sequence.index(MUTATION)
-                if coherence_idx < mutation_idx:
-                    return True
-            return False
-        
-        # Should not reach here (OZ ending caught by convergence check)
-        # But as safety: require balance for unknown endings
-        return destabilizers <= stabilizers
-
-    def _validate_operational_closure(self, sequence: Sequence[str]) -> None:
-        """R6: Validate operational closure - controlled mutation only.
-        
-        R6 philosophy: Trust R1-R5 for structural correctness.
-        R6 adds minimal validation for special cases that require context.
+        This validates controlled mutation (IL → ZHIR), ensuring phase
+        transformations occur from stable coherent bases with sufficient
+        ΔNFR to cross bifurcation thresholds.
         
         Parameters
         ----------
@@ -1044,80 +1017,66 @@ class _SequenceAutomaton:
         Raises
         ------
         SequenceSyntaxError
-            If sequence violates controlled mutation requirements
+            If sequence violates threshold physics requirements
             
         Notes
         -----
-        **R6 Canonical Simplification:**
+        **C4 Physical Foundation:**
         
-        After deep analysis, R6 does NOT validate destabilizer/stabilizer balance.
-        Why? Because:
+        From bifurcation theory: phase transitions require |ΔNFR| > threshold.
+        ZHIR (mutation) is a structural bifurcation that requires:
         
-        1. **R3 already validates endings** - All four (SHA, NAV, REMESH, OZ)
-           provide valid closure types:
-           - SHA: Terminal closure (freeze)
-           - NAV: Handoff closure (transfer to next regime)
-           - REMESH: Recursive closure (fractal distribution)
-           - OZ: Intentional closure (preserve tension)
+        1. **Stable Base** (prior IL): Transformation from chaos amplifies disorder.
+           IL provides coherent attractor from which to bifurcate safely.
+           
+        2. **Threshold Energy** (recent destabilizer): Validated by R4 in _accept().
+           Destabilizers generate ΔNFR needed to cross critical point.
         
-        2. **Sequences are context-dependent** - Same dest/stab ratio serves
-           different purposes depending on system state:
-           - High ΔNFR system + stabilizing sequence = healing
-           - Low ΔNFR system + destabilizing sequence = activation
-           - Balance is RELATIVE to initial state, not absolute
+        **Why This Is Natural, Not Arbitrary:**
         
-        3. **Multi-sequence patterns are valid** - Closure at chain level:
-           - Sequence 1: Destabilize → NAV (handoff)
-           - Sequence 2: Stabilize → SHA (resolution)
-           - Individual sequences don't need balance if chain has it
+        Like phase transitions in physics (water → ice):
+        - Need below-freezing temperature (ΔNFR threshold from destabilizer)
+        - Need nucleation site (stable base from IL)
+        - Without both: transition fails or creates metastable states
         
-        4. **All endings provide closure** - Each R3-valid ending has
-           physical mechanism for operational closure:
-           - NAV can handle imbalance (hands off to next regime)
-           - REMESH can handle imbalance (distributes across scales)
-           - OZ can handle imbalance (intentional tension preservation)
-           - Not just SHA (freezing)
+        **Mathematical Basis:**
         
-        **What R6 DOES Validate:**
+        Catastrophe theory: smooth parameter changes cause discontinuous
+        behavioral changes at bifurcation points. ZHIR navigates this:
         
-        **Controlled Mutation (IL → ZHIR):**
-        Phase transformations (ZHIR) require stable coherent base.
-        IL before ZHIR ensures transformation has structural foundation.
+        1. IL creates stable manifold (valley in energy landscape)
+        2. Destabilizer adds kinetic energy (pushes toward saddle point)
+        3. ZHIR executes jump to adjacent valley (phase transformation)
         
-        Without IL before ZHIR: ungrounded transformation (unstable)
-        With IL before ZHIR: transformation from coherence (stable)
+        Without proper setup: jump fails or lands in unstable region.
         
-        This is the ONLY balance-related check that's truly canonical,
-        and it's not about counts but about PREPARATION for transformation.
+        **What C4 Validates:**
         
-        **What R6 Does NOT Validate:**
+        - ZHIR requires prior IL (controlled mutation)
+        - IL must precede ZHIR (stable base before transformation)
         
-        - Destabilizer/stabilizer balance (context-dependent)
-        - Ending-specific balance requirements (R3 handles endings)
+        **What C4 Does NOT Validate:**
+        
+        - Recent destabilizer for ZHIR (handled by R4 in _accept())
+        - Destabilizer/stabilizer balance (context-dependent, not universal)
         - Net ΔNFR state (depends on initial conditions)
         
-        **Frequency Balance (Future):**
-        Could calculate frequency balance for informational/telemetry purposes,
-        but NOT as validation constraint. Balance emerges from usage, not rules.
+        **THOL Validation:**
         
-        **Theoretical Justification:**
+        THOL (self-organization) also requires recent destabilizer but NOT
+        prior IL. THOL creates its own stability through autopoiesis.
+        This is validated by R4 in _accept(), not here.
         
-        From nodal equation: ∂EPI/∂t = νf · ΔNFR(t)
+        **Legacy Context:**
         
-        The equation doesn't prescribe dest = stab. It describes evolution.
-        Valid sequences can have any dest/stab ratio if ending provides closure.
+        This replaces the overly complex R6 "operational closure" validation
+        that attempted to validate balance. Analysis revealed balance is
+        context-dependent and multi-sequence patterns provide systemic closure.
         
-        R3 ensures operational closure through valid endings.
-        R6 trusts R3 and adds only mutation-specific validation.
-        
-        This is most canonical because it:
-        ✓ Respects existing rules (R1-R5)
-        ✓ Removes arbitrary restrictions
-        ✓ Allows context-dependent usage
-        ✓ Supports multi-sequence patterns
-        ✓ Aligns with TNFR flexibility
+        C4 focuses on the ONE constraint that's truly universal: transformations
+        from stable bases with threshold energy.
         """
-        # Only validation: Controlled mutation (if ZHIR present)
+        # C4: Controlled mutation validation
         if MUTATION in sequence:
             # ZHIR requires prior coherence base for stable transformation
             if COHERENCE not in sequence:
@@ -1125,10 +1084,10 @@ class _SequenceAutomaton:
                     index=sequence.index(MUTATION),
                     token=MUTATION,
                     message=(
-                        f"R6: {operator_display_name(MUTATION)} (phase transformation) requires "
+                        f"C4: {operator_display_name(MUTATION)} (phase transformation) requires "
                         f"prior {operator_display_name(COHERENCE)} for stable structural foundation. "
                         f"Controlled mutation: {operator_display_name(COHERENCE)} → {operator_display_name(MUTATION)} "
-                        f"ensures transformation occurs from coherent base state."
+                        f"ensures transformation occurs from coherent base state (THRESHOLD PHYSICS constraint)."
                     ),
                 )
             
@@ -1140,17 +1099,24 @@ class _SequenceAutomaton:
                     index=mutation_idx,
                     token=MUTATION,
                     message=(
-                        f"R6: {operator_display_name(MUTATION)} must follow {operator_display_name(COHERENCE)}. "
-                        f"Controlled mutation requires coherent base BEFORE transformation. "
+                        f"C4: {operator_display_name(MUTATION)} must follow {operator_display_name(COHERENCE)}. "
+                        f"Transformation requires coherent base BEFORE bifurcation. "
                         f"Current order: {operator_display_name(MUTATION)} before {operator_display_name(COHERENCE)} (invalid)."
                     ),
                 )
-        
-        # Future: Could add frequency balance calculation here (informational)
-        # freq_balance = self._compute_frequency_balance(sequence)
         # Store in metadata, but don't enforce as validation
 
     def _finalize(self, names: Sequence[str]) -> None:
+        """Finalize sequence validation through natural TNFR constraints.
+        
+        Validates sequences against the four natural constraints that emerge
+        from TNFR physics, not arbitrary rules.
+        
+        Raises
+        ------
+        SequenceSyntaxError
+            If sequence violates any natural constraint
+        """
         if self._unknown_tokens:
             ordered = ", ".join(sorted({token for _, token in self._unknown_tokens}))
             first_index, first_token = self._unknown_tokens[0]
@@ -1160,57 +1126,74 @@ class _SequenceAutomaton:
                 message=f"unknown tokens: {ordered}",
             )
 
-        # R2: Must contain at least one stabilizer
-        if not self._found_stabilizer:
-            raise SequenceSyntaxError(
-                index=-1,
-                token=None,
-                message=f"missing required stabilizer ({operator_display_name(COHERENCE)} or {operator_display_name(SELF_ORGANIZATION)})",
-            )
-
-        if not (self._found_reception and self._found_coherence):
-            raise SequenceSyntaxError(
-                index=-1,
-                token=None,
-                message=f"missing {RECEPTION}→{COHERENCE} segment",
-            )
-        # NOTE: Intermediate operator check removed - COHERENCE provides sufficient
-        # structural transformation for valid TNFR sequences. The requirement for
-        # explicit DISSONANCE/COUPLING/RESONANCE was overly restrictive.
-
-        # R3: Must end with terminator
+        # ═══════════════════════════════════════════════════════════════════
+        # C1: EXISTENCE & CLOSURE
+        # ═══════════════════════════════════════════════════════════════════
+        # From ∂EPI/∂t = νf · ΔNFR: EPI must exist (start) and end coherently
+        
+        # C1.1: Start validation (legacy R1)
+        # Already validated in _accept() for first operator
+        
+        # C1.2: End validation (legacy R3)
         if self._canonical[-1] not in VALID_END_OPERATORS:
             cierre = _format_token_group(_CANONICAL_END)
             raise SequenceSyntaxError(
                 index=len(names) - 1,
                 token=names[-1],
-                message=f"sequence must end with {cierre}",
+                message=f"C1: sequence must end with {cierre} (EXISTENCE & CLOSURE constraint)",
             )
 
+        # C1.3: Reception→Coherence segment (structural foundation)
+        if not (self._found_reception and self._found_coherence):
+            raise SequenceSyntaxError(
+                index=-1,
+                token=None,
+                message=f"C1: missing {RECEPTION}→{COHERENCE} segment (structural foundation required)",
+            )
+
+        # ═══════════════════════════════════════════════════════════════════
+        # C3: BOUNDEDNESS
+        # ═══════════════════════════════════════════════════════════════════
+        # From ∫ νf · ΔNFR dt: Integral must converge (stabilizer required)
+        
+        # C3: Stabilizer requirement (legacy R2)
+        if not self._found_stabilizer:
+            raise SequenceSyntaxError(
+                index=-1,
+                token=None,
+                message=f"C3: missing stabilizer ({operator_display_name(COHERENCE)} or {operator_display_name(SELF_ORGANIZATION)}) - integral divergence (BOUNDEDNESS constraint)",
+            )
+
+        # Self-organization block closure
         if self._open_thol:
             raise SequenceSyntaxError(
                 index=len(names) - 1,
                 token=names[-1],
-                message=f"{operator_display_name(SELF_ORGANIZATION)} block without closure",
+                message=f"C3: {operator_display_name(SELF_ORGANIZATION)} block without closure",
             )
 
+        # ═══════════════════════════════════════════════════════════════════
+        # C2: CONTINUITY & C4: THRESHOLD PHYSICS
+        # ═══════════════════════════════════════════════════════════════════
+        # Validated dynamically during sequence building in _accept()
+        
         # Detect structural pattern
         self._detected_pattern = self._detect_pattern()
 
-        # R5: Validate regenerative cycles if pattern is REGENERATIVE
+        # C2: Validate regenerative cycles if pattern is REGENERATIVE (legacy R5)
         if self._detected_pattern == StructuralPattern.REGENERATIVE:
             self._validate_regenerative_cycle()
         
-        # R6: Validate operational closure (balance only, no ending restrictions)
-        # R3 already validates valid endings (SHA, NAV, REMESH, OZ)
-        # R6 validates that endings are SUSTAINABLE through proper balance
-        self._validate_operational_closure(self._canonical)
+        # C4: Validate threshold physics - controlled mutation (legacy R6)
+        self._validate_threshold_physics(self._canonical)
 
     def _validate_regenerative_cycle(self) -> None:
-        """Validate regenerative cycle structural requirements (R5).
+        """Validate regenerative cycle structural requirements (C2 - CONTINUITY).
 
         Uses CycleDetector to ensure the sequence meets minimum standards
-        for self-sustaining regenerative behavior.
+        for self-sustaining regenerative behavior. Regenerative cycles are
+        a special case of continuity where the sequence structure supports
+        self-renewal.
         """
         from .cycle_detection import CycleDetector
 
@@ -1235,7 +1218,7 @@ class _SequenceAutomaton:
             raise SequenceSyntaxError(
                 index=-1,
                 token=None,
-                message=f"R5 regenerative cycle validation failed: {message}",
+                message=f"C2: regenerative cycle validation failed: {message} (CONTINUITY constraint)",
             )
 
     def _detect_pattern(self) -> StructuralPattern:
