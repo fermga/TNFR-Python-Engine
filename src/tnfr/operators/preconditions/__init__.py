@@ -18,13 +18,13 @@ if TYPE_CHECKING:
     import logging
 
 from ...alias import get_attr
-from ...constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
 from ...config.operator_names import (
-    DESTABILIZERS_STRONG,
-    DESTABILIZERS_MODERATE,
-    DESTABILIZERS_WEAK,
     BIFURCATION_WINDOWS,
+    DESTABILIZERS_MODERATE,
+    DESTABILIZERS_STRONG,
+    DESTABILIZERS_WEAK,
 )
+from ...constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
 
 __all__ = [
     "OperatorPreconditionError",
@@ -145,7 +145,7 @@ def validate_coherence(G: "TNFRGraph", node: "NodeId") -> None:
     -----
     For backward compatibility, this function maintains the same signature
     as the legacy validate_coherence but now provides enhanced validation.
-    
+
     See Also
     --------
     tnfr.operators.preconditions.coherence.validate_coherence_strict : Full implementation
@@ -184,16 +184,16 @@ def diagnose_coherence_readiness(G: "TNFRGraph", node: "NodeId") -> dict:
 
 def validate_dissonance(G: "TNFRGraph", node: "NodeId") -> None:
     """OZ - Dissonance requires comprehensive structural preconditions.
-    
+
     This function delegates to the strict validation implementation in
     dissonance.py module, which provides canonical precondition checks:
-    
+
     1. Minimum coherence base (EPI >= threshold)
     2. ΔNFR not critically high (avoid overload)
     3. Sufficient νf for reorganization response
     4. No overload pattern (sobrecarga disonante)
     5. Network connectivity (warning)
-    
+
     Also detects bifurcation readiness when ∂²EPI/∂t² > τ, enabling
     alternative structural paths (ZHIR, NUL, IL, THOL).
 
@@ -208,48 +208,51 @@ def validate_dissonance(G: "TNFRGraph", node: "NodeId") -> None:
     ------
     OperatorPreconditionError
         If critical preconditions are not met (EPI, ΔNFR, νf, overload)
-        
+
     Notes
     -----
     For backward compatibility, this function maintains the same signature
     as the legacy validate_dissonance but now provides enhanced validation.
-    
+
     When bifurcation threshold is exceeded, sets node['_bifurcation_ready'] = True
     and logs the event for telemetry.
-    
+
     See Also
     --------
     tnfr.operators.preconditions.dissonance.validate_dissonance_strict : Full implementation
     """
     import logging
-    
+
     logger = logging.getLogger(__name__)
-    
+
     # First, apply strict canonical preconditions
     # This validates EPI, ΔNFR, νf, overload, and connectivity
     from .dissonance import validate_dissonance_strict
-    
+
     try:
         validate_dissonance_strict(G, node)
     except ValueError as e:
         # Convert ValueError to OperatorPreconditionError for backward compatibility
-        raise OperatorPreconditionError("Dissonance", str(e).replace("OZ precondition failed: ", ""))
-    
+        raise OperatorPreconditionError(
+            "Dissonance", str(e).replace("OZ precondition failed: ", "")
+        )
+
     # Check bifurcation readiness using existing THOL infrastructure
     # Reuse _compute_epi_acceleration from SelfOrganization
     from ..definitions import SelfOrganization
-    
+
     thol_instance = SelfOrganization()
     d2_epi = thol_instance._compute_epi_acceleration(G, node)
-    
+
     # Get bifurcation threshold
     tau = float(G.graph.get("BIFURCATION_THRESHOLD_TAU", 0.5))
-    
+
     # Store d²EPI for telemetry (using existing ALIAS_D2EPI)
-    from ...constants.aliases import ALIAS_D2EPI
     from ...alias import set_attr
+    from ...constants.aliases import ALIAS_D2EPI
+
     set_attr(G.nodes[node], ALIAS_D2EPI, d2_epi)
-    
+
     # Check if bifurcation threshold exceeded
     if d2_epi > tau:
         # Mark node as bifurcation-ready
@@ -265,7 +268,26 @@ def validate_dissonance(G: "TNFRGraph", node: "NodeId") -> None:
 
 
 def validate_coupling(G: "TNFRGraph", node: "NodeId") -> None:
-    """UM - Coupling requires node to have potential coupling targets.
+    """UM - Coupling requires active nodes with compatible phases.
+
+    Validates comprehensive canonical preconditions for the UM (Coupling) operator
+    according to TNFR theory:
+
+    1. **Graph connectivity**: At least one other node exists for coupling
+    2. **Active EPI**: Node has sufficient structural form (EPI > threshold)
+    3. **Structural frequency**: Node has capacity for synchronization (νf > threshold)
+    4. **Phase compatibility** (optional): At least one neighbor within phase range
+
+    Configuration Parameters
+    ------------------------
+    UM_MIN_EPI : float, default 0.05
+        Minimum EPI magnitude required for coupling
+    UM_MIN_VF : float, default 0.01
+        Minimum structural frequency required for coupling
+    UM_STRICT_PHASE_CHECK : bool, default False
+        Enable strict phase compatibility checking with existing neighbors
+    UM_MAX_PHASE_DIFF : float, default π/2
+        Maximum phase difference for compatible coupling (radians)
 
     Parameters
     ----------
@@ -277,14 +299,86 @@ def validate_coupling(G: "TNFRGraph", node: "NodeId") -> None:
     Raises
     ------
     OperatorPreconditionError
-        If node is isolated with no potential coupling targets
+        If node state is unsuitable for coupling:
+        - Graph has no other nodes
+        - EPI below threshold
+        - Structural frequency below threshold
+        - No phase-compatible neighbors (when strict checking enabled)
+
+    Notes
+    -----
+    Phase compatibility check is soft by default (UM_STRICT_PHASE_CHECK=False)
+    since UM can create new links via UM_FUNCTIONAL_LINKS mechanism. Enable
+    strict checking when coupling should only work with existing neighbors.
+
+    Examples
+    --------
+    >>> from tnfr.structural import create_nfr
+    >>> from tnfr.operators.preconditions import validate_coupling
+    >>>
+    >>> # Valid node for coupling
+    >>> G, node = create_nfr("active", epi=0.15, vf=0.50)
+    >>> validate_coupling(G, node)  # Passes
+    >>>
+    >>> # Invalid: EPI too low
+    >>> G, node = create_nfr("inactive", epi=0.02, vf=0.50)
+    >>> validate_coupling(G, node)  # Raises OperatorPreconditionError
+
+    See Also
+    --------
+    Coupling : UM operator that uses this validation
     """
-    # Coupling can work with existing neighbors or create new links
-    # Only fail if graph has no other nodes at all
+    import math
+
+    # Basic graph check - at least one other node required
     if G.number_of_nodes() <= 1:
         raise OperatorPreconditionError(
             "Coupling", "Graph has no other nodes to couple with"
         )
+
+    # Node must be active (non-zero EPI)
+    epi = _get_node_attr(G, node, ALIAS_EPI)
+    min_epi = float(G.graph.get("UM_MIN_EPI", 0.05))
+    if abs(epi) < min_epi:
+        raise OperatorPreconditionError(
+            "Coupling",
+            f"Node EPI too low for coupling (|EPI|={abs(epi):.3f} < {min_epi:.3f})",
+        )
+
+    # Node must have structural frequency capacity
+    vf = _get_node_attr(G, node, ALIAS_VF)
+    min_vf = float(G.graph.get("UM_MIN_VF", 0.01))
+    if vf < min_vf:
+        raise OperatorPreconditionError(
+            "Coupling", f"Structural frequency too low (νf={vf:.3f} < {min_vf:.3f})"
+        )
+
+    # Optional: Check if at least some neighbors are phase-compatible
+    # This is a soft check - we don't fail if no neighbors exist yet
+    # since UM can create new links with UM_FUNCTIONAL_LINKS
+    strict_phase = bool(G.graph.get("UM_STRICT_PHASE_CHECK", False))
+    if strict_phase:
+        neighbors = list(G.neighbors(node))
+        if neighbors:
+            from ...utils.numeric import angle_diff
+
+            theta_i = _get_node_attr(G, node, ALIAS_THETA)
+            max_phase_diff = float(G.graph.get("UM_MAX_PHASE_DIFF", math.pi / 2))
+
+            # Check if at least one neighbor is phase-compatible
+            has_compatible = False
+            for neighbor in neighbors:
+                theta_j = _get_node_attr(G, neighbor, ALIAS_THETA)
+                phase_diff = abs(angle_diff(theta_i, theta_j))
+                if phase_diff <= max_phase_diff:
+                    has_compatible = True
+                    break
+
+            if not has_compatible:
+                raise OperatorPreconditionError(
+                    "Coupling",
+                    f"No phase-compatible neighbors (all |Δθ| > {max_phase_diff:.3f})",
+                )
 
 
 def validate_resonance(G: "TNFRGraph", node: "NodeId") -> None:
@@ -386,7 +480,7 @@ def validate_self_organization(G: "TNFRGraph", node: "NodeId") -> None:
 
     T'HOL implements structural metabolism and bifurcation. Preconditions ensure
     sufficient structure and reorganization pressure for self-organization.
-    
+
     Also detects and records the destabilizer type that enabled this self-organization
     for telemetry and structural tracing purposes.
 
@@ -405,7 +499,7 @@ def validate_self_organization(G: "TNFRGraph", node: "NodeId") -> None:
     Warnings
     --------
     Warns if node is isolated - bifurcation may not propagate through network
-    
+
     Notes
     -----
     This function implements R4 Extended telemetry by analyzing the glyph_history
@@ -440,7 +534,7 @@ def validate_self_organization(G: "TNFRGraph", node: "NodeId") -> None:
             f"Node {node} is isolated - bifurcation may not propagate through network",
             stacklevel=3,
         )
-    
+
     # R4 Extended: Detect and record destabilizer type for telemetry
     _record_destabilizer_context(G, node, logger)
 
@@ -449,11 +543,11 @@ def _record_destabilizer_context(
     G: "TNFRGraph", node: "NodeId", logger: "logging.Logger"
 ) -> None:
     """Detect and record which destabilizer enabled the current mutation.
-    
+
     This implements R4 Extended telemetry by analyzing the glyph_history
     to determine which destabilizer type (strong/moderate/weak) is within
     its appropriate bifurcation window.
-    
+
     Parameters
     ----------
     G : TNFRGraph
@@ -462,7 +556,7 @@ def _record_destabilizer_context(
         Node being mutated
     logger : logging.Logger
         Logger for telemetry output
-        
+
     Notes
     -----
     The destabilizer context is stored in node['_mutation_context'] for
@@ -470,63 +564,69 @@ def _record_destabilizer_context(
     of bifurcation pathways without breaking TNFR structural invariants.
     """
     # Get glyph history from node
-    history = G.nodes[node].get('glyph_history', [])
+    history = G.nodes[node].get("glyph_history", [])
     if not history:
         # No history available, mutation enabled by external factors
-        G.nodes[node]['_mutation_context'] = {
-            'destabilizer_type': None,
-            'destabilizer_operator': None,
-            'destabilizer_distance': None,
-            'recent_history': [],
+        G.nodes[node]["_mutation_context"] = {
+            "destabilizer_type": None,
+            "destabilizer_operator": None,
+            "destabilizer_distance": None,
+            "recent_history": [],
         }
         return
-    
+
     # Import glyph_function_name to convert glyphs to operator names
     from ..grammar import glyph_function_name
-    
+
     # Get recent history (up to max window size)
-    max_window = BIFURCATION_WINDOWS['strong']
+    max_window = BIFURCATION_WINDOWS["strong"]
     recent = list(history)[-max_window:] if len(history) > max_window else list(history)
     recent_names = [glyph_function_name(g) for g in recent]
-    
+
     # Search backwards for destabilizers, checking window constraints
     destabilizer_found = None
     destabilizer_type = None
     destabilizer_distance = None
-    
+
     for i, op_name in enumerate(reversed(recent_names)):
         distance = i + 1  # Distance from mutation (1 = immediate predecessor)
-        
+
         # Check strong destabilizers (window = 4)
-        if op_name in DESTABILIZERS_STRONG and distance <= BIFURCATION_WINDOWS['strong']:
+        if (
+            op_name in DESTABILIZERS_STRONG
+            and distance <= BIFURCATION_WINDOWS["strong"]
+        ):
             destabilizer_found = op_name
-            destabilizer_type = 'strong'
+            destabilizer_type = "strong"
             destabilizer_distance = distance
             break
-        
+
         # Check moderate destabilizers (window = 2)
-        if op_name in DESTABILIZERS_MODERATE and distance <= BIFURCATION_WINDOWS['moderate']:
+        if (
+            op_name in DESTABILIZERS_MODERATE
+            and distance <= BIFURCATION_WINDOWS["moderate"]
+        ):
             destabilizer_found = op_name
-            destabilizer_type = 'moderate'
+            destabilizer_type = "moderate"
             destabilizer_distance = distance
             break
-        
+
         # Check weak destabilizers (window = 1, immediate only)
         if op_name in DESTABILIZERS_WEAK and distance == 1:
             destabilizer_found = op_name
-            destabilizer_type = 'weak'
+            destabilizer_type = "weak"
             destabilizer_distance = distance
             break
-    
+
     # Store context in node metadata for telemetry
     context = {
-        'destabilizer_type': destabilizer_type,
-        'destabilizer_operator': destabilizer_found,
-        'destabilizer_distance': destabilizer_distance,
-        'recent_history': recent_names,
+        "destabilizer_type": destabilizer_type,
+        "destabilizer_operator": destabilizer_found,
+        "destabilizer_distance": destabilizer_distance,
+        "recent_history": recent_names,
     }
-    G.nodes[node]['_mutation_context'] = context
-    
+    G.nodes[node]["_mutation_context"] = context
+
     # Log telemetry for structural tracing
     if destabilizer_found:
         logger.info(
@@ -542,7 +642,7 @@ def _record_destabilizer_context(
 
 def validate_mutation(G: "TNFRGraph", node: "NodeId") -> None:
     """ZHIR - Mutation requires node to be in valid structural state.
-    
+
     Also detects and records the destabilizer type that enabled this mutation
     for telemetry and structural tracing purposes.
 
@@ -557,7 +657,7 @@ def validate_mutation(G: "TNFRGraph", node: "NodeId") -> None:
     ------
     OperatorPreconditionError
         If node state is unsuitable for mutation
-        
+
     Notes
     -----
     This function implements R4 Extended telemetry by analyzing the glyph_history
@@ -565,9 +665,9 @@ def validate_mutation(G: "TNFRGraph", node: "NodeId") -> None:
     The destabilizer context is stored in node metadata for structural tracing.
     """
     import logging
-    
+
     logger = logging.getLogger(__name__)
-    
+
     # Mutation is a phase change, require minimum vf for meaningful transition
     vf = _get_node_attr(G, node, ALIAS_VF)
     min_vf = float(G.graph.get("ZHIR_MIN_VF", 0.05))
@@ -576,7 +676,7 @@ def validate_mutation(G: "TNFRGraph", node: "NodeId") -> None:
             "Mutation",
             f"Structural frequency too low for mutation (νf={vf:.3f} < {min_vf:.3f})",
         )
-    
+
     # R4 Extended: Detect and record destabilizer type for telemetry
     # This provides structural traceability for bifurcation events
     _record_destabilizer_context(G, node, logger)
