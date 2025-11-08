@@ -131,9 +131,9 @@ class Operator:
 
         # Optional nodal equation validation (∂EPI/∂t = νf · ΔNFR(t))
         if validate_equation and state_before is not None:
-            from .nodal_equation import validate_nodal_equation
             from ..alias import get_attr
             from ..constants.aliases import ALIAS_EPI
+            from .nodal_equation import validate_nodal_equation
 
             dt = float(kw.get("dt", 1.0))  # Time step, default 1.0 for discrete ops
             strict = G.graph.get("NODAL_EQUATION_STRICT", False)
@@ -183,7 +183,7 @@ class Operator:
             Attribute value
         """
         from ..alias import get_attr
-        from ..constants.aliases import ALIAS_EPI, ALIAS_VF, ALIAS_DNFR, ALIAS_THETA
+        from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
 
         alias_map = {
             "epi": ALIAS_EPI,
@@ -201,7 +201,7 @@ class Operator:
         Returns dict with relevant state for metrics computation.
         """
         from ..alias import get_attr
-        from ..constants.aliases import ALIAS_EPI, ALIAS_VF, ALIAS_DNFR, ALIAS_THETA
+        from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
 
         return {
             "epi": float(get_attr(G.nodes[node], ALIAS_EPI, 0.0)),
@@ -219,7 +219,7 @@ class Operator:
         Base implementation returns basic state change.
         """
         from ..alias import get_attr
-        from ..constants.aliases import ALIAS_EPI, ALIAS_VF, ALIAS_DNFR, ALIAS_THETA
+        from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
 
         # Safely access glyph value
         glyph_value = None
@@ -744,14 +744,14 @@ class Coherence(Operator):
     >>> from tnfr.operators.definitions import Emission, Reception, Coherence, Coupling, Resonance, Transition
     >>> from tnfr.alias import get_attr
     >>> from tnfr.constants.aliases import ALIAS_EPI
-    >>> 
+    >>>
     >>> # Stabilizing heart rhythm during breath-focus training
     >>> G_heart, heart = create_nfr("cardiac_rhythm", epi=0.40, vf=1.10)
-    >>> 
+    >>>
     >>> # Valid sequence: Emission → Reception → Coherence → Coupling → Resonance → Transition
-    >>> run_sequence(G_heart, heart, 
+    >>> run_sequence(G_heart, heart,
     ...     [Emission(), Reception(), Coherence(), Coupling(), Resonance(), Transition()])
-    >>> 
+    >>>
     >>> # Result: HRV pattern stabilizes, ΔNFR reduces
     >>> epi_final = float(get_attr(G_heart.nodes[heart], ALIAS_EPI, 0.0))
     >>> # Patient enters sustained coherent state
@@ -760,11 +760,11 @@ class Coherence(Operator):
 
     >>> # Student consolidating newly understood concept
     >>> G_study, mind = create_nfr("student_understanding", epi=0.30, vf=1.05)
-    >>> 
+    >>>
     >>> # Receive teaching and consolidate understanding
     >>> run_sequence(G_study, mind,
     ...     [Emission(), Reception(), Coherence(), Coupling(), Resonance(), Transition()])
-    >>> 
+    >>>
     >>> # Result: Knowledge structure stabilizes, confusion reduces
     >>> # Concept becomes part of stable mental model
 
@@ -772,11 +772,11 @@ class Coherence(Operator):
 
     >>> # Collaborative team stabilizing after creative session
     >>> G_team, group = create_nfr("team_consensus", epi=0.55, vf=1.00)
-    >>> 
+    >>>
     >>> # Build consensus through coupling and coherence
     >>> run_sequence(G_team, group,
     ...     [Emission(), Reception(), Coupling(), Coherence(), Resonance(), Transition()])
-    >>> 
+    >>>
     >>> # Result: Group coherence increases, conflicts resolve
     >>> # Team operates with unified purpose
 
@@ -816,15 +816,15 @@ class Coherence(Operator):
         structural traceability.
 
         **C(t) Coherence Tracking:**
-        
+
         Captures global and local coherence before and after Coherence application:
         - C_global: Network-wide coherence using C(t) = 1 - (σ_ΔNFR / ΔNFR_max)
         - C_local: Node neighborhood coherence with configurable radius
-        
+
         Both metrics are stored in G.graph["IL_coherence_tracking"] for analysis.
 
         **Phase Locking:**
-        
+
         Aligns node phase θ with network neighborhood phase:
         - θ_node → θ_node + α * (θ_network - θ_node)
         - Uses circular mean for proper phase wrap-around handling
@@ -834,11 +834,16 @@ class Coherence(Operator):
         the graph before calling this operator. Default is 0.7 (30% reduction).
         """
         # Import here to avoid circular import
-        from ..metrics.coherence import compute_global_coherence, compute_local_coherence
-        
+        from ..metrics.coherence import (
+            compute_global_coherence,
+            compute_local_coherence,
+        )
+
         # Capture C(t) before Coherence application
         C_global_before = compute_global_coherence(G)
-        C_local_before = compute_local_coherence(G, node, radius=kw.get("coherence_radius", 1))
+        C_local_before = compute_local_coherence(
+            G, node, radius=kw.get("coherence_radius", 1)
+        )
 
         # Capture ΔNFR before Coherence application for telemetry
         dnfr_before = float(get_attr(G.nodes[node], ALIAS_DNFR, 0.0))
@@ -852,7 +857,9 @@ class Coherence(Operator):
 
         # Capture C(t) after IL application
         C_global_after = compute_global_coherence(G)
-        C_local_after = compute_local_coherence(G, node, radius=kw.get("coherence_radius", 1))
+        C_local_after = compute_local_coherence(
+            G, node, radius=kw.get("coherence_radius", 1)
+        )
 
         # Capture ΔNFR after IL application for telemetry
         dnfr_after = float(get_attr(G.nodes[node], ALIAS_DNFR, 0.0))
@@ -860,16 +867,18 @@ class Coherence(Operator):
         # Store C(t) tracking in graph telemetry
         if "IL_coherence_tracking" not in G.graph:
             G.graph["IL_coherence_tracking"] = []
-        
-        G.graph["IL_coherence_tracking"].append({
-            "node": node,
-            "C_global_before": C_global_before,
-            "C_global_after": C_global_after,
-            "C_global_delta": C_global_after - C_global_before,
-            "C_local_before": C_local_before,
-            "C_local_after": C_local_after,
-            "C_local_delta": C_local_after - C_local_before,
-        })
+
+        G.graph["IL_coherence_tracking"].append(
+            {
+                "node": node,
+                "C_global_before": C_global_before,
+                "C_global_after": C_global_after,
+                "C_global_delta": C_global_after - C_global_before,
+                "C_local_before": C_local_before,
+                "C_local_after": C_local_after,
+                "C_local_delta": C_local_after - C_local_before,
+            }
+        )
 
         # Log ΔNFR reduction in graph metadata for telemetry
         if "IL_dnfr_reductions" not in G.graph:
@@ -905,18 +914,15 @@ class Coherence(Operator):
         return coherence_metrics(G, node, state_before["dnfr"])
 
     def _apply_phase_locking(
-        self,
-        G: TNFRGraph,
-        node: Any,
-        locking_coefficient: float = 0.3
+        self, G: TNFRGraph, node: Any, locking_coefficient: float = 0.3
     ) -> None:
         """Align node phase θ with network neighborhood phase.
-        
+
         Implements canonical IL phase locking:
         θ_node → θ_node + α * (θ_network - θ_node)
-        
+
         where α ∈ [0.1, 0.5] is the phase locking coefficient (default: 0.3).
-        
+
         Parameters
         ----------
         G : TNFRGraph
@@ -925,141 +931,142 @@ class Coherence(Operator):
             Target node
         locking_coefficient : float
             Phase alignment strength α, default 0.3
-            
+
         Notes
         -----
         **Canonical Specification:**
-        
+
         IL operator synchronizes node phase with its network neighborhood:
-        
+
         1. Compute network phase θ_network as circular mean of neighbor phases
         2. Compute phase difference Δθ = θ_network - θ_node (shortest arc)
         3. Apply locking: θ_new = θ_node + α * Δθ
         4. Normalize θ_new to [0, 2π]
-        
+
         **Circular Statistics:**
-        
+
         Phase averaging uses complex exponentials to handle wrap-around at 2π:
         - Convert phases to e^(iθ)
         - Compute mean of complex phasors
         - Extract angle as network phase
-        
+
         This ensures correct averaging (e.g., 0.1 and 6.2 radians average to ~0).
-        
+
         **Telemetry:**
-        
+
         Stores detailed phase locking information in G.graph["IL_phase_locking"]:
         - theta_before, theta_after: Node phase before/after locking
         - theta_network: Network neighborhood mean phase
         - delta_theta: Phase difference (shortest arc)
         - alignment_achieved: Residual misalignment after locking
-        
+
         **Special Cases:**
-        
+
         - No neighbors: Phase unchanged (no network to align with)
         - Single neighbor: Aligns toward that neighbor's phase
         - Isolated node: No-op (returns immediately)
-        
+
         See Also
         --------
         metrics.phase_coherence.compute_phase_alignment : Measure alignment quality
         """
         from ..alias import set_attr
         from ..constants.aliases import ALIAS_THETA
-        
+
         # Get current node phase
         theta_node = float(get_attr(G.nodes[node], ALIAS_THETA, 0.0))
-        
+
         # Get neighbor phases
         neighbors = list(G.neighbors(node))
         if not neighbors:
             return  # No neighbors, no phase locking
-        
+
         theta_neighbors = [
-            float(get_attr(G.nodes[n], ALIAS_THETA, 0.0))
-            for n in neighbors
+            float(get_attr(G.nodes[n], ALIAS_THETA, 0.0)) for n in neighbors
         ]
-        
+
         # Compute mean phase using circular mean (angles wrap around 2π)
         # Convert to complex exponentials for circular averaging
         np = get_numpy()
-        
+
         if np is not None:
             # NumPy vectorized computation
             theta_array = np.array(theta_neighbors)
             complex_phases = np.exp(1j * theta_array)
             mean_complex = np.mean(complex_phases)
             theta_network = np.angle(mean_complex)  # Returns value in [-π, π]
-            
+
             # Ensure positive phase [0, 2π]
             if theta_network < 0:
                 theta_network = float(theta_network + 2 * np.pi)
             else:
                 theta_network = float(theta_network)
-            
+
             # Compute phase difference (considering wrap-around)
             delta_theta = theta_network - theta_node
-            
+
             # Normalize to [-π, π] for shortest angular distance
             if delta_theta > np.pi:
                 delta_theta -= 2 * np.pi
             elif delta_theta < -np.pi:
                 delta_theta += 2 * np.pi
             delta_theta = float(delta_theta)
-            
+
             # Apply phase locking: move θ toward network mean
             theta_new = theta_node + locking_coefficient * delta_theta
-            
+
             # Normalize to [0, 2π]
             theta_new = float(theta_new % (2 * np.pi))
             import cmath
             import math
-            
+
             # Convert phases to complex exponentials
             complex_phases = [cmath.exp(1j * theta) for theta in theta_neighbors]
-            
+
             # Compute mean complex phasor
             mean_real = sum(z.real for z in complex_phases) / len(complex_phases)
             mean_imag = sum(z.imag for z in complex_phases) / len(complex_phases)
             mean_complex = complex(mean_real, mean_imag)
-            
+
             # Extract angle (in [-π, π])
             theta_network = cmath.phase(mean_complex)
-            
+
             # Ensure positive phase [0, 2π]
             if theta_network < 0:
                 theta_network += 2 * math.pi
-            
+
             # Compute phase difference (considering wrap-around)
             delta_theta = theta_network - theta_node
-            
+
             # Normalize to [-π, π] for shortest angular distance
             if delta_theta > math.pi:
                 delta_theta -= 2 * math.pi
             elif delta_theta < -math.pi:
                 delta_theta += 2 * math.pi
-            
+
             # Apply phase locking: move θ toward network mean
             theta_new = theta_node + locking_coefficient * delta_theta
-            
+
             # Normalize to [0, 2π]
             theta_new = theta_new % (2 * math.pi)
-        
+
         # Update node phase
         set_attr(G.nodes[node], ALIAS_THETA, theta_new)
-        
+
         # Store phase locking telemetry
         if "IL_phase_locking" not in G.graph:
             G.graph["IL_phase_locking"] = []
-        
-        G.graph["IL_phase_locking"].append({
-            "node": node,
-            "theta_before": theta_node,
-            "theta_after": theta_new,
-            "theta_network": theta_network,
-            "delta_theta": delta_theta,
-            "alignment_achieved": abs(delta_theta) * (1 - locking_coefficient),
-        })
+
+        G.graph["IL_phase_locking"].append(
+            {
+                "node": node,
+                "theta_before": theta_node,
+                "theta_after": theta_new,
+                "theta_network": theta_network,
+                "delta_theta": delta_theta,
+                "alignment_achieved": abs(delta_theta) * (1 - locking_coefficient),
+            }
+        )
 
 
 @register_operator
@@ -1215,7 +1222,7 @@ class Dissonance(Operator):
 
     def __call__(self, G: TNFRGraph, node: Any, **kw: Any) -> None:
         """Apply OZ with optional network propagation.
-        
+
         Parameters
         ----------
         G : TNFRGraph
@@ -1230,35 +1237,39 @@ class Dissonance(Operator):
         """
         # Capture state before for propagation computation
         dnfr_before = float(get_attr(G.nodes[node], ALIAS_DNFR, 0.0))
-        
+
         # Apply standard operator logic via parent
         super().__call__(G, node, **kw)
-        
+
         # Compute dissonance increase
         dnfr_after = float(get_attr(G.nodes[node], ALIAS_DNFR, 0.0))
         dissonance_magnitude = abs(dnfr_after - dnfr_before)
-        
+
         # Propagate to network if enabled
-        propagate = kw.get("propagate_to_network", G.graph.get("OZ_ENABLE_PROPAGATION", True))
+        propagate = kw.get(
+            "propagate_to_network", G.graph.get("OZ_ENABLE_PROPAGATION", True)
+        )
         if propagate and dissonance_magnitude > 0:
             from ..dynamics.propagation import propagate_dissonance
-            
+
             affected = propagate_dissonance(
-                G, 
-                node, 
+                G,
+                node,
                 dissonance_magnitude,
                 propagation_mode=kw.get("propagation_mode", "phase_weighted"),
             )
-            
+
             # Store propagation telemetry
             if "_oz_propagation_events" not in G.graph:
                 G.graph["_oz_propagation_events"] = []
-            G.graph["_oz_propagation_events"].append({
-                "source": node,
-                "magnitude": dissonance_magnitude,
-                "affected_nodes": list(affected),
-                "affected_count": len(affected),
-            })
+            G.graph["_oz_propagation_events"].append(
+                {
+                    "source": node,
+                    "magnitude": dissonance_magnitude,
+                    "affected_nodes": list(affected),
+                    "affected_count": len(affected),
+                }
+            )
 
     def _validate_preconditions(self, G: TNFRGraph, node: Any) -> None:
         """Validate OZ-specific preconditions."""
@@ -1330,7 +1341,7 @@ class Coupling(Operator):
     Preconditions
     -------------
     **Canonical Requirements (TNFR Theory)**:
-    
+
     1. **Graph connectivity**: At least one other node exists for potential coupling
     2. **Active EPI**: Node must have sufficient structural form (EPI > threshold)
        - Default threshold: 0.05 (configurable via ``UM_MIN_EPI``)
@@ -1342,16 +1353,16 @@ class Coupling(Operator):
        - Enabled via ``UM_STRICT_PHASE_CHECK`` flag (default: False)
        - Maximum phase difference: π/2 radians (configurable via ``UM_MAX_PHASE_DIFF``)
        - Soft check by default since UM can create new functional links
-    
+
     **Configuration Parameters**:
-    
+
     - ``UM_MIN_EPI`` (float, default 0.05): Minimum EPI magnitude for coupling
     - ``UM_MIN_VF`` (float, default 0.01): Minimum structural frequency for coupling
     - ``UM_STRICT_PHASE_CHECK`` (bool, default False): Enable phase compatibility checking
     - ``UM_MAX_PHASE_DIFF`` (float, default π/2): Maximum phase difference for compatibility
-    
+
     **Validation Control**:
-    
+
     Set ``VALIDATE_OPERATOR_PRECONDITIONS=True`` in graph metadata to enable validation.
     Validation is backward-compatible and disabled by default to preserve existing behavior.
 
@@ -1998,7 +2009,7 @@ class SelfOrganization(Operator):
     def _compute_epi_acceleration(self, G: TNFRGraph, node: Any) -> float:
         """Calculate ∂²EPI/∂t² from node's EPI history.
 
-        Uses finite difference approximation: 
+        Uses finite difference approximation:
         d²EPI/dt² ≈ (EPI_t - 2*EPI_{t-1} + EPI_{t-2}) / (Δt)²
         For unit time steps: d²EPI/dt² ≈ EPI_t - 2*EPI_{t-1} + EPI_{t-2}
 
