@@ -15,6 +15,11 @@ def nfr_with_validation():
     """Create an NFR node with precondition validation enabled."""
     G, node = create_nfr("test", epi=0.3, vf=1.0)
     G.graph['VALIDATE_OPERATOR_PRECONDITIONS'] = True
+    # Enable isolated THOL for telemetry tests
+    G.graph['THOL_ALLOW_ISOLATED'] = True
+    G.graph['THOL_METABOLIC_ENABLED'] = False
+    # Reduce history requirement for telemetry tests
+    G.graph['THOL_MIN_HISTORY_LENGTH'] = 0
     return G, node
 
 
