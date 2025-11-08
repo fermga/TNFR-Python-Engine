@@ -39,7 +39,7 @@ if TYPE_CHECKING:
     from ..types import NodeId, TNFRGraph
 
 from ..alias import get_attr
-from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
+from ..constants.aliases import ALIAS_EPI, ALIAS_THETA
 from ..utils import get_numpy
 
 __all__ = [
