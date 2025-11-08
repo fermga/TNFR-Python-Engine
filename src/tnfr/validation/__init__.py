@@ -72,13 +72,39 @@ class Validator(Protocol[SubjectT]):
         """Produce a concise textual explanation for ``outcome``."""
 
 
-from .compatibility import (  # noqa: F401
-    CANON_COMPAT,
-    CANON_FALLBACK,
-    CompatibilityLevel,
-    GRADUATED_COMPATIBILITY,
-    get_compatibility_level,
-)
+# NOTE: Compatibility module deprecated - grammar emerges from TNFR structural dynamics
+# Legacy exports kept for backward compatibility but will be removed in future versions
+try:
+    from .compatibility import (  # noqa: F401
+        CANON_COMPAT,
+        CANON_FALLBACK,
+        CompatibilityLevel,
+        GRADUATED_COMPATIBILITY,
+        get_compatibility_level,
+    )
+    _COMPAT_AVAILABLE = True
+except ImportError:
+    # Compatibility module removed - provide stubs for backward compatibility
+    _COMPAT_AVAILABLE = False
+    CANON_COMPAT = {}
+    CANON_FALLBACK = {}
+    class CompatibilityLevel:
+        EXCELLENT = "excellent"
+        GOOD = "good"
+        CAUTION = "caution"
+        AVOID = "avoid"
+    GRADUATED_COMPATIBILITY = {}
+    def get_compatibility_level(prev: str, next_op: str) -> str:
+        """Deprecated: Use frequency transition validation instead."""
+        import warnings
+        warnings.warn(
+            "get_compatibility_level is deprecated. "
+            "Grammar rules now emerge naturally from TNFR structural dynamics. "
+            "Use validate_frequency_transition from tnfr.operators.grammar instead.",
+            DeprecationWarning,
+            stacklevel=2
+        )
+        return "good"
 from ..operators import grammar as _grammar
 from ..types import Glyph
 from .graph import GRAPH_VALIDATORS, run_validators  # noqa: F401

@@ -79,6 +79,9 @@ def test_emission_preserves_origin_timestamp():
     assert original_timestamp is not None
 
     # Re-emission should NOT change origin
+    # Coherent reactivation from silence: SHA → IL → AL (zero → medium → high)
+    Coherence()(G, node)  # Stabilize from silence (zero → medium)
+    
     run_sequence(G, node, [Emission(), Reception(), Coherence(), Silence()])
 
     assert (
@@ -117,11 +120,13 @@ def test_emission_reactivation_increments_counter():
     run_sequence(G, node, [Emission(), Reception(), Coherence(), Silence()])
     assert G.nodes[node]["_structural_lineage"]["activation_count"] == 1
 
-    # Second activation
+    # Second activation - coherent reactivation: SHA → IL → AL
+    Coherence()(G, node)  # Stabilize from silence
     run_sequence(G, node, [Emission(), Reception(), Coherence(), Silence()])
     assert G.nodes[node]["_structural_lineage"]["activation_count"] == 2
 
-    # Third activation
+    # Third activation - coherent reactivation: SHA → IL → AL
+    Coherence()(G, node)  # Stabilize from silence
     run_sequence(G, node, [Emission(), Reception(), Coherence(), Silence()])
     assert G.nodes[node]["_structural_lineage"]["activation_count"] == 3
 
@@ -252,7 +257,8 @@ def test_emission_reactivation_preserves_all_original_metadata():
     original_origin = G.nodes[node]["_emission_origin"]
     original_activated = G.nodes[node]["_emission_activated"]
 
-    # Re-activate
+    # Re-activate - coherent reactivation: SHA → IL → AL
+    Coherence()(G, node)  # Stabilize from silence
     run_sequence(G, node, [Emission(), Reception(), Coherence(), Silence()])
 
     # Verify preservation

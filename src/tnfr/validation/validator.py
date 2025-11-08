@@ -748,7 +748,7 @@ class TNFRValidator:
         graph: TNFRGraph,
         min_severity: InvariantSeverity = InvariantSeverity.ERROR,
     ) -> None:
-        """Valida y lanza excepción si encuentra violaciones de severidad mínima.
+        """Validates and raises exception if violations of minimum severity are found.
 
         Parameters
         ----------
@@ -764,7 +764,7 @@ class TNFRValidator:
         """
         violations = self.validate_graph(graph)
 
-        # Filtrar violaciones por severidad mínima
+        # Filter violations by minimum severity
         severity_order = {
             InvariantSeverity.INFO: -1,
             InvariantSeverity.WARNING: 0,
@@ -1051,7 +1051,7 @@ class TNFRValidator:
 
 
 class TNFRValidationError(Exception):
-    """Excepción lanzada cuando se detectan violaciones de invariantes TNFR."""
+    """Exception raised when TNFR invariant violations are detected."""
 
     def __init__(self, violations: list[InvariantViolation]) -> None:
         self.violations = violations

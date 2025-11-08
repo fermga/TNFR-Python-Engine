@@ -142,7 +142,7 @@ def reception_metrics(G: TNFRGraph, node: NodeId, epi_before: float) -> dict[str
 
     Extended metrics for Reception (EN) operator that track emission sources,
     phase compatibility, and integration efficiency as specified in TNFR.pdf
-    §2.2.1 (EN - Recepción estructural).
+    §2.2.1 (EN - Structural reception).
 
     Parameters
     ----------
@@ -835,7 +835,10 @@ def resonance_metrics(
 def silence_metrics(
     G: TNFRGraph, node: NodeId, vf_before: float, epi_before: float
 ) -> dict[str, Any]:
-    """SHA - Silence metrics: νf reduction, EPI preservation.
+    """SHA - Silence metrics: νf reduction, EPI preservation, and latency tracking.
+
+    Collects silence-specific metrics that reflect canonical SHA effects including
+    latency state management as specified in TNFR.pdf §2.3.10.
 
     Parameters
     ----------
@@ -851,12 +854,16 @@ def silence_metrics(
     Returns
     -------
     dict
-        Silence-specific metrics including frequency reduction
+        Silence-specific metrics including:
+        - Core metrics: vf_reduction, epi_preservation
+        - Latency state: latent flag, silence_duration
+        - Integrity metrics: preservation_integrity, epi_variance
     """
     vf_after = _get_node_attr(G, node, ALIAS_VF)
     epi_after = _get_node_attr(G, node, ALIAS_EPI)
 
-    return {
+    # Basic SHA metrics
+    metrics = {
         "operator": "Silence",
         "glyph": "SHA",
         "vf_reduction": vf_before - vf_after,
@@ -865,6 +872,29 @@ def silence_metrics(
         "epi_final": epi_after,
         "is_silent": vf_after < 0.1,  # Configurable threshold
     }
+
+    # Latency state tracking metrics
+    metrics["latent"] = G.nodes[node].get("latent", False)
+    metrics["silence_duration"] = G.nodes[node].get("silence_duration", 0.0)
+
+    # Preservation integrity: measures EPI variance during silence
+    preserved_epi = G.nodes[node].get("preserved_epi")
+    if preserved_epi is not None:
+        preservation_integrity = abs(epi_after - preserved_epi) / max(
+            abs(preserved_epi), 1e-10
+        )
+        metrics["preservation_integrity"] = preservation_integrity
+    else:
+        metrics["preservation_integrity"] = 0.0
+
+    # EPI variance during silence (relative to preserved value)
+    if preserved_epi is not None:
+        epi_variance = abs(epi_after - preserved_epi)
+        metrics["epi_variance_during_silence"] = epi_variance
+    else:
+        metrics["epi_variance_during_silence"] = abs(epi_after - epi_before)
+
+    return metrics
 
 
 def expansion_metrics(

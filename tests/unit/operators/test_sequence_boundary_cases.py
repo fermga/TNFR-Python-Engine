@@ -252,6 +252,10 @@ class TestGrammarSequencesWithHighEPI:
         
         # Run three complete sequences
         for run in range(3):
+            # Add reactivation from silence for subsequent runs
+            if run > 0:
+                apply_glyph_with_grammar(G, [node], COHERENCE)  # SHA → IL
+            
             sequence = [EMISSION, EXPANSION, COHERENCE, SILENCE]
             for op_name in sequence:
                 apply_glyph_with_grammar(G, [node], op_name)
