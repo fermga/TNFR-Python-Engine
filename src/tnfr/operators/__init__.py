@@ -67,7 +67,12 @@ GlyphOperation = Callable[["NodeProtocol", GlyphFactors], None]
 
 from .grammar import apply_glyph_with_grammar  # noqa: E402
 from .health_analyzer import SequenceHealthAnalyzer, SequenceHealthMetrics  # noqa: E402
-from .hamiltonian import InternalHamiltonian, build_H_coherence, build_H_frequency, build_H_coupling  # noqa: E402
+from .hamiltonian import (
+    InternalHamiltonian,
+    build_H_coherence,
+    build_H_frequency,
+    build_H_coupling,
+)  # noqa: E402
 
 __all__ = [
     "JitterCache",
@@ -601,7 +606,7 @@ def _op_UM(node: NodeProtocol, gf: GlyphFactors) -> None:  # UM — Coupling
     node : NodeProtocol
         Node whose phase and frequency are being synchronised.
     gf : GlyphFactors
-        Provides ``UM_theta_push``, ``UM_vf_sync``, ``UM_dnfr_reduction`` and 
+        Provides ``UM_theta_push``, ``UM_vf_sync``, ``UM_dnfr_reduction`` and
         optional selection parameters.
 
     Notes
@@ -672,7 +677,7 @@ def _op_UM(node: NodeProtocol, gf: GlyphFactors) -> None:  # UM — Coupling
             else:
                 # Wrap neighbor IDs to access theta attribute
                 neighbors = [NodeNX.from_graph(node.G, nid) for nid in neighbor_ids]
-                
+
                 # Collect all phases (node + neighbors)
                 phases = [th_i] + [n.theta for n in neighbors]
                 target_phase = compute_consensus_phase(phases)
@@ -701,20 +706,20 @@ def _op_UM(node: NodeProtocol, gf: GlyphFactors) -> None:  # UM — Coupling
             vf_neighbors = [
                 get_attr(node.G.nodes[nid], ALIAS_VF, 0.0) for nid in neighbor_ids
             ]
-            
+
             if vf_neighbors:
                 vf_mean = sum(vf_neighbors) / len(vf_neighbors)
-                
+
                 # Gradual convergence towards mean (similar to phase sync)
                 node.vf = vf_i + k_vf * (vf_mean - vf_i)
 
     # ΔNFR reduction by mutual stabilization
     # Coupling produces a stabilizing effect that reduces reorganization pressure
     stabilize_dnfr = bool(node.graph.get("UM_STABILIZE_DNFR", True))
-    
+
     if stabilize_dnfr:
         k_dnfr = get_factor(gf, "UM_dnfr_reduction", 0.15)
-        
+
         # Calculate compatibility with neighbors based on phase alignment
         neighbor_ids = list(node.neighbors())
         if neighbor_ids:
@@ -722,7 +727,7 @@ def _op_UM(node: NodeProtocol, gf: GlyphFactors) -> None:  # UM — Coupling
             NodeNX = get_nodenx()
             if NodeNX is not None and hasattr(node, "G"):
                 neighbors = [NodeNX.from_graph(node.G, nid) for nid in neighbor_ids]
-                
+
                 # Compute phase alignments with each neighbor
                 phase_alignments = []
                 for neighbor in neighbors:
@@ -730,10 +735,10 @@ def _op_UM(node: NodeProtocol, gf: GlyphFactors) -> None:  # UM — Coupling
                     # alignment: 1.0 (perfectly aligned) to 0.0 (opposite phases)
                     alignment = 1.0 - dphi / math.pi
                     phase_alignments.append(alignment)
-                
+
                 # Mean alignment represents coupling strength
                 mean_alignment = sum(phase_alignments) / len(phase_alignments)
-                
+
                 # Reduce ΔNFR proportionally to coupling strength
                 # reduction_factor < 1.0 when well-coupled (high alignment)
                 reduction_factor = 1.0 - (k_dnfr * mean_alignment)
@@ -809,7 +814,7 @@ def _op_RA(node: NodeProtocol, gf: GlyphFactors) -> None:  # RA — Resonance
     global C(t) is measured before/after RA application to quantify network-level
     coherence increase.
 
-    **Identity Preservation (Canonical)**: EPI structure (kind and sign) are preserved 
+    **Identity Preservation (Canonical)**: EPI structure (kind and sign) are preserved
     during propagation to ensure structural identity is maintained as required by theory.
 
     Examples
@@ -836,36 +841,39 @@ def _op_RA(node: NodeProtocol, gf: GlyphFactors) -> None:  # RA — Resonance
     # Get configuration factors
     diff = get_factor(gf, "RA_epi_diff", 0.15)
     vf_boost = get_factor(gf, "RA_vf_amplification", 0.05)
-    phase_coupling = get_factor(gf, "RA_phase_coupling", 0.10)  # Canonical phase strengthening
-    
+    phase_coupling = get_factor(
+        gf, "RA_phase_coupling", 0.10
+    )  # Canonical phase strengthening
+
     # Track network C(t) before RA if enabled (optional telemetry)
     track_coherence = bool(node.graph.get("TRACK_NETWORK_COHERENCE", False))
     c_before = None
     if track_coherence and hasattr(node, "G"):
         try:
             from ..metrics.coherence import compute_network_coherence
+
             c_before = compute_network_coherence(node.G)
             if "_ra_c_tracking" not in node.graph:
                 node.graph["_ra_c_tracking"] = []
         except ImportError:
             pass  # Metrics module not available
-    
+
     # Capture state before for metrics
     vf_before = node.vf
     epi_before = node.EPI
     kind_before = node.epi_kind
     theta_before = node.theta if hasattr(node, "theta") else None
-    
+
     # EPI diffusion (existing behavior)
     neigh, epi_bar = get_neighbor_epi(node)
     epi_bar_result, kind_result = _mix_epi_with_neighbors(node, diff, Glyph.RA)
-    
+
     # CANONICAL EFFECT 1: νf amplification through resonance
     # This is always active - it's a fundamental property of resonance per TNFR theory
     # Only amplify if neighbors have coherence to propagate
     if abs(epi_bar_result) > 1e-9 and len(neigh) > 0:
-        node.vf *= (1.0 + vf_boost)
-    
+        node.vf *= 1.0 + vf_boost
+
     # CANONICAL EFFECT 2: Phase alignment strengthening
     # Per theory: "Phase alignment: Strengthens across propagation path"
     # Uses existing phase locking logic from IL operator (avoid duplication)
@@ -877,7 +885,7 @@ def _op_RA(node: NodeProtocol, gf: GlyphFactors) -> None:  # RA — Resonance
             from ..constants.aliases import ALIAS_THETA
             import cmath
             import math
-            
+
             # Get neighbor phases using existing utilities
             neighbor_phases = []
             for n in neigh:
@@ -886,7 +894,7 @@ def _op_RA(node: NodeProtocol, gf: GlyphFactors) -> None:  # RA — Resonance
                     neighbor_phases.append(theta_n)
                 except (KeyError, ValueError, TypeError):
                     continue
-            
+
             if neighbor_phases:
                 # Circular mean using the same method as in phase_coherence.py
                 complex_phases = [cmath.exp(1j * theta) for theta in neighbor_phases]
@@ -894,34 +902,35 @@ def _op_RA(node: NodeProtocol, gf: GlyphFactors) -> None:  # RA — Resonance
                 mean_imag = sum(z.imag for z in complex_phases) / len(complex_phases)
                 mean_complex = complex(mean_real, mean_imag)
                 mean_phase = cmath.phase(mean_complex)
-                
+
                 # Ensure positive phase [0, 2π]
                 if mean_phase < 0:
                     mean_phase += 2 * math.pi
-                
+
                 # Calculate phase difference (shortest arc)
                 delta_theta = mean_phase - node.theta
                 if delta_theta > math.pi:
                     delta_theta -= 2 * math.pi
                 elif delta_theta < -math.pi:
                     delta_theta += 2 * math.pi
-                
+
                 # Apply phase strengthening (move toward network mean)
                 # Same approach as IL operator phase locking
                 node.theta = node.theta + phase_coupling * delta_theta
-                
+
                 # Normalize to [0, 2π]
                 node.theta = node.theta % (2 * math.pi)
                 phase_strengthened = True
         except (AttributeError, ImportError):
             pass  # Phase alignment not possible in this context
-    
+
     # Track identity preservation (canonical validation)
     identity_preserved = (
-        (kind_result == kind_before or kind_result == Glyph.RA.value)
-        and (float(epi_before) * float(node.EPI) >= 0)  # Sign preserved
-    )
-    
+        kind_result == kind_before or kind_result == Glyph.RA.value
+    ) and (
+        float(epi_before) * float(node.EPI) >= 0
+    )  # Sign preserved
+
     # Collect propagation metrics if enabled (optional telemetry)
     collect_metrics = bool(node.graph.get("COLLECT_RA_METRICS", False))
     if collect_metrics:
@@ -942,18 +951,21 @@ def _op_RA(node: NodeProtocol, gf: GlyphFactors) -> None:  # RA — Resonance
         if "ra_metrics" not in node.graph:
             node.graph["ra_metrics"] = []
         node.graph["ra_metrics"].append(metrics)
-    
+
     # Track network C(t) after RA if enabled (optional telemetry)
     if track_coherence and c_before is not None and hasattr(node, "G"):
         try:
             from ..metrics.coherence import compute_network_coherence
+
             c_after = compute_network_coherence(node.G)
-            node.graph["_ra_c_tracking"].append({
-                "node": getattr(node, "n", None),
-                "c_before": c_before,
-                "c_after": c_after,
-                "c_delta": c_after - c_before,
-            })
+            node.graph["_ra_c_tracking"].append(
+                {
+                    "node": getattr(node, "n", None),
+                    "c_before": c_before,
+                    "c_after": c_after,
+                    "c_delta": c_after - c_before,
+                }
+            )
         except ImportError:
             pass
 
@@ -966,7 +978,7 @@ def _op_SHA(node: NodeProtocol, gf: GlyphFactors) -> None:  # SHA — Silence
     suspension of structural evolution.
 
     **TNFR Canonical Behavior:**
-    
+
     According to the nodal equation ∂EPI/∂t = νf · ΔNFR(t), reducing νf → νf_min ≈ 0
     causes structural evolution to freeze (∂EPI/∂t → 0) regardless of ΔNFR magnitude.
     This implements **structural silence** - a state where the node's form (EPI) is
@@ -1005,11 +1017,11 @@ def _set_epi_with_boundary_check(
     node: NodeProtocol, new_epi: float, *, apply_clip: bool = True
 ) -> None:
     """Canonical EPI assignment with structural boundary preservation.
-    
+
     This is the unified function all operators should use when modifying EPI
     to ensure structural boundaries are respected. Provides single point of
     enforcement for TNFR canonical invariant: EPI ∈ [EPI_MIN, EPI_MAX].
-    
+
     Parameters
     ----------
     node : NodeProtocol
@@ -1020,16 +1032,16 @@ def _set_epi_with_boundary_check(
         If True, applies structural_clip to enforce boundaries.
         If False, assigns value directly (use only when boundaries
         are known to be satisfied, e.g., from edge-aware pre-computation).
-        
+
     Notes
     -----
     TNFR Principle: This function embodies the canonical invariant that EPI
     must remain within structural boundaries. All operator EPI modifications
     should flow through this function to maintain coherence.
-    
+
     The function uses the graph-level configuration for EPI_MIN, EPI_MAX,
     and CLIP_MODE to ensure consistent boundary enforcement across all operators.
-    
+
     Examples
     --------
     >>> class MockNode:
@@ -1042,24 +1054,24 @@ def _set_epi_with_boundary_check(
     1.0
     """
     from ..dynamics.structural_clip import structural_clip
-    
+
     if not apply_clip:
         node.EPI = new_epi
         return
-    
+
     # Ensure new_epi is float (in case it's a BEPI or other structure)
     new_epi_float = float(new_epi)
-    
+
     # Get boundary configuration from graph (with defensive fallback)
-    graph_attrs = getattr(node, 'graph', {})
+    graph_attrs = getattr(node, "graph", {})
     epi_min = float(graph_attrs.get("EPI_MIN", DEFAULTS.get("EPI_MIN", -1.0)))
     epi_max = float(graph_attrs.get("EPI_MAX", DEFAULTS.get("EPI_MAX", 1.0)))
     clip_mode_str = str(graph_attrs.get("CLIP_MODE", "hard"))
-    
+
     # Validate clip mode
     if clip_mode_str not in ("hard", "soft"):
         clip_mode_str = "hard"
-    
+
     # Apply structural boundary preservation
     clipped_epi = structural_clip(
         new_epi_float,
@@ -1068,7 +1080,7 @@ def _set_epi_with_boundary_check(
         mode=clip_mode_str,  # type: ignore[arg-type]
         record_stats=False,
     )
-    
+
     node.EPI = clipped_epi
 
 
@@ -1076,11 +1088,11 @@ def _compute_val_edge_aware_scale(
     epi_current: float, scale: float, epi_max: float, epsilon: float
 ) -> float:
     """Compute edge-aware scale factor for VAL (Expansion) operator.
-    
+
     Adapts the expansion scale to prevent EPI overflow beyond EPI_MAX.
     When EPI is near the upper boundary, the effective scale is reduced
     to ensure EPI * scale_eff <= EPI_MAX.
-    
+
     Parameters
     ----------
     epi_current : float
@@ -1091,24 +1103,24 @@ def _compute_val_edge_aware_scale(
         Upper EPI boundary (typically 1.0)
     epsilon : float
         Small value to prevent division by zero (e.g., 1e-12)
-        
+
     Returns
     -------
     float
         Effective scale factor, adapted to respect EPI_MAX boundary
-        
+
     Notes
     -----
     TNFR Principle: This implements "resonance to the edge" - expansion
     scales adaptively to explore volume while respecting structural envelope.
     The adaptation is a dynamic compatibility check, not a fixed constant.
-    
+
     Examples
     --------
     >>> # Normal case: EPI far from boundary
     >>> _compute_val_edge_aware_scale(0.5, 1.05, 1.0, 1e-12)
     1.05
-    
+
     >>> # Edge case: EPI near boundary, scale adapts
     >>> scale = _compute_val_edge_aware_scale(0.96, 1.05, 1.0, 1e-12)
     >>> abs(scale - 1.0417) < 0.001  # Roughly 1.0/0.96
@@ -1118,10 +1130,10 @@ def _compute_val_edge_aware_scale(
     if abs_epi < epsilon:
         # EPI near zero, full scale can be applied safely
         return scale
-    
+
     # Compute maximum safe scale that keeps EPI within bounds
     max_safe_scale = epi_max / abs_epi
-    
+
     # Return the minimum of desired scale and safe scale
     return min(scale, max_safe_scale)
 
@@ -1130,9 +1142,9 @@ def _compute_nul_edge_aware_scale(
     epi_current: float, scale: float, epi_min: float, epsilon: float
 ) -> float:
     """Compute edge-aware scale factor for NUL (Contraction) operator.
-    
+
     Adapts the contraction scale to prevent EPI underflow below EPI_MIN.
-    
+
     Parameters
     ----------
     epi_current : float
@@ -1143,28 +1155,28 @@ def _compute_nul_edge_aware_scale(
         Lower EPI boundary (typically -1.0)
     epsilon : float
         Small value to prevent division by zero (e.g., 1e-12)
-        
+
     Returns
     -------
     float
         Effective scale factor, adapted to respect EPI_MIN boundary
-        
+
     Notes
     -----
     TNFR Principle: Contraction concentrates structure toward core while
     maintaining coherence.
-    
+
     For typical NUL_scale < 1.0, contraction naturally moves EPI toward zero
     (the center), which is always safe regardless of whether EPI is positive
     or negative. Edge-awareness is only needed if scale could somehow push
     EPI beyond boundaries.
-    
+
     In practice, with NUL_scale = 0.85 < 1.0:
     - Positive EPI contracts toward zero: safe
     - Negative EPI contracts toward zero: safe
-    
+
     Edge-awareness is provided for completeness and future extensibility.
-    
+
     Examples
     --------
     >>> # Normal contraction (always safe with scale < 1.0)
@@ -1196,43 +1208,59 @@ def _make_scale_op(glyph: Glyph) -> GlyphOperation:
         key = "VAL_scale" if glyph is Glyph.VAL else "NUL_scale"
         default = _SCALE_FACTORS[glyph]
         factor = get_factor(gf, key, default)
-        
+
         # Always scale νf (existing behavior)
         _op_scale(node, factor)
-        
+
         # Edge-aware EPI scaling (new behavior) if enabled
-        edge_aware_enabled = bool(node.graph.get("EDGE_AWARE_ENABLED", DEFAULTS.get("EDGE_AWARE_ENABLED", True)))
-        
+        edge_aware_enabled = bool(
+            node.graph.get(
+                "EDGE_AWARE_ENABLED", DEFAULTS.get("EDGE_AWARE_ENABLED", True)
+            )
+        )
+
         if edge_aware_enabled:
-            epsilon = float(node.graph.get("EDGE_AWARE_EPSILON", DEFAULTS.get("EDGE_AWARE_EPSILON", 1e-12)))
+            epsilon = float(
+                node.graph.get(
+                    "EDGE_AWARE_EPSILON", DEFAULTS.get("EDGE_AWARE_EPSILON", 1e-12)
+                )
+            )
             epi_min = float(node.graph.get("EPI_MIN", DEFAULTS.get("EPI_MIN", -1.0)))
             epi_max = float(node.graph.get("EPI_MAX", DEFAULTS.get("EPI_MAX", 1.0)))
-            
+
             epi_current = node.EPI
-            
+
             # Compute edge-aware scale factor
             if glyph is Glyph.VAL:
-                scale_eff = _compute_val_edge_aware_scale(epi_current, factor, epi_max, epsilon)
+                scale_eff = _compute_val_edge_aware_scale(
+                    epi_current, factor, epi_max, epsilon
+                )
             else:  # Glyph.NUL
-                scale_eff = _compute_nul_edge_aware_scale(epi_current, factor, epi_min, epsilon)
-            
+                scale_eff = _compute_nul_edge_aware_scale(
+                    epi_current, factor, epi_min, epsilon
+                )
+
             # Apply edge-aware EPI scaling with boundary check
             # Edge-aware already computed safe scale, but use unified function
             # for consistency (with apply_clip=True as safety net)
             new_epi = epi_current * scale_eff
             _set_epi_with_boundary_check(node, new_epi, apply_clip=True)
-            
+
             # Record telemetry if scale was adapted
             if abs(scale_eff - factor) > epsilon:
                 telemetry = node.graph.setdefault("edge_aware_interventions", [])
-                telemetry.append({
-                    "glyph": glyph.name if hasattr(glyph, "name") else str(glyph),
-                    "epi_before": epi_current,
-                    "epi_after": float(node.EPI),  # Get actual value after boundary check
-                    "scale_requested": factor,
-                    "scale_effective": scale_eff,
-                    "adapted": True,
-                })
+                telemetry.append(
+                    {
+                        "glyph": glyph.name if hasattr(glyph, "name") else str(glyph),
+                        "epi_before": epi_current,
+                        "epi_after": float(
+                            node.EPI
+                        ),  # Get actual value after boundary check
+                        "scale_requested": factor,
+                        "scale_effective": scale_eff,
+                        "adapted": True,
+                    }
+                )
 
     _op.__doc__ = """{} glyph scales νf and EPI with edge-aware adaptation.
 

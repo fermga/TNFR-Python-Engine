@@ -397,7 +397,14 @@ class SequenceSyntaxError(ValueError):
 class SequenceValidationResult(ValidationOutcome[tuple[str, ...]]):
     """Structured report emitted by :func:`validate_sequence`."""
 
-    __slots__ = ("tokens", "canonical_tokens", "message", "metadata", "error", "health_metrics")
+    __slots__ = (
+        "tokens",
+        "canonical_tokens",
+        "message",
+        "metadata",
+        "error",
+        "health_metrics",
+    )
 
     def __init__(
         self,
@@ -472,12 +479,14 @@ class _SequenceAutomaton:
         self._found_stabilizer = False  # Track IL or THOL for R2
         self._detected_pattern: StructuralPattern = StructuralPattern.UNKNOWN
         # Legacy: Use deque with maxlen for backward compatibility
-        self._bifurcation_context: deque[tuple[str, int]] = deque(maxlen=BIFURCATION_WINDOW)
+        self._bifurcation_context: deque[tuple[str, int]] = deque(
+            maxlen=BIFURCATION_WINDOW
+        )
         # R4 Extended: Track destabilizers by intensity level with graduated windows
         self._destabilizer_context: dict[str, deque[int]] = {
-            'strong': deque(maxlen=BIFURCATION_WINDOWS['strong']),
-            'moderate': deque(maxlen=BIFURCATION_WINDOWS['moderate']),
-            'weak': deque(maxlen=BIFURCATION_WINDOWS['weak']),
+            "strong": deque(maxlen=BIFURCATION_WINDOWS["strong"]),
+            "moderate": deque(maxlen=BIFURCATION_WINDOWS["moderate"]),
+            "weak": deque(maxlen=BIFURCATION_WINDOWS["weak"]),
         }
 
     def run(self, names: Sequence[str]) -> None:
@@ -523,16 +532,16 @@ class _SequenceAutomaton:
 
         # R4 Extended: Track destabilizers by intensity level
         if canonical in DESTABILIZERS_STRONG:
-            self._destabilizer_context['strong'].append(index)
+            self._destabilizer_context["strong"].append(index)
             # Legacy: also populate old context for backward compatibility
             self._bifurcation_context.append((canonical, index))
         elif canonical in DESTABILIZERS_MODERATE:
-            self._destabilizer_context['moderate'].append(index)
+            self._destabilizer_context["moderate"].append(index)
             # Legacy: also populate old context for backward compatibility
             self._bifurcation_context.append((canonical, index))
         elif canonical in DESTABILIZERS_WEAK:
-            self._destabilizer_context['weak'].append(index)
-        
+            self._destabilizer_context["weak"].append(index)
+
         # R4 Extended: Validate transformers (ZHIR/THOL) require recent destabilizer
         if canonical in TRANSFORMERS:
             if not self._has_graduated_destabilizer(index):
@@ -546,7 +555,7 @@ class _SequenceAutomaton:
                         f"  Weak ({operator_display_name(RECEPTION)}) immediately before"
                     ),
                 )
-        
+
         # Legacy: Keep tracking dissonance for backward compatibility with existing code
         if canonical == DISSONANCE:
             self._found_dissonance = True
@@ -577,7 +586,10 @@ class _SequenceAutomaton:
         Note: Import is done inside the method to avoid circular dependency between
         grammar and compatibility modules.
         """
-        from ..validation.compatibility import CompatibilityLevel, get_compatibility_level
+        from ..validation.compatibility import (
+            CompatibilityLevel,
+            get_compatibility_level,
+        )
 
         # Only validate if prev is also a known operator
         if prev not in OPERATORS:
@@ -611,17 +623,17 @@ class _SequenceAutomaton:
 
     def _has_recent_destabilizer(self, current_index: int) -> bool:
         """Check if a destabilizer exists within the bifurcation window.
-        
+
         Parameters
         ----------
         current_index : int
             Current position in the sequence
-            
+
         Returns
         -------
         bool
             True if a destabilizer was found in the previous BIFURCATION_WINDOW operators
-            
+
         Notes
         -----
         The `_bifurcation_context` deque stores only destabilizers (not all operators),
@@ -636,45 +648,45 @@ class _SequenceAutomaton:
 
     def _has_graduated_destabilizer(self, current_index: int) -> bool:
         """Check if any level of destabilizer satisfies its window requirement.
-        
+
         Parameters
         ----------
         current_index : int
             Current position in the sequence
-            
+
         Returns
         -------
         bool
             True if a destabilizer was found within its appropriate window
-            
+
         Notes
         -----
         This method implements R4 Extended graduated destabilization:
         - Strong destabilizers (OZ): window of 4 operators
         - Moderate destabilizers (NAV, VAL): window of 2 operators
         - Weak destabilizers (EN): must be immediate predecessor (window of 1)
-        
+
         The method checks each level in order of window size (largest first)
         to provide the most permissive validation.
         """
         # Check strong destabilizers (longest window = 4)
-        if self._destabilizer_context['strong']:
-            last_strong = self._destabilizer_context['strong'][-1]
-            if current_index - last_strong <= BIFURCATION_WINDOWS['strong']:
+        if self._destabilizer_context["strong"]:
+            last_strong = self._destabilizer_context["strong"][-1]
+            if current_index - last_strong <= BIFURCATION_WINDOWS["strong"]:
                 return True
-        
+
         # Check moderate destabilizers (window = 2)
-        if self._destabilizer_context['moderate']:
-            last_moderate = self._destabilizer_context['moderate'][-1]
-            if current_index - last_moderate <= BIFURCATION_WINDOWS['moderate']:
+        if self._destabilizer_context["moderate"]:
+            last_moderate = self._destabilizer_context["moderate"][-1]
+            if current_index - last_moderate <= BIFURCATION_WINDOWS["moderate"]:
                 return True
-        
+
         # Check weak destabilizers (window = 1, must be immediate)
-        if self._destabilizer_context['weak']:
-            last_weak = self._destabilizer_context['weak'][-1]
+        if self._destabilizer_context["weak"]:
+            last_weak = self._destabilizer_context["weak"][-1]
             if current_index - last_weak == 1:
                 return True
-        
+
         return False
 
     def _finalize(self, names: Sequence[str]) -> None:
@@ -723,22 +735,22 @@ class _SequenceAutomaton:
 
         # Detect structural pattern
         self._detected_pattern = self._detect_pattern()
-        
+
         # R5: Validate regenerative cycles if pattern is REGENERATIVE
         if self._detected_pattern == StructuralPattern.REGENERATIVE:
             self._validate_regenerative_cycle()
 
     def _validate_regenerative_cycle(self) -> None:
         """Validate regenerative cycle structural requirements (R5).
-        
+
         Uses CycleDetector to ensure the sequence meets minimum standards
         for self-sustaining regenerative behavior.
         """
         from .cycle_detection import CycleDetector
-        
+
         detector = CycleDetector()
         analysis = detector.analyze_full_cycle(self._canonical)
-        
+
         if not analysis.is_valid_regenerative:
             # Build informative error message
             reason_messages = {
@@ -749,12 +761,11 @@ class _SequenceAutomaton:
                 "low_health_score": f"cycle health score {analysis.health_score:.2f} below threshold {CycleDetector.MIN_HEALTH_SCORE}",
                 "no_valid_cycle": "no valid regenerative cycle structure detected",
             }
-            
+
             message = reason_messages.get(
-                analysis.reason,
-                f"invalid regenerative cycle: {analysis.reason}"
+                analysis.reason, f"invalid regenerative cycle: {analysis.reason}"
             )
-            
+
             raise SequenceSyntaxError(
                 index=-1,
                 token=None,
@@ -763,12 +774,12 @@ class _SequenceAutomaton:
 
     def _detect_pattern(self) -> StructuralPattern:
         """Detect the structural pattern type of the sequence.
-        
+
         Uses advanced pattern detection to identify domain-specific and
         meta-patterns, falling back to basic pattern detection when needed.
         """
         from .patterns import AdvancedPatternDetector
-        
+
         detector = AdvancedPatternDetector()
         return detector.detect_pattern(self._canonical)
 
@@ -890,7 +901,7 @@ class MissingStabilizerError(StructuralGrammarError):
 
 class StructuralPattern(Enum):
     """Unified typology of structural patterns in operator sequences.
-    
+
     All patterns are equal - no hierarchies or priorities. Detection uses
     pattern signatures to identify the best match based on specificity
     and coverage of the sequence.
@@ -902,35 +913,47 @@ class StructuralPattern(Enum):
     FRACTAL = "fractal"  # Recursive structure: NAV → IL → UM → NAV
     CYCLIC = "cyclic"  # Regenerative loops: multiple NAV
     BIFURCATED = "bifurcated"  # Branching: OZ → {ZHIR | NUL}
-    
+
     # Domain-specific applied patterns
     THERAPEUTIC = "therapeutic"  # Healing: EN→AL→IL→OZ→THOL→IL
     EDUCATIONAL = "educational"  # Learning: EN→AL→IL→VAL→OZ→ZHIR
     ORGANIZATIONAL = "organizational"  # Evolution: NAV→AL→EN→UM→RA→OZ→THOL
     CREATIVE = "creative"  # Artistic: SHA→AL→VAL→OZ→ZHIR→THOL
     REGENERATIVE = "regenerative"  # Self-sustaining: IL→RA→VAL→SHA→NAV→AL
-    
+
     # Compositional patterns
     BOOTSTRAP = "bootstrap"  # Initialization: AL→UM→IL
     EXPLORE = "explore"  # Exploration: OZ→ZHIR→IL
     STABILIZE = "stabilize"  # Consolidation: *→IL→{SHA|RA}
     RESONATE = "resonate"  # Amplification: RA→UM→RA
     COMPRESS = "compress"  # Simplification: NUL→IL→SHA
-    
+
     # Canonical IL (Coherence) compositional patterns
     SAFE_ACTIVATION = "safe_activation"  # emission→coherence: Emission stabilized
-    STABLE_INTEGRATION = "stable_integration"  # reception→coherence: Reception consolidated
-    CREATIVE_RESOLUTION = "creative_resolution"  # dissonance→coherence: Dissonance resolved
-    RESONANCE_CONSOLIDATION = "resonance_consolidation"  # resonance→coherence: Resonance locked
-    STABLE_TRANSFORMATION = "stable_transformation"  # coherence→mutation: Controlled mutation
-    
+    STABLE_INTEGRATION = (
+        "stable_integration"  # reception→coherence: Reception consolidated
+    )
+    CREATIVE_RESOLUTION = (
+        "creative_resolution"  # dissonance→coherence: Dissonance resolved
+    )
+    RESONANCE_CONSOLIDATION = (
+        "resonance_consolidation"  # resonance→coherence: Resonance locked
+    )
+    STABLE_TRANSFORMATION = (
+        "stable_transformation"  # coherence→mutation: Controlled mutation
+    )
+
     # Adaptive learning patterns (AL + T'HOL canonical sequences)
     BASIC_LEARNING = "basic_learning"  # Simple learning: AL→EN→IL
     DEEP_LEARNING = "deep_learning"  # Deep learning with crisis: AL→EN→OZ→THOL→IL
-    EXPLORATORY_LEARNING = "exploratory_learning"  # Exploration learning: AL→OZ→THOL→RA→IL
+    EXPLORATORY_LEARNING = (
+        "exploratory_learning"  # Exploration learning: AL→OZ→THOL→RA→IL
+    )
     CONSOLIDATION_CYCLE = "consolidation_cycle"  # Memory consolidation: IL→SHA→REMESH
-    ADAPTIVE_MUTATION = "adaptive_mutation"  # Transformative learning: EN→OZ→THOL→ZHIR→NAV→IL
-    
+    ADAPTIVE_MUTATION = (
+        "adaptive_mutation"  # Transformative learning: EN→OZ→THOL→ZHIR→NAV→IL
+    )
+
     # Structural complexity
     COMPLEX = "complex"  # Multiple patterns combined
     MINIMAL = "minimal"  # Single or very few operators
@@ -941,7 +964,7 @@ class StructuralPattern(Enum):
 # R5: HARMONIC_FREQUENCIES validation (now active)
 # Maps each operator to its structural frequency level following TNFR canonical theory.
 # - high: Operators that initiate, amplify, concentrate, or pivot structure
-# - medium: Operators that capture, stabilize, couple, or organize  
+# - medium: Operators that capture, stabilize, couple, or organize
 # - zero: Operators that suspend reorganization while preserving form
 STRUCTURAL_FREQUENCIES: dict[str, str] = {
     EMISSION: "high",  # AL: initiation/reorganization
@@ -962,7 +985,7 @@ STRUCTURAL_FREQUENCIES: dict[str, str] = {
 # Frequency compatibility: operators with harmonic frequencies can transition
 # Valid transitions preserve structural coherence:
 # - high ↔ medium: High energy can stabilize or stabilized can amplify
-# - medium ↔ zero: Stabilized can pause or resume from pause  
+# - medium ↔ zero: Stabilized can pause or resume from pause
 # - high ↔ high: High energy can chain directly
 # Invalid: zero → high (cannot jump from pause to high without intermediate stabilization)
 FREQUENCY_TRANSITIONS: dict[str, set[str]] = {
@@ -972,7 +995,9 @@ FREQUENCY_TRANSITIONS: dict[str, set[str]] = {
 }
 
 
-def validate_frequency_transition(prev_operator: str, next_operator: str) -> tuple[bool, str]:
+def validate_frequency_transition(
+    prev_operator: str, next_operator: str
+) -> tuple[bool, str]:
     """Validate structural frequency transition between consecutive operators (R5 rule).
 
     Parameters
@@ -1048,7 +1073,7 @@ CANONICAL_IL_SEQUENCES: dict[str, dict[str, Any]] = {
         "use_cases": [
             "Meditation initiation with immediate stabilization",
             "Therapeutic process activation with safety frame",
-            "Learning attention activation with sustained focus"
+            "Learning attention activation with sustained focus",
         ],
     },
     "RECEPTION_COHERENCE": {
@@ -1061,7 +1086,7 @@ CANONICAL_IL_SEQUENCES: dict[str, dict[str, Any]] = {
         "use_cases": [
             "Biofeedback signal integration",
             "Educational concept consolidation",
-            "Communication message comprehension"
+            "Communication message comprehension",
         ],
     },
     "DISSONANCE_COHERENCE": {
@@ -1074,7 +1099,7 @@ CANONICAL_IL_SEQUENCES: dict[str, dict[str, Any]] = {
         "use_cases": [
             "Therapeutic crisis resolution",
             "Scientific paradox breakthrough",
-            "Artistic chaos to form transformation"
+            "Artistic chaos to form transformation",
         ],
     },
     "RESONANCE_COHERENCE": {
@@ -1087,7 +1112,7 @@ CANONICAL_IL_SEQUENCES: dict[str, dict[str, Any]] = {
         "use_cases": [
             "Cardiac coherence network-wide stabilization",
             "Collective insight consolidation",
-            "Social movement momentum lock-in"
+            "Social movement momentum lock-in",
         ],
     },
     "COHERENCE_MUTATION": {
@@ -1101,7 +1126,7 @@ CANONICAL_IL_SEQUENCES: dict[str, dict[str, Any]] = {
         "use_cases": [
             "Personal paradigm shift from stable identity",
             "Organizational strategic pivot preparation",
-            "System phase transition with controlled entry"
+            "System phase transition with controlled entry",
         ],
     },
 }
@@ -1130,7 +1155,11 @@ IL_ANTIPATTERNS: dict[str, dict[str, Any]] = {
         "glyphs": [Glyph.SHA, Glyph.IL],
         "severity": "error",  # Grammar blocks this (AVOID compatibility)
         "warning": "Reactivating from silence directly to coherence bypasses necessary activation. Use silence → emission → coherence sequence instead.",
-        "alternative": [SILENCE, EMISSION, COHERENCE],  # Reformulated to comply with grammar
+        "alternative": [
+            SILENCE,
+            EMISSION,
+            COHERENCE,
+        ],  # Reformulated to comply with grammar
         "alternative_glyphs": [Glyph.SHA, Glyph.AL, Glyph.IL],
         "note": "Grammar compatibility: AVOID. Reformulated as silence → emission → coherence to express same function (reactivation with stabilization) while complying with grammar.",
     },
@@ -1194,7 +1223,7 @@ def recognize_coherence_sequences(
     designed for longer sequences.
     """
     from ..validation.compatibility import get_compatibility_level, CompatibilityLevel
-    
+
     # Normalize sequence to operator names (strings)
     normalized_seq: list[str] = []
     for item in sequence:
@@ -1211,7 +1240,7 @@ def recognize_coherence_sequences(
                 normalized_seq.append(item)
 
     recognized: list[dict[str, Any]] = []
-    
+
     # Define canonical coherence 2-operator patterns
     coherence_patterns_map = {
         (EMISSION, COHERENCE): {
@@ -1235,28 +1264,30 @@ def recognize_coherence_sequences(
             "description": "Coherence enabling controlled mutation (coherence → mutation)",
         },
     }
-    
+
     # Scan sequence for 2-operator patterns
     for i in range(len(normalized_seq) - 1):
         prev = normalized_seq[i]
         curr = normalized_seq[i + 1]
         pair = (prev, curr)
-        
+
         # Check for canonical coherence patterns
         if pair in coherence_patterns_map:
             pattern_info = coherence_patterns_map[pair]
-            recognized.append({
-                "position": i,
-                "pattern_name": pattern_info["name"],
-                "pattern": [prev, curr],
-                "is_coherence_pattern": True,
-                "is_antipattern": False,
-                "description": pattern_info["description"],
-            })
-        
+            recognized.append(
+                {
+                    "position": i,
+                    "pattern_name": pattern_info["name"],
+                    "pattern": [prev, curr],
+                    "is_coherence_pattern": True,
+                    "is_antipattern": False,
+                    "description": pattern_info["description"],
+                }
+            )
+
         # Check for anti-patterns using compatibility rules
         compat = get_compatibility_level(prev, curr)
-        
+
         if compat == CompatibilityLevel.AVOID:
             if prev == COHERENCE and curr == COHERENCE:
                 # coherence → coherence anti-pattern
@@ -1264,49 +1295,55 @@ def recognize_coherence_sequences(
                     f"Anti-pattern detected at position {i}: coherence → coherence. "
                     f"Repeated coherence without intervening dynamics serves no structural purpose.",
                     UserWarning,
-                    stacklevel=2
+                    stacklevel=2,
                 )
-                recognized.append({
-                    "position": i,
-                    "pattern_name": "coherence_coherence_antipattern",
-                    "pattern": [prev, curr],
-                    "is_coherence_pattern": True,
-                    "is_antipattern": True,
-                    "severity": "warning",
-                    "warning": "Repeated coherence without intervening dynamics. Check if necessary.",
-                    "alternative": None,
-                })
+                recognized.append(
+                    {
+                        "position": i,
+                        "pattern_name": "coherence_coherence_antipattern",
+                        "pattern": [prev, curr],
+                        "is_coherence_pattern": True,
+                        "is_antipattern": True,
+                        "severity": "warning",
+                        "warning": "Repeated coherence without intervening dynamics. Check if necessary.",
+                        "alternative": None,
+                    }
+                )
             elif prev == SILENCE and curr == COHERENCE:
                 # silence → coherence anti-pattern
                 warnings.warn(
                     f"Anti-pattern detected at position {i}: silence → coherence. "
                     f"Reactivating from silence. Consider silence → emission → coherence sequence.",
                     UserWarning,
-                    stacklevel=2
+                    stacklevel=2,
                 )
-                recognized.append({
-                    "position": i,
-                    "pattern_name": "silence_coherence_antipattern",
-                    "pattern": [prev, curr],
-                    "is_coherence_pattern": True,
-                    "is_antipattern": True,
-                    "severity": "error",
-                    "warning": "Reactivating from silence. Use silence → emission → coherence instead.",
-                    "alternative": [SILENCE, EMISSION, COHERENCE],
-                })
-        
+                recognized.append(
+                    {
+                        "position": i,
+                        "pattern_name": "silence_coherence_antipattern",
+                        "pattern": [prev, curr],
+                        "is_coherence_pattern": True,
+                        "is_antipattern": True,
+                        "severity": "error",
+                        "warning": "Reactivating from silence. Use silence → emission → coherence instead.",
+                        "alternative": [SILENCE, EMISSION, COHERENCE],
+                    }
+                )
+
         # Informational: coherence → silence (GOOD compatibility, but potentially redundant)
         if prev == COHERENCE and curr == SILENCE and compat == CompatibilityLevel.GOOD:
-            recognized.append({
-                "position": i,
-                "pattern_name": "coherence_silence_info",
-                "pattern": [prev, curr],
-                "is_coherence_pattern": True,
-                "is_antipattern": True,  # Technically an anti-pattern (redundancy)
-                "severity": "info",
-                "warning": "Stabilizing then silencing may be redundant. Consider silence alone.",
-                "alternative": None,
-            })
+            recognized.append(
+                {
+                    "position": i,
+                    "pattern_name": "coherence_silence_info",
+                    "pattern": [prev, curr],
+                    "is_coherence_pattern": True,
+                    "is_antipattern": True,  # Technically an anti-pattern (redundancy)
+                    "severity": "info",
+                    "warning": "Stabilizing then silencing may be redundant. Consider silence alone.",
+                    "alternative": None,
+                }
+            )
 
     return recognized
 
@@ -1580,22 +1617,22 @@ def validate_sequence_with_health(
     names: Iterable[str] | object = _MISSING, **kwargs: object
 ) -> SequenceValidationResult:
     """Validate a sequence and include structural health metrics.
-    
+
     This is an enhanced version of :func:`validate_sequence` that additionally
     computes comprehensive health metrics for valid sequences. The metrics
     provide quantitative assessment of sequence quality: coherence, balance,
     sustainability, and efficiency.
-    
+
     Parameters
     ----------
     names : Iterable[str]
         Sequence of operator names to validate and analyze.
-    
+
     Returns
     -------
     SequenceValidationResult
         Validation result with ``health_metrics`` field populated for valid sequences.
-    
+
     Examples
     --------
     >>> from tnfr.operators.grammar import validate_sequence_with_health
@@ -1606,7 +1643,7 @@ def validate_sequence_with_health(
     True
     >>> result.health_metrics.dominant_pattern
     'activation'
-    
+
     Notes
     -----
     Health metrics are only computed for sequences that pass validation.
@@ -1618,18 +1655,20 @@ def validate_sequence_with_health(
             f"validate_sequence_with_health() got unexpected keyword argument(s): {unexpected}"
         )
     if names is _MISSING:
-        raise TypeError("validate_sequence_with_health() missing required argument: 'names'")
-    
+        raise TypeError(
+            "validate_sequence_with_health() missing required argument: 'names'"
+        )
+
     # First, perform standard validation
     result = _analyse_sequence(names)
-    
+
     # If validation passed, compute health metrics
     if result.passed:
         from .health_analyzer import SequenceHealthAnalyzer
-        
+
         analyzer = SequenceHealthAnalyzer()
         health = analyzer.analyze_health(list(names))
-        
+
         # Create new result with health metrics
         result = SequenceValidationResult(
             tokens=result.tokens,
@@ -1640,7 +1679,7 @@ def validate_sequence_with_health(
             error=result.error,
             health_metrics=health,
         )
-    
+
     return result
 
 
@@ -1726,15 +1765,15 @@ def apply_glyph_with_grammar(
     window: Optional[int] = None,
 ) -> None:
     """Apply glyph with grammar-based validation and coherence sequence recognition.
-    
+
     This function is the canonical entry point for applying structural operators through
     the grammar layer. It enforces TNFR grammar rules, validates operator preconditions,
     and tracks operator sequences for telemetry.
-    
+
     Enhanced to recognize and log canonical coherence sequences when they
     occur in the glyph history. This enables pattern detection, telemetry, and
     future optimization of common structural patterns.
-    
+
     Parameters
     ----------
     G : TNFRGraph
@@ -1745,45 +1784,45 @@ def apply_glyph_with_grammar(
         Glyph to apply (e.g., Glyph.SHA for Silence operator)
     window : Optional[int]
         Hysteresis window (uses graph default if None)
-    
+
     Notes
     -----
     **Structural Operator Effects:**
-    
+
     This function delegates to operator-specific implementations that enforce
     TNFR canonical behavior. Key operator effects include:
-    
+
     - **SHA (Silence)**: Reduces νf → νf_min ≈ 0, causing ∂EPI/∂t → 0
       (structural evolution freezes). EPI preserved intact regardless of ΔNFR.
       Implements structural silence for memory consolidation and protective latency.
-    
+
     - **AL (Emission)**: Increases νf and initiates positive ΔNFR for pattern activation
-    
+
     - **IL (Coherence)**: Reduces |ΔNFR| and stabilizes EPI form
-    
+
     - **OZ (Dissonance)**: Increases |ΔNFR| for exploration and bifurcation
-    
+
     See operator definitions in ``tnfr.operators.definitions`` for complete
     canonical behavior specifications.
-    
+
     **Coherence Sequence Recognition:**
-    
+
     When a glyph is applied, the function checks if it forms a canonical coherence
     sequence with the previous glyph in the node's history. Recognized patterns
     are logged in ``G.graph["recognized_coherence_patterns"]`` for:
-    
+
     - Telemetry and analysis
     - Pattern-based optimization hints
     - Structural sequence quality assessment
     - Anti-pattern detection and warnings
-    
+
     Canonical coherence sequences recognized:
     - emission → coherence (safe_activation)
     - reception → coherence (stable_integration)
     - dissonance → coherence (creative_resolution)
     - resonance → coherence (resonance_consolidation)
     - coherence → mutation (stable_transformation, generates CAUTION warning)
-    
+
     Anti-patterns detected:
     - coherence → silence (info: potentially redundant)
     - coherence → coherence (warning: no structural purpose)
@@ -1803,46 +1842,53 @@ def apply_glyph_with_grammar(
 
     for node_ref in iter_nodes:
         node_id = node_ref.n if hasattr(node_ref, "n") else node_ref
-        
+
         # Get node's glyph history before applying new glyph
         nd = G.nodes[node_id]
         glyph_history = nd.get("glyph_history", ())
-        
+
         # Check if current glyph forms canonical IL sequence with previous glyph
         if glyph_history:
             # Get last applied glyph
             last_glyph = glyph_history[-1]
-            
+
             # Convert to Glyph enum for pattern matching
             current_glyph_obj = function_name_to_glyph(g_str)
-            last_glyph_obj = last_glyph if isinstance(last_glyph, Glyph) else function_name_to_glyph(last_glyph)
-            
+            last_glyph_obj = (
+                last_glyph
+                if isinstance(last_glyph, Glyph)
+                else function_name_to_glyph(last_glyph)
+            )
+
             if current_glyph_obj is not None and last_glyph_obj is not None:
                 # Build 2-element sequence for recognition
                 recent_sequence = [last_glyph_obj, current_glyph_obj]
                 recognized = recognize_coherence_sequences(recent_sequence)
-                
+
                 if recognized:
                     # Log recognized patterns in graph metadata
                     if "recognized_coherence_patterns" not in G.graph:
                         G.graph["recognized_coherence_patterns"] = []
-                    
+
                     for pattern_info in recognized:
                         # Add node and timestamp information
                         pattern_info["node"] = node_id
-                        pattern_info["timestamp"] = len(glyph_history)  # Position in history
+                        pattern_info["timestamp"] = len(
+                            glyph_history
+                        )  # Position in history
                         G.graph["recognized_coherence_patterns"].append(pattern_info)
-                        
+
                         # Log recognized canonical sequence (not anti-patterns, those warn separately)
                         if not pattern_info.get("is_antipattern", False):
                             logger.info(
                                 f"Recognized coherence sequence '{pattern_info['pattern_name']}' "
                                 f"at node {node_id}: {pattern_info['description']}"
                             )
-        
+
         try:
             g_eff = enforce_canonical_grammar(G, node_id, g_str, ctx)
         except StructuralGrammarError as err:
+
             def _structural_history(value: Glyph | str) -> str:
                 default = value.value if isinstance(value, Glyph) else str(value)
                 resolved = glyph_function_name(value, default=default)
