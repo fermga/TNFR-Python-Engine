@@ -1,11 +1,58 @@
-# Resumen Final: Gramática TNFR 100% Canónica
+# Final Summary: TNFR Grammar 100% Canonical & Unified
 
-## Objetivo Cumplido
+## Objectives Accomplished
 
-✅ **Se investigaron y documentaron todas las reglas gramaticales que emergen de la física TNFR**
-✅ **Se eliminó RNC1 (convención organizativa) - Gramática ahora 100% canónica**
+✅ **Investigated and documented all grammar rules that emerge from TNFR physics**
+✅ **Eliminated RNC1 (organizational convention) - Grammar now 100% canonical**
+✅ **Unified C1-C3 and RC1-RC4 into single source of truth U1-U4**
 
-## Hallazgos Principales
+**Latest Update:** Grammar systems consolidated. See **UNIFIED_GRAMMAR_RULES.md** for complete unified specification.
+
+## Latest Evolution: Unified Grammar (U1-U4)
+
+**Date:** 2025-11-08  
+**Change:** Consolidated C1-C3 (grammar.py) and RC1-RC4 (canonical_grammar.py) into unified U1-U4
+
+### Problem with Dual Systems
+- C1-C3 in `grammar.py` (operational grammar)
+- RC1-RC4 in `canonical_grammar.py` (canonical physics grammar)
+- **Duplication:** C1 ≈ RC1, C2 = RC2, C3 ≈ RC4
+- **Gaps:** RC3 (phase) missing from C1-C3
+- **Inconsistency:** Two sources of truth for same physics
+
+### Unified Solution: Four Canonical Constraints
+
+**U1: STRUCTURAL INITIATION & CLOSURE**
+- U1a: Start with generators {AL, NAV, REMESH}
+- U1b: End with closures {SHA, NAV, REMESH, OZ}
+- Physics: ∂EPI/∂t undefined at EPI=0 + sequences need coherent endpoints
+- Consolidates: C1 + RC1 + RNC1 (restored with physics basis)
+
+**U2: CONVERGENCE & BOUNDEDNESS**
+- If destabilizers {OZ, ZHIR, VAL}, include stabilizers {IL, THOL}
+- Physics: ∫νf·ΔNFR dt must converge
+- Consolidates: C2 = RC2 (identical)
+
+**U3: RESONANT COUPLING**
+- If coupling/resonance {UM, RA}, verify phase |φᵢ - φⱼ| ≤ Δφ_max
+- Physics: Invariant #5 + resonance physics
+- Source: RC3 (was missing from C1-C3)
+
+**U4: BIFURCATION DYNAMICS**
+- U4a: If triggers {OZ, ZHIR}, include handlers {THOL, IL}
+- U4b: If transformers {ZHIR, THOL}, need recent destabilizer
+- Physics: Contract OZ + bifurcation theory
+- Consolidates: C3 + RC4
+
+### Benefits of Unification
+1. ✅ Single source of truth - No duplication
+2. ✅ Complete coverage - All rules from both systems
+3. ✅ 100% physics - Every rule derives from equation/invariants/contracts
+4. ✅ Comprehensive docs - UNIFIED_GRAMMAR_RULES.md
+
+---
+
+## Historical Evolution
 
 ### Estado Anterior (Con Convenciones)
 ```

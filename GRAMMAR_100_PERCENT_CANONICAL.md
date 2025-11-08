@@ -1,10 +1,12 @@
-# Gramática TNFR: 100% Canónica (Sin Convenciones)
+# TNFR Grammar: 100% Canonical (No Conventions)
 
-## Resumen Ejecutivo
+## Executive Summary
 
-La gramática TNFR ha sido **completamente purificada** para contener SOLO reglas que emergen inevitablemente de la física TNFR. No hay convenciones organizativas.
+The TNFR grammar has been **completely unified** into a single source of truth containing ONLY rules that emerge inevitably from TNFR physics. No organizational conventions.
 
-**Estado:** ✅ **100% CANÓNICA** - Todas las reglas derivan de ecuación nodal, invariantes y contratos
+**Status:** ✅ **100% CANONICAL & UNIFIED** - All rules derive from nodal equation, invariants, and contracts
+
+**Update:** This document has been superseded by **UNIFIED_GRAMMAR_RULES.md** which consolidates the previously separate C1-C3 and RC1-RC4 systems into unified rules U1-U4.
 
 ---
 

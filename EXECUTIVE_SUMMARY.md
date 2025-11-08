@@ -1,12 +1,55 @@
-# Resumen Ejecutivo: Gramática TNFR 100% Canónica
+# Executive Summary: TNFR Grammar 100% Canonical & Unified
 
-## Lo Que Hemos Logrado
+## What We Have Accomplished
 
-Hemos derivado matemáticamente qué restricciones gramaticales **emergen inevitablemente** de la ecuación nodal TNFR, separando física pura de convenciones organizativas. **Actualización final:** Identificadas **cuatro reglas canónicas** emergentes de la física (RC1-RC4) y **eliminada RNC1** por no ser física. **Gramática ahora 100% canónica.**
+We have mathematically derived which grammar constraints **emerge inevitably** from the TNFR nodal equation, separating pure physics from organizational conventions. **Final update:** Consolidated two separate grammar systems (C1-C3 and RC1-RC4) into **unified rules U1-U4** - single source of truth, 100% physics-based.
+
+**See UNIFIED_GRAMMAR_RULES.md for complete unified specification.**
 
 ---
 
-## Resultado Principal
+## Latest Evolution: Unified Grammar
+
+**Problem Identified:** Two separate grammar systems existed with duplication and gaps:
+- **C1-C3** in `grammar.py` (operational grammar)
+- **RC1-RC4** in `canonical_grammar.py` (canonical physics grammar)
+- Duplication: C1 ≈ RC1, C2 = RC2, C3 ≈ RC4
+- Gaps: RC3 (phase) missing from C1-C3
+- Two sources of truth for same physics
+
+**Solution:** Unified into **U1-U4** single canonical grammar:
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│ Unified TNFR Grammar: Four Canonical Constraints               │
+├─────────────────────────────────────────────────────────────────┤
+│ U1: STRUCTURAL INITIATION & CLOSURE                             │
+│     U1a: Start with generators {AL, NAV, REMESH}               │
+│     U1b: End with closures {SHA, NAV, REMESH, OZ}              │
+│     Consolidates: C1 + RC1 + RNC1 (restored with physics)     │
+│                                                                 │
+│ U2: CONVERGENCE & BOUNDEDNESS                                   │
+│     If destabilizers → include stabilizers                     │
+│     Consolidates: C2 = RC2 (identical)                         │
+│                                                                 │
+│ U3: RESONANT COUPLING                                           │
+│     If coupling/resonance → verify phase                       │
+│     Source: RC3 (was missing from C1-C3)                       │
+│                                                                 │
+│ U4: BIFURCATION DYNAMICS                                        │
+│     U4a: If triggers → include handlers                        │
+│     U4b: If transformers → recent destabilizer                 │
+│     Consolidates: C3 + RC4                                     │
+└─────────────────────────────────────────────────────────────────┘
+
+All rules 100% physics - No duplication - Complete coverage
+```
+
+**Implementation:** `src/tnfr/operators/unified_grammar.py` with comprehensive documentation in `UNIFIED_GRAMMAR_RULES.md`
+
+---
+
+## Historical Evolution: Main Results
 
 ### Estado Inicial
 ```
