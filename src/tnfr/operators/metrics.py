@@ -264,7 +264,7 @@ def coherence_metrics(G: TNFRGraph, node: NodeId, dnfr_before: float) -> dict[st
     # Import here to avoid circular import
     from ..metrics.coherence import compute_global_coherence, compute_local_coherence
     from ..metrics.phase_coherence import compute_phase_alignment
-    
+
     dnfr_after = _get_node_attr(G, node, ALIAS_DNFR)
     epi = _get_node_attr(G, node, ALIAS_EPI)
     vf = _get_node_attr(G, node, ALIAS_VF)
@@ -274,11 +274,11 @@ def coherence_metrics(G: TNFRGraph, node: NodeId, dnfr_before: float) -> dict[st
     dnfr_reduction_pct = (
         (dnfr_reduction / dnfr_before * 100.0) if dnfr_before > 0 else 0.0
     )
-    
+
     # Compute coherence metrics
     C_global = compute_global_coherence(G)
     C_local = compute_local_coherence(G, node)
-    
+
     # Compute phase alignment (Kuramoto order parameter)
     phase_alignment = compute_phase_alignment(G, node)
 
@@ -306,7 +306,7 @@ def dissonance_metrics(
     G: TNFRGraph, node: NodeId, dnfr_before: float, theta_before: float
 ) -> dict[str, Any]:
     """OZ - Comprehensive dissonance and bifurcation metrics.
-    
+
     Collects extended metrics for the Dissonance (OZ) operator, including
     quantitative bifurcation analysis, topological disruption measures, and
     viable path identification. This aligns with TNFR canonical theory (§2.3.3)
@@ -327,95 +327,95 @@ def dissonance_metrics(
     -------
     dict
         Comprehensive dissonance metrics with keys:
-        
+
         **Quantitative dynamics:**
-        
+
         - dnfr_increase: Magnitude of introduced instability
         - dnfr_final: Post-OZ ΔNFR value
         - theta_shift: Phase exploration degree
         - theta_final: Post-OZ phase value
         - d2epi: Structural acceleration (bifurcation indicator)
-        
+
         **Bifurcation analysis:**
-        
+
         - bifurcation_score: Quantitative potential [0,1]
         - bifurcation_active: Boolean threshold indicator (score > 0.5)
         - viable_paths: List of viable operator glyph values
         - viable_path_count: Number of viable paths
         - mutation_readiness: Boolean indicator for ZHIR viability
-        
+
         **Topological effects:**
-        
+
         - topological_asymmetry_delta: Change in structural asymmetry
         - symmetry_disrupted: Boolean (|delta| > 0.1)
-        
+
         **Network impact:**
-        
+
         - neighbor_count: Total neighbors
         - impacted_neighbors: Count with |ΔNFR| > 0.1
         - network_impact_radius: Ratio of impacted neighbors
-        
+
         **Recovery guidance:**
-        
+
         - recovery_estimate_IL: Estimated IL applications needed
         - dissonance_level: |ΔNFR| magnitude
         - critical_dissonance: Boolean (|ΔNFR| > 0.8)
-        
+
     Notes
     -----
     **Enhanced metrics vs original:**
-    
+
     The original implementation (lines 326-342) provided:
     - Basic ΔNFR change
     - Boolean bifurcation_risk
     - Simple d2epi reading
-    
+
     This enhanced version adds:
     - Quantitative bifurcation_score [0,1]
     - Viable path identification
     - Topological asymmetry measurement
     - Network impact analysis
     - Recovery estimation
-    
+
     **Topological asymmetry:**
-    
+
     Measures structural disruption in the node's ego-network using degree
     and clustering heterogeneity. This captures the canonical effect that
     OZ introduces **topological disruption**, not just numerical change.
-    
+
     **Viable paths:**
-    
+
     Identifies which operators can structurally resolve the dissonance:
     - IL (Coherence): Always viable (universal resolution)
     - ZHIR (Mutation): If νf > 0.8 (controlled transformation)
     - NUL (Contraction): If EPI < 0.5 (safe collapse window)
     - THOL (Self-organization): If degree >= 2 (network support)
-    
+
     Examples
     --------
     >>> from tnfr.structural import create_nfr
     >>> from tnfr.operators.definitions import Dissonance, Coherence
-    >>> 
+    >>>
     >>> G, node = create_nfr("test", epi=0.5, vf=1.2)
     >>> # Add neighbors for network analysis
     >>> for i in range(3):
     ...     G.add_node(f"n{i}")
     ...     G.add_edge(node, f"n{i}")
-    >>> 
+    >>>
     >>> # Enable metrics collection
     >>> G.graph['COLLECT_OPERATOR_METRICS'] = True
-    >>> 
+    >>>
     >>> # Apply Coherence to stabilize, then Dissonance to disrupt
     >>> Coherence()(G, node)
     >>> Dissonance()(G, node)
-    >>> 
+    >>>
     >>> # Retrieve enhanced metrics
     >>> metrics = G.graph['operator_metrics'][-1]
     >>> print(f"Bifurcation score: {metrics['bifurcation_score']:.2f}")
     >>> print(f"Viable paths: {metrics['viable_paths']}")
     >>> print(f"Network impact: {metrics['network_impact_radius']:.1%}")
     >>> print(f"Recovery estimate: {metrics['recovery_estimate_IL']} IL")
-    
+
     See Also
     --------
     tnfr.dynamics.bifurcation.compute_bifurcation_score : Bifurcation scoring
@@ -425,16 +425,16 @@ def dissonance_metrics(
     from ..dynamics.bifurcation import compute_bifurcation_score, get_bifurcation_paths
     from ..topology.asymmetry import compute_topological_asymmetry
     from .nodal_equation import compute_d2epi_dt2
-    
+
     # Get post-OZ node state
     dnfr_after = _get_node_attr(G, node, ALIAS_DNFR)
     theta_after = _get_node_attr(G, node, ALIAS_THETA)
     epi_after = _get_node_attr(G, node, ALIAS_EPI)
     vf_after = _get_node_attr(G, node, ALIAS_VF)
-    
+
     # 1. Compute d2epi actively during OZ
     d2epi = compute_d2epi_dt2(G, node)
-    
+
     # 2. Quantitative bifurcation score (not just boolean)
     bifurcation_threshold = float(G.graph.get("OZ_BIFURCATION_THRESHOLD", 0.5))
     bifurcation_score = compute_bifurcation_score(
@@ -444,28 +444,28 @@ def dissonance_metrics(
         epi=epi_after,
         tau=bifurcation_threshold,
     )
-    
+
     # 3. Topological asymmetry introduced by OZ
     # Note: We measure asymmetry after OZ. In a full implementation, we'd also
     # capture before state, but for metrics collection we focus on post-state.
     # The delta is captured conceptually (OZ introduces disruption).
     asymmetry_after = compute_topological_asymmetry(G, node)
-    
+
     # For now, we'll estimate delta based on the assumption that OZ increases asymmetry
     # In a future enhancement, this could be computed by storing asymmetry_before
     asymmetry_delta = asymmetry_after  # Simplified: assume OZ caused current asymmetry
-    
+
     # 4. Analyze viable post-OZ paths
     # Set bifurcation_ready flag if score exceeds threshold
     if bifurcation_score > 0.5:
         G.nodes[node]["_bifurcation_ready"] = True
-    
+
     viable_paths = get_bifurcation_paths(G, node)
-    
+
     # 5. Network impact (neighbors affected by dissonance)
     neighbors = list(G.neighbors(node))
     impacted_neighbors = 0
-    
+
     if neighbors:
         # Count neighbors with significant |ΔNFR|
         impact_threshold = 0.1
@@ -473,12 +473,12 @@ def dissonance_metrics(
             neighbor_dnfr = abs(_get_node_attr(G, n, ALIAS_DNFR))
             if neighbor_dnfr > impact_threshold:
                 impacted_neighbors += 1
-    
+
     # 6. Recovery estimate (how many IL needed to resolve)
     # Assumes ~15% ΔNFR reduction per IL application
     il_reduction_rate = 0.15
     recovery_estimate = int(abs(dnfr_after) / il_reduction_rate) + 1 if dnfr_after != 0 else 1
-    
+
     # 7. Propagation analysis (if propagation occurred)
     propagation_data = {}
     propagation_events = G.graph.get("_oz_propagation_events", [])
@@ -495,7 +495,7 @@ def dissonance_metrics(
             propagation_data = {"propagation_occurred": False}
     else:
         propagation_data = {"propagation_occurred": False}
-    
+
     # 8. Compute network dissonance field (if propagation module available)
     field_data = {}
     try:
@@ -513,39 +513,39 @@ def dissonance_metrics(
             "max_field_strength": 0.0,
             "mean_field_strength": 0.0,
         }
-    
+
     return {
         "operator": "Dissonance",
         "glyph": "OZ",
-        
+
         # Quantitative dynamics
         "dnfr_increase": dnfr_after - dnfr_before,
         "dnfr_final": dnfr_after,
         "theta_shift": abs(theta_after - theta_before),
         "theta_final": theta_after,
         "d2epi": d2epi,
-        
+
         # Bifurcation analysis
         "bifurcation_score": bifurcation_score,
         "bifurcation_active": bifurcation_score > 0.5,
         "viable_paths": [str(g.value) for g in viable_paths],
         "viable_path_count": len(viable_paths),
         "mutation_readiness": any(g.value == "ZHIR" for g in viable_paths),
-        
+
         # Topological effects
         "topological_asymmetry_delta": asymmetry_delta,
         "symmetry_disrupted": abs(asymmetry_delta) > 0.1,
-        
+
         # Network impact
         "neighbor_count": len(neighbors),
         "impacted_neighbors": impacted_neighbors,
         "network_impact_radius": impacted_neighbors / len(neighbors) if neighbors else 0.0,
-        
+
         # Recovery guidance
         "recovery_estimate_IL": recovery_estimate,
         "dissonance_level": abs(dnfr_after),
         "critical_dissonance": abs(dnfr_after) > 0.8,
-        
+
         # Network propagation
         **propagation_data,
         **field_data,
@@ -553,9 +553,9 @@ def dissonance_metrics(
 
 
 def coupling_metrics(
-    G: TNFRGraph, 
-    node: NodeId, 
-    theta_before: float, 
+    G: TNFRGraph,
+    node: NodeId,
+    theta_before: float,
     dnfr_before: float = None,
     vf_before: float = None,
     edges_before: int = None,
@@ -587,55 +587,55 @@ def coupling_metrics(
     -------
     dict
         Coupling-specific metrics including:
-        
+
         **Phase metrics:**
-        
+
         - theta_shift: Absolute phase change
         - theta_final: Post-coupling phase
         - mean_neighbor_phase: Average phase of neighbors
         - phase_alignment: Alignment with neighbors [0,1]
         - phase_dispersion: Standard deviation of phases in local cluster
         - is_synchronized: Boolean indicating strong synchronization (alignment > 0.8)
-        
+
         **Frequency metrics:**
-        
+
         - delta_vf: Change in structural frequency (νf)
         - vf_final: Post-coupling structural frequency
-        
+
         **Reorganization metrics:**
-        
+
         - delta_dnfr: Change in ΔNFR
         - dnfr_stabilization: Reduction of reorganization pressure (positive if stabilized)
         - dnfr_final: Post-coupling ΔNFR
         - dnfr_reduction: Absolute reduction (before - after)
         - dnfr_reduction_pct: Percentage reduction
-        
+
         **EPI Invariance metrics:**
-        
+
         - epi_before: EPI value before coupling
         - epi_after: EPI value after coupling
         - epi_drift: Absolute difference between before and after
         - epi_preserved: Boolean indicating EPI invariance (drift < 1e-9)
-        
+
         **Network metrics:**
-        
+
         - neighbor_count: Number of neighbors after coupling
         - new_edges_count: Number of edges added
         - total_edges: Total edges after coupling
         - coupling_strength_total: Sum of coupling weights on edges
         - local_coherence: Kuramoto order parameter of local subgraph
-    
+
     Notes
     -----
     The extended metrics align with TNFR canonical theory (§2.2.2) that UM creates
     structural links through phase synchronization (φᵢ(t) ≈ φⱼ(t)). The metrics
     capture both the synchronization quality and the network structural changes
     resulting from coupling.
-    
+
     **EPI Invariance**: UM MUST preserve EPI identity. The epi_preserved metric
     validates this fundamental invariant. If epi_preserved is False, it indicates
     a violation of TNFR canonical requirements.
-    
+
     See Also
     --------
     operators.definitions.Coupling : UM operator implementation
@@ -748,8 +748,8 @@ def coupling_metrics(
 
 
 def resonance_metrics(
-    G: TNFRGraph, 
-    node: NodeId, 
+    G: TNFRGraph,
+    node: NodeId,
     epi_before: float,
     vf_before: float | None = None,
 ) -> dict[str, Any]:
@@ -793,13 +793,13 @@ def resonance_metrics(
         neighbor_epi_sum = sum(_get_node_attr(G, n, ALIAS_EPI) for n in neighbors)
         neighbor_epi_mean = neighbor_epi_sum / neighbor_count
         resonance_strength = abs(epi_after - epi_before) * neighbor_count
-        
+
         # Canonical νf amplification tracking
         if vf_before is not None and vf_before > 0:
             vf_amplification = vf_after / vf_before
         else:
             vf_amplification = 1.0
-            
+
         # Phase alignment quality (measure coherence with neighbors)
         from ..metrics.phase_coherence import compute_phase_alignment
         phase_alignment = compute_phase_alignment(G, node)
@@ -972,7 +972,10 @@ def contraction_metrics(
 def self_organization_metrics(
     G: TNFRGraph, node: NodeId, epi_before: float, vf_before: float
 ) -> dict[str, Any]:
-    """THOL - Self-organization metrics: nested EPI generation, cascade formation.
+    """THOL - Enhanced metrics with cascade dynamics and collective coherence.
+
+    Collects comprehensive THOL metrics including bifurcation, cascade propagation,
+    collective coherence of sub-EPIs, and metabolic activity indicators.
 
     Parameters
     ----------
@@ -988,28 +991,86 @@ def self_organization_metrics(
     Returns
     -------
     dict
-        Self-organization-specific metrics including cascade indicators
+        Self-organization-specific metrics including:
+
+        **Base operator metrics:**
+
+        - operator: "Self-organization"
+        - glyph: "THOL"
+        - delta_epi: Change in EPI
+        - delta_vf: Change in νf
+        - epi_final: Final EPI value
+        - vf_final: Final νf value
+        - d2epi: Structural acceleration
+        - dnfr_final: Final ΔNFR
+
+        **Bifurcation metrics:**
+
+        - bifurcation_occurred: Boolean indicator
+        - nested_epi_count: Number of sub-EPIs created
+        - d2epi_magnitude: Absolute acceleration
+
+        **Cascade dynamics (NEW):**
+
+        - cascade_depth: Maximum hierarchical bifurcation depth
+        - propagation_radius: Total unique nodes affected
+        - cascade_detected: Boolean cascade indicator
+        - affected_node_count: Nodes reached by cascade
+        - total_propagations: Total propagation events
+
+        **Collective coherence (NEW):**
+
+        - subepi_coherence: Coherence of sub-EPI ensemble [0,1]
+        - metabolic_activity_index: Network context usage [0,1]
+
+        **Network emergence indicator (NEW):**
+
+        - network_emergence: Combined indicator (cascade + high coherence)
+
+    Notes
+    -----
+    TNFR Principle: Complete traceability of self-organization dynamics.
+    These metrics enable reconstruction of entire cascade evolution,
+    validation of controlled emergence, and identification of collective
+    network phenomena.
+
+    See Also
+    --------
+    operators.metabolism.compute_cascade_depth : Cascade depth computation
+    operators.metabolism.compute_subepi_collective_coherence : Coherence metric
+    operators.metabolism.compute_metabolic_activity_index : Metabolic tracking
+    operators.cascade.detect_cascade : Cascade detection
     """
-    from .cascade import detect_cascade, measure_cascade_radius
+    from .cascade import detect_cascade
+    from .metabolism import (
+        compute_cascade_depth,
+        compute_propagation_radius,
+        compute_subepi_collective_coherence,
+        compute_metabolic_activity_index,
+    )
 
     epi_after = _get_node_attr(G, node, ALIAS_EPI)
     vf_after = _get_node_attr(G, node, ALIAS_VF)
     d2epi = _get_node_attr(G, node, ALIAS_D2EPI)
     dnfr = _get_node_attr(G, node, ALIAS_DNFR)
 
-    # Track nested EPI count if graph maintains it
-    nested_epi_count = len(G.graph.get("sub_epi", []))
+    # Track nested EPI count from node attribute or graph (backward compatibility)
+    nested_epi_count = len(G.nodes[node].get("sub_epis", []))
+    if nested_epi_count == 0:
+        # Fallback to old location for backward compatibility
+        nested_epi_count = len(G.graph.get("sub_epi", []))
 
-    # NEW: Network propagation and cascade metrics
+    # Cascade and propagation analysis
     cascade_analysis = detect_cascade(G)
-    cascade_radius = (
-        measure_cascade_radius(G, node) if cascade_analysis["is_cascade"] else 0
-    )
 
-    propagations = G.graph.get("thol_propagations", [])
-    propagated = len(propagations) > 0
+    # NEW: Enhanced cascade and emergence metrics
+    cascade_depth = compute_cascade_depth(G, node)
+    propagation_radius = compute_propagation_radius(G)
+    subepi_coherence = compute_subepi_collective_coherence(G, node)
+    metabolic_activity = compute_metabolic_activity_index(G, node)
 
     return {
+        # Base operator metrics
         "operator": "Self-organization",
         "glyph": "THOL",
         "delta_epi": epi_after - epi_before,
@@ -1018,14 +1079,28 @@ def self_organization_metrics(
         "vf_final": vf_after,
         "d2epi": d2epi,
         "dnfr_final": dnfr,
+
+        # Bifurcation metrics
+        "bifurcation_occurred": nested_epi_count > 0,
         "nested_epi_count": nested_epi_count,
-        "cascade_active": abs(d2epi) > 0.1,  # Configurable threshold
-        # NEW: Network emergence metrics
-        "propagated": propagated,
+        "d2epi_magnitude": abs(d2epi),
+
+        # NEW: Cascade dynamics
+        "cascade_depth": cascade_depth,
+        "propagation_radius": propagation_radius,
         "cascade_detected": cascade_analysis["is_cascade"],
-        "cascade_radius": cascade_radius,
         "affected_node_count": len(cascade_analysis["affected_nodes"]),
         "total_propagations": cascade_analysis["total_propagations"],
+
+        # NEW: Collective coherence
+        "subepi_coherence": subepi_coherence,
+        "metabolic_activity_index": metabolic_activity,
+
+        # NEW: Network emergence indicator
+        "network_emergence": (
+            cascade_analysis["is_cascade"]
+            and subepi_coherence > 0.5
+        ),
     }
 
 
