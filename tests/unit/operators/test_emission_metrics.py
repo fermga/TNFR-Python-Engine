@@ -305,7 +305,8 @@ def test_multiple_emissions_multiple_metrics():
     run_sequence(G, node, [Emission(), Reception(), Coherence(), Silence()])
     first_count = len(G.graph["operator_metrics"])
 
-    # Second emission
+    # Second emission - coherent reactivation
+    Coherence()(G, node)  # Reactivate from silence
     run_sequence(G, node, [Emission(), Reception(), Coherence(), Silence()])
     second_count = len(G.graph["operator_metrics"])
 

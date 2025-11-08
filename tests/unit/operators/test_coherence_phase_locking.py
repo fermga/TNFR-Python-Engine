@@ -243,7 +243,12 @@ def test_phase_locking_convergence_with_repeated_il():
     alignment_before = compute_phase_alignment(G, 1, radius=1)
     
     # Apply IL multiple times to center node
-    for _ in range(5):
+    # First application
+    run_sequence(G, 1, [Emission(), Reception(), Coherence(), Silence()])
+    
+    # Subsequent applications need reactivation
+    for _ in range(4):
+        Coherence()(G, 1)  # Reactivate from silence
         run_sequence(G, 1, [Emission(), Reception(), Coherence(), Silence()])
     
     # Measure final alignment
