@@ -5,6 +5,7 @@ This module provides advanced visualization capabilities for:
 - Health metrics dashboards with radar charts and gauges
 - Pattern analysis with component highlighting
 - Frequency timelines showing structural evolution
+- Cascade propagation and temporal dynamics (NEW)
 
 Requires matplotlib for plotting. Install with::
 
@@ -21,15 +22,28 @@ Examples
 >>> visualizer = SequenceVisualizer()
 >>> fig, ax = visualizer.plot_sequence_flow(sequence, result.health_metrics)
 >>> fig.savefig("sequence_flow.png")
+
+>>> # Cascade visualization (NEW)
+>>> from tnfr.visualization import plot_cascade_propagation, plot_cascade_timeline
+>>> fig = plot_cascade_propagation(G)
+>>> fig.savefig("cascade_propagation.png")
 """
 
 _import_error: ImportError | None = None
 
 try:
     from .sequence_plotter import SequenceVisualizer
+    from .cascade_viz import (
+        plot_cascade_propagation,
+        plot_cascade_timeline,
+        plot_cascade_metrics_summary,
+    )
     
     __all__ = [
         "SequenceVisualizer",
+        "plot_cascade_propagation",
+        "plot_cascade_timeline",
+        "plot_cascade_metrics_summary",
     ]
 except ImportError as _import_err:
     _import_error = _import_err
@@ -55,7 +69,13 @@ except ImportError as _import_err:
             ) from _import_error
 
     SequenceVisualizer = _missing_viz_dependency  # type: ignore[assignment]
+    plot_cascade_propagation = _missing_viz_dependency  # type: ignore[assignment]
+    plot_cascade_timeline = _missing_viz_dependency  # type: ignore[assignment]
+    plot_cascade_metrics_summary = _missing_viz_dependency  # type: ignore[assignment]
     
     __all__ = [
         "SequenceVisualizer",
+        "plot_cascade_propagation",
+        "plot_cascade_timeline",
+        "plot_cascade_metrics_summary",
     ]

@@ -1054,8 +1054,11 @@ def self_organization_metrics(
     d2epi = _get_node_attr(G, node, ALIAS_D2EPI)
     dnfr = _get_node_attr(G, node, ALIAS_DNFR)
 
-    # Track nested EPI count from node attribute
+    # Track nested EPI count from node attribute or graph (backward compatibility)
     nested_epi_count = len(G.nodes[node].get("sub_epis", []))
+    if nested_epi_count == 0:
+        # Fallback to old location for backward compatibility
+        nested_epi_count = len(G.graph.get("sub_epi", []))
 
     # Cascade and propagation analysis
     cascade_analysis = detect_cascade(G)
