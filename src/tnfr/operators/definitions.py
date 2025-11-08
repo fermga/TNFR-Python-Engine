@@ -1453,13 +1453,30 @@ class Coupling(Operator):
 
         validate_coupling(G, node)
 
+    def _capture_state(self, G: TNFRGraph, node: Any) -> dict[str, Any]:
+        """Capture node state before operator application, including edge count."""
+        # Get base state (epi, vf, dnfr, theta)
+        state = super()._capture_state(G, node)
+        
+        # Add edge count for coupling-specific metrics
+        state["edges"] = G.degree(node)
+        
+        return state
+
     def _collect_metrics(
         self, G: TNFRGraph, node: Any, state_before: dict[str, Any]
     ) -> dict[str, Any]:
-        """Collect UM-specific metrics."""
+        """Collect UM-specific metrics with expanded canonical measurements."""
         from .metrics import coupling_metrics
 
-        return coupling_metrics(G, node, state_before["theta"], state_before["dnfr"])
+        return coupling_metrics(
+            G, 
+            node, 
+            state_before["theta"], 
+            dnfr_before=state_before["dnfr"],
+            vf_before=state_before["vf"],
+            edges_before=state_before.get("edges", None),
+        )
 
 
 @register_operator

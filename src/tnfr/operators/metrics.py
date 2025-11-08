@@ -552,8 +552,18 @@ def dissonance_metrics(
     }
 
 
-def coupling_metrics(G: TNFRGraph, node: NodeId, theta_before: float, dnfr_before: float = None) -> dict[str, Any]:
+def coupling_metrics(
+    G: TNFRGraph, 
+    node: NodeId, 
+    theta_before: float, 
+    dnfr_before: float = None,
+    vf_before: float = None,
+    edges_before: int = None,
+) -> dict[str, Any]:
     """UM - Coupling metrics: phase alignment, link formation, synchrony, ΔNFR reduction.
+
+    Extended metrics for Coupling (UM) operator that track structural changes,
+    network formation, and synchronization effectiveness.
 
     Parameters
     ----------
@@ -565,16 +575,64 @@ def coupling_metrics(G: TNFRGraph, node: NodeId, theta_before: float, dnfr_befor
         Phase value before operator application
     dnfr_before : float, optional
         ΔNFR value before operator application (for reduction tracking)
+    vf_before : float, optional
+        Structural frequency (νf) before operator application
+    edges_before : int, optional
+        Number of edges before operator application
 
     Returns
     -------
     dict
-        Coupling-specific metrics including phase synchronization and ΔNFR reduction
+        Coupling-specific metrics including:
+        
+        **Phase metrics:**
+        
+        - theta_shift: Absolute phase change
+        - theta_final: Post-coupling phase
+        - mean_neighbor_phase: Average phase of neighbors
+        - phase_alignment: Alignment with neighbors [0,1]
+        - phase_dispersion: Standard deviation of phases in local cluster
+        - is_synchronized: Boolean indicating strong synchronization (alignment > 0.8)
+        
+        **Frequency metrics:**
+        
+        - delta_vf: Change in structural frequency (νf)
+        - vf_final: Post-coupling structural frequency
+        
+        **Reorganization metrics:**
+        
+        - delta_dnfr: Change in ΔNFR
+        - dnfr_stabilization: Reduction of reorganization pressure (positive if stabilized)
+        - dnfr_final: Post-coupling ΔNFR
+        - dnfr_reduction: Absolute reduction (before - after)
+        - dnfr_reduction_pct: Percentage reduction
+        
+        **Network metrics:**
+        
+        - neighbor_count: Number of neighbors after coupling
+        - new_edges_count: Number of edges added
+        - total_edges: Total edges after coupling
+        - coupling_strength_total: Sum of coupling weights on edges
+        - local_coherence: Kuramoto order parameter of local subgraph
+    
+    Notes
+    -----
+    The extended metrics align with TNFR canonical theory (§2.2.2) that UM creates
+    structural links through phase synchronization (φᵢ(t) ≈ φⱼ(t)). The metrics
+    capture both the synchronization quality and the network structural changes
+    resulting from coupling.
+    
+    See Also
+    --------
+    operators.definitions.Coupling : UM operator implementation
+    metrics.phase_coherence.compute_phase_alignment : Phase alignment computation
     """
     import math
+    import statistics
 
     theta_after = _get_node_attr(G, node, ALIAS_THETA)
     dnfr_after = _get_node_attr(G, node, ALIAS_DNFR)
+    vf_after = _get_node_attr(G, node, ALIAS_VF)
     neighbors = list(G.neighbors(node))
     neighbor_count = len(neighbors)
 
@@ -587,6 +645,7 @@ def coupling_metrics(G: TNFRGraph, node: NodeId, theta_before: float, dnfr_befor
         mean_neighbor_phase = theta_after
         phase_alignment = 0.0
 
+    # Base metrics (always present)
     metrics = {
         "operator": "Coupling",
         "glyph": "UM",
@@ -597,16 +656,67 @@ def coupling_metrics(G: TNFRGraph, node: NodeId, theta_before: float, dnfr_befor
         "phase_alignment": max(0.0, phase_alignment),
     }
 
-    # Add ΔNFR reduction metrics if dnfr_before is provided
+    # Structural frequency metrics (if vf_before provided)
+    if vf_before is not None:
+        delta_vf = vf_after - vf_before
+        metrics.update({
+            "delta_vf": delta_vf,
+            "vf_final": vf_after,
+        })
+
+    # ΔNFR reduction metrics (if dnfr_before provided)
     if dnfr_before is not None:
         dnfr_reduction = dnfr_before - dnfr_after
         dnfr_reduction_pct = (dnfr_reduction / (abs(dnfr_before) + 1e-9)) * 100.0
+        dnfr_stabilization = dnfr_before - dnfr_after  # Positive if stabilized
         metrics.update({
             "dnfr_before": dnfr_before,
             "dnfr_after": dnfr_after,
+            "delta_dnfr": dnfr_after - dnfr_before,
             "dnfr_reduction": dnfr_reduction,
             "dnfr_reduction_pct": dnfr_reduction_pct,
+            "dnfr_stabilization": dnfr_stabilization,
+            "dnfr_final": dnfr_after,
         })
+
+    # Edge/network formation metrics (if edges_before provided)
+    edges_after = G.degree(node)
+    if edges_before is not None:
+        new_edges_count = edges_after - edges_before
+        metrics.update({
+            "new_edges_count": new_edges_count,
+            "total_edges": edges_after,
+        })
+    else:
+        # Still provide total_edges even without edges_before
+        metrics["total_edges"] = edges_after
+
+    # Coupling strength (sum of edge weights)
+    coupling_strength_total = 0.0
+    for neighbor in neighbors:
+        edge_data = G.get_edge_data(node, neighbor)
+        if edge_data and isinstance(edge_data, dict):
+            coupling_strength_total += edge_data.get('coupling', 0.0)
+    metrics["coupling_strength_total"] = coupling_strength_total
+
+    # Phase dispersion (standard deviation of local phases)
+    if neighbor_count > 1:
+        phases = [theta_after] + [_get_node_attr(G, n, ALIAS_THETA) for n in neighbors]
+        phase_std = statistics.stdev(phases)
+        metrics["phase_dispersion"] = phase_std
+    else:
+        metrics["phase_dispersion"] = 0.0
+
+    # Local coherence (Kuramoto order parameter of subgraph)
+    if neighbor_count > 0:
+        from ..metrics.phase_coherence import compute_phase_alignment
+        local_coherence = compute_phase_alignment(G, node, radius=1)
+        metrics["local_coherence"] = local_coherence
+    else:
+        metrics["local_coherence"] = 0.0
+
+    # Synchronization indicator
+    metrics["is_synchronized"] = phase_alignment > 0.8
 
     return metrics
 
