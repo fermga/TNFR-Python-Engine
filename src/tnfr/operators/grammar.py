@@ -694,6 +694,9 @@ class _SequenceAutomaton:
         "_detected_pattern",
         "_bifurcation_context",
         "_destabilizer_context",
+        "_thol_stack",
+        "_thol_subsequences",
+        "_thol_encapsulated_indices",
     )
 
     def __init__(self) -> None:
@@ -716,6 +719,10 @@ class _SequenceAutomaton:
             "moderate": deque(maxlen=BIFURCATION_WINDOWS["moderate"]),
             "weak": deque(maxlen=BIFURCATION_WINDOWS["weak"]),
         }
+        # THOL recursive validation: Track nested THOL blocks and their subsequences
+        self._thol_stack: list[int] = []  # Stack of THOL opening indices
+        self._thol_subsequences: dict[int, list[str]] = {}  # Subsequences by opening index
+        self._thol_encapsulated_indices: set[int] = set()  # Indices inside THOL windows
 
     def run(self, names: Sequence[str]) -> None:
         if not names:
@@ -788,11 +795,66 @@ class _SequenceAutomaton:
         if canonical == DISSONANCE:
             self._found_dissonance = True
 
-        # Track THOL state
+        # Track THOL state: Bifurcation window with automatic validation-based closure
+        # 
+        # TNFR Bifurcation Window Principle: THOL window closes when internal sequence is valid
+        # - THOL opens bifurcation window
+        # - Window accumulates operators
+        # - When sequence reaches valid end operator, try to validate
+        # - If valid: close window automatically
+        # - If not valid: continue accumulating
+        #
+        # This allows internal sequences to be identical to external ones:
+        # they self-close when complete, no explicit delimiter needed.
+        #
+        # Empty window allowed (no bifurcation case: ∂²EPI/∂t² ≤ τ)
         if canonical == SELF_ORGANIZATION:
+            # THOL opening: push to stack and initialize bifurcation window
+            self._thol_stack.append(index)
+            self._thol_subsequences[index] = []
             self._open_thol = True
-        elif self._open_thol and canonical in SELF_ORGANIZATION_CLOSURES:
-            self._open_thol = False
+        elif self._open_thol and self._thol_stack:
+            current_thol = self._thol_stack[-1]
+            window_content = self._thol_subsequences[current_thol]
+            
+            # Mark this operator as encapsulated in THOL window
+            self._thol_encapsulated_indices.add(index)
+            
+            # Check if this is the first operator in window
+            if len(window_content) == 0:
+                # First operator after THOL opening
+                # If it's not a valid start operator, window remains empty (no bifurcation)
+                # and this operator belongs to external sequence
+                if canonical not in VALID_START_OPERATORS:
+                    # Empty window - no bifurcation occurred
+                    # Close THOL immediately and process operator in parent context
+                    self._thol_stack.pop()
+                    self._open_thol = bool(self._thol_stack)
+                    # Unmark as encapsulated since it's part of parent context
+                    self._thol_encapsulated_indices.discard(index)
+                    # Don't add to window - process normally in parent context
+                    # (will be processed by subsequent validation logic)
+                    return
+            
+            # Add operator to bifurcation window
+            self._thol_subsequences[current_thol].append(canonical)
+            
+            # Check if window is complete (sequence ends with valid end operator)
+            # Try to close if last operator is a valid sequence end
+            if canonical in VALID_END_OPERATORS and len(window_content) > 0:
+                # Attempt to validate window as complete sequence
+                try:
+                    # Create temporary automaton to test if window is valid
+                    test_automaton = _SequenceAutomaton()
+                    test_automaton.run(self._thol_subsequences[current_thol])
+                    
+                    # Validation succeeded - window is complete, close THOL
+                    self._thol_stack.pop()
+                    self._open_thol = bool(self._thol_stack)
+                    
+                except SequenceSyntaxError:
+                    # Window not yet complete/valid - continue accumulating
+                    pass
 
         # Validate sequential compatibility if not first token
         # Only validate if both prev and current are known operators
@@ -999,6 +1061,73 @@ class _SequenceAutomaton:
 
         return False
 
+    def _validate_thol_subsequence(
+        self,
+        subsequence: list[str],
+        start_index: int,
+        end_index: int,
+        end_token: str
+    ) -> None:
+        """Validate bifurcation window content within THOL block.
+        
+        TNFR Bifurcation Window Principle: THOL requires explicit window that
+        contains bifurcation sequences. Window must be verified before proceeding.
+        
+        Empty window is valid (THOL applied without bifurcation: ∂²EPI/∂t² ≤ τ).
+        Non-empty window must contain grammatically coherent sequence(s).
+        
+        Window semantics (from @fermga's structural time insight):
+        - Window opened by THOL, closed by CONTRACTION
+        - Content represents bifurcation space
+        - If bifurcation occurs: sequences written in window
+        - If no bifurcation: window remains empty
+        - Only after window validation, sequence proceeds to next operator
+        
+        Parameters
+        ----------
+        subsequence : list[str]
+            Operators within THOL bifurcation window
+        start_index : int
+            Index of THOL opening in parent sequence
+        end_index : int
+            Index of window closure in parent sequence
+        end_token : str
+            Token used for closure (CONTRACTION)
+            
+        Raises
+        ------
+        SequenceSyntaxError
+            If window content is invalid (when non-empty)
+            
+        Notes
+        -----
+        From TNFR Manual §3.2.2 (Ontología fractal resonante):
+        "Los NFRs pueden anidarse jerárquicamente: un nodo puede contener
+        nodos internos coherentes, dando lugar a una estructura fractal."
+        
+        Bifurcation window enables operational fractality while maintaining
+        explicit structural boundaries.
+        """
+        # Empty window is valid: THOL applied without bifurcation
+        if not subsequence:
+            return
+        
+        # Recursive grammar validation for non-empty bifurcation window
+        # Create new automaton to validate window content independently
+        try:
+            nested_automaton = _SequenceAutomaton()
+            nested_automaton.run(subsequence)
+        except SequenceSyntaxError as e:
+            # Re-raise with THOL context
+            raise SequenceSyntaxError(
+                index=start_index + e.index + 1,  # Offset by THOL position
+                token=e.token,
+                message=(
+                    f"Invalid subsequence within {operator_display_name(SELF_ORGANIZATION)} "
+                    f"block (opened at position {start_index}): {e.message}"
+                )
+            ) from e
+
     def _validate_threshold_physics(self, sequence: Sequence[str]) -> None:
         """C4: Validate threshold physics - transformations require context.
         
@@ -1135,21 +1264,38 @@ class _SequenceAutomaton:
         # Already validated in _accept() for first operator
         
         # C1.2: End validation (legacy R3)
-        if self._canonical[-1] not in VALID_END_OPERATORS:
+        # TNFR Encapsulation: Check last operator NOT inside THOL window
+        # Sub-EPIs are independent nodes (operational fractality), so operators
+        # inside THOL windows don't count toward main sequence ending.
+        last_non_encapsulated_index = len(self._canonical) - 1
+        for i in range(len(self._canonical) - 1, -1, -1):
+            if i not in self._thol_encapsulated_indices:
+                last_non_encapsulated_index = i
+                break
+        
+        if self._canonical[last_non_encapsulated_index] not in VALID_END_OPERATORS:
             cierre = _format_token_group(_CANONICAL_END)
             raise SequenceSyntaxError(
-                index=len(names) - 1,
-                token=names[-1],
-                message=f"C1: sequence must end with {cierre} (EXISTENCE & CLOSURE constraint)",
+                index=last_non_encapsulated_index,
+                token=names[last_non_encapsulated_index],
+                message=f"C1: sequence must end with {cierre} (EXISTENCE & CLOSURE constraint). "
+                        f"Operators inside {operator_display_name(SELF_ORGANIZATION)} windows are encapsulated "
+                        f"(operational fractality) and don't count as sequence ending.",
             )
 
-        # C1.3: Reception→Coherence segment (structural foundation)
-        if not (self._found_reception and self._found_coherence):
-            raise SequenceSyntaxError(
-                index=-1,
-                token=None,
-                message=f"C1: missing {RECEPTION}→{COHERENCE} segment (structural foundation required)",
-            )
+        # NOTE: C1.3 Reception→Coherence segment validation removed
+        # This requirement does NOT derive from the 4 physical constraints (C1-C4).
+        # It was a heuristic for "structural foundation" but is not canonical.
+        # Sequences are valid if they satisfy C1 (start/end), C2 (continuity),
+        # C3 (stabilizer), and C4 (threshold physics) - nothing more.
+        #
+        # Removed validation:
+        # if not (self._found_reception and self._found_coherence):
+        #     raise SequenceSyntaxError(
+        #         index=-1,
+        #         token=None,
+        #         message=f"C1: missing {RECEPTION}→{COHERENCE} segment (structural foundation required)",
+        #     )
 
         # ═══════════════════════════════════════════════════════════════════
         # C3: BOUNDEDNESS
@@ -1164,13 +1310,34 @@ class _SequenceAutomaton:
                 message=f"C3: missing stabilizer ({operator_display_name(COHERENCE)} or {operator_display_name(SELF_ORGANIZATION)}) - integral divergence (BOUNDEDNESS constraint)",
             )
 
-        # Self-organization block closure
+        # Self-organization bifurcation window closure
+        # Empty window is valid (no bifurcation: ∂²EPI/∂t² ≤ τ)
+        # Non-empty window must contain valid sequence (bifurcation occurred)
         if self._open_thol:
-            raise SequenceSyntaxError(
-                index=len(names) - 1,
-                token=names[-1],
-                message=f"C3: {operator_display_name(SELF_ORGANIZATION)} block without closure",
-            )
+            # Close all open THOL windows with their current content
+            while self._thol_stack:
+                thol_start = self._thol_stack.pop()
+                window_content = self._thol_subsequences[thol_start]
+                
+                # Empty window is valid (THOL without bifurcation)
+                if len(window_content) == 0:
+                    continue  # Valid empty window
+                
+                # Non-empty window: validate as complete sequence
+                # If window was not auto-closed during parsing, check if valid at sequence end
+                try:
+                    nested_automaton = _SequenceAutomaton()
+                    nested_automaton.run(window_content)
+                    # Valid - window is complete
+                except SequenceSyntaxError as e:
+                    # Invalid/incomplete window
+                    raise SequenceSyntaxError(
+                        index=len(names) - 1,
+                        token=names[-1] if names else "",
+                        message=f"Invalid {operator_display_name(SELF_ORGANIZATION)} bifurcation window (opened at position {thol_start}): {e.message}"
+                    ) from e
+            
+            self._open_thol = False
 
         # ═══════════════════════════════════════════════════════════════════
         # C2: CONTINUITY & C4: THRESHOLD PHYSICS
