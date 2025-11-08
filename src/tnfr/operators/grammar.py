@@ -793,31 +793,61 @@ class _SequenceAutomaton:
         if canonical == DISSONANCE:
             self._found_dissonance = True
 
-        # Track THOL state: Structural time with automatic closure
+        # Track THOL state: Bifurcation window with automatic validation-based closure
         # 
-        # TNFR Structural Time Principle: THOL closure emerges from bifurcation completion,
-        # not from operator detection. Internal sequences are equivalent to external ones.
+        # TNFR Bifurcation Window Principle: THOL window closes when internal sequence is valid
+        # - THOL opens bifurcation window
+        # - Window accumulates operators
+        # - When sequence reaches valid end operator, try to validate
+        # - If valid: close window automatically
+        # - If not valid: continue accumulating
         #
-        # Implementation for static validation:
-        # - THOL opens a nested context
-        # - Operators inside THOL are treated as normal sequence (can include SILENCE, etc.)
-        # - THOL closes automatically at sequence end or parent THOL closure
-        # - Nested THOL are supported (operational fractality)
+        # This allows internal sequences to be identical to external ones:
+        # they self-close when complete, no explicit delimiter needed.
         #
-        # This allows internal sequences to be identical to external ones, including
-        # having their own THOL blocks and using any valid end operators.
+        # Empty window allowed (no bifurcation case: ∂²EPI/∂t² ≤ τ)
         if canonical == SELF_ORGANIZATION:
-            # THOL opening: push to stack and initialize subsequence
+            # THOL opening: push to stack and initialize bifurcation window
             self._thol_stack.append(index)
             self._thol_subsequences[index] = []
             self._open_thol = True
         elif self._open_thol and self._thol_stack:
             current_thol = self._thol_stack[-1]
+            window_content = self._thol_subsequences[current_thol]
             
-            # All operators inside THOL are added to subsequence
-            # No operator-based closure detection - THOL closes structurally
-            # This allows internal sequences to be identical to external ones
+            # Check if this is the first operator in window
+            if len(window_content) == 0:
+                # First operator after THOL opening
+                # If it's not a valid start operator, window remains empty (no bifurcation)
+                # and this operator belongs to external sequence
+                if canonical not in VALID_START_OPERATORS:
+                    # Empty window - no bifurcation occurred
+                    # Close THOL immediately and process operator in parent context
+                    self._thol_stack.pop()
+                    self._open_thol = bool(self._thol_stack)
+                    # Don't add to window - process normally in parent context
+                    # (will be processed by subsequent validation logic)
+                    return
+            
+            # Add operator to bifurcation window
             self._thol_subsequences[current_thol].append(canonical)
+            
+            # Check if window is complete (sequence ends with valid end operator)
+            # Try to close if last operator is a valid sequence end
+            if canonical in VALID_END_OPERATORS and len(window_content) > 0:
+                # Attempt to validate window as complete sequence
+                try:
+                    # Create temporary automaton to test if window is valid
+                    test_automaton = _SequenceAutomaton()
+                    test_automaton.run(self._thol_subsequences[current_thol])
+                    
+                    # Validation succeeded - window is complete, close THOL
+                    self._thol_stack.pop()
+                    self._open_thol = bool(self._thol_stack)
+                    
+                except SequenceSyntaxError:
+                    # Window not yet complete/valid - continue accumulating
+                    pass
 
         # Validate sequential compatibility if not first token
         # Only validate if both prev and current are known operators
@@ -1031,29 +1061,36 @@ class _SequenceAutomaton:
         end_index: int,
         end_token: str
     ) -> None:
-        """Validate recursively the subsequence within THOL block.
+        """Validate bifurcation window content within THOL block.
         
-        TNFR Physical Principle: THOL (self-organization) always applies as operator,
-        but only generates sub-EPIs (and thus subsequence) if ∂²EPI/∂t² > τ.
+        TNFR Bifurcation Window Principle: THOL requires explicit window that
+        contains bifurcation sequences. Window must be verified before proceeding.
         
-        Empty THOL is physically valid - represents THOL application without bifurcation.
-        Non-empty subsequence represents sub-EPIs and must respect grammar rules (C1-C4).
+        Empty window is valid (THOL applied without bifurcation: ∂²EPI/∂t² ≤ τ).
+        Non-empty window must contain grammatically coherent sequence(s).
+        
+        Window semantics (from @fermga's structural time insight):
+        - Window opened by THOL, closed by CONTRACTION
+        - Content represents bifurcation space
+        - If bifurcation occurs: sequences written in window
+        - If no bifurcation: window remains empty
+        - Only after window validation, sequence proceeds to next operator
         
         Parameters
         ----------
         subsequence : list[str]
-            Operators within THOL block (between opening and closure)
+            Operators within THOL bifurcation window
         start_index : int
             Index of THOL opening in parent sequence
         end_index : int
-            Index of THOL closure in parent sequence
+            Index of window closure in parent sequence
         end_token : str
-            Token used for closure (for error messages)
+            Token used for closure (CONTRACTION)
             
         Raises
         ------
         SequenceSyntaxError
-            If subsequence is invalid (when non-empty)
+            If window content is invalid (when non-empty)
             
         Notes
         -----
@@ -1061,18 +1098,15 @@ class _SequenceAutomaton:
         "Los NFRs pueden anidarse jerárquicamente: un nodo puede contener
         nodos internos coherentes, dando lugar a una estructura fractal."
         
-        From operator implementation: THOL bifurcates only if d2_epi > tau.
-        This means THOL can appear without generating sub-EPIs (empty subsequence).
-        
-        When bifurcation occurs (non-empty subsequence), structures must be
-        coherent at all scales - operational fractality is maintained.
+        Bifurcation window enables operational fractality while maintaining
+        explicit structural boundaries.
         """
-        # Empty THOL is valid: THOL applied but no bifurcation occurred
+        # Empty window is valid: THOL applied without bifurcation
         if not subsequence:
             return
         
-        # Recursive grammar validation for non-empty subsequences
-        # Create new automaton to validate subsequence independently
+        # Recursive grammar validation for non-empty bifurcation window
+        # Create new automaton to validate window content independently
         try:
             nested_automaton = _SequenceAutomaton()
             nested_automaton.run(subsequence)
@@ -1258,30 +1292,32 @@ class _SequenceAutomaton:
                 message=f"C3: missing stabilizer ({operator_display_name(COHERENCE)} or {operator_display_name(SELF_ORGANIZATION)}) - integral divergence (BOUNDEDNESS constraint)",
             )
 
-        # Self-organization block closure (structural time)
-        # THOL closes automatically at sequence end - validates all captured subsequences
+        # Self-organization bifurcation window closure
+        # Empty window is valid (no bifurcation: ∂²EPI/∂t² ≤ τ)
+        # Non-empty window must contain valid sequence (bifurcation occurred)
         if self._open_thol:
-            # Close all open THOL blocks from innermost to outermost
+            # Close all open THOL windows with their current content
             while self._thol_stack:
                 thol_start = self._thol_stack.pop()
-                thol_subseq = self._thol_subsequences[thol_start]
+                window_content = self._thol_subsequences[thol_start]
                 
-                # Validate subsequence (allows empty THOL - no bifurcation case)
-                if len(thol_subseq) > 0:
-                    try:
-                        self._validate_thol_subsequence(
-                            thol_subseq, 
-                            thol_start, 
-                            len(names) - 1,
-                            names[-1] if names else ""
-                        )
-                    except SequenceSyntaxError as e:
-                        # Re-raise with THOL context
-                        raise SequenceSyntaxError(
-                            index=e.index,
-                            token=e.token,
-                            message=f"Invalid THOL subsequence (opened at position {thol_start}): {e.message}"
-                        ) from e
+                # Empty window is valid (THOL without bifurcation)
+                if len(window_content) == 0:
+                    continue  # Valid empty window
+                
+                # Non-empty window: validate as complete sequence
+                # If window was not auto-closed during parsing, check if valid at sequence end
+                try:
+                    nested_automaton = _SequenceAutomaton()
+                    nested_automaton.run(window_content)
+                    # Valid - window is complete
+                except SequenceSyntaxError as e:
+                    # Invalid/incomplete window
+                    raise SequenceSyntaxError(
+                        index=len(names) - 1,
+                        token=names[-1] if names else "",
+                        message=f"Invalid {operator_display_name(SELF_ORGANIZATION)} bifurcation window (opened at position {thol_start}): {e.message}"
+                    ) from e
             
             self._open_thol = False
 
