@@ -46,6 +46,10 @@ __all__ = [
     "capture_network_signals",
     "metabolize_signals_into_subepi",
     "propagate_subepi_to_network",
+    "compute_cascade_depth",
+    "compute_propagation_radius",
+    "compute_subepi_collective_coherence",
+    "compute_metabolic_activity_index",
 ]
 
 
@@ -329,3 +333,185 @@ def propagate_subepi_to_network(
             G.nodes[neighbor]["epi_history"] = history[-10:]  # Keep last 10
 
     return propagations
+
+
+def compute_cascade_depth(G: TNFRGraph, node: NodeId) -> int:
+    """Compute maximum hierarchical depth of bifurcation cascade.
+
+    Recursively measures how many levels of nested sub-EPIs exist,
+    where each sub-EPI can itself bifurcate into deeper levels.
+
+    Parameters
+    ----------
+    G : TNFRGraph
+        Graph containing bifurcation history
+    node : NodeId
+        Root node of cascade analysis
+
+    Returns
+    -------
+    int
+        Maximum cascade depth (0 if no bifurcation occurred)
+
+    Examples
+    --------
+    >>> # Single-level bifurcation
+    >>> compute_cascade_depth(G, node)
+    1
+
+    >>> # Multi-level cascade (sub-EPIs bifurcated further)
+    >>> compute_cascade_depth(G_complex, node)
+    3
+
+    Notes
+    -----
+    TNFR Principle: Cascade depth measures the hierarchical complexity
+    of emergent self-organization. Depth = 1 indicates direct bifurcation;
+    depth > 1 indicates recursive, multi-scale emergence.
+    """
+    sub_epis = G.nodes[node].get("sub_epis", [])
+    if not sub_epis:
+        return 0
+
+    # For now: depth = 1 (direct children)
+    # TODO: If sub-EPIs become independent nodes, recurse
+    max_depth = 1
+
+    for sub in sub_epis:
+        # If sub-EPI spawned its own children (future enhancement)
+        nested_depth = sub.get("cascade_depth", 0)
+        max_depth = max(max_depth, 1 + nested_depth)
+
+    return max_depth
+
+
+def compute_propagation_radius(G: TNFRGraph) -> int:
+    """Count total unique nodes affected by THOL cascades.
+
+    Parameters
+    ----------
+    G : TNFRGraph
+        Graph with THOL propagation history
+
+    Returns
+    -------
+    int
+        Number of nodes reached by at least one propagation event
+
+    Notes
+    -----
+    TNFR Principle: Propagation radius measures the spatial extent
+    of cascade effects across the network. High radius indicates
+    network-wide self-organization.
+
+    Examples
+    --------
+    >>> # Local cascade (few nodes)
+    >>> compute_propagation_radius(G_local)
+    3
+
+    >>> # Network-wide cascade
+    >>> compute_propagation_radius(G_wide)
+    15
+    """
+    propagations = G.graph.get("thol_propagations", [])
+    affected_nodes = set()
+
+    for prop in propagations:
+        affected_nodes.add(prop["source_node"])
+        for target, _ in prop["propagations"]:
+            affected_nodes.add(target)
+
+    return len(affected_nodes)
+
+
+def compute_subepi_collective_coherence(G: TNFRGraph, node: NodeId) -> float:
+    """Calculate coherence of sub-EPI ensemble.
+
+    Measures how structurally aligned the emergent sub-EPIs are.
+    Low variance = high coherence = stable emergence.
+
+    Parameters
+    ----------
+    G : TNFRGraph
+        Graph containing the node
+    node : NodeId
+        Node with sub-EPIs to analyze
+
+    Returns
+    -------
+    float
+        Coherence metric [0, 1] where 1 = perfect alignment
+
+    Notes
+    -----
+    Uses variance-based coherence:
+    C_sub = 1 / (1 + var(sub_epi_magnitudes))
+
+    TNFR Principle: Coherent bifurcation produces sub-EPIs with similar
+    structural magnitudes, indicating controlled emergence vs chaotic
+    fragmentation.
+
+    Examples
+    --------
+    >>> # Coherent bifurcation (similar sub-EPIs)
+    >>> compute_subepi_collective_coherence(G, node)
+    0.85
+
+    >>> # Chaotic fragmentation (varied sub-EPIs)
+    >>> compute_subepi_collective_coherence(G_chaotic, node)
+    0.23
+    """
+    np = get_numpy()
+
+    sub_epis = G.nodes[node].get("sub_epis", [])
+    if len(sub_epis) < 2:
+        return 0.0  # Need ≥2 sub-EPIs to measure coherence
+
+    epi_values = [sub["epi"] for sub in sub_epis]
+    variance = float(np.var(epi_values))
+
+    # Coherence: inverse relationship with variance
+    coherence = 1.0 / (1.0 + variance)
+    return coherence
+
+
+def compute_metabolic_activity_index(G: TNFRGraph, node: NodeId) -> float:
+    """Measure proportion of sub-EPIs generated through network metabolism.
+
+    Parameters
+    ----------
+    G : TNFRGraph
+        Graph containing the node
+    node : NodeId
+        Node to analyze
+
+    Returns
+    -------
+    float
+        Ratio [0, 1] of metabolized sub-EPIs to total sub-EPIs
+        1.0 = all sub-EPIs included network context
+        0.0 = all sub-EPIs were purely internal bifurcations
+
+    Notes
+    -----
+    TNFR Principle: Metabolic activity measures how much network context
+    influenced bifurcation. High index indicates external pressure drove
+    emergence; low index indicates internal acceleration dominated.
+
+    Examples
+    --------
+    >>> # Network-driven bifurcation
+    >>> compute_metabolic_activity_index(G_coupled, node)
+    0.90
+
+    >>> # Internal-only bifurcation
+    >>> compute_metabolic_activity_index(G_isolated, node)
+    0.0
+    """
+    sub_epis = G.nodes[node].get("sub_epis", [])
+    if not sub_epis:
+        return 0.0
+
+    metabolized_count = sum(1 for sub in sub_epis if sub.get("metabolized", False))
+    return metabolized_count / len(sub_epis)

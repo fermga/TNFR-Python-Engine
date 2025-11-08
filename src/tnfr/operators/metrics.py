@@ -972,7 +972,10 @@ def contraction_metrics(
 def self_organization_metrics(
     G: TNFRGraph, node: NodeId, epi_before: float, vf_before: float
 ) -> dict[str, Any]:
-    """THOL - Self-organization metrics: nested EPI generation, cascade formation.
+    """THOL - Enhanced metrics with cascade dynamics and collective coherence.
+
+    Collects comprehensive THOL metrics including bifurcation, cascade propagation,
+    collective coherence of sub-EPIs, and metabolic activity indicators.
 
     Parameters
     ----------
@@ -988,28 +991,86 @@ def self_organization_metrics(
     Returns
     -------
     dict
-        Self-organization-specific metrics including cascade indicators
+        Self-organization-specific metrics including:
+        
+        **Base operator metrics:**
+        
+        - operator: "Self-organization"
+        - glyph: "THOL"
+        - delta_epi: Change in EPI
+        - delta_vf: Change in νf
+        - epi_final: Final EPI value
+        - vf_final: Final νf value
+        - d2epi: Structural acceleration
+        - dnfr_final: Final ΔNFR
+        
+        **Bifurcation metrics:**
+        
+        - bifurcation_occurred: Boolean indicator
+        - nested_epi_count: Number of sub-EPIs created
+        - d2epi_magnitude: Absolute acceleration
+        
+        **Cascade dynamics (NEW):**
+        
+        - cascade_depth: Maximum hierarchical bifurcation depth
+        - propagation_radius: Total unique nodes affected
+        - cascade_detected: Boolean cascade indicator
+        - affected_node_count: Nodes reached by cascade
+        - total_propagations: Total propagation events
+        
+        **Collective coherence (NEW):**
+        
+        - subepi_coherence: Coherence of sub-EPI ensemble [0,1]
+        - metabolic_activity_index: Network context usage [0,1]
+        
+        **Network emergence indicator (NEW):**
+        
+        - network_emergence: Combined indicator (cascade + high coherence)
+
+    Notes
+    -----
+    TNFR Principle: Complete traceability of self-organization dynamics.
+    These metrics enable reconstruction of entire cascade evolution,
+    validation of controlled emergence, and identification of collective
+    network phenomena.
+
+    See Also
+    --------
+    operators.metabolism.compute_cascade_depth : Cascade depth computation
+    operators.metabolism.compute_subepi_collective_coherence : Coherence metric
+    operators.metabolism.compute_metabolic_activity_index : Metabolic tracking
+    operators.cascade.detect_cascade : Cascade detection
     """
     from .cascade import detect_cascade, measure_cascade_radius
+    from .metabolism import (
+        compute_cascade_depth,
+        compute_propagation_radius,
+        compute_subepi_collective_coherence,
+        compute_metabolic_activity_index,
+    )
 
     epi_after = _get_node_attr(G, node, ALIAS_EPI)
     vf_after = _get_node_attr(G, node, ALIAS_VF)
     d2epi = _get_node_attr(G, node, ALIAS_D2EPI)
     dnfr = _get_node_attr(G, node, ALIAS_DNFR)
 
-    # Track nested EPI count if graph maintains it
-    nested_epi_count = len(G.graph.get("sub_epi", []))
+    # Track nested EPI count from node attribute
+    nested_epi_count = len(G.nodes[node].get("sub_epis", []))
 
-    # NEW: Network propagation and cascade metrics
+    # Cascade and propagation analysis
     cascade_analysis = detect_cascade(G)
     cascade_radius = (
         measure_cascade_radius(G, node) if cascade_analysis["is_cascade"] else 0
     )
 
-    propagations = G.graph.get("thol_propagations", [])
-    propagated = len(propagations) > 0
+    # NEW: Enhanced cascade and emergence metrics
+    cascade_depth = compute_cascade_depth(G, node)
+    propagation_radius = compute_propagation_radius(G)
+    subepi_coherence = compute_subepi_collective_coherence(G, node)
+    metabolic_activity = compute_metabolic_activity_index(G, node)
 
     return {
+        # Base operator metrics
         "operator": "Self-organization",
         "glyph": "THOL",
         "delta_epi": epi_after - epi_before,
@@ -1018,14 +1079,28 @@ def self_organization_metrics(
         "vf_final": vf_after,
         "d2epi": d2epi,
         "dnfr_final": dnfr,
+        
+        # Bifurcation metrics
+        "bifurcation_occurred": nested_epi_count > 0,
         "nested_epi_count": nested_epi_count,
-        "cascade_active": abs(d2epi) > 0.1,  # Configurable threshold
-        # NEW: Network emergence metrics
-        "propagated": propagated,
+        "d2epi_magnitude": abs(d2epi),
+        
+        # NEW: Cascade dynamics
+        "cascade_depth": cascade_depth,
+        "propagation_radius": propagation_radius,
         "cascade_detected": cascade_analysis["is_cascade"],
-        "cascade_radius": cascade_radius,
         "affected_node_count": len(cascade_analysis["affected_nodes"]),
         "total_propagations": cascade_analysis["total_propagations"],
+        
+        # NEW: Collective coherence
+        "subepi_coherence": subepi_coherence,
+        "metabolic_activity_index": metabolic_activity,
+        
+        # NEW: Network emergence indicator
+        "network_emergence": (
+            cascade_analysis["is_cascade"] 
+            and subepi_coherence > 0.5
+        ),
     }
 
 
