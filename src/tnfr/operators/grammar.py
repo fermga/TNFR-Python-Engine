@@ -1,17 +1,201 @@
 """Canonical grammar and sequence validation for structural operators.
 
-This module enforces TNFR canonical grammar rules (R1-R5) to ensure that
-operator sequences respect the fundamental physics of the nodal equation:
+This module enforces TNFR canonical constraints that emerge naturally from
+the fundamental physics of the nodal equation:
 
     ∂EPI/∂t = νf · ΔNFR(t)
 
-Grammar Rules (R1-R5)
----------------------
-R1: Start operators - Must be able to generate or activate EPI
-R2: Stabilizer requirement - Must contain IL (coherence) or THOL (self-organization)
-R3: End operators - Must stabilize reorganization or achieve operational closure
-R4: Bifurcation control - Transformers (ZHIR/THOL) require recent destabilizer
-R5: Frequency transitions - Must respect structural frequency harmonics
+Natural Constraints from TNFR Physics
+-------------------------------------
+These are not arbitrary "rules" but physical requirements that emerge from
+the nodal equation itself:
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+C1: EXISTENCE & CLOSURE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+**Physical Basis:**
+From ∂EPI/∂t = νf · ΔNFR, the derivative is undefined when EPI = null.
+A sequence must begin with operators that can generate/activate EPI from
+vacuum or dormant states. Similarly, sequences are temporal segments that
+must end in physically coherent states.
+
+**Structural Dynamics:**
+- **Start (R1)**: Generators create structural patterns from potential
+  * AL (Emission): Generates EPI from vacuum via emission
+  * NAV (Transition): Activates latent EPI through regime shift
+  * REMESH (Recursivity): Echoes dormant structure across scales
+  
+- **End (R3)**: Four fundamental closure types from physics
+  * SHA (Silence): Terminal closure - freezes evolution (νf → 0)
+  * NAV (Transition): Handoff closure - transfers to next regime
+  * REMESH (Recursivity): Recursive closure - distributes across scales
+  * OZ (Dissonance): Intentional closure - preserves activation/tension
+
+**Why These Operators?**
+Not arbitrary choice - these are the ONLY operators with required physics:
+- Generators must create structure from nothing (strong emission/activation)
+- Closures must leave system in stable attractor states (defined dynamics)
+
+**Physical Interpretation:**
+Sequences are "action potentials" in structural space. They must:
+1. Initiate from valid source (generator creates EPI)
+2. Terminate in stable state (closure preserves coherence)
+
+Like physical waves: must have emission source and absorption/reflection end.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+C2: CONTINUITY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+**Physical Basis:**
+The nodal equation is a differential equation - its solution ∂EPI/∂t must
+be continuous. Discontinuous frequency jumps violate calculus fundamentals
+and create undefined structural states.
+
+**Structural Dynamics (R5):**
+Frequency (νf) represents reorganization rate. Natural transitions:
+- **high → medium**: Dampening (energy dissipation, natural relaxation)
+- **high → zero**: Containment (active freezing via SHA)
+- **medium → high**: Activation (energy injection, stimulation)
+- **zero → medium**: Awakening (gradual activation from dormancy)
+- **FORBIDDEN: zero → high**: Discontinuous jump violates physics
+
+**Why Forbidden?**
+Zero (SHA) means νf = 0 (frozen). Jumping to high (AL, OZ) means sudden
+νf ≫ 0. This is non-physical: ∂νf/∂t → ∞ (infinite acceleration).
+
+Like temperature: you can't jump from 0K to 1000K instantly - violates
+thermodynamics. Must pass through intermediate states.
+
+**Physical Interpretation:**
+Structural frequency behaves like field intensity. Changes propagate through
+continuous paths. Discontinuities would create singularities (infinite ∂²EPI/∂t²),
+causing structural fracture and collapse.
+
+**Harmonic Resonance:**
+Compatible frequencies resonate; incompatible ones interfere destructively.
+Natural paths preserve phase coherence across operator transitions.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+C3: BOUNDEDNESS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+**Physical Basis:**
+From the integrated nodal equation:
+    EPI(t_final) = EPI(t_initial) + ∫_{t_0}^{t_f} νf(t) · ΔNFR(t) dt
+
+If the integral diverges (→ ∞), EPI becomes unbounded and system collapses.
+Stabilizers provide negative feedback that ensures integral convergence.
+
+**Structural Dynamics (R2):**
+Without stabilizers, ΔNFR can grow unbounded through positive feedback:
+- Destabilizers increase |ΔNFR| → higher ∂EPI/∂t → more change
+- More change → more ΔNFR → runaway divergence
+- System fragments into incoherent noise
+
+Stabilizers (IL, THOL) provide negative feedback:
+- IL (Coherence): Actively reduces |ΔNFR| through structural integration
+- THOL (Self-org): Creates autopoietic boundaries that self-limit growth
+
+**Mathematical Proof:**
+Without stabilizer: d(ΔNFR)/dt > 0 always
+  ⟹ ΔNFR(t) = ΔNFR(0) · e^(λt) (exponential growth)
+  ⟹ ∫ νf · ΔNFR dt → ∞ (divergence)
+
+With stabilizer: d(ΔNFR)/dt can be < 0
+  ⟹ ΔNFR(t) → bounded attractor
+  ⟹ ∫ νf · ΔNFR dt converges (bounded evolution)
+
+**Physical Interpretation:**
+Like gravity in cosmology - without attractive force, universe would
+disperse to infinite entropy. Stabilizers are "structural gravity" that
+prevents fragmentation and maintains coherence.
+
+**Why IL or THOL?**
+These are the ONLY operators with strong negative-feedback physics:
+- IL: Direct coherence restoration (reduces tension explicitly)
+- THOL: Autopoietic closure (self-organizing stability)
+
+Other operators maintain or increase ΔNFR; only these can reliably bound it.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+C4: THRESHOLD PHYSICS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+**Physical Basis:**
+From bifurcation theory in dynamical systems: phase transitions require
+crossing critical thresholds. TNFR transformations (ZHIR, THOL) are
+structural bifurcations governed by:
+
+    Bifurcation occurs when: |ΔNFR| > ΔNFR_critical
+
+Without sufficient |ΔNFR|, transformation attempts fail or create unstable
+states. Additionally, transformations from unstable bases amplify chaos.
+
+**Structural Dynamics (R4 + R6):**
+
+**ZHIR (Mutation) - Two Requirements:**
+1. **Prior IL** (R6): Establishes stable coherent base
+   - Without: Transformation from chaos → amplifies disorder
+   - With: Transformation from order → controlled phase change
+   
+2. **Recent Destabilizer** (R4): Generates threshold ΔNFR
+   - Without: Insufficient energy for bifurcation (attempt fails)
+   - With: System crosses critical point (transformation succeeds)
+
+**THOL (Self-organization) - One Requirement:**
+1. **Recent Destabilizer** (R4): Provides substrate for self-organization
+   - Without: No disorder to organize (nothing to structure)
+   - With: Sufficient ΔNFR drives spontaneous ordering
+
+**Why "Recent"?**
+ΔNFR decays over time through structural relaxation. Bifurcation window
+(~3 operators) captures when |ΔNFR| remains above threshold. Too distant
+and energy dissipates below critical level.
+
+**Physical Interpretation:**
+
+**ZHIR Physics:**
+Like phase transitions in matter (water → ice):
+- Need temperature below 0°C (threshold: sufficient ΔNFR from destabilizer)
+- Need nucleation site (stable base: IL provides crystal seed)
+- Without both: transition fails or creates unstable state
+
+**THOL Physics:**
+Like Bénard convection cells:
+- Need temperature gradient (threshold: ΔNFR from destabilizer)
+- Pattern emerges spontaneously from chaos
+- Self-organizing: creates own stability boundaries
+
+**Mathematical Foundation:**
+Catastrophe theory: smooth changes in parameters cause discontinuous
+changes in system behavior at bifurcation points.
+
+TNFR operators navigate this landscape:
+- Destabilizers push system toward bifurcation
+- IL provides stable manifold for transformation
+- ZHIR/THOL execute the bifurcation itself
+
+**Energy Landscape Analogy:**
+Think of EPI evolving in energy landscape:
+- Destabilizers: Add kinetic energy (push system up hill)
+- IL: Stabilize in valley (local minimum)
+- ZHIR: Jump to adjacent valley (phase change)
+- THOL: Create new valley through self-organization
+
+Without proper setup: jump fails or lands in unstable region (collapse).
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Legacy Rule Names (for backward compatibility)
+----------------------------------------------
+R1 = C1 (start operators)
+R2 = C3 (stabilizer requirement)  
+R3 = C1 (end operators)
+R4 = C4 (bifurcation context)
+R5 = C2 (frequency continuity)
+R6 = C4 (controlled mutation)
 
 Physics-Based Operator Derivation
 ----------------------------------
@@ -815,7 +999,124 @@ class _SequenceAutomaton:
 
         return False
 
+    def _validate_threshold_physics(self, sequence: Sequence[str]) -> None:
+        """C4: Validate threshold physics - transformations require context.
+        
+        Constraint C4 (Threshold Physics): Bifurcations require crossing
+        critical thresholds from TNFR dynamical systems physics.
+        
+        This validates controlled mutation (IL → ZHIR), ensuring phase
+        transformations occur from stable coherent bases with sufficient
+        ΔNFR to cross bifurcation thresholds.
+        
+        Parameters
+        ----------
+        sequence : Sequence[str]
+            Operator sequence in canonical form
+            
+        Raises
+        ------
+        SequenceSyntaxError
+            If sequence violates threshold physics requirements
+            
+        Notes
+        -----
+        **C4 Physical Foundation:**
+        
+        From bifurcation theory: phase transitions require |ΔNFR| > threshold.
+        ZHIR (mutation) is a structural bifurcation that requires:
+        
+        1. **Stable Base** (prior IL): Transformation from chaos amplifies disorder.
+           IL provides coherent attractor from which to bifurcate safely.
+           
+        2. **Threshold Energy** (recent destabilizer): Validated by R4 in _accept().
+           Destabilizers generate ΔNFR needed to cross critical point.
+        
+        **Why This Is Natural, Not Arbitrary:**
+        
+        Like phase transitions in physics (water → ice):
+        - Need below-freezing temperature (ΔNFR threshold from destabilizer)
+        - Need nucleation site (stable base from IL)
+        - Without both: transition fails or creates metastable states
+        
+        **Mathematical Basis:**
+        
+        Catastrophe theory: smooth parameter changes cause discontinuous
+        behavioral changes at bifurcation points. ZHIR navigates this:
+        
+        1. IL creates stable manifold (valley in energy landscape)
+        2. Destabilizer adds kinetic energy (pushes toward saddle point)
+        3. ZHIR executes jump to adjacent valley (phase transformation)
+        
+        Without proper setup: jump fails or lands in unstable region.
+        
+        **What C4 Validates:**
+        
+        - ZHIR requires prior IL (controlled mutation)
+        - IL must precede ZHIR (stable base before transformation)
+        
+        **What C4 Does NOT Validate:**
+        
+        - Recent destabilizer for ZHIR (handled by R4 in _accept())
+        - Destabilizer/stabilizer balance (context-dependent, not universal)
+        - Net ΔNFR state (depends on initial conditions)
+        
+        **THOL Validation:**
+        
+        THOL (self-organization) also requires recent destabilizer but NOT
+        prior IL. THOL creates its own stability through autopoiesis.
+        This is validated by R4 in _accept(), not here.
+        
+        **Legacy Context:**
+        
+        This replaces the overly complex R6 "operational closure" validation
+        that attempted to validate balance. Analysis revealed balance is
+        context-dependent and multi-sequence patterns provide systemic closure.
+        
+        C4 focuses on the ONE constraint that's truly universal: transformations
+        from stable bases with threshold energy.
+        """
+        # C4: Controlled mutation validation
+        if MUTATION in sequence:
+            # ZHIR requires prior coherence base for stable transformation
+            if COHERENCE not in sequence:
+                raise SequenceSyntaxError(
+                    index=sequence.index(MUTATION),
+                    token=MUTATION,
+                    message=(
+                        f"C4: {operator_display_name(MUTATION)} (phase transformation) requires "
+                        f"prior {operator_display_name(COHERENCE)} for stable structural foundation. "
+                        f"Controlled mutation: {operator_display_name(COHERENCE)} → {operator_display_name(MUTATION)} "
+                        f"ensures transformation occurs from coherent base state (THRESHOLD PHYSICS constraint)."
+                    ),
+                )
+            
+            # If IL present, verify it comes before ZHIR
+            coherence_idx = sequence.index(COHERENCE)
+            mutation_idx = sequence.index(MUTATION)
+            if coherence_idx >= mutation_idx:
+                raise SequenceSyntaxError(
+                    index=mutation_idx,
+                    token=MUTATION,
+                    message=(
+                        f"C4: {operator_display_name(MUTATION)} must follow {operator_display_name(COHERENCE)}. "
+                        f"Transformation requires coherent base BEFORE bifurcation. "
+                        f"Current order: {operator_display_name(MUTATION)} before {operator_display_name(COHERENCE)} (invalid)."
+                    ),
+                )
+        # Store in metadata, but don't enforce as validation
+
     def _finalize(self, names: Sequence[str]) -> None:
+        """Finalize sequence validation through natural TNFR constraints.
+        
+        Validates sequences against the four natural constraints that emerge
+        from TNFR physics, not arbitrary rules.
+        
+        Raises
+        ------
+        SequenceSyntaxError
+            If sequence violates any natural constraint
+        """
         if self._unknown_tokens:
             ordered = ", ".join(sorted({token for _, token in self._unknown_tokens}))
             first_index, first_token = self._unknown_tokens[0]
@@ -825,52 +1126,74 @@ class _SequenceAutomaton:
                 message=f"unknown tokens: {ordered}",
             )
 
-        # R2: Must contain at least one stabilizer
-        if not self._found_stabilizer:
-            raise SequenceSyntaxError(
-                index=-1,
-                token=None,
-                message=f"missing required stabilizer ({operator_display_name(COHERENCE)} or {operator_display_name(SELF_ORGANIZATION)})",
-            )
-
-        if not (self._found_reception and self._found_coherence):
-            raise SequenceSyntaxError(
-                index=-1,
-                token=None,
-                message=f"missing {RECEPTION}→{COHERENCE} segment",
-            )
-        # NOTE: Intermediate operator check removed - COHERENCE provides sufficient
-        # structural transformation for valid TNFR sequences. The requirement for
-        # explicit DISSONANCE/COUPLING/RESONANCE was overly restrictive.
-
-        # R3: Must end with terminator
+        # ═══════════════════════════════════════════════════════════════════
+        # C1: EXISTENCE & CLOSURE
+        # ═══════════════════════════════════════════════════════════════════
+        # From ∂EPI/∂t = νf · ΔNFR: EPI must exist (start) and end coherently
+        
+        # C1.1: Start validation (legacy R1)
+        # Already validated in _accept() for first operator
+        
+        # C1.2: End validation (legacy R3)
         if self._canonical[-1] not in VALID_END_OPERATORS:
             cierre = _format_token_group(_CANONICAL_END)
             raise SequenceSyntaxError(
                 index=len(names) - 1,
                 token=names[-1],
-                message=f"sequence must end with {cierre}",
+                message=f"C1: sequence must end with {cierre} (EXISTENCE & CLOSURE constraint)",
             )
 
+        # C1.3: Reception→Coherence segment (structural foundation)
+        if not (self._found_reception and self._found_coherence):
+            raise SequenceSyntaxError(
+                index=-1,
+                token=None,
+                message=f"C1: missing {RECEPTION}→{COHERENCE} segment (structural foundation required)",
+            )
+
+        # ═══════════════════════════════════════════════════════════════════
+        # C3: BOUNDEDNESS
+        # ═══════════════════════════════════════════════════════════════════
+        # From ∫ νf · ΔNFR dt: Integral must converge (stabilizer required)
+        
+        # C3: Stabilizer requirement (legacy R2)
+        if not self._found_stabilizer:
+            raise SequenceSyntaxError(
+                index=-1,
+                token=None,
+                message=f"C3: missing stabilizer ({operator_display_name(COHERENCE)} or {operator_display_name(SELF_ORGANIZATION)}) - integral divergence (BOUNDEDNESS constraint)",
+            )
+
+        # Self-organization block closure
         if self._open_thol:
             raise SequenceSyntaxError(
                 index=len(names) - 1,
                 token=names[-1],
-                message=f"{operator_display_name(SELF_ORGANIZATION)} block without closure",
+                message=f"C3: {operator_display_name(SELF_ORGANIZATION)} block without closure",
             )
 
+        # ═══════════════════════════════════════════════════════════════════
+        # C2: CONTINUITY & C4: THRESHOLD PHYSICS
+        # ═══════════════════════════════════════════════════════════════════
+        # Validated dynamically during sequence building in _accept()
+        
         # Detect structural pattern
         self._detected_pattern = self._detect_pattern()
 
-        # R5: Validate regenerative cycles if pattern is REGENERATIVE
+        # C2: Validate regenerative cycles if pattern is REGENERATIVE (legacy R5)
         if self._detected_pattern == StructuralPattern.REGENERATIVE:
             self._validate_regenerative_cycle()
+        
+        # C4: Validate threshold physics - controlled mutation (legacy R6)
+        self._validate_threshold_physics(self._canonical)
 
     def _validate_regenerative_cycle(self) -> None:
-        """Validate regenerative cycle structural requirements (R5).
+        """Validate regenerative cycle structural requirements (C2 - CONTINUITY).
 
         Uses CycleDetector to ensure the sequence meets minimum standards
-        for self-sustaining regenerative behavior.
+        for self-sustaining regenerative behavior. Regenerative cycles are
+        a special case of continuity where the sequence structure supports
+        self-renewal.
         """
         from .cycle_detection import CycleDetector
 
@@ -895,7 +1218,7 @@ class _SequenceAutomaton:
             raise SequenceSyntaxError(
                 index=-1,
                 token=None,
-                message=f"R5 regenerative cycle validation failed: {message}",
+                message=f"C2: regenerative cycle validation failed: {message} (CONTINUITY constraint)",
             )
 
     def _detect_pattern(self) -> StructuralPattern:

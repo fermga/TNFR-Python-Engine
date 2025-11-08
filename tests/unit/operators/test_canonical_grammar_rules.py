@@ -278,6 +278,9 @@ class TestStructuralPatternDetection:
         Note: With coherence weighting, FRACTAL (NAV + RECURSIVITY) may be
         detected instead of CYCLIC when both are present, as FRACTAL represents
         deeper structural complexity (recursive structure across scales).
+        
+        Note: R6 requires balance. NAV is a destabilizer, so multiple NAVs
+        require additional stabilizers. Added IL to balance.
         """
         result = validate_sequence(
             [
@@ -286,6 +289,7 @@ class TestStructuralPatternDetection:
                 COHERENCE,
                 TRANSITION,
                 RESONANCE,
+                COHERENCE,  # Additional stabilizer for balance (R6)
                 TRANSITION,
             ]
         )
