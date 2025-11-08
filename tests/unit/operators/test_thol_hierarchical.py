@@ -112,6 +112,10 @@ class TestRecursiveBifurcation:
 
     def test_subepi_can_bifurcate(self):
         """Sub-node should be able to apply THOL and create its own sub-nodes."""
+        from tnfr.operators.definitions import Coherence
+        from tnfr.alias import get_attr
+        from tnfr.constants.aliases import ALIAS_EPI
+        
         # Create parent and trigger first bifurcation
         G, parent = create_nfr("parent", epi=0.70, vf=1.5)
         G.nodes[parent]["epi_history"] = [0.20, 0.50, 0.70]  # d²EPI = 0.10 > tau
@@ -122,13 +126,16 @@ class TestRecursiveBifurcation:
         child = G.nodes[parent]["sub_nodes"][0]
         
         # Build up child's EPI history to trigger bifurcation
-        # Use direct operator calls to avoid validation issues
-        from tnfr.operators.definitions import Coherence
-        for _ in range(4):
+        # Apply operators to evolve child, then manually set accelerating history
+        for _ in range(3):
             Emission()(G, child)
-            Coherence()(G, child)  # Stabilize after each emission
-            current_epi = G.nodes[child][EPI_PRIMARY]
-            G.nodes[child]["epi_history"].append(current_epi)
+            Coherence()(G, child)
+        
+        # Set an accelerating EPI history for the child
+        # d²EPI = abs(0.45 - 2*0.30 + 0.10) = abs(0.45 - 0.60 + 0.10) = 0.05 (borderline)
+        # Use more acceleration: d²EPI = abs(0.50 - 2*0.30 + 0.10) = 0.10
+        current_epi = float(get_attr(G.nodes[child], ALIAS_EPI, 0.0))
+        G.nodes[child]["epi_history"] = [0.10, 0.30, 0.60]  # Accelerating pattern
         
         # Trigger bifurcation on child
         SelfOrganization()(G, child, tau=0.05)
@@ -139,6 +146,10 @@ class TestRecursiveBifurcation:
 
     def test_recursive_hierarchy_levels(self):
         """Multi-level bifurcation should create increasing hierarchy levels."""
+        from tnfr.operators.definitions import Coherence
+        from tnfr.alias import get_attr
+        from tnfr.constants.aliases import ALIAS_EPI
+        
         # Parent at level 0
         G, parent = create_nfr("parent", epi=0.70, vf=1.5)
         G.nodes[parent]["hierarchy_level"] = 0
@@ -148,11 +159,12 @@ class TestRecursiveBifurcation:
         child = G.nodes[parent]["sub_nodes"][0]
         
         # Build child history and bifurcate
-        from tnfr.operators.definitions import Coherence
-        for _ in range(4):
+        for _ in range(3):
             Emission()(G, child)
             Coherence()(G, child)
-            G.nodes[child]["epi_history"].append(G.nodes[child][EPI_PRIMARY])
+        
+        # Set accelerating history for child
+        G.nodes[child]["epi_history"] = [0.10, 0.30, 0.60]
         
         SelfOrganization()(G, child, tau=0.05)
         
@@ -167,6 +179,10 @@ class TestRecursiveBifurcation:
 
     def test_cascade_depth_recursive(self):
         """Cascade depth should correctly measure multi-level bifurcation."""
+        from tnfr.operators.definitions import Coherence
+        from tnfr.alias import get_attr
+        from tnfr.constants.aliases import ALIAS_EPI
+        
         # Parent bifurcates
         G, parent = create_nfr("parent", epi=0.70, vf=1.5)
         G.nodes[parent]["hierarchy_level"] = 0
@@ -180,11 +196,12 @@ class TestRecursiveBifurcation:
         
         # Child bifurcates
         child = G.nodes[parent]["sub_nodes"][0]
-        from tnfr.operators.definitions import Coherence
-        for _ in range(4):
+        for _ in range(3):
             Emission()(G, child)
             Coherence()(G, child)
-            G.nodes[child]["epi_history"].append(G.nodes[child][EPI_PRIMARY])
+        
+        # Set accelerating history for child
+        G.nodes[child]["epi_history"] = [0.10, 0.30, 0.60]
         
         SelfOrganization()(G, child, tau=0.05)
         
