@@ -2429,6 +2429,19 @@ class SelfOrganization(Operator):
     - **Vibrational metabolism**: Digests external experience into internal structure
     - **Complexity emergence**: Engine of novelty and evolution in TNFR
 
+    **Vibrational Metabolism (Canonical THOL):**
+
+    THOL implements the metabolic principle: capturing network vibrational signals
+    (EPI gradients, phase variance) and transforming them into internal structure
+    (sub-EPIs). This ensures that bifurcation reflects not only internal acceleration
+    but also the network's coherence field.
+
+    Metabolic formula: ``sub-EPI = base + gradient*w₁ + variance*w₂``
+
+    - If node has neighbors: Captures and metabolizes network signals
+    - If node is isolated: Falls back to pure internal bifurcation
+    - Configurable via ``THOL_METABOLIC_ENABLED`` and weight parameters
+
     Use Cases: Emergence processes, bifurcation events, creative reorganization, complex
     system evolution, spontaneous order generation.
 
@@ -2538,11 +2551,15 @@ class SelfOrganization(Operator):
     def _spawn_sub_epi(
         self, G: TNFRGraph, node: Any, d2_epi: float, tau: float
     ) -> None:
-        """Generate sub-EPI through bifurcation.
+        """Generate sub-EPI through bifurcation with vibrational metabolism.
 
-        When acceleration exceeds threshold, creates nested sub-structure
-        that inherits properties from parent while maintaining operational
-        fractality.
+        When acceleration exceeds threshold, creates nested sub-structure that:
+        1. Captures network vibrational signals (metabolic perception)
+        2. Metabolizes signals into sub-EPI magnitude (digestion)
+        3. Inherits properties from parent while integrating field context
+
+        This implements canonical THOL: "reorganizes external experience into
+        internal structure without external instruction".
 
         Parameters
         ----------
@@ -2557,13 +2574,37 @@ class SelfOrganization(Operator):
         """
         from ..alias import get_attr, set_attr
         from ..constants.aliases import ALIAS_EPI, ALIAS_VF
+        from .metabolism import capture_network_signals, metabolize_signals_into_subepi
 
         # Get current node state
         parent_epi = float(get_attr(G.nodes[node], ALIAS_EPI, 0.0))
         parent_vf = float(get_attr(G.nodes[node], ALIAS_VF, 1.0))
 
-        # Calculate sub-EPI magnitude using canonical scaling factor
-        sub_epi_value = parent_epi * _THOL_SUB_EPI_SCALING
+        # Check if vibrational metabolism is enabled
+        metabolic_enabled = G.graph.get("THOL_METABOLIC_ENABLED", True)
+
+        # CANONICAL METABOLISM: Capture network context
+        network_signals = None
+        if metabolic_enabled:
+            network_signals = capture_network_signals(G, node)
+
+        # Get metabolic weights from graph config
+        gradient_weight = float(
+            G.graph.get("THOL_METABOLIC_GRADIENT_WEIGHT", 0.15)
+        )
+        complexity_weight = float(
+            G.graph.get("THOL_METABOLIC_COMPLEXITY_WEIGHT", 0.10)
+        )
+
+        # CANONICAL METABOLISM: Digest signals into sub-EPI
+        sub_epi_value = metabolize_signals_into_subepi(
+            parent_epi=parent_epi,
+            signals=network_signals if metabolic_enabled else None,
+            d2_epi=d2_epi,
+            scaling_factor=_THOL_SUB_EPI_SCALING,
+            gradient_weight=gradient_weight,
+            complexity_weight=complexity_weight,
+        )
 
         # Store sub-EPI in node's sub_epis list
         sub_epis = G.nodes[node].get("sub_epis", [])
@@ -2571,15 +2612,19 @@ class SelfOrganization(Operator):
         # Get current timestamp from glyph history length
         timestamp = len(G.nodes[node].get("glyph_history", []))
 
-        sub_epis.append(
-            {
-                "epi": sub_epi_value,
-                "vf": parent_vf,
-                "timestamp": timestamp,
-                "d2_epi": d2_epi,
-                "tau": tau,
-            }
-        )
+        # Store sub-EPI with metabolic metadata
+        sub_epi_record = {
+            "epi": sub_epi_value,
+            "vf": parent_vf,
+            "timestamp": timestamp,
+            "d2_epi": d2_epi,
+            "tau": tau,
+            # NEW: Metabolic metadata
+            "metabolized": network_signals is not None and metabolic_enabled,
+            "network_signals": network_signals,
+        }
+
+        sub_epis.append(sub_epi_record)
         G.nodes[node]["sub_epis"] = sub_epis
 
         # Increment parent EPI using canonical emergence contribution
