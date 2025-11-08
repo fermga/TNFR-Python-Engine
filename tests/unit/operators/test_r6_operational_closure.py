@@ -41,226 +41,100 @@ from tnfr.operators.grammar import (
 
 
 class TestR6StructuralConvergence:
-    """Test R6 structural convergence/closure requirement.
+    """Test R6 respects R3 endings - no additional convergence validation.
     
-    R6 rejects sequences ending with divergent operators (OZ) but accepts:
-    - Convergent: SHA (νf → 0)
-    - Operational closure: NAV (regime handoff, but requires balance), REMESH (fractal completion)
-    
-    KEY: NAV is itself a destabilizer, so sequences ending with NAV must have
-    proper balance (validated by operational closure check).
+    R6 simplified: Only validates controlled mutation (IL → ZHIR).
+    Does NOT reject OZ endings or validate balance.
+    All R3-valid endings (SHA, NAV, REMESH, OZ) are accepted by R6.
     """
 
-    def test_valid_convergence_with_silence(self):
-        """Sequence ending with silence converges (νf → 0)."""
+    def test_valid_ending_with_silence(self):
+        """Sequence ending with silence is valid."""
         sequence = [EMISSION, RECEPTION, COHERENCE, RESONANCE, SILENCE]
         result = validate_sequence(sequence)
         assert result.passed, f"Expected pass but got: {result.message}"
 
-    def test_valid_operational_closure_with_transition_balanced(self):
-        """Sequence ending with transition OK if balanced.
-        
-        NAV is a destabilizer, so sequence must have balance:
-        Destabilizers: EN(1), NAV(1) = 2
-        Stabilizers: IL(1), RA(1) = 2
-        Balance: 2 = 2 ✓
-        """
+    def test_valid_ending_with_transition(self):
+        """Sequence ending with transition is valid."""
         sequence = [EMISSION, RECEPTION, COHERENCE, RESONANCE, TRANSITION]
         result = validate_sequence(sequence)
         assert result.passed, f"Expected pass but got: {result.message}"
 
-    def test_invalid_operational_closure_with_transition_unbalanced(self):
-        """Sequence ending with transition fails if unbalanced.
-        
-        NAV is a destabilizer:
-        Destabilizers: NAV(1) = 1
-        Stabilizers: IL(1) = 1 (but EN requires coherence context, doesn't count)
-        Actually: EN at position 1 doesn't have prior coherence for destabilizer role
-        So just NAV(1) vs IL(1) = balanced
-        
-        Let me use a clearly unbalanced example:
-        """
-        # AL → EN → IL → NAV (minimal)
-        # EN doesn't have prior coherence context, so not destabilizer
-        # NAV is destabilizer: 1
-        # IL is stabilizer: 1
-        # 1 = 1: balanced, should pass
-        
-        # Need truly unbalanced: more destabilizers than stabilizers
-        # Skip this test - it's complex to construct
-        pass
-
-    def test_valid_operational_closure_with_recursivity(self):
-        """Sequence ending with recursivity achieves fractal closure.
-        
-        REMESH is not a destabilizer, so doesn't require special balance.
-        """
+    def test_valid_ending_with_recursivity(self):
+        """Sequence ending with recursivity is valid."""
         sequence = [EMISSION, RECEPTION, COHERENCE, RECURSIVITY]
         result = validate_sequence(sequence)
         assert result.passed, f"Expected pass but got: {result.message}"
 
-    def test_valid_minimal_sequence_ending_with_silence(self):
-        """Minimal sequence ending with silence passes all rules."""
-        sequence = [EMISSION, RECEPTION, COHERENCE, SILENCE]
-        result = validate_sequence(sequence)
-        assert result.passed, f"Expected pass but got: {result.message}"
-
-    def test_invalid_divergent_ending_with_dissonance(self):
-        """Sequence ending with dissonance is divergent (high νf, high ΔNFR).
+    def test_valid_ending_with_dissonance(self):
+        """Sequence ending with dissonance is valid (therapeutic/activation).
         
-        OZ leaves system in actively divergent state without continuation.
-        This is the only ending that R6 convergence check explicitly rejects.
+        OZ endings are always destabilizing (increase ΔNFR at end) but valid
+        for therapeutic tension, system activation, multi-sequence chains.
+        R2 ensures coherence base exists (IL or THOL required).
         """
         sequence = [EMISSION, RECEPTION, COHERENCE, DISSONANCE]
         result = validate_sequence(sequence)
-        # Should fail R6 convergence check
-        assert not result.passed
-        assert "R6" in result.message
-        assert "divergent" in result.message.lower()
+        assert result.passed, f"Expected pass but got: {result.message}"
 
 
-class TestR6OperationalClosure:
-    """Test R6 operational closure requirement.
+class TestR6ControlledMutation:
+    """Test R6 controlled mutation validation (IL → ZHIR).
     
-    Operational closure requires balance between destabilizers and stabilizers:
-    - Destabilizers: OZ, NAV, VAL, EN (increase |ΔNFR|)
-    - Stabilizers: IL, THOL, SHA, RA (reduce |ΔNFR| or achieve closure)
-    - Rule: destabilizers ≤ stabilizers OR controlled mutation (IL → ZHIR)
-    
-    Note: All valid sequences must end with SHA (only R3-valid convergent operator)
+    R6 simplified: ONLY validates controlled mutation.
+    Does NOT validate destabilizer/stabilizer balance.
     """
 
-    def test_valid_balanced_sequence(self):
-        """Sequence with balanced destabilizers and stabilizers passes."""
-        # 1 destabilizer (OZ), 2 stabilizers (IL, SHA)
-        sequence = [EMISSION, RECEPTION, COHERENCE, DISSONANCE, COHERENCE, SILENCE]
-        result = validate_sequence(sequence)
-        assert result.passed, f"Expected pass but got: {result.message}"
-
-    def test_valid_more_stabilizers_than_destabilizers(self):
-        """Sequence with more stabilizers than destabilizers passes."""
-        # 1 destabilizer (OZ), 3 stabilizers (IL x2, SHA)
-        # Note: RA (resonance) is stabilizer but not valid end operator per R3
+    def test_valid_controlled_mutation(self):
+        """Mutation after coherence is valid (controlled transformation)."""
         sequence = [
             EMISSION,
             RECEPTION,
-            COHERENCE,
-            DISSONANCE,
-            RESONANCE,  # Stabilizer (RA)
-            COHERENCE,
-            SILENCE,    # Must end with SHA for R3 and R6
-        ]
-        result = validate_sequence(sequence)
-        assert result.passed, f"Expected pass but got: {result.message}"
-
-    def test_valid_equal_destabilizers_and_stabilizers(self):
-        """Sequence with equal destabilizers and stabilizers passes."""
-        # 2 destabilizers (OZ, VAL), 2 stabilizers (IL, SHA)
-        sequence = [
-            EMISSION,
-            RECEPTION,
-            COHERENCE,
-            DISSONANCE,
-            EXPANSION,
-            COHERENCE,
+            COHERENCE,      # Coherent base
+            DISSONANCE,     # Destabilizer (R4 requirement for ZHIR)
+            MUTATION,       # ZHIR after IL (controlled)
+            COHERENCE,      # Stabilize after transformation
             SILENCE,
         ]
         result = validate_sequence(sequence)
         assert result.passed, f"Expected pass but got: {result.message}"
 
-    def test_invalid_excess_destabilizers(self):
-        """Sequence with excess destabilizers fails without SHA ending.
+    def test_invalid_mutation_without_coherence(self):
+        """Mutation without any coherence base fails.
         
-        3 destabilizers > 2 stabilizers violates closure for NAV/REMESH endings
-        (needs balance). But would be valid with SHA ending (absolute closure).
+        ZHIR requires prior IL for stable transformation foundation.
         """
-        # 3 destabilizers (EN, OZ, VAL), 2 stabilizers (IL, RA)
-        # With NAV ending: should fail (needs balance)
         sequence = [
             EMISSION,
             RECEPTION,
-            COHERENCE,      # Stabilizer 1
-            DISSONANCE,     # Destabilizer 1
-            TRANSITION,     # Destabilizer 2
-            EXPANSION,      # Destabilizer 3
-            RESONANCE,      # Stabilizer 2
-            TRANSITION,     # NAV ending without balance
+            DISSONANCE,     # Destabilizer for ZHIR (R4)
+            MUTATION,       # ZHIR without any IL
+            SILENCE,
         ]
         result = validate_sequence(sequence)
-        # Should fail: 4 destabilizers (EN, OZ, NAV, VAL) > 2 stabilizers (IL, RA)
-        # NAV ending requires dest ≤ stab
+        # Should fail R6: no coherence base
         assert not result.passed
         assert "R6" in result.message
-        assert "closure" in result.message.lower()
-    
-    def test_valid_excess_destabilizers_with_sha(self):
-        """Destabilizing sequence valid with SHA ending (absolute closure).
-        
-        SHA provides absolute closure (νf → 0), so accepts any dest/stab ratio.
-        This allows intentional destabilizing sequences for exploration.
-        """
-        # 3 destabilizers (EN, OZ, VAL) > 2 stabilizers (IL, SHA)
-        # But SHA ending: provides absolute closure
-        sequence = [
-            EMISSION,
-            RECEPTION,
-            COHERENCE,
-            DISSONANCE,
-            EXPANSION,
-            TRANSITION,
-            SILENCE,  # SHA provides absolute closure despite imbalance
-        ]
-        result = validate_sequence(sequence)
-        # Should pass: SHA accepts any ratio (destabilizing sequence)
-        assert result.passed, f"Expected pass but got: {result.message}"
+        assert "coherence" in result.message.lower()
 
-    def test_valid_controlled_mutation_exception(self):
-        """Sequence with destabilizers > stabilizers passes if mutation is controlled.
+    def test_invalid_mutation_before_coherence(self):
+        """Mutation before coherence fails (ungrounded transformation).
         
-        Controlled mutation: IL → ZHIR allows excess destabilizers because
-        coherence provides stable base for phase transformation.
+        IL must come BEFORE ZHIR to provide stable base.
         """
-        # 2 destabilizers (OZ, implicit from context), stabilizers (IL x2, SHA)
-        # IL → ZHIR pattern grants exception for closure balance
         sequence = [
             EMISSION,
             RECEPTION,
-            COHERENCE,      # Stabilizer, before ZHIR (controlled mutation base)
-            DISSONANCE,     # Destabilizer for ZHIR (R4 requirement)
-            MUTATION,       # ZHIR after IL (controlled mutation)
-            COHERENCE,      # Stabilizer after mutation
-            SILENCE,        # R3/R6 valid ending
-        ]
-        result = validate_sequence(sequence)
-        assert result.passed, f"Expected pass but got: {result.message}"
-
-    def test_invalid_mutation_without_prior_coherence(self):
-        """Mutation without prior coherence doesn't grant closure exception.
-        
-        The controlled mutation exception requires IL before ZHIR to establish
-        stable base for transformation.
-        """
-        # Create sequence where ZHIR comes before IL
-        # This requires careful construction to pass R4 (ZHIR needs destabilizer)
-        # AL → EN → OZ → ZHIR → IL → SHA
-        # Here ZHIR comes after OZ (R4 OK) but before first IL
-        sequence = [
-            EMISSION,
-            RECEPTION,
-            DISSONANCE,   # Destabilizer for ZHIR (R4)
-            MUTATION,     # ZHIR after OZ but before IL
-            COHERENCE,    # IL after ZHIR (not before)
+            DISSONANCE,     # Destabilizer for ZHIR (R4)
+            MUTATION,       # ZHIR before IL
+            COHERENCE,      # IL after ZHIR (wrong order)
             SILENCE,
         ]
-        
-        # Count: EN (weak destabilizer with context, but no prior coherence for context)
-        #        + OZ (strong destabilizer) = 2 destabilizers (OZ definitely counts)
-        # Actually EN at position 1 doesn't have prior coherence, so not destabilizer
-        # So just 1 destabilizer (OZ), 2 stabilizers (IL, SHA) - balanced
-        # This should pass because destabilizers <= stabilizers
         result = validate_sequence(sequence)
-        # This should actually pass - the controlled mutation exception isn't needed
-        assert result.passed or "missing" in result.message.lower()  # May fail R2 if EN→IL missing
+        # Should fail R6: wrong order
+        assert not result.passed
+        assert "R6" in result.message
+        assert "must follow" in result.message.lower() or "before" in result.message.lower()
 
 
 class TestR6FrequencyBalance:
