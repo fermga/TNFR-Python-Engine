@@ -694,6 +694,8 @@ class _SequenceAutomaton:
         "_detected_pattern",
         "_bifurcation_context",
         "_destabilizer_context",
+        "_thol_stack",
+        "_thol_subsequences",
     )
 
     def __init__(self) -> None:
@@ -716,6 +718,9 @@ class _SequenceAutomaton:
             "moderate": deque(maxlen=BIFURCATION_WINDOWS["moderate"]),
             "weak": deque(maxlen=BIFURCATION_WINDOWS["weak"]),
         }
+        # THOL recursive validation: Track nested THOL blocks and their subsequences
+        self._thol_stack: list[int] = []  # Stack of THOL opening indices
+        self._thol_subsequences: dict[int, list[str]] = {}  # Subsequences by opening index
 
     def run(self, names: Sequence[str]) -> None:
         if not names:
@@ -788,11 +793,35 @@ class _SequenceAutomaton:
         if canonical == DISSONANCE:
             self._found_dissonance = True
 
-        # Track THOL state
+        # Track THOL state with recursive support
         if canonical == SELF_ORGANIZATION:
+            # THOL opening: push to stack and initialize subsequence
+            self._thol_stack.append(index)
+            self._thol_subsequences[index] = []
             self._open_thol = True
         elif self._open_thol and canonical in SELF_ORGANIZATION_CLOSURES:
-            self._open_thol = False
+            # THOL closure: validate subsequence recursively
+            if not self._thol_stack:
+                raise SequenceSyntaxError(
+                    index=index,
+                    token=token,
+                    message=f"{operator_display_name(canonical)} closure without corresponding {operator_display_name(SELF_ORGANIZATION)} opening"
+                )
+            
+            thol_start = self._thol_stack.pop()
+            thol_subseq = self._thol_subsequences[thol_start]
+            
+            # Validate THOL subsequence recursively
+            self._validate_thol_subsequence(thol_subseq, thol_start, index, token)
+            
+            # Update _open_thol based on stack state (supports nested THOL)
+            self._open_thol = bool(self._thol_stack)
+        elif self._open_thol and self._thol_stack:
+            # Track operators within THOL block (excluding nested THOL openings)
+            # Nested THOL openings are handled separately, closures are part of inner subsequence
+            if canonical != SELF_ORGANIZATION:
+                current_thol = self._thol_stack[-1]
+                self._thol_subsequences[current_thol].append(canonical)
 
         # Validate sequential compatibility if not first token
         # Only validate if both prev and current are known operators
@@ -998,6 +1027,76 @@ class _SequenceAutomaton:
                 return self._validate_reception_context(last_weak)
 
         return False
+
+    def _validate_thol_subsequence(
+        self,
+        subsequence: list[str],
+        start_index: int,
+        end_index: int,
+        end_token: str
+    ) -> None:
+        """Validate recursively the subsequence within THOL block.
+        
+        TNFR Fractal Principle: THOL (self-organization) is a fractal operator
+        that encapsulates autonomous reorganization. The subsequence must:
+        1. Be non-empty (THOL without content is meaningless)
+        2. Respect all grammar rules R1-R6 (recursive coherence)
+        
+        Parameters
+        ----------
+        subsequence : list[str]
+            Operators within THOL block (between opening and closure)
+        start_index : int
+            Index of THOL opening in parent sequence
+        end_index : int
+            Index of THOL closure in parent sequence
+        end_token : str
+            Token used for closure (for error messages)
+            
+        Raises
+        ------
+        SequenceSyntaxError
+            If subsequence is empty or invalid
+            
+        Notes
+        -----
+        From TNFR Manual §3.2.2 (Ontología fractal resonante):
+        "Los NFRs pueden anidarse jerárquicamente: un nodo puede contener
+        nodos internos coherentes, dando lugar a una estructura fractal."
+        
+        This validation ensures THOL maintains operational fractality:
+        structures are coherent at all scales.
+        
+        Autonomy is implicit: if the subsequence passes all grammar rules,
+        it is by definition autonomous (can function independently).
+        """
+        # Validation 1: Non-empty subsequence
+        if not subsequence:
+            raise SequenceSyntaxError(
+                index=end_index,
+                token=end_token,
+                message=(
+                    f"{operator_display_name(SELF_ORGANIZATION)} block is empty "
+                    f"(opened at position {start_index}). Subsequence must contain "
+                    f"at least one operator for autonomous reorganization."
+                )
+            )
+        
+        # Validation 2: Recursive grammar validation
+        # Create new automaton to validate subsequence independently
+        try:
+            nested_automaton = _SequenceAutomaton()
+            nested_automaton.run(subsequence)
+        except SequenceSyntaxError as e:
+            # Re-raise with THOL context
+            raise SequenceSyntaxError(
+                index=start_index + e.index + 1,  # Offset by THOL position
+                token=e.token,
+                message=(
+                    f"Invalid subsequence within {operator_display_name(SELF_ORGANIZATION)} "
+                    f"block (opened at position {start_index}): {e.message}"
+                )
+            ) from e
 
     def _validate_threshold_physics(self, sequence: Sequence[str]) -> None:
         """C4: Validate threshold physics - transformations require context.
