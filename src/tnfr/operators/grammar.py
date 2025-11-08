@@ -793,10 +793,19 @@ class _SequenceAutomaton:
         if canonical == DISSONANCE:
             self._found_dissonance = True
 
-        # Track THOL state: Use balanced nesting to allow SILENCE/CONTRACTION inside THOL
-        # TNFR Physical Principle: THOL applies as operator, bifurcates if d2_epi > tau
-        # Empty THOL valid (no bifurcation), non-empty must be grammatically coherent
-        # Closure: First SILENCE/CONTRACTION at nesting depth 0 closes THOL
+        # Track THOL state: Structural time with automatic closure
+        # 
+        # TNFR Structural Time Principle: THOL closure emerges from bifurcation completion,
+        # not from operator detection. Internal sequences are equivalent to external ones.
+        #
+        # Implementation for static validation:
+        # - THOL opens a nested context
+        # - Operators inside THOL are treated as normal sequence (can include SILENCE, etc.)
+        # - THOL closes automatically at sequence end or parent THOL closure
+        # - Nested THOL are supported (operational fractality)
+        #
+        # This allows internal sequences to be identical to external ones, including
+        # having their own THOL blocks and using any valid end operators.
         if canonical == SELF_ORGANIZATION:
             # THOL opening: push to stack and initialize subsequence
             self._thol_stack.append(index)
@@ -805,32 +814,9 @@ class _SequenceAutomaton:
         elif self._open_thol and self._thol_stack:
             current_thol = self._thol_stack[-1]
             
-            # Check if this operator closes THOL BEFORE adding to subsequence
-            # This allows SILENCE/CONTRACTION inside THOL as sequence operators
-            if canonical in SELF_ORGANIZATION_CLOSURES:
-                # Count nested THOL blocks to determine nesting depth
-                subseq = self._thol_subsequences[current_thol]
-                nested_thol_count = 0
-                for op in subseq:
-                    if op == SELF_ORGANIZATION:
-                        nested_thol_count += 1
-                    elif op in SELF_ORGANIZATION_CLOSURES:
-                        nested_thol_count -= 1
-                
-                # Close THOL if we're at depth 0 (no unclosed nested THOL)
-                if nested_thol_count == 0:
-                    thol_start = self._thol_stack.pop()
-                    final_subseq = self._thol_subsequences[thol_start]
-                    
-                    # Validate THOL subsequence
-                    # Empty THOL valid (no bifurcation), non-empty must be coherent
-                    self._validate_thol_subsequence(final_subseq, thol_start, index, token)
-                    
-                    # Update _open_thol based on stack state (supports nested THOL)
-                    self._open_thol = bool(self._thol_stack)
-                    return  # Don't add closure operator to subsequence
-            
-            # Add operator to current THOL subsequence
+            # All operators inside THOL are added to subsequence
+            # No operator-based closure detection - THOL closes structurally
+            # This allows internal sequences to be identical to external ones
             self._thol_subsequences[current_thol].append(canonical)
 
         # Validate sequential compatibility if not first token
@@ -1272,13 +1258,32 @@ class _SequenceAutomaton:
                 message=f"C3: missing stabilizer ({operator_display_name(COHERENCE)} or {operator_display_name(SELF_ORGANIZATION)}) - integral divergence (BOUNDEDNESS constraint)",
             )
 
-        # Self-organization block closure
+        # Self-organization block closure (structural time)
+        # THOL closes automatically at sequence end - validates all captured subsequences
         if self._open_thol:
-            raise SequenceSyntaxError(
-                index=len(names) - 1,
-                token=names[-1],
-                message=f"C3: {operator_display_name(SELF_ORGANIZATION)} block without closure",
-            )
+            # Close all open THOL blocks from innermost to outermost
+            while self._thol_stack:
+                thol_start = self._thol_stack.pop()
+                thol_subseq = self._thol_subsequences[thol_start]
+                
+                # Validate subsequence (allows empty THOL - no bifurcation case)
+                if len(thol_subseq) > 0:
+                    try:
+                        self._validate_thol_subsequence(
+                            thol_subseq, 
+                            thol_start, 
+                            len(names) - 1,
+                            names[-1] if names else ""
+                        )
+                    except SequenceSyntaxError as e:
+                        # Re-raise with THOL context
+                        raise SequenceSyntaxError(
+                            index=e.index,
+                            token=e.token,
+                            message=f"Invalid THOL subsequence (opened at position {thol_start}): {e.message}"
+                        ) from e
+            
+            self._open_thol = False
 
         # ═══════════════════════════════════════════════════════════════════
         # C2: CONTINUITY & C4: THRESHOLD PHYSICS
