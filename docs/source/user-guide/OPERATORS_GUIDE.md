@@ -172,6 +172,7 @@ for node in G.nodes():
 **Effect**:
 - Phase synchronization: φᵢ(t) ≈ φⱼ(t)
 - Structural frequency synchronization: νf,ᵢ → νf,ⱼ
+- ΔNFR reduction through mutual stabilization
 - Information exchange enabled
 - Network connectivity increased
 
@@ -180,54 +181,71 @@ for node in G.nodes():
 - Connecting isolated nodes
 - Creating communication pathways
 - Synchronizing reorganization rates between coupled systems
+- Stabilizing reorganization pressure in coupled networks
 
 **Mathematical representation**: 
 - Phase: φᵢ(t) ≈ φⱼ(t)
 - Frequency: νf,ᵢ(t+1) = νf,ᵢ(t) + k_vf · (⟨νf,neighbors⟩ - νf,ᵢ(t))
+- ΔNFR stabilization: ΔNFR(t+1) = ΔNFR(t) · (1 - k_dnfr · alignment)
+  - Where alignment ∈ [0, 1] is based on phase coherence with neighbors
+  - Higher alignment → stronger ΔNFR reduction
 
 **Example**:
 ```python
 from tnfr.operators import apply_glyph
 from tnfr.alias import set_vf, get_attr
-from tnfr.constants.aliases import ALIAS_VF
+from tnfr.constants.aliases import ALIAS_VF, ALIAS_DNFR
 
-# Initialize nodes with different structural frequencies
+# Initialize nodes with different structural frequencies and reorganization pressures
 set_vf(G, node1, 1.0)  # Slow reorganization
 set_vf(G, node2, 5.0)  # Fast reorganization
+G.nodes[node1]['dnfr'] = 0.8  # High reorganization pressure
+G.nodes[node2]['dnfr'] = 0.3
 
-# Couple nodes - synchronizes both phase AND frequency
+# Couple nodes - synchronizes phase, frequency, AND reduces ΔNFR
 apply_glyph(G, node1, "UM")
 
-# Check synchronization
+# Check synchronization and stabilization
 phase1 = G.nodes[node1]['theta']
 phase2 = G.nodes[node2]['theta']
 vf1 = get_attr(G.nodes[node1], ALIAS_VF, 0.0)
 vf2 = get_attr(G.nodes[node2], ALIAS_VF, 0.0)
+dnfr1 = get_attr(G.nodes[node1], ALIAS_DNFR, 0.0)
 
 print(f"Phase difference: {abs(phase1 - phase2):.3f} rad")
 print(f"Frequency difference: {abs(vf1 - vf2):.3f} Hz_str")
+print(f"ΔNFR after coupling: {dnfr1:.3f} (reduced by mutual stabilization)")
 ```
 
 **Configuration**:
 - `UM_theta_push`: Phase synchronization strength (default: 0.25)
 - `UM_vf_sync`: Frequency synchronization strength (default: 0.10)
+- `UM_dnfr_reduction`: ΔNFR reduction factor (default: 0.15)
 - `UM_BIDIRECTIONAL`: Enable bidirectional phase sync (default: True)
 - `UM_SYNC_VF`: Enable frequency synchronization (default: True)
+- `UM_STABILIZE_DNFR`: Enable ΔNFR stabilization (default: True)
 - `UM_FUNCTIONAL_LINKS`: Create edges based on compatibility (default: False)
 
 **Contracts**:
 - Must verify phase compatibility before coupling
 - Synchronizes both θ and νf when enabled
+- Reduces ΔNFR proportionally to phase alignment
 - Creates bidirectional connection
 - Preserves existing couplings
 - Respects nodal equation: ∂EPI/∂t = νf · ΔNFR(t)
 
 **Notes**:
 According to TNFR canonical theory, coupling synchronizes not only phases but also
-structural frequencies. This ensures that coupled nodes converge their reorganization
-rates, which is essential for sustained resonance in systems such as:
+structural frequencies, and produces a stabilizing effect that reduces reorganization
+pressure (ΔNFR) through mutual stabilization. This ensures that coupled nodes:
+- Converge their reorganization rates (essential for sustained resonance)
+- Experience reduced structural instability when well-aligned
+- Maintain coherence through phase-dependent stabilization
+
+This mechanism is observed in systems such as:
 - Synchronized biological rhythms (heartbeats, neural oscillations)
 - Coherent network evolution (social dynamics, collective behavior)
+- Coupled oscillator systems (phase-locked loops, synchronized clocks)
 - Multi-agent coordination (swarm intelligence, distributed systems)
 
 ---
