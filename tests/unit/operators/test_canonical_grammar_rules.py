@@ -34,9 +34,16 @@ class TestR1StartOperators:
         assert result.passed
 
     def test_valid_start_with_recursivity(self):
-        """NAV (recursivity/transition) is a valid start operator."""
+        """REMESH (recursivity) is a valid start operator."""
         result = validate_sequence(
             [RECURSIVITY, RECEPTION, COHERENCE, RESONANCE, SILENCE]
+        )
+        assert result.passed
+
+    def test_valid_start_with_transition(self):
+        """NAV (transition) is a valid start operator (physics-derived)."""
+        result = validate_sequence(
+            [TRANSITION, RECEPTION, COHERENCE, RESONANCE, SILENCE]
         )
         assert result.passed
 
