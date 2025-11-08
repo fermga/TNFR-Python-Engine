@@ -141,6 +141,12 @@ class CoreDefaults:
     THOL_METABOLIC_COMPLEXITY_WEIGHT: float = 0.10
     THOL_BIFURCATION_THRESHOLD: float = 0.1
 
+    # THOL network propagation and cascade parameters
+    THOL_PROPAGATION_ENABLED: bool = True
+    THOL_MIN_COUPLING_FOR_PROPAGATION: float = 0.5
+    THOL_PROPAGATION_ATTENUATION: float = 0.7
+    THOL_CASCADE_MIN_NODES: int = 3
+
 
 @dataclass(frozen=True, slots=True)
 class RemeshDefaults:

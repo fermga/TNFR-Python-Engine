@@ -45,6 +45,7 @@ from ..utils import get_numpy
 __all__ = [
     "capture_network_signals",
     "metabolize_signals_into_subepi",
+    "propagate_subepi_to_network",
 ]
 
 
@@ -219,3 +220,112 @@ def metabolize_signals_into_subepi(
 
     # Structural bounds [0, 1]
     return float(np.clip(metabolized_epi, 0.0, 1.0))
+
+
+def propagate_subepi_to_network(
+    G: TNFRGraph,
+    parent_node: NodeId,
+    sub_epi_record: dict[str, Any],
+) -> list[tuple[NodeId, float]]:
+    """Propagate emergent sub-EPI to coupled neighbors through resonance.
+
+    Implements canonical THOL network dynamics: bifurcation creates structures
+    that propagate through coupled nodes, triggering potential cascades.
+
+    Parameters
+    ----------
+    G : TNFRGraph
+        Graph containing the network
+    parent_node : NodeId
+        Node where sub-EPI originated (bifurcation source)
+    sub_epi_record : dict
+        Sub-EPI record from bifurcation, containing:
+        - "epi": sub-EPI magnitude
+        - "vf": inherited structural frequency
+        - "timestamp": creation time
+
+    Returns
+    -------
+    list of (NodeId, float)
+        List of (neighbor_id, injected_epi) tuples showing propagation results.
+        Empty list if no propagation occurred.
+
+    Notes
+    -----
+    TNFR Principle: "Sub-EPIs propagate to coupled neighbors, triggering their
+    own bifurcations when ∂²EPI/∂t² > τ" (canonical THOL dynamics).
+
+    Propagation mechanism:
+    1. Select neighbors with sufficient coupling (phase alignment)
+    2. Compute attenuation based on coupling strength
+    3. Inject attenuated sub-EPI influence into neighbor's EPI
+    4. Record propagation in graph telemetry
+
+    Attenuation prevents unbounded growth while enabling cascades.
+
+    Examples
+    --------
+    >>> # Create coupled network
+    >>> G = nx.Graph()
+    >>> G.add_node(0, epi=0.50, vf=1.0, theta=0.1)
+    >>> G.add_node(1, epi=0.40, vf=1.0, theta=0.12)  # Phase-aligned
+    >>> G.add_edge(0, 1)
+    >>> sub_epi = {"epi": 0.15, "vf": 1.1, "timestamp": 10}
+    >>> propagations = propagate_subepi_to_network(G, node=0, sub_epi_record=sub_epi)
+    >>> len(propagations)  # Number of neighbors reached
+    1
+    >>> propagations[0]  # (neighbor_id, injected_epi)
+    (1, 0.105)  # 70% attenuation
+    """
+    from ..alias import set_attr
+    from ..utils.numeric import angle_diff
+
+    neighbors = list(G.neighbors(parent_node))
+    if not neighbors:
+        return []
+
+    # Configuration
+    min_coupling_strength = float(
+        G.graph.get("THOL_MIN_COUPLING_FOR_PROPAGATION", 0.5)
+    )
+    attenuation_factor = float(G.graph.get("THOL_PROPAGATION_ATTENUATION", 0.7))
+
+    parent_theta = float(get_attr(G.nodes[parent_node], ALIAS_THETA, 0.0))
+    sub_epi_magnitude = sub_epi_record["epi"]
+
+    propagations = []
+
+    for neighbor in neighbors:
+        neighbor_theta = float(get_attr(G.nodes[neighbor], ALIAS_THETA, 0.0))
+
+        # Compute coupling strength (phase alignment)
+        phase_diff = abs(angle_diff(neighbor_theta, parent_theta))
+        coupling_strength = 1.0 - (phase_diff / math.pi)
+
+        # Propagate only if sufficiently coupled
+        if coupling_strength >= min_coupling_strength:
+            # Attenuate sub-EPI based on distance and coupling
+            attenuated_epi = (
+                sub_epi_magnitude * attenuation_factor * coupling_strength
+            )
+
+            # Inject into neighbor's EPI
+            neighbor_epi = float(get_attr(G.nodes[neighbor], ALIAS_EPI, 0.0))
+            new_neighbor_epi = neighbor_epi + attenuated_epi
+
+            # Boundary check
+            from ..dynamics.structural_clip import structural_clip
+
+            epi_max = float(G.graph.get("EPI_MAX", 1.0))
+            new_neighbor_epi = structural_clip(new_neighbor_epi, lo=0.0, hi=epi_max)
+
+            set_attr(G.nodes[neighbor], ALIAS_EPI, new_neighbor_epi)
+
+            propagations.append((neighbor, attenuated_epi))
+
+            # Update neighbor's EPI history for potential subsequent bifurcation
+            history = G.nodes[neighbor].get("epi_history", [])
+            history.append(new_neighbor_epi)
+            G.nodes[neighbor]["epi_history"] = history[-10:]  # Keep last 10
+
+    return propagations
