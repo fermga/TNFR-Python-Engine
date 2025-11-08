@@ -6,7 +6,7 @@ from types import SimpleNamespace
 import pytest
 
 import tnfr.operators as operators
-from tnfr.constants import DNFR_PRIMARY, THETA_PRIMARY, inject_defaults
+from tnfr.constants import DNFR_PRIMARY, EPI_PRIMARY, THETA_PRIMARY, inject_defaults
 from tnfr.dynamics import set_delta_nfr_hook
 from tnfr.node import NodeNX
 from tnfr.operators import (
@@ -18,6 +18,7 @@ from tnfr.operators import (
     reset_jitter_manager,
     _um_candidate_iter,
 )
+from tnfr.operators.definitions import Coupling
 from tnfr.validation import SequenceValidationResult
 from tnfr.structural import Dissonance, create_nfr, run_sequence
 from tnfr.types import Glyph
@@ -361,3 +362,71 @@ def test_um_coupling_wraps_phases_near_pi_boundary(graph_canon):
     new_theta = G.nodes[0]["theta"]
     assert new_theta == pytest.approx(expected_theta)
     assert -math.pi <= new_theta < math.pi
+
+
+def test_um_preserves_epi_identity():
+    """Verify that UM does not directly modify EPI.
+    
+    One of the fundamental principles of the UM (Coupling) operator is that it 
+    preserves the identity EPI of nodes during coupling. The coupling process 
+    synchronizes θ (phase) and potentially νf (structural frequency), but NEVER 
+    modifies EPI directly. This test validates this critical invariant.
+    """
+    # Create two nodes with different EPI and phase values
+    G, node1 = create_nfr("node1", epi=0.5, theta=0.0)
+    G, node2 = create_nfr("node2", epi=0.7, theta=math.pi/4, graph=G)
+    G.add_edge(node1, node2)
+    
+    # Record EPI values before applying UM
+    epi_before_node1 = G.nodes[node1][EPI_PRIMARY]
+    epi_before_node2 = G.nodes[node2][EPI_PRIMARY]
+    
+    # Apply UM (Coupling) operator to node1
+    Coupling()(G, node1)
+    
+    # Get EPI values after applying UM
+    epi_after_node1 = G.nodes[node1][EPI_PRIMARY]
+    epi_after_node2 = G.nodes[node2][EPI_PRIMARY]
+    
+    # EPI should be unchanged for both the node and its neighbor
+    # Use strict tolerance (1e-9) to ensure no modification occurred
+    assert abs(epi_after_node1 - epi_before_node1) < 1e-9, \
+        f"UM modified node1 EPI: {epi_before_node1} → {epi_after_node1}"
+    assert abs(epi_after_node2 - epi_before_node2) < 1e-9, \
+        f"UM modified node2 EPI: {epi_before_node2} → {epi_after_node2}"
+    
+    # Verify the exact values remained constant
+    assert epi_after_node1 == 0.5, "node1 EPI should remain 0.5"
+    assert epi_after_node2 == 0.7, "node2 EPI should remain 0.7"
+
+
+def test_um_preserves_epi_identity_with_multiple_neighbors():
+    """Verify EPI preservation when coupling a node with multiple neighbors.
+    
+    Tests that UM maintains EPI identity even in complex network configurations
+    where a node couples with multiple neighbors simultaneously.
+    """
+    # Create a central node with multiple neighbors
+    G, center = create_nfr("center", epi=0.6, theta=0.0)
+    neighbors = []
+    for i in range(4):
+        G, neighbor = create_nfr(f"neighbor_{i}", epi=0.5 + i*0.1, theta=i*math.pi/4, graph=G)
+        G.add_edge(center, neighbor)
+        neighbors.append(neighbor)
+    
+    # Record all EPI values before coupling
+    epi_before = {center: G.nodes[center][EPI_PRIMARY]}
+    for n in neighbors:
+        epi_before[n] = G.nodes[n][EPI_PRIMARY]
+    
+    # Apply UM to the central node
+    Coupling()(G, center)
+    
+    # Verify EPI unchanged for center node and all neighbors
+    assert abs(G.nodes[center][EPI_PRIMARY] - epi_before[center]) < 1e-9, \
+        f"UM modified center EPI: {epi_before[center]} → {G.nodes[center][EPI_PRIMARY]}"
+    
+    for n in neighbors:
+        epi_after = G.nodes[n][EPI_PRIMARY]
+        assert abs(epi_after - epi_before[n]) < 1e-9, \
+            f"UM modified {n} EPI: {epi_before[n]} → {epi_after}"
