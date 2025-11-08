@@ -258,6 +258,82 @@ run_sequence(G, community, [Coupling(), Resonance()])
 # Result: Coherence propagates through coupled network
 ```
 
+**Extended UM Examples** (from `examples/coupling_network_formation.py`):
+
+#### Network Synchronization with UM
+```python
+from tnfr.sdk import TNFRNetwork, NetworkConfig
+
+# Create network with varied phases
+net = TNFRNetwork("network_sync_demo", NetworkConfig(random_seed=42))
+net.add_nodes(8)
+
+# Set distinct phase groups
+for i, node in enumerate(net.graph.nodes()):
+    net.graph.nodes[node]['theta'] = (i % 4) * math.pi / 2
+
+# Apply network_sync sequence (includes UM)
+# Sequence: AL → EN → IL → UM → RA → NAV
+net.apply_sequence("network_sync", repeat=2)
+
+results = net.measure()
+# Result: Phase spread reduced, coherence increased through UM
+print(f"Coherence: {results.coherence:.3f}")
+```
+
+#### Building Networks from Isolated Nodes
+```python
+# Start with isolated nodes
+net = TNFRNetwork("formation", NetworkConfig(random_seed=42))
+net.add_nodes(15)
+
+# Add connections
+net.connect_nodes(0.25, "random")
+
+# Apply formation sequence with UM
+net.apply_sequence("network_sync", repeat=3)
+net.apply_sequence("consolidation", repeat=2)
+
+results = net.measure()
+# Result: Coherent network formed from isolated nodes
+print(f"Network Coherence: {results.coherence:.3f}")
+```
+
+#### Bridging Incompatible Phase Groups
+```python
+net = TNFRNetwork("phase_merging", NetworkConfig(random_seed=42))
+net.add_nodes(10)
+
+# Create opposing phase groups (maximally incompatible)
+for i, node in enumerate(net.graph.nodes()):
+    if i < 5:
+        net.graph.nodes[node]['theta'] = 0.0     # Group 1
+    else:
+        net.graph.nodes[node]['theta'] = math.pi # Group 2
+
+net.connect_nodes(0.3, "random")
+
+# Apply repeated synchronization to bridge gap
+for _ in range(3):
+    net.apply_sequence("network_sync")
+
+results = net.measure()
+# Result: UM successfully merged incompatible phase groups
+print(f"Final coherence: {results.coherence:.3f}")
+```
+
+**Key UM Principles**:
+1. **Phase Synchronization**: UM synchronizes θᵢ ≈ θⱼ (primary mechanism)
+2. **EPI Preservation**: Each node maintains its structural identity
+3. **Network Foundation**: UM creates substrate for RA and THOL
+4. **Bidirectional**: Enables mutual influence and shared coherence
+
+**Typical UM Sequences**:
+- **AL → UM**: Emission + coupling (paired activation)
+- **UM → RA**: Coupling + propagation (network coherence)
+- **UM → IL**: Coupling + stabilization (consolidated links)
+- **Network_sync**: AL → EN → IL → UM → RA → NAV (complete cycle)
+
 ---
 
 ## Intermediate Sequences
