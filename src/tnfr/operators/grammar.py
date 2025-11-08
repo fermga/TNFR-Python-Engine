@@ -917,13 +917,15 @@ class _SequenceAutomaton:
                 )
 
         # R5: Validate structural frequency transitions using ONLY canonical TNFR physics
-        freq_valid, freq_msg = validate_frequency_transition(prev, curr)
-        if not freq_valid:
-            # Invalid frequency transition violates TNFR structural dynamics
-            raise SequenceSyntaxError(
-                index=index,
-                token=token,
-                message=f"{operator_display_name(curr)} invalid after {operator_display_name(prev)}: {freq_msg}",
+        # Frequency transitions now generate warnings for suboptimal patterns, not errors
+        freq_valid, freq_msg, freq_is_warning = validate_frequency_transition(prev, curr)
+        if freq_is_warning:
+            # Suboptimal frequency transition - warn but allow
+            import warnings
+            warnings.warn(
+                f"{operator_display_name(curr)} after {operator_display_name(prev)}: {freq_msg}",
+                UserWarning,
+                stacklevel=3
             )
 
     def _has_recent_destabilizer(self, current_index: int) -> bool:
@@ -1648,7 +1650,7 @@ FREQUENCY_TRANSITIONS: dict[str, set[str]] = {
 
 def validate_frequency_transition(
     prev_operator: str, next_operator: str
-) -> tuple[bool, str]:
+) -> tuple[bool, str, bool]:
     """Validate structural frequency transition between consecutive operators (R5 rule).
 
     Parameters
@@ -1660,25 +1662,33 @@ def validate_frequency_transition(
 
     Returns
     -------
-    tuple[bool, str]
-        (is_valid, message) where is_valid indicates if transition respects frequency
-        harmonics, and message provides context when invalid.
+    tuple[bool, str, bool]
+        (is_valid, message, is_warning) where:
+        - is_valid: Always True (transitions now allowed but may warn)
+        - message: Context about the transition quality
+        - is_warning: True if transition is suboptimal (should warn)
 
     Notes
     -----
-    Structural frequency transitions follow TNFR canonical rules:
-    - High ↔ Medium: Bidirectional, natural energy exchange
-    - High → Zero: High energy can pause (containment, closure via SHA terminator)
-    - Medium ↔ Zero: Stabilization can pause, pause can resume
-    - High ↔ High: High energy operators can chain directly
-    - **Invalid**: Zero → High without Medium intermediary
+    Structural frequency transitions are now treated as **heuristic guidance**
+    rather than hard constraints. The high/medium/zero classification describes
+    operator characteristics but doesn't impose physical impossibility.
 
-    Special case: OZ → SHA (dissonance → silence) is valid and represents
-    contained dissonance, postponed conflict, or preserved tension for later processing.
-    This is a canonical therapeutic and crisis management pattern.
+    Frequency tiers:
+    - High ↔ Medium: Natural, smooth energy exchange
+    - High → Zero: Natural containment (e.g., OZ → SHA)
+    - Medium ↔ Zero: Natural stabilization/reactivation
+    - High ↔ High: Natural high-energy chaining
+    - **Suboptimal**: Zero → High (abrupt reactivation)
 
-    This validation generates errors (not warnings) to enforce structural coherence
-    and prevent incoherent state transitions.
+    Zero → High transitions (e.g., SHA → AL) are **physically possible** per
+    ∂EPI/∂t = νf · ΔNFR - the operator can modify νf. However, they may be
+    structurally abrupt. A warning suggests considering an intermediate step
+    (e.g., SHA → NAV → AL) for smoother transitions.
+
+    This aligns frequency validation with the 4 fundamental TNFR constraints
+    (C1-C4) which emerge directly from physics, while treating frequency tiers
+    as descriptive metrics for code quality.
     """
     # Get frequency levels for both operators
     prev_freq = STRUCTURAL_FREQUENCIES.get(prev_operator)
@@ -1686,20 +1696,22 @@ def validate_frequency_transition(
 
     # If either operator is unknown, skip validation (compatibility handles this)
     if prev_freq is None or next_freq is None:
-        return True, ""
+        return True, "", False
 
-    # Check if transition is allowed
+    # Check if transition is in the "smooth" set
     allowed_targets = FREQUENCY_TRANSITIONS.get(prev_freq, set())
     if next_freq not in allowed_targets:
+        # Transition is suboptimal but not forbidden
         prev_display = operator_display_name(prev_operator)
         next_display = operator_display_name(next_operator)
-        return (
-            False,
-            f"Incoherent frequency transition: {prev_display} ({prev_freq}) → {next_display} ({next_freq}). "
-            f"Valid transitions from {prev_freq}: {', '.join(sorted(allowed_targets))}",
+        warning_msg = (
+            f"Abrupt frequency transition: {prev_display} ({prev_freq}) → {next_display} ({next_freq}). "
+            f"Consider intermediate operator for smoother transition. "
+            f"Recommended from {prev_freq}: {', '.join(sorted(allowed_targets))}"
         )
+        return True, warning_msg, True  # Valid but with warning
 
-    return True, ""
+    return True, "", False  # Smooth transition
 
 
 # R5: Regenerative cycle constants and types (from cycle_detection module)
