@@ -117,14 +117,15 @@ BIFURCATED_COLLAPSE = CanonicalSequence(
 
 THERAPEUTIC_PROTOCOL = CanonicalSequence(
     name="therapeutic_protocol",
-    glyphs=[Glyph.AL, Glyph.EN, Glyph.IL, Glyph.OZ, Glyph.ZHIR, Glyph.IL, Glyph.RA, Glyph.SHA],
+    glyphs=[Glyph.AL, Glyph.EN, Glyph.IL, Glyph.OZ, Glyph.ZHIR, Glyph.IL, Glyph.RA, Glyph.IL, Glyph.SHA],
     pattern_type=StructuralPattern.THERAPEUTIC,
     description=(
         "Protocolo ritual o terapéutico: emisión simbólica (AL), recepción "
         "estabilizadora (EN), coherencia inicial (IL), disonancia creativa como "
         "confrontación (OZ), mutación del sujeto (ZHIR), estabilización de la "
-        "nueva forma (IL), propagación resonante (RA), entrada en latencia (SHA). "
-        "Ciclo de transformación personal o colectiva con resolución creativa."
+        "nueva forma (IL), propagación resonante (RA), estabilización post-resonancia (IL), "
+        "entrada en latencia (SHA). Ciclo de transformación personal o colectiva con "
+        "resolución creativa y transiciones de frecuencia coherentes."
     ),
     use_cases=[
         "Ceremonias de transformación personal o iniciación",
@@ -169,14 +170,14 @@ THEORY_SYSTEM = CanonicalSequence(
 
 FULL_DEPLOYMENT = CanonicalSequence(
     name="full_deployment",
-    glyphs=[Glyph.AL, Glyph.EN, Glyph.IL, Glyph.OZ, Glyph.ZHIR, Glyph.IL, Glyph.RA, Glyph.SHA],
+    glyphs=[Glyph.AL, Glyph.EN, Glyph.IL, Glyph.OZ, Glyph.ZHIR, Glyph.IL, Glyph.RA, Glyph.IL, Glyph.SHA],
     pattern_type=StructuralPattern.COMPLEX,
     description=(
         "Trayectoria completa de reorganización nodal: emisión iniciadora (AL), "
         "recepción estabilizadora (EN), coherencia inicial (IL), disonancia "
         "exploradora (OZ), mutación transformativa (ZHIR), estabilización coherente (IL), "
-        "propagación resonante (RA), cierre en latencia (SHA). Secuencia exhaustiva "
-        "de reorganización estructural."
+        "propagación resonante (RA), consolidación post-resonancia (IL), cierre en latencia (SHA). "
+        "Secuencia exhaustiva de reorganización estructural con transiciones de frecuencia coherentes."
     ),
     use_cases=[
         "Procesos de transformación organizacional completa",
