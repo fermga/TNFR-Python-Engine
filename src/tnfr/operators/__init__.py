@@ -19,7 +19,7 @@ from tnfr import glyph_history
 
 from ..alias import get_attr
 from ..constants import DEFAULTS, get_param
-from ..constants.aliases import ALIAS_EPI
+from ..constants.aliases import ALIAS_EPI, ALIAS_VF
 from ..utils import angle_diff
 from ..metrics.trig import neighbor_phase_mean
 from ..rng import make_rng
@@ -585,20 +585,21 @@ def compute_consensus_phase(phases: list[float]) -> float:
 
 
 def _op_UM(node: NodeProtocol, gf: GlyphFactors) -> None:  # UM — Coupling
-    """Align node phase with neighbours and optionally create links.
+    """Align node phase and frequency with neighbours and optionally create links.
 
     Coupling shifts the node phase ``theta`` towards the neighbour mean while
     respecting νf and EPI. When bidirectional mode is enabled (default), both
-    the node and its neighbors synchronize their phases mutually. When
-    functional links are enabled it may add edges based on combined phase,
-    EPI, and sense-index similarity.
+    the node and its neighbors synchronize their phases mutually. Additionally,
+    structural frequency (νf) synchronization causes coupled nodes to converge
+    their reorganization rates. When functional links are enabled it may add
+    edges based on combined phase, EPI, and sense-index similarity.
 
     Parameters
     ----------
     node : NodeProtocol
-        Node whose phase is being synchronised.
+        Node whose phase and frequency are being synchronised.
     gf : GlyphFactors
-        Provides ``UM_theta_push`` and optional selection parameters.
+        Provides ``UM_theta_push``, ``UM_vf_sync`` and optional selection parameters.
 
     Notes
     -----
@@ -606,6 +607,12 @@ def _op_UM(node: NodeProtocol, gf: GlyphFactors) -> None:  # UM — Coupling
     the canonical TNFR requirement φᵢ(t) ≈ φⱼ(t) by mutually adjusting phases
     of both the node and its neighbors towards a consensus phase. This ensures
     true coupling as defined in the theory.
+
+    Structural frequency synchronization (UM_SYNC_VF=True, default) implements
+    the TNFR requirement that coupling synchronizes not only phases but also
+    structural frequencies (νf). This enables coupled nodes to converge their
+    reorganization rates, which is essential for sustained resonance and coherent
+    network evolution as described by the nodal equation: ∂EPI/∂t = νf · ΔNFR(t).
 
     Legacy unidirectional mode (UM_BIDIRECTIONAL=False) only adjusts the node's
     phase towards its neighbors, preserving backward compatibility.
@@ -637,6 +644,7 @@ def _op_UM(node: NodeProtocol, gf: GlyphFactors) -> None:  # UM — Coupling
     0.79
     """
     k = get_factor(gf, "UM_theta_push", 0.25)
+    k_vf = get_factor(gf, "UM_vf_sync", 0.10)
     th_i = node.theta
 
     # Check if bidirectional synchronization is enabled (default: True)
@@ -673,6 +681,24 @@ def _op_UM(node: NodeProtocol, gf: GlyphFactors) -> None:  # UM — Coupling
         thL = neighbor_phase_mean(node)
         d = angle_diff(thL, th_i)
         node.theta = th_i + k * d
+
+    # Structural frequency (νf) synchronization
+    # According to TNFR theory, coupling synchronizes both phase and frequency
+    sync_vf = bool(node.graph.get("UM_SYNC_VF", True))
+    if sync_vf:
+        neighbor_ids = list(node.neighbors())
+        if neighbor_ids and hasattr(node, "G"):
+            # Canonical access to vf through alias system
+            vf_i = node.vf
+            vf_neighbors = [
+                get_attr(node.G.nodes[nid], ALIAS_VF, 0.0) for nid in neighbor_ids
+            ]
+            
+            if vf_neighbors:
+                vf_mean = sum(vf_neighbors) / len(vf_neighbors)
+                
+                # Gradual convergence towards mean (similar to phase sync)
+                node.vf = vf_i + k_vf * (vf_mean - vf_i)
 
     if bool(node.graph.get("UM_FUNCTIONAL_LINKS", False)):
         thr = float(

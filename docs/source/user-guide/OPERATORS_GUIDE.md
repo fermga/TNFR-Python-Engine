@@ -167,10 +167,11 @@ for node in G.nodes():
 
 ### 5. Coupling (UM) 🔗
 
-**Function**: Creates structural links between nodes
+**Function**: Creates structural links between nodes and synchronizes their dynamics
 
 **Effect**:
 - Phase synchronization: φᵢ(t) ≈ φⱼ(t)
+- Structural frequency synchronization: νf,ᵢ → νf,ⱼ
 - Information exchange enabled
 - Network connectivity increased
 
@@ -178,26 +179,56 @@ for node in G.nodes():
 - Network formation
 - Connecting isolated nodes
 - Creating communication pathways
+- Synchronizing reorganization rates between coupled systems
 
-**Mathematical representation**: φᵢ(t) ≈ φⱼ(t)
+**Mathematical representation**: 
+- Phase: φᵢ(t) ≈ φⱼ(t)
+- Frequency: νf,ᵢ(t+1) = νf,ᵢ(t) + k_vf · (⟨νf,neighbors⟩ - νf,ᵢ(t))
 
 **Example**:
 ```python
-from tnfr.operators import Coupling
+from tnfr.operators import apply_glyph
+from tnfr.alias import set_vf, get_attr
+from tnfr.constants.aliases import ALIAS_VF
 
-# Couple two nodes
-Coupling()(G, node1, node2, strength=0.8)
+# Initialize nodes with different structural frequencies
+set_vf(G, node1, 1.0)  # Slow reorganization
+set_vf(G, node2, 5.0)  # Fast reorganization
 
-# Verify phase synchronization
-phase1 = G.nodes[node1]['phase']
-phase2 = G.nodes[node2]['phase']
+# Couple nodes - synchronizes both phase AND frequency
+apply_glyph(G, node1, "UM")
+
+# Check synchronization
+phase1 = G.nodes[node1]['theta']
+phase2 = G.nodes[node2]['theta']
+vf1 = get_attr(G.nodes[node1], ALIAS_VF, 0.0)
+vf2 = get_attr(G.nodes[node2], ALIAS_VF, 0.0)
+
 print(f"Phase difference: {abs(phase1 - phase2):.3f} rad")
+print(f"Frequency difference: {abs(vf1 - vf2):.3f} Hz_str")
 ```
+
+**Configuration**:
+- `UM_theta_push`: Phase synchronization strength (default: 0.25)
+- `UM_vf_sync`: Frequency synchronization strength (default: 0.10)
+- `UM_BIDIRECTIONAL`: Enable bidirectional phase sync (default: True)
+- `UM_SYNC_VF`: Enable frequency synchronization (default: True)
+- `UM_FUNCTIONAL_LINKS`: Create edges based on compatibility (default: False)
 
 **Contracts**:
 - Must verify phase compatibility before coupling
+- Synchronizes both θ and νf when enabled
 - Creates bidirectional connection
 - Preserves existing couplings
+- Respects nodal equation: ∂EPI/∂t = νf · ΔNFR(t)
+
+**Notes**:
+According to TNFR canonical theory, coupling synchronizes not only phases but also
+structural frequencies. This ensures that coupled nodes converge their reorganization
+rates, which is essential for sustained resonance in systems such as:
+- Synchronized biological rhythms (heartbeats, neural oscillations)
+- Coherent network evolution (social dynamics, collective behavior)
+- Multi-agent coordination (swarm intelligence, distributed systems)
 
 ---
 
