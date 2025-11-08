@@ -584,11 +584,47 @@ class _SequenceAutomaton:
         Frequency transitions are validated:
         - Valid transitions: Pass silently
         - Invalid transitions: Raise SequenceSyntaxError
+        
+        SHA (Silence) specific validations:
+        - SHA → OZ: Prohibited (silence followed by dissonance contradicts preservation)
+        - SHA → SHA: Prohibited (redundant silence without structural purpose)
         """
 
         # Only validate if prev is also a known operator
         if prev not in OPERATORS:
             return
+
+        # SHA-specific validations (R6: Silence operator compatibility)
+        if prev == SILENCE:
+            if curr == DISSONANCE:
+                # SHA → OZ: Silence followed by Dissonance is contradictory
+                # SHA reduces νf → 0 (preservation state)
+                # OZ increases ΔNFR (instability, exploration)
+                # Cannot introduce dissonance into a paused node
+                raise SequenceSyntaxError(
+                    index=index,
+                    token=token,
+                    message=(
+                        f"{operator_display_name(DISSONANCE)} invalid after {operator_display_name(SILENCE)}: "
+                        f"Silence (νf → 0) contradicts Dissonance (ΔNFR ↑). "
+                        f"Cannot introduce dissonance into paused node. "
+                        f"Use {operator_display_name(SILENCE)} → {operator_display_name(TRANSITION)} → {operator_display_name(DISSONANCE)} "
+                        f"or {operator_display_name(SILENCE)} → {operator_display_name(EMISSION)} → {operator_display_name(DISSONANCE)} for reactivation."
+                    ),
+                )
+            elif curr == SILENCE:
+                # SHA → SHA: Redundant silence without structural purpose
+                # If νf ≈ 0, second SHA has no effect
+                # Violates operator closure principle (each operator must transform)
+                raise SequenceSyntaxError(
+                    index=index,
+                    token=token,
+                    message=(
+                        f"Redundant {operator_display_name(SILENCE)} after {operator_display_name(SILENCE)}: "
+                        f"Consecutive silence operators serve no structural purpose. "
+                        f"Remove duplicate or insert transition operator."
+                    ),
+                )
 
         # R5: Validate structural frequency transitions using ONLY canonical TNFR physics
         freq_valid, freq_msg = validate_frequency_transition(prev, curr)
@@ -964,6 +1000,7 @@ STRUCTURAL_FREQUENCIES: dict[str, str] = {
 # Frequency compatibility: operators with harmonic frequencies can transition
 # Valid transitions preserve structural coherence:
 # - high ↔ medium: High energy can stabilize or stabilized can amplify
+# - high → zero: High energy can pause (containment, closure) - SHA as terminator
 # - medium ↔ zero: Stabilized can pause or resume from pause
 # - high ↔ high: High energy can chain directly
 # - zero → medium: Gradual reactivation from silence (structurally coherent)
@@ -971,7 +1008,7 @@ STRUCTURAL_FREQUENCIES: dict[str, str] = {
 # Invalid: zero → high (violates structural continuity - cannot jump from pause
 # to high energy without intermediate stabilization)
 FREQUENCY_TRANSITIONS: dict[str, set[str]] = {
-    "high": {"high", "medium"},
+    "high": {"high", "medium", "zero"},  # Allow high → zero for SHA termination (OZ → SHA valid)
     "medium": {"high", "medium", "zero"},
     "zero": {"medium"},  # Must transition through medium before high (structural coherence)
 }
@@ -999,12 +1036,17 @@ def validate_frequency_transition(
     -----
     Structural frequency transitions follow TNFR canonical rules:
     - High ↔ Medium: Bidirectional, natural energy exchange
+    - High → Zero: High energy can pause (containment, closure via SHA terminator)
     - Medium ↔ Zero: Stabilization can pause, pause can resume
     - High ↔ High: High energy operators can chain directly
     - **Invalid**: Zero → High without Medium intermediary
 
-    This validation generates warnings (not errors) to maintain flexibility while
-    alerting users to potentially incoherent structural transitions.
+    Special case: OZ → SHA (dissonance → silence) is valid and represents
+    contained dissonance, postponed conflict, or preserved tension for later processing.
+    This is a canonical therapeutic and crisis management pattern.
+
+    This validation generates errors (not warnings) to enforce structural coherence
+    and prevent incoherent state transitions.
     """
     # Get frequency levels for both operators
     prev_freq = STRUCTURAL_FREQUENCIES.get(prev_operator)
