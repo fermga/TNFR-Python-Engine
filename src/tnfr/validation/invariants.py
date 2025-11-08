@@ -48,15 +48,15 @@ __all__ = [
 class InvariantSeverity(Enum):
     """Severity levels for invariant violations."""
 
-    INFO = "info"  # Información, no un problema
-    WARNING = "warning"  # Inconsistencia menor
-    ERROR = "error"  # Violación que impide ejecución
-    CRITICAL = "critical"  # Corrupción de datos
+    INFO = "info"  # Information, not a problem
+    WARNING = "warning"  # Minor inconsistency
+    ERROR = "error"  # Violation that prevents execution
+    CRITICAL = "critical"  # Data corruption
 
 
 @dataclass
 class InvariantViolation:
-    """Descripción detallada de violación de invariante."""
+    """Detailed description of invariant violation."""
 
     invariant_id: int
     severity: InvariantSeverity
@@ -68,25 +68,25 @@ class InvariantViolation:
 
 
 class TNFRInvariant(ABC):
-    """Base class para validadores de invariantes TNFR."""
+    """Base class for TNFR invariant validators."""
 
     @property
     @abstractmethod
     def invariant_id(self) -> int:
-        """Número de invariante TNFR (1-10)."""
+        """TNFR invariant number (1-10)."""
 
     @property
     @abstractmethod
     def description(self) -> str:
-        """Descripción human-readable del invariante."""
+        """Human-readable description of the invariant."""
 
     @abstractmethod
     def validate(self, graph: TNFRGraph) -> list[InvariantViolation]:
-        """Valida invariante en el grafo, retorna violaciones encontradas."""
+        """Validates invariant in the graph, returns found violations."""
 
 
 class Invariant1_EPIOnlyThroughOperators(TNFRInvariant):
-    """Invariante 1: EPI cambia solo a través de operadores estructurales."""
+    """Invariant 1: EPI changes only through structural operators."""
 
     invariant_id = 1
     description = "EPI changes only through structural operators"

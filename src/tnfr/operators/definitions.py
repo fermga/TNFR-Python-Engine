@@ -334,7 +334,7 @@ class Emission(Operator):
 
         Marks temporal irreversibility before delegating to grammar execution.
         This ensures every emission leaves a persistent structural trace as
-        required by TNFR.pdf §2.2.1 (AL - Emisión fundacional).
+        required by TNFR.pdf §2.2.1 (AL - Foundational emission).
 
         Parameters
         ----------
@@ -635,7 +635,7 @@ class Reception(Operator):
 
         Detects emission sources in the network BEFORE applying reception
         grammar. This enables active reorganization from external sources
-        as specified in TNFR.pdf §2.2.1 (EN - Recepción estructural).
+        as specified in TNFR.pdf §2.2.1 (EN - Structural reception).
 
         Parameters
         ----------

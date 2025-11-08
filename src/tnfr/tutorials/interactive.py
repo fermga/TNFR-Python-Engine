@@ -99,7 +99,7 @@ def hello_tnfr(interactive: bool = True, random_seed: int = 42) -> None:
     _print_section("Hello, TNFR! 👋")
     
     _explain(
-        "Welcome to TNFR - Teoría de la Naturaleza Fractal Resonante!\n"
+        "Welcome to TNFR - Resonant Fractal Nature Theory!\n"
         "Let's learn the basics in just 5 minutes with a working example.",
         pause
     )
@@ -1248,7 +1248,7 @@ def oz_dissonance_tutorial(interactive: bool = True, random_seed: int = 42) -> d
     """Interactive tutorial on OZ (Dissonance) operator and canonical sequences.
     
     This tutorial covers:
-    - Theoretical foundations of OZ (disonancia topológica)
+    - Theoretical foundations of OZ (topological dissonance)
     - When to use OZ vs when to avoid
     - 6 canonical sequences with OZ from TNFR theory
     - Bifurcation paths and resolution patterns

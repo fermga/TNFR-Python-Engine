@@ -1,16 +1,16 @@
 """Canonical operator sequences and archetypal patterns from TNFR theory.
 
 This module defines the 6 canonical archetypal sequences involving OZ (Dissonance)
-as documented in "El pulso que nos atraviesa" (Table 2.5 - Tipología estructural glífica).
+as documented in "El pulso que nos atraviesa" (Table 2.5 - Glyphic structural typology).
 
 These sequences represent validated structural patterns that can be reused across
 different domains and applications while maintaining TNFR coherence and grammar.
 
 References
 ----------
-"El pulso que nos atraviesa", Tabla 2.5: Tipología estructural glífica
-Section 2.3.8: Ejemplos completos
-Section 2.3.5: Escritura glífica avanzada (Macros glíficas)
+"El pulso que nos atraviesa", Table 2.5: Glyphic structural typology
+Section 2.3.8: Complete examples
+Section 2.3.5: Advanced glyphic writing (Glyphic macros)
 """
 
 from __future__ import annotations
@@ -74,20 +74,20 @@ BIFURCATED_BASE = CanonicalSequence(
     glyphs=[Glyph.AL, Glyph.EN, Glyph.IL, Glyph.OZ, Glyph.ZHIR, Glyph.IL, Glyph.SHA],
     pattern_type=StructuralPattern.BIFURCATED,
     description=(
-        "Disonancia estructural que genera umbral de bifurcación. "
-        "El nodo puede reorganizarse (ZHIR) o colapsar a latencia (NUL). "
-        "Este patrón representa la resolución creativa de la disonancia "
-        "mediante mutación transformativa. "
-        "Incluye EN → IL (reception→coherence) para validación gramática."
+        "Structural dissonance that generates bifurcation threshold. "
+        "The node can reorganize (ZHIR) or collapse to latency (NUL). "
+        "This pattern represents the creative resolution of dissonance "
+        "through transformative mutation. "
+        "Includes EN → IL (reception→coherence) for grammar validation."
     ),
     use_cases=[
-        "Intervención terapéutica ante bloqueos emocionales o cognitivos",
-        "Análisis de crisis culturales o paradigmas en tensión",
-        "Diseño de sistemas con respuesta adaptativa a perturbaciones",
-        "Modelado de puntos de decisión en redes complejas",
+        "Therapeutic intervention for emotional or cognitive blockages",
+        "Analysis of cultural crises or paradigms under tension",
+        "Design of systems with adaptive response to perturbations",
+        "Modeling of decision points in complex networks",
     ],
     domain="general",
-    references="El pulso que nos atraviesa, Tabla 2.5, Sección 2.3.4 (Bifurcación)",
+    references="El pulso que nos atraviesa, Table 2.5, Section 2.3.4 (Bifurcation)",
 )
 
 BIFURCATED_COLLAPSE = CanonicalSequence(
@@ -95,24 +95,24 @@ BIFURCATED_COLLAPSE = CanonicalSequence(
     glyphs=[Glyph.AL, Glyph.EN, Glyph.IL, Glyph.OZ, Glyph.NUL, Glyph.IL, Glyph.SHA],
     pattern_type=StructuralPattern.BIFURCATED,
     description=(
-        "Path alternativo de bifurcación: disonancia lleva a colapso controlado (NUL) "
-        "en lugar de mutación. Útil para reset estructural cuando la transformación "
-        "no es viable. El nodo retorna a latencia preservando potencialidad. "
-        "Incluye EN → IL (reception→coherence) para validación gramática."
+        "Alternative bifurcation path: dissonance leads to controlled collapse (NUL) "
+        "instead of mutation. Useful for structural reset when transformation "
+        "is not viable. The node returns to latency preserving potentiality. "
+        "Includes EN → IL (reception→coherence) for grammar validation."
     ),
     use_cases=[
-        "Reset cognitivo tras sobrecarga informacional",
-        "Desinversión organizacional estratégica",
-        "Retorno a potencialidad tras exploración fallida",
-        "Simplificación estructural ante complejidad insostenible",
+        "Cognitive reset after informational overload",
+        "Strategic organizational disinvestment",
+        "Return to potentiality after failed exploration",
+        "Structural simplification facing unsustainable complexity",
     ],
     domain="general",
-    references="El pulso que nos atraviesa, Sección 2.3.3 (Bifurcación y mutación)",
+    references="El pulso que nos atraviesa, Section 2.3.3 (Bifurcation and mutation)",
 )
 
 
 # ============================================================================
-# Therapeutic Protocol: Ritual de Reorganización
+# Therapeutic Protocol: Reorganization Ritual
 # ============================================================================
 
 THERAPEUTIC_PROTOCOL = CanonicalSequence(
@@ -120,18 +120,18 @@ THERAPEUTIC_PROTOCOL = CanonicalSequence(
     glyphs=[Glyph.AL, Glyph.EN, Glyph.IL, Glyph.OZ, Glyph.ZHIR, Glyph.IL, Glyph.RA, Glyph.IL, Glyph.SHA],
     pattern_type=StructuralPattern.THERAPEUTIC,
     description=(
-        "Protocolo ritual o terapéutico: emisión simbólica (AL), recepción "
-        "estabilizadora (EN), coherencia inicial (IL), disonancia creativa como "
-        "confrontación (OZ), mutación del sujeto (ZHIR), estabilización de la "
-        "nueva forma (IL), propagación resonante (RA), estabilización post-resonancia (IL), "
-        "entrada en latencia (SHA). Ciclo de transformación personal o colectiva con "
-        "resolución creativa y transiciones de frecuencia coherentes."
+        "Ritual or therapeutic protocol: symbolic emission (AL), stabilizing "
+        "reception (EN), initial coherence (IL), creative dissonance as "
+        "confrontation (OZ), subject mutation (ZHIR), stabilization of the "
+        "new form (IL), resonant propagation (RA), post-resonance stabilization (IL), "
+        "entry into latency (SHA). Personal or collective transformation cycle with "
+        "creative resolution and coherent frequency transitions."
     ),
     use_cases=[
-        "Ceremonias de transformación personal o iniciación",
-        "Sesiones de reestructuración terapéutica profunda",
-        "Acompañamiento simbólico de procesos de cambio vital",
-        "Rituales de sanación colectiva o comunitaria",
+        "Personal transformation or initiation ceremonies",
+        "Deep therapeutic restructuring sessions",
+        "Symbolic accompaniment of vital change processes",
+        "Collective or community healing rituals",
     ],
     domain="biomedical",
     references="El pulso que nos atraviesa, Ejemplo 3 (Sección 2.3.8)",
@@ -139,7 +139,7 @@ THERAPEUTIC_PROTOCOL = CanonicalSequence(
 
 
 # ============================================================================
-# Theory System: Construcción Epistemológica
+# Theory System: Epistemological Construction
 # ============================================================================
 
 THEORY_SYSTEM = CanonicalSequence(
@@ -147,25 +147,25 @@ THEORY_SYSTEM = CanonicalSequence(
     glyphs=[Glyph.AL, Glyph.EN, Glyph.IL, Glyph.OZ, Glyph.ZHIR, Glyph.IL, Glyph.THOL, Glyph.SHA],
     pattern_type=StructuralPattern.EDUCATIONAL,
     description=(
-        "Sistema de ideas o teoría emergente: emisión inicial (AL), recepción de "
-        "información (EN), estabilización (IL), disonancia conceptual o paradoja (OZ), "
-        "mutación hacia nuevo paradigma (ZHIR), estabilización en comprensión coherente (IL), "
-        "autoorganización en sistema teórico (THOL), integración en conocimiento "
-        "encarnado (SHA). Trayectoria de construcción epistemológica."
+        "Emerging system of ideas or theory: initial emission (AL), information "
+        "reception (EN), stabilization (IL), conceptual dissonance or paradox (OZ), "
+        "mutation toward new paradigm (ZHIR), stabilization in coherent understanding (IL), "
+        "self-organization into theoretical system (THOL), integration into embodied "
+        "knowledge (SHA). Epistemological construction trajectory."
     ),
     use_cases=[
-        "Diseño de marcos epistemológicos o paradigmas científicos",
-        "Construcción de teorías coherentes en ciencias sociales",
-        "Modelado de evolución conceptual en comunidades académicas",
-        "Desarrollo de sistemas filosóficos o cosmovisiones",
+        "Design of epistemological frameworks or scientific paradigms",
+        "Construction of coherent theories in social sciences",
+        "Modeling of conceptual evolution in academic communities",
+        "Development of philosophical systems or worldviews",
     ],
     domain="cognitive",
-    references="El pulso que nos atraviesa, Ejemplo 2 (Sección 2.3.8)",
+    references="El pulso que nos atraviesa, Example 2 (Section 2.3.8)",
 )
 
 
 # ============================================================================
-# Full Deployment: Despliegue Total
+# Full Deployment: Complete Deployment
 # ============================================================================
 
 FULL_DEPLOYMENT = CanonicalSequence(
@@ -173,25 +173,25 @@ FULL_DEPLOYMENT = CanonicalSequence(
     glyphs=[Glyph.AL, Glyph.EN, Glyph.IL, Glyph.OZ, Glyph.ZHIR, Glyph.IL, Glyph.RA, Glyph.IL, Glyph.SHA],
     pattern_type=StructuralPattern.COMPLEX,
     description=(
-        "Trayectoria completa de reorganización nodal: emisión iniciadora (AL), "
-        "recepción estabilizadora (EN), coherencia inicial (IL), disonancia "
-        "exploradora (OZ), mutación transformativa (ZHIR), estabilización coherente (IL), "
-        "propagación resonante (RA), consolidación post-resonancia (IL), cierre en latencia (SHA). "
-        "Secuencia exhaustiva de reorganización estructural con transiciones de frecuencia coherentes."
+        "Complete nodal reorganization trajectory: initiating emission (AL), "
+        "stabilizing reception (EN), initial coherence (IL), exploratory "
+        "dissonance (OZ), transformative mutation (ZHIR), coherent stabilization (IL), "
+        "resonant propagation (RA), post-resonance consolidation (IL), closure in latency (SHA). "
+        "Exhaustive structural reorganization sequence with coherent frequency transitions."
     ),
     use_cases=[
-        "Procesos de transformación organizacional completa",
-        "Ciclos de innovación radical con múltiples fases",
-        "Trayectorias de aprendizaje profundo y transformativo",
-        "Reorganización sistémica de comunidades o ecosistemas",
+        "Complete organizational transformation processes",
+        "Radical innovation cycles with multiple phases",
+        "Deep and transformative learning trajectories",
+        "Systemic reorganization of communities or ecosystems",
     ],
     domain="general",
-    references="El pulso que nos atraviesa, Tabla 2.5 (Despliegue total)",
+    references="El pulso que nos atraviesa, Table 2.5 (Complete deployment)",
 )
 
 
 # ============================================================================
-# MOD_STABILIZER: Macro Glífica Reutilizable
+# MOD_STABILIZER: Reusable Glyphic Macro
 # ============================================================================
 
 MOD_STABILIZER = CanonicalSequence(
@@ -199,22 +199,22 @@ MOD_STABILIZER = CanonicalSequence(
     glyphs=[Glyph.REMESH, Glyph.EN, Glyph.IL, Glyph.OZ, Glyph.ZHIR, Glyph.IL, Glyph.REMESH],
     pattern_type=StructuralPattern.EXPLORE,
     description=(
-        "MOD_ESTABILIZADOR: macro glífica para transformación controlada. "
-        "Activa recursividad (REMESH), recibe estado actual (EN), estabiliza (IL), "
-        "introduce disonancia controlada (OZ), muta estructura (ZHIR), estabiliza "
-        "nueva forma (IL), cierra con recursividad (REMESH). Reutilizable como "
-        "subunidad modular dentro de secuencias más complejas. Representa el patrón "
-        "mínimo de exploración-transformación-consolidación con validación gramática "
-        "completa (EN → IL) y cierre recursivo."
+        "MOD_STABILIZER: glyphic macro for controlled transformation. "
+        "Activates recursivity (REMESH), receives current state (EN), stabilizes (IL), "
+        "introduces controlled dissonance (OZ), mutates structure (ZHIR), stabilizes "
+        "new form (IL), closes with recursivity (REMESH). Reusable as "
+        "modular subunit within more complex sequences. Represents the "
+        "minimal pattern of exploration-transformation-consolidation with complete "
+        "grammar validation (EN → IL) and recursive closure."
     ),
     use_cases=[
-        "Módulo de transformación segura para composición",
-        "Componente reutilizable en secuencias complejas",
-        "Patrón de resolución creativa encapsulado",
-        "Bloque de construcción para T'HOL (autoorganización)",
+        "Safe transformation module for composition",
+        "Reusable component in complex sequences",
+        "Encapsulated creative resolution pattern",
+        "Building block for T'HOL (self-organization)",
     ],
     domain="general",
-    references="El pulso que nos atraviesa, Sección 2.3.5 (Macros glíficas)",
+    references="El pulso que nos atraviesa, Section 2.3.5 (Glyphic macros)",
 )
 
 

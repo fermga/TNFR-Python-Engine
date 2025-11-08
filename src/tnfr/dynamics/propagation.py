@@ -6,8 +6,8 @@ structural dissonance propagates through the network based on phase compatibilit
 frequency matching, and coupling strength.
 
 According to TNFR canonical theory:
-    "Interferencia nodal: Disonancia entre nodos que perturba la coherencia.
-    Puede inducir reorganización o colapso."
+    "Nodal interference: Dissonance between nodes that disrupts coherence.
+    Can induce reorganization or collapse."
 
 OZ introduces topological asymmetry that propagates beyond the local node,
 potentially triggering bifurcation cascades in phase-compatible neighbors.
@@ -15,7 +15,7 @@ potentially triggering bifurcation cascades in phase-compatible neighbors.
 References
 ----------
 - TNFR.pdf §2.3.3: OZ introduces topological dissonance
-- Issue: [OZ] Implementar propagación de disonancia y efectos de red vecinal
+- Issue: [OZ] Implement dissonance propagation and neighborhood network effects
 """
 
 from __future__ import annotations

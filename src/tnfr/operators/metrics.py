@@ -142,7 +142,7 @@ def reception_metrics(G: TNFRGraph, node: NodeId, epi_before: float) -> dict[str
 
     Extended metrics for Reception (EN) operator that track emission sources,
     phase compatibility, and integration efficiency as specified in TNFR.pdf
-    §2.2.1 (EN - Recepción estructural).
+    §2.2.1 (EN - Structural reception).
 
     Parameters
     ----------

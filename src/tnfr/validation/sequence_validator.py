@@ -15,11 +15,11 @@ __all__ = [
 
 
 class SequenceSemanticValidator:
-    """Valida semántica de secuencias de operadores."""
+    """Validates semantics of operator sequences."""
 
     def __init__(self) -> None:
         """Initialize semantic validator with default rules."""
-        # Reglas semánticas entre operadores
+        # Semantic rules between operators
         self.semantic_rules: dict[str, dict] = {
             "mutation_without_stabilization": {
                 "pattern": ["mutation"],
@@ -87,7 +87,7 @@ class SequenceSemanticValidator:
     def validate_semantic_sequence(
         self, sequence: list[str]
     ) -> list[InvariantViolation]:
-        """Valida semántica de la secuencia de operadores.
+        """Validates semantics of the operator sequence.
 
         Parameters
         ----------
@@ -109,7 +109,7 @@ class SequenceSemanticValidator:
     def _check_rule(
         self, sequence: list[str], rule_name: str, rule: dict
     ) -> list[InvariantViolation]:
-        """Verifica una regla semántica específica.
+        """Verifies a specific semantic rule.
 
         Parameters
         ----------
@@ -128,11 +128,11 @@ class SequenceSemanticValidator:
         violations: list[InvariantViolation] = []
         pattern = rule["pattern"]
 
-        # Buscar patrones en la secuencia
+        # Search for patterns in the sequence
         for i in range(len(sequence) - len(pattern) + 1):
             if sequence[i : i + len(pattern)] == pattern:
 
-                # Si no hay restricciones adicionales, el patrón por sí mismo es una violación
+                # If there are no additional constraints, the pattern itself is a violation
                 if "not_followed_by" not in rule and "not_preceded_by" not in rule:
                     violations.append(
                         InvariantViolation(
