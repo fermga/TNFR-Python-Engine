@@ -59,23 +59,20 @@ def coerce_glyph(val: Any) -> Glyph | Any:
 
 
 def glyph_fallback(cand_key: str, fallbacks: Mapping[str, Any]) -> Glyph | str:
-    """Determine fallback glyph for ``cand_key`` considering canon tables."""
+    """Determine fallback glyph for ``cand_key``.
+    
+    Note: Compatibility table fallbacks have been deprecated.
+    Only explicit fallback overrides are now supported.
+    Grammar rules emerge naturally from TNFR structural dynamics.
+    """
 
     glyph_key = coerce_glyph(cand_key)
     fb_override = fallbacks.get(cand_key)
     if fb_override is not None:
         return coerce_glyph(fb_override)
-
-    glyph_to_name, name_to_glyph = _functional_translators()
-    _, fallback_table = _structural_tables()
-    cand_name = glyph_to_name(glyph_key if isinstance(glyph_key, Glyph) else cand_key)
-    if cand_name is None:
-        return coerce_glyph(cand_key)
-    fb_name = fallback_table.get(cand_name)
-    if fb_name is None:
-        return coerce_glyph(cand_key)
-    fb_glyph = name_to_glyph(fb_name)
-    return fb_glyph if fb_glyph is not None else coerce_glyph(cand_key)
+    
+    # No automatic fallback - let frequency validation handle compatibility
+    return coerce_glyph(cand_key)
 
 
 # -------------------------
@@ -230,39 +227,45 @@ def _check_thol_closure(
 
 
 def _check_compatibility(ctx: "GrammarContext", n, cand: Glyph | str) -> Glyph | str:
-    """Verify canonical transition compatibility for ``cand``."""
+    """Verify canonical transition compatibility based on TNFR structural dynamics.
+    
+    Uses only canonical mechanisms:
+    1. STRUCTURAL_FREQUENCIES: Each operator's inherent frequency
+    2. FREQUENCY_TRANSITIONS: Physics-based allowed transitions
+    
+    This ensures grammar rules EMERGE NATURALLY from TNFR structure and dynamics
+    rather than being imposed through arbitrary compatibility tables.
+    """
 
     nd = ctx.G.nodes[n]
     hist = nd.get("glyph_history")
     prev = hist[-1] if hist else None
     prev_glyph = coerce_glyph(prev)
     cand_glyph = coerce_glyph(cand)
+    
     if isinstance(prev_glyph, Glyph):
         glyph_to_name, name_to_glyph = _functional_translators()
-        compat, fallback = _structural_tables()
         prev_name = glyph_to_name(prev_glyph)
         if prev_name is None:
             return cand
-        allowed = compat.get(prev_name)
-        if allowed is None:
-            return cand
         cand_name = glyph_to_name(cand_glyph if isinstance(cand_glyph, Glyph) else cand)
-        if cand_name in allowed:
+        if cand_name is None:
             return cand
-        fb_name = fallback.get(prev_name)
-        if fb_name is not None:
-            fb_glyph = name_to_glyph(fb_name)
-            if fb_glyph is not None:
-                return fb_glyph
-        order = (prev_name, cand_name or str(cand))
+            
+        # Use ONLY frequency-based validation (canonical TNFR physics)
         from ..operators import grammar as _grammar
-
-        raise _grammar.TransitionCompatibilityError(
-            rule="transition-compatibility",
-            candidate=cand_name or str(cand),
-            message=f"{cand_name or cand} incompatible after {prev_name}",
-            order=order,
-        )
+        
+        is_valid, error_msg = _grammar.validate_frequency_transition(prev_name, cand_name)
+        
+        if not is_valid:
+            order = (prev_name, cand_name)
+            raise _grammar.TransitionCompatibilityError(
+                rule="frequency-transition",
+                candidate=cand_name,
+                message=f"Frequency transition {prev_name} → {cand_name} violates TNFR structural dynamics: {error_msg}",
+                order=order,
+            )
+    
     return cand
 
 
@@ -272,9 +275,5 @@ def _functional_translators():
 
     return _grammar.glyph_function_name, _grammar.function_name_to_glyph
 
-
-@lru_cache(maxsize=1)
-def _structural_tables():
-    from . import compatibility as _compat
-
-    return _compat._STRUCTURAL_COMPAT_TABLE, _compat._STRUCTURAL_FALLBACK_TABLE
+# NOTE: Compatibility tables deprecated - grammar rules now emerge naturally
+# from TNFR structural dynamics (frequency transitions only)

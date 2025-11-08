@@ -578,47 +578,26 @@ class _SequenceAutomaton:
     ) -> None:
         """Validate that curr is compatible after prev using graduated compatibility levels.
 
-        Uses the graduated compatibility matrix to provide more nuanced feedback:
-        - EXCELLENT and GOOD: Pass silently
-        - CAUTION: Log warning but allow transition
-        - AVOID: Raise SequenceSyntaxError
-
-        Note: Import is done inside the method to avoid circular dependency between
-        grammar and compatibility modules.
+        Uses frequency transition validation from TNFR structural dynamics.
+        Grammar rules emerge naturally from canonical mechanisms.
+        
+        Frequency transitions are validated:
+        - Valid transitions: Pass silently
+        - Invalid transitions: Raise SequenceSyntaxError
         """
-        from ..validation.compatibility import (
-            CompatibilityLevel,
-            get_compatibility_level,
-        )
 
         # Only validate if prev is also a known operator
         if prev not in OPERATORS:
             return
 
-        # R5: Validate structural frequency transitions (warnings only)
+        # R5: Validate structural frequency transitions using ONLY canonical TNFR physics
         freq_valid, freq_msg = validate_frequency_transition(prev, curr)
         if not freq_valid:
-            logger.warning(
-                "R5 frequency transition warning at position %d: %s",
-                index,
-                freq_msg,
-            )
-
-        # Get graduated compatibility level
-        level = get_compatibility_level(prev, curr)
-
-        if level == CompatibilityLevel.AVOID:
+            # Invalid frequency transition violates TNFR structural dynamics
             raise SequenceSyntaxError(
                 index=index,
                 token=token,
-                message=f"{operator_display_name(curr)} incompatible after {operator_display_name(prev)}",
-            )
-        elif level == CompatibilityLevel.CAUTION:
-            logger.warning(
-                "Caution: %s → %s transition at position %d requires careful context validation",
-                operator_display_name(prev),
-                operator_display_name(curr),
-                index,
+                message=f"{operator_display_name(curr)} invalid after {operator_display_name(prev)}: {freq_msg}",
             )
 
     def _has_recent_destabilizer(self, current_index: int) -> bool:
@@ -987,11 +966,14 @@ STRUCTURAL_FREQUENCIES: dict[str, str] = {
 # - high ↔ medium: High energy can stabilize or stabilized can amplify
 # - medium ↔ zero: Stabilized can pause or resume from pause
 # - high ↔ high: High energy can chain directly
-# Invalid: zero → high (cannot jump from pause to high without intermediate stabilization)
+# - zero → medium: Gradual reactivation from silence (structurally coherent)
+# 
+# Invalid: zero → high (violates structural continuity - cannot jump from pause
+# to high energy without intermediate stabilization)
 FREQUENCY_TRANSITIONS: dict[str, set[str]] = {
     "high": {"high", "medium"},
     "medium": {"high", "medium", "zero"},
-    "zero": {"medium"},  # Must transition through medium before high
+    "zero": {"medium"},  # Must transition through medium before high (structural coherence)
 }
 
 
@@ -1213,16 +1195,18 @@ def recognize_coherence_sequences(
     - RESONANCE_CONSOLIDATION (resonance → coherence): Resonance locked
     - STABLE_TRANSFORMATION (coherence → mutation): Controlled mutation
 
-    **Anti-patterns Detected** (based on grammar compatibility):
-    - coherence → coherence: Repeated coherence (AVOID compatibility - warning)
-    - silence → coherence: Reactivation without emission (AVOID - error)
-    - coherence → silence: Potentially redundant (GOOD - info only)
+    **Anti-patterns Detected** (based on structural coherence):
+    - coherence → coherence: Repeated coherence (warning)
+    - silence → coherence: Reactivation without emission (error)
+    - coherence → silence: Potentially redundant (info only)
 
     This function uses direct pattern matching for 2-operator sequences, which
     is simpler and more appropriate than the general :class:`AdvancedPatternDetector`
     designed for longer sequences.
+    
+    Note: Compatibility tables deprecated - pattern detection now based on
+    structural coherence principles.
     """
-    from ..validation.compatibility import get_compatibility_level, CompatibilityLevel
 
     # Normalize sequence to operator names (strings)
     normalized_seq: list[str] = []
@@ -1285,53 +1269,52 @@ def recognize_coherence_sequences(
                 }
             )
 
-        # Check for anti-patterns using compatibility rules
-        compat = get_compatibility_level(prev, curr)
+        # Check for anti-patterns based on structural coherence principles
+        # (no longer using compatibility tables - emergent from TNFR dynamics)
+        
+        if prev == COHERENCE and curr == COHERENCE:
+            # coherence → coherence anti-pattern
+            warnings.warn(
+                f"Anti-pattern detected at position {i}: coherence → coherence. "
+                f"Repeated coherence without intervening dynamics serves no structural purpose.",
+                UserWarning,
+                stacklevel=2,
+            )
+            recognized.append(
+                {
+                    "position": i,
+                    "pattern_name": "coherence_coherence_antipattern",
+                    "pattern": [prev, curr],
+                    "is_coherence_pattern": True,
+                    "is_antipattern": True,
+                    "severity": "warning",
+                    "warning": "Repeated coherence without intervening dynamics. Check if necessary.",
+                    "alternative": None,
+                }
+            )
+        elif prev == SILENCE and curr == COHERENCE:
+            # silence → coherence anti-pattern (violates frequency transitions)
+            warnings.warn(
+                f"Anti-pattern detected at position {i}: silence → coherence. "
+                f"Direct reactivation from silence. Consider silence → emission → coherence or silence → reception → coherence sequence.",
+                UserWarning,
+                stacklevel=2,
+            )
+            recognized.append(
+                {
+                    "position": i,
+                    "pattern_name": "silence_coherence_antipattern",
+                    "pattern": [prev, curr],
+                    "is_coherence_pattern": True,
+                    "is_antipattern": True,
+                    "severity": "warning",
+                    "warning": "Reactivating from silence. Consider intermediate step for structural coherence.",
+                    "alternative": [SILENCE, EMISSION, COHERENCE],
+                }
+            )
 
-        if compat == CompatibilityLevel.AVOID:
-            if prev == COHERENCE and curr == COHERENCE:
-                # coherence → coherence anti-pattern
-                warnings.warn(
-                    f"Anti-pattern detected at position {i}: coherence → coherence. "
-                    f"Repeated coherence without intervening dynamics serves no structural purpose.",
-                    UserWarning,
-                    stacklevel=2,
-                )
-                recognized.append(
-                    {
-                        "position": i,
-                        "pattern_name": "coherence_coherence_antipattern",
-                        "pattern": [prev, curr],
-                        "is_coherence_pattern": True,
-                        "is_antipattern": True,
-                        "severity": "warning",
-                        "warning": "Repeated coherence without intervening dynamics. Check if necessary.",
-                        "alternative": None,
-                    }
-                )
-            elif prev == SILENCE and curr == COHERENCE:
-                # silence → coherence anti-pattern
-                warnings.warn(
-                    f"Anti-pattern detected at position {i}: silence → coherence. "
-                    f"Reactivating from silence. Consider silence → emission → coherence sequence.",
-                    UserWarning,
-                    stacklevel=2,
-                )
-                recognized.append(
-                    {
-                        "position": i,
-                        "pattern_name": "silence_coherence_antipattern",
-                        "pattern": [prev, curr],
-                        "is_coherence_pattern": True,
-                        "is_antipattern": True,
-                        "severity": "error",
-                        "warning": "Reactivating from silence. Use silence → emission → coherence instead.",
-                        "alternative": [SILENCE, EMISSION, COHERENCE],
-                    }
-                )
-
-        # Informational: coherence → silence (GOOD compatibility, but potentially redundant)
-        if prev == COHERENCE and curr == SILENCE and compat == CompatibilityLevel.GOOD:
+        # Informational: coherence → silence (valid but potentially redundant)
+        if prev == COHERENCE and curr == SILENCE:
             recognized.append(
                 {
                     "position": i,
@@ -1722,9 +1705,8 @@ def enforce_canonical_grammar(
         if translated is not None:
             cand = translated
 
-    from ..validation.compatibility import CANON_COMPAT
-
-    if not isinstance(cand, Glyph) or cand not in CANON_COMPAT:
+    # Validate glyph is known (compatibility tables deprecated)
+    if not isinstance(cand, Glyph) or cand not in GLYPH_TO_FUNCTION:
         return raw_cand if input_was_str else cand
 
     cand = soft_grammar_filters(ctx, n, cand)

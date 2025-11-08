@@ -32,7 +32,7 @@ from ..config.operator_names import (
     SILENCE,
     TRANSITION,
 )
-from ..constants.aliases import ALIAS_DNFR
+from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI
 from ..types import Glyph, TNFRGraph
 from ..utils import get_numpy
 from .registry import register_operator
@@ -345,11 +345,73 @@ class Emission(Operator):
         **kw : Any
             Additional keyword arguments forwarded to the grammar layer.
         """
+        # Check and clear latency state if reactivating from silence
+        self._check_reactivation(G, node)
+
         # Mark structural irreversibility BEFORE grammar execution
         self._mark_irreversibility(G, node)
 
         # Delegate to parent __call__ which applies grammar
         super().__call__(G, node, **kw)
+
+    def _check_reactivation(self, G: TNFRGraph, node: Any) -> None:
+        """Check and clear latency state when reactivating from silence.
+
+        When AL (Emission) is applied to a node in latent state (from SHA),
+        this validates the reactivation and clears the latency attributes.
+
+        Parameters
+        ----------
+        G : TNFRGraph
+            Graph containing the node.
+        node : Any
+            Target node being reactivated.
+
+        Warnings
+        --------
+        - Warns if node is being reactivated after extended silence (duration check)
+        - Warns if EPI has drifted from preserved value during silence
+        """
+        if G.nodes[node].get("latent", False):
+            # Node is in latent state, reactivating from silence
+            silence_duration = G.nodes[node].get("silence_duration", 0.0)
+
+            # Get max silence duration threshold from graph config
+            max_silence = G.graph.get("MAX_SILENCE_DURATION", float("inf"))
+
+            # Validate reactivation timing
+            if silence_duration > max_silence:
+                warnings.warn(
+                    f"Node {node} reactivating after extended silence "
+                    f"(duration: {silence_duration:.2f}, max: {max_silence:.2f})",
+                    stacklevel=3,
+                )
+
+            # Check EPI preservation integrity
+            preserved_epi = G.nodes[node].get("preserved_epi")
+            if preserved_epi is not None:
+                from ..alias import get_attr
+
+                current_epi = float(get_attr(G.nodes[node], ALIAS_EPI, 0.0))
+                epi_drift = abs(current_epi - preserved_epi)
+
+                # Allow small numerical drift (1% tolerance)
+                if epi_drift > 0.01 * abs(preserved_epi):
+                    warnings.warn(
+                        f"Node {node} EPI drifted during silence "
+                        f"(preserved: {preserved_epi:.3f}, current: {current_epi:.3f}, "
+                        f"drift: {epi_drift:.3f})",
+                        stacklevel=3,
+                    )
+
+            # Clear latency state
+            del G.nodes[node]["latent"]
+            if "latency_start_time" in G.nodes[node]:
+                del G.nodes[node]["latency_start_time"]
+            if "preserved_epi" in G.nodes[node]:
+                del G.nodes[node]["preserved_epi"]
+            if "silence_duration" in G.nodes[node]:
+                del G.nodes[node]["silence_duration"]
 
     def _mark_irreversibility(self, G: TNFRGraph, node: Any) -> None:
         """Mark structural irreversibility for AL operator.
@@ -1976,7 +2038,8 @@ class Silence(Operator):
     """Silence structural operator (SHA) - Preservation through structural pause.
 
     Activates glyph ``SHA`` to lower νf and hold the local EPI invariant, suspending
-    reorganization to preserve the node's current coherence state.
+    reorganization to preserve the node's current coherence state. SHA implements
+    **latency state management** with explicit temporal tracking.
 
     TNFR Context
     ------------
@@ -1985,12 +2048,17 @@ class Silence(Operator):
     the current EPI form intact, preventing reorganization. SHA is essential for memory,
     consolidation, and maintaining structural identity during network turbulence.
 
+    According to TNFR.pdf §2.3.10, SHA is not merely frequency reduction but a
+    **transition to latent state** with temporal tracking for analyzing memory
+    consolidation, incubation periods, and protective pauses.
+
     **Key Elements:**
 
     - **Frequency Suppression**: Reduces νf to near-zero (structural pause)
     - **Form Preservation**: EPI remains unchanged despite external pressures
     - **Latent Memory**: Stored patterns awaiting reactivation
     - **Strategic Inaction**: Deliberate non-reorganization as protective mechanism
+    - **Temporal Tracking**: Explicit duration and state management
 
     Use Cases
     ---------
@@ -2018,10 +2086,12 @@ class Silence(Operator):
     Typical Sequences
     ---------------------------
     - **IL → SHA**: Stabilize then preserve (long-term memory)
-    - **SHA → AL**: Silence broken by reactivation (awakening)
+    - **SHA → IL → AL**: Silence → stabilization → reactivation (coherent awakening)
+    - **SHA → EN → IL**: Silence → external reception → stabilization (network reactivation)
     - **SHA → NAV**: Preserved structure transitions (controlled change)
     - **OZ → SHA**: Dissonance contained (protective pause)
 
+    **AVOID**: SHA → AL (direct reactivation violates structural continuity - requires intermediate stabilization)
     **AVOID**: SHA → OZ (silence followed by dissonance contradicts preservation)
     **AVOID**: SHA → SHA (redundant, no structural purpose)
 
@@ -2039,12 +2109,22 @@ class Silence(Operator):
     - **θ**: Maintained but not actively synchronized
     - **Network influence**: Minimal during silence
 
+    Latency State Attributes
+    -------------------------
+    SHA sets the following node attributes for latency tracking:
+    
+    - **latent**: Boolean flag indicating node is in latent state
+    - **latency_start_time**: ISO 8601 UTC timestamp when silence began
+    - **preserved_epi**: Snapshot of EPI at silence entry
+    - **silence_duration**: Cumulative duration in latent state (updated on subsequent steps)
+
     Metrics
     -----------------
     - νf reduction: Degree of frequency suppression
     - EPI stability: Variance over silence period (should be ~0)
     - Silence duration: Time in latent state
     - Preservation effectiveness: EPI integrity post-silence
+    - Preservation integrity: Measures EPI variance during silence
 
     Compatibility
     ---------------------
@@ -2119,6 +2199,73 @@ class Silence(Operator):
     __slots__ = ()
     name: ClassVar[str] = SILENCE
     glyph: ClassVar[Glyph] = Glyph.SHA
+
+    def __call__(self, G: TNFRGraph, node: Any, **kw: Any) -> None:
+        """Apply SHA with latency state tracking.
+
+        Establishes latency state before delegating to grammar execution.
+        This ensures every silence operation creates explicit latent state
+        tracking as required by TNFR.pdf §2.3.10 (SHA - Silencio estructural).
+
+        Parameters
+        ----------
+        G : TNFRGraph
+            Graph storing TNFR nodes and structural operator history.
+        node : Any
+            Identifier or object representing the target node within ``G``.
+        **kw : Any
+            Additional keyword arguments forwarded to the grammar layer.
+        """
+        # Mark latency state BEFORE grammar execution
+        self._mark_latency_state(G, node)
+
+        # Delegate to parent __call__ which applies grammar
+        super().__call__(G, node, **kw)
+
+    def _mark_latency_state(self, G: TNFRGraph, node: Any) -> None:
+        """Mark latency state for SHA operator.
+
+        According to TNFR.pdf §2.3.10, SHA implements structural silence
+        with temporal tracking for memory consolidation and protective pauses.
+
+        This method establishes:
+        - Latent flag: Boolean indicating node is in latent state
+        - Temporal marker: ISO timestamp when silence began
+        - Preserved EPI: Snapshot of EPI for integrity verification
+        - Duration tracker: Cumulative time in silence (initialized to 0)
+
+        Parameters
+        ----------
+        G : TNFRGraph
+            Graph containing the node.
+        node : Any
+            Target node for silence marking.
+
+        Notes
+        -----
+        Sets the following node attributes:
+        - latent: True (node in latent state)
+        - latency_start_time: ISO 8601 UTC timestamp
+        - preserved_epi: Current EPI value snapshot
+        - silence_duration: 0.0 (initialized, updated by external time tracking)
+        """
+        from datetime import datetime, timezone
+
+        from ..alias import get_attr
+
+        # Always set latency state (SHA can be applied multiple times)
+        G.nodes[node]["latent"] = True
+
+        # Set start time for this latency period
+        latency_start_time = datetime.now(timezone.utc).isoformat()
+        G.nodes[node]["latency_start_time"] = latency_start_time
+
+        # Preserve current EPI for integrity checking
+        epi_value = float(get_attr(G.nodes[node], ALIAS_EPI, 0.0))
+        G.nodes[node]["preserved_epi"] = epi_value
+
+        # Initialize silence duration (will be updated by external tracking)
+        G.nodes[node]["silence_duration"] = 0.0
 
     def _validate_preconditions(self, G: TNFRGraph, node: Any) -> None:
         """Validate SHA-specific preconditions."""
