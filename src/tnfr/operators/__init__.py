@@ -768,18 +768,40 @@ def _op_UM(node: NodeProtocol, gf: GlyphFactors) -> None:  # UM — Coupling
 
 
 def _op_RA(node: NodeProtocol, gf: GlyphFactors) -> None:  # RA — Resonance
-    """Diffuse EPI to the node through the Resonance glyph.
+    """Propagate coherence through resonance with νf amplification.
 
-    Resonance propagates EPI along existing couplings without affecting νf,
-    ΔNFR, or phase. The glyph nudges the node towards the neighbour mean using
-    ``RA_epi_diff``.
+    Resonance (RA) propagates EPI along existing couplings while amplifying
+    the structural frequency (νf) to reflect network coherence propagation.
+    According to TNFR theory, RA creates "resonant cascades" where coherence
+    amplifies across the network, increasing collective νf and global C(t).
+
+    **Canonical Effects:**
+
+    - **EPI Propagation**: Diffuses EPI to neighbors (identity-preserving)
+    - **νf Amplification**: Increases structural frequency when propagating coherence
+    - **Network C(t)**: Contributes to global coherence increase
+    - **Identity Preservation**: Maintains structural identity during propagation
 
     Parameters
     ----------
     node : NodeProtocol
         Node harmonising with its neighbourhood.
     gf : GlyphFactors
-        Provides ``RA_epi_diff`` as the mixing coefficient.
+        Provides ``RA_epi_diff`` (mixing coefficient, default 0.15) and
+        ``RA_vf_amplification`` (νf boost factor, default 0.05).
+
+    Notes
+    -----
+    **νf Amplification**: When neighbors have coherence (|epi_bar| > 1e-9),
+    node.vf is multiplied by (1.0 + RA_vf_amplification). This reflects
+    the canonical TNFR property that resonance amplifies collective νf.
+
+    **Network Coherence Tracking**: If ``TRACK_NETWORK_COHERENCE`` is enabled,
+    global C(t) is measured before/after RA application to quantify network-level
+    coherence increase.
+
+    **Identity Preservation**: EPI structure (kind and sign) are preserved during
+    propagation to ensure structural identity is maintained as required by theory.
 
     Examples
     --------
@@ -787,18 +809,86 @@ def _op_RA(node: NodeProtocol, gf: GlyphFactors) -> None:  # RA — Resonance
     ...     def __init__(self, epi, neighbors):
     ...         self.EPI = epi
     ...         self.epi_kind = "seed"
+    ...         self.vf = 1.0
     ...         self.graph = {}
     ...         self._neighbors = neighbors
     ...     def neighbors(self):
     ...         return self._neighbors
     >>> neighbor = MockNode(1.0, [])
     >>> node = MockNode(0.2, [neighbor])
-    >>> _op_RA(node, {"RA_epi_diff": 0.25})
+    >>> _op_RA(node, {"RA_epi_diff": 0.25, "RA_vf_amplification": 0.05})
     >>> round(node.EPI, 2)
     0.4
+    >>> node.vf  # Amplified due to neighbor coherence
+    1.05
     """
+    # Get configuration factors
     diff = get_factor(gf, "RA_epi_diff", 0.15)
-    _mix_epi_with_neighbors(node, diff, Glyph.RA)
+    vf_boost = get_factor(gf, "RA_vf_amplification", 0.05)
+    
+    # Track network C(t) before RA if enabled
+    track_coherence = bool(node.graph.get("TRACK_NETWORK_COHERENCE", False))
+    c_before = None
+    if track_coherence and hasattr(node, "G"):
+        try:
+            from ..metrics.coherence import compute_network_coherence
+            c_before = compute_network_coherence(node.G)
+            if "_ra_c_tracking" not in node.graph:
+                node.graph["_ra_c_tracking"] = []
+        except ImportError:
+            pass  # Metrics module not available
+    
+    # Capture state before for metrics
+    vf_before = node.vf
+    epi_before = node.EPI
+    kind_before = node.epi_kind
+    
+    # EPI diffusion (existing behavior)
+    neigh, epi_bar = get_neighbor_epi(node)
+    epi_bar_result, kind_result = _mix_epi_with_neighbors(node, diff, Glyph.RA)
+    
+    # νf amplification through resonance (NEW)
+    # Only amplify if neighbors have coherence to propagate
+    if abs(epi_bar_result) > 1e-9 and len(neigh) > 0:
+        node.vf *= (1.0 + vf_boost)
+    
+    # Track identity preservation
+    identity_preserved = (
+        (kind_result == kind_before or kind_result == Glyph.RA.value)
+        and (epi_before * node.EPI >= 0)  # Sign preserved
+    )
+    
+    # Collect propagation metrics if enabled
+    collect_metrics = bool(node.graph.get("COLLECT_RA_METRICS", False))
+    if collect_metrics:
+        metrics = {
+            "operator": "RA",
+            "epi_propagated": epi_bar_result,
+            "vf_amplification": node.vf / vf_before if vf_before > 0 else 1.0,
+            "neighbors_influenced": len(neigh),
+            "identity_preserved": identity_preserved,
+            "epi_before": epi_before,
+            "epi_after": float(node.EPI),
+            "vf_before": vf_before,
+            "vf_after": node.vf,
+        }
+        if "ra_metrics" not in node.graph:
+            node.graph["ra_metrics"] = []
+        node.graph["ra_metrics"].append(metrics)
+    
+    # Track network C(t) after RA if enabled
+    if track_coherence and c_before is not None and hasattr(node, "G"):
+        try:
+            from ..metrics.coherence import compute_network_coherence
+            c_after = compute_network_coherence(node.G)
+            node.graph["_ra_c_tracking"].append({
+                "node": getattr(node, "n", None),
+                "c_before": c_before,
+                "c_after": c_after,
+                "c_delta": c_after - c_before,
+            })
+        except ImportError:
+            pass
 
 
 def _op_SHA(node: NodeProtocol, gf: GlyphFactors) -> None:  # SHA — Silence
