@@ -696,6 +696,7 @@ class _SequenceAutomaton:
         "_destabilizer_context",
         "_thol_stack",
         "_thol_subsequences",
+        "_thol_encapsulated_indices",
     )
 
     def __init__(self) -> None:
@@ -721,6 +722,7 @@ class _SequenceAutomaton:
         # THOL recursive validation: Track nested THOL blocks and their subsequences
         self._thol_stack: list[int] = []  # Stack of THOL opening indices
         self._thol_subsequences: dict[int, list[str]] = {}  # Subsequences by opening index
+        self._thol_encapsulated_indices: set[int] = set()  # Indices inside THOL windows
 
     def run(self, names: Sequence[str]) -> None:
         if not names:
@@ -815,6 +817,9 @@ class _SequenceAutomaton:
             current_thol = self._thol_stack[-1]
             window_content = self._thol_subsequences[current_thol]
             
+            # Mark this operator as encapsulated in THOL window
+            self._thol_encapsulated_indices.add(index)
+            
             # Check if this is the first operator in window
             if len(window_content) == 0:
                 # First operator after THOL opening
@@ -825,6 +830,8 @@ class _SequenceAutomaton:
                     # Close THOL immediately and process operator in parent context
                     self._thol_stack.pop()
                     self._open_thol = bool(self._thol_stack)
+                    # Unmark as encapsulated since it's part of parent context
+                    self._thol_encapsulated_indices.discard(index)
                     # Don't add to window - process normally in parent context
                     # (will be processed by subsequent validation logic)
                     return
@@ -1257,12 +1264,23 @@ class _SequenceAutomaton:
         # Already validated in _accept() for first operator
         
         # C1.2: End validation (legacy R3)
-        if self._canonical[-1] not in VALID_END_OPERATORS:
+        # TNFR Encapsulation: Check last operator NOT inside THOL window
+        # Sub-EPIs are independent nodes (operational fractality), so operators
+        # inside THOL windows don't count toward main sequence ending.
+        last_non_encapsulated_index = len(self._canonical) - 1
+        for i in range(len(self._canonical) - 1, -1, -1):
+            if i not in self._thol_encapsulated_indices:
+                last_non_encapsulated_index = i
+                break
+        
+        if self._canonical[last_non_encapsulated_index] not in VALID_END_OPERATORS:
             cierre = _format_token_group(_CANONICAL_END)
             raise SequenceSyntaxError(
-                index=len(names) - 1,
-                token=names[-1],
-                message=f"C1: sequence must end with {cierre} (EXISTENCE & CLOSURE constraint)",
+                index=last_non_encapsulated_index,
+                token=names[last_non_encapsulated_index],
+                message=f"C1: sequence must end with {cierre} (EXISTENCE & CLOSURE constraint). "
+                        f"Operators inside {operator_display_name(SELF_ORGANIZATION)} windows are encapsulated "
+                        f"(operational fractality) and don't count as sequence ending.",
             )
 
         # NOTE: C1.3 Reception→Coherence segment validation removed
