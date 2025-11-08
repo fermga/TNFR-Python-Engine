@@ -169,11 +169,13 @@ class TestR6OperationalClosure:
         assert result.passed, f"Expected pass but got: {result.message}"
 
     def test_invalid_excess_destabilizers(self):
-        """Sequence with excess destabilizers without controlled mutation fails."""
-        # 3 destabilizers (OZ, NAV, VAL), 2 stabilizers (IL at pos 2, SHA at end)
-        # This violates operational closure: 3 > 2
-        # Must end with R3-valid operator, but OZ/NAV don't pass R6 convergence
-        # So we end with SHA for R3/R6, but closure balance fails
+        """Sequence with excess destabilizers fails without SHA ending.
+        
+        3 destabilizers > 2 stabilizers violates closure for NAV/REMESH endings
+        (needs balance). But would be valid with SHA ending (absolute closure).
+        """
+        # 3 destabilizers (EN, OZ, VAL), 2 stabilizers (IL, RA)
+        # With NAV ending: should fail (needs balance)
         sequence = [
             EMISSION,
             RECEPTION,
@@ -181,13 +183,36 @@ class TestR6OperationalClosure:
             DISSONANCE,     # Destabilizer 1
             TRANSITION,     # Destabilizer 2
             EXPANSION,      # Destabilizer 3
-            SILENCE,        # Stabilizer 2, R3/R6 valid ending
+            RESONANCE,      # Stabilizer 2
+            TRANSITION,     # NAV ending without balance
         ]
         result = validate_sequence(sequence)
-        # Should fail R6 closure: 3 destabilizers > 2 stabilizers
+        # Should fail: 4 destabilizers (EN, OZ, NAV, VAL) > 2 stabilizers (IL, RA)
+        # NAV ending requires dest ≤ stab
         assert not result.passed
         assert "R6" in result.message
         assert "closure" in result.message.lower()
+    
+    def test_valid_excess_destabilizers_with_sha(self):
+        """Destabilizing sequence valid with SHA ending (absolute closure).
+        
+        SHA provides absolute closure (νf → 0), so accepts any dest/stab ratio.
+        This allows intentional destabilizing sequences for exploration.
+        """
+        # 3 destabilizers (EN, OZ, VAL) > 2 stabilizers (IL, SHA)
+        # But SHA ending: provides absolute closure
+        sequence = [
+            EMISSION,
+            RECEPTION,
+            COHERENCE,
+            DISSONANCE,
+            EXPANSION,
+            TRANSITION,
+            SILENCE,  # SHA provides absolute closure despite imbalance
+        ]
+        result = validate_sequence(sequence)
+        # Should pass: SHA accepts any ratio (destabilizing sequence)
+        assert result.passed, f"Expected pass but got: {result.message}"
 
     def test_valid_controlled_mutation_exception(self):
         """Sequence with destabilizers > stabilizers passes if mutation is controlled.
@@ -320,15 +345,17 @@ class TestR6ErrorMessages:
 
     def test_closure_error_message_clarity(self):
         """Closure error message explains destabilizer/stabilizer imbalance."""
-        # Create sequence with excess destabilizers
+        # Create sequence with excess destabilizers and NAV ending (not SHA)
+        # NAV requires balance, but this has imbalance
         sequence = [
             EMISSION,
             RECEPTION,
             COHERENCE,
             DISSONANCE,
-            TRANSITION,
-            EXPANSION,
-            SILENCE,
+            TRANSITION,     # Destabilizer 2
+            EXPANSION,      # Destabilizer 3
+            RESONANCE,
+            TRANSITION,     # NAV ending (needs balance)
         ]
         result = validate_sequence(sequence)
         assert not result.passed
@@ -337,7 +364,7 @@ class TestR6ErrorMessages:
         # Should mention balance concept
         assert any(
             word in result.message.lower()
-            for word in ["destabilizer", "stabilizer", "balance"]
+            for word in ["destabilizer", "stabilizer", "balance", "sustainability"]
         )
 
 

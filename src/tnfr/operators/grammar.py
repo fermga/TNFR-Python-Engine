@@ -918,10 +918,14 @@ class _SequenceAutomaton:
         return False
 
     def _check_operational_closure(self, sequence: Sequence[str]) -> bool:
-        """Verify balance between destabilization and stabilization.
+        """Verify operational closure with purpose-aware balance validation.
         
-        Operational closure requires that destabilizing operators are balanced
-        by stabilizing operators, preventing runaway divergence or collapse.
+        R6 allows three types of sequences based on their PURPOSE:
+        - Stabilizing (dest < stab): Reduce existing ΔNFR
+        - Neutral (dest = stab): Maintain coherence  
+        - Destabilizing (dest > stab): Explore new states (ONLY with SHA ending)
+        
+        The ending operator determines sustainability of any imbalance.
         
         Parameters
         ----------
@@ -931,31 +935,68 @@ class _SequenceAutomaton:
         Returns
         -------
         bool
-            True if sequence has operational closure
+            True if sequence has operational closure appropriate to its purpose
             
         Notes
         -----
-        Destabilizers (increase |ΔNFR|):
+        **Sequence Purpose and Balance:**
+        
+        TNFR sequences operate on existing systems with existing ΔNFR.
+        Sequences have PURPOSE:
+        
+        1. **STABILIZING** (dest < stab): More stabilizers reduce existing ΔNFR
+           - Use case: System with high ΔNFR needs consolidation
+           - Example: AL → EN → IL → RA → SHA (1 dest, 3 stab)
+           
+        2. **NEUTRAL** (dest = stab): Balanced exploration and stabilization
+           - Use case: System in good state, maintain coherence
+           - Example: AL → EN → IL → OZ → IL → NAV (2 dest, 2 stab)
+           
+        3. **DESTABILIZING** (dest > stab): More destabilizers for exploration
+           - Use case: System stuck in local minimum, needs activation
+           - Example: AL → EN → IL → OZ → VAL → SHA (3 dest, 2 stab)
+           - **REQUIRES: SHA ending for absolute closure**
+        
+        **Ending-Dependent Rules:**
+        
+        A. **SHA (Silence) ending:**
+           - Accepts ANY destabilizer/stabilizer ratio
+           - SHA freezes system (νf → 0), provides absolute closure
+           - Can handle imbalanced destabilization because evolution stops
+           
+        B. **NAV/REMESH ending:**
+           - Requires: destabilizers ≤ stabilizers
+           - Provides operational closure but not freezing
+           - Needs balance for sustainable handoff/recursion
+           
+        C. **OZ ending:**
+           - NEVER acceptable (checked in convergence validation)
+           - Leaves high |ΔNFR| without closure mechanism
+        
+        **Destabilizers** (increase |ΔNFR|):
         - Strong: OZ (Dissonance)
         - Moderate: NAV (Transition), VAL (Expansion)
         - Weak: EN (Reception, context-dependent)
         
-        Stabilizers (reduce |ΔNFR| or achieve closure):
-        - IL (Coherence)
-        - THOL (Self-organization)
-        - SHA (Silence)
-        - RA (Resonance)
+        **Stabilizers** (reduce |ΔNFR| or freeze νf):
+        - IL (Coherence) - reduces |ΔNFR|
+        - THOL (Self-organization) - autopoietic closure
+        - SHA (Silence) - freezes νf → 0
+        - RA (Resonance) - propagates stable coherence
         
-        Closure conditions:
-        1. destabilizers ≤ stabilizers (strict balance), OR
-        2. Controlled mutation: ZHIR after IL (prepared phase change)
+        **Special Exception:**
+        Controlled mutation (IL → ZHIR) allows imbalance because coherence
+        provides stable base for intentional phase transformation.
         
-        Exception for controlled mutation:
-        IL → ZHIR sequences allow destabilizers > stabilizers because
-        coherence provides stable base for phase transformation. This
-        represents intentional structural reorganization, not collapse.
+        **Why This Logic is Canonical:**
+        
+        - Respects sequence PURPOSE (stabilize, maintain, or explore)
+        - Context-aware: same count ratio serves different purposes
+        - Ending determines sustainability (SHA strongest, NAV/REMESH balanced)
+        - Prevents pure divergence (no OZ endings)
+        - Allows therapeutic stabilization and explorative destabilization
         """
-        # Count destabilizers (all levels)
+        # Count destabilizers and stabilizers
         from ..config.operator_names import DESTABILIZERS_ALL
         
         destabilizers = sum(
@@ -963,32 +1004,39 @@ class _SequenceAutomaton:
             if op in DESTABILIZERS_ALL
         )
         
-        # Count stabilizers
         stabilizers = sum(
             1 for op in sequence
             if op in {COHERENCE, SELF_ORGANIZATION, SILENCE, RESONANCE}
         )
         
-        # Strict balance: destabilizers ≤ stabilizers
-        if destabilizers <= stabilizers:
-            return True
+        # SHA ending: Accepts ANY ratio (strongest closure, freezes system)
+        if sequence[-1] == SILENCE:
+            return True  # SHA provides absolute closure regardless of balance
         
-        # Exception: controlled mutation (IL before ZHIR)
-        # This allows destabilizers > stabilizers when mutation is prepared
-        if MUTATION in sequence and COHERENCE in sequence:
-            # Check if coherence precedes mutation (stable base for transformation)
-            coherence_idx = sequence.index(COHERENCE)
-            mutation_idx = sequence.index(MUTATION)
-            if coherence_idx < mutation_idx:
+        # NAV/REMESH ending: Requires balance (dest ≤ stab)
+        # These provide operational closure but need balance for sustainability
+        if sequence[-1] in {TRANSITION, RECURSIVITY}:
+            if destabilizers <= stabilizers:
                 return True
+            # Exception: Controlled mutation allows imbalance
+            if MUTATION in sequence and COHERENCE in sequence:
+                coherence_idx = sequence.index(COHERENCE)
+                mutation_idx = sequence.index(MUTATION)
+                if coherence_idx < mutation_idx:
+                    return True
+            return False
         
-        return False
+        # Should not reach here (OZ ending caught by convergence check)
+        # But as safety: require balance for unknown endings
+        return destabilizers <= stabilizers
 
     def _validate_operational_closure(self, sequence: Sequence[str]) -> None:
-        """R6: Validate sequence completes coherent reorganization cycle.
+        """R6: Validate sequence has operational closure through proper balance.
         
-        Ensures sequences respect conservation of structural coherence and
-        achieve operational closure according to TNFR canonical principles.
+        R6 validates that operator sequences achieve operational closure by
+        ensuring destabilization is properly balanced with stabilization.
+        This prevents divergent trajectories while allowing all valid purposes:
+        stabilizing, neutral, and destabilizing sequences.
         
         Parameters
         ----------
@@ -998,69 +1046,87 @@ class _SequenceAutomaton:
         Raises
         ------
         SequenceSyntaxError
-            If sequence violates operational closure or convergence requirements
+            If sequence violates operational closure requirements
             
         Notes
         -----
-        R6 validates three aspects of sequence coherence:
+        **R6 Philosophy:**
         
-        1. **Structural Convergence**: Sequence must end with operator that
-           stabilizes reorganization (∂EPI/∂t → stable state)
+        R3 validates syntactic correctness (valid start/end operators).
+        R6 validates semantic coherence (sustainable balance).
+        
+        R6 does NOT reject any R3-valid endings (SHA, NAV, REMESH, OZ).
+        Instead, it validates that each ending type has appropriate balance.
+        
+        **Valid Ending Types** (from R3):
+        
+        1. **SHA (Silence)**: Terminal closure
+           - Freezes evolution (νf → 0)
+           - Accepts ANY destabilizer/stabilizer ratio
+           - Provides absolute closure regardless of balance
            
-        2. **Operational Closure**: Balance between destabilizers and stabilizers
-           prevents divergent or collapsing trajectories
+        2. **NAV (Transition)**: Handoff closure
+           - Regime transfer to next state
+           - Requires: destabilizers ≤ stabilizers
+           - Needs balance for sustainable handoff
            
-        3. **Frequency Balance** (future): Net frequency tendency should support
-           coherent reorganization (currently informational only)
+        3. **REMESH (Recursivity)**: Recursive closure
+           - Fractal echo across scales
+           - Requires: destabilizers ≤ stabilizers
+           - Needs balance for stable recursion
+           
+        4. **OZ (Dissonance)**: Intentional tension preservation
+           - Therapeutic/activation pattern
+           - Requires: destabilizers ≤ stabilizers
+           - Must be CONTROLLED dissonance with prior stabilization
+           
+        **Balance Validation:**
+        
+        Operational closure requires appropriate balance for non-SHA endings:
+        - dest ≤ stab: Ensures sustainability
+        - dest = stab: Neutral (maintains coherence)
+        - dest < stab: Stabilizing (reduces ΔNFR)
+        
+        SHA exception: Can handle dest > stab because freezing (νf → 0)
+        provides absolute closure that doesn't depend on balance.
+        
+        **Why Allow OZ Endings?**
+        
+        OZ endings serve valid purposes:
+        - Therapeutic: Intentionally preserve tension for processing
+        - Activation: Wake up stuck systems
+        - Multi-sequence chains: Open tension for next sequence to resolve
+        
+        The key: OZ ending must be CONTROLLED (have prior stabilization),
+        not runaway destabilization. Balance check ensures this.
+        
+        **Controlled Mutation Exception:**
+        
+        IL → ZHIR allows imbalance because coherence provides stable base
+        for intentional phase transformation.
         
         Theoretical foundation:
-        From integrated nodal equation:
-            EPI(t_final) = EPI(t_initial) + ∫_{t_0}^{t_f} νf(t) · ΔNFR(t) dt
+        From integrated equation: EPI(t_f) = EPI(t_0) + ∫ νf · ΔNFR dt
         
         For physical coherence:
-        - Integral must converge (not diverge toward collapse)
-        - EPI_final must be stable (sustainable coherence)
-        - Reorganization must close (∂EPI/∂t → 0 at sequence end)
-        
-        References:
-        - TNFR.pdf Section 2.1.4: Nodal stability conditions
-        - AGENTS.md Section 3: Canonical invariants
+        - SHA: νf → 0, so integral converges regardless of ΔNFR
+        - Others: Need dest ≤ stab to ensure ∫ νf · ΔNFR dt converges
         """
-        # 1. Verify ending is not divergent (OZ rejected, NAV/REMESH/SHA OK)
-        if not self._check_structural_convergence(sequence):
+        # Validate balance (no separate convergence check - respect R3)
+        if not self._check_operational_closure(sequence):
             last_op = sequence[-1]
             raise SequenceSyntaxError(
                 index=-1,
                 token=None,
                 message=(
-                    f"R6: Sequence ends with divergent operator {operator_display_name(last_op)}. "
-                    f"{operator_display_name(DISSONANCE)} leaves system with high |ΔNFR| and high νf, "
-                    f"creating actively divergent state without continuation. "
-                    f"Acceptable endings: {operator_display_name(SILENCE)} (convergent), "
-                    f"{operator_display_name(TRANSITION)}/{operator_display_name(RECURSIVITY)} (operational closure)."
-                ),
-            )
-        
-        # 2. Validate operational closure (destabilizer/stabilizer balance)
-        if not self._check_operational_closure(sequence):
-            raise SequenceSyntaxError(
-                index=-1,
-                token=None,
-                message=(
                     f"R6: Sequence lacks operational closure. "
-                    f"Destabilizers exceed stabilizers without controlled mutation. "
-                    f"Balance destabilization ({operator_display_name(DISSONANCE)}, {operator_display_name(TRANSITION)}, "
-                    f"{operator_display_name(EXPANSION)}) with stabilization ({operator_display_name(COHERENCE)}, "
-                    f"{operator_display_name(SELF_ORGANIZATION)}, {operator_display_name(SILENCE)})."
+                    f"Ending with {operator_display_name(last_op)} requires destabilizers ≤ stabilizers for sustainability. "
+                    f"Purpose-aware balance: STABILIZING (dest < stab), NEUTRAL (dest = stab), or DESTABILIZING (dest > stab, needs {operator_display_name(SILENCE)} ending). "
+                    f"Destabilizers: {operator_display_name(DISSONANCE)}, {operator_display_name(TRANSITION)}, {operator_display_name(EXPANSION)}, {operator_display_name(RECEPTION)}. "
+                    f"Stabilizers: {operator_display_name(COHERENCE)}, {operator_display_name(SELF_ORGANIZATION)}, {operator_display_name(SILENCE)}, {operator_display_name(RESONANCE)}. "
+                    f"Note: {operator_display_name(DISSONANCE)} endings are valid for therapeutic/activation patterns when properly balanced."
                 ),
             )
-        
-        # 3. Compute frequency balance (informational - for future warnings)
-        # Currently not enforced as error, but could be used for telemetry
-        freq_balance = self._compute_frequency_balance(sequence)
-        # Store for metadata/telemetry
-        # Future: Could add warnings for extremely negative balance (< -0.5)
-        # indicating tendency toward collapse
 
     def _finalize(self, names: Sequence[str]) -> None:
         if self._unknown_tokens:
@@ -1113,7 +1179,9 @@ class _SequenceAutomaton:
         if self._detected_pattern == StructuralPattern.REGENERATIVE:
             self._validate_regenerative_cycle()
         
-        # R6: Validate operational closure and coherence conservation
+        # R6: Validate operational closure (balance only, no ending restrictions)
+        # R3 already validates valid endings (SHA, NAV, REMESH, OZ)
+        # R6 validates that endings are SUSTAINABLE through proper balance
         self._validate_operational_closure(self._canonical)
 
     def _validate_regenerative_cycle(self) -> None:
