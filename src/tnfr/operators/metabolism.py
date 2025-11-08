@@ -341,6 +341,9 @@ def compute_cascade_depth(G: TNFRGraph, node: NodeId) -> int:
     Recursively measures how many levels of nested sub-EPIs exist,
     where each sub-EPI can itself bifurcate into deeper levels.
 
+    With architectural refactor: sub-EPIs are now independent NFR nodes,
+    enabling true recursive depth computation.
+
     Parameters
     ----------
     G : TNFRGraph
@@ -368,19 +371,42 @@ def compute_cascade_depth(G: TNFRGraph, node: NodeId) -> int:
     TNFR Principle: Cascade depth measures the hierarchical complexity
     of emergent self-organization. Depth = 1 indicates direct bifurcation;
     depth > 1 indicates recursive, multi-scale emergence.
+
+    ARCHITECTURAL: Now supports true recursive bifurcation with independent
+    sub-nodes. If a node has no independent sub-nodes, falls back to
+    metadata-based depth for backward compatibility.
     """
+    # Primary path: Check for independent sub-nodes (new architecture)
+    sub_nodes = G.nodes[node].get("sub_nodes", [])
+    if sub_nodes:
+        # Recursive computation with actual nodes
+        max_depth = 0
+        for sub_node_id in sub_nodes:
+            if sub_node_id in G.nodes:
+                # Recurse into child's depth
+                child_depth = compute_cascade_depth(G, sub_node_id)
+                max_depth = max(max_depth, 1 + child_depth)
+            else:
+                # Child node exists in list but not in graph (shouldn't happen)
+                max_depth = max(max_depth, 1)
+        return max_depth
+
+    # Fallback path: Legacy metadata-based depth
     sub_epis = G.nodes[node].get("sub_epis", [])
     if not sub_epis:
         return 0
 
-    # For now: depth = 1 (direct children)
-    # TODO: If sub-EPIs become independent nodes, recurse
     max_depth = 1
-
     for sub in sub_epis:
-        # If sub-EPI spawned its own children (future enhancement)
-        nested_depth = sub.get("cascade_depth", 0)
-        max_depth = max(max_depth, 1 + nested_depth)
+        # Check if sub-EPI has node_id (new architecture with metadata)
+        if "node_id" in sub and sub["node_id"] in G.nodes:
+            # Recurse into independent node
+            child_depth = compute_cascade_depth(G, sub["node_id"])
+            max_depth = max(max_depth, 1 + child_depth)
+        else:
+            # Legacy metadata-only mode
+            nested_depth = sub.get("cascade_depth", 0)
+            max_depth = max(max_depth, 1 + nested_depth)
 
     return max_depth
 
