@@ -17,13 +17,12 @@ RC3: Phase Verification - Coupling/resonance requires phase compatibility
 RC4: Bifurcation Limits - If ∂²EPI/∂t² > τ, bifurcation handler required
      Reason: AGENTS.md Contract OZ + bifurcation theory (conditional)
 
-Non-Canonical Rules (Organizational Conventions)
--------------------------------------------------
-RNC1: Termination - Sequence must end with specific terminators
-      Reason: Code organization, NOT physics
-      
-RNC2: Specific composition restrictions
-      Reason: High-level semantics, NOT nodal equation
+Historical Note
+---------------
+Previous versions included RNC1 (Termination requirement), but this was
+removed as it does NOT emerge from TNFR physics. It was purely organizational.
+The grammar now contains ONLY rules that emerge inevitably from the nodal
+equation, invariants, and formal contracts.
 
 References
 ----------
@@ -63,24 +62,20 @@ COUPLING_RESONANCE = frozenset({'coupling', 'resonance'})
 BIFURCATION_TRIGGERS = frozenset({'dissonance', 'mutation'})
 BIFURCATION_HANDLERS = frozenset({'self_organization', 'coherence'})
 
-# Conventional terminators (NOT canonical - organizational only)
-CONVENTIONAL_TERMINATORS = frozenset({
-    'silence',
-    'dissonance',
-    'transition',
-    'recursivity',
-})
+# Historical: CONVENTIONAL_TERMINATORS removed - not physics-based
+# Previous versions enforced RNC1 (terminator requirement) but this was
+# purely organizational convention with no basis in TNFR physics
 
 
 class CanonicalGrammarValidator:
     """Validates sequences using ONLY physics-derived rules.
     
-    This validator implements RC1, RC2, and RC3, which emerge inevitably from
-    the nodal equation ∂EPI/∂t = νf · ΔNFR(t), TNFR invariants, and formal
-    contracts. It does NOT enforce organizational conventions like required terminators.
+    This validator implements RC1, RC2, RC3, and RC4, which emerge inevitably
+    from the nodal equation ∂EPI/∂t = νf · ΔNFR(t), TNFR invariants, and formal
+    contracts.
     
-    Use this for testing algebraic properties where you want to validate
-    pure physics without implementation conventions.
+    The grammar is 100% canonical - no organizational conventions are enforced.
+    All rules derive from TNFR physics.
     """
     
     @staticmethod
@@ -222,20 +217,80 @@ class CanonicalGrammarValidator:
             f"(MANDATORY per Invariant #5). Enforced in preconditions."
         )
     
+    @staticmethod
+    def validate_bifurcation_limits(sequence: List[Operator]) -> tuple[bool, str]:
+        """Validate RC4: Bifurcation limits (conditional rule).
+        
+        Physical basis: AGENTS.md Contract OZ states that dissonance may trigger
+        bifurcation if ∂²EPI/∂t² > τ. When bifurcation is triggered, a handler
+        is required to manage the structural reorganization.
+        
+        This is a CONDITIONAL rule: only applies when bifurcation-triggering
+        operators are present.
+        
+        Parameters
+        ----------
+        sequence : List[Operator]
+            Sequence of operators to validate
+        
+        Returns
+        -------
+        tuple[bool, str]
+            (is_valid, message)
+            
+        Notes
+        -----
+        RC4 is enforced at runtime in operator preconditions (validate_dissonance).
+        This grammar rule documents the requirement for awareness.
+        Actual bifurcation detection happens via compute_d2epi_dt2().
+        """
+        # Check if sequence contains bifurcation triggers
+        trigger_ops = [
+            getattr(op, 'canonical_name', op.name.lower())
+            for op in sequence
+            if getattr(op, 'canonical_name', op.name.lower()) in BIFURCATION_TRIGGERS
+        ]
+        
+        if not trigger_ops:
+            # No triggers = RC4 not applicable
+            return True, "RC4 not applicable: no bifurcation triggers present"
+        
+        # Check for handlers
+        handler_ops = [
+            getattr(op, 'canonical_name', op.name.lower())
+            for op in sequence
+            if getattr(op, 'canonical_name', op.name.lower()) in BIFURCATION_HANDLERS
+        ]
+        
+        if not handler_ops:
+            return (
+                False,
+                f"RC4 violated: bifurcation triggers {trigger_ops} present "
+                f"without handler. If ∂²EPI/∂t² > τ, bifurcation may occur unmanaged. "
+                f"Add: {sorted(BIFURCATION_HANDLERS)}"
+            )
+        
+        return (
+            True,
+            f"RC4 satisfied: bifurcation triggers {trigger_ops} "
+            f"have handlers {handler_ops}"
+        )
+    
     @classmethod
     def validate(
         cls,
         sequence: List[Operator],
         epi_initial: float = 0.0,
     ) -> tuple[bool, List[str]]:
-        """Validate sequence using ONLY canonical rules (RC1, RC2, RC3).
+        """Validate sequence using ONLY canonical rules (RC1, RC2, RC3, RC4).
         
-        This validates pure physics without organizational conventions.
+        This validates 100% pure TNFR physics without organizational conventions.
         
         Canonical rules validated:
         - RC1: Initialization (if EPI=0, use generator)
         - RC2: Convergence (if destabilizers, use stabilizer)
         - RC3: Phase compatibility (coupling/resonance require phase check)
+        - RC4: Bifurcation limits (if triggers present, require handlers)
         
         Parameters
         ----------
@@ -269,6 +324,11 @@ class CanonicalGrammarValidator:
         messages.append(f"RC3: {msg_phase}")
         all_valid = all_valid and valid_phase
         
+        # RC4: Bifurcation limits
+        valid_bifurc, msg_bifurc = cls.validate_bifurcation_limits(sequence)
+        messages.append(f"RC4: {msg_bifurc}")
+        all_valid = all_valid and valid_bifurc
+        
         return all_valid, messages
 
 
@@ -282,13 +342,10 @@ def validate_canonical_only(
     - RC1: Initialization (if EPI=0, use generator)
     - RC2: Convergence (if destabilizers, use stabilizer)
     - RC3: Phase compatibility (coupling/resonance require phase check)
+    - RC4: Bifurcation limits (if triggers present, require handlers)
     
-    It does NOT validate:
-    - RNC1: Terminator requirements (organizational convention)
-    - RNC2: Specific composition restrictions (high-level semantics)
-    
-    Use this when testing algebraic properties where you want pure physics
-    validation without implementation conventions.
+    All rules emerge inevitably from TNFR physics. No organizational
+    conventions are enforced.
     
     Parameters
     ----------
@@ -326,11 +383,20 @@ def validate_with_conventions(
     sequence: List[Operator],
     epi_initial: float = 0.0,
 ) -> tuple[bool, List[str]]:
-    """Validate sequence with both canonical rules and conventions.
+    """Validate sequence with canonical rules only.
+    
+    Historical Note: This function previously enforced RNC1 (terminator
+    convention), but that has been removed as it does NOT emerge from
+    TNFR physics. This function now performs the same validation as
+    validate_canonical_only() but returns detailed messages.
     
     This validates:
-    - RC1, RC2, RC3: Canonical physics rules
-    - RNC1: Terminator convention (organizational, NOT physics)
+    - RC1: Initialization (if EPI=0, use generator)
+    - RC2: Convergence (if destabilizers, use stabilizer)
+    - RC3: Phase compatibility (coupling/resonance require phase check)
+    - RC4: Bifurcation limits (if triggers present, require handlers)
+    
+    All rules are 100% physics-based.
     
     Parameters
     ----------
@@ -344,30 +410,5 @@ def validate_with_conventions(
     tuple[bool, List[str]]
         (is_valid, messages)
     """
-    messages = []
-    all_valid = True
-    
-    # First validate canonical rules (RC1, RC2, RC3)
-    valid_canonical, canonical_msgs = CanonicalGrammarValidator.validate(
-        sequence, epi_initial
-    )
-    messages.extend(canonical_msgs)
-    all_valid = all_valid and valid_canonical
-    
-    # Then check conventions (RNC1)
-    if sequence:
-        last_op = getattr(sequence[-1], 'canonical_name', sequence[-1].name.lower())
-        if last_op not in CONVENTIONAL_TERMINATORS:
-            messages.append(
-                f"RNC1 (CONVENTION): Sequence should end with terminator "
-                f"(got '{last_op}'). Valid: {sorted(CONVENTIONAL_TERMINATORS)}. "
-                f"Note: This is organizational convention, NOT physics."
-            )
-            all_valid = False
-        else:
-            messages.append(
-                f"RNC1 (CONVENTION): ends with terminator '{last_op}' "
-                f"(organizational convention satisfied)"
-            )
-    
-    return all_valid, messages
+    # Just use canonical validation - no conventions anymore
+    return CanonicalGrammarValidator.validate(sequence, epi_initial)
