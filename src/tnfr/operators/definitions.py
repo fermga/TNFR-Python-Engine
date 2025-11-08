@@ -1366,6 +1366,30 @@ class Coupling(Operator):
     Set ``VALIDATE_OPERATOR_PRECONDITIONS=True`` in graph metadata to enable validation.
     Validation is backward-compatible and disabled by default to preserve existing behavior.
 
+    Structural Invariants
+    ---------------------
+    **CRITICAL**: UM preserves EPI identity. The coupling process synchronizes
+    phases (θ), may align structural frequencies (νf), and can reduce ΔNFR, but
+    it NEVER directly modifies EPI. This ensures that coupled nodes maintain
+    their structural identities while achieving phase coherence.
+    
+    Any change to EPI during a sequence containing UM must come from other
+    operators (e.g., Emission, Reception) or from the natural evolution via
+    the nodal equation ∂EPI/∂t = νf · ΔNFR(t), never from UM itself.
+    
+    **Theoretical Basis**: In TNFR theory, coupling (UM) creates structural links 
+    through phase synchronization φᵢ(t) ≈ φⱼ(t), not through information transfer 
+    or EPI modification. The structural identity (EPI) of each node remains intact 
+    while the nodes achieve synchronized phases that enable resonant interaction.
+    
+    **Implementation Guarantee**: The `_op_UM` function modifies only:
+    
+    - Phase (θ): Adjusted towards consensus phase
+    - Structural frequency (νf): Optionally synchronized with neighbors
+    - Reorganization gradient (ΔNFR): Reduced through stabilization
+    
+    EPI is never touched by the coupling logic, preserving this fundamental invariant.
+
     Structural Effects
     ------------------
     - **θ**: Phases of coupled nodes converge (primary effect)
@@ -1476,6 +1500,7 @@ class Coupling(Operator):
             dnfr_before=state_before["dnfr"],
             vf_before=state_before["vf"],
             edges_before=state_before.get("edges", None),
+            epi_before=state_before["epi"],
         )
 
 

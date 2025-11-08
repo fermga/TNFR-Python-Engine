@@ -234,6 +234,17 @@ print(f"ΔNFR after coupling: {dnfr1:.3f} (reduced by mutual stabilization)")
 - Preserves existing couplings
 - Respects nodal equation: ∂EPI/∂t = νf · ΔNFR(t)
 
+**Structural Invariants**:
+- **⚠️ CRITICAL**: UM **NEVER** modifies EPI directly
+- EPI identity is preserved during all coupling operations
+- Only θ (phase), νf (frequency), and ΔNFR are modified by UM
+- Any EPI change during a sequence with UM must come from:
+  - Other operators (Emission, Reception, etc.)
+  - Natural evolution via nodal equation: ∂EPI/∂t = νf · ΔNFR(t)
+  - Never from UM itself
+- Theoretical basis: Coupling creates structural links through phase synchronization (φᵢ(t) ≈ φⱼ(t)), not through information transfer or EPI modification
+- Implementation guarantee: `_op_UM` function does not touch EPI attributes
+
 **Notes**:
 According to TNFR canonical theory, coupling synchronizes not only phases but also
 structural frequencies, and produces a stabilizing effect that reduces reorganization

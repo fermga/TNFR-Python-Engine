@@ -559,6 +559,7 @@ def coupling_metrics(
     dnfr_before: float = None,
     vf_before: float = None,
     edges_before: int = None,
+    epi_before: float = None,
 ) -> dict[str, Any]:
     """UM - Coupling metrics: phase alignment, link formation, synchrony, ΔNFR reduction.
 
@@ -579,6 +580,8 @@ def coupling_metrics(
         Structural frequency (νf) before operator application
     edges_before : int, optional
         Number of edges before operator application
+    epi_before : float, optional
+        EPI value before operator application (for invariance verification)
 
     Returns
     -------
@@ -607,6 +610,13 @@ def coupling_metrics(
         - dnfr_reduction: Absolute reduction (before - after)
         - dnfr_reduction_pct: Percentage reduction
         
+        **EPI Invariance metrics:**
+        
+        - epi_before: EPI value before coupling
+        - epi_after: EPI value after coupling
+        - epi_drift: Absolute difference between before and after
+        - epi_preserved: Boolean indicating EPI invariance (drift < 1e-9)
+        
         **Network metrics:**
         
         - neighbor_count: Number of neighbors after coupling
@@ -621,6 +631,10 @@ def coupling_metrics(
     structural links through phase synchronization (φᵢ(t) ≈ φⱼ(t)). The metrics
     capture both the synchronization quality and the network structural changes
     resulting from coupling.
+    
+    **EPI Invariance**: UM MUST preserve EPI identity. The epi_preserved metric
+    validates this fundamental invariant. If epi_preserved is False, it indicates
+    a violation of TNFR canonical requirements.
     
     See Also
     --------
@@ -677,6 +691,18 @@ def coupling_metrics(
             "dnfr_reduction_pct": dnfr_reduction_pct,
             "dnfr_stabilization": dnfr_stabilization,
             "dnfr_final": dnfr_after,
+        })
+
+    # EPI invariance verification (if epi_before provided)
+    # CRITICAL: UM MUST preserve EPI identity per TNFR canonical theory
+    if epi_before is not None:
+        epi_after = _get_node_attr(G, node, ALIAS_EPI)
+        epi_drift = abs(epi_after - epi_before)
+        metrics.update({
+            "epi_before": epi_before,
+            "epi_after": epi_after,
+            "epi_drift": epi_drift,
+            "epi_preserved": epi_drift < 1e-9,  # Should ALWAYS be True
         })
 
     # Edge/network formation metrics (if edges_before provided)
