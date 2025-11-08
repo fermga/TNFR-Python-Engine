@@ -147,6 +147,13 @@ class CoreDefaults:
     THOL_PROPAGATION_ATTENUATION: float = 0.7
     THOL_CASCADE_MIN_NODES: int = 3
 
+    # THOL precondition thresholds
+    THOL_MIN_EPI: float = 0.2  # Minimum EPI for bifurcation
+    THOL_MIN_VF: float = 0.1  # Minimum structural frequency for reorganization
+    THOL_MIN_DEGREE: int = 1  # Minimum network connectivity
+    THOL_MIN_HISTORY_LENGTH: int = 3  # Minimum EPI history for acceleration computation
+    THOL_ALLOW_ISOLATED: bool = False  # Require network context by default
+
 
 @dataclass(frozen=True, slots=True)
 class RemeshDefaults:
