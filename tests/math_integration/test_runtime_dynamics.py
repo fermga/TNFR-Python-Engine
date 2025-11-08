@@ -10,9 +10,9 @@ from tnfr.mathematics import (
     CoherenceOperator,
     HilbertSpace,
     MathematicalDynamicsEngine,
-    NFRValidator,
     make_frequency_operator,
 )
+from tnfr.validation import NFRValidator
 from tnfr.node import NodeNX
 from tnfr.operators.definitions import (
     Coherence,
