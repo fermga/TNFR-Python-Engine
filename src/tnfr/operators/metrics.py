@@ -832,11 +832,150 @@ def resonance_metrics(
     }
 
 
+def _compute_epi_variance(G: TNFRGraph, node: NodeId) -> float:
+    """Compute EPI variance during silence period.
+
+    Measures the standard deviation of EPI values recorded during silence,
+    validating effective preservation (variance ≈ 0).
+
+    Parameters
+    ----------
+    G : TNFRGraph
+        Graph containing the node
+    node : NodeId
+        Node to compute variance for
+
+    Returns
+    -------
+    float
+        Standard deviation of EPI during silence period
+    """
+    import numpy as np
+
+    epi_history = G.nodes[node].get("epi_history_during_silence", [])
+    if len(epi_history) < 2:
+        return 0.0
+    return float(np.std(epi_history))
+
+
+def _compute_preservation_integrity(preserved_epi: float, epi_after: float) -> float:
+    """Compute preservation integrity ratio.
+
+    Measures structural preservation quality as:
+        integrity = 1 - |EPI_after - EPI_preserved| / EPI_preserved
+
+    Interpretation:
+    - integrity = 1.0: Perfect preservation
+    - integrity < 0.95: Significant degradation
+    - integrity < 0.8: Preservation failure
+
+    Parameters
+    ----------
+    preserved_epi : float
+        EPI value that was preserved at silence start
+    epi_after : float
+        Current EPI value
+
+    Returns
+    -------
+    float
+        Preservation integrity in [0, 1]
+    """
+    if preserved_epi == 0:
+        return 1.0 if epi_after == 0 else 0.0
+
+    integrity = 1.0 - abs(epi_after - preserved_epi) / abs(preserved_epi)
+    return max(0.0, integrity)
+
+
+def _compute_reactivation_readiness(G: TNFRGraph, node: NodeId) -> float:
+    """Compute readiness score for reactivation from silence.
+
+    Evaluates if the node can reactivate effectively based on:
+    - νf residual (must be recoverable)
+    - EPI preserved (must be coherent)
+    - Silence duration (not excessive)
+    - Network connectivity (active neighbors)
+
+    Score in [0, 1]:
+    - 1.0: Fully ready to reactivate
+    - 0.5-0.8: Moderate readiness
+    - < 0.3: Risky reactivation
+
+    Parameters
+    ----------
+    G : TNFRGraph
+        Graph containing the node
+    node : NodeId
+        Node to compute readiness for
+
+    Returns
+    -------
+    float
+        Reactivation readiness score in [0, 1]
+    """
+    vf = _get_node_attr(G, node, ALIAS_VF)
+    epi = _get_node_attr(G, node, ALIAS_EPI)
+    duration = G.nodes[node].get("silence_duration", 0.0)
+
+    # Count active neighbors
+    active_neighbors = 0
+    if G.has_node(node):
+        for n in G.neighbors(node):
+            if _get_node_attr(G, n, ALIAS_VF) > 0.1:
+                active_neighbors += 1
+
+    # Scoring components
+    vf_score = min(vf / 0.5, 1.0)  # νf recoverable
+    epi_score = min(epi / 0.3, 1.0)  # EPI coherent
+    duration_score = 1.0 / (1.0 + duration * 0.1)  # Penalize long silence
+    network_score = min(active_neighbors / 3.0, 1.0)  # Network support
+
+    return (vf_score + epi_score + duration_score + network_score) / 4.0
+
+
+def _estimate_time_to_collapse(G: TNFRGraph, node: NodeId) -> float:
+    """Estimate time until nodal collapse during silence.
+
+    Estimates how long silence can be maintained before structural collapse
+    based on observed drift rate or default degradation model.
+
+    Model:
+        t_collapse ≈ EPI_preserved / |DRIFT_RATE|
+
+    Parameters
+    ----------
+    G : TNFRGraph
+        Graph containing the node
+    node : NodeId
+        Node to estimate collapse time for
+
+    Returns
+    -------
+    float
+        Estimated time steps until collapse (inf if no degradation)
+    """
+    preserved_epi = G.nodes[node].get("preserved_epi", 0.0)
+    drift_rate = G.nodes[node].get("epi_drift_rate", 0.0)
+
+    if abs(drift_rate) < 1e-10:
+        # No observed degradation - return large value
+        return float("inf")
+
+    if preserved_epi <= 0:
+        # Already at or below collapse threshold
+        return 0.0
+
+    # Estimate time until EPI reaches zero
+    return abs(preserved_epi / drift_rate)
+
+
 def silence_metrics(
     G: TNFRGraph, node: NodeId, vf_before: float, epi_before: float
 ) -> dict[str, Any]:
-    """SHA - Silence metrics: νf reduction, EPI preservation, and latency tracking.
+    """SHA - Silence metrics: νf reduction, EPI preservation, duration tracking.
 
+    Extended metrics for deep analysis of structural preservation effectiveness.
     Collects silence-specific metrics that reflect canonical SHA effects including
     latency state management as specified in TNFR.pdf §2.3.10.
 
@@ -855,46 +994,76 @@ def silence_metrics(
     -------
     dict
         Silence-specific metrics including:
-        - Core metrics: vf_reduction, epi_preservation
-        - Latency state: latent flag, silence_duration
-        - Integrity metrics: preservation_integrity, epi_variance
+
+        **Core metrics (existing):**
+
+        - operator: "Silence"
+        - glyph: "SHA"
+        - vf_reduction: Absolute reduction in νf
+        - vf_final: Post-silence νf value
+        - epi_preservation: Absolute EPI change (should be ≈ 0)
+        - epi_final: Post-silence EPI value
+        - is_silent: Boolean indicating silent state (νf < 0.1)
+
+        **Latency state tracking:**
+
+        - latent: Boolean latency flag
+        - silence_duration: Time in silence state (steps or structural time)
+
+        **Extended metrics (NEW):**
+
+        - epi_variance: Standard deviation of EPI during silence
+        - preservation_integrity: Quality metric [0, 1] for preservation
+        - reactivation_readiness: Readiness score [0, 1] for reactivation
+        - time_to_collapse: Estimated time until nodal collapse
+
+    Notes
+    -----
+    Extended metrics enable:
+    - Detection of excessive silence (collapse risk)
+    - Validation of preservation quality
+    - Analysis of consolidation patterns (memory, learning)
+    - Strategic pause effectiveness (biomedical, cognitive, social domains)
+
+    See Also
+    --------
+    _compute_epi_variance : EPI variance computation
+    _compute_preservation_integrity : Preservation quality metric
+    _compute_reactivation_readiness : Reactivation readiness score
+    _estimate_time_to_collapse : Collapse time estimation
     """
     vf_after = _get_node_attr(G, node, ALIAS_VF)
     epi_after = _get_node_attr(G, node, ALIAS_EPI)
+    preserved_epi = G.nodes[node].get("preserved_epi")
 
-    # Basic SHA metrics
-    metrics = {
+    # Core metrics (existing)
+    core = {
         "operator": "Silence",
         "glyph": "SHA",
         "vf_reduction": vf_before - vf_after,
         "vf_final": vf_after,
         "epi_preservation": abs(epi_after - epi_before),
         "epi_final": epi_after,
-        "is_silent": vf_after < 0.1,  # Configurable threshold
+        "is_silent": vf_after < 0.1,
     }
 
     # Latency state tracking metrics
-    metrics["latent"] = G.nodes[node].get("latent", False)
-    metrics["silence_duration"] = G.nodes[node].get("silence_duration", 0.0)
+    core["latent"] = G.nodes[node].get("latent", False)
+    core["silence_duration"] = G.nodes[node].get("silence_duration", 0.0)
 
-    # Preservation integrity: measures EPI variance during silence
-    preserved_epi = G.nodes[node].get("preserved_epi")
-    if preserved_epi is not None:
-        preservation_integrity = abs(epi_after - preserved_epi) / max(
-            abs(preserved_epi), 1e-10
-        )
-        metrics["preservation_integrity"] = preservation_integrity
-    else:
-        metrics["preservation_integrity"] = 0.0
+    # Extended metrics (new)
+    extended = {
+        "epi_variance": _compute_epi_variance(G, node),
+        "preservation_integrity": (
+            _compute_preservation_integrity(preserved_epi, epi_after)
+            if preserved_epi is not None
+            else 1.0 - abs(epi_after - epi_before)
+        ),
+        "reactivation_readiness": _compute_reactivation_readiness(G, node),
+        "time_to_collapse": _estimate_time_to_collapse(G, node),
+    }
 
-    # EPI variance during silence (relative to preserved value)
-    if preserved_epi is not None:
-        epi_variance = abs(epi_after - preserved_epi)
-        metrics["epi_variance_during_silence"] = epi_variance
-    else:
-        metrics["epi_variance_during_silence"] = abs(epi_after - epi_before)
-
-    return metrics
+    return {**core, **extended}
 
 
 def expansion_metrics(
