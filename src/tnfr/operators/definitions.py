@@ -2561,6 +2561,10 @@ class SelfOrganization(Operator):
         This implements canonical THOL: "reorganizes external experience into
         internal structure without external instruction".
 
+        ARCHITECTURAL: Sub-EPIs are created as independent NFR nodes to enable
+        operational fractality - recursive operator application, hierarchical metrics,
+        and multi-level bifurcation.
+
         Parameters
         ----------
         G : TNFRGraph
@@ -2573,12 +2577,13 @@ class SelfOrganization(Operator):
             Bifurcation threshold that was exceeded
         """
         from ..alias import get_attr, set_attr
-        from ..constants.aliases import ALIAS_EPI, ALIAS_VF
+        from ..constants.aliases import ALIAS_EPI, ALIAS_VF, ALIAS_THETA
         from .metabolism import capture_network_signals, metabolize_signals_into_subepi
 
         # Get current node state
         parent_epi = float(get_attr(G.nodes[node], ALIAS_EPI, 0.0))
         parent_vf = float(get_attr(G.nodes[node], ALIAS_VF, 1.0))
+        parent_theta = float(get_attr(G.nodes[node], ALIAS_THETA, 0.0))
 
         # Check if vibrational metabolism is enabled
         metabolic_enabled = G.graph.get("THOL_METABOLIC_ENABLED", True)
@@ -2606,24 +2611,33 @@ class SelfOrganization(Operator):
             complexity_weight=complexity_weight,
         )
 
-        # Store sub-EPI in node's sub_epis list
-        sub_epis = G.nodes[node].get("sub_epis", [])
-
         # Get current timestamp from glyph history length
         timestamp = len(G.nodes[node].get("glyph_history", []))
 
-        # Store sub-EPI with metabolic metadata
+        # ARCHITECTURAL: Create sub-EPI as independent NFR node
+        # This enables operational fractality - recursive operators, hierarchical metrics
+        sub_node_id = self._create_sub_node(
+            G,
+            parent_node=node,
+            sub_epi=sub_epi_value,
+            parent_vf=parent_vf,
+            parent_theta=parent_theta,
+        )
+
+        # Store sub-EPI metadata for telemetry and backward compatibility
         sub_epi_record = {
             "epi": sub_epi_value,
             "vf": parent_vf,
             "timestamp": timestamp,
             "d2_epi": d2_epi,
             "tau": tau,
-            # NEW: Metabolic metadata
+            "node_id": sub_node_id,  # Reference to independent node
             "metabolized": network_signals is not None and metabolic_enabled,
             "network_signals": network_signals,
         }
 
+        # Keep metadata list for telemetry/metrics backward compatibility
+        sub_epis = G.nodes[node].get("sub_epis", [])
         sub_epis.append(sub_epi_record)
         G.nodes[node]["sub_epis"] = sub_epis
 
@@ -2648,6 +2662,82 @@ class SelfOrganization(Operator):
                         "timestamp": timestamp,
                     }
                 )
+
+    def _create_sub_node(
+        self,
+        G: TNFRGraph,
+        parent_node: Any,
+        sub_epi: float,
+        parent_vf: float,
+        parent_theta: float,
+    ) -> str:
+        """Create sub-EPI as independent NFR node for operational fractality.
+
+        Sub-nodes are full TNFR nodes that can have operators applied, bifurcate
+        recursively, and contribute to hierarchical metrics.
+
+        Parameters
+        ----------
+        G : TNFRGraph
+            Graph containing the parent node
+        parent_node : Any
+            Parent node identifier
+        sub_epi : float
+            EPI value for the sub-node
+        parent_vf : float
+            Parent's structural frequency (inherited with damping)
+        parent_theta : float
+            Parent's phase (inherited)
+
+        Returns
+        -------
+        str
+            Identifier of the newly created sub-node
+        """
+        from ..constants import EPI_PRIMARY, VF_PRIMARY, THETA_PRIMARY, DNFR_PRIMARY
+        from ..dynamics import set_delta_nfr_hook
+
+        # Generate unique sub-node ID
+        sub_nodes_list = G.nodes[parent_node].get("sub_nodes", [])
+        sub_index = len(sub_nodes_list)
+        sub_node_id = f"{parent_node}_sub_{sub_index}"
+
+        # Get parent hierarchy level
+        parent_hierarchy_level = G.nodes[parent_node].get("hierarchy_level", 0)
+
+        # Inherit parent's vf with slight damping (canonical: 95%)
+        sub_vf = parent_vf * 0.95
+
+        # Create the sub-node with full TNFR state
+        G.add_node(
+            sub_node_id,
+            **{
+                EPI_PRIMARY: float(sub_epi),
+                VF_PRIMARY: float(sub_vf),
+                THETA_PRIMARY: float(parent_theta),
+                DNFR_PRIMARY: 0.0,
+                "parent_node": parent_node,
+                "hierarchy_level": parent_hierarchy_level + 1,
+                "epi_history": [float(sub_epi)],  # Initialize history for future bifurcation
+                "glyph_history": [],
+            },
+        )
+
+        # Ensure ΔNFR hook is set for the sub-node
+        # (inherits from graph-level hook, but ensure it's activated)
+        if hasattr(G, "graph") and "_delta_nfr_hook" in G.graph:
+            # Hook already set at graph level, will apply to sub-node automatically
+            pass
+
+        # Track sub-node in parent
+        sub_nodes_list.append(sub_node_id)
+        G.nodes[parent_node]["sub_nodes"] = sub_nodes_list
+
+        # Track hierarchy in graph metadata
+        hierarchy = G.graph.setdefault("hierarchy", {})
+        hierarchy.setdefault(parent_node, []).append(sub_node_id)
+
+        return sub_node_id
 
     def _validate_preconditions(self, G: TNFRGraph, node: Any) -> None:
         """Validate THOL-specific preconditions."""
