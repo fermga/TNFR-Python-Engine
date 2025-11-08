@@ -280,6 +280,45 @@ def test_um_candidate_subset_proximity(graph_canon):
     assert not G.has_edge(0, 3)
 
 
+def test_um_functional_links_enabled_by_default(graph_canon):
+    """UM operator creates functional links by default (canonical behavior)."""
+    G = graph_canon()
+    inject_defaults(G)
+    # Create nodes with similar phase, EPI, and Si for high compatibility
+    for i, th in enumerate([0.0, 0.05, 0.1]):
+        G.add_node(i, **{"theta": th, "EPI": 1.0, "Si": 0.8})
+
+    # Lower threshold to ensure links are created for testing
+    G.graph["UM_COMPAT_THRESHOLD"] = 0.5
+
+    # Apply UM without explicitly setting UM_FUNCTIONAL_LINKS
+    # Links should be created by default
+    apply_glyph(G, 0, "UM")
+
+    # Verify that at least one link was created
+    # (exact number depends on compatibility calculation)
+    assert G.number_of_edges() > 0, "UM should create functional links by default"
+
+
+def test_um_functional_links_can_be_disabled(graph_canon):
+    """UM operator respects explicit UM_FUNCTIONAL_LINKS=False (edge case)."""
+    G = graph_canon()
+    inject_defaults(G)
+    # Create nodes with similar phase, EPI, and Si for high compatibility
+    for i, th in enumerate([0.0, 0.05, 0.1]):
+        G.add_node(i, **{"theta": th, "EPI": 1.0, "Si": 0.8})
+
+    # Explicitly disable functional links (edge case for phase-only sync)
+    G.graph["UM_FUNCTIONAL_LINKS"] = False
+    G.graph["UM_COMPAT_THRESHOLD"] = 0.5
+
+    # Apply UM with links explicitly disabled
+    apply_glyph(G, 0, "UM")
+
+    # Verify that no links were created
+    assert G.number_of_edges() == 0, "UM should respect UM_FUNCTIONAL_LINKS=False"
+
+
 def test_um_candidate_iter_missing_nodenx(monkeypatch):
     class DummyNode:
         def __init__(self) -> None:

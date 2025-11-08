@@ -739,7 +739,7 @@ def _op_UM(node: NodeProtocol, gf: GlyphFactors) -> None:  # UM — Coupling
                 reduction_factor = 1.0 - (k_dnfr * mean_alignment)
                 node.dnfr = node.dnfr * reduction_factor
 
-    if bool(node.graph.get("UM_FUNCTIONAL_LINKS", False)):
+    if bool(node.graph.get("UM_FUNCTIONAL_LINKS", True)):
         thr = float(
             node.graph.get(
                 "UM_COMPAT_THRESHOLD",

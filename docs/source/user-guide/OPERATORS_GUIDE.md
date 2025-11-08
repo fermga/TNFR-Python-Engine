@@ -224,7 +224,7 @@ print(f"ΔNFR after coupling: {dnfr1:.3f} (reduced by mutual stabilization)")
 - `UM_BIDIRECTIONAL`: Enable bidirectional phase sync (default: True)
 - `UM_SYNC_VF`: Enable frequency synchronization (default: True)
 - `UM_STABILIZE_DNFR`: Enable ΔNFR stabilization (default: True)
-- `UM_FUNCTIONAL_LINKS`: Create edges based on compatibility (default: False)
+- `UM_FUNCTIONAL_LINKS`: Create edges based on compatibility (default: True)
 
 **Contracts**:
 - Must verify phase compatibility before coupling
