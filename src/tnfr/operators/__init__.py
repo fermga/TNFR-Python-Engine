@@ -855,7 +855,7 @@ def _op_RA(node: NodeProtocol, gf: GlyphFactors) -> None:  # RA — Resonance
     # Track identity preservation
     identity_preserved = (
         (kind_result == kind_before or kind_result == Glyph.RA.value)
-        and (epi_before * node.EPI >= 0)  # Sign preserved
+        and (float(epi_before) * float(node.EPI) >= 0)  # Sign preserved
     )
     
     # Collect propagation metrics if enabled
