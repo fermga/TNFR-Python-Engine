@@ -166,16 +166,26 @@ class TestWeakDestabilizer:
         assert result.passed
 
     def test_en_immediate_thol_also_requires_coherence(self):
-        """EN → THOL also needs EN → IL → THOL per R2."""
-        # R2 requires RECEPTION → COHERENCE segment
+        """EN → THOL fails because EN lacks coherent context for destabilization.
+        
+        Updated with dual-role context validation: EN as weak destabilizer now
+        requires prior coherence base. AL → EN → THOL fails because EN at position 1
+        has no prior stabilizer (IL or THOL) to provide context for destabilization.
+        
+        This is more precise than the generic "missing reception→coherence segment"
+        error, as it specifically identifies that EN cannot destabilize THOL without
+        structural preparation.
+        """
         with pytest.raises(SequenceSyntaxError) as excinfo:
             parse_sequence(
                 [EMISSION, RECEPTION, SELF_ORGANIZATION, SILENCE]
             )
         
         error = excinfo.value
-        # Should fail on missing coherence segment, not destabilizer
-        assert "reception" in error.message.lower() and "coherence" in error.message.lower()
+        # With dual-role validation, fails on destabilizer requirement
+        # (more specific than generic EN→IL segment requirement)
+        assert "self_organization" in error.message.lower()
+        assert "destabilizer" in error.message.lower()
 
     def test_en_with_intermediate_thol_fails(self):
         """EN → IL → THOL (fails - EN requires immediate)."""

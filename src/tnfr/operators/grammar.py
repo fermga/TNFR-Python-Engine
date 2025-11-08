@@ -87,6 +87,7 @@ __all__ = [
     "FUNCTION_TO_GLYPH",
     "GLYPH_TO_FUNCTION",
     "STRUCTURAL_FREQUENCIES",
+    "DUAL_FREQUENCY_OPERATORS",
     "FREQUENCY_TRANSITIONS",
     "glyph_function_name",
     "function_name_to_glyph",
@@ -661,6 +662,62 @@ class _SequenceAutomaton:
             for _, dest_index in self._bifurcation_context
         )
 
+    def _validate_reception_context(self, reception_index: int) -> bool:
+        """Validate that RECEPTION has sufficient prior coherence for destabilization.
+
+        RECEPTION (EN) as a weak destabilizer requires context: it must operate on
+        a node with existing structural base to generate sufficient ΔNFR for transformers.
+
+        Parameters
+        ----------
+        reception_index : int
+            Index of the RECEPTION operator in the sequence
+
+        Returns
+        -------
+        bool
+            True if RECEPTION has adequate prior structural coherence
+
+        Notes
+        -----
+        Valid patterns include:
+        - AL → EN → IL → EN (emission provides base, first EN consolidated, second can destabilize)
+        - EN → IL → EN (first EN consolidated, second can destabilize)
+        - OZ → IL → EN (dissonance resolved provides base)
+
+        Invalid patterns include:
+        - EN as first operator (no prior base)
+        - EN immediately after SHA (silence removes base)
+
+        Theoretical justification:
+        From nodal equation ∂EPI/∂t = νf · ΔNFR, RECEPTION has medium νf.
+        For EN → ZHIR to be valid, EN must generate high ΔNFR. This is only possible
+        when EN captures external coherence into a structurally prepared node,
+        creating reorganization pressure from the integration.
+        """
+        # RECEPTION at position 0 cannot have prior coherence
+        if reception_index == 0:
+            return False
+
+        # Look for stabilizer (IL or THOL) before RECEPTION
+        # This indicates the node has structural base for destabilization
+        for i in range(reception_index):
+            op = self._canonical[i]
+            if op in {COHERENCE, SELF_ORGANIZATION}:
+                # Found stabilizer - check it's not too far back
+                # For context, we require stabilizer within 3 operators before EN
+                if reception_index - i <= 3:
+                    # Additionally, ensure no SILENCE between stabilizer and EN
+                    # (SILENCE would remove the coherent base)
+                    has_silence = any(
+                        self._canonical[j] == SILENCE
+                        for j in range(i + 1, reception_index)
+                    )
+                    if not has_silence:
+                        return True
+
+        return False
+
     def _has_graduated_destabilizer(self, current_index: int) -> bool:
         """Check if any level of destabilizer satisfies its window requirement.
 
@@ -680,9 +737,16 @@ class _SequenceAutomaton:
         - Strong destabilizers (OZ): window of 4 operators
         - Moderate destabilizers (NAV, VAL): window of 2 operators
         - Weak destabilizers (EN): must be immediate predecessor (window of 1)
+          AND have sufficient prior coherence context
 
         The method checks each level in order of window size (largest first)
         to provide the most permissive validation.
+
+        RECEPTION (EN) Context Validation:
+        EN as weak destabilizer requires validation of structural context.
+        According to DUAL_FREQUENCY_OPERATORS, EN has medium base frequency
+        but can generate ΔNFR when capturing external coherence into a prepared
+        node. This validation ensures EN → ZHIR transitions are structurally sound.
         """
         # Check strong destabilizers (longest window = 4)
         if self._destabilizer_context["strong"]:
@@ -697,10 +761,14 @@ class _SequenceAutomaton:
                 return True
 
         # Check weak destabilizers (window = 1, must be immediate)
+        # RECEPTION requires additional context validation for dual-role coherence
         if self._destabilizer_context["weak"]:
             last_weak = self._destabilizer_context["weak"][-1]
             if current_index - last_weak == 1:
-                return True
+                # Validate that RECEPTION has sufficient context for destabilization
+                # This implements the "requires_prior_coherence" condition from
+                # DUAL_FREQUENCY_OPERATORS
+                return self._validate_reception_context(last_weak)
 
         return False
 
@@ -983,7 +1051,7 @@ class StructuralPattern(Enum):
 # - zero: Operators that suspend reorganization while preserving form
 STRUCTURAL_FREQUENCIES: dict[str, str] = {
     EMISSION: "high",  # AL: initiation/reorganization
-    RECEPTION: "medium",  # EN: structural capture
+    RECEPTION: "medium",  # EN: structural capture (base frequency)
     COHERENCE: "medium",  # IL: stabilization
     DISSONANCE: "high",  # OZ: tension
     COUPLING: "medium",  # UM: coupling
@@ -995,6 +1063,37 @@ STRUCTURAL_FREQUENCIES: dict[str, str] = {
     MUTATION: "high",  # ZHIR: threshold pivot
     TRANSITION: "medium",  # NAV: controlled hand-off
     RECURSIVITY: "medium",  # REMESH: fractal echo
+}
+
+# Dual-role operators: operators with context-dependent destabilization capacity
+# Resolves the structural inconsistency between base frequency (νf) and ΔNFR generation.
+#
+# RECEPTION (EN) is the canonical dual-role operator:
+# - Base frequency: "medium" (νf for structural capture)
+# - Destabilization capacity: "weak" (can generate ΔNFR when integrating external coherence)
+# - Condition: Requires prior coherence base for effective destabilization
+#
+# Theoretical foundation (nodal equation):
+#   ∂EPI/∂t = νf · ΔNFR
+# 
+# RECEPTION has medium νf (moderate reorganization rate) but can act as weak 
+# destabilizer in graduated bifurcation (R4) when capturing external coherence 
+# into a node with existing structural base. The external input can generate 
+# sufficient ΔNFR to enable transformers (ZHIR/THOL) despite medium base frequency.
+#
+# Context requirement: EN → ZHIR valid only when EN operates on coherent base
+# (e.g., AL → EN → IL → EN → ZHIR). Direct EN → ZHIR without context violates
+# structural coherence as medium νf alone cannot sustain high ΔNFR for mutation.
+DUAL_FREQUENCY_OPERATORS: dict[str, dict[str, str]] = {
+    RECEPTION: {
+        "base_freq": "medium",
+        "destabilization_capacity": "weak",
+        "conditions": "requires_prior_coherence",
+        "rationale": (
+            "Captures external coherence which can generate ΔNFR when "
+            "integrated into structurally prepared node"
+        ),
+    }
 }
 
 # Frequency compatibility: operators with harmonic frequencies can transition
