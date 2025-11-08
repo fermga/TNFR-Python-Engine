@@ -97,6 +97,56 @@ class TestOperatorPreconditions:
         with pytest.raises(OperatorPreconditionError, match="already minimal"):
             Silence()(G, "n1")
 
+    def test_silence_canonical_vf_reduction(self):
+        """SHA - Canonical behavior: νf reduction below threshold with EPI preservation.
+        
+        Validates TNFR canonical invariant for SHA operator:
+        - νf → νf_min ≈ 0 (structural frequency reduction)
+        - EPI(t + Δt) ≈ EPI(t) (form preservation)
+        - ∂EPI/∂t → 0 (structural evolution freezes)
+        
+        This test ensures apply_glyph_with_grammar correctly reduces νf
+        through the operator chain when SHA is applied.
+        """
+        # Create node with active νf and established EPI
+        G = nx.DiGraph()
+        G.add_node("n1", **{EPI_PRIMARY: 0.51, VF_PRIMARY: 1.00})
+        G.graph["SHA_MIN_VF"] = 0.01  # Configure threshold
+        G.graph["SHA_vf_factor"] = 0.85  # Explicit reduction factor
+        
+        # Record state before SHA
+        epi_before = G.nodes["n1"][EPI_PRIMARY]
+        vf_before = G.nodes["n1"][VF_PRIMARY]
+        
+        # Apply SHA through operator (canonical path via grammar layer)
+        Silence()(G, "n1")
+        
+        # Get state after SHA
+        epi_after = G.nodes["n1"][EPI_PRIMARY]
+        vf_after = G.nodes["n1"][VF_PRIMARY]
+        
+        # Validate canonical SHA effects:
+        # 1. νf explicitly reduced (primary effect)
+        assert vf_after < vf_before, "SHA must reduce νf"
+        assert vf_after == pytest.approx(vf_before * 0.85, abs=0.01), \
+            "SHA should reduce νf by configured factor"
+        
+        # 2. νf approaches minimum (structural silence)
+        # After one application: 1.0 * 0.85 = 0.85
+        # We verify it's moving toward zero
+        assert vf_after < 1.0, "νf should decrease toward structural silence"
+        
+        # 3. EPI preserved (form invariance during silence)
+        assert abs(epi_after - epi_before) < 1e-6, \
+            "SHA must preserve EPI (structural form)"
+        
+        # 4. Verify metrics track the reduction (using centralized function)
+        from tnfr.operators.metrics import silence_metrics
+        metrics = silence_metrics(G, "n1", vf_before, epi_before)
+        assert metrics["vf_reduction"] == pytest.approx(vf_before - vf_after, abs=0.01)
+        assert metrics["epi_preservation"] < 1e-6, \
+            "Metrics should confirm EPI preservation"
+
     def test_expansion_precondition_max_vf(self):
         """VAL - Expansion should fail if νf at maximum."""
         G = nx.DiGraph()

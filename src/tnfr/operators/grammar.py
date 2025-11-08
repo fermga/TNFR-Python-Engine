@@ -1727,6 +1727,10 @@ def apply_glyph_with_grammar(
 ) -> None:
     """Apply glyph with grammar-based validation and coherence sequence recognition.
     
+    This function is the canonical entry point for applying structural operators through
+    the grammar layer. It enforces TNFR grammar rules, validates operator preconditions,
+    and tracks operator sequences for telemetry.
+    
     Enhanced to recognize and log canonical coherence sequences when they
     occur in the glyph history. This enables pattern detection, telemetry, and
     future optimization of common structural patterns.
@@ -1738,13 +1742,31 @@ def apply_glyph_with_grammar(
     nodes : Optional[Iterable[NodeId | NodeProtocol]]
         Target nodes (all nodes if None)
     glyph : Glyph | str
-        Glyph to apply
+        Glyph to apply (e.g., Glyph.SHA for Silence operator)
     window : Optional[int]
         Hysteresis window (uses graph default if None)
     
     Notes
     -----
-    **Coherence Sequence Recognition** (New):
+    **Structural Operator Effects:**
+    
+    This function delegates to operator-specific implementations that enforce
+    TNFR canonical behavior. Key operator effects include:
+    
+    - **SHA (Silence)**: Reduces νf → νf_min ≈ 0, causing ∂EPI/∂t → 0
+      (structural evolution freezes). EPI preserved intact regardless of ΔNFR.
+      Implements structural silence for memory consolidation and protective latency.
+    
+    - **AL (Emission)**: Increases νf and initiates positive ΔNFR for pattern activation
+    
+    - **IL (Coherence)**: Reduces |ΔNFR| and stabilizes EPI form
+    
+    - **OZ (Dissonance)**: Increases |ΔNFR| for exploration and bifurcation
+    
+    See operator definitions in ``tnfr.operators.definitions`` for complete
+    canonical behavior specifications.
+    
+    **Coherence Sequence Recognition:**
     
     When a glyph is applied, the function checks if it forms a canonical coherence
     sequence with the previous glyph in the node's history. Recognized patterns

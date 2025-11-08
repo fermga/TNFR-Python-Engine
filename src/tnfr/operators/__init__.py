@@ -965,12 +965,20 @@ def _op_SHA(node: NodeProtocol, gf: GlyphFactors) -> None:  # SHA — Silence
     stillness. EPI, ΔNFR, and phase remain unchanged, signalling a temporary
     suspension of structural evolution.
 
+    **TNFR Canonical Behavior:**
+    
+    According to the nodal equation ∂EPI/∂t = νf · ΔNFR(t), reducing νf → νf_min ≈ 0
+    causes structural evolution to freeze (∂EPI/∂t → 0) regardless of ΔNFR magnitude.
+    This implements **structural silence** - a state where the node's form (EPI) is
+    preserved intact despite external pressures, enabling memory consolidation and
+    protective latency.
+
     Parameters
     ----------
     node : NodeProtocol
         Node whose νf is being attenuated.
     gf : GlyphFactors
-        Provides ``SHA_vf_factor`` to scale νf.
+        Provides ``SHA_vf_factor`` to scale νf (default 0.85 for gradual reduction).
 
     Examples
     --------
@@ -983,6 +991,8 @@ def _op_SHA(node: NodeProtocol, gf: GlyphFactors) -> None:  # SHA — Silence
     0.5
     """
     factor = get_factor(gf, "SHA_vf_factor", 0.85)
+    # Canonical SHA effect: reduce structural frequency toward zero
+    # This implements: νf → νf_min ≈ 0 ⇒ ∂EPI/∂t → 0 (structural preservation)
     node.vf = factor * node.vf
 
 
