@@ -42,6 +42,7 @@ __all__ = [
     "validate_transition",
     "validate_recursivity",
     "diagnose_coherence_readiness",
+    "diagnose_resonance_readiness",
 ]
 
 
@@ -382,7 +383,16 @@ def validate_coupling(G: "TNFRGraph", node: "NodeId") -> None:
 
 
 def validate_resonance(G: "TNFRGraph", node: "NodeId") -> None:
-    """RA - Resonance requires neighbors to propagate energy.
+    """RA - Resonance requires comprehensive canonical preconditions.
+
+    This function delegates to the strict validation implementation in
+    resonance.py module, which provides canonical precondition checks:
+
+    1. Coherent source EPI (minimum structural form)
+    2. Network connectivity (edges for propagation)
+    3. Phase compatibility with neighbors (synchronization)
+    4. Controlled dissonance (stable resonance state)
+    5. Sufficient νf (propagation capacity)
 
     Parameters
     ----------
@@ -393,14 +403,58 @@ def validate_resonance(G: "TNFRGraph", node: "NodeId") -> None:
 
     Raises
     ------
-    OperatorPreconditionError
-        If node has no neighbors for resonance propagation
+    ValueError
+        If critical preconditions are not met (EPI, connectivity, νf, ΔNFR)
+
+    Warnings
+    --------
+    UserWarning
+        For suboptimal conditions (phase misalignment, isolated node)
+
+    Notes
+    -----
+    For backward compatibility, this function maintains the same signature
+    as the legacy validate_resonance but now provides enhanced validation.
+
+    Typical canonical sequences that satisfy RA preconditions:
+    - UM → RA: Coupling followed by propagation
+    - AL → RA: Emission followed by propagation
+    - IL → RA: Coherence stabilized then propagated
+
+    See Also
+    --------
+    tnfr.operators.preconditions.resonance.validate_resonance_strict : Full implementation
     """
-    neighbors = list(G.neighbors(node))
-    if not neighbors:
-        raise OperatorPreconditionError(
-            "Resonance", "Node has no neighbors for resonance propagation"
-        )
+    from .resonance import validate_resonance_strict
+
+    validate_resonance_strict(G, node)
+
+
+def diagnose_resonance_readiness(G: "TNFRGraph", node: "NodeId") -> dict:
+    """Diagnose node readiness for RA (Resonance) operator.
+
+    Provides comprehensive diagnostic report with readiness status and
+    actionable recommendations for RA operator application.
+
+    Parameters
+    ----------
+    G : TNFRGraph
+        Graph containing the node
+    node : NodeId
+        Node to diagnose
+
+    Returns
+    -------
+    dict
+        Diagnostic report with readiness status, check results, values, and recommendations
+
+    See Also
+    --------
+    tnfr.operators.preconditions.resonance.diagnose_resonance_readiness : Full implementation
+    """
+    from .resonance import diagnose_resonance_readiness as _diagnose
+
+    return _diagnose(G, node)
 
 
 def validate_silence(G: "TNFRGraph", node: "NodeId") -> None:

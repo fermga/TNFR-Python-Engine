@@ -21,6 +21,10 @@ __all__ = [
     "EPI_IL_MAX",
     "VF_IL_MIN",
     "DNFR_IL_CRITICAL",
+    "EPI_RA_MIN",
+    "DNFR_RA_MAX",
+    "VF_RA_MIN",
+    "PHASE_RA_MAX_DIFF",
 ]
 
 # -------------------------
@@ -83,3 +87,29 @@ VF_IL_MIN: float = 0.0
 # OZ (Dissonance) → IL sequence for controlled stabilization
 # This is a warning threshold, not a hard failure
 DNFR_IL_CRITICAL: float = 0.8
+
+# -------------------------
+# RA (Resonance) Thresholds
+# -------------------------
+
+# Minimum EPI for resonance source - RA requires coherent structural form
+# According to TNFR theory, resonance propagates existing coherence through
+# network connections. Source node must have sufficient EPI to propagate.
+EPI_RA_MIN: float = 0.1
+
+# Maximum ΔNFR for resonance - RA requires controlled dissonance
+# Excessive reorganization pressure prevents stable resonance propagation.
+# Consider IL (Coherence) first to stabilize before applying RA.
+DNFR_RA_MAX: float = 0.5
+
+# Minimum structural frequency for resonance - RA requires active νf
+# Resonance amplifies νf across the network. Zero νf prevents propagation
+# dynamics from occurring. Consider AL (Emission) or VAL (Expansion) first.
+VF_RA_MIN: float = 0.01
+
+# Maximum phase difference for optimal resonance - RA prefers phase alignment
+# This is a soft threshold (warning only). Larger phase differences reduce
+# resonance effectiveness but don't prevent propagation entirely.
+# Measured in radians: π/3 ≈ 1.0 rad ≈ 60 degrees
+PHASE_RA_MAX_DIFF: float = 1.0
+
