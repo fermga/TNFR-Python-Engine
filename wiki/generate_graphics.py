@@ -113,22 +113,22 @@ def create_structural_operators_diagram():
     axes = axes.flatten()
     
     operators = [
-        ('Emission\n(AL)', '🎵', '#ff6b6b'),
-        ('Reception\n(EN)', '📡', '#4ecdc4'),
-        ('Coherence\n(IL)', '🔒', '#45b7d1'),
+        ('Emission\n(AL)', '♪', '#ff6b6b'),
+        ('Reception\n(EN)', '⟲', '#4ecdc4'),
+        ('Coherence\n(IL)', '◉', '#45b7d1'),
         ('Dissonance\n(OZ)', '⚡', '#f38181'),
-        ('Coupling\n(UM)', '🔗', '#aa96da'),
-        ('Resonance\n(RA)', '🌊', '#5c7cfa'),
-        ('Silence\n(SHA)', '🔇', '#95afc0'),
-        ('Expansion\n(VAL)', '📈', '#38ada9'),
-        ('Contraction\n(NUL)', '📉', '#ee5a6f'),
-        ('Self-org\n(THOL)', '🌱', '#26de81'),
-        ('Mutation\n(ZHIR)', '🧬', '#fd79a8'),
-        ('Transition\n(NAV)', '➡️', '#fdcb6e'),
-        ('Recursivity\n(REMESH)', '🔄', '#6c5ce7'),
+        ('Coupling\n(UM)', '⟷', '#aa96da'),
+        ('Resonance\n(RA)', '≋', '#5c7cfa'),
+        ('Silence\n(SHA)', '○', '#95afc0'),
+        ('Expansion\n(VAL)', '↗', '#38ada9'),
+        ('Contraction\n(NUL)', '↘', '#ee5a6f'),
+        ('Self-org\n(THOL)', '❋', '#26de81'),
+        ('Mutation\n(ZHIR)', '※', '#fd79a8'),
+        ('Transition\n(NAV)', '→', '#fdcb6e'),
+        ('Recursivity\n(REMESH)', '↻', '#6c5ce7'),
     ]
     
-    for idx, (name, emoji, color) in enumerate(operators):
+    for idx, (name, symbol, color) in enumerate(operators):
         ax = axes[idx]
         
         # Create operator box
@@ -140,9 +140,9 @@ def create_structural_operators_diagram():
                                       alpha=0.7)
         ax.add_patch(rect)
         
-        # Add emoji
-        ax.text(0.5, 0.65, emoji, ha='center', va='center',
-               fontsize=32)
+        # Add symbol
+        ax.text(0.5, 0.65, symbol, ha='center', va='center',
+               fontsize=48, fontweight='bold', color='white')
         
         # Add operator name
         ax.text(0.5, 0.35, name, ha='center', va='center',
