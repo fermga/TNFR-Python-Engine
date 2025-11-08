@@ -142,11 +142,11 @@ class TestSHACanonicalSequences:
         assert abs(G.nodes[node][EPI_PRIMARY] - post_il_epi) < 0.05, "EPI preserved"
 
     def test_sha_to_emission_reactivation(self):
-        """Test 7: SHA → NAV → AL (reactivation from silence) - structurally coherent awakening.
+        """Test 7: SHA → AL (direct reactivation from silence) - now valid with C2 clarification.
         
-        TNFR Physics: Cannot jump zero → high (SHA → AL) directly.
-        Must transition through medium frequency: SHA → NAV → AL (zero → medium → high).
-        This respects structural continuity and prevents singularities.
+        TNFR Physics: AL (Emission) operator manages νf transition internally.
+        With R5 removed, SHA → AL is valid - operator encapsulates transition dynamics.
+        This aligns with C2: continuity is maintained WITHIN operators, not between them.
         """
         G, node = create_nfr("sleeping", epi=0.55, vf=1.00)
         
@@ -155,10 +155,10 @@ class TestSHACanonicalSequences:
         assert G.nodes[node][VF_PRIMARY] < 0.1, "Node in silence"
         silent_epi = G.nodes[node][EPI_PRIMARY]
         
-        # Phase 2: Reactivate through medium frequency (NAV) then high (AL)
-        run_sequence(G, node, [Transition(), Emission()])
+        # Phase 2: Direct reactivation (SHA → AL now valid)
+        run_sequence(G, node, [Emission()])
         
-        # Validate coherent reactivation
+        # Validate direct reactivation
         assert G.nodes[node][VF_PRIMARY] > 0.5, "Node reactivated"
         assert G.nodes[node][EPI_PRIMARY] >= silent_epi - 0.15, "EPI maintains structural identity"
 
@@ -307,9 +307,10 @@ class TestSHAFullLifecycle:
     """Test G: Complete lifecycle including SHA."""
 
     def test_sha_full_cycle_activation_silence_reactivation(self):
-        """Test 14: Complete cycle: AL → IL → SHA → NAV → AL.
+        """Test 14: Complete cycle: AL → IL → SHA → AL.
         
-        Simulates: learning → consolidation → memory → recall → use
+        Simulates: learning → consolidation → memory → direct recall
+        With R5 removed, SHA → AL is valid (operator manages transition).
         """
         G, node = create_nfr("lifecycle", epi=0.25, vf=0.90)
         
@@ -323,8 +324,8 @@ class TestSHAFullLifecycle:
         assert G.nodes[node][VF_PRIMARY] < 0.1, "Memory consolidated"
         memory_epi = G.nodes[node][EPI_PRIMARY]
         
-        # Phase 3: Transition and reactivation (recall)
-        run_sequence(G, node, [Transition(), Emission()])
+        # Phase 3: Direct reactivation (recall) - SHA → AL now valid
+        run_sequence(G, node, [Emission()])
         
         # Validate memory preservation and reactivation
         assert abs(G.nodes[node][EPI_PRIMARY] - memory_epi) < 0.2, (

@@ -21,12 +21,12 @@ vacuum or dormant states. Similarly, sequences are temporal segments that
 must end in physically coherent states.
 
 **Structural Dynamics:**
-- **Start (R1)**: Generators create structural patterns from potential
+- **Start**: Generators create structural patterns from potential
   * AL (Emission): Generates EPI from vacuum via emission
   * NAV (Transition): Activates latent EPI through regime shift
   * REMESH (Recursivity): Echoes dormant structure across scales
   
-- **End (R3)**: Four fundamental closure types from physics
+- **End**: Four fundamental closure types from physics
   * SHA (Silence): Terminal closure - freezes evolution (νf → 0)
   * NAV (Transition): Handoff closure - transfers to next regime
   * REMESH (Recursivity): Recursive closure - distributes across scales
@@ -45,40 +45,7 @@ Sequences are "action potentials" in structural space. They must:
 Like physical waves: must have emission source and absorption/reflection end.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-C2: CONTINUITY
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-**Physical Basis:**
-The nodal equation is a differential equation - its solution ∂EPI/∂t must
-be continuous. Discontinuous frequency jumps violate calculus fundamentals
-and create undefined structural states.
-
-**Structural Dynamics (R5):**
-Frequency (νf) represents reorganization rate. Natural transitions:
-- **high → medium**: Dampening (energy dissipation, natural relaxation)
-- **high → zero**: Containment (active freezing via SHA)
-- **medium → high**: Activation (energy injection, stimulation)
-- **zero → medium**: Awakening (gradual activation from dormancy)
-- **FORBIDDEN: zero → high**: Discontinuous jump violates physics
-
-**Why Forbidden?**
-Zero (SHA) means νf = 0 (frozen). Jumping to high (AL, OZ) means sudden
-νf ≫ 0. This is non-physical: ∂νf/∂t → ∞ (infinite acceleration).
-
-Like temperature: you can't jump from 0K to 1000K instantly - violates
-thermodynamics. Must pass through intermediate states.
-
-**Physical Interpretation:**
-Structural frequency behaves like field intensity. Changes propagate through
-continuous paths. Discontinuities would create singularities (infinite ∂²EPI/∂t²),
-causing structural fracture and collapse.
-
-**Harmonic Resonance:**
-Compatible frequencies resonate; incompatible ones interfere destructively.
-Natural paths preserve phase coherence across operator transitions.
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-C3: BOUNDEDNESS
+C2: BOUNDEDNESS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 **Physical Basis:**
@@ -88,7 +55,7 @@ From the integrated nodal equation:
 If the integral diverges (→ ∞), EPI becomes unbounded and system collapses.
 Stabilizers provide negative feedback that ensures integral convergence.
 
-**Structural Dynamics (R2):**
+**Structural Dynamics:**
 Without stabilizers, ΔNFR can grow unbounded through positive feedback:
 - Destabilizers increase |ΔNFR| → higher ∂EPI/∂t → more change
 - More change → more ΔNFR → runaway divergence
@@ -120,7 +87,7 @@ These are the ONLY operators with strong negative-feedback physics:
 Other operators maintain or increase ΔNFR; only these can reliably bound it.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-C4: THRESHOLD PHYSICS
+C3: THRESHOLD PHYSICS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 **Physical Basis:**
@@ -133,19 +100,19 @@ structural bifurcations governed by:
 Without sufficient |ΔNFR|, transformation attempts fail or create unstable
 states. Additionally, transformations from unstable bases amplify chaos.
 
-**Structural Dynamics (R4 + R6):**
+**Structural Dynamics:**
 
 **ZHIR (Mutation) - Two Requirements:**
-1. **Prior IL** (R6): Establishes stable coherent base
+1. **Prior IL**: Establishes stable coherent base
    - Without: Transformation from chaos → amplifies disorder
    - With: Transformation from order → controlled phase change
    
-2. **Recent Destabilizer** (R4): Generates threshold ΔNFR
+2. **Recent Destabilizer**: Generates threshold ΔNFR
    - Without: Insufficient energy for bifurcation (attempt fails)
    - With: System crosses critical point (transformation succeeds)
 
 **THOL (Self-organization) - One Requirement:**
-1. **Recent Destabilizer** (R4): Provides substrate for self-organization
+1. **Recent Destabilizer**: Provides substrate for self-organization
    - Without: No disorder to organize (nothing to structure)
    - With: Sufficient ΔNFR drives spontaneous ordering
 
@@ -188,14 +155,14 @@ Without proper setup: jump fails or lands in unstable region (collapse).
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Legacy Rule Names (for backward compatibility)
-----------------------------------------------
-R1 = C1 (start operators)
-R2 = C3 (stabilizer requirement)  
-R3 = C1 (end operators)
-R4 = C4 (bifurcation context)
-R5 = C2 (frequency continuity)
-R6 = C4 (controlled mutation)
+Summary: Three Fundamental Constraints from TNFR Physics
+---------------------------------------------------------
+**C1: EXISTENCE & CLOSURE** - Valid start/end states (from ∂EPI/∂t = νf · ΔNFR)
+**C2: BOUNDEDNESS** - Stabilizers prevent divergence (from ∫ νf · ΔNFR dt)
+**C3: THRESHOLD PHYSICS** - Bifurcations require context (from bifurcation theory)
+
+These emerge directly from ∂EPI/∂t = νf · ΔNFR(t) and are the ONLY
+hard constraints in TNFR grammar. All other patterns are descriptive.
 
 Physics-Based Operator Derivation
 ----------------------------------
@@ -308,11 +275,8 @@ __all__ = [
     "FUNCTION_TO_GLYPH",
     "GLYPH_TO_FUNCTION",
     "STRUCTURAL_FREQUENCIES",
-    "DUAL_FREQUENCY_OPERATORS",
-    "FREQUENCY_TRANSITIONS",
     "glyph_function_name",
     "function_name_to_glyph",
-    "validate_frequency_transition",
     "REGENERATORS",
     "MIN_CYCLE_LENGTH",
     "MAX_CYCLE_LENGTH",
@@ -707,13 +671,13 @@ class _SequenceAutomaton:
         self._open_thol = False
         self._unknown_tokens: list[tuple[int, str]] = []
         self._found_dissonance = False  # Legacy: Track OZ for backward compatibility
-        self._found_stabilizer = False  # Track IL or THOL for R2
+        self._found_stabilizer = False  # Track IL or THOL for C2 (boundedness)
         self._detected_pattern: StructuralPattern = StructuralPattern.UNKNOWN
         # Legacy: Use deque with maxlen for backward compatibility
         self._bifurcation_context: deque[tuple[str, int]] = deque(
             maxlen=BIFURCATION_WINDOW
         )
-        # R4 Extended: Track destabilizers by intensity level with graduated windows
+        # C3: Track destabilizers by intensity level with graduated windows
         self._destabilizer_context: dict[str, deque[int]] = {
             "strong": deque(maxlen=BIFURCATION_WINDOWS["strong"]),
             "moderate": deque(maxlen=BIFURCATION_WINDOWS["moderate"]),
@@ -741,7 +705,7 @@ class _SequenceAutomaton:
         if canonical not in OPERATORS:
             self._unknown_tokens.append((index, token))
 
-        # R1: Validate start (already implemented)
+        # C1: Validate start (generators required)
         if index == 0:
             if canonical not in VALID_START_OPERATORS:
                 expected = _format_token_group(_CANONICAL_START)
@@ -761,11 +725,11 @@ class _SequenceAutomaton:
         elif self._found_coherence and canonical in INTERMEDIATE_OPERATORS:
             self._seen_intermediate = True
 
-        # R2: Track stabilizers (IL or THOL)
+        # C2: Track stabilizers (IL or THOL) for boundedness
         if canonical in {COHERENCE, SELF_ORGANIZATION}:
             self._found_stabilizer = True
 
-        # R4 Extended: Track destabilizers by intensity level
+        # C3: Track destabilizers by intensity level for bifurcation context
         if canonical in DESTABILIZERS_STRONG:
             self._destabilizer_context["strong"].append(index)
             # Legacy: also populate old context for backward compatibility
@@ -777,7 +741,7 @@ class _SequenceAutomaton:
         elif canonical in DESTABILIZERS_WEAK:
             self._destabilizer_context["weak"].append(index)
 
-        # R4 Extended: Validate transformers (ZHIR/THOL) require recent destabilizer
+        # C3: Validate transformers (ZHIR/THOL) require recent destabilizer
         if canonical in TRANSFORMERS:
             if not self._has_graduated_destabilizer(index):
                 raise SequenceSyntaxError(
@@ -884,7 +848,7 @@ class _SequenceAutomaton:
         if prev not in OPERATORS:
             return
 
-        # SHA-specific validations (R6: Silence operator compatibility)
+        # SHA-specific validations (operator-level compatibility)
         if prev == SILENCE:
             if curr == DISSONANCE:
                 # SHA → OZ: Silence followed by Dissonance is contradictory
@@ -916,17 +880,6 @@ class _SequenceAutomaton:
                     ),
                 )
 
-        # R5: Validate structural frequency transitions using ONLY canonical TNFR physics
-        # Frequency transitions now generate warnings for suboptimal patterns, not errors
-        freq_valid, freq_msg, freq_is_warning = validate_frequency_transition(prev, curr)
-        if freq_is_warning:
-            # Suboptimal frequency transition - warn but allow
-            import warnings
-            warnings.warn(
-                f"{operator_display_name(curr)} after {operator_display_name(prev)}: {freq_msg}",
-                UserWarning,
-                stacklevel=3
-            )
 
     def _has_recent_destabilizer(self, current_index: int) -> bool:
         """Check if a destabilizer exists within the bifurcation window.
@@ -1024,7 +977,7 @@ class _SequenceAutomaton:
 
         Notes
         -----
-        This method implements R4 Extended graduated destabilization:
+        This method implements C3 (Threshold Physics) graduated destabilization:
         - Strong destabilizers (OZ): window of 4 operators
         - Moderate destabilizers (NAV, VAL): window of 2 operators
         - Weak destabilizers (EN): must be immediate predecessor (window of 1)
@@ -1035,9 +988,9 @@ class _SequenceAutomaton:
 
         RECEPTION (EN) Context Validation:
         EN as weak destabilizer requires validation of structural context.
-        According to DUAL_FREQUENCY_OPERATORS, EN has medium base frequency
-        but can generate ΔNFR when capturing external coherence into a prepared
-        node. This validation ensures EN → ZHIR transitions are structurally sound.
+        EN has medium base frequency but can generate ΔNFR when capturing 
+        external coherence into a prepared node. This validation ensures 
+        EN → ZHIR transitions are structurally sound.
         """
         # Check strong destabilizers (longest window = 4)
         if self._destabilizer_context["strong"]:
@@ -1131,9 +1084,9 @@ class _SequenceAutomaton:
             ) from e
 
     def _validate_threshold_physics(self, sequence: Sequence[str]) -> None:
-        """C4: Validate threshold physics - transformations require context.
+        """C3: Validate threshold physics - transformations require context.
         
-        Constraint C4 (Threshold Physics): Bifurcations require crossing
+        Constraint C3 (Threshold Physics): Bifurcations require crossing
         critical thresholds from TNFR dynamical systems physics.
         
         This validates controlled mutation (IL → ZHIR), ensuring phase
@@ -1152,7 +1105,7 @@ class _SequenceAutomaton:
             
         Notes
         -----
-        **C4 Physical Foundation:**
+        **C3 Physical Foundation:**
         
         From bifurcation theory: phase transitions require |ΔNFR| > threshold.
         ZHIR (mutation) is a structural bifurcation that requires:
@@ -1160,7 +1113,7 @@ class _SequenceAutomaton:
         1. **Stable Base** (prior IL): Transformation from chaos amplifies disorder.
            IL provides coherent attractor from which to bifurcate safely.
            
-        2. **Threshold Energy** (recent destabilizer): Validated by R4 in _accept().
+        2. **Threshold Energy** (recent destabilizer): Validated by C3 in _accept().
            Destabilizers generate ΔNFR needed to cross critical point.
         
         **Why This Is Natural, Not Arbitrary:**
@@ -1181,14 +1134,14 @@ class _SequenceAutomaton:
         
         Without proper setup: jump fails or lands in unstable region.
         
-        **What C4 Validates:**
+        **What C3 Validates:**
         
         - ZHIR requires prior IL (controlled mutation)
         - IL must precede ZHIR (stable base before transformation)
         
-        **What C4 Does NOT Validate:**
+        **What C3 Does NOT Validate:**
         
-        - Recent destabilizer for ZHIR (handled by R4 in _accept())
+        - Recent destabilizer for ZHIR (handled by C3 in _accept())
         - Destabilizer/stabilizer balance (context-dependent, not universal)
         - Net ΔNFR state (depends on initial conditions)
         
@@ -1196,18 +1149,18 @@ class _SequenceAutomaton:
         
         THOL (self-organization) also requires recent destabilizer but NOT
         prior IL. THOL creates its own stability through autopoiesis.
-        This is validated by R4 in _accept(), not here.
+        This is validated by C3 in _accept(), not here.
         
         **Legacy Context:**
         
-        This replaces the overly complex R6 "operational closure" validation
-        that attempted to validate balance. Analysis revealed balance is
-        context-dependent and multi-sequence patterns provide systemic closure.
+        This replaces overly complex validation attempts that tried to enforce
+        balance. Analysis revealed balance is context-dependent and multi-sequence 
+        patterns provide systemic closure.
         
-        C4 focuses on the ONE constraint that's truly universal: transformations
+        C3 focuses on the ONE constraint that's truly universal: transformations
         from stable bases with threshold energy.
         """
-        # C4: Controlled mutation validation
+        # C3: Controlled mutation validation
         if MUTATION in sequence:
             # ZHIR requires prior coherence base for stable transformation
             if COHERENCE not in sequence:
@@ -1215,7 +1168,7 @@ class _SequenceAutomaton:
                     index=sequence.index(MUTATION),
                     token=MUTATION,
                     message=(
-                        f"C4: {operator_display_name(MUTATION)} (phase transformation) requires "
+                        f"C3: {operator_display_name(MUTATION)} (phase transformation) requires "
                         f"prior {operator_display_name(COHERENCE)} for stable structural foundation. "
                         f"Controlled mutation: {operator_display_name(COHERENCE)} → {operator_display_name(MUTATION)} "
                         f"ensures transformation occurs from coherent base state (THRESHOLD PHYSICS constraint)."
@@ -1230,7 +1183,7 @@ class _SequenceAutomaton:
                     index=mutation_idx,
                     token=MUTATION,
                     message=(
-                        f"C4: {operator_display_name(MUTATION)} must follow {operator_display_name(COHERENCE)}. "
+                        f"C3: {operator_display_name(MUTATION)} must follow {operator_display_name(COHERENCE)}. "
                         f"Transformation requires coherent base BEFORE bifurcation. "
                         f"Current order: {operator_display_name(MUTATION)} before {operator_display_name(COHERENCE)} (invalid)."
                     ),
@@ -1240,7 +1193,7 @@ class _SequenceAutomaton:
     def _finalize(self, names: Sequence[str]) -> None:
         """Finalize sequence validation through natural TNFR constraints.
         
-        Validates sequences against the four natural constraints that emerge
+        Validates sequences against the three natural constraints that emerge
         from TNFR physics, not arbitrary rules.
         
         Raises
@@ -1262,10 +1215,10 @@ class _SequenceAutomaton:
         # ═══════════════════════════════════════════════════════════════════
         # From ∂EPI/∂t = νf · ΔNFR: EPI must exist (start) and end coherently
         
-        # C1.1: Start validation (legacy R1)
+        # C1.1: Start validation
         # Already validated in _accept() for first operator
         
-        # C1.2: End validation (legacy R3)
+        # C1.2: End validation
         # TNFR Encapsulation: Check last operator NOT inside THOL window
         # Sub-EPIs are independent nodes (operational fractality), so operators
         # inside THOL windows don't count toward main sequence ending.
@@ -1285,11 +1238,11 @@ class _SequenceAutomaton:
                         f"(operational fractality) and don't count as sequence ending.",
             )
 
-        # NOTE: C1.3 Reception→Coherence segment validation removed
-        # This requirement does NOT derive from the 4 physical constraints (C1-C4).
+        # NOTE: Reception→Coherence segment validation removed
+        # This requirement does NOT derive from the 3 physical constraints (C1-C3).
         # It was a heuristic for "structural foundation" but is not canonical.
-        # Sequences are valid if they satisfy C1 (start/end), C2 (continuity),
-        # C3 (stabilizer), and C4 (threshold physics) - nothing more.
+        # Sequences are valid if they satisfy C1 (start/end), C2 (stabilizer), 
+        # and C3 (threshold physics) - nothing more.
         #
         # Removed validation:
         # if not (self._found_reception and self._found_coherence):
@@ -1300,16 +1253,16 @@ class _SequenceAutomaton:
         #     )
 
         # ═══════════════════════════════════════════════════════════════════
-        # C3: BOUNDEDNESS
+        # C2: BOUNDEDNESS
         # ═══════════════════════════════════════════════════════════════════
         # From ∫ νf · ΔNFR dt: Integral must converge (stabilizer required)
         
-        # C3: Stabilizer requirement (legacy R2)
+        # C2: Stabilizer requirement
         if not self._found_stabilizer:
             raise SequenceSyntaxError(
                 index=-1,
                 token=None,
-                message=f"C3: missing stabilizer ({operator_display_name(COHERENCE)} or {operator_display_name(SELF_ORGANIZATION)}) - integral divergence (BOUNDEDNESS constraint)",
+                message=f"C2: missing stabilizer ({operator_display_name(COHERENCE)} or {operator_display_name(SELF_ORGANIZATION)}) - integral divergence (BOUNDEDNESS constraint)",
             )
 
         # Self-organization bifurcation window closure
@@ -1342,22 +1295,22 @@ class _SequenceAutomaton:
             self._open_thol = False
 
         # ═══════════════════════════════════════════════════════════════════
-        # C2: CONTINUITY & C4: THRESHOLD PHYSICS
+        # C3: THRESHOLD PHYSICS
         # ═══════════════════════════════════════════════════════════════════
         # Validated dynamically during sequence building in _accept()
         
         # Detect structural pattern
         self._detected_pattern = self._detect_pattern()
 
-        # C2: Validate regenerative cycles if pattern is REGENERATIVE (legacy R5)
+        # Validate regenerative cycles if pattern is REGENERATIVE
         if self._detected_pattern == StructuralPattern.REGENERATIVE:
             self._validate_regenerative_cycle()
         
-        # C4: Validate threshold physics - controlled mutation (legacy R6)
+        # C3: Validate threshold physics - controlled mutation
         self._validate_threshold_physics(self._canonical)
 
     def _validate_regenerative_cycle(self) -> None:
-        """Validate regenerative cycle structural requirements (C2 - CONTINUITY).
+        """Validate regenerative cycle structural requirements.
 
         Uses CycleDetector to ensure the sequence meets minimum standards
         for self-sustaining regenerative behavior. Regenerative cycles are
@@ -1502,7 +1455,7 @@ class TransitionCompatibilityError(StructuralGrammarError):
 
 
 class MutationWithoutDissonanceError(StructuralGrammarError):
-    """ZHIR applied without OZ precedent (R4 violation)."""
+    """ZHIR applied without OZ precedent (C3 - Threshold Physics violation)."""
 
 
 class IncompatibleSequenceError(StructuralGrammarError):
@@ -1514,7 +1467,7 @@ class IncompleteEncapsulationError(StructuralGrammarError):
 
 
 class MissingStabilizerError(StructuralGrammarError):
-    """Sequence missing required stabilizer (IL or THOL) - R2 violation."""
+    """Sequence missing required stabilizer (IL or THOL) - C2 BOUNDEDNESS violation."""
 
 
 class StructuralPattern(Enum):
@@ -1578,143 +1531,54 @@ class StructuralPattern(Enum):
     UNKNOWN = "unknown"  # Unclassified
 
 
-# Structural frequency matrix (νf): Hz_str categories per operator
-# R5: HARMONIC_FREQUENCIES validation (now active)
-# Maps each operator to its structural frequency level following TNFR canonical theory.
-# - high: Operators that initiate, amplify, concentrate, or pivot structure
-# - medium: Operators that capture, stabilize, couple, or organize
-# - zero: Operators that suspend reorganization while preserving form
+# ==============================================================================
+# Structural Frequency Classification (Descriptive Metric)
+# ==============================================================================
+# These classifications describe the characteristic reorganization intensity
+# of each operator based on TNFR physics. This is NOT a validation constraint
+# but a descriptive metric useful for analysis, visualization, and understanding.
+#
+# Physical Basis (from ∂EPI/∂t = νf · ΔNFR):
+# Operators don't directly modify νf - they modify the structural state (EPI, ΔNFR).
+# The frequency classification describes the INTENSITY of reorganization the operator
+# induces, which manifests through changes in ΔNFR magnitude and structural dynamics.
+#
+# - HIGH: Operators that strongly increase |ΔNFR| → intense reorganization
+#   Examples: Generating structure (AL), injecting tension (OZ), amplifying (RA)
+#
+# - MEDIUM: Operators that moderately affect ΔNFR → gradual reorganization
+#   Examples: Capturing (EN), stabilizing (IL), coupling (UM), transitioning (NAV)
+#
+# - ZERO: Operators that freeze reorganization (νf → 0) → no structural change
+#   Examples: Silence (SHA) - EPI preserved, evolution paused
+#
+# Note: These do NOT constrain sequence validity. All operator transitions are
+# valid per TNFR physics (only C1-C3 constraints apply). Frequencies are purely
+# descriptive for understanding operator characteristics.
+
 STRUCTURAL_FREQUENCIES: dict[str, str] = {
-    EMISSION: "high",  # AL: initiation/reorganization
-    RECEPTION: "medium",  # EN: structural capture (base frequency)
-    COHERENCE: "medium",  # IL: stabilization
-    DISSONANCE: "high",  # OZ: tension
-    COUPLING: "medium",  # UM: coupling
-    RESONANCE: "high",  # RA: amplification
-    SILENCE: "zero",  # SHA: pause (suspended)
-    EXPANSION: "medium",  # VAL: volumetric exploration
-    CONTRACTION: "high",  # NUL: concentration
-    SELF_ORGANIZATION: "medium",  # THOL: autonomous cascades
-    MUTATION: "high",  # ZHIR: threshold pivot
-    TRANSITION: "medium",  # NAV: controlled hand-off
-    RECURSIVITY: "medium",  # REMESH: fractal echo
-}
-
-# Dual-role operators: operators with context-dependent destabilization capacity
-# Resolves the structural inconsistency between base frequency (νf) and ΔNFR generation.
-#
-# RECEPTION (EN) is the canonical dual-role operator:
-# - Base frequency: "medium" (νf for structural capture)
-# - Destabilization capacity: "weak" (can generate ΔNFR when integrating external coherence)
-# - Condition: Requires prior coherence base for effective destabilization
-#
-# Theoretical foundation (nodal equation):
-#   ∂EPI/∂t = νf · ΔNFR
-# 
-# RECEPTION has medium νf (moderate reorganization rate) but can act as weak 
-# destabilizer in graduated bifurcation (R4) when capturing external coherence 
-# into a node with existing structural base. The external input can generate 
-# sufficient ΔNFR to enable transformers (ZHIR/THOL) despite medium base frequency.
-#
-# Context requirement: EN → ZHIR valid only when EN operates on coherent base
-# (e.g., AL → EN → IL → EN → ZHIR). Direct EN → ZHIR without context violates
-# structural coherence as medium νf alone cannot sustain high ΔNFR for mutation.
-DUAL_FREQUENCY_OPERATORS: dict[str, dict[str, str]] = {
-    RECEPTION: {
-        "base_freq": "medium",
-        "destabilization_capacity": "weak",
-        "conditions": "requires_prior_coherence",
-        "rationale": (
-            "Captures external coherence which can generate ΔNFR when "
-            "integrated into structurally prepared node"
-        ),
-    }
-}
-
-# Frequency compatibility: operators with harmonic frequencies can transition
-# Valid transitions preserve structural coherence:
-# - high ↔ medium: High energy can stabilize or stabilized can amplify
-# - high → zero: High energy can pause (containment, closure) - SHA as terminator
-# - medium ↔ zero: Stabilized can pause or resume from pause
-# - high ↔ high: High energy can chain directly
-# - zero → medium: Gradual reactivation from silence (structurally coherent)
-# 
-# Invalid: zero → high (violates structural continuity - cannot jump from pause
-# to high energy without intermediate stabilization)
-FREQUENCY_TRANSITIONS: dict[str, set[str]] = {
-    "high": {"high", "medium", "zero"},  # Allow high → zero for SHA termination (OZ → SHA valid)
-    "medium": {"high", "medium", "zero"},
-    "zero": {"medium"},  # Must transition through medium before high (structural coherence)
+    # HIGH: Intense reorganization (strongly affects |ΔNFR|)
+    EMISSION: "high",           # AL: Activates from latency, initiates strong resonance
+    DISSONANCE: "high",         # OZ: Injects controlled tension, increases |ΔNFR| significantly  
+    RESONANCE: "high",          # RA: Amplifies patterns, propagates high-intensity changes
+    CONTRACTION: "high",        # NUL: Concentrates structure rapidly, high ΔNFR gradient
+    MUTATION: "high",           # ZHIR: Phase transition, abrupt structural reorganization
+    
+    # MEDIUM: Moderate reorganization (gradual ΔNFR evolution)
+    RECEPTION: "medium",        # EN: Captures external coherence, moderate integration
+    COHERENCE: "medium",        # IL: Reduces |ΔNFR| gradually, stabilizes progressively
+    COUPLING: "medium",         # UM: Synchronizes phase, moderate coordination dynamics
+    TRANSITION: "medium",       # NAV: Controlled regime shift, managed reorganization
+    EXPANSION: "medium",        # VAL: Explores structure space, gradual dilation
+    SELF_ORGANIZATION: "medium",# THOL: Emergent ordering, progressive self-structuring
+    RECURSIVITY: "medium",      # REMESH: Fractal echo, distributed reorganization
+    
+    # ZERO: Paused reorganization (νf → 0, EPI frozen)
+    SILENCE: "zero",            # SHA: Suspends evolution, preserves structure
 }
 
 
-def validate_frequency_transition(
-    prev_operator: str, next_operator: str
-) -> tuple[bool, str, bool]:
-    """Validate structural frequency transition between consecutive operators (R5 rule).
-
-    Parameters
-    ----------
-    prev_operator : str
-        Previous operator in canonical form (e.g., "emission", "coherence").
-    next_operator : str
-        Next operator in canonical form (e.g., "dissonance", "resonance").
-
-    Returns
-    -------
-    tuple[bool, str, bool]
-        (is_valid, message, is_warning) where:
-        - is_valid: Always True (transitions now allowed but may warn)
-        - message: Context about the transition quality
-        - is_warning: True if transition is suboptimal (should warn)
-
-    Notes
-    -----
-    Structural frequency transitions are now treated as **heuristic guidance**
-    rather than hard constraints. The high/medium/zero classification describes
-    operator characteristics but doesn't impose physical impossibility.
-
-    Frequency tiers:
-    - High ↔ Medium: Natural, smooth energy exchange
-    - High → Zero: Natural containment (e.g., OZ → SHA)
-    - Medium ↔ Zero: Natural stabilization/reactivation
-    - High ↔ High: Natural high-energy chaining
-    - **Suboptimal**: Zero → High (abrupt reactivation)
-
-    Zero → High transitions (e.g., SHA → AL) are **physically possible** per
-    ∂EPI/∂t = νf · ΔNFR - the operator can modify νf. However, they may be
-    structurally abrupt. A warning suggests considering an intermediate step
-    (e.g., SHA → NAV → AL) for smoother transitions.
-
-    This aligns frequency validation with the 4 fundamental TNFR constraints
-    (C1-C4) which emerge directly from physics, while treating frequency tiers
-    as descriptive metrics for code quality.
-    """
-    # Get frequency levels for both operators
-    prev_freq = STRUCTURAL_FREQUENCIES.get(prev_operator)
-    next_freq = STRUCTURAL_FREQUENCIES.get(next_operator)
-
-    # If either operator is unknown, skip validation (compatibility handles this)
-    if prev_freq is None or next_freq is None:
-        return True, "", False
-
-    # Check if transition is in the "smooth" set
-    allowed_targets = FREQUENCY_TRANSITIONS.get(prev_freq, set())
-    if next_freq not in allowed_targets:
-        # Transition is suboptimal but not forbidden
-        prev_display = operator_display_name(prev_operator)
-        next_display = operator_display_name(next_operator)
-        warning_msg = (
-            f"Abrupt frequency transition: {prev_display} ({prev_freq}) → {next_display} ({next_freq}). "
-            f"Consider intermediate operator for smoother transition. "
-            f"Recommended from {prev_freq}: {', '.join(sorted(allowed_targets))}"
-        )
-        return True, warning_msg, True  # Valid but with warning
-
-    return True, "", False  # Smooth transition
-
-
-# R5: Regenerative cycle constants and types (from cycle_detection module)
+# Regenerative cycle constants and types (from cycle_detection module)
 from .cycle_detection import (
     REGENERATORS,
     MIN_CYCLE_LENGTH,
@@ -1727,8 +1591,8 @@ from .cycle_detection import (
 # Canonical Coherence Sequences
 # ==============================================================================
 # These sequences encode fundamental TNFR structural patterns involving the
-# Coherence operator. Each sequence has been validated against grammar
-# rules (R1-R5) and compatibility constraints.
+# Coherence operator. Each sequence has been validated against the 3 fundamental
+# constraints (C1-C3) and compatibility requirements.
 
 CANONICAL_IL_SEQUENCES: dict[str, dict[str, Any]] = {
     "EMISSION_COHERENCE": {
