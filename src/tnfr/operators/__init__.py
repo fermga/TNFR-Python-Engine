@@ -545,12 +545,53 @@ def _um_select_candidates(
     return reservoir
 
 
+def compute_consensus_phase(phases: list[float]) -> float:
+    """Compute circular mean (consensus phase) from a list of phase angles.
+
+    This function calculates the consensus phase using the circular mean
+    formula: arctan2(mean(sin), mean(cos)). This ensures proper handling
+    of phase wrapping at ±π boundaries.
+
+    Parameters
+    ----------
+    phases : list[float]
+        List of phase angles in radians.
+
+    Returns
+    -------
+    float
+        Consensus phase angle in radians, in the range [-π, π).
+
+    Notes
+    -----
+    The consensus phase represents the central tendency of a set of angular
+    values, accounting for the circular nature of phase space. This is
+    critical for bidirectional phase synchronization in the UM operator.
+
+    Examples
+    --------
+    >>> import math
+    >>> phases = [0.0, math.pi/2, math.pi]
+    >>> result = compute_consensus_phase(phases)
+    >>> -math.pi <= result < math.pi
+    True
+    """
+    if not phases:
+        return 0.0
+
+    cos_sum = sum(math.cos(ph) for ph in phases)
+    sin_sum = sum(math.sin(ph) for ph in phases)
+    return math.atan2(sin_sum, cos_sum)
+
+
 def _op_UM(node: NodeProtocol, gf: GlyphFactors) -> None:  # UM — Coupling
     """Align node phase with neighbours and optionally create links.
 
     Coupling shifts the node phase ``theta`` towards the neighbour mean while
-    respecting νf and EPI. When functional links are enabled it may add edges
-    based on combined phase, EPI, and sense-index similarity.
+    respecting νf and EPI. When bidirectional mode is enabled (default), both
+    the node and its neighbors synchronize their phases mutually. When
+    functional links are enabled it may add edges based on combined phase,
+    EPI, and sense-index similarity.
 
     Parameters
     ----------
@@ -558,6 +599,16 @@ def _op_UM(node: NodeProtocol, gf: GlyphFactors) -> None:  # UM — Coupling
         Node whose phase is being synchronised.
     gf : GlyphFactors
         Provides ``UM_theta_push`` and optional selection parameters.
+
+    Notes
+    -----
+    Bidirectional synchronization (UM_BIDIRECTIONAL=True, default) implements
+    the canonical TNFR requirement φᵢ(t) ≈ φⱼ(t) by mutually adjusting phases
+    of both the node and its neighbors towards a consensus phase. This ensures
+    true coupling as defined in the theory.
+
+    Legacy unidirectional mode (UM_BIDIRECTIONAL=False) only adjusts the node's
+    phase towards its neighbors, preserving backward compatibility.
 
     Examples
     --------
@@ -586,10 +637,42 @@ def _op_UM(node: NodeProtocol, gf: GlyphFactors) -> None:  # UM — Coupling
     0.79
     """
     k = get_factor(gf, "UM_theta_push", 0.25)
-    th = node.theta
-    thL = neighbor_phase_mean(node)
-    d = angle_diff(thL, th)
-    node.theta = th + k * d
+    th_i = node.theta
+
+    # Check if bidirectional synchronization is enabled (default: True)
+    bidirectional = bool(node.graph.get("UM_BIDIRECTIONAL", True))
+
+    if bidirectional:
+        # Bidirectional mode: mutually synchronize node and neighbors
+        neighbor_ids = list(node.neighbors())
+        if neighbor_ids:
+            # Get NodeNX wrapper for accessing neighbor attributes
+            NodeNX = get_nodenx()
+            if NodeNX is None or not hasattr(node, "G"):
+                # Fallback to unidirectional if NodeNX unavailable
+                thL = neighbor_phase_mean(node)
+                d = angle_diff(thL, th_i)
+                node.theta = th_i + k * d
+            else:
+                # Wrap neighbor IDs to access theta attribute
+                neighbors = [NodeNX.from_graph(node.G, nid) for nid in neighbor_ids]
+                
+                # Collect all phases (node + neighbors)
+                phases = [th_i] + [n.theta for n in neighbors]
+                target_phase = compute_consensus_phase(phases)
+
+                # Adjust node phase towards consensus
+                node.theta = th_i + k * angle_diff(target_phase, th_i)
+
+                # Adjust neighbor phases towards consensus
+                for neighbor in neighbors:
+                    th_j = neighbor.theta
+                    neighbor.theta = th_j + k * angle_diff(target_phase, th_j)
+    else:
+        # Legacy unidirectional mode: only adjust node towards neighbors
+        thL = neighbor_phase_mean(node)
+        d = angle_diff(thL, th_i)
+        node.theta = th_i + k * d
 
     if bool(node.graph.get("UM_FUNCTIONAL_LINKS", False)):
         thr = float(
@@ -604,12 +687,12 @@ def _op_UM(node: NodeProtocol, gf: GlyphFactors) -> None:  # UM — Coupling
         limit = int(node.graph.get("UM_CANDIDATE_COUNT", 0))
         mode = str(node.graph.get("UM_CANDIDATE_MODE", "sample")).lower()
         candidates = _um_select_candidates(
-            node, _um_candidate_iter(node), limit, mode, th
+            node, _um_candidate_iter(node), limit, mode, th_i
         )
 
         for j in candidates:
             th_j = j.theta
-            dphi = abs(angle_diff(th_j, th)) / math.pi
+            dphi = abs(angle_diff(th_j, th_i)) / math.pi
             epi_j = j.EPI
             si_j = j.Si
             epi_sim = 1.0 - abs(epi_i - epi_j) / (abs(epi_i) + abs(epi_j) + 1e-9)

@@ -340,6 +340,9 @@ def test_um_coupling_wraps_phases_near_pi_boundary(graph_canon):
         G.add_node(idx, theta=theta, EPI=1.0, Si=0.5)
         G.add_edge(0, idx)
 
+    # Test unidirectional mode for backward compatibility
+    G.graph["UM_BIDIRECTIONAL"] = False
+
     theta_before = G.nodes[0]["theta"]
     mean_cos = sum(math.cos(th) for th in neighbor_thetas) / len(neighbor_thetas)
     mean_sin = sum(math.sin(th) for th in neighbor_thetas) / len(neighbor_thetas)
