@@ -793,35 +793,45 @@ class _SequenceAutomaton:
         if canonical == DISSONANCE:
             self._found_dissonance = True
 
-        # Track THOL state with recursive support
+        # Track THOL state: Use balanced nesting to allow SILENCE/CONTRACTION inside THOL
+        # TNFR Physical Principle: THOL applies as operator, bifurcates if d2_epi > tau
+        # Empty THOL valid (no bifurcation), non-empty must be grammatically coherent
+        # Closure: First SILENCE/CONTRACTION at nesting depth 0 closes THOL
         if canonical == SELF_ORGANIZATION:
             # THOL opening: push to stack and initialize subsequence
             self._thol_stack.append(index)
             self._thol_subsequences[index] = []
             self._open_thol = True
-        elif self._open_thol and canonical in SELF_ORGANIZATION_CLOSURES:
-            # THOL closure: validate subsequence recursively
-            if not self._thol_stack:
-                raise SequenceSyntaxError(
-                    index=index,
-                    token=token,
-                    message=f"{operator_display_name(canonical)} closure without corresponding {operator_display_name(SELF_ORGANIZATION)} opening"
-                )
-            
-            thol_start = self._thol_stack.pop()
-            thol_subseq = self._thol_subsequences[thol_start]
-            
-            # Validate THOL subsequence recursively
-            self._validate_thol_subsequence(thol_subseq, thol_start, index, token)
-            
-            # Update _open_thol based on stack state (supports nested THOL)
-            self._open_thol = bool(self._thol_stack)
         elif self._open_thol and self._thol_stack:
-            # Track operators within THOL block (excluding nested THOL openings)
-            # Nested THOL openings are handled separately, closures are part of inner subsequence
-            if canonical != SELF_ORGANIZATION:
-                current_thol = self._thol_stack[-1]
-                self._thol_subsequences[current_thol].append(canonical)
+            current_thol = self._thol_stack[-1]
+            
+            # Check if this operator closes THOL BEFORE adding to subsequence
+            # This allows SILENCE/CONTRACTION inside THOL as sequence operators
+            if canonical in SELF_ORGANIZATION_CLOSURES:
+                # Count nested THOL blocks to determine nesting depth
+                subseq = self._thol_subsequences[current_thol]
+                nested_thol_count = 0
+                for op in subseq:
+                    if op == SELF_ORGANIZATION:
+                        nested_thol_count += 1
+                    elif op in SELF_ORGANIZATION_CLOSURES:
+                        nested_thol_count -= 1
+                
+                # Close THOL if we're at depth 0 (no unclosed nested THOL)
+                if nested_thol_count == 0:
+                    thol_start = self._thol_stack.pop()
+                    final_subseq = self._thol_subsequences[thol_start]
+                    
+                    # Validate THOL subsequence
+                    # Empty THOL valid (no bifurcation), non-empty must be coherent
+                    self._validate_thol_subsequence(final_subseq, thol_start, index, token)
+                    
+                    # Update _open_thol based on stack state (supports nested THOL)
+                    self._open_thol = bool(self._thol_stack)
+                    return  # Don't add closure operator to subsequence
+            
+            # Add operator to current THOL subsequence
+            self._thol_subsequences[current_thol].append(canonical)
 
         # Validate sequential compatibility if not first token
         # Only validate if both prev and current are known operators
@@ -1037,10 +1047,11 @@ class _SequenceAutomaton:
     ) -> None:
         """Validate recursively the subsequence within THOL block.
         
-        TNFR Fractal Principle: THOL (self-organization) is a fractal operator
-        that encapsulates autonomous reorganization. The subsequence must:
-        1. Be non-empty (THOL without content is meaningless)
-        2. Respect all grammar rules R1-R6 (recursive coherence)
+        TNFR Physical Principle: THOL (self-organization) always applies as operator,
+        but only generates sub-EPIs (and thus subsequence) if ∂²EPI/∂t² > τ.
+        
+        Empty THOL is physically valid - represents THOL application without bifurcation.
+        Non-empty subsequence represents sub-EPIs and must respect grammar rules (C1-C4).
         
         Parameters
         ----------
@@ -1056,7 +1067,7 @@ class _SequenceAutomaton:
         Raises
         ------
         SequenceSyntaxError
-            If subsequence is empty or invalid
+            If subsequence is invalid (when non-empty)
             
         Notes
         -----
@@ -1064,25 +1075,17 @@ class _SequenceAutomaton:
         "Los NFRs pueden anidarse jerárquicamente: un nodo puede contener
         nodos internos coherentes, dando lugar a una estructura fractal."
         
-        This validation ensures THOL maintains operational fractality:
-        structures are coherent at all scales.
+        From operator implementation: THOL bifurcates only if d2_epi > tau.
+        This means THOL can appear without generating sub-EPIs (empty subsequence).
         
-        Autonomy is implicit: if the subsequence passes all grammar rules,
-        it is by definition autonomous (can function independently).
+        When bifurcation occurs (non-empty subsequence), structures must be
+        coherent at all scales - operational fractality is maintained.
         """
-        # Validation 1: Non-empty subsequence
+        # Empty THOL is valid: THOL applied but no bifurcation occurred
         if not subsequence:
-            raise SequenceSyntaxError(
-                index=end_index,
-                token=end_token,
-                message=(
-                    f"{operator_display_name(SELF_ORGANIZATION)} block is empty "
-                    f"(opened at position {start_index}). Subsequence must contain "
-                    f"at least one operator for autonomous reorganization."
-                )
-            )
+            return
         
-        # Validation 2: Recursive grammar validation
+        # Recursive grammar validation for non-empty subsequences
         # Create new automaton to validate subsequence independently
         try:
             nested_automaton = _SequenceAutomaton()
