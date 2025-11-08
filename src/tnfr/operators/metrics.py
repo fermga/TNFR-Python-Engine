@@ -990,6 +990,8 @@ def self_organization_metrics(
     dict
         Self-organization-specific metrics including cascade indicators
     """
+    from .cascade import detect_cascade, measure_cascade_radius
+
     epi_after = _get_node_attr(G, node, ALIAS_EPI)
     vf_after = _get_node_attr(G, node, ALIAS_VF)
     d2epi = _get_node_attr(G, node, ALIAS_D2EPI)
@@ -997,6 +999,15 @@ def self_organization_metrics(
 
     # Track nested EPI count if graph maintains it
     nested_epi_count = len(G.graph.get("sub_epi", []))
+
+    # NEW: Network propagation and cascade metrics
+    cascade_analysis = detect_cascade(G)
+    cascade_radius = (
+        measure_cascade_radius(G, node) if cascade_analysis["is_cascade"] else 0
+    )
+
+    propagations = G.graph.get("thol_propagations", [])
+    propagated = len(propagations) > 0
 
     return {
         "operator": "Self-organization",
@@ -1009,6 +1020,12 @@ def self_organization_metrics(
         "dnfr_final": dnfr,
         "nested_epi_count": nested_epi_count,
         "cascade_active": abs(d2epi) > 0.1,  # Configurable threshold
+        # NEW: Network emergence metrics
+        "propagated": propagated,
+        "cascade_detected": cascade_analysis["is_cascade"],
+        "cascade_radius": cascade_radius,
+        "affected_node_count": len(cascade_analysis["affected_nodes"]),
+        "total_propagations": cascade_analysis["total_propagations"],
     }
 
 

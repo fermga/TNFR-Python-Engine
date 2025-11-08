@@ -2632,6 +2632,23 @@ class SelfOrganization(Operator):
         new_epi = parent_epi + sub_epi_value * _THOL_EMERGENCE_CONTRIBUTION
         set_attr(G.nodes[node], ALIAS_EPI, new_epi)
 
+        # CANONICAL PROPAGATION: Enable network cascade dynamics
+        if G.graph.get("THOL_PROPAGATION_ENABLED", True):
+            from .metabolism import propagate_subepi_to_network
+
+            propagations = propagate_subepi_to_network(G, node, sub_epi_record)
+
+            # Record propagation telemetry for cascade analysis
+            if propagations:
+                G.graph.setdefault("thol_propagations", []).append(
+                    {
+                        "source_node": node,
+                        "sub_epi": sub_epi_value,
+                        "propagations": propagations,
+                        "timestamp": timestamp,
+                    }
+                )
+
     def _validate_preconditions(self, G: TNFRGraph, node: Any) -> None:
         """Validate THOL-specific preconditions."""
         from .preconditions import validate_self_organization
