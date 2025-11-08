@@ -171,18 +171,17 @@ class TestR5CompatibilityRules:
             )
 
         error = excinfo.value
-        assert "incompatible" in error.message.lower()
+        # Check that error message explains the physical incompatibility
+        assert "invalid after silence" in error.message.lower() or "contradicts" in error.message.lower()
 
-    def test_incompatible_expansion_direct_to_contraction(self):
-        """VAL → NUL without stabilization is incompatible."""
-        # VAL (expansion) is not in the allowed list for direct transition to NUL
-        with pytest.raises(SequenceSyntaxError) as excinfo:
-            parse_sequence(
-                [EMISSION, RECEPTION, COHERENCE, EXPANSION, CONTRACTION, SILENCE]
-            )
-
-        error = excinfo.value
-        assert "incompatible" in error.message.lower()
+    def test_expansion_to_contraction_valid_with_medium_to_high(self):
+        """VAL → NUL is valid (medium → high frequency transition)."""
+        # EXPANSION has medium freq, CONTRACTION has high freq
+        # medium → high is a valid transition in TNFR physics
+        result = validate_sequence(
+            [EMISSION, RECEPTION, COHERENCE, EXPANSION, CONTRACTION, SILENCE]
+        )
+        assert result.passed, f"Expected valid but got: {result.message}"
 
 
 class TestValidCanonicalSequences:
