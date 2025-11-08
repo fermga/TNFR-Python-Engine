@@ -39,9 +39,9 @@ Similarity Components
 Matrix elements :math:`w_{ij}` are computed from four structural similarity components:
 
 .. math::
-    w_{ij} = w_{\text{phase}} \cdot s_{\text{phase}}(i,j) 
+    w_{ij} = w_{\text{phase}} \cdot s_{\text{phase}}(i,j)
            + w_{\text{EPI}} \cdot s_{\text{EPI}}(i,j)
-           + w_{\nu_f} \cdot s_{\nu_f}(i,j) 
+           + w_{\nu_f} \cdot s_{\nu_f}(i,j)
            + w_{\text{Si}} \cdot s_{\text{Si}}(i,j)
 
 where:
@@ -282,64 +282,64 @@ def compute_wij_phase_epi_vf_si(
     np: ModuleType | None = None,
 ) -> SimilarityComponents | VectorizedComponents:
     r"""Compute structural similarity components for coherence matrix elements.
-    
+
     Returns four similarity components :math:`(s_{\text{phase}}, s_{\text{EPI}}, s_{\nu_f}, s_{\text{Si}})`
     that approximate coherence operator matrix elements :math:`w_{ij} \approx \langle i | \hat{C} | j \rangle`.
-    
+
     Mathematical Foundation
     -----------------------
-    
+
     Each similarity component measures structural resemblance between nodes :math:`i` and :math:`j`
     in a specific dimension:
-    
+
     **Phase similarity** (synchronization):
-    
+
     .. math::
         s_{\text{phase}}(i,j) = \frac{1}{2}\left(1 + \cos(\theta_i - \theta_j)\right)
-    
+
     Range: [0, 1] where 1 = perfect synchrony, 0 = anti-phase.
-    
+
     **EPI similarity** (structural form):
-    
+
     .. math::
         s_{\text{EPI}}(i,j) = 1 - \frac{|\text{EPI}_i - \text{EPI}_j|}{\Delta_{\text{EPI}}}
-    
+
     Range: [0, 1] where 1 = identical structure, 0 = maximally different.
-    
+
     **Frequency similarity** (reorganization rate):
-    
+
     .. math::
         s_{\nu_f}(i,j) = 1 - \frac{|\nu_{f,i} - \nu_{f,j}|}{\Delta_{\nu_f}}
-    
+
     Range: [0, 1] where 1 = matching frequencies.
-    
+
     **Si similarity** (stability):
-    
+
     .. math::
         s_{\text{Si}}(i,j) = 1 - |\text{Si}_i - \text{Si}_j|
-    
+
     Range: [0, 1] where 1 = equal reorganization stability.
-    
+
     These components are combined via weighted sum to obtain :math:`w_{ij}`:
-    
+
     .. math::
-        w_{ij} = w_{\text{phase}} \cdot s_{\text{phase}} + w_{\text{EPI}} \cdot s_{\text{EPI}} 
+        w_{ij} = w_{\text{phase}} \cdot s_{\text{phase}} + w_{\text{EPI}} \cdot s_{\text{EPI}}
                + w_{\nu_f} \cdot s_{\nu_f} + w_{\text{Si}} \cdot s_{\text{Si}}
-    
+
     where :math:`w_{ij} \approx \langle i | \hat{C} | j \rangle` (coherence operator matrix element).
-    
+
     Parameters
     ----------
     inputs : SimilarityInputs
         Container with structural data:
-        
+
         - `th_vals` : Sequence[float] - Phase values :math:`\theta` in radians
         - `epi_vals` : Sequence[float] - EPI values
         - `vf_vals` : Sequence[float] - Structural frequencies :math:`\nu_f` in Hz_str
         - `si_vals` : Sequence[float] - Sense Index values
         - `cos_vals` : Sequence[float] | None - Precomputed :math:`\cos\theta` (optional cache)
         - `sin_vals` : Sequence[float] | None - Precomputed :math:`\sin\theta` (optional cache)
-        
+
     i : int | None, optional
         Index of first node for pairwise computation. If None, vectorized mode is used.
     j : int | None, optional
@@ -351,7 +351,7 @@ def compute_wij_phase_epi_vf_si(
     nodes : Sequence[NodeId] | None, optional
         Node identifiers corresponding to indices in `inputs` arrays.
     epi_range : float, default=1.0
-        Normalization range :math:`\Delta_{\text{EPI}}` for EPI similarity. 
+        Normalization range :math:`\Delta_{\text{EPI}}` for EPI similarity.
         Should be :math:`\text{EPI}_{\max} - \text{EPI}_{\min}`.
     vf_range : float, default=1.0
         Normalization range :math:`\Delta_{\nu_f}` for frequency similarity.
@@ -359,55 +359,55 @@ def compute_wij_phase_epi_vf_si(
     np : ModuleType | None, optional
         NumPy-like module (numpy, jax.numpy, torch) for vectorized computation.
         If provided with `i=None, j=None`, returns vectorized arrays for all pairs.
-    
+
     Returns
     -------
     SimilarityComponents or VectorizedComponents
         **Pairwise mode** (i and j provided):
             tuple of (s_phase, s_epi, s_vf, s_si) : tuple[float, float, float, float]
             Normalized similarity scores :math:`\in [0,1]` for the pair (i, j).
-        
+
         **Vectorized mode** (i=None, j=None, np provided):
             tuple of (S_phase, S_epi, S_vf, S_si) : tuple[FloatMatrix, FloatMatrix, FloatMatrix, FloatMatrix]
             Matrices of shape (N, N) containing all pairwise similarities.
-    
+
     Raises
     ------
     ValueError
         If pairwise mode is requested (i or j provided) but both are not specified.
-    
+
     See Also
     --------
     coherence_matrix : Constructs full :math:`W \approx \hat{C}` matrix
     compute_coherence : Computes :math:`C(t) = \text{Tr}(\hat{C}\rho)`
     _combine_similarity : Weighted combination of similarity components
-    
+
     Notes
     -----
-    
+
     **Performance**:
-    
+
     - Vectorized mode (with `np`) is ~10-100x faster for large networks
     - Trigonometric caching avoids redundant cos/sin evaluations
     - Use `get_trig_cache(G)` to populate cache before repeated calls
-    
+
     **Normalization**:
-    
+
     - `epi_range` and `vf_range` should reflect actual network ranges for proper scaling
     - If ranges are 0, defaults to 1.0 to avoid division by zero
     - Si similarity uses absolute difference (already bounded to [0,1])
-    
+
     References
     ----------
     .. [1] Mathematical Foundations, §3.1.1 - Implementation Bridge
     .. [2] docs/source/theory/mathematical_foundations.md#311-implementation-bridge-theory-to-code
     .. [3] docs/source/examples/worked_examples.md - Example 2: Coherence Matrix Elements
-    
+
     Examples
     --------
-    
+
     **Pairwise computation**:
-    
+
     >>> from tnfr.metrics.coherence import compute_wij_phase_epi_vf_si, SimilarityInputs
     >>> inputs = SimilarityInputs(
     ...     th_vals=[0.0, 0.1],
@@ -422,9 +422,9 @@ def compute_wij_phase_epi_vf_si(
     True
     >>> 0.8 < s_epi < 1.0    # Similar EPI values
     True
-    
+
     **Vectorized computation**:
-    
+
     >>> import numpy as np
     >>> S_phase, S_epi, S_vf, S_si = compute_wij_phase_epi_vf_si(
     ...     inputs, epi_range=1.0, vf_range=1.0, np=np
@@ -433,9 +433,9 @@ def compute_wij_phase_epi_vf_si(
     (2, 2)
     >>> np.allclose(S_phase[0, 1], S_phase[1, 0])  # Symmetric
     True
-    
+
     **With graph and caching**:
-    
+
     >>> import networkx as nx
     >>> from tnfr.metrics.trig_cache import get_trig_cache
     >>> G = nx.Graph()
@@ -1037,7 +1037,7 @@ def coherence_matrix(
 
     Mathematical Foundation:
         Ĉ ≈ Σᵢⱼ wᵢⱼ |i⟩⟨j|
-    
+
     Matrix W satisfies Hermiticity (W=W^T), element bounds (wᵢⱼ ∈ [0,1]),
     and provides spectrum σ(Ĉ) via eigenvalues.
 
@@ -1059,7 +1059,7 @@ def coherence_matrix(
 
     See Also
     --------
-    compute_coherence : Computes C(t) = Tr(Ĉρ)  
+    compute_coherence : Computes C(t) = Tr(Ĉρ)
     Mathematical Foundations §3.1: Theory + Implementation Bridge
 
     Examples
@@ -1814,53 +1814,53 @@ def _aggregate_si(
 
 def compute_global_coherence(G: TNFRGraph) -> float:
     """Compute global coherence C(t) for entire network.
-    
+
     C(t) = 1 - (σ_ΔNFR / ΔNFR_max)
-    
+
     This is the canonical TNFR coherence metric that measures global structural
     stability through the dispersion of reorganization pressure (ΔNFR) across
     the network.
-    
+
     Parameters
     ----------
     G : TNFRGraph
         Network graph with nodes containing ΔNFR attributes
-    
+
     Returns
     -------
     float
         Global coherence value in [0, 1] where:
         - 1.0 = perfect coherence (no reorganization pressure variance)
         - 0.0 = maximum incoherence (extreme ΔNFR dispersion)
-    
+
     Notes
     -----
     **Mathematical Foundation:**
-    
+
     Global coherence quantifies the network's structural stability by measuring
     how uniformly reorganization pressure is distributed across nodes:
-    
+
     - **σ_ΔNFR**: Standard deviation of ΔNFR values measures dispersion
     - **ΔNFR_max**: Maximum ΔNFR provides normalization scale
     - **C(t)**: Higher values indicate more uniform structural state
-    
+
     **Special Cases:**
-    
+
     - Empty network: Returns 1.0 (perfect coherence by definition)
     - All ΔNFR = 0: Returns 1.0 (no reorganization pressure)
     - ΔNFR_max = 0: Returns 1.0 (degenerate case, no pressure)
-    
+
     **TNFR Context:**
-    
+
     C(t) is the primary metric for measuring IL (Coherence) operator
     effectiveness. When IL is applied, C(t) should increase as ΔNFR
     becomes more uniformly distributed (ideally all approaching zero).
-    
+
     See Also
     --------
     compute_local_coherence : Local coherence for node neighborhoods
     compute_coherence : Alternative coherence metric (legacy)
-    
+
     Examples
     --------
     >>> import networkx as nx
@@ -1876,14 +1876,11 @@ def compute_global_coherence(G: TNFRGraph) -> float:
     True
     """
     # Collect all ΔNFR values
-    dnfr_values = [
-        float(get_attr(G.nodes[n], ALIAS_DNFR, 0.0))
-        for n in G.nodes()
-    ]
-    
+    dnfr_values = [float(get_attr(G.nodes[n], ALIAS_DNFR, 0.0)) for n in G.nodes()]
+
     if not dnfr_values or all(v == 0 for v in dnfr_values):
         return 1.0  # Perfect coherence when no reorganization pressure
-    
+
     np = get_numpy()
     if np is not None:
         dnfr_array = np.array(dnfr_values)
@@ -1893,14 +1890,14 @@ def compute_global_coherence(G: TNFRGraph) -> float:
         # Pure Python fallback
         mean_dnfr = sum(dnfr_values) / len(dnfr_values)
         variance = sum((v - mean_dnfr) ** 2 for v in dnfr_values) / len(dnfr_values)
-        sigma_dnfr = variance ** 0.5
+        sigma_dnfr = variance**0.5
         dnfr_max = max(dnfr_values)
-    
+
     if dnfr_max == 0:
         return 1.0
-    
+
     C_t = 1.0 - (sigma_dnfr / dnfr_max)
-    
+
     # Clamp to [0, 1] to handle numerical edge cases
     if np is not None:
         return float(np.clip(C_t, 0.0, 1.0))
@@ -1909,13 +1906,13 @@ def compute_global_coherence(G: TNFRGraph) -> float:
 
 def compute_local_coherence(G: TNFRGraph, node: Any, radius: int = 1) -> float:
     """Compute local coherence for node and its neighborhood.
-    
+
     Local coherence applies the same C(t) formula to a neighborhood subgraph:
     C_local(t) = 1 - (σ_ΔNFR_local / ΔNFR_max_local)
-    
+
     This measures structural stability within a node's local vicinity, useful
     for identifying coherence gradients and structural weak points in networks.
-    
+
     Parameters
     ----------
     G : TNFRGraph
@@ -1927,39 +1924,39 @@ def compute_local_coherence(G: TNFRGraph, node: Any, radius: int = 1) -> float:
         - 1 = immediate neighbors (default)
         - 2 = neighbors + neighbors-of-neighbors
         - etc.
-    
+
     Returns
     -------
     float
         Local coherence value in [0, 1] where:
         - 1.0 = perfect local coherence
         - 0.0 = maximum local incoherence
-    
+
     Notes
     -----
     **Use Cases:**
-    
+
     - **Hotspot Detection**: Identify regions of structural instability
     - **IL Targeting**: Prioritize nodes needing coherence stabilization
     - **Network Health**: Monitor local vs. global coherence balance
     - **Bifurcation Risk**: Low local C(t) may predict structural splits
-    
+
     **Radius Selection:**
-    
+
     - **radius=1**: Fast, captures immediate structural environment
     - **radius=2**: Better for mesoscale patterns, slower
     - **radius>2**: Approaches global coherence, expensive
-    
+
     **Special Cases:**
-    
+
     - Isolated node (no neighbors): Returns 1.0
     - All neighborhood ΔNFR = 0: Returns 1.0
     - Single-node neighborhood: Returns 1.0 (no variance)
-    
+
     See Also
     --------
     compute_global_coherence : Global network coherence
-    
+
     Examples
     --------
     >>> import networkx as nx
@@ -1974,22 +1971,21 @@ def compute_local_coherence(G: TNFRGraph, node: Any, radius: int = 1) -> float:
     True
     """
     import networkx as nx
-    
+
     # Get neighborhood
     if radius == 1:
         neighbors = set(G.neighbors(node)) | {node}
     else:
-        neighbors = set(nx.single_source_shortest_path_length(G, node, cutoff=radius).keys())
-    
+        neighbors = set(
+            nx.single_source_shortest_path_length(G, node, cutoff=radius).keys()
+        )
+
     # Collect ΔNFR for neighborhood
-    dnfr_values = [
-        float(get_attr(G.nodes[n], ALIAS_DNFR, 0.0))
-        for n in neighbors
-    ]
-    
+    dnfr_values = [float(get_attr(G.nodes[n], ALIAS_DNFR, 0.0)) for n in neighbors]
+
     if not dnfr_values or all(v == 0 for v in dnfr_values):
         return 1.0
-    
+
     np = get_numpy()
     if np is not None:
         dnfr_array = np.array(dnfr_values)
@@ -1999,14 +1995,14 @@ def compute_local_coherence(G: TNFRGraph, node: Any, radius: int = 1) -> float:
         # Pure Python fallback
         mean_dnfr = sum(dnfr_values) / len(dnfr_values)
         variance = sum((v - mean_dnfr) ** 2 for v in dnfr_values) / len(dnfr_values)
-        sigma_dnfr = variance ** 0.5
+        sigma_dnfr = variance**0.5
         dnfr_max = max(dnfr_values)
-    
+
     if dnfr_max == 0:
         return 1.0
-    
+
     C_local = 1.0 - (sigma_dnfr / dnfr_max)
-    
+
     # Clamp to [0, 1]
     if np is not None:
         return float(np.clip(C_local, 0.0, 1.0))

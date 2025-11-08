@@ -65,9 +65,7 @@ def compute_structural_complexity(G: TNFRGraph, node: NodeId) -> int:
     return len(sub_epis)
 
 
-def compute_bifurcation_rate(
-    G: TNFRGraph, node: NodeId, window: int = 10
-) -> float:
+def compute_bifurcation_rate(G: TNFRGraph, node: NodeId, window: int = 10) -> float:
     """Calculate frequency of bifurcations in recent history.
 
     Bifurcation rate indicates how actively the node is generating new
@@ -176,9 +174,7 @@ def compute_metabolic_efficiency(G: TNFRGraph, node: NodeId) -> float:
 
     # Count T'HOL applications
     glyph_history = G.nodes[node].get("glyph_history", [])
-    thol_count = sum(
-        1 for g in glyph_history if g == "THOL" or g == Glyph.THOL.value
-    )
+    thol_count = sum(1 for g in glyph_history if g == "THOL" or g == Glyph.THOL.value)
 
     if thol_count == 0:
         return 0.0

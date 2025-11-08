@@ -89,7 +89,7 @@ def recent_glyph(nd: MutableMapping[str, Any], glyph: str, window: int) -> bool:
     accidentally truncating the glyph_history deque when checking with a
     smaller window than the deque's maxlen. This preserves the canonical
     principle that reading history should not modify it.
-    
+
     Reuses ``validate_window`` and ``ensure_collection`` utilities.
     """
     from tnfr.validation.window import validate_window
@@ -104,13 +104,13 @@ def recent_glyph(nd: MutableMapping[str, Any], glyph: str, window: int) -> bool:
         return False
 
     gl = str(glyph)
-    
+
     # Use canonical ensure_collection to materialize history
     try:
         items = list(ensure_collection(hist, max_materialize=None))
     except (TypeError, ValueError):
         return False
-    
+
     # Check only the last v_window items
     recent_items = items[-v_window:] if len(items) > v_window else items
     return gl in recent_items

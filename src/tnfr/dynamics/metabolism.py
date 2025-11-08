@@ -140,7 +140,9 @@ class StructuralMetabolism:
             # High stress: dissonance + deep reorganization
             # Apply operators individually to avoid grammar restrictions
             Dissonance()(self.G, self.node)  # Introduce controlled instability
-            SelfOrganization()(self.G, self.node, tau=0.08)  # Deep reorganization (likely bifurcates)
+            SelfOrganization()(
+                self.G, self.node, tau=0.08
+            )  # Deep reorganization (likely bifurcates)
             Coherence()(self.G, self.node)  # Stabilize new configuration
         else:
             # Moderate stress: gentle reorganization

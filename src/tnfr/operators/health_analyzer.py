@@ -90,7 +90,7 @@ class SequenceHealthAnalyzer:
 
     Evaluates sequences along multiple dimensions to provide quantitative
     assessment of structural quality, coherence, and sustainability.
-    
+
     Uses caching to optimize repeated analysis of identical sequences,
     which is common in pattern exploration and batch validation workflows.
 
@@ -117,15 +117,15 @@ class SequenceHealthAnalyzer:
         self, sequence_tuple: Tuple[str, ...]
     ) -> Tuple[int, int, int, int, int, List[Tuple[str, str]]]:
         """Compute sequence statistics in a single pass for efficiency.
-        
+
         This method scans the sequence once and extracts all the information
         needed for the various health metrics, avoiding redundant iterations.
-        
+
         Parameters
         ----------
         sequence_tuple : Tuple[str, ...]
             Immutable sequence of operators (tuple for hashability in cache).
-            
+
         Returns
         -------
         Tuple containing:
@@ -135,7 +135,7 @@ class SequenceHealthAnalyzer:
             - regenerator_count: int
             - unique_ops: int
             - problematic_transitions: List[(op1, op2)] pairs
-        
+
         Notes
         -----
         This function is cached using lru_cache to optimize repeated analysis
@@ -143,7 +143,7 @@ class SequenceHealthAnalyzer:
         pattern exploration workflows.
         """
         sequence = list(sequence_tuple)
-        
+
         # Initialize counters
         stabilizer_count = 0
         destabilizer_count = 0
@@ -151,11 +151,11 @@ class SequenceHealthAnalyzer:
         regenerator_count = 0
         unique_ops_set = set()
         problematic_transitions = []
-        
+
         # Single pass through sequence
         for i, op in enumerate(sequence):
             unique_ops_set.add(op)
-            
+
             # Count operator categories
             if op in _STABILIZERS:
                 stabilizer_count += 1
@@ -165,14 +165,14 @@ class SequenceHealthAnalyzer:
                 transformer_count += 1
             if op in _REGENERATORS:
                 regenerator_count += 1
-            
+
             # Check transitions
             if i < len(sequence) - 1:
                 next_op = sequence[i + 1]
                 # Destabilizer → destabilizer is problematic
                 if op in DESTABILIZERS and next_op in DESTABILIZERS:
                     problematic_transitions.append((op, next_op))
-        
+
         return (
             stabilizer_count,
             destabilizer_count,
@@ -203,11 +203,11 @@ class SequenceHealthAnalyzer:
         True
         """
         self._recommendations = []
-        
+
         # Use single-pass analysis for efficiency (cached)
         sequence_tuple = tuple(sequence)
         analysis = self._analysis_cache(sequence_tuple)
-        
+
         # Extract results from single-pass analysis
         (
             stabilizer_count,
@@ -235,13 +235,13 @@ class SequenceHealthAnalyzer:
         # Calculate overall health as weighted average
         # Primary metrics weighted more heavily
         overall = (
-            coherence * 0.20 +
-            balance * 0.20 +
-            sustainability * 0.20 +
-            efficiency * 0.15 +
-            frequency * 0.10 +
-            completeness * 0.10 +
-            smoothness * 0.05
+            coherence * 0.20
+            + balance * 0.20
+            + sustainability * 0.20
+            + efficiency * 0.15
+            + frequency * 0.10
+            + completeness * 0.10
+            + smoothness * 0.05
         )
 
         pattern = self._detect_pattern(sequence)
@@ -437,8 +437,10 @@ class SequenceHealthAnalyzer:
             return 0.0
 
         # Assess structural value using pre-computed unique count
-        diversity_score = min(1.0, unique_count / 6.0)  # 6+ operators is excellent diversity
-        
+        diversity_score = min(
+            1.0, unique_count / 6.0
+        )  # 6+ operators is excellent diversity
+
         # Note: We still need to call _assess_pattern_value for category coverage
         # This is minimal overhead as it's a single pass checking set memberships
         pattern_value = self._assess_pattern_value_optimized(sequence, unique_count)
@@ -519,7 +521,9 @@ class SequenceHealthAnalyzer:
         has_stabilization = stabilizer_count > 0
         has_completion = any(op in {"silence", "transition"} for op in sequence)
 
-        phase_count = sum([has_activation, has_transformation, has_stabilization, has_completion])
+        phase_count = sum(
+            [has_activation, has_transformation, has_stabilization, has_completion]
+        )
 
         # All 4 phases = 1.0, 3 phases = 0.75, 2 phases = 0.5, 1 phase = 0.25
         return phase_count / 4.0
@@ -625,7 +629,7 @@ class SequenceHealthAnalyzer:
         for i, op in enumerate(sequence):
             if op in DESTABILIZERS:
                 # Check if a stabilizer appears in the next 'window' operators
-                lookahead = sequence[i + 1:i + 1 + window]
+                lookahead = sequence[i + 1 : i + 1 + window]
                 if not any(stabilizer in _STABILIZERS for stabilizer in lookahead):
                     unresolved += 1
 
@@ -657,7 +661,9 @@ class SequenceHealthAnalyzer:
             return 0.0
 
         # Diversity: use pre-computed unique count
-        diversity_score = min(1.0, unique_count / 6.0)  # 6+ operators is excellent diversity
+        diversity_score = min(
+            1.0, unique_count / 6.0
+        )  # 6+ operators is excellent diversity
 
         # Coverage: how many operator categories are represented
         # This is still a minimal single-pass check

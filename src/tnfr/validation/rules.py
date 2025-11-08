@@ -60,7 +60,7 @@ def coerce_glyph(val: Any) -> Glyph | Any:
 
 def glyph_fallback(cand_key: str, fallbacks: Mapping[str, Any]) -> Glyph | str:
     """Determine fallback glyph for ``cand_key``.
-    
+
     Note: Compatibility table fallbacks have been deprecated.
     Only explicit fallback overrides are now supported.
     Grammar rules emerge naturally from TNFR structural dynamics.
@@ -70,7 +70,7 @@ def glyph_fallback(cand_key: str, fallbacks: Mapping[str, Any]) -> Glyph | str:
     fb_override = fallbacks.get(cand_key)
     if fb_override is not None:
         return coerce_glyph(fb_override)
-    
+
     # No automatic fallback - let frequency validation handle compatibility
     return coerce_glyph(cand_key)
 
@@ -228,13 +228,13 @@ def _check_thol_closure(
 
 def _check_compatibility(ctx: "GrammarContext", n, cand: Glyph | str) -> Glyph | str:
     """Verify canonical transition compatibility based on TNFR structural dynamics.
-    
+
     Note: Frequency-based validation (R5) has been removed as it was not a
     fundamental physical constraint. Only C1-C3 constraints remain:
     - C1: EXISTENCE & CLOSURE (valid start/end)
     - C2: BOUNDEDNESS (stabilizers required)
     - C3: THRESHOLD PHYSICS (bifurcations need context)
-    
+
     These are validated in grammar.py, not here. This function now simply
     allows all transitions - validation happens at sequence level.
     """
@@ -247,6 +247,7 @@ def _functional_translators():
     from ..operators import grammar as _grammar
 
     return _grammar.glyph_function_name, _grammar.function_name_to_glyph
+
 
 # NOTE: Compatibility tables deprecated - grammar rules now emerge naturally
 # from TNFR structural dynamics (frequency transitions only)

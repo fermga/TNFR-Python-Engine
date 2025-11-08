@@ -291,11 +291,11 @@ def get_attr(
     conv: Callable[[Any], T] = _bepi_to_float,
 ) -> T | None:
     """Return the value for the first key in ``aliases`` found in ``d``.
-    
+
     WARNING: This function searches for keys in alias order. If you manually
     wrote to a non-canonical key (e.g., 'vf' instead of 'νf'), this function
     will NOT find it and will return the default value instead.
-    
+
     For structural frequency: ALWAYS use set_vf() to write, not d['vf'] = value.
     See module docstring for detailed guidance on canonical attribute access.
     """
@@ -400,13 +400,13 @@ def set_attr_generic(
     conv: Callable[[Any], T],
 ) -> T:
     """Assign ``value`` to the FIRST (canonical) alias key in ``aliases``.
-    
+
     CRITICAL: This function writes to the FIRST key in the alias tuple.
     For ALIAS_VF = ('νf', 'nu_f', ...), this writes to 'νf' (Greek nu), NOT 'vf'.
-    
+
     If you later try to read with G.nodes[n]['vf'], you will NOT find the value.
     ALWAYS use get_attr() to read what set_attr() wrote.
-    
+
     For high-level usage, prefer set_vf(), set_theta(), etc. which handle this correctly.
     See module docstring for detailed guidance on canonical attribute access.
     """

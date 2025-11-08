@@ -146,6 +146,7 @@ Examples:
     # Handle interactive mode
     if args.interactive:
         from .interactive_validator import run_interactive_validator
+
         return run_interactive_validator(seed=args.seed)
 
     # Require graph_file for non-interactive mode

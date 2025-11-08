@@ -15,10 +15,10 @@ Examples
 --------
 >>> from tnfr.visualization import SequenceVisualizer
 >>> from tnfr.operators.grammar import validate_sequence_with_health
->>> 
+>>>
 >>> sequence = ["emission", "reception", "coherence", "silence"]
 >>> result = validate_sequence_with_health(sequence)
->>> 
+>>>
 >>> visualizer = SequenceVisualizer()
 >>> fig, ax = visualizer.plot_sequence_flow(sequence, result.health_metrics)
 >>> fig.savefig("sequence_flow.png")
@@ -38,7 +38,7 @@ try:
         plot_cascade_timeline,
         plot_cascade_metrics_summary,
     )
-    
+
     __all__ = [
         "SequenceVisualizer",
         "plot_cascade_propagation",
@@ -55,7 +55,7 @@ except ImportError as _import_err:
             import matplotlib  # noqa: F401
         except ImportError:
             missing_deps.append("matplotlib")
-        
+
         if missing_deps:
             deps_str = " and ".join(missing_deps)
             raise ImportError(
@@ -72,7 +72,7 @@ except ImportError as _import_err:
     plot_cascade_propagation = _missing_viz_dependency  # type: ignore[assignment]
     plot_cascade_timeline = _missing_viz_dependency  # type: ignore[assignment]
     plot_cascade_metrics_summary = _missing_viz_dependency  # type: ignore[assignment]
-    
+
     __all__ = [
         "SequenceVisualizer",
         "plot_cascade_propagation",

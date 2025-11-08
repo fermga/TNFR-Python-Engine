@@ -25,7 +25,7 @@ must end in physically coherent states.
   * AL (Emission): Generates EPI from vacuum via emission
   * NAV (Transition): Activates latent EPI through regime shift
   * REMESH (Recursivity): Echoes dormant structure across scales
-  
+
 - **End**: Four fundamental closure types from physics
   * SHA (Silence): Terminal closure - freezes evolution (νf → 0)
   * NAV (Transition): Handoff closure - transfers to next regime
@@ -106,7 +106,7 @@ states. Additionally, transformations from unstable bases amplify chaos.
 1. **Prior IL**: Establishes stable coherent base
    - Without: Transformation from chaos → amplifies disorder
    - With: Transformation from order → controlled phase change
-   
+
 2. **Recent Destabilizer**: Generates threshold ΔNFR
    - Without: Insufficient energy for bifurcation (attempt fails)
    - With: System crosses critical point (transformation succeeds)
@@ -186,7 +186,6 @@ References
 TNFR.pdf: Section 2.1 (Nodal Equation)
 AGENTS.md: Section 3 (Canonical Invariants)
 """
-
 
 from __future__ import annotations
 
@@ -685,7 +684,9 @@ class _SequenceAutomaton:
         }
         # THOL recursive validation: Track nested THOL blocks and their subsequences
         self._thol_stack: list[int] = []  # Stack of THOL opening indices
-        self._thol_subsequences: dict[int, list[str]] = {}  # Subsequences by opening index
+        self._thol_subsequences: dict[int, list[str]] = (
+            {}
+        )  # Subsequences by opening index
         self._thol_encapsulated_indices: set[int] = set()  # Indices inside THOL windows
 
     def run(self, names: Sequence[str]) -> None:
@@ -760,7 +761,7 @@ class _SequenceAutomaton:
             self._found_dissonance = True
 
         # Track THOL state: Bifurcation window with automatic validation-based closure
-        # 
+        #
         # TNFR Bifurcation Window Principle: THOL window closes when internal sequence is valid
         # - THOL opens bifurcation window
         # - Window accumulates operators
@@ -780,10 +781,10 @@ class _SequenceAutomaton:
         elif self._open_thol and self._thol_stack:
             current_thol = self._thol_stack[-1]
             window_content = self._thol_subsequences[current_thol]
-            
+
             # Mark this operator as encapsulated in THOL window
             self._thol_encapsulated_indices.add(index)
-            
+
             # Check if this is the first operator in window
             if len(window_content) == 0:
                 # First operator after THOL opening
@@ -799,10 +800,10 @@ class _SequenceAutomaton:
                     # Don't add to window - process normally in parent context
                     # (will be processed by subsequent validation logic)
                     return
-            
+
             # Add operator to bifurcation window
             self._thol_subsequences[current_thol].append(canonical)
-            
+
             # Check if window is complete (sequence ends with valid end operator)
             # Try to close if last operator is a valid sequence end
             if canonical in VALID_END_OPERATORS and len(window_content) > 0:
@@ -811,11 +812,11 @@ class _SequenceAutomaton:
                     # Create temporary automaton to test if window is valid
                     test_automaton = _SequenceAutomaton()
                     test_automaton.run(self._thol_subsequences[current_thol])
-                    
+
                     # Validation succeeded - window is complete, close THOL
                     self._thol_stack.pop()
                     self._open_thol = bool(self._thol_stack)
-                    
+
                 except SequenceSyntaxError:
                     # Window not yet complete/valid - continue accumulating
                     pass
@@ -834,11 +835,11 @@ class _SequenceAutomaton:
 
         Uses frequency transition validation from TNFR structural dynamics.
         Grammar rules emerge naturally from canonical mechanisms.
-        
+
         Frequency transitions are validated:
         - Valid transitions: Pass silently
         - Invalid transitions: Raise SequenceSyntaxError
-        
+
         SHA (Silence) specific validations:
         - SHA → OZ: Prohibited (silence followed by dissonance contradicts preservation)
         - SHA → SHA: Prohibited (redundant silence without structural purpose)
@@ -879,7 +880,6 @@ class _SequenceAutomaton:
                         f"Remove duplicate or insert transition operator."
                     ),
                 )
-
 
     def _has_recent_destabilizer(self, current_index: int) -> bool:
         """Check if a destabilizer exists within the bifurcation window.
@@ -988,8 +988,8 @@ class _SequenceAutomaton:
 
         RECEPTION (EN) Context Validation:
         EN as weak destabilizer requires validation of structural context.
-        EN has medium base frequency but can generate ΔNFR when capturing 
-        external coherence into a prepared node. This validation ensures 
+        EN has medium base frequency but can generate ΔNFR when capturing
+        external coherence into a prepared node. This validation ensures
         EN → ZHIR transitions are structurally sound.
         """
         # Check strong destabilizers (longest window = 4)
@@ -1017,27 +1017,23 @@ class _SequenceAutomaton:
         return False
 
     def _validate_thol_subsequence(
-        self,
-        subsequence: list[str],
-        start_index: int,
-        end_index: int,
-        end_token: str
+        self, subsequence: list[str], start_index: int, end_index: int, end_token: str
     ) -> None:
         """Validate bifurcation window content within THOL block.
-        
+
         TNFR Bifurcation Window Principle: THOL requires explicit window that
         contains bifurcation sequences. Window must be verified before proceeding.
-        
+
         Empty window is valid (THOL applied without bifurcation: ∂²EPI/∂t² ≤ τ).
         Non-empty window must contain grammatically coherent sequence(s).
-        
+
         Window semantics (from @fermga's structural time insight):
         - Window opened by THOL, closed by CONTRACTION
         - Content represents bifurcation space
         - If bifurcation occurs: sequences written in window
         - If no bifurcation: window remains empty
         - Only after window validation, sequence proceeds to next operator
-        
+
         Parameters
         ----------
         subsequence : list[str]
@@ -1048,25 +1044,25 @@ class _SequenceAutomaton:
             Index of window closure in parent sequence
         end_token : str
             Token used for closure (CONTRACTION)
-            
+
         Raises
         ------
         SequenceSyntaxError
             If window content is invalid (when non-empty)
-            
+
         Notes
         -----
         From TNFR Manual §3.2.2 (Ontología fractal resonante):
         "Los NFRs pueden anidarse jerárquicamente: un nodo puede contener
         nodos internos coherentes, dando lugar a una estructura fractal."
-        
+
         Bifurcation window enables operational fractality while maintaining
         explicit structural boundaries.
         """
         # Empty window is valid: THOL applied without bifurcation
         if not subsequence:
             return
-        
+
         # Recursive grammar validation for non-empty bifurcation window
         # Create new automaton to validate window content independently
         try:
@@ -1080,83 +1076,83 @@ class _SequenceAutomaton:
                 message=(
                     f"Invalid subsequence within {operator_display_name(SELF_ORGANIZATION)} "
                     f"block (opened at position {start_index}): {e.message}"
-                )
+                ),
             ) from e
 
     def _validate_threshold_physics(self, sequence: Sequence[str]) -> None:
         """C3: Validate threshold physics - transformations require context.
-        
+
         Constraint C3 (Threshold Physics): Bifurcations require crossing
         critical thresholds from TNFR dynamical systems physics.
-        
+
         This validates controlled mutation (IL → ZHIR), ensuring phase
         transformations occur from stable coherent bases with sufficient
         ΔNFR to cross bifurcation thresholds.
-        
+
         Parameters
         ----------
         sequence : Sequence[str]
             Operator sequence in canonical form
-            
+
         Raises
         ------
         SequenceSyntaxError
             If sequence violates threshold physics requirements
-            
+
         Notes
         -----
         **C3 Physical Foundation:**
-        
+
         From bifurcation theory: phase transitions require |ΔNFR| > threshold.
         ZHIR (mutation) is a structural bifurcation that requires:
-        
+
         1. **Stable Base** (prior IL): Transformation from chaos amplifies disorder.
            IL provides coherent attractor from which to bifurcate safely.
-           
+
         2. **Threshold Energy** (recent destabilizer): Validated by C3 in _accept().
            Destabilizers generate ΔNFR needed to cross critical point.
-        
+
         **Why This Is Natural, Not Arbitrary:**
-        
+
         Like phase transitions in physics (water → ice):
         - Need below-freezing temperature (ΔNFR threshold from destabilizer)
         - Need nucleation site (stable base from IL)
         - Without both: transition fails or creates metastable states
-        
+
         **Mathematical Basis:**
-        
+
         Catastrophe theory: smooth parameter changes cause discontinuous
         behavioral changes at bifurcation points. ZHIR navigates this:
-        
+
         1. IL creates stable manifold (valley in energy landscape)
         2. Destabilizer adds kinetic energy (pushes toward saddle point)
         3. ZHIR executes jump to adjacent valley (phase transformation)
-        
+
         Without proper setup: jump fails or lands in unstable region.
-        
+
         **What C3 Validates:**
-        
+
         - ZHIR requires prior IL (controlled mutation)
         - IL must precede ZHIR (stable base before transformation)
-        
+
         **What C3 Does NOT Validate:**
-        
+
         - Recent destabilizer for ZHIR (handled by C3 in _accept())
         - Destabilizer/stabilizer balance (context-dependent, not universal)
         - Net ΔNFR state (depends on initial conditions)
-        
+
         **THOL Validation:**
-        
+
         THOL (self-organization) also requires recent destabilizer but NOT
         prior IL. THOL creates its own stability through autopoiesis.
         This is validated by C3 in _accept(), not here.
-        
+
         **Legacy Context:**
-        
+
         This replaces overly complex validation attempts that tried to enforce
-        balance. Analysis revealed balance is context-dependent and multi-sequence 
+        balance. Analysis revealed balance is context-dependent and multi-sequence
         patterns provide systemic closure.
-        
+
         C3 focuses on the ONE constraint that's truly universal: transformations
         from stable bases with threshold energy.
         """
@@ -1174,7 +1170,7 @@ class _SequenceAutomaton:
                         f"ensures transformation occurs from coherent base state (THRESHOLD PHYSICS constraint)."
                     ),
                 )
-            
+
             # If IL present, verify it comes before ZHIR
             coherence_idx = sequence.index(COHERENCE)
             mutation_idx = sequence.index(MUTATION)
@@ -1192,10 +1188,10 @@ class _SequenceAutomaton:
 
     def _finalize(self, names: Sequence[str]) -> None:
         """Finalize sequence validation through natural TNFR constraints.
-        
+
         Validates sequences against the three natural constraints that emerge
         from TNFR physics, not arbitrary rules.
-        
+
         Raises
         ------
         SequenceSyntaxError
@@ -1214,10 +1210,10 @@ class _SequenceAutomaton:
         # C1: EXISTENCE & CLOSURE
         # ═══════════════════════════════════════════════════════════════════
         # From ∂EPI/∂t = νf · ΔNFR: EPI must exist (start) and end coherently
-        
+
         # C1.1: Start validation
         # Already validated in _accept() for first operator
-        
+
         # C1.2: End validation
         # TNFR Encapsulation: Check last operator NOT inside THOL window
         # Sub-EPIs are independent nodes (operational fractality), so operators
@@ -1227,21 +1223,21 @@ class _SequenceAutomaton:
             if i not in self._thol_encapsulated_indices:
                 last_non_encapsulated_index = i
                 break
-        
+
         if self._canonical[last_non_encapsulated_index] not in VALID_END_OPERATORS:
             cierre = _format_token_group(_CANONICAL_END)
             raise SequenceSyntaxError(
                 index=last_non_encapsulated_index,
                 token=names[last_non_encapsulated_index],
                 message=f"C1: sequence must end with {cierre} (EXISTENCE & CLOSURE constraint). "
-                        f"Operators inside {operator_display_name(SELF_ORGANIZATION)} windows are encapsulated "
-                        f"(operational fractality) and don't count as sequence ending.",
+                f"Operators inside {operator_display_name(SELF_ORGANIZATION)} windows are encapsulated "
+                f"(operational fractality) and don't count as sequence ending.",
             )
 
         # NOTE: Reception→Coherence segment validation removed
         # This requirement does NOT derive from the 3 physical constraints (C1-C3).
         # It was a heuristic for "structural foundation" but is not canonical.
-        # Sequences are valid if they satisfy C1 (start/end), C2 (stabilizer), 
+        # Sequences are valid if they satisfy C1 (start/end), C2 (stabilizer),
         # and C3 (threshold physics) - nothing more.
         #
         # Removed validation:
@@ -1256,7 +1252,7 @@ class _SequenceAutomaton:
         # C2: BOUNDEDNESS
         # ═══════════════════════════════════════════════════════════════════
         # From ∫ νf · ΔNFR dt: Integral must converge (stabilizer required)
-        
+
         # C2: Stabilizer requirement
         if not self._found_stabilizer:
             raise SequenceSyntaxError(
@@ -1273,11 +1269,11 @@ class _SequenceAutomaton:
             while self._thol_stack:
                 thol_start = self._thol_stack.pop()
                 window_content = self._thol_subsequences[thol_start]
-                
+
                 # Empty window is valid (THOL without bifurcation)
                 if len(window_content) == 0:
                     continue  # Valid empty window
-                
+
                 # Non-empty window: validate as complete sequence
                 # If window was not auto-closed during parsing, check if valid at sequence end
                 try:
@@ -1289,23 +1285,23 @@ class _SequenceAutomaton:
                     raise SequenceSyntaxError(
                         index=len(names) - 1,
                         token=names[-1] if names else "",
-                        message=f"Invalid {operator_display_name(SELF_ORGANIZATION)} bifurcation window (opened at position {thol_start}): {e.message}"
+                        message=f"Invalid {operator_display_name(SELF_ORGANIZATION)} bifurcation window (opened at position {thol_start}): {e.message}",
                     ) from e
-            
+
             self._open_thol = False
 
         # ═══════════════════════════════════════════════════════════════════
         # C3: THRESHOLD PHYSICS
         # ═══════════════════════════════════════════════════════════════════
         # Validated dynamically during sequence building in _accept()
-        
+
         # Detect structural pattern
         self._detected_pattern = self._detect_pattern()
 
         # Validate regenerative cycles if pattern is REGENERATIVE
         if self._detected_pattern == StructuralPattern.REGENERATIVE:
             self._validate_regenerative_cycle()
-        
+
         # C3: Validate threshold physics - controlled mutation
         self._validate_threshold_physics(self._canonical)
 
@@ -1558,23 +1554,21 @@ class StructuralPattern(Enum):
 
 STRUCTURAL_FREQUENCIES: dict[str, str] = {
     # HIGH: Intense reorganization (strongly affects |ΔNFR|)
-    EMISSION: "high",           # AL: Activates from latency, initiates strong resonance
-    DISSONANCE: "high",         # OZ: Injects controlled tension, increases |ΔNFR| significantly  
-    RESONANCE: "high",          # RA: Amplifies patterns, propagates high-intensity changes
-    CONTRACTION: "high",        # NUL: Concentrates structure rapidly, high ΔNFR gradient
-    MUTATION: "high",           # ZHIR: Phase transition, abrupt structural reorganization
-    
+    EMISSION: "high",  # AL: Activates from latency, initiates strong resonance
+    DISSONANCE: "high",  # OZ: Injects controlled tension, increases |ΔNFR| significantly
+    RESONANCE: "high",  # RA: Amplifies patterns, propagates high-intensity changes
+    CONTRACTION: "high",  # NUL: Concentrates structure rapidly, high ΔNFR gradient
+    MUTATION: "high",  # ZHIR: Phase transition, abrupt structural reorganization
     # MEDIUM: Moderate reorganization (gradual ΔNFR evolution)
-    RECEPTION: "medium",        # EN: Captures external coherence, moderate integration
-    COHERENCE: "medium",        # IL: Reduces |ΔNFR| gradually, stabilizes progressively
-    COUPLING: "medium",         # UM: Synchronizes phase, moderate coordination dynamics
-    TRANSITION: "medium",       # NAV: Controlled regime shift, managed reorganization
-    EXPANSION: "medium",        # VAL: Explores structure space, gradual dilation
-    SELF_ORGANIZATION: "medium",# THOL: Emergent ordering, progressive self-structuring
-    RECURSIVITY: "medium",      # REMESH: Fractal echo, distributed reorganization
-    
+    RECEPTION: "medium",  # EN: Captures external coherence, moderate integration
+    COHERENCE: "medium",  # IL: Reduces |ΔNFR| gradually, stabilizes progressively
+    COUPLING: "medium",  # UM: Synchronizes phase, moderate coordination dynamics
+    TRANSITION: "medium",  # NAV: Controlled regime shift, managed reorganization
+    EXPANSION: "medium",  # VAL: Explores structure space, gradual dilation
+    SELF_ORGANIZATION: "medium",  # THOL: Emergent ordering, progressive self-structuring
+    RECURSIVITY: "medium",  # REMESH: Fractal echo, distributed reorganization
     # ZERO: Paused reorganization (νf → 0, EPI frozen)
-    SILENCE: "zero",            # SHA: Suspends evolution, preserves structure
+    SILENCE: "zero",  # SHA: Suspends evolution, preserves structure
 }
 
 
@@ -1753,7 +1747,7 @@ def recognize_coherence_sequences(
     This function uses direct pattern matching for 2-operator sequences, which
     is simpler and more appropriate than the general :class:`AdvancedPatternDetector`
     designed for longer sequences.
-    
+
     Note: Compatibility tables deprecated - pattern detection now based on
     structural coherence principles.
     """
@@ -1821,7 +1815,7 @@ def recognize_coherence_sequences(
 
         # Check for anti-patterns based on structural coherence principles
         # (no longer using compatibility tables - emergent from TNFR dynamics)
-        
+
         if prev == COHERENCE and curr == COHERENCE:
             # coherence → coherence anti-pattern
             warnings.warn(

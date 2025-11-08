@@ -112,4 +112,3 @@ VF_RA_MIN: float = 0.01
 # resonance effectiveness but don't prevent propagation entirely.
 # Measured in radians: π/3 ≈ 1.0 rad ≈ 60 degrees
 PHASE_RA_MAX_DIFF: float = 1.0
-

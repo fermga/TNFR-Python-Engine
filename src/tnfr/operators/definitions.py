@@ -1434,22 +1434,22 @@ class Coupling(Operator):
     phases (θ), may align structural frequencies (νf), and can reduce ΔNFR, but
     it NEVER directly modifies EPI. This ensures that coupled nodes maintain
     their structural identities while achieving phase coherence.
-    
+
     Any change to EPI during a sequence containing UM must come from other
     operators (e.g., Emission, Reception) or from the natural evolution via
     the nodal equation ∂EPI/∂t = νf · ΔNFR(t), never from UM itself.
-    
-    **Theoretical Basis**: In TNFR theory, coupling (UM) creates structural links 
-    through phase synchronization φᵢ(t) ≈ φⱼ(t), not through information transfer 
-    or EPI modification. The structural identity (EPI) of each node remains intact 
+
+    **Theoretical Basis**: In TNFR theory, coupling (UM) creates structural links
+    through phase synchronization φᵢ(t) ≈ φⱼ(t), not through information transfer
+    or EPI modification. The structural identity (EPI) of each node remains intact
     while the nodes achieve synchronized phases that enable resonant interaction.
-    
+
     **Implementation Guarantee**: The `_op_UM` function modifies only:
-    
+
     - Phase (θ): Adjusted towards consensus phase
     - Structural frequency (νf): Optionally synchronized with neighbors
     - Reorganization gradient (ΔNFR): Reduced through stabilization
-    
+
     EPI is never touched by the coupling logic, preserving this fundamental invariant.
 
     Structural Effects
@@ -1543,10 +1543,10 @@ class Coupling(Operator):
         """Capture node state before operator application, including edge count."""
         # Get base state (epi, vf, dnfr, theta)
         state = super()._capture_state(G, node)
-        
+
         # Add edge count for coupling-specific metrics
         state["edges"] = G.degree(node)
-        
+
         return state
 
     def _collect_metrics(
@@ -1556,9 +1556,9 @@ class Coupling(Operator):
         from .metrics import coupling_metrics
 
         return coupling_metrics(
-            G, 
-            node, 
-            state_before["theta"], 
+            G,
+            node,
+            state_before["theta"],
             dnfr_before=state_before["dnfr"],
             vf_before=state_before["vf"],
             edges_before=state_before.get("edges", None),
@@ -1593,7 +1593,7 @@ class Resonance(Operator):
     **Biomedical**:
 
     - **Cardiac Coherence Propagation**
-      
+
       - **Mechanism**: HRV coherence from heart rhythm spreads through vagal nerve network
       - **RA Role**: Propagates coherent cardiac pattern to brain, organs, peripheral systems
       - **Observable**: Reduced heart rate variability entropy, increased baroreflex sensitivity
@@ -1601,7 +1601,7 @@ class Resonance(Operator):
       - **Metrics**: ΔHRV coherence across organ systems, autonomic tone synchronization
 
     - **Neural Synchronization Cascades**
-      
+
       - **Mechanism**: Synchronized neuronal firing in one region propagates to connected areas
       - **RA Role**: Transmits oscillatory patterns (e.g., gamma, theta) across brain networks
       - **Observable**: EEG phase synchronization indices, functional connectivity increases
@@ -1609,14 +1609,14 @@ class Resonance(Operator):
       - **Clinical**: Meditation-induced alpha coherence, seizure propagation dynamics
 
     - **Immune Cascade Activation**
-      
+
       - **Mechanism**: Cytokine signaling propagates immune response across tissue
       - **RA Role**: Coordinates cellular activation without losing response specificity
       - **Observable**: Immune cell recruitment patterns, synchronized cytokine expression
       - **Pathological**: Cytokine storms as uncontrolled RA (missing IL stabilization)
 
     - **Morphogenetic Field Propagation**
-      
+
       - **Mechanism**: Developmental signals organize tissue pattern formation
       - **RA Role**: Spreads positional information maintaining structural identity
       - **Observable**: Hox gene expression gradients, limb bud patterning
@@ -1625,7 +1625,7 @@ class Resonance(Operator):
     **Cognitive**:
 
     - **Insight Propagation ("Aha!" Moments)**
-      
+
       - **Mechanism**: Single conceptual breakthrough reorganizes entire knowledge network
       - **RA Role**: Key understanding cascades through related concepts, illuminating connections
       - **Observable**: Sudden problem-solving, gestalt shifts, conceptual restructuring
@@ -1633,7 +1633,7 @@ class Resonance(Operator):
       - **Example**: Understanding recursion suddenly clarifies programming, fractals, self-reference
 
     - **Meme Propagation**
-      
+
       - **Mechanism**: Ideas spread through population maintaining core structure
       - **RA Role**: Transmits conceptual pattern ("viral" spread) with identity preservation
       - **Observable**: Social media virality curves, idea adoption S-curves
@@ -1641,7 +1641,7 @@ class Resonance(Operator):
       - **Counter**: IL (fact-checking) dampens incoherent RA
 
     - **Knowledge Transfer in Learning**
-      
+
       - **Mechanism**: Expertise propagates from teacher to student network
       - **RA Role**: Transmits structured understanding, not just information
       - **Observable**: Student mental models converging toward expert patterns
@@ -1649,7 +1649,7 @@ class Resonance(Operator):
       - **Metrics**: Transfer learning success, analogical reasoning improvements
 
     - **Attention Cascades**
-      
+
       - **Mechanism**: Focus on one element draws attention to connected elements
       - **RA Role**: Spreads attentional coherence across semantic network
       - **Observable**: Priming effects, associative memory activation
@@ -1658,7 +1658,7 @@ class Resonance(Operator):
     **Social**:
 
     - **Collective Emotional Contagion**
-      
+
       - **Mechanism**: Emotion spreads through group (laughter, panic, enthusiasm)
       - **RA Role**: Propagates affective state while maintaining emotional coherence
       - **Observable**: Synchronized facial expressions, heart rate convergence, mirroring
@@ -1666,7 +1666,7 @@ class Resonance(Operator):
       - **Examples**: Concert crowds, protest movements, team celebrations
 
     - **Social Movement Diffusion**
-      
+
       - **Mechanism**: Values/practices spread through social networks
       - **RA Role**: Propagates coherent ideology maintaining identity
       - **Observable**: Network diffusion curves, hashtag propagation, adoption cascades
@@ -1674,7 +1674,7 @@ class Resonance(Operator):
       - **Examples**: Arab Spring, #MeToo, climate activism
 
     - **Innovation Diffusion in Organizations**
-      
+
       - **Mechanism**: New practices spread through company departments
       - **RA Role**: Transfers best practices while adapting to local context
       - **Observable**: Practice adoption rates, cross-functional knowledge sharing
@@ -1682,7 +1682,7 @@ class Resonance(Operator):
       - **Barriers**: OZ (departmental resistance) can block RA
 
     - **Cultural Pattern Transmission**
-      
+
       - **Mechanism**: Rituals, norms, symbols propagate across generations
       - **RA Role**: Maintains cultural identity while allowing adaptation
       - **Observable**: Cultural continuity metrics, tradition persistence
@@ -1716,19 +1716,19 @@ class Resonance(Operator):
     **Propagation Metrics**:
 
     - **Propagation Distance**: Number of nodes reached from source
-      
+
       - Measurement: Graph traversal depth from origin
       - Healthy: Distance scales with network density
       - Pathological: Isolated propagation (missing UM coupling)
 
     - **Amplification Factor**: Coherence gain through network
-      
+
       - Formula: ``C(t_after) / C(t_before)`` at network level
       - Healthy: Factor > 1.0 (resonance amplifies)
       - Degraded: Factor ≈ 1.0 (diffusion without resonance)
 
     - **Propagation Speed**: Rate of coherence spread
-      
+
       - Measurement: Nodes activated per time step
       - Fast: High νf alignment, strong UM coupling
       - Slow: Phase misalignment, weak network connectivity
@@ -1736,13 +1736,13 @@ class Resonance(Operator):
     **Identity Preservation Metrics**:
 
     - **EPI Structure Similarity**: How well propagated EPI matches source
-      
+
       - Measurement: Cosine similarity of EPI vectors (if structured)
       - Healthy: Similarity > 0.8 (identity preserved)
       - Distorted: Similarity < 0.5 (pattern corruption)
 
     - **epi_kind Consistency**: Semantic label propagation
-      
+
       - Measurement: Fraction of influenced nodes adopting source ``epi_kind``
       - Healthy: > 70% adoption in coupled neighborhood
       - Fragmented: < 30% (RA failed, revert to AL)
@@ -1750,13 +1750,13 @@ class Resonance(Operator):
     **Network-Level Metrics**:
 
     - **Global Coherence Increase (ΔC(t))**:
-      
+
       - Formula: ``C_global(t+1) - C_global(t)`` after RA application
       - Healthy: ΔC(t) > 0 (network more coherent)
       - Harmful: ΔC(t) < 0 (RA applied incorrectly, spreading chaos)
 
     - **Phase Synchronization Index**:
-      
+
       - Measurement: Kuramoto order parameter before/after RA
       - Healthy: Index increases toward 1.0
       - Misaligned: Index decreases (needs UM first)
@@ -1764,7 +1764,7 @@ class Resonance(Operator):
     **Frequency Metrics**:
 
     - **Collective νf Shift**: Average νf change across influenced nodes
-      
+
       - Measurement: ``mean(νf_influenced) - mean(νf_before)``
       - Healthy: Positive shift (amplification)
       - Note: Current implementation may not fully track this (see related issues)
@@ -1774,21 +1774,21 @@ class Resonance(Operator):
     **Synergistic Sequences** (amplify each other's effects):
 
     - **UM → RA**: Canonical resonance pattern
-      
+
       - UM establishes phase coupling
       - RA propagates through coupled network
       - Result: Coherent network-wide reorganization
       - Analogy: Tuning instruments (UM) then playing symphony (RA)
 
     - **IL → RA**: Stable propagation
-      
+
       - IL stabilizes source pattern
       - RA propagates verified coherence
       - Result: Reliable, non-distorted transmission
       - Use: Knowledge transfer, cultural preservation
 
     - **AL → RA**: Broadcast pattern
-      
+
       - AL initiates new coherence
       - RA immediately spreads to receptive nodes
       - Result: Rapid network activation
@@ -1798,13 +1798,13 @@ class Resonance(Operator):
     **Required Prerequisites** (apply before RA):
 
     - **UM before RA** (when network uncoupled):
-      
+
       - Without UM: RA has no propagation pathways
       - Symptom: RA applied to isolated node
       - Fix: ``run_sequence(G, node, [Coupling(), Resonance()])``
 
     - **IL before RA** (when source unstable):
-      
+
       - Without IL: RA propagates noise/chaos
       - Symptom: High ΔNFR, low EPI at source
       - Fix: ``run_sequence(G, node, [Coherence(), Resonance()])``
@@ -1812,21 +1812,21 @@ class Resonance(Operator):
     **Natural Progressions** (what to apply after RA):
 
     - **RA → IL**: Lock in propagated coherence
-      
+
       - RA spreads pattern
       - IL stabilizes across network
       - Result: Persistent network-wide coherence
       - Example: Post-meditation integration, learning consolidation
 
     - **RA → EN**: Distributed reception
-      
+
       - RA broadcasts from source
       - EN nodes receive and integrate
       - Result: Coordinated network update
       - Example: Software update propagation, news dissemination
 
     - **RA → SHA**: Resonance completion
-      
+
       - RA propagates pattern
       - SHA pauses further spreading
       - Result: Bounded coherence domain
@@ -1835,14 +1835,14 @@ class Resonance(Operator):
     **Incompatible Patterns** (avoid or use carefully):
 
     - **SHA → RA**: Contradiction
-      
+
       - SHA silences node (νf → 0)
       - RA requires active propagation
       - Result: Ineffective RA (nothing to propagate)
       - Exception: SHA → NAV → RA (reactivation sequence)
 
     - **OZ → RA** (unconstrained dissonance):
-      
+
       - OZ introduces chaos
       - RA propagates chaos (pathological)
       - Result: Network destabilization
@@ -1850,7 +1850,7 @@ class Resonance(Operator):
       - Intentional: OZ → RA for creative disruption (rare)
 
     - **Multiple RA without IL**:
-      
+
       - Repeated RA can blur pattern identity
       - Result: "Telephone game" distortion
       - Fix: Interleave IL to preserve structure
@@ -1859,19 +1859,19 @@ class Resonance(Operator):
     **Edge Cases**:
 
     - **RA on fully connected graph**:
-      
+
       - All nodes receive simultaneously
       - Result: Instantaneous network coherence (no cascade)
       - Efficiency: RA becomes equivalent to broadcast AL
 
     - **RA on tree topology**:
-      
+
       - Clean propagation paths, no loops
       - Result: Predictable cascade from root
       - Application: Hierarchical organizations, decision trees
 
     - **RA on scale-free network**:
-      
+
       - Hub nodes amplify propagation
       - Result: Exponential spread through hubs
       - Application: Social networks, viral marketing
@@ -1940,14 +1940,14 @@ class Resonance(Operator):
     >>> from tnfr.operators.definitions import Coupling, Resonance
     >>> from tnfr.metrics.coherence import compute_global_coherence
     >>> from tnfr.constants import EPI_PRIMARY
-    >>> 
+    >>>
     >>> G_meditation = nx.Graph()
     >>> # Teacher with high coherence
     >>> G_meditation.add_node("teacher")
     >>> G_meditation.nodes["teacher"][EPI_PRIMARY] = 0.85
     >>> G_meditation.nodes["teacher"]["vf"] = 1.2
     >>> G_meditation.nodes["teacher"]["theta"] = 0.0
-    >>> 
+    >>>
     >>> # Students with lower coherence, varied phases
     >>> for i in range(10):
     ...     student_id = f"student_{i}"
@@ -1957,12 +1957,12 @@ class Resonance(Operator):
     ...     G_meditation.nodes[student_id]["theta"] = random.uniform(-0.5, 0.5)
     ...     # Teacher couples with students through presence (UM)
     ...     G_meditation.add_edge("teacher", student_id)
-    >>> 
+    >>>
     >>> # Teacher's coherence resonates to group (RA)
     >>> c_before = compute_global_coherence(G_meditation)
     >>> run_sequence(G_meditation, "teacher", [Coupling(), Resonance()])
     >>> c_after = compute_global_coherence(G_meditation)
-    >>> 
+    >>>
     >>> # Result: Students' EPI increases, phases align, network coherence rises
     >>> # Group enters synchronized meditative state through RA propagation
 
@@ -1973,20 +1973,20 @@ class Resonance(Operator):
     >>> from tnfr.structural import run_sequence
     >>> from tnfr.operators.definitions import Coupling, Resonance
     >>> from tnfr.constants import EPI_PRIMARY
-    >>> 
+    >>>
     >>> G_social = nx.barabasi_albert_graph(100, 3)  # Scale-free social network
     >>> origin = 0  # Hub node with high connectivity
-    >>> 
+    >>>
     >>> # Set initial state: one coherent idea, rest neutral
     >>> for node in G_social.nodes():
     ...     G_social.nodes[node][EPI_PRIMARY] = 0.9 if node == origin else 0.1
     ...     G_social.nodes[node]["vf"] = 1.0
     ...     G_social.nodes[node]["epi_kind"] = "viral_meme" if node == origin else "neutral"
     ...     G_social.nodes[node]["theta"] = 0.0
-    >>> 
+    >>>
     >>> # Phase 1: Early adopters couple with origin (UM)
     >>> run_sequence(G_social, origin, [Coupling()])
-    >>> 
+    >>>
     >>> # Phase 2: Idea resonates through coupled network (RA)
     >>> adoption_wave = [origin]
     >>> for wave_step in range(5):  # 5 propagation hops
@@ -1996,7 +1996,7 @@ class Resonance(Operator):
     ...         for neighbor in G_social.neighbors(node):
     ...             if G_social.nodes[neighbor][EPI_PRIMARY] > 0.5 and neighbor not in adoption_wave:
     ...                 adoption_wave.append(neighbor)
-    >>> 
+    >>>
     >>> # Result: Meme spreads through network maintaining identity
     >>> adopters = [n for n in G_social.nodes() if G_social.nodes[n].get("epi_kind") == "viral_meme"]
     >>> adoption_rate = len(adopters) / 100
@@ -2026,10 +2026,10 @@ class Resonance(Operator):
         from .metrics import resonance_metrics
 
         return resonance_metrics(
-            G, 
-            node, 
+            G,
+            node,
             state_before["epi"],
-            vf_before=state_before["vf"]  # Include νf for amplification tracking
+            vf_before=state_before["vf"],  # Include νf for amplification tracking
         )
 
 
@@ -2112,7 +2112,7 @@ class Silence(Operator):
     Latency State Attributes
     -------------------------
     SHA sets the following node attributes for latency tracking:
-    
+
     - **latent**: Boolean flag indicating node is in latent state
     - **latency_start_time**: ISO 8601 UTC timestamp when silence began
     - **preserved_epi**: Snapshot of EPI at silence entry
@@ -2194,14 +2194,14 @@ class Silence(Operator):
     Coherence : Often precedes SHA for stable preservation
     Transition : Breaks silence with controlled change
     Emission : Reactivates silenced structures
-    
+
     Extended Clinical Documentation
     --------------------------------
     For detailed clinical protocols, expected telemetry, physiological correlates,
     and scientific references, see:
-    
+
     **docs/source/examples/SHA_CLINICAL_APPLICATIONS.md**
-    
+
     Comprehensive documentation includes:
     - Cardiac Coherence Training (HRV consolidation)
     - Trauma Therapy (protective containment)
@@ -2209,7 +2209,7 @@ class Silence(Operator):
     - Post-Exercise Recovery (athletic training)
     - Meditation & Mindfulness (contemplative practices)
     - Organizational Strategy (strategic pause protocols)
-    
+
     **Executable Examples**: examples/biomedical/
     - cardiac_coherence_sha.py
     - trauma_containment_sha.py
@@ -2615,12 +2615,8 @@ class SelfOrganization(Operator):
             network_signals = capture_network_signals(G, node)
 
         # Get metabolic weights from graph config
-        gradient_weight = float(
-            G.graph.get("THOL_METABOLIC_GRADIENT_WEIGHT", 0.15)
-        )
-        complexity_weight = float(
-            G.graph.get("THOL_METABOLIC_COMPLEXITY_WEIGHT", 0.10)
-        )
+        gradient_weight = float(G.graph.get("THOL_METABOLIC_GRADIENT_WEIGHT", 0.15))
+        complexity_weight = float(G.graph.get("THOL_METABOLIC_COMPLEXITY_WEIGHT", 0.10))
 
         # CANONICAL METABOLISM: Digest signals into sub-EPI
         sub_epi_value = metabolize_signals_into_subepi(
@@ -2739,7 +2735,9 @@ class SelfOrganization(Operator):
                 DNFR_PRIMARY: 0.0,
                 "parent_node": parent_node,
                 "hierarchy_level": parent_hierarchy_level + 1,
-                "epi_history": [float(sub_epi)],  # Initialize history for future bifurcation
+                "epi_history": [
+                    float(sub_epi)
+                ],  # Initialize history for future bifurcation
                 "glyph_history": [],
             },
         )

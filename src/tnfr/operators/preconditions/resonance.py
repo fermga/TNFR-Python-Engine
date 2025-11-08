@@ -37,7 +37,7 @@ def validate_resonance_strict(
     """Validate strict canonical preconditions for RA (Resonance) operator.
 
     According to TNFR theory, Resonance (RA - Resonancia) requires:
-    
+
     1. **Coherent source**: EPI >= threshold (sufficient structure to propagate)
     2. **Network connectivity**: degree > 0 (edges for propagation)
     3. **Phase compatibility**: alignment with neighbors (synchronization)
@@ -92,7 +92,7 @@ def validate_resonance_strict(
     --------
     >>> from tnfr.structural import create_nfr
     >>> from tnfr.operators.preconditions.resonance import validate_resonance_strict
-    >>> 
+    >>>
     >>> # Valid node for resonance
     >>> G, node = create_nfr("source", epi=0.8, vf=0.9)
     >>> neighbor = "neighbor"
@@ -100,7 +100,7 @@ def validate_resonance_strict(
     >>> G.add_edge(node, neighbor)
     >>> G.nodes[node]["dnfr"] = 0.1
     >>> validate_resonance_strict(G, node)  # OK
-    
+
     >>> # Invalid: EPI too low
     >>> G2, node2 = create_nfr("weak_source", epi=0.05, vf=0.9)
     >>> neighbor2 = "neighbor2"
@@ -110,7 +110,7 @@ def validate_resonance_strict(
     Traceback (most recent call last):
         ...
     ValueError: RA requires coherent source with EPI >= 0.1 (current: 0.050). Apply IL or THOL first.
-    
+
     >>> # Invalid: No connectivity
     >>> G3, node3 = create_nfr("isolated", epi=0.8, vf=0.9)
     >>> validate_resonance_strict(G3, node3)  # doctest: +SKIP
@@ -225,7 +225,7 @@ def diagnose_resonance_readiness(G: TNFRGraph, node: Any) -> dict[str, Any]:
     --------
     >>> from tnfr.structural import create_nfr
     >>> from tnfr.operators.preconditions.resonance import diagnose_resonance_readiness
-    >>> 
+    >>>
     >>> # Diagnose weak source
     >>> G, node = create_nfr("weak", epi=0.05, vf=0.9)
     >>> diag = diagnose_resonance_readiness(G, node)

@@ -13,11 +13,11 @@ from typing import Any, Dict, List, Optional, Type
 @dataclass
 class PatternDefinition:
     """Definition of a domain-specific structural pattern.
-    
+
     Captures a validated sequence of structural operators and its domain context,
     ensuring patterns maintain TNFR canonical requirements while providing
     domain-specific semantics.
-    
+
     Attributes
     ----------
     name : str
@@ -35,7 +35,7 @@ class PatternDefinition:
     examples : List[Dict[str, Any]]
         Validated examples demonstrating pattern effectiveness.
     """
-    
+
     name: str
     sequence: List[str]
     description: str
@@ -48,10 +48,10 @@ class PatternDefinition:
 @dataclass
 class CookbookRecipe:
     """Validated recipe for a common domain scenario.
-    
+
     Provides a tested sequence configuration with parameters and expected outcomes,
     allowing practitioners to apply proven patterns to their specific contexts.
-    
+
     Attributes
     ----------
     name : str
@@ -67,7 +67,7 @@ class CookbookRecipe:
     validation : Dict[str, Any]
         Validation metadata (test count, success rate, notes).
     """
-    
+
     name: str
     description: str
     sequence: List[str]
@@ -78,18 +78,18 @@ class CookbookRecipe:
 
 class TNFRExtension(ABC):
     """Abstract base class for TNFR domain extensions.
-    
+
     Domain extensions provide specialized patterns, health analyzers, and tools
     for specific application domains while maintaining TNFR canonical invariants.
     All extensions must implement the core abstract methods to ensure consistent
     structure and discoverability.
-    
+
     Examples
     --------
     >>> class MedicalExtension(TNFRExtension):
     ...     def get_domain_name(self) -> str:
     ...         return "medical"
-    ...     
+    ...
     ...     def get_pattern_definitions(self) -> Dict[str, PatternDefinition]:
     ...         return {
     ...             "therapeutic_alliance": PatternDefinition(
@@ -99,68 +99,68 @@ class TNFRExtension(ABC):
     ...                 use_cases=["Initial therapy session", "Crisis intervention"],
     ...             )
     ...         }
-    ...     
+    ...
     ...     def get_health_analyzers(self) -> Dict[str, Type]:
     ...         from .health_analyzers import TherapeuticHealthAnalyzer
     ...         return {"therapeutic": TherapeuticHealthAnalyzer}
     """
-    
+
     @abstractmethod
     def get_domain_name(self) -> str:
         """Return the unique domain identifier.
-        
+
         Returns
         -------
         str
             Domain name (lowercase, underscore-separated).
         """
         pass
-    
+
     @abstractmethod
     def get_pattern_definitions(self) -> Dict[str, PatternDefinition]:
         """Return domain-specific pattern definitions.
-        
+
         Returns
         -------
         Dict[str, PatternDefinition]
             Mapping of pattern names to their definitions.
         """
         pass
-    
+
     @abstractmethod
     def get_health_analyzers(self) -> Dict[str, Type]:
         """Return domain-specific health analyzer classes.
-        
+
         Returns
         -------
         Dict[str, Type]
             Mapping of analyzer names to analyzer classes.
         """
         pass
-    
+
     def get_cookbook_recipes(self) -> Dict[str, CookbookRecipe]:
         """Return validated recipes for common scenarios.
-        
+
         Returns
         -------
         Dict[str, CookbookRecipe]
             Mapping of recipe names to recipe definitions. Empty dict if none.
         """
         return {}
-    
+
     def get_visualization_tools(self) -> Dict[str, Type]:
         """Return domain-specific visualization tools.
-        
+
         Returns
         -------
         Dict[str, Type]
             Mapping of visualizer names to visualizer classes. Empty dict if none.
         """
         return {}
-    
+
     def get_metadata(self) -> Dict[str, Any]:
         """Return extension metadata.
-        
+
         Returns
         -------
         Dict[str, Any]
