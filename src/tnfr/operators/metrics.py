@@ -552,8 +552,8 @@ def dissonance_metrics(
     }
 
 
-def coupling_metrics(G: TNFRGraph, node: NodeId, theta_before: float) -> dict[str, Any]:
-    """UM - Coupling metrics: phase alignment, link formation, synchrony.
+def coupling_metrics(G: TNFRGraph, node: NodeId, theta_before: float, dnfr_before: float = None) -> dict[str, Any]:
+    """UM - Coupling metrics: phase alignment, link formation, synchrony, ΔNFR reduction.
 
     Parameters
     ----------
@@ -563,15 +563,18 @@ def coupling_metrics(G: TNFRGraph, node: NodeId, theta_before: float) -> dict[st
         Node to collect metrics from
     theta_before : float
         Phase value before operator application
+    dnfr_before : float, optional
+        ΔNFR value before operator application (for reduction tracking)
 
     Returns
     -------
     dict
-        Coupling-specific metrics including phase synchronization
+        Coupling-specific metrics including phase synchronization and ΔNFR reduction
     """
     import math
 
     theta_after = _get_node_attr(G, node, ALIAS_THETA)
+    dnfr_after = _get_node_attr(G, node, ALIAS_DNFR)
     neighbors = list(G.neighbors(node))
     neighbor_count = len(neighbors)
 
@@ -584,7 +587,7 @@ def coupling_metrics(G: TNFRGraph, node: NodeId, theta_before: float) -> dict[st
         mean_neighbor_phase = theta_after
         phase_alignment = 0.0
 
-    return {
+    metrics = {
         "operator": "Coupling",
         "glyph": "UM",
         "theta_shift": abs(theta_after - theta_before),
@@ -593,6 +596,19 @@ def coupling_metrics(G: TNFRGraph, node: NodeId, theta_before: float) -> dict[st
         "mean_neighbor_phase": mean_neighbor_phase,
         "phase_alignment": max(0.0, phase_alignment),
     }
+
+    # Add ΔNFR reduction metrics if dnfr_before is provided
+    if dnfr_before is not None:
+        dnfr_reduction = dnfr_before - dnfr_after
+        dnfr_reduction_pct = (dnfr_reduction / (abs(dnfr_before) + 1e-9)) * 100.0
+        metrics.update({
+            "dnfr_before": dnfr_before,
+            "dnfr_after": dnfr_after,
+            "dnfr_reduction": dnfr_reduction,
+            "dnfr_reduction_pct": dnfr_reduction_pct,
+        })
+
+    return metrics
 
 
 def resonance_metrics(G: TNFRGraph, node: NodeId, epi_before: float) -> dict[str, Any]:
