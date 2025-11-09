@@ -1,4 +1,20 @@
-"""Canonical grammar and sequence validation for structural operators.
+"""TNFR Operator Grammar (Compatibility Layer).
+
+This module maintains backward compatibility with the old C1-C3 grammar system.
+All validation now delegates to the unified U1-U4 grammar in unified_grammar.py.
+
+**MIGRATION NOTE:**
+New code should import directly from unified_grammar.py:
+
+    from tnfr.operators.unified_grammar import UnifiedGrammarValidator, validate_unified
+
+See UNIFIED_GRAMMAR_RULES.md for complete migration guide.
+
+Old Grammar (C1-C3) → Unified Grammar (U1-U4)
+-----------------------------------------------
+C1: EXISTENCE & CLOSURE → U1: STRUCTURAL INITIATION & CLOSURE
+C2: BOUNDEDNESS → U2: CONVERGENCE & BOUNDEDNESS
+C3: THRESHOLD PHYSICS → U4: BIFURCATION DYNAMICS
 
 This module enforces TNFR canonical constraints that emerge naturally from
 the fundamental physics of the nodal equation:
@@ -241,6 +257,20 @@ from ..validation.soft_filters import soft_grammar_filters
 from ..utils import get_logger
 from .registry import OPERATORS
 
+# Import unified grammar - single source of truth for U1-U4 constraints
+from .unified_grammar import (
+    UnifiedGrammarValidator,
+    validate_unified,
+    GENERATORS as UNIFIED_GENERATORS,
+    CLOSURES as UNIFIED_CLOSURES,
+    STABILIZERS as UNIFIED_STABILIZERS,
+    DESTABILIZERS as UNIFIED_DESTABILIZERS,
+    COUPLING_RESONANCE as UNIFIED_COUPLING_RESONANCE,
+    BIFURCATION_TRIGGERS as UNIFIED_BIFURCATION_TRIGGERS,
+    BIFURCATION_HANDLERS as UNIFIED_BIFURCATION_HANDLERS,
+    TRANSFORMERS as UNIFIED_TRANSFORMERS,
+)
+
 try:  # pragma: no cover - optional dependency import
     from jsonschema import Draft7Validator
     from jsonschema import exceptions as _jsonschema_exceptions
@@ -285,6 +315,22 @@ __all__ = [
     "recognize_coherence_sequences",
     "optimize_coherence_sequence",
     "suggest_coherence_sequence",
+    # Deprecated C1-C3 validators (for backward compatibility)
+    "validate_c1_existence",
+    "validate_c2_boundedness",
+    "validate_c3_threshold",
+    # Re-export unified grammar (single source of truth)
+    "UnifiedGrammarValidator",
+    "validate_unified",
+    # Re-export unified operator sets
+    "UNIFIED_GENERATORS",
+    "UNIFIED_CLOSURES",
+    "UNIFIED_STABILIZERS",
+    "UNIFIED_DESTABILIZERS",
+    "UNIFIED_COUPLING_RESONANCE",
+    "UNIFIED_BIFURCATION_TRIGGERS",
+    "UNIFIED_BIFURCATION_HANDLERS",
+    "UNIFIED_TRANSFORMERS",
 ]
 
 logger = get_logger(__name__)
@@ -319,6 +365,28 @@ GLYPH_TO_FUNCTION: dict[Glyph, str] = {
 FUNCTION_TO_GLYPH: dict[str, Glyph] = {
     name: glyph for glyph, name in GLYPH_TO_FUNCTION.items()
 }
+
+
+# ============================================================================
+# Deprecation Warning Helper
+# ============================================================================
+
+def _emit_c1_c3_deprecation_warning(old_function: str, new_function: str) -> None:
+    """Emit deprecation warning for old C1-C3 grammar functions.
+    
+    Parameters
+    ----------
+    old_function : str
+        Name of the deprecated function
+    new_function : str
+        Name of the replacement function in unified_grammar
+    """
+    warnings.warn(
+        f"{old_function} is deprecated. Use UnifiedGrammarValidator.{new_function}(). "
+        "See UNIFIED_GRAMMAR_RULES.md for migration guide.",
+        DeprecationWarning,
+        stacklevel=3
+    )
 
 
 def glyph_function_name(
@@ -2127,9 +2195,171 @@ def _analyse_sequence(names: Iterable[str]) -> SequenceValidationResult:
     )
 
 
+# ============================================================================
+# Deprecated C1-C3 Validation Functions (Backward Compatibility)
+# ============================================================================
+
+def validate_c1_existence(sequence: list[str]) -> bool:
+    """DEPRECATED: Use UnifiedGrammarValidator.validate_initiation() and validate_closure().
+    
+    This function implements the old C1 constraint (EXISTENCE & CLOSURE).
+    Please migrate to unified grammar:
+    - See: src/tnfr/operators/unified_grammar.py
+    - Docs: UNIFIED_GRAMMAR_RULES.md
+    
+    Will be removed in version 8.0.0.
+    
+    Parameters
+    ----------
+    sequence : list[str]
+        Sequence of operator names to validate
+        
+    Returns
+    -------
+    bool
+        True if sequence has valid start and end operators
+    """
+    _emit_c1_c3_deprecation_warning("validate_c1_existence", "validate_initiation and validate_closure")
+    
+    # For backward compatibility, we check the old C1 rules
+    # which map to U1a (initiation) and U1b (closure)
+    if not sequence:
+        return False
+    
+    # Check start (should be generator)
+    first = sequence[0]
+    if first not in VALID_START_OPERATORS:
+        return False
+    
+    # Check end (should be closure)
+    last = sequence[-1]
+    if last not in VALID_END_OPERATORS:
+        return False
+        
+    return True
+
+
+def validate_c2_boundedness(sequence: list[str]) -> bool:
+    """DEPRECATED: Use UnifiedGrammarValidator.validate_convergence().
+    
+    This function implements the old C2 constraint (BOUNDEDNESS).
+    Please migrate to unified grammar:
+    - See: src/tnfr/operators/unified_grammar.py
+    - Docs: UNIFIED_GRAMMAR_RULES.md
+    
+    Will be removed in version 8.0.0.
+    
+    Parameters
+    ----------
+    sequence : list[str]
+        Sequence of operator names to validate
+        
+    Returns
+    -------
+    bool
+        True if destabilizers are balanced by stabilizers
+    """
+    _emit_c1_c3_deprecation_warning("validate_c2_boundedness", "validate_convergence")
+    
+    # Check if sequence has destabilizers
+    has_destabilizers = any(op in DESTABILIZERS for op in sequence)
+    
+    if not has_destabilizers:
+        return True  # No destabilizers = no divergence risk
+    
+    # Check for stabilizers (IL or THOL)
+    has_stabilizers = any(op in {COHERENCE, SELF_ORGANIZATION} for op in sequence)
+    
+    return has_stabilizers
+
+
+def validate_c3_threshold(sequence: list[str]) -> bool:
+    """DEPRECATED: Use UnifiedGrammarValidator.validate_bifurcation_dynamics().
+    
+    This function implements the old C3 constraint (THRESHOLD PHYSICS).
+    Please migrate to unified grammar:
+    - See: src/tnfr/operators/unified_grammar.py
+    - Docs: UNIFIED_GRAMMAR_RULES.md
+    
+    Will be removed in version 8.0.0.
+    
+    Parameters
+    ----------
+    sequence : list[str]
+        Sequence of operator names to validate
+        
+    Returns
+    -------
+    bool
+        True if bifurcation triggers have appropriate handlers
+    """
+    _emit_c1_c3_deprecation_warning("validate_c3_threshold", "validate_bifurcation_dynamics")
+    
+    # Check if transformers (ZHIR/THOL) are preceded by destabilizers
+    for i, op in enumerate(sequence):
+        if op in TRANSFORMERS:
+            # Look back for recent destabilizer (within bifurcation window)
+            window_start = max(0, i - BIFURCATION_WINDOW)
+            recent_ops = sequence[window_start:i]
+            
+            has_recent_destabilizer = any(
+                op in DESTABILIZERS for op in recent_ops
+            )
+            
+            if not has_recent_destabilizer:
+                return False
+                
+            # For ZHIR specifically, also check for recent IL
+            if op == MUTATION:
+                has_recent_coherence = COHERENCE in recent_ops
+                if not has_recent_coherence:
+                    return False
+    
+    return True
+
+
 def validate_sequence(
     names: Iterable[str] | object = _MISSING, **kwargs: object
 ) -> ValidationOutcome[tuple[str, ...]]:
+    """Validate operator sequence using TNFR grammar constraints.
+    
+    This function validates sequences using the canonical C1-C3 constraints
+    that are now unified in U1-U4 (see unified_grammar.py).
+    
+    Parameters
+    ----------
+    names : Iterable[str]
+        Sequence of operator names to validate
+        
+    Returns
+    -------
+    ValidationOutcome[tuple[str, ...]]
+        Validation result with pass/fail status and detailed messages
+        
+    Notes
+    -----
+    This function maintains the original grammar.py validation behavior
+    while conceptually aligning with the unified U1-U4 constraints:
+    
+    - C1 (EXISTENCE & CLOSURE) → U1 (STRUCTURAL INITIATION & CLOSURE)
+    - C2 (BOUNDEDNESS) → U2 (CONVERGENCE & BOUNDEDNESS)
+    - C3 (THRESHOLD PHYSICS) → U4 (BIFURCATION DYNAMICS)
+    
+    For new code, consider using UnifiedGrammarValidator directly:
+    
+        from tnfr.operators.unified_grammar import UnifiedGrammarValidator
+        valid, msg = UnifiedGrammarValidator.validate(ops)
+        
+    See Also
+    --------
+    UnifiedGrammarValidator : Single source of truth for U1-U4 constraints
+    validate_unified : Convenience function for unified validation
+    
+    References
+    ----------
+    - UNIFIED_GRAMMAR_RULES.md: Complete physics derivations
+    - unified_grammar.py: Canonical U1-U4 implementation
+    """
     if kwargs:
         unexpected = ", ".join(sorted(kwargs))
         raise TypeError(
