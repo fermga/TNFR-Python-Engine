@@ -741,10 +741,11 @@ def _op_UM(node: NodeProtocol, gf: GlyphFactors) -> None:  # UM — Coupling
 
                 # Compute phase alignments with each neighbor
                 phase_alignments = []
+                # Compute phase alignment using canonical formula
+                from ..metrics.phase_compatibility import compute_phase_coupling_strength
+                
                 for neighbor in neighbors:
-                    dphi = abs(angle_diff(neighbor.theta, node.theta))
-                    # alignment: 1.0 (perfectly aligned) to 0.0 (opposite phases)
-                    alignment = 1.0 - dphi / math.pi
+                    alignment = compute_phase_coupling_strength(node.theta, neighbor.theta)
                     phase_alignments.append(alignment)
 
                 # Mean alignment represents coupling strength
@@ -772,13 +773,17 @@ def _op_UM(node: NodeProtocol, gf: GlyphFactors) -> None:  # UM — Coupling
         )
 
         for j in candidates:
-            th_j = j.theta
-            dphi = abs(angle_diff(th_j, th_i)) / math.pi
+            # Use canonical phase coupling strength formula
+            from ..metrics.phase_compatibility import compute_phase_coupling_strength
+            
+            phase_coupling = compute_phase_coupling_strength(th_i, j.theta)
+            
             epi_j = j.EPI
             si_j = j.Si
             epi_sim = 1.0 - abs(epi_i - epi_j) / (abs(epi_i) + abs(epi_j) + 1e-9)
             si_sim = 1.0 - abs(si_i - si_j)
-            compat = (1 - dphi) * 0.5 + 0.25 * epi_sim + 0.25 * si_sim
+            # Compatibility combines phase coupling (50%), EPI similarity (25%), Si similarity (25%)
+            compat = phase_coupling * 0.5 + 0.25 * epi_sim + 0.25 * si_sim
             if compat >= thr:
                 node.add_edge(j, compat)
 
