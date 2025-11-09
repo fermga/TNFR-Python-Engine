@@ -41,12 +41,14 @@ if TYPE_CHECKING:
 from ..alias import get_attr
 from ..constants.aliases import ALIAS_EPI, ALIAS_THETA
 from ..utils import get_numpy
+from ..utils.numeric import angle_diff
 
 __all__ = [
     "capture_network_signals",
     "metabolize_signals_into_subepi",
     "propagate_subepi_to_network",
     "compute_cascade_depth",
+    "compute_hierarchical_depth",
     "compute_propagation_radius",
     "compute_subepi_collective_coherence",
     "compute_metabolic_activity_index",
@@ -412,6 +414,76 @@ def compute_cascade_depth(G: TNFRGraph, node: NodeId) -> int:
             max_depth = max(max_depth, 1 + nested_depth)
 
     return max_depth
+
+
+def compute_hierarchical_depth(G: TNFRGraph, node: NodeId) -> int:
+    """Compute maximum bifurcation depth from node using recursive traversal.
+    
+    Traverses sub-EPI hierarchy recursively to find the maximum bifurcation_level
+    across all nested branches. This provides accurate hierarchical telemetry for
+    nested THOL bifurcations, supporting operational fractality analysis.
+    
+    Parameters
+    ----------
+    G : TNFRGraph
+        Network graph
+    node : NodeId
+        Root node to measure depth from
+        
+    Returns
+    -------
+    int
+        Maximum bifurcation depth (0 = no bifurcations, 1 = single-level, etc.)
+        
+    Notes
+    -----
+    TNFR Principle: Hierarchical depth reflects operational fractality
+    (Invariant #7) - the ability of sub-EPIs to bifurcate recursively,
+    creating multi-scale emergent structures.
+    
+    This function recursively traverses all branches to find the deepest
+    bifurcation_level, providing precise depth tracking for:
+    - Debugging complex nested structures
+    - Validating depth limits
+    - Analyzing bifurcation patterns
+    - Performance monitoring
+    
+    Examples
+    --------
+    >>> # Node with no bifurcations
+    >>> compute_hierarchical_depth(G, node)
+    0
+    
+    >>> # Node with single-level bifurcation
+    >>> compute_hierarchical_depth(G, node_with_subs)
+    1
+    
+    >>> # Node with 2-level nested bifurcation
+    >>> compute_hierarchical_depth(G, node_nested)
+    2
+    """
+    sub_epis = G.nodes[node].get("sub_epis", [])
+    
+    if not sub_epis:
+        return 0
+    
+    # Recursively find the maximum bifurcation_level across all branches
+    max_level = 0
+    for sub_epi in sub_epis:
+        # Get this sub-EPI's bifurcation level
+        level = sub_epi.get("bifurcation_level", 1)
+        max_level = max(max_level, level)
+        
+        # Recurse into sub-node if it exists to find deeper levels
+        sub_node_id = sub_epi.get("node_id")
+        if sub_node_id and sub_node_id in G.nodes:
+            # Recursively check this sub-node's depth
+            sub_depth = compute_hierarchical_depth(G, sub_node_id)
+            # If sub-node has bifurcations, its depth represents deeper levels
+            if sub_depth > 0:
+                max_level = max(max_level, sub_depth)
+    
+    return max_level
 
 
 def compute_propagation_radius(G: TNFRGraph) -> int:

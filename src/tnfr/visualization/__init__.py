@@ -5,11 +5,14 @@ This module provides advanced visualization capabilities for:
 - Health metrics dashboards with radar charts and gauges
 - Pattern analysis with component highlighting
 - Frequency timelines showing structural evolution
-- Cascade propagation and temporal dynamics (NEW)
+- Cascade propagation and temporal dynamics
+- Hierarchical bifurcation structures (NEW)
 
-Requires matplotlib for plotting. Install with::
+Requires matplotlib for plotting (optional). Install with::
 
     pip install tnfr[viz]
+
+Hierarchy visualization (ASCII) has no external dependencies.
 
 Examples
 --------
@@ -23,11 +26,21 @@ Examples
 >>> fig, ax = visualizer.plot_sequence_flow(sequence, result.health_metrics)
 >>> fig.savefig("sequence_flow.png")
 
->>> # Cascade visualization (NEW)
+>>> # Cascade visualization
 >>> from tnfr.visualization import plot_cascade_propagation, plot_cascade_timeline
 >>> fig = plot_cascade_propagation(G)
 >>> fig.savefig("cascade_propagation.png")
+
+>>> # Hierarchy visualization (no matplotlib required)
+>>> from tnfr.visualization import print_bifurcation_hierarchy
+>>> print_bifurcation_hierarchy(G, node)
 """
+
+# Always available (no dependencies)
+from .hierarchy import (
+    print_bifurcation_hierarchy,
+    get_hierarchy_info,
+)
 
 _import_error: ImportError | None = None
 
@@ -44,6 +57,8 @@ try:
         "plot_cascade_propagation",
         "plot_cascade_timeline",
         "plot_cascade_metrics_summary",
+        "print_bifurcation_hierarchy",
+        "get_hierarchy_info",
     ]
 except ImportError as _import_err:
     _import_error = _import_err
@@ -78,4 +93,6 @@ except ImportError as _import_err:
         "plot_cascade_propagation",
         "plot_cascade_timeline",
         "plot_cascade_metrics_summary",
+        "print_bifurcation_hierarchy",
+        "get_hierarchy_info",
     ]
