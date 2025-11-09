@@ -467,7 +467,7 @@ def test_seed_reproducibility():
 
 ### Before Writing Code
 
-1. **Read TNFR.pdf** (fundamentals, operators, nodal equation)
+1. **Read the documentation** (fundamentals, operators, nodal equation)
 2. **Review UNIFIED_GRAMMAR_RULES.md** (grammar physics)
 3. **Check existing code** for equivalent functionality
 4. **Run test suite** to understand current state
