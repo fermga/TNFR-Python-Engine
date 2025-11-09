@@ -29,6 +29,7 @@ Parameters controlling when and how bifurcation (sub-EPI creation) occurs.
 | `THOL_MIN_EPI` | 0.2 | [0.05, 0.5] | — | Minimum EPI magnitude required for structural bifurcation |
 | `THOL_MIN_VF` | 0.1 | [0.01, 1.0] | Hz_str | Minimum structural frequency for reorganization capacity |
 | `THOL_ACCEL` | 0.10 | [0.01, 0.5] | — | Acceleration factor in glyph: ΔNFR += `THOL_accel` × d²EPI/dt² |
+| `THOL_MIN_COLLECTIVE_COHERENCE` | 0.3 | [0.0, 1.0] | — | Minimum collective coherence for sub-EPI ensemble. When multiple sub-EPIs exist and coherence < threshold, warning is logged |
 
 **Physical Basis:**
 
@@ -38,6 +39,12 @@ From the nodal equation ∂EPI/∂t = νf · ΔNFR(t), bifurcation occurs when *
 - **EPI_min**: Coherence floor. Nodes below this lack sufficient form to bifurcate coherently.
 - **νf_min**: Reorganization capacity floor. Nodes below this are "frozen" and cannot respond.
 - **THOL_accel**: Controls how strongly d²EPI/dt² influences ΔNFR in glyph sequences.
+- **THOL_MIN_COLLECTIVE_COHERENCE**: Monitors ensemble coherence of sub-EPIs. According to TNFR.pdf §2.2.10, sub-EPIs must form a **coherent ensemble** rather than fragmenting chaotically. Collective coherence is computed as `C = 1/(1 + var(sub_epi_magnitudes))`. Interpretation:
+  - **> 0.7**: High coherence (structurally solid bifurcation)
+  - **0.3-0.7**: Moderate (acceptable, monitor)
+  - **< 0.3**: Low (possible fragmentation, warning logged)
+  
+  When multiple sub-EPIs exist and coherence falls below threshold, a warning is logged and the event is recorded in `G.graph["thol_coherence_warnings"]` for analysis. This validation is **non-blocking** (warnings only) to allow research into low-coherence dynamics.
 
 **Configuration Example:**
 ```python
@@ -48,11 +55,21 @@ G = nx.Graph()
 G.graph["BIFURCATION_THRESHOLD_TAU"] = 0.8  # High threshold
 G.graph["THOL_MIN_EPI"] = 0.3              # Require strong coherence
 G.graph["THOL_MIN_VF"] = 0.2               # Require high capacity
+G.graph["THOL_MIN_COLLECTIVE_COHERENCE"] = 0.5  # Require coherent ensemble
 
 # Sensitive bifurcation (easier to trigger)
 G.graph["BIFURCATION_THRESHOLD_TAU"] = 0.2  # Low threshold
 G.graph["THOL_MIN_EPI"] = 0.1              # Lower coherence floor
 G.graph["THOL_MIN_VF"] = 0.05              # Lower capacity floor
+G.graph["THOL_MIN_COLLECTIVE_COHERENCE"] = 0.2  # More tolerant of fragmentation
+
+# Monitor collective coherence
+from tnfr.operators.health_analyzer import SequenceHealthAnalyzer
+analyzer = SequenceHealthAnalyzer()
+coherence_stats = analyzer.analyze_thol_coherence(G)
+if coherence_stats:
+    print(f"Mean coherence: {coherence_stats['mean_coherence']:.3f}")
+    print(f"Nodes below threshold: {coherence_stats['nodes_below_threshold']}")
 ```
 
 ---
@@ -668,6 +685,7 @@ G.graph["BIFURCATION_THRESHOLD_TAU"] = 0.5         # Higher threshold
 | Version | Date | Changes |
 |---------|------|---------|
 | 1.0.0 | 2025-11-09 | Initial release: Centralized all THOL parameters with canonical constraints |
+| 1.1.0 | 2025-11-09 | Added `THOL_MIN_COLLECTIVE_COHERENCE` parameter for sub-EPI ensemble validation |
 
 ---
 

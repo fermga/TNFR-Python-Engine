@@ -7,7 +7,10 @@ canonical TNFR metrics: coherence, balance, sustainability, and efficiency.
 from __future__ import annotations
 
 from functools import lru_cache
-from typing import List, Tuple
+from typing import Any, List, Tuple, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from ..types import TNFRGraph
 
 from ..compat.dataclass import dataclass
 from ..config.operator_names import (
@@ -725,3 +728,82 @@ class SequenceHealthAnalyzer:
             return "exploratory"
 
         return "unknown"
+
+    def analyze_thol_coherence(self, G: TNFRGraph) -> dict[str, Any] | None:
+        """Analyze collective coherence of THOL bifurcations across the network.
+
+        Examines all nodes that have undergone THOL bifurcation and provides
+        statistics on their collective coherence metrics.
+
+        Parameters
+        ----------
+        G : TNFRGraph
+            Graph containing nodes with potential THOL bifurcations
+
+        Returns
+        -------
+        dict or None
+            Dictionary containing coherence statistics:
+            - mean_coherence: Average coherence across all THOL nodes
+            - min_coherence: Lowest coherence value observed
+            - max_coherence: Highest coherence value observed
+            - nodes_below_threshold: Count of nodes with coherence < 0.3
+            - total_thol_nodes: Total nodes with sub-EPIs
+            Returns None if no THOL bifurcations exist in the network.
+
+        Notes
+        -----
+        TNFR Principle: Collective coherence measures the structural alignment
+        of emergent sub-EPIs. Low coherence may indicate chaotic fragmentation
+        rather than controlled emergence.
+
+        This metric is particularly useful for:
+        - Detecting pathological bifurcation patterns
+        - Monitoring network-wide self-organization quality
+        - Identifying nodes requiring stabilization
+
+        Examples
+        --------
+        >>> analyzer = SequenceHealthAnalyzer()
+        >>> # After running THOL operations on graph G
+        >>> coherence_stats = analyzer.analyze_thol_coherence(G)
+        >>> if coherence_stats:
+        ...     print(f"Mean coherence: {coherence_stats['mean_coherence']:.3f}")
+        ...     print(f"Nodes below threshold: {coherence_stats['nodes_below_threshold']}")
+        """
+        # Find all nodes with sub-EPIs (THOL bifurcation occurred)
+        thol_nodes = []
+        for node in G.nodes():
+            if G.nodes[node].get("sub_epis"):
+                thol_nodes.append(node)
+
+        if not thol_nodes:
+            return None
+
+        # Collect coherence values
+        coherences = []
+        for node in thol_nodes:
+            coh = G.nodes[node].get("_thol_collective_coherence")
+            if coh is not None:
+                coherences.append(coh)
+
+        if not coherences:
+            return None
+
+        # Compute statistics
+        mean_coherence = sum(coherences) / len(coherences)
+        min_coherence = min(coherences)
+        max_coherence = max(coherences)
+
+        # Get threshold from graph config
+        threshold = float(G.graph.get("THOL_MIN_COLLECTIVE_COHERENCE", 0.3))
+        nodes_below_threshold = sum(1 for c in coherences if c < threshold)
+
+        return {
+            "mean_coherence": mean_coherence,
+            "min_coherence": min_coherence,
+            "max_coherence": max_coherence,
+            "nodes_below_threshold": nodes_below_threshold,
+            "total_thol_nodes": len(thol_nodes),
+            "threshold": threshold,
+        }

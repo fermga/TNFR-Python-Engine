@@ -158,6 +158,7 @@ class CoreDefaults:
     THOL_MIN_DEGREE: int = 1  # Minimum network connectivity
     THOL_MIN_HISTORY_LENGTH: int = 3  # Minimum EPI history for acceleration computation
     THOL_ALLOW_ISOLATED: bool = False  # Require network context by default
+    THOL_MIN_COLLECTIVE_COHERENCE: float = 0.3  # Minimum collective coherence for sub-EPI ensemble
 
     # VAL (Expansion) precondition thresholds
     VAL_MAX_VF: float = 10.0  # Maximum structural frequency threshold
