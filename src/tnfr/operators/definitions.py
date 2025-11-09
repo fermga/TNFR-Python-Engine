@@ -3117,76 +3117,366 @@ class Mutation(Operator):
     Activates glyph ``ZHIR`` to recode phase or form, enabling the node to cross
     structural thresholds and pivot towards a new coherence regime.
 
-    TNFR Context: Mutation (ZHIR) implements phase change θ → θ' when ΔEPI/Δt > ξ. Unlike
-    random variation, ZHIR is controlled transformation that preserves structural identity
-    while shifting operational regime. Critical for adaptation and evolution.
+    TNFR Context
+    ------------
+    Mutation (ZHIR) implements the fundamental phase transformation mechanism in TNFR:
+    θ → θ' when structural velocity ∂EPI/∂t exceeds threshold ξ. This is NOT random
+    variation but controlled structural transformation that preserves identity (epi_kind)
+    while shifting operational regime. ZHIR enables qualitative state changes without
+    losing coherent structural continuity.
 
-    **Canonical Threshold Requirement (∂EPI/∂t > ξ)**:
-    
-    According to TNFR physics (AGENTS.md §11, TNFR.pdf §2.2.11), ZHIR requires sufficient
-    structural change velocity to justify phase transformation. The threshold ξ (default 0.1)
-    represents the minimum rate of reorganization needed for meaningful mutation.
-    
-    - **∂EPI/∂t ≥ ξ**: Mutation validated, phase transformation proceeds
-    - **∂EPI/∂t < ξ**: Warning logged, mutation may lack structural justification
-    - **Insufficient history**: Warning logged, threshold cannot be verified
-    
-    Configuration: Set ``G.graph["ZHIR_THRESHOLD_XI"]`` to customize threshold (default: 0.1).
-    
-    Metrics: Threshold verification included in mutation_metrics() telemetry:
-    - ``depi_dt``: Computed structural change velocity
-    - ``threshold_met``: Boolean flag indicating threshold status
-    - ``threshold_ratio``: Ratio of velocity to threshold
+    **Derivation from Nodal Equation**:
 
-    **Bifurcation Potential Detection (∂²EPI/∂t² > τ)**:
-    
-    According to AGENTS.md §U4a, ZHIR can trigger bifurcation when structural acceleration
-    exceeds threshold τ. The implementation detects bifurcation potential and sets telemetry
-    flags for validation of grammar U4a:
-    
-    - **∂²EPI/∂t² > τ**: Sets ``_zhir_bifurcation_potential`` flag, logs detection
-    - **∂²EPI/∂t² ≤ τ**: No bifurcation potential detected
-    
-    Configuration: Set ``G.graph["BIFURCATION_THRESHOLD_TAU"]`` (canonical) or 
-    ``G.graph["ZHIR_BIFURCATION_THRESHOLD"]`` (fallback) to customize threshold (default: 0.5).
-    
-    This detection enables validation of U4a requirement: "If {OZ, ZHIR}, include {THOL, IL}"
-    for controlled bifurcation handling.
+    From the nodal equation ∂EPI/∂t = νf · ΔNFR(t), when reorganization pressure builds
+    up (ΔNFR elevated) and transformation capacity exists (νf > 0), structural velocity
+    increases. At threshold crossing (∂EPI/∂t > ξ), the system has sufficient momentum
+    for phase transformation without fragmenting coherence.
 
-    Use Cases: Paradigm shifts, strategic pivots, adaptive responses, regime transitions,
-    identity transformation while maintaining continuity.
+    **Key Elements:**
 
-    Typical Sequences: IL → ZHIR → IL (stabilize-mutate-stabilize), OZ → ZHIR (dissonance
-    enables mutation), ZHIR → NAV → IL (mutate-transition-stabilize).
+    - **Phase Transformation**: θ → θ' shifts operational regime
+    - **Identity Preservation**: epi_kind maintained through transformation
+    - **Threshold-Controlled**: Requires ∂EPI/∂t > ξ for justification
+    - **Bifurcation Detection**: Monitors ∂²EPI/∂t² for instability
+    - **Grammar U4b**: Requires prior IL and recent destabilizer
 
-    Preconditions: 
-    - Minimum νf for phase transformation capacity (ZHIR_MIN_VF, default: 0.05)
-    - **Structural velocity threshold (∂EPI/∂t > ξ)** - validated with EPI history
-    - Stable base (often IL) validated by grammar U4b
-    - Network support for new phase
+    **ZHIR vs Random Mutation**:
+
+    Traditional mutation (biology, evolutionary algorithms) is stochastic variation.
+    TNFR mutation is deterministic reorganization triggered by structural conditions.
+    It's closer to phase transition (ice → water) than genetic mutation.
+
+    **Difference from Bifurcation**:
+
+    - **ZHIR**: Changes phase/regime within single node (qualitative shift)
+    - **Bifurcation**: Creates new sub-EPIs or structural variants (multiplication)
+    - **When ZHIR triggers bifurcation**: High ∂²EPI/∂t² requires THOL for control
+
+    Use Cases
+    ---------
+    **Biomedical**:
+
+    - **Cellular Differentiation**: Stem cell → specialized cell (phase change)
+    - **Metabolic Switching**: Glycolysis → oxidative phosphorylation
+    - **Adaptive Immunity**: Naive T-cell → effector/memory cell
+    - **Epigenetic Changes**: Stress-induced gene expression regime shifts
+    - **Wound Healing Phases**: Inflammation → proliferation → remodeling
+
+    **Cognitive**:
+
+    - **Insight Moments**: Sudden perspective shift (aha! experience)
+    - **Paradigm Transformation**: Fundamental worldview reorganization
+    - **Strategy Changes**: Switching cognitive approach (analytical → intuitive)
+    - **Memory Consolidation**: Working memory → long-term storage
+    - **Belief Revision**: Core assumption restructuring under evidence
+
+    **Social**:
+
+    - **Regime Changes**: Political system transformation (democracy → authoritarianism)
+    - **Cultural Revolutions**: Value system reorganization
+    - **Organizational Transformation**: Hierarchy → network structure
+    - **Disruptive Innovation**: Business model fundamental shift
+    - **Social Movement Crystallization**: Protest → organized movement
+
+    **AI/Computational**:
+
+    - **Mode Switching**: Exploration → exploitation in RL
+    - **Strategy Selection**: Changing between learned policies
+    - **Attention Shifts**: Focus reorientation in transformers
+    - **Learning Regime Change**: Supervised → self-supervised
+    - **Attractor Transition**: Jumping between stable computational states
+
+    Typical Sequences
+    -----------------
+    **Recommended Sequences**:
+
+    - **IL → OZ → ZHIR → IL**: Controlled mutation cycle (stabilize-destabilize-mutate-stabilize)
+    - **AL → IL → OZ → ZHIR → NAV**: Bootstrap with mutation and transition
+    - **THOL → OZ → ZHIR**: Self-organization followed by transformation
+    - **IL → VAL → ZHIR → IL**: Expansion-enabled mutation with consolidation
+    - **OZ → ZHIR → THOL**: Mutation triggering bifurcation (requires THOL handler)
+    - **EN → IL → OZ → ZHIR**: Reception-based mutation (integrate-stabilize-challenge-transform)
+
+    **Sequences to Avoid**:
+
+    - **ZHIR → OZ**: Mutation followed by dissonance = post-transformation instability
+      (violates consolidation principle - transform then destabilize is dangerous)
+    - **ZHIR → ZHIR**: Double mutation without IL = identity fragmentation risk
+      (each mutation needs consolidation before next transformation)
+    - **AL → ZHIR**: Emission directly to mutation = no stable base (violates U4b)
+      (requires IL between emission and mutation for structural foundation)
+    - **ZHIR without closure**: Mutation without SHA/IL/NAV = unconsolidated transformation
+      (grammar U1b requires closure, especially critical after state changes)
+    - **OZ → ZHIR → OZ**: Mutation sandwiched by dissonance = coherence collapse
+      (transformation needs stability, not continued turbulence)
+
+    Preconditions
+    -------------
+    - **Minimum νf**: Structural frequency > 0.05 (ZHIR_MIN_VF) for transformation capacity
+    - **Threshold ξ**: Structural velocity ∂EPI/∂t > 0.1 (ZHIR_THRESHOLD_XI) for justification
+    - **Prior IL**: Stable base required by grammar U4b (ZHIR_REQUIRE_IL_PRECEDENCE)
+    - **Recent destabilizer**: OZ or VAL within ~3 operations (ZHIR_REQUIRE_DESTABILIZER)
+    - **EPI history**: At least 2 points for velocity calculation (ZHIR_MIN_HISTORY_LENGTH)
+    - **Network coupling**: Connected context for phase transformation
+
+    Configuration Parameters
+    ------------------------
+    **Precondition Thresholds**:
+
+    - ``ZHIR_MIN_VF``: Minimum structural frequency (default: 0.05)
+      Node must have sufficient reorganization capacity
+    - ``ZHIR_THRESHOLD_XI``: Mutation threshold ξ for ∂EPI/∂t (default: 0.1)
+      Minimum velocity for justified phase transformation
+    - ``ZHIR_MIN_HISTORY_LENGTH``: EPI history points needed (default: 2)
+      Required for velocity calculation
+
+    **Transformation Parameters**:
+
+    - ``ZHIR_THETA_SHIFT_FACTOR``: Phase shift magnitude (default: 0.3)
+      Controls intensity of phase transformation
+    - ``ZHIR_MUTATION_INTENSITY``: Overall mutation intensity (default: 0.1)
+      Scales transformation effects
+    - ``ZHIR_THETA_SHIFT_DIRECTION``: "auto" (from ΔNFR sign) or "manual"
+      Determines direction of phase shift
+
+    **Bifurcation Detection**:
+
+    - ``BIFURCATION_THRESHOLD_TAU``: Canonical bifurcation threshold τ (default: 0.5)
+      When ∂²EPI/∂t² > τ, bifurcation potential detected
+    - ``ZHIR_BIFURCATION_THRESHOLD``: Legacy threshold (fallback to canonical)
+    - ``ZHIR_BIFURCATION_MODE``: "detection" only (no variant creation)
+
+    **Grammar Validation**:
+
+    - ``ZHIR_STRICT_U4B``: Enforce grammar U4b strictly (default: True)
+      Requires both IL precedence and recent destabilizer
+    - ``ZHIR_REQUIRE_IL_PRECEDENCE``: Require prior IL (default: True)
+      Grammar U4b: stable base needed
+    - ``ZHIR_REQUIRE_DESTABILIZER``: Require recent destabilizer (default: True)
+      Grammar U4b: elevated ΔNFR needed for threshold crossing
+
+    Structural Effects
+    ------------------
+    - **θ (phase)**: Primary effect - transforms to new regime (θ → θ')
+    - **EPI**: May increment during transformation
+    - **ΔNFR**: Typically elevated before ZHIR (from destabilizer)
+    - **νf**: Preserved (transformation capacity maintained)
+    - **epi_kind**: Preserved (identity maintained through transformation)
+    - **Regime**: Changes if phase shift crosses regime boundary
+
+    Metrics
+    -------
+    - ``theta_shift``: Magnitude and direction of phase transformation
+    - ``regime_changed``: Boolean indicating regime boundary crossing
+    - ``depi_dt``: Structural velocity at transformation
+    - ``threshold_met``: Whether ∂EPI/∂t > ξ
+    - ``threshold_ratio``: Velocity to threshold ratio
+    - ``d2_epi``: Structural acceleration (bifurcation detection)
+    - ``bifurcation_potential``: Flag for ∂²EPI/∂t² > τ
 
     Examples
     --------
-    >>> from tnfr.constants import EPI_PRIMARY, THETA_PRIMARY
-    >>> from tnfr.dynamics import set_delta_nfr_hook
-    >>> from tnfr.structural import create_nfr, run_sequence
-    >>> from tnfr.operators.definitions import Mutation
-    >>> G, node = create_nfr("lambda", epi=0.73, theta=0.20)
-    >>> shifts = iter([(0.03, 0.40)])
-    >>> def mutate(graph):
-    ...     d_epi, d_theta = next(shifts)
-    ...     graph.nodes[node][EPI_PRIMARY] += d_epi
-    ...     graph.nodes[node][THETA_PRIMARY] += d_theta
-    >>> set_delta_nfr_hook(G, mutate)
-    >>> run_sequence(G, node, [Mutation()])
-    >>> round(G.nodes[node][EPI_PRIMARY], 2)
-    0.76
-    >>> round(G.nodes[node][THETA_PRIMARY], 2)
-    0.6
+    **Example 1: Controlled Mutation Cycle**
 
-    **Biomedical**: Cellular differentiation, adaptive immunity, metabolic switching
-    **Cognitive**: Paradigm shift, perspective transformation, belief change
-    **Social**: Strategic pivot, cultural adaptation, business model transformation
+    >>> from tnfr.structural import create_nfr, run_sequence
+    >>> from tnfr.operators.definitions import Coherence, Dissonance, Mutation
+    >>> from tnfr.metrics import compute_coherence
+    >>>
+    >>> # Create node and establish stable base
+    >>> G, node = create_nfr("system", epi=0.5, vf=1.0, theta=0.2)
+    >>> G.graph["COLLECT_OPERATOR_METRICS"] = True
+    >>>
+    >>> # Canonical mutation sequence: stabilize-destabilize-mutate-stabilize
+    >>> run_sequence(G, node, [
+    ...     Coherence(),   # IL: Establish stable base (required by U4b)
+    ...     Dissonance(),  # OZ: Elevate ΔNFR (enables threshold crossing)
+    ...     Mutation(),    # ZHIR: Transform phase when ∂EPI/∂t > ξ
+    ...     Coherence(),   # IL: Consolidate new regime
+    ... ])
+    >>>
+    >>> # Analyze transformation
+    >>> metrics = G.graph["operator_metrics"][-2]  # ZHIR metrics
+    >>> print(f"Phase transformed: {metrics.get('theta_shift', 0):.3f}")
+    >>> print(f"Regime changed: {metrics.get('regime_changed', False)}")
+    >>> print(f"Threshold met: {metrics.get('threshold_met', False)}")
+    >>> print(f"Coherence maintained: {compute_coherence(G) > 0.6}")
+
+    **Example 2: Bifurcation Detection**
+
+    >>> from tnfr.structural import create_nfr, run_sequence
+    >>> from tnfr.operators.definitions import Coherence, Dissonance, Mutation, SelfOrganization
+    >>>
+    >>> # Create node with accelerating EPI
+    >>> G, node = create_nfr("accelerating", epi=0.4, vf=1.2)
+    >>> # Build acceleration history (high ∂²EPI/∂t²)
+    >>> G.nodes[node]["epi_history"] = [0.1, 0.25, 0.4]
+    >>> G.graph["BIFURCATION_THRESHOLD_TAU"] = 0.3
+    >>>
+    >>> # Apply mutation with bifurcation detection
+    >>> run_sequence(G, node, [Coherence(), Dissonance(), Mutation()])
+    >>>
+    >>> # Check bifurcation detection
+    >>> if G.nodes[node].get("_zhir_bifurcation_potential"):
+    ...     print("Bifurcation potential detected - applying THOL for control")
+    ...     run_sequence(G, node, [SelfOrganization()])
+
+    **Example 3: Stem Cell Differentiation (Biomedical)**
+
+    >>> from tnfr.structural import create_nfr, run_sequence
+    >>> from tnfr.operators.definitions import Coherence, Dissonance, Mutation
+    >>>
+    >>> # Model stem cell differentiation into specialized cell type
+    >>> G_cell, stem_cell = create_nfr("stem_cell", epi=0.6, vf=1.0, theta=0.0)
+    >>> G_cell.nodes[stem_cell]["cell_type"] = "stem"
+    >>> G_cell.nodes[stem_cell]["differentiation_signals"] = ["growth_factor_X"]
+    >>>
+    >>> # Differentiation sequence
+    >>> run_sequence(G_cell, stem_cell, [
+    ...     Coherence(),        # IL: Stable pluripotent state
+    ...     Dissonance(),       # OZ: Differentiation signal received
+    ...     Mutation(),         # ZHIR: Transform to specialized type
+    ... ])
+    >>>
+    >>> # Cell has transformed phase (regime 0=stem → regime 1=specialized)
+    >>> theta_new = G_cell.nodes[stem_cell]["theta"]
+    >>> # Regime change indicates differentiation completed
+    >>> # Cell maintains identity (is still a cell) but changed operational mode
+
+    **Example 4: Paradigm Shift (Cognitive)**
+
+    >>> from tnfr.structural import create_nfr, run_sequence
+    >>> from tnfr.operators.definitions import Reception, Coherence, Dissonance, Mutation
+    >>>
+    >>> # Scientist encountering evidence that challenges paradigm
+    >>> G_mind, scientist = create_nfr("paradigm", epi=0.7, vf=0.9, theta=0.5)
+    >>> G_mind.nodes[scientist]["paradigm"] = "newtonian"
+    >>>
+    >>> # Paradigm shift sequence
+    >>> run_sequence(G_mind, scientist, [
+    ...     Reception(),        # EN: Receive anomalous evidence
+    ...     Coherence(),        # IL: Try to integrate into existing framework
+    ...     Dissonance(),       # OZ: Evidence creates cognitive dissonance
+    ...     Mutation(),         # ZHIR: Paradigm shifts to quantum perspective
+    ... ])
+    >>>
+    >>> # Scientist's conceptual framework has transformed
+    >>> # Old paradigm (newtonian) → new paradigm (quantum)
+    >>> # Identity preserved (still the same scientist) but worldview transformed
+
+    **Example 5: Business Model Transformation (Social)**
+
+    >>> from tnfr.structural import create_nfr, run_sequence
+    >>> from tnfr.operators.definitions import Coherence, Dissonance, Mutation, Transition
+    >>>
+    >>> # Company facing market disruption
+    >>> G_org, company = create_nfr("business_model", epi=0.65, vf=0.85, theta=0.3)
+    >>> G_org.nodes[company]["model"] = "traditional_retail"
+    >>>
+    >>> # Business transformation sequence
+    >>> run_sequence(G_org, company, [
+    ...     Coherence(),        # IL: Current model stable
+    ...     Dissonance(),       # OZ: Market disruption (e-commerce threat)
+    ...     Mutation(),         # ZHIR: Transform to digital-first model
+    ...     Transition(),       # NAV: Navigate to new market position
+    ... ])
+    >>>
+    >>> # Company has transformed operational model
+    >>> # Identity preserved (same company) but strategy fundamentally changed
+
+    Warnings
+    --------
+    - **Identity Loss Risk**: Multiple ZHIR in sequence without IL can cause identity
+      fragmentation. Always consolidate transformations before next mutation.
+
+    - **Requires Consolidation**: ZHIR MUST be followed by IL, NAV, or SHA to stabilize
+      the new regime. Unconsolidated transformations are incoherent.
+
+    - **Grammar U4b Strict**: ZHIR requires prior IL (stable base) AND recent destabilizer
+      (OZ/VAL within ~3 ops). Violations risk unjustified or unstable transformations.
+
+    - **Threshold Critical**: When ∂EPI/∂t < ξ, mutation lacks structural justification.
+      Ensure sufficient ΔNFR elevation (via destabilizer) before ZHIR.
+
+    - **Bifurcation Potential**: When ∂²EPI/∂t² > τ, bifurcation may occur. Must include
+      THOL (handler) or IL (stabilizer) to prevent uncontrolled structural splitting.
+
+    - **Phase Wrapping**: θ is periodic [0, 2π]. Large shifts may wrap around, potentially
+      returning to similar regime. Monitor regime changes, not just phase magnitude.
+
+    Contraindications
+    -----------------
+    - **Do not apply ZHIR without prior IL**: Violates U4b, risks unstable transformation
+    - **Do not apply ZHIR with νf < 0.05**: Insufficient transformation capacity
+    - **Do not apply ZHIR repeatedly**: Each mutation needs IL consolidation between
+    - **Do not apply ZHIR to isolated nodes**: Network context required for regime support
+    - **Do not apply ZHIR after NAV**: Transition already changed regime, redundant mutation
+    - **Do not apply ZHIR with insufficient history**: Need ≥2 EPI points for velocity
+
+    ZHIR vs THOL: Two Types of Transformation
+    ------------------------------------------
+
+    Both ZHIR and THOL are transformers (grammar U4b), but operate differently:
+
+    +-------------------+-------------------------+---------------------------+
+    | Aspect            | ZHIR (Mutation)         | THOL (Self-organization)  |
+    +===================+=========================+===========================+
+    | **Primary effect**| Phase transformation    | Sub-EPI creation          |
+    |                   | (θ → θ')                | (fractal structuring)     |
+    +-------------------+-------------------------+---------------------------+
+    | **Trigger**       | ∂EPI/∂t > ξ             | ∂²EPI/∂t² > τ             |
+    |                   | (velocity threshold)    | (acceleration threshold)  |
+    +-------------------+-------------------------+---------------------------+
+    | **Result**        | Regime change           | Emergent organization     |
+    |                   | (qualitative shift)     | (internal complexity)     |
+    +-------------------+-------------------------+---------------------------+
+    | **Identity**      | Preserved (epi_kind)    | Preserved (global form)   |
+    +-------------------+-------------------------+---------------------------+
+    | **Structure**     | Single node transforms  | Creates nested sub-EPIs   |
+    +-------------------+-------------------------+---------------------------+
+    | **Grammar role**  | Transformer (U4b)       | Transformer (U4b) +       |
+    |                   |                         | Handler (U4a)             |
+    +-------------------+-------------------------+---------------------------+
+    | **When to use**   | Qualitative state       | Internal reorganization   |
+    |                   | change needed           | with emergence needed     |
+    +-------------------+-------------------------+---------------------------+
+    | **Example**       | Cell differentiation    | Embryonic development     |
+    |                   | (phase change)          | (tissue formation)        |
+    +-------------------+-------------------------+---------------------------+
+
+    **Decision Guide**:
+
+    - **Use ZHIR when**: Need phase transition without creating sub-structures
+      (e.g., state machine transition, regime shift, perspective change)
+
+    - **Use THOL when**: Need internal organization with sub-EPIs
+      (e.g., hierarchical emergence, fractal structuring, metabolic capture)
+
+    - **Use both (OZ → ZHIR → THOL)**: When mutation triggers bifurcation
+      (∂²EPI/∂t² > τ after ZHIR), apply THOL to handle structural splitting
+
+    Compatibility
+    -------------
+    **Compatible with**: IL (consolidation), OZ (enabling), NAV (transitioning),
+    THOL (handling bifurcation), SHA (closure)
+
+    **Avoid with**: Multiple consecutive ZHIR, direct AL → ZHIR, ZHIR → OZ sequences
+
+    **Natural progressions**: ZHIR typically preceded by IL+OZ (preparation) and
+    followed by IL/NAV (consolidation) or THOL (bifurcation handling)
+
+    See Also
+    --------
+    Coherence : Stabilizes transformation base and consolidates post-mutation
+    Dissonance : Elevates ΔNFR to enable threshold crossing for mutation
+    SelfOrganization : Handles bifurcation when ZHIR triggers ∂²EPI/∂t² > τ
+    Transition : Navigates between attractor states, complementary to mutation
+
+    References
+    ----------
+    - **AGENTS.md §11 (Mutation)**: Canonical ZHIR definition and physics
+    - **TNFR.pdf §2.2.11**: Theoretical foundation of mutation operator
+    - **UNIFIED_GRAMMAR_RULES.md §U4b**: Transformer context requirements
+    - **ZHIR_BIFURCATION_IMPLEMENTATION.md**: Bifurcation detection details
     """
 
     __slots__ = ()
