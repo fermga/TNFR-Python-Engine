@@ -1080,14 +1080,15 @@ def silence_metrics(
 def expansion_metrics(
     G: TNFRGraph, node: NodeId, vf_before: float, epi_before: float
 ) -> dict[str, Any]:
-    """VAL - Enhanced expansion metrics with structural fidelity indicators.
+    """VAL - Enhanced expansion metrics with structural indicators (Issue #2724).
 
-    Collects comprehensive metrics that reflect canonical VAL effects:
-    - **Structural dilation**: EPI and νf increases
-    - **Bifurcation risk**: ∂²EPI/∂t² threshold monitoring
-    - **Coherence gradient**: Impact on local/global coherence
-    - **Network impact**: Affected neighbors and coupling changes
-    - **Fractality preservation**: Structural complexity indicators
+    Captures comprehensive metrics reflecting canonical VAL effects:
+    - Basic growth metrics (Δνf, ΔEPI)
+    - Bifurcation risk (∂²EPI/∂t²)
+    - Coherence preservation (local C(t))
+    - Fractality indicators (growth ratios)
+    - Network impact (phase coherence with neighbors)
+    - Structural stability (ΔNFR bounds)
 
     Parameters
     ----------
@@ -1104,135 +1105,187 @@ def expansion_metrics(
     -------
     dict
         Comprehensive expansion metrics including:
-        
-        **Core Metrics**:
+
+        **Core Metrics (existing)**:
         - operator, glyph: Identification
         - vf_increase, vf_final: Frequency changes
         - delta_epi, epi_final: EPI changes
         - expansion_factor: Relative νf increase
-        
-        **Structural Metrics** (NEW):
+
+        **Structural Stability (NEW)**:
         - dnfr_final: Final reorganization gradient
+        - dnfr_positive: True if ΔNFR > 0 (required for expansion)
+        - dnfr_stable: True if 0 < ΔNFR < 1.0 (bounded growth)
+
+        **Bifurcation Risk (ENHANCED)**:
         - d2epi: EPI acceleration (∂²EPI/∂t²)
-        - bifurcation_risk: Boolean flag if d²EPI/dt² > τ
-        - coherence_local: Local coherence after expansion
-        - phase_final: Final phase alignment
-        
-        **Network Metrics** (NEW):
-        - neighbor_count: Number of connected neighbors
-        - network_impact_radius: Boolean if has neighbors
-        - degree_change: Change in node degree (if applicable)
-        
-        **Fractality Indicators** (NEW):
-        - structural_complexity_increase: Relative EPI growth
-        - frequency_complexity_ratio: νf/EPI growth ratio
-        - expansion_quality: "coherent" if metrics healthy, else "unstable"
+        - bifurcation_risk: True when |∂²EPI/∂t²| > threshold
+        - bifurcation_magnitude: Ratio of d2epi to threshold
+        - bifurcation_threshold: Configurable threshold value
+
+        **Coherence Preservation (ENHANCED)**:
+        - coherence_local: Local coherence measurement [0,1]
+        - coherence_preserved: True when C_local > threshold
+
+        **Fractality Indicators (ENHANCED)**:
+        - epi_growth_rate: Relative EPI growth
+        - vf_growth_rate: Relative νf growth
+        - growth_ratio: vf_growth_rate / epi_growth_rate
+        - fractal_preserved: True when ratio in valid range [0.5, 2.0]
+
+        **Network Impact (NEW)**:
+        - neighbor_count: Number of neighbors
+        - phase_coherence_neighbors: Phase alignment with neighbors [0,1]
+        - network_coupled: True if neighbors exist and phase_coherence > 0.5
+        - theta_final: Final phase value
+
+        **Overall Health (NEW)**:
+        - expansion_healthy: Combined indicator of all health metrics
+
+    Notes
+    -----
+    Key indicators:
+    - bifurcation_risk: True when |∂²EPI/∂t²| > threshold
+    - fractal_preserved: True when growth rates maintain scaling relationship
+    - coherence_preserved: True when local C(t) remains above threshold
+    - dnfr_positive: True when ΔNFR > 0 (required for expansion)
+
+    Thresholds are configurable via graph metadata:
+    - VAL_BIFURCATION_THRESHOLD (default: 0.3)
+    - VAL_MIN_COHERENCE (default: 0.5)
+    - VAL_FRACTAL_RATIO_MIN (default: 0.5)
+    - VAL_FRACTAL_RATIO_MAX (default: 2.0)
 
     Examples
     --------
     >>> from tnfr.structural import create_nfr, run_sequence
     >>> from tnfr.operators.definitions import Expansion
     >>>
-    >>> G, node = create_nfr("test", epi=0.5, vf=2.0)
+    >>> G, node = create_nfr("test", epi=0.4, vf=1.0)
     >>> G.graph["COLLECT_OPERATOR_METRICS"] = True
-    >>> G.nodes[node]['delta_nfr'] = 0.1
-    >>> 
-    >>> # Apply expansion
-    >>> Expansion()(G, node, collect_metrics=True)
-    >>> 
-    >>> # Metrics include bifurcation_risk, coherence_local, etc.
+    >>> run_sequence(G, node, [Expansion()])
+    >>>
+    >>> metrics = G.graph["operator_metrics"][-1]
+    >>> if metrics["bifurcation_risk"]:
+    ...     print(f"WARNING: Bifurcation risk! d2epi={metrics['d2epi']:.3f}")
+    >>> if not metrics["coherence_preserved"]:
+    ...     print(f"WARNING: Coherence degraded! C={metrics['coherence_local']:.3f}")
 
-    Notes
-    -----
-    These metrics enable monitoring of:
-    1. **Bifurcation readiness**: d²EPI/dt² > τ signals reorganization threshold
-    2. **Coherence preservation**: Expansion should maintain or increase coherence
-    3. **Fractality**: Self-similar growth patterns indicated by complexity ratios
-    4. **Network coupling**: Impact on surrounding nodes
-    
     See Also
     --------
     Expansion : VAL operator that produces these metrics
     validate_expansion : Preconditions ensuring valid expansion
     """
-    # Existing metrics
+    import math
+
+    # Basic state
     vf_after = _get_node_attr(G, node, ALIAS_VF)
     epi_after = _get_node_attr(G, node, ALIAS_EPI)
-    
-    # NEW: Additional structural parameters
     dnfr = _get_node_attr(G, node, ALIAS_DNFR)
     d2epi = _get_node_attr(G, node, ALIAS_D2EPI)
     theta = _get_node_attr(G, node, ALIAS_THETA)
-    
-    # NEW: Bifurcation risk assessment
-    tau = float(G.graph.get("BIFURCATION_THRESHOLD_TAU", 0.5))
-    bifurcation_risk = abs(d2epi) > tau
-    
-    # NEW: Network impact metrics
+
+    # Network context
     neighbors = list(G.neighbors(node))
     neighbor_count = len(neighbors)
-    network_impact_radius = neighbor_count > 0
-    
-    # NEW: Coherence metrics (if available)
-    try:
-        from ..telemetry import compute_local_coherence
-        coherence_local = compute_local_coherence(G, node)
-    except (ImportError, AttributeError):
-        # Fallback if telemetry not available
-        coherence_local = None
-    
-    # NEW: Fractality and complexity indicators
+
+    # Thresholds (configurable)
+    bifurcation_threshold = float(G.graph.get("VAL_BIFURCATION_THRESHOLD", 0.3))
+    coherence_threshold = float(G.graph.get("VAL_MIN_COHERENCE", 0.5))
+    fractal_ratio_min = float(G.graph.get("VAL_FRACTAL_RATIO_MIN", 0.5))
+    fractal_ratio_max = float(G.graph.get("VAL_FRACTAL_RATIO_MAX", 2.0))
+
+    # Growth deltas
     delta_epi = epi_after - epi_before
     delta_vf = vf_after - vf_before
-    
-    structural_complexity_increase = (
-        (delta_epi / epi_before) if epi_before > 0 else 0.0
+
+    # Growth rates (relative to initial values)
+    epi_growth_rate = (delta_epi / epi_before) if epi_before > 1e-9 else 0.0
+    vf_growth_rate = (delta_vf / vf_before) if vf_before > 1e-9 else 0.0
+    growth_ratio = (
+        vf_growth_rate / epi_growth_rate if abs(epi_growth_rate) > 1e-9 else 0.0
     )
-    
-    frequency_complexity_ratio = (
-        (delta_vf / delta_epi) if delta_epi > 0 else 0.0
+
+    # Coherence preservation
+    try:
+        from ..metrics.coherence import compute_local_coherence
+
+        c_local = compute_local_coherence(G, node)
+    except (ImportError, AttributeError):
+        # Fallback if coherence module not available
+        c_local = 0.0
+
+    # Phase coherence with neighbors
+    if neighbor_count > 0:
+        neighbor_theta_sum = sum(_get_node_attr(G, n, ALIAS_THETA) for n in neighbors)
+        mean_neighbor_theta = neighbor_theta_sum / neighbor_count
+        phase_diff = abs(theta - mean_neighbor_theta)
+        # Normalize to [0, 1], 1 = perfect alignment
+        phase_coherence_neighbors = 1.0 - min(phase_diff, math.pi) / math.pi
+    else:
+        phase_coherence_neighbors = 0.0
+
+    # Bifurcation magnitude (ratio to threshold)
+    bifurcation_magnitude = (
+        abs(d2epi) / bifurcation_threshold if bifurcation_threshold > 0 else 0.0
     )
-    
-    # NEW: Expansion quality assessment
-    expansion_quality = "coherent"
-    if bifurcation_risk:
-        expansion_quality = "threshold"  # At bifurcation point
-    if dnfr < 0:
-        expansion_quality = "unstable"  # Negative ΔNFR (shouldn't happen)
-    if delta_epi <= 0 or delta_vf <= 0:
-        expansion_quality = "ineffective"  # No actual expansion occurred
-    
+
+    # Boolean indicators
+    bifurcation_risk = abs(d2epi) > bifurcation_threshold
+    coherence_preserved = c_local > coherence_threshold
+    dnfr_positive = dnfr > 0
+    dnfr_stable = 0 < dnfr < 1.0
+    fractal_preserved = (
+        fractal_ratio_min < growth_ratio < fractal_ratio_max
+        if abs(epi_growth_rate) > 1e-9
+        else True
+    )
+    network_coupled = neighbor_count > 0 and phase_coherence_neighbors > 0.5
+
+    # Overall health indicator
+    expansion_healthy = (
+        dnfr_positive
+        and not bifurcation_risk
+        and coherence_preserved
+        and fractal_preserved
+    )
+
     return {
         # Core identification
         "operator": "Expansion",
         "glyph": "VAL",
-        
-        # Existing metrics
+        # Existing basic metrics
         "vf_increase": delta_vf,
         "vf_final": vf_after,
         "delta_epi": delta_epi,
         "epi_final": epi_after,
-        "expansion_factor": vf_after / vf_before if vf_before > 0 else 1.0,
-        
-        # NEW: Structural metrics
+        "expansion_factor": vf_after / vf_before if vf_before > 1e-9 else 1.0,
+        # NEW: Structural stability
         "dnfr_final": dnfr,
+        "dnfr_positive": dnfr_positive,
+        "dnfr_stable": dnfr_stable,
+        # NEW: Bifurcation risk (enhanced)
         "d2epi": d2epi,
         "bifurcation_risk": bifurcation_risk,
-        "bifurcation_threshold": tau,
-        "coherence_local": coherence_local,
-        "phase_final": theta,
-        
+        "bifurcation_magnitude": bifurcation_magnitude,
+        "bifurcation_threshold": bifurcation_threshold,
+        # NEW: Coherence preservation
+        "coherence_local": c_local,
+        "coherence_preserved": coherence_preserved,
+        # NEW: Fractality indicators
+        "epi_growth_rate": epi_growth_rate,
+        "vf_growth_rate": vf_growth_rate,
+        "growth_ratio": growth_ratio,
+        "fractal_preserved": fractal_preserved,
         # NEW: Network impact
         "neighbor_count": neighbor_count,
-        "network_impact_radius": network_impact_radius,
-        
-        # NEW: Fractality indicators
-        "structural_complexity_increase": structural_complexity_increase,
-        "frequency_complexity_ratio": frequency_complexity_ratio,
-        "expansion_quality": expansion_quality,
-        
+        "phase_coherence_neighbors": max(0.0, phase_coherence_neighbors),
+        "network_coupled": network_coupled,
+        "theta_final": theta,
+        # NEW: Overall health
+        "expansion_healthy": expansion_healthy,
         # Metadata
-        "metrics_version": "2.0_canonical",
+        "metrics_version": "3.0_canonical",
     }
 
 
