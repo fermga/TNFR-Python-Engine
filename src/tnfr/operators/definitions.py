@@ -3138,6 +3138,21 @@ class Mutation(Operator):
     - ``threshold_met``: Boolean flag indicating threshold status
     - ``threshold_ratio``: Ratio of velocity to threshold
 
+    **Bifurcation Potential Detection (∂²EPI/∂t² > τ)**:
+    
+    According to AGENTS.md §U4a, ZHIR can trigger bifurcation when structural acceleration
+    exceeds threshold τ. The implementation detects bifurcation potential and sets telemetry
+    flags for validation of grammar U4a:
+    
+    - **∂²EPI/∂t² > τ**: Sets ``_zhir_bifurcation_potential`` flag, logs detection
+    - **∂²EPI/∂t² ≤ τ**: No bifurcation potential detected
+    
+    Configuration: Set ``G.graph["BIFURCATION_THRESHOLD_TAU"]`` (canonical) or 
+    ``G.graph["ZHIR_BIFURCATION_THRESHOLD"]`` (fallback) to customize threshold (default: 0.5).
+    
+    This detection enables validation of U4a requirement: "If {OZ, ZHIR}, include {THOL, IL}"
+    for controlled bifurcation handling.
+
     Use Cases: Paradigm shifts, strategic pivots, adaptive responses, regime transitions,
     identity transformation while maintaining continuity.
 
@@ -3177,6 +3192,130 @@ class Mutation(Operator):
     __slots__ = ()
     name: ClassVar[str] = MUTATION
     glyph: ClassVar[Glyph] = Glyph.ZHIR
+
+    def __call__(self, G: TNFRGraph, node: Any, **kw: Any) -> None:
+        """Apply ZHIR with bifurcation potential detection.
+
+        Detects when ∂²EPI/∂t² > τ (bifurcation threshold) and sets telemetry flags
+        to enable validation of grammar U4a.
+
+        Parameters
+        ----------
+        G : TNFRGraph
+            Graph storing TNFR nodes
+        node : Any
+            Target node identifier
+        **kw : Any
+            Additional parameters including:
+            - tau: Bifurcation threshold (default from graph config or 0.5)
+            - validate_preconditions: Enable precondition checks (default True)
+            - collect_metrics: Enable metrics collection (default False)
+        """
+        # Compute structural acceleration before base operator
+        d2_epi = self._compute_epi_acceleration(G, node)
+
+        # Get bifurcation threshold (tau) from kwargs or graph config
+        tau = kw.get("tau")
+        if tau is None:
+            # Try canonical threshold first, then operator-specific, then default
+            tau = float(
+                G.graph.get(
+                    "BIFURCATION_THRESHOLD_TAU",
+                    G.graph.get("ZHIR_BIFURCATION_THRESHOLD", 0.5),
+                )
+            )
+
+        # Apply base operator (includes glyph application, preconditions, and metrics)
+        super().__call__(G, node, **kw)
+
+        # Detect bifurcation potential if acceleration exceeds threshold
+        if d2_epi > tau:
+            self._detect_bifurcation_potential(G, node, d2_epi=d2_epi, tau=tau)
+
+    def _compute_epi_acceleration(self, G: TNFRGraph, node: Any) -> float:
+        """Calculate ∂²EPI/∂t² from node's EPI history.
+
+        Uses finite difference approximation:
+        d²EPI/dt² ≈ (EPI_t - 2*EPI_{t-1} + EPI_{t-2}) / (Δt)²
+        For unit time steps: d²EPI/dt² ≈ EPI_t - 2*EPI_{t-1} + EPI_{t-2}
+
+        Parameters
+        ----------
+        G : TNFRGraph
+            Graph containing the node
+        node : Any
+            Node identifier
+
+        Returns
+        -------
+        float
+            Magnitude of EPI acceleration (always non-negative)
+        """
+        from ..alias import get_attr
+        from ..constants.aliases import ALIAS_EPI
+
+        # Get EPI history (maintained by node for temporal analysis)
+        history = G.nodes[node].get("epi_history", [])
+
+        # Need at least 3 points for second derivative
+        if len(history) < 3:
+            return 0.0
+
+        # Finite difference: d²EPI/dt² ≈ (EPI_t - 2*EPI_{t-1} + EPI_{t-2})
+        epi_t = float(history[-1])
+        epi_t1 = float(history[-2])
+        epi_t2 = float(history[-3])
+
+        d2_epi = epi_t - 2.0 * epi_t1 + epi_t2
+
+        return abs(d2_epi)
+
+    def _detect_bifurcation_potential(
+        self, G: TNFRGraph, node: Any, d2_epi: float, tau: float
+    ) -> None:
+        """Detect and record bifurcation potential when ∂²EPI/∂t² > τ.
+
+        This implements Option B (conservative detection) from the issue specification.
+        Sets telemetry flags and logs informative message without creating structural
+        variants. Enables validation of grammar U4a requirement.
+
+        Parameters
+        ----------
+        G : TNFRGraph
+            Graph containing the node
+        node : Any
+            Node identifier
+        d2_epi : float
+            Current EPI acceleration
+        tau : float
+            Bifurcation threshold that was exceeded
+        """
+        import logging
+
+        logger = logging.getLogger(__name__)
+
+        # Set telemetry flags for grammar validation
+        G.nodes[node]["_zhir_bifurcation_potential"] = True
+        G.nodes[node]["_zhir_d2epi"] = d2_epi
+        G.nodes[node]["_zhir_tau"] = tau
+
+        # Record bifurcation detection event in graph for analysis
+        bifurcation_events = G.graph.setdefault("zhir_bifurcation_events", [])
+        bifurcation_events.append(
+            {
+                "node": node,
+                "d2_epi": d2_epi,
+                "tau": tau,
+                "timestamp": len(G.nodes[node].get("glyph_history", [])),
+            }
+        )
+
+        # Log informative message
+        logger.info(
+            f"Node {node}: ZHIR bifurcation potential detected "
+            f"(∂²EPI/∂t²={d2_epi:.3f} > τ={tau}). "
+            f"Consider applying THOL for controlled bifurcation or IL for stabilization."
+        )
 
     def _validate_preconditions(self, G: TNFRGraph, node: Any) -> None:
         """Validate ZHIR-specific preconditions."""
