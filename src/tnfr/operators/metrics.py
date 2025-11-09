@@ -1584,16 +1584,37 @@ def mutation_metrics(
     threshold_met = depi_dt >= xi
     threshold_ratio = depi_dt / xi if xi > 0 else 0.0
 
+    # Extract transformation telemetry from glyph storage
+    theta_shift_stored = G.nodes[node].get("_zhir_theta_shift", None)
+    regime_changed = G.nodes[node].get("_zhir_regime_changed", False)
+    regime_before = G.nodes[node].get("_zhir_regime_before", None)
+    regime_after = G.nodes[node].get("_zhir_regime_after", None)
+    fixed_mode = G.nodes[node].get("_zhir_fixed_mode", False)
+    
+    # Compute theta shift magnitude
+    theta_shift_magnitude = abs(theta_after - theta_before)
+    
     return {
         "operator": "Mutation",
         "glyph": "ZHIR",
-        # Existing metrics
-        "theta_shift": abs(theta_after - theta_before),
+        # Phase transformation metrics (ENHANCED)
+        "theta_shift": theta_shift_magnitude,
+        "theta_shift_signed": theta_shift_stored if theta_shift_stored is not None else (theta_after - theta_before),
+        "theta_before": theta_before,
+        "theta_after": theta_after,
         "theta_final": theta_after,
+        "phase_change": theta_shift_magnitude > 0.5,  # Configurable threshold
+        # NEW: Regime change detection
+        "theta_regime_change": regime_changed,
+        "regime_before": regime_before if regime_before is not None else int(theta_before // (3.14159 / 2)),
+        "regime_after": regime_after if regime_after is not None else int(theta_after // (3.14159 / 2)),
+        "transformation_mode": "fixed" if fixed_mode else "canonical",
+        # EPI metrics
         "delta_epi": epi_after - epi_before,
+        "epi_before": epi_before,
+        "epi_after": epi_after,
         "epi_final": epi_after,
-        "phase_change": abs(theta_after - theta_before) > 0.5,  # Configurable threshold
-        # NEW: Threshold verification metrics
+        # Threshold verification metrics
         "depi_dt": depi_dt,
         "threshold_xi": xi,
         "threshold_met": threshold_met,

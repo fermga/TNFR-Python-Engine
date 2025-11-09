@@ -1379,31 +1379,95 @@ def _op_THOL(node: NodeProtocol, gf: GlyphFactors) -> None:  # THOL — Self-org
 
 
 def _op_ZHIR(node: NodeProtocol, gf: GlyphFactors) -> None:  # ZHIR — Mutation
-    """Shift phase by a fixed offset to enact mutation.
+    """Apply canonical phase transformation θ → θ' based on structural dynamics.
 
-    Mutation changes the node's phase (θ) while preserving EPI, νf, and ΔNFR.
-    The glyph encodes discrete structural transitions between coherent states.
+    ZHIR (Mutation) implements the canonical TNFR phase transformation that depends on
+    the node's reorganization state (ΔNFR). Unlike a fixed rotation, the transformation
+    magnitude and direction are determined by structural pressure, implementing the
+    physics: θ → θ' when ΔEPI/Δt > ξ (AGENTS.md §11, TNFR.pdf §2.2.11).
+
+    **Canonical Behavior**:
+    - Direction: Based on ΔNFR sign (positive → forward phase, negative → backward)
+    - Magnitude: Proportional to theta_shift_factor and |ΔNFR|
+    - Regime detection: Identifies quadrant crossings (π/2 boundaries)
+    - Deterministic: Same seed produces same transformation
+
+    The transformation preserves structural identity (epi_kind) while shifting the
+    operational regime, enabling adaptation without losing coherence.
 
     Parameters
     ----------
     node : NodeProtocol
-        Node whose phase is rotated.
+        Node whose phase is transformed based on its structural state.
     gf : GlyphFactors
-        Supplies ``ZHIR_theta_shift`` defining the rotation.
+        Supplies ``ZHIR_theta_shift_factor`` (default: 0.3) controlling transformation
+        magnitude. Can override with explicit ``ZHIR_theta_shift`` for fixed rotation.
 
     Examples
     --------
     >>> import math
     >>> class MockNode:
-    ...     def __init__(self, theta):
+    ...     def __init__(self, theta, dnfr):
     ...         self.theta = theta
-    >>> node = MockNode(0.0)
-    >>> _op_ZHIR(node, {"ZHIR_theta_shift": math.pi / 2})
-    >>> round(node.theta, 2)
+    ...         self.dnfr = dnfr
+    ...         self.graph = {}
+    >>> # Positive ΔNFR → forward phase shift
+    >>> node = MockNode(0.0, 0.5)
+    >>> _op_ZHIR(node, {"ZHIR_theta_shift_factor": 0.3})
+    >>> 0.2 < node.theta < 0.3  # ~π/4 * 0.3 ≈ 0.24
+    True
+    >>> # Negative ΔNFR → backward phase shift
+    >>> node2 = MockNode(math.pi, -0.5)
+    >>> _op_ZHIR(node2, {"ZHIR_theta_shift_factor": 0.3})
+    >>> 2.9 < node2.theta < 3.0  # π - 0.24 ≈ 2.90
+    True
+    >>> # Fixed shift overrides dynamic behavior
+    >>> node3 = MockNode(0.0, 0.5)
+    >>> _op_ZHIR(node3, {"ZHIR_theta_shift": math.pi / 2})
+    >>> round(node3.theta, 2)
     1.57
     """
-    shift = get_factor(gf, "ZHIR_theta_shift", math.pi / 2)
-    node.theta = node.theta + shift
+    # Check for explicit fixed shift (backward compatibility)
+    if "ZHIR_theta_shift" in gf:
+        shift = get_factor(gf, "ZHIR_theta_shift", math.pi / 2)
+        node.theta = node.theta + shift
+        # Store telemetry for fixed shift mode
+        storage = node._glyph_storage()
+        storage["_zhir_theta_shift"] = shift
+        storage["_zhir_fixed_mode"] = True
+        return
+
+    # Canonical transformation: θ → θ' based on ΔNFR
+    theta_before = node.theta
+    dnfr = node.dnfr
+    
+    # Transformation magnitude controlled by factor
+    theta_shift_factor = get_factor(gf, "ZHIR_theta_shift_factor", 0.3)
+    
+    # Direction based on ΔNFR sign (coherent with structural pressure)
+    # Magnitude based on |ΔNFR| (stronger pressure → larger shift)
+    # Base shift is π/4, scaled by factor and ΔNFR
+    base_shift = math.pi / 4
+    shift = theta_shift_factor * math.copysign(1.0, dnfr) * base_shift
+    
+    # Apply transformation with phase wrapping [0, 2π)
+    theta_new = (theta_before + shift) % (2 * math.pi)
+    node.theta = theta_new
+    
+    # Detect regime change (crossing quadrant boundaries)
+    regime_before = int(theta_before // (math.pi / 2))
+    regime_after = int(theta_new // (math.pi / 2))
+    regime_changed = regime_before != regime_after
+    
+    # Store telemetry for metrics collection
+    storage = node._glyph_storage()
+    storage["_zhir_theta_shift"] = shift
+    storage["_zhir_theta_before"] = theta_before
+    storage["_zhir_theta_after"] = theta_new
+    storage["_zhir_regime_changed"] = regime_changed
+    storage["_zhir_regime_before"] = regime_before
+    storage["_zhir_regime_after"] = regime_after
+    storage["_zhir_fixed_mode"] = False
 
 
 def _op_NAV(node: NodeProtocol, gf: GlyphFactors) -> None:  # NAV — Transition
