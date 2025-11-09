@@ -39,18 +39,20 @@ jobs:
       - name: Install TNFR dependencies
         run: |
           python -m pip install --upgrade pip
-          # Install TNFR with test, serialization, and core dependencies
+          # Install TNFR directly from repository source code (NOT from PyPI)
+          # Using editable mode (-e) to work with the latest development version
           # This provides full environment for exploring and developing TNFR:
           # - Core operators (13 canonical structural transformations)
           # - Test infrastructure for validating invariants
           # - Serialization for state preservation
           # - NumPy for structural computations
-          python -m pip install .[test,numpy,yaml,orjson]
+          python -m pip install -e .[test,numpy,yaml,orjson]
 
       - name: Verify TNFR installation
         run: |
-          # Verify the TNFR package is properly installed
+          # Verify the TNFR package is properly installed from repo (not PyPI)
           python -c "import tnfr; print(f'TNFR version: {tnfr.__version__}')"
+          python -c "import tnfr, os; print(f'TNFR location: {os.path.dirname(tnfr.__file__)}')"
           # Verify core modules are accessible
           python -c "from tnfr.operators import Emission, Coherence, Resonance; print('✓ Core operators available')"
           python -c "from tnfr.metrics.coherence import compute_global_coherence; print('✓ Metrics available')"
