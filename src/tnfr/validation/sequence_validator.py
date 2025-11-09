@@ -35,13 +35,17 @@ class SequenceSemanticValidator:
             "invalid_transition_sequence": {
                 "pattern": ["transition"],
                 "not_preceded_by": [
+                    "emission",  # AL → NAV (activate-transition)
+                    "silence",  # SHA → NAV (latency-transition)
+                    "coherence",  # IL → NAV (stabilize-transition)
                     "dissonance",
                     "mutation",
                     "resonance",
                     "transition",
+                    "reception",  # EN → NAV (integrate-transition)
                 ],
                 "severity": InvariantSeverity.ERROR,
-                "message": "Transition requires structural perturbation (dissonance, mutation) or coherent propagation (resonance)",
+                "message": "Transition requires prior structural context (emission, coherence, perturbation, or propagation)",
             },
             "resonance_without_coupling": {
                 "pattern": ["resonance"],
