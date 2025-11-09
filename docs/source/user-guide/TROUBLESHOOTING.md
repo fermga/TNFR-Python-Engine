@@ -1,6 +1,6 @@
 # Troubleshooting Guide
 
-[Home](../index.rst) › [User Guide](../user-guide/) › Troubleshooting
+[Home](../home.md) › Troubleshooting
 
 This guide helps you diagnose and solve common problems when working with TNFR networks.
 

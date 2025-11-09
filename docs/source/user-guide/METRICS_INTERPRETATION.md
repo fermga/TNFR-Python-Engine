@@ -1,6 +1,6 @@
 # Metrics Interpretation Guide
 
-[Home](../index.rst) › [User Guide](../user-guide/) › Metrics Interpretation
+[Home](../home.md) › Metrics Interpretation
 
 This guide explains how to interpret and use TNFR's key metrics: Total Coherence (C(t)), Sense Index (Si), structural frequency (νf), phase (φ), and reorganization gradient (ΔNFR).
 

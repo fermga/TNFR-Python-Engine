@@ -7,3 +7,6 @@ sphinxcontrib-mermaid>=0.9
 ipykernel>=6
 nbconvert>=7.16
 pypandoc-binary>=1.14
+mkdocs>=1.5
+mkdocs-material>=9.4
+mkdocs-jupyter>=0.24

@@ -17,6 +17,12 @@ repos:
         files: ^src/tnfr/
   - repo: local
     hooks:
+      - id: code-review-check
+        name: Code review quality check
+        entry: bash -c 'echo "⚠️  Remember to run code review before committing significant changes" && echo "   Run: make lint test" && exit 0'
+        language: system
+        pass_filenames: false
+        stages: [commit]
       - id: check-stubs
         name: Check .pyi stub files
         entry: python scripts/generate_stubs.py --check

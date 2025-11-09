@@ -809,9 +809,9 @@ Before creating a PR with factory changes:
 
 ## References
 
-- [AGENTS.md](../../../AGENTS.md) - TNFR paradigm fundamentals
-- [CONTRIBUTING.md](../../../CONTRIBUTING.md) - General contribution guidelines
-- [ARCHITECTURE.md](../../../ARCHITECTURE.md) - Overall project structure
+- [AGENTS.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/AGENTS.md) - TNFR paradigm fundamentals
+- [CONTRIBUTING.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/CONTRIBUTING.md) - General contribution guidelines
+- [ARCHITECTURE.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/ARCHITECTURE.md) - Overall project structure
 - [Performance Optimization](PERFORMANCE_OPTIMIZATION.md) - Caching and optimization patterns
 - [Testing Strategies](TESTING_STRATEGIES.md) - Test patterns and coverage requirements
 - [Foundations](../foundations.md) - Mathematical foundations
