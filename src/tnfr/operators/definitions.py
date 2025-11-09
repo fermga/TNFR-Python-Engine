@@ -2720,6 +2720,13 @@ class SelfOrganization(Operator):
         if d2_epi > tau:
             self._spawn_sub_epi(G, node, d2_epi=d2_epi, tau=tau)
 
+        # CANONICAL VALIDATION: Verify collective coherence of sub-EPIs
+        # When THOL creates multiple sub-EPIs, they must form a coherent ensemble
+        # that preserves the structural identity of the parent node (TNFR Manual §2.2.10)
+        # Always validate if node has sub-EPIs (whether created now or previously)
+        if G.nodes[node].get("sub_epis"):
+            self._validate_collective_coherence(G, node)
+
     def _compute_epi_acceleration(self, G: TNFRGraph, node: Any) -> float:
         """Calculate ∂²EPI/∂t² from node's EPI history.
 
@@ -2946,6 +2953,71 @@ class SelfOrganization(Operator):
         hierarchy.setdefault(parent_node, []).append(sub_node_id)
 
         return sub_node_id
+
+    def _validate_collective_coherence(self, G: TNFRGraph, node: Any) -> None:
+        """Validate collective coherence of sub-EPI ensemble after bifurcation.
+
+        When THOL creates multiple sub-EPIs, they must form a coherent ensemble
+        that preserves the structural identity of the parent node. This validation
+        ensures the emergent sub-structures maintain structural alignment.
+
+        Parameters
+        ----------
+        G : TNFRGraph
+            Graph containing the node
+        node : Any
+            Node that underwent bifurcation
+
+        Notes
+        -----
+        TNFR Canonical Principle (TNFR Manual §2.2.10):
+        "THOL reorganiza la forma desde dentro, en respuesta a la coherencia
+        vibracional del campo. La autoorganización es resonancia estructurada
+        desde el interior del nodo."
+
+        Implication: Sub-EPIs are not random fragments but coherent structures
+        that emerge from internal resonance.
+
+        This method:
+        1. Computes collective coherence of sub-EPI ensemble
+        2. Stores coherence value for telemetry
+        3. Logs warning if coherence < threshold
+        4. Records event for analysis
+
+        Does NOT fail the operation - allows monitoring and analysis of
+        low-coherence bifurcations for research purposes.
+        """
+        import logging
+        from .metabolism import compute_subepi_collective_coherence
+
+        # Compute collective coherence
+        coherence = compute_subepi_collective_coherence(G, node)
+
+        # Store for telemetry (always store, even if 0.0 for single/no sub-EPIs)
+        G.nodes[node]["_thol_collective_coherence"] = coherence
+
+        # Get threshold from graph config
+        min_coherence = float(G.graph.get("THOL_MIN_COLLECTIVE_COHERENCE", 0.3))
+
+        # Validate against threshold (only warn if we have multiple sub-EPIs)
+        sub_epis = G.nodes[node].get("sub_epis", [])
+        if len(sub_epis) >= 2 and coherence < min_coherence:
+            # Log warning (but don't fail - allow monitoring)
+            logger = logging.getLogger(__name__)
+            logger.warning(
+                f"Node {node}: THOL collective coherence ({coherence:.3f}) < "
+                f"threshold ({min_coherence}). Sub-EPIs may be fragmenting. "
+                f"Sub-EPI count: {len(sub_epis)}."
+            )
+
+            # Record event for analysis
+            events = G.graph.setdefault("thol_coherence_warnings", [])
+            events.append({
+                "node": node,
+                "coherence": coherence,
+                "threshold": min_coherence,
+                "sub_epi_count": len(sub_epis),
+            })
 
     def _validate_preconditions(self, G: TNFRGraph, node: Any) -> None:
         """Validate THOL-specific preconditions."""
