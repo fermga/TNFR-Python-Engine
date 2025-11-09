@@ -154,6 +154,13 @@ class CoreDefaults:
     THOL_MIN_HISTORY_LENGTH: int = 3  # Minimum EPI history for acceleration computation
     THOL_ALLOW_ISOLATED: bool = False  # Require network context by default
 
+    # VAL (Expansion) precondition thresholds
+    VAL_MAX_VF: float = 10.0  # Maximum structural frequency threshold
+    VAL_MIN_DNFR: float = 1e-6  # Minimum positive ΔNFR for coherent expansion (very low to minimize breaking changes)
+    VAL_MIN_EPI: float = 0.2  # Minimum EPI for coherent expansion base
+    VAL_CHECK_NETWORK_CAPACITY: bool = False  # Optional network capacity validation
+    VAL_MAX_NETWORK_SIZE: int = 1000  # Maximum network size if capacity checking enabled
+
 
 @dataclass(frozen=True, slots=True)
 class RemeshDefaults:
