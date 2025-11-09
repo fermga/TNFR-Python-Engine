@@ -53,7 +53,7 @@ jobs:
           python -c "import tnfr; print(f'TNFR version: {tnfr.__version__}')"
           # Verify core modules are accessible
           python -c "from tnfr.operators import Emission, Coherence, Resonance; print('✓ Core operators available')"
-          python -c "from tnfr.metrics import compute_coherence; print('✓ Metrics available')"
+          python -c "from tnfr.metrics.coherence import compute_global_coherence; print('✓ Metrics available')"
           # Display Python environment info
           python --version
           pip list | grep -E "(tnfr|pytest|numpy|networkx)"
