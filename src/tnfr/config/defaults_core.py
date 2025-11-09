@@ -95,6 +95,11 @@ class CoreDefaults:
             # This preserves structural identity at boundary (EPI_MAX as identity frontier).
             "VAL_scale": 1.05,
             "NUL_scale": 0.85,
+            # NUL canonical ΔNFR densification factor: implements structural pressure
+            # concentration due to volume reduction. When V' = V × 0.85, density increases
+            # by ~1.176× geometrically. Canonical value 1.35 accounts for nonlinear
+            # structural effects at smaller scales, per TNFR theory.
+            "NUL_densification_factor": 1.35,
             "THOL_accel": 0.10,
             "ZHIR_theta_shift": 1.57079632679,
             "NAV_jitter": 0.05,
