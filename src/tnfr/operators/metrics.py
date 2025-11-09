@@ -1294,6 +1294,9 @@ def contraction_metrics(
 ) -> dict[str, Any]:
     """NUL - Contraction metrics: νf decrease, core concentration, ΔNFR densification.
 
+    Collects comprehensive contraction metrics including structural density dynamics
+    that validate canonical NUL behavior and enable early warning for over-compression.
+
     Parameters
     ----------
     G : TNFRGraph
@@ -1308,9 +1311,52 @@ def contraction_metrics(
     Returns
     -------
     dict
-        Contraction-specific metrics including structural compression and
-        canonical ΔNFR densification tracking.
+        Contraction-specific metrics including:
+
+        **Basic metrics:**
+
+        - operator: "Contraction"
+        - glyph: "NUL"
+        - vf_decrease: Absolute reduction in νf
+        - vf_final: Post-contraction νf
+        - delta_epi: EPI change
+        - epi_final: Post-contraction EPI
+        - dnfr_final: Post-contraction ΔNFR
+        - contraction_factor: Ratio of vf_after / vf_before
+
+        **Densification metrics (if available):**
+
+        - densification_factor: ΔNFR amplification factor (typically 1.35)
+        - dnfr_densified: Boolean indicating densification occurred
+        - dnfr_before: ΔNFR value before contraction
+        - dnfr_increase: Absolute ΔNFR change (dnfr_after - dnfr_before)
+
+        **Structural density metrics (NEW):**
+
+        - density_before: |ΔNFR| / max(EPI, ε) before contraction
+        - density_after: |ΔNFR| / max(EPI, ε) after contraction
+        - densification_ratio: density_after / density_before
+        - is_critical_density: Warning flag (density > threshold)
+
+    Notes
+    -----
+    **Structural Density**: Defined as ρ = |ΔNFR| / max(EPI, ε) where ε = 1e-9.
+    This captures the concentration of reorganization pressure per unit structure.
+
+    **Critical Density**: When density exceeds CRITICAL_DENSITY_THRESHOLD (default: 5.0),
+    it indicates over-compression risk where the node may become unstable.
+
+    **Densification Ratio**: Quantifies how much density increased during contraction.
+    Canonical NUL should produce densification_ratio ≈ densification_factor / contraction_factor.
+
+    See Also
+    --------
+    Contraction : NUL operator implementation
+    validate_contraction : Preconditions for safe contraction
     """
+    # Small epsilon for numerical stability
+    EPSILON = 1e-9
+    
     vf_after = _get_node_attr(G, node, ALIAS_VF)
     epi_after = _get_node_attr(G, node, ALIAS_EPI)
     dnfr_after = _get_node_attr(G, node, ALIAS_DNFR)
@@ -1324,6 +1370,18 @@ def contraction_metrics(
         last_entry = densification_log[-1]
         densification_factor = last_entry.get("densification_factor")
         dnfr_before = last_entry.get("dnfr_before")
+
+    # Calculate structural density before and after
+    # Density = |ΔNFR| / max(EPI, ε)
+    density_before = abs(dnfr_before) / max(abs(epi_before), EPSILON) if dnfr_before is not None else 0.0
+    density_after = abs(dnfr_after) / max(abs(epi_after), EPSILON)
+    
+    # Calculate densification ratio (how much density increased)
+    densification_ratio = density_after / density_before if density_before > EPSILON else float('inf')
+    
+    # Get critical density threshold from graph config or use default
+    critical_density_threshold = float(G.graph.get("CRITICAL_DENSITY_THRESHOLD", 5.0))
+    is_critical_density = density_after > critical_density_threshold
 
     metrics = {
         "operator": "Contraction",
@@ -1343,6 +1401,12 @@ def contraction_metrics(
     if dnfr_before is not None:
         metrics["dnfr_before"] = dnfr_before
         metrics["dnfr_increase"] = dnfr_after - dnfr_before if dnfr_before else 0.0
+    
+    # Add NEW structural density metrics
+    metrics["density_before"] = density_before
+    metrics["density_after"] = density_after
+    metrics["densification_ratio"] = densification_ratio
+    metrics["is_critical_density"] = is_critical_density
     
     return metrics
 
