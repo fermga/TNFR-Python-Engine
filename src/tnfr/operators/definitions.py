@@ -3741,8 +3741,8 @@ class Transition(Operator):
         Implements TNFR.pdf §2.3.11 canonical transition logic:
         1. Detect current structural regime (latent/active/resonant)
         2. Handle latency reactivation if node was in silence (SHA → NAV)
-        3. Apply grammar via parent __call__
-        4. Execute regime-specific structural transformation (θ, νf, ΔNFR)
+        3. Apply grammar and structural transformation
+        4. Collect metrics (if enabled)
 
         Parameters
         ----------
@@ -3754,7 +3754,7 @@ class Transition(Operator):
             Additional keyword arguments:
             - phase_shift (float): Override default phase shift per regime
             - vf_factor (float): Override νf scaling for active regime (default: 1.0)
-            - Other args forwarded to grammar layer via parent __call__
+            - Other args forwarded to grammar layer
 
         Notes
         -----
@@ -3781,18 +3781,66 @@ class Transition(Operator):
         from ..alias import get_attr, set_attr
         from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
 
-        # 1. Detect current regime
+        # 1. Detect current regime and store for metrics collection
         current_regime = self._detect_regime(G, node)
+        G.nodes[node]["_regime_before"] = current_regime
 
         # 2. Handle latency reactivation if applicable
         if G.nodes[node].get("latent", False):
             self._handle_latency_transition(G, node)
 
-        # 3. Apply grammar base (delegates to parent which calls apply_glyph_with_grammar)
-        super().__call__(G, node, **kw)
+        # 3. Validate preconditions (if enabled)
+        validate_preconditions = kw.get("validate_preconditions", True) or G.graph.get(
+            "VALIDATE_PRECONDITIONS", False
+        )
+        if validate_preconditions:
+            self._validate_preconditions(G, node)
 
-        # 4. Execute structural transition
+        # 4. Capture state before for metrics/validation
+        collect_metrics = kw.get("collect_metrics", False) or G.graph.get(
+            "COLLECT_OPERATOR_METRICS", False
+        )
+        validate_equation = kw.get("validate_nodal_equation", False) or G.graph.get(
+            "VALIDATE_NODAL_EQUATION", False
+        )
+
+        state_before = None
+        if collect_metrics or validate_equation:
+            state_before = self._capture_state(G, node)
+
+        # 5. Apply grammar
+        from . import apply_glyph_with_grammar
+        apply_glyph_with_grammar(G, [node], self.glyph, kw.get("window"))
+
+        # 6. Execute structural transition (BEFORE metrics collection)
         self._apply_structural_transition(G, node, current_regime, **kw)
+
+        # 7. Optional nodal equation validation
+        if validate_equation and state_before is not None:
+            from ..alias import get_attr
+            from ..constants.aliases import ALIAS_EPI
+            from .nodal_equation import validate_nodal_equation
+
+            dt = float(kw.get("dt", 1.0))
+            strict = G.graph.get("NODAL_EQUATION_STRICT", False)
+            epi_after = float(get_attr(G.nodes[node], ALIAS_EPI, 0.0))
+
+            validate_nodal_equation(
+                G,
+                node,
+                epi_before=state_before["epi"],
+                epi_after=epi_after,
+                dt=dt,
+                operator_name=self.name,
+                strict=strict,
+            )
+
+        # 8. Optional metrics collection (AFTER structural transformation)
+        if collect_metrics and state_before is not None:
+            metrics = self._collect_metrics(G, node, state_before)
+            if "operator_metrics" not in G.graph:
+                G.graph["operator_metrics"] = []
+            G.graph["operator_metrics"].append(metrics)
 
     def _detect_regime(self, G: TNFRGraph, node: Any) -> str:
         """Detect current structural regime: latent/active/resonant.
@@ -3896,9 +3944,7 @@ class Transition(Operator):
             del G.nodes[node]["latency_start_time"]
         if "preserved_epi" in G.nodes[node]:
             del G.nodes[node]["preserved_epi"]
-        if "silence_duration" in G.nodes[node]:
-            # Keep silence_duration for telemetry
-            pass
+        # Keep silence_duration for telemetry/metrics - don't delete it
 
     def _apply_structural_transition(
         self, G: TNFRGraph, node: Any, regime: str, **kw: Any
@@ -3989,7 +4035,12 @@ class Transition(Operator):
         from .metrics import transition_metrics
 
         return transition_metrics(
-            G, node, state_before["dnfr"], state_before["vf"], state_before["theta"]
+            G,
+            node,
+            state_before["dnfr"],
+            state_before["vf"],
+            state_before["theta"],
+            epi_before=state_before.get("epi"),
         )
 
 

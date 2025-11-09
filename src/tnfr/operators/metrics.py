@@ -1882,8 +1882,13 @@ def transition_metrics(
     dnfr_before: float,
     vf_before: float,
     theta_before: float,
+    epi_before: float | None = None,
 ) -> dict[str, Any]:
-    """NAV - Transition metrics: regime handoff, ΔNFR rebalancing.
+    """NAV - Transition metrics: regime classification, phase shift, frequency scaling.
+
+    Collects comprehensive transition metrics including regime origin/destination,
+    phase shift magnitude (properly wrapped), transition type classification, and
+    structural preservation ratios as specified in TNFR.pdf Table 2.3.
 
     Parameters
     ----------
@@ -1897,29 +1902,199 @@ def transition_metrics(
         νf value before operator application
     theta_before : float
         Phase value before operator application
+    epi_before : float, optional
+        EPI value before operator application (for preservation tracking)
 
     Returns
     -------
     dict
-        Transition-specific metrics including handoff success
+        Transition-specific metrics including:
+
+        **Core metrics (existing)**:
+
+        - operator: "Transition"
+        - glyph: "NAV"
+        - delta_theta: Signed phase change
+        - delta_vf: Change in νf
+        - delta_dnfr: Change in ΔNFR
+        - dnfr_final: Final ΔNFR value
+        - vf_final: Final νf value
+        - theta_final: Final phase value
+        - transition_complete: Boolean (|ΔNFR| < |νf|)
+
+        **Regime classification (NEW)**:
+
+        - regime_origin: "latent" | "active" | "resonant"
+        - regime_destination: "latent" | "active" | "resonant"
+        - transition_type: "reactivation" | "phase_shift" | "regime_change"
+
+        **Phase metrics (NEW)**:
+
+        - phase_shift_magnitude: Absolute phase change (radians, 0-π)
+        - phase_shift_signed: Signed phase change (radians, wrapped to [-π, π])
+
+        **Structural scaling (NEW)**:
+
+        - vf_scaling_factor: vf_after / vf_before
+        - dnfr_damping_ratio: dnfr_after / dnfr_before
+        - epi_preservation: epi_after / epi_before (if epi_before provided)
+
+        **Latency tracking (NEW)**:
+
+        - latency_duration: Time in silence (seconds) if transitioning from SHA
+
+    Notes
+    -----
+    **Regime Classification**:
+    
+    - **Latent**: latent flag set OR νf < 0.05
+    - **Active**: Default operational state
+    - **Resonant**: EPI > 0.5 AND νf > 0.8
+
+    **Transition Type**:
+
+    - **reactivation**: From latent state (SHA → NAV flow)
+    - **phase_shift**: Significant phase change (|Δθ| > 0.3 rad)
+    - **regime_change**: Regime switch without significant phase shift
+
+    **Phase Shift Wrapping**:
+
+    Phase shifts are properly wrapped to [-π, π] range to handle 0-2π boundary
+    crossings correctly, ensuring accurate phase change measurement.
+
+    Examples
+    --------
+    >>> from tnfr.structural import create_nfr, run_sequence
+    >>> from tnfr.operators.definitions import Silence, Transition
+    >>> 
+    >>> # Example: SHA → NAV reactivation
+    >>> G, node = create_nfr("test", epi=0.5, vf=0.8)
+    >>> G.graph["COLLECT_OPERATOR_METRICS"] = True
+    >>> run_sequence(G, node, [Silence(), Transition()])
+    >>> 
+    >>> metrics = G.graph["operator_metrics"][-1]
+    >>> assert metrics["operator"] == "Transition"
+    >>> assert metrics["transition_type"] == "reactivation"
+    >>> assert metrics["regime_origin"] == "latent"
+    >>> assert metrics["latency_duration"] is not None
+
+    See Also
+    --------
+    operators.definitions.Transition : NAV operator implementation
+    operators.definitions.Transition._detect_regime : Regime detection logic
     """
+    import math
+
+    # Get current state (after transformation)
+    epi_after = _get_node_attr(G, node, ALIAS_EPI)
     dnfr_after = _get_node_attr(G, node, ALIAS_DNFR)
     vf_after = _get_node_attr(G, node, ALIAS_VF)
     theta_after = _get_node_attr(G, node, ALIAS_THETA)
 
+    # === REGIME CLASSIFICATION ===
+    # Get regime origin from node attribute (stored by Transition operator before super().__call__)
+    regime_origin = G.nodes[node].get("_regime_before", None)
+    if regime_origin is None:
+        # Fallback: detect regime from before state
+        regime_origin = _detect_regime_from_state(
+            epi_before or epi_after, vf_before, False  # Cannot access latent flag from before
+        )
+
+    # Detect destination regime
+    regime_destination = _detect_regime_from_state(
+        epi_after, vf_after, G.nodes[node].get("latent", False)
+    )
+
+    # === TRANSITION TYPE CLASSIFICATION ===
+    # Calculate phase shift (properly wrapped)
+    phase_shift_raw = theta_after - theta_before
+    if phase_shift_raw > math.pi:
+        phase_shift_raw -= 2 * math.pi
+    elif phase_shift_raw < -math.pi:
+        phase_shift_raw += 2 * math.pi
+
+    # Classify transition type
+    if regime_origin == "latent":
+        transition_type = "reactivation"
+    elif abs(phase_shift_raw) > 0.3:
+        transition_type = "phase_shift"
+    else:
+        transition_type = "regime_change"
+
+    # === STRUCTURAL SCALING FACTORS ===
+    vf_scaling = vf_after / vf_before if vf_before > 0 else 1.0
+    dnfr_damping = dnfr_after / dnfr_before if abs(dnfr_before) > 1e-9 else 1.0
+
+    # === EPI PRESERVATION ===
+    epi_preservation = None
+    if epi_before is not None and epi_before > 0:
+        epi_preservation = epi_after / epi_before
+
+    # === LATENCY DURATION ===
+    # Get from node if transitioning from silence
+    latency_duration = G.nodes[node].get("silence_duration", None)
+
     return {
+        # === CORE (existing, preserved) ===
         "operator": "Transition",
         "glyph": "NAV",
-        "dnfr_change": abs(dnfr_after - dnfr_before),
+        "delta_theta": phase_shift_raw,
+        "delta_vf": vf_after - vf_before,
+        "delta_dnfr": dnfr_after - dnfr_before,
         "dnfr_final": dnfr_after,
-        "vf_change": abs(vf_after - vf_before),
         "vf_final": vf_after,
-        "theta_shift": abs(theta_after - theta_before),
         "theta_final": theta_after,
-        # Transition complete when ΔNFR magnitude is bounded by νf magnitude
-        # indicating structural frequency dominates reorganization dynamics
         "transition_complete": abs(dnfr_after) < abs(vf_after),
+        # Legacy compatibility
+        "dnfr_change": abs(dnfr_after - dnfr_before),
+        "vf_change": abs(vf_after - vf_before),
+        "theta_shift": abs(phase_shift_raw),
+        # === REGIME CLASSIFICATION (NEW) ===
+        "regime_origin": regime_origin,
+        "regime_destination": regime_destination,
+        "transition_type": transition_type,
+        # === PHASE METRICS (NEW) ===
+        "phase_shift_magnitude": abs(phase_shift_raw),
+        "phase_shift_signed": phase_shift_raw,
+        # === STRUCTURAL SCALING (NEW) ===
+        "vf_scaling_factor": vf_scaling,
+        "dnfr_damping_ratio": dnfr_damping,
+        "epi_preservation": epi_preservation,
+        # === LATENCY TRACKING (NEW) ===
+        "latency_duration": latency_duration,
     }
+
+
+def _detect_regime_from_state(epi: float, vf: float, latent: bool) -> str:
+    """Detect structural regime from node state.
+
+    Helper function for transition_metrics to classify regime without
+    accessing the Transition operator directly.
+
+    Parameters
+    ----------
+    epi : float
+        EPI value
+    vf : float
+        νf value
+    latent : bool
+        Latent flag
+
+    Returns
+    -------
+    str
+        Regime classification: "latent", "active", or "resonant"
+
+    Notes
+    -----
+    Matches logic in Transition._detect_regime (definitions.py).
+    """
+    if latent or vf < 0.05:
+        return "latent"
+    elif epi > 0.5 and vf > 0.8:
+        return "resonant"
+    else:
+        return "active"
 
 
 def recursivity_metrics(
