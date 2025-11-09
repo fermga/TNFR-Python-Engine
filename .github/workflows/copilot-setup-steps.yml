@@ -1,0 +1,61 @@
+name: "Copilot Setup Steps"
+
+# Automatically run the setup steps when they are changed to allow for easy validation,
+# and allow manual testing through the repository's "Actions" tab
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/copilot-setup-steps.yml
+  pull_request:
+    paths:
+      - .github/workflows/copilot-setup-steps.yml
+
+jobs:
+  # The job MUST be called `copilot-setup-steps` or it will not be picked up by Copilot.
+  copilot-setup-steps:
+    runs-on: ubuntu-latest
+
+    # Set the permissions to the lowest permissions possible needed for your steps.
+    # Copilot will be given its own token for its operations.
+    permissions:
+      # Required for actions/checkout - Copilot needs to access the repository
+      contents: read
+
+    # Configure the environment for TNFR development
+    # Purpose: Enable exploration, study, investigation, and development of TNFR
+    # (Resonant Fractal Nature Theory - modeling coherent patterns through resonance)
+    steps:
+      - name: Checkout TNFR repository
+        uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          # Using Python 3.11 - the primary version for TNFR development and CI
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install TNFR dependencies
+        run: |
+          python -m pip install --upgrade pip
+          # Install TNFR directly from repository source code (NOT from PyPI)
+          # Using editable mode (-e) to work with the latest development version
+          # This provides full environment for exploring and developing TNFR:
+          # - Core operators (13 canonical structural transformations)
+          # - Test infrastructure for validating invariants
+          # - Serialization for state preservation
+          # - NumPy for structural computations
+          python -m pip install -e .[test,numpy,yaml,orjson]
+
+      - name: Verify TNFR installation
+        run: |
+          # Verify the TNFR package is properly installed from repo (not PyPI)
+          python -c "import tnfr; print(f'TNFR version: {tnfr.__version__}')"
+          python -c "import tnfr, os; print(f'TNFR location: {os.path.dirname(tnfr.__file__)}')"
+          # Verify core modules are accessible
+          python -c "from tnfr.operators import Emission, Coherence, Resonance; print('✓ Core operators available')"
+          python -c "from tnfr.metrics.coherence import compute_global_coherence; print('✓ Metrics available')"
+          # Display Python environment info
+          python --version
+          pip list | grep -E "(tnfr|pytest|numpy|networkx)"
