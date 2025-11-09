@@ -40,13 +40,13 @@ class TestZHIREPISignPreservation:
         G.nodes[node]["epi_history"] = [0.3, 0.4, 0.5]
         G.nodes[node]["delta_nfr"] = 0.3
         
-        epi_before = G.nodes[node]["epi"]
+        epi_before = G.nodes[node]["EPI"]
         assert epi_before > 0, "Test setup: EPI should be positive"
         
         # Apply mutation
         Mutation()(G, node)
         
-        epi_after = G.nodes[node]["epi"]
+        epi_after = G.nodes[node]["EPI"]
         
         # CRITICAL CONTRACT: Positive EPI must remain positive
         assert epi_after > 0, \
@@ -58,13 +58,13 @@ class TestZHIREPISignPreservation:
         G.nodes[node]["epi_history"] = [-0.7, -0.6, -0.5]
         G.nodes[node]["delta_nfr"] = 0.3
         
-        epi_before = G.nodes[node]["epi"]
+        epi_before = G.nodes[node]["EPI"]
         assert epi_before < 0, "Test setup: EPI should be negative"
         
         # Apply mutation
         Mutation()(G, node)
         
-        epi_after = G.nodes[node]["epi"]
+        epi_after = G.nodes[node]["EPI"]
         
         # CRITICAL CONTRACT: Negative EPI must remain negative
         assert epi_after < 0, \
@@ -75,13 +75,13 @@ class TestZHIREPISignPreservation:
         G, node = create_nfr("test", epi=0.6, vf=1.0)
         G.nodes[node]["epi_history"] = [0.4, 0.5, 0.6]
         
-        epi_initial = G.nodes[node]["epi"]
+        epi_initial = G.nodes[node]["EPI"]
         sign_initial = 1 if epi_initial > 0 else -1
         
         # Apply canonical sequence
         run_sequence(G, node, [Coherence(), Dissonance(), Mutation()])
         
-        epi_final = G.nodes[node]["epi"]
+        epi_final = G.nodes[node]["EPI"]
         sign_final = 1 if epi_final > 0 else -1
         
         # Sign must be preserved
@@ -97,7 +97,7 @@ class TestZHIREPISignPreservation:
         # Should not raise error
         Mutation()(G, node)
         
-        epi_after = G.nodes[node]["epi"]
+        epi_after = G.nodes[node]["EPI"]
         # Result can be positive, negative, or zero (no sign to preserve at 0)
         # Contract is satisfied as long as it doesn't crash
 
@@ -107,13 +107,13 @@ class TestZHIREPISignPreservation:
         G.nodes[node]["epi_history"] = [0.4, 0.55, 0.7]
         G.nodes[node]["delta_nfr"] = 0.8  # High transformation pressure
         
-        epi_before = G.nodes[node]["epi"]
+        epi_before = G.nodes[node]["EPI"]
         assert epi_before > 0
         
         # Apply with strong destabilizer first
         run_sequence(G, node, [Dissonance(), Mutation()])
         
-        epi_after = G.nodes[node]["epi"]
+        epi_after = G.nodes[node]["EPI"]
         
         # Even with strong transformation, sign must be preserved
         assert epi_after > 0, \
@@ -128,13 +128,13 @@ class TestZHIRVfPreservation:
         G, node = create_nfr("test", epi=0.5, vf=1.0)
         G.nodes[node]["epi_history"] = [0.3, 0.4, 0.5]
         
-        vf_before = G.nodes[node]["vf"]
+        vf_before = G.nodes[node]["νf"]
         assert vf_before > 0, "Test setup: νf should be positive"
         
         # Apply mutation
         Mutation()(G, node)
         
-        vf_after = G.nodes[node]["vf"]
+        vf_after = G.nodes[node]["νf"]
         
         # CRITICAL CONTRACT: νf must remain positive
         assert vf_after > 0, \
@@ -145,12 +145,12 @@ class TestZHIRVfPreservation:
         G, node = create_nfr("test", epi=0.5, vf=1.0)
         G.nodes[node]["epi_history"] = [0.3, 0.4, 0.5]
         
-        vf_before = G.nodes[node]["vf"]
+        vf_before = G.nodes[node]["νf"]
         
         # Apply mutation
         Mutation()(G, node)
         
-        vf_after = G.nodes[node]["vf"]
+        vf_after = G.nodes[node]["νf"]
         
         # νf should not drop by more than 50% in single mutation
         # (This is a soft contract - strong drops indicate potential issue)
@@ -162,13 +162,13 @@ class TestZHIRVfPreservation:
         G, node = create_nfr("test", epi=0.5, vf=1.0)
         G.nodes[node]["epi_history"] = [0.3, 0.4, 0.5]
         
-        vf_initial = G.nodes[node]["vf"]
+        vf_initial = G.nodes[node]["νf"]
         
         # Apply 5 mutation cycles
         for i in range(5):
             run_sequence(G, node, [Coherence(), Dissonance(), Mutation()])
         
-        vf_final = G.nodes[node]["vf"]
+        vf_final = G.nodes[node]["νf"]
         
         # νf should not have collapsed to near-zero
         assert vf_final > 0.1 * vf_initial, \
@@ -184,7 +184,7 @@ class TestZHIRVfPreservation:
         # Apply mutation
         Mutation()(G, node)
         
-        vf_after = G.nodes[node]["vf"]
+        vf_after = G.nodes[node]["νf"]
         
         # Should remain positive
         assert vf_after > 0, "ZHIR collapsed already-low νf"
@@ -199,7 +199,7 @@ class TestZHIRVfPreservation:
         G.nodes[node]["epi_history"] = [0.3, 0.4, 0.5]
         G.graph["COLLECT_OPERATOR_METRICS"] = True
         
-        vf_before = G.nodes[node]["vf"]
+        vf_before = G.nodes[node]["νf"]
         
         Mutation()(G, node)
         
@@ -210,7 +210,7 @@ class TestZHIRVfPreservation:
         assert "delta_vf" in metrics
         
         # delta_vf should reflect actual change
-        vf_after = G.nodes[node]["vf"]
+        vf_after = G.nodes[node]["νf"]
         expected_delta = vf_after - vf_before
         assert abs(metrics["delta_vf"] - expected_delta) < 0.01
 
@@ -227,7 +227,7 @@ class TestZHIRStructuralBounds:
         # Apply with destabilizer
         run_sequence(G, node, [Dissonance(), Mutation()])
         
-        epi_after = G.nodes[node]["epi"]
+        epi_after = G.nodes[node]["EPI"]
         
         # Should respect upper bound
         assert epi_after <= 1.0, \
@@ -242,7 +242,7 @@ class TestZHIRStructuralBounds:
         # Apply with destabilizer
         run_sequence(G, node, [Dissonance(), Mutation()])
         
-        epi_after = G.nodes[node]["epi"]
+        epi_after = G.nodes[node]["EPI"]
         
         # Should respect lower bound
         assert epi_after >= -1.0, \
@@ -271,21 +271,21 @@ class TestZHIRContractIntegration:
     def test_all_contracts_satisfied_in_typical_use(self):
         """Typical ZHIR usage should satisfy all contracts."""
         G, node = create_nfr("test", epi=0.5, vf=1.0, theta=1.0)
-        G.nodes[node]["epi_kind"] = "test_pattern"
+        G.nodes[node]["EPI_kind"] = "test_pattern"
         G.nodes[node]["epi_history"] = [0.3, 0.4, 0.5]
         
-        epi_before = G.nodes[node]["epi"]
-        vf_before = G.nodes[node]["vf"]
+        epi_before = G.nodes[node]["EPI"]
+        vf_before = G.nodes[node]["νf"]
         sign_before = 1 if epi_before > 0 else -1
-        identity_before = G.nodes[node]["epi_kind"]
+        identity_before = G.nodes[node]["EPI_kind"]
         
         # Apply canonical sequence
         run_sequence(G, node, [Coherence(), Dissonance(), Mutation(), Coherence()])
         
-        epi_after = G.nodes[node]["epi"]
-        vf_after = G.nodes[node]["vf"]
+        epi_after = G.nodes[node]["EPI"]
+        vf_after = G.nodes[node]["νf"]
         sign_after = 1 if epi_after > 0 else -1
-        identity_after = G.nodes[node]["epi_kind"]
+        identity_after = G.nodes[node]["EPI_kind"]
         theta_after = G.nodes[node]["theta"]
         
         # Check all contracts
@@ -298,20 +298,20 @@ class TestZHIRContractIntegration:
     def test_contracts_under_extreme_conditions(self):
         """Contracts should hold even under extreme transformations."""
         G, node = create_nfr("test", epi=0.8, vf=2.0, theta=0.1)
-        G.nodes[node]["epi_kind"] = "extreme_pattern"
+        G.nodes[node]["EPI_kind"] = "extreme_pattern"
         G.nodes[node]["epi_history"] = [0.5, 0.65, 0.8]
         G.nodes[node]["delta_nfr"] = 0.9  # Very high pressure
         
-        epi_before = G.nodes[node]["epi"]
-        vf_before = G.nodes[node]["vf"]
+        epi_before = G.nodes[node]["EPI"]
+        vf_before = G.nodes[node]["νf"]
         sign_before = 1 if epi_before > 0 else -1
         
         # Apply with extreme conditions
         G.graph["GLYPH_FACTORS"] = {"ZHIR_theta_shift_factor": 0.9}
         run_sequence(G, node, [Dissonance(), Mutation()])
         
-        epi_after = G.nodes[node]["epi"]
-        vf_after = G.nodes[node]["vf"]
+        epi_after = G.nodes[node]["EPI"]
+        vf_after = G.nodes[node]["νf"]
         sign_after = 1 if epi_after > 0 else -1
         
         # Contracts must still hold
@@ -325,12 +325,12 @@ class TestZHIRContractIntegration:
         G.nodes[node]["epi_history"] = [0.7, 0.6, 0.5]  # Decreasing
         G.nodes[node]["delta_nfr"] = -0.4  # Negative pressure
         
-        epi_before = G.nodes[node]["epi"]
+        epi_before = G.nodes[node]["EPI"]
         sign_before = 1
         
         Mutation()(G, node)
         
-        epi_after = G.nodes[node]["epi"]
+        epi_after = G.nodes[node]["EPI"]
         sign_after = 1 if epi_after > 0 else -1
         
         # Sign must be preserved even with negative ΔNFR

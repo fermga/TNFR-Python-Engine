@@ -38,8 +38,8 @@ class TestZHIRIsolatedNodes:
         Mutation()(G, node)
         
         # Node should still be viable
-        assert G.nodes[node]["vf"] > 0
-        assert -1.0 <= G.nodes[node]["epi"] <= 1.0
+        assert G.nodes[node]["νf"] > 0
+        assert -1.0 <= G.nodes[node]["EPI"] <= 1.0
 
     def test_zhir_isolated_node_transforms_phase(self):
         """Isolated node's phase should still transform."""
@@ -60,23 +60,23 @@ class TestZHIRIsolatedNodes:
     def test_zhir_isolated_preserves_all_contracts(self):
         """Isolated node should satisfy all ZHIR contracts."""
         G, node = create_nfr("test", epi=0.6, vf=1.2)
-        G.nodes[node]["epi_kind"] = "isolated_pattern"
+        G.nodes[node]["EPI_kind"] = "isolated_pattern"
         G.nodes[node]["epi_history"] = [0.4, 0.5, 0.6]
         
-        epi_before = G.nodes[node]["epi"]
-        vf_before = G.nodes[node]["vf"]
+        epi_before = G.nodes[node]["EPI"]
+        vf_before = G.nodes[node]["νf"]
         sign_before = 1 if epi_before > 0 else -1
         
         Mutation()(G, node)
         
-        epi_after = G.nodes[node]["epi"]
-        vf_after = G.nodes[node]["vf"]
+        epi_after = G.nodes[node]["EPI"]
+        vf_after = G.nodes[node]["νf"]
         sign_after = 1 if epi_after > 0 else -1
         
         # All contracts should hold
         assert sign_after == sign_before, "Sign contract violated"
         assert vf_after > 0, "νf contract violated"
-        assert G.nodes[node]["epi_kind"] == "isolated_pattern", "Identity contract violated"
+        assert G.nodes[node]["EPI_kind"] == "isolated_pattern", "Identity contract violated"
 
 
 class TestZHIRPhaseBoundaries:
@@ -172,8 +172,8 @@ class TestZHIRReproducibility:
         Mutation()(G1, node1)
         result1 = {
             "theta": G1.nodes[node1]["theta"],
-            "epi": G1.nodes[node1]["epi"],
-            "vf": G1.nodes[node1]["vf"],
+            "epi": G1.nodes[node1]["EPI"],
+            "vf": G1.nodes[node1]["νf"],
         }
         
         # Second run with same seed
@@ -185,14 +185,14 @@ class TestZHIRReproducibility:
         Mutation()(G2, node2)
         result2 = {
             "theta": G2.nodes[node2]["theta"],
-            "epi": G2.nodes[node2]["epi"],
-            "vf": G2.nodes[node2]["vf"],
+            "epi": G2.nodes[node2]["EPI"],
+            "vf": G2.nodes[node2]["νf"],
         }
         
         # Should be identical
         assert abs(result1["theta"] - result2["theta"]) < 1e-10
-        assert abs(result1["epi"] - result2["epi"]) < 1e-10
-        assert abs(result1["vf"] - result2["vf"]) < 1e-10
+        assert abs(result1["EPI"] - result2["EPI"]) < 1e-10
+        assert abs(result1["νf"] - result2["νf"]) < 1e-10
 
     def test_zhir_different_seeds_produce_different_results(self):
         """Different seeds should produce different results (if stochastic)."""
@@ -250,7 +250,7 @@ class TestZHIRExtremeCases:
         Mutation()(G, node)
         
         # Should not exceed bounds
-        assert G.nodes[node]["epi"] <= 1.0
+        assert G.nodes[node]["EPI"] <= 1.0
 
     def test_zhir_with_very_low_epi(self):
         """ZHIR near lower EPI bound."""
@@ -260,18 +260,18 @@ class TestZHIRExtremeCases:
         Mutation()(G, node)
         
         # Should not exceed bounds
-        assert G.nodes[node]["epi"] >= -1.0
+        assert G.nodes[node]["EPI"] >= -1.0
 
     def test_zhir_with_very_high_vf(self):
         """ZHIR with very high structural frequency."""
-        G, node = create_nfr("test", epi=0.5, vf=100.0)
+        G, node = create_nfr("test", epi=0.5, vf=9.5)  # Near maximum (10.0)
         G.nodes[node]["epi_history"] = [0.3, 0.4, 0.5]
         
         # Should not raise error
         Mutation()(G, node)
         
         # Should still be viable
-        assert G.nodes[node]["vf"] > 0
+        assert G.nodes[node]["νf"] > 0
 
     def test_zhir_with_very_high_dnfr(self):
         """ZHIR with extreme ΔNFR values."""
@@ -283,7 +283,7 @@ class TestZHIRExtremeCases:
         Mutation()(G, node)
         
         # Should maintain bounds
-        assert -1.0 <= G.nodes[node]["epi"] <= 1.0
+        assert -1.0 <= G.nodes[node]["EPI"] <= 1.0
 
     def test_zhir_with_negative_dnfr(self):
         """ZHIR with negative ΔNFR (contraction pressure)."""
@@ -345,8 +345,8 @@ class TestZHIRUnusualConfigurations:
             Mutation()(G, node)
         
         # Node should still be viable
-        assert G.nodes[node]["vf"] > 0
-        assert -1.0 <= G.nodes[node]["epi"] <= 1.0
+        assert G.nodes[node]["νf"] > 0
+        assert -1.0 <= G.nodes[node]["EPI"] <= 1.0
         assert 0 <= G.nodes[node]["theta"] < 2 * math.pi
 
 

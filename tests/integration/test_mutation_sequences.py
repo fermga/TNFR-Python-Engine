@@ -58,7 +58,7 @@ class TestCanonicalMutationCycle:
 
     def test_mutation_cycle_improves_coherence(self):
         """Mutation cycle should end with stabilized state."""
-        from tnfr.metrics import compute_coherence
+        from tnfr.metrics.coherence import compute_coherence
         
         G, node = create_nfr("test", epi=0.5, vf=1.0)
         G.nodes[node]["epi_history"] = [0.35, 0.42, 0.50]
@@ -93,7 +93,7 @@ class TestCanonicalMutationCycle:
         ])
         
         # Node should remain viable
-        vf_final = G.nodes[node]["vf"]
+        vf_final = G.nodes[node]["νf"]
         assert vf_final > 0, "Mutation cycle killed node (νf → 0)"
         assert vf_final > 0.2, "Mutation cycle severely weakened node"
 
@@ -133,8 +133,8 @@ class TestCanonicalMutationCycle:
             ])
         
         # Node should still be viable
-        assert G.nodes[node]["vf"] > 0
-        assert -1.0 <= G.nodes[node]["epi"] <= 1.0
+        assert G.nodes[node]["νf"] > 0
+        assert -1.0 <= G.nodes[node]["EPI"] <= 1.0
 
 
 class TestMutationWithSelfOrganization:
@@ -144,8 +144,9 @@ class TestMutationWithSelfOrganization:
         """OZ → ZHIR → THOL should complete successfully."""
         G, node = create_nfr("test", epi=0.5, vf=1.0)
         # Add a neighbor for THOL to work with
-        G.add_node("neighbor", epi=0.4, vf=1.0, theta=0.5)
-        G.add_edge(node, "neighbor")
+        neighbor_node = "neighbor"
+        G.add_node(neighbor_node, EPI=0.4, **{"νf": 1.0}, theta=0.5, delta_nfr=0.0)
+        G.add_edge(node, neighbor_node)
         
         G.nodes[node]["epi_history"] = [0.35, 0.42, 0.50]
         G.graph["COLLECT_OPERATOR_METRICS"] = True
@@ -169,10 +170,10 @@ class TestMutationWithSelfOrganization:
     def test_mutation_enables_self_organization(self):
         """ZHIR transformation should enable effective THOL."""
         G, node = create_nfr("test", epi=0.5, vf=1.0, theta=0.2)
-        # Add neighbors
+        # Add neighbors with proper initialization
         for i in range(2):
             neighbor_id = f"n{i}"
-            G.add_node(neighbor_id, epi=0.4, vf=1.0, theta=0.3 + i * 0.1)
+            G.add_node(neighbor_id, EPI=0.4, **{"νf": 1.0}, theta=0.3 + i * 0.1, delta_nfr=0.0)
             G.add_edge(node, neighbor_id)
         
         G.nodes[node]["epi_history"] = [0.35, 0.42, 0.50]
@@ -223,13 +224,15 @@ class TestBootstrapWithMutation:
         G.graph["VALIDATE_OPERATOR_PRECONDITIONS"] = True
         
         # Sequence should pass grammar validation
+        # Note: Removed Transition at end as it requires perturbation before it
         run_sequence(G, node, [
             Emission(),    # U1a: Generator for EPI=0
             Coherence(),   # U2: Stabilizer after generation
             Dissonance(),  # U2: Destabilizer (needs stabilizer after)
             Mutation(),    # U4b: Transformer (has IL + destabilizer)
             Coherence(),   # U2: Stabilizer after mutation
-            Transition(),  # U1b: Closure
+            # Transition requires perturbation, so use Silence for closure
+            Silence(),     # U1b: Closure
         ])
         
         # Should complete without grammar violations
@@ -247,8 +250,8 @@ class TestBootstrapWithMutation:
         ])
         
         # Node should be viable
-        assert G.nodes[node]["epi"] != 0.0
-        assert G.nodes[node]["vf"] > 0
+        assert G.nodes[node]["EPI"] != 0.0
+        assert G.nodes[node]["νf"] > 0
         assert 0 <= G.nodes[node]["theta"] < 6.28319  # 2π
 
 
@@ -272,15 +275,16 @@ class TestExtendedMutationSequences:
         ])
         
         # Node should still be viable
-        assert G.nodes[node]["vf"] > 0
-        assert -1.0 <= G.nodes[node]["epi"] <= 1.0
+        assert G.nodes[node]["νf"] > 0
+        assert -1.0 <= G.nodes[node]["EPI"] <= 1.0
 
     def test_resonance_after_mutation(self):
         """RA (Resonance) after ZHIR should propagate transformed state."""
         G, node = create_nfr("test", epi=0.5, vf=1.0, theta=0.5)
-        # Add neighbor with compatible phase
-        G.add_node("neighbor", epi=0.4, vf=1.0, theta=0.6)
-        G.add_edge(node, "neighbor")
+        # Add neighbor with compatible phase and proper initialization
+        neighbor_id = "neighbor"
+        G.add_node(neighbor_id, EPI=0.4, **{"νf": 1.0}, theta=0.6, delta_nfr=0.0)
+        G.add_edge(node, neighbor_id)
         
         G.nodes[node]["epi_history"] = [0.35, 0.42, 0.50]
         

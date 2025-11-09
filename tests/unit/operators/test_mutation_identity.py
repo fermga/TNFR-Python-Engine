@@ -35,7 +35,7 @@ class TestZHIRIdentityPreservation:
         
         # Set structural identity
         epi_kind_original = "coherent_oscillator"
-        G.nodes[node]["epi_kind"] = epi_kind_original
+        G.nodes[node]["EPI_kind"] = epi_kind_original
         G.nodes[node]["epi_history"] = [0.3, 0.4, 0.5]
         G.nodes[node]["delta_nfr"] = 0.3
         
@@ -52,7 +52,7 @@ class TestZHIRIdentityPreservation:
         G, node = create_nfr("test", epi=0.4, vf=1.0)
         
         # Set identity
-        G.nodes[node]["epi_kind"] = "test_pattern"
+        G.nodes[node]["EPI_kind"] = "test_pattern"
         G.nodes[node]["epi_history"] = [0.35, 0.38, 0.40]
         
         # Apply canonical sequence
@@ -64,7 +64,7 @@ class TestZHIRIdentityPreservation:
         ])
         
         # Identity must be preserved through entire sequence
-        assert G.nodes[node]["epi_kind"] == "test_pattern"
+        assert G.nodes[node]["EPI_kind"] == "test_pattern"
 
     def test_multiple_zhir_preserve_identity(self):
         """Multiple ZHIR applications (with IL between) preserve identity."""
@@ -72,7 +72,7 @@ class TestZHIRIdentityPreservation:
         
         # Set identity
         original_identity = "fractal_structure"
-        G.nodes[node]["epi_kind"] = original_identity
+        G.nodes[node]["EPI_kind"] = original_identity
         G.nodes[node]["epi_history"] = [0.3, 0.4, 0.5]
         
         # Apply 3 mutation cycles
@@ -85,7 +85,7 @@ class TestZHIRIdentityPreservation:
             ])
         
         # Identity must still be preserved
-        assert G.nodes[node]["epi_kind"] == original_identity, \
+        assert G.nodes[node]["EPI_kind"] == original_identity, \
             "Multiple ZHIR violated identity preservation"
 
     def test_zhir_without_epi_kind_set(self):
@@ -113,14 +113,14 @@ class TestZHIRIdentityPreservation:
         
         for identity_type in identity_types:
             G, node = create_nfr(f"test_{identity_type}", epi=0.5, vf=1.0)
-            G.nodes[node]["epi_kind"] = identity_type
+            G.nodes[node]["EPI_kind"] = identity_type
             G.nodes[node]["epi_history"] = [0.3, 0.4, 0.5]
             
             # Apply mutation
             run_sequence(G, node, [Coherence(), Dissonance(), Mutation()])
             
             # Verify preservation
-            assert G.nodes[node]["epi_kind"] == identity_type, \
+            assert G.nodes[node]["EPI_kind"] == identity_type, \
                 f"Failed to preserve identity: {identity_type}"
 
 
@@ -130,7 +130,7 @@ class TestZHIRIdentityMetrics:
     def test_identity_preserved_in_metrics(self):
         """Metrics should track identity preservation."""
         G, node = create_nfr("test", epi=0.5, vf=1.0)
-        G.nodes[node]["epi_kind"] = "test_identity"
+        G.nodes[node]["EPI_kind"] = "test_identity"
         G.nodes[node]["epi_history"] = [0.3, 0.4, 0.5]
         G.graph["COLLECT_OPERATOR_METRICS"] = True
         
@@ -179,7 +179,7 @@ class TestZHIRIdentityWithTransformations:
         import math
         
         G, node = create_nfr("test", epi=0.5, vf=1.0)
-        G.nodes[node]["epi_kind"] = "rotating_pattern"
+        G.nodes[node]["EPI_kind"] = "rotating_pattern"
         G.nodes[node]["theta"] = 0.0
         G.nodes[node]["delta_nfr"] = 0.8  # Strong transformation
         G.nodes[node]["epi_history"] = [0.3, 0.4, 0.5]
@@ -195,12 +195,12 @@ class TestZHIRIdentityWithTransformations:
         assert abs(theta_after) > 0.5
         
         # But identity MUST be preserved
-        assert G.nodes[node]["epi_kind"] == "rotating_pattern"
+        assert G.nodes[node]["EPI_kind"] == "rotating_pattern"
 
     def test_identity_preserved_with_high_epi_change(self):
         """Identity preserved even when EPI changes (within bounds)."""
         G, node = create_nfr("test", epi=0.3, vf=1.0)
-        G.nodes[node]["epi_kind"] = "adaptive_pattern"
+        G.nodes[node]["EPI_kind"] = "adaptive_pattern"
         G.nodes[node]["epi_history"] = [0.1, 0.2, 0.3]
         G.nodes[node]["delta_nfr"] = 0.5
         
@@ -208,18 +208,18 @@ class TestZHIRIdentityWithTransformations:
         run_sequence(G, node, [Dissonance(), Mutation()])
         
         # EPI may have changed
-        epi_after = G.nodes[node]["epi"]
+        epi_after = G.nodes[node]["EPI"]
         # (exact value depends on implementation)
         
         # Identity must be preserved
-        assert G.nodes[node]["epi_kind"] == "adaptive_pattern"
+        assert G.nodes[node]["EPI_kind"] == "adaptive_pattern"
 
     def test_identity_preserved_across_regime_change(self):
         """Identity preserved when phase crosses regime boundary."""
         import math
         
         G, node = create_nfr("test", epi=0.5, vf=1.0)
-        G.nodes[node]["epi_kind"] = "regime_crossing_pattern"
+        G.nodes[node]["EPI_kind"] = "regime_crossing_pattern"
         G.nodes[node]["theta"] = math.pi / 2 - 0.1  # Near boundary
         G.nodes[node]["delta_nfr"] = 0.6  # Strong shift
         G.nodes[node]["epi_history"] = [0.3, 0.4, 0.5]
@@ -234,7 +234,7 @@ class TestZHIRIdentityWithTransformations:
         regime_after = int(theta_after // (math.pi / 2))
         
         # Identity must be preserved regardless of regime change
-        assert G.nodes[node]["epi_kind"] == "regime_crossing_pattern"
+        assert G.nodes[node]["EPI_kind"] == "regime_crossing_pattern"
 
 
 class TestZHIRIdentityEdgeCases:
@@ -243,43 +243,43 @@ class TestZHIRIdentityEdgeCases:
     def test_identity_with_negative_epi(self):
         """Identity preserved when EPI is negative."""
         G, node = create_nfr("test", epi=-0.5, vf=1.0)
-        G.nodes[node]["epi_kind"] = "negative_epi_pattern"
+        G.nodes[node]["EPI_kind"] = "negative_epi_pattern"
         G.nodes[node]["epi_history"] = [-0.7, -0.6, -0.5]
         
         Mutation()(G, node)
         
-        assert G.nodes[node]["epi_kind"] == "negative_epi_pattern"
+        assert G.nodes[node]["EPI_kind"] == "negative_epi_pattern"
 
     def test_identity_with_zero_epi(self):
         """Identity preserved when EPI crosses zero."""
         G, node = create_nfr("test", epi=0.0, vf=1.0)
-        G.nodes[node]["epi_kind"] = "zero_crossing_pattern"
+        G.nodes[node]["EPI_kind"] = "zero_crossing_pattern"
         G.nodes[node]["epi_history"] = [-0.1, 0.0, 0.0]
         
         Mutation()(G, node)
         
-        assert G.nodes[node]["epi_kind"] == "zero_crossing_pattern"
+        assert G.nodes[node]["EPI_kind"] == "zero_crossing_pattern"
 
     def test_identity_with_special_characters(self):
         """Identity strings with special characters should be preserved."""
         G, node = create_nfr("test", epi=0.5, vf=1.0)
-        G.nodes[node]["epi_kind"] = "pattern_v2.0_α-β"
+        G.nodes[node]["EPI_kind"] = "pattern_v2.0_α-β"
         G.nodes[node]["epi_history"] = [0.3, 0.4, 0.5]
         
         Mutation()(G, node)
         
-        assert G.nodes[node]["epi_kind"] == "pattern_v2.0_α-β"
+        assert G.nodes[node]["EPI_kind"] == "pattern_v2.0_α-β"
 
     def test_identity_with_long_name(self):
         """Long identity names should be preserved."""
         G, node = create_nfr("test", epi=0.5, vf=1.0)
         long_identity = "very_long_identity_name_" * 10  # 260+ characters
-        G.nodes[node]["epi_kind"] = long_identity
+        G.nodes[node]["EPI_kind"] = long_identity
         G.nodes[node]["epi_history"] = [0.3, 0.4, 0.5]
         
         Mutation()(G, node)
         
-        assert G.nodes[node]["epi_kind"] == long_identity
+        assert G.nodes[node]["EPI_kind"] == long_identity
 
 
 class TestZHIRIdentityViolationDetection:
@@ -301,7 +301,7 @@ class TestZHIRIdentityViolationDetection:
         # When identity enforcement is implemented, this should become:
         #
         # G, node = create_nfr("test", epi=0.5, vf=1.0)
-        # G.nodes[node]["epi_kind"] = "original_identity"
+        # G.nodes[node]["EPI_kind"] = "original_identity"
         # G.graph["VALIDATE_OPERATOR_POSTCONDITIONS"] = True
         #
         # # Simulate identity violation (would require internal modification)

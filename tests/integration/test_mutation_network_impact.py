@@ -232,20 +232,21 @@ class TestZHIRNeighborPhaseCompatibility:
         
         # Add neighbors with incompatible phases (antiphase)
         for i in range(3):
+            neighbor_id = f"n{i}"
             G.add_node(
-                f"n{i}",
-                epi=0.5,
-                vf=1.0,
+                neighbor_id,
+                EPI=0.5,
+                **{"νf": 1.0},
                 theta=0.5 + math.pi + i * 0.1,  # Opposite phase
                 delta_nfr=0.0,
             )
-            G.add_edge(node, f"n{i}")
+            G.add_edge(node, neighbor_id)
         
         # Should not raise error (ZHIR is internal transformation)
         Mutation()(G, node)
         
         # Node should still be viable
-        assert G.nodes[node]["vf"] > 0
+        assert G.nodes[node]["νf"] > 0
 
 
 class TestZHIRNetworkPropagation:
@@ -258,9 +259,10 @@ class TestZHIRNetworkPropagation:
         G, node = create_nfr("test", epi=0.5, vf=1.0, theta=0.5)
         G.nodes[node]["epi_history"] = [0.3, 0.4, 0.5]
         
-        # Add neighbor with compatible phase
-        G.add_node("neighbor", epi=0.5, vf=1.0, theta=0.52, delta_nfr=0.0)
-        G.add_edge(node, "neighbor")
+        # Add neighbor with compatible phase and proper initialization
+        neighbor_id = "neighbor"
+        G.add_node(neighbor_id, EPI=0.5, **{"νf": 1.0}, theta=0.52, delta_nfr=0.0)
+        G.add_edge(node, neighbor_id)
         
         theta_before = G.nodes[node]["theta"]
         
@@ -282,20 +284,21 @@ class TestZHIRNetworkPropagation:
         G, node = create_nfr("test", epi=0.5, vf=1.0, theta=0.5)
         G.nodes[node]["epi_history"] = [0.3, 0.4, 0.5]
         
-        # Add neighbor
-        G.add_node("neighbor", epi=0.5, vf=1.0, theta=0.52, delta_nfr=0.0)
-        G.add_edge(node, "neighbor")
+        # Add neighbor with proper initialization
+        neighbor_id = "neighbor"
+        G.add_node(neighbor_id, EPI=0.5, **{"νf": 1.0}, theta=0.52, delta_nfr=0.0)
+        G.add_edge(node, neighbor_id)
         
         # Store neighbor state
-        neighbor_theta_before = G.nodes["neighbor"]["theta"]
-        neighbor_epi_before = G.nodes["neighbor"]["epi"]
+        neighbor_theta_before = G.nodes[neighbor_id]["theta"]
+        neighbor_epi_before = G.nodes[neighbor_id]["EPI"]
         
         # Apply mutation to main node
         Mutation()(G, node)
         
         # Neighbor should not be directly modified
-        assert G.nodes["neighbor"]["theta"] == neighbor_theta_before
-        assert G.nodes["neighbor"]["epi"] == neighbor_epi_before
+        assert G.nodes[neighbor_id]["theta"] == neighbor_theta_before
+        assert G.nodes[neighbor_id]["EPI"] == neighbor_epi_before
 
 
 if __name__ == "__main__":
