@@ -1,16 +1,27 @@
 """Classical N-body gravitational system demonstration using TNFR framework.
 
-This example demonstrates how classical mechanics emerges from TNFR as a
-low-dissonance coherence regime. The gravitational N-body problem becomes
-a network of resonant fractal nodes coupled through coherence potential.
+⚠️ **IMPORTANT**: This example ASSUMES Newtonian gravitational potential:
+   U = -G*m₁*m₂/r
 
-Key TNFR Concepts Demonstrated
--------------------------------
+This is an **external assumption**, NOT derived from TNFR physics!
+
+For a PURE TNFR formulation (no gravitational assumption), see:
+   examples/domain_applications/nbody_tnfr_pure.py
+
+That implementation derives dynamics from coherence potential and phase
+synchronization, with NO assumptions about classical force laws.
+
+What This Example Shows
+------------------------
+
+This example demonstrates how TNFR can **reproduce** classical mechanics
+when we explicitly assume the classical potential. It shows:
+
 1. **Mass as inverse frequency**: m = 1/νf
    Particles with high mass have low reorganization rate (inertia)
    
-2. **Force as coherence gradient**: F = -∇U
-   Gravitational force drives system toward higher coherence
+2. **Force as coherence gradient**: F = -∇U (ASSUMED U from gravity)
+   Classical gravitational force mapped to TNFR framework
    
 3. **Nodal equation**: ∂EPI/∂t = νf · ΔNFR
    Particle trajectories emerge from structural evolution
@@ -18,12 +29,26 @@ Key TNFR Concepts Demonstrated
 4. **Conservation laws emerge naturally**:
    Energy, momentum, angular momentum preserved
 
+Comparison:
+-----------
+
+**This script** (nbody_gravitational.py):
+- Assumes: U = -G*m₁*m₂/r (Newtonian gravity)
+- Computes: F = -∇U, then ΔNFR = F/m
+- Shows: TNFR can reproduce classical mechanics
+
+**Pure TNFR** (nbody_tnfr_pure.py):
+- Assumes: NOTHING (pure TNFR)
+- Computes: ΔNFR from Hamiltonian commutator
+- Shows: Attraction emerges from coherence/phase sync
+
 Examples shown:
 - Two-body circular orbit (Earth-Moon analogy)
 - Three-body figure-8 orbit (choreographic solution)
 - Solar system approximation (Sun + planets)
 
-Run this script to see TNFR structural dynamics reproducing classical mechanics!
+Run this script to see how TNFR reproduces classical mechanics
+when classical potentials are explicitly assumed!
 """
 
 import numpy as np
