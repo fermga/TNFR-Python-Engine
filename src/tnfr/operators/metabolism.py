@@ -259,6 +259,12 @@ def propagate_subepi_to_network(
     TNFR Principle: "Sub-EPIs propagate to coupled neighbors, triggering their
     own bifurcations when ∂²EPI/∂t² > τ" (canonical THOL dynamics).
 
+    **AGENTS.md Invariant #5**: No coupling is valid without explicit phase
+    verification. This function enforces phase compatibility before propagation:
+    - Computes coupling_strength = 1.0 - (|Δθ| / π) using angle_diff()
+    - Rejects neighbors with coupling_strength < threshold (antiphase blocked)
+    - Ensures resonance physics: only phase-aligned nodes receive sub-EPIs
+
     Propagation mechanism:
     1. Select neighbors with sufficient coupling (phase alignment)
     2. Compute attenuation based on coupling strength
@@ -300,11 +306,14 @@ def propagate_subepi_to_network(
     for neighbor in neighbors:
         neighbor_theta = float(get_attr(G.nodes[neighbor], ALIAS_THETA, 0.0))
 
-        # Compute coupling strength (phase alignment)
+        # INVARIANT #5: Phase verification before coupling
+        # Compute coupling strength based on phase alignment
+        # coupling_strength ∈ [0, 1]: 1 = in-phase, 0 = antiphase
         phase_diff = abs(angle_diff(neighbor_theta, parent_theta))
         coupling_strength = 1.0 - (phase_diff / math.pi)
 
-        # Propagate only if sufficiently coupled
+        # Propagate only if sufficiently coupled (phase-aligned)
+        # Antiphase neighbors (Δθ ≈ π) have coupling_strength ≈ 0, blocked by threshold
         if coupling_strength >= min_coupling_strength:
             # Attenuate sub-EPI based on distance and coupling
             attenuated_epi = sub_epi_magnitude * attenuation_factor * coupling_strength
