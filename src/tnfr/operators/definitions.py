@@ -3484,10 +3484,11 @@ class Mutation(Operator):
     glyph: ClassVar[Glyph] = Glyph.ZHIR
 
     def __call__(self, G: TNFRGraph, node: Any, **kw: Any) -> None:
-        """Apply ZHIR with bifurcation potential detection.
+        """Apply ZHIR with bifurcation potential detection and postcondition verification.
 
         Detects when ∂²EPI/∂t² > τ (bifurcation threshold) and sets telemetry flags
-        to enable validation of grammar U4a.
+        to enable validation of grammar U4a. Also verifies postconditions to ensure
+        operator contract fulfillment.
 
         Parameters
         ----------
@@ -3499,8 +3500,20 @@ class Mutation(Operator):
             Additional parameters including:
             - tau: Bifurcation threshold (default from graph config or 0.5)
             - validate_preconditions: Enable precondition checks (default True)
+            - validate_postconditions: Enable postcondition checks (default False)
             - collect_metrics: Enable metrics collection (default False)
         """
+        # Capture state before mutation for postcondition verification
+        validate_postconditions = kw.get("validate_postconditions", False) or G.graph.get(
+            "VALIDATE_OPERATOR_POSTCONDITIONS", False
+        )
+        
+        state_before = None
+        if validate_postconditions:
+            state_before = self._capture_state(G, node)
+            # Also capture epi_kind if tracked
+            state_before["epi_kind"] = G.nodes[node].get("epi_kind")
+        
         # Compute structural acceleration before base operator
         d2_epi = self._compute_epi_acceleration(G, node)
 
@@ -3521,6 +3534,10 @@ class Mutation(Operator):
         # Detect bifurcation potential if acceleration exceeds threshold
         if d2_epi > tau:
             self._detect_bifurcation_potential(G, node, d2_epi=d2_epi, tau=tau)
+        
+        # Verify postconditions if enabled
+        if validate_postconditions and state_before is not None:
+            self._verify_postconditions(G, node, state_before)
 
     def _compute_epi_acceleration(self, G: TNFRGraph, node: Any) -> float:
         """Calculate ∂²EPI/∂t² from node's EPI history.
@@ -3612,6 +3629,44 @@ class Mutation(Operator):
         from .preconditions import validate_mutation
 
         validate_mutation(G, node)
+
+    def _verify_postconditions(
+        self, G: TNFRGraph, node: Any, state_before: dict[str, Any]
+    ) -> None:
+        """Verify ZHIR-specific postconditions.
+        
+        Ensures that ZHIR fulfilled its contract:
+        1. Phase was transformed (θ changed)
+        2. Identity preserved (epi_kind maintained)
+        3. Bifurcation handled (if detected)
+        
+        Parameters
+        ----------
+        G : TNFRGraph
+            Graph containing the node
+        node : Any
+            Node that was mutated
+        state_before : dict
+            Node state before operator application, containing:
+            - theta: Phase value before mutation
+            - epi_kind: Identity before mutation (if tracked)
+        """
+        from .postconditions.mutation import (
+            verify_phase_transformed,
+            verify_identity_preserved,
+            verify_bifurcation_handled,
+        )
+        
+        # Verify phase transformation
+        verify_phase_transformed(G, node, state_before["theta"])
+        
+        # Verify identity preservation (if tracked)
+        epi_kind_before = state_before.get("epi_kind")
+        if epi_kind_before is not None:
+            verify_identity_preserved(G, node, epi_kind_before)
+        
+        # Verify bifurcation handling
+        verify_bifurcation_handled(G, node)
 
     def _collect_metrics(
         self, G: TNFRGraph, node: Any, state_before: dict[str, Any]
