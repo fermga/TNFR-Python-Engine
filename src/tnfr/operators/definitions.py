@@ -2718,6 +2718,8 @@ class SelfOrganization(Operator):
 
         # Bifurcate if acceleration exceeds threshold
         if d2_epi > tau:
+            # Validate depth before bifurcation
+            self._validate_bifurcation_depth(G, node)
             self._spawn_sub_epi(G, node, d2_epi=d2_epi, tau=tau)
 
         # CANONICAL VALIDATION: Verify collective coherence of sub-EPIs
@@ -2827,6 +2829,14 @@ class SelfOrganization(Operator):
         # Get current timestamp from glyph history length
         timestamp = len(G.nodes[node].get("glyph_history", []))
 
+        # Determine parent bifurcation level for hierarchical telemetry
+        parent_level = G.nodes[node].get("_bifurcation_level", 0)
+        child_level = parent_level + 1
+        
+        # Construct hierarchy path for full traceability
+        parent_path = G.nodes[node].get("_hierarchy_path", [])
+        child_path = parent_path + [node]
+
         # ARCHITECTURAL: Create sub-EPI as independent NFR node
         # This enables operational fractality - recursive operators, hierarchical metrics
         sub_node_id = self._create_sub_node(
@@ -2835,6 +2845,8 @@ class SelfOrganization(Operator):
             sub_epi=sub_epi_value,
             parent_vf=parent_vf,
             parent_theta=parent_theta,
+            child_level=child_level,
+            child_path=child_path,
         )
 
         # Store sub-EPI metadata for telemetry and backward compatibility
@@ -2847,6 +2859,8 @@ class SelfOrganization(Operator):
             "node_id": sub_node_id,  # Reference to independent node
             "metabolized": network_signals is not None and metabolic_enabled,
             "network_signals": network_signals,
+            "bifurcation_level": child_level,  # Hierarchical depth tracking
+            "hierarchy_path": child_path,  # Full parent chain for traceability
         }
 
         # Keep metadata list for telemetry/metrics backward compatibility
@@ -2883,6 +2897,8 @@ class SelfOrganization(Operator):
         sub_epi: float,
         parent_vf: float,
         parent_theta: float,
+        child_level: int,
+        child_path: list,
     ) -> str:
         """Create sub-EPI as independent NFR node for operational fractality.
 
@@ -2901,6 +2917,10 @@ class SelfOrganization(Operator):
             Parent's structural frequency (inherited with damping)
         parent_theta : float
             Parent's phase (inherited)
+        child_level : int
+            Bifurcation level for hierarchical tracking
+        child_path : list
+            Full hierarchy path (ancestor chain)
 
         Returns
         -------
@@ -2931,6 +2951,8 @@ class SelfOrganization(Operator):
                 DNFR_PRIMARY: 0.0,
                 "parent_node": parent_node,
                 "hierarchy_level": parent_hierarchy_level + 1,
+                "_bifurcation_level": child_level,  # Hierarchical depth tracking
+                "_hierarchy_path": child_path,  # Full ancestor chain
                 "epi_history": [
                     float(sub_epi)
                 ],  # Initialize history for future bifurcation
@@ -2953,6 +2975,58 @@ class SelfOrganization(Operator):
         hierarchy.setdefault(parent_node, []).append(sub_node_id)
 
         return sub_node_id
+
+    def _validate_bifurcation_depth(self, G: TNFRGraph, node: Any) -> None:
+        """Validate bifurcation depth before creating new sub-EPI.
+        
+        Checks if the current bifurcation level is at or exceeds the configured
+        maximum depth. Issues a warning if depth limit is reached but still
+        allows the bifurcation (for flexibility in research contexts).
+        
+        Parameters
+        ----------
+        G : TNFRGraph
+            Graph containing the node
+        node : Any
+            Node about to undergo bifurcation
+            
+        Notes
+        -----
+        TNFR Principle: Deep nesting reflects operational fractality (Invariant #7),
+        but excessive depth may impact performance and interpretability. This
+        validation provides observability without hard constraints.
+        
+        The warning allows tracking when hierarchies become complex, enabling
+        researchers to study bifurcation patterns while maintaining system
+        performance awareness.
+        """
+        import logging
+        
+        # Get current bifurcation level
+        current_level = G.nodes[node].get("_bifurcation_level", 0)
+        
+        # Get max depth from graph config (default: 5 levels)
+        max_depth = int(G.graph.get("THOL_MAX_BIFURCATION_DEPTH", 5))
+        
+        # Warn if at or exceeding maximum
+        if current_level >= max_depth:
+            logger = logging.getLogger(__name__)
+            logger.warning(
+                f"Node {node}: Bifurcation depth ({current_level}) at/exceeds "
+                f"maximum ({max_depth}). Deep nesting may impact performance. "
+                f"Consider adjusting THOL_MAX_BIFURCATION_DEPTH if intended."
+            )
+            
+            # Record warning in node for telemetry
+            G.nodes[node]["_thol_max_depth_warning"] = True
+            
+            # Record event for analysis
+            events = G.graph.setdefault("thol_depth_warnings", [])
+            events.append({
+                "node": node,
+                "depth": current_level,
+                "max_depth": max_depth,
+            })
 
     def _validate_collective_coherence(self, G: TNFRGraph, node: Any) -> None:
         """Validate collective coherence of sub-EPI ensemble after bifurcation.
