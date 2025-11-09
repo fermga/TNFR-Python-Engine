@@ -215,6 +215,72 @@ class TestTHOLPropagation:
         propagations = G.graph.get("thol_propagations", [])
         assert len(propagations) == 0, "No propagations should be recorded"
 
+    def test_thol_rejects_antiphase_propagation(self):
+        """THOL must reject propagation to neighbors with antiphase (Invariant #5).
+        
+        This test explicitly validates AGENTS.md Invariant #5:
+        "No coupling is valid without explicit phase verification."
+        
+        THOL propagation uses phase-based coupling strength:
+        coupling_strength = 1.0 - (|Δθ| / π)
+        
+        For antiphase nodes (Δθ = π), coupling_strength = 0, which is below
+        the minimum threshold, thus blocking propagation as required by physics.
+        """
+        import math
+
+        G = nx.Graph()
+        # Node 0: phase = 0.0
+        G.add_node(
+            0,
+            **{
+                EPI_PRIMARY: 0.50,
+                VF_PRIMARY: 1.0,
+                THETA_PRIMARY: 0.0,
+                DNFR_PRIMARY: 0.15,
+            }
+        )
+        # Node 1: phase = π (antiphase - destructive interference)
+        G.add_node(
+            1,
+            **{
+                EPI_PRIMARY: 0.50,
+                VF_PRIMARY: 1.0,
+                THETA_PRIMARY: math.pi,
+                DNFR_PRIMARY: 0.05,
+            }
+        )
+        G.add_edge(0, 1)
+
+        # Enable propagation with standard threshold
+        G.graph["THOL_PROPAGATION_ENABLED"] = True
+        G.graph["THOL_MIN_COUPLING_FOR_PROPAGATION"] = 0.5
+
+        # Build EPI history for bifurcation
+        G.nodes[0]["epi_history"] = [0.05, 0.33, 0.50]
+
+        epi_1_before = G.nodes[1][EPI_PRIMARY]
+
+        # Apply THOL
+        SelfOrganization()(G, 0)
+
+        epi_1_after = G.nodes[1][EPI_PRIMARY]
+
+        # Verify: propagation should NOT have occurred to antiphase neighbor
+        assert (
+            epi_1_after == epi_1_before
+        ), "Antiphase neighbor must be rejected (Invariant #5)"
+
+        # Verify telemetry: no propagation to node 1
+        propagations = G.graph.get("thol_propagations", [])
+        if propagations:
+            for prop in propagations:
+                if prop["source_node"] == 0:
+                    affected_neighbors = [n for n, _ in prop["propagations"]]
+                    assert (
+                        1 not in affected_neighbors
+                    ), "Antiphase neighbor should not appear in propagation list"
+
 
 class TestTHOLCascades:
     """Test cascade triggering across network chains."""
