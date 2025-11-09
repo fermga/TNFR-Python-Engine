@@ -994,7 +994,8 @@ def validate_mutation(G: "TNFRGraph", node: "NodeId") -> None:
 
     1. Minimum νf for phase transformation capacity
     2. **∂EPI/∂t > ξ: Structural change velocity exceeds threshold**
-    3. Stable base (IL precedence validated by grammar U4b)
+    3. **U4b Part 1: Prior IL (Coherence) for stable transformation base**
+    4. **U4b Part 2: Recent destabilizer (~3 ops) for threshold energy**
 
     Also detects and records the destabilizer type that enabled this mutation
     for telemetry and structural tracing purposes.
@@ -1009,7 +1010,20 @@ def validate_mutation(G: "TNFRGraph", node: "NodeId") -> None:
     Raises
     ------
     OperatorPreconditionError
-        If node state is unsuitable for mutation
+        If node state is unsuitable for mutation or U4b requirements not met
+
+    Configuration Parameters
+    ------------------------
+    ZHIR_MIN_VF : float, default 0.05
+        Minimum structural frequency for phase transformation
+    ZHIR_THRESHOLD_XI : float, default 0.1
+        Threshold for ∂EPI/∂t velocity check
+    VALIDATE_OPERATOR_PRECONDITIONS : bool, default False
+        Enable strict U4b validation (IL precedence + destabilizer requirement)
+    ZHIR_REQUIRE_IL_PRECEDENCE : bool, default False
+        Require prior IL even if VALIDATE_OPERATOR_PRECONDITIONS=False
+    ZHIR_REQUIRE_DESTABILIZER : bool, default False
+        Require recent destabilizer even if VALIDATE_OPERATOR_PRECONDITIONS=False
 
     Notes
     -----
@@ -1022,6 +1036,14 @@ def validate_mutation(G: "TNFRGraph", node: "NodeId") -> None:
     - If ∂EPI/∂t < ξ: Logs warning (soft check for backward compatibility)
     - If ∂EPI/∂t ≥ ξ: Logs success, sets validation flag
     - If insufficient history: Logs warning, cannot verify
+    
+    **U4b Validation (Grammar Rule)**:
+    
+    When strict validation enabled (VALIDATE_OPERATOR_PRECONDITIONS=True):
+    - **Part 1**: Prior IL (Coherence) required for stable base
+    - **Part 2**: Recent destabilizer (OZ/VAL/etc) required within ~3 ops
+    
+    Without strict validation: Only telemetry/warnings logged.
     
     This function implements R4 Extended telemetry by analyzing the glyph_history
     to determine which destabilizer (strong/moderate/weak) enabled the mutation.
@@ -1075,9 +1097,53 @@ def validate_mutation(G: "TNFRGraph", node: "NodeId") -> None:
         )
         G.nodes[node]["_zhir_threshold_unknown"] = True
 
+    # U4b Part 1: IL Precedence Check (stable base for transformation)
+    # Check if strict validation enabled
+    strict_validation = bool(G.graph.get("VALIDATE_OPERATOR_PRECONDITIONS", False))
+    require_il = strict_validation or bool(G.graph.get("ZHIR_REQUIRE_IL_PRECEDENCE", False))
+    
+    if require_il:
+        # Get glyph history
+        glyph_history = G.nodes[node].get("glyph_history", [])
+        
+        # Import glyph_function_name to convert glyphs to operator names
+        from ..grammar import glyph_function_name
+        
+        # Convert history to operator names
+        history_names = [glyph_function_name(g) for g in glyph_history]
+        
+        # Check for prior IL (coherence)
+        il_found = "coherence" in history_names
+        
+        if not il_found:
+            raise OperatorPreconditionError(
+                "Mutation",
+                "U4b violation: ZHIR requires prior IL (Coherence) for stable transformation base. "
+                "Apply Coherence before mutation sequence. "
+                f"Recent history: {history_names[-5:] if len(history_names) > 5 else history_names}"
+            )
+        
+        logger.debug(f"Node {node}: ZHIR IL precedence satisfied (prior Coherence found)")
+
+    # U4b Part 2: Recent Destabilizer Check (threshold energy for bifurcation)
     # R4 Extended: Detect and record destabilizer type for telemetry
-    # This provides structural traceability for bifurcation events
     _record_destabilizer_context(G, node, logger)
+    
+    # If strict validation enabled, enforce destabilizer requirement
+    require_destabilizer = strict_validation or bool(G.graph.get("ZHIR_REQUIRE_DESTABILIZER", False))
+    
+    if require_destabilizer:
+        context = G.nodes[node].get("_mutation_context", {})
+        destabilizer_found = context.get("destabilizer_operator")
+        
+        if destabilizer_found is None:
+            recent_history = context.get("recent_history", [])
+            raise OperatorPreconditionError(
+                "Mutation",
+                "U4b violation: ZHIR requires recent destabilizer (OZ/VAL/etc) within ~3 ops. "
+                f"Recent history: {recent_history}. "
+                "Apply Dissonance or Expansion to elevate ΔNFR first."
+            )
 
 
 def validate_transition(G: "TNFRGraph", node: "NodeId") -> None:
