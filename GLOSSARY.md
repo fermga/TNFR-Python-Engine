@@ -128,7 +128,7 @@ Quick operational reference for the Resonant Fractal Nature Theory (TNFR). This 
 | REMESH | Recursivity | Nested operations | Multi-scale ops |
 
 **API:** `tnfr.structural.<OperatorName>()`, `run_sequence(G, node, ops)`  
-**Grammar:** See [CANONICAL_BOUNDARY_PATTERN.md](CANONICAL_BOUNDARY_PATTERN.md)  
+**Grammar:** See [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md)  
 **Math:** [Mathematical Foundations §5](docs/source/theory/mathematical_foundations.md)
 
 ---
@@ -232,7 +232,7 @@ The consolidated TNFR grammar system (U1-U4) that replaces the old C1-C3 and RC1
 
 **Source of Truth:** [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md)
 
-**Implementation:** `src/tnfr/operators/unified_grammar.py`
+**Implementation:** `src/tnfr/operators/grammar.py`
 
 **Four Canonical Constraints:**
 - U1: STRUCTURAL INITIATION & CLOSURE
@@ -370,8 +370,6 @@ Operators that perform graduated destabilization for phase transitions.
 ### Canonical Patterns
 - [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) - **Grammar single source of truth** ⭐
 - [GRAMMAR_MIGRATION_GUIDE.md](GRAMMAR_MIGRATION_GUIDE.md) - Migration from C1-C3/RC1-RC4 to U1-U4
-- [CANONICAL_BOUNDARY_PATTERN.md](CANONICAL_BOUNDARY_PATTERN.md) - Operator patterns
-- [CANONICITY_VERIFICATION.md](CANONICITY_VERIFICATION.md) - Validation rules
 - [TESTING.md](TESTING.md) - Test conventions
 
 ---

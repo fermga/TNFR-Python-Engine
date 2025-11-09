@@ -118,7 +118,7 @@ flowchart TB
 The TNFR grammar system follows a strict information hierarchy:
 
 1. **UNIFIED_GRAMMAR_RULES.md**: Complete physics derivations (ultimate source)
-2. **unified_grammar.py**: Canonical implementation
+2. **grammar.py**: Canonical implementation
 3. **grammar.py**: Backward compatibility layer (deprecated)
 4. **canonical_grammar.py**: Legacy alias (deprecated)
 
@@ -131,9 +131,9 @@ The TNFR grammar system follows a strict information hierarchy:
 
 ### Invariants
 
-**Grammar Invariant #1:** unified_grammar.py is the only module that implements validation logic.
+**Grammar Invariant #1:** grammar.py is the only module that implements validation logic.
 
-**Grammar Invariant #2:** All operator sets (GENERATORS, CLOSURES, etc.) defined once in unified_grammar.py.
+**Grammar Invariant #2:** All operator sets (GENERATORS, CLOSURES, etc.) defined once in grammar.py.
 
 **Grammar Invariant #3:** Every constraint has explicit physics derivation in UNIFIED_GRAMMAR_RULES.md.
 
@@ -168,7 +168,7 @@ The unified grammar consolidates two previously separate systems:
 - **C1-C3 System** (in `grammar.py`) - Deprecated
 - **RC1-RC4 System** (in `canonical_grammar.py`) - Deprecated
 
-**New Unified System** (U1-U4 in `unified_grammar.py`) - Active
+**New Unified System** (U1-U4 in `grammar.py`) - Active
 
 See [GRAMMAR_MIGRATION_GUIDE.md](GRAMMAR_MIGRATION_GUIDE.md) for migration instructions.
 

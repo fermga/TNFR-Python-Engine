@@ -445,7 +445,7 @@ This is not a convention - it's a **physical requirement** of wave mechanics.
 **Traceability**: 
 - Resonance physics (classical mechanics) → Phase requirement
 - AGENTS.md Invariant #5 → Explicit TNFR requirement
-- unified_grammar.py → Implementation of physical law
+- grammar.py → Implementation of physical law
 
 ---
 
@@ -487,7 +487,7 @@ Without handlers, bifurcations are uncontrolled → fragmentation.
 **Traceability**: 
 - Contract OZ → Bifurcation physics
 - Bifurcation theory → Need for stability mechanisms
-- unified_grammar.py → Implementation of controlled phase transitions
+- grammar.py → Implementation of controlled phase transitions
 
 ---
 
@@ -589,7 +589,7 @@ Additional for ZHIR (Mutation):
 ## Implementation Strategy
 
 ### Phase 1: Create Unified Module
-1. Create `src/tnfr/operators/unified_grammar.py`
+1. Create `src/tnfr/operators/grammar.py`
 2. Implement all 4 unified rules (U1-U4)
 3. Comprehensive docstrings with physics derivations
 4. Export unified validator and rule sets
@@ -606,7 +606,7 @@ Additional for ZHIR (Mutation):
 4. Update AGENTS.md references
 
 ### Phase 4: Update Tests
-1. Create tests/unit/operators/test_unified_grammar.py
+1. Create tests/unit/operators/test_grammar.py
 2. Update existing tests to use unified rules
 3. Verify all tests pass
 

@@ -19,7 +19,7 @@ All patterns align with unified grammar constraints from UNIFIED_GRAMMAR_RULES.m
 References
 ----------
 - UNIFIED_GRAMMAR_RULES.md: Physics basis for patterns
-- unified_grammar.py: Operator sets (GENERATORS, CLOSURES, etc.)
+- grammar.py: Operator sets (GENERATORS, CLOSURES, etc.)
 - canonical_patterns.py: Archetypal sequences with metadata
 - patterns.py: Advanced pattern detection algorithms
 """
@@ -47,7 +47,7 @@ from ..config.operator_names import (
     SILENCE,
     TRANSITION,
 )
-from .unified_grammar import (
+from .grammar import (
     BIFURCATION_HANDLERS,
     BIFURCATION_TRIGGERS,
     CLOSURES,

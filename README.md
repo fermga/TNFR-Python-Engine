@@ -214,16 +214,16 @@ All constraints emerge inevitably from the nodal equation and TNFR invariants.
 
 **For complete derivations:** See [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md)
 
-**For implementation:** See `src/tnfr/operators/unified_grammar.py`
+**For implementation:** See `src/tnfr/operators/grammar.py`
 
 #### Quick Start
 
 ```python
-from tnfr.operators.unified_grammar import validate_unified
+from tnfr.operators.grammar import validate_grammar
 from tnfr.operators.definitions import Emission, Coherence, Silence
 
 sequence = [Emission(), Coherence(), Silence()]
-is_valid = validate_unified(sequence, epi_initial=0.0)
+is_valid = validate_grammar(sequence, epi_initial=0.0)
 ```
 
 #### Migration from Old Grammar Systems
@@ -231,7 +231,7 @@ is_valid = validate_unified(sequence, epi_initial=0.0)
 If you're using the old C1-C3 or RC1-RC4 systems:
 
 - **Old:** `from tnfr.operators.grammar import validate_sequence`
-- **New:** `from tnfr.operators.unified_grammar import validate_unified`
+- **New:** `from tnfr.operators.grammar import validate_grammar`
 
 See migration guide in [GRAMMAR_MIGRATION_GUIDE.md](GRAMMAR_MIGRATION_GUIDE.md)
 

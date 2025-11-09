@@ -9,7 +9,7 @@ Two old systems have been consolidated:
 - **RC1-RC4 System** (in `canonical_grammar.py`)
 
 Both replaced by:
-- **U1-U4 Unified System** (in `unified_grammar.py`)
+- **U1-U4 Unified System** (in `grammar.py`)
 
 ## Quick Migration
 
@@ -25,8 +25,8 @@ from tnfr.operators.canonical_grammar import validate_canonical
 valid = validate_canonical(seq)
 
 # NEW (Unified system)
-from tnfr.operators.unified_grammar import validate_unified
-valid = validate_unified(seq, epi_initial=0.0)
+from tnfr.operators.unified_grammar import validate_grammar
+valid = validate_grammar(seq, epi_initial=0.0)
 ```
 
 ## Constraint Mapping
@@ -70,7 +70,7 @@ from tnfr.operators.canonical_grammar import (
 **After (Unified):**
 ```python
 from tnfr.operators.unified_grammar import (
-    validate_unified,
+    validate_grammar,
     GENERATORS,
     CLOSURES,
     STABILIZERS,
@@ -97,12 +97,12 @@ if not result.passed:
 **After:**
 ```python
 # Unified style
-from tnfr.operators.unified_grammar import validate_unified
+from tnfr.operators.unified_grammar import validate_grammar
 from tnfr.operators.definitions import Emission, Coherence, Silence
 
 sequence = [Emission(), Coherence(), Silence()]
 try:
-    is_valid = validate_unified(sequence, epi_initial=0.0)
+    is_valid = validate_grammar(sequence, epi_initial=0.0)
     print("Valid sequence!")
 except ValueError as e:
     print(f"Failed: {e}")
@@ -127,12 +127,12 @@ def test_sequence_validation():
 **After:**
 ```python
 def test_sequence_validation():
-    from tnfr.operators.unified_grammar import validate_unified
+    from tnfr.operators.unified_grammar import validate_grammar
     from tnfr.operators.definitions import Emission, Coherence
     
     sequence = [Emission(), Coherence()]
     # Should pass if sequence doesn't require closure or starts from EPI > 0
-    is_valid = validate_unified(sequence, epi_initial=1.0)
+    is_valid = validate_grammar(sequence, epi_initial=1.0)
     assert is_valid
 ```
 
@@ -169,11 +169,11 @@ The unified grammar uses more precise operator sets:
 ```python
 # Valid when starting from EPI=0
 sequence = [Emission(), Reception(), Coherence()]
-validate_unified(sequence, epi_initial=0.0)  # ✓
+validate_grammar(sequence, epi_initial=0.0)  # ✓
 
 # Invalid when starting from EPI=0
 sequence = [Reception(), Coherence()]
-validate_unified(sequence, epi_initial=0.0)  # ✗ Need generator first
+validate_grammar(sequence, epi_initial=0.0)  # ✗ Need generator first
 ```
 
 **U1b: Closure**
@@ -185,11 +185,11 @@ validate_unified(sequence, epi_initial=0.0)  # ✗ Need generator first
 ```python
 # Valid - ends with closure
 sequence = [Emission(), Coherence(), Silence()]
-validate_unified(sequence, epi_initial=0.0)  # ✓
+validate_grammar(sequence, epi_initial=0.0)  # ✓
 
 # May warn - no explicit closure
 sequence = [Emission(), Reception()]
-validate_unified(sequence, epi_initial=0.0)  # May issue warning
+validate_grammar(sequence, epi_initial=0.0)  # May issue warning
 ```
 
 ### U2: CONVERGENCE & BOUNDEDNESS
@@ -208,7 +208,7 @@ sequence = [
     Coherence(),   # Stabilizer
     Silence()
 ]
-validate_unified(sequence, epi_initial=0.0)  # ✓
+validate_grammar(sequence, epi_initial=0.0)  # ✓
 
 # Invalid - destabilizer without stabilizer
 sequence = [
@@ -216,7 +216,7 @@ sequence = [
     Dissonance(),  # Destabilizer
     Silence()      # No stabilizer!
 ]
-validate_unified(sequence, epi_initial=0.0)  # ✗
+validate_grammar(sequence, epi_initial=0.0)  # ✗
 ```
 
 ### U3: RESONANT COUPLING
@@ -235,7 +235,7 @@ sequence = [
     Coherence(),
     Silence()
 ]
-validate_unified(sequence, epi_initial=0.0)  # ✓
+validate_grammar(sequence, epi_initial=0.0)  # ✓
 # Note: Phase verification happens at runtime
 ```
 
@@ -253,7 +253,7 @@ sequence = [
     SelfOrganization(),  # Handler
     Silence()
 ]
-validate_unified(sequence, epi_initial=0.0)  # ✓
+validate_grammar(sequence, epi_initial=0.0)  # ✓
 ```
 
 **U4b: Transformers Need Context**
@@ -271,7 +271,7 @@ sequence = [
     Coherence(),
     Silence()
 ]
-validate_unified(sequence, epi_initial=0.0)  # ✓
+validate_grammar(sequence, epi_initial=0.0)  # ✓
 
 # Invalid - mutation without recent destabilizer
 sequence = [
@@ -280,7 +280,7 @@ sequence = [
     Mutation(),    # No recent destabilizer!
     Silence()
 ]
-validate_unified(sequence, epi_initial=0.0)  # ✗
+validate_grammar(sequence, epi_initial=0.0)  # ✗
 ```
 
 ## Benefits of Migration
@@ -315,11 +315,11 @@ def check_sequence(seq):
 
 **After:**
 ```python
-from tnfr.operators.unified_grammar import validate_unified
+from tnfr.operators.unified_grammar import validate_grammar
 
 def check_sequence(seq, epi_initial=0.0):
     try:
-        validate_unified(seq, epi_initial=epi_initial)
+        validate_grammar(seq, epi_initial=epi_initial)
         return True
     except ValueError:
         return False
@@ -360,11 +360,11 @@ def validate_with_stability_check(seq):
 
 **After:**
 ```python
-from tnfr.operators.unified_grammar import validate_unified, STABILIZERS
+from tnfr.operators.unified_grammar import validate_grammar, STABILIZERS
 
 def validate_with_stability_check(seq, epi_initial=0.0):
     try:
-        validate_unified(seq, epi_initial=epi_initial)
+        validate_grammar(seq, epi_initial=epi_initial)
     except ValueError:
         return False
     
@@ -418,18 +418,18 @@ Create a test file to verify your migration:
 
 ```python
 # test_grammar_migration.py
-from tnfr.operators.unified_grammar import validate_unified
+from tnfr.operators.unified_grammar import validate_grammar
 from tnfr.operators.definitions import *
 
 def test_basic_sequence():
     """Test basic valid sequence."""
     sequence = [Emission(), Coherence(), Silence()]
-    assert validate_unified(sequence, epi_initial=0.0)
+    assert validate_grammar(sequence, epi_initial=0.0)
 
 def test_destabilizer_with_stabilizer():
     """Test U2: Destabilizer needs stabilizer."""
     sequence = [Emission(), Dissonance(), Coherence(), Silence()]
-    assert validate_unified(sequence, epi_initial=0.0)
+    assert validate_grammar(sequence, epi_initial=0.0)
 
 def test_mutation_with_context():
     """Test U4b: Mutation needs context."""
@@ -441,7 +441,7 @@ def test_mutation_with_context():
         Coherence(),
         Silence()
     ]
-    assert validate_unified(sequence, epi_initial=0.0)
+    assert validate_grammar(sequence, epi_initial=0.0)
 
 if __name__ == "__main__":
     test_basic_sequence()
@@ -453,7 +453,7 @@ if __name__ == "__main__":
 ## References
 
 - **[UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md)**: Complete physics derivations
-- **[unified_grammar.py](src/tnfr/operators/unified_grammar.py)**: Implementation
+- **[grammar.py](src/tnfr/operators/grammar.py)**: Implementation
 - **[AGENTS.md](AGENTS.md)**: Invariants and contracts
 - **[GLOSSARY.md](GLOSSARY.md)**: Term definitions
 
@@ -462,7 +462,7 @@ if __name__ == "__main__":
 If you encounter migration issues:
 1. Check [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) § Mapping: Old Rules → Unified Rules
 2. Review examples in this guide
-3. Run the test suite: `pytest tests/unit/operators/test_unified_grammar.py`
+3. Run the test suite: `pytest tests/unit/operators/test_grammar.py`
 4. Open issue on GitHub with specific sequence that fails
 
 ---
