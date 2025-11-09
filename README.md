@@ -186,6 +186,7 @@ This demonstrates **classical mechanics as a natural expression of coherent stru
 - **[TNFR Concepts](docs/source/getting-started/TNFR_CONCEPTS.md)** - Paradigm introduction
 - **[API Overview](docs/source/api/overview.md)** - Package architecture
 - **[Operator Guide](docs/source/api/operators.md)** - Complete operator reference
+- **[NAV Guide](docs/source/operators/NAV_GUIDE.md)** - NAV (Transition) canonical sequences, anti-patterns, and troubleshooting
 - **[THOL Configuration Reference](docs/THOL_CONFIGURATION_REFERENCE.md)** - Comprehensive THOL parameter guide
 
 ### 🎨 Grammar System
