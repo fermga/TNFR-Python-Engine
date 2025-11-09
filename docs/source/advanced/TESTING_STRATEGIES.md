@@ -923,8 +923,8 @@ pytest tests/ --memprof
 - [Architecture Guide](ARCHITECTURE_GUIDE.md) - Factory patterns and dependency management
 - [Performance Optimization](PERFORMANCE_OPTIMIZATION.md) - Optimization strategies
 - [Development Workflow](DEVELOPMENT_WORKFLOW.md) - Contributing guidelines
-- [CONTRIBUTING.md](../../../CONTRIBUTING.md) - General contribution guide
-- [TESTING.md](../../../TESTING.md) - Test strategy overview
+- [CONTRIBUTING.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/CONTRIBUTING.md) - General contribution guide
+- [TESTING.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/TESTING.md) - Test strategy overview
 
 ---
 

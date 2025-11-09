@@ -1,6 +1,6 @@
 # Operators Guide: The 13 Structural Operators
 
-[Home](../index.rst) › [User Guide](../user-guide/) › Operators Guide
+[Home](../home.md) › Operators Guide
 
 This guide provides a comprehensive reference for TNFR's 13 canonical structural operators. These operators are the **only valid way** to modify networks in TNFR, ensuring all changes are traceable, coherent, and reproducible.
 
@@ -606,7 +606,7 @@ Safe_Exploration := Dissonance Operator* Coherence
 Multi_Scale := Recursivity(Sequence)
 ```
 
-See [Glyph Sequences Guide](../../../GLYPH_SEQUENCES_GUIDE.md) for comprehensive patterns.
+See [Glyph Sequences Guide](https://github.com/fermga/TNFR-Python-Engine/blob/main/GLYPH_SEQUENCES_GUIDE.md) for comprehensive patterns.
 
 ## Monitoring Operator Effects
 
@@ -718,7 +718,7 @@ def adaptive_operator(G, node):
 ## See Also
 
 - **[API Reference](../api/operators.md)** - Complete operator API
-- **[Glyph Sequences Guide](../../../GLYPH_SEQUENCES_GUIDE.md)** - Canonical patterns
+- **[Glyph Sequences Guide](https://github.com/fermga/TNFR-Python-Engine/blob/main/GLYPH_SEQUENCES_GUIDE.md)** - Canonical patterns
 - **[Metrics Interpretation](METRICS_INTERPRETATION.md)** - Understanding effects
 - **[Troubleshooting](TROUBLESHOOTING.md)** - Solving common issues
 - **[Examples](../examples/README.md)** - Practical operator usage

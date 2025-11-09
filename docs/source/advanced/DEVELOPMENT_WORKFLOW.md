@@ -751,7 +751,7 @@ make verify-refs-verbose
    - This guide
    - [ARCHITECTURE_GUIDE.md](ARCHITECTURE_GUIDE.md)
    - [TESTING_STRATEGIES.md](TESTING_STRATEGIES.md)
-   - [CONTRIBUTING.md](../../../CONTRIBUTING.md)
+   - [CONTRIBUTING.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/CONTRIBUTING.md)
 
 2. **Search GitHub Issues**:
    - Known issues and solutions
@@ -833,8 +833,8 @@ mypy --help                        # Mypy options
 - [Architecture Guide](ARCHITECTURE_GUIDE.md) - Factory patterns and dependencies
 - [Testing Strategies](TESTING_STRATEGIES.md) - Testing best practices
 - [Performance Optimization](PERFORMANCE_OPTIMIZATION.md) - Optimization techniques
-- [CONTRIBUTING.md](../../../CONTRIBUTING.md) - Contribution guidelines
-- [README.md](../../../README.md) - Project overview
+- [CONTRIBUTING.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/CONTRIBUTING.md) - Contribution guidelines
+- [README.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/README.md) - Project overview
 
 ---
 

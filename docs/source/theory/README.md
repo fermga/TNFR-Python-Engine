@@ -110,8 +110,8 @@ Hands-on exploration and visualization of TNFR concepts:
 
 ### Related Documentation
 - [TNFR Fundamental Concepts](../getting-started/TNFR_CONCEPTS.md) — Intuitive introduction
-- [GLOSSARY](../../../GLOSSARY.md) — Terminology reference
-- [AGENTS.md](../../../AGENTS.md) — Canonical invariants for AI agents
+- [GLOSSARY](https://github.com/fermga/TNFR-Python-Engine/blob/main/GLOSSARY.md) — Terminology reference
+- [AGENTS.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/AGENTS.md) — Canonical invariants for AI agents
 
 ## 📋 Document Status
 
