@@ -111,6 +111,67 @@ flowchart TB
     DTEL --> MMOD
 ```
 
+## Grammar System Architecture
+
+### Single Source of Truth
+
+The TNFR grammar system follows a strict information hierarchy:
+
+1. **UNIFIED_GRAMMAR_RULES.md**: Complete physics derivations (ultimate source)
+2. **unified_grammar.py**: Canonical implementation
+3. **grammar.py**: Backward compatibility layer (deprecated)
+4. **canonical_grammar.py**: Legacy alias (deprecated)
+
+### Design Principles
+
+- **No Duplication**: All grammar logic in one place
+- **100% Physics-Based**: Every rule from nodal equation/invariants
+- **Traceability**: Clear derivation chain from physics to code
+- **Testability**: All constraints independently testable
+
+### Invariants
+
+**Grammar Invariant #1:** unified_grammar.py is the only module that implements validation logic.
+
+**Grammar Invariant #2:** All operator sets (GENERATORS, CLOSURES, etc.) defined once in unified_grammar.py.
+
+**Grammar Invariant #3:** Every constraint has explicit physics derivation in UNIFIED_GRAMMAR_RULES.md.
+
+### Unified Canonical Constraints (U1-U4)
+
+All grammar rules emerge inevitably from the nodal equation **∂EPI/∂t = νf · ΔNFR(t)** and TNFR invariants:
+
+#### U1: STRUCTURAL INITIATION & CLOSURE
+- **U1a**: Start with generators {AL, NAV, REMESH} when EPI=0
+- **U1b**: End with closures {SHA, NAV, REMESH, OZ}
+- **Basis**: ∂EPI/∂t undefined at EPI=0, sequences need coherent endpoints
+
+#### U2: CONVERGENCE & BOUNDEDNESS
+- If destabilizers {OZ, ZHIR, VAL}, then include stabilizers {IL, THOL}
+- **Basis**: ∫νf·ΔNFR dt must converge (integral convergence theorem)
+
+#### U3: RESONANT COUPLING
+- If coupling/resonance {UM, RA}, then verify phase |φᵢ - φⱼ| ≤ Δφ_max
+- **Basis**: AGENTS.md Invariant #5 + resonance physics
+
+#### U4: BIFURCATION DYNAMICS
+- **U4a**: If triggers {OZ, ZHIR}, then include handlers {THOL, IL}
+- **U4b**: If transformers {ZHIR, THOL}, then recent destabilizer (~3 ops)
+- **Basis**: Contract OZ + bifurcation theory
+
+**Complete Reference**: See [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) for detailed physics derivations.
+
+### Migration from Old Systems
+
+The unified grammar consolidates two previously separate systems:
+
+- **C1-C3 System** (in `grammar.py`) - Deprecated
+- **RC1-RC4 System** (in `canonical_grammar.py`) - Deprecated
+
+**New Unified System** (U1-U4 in `unified_grammar.py`) - Active
+
+See [GRAMMAR_MIGRATION_GUIDE.md](GRAMMAR_MIGRATION_GUIDE.md) for migration instructions.
+
 ## Layered responsibilities
 
 | Layer | Key modules | Primary responsibilities | TNFR invariants guarded |

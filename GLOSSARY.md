@@ -224,6 +224,136 @@ All simulations must be:
 
 ---
 
+## Unified Grammar Terms
+
+### Unified Grammar
+
+The consolidated TNFR grammar system (U1-U4) that replaces the old C1-C3 and RC1-RC4 systems.
+
+**Source of Truth:** [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md)
+
+**Implementation:** `src/tnfr/operators/unified_grammar.py`
+
+**Four Canonical Constraints:**
+- U1: STRUCTURAL INITIATION & CLOSURE
+- U2: CONVERGENCE & BOUNDEDNESS
+- U3: RESONANT COUPLING
+- U4: BIFURCATION DYNAMICS
+
+---
+
+### Generator Operator
+
+Operator that can create EPI from null/dormant states.
+
+**Set:** GENERATORS = {emission, transition, recursivity}
+
+**Physics:** Only these operators can initialize when EPI=0
+
+**Grammar Rule:** U1a (STRUCTURAL INITIATION)
+
+**See:** UNIFIED_GRAMMAR_RULES.md § U1a
+
+---
+
+### Closure Operator
+
+Operator that leaves system in coherent attractor state.
+
+**Set:** CLOSURES = {silence, transition, recursivity, dissonance}
+
+**Physics:** Terminal states preserving coherence
+
+**Grammar Rule:** U1b (STRUCTURAL CLOSURE)
+
+**See:** UNIFIED_GRAMMAR_RULES.md § U1b
+
+---
+
+### Stabilizer Operator
+
+Operator that provides negative feedback for convergence.
+
+**Set:** STABILIZERS = {coherence, self_organization}
+
+**Physics:** Ensures ∫νf·ΔNFR dt converges (bounded evolution)
+
+**Grammar Rule:** U2 (CONVERGENCE & BOUNDEDNESS)
+
+**See:** UNIFIED_GRAMMAR_RULES.md § U2
+
+---
+
+### Destabilizer Operator
+
+Operator that increases |ΔNFR| through positive feedback.
+
+**Set:** DESTABILIZERS = {dissonance, mutation, expansion}
+
+**Physics:** Without stabilizers, leads to divergence
+
+**Grammar Rule:** U2 (CONVERGENCE & BOUNDEDNESS)
+
+**See:** UNIFIED_GRAMMAR_RULES.md § U2
+
+---
+
+### Coupling/Resonance Operator
+
+Operators that require phase verification for valid coupling.
+
+**Set:** COUPLING_RESONANCE = {coupling, resonance}
+
+**Physics:** Resonance requires |φᵢ - φⱼ| ≤ Δφ_max
+
+**Grammar Rule:** U3 (RESONANT COUPLING)
+
+**See:** UNIFIED_GRAMMAR_RULES.md § U3
+
+---
+
+### Bifurcation Trigger
+
+Operators that may trigger phase transitions.
+
+**Set:** BIFURCATION_TRIGGERS = {dissonance, mutation}
+
+**Physics:** Can cause ∂²EPI/∂t² > τ (bifurcation)
+
+**Grammar Rule:** U4a (requires handlers)
+
+**See:** UNIFIED_GRAMMAR_RULES.md § U4a
+
+---
+
+### Bifurcation Handler
+
+Operators that manage structural reorganization during bifurcations.
+
+**Set:** BIFURCATION_HANDLERS = {self_organization, coherence}
+
+**Physics:** Provide stability during phase transitions
+
+**Grammar Rule:** U4a (BIFURCATION DYNAMICS)
+
+**See:** UNIFIED_GRAMMAR_RULES.md § U4a
+
+---
+
+### Transformer Operator
+
+Operators that perform graduated destabilization for phase transitions.
+
+**Set:** TRANSFORMERS = {mutation, self_organization}
+
+**Physics:** Require recent destabilizer for threshold energy
+
+**Grammar Rule:** U4b (requires context + prior IL for ZHIR)
+
+**See:** UNIFIED_GRAMMAR_RULES.md § U4b
+
+---
+
 ## Related Documentation
 
 ### Mathematical Theory
@@ -238,7 +368,9 @@ All simulations must be:
 - [Examples](docs/source/examples/README.md) - Runnable scenarios
 
 ### Canonical Patterns
-- [CANONICAL_BOUNDARY_PATTERN.md](CANONICAL_BOUNDARY_PATTERN.md) - Operator grammar
+- [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) - **Grammar single source of truth** ⭐
+- [GRAMMAR_MIGRATION_GUIDE.md](GRAMMAR_MIGRATION_GUIDE.md) - Migration from C1-C3/RC1-RC4 to U1-U4
+- [CANONICAL_BOUNDARY_PATTERN.md](CANONICAL_BOUNDARY_PATTERN.md) - Operator patterns
 - [CANONICITY_VERIFICATION.md](CANONICITY_VERIFICATION.md) - Validation rules
 - [TESTING.md](TESTING.md) - Test conventions
 

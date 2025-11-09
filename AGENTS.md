@@ -34,11 +34,17 @@ For the extended explanation, see `tnfr.pdf` inside the repo.
 
 These invariants **define** TNFR canonicity and **must be preserved** by any AI agent proposing changes:
 
-1. **EPI as coherent form**: it only changes via **structural operators**; ad‑hoc mutations are not allowed.
+1. **EPI as coherent form**: it only changes via **structural operators**; ad‑hoc mutations are not allowed.  
+   **Grammar Implementation**: U1 (STRUCTURAL INITIATION & CLOSURE)  
+   **See**: UNIFIED_GRAMMAR_RULES.md § U1
 2. **Structural units**: **νf** expressed in **Hz\_str** (structural hertz). Do not relabel or mix units.
 3. **ΔNFR semantics**: its sign and magnitude modulate the reorganization rate; do **not** reinterpret it as a classic ML “error” or “loss gradient”.
 4. **Operator closure**: operator composition yields valid TNFR states; any new function must map to existing operators or be defined as one.
-5. **Phase check**: no coupling is valid without explicit **phase** verification (synchrony).
+5. **Phase check**: no coupling is valid without explicit **phase** verification (synchrony).  
+   **Grammar Implementation**: U3 (RESONANT COUPLING)  
+   **Physics Basis**: Resonance requires |φᵢ - φⱼ| ≤ Δφ_max; antiphase coupling → destructive interference (non-physical)  
+   **Code**: `unified_grammar.py::validate_resonant_coupling()`  
+   **See**: UNIFIED_GRAMMAR_RULES.md § U3: RESONANT COUPLING
 6. **Node birth/collapse**: keep minimal conditions (sufficient νf, coupling, reduced ΔNFR) and collapse causes (extreme dissonance, decoupling, frequency failure).
 7. **Operational fractality**: EPIs can nest without losing functional identity; avoid flattening that breaks recursivity.
 8. **Controlled determinism**: simulations may be stochastic, but must be **reproducible** (seeds) and **traceable** (structural logs).

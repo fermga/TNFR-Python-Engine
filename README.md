@@ -187,25 +187,53 @@ This demonstrates **classical mechanics as a natural expression of coherent stru
 - **[API Overview](docs/source/api/overview.md)** - Package architecture
 - **[Operator Guide](docs/source/api/operators.md)** - Complete operator reference
 
-### 🎨 Grammar 2.0 (Operator Sequences)
+### 🎨 Grammar System
 
-Enhanced validation system for operator sequences:
+TNFR uses a unified physics-based grammar to validate operator sequences.
+All constraints emerge inevitably from the nodal equation and TNFR invariants.
+
+#### Four Canonical Constraints (U1-U4)
+
+1. **U1: STRUCTURAL INITIATION & CLOSURE**
+   - U1a: Start with generators when EPI=0
+   - U1b: End with closure operators
+   - Basis: ∂EPI/∂t undefined at EPI=0
+
+2. **U2: CONVERGENCE & BOUNDEDNESS**
+   - If destabilizers, then include stabilizers
+   - Basis: ∫νf·ΔNFR dt must converge
+
+3. **U3: RESONANT COUPLING**
+   - If coupling/resonance, then verify phase
+   - Basis: AGENTS.md Invariant #5
+
+4. **U4: BIFURCATION DYNAMICS**
+   - U4a: If triggers, then include handlers
+   - U4b: If transformers, then recent destabilizer
+   - Basis: Contract OZ + bifurcation theory
+
+**For complete derivations:** See [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md)
+
+**For implementation:** See `src/tnfr/operators/unified_grammar.py`
+
+#### Quick Start
 
 ```python
-from tnfr.operators.grammar import validate_sequence_with_health
+from tnfr.operators.unified_grammar import validate_unified
+from tnfr.operators.definitions import Emission, Coherence, Silence
 
-result = validate_sequence_with_health(["emission", "reception", "coherence"])
-print(f"Health: {result.health_metrics.overall_health:.2f}")
-print(f"Pattern: {result.metadata['detected_pattern']}")
+sequence = [Emission(), Coherence(), Silence()]
+is_valid = validate_unified(sequence, epi_initial=0.0)
 ```
 
-**Features:**
-- 📊 Health metrics (7 dimensions, 0.0-1.0 scale)
-- 🎨 18 structural patterns (Linear, Fractal, Regenerative, etc.)
-- 🔄 Regenerative cycle detection
-- ⚡ Structural frequencies (Hz_str units)
+#### Migration from Old Grammar Systems
 
-**Learn More**: [Operator Sequences Guide](GLYPH_SEQUENCES_GUIDE.md) • [Migration Guide 2.0](docs/MIGRATION_GUIDE_2.0.md)
+If you're using the old C1-C3 or RC1-RC4 systems:
+
+- **Old:** `from tnfr.operators.grammar import validate_sequence`
+- **New:** `from tnfr.operators.unified_grammar import validate_unified`
+
+See migration guide in [GRAMMAR_MIGRATION_GUIDE.md](GRAMMAR_MIGRATION_GUIDE.md)
 
 ### 🧪 Advanced Topics
 
