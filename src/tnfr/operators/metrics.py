@@ -1546,6 +1546,9 @@ def mutation_metrics(
 ) -> dict[str, Any]:
     """ZHIR - Mutation metrics: phase transition, structural regime change.
 
+    Collects mutation-specific metrics including canonical threshold verification
+    (∂EPI/∂t > ξ) as per TNFR physics (AGENTS.md §11, TNFR.pdf §2.2.11).
+
     Parameters
     ----------
     G : TNFRGraph
@@ -1560,19 +1563,46 @@ def mutation_metrics(
     Returns
     -------
     dict
-        Mutation-specific metrics including phase change indicators
+        Mutation-specific metrics including:
+        - Phase change indicators (theta_shift, phase_change)
+        - EPI change (delta_epi)
+        - **Threshold verification**: depi_dt, threshold_met, threshold_ratio
+        - Structural justification flags
     """
     theta_after = _get_node_attr(G, node, ALIAS_THETA)
     epi_after = _get_node_attr(G, node, ALIAS_EPI)
 
+    # Compute ∂EPI/∂t from history
+    epi_history = G.nodes[node].get("epi_history") or G.nodes[node].get("_epi_history", [])
+    if len(epi_history) >= 2:
+        depi_dt = abs(epi_history[-1] - epi_history[-2])
+    else:
+        depi_dt = 0.0
+
+    # Check threshold
+    xi = float(G.graph.get("ZHIR_THRESHOLD_XI", 0.1))
+    threshold_met = depi_dt >= xi
+    threshold_ratio = depi_dt / xi if xi > 0 else 0.0
+
     return {
         "operator": "Mutation",
         "glyph": "ZHIR",
+        # Existing metrics
         "theta_shift": abs(theta_after - theta_before),
         "theta_final": theta_after,
         "delta_epi": epi_after - epi_before,
         "epi_final": epi_after,
         "phase_change": abs(theta_after - theta_before) > 0.5,  # Configurable threshold
+        # NEW: Threshold verification metrics
+        "depi_dt": depi_dt,
+        "threshold_xi": xi,
+        "threshold_met": threshold_met,
+        "threshold_ratio": threshold_ratio,
+        "threshold_exceeded_by": max(0.0, depi_dt - xi),
+        # Structural justification flags from preconditions
+        "threshold_warning": G.nodes[node].get("_zhir_threshold_warning", False),
+        "threshold_validated": G.nodes[node].get("_zhir_threshold_met", False),
+        "threshold_unknown": G.nodes[node].get("_zhir_threshold_unknown", False),
     }
 
 
