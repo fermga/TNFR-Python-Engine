@@ -1,5 +1,13 @@
 """Canonical operator sequences and archetypal patterns from TNFR theory.
 
+.. deprecated:: 0.2.0
+    This module is deprecated and will be removed in version 1.0.0.
+    Use :mod:`tnfr.operators.pattern_detection` instead, which provides unified
+    pattern detection with explicit U1-U4 grammar rule mappings.
+
+    For canonical sequences, this module remains the authoritative source.
+    For pattern detection, use the new unified module.
+
 This module defines the 6 canonical archetypal sequences involving OZ (Dissonance)
 as documented in "El pulso que nos atraviesa" (Table 2.5 - Glyphic structural typology).
 
@@ -15,7 +23,17 @@ Section 2.3.5: Advanced glyphic writing (Glyphic macros)
 
 from __future__ import annotations
 
+import warnings
 from typing import Dict, List, NamedTuple
+
+# Issue deprecation warning on import
+warnings.warn(
+    "canonical_patterns module is deprecated. "
+    "For pattern detection, use tnfr.operators.pattern_detection instead. "
+    "Canonical sequences remain available here for backward compatibility.",
+    DeprecationWarning,
+    stacklevel=2,
+)
 
 from ..types import Glyph
 from .grammar import StructuralPattern

@@ -1,5 +1,13 @@
 """Advanced pattern detection for structural operator sequences.
 
+.. deprecated:: 0.2.0
+    This module is deprecated and will be removed in version 1.0.0.
+    Use :mod:`tnfr.operators.pattern_detection` instead, which provides unified
+    pattern detection with explicit U1-U4 grammar rule mappings.
+
+    The :class:`AdvancedPatternDetector` class remains available for backward
+    compatibility, but new code should use :class:`UnifiedPatternDetector`.
+
 This module provides unified pattern detection using coherence-weighted scoring.
 All patterns are evaluated independently, but their match scores are weighted by
 their structural coherence level. This respects TNFR's principle that emergent
@@ -11,8 +19,18 @@ Coherence weights reflect observable structural depth, not arbitrary rankings.
 
 from __future__ import annotations
 
+import warnings
 from functools import lru_cache
 from typing import TYPE_CHECKING, Any, Mapping, Sequence, Tuple
+
+# Issue deprecation warning on import
+warnings.warn(
+    "patterns module is deprecated. "
+    "Use tnfr.operators.pattern_detection.UnifiedPatternDetector instead. "
+    "AdvancedPatternDetector remains available for backward compatibility.",
+    DeprecationWarning,
+    stacklevel=2,
+)
 
 if TYPE_CHECKING:
     from .grammar import StructuralPattern

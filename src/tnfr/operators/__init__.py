@@ -73,6 +73,12 @@ from .hamiltonian import (
     build_H_frequency,
     build_H_coupling,
 )  # noqa: E402
+from .pattern_detection import (  # noqa: E402
+    PatternMatch,
+    UnifiedPatternDetector,
+    detect_pattern,
+    analyze_sequence,
+)
 
 __all__ = [
     "JitterCache",
@@ -98,6 +104,11 @@ __all__ = [
     "build_H_coherence",
     "build_H_frequency",
     "build_H_coupling",
+    # Pattern detection (unified module)
+    "PatternMatch",
+    "UnifiedPatternDetector",
+    "detect_pattern",
+    "analyze_sequence",
 ]
 
 __all__.extend(_DEFINITION_EXPORTS.keys())
