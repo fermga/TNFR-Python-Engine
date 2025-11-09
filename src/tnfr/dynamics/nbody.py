@@ -1,9 +1,49 @@
 """Classical N-body problem implementation in TNFR structural framework.
 
-This module implements the classical N-body gravitational problem as a
-manifestation of TNFR structural coherence. Following the paradigm that
-"reality is coherence, not things," particles are modeled as resonant
-fractal nodes (NFR) coupled through gravitational coherence potential.
+⚠️ **IMPORTANT LIMITATION**: This module ASSUMES Newtonian gravitational potential:
+   U(q) = -Σ_{i<j} G * m_i * m_j / |r_i - r_j|
+
+This is an **external assumption**, NOT derived from TNFR first principles!
+
+For a PURE TNFR implementation (no gravitational assumption), see:
+   tnfr.dynamics.nbody_tnfr
+
+That module derives dynamics from coherence potential and Hamiltonian
+commutator, with NO classical force law assumptions.
+
+Purpose of This Module
+-----------------------
+
+This module demonstrates how TNFR can **reproduce** classical mechanics
+when we explicitly map classical potentials into the TNFR framework.
+It shows the correspondence:
+
+Classical Mechanics   ←→   TNFR Framework
+-------------------        ---------------
+Position q            ←→   EPI spatial component
+Velocity v            ←→   EPI velocity component  
+Mass m                ←→   1/νf (structural inertia)
+Force F = -∇U         ←→   ΔNFR (ASSUMED from classical U)
+Newton's 2nd law      ←→   Nodal equation ∂EPI/∂t = νf·ΔNFR
+
+Comparison:
+-----------
+
+**This module** (nbody.py):
+```python
+# Assumes gravitational potential
+U = -Σ G*m_i*m_j/r_ij
+F = -∇U  # Classical force
+ΔNFR = F/m  # External assumption
+```
+
+**Pure TNFR** (nbody_tnfr.py):
+```python
+# NO assumed potential
+H_int = H_coh + H_freq + H_coupling
+ΔNFR = i[H_int, ·]/ℏ_str  # From Hamiltonian
+# Forces emerge from coherence/phase sync
+```
 
 Theoretical Foundation
 ----------------------
@@ -15,7 +55,7 @@ coherence regime** where:
    High mass → low structural reorganization rate (inertia)
    Low mass → high structural reorganization rate (responsiveness)
 
-2. **Gravitational potential as coherence potential**:
+2. **Gravitational potential as coherence potential** (ASSUMED):
    U(q) = -Σ_{i<j} G * m_i * m_j / |r_i - r_j|
 
    This potential encodes structural stability landscape. Nodes
@@ -26,7 +66,7 @@ coherence regime** where:
    ∂EPI/∂t = νf · ΔNFR(t)
 
    Where EPI encodes position and velocity, and ΔNFR is computed
-   from the gravitational coherence gradient.
+   from the gravitational coherence gradient (ASSUMED).
 
 Mathematical Correspondence
 ---------------------------
@@ -35,7 +75,7 @@ Classical mechanics:     TNFR structural dynamics:
 - Position q_i          → EPI spatial component
 - Velocity v_i          → EPI velocity component
 - Mass m_i              → 1/νf_i (structural inertia)
-- Force F_i = -∇U       → ΔNFR (coherence gradient)
+- Force F_i = -∇U       → ΔNFR (coherence gradient, ASSUMED)
 - Newton's 2nd law      → Nodal equation ∂EPI/∂t = νf·ΔNFR
 
 Conservation Laws
@@ -51,6 +91,7 @@ translational/rotational symmetry of the coherence potential.
 
 References
 ----------
+- tnfr.dynamics.nbody_tnfr: Pure TNFR n-body (no assumptions)
 - docs/source/theory/07_emergence_classical_mechanics.md
 - docs/source/theory/08_classical_mechanics_euler_lagrange.md
 - TNFR.pdf: Canonical nodal equation (§2.3)
@@ -58,7 +99,7 @@ References
 
 Examples
 --------
-Two-body orbit (Earth-Moon system):
+Two-body orbit (Earth-Moon system) with ASSUMED gravity:
 
 >>> from tnfr.dynamics.nbody import NBodySystem
 >>> import numpy as np
@@ -67,7 +108,7 @@ Two-body orbit (Earth-Moon system):
 >>> system = NBodySystem(
 ...     n_bodies=2,
 ...     masses=[1.0, 0.012],  # Mass ratio ~ Earth/Moon
-...     G=1.0
+...     G=1.0  # Gravitational constant (ASSUMED)
 ... )
 >>>
 >>> # Initialize circular orbit
