@@ -97,7 +97,7 @@ def glyph_function_name(
     Parameters
     ----------
     val : Glyph | str | None
-        Glyph or string to convert
+        Glyph enum, glyph string value ('IL', 'OZ'), or function name to convert
     default : str | None, optional
         Default value if conversion fails
         
@@ -105,10 +105,35 @@ def glyph_function_name(
     -------
     str | None
         Canonical function name or default
+        
+    Notes
+    -----
+    Glyph enum inherits from str, so we must check for Enum type
+    BEFORE checking isinstance(val, str), otherwise Glyph instances
+    will be returned unchanged instead of being converted.
+    
+    The function handles three input types:
+    1. Glyph enum (e.g., Glyph.IL) → function name (e.g., 'coherence')
+    2. Glyph string value (e.g., 'IL') → function name (e.g., 'coherence')  
+    3. Function name (e.g., 'coherence') → returned as-is
     """
     if val is None:
         return default
+    # Check for Glyph/Enum BEFORE str (Glyph inherits from str)
+    if isinstance(val, Enum):
+        return GLYPH_TO_FUNCTION.get(val, default)
     if isinstance(val, str):
+        # Check if it's a glyph string value ('IL', 'OZ', etc)
+        # Build reverse lookup on first use
+        if not hasattr(glyph_function_name, '_glyph_value_map'):
+            glyph_function_name._glyph_value_map = {
+                g.value: func for g, func in GLYPH_TO_FUNCTION.items()
+            }
+        # Try to convert glyph value to function name
+        func_name = glyph_function_name._glyph_value_map.get(val)
+        if func_name:
+            return func_name
+        # Otherwise assume it's already a function name
         return val
     return GLYPH_TO_FUNCTION.get(val, default)
 
