@@ -578,6 +578,164 @@ Ensure the added operator makes **semantic sense** for your application:
 
 ---
 
+## Phase Compatibility in Propagation
+
+**CRITICAL**: THOL propagation respects **AGENTS.md Invariant #5**: "No coupling is valid without explicit phase verification."
+
+### Physical Basis
+
+Sub-EPI propagation follows resonance physics, not arbitrary connectivity. Antiphase nodes (Δθ ≈ π) create **destructive interference**, preventing coherent propagation regardless of network topology.
+
+### Implementation
+
+From `src/tnfr/operators/metabolism.py::propagate_subepi_to_network()`:
+
+```python
+# Compute coupling strength (phase alignment)
+phase_diff = abs(angle_diff(neighbor_theta, parent_theta))
+coupling_strength = 1.0 - (phase_diff / math.pi)
+
+# Propagate only if sufficiently coupled
+if coupling_strength >= min_coupling_strength:
+    # Attenuate and inject sub-EPI
+    attenuated_epi = sub_epi_magnitude * attenuation * coupling_strength
+    # ...
+```
+
+**Formula**: 
+```
+coupling_strength = 1.0 - (|Δθ| / π)
+```
+
+Where:
+- `Δθ` = phase difference between parent and neighbor (radians)
+- `coupling_strength` ∈ [0, 1]
+- Propagation occurs only if `coupling_strength ≥ threshold` (default: 0.5)
+
+### Phase Compatibility Table
+
+| Phase Difference (Δθ) | Coupling Strength | Propagates? (threshold=0.5) | Physics |
+|----------------------|-------------------|---------------------------|---------|
+| 0 (in-phase) | 1.0 | ✅ Yes | Perfect resonance |
+| π/4 (45°) | 0.75 | ✅ Yes | Strong coupling |
+| π/2 (90°) | 0.5 | ✅ Yes (at threshold) | Moderate coupling |
+| 3π/4 (135°) | 0.25 | ❌ No | Weak coupling |
+| π (antiphase) | 0.0 | ❌ No | Destructive interference |
+
+### Canonical Constraints
+
+**From AGENTS.md Invariant #5**:
+
+Sub-EPIs propagate **ONLY** to neighbors with:
+1. **Phase compatibility**: `|Δθ| ≤ Δθ_max` (typically π/2)
+2. **Coupling threshold**: `coupling_strength ≥ threshold` (default: 0.5)
+3. **Explicit verification**: Phase difference computed before propagation
+
+**Why This Matters**:
+
+- **TNFR Physics**: Resonance requires phase alignment, not just network edges
+- **Prevents Chaos**: Antiphase propagation would create destructive interference
+- **Canonical Compliance**: Same phase verification as UM (Coupling) and RA (Resonance)
+
+### Example: Phase Barrier Blocking Cascade
+
+```python
+import math
+import networkx as nx
+from tnfr.operators.definitions import SelfOrganization
+from tnfr.constants import EPI_PRIMARY, THETA_PRIMARY, VF_PRIMARY, DNFR_PRIMARY
+
+# Create network with phase barrier
+G = nx.Graph()
+
+# Cluster A: coherent phases
+G.add_node(0, **{EPI_PRIMARY: 0.50, THETA_PRIMARY: 0.1, VF_PRIMARY: 1.0, DNFR_PRIMARY: 0.10})
+G.add_node(1, **{EPI_PRIMARY: 0.45, THETA_PRIMARY: 0.12, VF_PRIMARY: 1.0, DNFR_PRIMARY: 0.10})
+
+# Node 2: phase barrier (antiphase)
+G.add_node(2, **{EPI_PRIMARY: 0.45, THETA_PRIMARY: math.pi, VF_PRIMARY: 1.0, DNFR_PRIMARY: 0.10})
+
+# Cluster B: isolated by barrier
+G.add_node(3, **{EPI_PRIMARY: 0.45, THETA_PRIMARY: math.pi + 0.1, VF_PRIMARY: 1.0, DNFR_PRIMARY: 0.10})
+
+# Connect: 0-1-2-3
+G.add_edges_from([(0, 1), (1, 2), (2, 3)])
+
+# Enable propagation
+G.graph["THOL_PROPAGATION_ENABLED"] = True
+G.nodes[0]["epi_history"] = [0.05, 0.33, 0.50]  # Bifurcation conditions
+
+# Trigger cascade from node 0
+SelfOrganization()(G, 0)
+
+# Result: Propagation reaches node 1, stops at phase barrier (node 2)
+# Node 3 is NOT affected due to phase incompatibility
+```
+
+### Testing Phase Verification
+
+From `tests/integration/test_thol_propagation.py`:
+
+```python
+def test_thol_rejects_antiphase_propagation():
+    """THOL must reject propagation to antiphase neighbors (Invariant #5)."""
+    import math
+    
+    G = nx.Graph()
+    G.add_node(0, epi=0.50, vf=1.0, theta=0.0, delta_nfr=0.15)
+    G.add_node(1, epi=0.50, vf=1.0, theta=math.pi, delta_nfr=0.05)  # Antiphase
+    G.add_edge(0, 1)
+    
+    G.graph["THOL_PROPAGATION_ENABLED"] = True
+    G.nodes[0]["epi_history"] = [0.05, 0.33, 0.50]
+    
+    epi_1_before = G.nodes[1]["epi"]
+    SelfOrganization()(G, 0)
+    epi_1_after = G.nodes[1]["epi"]
+    
+    # Antiphase neighbor should be rejected
+    assert epi_1_after == epi_1_before, "Invariant #5 violation"
+```
+
+### Configuration
+
+Control phase verification via graph parameters:
+
+```python
+# Strict phase compatibility (default)
+G.graph["THOL_MIN_COUPLING_FOR_PROPAGATION"] = 0.5  # Δθ ≤ π/2
+
+# Relaxed (allow weaker coupling)
+G.graph["THOL_MIN_COUPLING_FOR_PROPAGATION"] = 0.3  # Δθ ≤ ~2.2 rad
+
+# Very strict (only near-in-phase)
+G.graph["THOL_MIN_COUPLING_FOR_PROPAGATION"] = 0.8  # Δθ ≤ ~0.6 rad
+```
+
+**Canonical Default**: 0.5 (π/2 maximum phase difference)
+
+### Cross-Operator Consistency
+
+THOL phase verification is **consistent** with other TNFR operators:
+
+| Operator | Phase Verification | Formula | Use Case |
+|----------|-------------------|---------|----------|
+| **UM** (Coupling) | Consensus phase | `arctan2(Σsin(θ), Σcos(θ))` | Bidirectional synchronization |
+| **RA** (Resonance) | Circular mean | `\|⟨e^(iθ)⟩\|` (Kuramoto) | Network-wide propagation |
+| **THOL** (Propagation) | Direct difference | `1.0 - (\|Δθ\| / π)` | Unidirectional sub-EPI transfer |
+
+All three enforce phase compatibility before structural modifications, ensuring resonance physics integrity.
+
+### References
+
+- **AGENTS.md**: Invariant #5 (Phase Verification)
+- **UNIFIED_GRAMMAR_RULES.md**: U3 (Resonant Coupling)
+- **src/tnfr/operators/metabolism.py**: Lines 284-331 (propagate_subepi_to_network)
+- **src/tnfr/utils/numeric.py**: Lines 72-75 (angle_diff utility)
+- **tests/integration/test_thol_propagation.py**: Lines 220-290 (test_thol_rejects_antiphase_propagation)
+
+---
+
 ## Additional Resources
 
 - **[THOL_CONFIGURATION_REFERENCE.md](THOL_CONFIGURATION_REFERENCE.md)**: Complete THOL parameter reference with canonical constraints
@@ -589,6 +747,6 @@ Ensure the added operator makes **semantic sense** for your application:
 
 ---
 
-*Last updated: 2025-11-08*  
-*Version: 1.0.0 (Initial release with Grammar 2.0)*  
-*Related PR: #[PR_NUMBER] - Recursive THOL validation with encapsulation*
+*Last updated: 2025-11-09*  
+*Version: 1.1.0 (Added Phase Compatibility section)*  
+*Related PR: Verify phase validation in THOL sub-EPI propagation (Invariant #5)*
