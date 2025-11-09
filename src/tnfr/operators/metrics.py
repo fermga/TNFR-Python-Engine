@@ -1828,6 +1828,9 @@ def mutation_metrics(
         "theta_regime_before": regime_before,
         "theta_regime_after": regime_after,
         "regime_changed": regime_changed or (regime_before != regime_after),
+        "theta_regime_change": regime_changed or (regime_before != regime_after),  # Backwards compat
+        "regime_before": regime_before,  # Backwards compat
+        "regime_after": regime_after,  # Backwards compat
         "theta_shift_direction": math.copysign(1.0, theta_shift),
         "phase_transformation_magnitude": phase_transformation_magnitude,
         # === BIFURCATION ANALYSIS (NEW) ===
