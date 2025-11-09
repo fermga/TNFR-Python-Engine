@@ -990,6 +990,12 @@ def _record_destabilizer_context(
 def validate_mutation(G: "TNFRGraph", node: "NodeId") -> None:
     """ZHIR - Mutation requires node to be in valid structural state.
 
+    Implements canonical TNFR requirements for mutation (AGENTS.md §11, TNFR.pdf §2.2.11):
+
+    1. Minimum νf for phase transformation capacity
+    2. **∂EPI/∂t > ξ: Structural change velocity exceeds threshold**
+    3. Stable base (IL precedence validated by grammar U4b)
+
     Also detects and records the destabilizer type that enabled this mutation
     for telemetry and structural tracing purposes.
 
@@ -1007,6 +1013,16 @@ def validate_mutation(G: "TNFRGraph", node: "NodeId") -> None:
 
     Notes
     -----
+    **Canonical threshold verification (∂EPI/∂t > ξ)**:
+    
+    ZHIR is a phase transformation that requires sufficient structural reorganization
+    velocity to justify the transition. The threshold ξ represents the minimum rate
+    of structural change needed for a phase shift to be physically meaningful.
+    
+    - If ∂EPI/∂t < ξ: Logs warning (soft check for backward compatibility)
+    - If ∂EPI/∂t ≥ ξ: Logs success, sets validation flag
+    - If insufficient history: Logs warning, cannot verify
+    
     This function implements R4 Extended telemetry by analyzing the glyph_history
     to determine which destabilizer (strong/moderate/weak) enabled the mutation.
     The destabilizer context is stored in node metadata for structural tracing.
@@ -1023,6 +1039,41 @@ def validate_mutation(G: "TNFRGraph", node: "NodeId") -> None:
             "Mutation",
             f"Structural frequency too low for mutation (νf={vf:.3f} < {min_vf:.3f})",
         )
+
+    # NEW: Threshold crossing validation (∂EPI/∂t > ξ)
+    # Get EPI history - check both keys for compatibility
+    epi_history = G.nodes[node].get("epi_history") or G.nodes[node].get("_epi_history", [])
+    
+    if len(epi_history) >= 2:
+        # Compute ∂EPI/∂t (discrete approximation using last two points)
+        # For discrete operator applications with Δt=1: ∂EPI/∂t ≈ EPI_t - EPI_{t-1}
+        depi_dt = abs(epi_history[-1] - epi_history[-2])
+        
+        # Get threshold from configuration
+        xi_threshold = float(G.graph.get("ZHIR_THRESHOLD_XI", 0.1))
+        
+        # Verify threshold crossed
+        if depi_dt < xi_threshold:
+            # Allow mutation but log warning (soft check for backward compatibility)
+            logger.warning(
+                f"Node {node}: ZHIR applied with ∂EPI/∂t={depi_dt:.3f} < ξ={xi_threshold}. "
+                f"Mutation may lack structural justification. "
+                f"Consider increasing dissonance (OZ) first."
+            )
+            G.nodes[node]["_zhir_threshold_warning"] = True
+        else:
+            # Threshold met - log success
+            logger.info(
+                f"Node {node}: ZHIR threshold crossed (∂EPI/∂t={depi_dt:.3f} > ξ={xi_threshold})"
+            )
+            G.nodes[node]["_zhir_threshold_met"] = True
+    else:
+        # Insufficient history - cannot verify threshold
+        logger.warning(
+            f"Node {node}: ZHIR applied without sufficient EPI history "
+            f"(need ≥2 points, have {len(epi_history)}). Cannot verify threshold."
+        )
+        G.nodes[node]["_zhir_threshold_unknown"] = True
 
     # R4 Extended: Detect and record destabilizer type for telemetry
     # This provides structural traceability for bifurcation events

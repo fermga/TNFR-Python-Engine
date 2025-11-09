@@ -3121,14 +3121,34 @@ class Mutation(Operator):
     random variation, ZHIR is controlled transformation that preserves structural identity
     while shifting operational regime. Critical for adaptation and evolution.
 
+    **Canonical Threshold Requirement (∂EPI/∂t > ξ)**:
+    
+    According to TNFR physics (AGENTS.md §11, TNFR.pdf §2.2.11), ZHIR requires sufficient
+    structural change velocity to justify phase transformation. The threshold ξ (default 0.1)
+    represents the minimum rate of reorganization needed for meaningful mutation.
+    
+    - **∂EPI/∂t ≥ ξ**: Mutation validated, phase transformation proceeds
+    - **∂EPI/∂t < ξ**: Warning logged, mutation may lack structural justification
+    - **Insufficient history**: Warning logged, threshold cannot be verified
+    
+    Configuration: Set ``G.graph["ZHIR_THRESHOLD_XI"]`` to customize threshold (default: 0.1).
+    
+    Metrics: Threshold verification included in mutation_metrics() telemetry:
+    - ``depi_dt``: Computed structural change velocity
+    - ``threshold_met``: Boolean flag indicating threshold status
+    - ``threshold_ratio``: Ratio of velocity to threshold
+
     Use Cases: Paradigm shifts, strategic pivots, adaptive responses, regime transitions,
     identity transformation while maintaining continuity.
 
     Typical Sequences: IL → ZHIR → IL (stabilize-mutate-stabilize), OZ → ZHIR (dissonance
     enables mutation), ZHIR → NAV → IL (mutate-transition-stabilize).
 
-    Preconditions: Requires stable base (often IL), sufficient ΔNFR for phase change,
-    network support for new phase.
+    Preconditions: 
+    - Minimum νf for phase transformation capacity (ZHIR_MIN_VF, default: 0.05)
+    - **Structural velocity threshold (∂EPI/∂t > ξ)** - validated with EPI history
+    - Stable base (often IL) validated by grammar U4b
+    - Network support for new phase
 
     Examples
     --------
