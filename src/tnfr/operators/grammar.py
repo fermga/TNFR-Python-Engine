@@ -897,7 +897,7 @@ def apply_glyph_with_grammar(
 ) -> None:
     """Apply glyph to nodes with grammar validation.
     
-    Applies the specified glyph to each node in the list using the canonical
+    Applies the specified glyph to each node in the iterable using the canonical
     TNFR operator implementation.
     
     Parameters
@@ -905,7 +905,7 @@ def apply_glyph_with_grammar(
     G : TNFRGraph
         Graph containing nodes
     nodes : Any
-        Node or list of nodes to apply glyph to
+        Node, list of nodes, or node iterable to apply glyph to
     glyph : Any
         Glyph to apply
     window : Any, optional
@@ -918,11 +918,23 @@ def apply_glyph_with_grammar(
     """
     from . import apply_glyph
     
-    # Handle single node or list of nodes
-    if not isinstance(nodes, (list, tuple)):
-        nodes = [nodes]
+    # Handle single node or iterable of nodes
+    # Check if it's a single hashable node or an iterable
+    try:
+        # Try to treat as single hashable node
+        hash(nodes)
+        # If hashable, it's a single node
+        nodes_iter = [nodes]
+    except (TypeError, AttributeError):
+        # Not hashable, treat as iterable
+        # Convert to list to allow multiple iterations if needed
+        try:
+            nodes_iter = list(nodes)
+        except TypeError:
+            # If not iterable, wrap in list
+            nodes_iter = [nodes]
     
-    for node in nodes:
+    for node in nodes_iter:
         apply_glyph(G, node, glyph, window=window)
 
 
