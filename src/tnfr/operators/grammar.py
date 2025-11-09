@@ -141,8 +141,18 @@ def function_name_to_glyph(
 
 __all__ = [
     "GrammarValidator",
+    "GrammarContext",
     "validate_grammar",
     "StructuralPattern",
+    # Error classes
+    "StructuralGrammarError",
+    "RepeatWindowError",
+    "MutationPreconditionError",
+    "TholClosureError",
+    "TransitionCompatibilityError",
+    "SequenceSyntaxError",
+    "GrammarConfigurationError",
+    "record_grammar_violation",
     # Glyph mappings
     "GLYPH_TO_FUNCTION",
     "FUNCTION_TO_GLYPH",
@@ -152,6 +162,9 @@ __all__ = [
     "apply_glyph_with_grammar",
     "on_applied_glyph",
     "enforce_canonical_grammar",
+    # Sequence validation
+    "validate_sequence",
+    "parse_sequence",
     # Operator sets
     "GENERATORS",
     "CLOSURES",
@@ -191,6 +204,233 @@ BIFURCATION_HANDLERS = frozenset({"self_organization", "coherence"})
 
 # U4b: Transformers - Execute structural bifurcations
 TRANSFORMERS = frozenset({"mutation", "self_organization"})
+
+
+# ============================================================================
+# Grammar Errors
+# ============================================================================
+
+
+class StructuralGrammarError(RuntimeError):
+    """Base class for structural grammar violations.
+    
+    Attributes
+    ----------
+    rule : str
+        Grammar rule that was violated
+    candidate : str
+        Operator/glyph that caused violation
+    message : str
+        Error description
+    window : int | None
+        Grammar window if applicable
+    threshold : float | None
+        Threshold value if applicable
+    order : Sequence[str] | None
+        Operator sequence if applicable
+    context : dict
+        Additional context information
+    """
+    
+    def __init__(
+        self,
+        *,
+        rule: str,
+        candidate: str,
+        message: str,
+        window: int | None = None,
+        threshold: float | None = None,
+        order: list[str] | None = None,
+        context: dict[str, Any] | None = None,
+    ):
+        self.rule = rule
+        self.candidate = candidate
+        self.message = message
+        self.window = window
+        self.threshold = threshold
+        self.order = order
+        self.context = context or {}
+        super().__init__(message)
+    
+    def attach_context(self, **context: Any) -> "StructuralGrammarError":
+        """Attach additional context to error.
+        
+        Parameters
+        ----------
+        **context : Any
+            Additional context key-value pairs
+            
+        Returns
+        -------
+        StructuralGrammarError
+            Self for chaining
+        """
+        self.context.update(context)
+        return self
+    
+    def to_payload(self) -> dict[str, Any]:
+        """Convert error to dictionary payload.
+        
+        Returns
+        -------
+        dict
+            Error information as dictionary
+        """
+        return {
+            "rule": self.rule,
+            "candidate": self.candidate,
+            "message": self.message,
+            "window": self.window,
+            "threshold": self.threshold,
+            "order": self.order,
+            "context": self.context,
+        }
+
+
+class RepeatWindowError(StructuralGrammarError):
+    """Error for repeated operator within window."""
+    pass
+
+
+class MutationPreconditionError(StructuralGrammarError):
+    """Error for mutation without proper preconditions."""
+    pass
+
+
+class TholClosureError(StructuralGrammarError):
+    """Error for THOL without proper closure."""
+    pass
+
+
+class TransitionCompatibilityError(StructuralGrammarError):
+    """Error for incompatible transition."""
+    pass
+
+
+class SequenceSyntaxError(ValueError):
+    """Error in sequence syntax.
+    
+    Attributes
+    ----------
+    index : int
+        Position in sequence where error occurred
+    token : object
+        Token that caused the error
+    message : str
+        Error description
+    """
+    
+    def __init__(self, index: int, token: Any, message: str):
+        self.index = index
+        self.token = token
+        self.message = message
+        super().__init__(f"At index {index}, token '{token}': {message}")
+
+
+class GrammarConfigurationError(ValueError):
+    """Error in grammar configuration.
+    
+    Attributes
+    ----------
+    section : str
+        Configuration section with error
+    messages : list[str]
+        Error messages
+    details : list[tuple[str, str]]
+        Additional details
+    """
+    
+    def __init__(
+        self,
+        section: str,
+        messages: list[str],
+        *,
+        details: list[tuple[str, str]] | None = None,
+    ):
+        self.section = section
+        self.messages = messages
+        self.details = details or []
+        msg = f"Configuration error in {section}: {'; '.join(messages)}"
+        super().__init__(msg)
+
+
+def record_grammar_violation(
+    G: "TNFRGraph",
+    node: "NodeId",
+    error: StructuralGrammarError,
+    *,
+    stage: str,
+) -> None:
+    """Record grammar violation in node metadata.
+    
+    Parameters
+    ----------
+    G : TNFRGraph
+        Graph containing node
+    node : NodeId
+        Node where violation occurred
+    error : StructuralGrammarError
+        Grammar error to record
+    stage : str
+        Processing stage when error occurred
+    """
+    if "grammar_violations" not in G.nodes[node]:
+        G.nodes[node]["grammar_violations"] = []
+    G.nodes[node]["grammar_violations"].append({
+        "stage": stage,
+        "error": error.to_payload(),
+    })
+
+
+# ============================================================================
+# Grammar Context
+# ============================================================================
+
+
+class GrammarContext:
+    """Context object for grammar validation.
+    
+    Minimal implementation for import compatibility.
+    
+    Attributes
+    ----------
+    G : TNFRGraph
+        Graph being validated
+    cfg_soft : dict
+        Soft configuration parameters
+    cfg_canon : dict
+        Canonical configuration parameters
+    norms : dict
+        Normalization parameters
+    """
+    
+    def __init__(
+        self,
+        G: "TNFRGraph",
+        cfg_soft: dict[str, Any] | None = None,
+        cfg_canon: dict[str, Any] | None = None,
+        norms: dict[str, Any] | None = None,
+    ):
+        self.G = G
+        self.cfg_soft = cfg_soft or {}
+        self.cfg_canon = cfg_canon or {}
+        self.norms = norms or {}
+    
+    @classmethod
+    def from_graph(cls, G: "TNFRGraph") -> "GrammarContext":
+        """Create context from graph.
+        
+        Parameters
+        ----------
+        G : TNFRGraph
+            Graph to create context from
+            
+        Returns
+        -------
+        GrammarContext
+            New context instance
+        """
+        return cls(G)
 
 
 class GrammarValidator:
@@ -729,3 +969,59 @@ def enforce_canonical_grammar(
     """
     # Minimal stub - return candidate as-is
     return cand
+
+
+def validate_sequence(
+    names: Any = None,
+    **kwargs: Any,
+) -> Any:
+    """Validate sequence of operator names.
+    
+    Minimal stub implementation for import compatibility.
+    
+    Parameters
+    ----------
+    names : Iterable[str] | object, optional
+        Sequence of operator names
+    **kwargs : Any
+        Additional validation options
+        
+    Returns
+    -------
+    ValidationOutcome
+        Validation result (stub returns success)
+    """
+    # Minimal stub - return success
+    class ValidationStub:
+        def __init__(self):
+            self.passed = True
+            self.message = "Validation stub"
+            self.metadata = {}
+    return ValidationStub()
+
+
+def parse_sequence(names: Any) -> Any:
+    """Parse sequence of operator names.
+    
+    Minimal stub implementation.
+    
+    Parameters
+    ----------
+    names : Iterable[str]
+        Sequence of operator names
+        
+    Returns
+    -------
+    SequenceValidationResult
+        Parse result (stub)
+    """
+    # Minimal stub
+    class ParseStub:
+        def __init__(self):
+            self.tokens = list(names) if names else []
+            self.canonical_tokens = self.tokens
+            self.passed = True
+            self.message = "Parse stub"
+            self.metadata = {}
+            self.error = None
+    return ParseStub()
