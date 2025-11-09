@@ -369,35 +369,151 @@ print(f"Dimensionality: {dim_before} → {dim_after}")
 
 ### 9. Contraction (NUL) 📉
 
-**Function**: Reduces structural complexity
+**Function**: Structural concentration and densification through harmonic contraction
 
 **Effect**:
-- EPI dimensionality decreases
-- Removes degrees of freedom
-- Simplifies structure
+- **EPI volume decreases** (W → W × λ, λ < 1)
+- **ΔNFR density increases** (structural pressure concentrates)
+- **νf decreases** (reorganization rate slows)
+- **Product νf × ΔNFR slightly increases** (~1.15x)
+- Core strengthening through peripheral consolidation
+
+**TNFR Context**:
+
+Contraction (NUL) embodies **densification dynamics**: when structure contracts, it doesn't simply shrink—it concentrates. The structural pressure (ΔNFR) amplifies as volume reduces, implementing the principle that density = pressure/volume. This preserves the nodal equation ∂EPI/∂t = νf · ΔNFR(t) even as both νf and volume change.
+
+**Canonical Densification**:
+- Volume contraction: V' = V × 0.85 (default)
+- Density amplification: ΔNFR' = ΔNFR × 1.35 (default)
+- Equilibrium preserved: ΔNFR = 0 remains 0
+- Sign preserved: Negative ΔNFR amplifies (intensified contraction)
 
 **When to use**:
-- Simplification
-- Focusing on essentials
-- Reducing computational cost
+- **Consolidation**: After exploration phases (post-VAL)
+- **Focus Intensification**: Eliminating peripheral activities
+- **Resource Optimization**: Concentrating distributed resources
+- **Core Strengthening**: Refining to essential structure
+- **Completion Cycles**: VAL → NUL → IL (expand-contract-stabilize)
 
-**Mathematical representation**: ‖EPI′‖ ≥ τ (reduced support)
+**Use Cases Across Domains**:
 
-**Example**:
+**Biomedical**:
+- Apoptosis (programmed cell death)
+- Wound healing (tissue contraction)
+- Neural pruning (synaptic elimination)
+- Muscle contraction dynamics
+
+**Cognitive**:
+- Focus intensification (attention narrowing)
+- Concept refinement (simplification to essence)
+- Mental compression ("less is more")
+- Memory consolidation (dense representations)
+
+**Social**:
+- Team downsizing (strategic workforce reduction)
+- Resource consolidation (pooling for efficiency)
+- Core competency focus (eliminating periphery)
+- Crisis response (defensive contraction)
+
+**Typical Sequences**:
+
+✅ **Valid Patterns**:
+- `NUL → IL`: Contract then stabilize (safe consolidation)
+- `VAL → NUL → IL`: Expand-contract-stabilize (exploration-consolidation cycle)
+- `THOL → NUL`: Self-organize then refine (emergent structure consolidation)
+- `OZ → NUL`: Dissonance followed by compression (controlled pressure)
+- `NUL → SHA`: Compress then silence (preservation through contraction)
+- `EN → NUL → IL`: Receive, compress, stabilize (efficient integration)
+
+❌ **Avoid Patterns**:
+- `NUL → VAL`: Contradictory (immediate reversal wastes energy)
+- `NUL → NUL`: Over-compression risk (may collapse)
+- `NUL → OZ`: Compression + dissonance = dangerous instability
+- Excessive NUL: Multiple contractions without stabilization
+
+**Mathematical representation**: 
+- Volume: V' = V × λ, λ < 1
+- Densification: ΔNFR' = ΔNFR × ρ, ρ > 1
+- Nodal compliance: ∂EPI/∂t = νf · ΔNFR(t)
+
+**Example 1 - Neural Pruning**:
 ```python
-from tnfr.operators import Contraction
+from tnfr.structural import create_nfr, run_sequence
+from tnfr.operators import Contraction, Coherence
 
-# Contract node structure
-Contraction()(G, node, factor=0.7)
+# Brain eliminates weak synaptic connections
+G_brain, synapse = create_nfr("neural_connection", epi=0.39, vf=1.05)
 
-# Verify reduced complexity
-print(f"New dimensionality: {len(G.nodes[node]['epi'])}")
+# Apply NUL → IL: Contract then stabilize
+run_sequence(G_brain, synapse, [Contraction(), Coherence()])
+
+# Result: Neural network becomes more efficient
+# Weak connections eliminated, strong ones preserved
 ```
 
+**Example 2 - Strategic Focus**:
+```python
+from tnfr.structural import create_nfr, run_sequence
+from tnfr.operators import Contraction, Coherence
+
+# Company focuses on core competencies
+G_company, strategy = create_nfr("business_model", epi=0.42, vf=1.00)
+
+# Apply contraction to eliminate peripheral units
+run_sequence(G_company, strategy, [Contraction(), Coherence()])
+
+# Result: Core competencies strengthened
+# Resources concentrated on essential activities
+```
+
+**Example 3 - Expand-Contract Cycle**:
+```python
+from tnfr.operators import Expansion, Contraction, Coherence
+
+# Learning: explore broadly then consolidate
+G_learning, concept = create_nfr("understanding", epi=0.35, vf=0.95)
+
+# VAL → NUL → IL: Full exploration-consolidation cycle
+run_sequence(G_learning, concept, 
+    [Expansion(), Contraction(), Coherence()])
+
+# Result: Broad exploration (VAL) + coherent consolidation (NUL → IL)
+```
+
+**Warnings**:
+
+⚠️ **Over-compression Risks**:
+- Structural collapse if excessive
+- Loss of degrees of freedom (irreversible)
+- Requires adequate EPI baseline (cannot contract from ≈0)
+- Cannot reverse without VAL (expansion)
+
+⚠️ **Collapse Conditions**:
+- Multiple consecutive NUL without IL
+- Contraction when EPI critically low
+- NUL → OZ sequences (compression + instability)
+- Insufficient network coupling
+
 **Contracts**:
-- Must decrease EPI dimensionality
-- Preserves core structure
-- Maintains minimum threshold τ
+- Must decrease EPI volume
+- Must increase ΔNFR density (densification)
+- Must preserve nodal equation compliance
+- Preserves core structure identity
+- Maintains sign of ΔNFR (amplifies magnitude)
+
+**Compatibility**:
+- **Complementary with**: VAL (Expansion) - enables rhythmic cycles
+- **Compatible with**: IL, SHA, THOL, EN
+- **Avoid with**: OZ (dissonance), consecutive NUL
+
+**Comparison with VAL (Expansion)**:
+| Aspect | NUL (Contraction) | VAL (Expansion) |
+|--------|------------------|-----------------|
+| Volume | Decreases | Increases |
+| ΔNFR | Amplifies (densifies) | Distributes |
+| Purpose | Consolidate | Explore |
+| Phase | After exploration | Before contraction |
+| Typical use | Refinement | Growth |
 
 ---
 
