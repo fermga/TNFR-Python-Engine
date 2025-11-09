@@ -1,7 +1,5 @@
 # AGENTS.md — TNFR Expert Agent Guide
 
-> **Mission**: Transform any AI agent into a TNFR expert capable of understanding, implementing, and advancing Resonant Fractal Nature Theory (TNFR) through rigorous computational modeling.
-
 ---
 
 ## 🎯 Core Mission
