@@ -3329,7 +3329,14 @@ class Mutation(Operator):
         """Collect ZHIR-specific metrics."""
         from .metrics import mutation_metrics
 
-        return mutation_metrics(G, node, state_before["theta"], state_before["epi"])
+        return mutation_metrics(
+            G,
+            node,
+            state_before["theta"],
+            state_before["epi"],
+            vf_before=state_before.get("vf"),
+            dnfr_before=state_before.get("dnfr"),
+        )
 
 
 @register_operator

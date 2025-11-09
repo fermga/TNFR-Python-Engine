@@ -1542,12 +1542,23 @@ def self_organization_metrics(
 
 
 def mutation_metrics(
-    G: TNFRGraph, node: NodeId, theta_before: float, epi_before: float
+    G: TNFRGraph,
+    node: NodeId,
+    theta_before: float,
+    epi_before: float,
+    vf_before: float | None = None,
+    dnfr_before: float | None = None,
 ) -> dict[str, Any]:
-    """ZHIR - Mutation metrics: phase transition, structural regime change.
+    """ZHIR - Comprehensive mutation metrics with canonical structural indicators.
 
-    Collects mutation-specific metrics including canonical threshold verification
-    (∂EPI/∂t > ξ) as per TNFR physics (AGENTS.md §11, TNFR.pdf §2.2.11).
+    Collects extended metrics reflecting canonical ZHIR effects:
+    - Threshold verification (∂EPI/∂t > ξ)
+    - Phase transformation quality (θ → θ')
+    - Bifurcation potential (∂²EPI/∂t² > τ)
+    - Structural identity preservation
+    - Network impact and propagation
+    - Destabilizer context (R4 Extended)
+    - Grammar validation status
 
     Parameters
     ----------
@@ -1559,71 +1570,309 @@ def mutation_metrics(
         Phase value before operator application
     epi_before : float
         EPI value before operator application
+    vf_before : float, optional
+        νf before mutation (for frequency shift tracking)
+    dnfr_before : float, optional
+        ΔNFR before mutation (for pressure tracking)
 
     Returns
     -------
     dict
-        Mutation-specific metrics including:
-        - Phase change indicators (theta_shift, phase_change)
-        - EPI change (delta_epi)
-        - **Threshold verification**: depi_dt, threshold_met, threshold_ratio
-        - Structural justification flags
+        Comprehensive mutation metrics organized by category:
+
+        **Core metrics (existing):**
+
+        - operator, glyph: Identification
+        - theta_shift, theta_final: Phase changes
+        - delta_epi, epi_final: EPI changes
+        - phase_change: Boolean indicator
+
+        **Threshold verification (ENHANCED):**
+
+        - depi_dt: Structural velocity (∂EPI/∂t)
+        - threshold_xi: Configured threshold
+        - threshold_met: Boolean (∂EPI/∂t > ξ)
+        - threshold_ratio: depi_dt / ξ
+        - threshold_exceeded_by: max(0, depi_dt - ξ)
+
+        **Phase transformation (ENHANCED):**
+
+        - theta_regime_before: Initial phase regime [0-3]
+        - theta_regime_after: Final phase regime [0-3]
+        - regime_changed: Boolean regime transition
+        - theta_shift_direction: +1 (forward) or -1 (backward)
+        - phase_transformation_magnitude: Normalized shift [0, 1]
+
+        **Bifurcation analysis (NEW):**
+
+        - d2epi: Structural acceleration
+        - bifurcation_threshold_tau: Configured τ
+        - bifurcation_potential: Boolean (∂²EPI/∂t² > τ)
+        - bifurcation_score: Quantitative potential [0, 1]
+        - bifurcation_triggered: Boolean (event recorded)
+        - bifurcation_event_count: Number of bifurcation events
+
+        **Structural preservation (NEW):**
+
+        - epi_kind_before: Identity before mutation
+        - epi_kind_after: Identity after mutation
+        - identity_preserved: Boolean (must be True)
+        - delta_vf: Change in structural frequency
+        - vf_final: Final νf
+        - delta_dnfr: Change in reorganization pressure
+        - dnfr_final: Final ΔNFR
+
+        **Network impact (NEW):**
+
+        - neighbor_count: Number of neighbors
+        - impacted_neighbors: Count with phase shift detected
+        - network_impact_radius: Ratio of impacted neighbors
+        - phase_coherence_neighbors: Phase alignment after mutation
+
+        **Destabilizer context (NEW - R4 Extended):**
+
+        - destabilizer_type: "strong"/"moderate"/"weak"/None
+        - destabilizer_operator: Glyph that enabled mutation
+        - destabilizer_distance: Operators since destabilizer
+        - recent_history: Last 4 operators
+
+        **Grammar validation (NEW):**
+
+        - grammar_u4b_satisfied: Boolean (IL precedence + destabilizer)
+        - il_precedence_found: Boolean (IL in history)
+        - destabilizer_recent: Boolean (within window)
+
+    Examples
+    --------
+    >>> from tnfr.structural import create_nfr, run_sequence
+    >>> from tnfr.operators.definitions import Coherence, Dissonance, Mutation
+    >>>
+    >>> G, node = create_nfr("test", epi=0.5, vf=1.2)
+    >>> G.graph["COLLECT_OPERATOR_METRICS"] = True
+    >>>
+    >>> # Apply canonical sequence (IL → OZ → ZHIR)
+    >>> run_sequence(G, node, [Coherence(), Dissonance(), Mutation()])
+    >>>
+    >>> # Retrieve comprehensive metrics
+    >>> metrics = G.graph["operator_metrics"][-1]
+    >>> print(f"Threshold met: {metrics['threshold_met']}")
+    >>> print(f"Bifurcation score: {metrics['bifurcation_score']:.2f}")
+    >>> print(f"Identity preserved: {metrics['identity_preserved']}")
+    >>> print(f"Grammar satisfied: {metrics['grammar_u4b_satisfied']}")
+
+    See Also
+    --------
+    operators.definitions.Mutation : ZHIR operator implementation
+    dynamics.bifurcation.compute_bifurcation_score : Bifurcation scoring
+    operators.preconditions.validate_mutation : Precondition validation with context tracking
     """
+    import math
+
+    # === GET POST-MUTATION STATE ===
     theta_after = _get_node_attr(G, node, ALIAS_THETA)
     epi_after = _get_node_attr(G, node, ALIAS_EPI)
+    vf_after = _get_node_attr(G, node, ALIAS_VF)
+    dnfr_after = _get_node_attr(G, node, ALIAS_DNFR)
+    d2epi = _get_node_attr(G, node, ALIAS_D2EPI, 0.0)
 
+    # === THRESHOLD VERIFICATION ===
     # Compute ∂EPI/∂t from history
-    epi_history = G.nodes[node].get("epi_history") or G.nodes[node].get("_epi_history", [])
+    epi_history = G.nodes[node].get("epi_history") or G.nodes[node].get(
+        "_epi_history", []
+    )
     if len(epi_history) >= 2:
         depi_dt = abs(epi_history[-1] - epi_history[-2])
     else:
         depi_dt = 0.0
 
-    # Check threshold
     xi = float(G.graph.get("ZHIR_THRESHOLD_XI", 0.1))
     threshold_met = depi_dt >= xi
     threshold_ratio = depi_dt / xi if xi > 0 else 0.0
 
+    # === PHASE TRANSFORMATION ===
     # Extract transformation telemetry from glyph storage
     theta_shift_stored = G.nodes[node].get("_zhir_theta_shift", None)
     regime_changed = G.nodes[node].get("_zhir_regime_changed", False)
-    regime_before = G.nodes[node].get("_zhir_regime_before", None)
-    regime_after = G.nodes[node].get("_zhir_regime_after", None)
+    regime_before_stored = G.nodes[node].get("_zhir_regime_before", None)
+    regime_after_stored = G.nodes[node].get("_zhir_regime_after", None)
     fixed_mode = G.nodes[node].get("_zhir_fixed_mode", False)
-    
-    # Compute theta shift magnitude
-    theta_shift_magnitude = abs(theta_after - theta_before)
-    
+
+    # Compute theta shift
+    theta_shift = theta_after - theta_before
+    theta_shift_magnitude = abs(theta_shift)
+
+    # Compute regimes if not stored
+    regime_before = (
+        regime_before_stored
+        if regime_before_stored is not None
+        else int(theta_before // (math.pi / 2))
+    )
+    regime_after = (
+        regime_after_stored
+        if regime_after_stored is not None
+        else int(theta_after // (math.pi / 2))
+    )
+
+    # Normalized phase transformation magnitude [0, 1]
+    phase_transformation_magnitude = min(theta_shift_magnitude / math.pi, 1.0)
+
+    # === BIFURCATION ANALYSIS ===
+    tau = float(
+        G.graph.get(
+            "BIFURCATION_THRESHOLD_TAU", G.graph.get("ZHIR_BIFURCATION_THRESHOLD", 0.5)
+        )
+    )
+    bifurcation_potential = d2epi > tau
+
+    # Compute bifurcation score using canonical formula
+    from ..dynamics.bifurcation import compute_bifurcation_score
+
+    bifurcation_score = compute_bifurcation_score(
+        d2epi=d2epi, dnfr=dnfr_after, vf=vf_after, epi=epi_after, tau=tau
+    )
+
+    # Check if bifurcation was triggered (event recorded)
+    bifurcation_events = G.graph.get("zhir_bifurcation_events", [])
+    bifurcation_triggered = len(bifurcation_events) > 0
+    bifurcation_event_count = len(bifurcation_events)
+
+    # === STRUCTURAL PRESERVATION ===
+    epi_kind_before = G.nodes[node].get("_epi_kind_before")
+    epi_kind_after = G.nodes[node].get("epi_kind")
+    identity_preserved = (
+        epi_kind_before == epi_kind_after if epi_kind_before is not None else True
+    )
+
+    # Track frequency and pressure changes
+    delta_vf = vf_after - vf_before if vf_before is not None else 0.0
+    delta_dnfr = dnfr_after - dnfr_before if dnfr_before is not None else 0.0
+
+    # === NETWORK IMPACT ===
+    neighbors = list(G.neighbors(node))
+    neighbor_count = len(neighbors)
+
+    # Count neighbors that experienced phase shifts
+    # This is a simplified heuristic - we check if neighbors have recent phase changes
+    impacted_neighbors = 0
+    phase_impact_threshold = 0.1
+
+    if neighbor_count > 0:
+        # Check neighbors for phase alignment/disruption
+        for n in neighbors:
+            neighbor_theta = _get_node_attr(G, n, ALIAS_THETA)
+            # Simplified: check if neighbor is in similar phase regime after mutation
+            phase_diff = abs(neighbor_theta - theta_after)
+            # If phase diff is large, neighbor might be impacted
+            if phase_diff > phase_impact_threshold:
+                # Check if neighbor has changed recently (has history)
+                neighbor_theta_history = G.nodes[n].get("theta_history", [])
+                if len(neighbor_theta_history) >= 2:
+                    neighbor_change = abs(
+                        neighbor_theta_history[-1] - neighbor_theta_history[-2]
+                    )
+                    if neighbor_change > 0.05:  # Neighbor experienced change
+                        impacted_neighbors += 1
+
+        # Phase coherence with neighbors after mutation
+        from ..metrics.phase_coherence import compute_phase_alignment
+
+        phase_coherence = compute_phase_alignment(G, node, radius=1)
+    else:
+        phase_coherence = 0.0
+
+    # === DESTABILIZER CONTEXT (R4 Extended) ===
+    mutation_context = G.nodes[node].get("_mutation_context", {})
+    destabilizer_type = mutation_context.get("destabilizer_type")
+    destabilizer_operator = mutation_context.get("destabilizer_operator")
+    destabilizer_distance = mutation_context.get("destabilizer_distance")
+    recent_history = mutation_context.get("recent_history", [])
+
+    # === GRAMMAR VALIDATION (U4b) ===
+    # Check if U4b satisfied (IL precedence + recent destabilizer)
+    glyph_history = G.nodes[node].get("glyph_history", [])
+
+    # Look for IL in history
+    il_precedence_found = any("IL" in str(g) for g in glyph_history)
+
+    # Check if destabilizer is recent (within ~3 operators)
+    destabilizer_recent = (
+        destabilizer_distance is not None and destabilizer_distance <= 3
+    )
+
+    grammar_u4b_satisfied = il_precedence_found and destabilizer_recent
+
+    # === RETURN COMPREHENSIVE METRICS ===
     return {
+        # === CORE (existing) ===
         "operator": "Mutation",
         "glyph": "ZHIR",
-        # Phase transformation metrics (ENHANCED)
         "theta_shift": theta_shift_magnitude,
-        "theta_shift_signed": theta_shift_stored if theta_shift_stored is not None else (theta_after - theta_before),
+        "theta_shift_signed": (
+            theta_shift_stored if theta_shift_stored is not None else theta_shift
+        ),
         "theta_before": theta_before,
         "theta_after": theta_after,
         "theta_final": theta_after,
         "phase_change": theta_shift_magnitude > 0.5,  # Configurable threshold
-        # NEW: Regime change detection
-        "theta_regime_change": regime_changed,
-        "regime_before": regime_before if regime_before is not None else int(theta_before // (3.14159 / 2)),
-        "regime_after": regime_after if regime_after is not None else int(theta_after // (3.14159 / 2)),
         "transformation_mode": "fixed" if fixed_mode else "canonical",
-        # EPI metrics
-        "delta_epi": epi_after - epi_before,
-        "epi_before": epi_before,
-        "epi_after": epi_after,
-        "epi_final": epi_after,
-        # Threshold verification metrics
+        # === THRESHOLD VERIFICATION (ENHANCED) ===
         "depi_dt": depi_dt,
         "threshold_xi": xi,
         "threshold_met": threshold_met,
         "threshold_ratio": threshold_ratio,
         "threshold_exceeded_by": max(0.0, depi_dt - xi),
-        # Structural justification flags from preconditions
         "threshold_warning": G.nodes[node].get("_zhir_threshold_warning", False),
         "threshold_validated": G.nodes[node].get("_zhir_threshold_met", False),
         "threshold_unknown": G.nodes[node].get("_zhir_threshold_unknown", False),
+        # === PHASE TRANSFORMATION (ENHANCED) ===
+        "theta_regime_before": regime_before,
+        "theta_regime_after": regime_after,
+        "regime_changed": regime_changed or (regime_before != regime_after),
+        "theta_regime_change": regime_changed or (regime_before != regime_after),  # Backwards compat
+        "regime_before": regime_before,  # Backwards compat
+        "regime_after": regime_after,  # Backwards compat
+        "theta_shift_direction": math.copysign(1.0, theta_shift),
+        "phase_transformation_magnitude": phase_transformation_magnitude,
+        # === BIFURCATION ANALYSIS (NEW) ===
+        "d2epi": d2epi,
+        "bifurcation_threshold_tau": tau,
+        "bifurcation_potential": bifurcation_potential,
+        "bifurcation_score": bifurcation_score,
+        "bifurcation_triggered": bifurcation_triggered,
+        "bifurcation_event_count": bifurcation_event_count,
+        # === EPI METRICS ===
+        "delta_epi": epi_after - epi_before,
+        "epi_before": epi_before,
+        "epi_after": epi_after,
+        "epi_final": epi_after,
+        # === STRUCTURAL PRESERVATION (NEW) ===
+        "epi_kind_before": epi_kind_before,
+        "epi_kind_after": epi_kind_after,
+        "identity_preserved": identity_preserved,
+        "delta_vf": delta_vf,
+        "vf_before": vf_before if vf_before is not None else vf_after,
+        "vf_final": vf_after,
+        "delta_dnfr": delta_dnfr,
+        "dnfr_before": dnfr_before if dnfr_before is not None else dnfr_after,
+        "dnfr_final": dnfr_after,
+        # === NETWORK IMPACT (NEW) ===
+        "neighbor_count": neighbor_count,
+        "impacted_neighbors": impacted_neighbors,
+        "network_impact_radius": (
+            impacted_neighbors / neighbor_count if neighbor_count > 0 else 0.0
+        ),
+        "phase_coherence_neighbors": phase_coherence,
+        # === DESTABILIZER CONTEXT (NEW - R4 Extended) ===
+        "destabilizer_type": destabilizer_type,
+        "destabilizer_operator": destabilizer_operator,
+        "destabilizer_distance": destabilizer_distance,
+        "recent_history": recent_history,
+        # === GRAMMAR VALIDATION (NEW) ===
+        "grammar_u4b_satisfied": grammar_u4b_satisfied,
+        "il_precedence_found": il_precedence_found,
+        "destabilizer_recent": destabilizer_recent,
+        # === METADATA ===
+        "metrics_version": "2.0_canonical",
     }
 
 
