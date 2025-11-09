@@ -1,5 +1,3 @@
-# AGENTS.md — TNFR Expert Agent Guide
-
 ## 🎯 Core Mission
 
 **Primary Objective**: Steward the canonical computational implementation of TNFR - a paradigm shift from modeling "things" to modeling **coherent patterns that persist through resonance**.
