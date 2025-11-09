@@ -897,15 +897,15 @@ def apply_glyph_with_grammar(
 ) -> None:
     """Apply glyph to nodes with grammar validation.
     
-    Minimal stub implementation for import compatibility.
-    This function delegates actual operator application to the dynamics module.
+    Applies the specified glyph to each node in the iterable using the canonical
+    TNFR operator implementation.
     
     Parameters
     ----------
     G : TNFRGraph
         Graph containing nodes
     nodes : Any
-        Nodes to apply glyph to
+        Node, list of nodes, or node iterable to apply glyph to
     glyph : Any
         Glyph to apply
     window : Any, optional
@@ -913,12 +913,29 @@ def apply_glyph_with_grammar(
         
     Notes
     -----
-    This is a compatibility stub. The actual operator application logic
-    is handled by individual Operator classes in definitions.py through
-    their __call__ method.
+    This function delegates to apply_glyph for each node, which wraps
+    the node in NodeNX and applies the glyph operation.
     """
-    # Minimal stub - actual logic handled by Operator.__call__
-    pass
+    from . import apply_glyph
+    
+    # Handle single node or iterable of nodes
+    # Check if it's a single hashable node or an iterable
+    try:
+        # Try to treat as single hashable node
+        hash(nodes)
+        # If hashable, it's a single node
+        nodes_iter = [nodes]
+    except (TypeError, AttributeError):
+        # Not hashable, treat as iterable
+        # Convert to list to allow multiple iterations if needed
+        try:
+            nodes_iter = list(nodes)
+        except TypeError:
+            # If not iterable, wrap in list
+            nodes_iter = [nodes]
+    
+    for node in nodes_iter:
+        apply_glyph(G, node, glyph, window=window)
 
 
 def on_applied_glyph(G: "TNFRGraph", n: "NodeId", applied: Any) -> None:

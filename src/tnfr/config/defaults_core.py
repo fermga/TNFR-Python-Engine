@@ -101,7 +101,9 @@ class CoreDefaults:
             # structural effects at smaller scales, per TNFR theory.
             "NUL_densification_factor": 1.35,
             "THOL_accel": 0.10,
-            "ZHIR_theta_shift": 1.57079632679,
+            # ZHIR now uses canonical transformation by default (θ → θ' based on ΔNFR)
+            # To use fixed shift, explicitly set ZHIR_theta_shift in graph
+            "ZHIR_theta_shift_factor": 0.3,  # Canonical transformation magnitude
             "NAV_jitter": 0.05,
             "NAV_eta": 0.5,
             "REMESH_alpha": 0.5,
