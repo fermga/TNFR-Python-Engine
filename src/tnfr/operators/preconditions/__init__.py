@@ -1065,7 +1065,26 @@ def validate_mutation(G: "TNFRGraph", node: "NodeId") -> None:
 
 
 def validate_transition(G: "TNFRGraph", node: "NodeId") -> None:
-    """NAV - Transition requires ΔNFR and vf for controlled handoff.
+    """NAV - Comprehensive canonical preconditions for transition.
+
+    Validates comprehensive preconditions for NAV (Transition) operator according
+    to TNFR.pdf §2.3.11:
+
+    1. **Minimum νf**: Structural frequency must exceed threshold
+    2. **Controlled ΔNFR**: |ΔNFR| must be below maximum for stable transition
+    3. **Regime validation**: Warns if transitioning from deep latency (EPI < 0.05)
+    4. **Sequence compatibility** (optional): Warns if NAV applied after incompatible operators
+
+    Configuration Parameters
+    ------------------------
+    NAV_MIN_VF : float, default 0.01
+        Minimum structural frequency for transition
+    NAV_MAX_DNFR : float, default 1.0
+        Maximum |ΔNFR| for stable transition
+    NAV_STRICT_SEQUENCE_CHECK : bool, default False
+        Enable strict sequence compatibility checking
+    NAV_MIN_EPI_FROM_LATENCY : float, default 0.05
+        Minimum EPI for smooth transition from latency
 
     Parameters
     ----------
@@ -1077,15 +1096,106 @@ def validate_transition(G: "TNFRGraph", node: "NodeId") -> None:
     Raises
     ------
     OperatorPreconditionError
-        If node lacks necessary dynamics for transition
+        If node lacks necessary dynamics for transition:
+        - νf below minimum threshold
+        - |ΔNFR| exceeds maximum threshold (unstable state)
+
+    Warnings
+    --------
+    UserWarning
+        For suboptimal but valid conditions:
+        - Transitioning from deep latency (EPI < 0.05)
+        - NAV applied after incompatible operator (when strict checking enabled)
+
+    Notes
+    -----
+    NAV requires controlled ΔNFR to prevent instability during regime transitions.
+    High |ΔNFR| indicates significant reorganization pressure that could cause
+    structural disruption during transition. Apply IL (Coherence) first to reduce
+    ΔNFR before attempting regime transition.
+
+    Deep latency transitions (EPI < 0.05 after SHA) benefit from prior AL (Emission)
+    to provide smoother reactivation path.
+
+    Examples
+    --------
+    >>> from tnfr.structural import create_nfr
+    >>> from tnfr.operators.preconditions import validate_transition
+    >>>
+    >>> # Valid transition - controlled state
+    >>> G, node = create_nfr("test", epi=0.5, vf=0.6)
+    >>> G.nodes[node]['delta_nfr'] = 0.3  # Controlled ΔNFR
+    >>> validate_transition(G, node)  # Passes
+    >>>
+    >>> # Invalid - ΔNFR too high
+    >>> G.nodes[node]['delta_nfr'] = 1.5
+    >>> validate_transition(G, node)  # Raises OperatorPreconditionError
+
+    See Also
+    --------
+    Transition : NAV operator implementation
+    validate_coherence : IL preconditions for ΔNFR reduction
+    TNFR.pdf : §2.3.11 for NAV canonical requirements
     """
+    import warnings
+
+    # 1. νf minimum (existing check - preserved for backward compatibility)
     vf = _get_node_attr(G, node, ALIAS_VF)
     min_vf = float(G.graph.get("NAV_MIN_VF", 0.01))
     if vf < min_vf:
         raise OperatorPreconditionError(
             "Transition",
-            f"Structural frequency too low for transition (νf={vf:.3f} < {min_vf:.3f})",
+            f"Structural frequency too low (νf={vf:.3f} < {min_vf:.3f})",
         )
+
+    # 2. ΔNFR positivity and bounds check (NEW - CRITICAL)
+    dnfr = _get_node_attr(G, node, ALIAS_DNFR)
+    max_dnfr = float(G.graph.get("NAV_MAX_DNFR", 1.0))
+    if abs(dnfr) > max_dnfr:
+        raise OperatorPreconditionError(
+            "Transition",
+            f"ΔNFR too high for stable transition (|ΔNFR|={abs(dnfr):.3f} > {max_dnfr}). "
+            f"Apply IL (Coherence) first to reduce reorganization pressure.",
+        )
+
+    # 3. Regime origin validation (NEW - WARNING)
+    latent = G.nodes[node].get("latent", False)
+    epi = _get_node_attr(G, node, ALIAS_EPI)
+    min_epi_from_latency = float(G.graph.get("NAV_MIN_EPI_FROM_LATENCY", 0.05))
+
+    if latent and epi < min_epi_from_latency:
+        # Warning: transitioning from deep latency
+        warnings.warn(
+            f"Node {node} in deep latency (EPI={epi:.3f} < {min_epi_from_latency:.3f}). "
+            f"Consider AL (Emission) before NAV for smoother activation.",
+            UserWarning,
+            stacklevel=2,
+        )
+
+    # 4. Sequence compatibility check (NEW - OPTIONAL)
+    if G.graph.get("NAV_STRICT_SEQUENCE_CHECK", False):
+        history = G.nodes[node].get("glyph_history", [])
+        if history:
+            from ..grammar import glyph_function_name
+
+            last_op = glyph_function_name(history[-1]) if history else None
+
+            # NAV works best after stabilizers or generators
+            # Valid predecessors per TNFR.pdf §2.3.11 and AGENTS.md
+            valid_predecessors = {
+                "emission",      # AL → NAV (activation-transition)
+                "coherence",     # IL → NAV (stable-transition)
+                "silence",       # SHA → NAV (latency-transition)
+                "self_organization",  # THOL → NAV (bifurcation-transition)
+            }
+
+            if last_op and last_op not in valid_predecessors:
+                warnings.warn(
+                    f"NAV applied after {last_op}. "
+                    f"More coherent after: {', '.join(sorted(valid_predecessors))}",
+                    UserWarning,
+                    stacklevel=2,
+                )
 
 
 def validate_recursivity(G: "TNFRGraph", node: "NodeId") -> None:
