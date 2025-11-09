@@ -488,8 +488,23 @@ def validate_silence(G: "TNFRGraph", node: "NodeId") -> None:
 
 
 def validate_expansion(G: "TNFRGraph", node: "NodeId") -> None:
-    """VAL - Expansion requires vf below maximum threshold.
-
+    """VAL - Expansion requires comprehensive canonical preconditions.
+    
+    Canonical Requirements (TNFR Physics):
+    1. **νf < max_vf**: Structural frequency below saturation
+    2. **ΔNFR > 0**: Positive reorganization gradient (growth pressure)
+    3. **EPI >= min_epi**: Sufficient base coherence for expansion
+    4. **(Optional) Network capacity**: Check if network can support expansion
+    
+    Physical Basis:
+    ----------------
+    From nodal equation: ∂EPI/∂t = νf · ΔNFR(t)
+    
+    For coherent expansion:
+    - ΔNFR > 0 required: expansion needs outward pressure
+    - EPI > threshold: must have coherent base to expand from
+    - νf < max: must have capacity for increased reorganization
+    
     Parameters
     ----------
     G : TNFRGraph
@@ -500,15 +515,90 @@ def validate_expansion(G: "TNFRGraph", node: "NodeId") -> None:
     Raises
     ------
     OperatorPreconditionError
-        If structural frequency already at maximum
+        If any precondition fails:
+        - Structural frequency at maximum
+        - ΔNFR non-positive (no growth pressure)
+        - EPI below minimum (insufficient coherence base)
+        - (Optional) Network at capacity
+
+    Configuration Parameters
+    ------------------------
+    VAL_MAX_VF : float, default 10.0
+        Maximum structural frequency threshold
+    VAL_MIN_DNFR : float, default 0.01
+        Minimum ΔNFR for expansion (must be positive)
+    VAL_MIN_EPI : float, default 0.2
+        Minimum EPI for coherent expansion
+    VAL_CHECK_NETWORK_CAPACITY : bool, default False
+        Enable network capacity validation
+    VAL_MAX_NETWORK_SIZE : int, default 1000
+        Maximum network size if capacity checking enabled
+
+    Examples
+    --------
+    >>> from tnfr.structural import create_nfr
+    >>> from tnfr.operators.preconditions import validate_expansion
+    >>>
+    >>> # Valid node for expansion
+    >>> G, node = create_nfr("expanding", epi=0.5, vf=2.0)
+    >>> G.nodes[node]['delta_nfr'] = 0.1  # Positive ΔNFR
+    >>> validate_expansion(G, node)  # Passes
+    >>>
+    >>> # Invalid: negative ΔNFR
+    >>> G.nodes[node]['delta_nfr'] = -0.1
+    >>> validate_expansion(G, node)  # Raises OperatorPreconditionError
+    
+    Notes
+    -----
+    VAL increases both EPI magnitude and νf, enabling exploration of new
+    structural configurations while maintaining core identity (fractality).
+    
+    See Also
+    --------
+    Expansion : VAL operator implementation
+    validate_contraction : NUL preconditions (inverse operation)
     """
+    # 1. νf below maximum (existing check)
     vf = _get_node_attr(G, node, ALIAS_VF)
     max_vf = float(G.graph.get("VAL_MAX_VF", 10.0))
     if vf >= max_vf:
         raise OperatorPreconditionError(
             "Expansion",
-            f"Structural frequency at maximum (νf={vf:.3f} >= {max_vf:.3f})",
+            f"Structural frequency at maximum (νf={vf:.3f} >= {max_vf:.3f}). "
+            f"Node at reorganization capacity limit.",
         )
+    
+    # 2. ΔNFR positivity check (NEW - CRITICAL)
+    dnfr = _get_node_attr(G, node, ALIAS_DNFR)
+    min_dnfr = float(G.graph.get("VAL_MIN_DNFR", 0.01))
+    if dnfr < min_dnfr:
+        raise OperatorPreconditionError(
+            "Expansion",
+            f"ΔNFR must be positive for expansion (ΔNFR={dnfr:.3f} < {min_dnfr:.3f}). "
+            f"No outward growth pressure detected. Consider OZ (Dissonance) to generate ΔNFR.",
+        )
+    
+    # 3. EPI minimum check (NEW - IMPORTANT)
+    epi = _get_node_attr(G, node, ALIAS_EPI)
+    min_epi = float(G.graph.get("VAL_MIN_EPI", 0.2))
+    if epi < min_epi:
+        raise OperatorPreconditionError(
+            "Expansion",
+            f"EPI too low for coherent expansion (EPI={epi:.3f} < {min_epi:.3f}). "
+            f"Insufficient structural base. Consider AL (Emission) to activate node first.",
+        )
+    
+    # 4. Network capacity check (OPTIONAL - for large-scale systems)
+    check_capacity = bool(G.graph.get("VAL_CHECK_NETWORK_CAPACITY", False))
+    if check_capacity:
+        max_network_size = int(G.graph.get("VAL_MAX_NETWORK_SIZE", 1000))
+        current_size = G.number_of_nodes()
+        if current_size >= max_network_size:
+            raise OperatorPreconditionError(
+                "Expansion",
+                f"Network at capacity (n={current_size} >= {max_network_size}). "
+                f"Cannot support further expansion. Set VAL_CHECK_NETWORK_CAPACITY=False to disable.",
+            )
 
 
 def validate_contraction(G: "TNFRGraph", node: "NodeId") -> None:
