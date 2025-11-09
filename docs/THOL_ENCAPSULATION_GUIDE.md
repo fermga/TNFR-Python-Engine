@@ -580,6 +580,7 @@ Ensure the added operator makes **semantic sense** for your application:
 
 ## Additional Resources
 
+- **[THOL_CONFIGURATION_REFERENCE.md](THOL_CONFIGURATION_REFERENCE.md)**: Complete THOL parameter reference with canonical constraints
 - **[GLYPH_SEQUENCES_GUIDE.md](../GLYPH_SEQUENCES_GUIDE.md)**: Complete operator sequence reference
 - **[GRAMMAR_2_0_TESTING_SUMMARY.md](../GRAMMAR_2_0_TESTING_SUMMARY.md)**: Grammar 2.0 validation rules
 - **[TNFR.pdf](../TNFR.pdf)**: Theoretical foundations of operational fractality
