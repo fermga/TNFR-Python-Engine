@@ -161,6 +161,12 @@ class CoreDefaults:
     VAL_CHECK_NETWORK_CAPACITY: bool = False  # Optional network capacity validation
     VAL_MAX_NETWORK_SIZE: int = 1000  # Maximum network size if capacity checking enabled
 
+    # VAL (Expansion) metric thresholds (Issue #2724)
+    VAL_BIFURCATION_THRESHOLD: float = 0.3  # Threshold for |∂²EPI/∂t²| bifurcation detection
+    VAL_MIN_COHERENCE: float = 0.5  # Minimum local coherence for healthy expansion
+    VAL_FRACTAL_RATIO_MIN: float = 0.5  # Minimum vf_growth/epi_growth ratio for fractality
+    VAL_FRACTAL_RATIO_MAX: float = 2.0  # Maximum vf_growth/epi_growth ratio for fractality
+
 
 @dataclass(frozen=True, slots=True)
 class RemeshDefaults:
