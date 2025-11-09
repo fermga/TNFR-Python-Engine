@@ -97,6 +97,7 @@ def capture_network_signals(G: TNFRGraph, node: NodeId) -> dict[str, Any] | None
     0.45
     """
     np = get_numpy()
+    from ..metrics.phase_compatibility import compute_phase_coupling_strength
 
     neighbors = list(G.neighbors(node))
     if not neighbors:
@@ -117,12 +118,9 @@ def capture_network_signals(G: TNFRGraph, node: NodeId) -> dict[str, Any] | None
         neighbor_epis.append(n_epi)
         neighbor_thetas.append(n_theta)
 
-        # Coupling strength based on phase alignment
-        phase_diff = abs(n_theta - node_theta)
-        # Normalize to [0, π]
-        if phase_diff > math.pi:
-            phase_diff = 2 * math.pi - phase_diff
-        coupling_strength = 1.0 - (phase_diff / math.pi)
+        # Coupling strength using canonical phase compatibility formula
+        # (unified across UM, RA, THOL operators - see phase_compatibility module)
+        coupling_strength = compute_phase_coupling_strength(node_theta, n_theta)
         coupling_strengths.append(coupling_strength)
 
     # Compute structural gradients
@@ -288,7 +286,7 @@ def propagate_subepi_to_network(
     (1, 0.105)  # 70% attenuation
     """
     from ..alias import set_attr
-    from ..utils.numeric import angle_diff
+    from ..metrics.phase_compatibility import compute_phase_coupling_strength
 
     neighbors = list(G.neighbors(parent_node))
     if not neighbors:
