@@ -602,7 +602,25 @@ def validate_expansion(G: "TNFRGraph", node: "NodeId") -> None:
 
 
 def validate_contraction(G: "TNFRGraph", node: "NodeId") -> None:
-    """NUL - Contraction requires vf > minimum to reduce.
+    """NUL - Enhanced precondition validation with over-compression check.
+    
+    Canonical Requirements (TNFR Physics):
+    1. **νf > min_vf**: Structural frequency above minimum for reorganization
+    2. **EPI >= min_epi**: Sufficient structural form to contract safely
+    3. **density <= max_density**: Not already at critical compression
+    
+    Physical Basis:
+    ----------------
+    From nodal equation: ∂EPI/∂t = νf · ΔNFR(t)
+    
+    For safe contraction:
+    - EPI must have sufficient magnitude (can't compress vacuum)
+    - Density ρ = |ΔNFR| / EPI must not exceed critical threshold
+    - Over-compression (ρ → ∞) causes structural collapse
+    
+    Density is the structural pressure per unit form. When EPI contracts
+    while ΔNFR increases (canonical densification), density rises. If already
+    at critical density, further contraction risks fragmentation.
 
     Parameters
     ----------
@@ -614,14 +632,76 @@ def validate_contraction(G: "TNFRGraph", node: "NodeId") -> None:
     Raises
     ------
     OperatorPreconditionError
-        If structural frequency already at minimum
+        If any precondition fails:
+        - Structural frequency at minimum
+        - EPI too low for safe contraction
+        - Node already at critical density
+    
+    Configuration Parameters
+    ------------------------
+    NUL_MIN_VF : float, default 0.1
+        Minimum structural frequency threshold
+    NUL_MIN_EPI : float, default 0.1
+        Minimum EPI for safe contraction
+    NUL_MAX_DENSITY : float, default 10.0
+        Maximum density threshold (ρ = |ΔNFR| / max(EPI, ε))
+    
+    Examples
+    --------
+    >>> from tnfr.structural import create_nfr
+    >>> from tnfr.operators.preconditions import validate_contraction
+    >>>
+    >>> # Valid node for contraction
+    >>> G, node = create_nfr("contracting", epi=0.5, vf=1.0)
+    >>> G.nodes[node]['delta_nfr'] = 0.2
+    >>> validate_contraction(G, node)  # Passes
+    >>>
+    >>> # Invalid: EPI too low
+    >>> G, node = create_nfr("too_small", epi=0.05, vf=1.0)
+    >>> validate_contraction(G, node)  # Raises OperatorPreconditionError
+    >>>
+    >>> # Invalid: density too high
+    >>> G, node = create_nfr("over_compressed", epi=0.1, vf=1.0)
+    >>> G.nodes[node]['delta_nfr'] = 2.0  # High ΔNFR
+    >>> validate_contraction(G, node)  # Raises OperatorPreconditionError
+    
+    See Also
+    --------
+    Contraction : NUL operator implementation
+    validate_expansion : VAL preconditions (inverse operation)
     """
     vf = _get_node_attr(G, node, ALIAS_VF)
+    epi = _get_node_attr(G, node, ALIAS_EPI)
+    dnfr = _get_node_attr(G, node, ALIAS_DNFR)
+    
+    # Check 1: νf must be above minimum
     min_vf = float(G.graph.get("NUL_MIN_VF", 0.1))
     if vf <= min_vf:
         raise OperatorPreconditionError(
             "Contraction",
             f"Structural frequency at minimum (νf={vf:.3f} <= {min_vf:.3f})",
+        )
+    
+    # Check 2: EPI must be above minimum for contraction
+    min_epi = float(G.graph.get("NUL_MIN_EPI", 0.1))
+    if epi < min_epi:
+        raise OperatorPreconditionError(
+            "Contraction",
+            f"EPI too low for safe contraction (EPI={epi:.3f} < {min_epi:.3f}). "
+            f"Cannot compress structure below minimum coherent form.",
+        )
+    
+    # Check 3: Density must not exceed critical threshold
+    # Density ρ = |ΔNFR| / max(EPI, ε) - structural pressure per unit form
+    epsilon = 1e-9
+    density = abs(dnfr) / max(epi, epsilon)
+    max_density = float(G.graph.get("NUL_MAX_DENSITY", 10.0))
+    if density > max_density:
+        raise OperatorPreconditionError(
+            "Contraction",
+            f"Node already at critical density (ρ={density:.3f} > {max_density:.3f}). "
+            f"Further contraction risks structural collapse. "
+            f"Consider IL (Coherence) to stabilize or reduce ΔNFR first.",
         )
 
 
