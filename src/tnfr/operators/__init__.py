@@ -1223,6 +1223,37 @@ def _make_scale_op(glyph: Glyph) -> GlyphOperation:
         # Always scale νf (existing behavior)
         _op_scale(node, factor)
 
+        # NUL canonical ΔNFR densification (implements structural pressure concentration)
+        if glyph is Glyph.NUL:
+            # Volume reduction: V' = V · scale_factor (where scale_factor < 1.0)
+            # Density increase: ρ_ΔNFR = ΔNFR / V' = ΔNFR / (V · scale_factor)
+            # Result: ΔNFR' = ΔNFR · densification_factor
+            #
+            # Physics: When volume contracts by factor λ < 1, structural pressure
+            # concentrates by factor 1/λ > 1. For NUL_scale = 0.85, densification ≈ 1.176
+            #
+            # Default densification_factor from config (typically 1.3-1.5) provides
+            # additional canonical amplification beyond geometric 1/λ to account for
+            # nonlinear structural effects at smaller scales.
+            densification_key = "NUL_densification_factor"
+            densification_default = 1.35  # Canonical default: moderate amplification
+            densification_factor = get_factor(gf, densification_key, densification_default)
+            
+            # Apply densification to ΔNFR (use lowercase dnfr for NodeProtocol)
+            current_dnfr = node.dnfr
+            node.dnfr = current_dnfr * densification_factor
+            
+            # Record densification telemetry for traceability
+            telemetry = node.graph.setdefault("nul_densification_log", [])
+            telemetry.append(
+                {
+                    "dnfr_before": current_dnfr,
+                    "dnfr_after": float(node.dnfr),
+                    "densification_factor": densification_factor,
+                    "contraction_scale": factor,
+                }
+            )
+
         # Edge-aware EPI scaling (new behavior) if enabled
         edge_aware_enabled = bool(
             node.graph.get(

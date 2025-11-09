@@ -1292,7 +1292,7 @@ def expansion_metrics(
 def contraction_metrics(
     G: TNFRGraph, node: NodeId, vf_before: float, epi_before: float
 ) -> dict[str, Any]:
-    """NUL - Contraction metrics: νf decrease, core concentration.
+    """NUL - Contraction metrics: νf decrease, core concentration, ΔNFR densification.
 
     Parameters
     ----------
@@ -1308,22 +1308,43 @@ def contraction_metrics(
     Returns
     -------
     dict
-        Contraction-specific metrics including structural compression
+        Contraction-specific metrics including structural compression and
+        canonical ΔNFR densification tracking.
     """
     vf_after = _get_node_attr(G, node, ALIAS_VF)
     epi_after = _get_node_attr(G, node, ALIAS_EPI)
-    dnfr = _get_node_attr(G, node, ALIAS_DNFR)
+    dnfr_after = _get_node_attr(G, node, ALIAS_DNFR)
 
-    return {
+    # Extract densification telemetry if available
+    densification_log = G.graph.get("nul_densification_log", [])
+    densification_factor = None
+    dnfr_before = None
+    if densification_log:
+        # Get the most recent densification entry for this node
+        last_entry = densification_log[-1]
+        densification_factor = last_entry.get("densification_factor")
+        dnfr_before = last_entry.get("dnfr_before")
+
+    metrics = {
         "operator": "Contraction",
         "glyph": "NUL",
         "vf_decrease": vf_before - vf_after,
         "vf_final": vf_after,
         "delta_epi": epi_after - epi_before,
         "epi_final": epi_after,
-        "dnfr_final": dnfr,
+        "dnfr_final": dnfr_after,
         "contraction_factor": vf_after / vf_before if vf_before > 0 else 1.0,
     }
+    
+    # Add densification metrics if available
+    if densification_factor is not None:
+        metrics["densification_factor"] = densification_factor
+        metrics["dnfr_densified"] = True
+    if dnfr_before is not None:
+        metrics["dnfr_before"] = dnfr_before
+        metrics["dnfr_increase"] = dnfr_after - dnfr_before if dnfr_before else 0.0
+    
+    return metrics
 
 
 def self_organization_metrics(
