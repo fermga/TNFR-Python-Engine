@@ -115,16 +115,18 @@ THOL windows close **automatically** when the internal sequence:
    - TRANSITION (NAV)  
    - RECURSIVITY (REMESH)
    - DISSONANCE (OZ)
-2. **Validates successfully** against all grammar rules (C1-C4)
+2. **Validates successfully** against all unified grammar rules (U1-U4)
 
 ### Validation
 
 The internal sequence is validated **recursively**:
-- Must follow all grammar constraints (C1-C4)
-- Must start with valid start operator
-- Must end with valid end operator
+- Must follow all unified grammar constraints (U1-U4)
+- Must start with valid generator (U1a)
+- Must end with valid closure operator (U1b)
 - All operator transitions must be valid
-- THOL preconditions apply (requires destabilizer within 3-operator window)
+- THOL preconditions apply (requires destabilizer within 3-operator window per U4b)
+
+**See**: [UNIFIED_GRAMMAR_RULES.md](../UNIFIED_GRAMMAR_RULES.md) for complete grammar reference
 
 **Example**:
 ```python
