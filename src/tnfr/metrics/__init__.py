@@ -32,6 +32,11 @@ from .learning_metrics import (
     compute_learning_plasticity,
     glyph_history_to_operator_names,
 )
+from .phase_compatibility import (
+    compute_network_phase_alignment,
+    compute_phase_coupling_strength,
+    is_phase_compatible,
+)
 from .reporting import (
     Tg_by_node,
     Tg_global,
@@ -68,4 +73,7 @@ __all__ = (
     "compute_bifurcation_rate",
     "compute_metabolic_efficiency",
     "compute_emergence_index",
+    "compute_phase_coupling_strength",
+    "is_phase_compatible",
+    "compute_network_phase_alignment",
 )
