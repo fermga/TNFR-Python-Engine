@@ -369,3 +369,106 @@ class TestStructuralSimilarityIntegration:
         
         similarity = structural_similarity(epi1, epi2)
         assert similarity > 0.8  # Should remain similar
+
+
+class TestREMESHGrammarLimitations:
+    """Test REMESH-specific grammar limitations derived from physics."""
+    
+    def test_remesh_amplification_requires_stabilizer_with_VAL(self):
+        """U2-REMESH: REMESH + VAL requires stabilizer (recursive expansion)."""
+        from tnfr.operators.grammar import GrammarValidator
+        
+        # REMESH + VAL without stabilizer should violate U2-REMESH
+        seq_invalid = [Emission(), Recursivity(), Expansion(), Silence()]
+        valid, msgs = GrammarValidator.validate(seq_invalid)
+        
+        # Should fail
+        assert not valid
+        
+        # Should mention U2-REMESH violation
+        u2_remesh_msg = [m for m in msgs if "U2-REMESH" in m and "violated" in m]
+        assert len(u2_remesh_msg) > 0
+        assert "recursive amplification" in u2_remesh_msg[0].lower()
+    
+    def test_remesh_amplification_satisfied_with_stabilizer(self):
+        """U2-REMESH: REMESH + VAL + IL satisfies grammar."""
+        from tnfr.operators.grammar import GrammarValidator
+        
+        # REMESH + VAL + IL should satisfy U2-REMESH
+        seq_valid = [Emission(), Recursivity(), Expansion(), Coherence(), Silence()]
+        valid, msgs = GrammarValidator.validate(seq_valid)
+        
+        # Should pass
+        assert valid
+        
+        # U2-REMESH should be satisfied
+        u2_remesh_msg = [m for m in msgs if "U2-REMESH" in m and "satisfied" in m]
+        assert len(u2_remesh_msg) > 0
+    
+    def test_remesh_amplification_requires_stabilizer_with_OZ(self):
+        """U2-REMESH: REMESH + OZ requires stabilizer (recursive bifurcation)."""
+        from tnfr.operators.grammar import GrammarValidator
+        
+        # REMESH + OZ without stabilizer should violate U2-REMESH
+        seq_invalid = [Emission(), Recursivity(), Dissonance(), Silence()]
+        valid, msgs = GrammarValidator.validate(seq_invalid)
+        
+        # Should fail
+        assert not valid
+        
+        # Should mention dissonance amplification
+        u2_remesh_msg = [m for m in msgs if "U2-REMESH" in m and "violated" in m]
+        assert len(u2_remesh_msg) > 0
+        assert "dissonance" in u2_remesh_msg[0].lower()
+    
+    def test_remesh_without_destabilizer_not_applicable(self):
+        """U2-REMESH: Not applicable when REMESH has no destabilizers."""
+        from tnfr.operators.grammar import GrammarValidator
+        
+        # REMESH without destabilizers - U2-REMESH not applicable
+        seq = [Emission(), Recursivity(), Coherence(), Silence()]
+        valid, msgs = GrammarValidator.validate(seq)
+        
+        # Should pass
+        assert valid
+        
+        # U2-REMESH should indicate not applicable or satisfied
+        u2_remesh_msg = [m for m in msgs if "U2-REMESH" in m]
+        assert len(u2_remesh_msg) > 0
+        assert ("not applicable" in u2_remesh_msg[0].lower() or 
+                "satisfied" in u2_remesh_msg[0].lower())
+    
+    def test_destabilizer_without_remesh_uses_general_U2(self):
+        """General U2 applies when destabilizers present without REMESH."""
+        from tnfr.operators.grammar import GrammarValidator
+        
+        # VAL without REMESH - general U2 applies, not U2-REMESH
+        seq = [Emission(), Expansion(), Silence()]
+        valid, msgs = GrammarValidator.validate(seq)
+        
+        # Should fail on general U2
+        assert not valid
+        
+        # U2 should be violated
+        u2_msg = [m for m in msgs if m.startswith("U2:") and "violated" in m]
+        assert len(u2_msg) > 0
+        
+        # U2-REMESH should not be applicable
+        u2_remesh_msg = [m for m in msgs if "U2-REMESH" in m]
+        assert len(u2_remesh_msg) > 0
+        assert "not applicable" in u2_remesh_msg[0].lower()
+    
+    def test_physical_rationale_documented(self):
+        """Verify U2-REMESH has physical derivation from nodal equation."""
+        from tnfr.operators.grammar import GrammarValidator
+        import inspect
+        
+        # Check that validate_remesh_amplification has proper documentation
+        method = GrammarValidator.validate_remesh_amplification
+        docstring = inspect.getdoc(method)
+        
+        # Should mention key physical concepts
+        assert "temporal coupling" in docstring.lower()
+        assert "recursive" in docstring.lower() or "amplif" in docstring.lower()
+        assert "nodal equation" in docstring.lower()
+        assert "∫" in docstring or "integral" in docstring.lower()
