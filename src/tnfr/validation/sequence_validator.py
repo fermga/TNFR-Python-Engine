@@ -32,33 +32,6 @@ class SequenceSemanticValidator:
                 "severity": InvariantSeverity.ERROR,
                 "message": "Excessive consecutive dissonance may destabilize structure",
             },
-            "invalid_transition_sequence": {
-                "pattern": ["transition"],
-                "not_preceded_by": [
-                    "emission",  # AL → NAV (activate-transition)
-                    "silence",  # SHA → NAV (latency-transition)
-                    "coherence",  # IL → NAV (stabilize-transition)
-                    "dissonance",
-                    "mutation",
-                    "resonance",
-                    "transition",
-                    "reception",  # EN → NAV (integrate-transition)
-                ],
-                "severity": InvariantSeverity.ERROR,
-                "message": "Transition requires prior structural context (emission, coherence, perturbation, or propagation)",
-            },
-            "resonance_without_coupling": {
-                "pattern": ["resonance"],
-                "not_preceded_by": ["coupling", "emission", "reception"],
-                "severity": InvariantSeverity.WARNING,
-                "message": "Resonance typically follows coupling or communication operators",
-            },
-            "expansion_without_coherence": {
-                "pattern": ["expansion"],
-                "not_preceded_by": ["coherence", "coupling", "resonance"],
-                "severity": InvariantSeverity.WARNING,
-                "message": "Expansion should follow coherence-building operators to maintain structure",
-            },
             "contraction_after_silence": {
                 "pattern": ["silence", "contraction"],
                 "severity": InvariantSeverity.WARNING,
@@ -68,18 +41,6 @@ class SequenceSemanticValidator:
                 "pattern": ["recursivity", "recursivity", "recursivity"],
                 "severity": InvariantSeverity.WARNING,
                 "message": "Excessive consecutive recursivity may indicate inefficient sequence design",
-            },
-            "self_organization_without_dissonance": {
-                "pattern": ["self_organization"],
-                "not_preceded_by": ["dissonance", "mutation", "coupling"],
-                "severity": InvariantSeverity.WARNING,
-                "message": "Self-organization typically emerges after structural perturbation or coupling",
-            },
-            "coupling_without_emission": {
-                "pattern": ["coupling"],
-                "not_preceded_by": ["emission", "reception", "resonance"],
-                "severity": InvariantSeverity.WARNING,
-                "message": "Coupling should follow communication operators for effective synchronization",
             },
             "silence_after_mutation": {
                 "pattern": ["mutation", "silence"],

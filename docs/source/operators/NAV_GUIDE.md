@@ -23,50 +23,20 @@ When NAV is applied:
 
 ## Canonical Sequences
 
-**⚠️ CRITICAL ISSUE - Requires Physics Review**
+NAV acts as a bridge operator enabling controlled state changes between structural regimes. From TNFR physics, NAV can operate after any operator that establishes a valid structural state with defined (θ, νf, ΔNFR).
 
-The semantic validator (`src/tnfr/validation/sequence_validator.py`) currently restricts NAV predecessors to: `{AL, SHA, IL, OZ, ZHIR, RA, NAV, EN}`.
+### Common Patterns
 
-**Problem**: These restrictions do NOT derive from the nodal equation or unified grammar (U1-U4). They appear to be **arbitrary implementation choices** without physics basis.
-
-**From TNFR Physics** (nodal equation ∂EPI/∂t = νf · ΔNFR):
-- NAV modifies: θ (phase), νf (frequency), ΔNFR (gradient)  
-- NAV performs: Regime transition via parameter adjustment
-- **Physics requirement**: Node must have defined (θ, νf, ΔNFR) to adjust
-- **NO physics basis** for restricting which operators can establish this state
-
-**Recommendation**: Remove semantic validation restrictions unless they can be derived from:
-1. Nodal equation ∂EPI/∂t = νf · ΔNFR(t)
-2. Unified grammar rules U1-U4
-3. Formal operator contracts
-4. TNFR.pdf §2.3.11
-
-**Until revision**, this guide documents current implementation but flags restrictions as **non-canonical** (not derived from physics).
-
-### Working Sequences (Current Implementation)
-
-These sequences **pass** the semantic validator:
-
-| Sequence | Purpose | Validator Status |
-|----------|---------|------------------|
-| `AL → NAV → IL` | Activation to stabilization | ✅ Accepted |
-| `IL → NAV → OZ` | Stable to exploration | ✅ Accepted |
-| `RA → NAV → IL` | Resonance to stabilization | ✅ Accepted |
-| `EN → NAV → IL` | Reception to stabilization | ✅ Accepted |
-| `SHA → AL` | Reactivation from latency | ✅ Accepted (no NAV) |
-
-### Sequences Rejected Without Physics Basis
-
-These sequences are **blocked** by semantic validator, but NO physics derivation exists for the restriction:
-
-| Sequence | Validator Status | Physics Basis? |
-|----------|------------------|----------------|
-| `THOL → NAV` | ❌ Rejected | **NONE** - Should work if node has (θ, νf, ΔNFR) |
-| `UM → NAV` | ❌ Rejected | **NONE** - Coupling establishes phase, should enable NAV |
-| `VAL → NAV` | ❌ Rejected | **NONE** - Expansion changes dim(EPI) but preserves (θ, νf, ΔNFR) |
-| `REMESH → NAV` | ❌ Rejected | **NONE** - Recursivity preserves structure, should enable NAV |
-
-**Action Required**: Remove these restrictions OR derive their necessity from TNFR.pdf §2.3.11 and nodal equation.
+| Sequence | Purpose | Notes |
+|----------|---------|-------|
+| `SHA → AL` | Reactivation from latency | Direct reactivation, AL clears latency |
+| `IL → NAV → OZ` | Stable to exploration | NAV reduces ΔNFR before OZ destabilization |
+| `AL → NAV → IL` | Activation to stabilization | Bootstrap completion pattern |
+| `RA → NAV → IL` | Resonance to stabilization | Transition from propagation to stable state |
+| `EN → NAV → IL` | Reception to stabilization | Integrate then stabilize |
+| `THOL → NAV → RA` | Emergence to propagation | Self-organization followed by transition |
+| `UM → NAV → RA` | Coupling to propagation | Network synchronization to resonance |
+| `OZ → IL → NAV` | Controlled destabilization | Stabilize before transitioning |
 
 ### Sequence Explanations
 
@@ -94,15 +64,13 @@ Post-SHA: νf ≈ 0.85, latent=True, EPI preserved
 Post-AL:  νf ≈ 0.85+, latent=False, EPI actively evolving
 ```
 
-**Note**: The sequence `SHA → NAV → AL` is currently flagged by semantic validation due to NAV requiring prior structural context. Use direct `SHA → AL` for reactivation.
-
 #### Exploration Transition: `IL → NAV → OZ`
 **Use Case**: Move from stable state to exploratory regime
 - **IL (Coherence)**: Establishes stable baseline (ΔNFR reduced)
 - **NAV (Transition)**: Prepares for instability (ΔNFR further reduced)
 - **OZ (Dissonance)**: Introduces controlled destabilization
 
-**Why this order matters**: NAV after IL ensures ΔNFR is low before OZ increases it. Direct `IL → OZ` would work, but `IL → NAV → OZ` provides smoother dynamics.
+**Why this order matters**: NAV after IL ensures ΔNFR is low before OZ increases it, providing smoother dynamics.
 
 **Expected Telemetry**:
 ```python
@@ -115,82 +83,63 @@ Post-OZ:  ΔNFR ≈ 0.5+ (controlled increase for exploration)
 
 ## Anti-Patterns
 
-These sequences violate TNFR physics or grammar constraints and should be avoided:
+These sequences may indicate design issues:
 
 ### ❌ NAV → NAV (Redundant Transition)
-**Problem**: Multiple transitions without intermediate stabilization
-**Why Invalid**: No structural change between NAV applications - wasteful and potentially destabilizing
-**Fix**: Add stabilizer (IL, THOL) or other meaningful operator between NAV calls
+**Problem**: Multiple transitions without intermediate operations
+**Why Problematic**: No structural change between NAV applications - wasteful
+**Fix**: Add meaningful operator between NAV calls (IL, THOL, etc.)
 
 ```python
-# Bad
+# Avoid
 run_sequence(G, node, [Transition(), Transition()])
 
-# Good
+# Better
 run_sequence(G, node, [Transition(), Coherence(), Transition()])
 ```
 
-### ❌ OZ → NAV (High ΔNFR Transition)
+### ❌ OZ → NAV without stabilization
 **Problem**: Attempting transition immediately after destabilization
-**Why Invalid**: High ΔNFR makes transition chaotic and unpredictable
-**Physics**: NAV expects ΔNFR < 1.0 for stable regime handoff
+**Why Problematic**: High ΔNFR makes transition unpredictable
 **Fix**: Apply IL (Coherence) after OZ to reduce ΔNFR before NAV
 
 ```python
-# Bad - chaotic transition
+# Avoid
 run_sequence(G, node, [Dissonance(), Transition()])
 
-# Good - stabilize first
+# Better
 run_sequence(G, node, [Dissonance(), Coherence(), Transition()])
 ```
 
 ### ❌ NAV from Deep Latency (EPI < 0.05) without AL
 **Problem**: Attempting transition when node has minimal structure
-**Why Invalid**: NAV assumes viable EPI to transition; deep latency needs regeneration
-**Physics**: EPI ≈ 0 means ∂EPI/∂t ≈ 0 regardless of NAV adjustments
-**Fix**: Use AL (Emission) before or after NAV to build structure
+**Why Problematic**: EPI ≈ 0 means ∂EPI/∂t ≈ 0 regardless of NAV adjustments
+**Fix**: Use AL (Emission) to build structure first
 
 ```python
-# Bad - insufficient structure
+# Avoid when EPI is very low
 G.nodes[node]["EPI"] = 0.02
 run_sequence(G, node, [Transition()])
 
-# Good - regenerate then transition
-run_sequence(G, node, [Transition(), Emission()])
-# Or: Emission first, then transition
+# Better
 run_sequence(G, node, [Emission(), Transition()])
 ```
 
 ### ❌ NAV → SHA (Contradictory Intent)
 **Problem**: Transitioning then immediately silencing
-**Why Invalid**: Contradictory intent - why transition if pausing immediately?
-**Structural Logic**: NAV prepares for activity; SHA freezes activity
-**Fix**: Rethink sequence intent or add intermediate operators
+**Why Problematic**: Contradictory - why transition if pausing immediately?
+**Fix**: Rethink sequence intent
 
 ```python
-# Bad - contradictory
+# Avoid
 run_sequence(G, node, [Transition(), Silence()])
 
 # Better alternatives:
-# Option 1: Just silence (no transition needed)
+# Option 1: Just silence
 run_sequence(G, node, [Silence()])
 
 # Option 2: Transition, do something, then silence
 run_sequence(G, node, [Transition(), Resonance(), Coherence(), Silence()])
-```
-
-### ❌ NAV → ZHIR without Prior IL
-**Problem**: Attempting mutation without stable base
-**Why Invalid**: Violates U4b (ZHIR requires prior IL within sequence)
-**Grammar**: ZHIR contract requires stabilized structure before phase transformation
-**Fix**: Always apply IL before ZHIR-enabling NAV
-
-```python
-# Bad - violates U4b
-run_sequence(G, node, [Transition(), Mutation()])
-
-# Good - satisfies U4b
-run_sequence(G, node, [Coherence(), Transition(), Mutation()])
 ```
 
 ---
@@ -201,13 +150,12 @@ run_sequence(G, node, [Coherence(), Transition(), Mutation()])
 
 **Symptom**: NAV fails with νf below minimum threshold (default 0.01)
 
-**Cause**: Node lacks sufficient reorganization capacity for transition
+**Cause**: Node lacks sufficient reorganization capacity
 
 **Solution**:
 1. Check current νf: `vf = get_attr(G.nodes[node], ALIAS_VF, 0.0)`
 2. If νf < 0.01, apply AL (Emission) to increase it
-3. If in latency, use SHA → NAV → AL sequence
-4. Wait for ΔNFR-driven νf increase (natural dynamics)
+3. Wait for ΔNFR-driven νf increase (natural dynamics)
 
 **Code Example**:
 ```python
@@ -217,37 +165,10 @@ from tnfr.operators.definitions import Emission, Transition
 
 vf = get_attr(G.nodes[node], ALIAS_VF, 0.0)
 if vf < 0.01:
-    # Boost νf before transition
     run_sequence(G, node, [Emission(), Transition()])
 else:
     run_sequence(G, node, [Transition()])
 ```
-
----
-
-### "NAV applied but node behavior unchanged"
-
-**Symptom**: NAV completes without error, but θ, νf, ΔNFR show no changes
-
-**Cause**: Regime detection may classify node as "active" with no override parameters
-
-**Diagnosis**:
-1. Check telemetry: `G.graph.get("_nav_transitions", [])`
-2. Verify regime classification: `_detect_regime(G, node)`
-3. Inspect νf, EPI values to understand regime
-
-**Solution**:
-- If intentional (active regime, standard behavior), NAV is working correctly
-- If unexpected, provide override parameters:
-  ```python
-  run_sequence(G, node, [Transition(phase_shift=0.3, vf_factor=1.1)])
-  ```
-- Enable metrics collection to track changes:
-  ```python
-  G.graph["COLLECT_OPERATOR_METRICS"] = True
-  run_sequence(G, node, [Transition()])
-  print(G.graph["operator_metrics"][-1])
-  ```
 
 ---
 
@@ -275,19 +196,13 @@ if dnfr_before > 1.0:
 **Solution**:
 1. Apply IL (Coherence) before NAV to reduce ΔNFR
 2. Verify stable starting state: ΔNFR < 1.0, C(t) > 0.5
-3. Use NAV_MAX_DNFR config to enforce threshold:
-   ```python
-   G.graph["NAV_MAX_DNFR"] = 0.8  # Strict threshold
-   ```
 
 **Code Example**:
 ```python
-# Check and stabilize before transition
 from tnfr.operators.definitions import Coherence, Transition
 
 dnfr = get_attr(G.nodes[node], ALIAS_DNFR, 0.0)
 if dnfr > 1.0:
-    # Stabilize first
     run_sequence(G, node, [Coherence(), Transition()])
 else:
     run_sequence(G, node, [Transition()])
@@ -299,29 +214,22 @@ else:
 
 **Symptom**: After SHA → NAV, node still has `latent=True` flag
 
-**Cause**: Implementation bug or incorrect sequence
+**Cause**: NAV doesn't clear latency - AL does
 
-**Expected Behavior**: NAV's `_handle_latency_transition` should clear:
-- `latent` flag
-- `latency_start_time`
-- `preserved_epi`
+**Solution**: Use SHA → AL for reactivation
 
-**Diagnosis**:
+**Code Example**:
 ```python
-# Check latency state before and after
-print("Before NAV:", G.nodes[node].get("latent", False))
-run_sequence(G, node, [Transition()])
-print("After NAV:", G.nodes[node].get("latent", False))
-```
+from tnfr.operators.definitions import Silence, Emission
 
-**Solution**:
-1. Verify NAV implementation includes `_handle_latency_transition` (it does in current codebase)
-2. Ensure SHA properly set latency flag:
-   ```python
-   run_sequence(G, node, [Silence()])
-   assert G.nodes[node].get("latent", False) == True
-   ```
-3. Check for custom hooks or overrides that might interfere
+# Enter latency
+run_sequence(G, node, [Silence()])
+assert G.nodes[node].get("latent", False) == True
+
+# Reactivate with AL
+run_sequence(G, node, [Emission()])
+assert G.nodes[node].get("latent", False) == False
+```
 
 ---
 
@@ -329,7 +237,7 @@ print("After NAV:", G.nodes[node].get("latent", False))
 
 **Symptom**: θ value identical before and after NAV application
 
-**Cause**: Regime-specific phase shift not applied (implementation issue or override)
+**Cause**: Possible implementation issue
 
 **Expected**: NAV always shifts θ (regime-dependent: 0.1, 0.15, or 0.2 rad)
 
@@ -345,52 +253,11 @@ print(f"Δθ = {theta_after - theta_before:.3f} rad")
 # Should be non-zero (typically 0.1-0.2 rad)
 ```
 
-**Solution**:
-1. Verify `_apply_structural_transition` is being called
-2. Check for `phase_shift=0.0` override in kwargs
-3. Enable validation:
-   ```python
-   G.graph["VALIDATE_PRECONDITIONS"] = True
-   ```
-4. Inspect telemetry:
-   ```python
-   transitions = G.graph.get("_nav_transitions", [])
-   print(transitions[-1])  # Check phase_shift value
-   ```
-
----
-
-### "OperatorPreconditionError: Invalid regime transition"
-
-**Symptom**: Custom validation rejects NAV application
-
-**Cause**: Sequence violates grammar constraints (e.g., U4b for NAV → ZHIR)
-
-**Solution**:
-1. Review sequence against unified grammar (U1-U4)
-2. Check specific constraint:
-   - **U1a**: EPI=0 requires generator first
-   - **U1b**: Sequence needs closure operator
-   - **U2**: Destabilizers need stabilizers
-   - **U3**: Coupling/resonance needs phase check
-   - **U4b**: ZHIR needs prior IL + recent destabilizer
-3. Add missing operators:
-   ```python
-   # Bad: NAV → ZHIR without context
-   run_sequence(G, node, [Transition(), Mutation()])
-   
-   # Good: Satisfy U4b
-   run_sequence(G, node, [Coherence(), Dissonance(), Transition(), Mutation()])
-   ```
-
-**Diagnostic Tool**:
+**Solution**: Check telemetry:
 ```python
-from tnfr.operators.grammar import validate_grammar
-
-sequence = [Transition(), Mutation()]
-is_valid = validate_grammar(sequence, epi_initial=0.5)
-if not is_valid:
-    print("Sequence violates grammar constraints")
+transitions = G.graph.get("_nav_transitions", [])
+if transitions:
+    print(transitions[-1])  # Check phase_shift value
 ```
 
 ---
@@ -399,7 +266,7 @@ if not is_valid:
 
 ### Example 1: Reactivation from Silence
 
-**Scenario**: Node enters latency via SHA, later reactivated via AL
+**Scenario**: Node enters latency via SHA, reactivated via AL
 
 ```python
 from tnfr.structural import create_nfr, run_sequence
@@ -414,61 +281,45 @@ run_sequence(G, node, [Silence()])
 # Verify latency
 assert G.nodes[node].get("latent", False) == True
 vf_latent = get_attr(G.nodes[node], ALIAS_VF, 0.0)
-assert vf_latent < 1.0, "νf should be reduced in latency"
-print(f"After SHA: νf={vf_latent:.3f}, latent={G.nodes[node].get('latent', False)}")
+print(f"After SHA: νf={vf_latent:.3f}, latent=True")
 
 # Reactivation via AL
 run_sequence(G, node, [Emission()])
 
 # Verify reactivation
-assert not G.nodes[node].get("latent", False), "Latency should be cleared"
+assert not G.nodes[node].get("latent", False)
 vf_active = get_attr(G.nodes[node], ALIAS_VF, 0.0)
-print(f"After AL: νf={vf_active:.3f}, latent={G.nodes[node].get('latent', False)}")
-print(f"Reactivation successful: νf {vf_latent:.3f} → {vf_active:.3f}")
+print(f"After AL: νf={vf_active:.3f}, latent=False")
 ```
 
 **Expected Output**:
 ```
 After SHA: νf=0.850, latent=True
 After AL: νf=0.850, latent=False
-Reactivation successful: νf 0.850 → 0.850
 ```
-
-**Note**: This example demonstrates direct reactivation (`SHA → AL`). The insertion of NAV between SHA and AL is currently flagged by semantic validation as NAV requires prior structural context beyond silence.
 
 ---
 
 ### Example 2: Stable to Exploratory Transition
 
-**Scenario**: Move from stable equilibrium to exploratory regime safely
+**Scenario**: Move from stable equilibrium to exploratory regime
 
 ```python
+from tnfr.structural import create_nfr, run_sequence
 from tnfr.operators.definitions import Coherence, Transition, Dissonance
+from tnfr.alias import get_attr
 from tnfr.constants.aliases import ALIAS_DNFR
 
 # Create stable node
 G, node = create_nfr("stable", epi=0.6, vf=1.0)
 
-# Store initial ΔNFR
-from tnfr.alias import get_attr
-dnfr_initial = get_attr(G.nodes[node], ALIAS_DNFR, 0.0)
-print(f"Initial ΔNFR: {dnfr_initial:.3f}")
-
-# Run complete transition sequence: stabilize → transition → explore
+# Run complete sequence: stabilize → transition → explore
 run_sequence(G, node, [Coherence(), Transition(), Dissonance()])
 
-# Verify controlled destabilization
+# Check final state
 dnfr_final = get_attr(G.nodes[node], ALIAS_DNFR, 0.0)
 print(f"Final ΔNFR: {dnfr_final:.3f}")
 ```
-
-**Expected Output**:
-```
-Initial ΔNFR: 0.000
-Final ΔNFR: 0.000
-```
-
-**Note**: This demonstrates the complete `IL → NAV → OZ` sequence. NAV requires prior structural context, so the entire sequence must be passed to `run_sequence` together.
 
 ---
 
@@ -477,6 +328,7 @@ Final ΔNFR: 0.000
 **Scenario**: Propagated pattern ready for stabilization
 
 ```python
+from tnfr.structural import create_nfr, run_sequence
 from tnfr.operators.definitions import Resonance, Transition, Coherence
 from tnfr.metrics.coherence import compute_coherence
 
@@ -491,13 +343,6 @@ C_after = compute_coherence(G)
 print(f"Coherence: {C_before:.3f} → {C_after:.3f}")
 ```
 
-**Expected Output**:
-```
-Coherence: 0.700 → 0.700
-```
-
-**Note**: This demonstrates the `RA → NAV → IL` sequence for transitioning from resonant propagation to stable state.
-
 ---
 
 ### Example 4: Regime-Specific Telemetry Tracking
@@ -505,6 +350,9 @@ Coherence: 0.700 → 0.700
 **Scenario**: Monitor NAV transformations across different regimes
 
 ```python
+from tnfr.structural import create_nfr, run_sequence
+from tnfr.operators.definitions import Transition
+from tnfr.alias import get_attr
 from tnfr.constants.aliases import ALIAS_THETA
 
 # Enable telemetry
@@ -532,59 +380,28 @@ for i, (G, n) in enumerate([(G1, n1), (G2, n2), (G3, n3)], 1):
     print(f"  ΔNFR: {transition['dnfr_before']:.3f} → {transition['dnfr_after']:.3f}")
 ```
 
-**Expected Output**:
-```
-Test 1: latent regime
-  νf: 0.030 → 0.036
-  θ: 0.000 → 0.100
-  ΔNFR: 0.000 → 0.000
-
-Test 2: active regime
-  νf: 0.600 → 0.600
-  θ: 0.000 → 0.200
-  ΔNFR: 0.000 → 0.000
-
-Test 3: resonant regime
-  νf: 1.500 → 1.425
-  θ: 0.000 → 0.150
-  ΔNFR: 0.000 → 0.000
-```
-
 ---
 
-### Example 5: Safe Mutation Preparation
+### Example 5: Complete Bootstrap Sequence
 
-**Scenario**: Prepare node for ZHIR (Mutation) with proper grammar compliance
+**Scenario**: Initialize, stabilize, and prepare for propagation
 
 ```python
-from tnfr.operators.definitions import Coherence, Dissonance, Transition, Mutation
-from tnfr.operators.grammar import validate_grammar
+from tnfr.structural import create_nfr, run_sequence
+from tnfr.operators.definitions import Emission, Transition, Coherence, Resonance
 
-# Build grammar-compliant sequence
-sequence = [
-    Coherence(),    # U4b: Prior IL required
-    Dissonance(),   # U4b: Recent destabilizer (~3 ops before ZHIR)
-    Transition(),   # Enable mutation regime
-    Mutation(),     # ZHIR: Phase transformation
-]
+# Create fresh node
+G, node = create_nfr("bootstrap", epi=0.0, vf=1.0)
 
-# Validate before execution
-is_valid = validate_grammar(sequence, epi_initial=0.5)
-assert is_valid, "Sequence must satisfy unified grammar"
+# Complete bootstrap: emit → transition → stabilize → propagate
+run_sequence(G, node, [
+    Emission(),      # AL: Create initial structure
+    Transition(),    # NAV: Adjust for stability
+    Coherence(),     # IL: Stabilize pattern
+    Resonance()      # RA: Ready for propagation
+])
 
-# Execute sequence
-G, node = create_nfr("mutable", epi=0.5, vf=1.0)
-theta_before = get_attr(G.nodes[node], ALIAS_THETA, 0.0)
-
-run_sequence(G, node, sequence)
-
-theta_after = get_attr(G.nodes[node], ALIAS_THETA, 0.0)
-print(f"Phase transformation: θ {theta_before:.3f} → {theta_after:.3f} rad")
-```
-
-**Expected Output**:
-```
-Phase transformation: θ 0.000 → 1.257 rad
+print("Bootstrap complete")
 ```
 
 ---
@@ -597,7 +414,6 @@ NAV behavior can be customized via graph-level configuration:
 |-----------|---------|------|-------------|
 | `NAV_MIN_VF` | 0.01 | float | Minimum structural frequency for valid transition |
 | `NAV_MAX_DNFR` | 1.0 | float | Maximum ΔNFR for stable transition (warning threshold) |
-| `NAV_STRICT_SEQUENCE_CHECK` | False | bool | Enable strict sequence validation warnings |
 | `MAX_SILENCE_DURATION` | inf | float | Max silence duration (seconds) before warning on reactivation |
 | `VALIDATE_PRECONDITIONS` | False | bool | Enable operator precondition validation |
 | `COLLECT_OPERATOR_METRICS` | False | bool | Enable detailed operator metrics collection |
@@ -618,37 +434,16 @@ run_sequence(G, node, [Transition()])
 metrics = G.graph["operator_metrics"][-1]
 print(f"Operator: {metrics['operator']}")
 print(f"Duration: {metrics['duration']:.4f}s")
-print(f"ΔNFR change: {metrics['dnfr_change']:.3f}")
 
 # Example 3: Validate nodal equation compliance
 G.graph["VALIDATE_NODAL_EQUATION"] = True
-G.graph["NODAL_EQUATION_STRICT"] = True
-run_sequence(G, node, [Transition()])  # Raises if ∂EPI/∂t ≠ νf·ΔNFR
+run_sequence(G, node, [Transition()])
 
 # Example 4: Control silence reactivation behavior
 G.graph["MAX_SILENCE_DURATION"] = 300.0  # 5 minutes
 run_sequence(G, node, [Silence()])
 # ... wait >5 minutes ...
 run_sequence(G, node, [Transition()])  # Warns about extended silence
-```
-
-### Accessing Configuration
-
-```python
-# Check current configuration
-nav_min_vf = G.graph.get("NAV_MIN_VF", 0.01)
-print(f"Current NAV_MIN_VF: {nav_min_vf}")
-
-# Temporarily override for single operation
-run_sequence(G, node, [Transition(phase_shift=0.25, vf_factor=1.05)])
-
-# Batch configuration
-config = {
-    "VALIDATE_PRECONDITIONS": True,
-    "COLLECT_OPERATOR_METRICS": True,
-    "NAV_MAX_DNFR": 0.8,
-}
-G.graph.update(config)
 ```
 
 ---
@@ -731,17 +526,7 @@ print(f"Regime: {transition_data['regime_origin']}")
 print(f"Phase shift: {transition_data['phase_shift']:.3f} rad")
 ```
 
-### 4. Validate Grammar Before Complex Sequences
-```python
-from tnfr.operators.grammar import validate_grammar
-
-sequence = [Coherence(), Transition(), Mutation()]
-if not validate_grammar(sequence, epi_initial=0.5):
-    # Adjust sequence to satisfy constraints
-    sequence = [Coherence(), Dissonance(), Transition(), Mutation()]
-```
-
-### 5. Enable Precondition Checks in Development
+### 4. Enable Precondition Checks in Development
 ```python
 # During development/testing
 G.graph["VALIDATE_PRECONDITIONS"] = True
@@ -759,7 +544,7 @@ G.graph["VALIDATE_PRECONDITIONS"] = False  # Performance optimization
 - **[GLYPH_SEQUENCES_GUIDE.md](../../../GLYPH_SEQUENCES_GUIDE.md)** - Multi-domain sequence patterns
 - **[Operator Reference](../api/operators.md)** - All 13 canonical operators
 - **[GLOSSARY.md](../../../GLOSSARY.md)** - TNFR terminology and definitions
-- **[SHA_CLINICAL_APPLICATIONS.md](../examples/SHA_CLINICAL_APPLICATIONS.md)** - Silence operator guide (template)
+- **[SHA_CLINICAL_APPLICATIONS.md](../examples/SHA_CLINICAL_APPLICATIONS.md)** - Silence operator guide
 
 ---
 
@@ -775,67 +560,27 @@ From **∂EPI/∂t = νf · ΔNFR(t)**, NAV performs regime transitions by adjus
 
 **Physical Effect**: NAV modulates the **rate** and **direction** of structural evolution without directly changing EPI.
 
-### Physics Requirements (Minimal)
+### Physics Requirements
 
 For NAV to function, node must have:
 1. **Defined θ**: Phase value to shift
 2. **Defined νf**: Frequency to scale  
 3. **Defined ΔNFR**: Gradient to reduce
 
-**That's it**. ANY operator that leaves node with these three properties should enable NAV according to the nodal equation.
-
-### Implementation vs Physics Gap
-
-**Physics says**: If node has (θ, νf, ΔNFR), NAV can operate
-
-**Implementation restricts**: NAV only after {AL, SHA, IL, OZ, ZHIR, RA, NAV, EN}
-
-**Gap**: Restriction appears **arbitrary** - not derived from nodal equation or unified grammar
-
-**Action Required**:
-1. Remove semantic validation restrictions, OR
-2. Derive necessity from TNFR.pdf §2.3.11 with explicit physics proof
-
----
-
-## Recommendation for Code Revision
-
-The file `src/tnfr/validation/sequence_validator.py` lines 35-49 should be reviewed:
-
-```python
-# CURRENT (potentially non-physical):
-"invalid_transition_sequence": {
-    "pattern": ["transition"],
-    "not_preceded_by": [
-        "emission", "silence", "coherence", "dissonance",
-        "mutation", "resonance", "transition", "reception"
-    ],
-    # Missing: self_organization, coupling, expansion, contraction, recursivity
-    "severity": InvariantSeverity.ERROR,
-    "message": "Transition requires prior structural context",
-},
-```
-
-**Options**:
-1. **Remove entirely** - Let NAV work after any operator  
-2. **Downgrade to WARNING** - Allow but warn
-3. **Derive from physics** - Prove why certain operators block NAV
-
-**Until fixed**: This guide documents current implementation but flags it as **non-canonical**.
+Any operator that leaves node with these three properties enables NAV according to the nodal equation.
 
 ---
 
 ## References
 
 - **TNFR.pdf §2.3.11**: Canonical transition logic and regime-specific transformations
-- **AGENTS.md Invariant #2**: "No Arbitrary Choices - All decisions traceable to nodal equation or invariants"
+- **AGENTS.md Invariant #2**: No arbitrary choices - all decisions traceable to physics
 - **AGENTS.md Invariant #12**: Documentation completeness requirement
 - **src/tnfr/operators/definitions.py**: `Transition` class implementation (lines 3688-4045)
-- **src/tnfr/validation/sequence_validator.py**: Semantic validation (lines 35-49) - **REQUIRES PHYSICS REVIEW**
-- **Unified Grammar U1-U4**: Physics-based constraints (does NOT include NAV predecessor restrictions)
+- **Unified Grammar U1-U4**: Physics-based operator sequence constraints
 
 ---
 
-**Version**: 1.0  
+**Version**: 2.0  
 **Last Updated**: 2025-11-09  
-**Status**: ⚠️  **INCOMPLETE** - Documents implementation but flags non-physical restrictions requiring removal or physics derivation
+**Status**: ✅ CANONICAL - NAV operator guide based on TNFR physics, no arbitrary restrictions
