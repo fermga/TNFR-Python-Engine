@@ -223,7 +223,7 @@ class TestStructuralIdentity:
         
         set_attr(G.nodes[1], ALIAS_EPI, 0.5)
         set_attr(G.nodes[1], ALIAS_VF, 1.0)
-        set_attr(G.nodes[1], ALIAS_PHASE, math.pi / 2)
+        set_attr(G.nodes[1], ALIAS_THETA, math.pi / 2)
         
         identity = StructuralIdentity(
             epi_signature=0.5,
@@ -241,7 +241,7 @@ class TestStructuralIdentity:
         
         set_attr(G.nodes[1], ALIAS_EPI, 0.5)
         set_attr(G.nodes[1], ALIAS_VF, 1.0)
-        set_attr(G.nodes[1], ALIAS_PHASE, 0.05)  # Near 0
+        set_attr(G.nodes[1], ALIAS_THETA, 0.05)  # Near 0
         
         identity = StructuralIdentity(
             epi_signature=0.5,
@@ -310,7 +310,7 @@ class TestStructuralIdentity:
         
         set_attr(G.nodes[1], ALIAS_EPI, 0.5)
         set_attr(G.nodes[1], ALIAS_VF, 1.0)
-        set_attr(G.nodes[1], ALIAS_PHASE, math.pi / 4)
+        set_attr(G.nodes[1], ALIAS_THETA, math.pi / 4)
         
         identity = StructuralIdentity.capture_from_node(G.nodes[1])
         
@@ -627,5 +627,5 @@ class TestRemeshCoherenceLossError:
         )
         
         message = str(error)
-        assert "0.65" in message or "65%" in message
-        assert "0.85" in message or "85%" in message
+        assert "0.65" in message or "65%" in message or "65.00%" in message
+        assert "0.85" in message or "85%" in message or "85.00%" in message

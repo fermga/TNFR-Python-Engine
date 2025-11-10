@@ -1,17 +1,196 @@
-"""Adaptive remeshing operators preserving TNFR structural coherence.
+"""Canonical REMESH operator: Recursive pattern propagation preserving structural coherence.
 
-This module implements REMESH (Recursivity) - the canonical TNFR operator for
-fractal pattern propagation and multi-scale structural identity preservation.
+REMESH (Recursivity) - Glyph: REMESH
+====================================
 
-REMESH enables patterns to echo across scales while maintaining coherence, implementing
-the theoretical foundation: "What persists at one scale can be rewritten at another,
-with coherence propagating structurally, not imposed."
+Physical Foundation
+-------------------
+From the nodal equation: ∂EPI/∂t = νf · ΔNFR(t)
 
-Key capabilities:
+REMESH implements: **EPI(t) ↔ EPI(t-τ)** (operational fractality)
+
+REMESH enables patterns to echo across temporal and spatial scales while maintaining 
+coherence. "What persists at one scale can be rewritten at another, with coherence 
+propagating structurally, not imposed." - El pulso que nos atraviesa
+
+Canonical Physical Behavior
+----------------------------
+REMESH acts on the nodal equation by creating temporal/spatial coupling:
+
+1. **Memory Activation**: References EPI(t-τ) from structural history
+2. **Pattern Recognition**: Identifies similar EPIs across network (structural_similarity)
+3. **Coherent Propagation**: Propagates patterns maintaining identity (StructuralIdentity)
+4. **Scale Invariance**: Preserves structural properties across reorganizations
+
+Effect on nodal components:
+- EPI: Mixed with historical states (EPI_new = (1-α)·EPI_now + α·EPI_past)
+- νf: Can increase during memory activation (reactivation of dormant patterns)
+- ΔNFR: Implicitly calculated from reorganization (ΔNFR = ΔEPI/νf from nodal equation)
+- Phase: Preserved through StructuralIdentity tracking
+
+Operator Relationships (from Nodal Equation Physics)
+-----------------------------------------------------
+All relationships emerge naturally from how operators affect EPI, νf, ΔNFR, and phase:
+
+### REMESH Hierarchical (Central Control → Periphery)
+**Physics**: Controlled replication from center maintaining coherence descendente
+
+1. **IL (Coherence)**: Reduces |ΔNFR| → stabilizes each recursion level
+   - Relationship: Estabilización multinivel (coherence extended)
+   - Dynamics: REMESH propagates pattern, IL consolidates at each level
+   - Sequence: REMESH → IL (recursive propagation → multi-level stabilization)
+
+2. **VAL (Expansion)**: Increases dim(EPI) → structural expansion
+   - Relationship: Expansión estructural coherente (fractal growth)
+   - Dynamics: REMESH replicates, VAL expands each replica maintaining form
+   - Sequence: VAL → REMESH (expand → replicate expanded form)
+
+3. **SHA (Silence)**: νf → 0 → latent memory
+   - Relationship: Estabilización de red latente (structural memory)
+   - Dynamics: SHA freezes pattern (∂EPI/∂t → 0), REMESH propagates frozen state
+   - Sequence: SHA → REMESH (freeze → propagate frozen memory)
+   - **Critical**: NO functional redundancy - uses existing Silence operator
+
+4. **NUL (Contraction)**: Reduces dim(EPI) → compression
+   - Relationship: Compresión estructural coherente (fractal distillation)
+   - Dynamics: Complementary to VAL, reduces dimensionality maintaining identity
+   - Sequence: NUL → REMESH (compress → replicate compressed essence)
+   - **Note**: Hierarchical simplification preserving core structure
+
+### REMESH Rhizomatic (Decentralized Propagation)
+**Physics**: Propagation without fixed center, by local resonance
+
+1. **OZ (Dissonance)**: Increases |ΔNFR| → exploration
+   - Relationship: Bifurcación distribuida (distributed bifurcation)
+   - Dynamics: REMESH + OZ creates decentralized local variations
+   - Sequence: OZ → REMESH (destabilize → replicate variations)
+
+2. **UM (Coupling)**: φᵢ → φⱼ → structural connection
+   - Relationship: Acoplamiento multiescala (multi-scale coupling)
+   - Dynamics: REMESH propagates, UM connects replicas without hierarchy
+   - Sequence: REMESH → UM (propagate → connect peers)
+
+3. **THOL (Self-organization)**: Creates sub-EPIs → emergence
+   - Relationship: Auto-organización recursiva (recursive self-organization)
+   - Dynamics: REMESH + THOL generates emergent structures without center
+   - Sequence: THOL → REMESH (emerge sub-EPIs → replicate emergent forms)
+
+### REMESH Fractal Harmonic (Perfect Self-Similarity)
+**Physics**: Scale-symmetric replication maintaining perfect auto-similitud
+
+1. **RA (Resonance)**: Amplifies coherently → propagation
+   - Relationship: Resonancia multiescala (multi-scale resonance)
+   - Dynamics: REMESH replicates, RA amplifies with perfect symmetry
+   - Sequence: REMESH → RA (replicate → amplify symmetrically)
+
+2. **NAV (Transition)**: Activates latent EPI → regime shift
+   - Relationship: Transición entre attractores fractales
+   - Dynamics: REMESH navigates between self-similar attractor states
+   - Sequence: NAV → REMESH (transition → replicate new regime)
+
+3. **AL (Emission)**: Creates EPI from vacuum → generation
+   - Relationship: Emisión fractal (fractal emission)
+   - Dynamics: REMESH + AL generates self-similar patterns from origin
+   - Sequence: AL → REMESH (emit seed → replicate fractally)
+
+4. **EN (Reception)**: Updates EPI from network → reception
+   - Relationship: Recepción multi-escala simétrica (symmetric multi-scale reception)
+   - Dynamics: EN captures patterns from multiple sources → REMESH replicates symmetrically
+   - Sequence: EN → REMESH (receive multi-scale → propagate symmetrically)
+   - **Note**: Pre-recursion operator that feeds REMESH
+
+### Operators with Indirect Relationships
+
+**ZHIR (Mutation)**: Present in canonical relationships but NOT in types
+- **Physical Reason**: ZHIR is a TRANSFORMER that emerges POST-recursion
+- **Dynamics**: REMESH propagates → local variations + destabilizers → ZHIR transforms
+- **Grammar**: Requires IL previo + recent destabilizer (U4b)
+- **Relationship**: Mutación replicativa (replication facilitates mutation)
+- **Conclusion**: Operates AFTER REMESH completes, not during
+
+Grammar Implications from Physical Analysis
+--------------------------------------------
+REMESH's physical behavior affects unified grammar rules (UNIFIED_GRAMMAR_RULES.md):
+
+### U1: STRUCTURAL INITIATION & CLOSURE
+**Physical Basis**: REMESH echoes EPI(t-τ), can activate from dormant/null states
+
+**U1a (Initiation)**: REMESH is a GENERATOR
+- Can start sequences when operating on latent structure
+- Activates dormant patterns via temporal coupling
+- **Rule**: Sequences can begin with REMESH
+
+**U1b (Closure)**: REMESH is a CLOSURE operator
+- Distributes structure across scales leaving system in recursive attractor
+- Creates self-sustaining multi-scale coherence
+- **Rule**: Sequences can end with REMESH
+
+### U2: CONVERGENCE & BOUNDEDNESS
+**Physical Basis**: REMESH mixing with historical states can amplify or dampen ΔNFR
+
+**Requirement**: REMESH + destabilizers → must include stabilizers
+- Example: REMESH + VAL (expansion) → requires IL (coherence)
+- Prevents: Unbounded growth through recursive expansion
+- **Rule**: If REMESH precedes/follows VAL, OZ, or ZHIR → require IL or THOL
+
+**Integration Convergence**: ∫ νf · ΔNFR dt must converge
+- REMESH temporal mixing: (1-α)·EPI_now + α·EPI_past
+- Without stabilizers: Can create positive feedback loop
+- **Rule**: Stabilizers ensure convergence of recursive reorganization
+
+### U3: RESONANT COUPLING
+**Physical Basis**: REMESH propagates patterns - must verify phase compatibility
+
+**Requirement**: REMESH with UM or RA → verify |φᵢ - φⱼ| ≤ Δφ_max
+- REMESH creates replicas that must be phase-compatible for resonance
+- Antiphase replicas → destructive interference
+- **Rule**: StructuralIdentity.matches() includes phase verification
+- **Implementation**: Phase pattern captured and validated during propagation
+
+### U4: BIFURCATION DYNAMICS
+**Physical Basis**: REMESH can trigger bifurcation through recursive amplification
+
+**U4a (Triggers Need Handlers)**: REMESH + destabilizers → need handlers
+- REMESH → THOL sequence: Recursion enables self-organization
+- Must handle emergent sub-EPIs from recursive bifurcation
+- **Rule**: REMESH + OZ or ZHIR → require THOL or IL handlers
+
+**U4b (Transformers Need Context)**: ZHIR requires REMESH context
+- REMESH creates variations across scales
+- ZHIR then transforms local variations (post-recursion)
+- **Rule**: ZHIR after REMESH → requires prior IL + recent destabilizer
+
+Centralized Flow - No Redundancy
+---------------------------------
+This implementation maintains a single, centralized flow:
+
+1. **SHA Integration**: Uses existing Silence operator from definitions.py
+   - NO reimplementation of SHA functionality
+   - StructuralIdentity only CAPTURES frozen states, doesn't freeze
+   - Workflow: Silence() → capture_from_node(is_sha_frozen=True) → validate
+
+2. **Coherence Calculation**: Simplified C(t) for REMESH validation
+   - Full coherence calculation in tnfr.metrics module
+   - compute_global_coherence() specific to REMESH fidelity checks
+   - No duplication with main coherence computation
+
+3. **Pattern Recognition**: Unique to REMESH structural memory
+   - structural_similarity(): Pattern matching (no operator overlap)
+   - structural_memory_match(): Network-wide search (REMESH-specific)
+   - No duplication with network analysis tools
+
+4. **Identity Tracking**: REMESH-specific fractal identity
+   - StructuralIdentity: Persistent identity across reorganizations
+   - Captures EPI signature, νf range, phase pattern
+   - Validates preservation post-recursion
+
+Key Capabilities
+----------------
 - Structural memory: Pattern recognition across network nodes
 - Identity preservation: Fractal lineage tracking across reorganizations  
 - Coherence conservation: Validating structural fidelity during remeshing
 - Multi-modal recursivity: Hierarchical, rhizomatic, and fractal harmonic modes
+- Grammar-compliant: All operations respect unified grammar rules (U1-U4)
 """
 
 from __future__ import annotations
