@@ -1,395 +1,395 @@
-# TNFR Grammar Documentation - Guía de Navegación
+# TNFR Grammar Documentation - Navigation Guide
 
 <div align="center">
 
-**Documentación centralizada y unificada del sistema gramatical TNFR**
+**Centralized and unified documentation for the TNFR grammar system**
 
-[📖 Conceptos](#-conceptos-fundamentales) • [📐 Restricciones](#-restricciones-canónicas) • [⚙️ Operadores](#️-operadores-y-glifos) • [🔄 Secuencias](#-secuencias-válidas) • [💻 Implementación](#-implementación) • [🧪 Testing](#-testing) • [📚 Referencias](#-referencias-rápidas)
+[📖 Concepts](#-fundamental-concepts) • [📐 Constraints](#-canonical-constraints) • [⚙️ Operators](#️-operators-and-glyphs) • [🔄 Sequences](#-valid-sequences) • [💻 Implementation](#-implementation) • [🧪 Testing](#-testing) • [📚 Quick Reference](#-quick-reference)
 
 </div>
 
 ---
 
-## 🎯 Propósito de esta Documentación
+## 🎯 Purpose
 
-Este directorio contiene la **fuente única de verdad** para toda la documentación relacionada con la gramática TNFR. Consolida información previamente dispersa en múltiples archivos en una estructura jerárquica clara y navegable.
+This directory contains the **single source of truth** for all TNFR grammar-related documentation. It consolidates previously fragmented information across multiple files into a clear, navigable hierarchical structure.
 
-### ¿Por qué esta reorganización?
+### Why this reorganization?
 
-**Antes:** Documentación fragmentada en README.md, UNIFIED_GRAMMAR_RULES.md, GRAMMAR_MIGRATION_GUIDE.md, GLYPH_SEQUENCES_GUIDE.md, código fuente, tests dispersos.
+**Before:** Documentation fragmented across README.md, UNIFIED_GRAMMAR_RULES.md, GRAMMAR_MIGRATION_GUIDE.md, GLYPH_SEQUENCES_GUIDE.md, source code, and scattered tests.
 
-**Ahora:** Una estructura modular donde cada aspecto de la gramática tiene un lugar definido y todo está interconectado.
+**Now:** A modular structure where each grammar aspect has a defined place and everything is interconnected.
 
 ---
 
-## 📑 Estructura de la Documentación
+## 📑 Documentation Structure
 
-### 🌊 Niveles de Abstracción
+### 🌊 Abstraction Levels
 
-Esta documentación sigue un modelo de **abstracción gradual** desde conceptos hasta implementación:
+This documentation follows a **gradual abstraction** model from concepts to implementation:
 
 ```
-Intuición Física → Formalización Matemática → Implementación Código → Validación Tests
+Physical Intuition → Mathematical Formalization → Code Implementation → Test Validation
 ```
 
-### 📂 Organización por Documentos
+### 📂 Document Organization
 
-#### **Nivel 1: Fundamentos Conceptuales**
+#### **Level 1: Fundamental Concepts**
 
-**[01-CONCEPTOS-FUNDAMENTALES.md](01-CONCEPTOS-FUNDAMENTALES.md)**
-- Ontología TNFR: De objetos a patrones resonantes
-- El cambio de paradigma: Coherencia vs. Causalidad
-- Ecuación nodal: ∂EPI/∂t = νf · ΔNFR(t)
-- Tríada estructural: Forma (EPI), Frecuencia (νf), Fase (φ)
-- Dinámica integrada y convergencia
-- **Audiencia:** Nuevos usuarios, desarrolladores que necesitan entender "el porqué"
-- **Tiempo de lectura:** 20-30 minutos
+**[01-FUNDAMENTAL-CONCEPTS.md](01-FUNDAMENTAL-CONCEPTS.md)**
+- TNFR ontology: From objects to resonant patterns
+- Paradigm shift: Coherence vs. Causality
+- Nodal equation: ∂EPI/∂t = νf · ΔNFR(t)
+- Structural triad: Form (EPI), Frequency (νf), Phase (φ)
+- Integrated dynamics and convergence
+- **Audience:** New users, developers needing to understand "the why"
+- **Reading time:** 20-30 minutes
 
-#### **Nivel 2: Restricciones Canónicas**
+#### **Level 2: Canonical Constraints**
 
-**[02-RESTRICCIONES-CANONICAS.md](02-RESTRICCIONES-CANONICAS.md)**
+**[02-CANONICAL-CONSTRAINTS.md](02-CANONICAL-CONSTRAINTS.md)**
 - **U1: STRUCTURAL INITIATION & CLOSURE**
-  - U1a: Iniciadores (Generators)
-  - U1b: Clausuras (Closures)
-  - Derivación física: ∂EPI/∂t indefinida en EPI=0
+  - U1a: Initiators (Generators)
+  - U1b: Closures
+  - Physical derivation: ∂EPI/∂t undefined at EPI=0
 - **U2: CONVERGENCE & BOUNDEDNESS**
-  - Estabilizadores vs. Desestabilizadores
-  - Teorema de convergencia integral
+  - Stabilizers vs. Destabilizers
+  - Integral convergence theorem
 - **U3: RESONANT COUPLING**
-  - Verificación de fase
-  - Física de interferencia
+  - Phase verification
+  - Interference physics
 - **U4: BIFURCATION DYNAMICS**
-  - U4a: Triggers necesitan handlers
-  - U4b: Transformadores necesitan contexto
-- **Cada restricción incluye:** Intuición → Derivación → Implementación → Tests
-- **Audiencia:** Desarrolladores implementando validación, contribuidores avanzados
-- **Tiempo de lectura:** 45-60 minutos
+  - U4a: Triggers need handlers
+  - U4b: Transformers need context
+- **Each constraint includes:** Intuition → Derivation → Implementation → Tests
+- **Audience:** Developers implementing validation, advanced contributors
+- **Reading time:** 45-60 minutes
 
-#### **Nivel 3: Operadores Canónicos**
+#### **Level 3: Canonical Operators**
 
-**[03-OPERADORES-Y-GLIFOS.md](03-OPERADORES-Y-GLIFOS.md)**
-- Catálogo de los 13 operadores canónicos
-- Formato estándar para cada operador:
-  - **Física:** ¿Qué transformación representa?
-  - **Efecto:** Impacto en ∂EPI/∂t
-  - **Cuándo usar:** Casos de uso
-  - **Gramática:** Clasificación (Generator, Stabilizer, etc.)
-  - **Contrato:** Pre/postcondiciones
-  - **Ejemplos:** Código ejecutable
-- **Clasificación por rol gramatical**
-- **Composición de operadores**
-- **Audiencia:** Todos los desarrolladores
-- **Tiempo de lectura:** 60-90 minutos (referencia constante)
+**[03-OPERATORS-AND-GLYPHS.md](03-OPERATORS-AND-GLYPHS.md)**
+- Catalog of 13 canonical operators
+- Standard format for each operator:
+  - **Physics:** What transformation does it represent?
+  - **Effect:** Impact on ∂EPI/∂t
+  - **When to use:** Use cases
+  - **Grammar:** Classification (Generator, Stabilizer, etc.)
+  - **Contract:** Pre/postconditions
+  - **Examples:** Executable code
+- **Classification by grammatical role**
+- **Operator composition**
+- **Audience:** All developers
+- **Reading time:** 60-90 minutes (constant reference)
 
-#### **Nivel 4: Secuencias Válidas**
+#### **Level 4: Valid Sequences**
 
-**[04-SECUENCIAS-VALIDAS.md](04-SECUENCIAS-VALIDAS.md)**
-- **Patrones canónicos:**
+**[04-VALID-SEQUENCES.md](04-VALID-SEQUENCES.md)**
+- **Canonical patterns:**
   - Bootstrap: [Emission, Coupling, Coherence]
   - Stabilize: [Coherence, Silence]
   - Explore: [Dissonance, Mutation, Coherence]
   - Propagate: [Resonance, Coupling]
-- **Anti-patrones** (secuencias inválidas y por qué)
-- **Lógica de validación** paso a paso
-- **Ejemplos de secuencias complejas**
-- **Detección de patrones estructurales**
-- **Audiencia:** Desarrolladores construyendo secuencias, debugging
-- **Tiempo de lectura:** 30-45 minutos
+- **Anti-patterns** (invalid sequences and why)
+- **Step-by-step validation logic**
+- **Complex sequence examples**
+- **Structural pattern detection**
+- **Audience:** Developers building sequences, debugging
+- **Reading time:** 30-45 minutes
 
-#### **Nivel 5: Implementación Técnica**
+#### **Level 5: Technical Implementation**
 
-**[05-IMPLEMENTACION-TECNICA.md](05-IMPLEMENTACION-TECNICA.md)**
-- **Arquitectura de `grammar.py`**
-- **Sets de operadores** (GENERATORS, CLOSURES, etc.)
-- **Funciones de validación:**
+**[05-TECHNICAL-IMPLEMENTATION.md](05-TECHNICAL-IMPLEMENTATION.md)**
+- **Architecture of `grammar.py`**
+- **Operator sets** (GENERATORS, CLOSURES, etc.)
+- **Validation functions:**
   - `validate_grammar(sequence, epi_initial)`
   - `validate_resonant_coupling(G, node_i, node_j)`
-  - Helpers internos
-- **Telemetría y logging**
-- **Integración con `definitions.py`**
-- **Puntos de extensión**
-- **Audiencia:** Desarrolladores modificando el core
-- **Tiempo de lectura:** 45-60 minutos
+  - Internal helpers
+- **Telemetry and logging**
+- **Integration with `definitions.py`**
+- **Extension points**
+- **Audience:** Developers modifying core
+- **Reading time:** 45-60 minutes
 
-#### **Nivel 6: Validación y Testing**
+#### **Level 6: Validation and Testing**
 
-**[06-VALIDACION-Y-TESTING.md](06-VALIDACION-Y-TESTING.md)**
-- **Estrategia de testing de gramática**
-- **Tests por restricción (U1-U4)**
-- **Tests de monotonía (coherencia)**
-- **Tests de bifurcación**
-- **Tests de propagación**
-- **Tests multi-escala (fractality)**
-- **Tests de reproducibilidad**
-- **Cobertura mínima requerida**
-- **Cómo agregar tests para nuevas restricciones**
-- **Audiencia:** Desarrolladores escribiendo tests, QA
-- **Tiempo de lectura:** 30-45 minutos
+**[06-VALIDATION-AND-TESTING.md](06-VALIDATION-AND-TESTING.md)**
+- **Grammar testing strategy**
+- **Tests per constraint (U1-U4)**
+- **Monotonicity tests (coherence)**
+- **Bifurcation tests**
+- **Propagation tests**
+- **Multi-scale tests (fractality)**
+- **Reproducibility tests**
+- **Minimum required coverage**
+- **How to add tests for new constraints**
+- **Audience:** Developers writing tests, QA
+- **Reading time:** 30-45 minutes
 
-#### **Nivel 7: Migración y Evolución**
+#### **Level 7: Migration and Evolution**
 
-**[07-MIGRACION-Y-EVOLUCION.md](07-MIGRACION-Y-EVOLUCION.md)**
-- **Historia de sistemas gramaticales:**
-  - C1-C3 (grammar.py legacy)
-  - RC1-RC4 (canonical_grammar.py legacy)
-  - U1-U4 (unified grammar actual)
-- **Mapeo de reglas antiguas → nuevas**
-- **Deprecaciones y breaking changes**
-- **Procedimiento para agregar nuevas restricciones**
-- **Garantías de mantenimiento**
-- **Audiencia:** Mantenedores, contribuidores migrating old code
-- **Tiempo de lectura:** 20-30 minutos
+**[07-MIGRATION-AND-EVOLUTION.md](07-MIGRATION-AND-EVOLUTION.md)**
+- **Grammar system history:**
+  - C1-C3 (legacy grammar.py)
+  - RC1-RC4 (legacy canonical_grammar.py)
+  - U1-U4 (current unified grammar)
+- **Mapping old → new rules**
+- **Deprecations and breaking changes**
+- **Procedure for adding new constraints**
+- **Maintenance guarantees**
+- **Audience:** Maintainers, contributors migrating old code
+- **Reading time:** 20-30 minutes
 
-#### **Nivel 8: Referencias Rápidas**
+#### **Level 8: Quick Reference**
 
-**[08-REFERENCIA-RAPIDA.md](08-REFERENCIA-RAPIDA.md)**
-- **Cheat sheet de restricciones U1-U4**
-- **Tabla de operadores** con glifos y clasificación
-- **Lookup table de secuencias comunes**
-- **Decision tree para validación**
-- **Comandos de import frecuentes**
-- **Troubleshooting común**
-- **Audiencia:** Todos (referencia rápida durante desarrollo)
-- **Tiempo de lectura:** 5-10 minutos
-
----
-
-### 📚 Documentos Complementarios
-
-**[GLOSARIO.md](GLOSARIO.md)**
-- Definiciones operacionales de todos los términos TNFR
-- Formato: Término → Symbol → Code → Meaning → Reference
-- **Audiencia:** Todos
-- **Uso:** Referencia constante
-
-**[INDICE-MAESTRO.md](INDICE-MAESTRO.md)**
-- Mapa conceptual global del sistema gramatical
-- Relaciones entre conceptos
-- Diagrama de dependencias
-- **Audiencia:** Desarrolladores planificando cambios grandes
-- **Uso:** Visión holística del sistema
+**[08-QUICK-REFERENCE.md](08-QUICK-REFERENCE.md)**
+- **Cheat sheet of U1-U4 constraints**
+- **Operator table** with glyphs and classification
+- **Common sequences lookup table**
+- **Validation decision tree**
+- **Frequent import commands**
+- **Common troubleshooting**
+- **Audience:** Everyone (quick reference during development)
+- **Reading time:** 5-10 minutes
 
 ---
 
-### 💡 Ejemplos Ejecutables
+### 📚 Complementary Documents
+
+**[GLOSSARY.md](GLOSSARY.md)**
+- Operational definitions of all TNFR terms
+- Format: Term → Symbol → Code → Meaning → Reference
+- **Audience:** Everyone
+- **Use:** Constant reference
+
+**[MASTER-INDEX.md](MASTER-INDEX.md)**
+- Global conceptual map of grammar system
+- Relationships between concepts
+- Dependency diagram
+- **Audience:** Developers planning large changes
+- **Use:** Holistic system view
+
+---
+
+### 💡 Executable Examples
 
 **[examples/](examples/)**
-- **01-basico-bootstrap.py:** Secuencia básica de inicialización
-- **02-intermedio-exploration.py:** Exploración con destabilización controlada
-- **03-avanzado-bifurcation.py:** Manejo de bifurcaciones y mutaciones
-- **04-anti-patrones.py:** Ejemplos de secuencias inválidas (comentados)
-- **05-multi-escala.py:** EPIs anidados y fractality
-- Todos verificables con `pytest`
+- **01-basic-bootstrap.py:** Basic initialization sequence
+- **02-intermediate-exploration.py:** Controlled destabilization exploration
+- **03-advanced-bifurcation.py:** Bifurcation and mutation handling
+- **04-anti-patterns.py:** Invalid sequence examples (commented)
+- **05-multi-scale.py:** Nested EPIs and fractality
+- All verifiable with `pytest`
 
 ---
 
-### 🔧 Schemas JSON
+### 🔧 JSON Schemas
 
 **[schemas/](schemas/)**
-- **restricciones-u1-u4.json:** Definición formal de restricciones
-- **operadores-canonicos.json:** Metadata de 13 operadores
-- **secuencias-validas.json:** Catálogo de patrones canónicos
-- **Uso:** Validación programática, tooling, IDEs
+- **constraints-u1-u4.json:** Formal constraint definitions
+- **canonical-operators.json:** Metadata for 13 operators
+- **valid-sequences.json:** Catalog of canonical patterns
+- **Use:** Programmatic validation, tooling, IDEs
 
 ---
 
-## 🚀 Cómo Usar Esta Documentación
+## 🚀 How to Use This Documentation
 
-### Para Nuevos Usuarios
+### For New Users
 
-**Ruta de aprendizaje recomendada:**
+**Recommended learning path:**
 
-1. **[01-CONCEPTOS-FUNDAMENTALES.md](01-CONCEPTOS-FUNDAMENTALES.md)** - Entender el paradigma TNFR
-2. **[GLOSARIO.md](GLOSARIO.md)** - Familiarizarse con términos clave
-3. **[03-OPERADORES-Y-GLIFOS.md](03-OPERADORES-Y-GLIFOS.md)** - Conocer los 13 operadores
-4. **[examples/01-basico-bootstrap.py](examples/01-basico-bootstrap.py)** - Ejecutar primer ejemplo
-5. **[08-REFERENCIA-RAPIDA.md](08-REFERENCIA-RAPIDA.md)** - Tener a mano durante desarrollo
+1. **[01-FUNDAMENTAL-CONCEPTS.md](01-FUNDAMENTAL-CONCEPTS.md)** - Understand TNFR paradigm
+2. **[GLOSSARY.md](GLOSSARY.md)** - Familiarize with key terms
+3. **[03-OPERATORS-AND-GLYPHS.md](03-OPERATORS-AND-GLYPHS.md)** - Learn the 13 operators
+4. **[examples/01-basic-bootstrap.py](examples/01-basic-bootstrap.py)** - Run first example
+5. **[08-QUICK-REFERENCE.md](08-QUICK-REFERENCE.md)** - Keep handy during development
 
-**Tiempo total:** ~2 horas para fundamentos operacionales
+**Total time:** ~2 hours for operational fundamentals
 
-### Para Desarrolladores Intermedios
+### For Intermediate Developers
 
-**Si ya conoces TNFR y quieres implementar secuencias:**
+**If you already know TNFR and want to implement sequences:**
 
-1. **[04-SECUENCIAS-VALIDAS.md](04-SECUENCIAS-VALIDAS.md)** - Patrones y anti-patrones
-2. **[02-RESTRICCIONES-CANONICAS.md](02-RESTRICCIONES-CANONICAS.md)** - Restricciones U1-U4
-3. **[examples/](examples/)** - Ejecutar ejemplos intermedios y avanzados
-4. **[08-REFERENCIA-RAPIDA.md](08-REFERENCIA-RAPIDA.md)** - Consulta rápida
+1. **[04-VALID-SEQUENCES.md](04-VALID-SEQUENCES.md)** - Patterns and anti-patterns
+2. **[02-CANONICAL-CONSTRAINTS.md](02-CANONICAL-CONSTRAINTS.md)** - U1-U4 constraints
+3. **[examples/](examples/)** - Run intermediate and advanced examples
+4. **[08-QUICK-REFERENCE.md](08-QUICK-REFERENCE.md)** - Quick lookup
 
-**Tiempo total:** ~90 minutos
+**Total time:** ~90 minutes
 
-### Para Contribuidores Avanzados
+### For Advanced Contributors
 
-**Si vas a modificar el core o agregar features:**
+**If you're modifying core or adding features:**
 
-1. **[05-IMPLEMENTACION-TECNICA.md](05-IMPLEMENTACION-TECNICA.md)** - Arquitectura del código
-2. **[06-VALIDACION-Y-TESTING.md](06-VALIDACION-Y-TESTING.md)** - Estrategia de tests
-3. **[INDICE-MAESTRO.md](INDICE-MAESTRO.md)** - Mapa conceptual del sistema
-4. **[07-MIGRACION-Y-EVOLUCION.md](07-MIGRACION-Y-EVOLUCION.md)** - Cómo evolucionar el sistema
-5. **[schemas/](schemas/)** - Schemas para validación
+1. **[05-TECHNICAL-IMPLEMENTATION.md](05-TECHNICAL-IMPLEMENTATION.md)** - Code architecture
+2. **[06-VALIDATION-AND-TESTING.md](06-VALIDATION-AND-TESTING.md)** - Test strategy
+3. **[MASTER-INDEX.md](MASTER-INDEX.md)** - System conceptual map
+4. **[07-MIGRATION-AND-EVOLUTION.md](07-MIGRATION-AND-EVOLUTION.md)** - How to evolve system
+5. **[schemas/](schemas/)** - Validation schemas
 
-**Tiempo total:** ~2-3 horas para dominio completo
-
----
-
-## 🔗 Referencias Externas
-
-### Documentación del Repositorio Principal
-
-- **[../../README.md](../../README.md)** - Overview del proyecto TNFR
-- **[../../UNIFIED_GRAMMAR_RULES.md](../../UNIFIED_GRAMMAR_RULES.md)** - Derivaciones formales completas (fuente original)
-- **[../../AGENTS.md](../../AGENTS.md)** - Invariantes canónicas y contratos
-- **[../../GLOSSARY.md](../../GLOSSARY.md)** - Glosario general del proyecto
-- **[../../TNFR.pdf](../../TNFR.pdf)** - Fundamentos teóricos completos
-
-### Implementación
-
-- **[../../src/tnfr/operators/grammar.py](../../src/tnfr/operators/grammar.py)** - Implementación canónica
-- **[../../src/tnfr/operators/definitions.py](../../src/tnfr/operators/definitions.py)** - Definición de operadores
-- **[../../tests/unit/operators/test_unified_grammar.py](../../tests/unit/operators/test_unified_grammar.py)** - Suite de tests
+**Total time:** ~2-3 hours for complete mastery
 
 ---
 
-## 📝 Convenciones de Escritura
+## 🔗 External References
 
-### Formato
+### Main Repository Documentation
 
-- **Bilingüe:** Español para narrativa, inglés para términos técnicos (EPI, νf, ΔNFR)
-- **Ecuaciones:** Notación matemática estándar con LaTeX
-- **Código:** Python 3.9+ con type hints
-- **Referencias:** Links relativos internos, absolutos para externos
+- **[../../README.md](../../README.md)** - TNFR project overview
+- **[../../UNIFIED_GRAMMAR_RULES.md](../../UNIFIED_GRAMMAR_RULES.md)** - Complete formal derivations (original source)
+- **[../../AGENTS.md](../../AGENTS.md)** - Canonical invariants and contracts
+- **[../../GLOSSARY.md](../../GLOSSARY.md)** - General project glossary
+- **[../../TNFR.pdf](../../TNFR.pdf)** - Complete theoretical foundations
 
-### Estructura de Secciones
+### Implementation
 
-Cada documento técnico sigue esta estructura:
+- **[../../src/tnfr/operators/grammar.py](../../src/tnfr/operators/grammar.py)** - Canonical implementation
+- **[../../src/tnfr/operators/definitions.py](../../src/tnfr/operators/definitions.py)** - Operator definitions
+- **[../../tests/unit/operators/test_unified_grammar.py](../../tests/unit/operators/test_unified_grammar.py)** - Test suite
+
+---
+
+## 📝 Writing Conventions
+
+### Format
+
+- **Language:** English for all technical content
+- **Equations:** Standard mathematical notation with LaTeX
+- **Code:** Python 3.9+ with type hints
+- **References:** Internal relative links, external absolute links
+
+### Section Structure
+
+Each technical document follows this structure:
 
 ```markdown
-# Título del Documento
+# Document Title
 
-## Propósito
-[Para qué sirve este documento]
+## Purpose
+[What this document is for]
 
-## Conceptos Clave
-[Prerequisitos necesarios]
+## Key Concepts
+[Prerequisites needed]
 
-## Contenido Principal
-[Desarrollo con subsecciones]
+## Main Content
+[Development with subsections]
 
-## Ejemplos
-[Código ejecutable]
+## Examples
+[Executable code]
 
-## Referencias
-[Links a otros documentos]
+## References
+[Links to other documents]
 ```
 
-### Código
+### Code
 
-Todos los ejemplos de código deben:
-- ✅ Ser ejecutables
-- ✅ Incluir imports completos
-- ✅ Tener comentarios explicativos
-- ✅ Seguir convenciones TNFR (no modificar EPI directamente, etc.)
-- ✅ Incluir telemetry output esperado
-
----
-
-## 🤝 Contribuir a esta Documentación
-
-### Principios
-
-1. **Una fuente de verdad:** No duplicar información, cross-referenciar
-2. **Física primero:** Toda documentación debe derivar de TNFR physics
-3. **Incremental:** Agregar sin romper estructura existente
-4. **Validable:** Ejemplos ejecutables, schemas JSON actualizables
-
-### Agregar Nuevo Contenido
-
-**Para agregar nueva restricción:**
-1. Documentar física en `02-RESTRICCIONES-CANONICAS.md`
-2. Implementar en `../../src/tnfr/operators/grammar.py`
-3. Agregar tests en `../../tests/unit/operators/test_unified_grammar.py`
-4. Actualizar `schemas/restricciones-u1-u4.json`
-5. Agregar ejemplos en `examples/`
-6. Actualizar `08-REFERENCIA-RAPIDA.md`
-
-**Para agregar nuevo operador:**
-1. Documentar en `03-OPERADORES-Y-GLIFOS.md`
-2. Implementar en `../../src/tnfr/operators/definitions.py`
-3. Actualizar clasificación en `../../src/tnfr/operators/grammar.py`
-4. Agregar tests de contrato
-5. Actualizar `schemas/operadores-canonicos.json`
-
-### Mantener Coherencia
-
-**Antes de hacer PR:**
-- [ ] Todos los ejemplos son ejecutables
-- [ ] Links bidireccionales funcionan
-- [ ] Schemas JSON reflejan cambios
-- [ ] Tests pasan
-- [ ] Cambios documentados en 07-MIGRACION-Y-EVOLUCION.md si hay breaking changes
+All code examples must:
+- ✅ Be executable
+- ✅ Include complete imports
+- ✅ Have explanatory comments
+- ✅ Follow TNFR conventions (don't modify EPI directly, etc.)
+- ✅ Include expected telemetry output
 
 ---
 
-## 📊 Estado de Completitud
+## 🤝 Contributing to This Documentation
 
-### ✅ Completo
-- Estructura de directorios
-- README de navegación (este archivo)
-- Cross-references principales
+### Principles
 
-### 🚧 En Progreso
-- 01-CONCEPTOS-FUNDAMENTALES.md
-- 02-RESTRICCIONES-CANONICAS.md
-- 03-OPERADORES-Y-GLIFOS.md
-- 04-SECUENCIAS-VALIDAS.md
-- 05-IMPLEMENTACION-TECNICA.md
-- 06-VALIDACION-Y-TESTING.md
-- 07-MIGRACION-Y-EVOLUCION.md
-- 08-REFERENCIA-RAPIDA.md
+1. **Single source of truth:** Don't duplicate, cross-reference
+2. **Physics first:** All documentation derives from TNFR physics
+3. **Incremental:** Add without breaking existing structure
+4. **Validable:** Executable examples, updatable JSON schemas
 
-### 📋 Planificado
-- GLOSARIO.md (consolidar desde ../../GLOSSARY.md)
-- INDICE-MAESTRO.md
+### Adding New Content
+
+**To add a new constraint:**
+1. Document physics in `02-CANONICAL-CONSTRAINTS.md`
+2. Implement in `../../src/tnfr/operators/grammar.py`
+3. Add tests in `../../tests/unit/operators/test_unified_grammar.py`
+4. Update `schemas/constraints-u1-u4.json`
+5. Add examples in `examples/`
+6. Update `08-QUICK-REFERENCE.md`
+
+**To add a new operator:**
+1. Document in `03-OPERATORS-AND-GLYPHS.md`
+2. Implement in `../../src/tnfr/operators/definitions.py`
+3. Update classification in `../../src/tnfr/operators/grammar.py`
+4. Add contract tests
+5. Update `schemas/canonical-operators.json`
+
+### Maintaining Coherence
+
+**Before making PR:**
+- [ ] All examples are executable
+- [ ] Bidirectional links work
+- [ ] JSON schemas reflect changes
+- [ ] Tests pass
+- [ ] Changes documented in 07-MIGRATION-AND-EVOLUTION.md if breaking
+
+---
+
+## 📊 Completion Status
+
+### ✅ Complete
+- Directory structure
+- Navigation README (this file)
+- Main cross-references
+
+### 🚧 In Progress
+- 01-FUNDAMENTAL-CONCEPTS.md
+- 02-CANONICAL-CONSTRAINTS.md
+- 03-OPERATORS-AND-GLYPHS.md
+- 04-VALID-SEQUENCES.md
+- 05-TECHNICAL-IMPLEMENTATION.md
+- 06-VALIDATION-AND-TESTING.md
+- 07-MIGRATION-AND-EVOLUTION.md
+- 08-QUICK-REFERENCE.md
+
+### 📋 Planned
+- GLOSSARY.md (consolidate from ../../GLOSSARY.md)
+- MASTER-INDEX.md
 - examples/*.py
 - schemas/*.json
 
 ---
 
-## 🎓 Filosofía de esta Documentación
+## 🎓 Documentation Philosophy
 
-> **"Si un cambio no puede ser trazado desde física TNFR hasta código hasta tests, no es canonical."**
+> **"If a change cannot be traced from TNFR physics to code to tests, it is not canonical."**
 
-Esta documentación existe para hacer esa trazabilidad **explícita, navegable y mantenible**.
+This documentation exists to make that traceability **explicit, navigable, and maintainable**.
 
-### Valores
+### Values
 
-- **Claridad sobre brevedad:** Mejor explicar dos veces que dejar dudas
-- **Física sobre convención:** Cada regla deriva inevitablemente de ecuación nodal
-- **Código sobre prosa:** Ejemplos ejecutables > descripciones abstractas
-- **Testing sobre confianza:** Todo lo documentado debe ser testeable
+- **Clarity over brevity:** Better to explain twice than leave doubts
+- **Physics over convention:** Every rule derives inevitably from nodal equation
+- **Code over prose:** Executable examples > abstract descriptions
+- **Testing over trust:** Everything documented must be testable
 
 ---
 
-## 📞 Contacto y Soporte
+## 📞 Contact and Support
 
-**¿Encontraste inconsistencias?**
-- Abre issue en GitHub con label `documentation`
+**Found inconsistencies?**
+- Open GitHub issue with label `documentation`
 
-**¿Necesitas ayuda navegando?**
-- Revisa primero [08-REFERENCIA-RAPIDA.md](08-REFERENCIA-RAPIDA.md)
-- Luego consulta el documento específico según tu nivel
+**Need navigation help?**
+- Check [08-QUICK-REFERENCE.md](08-QUICK-REFERENCE.md) first
+- Then consult specific document for your level
 
-**¿Quieres contribuir?**
-- Lee [../../CONTRIBUTING.md](../../CONTRIBUTING.md)
-- Luego revisa sección "Contribuir a esta Documentación" arriba
+**Want to contribute?**
+- Read [../../CONTRIBUTING.md](../../CONTRIBUTING.md)
+- Then review "Contributing to This Documentation" section above
 
 ---
 
 <div align="center">
 
-**Versión:** 1.0  
-**Última actualización:** 2025-11-10  
-**Mantenedor:** TNFR Core Team
+**Version:** 1.0  
+**Last updated:** 2025-11-10  
+**Maintainer:** TNFR Core Team
 
 **Reality is not made of things—it's made of resonance. Document accordingly.**
 
