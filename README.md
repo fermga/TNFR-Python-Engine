@@ -7,7 +7,7 @@
 [![PyPI](https://img.shields.io/pypi/v/tnfr)](https://pypi.org/project/tnfr/)
 [![Python](https://img.shields.io/pypi/pyversions/tnfr)](https://pypi.org/project/tnfr/)
 [![License](https://img.shields.io/github/license/fermga/TNFR-Python-Engine)](LICENSE.md)
-[![Documentation](https://img.shields.io/badge/docs-latest-brightgreen)](https://tnfr.netlify.app)
+[![Documentation](https://img.shields.io/badge/docs-latest-brightgreen)](https://fermga.github.io/TNFR-Python-Engine/)
 
 [Quick Start](#-quick-start) • [Key Concepts](#-key-concepts) • [Documentation](#-documentation) • [Examples](#-examples) • [Contributing](#-contributing)
 
@@ -332,7 +332,7 @@ Released under the [MIT License](LICENSE.md).
 
 ## 🔗 Links
 
-- **Documentation**: https://tnfr.netlify.app
+- **Documentation**: https://fermga.github.io/TNFR-Python-Engine/
 - **PyPI Package**: https://pypi.org/project/tnfr/
 - **GitHub**: https://github.com/fermga/TNFR-Python-Engine
 - **Issues**: https://github.com/fermga/TNFR-Python-Engine/issues
