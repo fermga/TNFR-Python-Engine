@@ -93,6 +93,25 @@ Emission()(G, 0)
 print(f"EPI after emission: {G.nodes[0]['EPI']:.3f}")  # > 0
 ```
 
+### Anti-Patterns
+```python
+# ✗ WRONG: Using Emission in middle of sequence without purpose
+[Emission, Coherence, Emission, Coherence, Silence]  # Redundant second emission
+
+# ✓ CORRECT: Single emission to initialize
+[Emission, Coherence, Silence]
+```
+
+### Relationships
+- **Can precede**: All operators (generator role)
+- **Should follow**: Nothing (starts sequences from vacuum/dormant state)
+- **Often followed by**: Coherence (IL) to stabilize new structure
+
+### Test References
+- `tests/unit/operators/test_emission_irreversibility.py` - Structural irreversibility
+- `tests/unit/operators/test_emission_metrics.py` - EPI and νf validation
+- `tests/unit/operators/test_emission_preconditions.py` - Precondition enforcement
+
 ---
 
 ## 2. Reception (EN) 📡
@@ -142,6 +161,27 @@ Reception()(G, 0)  # Node 0 receives from node 1
 
 print(f"EPI after reception: {G.nodes[0]['EPI']:.3f}")
 ```
+
+### Anti-Patterns
+```python
+# ✗ WRONG: Reception without coupling (no network connectivity)
+G = nx.Graph()
+G.add_node(0, EPI=0.5, vf=1.0, theta=0.0, dnfr=0.0)
+Reception()(G, 0)  # No neighbors - violates precondition
+
+# ✓ CORRECT: Couple first, then receive
+Coupling()(G, 0, 1)
+Reception()(G, 0)
+```
+
+### Relationships
+- **Must precede**: Coupling (UM) or existing network connectivity
+- **Can follow**: Any operator that establishes network structure
+- **Often follows**: Coupling (UM) to receive from newly coupled nodes
+
+### Test References
+- `tests/unit/operators/test_reception_preconditions.py` - Network connectivity validation
+- `tests/unit/operators/test_reception_sources.py` - Source integration correctness
 
 ---
 
