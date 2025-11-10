@@ -1,0 +1,160 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "TNFR Canonical Constraints (U1-U4)",
+  "description": "Formal specification of the four canonical TNFR grammar constraints",
+  "version": "1.0.0",
+  "constraints": {
+    "U1": {
+      "name": "STRUCTURAL INITIATION & CLOSURE",
+      "basis": "∂EPI/∂t undefined at EPI=0, sequences need coherent endpoints",
+      "canonicity": "ABSOLUTE",
+      "sub_rules": {
+        "U1a": {
+          "name": "Initiation",
+          "condition": "When EPI = 0",
+          "requirement": "Start with generator",
+          "operators": ["emission", "transition", "recursivity"],
+          "glyphs": ["AL", "NAV", "REMESH"],
+          "physics": "Cannot evolve from null state without generation",
+          "validation_function": "validate_u1a_initiation"
+        },
+        "U1b": {
+          "name": "Closure",
+          "condition": "Always",
+          "requirement": "End with closure operator",
+          "operators": ["silence", "transition", "recursivity", "dissonance"],
+          "glyphs": ["SHA", "NAV", "REMESH", "OZ"],
+          "physics": "Sequences as action potentials need endpoints",
+          "validation_function": "validate_u1b_closure"
+        }
+      }
+    },
+    "U2": {
+      "name": "CONVERGENCE & BOUNDEDNESS",
+      "basis": "∫νf·ΔNFR dt must converge (integral convergence theorem)",
+      "canonicity": "ABSOLUTE",
+      "condition": "If destabilizers present",
+      "requirement": "Include stabilizers",
+      "destabilizers": {
+        "operators": ["dissonance", "mutation", "expansion"],
+        "glyphs": ["OZ", "ZHIR", "VAL"],
+        "effect": "Increase |ΔNFR| (positive feedback)"
+      },
+      "stabilizers": {
+        "operators": ["coherence", "self_organization"],
+        "glyphs": ["IL", "THOL"],
+        "effect": "Reduce |ΔNFR| (negative feedback)"
+      },
+      "physics": "Without stabilizers, integral diverges → fragmentation",
+      "validation_function": "validate_u2_convergence"
+    },
+    "U3": {
+      "name": "RESONANT COUPLING",
+      "basis": "Resonance physics + AGENTS.md Invariant #5",
+      "canonicity": "ABSOLUTE",
+      "condition": "If coupling/resonance operators present",
+      "requirement": "Verify phase compatibility",
+      "operators": {
+        "coupling_resonance": ["coupling", "resonance"],
+        "glyphs": ["UM", "RA"]
+      },
+      "phase_condition": {
+        "formula": "|φᵢ - φⱼ| ≤ Δφ_max",
+        "typical_threshold": "π/2 radians",
+        "units": "radians"
+      },
+      "physics": "Antiphase → destructive interference (non-physical)",
+      "validation_function": "validate_resonant_coupling",
+      "validation_timing": "runtime"
+    },
+    "U4": {
+      "name": "BIFURCATION DYNAMICS",
+      "basis": "Contract OZ + bifurcation theory",
+      "canonicity": "STRONG",
+      "sub_rules": {
+        "U4a": {
+          "name": "Bifurcation Triggers Need Handlers",
+          "condition": "If bifurcation triggers present",
+          "requirement": "Include handlers",
+          "triggers": {
+            "operators": ["dissonance", "mutation"],
+            "glyphs": ["OZ", "ZHIR"],
+            "effect": "Create structural instability (∂²EPI/∂t² > τ)"
+          },
+          "handlers": {
+            "operators": ["self_organization", "coherence"],
+            "glyphs": ["THOL", "IL"],
+            "effect": "Manage bifurcation transition"
+          },
+          "physics": "Uncontrolled bifurcation → chaos/fragmentation",
+          "validation_function": "validate_u4a_bifurcation_triggers"
+        },
+        "U4b": {
+          "name": "Transformers Need Context (Graduated Destabilization)",
+          "condition": "If transformers present",
+          "requirement": "Recent destabilizer within ~3 operators",
+          "transformers": {
+            "operators": ["mutation", "self_organization"],
+            "glyphs": ["ZHIR", "THOL"],
+            "additional_for_mutation": "Prior coherence (IL) for stable base"
+          },
+          "window": {
+            "size": 3,
+            "units": "operators",
+            "rationale": "Based on typical ΔNFR decay time"
+          },
+          "physics": "Threshold energy needed for phase transition",
+          "validation_function": "validate_u4b_transformer_context"
+        }
+      }
+    }
+  },
+  "operator_sets": {
+    "generators": {
+      "operators": ["emission", "transition", "recursivity"],
+      "glyphs": ["AL", "NAV", "REMESH"],
+      "used_in": ["U1a"]
+    },
+    "closures": {
+      "operators": ["silence", "transition", "recursivity", "dissonance"],
+      "glyphs": ["SHA", "NAV", "REMESH", "OZ"],
+      "used_in": ["U1b"]
+    },
+    "stabilizers": {
+      "operators": ["coherence", "self_organization"],
+      "glyphs": ["IL", "THOL"],
+      "used_in": ["U2", "U4a"]
+    },
+    "destabilizers": {
+      "operators": ["dissonance", "mutation", "expansion"],
+      "glyphs": ["OZ", "ZHIR", "VAL"],
+      "used_in": ["U2", "U4b"]
+    },
+    "coupling_resonance": {
+      "operators": ["coupling", "resonance"],
+      "glyphs": ["UM", "RA"],
+      "used_in": ["U3"]
+    },
+    "bifurcation_triggers": {
+      "operators": ["dissonance", "mutation"],
+      "glyphs": ["OZ", "ZHIR"],
+      "used_in": ["U4a"]
+    },
+    "bifurcation_handlers": {
+      "operators": ["self_organization", "coherence"],
+      "glyphs": ["THOL", "IL"],
+      "used_in": ["U4a"]
+    },
+    "transformers": {
+      "operators": ["mutation", "self_organization"],
+      "glyphs": ["ZHIR", "THOL"],
+      "used_in": ["U4b"]
+    }
+  },
+  "references": {
+    "theory": "../../UNIFIED_GRAMMAR_RULES.md",
+    "implementation": "../../src/tnfr/operators/grammar.py",
+    "tests": "../../tests/unit/operators/test_unified_grammar.py",
+    "invariants": "../../AGENTS.md"
+  }
+}
