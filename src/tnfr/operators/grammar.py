@@ -905,31 +905,48 @@ class GrammarValidator:
         """Validate U5: Multi-scale coherence preservation.
 
         Physical basis: Multi-scale hierarchical structures created by REMESH
-        with depth>1 require coherence conservation across scales. This operates
-        in the SPATIAL dimension (hierarchy) versus U1-U4 (TEMPORAL sequences).
+        with depth>1 require coherence conservation across scales. This emerges
+        inevitably from the nodal equation applied to hierarchical systems.
 
-        From coherence conservation principle:
-            C_total = C_parent + Σ C_child_i = constant
+        From the nodal equation at each hierarchical level:
+            ∂EPI_parent/∂t = νf_parent · ΔNFR_parent(t)
+            ∂EPI_child_i/∂t = νf_child_i · ΔNFR_child_i(t)  for each child i
 
-        For bounded evolution:
+        For hierarchical systems with N children:
+            EPI_parent = f(EPI_child_1, ..., EPI_child_N)  (structural coupling)
+
+        Taking time derivative and applying chain rule:
+            ∂EPI_parent/∂t = Σ (∂f/∂EPI_child_i) · ∂EPI_child_i/∂t
+                           = Σ w_i · νf_child_i · ΔNFR_child_i(t)
+
+        where w_i = ∂f/∂EPI_child_i are coupling weights.
+
+        Equating with nodal equation for parent:
+            νf_parent · ΔNFR_parent = Σ w_i · νf_child_i · ΔNFR_child_i
+
+        For coherence C(t) = measure of structural stability:
+            C_parent ~ 1/|ΔNFR_parent|  (lower pressure = higher coherence)
+            C_child_i ~ 1/|ΔNFR_child_i|
+
+        This gives the conservation inequality:
             C_parent ≥ α · Σ C_child_i
 
-        Where α = (1/√N) · η_phase(N) · η_coupling(N)
-        - 1/√N: Scale factor (sublinear growth)
-        - η_phase: Phase synchronization efficiency (decreases with N)
-        - η_coupling: Coupling efficiency (decreases with N)
+        Where α = (1/√N) · η_phase(N) · η_coupling(N) captures:
+        - 1/√N: Scale factor from coupling weight distribution
+        - η_phase: Phase synchronization efficiency (U3 requirement)
+        - η_coupling: Structural coupling efficiency losses
         - Typical range: α ∈ [0.1, 0.4]
 
         Without stabilizers:
             Deep REMESH (depth>1) creates nested EPIs
-            → Coherence fragments across scales
-            → C_parent < α · Σ C_child (conservation violated)
-            → System fragments
+            → ΔNFR_parent grows from uncoupled child fluctuations
+            → C_parent decreases below α·ΣC_child
+            → Violation of conservation → System fragments
 
         With stabilizers (IL or THOL):
-            Multi-level coherence stabilization
-            → C_parent ≥ α · Σ C_child (conservation preserved)
-            → Bounded multi-scale evolution
+            IL/THOL reduce |ΔNFR| at each level (direct from operator contracts)
+            → Maintains C_parent ≥ α·ΣC_child at all hierarchical levels
+            → Conservation preserved → Bounded multi-scale evolution
 
         Parameters
         ----------
@@ -954,13 +971,15 @@ class GrammarValidator:
             - U5: ✗ Deep recursivity without stabilization → fragmentation
 
         Physical derivation: See UNIFIED_GRAMMAR_RULES.md § U5
-        Canonicity: STRONG (derived from conservation of coherence)
+        Canonicity: STRONG (derived from nodal equation + structural coupling)
 
         References
         ----------
+        - TNFR.pdf § 2.1: Nodal equation ∂EPI/∂t = νf · ΔNFR(t)
         - Problem statement: "El pulso que nos atraviesa.pdf"
         - AGENTS.md: Invariant #7 (Operational Fractality)
-        - TNFR.pdf § 2.1: Nodal equation and coherence
+        - Contract IL: Reduces |ΔNFR| at all scales
+        - Contract THOL: Autopoietic closure across hierarchical levels
         """
         # Check for deep REMESH (depth > 1)
         # Note: Currently Recursivity doesn't expose depth parameter in operator
