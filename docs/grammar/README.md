@@ -248,6 +248,22 @@ Physical Intuition → Mathematical Formalization → Code Implementation → Te
 - **[../../src/tnfr/operators/definitions.py](../../src/tnfr/operators/definitions.py)** - Operator definitions
 - **[../../tests/unit/operators/test_unified_grammar.py](../../tests/unit/operators/test_unified_grammar.py)** - Test suite
 
+### Documentation Sync Tool
+
+- **[../../tools/sync_documentation.py](../../tools/sync_documentation.py)** - Centralized sync tool
+- **[CODE_DOCS_CROSSREF.md](CODE_DOCS_CROSSREF.md)** - Bidirectional cross-references
+
+**Run sync check:**
+```bash
+python tools/sync_documentation.py --all
+```
+
+This validates:
+- All functions documented (17/17 ✓)
+- All examples execute (8/8 ✓)
+- Cross-references accurate (35 documented)
+- Schema matches implementation
+
 ---
 
 ## 📝 Writing Conventions

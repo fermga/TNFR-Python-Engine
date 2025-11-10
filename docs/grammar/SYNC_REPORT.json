@@ -105,24 +105,24 @@
   },
   "operator_sets": {
     "GENERATORS": [
-      "transition",
       "emission",
-      "recursivity"
+      "recursivity",
+      "transition"
     ],
     "CLOSURES": [
-      "silence",
+      "recursivity",
       "transition",
       "dissonance",
-      "recursivity"
+      "silence"
     ],
     "STABILIZERS": [
-      "self_organization",
-      "coherence"
+      "coherence",
+      "self_organization"
     ],
     "DESTABILIZERS": [
-      "mutation",
+      "expansion",
       "dissonance",
-      "expansion"
+      "mutation"
     ],
     "COUPLING_RESONANCE": [
       "resonance",
@@ -358,14 +358,74 @@
       "doc": "MASTER-INDEX.md",
       "references": "validate_grammar",
       "type": "doc_to_function"
+    },
+    {
+      "doc": "CODE_DOCS_CROSSREF.md",
+      "references": "grammar.py",
+      "type": "doc_to_code"
+    },
+    {
+      "doc": "CODE_DOCS_CROSSREF.md",
+      "references": "function_name_to_glyph",
+      "type": "doc_to_function"
+    },
+    {
+      "doc": "CODE_DOCS_CROSSREF.md",
+      "references": "glyph_function_name",
+      "type": "doc_to_function"
+    },
+    {
+      "doc": "CODE_DOCS_CROSSREF.md",
+      "references": "validate_grammar",
+      "type": "doc_to_function"
+    },
+    {
+      "doc": "CODE_DOCS_CROSSREF.md",
+      "references": "GrammarValidator.validate",
+      "type": "doc_to_function"
+    },
+    {
+      "doc": "CODE_DOCS_CROSSREF.md",
+      "references": "GrammarValidator.validate_bifurcation_triggers",
+      "type": "doc_to_function"
+    },
+    {
+      "doc": "CODE_DOCS_CROSSREF.md",
+      "references": "GrammarValidator.validate_closure",
+      "type": "doc_to_function"
+    },
+    {
+      "doc": "CODE_DOCS_CROSSREF.md",
+      "references": "GrammarValidator.validate_convergence",
+      "type": "doc_to_function"
+    },
+    {
+      "doc": "CODE_DOCS_CROSSREF.md",
+      "references": "GrammarValidator.validate_initiation",
+      "type": "doc_to_function"
+    },
+    {
+      "doc": "CODE_DOCS_CROSSREF.md",
+      "references": "GrammarValidator.validate_remesh_amplification",
+      "type": "doc_to_function"
+    },
+    {
+      "doc": "CODE_DOCS_CROSSREF.md",
+      "references": "GrammarValidator.validate_resonant_coupling",
+      "type": "doc_to_function"
+    },
+    {
+      "doc": "CODE_DOCS_CROSSREF.md",
+      "references": "GrammarValidator.validate_transformer_context",
+      "type": "doc_to_function"
     }
   ],
   "issues": [
     {
       "type": "schema_extra",
       "extra_operators": [
-        "contraction",
-        "reception"
+        "reception",
+        "contraction"
       ],
       "severity": "low"
     }

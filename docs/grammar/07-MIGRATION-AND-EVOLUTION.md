@@ -404,6 +404,18 @@ Update all relevant documents:
 - `08-QUICK-REFERENCE.md` - Summary table
 - `schemas/constraints-u1-u4.json` → `constraints-u1-u5.json`
 - This file (`07-MIGRATION-AND-EVOLUTION.md`) - Document the change
+- `CODE_DOCS_CROSSREF.md` - Add new cross-references
+
+**Verify sync:**
+```bash
+python tools/sync_documentation.py --all
+```
+
+This will validate:
+- New function documented
+- Examples execute correctly
+- Cross-references updated
+- Schema synchronized
 
 #### 5. Examples
 
