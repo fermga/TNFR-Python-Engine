@@ -19,6 +19,29 @@ nav:
       - Operators Guide: user-guide/OPERATORS_GUIDE.md
       - Metrics Interpretation: user-guide/METRICS_INTERPRETATION.md
       - Troubleshooting: user-guide/TROUBLESHOOTING.md
+  - Grammar Documentation:
+      - Overview: grammar/README.md
+      - Executive Summary: grammar/EXECUTIVE-SUMMARY.md
+      - Core Concepts:
+          - Fundamental Concepts: grammar/01-FUNDAMENTAL-CONCEPTS.md
+          - Canonical Constraints: grammar/02-CANONICAL-CONSTRAINTS.md
+          - Operators and Glyphs: grammar/03-OPERATORS-AND-GLYPHS.md
+          - Valid Sequences: grammar/04-VALID-SEQUENCES.md
+      - Implementation:
+          - Technical Implementation: grammar/05-TECHNICAL-IMPLEMENTATION.md
+          - Validation and Testing: grammar/06-VALIDATION-AND-TESTING.md
+          - Migration and Evolution: grammar/07-MIGRATION-AND-EVOLUTION.md
+      - Reference:
+          - Quick Reference: grammar/08-QUICK-REFERENCE.md
+          - Glossary: grammar/GLOSSARY.md
+          - Master Index: grammar/MASTER-INDEX.md
+          - Operators Catalog: grammar/OPERATORS-CATALOG-SUMMARY.md
+          - Cross-Reference Index: grammar/CROSS-REFERENCE-INDEX.md
+          - Code Documentation Cross-Reference: grammar/CODE_DOCS_CROSSREF.md
+      - Tooling:
+          - Tooling and Automation: grammar/TOOLING-AND-AUTOMATION.md
+          - Testing Summary: grammar/TESTING-SUMMARY.md
+          - Deprecation Index: grammar/DEPRECATION-INDEX.md
   - Examples: examples/README.md
   - API Reference:
       - Overview: api/overview.md
