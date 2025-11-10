@@ -242,11 +242,11 @@ From issue #2897:
 - [x] **Estrategia de testing documentada** - Complete in `06-VALIDATION-AND-TESTING.md`
 - [x] **20+ casos de prueba canonicos** - 25+ test cases documented with templates
 - [x] **Tests para U1, U2, U3, U4** - All constraints covered (25 test cases)
-- [x] **Tests para patrones canonicos** - 7 patterns with valid/invalid variants
-- [x] **Tests para anti-patrones** - 7 anti-patterns with detection/fix tests
-- [x] **Suite ejecutable** - `scripts/validate_grammar.sh` created
+- [x] **Canonical pattern tests** - 7 patterns with valid/invalid variants
+- [x] **Anti-pattern tests** - 7 anti-patterns with detection/fix tests
+- [x] **Executable suite** - `scripts/validate_grammar.sh` created
 - [x] **Coverage >= 95%** - 100% achieved (8/8 statements)
-- [x] **Documentacion de test utilities** - Complete section with helpers
+- [x] **Test utilities documentation** - Complete section with helpers
 
 ## 📚 Additional Resources
 
