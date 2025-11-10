@@ -101,9 +101,11 @@ def is_closure(operator):
 
 ---
 
-## Main Validation Function
+## Main Validation Functions
 
-### Function Signature
+### Convenience Function: `validate_grammar()`
+
+**Location**: `src/tnfr/operators/grammar.py`
 
 ```python
 def validate_grammar(
@@ -118,137 +120,247 @@ def validate_grammar(
         epi_initial: Initial EPI value (0.0 = vacuum)
     
     Returns:
-        True if valid
+        bool: True if sequence is valid, False otherwise
         
-    Raises:
-        ValueError: If any constraint violated, with detailed message
+    Notes:
+        This is a convenience wrapper around GrammarValidator.validate()
+        that returns only the boolean result. For detailed validation
+        messages, use GrammarValidator.validate() instead.
+    """
+```
+
+**Implementation**:
+```python
+def validate_grammar(sequence: List[Operator], epi_initial: float = 0.0) -> bool:
+    """Validate sequence using canonical TNFR grammar constraints."""
+    is_valid, _ = GrammarValidator.validate(sequence, epi_initial)
+    return is_valid
+```
+
+### Full Validator: `GrammarValidator.validate()`
+
+**Location**: `src/tnfr/operators/grammar.py`
+
+```python
+@classmethod
+def validate(
+    cls,
+    sequence: List[Operator],
+    epi_initial: float = 0.0,
+) -> tuple[bool, List[str]]:
+    """
+    Validate sequence using all unified canonical constraints.
+
+    This validates pure TNFR physics:
+    - U1: Structural initiation & closure
+    - U2: Convergence & boundedness
+    - U3: Resonant coupling
+    - U4: Bifurcation dynamics
+
+    Parameters
+    ----------
+    sequence : List[Operator]
+        Sequence to validate
+    epi_initial : float, optional
+        Initial EPI value (default: 0.0)
+
+    Returns
+    -------
+    tuple[bool, List[str]]
+        (is_valid, messages)
+        is_valid: True if all constraints satisfied
+        messages: List of validation messages for each rule
     """
 ```
 
 ### Implementation Structure
 
 ```python
+# In src/tnfr/operators/grammar.py
+
+class GrammarValidator:
+    """Validates sequences using canonical TNFR grammar constraints."""
+
+    @classmethod
+    def validate(cls, sequence, epi_initial=0.0):
+        """Validate sequence against all U1-U4 rules."""
+        messages = []
+        all_valid = True
+
+        # U1a: Initiation
+        valid_init, msg_init = cls.validate_initiation(sequence, epi_initial)
+        messages.append(f"U1a: {msg_init}")
+        all_valid = all_valid and valid_init
+
+        # U1b: Closure
+        valid_closure, msg_closure = cls.validate_closure(sequence)
+        messages.append(f"U1b: {msg_closure}")
+        all_valid = all_valid and valid_closure
+
+        # U2: Convergence
+        valid_conv, msg_conv = cls.validate_convergence(sequence)
+        messages.append(f"U2: {msg_conv}")
+        all_valid = all_valid and valid_conv
+
+        # U3: Resonant coupling
+        valid_coupling, msg_coupling = cls.validate_resonant_coupling(sequence)
+        messages.append(f"U3: {msg_coupling}")
+        all_valid = all_valid and valid_coupling
+
+        # U4a: Bifurcation triggers
+        valid_triggers, msg_triggers = cls.validate_bifurcation_triggers(sequence)
+        messages.append(f"U4a: {msg_triggers}")
+        all_valid = all_valid and valid_triggers
+
+        # U4b: Transformer context
+        valid_context, msg_context = cls.validate_transformer_context(sequence)
+        messages.append(f"U4b: {msg_context}")
+        all_valid = all_valid and valid_context
+
+        # U2-REMESH: Recursive amplification control
+        valid_remesh, msg_remesh = cls.validate_remesh_amplification(sequence)
+        messages.append(f"U2-REMESH: {msg_remesh}")
+        all_valid = all_valid and valid_remesh
+
+        return all_valid, messages
+
+
 def validate_grammar(sequence, epi_initial=0.0):
-    """Validate sequence against U1-U4."""
-    
-    # --- U1a: INITIATION ---
-    if epi_initial == 0.0:
-        if not sequence:
-            raise ValueError("Empty sequence with EPI=0")
-        
-        first_op = get_operator_name(sequence[0])
-        if first_op not in GENERATORS:
-            raise ValueError(
-                f"U1a violation: Must start with generator {GENERATORS} "
-                f"when EPI=0, got '{first_op}'"
-            )
-    
-    # --- U1b: CLOSURE ---
-    if not sequence:
-        raise ValueError("Empty sequence")
-    
-    last_op = get_operator_name(sequence[-1])
-    if last_op not in CLOSURES:
-        raise ValueError(
-            f"U1b violation: Must end with closure {CLOSURES}, "
-            f"got '{last_op}'"
-        )
-    
-    # --- U2: CONVERGENCE ---
-    op_names = [get_operator_name(op) for op in sequence]
-    
-    has_destabilizer = any(op in DESTABILIZERS for op in op_names)
-    has_stabilizer = any(op in STABILIZERS for op in op_names)
-    
-    if has_destabilizer and not has_stabilizer:
-        raise ValueError(
-            f"U2 violation: Destabilizers {DESTABILIZERS} present "
-            f"but no stabilizers {STABILIZERS} found. Integral may diverge."
-        )
-    
-    # --- U4a: TRIGGERS NEED HANDLERS ---
-    has_trigger = any(op in BIFURCATION_TRIGGERS for op in op_names)
-    has_handler = any(op in BIFURCATION_HANDLERS for op in op_names)
-    
-    if has_trigger and not has_handler:
-        raise ValueError(
-            f"U4a violation: Bifurcation triggers {BIFURCATION_TRIGGERS} "
-            f"present but no handlers {BIFURCATION_HANDLERS} found."
-        )
-    
-    # --- U4b: TRANSFORMERS NEED CONTEXT ---
-    for i, op in enumerate(sequence):
-        op_name = get_operator_name(op)
-        
-        if op_name in TRANSFORMERS:
-            # Check for recent destabilizer (within ~3 ops)
-            window_start = max(0, i - 3)
-            window = op_names[window_start:i]
-            
-            has_recent_destabilizer = any(
-                w in DESTABILIZERS for w in window
-            )
-            
-            if not has_recent_destabilizer:
-                raise ValueError(
-                    f"U4b violation: Transformer '{op_name}' at position {i} "
-                    f"needs recent destabilizer {DESTABILIZERS} "
-                    "within ~3 operations"
-                )
-            
-            # ZHIR-specific: needs prior IL
-            if op_name == "mutation":
-                prior_ops = op_names[:window_start]
-                
-                has_prior_coherence = "coherence" in prior_ops
-                
-                if not has_prior_coherence:
-                    raise ValueError(
-                        f"U4b violation: ZHIR (Mutation) at position {i} "
-                        "requires prior IL (Coherence) for stable base"
-                    )
-    
-    # U3 is validated at runtime during coupling/resonance application
-    
-    return True
+    """Convenience function - returns only bool."""
+    is_valid, _ = GrammarValidator.validate(sequence, epi_initial)
+    return is_valid
 ```
+
+### Individual Validation Methods
+
+Each rule is implemented as a static method returning `tuple[bool, str]`:
+
+#### U1a: `validate_initiation()`
+```python
+@staticmethod
+def validate_initiation(sequence, epi_initial=0.0):
+    """Check if sequence starts with generator when EPI=0."""
+    if epi_initial > 0.0:
+        return True, "U1a: EPI>0, initiation not required"
+    
+    if not sequence:
+        return False, "U1a violated: Empty sequence with EPI=0"
+    
+    first_op = getattr(sequence[0], "canonical_name", sequence[0].name.lower())
+    
+    if first_op not in GENERATORS:
+        return (
+            False,
+            f"U1a violated: EPI=0 requires generator (got '{first_op}'). "
+            f"Valid: {sorted(GENERATORS)}",
+        )
+    
+    return True, f"U1a satisfied: starts with generator '{first_op}'"
+```
+
+#### U1b: `validate_closure()`
+```python
+@staticmethod
+def validate_closure(sequence):
+    """Check if sequence ends with closure operator."""
+    if not sequence:
+        return False, "U1b violated: Empty sequence has no closure"
+    
+    last_op = getattr(sequence[-1], "canonical_name", sequence[-1].name.lower())
+    
+    if last_op not in CLOSURES:
+        return (
+            False,
+            f"U1b violated: Sequence must end with closure (got '{last_op}'). "
+            f"Valid: {sorted(CLOSURES)}",
+        )
+    
+    return True, f"U1b satisfied: ends with closure '{last_op}'"
+```
+
+#### U2: `validate_convergence()`
+```python
+@staticmethod
+def validate_convergence(sequence):
+    """Check destabilizers have stabilizers for convergence."""
+    destabilizers_present = [
+        getattr(op, "canonical_name", op.name.lower())
+        for op in sequence
+        if getattr(op, "canonical_name", op.name.lower()) in DESTABILIZERS
+    ]
+    
+    if not destabilizers_present:
+        return True, "U2: not applicable (no destabilizers present)"
+    
+    stabilizers_present = [
+        getattr(op, "canonical_name", op.name.lower())
+        for op in sequence
+        if getattr(op, "canonical_name", op.name.lower()) in STABILIZERS
+    ]
+    
+    if not stabilizers_present:
+        return (
+            False,
+            f"U2 violated: destabilizers {destabilizers_present} present "
+            f"without stabilizer. Integral ∫νf·ΔNFR dt may diverge. "
+            f"Add: {sorted(STABILIZERS)}",
+        )
+    
+    return (
+        True,
+        f"U2 satisfied: stabilizers {stabilizers_present} "
+        f"bound destabilizers {destabilizers_present}",
+    )
+```
+
+See full implementation in `src/tnfr/operators/grammar.py` for U3, U4a, U4b, and U2-REMESH.
 
 ---
 
 ## Phase Validation (U3)
 
-### Function Signature
+U3 (RESONANT COUPLING) is a **meta-rule** that documents the requirement for phase verification during coupling/resonance operations.
+
+**Key Point**: Unlike U1, U2, U4 which validate sequences, U3 validates **runtime operations** when coupling/resonance operators are applied to specific nodes.
+
+### Validation Approach
 
 ```python
-def validate_resonant_coupling(
-    G: nx.Graph,
-    node_i: Any,
-    node_j: Any,
-    delta_phi_max: float = np.pi / 2
-) -> None:
-    """
-    Validate phase compatibility for coupling/resonance (U3).
+@staticmethod
+def validate_resonant_coupling(sequence):
+    """Document U3 awareness for sequences with coupling/resonance.
     
-    Args:
-        G: NetworkX graph
-        node_i: First node ID
-        node_j: Second node ID
-        delta_phi_max: Maximum phase difference (default π/2)
-    
-    Raises:
-        ValueError: If phases incompatible
+    This method checks if sequence contains coupling/resonance operators
+    and returns an awareness message. Actual phase verification happens
+    at runtime in operator preconditions.
     """
+    coupling_ops = [
+        getattr(op, "canonical_name", op.name.lower())
+        for op in sequence
+        if getattr(op, "canonical_name", op.name.lower()) in COUPLING_RESONANCE
+    ]
+    
+    if not coupling_ops:
+        return True, "U3: not applicable (no coupling/resonance operators)"
+    
+    return (
+        True,
+        f"U3 awareness: operators {coupling_ops} require phase verification "
+        f"(MANDATORY per Invariant #5). Enforced in preconditions.",
+    )
 ```
 
-### Implementation
+### Runtime Phase Check
+
+Phase compatibility is verified when operators are applied to nodes:
 
 ```python
-import numpy as np
-
-def validate_resonant_coupling(G, node_i, node_j, delta_phi_max=np.pi/2):
-    """Validate phase compatibility (U3)."""
+# In operator preconditions (during application)
+def check_phase_compatibility(G, node_i, node_j, delta_phi_max=np.pi/2):
+    """Verify phase compatibility for coupling/resonance (U3).
     
-    # Extract phases
+    Called by Coupling and Resonance operators before creating links.
+    """
     phi_i = G.nodes[node_i]['theta']
     phi_j = G.nodes[node_j]['theta']
     
@@ -262,37 +374,12 @@ def validate_resonant_coupling(G, node_i, node_j, delta_phi_max=np.pi/2):
     # Check compatibility
     if delta_phi > delta_phi_max:
         raise ValueError(
-            f"U3 violation: Phase mismatch for coupling. "
-            f"|φ_{node_i} - φ_{node_j}| = {delta_phi:.3f} rad > "
-            f"Δφ_max = {delta_phi_max:.3f} rad. "
-            "Cannot couple antiphase nodes."
+            f"U3 violation: Phase mismatch |φ_{node_i} - φ_{node_j}| = "
+            f"{delta_phi:.3f} rad > Δφ_max = {delta_phi_max:.3f} rad"
         )
 ```
 
-### Usage in Operators
-
-```python
-# In definitions.py, Coupling operator:
-
-class Coupling:
-    """UM - Creates structural links via phase synchronization."""
-    
-    def __call__(self, G, node_i, node_j=None):
-        """Apply coupling."""
-        if node_j is None:
-            # Single-node case (self-reference)
-            return
-        
-        # U3: Validate phase compatibility
-        from tnfr.operators.grammar import validate_resonant_coupling
-        validate_resonant_coupling(G, node_i, node_j)
-        
-        # Create edge
-        G.add_edge(node_i, node_j)
-        
-        # Update attributes
-        # ... (coupling logic)
-```
+**Location**: Operator preconditions in `src/tnfr/operators/preconditions/`
 
 ---
 
@@ -341,14 +428,26 @@ class Emission:
 ```python
 # Typical usage pattern
 
-from tnfr.operators.grammar import validate_grammar
+from tnfr.operators.grammar import validate_grammar, GrammarValidator
 from tnfr.operators.definitions import Emission, Coherence, Silence
 
 # 1. Define sequence
 sequence = [Emission(), Coherence(), Silence()]
 
 # 2. Validate BEFORE applying
-validate_grammar(sequence, epi_initial=0.0)  # Raises if invalid
+
+# Option A: Simple boolean check
+is_valid = validate_grammar(sequence, epi_initial=0.0)
+if not is_valid:
+    print("Sequence invalid!")
+else:
+    print("Sequence valid, proceed")
+
+# Option B: Get detailed messages
+is_valid, messages = GrammarValidator.validate(sequence, epi_initial=0.0)
+print(f"Valid: {is_valid}")
+for msg in messages:
+    print(f"  {msg}")
 
 # 3. Apply to network
 G = nx.Graph()
@@ -574,9 +673,26 @@ def test_valid_sequence():
 
 # Test invalid sequence
 def test_invalid_sequence():
+    from tnfr.operators.grammar import validate_grammar
+    from tnfr.operators.definitions import Coherence, Silence
+    
     sequence = [Coherence(), Silence()]  # No generator
-    with pytest.raises(ValueError, match="U1a violation"):
-        validate_grammar(sequence, epi_initial=0.0)
+    is_valid = validate_grammar(sequence, epi_initial=0.0)
+    assert is_valid is False  # Returns False, doesn't raise
+
+# Test with detailed messages
+def test_detailed_validation():
+    from tnfr.operators.grammar import GrammarValidator
+    from tnfr.operators.definitions import Coherence, Silence
+    
+    sequence = [Coherence(), Silence()]
+    is_valid, messages = GrammarValidator.validate(sequence, epi_initial=0.0)
+    
+    assert is_valid is False
+    # Check for U1a violation in messages
+    u1a_msg = [m for m in messages if "U1a" in m][0]
+    assert "violated" in u1a_msg
+    assert "generator" in u1a_msg
 ```
 
 ### Integration Testing

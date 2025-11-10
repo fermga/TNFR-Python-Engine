@@ -1,0 +1,373 @@
+{
+  "functions": {
+    "apply_glyph_with_grammar": {
+      "signature": "(G: \"'TNFRGraph'\", nodes: 'Any', glyph: 'Any', window: 'Any' = None) -> 'None'",
+      "docstring": "Apply glyph to nodes with grammar validation.\n\nApplies the specified glyph to each node in the iterable using the canonical\nTNFR operator implementation.\n\nParameters\n----------\nG : TNFRGraph\n    Graph containing nodes\nnodes : Any\n    Node, list of nodes, or node iterable to apply glyph to\nglyph : Any\n    Glyph to apply\nwindow : Any, optional\n    Grammar window constraint\n    \nNotes\n-----\nThis function delegates to apply_glyph for each node, which wraps\nthe node in NodeNX and applies the glyph operation.",
+      "has_docstring": true,
+      "module": "tnfr.operators.grammar"
+    },
+    "enforce_canonical_grammar": {
+      "signature": "(G: \"'TNFRGraph'\", n: \"'NodeId'\", cand: 'Any', ctx: 'Any' = None) -> 'Any'",
+      "docstring": "Enforce canonical grammar constraints before operator application.\n\nMinimal stub implementation.\n\nParameters\n----------\nG : TNFRGraph\n    Graph containing node\nn : NodeId\n    Node identifier  \ncand : Any\n    Candidate glyph/operator\nctx : Any, optional\n    Grammar context\n    \nReturns\n-------\nAny\n    Validated glyph/operator",
+      "has_docstring": true,
+      "module": "tnfr.operators.grammar"
+    },
+    "function_name_to_glyph": {
+      "signature": "(val: 'Any', *, default: 'Any' = None) -> 'Any'",
+      "docstring": "Convert function name to glyph.\n\nParameters\n----------\nval : str | Glyph | None\n    Function name or glyph to convert\ndefault : Glyph | None, optional\n    Default value if conversion fails\n    \nReturns\n-------\nGlyph | None\n    Glyph or default",
+      "has_docstring": true,
+      "module": "tnfr.operators.grammar"
+    },
+    "glyph_function_name": {
+      "signature": "(val: 'Any', *, default: 'Any' = None) -> 'Any'",
+      "docstring": "Convert glyph to canonical function name.\n\nParameters\n----------\nval : Glyph | str | None\n    Glyph enum, glyph string value ('IL', 'OZ'), or function name to convert\ndefault : str | None, optional\n    Default value if conversion fails\n    \nReturns\n-------\nstr | None\n    Canonical function name or default\n    \nNotes\n-----\nGlyph enum inherits from str, so we must check for Enum type\nBEFORE checking isinstance(val, str), otherwise Glyph instances\nwill be returned unchanged instead of being converted.\n\nThe function handles three input types:\n1. Glyph enum (e.g., Glyph.IL) \u2192 function name (e.g., 'coherence')\n2. Glyph string value (e.g., 'IL') \u2192 function name (e.g., 'coherence')  \n3. Function name (e.g., 'coherence') \u2192 returned as-is",
+      "has_docstring": true,
+      "module": "tnfr.operators.grammar"
+    },
+    "on_applied_glyph": {
+      "signature": "(G: \"'TNFRGraph'\", n: \"'NodeId'\", applied: 'Any') -> 'None'",
+      "docstring": "Record glyph application in node history.\n\nMinimal stub for tracking operator sequences.\n\nParameters\n----------\nG : TNFRGraph\n    Graph containing node\nn : NodeId\n    Node identifier\napplied : Any\n    Applied glyph or operator name",
+      "has_docstring": true,
+      "module": "tnfr.operators.grammar"
+    },
+    "parse_sequence": {
+      "signature": "(names: 'Any') -> 'Any'",
+      "docstring": "Parse sequence of operator names.\n\nMinimal stub implementation.\n\nParameters\n----------\nnames : Iterable[str]\n    Sequence of operator names\n    \nReturns\n-------\nSequenceValidationResult\n    Parse result (stub)",
+      "has_docstring": true,
+      "module": "tnfr.operators.grammar"
+    },
+    "record_grammar_violation": {
+      "signature": "(G: \"'TNFRGraph'\", node: \"'NodeId'\", error: 'StructuralGrammarError', *, stage: 'str') -> 'None'",
+      "docstring": "Record grammar violation in node metadata.\n\nParameters\n----------\nG : TNFRGraph\n    Graph containing node\nnode : NodeId\n    Node where violation occurred\nerror : StructuralGrammarError\n    Grammar error to record\nstage : str\n    Processing stage when error occurred",
+      "has_docstring": true,
+      "module": "tnfr.operators.grammar"
+    },
+    "validate_grammar": {
+      "signature": "(sequence: 'List[Operator]', epi_initial: 'float' = 0.0) -> 'bool'",
+      "docstring": "Validate sequence using canonical TNFR grammar constraints.\n\nConvenience function that returns only boolean result.\nFor detailed messages, use GrammarValidator.validate().\n\nParameters\n----------\nsequence : List[Operator]\n    Sequence of operators to validate\nepi_initial : float, optional\n    Initial EPI value (default: 0.0)\n\nReturns\n-------\nbool\n    True if sequence satisfies all canonical constraints\n\nExamples\n--------\n>>> from tnfr.operators.definitions import Emission, Coherence, Silence\n>>> ops = [Emission(), Coherence(), Silence()]\n>>> validate_grammar(ops, epi_initial=0.0)  # doctest: +SKIP\nTrue\n\nNotes\n-----\nThis validator is 100% physics-based. All constraints emerge from:\n- Nodal equation: \u2202EPI/\u2202t = \u03bdf \u00b7 \u0394NFR(t)\n- TNFR invariants (AGENTS.md \u00a73)\n- Formal operator contracts (AGENTS.md \u00a74)\n\nSee UNIFIED_GRAMMAR_RULES.md for complete derivations.",
+      "has_docstring": true,
+      "module": "tnfr.operators.grammar"
+    },
+    "validate_sequence": {
+      "signature": "(names: 'Any' = None, **kwargs: 'Any') -> 'Any'",
+      "docstring": "Validate sequence of operator names.\n\nMinimal stub implementation for import compatibility.\n\nParameters\n----------\nnames : Iterable[str] | object, optional\n    Sequence of operator names\n**kwargs : Any\n    Additional validation options\n    \nReturns\n-------\nValidationOutcome\n    Validation result (stub returns success)",
+      "has_docstring": true,
+      "module": "tnfr.operators.grammar"
+    },
+    "GrammarValidator.validate": {
+      "signature": "(sequence: 'List[Operator]', epi_initial: 'float' = 0.0) -> 'tuple[bool, List[str]]'",
+      "docstring": "Validate sequence using all unified canonical constraints.\n\nThis validates pure TNFR physics:\n- U1: Structural initiation & closure\n- U2: Convergence & boundedness\n- U3: Resonant coupling\n- U4: Bifurcation dynamics\n\nParameters\n----------\nsequence : List[Operator]\n    Sequence to validate\nepi_initial : float, optional\n    Initial EPI value (default: 0.0)\n\nReturns\n-------\ntuple[bool, List[str]]\n    (is_valid, messages)\n    is_valid: True if all constraints satisfied\n    messages: List of validation messages",
+      "has_docstring": true,
+      "class": "GrammarValidator"
+    },
+    "GrammarValidator.validate_bifurcation_triggers": {
+      "signature": "(sequence: 'List[Operator]') -> 'tuple[bool, str]'",
+      "docstring": "Validate U4a: Bifurcation triggers need handlers.\n\nPhysical basis: AGENTS.md Contract OZ states dissonance may trigger\nbifurcation if \u2202\u00b2EPI/\u2202t\u00b2 > \u03c4. When bifurcation is triggered, handlers\nare required to manage structural reorganization.\n\nBifurcation physics:\n    If \u2202\u00b2EPI/\u2202t\u00b2 > \u03c4 \u2192 multiple reorganization paths viable\n    \u2192 System enters bifurcation regime\n    \u2192 Requires handlers (THOL or IL) for stable transition\n\nParameters\n----------\nsequence : List[Operator]\n    Sequence of operators to validate\n\nReturns\n-------\ntuple[bool, str]\n    (is_valid, message)",
+      "has_docstring": true,
+      "class": "GrammarValidator"
+    },
+    "GrammarValidator.validate_closure": {
+      "signature": "(sequence: 'List[Operator]') -> 'tuple[bool, str]'",
+      "docstring": "Validate U1b: Structural closure.\n\nPhysical basis: Sequences are bounded action potentials in structural\nspace. Like physical waves, they must have termination that leaves\nsystem in coherent attractor states.\n\nClosures stabilize via:\n- SHA (Silence): Terminal closure - freezes evolution (\u03bdf \u2192 0)\n- NAV (Transition): Handoff closure - transfers to next regime\n- REMESH (Recursivity): Recursive closure - distributes across scales\n- OZ (Dissonance): Intentional closure - preserves activation/tension\n\nParameters\n----------\nsequence : List[Operator]\n    Sequence of operators to validate\n\nReturns\n-------\ntuple[bool, str]\n    (is_valid, message)",
+      "has_docstring": true,
+      "class": "GrammarValidator"
+    },
+    "GrammarValidator.validate_convergence": {
+      "signature": "(sequence: 'List[Operator]') -> 'tuple[bool, str]'",
+      "docstring": "Validate U2: Convergence and boundedness.\n\nPhysical basis: Without stabilizers, \u222b\u03bdf\u00b7\u0394NFR dt \u2192 \u221e (diverges).\nStabilizers provide negative feedback ensuring integral convergence.\n\nFrom integrated nodal equation:\n    EPI(t_f) = EPI(t_0) + \u222b_{t_0}^{t_f} \u03bdf\u00b7\u0394NFR d\u03c4\n\nWithout stabilizers:\n    d(\u0394NFR)/dt > 0 always \u2192 \u0394NFR ~ e^(\u03bbt) \u2192 integral diverges\n\nWith stabilizers (IL or THOL):\n    d(\u0394NFR)/dt can be < 0 \u2192 \u0394NFR bounded \u2192 integral converges\n\nParameters\n----------\nsequence : List[Operator]\n    Sequence of operators to validate\n\nReturns\n-------\ntuple[bool, str]\n    (is_valid, message)",
+      "has_docstring": true,
+      "class": "GrammarValidator"
+    },
+    "GrammarValidator.validate_initiation": {
+      "signature": "(sequence: 'List[Operator]', epi_initial: 'float' = 0.0) -> 'tuple[bool, str]'",
+      "docstring": "Validate U1a: Structural initiation.\n\nPhysical basis: If EPI=0, then \u2202EPI/\u2202t is undefined or zero.\nCannot evolve structure that doesn't exist.\n\nGenerators create structure from:\n- AL (Emission): vacuum via emission\n- NAV (Transition): latent EPI via regime shift\n- REMESH (Recursivity): dormant structure across scales\n\nParameters\n----------\nsequence : List[Operator]\n    Sequence of operators to validate\nepi_initial : float, optional\n    Initial EPI value (default: 0.0)\n\nReturns\n-------\ntuple[bool, str]\n    (is_valid, message)",
+      "has_docstring": true,
+      "class": "GrammarValidator"
+    },
+    "GrammarValidator.validate_remesh_amplification": {
+      "signature": "(sequence: 'List[Operator]') -> 'tuple[bool, str]'",
+      "docstring": "Validate U2-REMESH: Recursive amplification control.\n\nPhysical basis: REMESH implements temporal coupling EPI(t) \u2194 EPI(t-\u03c4)\nwhich creates feedback that amplifies structural changes. When combined\nwith destabilizers, this can cause unbounded growth.\n\nFrom integrated nodal equation:\n    EPI(t_f) = EPI(t_0) + \u222b_{t_0}^{t_f} \u03bdf\u00b7\u0394NFR d\u03c4\n\nREMESH temporal mixing:\n    EPI_mixed = (1-\u03b1)\u00b7EPI_now + \u03b1\u00b7EPI_past\n\nWithout stabilizers:\n    REMESH + destabilizers \u2192 recursive amplification\n    \u2192 \u222b \u03bdf\u00b7\u0394NFR dt \u2192 \u221e (feedback loop)\n    \u2192 System fragments\n\nWith stabilizers:\n    IL or THOL provides negative feedback\n    \u2192 Bounded recursive evolution\n    \u2192 \u222b \u03bdf\u00b7\u0394NFR dt < \u221e\n\nSpecific combinations requiring stabilizers:\n    - REMESH + VAL: Recursive expansion needs coherence stabilization\n    - REMESH + OZ: Recursive bifurcation needs self-organization handlers\n    - REMESH + ZHIR: Replicative mutation needs coherence consolidation\n\nParameters\n----------\nsequence : List[Operator]\n    Sequence of operators to validate\n\nReturns\n-------\ntuple[bool, str]\n    (is_valid, message)\n\nNotes\n-----\nThis rule is DISTINCT from general U2 (convergence). While U2 checks\nfor destabilizers needing stabilizers, U2-REMESH specifically addresses\nREMESH's amplification property: it multiplies the effect of destabilizers\nthrough recursive feedback across temporal/spatial scales.\n\nPhysical derivation: See src/tnfr/operators/remesh.py module docstring,\nsection \"Grammar Implications from Physical Analysis\" \u2192 U2: CONVERGENCE.",
+      "has_docstring": true,
+      "class": "GrammarValidator"
+    },
+    "GrammarValidator.validate_resonant_coupling": {
+      "signature": "(sequence: 'List[Operator]') -> 'tuple[bool, str]'",
+      "docstring": "Validate U3: Resonant coupling.\n\nPhysical basis: AGENTS.md Invariant #5 states \"no coupling is valid\nwithout explicit phase verification (synchrony)\".\n\nResonance physics requires phase compatibility:\n    |\u03c6\u1d62 - \u03c6\u2c7c| \u2264 \u0394\u03c6_max\n\nWithout phase verification:\n    Nodes with incompatible phases (antiphase) could attempt coupling\n    \u2192 Destructive interference \u2192 Violates resonance physics\n\nWith phase verification:\n    Only synchronous nodes couple \u2192 Constructive interference\n\nParameters\n----------\nsequence : List[Operator]\n    Sequence of operators to validate\n\nReturns\n-------\ntuple[bool, str]\n    (is_valid, message)\n\nNotes\n-----\nU3 is a META-rule: it requires that when UM (Coupling) or RA (Resonance)\noperators are used, the implementation MUST verify phase compatibility.\nThe actual phase check happens in operator preconditions.\n\nThis grammar rule documents the requirement and ensures awareness\nthat phase checks are MANDATORY (Invariant #5), not optional.",
+      "has_docstring": true,
+      "class": "GrammarValidator"
+    },
+    "GrammarValidator.validate_transformer_context": {
+      "signature": "(sequence: 'List[Operator]') -> 'tuple[bool, str]'",
+      "docstring": "Validate U4b: Transformers need context.\n\nPhysical basis: Bifurcations require threshold energy to cross\ncritical points. Transformers (ZHIR, THOL) need recent destabilizers\nto provide sufficient |\u0394NFR| for phase transitions.\n\nZHIR (Mutation) requirements:\n    1. Prior IL: Stable base prevents transformation from chaos\n    2. Recent destabilizer: Threshold energy for bifurcation\n\nTHOL (Self-organization) requirements:\n    1. Recent destabilizer: Disorder to self-organize\n\n\"Recent\" = within ~3 operators (\u0394NFR decays via structural relaxation)\n\nParameters\n----------\nsequence : List[Operator]\n    Sequence of operators to validate\n\nReturns\n-------\ntuple[bool, str]\n    (is_valid, message)\n\nNotes\n-----\nThis implements \"graduated destabilization\" - transformers need\nsufficient \u0394NFR context. The ~3 operator window captures when\n|\u0394NFR| remains above bifurcation threshold.",
+      "has_docstring": true,
+      "class": "GrammarValidator"
+    }
+  },
+  "operator_sets": {
+    "GENERATORS": [
+      "transition",
+      "emission",
+      "recursivity"
+    ],
+    "CLOSURES": [
+      "silence",
+      "transition",
+      "dissonance",
+      "recursivity"
+    ],
+    "STABILIZERS": [
+      "self_organization",
+      "coherence"
+    ],
+    "DESTABILIZERS": [
+      "mutation",
+      "dissonance",
+      "expansion"
+    ],
+    "COUPLING_RESONANCE": [
+      "resonance",
+      "coupling"
+    ],
+    "BIFURCATION_TRIGGERS": [
+      "mutation",
+      "dissonance"
+    ],
+    "BIFURCATION_HANDLERS": [
+      "self_organization",
+      "coherence"
+    ],
+    "TRANSFORMERS": [
+      "self_organization",
+      "mutation"
+    ]
+  },
+  "examples": {
+    "02-intermediate-exploration.py": {
+      "executes": true,
+      "exit_code": 0,
+      "error": null
+    },
+    "u1-initiation-closure-examples.py": {
+      "executes": true,
+      "exit_code": 0,
+      "error": null
+    },
+    "03-advanced-bifurcation.py": {
+      "executes": true,
+      "exit_code": 0,
+      "error": null
+    },
+    "u4-bifurcation-examples.py": {
+      "executes": true,
+      "exit_code": 0,
+      "error": null
+    },
+    "01-basic-bootstrap.py": {
+      "executes": true,
+      "exit_code": 0,
+      "error": null
+    },
+    "all-operators-catalog.py": {
+      "executes": true,
+      "exit_code": 0,
+      "error": null
+    },
+    "u2-convergence-examples.py": {
+      "executes": true,
+      "exit_code": 0,
+      "error": null
+    },
+    "u3-resonant-coupling-examples.py": {
+      "executes": true,
+      "exit_code": 0,
+      "error": null
+    }
+  },
+  "cross_references": [
+    {
+      "doc": "05-TECHNICAL-IMPLEMENTATION.md",
+      "references": "grammar.py",
+      "type": "doc_to_code"
+    },
+    {
+      "doc": "05-TECHNICAL-IMPLEMENTATION.md",
+      "references": "validate_grammar",
+      "type": "doc_to_function"
+    },
+    {
+      "doc": "05-TECHNICAL-IMPLEMENTATION.md",
+      "references": "GrammarValidator.validate",
+      "type": "doc_to_function"
+    },
+    {
+      "doc": "02-CANONICAL-CONSTRAINTS.md",
+      "references": "grammar.py",
+      "type": "doc_to_code"
+    },
+    {
+      "doc": "02-CANONICAL-CONSTRAINTS.md",
+      "references": "validate_grammar",
+      "type": "doc_to_function"
+    },
+    {
+      "doc": "02-CANONICAL-CONSTRAINTS.md",
+      "references": "GrammarValidator.validate",
+      "type": "doc_to_function"
+    },
+    {
+      "doc": "02-CANONICAL-CONSTRAINTS.md",
+      "references": "GrammarValidator.validate_bifurcation_triggers",
+      "type": "doc_to_function"
+    },
+    {
+      "doc": "02-CANONICAL-CONSTRAINTS.md",
+      "references": "GrammarValidator.validate_closure",
+      "type": "doc_to_function"
+    },
+    {
+      "doc": "02-CANONICAL-CONSTRAINTS.md",
+      "references": "GrammarValidator.validate_convergence",
+      "type": "doc_to_function"
+    },
+    {
+      "doc": "02-CANONICAL-CONSTRAINTS.md",
+      "references": "GrammarValidator.validate_initiation",
+      "type": "doc_to_function"
+    },
+    {
+      "doc": "02-CANONICAL-CONSTRAINTS.md",
+      "references": "GrammarValidator.validate_resonant_coupling",
+      "type": "doc_to_function"
+    },
+    {
+      "doc": "02-CANONICAL-CONSTRAINTS.md",
+      "references": "GrammarValidator.validate_transformer_context",
+      "type": "doc_to_function"
+    },
+    {
+      "doc": "07-MIGRATION-AND-EVOLUTION.md",
+      "references": "grammar.py",
+      "type": "doc_to_code"
+    },
+    {
+      "doc": "07-MIGRATION-AND-EVOLUTION.md",
+      "references": "validate_grammar",
+      "type": "doc_to_function"
+    },
+    {
+      "doc": "07-MIGRATION-AND-EVOLUTION.md",
+      "references": "validate_sequence",
+      "type": "doc_to_function"
+    },
+    {
+      "doc": "06-VALIDATION-AND-TESTING.md",
+      "references": "grammar.py",
+      "type": "doc_to_code"
+    },
+    {
+      "doc": "06-VALIDATION-AND-TESTING.md",
+      "references": "validate_grammar",
+      "type": "doc_to_function"
+    },
+    {
+      "doc": "08-QUICK-REFERENCE.md",
+      "references": "grammar.py",
+      "type": "doc_to_code"
+    },
+    {
+      "doc": "08-QUICK-REFERENCE.md",
+      "references": "validate_grammar",
+      "type": "doc_to_function"
+    },
+    {
+      "doc": "CROSS-REFERENCE-INDEX.md",
+      "references": "grammar.py",
+      "type": "doc_to_code"
+    },
+    {
+      "doc": "CROSS-REFERENCE-INDEX.md",
+      "references": "GrammarValidator.validate",
+      "type": "doc_to_function"
+    },
+    {
+      "doc": "CROSS-REFERENCE-INDEX.md",
+      "references": "GrammarValidator.validate_bifurcation_triggers",
+      "type": "doc_to_function"
+    },
+    {
+      "doc": "CROSS-REFERENCE-INDEX.md",
+      "references": "GrammarValidator.validate_closure",
+      "type": "doc_to_function"
+    },
+    {
+      "doc": "CROSS-REFERENCE-INDEX.md",
+      "references": "GrammarValidator.validate_convergence",
+      "type": "doc_to_function"
+    },
+    {
+      "doc": "CROSS-REFERENCE-INDEX.md",
+      "references": "GrammarValidator.validate_initiation",
+      "type": "doc_to_function"
+    },
+    {
+      "doc": "CROSS-REFERENCE-INDEX.md",
+      "references": "GrammarValidator.validate_resonant_coupling",
+      "type": "doc_to_function"
+    },
+    {
+      "doc": "CROSS-REFERENCE-INDEX.md",
+      "references": "GrammarValidator.validate_transformer_context",
+      "type": "doc_to_function"
+    },
+    {
+      "doc": "README.md",
+      "references": "grammar.py",
+      "type": "doc_to_code"
+    },
+    {
+      "doc": "README.md",
+      "references": "validate_grammar",
+      "type": "doc_to_function"
+    },
+    {
+      "doc": "01-FUNDAMENTAL-CONCEPTS.md",
+      "references": "grammar.py",
+      "type": "doc_to_code"
+    },
+    {
+      "doc": "04-VALID-SEQUENCES.md",
+      "references": "grammar.py",
+      "type": "doc_to_code"
+    },
+    {
+      "doc": "04-VALID-SEQUENCES.md",
+      "references": "validate_grammar",
+      "type": "doc_to_function"
+    },
+    {
+      "doc": "04-VALID-SEQUENCES.md",
+      "references": "validate_sequence",
+      "type": "doc_to_function"
+    },
+    {
+      "doc": "MASTER-INDEX.md",
+      "references": "grammar.py",
+      "type": "doc_to_code"
+    },
+    {
+      "doc": "MASTER-INDEX.md",
+      "references": "validate_grammar",
+      "type": "doc_to_function"
+    }
+  ],
+  "issues": [
+    {
+      "type": "schema_extra",
+      "extra_operators": [
+        "contraction",
+        "reception"
+      ],
+      "severity": "low"
+    }
+  ]
+}

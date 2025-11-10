@@ -49,22 +49,25 @@ def example_phase_compatibility():
         print(f"  θ₁ = {theta1:.3f}, θ₂ = {theta2:.3f}")
         print(f"  Δφ = {delta_phi:.3f} rad")
 
-        # Check using operator precondition
+        # Try applying coupling operator
         from tnfr.operators.definitions import Coupling
 
         try:
-            # Coupling operator checks phase in precondition
+            # Coupling operator should check phase during application
             op = Coupling()
-            result = op.check_preconditions(G, 0, 1)
+            # Apply the operator - it will check phase internally
+            op(G, 0, 1)
+            
             if should_pass:
                 print(f"  ✓ Coupling allowed (Δφ < π/2)")
             else:
                 print(f"  ⚠ Should have failed but passed!")
-        except (ValueError, RuntimeError) as e:
+        except (ValueError, RuntimeError, Exception) as e:
             if not should_pass:
                 print(f"  ✓ Correctly rejected: {str(e)[:60]}...")
             else:
-                print(f"  ✗ Should have passed but failed!")
+                print(f"  ✗ Should have passed but failed: {str(e)[:60]}...")
+
 
 
 def example_coupling_resonance_operators():
