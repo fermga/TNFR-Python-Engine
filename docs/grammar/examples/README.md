@@ -20,7 +20,149 @@ This directory contains **executable Python examples** that demonstrate TNFR gra
 
 ## Available Examples
 
-### 01-basic-bootstrap.py
+### Constraint-Focused Examples (NEW)
+
+#### u1-initiation-closure-examples.py
+
+**Level:** Beginner  
+**Constraint:** U1 (Structural Initiation & Closure)  
+**Focus:** U1a (Initiation), U1b (Closure)
+
+**Demonstrates:**
+- Valid generator patterns (AL, NAV, REMESH)
+- Valid closure patterns (SHA, NAV, REMESH, OZ)
+- When U1a applies (EPI=0 vs EPI>0)
+- Dual-role operators (NAV, REMESH)
+- Common anti-patterns and mistakes
+
+**Run:**
+```bash
+python docs/grammar/examples/u1-initiation-closure-examples.py
+```
+
+**Sections:**
+- U1a valid examples (starting with generators)
+- U1a invalid examples (missing generators)
+- U1a context (when initiation applies)
+- U1b valid examples (ending with closures)
+- U1b invalid examples (missing closures)
+- Dual role operators
+
+**Key Learning:**
+- Cannot evolve from EPI=0 without generator
+- All sequences need closure operator
+- Some operators serve multiple roles
+
+---
+
+#### u2-convergence-examples.py
+
+**Level:** Intermediate  
+**Constraint:** U2 (Convergence & Boundedness)  
+**Focus:** Stabilizer-destabilizer balance
+
+**Demonstrates:**
+- Valid balanced sequences
+- Invalid unbalanced sequences
+- When U2 applies (has destabilizers)
+- Operator classification
+- Ordering importance
+- Anti-patterns (masking, accumulation)
+
+**Run:**
+```bash
+python docs/grammar/examples/u2-convergence-examples.py
+```
+
+**Sections:**
+- U2 valid examples (balanced)
+- U2 invalid examples (unbalanced)
+- U2 not applicable (no destabilizers)
+- Operator classification
+- Ordering matters (stabilizer placement)
+- Masking anti-pattern
+- Interleaving pattern (best practice)
+
+**Key Learning:**
+- Without stabilizers: ∫νf·ΔNFR dt → ∞
+- Stabilizer order matters
+- Interleave for better control
+
+---
+
+#### u3-resonant-coupling-examples.py
+
+**Level:** Intermediate  
+**Constraint:** U3 (Resonant Coupling)  
+**Focus:** Phase verification requirement
+
+**Demonstrates:**
+- Phase compatibility checking
+- Coupling/resonance operators
+- Sequence-level validation
+- Wave interference physics
+- Anti-patterns (no check, phase drift)
+
+**Run:**
+```bash
+python docs/grammar/examples/u3-resonant-coupling-examples.py
+```
+
+**Sections:**
+- Phase compatibility examples
+- Coupling/resonance operator requirements
+- Sequence-level validation (meta-rule)
+- Anti-pattern: No phase check
+- Anti-pattern: Phase drift
+- Threshold considerations
+- Wave interference physics
+
+**Key Learning:**
+- Phase check is MANDATORY (Invariant #5)
+- |φᵢ - φⱼ| ≤ π/2 typically required
+- Antiphase = destructive interference
+
+---
+
+#### u4-bifurcation-examples.py
+
+**Level:** Advanced  
+**Constraint:** U4 (Bifurcation Dynamics)  
+**Focus:** U4a (Triggers need handlers), U4b (Transformers need context)
+
+**Demonstrates:**
+- Valid bifurcation sequences
+- Invalid uncontrolled bifurcations
+- Transformer context requirements
+- ZHIR-specific requirements
+- Anti-patterns (cascades, wrong handlers, window violations)
+
+**Run:**
+```bash
+python docs/grammar/examples/u4-bifurcation-examples.py
+```
+
+**Sections:**
+- U4a valid examples (triggers with handlers)
+- U4a invalid examples (uncontrolled)
+- U4b valid examples (transformers with context)
+- U4b invalid examples (missing context)
+- Operator classification
+- ZHIR-specific requirements
+- Anti-pattern: Bifurcation cascade
+- Anti-pattern: Context window violation
+- Handler selection best practices
+
+**Key Learning:**
+- Bifurcations need control (U4a)
+- Transformers need energy (U4b)
+- ZHIR needs stable base + recent destabilizer
+
+---
+
+### Pattern-Based Examples (EXISTING)
+
+#### 01-basic-bootstrap.py
 
 **Level:** Beginner  
 **Pattern:** Bootstrap (minimal)  
@@ -32,29 +174,14 @@ This directory contains **executable Python examples** that demonstrate TNFR gra
 - Minimal valid sequence
 - Basic telemetry export
 
-**Concepts covered:**
-- Creating nodes from vacuum (EPI=0)
-- Applying operators
-- Measuring coherence
-
 **Run:**
 ```bash
-python examples/01-basic-bootstrap.py
-```
-
-**Expected output:**
-```
-✓ Bootstrap sequence valid
-Initial: EPI=0.000, vf=1.000
-After Emission: EPI=0.XXX, vf=1.XXX
-After Coherence: EPI=0.XXX, vf=1.XXX, dnfr reduced
-After Silence: EPI=0.XXX, vf~0.000 (frozen)
-Coherence: C(t)=X.XXX
+python docs/grammar/examples/01-basic-bootstrap.py
 ```
 
 ---
 
-### 02-intermediate-exploration.py
+#### 02-intermediate-exploration.py
 
 **Level:** Intermediate  
 **Pattern:** Controlled exploration  
@@ -65,29 +192,14 @@ Coherence: C(t)=X.XXX
 - U4a: Bifurcation trigger (Dissonance) with handler (Coherence)
 - Exploration with stability
 
-**Concepts covered:**
-- Destabilization-stabilization cycles
-- |ΔNFR| dynamics
-- Coherence preservation
-- Controlled perturbation
-
 **Run:**
 ```bash
-python examples/02-intermediate-exploration.py
-```
-
-**Expected output:**
-```
-✓ Exploration sequence valid
-Phase 1 - Bootstrap: C(t)=X.XXX
-Phase 2 - Dissonance: |ΔNFR| increased, C(t) may decrease
-Phase 3 - Re-stabilize: C(t) recovered, |ΔNFR| reduced
-Final coherence: C(t)=X.XXX (maintained)
+python docs/grammar/examples/02-intermediate-exploration.py
 ```
 
 ---
 
-### 03-advanced-bifurcation.py
+#### 03-advanced-bifurcation.py
 
 **Level:** Advanced  
 **Pattern:** Complete transformation  
@@ -97,28 +209,10 @@ Final coherence: C(t)=X.XXX (maintained)
 - U4b: Mutation with proper context (prior IL, recent destabilizer)
 - U4a: Multiple handlers (SelfOrganization, Coherence)
 - Phase transformation
-- Multi-scale organization
-
-**Concepts covered:**
-- Bifurcation handling
-- Phase transitions (θ changes)
-- Hierarchical structure creation
-- Complete transformation lifecycle
 
 **Run:**
 ```bash
-python examples/03-advanced-bifurcation.py
-```
-
-**Expected output:**
-```
-✓ Bifurcation sequence valid
-Phase 1 - Stable base: θ=X.XXX
-Phase 2 - Destabilize: |ΔNFR| elevated
-Phase 3 - Mutate: θ→θ' (phase changed)
-Phase 4 - Self-organize: Hierarchical structure created
-Phase 5 - Stabilize: C(t) recovered
-Phase transformation complete: θ_initial → θ_final
+python docs/grammar/examples/03-advanced-bifurcation.py
 ```
 
 ---
@@ -127,41 +221,44 @@ Phase transformation complete: θ_initial → θ_final
 
 ### By Constraint
 
-**U1a - Initiation:**
+**U1 - Initiation & Closure:**
+- `u1-initiation-closure-examples.py` - Comprehensive U1 coverage
 - `01-basic-bootstrap.py` - Emission as generator
 - All examples (always start with generator when EPI=0)
 
-**U1b - Closure:**
-- `01-basic-bootstrap.py` - Silence as closure
-- All examples (always end with closure)
-
-**U2 - Convergence:**
+**U2 - Convergence & Boundedness:**
+- `u2-convergence-examples.py` - Comprehensive U2 coverage
 - `02-intermediate-exploration.py` - Dissonance + Coherence
 - `03-advanced-bifurcation.py` - Multiple destabilizers balanced
 
-**U3 - Coupling:**
+**U3 - Resonant Coupling:**
+- `u3-resonant-coupling-examples.py` - Comprehensive U3 coverage
 - (Planned: 04-network-propagation.py)
 
-**U4a - Bifurcation Triggers:**
+**U4 - Bifurcation Dynamics:**
+- `u4-bifurcation-examples.py` - Comprehensive U4a/U4b coverage
 - `02-intermediate-exploration.py` - Dissonance with handler
 - `03-advanced-bifurcation.py` - Mutation with handlers
-
-**U4b - Transformer Context:**
-- `03-advanced-bifurcation.py` - Mutation with proper context
 
 ### By Pattern
 
 **Bootstrap:**
 - `01-basic-bootstrap.py`
+- `u1-initiation-closure-examples.py` (simple sequences)
 
 **Exploration:**
 - `02-intermediate-exploration.py`
+- `u2-convergence-examples.py` (balanced sequences)
 
 **Transformation:**
 - `03-advanced-bifurcation.py`
+- `u4-bifurcation-examples.py` (transformer sequences)
 
-**Propagation:**
-- (Planned: 04-network-propagation.py)
+**Anti-Patterns:**
+- `u1-initiation-closure-examples.py` - U1 anti-patterns
+- `u2-convergence-examples.py` - U2 anti-patterns
+- `u3-resonant-coupling-examples.py` - U3 anti-patterns
+- `u4-bifurcation-examples.py` - U4 anti-patterns
 
 ---
 
@@ -171,13 +268,24 @@ Phase transformation complete: θ_initial → θ_final
 
 ```bash
 # Run specific example
-python docs/grammar/examples/01-basic-bootstrap.py
+python docs/grammar/examples/u1-initiation-closure-examples.py
 ```
 
-### All Examples
+### All Constraint Examples
 
 ```bash
-# Run all examples
+# Run all U1-U4 examples
+for constraint in u1 u2 u3 u4; do
+    echo "Running ${constraint} examples..."
+    python docs/grammar/examples/${constraint}-*-examples.py
+    echo "---"
+done
+```
+
+### All Pattern Examples
+
+```bash
+# Run all pattern examples
 for f in docs/grammar/examples/0*.py; do
     echo "Running $f..."
     python "$f"
@@ -185,11 +293,17 @@ for f in docs/grammar/examples/0*.py; do
 done
 ```
 
-### With pytest
+### All Examples
 
 ```bash
-# If examples have test functions
-pytest docs/grammar/examples/
+# Run everything
+python docs/grammar/examples/u1-initiation-closure-examples.py
+python docs/grammar/examples/u2-convergence-examples.py
+python docs/grammar/examples/u3-resonant-coupling-examples.py
+python docs/grammar/examples/u4-bifurcation-examples.py
+python docs/grammar/examples/01-basic-bootstrap.py
+python docs/grammar/examples/02-intermediate-exploration.py
+python docs/grammar/examples/03-advanced-bifurcation.py
 ```
 
 ---
