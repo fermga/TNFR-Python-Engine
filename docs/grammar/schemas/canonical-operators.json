@@ -7,9 +7,9 @@
     {
       "name": "emission",
       "glyph": "AL",
-      "symbol": "🎵",
+      "symbol": "\ud83c\udfb5",
       "physics": "Creates EPI from vacuum via resonant emission",
-      "effect": "∂EPI/∂t > 0, increases νf",
+      "effect": "\u2202EPI/\u2202t > 0, increases \u03bdf",
       "when_to_use": "Starting new patterns, initializing from EPI=0",
       "classification": {
         "generator": true,
@@ -21,19 +21,34 @@
         "bifurcation_handler": false,
         "transformer": false
       },
-      "grammar_roles": ["U1a: Generator"],
+      "grammar_roles": [
+        "U1a: Generator"
+      ],
       "contract": {
-        "preconditions": ["Can work from EPI=0"],
-        "postconditions": ["EPI > 0", "νf increased"]
+        "preconditions": [
+          "Can work from EPI=0"
+        ],
+        "postconditions": [
+          "EPI > 0",
+          "\u03bdf increased"
+        ]
       },
       "anti_patterns": [
         "Redundant emission in middle of sequence without purpose",
         "Excessive re-activation without stabilization"
       ],
       "relationships": {
-        "can_precede": ["All operators (generator role)"],
-        "should_follow": ["Nothing (starts from vacuum/dormant)"],
-        "often_followed_by": ["Coherence (IL)", "Reception (EN)", "Coupling (UM)"]
+        "can_precede": [
+          "All operators (generator role)"
+        ],
+        "should_follow": [
+          "Nothing (starts from vacuum/dormant)"
+        ],
+        "often_followed_by": [
+          "Coherence (IL)",
+          "Reception (EN)",
+          "Coupling (UM)"
+        ]
       },
       "test_references": [
         "tests/unit/operators/test_emission_irreversibility.py",
@@ -44,33 +59,47 @@
     {
       "name": "reception",
       "glyph": "EN",
-      "symbol": "📡",
+      "symbol": "\ud83d\udce1",
       "physics": "Captures and integrates incoming resonance",
       "effect": "Updates EPI based on network input",
       "when_to_use": "Information gathering, listening phase",
       "classification": {
         "generator": false,
         "closure": false,
-        "stabilizer": false,
+        "stabilizer": true,
         "destabilizer": false,
         "coupling_resonance": false,
         "bifurcation_trigger": false,
         "bifurcation_handler": false,
         "transformer": false
       },
-      "grammar_roles": [],
+      "grammar_roles": [
+        "U2: Stabilizer"
+      ],
       "contract": {
-        "preconditions": ["Network connectivity exists"],
-        "postconditions": ["Must not reduce C(t)"]
+        "preconditions": [
+          "Network connectivity exists"
+        ],
+        "postconditions": [
+          "Must not reduce C(t)"
+        ]
       },
       "anti_patterns": [
         "Reception without coupling (no network connectivity)",
         "Reception on isolated node"
       ],
       "relationships": {
-        "must_precede": ["Coupling (UM) or existing edges"],
-        "can_follow": ["Coupling (UM)", "Resonance (RA)"],
-        "often_followed_by": ["Coherence (IL)", "SelfOrganization (THOL)"]
+        "must_precede": [
+          "Coupling (UM) or existing edges"
+        ],
+        "can_follow": [
+          "Coupling (UM)",
+          "Resonance (RA)"
+        ],
+        "often_followed_by": [
+          "Coherence (IL)",
+          "SelfOrganization (THOL)"
+        ]
       },
       "test_references": [
         "tests/unit/operators/test_reception_preconditions.py",
@@ -80,9 +109,9 @@
     {
       "name": "coherence",
       "glyph": "IL",
-      "symbol": "🔒",
+      "symbol": "\ud83d\udd12",
       "physics": "Stabilizes form through negative feedback",
-      "effect": "Reduces |ΔNFR|, increases C(t)",
+      "effect": "Reduces |\u0394NFR|, increases C(t)",
       "when_to_use": "After changes, consolidation",
       "classification": {
         "generator": false,
@@ -94,10 +123,17 @@
         "bifurcation_handler": true,
         "transformer": false
       },
-      "grammar_roles": ["U2: Stabilizer", "U4a: Bifurcation Handler"],
+      "grammar_roles": [
+        "U2: Stabilizer",
+        "U4a: Bifurcation Handler"
+      ],
       "contract": {
-        "preconditions": ["EPI > 0"],
-        "postconditions": ["Must not reduce C(t) unless in dissonance test"]
+        "preconditions": [
+          "EPI > 0"
+        ],
+        "postconditions": [
+          "Must not reduce C(t) unless in dissonance test"
+        ]
       },
       "anti_patterns": [
         "Coherence without stabilization target (redundant application)",
@@ -105,9 +141,15 @@
         "Missing Coherence after destabilizers (violates U2)"
       ],
       "relationships": {
-        "must_precede": ["Mutation (ZHIR) - provides stable base"],
-        "should_follow": ["Destabilizers (OZ, VAL, ZHIR) per U2"],
-        "can_follow": ["Any operator that modifies structure"]
+        "must_precede": [
+          "Mutation (ZHIR) - provides stable base"
+        ],
+        "should_follow": [
+          "Destabilizers (OZ, VAL, ZHIR) per U2"
+        ],
+        "can_follow": [
+          "Any operator that modifies structure"
+        ]
       },
       "test_references": [
         "tests/unit/operators/test_coherence_dnfr_reduction.py",
@@ -119,9 +161,9 @@
     {
       "name": "dissonance",
       "glyph": "OZ",
-      "symbol": "⚡",
+      "symbol": "\u26a1",
       "physics": "Introduces controlled instability",
-      "effect": "Increases |ΔNFR|, may trigger bifurcation if ∂²EPI/∂t² > τ",
+      "effect": "Increases |\u0394NFR|, may trigger bifurcation if \u2202\u00b2EPI/\u2202t\u00b2 > \u03c4",
       "when_to_use": "Breaking local optima, exploration",
       "classification": {
         "generator": false,
@@ -133,10 +175,18 @@
         "bifurcation_handler": false,
         "transformer": false
       },
-      "grammar_roles": ["U1b: Closure", "U2: Destabilizer", "U4a: Bifurcation Trigger"],
+      "grammar_roles": [
+        "U1b: Closure",
+        "U2: Destabilizer",
+        "U4a: Bifurcation Trigger"
+      ],
       "contract": {
-        "preconditions": ["EPI > 0"],
-        "postconditions": ["Must increase |ΔNFR|"]
+        "preconditions": [
+          "EPI > 0"
+        ],
+        "postconditions": [
+          "Must increase |\u0394NFR|"
+        ]
       },
       "anti_patterns": [
         "Dissonance without stabilizer (violates U2)",
@@ -144,9 +194,15 @@
         "Dissonance as only content (no structure to perturb)"
       ],
       "relationships": {
-        "must_follow": ["Stabilizers (IL, THOL) in sequence per U2"],
-        "often_precedes": ["Mutation (ZHIR) - creates transformation context"],
-        "can_close": ["Sequences (U1b role)"]
+        "must_follow": [
+          "Stabilizers (IL, THOL) in sequence per U2"
+        ],
+        "often_precedes": [
+          "Mutation (ZHIR) - creates transformation context"
+        ],
+        "can_close": [
+          "Sequences (U1b role)"
+        ]
       },
       "test_references": [
         "tests/unit/operators/test_dissonance_preconditions.py",
@@ -157,9 +213,9 @@
     {
       "name": "coupling",
       "glyph": "UM",
-      "symbol": "🔗",
+      "symbol": "\ud83d\udd17",
       "physics": "Creates structural links via phase synchronization",
-      "effect": "φᵢ(t) → φⱼ(t), information exchange",
+      "effect": "\u03c6\u1d62(t) \u2192 \u03c6\u2c7c(t), information exchange",
       "when_to_use": "Network formation, connecting nodes",
       "classification": {
         "generator": false,
@@ -171,10 +227,17 @@
         "bifurcation_handler": false,
         "transformer": false
       },
-      "grammar_roles": ["U3: Resonant Coupling"],
+      "grammar_roles": [
+        "U3: Resonant Coupling"
+      ],
       "contract": {
-        "preconditions": ["|φᵢ - φⱼ| ≤ Δφ_max"],
-        "postconditions": ["Edge created", "Phase synchronized"]
+        "preconditions": [
+          "|\u03c6\u1d62 - \u03c6\u2c7c| \u2264 \u0394\u03c6_max"
+        ],
+        "postconditions": [
+          "Edge created",
+          "Phase synchronized"
+        ]
       },
       "anti_patterns": [
         "Coupling without phase verification (violates U3)",
@@ -182,9 +245,16 @@
         "Coupling without subsequent information flow"
       ],
       "relationships": {
-        "requires": ["Phase verification via validate_resonant_coupling()"],
-        "often_precedes": ["Reception (EN)", "Resonance (RA)"],
-        "enables": ["Network information flow"]
+        "requires": [
+          "Phase verification via validate_resonant_coupling()"
+        ],
+        "often_precedes": [
+          "Reception (EN)",
+          "Resonance (RA)"
+        ],
+        "enables": [
+          "Network information flow"
+        ]
       },
       "test_references": [
         "tests/unit/operators/test_coupling_preconditions.py",
@@ -194,7 +264,7 @@
     {
       "name": "resonance",
       "glyph": "RA",
-      "symbol": "🌊",
+      "symbol": "\ud83c\udf0a",
       "physics": "Amplifies and propagates patterns coherently",
       "effect": "Increases effective coupling, EPI propagation",
       "when_to_use": "Pattern reinforcement, spreading coherence",
@@ -208,10 +278,17 @@
         "bifurcation_handler": false,
         "transformer": false
       },
-      "grammar_roles": ["U3: Resonant Coupling"],
+      "grammar_roles": [
+        "U3: Resonant Coupling"
+      ],
       "contract": {
-        "preconditions": ["Network edges exist", "Phase compatible"],
-        "postconditions": ["Propagates EPI without altering identity"]
+        "preconditions": [
+          "Network edges exist",
+          "Phase compatible"
+        ],
+        "postconditions": [
+          "Propagates EPI without altering identity"
+        ]
       },
       "anti_patterns": [
         "Resonance without coupling (no edges)",
@@ -219,9 +296,15 @@
         "Resonance on isolated nodes"
       ],
       "relationships": {
-        "requires": ["Existing coupling (edges) and phase compatibility (U3)"],
-        "often_follows": ["Coupling (UM)"],
-        "effect": ["Amplifies coherent patterns without altering identity"]
+        "requires": [
+          "Existing coupling (edges) and phase compatibility (U3)"
+        ],
+        "often_follows": [
+          "Coupling (UM)"
+        ],
+        "effect": [
+          "Amplifies coherent patterns without altering identity"
+        ]
       },
       "test_references": [
         "tests/integration/test_coherence_operator_integration.py"
@@ -230,9 +313,9 @@
     {
       "name": "silence",
       "glyph": "SHA",
-      "symbol": "🔇",
+      "symbol": "\ud83d\udd07",
       "physics": "Freezes evolution temporarily",
-      "effect": "νf → 0, EPI unchanged",
+      "effect": "\u03bdf \u2192 0, EPI unchanged",
       "when_to_use": "Observation windows, pause for synchronization",
       "classification": {
         "generator": false,
@@ -244,10 +327,15 @@
         "bifurcation_handler": false,
         "transformer": false
       },
-      "grammar_roles": ["U1b: Closure"],
+      "grammar_roles": [
+        "U1b: Closure"
+      ],
       "contract": {
         "preconditions": [],
-        "postconditions": ["Preserves EPI over time", "νf → 0"]
+        "postconditions": [
+          "Preserves EPI over time",
+          "\u03bdf \u2192 0"
+        ]
       },
       "anti_patterns": [
         "Silence in middle without reactivation",
@@ -255,9 +343,15 @@
         "Attempting operations on silenced node"
       ],
       "relationships": {
-        "closes": ["Sequences (U1b role)"],
-        "should_follow": ["Stabilization (IL, THOL)"],
-        "reactivation": ["Requires generator (AL, NAV, REMESH)"]
+        "closes": [
+          "Sequences (U1b role)"
+        ],
+        "should_follow": [
+          "Stabilization (IL, THOL)"
+        ],
+        "reactivation": [
+          "Requires generator (AL, NAV, REMESH)"
+        ]
       },
       "test_references": [
         "Latency/reactivation tested in emission tests"
@@ -266,7 +360,7 @@
     {
       "name": "expansion",
       "glyph": "VAL",
-      "symbol": "📈",
+      "symbol": "\ud83d\udcc8",
       "physics": "Increases structural complexity",
       "effect": "dim(EPI) increases",
       "when_to_use": "Adding degrees of freedom",
@@ -280,10 +374,16 @@
         "bifurcation_handler": false,
         "transformer": false
       },
-      "grammar_roles": ["U2: Destabilizer"],
+      "grammar_roles": [
+        "U2: Destabilizer"
+      ],
       "contract": {
-        "preconditions": ["EPI > 0"],
-        "postconditions": ["Dimensionality increased"]
+        "preconditions": [
+          "EPI > 0"
+        ],
+        "postconditions": [
+          "Dimensionality increased"
+        ]
       },
       "anti_patterns": [
         "Expansion without stabilizer (violates U2)",
@@ -291,9 +391,15 @@
         "Unbounded expansion"
       ],
       "relationships": {
-        "requires": ["Stabilizer (IL, THOL) per U2"],
-        "often_follows": ["Emission or Reception"],
-        "inverse": ["Contraction (NUL)"]
+        "requires": [
+          "Stabilizer (IL, THOL) per U2"
+        ],
+        "often_follows": [
+          "Emission or Reception"
+        ],
+        "inverse": [
+          "Contraction (NUL)"
+        ]
       },
       "test_references": [
         "tests/unit/operators/test_destabilizer_telemetry.py",
@@ -303,7 +409,7 @@
     {
       "name": "contraction",
       "glyph": "NUL",
-      "symbol": "📉",
+      "symbol": "\ud83d\udcc9",
       "physics": "Reduces structural complexity",
       "effect": "dim(EPI) decreases",
       "when_to_use": "Simplification, dimensionality reduction",
@@ -311,25 +417,38 @@
         "generator": false,
         "closure": false,
         "stabilizer": false,
-        "destabilizer": false,
+        "destabilizer": true,
         "coupling_resonance": false,
         "bifurcation_trigger": false,
         "bifurcation_handler": false,
         "transformer": false
       },
-      "grammar_roles": [],
+      "grammar_roles": [
+        "U2: Destabilizer"
+      ],
       "contract": {
-        "preconditions": ["EPI > 0", "dim(EPI) > 1"],
-        "postconditions": ["Dimensionality decreased"]
+        "preconditions": [
+          "EPI > 0",
+          "dim(EPI) > 1"
+        ],
+        "postconditions": [
+          "Dimensionality decreased"
+        ]
       },
       "anti_patterns": [
         "Contraction on low-dimensional EPI",
         "Excessive contraction losing information"
       ],
       "relationships": {
-        "inverse": ["Expansion (VAL)"],
-        "not_destabilizer": ["Reduces complexity without requiring stabilizers"],
-        "often_follows": ["Expansion or complex transformations"]
+        "inverse": [
+          "Expansion (VAL)"
+        ],
+        "not_destabilizer": [
+          "Reduces complexity without requiring stabilizers"
+        ],
+        "often_follows": [
+          "Expansion or complex transformations"
+        ]
       },
       "test_references": [
         "tests/unit/operators/test_contraction.py",
@@ -340,7 +459,7 @@
     {
       "name": "self_organization",
       "glyph": "THOL",
-      "symbol": "🌱",
+      "symbol": "\ud83c\udf31",
       "physics": "Spontaneous autopoietic pattern formation",
       "effect": "Creates sub-EPIs, fractal structuring",
       "when_to_use": "Emergent organization",
@@ -354,20 +473,36 @@
         "bifurcation_handler": true,
         "transformer": true
       },
-      "grammar_roles": ["U2: Stabilizer", "U4a: Bifurcation Handler", "U4b: Transformer"],
+      "grammar_roles": [
+        "U2: Stabilizer",
+        "U4a: Bifurcation Handler",
+        "U4b: Transformer"
+      ],
       "contract": {
-        "preconditions": ["Recent destabilizer within ~3 ops"],
-        "postconditions": ["Preserves global form while creating sub-EPIs"]
+        "preconditions": [
+          "Recent destabilizer within ~3 ops"
+        ],
+        "postconditions": [
+          "Preserves global form while creating sub-EPIs"
+        ]
       },
       "anti_patterns": [
         "THOL without recent destabilizer (violates U4b)",
         "THOL without follow-up stabilization"
       ],
       "relationships": {
-        "requires": ["Recent destabilizer (~3 ops) per U4b"],
-        "handles": ["Bifurcations from OZ, VAL"],
-        "creates": ["Sub-EPIs (fractal structure)"],
-        "stabilizes": ["System after transformation (U2 role)"]
+        "requires": [
+          "Recent destabilizer (~3 ops) per U4b"
+        ],
+        "handles": [
+          "Bifurcations from OZ, VAL"
+        ],
+        "creates": [
+          "Sub-EPIs (fractal structure)"
+        ],
+        "stabilizes": [
+          "System after transformation (U2 role)"
+        ]
       },
       "test_references": [
         "tests/unit/operators/test_thol_coherence.py",
@@ -377,9 +512,9 @@
     {
       "name": "mutation",
       "glyph": "ZHIR",
-      "symbol": "🧬",
+      "symbol": "\ud83e\uddec",
       "physics": "Phase transformation at threshold",
-      "effect": "θ → θ' when ΔEPI/Δt > ξ",
+      "effect": "\u03b8 \u2192 \u03b8' when \u0394EPI/\u0394t > \u03be",
       "when_to_use": "Qualitative state changes",
       "classification": {
         "generator": false,
@@ -391,10 +526,19 @@
         "bifurcation_handler": false,
         "transformer": true
       },
-      "grammar_roles": ["U2: Destabilizer", "U4a: Bifurcation Trigger", "U4b: Transformer"],
+      "grammar_roles": [
+        "U2: Destabilizer",
+        "U4a: Bifurcation Trigger",
+        "U4b: Transformer"
+      ],
       "contract": {
-        "preconditions": ["Prior coherence (IL)", "Recent destabilizer within ~3 ops"],
-        "postconditions": ["Phase transformed"]
+        "preconditions": [
+          "Prior coherence (IL)",
+          "Recent destabilizer within ~3 ops"
+        ],
+        "postconditions": [
+          "Phase transformed"
+        ]
       },
       "anti_patterns": [
         "ZHIR without prior Coherence (violates U4b)",
@@ -402,9 +546,15 @@
         "ZHIR without handler (violates U4a)"
       ],
       "relationships": {
-        "requires": ["Prior IL + recent destabilizer + handler (U4b + U4a)"],
-        "triggers": ["Phase transformation (θ → θ')"],
-        "most_constrained": ["Strictest grammar requirements of all operators"]
+        "requires": [
+          "Prior IL + recent destabilizer + handler (U4b + U4a)"
+        ],
+        "triggers": [
+          "Phase transformation (\u03b8 \u2192 \u03b8')"
+        ],
+        "most_constrained": [
+          "Strictest grammar requirements of all operators"
+        ]
       },
       "test_references": [
         "tests/unit/operators/test_bifurcation.py",
@@ -414,7 +564,7 @@
     {
       "name": "transition",
       "glyph": "NAV",
-      "symbol": "➡️",
+      "symbol": "\u27a1\ufe0f",
       "physics": "Regime shift, activates latent EPI",
       "effect": "Controlled trajectory through structural space",
       "when_to_use": "Switching between attractor states",
@@ -428,19 +578,34 @@
         "bifurcation_handler": false,
         "transformer": false
       },
-      "grammar_roles": ["U1a: Generator", "U1b: Closure"],
+      "grammar_roles": [
+        "U1a: Generator",
+        "U1b: Closure"
+      ],
       "contract": {
-        "preconditions": ["Can activate dormant EPI"],
-        "postconditions": ["New regime activated"]
+        "preconditions": [
+          "Can activate dormant EPI"
+        ],
+        "postconditions": [
+          "New regime activated"
+        ]
       },
       "anti_patterns": [
         "NAV without latent structure to activate"
       ],
       "relationships": {
-        "generator_role": ["Can start sequences (U1a)"],
-        "closure_role": ["Can end sequences (U1b)"],
-        "dual_nature": ["Both activator and terminator"],
-        "often_used_for": ["Regime shifts, mode transitions"]
+        "generator_role": [
+          "Can start sequences (U1a)"
+        ],
+        "closure_role": [
+          "Can end sequences (U1b)"
+        ],
+        "dual_nature": [
+          "Both activator and terminator"
+        ],
+        "often_used_for": [
+          "Regime shifts, mode transitions"
+        ]
       },
       "test_references": [
         "Grammar tests validate U1a/U1b dual role"
@@ -449,9 +614,9 @@
     {
       "name": "recursivity",
       "glyph": "REMESH",
-      "symbol": "🔄",
+      "symbol": "\ud83d\udd04",
       "physics": "Echoes structure across scales (operational fractality)",
-      "effect": "EPI(t) references EPI(t-τ), nested operators",
+      "effect": "EPI(t) references EPI(t-\u03c4), nested operators",
       "when_to_use": "Multi-scale operations, memory",
       "classification": {
         "generator": true,
@@ -463,19 +628,34 @@
         "bifurcation_handler": false,
         "transformer": false
       },
-      "grammar_roles": ["U1a: Generator", "U1b: Closure"],
+      "grammar_roles": [
+        "U1a: Generator",
+        "U1b: Closure"
+      ],
       "contract": {
-        "preconditions": ["Previous EPI state available"],
-        "postconditions": ["Multi-scale structure created"]
+        "preconditions": [
+          "Previous EPI state available"
+        ],
+        "postconditions": [
+          "Multi-scale structure created"
+        ]
       },
       "anti_patterns": [
         "REMESH without history/previous states"
       ],
       "relationships": {
-        "generator_role": ["Can start sequences (U1a)"],
-        "closure_role": ["Can end sequences (U1b)"],
-        "creates": ["Recursive patterns across scales"],
-        "requires": ["Previous EPI states (history)"]
+        "generator_role": [
+          "Can start sequences (U1a)"
+        ],
+        "closure_role": [
+          "Can end sequences (U1b)"
+        ],
+        "creates": [
+          "Recursive patterns across scales"
+        ],
+        "requires": [
+          "Previous EPI states (history)"
+        ]
       },
       "test_references": [
         "tests/unit/operators/test_remesh_operator_integration.py"

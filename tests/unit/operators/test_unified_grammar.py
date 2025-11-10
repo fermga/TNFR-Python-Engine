@@ -75,8 +75,9 @@ class TestOperatorSets:
         Physics basis: Reduce |ΔNFR|, ensure integral convergence.
         - IL (Coherence): Direct coherence restoration
         - THOL (Self-organization): Autopoietic closure, self-limiting boundaries
+        - EN (Reception): Integration reduces ΔNFR through structural stabilization
         """
-        assert STABILIZERS == frozenset({"coherence", "self_organization"})
+        assert STABILIZERS == frozenset({"coherence", "self_organization", "reception"})
 
     def test_destabilizers_set(self):
         """U2: Destabilizers increase |ΔNFR| (positive feedback).
@@ -85,8 +86,9 @@ class TestOperatorSets:
         - OZ (Dissonance): Explicit dissonance
         - ZHIR (Mutation): Phase transformation
         - VAL (Expansion): Increases structural complexity
+        - NUL (Contraction): Densification increases ΔNFR
         """
-        assert DESTABILIZERS == frozenset({"dissonance", "mutation", "expansion"})
+        assert DESTABILIZERS == frozenset({"dissonance", "mutation", "expansion", "contraction"})
 
     def test_coupling_resonance_set(self):
         """U3: Ops requiring phase verification per Invariant #5.
@@ -572,15 +574,15 @@ class TestIntegration:
         assert "phase verification" in u3_msg.lower()
 
     def test_all_messages_include_constraint_label(self):
-        """All validation messages should include U1a, U1b, U2, U3, U4a, or U4b label."""
+        """All validation messages should include U1a, U1b, U2, U3, U4a, U4b, or U2-REMESH label."""
         seq = [Emission(), Coherence(), Silence()]
         valid, messages = UnifiedGrammarValidator.validate(seq, epi_initial=0.0)
 
-        # Should have exactly 6 messages (one for each constraint)
-        assert len(messages) == 6
+        # Should have exactly 7 messages (one for each constraint including U2-REMESH)
+        assert len(messages) == 7
 
         # Each should start with constraint label
-        constraint_labels = ["U1a:", "U1b:", "U2:", "U3:", "U4a:", "U4b:"]
+        constraint_labels = ["U1a:", "U1b:", "U2:", "U3:", "U4a:", "U4b:", "U2-REMESH:"]
         for label in constraint_labels:
             assert any(label in m for m in messages), f"Missing {label} in messages"
 

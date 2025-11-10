@@ -213,10 +213,10 @@ GENERATORS = frozenset({"emission", "transition", "recursivity"})
 CLOSURES = frozenset({"silence", "transition", "recursivity", "dissonance"})
 
 # U2: Stabilizers - Provide negative feedback for convergence
-STABILIZERS = frozenset({"coherence", "self_organization"})
+STABILIZERS = frozenset({"coherence", "self_organization", "reception"})
 
 # U2: Destabilizers - Increase |ΔNFR| (positive feedback)
-DESTABILIZERS = frozenset({"dissonance", "mutation", "expansion"})
+DESTABILIZERS = frozenset({"dissonance", "mutation", "expansion", "contraction"})
 
 # U3: Coupling/Resonance - Require phase verification
 COUPLING_RESONANCE = frozenset({"coupling", "resonance"})
