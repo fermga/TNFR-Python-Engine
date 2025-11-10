@@ -203,6 +203,84 @@ Does sequence end with closure {SHA, NAV, REMESH, OZ}?
 
 ---
 
+## 📊 13x13 Operator Compatibility Matrix
+
+**Legend:**
+- ✅ = Naturally compatible / Common pattern
+- ⚠️ = Valid but needs grammar compliance (stabilizers, handlers, etc.)
+- 🔒 = Requires explicit checks (e.g., phase verification for UM/RA)
+- ❌ = Anti-pattern / Violates physics or grammar
+- ➖ = Neutral / Depends on context
+
+### Matrix: Can Operator [Row] → Follow → Operator [Column]?
+
+|       | AL | EN | IL | OZ | UM | RA | SHA | VAL | NUL | THOL | ZHIR | NAV | REMESH |
+|-------|:--:|:--:|:--:|:--:|:--:|:--:|:---:|:---:|:---:|:----:|:----:|:---:|:------:|
+| **AL**    | ➖ | ✅ | ✅ | ⚠️ | 🔒 | ➖ | ✅  | ⚠️  | ➖  | ⚠️   | ❌   | ✅  | ✅     |
+| **EN**    | ➖ | ➖ | ✅ | ⚠️ | 🔒 | ➖ | ⚠️  | ⚠️  | ➖  | ⚠️   | ❌   | ➖  | ➖     |
+| **IL**    | ➖ | ✅ | ➖ | ✅ | 🔒 | 🔒 | ✅  | ➖  | ✅  | ✅   | ❌   | ✅  | ✅     |
+| **OZ**    | ➖ | ➖ | ✅ | ❌ | ➖ | ➖ | ⚠️  | ❌  | ➖  | ✅   | ⚠️   | ➖  | ➖     |
+| **UM**    | ➖ | ✅ | ✅ | ⚠️ | 🔒 | 🔒 | ⚠️  | ⚠️  | ➖  | ⚠️   | ❌   | ➖  | ➖     |
+| **RA**    | ➖ | ✅ | ✅ | ⚠️ | 🔒 | ➖ | ⚠️  | ⚠️  | ➖  | ⚠️   | ❌   | ➖  | ➖     |
+| **SHA**   | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ➖  | ❌  | ❌  | ❌   | ❌   | ✅  | ✅     |
+| **VAL**   | ➖ | ➖ | ✅ | ⚠️ | ➖ | ➖ | ⚠️  | ❌  | ✅  | ✅   | ⚠️   | ➖  | ➖     |
+| **NUL**   | ➖ | ➖ | ✅ | ⚠️ | ➖ | ➖ | ✅  | ➖  | ➖  | ➖   | ❌   | ➖  | ➖     |
+| **THOL**  | ➖ | ✅ | ✅ | ⚠️ | 🔒 | 🔒 | ✅  | ⚠️  | ✅  | ➖   | ❌   | ✅  | ✅     |
+| **ZHIR**  | ➖ | ➖ | ✅ | ❌ | ➖ | ➖ | ⚠️  | ❌  | ➖  | ✅   | ❌   | ➖  | ➖     |
+| **NAV**   | ➖ | ✅ | ✅ | ⚠️ | 🔒 | ➖ | ✅  | ⚠️  | ➖  | ⚠️   | ❌   | ➖  | ✅     |
+| **REMESH**| ➖ | ✅ | ✅ | ⚠️ | 🔒 | ➖ | ✅  | ⚠️  | ➖  | ✅   | ❌   | ✅  | ➖     |
+
+### Key Patterns from Matrix
+
+**✅ Most Compatible Pairs:**
+- AL → EN → IL (Bootstrap: emit, receive, stabilize)
+- IL → OZ → IL (Controlled exploration)
+- OZ → THOL → IL (Bifurcation handling)
+- UM/RA → EN (Network propagation)
+
+**⚠️ Valid but Needs Care:**
+- Any → OZ/VAL/ZHIR → Must follow with IL/THOL (U2)
+- OZ/IL → ZHIR → IL (U4b: prior IL + recent dest + handler)
+- THOL needs recent destabilizer (~3 ops before)
+
+**🔒 Phase Verification Required:**
+- Anything → UM/RA (Must call `validate_resonant_coupling()`)
+
+**❌ Anti-Patterns:**
+- SHA → Any except generators (Node frozen, needs reactivation)
+- Any → ZHIR without proper context (U4b violations)
+- OZ → OZ, VAL → VAL (Cascading destabilization without stabilizers)
+- Destabilizers → ZHIR without IL first
+
+### Usage Examples
+
+```python
+# ✅ Valid: Bootstrap pattern
+[Emission, Reception, Coherence, Silence]  # AL → EN → IL → SHA
+
+# ✅ Valid: Exploration with stabilization
+[Emission, Coherence, Dissonance, Coherence, Silence]  # OZ balanced by IL
+
+# ⚠️ Valid but complex: Mutation with full context
+[Emission, Coherence, Dissonance, Mutation, Coherence, Silence]
+#                ^prior IL  ^recent  ^ZHIR    ^handler
+
+# ❌ Invalid: Destabilizer without stabilizer
+[Emission, Dissonance, Silence]  # Violates U2
+
+# ❌ Invalid: Silence in middle
+[Emission, Silence, Coherence]  # Node frozen, can't apply Coherence
+
+# 🔒 Valid with check: Coupling requires phase verification
+[Emission, Coupling, Resonance, Silence]  # UM/RA need phase check
+```
+
+---
+└─ No  → ✗ Add closure
+```
+
+---
+
 ## 🐛 Common Errors & Solutions
 
 ### Error: "Need generator when EPI=0"

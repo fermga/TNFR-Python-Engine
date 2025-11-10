@@ -25,21 +25,7 @@
       "contract": {
         "preconditions": ["Can work from EPI=0"],
         "postconditions": ["EPI > 0", "νf increased"]
-      },
-      "anti_patterns": [
-        "Redundant emission in middle of sequence without purpose",
-        "Excessive re-activation without stabilization"
-      ],
-      "relationships": {
-        "can_precede": ["All operators (generator role)"],
-        "should_follow": ["Nothing (starts from vacuum/dormant)"],
-        "often_followed_by": ["Coherence (IL)", "Reception (EN)", "Coupling (UM)"]
-      },
-      "test_references": [
-        "tests/unit/operators/test_emission_irreversibility.py",
-        "tests/unit/operators/test_emission_metrics.py",
-        "tests/unit/operators/test_emission_preconditions.py"
-      ]
+      }
     },
     {
       "name": "reception",
@@ -62,20 +48,7 @@
       "contract": {
         "preconditions": ["Network connectivity exists"],
         "postconditions": ["Must not reduce C(t)"]
-      },
-      "anti_patterns": [
-        "Reception without coupling (no network connectivity)",
-        "Reception on isolated node"
-      ],
-      "relationships": {
-        "must_precede": ["Coupling (UM) or existing edges"],
-        "can_follow": ["Coupling (UM)", "Resonance (RA)"],
-        "often_followed_by": ["Coherence (IL)", "SelfOrganization (THOL)"]
-      },
-      "test_references": [
-        "tests/unit/operators/test_reception_preconditions.py",
-        "tests/unit/operators/test_reception_sources.py"
-      ]
+      }
     },
     {
       "name": "coherence",
@@ -98,23 +71,7 @@
       "contract": {
         "preconditions": ["EPI > 0"],
         "postconditions": ["Must not reduce C(t) unless in dissonance test"]
-      },
-      "anti_patterns": [
-        "Coherence without stabilization target (redundant application)",
-        "Coherence on EPI=0 node (violates precondition)",
-        "Missing Coherence after destabilizers (violates U2)"
-      ],
-      "relationships": {
-        "must_precede": ["Mutation (ZHIR) - provides stable base"],
-        "should_follow": ["Destabilizers (OZ, VAL, ZHIR) per U2"],
-        "can_follow": ["Any operator that modifies structure"]
-      },
-      "test_references": [
-        "tests/unit/operators/test_coherence_dnfr_reduction.py",
-        "tests/unit/operators/test_coherence_preconditions.py",
-        "tests/unit/operators/test_coherence_ct_tracking.py",
-        "tests/unit/operators/test_coherence_phase_locking.py"
-      ]
+      }
     },
     {
       "name": "dissonance",
@@ -137,22 +94,7 @@
       "contract": {
         "preconditions": ["EPI > 0"],
         "postconditions": ["Must increase |ΔNFR|"]
-      },
-      "anti_patterns": [
-        "Dissonance without stabilizer (violates U2)",
-        "Multiple dissonances without handlers (violates U4a)",
-        "Dissonance as only content (no structure to perturb)"
-      ],
-      "relationships": {
-        "must_follow": ["Stabilizers (IL, THOL) in sequence per U2"],
-        "often_precedes": ["Mutation (ZHIR) - creates transformation context"],
-        "can_close": ["Sequences (U1b role)"]
-      },
-      "test_references": [
-        "tests/unit/operators/test_dissonance_preconditions.py",
-        "tests/unit/operators/test_destabilizer_telemetry.py",
-        "tests/unit/operators/test_graduated_destabilizer_windows.py"
-      ]
+      }
     },
     {
       "name": "coupling",
@@ -175,21 +117,7 @@
       "contract": {
         "preconditions": ["|φᵢ - φⱼ| ≤ Δφ_max"],
         "postconditions": ["Edge created", "Phase synchronized"]
-      },
-      "anti_patterns": [
-        "Coupling without phase verification (violates U3)",
-        "Coupling antiphase nodes (destructive interference)",
-        "Coupling without subsequent information flow"
-      ],
-      "relationships": {
-        "requires": ["Phase verification via validate_resonant_coupling()"],
-        "often_precedes": ["Reception (EN)", "Resonance (RA)"],
-        "enables": ["Network information flow"]
-      },
-      "test_references": [
-        "tests/unit/operators/test_coupling_preconditions.py",
-        "tests/unit/operators/test_coupling_metrics.py"
-      ]
+      }
     },
     {
       "name": "resonance",
@@ -212,20 +140,7 @@
       "contract": {
         "preconditions": ["Network edges exist", "Phase compatible"],
         "postconditions": ["Propagates EPI without altering identity"]
-      },
-      "anti_patterns": [
-        "Resonance without coupling (no edges)",
-        "Resonance with incompatible phases (violates U3)",
-        "Resonance on isolated nodes"
-      ],
-      "relationships": {
-        "requires": ["Existing coupling (edges) and phase compatibility (U3)"],
-        "often_follows": ["Coupling (UM)"],
-        "effect": ["Amplifies coherent patterns without altering identity"]
-      },
-      "test_references": [
-        "tests/integration/test_coherence_operator_integration.py"
-      ]
+      }
     },
     {
       "name": "silence",
@@ -248,20 +163,7 @@
       "contract": {
         "preconditions": [],
         "postconditions": ["Preserves EPI over time", "νf → 0"]
-      },
-      "anti_patterns": [
-        "Silence in middle without reactivation",
-        "Silence without prior stabilization",
-        "Attempting operations on silenced node"
-      ],
-      "relationships": {
-        "closes": ["Sequences (U1b role)"],
-        "should_follow": ["Stabilization (IL, THOL)"],
-        "reactivation": ["Requires generator (AL, NAV, REMESH)"]
-      },
-      "test_references": [
-        "Latency/reactivation tested in emission tests"
-      ]
+      }
     },
     {
       "name": "expansion",
@@ -284,21 +186,7 @@
       "contract": {
         "preconditions": ["EPI > 0"],
         "postconditions": ["Dimensionality increased"]
-      },
-      "anti_patterns": [
-        "Expansion without stabilizer (violates U2)",
-        "Multiple expansions without stabilization",
-        "Unbounded expansion"
-      ],
-      "relationships": {
-        "requires": ["Stabilizer (IL, THOL) per U2"],
-        "often_follows": ["Emission or Reception"],
-        "inverse": ["Contraction (NUL)"]
-      },
-      "test_references": [
-        "tests/unit/operators/test_destabilizer_telemetry.py",
-        "tests/unit/operators/test_graduated_destabilizer_windows.py"
-      ]
+      }
     },
     {
       "name": "contraction",
@@ -321,21 +209,7 @@
       "contract": {
         "preconditions": ["EPI > 0", "dim(EPI) > 1"],
         "postconditions": ["Dimensionality decreased"]
-      },
-      "anti_patterns": [
-        "Contraction on low-dimensional EPI",
-        "Excessive contraction losing information"
-      ],
-      "relationships": {
-        "inverse": ["Expansion (VAL)"],
-        "not_destabilizer": ["Reduces complexity without requiring stabilizers"],
-        "often_follows": ["Expansion or complex transformations"]
-      },
-      "test_references": [
-        "tests/unit/operators/test_contraction.py",
-        "tests/unit/operators/test_contraction_preconditions.py",
-        "tests/unit/operators/test_contraction_density_metrics.py"
-      ]
+      }
     },
     {
       "name": "self_organization",
@@ -358,21 +232,7 @@
       "contract": {
         "preconditions": ["Recent destabilizer within ~3 ops"],
         "postconditions": ["Preserves global form while creating sub-EPIs"]
-      },
-      "anti_patterns": [
-        "THOL without recent destabilizer (violates U4b)",
-        "THOL without follow-up stabilization"
-      ],
-      "relationships": {
-        "requires": ["Recent destabilizer (~3 ops) per U4b"],
-        "handles": ["Bifurcations from OZ, VAL"],
-        "creates": ["Sub-EPIs (fractal structure)"],
-        "stabilizes": ["System after transformation (U2 role)"]
-      },
-      "test_references": [
-        "tests/unit/operators/test_thol_coherence.py",
-        "tests/unit/operators/test_controlled_bifurcation.py"
-      ]
+      }
     },
     {
       "name": "mutation",
@@ -395,21 +255,7 @@
       "contract": {
         "preconditions": ["Prior coherence (IL)", "Recent destabilizer within ~3 ops"],
         "postconditions": ["Phase transformed"]
-      },
-      "anti_patterns": [
-        "ZHIR without prior Coherence (violates U4b)",
-        "ZHIR without recent destabilizer (violates U4b)",
-        "ZHIR without handler (violates U4a)"
-      ],
-      "relationships": {
-        "requires": ["Prior IL + recent destabilizer + handler (U4b + U4a)"],
-        "triggers": ["Phase transformation (θ → θ')"],
-        "most_constrained": ["Strictest grammar requirements of all operators"]
-      },
-      "test_references": [
-        "tests/unit/operators/test_bifurcation.py",
-        "tests/unit/operators/test_canonical_grammar_rules.py"
-      ]
+      }
     },
     {
       "name": "transition",
@@ -432,19 +278,7 @@
       "contract": {
         "preconditions": ["Can activate dormant EPI"],
         "postconditions": ["New regime activated"]
-      },
-      "anti_patterns": [
-        "NAV without latent structure to activate"
-      ],
-      "relationships": {
-        "generator_role": ["Can start sequences (U1a)"],
-        "closure_role": ["Can end sequences (U1b)"],
-        "dual_nature": ["Both activator and terminator"],
-        "often_used_for": ["Regime shifts, mode transitions"]
-      },
-      "test_references": [
-        "Grammar tests validate U1a/U1b dual role"
-      ]
+      }
     },
     {
       "name": "recursivity",
@@ -467,19 +301,7 @@
       "contract": {
         "preconditions": ["Previous EPI state available"],
         "postconditions": ["Multi-scale structure created"]
-      },
-      "anti_patterns": [
-        "REMESH without history/previous states"
-      ],
-      "relationships": {
-        "generator_role": ["Can start sequences (U1a)"],
-        "closure_role": ["Can end sequences (U1b)"],
-        "creates": ["Recursive patterns across scales"],
-        "requires": ["Previous EPI states (history)"]
-      },
-      "test_references": [
-        "tests/unit/operators/test_remesh_operator_integration.py"
-      ]
+      }
     }
   ],
   "references": {
@@ -487,6 +309,5 @@
     "implementation": "../../src/tnfr/operators/definitions.py",
     "grammar": "../../src/tnfr/operators/grammar.py",
     "tests": "../../tests/unit/operators/"
-  },
-  "compatibility_matrix_reference": "../08-QUICK-REFERENCE.md#13x13-operator-compatibility-matrix"
+  }
 }
