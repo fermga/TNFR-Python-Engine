@@ -472,3 +472,104 @@ class TestREMESHGrammarLimitations:
         assert "recursive" in docstring.lower() or "amplif" in docstring.lower()
         assert "nodal equation" in docstring.lower()
         assert "∫" in docstring or "integral" in docstring.lower()
+
+
+class TestZHIRPostRecursionGrammar:
+    """Test U4b-REMESH: ZHIR as post-recursion transformer."""
+    
+    def test_zhir_after_remesh_canonical(self):
+        """U4b-REMESH: ZHIR after REMESH is canonical (replicative mutation)."""
+        from tnfr.operators.grammar import GrammarValidator
+        
+        # Canonical sequence: REMESH → ZHIR
+        seq_canonical = [Emission(), Coherence(), Dissonance(), Recursivity(), Mutation(), Silence()]
+        valid, msgs = GrammarValidator.validate(seq_canonical)
+        
+        # Should pass
+        assert valid
+        
+        # U4b-REMESH should be satisfied
+        u4b_remesh_msg = [m for m in msgs if "U4b-REMESH" in m and "satisfied" in m]
+        assert len(u4b_remesh_msg) > 0
+        assert "post-recursion" in u4b_remesh_msg[0].lower()
+    
+    def test_zhir_before_remesh_invalid(self):
+        """U4b-REMESH: ZHIR before REMESH violates canonical relationship."""
+        from tnfr.operators.grammar import GrammarValidator
+        
+        # Non-canonical: ZHIR → REMESH
+        seq_invalid = [Emission(), Coherence(), Dissonance(), Mutation(), Recursivity(), Silence()]
+        valid, msgs = GrammarValidator.validate(seq_invalid)
+        
+        # Should fail
+        assert not valid
+        
+        # Should mention U4b-REMESH violation
+        u4b_remesh_msg = [m for m in msgs if "U4b-REMESH" in m and "violated" in m]
+        assert len(u4b_remesh_msg) > 0
+        assert "precedes all recursivity" in u4b_remesh_msg[0].lower()
+        assert "post-recursion transformer" in u4b_remesh_msg[0].lower()
+    
+    def test_zhir_without_remesh_not_applicable(self):
+        """U4b-REMESH: Not applicable when ZHIR without REMESH."""
+        from tnfr.operators.grammar import GrammarValidator
+        
+        # ZHIR without REMESH - rule not applicable
+        seq = [Emission(), Coherence(), Dissonance(), Mutation(), Silence()]
+        valid, msgs = GrammarValidator.validate(seq)
+        
+        # Should pass (other rules may apply but U4b-REMESH N/A)
+        assert valid
+        
+        # U4b-REMESH should indicate not applicable
+        u4b_remesh_msg = [m for m in msgs if "U4b-REMESH" in m]
+        assert len(u4b_remesh_msg) > 0
+        assert "not applicable" in u4b_remesh_msg[0].lower()
+    
+    def test_remesh_without_zhir_not_applicable(self):
+        """U4b-REMESH: Not applicable when REMESH without ZHIR."""
+        from tnfr.operators.grammar import GrammarValidator
+        
+        # REMESH without ZHIR - rule not applicable
+        seq = [Emission(), Recursivity(), Coherence(), Silence()]
+        valid, msgs = GrammarValidator.validate(seq)
+        
+        # Should pass
+        assert valid
+        
+        # U4b-REMESH should indicate not applicable
+        u4b_remesh_msg = [m for m in msgs if "U4b-REMESH" in m]
+        assert len(u4b_remesh_msg) > 0
+        assert "not applicable" in u4b_remesh_msg[0].lower()
+    
+    def test_multiple_remesh_zhir_after_first(self):
+        """U4b-REMESH: With multiple REMESH, ZHIR after first satisfies rule."""
+        from tnfr.operators.grammar import GrammarValidator
+        
+        # ZHIR after first REMESH (even with second REMESH later)
+        seq = [Emission(), Recursivity(), Coherence(), Dissonance(), 
+               Mutation(), Recursivity(), Silence()]
+        valid, msgs = GrammarValidator.validate(seq)
+        
+        # Should pass
+        assert valid
+        
+        # U4b-REMESH should be satisfied
+        u4b_remesh_msg = [m for m in msgs if "U4b-REMESH" in m]
+        assert len(u4b_remesh_msg) > 0
+        assert "satisfied" in u4b_remesh_msg[0].lower()
+    
+    def test_physical_rationale_documented(self):
+        """Verify U4b-REMESH has physical derivation from REMESH dynamics."""
+        from tnfr.operators.grammar import GrammarValidator
+        import inspect
+        
+        # Check that validate_zhir_post_recursion has proper documentation
+        method = GrammarValidator.validate_zhir_post_recursion
+        docstring = inspect.getdoc(method)
+        
+        # Should mention key physical concepts
+        assert "post-recursion" in docstring.lower()
+        assert "replicative mutation" in docstring.lower() or "mutación replicativa" in docstring.lower()
+        assert "transforms" in docstring.lower()
+        assert "canonical" in docstring.lower()
