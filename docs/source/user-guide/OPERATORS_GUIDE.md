@@ -1,6 +1,6 @@
 # Operators Guide: The 13 Structural Operators
 
-[Home](../home.md) › Operators Guide
+[Home](../index.md) › Operators Guide
 
 This guide provides a comprehensive reference for TNFR's 13 canonical structural operators. These operators are the **only valid way** to modify networks in TNFR, ensuring all changes are traceable, coherent, and reproducible.
 
