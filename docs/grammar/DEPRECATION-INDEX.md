@@ -2,7 +2,7 @@
 
 **Purpose**: Track all deprecated grammar components and their replacements
 
-**Status**: ✅ Active - Updated for v2.0.0
+**Status**: ✅ Active - Updated for v2.1.0
 
 **Last Updated**: 2024-11-10
 
@@ -26,11 +26,11 @@ This document catalogs all deprecated grammar-related components, provides their
 
 #### GRAMMAR_MIGRATION_GUIDE.md
 
-- **Status**: ⚠️ DEPRECATED (v2.0.0)
+- **Status**: ❌ REMOVED (v2.1.0)
 - **Superseded by**: `docs/grammar/07-MIGRATION-AND-EVOLUTION.md`
 - **Reason**: Consolidated into canonical grammar documentation
-- **Removal planned**: v4.0.0
-- **Action required**: Update links to point to new location
+- **Removal**: Completed 2024-11-10
+- **Action required**: Update any links to point to new location
 - **Migration**: All content migrated to canonical docs
 
 ---
@@ -70,22 +70,48 @@ This document catalogs all deprecated grammar-related components, provides their
 
 ### Modules
 
-#### src/tnfr/operators/canonical_grammar.py
+#### src/tnfr/operators/canonical_patterns.py
 
-- **Status**: ❌ REMOVED (v2.0.0)
-- **Replaced by**: `src/tnfr/operators/grammar.py` + `unified_grammar.py`
-- **Reason**: Parallel implementation consolidated
-- **Removal**: Already removed
-- **Migration**: Use `from tnfr.operators.unified_grammar import validate_grammar`
+- **Status**: ❌ REMOVED (v2.1.0)
+- **Replaced by**: `src/tnfr/operators/pattern_detection.py`
+- **Reason**: Deprecated module causing import warnings
+- **Removal**: Completed 2024-11-10
+- **Migration**: Use `from tnfr.operators.pattern_detection import UnifiedPatternDetector`
+
+#### src/tnfr/operators/patterns.py
+
+- **Status**: ❌ REMOVED (v2.1.0)
+- **Replaced by**: `src/tnfr/operators/pattern_detection.py`
+- **Reason**: Deprecated module causing import warnings
+- **Removal**: Completed 2024-11-10
+- **Migration**: Use `from tnfr.operators.pattern_detection import UnifiedPatternDetector`
 
 ---
 
 ### Functions
 
+#### enforce_canonical_grammar()
+
+```python
+# DEPRECATED STUB (for compatibility only)
+from tnfr.operators.grammar import enforce_canonical_grammar
+result = enforce_canonical_grammar(G, node, candidate)
+
+# NEW (RECOMMENDED)
+from tnfr.operators.unified_grammar import validate_grammar
+result = validate_grammar(sequence, epi_initial=0.0)
+```
+
+- **Status**: ⚠️ DEPRECATED STUB (v2.1.0)
+- **Purpose**: No-op stub for backward compatibility
+- **Reason**: Function was minimal stub, now marked as deprecated
+- **Removal planned**: v3.0.0
+- **Note**: Simply returns candidate unchanged. Use `validate_grammar()` for actual validation.
+
 #### validate_sequence() [deprecated signature]
 
 ```python
-# OLD (DEPRECATED)
+# DEPRECATED STUB (for compatibility only)
 from tnfr.operators.grammar import validate_sequence
 result = validate_sequence(operators)
 
@@ -94,17 +120,35 @@ from tnfr.operators.unified_grammar import validate_grammar
 result = validate_grammar(operators, epi_initial=0.0)
 ```
 
-- **Status**: ⚠️ DEPRECATED (v2.0.0)
+- **Status**: ⚠️ DEPRECATED STUB (v2.1.0)
 - **Replaced by**: `validate_grammar(sequence, epi_initial=0.0)`
-- **Reason**: New signature adds required EPI parameter
-- **Removal planned**: v4.0.0
-- **Warning**: DeprecationWarning emitted
-- **Migration**: Add `epi_initial` parameter (default 0.0)
+- **Reason**: Mock stub returning success always
+- **Removal planned**: v3.0.0
+- **Warning**: Returns mock success result
+- **Migration**: Add `epi_initial` parameter and use `validate_grammar()`
+
+#### parse_sequence()
+
+```python
+# DEPRECATED STUB (for compatibility only)
+from tnfr.operators.grammar import parse_sequence
+result = parse_sequence(names)
+
+# NEW (RECOMMENDED)  
+from tnfr.operators.unified_grammar import validate_grammar
+# Use proper grammar validation instead
+```
+
+- **Status**: ⚠️ DEPRECATED STUB (v2.1.0)
+- **Purpose**: Mock stub for backward compatibility
+- **Reason**: Minimal stub implementation
+- **Removal planned**: v3.0.0
+- **Note**: Returns mock parse result. Use proper grammar validation.
 
 #### validate_canonical()
 
 ```python
-# OLD (DEPRECATED)
+# OLD (DEPRECATED - MODULE REMOVED)
 from tnfr.operators.canonical_grammar import validate_canonical
 result = validate_canonical(operators)
 
@@ -116,7 +160,7 @@ result = validate_grammar(operators, epi_initial=0.0)
 - **Status**: ❌ REMOVED (v2.0.0)
 - **Replaced by**: `validate_grammar()`
 - **Reason**: Module removed, functionality consolidated
-- **Removal**: Already removed
+- **Removal**: Completed with module removal
 - **Migration**: Use unified grammar validation
 
 ---
@@ -147,19 +191,19 @@ from tnfr.operators.unified_grammar import GENERATORS
 
 #### tests/unit/operators/test_canonical_grammar_legacy.py
 
-- **Status**: ✅ KEPT (with deprecation notice)
-- **Purpose**: Test legacy compatibility layer
-- **Reason**: Ensures backward compatibility works
-- **Removal planned**: v4.0.0 (when compatibility layer removed)
-- **Note**: Emits DeprecationWarnings by design
+- **Status**: ❌ REMOVED (v2.1.0)
+- **Purpose**: Tested legacy compatibility layer
+- **Reason**: Deprecated functionality removed
+- **Removal**: Completed 2024-11-10
+- **Note**: Tests for non-existent canonical_grammar module
 
 #### tests/unit/operators/test_grammar_c1_c3_deprecation.py
 
-- **Status**: ✅ KEPT (with deprecation notice)
-- **Purpose**: Test C1-C3 to U1-U4 migration warnings
-- **Reason**: Validates deprecation path
-- **Removal planned**: v4.0.0
-- **Note**: Tests that old names emit warnings
+- **Status**: ❌ REMOVED (v2.1.0)
+- **Purpose**: Tested C1-C3 to U1-U4 migration warnings
+- **Reason**: Migration complete, warnings no longer needed
+- **Removal**: Completed 2024-11-10
+- **Note**: C1-C3 references fully replaced with U1-U4
 
 ---
 
@@ -169,11 +213,11 @@ from tnfr.operators.unified_grammar import GENERATORS
 
 #### examples/grammar_migration_example.py
 
-- **Status**: ✅ KEPT (marked as deprecated)
+- **Status**: ⚠️ TO BE REVIEWED
 - **Purpose**: Show C1-C3/RC1-RC4 to U1-U4 migration
 - **Reason**: Educational, helps users migrate
 - **Removal planned**: v4.0.0
-- **Note**: File header clearly marked as deprecated
+- **Note**: File header should be marked as deprecated
 - **Replacement**: See `docs/grammar/examples/` for canonical examples
 
 ---
@@ -195,6 +239,24 @@ from tnfr.operators.unified_grammar import GENERATORS
 
 ## Migration Timeline
 
+### v2.1.0 (Released: 2024-11-10)
+
+**Removed:**
+- `src/tnfr/operators/canonical_patterns.py` - Deprecated module
+- `src/tnfr/operators/patterns.py` - Deprecated module
+- `tests/unit/operators/test_canonical_grammar_legacy.py` - Deprecated tests
+- `tests/unit/operators/test_grammar_c1_c3_deprecation.py` - Deprecated tests
+- `GRAMMAR_MIGRATION_GUIDE.md` - Root-level deprecated file
+
+**Converted to stubs:**
+- `enforce_canonical_grammar()` - Now minimal no-op stub (marked deprecated)
+- `validate_sequence()` - Now mock stub (marked deprecated)
+- `parse_sequence()` - Now mock stub (marked deprecated)
+
+**Rationale:** Clean up deprecated code while maintaining backward compatibility through stubs
+
+---
+
 ### v2.0.0 (Released: 2024-11)
 
 **Introduced:**
@@ -205,7 +267,8 @@ from tnfr.operators.unified_grammar import GENERATORS
 **Deprecated:**
 - Old constraint names (C1-C3, RC1-RC4)
 - `validate_sequence()` old signature
-- `canonical_grammar.py` module
+- `canonical_grammar.py` module concept
+- `canonical_patterns.py` and `patterns.py` modules
 
 **Removed:**
 - Parallel RC1-RC4 implementation

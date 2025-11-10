@@ -186,8 +186,8 @@ __all__ = [
     # Grammar application functions
     "apply_glyph_with_grammar",
     "on_applied_glyph",
-    "enforce_canonical_grammar",
-    # Sequence validation
+    "enforce_canonical_grammar",  # Deprecated stub for compatibility
+    # Sequence validation (deprecated stubs for compatibility)
     "validate_sequence",
     "parse_sequence",
     # Operator sets
@@ -1078,15 +1078,21 @@ def on_applied_glyph(G: "TNFRGraph", n: "NodeId", applied: Any) -> None:
     G.nodes[n]["glyph_history"].append(applied)
 
 
+
+
+
 def enforce_canonical_grammar(
     G: "TNFRGraph",
     n: "NodeId",
     cand: Any,
     ctx: Any = None,
 ) -> Any:
-    """Enforce canonical grammar constraints before operator application.
+    """Minimal stub for backward compatibility.
     
-    Minimal stub implementation.
+    This function is a no-op stub maintained for compatibility with existing
+    code that expects this interface. It simply returns the candidate as-is.
+    
+    For actual grammar validation, use validate_grammar() from unified_grammar.
     
     Parameters
     ----------
@@ -1097,50 +1103,55 @@ def enforce_canonical_grammar(
     cand : Any
         Candidate glyph/operator
     ctx : Any, optional
-        Grammar context
+        Grammar context (ignored)
         
     Returns
     -------
     Any
-        Validated glyph/operator
+        The candidate unchanged
     """
-    # Minimal stub - return candidate as-is
     return cand
+
+# ============================================================================
 
 
 def validate_sequence(
     names: Any = None,
     **kwargs: Any,
 ) -> Any:
-    """Validate sequence of operator names.
+    """DEPRECATED: Minimal stub for backward compatibility only.
     
-    Minimal stub implementation for import compatibility.
+    This function exists only for import compatibility with legacy code.
+    It returns a mock success result.
+    
+    For actual grammar validation, use validate_grammar() from unified_grammar module.
     
     Parameters
     ----------
     names : Iterable[str] | object, optional
-        Sequence of operator names
+        Sequence of operator names (ignored)
     **kwargs : Any
-        Additional validation options
+        Additional validation options (ignored)
         
     Returns
     -------
     ValidationOutcome
-        Validation result (stub returns success)
+        Mock validation result (always passes)
     """
-    # Minimal stub - return success
     class ValidationStub:
         def __init__(self):
             self.passed = True
-            self.message = "Validation stub"
+            self.message = "Validation stub - use validate_grammar() instead"
             self.metadata = {}
     return ValidationStub()
 
 
 def parse_sequence(names: Any) -> Any:
-    """Parse sequence of operator names.
+    """DEPRECATED: Minimal stub for backward compatibility only.
     
-    Minimal stub implementation.
+    This function exists only for import compatibility with legacy code.
+    
+    For actual grammar operations, use the unified_grammar module.
     
     Parameters
     ----------
@@ -1150,15 +1161,17 @@ def parse_sequence(names: Any) -> Any:
     Returns
     -------
     SequenceValidationResult
-        Parse result (stub)
+        Mock parse result
     """
-    # Minimal stub
     class ParseStub:
         def __init__(self):
             self.tokens = list(names) if names else []
             self.canonical_tokens = self.tokens
             self.passed = True
-            self.message = "Parse stub"
+            self.message = "Parse stub - use unified grammar instead"
             self.metadata = {}
             self.error = None
     return ParseStub()
+
+# Grammar Validator Class
+# ============================================================================
