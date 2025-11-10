@@ -32,7 +32,8 @@ Test Coverage
 - Identity property with Emission and complex sequences
 - Idempotence through consistent SHA behavior across contexts
 - Commutativity with Contraction operator
-- All tests respect TNFR grammar constraints (C1, C2, C3)
+- All tests respect TNFR grammar constraints (U1-U4)
+  Note: Legacy reference to C1-C3 constraints - see docs/grammar/DEPRECATION-INDEX.md
 """
 
 from __future__ import annotations

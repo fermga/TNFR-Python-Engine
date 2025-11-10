@@ -92,8 +92,10 @@ def validate_identity_property(
 
     Notes
     -----
-    Due to TNFR grammar constraints (C1: must end with terminator,
-    C2: must include stabilizer), we test identity by comparing:
+    Due to TNFR grammar constraints (U1b: must end with closure,
+    U2: must include stabilizer), we test identity by comparing:
+    
+    [Legacy note: Previously referenced C1-C2. See docs/grammar/DEPRECATION-INDEX.md]
 
     - Path 1: operator → Coherence → Dissonance (OZ terminator)
     - Path 2: operator → Coherence → Silence (SHA terminator)

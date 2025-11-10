@@ -230,15 +230,18 @@ def _check_compatibility(ctx: "GrammarContext", n, cand: Glyph | str) -> Glyph |
     """Verify canonical transition compatibility based on TNFR structural dynamics.
 
     Note: Frequency-based validation (R5) has been removed as it was not a
-    fundamental physical constraint. Only C1-C3 constraints remain:
-    - C1: EXISTENCE & CLOSURE (valid start/end)
-    - C2: BOUNDEDNESS (stabilizers required)
-    - C3: THRESHOLD PHYSICS (bifurcations need context)
+    fundamental physical constraint. Only U1-U4 constraints remain:
+    - U1: STRUCTURAL INITIATION & CLOSURE (valid start/end)
+    - U2: CONVERGENCE & BOUNDEDNESS (stabilizers required)
+    - U3: RESONANT COUPLING (phase compatibility)
+    - U4: BIFURCATION DYNAMICS (bifurcations need context)
+    
+    [Legacy note: Previously referenced C1-C3. See docs/grammar/DEPRECATION-INDEX.md]
 
     These are validated in grammar.py, not here. This function now simply
     allows all transitions - validation happens at sequence level.
     """
-    # All transitions allowed - validation at sequence level via C1-C3
+    # All transitions allowed - validation at sequence level via U1-U4
     return cand
 
 
