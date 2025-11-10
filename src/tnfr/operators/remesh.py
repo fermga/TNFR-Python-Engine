@@ -597,6 +597,411 @@ def structural_memory_match(
     return matches
 
 
+def compute_structural_signature(
+    G: CommunityGraph,
+    node: Hashable,
+) -> Any:
+    """Compute multidimensional structural signature of a node.
+    
+    The signature captures the node's complete structural identity including:
+    - EPI: coherence magnitude
+    - νf: structural frequency  
+    - θ: phase
+    - ΔNFR: reorganization gradient
+    - Topological properties: degree, local clustering
+    
+    This signature enables REMESH's structural memory capability - recognizing
+    the same pattern across different nodes and scales.
+    
+    Parameters
+    ----------
+    G : TNFRGraph
+        Network containing the node
+    node : Hashable
+        Node identifier whose signature to compute
+        
+    Returns
+    -------
+    signature : ndarray, shape (n_features,)
+        Normalized structural signature vector. If NumPy unavailable, returns
+        a tuple of features.
+        
+    Notes
+    -----
+    The signature is normalized to unit length for consistent similarity
+    comparisons across different network scales and configurations.
+    
+    Features included:
+    1. EPI magnitude (coherence)
+    2. νf (structural frequency in Hz_str)
+    3. sin(θ), cos(θ) (circular phase representation)
+    4. ΔNFR (reorganization gradient)
+    5. Normalized degree (relative connectivity)
+    6. Local clustering coefficient (triadic closure)
+    
+    Examples
+    --------
+    >>> G = nx.Graph()
+    >>> G.add_node(1, EPI=0.5, vf=1.0, theta=0.2, DNFR=0.1)
+    >>> G.add_edge(1, 2)
+    >>> sig = compute_structural_signature(G, 1)
+    >>> len(sig)  # 7 features
+    7
+    """
+    # Extract TNFR structural attributes
+    epi = _as_float(get_attr(G.nodes[node], ALIAS_EPI, 0.0))
+    vf = _as_float(get_attr(G.nodes[node], ALIAS_VF, 0.0))
+    from ..constants.aliases import ALIAS_THETA
+    theta = _as_float(get_attr(G.nodes[node], ALIAS_THETA, 0.0))
+    dnfr = _as_float(get_attr(G.nodes[node], ALIAS_DNFR, 0.0))
+    
+    # Compute topological features
+    degree = G.degree(node) if G.has_node(node) else 0
+    n_nodes = G.number_of_nodes()
+    normalized_degree = degree / n_nodes if n_nodes > 0 else 0.0
+    
+    # Local clustering coefficient (requires networkx)
+    try:
+        nx, _ = _get_networkx_modules()
+        clustering = nx.clustering(G, node)
+    except Exception:
+        clustering = 0.0
+    
+    # Build feature vector
+    import math
+    features = [
+        epi,
+        vf,
+        math.sin(theta),  # Circular phase representation
+        math.cos(theta),
+        dnfr,
+        normalized_degree,
+        clustering,
+    ]
+    
+    # Try to use NumPy for normalization
+    np = _get_numpy()
+    if np is not None:
+        signature = np.array(features, dtype=float)
+        norm = np.linalg.norm(signature)
+        if norm > 1e-10:
+            signature = signature / norm
+        return signature
+    else:
+        # Fallback: manual normalization
+        norm = math.sqrt(sum(f * f for f in features))
+        if norm > 1e-10:
+            features = [f / norm for f in features]
+        return tuple(features)
+
+
+def detect_recursive_patterns(
+    G: CommunityGraph,
+    threshold: float = 0.75,
+    metric: str = "cosine",
+    min_cluster_size: int = 2,
+) -> list[list[Hashable]]:
+    """Detect groups of nodes with similar structural patterns.
+    
+    These groups represent the same EPI pattern replicated across different
+    nodes/scales in the network. This is fundamental to REMESH's capability
+    to recognize and propagate structural identity.
+    
+    Parameters
+    ----------
+    G : TNFRGraph
+        Network to analyze
+    threshold : float, default=0.75
+        Minimum similarity score (0-1) to consider patterns as "same identity".
+        Higher values require stricter matching.
+    metric : str, default='cosine'
+        Similarity metric for signature comparison.
+        Options: 'cosine', 'euclidean', 'correlation'
+    min_cluster_size : int, default=2
+        Minimum number of nodes required to consider as a recursive pattern.
+        Single nodes are not patterns.
+        
+    Returns
+    -------
+    clusters : list of list
+        Each cluster contains nodes sharing a structural pattern.
+        Clusters are independent - nodes appear in at most one cluster.
+        
+    Notes
+    -----
+    Algorithm uses greedy clustering:
+    1. Compute structural signatures for all nodes
+    2. For each unvisited node, find all similar nodes (similarity >= threshold)
+    3. Form cluster if size >= min_cluster_size
+    4. Mark all cluster members as visited
+    
+    This implements TNFR's principle: "A node can recognize itself in other
+    nodes" through structural resonance.
+    
+    Examples
+    --------
+    >>> # Network with two groups of similar nodes
+    >>> clusters = detect_recursive_patterns(G, threshold=0.8)
+    >>> len(clusters)
+    2
+    >>> all(len(c) >= 2 for c in clusters)
+    True
+    """
+    nodes = list(G.nodes())
+    n = len(nodes)
+    
+    if n < min_cluster_size:
+        return []
+    
+    # Compute all signatures
+    signatures = {}
+    for node in nodes:
+        signatures[node] = compute_structural_signature(G, node)
+    
+    # Compute similarity matrix (only upper triangle needed)
+    np = _get_numpy()
+    if np is not None:
+        # Use NumPy for efficient computation
+        sig_array = np.array([signatures[node] for node in nodes])
+        
+        if metric == "cosine":
+            # Cosine similarity matrix
+            norms = np.linalg.norm(sig_array, axis=1, keepdims=True)
+            norms = np.maximum(norms, 1e-10)  # Avoid division by zero
+            normalized = sig_array / norms
+            similarities = np.dot(normalized, normalized.T)
+        elif metric == "euclidean":
+            # Euclidean distance -> similarity
+            from scipy.spatial.distance import pdist, squareform
+            distances = squareform(pdist(sig_array, metric='euclidean'))
+            max_dist = np.sqrt(2)  # Max distance for unit vectors
+            similarities = 1.0 - (distances / max_dist)
+        elif metric == "correlation":
+            # Pearson correlation
+            similarities = np.corrcoef(sig_array)
+            # Handle NaN (constant signatures)
+            similarities = np.nan_to_num(similarities, nan=0.0)
+        else:
+            raise ValueError(f"Unknown metric: {metric}")
+    else:
+        # Fallback: pairwise computation
+        similarities = {}
+        for i, node1 in enumerate(nodes):
+            for j, node2 in enumerate(nodes):
+                if i == j:
+                    similarities[(i, j)] = 1.0
+                elif i < j:
+                    # Use existing structural_similarity function
+                    sim = structural_similarity(
+                        signatures[node1],
+                        signatures[node2],
+                        metric=metric
+                    )
+                    similarities[(i, j)] = sim
+                    similarities[(j, i)] = sim
+    
+    # Greedy clustering
+    visited = set()
+    clusters = []
+    
+    for i, node in enumerate(nodes):
+        if node in visited:
+            continue
+        
+        # Find all similar nodes
+        cluster = [node]
+        visited.add(node)
+        
+        for j, other_node in enumerate(nodes):
+            if other_node in visited:
+                continue
+            
+            # Get similarity
+            if np is not None:
+                sim = similarities[i, j]
+            else:
+                sim = similarities.get((i, j), 0.0)
+            
+            if sim >= threshold:
+                cluster.append(other_node)
+                visited.add(other_node)
+        
+        # Only keep clusters meeting minimum size
+        if len(cluster) >= min_cluster_size:
+            clusters.append(cluster)
+    
+    return clusters
+
+
+def identify_pattern_origin(
+    G: CommunityGraph,
+    cluster: Sequence[Hashable],
+) -> Hashable | None:
+    """Identify the origin node of a recursive structural pattern.
+    
+    The origin is the node with the strongest structural manifestation,
+    determined by combining coherence (EPI) and reorganization capacity (νf).
+    This represents the "source" from which the pattern can most coherently
+    propagate.
+    
+    Parameters
+    ----------
+    G : TNFRGraph
+        Network containing the cluster
+    cluster : sequence of node identifiers
+        Nodes sharing the same structural pattern
+        
+    Returns
+    -------
+    origin_node : Hashable or None
+        Node identified as pattern origin (highest structural strength).
+        Returns None if cluster is empty.
+        
+    Notes
+    -----
+    Structural strength score = EPI × νf
+    
+    This metric captures:
+    - EPI: How coherent the pattern is (magnitude)
+    - νf: How actively the pattern reorganizes (frequency)
+    
+    High score indicates a node that both maintains strong coherence AND
+    has high reorganization capacity, making it ideal for propagation.
+    
+    Physical interpretation: The origin node is the "loudest" instance of
+    the pattern in the network's structural field.
+    
+    Examples
+    --------
+    >>> cluster = [1, 2, 3]  # Nodes with similar patterns
+    >>> origin = identify_pattern_origin(G, cluster)
+    >>> # Origin will be node with highest EPI × νf
+    """
+    if not cluster:
+        return None
+    
+    # Compute structural strength for each node
+    scores = []
+    for node in cluster:
+        epi = _as_float(get_attr(G.nodes[node], ALIAS_EPI, 0.0))
+        vf = _as_float(get_attr(G.nodes[node], ALIAS_VF, 0.0))
+        # Structural strength = coherence × reorganization capacity
+        strength = epi * vf
+        scores.append((strength, node))
+    
+    # Return node with maximum strength
+    scores.sort(reverse=True)
+    return scores[0][1]
+
+
+def propagate_structural_identity(
+    G: CommunityGraph,
+    origin_node: Hashable,
+    target_nodes: Sequence[Hashable],
+    propagation_strength: float = 0.5,
+) -> None:
+    """Propagate structural identity from origin to similar nodes.
+    
+    This implements REMESH's core principle: nodes with similar patterns
+    mutually reinforce their coherence through structural resonance.
+    The origin's pattern is propagated to targets via weighted interpolation.
+    
+    Parameters
+    ----------
+    G : TNFRGraph
+        Network to modify (changes node attributes in-place)
+    origin_node : Hashable
+        Source node whose pattern to propagate
+    target_nodes : sequence
+        Nodes that will receive pattern reinforcement
+    propagation_strength : float, default=0.5
+        Interpolation weight in [0, 1]:
+        - 0.0: No effect (targets unchanged)
+        - 1.0: Complete copy (targets become identical to origin)
+        - 0.5: Balanced blending
+        
+    Notes
+    -----
+    For each target node, updates:
+    - EPI: new = (1-α)×old + α×origin
+    - νf: new = (1-α)×old + α×origin  
+    - θ: new = (1-α)×old + α×origin
+    
+    Where α = propagation_strength.
+    
+    Updates respect structural boundaries (EPI_MIN, EPI_MAX) via
+    structural_clip to prevent overflow and maintain physical validity.
+    
+    Records propagation in node's 'structural_lineage' attribute for
+    traceability and analysis.
+    
+    **TNFR Physics**: This preserves the nodal equation ∂EPI/∂t = νf·ΔNFR
+    by interpolating the structural state rather than imposing it directly.
+    
+    Examples
+    --------
+    >>> origin = 1
+    >>> targets = [2, 3, 4]  # Similar nodes
+    >>> propagate_structural_identity(G, origin, targets, 0.3)
+    >>> # Targets now have patterns 30% closer to origin
+    """
+    # Get origin pattern
+    origin_epi = _as_float(get_attr(G.nodes[origin_node], ALIAS_EPI, 0.0))
+    origin_vf = _as_float(get_attr(G.nodes[origin_node], ALIAS_VF, 0.0))
+    from ..constants.aliases import ALIAS_THETA
+    origin_theta = _as_float(get_attr(G.nodes[origin_node], ALIAS_THETA, 0.0))
+    
+    # Get structural bounds
+    from ..constants import DEFAULTS
+    epi_min = float(G.graph.get("EPI_MIN", DEFAULTS.get("EPI_MIN", -1.0)))
+    epi_max = float(G.graph.get("EPI_MAX", DEFAULTS.get("EPI_MAX", 1.0)))
+    
+    # Get clip mode
+    clip_mode_str = str(G.graph.get("CLIP_MODE", "hard"))
+    if clip_mode_str not in ("hard", "soft"):
+        clip_mode_str = "hard"
+    
+    # Propagate to each target
+    for target in target_nodes:
+        if target == origin_node:
+            continue  # Don't propagate to self
+        
+        # Get current target state
+        target_epi = _as_float(get_attr(G.nodes[target], ALIAS_EPI, 0.0))
+        target_vf = _as_float(get_attr(G.nodes[target], ALIAS_VF, 0.0))
+        target_theta = _as_float(get_attr(G.nodes[target], ALIAS_THETA, 0.0))
+        
+        # Interpolate toward origin pattern
+        new_epi = (1.0 - propagation_strength) * target_epi + propagation_strength * origin_epi
+        new_vf = (1.0 - propagation_strength) * target_vf + propagation_strength * origin_vf
+        new_theta = (1.0 - propagation_strength) * target_theta + propagation_strength * origin_theta
+        
+        # Apply structural clipping to preserve boundaries
+        from ..dynamics.structural_clip import structural_clip
+        new_epi = structural_clip(new_epi, lo=epi_min, hi=epi_max, mode=clip_mode_str)  # type: ignore[arg-type]
+        
+        # Update node attributes
+        set_attr(G.nodes[target], ALIAS_EPI, new_epi)
+        set_attr(G.nodes[target], ALIAS_VF, new_vf)
+        set_attr(G.nodes[target], ALIAS_THETA, new_theta)
+        
+        # Record lineage for traceability
+        if 'structural_lineage' not in G.nodes[target]:
+            G.nodes[target]['structural_lineage'] = []
+        
+        # Get current step for timestamp
+        from ..glyph_history import current_step_idx
+        step = current_step_idx(G)
+        
+        G.nodes[target]['structural_lineage'].append({
+            'origin': origin_node,
+            'step': step,
+            'propagation_strength': propagation_strength,
+            'epi_before': target_epi,
+            'epi_after': new_epi,
+        })
+
+
 @cache
 def _get_numpy() -> ModuleType | None:
     """Get numpy module if available, None otherwise."""
@@ -639,44 +1044,6 @@ class RemeshCoherenceLossError(Exception):
         )
 
 
-def compute_global_coherence(G: CommunityGraph) -> float:
-    """Compute total coherence C(t) of the network.
-    
-    This is a simplified coherence measure for REMESH validation.
-    For full coherence computation, see tnfr.metrics module.
-    
-    Parameters
-    ----------
-    G : TNFRGraph
-        Network to measure
-        
-    Returns
-    -------
-    float
-        Global coherence in [0, 1]
-    """
-    from ..alias import get_attr
-    from ..constants.aliases import ALIAS_EPI, ALIAS_VF
-    
-    if G.number_of_nodes() == 0:
-        return 0.0
-    
-    # Simple coherence: average stability of nodes
-    # More sophisticated measure could use phase sync, Si, etc.
-    total_coherence = 0.0
-    for node_data in G.nodes.values():
-        epi = _as_float(get_attr(node_data, ALIAS_EPI, 0.0))
-        vf = _as_float(get_attr(node_data, ALIAS_VF, 0.0))
-        dnfr = _as_float(get_attr(node_data, ALIAS_DNFR, 0.0))
-        
-        # Node coherence: high vf and low |ΔNFR| indicate stable coherence
-        # Normalize to [0, 1] range
-        node_coherence = min(1.0, vf) * max(0.0, 1.0 - abs(dnfr))
-        total_coherence += node_coherence
-    
-    return total_coherence / G.number_of_nodes()
-
-
 def validate_coherence_preservation(
     G_before: CommunityGraph,
     G_after: CommunityGraph,
@@ -689,6 +1056,9 @@ def validate_coherence_preservation(
     Implements TNFR requirement that REMESH reorganization must occur
     "without loss of coherence" - the total structural stability must
     be maintained within acceptable bounds.
+    
+    This function uses the canonical TNFR coherence computation from
+    tnfr.metrics.common.compute_coherence() which is based on ΔNFR and dEPI.
     
     Parameters
     ----------
@@ -716,9 +1086,15 @@ def validate_coherence_preservation(
     Structural fidelity ≈ 1.0 indicates perfect coherence preservation.
     Fidelity > 1.0 is possible (reorganization increased coherence).
     Fidelity < min_fidelity indicates unacceptable coherence loss.
+    
+    Uses canonical TNFR coherence: C = 1/(1 + |ΔNFR|_mean + |dEPI|_mean)
+    from tnfr.metrics.common module.
     """
-    coherence_before = compute_global_coherence(G_before)
-    coherence_after = compute_global_coherence(G_after)
+    # Use canonical TNFR coherence computation
+    from ..metrics.common import compute_coherence
+    
+    coherence_before = compute_coherence(G_before)
+    coherence_after = compute_coherence(G_after)
     
     if coherence_before < 1e-10:
         # Edge case: network had no coherence to begin with
@@ -907,6 +1283,157 @@ def apply_network_remesh(G: CommunityGraph) -> None:
             meta["glyph_disr_last"] = h["glyph_load_disr"][-1]
 
     _log_remesh_event(G, meta)
+
+
+def apply_network_remesh_with_memory(
+    G: CommunityGraph,
+    *,
+    enable_structural_memory: bool = True,
+    similarity_threshold: float = 0.75,
+    similarity_metric: str = "cosine",
+    propagation_strength: float = 0.5,
+    min_cluster_size: int = 2,
+) -> None:
+    """Apply REMESH with structural field memory activation.
+    
+    This extended version of REMESH implements the theoretical capability
+    of "structural memory": nodes can recognize themselves in other nodes
+    through pattern similarity, enabling coherent propagation across scales.
+    
+    The function performs:
+    1. Standard REMESH reorganization (temporal EPI mixing)
+    2. Pattern detection (find groups of structurally similar nodes)
+    3. Identity propagation (reinforce shared patterns from origin nodes)
+    
+    Parameters
+    ----------
+    G : TNFRGraph
+        Network to reorganize (modified in-place)
+    enable_structural_memory : bool, default=True
+        Whether to activate structural memory after standard REMESH.
+        If False, performs only standard REMESH.
+    similarity_threshold : float, default=0.75
+        Minimum similarity [0-1] to recognize patterns as "same identity".
+        Higher = stricter matching. Typical range: 0.7-0.9.
+    similarity_metric : str, default='cosine'
+        Metric for comparing structural signatures.
+        Options: 'cosine', 'euclidean', 'correlation'
+    propagation_strength : float, default=0.5
+        Interpolation weight [0-1] for identity propagation.
+        - 0.0: No propagation (structural memory detection only)
+        - 0.5: Balanced blending (recommended)
+        - 1.0: Full replacement (aggressive, may reduce diversity)
+    min_cluster_size : int, default=2
+        Minimum nodes required to form a recursive pattern.
+        Single isolated nodes are not considered patterns.
+        
+    Notes
+    -----
+    **TNFR Physics**: This implements the principle that "coherence propagates
+    structurally, not imposed" (TNFR.pdf § 4.2). Patterns that resonate across
+    the network mutually reinforce through similarity-based coupling.
+    
+    **Workflow**:
+    1. `apply_network_remesh(G)` - Standard temporal memory mixing
+    2. `detect_recursive_patterns(G, threshold)` - Find similar node groups
+    3. For each cluster:
+       - `identify_pattern_origin(G, cluster)` - Find strongest instance
+       - `propagate_structural_identity(G, origin, targets)` - Reinforce pattern
+    
+    **Telemetry**: Logs structural memory events to G.graph['history']['structural_memory_events']
+    including cluster statistics and propagation metadata.
+    
+    **Canonical Relationships**: 
+    - Hierarchical REMESH: Combine with IL (coherence) for stable multi-level propagation
+    - Rhizomatic REMESH: Combine with UM (coupling) for decentralized pattern spread
+    - Fractal Harmonic: Combine with RA (resonance) for symmetric amplification
+    
+    Examples
+    --------
+    >>> # Standard REMESH with structural memory (recommended)
+    >>> apply_network_remesh_with_memory(G)
+    >>> 
+    >>> # Strict pattern matching with gentle propagation
+    >>> apply_network_remesh_with_memory(
+    ...     G,
+    ...     similarity_threshold=0.85,
+    ...     propagation_strength=0.3
+    ... )
+    >>> 
+    >>> # Disable structural memory (standard REMESH only)
+    >>> apply_network_remesh_with_memory(G, enable_structural_memory=False)
+    """
+    # Phase 1: Apply standard REMESH (temporal memory)
+    apply_network_remesh(G)
+    
+    if not enable_structural_memory:
+        return
+    
+    # Phase 2: Structural memory - detect and propagate patterns
+    try:
+        # Detect recursive patterns across network
+        clusters = detect_recursive_patterns(
+            G,
+            threshold=similarity_threshold,
+            metric=similarity_metric,
+            min_cluster_size=min_cluster_size,
+        )
+        
+        # Propagate identity from origin to similar nodes
+        propagation_events = []
+        for cluster in clusters:
+            if len(cluster) < min_cluster_size:
+                continue
+            
+            # Identify strongest instance of pattern
+            origin = identify_pattern_origin(G, cluster)
+            if origin is None:
+                continue
+            
+            # Propagate to other cluster members
+            targets = [n for n in cluster if n != origin]
+            if targets:
+                propagate_structural_identity(
+                    G,
+                    origin,
+                    targets,
+                    propagation_strength=propagation_strength,
+                )
+                
+                propagation_events.append({
+                    'origin': origin,
+                    'n_targets': len(targets),
+                    'targets': targets[:5],  # Sample for telemetry (avoid bloat)
+                })
+        
+        # Log structural memory event
+        if G.graph.get("REMESH_LOG_EVENTS", REMESH_DEFAULTS["REMESH_LOG_EVENTS"]):
+            from ..glyph_history import append_metric
+            hist = G.graph.setdefault("history", {})
+            append_metric(
+                hist,
+                "structural_memory_events",
+                {
+                    'n_clusters': len(clusters),
+                    'cluster_sizes': [len(c) for c in clusters],
+                    'n_propagations': len(propagation_events),
+                    'propagation_events': propagation_events[:10],  # Sample
+                    'similarity_threshold': similarity_threshold,
+                    'similarity_metric': similarity_metric,
+                    'propagation_strength': propagation_strength,
+                    'min_cluster_size': min_cluster_size,
+                },
+            )
+    
+    except Exception as e:
+        # Graceful degradation: if structural memory fails, REMESH still applied
+        import warnings
+        warnings.warn(
+            f"Structural memory activation failed: {e}. "
+            "Standard REMESH applied successfully.",
+            RuntimeWarning,
+            stacklevel=2,
+        )
 
 
 def _mst_edges_from_epi(
@@ -1271,8 +1798,12 @@ __all__ = [
     "StructuralIdentity",
     "structural_similarity",
     "structural_memory_match",
+    "compute_structural_signature",
+    "detect_recursive_patterns",
+    "identify_pattern_origin",
+    "propagate_structural_identity",
+    "apply_network_remesh_with_memory",
     # Phase 2: Coherence preservation & validation
     "RemeshCoherenceLossError",
-    "compute_global_coherence",
     "validate_coherence_preservation",
 ]
