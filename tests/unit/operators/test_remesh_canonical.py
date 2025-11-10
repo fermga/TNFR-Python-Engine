@@ -15,9 +15,9 @@ from tnfr.operators.remesh import (
     structural_similarity,
     structural_memory_match,
     RemeshCoherenceLossError,
-    compute_global_coherence,
     validate_coherence_preservation,
 )
+from tnfr.metrics.common import compute_coherence
 from tnfr.alias import get_attr, set_attr
 from tnfr.constants import inject_defaults
 from tnfr.constants.aliases import ALIAS_EPI, ALIAS_VF, ALIAS_DNFR, ALIAS_THETA
@@ -416,42 +416,45 @@ class TestStructuralMemoryMatch:
 # ==============================================================================
 
 
-class TestComputeGlobalCoherence:
-    """Test global coherence calculation."""
+class TestComputeCoherence:
+    """Test canonical coherence calculation using centralized function."""
     
     def test_empty_graph(self):
         """Empty graph has coherence = 0."""
         G = nx.DiGraph()
         inject_defaults(G)
         
-        coherence = compute_global_coherence(G)
+        coherence = compute_coherence(G)
         assert coherence == 0.0
     
     def test_single_stable_node(self):
-        """Stable node (high vf, low ΔNFR) has high coherence."""
+        """Stable node (low ΔNFR, low dEPI) has high coherence."""
         G = nx.DiGraph()
         G.add_node(1)
         inject_defaults(G)
         
         set_attr(G.nodes[1], ALIAS_EPI, 0.5)
-        set_attr(G.nodes[1], ALIAS_VF, 1.0)  # High vf
+        set_attr(G.nodes[1], ALIAS_VF, 1.0)
         set_attr(G.nodes[1], ALIAS_DNFR, 0.01)  # Low ΔNFR
+        # dEPI defaults to 0 if not set
         
-        coherence = compute_global_coherence(G)
+        coherence = compute_coherence(G)
+        # C = 1/(1 + |ΔNFR| + |dEPI|) ≈ 1/(1 + 0.01 + 0) ≈ 0.99
         assert coherence > 0.9
     
     def test_single_unstable_node(self):
-        """Unstable node (low vf or high ΔNFR) has low coherence."""
+        """Unstable node (high ΔNFR) has low coherence."""
         G = nx.DiGraph()
         G.add_node(1)
         inject_defaults(G)
         
         set_attr(G.nodes[1], ALIAS_EPI, 0.5)
-        set_attr(G.nodes[1], ALIAS_VF, 0.2)  # Low vf
+        set_attr(G.nodes[1], ALIAS_VF, 0.2)
         set_attr(G.nodes[1], ALIAS_DNFR, 0.8)  # High ΔNFR
         
-        coherence = compute_global_coherence(G)
-        assert coherence < 0.5
+        coherence = compute_coherence(G)
+        # C = 1/(1 + 0.8 + 0) ≈ 0.56
+        assert coherence < 0.6
     
     def test_mixed_network(self):
         """Network with mixed stability has intermediate coherence."""
@@ -459,20 +462,22 @@ class TestComputeGlobalCoherence:
         G.add_nodes_from([1, 2, 3])
         inject_defaults(G)
         
-        # Node 1: high coherence
+        # Node 1: low ΔNFR (high coherence contributor)
         set_attr(G.nodes[1], ALIAS_VF, 1.0)
         set_attr(G.nodes[1], ALIAS_DNFR, 0.01)
         
-        # Node 2: low coherence
+        # Node 2: high ΔNFR (low coherence contributor)
         set_attr(G.nodes[2], ALIAS_VF, 0.1)
         set_attr(G.nodes[2], ALIAS_DNFR, 0.9)
         
-        # Node 3: medium coherence
+        # Node 3: medium ΔNFR
         set_attr(G.nodes[3], ALIAS_VF, 0.6)
         set_attr(G.nodes[3], ALIAS_DNFR, 0.3)
         
-        coherence = compute_global_coherence(G)
-        assert 0.3 < coherence < 0.8
+        coherence = compute_coherence(G)
+        # Mean |ΔNFR| ≈ (0.01 + 0.9 + 0.3)/3 ≈ 0.4
+        # C ≈ 1/(1 + 0.4) ≈ 0.71
+        assert 0.5 < coherence < 0.9
 
 
 class TestValidateCoherencePreservation:
@@ -584,13 +589,14 @@ class TestValidateCoherencePreservation:
         assert error.min_fidelity == 0.85
         assert "details" in error.details or len(error.details) >= 0
     
-    def test_zero_coherence_before(self):
-        """Zero coherence before returns fidelity = 1.0 (edge case)."""
+    def test_near_zero_coherence_before(self):
+        """Very low coherence before is handled gracefully."""
         G_before = nx.DiGraph()
         G_before.add_node(1)
         inject_defaults(G_before)
-        set_attr(G_before.nodes[1], ALIAS_VF, 0.0)
-        set_attr(G_before.nodes[1], ALIAS_DNFR, 0.0)
+        # High ΔNFR to get low coherence
+        set_attr(G_before.nodes[1], ALIAS_VF, 0.1)
+        set_attr(G_before.nodes[1], ALIAS_DNFR, 10.0)  # Very high ΔNFR
         
         G_after = nx.DiGraph()
         G_after.add_node(1)
@@ -600,8 +606,9 @@ class TestValidateCoherencePreservation:
         
         fidelity = validate_coherence_preservation(G_before, G_after)
         
-        # Edge case: if starting coherence is zero, any result is "preservation"
-        assert fidelity == 1.0
+        # With high ΔNFR before, coherence is very low
+        # After has much better coherence, so fidelity > 1
+        assert fidelity > 1.0
 
 
 class TestRemeshCoherenceLossError:

@@ -15,8 +15,8 @@ from tnfr.operators.definitions import (
 from tnfr.operators.remesh import (
     StructuralIdentity,
     structural_similarity,
-    compute_global_coherence,
 )
+from tnfr.metrics.common import compute_coherence
 from tnfr.alias import get_attr, set_attr
 from tnfr.constants import inject_defaults
 from tnfr.constants.aliases import ALIAS_EPI, ALIAS_VF, ALIAS_DNFR, ALIAS_THETA
@@ -36,6 +36,7 @@ class TestREMESHOperatorIntegration:
         set_attr(G.nodes[1], ALIAS_VF, 1.0)
         set_attr(G.nodes[node if "node" in locals() else 1], ALIAS_THETA, 1.0)
         set_attr(G.nodes[1], ALIAS_THETA, 1.0)
+        set_attr(G.nodes[1], ALIAS_DNFR, 0.1)  # Set ΔNFR for coherence calc
         
         # Capture identity before
         identity_before = StructuralIdentity.capture_from_node(G.nodes[1])
@@ -43,8 +44,8 @@ class TestREMESHOperatorIntegration:
         # Apply REMESH → IL sequence
         run_sequence(G, 1, [Recursivity(), Coherence()])
         
-        # Verify coherence increased (IL effect)
-        coherence = compute_global_coherence(G)
+        # Verify coherence increased (IL effect) using canonical function
+        coherence = compute_coherence(G)
         assert coherence > 0.5  # Should be stabilized
         
         # Verify identity preserved
