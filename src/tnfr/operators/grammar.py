@@ -894,99 +894,6 @@ class GrammarValidator:
             f"bound recursive amplification of {destabilizers_present}",
         )
 
-    @staticmethod
-    def validate_zhir_post_recursion(sequence: List[Operator]) -> tuple[bool, str]:
-        """Validate U4b-REMESH: ZHIR as post-recursion transformer.
-
-        Physical basis: ZHIR (Mutation) transforms phase θ → θ' when threshold
-        ΔEPI/Δt > ξ is crossed. The canonical REMESH ↔ ZHIR relationship
-        "mutación replicativa" requires ZHIR to operate on recursively
-        propagated patterns.
-
-        From remesh.py documentation:
-            "ZHIR is a TRANSFORMER that emerges POST-recursion"
-            "REMESH propagates → local variations → ZHIR transforms"
-            "Operates AFTER REMESH completes, not during"
-
-        Two possible orderings with different physics:
-
-        1. ZHIR before REMESH:
-           - ZHIR mutates local pattern
-           - REMESH propagates mutated pattern uniformly
-           - Result: Uniform mutation across scales
-           - NOT canonical "replicative mutation"
-
-        2. ZHIR after REMESH (CANONICAL):
-           - REMESH propagates creating scale-dependent variations
-           - ZHIR transforms the variations (replicative mutation)
-           - Result: Mutation OF replicas (mutación replicativa)
-           - Canonical relationship from theoretical specification
-
-        The canonical relationship requires ZHIR to operate on the OUTPUT
-        of REMESH (the replicated/varied patterns), not the input.
-
-        Parameters
-        ----------
-        sequence : List[Operator]
-            Sequence of operators to validate
-
-        Returns
-        -------
-        tuple[bool, str]
-            (is_valid, message)
-
-        Notes
-        -----
-        This rule ensures the physical sequence matches the theoretical
-        specification of "replicative mutation": mutation operates on
-        recursively-propagated patterns, not on pre-recursion states.
-
-        Physical derivation: See src/tnfr/operators/remesh.py module docstring,
-        section "Operators with Indirect Relationships" → ZHIR (Mutation).
-        """
-        # Find positions of REMESH and ZHIR
-        remesh_positions = []
-        zhir_positions = []
-
-        for i, op in enumerate(sequence):
-            op_name = getattr(op, "canonical_name", op.name.lower())
-            if op_name == "recursivity":
-                remesh_positions.append(i)
-            elif op_name == "mutation":
-                zhir_positions.append(i)
-
-        # If no REMESH or no ZHIR, rule not applicable
-        if not remesh_positions or not zhir_positions:
-            return True, "U4b-REMESH: not applicable (no REMESH+ZHIR pairing)"
-
-        # Check that ZHIR comes after REMESH
-        # For canonical "replicative mutation", every ZHIR should be preceded by REMESH
-        violations = []
-        for zhir_pos in zhir_positions:
-            # Find closest preceding REMESH
-            preceding_remesh = [r for r in remesh_positions if r < zhir_pos]
-            
-            if not preceding_remesh:
-                violations.append(
-                    f"mutation at position {zhir_pos} precedes all recursivity operators. "
-                    f"For canonical 'mutación replicativa', mutation must operate on "
-                    f"recursively-propagated patterns (REMESH → ZHIR)"
-                )
-
-        if violations:
-            return (
-                False,
-                f"U4b-REMESH violated: {'; '.join(violations)}. "
-                f"Physical basis: ZHIR is post-recursion transformer - "
-                f"transforms replicated patterns, not pre-recursion states",
-            )
-
-        return (
-            True,
-            f"U4b-REMESH satisfied: mutation operates post-recursion "
-            f"(canonical replicative mutation)",
-        )
-
     @classmethod
     def validate(
         cls,
@@ -1052,11 +959,6 @@ class GrammarValidator:
         valid_remesh, msg_remesh = cls.validate_remesh_amplification(sequence)
         messages.append(f"U2-REMESH: {msg_remesh}")
         all_valid = all_valid and valid_remesh
-
-        # U4b-REMESH: ZHIR post-recursion constraint
-        valid_zhir_post, msg_zhir_post = cls.validate_zhir_post_recursion(sequence)
-        messages.append(f"U4b-REMESH: {msg_zhir_post}")
-        all_valid = all_valid and valid_zhir_post
 
         return all_valid, messages
 
