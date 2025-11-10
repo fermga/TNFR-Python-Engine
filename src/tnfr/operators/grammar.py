@@ -804,6 +804,96 @@ class GrammarValidator:
 
         return (True, f"U4b satisfied: transformers have proper context")
 
+    @staticmethod
+    def validate_remesh_amplification(sequence: List[Operator]) -> tuple[bool, str]:
+        """Validate U2-REMESH: Recursive amplification control.
+
+        Physical basis: REMESH implements temporal coupling EPI(t) ↔ EPI(t-τ)
+        which creates feedback that amplifies structural changes. When combined
+        with destabilizers, this can cause unbounded growth.
+
+        From integrated nodal equation:
+            EPI(t_f) = EPI(t_0) + ∫_{t_0}^{t_f} νf·ΔNFR dτ
+
+        REMESH temporal mixing:
+            EPI_mixed = (1-α)·EPI_now + α·EPI_past
+
+        Without stabilizers:
+            REMESH + destabilizers → recursive amplification
+            → ∫ νf·ΔNFR dt → ∞ (feedback loop)
+            → System fragments
+
+        With stabilizers:
+            IL or THOL provides negative feedback
+            → Bounded recursive evolution
+            → ∫ νf·ΔNFR dt < ∞
+
+        Specific combinations requiring stabilizers:
+            - REMESH + VAL: Recursive expansion needs coherence stabilization
+            - REMESH + OZ: Recursive bifurcation needs self-organization handlers
+            - REMESH + ZHIR: Replicative mutation needs coherence consolidation
+
+        Parameters
+        ----------
+        sequence : List[Operator]
+            Sequence of operators to validate
+
+        Returns
+        -------
+        tuple[bool, str]
+            (is_valid, message)
+
+        Notes
+        -----
+        This rule is DISTINCT from general U2 (convergence). While U2 checks
+        for destabilizers needing stabilizers, U2-REMESH specifically addresses
+        REMESH's amplification property: it multiplies the effect of destabilizers
+        through recursive feedback across temporal/spatial scales.
+
+        Physical derivation: See src/tnfr/operators/remesh.py module docstring,
+        section "Grammar Implications from Physical Analysis" → U2: CONVERGENCE.
+        """
+        # Check if sequence contains REMESH
+        has_remesh = any(
+            getattr(op, "canonical_name", op.name.lower()) == "recursivity"
+            for op in sequence
+        )
+
+        if not has_remesh:
+            return True, "U2-REMESH: not applicable (no recursivity present)"
+
+        # Check for destabilizers
+        destabilizers_present = [
+            getattr(op, "canonical_name", op.name.lower())
+            for op in sequence
+            if getattr(op, "canonical_name", op.name.lower()) in DESTABILIZERS
+        ]
+
+        if not destabilizers_present:
+            return True, "U2-REMESH: satisfied (no destabilizers to amplify)"
+
+        # Check for stabilizers
+        stabilizers_present = [
+            getattr(op, "canonical_name", op.name.lower())
+            for op in sequence
+            if getattr(op, "canonical_name", op.name.lower()) in STABILIZERS
+        ]
+
+        if not stabilizers_present:
+            return (
+                False,
+                f"U2-REMESH violated: recursivity amplifies destabilizers "
+                f"{destabilizers_present} via recursive feedback. "
+                f"Integral ∫νf·ΔNFR dt may diverge (unbounded growth). "
+                f"Required: {sorted(STABILIZERS)} to bound recursive amplification",
+            )
+
+        return (
+            True,
+            f"U2-REMESH satisfied: stabilizers {stabilizers_present} "
+            f"bound recursive amplification of {destabilizers_present}",
+        )
+
     @classmethod
     def validate(
         cls,
@@ -864,6 +954,11 @@ class GrammarValidator:
         valid_context, msg_context = cls.validate_transformer_context(sequence)
         messages.append(f"U4b: {msg_context}")
         all_valid = all_valid and valid_context
+
+        # U2-REMESH: Recursive amplification control
+        valid_remesh, msg_remesh = cls.validate_remesh_amplification(sequence)
+        messages.append(f"U2-REMESH: {msg_remesh}")
+        all_valid = all_valid and valid_remesh
 
         return all_valid, messages
 
