@@ -1,0 +1,2953 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Canonical TNFR structural dynamics engine documentation">
+      
+      
+      
+      
+        <link rel="prev" href="../user-guide/TROUBLESHOOTING/">
+      
+      
+        <link rel="next" href="EXECUTIVE-SUMMARY/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.23">
+    
+    
+      
+        <title>Overview - TNFR Python Engine</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.84d31ad4.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#tnfr-grammar-documentation-navigation-guide" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="TNFR Python Engine" class="md-header__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            TNFR Python Engine
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Overview
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    TNFR Python Engine
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="TNFR Python Engine" class="md-nav__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    TNFR Python Engine
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    TNFR Python Engine
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../home/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Getting Started
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Getting Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Welcome to TNFR
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Quickstart Tutorial
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/TNFR_CONCEPTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Core Concepts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/INTERACTIVE_TUTORIAL/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Interactive Tutorial
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/FAQ/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    FAQ
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/math-backends/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Math Backends
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/optional-dependencies/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Optional Dependencies
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/migrating-remesh-window/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Migrating from Remesh Window
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    User Guide
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            User Guide
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user-guide/OPERATORS_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Operators Guide
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user-guide/METRICS_INTERPRETATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Metrics Interpretation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user-guide/TROUBLESHOOTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Troubleshooting
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Grammar Documentation
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Grammar Documentation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Overview
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Overview
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#purpose" class="md-nav__link">
+    <span class="md-ellipsis">
+      🎯 Purpose
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🎯 Purpose">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-this-reorganization" class="md-nav__link">
+    <span class="md-ellipsis">
+      Why this reorganization?
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#documentation-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      📑 Documentation Structure
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📑 Documentation Structure">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#abstraction-levels" class="md-nav__link">
+    <span class="md-ellipsis">
+      🌊 Abstraction Levels
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#document-organization" class="md-nav__link">
+    <span class="md-ellipsis">
+      📂 Document Organization
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📂 Document Organization">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#level-1-fundamental-concepts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Level 1: Fundamental Concepts
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#level-2-canonical-constraints" class="md-nav__link">
+    <span class="md-ellipsis">
+      Level 2: Canonical Constraints
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#level-3-canonical-operators" class="md-nav__link">
+    <span class="md-ellipsis">
+      Level 3: Canonical Operators
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#level-4-valid-sequences" class="md-nav__link">
+    <span class="md-ellipsis">
+      Level 4: Valid Sequences
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#level-5-technical-implementation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Level 5: Technical Implementation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#level-6-validation-and-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Level 6: Validation and Testing
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#level-7-migration-and-evolution" class="md-nav__link">
+    <span class="md-ellipsis">
+      Level 7: Migration and Evolution
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#level-8-quick-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      Level 8: Quick Reference
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#complementary-documents" class="md-nav__link">
+    <span class="md-ellipsis">
+      📚 Complementary Documents
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#executable-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      💡 Executable Examples
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#json-schemas" class="md-nav__link">
+    <span class="md-ellipsis">
+      🔧 JSON Schemas
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-use-this-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      🚀 How to Use This Documentation
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🚀 How to Use This Documentation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#for-new-users" class="md-nav__link">
+    <span class="md-ellipsis">
+      For New Users
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#for-intermediate-developers" class="md-nav__link">
+    <span class="md-ellipsis">
+      For Intermediate Developers
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#for-advanced-contributors" class="md-nav__link">
+    <span class="md-ellipsis">
+      For Advanced Contributors
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#external-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      🔗 External References
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔗 External References">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#main-repository-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Main Repository Documentation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implementation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implementation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentation-sync-tool" class="md-nav__link">
+    <span class="md-ellipsis">
+      Documentation Sync Tool
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#writing-conventions" class="md-nav__link">
+    <span class="md-ellipsis">
+      📝 Writing Conventions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📝 Writing Conventions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#format" class="md-nav__link">
+    <span class="md-ellipsis">
+      Format
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#section-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      Section Structure
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#code" class="md-nav__link">
+    <span class="md-ellipsis">
+      Code
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#contributing-to-this-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      🤝 Contributing to This Documentation
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🤝 Contributing to This Documentation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#principles" class="md-nav__link">
+    <span class="md-ellipsis">
+      Principles
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adding-new-content" class="md-nav__link">
+    <span class="md-ellipsis">
+      Adding New Content
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#maintaining-coherence" class="md-nav__link">
+    <span class="md-ellipsis">
+      Maintaining Coherence
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#completion-status" class="md-nav__link">
+    <span class="md-ellipsis">
+      📊 Completion Status
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📊 Completion Status">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#complete" class="md-nav__link">
+    <span class="md-ellipsis">
+      ✅ Complete
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#in-progress" class="md-nav__link">
+    <span class="md-ellipsis">
+      🚧 In Progress
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#planned" class="md-nav__link">
+    <span class="md-ellipsis">
+      📋 Planned
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#documentation-philosophy" class="md-nav__link">
+    <span class="md-ellipsis">
+      🎓 Documentation Philosophy
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🎓 Documentation Philosophy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#values" class="md-nav__link">
+    <span class="md-ellipsis">
+      Values
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#contact-and-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      📞 Contact and Support
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="EXECUTIVE-SUMMARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Executive Summary
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_3" id="__nav_4_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Core Concepts
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3">
+            <span class="md-nav__icon md-icon"></span>
+            Core Concepts
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="01-FUNDAMENTAL-CONCEPTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Fundamental Concepts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="02-CANONICAL-CONSTRAINTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Canonical Constraints
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="03-OPERATORS-AND-GLYPHS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Operators and Glyphs
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="04-VALID-SEQUENCES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Valid Sequences
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_4" id="__nav_4_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Implementation
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_4">
+            <span class="md-nav__icon md-icon"></span>
+            Implementation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="05-TECHNICAL-IMPLEMENTATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Technical Implementation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="06-VALIDATION-AND-TESTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Validation and Testing
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="07-MIGRATION-AND-EVOLUTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Migration and Evolution
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_5" id="__nav_4_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Reference
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_5">
+            <span class="md-nav__icon md-icon"></span>
+            Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="08-QUICK-REFERENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Quick Reference
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="GLOSSARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Glossary
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="MASTER-INDEX/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Master Index
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="OPERATORS-CATALOG-SUMMARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Operators Catalog
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="CROSS-REFERENCE-INDEX/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Cross-Reference Index
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="CODE_DOCS_CROSSREF/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Code Documentation Cross-Reference
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_6" id="__nav_4_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Tooling
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_6">
+            <span class="md-nav__icon md-icon"></span>
+            Tooling
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="TOOLING-AND-AUTOMATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Tooling and Automation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="TESTING-SUMMARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Testing Summary
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="DEPRECATION-INDEX/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Deprecation Index
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Examples
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    API Reference
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            API Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/operators/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Structural Operators
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/OPERATORS_VISUAL_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Operators Visual Guide
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/telemetry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Telemetry & Utilities
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/docstring_style/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Docstring Style
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Advanced Topics
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            Advanced Topics
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../advanced/ARCHITECTURE_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Architecture Guide
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../advanced/PERFORMANCE_OPTIMIZATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Performance Optimization
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../advanced/TESTING_STRATEGIES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Testing Strategies
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../advanced/DEVELOPMENT_WORKFLOW/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Development Workflow
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../foundations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Mathematical Foundations
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Mathematical Foundations
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            Mathematical Foundations
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_8_1" id="__nav_8_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Primers
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_1">
+            <span class="md-nav__icon md-icon"></span>
+            Primers
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/01_structural_frequency_primer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Structural frequency primer
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/02_phase_synchrony_lattices/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Phase synchrony lattices
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/03_delta_nfr_gradient_fields/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    ΔNFR gradient fields
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/04_coherence_metrics_walkthrough/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Coherence metrics walkthrough
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/04_nfr_validator_and_metrics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Validator and metrics
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/05_sense_index_calibration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Sense index calibration
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/06_recursivity_cascades/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Recursivity cascades
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Security
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            Security
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/monitoring/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Monitoring
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/dependency-auditing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Dependency Auditing
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/codeql/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    CodeQL
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/dependabot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Dependabot
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Project Info
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            Project Info
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../releases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Releases
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="tnfr-grammar-documentation-navigation-guide">TNFR Grammar Documentation - Navigation Guide<a class="headerlink" href="#tnfr-grammar-documentation-navigation-guide" title="Permanent link">&para;</a></h1>
+<div align="center">
+
+**Centralized and unified documentation for the TNFR grammar system**
+
+[📖 Concepts](#-fundamental-concepts) • [📐 Constraints](#-canonical-constraints) • [⚙️ Operators](#️-operators-and-glyphs) • [🔄 Sequences](#-valid-sequences) • [💻 Implementation](#-implementation) • [🧪 Testing](#-testing) • [📚 Quick Reference](#-quick-reference)
+
+</div>
+
+<hr />
+<h2 id="purpose">🎯 Purpose<a class="headerlink" href="#purpose" title="Permanent link">&para;</a></h2>
+<p>This directory contains the <strong>single source of truth</strong> for all TNFR grammar-related documentation. It consolidates previously fragmented information across multiple files into a clear, navigable hierarchical structure.</p>
+<h3 id="why-this-reorganization">Why this reorganization?<a class="headerlink" href="#why-this-reorganization" title="Permanent link">&para;</a></h3>
+<p><strong>Before:</strong> Documentation fragmented across README.md, UNIFIED_GRAMMAR_RULES.md, GRAMMAR_MIGRATION_GUIDE.md, GLYPH_SEQUENCES_GUIDE.md, source code, and scattered tests.</p>
+<p><strong>Now:</strong> A modular structure where each grammar aspect has a defined place and everything is interconnected.</p>
+<hr />
+<h2 id="documentation-structure">📑 Documentation Structure<a class="headerlink" href="#documentation-structure" title="Permanent link">&para;</a></h2>
+<h3 id="abstraction-levels">🌊 Abstraction Levels<a class="headerlink" href="#abstraction-levels" title="Permanent link">&para;</a></h3>
+<p>This documentation follows a <strong>gradual abstraction</strong> model from concepts to implementation:</p>
+<div class="highlight"><pre><span></span><code>Physical Intuition → Mathematical Formalization → Code Implementation → Test Validation
+</code></pre></div>
+<h3 id="document-organization">📂 Document Organization<a class="headerlink" href="#document-organization" title="Permanent link">&para;</a></h3>
+<h4 id="level-1-fundamental-concepts"><strong>Level 1: Fundamental Concepts</strong><a class="headerlink" href="#level-1-fundamental-concepts" title="Permanent link">&para;</a></h4>
+<p><strong><a href="01-FUNDAMENTAL-CONCEPTS/">01-FUNDAMENTAL-CONCEPTS.md</a></strong>
+- TNFR ontology: From objects to resonant patterns
+- Paradigm shift: Coherence vs. Causality
+- Nodal equation: ∂EPI/∂t = νf · ΔNFR(t)
+- Structural triad: Form (EPI), Frequency (νf), Phase (φ)
+- Integrated dynamics and convergence
+- <strong>Audience:</strong> New users, developers needing to understand "the why"
+- <strong>Reading time:</strong> 20-30 minutes</p>
+<h4 id="level-2-canonical-constraints"><strong>Level 2: Canonical Constraints</strong><a class="headerlink" href="#level-2-canonical-constraints" title="Permanent link">&para;</a></h4>
+<p><strong><a href="02-CANONICAL-CONSTRAINTS/">02-CANONICAL-CONSTRAINTS.md</a></strong>
+- <strong>U1: STRUCTURAL INITIATION &amp; CLOSURE</strong>
+  - U1a: Initiators (Generators)
+  - U1b: Closures
+  - Physical derivation: ∂EPI/∂t undefined at EPI=0
+- <strong>U2: CONVERGENCE &amp; BOUNDEDNESS</strong>
+  - Stabilizers vs. Destabilizers
+  - Integral convergence theorem
+- <strong>U3: RESONANT COUPLING</strong>
+  - Phase verification
+  - Interference physics
+- <strong>U4: BIFURCATION DYNAMICS</strong>
+  - U4a: Triggers need handlers
+  - U4b: Transformers need context
+- <strong>Each constraint includes:</strong> Intuition → Derivation → Implementation → Tests
+- <strong>Audience:</strong> Developers implementing validation, advanced contributors
+- <strong>Reading time:</strong> 45-60 minutes</p>
+<h4 id="level-3-canonical-operators"><strong>Level 3: Canonical Operators</strong><a class="headerlink" href="#level-3-canonical-operators" title="Permanent link">&para;</a></h4>
+<p><strong><a href="03-OPERATORS-AND-GLYPHS/">03-OPERATORS-AND-GLYPHS.md</a></strong>
+- Catalog of 13 canonical operators
+- Standard format for each operator:
+  - <strong>Physics:</strong> What transformation does it represent?
+  - <strong>Effect:</strong> Impact on ∂EPI/∂t
+  - <strong>When to use:</strong> Use cases
+  - <strong>Grammar:</strong> Classification (Generator, Stabilizer, etc.)
+  - <strong>Contract:</strong> Pre/postconditions
+  - <strong>Examples:</strong> Executable code
+- <strong>Classification by grammatical role</strong>
+- <strong>Operator composition</strong>
+- <strong>Audience:</strong> All developers
+- <strong>Reading time:</strong> 60-90 minutes (constant reference)</p>
+<h4 id="level-4-valid-sequences"><strong>Level 4: Valid Sequences</strong><a class="headerlink" href="#level-4-valid-sequences" title="Permanent link">&para;</a></h4>
+<p><strong><a href="04-VALID-SEQUENCES/">04-VALID-SEQUENCES.md</a></strong>
+- <strong>Canonical patterns:</strong>
+  - Bootstrap: [Emission, Coupling, Coherence]
+  - Stabilize: [Coherence, Silence]
+  - Explore: [Dissonance, Mutation, Coherence]
+  - Propagate: [Resonance, Coupling]
+- <strong>Anti-patterns</strong> (invalid sequences and why)
+- <strong>Step-by-step validation logic</strong>
+- <strong>Complex sequence examples</strong>
+- <strong>Structural pattern detection</strong>
+- <strong>Audience:</strong> Developers building sequences, debugging
+- <strong>Reading time:</strong> 30-45 minutes</p>
+<h4 id="level-5-technical-implementation"><strong>Level 5: Technical Implementation</strong><a class="headerlink" href="#level-5-technical-implementation" title="Permanent link">&para;</a></h4>
+<p><strong><a href="05-TECHNICAL-IMPLEMENTATION/">05-TECHNICAL-IMPLEMENTATION.md</a></strong>
+- <strong>Architecture of <code>grammar.py</code></strong>
+- <strong>Operator sets</strong> (GENERATORS, CLOSURES, etc.)
+- <strong>Validation functions:</strong>
+  - <code>validate_grammar(sequence, epi_initial)</code>
+  - <code>validate_resonant_coupling(G, node_i, node_j)</code>
+  - Internal helpers
+- <strong>Telemetry and logging</strong>
+- <strong>Integration with <code>definitions.py</code></strong>
+- <strong>Extension points</strong>
+- <strong>Audience:</strong> Developers modifying core
+- <strong>Reading time:</strong> 45-60 minutes</p>
+<h4 id="level-6-validation-and-testing"><strong>Level 6: Validation and Testing</strong><a class="headerlink" href="#level-6-validation-and-testing" title="Permanent link">&para;</a></h4>
+<p><strong><a href="06-VALIDATION-AND-TESTING/">06-VALIDATION-AND-TESTING.md</a></strong>
+- <strong>Grammar testing strategy</strong>
+- <strong>Tests per constraint (U1-U4)</strong>
+- <strong>Monotonicity tests (coherence)</strong>
+- <strong>Bifurcation tests</strong>
+- <strong>Propagation tests</strong>
+- <strong>Multi-scale tests (fractality)</strong>
+- <strong>Reproducibility tests</strong>
+- <strong>Minimum required coverage</strong>
+- <strong>How to add tests for new constraints</strong>
+- <strong>Audience:</strong> Developers writing tests, QA
+- <strong>Reading time:</strong> 30-45 minutes</p>
+<h4 id="level-7-migration-and-evolution"><strong>Level 7: Migration and Evolution</strong><a class="headerlink" href="#level-7-migration-and-evolution" title="Permanent link">&para;</a></h4>
+<p><strong><a href="07-MIGRATION-AND-EVOLUTION/">07-MIGRATION-AND-EVOLUTION.md</a></strong>
+- <strong>Grammar system history:</strong>
+  - C1-C3 (legacy grammar.py)
+  - RC1-RC4 (legacy canonical_grammar.py)
+  - U1-U4 (current unified grammar)
+- <strong>Mapping old → new rules</strong>
+- <strong>Deprecations and breaking changes</strong>
+- <strong>Procedure for adding new constraints</strong>
+- <strong>Maintenance guarantees</strong>
+- <strong>Audience:</strong> Maintainers, contributors migrating old code
+- <strong>Reading time:</strong> 20-30 minutes</p>
+<h4 id="level-8-quick-reference"><strong>Level 8: Quick Reference</strong><a class="headerlink" href="#level-8-quick-reference" title="Permanent link">&para;</a></h4>
+<p><strong><a href="08-QUICK-REFERENCE/">08-QUICK-REFERENCE.md</a></strong>
+- <strong>Cheat sheet of U1-U4 constraints</strong>
+- <strong>Operator table</strong> with glyphs and classification
+- <strong>Common sequences lookup table</strong>
+- <strong>Validation decision tree</strong>
+- <strong>Frequent import commands</strong>
+- <strong>Common troubleshooting</strong>
+- <strong>Audience:</strong> Everyone (quick reference during development)
+- <strong>Reading time:</strong> 5-10 minutes</p>
+<hr />
+<h3 id="complementary-documents">📚 Complementary Documents<a class="headerlink" href="#complementary-documents" title="Permanent link">&para;</a></h3>
+<p><strong><a href="GLOSSARY/">GLOSSARY.md</a></strong>
+- Operational definitions of all TNFR terms
+- Format: Term → Symbol → Code → Meaning → Reference
+- <strong>Audience:</strong> Everyone
+- <strong>Use:</strong> Constant reference</p>
+<p><strong><a href="MASTER-INDEX/">MASTER-INDEX.md</a></strong>
+- Global conceptual map of grammar system
+- Relationships between concepts
+- Dependency diagram
+- <strong>Audience:</strong> Developers planning large changes
+- <strong>Use:</strong> Holistic system view</p>
+<p><strong><a href="EXECUTIVE-SUMMARY/">EXECUTIVE-SUMMARY.md</a></strong>
+- High-level overview for managers and stakeholders
+- Business value and strategic importance
+- Current status and roadmap
+- <strong>Audience:</strong> Non-technical decision makers
+- <strong>Use:</strong> Strategic planning and resource allocation</p>
+<p><strong><a href="TOOLING-AND-AUTOMATION/">TOOLING-AND-AUTOMATION.md</a></strong>
+- Complete guide to validation scripts and tools
+- CI/CD integration and pre-commit hooks
+- Development workflows and best practices
+- <strong>Audience:</strong> Developers and DevOps engineers
+- <strong>Use:</strong> Daily development and automation setup</p>
+<hr />
+<h3 id="executable-examples">💡 Executable Examples<a class="headerlink" href="#executable-examples" title="Permanent link">&para;</a></h3>
+<p><strong><a href="examples/">examples/</a></strong>
+- <strong>01-basic-bootstrap.py:</strong> Basic initialization sequence
+- <strong>02-intermediate-exploration.py:</strong> Controlled destabilization exploration
+- <strong>03-advanced-bifurcation.py:</strong> Bifurcation and mutation handling
+- <strong>04-anti-patterns.py:</strong> Invalid sequence examples (commented)
+- <strong>05-multi-scale.py:</strong> Nested EPIs and fractality
+- All verifiable with <code>pytest</code></p>
+<hr />
+<h3 id="json-schemas">🔧 JSON Schemas<a class="headerlink" href="#json-schemas" title="Permanent link">&para;</a></h3>
+<p><strong><a href="schemas/">schemas/</a></strong>
+- <strong>constraints-u1-u4.json:</strong> Formal constraint definitions
+- <strong>canonical-operators.json:</strong> Metadata for 13 operators
+- <strong>valid-sequences.json:</strong> Catalog of canonical patterns
+- <strong>Use:</strong> Programmatic validation, tooling, IDEs</p>
+<hr />
+<h2 id="how-to-use-this-documentation">🚀 How to Use This Documentation<a class="headerlink" href="#how-to-use-this-documentation" title="Permanent link">&para;</a></h2>
+<h3 id="for-new-users">For New Users<a class="headerlink" href="#for-new-users" title="Permanent link">&para;</a></h3>
+<p><strong>Recommended learning path:</strong></p>
+<ol>
+<li><strong><a href="01-FUNDAMENTAL-CONCEPTS/">01-FUNDAMENTAL-CONCEPTS.md</a></strong> - Understand TNFR paradigm</li>
+<li><strong><a href="GLOSSARY/">GLOSSARY.md</a></strong> - Familiarize with key terms</li>
+<li><strong><a href="03-OPERATORS-AND-GLYPHS/">03-OPERATORS-AND-GLYPHS.md</a></strong> - Learn the 13 operators</li>
+<li><strong><a href="examples/01-basic-bootstrap/">examples/01-basic-bootstrap.py</a></strong> - Run first example</li>
+<li><strong><a href="08-QUICK-REFERENCE/">08-QUICK-REFERENCE.md</a></strong> - Keep handy during development</li>
+</ol>
+<p><strong>Total time:</strong> ~2 hours for operational fundamentals</p>
+<h3 id="for-intermediate-developers">For Intermediate Developers<a class="headerlink" href="#for-intermediate-developers" title="Permanent link">&para;</a></h3>
+<p><strong>If you already know TNFR and want to implement sequences:</strong></p>
+<ol>
+<li><strong><a href="04-VALID-SEQUENCES/">04-VALID-SEQUENCES.md</a></strong> - Patterns and anti-patterns</li>
+<li><strong><a href="02-CANONICAL-CONSTRAINTS/">02-CANONICAL-CONSTRAINTS.md</a></strong> - U1-U4 constraints</li>
+<li><strong><a href="examples/">examples/</a></strong> - Run intermediate and advanced examples</li>
+<li><strong><a href="08-QUICK-REFERENCE/">08-QUICK-REFERENCE.md</a></strong> - Quick lookup</li>
+</ol>
+<p><strong>Total time:</strong> ~90 minutes</p>
+<h3 id="for-advanced-contributors">For Advanced Contributors<a class="headerlink" href="#for-advanced-contributors" title="Permanent link">&para;</a></h3>
+<p><strong>If you're modifying core or adding features:</strong></p>
+<ol>
+<li><strong><a href="05-TECHNICAL-IMPLEMENTATION/">05-TECHNICAL-IMPLEMENTATION.md</a></strong> - Code architecture</li>
+<li><strong><a href="06-VALIDATION-AND-TESTING/">06-VALIDATION-AND-TESTING.md</a></strong> - Test strategy</li>
+<li><strong><a href="MASTER-INDEX/">MASTER-INDEX.md</a></strong> - System conceptual map</li>
+<li><strong><a href="07-MIGRATION-AND-EVOLUTION/">07-MIGRATION-AND-EVOLUTION.md</a></strong> - How to evolve system</li>
+<li><strong><a href="schemas/">schemas/</a></strong> - Validation schemas</li>
+</ol>
+<p><strong>Total time:</strong> ~2-3 hours for complete mastery</p>
+<hr />
+<h2 id="external-references">🔗 External References<a class="headerlink" href="#external-references" title="Permanent link">&para;</a></h2>
+<h3 id="main-repository-documentation">Main Repository Documentation<a class="headerlink" href="#main-repository-documentation" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong><a href="../../README.md">../../README.md</a></strong> - TNFR project overview</li>
+<li><strong><a href="../../UNIFIED_GRAMMAR_RULES.md">../../UNIFIED_GRAMMAR_RULES.md</a></strong> - Complete formal derivations (original source)</li>
+<li><strong><a href="../../AGENTS.md">../../AGENTS.md</a></strong> - Canonical invariants and contracts</li>
+<li><strong><a href="../../GLOSSARY.md">../../GLOSSARY.md</a></strong> - General project glossary</li>
+<li><strong><a href="../../TNFR.pdf">../../TNFR.pdf</a></strong> - Complete theoretical foundations</li>
+</ul>
+<h3 id="implementation">Implementation<a class="headerlink" href="#implementation" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong><a href="../../src/tnfr/operators/grammar.py">../../src/tnfr/operators/grammar.py</a></strong> - Canonical implementation</li>
+<li><strong><a href="../../src/tnfr/operators/definitions.py">../../src/tnfr/operators/definitions.py</a></strong> - Operator definitions</li>
+<li><strong><a href="../../tests/unit/operators/test_unified_grammar.py">../../tests/unit/operators/test_unified_grammar.py</a></strong> - Test suite</li>
+</ul>
+<h3 id="documentation-sync-tool">Documentation Sync Tool<a class="headerlink" href="#documentation-sync-tool" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong><a href="../../tools/sync_documentation.py">../../tools/sync_documentation.py</a></strong> - Centralized sync tool</li>
+<li><strong><a href="CODE_DOCS_CROSSREF/">CODE_DOCS_CROSSREF.md</a></strong> - Bidirectional cross-references</li>
+</ul>
+<p><strong>Run sync check:</strong>
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>tools/sync_documentation.py<span class="w"> </span>--all
+</code></pre></div></p>
+<p>This validates:
+- All functions documented (17/17 ✓)
+- All examples execute (8/8 ✓)
+- Cross-references accurate (35 documented)
+- Schema matches implementation</p>
+<hr />
+<h2 id="writing-conventions">📝 Writing Conventions<a class="headerlink" href="#writing-conventions" title="Permanent link">&para;</a></h2>
+<h3 id="format">Format<a class="headerlink" href="#format" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Language:</strong> English for all technical content</li>
+<li><strong>Equations:</strong> Standard mathematical notation with LaTeX</li>
+<li><strong>Code:</strong> Python 3.9+ with type hints</li>
+<li><strong>References:</strong> Internal relative links, external absolute links</li>
+</ul>
+<h3 id="section-structure">Section Structure<a class="headerlink" href="#section-structure" title="Permanent link">&para;</a></h3>
+<p>Each technical document follows this structure:</p>
+<div class="highlight"><pre><span></span><code><span class="gh"># Document Title</span>
+
+<span class="gu">## Purpose</span>
+[What this document is for]
+
+<span class="gu">## Key Concepts</span>
+[Prerequisites needed]
+
+<span class="gu">## Main Content</span>
+[Development with subsections]
+
+<span class="gu">## Examples</span>
+[Executable code]
+
+<span class="gu">## References</span>
+[Links to other documents]
+</code></pre></div>
+<h3 id="code">Code<a class="headerlink" href="#code" title="Permanent link">&para;</a></h3>
+<p>All code examples must:
+- ✅ Be executable
+- ✅ Include complete imports
+- ✅ Have explanatory comments
+- ✅ Follow TNFR conventions (don't modify EPI directly, etc.)
+- ✅ Include expected telemetry output</p>
+<hr />
+<h2 id="contributing-to-this-documentation">🤝 Contributing to This Documentation<a class="headerlink" href="#contributing-to-this-documentation" title="Permanent link">&para;</a></h2>
+<h3 id="principles">Principles<a class="headerlink" href="#principles" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Single source of truth:</strong> Don't duplicate, cross-reference</li>
+<li><strong>Physics first:</strong> All documentation derives from TNFR physics</li>
+<li><strong>Incremental:</strong> Add without breaking existing structure</li>
+<li><strong>Validable:</strong> Executable examples, updatable JSON schemas</li>
+</ol>
+<h3 id="adding-new-content">Adding New Content<a class="headerlink" href="#adding-new-content" title="Permanent link">&para;</a></h3>
+<p><strong>To add a new constraint:</strong>
+1. Document physics in <code>02-CANONICAL-CONSTRAINTS.md</code>
+2. Implement in <code>../../src/tnfr/operators/grammar.py</code>
+3. Add tests in <code>../../tests/unit/operators/test_unified_grammar.py</code>
+4. Update <code>schemas/constraints-u1-u4.json</code>
+5. Add examples in <code>examples/</code>
+6. Update <code>08-QUICK-REFERENCE.md</code></p>
+<p><strong>To add a new operator:</strong>
+1. Document in <code>03-OPERATORS-AND-GLYPHS.md</code>
+2. Implement in <code>../../src/tnfr/operators/definitions.py</code>
+3. Update classification in <code>../../src/tnfr/operators/grammar.py</code>
+4. Add contract tests
+5. Update <code>schemas/canonical-operators.json</code></p>
+<h3 id="maintaining-coherence">Maintaining Coherence<a class="headerlink" href="#maintaining-coherence" title="Permanent link">&para;</a></h3>
+<p><strong>Before making PR:</strong>
+- [ ] All examples are executable
+- [ ] Bidirectional links work
+- [ ] JSON schemas reflect changes
+- [ ] Tests pass
+- [ ] Changes documented in 07-MIGRATION-AND-EVOLUTION.md if breaking</p>
+<hr />
+<h2 id="completion-status">📊 Completion Status<a class="headerlink" href="#completion-status" title="Permanent link">&para;</a></h2>
+<h3 id="complete">✅ Complete<a class="headerlink" href="#complete" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Directory structure</li>
+<li>Navigation README (this file)</li>
+<li>Main cross-references</li>
+</ul>
+<h3 id="in-progress">🚧 In Progress<a class="headerlink" href="#in-progress" title="Permanent link">&para;</a></h3>
+<ul>
+<li>01-FUNDAMENTAL-CONCEPTS.md</li>
+<li>02-CANONICAL-CONSTRAINTS.md</li>
+<li>03-OPERATORS-AND-GLYPHS.md</li>
+<li>04-VALID-SEQUENCES.md</li>
+<li>05-TECHNICAL-IMPLEMENTATION.md</li>
+<li>06-VALIDATION-AND-TESTING.md</li>
+<li>07-MIGRATION-AND-EVOLUTION.md</li>
+<li>08-QUICK-REFERENCE.md</li>
+</ul>
+<h3 id="planned">📋 Planned<a class="headerlink" href="#planned" title="Permanent link">&para;</a></h3>
+<ul>
+<li>GLOSSARY.md (consolidate from ../../GLOSSARY.md)</li>
+<li>MASTER-INDEX.md</li>
+<li>examples/*.py</li>
+<li>schemas/*.json</li>
+</ul>
+<hr />
+<h2 id="documentation-philosophy">🎓 Documentation Philosophy<a class="headerlink" href="#documentation-philosophy" title="Permanent link">&para;</a></h2>
+<blockquote>
+<p><strong>"If a change cannot be traced from TNFR physics to code to tests, it is not canonical."</strong></p>
+</blockquote>
+<p>This documentation exists to make that traceability <strong>explicit, navigable, and maintainable</strong>.</p>
+<h3 id="values">Values<a class="headerlink" href="#values" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Clarity over brevity:</strong> Better to explain twice than leave doubts</li>
+<li><strong>Physics over convention:</strong> Every rule derives inevitably from nodal equation</li>
+<li><strong>Code over prose:</strong> Executable examples &gt; abstract descriptions</li>
+<li><strong>Testing over trust:</strong> Everything documented must be testable</li>
+</ul>
+<hr />
+<h2 id="contact-and-support">📞 Contact and Support<a class="headerlink" href="#contact-and-support" title="Permanent link">&para;</a></h2>
+<p><strong>Found inconsistencies?</strong>
+- Open GitHub issue with label <code>documentation</code></p>
+<p><strong>Need navigation help?</strong>
+- Check <a href="08-QUICK-REFERENCE/">08-QUICK-REFERENCE.md</a> first
+- Then consult specific document for your level</p>
+<p><strong>Want to contribute?</strong>
+- Read <a href="../../CONTRIBUTING.md">../../CONTRIBUTING.md</a>
+- Then review "Contributing to This Documentation" section above</p>
+<hr />
+<div align="center">
+
+**Version:** 1.0  
+**Last updated:** 2025-11-10  
+**Maintainer:** TNFR Core Team
+
+**Reality is not made of things—it's made of resonance. Document accordingly.**
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "..", "features": ["navigation.sections", "navigation.top", "navigation.tracking", "toc.integrate"], "search": "../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      
+    
+  </body>
+</html>
