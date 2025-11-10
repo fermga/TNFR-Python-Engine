@@ -286,7 +286,7 @@ def validate_coupling(G: "TNFRGraph", node: "NodeId") -> None:
         Minimum EPI magnitude required for coupling
     UM_MIN_VF : float, default 0.01
         Minimum structural frequency required for coupling
-    UM_STRICT_PHASE_CHECK : bool, default True (changed from False per RC3)
+    UM_STRICT_PHASE_CHECK : bool, default True (changed from False per U3)
         Enable strict phase compatibility checking with existing neighbors.
         **MANDATORY per AGENTS.md Invariant #5**: "no coupling is valid without
         explicit phase verification (synchrony)"
@@ -312,7 +312,9 @@ def validate_coupling(G: "TNFRGraph", node: "NodeId") -> None:
     Notes
     -----
     **IMPORTANT**: Phase compatibility check is now MANDATORY by default
-    (UM_STRICT_PHASE_CHECK=True) to align with AGENTS.md Invariant #5 and RC3.
+    (UM_STRICT_PHASE_CHECK=True) to align with AGENTS.md Invariant #5 and U3.
+    
+    [Legacy note: Previously referenced RC3. See docs/grammar/DEPRECATION-INDEX.md]
 
     Set UM_STRICT_PHASE_CHECK=False to disable (NOT RECOMMENDED - violates
     canonical physics requirements).
@@ -334,7 +336,9 @@ def validate_coupling(G: "TNFRGraph", node: "NodeId") -> None:
     --------
     Coupling : UM operator that uses this validation
     AGENTS.md : Invariant #5 (phase check mandatory)
-    EMERGENT_GRAMMAR_ANALYSIS.md : RC3 derivation
+    UNIFIED_GRAMMAR_RULES.md : U3 derivation
+    
+    [Legacy: Previously referenced EMERGENT_GRAMMAR_ANALYSIS.md RC3]
     """
     import math
 
@@ -361,7 +365,7 @@ def validate_coupling(G: "TNFRGraph", node: "NodeId") -> None:
             "Coupling", f"Structural frequency too low (νf={vf:.3f} < {min_vf:.3f})"
         )
 
-    # RC3: Phase compatibility check
+    # U3: Phase compatibility check (was RC3)
     # Per AGENTS.md Invariant #5: "no coupling is valid without explicit phase verification"
     # Changed from False to True to align with canonical physics requirements
     strict_phase = bool(G.graph.get("UM_STRICT_PHASE_CHECK", True))
