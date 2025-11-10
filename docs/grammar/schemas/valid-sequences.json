@@ -1,0 +1,543 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "TNFR Valid Sequences Catalog",
+  "description": "Catalog of valid and invalid operator sequences, canonical patterns, and anti-patterns",
+  "version": "1.0.0",
+  "canonical_patterns": [
+    {
+      "id": "bootstrap_minimal",
+      "name": "Bootstrap (Minimal)",
+      "pattern": ["Generator", "Stabilizer", "Closure"],
+      "example": ["emission", "coherence", "silence"],
+      "purpose": "Create and stabilize new structure from vacuum",
+      "satisfies": ["U1a", "U1b", "U2"],
+      "use_when": "Initializing new nodes or structures",
+      "complexity": "minimal",
+      "c_t_impact": "increase"
+    },
+    {
+      "id": "basic_activation",
+      "name": "Basic Activation",
+      "pattern": ["Generator", "Reception", "Stabilizer", "Closure"],
+      "example": ["emission", "reception", "coherence", "silence"],
+      "purpose": "Create, gather information, stabilize",
+      "satisfies": ["U1a", "U1b", "U2"],
+      "use_when": "Creating nodes that need network input",
+      "complexity": "low",
+      "c_t_impact": "increase"
+    },
+    {
+      "id": "controlled_exploration",
+      "name": "Controlled Exploration",
+      "pattern": ["Generator", "Stabilizer", "Destabilizer", "Stabilizer", "Closure"],
+      "example": ["emission", "coherence", "dissonance", "coherence", "silence"],
+      "purpose": "Explore while maintaining stability",
+      "satisfies": ["U1a", "U1b", "U2", "U4a"],
+      "use_when": "Breaking local optima, controlled perturbation",
+      "complexity": "medium",
+      "c_t_impact": "neutral"
+    },
+    {
+      "id": "bifurcation_with_handling",
+      "name": "Bifurcation with Handling",
+      "pattern": ["Generator", "Stabilizer", "Trigger", "Handler", "Stabilizer", "Closure"],
+      "example": ["emission", "coherence", "dissonance", "self_organization", "coherence", "silence"],
+      "purpose": "Controlled bifurcation and structural reorganization",
+      "satisfies": ["U1a", "U1b", "U2", "U4a", "U4b"],
+      "use_when": "Creating hierarchical or multi-scale structures",
+      "complexity": "high",
+      "c_t_impact": "increase"
+    },
+    {
+      "id": "mutation_with_context",
+      "name": "Mutation with Context",
+      "pattern": ["Generator", "Coherence", "Destabilizer", "Mutation", "Stabilizer", "Closure"],
+      "example": ["emission", "coherence", "dissonance", "mutation", "coherence", "silence"],
+      "purpose": "Phase transformation with proper context",
+      "satisfies": ["U1a", "U1b", "U2", "U4a", "U4b"],
+      "use_when": "Qualitative state changes, regime shifts",
+      "complexity": "high",
+      "c_t_impact": "variable"
+    },
+    {
+      "id": "propagation",
+      "name": "Propagation",
+      "pattern": ["Generator", "Coupling", "Resonance", "Stabilizer", "Closure"],
+      "example": ["emission", "coupling", "resonance", "coherence", "silence"],
+      "purpose": "Create structure and propagate through network",
+      "satisfies": ["U1a", "U1b", "U3"],
+      "use_when": "Spreading patterns through network",
+      "complexity": "medium",
+      "c_t_impact": "increase",
+      "requires_phase_check": true
+    },
+    {
+      "id": "multiscale_organization",
+      "name": "Multi-scale Organization",
+      "pattern": ["Generator", "Coupling", "Destabilizer", "SelfOrganization", "Recursivity"],
+      "example": ["emission", "coupling", "dissonance", "self_organization", "recursivity"],
+      "purpose": "Create nested hierarchical structures",
+      "satisfies": ["U1a", "U1b", "U2", "U4a", "U4b"],
+      "use_when": "Building hierarchies, nested patterns",
+      "complexity": "high",
+      "c_t_impact": "increase",
+      "creates_fractality": true
+    },
+    {
+      "id": "dimension_reduction",
+      "name": "Dimension Reduction",
+      "pattern": ["Generator", "Stabilizer", "Contraction", "Stabilizer", "Closure"],
+      "example": ["emission", "coherence", "contraction", "coherence", "silence"],
+      "purpose": "Simplify structure while maintaining coherence",
+      "satisfies": ["U1a", "U1b", "U2"],
+      "use_when": "Simplifying over-complex structures, dimension reduction",
+      "complexity": "medium",
+      "c_t_impact": "increase"
+    },
+    {
+      "id": "network_bootstrap",
+      "name": "Network Bootstrap",
+      "pattern": ["Generator", "Coupling", "Reception", "Coherence", "Closure"],
+      "example": ["emission", "coupling", "reception", "coherence", "silence"],
+      "purpose": "Create node connected to network and integrate information",
+      "satisfies": ["U1a", "U1b", "U3"],
+      "use_when": "Creating nodes that need immediate network integration",
+      "complexity": "medium",
+      "c_t_impact": "increase",
+      "requires_phase_check": true
+    },
+    {
+      "id": "controlled_expansion",
+      "name": "Controlled Expansion",
+      "pattern": ["Generator", "Stabilizer", "Expansion", "Stabilizer", "Closure"],
+      "example": ["emission", "coherence", "expansion", "coherence", "silence"],
+      "purpose": "Increase structural complexity safely",
+      "satisfies": ["U1a", "U1b", "U2"],
+      "use_when": "Growing structure dimensionality, adding degrees of freedom",
+      "complexity": "medium",
+      "c_t_impact": "increase"
+    },
+    {
+      "id": "deep_exploration_cycle",
+      "name": "Deep Exploration Cycle",
+      "pattern": ["Generator", ["Coherence", "Dissonance"], "Coherence", "Closure"],
+      "example": ["emission", "coherence", "dissonance", "coherence", "dissonance", "coherence", "silence"],
+      "purpose": "Multiple rounds of exploration with stabilization",
+      "satisfies": ["U1a", "U1b", "U2", "U4a"],
+      "use_when": "Thorough exploration of structural space, optimization",
+      "complexity": "high",
+      "c_t_impact": "neutral",
+      "repeating_pattern": true
+    },
+    {
+      "id": "fractal_replication",
+      "name": "Fractal Replication",
+      "pattern": ["Generator", "Coherence", "Coupling", "Destabilizer", "SelfOrganization", "Recursivity"],
+      "example": ["emission", "coherence", "coupling", "dissonance", "self_organization", "recursivity"],
+      "purpose": "Create self-similar hierarchical structures",
+      "satisfies": ["U1a", "U1b", "U2", "U4a", "U4b"],
+      "use_when": "Creating multi-scale self-similar patterns",
+      "complexity": "high",
+      "c_t_impact": "increase",
+      "creates_fractality": true
+    },
+    {
+      "id": "transition_based_reorganization",
+      "name": "Transition-Based Reorganization",
+      "pattern": ["Transition", "Operations", "Transition"],
+      "example": ["transition", "coupling", "reception", "coherence", "transition"],
+      "purpose": "Move between regime states",
+      "satisfies": ["U1a", "U1b"],
+      "use_when": "Switching between behavioral modes or attractor states",
+      "complexity": "medium",
+      "c_t_impact": "variable"
+    }
+  ],
+  "anti_patterns": [
+    {
+      "id": "no_generator_from_vacuum",
+      "name": "No Generator from Vacuum",
+      "invalid_sequence": ["coherence", "silence"],
+      "violates": "U1a",
+      "reason": "∂EPI/∂t undefined at EPI=0, need external input",
+      "fix": "Add generator at start: [emission, coherence, silence]",
+      "severity": "critical"
+    },
+    {
+      "id": "no_closure",
+      "name": "No Closure",
+      "invalid_sequence": ["emission", "coherence"],
+      "violates": "U1b",
+      "reason": "No stable endpoint, system left in transient state",
+      "fix": "Add closure: [emission, coherence, silence]",
+      "severity": "critical"
+    },
+    {
+      "id": "destabilizer_without_stabilizer",
+      "name": "Destabilizer Without Stabilizer",
+      "invalid_sequence": ["emission", "dissonance", "silence"],
+      "violates": "U2",
+      "reason": "Integral may diverge, coherence not preserved",
+      "fix": "Add stabilizer: [emission, dissonance, coherence, silence]",
+      "severity": "critical"
+    },
+    {
+      "id": "mutation_without_context",
+      "name": "Mutation Without Context",
+      "invalid_sequence": ["emission", "mutation", "silence"],
+      "violates": "U4b",
+      "reason": "Cannot reach threshold without elevated ΔNFR",
+      "fix": "Add destabilizer and prior coherence: [emission, coherence, dissonance, mutation, coherence, silence]",
+      "severity": "critical"
+    },
+    {
+      "id": "mutation_without_prior_coherence",
+      "name": "Mutation Without Prior Coherence",
+      "invalid_sequence": ["emission", "dissonance", "mutation", "coherence", "silence"],
+      "violates": "U4b",
+      "reason": "No stable configuration to transform from",
+      "fix": "Add coherence before destabilizer: [emission, coherence, dissonance, mutation, coherence, silence]",
+      "severity": "critical"
+    },
+    {
+      "id": "coupling_without_phase_check",
+      "name": "Coupling Without Phase Check",
+      "invalid_sequence": ["emission", "coupling", "silence"],
+      "violates": "U3",
+      "reason": "Destructive interference if phases incompatible, physically meaningless",
+      "fix": "Verify phase compatibility before coupling (runtime check)",
+      "severity": "critical",
+      "runtime_error": true
+    },
+    {
+      "id": "bifurcation_trigger_without_handler",
+      "name": "Bifurcation Trigger Without Handler",
+      "invalid_sequence": ["emission", "dissonance", "silence"],
+      "violates": "U4a",
+      "reason": "Uncontrolled bifurcation may lead to chaos",
+      "fix": "Add handler: [emission, dissonance, coherence, silence]",
+      "severity": "high"
+    },
+    {
+      "id": "expansion_without_stabilization",
+      "name": "Expansion Without Stabilization",
+      "invalid_sequence": ["emission", "expansion", "silence"],
+      "violates": "U2",
+      "reason": "Unbounded growth, integral diverges",
+      "fix": "Add stabilizer: [emission, expansion, coherence, silence]",
+      "severity": "critical"
+    },
+    {
+      "id": "selforganization_without_recent_destabilizer",
+      "name": "Self-Organization Without Recent Destabilizer",
+      "invalid_sequence": ["emission", "coherence", "self_organization", "silence"],
+      "violates": "U4b",
+      "reason": "Cannot organize without elevated ΔNFR",
+      "fix": "Add destabilizer before THOL: [emission, coherence, dissonance, self_organization, silence]",
+      "severity": "high"
+    },
+    {
+      "id": "resonance_on_antiphase_nodes",
+      "name": "Resonance on Antiphase Nodes",
+      "invalid_sequence": ["emission", "coupling", "resonance", "silence"],
+      "violates": "U3",
+      "reason": "Destructive interference if |θᵢ - θⱼ| = π > Δθ_max",
+      "fix": "Ensure phase compatibility before resonance (runtime check)",
+      "severity": "critical",
+      "runtime_error": true
+    },
+    {
+      "id": "multiple_destabilizers_without_adequate_stabilization",
+      "name": "Multiple Destabilizers Without Adequate Stabilization",
+      "invalid_sequence": ["emission", "dissonance", "expansion", "coherence", "silence"],
+      "violates": "U2",
+      "reason": "Cumulative instability may exceed single stabilizer capacity",
+      "fix": "Balance with multiple stabilizers: [emission, dissonance, coherence, expansion, coherence, silence]",
+      "severity": "high"
+    },
+    {
+      "id": "recursivity_without_proper_context",
+      "name": "Recursivity Without Proper Context",
+      "invalid_sequence": ["recursivity", "silence"],
+      "violates": "semantic",
+      "reason": "Cannot echo structure that doesn't exist yet",
+      "fix": "Build structure first: [emission, coherence, dissonance, self_organization, recursivity]",
+      "severity": "medium",
+      "semantic_error": true
+    },
+    {
+      "id": "reception_without_network_connectivity",
+      "name": "Reception Without Network Connectivity",
+      "invalid_sequence": ["emission", "reception", "silence"],
+      "violates": "semantic",
+      "reason": "Cannot integrate information from non-existent network",
+      "fix": "Establish connectivity first: [emission, coupling, reception, coherence, silence]",
+      "severity": "medium",
+      "semantic_error": true
+    },
+    {
+      "id": "transition_without_state_change_logic",
+      "name": "Transition Without State Change Logic",
+      "invalid_sequence": ["transition", "transition"],
+      "violates": "semantic",
+      "reason": "Transition without operations is meaningless",
+      "fix": "Add meaningful operations: [transition, coupling, reception, coherence, transition]",
+      "severity": "low",
+      "semantic_error": true
+    }
+  ],
+  "operator_transition_matrix": {
+    "description": "13x13 matrix showing validity of transitions between operators",
+    "legend": {
+      "recommended": "⭐ Generally recommended pattern",
+      "valid": "✓ Valid transition",
+      "caution": "⚠️ Valid but needs additional context",
+      "invalid": "❌ Generally invalid or problematic",
+      "closure": "─ Closure operator, ends sequence"
+    },
+    "transitions": {
+      "emission": {
+        "emission": "caution",
+        "reception": "recommended",
+        "coherence": "recommended",
+        "dissonance": "caution",
+        "coupling": "recommended",
+        "resonance": "caution",
+        "silence": "valid",
+        "expansion": "caution",
+        "contraction": "valid",
+        "self_organization": "caution",
+        "mutation": "invalid",
+        "transition": "valid",
+        "recursivity": "caution"
+      },
+      "reception": {
+        "emission": "caution",
+        "reception": "caution",
+        "coherence": "recommended",
+        "dissonance": "caution",
+        "coupling": "valid",
+        "resonance": "caution",
+        "silence": "valid",
+        "expansion": "caution",
+        "contraction": "valid",
+        "self_organization": "recommended",
+        "mutation": "invalid",
+        "transition": "valid",
+        "recursivity": "valid"
+      },
+      "coherence": {
+        "emission": "caution",
+        "reception": "valid",
+        "coherence": "caution",
+        "dissonance": "recommended",
+        "coupling": "valid",
+        "resonance": "valid",
+        "silence": "recommended",
+        "expansion": "valid",
+        "contraction": "valid",
+        "self_organization": "caution",
+        "mutation": "caution",
+        "transition": "recommended",
+        "recursivity": "recommended"
+      },
+      "dissonance": {
+        "emission": "caution",
+        "reception": "valid",
+        "coherence": "recommended",
+        "dissonance": "invalid",
+        "coupling": "valid",
+        "resonance": "valid",
+        "silence": "caution",
+        "expansion": "caution",
+        "contraction": "valid",
+        "self_organization": "recommended",
+        "mutation": "recommended",
+        "transition": "valid",
+        "recursivity": "valid"
+      },
+      "coupling": {
+        "emission": "caution",
+        "reception": "recommended",
+        "coherence": "recommended",
+        "dissonance": "caution",
+        "coupling": "caution",
+        "resonance": "recommended",
+        "silence": "valid",
+        "expansion": "caution",
+        "contraction": "valid",
+        "self_organization": "caution",
+        "mutation": "invalid",
+        "transition": "valid",
+        "recursivity": "valid"
+      },
+      "resonance": {
+        "emission": "caution",
+        "reception": "recommended",
+        "coherence": "recommended",
+        "dissonance": "caution",
+        "coupling": "valid",
+        "resonance": "caution",
+        "silence": "valid",
+        "expansion": "caution",
+        "contraction": "valid",
+        "self_organization": "caution",
+        "mutation": "invalid",
+        "transition": "valid",
+        "recursivity": "valid"
+      },
+      "silence": {
+        "description": "Closure operator - no valid transitions"
+      },
+      "expansion": {
+        "emission": "caution",
+        "reception": "valid",
+        "coherence": "recommended",
+        "dissonance": "caution",
+        "coupling": "valid",
+        "resonance": "valid",
+        "silence": "caution",
+        "expansion": "invalid",
+        "contraction": "caution",
+        "self_organization": "recommended",
+        "mutation": "invalid",
+        "transition": "valid",
+        "recursivity": "valid"
+      },
+      "contraction": {
+        "emission": "caution",
+        "reception": "valid",
+        "coherence": "recommended",
+        "dissonance": "caution",
+        "coupling": "valid",
+        "resonance": "valid",
+        "silence": "valid",
+        "expansion": "caution",
+        "contraction": "caution",
+        "self_organization": "caution",
+        "mutation": "invalid",
+        "transition": "valid",
+        "recursivity": "valid"
+      },
+      "self_organization": {
+        "emission": "caution",
+        "reception": "valid",
+        "coherence": "recommended",
+        "dissonance": "caution",
+        "coupling": "valid",
+        "resonance": "valid",
+        "silence": "valid",
+        "expansion": "caution",
+        "contraction": "valid",
+        "self_organization": "caution",
+        "mutation": "caution",
+        "transition": "valid",
+        "recursivity": "recommended"
+      },
+      "mutation": {
+        "emission": "caution",
+        "reception": "valid",
+        "coherence": "recommended",
+        "dissonance": "invalid",
+        "coupling": "valid",
+        "resonance": "valid",
+        "silence": "caution",
+        "expansion": "caution",
+        "contraction": "valid",
+        "self_organization": "recommended",
+        "mutation": "invalid",
+        "transition": "valid",
+        "recursivity": "valid"
+      },
+      "transition": {
+        "emission": "recommended",
+        "reception": "recommended",
+        "coherence": "valid",
+        "dissonance": "caution",
+        "coupling": "recommended",
+        "resonance": "caution",
+        "silence": "closure",
+        "expansion": "caution",
+        "contraction": "valid",
+        "self_organization": "caution",
+        "mutation": "invalid",
+        "transition": "caution",
+        "recursivity": "caution"
+      },
+      "recursivity": {
+        "description": "Closure operator - no valid transitions"
+      }
+    }
+  },
+  "validation_rules": {
+    "U1a": {
+      "name": "Structural Initiation",
+      "constraint": "When EPI=0, must start with generator",
+      "operators": {
+        "generators": ["emission", "transition", "recursivity"]
+      },
+      "check_timing": "sequence_validation",
+      "canonicity": "ABSOLUTE"
+    },
+    "U1b": {
+      "name": "Structural Closure",
+      "constraint": "All sequences must end with closure",
+      "operators": {
+        "closures": ["silence", "transition", "recursivity", "dissonance"]
+      },
+      "check_timing": "sequence_validation",
+      "canonicity": "STRONG"
+    },
+    "U2": {
+      "name": "Convergence & Boundedness",
+      "constraint": "Destabilizers require stabilizers for integral convergence",
+      "operators": {
+        "destabilizers": ["dissonance", "mutation", "expansion"],
+        "stabilizers": ["coherence", "self_organization"]
+      },
+      "check_timing": "sequence_validation",
+      "canonicity": "ABSOLUTE"
+    },
+    "U3": {
+      "name": "Resonant Coupling",
+      "constraint": "Phase compatibility required for coupling/resonance",
+      "operators": {
+        "coupling_resonance": ["coupling", "resonance"]
+      },
+      "check_timing": "runtime",
+      "phase_threshold": "π/2",
+      "canonicity": "ABSOLUTE"
+    },
+    "U4a": {
+      "name": "Bifurcation Triggers Need Handlers",
+      "constraint": "Bifurcation triggers require handlers",
+      "operators": {
+        "triggers": ["dissonance", "mutation"],
+        "handlers": ["coherence", "self_organization"]
+      },
+      "check_timing": "sequence_validation",
+      "canonicity": "STRONG"
+    },
+    "U4b": {
+      "name": "Transformers Need Context",
+      "constraint": "Transformers need recent destabilizer, ZHIR needs prior IL",
+      "operators": {
+        "transformers": ["mutation", "self_organization"],
+        "destabilizers": ["dissonance", "mutation", "expansion"]
+      },
+      "check_timing": "sequence_validation",
+      "window_size": 3,
+      "special_rules": {
+        "mutation": "Requires prior coherence before destabilizer window"
+      },
+      "canonicity": "STRONG"
+    }
+  },
+  "metadata": {
+    "author": "TNFR Development Team",
+    "date_created": "2025-01-10",
+    "version": "1.0.0",
+    "documentation_reference": "docs/grammar/04-VALID-SEQUENCES.md",
+    "implementation_reference": "src/tnfr/operators/grammar.py"
+  }
+}
