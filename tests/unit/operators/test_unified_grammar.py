@@ -574,15 +574,15 @@ class TestIntegration:
         assert "phase verification" in u3_msg.lower()
 
     def test_all_messages_include_constraint_label(self):
-        """All validation messages should include U1a, U1b, U2, U3, U4a, U4b, or U2-REMESH label."""
+        """All validation messages should include U1a, U1b, U2, U3, U4a, U4b, U2-REMESH, or U5 label."""
         seq = [Emission(), Coherence(), Silence()]
         valid, messages = UnifiedGrammarValidator.validate(seq, epi_initial=0.0)
 
-        # Should have exactly 7 messages (one for each constraint including U2-REMESH)
-        assert len(messages) == 7
+        # Should have exactly 8 messages (one for each constraint including U2-REMESH and U5)
+        assert len(messages) == 8
 
         # Each should start with constraint label
-        constraint_labels = ["U1a:", "U1b:", "U2:", "U3:", "U4a:", "U4b:", "U2-REMESH:"]
+        constraint_labels = ["U1a:", "U1b:", "U2:", "U3:", "U4a:", "U4b:", "U2-REMESH:", "U5:"]
         for label in constraint_labels:
             assert any(label in m for m in messages), f"Missing {label} in messages"
 
