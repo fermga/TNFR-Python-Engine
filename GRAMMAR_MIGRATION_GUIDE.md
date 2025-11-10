@@ -1,5 +1,15 @@
 # Grammar Migration Guide: C1-C3/RC1-RC4 → U1-U4
 
+> **⚠️ DEPRECATED**: This file is deprecated as of v2.0.0  
+> **Superseded by**: [`docs/grammar/07-MIGRATION-AND-EVOLUTION.md`](docs/grammar/07-MIGRATION-AND-EVOLUTION.md)  
+> **Reason**: Consolidated into canonical grammar documentation  
+> **Removal planned**: v4.0.0  
+> 
+> Please use the canonical migration guide for all future references.
+> This file is kept temporarily for backward compatibility only.
+
+---
+
 This guide helps migrate from old grammar systems to unified grammar.
 
 ## Overview
