@@ -1,6 +1,6 @@
 # Troubleshooting Guide
 
-[Home](../home.md) › Troubleshooting
+[Home](../index.md) › Troubleshooting
 
 This guide helps you diagnose and solve common problems when working with TNFR networks.
 

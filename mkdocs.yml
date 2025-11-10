@@ -5,7 +5,7 @@ repo_name: TNFR Python Engine
 docs_dir: docs/source
 site_dir: site
 nav:
-  - Home: home.md
+  - Home: index.md
   - Getting Started:
       - Welcome to TNFR: getting-started/README.md
       - Quickstart Tutorial: getting-started/quickstart.md
