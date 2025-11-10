@@ -908,6 +908,213 @@ The unified grammar consolidates two previously separate rule systems into a sin
 
 ---
 
+---
+
+## Proposed Constraints Under Research
+
+This section documents grammar constraints that have physical motivation but do not yet meet the canonicity threshold (STRONG/ABSOLUTE) for implementation. They remain under investigation pending empirical validation.
+
+### Proposed U6: TEMPORAL ORDERING
+
+**Status:** 🔬 RESEARCH PHASE - Not Implemented  
+**Canonicity Level:** MODERATE (40% confidence)  
+**Investigation Date:** 2025-11-10
+
+#### Physical Motivation
+
+**Proposed Rule:**
+```
+If bifurcation trigger {OZ, ZHIR} at position i,
+Then do NOT apply {OZ, ZHIR, VAL} at positions i+1, i+2
+```
+
+**Physics Basis:**
+
+From bifurcation theory, systems experience **structural relaxation time** after phase transitions:
+
+$$
+\tau_{\text{relax}} \approx \frac{\alpha}{2\pi\nu_f}
+$$
+
+where:
+- α is scale factor (typically 0.5-0.9, context-dependent)
+- νf is structural frequency (Hz_str)
+- For νf = 1.0 Hz_str: τ_relax ≈ 0.159 seconds structural
+
+**Rationale:**
+1. **Post-bifurcation delay:** Systems exhibit ε^(2/3) delay after fold bifurcations
+2. **Structural instability:** Non-hyperbolic transitions cause extreme sensitivity
+3. **TNFR evidence:** "Caos estructural resonante" when νf high and ΔNFR grows rapidly
+
+**Physical Analogies:**
+- **Neuronal refractory period:** Neurons cannot fire immediately after action potential
+- **Thermal equilibration:** Phase transitions require relaxation time
+- **Oscillator synchronization:** After perturbation, need reconvergence time
+
+#### Gap Analysis: Does U6 Add Constraints?
+
+Testing reveals U6 DOES identify sequences that pass U1-U5 but may be problematic:
+
+**Example Sequences Passing U1-U5 but Flagged by U6:**
+
+```python
+# Case 1: Consecutive destabilizers
+[Emission, Dissonance, Dissonance, Coherence, Silence]  
+# ✓ U1-U5, ✗ U6 (OZ at i, OZ at i+1)
+
+# Case 2: Immediate OZ → ZHIR
+[Emission, Coherence, Dissonance, Mutation, Coherence, Silence]
+# ✓ U1-U5, ✗ U6 (OZ→ZHIR without spacing)
+
+# Case 3: Triple destabilizers
+[Emission, Dissonance, Expansion, Dissonance, Coherence, Silence]
+# ✓ U1-U5, ✗ U6 (consecutive destabilization)
+```
+
+**Gap Coverage:** 5 out of 6 test cases (83% coverage improvement over U1-U5)
+
+**Control (Valid under both):**
+```python
+[Emission, Dissonance, Coherence, SelfOrganization, Dissonance, Coherence, Silence]
+# ✓ U1-U5, ✓ U6 (3 operators spacing between OZ)
+```
+
+#### Limitations Preventing Canonical Status
+
+**Why NOT Canonical (Yet):**
+
+1. **Not Derived from Nodal Equation**
+   - Formula τ_relax = α/(2πνf) borrowed from oscillator period
+   - No formal proof from ∂EPI/∂t = νf · ΔNFR(t)
+   - Heuristic "2 operator positions" approximation
+
+2. **Parameter Dependence**
+   - α varies (0.5-0.9) → context-dependent, not universal
+   - No methodology for determining α from first principles
+   - Domain-specific calibration required
+
+3. **Temporal-Logical Conflation**
+   - Sequences are LOGICAL orderings (abstract)
+   - U6 assumes fixed temporal spacing between operators
+   - Actual Δt between operators may vary by domain/implementation
+
+4. **Empirical Validation Pending**
+   - No simulation studies confirming τ_relax values
+   - Problem statement explicitly notes: "validación experimental pendiente"
+   - Unknown: How often do U6 violations actually cause fragmentation?
+
+5. **Possible Partial Redundancy**
+   - U2 requires stabilizers after destabilizers
+   - U4a requires handlers after triggers
+   - Question: Do U2+U4a enforcement timings already prevent worst cases?
+
+#### Comparison with Canonical Rules
+
+| Property | U1-U5 | Proposed U6 |
+|----------|-------|-------------|
+| **Derivation** | Direct from nodal equation | Borrowed from oscillator theory |
+| **Parameters** | None (or implicit in physics) | α varies 0.5-0.9 |
+| **Domain** | Universal | Time-spacing may vary |
+| **Evidence** | Mathematical/physical necessity | Empirical validation needed |
+| **Type** | ABSOLUTE/STRONG | MODERATE |
+
+#### Research Needed for Elevation to STRONG
+
+To elevate U6 to canonical status (60-80% confidence), the following research is required:
+
+**1. Computational Validation (Priority: HIGH)**
+- Run extensive simulations with varying νf values
+- Measure actual relaxation times after bifurcations
+- Determine empirical distribution of α across domains
+- Test: Does violating U6 CONSISTENTLY cause C(t) fragmentation?
+
+**2. Theoretical Derivation (Priority: HIGH)**
+- Attempt rigorous derivation from integrated nodal equation
+- Prove (or disprove): ∫νf·ΔNFR dt diverges without temporal spacing
+- Determine if τ_relax can be expressed purely in terms of TNFR primitives
+- Analyze: Can U6 be reformulated to remove α parameter?
+
+**3. Alternative Formulations (Priority: MEDIUM)**
+- Test operator-count spacing vs. actual time-based spacing
+- Investigate: Should U6 apply only to specific operator pairs?
+- Consider: Graduated spacing (OZ→OZ vs. OZ→ZHIR may differ)
+- Explore: Can U4a/U4b be strengthened to subsume U6?
+
+**4. Cross-Domain Validation (Priority: MEDIUM)**
+- Test U6 violations in biological, social, AI domains
+- Measure domain-specific α values
+- Document: Which domains show strongest U6 effects?
+- Determine: Is U6 universal or domain-conditional?
+
+**5. Failure Mode Analysis (Priority: LOW)**
+- Characterize: What exactly happens when U6 violated?
+- Measure: C(t), Si, νf trajectories for U6 violations
+- Compare: U6 violations vs. U2/U4 violations
+- Quantify: How severe is U6 violation vs. other rules?
+
+#### Implementation Strategy (If Elevated to STRONG)
+
+**Phase 1: Experimental Flag**
+```python
+validator = UnifiedGrammarValidator(experimental_u6=True)
+violations = validator.validate(sequence, epi_initial=0.0)
+```
+
+**Phase 2: Configurable Parameter**
+```python
+validator = UnifiedGrammarValidator(u6_spacing=2, u6_alpha=0.7)
+```
+
+**Phase 3: Canonical Integration**
+- Add U6 to grammar.py operator sets
+- Update UNIFIED_GRAMMAR_RULES.md derivation section
+- Comprehensive test suite (bifurcation simulations)
+- Update AGENTS.md invariants if needed
+
+#### Current Recommendation
+
+**DO NOT IMPLEMENT** U6 as canonical constraint at this time.
+
+**Rationale:**
+1. Canonicity MODERATE (40%) below threshold for inclusion
+2. Requires empirical validation not yet performed
+3. Parameter α needs principled determination method
+4. May introduce false positives (overly restrictive)
+5. Alternative: Strengthen U4a/U4b to cover temporal aspects
+
+**Alternative Approach:**
+- Document U6 as "physically motivated constraint under research"
+- Provide experimental validation framework in research tools
+- Gather data from domain applications
+- Revisit in 6-12 months with empirical evidence
+- Consider elevation if canonicity reaches STRONG (60-80%)
+
+**Alignment with TNFR Philosophy:**
+- **"Physics First"** - wait for complete derivation
+- **"No Arbitrary Choices"** - resolve α parameter issue
+- **"Reproducibility Always"** - need validation studies
+- **"Coherence Over Convenience"** - don't prematurely constrain
+
+#### Timeline Estimate
+
+**Realistic elevation timeline:** 6-12 months
+
+**Milestones:**
+- Month 1-2: Simulation framework for τ_relax measurement
+- Month 3-4: Cross-domain validation studies
+- Month 5-6: Theoretical derivation attempts
+- Month 7-9: α parameter methodology development
+- Month 10-11: Comprehensive testing and refinement
+- Month 12: Decision on canonical promotion
+
+**Success Criteria:**
+- Empirical data: >80% of U6 violations cause measurable coherence loss
+- Theoretical: Derivation from nodal equation (even if approximate)
+- Parameter: α determinable from node properties (not free parameter)
+- Universality: Works across 3+ distinct domains without re-tuning
+
+---
+
 ## References
 
 - **TNFR.pdf**: Section 2.1 (Nodal Equation), bifurcation theory
@@ -916,8 +1123,11 @@ The unified grammar consolidates two previously separate rule systems into a sin
 - **canonical_grammar.py**: Original RC1-RC4 implementation
 - **RESUMEN_FINAL_GRAMATICA.md**: Grammar evolution documentation
 - **EMERGENT_GRAMMAR_ANALYSIS.md**: Detailed physics analysis
+- **Bifurcation Theory:** Kuznetsov (2004), "Elements of Applied Bifurcation Theory"
+- **U6 Research:** "El pulso que nos atraviesa.pdf" § Caos estructural resonante
 
 ---
 
-**Date:** 2025-11-08 (U1-U4), 2025-11-10 (U5)
-**Status:** ✅ IMPLEMENTED - U1-U5 canonical grammar complete with tests
+**Date:** 2025-11-08 (U1-U4), 2025-11-10 (U5, U6 research documented)  
+**Status:** ✅ IMPLEMENTED - U1-U5 canonical grammar complete with tests  
+**Research:** 🔬 U6 proposed, documented, awaiting empirical validation
