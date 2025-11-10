@@ -1,0 +1,2544 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Canonical TNFR structural dynamics engine documentation">
+      
+      
+      
+      
+        <link rel="prev" href="../OPERATORS_VISUAL_GUIDE/">
+      
+      
+        <link rel="next" href="../docstring_style/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.23">
+    
+    
+      
+        <title>Telemetry & Utilities - TNFR Python Engine</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.84d31ad4.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#telemetry-metrics-and-utilities" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="TNFR Python Engine" class="md-header__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            TNFR Python Engine
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Telemetry & Utilities
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    TNFR Python Engine
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="TNFR Python Engine" class="md-nav__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    TNFR Python Engine
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    TNFR Python Engine
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Getting Started
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Getting Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Welcome to TNFR
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Quickstart Tutorial
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/TNFR_CONCEPTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Core Concepts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/INTERACTIVE_TUTORIAL/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Interactive Tutorial
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/FAQ/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    FAQ
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/math-backends/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Math Backends
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/optional-dependencies/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Optional Dependencies
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/migrating-remesh-window/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Migrating from Remesh Window
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    User Guide
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            User Guide
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/OPERATORS_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Operators Guide
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/METRICS_INTERPRETATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Metrics Interpretation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/TROUBLESHOOTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Troubleshooting
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Grammar Documentation
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Grammar Documentation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/EXECUTIVE-SUMMARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Executive Summary
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_3" id="__nav_4_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Core Concepts
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3">
+            <span class="md-nav__icon md-icon"></span>
+            Core Concepts
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/01-FUNDAMENTAL-CONCEPTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Fundamental Concepts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/02-CANONICAL-CONSTRAINTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Canonical Constraints
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/03-OPERATORS-AND-GLYPHS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Operators and Glyphs
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/04-VALID-SEQUENCES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Valid Sequences
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_4" id="__nav_4_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Implementation
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_4">
+            <span class="md-nav__icon md-icon"></span>
+            Implementation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/05-TECHNICAL-IMPLEMENTATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Technical Implementation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/06-VALIDATION-AND-TESTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Validation and Testing
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/07-MIGRATION-AND-EVOLUTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Migration and Evolution
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_5" id="__nav_4_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Reference
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_5">
+            <span class="md-nav__icon md-icon"></span>
+            Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/08-QUICK-REFERENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Quick Reference
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/GLOSSARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Glossary
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/MASTER-INDEX/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Master Index
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/OPERATORS-CATALOG-SUMMARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Operators Catalog
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/CROSS-REFERENCE-INDEX/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Cross-Reference Index
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/CODE_DOCS_CROSSREF/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Code Documentation Cross-Reference
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_6" id="__nav_4_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Tooling
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_6">
+            <span class="md-nav__icon md-icon"></span>
+            Tooling
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/TOOLING-AND-AUTOMATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Tooling and Automation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/TESTING-SUMMARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Testing Summary
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/DEPRECATION-INDEX/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Deprecation Index
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Examples
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    API Reference
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            API Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../operators/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Structural Operators
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OPERATORS_VISUAL_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Operators Visual Guide
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Telemetry & Utilities
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Telemetry & Utilities
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#official-metrics-and-telemetry" class="md-nav__link">
+    <span class="md-ellipsis">
+      Official metrics and telemetry
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Official metrics and telemetry">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cache-telemetry-publishers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cache telemetry publishers
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#trace-capture-and-callback-safety" class="md-nav__link">
+    <span class="md-ellipsis">
+      Trace capture and callback safety
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Trace capture and callback safety">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#trace-verbosity-presets" class="md-nav__link">
+    <span class="md-ellipsis">
+      Trace verbosity presets
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#metrics-verbosity-tiers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Metrics verbosity tiers
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#locking-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      Locking policy
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#helper-utilities-api-tnfrutils" class="md-nav__link">
+    <span class="md-ellipsis">
+      Helper utilities API (tnfr.utils)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Helper utilities API (tnfr.utils)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#collections-and-numeric-helpers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Collections and numeric helpers
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#structural-history-helpers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Structural history helpers
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#graph-caches-and-nfr-invalidation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Graph caches and ΔNFR invalidation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simulation-best-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      Simulation best practices
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#topological-remeshing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Topological remeshing
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#additional-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      Additional references
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docstring_style/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Docstring Style
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Advanced Topics
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            Advanced Topics
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced/ARCHITECTURE_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Architecture Guide
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced/PERFORMANCE_OPTIMIZATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Performance Optimization
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced/TESTING_STRATEGIES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Testing Strategies
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced/DEVELOPMENT_WORKFLOW/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Development Workflow
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../foundations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Mathematical Foundations
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Mathematical Foundations
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            Mathematical Foundations
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_8_1" id="__nav_8_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Primers
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_1">
+            <span class="md-nav__icon md-icon"></span>
+            Primers
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../theory/01_structural_frequency_primer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Structural frequency primer
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../theory/02_phase_synchrony_lattices/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Phase synchrony lattices
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../theory/03_delta_nfr_gradient_fields/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    ΔNFR gradient fields
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../theory/04_coherence_metrics_walkthrough/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Coherence metrics walkthrough
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../theory/04_nfr_validator_and_metrics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Validator and metrics
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../theory/05_sense_index_calibration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Sense index calibration
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../theory/06_recursivity_cascades/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Recursivity cascades
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Security
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            Security
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/monitoring/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Monitoring
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/dependency-auditing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Dependency Auditing
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/codeql/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    CodeQL
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/dependabot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Dependabot
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Project Info
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            Project Info
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Releases
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="telemetry-metrics-and-utilities">Telemetry, metrics, and utilities<a class="headerlink" href="#telemetry-metrics-and-utilities" title="Permanent link">&para;</a></h1>
+<p>TNFR simulations require auditable telemetry, deterministic caches, and reproducible metrics.
+This guide consolidates the APIs that expose coherence data, structural histories, and helper
+facades.</p>
+<blockquote>
+<p><strong>Migration note</strong>: <code>tnfr.mathematics.validators</code> has been removed. Use
+<code>tnfr.validation</code> (preferred) or <code>tnfr.validation.spectral</code> when wiring
+validators alongside the telemetry hooks described in this guide so the engine
+stays aligned with the supported API surface.</p>
+</blockquote>
+<h2 id="official-metrics-and-telemetry">Official metrics and telemetry<a class="headerlink" href="#official-metrics-and-telemetry" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>C(t)</strong> — <code>tnfr.metrics.common.compute_coherence</code>: global stability with optional means for
+  ΔNFR and dEPI/dt.</li>
+<li><strong>ΔNFR</strong> — computed via graph hooks such as <code>compute_delta_nfr</code>, blending phase, EPI, νf, and
+  topology. Set <code>G.graph["DNFR_CHUNK_SIZE"]</code> to constrain the NumPy accumulator
+  batches; otherwise the helper auto-tunes the chunk length using the same
+  heuristics as Si.</li>
+<li><strong>νf</strong> — structural frequency in Hz_str, maintained by dynamics modules.</li>
+<li><strong>Si</strong> — <code>tnfr.metrics.sense_index.compute_Si</code>: ability to produce meaningful reorganisation
+  combining νf, phase, and topology. The routine accepts an optional
+  <code>chunk_size</code> parameter (or the graph-level knob <code>G.graph["SI_CHUNK_SIZE"]</code>)
+  to process nodes in deterministic batches. When omitted the engine derives a
+  safe chunk length from the node count, available CPUs, and conservative
+  memory heuristics so vectorised and Python fallbacks stay balanced.</li>
+<li><strong>Phase θ</strong> — <code>tnfr.dynamics.coordinate_global_local_phase</code> and related helpers.</li>
+<li><strong>Compatibility</strong> — graphs must expose only the English <code>"theta"</code>/<code>"phase"</code>
+  keys before importing TNFR 15.0.0+. Remove any deprecated aliases (including
+  the historical standalone <code>"θ"</code> symbol) because alias helpers now operate
+  purely on the canonical names and reject untranslated payloads.</li>
+<li><strong>Topology</strong> — coupling maps available through operator utilities like
+  <code>tnfr.operators.apply_topological_remesh</code>.</li>
+</ul>
+<p>Batching Si or ΔNFR is useful when the network contains tens of thousands of
+nodes or when simulations run on shared machines with strict memory caps. Set a
+smaller chunk size (for example 2048) to bound the temporary NumPy buffers and
+to balance the Python worker payload when NumPy is unavailable. Leave the value
+unset for medium graphs so the heuristics scale naturally with the workload.</p>
+<p>Register telemetry callbacks before running dynamics:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">register_metrics_callbacks</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.trace</span><span class="w"> </span><span class="kn">import</span> <span class="n">register_trace</span>
+
+<span class="n">register_metrics_callbacks</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+<span class="n">register_trace</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+</code></pre></div>
+<p>Histories are stored under <code>G.graph['history']</code> and can be prepared with the structural history
+helpers exposed by the <code>tnfr.glyph_history</code> module.</p>
+<h3 id="cache-telemetry-publishers">Cache telemetry publishers<a class="headerlink" href="#cache-telemetry-publishers" title="Permanent link">&para;</a></h3>
+<p>Cache usage is exported through :func:<code>tnfr.telemetry.publish_graph_cache_metrics</code> which iterates
+over the shared :class:<code>~tnfr.utils.cache.CacheManager</code> and emits snapshots via the
+:class:<code>~tnfr.telemetry.cache_metrics.CacheTelemetryPublisher</code>. The publisher logs structured JSON
+records under the <code>tnfr.telemetry.cache</code> logger and invokes callbacks registered for
+<code>CallbackEvent.CACHE_METRICS</code> so observers can react to hit ratio or latency regressions.</p>
+<p>Typical wiring attaches a recorder and lets :func:<code>~tnfr.dynamics.runtime.step</code> publish metrics at
+the end of each iteration:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.callback_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">CallbackEvent</span><span class="p">,</span> <span class="n">callback_manager</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.telemetry</span><span class="w"> </span><span class="kn">import</span> <span class="n">publish_graph_cache_metrics</span>
+
+<span class="n">callback_manager</span><span class="o">.</span><span class="n">register_callback</span><span class="p">(</span>
+    <span class="n">G</span><span class="p">,</span>
+    <span class="n">CallbackEvent</span><span class="o">.</span><span class="n">CACHE_METRICS</span><span class="p">,</span>
+    <span class="k">lambda</span> <span class="n">graph</span><span class="p">,</span> <span class="n">ctx</span><span class="p">:</span> <span class="n">graph</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;cache_events&quot;</span><span class="p">,</span> <span class="p">[])</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ctx</span><span class="p">),</span>
+<span class="p">)</span>
+
+<span class="c1"># Manual snapshots are available when running imperative cache workloads.</span>
+<span class="n">publish_graph_cache_metrics</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+</code></pre></div>
+<p>Snapshots include derived ratios (<code>hit_ratio</code>, <code>miss_ratio</code>) and a mean latency estimate so log
+pipelines or observability hooks can alert when the hit rate drifts below the default 50% threshold
+or when the average cache latency exceeds 100 ms.</p>
+<h2 id="trace-capture-and-callback-safety">Trace capture and callback safety<a class="headerlink" href="#trace-capture-and-callback-safety" title="Permanent link">&para;</a></h2>
+<p><code>tnfr.trace.register_trace</code> attaches before/after callbacks via the shared callback manager.
+It records Γ specs, selector state, ΔNFR weights, Kuramoto metrics, and operator counts so every
+simulation leaves an auditable trail. Callback errors are stored in a ring buffer attached to
+the graph (default length 100). Adjust or inspect the buffer at runtime with
+<code>tnfr.callback_utils.callback_manager.set_callback_error_limit</code> and
+<code>get_callback_error_limit</code>. The ring buffer exposes entries as
+<code>tnfr.types.CallbackError</code> mappings so typed consumers can rely on a stable
+schema when exporting diagnostics.</p>
+<h3 id="trace-verbosity-presets">Trace verbosity presets<a class="headerlink" href="#trace-verbosity-presets" title="Permanent link">&para;</a></h3>
+<p><code>G.graph["TRACE"]</code> accepts a <code>verbosity</code> knob that determines which field producers execute when
+no explicit <code>capture</code> list is provided. The CLI mirrors these presets through the
+<code>--trace-verbosity {basic,detailed,debug}</code> switch so scripted runs can stay in sync with
+manual API configuration. The presets are:</p>
+<ul>
+<li><code>"basic"</code> — captures the structural configuration (<code>gamma</code>, grammar, selector, ΔNFR/SI weights,
+  callback map, THOL state) while skipping the heavier collectors. Use this for smoke tests or
+  performance-sensitive runs where topology snapshots are enough.</li>
+<li><code>"detailed"</code> — extends the basic payload with the Kuramoto order parameters and Σ⃗ snapshot while
+  omitting glyph counts, avoiding the most expensive history walk. Pick this tier when you need
+  coherence metrics without paying the full glyph audit cost.</li>
+<li><code>"debug"</code> — executes the full collector suite, including glyph counts, to preserve the legacy
+  trace payload. This remains the default level and is intended for investigations and regression
+  hunts where complete operator coverage matters more than runtime.</li>
+</ul>
+<p>If you still need a custom field mix, set <code>TRACE["capture"]</code> explicitly; the resolver will honour
+that list (or mapping) and ignore the verbosity preset. Identifiers are case-sensitive and the
+following capture names are recognised:</p>
+<ul>
+<li><code>"gamma"</code> — canonical Γ specification snapshot.</li>
+<li><code>"grammar"</code> — canonical grammar configuration.</li>
+<li><code>"selector"</code> — active glyph selector name.</li>
+<li><code>"dnfr_weights"</code> — ΔNFR mixing weights.</li>
+<li><code>"si_weights"</code> — Si weighting and sensitivity payload.</li>
+<li><code>"callbacks"</code> — registered callback names per phase.</li>
+<li><code>"thol_open_nodes"</code> — count of nodes with an open THOL block.</li>
+<li><code>"kuramoto"</code> — network Kuramoto order parameters.</li>
+<li><code>"sigma"</code> — global sense-plane vector Σ⃗.</li>
+<li><code>"glyph_counts"</code> (alias <code>"glyphs"</code>) — per-step glyph/operator count audit.</li>
+</ul>
+<h3 id="metrics-verbosity-tiers">Metrics verbosity tiers<a class="headerlink" href="#metrics-verbosity-tiers" title="Permanent link">&para;</a></h3>
+<p>The metrics orchestrator follows the same pattern via <code>G.graph["METRICS"]["verbosity"]</code>,
+which is exposed on the CLI as <code>--metrics-verbosity {basic,detailed,debug}</code>:</p>
+<ul>
+<li><code>"basic"</code> keeps the coherence and stability core (C(t), ΔSi, B) while skipping phase sync,
+  Σ⃗ statistics, Si aggregates, glyph timing, and the coherence/diagnosis callback hooks. This is
+  useful for lightweight runs or smoke tests.</li>
+<li><code>"detailed"</code> enables <code>_update_phase_sync</code>, <code>_update_sigma</code>, and <code>_aggregate_si</code> while attaching
+  the coherence observers. It deliberately skips <code>_compute_advanced_metrics</code> and the diagnosis
+  callbacks so you get richer stability traces without the most expensive glyph timing jobs.</li>
+<li><code>"debug"</code> retains the entire collector suite, including <code>_compute_advanced_metrics</code> and the
+  diagnosis callbacks, to mirror the legacy payload. This remains the default verbosity for
+  investigations that require a full glyph and diagnosis audit trail.</li>
+</ul>
+<p>As with traces, an explicit override of <code>METRICS</code> parameters (for example <code>save_by_node</code> or
+<code>normalize_series</code>) still applies regardless of the verbosity preset.</p>
+<h2 id="locking-policy">Locking policy<a class="headerlink" href="#locking-policy" title="Permanent link">&para;</a></h2>
+<p>The engine centralises reusable process-wide locks in <code>tnfr.locking</code>. Obtain named locks with
+<code>tnfr.utils.get_lock()</code> (re-exporting :func:<code>tnfr.locking.get_lock</code>) and reuse them for caches,
+RNG seeds, and other shared resources.
+Avoid scattering bare <code>threading.Lock</code> instances across modules; only short-lived objects may
+instantiate ad-hoc locks when they are not shared.</p>
+<h2 id="helper-utilities-api-tnfrutils">Helper utilities API (<code>tnfr.utils</code>)<a class="headerlink" href="#helper-utilities-api-tnfrutils" title="Permanent link">&para;</a></h2>
+<blockquote>
+<p><strong>Compatibility note:</strong> <code>tnfr.cache</code> and <code>tnfr.io</code> continue to exist as
+compatibility shims that re-export the helpers in <code>tnfr.utils.cache</code> and
+<code>tnfr.utils.io</code>. Update new code to import from <code>tnfr.utils</code> directly so
+the structural helpers stay aligned with the canonical namespace.</p>
+</blockquote>
+<h3 id="collections-and-numeric-helpers">Collections and numeric helpers<a class="headerlink" href="#collections-and-numeric-helpers" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>ensure_collection(it, *, max_materialize=...)</code> — materialise potentially lazy iterables
+  once, enforcing a configurable limit to keep simulations bounded.</li>
+<li><code>clamp(x, a, b)</code> and <code>clamp01(x)</code> — restrict scalars to safe ranges for operator parameters.</li>
+<li><code>kahan_sum_nd(values, dims)</code> — numerically stable accumulators used to track coherence
+  magnitudes across long trajectories.</li>
+<li><code>angle_diff(a, b)</code> — compute minimal angular differences (radians) to compare structural
+  phases.</li>
+</ul>
+<h3 id="structural-history-helpers">Structural history helpers<a class="headerlink" href="#structural-history-helpers" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>push_glyph(nd, glyph, window)</code> — record operator usage in the node history while honouring
+  the configured window.</li>
+<li><code>recent_glyph(nd, glyph, window)</code> — check whether a specific operator appears in a node's
+  recent history.</li>
+<li><code>ensure_history(G)</code> — prepare the graph-level history container with appropriate bounds.</li>
+<li><code>last_glyph(nd)</code> — inspect the last operator emitted by a node.</li>
+<li><code>count_glyphs(G, window=None, *, last_only=False)</code> — aggregate operator usage across the
+  network using the full history or a bounded window.</li>
+</ul>
+<h3 id="graph-caches-and-nfr-invalidation">Graph caches and ΔNFR invalidation<a class="headerlink" href="#graph-caches-and-nfr-invalidation" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>cached_node_list(G)</code> — lazily cache a stable tuple of node identifiers, respecting opt-in
+  sorted ordering.</li>
+<li><code>ensure_node_index_map(G)</code> / <code>ensure_node_offset_map(G)</code> — expose cached index and offset
+  mappings for graphs that need to project nodes to arrays.</li>
+<li><code>node_set_checksum(G, nodes=None, *, presorted=False, store=True)</code> — produce deterministic
+  BLAKE2b hashes to detect topology changes.</li>
+<li><code>stable_json(obj)</code> — render deterministic JSON strings suited for hashing and reproducible
+  logs.</li>
+<li><code>get_graph(obj)</code> / <code>get_graph_mapping(G, key, warn_msg)</code> — normalise access to graph-level
+  metadata regardless of wrappers.</li>
+<li><code>EdgeCacheManager</code>, <code>edge_version_cache</code>, <code>cached_nodes_and_A</code>, <code>edge_version_update</code>, and
+  <code>increment_edge_version</code> — encapsulate the edge version cache and bump versions for
+  imperative workflows.</li>
+<li><code>mark_dnfr_prep_dirty(G)</code> — invalidate precomputed ΔNFR preparation when mutating edges
+  outside the cache helpers.</li>
+</ul>
+<h3 id="simulation-best-practices">Simulation best practices<a class="headerlink" href="#simulation-best-practices" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Configure histories with <code>G.graph['history']</code> and <code>HISTORY_MAXLEN</code> to cap series without
+  losing traceability.</li>
+<li>Use random sampling (<code>G.graph['_node_sample']</code>) and the jitter cache
+  (<code>tnfr.operators.get_jitter_manager</code>) to accelerate comparisons and deterministic noise.</li>
+<li>Coordinate edge updates with <code>edge_version_update(G)</code> to keep topology versions and derived
+  caches aligned.</li>
+</ul>
+<h3 id="topological-remeshing">Topological remeshing<a class="headerlink" href="#topological-remeshing" title="Permanent link">&para;</a></h3>
+<p>Use <code>tnfr.operators.apply_topological_remesh</code> (<code>from tnfr.operators import
+apply_topological_remesh</code>) to reorganise connectivity based on nodal EPI similarity while
+preserving graph connectivity. Pair it with
+<code>tnfr.operators.apply_remesh_if_globally_stable(G, stable_step_window=...)</code> to gate
+remeshing on a minimum window of stable steps. Only the English
+<code>stable_step_window</code> keyword is accepted.
+Modes:</p>
+<ul>
+<li><code>"knn"</code> — connect each node to its <code>k</code> nearest neighbours (with optional rewiring).</li>
+<li><code>"mst"</code> — retain only a minimum spanning tree.</li>
+<li><code>"community"</code> — collapse modular communities and reconnect them by similarity.</li>
+</ul>
+<p>All modes ensure connectivity by adding a base MST.</p>
+<h2 id="additional-references">Additional references<a class="headerlink" href="#additional-references" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>scripts/run_tests.sh</code> runs the canonical QA battery (<code>pydocstyle</code>, <code>pytest</code> with coverage,
+  and <code>vulture</code>).</li>
+<li>The <code>tnfr</code> CLI exposes subcommands such as <code>sequence</code>, <code>metrics</code>, and more. Inspect <code>tnfr
+  --help</code> for the full list.</li>
+<li>Explore <code>tnfr.dynamics</code>, <code>tnfr.structural</code>, <code>tnfr.metrics</code>, <code>tnfr.operators</code>, <code>tnfr.utils</code>,
+  and <code>tnfr.observers</code> for domain-specific extensions.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.sections", "navigation.top", "navigation.tracking", "toc.integrate"], "search": "../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,3285 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Canonical TNFR structural dynamics engine documentation">
+      
+      
+      
+      
+        <link rel="prev" href="../TNFR_CONCEPTS/">
+      
+      
+        <link rel="next" href="../FAQ/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.23">
+    
+    
+      
+        <title>Interactive Tutorial - TNFR Python Engine</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.84d31ad4.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#interactive-step-by-step-tutorial" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="TNFR Python Engine" class="md-header__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            TNFR Python Engine
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Interactive Tutorial
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    TNFR Python Engine
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="TNFR Python Engine" class="md-nav__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    TNFR Python Engine
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    TNFR Python Engine
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Getting Started
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Getting Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Welcome to TNFR
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Quickstart Tutorial
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TNFR_CONCEPTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Core Concepts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Interactive Tutorial
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Interactive Tutorial
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#part-1-first-steps-10-minutes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Part 1: First Steps (10 minutes)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 1: First Steps (10 minutes)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-installation-and-verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      1.1 Installation and Verification
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-your-first-network-the-hello-world-explained" class="md-nav__link">
+    <span class="md-ellipsis">
+      1.2 Your First Network (The "Hello World" Explained)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-connecting-nodes" class="md-nav__link">
+    <span class="md-ellipsis">
+      1.3 Connecting Nodes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-2-activation-and-dynamics-15-minutes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Part 2: Activation and Dynamics (15 minutes)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 2: Activation and Dynamics (15 minutes)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-applying-structural-operators" class="md-nav__link">
+    <span class="md-ellipsis">
+      2.1 Applying Structural Operators
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-measuring-coherence" class="md-nav__link">
+    <span class="md-ellipsis">
+      2.2 Measuring Coherence
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-3-your-first-practical-case-20-minutes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Part 3: Your First Practical Case (20 minutes)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 3: Your First Practical Case (20 minutes)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-problem-team-communication" class="md-nav__link">
+    <span class="md-ellipsis">
+      3.1 Problem: Team Communication
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-exploring-different-team-structures" class="md-nav__link">
+    <span class="md-ellipsis">
+      3.2 Exploring Different Team Structures
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-simulating-communication-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      3.3 Simulating Communication Flow
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-detailed-node-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      3.4 Detailed Node Analysis
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-4-interpretation-and-next-level-10-minutes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Part 4: Interpretation and Next Level (10 minutes)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 4: Interpretation and Next Level (10 minutes)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-optimizing-team-communication" class="md-nav__link">
+    <span class="md-ellipsis">
+      4.1 Optimizing Team Communication
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-understanding-what-you-built" class="md-nav__link">
+    <span class="md-ellipsis">
+      4.2 Understanding What You Built
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-5-whats-next-5-minutes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Part 5: What's Next? (5 minutes)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 5: What&#39;s Next? (5 minutes)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#for-different-domains" class="md-nav__link">
+    <span class="md-ellipsis">
+      For Different Domains
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="For Different Domains">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#for-researchers-biological-systems" class="md-nav__link">
+    <span class="md-ellipsis">
+      🔬 For Researchers: Biological Systems
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#for-aiml-developers-adaptive-systems" class="md-nav__link">
+    <span class="md-ellipsis">
+      🤖 For AI/ML Developers: Adaptive Systems
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#for-network-scientists-social-dynamics" class="md-nav__link">
+    <span class="md-ellipsis">
+      📊 For Network Scientists: Social Dynamics
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#interactive-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      Interactive Features
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Interactive Features">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#comprehension-checkpoints" class="md-nav__link">
+    <span class="md-ellipsis">
+      Comprehension Checkpoints
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#practice-exercises" class="md-nav__link">
+    <span class="md-ellipsis">
+      Practice Exercises
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#visualization-helpers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Visualization Helpers
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#success-criteria" class="md-nav__link">
+    <span class="md-ellipsis">
+      Success Criteria
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#where-to-go-next" class="md-nav__link">
+    <span class="md-ellipsis">
+      Where to Go Next
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Where to Go Next">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#documentation-deep-dives" class="md-nav__link">
+    <span class="md-ellipsis">
+      Documentation Deep Dives
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-gallery" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example Gallery
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#advanced-topics" class="md-nav__link">
+    <span class="md-ellipsis">
+      Advanced Topics
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      Troubleshooting
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#common-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Issues
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#getting-help" class="md-nav__link">
+    <span class="md-ellipsis">
+      Getting Help
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#congratulations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Congratulations! 🎉
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quick-reference-card" class="md-nav__link">
+    <span class="md-ellipsis">
+      Quick Reference Card
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Quick Reference Card">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#essential-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      Essential API
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      Key Metrics
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#operator-cheat-sheet" class="md-nav__link">
+    <span class="md-ellipsis">
+      Operator Cheat Sheet
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FAQ/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    FAQ
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../math-backends/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Math Backends
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../optional-dependencies/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Optional Dependencies
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../migrating-remesh-window/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Migrating from Remesh Window
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    User Guide
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            User Guide
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/OPERATORS_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Operators Guide
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/METRICS_INTERPRETATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Metrics Interpretation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/TROUBLESHOOTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Troubleshooting
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Grammar Documentation
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Grammar Documentation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/EXECUTIVE-SUMMARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Executive Summary
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_3" id="__nav_4_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Core Concepts
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3">
+            <span class="md-nav__icon md-icon"></span>
+            Core Concepts
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/01-FUNDAMENTAL-CONCEPTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Fundamental Concepts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/02-CANONICAL-CONSTRAINTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Canonical Constraints
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/03-OPERATORS-AND-GLYPHS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Operators and Glyphs
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/04-VALID-SEQUENCES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Valid Sequences
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_4" id="__nav_4_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Implementation
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_4">
+            <span class="md-nav__icon md-icon"></span>
+            Implementation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/05-TECHNICAL-IMPLEMENTATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Technical Implementation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/06-VALIDATION-AND-TESTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Validation and Testing
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/07-MIGRATION-AND-EVOLUTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Migration and Evolution
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_5" id="__nav_4_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Reference
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_5">
+            <span class="md-nav__icon md-icon"></span>
+            Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/08-QUICK-REFERENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Quick Reference
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/GLOSSARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Glossary
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/MASTER-INDEX/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Master Index
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/OPERATORS-CATALOG-SUMMARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Operators Catalog
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/CROSS-REFERENCE-INDEX/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Cross-Reference Index
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/CODE_DOCS_CROSSREF/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Code Documentation Cross-Reference
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_6" id="__nav_4_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Tooling
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_6">
+            <span class="md-nav__icon md-icon"></span>
+            Tooling
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/TOOLING-AND-AUTOMATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Tooling and Automation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/TESTING-SUMMARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Testing Summary
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/DEPRECATION-INDEX/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Deprecation Index
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Examples
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    API Reference
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            API Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/operators/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Structural Operators
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/OPERATORS_VISUAL_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Operators Visual Guide
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/telemetry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Telemetry & Utilities
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/docstring_style/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Docstring Style
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Advanced Topics
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            Advanced Topics
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced/ARCHITECTURE_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Architecture Guide
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced/PERFORMANCE_OPTIMIZATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Performance Optimization
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced/TESTING_STRATEGIES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Testing Strategies
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced/DEVELOPMENT_WORKFLOW/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Development Workflow
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../foundations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Mathematical Foundations
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Mathematical Foundations
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            Mathematical Foundations
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_8_1" id="__nav_8_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Primers
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_1">
+            <span class="md-nav__icon md-icon"></span>
+            Primers
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../theory/01_structural_frequency_primer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Structural frequency primer
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../theory/02_phase_synchrony_lattices/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Phase synchrony lattices
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../theory/03_delta_nfr_gradient_fields/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    ΔNFR gradient fields
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../theory/04_coherence_metrics_walkthrough/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Coherence metrics walkthrough
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../theory/04_nfr_validator_and_metrics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Validator and metrics
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../theory/05_sense_index_calibration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Sense index calibration
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../theory/06_recursivity_cascades/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Recursivity cascades
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Security
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            Security
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/monitoring/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Monitoring
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/dependency-auditing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Dependency Auditing
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/codeql/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    CodeQL
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/dependabot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Dependabot
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Project Info
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            Project Info
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Releases
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="interactive-step-by-step-tutorial">Interactive Step-by-Step Tutorial<a class="headerlink" href="#interactive-step-by-step-tutorial" title="Permanent link">&para;</a></h1>
+<p>Welcome to the TNFR Interactive Tutorial! This guide will take you from zero to creating your first functional TNFR application in about 60 minutes. You'll learn by doing, with clear explanations connecting theory to practice.</p>
+<blockquote>
+<p><strong>Prerequisites</strong>: Python 3.9+, basic Python knowledge. No prior TNFR experience needed!</p>
+</blockquote>
+<hr />
+<h2 id="part-1-first-steps-10-minutes">Part 1: First Steps (10 minutes)<a class="headerlink" href="#part-1-first-steps-10-minutes" title="Permanent link">&para;</a></h2>
+<h3 id="11-installation-and-verification">1.1 Installation and Verification<a class="headerlink" href="#11-installation-and-verification" title="Permanent link">&para;</a></h3>
+<p>Let's start by installing TNFR and verifying everything works.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># 📝 Step 1: Install TNFR</span>
+<span class="c1"># Run in your terminal:</span>
+<span class="c1"># pip install tnfr</span>
+
+<span class="c1"># 📝 Step 2: Verify installation</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.sdk</span><span class="w"> </span><span class="kn">import</span> <span class="n">TNFRNetwork</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;✓ TNFR installed correctly&quot;</span><span class="p">)</span>
+
+<span class="c1"># 🎯 Goal: Confirm that everything works before we begin</span>
+</code></pre></div>
+<p><strong>What just happened?</strong>
+- You installed the TNFR Python Engine
+- You imported the simplified SDK API that hides complexity while maintaining theoretical fidelity
+- You're ready to create your first resonant network!</p>
+<h3 id="12-your-first-network-the-hello-world-explained">1.2 Your First Network (The "Hello World" Explained)<a class="headerlink" href="#12-your-first-network-the-hello-world-explained" title="Permanent link">&para;</a></h3>
+<p>Now let's create your first TNFR network. This is like the "Hello World" of resonant systems.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># 📝 Step 3: Create your first network</span>
+<span class="n">network</span> <span class="o">=</span> <span class="n">TNFRNetwork</span><span class="p">(</span><span class="s2">&quot;my_first_network&quot;</span><span class="p">)</span>
+
+<span class="c1"># ❓ What did you just do?</span>
+<span class="c1"># You created a container for nodes that can resonate with each other.</span>
+<span class="c1"># Think of it like creating an empty stage where musical notes can harmonize.</span>
+
+<span class="c1"># 📝 Step 4: Add nodes</span>
+<span class="n">network</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>  <span class="c1"># 5 nodes = 5 points of coherence</span>
+
+<span class="c1"># ❓ What is a node?</span>
+<span class="c1"># A node (Nodo Fractal Resonante - NFR) is a point in the network that can:</span>
+<span class="c1"># - Receive information (structural patterns)</span>
+<span class="c1"># - Process information (through reorganization)</span>
+<span class="c1"># - Emit information (to connected nodes)</span>
+<span class="c1"># Each node has:</span>
+<span class="c1">#   • EPI: Primary Information Structure (its form)</span>
+<span class="c1">#   • νf: Structural frequency (reorganization rate, measured in Hz_str)</span>
+<span class="c1">#   • θ: Phase (synchronization state with the network)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;✓ Network created with </span><span class="si">{</span><span class="n">network</span><span class="o">.</span><span class="n">node_count</span><span class="p">()</span><span class="si">}</span><span class="s2"> nodes&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>Try it yourself!</strong>
+- Change the number from 5 to 10. How does this affect your network?
+- Each node is a potential point of coherence in your system.</p>
+<h3 id="13-connecting-nodes">1.3 Connecting Nodes<a class="headerlink" href="#13-connecting-nodes" title="Permanent link">&para;</a></h3>
+<p>Nodes need connections to communicate. Let's wire them up!</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># 📝 Step 5: Create connections</span>
+<span class="n">network</span><span class="o">.</span><span class="n">connect_nodes</span><span class="p">(</span><span class="mf">0.3</span><span class="p">,</span> <span class="s2">&quot;random&quot;</span><span class="p">)</span>  <span class="c1"># 30% probability of connection</span>
+
+<span class="c1"># ❓ Why connect nodes?</span>
+<span class="c1"># Isolated nodes cannot resonate with others. Connections allow:</span>
+<span class="c1"># - Coherence to propagate through the network</span>
+<span class="c1"># - Phase synchronization between nodes</span>
+<span class="c1"># - Information flow via structural resonance</span>
+<span class="c1">#</span>
+<span class="c1"># Without connections, you have 5 separate systems.</span>
+<span class="c1"># With connections, you have 1 coherent network.</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;✓ Connections created: </span><span class="si">{</span><span class="n">network</span><span class="o">.</span><span class="n">get_edge_count</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># 🔍 Network topology matters!</span>
+<span class="c1"># - &quot;random&quot;: Stochastic connections (good for exploration)</span>
+<span class="c1"># - &quot;ring&quot;: Circular topology (good for wave propagation)</span>
+<span class="c1"># - &quot;small_world&quot;: Mix of local and random (like social networks)</span>
+</code></pre></div>
+<p><strong>Understanding connection patterns:</strong>
+- <strong>0.3 probability</strong> means on average, 30% of possible connections exist
+- Too few connections → isolated clusters
+- Too many connections → computational cost without benefit
+- Sweet spot is often 0.2-0.4 for exploration</p>
+<hr />
+<h2 id="part-2-activation-and-dynamics-15-minutes">Part 2: Activation and Dynamics (15 minutes)<a class="headerlink" href="#part-2-activation-and-dynamics-15-minutes" title="Permanent link">&para;</a></h2>
+<h3 id="21-applying-structural-operators">2.1 Applying Structural Operators<a class="headerlink" href="#21-applying-structural-operators" title="Permanent link">&para;</a></h3>
+<p>Now let's activate your network using TNFR's structural operators!</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># 📝 Step 6: Activate the network</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">apply_sequence</span><span class="p">(</span><span class="s2">&quot;basic_activation&quot;</span><span class="p">,</span> <span class="n">repeat</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+
+<span class="c1"># ❓ What is &quot;basic_activation&quot;?</span>
+<span class="c1"># It&#39;s a sequence of structural operators that follows TNFR grammar:</span>
+<span class="c1">#</span>
+<span class="c1"># 1. emission      → Initiates resonance patterns</span>
+<span class="c1"># 2. reception     → Nodes capture structural information</span>
+<span class="c1"># 3. coherence     → Stabilizes the network form</span>
+<span class="c1"># 4. resonance     → Propagates coherence through connections</span>
+<span class="c1"># 5. silence       → Freezes evolution to observe the state</span>
+<span class="c1">#</span>
+<span class="c1"># These operators implement the canonical nodal equation:</span>
+<span class="c1">#   ∂EPI/∂t = νf · ΔNFR(t)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;✓ Network activated with 3 iterations of basic_activation sequence&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>What are structural operators?</strong></p>
+<p>TNFR defines 13 fundamental operators that reorganize networks. Think of them as "verbs" for structural change:</p>
+<table>
+<thead>
+<tr>
+<th>Operator</th>
+<th>Function</th>
+<th>When to use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>emission</code></td>
+<td>Start resonance</td>
+<td>Beginning sequences, initiating patterns</td>
+</tr>
+<tr>
+<td><code>reception</code></td>
+<td>Capture information</td>
+<td>After emission, to internalize patterns</td>
+</tr>
+<tr>
+<td><code>coherence</code></td>
+<td>Stabilize structure</td>
+<td>To consolidate forms</td>
+</tr>
+<tr>
+<td><code>resonance</code></td>
+<td>Propagate coherence</td>
+<td>To sync the network</td>
+</tr>
+<tr>
+<td><code>dissonance</code></td>
+<td>Generate conflict</td>
+<td>To explore alternatives</td>
+</tr>
+<tr>
+<td><code>coupling</code></td>
+<td>Strengthen connections</td>
+<td>To increase network integration</td>
+</tr>
+<tr>
+<td><code>mutation</code></td>
+<td>Change phase</td>
+<td>For phase transitions</td>
+</tr>
+<tr>
+<td><code>silence</code></td>
+<td>Freeze evolution</td>
+<td>To observe stable states</td>
+</tr>
+</tbody>
+</table>
+<h3 id="22-measuring-coherence">2.2 Measuring Coherence<a class="headerlink" href="#22-measuring-coherence" title="Permanent link">&para;</a></h3>
+<p>Let's examine what happened during activation.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># 📝 Step 7: Analyze results</span>
+<span class="n">metrics</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">measure</span><span class="p">()</span>
+
+<span class="c1"># ❓ What do these metrics mean?</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Coherence C(t): </span><span class="si">{</span><span class="n">metrics</span><span class="o">.</span><span class="n">coherence</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="c1"># → How synchronized is the network? (0.0 = chaos, 1.0 = perfect sync)</span>
+<span class="c1"># C(t) measures global stability via phase alignment and ΔNFR convergence</span>
+
+<span class="c1"># Average Sense Index across all nodes</span>
+<span class="n">si_values</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">metrics</span><span class="o">.</span><span class="n">sense_indices</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+<span class="n">avg_si</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">si_values</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">si_values</span><span class="p">)</span> <span class="k">if</span> <span class="n">si_values</span> <span class="k">else</span> <span class="mf">0.0</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Average Sense Index Si: </span><span class="si">{</span><span class="n">avg_si</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="c1"># → How useful is this structure? (higher = more stable reorganization capacity)</span>
+<span class="c1"># Si measures each node&#39;s ability to generate coherent transformations</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Average νf: </span><span class="si">{</span><span class="n">metrics</span><span class="o">.</span><span class="n">avg_vf</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> Hz_str&quot;</span><span class="p">)</span>
+<span class="c1"># → Average structural frequency across all nodes</span>
+<span class="c1"># Hz_str = &quot;structural hertz&quot; (TNFR&#39;s unit for reorganization rate)</span>
+
+<span class="n">dnfr_values</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">metrics</span><span class="o">.</span><span class="n">delta_nfr</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+<span class="n">avg_dnfr</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">dnfr_values</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">dnfr_values</span><span class="p">)</span> <span class="k">if</span> <span class="n">dnfr_values</span> <span class="k">else</span> <span class="mf">0.0</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Average ΔNFR: </span><span class="si">{</span><span class="n">avg_dnfr</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="c1"># → Average internal reorganization gradient</span>
+<span class="c1"># ΔNFR drives structural evolution according to the nodal equation</span>
+
+<span class="c1"># 🎯 Success criteria:</span>
+<span class="c1"># - C(t) &gt; 0.5: Good coherence</span>
+<span class="c1"># - Si &gt; 0.5: Useful structure</span>
+<span class="c1"># - Low ΔNFR: Network has converged</span>
+</code></pre></div>
+<p><strong>Interpreting the numbers:</strong>
+- <strong>Coherence (C)</strong> close to 0? Network is chaotic or disconnected
+- <strong>Coherence (C)</strong> close to 1? Strong synchronization
+- <strong>Sense Index (Si)</strong> measures how well nodes can reorganize while staying coupled
+- <strong>ΔNFR</strong> tells you if the network is still evolving (high) or stable (low)</p>
+<hr />
+<h2 id="part-3-your-first-practical-case-20-minutes">Part 3: Your First Practical Case (20 minutes)<a class="headerlink" href="#part-3-your-first-practical-case-20-minutes" title="Permanent link">&para;</a></h2>
+<h3 id="31-problem-team-communication">3.1 Problem: Team Communication<a class="headerlink" href="#31-problem-team-communication" title="Permanent link">&para;</a></h3>
+<p>Let's model something real: how information spreads in a work team.</p>
+<p><strong>Scenario</strong>: You have an 8-person team. Information needs to flow efficiently. How do we model and optimize this using TNFR?</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># 🎯 Scenario Setup:</span>
+<span class="c1"># - Nodes = People</span>
+<span class="c1"># - Connections = Communication relationships</span>
+<span class="c1"># - Operators = Types of interaction</span>
+<span class="c1"># - Coherence = Team alignment</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.sdk</span><span class="w"> </span><span class="kn">import</span> <span class="n">TNFRNetwork</span>
+
+<span class="c1"># Create team with reproducible random seed</span>
+<span class="n">team_network</span> <span class="o">=</span> <span class="n">TNFRNetwork</span><span class="p">(</span><span class="s2">&quot;team_communication&quot;</span><span class="p">)</span>
+<span class="n">team_network</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="n">random_seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>  <span class="c1"># 8 team members</span>
+</code></pre></div>
+<h3 id="32-exploring-different-team-structures">3.2 Exploring Different Team Structures<a class="headerlink" href="#32-exploring-different-team-structures" title="Permanent link">&para;</a></h3>
+<p>Real teams aren't randomly connected. Let's compare different structures.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># 📝 Step 8: Compare team topologies</span>
+
+<span class="c1"># Structure 1: Random (organic, unstructured teams)</span>
+<span class="n">random_team</span> <span class="o">=</span> <span class="n">TNFRNetwork</span><span class="p">(</span><span class="s2">&quot;random_team&quot;</span><span class="p">)</span>
+<span class="n">random_team</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="n">random_seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+<span class="n">random_team</span><span class="o">.</span><span class="n">connect_nodes</span><span class="p">(</span><span class="mf">0.3</span><span class="p">,</span> <span class="s2">&quot;random&quot;</span><span class="p">)</span>  <span class="c1"># 30% connections</span>
+
+<span class="c1"># Structure 2: Ring (linear communication chain)</span>
+<span class="n">ring_team</span> <span class="o">=</span> <span class="n">TNFRNetwork</span><span class="p">(</span><span class="s2">&quot;ring_team&quot;</span><span class="p">)</span>
+<span class="n">ring_team</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="n">random_seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+<span class="n">ring_team</span><span class="o">.</span><span class="n">connect_nodes</span><span class="p">(</span><span class="n">connection_pattern</span><span class="o">=</span><span class="s2">&quot;ring&quot;</span><span class="p">)</span>  <span class="c1"># Each person talks to next</span>
+
+<span class="c1"># Structure 3: Small-world (modern organizations)</span>
+<span class="n">sw_team</span> <span class="o">=</span> <span class="n">TNFRNetwork</span><span class="p">(</span><span class="s2">&quot;small_world_team&quot;</span><span class="p">)</span>
+<span class="n">sw_team</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="n">random_seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+<span class="n">sw_team</span><span class="o">.</span><span class="n">connect_nodes</span><span class="p">(</span><span class="mf">0.15</span><span class="p">,</span> <span class="s2">&quot;small_world&quot;</span><span class="p">)</span>  <span class="c1"># Local + some random links</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;✓ Created 3 team structures:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  - Random: </span><span class="si">{</span><span class="n">random_team</span><span class="o">.</span><span class="n">get_edge_count</span><span class="p">()</span><span class="si">}</span><span class="s2"> connections&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  - Ring: </span><span class="si">{</span><span class="n">ring_team</span><span class="o">.</span><span class="n">get_edge_count</span><span class="p">()</span><span class="si">}</span><span class="s2"> connections&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  - Small-world: </span><span class="si">{</span><span class="n">sw_team</span><span class="o">.</span><span class="n">get_edge_count</span><span class="p">()</span><span class="si">}</span><span class="s2"> connections&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>Network topology note:</strong>
+- <strong>Random</strong>: Good for exploration, but may have isolated clusters
+- <strong>Ring</strong>: Guaranteed connectivity, but slow propagation
+- <strong>Small-world</strong>: Mix of local and distant connections—efficient!</p>
+<h3 id="33-simulating-communication-flow">3.3 Simulating Communication Flow<a class="headerlink" href="#33-simulating-communication-flow" title="Permanent link">&para;</a></h3>
+<p>Let's activate each team structure and see which works best.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># 📝 Step 9: Simulate communication in each team</span>
+
+<span class="c1"># Apply same activation sequence to all teams</span>
+<span class="k">for</span> <span class="n">team</span> <span class="ow">in</span> <span class="p">[</span><span class="n">random_team</span><span class="p">,</span> <span class="n">ring_team</span><span class="p">,</span> <span class="n">sw_team</span><span class="p">]:</span>
+    <span class="n">team</span><span class="o">.</span><span class="n">apply_sequence</span><span class="p">(</span><span class="s2">&quot;network_sync&quot;</span><span class="p">,</span> <span class="n">repeat</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+<span class="c1"># Measure effectiveness</span>
+<span class="n">random_results</span> <span class="o">=</span> <span class="n">random_team</span><span class="o">.</span><span class="n">measure</span><span class="p">()</span>
+<span class="n">ring_results</span> <span class="o">=</span> <span class="n">ring_team</span><span class="o">.</span><span class="n">measure</span><span class="p">()</span>
+<span class="n">sw_results</span> <span class="o">=</span> <span class="n">sw_team</span><span class="o">.</span><span class="n">measure</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">📊 Communication Effectiveness:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Random Team:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  - Coherence: </span><span class="si">{</span><span class="n">random_results</span><span class="o">.</span><span class="n">coherence</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  - Connectivity: </span><span class="si">{</span><span class="n">random_team</span><span class="o">.</span><span class="n">get_density</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Ring Team:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  - Coherence: </span><span class="si">{</span><span class="n">ring_results</span><span class="o">.</span><span class="n">coherence</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  - Connectivity: </span><span class="si">{</span><span class="n">ring_team</span><span class="o">.</span><span class="n">get_density</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Small-World Team:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  - Coherence: </span><span class="si">{</span><span class="n">sw_results</span><span class="o">.</span><span class="n">coherence</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  - Connectivity: </span><span class="si">{</span><span class="n">sw_team</span><span class="o">.</span><span class="n">get_density</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Find best structure</span>
+<span class="n">teams</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;Random&quot;</span><span class="p">:</span> <span class="n">random_results</span><span class="o">.</span><span class="n">coherence</span><span class="p">,</span>
+    <span class="s2">&quot;Ring&quot;</span><span class="p">:</span> <span class="n">ring_results</span><span class="o">.</span><span class="n">coherence</span><span class="p">,</span>
+    <span class="s2">&quot;Small-World&quot;</span><span class="p">:</span> <span class="n">sw_results</span><span class="o">.</span><span class="n">coherence</span>
+<span class="p">}</span>
+<span class="n">best_team</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">teams</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">teams</span><span class="o">.</span><span class="n">get</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">🏆 Most coherent team structure: </span><span class="si">{</span><span class="n">best_team</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>What does this tell us?</strong>
+- Higher coherence → Better information synchronization
+- Small-world networks often win: they balance local clustering with global reach
+- You can test this with your real organizational structure!</p>
+<h3 id="34-detailed-node-analysis">3.4 Detailed Node Analysis<a class="headerlink" href="#34-detailed-node-analysis" title="Permanent link">&para;</a></h3>
+<p>Let's examine individual team members (nodes).</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># 📝 Step 10: Analyze individual nodes</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">🔍 Individual Team Member Analysis (Small-World Team):&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;Node&#39;</span><span class="si">:</span><span class="s2">&lt;12</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39;Si&#39;</span><span class="si">:</span><span class="s2">&lt;8</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39;ΔNFR&#39;</span><span class="si">:</span><span class="s2">&lt;10</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39;Status&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">45</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">node_id</span> <span class="ow">in</span> <span class="n">sw_results</span><span class="o">.</span><span class="n">sense_indices</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+    <span class="n">si</span> <span class="o">=</span> <span class="n">sw_results</span><span class="o">.</span><span class="n">sense_indices</span><span class="p">[</span><span class="n">node_id</span><span class="p">]</span>
+    <span class="n">dnfr</span> <span class="o">=</span> <span class="n">sw_results</span><span class="o">.</span><span class="n">delta_nfr</span><span class="p">[</span><span class="n">node_id</span><span class="p">]</span>
+
+    <span class="c1"># Determine status based on Si</span>
+    <span class="k">if</span> <span class="n">si</span> <span class="o">&gt;</span> <span class="mf">0.6</span><span class="p">:</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="s2">&quot;✓ Highly engaged&quot;</span>
+    <span class="k">elif</span> <span class="n">si</span> <span class="o">&gt;</span> <span class="mf">0.4</span><span class="p">:</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="s2">&quot;○ Moderately engaged&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="s2">&quot;✗ Needs attention&quot;</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">node_id</span><span class="si">:</span><span class="s2">&lt;12</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">si</span><span class="si">:</span><span class="s2">&lt;8.3f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">dnfr</span><span class="si">:</span><span class="s2">&lt;10.3f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">status</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Find nodes needing attention</span>
+<span class="n">low_si_nodes</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">node_id</span> <span class="k">for</span> <span class="n">node_id</span><span class="p">,</span> <span class="n">si</span> <span class="ow">in</span> <span class="n">sw_results</span><span class="o">.</span><span class="n">sense_indices</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> 
+    <span class="k">if</span> <span class="n">si</span> <span class="o">&lt;</span> <span class="mf">0.4</span>
+<span class="p">]</span>
+
+<span class="k">if</span> <span class="n">low_si_nodes</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">⚠️  Nodes with low engagement: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">low_si_nodes</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;   Consider: More connections, different role, or training&quot;</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">✓ All nodes well-engaged (Si &gt; 0.4)&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>Real-world insights:</strong>
+- <strong>High Si (&gt;0.6)</strong> → Person is well-connected and effective
+- <strong>Medium Si (0.4-0.6)</strong> → Person is functioning but could improve
+- <strong>Low Si (&lt;0.4)</strong> → Person may be isolated or overwhelmed
+- <strong>High ΔNFR</strong> → Person is still adjusting/learning
+- <strong>Low ΔNFR</strong> → Person has stabilized in their role</p>
+<hr />
+<h2 id="part-4-interpretation-and-next-level-10-minutes">Part 4: Interpretation and Next Level (10 minutes)<a class="headerlink" href="#part-4-interpretation-and-next-level-10-minutes" title="Permanent link">&para;</a></h2>
+<h3 id="41-optimizing-team-communication">4.1 Optimizing Team Communication<a class="headerlink" href="#41-optimizing-team-communication" title="Permanent link">&para;</a></h3>
+<p>We compared structures. Now let's optimize one!</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># 📝 Step 11: Iteratively improve network</span>
+
+<span class="c1"># Start with a random team</span>
+<span class="n">opt_team</span> <span class="o">=</span> <span class="n">TNFRNetwork</span><span class="p">(</span><span class="s2">&quot;optimizing_team&quot;</span><span class="p">)</span>
+<span class="n">opt_team</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">random_seed</span><span class="o">=</span><span class="mi">123</span><span class="p">)</span>
+<span class="n">opt_team</span><span class="o">.</span><span class="n">connect_nodes</span><span class="p">(</span><span class="mf">0.25</span><span class="p">,</span> <span class="s2">&quot;random&quot;</span><span class="p">)</span>  <span class="c1"># Start sparse</span>
+
+<span class="c1"># Baseline measurement</span>
+<span class="n">opt_team</span><span class="o">.</span><span class="n">apply_sequence</span><span class="p">(</span><span class="s2">&quot;basic_activation&quot;</span><span class="p">,</span> <span class="n">repeat</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">initial_results</span> <span class="o">=</span> <span class="n">opt_team</span><span class="o">.</span><span class="n">measure</span><span class="p">()</span>
+<span class="n">initial_coherence</span> <span class="o">=</span> <span class="n">initial_results</span><span class="o">.</span><span class="n">coherence</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Initial coherence: </span><span class="si">{</span><span class="n">initial_coherence</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Initial connections: </span><span class="si">{</span><span class="n">opt_team</span><span class="o">.</span><span class="n">get_edge_count</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Initial density: </span><span class="si">{</span><span class="n">opt_team</span><span class="o">.</span><span class="n">get_density</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Optimization: increase connectivity</span>
+<span class="n">opt_team_v2</span> <span class="o">=</span> <span class="n">TNFRNetwork</span><span class="p">(</span><span class="s2">&quot;optimizing_team_v2&quot;</span><span class="p">)</span>
+<span class="n">opt_team_v2</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">random_seed</span><span class="o">=</span><span class="mi">123</span><span class="p">)</span>  <span class="c1"># Same nodes</span>
+<span class="n">opt_team_v2</span><span class="o">.</span><span class="n">connect_nodes</span><span class="p">(</span><span class="mf">0.40</span><span class="p">,</span> <span class="s2">&quot;random&quot;</span><span class="p">)</span>  <span class="c1"># More connections</span>
+
+<span class="n">opt_team_v2</span><span class="o">.</span><span class="n">apply_sequence</span><span class="p">(</span><span class="s2">&quot;basic_activation&quot;</span><span class="p">,</span> <span class="n">repeat</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">improved_results</span> <span class="o">=</span> <span class="n">opt_team_v2</span><span class="o">.</span><span class="n">measure</span><span class="p">()</span>
+<span class="n">improved_coherence</span> <span class="o">=</span> <span class="n">improved_results</span><span class="o">.</span><span class="n">coherence</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">After optimization:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;New coherence: </span><span class="si">{</span><span class="n">improved_coherence</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;New connections: </span><span class="si">{</span><span class="n">opt_team_v2</span><span class="o">.</span><span class="n">get_edge_count</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;New density: </span><span class="si">{</span><span class="n">opt_team_v2</span><span class="o">.</span><span class="n">get_density</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">improvement</span> <span class="o">=</span> <span class="p">((</span><span class="n">improved_coherence</span> <span class="o">-</span> <span class="n">initial_coherence</span><span class="p">)</span> <span class="o">/</span> <span class="n">initial_coherence</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">📈 Coherence improvement: </span><span class="si">{</span><span class="n">improvement</span><span class="si">:</span><span class="s2">+.1f</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>Key lesson:</strong> Small structural changes can dramatically improve coherence!</p>
+<p><strong>Optimization strategies:</strong>
+1. <strong>Increase density</strong> (more connections) → Better sync, but higher cost
+2. <strong>Switch topology</strong> (random → small-world) → More efficient
+3. <strong>Longer activation</strong> (more repeats) → Deeper convergence
+4. <strong>Different sequences</strong> (exploration vs stabilization) → Different goals</p>
+<h3 id="42-understanding-what-you-built">4.2 Understanding What You Built<a class="headerlink" href="#42-understanding-what-you-built" title="Permanent link">&para;</a></h3>
+<p>Let's reflect on what you accomplished:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># You created TNFR models that:</span>
+<span class="c1">#</span>
+<span class="c1"># ✓ Represent people/systems as resonant nodes</span>
+<span class="c1"># ✓ Model interactions as structural operators</span>
+<span class="c1"># ✓ Measure alignment using coherence C(t)</span>
+<span class="c1"># ✓ Identify issues using network metrics</span>
+<span class="c1"># ✓ Optimize structure based on measurements</span>
+<span class="c1">#</span>
+<span class="c1"># This demonstrates TNFR&#39;s core principle:</span>
+<span class="c1"># &quot;Reality is not made of &#39;things&#39; but of coherences that</span>
+<span class="c1">#  persist because they resonate.&quot;</span>
+<span class="c1">#</span>
+<span class="c1"># Your team network persists because:</span>
+<span class="c1"># - Nodes have sufficient νf (reorganization capacity)</span>
+<span class="c1"># - Connections enable coupling (phase synchronization)</span>
+<span class="c1"># - Structure maintains coherence (stable form)</span>
+</code></pre></div>
+<p><strong>TNFR Invariants You Respected:</strong></p>
+<ol>
+<li>✓ <strong>Operator closure</strong> (Invariant #4): All operations composed validly</li>
+<li>✓ <strong>Phase synchrony</strong> (Invariant #5): Checked coupling via resonance</li>
+<li>✓ <strong>Structural units</strong> (Invariant #2): νf measured in Hz_str</li>
+<li>✓ <strong>Controlled determinism</strong> (Invariant #8): Used random_seed for reproducibility</li>
+<li>✓ <strong>EPI as coherent form</strong> (Invariant #1): Changed only via structural operators</li>
+</ol>
+<hr />
+<h2 id="part-5-whats-next-5-minutes">Part 5: What's Next? (5 minutes)<a class="headerlink" href="#part-5-whats-next-5-minutes" title="Permanent link">&para;</a></h2>
+<p>You've completed the basics! Here are pathways to deepen your TNFR mastery.</p>
+<h3 id="for-different-domains">For Different Domains<a class="headerlink" href="#for-different-domains" title="Permanent link">&para;</a></h3>
+<h4 id="for-researchers-biological-systems">🔬 For Researchers: Biological Systems<a class="headerlink" href="#for-researchers-biological-systems" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.tutorials</span><span class="w"> </span><span class="kn">import</span> <span class="n">biological_example</span>
+
+<span class="c1"># Model cell communication, tissue formation, organism development</span>
+<span class="n">biological_example</span><span class="p">()</span>
+
+<span class="c1"># Topics covered:</span>
+<span class="c1"># - Multi-scale networks (cells → tissues → organs)</span>
+<span class="c1"># - Self-organization via coherence</span>
+<span class="c1"># - Bifurcation and mutation operators</span>
+<span class="c1"># - Measuring emergent properties</span>
+</code></pre></div>
+<h4 id="for-aiml-developers-adaptive-systems">🤖 For AI/ML Developers: Adaptive Systems<a class="headerlink" href="#for-aiml-developers-adaptive-systems" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.tutorials</span><span class="w"> </span><span class="kn">import</span> <span class="n">adaptive_ai_example</span>
+
+<span class="c1"># Build systems that learn through resonance, not statistics</span>
+<span class="n">adaptive_ai_example</span><span class="p">()</span>
+
+<span class="c1"># Topics covered:</span>
+<span class="c1"># - Resonant learning (vs. gradient descent)</span>
+<span class="c1"># - Structural memory (vs. weight matrices)</span>
+<span class="c1"># - Contextual adaptation via phase coupling</span>
+<span class="c1"># - Sense-based decision making</span>
+</code></pre></div>
+<h4 id="for-network-scientists-social-dynamics">📊 For Network Scientists: Social Dynamics<a class="headerlink" href="#for-network-scientists-social-dynamics" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.tutorials</span><span class="w"> </span><span class="kn">import</span> <span class="n">social_network_example</span>
+
+<span class="c1"># Analyze social networks, opinion dynamics, information cascades</span>
+<span class="n">social_network_example</span><span class="p">()</span>
+
+<span class="c1"># Topics covered:</span>
+<span class="c1"># - Opinion formation via resonance</span>
+<span class="c1"># - Echo chambers as phase-locked clusters</span>
+<span class="c1"># - Influence propagation patterns</span>
+<span class="c1"># - Network intervention strategies</span>
+</code></pre></div>
+<h3 id="interactive-features">Interactive Features<a class="headerlink" href="#interactive-features" title="Permanent link">&para;</a></h3>
+<h4 id="comprehension-checkpoints">Comprehension Checkpoints<a class="headerlink" href="#comprehension-checkpoints" title="Permanent link">&para;</a></h4>
+<p>Test your understanding as you go:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># ❓ Checkpoint 1: What does this operator do?</span>
+<span class="n">network</span><span class="o">.</span><span class="n">apply_operator</span><span class="p">(</span><span class="s2">&quot;emission&quot;</span><span class="p">)</span>
+
+<span class="c1"># a) Activates a node to start resonance</span>
+<span class="c1"># b) Deletes the network</span>
+<span class="c1"># c) Changes all connections</span>
+<span class="c1"># d) Measures coherence</span>
+
+<span class="c1"># → Answer: a) ✓</span>
+<span class="c1"># Emission initiates resonance patterns in the network.</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="c1"># ❓ Checkpoint 2: What does high coherence C(t) indicate?</span>
+
+<span class="c1"># a) The network is about to collapse</span>
+<span class="c1"># b) Nodes are well-synchronized</span>
+<span class="c1"># c) Connections are too dense</span>
+<span class="c1"># d) The network needs more nodes</span>
+
+<span class="c1"># → Answer: b) ✓</span>
+<span class="c1"># High C(t) means strong phase alignment and structural stability.</span>
+</code></pre></div>
+<h4 id="practice-exercises">Practice Exercises<a class="headerlink" href="#practice-exercises" title="Permanent link">&para;</a></h4>
+<p>Try modifying the examples:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># 📝 Exercise 1: Scale Up</span>
+<span class="c1"># Modify the team example to model a 20-person organization</span>
+<span class="c1"># with 4 sub-teams. Add middle managers as hubs.</span>
+<span class="c1">#</span>
+<span class="c1"># Your code here:</span>
+<span class="c1"># org_network = TNFRNetwork(&quot;large_org&quot;)</span>
+<span class="c1"># org_network.add_nodes(?)  # How many?</span>
+<span class="c1"># ...</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="c1"># 📝 Exercise 2: Different Topology</span>
+<span class="c1"># Create a network with &quot;ring&quot; topology instead of &quot;random&quot;</span>
+<span class="c1"># How does this affect coherence?</span>
+<span class="c1">#</span>
+<span class="c1"># Your code here:</span>
+<span class="c1"># network = TNFRNetwork(&quot;ring_experiment&quot;)</span>
+<span class="c1"># network.add_nodes(10).connect_nodes(0.3, &quot;ring&quot;)  # Changed!</span>
+<span class="c1"># ...</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="c1"># 📝 Exercise 3: Custom Sequence</span>
+<span class="c1"># Design your own operator sequence following TNFR grammar:</span>
+<span class="c1"># - Start with emission or recursivity</span>
+<span class="c1"># - Include reception → coherence</span>
+<span class="c1"># - Include coupling/resonance</span>
+<span class="c1"># - End with silence/transition</span>
+<span class="c1">#</span>
+<span class="c1"># Your sequence:</span>
+<span class="c1"># custom_seq = [&quot;emission&quot;, &quot;reception&quot;, &quot;coherence&quot;, &quot;coupling&quot;, &quot;resonance&quot;, &quot;silence&quot;]</span>
+<span class="c1"># network.apply_custom_sequence(custom_seq, repeat=5)</span>
+</code></pre></div>
+<h3 id="visualization-helpers">Visualization Helpers<a class="headerlink" href="#visualization-helpers" title="Permanent link">&para;</a></h3>
+<p>Explore networks visually (requires optional dependencies):</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># 📈 Save your network for external visualization</span>
+<span class="n">network</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;my_network.json&quot;</span><span class="p">)</span>
+
+<span class="c1"># You can then load and visualize in Jupyter, web tools, or other software</span>
+
+<span class="c1"># Optional: If matplotlib is installed</span>
+<span class="c1"># pip install tnfr[viz-basic]</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">network</span><span class="o">.</span><span class="n">visualize</span><span class="p">()</span>  <span class="c1"># Basic network plot</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Install visualization tools: pip install tnfr[viz-basic]&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>Note</strong>: The core SDK focuses on computation. For advanced visualization:
+- Export to JSON and use tools like Gephi, Cytoscape
+- Use NetworkX visualization utilities
+- Build custom visualizations with matplotlib/plotly</p>
+<h3 id="success-criteria">Success Criteria<a class="headerlink" href="#success-criteria" title="Permanent link">&para;</a></h3>
+<p>You've successfully completed this tutorial when you can:</p>
+<ul>
+<li>[ ] ✓ Create a TNFR network with nodes and connections</li>
+<li>[ ] ✓ Explain what EPI, νf, and phase mean</li>
+<li>[ ] ✓ Apply structural operators and understand their effects</li>
+<li>[ ] ✓ Measure and interpret C(t) and Si metrics</li>
+<li>[ ] ✓ Model a real-world system using TNFR concepts</li>
+<li>[ ] ✓ Optimize network structure based on analysis</li>
+<li>[ ] ✓ Modify examples with confidence</li>
+<li>[ ] ✓ Know where to find advanced documentation</li>
+</ul>
+<h3 id="where-to-go-next">Where to Go Next<a class="headerlink" href="#where-to-go-next" title="Permanent link">&para;</a></h3>
+<h4 id="documentation-deep-dives">Documentation Deep Dives<a class="headerlink" href="#documentation-deep-dives" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong><a href="../TNFR_CONCEPTS/">TNFR Concepts</a></strong> - Theoretical foundations explained clearly</li>
+<li><strong><a href="../quickstart/">Quickstart Guide</a></strong> - Low-level API and advanced patterns</li>
+<li><strong><a href="../../api/overview/">API Reference</a></strong> - Complete function documentation</li>
+<li><strong><a href="../../GLYPH_SEQUENCES_GUIDE.md">Operator Guide</a></strong> - All 13 operators in detail</li>
+</ul>
+<h4 id="example-gallery">Example Gallery<a class="headerlink" href="#example-gallery" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong><a href="../../../examples/sdk_example.py">SDK Examples</a></strong> - More fluent API patterns</li>
+<li><strong><a href="../../../examples/multiscale_network_demo.py">Multi-scale Networks</a></strong> - Nested structures</li>
+<li><strong><a href="../../../examples/backend_performance_comparison.py">Backend Optimization</a></strong> - Performance tuning</li>
+</ul>
+<h4 id="advanced-topics">Advanced Topics<a class="headerlink" href="#advanced-topics" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong><a href="../math-backends/">Math Backends</a></strong> - JAX, PyTorch acceleration</li>
+<li><strong><a href="../../../examples/parallel_computation_demo.py">Parallel Computation</a></strong> - Scale to large networks</li>
+<li><strong><a href="../../api/telemetry/">Telemetry</a></strong> - Instrument experiments for analysis</li>
+</ul>
+<hr />
+<h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
+<h3 id="common-issues">Common Issues<a class="headerlink" href="#common-issues" title="Permanent link">&para;</a></h3>
+<p><strong>Issue</strong>: <code>ImportError: No module named 'tnfr'</code>
+<div class="highlight"><pre><span></span><code><span class="c1"># Solution: Install TNFR</span>
+pip<span class="w"> </span>install<span class="w"> </span>tnfr
+</code></pre></div></p>
+<p><strong>Issue</strong>: Network coherence stays near 0
+<div class="highlight"><pre><span></span><code><span class="c1"># Possible causes:</span>
+<span class="c1"># 1. Too few connections - increase probability</span>
+<span class="n">network</span> <span class="o">=</span> <span class="n">TNFRNetwork</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
+<span class="n">network</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">network</span><span class="o">.</span><span class="n">connect_nodes</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="s2">&quot;random&quot;</span><span class="p">)</span>  <span class="c1"># Increased from 0.3</span>
+
+<span class="c1"># 2. Need more activation iterations</span>
+<span class="n">network</span><span class="o">.</span><span class="n">apply_sequence</span><span class="p">(</span><span class="s2">&quot;basic_activation&quot;</span><span class="p">,</span> <span class="n">repeat</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>  <span class="c1"># More iterations</span>
+
+<span class="c1"># 3. Disconnected network - check density</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Network density: </span><span class="si">{</span><span class="n">network</span><span class="o">.</span><span class="n">get_density</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Edge count: </span><span class="si">{</span><span class="n">network</span><span class="o">.</span><span class="n">get_edge_count</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="c1"># Low density? Add more connections or use &quot;small_world&quot; pattern</span>
+</code></pre></div></p>
+<p><strong>Issue</strong>: <code>ValueError: Invalid operator sequence</code>
+<div class="highlight"><pre><span></span><code><span class="c1"># TNFR sequences must follow grammar rules</span>
+<span class="c1"># ✗ Wrong: [&quot;resonance&quot;, &quot;emission&quot;, &quot;silence&quot;]  # resonance before emission</span>
+<span class="c1"># ✓ Right: [&quot;emission&quot;, &quot;reception&quot;, &quot;coherence&quot;, &quot;resonance&quot;, &quot;silence&quot;]</span>
+
+<span class="c1"># Use named sequences to avoid errors</span>
+<span class="n">network</span><span class="o">.</span><span class="n">apply_sequence</span><span class="p">(</span><span class="s2">&quot;basic_activation&quot;</span><span class="p">)</span>  <span class="c1"># Always valid</span>
+</code></pre></div></p>
+<h3 id="getting-help">Getting Help<a class="headerlink" href="#getting-help" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Issues/Questions</strong>: <a href="https://github.com/fermga/TNFR-Python-Engine/issues">GitHub Issues</a></li>
+<li><strong>Examples</strong>: Browse the <code>examples/</code> directory</li>
+<li><strong>Theory</strong>: Read <code>TNFR.pdf</code> in the repository root</li>
+</ul>
+<hr />
+<h2 id="congratulations">Congratulations! 🎉<a class="headerlink" href="#congratulations" title="Permanent link">&para;</a></h2>
+<p>You've completed the TNFR Interactive Tutorial! You now understand:</p>
+<ul>
+<li>✓ What nodes, EPI, νf, and phase represent</li>
+<li>✓ How structural operators reorganize networks</li>
+<li>✓ How to measure coherence and sense index</li>
+<li>✓ How to model real systems with TNFR</li>
+<li>✓ How to analyze and optimize network structures</li>
+</ul>
+<p><strong>You're ready to build TNFR applications!</strong></p>
+<p>Remember: TNFR is not a metaphor. It's an operational paradigm with concrete tools for modeling coherent structures across scales. Every modification you make should preserve the canonical invariants while exploring new structural possibilities.</p>
+<p>Happy resonating! 🎵</p>
+<hr />
+<h2 id="quick-reference-card">Quick Reference Card<a class="headerlink" href="#quick-reference-card" title="Permanent link">&para;</a></h2>
+<h3 id="essential-api">Essential API<a class="headerlink" href="#essential-api" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.sdk</span><span class="w"> </span><span class="kn">import</span> <span class="n">TNFRNetwork</span>
+
+<span class="c1"># Create network</span>
+<span class="n">net</span> <span class="o">=</span> <span class="n">TNFRNetwork</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span>
+
+<span class="c1"># Add nodes</span>
+<span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">count</span><span class="p">)</span>
+
+<span class="c1"># Connect</span>
+<span class="n">net</span><span class="o">.</span><span class="n">connect_nodes</span><span class="p">(</span><span class="n">probability</span><span class="p">,</span> <span class="n">topology</span><span class="p">)</span>  <span class="c1"># topology: &quot;random&quot;, &quot;ring&quot;, &quot;complete&quot;</span>
+
+<span class="c1"># Apply operators</span>
+<span class="n">net</span><span class="o">.</span><span class="n">apply_sequence</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">repeat</span><span class="o">=</span><span class="n">n</span><span class="p">)</span>  <span class="c1"># name: &quot;basic_activation&quot;, &quot;network_sync&quot;, etc.</span>
+
+<span class="c1"># Measure</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">measure</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">summary</span><span class="p">())</span>
+</code></pre></div>
+<h3 id="key-metrics">Key Metrics<a class="headerlink" href="#key-metrics" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Symbol</th>
+<th>Range</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Coherence</td>
+<td>C(t)</td>
+<td>0-1</td>
+<td>Network synchronization</td>
+</tr>
+<tr>
+<td>Sense Index</td>
+<td>Si</td>
+<td>0-1</td>
+<td>Reorganization capacity</td>
+</tr>
+<tr>
+<td>Structural Frequency</td>
+<td>νf</td>
+<td>&gt;0</td>
+<td>Reorganization rate (Hz_str)</td>
+</tr>
+<tr>
+<td>Internal Gradient</td>
+<td>ΔNFR</td>
+<td>ℝ</td>
+<td>Evolution driver</td>
+</tr>
+<tr>
+<td>Phase</td>
+<td>θ</td>
+<td>0-2π</td>
+<td>Synchrony state (radians)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="operator-cheat-sheet">Operator Cheat Sheet<a class="headerlink" href="#operator-cheat-sheet" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Operator</th>
+<th>Effect</th>
+<th>Common Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>emission</td>
+<td>Start resonance</td>
+<td>Begin sequences</td>
+</tr>
+<tr>
+<td>reception</td>
+<td>Capture info</td>
+<td>After emission</td>
+</tr>
+<tr>
+<td>coherence</td>
+<td>Stabilize</td>
+<td>Consolidate structure</td>
+</tr>
+<tr>
+<td>resonance</td>
+<td>Propagate</td>
+<td>Sync network</td>
+</tr>
+<tr>
+<td>coupling</td>
+<td>Strengthen bonds</td>
+<td>Increase integration</td>
+</tr>
+<tr>
+<td>dissonance</td>
+<td>Create conflict</td>
+<td>Explore alternatives</td>
+</tr>
+<tr>
+<td>mutation</td>
+<td>Phase shift</td>
+<td>Transform structure</td>
+</tr>
+<tr>
+<td>silence</td>
+<td>Freeze state</td>
+<td>Observe results</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><em>Tutorial version: 1.0 | Last updated: 2025</em></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.sections", "navigation.top", "navigation.tracking", "toc.integrate"], "search": "../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      
+    
+  </body>
+</html>

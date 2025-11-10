@@ -1,0 +1,4298 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Canonical TNFR structural dynamics engine documentation">
+      
+      
+      
+      
+        <link rel="prev" href="../operators/">
+      
+      
+        <link rel="next" href="../telemetry/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.23">
+    
+    
+      
+        <title>Operators Visual Guide - TNFR Python Engine</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.84d31ad4.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#tnfr-structural-operators-visual-guide" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="TNFR Python Engine" class="md-header__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            TNFR Python Engine
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Operators Visual Guide
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    TNFR Python Engine
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="TNFR Python Engine" class="md-nav__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    TNFR Python Engine
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    TNFR Python Engine
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Getting Started
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Getting Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Welcome to TNFR
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Quickstart Tutorial
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/TNFR_CONCEPTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Core Concepts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/INTERACTIVE_TUTORIAL/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Interactive Tutorial
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/FAQ/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    FAQ
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/math-backends/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Math Backends
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/optional-dependencies/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Optional Dependencies
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/migrating-remesh-window/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Migrating from Remesh Window
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    User Guide
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            User Guide
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/OPERATORS_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Operators Guide
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/METRICS_INTERPRETATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Metrics Interpretation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/TROUBLESHOOTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Troubleshooting
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Grammar Documentation
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Grammar Documentation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/EXECUTIVE-SUMMARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Executive Summary
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_3" id="__nav_4_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Core Concepts
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3">
+            <span class="md-nav__icon md-icon"></span>
+            Core Concepts
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/01-FUNDAMENTAL-CONCEPTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Fundamental Concepts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/02-CANONICAL-CONSTRAINTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Canonical Constraints
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/03-OPERATORS-AND-GLYPHS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Operators and Glyphs
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/04-VALID-SEQUENCES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Valid Sequences
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_4" id="__nav_4_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Implementation
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_4">
+            <span class="md-nav__icon md-icon"></span>
+            Implementation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/05-TECHNICAL-IMPLEMENTATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Technical Implementation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/06-VALIDATION-AND-TESTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Validation and Testing
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/07-MIGRATION-AND-EVOLUTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Migration and Evolution
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_5" id="__nav_4_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Reference
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_5">
+            <span class="md-nav__icon md-icon"></span>
+            Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/08-QUICK-REFERENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Quick Reference
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/GLOSSARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Glossary
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/MASTER-INDEX/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Master Index
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/OPERATORS-CATALOG-SUMMARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Operators Catalog
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/CROSS-REFERENCE-INDEX/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Cross-Reference Index
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/CODE_DOCS_CROSSREF/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Code Documentation Cross-Reference
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_6" id="__nav_4_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Tooling
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_6">
+            <span class="md-nav__icon md-icon"></span>
+            Tooling
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/TOOLING-AND-AUTOMATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Tooling and Automation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/TESTING-SUMMARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Testing Summary
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/DEPRECATION-INDEX/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Deprecation Index
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Examples
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    API Reference
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            API Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../operators/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Structural Operators
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Operators Visual Guide
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Operators Visual Guide
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#introduction" class="md-nav__link">
+    <span class="md-ellipsis">
+      Introduction
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Introduction">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-are-structural-operators" class="md-nav__link">
+    <span class="md-ellipsis">
+      What are Structural Operators?
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-operators-reorganize-nodal-networks" class="md-nav__link">
+    <span class="md-ellipsis">
+      How Operators Reorganize Nodal Networks
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-paradigm-they-dont-represent-they-activate" class="md-nav__link">
+    <span class="md-ellipsis">
+      The Paradigm: "They Don't Represent, They Activate"
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-13-canonical-operators" class="md-nav__link">
+    <span class="md-ellipsis">
+      The 13 Canonical Operators
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The 13 Canonical Operators">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#overview-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview Table
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#operators-of-initiation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Operators of Initiation
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Operators of Initiation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#al-emission" class="md-nav__link">
+    <span class="md-ellipsis">
+      AL - Emission
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#en-reception" class="md-nav__link">
+    <span class="md-ellipsis">
+      EN - Reception
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#il-coherencia-coherence" class="md-nav__link">
+    <span class="md-ellipsis">
+      IL - Coherencia (Coherence)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#operators-of-transformation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Operators of Transformation
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Operators of Transformation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#oz-disonancia-dissonance" class="md-nav__link">
+    <span class="md-ellipsis">
+      OZ - Disonancia (Dissonance)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#thol-autoorganizacion-self-organization" class="md-nav__link">
+    <span class="md-ellipsis">
+      THOL - Autoorganización (Self-Organization)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#zhir-mutation" class="md-nav__link">
+    <span class="md-ellipsis">
+      ZHIR - Mutation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#operators-of-connection" class="md-nav__link">
+    <span class="md-ellipsis">
+      Operators of Connection
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Operators of Connection">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#um-coupling" class="md-nav__link">
+    <span class="md-ellipsis">
+      UM - Coupling
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ra-resonance" class="md-nav__link">
+    <span class="md-ellipsis">
+      RA - Resonance
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nav-transition" class="md-nav__link">
+    <span class="md-ellipsis">
+      NAV - Transition
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#operators-of-modulation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Operators of Modulation
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Operators of Modulation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sha-silence" class="md-nav__link">
+    <span class="md-ellipsis">
+      SHA - Silence
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#val-expansion" class="md-nav__link">
+    <span class="md-ellipsis">
+      VAL - Expansion
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nul-contraction" class="md-nav__link">
+    <span class="md-ellipsis">
+      NUL - Contraction
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#remesh-recursivity" class="md-nav__link">
+    <span class="md-ellipsis">
+      REMESH - Recursivity
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#operator-flow-diagram" class="md-nav__link">
+    <span class="md-ellipsis">
+      Operator Flow Diagram
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Operator Flow Diagram">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#typical-operator-relationships" class="md-nav__link">
+    <span class="md-ellipsis">
+      Typical Operator Relationships
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#canonical-sequence-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Canonical Sequence Patterns
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#operator-combinations-to-avoid" class="md-nav__link">
+    <span class="md-ellipsis">
+      Operator Combinations to Avoid
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Operator Combinations to Avoid">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#contraindicated-sequences" class="md-nav__link">
+    <span class="md-ellipsis">
+      Contraindicated Sequences
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#interactive-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      Interactive Examples
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Interactive Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example-1-creative-process" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example 1: Creative Process
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-2-therapeutic-process" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example 2: Therapeutic Process
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-3-network-coordination" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example 3: Network Coordination
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#practical-guidelines" class="md-nav__link">
+    <span class="md-ellipsis">
+      Practical Guidelines
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Practical Guidelines">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#when-to-use-each-operator" class="md-nav__link">
+    <span class="md-ellipsis">
+      When to Use Each Operator
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting-common-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Troubleshooting Common Issues
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting Common Issues">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#problem-node-collapse" class="md-nav__link">
+    <span class="md-ellipsis">
+      Problem: Node Collapse
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#problem-over-stabilization" class="md-nav__link">
+    <span class="md-ellipsis">
+      Problem: Over-Stabilization
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#problem-uncontrolled-bifurcation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Problem: Uncontrolled Bifurcation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#problem-phase-desynchronization" class="md-nav__link">
+    <span class="md-ellipsis">
+      Problem: Phase Desynchronization
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#problem-pattern-propagation-failure" class="md-nav__link">
+    <span class="md-ellipsis">
+      Problem: Pattern Propagation Failure
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#advanced-topics" class="md-nav__link">
+    <span class="md-ellipsis">
+      Advanced Topics
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Advanced Topics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#operator-composition-theory" class="md-nav__link">
+    <span class="md-ellipsis">
+      Operator Composition Theory
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#operator-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      Operator Metrics
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#optimization-strategies" class="md-nav__link">
+    <span class="md-ellipsis">
+      Optimization Strategies
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary-and-best-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      Summary and Best Practices
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Summary and Best Practices">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#core-principles" class="md-nav__link">
+    <span class="md-ellipsis">
+      Core Principles
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#recommended-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Recommended Workflow
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quick-reference-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      Quick Reference Commands
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#further-reading" class="md-nav__link">
+    <span class="md-ellipsis">
+      Further Reading
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Further Reading">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#related-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Related Documentation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#theoretical-foundations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Theoretical Foundations
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#examples-and-tutorials" class="md-nav__link">
+    <span class="md-ellipsis">
+      Examples and Tutorials
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#appendix-operator-cheat-sheet" class="md-nav__link">
+    <span class="md-ellipsis">
+      Appendix: Operator Cheat Sheet
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Appendix: Operator Cheat Sheet">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#quick-operator-selection-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      Quick Operator Selection Matrix
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#emergency-interventions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Emergency Interventions
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../telemetry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Telemetry & Utilities
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docstring_style/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Docstring Style
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Advanced Topics
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            Advanced Topics
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced/ARCHITECTURE_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Architecture Guide
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced/PERFORMANCE_OPTIMIZATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Performance Optimization
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced/TESTING_STRATEGIES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Testing Strategies
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced/DEVELOPMENT_WORKFLOW/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Development Workflow
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../foundations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Mathematical Foundations
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Mathematical Foundations
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            Mathematical Foundations
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_8_1" id="__nav_8_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Primers
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_1">
+            <span class="md-nav__icon md-icon"></span>
+            Primers
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../theory/01_structural_frequency_primer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Structural frequency primer
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../theory/02_phase_synchrony_lattices/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Phase synchrony lattices
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../theory/03_delta_nfr_gradient_fields/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    ΔNFR gradient fields
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../theory/04_coherence_metrics_walkthrough/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Coherence metrics walkthrough
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../theory/04_nfr_validator_and_metrics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Validator and metrics
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../theory/05_sense_index_calibration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Sense index calibration
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../theory/06_recursivity_cascades/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Recursivity cascades
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Security
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            Security
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/monitoring/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Monitoring
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/dependency-auditing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Dependency Auditing
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/codeql/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    CodeQL
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/dependabot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Dependabot
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Project Info
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            Project Info
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Releases
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="tnfr-structural-operators-visual-guide">TNFR Structural Operators: Visual Guide<a class="headerlink" href="#tnfr-structural-operators-visual-guide" title="Permanent link">&para;</a></h1>
+<h2 id="introduction">Introduction<a class="headerlink" href="#introduction" title="Permanent link">&para;</a></h2>
+<h3 id="what-are-structural-operators">What are Structural Operators?<a class="headerlink" href="#what-are-structural-operators" title="Permanent link">&para;</a></h3>
+<p>Structural operators are <strong>the only canonical way</strong> to reorganize coherence in TNFR networks. They are not descriptive representations - they <strong>activate</strong> transformations that preserve TNFR invariants while enabling controlled evolution of Primary Information Structures (EPIs).</p>
+<p><strong>Key Principle</strong>: Operators don't represent change; they <strong>activate resonance</strong>.</p>
+<h3 id="how-operators-reorganize-nodal-networks">How Operators Reorganize Nodal Networks<a class="headerlink" href="#how-operators-reorganize-nodal-networks" title="Permanent link">&para;</a></h3>
+<p>Every structural operator:
+- Modifies nodes through the <strong>nodal equation</strong>: <code>∂EPI/∂t = νf · ΔNFR(t)</code>
+- Preserves <strong>operator closure</strong> (valid sequences maintain TNFR system integrity)
+- Maintains <strong>structural coherence</strong> (C(t) remains bounded)
+- Respects <strong>phase alignment</strong> (θ continuity across transformations)</p>
+<h3 id="the-paradigm-they-dont-represent-they-activate">The Paradigm: "They Don't Represent, They Activate"<a class="headerlink" href="#the-paradigm-they-dont-represent-they-activate" title="Permanent link">&para;</a></h3>
+<p>Traditional approaches <strong>represent</strong> systems as static objects.<br />
+TNFR operators <strong>activate</strong> dynamic reorganization of coherent patterns.</p>
+<p>Think of operators as <strong>musical gestures</strong> rather than mechanical operations:
+- They initiate, modulate, and propagate <strong>vibrational patterns</strong>
+- They work through <strong>resonance</strong>, not force
+- They preserve <strong>structural identity</strong> while enabling evolution</p>
+<hr />
+<h2 id="the-13-canonical-operators">The 13 Canonical Operators<a class="headerlink" href="#the-13-canonical-operators" title="Permanent link">&para;</a></h2>
+<h3 id="overview-table">Overview Table<a class="headerlink" href="#overview-table" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Operator</th>
+<th>Glyph</th>
+<th>Function</th>
+<th>Primary Effect</th>
+<th>Typical Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Emission</strong></td>
+<td>AL</td>
+<td>Foundational activation</td>
+<td>Increases νf, positive ΔNFR</td>
+<td>Initiation, starting patterns</td>
+</tr>
+<tr>
+<td><strong>Reception</strong></td>
+<td>EN</td>
+<td>Information anchoring</td>
+<td>Integrates external coherence</td>
+<td>Learning, receiving signals</td>
+</tr>
+<tr>
+<td><strong>Coherence</strong></td>
+<td>IL</td>
+<td>Structural stabilization</td>
+<td>Reduces ΔNFR, raises C(t)</td>
+<td>Consolidation, stabilization</td>
+</tr>
+<tr>
+<td><strong>Dissonance</strong></td>
+<td>OZ</td>
+<td>Controlled instability</td>
+<td>Increases |ΔNFR|, triggers bifurcation</td>
+<td>Exploration, breaking patterns</td>
+</tr>
+<tr>
+<td><strong>Coupling</strong></td>
+<td>UM</td>
+<td>Node synchronization</td>
+<td>Phase alignment (θᵢ ≈ θⱼ)</td>
+<td>Network formation, coordination</td>
+</tr>
+<tr>
+<td><strong>Resonance</strong></td>
+<td>RA</td>
+<td>Coherence propagation</td>
+<td>Amplifies patterns through network</td>
+<td>Pattern spreading, reinforcement</td>
+</tr>
+<tr>
+<td><strong>Silence</strong></td>
+<td>SHA</td>
+<td>Evolution freeze</td>
+<td>Sets νf ≈ 0</td>
+<td>Observation, pausing</td>
+</tr>
+<tr>
+<td><strong>Expansion</strong></td>
+<td>VAL</td>
+<td>Structural growth</td>
+<td>Increases EPI dimensionality</td>
+<td>Elaboration, scaling up</td>
+</tr>
+<tr>
+<td><strong>Contraction</strong></td>
+<td>NUL</td>
+<td>Densification</td>
+<td>Reduces EPI dimensionality</td>
+<td>Simplification, focusing</td>
+</tr>
+<tr>
+<td><strong>Self-organization</strong></td>
+<td>THOL</td>
+<td>Spontaneous reconfiguration</td>
+<td>Creates sub-EPIs</td>
+<td>Emergence, pattern formation</td>
+</tr>
+<tr>
+<td><strong>Mutation</strong></td>
+<td>ZHIR</td>
+<td>Phase transformation</td>
+<td>θ → θ' (qualitative change)</td>
+<td>State transitions, adaptation</td>
+</tr>
+<tr>
+<td><strong>Transition</strong></td>
+<td>NAV</td>
+<td>Controlled movement</td>
+<td>Guided EPI evolution</td>
+<td>Navigation, pathway following</td>
+</tr>
+<tr>
+<td><strong>Recursivity</strong></td>
+<td>REMESH</td>
+<td>Self-reinforcement</td>
+<td>Maintains adaptive memory</td>
+<td>Multi-scale operations, nesting</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="operators-of-initiation">Operators of Initiation<a class="headerlink" href="#operators-of-initiation" title="Permanent link">&para;</a></h2>
+<h3 id="al-emission">AL - Emission<a class="headerlink" href="#al-emission" title="Permanent link">&para;</a></h3>
+<p><strong>Function</strong>: Activates an EPI from latent state to active resonance</p>
+<p><strong>Structural Transformation</strong>:
+<div class="highlight"><pre><span></span><code>∂EPI/∂t = νf · ΔNFR(t)  [ΔNFR becomes positive]
+νf: 0.1 → 1.0+ Hz_str   [frequency activates]
+EPI: 0.2 → 0.5+         [form emerges]
+</code></pre></div></p>
+<p><strong>ASCII Visualization</strong>:
+<div class="highlight"><pre><span></span><code>Before AL:              After AL:
+    ·                      ○
+  (latent)            ╱    │    ╲
+                    •      •      •
+                   Emission radiates
+</code></pre></div></p>
+<p><strong>Conceptual Diagram</strong>:
+<div class="highlight"><pre><span></span><code>  Latent State           Active Resonance
+      ○                      ◉
+      │                    ╱ │ ╲
+      │         AL       ╱   │   ╲
+   (silent)    ──→     •    •    •
+                      Outward coherence
+</code></pre></div></p>
+<p><strong>Applications</strong>:
+- <strong>Creative Processes</strong>: Idea germination, artistic inspiration
+- <strong>Therapeutic</strong>: Session initiation, therapeutic space activation
+- <strong>Biological</strong>: Cell activation, neural firing initiation
+- <strong>Social</strong>: Community emergence, movement initiation</p>
+<p><strong>Code Example</strong>:
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.structural</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_nfr</span><span class="p">,</span> <span class="n">run_sequence</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.operators.definitions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Emission</span>
+
+<span class="c1"># Create latent node</span>
+<span class="n">G</span><span class="p">,</span> <span class="n">node</span> <span class="o">=</span> <span class="n">create_nfr</span><span class="p">(</span><span class="s2">&quot;creative_seed&quot;</span><span class="p">,</span> <span class="n">epi</span><span class="o">=</span><span class="mf">0.18</span><span class="p">,</span> <span class="n">vf</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+
+<span class="c1"># Apply Emission - activate the node</span>
+<span class="n">run_sequence</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="p">[</span><span class="n">Emission</span><span class="p">()])</span>
+
+<span class="c1"># Result: Node transitions from latent to active</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;EPI after AL: </span><span class="si">{</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">node</span><span class="p">][</span><span class="s1">&#39;epi&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># ~0.25</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;νf after AL: </span><span class="si">{</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">node</span><span class="p">][</span><span class="s1">&#39;vf&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>    <span class="c1"># ~1.02</span>
+</code></pre></div></p>
+<p><strong>Typical Sequences</strong>:
+- <code>AL → IL</code>: Emission followed by immediate stabilization
+- <code>AL → EN</code>: Bidirectional activation (emit and receive)
+- <code>AL → RA</code>: Emission with immediate propagation
+- <code>AL → NAV → IL</code>: Phased activation with transition</p>
+<p><strong>Preconditions</strong>:
+- EPI &lt; 0.8 (below saturation)
+- Node in latent or low-activation state
+- Sufficient network coupling potential</p>
+<p><strong>Structural Effects</strong>:
+- <strong>EPI</strong>: ↑ (form activation)
+- <strong>νf</strong>: ↑↑ (frequency increases significantly)
+- <strong>ΔNFR</strong>: → positive (reorganization pressure builds)
+- <strong>θ</strong>: May shift (phase begins to align with network)</p>
+<p><strong>Metrics to Monitor</strong>:
+- ΔEPI &gt; 0.05 (significant activation)
+- Δνf &gt; 0.5 Hz_str (frequency jump)
+- C(t) increase (global coherence improves)</p>
+<hr />
+<h3 id="en-reception">EN - Reception<a class="headerlink" href="#en-reception" title="Permanent link">&para;</a></h3>
+<p><strong>Function</strong>: Anchors external coherence into local EPI structure</p>
+<p><strong>Structural Transformation</strong>:
+<div class="highlight"><pre><span></span><code>∂EPI/∂t = νf · ΔNFR(t)  [integrates external pattern]
+ΔNFR: high → reduced    [stabilization through integration]
+EPI: +0.05 to +0.15     [form incorporates external coherence]
+</code></pre></div></p>
+<p><strong>ASCII Visualization</strong>:
+<div class="highlight"><pre><span></span><code>Before EN:              After EN:
+    ○     →               ◉
+           ↓            integrated
+    ○  (receiving)        ○
+</code></pre></div></p>
+<p><strong>Conceptual Diagram</strong>:
+<div class="highlight"><pre><span></span><code>  External Pattern      Integrated State
+      ▼ ▼ ▼                  ◉
+       ╲│╱                 ╱ │ ╲
+        ○        EN       •  •  •
+      (open)    ──→    Pattern anchored
+</code></pre></div></p>
+<p><strong>Applications</strong>:
+- <strong>Learning</strong>: Student integrating teacher's explanation
+- <strong>Biofeedback</strong>: Patient receiving HRV coherence signal
+- <strong>Communication</strong>: Team member integrating collaborative input
+- <strong>Therapeutic</strong>: Client receiving therapist's coherent presence</p>
+<p><strong>Code Example</strong>:
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.structural</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_nfr</span><span class="p">,</span> <span class="n">run_sequence</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.operators.definitions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Reception</span>
+
+<span class="c1"># Create receptive node</span>
+<span class="n">G</span><span class="p">,</span> <span class="n">learner</span> <span class="o">=</span> <span class="n">create_nfr</span><span class="p">(</span><span class="s2">&quot;student_mind&quot;</span><span class="p">,</span> <span class="n">epi</span><span class="o">=</span><span class="mf">0.30</span><span class="p">,</span> <span class="n">vf</span><span class="o">=</span><span class="mf">0.95</span><span class="p">)</span>
+
+<span class="c1"># Apply Reception - integrate external information</span>
+<span class="n">run_sequence</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">learner</span><span class="p">,</span> <span class="p">[</span><span class="n">Reception</span><span class="p">()])</span>
+
+<span class="c1"># Result: External coherence anchors into EPI</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;EPI after EN: </span><span class="si">{</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">learner</span><span class="p">][</span><span class="s1">&#39;epi&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># ~0.35</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ΔNFR after EN: </span><span class="si">{</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">learner</span><span class="p">][</span><span class="s1">&#39;dnfr&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># reduced</span>
+</code></pre></div></p>
+<p><strong>Typical Sequences</strong>:
+- <code>EN → IL</code>: Reception with immediate stabilization
+- <code>AL → EN</code>: Bidirectional flow (emit and receive)
+- <code>RA → EN</code>: Resonance propagation followed by reception
+- <code>EN → THOL</code>: Reception triggering self-organization</p>
+<p><strong>Preconditions</strong>:
+- Non-saturated EPI (capacity to receive)
+- External coherence sources present in network
+- Phase compatibility with emitting nodes</p>
+<p><strong>Structural Effects</strong>:
+- <strong>EPI</strong>: ↑ (integration of external patterns)
+- <strong>ΔNFR</strong>: ↓ (stabilization through integration)
+- <strong>θ</strong>: → alignment (phase moves toward sources)
+- <strong>Network coupling</strong>: ↑ (connections strengthen)</p>
+<p><strong>Metrics to Monitor</strong>:
+- ΔEPI: +0.05 to +0.15 (integration magnitude)
+- ΔNFR reduction: 30-50% (stabilization effectiveness)
+- Phase alignment: increasing similarity to sources</p>
+<hr />
+<h3 id="il-coherencia-coherence">IL - Coherencia (Coherence)<a class="headerlink" href="#il-coherencia-coherence" title="Permanent link">&para;</a></h3>
+<p><strong>Function</strong>: Stabilizes structural form by reducing reorganization pressure</p>
+<p><strong>Structural Transformation</strong>:
+<div class="highlight"><pre><span></span><code>∂EPI/∂t → 0 as ΔNFR → 0  [evolution stabilizes]
+C(t): increases          [global coherence rises]
+|ΔNFR|: reduced          [reorganization pressure drops]
+</code></pre></div></p>
+<p><strong>ASCII Visualization</strong>:
+<div class="highlight"><pre><span></span><code>Before IL:              After IL:
+  ○~~~○                   ○═══○
+   ╲ ╱                     ║ ║
+    ○  (unstable)          ○  (stable)
+</code></pre></div></p>
+<p><strong>Conceptual Diagram</strong>:
+<div class="highlight"><pre><span></span><code>  Unstable State        Stable Coherence
+    ○ ~ ○                   ○═══○
+     ╲╱                     ║   ║
+      ○       IL            ○   ○
+   (drift)   ──→        Locked form
+</code></pre></div></p>
+<p><strong>Applications</strong>:
+- <strong>Meditation</strong>: Establishing sustained coherent state
+- <strong>Therapy</strong>: Consolidating therapeutic gains
+- <strong>Learning</strong>: Stabilizing newly learned concepts
+- <strong>Teams</strong>: Crystallizing group agreements</p>
+<p><strong>Code Example</strong>:
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.structural</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_nfr</span><span class="p">,</span> <span class="n">run_sequence</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.operators.definitions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Coherence</span>
+
+<span class="c1"># Create node with some instability</span>
+<span class="n">G</span><span class="p">,</span> <span class="n">node</span> <span class="o">=</span> <span class="n">create_nfr</span><span class="p">(</span><span class="s2">&quot;meditation_practice&quot;</span><span class="p">,</span> <span class="n">epi</span><span class="o">=</span><span class="mf">0.45</span><span class="p">,</span> <span class="n">vf</span><span class="o">=</span><span class="mf">0.85</span><span class="p">)</span>
+
+<span class="c1"># Apply Coherence - stabilize the structure</span>
+<span class="n">run_sequence</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="p">[</span><span class="n">Coherence</span><span class="p">()])</span>
+
+<span class="c1"># Result: ΔNFR reduced, form stabilized</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ΔNFR after IL: </span><span class="si">{</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">node</span><span class="p">][</span><span class="s1">&#39;dnfr&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># ~0.01</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;C(t): </span><span class="si">{</span><span class="n">G</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="s1">&#39;coherence&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># increased</span>
+</code></pre></div></p>
+<p><strong>Typical Sequences</strong>:
+- <code>AL → IL</code>: Activation followed by stabilization
+- <code>EN → IL</code>: Reception followed by consolidation
+- <code>OZ → IL</code>: Dissonance followed by restabilization
+- <code>IL → SHA</code>: Stabilization followed by pause</p>
+<p><strong>Preconditions</strong>:
+- Node must have active EPI (cannot stabilize non-existent structure)
+- ΔNFR should be moderate (extreme values need other operators first)</p>
+<p><strong>Structural Effects</strong>:
+- <strong>EPI</strong>: → stable (minimal change)
+- <strong>ΔNFR</strong>: ↓↓ (significant reduction)
+- <strong>C(t)</strong>: ↑ (global coherence increases)
+- <strong>νf</strong>: slight ↓ (frequency moderates)</p>
+<p><strong>Metrics to Monitor</strong>:
+- ΔNFR: should approach 0.01 or less
+- C(t): should increase by 0.1-0.3
+- Structural stability: ∂EPI/∂t → 0</p>
+<hr />
+<h2 id="operators-of-transformation">Operators of Transformation<a class="headerlink" href="#operators-of-transformation" title="Permanent link">&para;</a></h2>
+<h3 id="oz-disonancia-dissonance">OZ - Disonancia (Dissonance)<a class="headerlink" href="#oz-disonancia-dissonance" title="Permanent link">&para;</a></h3>
+<p><strong>Function</strong>: Introduces controlled instability to enable exploration and evolution</p>
+<p><strong>Structural Transformation</strong>:
+<div class="highlight"><pre><span></span><code>∂EPI/∂t = νf · ΔNFR(t)  [ΔNFR increases significantly]
+|ΔNFR|: low → high      [reorganization pressure builds]
+∂²EPI/∂t² &gt; τ           [may trigger bifurcation]
+</code></pre></div></p>
+<p><strong>ASCII Visualization</strong>:
+<div class="highlight"><pre><span></span><code>Before OZ:              After OZ:
+    ○═══○                 ○~~~○
+     ║ ║                   ╲ ╱
+     ○                 ○ ? ○ ? ○
+  (locked)           (exploring paths)
+</code></pre></div></p>
+<p><strong>Conceptual Diagram</strong>:
+<div class="highlight"><pre><span></span><code>  Stable State          Exploratory State
+      ○                    ○╱ ╲○
+      ║         OZ        ╱│?│╲
+      ○        ──→       ○ │ │ ○
+   (static)           Multiple paths
+</code></pre></div></p>
+<p><strong>Applications</strong>:
+- <strong>Creative Breakthroughs</strong>: Breaking mental blocks
+- <strong>Therapeutic</strong>: Disrupting maladaptive patterns
+- <strong>Organizational</strong>: Challenging status quo for innovation
+- <strong>Scientific</strong>: Hypothesis generation, paradigm shifts</p>
+<p><strong>Code Example</strong>:
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.structural</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_nfr</span><span class="p">,</span> <span class="n">run_sequence</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.operators.definitions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dissonance</span><span class="p">,</span> <span class="n">Coherence</span>
+
+<span class="c1"># Create overly stable node (stuck)</span>
+<span class="n">G</span><span class="p">,</span> <span class="n">node</span> <span class="o">=</span> <span class="n">create_nfr</span><span class="p">(</span><span class="s2">&quot;rigid_pattern&quot;</span><span class="p">,</span> <span class="n">epi</span><span class="o">=</span><span class="mf">0.60</span><span class="p">,</span> <span class="n">vf</span><span class="o">=</span><span class="mf">0.70</span><span class="p">)</span>
+
+<span class="c1"># Apply Dissonance - introduce controlled instability</span>
+<span class="n">run_sequence</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="p">[</span><span class="n">Dissonance</span><span class="p">()])</span>
+
+<span class="c1"># Result: ΔNFR increases, enabling exploration</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ΔNFR after OZ: </span><span class="si">{</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">node</span><span class="p">][</span><span class="s1">&#39;dnfr&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># significantly increased</span>
+
+<span class="c1"># Follow with Coherence to restabilize after exploration</span>
+<span class="n">run_sequence</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="p">[</span><span class="n">Coherence</span><span class="p">()])</span>
+</code></pre></div></p>
+<p><strong>Typical Sequences</strong>:
+- <code>OZ → THOL</code>: Dissonance triggering self-organization
+- <code>OZ → ZHIR</code>: Dissonance enabling mutation
+- <code>OZ → IL</code>: Controlled disruption then restabilization
+- <code>IL → OZ → IL</code>: Stable → explore → restabilize cycle</p>
+<p><strong>Preconditions</strong>:
+- Node should be in relatively stable state (to disrupt)
+- C(t) should be sufficient to tolerate instability
+- Follow with stabilizing operators to avoid collapse</p>
+<p><strong>Structural Effects</strong>:
+- <strong>EPI</strong>: variable (exploration begins)
+- <strong>ΔNFR</strong>: ↑↑↑ (significant increase)
+- <strong>νf</strong>: may ↑ (increased reorganization rate)
+- <strong>Bifurcation risk</strong>: increases</p>
+<p><strong>Metrics to Monitor</strong>:
+- ΔNFR: expect 2-5× increase
+- ∂²EPI/∂t²: watch for bifurcation threshold
+- C(t): should remain above collapse threshold</p>
+<p><strong>⚠️ Warning</strong>: Use OZ carefully - excessive dissonance can trigger node collapse. Always monitor C(t) and be ready to apply IL (Coherence) or SHA (Silence) if instability grows too large.</p>
+<hr />
+<h3 id="thol-autoorganizacion-self-organization">THOL - Autoorganización (Self-Organization)<a class="headerlink" href="#thol-autoorganizacion-self-organization" title="Permanent link">&para;</a></h3>
+<p><strong>Function</strong>: Enables spontaneous reconfiguration into emergent coherent structures</p>
+<p><strong>Structural Transformation</strong>:
+<div class="highlight"><pre><span></span><code>∂²EPI/∂t² &gt; τ           [bifurcation occurs]
+EPI → {EPI₁, EPI₂, ...} [sub-structures emerge]
+Global form preserved    [operational fractality]
+</code></pre></div></p>
+<p><strong>ASCII Visualization</strong>:
+<div class="highlight"><pre><span></span><code>Before THOL:            After THOL:
+      ○                   ◉
+      ║                 ╱ │ ╲
+      ○              ○   ○   ○
+   (monolithic)    (self-organized)
+</code></pre></div></p>
+<p><strong>Conceptual Diagram</strong>:
+<div class="highlight"><pre><span></span><code>  Uniform State        Organized Structure
+      ●●●                  ◉
+      ●●●      THOL       ╱│╲
+      ●●●       ──→      ◎ ◎ ◎
+   (undifferentiated)  Sub-patterns
+</code></pre></div></p>
+<p><strong>Applications</strong>:
+- <strong>Biological</strong>: Cell differentiation, tissue organization
+- <strong>Cognitive</strong>: Concept categorization, mental schema formation
+- <strong>Social</strong>: Team role emergence, community structure formation
+- <strong>Creative</strong>: Compositional structure emergence in art/music</p>
+<p><strong>Code Example</strong>:
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.structural</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_nfr</span><span class="p">,</span> <span class="n">run_sequence</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.operators.definitions</span><span class="w"> </span><span class="kn">import</span> <span class="n">SelfOrganization</span>
+
+<span class="c1"># Create node ready for organization</span>
+<span class="n">G</span><span class="p">,</span> <span class="n">collective</span> <span class="o">=</span> <span class="n">create_nfr</span><span class="p">(</span><span class="s2">&quot;community_seed&quot;</span><span class="p">,</span> <span class="n">epi</span><span class="o">=</span><span class="mf">0.50</span><span class="p">,</span> <span class="n">vf</span><span class="o">=</span><span class="mf">1.10</span><span class="p">)</span>
+
+<span class="c1"># Apply Self-Organization - trigger spontaneous structuring</span>
+<span class="n">run_sequence</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">collective</span><span class="p">,</span> <span class="p">[</span><span class="n">SelfOrganization</span><span class="p">()])</span>
+
+<span class="c1"># Result: Sub-EPIs form while preserving global structure</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Node count after THOL: </span><span class="si">{</span><span class="n">G</span><span class="o">.</span><span class="n">number_of_nodes</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># may increase</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Global coherence: </span><span class="si">{</span><span class="n">G</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;coherence&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div></p>
+<p><strong>Typical Sequences</strong>:
+- <code>OZ → THOL</code>: Dissonance enabling self-organization
+- <code>EN → THOL</code>: Reception triggering emergent organization
+- <code>THOL → IL</code>: Self-organization followed by stabilization
+- <code>AL → THOL → RA</code>: Emit, organize, propagate</p>
+<p><strong>Preconditions</strong>:
+- Sufficient ΔNFR (reorganization pressure)
+- ∂²EPI/∂t² approaching threshold
+- Network context supporting differentiation</p>
+<p><strong>Structural Effects</strong>:
+- <strong>EPI</strong>: fractional (creates sub-EPIs)
+- <strong>Network topology</strong>: may add nodes/edges
+- <strong>C(t)</strong>: typically increases (better organization)
+- <strong>Operational fractality</strong>: preserved</p>
+<p><strong>Metrics to Monitor</strong>:
+- Sub-structure count (emergent components)
+- Global coherence (should increase)
+- Fractal dimension (structural complexity)</p>
+<hr />
+<h3 id="zhir-mutation">ZHIR - Mutation<a class="headerlink" href="#zhir-mutation" title="Permanent link">&para;</a></h3>
+<p><strong>Function</strong>: Triggers qualitative phase transformation when structural threshold crossed</p>
+<p><strong>Structural Transformation</strong>:
+<div class="highlight"><pre><span></span><code>θ → θ&#39; if ΔEPI/Δt &gt; ξ   [phase shift when threshold exceeded]
+Qualitative change       [state transformation]
+Form identity preserved  [EPI maintains coherence]
+</code></pre></div></p>
+<p><strong>ASCII Visualization</strong>:
+<div class="highlight"><pre><span></span><code>Before ZHIR:            After ZHIR:
+    ○ (θ)                 ◉ (θ&#39;)
+    │                     │
+  State A              State B
+</code></pre></div></p>
+<p><strong>Conceptual Diagram</strong>:
+<div class="highlight"><pre><span></span><code>  Phase State A        Phase State B
+      ○                    ◉
+      │                    │
+   θ = 0.2    ZHIR     θ&#39; = 1.8
+      │        ──→         │
+   (liquid)            (crystal)
+</code></pre></div></p>
+<p><strong>Applications</strong>:
+- <strong>Physical</strong>: Phase transitions (liquid ↔ solid)
+- <strong>Biological</strong>: Developmental stage transitions, metamorphosis
+- <strong>Cognitive</strong>: Paradigm shifts, gestalt switches
+- <strong>Organizational</strong>: Cultural transformation, business model pivots</p>
+<p><strong>Code Example</strong>:
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.structural</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_nfr</span><span class="p">,</span> <span class="n">run_sequence</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.operators.definitions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mutation</span>
+
+<span class="c1"># Create node approaching transformation threshold</span>
+<span class="n">G</span><span class="p">,</span> <span class="n">organism</span> <span class="o">=</span> <span class="n">create_nfr</span><span class="p">(</span><span class="s2">&quot;metamorphosis&quot;</span><span class="p">,</span> <span class="n">epi</span><span class="o">=</span><span class="mf">0.55</span><span class="p">,</span> <span class="n">vf</span><span class="o">=</span><span class="mf">1.00</span><span class="p">,</span> <span class="n">theta</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+
+<span class="c1"># Apply Mutation - trigger phase transformation</span>
+<span class="n">run_sequence</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">organism</span><span class="p">,</span> <span class="p">[</span><span class="n">Mutation</span><span class="p">()])</span>
+
+<span class="c1"># Result: θ shifts to new phase while preserving structural identity</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Phase after ZHIR: </span><span class="si">{</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">organism</span><span class="p">][</span><span class="s1">&#39;theta&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># significantly different</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;EPI after ZHIR: </span><span class="si">{</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">organism</span><span class="p">][</span><span class="s1">&#39;epi&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># maintained coherence</span>
+</code></pre></div></p>
+<p><strong>Typical Sequences</strong>:
+- <code>OZ → ZHIR</code>: Dissonance enabling mutation
+- <code>ZHIR → IL</code>: Mutation followed by stabilization in new phase
+- <code>NAV → ZHIR</code>: Transition triggering transformation
+- <code>ZHIR → THOL</code>: Mutation enabling new organization</p>
+<p><strong>Preconditions</strong>:
+- ΔEPI/Δt &gt; ξ (threshold parameter, configurable)
+- Sufficient νf to support transformation
+- Network context compatible with new phase</p>
+<p><strong>Structural Effects</strong>:
+- <strong>θ</strong>: ↑↑ or ↓↓ (significant phase shift)
+- <strong>EPI</strong>: maintained (identity preserved)
+- <strong>νf</strong>: may change (new phase dynamics)
+- <strong>Qualitative state</strong>: transformed</p>
+<p><strong>Metrics to Monitor</strong>:
+- Δθ: expect &gt;0.5 radians shift
+- EPI coherence: should remain bounded
+- State classification: qualitatively different</p>
+<hr />
+<h2 id="operators-of-connection">Operators of Connection<a class="headerlink" href="#operators-of-connection" title="Permanent link">&para;</a></h2>
+<h3 id="um-coupling">UM - Coupling<a class="headerlink" href="#um-coupling" title="Permanent link">&para;</a></h3>
+<p><strong>Function</strong>: Synchronizes nodes through phase alignment</p>
+<p><strong>Structural Transformation</strong>:
+<div class="highlight"><pre><span></span><code>φᵢ(t) ≈ φⱼ(t)          [phase synchronization]
+Coupling strength ↑     [connection reinforcement]
+Information exchange ↑  [bidirectional flow enabled]
+</code></pre></div></p>
+<p><strong>ASCII Visualization</strong>:
+<div class="highlight"><pre><span></span><code>Before UM:              After UM:
+  ○     ○                 ○═══○
+ (θ₁)  (θ₂)              (θ ≈ θ)
+</code></pre></div></p>
+<p><strong>Conceptual Diagram</strong>:
+<div class="highlight"><pre><span></span><code>  Independent Nodes     Coupled System
+    ○ · · ○               ○═══○
+    │     │       UM      ║   ║
+  θ₁≠θ₂           ──→     θ≈θ
+  Unsynchronized      Synchronized
+</code></pre></div></p>
+<p><strong>Applications</strong>:
+- <strong>Cardiac</strong>: Heart-brain coherence coupling
+- <strong>Neurological</strong>: Neural synchronization, brain regions coupling
+- <strong>Social</strong>: Team alignment, collaborative synchrony
+- <strong>Musical</strong>: Ensemble synchronization</p>
+<p><strong>Code Example</strong>:
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.structural</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_nfr</span><span class="p">,</span> <span class="n">run_sequence</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.operators.definitions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Coupling</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">networkx</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nx</span>
+
+<span class="c1"># Create two nodes with different phases</span>
+<span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">()</span>
+<span class="n">G</span><span class="p">,</span> <span class="n">node1</span> <span class="o">=</span> <span class="n">create_nfr</span><span class="p">(</span><span class="s2">&quot;heart&quot;</span><span class="p">,</span> <span class="n">epi</span><span class="o">=</span><span class="mf">0.40</span><span class="p">,</span> <span class="n">vf</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">theta</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">G</span><span class="o">=</span><span class="n">G</span><span class="p">)</span>
+<span class="n">G</span><span class="p">,</span> <span class="n">node2</span> <span class="o">=</span> <span class="n">create_nfr</span><span class="p">(</span><span class="s2">&quot;brain&quot;</span><span class="p">,</span> <span class="n">epi</span><span class="o">=</span><span class="mf">0.45</span><span class="p">,</span> <span class="n">vf</span><span class="o">=</span><span class="mf">0.95</span><span class="p">,</span> <span class="n">theta</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">G</span><span class="o">=</span><span class="n">G</span><span class="p">)</span>
+
+<span class="c1"># Add edge to enable coupling</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">node1</span><span class="p">,</span> <span class="n">node2</span><span class="p">)</span>
+
+<span class="c1"># Apply Coupling - synchronize phases</span>
+<span class="n">run_sequence</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">node1</span><span class="p">,</span> <span class="p">[</span><span class="n">Coupling</span><span class="p">()])</span>
+
+<span class="c1"># Result: Phases converge, enabling coherent interaction</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Phase difference reduced&quot;</span><span class="p">)</span>
+</code></pre></div></p>
+<p><strong>Typical Sequences</strong>:
+- <code>UM → RA</code>: Coupling enabling resonance propagation
+- <code>AL → UM</code>: Emission preparing for coupling
+- <code>UM → IL</code>: Coupling followed by stabilization
+- <code>EN → UM → EN</code>: Reception-coupling-reception cycle</p>
+<p><strong>Preconditions</strong>:
+- Nodes must be network neighbors (edges exist)
+- Both nodes must have active νf
+- Initial phase difference should not be too large</p>
+<p><strong>Structural Effects</strong>:
+- <strong>θ</strong>: convergence (φᵢ → φⱼ)
+- <strong>Coupling strength</strong>: ↑
+- <strong>Network coherence</strong>: ↑
+- <strong>Information exchange</strong>: enabled</p>
+<p><strong>Metrics to Monitor</strong>:
+- Phase difference: Δθ = |θᵢ - θⱼ| (should decrease)
+- Coupling coefficient: should increase
+- C(t): global coherence should improve</p>
+<hr />
+<h3 id="ra-resonance">RA - Resonance<a class="headerlink" href="#ra-resonance" title="Permanent link">&para;</a></h3>
+<p><strong>Function</strong>: Propagates coherence patterns through network without loss of identity</p>
+<p><strong>Structural Transformation</strong>:
+<div class="highlight"><pre><span></span><code>EPIₙ → EPIₙ₊₁           [pattern propagation]
+Coupling amplification  [effective connectivity ↑]
+Identity preservation   [form maintained]
+</code></pre></div></p>
+<p><strong>ASCII Visualization</strong>:
+<div class="highlight"><pre><span></span><code>Initial:                After RA:
+  ◉                     ◉═══○═══○
+  │                     Pattern spreads
+  ○     ○               without distortion
+</code></pre></div></p>
+<p><strong>Conceptual Diagram</strong>:
+<div class="highlight"><pre><span></span><code>  Source Node          Network Resonance
+      ◉                  ◉═══○
+      │        RA        ║   ║
+      ○        ──→       ○═══○
+   (isolated)         (propagated)
+</code></pre></div></p>
+<p><strong>Applications</strong>:
+- <strong>Biological</strong>: Action potential propagation, immune response spreading
+- <strong>Cognitive</strong>: Insight spreading through mental network, "aha moment"
+- <strong>Social</strong>: Viral ideas, social movements, cultural memes
+- <strong>Therapeutic</strong>: Coherence spreading from therapist to client system</p>
+<p><strong>Code Example</strong>:
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.structural</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_nfr</span><span class="p">,</span> <span class="n">run_sequence</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.operators.definitions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Resonance</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">networkx</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nx</span>
+
+<span class="c1"># Create network with central coherent node</span>
+<span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">()</span>
+<span class="n">G</span><span class="p">,</span> <span class="n">source</span> <span class="o">=</span> <span class="n">create_nfr</span><span class="p">(</span><span class="s2">&quot;coherent_source&quot;</span><span class="p">,</span> <span class="n">epi</span><span class="o">=</span><span class="mf">0.70</span><span class="p">,</span> <span class="n">vf</span><span class="o">=</span><span class="mf">1.2</span><span class="p">,</span> <span class="n">G</span><span class="o">=</span><span class="n">G</span><span class="p">)</span>
+<span class="n">G</span><span class="p">,</span> <span class="n">target1</span> <span class="o">=</span> <span class="n">create_nfr</span><span class="p">(</span><span class="s2">&quot;receiver1&quot;</span><span class="p">,</span> <span class="n">epi</span><span class="o">=</span><span class="mf">0.20</span><span class="p">,</span> <span class="n">vf</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">G</span><span class="o">=</span><span class="n">G</span><span class="p">)</span>
+<span class="n">G</span><span class="p">,</span> <span class="n">target2</span> <span class="o">=</span> <span class="n">create_nfr</span><span class="p">(</span><span class="s2">&quot;receiver2&quot;</span><span class="p">,</span> <span class="n">epi</span><span class="o">=</span><span class="mf">0.18</span><span class="p">,</span> <span class="n">vf</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span> <span class="n">G</span><span class="o">=</span><span class="n">G</span><span class="p">)</span>
+
+<span class="c1"># Connect network</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">target1</span><span class="p">)</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">target2</span><span class="p">)</span>
+
+<span class="c1"># Apply Resonance - propagate coherence</span>
+<span class="n">run_sequence</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="p">[</span><span class="n">Resonance</span><span class="p">()])</span>
+
+<span class="c1"># Result: Coherence spreads to connected nodes</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Target1 EPI after RA: </span><span class="si">{</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">target1</span><span class="p">][</span><span class="s1">&#39;epi&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># increased</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Target2 EPI after RA: </span><span class="si">{</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">target2</span><span class="p">][</span><span class="s1">&#39;epi&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># increased</span>
+</code></pre></div></p>
+<p><strong>Typical Sequences</strong>:
+- <code>UM → RA</code>: Coupling enabling resonance
+- <code>AL → RA</code>: Emission immediately propagating
+- <code>RA → EN</code>: Resonance propagation followed by reception
+- <code>IL → RA</code>: Stabilization then propagation</p>
+<p><strong>Preconditions</strong>:
+- Source node must have high coherence (EPI &gt; threshold)
+- Network paths must exist to targets
+- Target nodes must have receptive capacity</p>
+<p><strong>Structural Effects</strong>:
+- <strong>EPI</strong>: propagates to neighbors
+- <strong>Network coupling</strong>: amplified
+- <strong>C(t)</strong>: significant increase
+- <strong>Pattern identity</strong>: preserved during propagation</p>
+<p><strong>Metrics to Monitor</strong>:
+- Propagation distance (how far pattern spreads)
+- Pattern fidelity (identity preservation)
+- C(t) increase (global coherence improvement)</p>
+<hr />
+<h3 id="nav-transition">NAV - Transition<a class="headerlink" href="#nav-transition" title="Permanent link">&para;</a></h3>
+<p><strong>Function</strong>: Enables controlled movement between structural states along defined pathways</p>
+<p><strong>Structural Transformation</strong>:
+<div class="highlight"><pre><span></span><code>EPIₐ → EPIᵦ             [guided evolution]
+Path constraints        [trajectory control]
+Creative threshold      [ΔNFR ≈ νf]
+</code></pre></div></p>
+<p><strong>ASCII Visualization</strong>:
+<div class="highlight"><pre><span></span><code>State A                 State B
+  ○                       ○
+  │      NAV path         │
+  │  ─────────────→       │
+(start)              (destination)
+</code></pre></div></p>
+<p><strong>Conceptual Diagram</strong>:
+<div class="highlight"><pre><span></span><code>  State Space            Transition Path
+    ○A        ○B           ○A ········&gt; ○B
+    │         │     NAV    │            │
+    ○         ○     ──→    └──trajectory─┘
+  Static              Dynamic movement
+</code></pre></div></p>
+<p><strong>Applications</strong>:
+- <strong>Developmental</strong>: Life stage transitions (childhood → adolescence)
+- <strong>Therapeutic</strong>: Moving from problematic to healthy state
+- <strong>Organizational</strong>: Strategic transitions, change management
+- <strong>Learning</strong>: Progressive skill acquisition, mastery levels</p>
+<p><strong>Code Example</strong>:
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.structural</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_nfr</span><span class="p">,</span> <span class="n">run_sequence</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.operators.definitions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Transition</span>
+
+<span class="c1"># Create node in initial state</span>
+<span class="n">G</span><span class="p">,</span> <span class="n">project</span> <span class="o">=</span> <span class="n">create_nfr</span><span class="p">(</span><span class="s2">&quot;development_phase&quot;</span><span class="p">,</span> <span class="n">epi</span><span class="o">=</span><span class="mf">0.35</span><span class="p">,</span> <span class="n">vf</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+
+<span class="c1"># Apply Transition - move to next phase</span>
+<span class="n">run_sequence</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">project</span><span class="p">,</span> <span class="p">[</span><span class="n">Transition</span><span class="p">()])</span>
+
+<span class="c1"># Result: Controlled evolution along pathway</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;EPI after NAV: </span><span class="si">{</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">project</span><span class="p">][</span><span class="s1">&#39;epi&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># evolved</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;State: transitioned to next phase&quot;</span><span class="p">)</span>
+</code></pre></div></p>
+<p><strong>Typical Sequences</strong>:
+- <code>AL → NAV → IL</code>: Activate, transition, stabilize
+- <code>NAV → ZHIR</code>: Transition enabling mutation
+- <code>OZ → NAV</code>: Dissonance opening transition pathway
+- <code>NAV → THOL</code>: Transition triggering organization</p>
+<p><strong>Preconditions</strong>:
+- ΔNFR ≈ νf (creative threshold)
+- Valid pathway exists in state space
+- Sufficient νf to support movement</p>
+<p><strong>Structural Effects</strong>:
+- <strong>EPI</strong>: evolves along trajectory
+- <strong>ΔNFR</strong>: fluctuates (pathway navigation)
+- <strong>State classification</strong>: changes
+- <strong>Path memory</strong>: may be recorded</p>
+<p><strong>Metrics to Monitor</strong>:
+- Trajectory coherence (smooth vs. erratic path)
+- Distance traveled in state space
+- Threshold crossings (ΔNFR ≈ νf moments)</p>
+<hr />
+<h2 id="operators-of-modulation">Operators of Modulation<a class="headerlink" href="#operators-of-modulation" title="Permanent link">&para;</a></h2>
+<h3 id="sha-silence">SHA - Silence<a class="headerlink" href="#sha-silence" title="Permanent link">&para;</a></h3>
+<p><strong>Function</strong>: Temporarily freezes structural evolution for observation or synchronization</p>
+<p><strong>Structural Transformation</strong>:
+<div class="highlight"><pre><span></span><code>νf → 0                  [frequency drops to zero]
+∂EPI/∂t ≈ 0            [evolution pauses]
+EPI preserved           [form maintained]
+</code></pre></div></p>
+<p><strong>ASCII Visualization</strong>:
+<div class="highlight"><pre><span></span><code>Active State:           Silent State:
+    ◉                     ○
+   ╱│╲                    │
+  • • •     SHA          (frozen)
+ (dynamic)    ──→      No evolution
+</code></pre></div></p>
+<p><strong>Conceptual Diagram</strong>:
+<div class="highlight"><pre><span></span><code>  Evolving System       Paused System
+      ◉ →               ○ —
+      │                 │
+    Active    SHA     Latent
+               ──→   
+   ∂EPI/∂t≠0        ∂EPI/∂t≈0
+</code></pre></div></p>
+<p><strong>Applications</strong>:
+- <strong>Therapeutic</strong>: Creating space for integration, therapeutic pause
+- <strong>Meditation</strong>: Deep stillness, observation without action
+- <strong>Scientific</strong>: Measurement window, observation without perturbation
+- <strong>Social</strong>: Silence in conversation, reflective pause</p>
+<p><strong>Code Example</strong>:
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.structural</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_nfr</span><span class="p">,</span> <span class="n">run_sequence</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.operators.definitions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Silence</span><span class="p">,</span> <span class="n">Emission</span>
+
+<span class="c1"># Create active node</span>
+<span class="n">G</span><span class="p">,</span> <span class="n">node</span> <span class="o">=</span> <span class="n">create_nfr</span><span class="p">(</span><span class="s2">&quot;active_process&quot;</span><span class="p">,</span> <span class="n">epi</span><span class="o">=</span><span class="mf">0.50</span><span class="p">,</span> <span class="n">vf</span><span class="o">=</span><span class="mf">1.2</span><span class="p">)</span>
+
+<span class="c1"># Apply Silence - pause evolution</span>
+<span class="n">run_sequence</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="p">[</span><span class="n">Silence</span><span class="p">()])</span>
+
+<span class="c1"># Result: νf drops, evolution freezes, EPI preserved</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;νf after SHA: </span><span class="si">{</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">node</span><span class="p">][</span><span class="s1">&#39;vf&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># ~0.0</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;EPI after SHA: </span><span class="si">{</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">node</span><span class="p">][</span><span class="s1">&#39;epi&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># unchanged</span>
+
+<span class="c1"># Can reactivate later with Emission</span>
+<span class="n">run_sequence</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="p">[</span><span class="n">Emission</span><span class="p">()])</span>
+</code></pre></div></p>
+<p><strong>Typical Sequences</strong>:
+- <code>IL → SHA</code>: Stabilize then pause
+- <code>SHA → AL</code>: Pause then reactivate
+- <code>EN → SHA → IL</code>: Receive, pause, consolidate
+- <code>SHA → measurement → SHA⁻¹</code>: Observation window</p>
+<p><strong>Preconditions</strong>:
+- Node must have active EPI to preserve
+- Should be used temporarily (not permanent)
+- Network context should support pause</p>
+<p><strong>Structural Effects</strong>:
+- <strong>νf</strong>: → 0 (frequency drops)
+- <strong>∂EPI/∂t</strong>: → 0 (evolution ceases)
+- <strong>EPI</strong>: preserved unchanged
+- <strong>Network influence</strong>: paused</p>
+<p><strong>Metrics to Monitor</strong>:
+- νf: should approach 0.0
+- EPI stability: should be constant
+- Duration of silence (time in paused state)</p>
+<p><strong>⚠️ Note</strong>: Prolonged SHA can lead to node collapse if not reactivated. Use for observation/synchronization windows, not permanent states.</p>
+<hr />
+<h3 id="val-expansion">VAL - Expansion<a class="headerlink" href="#val-expansion" title="Permanent link">&para;</a></h3>
+<p><strong>Function</strong>: Increases structural complexity by scaling EPI dimensionality</p>
+<p><strong>Structural Transformation</strong>:
+<div class="highlight"><pre><span></span><code>EPI → k·EPI, k ∈ ℕ⁺     [scalar multiplication]
+Dimensionality ↑        [degrees of freedom increase]
+Complexity ↑            [structural elaboration]
+</code></pre></div></p>
+<p><strong>ASCII Visualization</strong>:
+<div class="highlight"><pre><span></span><code>Before VAL:             After VAL:
+    ○                    ◉◉◉
+    │                   ╱│║│╲
+   (simple)            ◉ ◉ ◉ ◉
+                       (elaborated)
+</code></pre></div></p>
+<p><strong>Conceptual Diagram</strong>:
+<div class="highlight"><pre><span></span><code>  Compact State        Expanded State
+      ○                  ◉═══◉
+      │       VAL       ╱│   │╲
+      ○        ──→     ◉ ◉   ◉ ◉
+   (minimal)         (elaborated)
+</code></pre></div></p>
+<p><strong>Applications</strong>:
+- <strong>Creative</strong>: Elaborating ideas, compositional development
+- <strong>Organizational</strong>: Scaling teams, expanding operations
+- <strong>Biological</strong>: Growth, tissue expansion
+- <strong>Cognitive</strong>: Concept elaboration, knowledge expansion</p>
+<p><strong>Code Example</strong>:
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.structural</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_nfr</span><span class="p">,</span> <span class="n">run_sequence</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.operators.definitions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Expansion</span>
+
+<span class="c1"># Create minimal structure</span>
+<span class="n">G</span><span class="p">,</span> <span class="n">seed</span> <span class="o">=</span> <span class="n">create_nfr</span><span class="p">(</span><span class="s2">&quot;startup&quot;</span><span class="p">,</span> <span class="n">epi</span><span class="o">=</span><span class="mf">0.30</span><span class="p">,</span> <span class="n">vf</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+
+<span class="c1"># Apply Expansion - scale up complexity</span>
+<span class="n">run_sequence</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">seed</span><span class="p">,</span> <span class="p">[</span><span class="n">Expansion</span><span class="p">()])</span>
+
+<span class="c1"># Result: Structural complexity increases</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;EPI after VAL: </span><span class="si">{</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">seed</span><span class="p">][</span><span class="s1">&#39;epi&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># increased</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Structural scale expanded&quot;</span><span class="p">)</span>
+</code></pre></div></p>
+<p><strong>Typical Sequences</strong>:
+- <code>AL → VAL</code>: Activate then expand
+- <code>VAL → IL</code>: Expand then stabilize
+- <code>VAL → THOL</code>: Expansion enabling organization
+- <code>IL → VAL → IL</code>: Stabilize, expand, restabilize</p>
+<p><strong>Preconditions</strong>:
+- Node must have sufficient coherence to maintain expanded form
+- Network must support increased complexity
+- C(t) should be adequate (&gt;0.4)</p>
+<p><strong>Structural Effects</strong>:
+- <strong>EPI</strong>: ↑ (dimensionality increases)
+- <strong>Complexity</strong>: ↑ (more degrees of freedom)
+- <strong>ΔNFR</strong>: may ↑ temporarily (reorganization needed)
+- <strong>Network load</strong>: ↑ (more structural information)</p>
+<p><strong>Metrics to Monitor</strong>:
+- EPI magnitude (scalar growth)
+- Structural complexity (dimensionality)
+- C(t) maintenance (coherence during expansion)</p>
+<hr />
+<h3 id="nul-contraction">NUL - Contraction<a class="headerlink" href="#nul-contraction" title="Permanent link">&para;</a></h3>
+<p><strong>Function</strong>: Reduces structural complexity through densification and focusing</p>
+<p><strong>Structural Transformation</strong>:
+<div class="highlight"><pre><span></span><code>‖EPI′‖ ≥ τ              [density threshold maintained]
+Support reduced         [fewer dimensions]
+Information concentrated [focused structure]
+</code></pre></div></p>
+<p><strong>ASCII Visualization</strong>:
+<div class="highlight"><pre><span></span><code>Before NUL:             After NUL:
+  ◉═◉═◉                   ○
+  ║ ║ ║       NUL         │
+  ◉ ◉ ◉        ──→      (dense)
+(distributed)          (concentrated)
+</code></pre></div></p>
+<p><strong>Conceptual Diagram</strong>:
+<div class="highlight"><pre><span></span><code>  Diffuse State        Contracted State
+   ◉ ◉ ◉                   ●
+   ╲ │ ╱       NUL         │
+    ◉╱          ──→     (focused)
+  (scattered)          
+</code></pre></div></p>
+<p><strong>Applications</strong>:
+- <strong>Cognitive</strong>: Insight compression, essential concept extraction
+- <strong>Therapeutic</strong>: Focusing scattered attention, centering
+- <strong>Organizational</strong>: Streamlining, focusing on core business
+- <strong>Creative</strong>: Distillation, finding essence</p>
+<p><strong>Code Example</strong>:
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.structural</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_nfr</span><span class="p">,</span> <span class="n">run_sequence</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.operators.definitions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Contraction</span>
+
+<span class="c1"># Create scattered structure</span>
+<span class="n">G</span><span class="p">,</span> <span class="n">diffuse</span> <span class="o">=</span> <span class="n">create_nfr</span><span class="p">(</span><span class="s2">&quot;scattered_effort&quot;</span><span class="p">,</span> <span class="n">epi</span><span class="o">=</span><span class="mf">0.60</span><span class="p">,</span> <span class="n">vf</span><span class="o">=</span><span class="mf">0.90</span><span class="p">)</span>
+
+<span class="c1"># Apply Contraction - focus and densify</span>
+<span class="n">run_sequence</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">diffuse</span><span class="p">,</span> <span class="p">[</span><span class="n">Contraction</span><span class="p">()])</span>
+
+<span class="c1"># Result: Structure becomes more focused and dense</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;EPI after NUL: </span><span class="si">{</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">diffuse</span><span class="p">][</span><span class="s1">&#39;epi&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># maintained</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Structural density increased&quot;</span><span class="p">)</span>
+</code></pre></div></p>
+<p><strong>Typical Sequences</strong>:
+- <code>VAL → NUL</code>: Expand then contract (breathing cycle)
+- <code>NUL → IL</code>: Contract then stabilize
+- <code>OZ → NUL</code>: Dissonance then focusing
+- <code>EN → NUL</code>: Receive then distill essence</p>
+<p><strong>Preconditions</strong>:
+- Node must have distributed structure to contract
+- ‖EPI′‖ ≥ τ (density threshold)
+- Information should be preservable during compression</p>
+<p><strong>Structural Effects</strong>:
+- <strong>EPI</strong>: maintained or slightly reduced
+- <strong>Dimensionality</strong>: ↓ (fewer degrees of freedom)
+- <strong>Density</strong>: ↑ (concentrated information)
+- <strong>Focus</strong>: ↑ (clearer structure)</p>
+<p><strong>Metrics to Monitor</strong>:
+- Structural density (information per dimension)
+- Dimensionality reduction (degree of contraction)
+- Information preservation (no essential loss)</p>
+<hr />
+<h3 id="remesh-recursivity">REMESH - Recursivity<a class="headerlink" href="#remesh-recursivity" title="Permanent link">&para;</a></h3>
+<p><strong>Function</strong>: Maintains adaptive memory through nested operator application</p>
+<p><strong>Structural Transformation</strong>:
+<div class="highlight"><pre><span></span><code>EPI(t) = f(EPI(t - τ))  [memory integration]
+Operational fractality  [self-similar nesting]
+Multi-scale coherence   [cross-level consistency]
+</code></pre></div></p>
+<p><strong>ASCII Visualization</strong>:
+<div class="highlight"><pre><span></span><code>Linear Operation:       Recursive Operation:
+    ○                       ◉
+    │                     ╱ │ ╲
+    ↓                    ○  ◉  ○
+    ○                      ╱│╲
+                          ○ ○ ○
+                        (nested)
+</code></pre></div></p>
+<p><strong>Conceptual Diagram</strong>:
+<div class="highlight"><pre><span></span><code>  Single Layer          Recursive Layers
+      ○                     ◉
+      │       REMESH      ╱│╲  
+      ○         ──→      ◉ ◉ ◉
+   (flat)              ╱│╲ ╱│╲
+                      ○○○ ○○○
+                    (self-similar)
+</code></pre></div></p>
+<p><strong>Applications</strong>:
+- <strong>Cognitive</strong>: Hierarchical concept structures, recursive thinking
+- <strong>Biological</strong>: Fractal organ structures, recursive development
+- <strong>Social</strong>: Nested organizational structures, holarchies
+- <strong>Computational</strong>: Recursive algorithms, self-referential systems</p>
+<p><strong>Code Example</strong>:
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.structural</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_nfr</span><span class="p">,</span> <span class="n">run_sequence</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.operators.definitions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Recursivity</span>
+
+<span class="c1"># Create node ready for recursive organization</span>
+<span class="n">G</span><span class="p">,</span> <span class="n">system</span> <span class="o">=</span> <span class="n">create_nfr</span><span class="p">(</span><span class="s2">&quot;hierarchical_system&quot;</span><span class="p">,</span> <span class="n">epi</span><span class="o">=</span><span class="mf">0.50</span><span class="p">,</span> <span class="n">vf</span><span class="o">=</span><span class="mf">1.1</span><span class="p">)</span>
+
+<span class="c1"># Apply Recursivity - create nested structure</span>
+<span class="n">run_sequence</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">system</span><span class="p">,</span> <span class="p">[</span><span class="n">Recursivity</span><span class="p">()])</span>
+
+<span class="c1"># Result: Operational fractality maintained across scales</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Recursive depth: </span><span class="si">{</span><span class="n">G</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;recursive_depth&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Fractal structure established&quot;</span><span class="p">)</span>
+</code></pre></div></p>
+<p><strong>Typical Sequences</strong>:
+- <code>THOL → REMESH</code>: Self-organization with recursion
+- <code>REMESH → IL</code>: Recursive structure then stabilization
+- <code>VAL → REMESH</code>: Expansion with recursive nesting
+- <code>REMESH → REMESH</code>: Recursive recursion (meta-levels)</p>
+<p><strong>Preconditions</strong>:
+- Node must support nested structures
+- Operational fractality must be preservable
+- Memory parameter τ must be defined</p>
+<p><strong>Structural Effects</strong>:
+- <strong>EPI</strong>: nested (contains sub-EPIs)
+- <strong>Structural depth</strong>: ↑ (hierarchical levels)
+- <strong>Memory</strong>: ↑ (past states integrated)
+- <strong>Fractality</strong>: maintained (self-similarity)</p>
+<p><strong>Metrics to Monitor</strong>:
+- Recursive depth (nesting levels)
+- Fractal dimension (self-similarity measure)
+- Cross-scale coherence (consistency across levels)</p>
+<hr />
+<h2 id="operator-flow-diagram">Operator Flow Diagram<a class="headerlink" href="#operator-flow-diagram" title="Permanent link">&para;</a></h2>
+<h3 id="typical-operator-relationships">Typical Operator Relationships<a class="headerlink" href="#typical-operator-relationships" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>         Initiation Layer
+              │
+      ┌───────┼───────┐
+      │       │       │
+     AL      EN      IL
+   (Emit) (Receive) (Stabilize)
+      │       │       │
+      └───────┼───────┘
+              │
+         Transformation Layer
+              │
+      ┌───────┼───────┐
+      │       │       │
+     OZ     THOL    ZHIR
+ (Dissonance) (Self-Org) (Mutation)
+      │       │       │
+      └───────┼───────┘
+              │
+         Connection Layer
+              │
+      ┌───────┼───────┐
+      │       │       │
+     UM      RA      NAV
+ (Coupling) (Resonance) (Transition)
+      │       │       │
+      └───────┼───────┘
+              │
+         Modulation Layer
+              │
+      ┌───────┼───────────┐
+      │       │       │   │
+    SHA     VAL     NUL  REMESH
+ (Silence) (Expand) (Contract) (Recursivity)
+      │       │       │   │
+      └───────┴───────┴───┘
+</code></pre></div>
+<h3 id="canonical-sequence-patterns">Canonical Sequence Patterns<a class="headerlink" href="#canonical-sequence-patterns" title="Permanent link">&para;</a></h3>
+<p><strong>Growth Cycle</strong>:
+<div class="highlight"><pre><span></span><code>AL → VAL → THOL → IL
+(activate → expand → organize → stabilize)
+</code></pre></div></p>
+<p><strong>Exploration Cycle</strong>:
+<div class="highlight"><pre><span></span><code>IL → OZ → ZHIR → IL
+(stable → disrupt → mutate → restabilize)
+</code></pre></div></p>
+<p><strong>Network Propagation</strong>:
+<div class="highlight"><pre><span></span><code>AL → UM → RA → EN
+(emit → couple → resonate → receive)
+</code></pre></div></p>
+<p><strong>Learning Cycle</strong>:
+<div class="highlight"><pre><span></span><code>EN → IL → REMESH → SHA
+(receive → stabilize → integrate → pause)
+</code></pre></div></p>
+<p><strong>Transformation Cycle</strong>:
+<div class="highlight"><pre><span></span><code>OZ → NAV → ZHIR → THOL → IL
+(disrupt → transition → mutate → organize → stabilize)
+</code></pre></div></p>
+<hr />
+<h2 id="operator-combinations-to-avoid">Operator Combinations to Avoid<a class="headerlink" href="#operator-combinations-to-avoid" title="Permanent link">&para;</a></h2>
+<h3 id="contraindicated-sequences">Contraindicated Sequences<a class="headerlink" href="#contraindicated-sequences" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>SHA → OZ</strong> (Silence then Dissonance)</li>
+<li>Problem: Cannot disrupt frozen structure effectively</li>
+<li>
+<p>Solution: AL → OZ (activate first)</p>
+</li>
+<li>
+<p><strong>IL → IL → IL</strong> (Repeated Coherence)</p>
+</li>
+<li>Problem: Over-stabilization, rigidity</li>
+<li>
+<p>Solution: Intersperse with OZ or VAL for flexibility</p>
+</li>
+<li>
+<p><strong>VAL → VAL → VAL</strong> (Repeated Expansion)</p>
+</li>
+<li>Problem: Unbounded growth, loss of coherence</li>
+<li>
+<p>Solution: VAL → IL or VAL → NUL for containment</p>
+</li>
+<li>
+<p><strong>SHA during RA</strong> (Silence during Resonance)</p>
+</li>
+<li>Problem: Contradicts propagation intent</li>
+<li>
+<p>Solution: Complete RA first, then SHA if needed</p>
+</li>
+<li>
+<p><strong>ZHIR without preparation</strong></p>
+</li>
+<li>Problem: Uncontrolled mutation, collapse risk</li>
+<li>Solution: OZ → ZHIR or NAV → ZHIR (prepare first)</li>
+</ol>
+<hr />
+<h2 id="interactive-examples">Interactive Examples<a class="headerlink" href="#interactive-examples" title="Permanent link">&para;</a></h2>
+<h3 id="example-1-creative-process">Example 1: Creative Process<a class="headerlink" href="#example-1-creative-process" title="Permanent link">&para;</a></h3>
+<p><strong>Scenario</strong>: Artist developing a new work</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.structural</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_nfr</span><span class="p">,</span> <span class="n">run_sequence</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.operators.definitions</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Emission</span><span class="p">,</span> <span class="n">Dissonance</span><span class="p">,</span> <span class="n">SelfOrganization</span><span class="p">,</span> 
+    <span class="n">Coherence</span><span class="p">,</span> <span class="n">Expansion</span>
+<span class="p">)</span>
+
+<span class="c1"># Create artist&#39;s creative process</span>
+<span class="n">G</span><span class="p">,</span> <span class="n">creative</span> <span class="o">=</span> <span class="n">create_nfr</span><span class="p">(</span><span class="s2">&quot;artist_mind&quot;</span><span class="p">,</span> <span class="n">epi</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">vf</span><span class="o">=</span><span class="mf">0.90</span><span class="p">)</span>
+
+<span class="c1"># 1. Initial inspiration (Emission)</span>
+<span class="n">run_sequence</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">creative</span><span class="p">,</span> <span class="p">[</span><span class="n">Emission</span><span class="p">()])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Phase 1: Inspiration activated&quot;</span><span class="p">)</span>
+
+<span class="c1"># 2. Explore possibilities (Dissonance)</span>
+<span class="n">run_sequence</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">creative</span><span class="p">,</span> <span class="p">[</span><span class="n">Dissonance</span><span class="p">()])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Phase 2: Exploring possibilities&quot;</span><span class="p">)</span>
+
+<span class="c1"># 3. Patterns emerge (Self-Organization)</span>
+<span class="n">run_sequence</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">creative</span><span class="p">,</span> <span class="p">[</span><span class="n">SelfOrganization</span><span class="p">()])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Phase 3: Compositional structure emerges&quot;</span><span class="p">)</span>
+
+<span class="c1"># 4. Expand the work (Expansion)</span>
+<span class="n">run_sequence</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">creative</span><span class="p">,</span> <span class="p">[</span><span class="n">Expansion</span><span class="p">()])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Phase 4: Elaborating themes&quot;</span><span class="p">)</span>
+
+<span class="c1"># 5. Finalize (Coherence)</span>
+<span class="n">run_sequence</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">creative</span><span class="p">,</span> <span class="p">[</span><span class="n">Coherence</span><span class="p">()])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Phase 5: Work completed and stable&quot;</span><span class="p">)</span>
+
+<span class="c1"># Check final state</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Final EPI: </span><span class="si">{</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">creative</span><span class="p">][</span><span class="s1">&#39;epi&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Final Coherence: </span><span class="si">{</span><span class="n">G</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;coherence&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="example-2-therapeutic-process">Example 2: Therapeutic Process<a class="headerlink" href="#example-2-therapeutic-process" title="Permanent link">&para;</a></h3>
+<p><strong>Scenario</strong>: Client working through therapeutic transformation</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.structural</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_nfr</span><span class="p">,</span> <span class="n">run_sequence</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.operators.definitions</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Reception</span><span class="p">,</span> <span class="n">Coherence</span><span class="p">,</span> <span class="n">Dissonance</span><span class="p">,</span> 
+    <span class="n">Mutation</span><span class="p">,</span> <span class="n">Silence</span>
+<span class="p">)</span>
+
+<span class="c1"># Create client&#39;s therapeutic process</span>
+<span class="n">G</span><span class="p">,</span> <span class="n">client</span> <span class="o">=</span> <span class="n">create_nfr</span><span class="p">(</span><span class="s2">&quot;client_process&quot;</span><span class="p">,</span> <span class="n">epi</span><span class="o">=</span><span class="mf">0.40</span><span class="p">,</span> <span class="n">vf</span><span class="o">=</span><span class="mf">0.85</span><span class="p">)</span>
+
+<span class="c1"># 1. Receive therapeutic input (Reception)</span>
+<span class="n">run_sequence</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">client</span><span class="p">,</span> <span class="p">[</span><span class="n">Reception</span><span class="p">()])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Session start: Therapist presence received&quot;</span><span class="p">)</span>
+
+<span class="c1"># 2. Initial stabilization (Coherence)</span>
+<span class="n">run_sequence</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">client</span><span class="p">,</span> <span class="p">[</span><span class="n">Coherence</span><span class="p">()])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Safety established&quot;</span><span class="p">)</span>
+
+<span class="c1"># 3. Disrupt old pattern (Dissonance)</span>
+<span class="n">run_sequence</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">client</span><span class="p">,</span> <span class="p">[</span><span class="n">Dissonance</span><span class="p">()])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Challenging maladaptive pattern&quot;</span><span class="p">)</span>
+
+<span class="c1"># 4. Transform state (Mutation)</span>
+<span class="n">run_sequence</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">client</span><span class="p">,</span> <span class="p">[</span><span class="n">Mutation</span><span class="p">()])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;New perspective emerges&quot;</span><span class="p">)</span>
+
+<span class="c1"># 5. Integration pause (Silence)</span>
+<span class="n">run_sequence</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">client</span><span class="p">,</span> <span class="p">[</span><span class="n">Silence</span><span class="p">()])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Silent integration&quot;</span><span class="p">)</span>
+
+<span class="c1"># 6. Final stabilization (Coherence)</span>
+<span class="n">run_sequence</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">client</span><span class="p">,</span> <span class="p">[</span><span class="n">Coherence</span><span class="p">()])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;New pattern stabilized&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Transformation complete&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Phase shift: </span><span class="si">{</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">client</span><span class="p">][</span><span class="s1">&#39;theta&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="example-3-network-coordination">Example 3: Network Coordination<a class="headerlink" href="#example-3-network-coordination" title="Permanent link">&para;</a></h3>
+<p><strong>Scenario</strong>: Team achieving collaborative coherence</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.structural</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_nfr</span><span class="p">,</span> <span class="n">run_sequence</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.operators.definitions</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Emission</span><span class="p">,</span> <span class="n">Coupling</span><span class="p">,</span> <span class="n">Resonance</span><span class="p">,</span> <span class="n">Coherence</span>
+<span class="p">)</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">networkx</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nx</span>
+
+<span class="c1"># Create team network</span>
+<span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">()</span>
+<span class="n">G</span><span class="p">,</span> <span class="n">leader</span> <span class="o">=</span> <span class="n">create_nfr</span><span class="p">(</span><span class="s2">&quot;team_leader&quot;</span><span class="p">,</span> <span class="n">epi</span><span class="o">=</span><span class="mf">0.60</span><span class="p">,</span> <span class="n">vf</span><span class="o">=</span><span class="mf">1.1</span><span class="p">,</span> <span class="n">theta</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">G</span><span class="o">=</span><span class="n">G</span><span class="p">)</span>
+<span class="n">G</span><span class="p">,</span> <span class="n">member1</span> <span class="o">=</span> <span class="n">create_nfr</span><span class="p">(</span><span class="s2">&quot;member1&quot;</span><span class="p">,</span> <span class="n">epi</span><span class="o">=</span><span class="mf">0.35</span><span class="p">,</span> <span class="n">vf</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span> <span class="n">theta</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">G</span><span class="o">=</span><span class="n">G</span><span class="p">)</span>
+<span class="n">G</span><span class="p">,</span> <span class="n">member2</span> <span class="o">=</span> <span class="n">create_nfr</span><span class="p">(</span><span class="s2">&quot;member2&quot;</span><span class="p">,</span> <span class="n">epi</span><span class="o">=</span><span class="mf">0.30</span><span class="p">,</span> <span class="n">vf</span><span class="o">=</span><span class="mf">0.95</span><span class="p">,</span> <span class="n">theta</span><span class="o">=</span><span class="mf">1.2</span><span class="p">,</span> <span class="n">G</span><span class="o">=</span><span class="n">G</span><span class="p">)</span>
+
+<span class="c1"># Connect team</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">leader</span><span class="p">,</span> <span class="n">member1</span><span class="p">)</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">leader</span><span class="p">,</span> <span class="n">member2</span><span class="p">)</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">member1</span><span class="p">,</span> <span class="n">member2</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Initial team state:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Leader phase: </span><span class="si">{</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">leader</span><span class="p">][</span><span class="s1">&#39;theta&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Member1 phase: </span><span class="si">{</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">member1</span><span class="p">][</span><span class="s1">&#39;theta&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Member2 phase: </span><span class="si">{</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">member2</span><span class="p">][</span><span class="s1">&#39;theta&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># 1. Leader initiates (Emission)</span>
+<span class="n">run_sequence</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">leader</span><span class="p">,</span> <span class="p">[</span><span class="n">Emission</span><span class="p">()])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Phase 1: Leader vision emitted&quot;</span><span class="p">)</span>
+
+<span class="c1"># 2. Team couples (Coupling)</span>
+<span class="n">run_sequence</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">leader</span><span class="p">,</span> <span class="p">[</span><span class="n">Coupling</span><span class="p">()])</span>
+<span class="n">run_sequence</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">member1</span><span class="p">,</span> <span class="p">[</span><span class="n">Coupling</span><span class="p">()])</span>
+<span class="n">run_sequence</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">member2</span><span class="p">,</span> <span class="p">[</span><span class="n">Coupling</span><span class="p">()])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Phase 2: Team synchronizing&quot;</span><span class="p">)</span>
+
+<span class="c1"># 3. Coherence propagates (Resonance)</span>
+<span class="n">run_sequence</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">leader</span><span class="p">,</span> <span class="p">[</span><span class="n">Resonance</span><span class="p">()])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Phase 3: Vision spreading through team&quot;</span><span class="p">)</span>
+
+<span class="c1"># 4. Stabilize team (Coherence)</span>
+<span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="p">[</span><span class="n">leader</span><span class="p">,</span> <span class="n">member1</span><span class="p">,</span> <span class="n">member2</span><span class="p">]:</span>
+    <span class="n">run_sequence</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="p">[</span><span class="n">Coherence</span><span class="p">()])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Phase 4: Team alignment stabilized&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Final global coherence: </span><span class="si">{</span><span class="n">G</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;coherence&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<hr />
+<h2 id="practical-guidelines">Practical Guidelines<a class="headerlink" href="#practical-guidelines" title="Permanent link">&para;</a></h2>
+<h3 id="when-to-use-each-operator">When to Use Each Operator<a class="headerlink" href="#when-to-use-each-operator" title="Permanent link">&para;</a></h3>
+<p><strong>Use AL (Emission) when</strong>:
+- Starting new projects, initiatives, or processes
+- Activating latent potential
+- Beginning creative or therapeutic work
+- Initiating network activity</p>
+<p><strong>Use EN (Reception) when</strong>:
+- Learning or integrating new information
+- Receiving feedback or input
+- Synchronizing with external patterns
+- Biofeedback or signal integration</p>
+<p><strong>Use IL (Coherence) when</strong>:
+- Stabilizing recent changes
+- Consolidating learning or gains
+- Reducing instability or drift
+- After any transformative operator</p>
+<p><strong>Use OZ (Dissonance) when</strong>:
+- Breaking out of stuck patterns
+- Exploring new possibilities
+- Preparing for transformation
+- Innovation or creative breakthrough needed</p>
+<p><strong>Use UM (Coupling) when</strong>:
+- Connecting independent entities
+- Synchronizing phases
+- Building collaborative relationships
+- Establishing communication channels</p>
+<p><strong>Use RA (Resonance) when</strong>:
+- Spreading coherent patterns
+- Amplifying successful structures
+- Building network-wide coherence
+- Propagating insights or innovations</p>
+<p><strong>Use SHA (Silence) when</strong>:
+- Observation or measurement needed
+- Integration time required
+- Synchronization pause helpful
+- Before strategic decision-making</p>
+<p><strong>Use VAL (Expansion) when</strong>:
+- Scaling successful patterns
+- Elaborating structures
+- Growing operations or capacity
+- Developing ideas or systems</p>
+<p><strong>Use NUL (Contraction) when</strong>:
+- Focusing scattered effort
+- Distilling essence from complexity
+- Streamlining operations
+- Finding core insight</p>
+<p><strong>Use THOL (Self-Organization) when</strong>:
+- Spontaneous structure emerging
+- Differentiation needed
+- Complexity organizing itself
+- Hierarchical patterns forming</p>
+<p><strong>Use ZHIR (Mutation) when</strong>:
+- Qualitative transformation needed
+- Phase transition occurring
+- Paradigm shift required
+- Developmental stage change</p>
+<p><strong>Use NAV (Transition) when</strong>:
+- Moving between defined states
+- Following developmental pathway
+- Strategic change implementation
+- Controlled transformation needed</p>
+<p><strong>Use REMESH (Recursivity) when</strong>:
+- Nested structures forming
+- Multi-scale coordination needed
+- Fractal organization emerging
+- Hierarchical memory important</p>
+<hr />
+<h2 id="troubleshooting-common-issues">Troubleshooting Common Issues<a class="headerlink" href="#troubleshooting-common-issues" title="Permanent link">&para;</a></h2>
+<h3 id="problem-node-collapse">Problem: Node Collapse<a class="headerlink" href="#problem-node-collapse" title="Permanent link">&para;</a></h3>
+<p><strong>Symptoms</strong>: EPI → 0, νf → 0, node becomes inactive</p>
+<p><strong>Causes</strong>:
+- Excessive OZ without stabilization
+- Insufficient C(t) during transformation
+- νf dropped too low (prolonged SHA)</p>
+<p><strong>Solutions</strong>:
+1. Apply IL (Coherence) immediately
+2. Apply AL (Emission) to reactivate
+3. Reduce dissonance intensity
+4. Monitor C(t) during operations</p>
+<h3 id="problem-over-stabilization">Problem: Over-Stabilization<a class="headerlink" href="#problem-over-stabilization" title="Permanent link">&para;</a></h3>
+<p><strong>Symptoms</strong>: ΔNFR → 0, no evolution, rigidity</p>
+<p><strong>Causes</strong>:
+- Repeated IL without variation
+- No OZ or VAL to enable growth
+- Insufficient network coupling</p>
+<p><strong>Solutions</strong>:
+1. Apply OZ (Dissonance) to introduce flexibility
+2. Apply VAL (Expansion) or NAV (Transition)
+3. Increase network interactions
+4. Use RA (Resonance) to bring fresh patterns</p>
+<h3 id="problem-uncontrolled-bifurcation">Problem: Uncontrolled Bifurcation<a class="headerlink" href="#problem-uncontrolled-bifurcation" title="Permanent link">&para;</a></h3>
+<p><strong>Symptoms</strong>: ∂²EPI/∂t² &gt; τ unexpectedly, fragmentation</p>
+<p><strong>Causes</strong>:
+- OZ too strong without preparation
+- ΔNFR exceeded threshold
+- Network instability</p>
+<p><strong>Solutions</strong>:
+1. Apply SHA (Silence) immediately to pause
+2. Apply IL (Coherence) to restabilize
+3. Reduce transformation rate
+4. Strengthen network coupling with UM</p>
+<h3 id="problem-phase-desynchronization">Problem: Phase Desynchronization<a class="headerlink" href="#problem-phase-desynchronization" title="Permanent link">&para;</a></h3>
+<p><strong>Symptoms</strong>: θᵢ ≠ θⱼ for coupled nodes, coordination failure</p>
+<p><strong>Causes</strong>:
+- Insufficient UM (Coupling)
+- Nodes evolving at different rates
+- Network connectivity issues</p>
+<p><strong>Solutions</strong>:
+1. Apply UM (Coupling) to resynchronize
+2. Apply RA (Resonance) for coherence spreading
+3. Verify network topology (edges present)
+4. Monitor phase differences regularly</p>
+<h3 id="problem-pattern-propagation-failure">Problem: Pattern Propagation Failure<a class="headerlink" href="#problem-pattern-propagation-failure" title="Permanent link">&para;</a></h3>
+<p><strong>Symptoms</strong>: RA doesn't spread coherence, isolated nodes</p>
+<p><strong>Causes</strong>:
+- Insufficient source coherence (EPI too low)
+- Network disconnected
+- Receivers not receptive</p>
+<p><strong>Solutions</strong>:
+1. Apply IL to source first (strengthen pattern)
+2. Verify network connectivity
+3. Apply EN to receivers (increase receptivity)
+4. Use UM before RA (couple first, then resonate)</p>
+<hr />
+<h2 id="advanced-topics">Advanced Topics<a class="headerlink" href="#advanced-topics" title="Permanent link">&para;</a></h2>
+<h3 id="operator-composition-theory">Operator Composition Theory<a class="headerlink" href="#operator-composition-theory" title="Permanent link">&para;</a></h3>
+<p>Operators can be composed into <strong>operator strings</strong> that form coherent transformation trajectories:</p>
+<p><strong>Formal Composition</strong>:
+<div class="highlight"><pre><span></span><code>Ω = ω₁ ∘ ω₂ ∘ ... ∘ ωₙ
+</code></pre></div></p>
+<p>Where:
+- Ω is the composed operator
+- ωᵢ are individual operators
+- ∘ denotes sequential composition</p>
+<p><strong>Closure Property</strong>: Any valid composition Ω preserves TNFR invariants:
+1. Operator closure maintained
+2. C(t) remains bounded
+3. Phase continuity preserved
+4. Nodal equation satisfied</p>
+<h3 id="operator-metrics">Operator Metrics<a class="headerlink" href="#operator-metrics" title="Permanent link">&para;</a></h3>
+<p><strong>Effectiveness Metrics</strong>:
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">measure_operator_effectiveness</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">operator</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Measure operator&#39;s effectiveness.&quot;&quot;&quot;</span>
+    <span class="n">state_before</span> <span class="o">=</span> <span class="n">capture_state</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
+
+    <span class="n">operator</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
+
+    <span class="n">state_after</span> <span class="o">=</span> <span class="n">capture_state</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s1">&#39;delta_epi&#39;</span><span class="p">:</span> <span class="n">state_after</span><span class="p">[</span><span class="s1">&#39;epi&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">state_before</span><span class="p">[</span><span class="s1">&#39;epi&#39;</span><span class="p">],</span>
+        <span class="s1">&#39;delta_dnfr&#39;</span><span class="p">:</span> <span class="n">state_after</span><span class="p">[</span><span class="s1">&#39;dnfr&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">state_before</span><span class="p">[</span><span class="s1">&#39;dnfr&#39;</span><span class="p">],</span>
+        <span class="s1">&#39;delta_coherence&#39;</span><span class="p">:</span> <span class="n">G</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="s1">&#39;coherence&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">state_before</span><span class="p">[</span><span class="s1">&#39;C_t&#39;</span><span class="p">],</span>
+        <span class="s1">&#39;phase_shift&#39;</span><span class="p">:</span> <span class="n">state_after</span><span class="p">[</span><span class="s1">&#39;theta&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">state_before</span><span class="p">[</span><span class="s1">&#39;theta&#39;</span><span class="p">],</span>
+    <span class="p">}</span>
+</code></pre></div></p>
+<h3 id="optimization-strategies">Optimization Strategies<a class="headerlink" href="#optimization-strategies" title="Permanent link">&para;</a></h3>
+<p><strong>Goal-Oriented Operator Selection</strong>:</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">select_operator_for_goal</span><span class="p">(</span><span class="n">current_state</span><span class="p">,</span> <span class="n">goal_state</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Select optimal operator to move toward goal.&quot;&quot;&quot;</span>
+    <span class="n">delta_epi</span> <span class="o">=</span> <span class="n">goal_state</span><span class="p">[</span><span class="s1">&#39;epi&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">current_state</span><span class="p">[</span><span class="s1">&#39;epi&#39;</span><span class="p">]</span>
+    <span class="n">delta_coherence</span> <span class="o">=</span> <span class="n">goal_state</span><span class="p">[</span><span class="s1">&#39;C_t&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">current_state</span><span class="p">[</span><span class="s1">&#39;C_t&#39;</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">delta_epi</span> <span class="o">&gt;</span> <span class="mf">0.2</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">delta_coherence</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">Expansion</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">()]</span>  <span class="c1"># grow then stabilize</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Expansion</span><span class="p">()]</span>  <span class="c1"># activate then grow</span>
+
+    <span class="k">elif</span> <span class="n">current_state</span><span class="p">[</span><span class="s1">&#39;dnfr&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.3</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">Coherence</span><span class="p">(),</span> <span class="n">Silence</span><span class="p">()]</span>  <span class="c1"># stabilize then pause</span>
+
+    <span class="k">elif</span> <span class="n">delta_coherence</span> <span class="o">&lt;</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">Dissonance</span><span class="p">(),</span> <span class="n">SelfOrganization</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">()]</span>  <span class="c1"># reorganize</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">Coherence</span><span class="p">()]</span>  <span class="c1"># default stabilization</span>
+</code></pre></div>
+<hr />
+<h2 id="summary-and-best-practices">Summary and Best Practices<a class="headerlink" href="#summary-and-best-practices" title="Permanent link">&para;</a></h2>
+<h3 id="core-principles">Core Principles<a class="headerlink" href="#core-principles" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Operators activate, not represent</strong>: They initiate structural reorganization</li>
+<li><strong>Always preserve invariants</strong>: C(t) bounded, νf &gt; 0, phase continuity</li>
+<li><strong>Use canonical sequences</strong>: Proven patterns ensure coherence</li>
+<li><strong>Monitor metrics continuously</strong>: C(t), ΔNFR, Si, θ</li>
+<li><strong>Stabilize after transformation</strong>: Follow disruptive operators with IL</li>
+</ol>
+<h3 id="recommended-workflow">Recommended Workflow<a class="headerlink" href="#recommended-workflow" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Start with clear intent</strong>: What coherence do you want to activate?</li>
+<li><strong>Select appropriate operator(s)</strong>: Match intent to structural function</li>
+<li><strong>Apply in sequence</strong>: Use canonical patterns when available</li>
+<li><strong>Monitor continuously</strong>: Watch C(t), ΔNFR, phase alignment</li>
+<li><strong>Stabilize results</strong>: Apply IL after transformative operators</li>
+<li><strong>Verify outcomes</strong>: Check that goals achieved, invariants preserved</li>
+</ol>
+<h3 id="quick-reference-commands">Quick Reference Commands<a class="headerlink" href="#quick-reference-commands" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Basic imports</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.structural</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_nfr</span><span class="p">,</span> <span class="n">run_sequence</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.operators.definitions</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Emission</span><span class="p">,</span> <span class="n">Reception</span><span class="p">,</span> <span class="n">Coherence</span><span class="p">,</span> <span class="n">Dissonance</span><span class="p">,</span>
+    <span class="n">Coupling</span><span class="p">,</span> <span class="n">Resonance</span><span class="p">,</span> <span class="n">Silence</span><span class="p">,</span> <span class="n">Expansion</span><span class="p">,</span>
+    <span class="n">Contraction</span><span class="p">,</span> <span class="n">SelfOrganization</span><span class="p">,</span> <span class="n">Mutation</span><span class="p">,</span>
+    <span class="n">Transition</span><span class="p">,</span> <span class="n">Recursivity</span>
+<span class="p">)</span>
+
+<span class="c1"># Create and activate node</span>
+<span class="n">G</span><span class="p">,</span> <span class="n">node</span> <span class="o">=</span> <span class="n">create_nfr</span><span class="p">(</span><span class="s2">&quot;node_id&quot;</span><span class="p">,</span> <span class="n">epi</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">vf</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+<span class="n">run_sequence</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">()])</span>
+
+<span class="c1"># Monitor state</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;EPI: </span><span class="si">{</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">node</span><span class="p">][</span><span class="s1">&#39;epi&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ΔNFR: </span><span class="si">{</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">node</span><span class="p">][</span><span class="s1">&#39;dnfr&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;C(t): </span><span class="si">{</span><span class="n">G</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;coherence&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<hr />
+<h2 id="further-reading">Further Reading<a class="headerlink" href="#further-reading" title="Permanent link">&para;</a></h2>
+<h3 id="related-documentation">Related Documentation<a class="headerlink" href="#related-documentation" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong><a href="../../../GLYPH_SEQUENCES_GUIDE.md">GLYPH_SEQUENCES_GUIDE.md</a></strong>: Comprehensive canonical sequences and patterns</li>
+<li><strong><a href="../../getting-started/TNFR_CONCEPTS/">TNFR_CONCEPTS.md</a></strong>: Core theoretical concepts</li>
+<li><strong><a href="../../user-guide/OPERATORS_GUIDE/">OPERATORS_GUIDE.md</a></strong>: Practical operator usage guide</li>
+<li><strong><a href="../operators/">operators.md</a></strong>: API reference for structural operators</li>
+</ul>
+<h3 id="theoretical-foundations">Theoretical Foundations<a class="headerlink" href="#theoretical-foundations" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>TNFR.pdf</strong>: Complete paradigm documentation</li>
+<li><strong>Nodal Equation</strong>: <code>∂EPI/∂t = νf · ΔNFR(t)</code></li>
+<li><strong>Operator Closure</strong>: Mathematical proof of invariant preservation</li>
+<li><strong>Phase Synchrony</strong>: Theory of coupling and resonance</li>
+</ul>
+<h3 id="examples-and-tutorials">Examples and Tutorials<a class="headerlink" href="#examples-and-tutorials" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong><a href="../../examples/">examples/README.md</a></strong>: Practical examples across domains</li>
+<li><strong><a href="../../getting-started/INTERACTIVE_TUTORIAL/">INTERACTIVE_TUTORIAL.md</a></strong>: Hands-on learning</li>
+<li><strong><a href="../../getting-started/quickstart/">quickstart.md</a></strong>: Quick start guide</li>
+</ul>
+<hr />
+<h2 id="appendix-operator-cheat-sheet">Appendix: Operator Cheat Sheet<a class="headerlink" href="#appendix-operator-cheat-sheet" title="Permanent link">&para;</a></h2>
+<h3 id="quick-operator-selection-matrix">Quick Operator Selection Matrix<a class="headerlink" href="#quick-operator-selection-matrix" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Intent</th>
+<th>Primary Operator</th>
+<th>Supporting Operators</th>
+<th>Stabilization</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Start new process</td>
+<td>AL (Emission)</td>
+<td>VAL, UM</td>
+<td>IL</td>
+</tr>
+<tr>
+<td>Receive information</td>
+<td>EN (Reception)</td>
+<td>UM, RA</td>
+<td>IL</td>
+</tr>
+<tr>
+<td>Stabilize structure</td>
+<td>IL (Coherence)</td>
+<td>SHA</td>
+<td>-</td>
+</tr>
+<tr>
+<td>Explore alternatives</td>
+<td>OZ (Dissonance)</td>
+<td>NAV, ZHIR</td>
+<td>IL</td>
+</tr>
+<tr>
+<td>Connect entities</td>
+<td>UM (Coupling)</td>
+<td>RA, EN</td>
+<td>IL</td>
+</tr>
+<tr>
+<td>Spread pattern</td>
+<td>RA (Resonance)</td>
+<td>UM, EN</td>
+<td>IL</td>
+</tr>
+<tr>
+<td>Pause evolution</td>
+<td>SHA (Silence)</td>
+<td>-</td>
+<td>IL (to resume)</td>
+</tr>
+<tr>
+<td>Grow complexity</td>
+<td>VAL (Expansion)</td>
+<td>THOL, REMESH</td>
+<td>IL</td>
+</tr>
+<tr>
+<td>Focus essence</td>
+<td>NUL (Contraction)</td>
+<td>IL</td>
+<td>SHA</td>
+</tr>
+<tr>
+<td>Organize spontaneously</td>
+<td>THOL (Self-Org)</td>
+<td>OZ, VAL</td>
+<td>IL</td>
+</tr>
+<tr>
+<td>Transform qualitatively</td>
+<td>ZHIR (Mutation)</td>
+<td>OZ, NAV</td>
+<td>IL</td>
+</tr>
+<tr>
+<td>Navigate pathway</td>
+<td>NAV (Transition)</td>
+<td>ZHIR, THOL</td>
+<td>IL</td>
+</tr>
+<tr>
+<td>Create hierarchy</td>
+<td>REMESH (Recursivity)</td>
+<td>THOL, VAL</td>
+<td>IL</td>
+</tr>
+</tbody>
+</table>
+<h3 id="emergency-interventions">Emergency Interventions<a class="headerlink" href="#emergency-interventions" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Problem</th>
+<th>Immediate Action</th>
+<th>Follow-up</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Node collapsing</td>
+<td>IL, then AL</td>
+<td>Monitor C(t)</td>
+</tr>
+<tr>
+<td>Too rigid</td>
+<td>OZ</td>
+<td>NAV, then IL</td>
+</tr>
+<tr>
+<td>Desynchronized</td>
+<td>UM</td>
+<td>RA, then IL</td>
+</tr>
+<tr>
+<td>Chaotic</td>
+<td>SHA</td>
+<td>IL, reduce ΔNFR</td>
+</tr>
+<tr>
+<td>Fragmenting</td>
+<td>RA</td>
+<td>UM, then IL</td>
+</tr>
+<tr>
+<td>Stagnant</td>
+<td>VAL or OZ</td>
+<td>THOL, then IL</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><strong>Document Version</strong>: 1.0<br />
+<strong>Last Updated</strong>: 2025<br />
+<strong>Maintainer</strong>: TNFR Core Team<br />
+<strong>License</strong>: Same as TNFR-Python-Engine</p>
+<hr />
+<p><em>Remember: Structural operators don't represent—they activate. Use them to initiate, modulate, and propagate coherence in resonant networks.</em></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.sections", "navigation.top", "navigation.tracking", "toc.integrate"], "search": "../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      
+    
+  </body>
+</html>
