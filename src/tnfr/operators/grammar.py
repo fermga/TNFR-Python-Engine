@@ -199,6 +199,8 @@ __all__ = [
     "BIFURCATION_TRIGGERS",
     "BIFURCATION_HANDLERS",
     "TRANSFORMERS",
+    "RECURSIVE_GENERATORS",
+    "SCALE_STABILIZERS",
 ]
 
 
@@ -229,6 +231,10 @@ BIFURCATION_HANDLERS = frozenset({"self_organization", "coherence"})
 
 # U4b: Transformers - Execute structural bifurcations
 TRANSFORMERS = frozenset({"mutation", "self_organization"})
+
+# U5: Multi-Scale Coherence - Recursive generators and scale stabilizers
+RECURSIVE_GENERATORS = frozenset({"recursivity"})
+SCALE_STABILIZERS = frozenset({"coherence", "self_organization"})
 
 
 # ============================================================================
@@ -894,6 +900,139 @@ class GrammarValidator:
             f"bound recursive amplification of {destabilizers_present}",
         )
 
+    @staticmethod
+    def validate_multiscale_coherence(sequence: List[Operator]) -> tuple[bool, str]:
+        """Validate U5: Multi-scale coherence preservation.
+
+        Physical basis: Multi-scale hierarchical structures created by REMESH
+        with depth>1 require coherence conservation across scales. This emerges
+        inevitably from the nodal equation applied to hierarchical systems.
+
+        From the nodal equation at each hierarchical level:
+            ∂EPI_parent/∂t = νf_parent · ΔNFR_parent(t)
+            ∂EPI_child_i/∂t = νf_child_i · ΔNFR_child_i(t)  for each child i
+
+        For hierarchical systems with N children:
+            EPI_parent = f(EPI_child_1, ..., EPI_child_N)  (structural coupling)
+
+        Taking time derivative and applying chain rule:
+            ∂EPI_parent/∂t = Σ (∂f/∂EPI_child_i) · ∂EPI_child_i/∂t
+                           = Σ w_i · νf_child_i · ΔNFR_child_i(t)
+
+        where w_i = ∂f/∂EPI_child_i are coupling weights.
+
+        Equating with nodal equation for parent:
+            νf_parent · ΔNFR_parent = Σ w_i · νf_child_i · ΔNFR_child_i
+
+        For coherence C(t) = measure of structural stability:
+            C_parent ~ 1/|ΔNFR_parent|  (lower pressure = higher coherence)
+            C_child_i ~ 1/|ΔNFR_child_i|
+
+        This gives the conservation inequality:
+            C_parent ≥ α · Σ C_child_i
+
+        Where α = (1/√N) · η_phase(N) · η_coupling(N) captures:
+        - 1/√N: Scale factor from coupling weight distribution
+        - η_phase: Phase synchronization efficiency (U3 requirement)
+        - η_coupling: Structural coupling efficiency losses
+        - Typical range: α ∈ [0.1, 0.4]
+
+        Without stabilizers:
+            Deep REMESH (depth>1) creates nested EPIs
+            → ΔNFR_parent grows from uncoupled child fluctuations
+            → C_parent decreases below α·ΣC_child
+            → Violation of conservation → System fragments
+
+        With stabilizers (IL or THOL):
+            IL/THOL reduce |ΔNFR| at each level (direct from operator contracts)
+            → Maintains C_parent ≥ α·ΣC_child at all hierarchical levels
+            → Conservation preserved → Bounded multi-scale evolution
+
+        Parameters
+        ----------
+        sequence : List[Operator]
+            Sequence of operators to validate
+
+        Returns
+        -------
+        tuple[bool, str]
+            (is_valid, message)
+
+        Notes
+        -----
+        U5 is INDEPENDENT of U2+U4b:
+        - U2/U4b: TEMPORAL dimension (operator sequences in time)
+        - U5: SPATIAL dimension (hierarchical nesting in structure)
+
+        Decision test case that passes U2+U4b but fails U5:
+            [AL, REMESH(depth=3), SHA]
+            - U2: ✓ No destabilizers (trivially convergent)
+            - U4b: ✓ REMESH not a transformer (U4b doesn't apply)
+            - U5: ✗ Deep recursivity without stabilization → fragmentation
+
+        Physical derivation: See UNIFIED_GRAMMAR_RULES.md § U5
+        Canonicity: STRONG (derived from nodal equation + structural coupling)
+
+        References
+        ----------
+        - TNFR.pdf § 2.1: Nodal equation ∂EPI/∂t = νf · ΔNFR(t)
+        - Problem statement: "El pulso que nos atraviesa.pdf"
+        - AGENTS.md: Invariant #7 (Operational Fractality)
+        - Contract IL: Reduces |ΔNFR| at all scales
+        - Contract THOL: Autopoietic closure across hierarchical levels
+        """
+        # Check for deep REMESH (depth > 1)
+        # Note: Currently Recursivity doesn't expose depth parameter in operator
+        # This is a forward-looking validation for when depth is added
+        deep_remesh_indices = []
+        
+        for i, op in enumerate(sequence):
+            op_name = getattr(op, "canonical_name", op.name.lower())
+            if op_name == "recursivity":
+                # Check if operator has depth attribute
+                depth = getattr(op, "depth", 1)  # Default depth=1 if not present
+                if depth > 1:
+                    deep_remesh_indices.append((i, depth))
+
+        if not deep_remesh_indices:
+            # No deep REMESH present, U5 not applicable
+            return True, "U5: not applicable (no deep recursivity depth>1 present)"
+
+        # For each deep REMESH, check for stabilizers in window
+        violations = []
+        for idx, depth in deep_remesh_indices:
+            # Check window of ±3 operators for scale stabilizers
+            window_start = max(0, idx - 3)
+            window_end = min(len(sequence), idx + 4)
+            
+            has_stabilizer = False
+            stabilizers_in_window = []
+            
+            for j in range(window_start, window_end):
+                op_name = getattr(
+                    sequence[j], "canonical_name", sequence[j].name.lower()
+                )
+                if op_name in SCALE_STABILIZERS:
+                    has_stabilizer = True
+                    stabilizers_in_window.append((j, op_name))
+
+            if not has_stabilizer:
+                violations.append(
+                    f"recursivity at position {idx} (depth={depth}) lacks scale "
+                    f"stabilizer in window [{window_start}:{window_end}]. "
+                    f"Deep hierarchical nesting requires {sorted(SCALE_STABILIZERS)} "
+                    f"for multi-scale coherence preservation (C_parent ≥ α·ΣC_child)"
+                )
+
+        if violations:
+            return (False, f"U5 violated: {'; '.join(violations)}")
+
+        return (
+            True,
+            f"U5 satisfied: deep recursivity has scale stabilizers "
+            f"for multi-scale coherence preservation",
+        )
+
     @classmethod
     def validate(
         cls,
@@ -907,6 +1046,7 @@ class GrammarValidator:
         - U2: Convergence & boundedness
         - U3: Resonant coupling
         - U4: Bifurcation dynamics
+        - U5: Multi-scale coherence
 
         Parameters
         ----------
@@ -959,6 +1099,11 @@ class GrammarValidator:
         valid_remesh, msg_remesh = cls.validate_remesh_amplification(sequence)
         messages.append(f"U2-REMESH: {msg_remesh}")
         all_valid = all_valid and valid_remesh
+
+        # U5: Multi-scale coherence
+        valid_multiscale, msg_multiscale = cls.validate_multiscale_coherence(sequence)
+        messages.append(f"U5: {msg_multiscale}")
+        all_valid = all_valid and valid_multiscale
 
         return all_valid, messages
 

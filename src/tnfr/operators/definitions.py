@@ -4064,6 +4064,21 @@ class Recursivity(Operator):
 
     Critical: REMESH preserves identity across scales - fundamental to TNFR fractality.
 
+    Parameters
+    ----------
+    depth : int, optional
+        Hierarchical nesting depth for multi-scale recursion (default: 1).
+        - depth=1: Shallow recursion (single level, no multi-scale constraint)
+        - depth>1: Deep recursion (multi-level hierarchy, requires U5 stabilizers)
+        
+    Notes
+    -----
+    **U5: Multi-Scale Coherence**: When depth>1, U5 grammar rule applies requiring
+    scale stabilizers (IL or THOL) within ±3 operators to preserve coherence across
+    hierarchical levels. This ensures C_parent ≥ α·ΣC_child per conservation principle.
+    
+    See UNIFIED_GRAMMAR_RULES.md § U5 for complete physical derivation.
+
     Examples
     --------
     >>> from tnfr.constants import EPI_PRIMARY, VF_PRIMARY
@@ -4083,15 +4098,32 @@ class Recursivity(Operator):
     >>> run_sequence(G, node, [Recursivity()])
     >>> G.graph["echo_trace"]
     [(0.54, 0.95)]
+    
+    Deep recursion example requiring U5 stabilizers:
+    >>> from tnfr.operators.definitions import Recursivity, Coherence, Silence
+    >>> # depth=3 creates multi-level hierarchy - requires IL for U5
+    >>> ops = [Recursivity(depth=3), Coherence(), Silence()]
 
     **Biomedical**: Fractal physiology (HRV, EEG), developmental recapitulation
     **Cognitive**: Recursive thinking, meta-cognition, self-referential processes
     **Social**: Cultural fractals, organizational self-similarity, meme propagation
     """
 
-    __slots__ = ()
+    __slots__ = ("depth",)
     name: ClassVar[str] = RECURSIVITY
     glyph: ClassVar[Glyph] = Glyph.REMESH
+
+    def __init__(self, depth: int = 1):
+        """Initialize Recursivity operator with hierarchical depth.
+        
+        Parameters
+        ----------
+        depth : int, optional
+            Nesting depth for multi-scale recursion (default: 1)
+        """
+        if depth < 1:
+            raise ValueError(f"depth must be >= 1, got {depth}")
+        self.depth = depth
 
     def _validate_preconditions(self, G: TNFRGraph, node: Any) -> None:
         """Validate REMESH-specific preconditions."""

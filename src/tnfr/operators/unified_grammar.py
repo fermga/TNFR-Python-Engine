@@ -1,7 +1,7 @@
 """Unified TNFR Grammar - Facade to GrammarValidator.
 
 This module provides a clean facade to the canonical grammar validation
-implemented in grammar.py. It exports the unified grammar constraints (U1-U4)
+implemented in grammar.py. It exports the unified grammar constraints (U1-U5)
 and the validator for use in tests and applications.
 
 All grammar rules derive inevitably from TNFR physics:
@@ -9,6 +9,7 @@ All grammar rules derive inevitably from TNFR physics:
 - U2: CONVERGENCE & BOUNDEDNESS  
 - U3: RESONANT COUPLING
 - U4: BIFURCATION DYNAMICS (U4a: triggers, U4b: transformers)
+- U5: MULTI-SCALE COHERENCE
 
 References
 ----------
@@ -40,6 +41,8 @@ from .grammar import (
     COUPLING_RESONANCE,
     DESTABILIZERS,
     GENERATORS,
+    RECURSIVE_GENERATORS,
+    SCALE_STABILIZERS,
     STABILIZERS,
     TRANSFORMERS,
 )
@@ -52,7 +55,7 @@ __all__ = [
     "UnifiedGrammarValidator",
     # Convenience function
     "validate_unified",
-    # Operator sets (U1-U4 categories)
+    # Operator sets (U1-U5 categories)
     "GENERATORS",
     "CLOSURES",
     "STABILIZERS",
@@ -61,6 +64,8 @@ __all__ = [
     "BIFURCATION_TRIGGERS",
     "BIFURCATION_HANDLERS",
     "TRANSFORMERS",
+    "RECURSIVE_GENERATORS",
+    "SCALE_STABILIZERS",
 ]
 
 
@@ -68,7 +73,7 @@ def validate_unified(
     sequence: List["Operator"],
     epi_initial: float = 0.0,
 ) -> bool:
-    """Validate sequence using unified TNFR grammar (U1-U4).
+    """Validate sequence using unified TNFR grammar (U1-U5).
 
     Convenience function that returns only boolean result.
     For detailed messages, use UnifiedGrammarValidator.validate().
@@ -83,7 +88,7 @@ def validate_unified(
     Returns
     -------
     bool
-        True if sequence satisfies all U1-U4 constraints
+        True if sequence satisfies all U1-U5 constraints
 
     Examples
     --------
