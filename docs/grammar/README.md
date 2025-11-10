@@ -169,6 +169,20 @@ Physical Intuition → Mathematical Formalization → Code Implementation → Te
 - **Audience:** Developers planning large changes
 - **Use:** Holistic system view
 
+**[EXECUTIVE-SUMMARY.md](EXECUTIVE-SUMMARY.md)**
+- High-level overview for managers and stakeholders
+- Business value and strategic importance
+- Current status and roadmap
+- **Audience:** Non-technical decision makers
+- **Use:** Strategic planning and resource allocation
+
+**[TOOLING-AND-AUTOMATION.md](TOOLING-AND-AUTOMATION.md)**
+- Complete guide to validation scripts and tools
+- CI/CD integration and pre-commit hooks
+- Development workflows and best practices
+- **Audience:** Developers and DevOps engineers
+- **Use:** Daily development and automation setup
+
 ---
 
 ### 💡 Executable Examples

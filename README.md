@@ -137,113 +137,30 @@ At the heart of TNFR is one elegant equation:
 
 ## 📚 Documentation
 
-### 🎯 Single Source of Truth for Mathematics
+### Core Documentation
 
-**[Mathematical Foundations of TNFR](docs/source/theory/mathematical_foundations.md)** ⭐
+**Theory & Foundations**
+- 📘 **[Mathematical Foundations](docs/source/theory/mathematical_foundations.md)** - Formal TNFR mathematics
+- 📖 **[TNFR Concepts](docs/source/getting-started/TNFR_CONCEPTS.md)** - Paradigm introduction
+- 📋 **[GLOSSARY](GLOSSARY.md)** - Operational definitions
+- 🔬 **[Classical Mechanics Emergence](docs/TNFR_CLASSICAL_NBODY.md)** - How classical physics emerges from TNFR
 
-This is THE ONLY place where TNFR mathematics is formally defined:
-- Hilbert space H_NFR and Banach space B_EPI
-- Coherence operator Ĉ (spectral theory, proofs)
-- Frequency operator Ĵ and reorganization operator ΔNFR
-- Complete nodal equation derivation
-- **§3.1.1**: Implementation bridge (theory → code)
+**Grammar System**
+- 🎯 **[Grammar Documentation Hub](docs/grammar/README.md)** - Complete navigation guide
+- 📐 **[Unified Grammar Rules](UNIFIED_GRAMMAR_RULES.md)** - U1-U4 constraint derivations
+- 🚀 **[Grammar Quick Reference](docs/grammar/08-QUICK-REFERENCE.md)** - One-page cheat sheet
+- 📊 **[Executive Summary](docs/grammar/EXECUTIVE-SUMMARY.md)** - For managers and stakeholders
 
-### 🎯 Classical Mechanics Emergence
+**Implementation & API**
+- ⚙️ **[API Overview](docs/source/api/overview.md)** - Package architecture
+- 🔧 **[Operator Guide](docs/source/api/operators.md)** - Complete operator reference
+- 🛠️ **[ARCHITECTURE](ARCHITECTURE.md)** - System design
 
-**TNFR reveals how observable classical physics emerges from structural coherence dynamics**:
-
-```
-TNFR Nodal Equation (∂EPI/∂t = νf · ΔNFR)
-           ↓ 
-    Low-dissonance limit (ε → 0)
-           ↓
-Observable Classical Mechanics
-```
-
-**Key Emergent Phenomena**:
-- **Mass**: `m = 1/νf` (inverse structural frequency) — mass is structural inertia
-- **Force**: `F = -∇U(q)` (coherence potential gradient) — force is stability flow
-- **Newton's Laws**: Natural consequences of the nodal equation at low dissonance
-- **Action Principle**: Coherence optimization over time
-- **Conservation Laws**: Network symmetries preserve structural quantities
-
-**Documentation**:
-- **[📘 N-Body Classical Mechanics Guide](docs/TNFR_CLASSICAL_NBODY.md)** — **Complete formal reference** (variable mappings, conservation laws, validation protocols, code examples)
-- [Classical Mechanics from TNFR](docs/source/theory/07_emergence_classical_mechanics.md) — Complete derivation from nodal equation
-- [Euler-Lagrange Correspondence](docs/source/theory/08_classical_mechanics_euler_lagrange.md) — Variational formulation
-- [Numerical Validation](docs/source/theory/09_classical_mechanics_numerical_validation.md) — Computational verification
-
-**Practical Examples**:
-- `examples/domain_applications/nbody_gravitational.py` — Two-body orbits, three-body systems
-- `examples/nbody_quantitative_validation.py` — Full validation suite (6 canonical experiments)
-- `tests/validation/test_nbody_validation.py` — Automated test suite
-
-This demonstrates **classical mechanics as a natural expression of coherent structural dynamics** in the observable, deterministic regime.
-
-### 📖 Quick References
-
-- **[GLOSSARY](GLOSSARY.md)** - Operational definitions for code use
-- **[TNFR Concepts](docs/source/getting-started/TNFR_CONCEPTS.md)** - Paradigm introduction
-- **[API Overview](docs/source/api/overview.md)** - Package architecture
-- **[Operator Guide](docs/source/api/operators.md)** - Complete operator reference
-- **[NAV Guide](docs/source/operators/NAV_GUIDE.md)** - NAV (Transition) canonical sequences, anti-patterns, and troubleshooting
-- **[THOL Configuration Reference](docs/THOL_CONFIGURATION_REFERENCE.md)** - Comprehensive THOL parameter guide
-
-### 🎨 Grammar System
-
-TNFR uses a unified physics-based grammar to validate operator sequences.
-All constraints emerge inevitably from the nodal equation and TNFR invariants.
-
-#### Four Canonical Constraints (U1-U4)
-
-1. **U1: STRUCTURAL INITIATION & CLOSURE**
-   - U1a: Start with generators when EPI=0
-   - U1b: End with closure operators
-   - Basis: ∂EPI/∂t undefined at EPI=0
-
-2. **U2: CONVERGENCE & BOUNDEDNESS**
-   - If destabilizers, then include stabilizers
-   - Basis: ∫νf·ΔNFR dt must converge
-
-3. **U3: RESONANT COUPLING**
-   - If coupling/resonance, then verify phase
-   - Basis: AGENTS.md Invariant #5
-
-4. **U4: BIFURCATION DYNAMICS**
-   - U4a: If triggers, then include handlers
-   - U4b: If transformers, then recent destabilizer
-   - Basis: Contract OZ + bifurcation theory
-
-**For complete derivations:** See [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md)
-
-**For implementation:** See `src/tnfr/operators/grammar.py`
-
-#### Quick Start
-
-```python
-from tnfr.operators.grammar import validate_grammar
-from tnfr.operators.definitions import Emission, Coherence, Silence
-
-sequence = [Emission(), Coherence(), Silence()]
-is_valid = validate_grammar(sequence, epi_initial=0.0)
-```
-
-#### Migration from Old Grammar Systems
-
-If you're using the old C1-C3 or RC1-RC4 systems:
-
-- **Old:** `from tnfr.operators.grammar import validate_sequence`
-- **New:** `from tnfr.operators.grammar import validate_grammar`
-
-See migration guide in [GRAMMAR_MIGRATION_GUIDE.md](GRAMMAR_MIGRATION_GUIDE.md)
-
-### 🧪 Advanced Topics
-
-- [ARCHITECTURE.md](ARCHITECTURE.md) - System design & invariants
-- [Backend System](docs/backends.md) - NumPy/JAX/Torch backends
-- [TESTING.md](TESTING.md) - Test strategy & validation
-- [SECURITY.md](SECURITY.md) - Security practices
-- [CONTRIBUTING.md](CONTRIBUTING.md) - Development workflow
+**Development**
+- 🤝 **[CONTRIBUTING](CONTRIBUTING.md)** - Development workflow
+- 🧪 **[TESTING](TESTING.md)** - Test strategy
+- 🔒 **[SECURITY](SECURITY.md)** - Security practices
+- 🎓 **[AGENTS](AGENTS.md)** - Canonical invariants and guidance
 
 ---
 

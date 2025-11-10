@@ -2,7 +2,7 @@
 
 **One-page cheat sheet for TNFR grammar validation**
 
-[💾 Download PDF](08-QUICK-REFERENCE.pdf) • [📖 Full Docs](README.md) • [🔬 Deep Dive](02-CANONICAL-CONSTRAINTS.md)
+[📖 Full Docs](README.md) • [🔬 Deep Dive](02-CANONICAL-CONSTRAINTS.md) • [📚 Glossary](GLOSSARY.md)
 
 ---
 

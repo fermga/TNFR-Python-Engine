@@ -8,7 +8,7 @@
     },
     "enforce_canonical_grammar": {
       "signature": "(G: \"'TNFRGraph'\", n: \"'NodeId'\", cand: 'Any', ctx: 'Any' = None) -> 'Any'",
-      "docstring": "Enforce canonical grammar constraints before operator application.\n\nMinimal stub implementation.\n\nParameters\n----------\nG : TNFRGraph\n    Graph containing node\nn : NodeId\n    Node identifier  \ncand : Any\n    Candidate glyph/operator\nctx : Any, optional\n    Grammar context\n    \nReturns\n-------\nAny\n    Validated glyph/operator",
+      "docstring": "Minimal stub for backward compatibility.\n\nThis function is a no-op stub maintained for compatibility with existing\ncode that expects this interface. It simply returns the candidate as-is.\n\nFor actual grammar validation, use validate_grammar() from unified_grammar.\n\nParameters\n----------\nG : TNFRGraph\n    Graph containing node\nn : NodeId\n    Node identifier  \ncand : Any\n    Candidate glyph/operator\nctx : Any, optional\n    Grammar context (ignored)\n    \nReturns\n-------\nAny\n    The candidate unchanged",
       "has_docstring": true,
       "module": "tnfr.operators.grammar"
     },
@@ -32,7 +32,7 @@
     },
     "parse_sequence": {
       "signature": "(names: 'Any') -> 'Any'",
-      "docstring": "Parse sequence of operator names.\n\nMinimal stub implementation.\n\nParameters\n----------\nnames : Iterable[str]\n    Sequence of operator names\n    \nReturns\n-------\nSequenceValidationResult\n    Parse result (stub)",
+      "docstring": "DEPRECATED: Minimal stub for backward compatibility only.\n\nThis function exists only for import compatibility with legacy code.\n\nFor actual grammar operations, use the unified_grammar module.\n\nParameters\n----------\nnames : Iterable[str]\n    Sequence of operator names\n    \nReturns\n-------\nSequenceValidationResult\n    Mock parse result",
       "has_docstring": true,
       "module": "tnfr.operators.grammar"
     },
@@ -50,7 +50,7 @@
     },
     "validate_sequence": {
       "signature": "(names: 'Any' = None, **kwargs: 'Any') -> 'Any'",
-      "docstring": "Validate sequence of operator names.\n\nMinimal stub implementation for import compatibility.\n\nParameters\n----------\nnames : Iterable[str] | object, optional\n    Sequence of operator names\n**kwargs : Any\n    Additional validation options\n    \nReturns\n-------\nValidationOutcome\n    Validation result (stub returns success)",
+      "docstring": "DEPRECATED: Minimal stub for backward compatibility only.\n\nThis function exists only for import compatibility with legacy code.\nIt returns a mock success result.\n\nFor actual grammar validation, use validate_grammar() from unified_grammar module.\n\nParameters\n----------\nnames : Iterable[str] | object, optional\n    Sequence of operator names (ignored)\n**kwargs : Any\n    Additional validation options (ignored)\n    \nReturns\n-------\nValidationOutcome\n    Mock validation result (always passes)",
       "has_docstring": true,
       "module": "tnfr.operators.grammar"
     },
@@ -111,36 +111,36 @@
     ],
     "CLOSURES": [
       "dissonance",
-      "recursivity",
       "transition",
-      "silence"
+      "silence",
+      "recursivity"
     ],
     "STABILIZERS": [
-      "coherence",
       "reception",
+      "coherence",
       "self_organization"
     ],
     "DESTABILIZERS": [
-      "dissonance",
-      "mutation",
       "expansion",
-      "contraction"
+      "mutation",
+      "contraction",
+      "dissonance"
     ],
     "COUPLING_RESONANCE": [
-      "resonance",
-      "coupling"
+      "coupling",
+      "resonance"
     ],
     "BIFURCATION_TRIGGERS": [
-      "dissonance",
-      "mutation"
+      "mutation",
+      "dissonance"
     ],
     "BIFURCATION_HANDLERS": [
-      "self_organization",
-      "coherence"
+      "coherence",
+      "self_organization"
     ],
     "TRANSFORMERS": [
-      "self_organization",
-      "mutation"
+      "mutation",
+      "self_organization"
     ]
   },
   "examples": {
@@ -187,6 +187,16 @@
   },
   "cross_references": [
     {
+      "doc": "TOOLING-AND-AUTOMATION.md",
+      "references": "grammar.py",
+      "type": "doc_to_code"
+    },
+    {
+      "doc": "TOOLING-AND-AUTOMATION.md",
+      "references": "validate_grammar",
+      "type": "doc_to_function"
+    },
+    {
       "doc": "05-TECHNICAL-IMPLEMENTATION.md",
       "references": "grammar.py",
       "type": "doc_to_code"
@@ -250,6 +260,11 @@
       "doc": "07-MIGRATION-AND-EVOLUTION.md",
       "references": "grammar.py",
       "type": "doc_to_code"
+    },
+    {
+      "doc": "07-MIGRATION-AND-EVOLUTION.md",
+      "references": "glyph_function_name",
+      "type": "doc_to_function"
     },
     {
       "doc": "07-MIGRATION-AND-EVOLUTION.md",
@@ -262,6 +277,41 @@
       "type": "doc_to_function"
     },
     {
+      "doc": "EXECUTIVE-SUMMARY.md",
+      "references": "grammar.py",
+      "type": "doc_to_code"
+    },
+    {
+      "doc": "DEPRECATION-INDEX.md",
+      "references": "grammar.py",
+      "type": "doc_to_code"
+    },
+    {
+      "doc": "DEPRECATION-INDEX.md",
+      "references": "enforce_canonical_grammar",
+      "type": "doc_to_function"
+    },
+    {
+      "doc": "DEPRECATION-INDEX.md",
+      "references": "parse_sequence",
+      "type": "doc_to_function"
+    },
+    {
+      "doc": "DEPRECATION-INDEX.md",
+      "references": "validate_grammar",
+      "type": "doc_to_function"
+    },
+    {
+      "doc": "DEPRECATION-INDEX.md",
+      "references": "validate_sequence",
+      "type": "doc_to_function"
+    },
+    {
+      "doc": "DEPRECATION-INDEX.md",
+      "references": "GrammarValidator.validate",
+      "type": "doc_to_function"
+    },
+    {
       "doc": "06-VALIDATION-AND-TESTING.md",
       "references": "grammar.py",
       "type": "doc_to_code"
@@ -332,12 +382,17 @@
       "type": "doc_to_function"
     },
     {
-      "doc": "01-FUNDAMENTAL-CONCEPTS.md",
+      "doc": "TESTING-SUMMARY.md",
       "references": "grammar.py",
       "type": "doc_to_code"
     },
     {
-      "doc": "04-VALID-SEQUENCES.md",
+      "doc": "TESTING-SUMMARY.md",
+      "references": "validate_grammar",
+      "type": "doc_to_function"
+    },
+    {
+      "doc": "01-FUNDAMENTAL-CONCEPTS.md",
       "references": "grammar.py",
       "type": "doc_to_code"
     },
