@@ -1,8 +1,9 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "TNFR Canonical Constraints (U1-U4)",
-  "description": "Formal specification of the four canonical TNFR grammar constraints",
-  "version": "1.0.0",
+  "description": "Formal specification of the four canonical TNFR grammar constraints with complete traceability",
+  "version": "2.0.0",
+  "last_updated": "2025-11-10",
   "constraints": {
     "U1": {
       "name": "STRUCTURAL INITIATION & CLOSURE",
@@ -16,7 +17,20 @@
           "operators": ["emission", "transition", "recursivity"],
           "glyphs": ["AL", "NAV", "REMESH"],
           "physics": "Cannot evolve from null state without generation",
-          "validation_function": "validate_u1a_initiation"
+          "validation_function": "GrammarValidator.validate_initiation",
+          "tests": [
+            "tests/unit/operators/test_unified_grammar.py::TestU1Initiation",
+            "tests/integration/test_mutation_sequences.py::test_u1a_satisfied_with_emission"
+          ],
+          "examples": [
+            "docs/grammar/examples/u1-initiation-closure-examples.py::example_u1a_valid",
+            "docs/grammar/examples/u1-initiation-closure-examples.py::example_u1a_invalid"
+          ],
+          "anti_patterns": [
+            "Using Reception as initiator",
+            "Forgetting generator when reusing sequences",
+            "Assuming EPI exists without checking"
+          ]
         },
         "U1b": {
           "name": "Closure",
@@ -25,7 +39,21 @@
           "operators": ["silence", "transition", "recursivity", "dissonance"],
           "glyphs": ["SHA", "NAV", "REMESH", "OZ"],
           "physics": "Sequences as action potentials need endpoints",
-          "validation_function": "validate_u1b_closure"
+          "validation_function": "GrammarValidator.validate_closure",
+          "tests": [
+            "tests/unit/operators/test_unified_grammar.py::TestU1Closure",
+            "tests/integration/test_mutation_sequences.py::test_u1b_closure_satisfied",
+            "tests/unit/operators/test_remesh_operator_integration.py::test_remesh_as_closure_U1b"
+          ],
+          "examples": [
+            "docs/grammar/examples/u1-initiation-closure-examples.py::example_u1b_valid",
+            "docs/grammar/examples/u1-initiation-closure-examples.py::example_u1b_invalid"
+          ],
+          "anti_patterns": [
+            "Ending with Coherence (not a closure)",
+            "Ending with data gathering operations",
+            "Confusing closure with stabilization"
+          ]
         }
       }
     },
@@ -46,7 +74,23 @@
         "effect": "Reduce |ΔNFR| (negative feedback)"
       },
       "physics": "Without stabilizers, integral diverges → fragmentation",
-      "validation_function": "validate_u2_convergence"
+      "validation_function": "GrammarValidator.validate_convergence",
+      "tests": [
+        "tests/unit/operators/test_unified_grammar.py::TestU2Convergence",
+        "tests/integration/test_mutation_sequences.py::test_u2_satisfied_with_stabilizers",
+        "tests/unit/operators/test_canonical_grammar_legacy.py::test_rc2_maps_to_u2",
+        "tests/unit/operators/test_grammar_c1_c3_deprecation.py::test_validate_c2_boundedness_*"
+      ],
+      "examples": [
+        "docs/grammar/examples/u2-convergence-examples.py::example_u2_valid",
+        "docs/grammar/examples/u2-convergence-examples.py::example_u2_invalid",
+        "docs/grammar/examples/u2-convergence-examples.py::example_masking_antipattern"
+      ],
+      "anti_patterns": [
+        "Masking with weak stabilizers (multiple destabilizers, single stabilizer)",
+        "Assuming order doesn't matter (stabilizer before destabilizer ineffective)",
+        "Ignoring accumulation effects (long sequence of destabilizers)"
+      ]
     },
     "U3": {
       "name": "RESONANT COUPLING",
@@ -64,8 +108,24 @@
         "units": "radians"
       },
       "physics": "Antiphase → destructive interference (non-physical)",
-      "validation_function": "validate_resonant_coupling",
-      "validation_timing": "runtime"
+      "validation_function": "GrammarValidator.validate_resonant_coupling",
+      "validation_timing": "runtime",
+      "tests": [
+        "tests/unit/operators/test_unified_grammar.py::TestU3ResonantCoupling",
+        "tests/unit/operators/test_coupling_preconditions.py::test_um_phase_compatibility_*",
+        "tests/unit/metrics/test_phase_compatibility.py::test_grammar_u3_compliance",
+        "tests/unit/operators/test_canonical_grammar_legacy.py::test_rc3_maps_to_u3"
+      ],
+      "examples": [
+        "docs/grammar/examples/u3-resonant-coupling-examples.py::example_phase_compatibility",
+        "docs/grammar/examples/u3-resonant-coupling-examples.py::example_antipattern_no_check",
+        "docs/grammar/examples/u3-resonant-coupling-examples.py::example_antipattern_phase_drift"
+      ],
+      "anti_patterns": [
+        "Coupling nodes without phase check",
+        "Assuming small phase differences are always OK",
+        "Ignoring phase drift during sequences"
+      ]
     },
     "U4": {
       "name": "BIFURCATION DYNAMICS",
@@ -78,6 +138,129 @@
           "requirement": "Include handlers",
           "triggers": {
             "operators": ["dissonance", "mutation"],
+            "glyphs": ["OZ", "ZHIR"],
+            "effect": "Create structural instability (∂²EPI/∂t² > τ)"
+          },
+          "handlers": {
+            "operators": ["self_organization", "coherence"],
+            "glyphs": ["THOL", "IL"],
+            "effect": "Manage bifurcation transition"
+          },
+          "physics": "Uncontrolled bifurcation → chaos/fragmentation",
+          "validation_function": "GrammarValidator.validate_bifurcation_triggers",
+          "tests": [
+            "tests/unit/operators/test_unified_grammar.py::TestU4aBifurcationTriggers",
+            "tests/unit/operators/test_controlled_bifurcation.py::test_multiple_bifurcations_*",
+            "tests/unit/operators/test_bifurcation.py::test_bifurcation_above_threshold"
+          ],
+          "examples": [
+            "docs/grammar/examples/u4-bifurcation-examples.py::example_u4a_valid",
+            "docs/grammar/examples/u4-bifurcation-examples.py::example_u4a_invalid",
+            "docs/grammar/examples/u4-bifurcation-examples.py::example_antipattern_cascade"
+          ],
+          "anti_patterns": [
+            "Uncontrolled bifurcation cascades (multiple triggers without handlers)",
+            "Wrong handler for trigger type",
+            "Assuming handler proximity doesn't matter"
+          ]
+        },
+        "U4b": {
+          "name": "Transformers Need Context (Graduated Destabilization)",
+          "condition": "If transformers present",
+          "requirement": "Recent destabilizer within ~3 operators",
+          "transformers": {
+            "operators": ["mutation", "self_organization"],
+            "glyphs": ["ZHIR", "THOL"],
+            "additional_for_mutation": "Prior coherence (IL) for stable base"
+          },
+          "window": {
+            "size": 3,
+            "units": "operators",
+            "rationale": "Based on typical ΔNFR decay time"
+          },
+          "physics": "Threshold energy needed for phase transition",
+          "validation_function": "GrammarValidator.validate_transformer_context",
+          "tests": [
+            "tests/unit/operators/test_unified_grammar.py::TestU4bTransformerContext",
+            "tests/integration/test_mutation_sequences.py::test_u4b_satisfied_in_canonical_sequence",
+            "tests/unit/operators/test_controlled_bifurcation.py::test_transformer_at_sequence_start_fails",
+            "tests/unit/operators/test_zhir_u4b_validation.py",
+            "tests/unit/operators/test_mutation_metrics_comprehensive.py::test_grammar_u4b_validation"
+          ],
+          "examples": [
+            "docs/grammar/examples/u4-bifurcation-examples.py::example_u4b_valid",
+            "docs/grammar/examples/u4-bifurcation-examples.py::example_u4b_invalid",
+            "docs/grammar/examples/u4-bifurcation-examples.py::example_antipattern_window"
+          ],
+          "anti_patterns": [
+            "Transformer without sufficient energy (too far from destabilizer)",
+            "ZHIR without stable base (missing prior coherence)",
+            "Confusing context window (which destabilizer provides context?)"
+          ]
+        }
+      }
+    }
+  },
+  "operator_sets": {
+    "generators": {
+      "operators": ["emission", "transition", "recursivity"],
+      "glyphs": ["AL", "NAV", "REMESH"],
+      "used_in": ["U1a"]
+    },
+    "closures": {
+      "operators": ["silence", "transition", "recursivity", "dissonance"],
+      "glyphs": ["SHA", "NAV", "REMESH", "OZ"],
+      "used_in": ["U1b"]
+    },
+    "stabilizers": {
+      "operators": ["coherence", "self_organization"],
+      "glyphs": ["IL", "THOL"],
+      "used_in": ["U2", "U4a"]
+    },
+    "destabilizers": {
+      "operators": ["dissonance", "mutation", "expansion"],
+      "glyphs": ["OZ", "ZHIR", "VAL"],
+      "used_in": ["U2", "U4b"]
+    },
+    "coupling_resonance": {
+      "operators": ["coupling", "resonance"],
+      "glyphs": ["UM", "RA"],
+      "used_in": ["U3"]
+    },
+    "bifurcation_triggers": {
+      "operators": ["dissonance", "mutation"],
+      "glyphs": ["OZ", "ZHIR"],
+      "used_in": ["U4a"]
+    },
+    "bifurcation_handlers": {
+      "operators": ["self_organization", "coherence"],
+      "glyphs": ["THOL", "IL"],
+      "used_in": ["U4a"]
+    },
+    "transformers": {
+      "operators": ["mutation", "self_organization"],
+      "glyphs": ["ZHIR", "THOL"],
+      "used_in": ["U4b"]
+    }
+  },
+  "references": {
+    "theory": "../../UNIFIED_GRAMMAR_RULES.md",
+    "documentation": "../02-CANONICAL-CONSTRAINTS.md",
+    "implementation": "../../src/tnfr/operators/grammar.py",
+    "tests": "../../tests/unit/operators/test_unified_grammar.py",
+    "invariants": "../../AGENTS.md",
+    "examples": "../examples/",
+    "tnfr_pdf": "../../TNFR.pdf"
+  },
+  "metadata": {
+    "status": "CANONICAL",
+    "maintainer": "TNFR Core Team",
+    "last_audit": "2025-11-10",
+    "completeness": "COMPLETE",
+    "traceability": "FULL",
+    "notes": "Version 2.0 includes complete anti-patterns, executable examples, and comprehensive test references"
+  }
+}
             "glyphs": ["OZ", "ZHIR"],
             "effect": "Create structural instability (∂²EPI/∂t² > τ)"
           },

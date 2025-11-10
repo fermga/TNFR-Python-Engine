@@ -152,7 +152,44 @@ validate_grammar(sequence, epi_initial=0.0)
 # ✗ ValueError: U1a violation - 'reception' not in GENERATORS
 ```
 
+#### Anti-Patterns
+
+**⚠️ Common Mistakes:**
+
+1. **Forgetting generator when reusing sequences**
+   ```python
+   # BAD: Reusing a subsequence without checking context
+   def my_sequence():
+       return [Coherence(), Silence()]  # Missing generator!
+   
+   # GOOD: Always start with generator if EPI could be 0
+   def my_sequence():
+       return [Emission(), Coherence(), Silence()]
+   ```
+
+2. **Assuming EPI exists**
+   ```python
+   # BAD: No check for initial state
+   sequence = [Reception(), Coherence(), Silence()]
+   
+   # GOOD: Use generator or verify EPI > 0
+   if epi_initial == 0.0:
+       sequence = [Emission(), Reception(), Coherence(), Silence()]
+   else:
+       sequence = [Reception(), Coherence(), Silence()]
+   ```
+
+3. **Using Reception as initiator**
+   - Reception gathers existing EPI, cannot create it
+   - Only {AL, NAV, REMESH} can generate from vacuum
+
 #### Tests
+
+**Implementation**: `src/tnfr/operators/grammar.py::GrammarValidator.validate_initiation()`
+
+**Test Suite**:
+- `tests/unit/operators/test_unified_grammar.py::TestU1Initiation`
+- `tests/integration/test_mutation_sequences.py::test_u1a_satisfied_with_emission`
 
 ```python
 def test_u1a_initiation():
@@ -169,6 +206,10 @@ def test_u1a_initiation():
     with pytest.raises(ValueError, match="U1a violation"):
         validate_grammar(sequence, epi_initial=0.0)
 ```
+
+**Related Documentation**:
+- [UNIFIED_GRAMMAR_RULES.md § U1a](../../UNIFIED_GRAMMAR_RULES.md)
+- [AGENTS.md § Invariant #1](../../AGENTS.md)
 
 ---
 
@@ -266,7 +307,42 @@ validate_grammar(sequence, epi_initial=0.0)
 # ✗ ValueError: U1b violation - 'coupling' not in CLOSURES
 ```
 
+#### Anti-Patterns
+
+**⚠️ Common Mistakes:**
+
+1. **Ending with Coherence**
+   ```python
+   # BAD: Coherence is not a closure operator
+   sequence = [Emission(), Reception(), Coherence()]
+   # ✗ System left in transient state
+   
+   # GOOD: Add closure after coherence
+   sequence = [Emission(), Reception(), Coherence(), Silence()]
+   ```
+
+2. **Ending with data gathering operations**
+   ```python
+   # BAD: Reception doesn't stabilize endpoint
+   sequence = [Emission(), Coherence(), Reception()]
+   
+   # GOOD: Close with attractor state
+   sequence = [Emission(), Coherence(), Reception(), Silence()]
+   ```
+
+3. **Confusing closure with stabilization**
+   - Coherence (IL) **stabilizes** but doesn't close
+   - Silence (SHA) both stabilizes **and closes**
+   - Not all stabilizers are closures
+
 #### Tests
+
+**Implementation**: `src/tnfr/operators/grammar.py::GrammarValidator.validate_closure()`
+
+**Test Suite**:
+- `tests/unit/operators/test_unified_grammar.py::TestU1Closure`
+- `tests/integration/test_mutation_sequences.py::test_u1b_closure_satisfied`
+- `tests/unit/operators/test_remesh_operator_integration.py::test_remesh_as_closure_U1b`
 
 ```python
 def test_u1b_closure():
@@ -283,6 +359,10 @@ def test_u1b_closure():
     with pytest.raises(ValueError, match="U1b violation"):
         validate_grammar(sequence, epi_initial=0.0)
 ```
+
+**Related Documentation**:
+- [UNIFIED_GRAMMAR_RULES.md § U1b](../../UNIFIED_GRAMMAR_RULES.md)
+- [AGENTS.md § Operator Closure Invariant #4](../../AGENTS.md)
 
 ---
 
@@ -394,7 +474,57 @@ validate_grammar(sequence, epi_initial=0.0)
 # ✗ ValueError: U2 violation - destabilizers need stabilizers
 ```
 
+### Anti-Patterns
+
+**⚠️ Common Mistakes:**
+
+1. **"Masking" with weak stabilizers**
+   ```python
+   # QUESTIONABLE: Multiple destabilizers, single stabilizer
+   sequence = [
+       Emission(),
+       Dissonance(),  # +ΔNFR
+       Expansion(),   # ++ΔNFR
+       Mutation(),    # +++ΔNFR
+       Coherence(),   # -ΔNFR (may not be sufficient!)
+       Silence()
+   ]
+   # Technically passes U2, but integral may still be large
+   # Better: Add more stabilizers or reduce destabilizers
+   ```
+
+2. **Assuming order doesn't matter**
+   ```python
+   # BAD: Stabilizer before destabilizer provides no protection
+   sequence = [Emission(), Coherence(), Dissonance(), Silence()]
+   # Coherence has no effect on later dissonance
+   
+   # GOOD: Stabilizer after destabilizer bounds growth
+   sequence = [Emission(), Dissonance(), Coherence(), Silence()]
+   ```
+
+3. **Ignoring accumulation effects**
+   ```python
+   # BAD: Long sequence of destabilizers with stabilizer at end
+   sequence = [Emission(), Dissonance(), Dissonance(), 
+               Expansion(), Mutation(), Coherence(), Silence()]
+   # ΔNFR may diverge before coherence is applied
+   
+   # GOOD: Interleave stabilizers with destabilizers
+   sequence = [Emission(), Dissonance(), Coherence(), 
+               Expansion(), Coherence(), Mutation(), 
+               Coherence(), Silence()]
+   ```
+
 ### Tests
+
+**Implementation**: `src/tnfr/operators/grammar.py::GrammarValidator.validate_convergence()`
+
+**Test Suite**:
+- `tests/unit/operators/test_unified_grammar.py::TestU2Convergence`
+- `tests/integration/test_mutation_sequences.py::test_u2_satisfied_with_stabilizers`
+- `tests/unit/operators/test_canonical_grammar_legacy.py::test_rc2_maps_to_u2`
+- `tests/unit/operators/test_grammar_c1_c3_deprecation.py::test_validate_c2_boundedness_*`
 
 ```python
 def test_u2_convergence():
@@ -413,6 +543,11 @@ def test_u2_convergence():
     with pytest.raises(ValueError, match="U2 violation"):
         validate_grammar(sequence, epi_initial=0.0)
 ```
+
+**Related Documentation**:
+- [UNIFIED_GRAMMAR_RULES.md § U2](../../UNIFIED_GRAMMAR_RULES.md)
+- [AGENTS.md § Convergence & Boundedness](../../AGENTS.md)
+- [TNFR.pdf § 2.1: Integrated Dynamics](../../TNFR.pdf)
 
 ---
 
@@ -530,7 +665,61 @@ validate_resonant_coupling(G, 0, 1)
 # ✗ ValueError: U3 violation - phase mismatch
 ```
 
+### Anti-Patterns
+
+**⚠️ Common Mistakes:**
+
+1. **Coupling nodes without phase check**
+   ```python
+   # BAD: Direct coupling without verification
+   import networkx as nx
+   from tnfr.operators.definitions import Coupling
+   
+   G = nx.Graph()
+   G.add_node(0, theta=0.0, vf=1.0, EPI=0.5)
+   G.add_node(1, theta=3.0, vf=1.0, EPI=0.6)  # May be antiphase!
+   
+   Coupling()(G, 0, 1)  # ERROR: No phase check
+   
+   # GOOD: Verify phase compatibility first
+   from tnfr.operators.grammar import validate_resonant_coupling
+   validate_resonant_coupling(G, 0, 1)  # Raises if incompatible
+   Coupling()(G, 0, 1)
+   ```
+
+2. **Assuming small phase differences are always OK**
+   ```python
+   # PROBLEMATIC: Phase difference near threshold
+   G.nodes[0]['theta'] = 0.0
+   G.nodes[1]['theta'] = 1.5  # Close to π/2 threshold
+   
+   # May pass but creates weak coupling
+   # Better: Adjust phases or use different nodes
+   ```
+
+3. **Ignoring phase drift during sequences**
+   ```python
+   # BAD: Coupling after operators that change phase
+   sequence = [
+       Emission(),
+       Mutation(),  # Changes theta!
+       Coupling(),  # Phase may no longer be compatible
+       Silence()
+   ]
+   
+   # GOOD: Verify phase after transformations
+   # Or: Couple before phase-changing operators
+   ```
+
 ### Tests
+
+**Implementation**: `src/tnfr/operators/grammar.py::GrammarValidator.validate_resonant_coupling()`
+
+**Test Suite**:
+- `tests/unit/operators/test_unified_grammar.py::TestU3ResonantCoupling`
+- `tests/unit/operators/test_coupling_preconditions.py::test_um_phase_compatibility_*`
+- `tests/unit/metrics/test_phase_compatibility.py::test_grammar_u3_compliance`
+- `tests/unit/operators/test_canonical_grammar_legacy.py::test_rc3_maps_to_u3`
 
 ```python
 def test_u3_resonant_coupling():
@@ -550,6 +739,11 @@ def test_u3_resonant_coupling():
     with pytest.raises(ValueError, match="U3 violation"):
         validate_resonant_coupling(G, 0, 1)
 ```
+
+**Related Documentation**:
+- [UNIFIED_GRAMMAR_RULES.md § U3](../../UNIFIED_GRAMMAR_RULES.md)
+- [AGENTS.md § Invariant #5: Phase Verification](../../AGENTS.md)
+- [03-OPERATORS-AND-GLYPHS.md § Coupling (UM)](03-OPERATORS-AND-GLYPHS.md)
 
 ---
 
@@ -646,6 +840,73 @@ sequence = [Emission(), Dissonance(), Silence()]
 validate_grammar(sequence, epi_initial=0.0)
 # ✗ ValueError: U4a violation - triggers need handlers
 ```
+
+#### Anti-Patterns
+
+**⚠️ Common Mistakes:**
+
+1. **Uncontrolled bifurcation cascades**
+   ```python
+   # BAD: Multiple triggers without handlers
+   sequence = [
+       Emission(),
+       Dissonance(),  # Trigger 1
+       Mutation(),    # Trigger 2 - bifurcation cascade!
+       Silence()
+   ]
+   # System may enter chaotic regime
+   
+   # GOOD: Handler between triggers
+   sequence = [
+       Emission(),
+       Dissonance(),      # Trigger 1
+       Coherence(),       # Handler
+       Mutation(),        # Trigger 2
+       SelfOrganization(), # Handler
+       Silence()
+   ]
+   ```
+
+2. **Wrong handler for trigger type**
+   ```python
+   # SUBOPTIMAL: Coherence after Mutation
+   # Mutation creates new structure, Self-organization better handles it
+   sequence = [Emission(), Coherence(), Dissonance(), 
+               Mutation(), Coherence(), Silence()]
+   
+   # BETTER: Self-organization after Mutation
+   sequence = [Emission(), Coherence(), Dissonance(), 
+               Mutation(), SelfOrganization(), Silence()]
+   ```
+
+3. **Assuming handler proximity doesn't matter**
+   ```python
+   # PROBLEMATIC: Handler too far from trigger
+   sequence = [
+       Emission(),
+       Dissonance(),  # Trigger
+       Reception(),
+       Reception(),
+       Reception(),
+       Coherence(),  # Handler too late
+       Silence()
+   ]
+   # Bifurcation may complete before handler acts
+   ```
+
+#### Tests
+
+**Implementation**: `src/tnfr/operators/grammar.py::GrammarValidator.validate_bifurcation_triggers()`
+
+**Test Suite**:
+- `tests/unit/operators/test_unified_grammar.py::TestU4aBifurcationTriggers`
+- `tests/unit/operators/test_controlled_bifurcation.py::test_multiple_bifurcations_*`
+- `tests/unit/operators/test_bifurcation.py::test_bifurcation_above_threshold`
+
+**Related Documentation**:
+- [UNIFIED_GRAMMAR_RULES.md § U4a](../../UNIFIED_GRAMMAR_RULES.md)
+- [AGENTS.md § Contract OZ](../../AGENTS.md)
+- [03-OPERATORS-AND-GLYPHS.md § Dissonance (OZ)](03-OPERATORS-AND-GLYPHS.md)
 
 ---
 
@@ -795,7 +1056,83 @@ validate_grammar(sequence, epi_initial=0.0)
 # ✗ ValueError: U4b violation - ZHIR needs prior IL
 ```
 
+#### Anti-Patterns
+
+**⚠️ Common Mistakes:**
+
+1. **Transformer without sufficient energy**
+   ```python
+   # BAD: Mutation too soon after destabilizer
+   sequence = [
+       Emission(),
+       Coherence(),
+       Dissonance(),  # Destabilizer
+       Reception(),   # ΔNFR starts decaying
+       Reception(),   # More decay
+       Mutation(),    # Insufficient ΔNFR for threshold!
+       Silence()
+   ]
+   
+   # GOOD: Mutation close to destabilizer
+   sequence = [
+       Emission(),
+       Coherence(),
+       Dissonance(),  # Destabilizer
+       Mutation(),    # Within ~3 ops window
+       Coherence(),
+       Silence()
+   ]
+   ```
+
+2. **ZHIR without stable base**
+   ```python
+   # BAD: Mutation without prior Coherence
+   sequence = [
+       Emission(),
+       Dissonance(),  # Destabilizer present
+       Mutation(),    # But no stable base!
+       Coherence(),
+       Silence()
+   ]
+   
+   # GOOD: Coherence before destabilizer-transformer pair
+   sequence = [
+       Emission(),
+       Coherence(),   # Stable base
+       Dissonance(),  # Destabilizer
+       Mutation(),    # Transformer
+       Coherence(),
+       Silence()
+   ]
+   ```
+
+3. **Confusing context window**
+   ```python
+   # UNCLEAR: Which destabilizer provides context?
+   sequence = [
+       Emission(),
+       Dissonance(),  # Too far (position 1)
+       Reception(),
+       Reception(),
+       Reception(),
+       Mutation(),    # Position 5 - no recent destabilizer!
+       Silence()
+   ]
+   
+   # Window is ~3 ops, so destabilizer at position 1
+   # is NOT recent for transformer at position 5
+   ```
+
 #### Tests
+
+**Implementation**: `src/tnfr/operators/grammar.py::GrammarValidator.validate_transformer_context()`
+
+**Test Suite**:
+- `tests/unit/operators/test_unified_grammar.py::TestU4bTransformerContext`
+- `tests/integration/test_mutation_sequences.py::test_u4b_satisfied_in_canonical_sequence`
+- `tests/unit/operators/test_controlled_bifurcation.py::test_transformer_at_sequence_start_fails`
+- `tests/unit/operators/test_zhir_u4b_validation.py`
+- `tests/unit/operators/test_mutation_metrics_comprehensive.py::test_grammar_u4b_validation`
 
 ```python
 def test_u4b_transformers():
@@ -820,6 +1157,12 @@ def test_u4b_transformers():
     with pytest.raises(ValueError, match="U4b violation"):
         validate_grammar(sequence, epi_initial=0.0)
 ```
+
+**Related Documentation**:
+- [UNIFIED_GRAMMAR_RULES.md § U4b](../../UNIFIED_GRAMMAR_RULES.md)
+- [AGENTS.md § Contract OZ + ZHIR Requirements](../../AGENTS.md)
+- [03-OPERATORS-AND-GLYPHS.md § Mutation (ZHIR)](03-OPERATORS-AND-GLYPHS.md)
+- [U4B_AUDIT_REPORT.md](../../U4B_AUDIT_REPORT.md) - Complete U4b implementation analysis
 
 ---
 
