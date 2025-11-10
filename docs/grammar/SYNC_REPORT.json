@@ -106,31 +106,33 @@
   "operator_sets": {
     "GENERATORS": [
       "emission",
-      "recursivity",
-      "transition"
+      "transition",
+      "recursivity"
     ],
     "CLOSURES": [
+      "dissonance",
       "recursivity",
       "transition",
-      "dissonance",
       "silence"
     ],
     "STABILIZERS": [
       "coherence",
+      "reception",
       "self_organization"
     ],
     "DESTABILIZERS": [
-      "expansion",
       "dissonance",
-      "mutation"
+      "mutation",
+      "expansion",
+      "contraction"
     ],
     "COUPLING_RESONANCE": [
       "resonance",
       "coupling"
     ],
     "BIFURCATION_TRIGGERS": [
-      "mutation",
-      "dissonance"
+      "dissonance",
+      "mutation"
     ],
     "BIFURCATION_HANDLERS": [
       "self_organization",
@@ -420,14 +422,5 @@
       "type": "doc_to_function"
     }
   ],
-  "issues": [
-    {
-      "type": "schema_extra",
-      "extra_operators": [
-        "reception",
-        "contraction"
-      ],
-      "severity": "low"
-    }
-  ]
+  "issues": []
 }
