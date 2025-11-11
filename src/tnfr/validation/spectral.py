@@ -15,7 +15,7 @@ from ..mathematics.runtime import (
     normalized as runtime_normalized,
     stable_unitary as runtime_stable_unitary,
 )
-from . import ValidationOutcome, Validator
+from .base import ValidationOutcome, Validator
 
 __all__ = ("NFRValidator",)
 

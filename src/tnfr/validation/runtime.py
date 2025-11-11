@@ -28,7 +28,7 @@ from ..types import (
     _is_scalar,
 )
 from ..utils import clamp, ensure_collection
-from . import ValidationOutcome, Validator
+from .base import ValidationOutcome, Validator
 from .graph import run_validators
 
 HistoryLog = MutableSequence[MutableMapping[str, object]]
