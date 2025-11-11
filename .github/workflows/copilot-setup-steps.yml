@@ -51,6 +51,7 @@ jobs:
       - name: Verify TNFR installation
         run: |
           # Verify the TNFR package is properly installed from repo (not PyPI)
+          # Fixed: circular import in validation module resolved via base.py
           python -c "import tnfr; print(f'TNFR version: {tnfr.__version__}')"
           python -c "import tnfr, os; print(f'TNFR location: {os.path.dirname(tnfr.__file__)}')"
           # Verify core modules are accessible
