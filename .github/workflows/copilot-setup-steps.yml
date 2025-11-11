@@ -29,6 +29,11 @@ jobs:
       - name: Checkout TNFR repository
         uses: actions/checkout@v5
 
+      - name: Clean Python bytecode cache
+        run: |
+          find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
+          find . -type f -name "*.pyc" -delete 2>/dev/null || true
+
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
@@ -47,6 +52,15 @@ jobs:
           # - Serialization for state preservation
           # - NumPy for structural computations
           python -m pip install -e .[test,numpy,yaml,orjson]
+
+      - name: Debug - Verify base.py exists
+        run: |
+          echo "Checking for base.py..."
+          ls -la src/tnfr/validation/base.py
+          echo "Checking runtime.py import line..."
+          grep -n "from.*import.*ValidationOutcome" src/tnfr/validation/runtime.py
+          echo "Git commit SHA:"
+          git rev-parse HEAD
 
       - name: Verify TNFR installation
         run: |
