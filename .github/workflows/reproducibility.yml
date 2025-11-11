@@ -1,0 +1,75 @@
+name: Reproducibility Check
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  reproducibility:
+    name: Verify benchmark reproducibility
+    runs-on: ubuntu-latest
+    env:
+      PYTHONPATH: ${{ github.workspace }}/src
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install .[test,numpy,yaml,orjson]
+
+      - name: Run benchmarks (first pass)
+        run: |
+          python scripts/run_reproducible_benchmarks.py \
+            --seed 42 \
+            --output-dir artifacts/run1 \
+            --manifest artifacts/manifest1.json \
+            --benchmarks comprehensive_cache_profiler
+
+      - name: Run benchmarks (second pass)
+        run: |
+          python scripts/run_reproducible_benchmarks.py \
+            --seed 42 \
+            --output-dir artifacts/run2 \
+            --manifest artifacts/manifest2.json \
+            --benchmarks comprehensive_cache_profiler
+
+      - name: Compare manifests
+        run: |
+          echo "Comparing manifest checksums..."
+          python scripts/compare_manifests.py \
+            artifacts/manifest1.json \
+            artifacts/manifest2.json
+
+      - name: Verify manifest structure
+        run: |
+          python scripts/run_reproducible_benchmarks.py --verify artifacts/manifest1.json
+
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: reproducibility-artifacts
+          path: artifacts/
+          retention-days: 7

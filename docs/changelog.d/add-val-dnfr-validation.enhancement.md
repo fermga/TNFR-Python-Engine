@@ -1,0 +1,6 @@
+- Added canonical ΔNFR validation to VAL (Expansion) operator preconditions.
+- Implemented three-tier validation for VAL: νf < max, ΔNFR > 0, and EPI >= min.
+- Added configuration parameters: `VAL_MAX_VF`, `VAL_MIN_DNFR`, `VAL_MIN_EPI`, `VAL_CHECK_NETWORK_CAPACITY`, `VAL_MAX_NETWORK_SIZE`.
+- Set `VAL_MIN_DNFR` default to `1e-6` (very low threshold to minimize breaking changes while ensuring physical correctness).
+- Enhanced error messages to suggest alternative operators (OZ for ΔNFR generation, AL for EPI activation).
+- Aligned implementation with TNFR nodal equation ∂EPI/∂t = νf · ΔNFR(t) requiring both νf > 0 and ΔNFR > 0 for coherent expansion.

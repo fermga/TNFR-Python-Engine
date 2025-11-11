@@ -1,0 +1,113 @@
+name: 🎯 New Domain Pattern
+description: Submit a new structural pattern for a specific domain
+title: "[PATTERN] <Domain>: <Pattern Name>"
+labels: ["enhancement", "pattern", "community"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Submit a New Domain Pattern
+        
+        Help expand TNFR to new domains by contributing validated structural patterns.
+        
+        **Requirements**:
+        - Health score > 0.75 for all examples
+        - Minimum 3 validated use cases
+        - Clear mapping to real-world domain
+        
+  - type: input
+    id: domain
+    attributes:
+      label: Domain
+      description: Application domain for this pattern (e.g., medical, business, education)
+      placeholder: "medical"
+    validations:
+      required: true
+      
+  - type: input
+    id: pattern_name
+    attributes:
+      label: Pattern Name
+      description: Descriptive name for the pattern
+      placeholder: "therapeutic_journey"
+    validations:
+      required: true
+      
+  - type: textarea
+    id: pattern_sequence
+    attributes:
+      label: Pattern Sequence
+      description: The structural operator sequence (use canonical English identifiers)
+      placeholder: |
+        ["emission", "reception", "coherence", "resonance"]
+    validations:
+      required: true
+      
+  - type: textarea
+    id: domain_context
+    attributes:
+      label: Domain Context
+      description: What does this pattern represent in your domain?
+      placeholder: |
+        In therapeutic practice, this pattern represents the establishment of 
+        therapeutic alliance through active listening and empathetic response...
+    validations:
+      required: true
+      
+  - type: textarea
+    id: use_cases
+    attributes:
+      label: Use Cases (minimum 3)
+      description: Provide at least 3 validated examples where this pattern applies
+      placeholder: |
+        1. Initial therapy session - establishing rapport
+        2. Crisis intervention - stabilizing emotional state
+        3. Breakthrough moment - integrating new insights
+    validations:
+      required: true
+      
+  - type: textarea
+    id: health_metrics
+    attributes:
+      label: Health Metrics
+      description: Provide health scores for your examples
+      placeholder: |
+        Example 1: C(t) = 0.82, Si = 0.76
+        Example 2: C(t) = 0.79, Si = 0.81
+        Example 3: C(t) = 0.85, Si = 0.78
+    validations:
+      required: true
+      
+  - type: textarea
+    id: validation
+    attributes:
+      label: Validation Method
+      description: How did you validate this pattern works?
+      placeholder: |
+        - Tested with real case data
+        - Verified coherence metrics
+        - Cross-validated with domain experts
+    validations:
+      required: true
+      
+  - type: textarea
+    id: related_patterns
+    attributes:
+      label: Related Patterns
+      description: Are there similar or complementary patterns?
+      placeholder: "Similar to stabilization_pattern but includes resonance phase"
+      
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Submission Checklist
+      description: Please confirm the following
+      options:
+        - label: All examples achieve health score > 0.75
+          required: true
+        - label: Pattern uses canonical English operator identifiers
+          required: true
+        - label: Domain mapping is clearly documented
+          required: true
+        - label: At least 3 validated use cases provided
+          required: true

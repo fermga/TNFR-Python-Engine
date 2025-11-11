@@ -1,0 +1,67 @@
+name: Automated Code Review
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  code-review:
+    name: Run automated code review
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e .[dev-minimal]
+
+      - name: Run code review
+        id: review
+        continue-on-error: true
+        run: |
+          # Note: This is a placeholder for the actual code review process
+          # In practice, this would call a code review service or tool
+          echo "Running automated code review..."
+          echo "Checking code quality, style, and best practices..."
+          
+          # Run linters and static analysis
+          EXIT_CODE=0
+          python -m black --check src/ tests/ 2>&1 && echo "✅ Black formatting passed" || { echo "::warning::Black formatting issues found"; EXIT_CODE=1; }
+          python -m mypy src/ 2>&1 && echo "✅ Type checking passed" || { echo "::warning::Type checking issues found"; EXIT_CODE=1; }
+          
+          echo "Code review completed"
+          exit $EXIT_CODE
+
+      - name: Comment on PR
+        if: always()
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const reviewStatus = '${{ steps.review.outcome }}' === 'success' ? '✅ Passed' : '⚠️ Issues found';
+            const comment = `## Automated Code Review\n\n${reviewStatus}\n\nPlease review the workflow logs for details.`;
+            
+            github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: comment
+            });

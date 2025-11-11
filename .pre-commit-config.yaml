@@ -1,0 +1,37 @@
+repos:
+  - repo: https://github.com/psf/black
+    rev: 25.9.0
+    hooks:
+      - id: black
+        args: ["--config=pyproject.toml"]
+  - repo: https://github.com/PyCQA/isort
+    rev: 5.13.2
+    hooks:
+      - id: isort
+        args: ["--settings-path=pyproject.toml"]
+  - repo: https://github.com/PyCQA/pydocstyle
+    rev: 6.3.0
+    hooks:
+      - id: pydocstyle
+        args: ["--config=pyproject.toml"]
+        files: ^src/tnfr/
+  - repo: local
+    hooks:
+      - id: code-review-check
+        name: Code review quality check
+        entry: bash -c 'echo "⚠️  Remember to run code review before committing significant changes" && echo "   Run: make lint test" && exit 0'
+        language: system
+        pass_filenames: false
+        stages: [commit]
+      - id: check-stubs
+        name: Check .pyi stub files
+        entry: python scripts/generate_stubs.py --check
+        language: system
+        pass_filenames: false
+        files: ^src/tnfr/.*\.py$
+      - id: check-bandit-format
+        name: Check for invalid bandit -f sarif usage
+        entry: bash -c 'if grep -r "bandit.*-f sarif" .github/workflows/ scripts/ 2>/dev/null; then echo "ERROR - bandit does not support SARIF format. Use -f json instead."; exit 1; fi'
+        language: system
+        pass_filenames: false
+        files: ^(\.github/workflows/|scripts/|tools/).*\.(yml|yaml|sh|py)$

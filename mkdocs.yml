@@ -1,0 +1,97 @@
+site_name: TNFR Python Engine
+site_description: Canonical TNFR structural dynamics engine documentation
+repo_url: https://github.com/fermga/TNFR-Python-Engine
+repo_name: TNFR Python Engine
+docs_dir: docs/source
+site_dir: site
+nav:
+  - Home: index.md
+  - Getting Started:
+      - Welcome to TNFR: getting-started/README.md
+      - Quickstart Tutorial: getting-started/quickstart.md
+      - Core Concepts: getting-started/TNFR_CONCEPTS.md
+      - Interactive Tutorial: getting-started/INTERACTIVE_TUTORIAL.md
+      - FAQ: getting-started/FAQ.md
+      - Math Backends: getting-started/math-backends.md
+      - Optional Dependencies: getting-started/optional-dependencies.md
+      - Migrating from Remesh Window: getting-started/migrating-remesh-window.md
+  - User Guide:
+      - Operators Guide: user-guide/OPERATORS_GUIDE.md
+      - Metrics Interpretation: user-guide/METRICS_INTERPRETATION.md
+      - Troubleshooting: user-guide/TROUBLESHOOTING.md
+  - Grammar Documentation:
+      - Overview: grammar/README.md
+      - Executive Summary: grammar/EXECUTIVE-SUMMARY.md
+      - Core Concepts:
+          - Fundamental Concepts: grammar/01-FUNDAMENTAL-CONCEPTS.md
+          - Canonical Constraints: grammar/02-CANONICAL-CONSTRAINTS.md
+          - Operators and Glyphs: grammar/03-OPERATORS-AND-GLYPHS.md
+          - Valid Sequences: grammar/04-VALID-SEQUENCES.md
+      - Implementation:
+          - Technical Implementation: grammar/05-TECHNICAL-IMPLEMENTATION.md
+          - Validation and Testing: grammar/06-VALIDATION-AND-TESTING.md
+          - Migration and Evolution: grammar/07-MIGRATION-AND-EVOLUTION.md
+      - Reference:
+          - Quick Reference: grammar/08-QUICK-REFERENCE.md
+          - Glossary: grammar/GLOSSARY.md
+          - Master Index: grammar/MASTER-INDEX.md
+          - Operators Catalog: grammar/OPERATORS-CATALOG-SUMMARY.md
+          - Cross-Reference Index: grammar/CROSS-REFERENCE-INDEX.md
+          - Code Documentation Cross-Reference: grammar/CODE_DOCS_CROSSREF.md
+      - Tooling:
+          - Tooling and Automation: grammar/TOOLING-AND-AUTOMATION.md
+          - Testing Summary: grammar/TESTING-SUMMARY.md
+          - Deprecation Index: grammar/DEPRECATION-INDEX.md
+  - Examples: examples/README.md
+  - API Reference:
+      - Overview: api/overview.md
+      - Structural Operators: api/operators.md
+      - Operators Visual Guide: api/OPERATORS_VISUAL_GUIDE.md
+      - Telemetry & Utilities: api/telemetry.md
+      - Docstring Style: api/docstring_style.md
+  - Advanced Topics:
+      - Architecture Guide: advanced/ARCHITECTURE_GUIDE.md
+      - Performance Optimization: advanced/PERFORMANCE_OPTIMIZATION.md
+      - Testing Strategies: advanced/TESTING_STRATEGIES.md
+      - Development Workflow: advanced/DEVELOPMENT_WORKFLOW.md
+      - Mathematical Foundations: foundations.md
+  - Mathematical Foundations:
+      - Primers:
+          - Structural frequency primer: theory/01_structural_frequency_primer.ipynb
+          - Phase synchrony lattices: theory/02_phase_synchrony_lattices.ipynb
+          - ΔNFR gradient fields: theory/03_delta_nfr_gradient_fields.ipynb
+          - Coherence metrics walkthrough: theory/04_coherence_metrics_walkthrough.ipynb
+          - NFR validator & metrics: theory/04_nfr_validator_and_metrics.ipynb
+          - Sense index calibration: theory/05_sense_index_calibration.ipynb
+          - Recursivity cascades: theory/06_recursivity_cascades.ipynb
+  - Security:
+      - Monitoring: security/monitoring.md
+      - Dependency Auditing: security/dependency-auditing.md
+      - CodeQL: security/codeql.md
+      - Dependabot: security/dependabot.md
+  - Project Info:
+      - Releases: releases.md
+theme:
+  name: material
+  features:
+    - navigation.sections
+    - navigation.top
+    - navigation.tracking
+    - toc.integrate
+markdown_extensions:
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.highlight
+  - pymdownx.details
+  - pymdownx.superfences
+plugins:
+  - search
+  - mkdocs-jupyter:
+      execute: false
+      include_source: true

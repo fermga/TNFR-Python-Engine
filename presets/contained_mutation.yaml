@@ -1,0 +1,40 @@
+# Contained Mutation Preset
+# Demonstrates controlled phase transitions (mutations) within a
+# structured resonance block (THOL).
+
+metadata:
+  name: contained_mutation
+  description: >
+    Explores controlled mutations within a resonant structure.
+    Uses THOL (recursive block) to contain dissonant operators
+    (OZ - Dissonance, ZHIR - Mutation) within a coherent framework.
+  operators:
+    - AL    # Emission
+    - EN    # Reception
+    - OZ    # Dissonance
+    - ZHIR  # Mutation
+    - IL    # Coupling
+    - RA    # Resonance
+    - SHA   # Silence
+
+topology:
+  type: ring
+  nodes: 24
+  seed: 1
+
+dynamics:
+  dt: 0.1
+  integrator: euler
+  steps: 100
+
+sequence:
+  - AL
+  - EN
+  - THOL:
+      body:
+        - OZ
+        - ZHIR
+        - IL
+      repeat: 2
+  - RA
+  - SHA

@@ -1,0 +1,88 @@
+name: Dependency Vulnerability Audit
+
+# This workflow scans all installed Python dependencies for known security vulnerabilities
+# using pip-audit, which checks against the Python Packaging Advisory Database (PyPA).
+#
+# Runs on:
+# - Every push to main/master
+# - Every pull request to main/master  
+# - Weekly schedule (every Monday at 5 AM UTC)
+#
+# Outputs:
+# - JSON report artifact (pip-audit-report) for detailed analysis
+# - Human-readable report in workflow logs
+# - Fails the build if vulnerabilities are detected
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    branches:
+      - main
+      - master
+  schedule:
+    - cron: '0 5 * * 1'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  pip-audit:
+    name: pip-audit dependency scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Install project dependencies
+        run: |
+          # pip 25.2 is affected by GHSA-4xh5-x5gv-qwph; install the patched commit until 25.3 lands.
+          python -m pip install --upgrade "pip @ git+https://github.com/pypa/pip.git@f2b92314da012b9fffa36b3f3e67748a37ef464a"
+          python -m pip install --upgrade "setuptools>=78.1.1"
+          python -m pip install pipx
+          python -m pip install .[all]
+
+      - name: Resolve site-packages path
+        id: python_site
+        run: |
+          SITE_PACKAGES=$(python -c "import sysconfig; print(sysconfig.get_path('purelib'))")
+          echo "site-packages=$SITE_PACKAGES" >> "$GITHUB_OUTPUT"
+
+      - name: Run pip-audit (JSON report)
+        id: pip_audit
+        continue-on-error: true
+        run: |
+          pipx run pip-audit --progress-spinner off --format json --output pip-audit.json --path "${{ steps.python_site.outputs.site-packages }}"
+
+      - name: Run pip-audit (Human-readable output)
+        if: always()
+        continue-on-error: true
+        run: |
+          echo "::group::pip-audit human-readable report"
+          pipx run pip-audit --progress-spinner off --path "${{ steps.python_site.outputs.site-packages }}" || true
+          echo "::endgroup::"
+
+      - name: Upload pip-audit report
+        if: always() && hashFiles('pip-audit.json') != ''
+        uses: actions/upload-artifact@v5
+        with:
+          name: pip-audit-report
+          path: pip-audit.json
+
+      - name: Fail if vulnerabilities were detected
+        if: steps.pip_audit.outcome == 'failure'
+        run: |
+          echo 'pip-audit detected dependency vulnerabilities. Review pip-audit.json for details.'
+          exit 1

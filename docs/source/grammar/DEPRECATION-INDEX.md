@@ -1,0 +1,1 @@
+../../grammar/DEPRECATION-INDEX.md

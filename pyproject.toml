@@ -1,0 +1,285 @@
+[project]
+name = "tnfr"
+dynamic = ["version"]
+description = "Modular structural-based dynamics on networks."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "fmg" }]
+keywords = [
+  "TNFR", "complex systems", "fractals", "resonance", 
+  "networks", "structural dynamics", 
+  "structural analysis"
+]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Intended Audience :: Science/Research",
+  "Topic :: Scientific/Engineering",
+  "Topic :: Scientific/Engineering :: Information Analysis",
+  "Topic :: Scientific/Engineering :: Mathematics"
+]
+dependencies = [
+  "networkx>=2.6,<4.0",
+  "cachetools>=5.0,<7.0",
+  "numpy>=1.24,<3.0",
+  "scipy>=1.9,<2.0",
+  "typing-extensions>=4.4; python_version < \"3.10\"",
+]
+
+[project.optional-dependencies]
+# Computational backends
+compute-jax = ["jax>=0.4,<1.0"]
+compute-torch = ["torch>=2.1,<3.0"]
+
+# Serialization formats
+serialization = ["pyyaml>=6.0,<7.0", "orjson>=3,<4"]
+
+# Visualization
+viz-basic = ["matplotlib>=3.7,<4.0"]
+
+# Legacy compatibility aliases (for backward compatibility with existing workflows)
+# Note: numpy is now a core dependency, so this extra installs nothing additional
+numpy = []  # Empty - numpy is now in core dependencies
+jax = ["jax>=0.4,<1.0"]
+torch = ["torch>=2.1,<3.0"]
+yaml = ["pyyaml>=6.0,<7.0"]
+orjson = ["orjson>=3,<4"]
+viz = ["matplotlib>=3.7,<4.0"]
+docs = [
+  "sphinx>=7.2",
+  "sphinx-autodoc-typehints>=1.25",
+  "myst-parser>=2.0",
+  "nbsphinx>=0.9",
+  "sphinx-rtd-theme>=1.3",
+  "sphinxcontrib-mermaid>=0.9",
+  "ipykernel>=6",
+  "nbconvert>=7.16",
+  "pypandoc-binary>=1.14",
+  "mkdocs>=1.5",
+  "mkdocs-material>=9.4",
+  "mkdocs-jupyter>=0.24",
+]
+# Testing - modular groups
+test-unit = [
+  "pytest>=7,<9",
+  "pytest-cov>=4,<8",
+  "pytest-timeout>=2,<3",
+]
+test-property = [
+  "hypothesis>=6,<7",
+  "hypothesis-networkx>=0.3,<1.0",
+]
+test-performance = [
+  "pytest-benchmark>=4,<6",
+]
+test-parallel = [
+  "pytest-xdist>=3,<4",
+]
+test-quality = [
+  "pydocstyle>=6,<7",
+  "flake8>=5,<8",
+  "flake8-pyproject>=1.2,<2.0",
+  "vulture>=2,<3",
+]
+test-all = [
+  "pytest>=7,<9",
+  "pytest-cov>=4,<8",
+  "pytest-timeout>=2,<3",
+  "hypothesis>=6,<7",
+  "hypothesis-networkx>=0.3,<1.0",
+  "pytest-benchmark>=4,<6",
+  "pytest-xdist>=3,<4",
+  "pydocstyle>=6,<7",
+  "flake8>=5,<8",
+  "flake8-pyproject>=1.2,<2.0",
+  "vulture>=2,<3",
+  "matplotlib>=3.7,<4.0",
+]
+test = [  # Legacy alias
+  "pytest>=7,<9",
+  "pytest-cov>=4,<8",
+  "pytest-timeout>=2,<3",
+  "hypothesis>=6,<7",
+  "hypothesis-networkx>=0.3,<1.0",
+  "pytest-benchmark>=4,<6",
+  "pytest-xdist>=3,<4",
+  "pydocstyle>=6,<7",
+  "flake8>=5,<8",
+  "flake8-pyproject>=1.2,<2.0",
+  "vulture>=2,<3",
+  "matplotlib>=3.7,<4.0",
+]
+
+# Type checking
+typecheck = [
+  "mypy>=1.8,<2.0",
+  "pyright>=1.1.350,<1.2.0",
+  "networkx-stubs>=0.0.1",
+  "types-cachetools>=6.0.0.0",
+]
+# Development environment groups
+dev-minimal = [
+  "mypy>=1.8,<2.0",
+  "black>=23,<26",
+  "pytest>=7,<9",
+  "pytest-cov>=4,<8",
+  "pytest-timeout>=2,<3",
+]
+dev-full = [
+  "pytest>=7,<9",
+  "pytest-cov>=4,<8",
+  "pytest-timeout>=2,<3",
+  "hypothesis>=6,<7",
+  "hypothesis-networkx>=0.3,<1.0",
+  "pytest-benchmark>=4,<6",
+  "pytest-xdist>=3,<4",
+  "pydocstyle>=6,<7",
+  "flake8>=5,<8",
+  "flake8-pyproject>=1.2,<2.0",
+  "vulture>=2,<3",
+  "matplotlib>=3.7,<4.0",
+  "jax>=0.4,<1.0",
+  "mypy>=1.8,<2.0",
+  "pyright>=1.1.350,<1.2.0",
+  "networkx-stubs>=0.0.1",
+  "types-cachetools>=6.0.0.0",
+]
+
+# Release tooling
+release = [
+  "python-semantic-release>=10.4,<11",
+  "setuptools-scm>=8,<10",
+  "build>=1,<2",
+  "towncrier>=23,<26",
+]
+
+[project.scripts]
+tnfr = "tnfr.cli:main"
+tnfr-validate = "tnfr.cli.validate:main"
+
+[project.urls]
+Homepage = "https://pypi.org/project/tnfr/"
+Repository = "https://github.com/fermga/TNFR-Python-Engine"
+GPT = "https://chatgpt.com/g/g-67abc78885a88191b2d67f94fd60dc97-tnfr-resonant-fractal-nature-theory"
+
+[tool.setuptools.package-data]
+tnfr = ["py.typed", "schemas/*.json"]
+
+[tool.setuptools_scm]
+tag_regex = '^v(?P<version>[0-9]+\.[0-9]+\.[0-9]+)$'
+local_scheme = "no-local-version"
+write_to = "src/tnfr/_generated_version.py"
+
+[tool.semantic_release]
+version_source = "tag"
+commit_parser = "conventional"
+allow_zero_version = false
+major_on_zero = false
+tag_format = "v{version}"
+
+[tool.semantic_release.branches.main]
+match = "^main$"
+prerelease = false
+
+[tool.semantic_release.changelog]
+template_dir = "meta/semantic_release/templates"
+mode = "update"
+
+[tool.semantic_release.changelog.default_templates]
+mask_initial_release = true
+changelog_file = ""
+
+[tool.semantic_release.commit_parser_options]
+minor_tags = ["feat", "structure"]
+patch_tags = ["fix", "perf", "refactor", "docs", "test", "build", "ci", "style", "chore"]
+other_allowed_tags = ["revert", "docs", "test", "build", "ci", "style", "refactor", "perf", "chore"]
+allowed_tags = ["feat", "fix", "perf", "refactor", "docs", "test", "build", "ci", "style", "chore", "structure", "revert"]
+default_bump_level = 0
+parse_squash_commits = true
+ignore_merge_commits = true
+
+[tool.black]
+line-length = 88
+target-version = ["py39", "py310", "py311", "py312", "py313"]
+
+[tool.isort]
+profile = "black"
+line_length = 88
+skip = ["benchmarks"]
+
+[tool.flake8]
+max-line-length = 88
+ignore = ["E501", "W503", "E203"]
+exclude = ["benchmarks/"]
+
+[tool.pydocstyle]
+convention = "numpy"
+add-ignore = [
+  "D202",  # Allow blank line after docstring where needed for readability.
+]
+
+[tool.tnfr.language_check]
+exclude = [
+  "TNFR.pdf",
+  "benchmarks/**/*.pdf",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+addopts = "-m 'not slow'"
+markers = [
+  "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+  "benchmarks: run with 'pytest benchmarks --benchmark-only' to execute the benchmark suite",
+  "stress: high-load deterministic stress coverage (select with '-m \"stress\"')",
+  "val: Tests specific to VAL (Expansion) operator",
+  "canonical: Tests validating canonical TNFR invariants",
+  "nodal_equation: Tests validating fundamental nodal equation",
+  "fractality: Tests validating fractal preservation",
+]
+
+[tool.mypy]
+python_version = "3.9"
+warn_unused_configs = true
+warn_return_any = false
+no_implicit_optional = false
+strict_equality = false
+disallow_any_unimported = false
+show_error_codes = true
+follow_imports = "skip"
+allow_redefinition = true
+allow_untyped_defs = false
+allow_untyped_calls = false
+allow_untyped_globals = false
+
+[[tool.mypy.overrides]]
+module = ["networkx", "networkx.*"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["yaml", "yaml.*"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["numpy", "numpy.*"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["matplotlib", "matplotlib.*"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["jsonschema", "jsonschema.*"]
+ignore_missing_imports = true
+
+
+[build-system]
+requires = ["setuptools>=78.1.1", "wheel", "setuptools-scm>=8"]
+build-backend = "setuptools.build_meta"

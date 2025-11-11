@@ -1,0 +1,41 @@
+# JavaScript dependencies
+node_modules/
+__pycache__/
+*.pyc
+dist/
+build/
+site/
+docs/_build/
+*.egg-info/
+*.egg
+.semantic_release/
+src/tnfr/_generated_version.py
+.venv/
+.env
+.pytest_cache/
+.hypothesis/
+cover/
+*.cover
+.coverage
+coverage.xml
+.tox/
+*.log
+.DS_Store
+Thumbs.db
+.benchmarks/
+
+# Reproducibility artifacts
+artifacts/
+profiles/
+*.pstats
+
+# Security scan results (temporary)
+bandit.json
+bandit-fixed.json
+bandit.sarif
+pip-audit*.json
+semgrep.json
+semgrep.sarif
+
+# Validation outputs (generated)
+validation_outputs/

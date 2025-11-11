@@ -1,0 +1,15 @@
+# Semgrep configuration documenting justified exceptions for TNFR.
+exclude:
+  rules:
+    - id: python.lang.security.audit.non-literal-import.non-literal-import
+      justification: >-
+        Dynamic imports only load TNFR-maintained helpers and operator registries.
+        Module names originate from static manifests or package discovery, not user input.
+    - id: python.lang.security.deserialization.pickle.avoid-pickle
+      justification: >-
+        Pickle is invoked solely to verify multiprocessing compatibility for in-memory
+        graph state; no untrusted payloads are deserialised.
+    - id: python.lang.security.insecure-hash-algorithms.insecure-hash-algorithm-sha1
+      justification: >-
+        SHA1 digests are used for deterministic topology fingerprints in telemetry and
+        caches and are not relied upon for security guarantees.

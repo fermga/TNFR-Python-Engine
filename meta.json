@@ -1,0 +1,72 @@
+{
+  "name": "TNFR — Resonant Fractal Nature Theory",
+  "shortName": "TNFR",
+  "language": "en",
+  "license": "MIT",
+  "description": "TNFR is an operational framework that models reality as coherent reorganization rather than fixed substances. Forms that persist (cells, ideas, teams, emotional states) do so because they resonate — they share structure, rhythm and phase with their environment. TNFR provides a practical grammar (structural operators) and a nodal equation to design, stabilize, transform or collapse forms in a controlled way.",
+  "summary": "Python engine for modeling, simulating and measuring multiscale coherence: use structural frequency, phase and nodal gradients to activate and stabilize forms (EPI) across domains.",
+  "theory": {
+    "premises": [
+      "What persists is coherence. Not substance but structure-in-reorganization.",
+      "A form exists when its internal frequency resonates with the reorganization it requires in its networked environment.",
+      "There is no privileged scale: micro and macro are levels of the same resonant web.",
+      "The goal is not only to understand but to activate: TNFR intervenes by shaping form."
+    ],
+    "coreEquation": {
+      "notation": "∂EPI/∂t = νf · ΔNFR(t)",
+      "ascii": "dEPI/dt = vf * DNFR(t)",
+      "meaning": "A form (EPI) emerges and stabilizes when the internal structural frequency (νf) resonates with the required internal reorganization (ΔNFR) over time.",
+      "variables": {
+        "EPI": "Primary Structure of Information (aka PSI): an active coherent form.",
+        "νf": "Structural frequency: the node's internal rhythm (unit: Hz_str).",
+        "ΔNFR": "Nodal reorganization operator/gradient over time.",
+        "theta": "Structural phase: relative synchrony with the network.",
+        "C(t)": "Total coherence at structural time t."
+      }
+    },
+    "operators": [
+      {"name": "Emission",           "structuralFunction": "initiate resonant pattern",           "resonantExpression": "pattern generator φ(νf, θ)"},
+      {"name": "Reception",          "structuralFunction": "capture incident information",         "resonantExpression": "∫ ψ(x,t) dx"},
+      {"name": "Coherence",          "structuralFunction": "stabilize form",                        "resonantExpression": "∂EPI/∂t → 0 as ΔNFR → 0"},
+      {"name": "Dissonance",         "structuralFunction": "productive instability",                "resonantExpression": "ΔNFR(t) > νf"},
+      {"name": "Coupling",           "structuralFunction": "synchronize nodes",                      "resonantExpression": "φ_i(t) ≈ φ_j(t)"},
+      {"name": "Resonance",          "structuralFunction": "propagate coherence in network",        "resonantExpression": "EPI_n → EPI_{n+1}"},
+      {"name": "Silence",            "structuralFunction": "latent/holding phase",                   "resonantExpression": "νf ≈ 0 ⇒ ∂EPI/∂t ≈ 0"},
+      {"name": "Expansion",          "structuralFunction": "scale up structure",                     "resonantExpression": "EPI → k·EPI, k ∈ ℕ⁺"},
+      {"name": "Contraction",        "structuralFunction": "densify/focus structure",                "resonantExpression": "‖EPI′‖ ≥ τ; Supp(EPI′) ⊂ Supp(EPI)"},
+      {"name": "Self-organization",  "structuralFunction": "spontaneous coherent restructuring",     "resonantExpression": "∂²EPI/∂t² > τ"},
+      {"name": "Mutation",           "structuralFunction": "phase change without destruction",       "resonantExpression": "θ(t) → θ′(t) if ΔEPI/Δt > ξ"},
+      {"name": "Transition",         "structuralFunction": "creative threshold state",               "resonantExpression": "ΔNFR ≈ νf"},
+      {"name": "Recursivity",        "structuralFunction": "adaptive repetition/memory of network",  "resonantExpression": "EPI(t) = EPI(t − τ)"}
+    ]
+  },
+  "metrics": {
+    "coherence": "‖EPI‖ or C(t): stability over structural time.",
+    "frequency": "νf: internal rhythm (Hz_str).",
+    "nodalGradient": "ΔNFR: need for reorganization relative to environment.",
+    "senseIndex": "Si = f(νf, theta, topology): capacity to generate stable, meaningful reorganization.",
+    "phase": "theta: relative synchrony with the network.",
+    "topology": "Connection pattern among nodes that influences coupling and propagation."
+  },
+  "install": {"pip": "pip install tnfr"},
+  "compatibility": {"python": ">=3.9"},
+  "links": {
+    "repository": "https://github.com/fermga/TNFR-Python-Engine",
+    "package": "https://pypi.org/project/tnfr/",
+    "documentation": "TNFR.pdf"
+  },
+  "status": "research/operational",
+  "maintainers": [{"name": "fmg"}],
+  "keywords": [
+    "resonance",
+    "fractal",
+    "coherence",
+    "structural frequency",
+    "complex systems",
+    "operational theory",
+    "adaptive protocols",
+    "design by coherence"
+  ],
+  "disclaimer": "TNFR does not model fixed substances but coherent reorganization processes. It is intended for design and intervention across scales (from personal to organizational)."
+}
+

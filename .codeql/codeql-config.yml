@@ -1,0 +1,47 @@
+# CodeQL Configuration
+# This file configures CodeQL analysis for the TNFR Python Engine repository
+
+name: "TNFR CodeQL Configuration"
+
+# Use the default security-and-quality query suite
+queries:
+  - uses: security-and-quality
+
+# Query filters to suppress false positives
+query-filters:
+  # Suppress incomplete URL substring sanitization in test files
+  # Context: Test files use 'module_name in sys.modules' pattern for test
+  # isolation (clearing module cache), not for URL validation. CodeQL
+  # incorrectly flags this as CWE-020 (Incomplete URL substring sanitization).
+  # This is a false positive - the code performs module management, not
+  # security validation.
+  - exclude:
+      id: py/incomplete-url-substring-sanitization
+      paths:
+        - "tests/**/*.py"
+      reason: "Test files use module path checking for test isolation, not URL validation"
+  
+  # Suppress ineffectual statement warnings for Protocol method stubs
+  # Context: Python Protocol classes use ellipsis (...) as method body to define
+  # structural contracts for type checking. These are not ineffectual statements
+  # but required typing patterns per PEP 544 (Protocol).
+  # Affected files: types.py (13 stubs), node.py (6 stubs)
+  - exclude:
+      id: py/ineffectual-statement
+      paths:
+        - "src/tnfr/types.py"
+        - "src/tnfr/node.py"
+      reason: "Protocol method definitions use ellipsis as valid structural contract stubs (PEP 544)"
+  
+  # Suppress ineffectual statement warnings for @overload signatures
+  # Context: Python @overload decorator (PEP 484) requires function signatures
+  # with ellipsis body to define type variants. The actual implementation follows
+  # these signatures. These are not ineffectual but required typing patterns.
+  # Affected files: trace.py, utils/data.py, metrics/trig.py (6 overload stubs)
+  - exclude:
+      id: py/ineffectual-statement
+      paths:
+        - "src/tnfr/trace.py"
+        - "src/tnfr/utils/data.py"
+        - "src/tnfr/metrics/trig.py"
+      reason: "@overload signatures use ellipsis as valid type variant stubs (PEP 484)"
