@@ -93,7 +93,7 @@ The following files in `docs/` are **retained as detailed references**:
 → See [`advanced/PERFORMANCE_OPTIMIZATION.md`](../source/advanced/PERFORMANCE_OPTIMIZATION.md), then reference factory/cache docs if needed
 
 **Contributing to TNFR**:
-→ Read [`CONTRIBUTING.md`](../../CONTRIBUTING.md) and [`AGENTS.md`](../../AGENTS.md)
+→ Read [`CONTRIBUTING.md`](https://github.com/fermga/TNFR-Python-Engine/blob/main/CONTRIBUTING.md) and [`AGENTS.md`](https://github.com/fermga/TNFR-Python-Engine/blob/main/AGENTS.md)
 
 **Researching implementation details**:
 → **Then** consult these detailed technical documents

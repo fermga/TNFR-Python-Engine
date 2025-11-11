@@ -787,12 +787,12 @@ Complete tutorial on self-sustaining sequences:
 
 ## Resources
 
-- **[GLYPH_SEQUENCES_GUIDE.md](../GLYPH_SEQUENCES_GUIDE.md)**: Complete Grammar 2.0 documentation
+- **[GLYPH_SEQUENCES_GUIDE.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/GLYPH_SEQUENCES_GUIDE.md)**: Complete Grammar 2.0 documentation
 - **[docs/HEALTH_METRICS_GUIDE.md](HEALTH_METRICS_GUIDE.md)**: Deep dive into health metrics
 - **[docs/PATTERN_REFERENCE.md](PATTERN_REFERENCE.md)**: Complete pattern catalog
-- **[examples/domain_applications/](../examples/domain_applications/)**: Domain-specific examples
-- **[examples/migration/](../examples/migration/)**: Migration examples and tutorials
-- **[tools/migration/](../tools/migration/)**: Automated migration tools
+- **[examples/domain_applications/](https://github.com/fermga/TNFR-Python-Engine/tree/main/examples/domain_applications)**: Domain-specific examples
+- **[examples/migration/](https://github.com/fermga/TNFR-Python-Engine/tree/main/examples/migration)**: Migration examples and tutorials
+- **[tools/migration/](https://github.com/fermga/TNFR-Python-Engine/tree/main/tools/migration)**: Automated migration tools
 
 ---
 
@@ -812,7 +812,7 @@ Grammar 2.0 is a **significant enhancement** that:
 4. Test your sequences
 5. Enjoy the new capabilities!
 
-**Questions?** See [GLYPH_SEQUENCES_GUIDE.md](../GLYPH_SEQUENCES_GUIDE.md) or open an issue.
+**Questions?** See [GLYPH_SEQUENCES_GUIDE.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/GLYPH_SEQUENCES_GUIDE.md) or open an issue.
 
 ---
 

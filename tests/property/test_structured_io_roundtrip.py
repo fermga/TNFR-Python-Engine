@@ -112,11 +112,7 @@ def _toml_dumps(data: dict[str, Any]) -> str:
             lines.append(f"[{'.'.join(prefix)}]")
 
         for key, value in sorted(scalars):
-            rendered = (
-                _format_array(value)
-                if isinstance(value, list)
-                else _format_scalar(value)
-            )
+            rendered = _format_array(value) if isinstance(value, list) else _format_scalar(value)
             lines.append(f"{key} = {rendered}")
 
         for index, (key, value) in enumerate(sorted(nested)):
@@ -203,9 +199,7 @@ _MALFORMED_CASES = st.sampled_from(
 
 @given(case=_MALFORMED_CASES)
 @FILE_IO_PROPERTY_SETTINGS
-def test_structured_file_error_contract(
-    tmp_path: Path, case: tuple[str, str, str]
-) -> None:
+def test_structured_file_error_contract(tmp_path: Path, case: tuple[str, str, str]) -> None:
     suffix, contents, expected_message = case
     path = tmp_path / f"invalid{suffix}"
     safe_write(path, lambda handle: handle.write(contents))

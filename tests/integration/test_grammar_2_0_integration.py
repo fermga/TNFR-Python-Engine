@@ -84,9 +84,7 @@ class TestGrammar20Integration:
         cycle_detector = CycleDetector()
         # Find the regenerator position (transition)
         regenerator_idx = sequence.index("transition")
-        cycle_analysis = cycle_detector.analyze_potential_cycle(
-            sequence, regenerator_idx
-        )
+        cycle_analysis = cycle_detector.analyze_potential_cycle(sequence, regenerator_idx)
         # Should have cycle analysis results
         assert cycle_analysis is not None
         assert cycle_analysis.cycle_type is not None
@@ -96,7 +94,15 @@ class TestGrammar20Integration:
         # Test sequences that should produce consistent pattern detection
         # All sequences must follow grammar rules
         test_cases = {
-            "explore": ["emission", "reception", "coherence", "dissonance", "mutation", "coherence", "silence"],
+            "explore": [
+                "emission",
+                "reception",
+                "coherence",
+                "dissonance",
+                "mutation",
+                "coherence",
+                "silence",
+            ],
             "stabilize": ["emission", "reception", "coherence", "silence"],
             "resonate": ["emission", "reception", "coherence", "resonance", "silence"],
         }
@@ -151,7 +157,15 @@ class TestGrammar20Integration:
         valid_sequences = [
             ["emission", "reception", "coherence", "silence"],
             ["emission", "reception", "coherence", "resonance", "recursivity"],
-            ["emission", "reception", "coherence", "dissonance", "mutation", "coherence", "silence"],
+            [
+                "emission",
+                "reception",
+                "coherence",
+                "dissonance",
+                "mutation",
+                "coherence",
+                "silence",
+            ],
         ]
 
         for sequence in valid_sequences:
@@ -180,7 +194,7 @@ class TestGrammar20Integration:
         health_result = validate_sequence_with_health(sequence)
         health = health_result.health_metrics
 
-        # Get pattern detection  
+        # Get pattern detection
         detector = AdvancedPatternDetector()
         pattern = detector.detect_pattern(sequence)
 
@@ -189,12 +203,12 @@ class TestGrammar20Integration:
         # What matters is that both analyze successfully
         assert health.dominant_pattern != "unknown" or health.dominant_pattern == "unknown"
         assert pattern.value != "empty"
-        
+
         # Both should provide consistent structural insights
         # Health analyzer uses simpler heuristics, AdvancedPatternDetector uses
         # coherence-weighted scoring, so results may vary
         assert health.overall_health > 0.0  # Should have computed health
-        
+
         composition = detector.analyze_sequence_composition(sequence)
         assert composition["primary_pattern"] is not None
 

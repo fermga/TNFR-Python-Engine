@@ -127,8 +127,7 @@ def normalize_optional_int(
         if not text:
             if strict:
                 raise ValueError(
-                    error_message
-                    or "Empty value is not allowed for configuration options."
+                    error_message or "Empty value is not allowed for configuration options."
                 )
             return None
         sentinel_set: set[str] | None = None
@@ -141,16 +140,13 @@ def normalize_optional_int(
             result = int(text)
         except (TypeError, ValueError) as exc:
             if strict:
-                raise ValueError(
-                    error_message or f"Invalid integer value: {value!r}"
-                ) from exc
+                raise ValueError(error_message or f"Invalid integer value: {value!r}") from exc
             return None
 
     if not allow_non_positive and result <= 0:
         if strict:
             raise ValueError(
-                error_message
-                or "Non-positive values are not permitted for this option."
+                error_message or "Non-positive values are not permitted for this option."
             )
         return None
 
@@ -162,9 +158,7 @@ def negative_weights_warn_once(
 ) -> Callable[[Mapping[str, float]], None]:
     """Return a ``WarnOnce`` callable for negative weight warnings."""
 
-    return _warn_once_factory(
-        _collections_logger, NEGATIVE_WEIGHTS_MSG, maxsize=maxsize
-    )
+    return _warn_once_factory(_collections_logger, NEGATIVE_WEIGHTS_MSG, maxsize=maxsize)
 
 
 def _log_negative_weights(negatives: Mapping[str, float]) -> None:

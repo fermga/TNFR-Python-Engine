@@ -7,12 +7,12 @@ maintaining computational efficiency and TNFR semantic fidelity.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Sequence
+from typing import Any, Dict, Optional, Sequence
 
 import numpy as np
 from scipy import sparse
 
-from ..types import NodeId, DeltaNFR
+from ..types import NodeId
 from ..utils import get_logger
 
 logger = get_logger(__name__)
@@ -74,9 +74,7 @@ class SparseCache:
         if len(self._cache) + len(values) > self.capacity:
             # Remove oldest entries
             to_remove = len(self._cache) + len(values) - self.capacity
-            oldest_keys = sorted(self._cache.keys(), key=lambda k: self._cache[k][1])[
-                :to_remove
-            ]
+            oldest_keys = sorted(self._cache.keys(), key=lambda k: self._cache[k][1])[:to_remove]
             for key in oldest_keys:
                 del self._cache[key]
 
@@ -291,8 +289,7 @@ class SparseTNFRGraph:
             self._initialize_random(seed)
 
         logger.info(
-            f"Created sparse TNFR graph: {node_count} nodes, "
-            f"density={expected_density:.2f}"
+            f"Created sparse TNFR graph: {node_count} nodes, " f"density={expected_density:.2f}"
         )
 
     def _initialize_random(self, seed: int) -> None:
@@ -332,9 +329,7 @@ class SparseTNFRGraph:
         self.adjacency[u, v] = weight
         self.adjacency[v, u] = weight  # Undirected graph
 
-    def compute_dnfr_sparse(
-        self, node_ids: Optional[Sequence[NodeId]] = None
-    ) -> np.ndarray:
+    def compute_dnfr_sparse(self, node_ids: Optional[Sequence[NodeId]] = None) -> np.ndarray:
         """Compute ΔNFR using sparse matrix operations.
 
         Implements the TNFR ΔNFR computation efficiently using sparse
@@ -391,9 +386,7 @@ class SparseTNFRGraph:
                     phase_diffs = np.sin(node_phase - neighbor_phases)
 
                     # Weighted sum
-                    dnfr = np.sum(neighbor_weights * phase_diffs) / len(
-                        neighbor_indices
-                    )
+                    dnfr = np.sum(neighbor_weights * phase_diffs) / len(neighbor_indices)
                 else:
                     dnfr = 0.0
 
@@ -465,14 +458,10 @@ class SparseTNFRGraph:
         """
         # Convert to CSR for accurate size measurement
         adj_csr = self.adjacency.tocsr()
-        adjacency_memory = (
-            adj_csr.data.nbytes + adj_csr.indices.nbytes + adj_csr.indptr.nbytes
-        )
+        adjacency_memory = adj_csr.data.nbytes + adj_csr.indices.nbytes + adj_csr.indptr.nbytes
 
         attributes_memory = self.node_attributes.memory_usage()
-        cache_memory = (
-            self._dnfr_cache.memory_usage() + self._coherence_cache.memory_usage()
-        )
+        cache_memory = self._dnfr_cache.memory_usage() + self._coherence_cache.memory_usage()
 
         total_memory = adjacency_memory + attributes_memory + cache_memory
         memory_per_node = total_memory / self.node_count

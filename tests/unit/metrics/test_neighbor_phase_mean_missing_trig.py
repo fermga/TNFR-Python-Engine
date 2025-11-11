@@ -17,9 +17,9 @@ def test_neighbor_phase_mean_core_missing_trig():
     angle = _neighbor_phase_mean_core(neigh, cos_th, sin_th, np=None, fallback=0.5)
     assert angle == pytest.approx(math.pi / 4)
 
-    assert _neighbor_phase_mean_core(
-        [3], cos_th, sin_th, np=None, fallback=0.5
-    ) == pytest.approx(0.5)
+    assert _neighbor_phase_mean_core([3], cos_th, sin_th, np=None, fallback=0.5) == pytest.approx(
+        0.5
+    )
 
 
 def test_neighbor_phase_mean_list_delegates_generic(monkeypatch):

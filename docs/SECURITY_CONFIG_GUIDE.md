@@ -379,6 +379,6 @@ logger.info(f"Connecting to: {safe_url}")
 
 ## Additional Resources
 
-- [SECURITY.md](../SECURITY.md) - General security policy
+- [SECURITY.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/SECURITY.md) - General security policy
 - [Redis Security Documentation](https://redis.io/docs/management/security/)
 - [OWASP Credential Management](https://cheatsheetseries.owasp.org/cheatsheets/Credential_Storage_Cheat_Sheet.html)

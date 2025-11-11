@@ -44,11 +44,7 @@ __all__ = (
 def _max_bepi_magnitude(value: Any) -> float:
     element = ensure_bepi(value)
     mags = [
-        (
-            float(np.max(np.abs(element.f_continuous)))
-            if element.f_continuous.size
-            else 0.0
-        ),
+        (float(np.max(np.abs(element.f_continuous))) if element.f_continuous.size else 0.0),
         float(np.max(np.abs(element.a_discrete))) if element.a_discrete.size else 0.0,
     ]
     return float(max(mags)) if mags else 0.0
@@ -120,9 +116,7 @@ def apply_canonical_clamps(
     th_val = get_theta_attr(nd, 0.0)
     th = 0.0 if th_val is None else float(th_val)
 
-    strict = bool(
-        graph_data.get("VALIDATORS_STRICT", DEFAULTS.get("VALIDATORS_STRICT", False))
-    )
+    strict = bool(graph_data.get("VALIDATORS_STRICT", DEFAULTS.get("VALIDATORS_STRICT", False)))
     if strict and graph_dict is not None:
         history = cast(MutableMapping[str, Any], graph_dict.setdefault("history", {}))
         alerts = history.get("clamp_alerts")
@@ -143,9 +137,7 @@ def apply_canonical_clamps(
         clamped_value = float(clamp(original_scalar_value, eps_min, eps_max))
         set_attr_generic(nd, ALIAS_EPI, clamped_value, conv=lambda obj: obj)
     else:
-        set_attr_generic(
-            nd, ALIAS_EPI, serialize_bepi(clamped_epi), conv=lambda obj: obj
-        )
+        set_attr_generic(nd, ALIAS_EPI, serialize_bepi(clamped_epi), conv=lambda obj: obj)
 
     vf_val = float(clamp(vf, vf_min, vf_max))
     if G is not None and node is not None:
@@ -201,9 +193,7 @@ class GraphCanonicalValidator(Validator[TNFRGraph]):
             mapping = cast(MutableMapping[str, Any], data)
             before = {
                 "EPI": _max_bepi_magnitude(
-                    get_attr(
-                        mapping, ALIAS_EPI, ZERO_BEPI_STORAGE, conv=lambda obj: obj
-                    )
+                    get_attr(mapping, ALIAS_EPI, ZERO_BEPI_STORAGE, conv=lambda obj: obj)
                 ),
                 "VF": float(get_attr(mapping, ALIAS_VF, 0.0)),
                 "THETA": float(get_theta_attr(mapping, 0.0) or 0.0),
@@ -211,9 +201,7 @@ class GraphCanonicalValidator(Validator[TNFRGraph]):
             apply_canonical_clamps(mapping, subject, cast(NodeId, node))
             after = {
                 "EPI": _max_bepi_magnitude(
-                    get_attr(
-                        mapping, ALIAS_EPI, ZERO_BEPI_STORAGE, conv=lambda obj: obj
-                    )
+                    get_attr(mapping, ALIAS_EPI, ZERO_BEPI_STORAGE, conv=lambda obj: obj)
                 ),
                 "VF": float(get_attr(mapping, ALIAS_VF, 0.0)),
                 "THETA": float(get_theta_attr(mapping, 0.0) or 0.0),

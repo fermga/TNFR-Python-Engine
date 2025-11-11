@@ -1,1 +1,0 @@
-../../grammar/TOOLING-AND-AUTOMATION.md

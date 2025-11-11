@@ -115,9 +115,7 @@ def test_gamma_harmonic_eval(graph_canon):
     G = graph_canon()
     G.add_nodes_from([0, 1])
     inject_defaults(G)
-    merge_overrides(
-        G, GAMMA={"type": "harmonic", "beta": 1.0, "omega": 1.0, "phi": 0.0}
-    )
+    merge_overrides(G, GAMMA={"type": "harmonic", "beta": 1.0, "omega": 1.0, "phi": 0.0})
     for n in G.nodes():
         G.nodes[n]["theta"] = 0.0
     g0 = eval_gamma(G, 0, t=math.pi / 2)

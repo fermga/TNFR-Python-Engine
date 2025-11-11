@@ -63,9 +63,7 @@ def test_coherence_operator_expectation(structural_rng: np.random.Generator) -> 
 
     state = structural_rng.normal(size=2) + 1j * structural_rng.normal(size=2)
     expectation = operator.expectation(state)
-    manual = np.vdot(
-        state / np.linalg.norm(state), matrix @ (state / np.linalg.norm(state))
-    )
+    manual = np.vdot(state / np.linalg.norm(state), matrix @ (state / np.linalg.norm(state)))
     assert isinstance(expectation, float)
     assert expectation == pytest.approx(float(manual.real))
 
@@ -106,6 +104,4 @@ def test_make_frequency_operator_preserves_valid_matrix(
 
     operator = make_frequency_operator(matrix)
 
-    np.testing.assert_allclose(
-        operator.matrix, matrix, atol=structural_tolerances["atol"]
-    )
+    np.testing.assert_allclose(operator.matrix, matrix, atol=structural_tolerances["atol"])

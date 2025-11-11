@@ -34,9 +34,7 @@ def test_jax_norm_gradient_matches_analytic() -> None:
 
     grad = jax.grad(norm_squared)(vector)
     expected = 2.0 * vector
-    np.testing.assert_allclose(
-        np.asarray(grad), np.asarray(expected), rtol=1e-6, atol=1e-6
-    )
+    np.testing.assert_allclose(np.asarray(grad), np.asarray(expected), rtol=1e-6, atol=1e-6)
 
 
 def test_jax_expectation_gradient_matches_closed_form() -> None:
@@ -76,9 +74,7 @@ def test_torch_norm_gradient_matches_analytic() -> None:
     (grad,) = torch.autograd.grad(value, vector)
 
     expected = 2.0 * vector.detach().cpu().numpy()
-    np.testing.assert_allclose(
-        grad.detach().cpu().numpy(), expected, rtol=1e-6, atol=1e-6
-    )
+    np.testing.assert_allclose(grad.detach().cpu().numpy(), expected, rtol=1e-6, atol=1e-6)
 
 
 def test_torch_expectation_gradient_matches_closed_form() -> None:
@@ -100,9 +96,7 @@ def test_torch_expectation_gradient_matches_closed_form() -> None:
     denom_np = float(np.dot(vector_np, vector_np))
     energy_np = float(vector_np @ (matrix_np @ vector_np) / denom_np)
     expected = 2.0 * (matrix_np @ vector_np - energy_np * vector_np) / denom_np
-    np.testing.assert_allclose(
-        grad.detach().cpu().numpy(), expected, rtol=1e-6, atol=1e-6
-    )
+    np.testing.assert_allclose(grad.detach().cpu().numpy(), expected, rtol=1e-6, atol=1e-6)
 
 
 def test_torch_dynamics_step_supports_autodiff() -> None:
@@ -116,9 +110,7 @@ def test_torch_dynamics_step_supports_autodiff() -> None:
     )
     engine = MathematicalDynamicsEngine(generator, hilbert, backend=backend)
 
-    state = torch.tensor(
-        [0.8 + 0.0j, 0.1 + 0.3j], dtype=torch.complex128, requires_grad=True
-    )
+    state = torch.tensor([0.8 + 0.0j, 0.1 + 0.3j], dtype=torch.complex128, requires_grad=True)
     result = engine.step(state, dt=0.25, normalize=False)
     value = result.abs().pow(2).sum()
 
@@ -139,9 +131,7 @@ def test_torch_dynamics_step_autodiff_with_normalization() -> None:
     )
     engine = MathematicalDynamicsEngine(generator, hilbert, backend=backend)
 
-    state = torch.tensor(
-        [0.4 + 0.1j, 0.2 - 0.3j], dtype=torch.complex128, requires_grad=True
-    )
+    state = torch.tensor([0.4 + 0.1j, 0.2 - 0.3j], dtype=torch.complex128, requires_grad=True)
     result = engine.step(state, dt=0.4, normalize=True)
     value = result.abs().pow(2).sum()
 

@@ -39,8 +39,7 @@ def test_compute_coherence_precision_improved(graph_canon):
     naive = naive_compute_coherence(G)
     count = G.number_of_nodes()
     expected = 1.0 / (
-        1.0
-        + math.fsum(abs(nd.get("dnfr", 0.0)) for _, nd in G.nodes(data=True)) / count
+        1.0 + math.fsum(abs(nd.get("dnfr", 0.0)) for _, nd in G.nodes(data=True)) / count
     )
     assert result == expected
     assert abs(result - expected) < abs(naive - expected)

@@ -62,9 +62,7 @@ def test_angle_diff_array_matches_scalar():
     angles_a = np.array([0.0, math.pi - 1e-9, -math.pi + 1e-6, math.tau + 0.5])
     angles_b = np.array([math.pi, -math.pi, 0.0, 0.25])
     out = angle_diff_array(angles_a, angles_b, np=np)
-    expected = np.array(
-        [angle_diff(a, b) for a, b in zip(angles_a, angles_b)], dtype=float
-    )
+    expected = np.array([angle_diff(a, b) for a, b in zip(angles_a, angles_b)], dtype=float)
     assert np.allclose(out, expected)
 
 

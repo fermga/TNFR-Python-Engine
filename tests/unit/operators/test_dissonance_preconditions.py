@@ -24,7 +24,14 @@ import pytest
 
 from tnfr.alias import get_attr, set_attr
 from tnfr.constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_VF
-from tnfr.operators.definitions import Coherence, Contraction, Dissonance, Emission, Resonance, SelfOrganization
+from tnfr.operators.definitions import (
+    Coherence,
+    Contraction,
+    Dissonance,
+    Emission,
+    Resonance,
+    SelfOrganization,
+)
 from tnfr.operators.preconditions import OperatorPreconditionError
 from tnfr.operators.preconditions.dissonance import validate_dissonance_strict
 from tnfr.structural import create_nfr
@@ -116,7 +123,7 @@ class TestDissonanceStrictPreconditions:
     def test_validate_dissonance_strict_no_warning_connected_node(self):
         """No connectivity warning for connected node."""
         G, node = create_nfr("connected", epi=0.5, vf=1.0)
-        
+
         # Add neighbor
         other = "neighbor"
         G.add_node(other)

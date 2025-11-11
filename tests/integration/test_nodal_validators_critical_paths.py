@@ -440,9 +440,7 @@ def test_validator_handles_edge_cases() -> None:
         (100, 1.0),
     ],
 )
-def test_validator_scalability_with_large_graphs(
-    seed_graph_factory, num_nodes, dnfr_scale
-) -> None:
+def test_validator_scalability_with_large_graphs(seed_graph_factory, num_nodes, dnfr_scale) -> None:
     """Test validator performance and correctness with larger graphs.
 
     Adds critical path coverage for scalability with increasing network size.

@@ -67,10 +67,7 @@ def test_public_api_missing_optional_dependency(monkeypatch):
             module = importlib.import_module("tnfr")
         missing = [w for w in caught if issubclass(w.category, ImportWarning)]
         assert missing
-        assert any(
-            "create_nfr" in str(w.message) and "networkx" in str(w.message)
-            for w in missing
-        )
+        assert any("create_nfr" in str(w.message) and "networkx" in str(w.message) for w in missing)
         with pytest.raises(ImportError) as excinfo:
             module.create_nfr("n1")
         assert "networkx" in str(excinfo.value)
@@ -101,8 +98,7 @@ def test_public_api_missing_prepare_network_dependency(monkeypatch):
         assert missing
         warning_messages = [str(w.message) for w in missing]
         assert any(
-            "prepare_network" in message and "networkx" in message
-            for message in warning_messages
+            "prepare_network" in message and "networkx" in message for message in warning_messages
         )
         assert "prepare_network" in module.__all__
         assert not getattr(module, "_HAS_PREPARE_NETWORK", True)
@@ -110,9 +106,7 @@ def test_public_api_missing_prepare_network_dependency(monkeypatch):
         with pytest.raises(ImportError) as excinfo:
             module.prepare_network(None)
         assert "networkx" in str(excinfo.value)
-        prepare_info = getattr(
-            module.prepare_network, "__tnfr_missing_dependency__", {}
-        )
+        prepare_info = getattr(module.prepare_network, "__tnfr_missing_dependency__", {})
         assert prepare_info.get("export") == "prepare_network"
         assert prepare_info.get("missing") == "networkx"
     _clear_tnfr_modules()

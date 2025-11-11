@@ -61,7 +61,7 @@ All TNFR grammar rules derive from this single equation:
 
 ### Components
 
-**EPI (Estructura Primaria de Información):**
+**EPI (Primary Information Structure):**
 - The **coherent structural form** of a node
 - Lives in Banach space B_EPI
 - Cannot be modified directly - only via structural operators
@@ -256,7 +256,7 @@ All current TNFR grammar rules are ABSOLUTE or STRONG.
 
 Before proceeding to other documents, understand these essential terms:
 
-**EPI (Estructura Primaria de Información):**
+**EPI (Primary Information Structure):**
 - Coherent structural form of a node
 - Changes only via operators
 
@@ -490,16 +490,16 @@ To work effectively with TNFR, you need to **think differently**:
 
 ### Repository Documentation
 
-- **[../../TNFR.pdf](../../TNFR.pdf)** - Complete theoretical foundation
-- **[../../UNIFIED_GRAMMAR_RULES.md](../../UNIFIED_GRAMMAR_RULES.md)** - Mathematical proofs
-- **[../../AGENTS.md](../../AGENTS.md)** - Canonical invariants (core principles)
-- **[../../README.md](../../README.md)** - Project overview
+- **Theory Reference**: [TNFR_FORCES_EMERGENCE.md](../TNFR_FORCES_EMERGENCE.md)
+- **Unified Grammar Rules**: https://github.com/fermga/TNFR-Python-Engine/blob/main/UNIFIED_GRAMMAR_RULES.md
+- **Canonical Invariants (AGENTS.md)**: https://github.com/fermga/TNFR-Python-Engine/blob/main/AGENTS.md
+- **Project Overview**: https://github.com/fermga/TNFR-Python-Engine/blob/main/README.md
 
 ### Implementation
 
-- **[../../src/tnfr/operators/grammar.py](../../src/tnfr/operators/grammar.py)** - Grammar validation code
-- **[../../src/tnfr/operators/definitions.py](../../src/tnfr/operators/definitions.py)** - Operator implementations
-- **[../../src/tnfr/dynamics/](../../src/tnfr/dynamics/)** - Nodal equation integration
+- **Grammar validation code**: https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/operators/grammar.py
+- **Operator implementations**: https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/operators/definitions.py
+- **Nodal equation integration**: https://github.com/fermga/TNFR-Python-Engine/tree/main/src/tnfr/dynamics
 
 ---
 

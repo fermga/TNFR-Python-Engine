@@ -211,14 +211,14 @@ class TestContractionDensityThreshold:
         """Density calculation uses epsilon when EPI is very small but above minimum."""
         G, node = create_nfr("epsilon_case", epi=0.1, vf=1.0)
         G.nodes[node][DNFR_PRIMARY] = 1.5
-        
+
         # Set very low minimum EPI to bypass that check
         G.graph["NUL_MIN_EPI"] = 0.01
-        
+
         # density = 1.5 / max(0.1, 1e-9) = 15.0 > 10.0
         with pytest.raises(OperatorPreconditionError) as exc_info:
             validate_contraction(G, node)
-        
+
         error_msg = str(exc_info.value)
         assert "critical density" in error_msg
         assert "15.000" in error_msg
@@ -337,9 +337,7 @@ class TestContractionPreconditionsIntegration:
         with pytest.raises(OperatorPreconditionError) as exc1:
             validate_contraction(G1, node1)
 
-        assert "Cannot compress structure below minimum coherent form" in str(
-            exc1.value
-        )
+        assert "Cannot compress structure below minimum coherent form" in str(exc1.value)
 
         # Test density violation message
         G2, node2 = create_nfr("high_density", epi=0.2, vf=1.0)

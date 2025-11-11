@@ -167,6 +167,4 @@ def test_compute_Si_node_unknown_keyword(graph_canon):
             inplace=False,
         )
 
-    assert f"Unexpected keyword argument(s): {DEPRECATED_SI_COMPUTE_ARG}" in str(
-        excinfo.value
-    )
+    assert f"Unexpected keyword argument(s): {DEPRECATED_SI_COMPUTE_ARG}" in str(excinfo.value)

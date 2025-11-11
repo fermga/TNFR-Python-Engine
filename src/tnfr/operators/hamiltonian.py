@@ -93,7 +93,6 @@ from ..constants.aliases import ALIAS_VF
 from ..utils.cache import cached_node_list, CacheManager, _graph_cache_manager
 
 if TYPE_CHECKING:  # pragma: no cover
-    import numpy as np
     from ..types import TNFRGraph, FloatMatrix
 
 __all__ = (
@@ -105,7 +104,7 @@ __all__ = (
 
 
 class InternalHamiltonian:
-    """Constructs and manipulates the internal Hamiltonian H_int.
+    r"""Constructs and manipulates the internal Hamiltonian H_int.
 
     Mathematical Definition
     -----------------------
@@ -181,8 +180,7 @@ class InternalHamiltonian:
             self._np = np
         except ImportError as exc:
             raise ImportError(
-                "NumPy is required for Hamiltonian construction. "
-                "Install with: pip install numpy"
+                "NumPy is required for Hamiltonian construction. " "Install with: pip install numpy"
             ) from exc
 
         self.G = G
@@ -209,7 +207,7 @@ class InternalHamiltonian:
         self._verify_hermitian()
 
     def _build_H_coherence(self) -> FloatMatrix:
-        """Construct coherence potential H_coh from coherence matrix.
+        r"""Construct coherence potential H_coh from coherence matrix.
 
         Theory
         ------
@@ -287,7 +285,7 @@ class InternalHamiltonian:
         return H_coh
 
     def _build_H_frequency(self) -> FloatMatrix:
-        """Construct frequency operator H_freq (diagonal).
+        r"""Construct frequency operator H_freq (diagonal).
 
         Theory
         ------
@@ -324,7 +322,7 @@ class InternalHamiltonian:
         return H_freq
 
     def _build_H_coupling(self) -> FloatMatrix:
-        """Construct coupling Hamiltonian from network topology.
+        r"""Construct coupling Hamiltonian from network topology.
 
         Theory
         ------
@@ -368,7 +366,7 @@ class InternalHamiltonian:
         return H_coupling
 
     def _verify_hermitian(self, tolerance: float = 1e-10) -> None:
-        """Verify that all Hamiltonian components are Hermitian.
+        r"""Verify that all Hamiltonian components are Hermitian.
 
         Parameters
         ----------
@@ -415,7 +413,7 @@ class InternalHamiltonian:
                 )
 
     def compute_delta_nfr_operator(self) -> FloatMatrix:
-        """Compute ΔNFR operator from Hamiltonian commutator.
+        r"""Compute ΔNFR operator from Hamiltonian commutator.
 
         Theory
         ------
@@ -502,7 +500,7 @@ class InternalHamiltonian:
         return U_t
 
     def get_spectrum(self) -> Tuple[Any, Any]:
-        """Compute eigenvalues and eigenvectors of H_int.
+        r"""Compute eigenvalues and eigenvectors of H_int.
 
         Returns
         -------
@@ -530,7 +528,7 @@ class InternalHamiltonian:
         return eigenvalues, eigenvectors
 
     def compute_node_delta_nfr(self, node: Any) -> float:
-        """Compute ΔNFR for a single node using Hamiltonian commutator.
+        r"""Compute ΔNFR for a single node using Hamiltonian commutator.
 
         Parameters
         ----------

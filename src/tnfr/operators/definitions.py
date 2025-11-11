@@ -7,11 +7,19 @@ underlying transformation.
 
 English identifiers are the public API. Spanish wrappers were removed in
 TNFR 2.0, so downstream code must import these classes directly.
+
+**Physics & Theory References:**
+- Complete operator physics: AGENTS.md § Canonical Operators
+- Grammar constraints (U1-U6): UNIFIED_GRAMMAR_RULES.md
+- Nodal equation (∂EPI/∂t = νf · ΔNFR): AGENTS.md § Foundational Physics
+
+**Implementation:**
+- Canonical grammar validation: src/tnfr/operators/grammar.py
+- Operator registry: src/tnfr/operators/registry.py
 """
 
 from __future__ import annotations
 
-import cmath
 import math
 import warnings
 from typing import Any, ClassVar
@@ -108,9 +116,7 @@ class Operator:
 
         # Optional precondition validation
         validate_preconditions = kw.get("validate_preconditions", True)
-        if validate_preconditions and G.graph.get(
-            "VALIDATE_OPERATOR_PRECONDITIONS", False
-        ):
+        if validate_preconditions and G.graph.get("VALIDATE_OPERATOR_PRECONDITIONS", False):
             self._validate_preconditions(G, node)
 
         # Capture state before operator application for metrics and validation
@@ -163,7 +169,6 @@ class Operator:
         Override in subclasses to implement specific validation logic.
         Base implementation does nothing.
         """
-        pass
 
     def _get_node_attr(self, G: TNFRGraph, node: Any, attr_name: str) -> float:
         """Get node attribute value.
@@ -224,21 +229,15 @@ class Operator:
         # Safely access glyph value
         glyph_value = None
         if self.glyph is not None:
-            glyph_value = (
-                self.glyph.value if hasattr(self.glyph, "value") else str(self.glyph)
-            )
+            glyph_value = self.glyph.value if hasattr(self.glyph, "value") else str(self.glyph)
 
         return {
             "operator": self.name,
             "glyph": glyph_value,
-            "delta_epi": float(get_attr(G.nodes[node], ALIAS_EPI, 0.0))
-            - state_before["epi"],
-            "delta_vf": float(get_attr(G.nodes[node], ALIAS_VF, 0.0))
-            - state_before["vf"],
-            "delta_dnfr": float(get_attr(G.nodes[node], ALIAS_DNFR, 0.0))
-            - state_before["dnfr"],
-            "delta_theta": float(get_attr(G.nodes[node], ALIAS_THETA, 0.0))
-            - state_before["theta"],
+            "delta_epi": float(get_attr(G.nodes[node], ALIAS_EPI, 0.0)) - state_before["epi"],
+            "delta_vf": float(get_attr(G.nodes[node], ALIAS_VF, 0.0)) - state_before["vf"],
+            "delta_dnfr": float(get_attr(G.nodes[node], ALIAS_DNFR, 0.0)) - state_before["dnfr"],
+            "delta_theta": float(get_attr(G.nodes[node], ALIAS_THETA, 0.0)) - state_before["theta"],
         }
 
 
@@ -903,9 +902,7 @@ class Coherence(Operator):
 
         # Capture C(t) before Coherence application
         C_global_before = compute_global_coherence(G)
-        C_local_before = compute_local_coherence(
-            G, node, radius=kw.get("coherence_radius", 1)
-        )
+        C_local_before = compute_local_coherence(G, node, radius=kw.get("coherence_radius", 1))
 
         # Capture ΔNFR before Coherence application for telemetry
         dnfr_before = float(get_attr(G.nodes[node], ALIAS_DNFR, 0.0))
@@ -919,9 +916,7 @@ class Coherence(Operator):
 
         # Capture C(t) after IL application
         C_global_after = compute_global_coherence(G)
-        C_local_after = compute_local_coherence(
-            G, node, radius=kw.get("coherence_radius", 1)
-        )
+        C_local_after = compute_local_coherence(G, node, radius=kw.get("coherence_radius", 1))
 
         # Capture ΔNFR after IL application for telemetry
         dnfr_after = float(get_attr(G.nodes[node], ALIAS_DNFR, 0.0))
@@ -1043,9 +1038,7 @@ class Coherence(Operator):
         if not neighbors:
             return  # No neighbors, no phase locking
 
-        theta_neighbors = [
-            float(get_attr(G.nodes[n], ALIAS_THETA, 0.0)) for n in neighbors
-        ]
+        theta_neighbors = [float(get_attr(G.nodes[n], ALIAS_THETA, 0.0)) for n in neighbors]
 
         # Compute mean phase using circular mean (angles wrap around 2π)
         # Convert to complex exponentials for circular averaging
@@ -1308,9 +1301,7 @@ class Dissonance(Operator):
         dissonance_magnitude = abs(dnfr_after - dnfr_before)
 
         # Propagate to network if enabled
-        propagate = kw.get(
-            "propagate_to_network", G.graph.get("OZ_ENABLE_PROPAGATION", True)
-        )
+        propagate = kw.get("propagate_to_network", G.graph.get("OZ_ENABLE_PROPAGATION", True))
         if propagate and dissonance_magnitude > 0:
             from ..dynamics.propagation import propagate_dissonance
 
@@ -2748,8 +2739,6 @@ class SelfOrganization(Operator):
         float
             Magnitude of EPI acceleration (always non-negative)
         """
-        from ..alias import get_attr
-        from ..constants.aliases import ALIAS_EPI
 
         # Get EPI history (maintained by node for temporal analysis)
         history = G.nodes[node].get("epi_history", [])
@@ -2767,9 +2756,7 @@ class SelfOrganization(Operator):
 
         return abs(d2_epi)
 
-    def _spawn_sub_epi(
-        self, G: TNFRGraph, node: Any, d2_epi: float, tau: float
-    ) -> None:
+    def _spawn_sub_epi(self, G: TNFRGraph, node: Any, d2_epi: float, tau: float) -> None:
         """Generate sub-EPI through bifurcation with vibrational metabolism.
 
         When acceleration exceeds threshold, creates nested sub-structure that:
@@ -2832,7 +2819,7 @@ class SelfOrganization(Operator):
         # Determine parent bifurcation level for hierarchical telemetry
         parent_level = G.nodes[node].get("_bifurcation_level", 0)
         child_level = parent_level + 1
-        
+
         # Construct hierarchy path for full traceability
         parent_path = G.nodes[node].get("_hierarchy_path", [])
         child_path = parent_path + [node]
@@ -2928,7 +2915,6 @@ class SelfOrganization(Operator):
             Identifier of the newly created sub-node
         """
         from ..constants import EPI_PRIMARY, VF_PRIMARY, THETA_PRIMARY, DNFR_PRIMARY
-        from ..dynamics import set_delta_nfr_hook
 
         # Generate unique sub-node ID
         sub_nodes_list = G.nodes[parent_node].get("sub_nodes", [])
@@ -2953,9 +2939,7 @@ class SelfOrganization(Operator):
                 "hierarchy_level": parent_hierarchy_level + 1,
                 "_bifurcation_level": child_level,  # Hierarchical depth tracking
                 "_hierarchy_path": child_path,  # Full ancestor chain
-                "epi_history": [
-                    float(sub_epi)
-                ],  # Initialize history for future bifurcation
+                "epi_history": [float(sub_epi)],  # Initialize history for future bifurcation
                 "glyph_history": [],
             },
         )
@@ -2978,36 +2962,36 @@ class SelfOrganization(Operator):
 
     def _validate_bifurcation_depth(self, G: TNFRGraph, node: Any) -> None:
         """Validate bifurcation depth before creating new sub-EPI.
-        
+
         Checks if the current bifurcation level is at or exceeds the configured
         maximum depth. Issues a warning if depth limit is reached but still
         allows the bifurcation (for flexibility in research contexts).
-        
+
         Parameters
         ----------
         G : TNFRGraph
             Graph containing the node
         node : Any
             Node about to undergo bifurcation
-            
+
         Notes
         -----
         TNFR Principle: Deep nesting reflects operational fractality (Invariant #7),
         but excessive depth may impact performance and interpretability. This
         validation provides observability without hard constraints.
-        
+
         The warning allows tracking when hierarchies become complex, enabling
         researchers to study bifurcation patterns while maintaining system
         performance awareness.
         """
         import logging
-        
+
         # Get current bifurcation level
         current_level = G.nodes[node].get("_bifurcation_level", 0)
-        
+
         # Get max depth from graph config (default: 5 levels)
         max_depth = int(G.graph.get("THOL_MAX_BIFURCATION_DEPTH", 5))
-        
+
         # Warn if at or exceeding maximum
         if current_level >= max_depth:
             logger = logging.getLogger(__name__)
@@ -3016,17 +3000,19 @@ class SelfOrganization(Operator):
                 f"maximum ({max_depth}). Deep nesting may impact performance. "
                 f"Consider adjusting THOL_MAX_BIFURCATION_DEPTH if intended."
             )
-            
+
             # Record warning in node for telemetry
             G.nodes[node]["_thol_max_depth_warning"] = True
-            
+
             # Record event for analysis
             events = G.graph.setdefault("thol_depth_warnings", [])
-            events.append({
-                "node": node,
-                "depth": current_level,
-                "max_depth": max_depth,
-            })
+            events.append(
+                {
+                    "node": node,
+                    "depth": current_level,
+                    "max_depth": max_depth,
+                }
+            )
 
     def _validate_collective_coherence(self, G: TNFRGraph, node: Any) -> None:
         """Validate collective coherence of sub-EPI ensemble after bifurcation.
@@ -3086,12 +3072,14 @@ class SelfOrganization(Operator):
 
             # Record event for analysis
             events = G.graph.setdefault("thol_coherence_warnings", [])
-            events.append({
-                "node": node,
-                "coherence": coherence,
-                "threshold": min_coherence,
-                "sub_epi_count": len(sub_epis),
-            })
+            events.append(
+                {
+                    "node": node,
+                    "coherence": coherence,
+                    "threshold": min_coherence,
+                    "sub_epi_count": len(sub_epis),
+                }
+            )
 
     def _validate_preconditions(self, G: TNFRGraph, node: Any) -> None:
         """Validate THOL-specific preconditions."""
@@ -3105,9 +3093,7 @@ class SelfOrganization(Operator):
         """Collect THOL-specific metrics."""
         from .metrics import self_organization_metrics
 
-        return self_organization_metrics(
-            G, node, state_before["epi"], state_before["vf"]
-        )
+        return self_organization_metrics(G, node, state_before["epi"], state_before["vf"])
 
 
 @register_operator
@@ -3507,13 +3493,13 @@ class Mutation(Operator):
         validate_postconditions = kw.get("validate_postconditions", False) or G.graph.get(
             "VALIDATE_OPERATOR_POSTCONDITIONS", False
         )
-        
+
         state_before = None
         if validate_postconditions:
             state_before = self._capture_state(G, node)
             # Also capture epi_kind if tracked
             state_before["epi_kind"] = G.nodes[node].get("epi_kind")
-        
+
         # Compute structural acceleration before base operator
         d2_epi = self._compute_epi_acceleration(G, node)
 
@@ -3534,7 +3520,7 @@ class Mutation(Operator):
         # Detect bifurcation potential if acceleration exceeds threshold
         if d2_epi > tau:
             self._detect_bifurcation_potential(G, node, d2_epi=d2_epi, tau=tau)
-        
+
         # Verify postconditions if enabled
         if validate_postconditions and state_before is not None:
             self._verify_postconditions(G, node, state_before)
@@ -3558,8 +3544,6 @@ class Mutation(Operator):
         float
             Magnitude of EPI acceleration (always non-negative)
         """
-        from ..alias import get_attr
-        from ..constants.aliases import ALIAS_EPI
 
         # Get EPI history (maintained by node for temporal analysis)
         history = G.nodes[node].get("epi_history", [])
@@ -3630,16 +3614,14 @@ class Mutation(Operator):
 
         validate_mutation(G, node)
 
-    def _verify_postconditions(
-        self, G: TNFRGraph, node: Any, state_before: dict[str, Any]
-    ) -> None:
+    def _verify_postconditions(self, G: TNFRGraph, node: Any, state_before: dict[str, Any]) -> None:
         """Verify ZHIR-specific postconditions.
-        
+
         Ensures that ZHIR fulfilled its contract:
         1. Phase was transformed (θ changed)
         2. Identity preserved (epi_kind maintained)
         3. Bifurcation handled (if detected)
-        
+
         Parameters
         ----------
         G : TNFRGraph
@@ -3656,15 +3638,15 @@ class Mutation(Operator):
             verify_identity_preserved,
             verify_bifurcation_handled,
         )
-        
+
         # Verify phase transformation
         verify_phase_transformed(G, node, state_before["theta"])
-        
+
         # Verify identity preservation (if tracked)
         epi_kind_before = state_before.get("epi_kind")
         if epi_kind_before is not None:
             verify_identity_preserved(G, node, epi_kind_before)
-        
+
         # Verify bifurcation handling
         verify_bifurcation_handled(G, node)
 
@@ -3778,8 +3760,8 @@ class Transition(Operator):
         Telemetry stored in G.graph["_nav_transitions"] tracks:
         - regime_origin, vf_before/after, theta_before/after, dnfr_before/after
         """
-        from ..alias import get_attr, set_attr
-        from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
+        from ..alias import get_attr
+        from ..constants.aliases import ALIAS_EPI
 
         # 1. Detect current regime and store for metrics collection
         current_regime = self._detect_regime(G, node)
@@ -3810,6 +3792,7 @@ class Transition(Operator):
 
         # 5. Apply grammar
         from . import apply_glyph_with_grammar
+
         apply_glyph_with_grammar(G, [node], self.glyph, kw.get("window"))
 
         # 6. Execute structural transition (BEFORE metrics collection)
@@ -3817,8 +3800,6 @@ class Transition(Operator):
 
         # 7. Optional nodal equation validation
         if validate_equation and state_before is not None:
-            from ..alias import get_attr
-            from ..constants.aliases import ALIAS_EPI
             from .nodal_equation import validate_nodal_equation
 
             dt = float(kw.get("dt", 1.0))
@@ -3946,9 +3927,7 @@ class Transition(Operator):
             del G.nodes[node]["preserved_epi"]
         # Keep silence_duration for telemetry/metrics - don't delete it
 
-    def _apply_structural_transition(
-        self, G: TNFRGraph, node: Any, regime: str, **kw: Any
-    ) -> None:
+    def _apply_structural_transition(self, G: TNFRGraph, node: Any, regime: str, **kw: Any) -> None:
         """Apply structural transformation based on regime origin.
 
         Parameters
@@ -4070,13 +4049,13 @@ class Recursivity(Operator):
         Hierarchical nesting depth for multi-scale recursion (default: 1).
         - depth=1: Shallow recursion (single level, no multi-scale constraint)
         - depth>1: Deep recursion (multi-level hierarchy, requires U5 stabilizers)
-        
+
     Notes
     -----
     **U5: Multi-Scale Coherence**: When depth>1, U5 grammar rule applies requiring
     scale stabilizers (IL or THOL) within ±3 operators to preserve coherence across
     hierarchical levels. This ensures C_parent ≥ α·ΣC_child per conservation principle.
-    
+
     See UNIFIED_GRAMMAR_RULES.md § U5 for complete physical derivation.
 
     Examples
@@ -4098,7 +4077,7 @@ class Recursivity(Operator):
     >>> run_sequence(G, node, [Recursivity()])
     >>> G.graph["echo_trace"]
     [(0.54, 0.95)]
-    
+
     Deep recursion example requiring U5 stabilizers:
     >>> from tnfr.operators.definitions import Recursivity, Coherence, Silence
     >>> # depth=3 creates multi-level hierarchy - requires IL for U5
@@ -4115,7 +4094,7 @@ class Recursivity(Operator):
 
     def __init__(self, depth: int = 1):
         """Initialize Recursivity operator with hierarchical depth.
-        
+
         Parameters
         ----------
         depth : int, optional

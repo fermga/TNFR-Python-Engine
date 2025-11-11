@@ -242,9 +242,7 @@ def test_run_sequence_deep_nesting() -> None:
     # Create deeply nested sequence
     from tnfr.tokens import Glyph
 
-    sequence = seq(
-        block(block(block(Glyph.SHA, repeat=1), repeat=1), repeat=1), wait(1)
-    )
+    sequence = seq(block(block(block(Glyph.SHA, repeat=1), repeat=1), repeat=1), wait(1))
 
     compiled = compile_sequence(sequence)
 

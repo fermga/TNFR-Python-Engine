@@ -116,9 +116,7 @@ def _profile_start_stop(
         def _start() -> float:
             return 0.0
 
-        def _stop(
-            metric: str, start: float
-        ) -> None:  # noqa: ARG001 - uniform signature
+        def _stop(metric: str, start: float) -> None:  # noqa: ARG001 - uniform signature
             return None
 
     return _start, _stop
@@ -272,10 +270,7 @@ def _resolve_parallel_jobs(n_jobs: int | None, total: int) -> int | None:
 
 
 def _is_numpy_like(obj) -> bool:
-    return (
-        getattr(obj, "dtype", None) is not None
-        and getattr(obj, "shape", None) is not None
-    )
+    return getattr(obj, "dtype", None) is not None and getattr(obj, "shape", None) is not None
 
 
 def _has_cached_numpy_buffers(data: dict, cache: DnfrCache | None) -> bool:
@@ -304,9 +299,7 @@ __all__ = (
 )
 
 
-def _write_dnfr_metadata(
-    G, *, weights: dict, hook_name: str, note: str | None = None
-) -> None:
+def _write_dnfr_metadata(G, *, weights: dict, hook_name: str, note: str | None = None) -> None:
     """Write a ``_DNFR_META`` block in ``G.graph`` with the mix and hook name.
 
     ``weights`` may include arbitrary components (phase/epi/vf/topo/etc.).
@@ -595,9 +588,7 @@ def _ensure_cached_array(
     return arr
 
 
-def _ensure_numpy_state_vectors(
-    data: MutableMapping[str, Any], np: ModuleType
-) -> DnfrVectorMap:
+def _ensure_numpy_state_vectors(data: MutableMapping[str, Any], np: ModuleType) -> DnfrVectorMap:
     """Synchronise list-based state vectors with their NumPy counterparts."""
 
     nodes = data.get("nodes") or ()
@@ -677,9 +668,7 @@ def _build_edge_index_arrays(
     return edge_src, edge_dst
 
 
-def _refresh_dnfr_vectors(
-    G: TNFRGraph, nodes: Sequence[NodeId], cache: DnfrCache
-) -> None:
+def _refresh_dnfr_vectors(G: TNFRGraph, nodes: Sequence[NodeId], cache: DnfrCache) -> None:
     """Update cached angle and state vectors for ΔNFR."""
     np_module = get_numpy()
     trig = compute_theta_trig(((n, G.nodes[n]) for n in nodes), np=np_module)
@@ -1021,13 +1010,9 @@ def _prepare_dnfr_data(
         result["epi"] = epi_np
     if vf_np is not None and getattr(vf_np, "shape", None) == (len(nodes),):
         result["vf"] = vf_np
-    if cos_theta_np is not None and getattr(cos_theta_np, "shape", None) == (
-        len(nodes),
-    ):
+    if cos_theta_np is not None and getattr(cos_theta_np, "shape", None) == (len(nodes),):
         result["cos_theta"] = cos_theta_np
-    if sin_theta_np is not None and getattr(sin_theta_np, "shape", None) == (
-        len(nodes),
-    ):
+    if sin_theta_np is not None and getattr(sin_theta_np, "shape", None) == (len(nodes),):
         result["sin_theta"] = sin_theta_np
     result["deg_array"] = deg_array
     result["edge_src"] = edge_src
@@ -1288,11 +1273,7 @@ def _init_bar_arrays(
             th_bar = np.array(theta, dtype=float)
             epi_bar = np.array(epi, dtype=float)
             vf_bar = np.array(vf, dtype=float)
-            deg_bar = (
-                np.array(degs, dtype=float)
-                if w_topo != 0.0 and degs is not None
-                else None
-            )
+            deg_bar = np.array(degs, dtype=float) if w_topo != 0.0 and degs is not None else None
     else:
         size = len(theta)
         if cache is not None:
@@ -1448,9 +1429,7 @@ def _compute_dnfr_common(
     )
 
     np_module = get_numpy()
-    if np_module is not None and isinstance(
-        count, getattr(np_module, "ndarray", tuple)
-    ):
+    if np_module is not None and isinstance(count, getattr(np_module, "ndarray", tuple)):
         np_arg = np_module
     else:
         np_arg = None
@@ -1486,11 +1465,7 @@ def _reset_numpy_buffer(
     size: int,
     np: ModuleType,
 ) -> np.ndarray:
-    if (
-        buffer is None
-        or getattr(buffer, "shape", None) is None
-        or buffer.shape[0] != size
-    ):
+    if buffer is None or getattr(buffer, "shape", None) is None or buffer.shape[0] != size:
         return np.zeros(size, dtype=float)
     buffer.fill(0.0)
     return buffer
@@ -1804,9 +1779,7 @@ def _accumulate_neighbors_broadcasted(
             else (resolved_chunk if use_chunks else component_rows)
         )
         workspace = (
-            np.empty((component_rows, workspace_length), dtype=float)
-            if workspace_length
-            else None
+            np.empty((component_rows, workspace_length), dtype=float) if workspace_length else None
         )
 
     if edge_count:
@@ -1940,9 +1913,7 @@ def _accumulate_neighbors_broadcasted(
                         _apply_full_bincount(count_row, unit_weight=True)
 
                     if deg_row is not None and deg_array is not None:
-                        np.take(
-                            deg_array, edge_dst_int, out=workspace[deg_row, :edge_count]
-                        )
+                        np.take(deg_array, edge_dst_int, out=workspace[deg_row, :edge_count])
                         _apply_full_bincount(deg_row, workspace[deg_row, :edge_count])
                 else:
                     # Workspace doesn't have enough rows, fall back to temporary arrays
@@ -2070,20 +2041,14 @@ def _build_neighbor_sums_common(
     if use_numpy and np_module is None and has_numpy_buffers:
         candidate = sys.modules.get("numpy")
         # Validate the candidate module has required NumPy attributes
-        if (
-            candidate is not None
-            and hasattr(candidate, "ndarray")
-            and hasattr(candidate, "empty")
-        ):
+        if candidate is not None and hasattr(candidate, "ndarray") and hasattr(candidate, "empty"):
             np_module = candidate
 
     if np_module is not None:
         if not nodes:
             return _init_neighbor_sums(data, np=np_module)
 
-        x, y, epi_sum, vf_sum, count, deg_sum, degs = _init_neighbor_sums(
-            data, np=np_module
-        )
+        x, y, epi_sum, vf_sum, count, deg_sum, degs = _init_neighbor_sums(data, np=np_module)
 
         # Reuse centralized sparse/dense decision from _prepare_dnfr_data.
         # The decision logic at lines 785-807 already computed prefer_sparse
@@ -2091,9 +2056,7 @@ def _build_neighbor_sums_common(
         prefer_sparse = data.get("prefer_sparse")
         if prefer_sparse is None:
             # Fallback: recompute if not set (defensive, should be rare)
-            prefer_sparse = _prefer_sparse_accumulation(
-                len(nodes), data.get("edge_count")
-            )
+            prefer_sparse = _prefer_sparse_accumulation(len(nodes), data.get("edge_count"))
             data["prefer_sparse"] = prefer_sparse
 
         use_dense = False
@@ -2787,9 +2750,7 @@ def dnfr_epi_vf_mixed(G: TNFRGraph, *, n_jobs: int | None = None) -> None:
         serial execution.
     """
 
-    epi_values = {
-        n: float(get_attr(nd, ALIAS_EPI, 0.0)) for n, nd in G.nodes(data=True)
-    }
+    epi_values = {n: float(get_attr(nd, ALIAS_EPI, 0.0)) for n, nd in G.nodes(data=True)}
     vf_values = {n: float(get_attr(nd, ALIAS_VF, 0.0)) for n, nd in G.nodes(data=True)}
     grads = {
         "epi": _NeighborAverageGradient(ALIAS_EPI, epi_values),
@@ -2821,9 +2782,7 @@ def dnfr_laplacian(G: TNFRGraph, *, n_jobs: int | None = None) -> None:
     wE = float(weights_cfg.get("epi", DEFAULTS["DNFR_WEIGHTS"]["epi"]))
     wV = float(weights_cfg.get("vf", DEFAULTS["DNFR_WEIGHTS"]["vf"]))
 
-    epi_values = {
-        n: float(get_attr(nd, ALIAS_EPI, 0.0)) for n, nd in G.nodes(data=True)
-    }
+    epi_values = {n: float(get_attr(nd, ALIAS_EPI, 0.0)) for n, nd in G.nodes(data=True)}
     vf_values = {n: float(get_attr(nd, ALIAS_VF, 0.0)) for n, nd in G.nodes(data=True)}
     grads = {
         "epi": _NeighborAverageGradient(ALIAS_EPI, epi_values),
@@ -2846,16 +2805,16 @@ def compute_delta_nfr_hamiltonian(
     cache_hamiltonian: bool = True,
     profile: MutableMapping[str, float] | None = None,
 ) -> None:
-    """Compute ΔNFR using rigorous Hamiltonian commutator formulation.
+    r"""Compute ΔNFR using rigorous Hamiltonian commutator formulation.
 
     This is the **canonical** TNFR method that constructs the internal
     Hamiltonian H_int = H_coh + H_freq + H_coupling explicitly and computes
     ΔNFR from the quantum commutator:
 
     .. math::
-        \Delta\text{NFR}_n = \\frac{i}{\hbar_{str}} \langle n | [\\hat{H}_{int}, \\rho_n] | n \\rangle
+        \Delta\text{NFR}_n = \frac{i}{\hbar_{str}} \langle n | [\hat{H}_{int}, \rho_n] | n \rangle
 
-    where \\rho_n = |n\\rangle\\langle n| is the density matrix for node n.
+    where \rho_n = |n\rangle\langle n| is the density matrix for node n.
 
     Theory
     ------
@@ -2863,12 +2822,12 @@ def compute_delta_nfr_hamiltonian(
     The internal Hamiltonian governs structural evolution through:
 
     .. math::
-        \\frac{\partial \text{EPI}}{\partial t} = \\nu_f \cdot \Delta\text{NFR}(t)
+        \frac{\partial \text{EPI}}{\partial t} = \nu_f \cdot \Delta\text{NFR}(t)
 
     with the reorganization operator defined as:
 
     .. math::
-        \Delta\text{NFR} = \\frac{d}{dt} + \\frac{i[\\hat{H}_{int}, \cdot]}{\hbar_{str}}
+        \Delta\text{NFR} = \frac{d}{dt} + \frac{i[\hat{H}_{int}, \cdot]}{\hbar_{str}}
 
     **Components**:
 

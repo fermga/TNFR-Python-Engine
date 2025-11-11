@@ -226,16 +226,16 @@ class TestPhysicsValidation:
     def test_current_start_operators_match_physics(self):
         """Current VALID_START_OPERATORS should match physics derivation."""
         result = validate_physics_derivation()
-        assert result["start_operators_valid"], (
-            f"VALID_START_OPERATORS mismatch: {result['discrepancies']}"
-        )
+        assert result[
+            "start_operators_valid"
+        ], f"VALID_START_OPERATORS mismatch: {result['discrepancies']}"
 
     def test_current_end_operators_match_physics(self):
         """Current VALID_END_OPERATORS should match physics derivation."""
         result = validate_physics_derivation()
-        assert result["end_operators_valid"], (
-            f"VALID_END_OPERATORS mismatch: {result['discrepancies']}"
-        )
+        assert result[
+            "end_operators_valid"
+        ], f"VALID_END_OPERATORS mismatch: {result['discrepancies']}"
 
     def test_start_operators_expected_equals_derived(self):
         """Expected start operators should match derived set."""
@@ -259,16 +259,14 @@ class TestOperatorSetsConsistency:
         """VALID_START_OPERATORS should equal physics-derived set."""
         derived = derive_start_operators_from_physics()
         assert VALID_START_OPERATORS == derived, (
-            f"VALID_START_OPERATORS={VALID_START_OPERATORS} "
-            f"!= derived={derived}"
+            f"VALID_START_OPERATORS={VALID_START_OPERATORS} " f"!= derived={derived}"
         )
 
     def test_valid_end_operators_matches_physics(self):
         """VALID_END_OPERATORS should equal physics-derived set."""
         derived = derive_end_operators_from_physics()
         assert VALID_END_OPERATORS == derived, (
-            f"VALID_END_OPERATORS={VALID_END_OPERATORS} "
-            f"!= derived={derived}"
+            f"VALID_END_OPERATORS={VALID_END_OPERATORS} " f"!= derived={derived}"
         )
 
 

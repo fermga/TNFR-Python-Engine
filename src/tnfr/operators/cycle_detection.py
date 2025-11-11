@@ -8,10 +8,10 @@ to TNFR canonical principles.
 from __future__ import annotations
 
 from enum import Enum
-from typing import TYPE_CHECKING, Any, Sequence
+from typing import TYPE_CHECKING, Sequence
 
 if TYPE_CHECKING:
-    from .grammar import StructuralPattern
+    pass
 
 from ..compat.dataclass import dataclass
 from ..config.operator_names import (
@@ -31,9 +31,7 @@ from ..config.operator_names import (
 # Note: This uses canonical names (coherence, resonance, etc.) rather than
 # glyph codes (IL, RA, etc.) from config.constants.STABILIZERS to match
 # the sequence validation format throughout the system.
-_STABILIZERS_SET = frozenset(
-    [COHERENCE, SELF_ORGANIZATION, SILENCE, RESONANCE, COUPLING]
-)
+_STABILIZERS_SET = frozenset([COHERENCE, SELF_ORGANIZATION, SILENCE, RESONANCE, COUPLING])
 
 __all__ = [
     "REGENERATORS",
@@ -211,9 +209,7 @@ class CycleDetector:
             )
 
         # Find all regenerators in sequence
-        regenerator_positions = [
-            i for i, op in enumerate(sequence) if op in REGENERATORS
-        ]
+        regenerator_positions = [i for i, op in enumerate(sequence) if op in REGENERATORS]
 
         if not regenerator_positions:
             return CycleAnalysis(
@@ -289,7 +285,7 @@ class CycleDetector:
 
         detector = AdvancedPatternDetector()
         # Complexity includes diversity as a factor
-        complexity = detector._calculate_complexity(sequence)
+        detector._calculate_complexity(sequence)
 
         # For cycles, we primarily care about diversity component
         unique_count = len(set(sequence))

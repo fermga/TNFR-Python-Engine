@@ -159,10 +159,7 @@ def _add_run_parser(sub: argparse._SubParsersAction) -> None:
         "--summary-limit",
         type=int,
         default=DEFAULT_SUMMARY_SERIES_LIMIT,
-        help=(
-            "Maximum number of samples per series in the summary (<=0 to"
-            " disable trimming)"
-        ),
+        help=("Maximum number of samples per series in the summary (<=0 to" " disable trimming)"),
     )
 
     math_group = p_run.add_argument_group("Mathematical dynamics")
@@ -187,8 +184,7 @@ def _add_run_parser(sub: argparse._SubParsersAction) -> None:
         nargs="+",
         metavar="λ",
         help=(
-            "Eigenvalues for the coherence operator (defaults to a flat"
-            " spectrum when omitted)"
+            "Eigenvalues for the coherence operator (defaults to a flat" " spectrum when omitted)"
         ),
     )
     math_group.add_argument(
@@ -264,10 +260,7 @@ def _add_metrics_parser(sub: argparse._SubParsersAction) -> None:
         "--summary-limit",
         type=int,
         default=None,
-        help=(
-            "Maximum number of samples per series in the summary (<=0 to"
-            " disable trimming)"
-        ),
+        help=("Maximum number of samples per series in the summary (<=0 to" " disable trimming)"),
     )
     p_met.set_defaults(func=cmd_metrics)
 

@@ -80,7 +80,7 @@ import cmath
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
-    from ..types import TNFRGraph, NodeId
+    from ..types import TNFRGraph
 
 from ..alias import get_attr
 from ..constants.aliases import ALIAS_THETA
@@ -181,9 +181,7 @@ def compute_phase_alignment(G: TNFRGraph, node: Any, radius: int = 1) -> float:
         neighbors = set(G.neighbors(node)) | {node}
     else:
         try:
-            neighbors = set(
-                nx.single_source_shortest_path_length(G, node, cutoff=radius).keys()
-            )
+            neighbors = set(nx.single_source_shortest_path_length(G, node, cutoff=radius).keys())
         except (nx.NetworkXError, KeyError):
             # Node not in graph or graph is empty
             neighbors = {node} if node in G.nodes else set()

@@ -79,9 +79,7 @@ def kuramoto_R_psi(G: TNFRGraph) -> tuple[float, float]:
     return R, psi
 
 
-def _kuramoto_common(
-    G: TNFRGraph, node: NodeId, _cfg: GammaSpec
-) -> tuple[float, float, float]:
+def _kuramoto_common(G: TNFRGraph, node: NodeId, _cfg: GammaSpec) -> tuple[float, float, float]:
     """Return ``(θ_i, R, ψ)`` for Kuramoto-based Γ functions.
 
     Reads cached global order ``R`` and mean phase ``ψ`` and obtains node
@@ -135,11 +133,7 @@ def _get_gamma_spec(G: TNFRGraph) -> GammaSpec:
     mapping_hash: str | None = None
     if isinstance(raw, Mapping):
         mapping_hash = _hash_mapping(raw)
-        if (
-            raw is cached_raw
-            and cached_spec is not None
-            and cached_hash == mapping_hash
-        ):
+        if raw is cached_raw and cached_spec is not None and cached_hash == mapping_hash:
             return cached_spec
     elif raw is cached_raw and cached_spec is not None and cached_hash is not None:
         return cached_spec
@@ -224,15 +218,11 @@ def _builder_bandpass(th_i: float, R: float, psi: float, beta: float) -> float:
     return beta * R * (1.0 - R) * sgn
 
 
-def _builder_tanh(
-    th_i: float, R: float, psi: float, beta: float, k: float, R0: float
-) -> float:
+def _builder_tanh(th_i: float, R: float, psi: float, beta: float, k: float, R0: float) -> float:
     return beta * math.tanh(k * (R - R0)) * math.cos(th_i - psi)
 
 
-def gamma_kuramoto_linear(
-    G: TNFRGraph, node: NodeId, t: float | int, cfg: GammaSpec
-) -> float:
+def gamma_kuramoto_linear(G: TNFRGraph, node: NodeId, t: float | int, cfg: GammaSpec) -> float:
     """Linear Kuramoto coupling for Γi(R).
 
     Formula: Γ = β · (R - R0) · cos(θ_i - ψ)
@@ -247,17 +237,13 @@ def gamma_kuramoto_linear(
     return _gamma_kuramoto(G, node, cfg, _builder_linear, beta=0.0, R0=0.0)
 
 
-def gamma_kuramoto_bandpass(
-    G: TNFRGraph, node: NodeId, t: float | int, cfg: GammaSpec
-) -> float:
+def gamma_kuramoto_bandpass(G: TNFRGraph, node: NodeId, t: float | int, cfg: GammaSpec) -> float:
     """Compute Γ = β · R(1-R) · sign(cos(θ_i - ψ))."""
 
     return _gamma_kuramoto(G, node, cfg, _builder_bandpass, beta=0.0)
 
 
-def gamma_kuramoto_tanh(
-    G: TNFRGraph, node: NodeId, t: float | int, cfg: GammaSpec
-) -> float:
+def gamma_kuramoto_tanh(G: TNFRGraph, node: NodeId, t: float | int, cfg: GammaSpec) -> float:
     """Saturating tanh coupling for Γi(R).
 
     Formula: Γ = β · tanh(k·(R - R0)) · cos(θ_i - ψ)
@@ -336,11 +322,7 @@ def eval_gamma(
     try:
         return float(entry.fn(G, node, t, spec))
     except (ValueError, TypeError, ArithmeticError) as exc:
-        level = (
-            log_level
-            if log_level is not None
-            else (logging.ERROR if strict else logging.DEBUG)
-        )
+        level = log_level if log_level is not None else (logging.ERROR if strict else logging.DEBUG)
         logger.log(
             level,
             "Failed to evaluate Γi for node %s at t=%s: %s: %s",

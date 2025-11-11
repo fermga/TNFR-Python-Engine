@@ -249,9 +249,7 @@ def ensure_coherence_monotonicity(
     if norm_kwargs is None:
         norm_kwargs = {}
 
-    values = _as_coherence_values(
-        coherence_series, space=space, norm_kwargs=norm_kwargs
-    )
+    values = _as_coherence_values(coherence_series, space=space, norm_kwargs=norm_kwargs)
 
     violations: list[CoherenceViolation] = []
 

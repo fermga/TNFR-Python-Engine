@@ -137,29 +137,22 @@ The TNFR grammar system follows a strict information hierarchy:
 
 **Grammar Invariant #3:** Every constraint has explicit physics derivation in UNIFIED_GRAMMAR_RULES.md.
 
-### Unified Canonical Constraints (U1-U4)
+### Unified Canonical Constraints (U1-U6)
 
-All grammar rules emerge inevitably from the nodal equation **∂EPI/∂t = νf · ΔNFR(t)** and TNFR invariants:
+**All grammar rules emerge inevitably from the nodal equation ∂EPI/∂t = νf · ΔNFR(t) and TNFR invariants.**
 
-#### U1: STRUCTURAL INITIATION & CLOSURE
-- **U1a**: Start with generators {AL, NAV, REMESH} when EPI=0
-- **U1b**: End with closures {SHA, NAV, REMESH, OZ}
-- **Basis**: ∂EPI/∂t undefined at EPI=0, sequences need coherent endpoints
+For complete physics derivations, canonical definitions, and implementation details, see:
+- **[UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md)** - Complete mathematical derivations
+- **[AGENTS.md § Unified Grammar](AGENTS.md#-unified-grammar-u1-u6)** - Concise reference
+- **[docs/grammar/02-CANONICAL-CONSTRAINTS.md](docs/grammar/02-CANONICAL-CONSTRAINTS.md)** - Technical specification
 
-#### U2: CONVERGENCE & BOUNDEDNESS
-- If destabilizers {OZ, ZHIR, VAL}, then include stabilizers {IL, THOL}
-- **Basis**: ∫νf·ΔNFR dt must converge (integral convergence theorem)
-
-#### U3: RESONANT COUPLING
-- If coupling/resonance {UM, RA}, then verify phase |φᵢ - φⱼ| ≤ Δφ_max
-- **Basis**: AGENTS.md Invariant #5 + resonance physics
-
-#### U4: BIFURCATION DYNAMICS
-- **U4a**: If triggers {OZ, ZHIR}, then include handlers {THOL, IL}
-- **U4b**: If transformers {ZHIR, THOL}, then recent destabilizer (~3 ops)
-- **Basis**: Contract OZ + bifurcation theory
-
-**Complete Reference**: See [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) for detailed physics derivations.
+**Quick Summary**:
+- **U1**: STRUCTURAL INITIATION & CLOSURE - Start with generators, end with closures
+- **U2**: CONVERGENCE & BOUNDEDNESS - Destabilizers require stabilizers
+- **U3**: RESONANT COUPLING - Phase verification required for coupling/resonance
+- **U4**: BIFURCATION DYNAMICS - Triggers need handlers, transformers need context
+- **U5**: MULTI-SCALE COHERENCE - Stabilizers required at each hierarchical level
+- **U6**: STRUCTURAL POTENTIAL CONFINEMENT - Monitor Δ Φ_s < 2.0 (escape threshold)
 
 ### Migration from Old Systems
 
@@ -170,7 +163,7 @@ The unified grammar consolidates two previously separate systems:
 
 **New Unified System** (U1-U4 in `grammar.py`) - Active
 
-See [GRAMMAR_MIGRATION_GUIDE.md](GRAMMAR_MIGRATION_GUIDE.md) for migration instructions.
+See [Grammar Migration Guide](docs/grammar/07-MIGRATION-AND-EVOLUTION.md) for migration instructions.
 
 ## Layered responsibilities
 

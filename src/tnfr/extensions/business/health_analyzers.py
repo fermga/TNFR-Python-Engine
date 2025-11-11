@@ -48,17 +48,13 @@ class ProcessHealthAnalyzer:
         metrics = {}
 
         # Compute business dimensions
-        metrics["efficiency_potential"] = self._calculate_efficiency_potential(
-            G, sequence
-        )
+        metrics["efficiency_potential"] = self._calculate_efficiency_potential(G, sequence)
         metrics["change_readiness"] = self._calculate_change_readiness(G, sequence)
         metrics["alignment_strength"] = self._calculate_alignment_strength(G, sequence)
 
         return metrics
 
-    def _calculate_efficiency_potential(
-        self, G: nx.Graph, sequence: List[str]
-    ) -> float:
+    def _calculate_efficiency_potential(self, G: nx.Graph, sequence: List[str]) -> float:
         """Calculate capacity for process efficiency improvement.
 
         Parameters
@@ -131,7 +127,7 @@ class ProcessHealthAnalyzer:
 
         # Change readiness requires both disruption and stabilization
         change_ratio = change_count / len(sequence)
-        stability_ratio = stability_count / len(sequence)
+        stability_count / len(sequence)
 
         # Need balance - too much disruption is risky
         if change_count > 0:
@@ -195,8 +191,6 @@ class ProcessHealthAnalyzer:
             cohesion_score = 0.5
 
         # Combine factors
-        alignment_strength = (
-            0.5 * alignment_ratio + 0.3 * cohesion_score + 0.2
-        ) + coherence_bonus
+        alignment_strength = (0.5 * alignment_ratio + 0.3 * cohesion_score + 0.2) + coherence_bonus
 
         return min(alignment_strength, 1.0)

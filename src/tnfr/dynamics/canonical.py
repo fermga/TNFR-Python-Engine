@@ -160,14 +160,10 @@ def validate_structural_frequency(
         value = float(nu_f)
     except TypeError as exc:
         # Non-convertible type (e.g., None, object())
-        raise TypeError(
-            f"Structural frequency must be numeric, got {type(nu_f).__name__}"
-        ) from exc
+        raise TypeError(f"Structural frequency must be numeric, got {type(nu_f).__name__}") from exc
     except ValueError as exc:
         # Invalid string value (e.g., "invalid")
-        raise ValueError(
-            f"Structural frequency must be a valid number, got {nu_f!r}"
-        ) from exc
+        raise ValueError(f"Structural frequency must be a valid number, got {nu_f!r}") from exc
 
     # Check for NaN or infinity using math.isfinite
     if not math.isfinite(value):
@@ -213,14 +209,10 @@ def validate_nodal_gradient(
         value = float(delta_nfr)
     except TypeError as exc:
         # Non-convertible type (e.g., None, object())
-        raise TypeError(
-            f"Nodal gradient must be numeric, got {type(delta_nfr).__name__}"
-        ) from exc
+        raise TypeError(f"Nodal gradient must be numeric, got {type(delta_nfr).__name__}") from exc
     except ValueError as exc:
         # Invalid string value (e.g., "invalid")
-        raise ValueError(
-            f"Nodal gradient must be a valid number, got {delta_nfr!r}"
-        ) from exc
+        raise ValueError(f"Nodal gradient must be a valid number, got {delta_nfr!r}") from exc
 
     # Check for NaN or infinity using math.isfinite
     if not math.isfinite(value):

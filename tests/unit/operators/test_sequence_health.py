@@ -135,7 +135,17 @@ class TestBalanceScore:
         """Severely imbalanced sequences should score low."""
         analyzer = SequenceHealthAnalyzer()
         # Many destabilizers, few stabilizers - create severe imbalance
-        sequence = [EMISSION, DISSONANCE, DISSONANCE, DISSONANCE, EXPANSION, TRANSITION, EXPANSION, COHERENCE, SILENCE]
+        sequence = [
+            EMISSION,
+            DISSONANCE,
+            DISSONANCE,
+            DISSONANCE,
+            EXPANSION,
+            TRANSITION,
+            EXPANSION,
+            COHERENCE,
+            SILENCE,
+        ]
 
         health = analyzer.analyze_health(sequence)
 
@@ -189,7 +199,9 @@ class TestSustainabilityIndex:
         health = analyzer.analyze_health(sequence)
 
         # Multiple unresolved dissonances (dissonance followed by 4 non-stabilizers)
-        assert health.sustainability_index < 0.9  # Still gets some credit for ending with stabilizer
+        assert (
+            health.sustainability_index < 0.9
+        )  # Still gets some credit for ending with stabilizer
         # May or may not have specific recommendation depending on exact calculation
 
     def test_regenerative_elements_increase_sustainability(self):
@@ -231,9 +243,19 @@ class TestComplexityEfficiency:
         analyzer = SequenceHealthAnalyzer()
         # 13 operators - quite long
         sequence = [
-            EMISSION, RECEPTION, COHERENCE, DISSONANCE, COUPLING,
-            RESONANCE, EXPANSION, CONTRACTION, SELF_ORGANIZATION,
-            MUTATION, TRANSITION, RECURSIVITY, SILENCE
+            EMISSION,
+            RECEPTION,
+            COHERENCE,
+            DISSONANCE,
+            COUPLING,
+            RESONANCE,
+            EXPANSION,
+            CONTRACTION,
+            SELF_ORGANIZATION,
+            MUTATION,
+            TRANSITION,
+            RECURSIVITY,
+            SILENCE,
         ]
 
         health = analyzer.analyze_health(sequence)
@@ -335,7 +357,15 @@ class TestOverallHealth:
         """Optimal sequences should have high overall health."""
         analyzer = SequenceHealthAnalyzer()
         # Well-balanced, complete, sustainable sequence
-        sequence = [EMISSION, RECEPTION, COHERENCE, DISSONANCE, SELF_ORGANIZATION, RESONANCE, SILENCE]
+        sequence = [
+            EMISSION,
+            RECEPTION,
+            COHERENCE,
+            DISSONANCE,
+            SELF_ORGANIZATION,
+            RESONANCE,
+            SILENCE,
+        ]
 
         health = analyzer.analyze_health(sequence)
 
@@ -394,8 +424,13 @@ class TestValidateSequenceWithHealth:
         assert result.passed
         assert result.health_metrics.overall_health > 0
         assert result.health_metrics.dominant_pattern in [
-            "activation", "therapeutic", "regenerative", "transformative",
-            "stabilization", "exploratory", "unknown"
+            "activation",
+            "therapeutic",
+            "regenerative",
+            "transformative",
+            "stabilization",
+            "exploratory",
+            "unknown",
         ]
 
 
@@ -416,14 +451,25 @@ class TestRecommendations:
         """Imbalanced sequences should generate balance recommendations."""
         analyzer = SequenceHealthAnalyzer()
         # Create severely imbalanced: many destabilizers, few stabilizers
-        sequence = [EMISSION, DISSONANCE, DISSONANCE, DISSONANCE, EXPANSION, TRANSITION, COHERENCE, SILENCE]
+        sequence = [
+            EMISSION,
+            DISSONANCE,
+            DISSONANCE,
+            DISSONANCE,
+            EXPANSION,
+            TRANSITION,
+            COHERENCE,
+            SILENCE,
+        ]
 
         health = analyzer.analyze_health(sequence)
 
         # Should recommend addressing imbalance or unresolved dissonance
         assert len(health.recommendations) > 0
-        assert any("imbalance" in rec.lower() or "stabilizer" in rec.lower() or "unresolved" in rec.lower()
-                   for rec in health.recommendations)
+        assert any(
+            "imbalance" in rec.lower() or "stabilizer" in rec.lower() or "unresolved" in rec.lower()
+            for rec in health.recommendations
+        )
 
     def test_recommendations_for_missing_stabilizer(self):
         """Sequences without final stabilizer should get recommendation."""
@@ -475,9 +521,19 @@ class TestEdgeCases:
         """Test sequence with all 13 operators."""
         analyzer = SequenceHealthAnalyzer()
         sequence = [
-            EMISSION, RECEPTION, COHERENCE, DISSONANCE, COUPLING,
-            RESONANCE, SILENCE, EXPANSION, CONTRACTION,
-            SELF_ORGANIZATION, MUTATION, TRANSITION, RECURSIVITY
+            EMISSION,
+            RECEPTION,
+            COHERENCE,
+            DISSONANCE,
+            COUPLING,
+            RESONANCE,
+            SILENCE,
+            EXPANSION,
+            CONTRACTION,
+            SELF_ORGANIZATION,
+            MUTATION,
+            TRANSITION,
+            RECURSIVITY,
         ]
 
         health = analyzer.analyze_health(sequence)

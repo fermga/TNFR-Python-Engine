@@ -49,9 +49,7 @@ def _has_numpy_support(np_obj: object) -> bool:
     """Return ``True`` when ``np_obj`` exposes the required NumPy API."""
 
     return isinstance(np_obj, ModuleType) or (
-        np_obj is not None
-        and hasattr(np_obj, "fromiter")
-        and hasattr(np_obj, "bincount")
+        np_obj is not None and hasattr(np_obj, "fromiter") and hasattr(np_obj, "bincount")
     )
 
 
@@ -288,10 +286,7 @@ def _update_epi_support(
 
     if _has_numpy_support(np) and node_count:
         epi_values = np.fromiter(
-            (
-                abs(_coerce_float(get_attr(nd, ALIAS_EPI, 0.0)))
-                for _, nd in G.nodes(data=True)
-            ),
+            (abs(_coerce_float(get_attr(nd, ALIAS_EPI, 0.0))) for _, nd in G.nodes(data=True)),
             dtype=float,
             count=node_count,
         )
@@ -300,10 +295,7 @@ def _update_epi_support(
         if count:
             total = float(epi_values[mask].sum())
     elif n_jobs is not None and n_jobs > 1 and node_count > 1:
-        values = [
-            abs(_coerce_float(get_attr(nd, ALIAS_EPI, 0.0)))
-            for _, nd in G.nodes(data=True)
-        ]
+        values = [abs(_coerce_float(get_attr(nd, ALIAS_EPI, 0.0))) for _, nd in G.nodes(data=True)]
         approx_chunk = math.ceil(len(values) / n_jobs) if n_jobs else None
         chunk_size = resolve_chunk_size(
             approx_chunk,

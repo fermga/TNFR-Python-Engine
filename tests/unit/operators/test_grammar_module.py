@@ -88,7 +88,7 @@ def test_validate_sequence_requires_valid_start() -> None:
 
 def test_validate_sequence_accepts_simple_sequences() -> None:
     """Simple sequences without intermediate operators are now valid.
-    
+
     NOTE: The requirement for explicit intermediate operators (DISSONANCE/COUPLING/RESONANCE)
     was removed as overly restrictive. COHERENCE provides sufficient structural transformation.
     """

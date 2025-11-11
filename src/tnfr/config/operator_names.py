@@ -220,9 +220,7 @@ def validate_physics_derivation() -> dict[str, Any]:
                 f"VALID_START_OPERATORS missing physics-derived operators: {missing}"
             )
         if extra:
-            discrepancies.append(
-                f"VALID_START_OPERATORS contains non-physics operators: {extra}"
-            )
+            discrepancies.append(f"VALID_START_OPERATORS contains non-physics operators: {extra}")
 
     end_valid = VALID_END_OPERATORS == expected_ends
     if not end_valid:
@@ -233,9 +231,7 @@ def validate_physics_derivation() -> dict[str, Any]:
                 f"VALID_END_OPERATORS missing physics-derived operators: {missing}"
             )
         if extra:
-            discrepancies.append(
-                f"VALID_END_OPERATORS contains non-physics operators: {extra}"
-            )
+            discrepancies.append(f"VALID_END_OPERATORS contains non-physics operators: {extra}")
 
     return {
         "start_operators_valid": start_valid,

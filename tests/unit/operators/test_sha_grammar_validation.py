@@ -54,7 +54,7 @@ class TestSHAProhibitedTransitions:
         # - Cannot introduce dissonance into paused node
         sequence = [EMISSION, RECEPTION, COHERENCE, SILENCE, DISSONANCE, COHERENCE, SILENCE]
         result = validate_sequence(sequence)
-        
+
         assert not result.passed, "SHA → OZ should be rejected"
         assert result.error is not None
         # Check error message contains SHA/Silence and OZ/Dissonance
@@ -70,7 +70,7 @@ class TestSHAProhibitedTransitions:
         # - Redundant operators serve no purpose
         sequence = [EMISSION, RECEPTION, COHERENCE, SILENCE, SILENCE]
         result = validate_sequence(sequence)
-        
+
         assert not result.passed, "SHA → SHA should be rejected"
         assert result.error is not None
         # Check error message indicates redundancy
@@ -86,16 +86,27 @@ class TestSHAValidTransitions:
         """SHA → AL is valid (reactivation from silence)."""
         # SHA → AL (emission) is valid reactivation pattern
         # Frequency: zero → high requires intermediate, but AL is special reactivation case
-        sequence = [EMISSION, RECEPTION, COHERENCE, SILENCE, EMISSION, RECEPTION, COHERENCE, SILENCE]
+        sequence = [
+            EMISSION,
+            RECEPTION,
+            COHERENCE,
+            SILENCE,
+            EMISSION,
+            RECEPTION,
+            COHERENCE,
+            SILENCE,
+        ]
         result = validate_sequence(sequence)
-        
+
         # Note: This may fail due to frequency rules (zero → high)
         # If it does, that's expected behavior - user should use SHA → medium → AL
         if not result.passed:
             # Verify it fails for frequency reasons, not SHA-specific reasons
             msg_lower = result.message.lower()
             # Should not mention SHA → OZ or SHA → SHA specifically
-            assert not ("silence" in msg_lower and "dissonance" in msg_lower and "contradicts" in msg_lower)
+            assert not (
+                "silence" in msg_lower and "dissonance" in msg_lower and "contradicts" in msg_lower
+            )
             assert "redundant" not in msg_lower
 
     def test_sha_to_reception_valid(self):
@@ -104,7 +115,7 @@ class TestSHAValidTransitions:
         # Frequency: zero → medium is allowed
         sequence = [EMISSION, RECEPTION, COHERENCE, SILENCE, RECEPTION, COHERENCE, SILENCE]
         result = validate_sequence(sequence)
-        
+
         assert result.passed, f"SHA → EN should be valid: {result.message}"
 
     def test_sha_to_coherence_valid(self):
@@ -113,7 +124,7 @@ class TestSHAValidTransitions:
         # Frequency: zero → medium is allowed
         sequence = [EMISSION, RECEPTION, COHERENCE, SILENCE, COHERENCE, SILENCE]
         result = validate_sequence(sequence)
-        
+
         # Note: This may trigger anti-pattern warning (silence → coherence)
         # but should not be blocked by grammar
         if not result.passed:
@@ -128,7 +139,7 @@ class TestSHAValidTransitions:
         # Frequency: zero → medium is allowed
         sequence = [EMISSION, RECEPTION, COHERENCE, SILENCE, TRANSITION]
         result = validate_sequence(sequence)
-        
+
         assert result.passed, f"SHA → NAV should be valid: {result.message}"
 
     def test_sha_to_coupling_valid(self):
@@ -137,7 +148,7 @@ class TestSHAValidTransitions:
         # Frequency: zero → medium is allowed
         sequence = [EMISSION, RECEPTION, COHERENCE, SILENCE, COUPLING, RESONANCE, SILENCE]
         result = validate_sequence(sequence)
-        
+
         assert result.passed, f"SHA → UM should be valid: {result.message}"
 
 
@@ -159,12 +170,14 @@ class TestSHATransitionAlternatives:
             SILENCE,
         ]
         result = validate_sequence(sequence)
-        
+
         # This may still fail due to frequency rules, but not SHA-specific rules
         if not result.passed:
             msg_lower = result.message.lower()
             # Should not mention SHA → OZ specifically
-            assert not ("silence" in msg_lower and "dissonance" in msg_lower and "contradicts" in msg_lower)
+            assert not (
+                "silence" in msg_lower and "dissonance" in msg_lower and "contradicts" in msg_lower
+            )
 
     def test_sha_emission_oz_valid(self):
         """SHA → AL → OZ is valid (emission reactivation before dissonance)."""
@@ -183,13 +196,15 @@ class TestSHATransitionAlternatives:
             SILENCE,
         ]
         result = validate_sequence(sequence)
-        
+
         # This may fail due to frequency rules (SHA → AL is zero → high)
         # but should not fail for SHA → OZ reasons
         if not result.passed:
             msg_lower = result.message.lower()
             # Should not mention SHA → OZ contradiction
-            assert not ("silence" in msg_lower and "dissonance" in msg_lower and "contradicts" in msg_lower)
+            assert not (
+                "silence" in msg_lower and "dissonance" in msg_lower and "contradicts" in msg_lower
+            )
 
 
 class TestOZtoSHAAllowed:
@@ -203,7 +218,7 @@ class TestOZtoSHAAllowed:
         # - Tension preserved for later processing
         sequence = [EMISSION, RECEPTION, COHERENCE, DISSONANCE, SILENCE]
         result = validate_sequence(sequence)
-        
+
         assert result.passed, f"OZ → SHA should be valid: {result.message}"
 
     def test_oz_coherence_sha_valid(self):
@@ -211,7 +226,7 @@ class TestOZtoSHAAllowed:
         # Resolve dissonance then pause
         sequence = [EMISSION, RECEPTION, COHERENCE, DISSONANCE, COHERENCE, SILENCE]
         result = validate_sequence(sequence)
-        
+
         assert result.passed, f"OZ → IL → SHA should be valid: {result.message}"
 
 
@@ -222,10 +237,10 @@ class TestSHAErrorMessages:
         """SHA → OZ error should explain TNFR structural contradiction."""
         sequence = [EMISSION, RECEPTION, COHERENCE, SILENCE, DISSONANCE, COHERENCE, SILENCE]
         result = validate_sequence(sequence)
-        
+
         assert not result.passed
         msg_lower = result.message.lower()
-        
+
         # Error message should mention:
         # - Silence/SHA
         # - Dissonance/OZ
@@ -243,10 +258,10 @@ class TestSHAErrorMessages:
         """SHA → SHA error should explain redundancy principle."""
         sequence = [EMISSION, RECEPTION, COHERENCE, SILENCE, SILENCE]
         result = validate_sequence(sequence)
-        
+
         assert not result.passed
         msg_lower = result.message.lower()
-        
+
         # Error message should mention:
         # - Redundant/consecutive
         # - Silence
@@ -259,17 +274,14 @@ class TestSHAErrorMessages:
         """SHA → OZ error should suggest valid alternative sequences."""
         sequence = [EMISSION, RECEPTION, COHERENCE, SILENCE, DISSONANCE, COHERENCE, SILENCE]
         result = validate_sequence(sequence)
-        
+
         assert not result.passed
         msg_lower = result.message.lower()
-        
+
         # Error should suggest alternatives:
         # - SHA → NAV → OZ (transition intermediary)
         # - SHA → AL → OZ (emission reactivation)
-        has_suggestion = any(
-            op in msg_lower
-            for op in ["transition", "nav", "emission", "al"]
-        )
+        has_suggestion = any(op in msg_lower for op in ["transition", "nav", "emission", "al"])
         assert has_suggestion, "Error should suggest alternative sequences"
 
 
@@ -280,18 +292,18 @@ class TestSHAGrammarIntegration:
         """Complex sequence using SHA correctly."""
         # Pattern: activate → explore → stabilize → pause → resume → stabilize → end
         sequence = [
-            EMISSION,         # Activate
-            RECEPTION,        # Receive
-            COHERENCE,        # Stabilize
-            DISSONANCE,       # Explore (before SHA, not after)
-            COHERENCE,        # Resolve
-            SILENCE,          # Pause
-            RECEPTION,        # Resume with reception (medium frequency)
-            COHERENCE,        # Stabilize
-            SILENCE,          # End
+            EMISSION,  # Activate
+            RECEPTION,  # Receive
+            COHERENCE,  # Stabilize
+            DISSONANCE,  # Explore (before SHA, not after)
+            COHERENCE,  # Resolve
+            SILENCE,  # Pause
+            RECEPTION,  # Resume with reception (medium frequency)
+            COHERENCE,  # Stabilize
+            SILENCE,  # End
         ]
         result = validate_sequence(sequence)
-        
+
         assert result.passed, f"Complex valid SHA sequence failed: {result.message}"
 
     def test_multiple_sha_with_intermediaries(self):
@@ -301,13 +313,13 @@ class TestSHAGrammarIntegration:
             EMISSION,
             RECEPTION,
             COHERENCE,
-            SILENCE,          # First pause
-            RECEPTION,        # Transform
+            SILENCE,  # First pause
+            RECEPTION,  # Transform
             COHERENCE,
-            SILENCE,          # Second pause (with intermediary)
+            SILENCE,  # Second pause (with intermediary)
         ]
         result = validate_sequence(sequence)
-        
+
         assert result.passed, f"Multiple SHA with intermediaries failed: {result.message}"
 
     def test_sha_in_regenerative_cycle(self):
@@ -320,9 +332,9 @@ class TestSHAGrammarIntegration:
             RESONANCE,
             EXPANSION,
             COHERENCE,
-            SILENCE,          # Pause before transition
-            TRANSITION,       # Transition to next cycle phase
+            SILENCE,  # Pause before transition
+            TRANSITION,  # Transition to next cycle phase
         ]
         result = validate_sequence(sequence)
-        
+
         assert result.passed, f"SHA in regenerative cycle failed: {result.message}"

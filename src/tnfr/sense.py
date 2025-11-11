@@ -98,9 +98,7 @@ def _weight(nd: Mapping[str, Any], mode: str) -> float:
     return MODE_FUNCS.get(mode, lambda _: 1.0)(nd)
 
 
-def _node_weight(
-    nd: Mapping[str, Any], weight_mode: str
-) -> tuple[str, float, complex] | None:
+def _node_weight(nd: Mapping[str, Any], weight_mode: str) -> tuple[str, float, complex] | None:
     """Return ``(glyph, weight, weighted_unit)`` or ``None`` if no glyph."""
     g = last_glyph(nd)
     if not g:
@@ -156,9 +154,7 @@ def _sigma_from_iterable(
     number of processed values under the ``"n"`` key.
     """
 
-    if isinstance(values, Iterable) and not isinstance(
-        values, (str, bytes, bytearray, Mapping)
-    ):
+    if isinstance(values, Iterable) and not isinstance(values, (str, bytes, bytearray, Mapping)):
         iterator = iter(values)
     else:
         iterator = iter((values,))
@@ -270,9 +266,7 @@ def sigma_vector(dist: Mapping[str, float]) -> SigmaVector:
     return _sigma_from_iterable(vectors)
 
 
-def sigma_vector_from_graph(
-    G: TNFRGraph, weight_mode: str | None = None
-) -> SigmaVector:
+def sigma_vector_from_graph(G: TNFRGraph, weight_mode: str | None = None) -> SigmaVector:
     """Global vector in the σ sense plane for a graph.
 
     Parameters

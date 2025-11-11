@@ -37,9 +37,7 @@ class HilbertSpace:
     def _as_vector(self, value: Sequence[complex] | np.ndarray) -> np.ndarray:
         vector = np.asarray(value, dtype=self.dtype)
         if vector.shape != (self.dimension,):
-            raise ValueError(
-                f"Vector must have shape ({self.dimension},), got {vector.shape!r}."
-            )
+            raise ValueError(f"Vector must have shape ({self.dimension},), got {vector.shape!r}.")
         return vector
 
     def inner_product(
@@ -60,16 +58,12 @@ class HilbertSpace:
         magnitude = max(value.real, 0.0)
         return float(np.sqrt(magnitude))
 
-    def is_normalized(
-        self, vector: Sequence[complex] | np.ndarray, *, atol: float = 1e-9
-    ) -> bool:
+    def is_normalized(self, vector: Sequence[complex] | np.ndarray, *, atol: float = 1e-9) -> bool:
         """Check whether a vector has unit norm within a tolerance."""
 
         return np.isclose(self.norm(vector), 1.0, atol=atol)
 
-    def _validate_basis(
-        self, basis: Sequence[Sequence[complex] | np.ndarray]
-    ) -> np.ndarray:
+    def _validate_basis(self, basis: Sequence[Sequence[complex] | np.ndarray]) -> np.ndarray:
         basis_list = list(basis)
         if len(basis_list) == 0:
             raise ValueError("An orthonormal basis must contain at least one vector.")
@@ -200,9 +194,7 @@ class BanachSpaceEPI(_EPIValidators):
         """Compute the tensor product against a :class:`HilbertSpace` vector."""
 
         raw_vector = hilbert_space.basis[0] if vector is None else vector
-        hilbert_vector = hilbert_space._as_vector(
-            raw_vector
-        )  # pylint: disable=protected-access
+        hilbert_vector = hilbert_space._as_vector(raw_vector)  # pylint: disable=protected-access
         return element.tensor(hilbert_vector)
 
     def compute_coherence_functional(

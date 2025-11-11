@@ -41,9 +41,7 @@ ChunkArgs = tuple[
 __all__ = ("coordinate_global_local_phase",)
 
 
-def _ensure_hist_deque(
-    hist: MutableMapping[str, Any], key: str, maxlen: int
-) -> deque[_DequeT]:
+def _ensure_hist_deque(hist: MutableMapping[str, Any], key: str, maxlen: int) -> deque[_DequeT]:
     """Ensure history entry ``key`` is a deque with ``maxlen``."""
 
     dq = hist.setdefault(key, deque(maxlen=maxlen))
@@ -296,12 +294,8 @@ def coordinate_global_local_phase(
         return float(attr_val if attr_val is not None else 0.0)
 
     theta_vals = [_theta_value(n) for n in nodes]
-    cos_vals = [
-        float(cos_map.get(n, math.cos(theta_vals[idx]))) for idx, n in enumerate(nodes)
-    ]
-    sin_vals = [
-        float(sin_map.get(n, math.sin(theta_vals[idx]))) for idx, n in enumerate(nodes)
-    ]
+    cos_vals = [float(cos_map.get(n, math.cos(theta_vals[idx]))) for idx, n in enumerate(nodes)]
+    sin_vals = [float(sin_map.get(n, math.sin(theta_vals[idx]))) for idx, n in enumerate(nodes)]
 
     if np is not None:
         theta_arr = cast(FloatArray, np.fromiter(theta_vals, dtype=float))
@@ -324,9 +318,7 @@ def coordinate_global_local_phase(
             for idx, n in enumerate(nodes)
         ]
         neighbor_arr = cast(FloatArray, np.fromiter(neighbor_means, dtype=float))
-        theta_updates = (
-            theta_arr + kG * (thG - theta_arr) + kL * (neighbor_arr - theta_arr)
-        )
+        theta_updates = theta_arr + kG * (thG - theta_arr) + kL * (neighbor_arr - theta_arr)
         for idx, node in enumerate(nodes):
             set_theta(G, node, float(theta_updates[int(idx)]))
         return

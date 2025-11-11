@@ -68,8 +68,7 @@ class JAXBackend(TNFRBackend):
             self._jnp = jnp
         except ImportError as exc:
             raise RuntimeError(
-                "JAX backend requires jax to be installed. "
-                "Install with: pip install jax jaxlib"
+                "JAX backend requires jax to be installed. " "Install with: pip install jax jaxlib"
             ) from exc
 
     @property

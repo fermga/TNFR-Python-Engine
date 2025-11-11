@@ -141,9 +141,7 @@ def _epi_to_storage(
     return serialize_bepi(value)
 
 
-def _get_bepi_attr(
-    mapping: Mapping[str, Any], aliases: tuple[str, ...], default: Any
-) -> Any:
+def _get_bepi_attr(mapping: Mapping[str, Any], aliases: tuple[str, ...], default: Any) -> Any:
     return get_attr(mapping, aliases, default, conv=lambda obj: obj)
 
 
@@ -320,9 +318,7 @@ class NodeNX(NodeProtocol):
             if effective_dim is None:
                 effective_dim = int(spectrum_length)
             elif spectrum_length != int(effective_dim):
-                raise ValueError(
-                    "Coherence spectrum size mismatch with requested dimension."
-                )
+                raise ValueError("Coherence spectrum size mismatch with requested dimension.")
 
         if effective_dim is None:
             return None
@@ -375,40 +371,28 @@ class NodeNX(NodeProtocol):
             effective_validation = bool(enable_math_validation)
         self.enable_math_validation: bool = effective_validation
         default_dimension = (
-            G.number_of_nodes()
-            if hasattr(G, "number_of_nodes")
-            else len(tuple(G.nodes))
+            G.number_of_nodes() if hasattr(G, "number_of_nodes") else len(tuple(G.nodes))
         )
         default_dimension = max(1, int(default_dimension))
-        self.hilbert_space: HilbertSpace = hilbert_space or HilbertSpace(
-            default_dimension
-        )
+        self.hilbert_space: HilbertSpace = hilbert_space or HilbertSpace(default_dimension)
         if coherence_operator is not None and (
             coherence_dim is not None
             or coherence_spectrum is not None
             or coherence_c_min is not None
         ):
-            raise ValueError(
-                "Provide either a coherence operator or factory parameters, not both."
-            )
+            raise ValueError("Provide either a coherence operator or factory parameters, not both.")
         if frequency_operator is not None and frequency_matrix is not None:
-            raise ValueError(
-                "Provide either a frequency operator or frequency matrix, not both."
-            )
+            raise ValueError("Provide either a frequency operator or frequency matrix, not both.")
 
-        self.coherence_operator: CoherenceOperator | None = (
-            self._prepare_coherence_operator(
-                coherence_operator,
-                dim=coherence_dim,
-                spectrum=coherence_spectrum,
-                c_min=coherence_c_min,
-            )
+        self.coherence_operator: CoherenceOperator | None = self._prepare_coherence_operator(
+            coherence_operator,
+            dim=coherence_dim,
+            spectrum=coherence_spectrum,
+            c_min=coherence_c_min,
         )
-        self.frequency_operator: FrequencyOperator | None = (
-            self._prepare_frequency_operator(
-                frequency_operator,
-                matrix=frequency_matrix,
-            )
+        self.frequency_operator: FrequencyOperator | None = self._prepare_frequency_operator(
+            frequency_operator,
+            matrix=frequency_matrix,
         )
         self.coherence_threshold: float | None = (
             float(coherence_threshold) if coherence_threshold is not None else None
@@ -423,9 +407,7 @@ class NodeNX(NodeProtocol):
         return self.G.nodes[self.n]
 
     @classmethod
-    def from_graph(
-        cls, G: TNFRGraph, n: NodeId, *, use_weak_cache: bool = False
-    ) -> "NodeNX":
+    def from_graph(cls, G: TNFRGraph, n: NodeId, *, use_weak_cache: bool = False) -> "NodeNX":
         """Return cached ``NodeNX`` for ``(G, n)`` with thread safety.
 
         Parameters
@@ -667,9 +649,7 @@ class NodeNX(NodeProtocol):
         def _metrics(state: np.ndarray, label: str) -> dict[str, Any]:
             metrics: dict[str, Any] = {}
             with context_flags(log_performance=False):
-                norm_passed, norm_value = runtime_normalized(
-                    state, hilbert, label=label
-                )
+                norm_passed, norm_value = runtime_normalized(state, hilbert, label=label)
                 metrics["normalized"] = bool(norm_passed)
                 metrics["norm"] = float(norm_value)
                 if effective_coherence is not None and threshold is not None:
@@ -688,15 +668,9 @@ class NodeNX(NodeProtocol):
                     )
                     metrics["frequency_positive"] = bool(freq_summary["passed"])
                     metrics["frequency_expectation"] = float(freq_summary["value"])
-                    metrics["frequency_projection_passed"] = bool(
-                        freq_summary["projection_passed"]
-                    )
-                    metrics["frequency_spectrum_psd"] = bool(
-                        freq_summary["spectrum_psd"]
-                    )
-                    metrics["frequency_spectrum_min"] = float(
-                        freq_summary["spectrum_min"]
-                    )
+                    metrics["frequency_projection_passed"] = bool(freq_summary["projection_passed"])
+                    metrics["frequency_spectrum_psd"] = bool(freq_summary["spectrum_psd"])
+                    metrics["frequency_spectrum_min"] = float(freq_summary["spectrum_min"])
                     metrics["frequency_enforced"] = bool(freq_summary["enforce"])
                 if effective_coherence is not None:
                     unitary_passed, unitary_norm = runtime_stable_unitary(

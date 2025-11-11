@@ -262,9 +262,7 @@ class TestGenerateForPattern:
     def test_generate_bootstrap_pattern(self):
         """Test generation targeting BOOTSTRAP pattern."""
         generator = ContextualSequenceGenerator(seed=42)
-        result = generator.generate_for_pattern(
-            target_pattern="BOOTSTRAP", min_health=0.65
-        )
+        result = generator.generate_for_pattern(target_pattern="BOOTSTRAP", min_health=0.65)
 
         assert result.sequence is not None
         assert len(result.sequence) >= 3
@@ -274,9 +272,7 @@ class TestGenerateForPattern:
     def test_generate_therapeutic_pattern(self):
         """Test generation targeting THERAPEUTIC pattern."""
         generator = ContextualSequenceGenerator(seed=42)
-        result = generator.generate_for_pattern(
-            target_pattern="THERAPEUTIC", min_health=0.75
-        )
+        result = generator.generate_for_pattern(target_pattern="THERAPEUTIC", min_health=0.75)
 
         assert result.sequence is not None
         # THERAPEUTIC pattern should include key operators
@@ -285,9 +281,7 @@ class TestGenerateForPattern:
     def test_generate_educational_pattern(self):
         """Test generation targeting EDUCATIONAL pattern."""
         generator = ContextualSequenceGenerator(seed=42)
-        result = generator.generate_for_pattern(
-            target_pattern="EDUCATIONAL", min_health=0.70
-        )
+        result = generator.generate_for_pattern(target_pattern="EDUCATIONAL", min_health=0.70)
 
         assert result.sequence is not None
         assert result.health_score >= 0.65  # May not always meet exact threshold
@@ -295,9 +289,7 @@ class TestGenerateForPattern:
     def test_generate_stabilize_pattern(self):
         """Test generation targeting STABILIZE pattern."""
         generator = ContextualSequenceGenerator(seed=42)
-        result = generator.generate_for_pattern(
-            target_pattern="STABILIZE", min_health=0.70
-        )
+        result = generator.generate_for_pattern(target_pattern="STABILIZE", min_health=0.70)
 
         assert result.sequence is not None
         # STABILIZE should end with stabilizer
@@ -306,9 +298,7 @@ class TestGenerateForPattern:
     def test_generate_explore_pattern(self):
         """Test generation targeting EXPLORE pattern."""
         generator = ContextualSequenceGenerator(seed=42)
-        result = generator.generate_for_pattern(
-            target_pattern="EXPLORE", min_health=0.70
-        )
+        result = generator.generate_for_pattern(target_pattern="EXPLORE", min_health=0.70)
 
         assert result.sequence is not None
         # EXPLORE should include dissonance and mutation
@@ -317,9 +307,7 @@ class TestGenerateForPattern:
     def test_generate_pattern_respects_max_length(self):
         """Test that pattern generation respects max_length."""
         generator = ContextualSequenceGenerator(seed=42)
-        result = generator.generate_for_pattern(
-            target_pattern="THERAPEUTIC", max_length=5
-        )
+        result = generator.generate_for_pattern(target_pattern="THERAPEUTIC", max_length=5)
 
         assert len(result.sequence) <= 5
 
@@ -363,9 +351,7 @@ class TestImproveSequence:
         generator = ContextualSequenceGenerator(seed=42)
         current = [EMISSION, COHERENCE]
 
-        improved, recommendations = generator.improve_sequence(
-            current, target_health=0.75
-        )
+        improved, recommendations = generator.improve_sequence(current, target_health=0.75)
 
         assert improved is not None
         assert len(recommendations) > 0
@@ -447,9 +433,7 @@ class TestHealthConstraints:
         total = len(test_cases)
 
         for domain, objective, min_health in test_cases:
-            result = generator.generate_for_context(
-                domain, objective, min_health=min_health
-            )
+            result = generator.generate_for_context(domain, objective, min_health=min_health)
             health = analyzer.analyze_health(result.sequence)
 
             # Consider "close enough" within 0.05
@@ -492,19 +476,19 @@ class TestPatternAccuracy:
         # Test that we can generate sequences for each pattern
         for pattern in target_patterns:
             result = generator.generate_for_pattern(pattern, min_health=0.60)
-            
+
             # Verify basic properties
             assert result.sequence is not None, f"Failed to generate sequence for {pattern}"
             assert len(result.sequence) >= 3, f"Sequence too short for {pattern}"
-            
+
             # Pattern matching is complex and depends on many factors
             # Just verify we get a recognized pattern (not UNKNOWN for non-trivial sequences)
             detected = detector.detect_pattern(result.sequence)
             # Should not be UNKNOWN unless sequence is very short
             if len(result.sequence) > 3:
-                assert detected.value != "UNKNOWN", (
-                    f"Generated sequence for {pattern} resulted in UNKNOWN pattern: {result.sequence}"
-                )
+                assert (
+                    detected.value != "UNKNOWN"
+                ), f"Generated sequence for {pattern} resulted in UNKNOWN pattern: {result.sequence}"
 
 
 # =============================================================================

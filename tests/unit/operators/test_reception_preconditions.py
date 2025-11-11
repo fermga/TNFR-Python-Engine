@@ -302,7 +302,9 @@ class TestReceptionOperatorWithValidation:
 
         # Should warn but not fail
         with pytest.warns(UserWarning) as warning_info:
-            Reception()(G, node, track_sources=False)  # Disable source tracking to test only preconditions
+            Reception()(
+                G, node, track_sources=False
+            )  # Disable source tracking to test only preconditions
 
         assert len(warning_info) > 0
         warning_msg = str(warning_info[0].message)

@@ -74,9 +74,7 @@ def test_operator_composition_chain_stability() -> None:
         composed = composed + scaled_op
 
         # Verify structural properties maintained
-        assert np.allclose(
-            composed, composed.conj().T
-        ), "Lost Hermitian property in chain"
+        assert np.allclose(composed, composed.conj().T), "Lost Hermitian property in chain"
         assert np.all(np.isfinite(composed)), "Non-finite values in composition chain"
 
 

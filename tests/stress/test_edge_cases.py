@@ -37,11 +37,11 @@ class TestEdgeCases:
         # Should validate
         result = validate_sequence(max_sequence)
         # Note: may fail due to grammar rules, that's OK
-        
+
         # Health analysis should handle it
         analyzer = SequenceHealthAnalyzer()
         health = analyzer.analyze_health(max_sequence)
-        
+
         assert health.sequence_length == 13
         assert 0.0 <= health.overall_health <= 1.0
 
@@ -65,7 +65,7 @@ class TestEdgeCases:
         for sequence in minimal_sequences:
             # Validation may pass or fail depending on grammar
             result = validate_sequence(sequence)
-            
+
             # Health analysis should always complete
             health = analyzer.analyze_health(sequence)
             assert health.sequence_length == len(sequence)
@@ -122,7 +122,15 @@ class TestEdgeCases:
             # All stabilizers
             ["emission", "reception", "coherence", "coherence", "silence"],
             # Alternating operators
-            ["emission", "reception", "coherence", "dissonance", "coherence", "dissonance", "silence"],
+            [
+                "emission",
+                "reception",
+                "coherence",
+                "dissonance",
+                "coherence",
+                "dissonance",
+                "silence",
+            ],
             # Only high frequency operators (where valid)
             ["emission", "resonance", "dissonance", "recursivity"],
         ]
@@ -133,7 +141,7 @@ class TestEdgeCases:
             # Should detect some pattern (even if "unknown" or "complex")
             pattern = detector.detect_pattern(sequence)
             assert pattern is not None
-            
+
             # Composition should complete
             composition = detector.analyze_sequence_composition(sequence)
             assert composition["primary_pattern"] is not None
@@ -142,10 +150,10 @@ class TestEdgeCases:
         """Test sequences with only high-frequency operators."""
         # Operators with high structural frequency
         high_freq_sequence = [
-            "emission",     # high
-            "resonance",    # high
-            "dissonance",   # high
-            "mutation",     # high
+            "emission",  # high
+            "resonance",  # high
+            "dissonance",  # high
+            "mutation",  # high
             "recursivity",  # medium (valid end)
         ]
 
@@ -154,7 +162,7 @@ class TestEdgeCases:
 
         # Should complete health analysis
         assert health.sequence_length == len(high_freq_sequence)
-        
+
         # Frequency harmony might be lower due to sustained high frequency
         # but should still be in valid range
         assert 0.0 <= health.frequency_harmony <= 1.0
@@ -196,14 +204,14 @@ class TestEdgeCases:
 
         # Should have low balance score due to destabilizer dominance
         assert 0.0 <= health.balance_score <= 1.0
-        
+
         # But overall health should still be computable
         assert 0.0 <= health.overall_health <= 1.0
 
     def test_cycle_detection_edge_cases(self):
         """Test cycle detection with edge case regenerator positions."""
         from tnfr.operators.cycle_detection import MIN_CYCLE_LENGTH
-        
+
         cycle_detector = CycleDetector()
 
         # Regenerator at very beginning
@@ -254,7 +262,7 @@ class TestEdgeCases:
 
         # Should compute health (may be lower)
         assert 0.0 <= health.overall_health <= 1.0
-        
+
         # Sustainability might be lower
         assert 0.0 <= health.sustainability_index <= 1.0
 
@@ -262,11 +270,11 @@ class TestEdgeCases:
         """Test sequences that could match multiple patterns."""
         # Sequence with characteristics of multiple patterns
         ambiguous = [
-            "emission",          # Activation
+            "emission",  # Activation
             "reception",
             "coherence",
-            "dissonance",        # Exploration
-            "self_organization", # Transformative
+            "dissonance",  # Exploration
+            "self_organization",  # Transformative
             "coherence",
             "silence",
         ]
@@ -335,7 +343,7 @@ class TestEdgeCases:
             result = validate_sequence(sequence)
             if not result.passed:
                 continue  # Skip invalid sequences
-                
+
             health = analyzer.analyze_health(sequence)
 
             # Poor sequences should have recommendations

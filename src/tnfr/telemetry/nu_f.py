@@ -162,9 +162,7 @@ class NuFTelemetryAccumulator:
         self._windows: Deque[NuFWindow] = deque()
         self._total_reorganisations = 0
         self._total_duration = 0.0
-        self._graph_ref: (
-            weakref.ReferenceType[GraphLike | MutableMapping[str, Any]] | None
-        ) = None
+        self._graph_ref: weakref.ReferenceType[GraphLike | MutableMapping[str, Any]] | None = None
         self.attach_graph(graph)
 
     @property
@@ -371,9 +369,7 @@ def ensure_nu_f_telemetry(
                 confidence_level is not None
                 and abs(accumulator.confidence_level - confidence_level) > 1e-12
             )
-            or (
-                history_limit is not None and accumulator.history_limit != history_limit
-            )
+            or (history_limit is not None and accumulator.history_limit != history_limit)
             or (window_limit is not None and accumulator.window_limit != window_limit)
         ):
             replace = True

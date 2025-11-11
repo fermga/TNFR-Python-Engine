@@ -9,8 +9,8 @@ From the nodal equation: ∂EPI/∂t = νf · ΔNFR(t)
 
 REMESH implements: **EPI(t) ↔ EPI(t-τ)** (operational fractality)
 
-REMESH enables patterns to echo across temporal and spatial scales while maintaining 
-coherence. "What persists at one scale can be rewritten at another, with coherence 
+REMESH enables patterns to echo across temporal and spatial scales while maintaining
+coherence. "What persists at one scale can be rewritten at another, with coherence
 propagating structurally, not imposed." - El pulso que nos atraviesa
 
 Canonical Physical Behavior
@@ -187,7 +187,7 @@ This implementation maintains a single, centralized flow:
 Key Capabilities
 ----------------
 - Structural memory: Pattern recognition across network nodes
-- Identity preservation: Fractal lineage tracking across reorganizations  
+- Identity preservation: Fractal lineage tracking across reorganizations
 - Coherence conservation: Validating structural fidelity during remeshing
 - Multi-modal recursivity: Hierarchical, rhizomatic, and fractal harmonic modes
 - Grammar-compliant: All operations respect unified grammar rules (U1-U5)
@@ -233,23 +233,23 @@ RemeshConfigValue: TypeAlias = bool | float | int
 @dataclass
 class StructuralIdentity:
     """Persistent fractal identity maintained across reorganizations.
-    
+
     Captures the canonical structural "signature" of a pattern that must be
     preserved as it echoes across scales. This implements TNFR's requirement
     that patterns maintain identity through reorganization.
-    
+
     **REMESH ↔ SHA Relationship**: According to TNFR theory, SHA (Silence)
     stabilizes latent network memory by reducing νf → 0, which freezes EPI
     via the nodal equation: ∂EPI/∂t = νf · ΔNFR → 0. When REMESH propagates
     patterns across scales, SHA-frozen nodes act as "structural anchors" that
     maintain identity during reorganization.
-    
+
     **Usage Pattern**:
     1. Apply SHA to freeze node: νf → 0, preserves EPI
     2. Capture identity from frozen state (this class)
     3. Apply REMESH to propagate pattern across scales
     4. Validate identity preservation post-reorganization
-    
+
     Attributes
     ----------
     epi_signature : float
@@ -264,61 +264,61 @@ class StructuralIdentity:
         History of transformations preserving this identity
     tolerance : float
         Maximum deviation for identity match (default: 0.1)
-        
+
     Notes
     -----
     From TNFR physics (definitions.py::Silence): SHA reduces νf causing
     ∂EPI/∂t → 0 regardless of ΔNFR. This creates "latent memory" - frozen
     structural patterns that REMESH can propagate coherently across scales.
-    
+
     **Do NOT reimplement SHA** - use existing Silence operator from
     tnfr.operators.definitions. This class only captures and validates
     identity, it does NOT apply SHA itself.
-    
+
     See Also
     --------
     tnfr.operators.definitions.Silence : SHA operator implementation
     SHA_ALGEBRA_PHYSICS.md : SHA as identity operator derivation
     """
-    
+
     epi_signature: float
     vf_range: tuple[float, float]
     phase_pattern: float | None = None
     frozen_by_sha: bool = False
     lineage: list[str] = field(default_factory=list)
     tolerance: float = 0.1
-    
+
     def matches(self, node_data: Mapping[str, Any], *, tolerance: float | None = None) -> bool:
         """Check if a node maintains this structural identity.
-        
+
         Parameters
         ----------
         node_data : Mapping
             Node attributes containing EPI, vf, and optionally phase
         tolerance : float, optional
             Override default tolerance for this check
-            
+
         Returns
         -------
         bool
             True if node matches this identity within tolerance
-            
+
         Notes
         -----
         If frozen_by_sha=True, vf check is relaxed since SHA-frozen patterns
         have νf ≈ 0 (frozen state) while maintaining identity via EPI.
         """
         tol = tolerance if tolerance is not None else self.tolerance
-        
+
         # Check EPI signature match (primary identity criterion)
         node_epi = _as_float(get_attr(node_data, ALIAS_EPI, 0.0))
         if abs(node_epi - self.epi_signature) > tol:
             return False
-        
+
         # Check vf range (relaxed if SHA-frozen)
         node_vf = _as_float(get_attr(node_data, ALIAS_VF, 0.0))
         vf_min, vf_max = self.vf_range
-        
+
         if self.frozen_by_sha:
             # SHA-frozen: accept low νf (frozen state) OR original range
             # (pattern may be reactivated after SHA)
@@ -330,32 +330,34 @@ class StructuralIdentity:
             # Normal check: must be within range
             if not (vf_min - tol <= node_vf <= vf_max + tol):
                 return False
-        
+
         # Check phase pattern if specified
         if self.phase_pattern is not None:
             from ..constants.aliases import ALIAS_THETA
+
             node_phase = _as_float(get_attr(node_data, ALIAS_THETA, None))
             if node_phase is None:
                 return False
             # Phase comparison with circular wrap-around
             import math
+
             phase_diff = abs(node_phase - self.phase_pattern)
             phase_diff = min(phase_diff, 2 * math.pi - phase_diff)
             if phase_diff > tol:
                 return False
-        
+
         return True
-    
+
     def record_transformation(self, operation: str) -> None:
         """Record a structural transformation in this identity's lineage.
-        
+
         Parameters
         ----------
         operation : str
             Description of the transformation applied
         """
         self.lineage.append(operation)
-    
+
     @classmethod
     def capture_from_node(
         cls,
@@ -365,10 +367,10 @@ class StructuralIdentity:
         tolerance: float = 0.1,
     ) -> "StructuralIdentity":
         """Capture structural identity from a node's current state.
-        
+
         This creates a "memory snapshot" of the node's structural signature
         that can be propagated via REMESH across scales.
-        
+
         Parameters
         ----------
         node_data : Mapping
@@ -379,24 +381,24 @@ class StructuralIdentity:
             already applied. Use tnfr.operators.definitions.Silence to apply SHA.
         tolerance : float, default=0.1
             Tolerance for future identity matching
-            
+
         Returns
         -------
         StructuralIdentity
             Captured structural identity
-            
+
         Notes
         -----
         **REMESH ↔ SHA Integration Pattern**:
-        
+
         1. Apply SHA operator to freeze node (see tnfr.operators.definitions.Silence)
         2. Call this method with is_sha_frozen=True to capture frozen state
         3. Apply REMESH to propagate pattern across scales
         4. Use identity.matches() to validate preservation
-        
+
         **DO NOT use this to apply SHA** - SHA is a separate operator that must
         be applied via the grammar system. This only captures state AFTER SHA.
-        
+
         Example
         -------
         >>> from tnfr.operators.definitions import Silence
@@ -415,17 +417,18 @@ class StructuralIdentity:
         """
         epi = _as_float(get_attr(node_data, ALIAS_EPI, 0.0))
         vf = _as_float(get_attr(node_data, ALIAS_VF, 0.0))
-        
+
         # For vf_range, use small window around current value
         # (unless SHA-frozen, in which case we expect νf ≈ 0)
         vf_tolerance = 0.1
         vf_min = max(0.0, vf - vf_tolerance)
         vf_max = vf + vf_tolerance
-        
+
         # Capture phase if present
         from ..constants.aliases import ALIAS_THETA
+
         phase = _as_float(get_attr(node_data, ALIAS_THETA, None))
-        
+
         identity = cls(
             epi_signature=epi,
             vf_range=(vf_min, vf_max),
@@ -433,12 +436,12 @@ class StructuralIdentity:
             frozen_by_sha=is_sha_frozen,
             tolerance=tolerance,
         )
-        
+
         if is_sha_frozen:
             identity.record_transformation(
                 "Captured from SHA-frozen state (latent structural memory)"
             )
-        
+
         return identity
 
 
@@ -449,27 +452,27 @@ def structural_similarity(
     metric: str = "euclidean",
 ) -> float:
     """Compute structural similarity between two EPI patterns.
-    
+
     Implements pattern matching for structural memory recognition.
     Returns a similarity score in [0, 1] where 1 = identical patterns.
-    
+
     Parameters
     ----------
     epi1, epi2 : float or array-like
         EPI patterns to compare. Can be scalars or vectors.
     metric : {'euclidean', 'cosine', 'correlation'}
         Distance/similarity metric to use
-        
+
     Returns
     -------
     float
         Similarity score in [0, 1], where 1 indicates identical patterns
-        
+
     Notes
     -----
     This function is fundamental to REMESH's structural memory capability,
     enabling pattern recognition across network scales.
-    
+
     Examples
     --------
     >>> structural_similarity(0.5, 0.52)  # Nearly identical scalars
@@ -483,35 +486,34 @@ def structural_similarity(
         # Fallback: scalar comparison only
         if isinstance(epi1, (list, tuple)) or isinstance(epi2, (list, tuple)):
             raise ImportError(
-                "NumPy required for vector EPI comparison. "
-                "Install numpy: pip install numpy"
+                "NumPy required for vector EPI comparison. " "Install numpy: pip install numpy"
             )
         # Simple scalar distance -> similarity
         distance = abs(float(epi1) - float(epi2))
         # Map distance to similarity using exponential decay
         # similarity = exp(-k * distance) where k controls sensitivity
         import math
+
         k = 5.0  # Sensitivity parameter (higher = stricter matching)
         return math.exp(-k * distance)
-    
+
     # NumPy available - use vector operations
     arr1 = np.atleast_1d(np.asarray(epi1, dtype=float))
     arr2 = np.atleast_1d(np.asarray(epi2, dtype=float))
-    
+
     if arr1.shape != arr2.shape:
-        raise ValueError(
-            f"EPI patterns must have same shape: {arr1.shape} vs {arr2.shape}"
-        )
-    
+        raise ValueError(f"EPI patterns must have same shape: {arr1.shape} vs {arr2.shape}")
+
     if metric == "euclidean":
         distance = np.linalg.norm(arr1 - arr2)
         # Normalize by dimension for fair comparison across scales
         distance /= np.sqrt(len(arr1))
         # Convert to similarity
         import math
+
         k = 5.0
         return float(math.exp(-k * distance))
-    
+
     elif metric == "cosine":
         # Cosine similarity: (a · b) / (||a|| ||b||)
         dot_product = np.dot(arr1, arr2)
@@ -522,7 +524,7 @@ def structural_similarity(
         similarity = dot_product / (norm1 * norm2)
         # Map [-1, 1] to [0, 1]
         return float((similarity + 1.0) / 2.0)
-    
+
     elif metric == "correlation":
         # Pearson correlation coefficient
         if len(arr1) < 2:
@@ -535,11 +537,9 @@ def structural_similarity(
             correlation = 1.0 if np.allclose(arr1, arr2) else 0.0
         # Map [-1, 1] to [0, 1]
         return float((correlation + 1.0) / 2.0)
-    
+
     else:
-        raise ValueError(
-            f"Unknown metric '{metric}'. Choose from: euclidean, cosine, correlation"
-        )
+        raise ValueError(f"Unknown metric '{metric}'. Choose from: euclidean, cosine, correlation")
 
 
 def structural_memory_match(
@@ -551,10 +551,10 @@ def structural_memory_match(
     metric: str = "euclidean",
 ) -> list[tuple[Hashable, float]]:
     """Identify nodes with EPI patterns similar to source node.
-    
+
     Implements REMESH's structural memory: recognizing coherent patterns
     across the network that resonate with the source pattern.
-    
+
     Parameters
     ----------
     G : TNFRGraph
@@ -567,22 +567,22 @@ def structural_memory_match(
         Minimum similarity score for a match
     metric : str, default='euclidean'
         Similarity metric (see structural_similarity)
-        
+
     Returns
     -------
     list of (node, similarity) tuples
         Nodes matching the source pattern, sorted by similarity (highest first)
-        
+
     Notes
     -----
     This function is critical for REMESH's ability to propagate patterns
     coherently across scales, as specified in TNFR theoretical foundation.
     """
     source_epi = _as_float(get_attr(G.nodes[source_node], ALIAS_EPI, 0.0))
-    
+
     if target_nodes is None:
         target_nodes = [n for n in G.nodes() if n != source_node]
-    
+
     matches = []
     for target in target_nodes:
         if target == source_node:
@@ -591,7 +591,7 @@ def structural_memory_match(
         similarity = structural_similarity(source_epi, target_epi, metric=metric)
         if similarity >= threshold:
             matches.append((target, similarity))
-    
+
     # Sort by similarity descending
     matches.sort(key=lambda x: x[1], reverse=True)
     return matches
@@ -602,35 +602,35 @@ def compute_structural_signature(
     node: Hashable,
 ) -> Any:
     """Compute multidimensional structural signature of a node.
-    
+
     The signature captures the node's complete structural identity including:
     - EPI: coherence magnitude
-    - νf: structural frequency  
+    - νf: structural frequency
     - θ: phase
     - ΔNFR: reorganization gradient
     - Topological properties: degree, local clustering
-    
+
     This signature enables REMESH's structural memory capability - recognizing
     the same pattern across different nodes and scales.
-    
+
     Parameters
     ----------
     G : TNFRGraph
         Network containing the node
     node : Hashable
         Node identifier whose signature to compute
-        
+
     Returns
     -------
     signature : ndarray, shape (n_features,)
         Normalized structural signature vector. If NumPy unavailable, returns
         a tuple of features.
-        
+
     Notes
     -----
     The signature is normalized to unit length for consistent similarity
     comparisons across different network scales and configurations.
-    
+
     Features included:
     1. EPI magnitude (coherence)
     2. νf (structural frequency in Hz_str)
@@ -638,7 +638,7 @@ def compute_structural_signature(
     4. ΔNFR (reorganization gradient)
     5. Normalized degree (relative connectivity)
     6. Local clustering coefficient (triadic closure)
-    
+
     Examples
     --------
     >>> G = nx.Graph()
@@ -652,23 +652,25 @@ def compute_structural_signature(
     epi = _as_float(get_attr(G.nodes[node], ALIAS_EPI, 0.0))
     vf = _as_float(get_attr(G.nodes[node], ALIAS_VF, 0.0))
     from ..constants.aliases import ALIAS_THETA
+
     theta = _as_float(get_attr(G.nodes[node], ALIAS_THETA, 0.0))
     dnfr = _as_float(get_attr(G.nodes[node], ALIAS_DNFR, 0.0))
-    
+
     # Compute topological features
     degree = G.degree(node) if G.has_node(node) else 0
     n_nodes = G.number_of_nodes()
     normalized_degree = degree / n_nodes if n_nodes > 0 else 0.0
-    
+
     # Local clustering coefficient (requires networkx)
     try:
         nx, _ = _get_networkx_modules()
         clustering = nx.clustering(G, node)
     except Exception:
         clustering = 0.0
-    
+
     # Build feature vector
     import math
+
     features = [
         epi,
         vf,
@@ -678,7 +680,7 @@ def compute_structural_signature(
         normalized_degree,
         clustering,
     ]
-    
+
     # Try to use NumPy for normalization
     np = _get_numpy()
     if np is not None:
@@ -702,11 +704,11 @@ def detect_recursive_patterns(
     min_cluster_size: int = 2,
 ) -> list[list[Hashable]]:
     """Detect groups of nodes with similar structural patterns.
-    
+
     These groups represent the same EPI pattern replicated across different
     nodes/scales in the network. This is fundamental to REMESH's capability
     to recognize and propagate structural identity.
-    
+
     Parameters
     ----------
     G : TNFRGraph
@@ -720,13 +722,13 @@ def detect_recursive_patterns(
     min_cluster_size : int, default=2
         Minimum number of nodes required to consider as a recursive pattern.
         Single nodes are not patterns.
-        
+
     Returns
     -------
     clusters : list of list
         Each cluster contains nodes sharing a structural pattern.
         Clusters are independent - nodes appear in at most one cluster.
-        
+
     Notes
     -----
     Algorithm uses greedy clustering:
@@ -734,10 +736,10 @@ def detect_recursive_patterns(
     2. For each unvisited node, find all similar nodes (similarity >= threshold)
     3. Form cluster if size >= min_cluster_size
     4. Mark all cluster members as visited
-    
+
     This implements TNFR's principle: "A node can recognize itself in other
     nodes" through structural resonance.
-    
+
     Examples
     --------
     >>> # Network with two groups of similar nodes
@@ -749,21 +751,21 @@ def detect_recursive_patterns(
     """
     nodes = list(G.nodes())
     n = len(nodes)
-    
+
     if n < min_cluster_size:
         return []
-    
+
     # Compute all signatures
     signatures = {}
     for node in nodes:
         signatures[node] = compute_structural_signature(G, node)
-    
+
     # Compute similarity matrix (only upper triangle needed)
     np = _get_numpy()
     if np is not None:
         # Use NumPy for efficient computation
         sig_array = np.array([signatures[node] for node in nodes])
-        
+
         if metric == "cosine":
             # Cosine similarity matrix
             norms = np.linalg.norm(sig_array, axis=1, keepdims=True)
@@ -773,7 +775,8 @@ def detect_recursive_patterns(
         elif metric == "euclidean":
             # Euclidean distance -> similarity
             from scipy.spatial.distance import pdist, squareform
-            distances = squareform(pdist(sig_array, metric='euclidean'))
+
+            distances = squareform(pdist(sig_array, metric="euclidean"))
             max_dist = np.sqrt(2)  # Max distance for unit vectors
             similarities = 1.0 - (distances / max_dist)
         elif metric == "correlation":
@@ -792,44 +795,40 @@ def detect_recursive_patterns(
                     similarities[(i, j)] = 1.0
                 elif i < j:
                     # Use existing structural_similarity function
-                    sim = structural_similarity(
-                        signatures[node1],
-                        signatures[node2],
-                        metric=metric
-                    )
+                    sim = structural_similarity(signatures[node1], signatures[node2], metric=metric)
                     similarities[(i, j)] = sim
                     similarities[(j, i)] = sim
-    
+
     # Greedy clustering
     visited = set()
     clusters = []
-    
+
     for i, node in enumerate(nodes):
         if node in visited:
             continue
-        
+
         # Find all similar nodes
         cluster = [node]
         visited.add(node)
-        
+
         for j, other_node in enumerate(nodes):
             if other_node in visited:
                 continue
-            
+
             # Get similarity
             if np is not None:
                 sim = similarities[i, j]
             else:
                 sim = similarities.get((i, j), 0.0)
-            
+
             if sim >= threshold:
                 cluster.append(other_node)
                 visited.add(other_node)
-        
+
         # Only keep clusters meeting minimum size
         if len(cluster) >= min_cluster_size:
             clusters.append(cluster)
-    
+
     return clusters
 
 
@@ -838,39 +837,39 @@ def identify_pattern_origin(
     cluster: Sequence[Hashable],
 ) -> Hashable | None:
     """Identify the origin node of a recursive structural pattern.
-    
+
     The origin is the node with the strongest structural manifestation,
     determined by combining coherence (EPI) and reorganization capacity (νf).
     This represents the "source" from which the pattern can most coherently
     propagate.
-    
+
     Parameters
     ----------
     G : TNFRGraph
         Network containing the cluster
     cluster : sequence of node identifiers
         Nodes sharing the same structural pattern
-        
+
     Returns
     -------
     origin_node : Hashable or None
         Node identified as pattern origin (highest structural strength).
         Returns None if cluster is empty.
-        
+
     Notes
     -----
     Structural strength score = EPI × νf
-    
+
     This metric captures:
     - EPI: How coherent the pattern is (magnitude)
     - νf: How actively the pattern reorganizes (frequency)
-    
+
     High score indicates a node that both maintains strong coherence AND
     has high reorganization capacity, making it ideal for propagation.
-    
+
     Physical interpretation: The origin node is the "loudest" instance of
     the pattern in the network's structural field.
-    
+
     Examples
     --------
     >>> cluster = [1, 2, 3]  # Nodes with similar patterns
@@ -879,7 +878,7 @@ def identify_pattern_origin(
     """
     if not cluster:
         return None
-    
+
     # Compute structural strength for each node
     scores = []
     for node in cluster:
@@ -888,7 +887,7 @@ def identify_pattern_origin(
         # Structural strength = coherence × reorganization capacity
         strength = epi * vf
         scores.append((strength, node))
-    
+
     # Return node with maximum strength
     scores.sort(reverse=True)
     return scores[0][1]
@@ -901,11 +900,11 @@ def propagate_structural_identity(
     propagation_strength: float = 0.5,
 ) -> None:
     """Propagate structural identity from origin to similar nodes.
-    
+
     This implements REMESH's core principle: nodes with similar patterns
     mutually reinforce their coherence through structural resonance.
     The origin's pattern is propagated to targets via weighted interpolation.
-    
+
     Parameters
     ----------
     G : TNFRGraph
@@ -919,25 +918,25 @@ def propagate_structural_identity(
         - 0.0: No effect (targets unchanged)
         - 1.0: Complete copy (targets become identical to origin)
         - 0.5: Balanced blending
-        
+
     Notes
     -----
     For each target node, updates:
     - EPI: new = (1-α)×old + α×origin
-    - νf: new = (1-α)×old + α×origin  
+    - νf: new = (1-α)×old + α×origin
     - θ: new = (1-α)×old + α×origin
-    
+
     Where α = propagation_strength.
-    
+
     Updates respect structural boundaries (EPI_MIN, EPI_MAX) via
     structural_clip to prevent overflow and maintain physical validity.
-    
+
     Records propagation in node's 'structural_lineage' attribute for
     traceability and analysis.
-    
+
     **TNFR Physics**: This preserves the nodal equation ∂EPI/∂t = νf·ΔNFR
     by interpolating the structural state rather than imposing it directly.
-    
+
     Examples
     --------
     >>> origin = 1
@@ -949,57 +948,65 @@ def propagate_structural_identity(
     origin_epi = _as_float(get_attr(G.nodes[origin_node], ALIAS_EPI, 0.0))
     origin_vf = _as_float(get_attr(G.nodes[origin_node], ALIAS_VF, 0.0))
     from ..constants.aliases import ALIAS_THETA
+
     origin_theta = _as_float(get_attr(G.nodes[origin_node], ALIAS_THETA, 0.0))
-    
+
     # Get structural bounds
     from ..constants import DEFAULTS
+
     epi_min = float(G.graph.get("EPI_MIN", DEFAULTS.get("EPI_MIN", -1.0)))
     epi_max = float(G.graph.get("EPI_MAX", DEFAULTS.get("EPI_MAX", 1.0)))
-    
+
     # Get clip mode
     clip_mode_str = str(G.graph.get("CLIP_MODE", "hard"))
     if clip_mode_str not in ("hard", "soft"):
         clip_mode_str = "hard"
-    
+
     # Propagate to each target
     for target in target_nodes:
         if target == origin_node:
             continue  # Don't propagate to self
-        
+
         # Get current target state
         target_epi = _as_float(get_attr(G.nodes[target], ALIAS_EPI, 0.0))
         target_vf = _as_float(get_attr(G.nodes[target], ALIAS_VF, 0.0))
         target_theta = _as_float(get_attr(G.nodes[target], ALIAS_THETA, 0.0))
-        
+
         # Interpolate toward origin pattern
         new_epi = (1.0 - propagation_strength) * target_epi + propagation_strength * origin_epi
         new_vf = (1.0 - propagation_strength) * target_vf + propagation_strength * origin_vf
-        new_theta = (1.0 - propagation_strength) * target_theta + propagation_strength * origin_theta
-        
+        new_theta = (
+            1.0 - propagation_strength
+        ) * target_theta + propagation_strength * origin_theta
+
         # Apply structural clipping to preserve boundaries
         from ..dynamics.structural_clip import structural_clip
+
         new_epi = structural_clip(new_epi, lo=epi_min, hi=epi_max, mode=clip_mode_str)  # type: ignore[arg-type]
-        
+
         # Update node attributes
         set_attr(G.nodes[target], ALIAS_EPI, new_epi)
         set_attr(G.nodes[target], ALIAS_VF, new_vf)
         set_attr(G.nodes[target], ALIAS_THETA, new_theta)
-        
+
         # Record lineage for traceability
-        if 'structural_lineage' not in G.nodes[target]:
-            G.nodes[target]['structural_lineage'] = []
-        
+        if "structural_lineage" not in G.nodes[target]:
+            G.nodes[target]["structural_lineage"] = []
+
         # Get current step for timestamp
         from ..glyph_history import current_step_idx
+
         step = current_step_idx(G)
-        
-        G.nodes[target]['structural_lineage'].append({
-            'origin': origin_node,
-            'step': step,
-            'propagation_strength': propagation_strength,
-            'epi_before': target_epi,
-            'epi_after': new_epi,
-        })
+
+        G.nodes[target]["structural_lineage"].append(
+            {
+                "origin": origin_node,
+                "step": step,
+                "propagation_strength": propagation_strength,
+                "epi_before": target_epi,
+                "epi_after": new_epi,
+            }
+        )
 
 
 @cache
@@ -1015,15 +1022,15 @@ def _get_numpy() -> ModuleType | None:
 
 class RemeshCoherenceLossError(Exception):
     """Raised when REMESH reorganization loses structural coherence.
-    
+
     REMESH must preserve coherence during reorganization. This error indicates
     that the structural fidelity dropped below acceptable thresholds, violating
     TNFR's requirement that "coherence propagates structurally, not imposed."
     """
-    
+
     def __init__(self, fidelity: float, min_fidelity: float, details: dict[str, Any] | None = None):
         """Initialize coherence loss error.
-        
+
         Parameters
         ----------
         fidelity : float
@@ -1036,7 +1043,7 @@ class RemeshCoherenceLossError(Exception):
         self.fidelity = fidelity
         self.min_fidelity = min_fidelity
         self.details = details or {}
-        
+
         super().__init__(
             f"REMESH coherence loss: structural fidelity {fidelity:.2%} "
             f"< minimum {min_fidelity:.2%}\n"
@@ -1052,14 +1059,14 @@ def validate_coherence_preservation(
     rollback_on_failure: bool = False,
 ) -> float:
     """Validate that reorganization preserved structural coherence.
-    
+
     Implements TNFR requirement that REMESH reorganization must occur
     "without loss of coherence" - the total structural stability must
     be maintained within acceptable bounds.
-    
+
     This function uses the canonical TNFR coherence computation from
     tnfr.metrics.common.compute_coherence() which is based on ΔNFR and dEPI.
-    
+
     Parameters
     ----------
     G_before : TNFRGraph
@@ -1070,38 +1077,38 @@ def validate_coherence_preservation(
         Minimum acceptable fidelity (coherence_after / coherence_before)
     rollback_on_failure : bool, default=False
         If True and fidelity check fails, raise RemeshCoherenceLossError
-        
+
     Returns
     -------
     float
         Structural fidelity score (coherence_after / coherence_before)
-        
+
     Raises
     ------
     RemeshCoherenceLossError
         If fidelity < min_fidelity and rollback_on_failure=True
-        
+
     Notes
     -----
     Structural fidelity ≈ 1.0 indicates perfect coherence preservation.
     Fidelity > 1.0 is possible (reorganization increased coherence).
     Fidelity < min_fidelity indicates unacceptable coherence loss.
-    
+
     Uses canonical TNFR coherence: C = 1/(1 + |ΔNFR|_mean + |dEPI|_mean)
     from tnfr.metrics.common module.
     """
     # Use canonical TNFR coherence computation
     from ..metrics.common import compute_coherence
-    
+
     coherence_before = compute_coherence(G_before)
     coherence_after = compute_coherence(G_after)
-    
+
     if coherence_before < 1e-10:
         # Edge case: network had no coherence to begin with
         return 1.0
-    
+
     structural_fidelity = coherence_after / coherence_before
-    
+
     if rollback_on_failure and structural_fidelity < min_fidelity:
         details = {
             "coherence_before": coherence_before,
@@ -1110,7 +1117,7 @@ def validate_coherence_preservation(
             "n_nodes_after": G_after.number_of_nodes(),
         }
         raise RemeshCoherenceLossError(structural_fidelity, min_fidelity, details)
-    
+
     return structural_fidelity
 
 
@@ -1244,12 +1251,8 @@ def apply_network_remesh(G: CommunityGraph) -> None:
 
     for n, nd in G.nodes(data=True):
         epi_now = _as_float(get_attr(nd, ALIAS_EPI, 0.0))
-        epi_old_l = _as_float(
-            past_l.get(n) if isinstance(past_l, Mapping) else None, epi_now
-        )
-        epi_old_g = _as_float(
-            past_g.get(n) if isinstance(past_g, Mapping) else None, epi_now
-        )
+        epi_old_l = _as_float(past_l.get(n) if isinstance(past_l, Mapping) else None, epi_now)
+        epi_old_g = _as_float(past_g.get(n) if isinstance(past_g, Mapping) else None, epi_now)
         mixed = (1 - alpha) * epi_now + alpha * epi_old_l
         mixed = (1 - alpha) * mixed + alpha * epi_old_g
 
@@ -1295,16 +1298,16 @@ def apply_network_remesh_with_memory(
     min_cluster_size: int = 2,
 ) -> None:
     """Apply REMESH with structural field memory activation.
-    
+
     This extended version of REMESH implements the theoretical capability
     of "structural memory": nodes can recognize themselves in other nodes
     through pattern similarity, enabling coherent propagation across scales.
-    
+
     The function performs:
     1. Standard REMESH reorganization (temporal EPI mixing)
     2. Pattern detection (find groups of structurally similar nodes)
     3. Identity propagation (reinforce shared patterns from origin nodes)
-    
+
     Parameters
     ----------
     G : TNFRGraph
@@ -1326,49 +1329,49 @@ def apply_network_remesh_with_memory(
     min_cluster_size : int, default=2
         Minimum nodes required to form a recursive pattern.
         Single isolated nodes are not considered patterns.
-        
+
     Notes
     -----
     **TNFR Physics**: This implements the principle that "coherence propagates
     structurally, not imposed" (TNFR.pdf § 4.2). Patterns that resonate across
     the network mutually reinforce through similarity-based coupling.
-    
+
     **Workflow**:
     1. `apply_network_remesh(G)` - Standard temporal memory mixing
     2. `detect_recursive_patterns(G, threshold)` - Find similar node groups
     3. For each cluster:
        - `identify_pattern_origin(G, cluster)` - Find strongest instance
        - `propagate_structural_identity(G, origin, targets)` - Reinforce pattern
-    
+
     **Telemetry**: Logs structural memory events to G.graph['history']['structural_memory_events']
     including cluster statistics and propagation metadata.
-    
-    **Canonical Relationships**: 
+
+    **Canonical Relationships**:
     - Hierarchical REMESH: Combine with IL (coherence) for stable multi-level propagation
     - Rhizomatic REMESH: Combine with UM (coupling) for decentralized pattern spread
     - Fractal Harmonic: Combine with RA (resonance) for symmetric amplification
-    
+
     Examples
     --------
     >>> # Standard REMESH with structural memory (recommended)
     >>> apply_network_remesh_with_memory(G)
-    >>> 
+    >>>
     >>> # Strict pattern matching with gentle propagation
     >>> apply_network_remesh_with_memory(
     ...     G,
     ...     similarity_threshold=0.85,
     ...     propagation_strength=0.3
     ... )
-    >>> 
+    >>>
     >>> # Disable structural memory (standard REMESH only)
     >>> apply_network_remesh_with_memory(G, enable_structural_memory=False)
     """
     # Phase 1: Apply standard REMESH (temporal memory)
     apply_network_remesh(G)
-    
+
     if not enable_structural_memory:
         return
-    
+
     # Phase 2: Structural memory - detect and propagate patterns
     try:
         # Detect recursive patterns across network
@@ -1378,18 +1381,18 @@ def apply_network_remesh_with_memory(
             metric=similarity_metric,
             min_cluster_size=min_cluster_size,
         )
-        
+
         # Propagate identity from origin to similar nodes
         propagation_events = []
         for cluster in clusters:
             if len(cluster) < min_cluster_size:
                 continue
-            
+
             # Identify strongest instance of pattern
             origin = identify_pattern_origin(G, cluster)
             if origin is None:
                 continue
-            
+
             # Propagate to other cluster members
             targets = [n for n in cluster if n != origin]
             if targets:
@@ -1399,38 +1402,41 @@ def apply_network_remesh_with_memory(
                     targets,
                     propagation_strength=propagation_strength,
                 )
-                
-                propagation_events.append({
-                    'origin': origin,
-                    'n_targets': len(targets),
-                    'targets': targets[:5],  # Sample for telemetry (avoid bloat)
-                })
-        
+
+                propagation_events.append(
+                    {
+                        "origin": origin,
+                        "n_targets": len(targets),
+                        "targets": targets[:5],  # Sample for telemetry (avoid bloat)
+                    }
+                )
+
         # Log structural memory event
         if G.graph.get("REMESH_LOG_EVENTS", REMESH_DEFAULTS["REMESH_LOG_EVENTS"]):
             from ..glyph_history import append_metric
+
             hist = G.graph.setdefault("history", {})
             append_metric(
                 hist,
                 "structural_memory_events",
                 {
-                    'n_clusters': len(clusters),
-                    'cluster_sizes': [len(c) for c in clusters],
-                    'n_propagations': len(propagation_events),
-                    'propagation_events': propagation_events[:10],  # Sample
-                    'similarity_threshold': similarity_threshold,
-                    'similarity_metric': similarity_metric,
-                    'propagation_strength': propagation_strength,
-                    'min_cluster_size': min_cluster_size,
+                    "n_clusters": len(clusters),
+                    "cluster_sizes": [len(c) for c in clusters],
+                    "n_propagations": len(propagation_events),
+                    "propagation_events": propagation_events[:10],  # Sample
+                    "similarity_threshold": similarity_threshold,
+                    "similarity_metric": similarity_metric,
+                    "propagation_strength": propagation_strength,
+                    "min_cluster_size": min_cluster_size,
                 },
             )
-    
+
     except Exception as e:
         # Graceful degradation: if structural memory fails, REMESH still applied
         import warnings
+
         warnings.warn(
-            f"Structural memory activation failed: {e}. "
-            "Standard REMESH applied successfully.",
+            f"Structural memory activation failed: {e}. " "Standard REMESH applied successfully.",
             RuntimeWarning,
             stacklevel=2,
         )
@@ -1444,9 +1450,7 @@ def _mst_edges_from_epi(
     """Return MST edges based on absolute EPI distance."""
     H = nx.Graph()
     H.add_nodes_from(nodes)
-    H.add_weighted_edges_from(
-        (u, v, abs(epi[u] - epi[v])) for u, v in combinations(nodes, 2)
-    )
+    H.add_weighted_edges_from((u, v, abs(epi[u] - epi[v])) for u, v in combinations(nodes, 2))
     return {_ordered_edge(u, v) for u, v in nx.minimum_spanning_edges(H, data=False)}
 
 
@@ -1529,9 +1533,7 @@ def _community_k_neighbor_edges(
                 v = ordered[left]
                 left -= 1
             else:
-                if abs(epi_u - epi_vals[ordered[left]]) <= abs(
-                    epi_vals[ordered[right]] - epi_u
-                ):
+                if abs(epi_u - epi_vals[ordered[left]]) <= abs(epi_vals[ordered[right]] - epi_u):
                     v = ordered[left]
                     left -= 1
                 else:
@@ -1575,9 +1577,7 @@ def _community_remesh(
     C = _community_graph(comms, epi, nx)
     mst_c = nx.minimum_spanning_tree(C, weight="weight")
     new_edges: set[RemeshEdge] = {_ordered_edge(u, v) for u, v in mst_c.edges()}
-    extra_edges, attempts, rewired_edges = _community_k_neighbor_edges(
-        C, k_val, p_rewire, rnd
-    )
+    extra_edges, attempts, rewired_edges = _community_k_neighbor_edges(C, k_val, p_rewire, rnd)
     new_edges |= extra_edges
 
     extra_degrees = {idx: 0 for idx in C.nodes()}
@@ -1641,16 +1641,12 @@ def apply_topological_remesh(
     rnd = make_rng(base_seed, -2, G)
 
     if mode is None:
-        mode = str(
-            G.graph.get("REMESH_MODE", REMESH_DEFAULTS.get("REMESH_MODE", "knn"))
-        )
+        mode = str(G.graph.get("REMESH_MODE", REMESH_DEFAULTS.get("REMESH_MODE", "knn")))
     mode = str(mode)
     nx, nx_comm = _get_networkx_modules()
     epi = {n: _as_float(get_attr(G.nodes[n], ALIAS_EPI, 0.0)) for n in nodes}
     mst_edges = _mst_edges_from_epi(nx, nodes, epi)
-    default_k = int(
-        G.graph.get("REMESH_COMMUNITY_K", REMESH_DEFAULTS.get("REMESH_COMMUNITY_K", 2))
-    )
+    default_k = int(G.graph.get("REMESH_COMMUNITY_K", REMESH_DEFAULTS.get("REMESH_COMMUNITY_K", 2)))
     k_val = max(1, int(k) if k is not None else default_k)
 
     if mode == "community":
@@ -1712,8 +1708,7 @@ def apply_remesh_if_globally_stable(
     if kwargs:
         unexpected = ", ".join(sorted(kwargs))
         raise TypeError(
-            "apply_remesh_if_globally_stable() got unexpected keyword argument(s): "
-            f"{unexpected}"
+            "apply_remesh_if_globally_stable() got unexpected keyword argument(s): " f"{unexpected}"
         )
 
     params = [
@@ -1760,9 +1755,7 @@ def apply_remesh_if_globally_stable(
         cfg[key] = conv(get_param(G, key))
     frac_req = _as_float(get_param(G, "FRACTION_STABLE_REMESH"))
     w_estab = (
-        stable_step_window
-        if stable_step_window is not None
-        else cfg["REMESH_STABILITY_WINDOW"]
+        stable_step_window if stable_step_window is not None else cfg["REMESH_STABILITY_WINDOW"]
     )
 
     hist = ensure_history(G)

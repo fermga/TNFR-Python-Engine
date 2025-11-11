@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     from ..types import NodeId, TNFRGraph
 
 from ..alias import get_attr, set_attr
-from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_VF, ALIAS_D2EPI
+from ..constants.aliases import ALIAS_DNFR, ALIAS_VF, ALIAS_D2EPI
 
 __all__ = [
     "NodalEquationViolation",
@@ -201,15 +201,11 @@ def validate_nodal_equation(
     """
     if tolerance is None:
         # Try graph configuration first, then use default constant
-        tolerance = float(
-            G.graph.get("NODAL_EQUATION_TOLERANCE", DEFAULT_NODAL_EQUATION_TOLERANCE)
-        )
+        tolerance = float(G.graph.get("NODAL_EQUATION_TOLERANCE", DEFAULT_NODAL_EQUATION_TOLERANCE))
 
     if clip_aware is None:
         # Try graph configuration first, then use default
-        clip_aware = G.graph.get(
-            "NODAL_EQUATION_CLIP_AWARE", DEFAULT_NODAL_EQUATION_CLIP_AWARE
-        )
+        clip_aware = G.graph.get("NODAL_EQUATION_CLIP_AWARE", DEFAULT_NODAL_EQUATION_CLIP_AWARE)
 
     # Measured rate of EPI change
     measured_depi_dt = (epi_after - epi_before) / dt if dt > 0 else 0.0

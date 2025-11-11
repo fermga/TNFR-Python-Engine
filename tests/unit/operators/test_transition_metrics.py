@@ -123,12 +123,12 @@ class TestPhaseShiftMetrics:
 
         theta_after = get_attr(G.nodes[node], ALIAS_THETA, 0.0)
         metrics = G.graph["operator_metrics"][-1]
-        
+
         # Verify phase shift magnitude matches actual change
         actual_shift = abs(theta_after - theta_before)
         if actual_shift > math.pi:
             actual_shift = 2 * math.pi - actual_shift
-        
+
         assert metrics["phase_shift_magnitude"] >= 0
         assert abs(metrics["phase_shift_signed"]) == metrics["phase_shift_magnitude"]
 
@@ -154,9 +154,7 @@ class TestPhaseShiftMetrics:
         # Verify wrapping occurred correctly
         assert abs(metrics["phase_shift_signed"]) <= math.pi
         # Allow for floating point tolerance
-        assert math.isclose(
-            metrics["phase_shift_signed"], expected_wrapped, abs_tol=0.1
-        )
+        assert math.isclose(metrics["phase_shift_signed"], expected_wrapped, abs_tol=0.1)
 
     def test_phase_shift_signed_preserves_direction(self):
         """Signed phase shift should preserve direction information."""
@@ -168,17 +166,19 @@ class TestPhaseShiftMetrics:
 
         theta_after = get_attr(G.nodes[node], ALIAS_THETA, 0.0)
         metrics = G.graph["operator_metrics"][-1]
-        
+
         # Calculate expected sign
         raw_shift = theta_after - theta_before
         if raw_shift > math.pi:
             raw_shift -= 2 * math.pi
         elif raw_shift < -math.pi:
             raw_shift += 2 * math.pi
-            
+
         # Verify sign is preserved
         if abs(raw_shift) > 1e-9:  # If there's actual movement
-            assert math.copysign(1.0, metrics["phase_shift_signed"]) == math.copysign(1.0, raw_shift)
+            assert math.copysign(1.0, metrics["phase_shift_signed"]) == math.copysign(
+                1.0, raw_shift
+            )
         assert metrics["delta_theta"] == metrics["phase_shift_signed"]
 
 
@@ -197,7 +197,7 @@ class TestStructuralScalingMetrics:
 
         vf_after = get_attr(G.nodes[node], ALIAS_VF, 0.0)
         metrics = G.graph["operator_metrics"][-1]
-        
+
         # Latent transition increases vf by 20%
         expected_scaling = vf_after / vf_before if vf_before > 0 else 1.0
         assert metrics["vf_scaling_factor"] > 1.0
@@ -386,19 +386,13 @@ class TestBackwardCompatibility:
         metrics = G.graph["operator_metrics"][-1]
 
         # theta_shift (legacy) should match phase_shift_magnitude (new)
-        assert math.isclose(
-            metrics["theta_shift"], metrics["phase_shift_magnitude"], abs_tol=1e-9
-        )
+        assert math.isclose(metrics["theta_shift"], metrics["phase_shift_magnitude"], abs_tol=1e-9)
 
         # dnfr_change (legacy) should match abs(delta_dnfr) (new)
-        assert math.isclose(
-            metrics["dnfr_change"], abs(metrics["delta_dnfr"]), abs_tol=1e-9
-        )
+        assert math.isclose(metrics["dnfr_change"], abs(metrics["delta_dnfr"]), abs_tol=1e-9)
 
         # vf_change (legacy) should match abs(delta_vf) (new)
-        assert math.isclose(
-            metrics["vf_change"], abs(metrics["delta_vf"]), abs_tol=1e-9
-        )
+        assert math.isclose(metrics["vf_change"], abs(metrics["delta_vf"]), abs_tol=1e-9)
 
 
 class TestSequenceIntegration:

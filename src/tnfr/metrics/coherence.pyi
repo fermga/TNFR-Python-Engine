@@ -96,9 +96,7 @@ StabilityChunkArgs = tuple[
     float,
     float,
 ]
-StabilityChunkResult = tuple[
-    int, int, float, float, list[float], list[float], list[float]
-]
+StabilityChunkResult = tuple[int, int, float, float, list[float], list[float], list[float]]
 MetricValue: TypeAlias
 MetricProvider = Callable[[], MetricValue]
 MetricRecord: TypeAlias

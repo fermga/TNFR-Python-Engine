@@ -17,7 +17,6 @@ if TYPE_CHECKING:
 
 from ..alias import get_attr
 from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_VF
-from ..types import Glyph
 
 __all__ = [
     "get_bifurcation_paths",
@@ -79,7 +78,7 @@ def get_bifurcation_paths(G: "TNFRGraph", node: "NodeId") -> list["Glyph"]:
         return []  # No bifurcation active
 
     # Get node state for path evaluation
-    dnfr = abs(float(get_attr(G.nodes[node], ALIAS_DNFR, 0.0)))
+    abs(float(get_attr(G.nodes[node], ALIAS_DNFR, 0.0)))
     epi = float(get_attr(G.nodes[node], ALIAS_EPI, 0.0))
     vf = float(get_attr(G.nodes[node], ALIAS_VF, 0.0))
     degree = G.degree(node)

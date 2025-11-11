@@ -74,9 +74,7 @@ from .types import DeltaNFRHook, NodeId, TNFRGraph
 
 try:  # pragma: no cover - optional dependency path exercised in CI extras
     import numpy as np
-except (
-    ImportError
-):  # pragma: no cover - optional dependency path exercised in CI extras
+except ImportError:  # pragma: no cover - optional dependency path exercised in CI extras
     np = None  # type: ignore[assignment]
 
 # ---------------------------------------------------------------------------
@@ -367,9 +365,7 @@ def create_math_nfr(
     """
 
     if np is None:
-        raise ImportError(
-            "create_math_nfr requires NumPy; install the 'tnfr[math]' extras."
-        )
+        raise ImportError("create_math_nfr requires NumPy; install the 'tnfr[math]' extras.")
 
     G, node = create_nfr(
         name,
@@ -403,9 +399,7 @@ def create_math_nfr(
         spectrum=coherence_spectrum,
         c_min=coherence_c_min,
     )
-    threshold = float(
-        coherence_threshold if coherence_threshold is not None else coherence.c_min
-    )
+    threshold = float(coherence_threshold if coherence_threshold is not None else coherence.c_min)
 
     frequency = _ensure_frequency_operator(
         operator=frequency_operator,
@@ -479,13 +473,10 @@ def create_math_nfr(
         ),
         "frequency_spectrum_min": (
             float(frequency_summary.get("spectrum_min", 0.0))
-            if isinstance(frequency_summary, Mapping)
-            and "spectrum_min" in frequency_summary
+            if isinstance(frequency_summary, Mapping) and "spectrum_min" in frequency_summary
             else None
         ),
-        "unitary_passed": bool(
-            summary.get("unitary_stability", {}).get("passed", False)
-        ),
+        "unitary_passed": bool(summary.get("unitary_stability", {}).get("passed", False)),
     }
 
     node_context = {
@@ -640,9 +631,7 @@ def run_sequence(G: TNFRGraph, node: NodeId, ops: Iterable[Operator]) -> None:
                     or v.severity == InvariantSeverity.CRITICAL
                 ]
                 warning_violations = [
-                    v
-                    for v in semantic_violations
-                    if v.severity == InvariantSeverity.WARNING
+                    v for v in semantic_violations if v.severity == InvariantSeverity.WARNING
                 ]
 
                 # Always raise on errors
@@ -661,7 +650,7 @@ def run_sequence(G: TNFRGraph, node: NodeId, ops: Iterable[Operator]) -> None:
             run_sequence._invariant_validator.validate_and_raise(  # type: ignore[attr-defined]
                 G, validation_config.min_severity
             )
-        except Exception as e:
+        except Exception:
             # If validation fails, provide context but don't block if it's just warnings
             if validation_config.min_severity != InvariantSeverity.WARNING:
                 raise
@@ -677,10 +666,7 @@ def run_sequence(G: TNFRGraph, node: NodeId, ops: Iterable[Operator]) -> None:
             compute(G)
 
         # Per-step validation (expensive, only if configured)
-        if (
-            validation_config.validate_each_step
-            and validation_config.validate_invariants
-        ):
+        if validation_config.validate_each_step and validation_config.validate_invariants:
             violations = run_sequence._invariant_validator.validate_graph(  # type: ignore[attr-defined]
                 G, InvariantSeverity.ERROR
             )
@@ -699,7 +685,7 @@ def run_sequence(G: TNFRGraph, node: NodeId, ops: Iterable[Operator]) -> None:
             run_sequence._invariant_validator.validate_and_raise(  # type: ignore[attr-defined]
                 G, validation_config.min_severity
             )
-        except Exception as e:
+        except Exception:
             # If validation fails, provide context but don't block if it's just warnings
             if validation_config.min_severity != InvariantSeverity.WARNING:
                 raise

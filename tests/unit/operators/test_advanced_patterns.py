@@ -193,7 +193,7 @@ def test_bootstrap_pattern_too_long():
 
 def test_explore_pattern_detection():
     """Test detection of explore pattern: OZ→ZHIR→IL (controlled exploration).
-    
+
     Note: Patterns are detected in priority order. This test creates a sequence
     where EXPLORE is the best match without triggering higher-priority patterns.
     """
@@ -229,7 +229,7 @@ def test_stabilize_pattern_with_resonance():
 
 def test_complex_pattern_detection():
     """Test detection of complex patterns (>8 ops with multiple sub-patterns).
-    
+
     Note: With coherence weighting, FRACTAL (weight 2.0) may win over BIFURCATED
     (weight 2.0) or COMPLEX (weight 1.5) depending on match quality.
     """
@@ -249,7 +249,11 @@ def test_complex_pattern_detection():
     ]
     pattern = detector.detect_pattern(sequence)
     # Should be one of the high-coherence patterns
-    assert pattern in {StructuralPattern.COMPLEX, StructuralPattern.BIFURCATED, StructuralPattern.FRACTAL}
+    assert pattern in {
+        StructuralPattern.COMPLEX,
+        StructuralPattern.BIFURCATED,
+        StructuralPattern.FRACTAL,
+    }
 
 
 # Basic pattern fallback tests ---------------------------------------------
@@ -332,7 +336,7 @@ def test_sequence_composition_analysis():
         SILENCE,
     ]
     analysis = detector.analyze_sequence_composition(sequence)
-    
+
     assert "primary_pattern" in analysis
     assert analysis["primary_pattern"] == StructuralPattern.THERAPEUTIC.value
     assert "components" in analysis
@@ -354,7 +358,7 @@ def test_composition_identifies_components():
         SILENCE,
     ]
     analysis = detector.analyze_sequence_composition(sequence)
-    
+
     components = analysis["components"]
     assert "bootstrap" in components  # AL→UM→IL
     assert "explore" in components  # OZ→ZHIR→IL
@@ -364,11 +368,11 @@ def test_composition_identifies_components():
 def test_complexity_score_calculation():
     """Test complexity score reflects sequence characteristics."""
     detector = AdvancedPatternDetector()
-    
+
     # Simple sequence
     simple = [EMISSION, RECEPTION, COHERENCE, SILENCE]
     simple_analysis = detector.analyze_sequence_composition(simple)
-    
+
     # Complex sequence
     complex_seq = [
         EMISSION,
@@ -383,7 +387,7 @@ def test_complexity_score_calculation():
         RESONANCE,
     ]
     complex_analysis = detector.analyze_sequence_composition(complex_seq)
-    
+
     # Complex should have higher score
     assert complex_analysis["complexity_score"] > simple_analysis["complexity_score"]
 
@@ -394,7 +398,7 @@ def test_domain_suitability_assessment():
     # Therapeutic-like sequence
     sequence = [RECEPTION, EMISSION, COHERENCE, DISSONANCE, SELF_ORGANIZATION, COHERENCE]
     analysis = detector.analyze_sequence_composition(sequence)
-    
+
     suitability = analysis["domain_suitability"]
     assert "therapeutic" in suitability
     assert "educational" in suitability
@@ -413,7 +417,7 @@ def test_structural_health_metrics():
         SILENCE,
     ]
     analysis = detector.analyze_sequence_composition(sequence)
-    
+
     health = analysis["structural_health"]
     assert "stabilizer_count" in health
     assert "destabilizer_count" in health
@@ -439,7 +443,7 @@ def test_validate_sequence_detects_advanced_patterns():
         SILENCE,
     ]
     result = validate_sequence(sequence)
-    
+
     assert result.passed
     assert "detected_pattern" in result.metadata
     # Pattern will be detected based on structure
@@ -456,7 +460,7 @@ def test_parse_sequence_with_bootstrap_pattern():
     # Bootstrap must satisfy grammar rules: needs EN→IL segment
     sequence = [EMISSION, RECEPTION, COUPLING, COHERENCE, SILENCE]
     result = parse_sequence(sequence)
-    
+
     assert result.passed
     # Pattern detection happens, check it's valid
     pattern = result.metadata["detected_pattern"]
@@ -470,16 +474,16 @@ def test_parse_sequence_with_bootstrap_pattern():
 def test_advanced_pattern_backward_compatibility():
     """Test that basic patterns still work (backward compatibility)."""
     detector = AdvancedPatternDetector()
-    
+
     # Test all basic patterns still detected
     linear = [EMISSION, RECEPTION, COHERENCE, RESONANCE, SILENCE]
     assert detector.detect_pattern(linear) == StructuralPattern.LINEAR
-    
+
     hierarchical = [EMISSION, RECEPTION, SELF_ORGANIZATION, SILENCE]
     pattern = detector.detect_pattern(hierarchical)
     # Could be HIERARCHICAL or domain-specific if matches signature
     assert pattern in {StructuralPattern.HIERARCHICAL, StructuralPattern.THERAPEUTIC}
-    
+
     bifurcated = [EMISSION, RECEPTION, DISSONANCE, MUTATION, COHERENCE, SILENCE]
     pattern = detector.detect_pattern(bifurcated)
     # Could be BIFURCATED or EXPLORE depending on detection priority
@@ -545,7 +549,7 @@ def test_partial_pattern_matching():
 
 def test_multiple_patterns_in_long_sequence():
     """Test detection when multiple patterns exist in one sequence.
-    
+
     With coherence weighting, FRACTAL (weight 2.0) or BIFURCATED (weight 2.0)
     may win over compositional patterns (weight 1.0).
     """

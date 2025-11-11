@@ -29,8 +29,6 @@ from ..config.operator_names import (
     MUTATION,
     RECEPTION,
     RECURSIVITY,
-    RESONANCE,
-    SELF_ORGANIZATION,
     SILENCE,
     TRANSITION,
 )
@@ -94,9 +92,7 @@ class AdaptiveSequenceSelector:
         }
 
         # Performance history: sequence_name -> [coherence_gains]
-        self.performance: Dict[str, List[float]] = {
-            k: [] for k in self.sequences.keys()
-        }
+        self.performance: Dict[str, List[float]] = {k: [] for k in self.sequences.keys()}
 
     def select_sequence(self, context: Dict[str, Any]) -> List[str]:
         """Select optimal sequence based on context and historical performance.

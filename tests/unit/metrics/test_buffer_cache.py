@@ -12,9 +12,7 @@ from tnfr.metrics.buffer_cache import ensure_numpy_buffers
 def test_ensure_numpy_buffers_basic():
     """Verify basic buffer allocation with correct shapes."""
     G = nx.Graph([(0, 1), (1, 2)])
-    buffers = ensure_numpy_buffers(
-        G, key_prefix="_test_basic", count=10, buffer_count=3, np=np
-    )
+    buffers = ensure_numpy_buffers(G, key_prefix="_test_basic", count=10, buffer_count=3, np=np)
     assert len(buffers) == 3
     assert all(buf.shape == (10,) for buf in buffers)
     assert all(buf.dtype == np.dtype(float) for buf in buffers)
@@ -23,12 +21,8 @@ def test_ensure_numpy_buffers_basic():
 def test_ensure_numpy_buffers_caches():
     """Verify buffers are cached and reused."""
     G = nx.Graph([(0, 1)])
-    buffers1 = ensure_numpy_buffers(
-        G, key_prefix="_test_cache", count=5, buffer_count=2, np=np
-    )
-    buffers2 = ensure_numpy_buffers(
-        G, key_prefix="_test_cache", count=5, buffer_count=2, np=np
-    )
+    buffers1 = ensure_numpy_buffers(G, key_prefix="_test_cache", count=5, buffer_count=2, np=np)
+    buffers2 = ensure_numpy_buffers(G, key_prefix="_test_cache", count=5, buffer_count=2, np=np)
     # Same cache key should return same buffer objects
     assert buffers1[0] is buffers2[0]
     assert buffers1[1] is buffers2[1]
@@ -37,9 +31,7 @@ def test_ensure_numpy_buffers_caches():
 def test_ensure_numpy_buffers_different_counts():
     """Verify different counts create separate cache entries."""
     G = nx.Graph([(0, 1)])
-    buffers_small = ensure_numpy_buffers(
-        G, key_prefix="_test_diff", count=5, buffer_count=2, np=np
-    )
+    buffers_small = ensure_numpy_buffers(G, key_prefix="_test_diff", count=5, buffer_count=2, np=np)
     buffers_large = ensure_numpy_buffers(
         G, key_prefix="_test_diff", count=10, buffer_count=2, np=np
     )
@@ -55,15 +47,11 @@ def test_ensure_numpy_buffers_edge_version_invalidation():
     from tnfr.utils import increment_edge_version
 
     G = nx.Graph([(0, 1)])
-    buffers1 = ensure_numpy_buffers(
-        G, key_prefix="_test_edge", count=5, buffer_count=1, np=np
-    )
+    buffers1 = ensure_numpy_buffers(G, key_prefix="_test_edge", count=5, buffer_count=1, np=np)
     # Change graph structure
     G.add_edge(2, 3)
     increment_edge_version(G)
-    buffers2 = ensure_numpy_buffers(
-        G, key_prefix="_test_edge", count=5, buffer_count=1, np=np
-    )
+    buffers2 = ensure_numpy_buffers(G, key_prefix="_test_edge", count=5, buffer_count=1, np=np)
     # Should be different objects after edge change
     assert buffers1[0] is not buffers2[0]
 
@@ -71,13 +59,9 @@ def test_ensure_numpy_buffers_edge_version_invalidation():
 def test_ensure_numpy_buffers_zero_count_clamps():
     """Verify zero or negative count is clamped to 1."""
     G = nx.Graph()
-    buffers = ensure_numpy_buffers(
-        G, key_prefix="_test_zero", count=0, buffer_count=1, np=np
-    )
+    buffers = ensure_numpy_buffers(G, key_prefix="_test_zero", count=0, buffer_count=1, np=np)
     assert buffers[0].shape == (1,)
-    buffers_neg = ensure_numpy_buffers(
-        G, key_prefix="_test_neg", count=-5, buffer_count=1, np=np
-    )
+    buffers_neg = ensure_numpy_buffers(G, key_prefix="_test_neg", count=-5, buffer_count=1, np=np)
     assert buffers_neg[0].shape == (1,)
 
 

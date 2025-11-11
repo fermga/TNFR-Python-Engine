@@ -83,6 +83,34 @@ Quick operational reference for the Resonant Fractal Nature Theory (TNFR). This 
 
 ---
 
+### Structural Potential (Φ_s)
+
+**Code:** `compute_structural_potential(G, alpha=2.0)` → Dict[NodeId, float]  
+**Symbol:** \(\Phi_s(i)\)  
+**Formula:** \(\Phi_s(i) = \sum_{j \neq i} \frac{\Delta\text{NFR}_j}{d(i,j)^\alpha}\) where \(\alpha = 2\)  
+**What:** Emergent potential field from network ΔNFR distribution  
+**Status:** ✅ **CANONICAL** (promoted 2025-11-11)  
+**Validation:** 2,400+ experiments, corr(Δ Φ_s, ΔC) = -0.822, CV = 0.1%  
+**Physics:** Passive equilibrium landscape (minima = potential wells)  
+**Grammar:** U6 STRUCTURAL POTENTIAL CONFINEMENT (Δ Φ_s < 2.0)  
+**API:** `tnfr.physics.fields.compute_structural_potential()`  
+**Validation:** `tnfr.operators.grammar.validate_structural_potential_confinement()`  
+**Math/Physics:** 
+- [UNIFIED_GRAMMAR_RULES.md § U6](UNIFIED_GRAMMAR_RULES.md) - Complete derivation
+- [TNFR_FORCES_EMERGENCE.md § 14-15](docs/TNFR_FORCES_EMERGENCE.md) - Empirical validation
+- [src/tnfr/physics/fields.py](src/tnfr/physics/fields.py) - Implementation
+
+**Interpretation:**
+- Φ_s minima = passive equilibrium states
+- Δ Φ_s < 2.0 = system confined (safe regime)
+- Δ Φ_s ≥ 2.0 = escape threshold (fragmentation risk)
+- Valid sequences: Δ Φ_s ≈ 0.6 (30% of threshold)
+- Violations: Δ Φ_s ≈ 3.9 (195% of threshold)
+
+**Mechanism:** Grammar U1-U5 acts as passive confinement (NOT active attractor). Reduces escape drift by 85%.
+
+---
+
 ## The Nodal Equation
 
 **The fundamental equation of TNFR** governs structural evolution:
@@ -109,26 +137,46 @@ Quick operational reference for the Resonant Fractal Nature Theory (TNFR). This 
 
 ## Structural Operators
 
-13 canonical operators that modify EPI through resonant interactions. Each operator has preconditions and postconditions defined in the grammar.
+The 13 canonical operators are the **only way** to modify nodes in TNFR. They're not arbitrary functions—they're **resonant transformations** with rigorous physics.
 
-| Symbol | Name | Effect | Usage |
-|--------|------|--------|-------|
-| AL | Emission | Initiate pattern | Start trajectories |
-| EN | Reception | Integrate external | Network listening |
-| IL | Coherence | Stabilize form | Consolidation |
-| OZ | Dissonance | Controlled instability | Exploration |
-| UM | Coupling | Create links | Network formation |
-| RA | Resonance | Amplify/propagate | Pattern reinforcement |
-| SHA | Silence | Freeze evolution | Observation windows |
-| VAL | Expansion | Increase complexity | Add degrees of freedom |
-| NUL | Contraction | Reduce complexity | Simplification |
-| THOL | Self-organization | Emergent structure | Fractalization |
-| ZHIR | Mutation | Phase transformation | State changes |
-| NAV | Transition | Controlled movement | Trajectory navigation |
-| REMESH | Recursivity | Nested operations | Multi-scale ops |
+For complete specifications with physics derivations, contracts, and usage examples, see **[AGENTS.md § The 13 Canonical Operators](AGENTS.md#-the-13-canonical-operators)**.
 
-**API:** `tnfr.structural.<OperatorName>()`, `run_sequence(G, node, ops)`  
-**Grammar:** See [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md)  
+### Quick Reference
+
+| Symbol | Name | Physics | Grammar Sets | When to Use |
+|--------|------|---------|-------------|-------------|
+| **AL** | Emission | Creates EPI from vacuum via resonant emission | Generator (U1a) | Starting new patterns, initializing from EPI=0 |
+| **EN** | Reception | Captures and integrates incoming resonance | - | Information gathering, listening phase |
+| **IL** | Coherence | Stabilizes form through negative feedback | Stabilizer (U2) | After changes, consolidation |
+| **OZ** | Dissonance | Introduces controlled instability | Destabilizer (U2), Bifurcation trigger (U4a), Closure (U1b) | Breaking local optima, exploration |
+| **UM** | Coupling | Creates structural links via phase synchronization | Requires phase verification (U3) | Network formation, connecting nodes |
+| **RA** | Resonance | Amplifies and propagates patterns coherently | Requires phase verification (U3) | Pattern reinforcement, spreading coherence |
+| **SHA** | Silence | Freezes evolution temporarily (νf → 0) | Closure (U1b) | Observation windows, pause for synchronization |
+| **VAL** | Expansion | Increases structural complexity (dim ↑) | Destabilizer (U2) | Adding degrees of freedom |
+| **NUL** | Contraction | Reduces structural complexity (dim ↓) | - | Simplification, dimensionality reduction |
+| **THOL** | Self-organization | Spontaneous autopoietic pattern formation | Stabilizer (U2), Handler (U4a), Transformer (U4b) | Emergent organization, fractal structuring |
+| **ZHIR** | Mutation | Phase transformation at threshold | Bifurcation trigger (U4a), Transformer (U4b) | Qualitative state changes |
+| **NAV** | Transition | Regime shift, activates latent EPI | Generator (U1a), Closure (U1b) | Switching between attractor states |
+| **REMESH** | Recursivity | Echoes structure across scales | Generator (U1a), Closure (U1b) | Multi-scale operations, memory |
+
+### Operator Composition
+
+Operators combine into **sequences** that implement complex behaviors:
+
+- **Bootstrap** = [Emission, Coupling, Coherence]
+- **Stabilize** = [Coherence, Silence]
+- **Explore** = [Dissonance, Mutation, Coherence]
+- **Propagate** = [Resonance, Coupling]
+
+**Critical**: All sequences must satisfy unified grammar (U1-U6).
+
+**API:** 
+- `tnfr.structural.<OperatorName>()` - Individual operators
+- `run_sequence(G, node, ops)` - Execute operator sequences
+- `validate_sequence(ops)` - Check grammar compliance
+
+**Grammar:** See [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) for complete rules  
+**Detailed Specs:** See [AGENTS.md § The 13 Canonical Operators](AGENTS.md#-the-13-canonical-operators)  
 **Math:** [Mathematical Foundations §5](docs/source/theory/mathematical_foundations.md)
 
 ---
@@ -228,17 +276,40 @@ All simulations must be:
 
 ### Unified Grammar
 
-The consolidated TNFR grammar system (U1-U5) that replaces the old C1-C3 and RC1-RC4 systems. (U5 multi-scale coherence added 2025-11-10.)
+The consolidated TNFR grammar system (**U1-U6**) that replaces the old C1-C3 and RC1-RC4 systems.
 
-**Source of Truth:** [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md)
-
+**Source of Truth:** [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md)  
+**Quick Reference:** [AGENTS.md § Unified Grammar (U1-U6)](AGENTS.md#-unified-grammar-u1-u6)  
 **Implementation:** `src/tnfr/operators/grammar.py`
 
-**Four Canonical Constraints:**
-- U1: STRUCTURAL INITIATION & CLOSURE
-- U2: CONVERGENCE & BOUNDEDNESS
-- U3: RESONANT COUPLING
-- U4: BIFURCATION DYNAMICS
+**Six Canonical Constraints:**
+
+| Rule | Name | Physics Basis | Requirement | Canonicity |
+|------|------|---------------|-------------|------------|
+| **U1** | STRUCTURAL INITIATION & CLOSURE | ∂EPI/∂t undefined at EPI=0 | Start with generator {AL, NAV, REMESH}, End with closure {SHA, NAV, REMESH, OZ} | ABSOLUTE |
+| **U2** | CONVERGENCE & BOUNDEDNESS | ∫νf·ΔNFR dt must converge | If destabilizer {OZ, ZHIR, VAL}, then include stabilizer {IL, THOL} | ABSOLUTE |
+| **U3** | RESONANT COUPLING | Phase compatibility required for resonance | If coupling {UM, RA}, verify \|φᵢ - φⱼ\| ≤ Δφ_max | ABSOLUTE |
+| **U4** | BIFURCATION DYNAMICS | ∂²EPI/∂t² > τ requires control | Triggers {OZ, ZHIR} need handlers {THOL, IL}; Transformers need context | STRONG |
+| **U5** | MULTI-SCALE COHERENCE | Hierarchical coupling + chain rule | Nested EPIs require stabilizers {IL, THOL} at each level | ABSOLUTE |
+| **U6** | STRUCTURAL POTENTIAL CONFINEMENT | Emergent Φ_s field: Φ_s(i) = Σ ΔNFR_j/d(i,j)² | Monitor Δ Φ_s < 2.0 (telemetry-based safety) | STRONG |
+
+**Canonicity Levels:**
+- **ABSOLUTE**: Mathematical necessity (direct consequence of nodal equation)
+- **STRONG**: Strong empirical/theoretical support (2,400+ experiments for U6)
+
+**Recent Updates:**
+- U5 added 2025-11-10 (hierarchical REMESH stabilization)
+- U6 promoted to canonical 2025-11-11 (Φ_s field validation complete)
+  - Replaces experimental "Temporal Ordering" research proposal
+  - Validated across 5 topologies: ring, scale_free, small-world, tree, grid
+  - Correlation: corr(Δ Φ_s, ΔC) = -0.822 (R² ≈ 0.68)
+
+**See Also:**
+- [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) - Complete derivations from physics
+- [AGENTS.md § Unified Grammar](AGENTS.md#-unified-grammar-u1-u6) - Quick reference
+- [docs/grammar/U6_STRUCTURAL_POTENTIAL_CONFINEMENT.md](docs/grammar/U6_STRUCTURAL_POTENTIAL_CONFINEMENT.md) - U6 complete specification
+- [TNFR_FORCES_EMERGENCE.md § 14-15](docs/TNFR_FORCES_EMERGENCE.md) - U6 validation details
+- [src/tnfr/physics/fields.py](src/tnfr/physics/fields.py) - Φ_s implementation
 
 ---
 
@@ -356,21 +427,40 @@ Operators that perform graduated destabilization for phase transitions.
 
 ## Related Documentation
 
-### Mathematical Theory
-- **[Mathematical Foundations](docs/source/theory/mathematical_foundations.md)** ⭐ **SINGLE SOURCE FOR ALL MATH**
-- [TNFR.pdf](TNFR.pdf) - Original theoretical companion
+### Core References (Essential)
+- **[AGENTS.md](AGENTS.md)** ⭐ - Single source of truth for TNFR agent guidance, invariants, and philosophy
+- **[UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md)** ⭐ - Grammar single source of truth (U1-U6 complete derivations)
+- **[Mathematical Foundations](docs/source/theory/mathematical_foundations.md)** ⭐ - **SINGLE SOURCE FOR ALL MATH** (formalization, proofs, spectral theory)
 
-### Implementation
-- [AGENTS.md](AGENTS.md) - AI agent guidelines and invariants
+### Theory & Physics
+- [TNFR.pdf](TNFR.pdf) - Original theoretical companion (paradigm, nodal equation, foundational physics)
+- [docs/grammar/U6_STRUCTURAL_POTENTIAL_CONFINEMENT.md](docs/grammar/U6_STRUCTURAL_POTENTIAL_CONFINEMENT.md) - U6 complete specification
+- [TNFR_FORCES_EMERGENCE.md](docs/TNFR_FORCES_EMERGENCE.md) - Structural fields validation (Φ_s, phase gradients)
+- [SHA_ALGEBRA_PHYSICS.md](SHA_ALGEBRA_PHYSICS.md) - Silence operator physical basis
+
+### Implementation & API
+- [ARCHITECTURE.md](ARCHITECTURE.md) - System design and architecture patterns
 - [Foundations](docs/source/foundations.md) - Runtime/API guide
 - [API Overview](docs/source/api/overview.md) - Package architecture
-- [Structural Operators](docs/source/api/operators.md) - Operator details
-- [Examples](docs/source/examples/README.md) - Runnable scenarios
+- [Structural Operators](docs/source/api/operators.md) - Operator implementation details
+- [Examples](docs/source/examples/README.md) - Runnable scenarios across domains
 
-### Canonical Patterns
-- [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) - **Grammar single source of truth** ⭐
-- [GRAMMAR_MIGRATION_GUIDE.md](GRAMMAR_MIGRATION_GUIDE.md) - Migration from C1-C3/RC1-RC4 to initial U1-U4 (multi-scale U5 added subsequently)
-- [TESTING.md](TESTING.md) - Test conventions
+### Grammar & Migration
+- [GRAMMAR_MIGRATION_GUIDE.md](GRAMMAR_MIGRATION_GUIDE.md) - Migration from C1-C3/RC1-RC4 to U1-U6
+- [docs/grammar/](docs/grammar/) - Grammar documentation directory (U6, fundamental concepts, etc.)
+- [GLYPH_SEQUENCES_GUIDE.md](GLYPH_SEQUENCES_GUIDE.md) - Operator sequence patterns
+
+### Testing & Development
+- [TESTING.md](TESTING.md) - Test conventions and invariant verification
+- [CONTRIBUTING.md](CONTRIBUTING.md) - Detailed contribution guidelines
+- [REPRODUCIBILITY.md](docs/REPRODUCIBILITY.md) - Determinism requirements
+
+### See Also Cross-References
+This glossary is bidirectionally linked with:
+- **AGENTS.md** references this glossary for term definitions
+- **UNIFIED_GRAMMAR_RULES.md** references this glossary for quick lookups
+- **ARCHITECTURE.md** references this glossary for technical terms
+- This glossary references all above documents for complete specifications
 
 ---
 

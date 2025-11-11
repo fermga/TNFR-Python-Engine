@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import copy
 from collections.abc import Mapping
-from typing import Any, Callable, TypeVar, cast
+from typing import Any, TypeVar, cast
 
 from ..immutable import _is_immutable
 from ..types import GraphLike, TNFRConfigValue
@@ -312,9 +312,7 @@ class TNFRConfig:
         # Validate DT (time step) is positive for temporal coherence
         dt = config.get("DT")
         if dt is not None and dt <= 0:
-            raise TNFRConfigError(
-                f"DT (time step) must be > 0 for temporal coherence, got {dt}"
-            )
+            raise TNFRConfigError(f"DT (time step) must be > 0 for temporal coherence, got {dt}")
 
         return True
 
@@ -383,9 +381,7 @@ class TNFRConfig:
         G.graph.setdefault("_tnfr_defaults_attached", False)
         for k, v in config_to_inject.items():
             if override or k not in G.graph:
-                G.graph[k] = (
-                    v if _is_immutable(v) else cast(TNFRConfigValue, copy.deepcopy(v))
-                )
+                G.graph[k] = v if _is_immutable(v) else cast(TNFRConfigValue, copy.deepcopy(v))
         G.graph["_tnfr_defaults_attached"] = True
 
         # Ensure node offset map if available
@@ -466,9 +462,7 @@ def normalise_state_token(token: str) -> str:
     if lowered in CANONICAL_STATE_TOKENS:
         return lowered
 
-    raise ValueError(
-        "state token must be one of 'stable', 'transition', or 'dissonant'"
-    )
+    raise ValueError("state token must be one of 'stable', 'transition', or 'dissonant'")
 
 
 __all__ = (

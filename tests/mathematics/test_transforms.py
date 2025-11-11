@@ -67,9 +67,7 @@ def test_ensure_coherence_monotonicity_detects_drop_and_logs(
     caplog: pytest.LogCaptureFixture,
 ) -> None:
     with caplog.at_level("WARNING"):
-        report = transforms.ensure_coherence_monotonicity(
-            [1.0, 0.92, 0.95], tolerated_drop=0.03
-        )
+        report = transforms.ensure_coherence_monotonicity([1.0, 0.92, 0.95], tolerated_drop=0.03)
 
     assert not report.is_monotonic
     assert report.violations
@@ -80,9 +78,7 @@ def test_ensure_coherence_monotonicity_detects_drop_and_logs(
 
 
 def test_ensure_coherence_monotonicity_flags_plateau_when_forbidden() -> None:
-    report = transforms.ensure_coherence_monotonicity(
-        [1.0, 1.0, 1.02], allow_plateaus=False
-    )
+    report = transforms.ensure_coherence_monotonicity([1.0, 1.0, 1.02], allow_plateaus=False)
 
     assert not report.is_monotonic
     assert report.violations[0].kind == "plateau"
@@ -104,13 +100,9 @@ def test_coherence_transform_evaluator_validates_kappa() -> None:
     assert result.coherence_after >= result.coherence_before
 
     ratio = result.ratio
-    failing = evaluate_coherence_transform(
-        element, lift, kappa=ratio + 1e-6, tolerance=0.0
-    )
+    failing = evaluate_coherence_transform(element, lift, kappa=ratio + 1e-6, tolerance=0.0)
     assert not failing.satisfied
     assert failing.deficit > 0
 
-    forgiving = evaluate_coherence_transform(
-        element, lift, kappa=ratio + 1e-6, tolerance=1e-3
-    )
+    forgiving = evaluate_coherence_transform(element, lift, kappa=ratio + 1e-6, tolerance=1e-3)
     assert forgiving.satisfied

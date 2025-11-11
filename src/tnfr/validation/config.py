@@ -65,7 +65,6 @@ def configure_validation(**kwargs: object) -> None:
     >>> configure_validation(validate_each_step=True)
     >>> configure_validation(phase_coupling_threshold=3.14159/3)
     """
-    global validation_config
     for key, value in kwargs.items():
         if hasattr(validation_config, key):
             setattr(validation_config, key, value)

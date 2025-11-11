@@ -37,9 +37,7 @@ class TestNoWeakHashAlgorithms:
                 if md5_pattern.search(line):
                     violations.append(f"{py_file.name}:{line_num}: {line.strip()}")
 
-        assert not violations, f"Found MD5 usage in source code:\n" + "\n".join(
-            violations
-        )
+        assert not violations, f"Found MD5 usage in source code:\n" + "\n".join(violations)
 
     def test_no_sha1_in_source(self) -> None:
         """Verify SHA-1 is not used for any purpose in source code."""
@@ -55,9 +53,7 @@ class TestNoWeakHashAlgorithms:
                 if sha1_pattern.search(line):
                     violations.append(f"{py_file.name}:{line_num}: {line.strip()}")
 
-        assert not violations, f"Found SHA-1 usage in source code:\n" + "\n".join(
-            violations
-        )
+        assert not violations, f"Found SHA-1 usage in source code:\n" + "\n".join(violations)
 
 
 class TestModernCryptographicAlgorithms:

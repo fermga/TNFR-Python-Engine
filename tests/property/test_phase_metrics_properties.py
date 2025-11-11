@@ -55,12 +55,8 @@ def test_neighbor_phase_mean_list_rotates_by_constant(
         fallback=neighbourhood.fallback,
     )
 
-    rotated_cos = {
-        key: math.cos(angle + rotation) for key, angle in neighbourhood.angles.items()
-    }
-    rotated_sin = {
-        key: math.sin(angle + rotation) for key, angle in neighbourhood.angles.items()
-    }
+    rotated_cos = {key: math.cos(angle + rotation) for key, angle in neighbourhood.angles.items()}
+    rotated_sin = {key: math.sin(angle + rotation) for key, angle in neighbourhood.angles.items()}
 
     rotated_mean = neighbor_phase_mean_list(
         neighbourhood.neighbours,

@@ -247,7 +247,9 @@ pytest -m performance tests/performance
 
 ## Structural Fidelity Tests
 
-These tests validate TNFR canonical invariants (see ARCHITECTURE.md §3):
+## Invariant Tests
+
+These tests validate TNFR canonical invariants. For complete invariant definitions and physics, see **[AGENTS.md § Canonical Invariants](AGENTS.md#-canonical-invariants-never-break)**.
 
 ### Invariant 1: EPI Changes Only Through Operators
 

@@ -17,9 +17,7 @@ def build_delta_nfr(
 def build_lindblad_delta_nfr(
     *,
     hamiltonian: Sequence[Sequence[complex]] | np.ndarray | None = None,
-    collapse_operators: (
-        Sequence[Sequence[Sequence[complex]] | np.ndarray] | None
-    ) = None,
+    collapse_operators: Sequence[Sequence[Sequence[complex]] | np.ndarray] | None = None,
     dim: int | None = None,
     nu_f: float = 1.0,
     scale: float = 1.0,

@@ -268,9 +268,7 @@ def test_failure_log_respects_limit(monkeypatch, reset_cached_import):
 # -- Cache manager integration ---------------------------------------------------------------
 
 
-def test_import_cache_capacity_respects_manager_config(
-    monkeypatch, reset_cached_import
-):
+def test_import_cache_capacity_respects_manager_config(monkeypatch, reset_cached_import):
     manager = import_utils._IMPORT_CACHE_MANAGER
     previous_config = manager.export_config()
     reset_cached_import()
@@ -303,9 +301,7 @@ def test_import_cache_capacity_respects_manager_config(
         reset_cached_import()
 
 
-def test_import_cache_telemetry_records_hits_and_misses(
-    monkeypatch, reset_cached_import
-):
+def test_import_cache_telemetry_records_hits_and_misses(monkeypatch, reset_cached_import):
     manager = import_utils._IMPORT_CACHE_MANAGER
     reset_cached_import()
 
@@ -464,9 +460,7 @@ def test_warm_cached_import_handles_multiple_specs(monkeypatch, reset_cached_imp
 
 def test_warm_cached_import_attr_rejects_multiple_specs(reset_cached_import):
     reset_cached_import()
-    with pytest.raises(
-        ValueError, match="'attr' can only be combined with a single module name"
-    ):
+    with pytest.raises(ValueError, match="'attr' can only be combined with a single module name"):
         warm_cached_import("pkg", "other", attr="value")
 
 
@@ -480,15 +474,11 @@ def test_warm_cached_import_attr_requires_string_module(reset_cached_import):
 
 def test_warm_cached_import_rejects_empty_iterable(reset_cached_import):
     reset_cached_import()
-    with pytest.raises(
-        ValueError, match="At least one module specification is required"
-    ):
+    with pytest.raises(ValueError, match="At least one module specification is required"):
         warm_cached_import([])
 
 
 def test_warm_cached_import_rejects_invalid_tuple(reset_cached_import):
     reset_cached_import()
-    with pytest.raises(
-        TypeError, match="Invalid module specification for warm_cached_import"
-    ):
+    with pytest.raises(TypeError, match="Invalid module specification for warm_cached_import"):
         warm_cached_import((None, "attr"))

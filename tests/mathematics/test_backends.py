@@ -81,9 +81,7 @@ def test_mathematical_dynamics_matches_numpy(
     reference_backend = get_backend("numpy")
 
     hilbert = HilbertSpace(dimension=2)
-    generator = np.array(
-        [[1.0, 0.25 - 0.15j], [0.25 + 0.15j, -0.5]], dtype=np.complex128
-    )
+    generator = np.array([[1.0, 0.25 - 0.15j], [0.25 + 0.15j, -0.5]], dtype=np.complex128)
     state = np.array([0.8 + 0.1j, 0.3 - 0.2j], dtype=np.complex128)
 
     reference_engine = MathematicalDynamicsEngine(

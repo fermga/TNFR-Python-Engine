@@ -130,6 +130,6 @@ To add a new benchmark to the reproducibility suite:
 
 ## References
 
-- [scripts/README.md](../scripts/README.md) - Script documentation
-- [benchmarks/README.md](../benchmarks/README.md) - Benchmark usage guide
-- [AGENTS.md](../AGENTS.md) - TNFR paradigm compliance
+- [scripts/README.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/scripts/README.md) - Script documentation
+- [benchmarks/README.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/benchmarks/README.md) - Benchmark usage guide
+- [AGENTS.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/AGENTS.md) - TNFR paradigm compliance

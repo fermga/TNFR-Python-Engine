@@ -95,9 +95,7 @@ def test_coordinate_phase_parallel_matches_serial(monkeypatch, graph_canon, phas
 
 
 @pytest.mark.parametrize("bad_jobs", ["three", 1])
-def test_coordinate_phase_invalid_jobs_stay_sequential(
-    monkeypatch, graph_canon, bad_jobs
-):
+def test_coordinate_phase_invalid_jobs_stay_sequential(monkeypatch, graph_canon, bad_jobs):
     graph_factory = graph_canon
 
     monkeypatch.setattr(coordination, "get_numpy", lambda: None)
@@ -146,9 +144,7 @@ def test_coordinate_phase_empty_graph_keeps_history(monkeypatch, graph_canon):
         for key, value in history.items()
         if key in {"phase_state", "phase_R", "phase_disr"}
     }
-    k_lengths = {
-        key: len(value) for key, value in history.items() if key.startswith("phase_k")
-    }
+    k_lengths = {key: len(value) for key, value in history.items() if key.startswith("phase_k")}
 
     coordination.coordinate_global_local_phase(graph)
 
@@ -218,9 +214,7 @@ class _FakeNumPy:
 
 
 @pytest.mark.parametrize("numpy_present", [False, True])
-def test_coordinate_phase_overrides_and_adaptive_history(
-    monkeypatch, graph_canon, numpy_present
-):
+def test_coordinate_phase_overrides_and_adaptive_history(monkeypatch, graph_canon, numpy_present):
     def _fake_get_numpy():
         return _FakeNumPy() if numpy_present else None
 
@@ -251,9 +245,7 @@ def test_coordinate_phase_overrides_and_adaptive_history(
 
     monkeypatch.setattr(coordination, "_compute_state", _fake_compute_state)
 
-    coordination.coordinate_global_local_phase(
-        graph, global_force=0.42, local_force=0.27
-    )
+    coordination.coordinate_global_local_phase(graph, global_force=0.42, local_force=0.27)
 
     assert compute_calls == []
 
@@ -406,9 +398,7 @@ def test_coordinate_phase_handles_desynced_trig_cache(monkeypatch, graph_canon):
         ("Stable", 0.37, 0.23, 0.11, 0.05),
     ],
 )
-def test_smooth_adjust_k_tracks_state_targets(
-    state, kG_start, kL_start, expected_kG, expected_kL
-):
+def test_smooth_adjust_k_tracks_state_targets(state, kG_start, kL_start, expected_kG, expected_kL):
     cfg = {
         "kG_min": 0.11,
         "kG_max": 0.37,

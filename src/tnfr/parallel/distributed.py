@@ -8,7 +8,7 @@ Requires installation of optional dependencies:
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Dict, List, Optional
+from typing import TYPE_CHECKING, Any, Dict, List
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..types import TNFRGraph
@@ -84,9 +84,7 @@ class TNFRDistributedEngine:
         if backend == "ray" and not HAS_RAY:
             raise ImportError("Ray not available. Install with: pip install ray")
         if backend == "dask" and not HAS_DASK:
-            raise ImportError(
-                "Dask not available. Install with: pip install dask[distributed]"
-            )
+            raise ImportError("Dask not available. Install with: pip install dask[distributed]")
 
         return backend
 
@@ -161,9 +159,7 @@ class TNFRDistributedEngine:
             si_values = engine.compute_si_parallel(graph, **kwargs)
             return {"si_values": si_values, "backend": "multiprocessing"}
 
-    def _compute_si_ray(
-        self, graph: TNFRGraph, chunk_size: int, **kwargs: Any
-    ) -> Dict[str, Any]:
+    def _compute_si_ray(self, graph: TNFRGraph, chunk_size: int, **kwargs: Any) -> Dict[str, Any]:
         """Compute Si using Ray for distributed execution.
 
         Parameters
@@ -188,7 +184,6 @@ class TNFRDistributedEngine:
         def compute_si_chunk(node_chunk, graph_data):
             """Compute Si for a chunk of nodes (Ray remote function)."""
             import networkx as nx
-            from tnfr.metrics.sense_index import compute_Si
 
             # Reconstruct graph in worker
             G = nx.Graph()
@@ -203,7 +198,7 @@ class TNFRDistributedEngine:
                     from tnfr.metrics.sense_index import compute_Si_node
 
                     si_values[node_id] = compute_Si_node(G, node_id)
-                except Exception as e:
+                except Exception:
                     # Fallback value on error
                     si_values[node_id] = 0.5
 
@@ -238,9 +233,7 @@ class TNFRDistributedEngine:
             "nodes_per_chunk": chunk_size,
         }
 
-    def _compute_si_dask(
-        self, graph: TNFRGraph, chunk_size: int, **kwargs: Any
-    ) -> Dict[str, Any]:
+    def _compute_si_dask(self, graph: TNFRGraph, chunk_size: int, **kwargs: Any) -> Dict[str, Any]:
         """Compute Si using Dask for distributed execution.
 
         Parameters
@@ -299,9 +292,7 @@ class TNFRDistributedEngine:
         nodes = list(graph.nodes())
         chunks = [nodes[i : i + chunk_size] for i in range(0, len(nodes), chunk_size)]
 
-        delayed_tasks = [
-            delayed(compute_si_chunk)(chunk, graph_data) for chunk in chunks
-        ]
+        delayed_tasks = [delayed(compute_si_chunk)(chunk, graph_data) for chunk in chunks]
 
         # Compute in parallel
         chunk_results = compute(*delayed_tasks)

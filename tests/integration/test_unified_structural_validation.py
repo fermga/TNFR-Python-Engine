@@ -68,9 +68,7 @@ def parametrized_homogeneous_config(request):
     return request.param
 
 
-def test_dnfr_conservation_unified(
-    seed_graph_factory, parametrized_network_scale
-) -> None:
+def test_dnfr_conservation_unified(seed_graph_factory, parametrized_network_scale) -> None:
     """Unified ΔNFR conservation test consolidating multiple scale tests.
 
     Consolidates:
@@ -217,9 +215,7 @@ def test_dnfr_phase_rotation_invariance() -> None:
 
 
 @pytest.mark.parametrize("edge_prob", [0.1, 0.3, 0.5, 0.7])
-def test_structural_conservation_across_topologies(
-    seed_graph_factory, edge_prob
-) -> None:
+def test_structural_conservation_across_topologies(seed_graph_factory, edge_prob) -> None:
     """Verify ΔNFR conservation holds across different network topologies.
 
     Consolidates topology variation tests using parametrization.

@@ -60,8 +60,7 @@ def _push_thol_frame(
     # Default to NUL (contraction) when no valid closure specified
     closing = (
         item.force_close
-        if isinstance(item.force_close, Glyph)
-        and item.force_close in {Glyph.SHA, Glyph.NUL}
+        if isinstance(item.force_close, Glyph) and item.force_close in {Glyph.SHA, Glyph.NUL}
         else (Glyph.NUL if item.force_close is None else None)
     )
     seq0 = ensure_collection(

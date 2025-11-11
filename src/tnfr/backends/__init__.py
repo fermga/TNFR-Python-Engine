@@ -198,9 +198,7 @@ def register_backend(name: str, backend_class: type[TNFRBackend]) -> None:
         raise ValueError(f"Backend '{name}' is already registered")
 
     if not issubclass(backend_class, TNFRBackend):
-        raise TypeError(
-            f"Backend class must inherit from TNFRBackend, got {backend_class}"
-        )
+        raise TypeError(f"Backend class must inherit from TNFRBackend, got {backend_class}")
 
     _BACKEND_REGISTRY[name_lower] = backend_class
     logger.debug("Registered TNFR backend: %s", name)
@@ -244,8 +242,6 @@ def get_backend(name: str | None = None) -> TNFRBackend:
     >>> backend.name
     'numpy'
     """
-    global _CURRENT_BACKEND
-
     # Resolve backend name
     if name is None:
         if _CURRENT_BACKEND is not None:

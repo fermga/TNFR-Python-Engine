@@ -65,9 +65,7 @@ def test_detect_fractal_awakening():
     patterns = detector.detect_initiation_patterns(sequence)
 
     # Should detect fractal_awakening
-    fractal_awakenings = [
-        p for p in patterns if p.pattern_name == "fractal_awakening"
-    ]
+    fractal_awakenings = [p for p in patterns if p.pattern_name == "fractal_awakening"]
     assert len(fractal_awakenings) == 1
     assert fractal_awakenings[0].grammar_rule == "U1a"
 
@@ -107,9 +105,7 @@ def test_detect_fractal_distribution():
     patterns = detector.detect_closure_patterns(sequence)
 
     # Should detect fractal_distribution
-    fractal_distributions = [
-        p for p in patterns if p.pattern_name == "fractal_distribution"
-    ]
+    fractal_distributions = [p for p in patterns if p.pattern_name == "fractal_distribution"]
     assert len(fractal_distributions) == 1
     assert fractal_distributions[0].grammar_rule == "U1b"
 
@@ -121,9 +117,7 @@ def test_detect_intentional_tension():
     patterns = detector.detect_closure_patterns(sequence)
 
     # Should detect intentional_tension
-    intentional_tensions = [
-        p for p in patterns if p.pattern_name == "intentional_tension"
-    ]
+    intentional_tensions = [p for p in patterns if p.pattern_name == "intentional_tension"]
     assert len(intentional_tensions) == 1
     assert intentional_tensions[0].grammar_rule == "U1b"
 
@@ -138,9 +132,7 @@ def test_detect_stabilization_cycle():
     patterns = detector.detect_convergence_patterns(sequence)
 
     # Should detect stabilization_cycle
-    stabilization_cycles = [
-        p for p in patterns if p.pattern_name == "stabilization_cycle"
-    ]
+    stabilization_cycles = [p for p in patterns if p.pattern_name == "stabilization_cycle"]
     assert len(stabilization_cycles) >= 1
     assert all(p.grammar_rule == "U2" for p in stabilization_cycles)
 
@@ -174,9 +166,7 @@ def test_detect_bounded_evolution():
 
     # May or may not detect bounded_evolution depending on strict alternation
     # But should detect multiple stabilization_cycles
-    stabilization_cycles = [
-        p for p in patterns if p.pattern_name == "stabilization_cycle"
-    ]
+    stabilization_cycles = [p for p in patterns if p.pattern_name == "stabilization_cycle"]
     assert len(stabilization_cycles) >= 1
 
 
@@ -214,9 +204,7 @@ def test_detect_phase_locked_network():
     patterns = detector.detect_resonance_patterns(sequence)
 
     # Should detect phase_locked_network
-    phase_locked_networks = [
-        p for p in patterns if p.pattern_name == "phase_locked_network"
-    ]
+    phase_locked_networks = [p for p in patterns if p.pattern_name == "phase_locked_network"]
     assert len(phase_locked_networks) >= 1
     assert phase_locked_networks[0].grammar_rule == "U3"
 
@@ -245,9 +233,7 @@ def test_detect_managed_bifurcation():
     patterns = detector.detect_bifurcation_patterns(sequence)
 
     # Should detect managed_bifurcation
-    managed_bifurcations = [
-        p for p in patterns if p.pattern_name == "managed_bifurcation"
-    ]
+    managed_bifurcations = [p for p in patterns if p.pattern_name == "managed_bifurcation"]
     assert len(managed_bifurcations) >= 1
     assert managed_bifurcations[0].grammar_rule == "U4a"
 
@@ -259,9 +245,7 @@ def test_detect_stable_transformation():
     patterns = detector.detect_bifurcation_patterns(sequence)
 
     # Should detect stable_transformation
-    stable_transformations = [
-        p for p in patterns if p.pattern_name == "stable_transformation"
-    ]
+    stable_transformations = [p for p in patterns if p.pattern_name == "stable_transformation"]
     assert len(stable_transformations) >= 1
     assert stable_transformations[0].grammar_rule == "U4b"
 

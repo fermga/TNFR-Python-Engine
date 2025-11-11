@@ -140,9 +140,7 @@ def _handle_thol(
     trace: ProgramTrace,
     step_fn: AdvanceFn,
 ) -> Optional[Sequence[NodeId]]:
-    return _handle_glyph(
-        G, g or Glyph.THOL.value, curr_target, trace, step_fn, label=OpTag.THOL
-    )
+    return _handle_glyph(G, g or Glyph.THOL.value, curr_target, trace, step_fn, label=OpTag.THOL)
 
 
 HANDLERS: dict[OpTag, HandlerFn] = {
@@ -153,9 +151,7 @@ HANDLERS: dict[OpTag, HandlerFn] = {
 }
 
 
-def play(
-    G: TNFRGraph, sequence: Sequence[Token], step_fn: Optional[AdvanceFn] = None
-) -> None:
+def play(G: TNFRGraph, sequence: Sequence[Token], step_fn: Optional[AdvanceFn] = None) -> None:
     """Execute a canonical sequence on graph ``G``."""
 
     step_fn = step_fn or step

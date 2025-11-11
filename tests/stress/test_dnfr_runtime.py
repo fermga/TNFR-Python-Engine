@@ -78,9 +78,7 @@ def _seed_graph(
 def _sum_dnfr(graph: nx.Graph) -> float:
     """Return the total ΔNFR across the nodes of ``graph``."""
 
-    return sum(
-        float(get_attr(data, ALIAS_DNFR, 0.0)) for _, data in graph.nodes(data=True)
-    )
+    return sum(float(get_attr(data, ALIAS_DNFR, 0.0)) for _, data in graph.nodes(data=True))
 
 
 @pytest.mark.timeout(30)
@@ -91,12 +89,8 @@ def test_default_compute_delta_nfr_large_graph_consistent() -> None:
     edge_probability = 0.18
     seed = 4201
 
-    cached_graph = _seed_graph(
-        num_nodes=node_count, edge_probability=edge_probability, seed=seed
-    )
-    uncached_graph = _seed_graph(
-        num_nodes=node_count, edge_probability=edge_probability, seed=seed
-    )
+    cached_graph = _seed_graph(num_nodes=node_count, edge_probability=edge_probability, seed=seed)
+    uncached_graph = _seed_graph(num_nodes=node_count, edge_probability=edge_probability, seed=seed)
 
     start_cached = time.perf_counter()
     default_compute_delta_nfr(cached_graph, cache_size=128)
@@ -205,6 +199,4 @@ def test_apply_dnfr_hook_parallel_python_matches_serial(
         serial_value = float(get_attr(serial_graph.nodes[node], ALIAS_DNFR, 0.0))
         assert parallel_value == pytest.approx(serial_value, rel=0.0, abs=1e-9)
 
-    assert _sum_dnfr(parallel_graph) == pytest.approx(
-        _sum_dnfr(serial_graph), rel=0.0, abs=1e-9
-    )
+    assert _sum_dnfr(parallel_graph) == pytest.approx(_sum_dnfr(serial_graph), rel=0.0, abs=1e-9)

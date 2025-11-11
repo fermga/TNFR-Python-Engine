@@ -34,9 +34,7 @@ __all__ = [
 GLYPH_TO_FUNCTION: dict[Glyph, str]
 FUNCTION_TO_GLYPH: dict[str, Glyph]
 
-def glyph_function_name(
-    val: Glyph | str | None, *, default: str | None = None
-) -> str | None: ...
+def glyph_function_name(val: Glyph | str | None, *, default: str | None = None) -> str | None: ...
 def function_name_to_glyph(
     val: str | Glyph | None, *, default: Glyph | None = None
 ) -> Glyph | None: ...

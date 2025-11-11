@@ -65,8 +65,7 @@ def _seed_metrics_graph(
         totals_sum += value
     history["Tg_total"] = totals
     tg_normalized = {
-        glyph: value / totals_sum if totals_sum else 0.0
-        for glyph, value in totals.items()
+        glyph: value / totals_sum if totals_sum else 0.0 for glyph, value in totals.items()
     }
 
     glyphogram_rows: list[dict[str, float]] = []
@@ -147,9 +146,7 @@ def test_build_metrics_summary_handles_large_histories() -> None:
         assert glyphogram[glyph] == seeded.glyphogram_series[glyph]
 
     limit = 37
-    trimmed_summary, trimmed_has_latency = build_metrics_summary(
-        seeded.graph, series_limit=limit
-    )
+    trimmed_summary, trimmed_has_latency = build_metrics_summary(seeded.graph, series_limit=limit)
     assert trimmed_has_latency is True
     trimmed_glyphs = trimmed_summary["glyphogram"]
     assert len(trimmed_glyphs["t"]) == limit
@@ -162,8 +159,6 @@ def test_build_metrics_summary_handles_large_histories() -> None:
     )
     assert trimmed_has_latency_repeat is True
     assert trimmed_summary_repeat == trimmed_summary
-    assert trimmed_summary_repeat["latency_mean"] == pytest.approx(
-        summary["latency_mean"]
-    )
+    assert trimmed_summary_repeat["latency_mean"] == pytest.approx(summary["latency_mean"])
     assert trimmed_summary_repeat["Tg_global"] == summary["Tg_global"]
     assert trimmed_summary_repeat["rose"] == summary["rose"]

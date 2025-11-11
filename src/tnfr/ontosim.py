@@ -46,9 +46,7 @@ def prepare_network(
 
         merge_overrides(G, **overrides)
     # Initialize history buffers
-    ph_len = int(
-        G.graph.get("PHASE_HISTORY_MAXLEN", METRIC_DEFAULTS["PHASE_HISTORY_MAXLEN"])
-    )
+    ph_len = int(G.graph.get("PHASE_HISTORY_MAXLEN", METRIC_DEFAULTS["PHASE_HISTORY_MAXLEN"]))
     hist_keys = [
         "C_steps",
         "stable_frac",

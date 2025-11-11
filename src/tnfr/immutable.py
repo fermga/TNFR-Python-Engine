@@ -37,10 +37,7 @@ FrozenTaggedMapping: TypeAlias = tuple[str, FrozenMappingItems]
 """Tagged mapping snapshot identifying the original mapping flavour."""
 
 FrozenSnapshot: TypeAlias = (
-    FrozenPrimitive
-    | FrozenCollectionItems
-    | FrozenTaggedCollection
-    | FrozenTaggedMapping
+    FrozenPrimitive | FrozenCollectionItems | FrozenTaggedCollection | FrozenTaggedMapping
 )
 """Union describing the immutable snapshot returned by :func:`_freeze`."""
 
@@ -102,9 +99,7 @@ def _freeze_tuple(
     return tuple(_freeze(v, seen) for v in value)
 
 
-def _freeze_iterable(
-    container: Iterable[Any], tag: str, seen: set[int]
-) -> FrozenTaggedCollection:
+def _freeze_iterable(container: Iterable[Any], tag: str, seen: set[int]) -> FrozenTaggedCollection:
     return (tag, tuple(_freeze(v, seen) for v in container))
 
 
@@ -117,9 +112,7 @@ def _freeze_iterable_with_tag(
 
 def _register_iterable(cls: type, tag: str) -> None:
     handler = _check_cycle(partial(_freeze_iterable_with_tag, tag=tag))
-    _freeze.register(cls)(
-        cast(Callable[[Any, set[int] | None], FrozenSnapshot], handler)
-    )
+    _freeze.register(cls)(cast(Callable[[Any, set[int] | None], FrozenSnapshot], handler))
 
 
 for _cls, _tag in (

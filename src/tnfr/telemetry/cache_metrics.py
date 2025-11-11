@@ -43,9 +43,7 @@ class CacheMetricsSnapshot:
     avg_latency: float | None
 
     @classmethod
-    def from_statistics(
-        cls, name: str, stats: CacheStatistics
-    ) -> "CacheMetricsSnapshot":
+    def from_statistics(cls, name: str, stats: CacheStatistics) -> "CacheMetricsSnapshot":
         """Build a snapshot computing ratios from :class:`CacheStatistics`."""
 
         hits = int(stats.hits)
@@ -110,9 +108,7 @@ class CacheTelemetryPublisher:
 
         return self._logger
 
-    def attach_graph(
-        self, graph: "TNFRGraph | Graph | MutableMapping[str, Any] | None"
-    ) -> None:
+    def attach_graph(self, graph: "TNFRGraph | Graph | MutableMapping[str, Any] | None") -> None:
         """Attach ``graph`` so observability callbacks receive metrics."""
 
         if graph is None:

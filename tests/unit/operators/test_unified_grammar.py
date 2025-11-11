@@ -65,9 +65,7 @@ class TestOperatorSets:
         - REMESH (Recursivity): Recursive closure - distributes across scales
         - OZ (Dissonance): Intentional closure - preserves activation/tension
         """
-        assert CLOSURES == frozenset(
-            {"silence", "transition", "recursivity", "dissonance"}
-        )
+        assert CLOSURES == frozenset({"silence", "transition", "recursivity", "dissonance"})
 
     def test_stabilizers_set(self):
         """U2: Stabilizers provide negative feedback.
@@ -699,3 +697,248 @@ class TestOperatorNameHandling:
         seq = [Emission(), Coherence(), Silence()]
         valid, _ = UnifiedGrammarValidator.validate(seq, epi_initial=0.0)
         assert valid
+
+
+class TestU6StructuralPotentialConfinement:
+    """Test U6: STRUCTURAL POTENTIAL CONFINEMENT (CANONICAL as of 2025-11-11).
+
+    Tests the structural potential field Φ_s and escape threshold validation.
+
+    Physics basis:
+    - Φ_s(i) = Σ_{j≠i} ΔNFR_j / d(i,j)^α (α=2)
+    - Δ Φ_s < 2.0 (escape threshold)
+    - corr(Δ Φ_s, ΔC) = -0.822 (validated 2,400+ experiments)
+    - CV = 0.1% (topology-universal)
+
+    References:
+    - UNIFIED_GRAMMAR_RULES.md § U6: Complete physics derivation
+    - docs/TNFR_FORCES_EMERGENCE.md § 14-15: Validation evidence
+    - AGENTS.md § Structural Fields: Canonical status
+    """
+
+    def test_structural_potential_confined_sequence(self):
+        """Valid sequence maintains Δ Φ_s < 2.0 (safe regime)."""
+        import networkx as nx
+        from tnfr.physics.fields import compute_structural_potential
+        from tnfr.operators.grammar import validate_structural_potential_confinement
+
+        # Create test network
+        G = nx.karate_club_graph()
+
+        # Set ΔNFR to simulate valid sequence result (low drift)
+        for node in G.nodes():
+            G.nodes[node]["delta_nfr"] = 0.5  # Moderate pressure
+
+        phi_before = compute_structural_potential(G, alpha=2.0)
+
+        # Simulate small change (valid sequence)
+        for node in G.nodes():
+            G.nodes[node]["delta_nfr"] = 0.6  # Small increase
+
+        phi_after = compute_structural_potential(G, alpha=2.0)
+
+        # Validate confinement
+        valid, drift, msg = validate_structural_potential_confinement(
+            G, phi_before, phi_after, threshold=2.0, strict=False
+        )
+
+        assert valid, f"Expected confinement, got: {msg}"
+        assert drift < 2.0, f"Drift {drift:.3f} should be < 2.0"
+        assert "PASS" in msg
+        assert "confined" in msg
+
+    def test_structural_potential_escape_violation(self):
+        """Violation sequence produces Δ Φ_s ≥ 2.0 (fragmentation risk)."""
+        import networkx as nx
+        from tnfr.physics.fields import compute_structural_potential
+        from tnfr.operators.grammar import (
+            validate_structural_potential_confinement,
+            StructuralPotentialConfinementError,
+        )
+
+        # Create test network
+        G = nx.karate_club_graph()
+
+        # Set ΔNFR to simulate before state
+        for node in G.nodes():
+            G.nodes[node]["delta_nfr"] = 0.5
+
+        phi_before = compute_structural_potential(G, alpha=2.0)
+
+        # Simulate large change (violation sequence)
+        for node in G.nodes():
+            G.nodes[node]["delta_nfr"] = 3.0  # Large increase (fragmentation)
+
+        phi_after = compute_structural_potential(G, alpha=2.0)
+
+        # Validate - should fail
+        valid, drift, msg = validate_structural_potential_confinement(
+            G, phi_before, phi_after, threshold=2.0, strict=False
+        )
+
+        assert not valid, f"Expected escape violation, got: {msg}"
+        assert drift >= 2.0, f"Drift {drift:.3f} should be ≥ 2.0"
+        assert "FAIL" in msg
+        assert "escape" in msg.lower() or "fragmentation" in msg.lower()
+
+    def test_structural_potential_strict_mode_raises(self):
+        """strict=True raises StructuralPotentialConfinementError on violation."""
+        import networkx as nx
+        from tnfr.physics.fields import compute_structural_potential
+        from tnfr.operators.grammar import (
+            validate_structural_potential_confinement,
+            StructuralPotentialConfinementError,
+        )
+
+        # Create test network with violation
+        G = nx.karate_club_graph()
+
+        for node in G.nodes():
+            G.nodes[node]["delta_nfr"] = 0.5
+        phi_before = compute_structural_potential(G, alpha=2.0)
+
+        for node in G.nodes():
+            G.nodes[node]["delta_nfr"] = 3.0
+        phi_after = compute_structural_potential(G, alpha=2.0)
+
+        # Should raise in strict mode
+        with pytest.raises(StructuralPotentialConfinementError) as exc_info:
+            validate_structural_potential_confinement(
+                G, phi_before, phi_after, threshold=2.0, strict=True
+            )
+
+        err = exc_info.value
+        assert "U6 STRUCTURAL POTENTIAL CONFINEMENT violated" in str(err)
+        assert err.context["delta_phi_s"] >= 2.0
+        assert err.threshold == 2.0
+
+    def test_structural_potential_custom_threshold(self):
+        """Custom threshold allows tuning escape boundary."""
+        import networkx as nx
+        from tnfr.physics.fields import compute_structural_potential
+        from tnfr.operators.grammar import validate_structural_potential_confinement
+
+        G = nx.karate_club_graph()
+
+        for node in G.nodes():
+            G.nodes[node]["delta_nfr"] = 0.5
+        phi_before = compute_structural_potential(G, alpha=2.0)
+
+        for node in G.nodes():
+            G.nodes[node]["delta_nfr"] = 1.2  # Moderate increase
+        phi_after = compute_structural_potential(G, alpha=2.0)
+
+        # Should pass with threshold=2.0
+        valid_high, drift, _ = validate_structural_potential_confinement(
+            G, phi_before, phi_after, threshold=2.0, strict=False
+        )
+        assert valid_high
+
+        # Should fail with threshold=0.5
+        valid_low, _, _ = validate_structural_potential_confinement(
+            G, phi_before, phi_after, threshold=0.5, strict=False
+        )
+        assert not valid_low
+
+        # Drift should be the same regardless of threshold
+        _, drift_high, _ = validate_structural_potential_confinement(
+            G, phi_before, phi_after, threshold=2.0, strict=False
+        )
+        _, drift_low, _ = validate_structural_potential_confinement(
+            G, phi_before, phi_after, threshold=0.5, strict=False
+        )
+        assert abs(drift_high - drift_low) < 1e-6
+
+    def test_structural_potential_empty_network(self):
+        """Empty network trivially satisfies U6."""
+        import networkx as nx
+        from tnfr.operators.grammar import validate_structural_potential_confinement
+
+        G = nx.Graph()  # Empty network
+
+        phi_before = {}
+        phi_after = {}
+
+        valid, drift, msg = validate_structural_potential_confinement(
+            G, phi_before, phi_after, threshold=2.0, strict=False
+        )
+
+        assert valid
+        assert drift == 0.0
+        assert "No nodes" in msg or "trivial" in msg.lower()
+
+    def test_structural_potential_physics_interpretation(self):
+        """Verify passive equilibrium mechanism (not active attraction)."""
+        import networkx as nx
+        from tnfr.physics.fields import compute_structural_potential
+        from tnfr.operators.grammar import validate_structural_potential_confinement
+
+        # Create network
+        G = nx.karate_club_graph()
+
+        # Test 1: Grammar-valid behavior (small drift ~0.6)
+        for node in G.nodes():
+            G.nodes[node]["delta_nfr"] = 0.5
+        phi_valid_before = compute_structural_potential(G, alpha=2.0)
+
+        for node in G.nodes():
+            G.nodes[node]["delta_nfr"] = 0.55  # Small change
+        phi_valid_after = compute_structural_potential(G, alpha=2.0)
+
+        valid_ok, drift_valid, _ = validate_structural_potential_confinement(
+            G, phi_valid_before, phi_valid_after, threshold=2.0, strict=False
+        )
+
+        # Test 2: Grammar-violating behavior (large drift ~3.9)
+        for node in G.nodes():
+            G.nodes[node]["delta_nfr"] = 0.5
+        phi_viol_before = compute_structural_potential(G, alpha=2.0)
+
+        for node in G.nodes():
+            G.nodes[node]["delta_nfr"] = 2.5  # Large change
+        phi_viol_after = compute_structural_potential(G, alpha=2.0)
+
+        valid_bad, drift_viol, _ = validate_structural_potential_confinement(
+            G, phi_viol_before, phi_viol_after, threshold=2.0, strict=False
+        )
+
+        # Verify passive protection: valid drift < violation drift
+        assert drift_valid < drift_viol, "Valid sequences should have smaller drift"
+        assert drift_valid < 2.0, "Valid drift should be below threshold"
+        # Note: Actual ratio ~0.15× from validation (valid 0.6 vs violation 3.9)
+        # Here we just verify the qualitative relationship
+
+    def test_structural_potential_topology_independence(self):
+        """Φ_s validation works across different topologies."""
+        import networkx as nx
+        from tnfr.physics.fields import compute_structural_potential
+        from tnfr.operators.grammar import validate_structural_potential_confinement
+
+        topologies = [
+            ("ring", nx.cycle_graph(20)),
+            ("grid", nx.grid_2d_graph(5, 5)),
+            ("tree", nx.balanced_tree(2, 3)),
+            ("scale_free", nx.barabasi_albert_graph(20, 2)),
+        ]
+
+        for name, G in topologies:
+            # Convert grid nodes to integers for consistency
+            if name == "grid":
+                G = nx.convert_node_labels_to_integers(G)
+
+            # Set ΔNFR
+            for node in G.nodes():
+                G.nodes[node]["delta_nfr"] = 0.5
+            phi_before = compute_structural_potential(G, alpha=2.0)
+
+            # Small change (valid)
+            for node in G.nodes():
+                G.nodes[node]["delta_nfr"] = 0.6
+            phi_after = compute_structural_potential(G, alpha=2.0)
+
+            valid, drift, msg = validate_structural_potential_confinement(
+                G, phi_before, phi_after, threshold=2.0, strict=False
+            )
+
+            assert valid, f"Topology {name} should pass U6: {msg}"
+            assert drift < 2.0, f"Topology {name} drift {drift:.3f} exceeds threshold"

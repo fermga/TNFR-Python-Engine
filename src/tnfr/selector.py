@@ -141,9 +141,7 @@ def _selector_norms(G: "nx.Graph") -> SelectorNorms:
     return norms
 
 
-def _calc_selector_score(
-    Si: float, dnfr: float, accel: float, weights: SelectorWeights
-) -> float:
+def _calc_selector_score(Si: float, dnfr: float, accel: float, weights: SelectorWeights) -> float:
     """Compute weighted selector score.
 
     Parameters
@@ -163,9 +161,7 @@ def _calc_selector_score(
         Final weighted score.
     """
     return (
-        weights["w_si"] * Si
-        + weights["w_dnfr"] * (1.0 - dnfr)
-        + weights["w_accel"] * (1.0 - accel)
+        weights["w_si"] * Si + weights["w_dnfr"] * (1.0 - dnfr) + weights["w_accel"] * (1.0 - accel)
     )
 
 

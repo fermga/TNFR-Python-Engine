@@ -94,9 +94,7 @@ class TestParallelExecutionMonitor:
         for i in range(3):
             monitor.start_monitoring(expected_nodes=100 * (i + 1), workers=2)
             time.sleep(0.01)
-            monitor.stop_monitoring(
-                final_coherence=0.8 + i * 0.05, initial_coherence=0.7
-            )
+            monitor.stop_monitoring(final_coherence=0.8 + i * 0.05, initial_coherence=0.7)
 
         # Should have all three in history
         history = monitor.history

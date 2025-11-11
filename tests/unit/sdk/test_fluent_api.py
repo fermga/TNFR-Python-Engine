@@ -150,9 +150,7 @@ class TestTNFRNetwork:
         network.connect_nodes(0.5, "ring")
 
         # Custom valid sequence
-        network.apply_sequence(
-            ["emission", "reception", "coherence", "resonance", "silence"]
-        )
+        network.apply_sequence(["emission", "reception", "coherence", "resonance", "silence"])
 
         assert network._graph is not None
 

@@ -67,9 +67,7 @@ def test_build_delta_nfr_preserves_structure_under_parameter_scaling() -> None:
         operator = build_delta_nfr(dim, scale=scale, rng=rng)
 
         # Structural properties must hold regardless of scale
-        assert np.allclose(
-            operator, operator.conj().T
-        ), f"Not Hermitian at scale={scale}"
+        assert np.allclose(operator, operator.conj().T), f"Not Hermitian at scale={scale}"
         assert np.all(np.isfinite(operator)), f"Non-finite values at scale={scale}"
 
         # Eigenvalues should be real
@@ -173,12 +171,8 @@ def test_operator_topology_structural_differences() -> None:
     seed = 999
 
     # Create separate RNG instances instead of manipulating state
-    op_laplacian = build_delta_nfr(
-        dim, topology="laplacian", rng=np.random.default_rng(seed=seed)
-    )
-    op_adjacency = build_delta_nfr(
-        dim, topology="adjacency", rng=np.random.default_rng(seed=seed)
-    )
+    op_laplacian = build_delta_nfr(dim, topology="laplacian", rng=np.random.default_rng(seed=seed))
+    op_adjacency = build_delta_nfr(dim, topology="adjacency", rng=np.random.default_rng(seed=seed))
 
     # Both should be valid Hermitian operators
     assert np.allclose(op_laplacian, op_laplacian.conj().T)

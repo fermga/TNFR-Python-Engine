@@ -108,9 +108,7 @@ def test_repeat_window_and_force(graph_canon):
 
     nd["ΔNFR"] = 0.0
     nd["d2EPI_dt2"] = 0.0
-    assert (
-        glyph_function_name(enforce_canonical_grammar(G, 0, Glyph.ZHIR)) == TRANSITION
-    )
+    assert glyph_function_name(enforce_canonical_grammar(G, 0, Glyph.ZHIR)) == TRANSITION
 
     nd["ΔNFR"] = 0.6
     assert glyph_function_name(enforce_canonical_grammar(G, 0, Glyph.ZHIR)) == MUTATION
@@ -252,9 +250,7 @@ def test_apply_glyph_with_grammar_equivalence(graph_canon):
     G_manual = graph_canon()
     G_manual.add_node(0)
     inject_defaults(G_manual)
-    G_manual.nodes[0]["glyph_history"] = deque(
-        [Glyph.OZ]
-    )  # Add dissonance precondition
+    G_manual.nodes[0]["glyph_history"] = deque([Glyph.OZ])  # Add dissonance precondition
     G_func = graph_canon()
     G_func.add_node(0)
     inject_defaults(G_func)
@@ -278,9 +274,7 @@ def test_apply_glyph_with_grammar_multiple_nodes(graph_canon):
     G.add_node(1)
     inject_defaults(G)
     G.nodes[0]["glyph_history"] = deque([Glyph.OZ])
-    G.nodes[1]["glyph_history"] = deque(
-        [Glyph.OZ]
-    )  # Add dissonance precondition for node 1 too
+    G.nodes[1]["glyph_history"] = deque([Glyph.OZ])  # Add dissonance precondition for node 1 too
 
     apply_glyph_with_grammar(G, [0, 1], Glyph.ZHIR, 1)
 

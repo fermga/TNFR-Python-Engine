@@ -79,8 +79,6 @@ _SQL_KEYWORDS = frozenset(
 class SQLInjectionError(ValueError):
     """Exception raised when potential SQL injection is detected."""
 
-    pass
-
 
 def validate_identifier(identifier: str, *, allow_keywords: bool = False) -> str:
     """Validate a SQL identifier (table or column name).
@@ -121,9 +119,7 @@ def validate_identifier(identifier: str, *, allow_keywords: bool = False) -> str
     SQLInjectionError: Invalid identifier 'invalid-name'
     """
     if not isinstance(identifier, str):
-        raise SQLInjectionError(
-            f"Identifier must be a string, got {type(identifier).__name__}"
-        )
+        raise SQLInjectionError(f"Identifier must be a string, got {type(identifier).__name__}")
 
     if not identifier:
         raise SQLInjectionError("Identifier cannot be empty")
@@ -136,9 +132,7 @@ def validate_identifier(identifier: str, *, allow_keywords: bool = False) -> str
         )
 
     if not allow_keywords and identifier.upper() in _SQL_KEYWORDS:
-        raise SQLInjectionError(
-            f"Identifier '{identifier}' is a SQL keyword and cannot be used"
-        )
+        raise SQLInjectionError(f"Identifier '{identifier}' is a SQL keyword and cannot be used")
 
     return identifier
 
@@ -181,8 +175,7 @@ def sanitize_string_input(value: str, *, max_length: int = 1000) -> str:
 
     if len(value) > max_length:
         raise SQLInjectionError(
-            f"Input exceeds maximum length of {max_length} characters "
-            f"(got {len(value)})"
+            f"Input exceeds maximum length of {max_length} characters " f"(got {len(value)})"
         )
 
     # Check for null bytes which can truncate strings in some contexts
@@ -230,9 +223,7 @@ class SecureQueryBuilder:
         self._params: list[Any] = []
         self._operation: str | None = None
 
-    def select(
-        self, table: str, columns: list[str] | None = None
-    ) -> SecureQueryBuilder:
+    def select(self, table: str, columns: list[str] | None = None) -> SecureQueryBuilder:
         """Start a SELECT query.
 
         Parameters
@@ -279,9 +270,7 @@ class SecureQueryBuilder:
         validated_cols = [validate_identifier(col) for col in columns]
         cols_str = ", ".join(validated_cols)
         placeholders = ", ".join(["?"] * len(columns))
-        self._query_parts.append(
-            f"INSERT INTO {table} ({cols_str}) VALUES ({placeholders})"
-        )
+        self._query_parts.append(f"INSERT INTO {table} ({cols_str}) VALUES ({placeholders})")
         return self
 
     def update(self, table: str) -> SecureQueryBuilder:
@@ -367,13 +356,10 @@ class SecureQueryBuilder:
         expected_params = condition.count("?")
         if len(values) != expected_params:
             raise SQLInjectionError(
-                f"WHERE condition expects {expected_params} parameters, "
-                f"got {len(values)}"
+                f"WHERE condition expects {expected_params} parameters, " f"got {len(values)}"
             )
 
-        prefix = (
-            "WHERE" if not any("WHERE" in part for part in self._query_parts) else "AND"
-        )
+        prefix = "WHERE" if not any("WHERE" in part for part in self._query_parts) else "AND"
         self._query_parts.append(f"{prefix} {condition}")
         self._params.extend(values)
         return self
@@ -484,8 +470,7 @@ def execute_parameterized_query(
     if "'" in query or '"' in query:
         # Allow quoted identifiers if query has standard SQL keywords
         if not any(
-            keyword in query.upper()
-            for keyword in ["SELECT", "INSERT", "UPDATE", "DELETE"]
+            keyword in query.upper() for keyword in ["SELECT", "INSERT", "UPDATE", "DELETE"]
         ):
             raise SQLInjectionError(
                 "Query contains quoted strings. Use parameterized queries instead."
@@ -495,14 +480,12 @@ def execute_parameterized_query(
     placeholder_count = query.count("?")
     if placeholder_count != len(params):
         raise SQLInjectionError(
-            f"Query has {placeholder_count} placeholders but {len(params)} "
-            f"parameters provided"
+            f"Query has {placeholder_count} placeholders but {len(params)} " f"parameters provided"
         )
 
     # In a real implementation, this would execute the query
     # For example, with sqlite3:
     # cursor.execute(query, params)
-    pass
 
 
 __all__ = (

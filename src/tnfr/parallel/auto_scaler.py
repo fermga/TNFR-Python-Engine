@@ -7,7 +7,7 @@ resources, and hardware capabilities.
 from __future__ import annotations
 
 from multiprocessing import cpu_count
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 
 class TNFRAutoScaler:
@@ -81,25 +81,19 @@ class TNFRAutoScaler:
         elif graph_size < 1000:
             strategy["backend"] = "multiprocessing"
             strategy["workers"] = min(cpu_count(), graph_size // 50)
-            strategy["explanation"] = (
-                "Medium network - multiprocessing provides optimal speedup"
-            )
+            strategy["explanation"] = "Medium network - multiprocessing provides optimal speedup"
 
         elif graph_size < 10000 and has_gpu:
             strategy["backend"] = "gpu"
             strategy["workers"] = 1
             strategy["gpu_engine"] = "jax"
-            strategy["explanation"] = (
-                "Large network with GPU - vectorized acceleration available"
-            )
+            strategy["explanation"] = "Large network with GPU - vectorized acceleration available"
 
         else:
             strategy["backend"] = "distributed"
             strategy["workers"] = cpu_count() * 2
             strategy["chunk_size"] = min(500, graph_size // 20)
-            strategy["explanation"] = (
-                "Massive network - distributed computation recommended"
-            )
+            strategy["explanation"] = "Massive network - distributed computation recommended"
 
         # Estimate memory requirements
         estimated_memory = self._estimate_memory_usage(graph_size, strategy["backend"])
@@ -111,9 +105,7 @@ class TNFRAutoScaler:
                 f"Estimated memory ({estimated_memory:.1f}GB) may exceed "
                 f"available memory ({available_memory_gb:.1f}GB)"
             )
-            strategy["recommendation"] = (
-                "Consider distributed backend or smaller partition sizes"
-            )
+            strategy["recommendation"] = "Consider distributed backend or smaller partition sizes"
 
         # Estimate execution time
         estimated_time = self._estimate_execution_time(graph_size, strategy["backend"])
@@ -184,9 +176,7 @@ class TNFRAutoScaler:
         time_factor = base_time_per_1k.get(backend, 2.0)
         return (graph_size / 1000.0) * time_factor
 
-    def get_optimization_suggestions(
-        self, performance_metrics: Dict[str, Any]
-    ) -> List[str]:
+    def get_optimization_suggestions(self, performance_metrics: Dict[str, Any]) -> List[str]:
         """Generate optimization suggestions based on observed performance.
 
         Parameters
@@ -224,8 +214,7 @@ class TNFRAutoScaler:
             ops = performance_metrics["operations_per_second"]
             if ops < 100:
                 suggestions.append(
-                    "📈 Low throughput - consider GPU backend or algorithm "
-                    "optimization"
+                    "📈 Low throughput - consider GPU backend or algorithm " "optimization"
                 )
 
         if not suggestions:

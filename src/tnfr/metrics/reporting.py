@@ -85,9 +85,7 @@ def glyphogram_series(G: TNFRGraph) -> dict[str, list[float]]:
     xs = hist.get("glyphogram", [])
     if not xs:
         return {"t": []}
-    out: dict[str, list[float]] = {
-        "t": [float(x.get("t", i)) for i, x in enumerate(xs)]
-    }
+    out: dict[str, list[float]] = {"t": [float(x.get("t", i)) for i, x in enumerate(xs)]}
 
     def add(g: str) -> None:
         out[g] = [float(x.get(g, 0.0)) for x in xs]
@@ -108,9 +106,7 @@ def glyph_top(G: TNFRGraph, k: int = 3) -> list[tuple[str, float]]:
 
 def build_metrics_summary(
     G: TNFRGraph, *, series_limit: int | None = None
-) -> tuple[
-    dict[str, float | dict[str, float] | dict[str, list[float]] | dict[str, int]], bool
-]:
+) -> tuple[dict[str, float | dict[str, float] | dict[str, list[float]] | dict[str, int]], bool]:
     """Collect a compact metrics summary for CLI reporting.
 
     This factory aggregates various TNFR metrics into a unified summary

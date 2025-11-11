@@ -52,9 +52,7 @@ def test_play_uses_default_step(monkeypatch, graph_canon):
 
     play(G, program)
 
-    expected_steps = sum(
-        payload if op is OpTag.WAIT else 1 for op, payload in flattened
-    )
+    expected_steps = sum(payload if op is OpTag.WAIT else 1 for op, payload in flattened)
     assert len(calls) == expected_steps
 
     trace = list(G.graph["history"]["program_trace"])
@@ -323,9 +321,7 @@ def test_target_generator_materializes_selection(graph_canon):
         ),
     ],
 )
-def test_load_sequence_errors_raise_system_exit(
-    monkeypatch, caplog, tmp_path, exc_factory
-):
+def test_load_sequence_errors_raise_system_exit(monkeypatch, caplog, tmp_path, exc_factory):
     target_path = tmp_path / "program.yaml"
     target_path.write_text("[]", encoding="utf-8")
 

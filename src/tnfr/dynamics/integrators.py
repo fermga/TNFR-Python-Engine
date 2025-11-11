@@ -43,7 +43,6 @@ from ..constants.aliases import (
 from ..gamma import _get_gamma_spec, eval_gamma
 from ..types import NodeId, TNFRGraph
 from ..utils import get_numpy, resolve_chunk_size
-from .canonical import compute_canonical_nodal_derivative
 from .structural_clip import structural_clip
 
 __all__ = (
@@ -200,8 +199,7 @@ def prepare_integration_params(
         t = float(t)
 
     method_value = (
-        method
-        or G.graph.get("INTEGRATOR_METHOD", DEFAULTS.get("INTEGRATOR_METHOD", "euler"))
+        method or G.graph.get("INTEGRATOR_METHOD", DEFAULTS.get("INTEGRATOR_METHOD", "euler"))
     ).lower()
     if method_value not in ("euler", "rk4"):
         raise ValueError("method must be 'euler' or 'rk4'")
@@ -386,8 +384,7 @@ def _collect_nodal_increments(
             combined = base[:, None]
 
         return {
-            node: tuple(float(value) for value in combined[idx])
-            for idx, node in enumerate(nodes)
+            node: tuple(float(value) for value in combined[idx]) for idx, node in enumerate(nodes)
         }
 
     increments: NodeIncrements = {}
@@ -440,9 +437,7 @@ def _build_gamma_increments(
         gamma_type = str(gamma_spec.get("type", "")).lower()
 
     if gamma_type == "none":
-        gamma_maps: tuple[GammaMap, ...] = tuple(
-            cast(GammaMap, {}) for _ in range(gamma_count)
-        )
+        gamma_maps: tuple[GammaMap, ...] = tuple(cast(GammaMap, {}) for _ in range(gamma_count))
         return _collect_nodal_increments(G, gamma_maps, method=method)
 
     nodes: list[NodeId] = list(G.nodes)
@@ -541,9 +536,7 @@ class DefaultIntegrator(AbstractIntegrator):
     ) -> None:
         """Integrate the nodal equation updating EPI, ΔEPI and Δ²EPI."""
 
-        if not isinstance(
-            graph, (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph)
-        ):
+        if not isinstance(graph, (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph)):
             raise TypeError("G must be a networkx graph instance")
 
         dt_step, steps, t0, resolved_method = prepare_integration_params(
@@ -553,9 +546,7 @@ class DefaultIntegrator(AbstractIntegrator):
         t_local = t0
         for _ in range(steps):
             if resolved_method == "rk4":
-                updates: NodalUpdate = _integrate_rk4(
-                    graph, dt_step, t_local, n_jobs=n_jobs
-                )
+                updates: NodalUpdate = _integrate_rk4(graph, dt_step, t_local, n_jobs=n_jobs)
             else:
                 updates = _integrate_euler(graph, dt_step, t_local, n_jobs=n_jobs)
 
@@ -564,12 +555,8 @@ class DefaultIntegrator(AbstractIntegrator):
                 epi_kind = get_attr_str(nd, ALIAS_EPI_KIND, "")
 
                 # Apply structural boundary preservation
-                epi_min = float(
-                    graph.graph.get("EPI_MIN", DEFAULTS.get("EPI_MIN", -1.0))
-                )
-                epi_max = float(
-                    graph.graph.get("EPI_MAX", DEFAULTS.get("EPI_MAX", 1.0))
-                )
+                epi_min = float(graph.graph.get("EPI_MIN", DEFAULTS.get("EPI_MIN", -1.0)))
+                epi_max = float(graph.graph.get("EPI_MAX", DEFAULTS.get("EPI_MAX", 1.0)))
                 clip_mode_str = str(graph.graph.get("CLIP_MODE", "hard"))
                 # Validate clip mode and cast to proper type
                 if clip_mode_str not in ("hard", "soft"):

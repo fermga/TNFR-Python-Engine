@@ -64,9 +64,7 @@ def compare_networks(
 
         if "avg_si" in metrics:
             si_values = list(results.sense_indices.values())
-            comparison[name]["avg_si"] = (
-                sum(si_values) / len(si_values) if si_values else 0.0
-            )
+            comparison[name]["avg_si"] = sum(si_values) / len(si_values) if si_values else 0.0
 
         if "avg_delta_nfr" in metrics:
             dnfr_values = list(results.delta_nfr.values())
@@ -336,6 +334,4 @@ def suggest_sequence_for_goal(goal: str) -> Tuple[str, str]:
         ),
     }
 
-    return suggestions.get(
-        goal_lower, ("basic_activation", "Default: basic activation sequence")
-    )
+    return suggestions.get(goal_lower, ("basic_activation", "Default: basic activation sequence"))

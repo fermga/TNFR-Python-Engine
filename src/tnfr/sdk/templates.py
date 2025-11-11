@@ -103,9 +103,7 @@ class TNFRTemplates:
         network.apply_sequence("network_sync", repeat=steps_per_phase)
 
         # Phase 3: Consolidation (stabilization of relationships)
-        network.apply_sequence(
-            "consolidation", repeat=simulation_steps - 2 * steps_per_phase
-        )
+        network.apply_sequence("consolidation", repeat=simulation_steps - 2 * steps_per_phase)
 
         return network.measure()
 
@@ -277,9 +275,7 @@ class TNFRTemplates:
         network.apply_sequence("creative_mutation", repeat=cycles_per_phase)
 
         # Phase 3: Integration (convergent synthesis)
-        network.apply_sequence(
-            "network_sync", repeat=development_cycles - 2 * cycles_per_phase
-        )
+        network.apply_sequence("network_sync", repeat=development_cycles - 2 * cycles_per_phase)
 
         return network.measure()
 
@@ -335,8 +331,6 @@ class TNFRTemplates:
         network.apply_sequence("network_sync", repeat=steps_per_phase)
 
         # Phase 2: Stabilization of coordinated action
-        network.apply_sequence(
-            "consolidation", repeat=coordination_steps - steps_per_phase
-        )
+        network.apply_sequence("consolidation", repeat=coordination_steps - steps_per_phase)
 
         return network.measure()

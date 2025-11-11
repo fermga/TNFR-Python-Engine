@@ -45,8 +45,7 @@ except ImportError as _import_err:
         else:
             # Some other import error
             raise ImportError(
-                "Visualization functions are not available. "
-                "Install with: pip install tnfr[viz]"
+                "Visualization functions are not available. " "Install with: pip install tnfr[viz]"
             ) from _import_error
 
     plot_coherence_matrix = _missing_viz_dependency  # type: ignore[assignment]

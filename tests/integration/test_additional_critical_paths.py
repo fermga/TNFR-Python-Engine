@@ -73,15 +73,11 @@ def test_operator_closure_under_scaling() -> None:
         scaled_op = scalar * op
 
         # Must remain Hermitian
-        assert np.allclose(
-            scaled_op, scaled_op.conj().T
-        ), f"Not Hermitian for scalar={scalar}"
+        assert np.allclose(scaled_op, scaled_op.conj().T), f"Not Hermitian for scalar={scalar}"
 
         # Eigenvalues must be real
         eigenvalues = np.linalg.eigvalsh(scaled_op)
-        assert np.all(
-            np.isfinite(eigenvalues)
-        ), f"Non-finite eigenvalues for scalar={scalar}"
+        assert np.all(np.isfinite(eigenvalues)), f"Non-finite eigenvalues for scalar={scalar}"
 
 
 def test_operator_closure_under_commutator() -> None:
@@ -390,9 +386,7 @@ def test_multi_operator_interaction_maintains_conservation(seed_graph_factory) -
 
 
 @pytest.mark.parametrize("num_iterations", [1, 5, 10])
-def test_iterative_operator_application_stability(
-    seed_graph_factory, num_iterations
-) -> None:
+def test_iterative_operator_application_stability(seed_graph_factory, num_iterations) -> None:
     """Verify stability under repeated operator applications."""
     graph = seed_graph_factory(num_nodes=10, edge_probability=0.3, seed=2020)
 

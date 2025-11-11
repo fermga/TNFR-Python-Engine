@@ -51,9 +51,7 @@ class BasicStateProjector:
     dissonance while preserving determinism when a seed is provided.
     """
 
-    dtype: np.dtype[np.complexfloating[np.float64, np.float64]] = np.dtype(
-        np.complex128
-    )
+    dtype: np.dtype[np.complexfloating[np.float64, np.float64]] = np.dtype(np.complex128)
     atol: float = 1e-12
 
     def __call__(

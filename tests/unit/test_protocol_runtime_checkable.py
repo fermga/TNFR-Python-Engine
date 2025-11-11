@@ -47,9 +47,7 @@ class TestBEPIProtocol:
                 return self
 
         mock_bepi = MockBEPI()
-        assert isinstance(
-            mock_bepi, BEPIProtocol
-        ), "MockBEPI should satisfy BEPIProtocol"
+        assert isinstance(mock_bepi, BEPIProtocol), "MockBEPI should satisfy BEPIProtocol"
 
     def test_bepi_protocol_rejects_incomplete(self) -> None:
         """Verify incomplete BEPI implementations are rejected."""
@@ -120,9 +118,7 @@ class TestGraphLikeProtocol:
                 return iter([1, 2, 3])
 
         mock_graph = MockGraph()
-        assert isinstance(
-            mock_graph, GraphLike
-        ), "MockGraph should satisfy GraphLike protocol"
+        assert isinstance(mock_graph, GraphLike), "MockGraph should satisfy GraphLike protocol"
 
     def test_graphlike_protocol_checks_methods(self) -> None:
         """Verify GraphLike requires all protocol methods."""
@@ -195,9 +191,7 @@ def test_all_protocols_support_isinstance() -> None:
 
     for protocol in protocols:
         # Verify it's actually a Protocol
-        assert issubclass(
-            protocol, Protocol
-        ), f"{protocol.__name__} should be a Protocol"
+        assert issubclass(protocol, Protocol), f"{protocol.__name__} should be a Protocol"
 
         # The most reliable test: verify isinstance works with a mock
         class MockImplementation:

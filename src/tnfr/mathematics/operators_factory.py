@@ -65,9 +65,7 @@ def make_coherence_operator(
             np.full(dimension, float(c_min), dtype=float), backend=backend
         )
     else:
-        eigenvalues_backend = ensure_array(
-            spectrum, dtype=np.complex128, backend=backend
-        )
+        eigenvalues_backend = ensure_array(spectrum, dtype=np.complex128, backend=backend)
         eigenvalues_np = ensure_numpy(eigenvalues_backend, backend=backend)
         if eigenvalues_np.ndim != 1:
             raise ValueError("Coherence spectrum must be one-dimensional.")

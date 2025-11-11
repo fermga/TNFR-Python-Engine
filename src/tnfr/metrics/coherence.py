@@ -205,14 +205,10 @@ class SimilarityInputs:
 CoherenceMatrixDense = list[list[float]]
 CoherenceMatrixSparse = list[tuple[int, int, float]]
 CoherenceMatrixPayload = CoherenceMatrixDense | CoherenceMatrixSparse
-PhaseSyncWeights: TypeAlias = (
-    Sequence[float] | CoherenceMatrixSparse | CoherenceMatrixDense
-)
+PhaseSyncWeights: TypeAlias = Sequence[float] | CoherenceMatrixSparse | CoherenceMatrixDense
 
 SimilarityComponents = tuple[float, float, float, float]
-VectorizedComponents: TypeAlias = tuple[
-    FloatMatrix, FloatMatrix, FloatMatrix, FloatMatrix
-]
+VectorizedComponents: TypeAlias = tuple[FloatMatrix, FloatMatrix, FloatMatrix, FloatMatrix]
 ScalarOrArray: TypeAlias = float | FloatArray
 StabilityChunkArgs = tuple[
     Sequence[float],
@@ -260,9 +256,7 @@ def _compute_wij_phase_epi_vf_si_vectorized(
 
     epi_range = epi_range if epi_range > 0 else 1.0
     vf_range = vf_range if vf_range > 0 else 1.0
-    s_phase = 0.5 * (
-        1.0 + cos_th[:, None] * cos_th[None, :] + sin_th[:, None] * sin_th[None, :]
-    )
+    s_phase = 0.5 * (1.0 + cos_th[:, None] * cos_th[None, :] + sin_th[:, None] * sin_th[None, :])
     s_epi = 1.0 - np.abs(epi[:, None] - epi[None, :]) / epi_range
     s_vf = 1.0 - np.abs(vf[:, None] - vf[None, :]) / vf_range
     s_si = 1.0 - np.abs(si[:, None] - si[None, :])
@@ -600,9 +594,7 @@ def _wij_vectorized(
     )
     wij_matrix = cast(
         FloatMatrix,
-        _combine_similarity(
-            s_phase, s_epi, s_vf, s_si, phase_w, epi_w, vf_w, si_w, np=np
-        ),
+        _combine_similarity(s_phase, s_epi, s_vf, s_si, phase_w, epi_w, vf_w, si_w, np=np),
     )
     if self_diag:
         np.fill_diagonal(wij_matrix, 1.0)
@@ -959,9 +951,7 @@ def _coherence_python(
         results = [task.result() for task in tasks]
 
     results.sort(key=lambda item: item[0])
-    sparse_entries: list[tuple[int, int, float]] | None = (
-        [] if mode != "dense" else None
-    )
+    sparse_entries: list[tuple[int, int, float]] | None = [] if mode != "dense" else None
     for start, chunk_values, chunk_row_sum, chunk_sparse in results:
         values.extend(chunk_values)
         for offset, total in enumerate(chunk_row_sum):
@@ -972,9 +962,7 @@ def _coherence_python(
     if mode == "dense":
         W_dense: CoherenceMatrixDense = [list(row) for row in wij]
         return n, values, row_sum, W_dense
-    sparse_result: CoherenceMatrixSparse = (
-        sparse_entries if sparse_entries is not None else []
-    )
+    sparse_result: CoherenceMatrixSparse = sparse_entries if sparse_entries is not None else []
     return n, values, row_sum, sparse_result
 
 
@@ -1190,9 +1178,7 @@ def local_phase_sync_weighted(
     sparse list of ``(i, j, w)`` tuples for the whole matrix.
     """
     if W_row is None or nodes_order is None:
-        raise ValueError(
-            "nodes_order and W_row are required for weighted phase synchrony"
-        )
+        raise ValueError("nodes_order and W_row are required for weighted phase synchrony")
 
     if node_to_index is None:
         node_to_index = ensure_node_index_map(G)
@@ -1441,10 +1427,7 @@ def _stability_chunk_worker(args: StabilityChunkArgs) -> StabilityChunkResult:
         B_vals.append(B)
         B_sum += B
 
-        if (
-            abs(float(dnfr_vals[idx])) <= eps_dnfr
-            and abs(float(depi_vals[idx])) <= eps_depi
-        ):
+        if abs(float(dnfr_vals[idx])) <= eps_dnfr and abs(float(depi_vals[idx])) <= eps_depi:
             stable += 1
 
     chunk_len = len(si_curr_vals)
@@ -1606,9 +1589,7 @@ def _track_stability(
                     eps_dnfr,
                     eps_depi,
                 )
-                futures.append(
-                    (start, executor.submit(_stability_chunk_worker, chunk_args))
-                )
+                futures.append((start, executor.submit(_stability_chunk_worker, chunk_args)))
 
             for start, fut in futures:
                 chunk_results.append((start, fut.result()))
@@ -1671,10 +1652,7 @@ def _track_stability(
             B_vals_all.append(B_val)
             B_sum += B_val
 
-            if (
-                abs(float(dnfr_list[idx])) <= eps_dnfr
-                and abs(float(depi_list[idx])) <= eps_depi
-            ):
+            if abs(float(dnfr_list[idx])) <= eps_dnfr and abs(float(depi_list[idx])) <= eps_depi:
                 stable_total += 1
 
         total = len(delta_vals_all)
@@ -1789,9 +1767,7 @@ def _aggregate_si(
             with ProcessPoolExecutor(max_workers=n_jobs) as executor:
                 for idx in range(0, len(sis), chunk_size):
                     chunk = sis[idx : idx + chunk_size]
-                    futures.append(
-                        executor.submit(_si_chunk_stats, chunk, si_hi, si_lo)
-                    )
+                    futures.append(executor.submit(_si_chunk_stats, chunk, si_hi, si_lo))
             totals = [future.result() for future in futures]
             total = sum(part[0] for part in totals)
             count = sum(part[1] for part in totals)
@@ -1976,9 +1952,7 @@ def compute_local_coherence(G: TNFRGraph, node: Any, radius: int = 1) -> float:
     if radius == 1:
         neighbors = set(G.neighbors(node)) | {node}
     else:
-        neighbors = set(
-            nx.single_source_shortest_path_length(G, node, cutoff=radius).keys()
-        )
+        neighbors = set(nx.single_source_shortest_path_length(G, node, cutoff=radius).keys())
 
     # Collect ΔNFR for neighborhood
     dnfr_values = [float(get_attr(G.nodes[n], ALIAS_DNFR, 0.0)) for n in neighbors]

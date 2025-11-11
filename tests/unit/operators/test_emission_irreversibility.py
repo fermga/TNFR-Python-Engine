@@ -42,16 +42,12 @@ def test_emission_marks_timestamp_on_first_activation():
     time_after = datetime.now(timezone.utc)
 
     # Verify timestamp exists and is within expected range
-    timestamp_str = get_attr_str(
-        G.nodes[node], ALIAS_EMISSION_TIMESTAMP, default=None
-    )
+    timestamp_str = get_attr_str(G.nodes[node], ALIAS_EMISSION_TIMESTAMP, default=None)
     assert timestamp_str is not None, "Emission timestamp must be set"
 
     # Parse timestamp and verify it's between before/after
     emission_time = datetime.fromisoformat(timestamp_str)
-    assert (
-        time_before <= emission_time <= time_after
-    ), "Timestamp must be within execution window"
+    assert time_before <= emission_time <= time_after, "Timestamp must be within execution window"
 
 
 def test_emission_sets_activation_flag():
@@ -81,7 +77,7 @@ def test_emission_preserves_origin_timestamp():
     # Re-emission should NOT change origin
     # Coherent reactivation from silence: SHA → IL → AL (zero → medium → high)
     Coherence()(G, node)  # Stabilize from silence (zero → medium)
-    
+
     run_sequence(G, node, [Emission(), Reception(), Coherence(), Silence()])
 
     assert (
@@ -137,9 +133,7 @@ def test_emission_timestamp_uses_utc():
 
     run_sequence(G, node, [Emission(), Reception(), Coherence(), Silence()])
 
-    timestamp_str = get_attr_str(
-        G.nodes[node], ALIAS_EMISSION_TIMESTAMP, default=None
-    )
+    timestamp_str = get_attr_str(G.nodes[node], ALIAS_EMISSION_TIMESTAMP, default=None)
     assert timestamp_str is not None
 
     # Parse and verify timezone
@@ -153,9 +147,7 @@ def test_emission_timestamp_is_iso_format():
 
     run_sequence(G, node, [Emission(), Reception(), Coherence(), Silence()])
 
-    timestamp_str = get_attr_str(
-        G.nodes[node], ALIAS_EMISSION_TIMESTAMP, default=None
-    )
+    timestamp_str = get_attr_str(G.nodes[node], ALIAS_EMISSION_TIMESTAMP, default=None)
     assert timestamp_str is not None
 
     # Should parse without error
@@ -185,13 +177,13 @@ def test_emission_backward_compatible_with_legacy_nodes():
 def test_emission_multiple_nodes_independent_timestamps():
     """Different nodes must have independent emission timestamps."""
     G, node1 = create_nfr("node1", epi=0.2, vf=1.0)
-    
+
     # Create second node properly using create_nfr
     G.add_node("node2")
     G.nodes["node2"][EPI_PRIMARY] = 0.3
     G.nodes["node2"][VF_PRIMARY] = 0.9
     G.nodes["node2"]["theta"] = 0.0
-    
+
     # Set DNFR hook for proper operation
     set_delta_nfr_hook(G, dnfr_epi_vf_mixed)
 
@@ -216,14 +208,10 @@ def test_emission_lineage_origin_matches_timestamp():
 
     run_sequence(G, node, [Emission(), Reception(), Coherence(), Silence()])
 
-    timestamp = get_attr_str(
-        G.nodes[node], ALIAS_EMISSION_TIMESTAMP, default=None
-    )
+    timestamp = get_attr_str(G.nodes[node], ALIAS_EMISSION_TIMESTAMP, default=None)
     lineage_origin = G.nodes[node]["_structural_lineage"]["origin"]
 
-    assert (
-        timestamp == lineage_origin
-    ), "Timestamp and lineage origin must match"
+    assert timestamp == lineage_origin, "Timestamp and lineage origin must match"
 
 
 def test_emission_with_scripted_dnfr():
@@ -251,9 +239,7 @@ def test_emission_reactivation_preserves_all_original_metadata():
     run_sequence(G, node, [Emission(), Reception(), Coherence(), Silence()])
 
     # Capture original metadata
-    original_timestamp = get_attr_str(
-        G.nodes[node], ALIAS_EMISSION_TIMESTAMP, default=None
-    )
+    original_timestamp = get_attr_str(G.nodes[node], ALIAS_EMISSION_TIMESTAMP, default=None)
     original_origin = G.nodes[node]["_emission_origin"]
     original_activated = G.nodes[node]["_emission_activated"]
 
@@ -262,10 +248,7 @@ def test_emission_reactivation_preserves_all_original_metadata():
     run_sequence(G, node, [Emission(), Reception(), Coherence(), Silence()])
 
     # Verify preservation
-    assert (
-        get_attr_str(G.nodes[node], ALIAS_EMISSION_TIMESTAMP, default=None)
-        == original_timestamp
-    )
+    assert get_attr_str(G.nodes[node], ALIAS_EMISSION_TIMESTAMP, default=None) == original_timestamp
     assert G.nodes[node]["_emission_origin"] == original_origin
     assert G.nodes[node]["_emission_activated"] == original_activated
 

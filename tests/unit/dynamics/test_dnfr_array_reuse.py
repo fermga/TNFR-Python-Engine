@@ -56,9 +56,7 @@ def test_deg_array_reused_across_steps():
     assert deg_array2 is not None, "deg_array should still be present"
 
     # Same buffer reused (identity check)
-    assert (
-        id(deg_array2) == deg_array1_id
-    ), "deg_array should be reused when topology is stable"
+    assert id(deg_array2) == deg_array1_id, "deg_array should be reused when topology is stable"
 
 
 def test_deg_array_invalidated_on_edge_change():
@@ -113,9 +111,7 @@ def test_ephemeral_graph_cache_cleanup():
     gc.collect()
 
     # Verify manager was garbage collected
-    assert (
-        manager_weakref() is None
-    ), "Cache manager should be GC'd when graph is deleted"
+    assert manager_weakref() is None, "Cache manager should be GC'd when graph is deleted"
 
     if cache_weakref is not None:
         # Cache may still exist if referenced elsewhere, but should be GC-able

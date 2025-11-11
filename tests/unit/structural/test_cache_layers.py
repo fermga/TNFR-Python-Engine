@@ -32,9 +32,7 @@ from tnfr.utils import (
 class _FlakyLayer(CacheLayer):
     """Cache layer that can simulate load/store failures."""
 
-    def __init__(
-        self, *, fail_on_store: bool = False, fail_on_load: bool = False
-    ) -> None:
+    def __init__(self, *, fail_on_store: bool = False, fail_on_load: bool = False) -> None:
         self.fail_on_store = fail_on_store
         self.fail_on_load = fail_on_load
         self._storage: dict[str, Any] = {}
@@ -335,9 +333,7 @@ def test_edge_cache_persists_across_layers(tmp_path):
     G.graph.pop("_edge_cache_manager", None)
 
     restarted_shelf = ShelveCacheLayer(str(shelf_path))
-    restarted_manager = CacheManager(
-        layers=(RedisCacheLayer(client=fake_redis), restarted_shelf)
-    )
+    restarted_manager = CacheManager(layers=(RedisCacheLayer(client=fake_redis), restarted_shelf))
     G.graph["_tnfr_cache_manager"] = restarted_manager
 
     builder_called = False

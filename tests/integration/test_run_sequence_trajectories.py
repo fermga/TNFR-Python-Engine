@@ -36,9 +36,7 @@ def test_run_sequence_empty_sequence(graph_canon) -> None:
 # These tests focus on sequence compilation and structural validation instead.
 
 
-def test_run_sequence_with_operator_factory(
-    graph_canon, operator_sequence_factory
-) -> None:
+def test_run_sequence_with_operator_factory(graph_canon, operator_sequence_factory) -> None:
     """Verify sequence execution works with operator factory."""
     # Create sequence using factory
     operators = operator_sequence_factory(["coherence", "emission", "reception"])

@@ -95,9 +95,7 @@ class TestGrammar20Performance:
         regenerator_idx = sequence.index("recursivity")
 
         # Benchmark cycle analysis
-        result = benchmark(
-            cycle_detector.analyze_potential_cycle, sequence, regenerator_idx
-        )
+        result = benchmark(cycle_detector.analyze_potential_cycle, sequence, regenerator_idx)
 
         # Should complete
         assert result is not None

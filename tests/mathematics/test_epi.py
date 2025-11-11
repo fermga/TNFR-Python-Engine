@@ -67,9 +67,7 @@ def test_adjoint_inverts_phase(
 
     adjoint = space.adjoint(element_a)
 
-    np.testing.assert_allclose(
-        adjoint.f_continuous, np.conjugate(element_a.f_continuous)
-    )
+    np.testing.assert_allclose(adjoint.f_continuous, np.conjugate(element_a.f_continuous))
     np.testing.assert_allclose(adjoint.a_discrete, np.conjugate(element_a.a_discrete))
 
     original_norm = space.coherence_norm(
@@ -186,8 +184,7 @@ def test_bepi_sequence_forms_cauchy(sample_grid: np.ndarray) -> None:
 
     assert distances_to_limit[-1] < 0.08
     assert all(
-        earlier >= later
-        for earlier, later in zip(distances_to_limit, distances_to_limit[1:])
+        earlier >= later for earlier, later in zip(distances_to_limit, distances_to_limit[1:])
     )
 
     tail_bounds = []

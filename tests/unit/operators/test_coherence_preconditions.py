@@ -115,6 +115,7 @@ class TestCoherenceStrictPreconditions:
         G, node = create_nfr("negative_vf", epi=0.5, vf=0.5)
         # Manually set negative vf after creation
         from tnfr.constants.aliases import ALIAS_VF
+
         G.nodes[node][ALIAS_VF[0]] = -0.1
 
         with pytest.raises(ValueError) as exc_info:
@@ -401,8 +402,9 @@ class TestCoherenceOperatorIntegration:
         G, node = create_nfr("invalid", epi=0.5, vf=0.9)
         # Manually set zero EPI after creation to test precondition
         from tnfr.constants.aliases import ALIAS_EPI
+
         G.nodes[node][ALIAS_EPI[0]] = 0.0
-        
+
         # Enable precondition validation
         G.graph["VALIDATE_OPERATOR_PRECONDITIONS"] = True
 
@@ -417,7 +419,7 @@ class TestCoherenceOperatorIntegration:
         """Coherence operator succeeds when preconditions are met."""
         G, node = create_nfr("valid", epi=0.5, vf=0.9)
         G.nodes[node]["dnfr"] = 0.1
-        
+
         # Enable precondition validation
         G.graph["VALIDATE_OPERATOR_PRECONDITIONS"] = True
 
@@ -432,7 +434,7 @@ class TestCoherenceOperatorIntegration:
         """Coherence operator issues warnings for suboptimal states."""
         G, node = create_nfr("suboptimal", epi=0.5, vf=0.9)
         G.nodes[node]["dnfr"] = 0.0  # Zero ΔNFR - should warn
-        
+
         # Enable precondition validation
         G.graph["VALIDATE_OPERATOR_PRECONDITIONS"] = True
 

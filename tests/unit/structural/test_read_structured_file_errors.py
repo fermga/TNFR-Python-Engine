@@ -31,9 +31,7 @@ def test_read_structured_file_unsupported_suffix(tmp_path: Path):
     assert "not allowed" in msg or "Unsupported suffix" in msg
 
 
-def test_read_structured_file_permission_error(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-):
+def test_read_structured_file_permission_error(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     path = tmp_path / "forbidden.json"
     original_open = Path.open
 
@@ -83,9 +81,7 @@ def test_read_structured_file_corrupt_toml(tmp_path: Path):
     assert str(path) in msg
 
 
-def test_read_structured_file_missing_dependency(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-):
+def test_read_structured_file_missing_dependency(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     path = tmp_path / "data.yaml"
     path.write_text("a: 1", encoding="utf-8")
 
@@ -180,9 +176,7 @@ def test_read_structured_file_ignores_missing_yaml_when_parsing_json(
     assert io_mod.read_structured_file(path) == {"a": 1}
 
 
-def test_read_structured_file_unhandled_error(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-):
+def test_read_structured_file_unhandled_error(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     path = tmp_path / "data.json"
     path.write_text("{}", encoding="utf-8")
 

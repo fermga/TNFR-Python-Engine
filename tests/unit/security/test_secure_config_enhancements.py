@@ -124,10 +124,7 @@ class TestSecureCredentialValidator:
         secret = "medium"
 
         # Should pass with lower threshold
-        assert (
-            SecureCredentialValidator.validate_secret_strength(secret, min_length=4)
-            is True
-        )
+        assert SecureCredentialValidator.validate_secret_strength(secret, min_length=4) is True
 
         # Should fail with higher threshold
         with pytest.raises(ValueError, match="Secret too short"):

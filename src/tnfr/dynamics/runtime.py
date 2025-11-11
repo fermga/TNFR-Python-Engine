@@ -262,9 +262,7 @@ def _resolve_integrator_instance(G: TNFRGraph) -> integrators.AbstractIntegrator
 
     if isinstance(candidate, integrators.AbstractIntegrator):
         instance = candidate
-    elif inspect.isclass(candidate) and issubclass(
-        candidate, integrators.AbstractIntegrator
-    ):
+    elif inspect.isclass(candidate) and issubclass(candidate, integrators.AbstractIntegrator):
         instance = candidate()
     elif callable(candidate):
         instance = cast(
@@ -362,9 +360,7 @@ def _prepare_dnfr(
         )
         dynamics_module = sys.modules.get("tnfr.dynamics")
         compute_si_fn = (
-            getattr(dynamics_module, "compute_Si", None)
-            if dynamics_module is not None
-            else None
+            getattr(dynamics_module, "compute_Si", None) if dynamics_module is not None else None
         )
         if compute_si_fn is None:
             compute_si_fn = compute_Si
@@ -586,20 +582,14 @@ def _advance_math_engine(
     hilbert_space = cfg.get("hilbert_space")
     coherence_operator = cfg.get("coherence_operator")
     coherence_threshold = cfg.get("coherence_threshold")
-    if (
-        hilbert_space is None
-        or coherence_operator is None
-        or coherence_threshold is None
-    ):
+    if hilbert_space is None or coherence_operator is None or coherence_threshold is None:
         raise ValueError(
             "MATH_ENGINE requires 'hilbert_space', 'coherence_operator' and "
             "'coherence_threshold' entries."
         )
 
     if BasicStateProjector is None:  # pragma: no cover - guarded by import above
-        raise RuntimeError(
-            "Mathematical dynamics require the BasicStateProjector helper."
-        )
+        raise RuntimeError("Mathematical dynamics require the BasicStateProjector helper.")
 
     projector = cfg.get("state_projector")
     if not isinstance(projector, BasicStateProjector):
@@ -615,9 +605,7 @@ def _advance_math_engine(
                 "'generator_matrix'."
             )
         generator_matrix = np.asarray(generator, dtype=np.complex128)
-        engine = MathematicalDynamicsEngine(
-            generator_matrix, hilbert_space=hilbert_space
-        )
+        engine = MathematicalDynamicsEngine(generator_matrix, hilbert_space=hilbert_space)
         cfg["dynamics_engine"] = engine
 
     state_vector = cfg.get("_state_vector")
@@ -668,9 +656,7 @@ def _advance_math_engine(
     frequency_summary: dict[str, Any] | None = None
     if frequency_operator is not None:
         if runtime_frequency_positive is None:  # pragma: no cover - guarded above
-            raise RuntimeError(
-                "Frequency positivity checks require tnfr.mathematics extras."
-            )
+            raise RuntimeError("Frequency positivity checks require tnfr.mathematics extras.")
         freq_raw = runtime_frequency_positive(
             advanced,
             frequency_operator,
@@ -705,9 +691,7 @@ def _advance_math_engine(
     hist.setdefault("math_engine_norm", []).append(summary["norm"])
     hist.setdefault("math_engine_normalized", []).append(summary["normalized"])
     hist.setdefault("math_engine_coherence", []).append(summary["coherence"]["value"])
-    hist.setdefault("math_engine_coherence_passed", []).append(
-        summary["coherence"]["passed"]
-    )
+    hist.setdefault("math_engine_coherence_passed", []).append(summary["coherence"]["passed"])
 
     if frequency_summary is None:
         hist.setdefault("math_engine_frequency", []).append(None)
@@ -715,9 +699,7 @@ def _advance_math_engine(
         hist.setdefault("math_engine_frequency_projection_passed", []).append(None)
     else:
         hist.setdefault("math_engine_frequency", []).append(frequency_summary["value"])
-        hist.setdefault("math_engine_frequency_passed", []).append(
-            frequency_summary["passed"]
-        )
+        hist.setdefault("math_engine_frequency_passed", []).append(frequency_summary["passed"])
         hist.setdefault("math_engine_frequency_projection_passed", []).append(
             frequency_summary["projection_passed"]
         )
@@ -791,9 +773,7 @@ def step(
     job_overrides = _normalize_job_overrides(n_jobs)
     hist = ensure_history(G)
     step_idx = len(hist.setdefault("C_steps", []))
-    _run_before_callbacks(
-        G, step_idx=step_idx, dt=dt, use_Si=use_Si, apply_glyphs=apply_glyphs
-    )
+    _run_before_callbacks(G, step_idx=step_idx, dt=dt, use_Si=use_Si, apply_glyphs=apply_glyphs)
     _update_nodes(
         G,
         dt=dt,

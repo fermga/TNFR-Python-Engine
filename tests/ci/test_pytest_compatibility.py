@@ -62,9 +62,7 @@ class TestPytestPluginsAvailable:
         # Verify version is 5.x or higher for pytest 8.x compatibility
         version = pytest_benchmark.__version__
         major = int(version.split(".")[0])
-        assert major >= 5, (
-            f"Expected pytest-benchmark 5.x or higher, got {version}"
-        )
+        assert major >= 5, f"Expected pytest-benchmark 5.x or higher, got {version}"
 
     def test_hypothesis_available(self):
         """Verify hypothesis is available."""
@@ -90,9 +88,7 @@ class TestPytestPluginsCompatibility:
         """Test pytest-cov works with pytest 8.x."""
         # Create a simple test file
         test_file = tmp_path / "test_simple.py"
-        test_file.write_text(
-            "def test_pass():\n    assert True\n", encoding="utf-8"
-        )
+        test_file.write_text("def test_pass():\n    assert True\n", encoding="utf-8")
 
         # Run pytest with coverage
         result = pytest.main(
@@ -163,13 +159,11 @@ class TestDeprecationWarnings:
         pytest_warnings = [
             w
             for w in recwarn.list
-            if "pytest" in str(w.category).lower()
-            and "deprecat" in str(w.message).lower()
+            if "pytest" in str(w.category).lower() and "deprecat" in str(w.message).lower()
         ]
 
         assert len(pytest_warnings) == 0, (
-            f"Found pytest deprecation warnings: "
-            f"{[str(w.message) for w in pytest_warnings]}"
+            f"Found pytest deprecation warnings: " f"{[str(w.message) for w in pytest_warnings]}"
         )
 
 
@@ -199,9 +193,7 @@ class TestPytestFeatures:
         """Test that pytest.approx works correctly."""
         assert 0.1 + 0.2 == pytest.approx(0.3)
 
-    @pytest.mark.skipif(
-        sys.version_info < (3, 9), reason="Requires Python 3.9+"
-    )
+    @pytest.mark.skipif(sys.version_info < (3, 9), reason="Requires Python 3.9+")
     def test_skipif_works(self):
         """Test that skipif marker works correctly."""
         assert sys.version_info >= (3, 9)

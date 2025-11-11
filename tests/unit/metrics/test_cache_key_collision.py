@@ -33,15 +33,9 @@ class TestCacheKeyUniqueness:
             pytest.skip("NumPy not available")
 
         # Allocate buffers with different prefixes
-        buffers1 = ensure_numpy_buffers(
-            G, key_prefix="_test1", count=10, buffer_count=2, np=np_mod
-        )
-        buffers2 = ensure_numpy_buffers(
-            G, key_prefix="_test2", count=10, buffer_count=2, np=np_mod
-        )
-        buffers3 = ensure_numpy_buffers(
-            G, key_prefix="_test1", count=20, buffer_count=2, np=np_mod
-        )
+        buffers1 = ensure_numpy_buffers(G, key_prefix="_test1", count=10, buffer_count=2, np=np_mod)
+        buffers2 = ensure_numpy_buffers(G, key_prefix="_test2", count=10, buffer_count=2, np=np_mod)
+        buffers3 = ensure_numpy_buffers(G, key_prefix="_test1", count=20, buffer_count=2, np=np_mod)
 
         # Different prefixes should not share buffers
         assert buffers1[0] is not buffers2[0]
@@ -129,9 +123,7 @@ class TestCacheKeyUniqueness:
             pytest.skip("NumPy not available")
 
         # Store various cached items
-        buffers = ensure_numpy_buffers(
-            G, key_prefix="_test_ns", count=5, buffer_count=1, np=np_mod
-        )
+        buffers = ensure_numpy_buffers(G, key_prefix="_test_ns", count=5, buffer_count=1, np=np_mod)
         neighbors = ensure_neighbors_map(G)
         trig = get_trig_cache(G, np=np_mod)
 
@@ -233,18 +225,14 @@ class TestCacheInvalidation:
             pytest.skip("NumPy not available")
 
         # Allocate buffers
-        buffers1 = ensure_numpy_buffers(
-            G, key_prefix="_test", count=3, buffer_count=1, np=np_mod
-        )
+        buffers1 = ensure_numpy_buffers(G, key_prefix="_test", count=3, buffer_count=1, np=np_mod)
 
         # Modify graph topology
         G.add_edge(2, 3)
         increment_edge_version(G)
 
         # Should get new buffers
-        buffers2 = ensure_numpy_buffers(
-            G, key_prefix="_test", count=3, buffer_count=1, np=np_mod
-        )
+        buffers2 = ensure_numpy_buffers(G, key_prefix="_test", count=3, buffer_count=1, np=np_mod)
 
         # Note: The count is the same (3 nodes), but edge version changed
         # The cache should still be invalidated based on edge version
@@ -253,9 +241,7 @@ class TestCacheInvalidation:
 
         # Add another node to change the count
         G.add_node(4)
-        buffers3 = ensure_numpy_buffers(
-            G, key_prefix="_test", count=4, buffer_count=1, np=np_mod
-        )
+        buffers3 = ensure_numpy_buffers(G, key_prefix="_test", count=4, buffer_count=1, np=np_mod)
 
         # Different count should definitely produce different buffers
         assert buffers3[0].shape != buffers1[0].shape

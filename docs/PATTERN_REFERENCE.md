@@ -756,9 +756,9 @@ print(result.metadata['detected_pattern'])
 
 ## Resources
 
-- **[GLYPH_SEQUENCES_GUIDE.md](../GLYPH_SEQUENCES_GUIDE.md)**: Complete guide
+- **[GLYPH_SEQUENCES_GUIDE.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/GLYPH_SEQUENCES_GUIDE.md)**: Complete guide
 - **[HEALTH_METRICS_GUIDE.md](HEALTH_METRICS_GUIDE.md)**: Health metrics deep dive
-- **[examples/domain_applications/](../examples/domain_applications/)**: Pattern examples
+- **[examples/domain_applications/](https://github.com/fermga/TNFR-Python-Engine/tree/main/examples/domain_applications)**: Pattern examples
 
 ---
 

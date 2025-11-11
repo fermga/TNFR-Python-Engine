@@ -118,9 +118,7 @@ def compute_bifurcation_rate(G: TNFRGraph, node: NodeId, window: int = 10) -> fl
     current_time = len(G.nodes[node].get("glyph_history", []))
 
     # Count bifurcations in window
-    recent_bifurcations = [
-        s for s in sub_epis if s.get("timestamp", 0) >= (current_time - window)
-    ]
+    recent_bifurcations = [s for s in sub_epis if s.get("timestamp", 0) >= (current_time - window)]
 
     return len(recent_bifurcations) / float(window)
 

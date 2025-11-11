@@ -209,14 +209,10 @@ class TestTNFRHierarchicalCache:
         cache = TNFRHierarchicalCache(max_memory_mb=1)
 
         # Add low-cost entry
-        cache.set(
-            "cheap", "x" * 1000, CacheLevel.TEMPORARY, set(), computation_cost=1.0
-        )
+        cache.set("cheap", "x" * 1000, CacheLevel.TEMPORARY, set(), computation_cost=1.0)
 
         # Add high-cost entry
-        cache.set(
-            "expensive", "x" * 1000, CacheLevel.TEMPORARY, set(), computation_cost=100.0
-        )
+        cache.set("expensive", "x" * 1000, CacheLevel.TEMPORARY, set(), computation_cost=100.0)
 
         # Access expensive entry multiple times
         for _ in range(10):

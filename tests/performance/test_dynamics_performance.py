@@ -184,8 +184,7 @@ def test_default_compute_delta_nfr_vectorized_is_faster_and_equivalent():
     assert vector_time <= fallback_time * 0.95
 
     vector_dnfr = [
-        get_attr(vectorized_graph.nodes[n], ALIAS_DNFR, 0.0)
-        for n in vectorized_graph.nodes
+        get_attr(vectorized_graph.nodes[n], ALIAS_DNFR, 0.0) for n in vectorized_graph.nodes
     ]
     fallback_dnfr = [
         get_attr(fallback_graph.nodes[n], ALIAS_DNFR, 0.0) for n in fallback_graph.nodes
@@ -226,9 +225,7 @@ def test_broadcast_neighbor_accumulator_stays_faster_and_correct(monkeypatch):
         ctx.setattr(dnfr_module, "get_numpy", lambda: None)
 
         def _loop_run() -> None:
-            loop_results.append(
-                _build_neighbor_sums_common(loop_graph, loop_data, use_numpy=False)
-            )
+            loop_results.append(_build_neighbor_sums_common(loop_graph, loop_data, use_numpy=False))
 
         loop_time = _measure(_loop_run, loops)
     loop_result = loop_results[-1]
@@ -240,18 +237,14 @@ def test_broadcast_neighbor_accumulator_stays_faster_and_correct(monkeypatch):
         if vec_arr is None or loop_arr is None:
             assert vec_arr is loop_arr is None
         else:
-            npt.assert_allclose(
-                vec_arr, np.asarray(loop_arr, dtype=float), rtol=1e-9, atol=1e-9
-            )
+            npt.assert_allclose(vec_arr, np.asarray(loop_arr, dtype=float), rtol=1e-9, atol=1e-9)
 
     vec_deg = vector_result[-1]
     loop_deg = loop_result[-1]
     if vec_deg is None or loop_deg is None:
         assert vec_deg is loop_deg is None
     else:
-        npt.assert_allclose(
-            vec_deg, np.asarray(loop_deg, dtype=float), rtol=1e-9, atol=1e-9
-        )
+        npt.assert_allclose(vec_deg, np.asarray(loop_deg, dtype=float), rtol=1e-9, atol=1e-9)
 
 
 def test_broadcast_accumulator_bincount_fast_path_matches_python(monkeypatch):
@@ -427,9 +420,7 @@ def test_neighbor_accumulation_numpy_outperforms_stack_strategy():
         loops,
     )
     legacy_time = _measure(
-        lambda: _legacy_numpy_stack_accumulation(
-            graph_legacy, legacy_data, buffers=legacy_buffers
-        ),
+        lambda: _legacy_numpy_stack_accumulation(graph_legacy, legacy_data, buffers=legacy_buffers),
         loops,
     )
 

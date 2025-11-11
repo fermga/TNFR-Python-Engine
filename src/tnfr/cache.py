@@ -161,6 +161,9 @@ __all__ = [
     "CacheEntry",
     "cache_tnfr_computation",
     "invalidate_function_cache",
+    "get_global_cache",
+    "set_global_cache",
+    "reset_global_cache",
     # Change tracking
     "GraphChangeTracker",
     "track_node_property_update",

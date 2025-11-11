@@ -50,9 +50,7 @@ class TestNoHardcodedSecrets:
         """Verify no hardcoded GitHub tokens in source code."""
         # Pattern for GitHub tokens - adjusted to catch more variants
         # Classic tokens are ~40 chars after prefix, fine-grained can vary
-        github_token_pattern = re.compile(
-            r"(ghp|gho|ghu|ghs|ghr)_[a-zA-Z0-9]{30,}", re.IGNORECASE
-        )
+        github_token_pattern = re.compile(r"(ghp|gho|ghu|ghs|ghr)_[a-zA-Z0-9]{30,}", re.IGNORECASE)
 
         violations = []
         for file_path in source_files:
@@ -65,9 +63,7 @@ class TestNoHardcodedSecrets:
                 # Skip files that can't be read
                 continue
 
-        assert (
-            not violations
-        ), f"Found potential hardcoded GitHub tokens in:\n" + "\n".join(
+        assert not violations, f"Found potential hardcoded GitHub tokens in:\n" + "\n".join(
             f"  {path}: {matches}" for path, matches in violations
         )
 
@@ -89,9 +85,7 @@ class TestNoHardcodedSecrets:
             except Exception:
                 continue
 
-        assert (
-            not violations
-        ), f"Found potential hardcoded PyPI tokens in:\n" + "\n".join(
+        assert not violations, f"Found potential hardcoded PyPI tokens in:\n" + "\n".join(
             f"  {path}: {matches}" for path, matches in violations
         )
 
@@ -125,9 +119,7 @@ class TestNoHardcodedSecrets:
                 for match in suspicious_pattern.finditer(content):
                     string_value = match.group(1)
                     # Check if it matches allowed patterns
-                    if any(
-                        re.match(pattern, string_value) for pattern in allowed_patterns
-                    ):
+                    if any(re.match(pattern, string_value) for pattern in allowed_patterns):
                         continue
                     # Skip common non-secret strings
                     if string_value.isupper():  # Environment variable names
@@ -143,11 +135,8 @@ class TestNoHardcodedSecrets:
 
         # This test warns but doesn't fail to avoid false positives
         if violations:
-            message = (
-                "Found suspicious long strings (potential secrets):\n"
-                + "\n".join(
-                    f"  {path}:{line}: {value}" for path, line, value in violations[:10]
-                )
+            message = "Found suspicious long strings (potential secrets):\n" + "\n".join(
+                f"  {path}:{line}: {value}" for path, line, value in violations[:10]
             )
             pytest.skip(f"Review needed: {message}")
 
@@ -177,9 +166,7 @@ class TestNoHardcodedSecrets:
         # This test might pass in development environments where .env exists
         # but is gitignored
         if env_path.exists():
-            pytest.skip(
-                ".env file exists (likely in development, should be gitignored)"
-            )
+            pytest.skip(".env file exists (likely in development, should be gitignored)")
 
 
 class TestConfigurationUtilities:

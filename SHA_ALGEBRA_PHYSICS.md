@@ -18,21 +18,21 @@ Este documento identifica qué propiedades algebraicas de SHA emergen **inevitab
 
 ### Derivación Física de Propiedades Algebraicas (Canónicas)
 
-#### 1. SHA como Identidad Estructural (✅ Canónico)
+#### 1. SHA as Structural Identity (✅ Canonical)
 
-**Mecanismo físico de SHA:**
+**Physical mechanism of SHA:**
 ```
-SHA: νf → 0 (reduce frecuencia estructural)
+SHA: νf → 0 (reduce structural frequency)
 ```
 
-**Efecto en la ecuación nodal:**
+**Effect on nodal equation:**
 ```
 ∂EPI/∂t = νf · ΔNFR(t)
-Si νf → 0, entonces ∂EPI/∂t → 0
+If νf → 0, then ∂EPI/∂t → 0
 ```
 
-**Conclusión inevitable:**
-La estructura EPI se **congela** - no evoluciona más, independientemente de ΔNFR.
+**Inevitable conclusion:**
+EPI structure **freezes** - no longer evolves, regardless of ΔNFR.
 
 **Propiedad algebraica resultante:**
 ```

@@ -50,6 +50,4 @@ def test_convert_value_rejects_non_finite(caplog):
         ok, result = convert_value("x", conv, key="foo")
 
     assert not ok and result is None
-    assert any(
-        "Non-finite value for 'foo'" in record.getMessage() for record in caplog.records
-    )
+    assert any("Non-finite value for 'foo'" in record.getMessage() for record in caplog.records)

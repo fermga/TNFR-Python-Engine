@@ -125,9 +125,7 @@ class TestInvalidGlyphSequences:
         sequence = [RECEPTION, COHERENCE, RESONANCE, SILENCE]
         result = validate_sequence(sequence)
         assert not result.passed
-        assert (
-            "must start" in result.message.lower() or "start" in result.message.lower()
-        )
+        assert "must start" in result.message.lower() or "start" in result.message.lower()
 
     def test_missing_intermediate_operator(self):
         """Sequences must contain reception→coherence segment."""
@@ -138,10 +136,7 @@ class TestInvalidGlyphSequences:
         # Should fail - missing required reception→coherence
         assert not result.passed
         assert (
-            (
-                "missing" in result.message.lower()
-                and "segment" in result.message.lower()
-            )
+            ("missing" in result.message.lower() and "segment" in result.message.lower())
             or "reception" in result.message.lower()
             or "coherence" in result.message.lower()
         )

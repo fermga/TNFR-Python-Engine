@@ -10,7 +10,7 @@ from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 
 try:
-    import psutil
+    pass
 
     HAS_PSUTIL = True
 except ImportError:
@@ -116,9 +116,7 @@ class ParallelExecutionMonitor:
         if self._process:
             try:
                 mem_info = self._process.memory_info()
-                self._current_metrics["memory_samples"].append(
-                    mem_info.rss / 1024 / 1024
-                )
+                self._current_metrics["memory_samples"].append(mem_info.rss / 1024 / 1024)
                 self._current_metrics["cpu_samples"].append(self._process.cpu_percent())
             except Exception:
                 pass
@@ -150,9 +148,7 @@ class ParallelExecutionMonitor:
         if self._process:
             try:
                 mem_info = self._process.memory_info()
-                self._current_metrics["memory_samples"].append(
-                    mem_info.rss / 1024 / 1024
-                )
+                self._current_metrics["memory_samples"].append(mem_info.rss / 1024 / 1024)
                 self._current_metrics["cpu_samples"].append(self._process.cpu_percent())
             except Exception:
                 pass
@@ -179,9 +175,7 @@ class ParallelExecutionMonitor:
         expected_cpu = workers * 100.0
         actual_speedup = (avg_cpu / 100.0) if expected_cpu > 0 else 1.0
         parallelization_eff = (
-            min(1.0, actual_speedup / theoretical_speedup)
-            if theoretical_speedup > 0
-            else 0.0
+            min(1.0, actual_speedup / theoretical_speedup) if theoretical_speedup > 0 else 0.0
         )
 
         # Memory efficiency: nodes per MB
@@ -228,8 +222,7 @@ class ParallelExecutionMonitor:
 
         if latest.memory_efficiency < 0.1:
             suggestions.append(
-                "💾 High memory usage - consider distributed execution "
-                "or memory optimization"
+                "💾 High memory usage - consider distributed execution " "or memory optimization"
             )
 
         if latest.operations_per_second < 100:

@@ -112,9 +112,7 @@ class TestInteractiveValidator:
         validator = TNFRInteractiveValidator()
         analyzer = SequenceHealthAnalyzer()
 
-        health = analyzer.analyze_health(
-            ["emission", "reception", "coherence", "silence"]
-        )
+        health = analyzer.analyze_health(["emission", "reception", "coherence", "silence"])
 
         validator._display_health_metrics(health)
 
@@ -352,9 +350,7 @@ def test_run_interactive_validator_success(monkeypatch):
         call_count[0] += 1
         self.running = False
 
-    monkeypatch.setattr(
-        TNFRInteractiveValidator, "run_interactive_session", mock_run_session
-    )
+    monkeypatch.setattr(TNFRInteractiveValidator, "run_interactive_session", mock_run_session)
 
     exit_code = run_interactive_validator()
     assert exit_code == 0

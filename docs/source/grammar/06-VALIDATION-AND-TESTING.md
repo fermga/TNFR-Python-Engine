@@ -1,1 +1,0 @@
-../../grammar/06-VALIDATION-AND-TESTING.md

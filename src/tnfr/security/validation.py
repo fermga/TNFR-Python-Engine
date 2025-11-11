@@ -62,9 +62,7 @@ def validate_structural_frequency(nu_f: float) -> float:
     ValueError: Structural frequency must be non-negative, got -0.1
     """
     if not isinstance(nu_f, (int, float)):
-        raise ValueError(
-            f"Structural frequency must be numeric, got {type(nu_f).__name__}"
-        )
+        raise ValueError(f"Structural frequency must be numeric, got {type(nu_f).__name__}")
 
     if math.isnan(nu_f):
         raise ValueError("Structural frequency cannot be NaN")

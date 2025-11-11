@@ -30,9 +30,7 @@ class TestTNFRTemplates:
 
     def test_ecosystem_dynamics(self):
         """Test ecosystem dynamics template."""
-        results = TNFRTemplates.ecosystem_dynamics(
-            species=12, evolution_steps=10, random_seed=42
-        )
+        results = TNFRTemplates.ecosystem_dynamics(species=12, evolution_steps=10, random_seed=42)
 
         assert isinstance(results, NetworkResults)
         assert len(results.sense_indices) == 12
@@ -79,9 +77,7 @@ class TestTNFRExperimentBuilder:
 
     def test_creativity_emergence(self):
         """Test creativity emergence study."""
-        results = TNFRExperimentBuilder.creativity_emergence(
-            nodes=10, steps=3, random_seed=42
-        )
+        results = TNFRExperimentBuilder.creativity_emergence(nodes=10, steps=3, random_seed=42)
 
         assert isinstance(results, NetworkResults)
         assert len(results.sense_indices) == 10

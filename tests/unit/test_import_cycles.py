@@ -45,18 +45,18 @@ def test_callback_utils_removed():
 
     Structural Function: Transition - completed deprecation removal
     TNFR Invariants: #8 (Controlled determinism)
-    
+
     The functionality is now available only through tnfr.utils.callbacks.
     """
     import importlib.util
-    
+
     # Verify the module doesn't exist
     spec = importlib.util.find_spec("tnfr.callback_utils")
     assert spec is None, "tnfr.callback_utils should be removed"
-    
+
     # Verify functionality is available via the correct path
     from tnfr.utils.callbacks import CallbackManager, CallbackEvent, callback_manager
-    
+
     assert CallbackManager is not None
     assert CallbackEvent is not None
     assert callback_manager is not None
@@ -134,9 +134,7 @@ def test_numeric_module_has_no_tnfr_imports():
     # Filter out relative imports (those are within utils package)
     tnfr_imports = [imp for imp in imports if not imp.startswith("_")]
 
-    assert (
-        len(tnfr_imports) == 0
-    ), f"numeric.py should have no TNFR imports, found: {tnfr_imports}"
+    assert len(tnfr_imports) == 0, f"numeric.py should have no TNFR imports, found: {tnfr_imports}"
 
 
 def test_chunks_module_has_no_tnfr_imports():
@@ -155,9 +153,7 @@ def test_chunks_module_has_no_tnfr_imports():
     # Filter out relative imports
     tnfr_imports = [imp for imp in imports if not imp.startswith("_")]
 
-    assert (
-        len(tnfr_imports) == 0
-    ), f"chunks.py should have no TNFR imports, found: {tnfr_imports}"
+    assert len(tnfr_imports) == 0, f"chunks.py should have no TNFR imports, found: {tnfr_imports}"
 
 
 def test_utils_layer_hierarchy():
@@ -188,9 +184,7 @@ def test_utils_layer_hierarchy():
 
     violations = [imp for imp in imports if any(f in imp for f in forbidden)]
 
-    assert (
-        len(violations) == 0
-    ), f"data.py should not import from {forbidden}, found: {violations}"
+    assert len(violations) == 0, f"data.py should not import from {forbidden}, found: {violations}"
 
 
 def test_all_utils_modules_importable():
@@ -247,21 +241,13 @@ def test_utils_init_exports_match_submodules():
     assert hasattr(tnfr.utils, "CallbackManager")
     assert hasattr(tnfr.utils.callbacks, "CallbackManager")
     # Verify they're the same class by checking isinstance
-    assert isinstance(
-        tnfr.utils.CallbackManager, type
-    ), "CallbackManager should be a class"
+    assert isinstance(tnfr.utils.CallbackManager, type), "CallbackManager should be a class"
     assert isinstance(
         tnfr.utils.callbacks.CallbackManager, type
     ), "CallbackManager should be a class"
     # Verify same name and module
-    assert (
-        tnfr.utils.CallbackManager.__name__
-        == tnfr.utils.callbacks.CallbackManager.__name__
-    )
-    assert (
-        tnfr.utils.CallbackManager.__module__
-        == tnfr.utils.callbacks.CallbackManager.__module__
-    )
+    assert tnfr.utils.CallbackManager.__name__ == tnfr.utils.callbacks.CallbackManager.__name__
+    assert tnfr.utils.CallbackManager.__module__ == tnfr.utils.callbacks.CallbackManager.__module__
 
 
 def test_no_import_star_in_utils():

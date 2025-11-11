@@ -16,17 +16,13 @@ from matplotlib.axes import Axes
 
 if TYPE_CHECKING:
     from ..operators.health_analyzer import SequenceHealthMetrics
-    from ..operators.grammar import StructuralPattern
 
 from ..config.operator_names import (
     COHERENCE,
-    CONTRACTION,
     COUPLING,
     DISSONANCE,
     EMISSION,
-    EXPANSION,
     MUTATION,
-    RECEPTION,
     RECURSIVITY,
     RESONANCE,
     SELF_ORGANIZATION,
@@ -212,9 +208,7 @@ class SequenceVisualizer:
             border_width = 2
 
             # Draw node
-            circle = plt.Circle(
-                pos, 0.04, color=node_color, ec="black", lw=border_width, zorder=10
-            )
+            circle = plt.Circle(pos, 0.04, color=node_color, ec="black", lw=border_width, zorder=10)
             ax.add_patch(circle)
 
             # Add operator label
@@ -227,19 +221,6 @@ class SequenceVisualizer:
                 va="top",
                 fontsize=10,
                 weight="bold",
-            )
-
-            # Add frequency indicator
-            freq_label = f"νf={freq}"
-            ax.text(
-                pos[0],
-                pos[1] + 0.06,
-                freq_label,
-                ha="center",
-                va="bottom",
-                fontsize=8,
-                style="italic",
-                color=FREQUENCY_COLORS.get(freq, "#95a5a6"),
             )
 
         # Add title
@@ -460,9 +441,7 @@ class SequenceVisualizer:
         # Add markers
         for i in range(0, 11):
             val = i / 10
-            ax_gauge.axvline(
-                val, color="gray", linestyle="--", alpha=0.3, linewidth=0.5
-            )
+            ax_gauge.axvline(val, color="gray", linestyle="--", alpha=0.3, linewidth=0.5)
 
         ax_gauge.set_xlim(0, 1)
         ax_gauge.set_ylim(-0.5, 0.5)
@@ -509,16 +488,12 @@ class SequenceVisualizer:
             bbox=dict(boxstyle="round", facecolor="wheat", alpha=0.5),
         )
 
-        ax_gauge.set_title(
-            "Overall Structural Health", fontsize=14, weight="bold", pad=20
-        )
+        ax_gauge.set_title("Overall Structural Health", fontsize=14, weight="bold", pad=20)
         ax_gauge.spines["top"].set_visible(False)
         ax_gauge.spines["right"].set_visible(False)
         ax_gauge.spines["left"].set_visible(False)
 
-        fig.suptitle(
-            "TNFR Sequence Health Dashboard", fontsize=16, weight="bold", y=0.98
-        )
+        fig.suptitle("TNFR Sequence Health Dashboard", fontsize=16, weight="bold", y=0.98)
 
         plt.tight_layout(rect=[0, 0, 1, 0.96])
 
@@ -633,21 +608,11 @@ class SequenceVisualizer:
 
         # Add legend for categories
         legend_elements = [
-            mpatches.Patch(
-                color=OPERATOR_CATEGORY_COLORS["initiator"], label="Initiator"
-            ),
-            mpatches.Patch(
-                color=OPERATOR_CATEGORY_COLORS["stabilizer"], label="Stabilizer"
-            ),
-            mpatches.Patch(
-                color=OPERATOR_CATEGORY_COLORS["transformer"], label="Transformer"
-            ),
-            mpatches.Patch(
-                color=OPERATOR_CATEGORY_COLORS["amplifier"], label="Amplifier"
-            ),
-            mpatches.Patch(
-                color=OPERATOR_CATEGORY_COLORS["organizer"], label="Organizer"
-            ),
+            mpatches.Patch(color=OPERATOR_CATEGORY_COLORS["initiator"], label="Initiator"),
+            mpatches.Patch(color=OPERATOR_CATEGORY_COLORS["stabilizer"], label="Stabilizer"),
+            mpatches.Patch(color=OPERATOR_CATEGORY_COLORS["transformer"], label="Transformer"),
+            mpatches.Patch(color=OPERATOR_CATEGORY_COLORS["amplifier"], label="Amplifier"),
+            mpatches.Patch(color=OPERATOR_CATEGORY_COLORS["organizer"], label="Organizer"),
         ]
         ax.legend(handles=legend_elements, loc="lower right", fontsize=9, ncol=5)
 
@@ -655,9 +620,7 @@ class SequenceVisualizer:
         ax.set_ylim(0, 1)
         ax.set_aspect("equal")
         ax.axis("off")
-        ax.set_title(
-            "TNFR Pattern Component Analysis", fontsize=14, weight="bold", pad=20
-        )
+        ax.set_title("TNFR Pattern Component Analysis", fontsize=14, weight="bold", pad=20)
 
         plt.tight_layout()
 
@@ -752,26 +715,16 @@ class SequenceVisualizer:
         ax.set_xticklabels([f"Step {i+1}" for i in range(len(normalized))], fontsize=9)
         ax.set_ylabel("Operator Intensity", fontsize=12, weight="bold")
         ax.set_xlabel("Sequence Position", fontsize=12, weight="bold")
-        ax.set_title(
-            "TNFR Operator Sequence Timeline", fontsize=14, weight="bold", pad=20
-        )
+        ax.set_title("TNFR Operator Sequence Timeline", fontsize=14, weight="bold", pad=20)
         ax.grid(axis="y", alpha=0.3, linestyle="--")
         ax.set_ylim(0.5, 3.5)
 
         # Add category legend
         legend_elements = [
-            mpatches.Patch(
-                color=OPERATOR_CATEGORY_COLORS["generator"], label="Generator"
-            ),
-            mpatches.Patch(
-                color=OPERATOR_CATEGORY_COLORS["stabilizer"], label="Stabilizer"
-            ),
-            mpatches.Patch(
-                color=OPERATOR_CATEGORY_COLORS["transformer"], label="Transformer"
-            ),
-            mpatches.Patch(
-                color=OPERATOR_CATEGORY_COLORS["connector"], label="Connector"
-            ),
+            mpatches.Patch(color=OPERATOR_CATEGORY_COLORS["generator"], label="Generator"),
+            mpatches.Patch(color=OPERATOR_CATEGORY_COLORS["stabilizer"], label="Stabilizer"),
+            mpatches.Patch(color=OPERATOR_CATEGORY_COLORS["transformer"], label="Transformer"),
+            mpatches.Patch(color=OPERATOR_CATEGORY_COLORS["connector"], label="Connector"),
             mpatches.Patch(color=OPERATOR_CATEGORY_COLORS["closure"], label="Closure"),
         ]
         ax.legend(handles=legend_elements, loc="upper right", fontsize=9, ncol=2)

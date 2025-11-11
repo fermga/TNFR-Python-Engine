@@ -1571,7 +1571,7 @@ print(f"C(t): {G.graph.get('coherence', 0):.2f}")
 
 ### Related Documentation
 
-- **[GLYPH_SEQUENCES_GUIDE.md](../../../GLYPH_SEQUENCES_GUIDE.md)**: Comprehensive canonical sequences and patterns
+- **[GLYPH_SEQUENCES_GUIDE.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/GLYPH_SEQUENCES_GUIDE.md)**: Comprehensive canonical sequences and patterns
 - **[TNFR_CONCEPTS.md](../getting-started/TNFR_CONCEPTS.md)**: Core theoretical concepts
 - **[OPERATORS_GUIDE.md](../user-guide/OPERATORS_GUIDE.md)**: Practical operator usage guide
 - **[operators.md](operators.md)**: API reference for structural operators

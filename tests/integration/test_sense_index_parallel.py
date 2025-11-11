@@ -54,9 +54,7 @@ def test_parallel_si_matches_sequential_for_large_graph(monkeypatch):
     class _ImmediateExecutor:
         def __init__(self, max_workers=None):
             self.max_workers = max_workers
-            self.chunks: list[
-                tuple[tuple[Any, tuple[Any, ...], float, float, float], ...]
-            ] = []
+            self.chunks: list[tuple[tuple[Any, tuple[Any, ...], float, float, float], ...]] = []
             instances.append(self)
 
         def __enter__(self):
@@ -69,9 +67,7 @@ def test_parallel_si_matches_sequential_for_large_graph(monkeypatch):
             self.chunks.append(chunk)
             return _ImmediateFuture(func(chunk, **kwargs))
 
-    monkeypatch.setattr(
-        "tnfr.metrics.sense_index.ProcessPoolExecutor", _ImmediateExecutor
-    )
+    monkeypatch.setattr("tnfr.metrics.sense_index.ProcessPoolExecutor", _ImmediateExecutor)
 
     reference = compute_Si(graph, inplace=False)
     parallel = compute_Si(graph, inplace=False, n_jobs=4)

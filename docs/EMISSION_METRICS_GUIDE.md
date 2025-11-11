@@ -237,7 +237,7 @@ Existing code continues to work without changes.
 
 ## See Also
 
-- [Emission Operator Documentation](../api/operators.md#emission-al)
-- [TNFR.pdf §2.2.1](../../../TNFR.pdf) - AL (Emisión fundacional)
-- [Emission Metrics Demo](../../../examples/emission_metrics_demo.py)
-- [Emission Irreversibility Tests](../../../tests/unit/operators/test_emission_irreversibility.py)
+- [Emission Operator Documentation](source/api/operators.md#emission-al)
+- [TNFR.pdf §2.2.1](https://github.com/fermga/TNFR-Python-Engine/blob/main/TNFR.pdf) - AL (Emisión fundacional)
+- [Emission Metrics Demo](https://github.com/fermga/TNFR-Python-Engine/blob/main/examples/emission_metrics_demo.py)
+- [Emission Irreversibility Tests](https://github.com/fermga/TNFR-Python-Engine/blob/main/tests/unit/operators/test_emission_irreversibility.py)

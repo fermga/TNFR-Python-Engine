@@ -1,6 +1,6 @@
 # Getting Started with TNFR
 
-[Home](../index.rst) › Getting Started
+[Home](../index.md) › Getting Started
 
 Welcome to TNFR (Teoría de la Naturaleza Fractal Resonante / Resonant Fractal Nature Theory)! This guide will help you get started with the TNFR Python Engine.
 
@@ -14,8 +14,8 @@ TNFR is a computational paradigm that models reality as **coherent patterns that
 
 ### Key Concepts
 
-- **NFR (Nodo Fractal Resonante)**: The fundamental unit of structural coherence
-- **EPI (Estructura Primaria de Información)**: The coherent "form" or identity of a node
+- **NFR (Resonant Fractal Node)**: The fundamental unit of structural coherence
+- **EPI (Primary Information Structure)**: The coherent "form" or identity of a node
 - **νf (Structural Frequency)**: The rate at which a node reorganizes (measured in Hz_str)
 - **ΔNFR**: The internal reorganization gradient driving structural change
 - **Phase (φ)**: Relative synchrony with the network
@@ -122,7 +122,7 @@ TNFR Concepts → Mathematical Foundations → Math Notebooks → Examples
 - **[Quickstart](quickstart.md)** - Get running in 5 minutes
 - **[TNFR Concepts](TNFR_CONCEPTS.md)** - Core theory explained
 - **[FAQ](FAQ.md)** - Common questions answered
-- **[Glossary](../../GLOSSARY.md)** - Term definitions
+- **[Glossary](https://github.com/fermga/TNFR-Python-Engine/blob/main/GLOSSARY.md)** - Term definitions
 - **[Examples](../examples/README.md)** - Runnable code samples
 
 ## Getting Help

@@ -55,7 +55,17 @@ class TestZhirRequiresDestabilizer:
         # TRANSITION → COHERENCE → ZHIR
         # DISSONANCE → TRANSITION is good, TRANSITION → COHERENCE is excellent
         result = validate_sequence(
-            [EMISSION, RECEPTION, COHERENCE, DISSONANCE, TRANSITION, COHERENCE, MUTATION, COHERENCE, SILENCE]
+            [
+                EMISSION,
+                RECEPTION,
+                COHERENCE,
+                DISSONANCE,
+                TRANSITION,
+                COHERENCE,
+                MUTATION,
+                COHERENCE,
+                SILENCE,
+            ]
         )
         assert result.passed
 
@@ -71,7 +81,7 @@ class TestZhirRequiresDestabilizer:
         """ZHIR without any destabilizer in history should fail."""
         with pytest.raises(SequenceSyntaxError) as excinfo:
             parse_sequence([EMISSION, RECEPTION, COHERENCE, MUTATION, SILENCE])
-        
+
         error = excinfo.value
         assert "mutation" in error.message.lower()
         assert "destabilizer" in error.message.lower()
@@ -92,7 +102,16 @@ class TestTholRequiresDestabilizer:
         """NAV → ... → THOL (transition enables emergence)."""
         # DISSONANCE → TRANSITION → COHERENCE → THOL
         result = validate_sequence(
-            [EMISSION, RECEPTION, COHERENCE, DISSONANCE, TRANSITION, COHERENCE, SELF_ORGANIZATION, SILENCE]
+            [
+                EMISSION,
+                RECEPTION,
+                COHERENCE,
+                DISSONANCE,
+                TRANSITION,
+                COHERENCE,
+                SELF_ORGANIZATION,
+                SILENCE,
+            ]
         )
         assert result.passed
 
@@ -107,7 +126,7 @@ class TestTholRequiresDestabilizer:
         """THOL without destabilizer context should fail."""
         with pytest.raises(SequenceSyntaxError) as excinfo:
             parse_sequence([EMISSION, RECEPTION, COHERENCE, SELF_ORGANIZATION, SILENCE])
-        
+
         error = excinfo.value
         assert "self_organization" in error.message.lower()
         assert "destabilizer" in error.message.lower()
@@ -146,9 +165,21 @@ class TestBifurcationWindow:
             # OZ at index 3, operators at 4,5,6,7, ZHIR at index 8 = 5 steps apart (beyond window)
             # Use valid transitions: OZ → IL → RA → IL → RA → IL → ZHIR
             parse_sequence(
-                [EMISSION, RECEPTION, COHERENCE, DISSONANCE, COHERENCE, RESONANCE, COHERENCE, RESONANCE, COHERENCE, MUTATION, SILENCE]
+                [
+                    EMISSION,
+                    RECEPTION,
+                    COHERENCE,
+                    DISSONANCE,
+                    COHERENCE,
+                    RESONANCE,
+                    COHERENCE,
+                    RESONANCE,
+                    COHERENCE,
+                    MUTATION,
+                    SILENCE,
+                ]
             )
-        
+
         error = excinfo.value
         assert "mutation" in error.message.lower()
         assert "destabilizer" in error.message.lower()
@@ -161,7 +192,18 @@ class TestMultipleDestabilizers:
         """Multiple destabilizers in window (any should work)."""
         # OZ → IL → VAL → IL → ZHIR
         result = validate_sequence(
-            [EMISSION, RECEPTION, COHERENCE, DISSONANCE, COHERENCE, EXPANSION, COHERENCE, MUTATION, COHERENCE, SILENCE]
+            [
+                EMISSION,
+                RECEPTION,
+                COHERENCE,
+                DISSONANCE,
+                COHERENCE,
+                EXPANSION,
+                COHERENCE,
+                MUTATION,
+                COHERENCE,
+                SILENCE,
+            ]
         )
         assert result.passed
 
@@ -170,7 +212,18 @@ class TestMultipleDestabilizers:
         # First DISSONANCE outside window, EXPANSION inside
         # COHERENCE → DISSONANCE is caution (allowed with warning), then continue
         result = validate_sequence(
-            [EMISSION, RECEPTION, COHERENCE, DISSONANCE, COHERENCE, EXPANSION, COHERENCE, MUTATION, COHERENCE, SILENCE]
+            [
+                EMISSION,
+                RECEPTION,
+                COHERENCE,
+                DISSONANCE,
+                COHERENCE,
+                EXPANSION,
+                COHERENCE,
+                MUTATION,
+                COHERENCE,
+                SILENCE,
+            ]
         )
         assert result.passed
 
@@ -182,10 +235,16 @@ class TestComplexBifurcationPatterns:
         """Multiple ZHIR/THOL each with their own destabilizer."""
         result = validate_sequence(
             [
-                EMISSION, RECEPTION, COHERENCE,
-                DISSONANCE, MUTATION, COHERENCE,  # First bifurcation: OZ → ZHIR
-                EXPANSION, COHERENCE, SELF_ORGANIZATION,  # Second bifurcation: VAL → THOL
-                SILENCE
+                EMISSION,
+                RECEPTION,
+                COHERENCE,
+                DISSONANCE,
+                MUTATION,
+                COHERENCE,  # First bifurcation: OZ → ZHIR
+                EXPANSION,
+                COHERENCE,
+                SELF_ORGANIZATION,  # Second bifurcation: VAL → THOL
+                SILENCE,
             ]
         )
         assert result.passed
@@ -194,11 +253,14 @@ class TestComplexBifurcationPatterns:
         """ZHIR and THOL both using same destabilizer."""
         result = validate_sequence(
             [
-                EMISSION, RECEPTION, COHERENCE,
+                EMISSION,
+                RECEPTION,
+                COHERENCE,
                 DISSONANCE,  # Destabilizer for both
-                MUTATION, COHERENCE,  # First transformer
+                MUTATION,
+                COHERENCE,  # First transformer
                 SELF_ORGANIZATION,  # Second transformer (within window of OZ)
-                SILENCE
+                SILENCE,
             ]
         )
         assert result.passed
@@ -215,7 +277,16 @@ class TestComplexBifurcationPatterns:
         # Use TRANSITION as destabilizer, then THOL
         # DISSONANCE → TRANSITION → COHERENCE → THOL
         result = validate_sequence(
-            [EMISSION, RECEPTION, COHERENCE, DISSONANCE, TRANSITION, COHERENCE, SELF_ORGANIZATION, SILENCE]
+            [
+                EMISSION,
+                RECEPTION,
+                COHERENCE,
+                DISSONANCE,
+                TRANSITION,
+                COHERENCE,
+                SELF_ORGANIZATION,
+                SILENCE,
+            ]
         )
         assert result.passed
 
@@ -236,7 +307,7 @@ class TestEdgeCases:
         # Even though RECURSIVITY is a valid start, it's not a destabilizer
         with pytest.raises(SequenceSyntaxError) as excinfo:
             parse_sequence([EMISSION, MUTATION, COHERENCE, SILENCE])
-        
+
         error = excinfo.value
         assert "mutation" in error.message.lower()
 
@@ -244,9 +315,7 @@ class TestEdgeCases:
         """Destabilizer at end is valid (even if not used)."""
         # DISSONANCE is a valid end operator
         # COHERENCE → DISSONANCE is caution (allowed with warning)
-        result = validate_sequence(
-            [EMISSION, RECEPTION, COHERENCE, DISSONANCE]
-        )
+        result = validate_sequence([EMISSION, RECEPTION, COHERENCE, DISSONANCE])
         assert result.passed
 
     def test_all_three_destabilizer_types(self):
@@ -254,10 +323,16 @@ class TestEdgeCases:
         # THOL needs closure with SILENCE or CONTRACTION
         result = validate_sequence(
             [
-                EMISSION, RECEPTION, COHERENCE,
-                DISSONANCE, MUTATION, COHERENCE,  # OZ destabilizer
-                EXPANSION, COHERENCE, SELF_ORGANIZATION,  # VAL destabilizer
-                SILENCE  # Proper THOL closure
+                EMISSION,
+                RECEPTION,
+                COHERENCE,
+                DISSONANCE,
+                MUTATION,
+                COHERENCE,  # OZ destabilizer
+                EXPANSION,
+                COHERENCE,
+                SELF_ORGANIZATION,  # VAL destabilizer
+                SILENCE,  # Proper THOL closure
             ]
         )
         assert result.passed
@@ -275,23 +350,17 @@ class TestBackwardCompatibility:
 
     def test_linear_sequences_unaffected(self):
         """Linear sequences without transformers remain valid."""
-        result = validate_sequence(
-            [EMISSION, RECEPTION, COHERENCE, RESONANCE, SILENCE]
-        )
+        result = validate_sequence([EMISSION, RECEPTION, COHERENCE, RESONANCE, SILENCE])
         assert result.passed
 
     def test_sequences_with_expansion_unaffected(self):
         """Sequences with VAL but no transformers remain valid."""
-        result = validate_sequence(
-            [EMISSION, RECEPTION, COHERENCE, EXPANSION, RESONANCE, SILENCE]
-        )
+        result = validate_sequence([EMISSION, RECEPTION, COHERENCE, EXPANSION, RESONANCE, SILENCE])
         assert result.passed
 
     def test_sequences_with_transition_unaffected(self):
         """Sequences with NAV but no transformers remain valid."""
-        result = validate_sequence(
-            [RECURSIVITY, RECEPTION, COHERENCE, RESONANCE, TRANSITION]
-        )
+        result = validate_sequence([RECURSIVITY, RECEPTION, COHERENCE, RESONANCE, TRANSITION])
         assert result.passed
 
 
@@ -302,25 +371,30 @@ class TestErrorMessages:
         """Error for ZHIR should mention all possible destabilizers."""
         with pytest.raises(SequenceSyntaxError) as excinfo:
             parse_sequence([EMISSION, RECEPTION, COHERENCE, MUTATION, SILENCE])
-        
+
         error = excinfo.value
         # Should mention the destabilizer options
-        assert any(word in error.message.lower() for word in ["dissonance", "expansion", "transition"])
+        assert any(
+            word in error.message.lower() for word in ["dissonance", "expansion", "transition"]
+        )
 
     def test_thol_error_mentions_window_size(self):
         """Error for THOL should mention the graduated window sizes."""
         with pytest.raises(SequenceSyntaxError) as excinfo:
             parse_sequence([EMISSION, RECEPTION, COHERENCE, SELF_ORGANIZATION, SILENCE])
-        
+
         error = excinfo.value
         # With graduated windows, error should mention window sizes (4, 2, or 1)
-        assert any(str(size) in error.message for size in ["4", "2", "1"]) or "previous" in error.message.lower()
+        assert (
+            any(str(size) in error.message for size in ["4", "2", "1"])
+            or "previous" in error.message.lower()
+        )
 
     def test_error_provides_correct_index(self):
         """Error should point to the transformer that failed."""
         with pytest.raises(SequenceSyntaxError) as excinfo:
             parse_sequence([EMISSION, RECEPTION, COHERENCE, RESONANCE, MUTATION, SILENCE])
-        
+
         error = excinfo.value
         assert error.index == 4  # MUTATION is at index 4
         assert error.token == MUTATION

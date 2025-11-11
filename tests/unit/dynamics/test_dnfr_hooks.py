@@ -54,10 +54,7 @@ def test_dnfr_phase_only_parallel_matches_serial(graph_canon, monkeypatch):
     G_serial.nodes[0][ALIAS_THETA[0]] = 0.0
     G_serial.nodes[1][ALIAS_THETA[0]] = math.pi / 2
     dnfr_phase_only(G_serial)
-    serial = {
-        node: get_attr(data, ALIAS_DNFR, 0.0)
-        for node, data in G_serial.nodes(data=True)
-    }
+    serial = {node: get_attr(data, ALIAS_DNFR, 0.0) for node, data in G_serial.nodes(data=True)}
 
     G_parallel = graph_canon()
     G_parallel.add_edge(0, 1)
@@ -65,10 +62,7 @@ def test_dnfr_phase_only_parallel_matches_serial(graph_canon, monkeypatch):
     G_parallel.nodes[1][ALIAS_THETA[0]] = math.pi / 2
     monkeypatch.setattr("tnfr.dynamics.dnfr.get_numpy", lambda: None)
     dnfr_phase_only(G_parallel, n_jobs=2)
-    parallel = {
-        node: get_attr(data, ALIAS_DNFR, 0.0)
-        for node, data in G_parallel.nodes(data=True)
-    }
+    parallel = {node: get_attr(data, ALIAS_DNFR, 0.0) for node, data in G_parallel.nodes(data=True)}
 
     assert parallel == serial
 

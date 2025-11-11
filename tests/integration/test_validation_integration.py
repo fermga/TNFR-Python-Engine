@@ -40,9 +40,7 @@ class TestValidationIntegration:
         G, node = create_nfr("test_node", epi=0.5, vf=1.0, theta=0.0)
 
         # Valid grammar sequence
-        run_sequence(
-            G, node, [Emission(), Reception(), Coherence(), Resonance(), Recursivity()]
-        )
+        run_sequence(G, node, [Emission(), Reception(), Coherence(), Resonance(), Recursivity()])
 
         # Node should still exist and have valid attributes
         assert node in G.nodes()
@@ -143,9 +141,7 @@ class TestValidationIntegration:
         G, node = create_nfr("test_node", epi=0.5, vf=1.0, theta=0.0)
 
         # Transition after dissonance should be fine
-        run_sequence(
-            G, node, [Emission(), Reception(), Coherence(), Dissonance(), Transition()]
-        )
+        run_sequence(G, node, [Emission(), Reception(), Coherence(), Dissonance(), Transition()])
 
     def test_operator_tracking(self):
         """Test that operator tracking works for invariant 1."""
@@ -191,9 +187,7 @@ class TestValidationIntegration:
 
             # Should also run (no errors in valid graph)
             G2, node2 = create_nfr("test_node2", epi=0.5, vf=1.0, theta=0.0)
-            run_sequence(
-                G2, node2, [Emission(), Reception(), Coherence(), Recursivity()]
-            )
+            run_sequence(G2, node2, [Emission(), Reception(), Coherence(), Recursivity()])
 
         finally:
             # Restore original severity

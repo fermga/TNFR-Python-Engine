@@ -156,9 +156,7 @@ class TestConvenienceMethods:
 
     def test_clone(self):
         """Test network cloning."""
-        original = (
-            TNFRNetwork("original").add_nodes(5, random_seed=42).connect_nodes(0.3)
-        )
+        original = TNFRNetwork("original").add_nodes(5, random_seed=42).connect_nodes(0.3)
 
         cloned = original.clone()
 

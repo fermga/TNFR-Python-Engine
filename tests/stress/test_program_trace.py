@@ -127,9 +127,7 @@ def test_program_trace_rotates_without_dropping_thol_history(graph_canon):
     def glyph_spy(G, payload, curr_target, trace, step_fn):
         glyph_value = payload.value if isinstance(payload, Glyph) else str(payload)
         if glyph_value in glyph_watch:
-            captured_targets.setdefault(glyph_value, []).append(
-                tuple(curr_target or ())
-            )
+            captured_targets.setdefault(glyph_value, []).append(tuple(curr_target or ()))
         return original_glyph_handler(G, payload, curr_target, trace, step_fn)
 
     def step_monitor(graph):
@@ -160,12 +158,8 @@ def test_program_trace_rotates_without_dropping_thol_history(graph_canon):
     expected_ops = [op.name for op, _ in final_ops]
     assert observed_ops == expected_ops
 
-    observed_glyphs = [
-        entry.get("g") for entry in tail if entry["op"] in {"THOL", "GLYPH"}
-    ]
-    expected_glyphs = [
-        payload for op, payload in final_ops if op.name in {"THOL", "GLYPH"}
-    ]
+    observed_glyphs = [entry.get("g") for entry in tail if entry["op"] in {"THOL", "GLYPH"}]
+    expected_glyphs = [payload for op, payload in final_ops if op.name in {"THOL", "GLYPH"}]
     assert observed_glyphs == expected_glyphs
 
     for glyph, nodes in zip(after_wait_glyphs, groups):

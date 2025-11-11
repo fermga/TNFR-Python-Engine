@@ -26,7 +26,7 @@ Chain operations for rapid prototyping:
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
@@ -42,7 +42,7 @@ import networkx as nx
 
 from ..structural import create_nfr, run_sequence
 from ..metrics.coherence import compute_coherence
-from ..metrics.sense_index import compute_Si, compute_Si_node
+from ..metrics.sense_index import compute_Si
 from ..constants.aliases import ALIAS_DNFR
 from ..validation import validate_sequence
 
@@ -225,9 +225,7 @@ TNFR Network Results:
             "summary_stats": {
                 "node_count": len(self.sense_indices),
                 "avg_si": sum(si_values) / len(si_values) if si_values else 0.0,
-                "avg_delta_nfr": (
-                    sum(dnfr_values) / len(dnfr_values) if dnfr_values else 0.0
-                ),
+                "avg_delta_nfr": (sum(dnfr_values) / len(dnfr_values) if dnfr_values else 0.0),
                 "avg_vf": self.avg_vf,
                 "avg_phase": self.avg_phase,
             },
@@ -267,9 +265,7 @@ class TNFRNetwork:
     ...            .measure())
     """
 
-    def __init__(
-        self, name: str = "tnfr_network", config: Optional[NetworkConfig] = None
-    ):
+    def __init__(self, name: str = "tnfr_network", config: Optional[NetworkConfig] = None):
         """Initialize TNFR network with given name and configuration."""
         self.name = name
         self._config = config if config is not None else NetworkConfig()
@@ -341,11 +337,7 @@ class TNFRNetwork:
 
         # Setup RNG for this operation
         if _HAS_NUMPY:
-            rng = (
-                np.random.RandomState(random_seed)
-                if random_seed is not None
-                else self._rng
-            )
+            rng = np.random.RandomState(random_seed) if random_seed is not None else self._rng
 
             for _ in range(count):
                 node_id = f"node_{self._node_counter}"
@@ -480,11 +472,7 @@ class TNFRNetwork:
                         # Remove edge and create new random edge
                         self._graph.remove_edge(u, v)
                         # Find node not already connected
-                        candidates = [
-                            n
-                            for n in nodes
-                            if n != u and not self._graph.has_edge(u, n)
-                        ]
+                        candidates = [n for n in nodes if n != u and not self._graph.has_edge(u, n)]
                         if candidates:
                             idx = int(self._rng.randint(0, len(candidates)))
                             if idx >= len(candidates):
@@ -497,11 +485,7 @@ class TNFRNetwork:
                 for u, v in edges:
                     if random.random() < connection_probability:
                         self._graph.remove_edge(u, v)
-                        candidates = [
-                            n
-                            for n in nodes
-                            if n != u and not self._graph.has_edge(u, n)
-                        ]
+                        candidates = [n for n in nodes if n != u and not self._graph.has_edge(u, n)]
                         if candidates:
                             w = random.choice(candidates)
                             self._graph.add_edge(u, w)
@@ -509,8 +493,7 @@ class TNFRNetwork:
         else:
             available = ", ".join(["random", "ring", "small_world"])
             raise ValueError(
-                f"Unknown connection pattern '{connection_pattern}'. "
-                f"Available: {available}"
+                f"Unknown connection pattern '{connection_pattern}'. " f"Available: {available}"
             )
 
         return self
@@ -571,9 +554,7 @@ class TNFRNetwork:
         if isinstance(sequence, str):
             if sequence not in NAMED_SEQUENCES:
                 available = ", ".join(sorted(NAMED_SEQUENCES.keys()))
-                raise ValueError(
-                    f"Unknown sequence '{sequence}'. Available: {available}"
-                )
+                raise ValueError(f"Unknown sequence '{sequence}'. Available: {available}")
             operator_list = NAMED_SEQUENCES[sequence]
         else:
             operator_list = sequence
@@ -734,8 +715,7 @@ class TNFRNetwork:
         if sequence_name not in CANONICAL_SEQUENCES:
             available = ", ".join(sorted(CANONICAL_SEQUENCES.keys()))
             raise ValueError(
-                f"Unknown canonical sequence '{sequence_name}'. "
-                f"Available: {available}"
+                f"Unknown canonical sequence '{sequence_name}'. " f"Available: {available}"
             )
 
         sequence = CANONICAL_SEQUENCES[sequence_name]
@@ -858,15 +838,11 @@ class TNFRNetwork:
 
         # Filter by domain if specified
         if domain is not None:
-            sequences = {
-                name: seq for name, seq in sequences.items() if seq.domain == domain
-            }
+            sequences = {name: seq for name, seq in sequences.items() if seq.domain == domain}
 
         # Filter by OZ presence if requested
         if with_oz:
-            sequences = {
-                name: seq for name, seq in sequences.items() if Glyph.OZ in seq.glyphs
-            }
+            sequences = {name: seq for name, seq in sequences.items() if Glyph.OZ in seq.glyphs}
 
         return sequences
 

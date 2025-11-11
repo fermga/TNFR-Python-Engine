@@ -29,9 +29,9 @@ This document provides a **complete cross-reference index** for the unified TNFR
 **Physics Basis**: ∂EPI/∂t undefined at EPI=0
 
 **Theory**:
-- [UNIFIED_GRAMMAR_RULES.md § U1](../../UNIFIED_GRAMMAR_RULES.md)
-- [TNFR.pdf § 2.1 - Nodal Equation](../../TNFR.pdf)
-- [AGENTS.md § Invariant #1](../../AGENTS.md)
+- [UNIFIED_GRAMMAR_RULES.md § U1](https://github.com/fermga/TNFR-Python-Engine/blob/main/UNIFIED_GRAMMAR_RULES.md)
+- [TNFR.pdf § 2.1 - Nodal Equation](https://github.com/fermga/TNFR-Python-Engine/blob/main/TNFR.pdf)
+- [AGENTS.md § Invariant #1](https://github.com/fermga/TNFR-Python-Engine/blob/main/AGENTS.md)
 
 **Documentation**:
 - [02-CANONICAL-CONSTRAINTS.md § U1a](02-CANONICAL-CONSTRAINTS.md#u1a-initiation-generators)
@@ -68,8 +68,8 @@ This document provides a **complete cross-reference index** for the unified TNFR
 **Physics Basis**: Sequences as action potentials need endpoints
 
 **Theory**:
-- [UNIFIED_GRAMMAR_RULES.md § U1](../../UNIFIED_GRAMMAR_RULES.md)
-- [AGENTS.md § Invariant #4 - Operator Closure](../../AGENTS.md)
+- [UNIFIED_GRAMMAR_RULES.md § U1](https://github.com/fermga/TNFR-Python-Engine/blob/main/UNIFIED_GRAMMAR_RULES.md)
+- [AGENTS.md § Invariant #4 - Operator Closure](https://github.com/fermga/TNFR-Python-Engine/blob/main/AGENTS.md)
 
 **Documentation**:
 - [02-CANONICAL-CONSTRAINTS.md § U1b](02-CANONICAL-CONSTRAINTS.md#u1b-closure-endpoints)
@@ -107,9 +107,9 @@ This document provides a **complete cross-reference index** for the unified TNFR
 **Physics Basis**: ∫νf·ΔNFR dt must converge (integral convergence theorem)
 
 **Theory**:
-- [UNIFIED_GRAMMAR_RULES.md § U2](../../UNIFIED_GRAMMAR_RULES.md)
-- [TNFR.pdf § 2.1 - Integrated Dynamics](../../TNFR.pdf)
-- [AGENTS.md § Convergence & Boundedness](../../AGENTS.md)
+- [UNIFIED_GRAMMAR_RULES.md § U2](https://github.com/fermga/TNFR-Python-Engine/blob/main/UNIFIED_GRAMMAR_RULES.md)
+- [TNFR.pdf § 2.1 - Integrated Dynamics](https://github.com/fermga/TNFR-Python-Engine/blob/main/TNFR.pdf)
+- [AGENTS.md § Convergence & Boundedness](https://github.com/fermga/TNFR-Python-Engine/blob/main/AGENTS.md)
 
 **Documentation**:
 - [02-CANONICAL-CONSTRAINTS.md § U2](02-CANONICAL-CONSTRAINTS.md#u2-convergence--boundedness)
@@ -152,8 +152,8 @@ This document provides a **complete cross-reference index** for the unified TNFR
 **Physics Basis**: Resonance physics + AGENTS.md Invariant #5
 
 **Theory**:
-- [UNIFIED_GRAMMAR_RULES.md § U3](../../UNIFIED_GRAMMAR_RULES.md)
-- [AGENTS.md § Invariant #5 - Phase Verification](../../AGENTS.md)
+- [UNIFIED_GRAMMAR_RULES.md § U3](https://github.com/fermga/TNFR-Python-Engine/blob/main/UNIFIED_GRAMMAR_RULES.md)
+- [AGENTS.md § Invariant #5 - Phase Verification](https://github.com/fermga/TNFR-Python-Engine/blob/main/AGENTS.md)
 
 **Documentation**:
 - [02-CANONICAL-CONSTRAINTS.md § U3](02-CANONICAL-CONSTRAINTS.md#u3-resonant-coupling)
@@ -201,8 +201,8 @@ This document provides a **complete cross-reference index** for the unified TNFR
 **Physics Basis**: Contract OZ + bifurcation theory (∂²EPI/∂t² > τ)
 
 **Theory**:
-- [UNIFIED_GRAMMAR_RULES.md § U4a](../../UNIFIED_GRAMMAR_RULES.md)
-- [AGENTS.md § Contract OZ](../../AGENTS.md)
+- [UNIFIED_GRAMMAR_RULES.md § U4a](https://github.com/fermga/TNFR-Python-Engine/blob/main/UNIFIED_GRAMMAR_RULES.md)
+- [AGENTS.md § Contract OZ](https://github.com/fermga/TNFR-Python-Engine/blob/main/AGENTS.md)
 - [03-OPERATORS-AND-GLYPHS.md § Dissonance (OZ)](03-OPERATORS-AND-GLYPHS.md)
 
 **Documentation**:
@@ -244,9 +244,9 @@ This document provides a **complete cross-reference index** for the unified TNFR
 **Physics Basis**: Threshold energy needed for phase transition
 
 **Theory**:
-- [UNIFIED_GRAMMAR_RULES.md § U4b](../../UNIFIED_GRAMMAR_RULES.md)
-- [AGENTS.md § Contract OZ + ZHIR Requirements](../../AGENTS.md)
-- [U4B_AUDIT_REPORT.md](../../U4B_AUDIT_REPORT.md) - Complete U4b analysis
+- [UNIFIED_GRAMMAR_RULES.md § U4b](https://github.com/fermga/TNFR-Python-Engine/blob/main/UNIFIED_GRAMMAR_RULES.md)
+- [AGENTS.md § Contract OZ + ZHIR Requirements](https://github.com/fermga/TNFR-Python-Engine/blob/main/AGENTS.md)
+- [U4B_AUDIT_REPORT.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/U4B_AUDIT_REPORT.md) - Complete U4b analysis
 
 **Documentation**:
 - [02-CANONICAL-CONSTRAINTS.md § U4b](02-CANONICAL-CONSTRAINTS.md#u4b-transformers-need-context)
@@ -309,25 +309,25 @@ Complete machine-readable specification with:
 
 | Type | Location |
 |------|----------|
-| Theory | [UNIFIED_GRAMMAR_RULES.md](../../UNIFIED_GRAMMAR_RULES.md) |
-| Physics | [TNFR.pdf](../../TNFR.pdf) |
+| Theory | [UNIFIED_GRAMMAR_RULES.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/UNIFIED_GRAMMAR_RULES.md) |
+| Physics | [TNFR_FORCES_EMERGENCE.md](../TNFR_FORCES_EMERGENCE.md) |
 | Documentation | [02-CANONICAL-CONSTRAINTS.md](02-CANONICAL-CONSTRAINTS.md) |
 | Implementation | `src/tnfr/operators/grammar.py` |
 | Tests | `tests/unit/operators/test_unified_grammar.py` |
 | Examples | `examples/u*-examples.py` |
 | Schema | Unified constraints schema (includes U5) |
-| Invariants | [AGENTS.md](../../AGENTS.md) |
+| Invariants | [AGENTS.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/AGENTS.md) |
 
 **By Constraint**:
 
 | Constraint | Theory | Docs | Code | Tests | Examples |
 |------------|--------|------|------|-------|----------|
-| U1a | [Link](../../UNIFIED_GRAMMAR_RULES.md) | [Link](02-CANONICAL-CONSTRAINTS.md#u1a-initiation-generators) | `validate_initiation()` | TestU1aInitiation | u1-examples.py |
-| U1b | [Link](../../UNIFIED_GRAMMAR_RULES.md) | [Link](02-CANONICAL-CONSTRAINTS.md#u1b-closure-endpoints) | `validate_closure()` | TestU1bClosure | u1-examples.py |
-| U2 | [Link](../../UNIFIED_GRAMMAR_RULES.md) | [Link](02-CANONICAL-CONSTRAINTS.md#u2-convergence--boundedness) | `validate_convergence()` | TestU2Convergence | u2-examples.py |
-| U3 | [Link](../../UNIFIED_GRAMMAR_RULES.md) | [Link](02-CANONICAL-CONSTRAINTS.md#u3-resonant-coupling) | `validate_resonant_coupling()` | TestU3ResonantCoupling | u3-examples.py |
-| U4a | [Link](../../UNIFIED_GRAMMAR_RULES.md) | [Link](02-CANONICAL-CONSTRAINTS.md#u4a-triggers-need-handlers) | `validate_bifurcation_triggers()` | TestU4aBifurcationTriggers | u4-examples.py |
-| U4b | [Link](../../UNIFIED_GRAMMAR_RULES.md) | [Link](02-CANONICAL-CONSTRAINTS.md#u4b-transformers-need-context) | `validate_transformer_context()` | TestU4bTransformerContext | u4-examples.py |
+| U1a | [Link](https://github.com/fermga/TNFR-Python-Engine/blob/main/UNIFIED_GRAMMAR_RULES.md#u1-structural-initiation--closure) | [Link](02-CANONICAL-CONSTRAINTS.md#u1a-initiation-generators) | `validate_initiation()` | TestU1aInitiation | u1-examples.py |
+| U1b | [Link](https://github.com/fermga/TNFR-Python-Engine/blob/main/UNIFIED_GRAMMAR_RULES.md#u1-structural-initiation--closure) | [Link](02-CANONICAL-CONSTRAINTS.md#u1b-closure-endpoints) | `validate_closure()` | TestU1bClosure | u1-examples.py |
+| U2 | [Link](https://github.com/fermga/TNFR-Python-Engine/blob/main/UNIFIED_GRAMMAR_RULES.md#u2-convergence--boundedness) | [Link](02-CANONICAL-CONSTRAINTS.md#u2-convergence--boundedness) | `validate_convergence()` | TestU2Convergence | u2-examples.py |
+| U3 | [Link](https://github.com/fermga/TNFR-Python-Engine/blob/main/UNIFIED_GRAMMAR_RULES.md#u3-resonant-coupling) | [Link](02-CANONICAL-CONSTRAINTS.md#u3-resonant-coupling) | `validate_resonant_coupling()` | TestU3ResonantCoupling | u3-examples.py |
+| U4a | [Link](https://github.com/fermga/TNFR-Python-Engine/blob/main/UNIFIED_GRAMMAR_RULES.md#u4-bifurcation-dynamics) | [Link](02-CANONICAL-CONSTRAINTS.md#u4a-triggers-need-handlers) | `validate_bifurcation_triggers()` | TestU4aBifurcationTriggers | u4-examples.py |
+| U4b | [Link](https://github.com/fermga/TNFR-Python-Engine/blob/main/UNIFIED_GRAMMAR_RULES.md#u4-bifurcation-dynamics) | [Link](02-CANONICAL-CONSTRAINTS.md#u4b-transformers-need-context) | `validate_transformer_context()` | TestU4bTransformerContext | u4-examples.py |
 
 ---
 

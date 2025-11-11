@@ -223,9 +223,10 @@ class TestTransitionSequenceValidation:
         """No sequence warning when NAV_STRICT_SEQUENCE_CHECK=False."""
         G, node = create_nfr("test", epi=0.5, vf=0.6)
         set_attr(G.nodes[node], ALIAS_DNFR, 0.3)
-        
+
         # Apply incompatible operator before NAV
         from tnfr.operators.definitions import Dissonance
+
         dissonance = Dissonance()
         dissonance(G, node)
 
@@ -239,9 +240,10 @@ class TestTransitionSequenceValidation:
         G, node = create_nfr("test", epi=0.5, vf=0.6)
         G.graph["NAV_STRICT_SEQUENCE_CHECK"] = True
         set_attr(G.nodes[node], ALIAS_DNFR, 0.3)
-        
+
         # Apply dissonance (not a valid predecessor)
         from tnfr.operators.definitions import Dissonance
+
         dissonance = Dissonance()
         dissonance(G, node)
 
@@ -260,7 +262,7 @@ class TestTransitionSequenceValidation:
         G, node = create_nfr("test", epi=0.5, vf=0.6)
         G.graph["NAV_STRICT_SEQUENCE_CHECK"] = True
         set_attr(G.nodes[node], ALIAS_DNFR, 0.3)
-        
+
         # Apply emission (valid predecessor)
         emission = Emission()
         emission(G, node)
@@ -274,7 +276,7 @@ class TestTransitionSequenceValidation:
         G, node = create_nfr("test", epi=0.5, vf=0.6)
         G.graph["NAV_STRICT_SEQUENCE_CHECK"] = True
         set_attr(G.nodes[node], ALIAS_DNFR, 0.3)
-        
+
         # Apply coherence (valid predecessor)
         coherence = Coherence()
         coherence(G, node)
@@ -288,7 +290,7 @@ class TestTransitionSequenceValidation:
         G, node = create_nfr("test", epi=0.5, vf=0.6)
         G.graph["NAV_STRICT_SEQUENCE_CHECK"] = True
         set_attr(G.nodes[node], ALIAS_DNFR, 0.3)
-        
+
         # Apply silence (valid predecessor)
         silence = Silence()
         silence(G, node)
@@ -352,9 +354,10 @@ class TestTransitionIntegration:
         G.graph["NAV_STRICT_SEQUENCE_CHECK"] = True
         G.nodes[node]["latent"] = True
         set_attr(G.nodes[node], ALIAS_DNFR, 0.3)
-        
+
         # Apply incompatible operator
         from tnfr.operators.definitions import Dissonance
+
         dissonance = Dissonance()
         dissonance(G, node)
 
@@ -364,10 +367,10 @@ class TestTransitionIntegration:
         # Should have warnings for both deep latency and sequence
         assert len(warnings_list) == 2
         warning_messages = [str(w.message) for w in warnings_list]
-        
+
         # Check for deep latency warning
         assert any("deep latency" in msg for msg in warning_messages)
-        
+
         # Check for sequence warning
         assert any("NAV applied after" in msg for msg in warning_messages)
 
@@ -405,8 +408,9 @@ class TestTransitionErrorMessages:
         G, node = create_nfr("test", epi=0.5, vf=0.6)
         G.graph["NAV_STRICT_SEQUENCE_CHECK"] = True
         set_attr(G.nodes[node], ALIAS_DNFR, 0.3)
-        
+
         from tnfr.operators.definitions import Dissonance
+
         dissonance = Dissonance()
         dissonance(G, node)
 

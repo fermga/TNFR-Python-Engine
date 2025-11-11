@@ -297,9 +297,7 @@ def test_step_respects_n_jobs_overrides(monkeypatch, graph_canon):
     )
     monkeypatch.setattr(adaptation, "adapt_vf_by_coherence", fake_adapt_vf_by_coherence)
     monkeypatch.setattr(selectors, "_apply_glyphs", lambda G, selector, hist: None)
-    monkeypatch.setattr(
-        validation, "apply_canonical_clamps", lambda *args, **kwargs: None
-    )
+    monkeypatch.setattr(validation, "apply_canonical_clamps", lambda *args, **kwargs: None)
     monkeypatch.setattr(runtime, "apply_canonical_clamps", lambda *args, **kwargs: None)
     monkeypatch.setattr(dynamics, "_update_node_sample", lambda *args, **kwargs: None)
     monkeypatch.setattr(runtime, "_update_node_sample", lambda *args, **kwargs: None)
@@ -371,9 +369,7 @@ def test_step_defaults_to_graph_jobs(monkeypatch, graph_canon):
     )
     monkeypatch.setattr(adaptation, "adapt_vf_by_coherence", fake_adapt_vf_by_coherence)
     monkeypatch.setattr(selectors, "_apply_glyphs", lambda G, selector, hist: None)
-    monkeypatch.setattr(
-        validation, "apply_canonical_clamps", lambda *args, **kwargs: None
-    )
+    monkeypatch.setattr(validation, "apply_canonical_clamps", lambda *args, **kwargs: None)
     monkeypatch.setattr(runtime, "apply_canonical_clamps", lambda *args, **kwargs: None)
     monkeypatch.setattr(dynamics, "_update_node_sample", lambda *args, **kwargs: None)
     monkeypatch.setattr(runtime, "_update_node_sample", lambda *args, **kwargs: None)
@@ -407,9 +403,7 @@ def test_update_nodes_clamps_out_of_range_values(monkeypatch, graph_canon):
     G.add_node(node_id, EPI=epi_hi, nu_f=vf_lo)
 
     monkeypatch.setattr(runtime, "_prepare_dnfr", lambda *args, **kwargs: None)
-    monkeypatch.setattr(
-        selectors, "_apply_selector", lambda *_args, **_kwargs: object()
-    )
+    monkeypatch.setattr(selectors, "_apply_selector", lambda *_args, **_kwargs: object())
     monkeypatch.setattr(selectors, "_apply_glyphs", lambda *_args, **_kwargs: None)
 
     class _NoOpIntegrator(integrators.AbstractIntegrator):
@@ -424,17 +418,13 @@ def test_update_nodes_clamps_out_of_range_values(monkeypatch, graph_canon):
         ) -> None:
             return None
 
-    monkeypatch.setattr(
-        runtime, "_resolve_integrator_instance", lambda _graph: _NoOpIntegrator()
-    )
+    monkeypatch.setattr(runtime, "_resolve_integrator_instance", lambda _graph: _NoOpIntegrator())
     monkeypatch.setattr(
         coordination,
         "coordinate_global_local_phase",
         lambda *_args, **_kwargs: None,
     )
-    monkeypatch.setattr(
-        adaptation, "adapt_vf_by_coherence", lambda *_args, **_kwargs: None
-    )
+    monkeypatch.setattr(adaptation, "adapt_vf_by_coherence", lambda *_args, **_kwargs: None)
 
     runtime._update_nodes(
         G,

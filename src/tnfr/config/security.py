@@ -18,13 +18,12 @@ Security Principles:
 from __future__ import annotations
 
 import os
-import re
 import secrets
 import time
 import warnings
 from datetime import datetime, timedelta, timezone
 from typing import Any, Callable, Optional
-from urllib.parse import ParseResult, urlparse, urlunparse
+from urllib.parse import urlparse, urlunparse
 
 
 class ConfigurationError(Exception):
@@ -309,9 +308,7 @@ def get_cache_secret() -> bytes | None:
     try:
         return bytes.fromhex(secret_hex)
     except ValueError as exc:
-        raise ConfigurationError(
-            f"TNFR_CACHE_SECRET must be a hex-encoded string: {exc}"
-        )
+        raise ConfigurationError(f"TNFR_CACHE_SECRET must be a hex-encoded string: {exc}")
 
 
 def validate_no_hardcoded_secrets(value: str) -> bool:
@@ -807,22 +804,16 @@ class SecurityAuditor:
             var_value = os.environ[var_name]
 
             # Check if this is a sensitive variable
-            is_sensitive = any(
-                pattern in var_name_lower for pattern in self.SENSITIVE_PATTERNS
-            )
+            is_sensitive = any(pattern in var_name_lower for pattern in self.SENSITIVE_PATTERNS)
 
             if is_sensitive:
                 # Check for weak values
                 if var_value.lower() in self.WEAK_VALUES:
-                    issues.append(
-                        f"Weak/default value in sensitive variable: {var_name}"
-                    )
+                    issues.append(f"Weak/default value in sensitive variable: {var_name}")
 
                 # Check for too short secrets
                 if len(var_value) < 8:
-                    issues.append(
-                        f"Secret too short ({len(var_value)} chars) in: {var_name}"
-                    )
+                    issues.append(f"Secret too short ({len(var_value)} chars) in: {var_name}")
 
                 # Check if secret looks like a placeholder
                 if var_value in ["your-secret", "your-token", "changeme", "..."]:

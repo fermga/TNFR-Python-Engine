@@ -218,9 +218,7 @@ def _validate_export_dependencies() -> None:
                     f"helper '{export_name}' is missing '{key}' dependencies in EXPORT_DEPENDENCIES"
                 )
 
-    missing_exports = manifest_names.difference(export_names).difference(
-        _MISSING_EXPORTS
-    )
+    missing_exports = manifest_names.difference(export_names).difference(_MISSING_EXPORTS)
     for manifest_only in sorted(missing_exports):
         entry = manifest[manifest_only]
         if not isinstance(entry, dict):
@@ -255,9 +253,7 @@ def _assign_exports(module: str, names: tuple[str, ...]) -> bool:
         for export_name in names:
             stub = _missing_dependency(export_name, exc, module=module)
             globals()[export_name] = stub
-            _MISSING_EXPORTS[export_name] = getattr(
-                stub, "__tnfr_missing_dependency__", {}
-            )
+            _MISSING_EXPORTS[export_name] = getattr(stub, "__tnfr_missing_dependency__", {})
         return False
     else:
         for export_name in names:

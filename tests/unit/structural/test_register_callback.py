@@ -21,25 +21,15 @@ def test_register_callback_replaces_existing(graph_canon):
         pass
 
     # initial registration
-    callback_manager.register_callback(
-        G, event=CallbackEvent.BEFORE_STEP, func=cb1, name="cb"
-    )
-    assert G.graph["callbacks"][CallbackEvent.BEFORE_STEP.value] == {
-        "cb": CallbackSpec("cb", cb1)
-    }
+    callback_manager.register_callback(G, event=CallbackEvent.BEFORE_STEP, func=cb1, name="cb")
+    assert G.graph["callbacks"][CallbackEvent.BEFORE_STEP.value] == {"cb": CallbackSpec("cb", cb1)}
 
     # same name should replace existing
-    callback_manager.register_callback(
-        G, event=CallbackEvent.BEFORE_STEP, func=cb2, name="cb"
-    )
-    assert G.graph["callbacks"][CallbackEvent.BEFORE_STEP.value] == {
-        "cb": CallbackSpec("cb", cb2)
-    }
+    callback_manager.register_callback(G, event=CallbackEvent.BEFORE_STEP, func=cb2, name="cb")
+    assert G.graph["callbacks"][CallbackEvent.BEFORE_STEP.value] == {"cb": CallbackSpec("cb", cb2)}
 
     # same function with different name should also replace existing
-    callback_manager.register_callback(
-        G, event=CallbackEvent.BEFORE_STEP, func=cb2, name="other"
-    )
+    callback_manager.register_callback(G, event=CallbackEvent.BEFORE_STEP, func=cb2, name="other")
     assert G.graph["callbacks"][CallbackEvent.BEFORE_STEP.value] == {
         "other": CallbackSpec("other", cb2)
     }
@@ -53,9 +43,7 @@ def test_register_callback_same_callable_dedupes(graph_canon):
 
     callback_manager.register_callback(G, CallbackEvent.BEFORE_STEP, cb)
     callback_manager.register_callback(G, CallbackEvent.BEFORE_STEP, cb)
-    assert G.graph["callbacks"][CallbackEvent.BEFORE_STEP.value] == {
-        "cb": CallbackSpec("cb", cb)
-    }
+    assert G.graph["callbacks"][CallbackEvent.BEFORE_STEP.value] == {"cb": CallbackSpec("cb", cb)}
 
 
 def test_register_callback_rejects_tuple(graph_canon):
@@ -65,9 +53,7 @@ def test_register_callback_rejects_tuple(graph_canon):
         pass
 
     with pytest.raises(TypeError, match="must be callable"):
-        callback_manager.register_callback(
-            G, event=CallbackEvent.BEFORE_STEP, func=("cb", cb)
-        )
+        callback_manager.register_callback(G, event=CallbackEvent.BEFORE_STEP, func=("cb", cb))
 
 
 def test_enum_registration_and_invocation(graph_canon):

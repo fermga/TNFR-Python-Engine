@@ -53,9 +53,9 @@ This is TNFR's model of **everything**: atoms, cells, thoughts, societies.
 **Every node in a TNFR network evolves according to this equation**.
 
 **Components**:
-- **EPI** (Estructura Primaria de Información): The coherent structural "form" of a node
-- **νf** (Frecuencia estructural): Structural frequency - rate of reorganization (Hz_str units)
-- **ΔNFR** (Gradiente nodal): Internal reorganization operator - "structural pressure"
+- **EPI** (Primary Information Structure): The coherent structural "form" of a node
+- **νf** (Structural frequency): Rate of reorganization (Hz_str units)
+- **ΔNFR** (Nodal gradient): Internal reorganization operator - "structural pressure"
 - **t**: Time
 
 **Physical Meaning**:
@@ -227,7 +227,7 @@ Operators combine into **sequences** that implement complex behaviors:
 
 ---
 
-## 📏 Unified Grammar (U1-U4)
+## 📏 Unified Grammar (U1-U6)
 
 The grammar is not arbitrary—it emerges **inevitably** from TNFR physics.
 
@@ -275,6 +275,27 @@ The grammar is not arbitrary—it emerges **inevitably** from TNFR physics.
 - **Why**: ΔNFR must be elevated for threshold crossing
 - **Additional**: ZHIR needs prior IL (stable base)
 - **Canonicity**: STRONG (threshold physics + timing)
+
+### U5: MULTI-SCALE COHERENCE
+
+- **Physics**: Hierarchical coupling + chain rule + central limit theorem
+- **Requirement**: For nested EPIs, include stabilizers {IL, THOL} at each level
+- **Why**: Parent coherence depends on aggregate child reorganization
+- **Conservation**: C_parent ≥ α · Σ C_child (α ~ 1/√N · η_phase)
+- **Without stabilizers**: Uncorrelated child fluctuations → parent ΔNFR grows → fragmentation
+- **Canonicity**: ABSOLUTE (mathematical consequence of hierarchical structure)
+
+### U6: STRUCTURAL POTENTIAL CONFINEMENT
+
+- **Physics**: Emergent field Φ_s from distance-weighted ΔNFR distribution
+- **Formula**: Φ_s(i) = Σ_{j≠i} ΔNFR_j / d(i,j)² (inverse-square law analog)
+- **Requirement**: Monitor Δ Φ_s < 2.0 (escape threshold)
+- **Validation**: 2,400+ experiments, corr(Δ Φ_s, ΔC) = -0.822, R² ≈ 0.68
+- **Mechanism**: Passive equilibrium - grammar acts as confinement, not attraction
+- **Usage**: Telemetry-based safety check (read-only, not sequence constraint)
+- **Typical**: Valid sequences maintain Δ Φ_s ≈ 0.6 (30% of threshold)
+- **Canonicity**: STRONG (2,400+ experiments across 5 topologies, universal)
+- **See**: `docs/grammar/U6_STRUCTURAL_POTENTIAL_CONFINEMENT.md` for complete specification
 
 **See**: UNIFIED_GRAMMAR_RULES.md for complete derivations
 
@@ -791,3 +812,68 @@ A TNFR expert:
 **Version**: 2.0  
 **Last Updated**: 2025-11-09  
 **Status**: ✅ CANONICAL - Single source of truth for TNFR agent guidance
+
+---
+
+### Structural Fields: Φ_s (CANONICAL) + Research Fields
+
+**CANONICAL Status** (2025-11-11): **Structural Potential (Φ_s)**
+
+The structural potential field Φ_s has been **promoted to CANONICAL** status after comprehensive validation:
+
+```python
+Φ_s(i) = Σ_{j≠i} ΔNFR_j / d(i,j)^α  (α=2)
+```
+
+**Validation Evidence** (2,400+ experiments):
+- ✅ **Formal derivation**: Direct from nodal equation via distance-weighted ΔNFR summation
+- ✅ **Predictive power**: corr(Δ Φ_s, ΔC) = -0.822 (R² ≈ 0.68) across 5 topology families
+  - Validated: ring, scale_free, ws (small-world), tree (hierarchical), grid (2D lattice)
+  - Universality: CV < 1% (perfect across topologies)
+- ✅ **Grammar compliance**: Read-only telemetry, no U1-U5 conflicts
+- ✅ **Fractality**: β exponent scale-dependent (physically expected: β_flat = 0.556, β_nested = 0.178)
+
+**Physical Interpretation**:
+- Φ_s minima = **passive equilibrium states** (potential wells)
+- Displacement from minima (Δ Φ_s > 0) → coherence loss (ΔC < 0)
+- **NOT active attraction** - grammar U6 acts as confinement mechanism
+- Dominant field: |corr_Φs| = 0.822 >> |corr_Kφ| ≈ 0.07, |corr_∇φ| ≈ 0.13
+
+**Safety Criterion**:
+- **Δ Φ_s < 2.0**: Escape threshold (fragmentation boundary)
+- Valid sequences maintain Δ Φ_s ≈ 0.6 (15% of violation drift)
+
+**Usage**:
+- Import from `src/tnfr/physics/fields.py`
+- Compute via `compute_structural_potential(G, alpha=2.0)`
+- Monitor in telemetry alongside C(t), Si, νf
+
+**Documentation**: See `docs/TNFR_FORCES_EMERGENCE.md` §14-15 for full validation details.
+
+---
+
+**RESEARCH-PHASE Fields** (NOT CANONICAL):
+
+A telemetry module (`src/tnfr/physics/fields.py`) also provides:
+- Phase gradient (|∇φ|)
+- Phase curvature (K_φ)
+- Coherence length (ξ_C)
+
+Purpose: investigate whether TNFR dynamics naturally generate regimes with qualitative similarity to strong/em/weak interaction patterns via phase organization and curvature. These are analogies only, not claims of physical identity.
+
+**Evidence** (from §10-11):
+- |∇φ|: corr(|∇φ|, ΔC) ≈ -0.13 (weak EM-like, long-range)
+- |K_φ|: corr(|K_φ|, ΔC) ≈ -0.07 (weak strong-like, confinement at |K_φ| > 4.88)
+- ξ_C: Critical threshold at I_c = 2.015 (weak-like symmetry breaking)
+
+Constraints:
+- Preserve Invariant #1 (no direct EPI mutation)
+- Preserve Invariant #5 (phase verification still required for UM/RA)
+- Preserve Invariant #10 (domain neutrality; physics analogies isolated to docs)
+
+**Promotion Criteria to Canonical** (for |∇φ|, K_φ, ξ_C):
+1. Demonstrate predictive power comparable to Φ_s (|corr| > 0.5)
+2. Establish unique safety criteria not captured by Φ_s alone
+3. Cross-domain validation (biological, social, AI applications)
+
+Until criteria satisfied: classification = **RESEARCH**.

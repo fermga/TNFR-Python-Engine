@@ -46,7 +46,9 @@ def test_ra_amplifies_vf_in_sequence():
     G.add_edge(source, target_id)
 
     # Valid complete sequence: AL → EN → IL → RA → IL → SHA
-    run_sequence(G, target_id, [Emission(), Reception(), Coherence(), Resonance(), Coherence(), Silence()])
+    run_sequence(
+        G, target_id, [Emission(), Reception(), Coherence(), Resonance(), Coherence(), Silence()]
+    )
 
     # After full sequence, node should have been modified
     # We verify the sequence ran successfully
@@ -75,7 +77,9 @@ def test_ra_vf_amplification_with_custom_factor():
     G.graph["GLYPH_FACTORS"] = {"RA_vf_amplification": custom_boost}
 
     # Valid sequence with RA: AL → EN → IL → RA → IL → SHA
-    run_sequence(G, target_id, [Emission(), Reception(), Coherence(), Resonance(), Coherence(), Silence()])
+    run_sequence(
+        G, target_id, [Emission(), Reception(), Coherence(), Resonance(), Coherence(), Silence()]
+    )
 
     # νf should have been modified (amplified at RA, then reduced at SHA)
     vf_final = G.nodes[target_id][VF_PRIMARY]
@@ -102,7 +106,9 @@ def test_ra_collects_propagation_metrics():
     G.graph["COLLECT_RA_METRICS"] = True
 
     # Valid sequence with RA
-    run_sequence(G, target_id, [Emission(), Reception(), Coherence(), Resonance(), Coherence(), Silence()])
+    run_sequence(
+        G, target_id, [Emission(), Reception(), Coherence(), Resonance(), Coherence(), Silence()]
+    )
 
     # Check metrics were collected
     assert "ra_metrics" in G.graph, "RA metrics should be collected"
@@ -134,7 +140,9 @@ def test_ra_metrics_has_required_fields():
 
     G.graph["COLLECT_RA_METRICS"] = True
 
-    run_sequence(G, target_id, [Emission(), Reception(), Coherence(), Resonance(), Coherence(), Silence()])
+    run_sequence(
+        G, target_id, [Emission(), Reception(), Coherence(), Resonance(), Coherence(), Silence()]
+    )
 
     metrics = G.graph["ra_metrics"][0]
 
@@ -172,10 +180,12 @@ def test_ra_backward_compatibility_epi_diffusion():
     G.add_edge(source, target_id)
 
     epi_before = G.nodes[target_id][EPI_PRIMARY]
-    
+
     # Valid sequence with RA
-    run_sequence(G, target_id, [Emission(), Reception(), Coherence(), Resonance(), Coherence(), Silence()])
-    
+    run_sequence(
+        G, target_id, [Emission(), Reception(), Coherence(), Resonance(), Coherence(), Silence()]
+    )
+
     epi_after = G.nodes[target_id][EPI_PRIMARY]
 
     # EPI should have changed (diffusion occurred)
@@ -202,7 +212,9 @@ def test_ra_network_coherence_tracking_optional():
     G.graph["TRACK_NETWORK_COHERENCE"] = False
 
     # Should not raise any exceptions
-    run_sequence(G, target_id, [Emission(), Reception(), Coherence(), Resonance(), Coherence(), Silence()])
+    run_sequence(
+        G, target_id, [Emission(), Reception(), Coherence(), Resonance(), Coherence(), Silence()]
+    )
 
     # Should not have tracking data
     assert "_ra_c_tracking" not in G.graph or len(G.graph.get("_ra_c_tracking", [])) == 0
@@ -228,7 +240,9 @@ def test_ra_network_coherence_tracking_enabled():
     G.graph["TRACK_NETWORK_COHERENCE"] = True
 
     # Valid sequence with RA
-    run_sequence(G, target_id, [Emission(), Reception(), Coherence(), Resonance(), Coherence(), Silence()])
+    run_sequence(
+        G, target_id, [Emission(), Reception(), Coherence(), Resonance(), Coherence(), Silence()]
+    )
 
     # Check if tracking was attempted (should have data if metrics module available)
     # Note: tracking depends on metrics module availability
@@ -296,14 +310,17 @@ def test_ra_zero_amplification_factor():
     G.graph["COLLECT_RA_METRICS"] = True
 
     # Valid sequence with RA
-    run_sequence(G, target_id, [Emission(), Reception(), Coherence(), Resonance(), Coherence(), Silence()])
+    run_sequence(
+        G, target_id, [Emission(), Reception(), Coherence(), Resonance(), Coherence(), Silence()]
+    )
 
     # Check metrics show no amplification from RA step
     if "ra_metrics" in G.graph and len(G.graph["ra_metrics"]) > 0:
         metrics = G.graph["ra_metrics"][0]
         # With zero boost, amplification should be 1.0 (no change) in the RA step
-        assert abs(metrics["vf_amplification"] - 1.0) < 0.01, \
-            "Zero amplification should result in ratio of 1.0"
+        assert (
+            abs(metrics["vf_amplification"] - 1.0) < 0.01
+        ), "Zero amplification should result in ratio of 1.0"
 
 
 def test_ra_identity_preservation_tracking():
@@ -324,7 +341,9 @@ def test_ra_identity_preservation_tracking():
 
     G.graph["COLLECT_RA_METRICS"] = True
 
-    run_sequence(G, target_id, [Emission(), Reception(), Coherence(), Resonance(), Coherence(), Silence()])
+    run_sequence(
+        G, target_id, [Emission(), Reception(), Coherence(), Resonance(), Coherence(), Silence()]
+    )
 
     metrics = G.graph["ra_metrics"][0]
     assert "identity_preserved" in metrics
@@ -396,10 +415,10 @@ def test_ra_without_optional_features():
     G.graph["TRACK_NETWORK_COHERENCE"] = False
 
     # Should not raise any exceptions
-    run_sequence(G, target_id, [Emission(), Reception(), Coherence(), Resonance(), Coherence(), Silence()])
+    run_sequence(
+        G, target_id, [Emission(), Reception(), Coherence(), Resonance(), Coherence(), Silence()]
+    )
 
     # Should have modified state - just check key exists and sequence ran
     assert EPI_PRIMARY in G.nodes[target_id]
     assert VF_PRIMARY in G.nodes[target_id]
-
-

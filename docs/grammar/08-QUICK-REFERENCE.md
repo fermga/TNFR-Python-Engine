@@ -442,8 +442,8 @@ if delta_phi > np.pi/2:
 - **[02-CANONICAL-CONSTRAINTS.md](02-CANONICAL-CONSTRAINTS.md)** - Full U1-U5 derivations
 - **[03-OPERATORS-AND-GLYPHS.md](03-OPERATORS-AND-GLYPHS.md)** - Complete operator catalog
 - **[04-VALID-SEQUENCES.md](04-VALID-SEQUENCES.md)** - Pattern examples
-- **[../../UNIFIED_GRAMMAR_RULES.md](../../UNIFIED_GRAMMAR_RULES.md)** - Mathematical proofs
-- **[../../AGENTS.md](../../AGENTS.md)** - Canonical invariants
+- **[UNIFIED_GRAMMAR_RULES.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/UNIFIED_GRAMMAR_RULES.md)** - Mathematical proofs
+- **[AGENTS.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/AGENTS.md)** - Canonical invariants
 
 ---
 

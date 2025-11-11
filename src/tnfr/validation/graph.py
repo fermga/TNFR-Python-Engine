@@ -38,9 +38,7 @@ def _materialize_node_mapping(data: NodeData) -> dict[str, object]:
     return dict(data)
 
 
-def _require_attr(
-    data: NodeData, alias: AliasSequence, node: NodeId, name: str
-) -> float:
+def _require_attr(data: NodeData, alias: AliasSequence, node: NodeId, name: str) -> float:
     """Return scalar attribute value or raise if missing."""
 
     mapping = _materialize_node_mapping(data)

@@ -6,13 +6,23 @@ features to ensure usability and correctness.
 
 import pytest
 
-from tnfr.operators.grammar import (
-    validate_sequence,
-    validate_sequence_with_health,
-)
+from tnfr.operators.grammar import validate_sequence
 from tnfr.operators.health_analyzer import SequenceHealthAnalyzer
 from tnfr.operators.patterns import AdvancedPatternDetector
 from tnfr.operators.cycle_detection import CycleDetector
+
+
+def validate_sequence_with_health(sequence):
+    """Helper function to validate sequence and compute health metrics."""
+    result = validate_sequence(sequence)
+    if result.passed:
+        analyzer = SequenceHealthAnalyzer()
+        health = analyzer.analyze_health(sequence)
+        # Attach health metrics to result
+        result.health_metrics = health
+    else:
+        result.health_metrics = None
+    return result
 
 
 class TestUserScenarios:
@@ -177,9 +187,7 @@ class TestUserScenarios:
 
         # Step 2: User searches for regenerators
         regenerators = ["transition", "recursivity", "silence"]
-        regenerator_positions = [
-            i for i, op in enumerate(sequence) if op in regenerators
-        ]
+        regenerator_positions = [i for i, op in enumerate(sequence) if op in regenerators]
         assert len(regenerator_positions) > 0, "Sequence should have regenerators"
 
         # Step 3: Analyze each regenerator position

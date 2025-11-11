@@ -36,8 +36,51 @@ use TNFRValidator instead.
 
 from __future__ import annotations
 
-from ..compat.dataclass import dataclass
 from typing import Any, Generic, Mapping, Protocol, TypeVar, runtime_checkable
+
+from ..compat.dataclass import dataclass
+from ..operators import grammar as _grammar
+from ..types import Glyph
+from .config import ValidationConfig, configure_validation, validation_config  # noqa: F401
+from .graph import GRAPH_VALIDATORS, run_validators  # noqa: F401
+from .input_validation import (  # noqa: F401
+    ValidationError,
+    validate_dnfr_value,
+    validate_epi_value,
+    validate_glyph,
+    validate_glyph_factors,
+    validate_node_id,
+    validate_operator_parameters,
+    validate_theta_value,
+    validate_tnfr_graph,
+    validate_vf_value,
+)
+from .invariants import (  # noqa: F401
+    Invariant10_DomainNeutrality,
+    Invariant1_EPIOnlyThroughOperators,
+    Invariant2_VfInHzStr,
+    Invariant3_DNFRSemantics,
+    Invariant4_OperatorClosure,
+    Invariant5_ExplicitPhaseChecks,
+    Invariant6_NodeBirthCollapse,
+    Invariant7_OperationalFractality,
+    Invariant8_ControlledDeterminism,
+    Invariant9_StructuralMetrics,
+    InvariantSeverity,
+    InvariantViolation,
+    TNFRInvariant,
+)
+from .rules import coerce_glyph, get_norm, glyph_fallback, normalized_dnfr  # noqa: F401
+from .runtime import GraphCanonicalValidator, apply_canonical_clamps, validate_canon  # noqa: F401
+from .sequence_validator import SequenceSemanticValidator  # noqa: F401
+from .soft_filters import (  # noqa: F401
+    acceleration_norm,
+    check_repeats,
+    maybe_force,
+    soft_grammar_filters,
+)
+from .validator import TNFRValidationError, TNFRValidator  # noqa: F401
+from .window import validate_window  # noqa: F401
 
 SubjectT = TypeVar("SubjectT")
 
@@ -63,9 +106,7 @@ class ValidationOutcome(Generic[SubjectT]):
 class Validator(Protocol[SubjectT]):
     """Contract implemented by runtime and spectral validators."""
 
-    def validate(
-        self, subject: SubjectT, /, **kwargs: Any
-    ) -> ValidationOutcome[SubjectT]:
+    def validate(self, subject: SubjectT, /, **kwargs: Any) -> ValidationOutcome[SubjectT]:
         """Validate ``subject`` returning a :class:`ValidationOutcome`."""
 
     def report(self, outcome: "ValidationOutcome[SubjectT]") -> str:
@@ -75,7 +116,7 @@ class Validator(Protocol[SubjectT]):
 # NOTE: Compatibility module deprecated - grammar emerges from TNFR structural dynamics
 # Legacy exports kept for backward compatibility but will be removed in future versions
 try:
-    from .compatibility import (  # noqa: F401
+    from .compatibility import (
         CANON_COMPAT,
         CANON_FALLBACK,
         CompatibilityLevel,
@@ -111,62 +152,6 @@ except ImportError:
         )
         return "good"
 
-
-from ..operators import grammar as _grammar
-from ..types import Glyph
-from .graph import GRAPH_VALIDATORS, run_validators  # noqa: F401
-from .window import validate_window  # noqa: F401
-from .runtime import (
-    GraphCanonicalValidator,
-    apply_canonical_clamps,
-    validate_canon,
-)  # noqa: F401
-from .rules import coerce_glyph, get_norm, glyph_fallback, normalized_dnfr  # noqa: F401
-from .soft_filters import (  # noqa: F401
-    acceleration_norm,
-    check_repeats,
-    maybe_force,
-    soft_grammar_filters,
-)
-from .input_validation import (  # noqa: F401
-    ValidationError,
-    validate_epi_value,
-    validate_vf_value,
-    validate_theta_value,
-    validate_dnfr_value,
-    validate_node_id,
-    validate_glyph,
-    validate_tnfr_graph,
-    validate_glyph_factors,
-    validate_operator_parameters,
-)
-from .invariants import (  # noqa: F401
-    InvariantSeverity,
-    InvariantViolation,
-    TNFRInvariant,
-    Invariant1_EPIOnlyThroughOperators,
-    Invariant2_VfInHzStr,
-    Invariant3_DNFRSemantics,
-    Invariant4_OperatorClosure,
-    Invariant5_ExplicitPhaseChecks,
-    Invariant6_NodeBirthCollapse,
-    Invariant7_OperationalFractality,
-    Invariant8_ControlledDeterminism,
-    Invariant9_StructuralMetrics,
-    Invariant10_DomainNeutrality,
-)
-from .validator import (  # noqa: F401
-    TNFRValidator,
-    TNFRValidationError,
-)
-from .sequence_validator import (  # noqa: F401
-    SequenceSemanticValidator,
-)
-from .config import (  # noqa: F401
-    ValidationConfig,
-    validation_config,
-    configure_validation,
-)
 
 _GRAMMAR_EXPORTS = tuple(getattr(_grammar, "__all__", ()))
 

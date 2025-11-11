@@ -44,7 +44,7 @@ class TestTHOLPropagation:
                 VF_PRIMARY: 1.0,
                 THETA_PRIMARY: 0.1,
                 DNFR_PRIMARY: 0.10,
-            }
+            },
         )
         G.add_node(
             1,
@@ -53,7 +53,7 @@ class TestTHOLPropagation:
                 VF_PRIMARY: 1.0,
                 THETA_PRIMARY: 0.12,  # Phase-aligned
                 DNFR_PRIMARY: 0.05,
-            }
+            },
         )
         G.add_node(
             2,
@@ -62,7 +62,7 @@ class TestTHOLPropagation:
                 VF_PRIMARY: 1.0,
                 THETA_PRIMARY: 2.5,  # Not aligned
                 DNFR_PRIMARY: 0.05,
-            }
+            },
         )
         G.add_edge(0, 1)
         G.add_edge(0, 2)
@@ -87,9 +87,7 @@ class TestTHOLPropagation:
         assert epi_1_after > epi_1_before, "Coupled neighbor should receive sub-EPI"
 
         # Node 2 (not aligned) should NOT receive propagation
-        assert (
-            epi_2_after == epi_2_before
-        ), "Uncoupled neighbor should not be affected"
+        assert epi_2_after == epi_2_before, "Uncoupled neighbor should not be affected"
 
         # Verify telemetry
         propagations = G.graph.get("thol_propagations", [])
@@ -107,7 +105,7 @@ class TestTHOLPropagation:
                 VF_PRIMARY: 1.0,
                 THETA_PRIMARY: 0.0,
                 DNFR_PRIMARY: 0.10,
-            }
+            },
         )
         G.add_node(
             1,
@@ -116,7 +114,7 @@ class TestTHOLPropagation:
                 VF_PRIMARY: 1.0,
                 THETA_PRIMARY: 1.0,  # Moderate phase difference
                 DNFR_PRIMARY: 0.05,
-            }
+            },
         )
         G.add_edge(0, 1)
 
@@ -145,7 +143,7 @@ class TestTHOLPropagation:
                 VF_PRIMARY: 1.0,
                 THETA_PRIMARY: 0.0,
                 DNFR_PRIMARY: 0.10,
-            }
+            },
         )
         G.add_node(
             1,
@@ -154,7 +152,7 @@ class TestTHOLPropagation:
                 VF_PRIMARY: 1.0,
                 THETA_PRIMARY: 0.01,  # Nearly in-phase
                 DNFR_PRIMARY: 0.05,
-            }
+            },
         )
         G.add_edge(0, 1)
 
@@ -186,7 +184,7 @@ class TestTHOLPropagation:
                 VF_PRIMARY: 1.0,
                 THETA_PRIMARY: 0.0,
                 DNFR_PRIMARY: 0.10,
-            }
+            },
         )
         G.add_node(
             1,
@@ -195,7 +193,7 @@ class TestTHOLPropagation:
                 VF_PRIMARY: 1.0,
                 THETA_PRIMARY: 0.01,
                 DNFR_PRIMARY: 0.05,
-            }
+            },
         )
         G.add_edge(0, 1)
 
@@ -217,13 +215,13 @@ class TestTHOLPropagation:
 
     def test_thol_rejects_antiphase_propagation(self):
         """THOL must reject propagation to neighbors with antiphase (Invariant #5).
-        
+
         This test explicitly validates AGENTS.md Invariant #5:
         "No coupling is valid without explicit phase verification."
-        
+
         THOL propagation uses phase-based coupling strength:
         coupling_strength = 1.0 - (|Δθ| / π)
-        
+
         For antiphase nodes (Δθ = π), coupling_strength = 0, which is below
         the minimum threshold, thus blocking propagation as required by physics.
         """
@@ -238,7 +236,7 @@ class TestTHOLPropagation:
                 VF_PRIMARY: 1.0,
                 THETA_PRIMARY: 0.0,
                 DNFR_PRIMARY: 0.15,
-            }
+            },
         )
         # Node 1: phase = π (antiphase - destructive interference)
         G.add_node(
@@ -248,7 +246,7 @@ class TestTHOLPropagation:
                 VF_PRIMARY: 1.0,
                 THETA_PRIMARY: math.pi,
                 DNFR_PRIMARY: 0.05,
-            }
+            },
         )
         G.add_edge(0, 1)
 
@@ -267,9 +265,7 @@ class TestTHOLPropagation:
         epi_1_after = G.nodes[1][EPI_PRIMARY]
 
         # Verify: propagation should NOT have occurred to antiphase neighbor
-        assert (
-            epi_1_after == epi_1_before
-        ), "Antiphase neighbor must be rejected (Invariant #5)"
+        assert epi_1_after == epi_1_before, "Antiphase neighbor must be rejected (Invariant #5)"
 
         # Verify telemetry: no propagation to node 1
         propagations = G.graph.get("thol_propagations", [])
@@ -312,9 +308,7 @@ class TestTHOLCascades:
 
         # Should have propagation events
         assert cascade_analysis["total_propagations"] >= 1, "Should have propagations"
-        assert (
-            len(cascade_analysis["affected_nodes"]) >= 2
-        ), "Should reach at least 2 nodes"
+        assert len(cascade_analysis["affected_nodes"]) >= 2, "Should reach at least 2 nodes"
 
     def test_thol_cascade_respects_phase_barriers(self):
         """Cascades should not cross phase-incoherent boundaries."""
@@ -329,7 +323,7 @@ class TestTHOLCascades:
                 THETA_PRIMARY: 0.1,
                 VF_PRIMARY: 1.0,
                 DNFR_PRIMARY: 0.10,
-            }
+            },
         )
         G.add_node(
             1,
@@ -338,7 +332,7 @@ class TestTHOLCascades:
                 THETA_PRIMARY: 0.12,
                 VF_PRIMARY: 1.0,
                 DNFR_PRIMARY: 0.10,
-            }
+            },
         )
 
         # Node 2: phase barrier (gate)
@@ -349,7 +343,7 @@ class TestTHOLCascades:
                 THETA_PRIMARY: 2.0,  # π out of phase
                 VF_PRIMARY: 1.0,
                 DNFR_PRIMARY: 0.10,
-            }
+            },
         )
 
         # Cluster B: coherent phases (isolated by barrier)
@@ -360,7 +354,7 @@ class TestTHOLCascades:
                 THETA_PRIMARY: 2.05,
                 VF_PRIMARY: 1.0,
                 DNFR_PRIMARY: 0.10,
-            }
+            },
         )
 
         # Connect: 0-1-2-3
@@ -452,7 +446,7 @@ class TestTHOLPropagationEPIHistory:
                 VF_PRIMARY: 1.0,
                 THETA_PRIMARY: 0.0,
                 DNFR_PRIMARY: 0.10,
-            }
+            },
         )
         G.add_node(
             1,
@@ -461,7 +455,7 @@ class TestTHOLPropagationEPIHistory:
                 VF_PRIMARY: 1.0,
                 THETA_PRIMARY: 0.01,
                 DNFR_PRIMARY: 0.05,
-            }
+            },
         )
         G.add_edge(0, 1)
 
@@ -491,7 +485,7 @@ class TestBackwardCompatibility:
                 VF_PRIMARY: 1.0,
                 THETA_PRIMARY: 0.0,
                 DNFR_PRIMARY: 0.10,
-            }
+            },
         )
 
         G.graph["THOL_PROPAGATION_ENABLED"] = True
@@ -520,7 +514,7 @@ class TestBackwardCompatibility:
                 VF_PRIMARY: 1.0,
                 THETA_PRIMARY: 0.0,
                 DNFR_PRIMARY: 0.10,
-            }
+            },
         )
         G.add_node(
             1,
@@ -529,7 +523,7 @@ class TestBackwardCompatibility:
                 VF_PRIMARY: 1.0,
                 THETA_PRIMARY: 0.01,
                 DNFR_PRIMARY: 0.05,
-            }
+            },
         )
         G.add_edge(0, 1)
 

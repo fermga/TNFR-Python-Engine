@@ -85,7 +85,7 @@ Two-body orbital resonance (no gravitational assumption):
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Dict, List, Tuple, Optional
+from typing import TYPE_CHECKING, Any, Dict, List, Tuple
 
 import numpy as np
 from numpy.typing import NDArray
@@ -93,7 +93,6 @@ from numpy.typing import NDArray
 from ..structural import create_nfr
 from ..types import TNFRGraph
 from ..operators.hamiltonian import InternalHamiltonian
-from ..alias import get_attr
 
 if TYPE_CHECKING:
     from matplotlib.figure import Figure
@@ -113,12 +112,12 @@ def compute_tnfr_coherence_potential(
     """Compute coherence potential from TNFR network structure.
 
     This is the pure TNFR potential - NO classical assumptions.
-    
+
     The potential emerges from:
     - Structural similarity (coherence matrix)
     - Network coupling topology
     - Phase synchronization
-    
+
     NOT from Newtonian gravity or any other classical force law.
 
     Parameters
@@ -142,14 +141,14 @@ def compute_tnfr_coherence_potential(
     """
     # Build internal Hamiltonian
     ham = InternalHamiltonian(G, hbar_str=hbar_str)
-    
+
     # Potential is encoded in ground state energy
     eigenvalues, _ = ham.get_spectrum()
-    
+
     # Total potential: sum of eigenvalues (trace of H_int)
     # For energy conservation, we use ground state as reference
     U = float(eigenvalues[0])  # Ground state energy
-    
+
     return U
 
 
@@ -162,7 +161,7 @@ def compute_tnfr_delta_nfr(
 
     This is the correct TNFR computation of ΔNFR:
         ΔNFR = i[H_int, ·]/ℏ_str
-    
+
     NOT from classical forces: F = -∇U (external assumption).
 
     Parameters
@@ -186,12 +185,12 @@ def compute_tnfr_delta_nfr(
     """
     # Build Hamiltonian
     ham = InternalHamiltonian(G, hbar_str=hbar_str)
-    
+
     # Compute ΔNFR for each node
     dnfr = np.zeros(len(node_ids))
     for i, node_id in enumerate(node_ids):
         dnfr[i] = ham.compute_node_delta_nfr(node_id)
-    
+
     return dnfr
 
 
@@ -224,7 +223,7 @@ class TNFRNBodySystem:
     -----
     Dynamics follow from nodal equation: ∂EPI/∂t = νf · ΔNFR
     where ΔNFR is computed from Hamiltonian commutator.
-    
+
     Attraction/repulsion emerges from phase synchronization,
     NOT from assumed gravitational potential.
     """
@@ -274,9 +273,7 @@ class TNFRNBodySystem:
         self.masses = np.array(masses, dtype=float)
 
         if len(self.masses) != n_bodies:
-            raise ValueError(
-                f"masses length {len(self.masses)} != n_bodies {n_bodies}"
-            )
+            raise ValueError(f"masses length {len(self.masses)} != n_bodies {n_bodies}")
 
         if np.any(self.masses <= 0):
             raise ValueError("All masses must be positive")
@@ -284,7 +281,7 @@ class TNFRNBodySystem:
         # State vectors
         self.positions = np.asarray(positions, dtype=float).copy()
         self.velocities = np.asarray(velocities, dtype=float).copy()
-        
+
         if phases is None:
             self.phases = np.zeros(n_bodies, dtype=float)
         else:
@@ -293,21 +290,15 @@ class TNFRNBodySystem:
         # Validate shapes
         expected_shape = (n_bodies, 3)
         if self.positions.shape != expected_shape:
-            raise ValueError(
-                f"positions shape {self.positions.shape} != {expected_shape}"
-            )
+            raise ValueError(f"positions shape {self.positions.shape} != {expected_shape}")
         if self.velocities.shape != expected_shape:
-            raise ValueError(
-                f"velocities shape {self.velocities.shape} != {expected_shape}"
-            )
+            raise ValueError(f"velocities shape {self.velocities.shape} != {expected_shape}")
         if self.phases.shape != (n_bodies,):
-            raise ValueError(
-                f"phases shape {self.phases.shape} != ({n_bodies},)"
-            )
+            raise ValueError(f"phases shape {self.phases.shape} != ({n_bodies},)")
 
         self.time = 0.0
         self.hbar_str = float(hbar_str)
-        
+
         # TNFR parameters
         self.coupling_strength = float(coupling_strength)
         self.coherence_strength = float(coherence_strength)
@@ -353,7 +344,7 @@ class TNFRNBodySystem:
                 theta=float(self.phases[i]),
                 graph=self.graph,
             )
-            
+
             # Override with structured EPI
             self.graph.nodes[node_id]["epi"] = epi_state
 
@@ -364,7 +355,7 @@ class TNFRNBodySystem:
             for j in range(i + 1, self.n_bodies):
                 node_i = f"body_{i}"
                 node_j = f"body_{j}"
-                
+
                 # Edge weight: coupling strength
                 # (In more sophisticated version, could depend on distance)
                 weight = self.coupling_strength
@@ -393,9 +384,7 @@ class TNFRNBodySystem:
 
         # Coherence potential from TNFR Hamiltonian
         # This is the key difference: NO assumption about gravity
-        potential = compute_tnfr_coherence_potential(
-            self.graph, self.positions, self.hbar_str
-        )
+        potential = compute_tnfr_coherence_potential(self.graph, self.positions, self.hbar_str)
 
         total = kinetic + potential
 
@@ -467,10 +456,8 @@ class TNFRNBodySystem:
         # Update phases based on ΔNFR
         # Compute scalar ΔNFR for phase evolution
         node_ids = [f"body_{i}" for i in range(self.n_bodies)]
-        dnfr_values = compute_tnfr_delta_nfr(
-            self.graph, node_ids, self.hbar_str
-        )
-        
+        dnfr_values = compute_tnfr_delta_nfr(self.graph, node_ids, self.hbar_str)
+
         # Phase evolution: dθ/dt ~ ΔNFR
         self.phases += dnfr_values * dt
         self.phases = np.mod(self.phases, 2 * np.pi)  # Keep in [0, 2π]
@@ -494,78 +481,78 @@ class TNFRNBodySystem:
         Notes
         -----
         The key TNFR insight: Forces emerge from maximizing coherence.
-        
+
         Coherence between nodes i and j depends on:
         1. Phase difference: cos(θᵢ - θⱼ) (in-phase → attractive)
         2. Coupling strength: J₀ (from network edges)
         3. Distance dependence: Coherence decreases with separation
-        
+
         This gives rise to attraction/repulsion WITHOUT assuming gravity!
         """
         accelerations = np.zeros((self.n_bodies, 3))
-        
+
         # For each pair of bodies
         for i in range(self.n_bodies):
             for j in range(self.n_bodies):
                 if i == j:
                     continue
-                
+
                 # Position difference
                 r_ij = self.positions[j] - self.positions[i]
                 dist = np.linalg.norm(r_ij)
-                
+
                 if dist < 1e-10:
                     continue  # Avoid singularity
-                
+
                 # Unit vector from i to j
                 r_hat = r_ij / dist
-                
+
                 # Phase difference (key TNFR element!)
                 phase_diff = self.phases[j] - self.phases[i]
-                
+
                 # Coherence factor: positive when in-phase, negative when anti-phase
                 # This creates attraction for synchronized nodes
                 coherence_factor = np.cos(phase_diff)
-                
+
                 # Distance-dependent coupling (coherence decays with distance)
                 # This emerges from spatial structure of coherence matrix
                 # Use exponential decay or power law
                 distance_factor = 1.0 / (dist**2 + 0.1)  # Softened power law
-                
+
                 # Frequency coupling: Both nodes contribute
                 nu_i = 1.0 / self.masses[i]
                 nu_j = 1.0 / self.masses[j]
                 freq_factor = np.sqrt(nu_i * nu_j)
-                
+
                 # Total TNFR force magnitude
                 force_mag = (
-                    self.coupling_strength *
-                    self.coherence_strength *  # Negative = attractive well
-                    coherence_factor *
-                    distance_factor *
-                    freq_factor
+                    self.coupling_strength
+                    * self.coherence_strength  # Negative = attractive well
+                    * coherence_factor
+                    * distance_factor
+                    * freq_factor
                 )
-                
+
                 # Force direction
                 force_vec = force_mag * r_hat
-                
+
                 # Acceleration: a = F/m = F * νf
                 accelerations[i] += force_vec * nu_i
-        
+
         return accelerations
 
     def _update_graph(self) -> None:
         """Update graph representation with current state."""
         for i in range(self.n_bodies):
             node_id = f"body_{i}"
-            
+
             # Update EPI
             epi_state = {
                 "position": self.positions[i].copy(),
                 "velocity": self.velocities[i].copy(),
             }
             self.graph.nodes[node_id]["epi"] = epi_state
-            
+
             # Update phase
             self.graph.nodes[node_id]["theta"] = float(self.phases[i])
 
@@ -690,11 +677,9 @@ class TNFRNBodySystem:
         """
         try:
             import matplotlib.pyplot as plt
-            from mpl_toolkits.mplot3d import Axes3D
         except ImportError as exc:
             raise ImportError(
-                "matplotlib required for plotting. "
-                "Install with: pip install 'tnfr[viz-basic]'"
+                "matplotlib required for plotting. " "Install with: pip install 'tnfr[viz-basic]'"
             ) from exc
 
         n_plots = 1 + int(show_energy) + int(show_phases)
@@ -719,14 +704,8 @@ class TNFRNBodySystem:
                 label=f"Body {i+1} (m={self.masses[i]:.2f})",
                 alpha=0.7,
             )
-            ax_3d.scatter(
-                traj[0, 0], traj[0, 1], traj[0, 2],
-                color=colors[i], s=100, marker="o"
-            )
-            ax_3d.scatter(
-                traj[-1, 0], traj[-1, 1], traj[-1, 2],
-                color=colors[i], s=50, marker="x"
-            )
+            ax_3d.scatter(traj[0, 0], traj[0, 1], traj[0, 2], color=colors[i], s=100, marker="o")
+            ax_3d.scatter(traj[-1, 0], traj[-1, 1], traj[-1, 2], color=colors[i], s=50, marker="x")
 
         ax_3d.set_xlabel("X")
         ax_3d.set_ylabel("Y")

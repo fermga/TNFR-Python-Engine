@@ -118,9 +118,7 @@ def _selector_normalized_metrics(
 def _selector_base_choice(
     Si: float, dnfr: float, accel: float, thr: Mapping[str, float]
 ) -> GlyphCode:
-    si_hi, si_lo, dnfr_hi, acc_hi = itemgetter("si_hi", "si_lo", "dnfr_hi", "accel_hi")(
-        thr
-    )
+    si_hi, si_lo, dnfr_hi, acc_hi = itemgetter("si_hi", "si_lo", "dnfr_hi", "accel_hi")(thr)
     if Si >= si_hi:
         return "IL"
     if Si <= si_lo:
@@ -135,9 +133,7 @@ def _selector_base_choice(
 def _configure_selector_weights(G: TNFRGraph) -> Mapping[str, float]:
     """Load and cache selector weight configuration from graph parameters."""
 
-    weights = merge_and_normalize_weights(
-        G, "SELECTOR_WEIGHTS", ("w_si", "w_dnfr", "w_accel")
-    )
+    weights = merge_and_normalize_weights(G, "SELECTOR_WEIGHTS", ("w_si", "w_dnfr", "w_accel"))
     cast_weights = cast(Mapping[str, float], weights)
     G.graph["_selector_weights"] = cast_weights
     return cast_weights
@@ -166,9 +162,7 @@ def _compute_selector_score(
     return float(score)
 
 
-def _apply_score_override(
-    cand: GlyphCode, score: float, dnfr: float, dnfr_lo: float
-) -> GlyphCode:
+def _apply_score_override(cand: GlyphCode, score: float, dnfr: float, dnfr_lo: float) -> GlyphCode:
     cand_key = str(cand)
     if score >= 0.66 and cand_key in ("NAV", "RA", "ZHIR", "OZ"):
         return "IL"
@@ -211,9 +205,7 @@ class _SelectorPreselection:
     margin: float | None = None
 
 
-def _build_default_preselection(
-    G: TNFRGraph, nodes: Sequence[NodeId]
-) -> _SelectorPreselection:
+def _build_default_preselection(G: TNFRGraph, nodes: Sequence[NodeId]) -> _SelectorPreselection:
     node_list = list(nodes)
     thresholds = _selector_thresholds(G)
     if not node_list:
@@ -223,21 +215,15 @@ def _build_default_preselection(
     n_jobs = _selector_parallel_jobs(G)
     metrics = _collect_selector_metrics(G, node_list, norms, n_jobs=n_jobs)
     base_choices = _compute_default_base_choices(metrics, thresholds)
-    return _SelectorPreselection(
-        "default", metrics, base_choices, thresholds=thresholds
-    )
+    return _SelectorPreselection("default", metrics, base_choices, thresholds=thresholds)
 
 
-def _build_param_preselection(
-    G: TNFRGraph, nodes: Sequence[NodeId]
-) -> _SelectorPreselection:
+def _build_param_preselection(G: TNFRGraph, nodes: Sequence[NodeId]) -> _SelectorPreselection:
     node_list = list(nodes)
     thresholds = _selector_thresholds(G)
     margin: float | None = get_graph_param(G, "GLYPH_SELECTOR_MARGIN")
     if not node_list:
-        return _SelectorPreselection(
-            "param", {}, {}, thresholds=thresholds, margin=margin
-        )
+        return _SelectorPreselection("param", {}, {}, thresholds=thresholds, margin=margin)
 
     norms = G.graph.get("_sel_norms") or _selector_norms(G)
     n_jobs = _selector_parallel_jobs(G)
@@ -274,9 +260,7 @@ class DefaultGlyphSelector(AbstractSelector):
             preselection = self._preselection
         else:
             preselection = None
-        return _resolve_preselected_glyph(
-            graph, node, _default_selector_logic, preselection
-        )
+        return _resolve_preselected_glyph(graph, node, _default_selector_logic, preselection)
 
 
 class ParametricGlyphSelector(AbstractSelector):
@@ -303,9 +287,7 @@ class ParametricGlyphSelector(AbstractSelector):
             preselection = self._preselection
         else:
             preselection = None
-        return _resolve_preselected_glyph(
-            graph, node, _parametric_selector_logic, preselection
-        )
+        return _resolve_preselected_glyph(graph, node, _parametric_selector_logic, preselection)
 
 
 default_glyph_selector = DefaultGlyphSelector()
@@ -336,9 +318,7 @@ def _choose_glyph(
             nd = G.nodes[n]
             history = tuple(str(item) for item in nd.get("glyph_history", ()))
             selector_name = getattr(selector, "__name__", selector.__class__.__name__)
-            err.attach_context(
-                node=n, selector=selector_name, history=history, stage="selector"
-            )
+            err.attach_context(node=n, selector=selector_name, history=history, stage="selector")
             record_grammar_violation(G, n, err, stage="selector")
             raise
     return g
@@ -380,13 +360,10 @@ def _collect_selector_metrics(
         si_seq_np = collect_attr(G, nodes, ALIAS_SI, 0.5, np=np_mod).astype(float)
         si_seq_np = np_mod.clip(si_seq_np, 0.0, 1.0)
         dnfr_seq_np = (
-            np_mod.abs(collect_attr(G, nodes, ALIAS_DNFR, 0.0, np=np_mod).astype(float))
-            / dnfr_max
+            np_mod.abs(collect_attr(G, nodes, ALIAS_DNFR, 0.0, np=np_mod).astype(float)) / dnfr_max
         )
         accel_seq_np = (
-            np_mod.abs(
-                collect_attr(G, nodes, ALIAS_D2EPI, 0.0, np=np_mod).astype(float)
-            )
+            np_mod.abs(collect_attr(G, nodes, ALIAS_D2EPI, 0.0, np=np_mod).astype(float))
             / accel_max
         )
 
@@ -404,9 +381,7 @@ def _collect_selector_metrics(
             dnfr_seq = [abs(float(v)) / dnfr_max for v in dnfr_values]
             accel_seq = [abs(float(v)) / accel_max for v in accel_values]
         else:
-            approx_chunk = (
-                math.ceil(len(nodes) / worker_count) if worker_count else None
-            )
+            approx_chunk = math.ceil(len(nodes) / worker_count) if worker_count else None
             chunk_size = resolve_chunk_size(
                 approx_chunk,
                 len(nodes),
@@ -435,9 +410,7 @@ def _collect_selector_metrics(
 
             executor_cls = ProcessPoolExecutor
             if dynamics_module is not None:
-                executor_cls = getattr(
-                    dynamics_module, "ProcessPoolExecutor", ProcessPoolExecutor
-                )
+                executor_cls = getattr(dynamics_module, "ProcessPoolExecutor", ProcessPoolExecutor)
             with executor_cls(max_workers=worker_count) as executor:
                 for si_chunk, dnfr_chunk, accel_chunk in executor.map(
                     _selector_metrics_chunk, _args_iter()
@@ -446,10 +419,7 @@ def _collect_selector_metrics(
                     dnfr_seq.extend(dnfr_chunk)
                     accel_seq.extend(accel_chunk)
 
-    return {
-        node: (si_seq[idx], dnfr_seq[idx], accel_seq[idx])
-        for idx, node in enumerate(nodes)
-    }
+    return {node: (si_seq[idx], dnfr_seq[idx], accel_seq[idx]) for idx, node in enumerate(nodes)}
 
 
 def _compute_default_base_choices(
@@ -508,9 +478,7 @@ def _compute_param_base_choices(
     executor_cls = ProcessPoolExecutor
     dynamics_module = sys.modules.get("tnfr.dynamics")
     if dynamics_module is not None:
-        executor_cls = getattr(
-            dynamics_module, "ProcessPoolExecutor", ProcessPoolExecutor
-        )
+        executor_cls = getattr(dynamics_module, "ProcessPoolExecutor", ProcessPoolExecutor)
     with executor_cls(max_workers=n_jobs) as executor:
         for result in executor.map(_param_base_worker, args):
             for node, cand in result:
@@ -583,9 +551,7 @@ def _glyph_proposal_worker(
     ],
 ) -> list[tuple[NodeId, GlyphCode]]:
     nodes, G, selector, preselection = args
-    return [
-        (n, _resolve_preselected_glyph(G, n, selector, preselection)) for n in nodes
-    ]
+    return [(n, _resolve_preselected_glyph(G, n, selector, preselection)) for n in nodes]
 
 
 def _apply_glyphs(G: TNFRGraph, selector: GlyphSelector, hist: HistoryState) -> None:
@@ -636,15 +602,12 @@ def _apply_glyphs(G: TNFRGraph, selector: GlyphSelector, hist: HistoryState) -> 
                 minimum=1,
             )
             chunks = [
-                to_select[idx : idx + chunk_size]
-                for idx in range(0, len(to_select), chunk_size)
+                to_select[idx : idx + chunk_size] for idx in range(0, len(to_select), chunk_size)
             ]
             dynamics_module = sys.modules.get("tnfr.dynamics")
             executor_cls = ProcessPoolExecutor
             if dynamics_module is not None:
-                executor_cls = getattr(
-                    dynamics_module, "ProcessPoolExecutor", ProcessPoolExecutor
-                )
+                executor_cls = getattr(dynamics_module, "ProcessPoolExecutor", ProcessPoolExecutor)
             with executor_cls(max_workers=n_jobs) as executor:
                 args_iter = ((chunk, G, selector, preselection) for chunk in chunks)
                 for results in executor.map(_glyph_proposal_worker, args_iter):
@@ -702,10 +665,7 @@ def _apply_selector(G: TNFRGraph) -> GlyphSelector:
     else:
         selector = default_glyph_selector
 
-    if (
-        isinstance(selector, ParametricGlyphSelector)
-        or selector is parametric_glyph_selector
-    ):
+    if isinstance(selector, ParametricGlyphSelector) or selector is parametric_glyph_selector:
         _selector_norms(G)
         _configure_selector_weights(G)
     return selector

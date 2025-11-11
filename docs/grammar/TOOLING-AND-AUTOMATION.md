@@ -20,7 +20,7 @@ This document describes all tools, scripts, and automation available for working
 
 **Purpose**: Maintains synchronization between grammar implementation and documentation.
 
-**Documentation**: [tools/README_SYNC.md](../../tools/README_SYNC.md)
+**Documentation**: [tools/README_SYNC.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/tools/README_SYNC.md)
 
 #### Usage
 
@@ -590,7 +590,7 @@ print('Missing:', code_ops - schema_ops)
 
 1. ✅ **Use cross-references consistently**
    ```markdown
-   [Grammar Implementation](../../src/tnfr/operators/grammar.py)
+  [Grammar Implementation](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/operators/grammar.py)
    [Fundamental Concepts](01-FUNDAMENTAL-CONCEPTS.md)
    ```
 
@@ -730,7 +730,7 @@ echo "=== Health Check Complete ==="
 
 ### Documentation
 - **Main README**: [docs/grammar/README.md](README.md)
-- **Sync Tool Guide**: [tools/README_SYNC.md](../../tools/README_SYNC.md)
+- **Sync Tool Guide**: [tools/README_SYNC.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/tools/README_SYNC.md)
 - **Testing Guide**: [docs/grammar/06-VALIDATION-AND-TESTING.md](06-VALIDATION-AND-TESTING.md)
 
 ### Code

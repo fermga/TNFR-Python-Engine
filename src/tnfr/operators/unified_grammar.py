@@ -6,7 +6,7 @@ and the validator for use in tests and applications.
 
 All grammar rules derive inevitably from TNFR physics:
 - U1: STRUCTURAL INITIATION & CLOSURE
-- U2: CONVERGENCE & BOUNDEDNESS  
+- U2: CONVERGENCE & BOUNDEDNESS
 - U3: RESONANT COUPLING
 - U4: BIFURCATION DYNAMICS (U4a: triggers, U4b: transformers)
 - U5: MULTI-SCALE COHERENCE

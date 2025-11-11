@@ -75,16 +75,12 @@ def test_vectorized_neighbor_sums_match_loop(topo_weight, monkeypatch):
 
     vector_graph = _dense_weighted_graph(np_module, nodes=32, topo_weight=topo_weight)
     vector_data = _prepare_dnfr_data(vector_graph)
-    vector_result = _build_neighbor_sums_common(
-        vector_graph, vector_data, use_numpy=True
-    )
+    vector_result = _build_neighbor_sums_common(vector_graph, vector_data, use_numpy=True)
 
     loop_graph = _dense_weighted_graph(np_module, nodes=32, topo_weight=topo_weight)
     with numpy_disabled(monkeypatch):
         loop_data = _prepare_dnfr_data(loop_graph)
-        loop_result = _build_neighbor_sums_common(
-            loop_graph, loop_data, use_numpy=False
-        )
+        loop_result = _build_neighbor_sums_common(loop_graph, loop_data, use_numpy=False)
 
     for vector_arr, loop_arr in zip(vector_result[:-1], loop_result[:-1]):
         if vector_arr is None or loop_arr is None:
@@ -98,9 +94,7 @@ def test_vectorized_neighbor_sums_match_loop(topo_weight, monkeypatch):
     if vec_degrees is None or loop_degrees is None:
         assert vec_degrees is loop_degrees is None
     else:
-        np_module.testing.assert_allclose(
-            vec_degrees, loop_degrees, rtol=1e-9, atol=1e-9
-        )
+        np_module.testing.assert_allclose(vec_degrees, loop_degrees, rtol=1e-9, atol=1e-9)
 
 
 @pytest.mark.parametrize("topo_weight", [0.0, 0.5])
@@ -111,16 +105,12 @@ def test_sparse_broadcast_neighbor_sums_match_loop(topo_weight, monkeypatch):
     vector_data = _prepare_dnfr_data(vector_graph)
     vector_data["prefer_sparse"] = True
     vector_data["A"] = None
-    vector_result = _build_neighbor_sums_common(
-        vector_graph, vector_data, use_numpy=True
-    )
+    vector_result = _build_neighbor_sums_common(vector_graph, vector_data, use_numpy=True)
 
     loop_graph = _sparse_weighted_graph(np_module, nodes=48, topo_weight=topo_weight)
     with numpy_disabled(monkeypatch):
         loop_data = _prepare_dnfr_data(loop_graph)
-        loop_result = _build_neighbor_sums_common(
-            loop_graph, loop_data, use_numpy=False
-        )
+        loop_result = _build_neighbor_sums_common(loop_graph, loop_data, use_numpy=False)
 
     for vector_arr, loop_arr in zip(vector_result[:-1], loop_result[:-1]):
         if vector_arr is None or loop_arr is None:
@@ -134,9 +124,7 @@ def test_sparse_broadcast_neighbor_sums_match_loop(topo_weight, monkeypatch):
     if vec_degrees is None or loop_degrees is None:
         assert vec_degrees is loop_degrees is None
     else:
-        np_module.testing.assert_allclose(
-            vec_degrees, loop_degrees, rtol=1e-9, atol=1e-9
-        )
+        np_module.testing.assert_allclose(vec_degrees, loop_degrees, rtol=1e-9, atol=1e-9)
 
 
 def test_neighbor_chunking_matches_unchunked():
@@ -162,33 +150,25 @@ def test_neighbor_chunking_matches_unchunked():
     assert accum is not None
     assert getattr(edge_workspace, "shape", None) == (accum.shape[0], chunk_size)
 
-    baseline_graph = _dense_weighted_graph(
-        np_module, nodes=nodes, topo_weight=topo_weight
-    )
+    baseline_graph = _dense_weighted_graph(np_module, nodes=nodes, topo_weight=topo_weight)
     baseline_data = _prepare_dnfr_data(baseline_graph)
     baseline_data["prefer_sparse"] = True
     baseline_data["A"] = None
     baseline_data["neighbor_chunk_hint"] = baseline_graph.number_of_edges() * 2
-    baseline_result = _build_neighbor_sums_common(
-        baseline_graph, baseline_data, use_numpy=True
-    )
+    baseline_result = _build_neighbor_sums_common(baseline_graph, baseline_data, use_numpy=True)
 
     for chunk_arr, baseline_arr in zip(chunk_result[:-1], baseline_result[:-1]):
         if chunk_arr is None or baseline_arr is None:
             assert chunk_arr is baseline_arr is None
         else:
-            np_module.testing.assert_allclose(
-                chunk_arr, baseline_arr, rtol=1e-9, atol=1e-9
-            )
+            np_module.testing.assert_allclose(chunk_arr, baseline_arr, rtol=1e-9, atol=1e-9)
 
     chunk_degrees = chunk_result[-1]
     baseline_degrees = baseline_result[-1]
     if chunk_degrees is None or baseline_degrees is None:
         assert chunk_degrees is baseline_degrees is None
     else:
-        np_module.testing.assert_allclose(
-            chunk_degrees, baseline_degrees, rtol=1e-9, atol=1e-9
-        )
+        np_module.testing.assert_allclose(chunk_degrees, baseline_degrees, rtol=1e-9, atol=1e-9)
 
 
 def test_chunked_broadcast_accumulator_avoids_bincount(monkeypatch):
@@ -264,9 +244,7 @@ def test_vectorized_neighbor_counts_fallback_without_degrees():
 
     count = result[4]
     assert isinstance(count, np_module.ndarray)
-    expected = np_module.asarray(
-        [graph.degree[node] for node in data["nodes"]], dtype=float
-    )
+    expected = np_module.asarray([graph.degree[node] for node in data["nodes"]], dtype=float)
     np_module.testing.assert_allclose(count, expected, rtol=1e-12, atol=1e-12)
 
 
@@ -293,9 +271,7 @@ def test_broadcast_accumulator_degree_totals_without_chunking():
 
     count = result[4]
     assert isinstance(count, np_module.ndarray)
-    expected_count = np_module.asarray(
-        [graph.degree[node] for node in data["nodes"]], dtype=float
-    )
+    expected_count = np_module.asarray([graph.degree[node] for node in data["nodes"]], dtype=float)
     np_module.testing.assert_allclose(
         count,
         expected_count,
@@ -364,9 +340,7 @@ def test_broadcast_accumulator_matches_without_cache(topo_weight):
     assert cos is not None and sin is not None and epi is not None and vf is not None
 
     nodes = data_cached["nodes"]
-    edge_src, edge_dst = _build_edge_index_arrays(
-        graph, nodes, data_cached["idx"], np_module
-    )
+    edge_src, edge_dst = _build_edge_index_arrays(graph, nodes, data_cached["idx"], np_module)
     data_cached["edge_src"] = edge_src
     data_cached["edge_dst"] = edge_dst
 
@@ -388,9 +362,7 @@ def test_broadcast_accumulator_matches_without_cache(topo_weight):
 
     deg_array = None
     if deg_sum_cached is not None:
-        deg_array = np_module.asarray(
-            [graph.degree(node) for node in nodes], dtype=float
-        )
+        deg_array = np_module.asarray([graph.degree(node) for node in nodes], dtype=float)
 
     cached_result = _accumulate_neighbors_broadcasted(
         edge_src=edge_src,
@@ -457,14 +429,10 @@ def test_broadcast_accumulator_matches_without_cache(topo_weight):
     np_module.testing.assert_allclose(vf_cached, vf_plain, rtol=1e-12, atol=1e-12)
 
     if count_cached is not None and count_plain is not None:
-        np_module.testing.assert_allclose(
-            count_cached, count_plain, rtol=1e-12, atol=1e-12
-        )
+        np_module.testing.assert_allclose(count_cached, count_plain, rtol=1e-12, atol=1e-12)
 
     if deg_sum_cached is not None and deg_sum_plain is not None:
-        np_module.testing.assert_allclose(
-            deg_sum_cached, deg_sum_plain, rtol=1e-12, atol=1e-12
-        )
+        np_module.testing.assert_allclose(deg_sum_cached, deg_sum_plain, rtol=1e-12, atol=1e-12)
 
     assert isinstance(cached_result.get("accumulator"), np_module.ndarray)
     assert isinstance(plain_result.get("accumulator"), np_module.ndarray)

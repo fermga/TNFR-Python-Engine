@@ -69,25 +69,17 @@ class dtype:
 class float64:
     """Stub for numpy.float64 type."""
 
-    pass
-
 
 class float_:
     """Stub for numpy.float_ type."""
-
-    pass
 
 
 class complex128:
     """Stub for numpy.complex128 type."""
 
-    pass
-
 
 class complexfloating:
     """Stub for numpy.complexfloating type."""
-
-    pass
 
 
 def asarray(*args: Any, **kwargs: Any) -> ndarray:
@@ -151,5 +143,3 @@ if TYPE_CHECKING:
 
         class NDArray:
             """Stub for numpy.typing.NDArray."""
-
-            pass

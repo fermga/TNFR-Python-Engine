@@ -18,9 +18,7 @@ class TestOptimizations:
             G_dense.nodes[node]["vf"] = 1.0
             G_dense.nodes[node]["phase"] = 0.0
 
-        partitioner_adaptive = FractalPartitioner(
-            adaptive=True, max_partition_size=None
-        )
+        partitioner_adaptive = FractalPartitioner(adaptive=True, max_partition_size=None)
         partitions_dense = partitioner_adaptive.partition_network(G_dense)
 
         # Adaptive partitioning should create partitions
@@ -47,18 +45,14 @@ class TestOptimizations:
             G.nodes[node]["phase"] = float(node) / 50.0  # Vary phases
 
         # With spatial indexing
-        partitioner_spatial = FractalPartitioner(
-            use_spatial_index=True, max_partition_size=50
-        )
+        partitioner_spatial = FractalPartitioner(use_spatial_index=True, max_partition_size=50)
         partitions_spatial = partitioner_spatial.partition_network(G)
 
         # Should create partitions
         assert len(partitions_spatial) > 0
 
         # Without spatial indexing
-        partitioner_no_spatial = FractalPartitioner(
-            use_spatial_index=False, max_partition_size=50
-        )
+        partitioner_no_spatial = FractalPartitioner(use_spatial_index=False, max_partition_size=50)
         partitions_no_spatial = partitioner_no_spatial.partition_network(G)
 
         # Should also work without spatial indexing

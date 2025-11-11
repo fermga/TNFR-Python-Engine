@@ -130,12 +130,8 @@ def test_runtime_run_glyph_pipeline_history_is_finite() -> None:
     assert isinstance(since_en, Mapping)
     assert since_al and since_en
 
-    glyph_histories = sum(
-        1 for _, data in graph.nodes(data=True) if data.get("glyph_history")
-    )
+    glyph_histories = sum(1 for _, data in graph.nodes(data=True) if data.get("glyph_history"))
     assert glyph_histories >= node_count // 2
 
-    dnfr_total = sum(
-        float(get_attr(data, ALIAS_DNFR, 0.0)) for _, data in graph.nodes(data=True)
-    )
+    dnfr_total = sum(float(get_attr(data, ALIAS_DNFR, 0.0)) for _, data in graph.nodes(data=True))
     assert math.isfinite(dnfr_total)

@@ -79,9 +79,7 @@ def assert_operator_positive_semidefinite(
     eigenvalues = np.linalg.eigvalsh(matrix)
 
     min_eigenvalue = eigenvalues.min()
-    assert (
-        min_eigenvalue >= -atol
-    ), f"Operator has negative eigenvalue: λ_min = {min_eigenvalue}"
+    assert min_eigenvalue >= -atol, f"Operator has negative eigenvalue: λ_min = {min_eigenvalue}"
 
 
 def assert_eigenvalues_real(
@@ -139,9 +137,7 @@ def assert_operator_finite(operator: Any) -> None:
     """
     matrix = _extract_matrix(operator)
 
-    assert np.all(
-        np.isfinite(matrix)
-    ), "Operator contains non-finite values (NaN or Inf)"
+    assert np.all(np.isfinite(matrix)), "Operator contains non-finite values (NaN or Inf)"
 
 
 def assert_operator_dimension(
@@ -256,13 +252,9 @@ def assert_operators_close(
     matrix1 = _extract_matrix(operator1)
     matrix2 = _extract_matrix(operator2)
 
-    assert (
-        matrix1.shape == matrix2.shape
-    ), f"Shape mismatch: {matrix1.shape} vs {matrix2.shape}"
+    assert matrix1.shape == matrix2.shape, f"Shape mismatch: {matrix1.shape} vs {matrix2.shape}"
 
-    assert np.allclose(
-        matrix1, matrix2, atol=atol, rtol=rtol
-    ), "Operators are not close"
+    assert np.allclose(matrix1, matrix2, atol=atol, rtol=rtol), "Operators are not close"
 
 
 def assert_commutator_properties(

@@ -570,18 +570,18 @@ You've successfully completed this tutorial when you can:
 - **[TNFR Concepts](TNFR_CONCEPTS.md)** - Theoretical foundations explained clearly
 - **[Quickstart Guide](quickstart.md)** - Low-level API and advanced patterns
 - **[API Reference](../api/overview.md)** - Complete function documentation
-- **[Operator Guide](../../GLYPH_SEQUENCES_GUIDE.md)** - All 13 operators in detail
+- **[Operator Guide](https://github.com/fermga/TNFR-Python-Engine/blob/main/GLYPH_SEQUENCES_GUIDE.md)** - All 13 operators in detail
 
 #### Example Gallery
 
-- **[SDK Examples](../../../examples/sdk_example.py)** - More fluent API patterns
-- **[Multi-scale Networks](../../../examples/multiscale_network_demo.py)** - Nested structures
-- **[Backend Optimization](../../../examples/backend_performance_comparison.py)** - Performance tuning
+- **[SDK Examples](https://github.com/fermga/TNFR-Python-Engine/blob/main/examples/sdk_example.py)** - More fluent API patterns
+- **[Multi-scale Networks](https://github.com/fermga/TNFR-Python-Engine/blob/main/examples/multiscale_network_demo.py)** - Nested structures
+- **[Backend Optimization](https://github.com/fermga/TNFR-Python-Engine/blob/main/examples/backend_performance_comparison.py)** - Performance tuning
 
 #### Advanced Topics
 
 - **[Math Backends](math-backends.md)** - JAX, PyTorch acceleration
-- **[Parallel Computation](../../../examples/parallel_computation_demo.py)** - Scale to large networks
+- **[Parallel Computation](https://github.com/fermga/TNFR-Python-Engine/blob/main/examples/parallel_computation_demo.py)** - Scale to large networks
 - **[Telemetry](../api/telemetry.md)** - Instrument experiments for analysis
 
 ---

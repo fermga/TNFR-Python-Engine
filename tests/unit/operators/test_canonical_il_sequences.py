@@ -132,7 +132,7 @@ class TestRecognizeILSequences:
         """Recognize AL → IL canonical sequence."""
         seq = [Glyph.AL, Glyph.IL]
         recognized = recognize_il_sequences(seq)
-        
+
         assert len(recognized) == 1
         assert recognized[0]["pattern_name"] == "safe_activation"
         assert recognized[0]["position"] == 0
@@ -142,7 +142,7 @@ class TestRecognizeILSequences:
         """Recognize EN → IL canonical sequence."""
         seq = [Glyph.EN, Glyph.IL]
         recognized = recognize_il_sequences(seq)
-        
+
         assert len(recognized) == 1
         assert recognized[0]["pattern_name"] == "stable_integration"
 
@@ -150,7 +150,7 @@ class TestRecognizeILSequences:
         """Recognize OZ → IL canonical sequence."""
         seq = [Glyph.OZ, Glyph.IL]
         recognized = recognize_il_sequences(seq)
-        
+
         assert len(recognized) == 1
         assert recognized[0]["pattern_name"] == "creative_resolution"
 
@@ -158,7 +158,7 @@ class TestRecognizeILSequences:
         """Recognize RA → IL canonical sequence."""
         seq = [Glyph.RA, Glyph.IL]
         recognized = recognize_il_sequences(seq)
-        
+
         assert len(recognized) == 1
         assert recognized[0]["pattern_name"] == "resonance_consolidation"
 
@@ -166,7 +166,7 @@ class TestRecognizeILSequences:
         """Recognize IL → ZHIR canonical sequence."""
         seq = [Glyph.IL, Glyph.ZHIR]
         recognized = recognize_il_sequences(seq)
-        
+
         assert len(recognized) == 1
         assert recognized[0]["pattern_name"] == "stable_transformation"
 
@@ -174,7 +174,7 @@ class TestRecognizeILSequences:
         """Recognize multiple IL sequences in longer sequence."""
         seq = [Glyph.AL, Glyph.IL, Glyph.ZHIR]
         recognized = recognize_il_sequences(seq)
-        
+
         assert len(recognized) == 2
         assert recognized[0]["pattern_name"] == "safe_activation"
         assert recognized[0]["position"] == 0
@@ -184,10 +184,10 @@ class TestRecognizeILSequences:
     def test_recognize_il_sha_antipattern(self):
         """Recognize coherence → silence anti-pattern (info severity, no warning emitted)."""
         seq = [Glyph.IL, Glyph.SHA]
-        
+
         # Info severity doesn't emit warnings automatically
         recognized = recognize_il_sequences(seq)
-        
+
         assert len(recognized) == 1
         assert recognized[0]["pattern_name"] == "coherence_silence_info"
         assert recognized[0]["is_antipattern"]
@@ -196,10 +196,10 @@ class TestRecognizeILSequences:
     def test_recognize_il_il_antipattern(self):
         """Recognize coherence → coherence anti-pattern with warning."""
         seq = [Glyph.IL, Glyph.IL]
-        
+
         with pytest.warns(UserWarning, match="Anti-pattern detected.*coherence"):
             recognized = recognize_il_sequences(seq)
-        
+
         assert len(recognized) == 1
         assert recognized[0]["pattern_name"] == "coherence_coherence_antipattern"
         assert recognized[0]["is_antipattern"]
@@ -208,10 +208,10 @@ class TestRecognizeILSequences:
     def test_recognize_sha_il_antipattern(self):
         """Recognize silence → coherence anti-pattern with error warning."""
         seq = [Glyph.SHA, Glyph.IL]
-        
+
         with pytest.warns(UserWarning, match="Anti-pattern detected.*silence"):
             recognized = recognize_il_sequences(seq)
-        
+
         assert len(recognized) == 1
         assert recognized[0]["pattern_name"] == "silence_coherence_antipattern"
         assert recognized[0]["is_antipattern"]
@@ -222,7 +222,7 @@ class TestRecognizeILSequences:
         """Recognize sequences from operator names (strings)."""
         seq = ["emission", "coherence"]
         recognized = recognize_il_sequences(seq)
-        
+
         assert len(recognized) == 1
         assert recognized[0]["pattern_name"] == "safe_activation"
 
@@ -230,7 +230,7 @@ class TestRecognizeILSequences:
         """Return empty list when no IL sequences found."""
         seq = [Glyph.AL, Glyph.EN, Glyph.RA]
         recognized = recognize_il_sequences(seq)
-        
+
         assert len(recognized) == 0
 
 
@@ -241,14 +241,14 @@ class TestOptimizeILSequence:
         """Currently returns original sequence (fusion not yet implemented)."""
         seq = [Glyph.AL, Glyph.IL, Glyph.SHA]
         optimized = optimize_il_sequence(seq)
-        
+
         assert optimized == seq
 
     def test_optimize_with_fusion_disabled(self):
         """With fusion disabled, returns original sequence."""
         seq = [Glyph.AL, Glyph.IL]
         optimized = optimize_il_sequence(seq, allow_fusion=False)
-        
+
         assert optimized == seq
 
     def test_optimize_recognizes_patterns(self):
@@ -266,18 +266,18 @@ class TestSuggestILSequence:
         """Suggest AL → IL for inactive node requiring stability."""
         current = {"epi": 0.05, "dnfr": 0.0, "vf": 0.85}
         goal = {"dnfr_target": "low", "consolidate": True}
-        
+
         suggested = suggest_il_sequence(current, goal)
-        
+
         assert suggested == [EMISSION, COHERENCE]
 
     def test_suggest_high_dnfr_resolution(self):
         """Suggest OZ → IL for high ΔNFR requiring reduction."""
         current = {"epi": 0.5, "dnfr": 0.85, "vf": 1.0}
         goal = {"dnfr_target": "low"}
-        
+
         suggested = suggest_il_sequence(current, goal)
-        
+
         assert DISSONANCE in suggested
         assert COHERENCE in suggested
 
@@ -285,18 +285,18 @@ class TestSuggestILSequence:
         """Suggest direct IL for moderate ΔNFR."""
         current = {"epi": 0.4, "dnfr": 0.4, "vf": 0.95}
         goal = {"dnfr_target": "low"}
-        
+
         suggested = suggest_il_sequence(current, goal)
-        
+
         assert suggested == [COHERENCE]
 
     def test_suggest_phase_transformation(self):
         """Suggest IL → ZHIR for phase change goal."""
         current = {"epi": 0.6, "dnfr": 0.3, "vf": 1.1}
         goal = {"phase_change": True}
-        
+
         suggested = suggest_il_sequence(current, goal)
-        
+
         assert COHERENCE in suggested
         assert MUTATION in suggested
         assert suggested[-2:] == [COHERENCE, MUTATION]
@@ -305,9 +305,9 @@ class TestSuggestILSequence:
         """Suggest AL → IL instead of SHA → IL anti-pattern."""
         current = {"epi": 0.0, "dnfr": 0.0, "vf": 0.02}  # Silenced state
         goal = {"reactivate": True, "consolidate": True}
-        
+
         suggested = suggest_il_sequence(current, goal)
-        
+
         # Should suggest AL → IL, not SHA → IL
         assert suggested == [EMISSION, COHERENCE]
 
@@ -315,9 +315,9 @@ class TestSuggestILSequence:
         """Suggest simple IL for consolidation goal."""
         current = {"epi": 0.5, "dnfr": 0.2, "vf": 1.0}
         goal = {"consolidate": True}
-        
+
         suggested = suggest_il_sequence(current, goal)
-        
+
         assert suggested == [COHERENCE]
 
 
@@ -327,49 +327,49 @@ class TestGrammarCompliance:
     def test_emission_coherence_compatible(self):
         """emission → coherence has EXCELLENT compatibility."""
         from tnfr.validation.compatibility import get_compatibility_level, CompatibilityLevel
-        
+
         level = get_compatibility_level(EMISSION, COHERENCE)
         assert level == CompatibilityLevel.EXCELLENT
 
     def test_reception_coherence_compatible(self):
         """reception → coherence has EXCELLENT compatibility."""
         from tnfr.validation.compatibility import get_compatibility_level, CompatibilityLevel
-        
+
         level = get_compatibility_level(RECEPTION, COHERENCE)
         assert level == CompatibilityLevel.EXCELLENT
 
     def test_dissonance_coherence_compatible(self):
         """dissonance → coherence has GOOD compatibility."""
         from tnfr.validation.compatibility import get_compatibility_level, CompatibilityLevel
-        
+
         level = get_compatibility_level(DISSONANCE, COHERENCE)
         assert level == CompatibilityLevel.GOOD
 
     def test_resonance_coherence_compatible(self):
         """resonance → coherence has EXCELLENT compatibility."""
         from tnfr.validation.compatibility import get_compatibility_level, CompatibilityLevel
-        
+
         level = get_compatibility_level(RESONANCE, COHERENCE)
         assert level == CompatibilityLevel.EXCELLENT
 
     def test_coherence_mutation_caution(self):
         """coherence → mutation has CAUTION compatibility."""
         from tnfr.validation.compatibility import get_compatibility_level, CompatibilityLevel
-        
+
         level = get_compatibility_level(COHERENCE, MUTATION)
         assert level == CompatibilityLevel.CAUTION
 
     def test_coherence_coherence_avoid(self):
         """coherence → coherence has AVOID compatibility."""
         from tnfr.validation.compatibility import get_compatibility_level, CompatibilityLevel
-        
+
         level = get_compatibility_level(COHERENCE, COHERENCE)
         assert level == CompatibilityLevel.AVOID
 
     def test_silence_coherence_avoid(self):
         """silence → coherence has AVOID compatibility."""
         from tnfr.validation.compatibility import get_compatibility_level, CompatibilityLevel
-        
+
         level = get_compatibility_level(SILENCE, COHERENCE)
         assert level == CompatibilityLevel.AVOID
 
@@ -382,15 +382,15 @@ class TestIntegrationWithGrammar:
         import networkx as nx
         from tnfr.operators.grammar import apply_glyph_with_grammar
         from tnfr.constants import inject_defaults
-        
+
         G = nx.DiGraph()
         inject_defaults(G)
         G.add_node("test_node", epi=0.3, vf=1.0, dnfr=0.1, theta=0.0)
         G.nodes["test_node"]["glyph_history"] = [Glyph.AL]
-        
+
         # Apply coherence to form emission → coherence sequence
         apply_glyph_with_grammar(G, ["test_node"], Glyph.IL)
-        
+
         # Check that sequence was recognized and logged
         assert "recognized_coherence_patterns" in G.graph
         patterns = G.graph["recognized_coherence_patterns"]
@@ -402,16 +402,16 @@ class TestIntegrationWithGrammar:
         import networkx as nx
         from tnfr.operators.grammar import apply_glyph_with_grammar
         from tnfr.constants import inject_defaults
-        
+
         G = nx.DiGraph()
         inject_defaults(G)
         G.add_node("test_node", epi=0.5, vf=1.0, dnfr=0.1, theta=0.0)
         G.nodes["test_node"]["glyph_history"] = [Glyph.IL]
-        
+
         # Apply coherence again to form coherence → coherence anti-pattern
         with pytest.warns(UserWarning, match="Anti-pattern detected.*coherence"):
             apply_glyph_with_grammar(G, ["test_node"], Glyph.IL)
-        
+
         # Pattern should still be logged
         assert "recognized_coherence_patterns" in G.graph
         patterns = G.graph["recognized_coherence_patterns"]

@@ -204,9 +204,7 @@ from .trig_cache import get_trig_cache
 
 PHASE_DISPERSION_KEY = "dSi_dphase_disp"
 _SI_APPROX_BYTES_PER_NODE = 64
-_VALID_SENSITIVITY_KEYS = frozenset(
-    {"dSi_dvf_norm", PHASE_DISPERSION_KEY, "dSi_ddnfr_norm"}
-)
+_VALID_SENSITIVITY_KEYS = frozenset({"dSi_dvf_norm", PHASE_DISPERSION_KEY, "dSi_ddnfr_norm"})
 __all__ = ("get_Si_weights", "compute_Si_node", "compute_Si")
 
 
@@ -323,9 +321,7 @@ def _ensure_si_buffers(
     These buffers are reused across computation steps to minimize allocation
     overhead in the hot path. Cache key: ``("_si_buffers", count, 3)``
     """
-    return ensure_numpy_buffers(
-        G, key_prefix="_si_buffers", count=count, buffer_count=3, np=np
-    )
+    return ensure_numpy_buffers(G, key_prefix="_si_buffers", count=count, buffer_count=3, np=np)
 
 
 def _ensure_chunk_workspace(
@@ -411,8 +407,7 @@ def _normalise_si_sensitivity_mapping(
         allowed = ", ".join(sorted(_VALID_SENSITIVITY_KEYS))
         received = ", ".join(unexpected)
         raise ValueError(
-            "Si sensitivity mappings accept only {%s}; unexpected key(s): %s"
-            % (allowed, received)
+            "Si sensitivity mappings accept only {%s}; unexpected key(s): %s" % (allowed, received)
         )
     return normalised
 
@@ -647,11 +642,7 @@ def _compute_si_python_chunk(
         phase_dispersion = abs(angle_diff(theta, th_bar)) / math.pi
         vf_norm = clamp01(abs(vf) / vfmax)
         dnfr_norm = clamp01(abs(dnfr) / dnfrmax)
-        Si = (
-            alpha * vf_norm
-            + beta * (1.0 - phase_dispersion)
-            + gamma * (1.0 - dnfr_norm)
-        )
+        Si = alpha * vf_norm + beta * (1.0 - phase_dispersion) + gamma * (1.0 - dnfr_norm)
         results[n] = clamp01(Si)
     return results
 
@@ -1000,9 +991,7 @@ def compute_Si(
             np=np,
         )
         raw_vfmax = float(np.max(np.abs(vf_arr))) if getattr(vf_arr, "size", 0) else 0.0
-        raw_dnfrmax = (
-            float(np.max(np.abs(dnfr_arr))) if getattr(dnfr_arr, "size", 0) else 0.0
-        )
+        raw_dnfrmax = float(np.max(np.abs(dnfr_arr))) if getattr(dnfr_arr, "size", 0) else 0.0
         G.graph["_vfmax"] = raw_vfmax
         G.graph["_dnfrmax"] = raw_dnfrmax
         vfmax = 1.0 if raw_vfmax == 0.0 else raw_vfmax
@@ -1172,9 +1161,9 @@ def compute_Si(
                     chunk_count += 1
                     out.update(chunk_result)
             if profile is not None:
-                profile["fallback_chunks"] = float(
-                    profile.get("fallback_chunks", 0.0)
-                ) + float(chunk_count)
+                profile["fallback_chunks"] = float(profile.get("fallback_chunks", 0.0)) + float(
+                    chunk_count
+                )
     else:
         for n, nd in nodes_data:
             theta = thetas.get(n, 0.0)

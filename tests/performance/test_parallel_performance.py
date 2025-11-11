@@ -69,16 +69,12 @@ class TestParallelPerformance:
         scaler = TNFRAutoScaler()
 
         # Small network
-        strategy = scaler.recommend_execution_strategy(
-            graph_size=50, available_memory_gb=8.0
-        )
+        strategy = scaler.recommend_execution_strategy(graph_size=50, available_memory_gb=8.0)
         assert strategy["backend"] == "sequential"
         assert strategy["estimated_time_minutes"] < 1.0
 
         # Medium network
-        strategy = scaler.recommend_execution_strategy(
-            graph_size=500, available_memory_gb=8.0
-        )
+        strategy = scaler.recommend_execution_strategy(graph_size=500, available_memory_gb=8.0)
         assert strategy["backend"] == "multiprocessing"
         assert strategy["workers"] > 1
 
@@ -103,9 +99,7 @@ class TestParallelPerformance:
         assert elapsed < 0.1  # Should complete in < 100ms
         assert metrics.duration_seconds < 0.1
 
-        print(
-            f"\nMonitoring overhead: {(elapsed - metrics.duration_seconds) * 1000:.1f}ms"
-        )
+        print(f"\nMonitoring overhead: {(elapsed - metrics.duration_seconds) * 1000:.1f}ms")
 
     @pytest.mark.parametrize("size", [100, 200])
     def test_compute_si_scaling(self, size):
@@ -130,9 +124,7 @@ class TestParallelPerformance:
 
         # For small networks, parallel may not be faster due to overhead
         # But it should at least complete successfully
-        print(
-            f"\nSize {size}: Serial={time_serial:.3f}s, Parallel={time_parallel:.3f}s"
-        )
+        print(f"\nSize {size}: Serial={time_serial:.3f}s, Parallel={time_parallel:.3f}s")
 
     def test_integration_example(self):
         """Integration test showing typical usage pattern."""
@@ -147,9 +139,7 @@ class TestParallelPerformance:
 
         # Get recommendation
         scaler = TNFRAutoScaler()
-        strategy = scaler.recommend_execution_strategy(
-            graph_size=len(G), available_memory_gb=8.0
-        )
+        strategy = scaler.recommend_execution_strategy(graph_size=len(G), available_memory_gb=8.0)
 
         # Create engine with recommended workers
         engine = TNFRParallelEngine(max_workers=strategy.get("workers", 1))

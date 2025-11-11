@@ -331,8 +331,8 @@ run_all_tutorials()
 - Examples: Check the `examples/` directory
 
 **Want to contribute?**
-- See [CONTRIBUTING.md](../../../CONTRIBUTING.md) for guidelines
-- Read [AGENTS.md](../../../AGENTS.md) for TNFR invariants
+- See [CONTRIBUTING.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/CONTRIBUTING.md) for guidelines
+- Read [AGENTS.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/AGENTS.md) for TNFR invariants
 
 ## Summary
 

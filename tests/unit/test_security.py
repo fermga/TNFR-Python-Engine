@@ -152,9 +152,7 @@ class TestRunCommandSafely:
 
     def test_executes_python_command(self) -> None:
         """Test that Python commands execute successfully."""
-        result = run_command_safely(
-            [sys.executable, "-c", "print('hello')"], check=True
-        )
+        result = run_command_safely([sys.executable, "-c", "print('hello')"], check=True)
         assert result.returncode == 0
         assert "hello" in result.stdout
 
@@ -207,9 +205,7 @@ class TestRunCommandSafely:
 
     def test_captures_output(self) -> None:
         """Test that output is captured correctly."""
-        result = run_command_safely(
-            [sys.executable, "-c", "print('test output')"], check=True
-        )
+        result = run_command_safely([sys.executable, "-c", "print('test output')"], check=True)
         assert "test output" in result.stdout
 
     def test_respects_cwd_parameter(self, tmp_path: Path) -> None:

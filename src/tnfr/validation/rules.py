@@ -66,7 +66,7 @@ def glyph_fallback(cand_key: str, fallbacks: Mapping[str, Any]) -> Glyph | str:
     Grammar rules emerge naturally from TNFR structural dynamics.
     """
 
-    glyph_key = coerce_glyph(cand_key)
+    coerce_glyph(cand_key)
     fb_override = fallbacks.get(cand_key)
     if fb_override is not None:
         return coerce_glyph(fb_override)
@@ -199,9 +199,7 @@ def _check_thol_closure(
             if target_glyph is not None and cand_name in {CONTRACTION, SILENCE}:
                 return target_glyph
 
-            history = tuple(
-                _structural_label(item) for item in nd.get("glyph_history", ())
-            )
+            history = tuple(_structural_label(item) for item in nd.get("glyph_history", ()))
             cand_label = cand_name if cand_name is not None else _structural_label(cand)
             order = (*history[-st["thol_len"] :], cand_label)
             from ..operators import grammar as _grammar
@@ -235,7 +233,7 @@ def _check_compatibility(ctx: "GrammarContext", n, cand: Glyph | str) -> Glyph |
     - U2: CONVERGENCE & BOUNDEDNESS (stabilizers required)
     - U3: RESONANT COUPLING (phase compatibility)
     - U4: BIFURCATION DYNAMICS (bifurcations need context)
-    
+
     [Legacy note: Previously referenced C1-C3. See docs/grammar/DEPRECATION-INDEX.md]
 
     These are validated in grammar.py, not here. This function now simply

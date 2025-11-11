@@ -37,9 +37,7 @@ class TestTHOLPreconditions:
         G.nodes[node]["epi_history"] = [0.35, 0.42, 0.50]
 
         # Should raise error (not just warning)
-        with pytest.raises(
-            OperatorPreconditionError, match="insufficiently connected"
-        ):
+        with pytest.raises(OperatorPreconditionError, match="insufficiently connected"):
             validate_self_organization(G, node)
 
     def test_thol_allows_isolated_when_configured(self):
@@ -60,7 +58,7 @@ class TestTHOLPreconditions:
         set_attr(G.nodes[0], ALIAS_EPI, 0.50)
         set_attr(G.nodes[0], ALIAS_VF, 0.05)  # vf too low
         set_attr(G.nodes[0], ALIAS_DNFR, 0.15)
-        
+
         G.add_node(1, theta=0.15)
         set_attr(G.nodes[1], ALIAS_EPI, 0.50)
         set_attr(G.nodes[1], ALIAS_VF, 1.0)
@@ -70,9 +68,7 @@ class TestTHOLPreconditions:
         G.nodes[0]["epi_history"] = [0.35, 0.42, 0.50]
         G.graph["THOL_MIN_VF"] = 0.1
 
-        with pytest.raises(
-            OperatorPreconditionError, match="Structural frequency too low"
-        ):
+        with pytest.raises(OperatorPreconditionError, match="Structural frequency too low"):
             validate_self_organization(G, 0)
 
     def test_thol_requires_sufficient_history(self):
@@ -82,7 +78,7 @@ class TestTHOLPreconditions:
         set_attr(G.nodes[0], ALIAS_EPI, 0.50)
         set_attr(G.nodes[0], ALIAS_VF, 1.0)
         set_attr(G.nodes[0], ALIAS_DNFR, 0.15)
-        
+
         G.add_node(1, theta=0.15)
         set_attr(G.nodes[1], ALIAS_EPI, 0.50)
         set_attr(G.nodes[1], ALIAS_VF, 1.0)
@@ -119,7 +115,7 @@ class TestTHOLPreconditions:
         set_attr(G.nodes[0], ALIAS_EPI, 0.50)
         set_attr(G.nodes[0], ALIAS_VF, 1.0)
         set_attr(G.nodes[0], ALIAS_DNFR, 0.15)
-        
+
         G.add_node(1, theta=0.15)
         set_attr(G.nodes[1], ALIAS_EPI, 0.50)
         set_attr(G.nodes[1], ALIAS_VF, 1.0)
@@ -139,7 +135,7 @@ class TestTHOLPreconditions:
         set_attr(G.nodes[0], ALIAS_EPI, 0.25)
         set_attr(G.nodes[0], ALIAS_VF, 0.15)
         set_attr(G.nodes[0], ALIAS_DNFR, 0.10)
-        
+
         G.add_node(1, theta=0.15)
         set_attr(G.nodes[1], ALIAS_EPI, 0.50)
         set_attr(G.nodes[1], ALIAS_VF, 1.0)
@@ -163,7 +159,7 @@ class TestTHOLPreconditions:
         set_attr(G.nodes[0], ALIAS_EPI, 0.15)  # EPI too low
         set_attr(G.nodes[0], ALIAS_VF, 1.0)
         set_attr(G.nodes[0], ALIAS_DNFR, 0.15)
-        
+
         G.add_node(1, theta=0.15)
         set_attr(G.nodes[1], ALIAS_EPI, 0.50)
         set_attr(G.nodes[1], ALIAS_VF, 1.0)
@@ -172,9 +168,7 @@ class TestTHOLPreconditions:
 
         G.nodes[0]["epi_history"] = [0.10, 0.12, 0.15]
 
-        with pytest.raises(
-            OperatorPreconditionError, match="EPI too low for bifurcation"
-        ):
+        with pytest.raises(OperatorPreconditionError, match="EPI too low for bifurcation"):
             validate_self_organization(G, 0)
 
     def test_thol_fails_non_positive_dnfr(self):
@@ -184,7 +178,7 @@ class TestTHOLPreconditions:
         set_attr(G.nodes[0], ALIAS_EPI, 0.50)
         set_attr(G.nodes[0], ALIAS_VF, 1.0)
         set_attr(G.nodes[0], ALIAS_DNFR, -0.05)  # Negative ΔNFR
-        
+
         G.add_node(1, theta=0.15)
         set_attr(G.nodes[1], ALIAS_EPI, 0.50)
         set_attr(G.nodes[1], ALIAS_VF, 1.0)
@@ -193,9 +187,7 @@ class TestTHOLPreconditions:
 
         G.nodes[0]["epi_history"] = [0.45, 0.48, 0.50]
 
-        with pytest.raises(
-            OperatorPreconditionError, match="ΔNFR non-positive"
-        ):
+        with pytest.raises(OperatorPreconditionError, match="ΔNFR non-positive"):
             validate_self_organization(G, 0)
 
     def test_thol_integration_with_run_sequence(self):
@@ -205,7 +197,7 @@ class TestTHOLPreconditions:
         set_attr(G.nodes[0], ALIAS_EPI, 0.50)
         set_attr(G.nodes[0], ALIAS_VF, 1.0)
         set_attr(G.nodes[0], ALIAS_DNFR, 0.15)
-        
+
         G.add_node(1, theta=0.15)
         set_attr(G.nodes[1], ALIAS_EPI, 0.50)
         set_attr(G.nodes[1], ALIAS_VF, 1.0)
@@ -239,7 +231,7 @@ class TestTHOLPreconditions:
         set_attr(G.nodes[0], ALIAS_EPI, 0.50)
         set_attr(G.nodes[0], ALIAS_VF, 1.0)
         set_attr(G.nodes[0], ALIAS_DNFR, 0.15)
-        
+
         G.add_node(1, theta=0.15)
         set_attr(G.nodes[1], ALIAS_EPI, 0.50)
         set_attr(G.nodes[1], ALIAS_VF, 1.0)
@@ -252,9 +244,7 @@ class TestTHOLPreconditions:
         # Require min_degree = 2 (should fail)
         G.graph["THOL_MIN_DEGREE"] = 2
 
-        with pytest.raises(
-            OperatorPreconditionError, match="insufficiently connected"
-        ):
+        with pytest.raises(OperatorPreconditionError, match="insufficiently connected"):
             validate_self_organization(G, 0)
 
         # Now add another edge (degree = 2)
@@ -274,7 +264,7 @@ class TestTHOLPreconditions:
         set_attr(G.nodes[0], ALIAS_EPI, 0.50)
         set_attr(G.nodes[0], ALIAS_VF, 1.0)
         set_attr(G.nodes[0], ALIAS_DNFR, 0.15)
-        
+
         G.add_node(1, theta=0.15)
         set_attr(G.nodes[1], ALIAS_EPI, 0.50)
         set_attr(G.nodes[1], ALIAS_VF, 1.0)
@@ -302,7 +292,7 @@ class TestTHOLOperationalModes:
         set_attr(G.nodes[0], ALIAS_EPI, 0.50)
         set_attr(G.nodes[0], ALIAS_VF, 1.0)
         set_attr(G.nodes[0], ALIAS_DNFR, 0.15)
-        
+
         G.add_node(1, theta=0.15)
         set_attr(G.nodes[1], ALIAS_EPI, 0.50)
         set_attr(G.nodes[1], ALIAS_VF, 1.0)

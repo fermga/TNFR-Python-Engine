@@ -22,7 +22,7 @@ from __future__ import annotations
 import math
 from typing import Any, Mapping
 
-from ..utils import get_numpy, get_logger
+from ..utils import get_logger
 
 logger = get_logger(__name__)
 
@@ -91,9 +91,7 @@ def _compute_fused_gradients_jit_kernel(
         vf_diff = vf[dst] - vf[src]
 
         # Fused contribution
-        contrib = (
-            w_phase * phase_diff + w_epi * epi_diff + w_vf * vf_diff + w_topo * 1.0
-        )
+        contrib = w_phase * phase_diff + w_epi * epi_diff + w_vf * vf_diff + w_topo * 1.0
 
         # Accumulate to destination node
         delta_nfr[dst] += contrib
@@ -235,9 +233,7 @@ def compute_fused_gradients(
         vf_diff = vf_dst - vf_src
 
         # Fused contribution per edge
-        edge_contrib = (
-            w_phase * phase_diff + w_epi * epi_diff + w_vf * vf_diff + w_topo * 1.0
-        )
+        edge_contrib = w_phase * phase_diff + w_epi * epi_diff + w_vf * vf_diff + w_topo * 1.0
 
         # Accumulate contributions to destination nodes
         np.add.at(delta_nfr, edge_dst, edge_contrib)
@@ -374,12 +370,8 @@ def compute_fused_gradients_symmetric(
     # Compute arithmetic means for EPI and νf
     epi_mean = np.zeros(n_nodes, dtype=float)
     vf_mean = np.zeros(n_nodes, dtype=float)
-    epi_mean[has_neighbors] = (
-        neighbor_epi_sum[has_neighbors] / neighbor_count[has_neighbors]
-    )
-    vf_mean[has_neighbors] = (
-        neighbor_vf_sum[has_neighbors] / neighbor_count[has_neighbors]
-    )
+    epi_mean[has_neighbors] = neighbor_epi_sum[has_neighbors] / neighbor_count[has_neighbors]
+    vf_mean[has_neighbors] = neighbor_vf_sum[has_neighbors] / neighbor_count[has_neighbors]
 
     # Compute gradients using TNFR canonical formula
     # Phase: g_phase = -angle_diff(θ_node, θ_mean) / π
@@ -399,12 +391,7 @@ def compute_fused_gradients_symmetric(
     g_topo = neighbor_count * w_topo
 
     # Combine gradients
-    delta_nfr = (
-        w_phase * g_phase
-        + w_epi * g_epi
-        + w_vf * g_vf
-        + g_topo  # Already scaled by w_topo
-    )
+    delta_nfr = w_phase * g_phase + w_epi * g_epi + w_vf * g_vf + g_topo  # Already scaled by w_topo
 
     return delta_nfr
 

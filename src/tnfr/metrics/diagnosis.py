@@ -364,9 +364,7 @@ def _node_diagnostics(
 
     if compute_symmetry:
         epi_bar = node_data.get("neighbor_epi_mean")
-        symm = (
-            1.0 if epi_bar is None else similarity_abs(EPI, epi_bar, epi_min, epi_max)
-        )
+        symm = 1.0 if epi_bar is None else similarity_abs(EPI, epi_bar, epi_min, epi_max)
     else:
         symm = None
 
@@ -524,10 +522,7 @@ def _diagnosis_step(
         if dnfr_max > 0:
             dnfr_arr = np_mod.clip(
                 np_mod.fromiter(
-                    (
-                        abs(cast(float, get_attr(nd, ALIAS_DNFR, 0.0)))
-                        for _, nd in nodes_data
-                    ),
+                    (abs(cast(float, get_attr(nd, ALIAS_DNFR, 0.0))) for _, nd in nodes_data),
                     dtype=float,
                     count=len(nodes_data),
                 )
@@ -543,10 +538,7 @@ def _diagnosis_step(
         epi_min, epi_max = min_max_range(epi_vals, default=(0.0, 1.0))
         si_vals = [clamp01(get_attr(nd, ALIAS_SI, 0.0)) for _, nd in nodes_data]
         vf_vals = [cast(float, get_attr(nd, ALIAS_VF, 0.0)) for _, nd in nodes_data]
-        dnfr_norms = [
-            normalize_dnfr(nd, dnfr_max) if dnfr_max > 0 else 0.0
-            for _, nd in nodes_data
-        ]
+        dnfr_norms = [normalize_dnfr(nd, dnfr_max) if dnfr_max > 0 else 0.0 for _, nd in nodes_data]
 
     epi_map = {node: epi_vals[idx] for idx, node in enumerate(nodes)}
 
@@ -575,9 +567,7 @@ def _diagnosis_step(
 
     if supports_vector:
         size = len(coherence_nodes)
-        matrix_np = (
-            _coherence_matrix_to_numpy(weight_matrix, size, np_mod) if size else None
-        )
+        matrix_np = _coherence_matrix_to_numpy(weight_matrix, size, np_mod) if size else None
         if matrix_np is not None and size:
             cos_weight = np_mod.fromiter(
                 (float(cos_map.get(node, 0.0)) for node in coherence_nodes),
@@ -595,9 +585,7 @@ def _diagnosis_step(
                 sin_weight,
                 np_mod,
             )
-            rloc_map = {
-                coherence_nodes[idx]: float(weighted_sync[idx]) for idx in range(size)
-            }
+            rloc_map = {coherence_nodes[idx]: float(weighted_sync[idx]) for idx in range(size)}
         else:
             rloc_map = {}
 
@@ -664,9 +652,7 @@ def _diagnosis_step(
             )
 
     if isinstance(Wi_last, (list, tuple)) and Wi_last:
-        wi_values = [
-            Wi_last[i] if i < len(Wi_last) else None for i in range(len(nodes))
-        ]
+        wi_values = [Wi_last[i] if i < len(Wi_last) else None for i in range(len(nodes))]
     else:
         wi_values = [None] * len(nodes)
 
@@ -771,9 +757,7 @@ def _diagnosis_step(
         diag_pairs = [_node_diagnostics(item, shared) for item in node_payload]
 
     diag_map = dict(diag_pairs)
-    diag: dict[NodeId, DiagnosisPayload] = {
-        node: diag_map.get(node, {}) for node in nodes
-    }
+    diag: dict[NodeId, DiagnosisPayload] = {node: diag_map.get(node, {}) for node in nodes}
 
     append_metric(hist, key, diag)
 

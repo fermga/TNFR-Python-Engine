@@ -14,15 +14,12 @@ from typing import Any, Optional, Sequence
 import networkx as nx
 import numpy as np
 
-# Constants
-TWO_PI = 2 * math.pi
-
+from ..alias import get_attr
 from ..config import apply_config
 from ..config.presets import (
     PREFERRED_PRESET_NAMES,
     get_preset,
 )
-from ..alias import get_attr
 from ..constants import METRIC_DEFAULTS, VF_PRIMARY, get_aliases, get_param
 from ..dynamics import default_glyph_selector, parametric_glyph_selector, run
 from ..execution import CANONICAL_PRESET_NAME, play
@@ -37,7 +34,6 @@ from ..mathematics import (
     make_coherence_operator,
     make_frequency_operator,
 )
-from ..validation import NFRValidator
 from ..metrics import (
     build_metrics_summary,
     export_metrics,
@@ -57,9 +53,12 @@ from ..utils import (
     read_structured_file,
     safe_write,
 )
+from ..validation import NFRValidator, validate_canon
 from .arguments import _args_to_dict
 from .utils import _parse_cli_variants
-from ..validation import validate_canon
+
+# Constants
+TWO_PI = 2 * math.pi
 
 logger = get_logger(__name__)
 
@@ -134,9 +133,7 @@ def _attach_callbacks(G: "nx.Graph") -> None:
 
 
 def _persist_history(G: "nx.Graph", args: argparse.Namespace) -> None:
-    if getattr(args, "save_history", None) or getattr(
-        args, "export_history_base", None
-    ):
+    if getattr(args, "save_history", None) or getattr(args, "export_history_base", None):
         history = ensure_history(G)
         if getattr(args, "save_history", None):
             _save_json(args.save_history, history)
@@ -168,26 +165,20 @@ def _resolve_math_dimension(args: argparse.Namespace, fallback: int) -> int:
         if candidate_lengths:
             unique = set(candidate_lengths)
             if len(unique) > 1:
-                raise ValueError(
-                    "Math engine configuration requires matching sequence lengths"
-                )
+                raise ValueError("Math engine configuration requires matching sequence lengths")
             dimension = unique.pop()
         else:
             dimension = fallback
     else:
         for length in candidate_lengths:
             if length != dimension:
-                raise ValueError(
-                    "Math engine sequence lengths must match the requested dimension"
-                )
+                raise ValueError("Math engine sequence lengths must match the requested dimension")
     if dimension is None or dimension <= 0:
         raise ValueError("Hilbert space dimension must be a positive integer")
     return int(dimension)
 
 
-def _build_math_engine_config(
-    G: "nx.Graph", args: argparse.Namespace
-) -> dict[str, Any]:
+def _build_math_engine_config(G: "nx.Graph", args: argparse.Namespace) -> dict[str, Any]:
     node_count = _count_graph_nodes(G)
     fallback_dim = max(1, int(node_count) if node_count is not None else 1)
     dimension = _resolve_math_dimension(args, fallback=fallback_dim)
@@ -221,9 +212,7 @@ def _build_math_engine_config(
         )
     else:
         if coherence_c_min is not None:
-            coherence_operator = CoherenceOperator(
-                coherence_spectrum, c_min=float(coherence_c_min)
-            )
+            coherence_operator = CoherenceOperator(coherence_spectrum, c_min=float(coherence_c_min))
         else:
             coherence_operator = CoherenceOperator(coherence_spectrum)
         if not coherence_operator.is_positive_semidefinite():
@@ -532,9 +521,7 @@ def _log_math_engine_summary(G: "nx.Graph") -> None:
     hilbert_space: HilbertSpace = math_cfg["hilbert_space"]
     coherence_operator: CoherenceOperator = math_cfg["coherence_operator"]
     frequency_operator: FrequencyOperator | None = math_cfg.get("frequency_operator")
-    state_projector: BasicStateProjector = math_cfg.get(
-        "state_projector", BasicStateProjector()
-    )
+    state_projector: BasicStateProjector = math_cfg.get("state_projector", BasicStateProjector())
     validator: NFRValidator | None = math_cfg.get("validator")
     if validator is None:
         coherence_threshold = math_cfg.get("coherence_threshold")
@@ -574,9 +561,7 @@ def _log_math_engine_summary(G: "nx.Graph") -> None:
             )
         )
         theta = float(data.get("theta", 0.0))
-        state = state_projector(
-            epi=epi, nu_f=nu_f, theta=theta, dim=hilbert_space.dimension
-        )
+        state = state_projector(epi=epi, nu_f=nu_f, theta=theta, dim=hilbert_space.dimension)
         norm_values.append(float(hilbert_space.norm(state)))
         outcome = validator.validate(
             state,
@@ -597,9 +582,7 @@ def _log_math_engine_summary(G: "nx.Graph") -> None:
             frequency_flags.append(bool(frequency_summary.get("passed", False)))
             frequency_values.append(float(frequency_summary.get("value", 0.0)))
             if frequency_spectrum_min is None and "spectrum_min" in frequency_summary:
-                frequency_spectrum_min = float(
-                    frequency_summary.get("spectrum_min", 0.0)
-                )
+                frequency_spectrum_min = float(frequency_summary.get("spectrum_min", 0.0))
 
     if norm_values:
         logger.info(
@@ -651,9 +634,7 @@ def _log_run_summaries(G: "nx.Graph", args: argparse.Namespace) -> None:
 
     if args.summary:
         summary_limit = getattr(args, "summary_limit", DEFAULT_SUMMARY_SERIES_LIMIT)
-        summary, has_latency_values = build_metrics_summary(
-            G, series_limit=summary_limit
-        )
+        summary, has_latency_values = build_metrics_summary(G, series_limit=summary_limit)
         logger.info("Global Tg: %s", summary["Tg_global"])
         logger.info("Top operators by Tg: %s", glyph_top(G, k=5))
         if has_latency_values:
@@ -855,9 +836,7 @@ def cmd_epi_validate(args: argparse.Namespace) -> int:
             if negative_frequencies:
                 validation_passed = False
                 for node_id, nu_f in negative_frequencies[:5]:  # Show first 5
-                    validation_summary.append(
-                        f"  [FAIL] Node {node_id}: νf={nu_f:.6f} < 0"
-                    )
+                    validation_summary.append(f"  [FAIL] Node {node_id}: νf={nu_f:.6f} < 0")
                 if len(negative_frequencies) > 5:
                     validation_summary.append(
                         f"  ... and {len(negative_frequencies) - 5} more nodes"
@@ -891,9 +870,7 @@ def cmd_epi_validate(args: argparse.Namespace) -> int:
                         f"  [WARN] Edge ({u},{v}): phase diff={diff:.6f} > 2π"
                     )
                 if len(phase_violations) > 5:
-                    validation_summary.append(
-                        f"  ... and {len(phase_violations) - 5} more edges"
-                    )
+                    validation_summary.append(f"  ... and {len(phase_violations) - 5} more edges")
             else:
                 validation_summary.append(
                     f"  [PASS] Phase synchrony maintained across {len(edges)} edges"

@@ -81,9 +81,7 @@ def test_node_constructs_operators_from_factory_parameters() -> None:
 
 
 def test_run_sequence_uses_factory_overrides() -> None:
-    node, _, _ = build_node_with_operators(
-        frequency_value=None, enable_validation=False
-    )
+    node, _, _ = build_node_with_operators(frequency_value=None, enable_validation=False)
     dim = node.hilbert_space.dimension
     new_spectrum = np.full(dim, 0.85)
     frequency_matrix = np.eye(dim) * 0.15

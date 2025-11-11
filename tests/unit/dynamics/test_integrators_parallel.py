@@ -105,9 +105,7 @@ def test_parallel_integrator_matches_serial(method: str) -> None:
 
 
 @pytest.mark.parametrize("method", ["euler", "rk4"])
-def test_parallel_fallback_without_numpy(
-    method: str, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_parallel_fallback_without_numpy(method: str, monkeypatch: pytest.MonkeyPatch) -> None:
     base = _build_sample_graph()
     base.graph["INTEGRATOR_METHOD"] = method
 
@@ -148,9 +146,7 @@ def test_evaluate_gamma_map_parallel_variants(monkeypatch: pytest.MonkeyPatch) -
     resolve_calls: list[tuple[int | None, int, dict[str, object]]] = []
     original_resolve = integrators.resolve_chunk_size
 
-    def tracking_resolve(
-        chunk_size: int | None, total_items: int, **kwargs: object
-    ) -> int:
+    def tracking_resolve(chunk_size: int | None, total_items: int, **kwargs: object) -> int:
         resolve_calls.append((chunk_size, total_items, dict(kwargs)))
         return original_resolve(chunk_size, total_items, **kwargs)
 

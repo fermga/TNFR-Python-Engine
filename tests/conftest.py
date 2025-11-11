@@ -185,9 +185,7 @@ def _reset_all_state() -> None:
     try:
         from tnfr import rng as rng_module
 
-        if hasattr(rng_module, "seed_hash") and hasattr(
-            rng_module.seed_hash, "cache_clear"
-        ):
+        if hasattr(rng_module, "seed_hash") and hasattr(rng_module.seed_hash, "cache_clear"):
             rng_module.seed_hash.cache_clear()
         # Reset RNG cache lock flag and cache
         rng_module._CACHE_LOCKED = False
@@ -342,10 +340,10 @@ def _reset_all_state() -> None:
 @pytest.fixture
 def boundary_test_cases() -> dict[str, list[float]]:
     """Provide standard test cases for boundary testing.
-    
+
     Returns standard EPI values near boundaries and in safe ranges
     for testing operator behavior at extremes.
-    
+
     Returns
     -------
     dict[str, list[float]]
@@ -358,16 +356,12 @@ def boundary_test_cases() -> dict[str, list[float]]:
     }
 
 
-def assert_epi_in_bounds(
-    epi_value: float,
-    tolerance: float = 1e-9,
-    abs_tol: float = 1e-12
-) -> None:
+def assert_epi_in_bounds(epi_value: float, tolerance: float = 1e-9, abs_tol: float = 1e-12) -> None:
     """Assert helper for verifying EPI within structural bounds with tolerance.
-    
+
     This helper uses math.isclose to handle floating-point precision issues
     that may occur near boundaries.
-    
+
     Parameters
     ----------
     epi_value : float
@@ -376,22 +370,24 @@ def assert_epi_in_bounds(
         Relative tolerance for boundary comparisons
     abs_tol : float, default 1e-12
         Absolute tolerance for boundary comparisons
-        
+
     Raises
     ------
     AssertionError
         If EPI value is outside [-1.0, 1.0] beyond tolerance
     """
     import math
-    
+
     # Check primary bounds
     if -1.0 <= epi_value <= 1.0:
         return
-    
+
     # Check with tolerance for floating point precision
     if epi_value > 1.0:
-        assert math.isclose(epi_value, 1.0, rel_tol=tolerance, abs_tol=abs_tol), \
-            f"EPI {epi_value} exceeds upper boundary 1.0 beyond tolerance"
+        assert math.isclose(
+            epi_value, 1.0, rel_tol=tolerance, abs_tol=abs_tol
+        ), f"EPI {epi_value} exceeds upper boundary 1.0 beyond tolerance"
     elif epi_value < -1.0:
-        assert math.isclose(epi_value, -1.0, rel_tol=tolerance, abs_tol=abs_tol), \
-            f"EPI {epi_value} falls below lower boundary -1.0 beyond tolerance"
+        assert math.isclose(
+            epi_value, -1.0, rel_tol=tolerance, abs_tol=abs_tol
+        ), f"EPI {epi_value} falls below lower boundary -1.0 beyond tolerance"

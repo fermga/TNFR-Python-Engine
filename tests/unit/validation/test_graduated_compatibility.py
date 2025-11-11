@@ -3,7 +3,7 @@
 This module validates the 4-level graduated compatibility system that
 replaces the binary compatible/incompatible validation with nuanced levels:
 - EXCELLENT: Optimal structural progression
-- GOOD: Acceptable structural progression  
+- GOOD: Acceptable structural progression
 - CAUTION: Contextually dependent, requires validation (generates warnings)
 - AVOID: Incompatible, violates structural coherence (raises errors)
 """
@@ -82,9 +82,7 @@ class TestGraduatedCompatibilityMatrix:
             for level_name in ["excellent", "good", "caution", "avoid"]:
                 targets = set(levels[level_name])
                 overlap = seen & targets
-                assert (
-                    not overlap
-                ), f"{source}: {overlap} appears in multiple levels"
+                assert not overlap, f"{source}: {overlap} appears in multiple levels"
                 seen.update(targets)
 
     def test_all_13_operators_accounted_for_in_each_entry(self):
@@ -209,7 +207,7 @@ class TestSequenceValidationWithGraduatedLevels:
         # EMISSION → RECEPTION → COHERENCE → SILENCE → DISSONANCE
         # SILENCE → DISSONANCE is AVOID (contradictory)
         result = validate_sequence([EMISSION, RECEPTION, COHERENCE, SILENCE, DISSONANCE])
-        
+
         # Should fail with error
         assert not result.passed
         assert result.error is not None
@@ -223,9 +221,7 @@ class TestSequenceValidationWithGraduatedLevels:
 
         # EMISSION (start) → RECEPTION (excellent) → COHERENCE (excellent)
         # → DISSONANCE (caution) → MUTATION (excellent) → SILENCE (excellent)
-        result = validate_sequence(
-            [EMISSION, RECEPTION, COHERENCE, DISSONANCE, MUTATION, SILENCE]
-        )
+        result = validate_sequence([EMISSION, RECEPTION, COHERENCE, DISSONANCE, MUTATION, SILENCE])
         assert result.passed
 
         # Should have warning for COHERENCE → DISSONANCE (caution)
@@ -293,7 +289,7 @@ class TestSequenceHealthMetrics:
         # Multiple CAUTION levels
         transitions = [
             (EMISSION, DISSONANCE),  # caution
-            (DISSONANCE, DISSONANCE),  # caution  
+            (DISSONANCE, DISSONANCE),  # caution
         ]
 
         caution_count = sum(
@@ -339,10 +335,13 @@ class TestContextualValidation:
 
         # Verify warning about caution for COHERENCE → MUTATION
         caution_warnings = [
-            record for record in caplog.records 
+            record
+            for record in caplog.records
             if "Caution" in record.message and "mutation" in record.message.lower()
         ]
-        assert len(caution_warnings) >= 1, "Expected at least one caution warning for COHERENCE → MUTATION"
+        assert (
+            len(caution_warnings) >= 1
+        ), "Expected at least one caution warning for COHERENCE → MUTATION"
 
 
 class TestEdgeCases:
@@ -351,17 +350,14 @@ class TestEdgeCases:
     def test_self_transitions_vary_by_operator(self):
         """Self-transitions (operator → same operator) have appropriate levels."""
         # DISSONANCE → DISSONANCE is CAUTION (repeated tension)
-        assert (
-            get_compatibility_level(DISSONANCE, DISSONANCE) == CompatibilityLevel.CAUTION
-        )
+        assert get_compatibility_level(DISSONANCE, DISSONANCE) == CompatibilityLevel.CAUTION
 
         # TRANSITION → TRANSITION is GOOD (continued handoff)
         assert get_compatibility_level(TRANSITION, TRANSITION) == CompatibilityLevel.GOOD
 
         # SELF_ORGANIZATION → SELF_ORGANIZATION is GOOD (nested fractality)
         assert (
-            get_compatibility_level(SELF_ORGANIZATION, SELF_ORGANIZATION)
-            == CompatibilityLevel.GOOD
+            get_compatibility_level(SELF_ORGANIZATION, SELF_ORGANIZATION) == CompatibilityLevel.GOOD
         )
 
         # EMISSION → EMISSION is AVOID (redundant initiation)
@@ -375,10 +371,5 @@ class TestEdgeCases:
         assert get_compatibility_level(SILENCE, DISSONANCE) == CompatibilityLevel.AVOID
 
         # CONTRACTION should allow EMISSION and COHERENCE as excellent
-        assert (
-            get_compatibility_level(CONTRACTION, EMISSION) == CompatibilityLevel.EXCELLENT
-        )
-        assert (
-            get_compatibility_level(CONTRACTION, COHERENCE)
-            == CompatibilityLevel.EXCELLENT
-        )
+        assert get_compatibility_level(CONTRACTION, EMISSION) == CompatibilityLevel.EXCELLENT
+        assert get_compatibility_level(CONTRACTION, COHERENCE) == CompatibilityLevel.EXCELLENT

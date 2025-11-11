@@ -24,9 +24,7 @@ class RecordingLogger:
         self._base.info(msg, *args, **kwargs)
 
 
-def make_graph(
-    *, coherence_enabled: bool = True, diagnosis_enabled: bool = True
-) -> nx.Graph:
+def make_graph(*, coherence_enabled: bool = True, diagnosis_enabled: bool = True) -> nx.Graph:
     graph = nx.Graph()
     graph.graph["HISTORY_MAXLEN"] = 0
     graph.graph["COHERENCE"] = {
@@ -74,9 +72,7 @@ def test_log_run_summaries_history_logging_toggled(
     diagnosis_enabled: bool,
     expected_messages: list[str],
 ) -> None:
-    graph = make_graph(
-        coherence_enabled=coherence_enabled, diagnosis_enabled=diagnosis_enabled
-    )
+    graph = make_graph(coherence_enabled=coherence_enabled, diagnosis_enabled=diagnosis_enabled)
     args = argparse.Namespace(summary=False)
 
     summary_limits: list[int] = []

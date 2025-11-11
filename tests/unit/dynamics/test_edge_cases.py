@@ -71,7 +71,4 @@ def test_apply_glyph_invalid_glyph_raises_and_logs():
     events = node.graph["history"].get("events")
     assert events and events[-1][0] == "warn"
     # Message may be "unknown glyph" or "invalid glyph" depending on validation path
-    assert (
-        "unknown glyph" in events[-1][1]["msg"]
-        or "invalid glyph" in events[-1][1]["msg"]
-    )
+    assert "unknown glyph" in events[-1][1]["msg"] or "invalid glyph" in events[-1][1]["msg"]

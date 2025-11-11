@@ -34,13 +34,10 @@ if TYPE_CHECKING:
 
 from ..config.operator_names import (
     COHERENCE,
-    CONTRACTION,
     COUPLING,
     DISSONANCE,
     EMISSION,
-    EXPANSION,
     MUTATION,
-    RECEPTION,
     RECURSIVITY,
     RESONANCE,
     SELF_ORGANIZATION,
@@ -50,10 +47,7 @@ from ..config.operator_names import (
 from .grammar import (
     BIFURCATION_HANDLERS,
     BIFURCATION_TRIGGERS,
-    CLOSURES,
-    COUPLING_RESONANCE,
     DESTABILIZERS,
-    GENERATORS,
     STABILIZERS,
     TRANSFORMERS,
 )
@@ -141,7 +135,6 @@ class UnifiedPatternDetector:
             # U2: Convergence patterns (STABILIZERS/DESTABILIZERS)
             "stabilization_cycle": "U2",
             "bounded_evolution": "U2",
-            "bootstrap": "U2",
             "stabilize": "U2",
             # U3: Resonance patterns (COUPLING_RESONANCE)
             "coupling_chain": "U3",
@@ -190,9 +183,7 @@ class UnifiedPatternDetector:
         """
         return self._advanced_detector.detect_pattern(sequence)
 
-    def detect_initiation_patterns(
-        self, sequence: Sequence[str]
-    ) -> List[PatternMatch]:
+    def detect_initiation_patterns(self, sequence: Sequence[str]) -> List[PatternMatch]:
         """Detect U1a-based initiation patterns.
 
         Patterns that use GENERATORS (emission, transition, recursivity) to
@@ -329,9 +320,7 @@ class UnifiedPatternDetector:
 
         return patterns
 
-    def detect_convergence_patterns(
-        self, sequence: Sequence[str]
-    ) -> List[PatternMatch]:
+    def detect_convergence_patterns(self, sequence: Sequence[str]) -> List[PatternMatch]:
         """Detect U2-based convergence patterns.
 
         Patterns involving STABILIZERS and DESTABILIZERS to ensure bounded evolution.
@@ -383,9 +372,7 @@ class UnifiedPatternDetector:
             alternating = True
             for i in range(0, len(sequence) - 1, 2):
                 if i + 1 < len(sequence):
-                    if not (
-                        sequence[i] in DESTABILIZERS and sequence[i + 1] in STABILIZERS
-                    ):
+                    if not (sequence[i] in DESTABILIZERS and sequence[i + 1] in STABILIZERS):
                         alternating = False
                         break
             if alternating and has_destabilizers and has_stabilizers:
@@ -402,9 +389,7 @@ class UnifiedPatternDetector:
 
         return patterns
 
-    def detect_resonance_patterns(
-        self, sequence: Sequence[str]
-    ) -> List[PatternMatch]:
+    def detect_resonance_patterns(self, sequence: Sequence[str]) -> List[PatternMatch]:
         """Detect U3-based resonance patterns.
 
         Patterns involving COUPLING_RESONANCE operators that require phase verification.
@@ -467,9 +452,7 @@ class UnifiedPatternDetector:
 
         return patterns
 
-    def detect_bifurcation_patterns(
-        self, sequence: Sequence[str]
-    ) -> List[PatternMatch]:
+    def detect_bifurcation_patterns(self, sequence: Sequence[str]) -> List[PatternMatch]:
         """Detect U4-based bifurcation patterns.
 
         Patterns involving TRANSFORMERS and BIFURCATION_TRIGGERS.
@@ -488,10 +471,7 @@ class UnifiedPatternDetector:
 
         # Graduated destabilization: destabilizer → transformer (U4b)
         for i in range(len(sequence) - 1):
-            if (
-                sequence[i] in DESTABILIZERS
-                and sequence[i + 1] in TRANSFORMERS
-            ):
+            if sequence[i] in DESTABILIZERS and sequence[i + 1] in TRANSFORMERS:
                 patterns.append(
                     PatternMatch(
                         pattern_name="graduated_destabilization",
@@ -505,10 +485,7 @@ class UnifiedPatternDetector:
 
         # Managed bifurcation: trigger → handler (U4a)
         for i in range(len(sequence) - 1):
-            if (
-                sequence[i] in BIFURCATION_TRIGGERS
-                and sequence[i + 1] in BIFURCATION_HANDLERS
-            ):
+            if sequence[i] in BIFURCATION_TRIGGERS and sequence[i + 1] in BIFURCATION_HANDLERS:
                 patterns.append(
                     PatternMatch(
                         pattern_name="managed_bifurcation",
@@ -536,10 +513,7 @@ class UnifiedPatternDetector:
 
         # Spontaneous organization: disorder → THOL
         for i in range(len(sequence) - 1):
-            if (
-                sequence[i] in DESTABILIZERS
-                and sequence[i + 1] == SELF_ORGANIZATION
-            ):
+            if sequence[i] in DESTABILIZERS and sequence[i + 1] == SELF_ORGANIZATION:
                 patterns.append(
                     PatternMatch(
                         pattern_name="spontaneous_organization",
@@ -589,9 +563,7 @@ class UnifiedPatternDetector:
         """
         return self._pattern_grammar_map.get(pattern_name.lower())
 
-    def analyze_sequence_composition(
-        self, sequence: Sequence[str]
-    ) -> Mapping[str, Any]:
+    def analyze_sequence_composition(self, sequence: Sequence[str]) -> Mapping[str, Any]:
         """Perform comprehensive analysis of sequence structure.
 
         Delegates to AdvancedPatternDetector for detailed analysis.

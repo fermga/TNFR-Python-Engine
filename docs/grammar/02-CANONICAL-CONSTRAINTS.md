@@ -1,6 +1,6 @@
-# Canonical Constraints: U1-U5
+# Canonical Constraints: U1-U6
 
-**Formal derivations and implementation of the five fundamental TNFR grammar rules**
+**Formal derivations and implementation of the six fundamental TNFR grammar rules**
 
 [🏠 Home](README.md) • [🌊 Concepts](01-FUNDAMENTAL-CONCEPTS.md) • [⚙️ Operators](03-OPERATORS-AND-GLYPHS.md) • [🔄 Sequences](04-VALID-SEQUENCES.md)
 
@@ -8,7 +8,7 @@
 
 ## Purpose
 
-This document provides the **complete formal specification** of the five canonical TNFR grammar constraints (U1-U5). Each constraint is presented with:
+This document provides the **complete formal specification** of the six canonical TNFR grammar constraints (U1-U6). Each constraint is presented with:
 
 1. **Intuition** - Conceptual understanding
 2. **Formal Definition** - Mathematical/logical specification
@@ -23,9 +23,9 @@ This document provides the **complete formal specification** of the five canonic
 
 ---
 
-## Overview of U1-U5
+## Overview of U1-U6
 
-The five canonical constraints form a complete, non-redundant grammar for TNFR (temporal + multi-scale):
+The six canonical constraints form a complete, non-redundant grammar for TNFR (temporal + spatial + multi-scale):
 
 ```
 U1: STRUCTURAL INITIATION & CLOSURE
@@ -45,11 +45,15 @@ U4: BIFURCATION DYNAMICS
 U5: MULTI-SCALE COHERENCE
     └─ Hierarchical REMESH (depth>1) requires scale stabilizers (IL / THOL)
        to conserve coherence across nested EPIs (C_parent ≥ α·ΣC_child)
+
+U6: STRUCTURAL POTENTIAL CONFINEMENT
+    └─ Monitor Δ Φ_s < 2.0 (escape threshold)
+       Telemetry-based safety criterion for structural stability
 ```
 
 **Canonicity Levels:**
-- **U1, U2, U3:** ABSOLUTE (mathematically/physically necessary)
-- **U4, U5:** STRONG (physically required for controlled bifurcation & hierarchical conservation)
+- **U1, U2, U3, U5:** ABSOLUTE (mathematically/physically necessary)
+- **U4, U6:** STRONG (extensive empirical validation, universal across topologies)
 
 ---
 
@@ -212,8 +216,8 @@ def test_u1a_initiation():
 ```
 
 **Related Documentation**:
-- [UNIFIED_GRAMMAR_RULES.md § U1a](../../UNIFIED_GRAMMAR_RULES.md)
-- [AGENTS.md § Invariant #1](../../AGENTS.md)
+- [UNIFIED_GRAMMAR_RULES.md § U1a](https://github.com/fermga/TNFR-Python-Engine/blob/main/UNIFIED_GRAMMAR_RULES.md#u1-structural-initiation--closure)
+- [AGENTS.md § Invariant #1](https://github.com/fermga/TNFR-Python-Engine/blob/main/AGENTS.md#canonical-invariants-never-break)
 
 ---
 
@@ -365,8 +369,8 @@ def test_u1b_closure():
 ```
 
 **Related Documentation**:
-- [UNIFIED_GRAMMAR_RULES.md § U1b](../../UNIFIED_GRAMMAR_RULES.md)
-- [AGENTS.md § Operator Closure Invariant #4](../../AGENTS.md)
+- [UNIFIED_GRAMMAR_RULES.md § U1b](https://github.com/fermga/TNFR-Python-Engine/blob/main/UNIFIED_GRAMMAR_RULES.md#u1-structural-initiation--closure)
+- [AGENTS.md § Operator Closure Invariant #4](https://github.com/fermga/TNFR-Python-Engine/blob/main/AGENTS.md#canonical-invariants-never-break)
 
 ---
 
@@ -549,9 +553,9 @@ def test_u2_convergence():
 ```
 
 **Related Documentation**:
-- [UNIFIED_GRAMMAR_RULES.md § U2](../../UNIFIED_GRAMMAR_RULES.md)
-- [AGENTS.md § Convergence & Boundedness](../../AGENTS.md)
-- [TNFR.pdf § 2.1: Integrated Dynamics](../../TNFR.pdf)
+- [UNIFIED_GRAMMAR_RULES.md § U2](https://github.com/fermga/TNFR-Python-Engine/blob/main/UNIFIED_GRAMMAR_RULES.md#u2-convergence--boundedness)
+- [AGENTS.md § Convergence & Boundedness](https://github.com/fermga/TNFR-Python-Engine/blob/main/AGENTS.md)
+- [TNFR_FORCES_EMERGENCE.md § Integrated Dynamics](../TNFR_FORCES_EMERGENCE.md)
 
 ---
 
@@ -745,8 +749,8 @@ def test_u3_resonant_coupling():
 ```
 
 **Related Documentation**:
-- [UNIFIED_GRAMMAR_RULES.md § U3](../../UNIFIED_GRAMMAR_RULES.md)
-- [AGENTS.md § Invariant #5: Phase Verification](../../AGENTS.md)
+- [UNIFIED_GRAMMAR_RULES.md § U3](https://github.com/fermga/TNFR-Python-Engine/blob/main/UNIFIED_GRAMMAR_RULES.md#u3-resonant-coupling)
+- [AGENTS.md § Invariant #5: Phase Verification](https://github.com/fermga/TNFR-Python-Engine/blob/main/AGENTS.md)
 - [03-OPERATORS-AND-GLYPHS.md § Coupling (UM)](03-OPERATORS-AND-GLYPHS.md)
 
 ---
@@ -908,8 +912,8 @@ validate_grammar(sequence, epi_initial=0.0)
 - `tests/unit/operators/test_bifurcation.py::test_bifurcation_above_threshold`
 
 **Related Documentation**:
-- [UNIFIED_GRAMMAR_RULES.md § U4a](../../UNIFIED_GRAMMAR_RULES.md)
-- [AGENTS.md § Contract OZ](../../AGENTS.md)
+- [UNIFIED_GRAMMAR_RULES.md § U4a](https://github.com/fermga/TNFR-Python-Engine/blob/main/UNIFIED_GRAMMAR_RULES.md#u4-bifurcation-dynamics)
+- [AGENTS.md § Contract OZ](https://github.com/fermga/TNFR-Python-Engine/blob/main/AGENTS.md)
 - [03-OPERATORS-AND-GLYPHS.md § Dissonance (OZ)](03-OPERATORS-AND-GLYPHS.md)
 
 ---
@@ -1163,10 +1167,10 @@ def test_u4b_transformers():
 ```
 
 **Related Documentation**:
-- [UNIFIED_GRAMMAR_RULES.md § U4b](../../UNIFIED_GRAMMAR_RULES.md)
-- [AGENTS.md § Contract OZ + ZHIR Requirements](../../AGENTS.md)
+- [UNIFIED_GRAMMAR_RULES.md § U4b](https://github.com/fermga/TNFR-Python-Engine/blob/main/UNIFIED_GRAMMAR_RULES.md#u4-bifurcation-dynamics)
+- [AGENTS.md § Contract OZ + ZHIR Requirements](https://github.com/fermga/TNFR-Python-Engine/blob/main/AGENTS.md)
 - [03-OPERATORS-AND-GLYPHS.md § Mutation (ZHIR)](03-OPERATORS-AND-GLYPHS.md)
-- [U4B_AUDIT_REPORT.md](../../U4B_AUDIT_REPORT.md) - Complete U4b implementation analysis
+- [U4B_AUDIT_REPORT.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/U4B_AUDIT_REPORT.md) - Complete U4b implementation analysis
 
 ---
 
@@ -1511,10 +1515,316 @@ def test_u5_coherence_conservation():
 ```
 
 **Related Documentation**:
-- [UNIFIED_GRAMMAR_RULES.md § U5](../../UNIFIED_GRAMMAR_RULES.md)
-- [AGENTS.md § Invariant #7: Operational Fractality](../../AGENTS.md)
+- [UNIFIED_GRAMMAR_RULES.md § U5](https://github.com/fermga/TNFR-Python-Engine/blob/main/UNIFIED_GRAMMAR_RULES.md#u5-multi-scale-coherence)
+- [AGENTS.md § Invariant #7: Operational Fractality](https://github.com/fermga/TNFR-Python-Engine/blob/main/AGENTS.md)
 - [03-OPERATORS-AND-GLYPHS.md § Recursivity (REMESH)](03-OPERATORS-AND-GLYPHS.md)
-- [SHA_ALGEBRA_PHYSICS.md § Multi-Scale Coherence](../../SHA_ALGEBRA_PHYSICS.md)
+- [SHA_ALGEBRA_PHYSICS.md § Multi-Scale Coherence](https://github.com/fermga/TNFR-Python-Engine/blob/main/SHA_ALGEBRA_PHYSICS.md)
+
+---
+
+## U6: STRUCTURAL POTENTIAL CONFINEMENT
+
+### Intuition
+
+The structural potential field (Φ_s) acts like a "gravitational well" for network dynamics. Sequences that respect grammar naturally stay near potential minima (stable equilibrium). Large displacements from equilibrium indicate fragmentation risk.
+
+**Analogy:** Like a marble in a bowl. Small disturbances keep it near the bottom (stable). Large kicks can eject it (fragmentation).
+
+### Formal Definition
+
+**FOR ALL** sequences (telemetry-based safety criterion):
+
+**COMPUTE** structural potential field before and after sequence:
+```
+Φ_s(i) = Σ_{j≠i} ΔNFR_j / d(i,j)²
+```
+
+**VERIFY** displacement within escape threshold:
+```
+Δ Φ_s = |Φ_s_after - Φ_s_before| < 2.0
+```
+
+Where:
+- `Φ_s(i)` = structural potential at node i
+- `ΔNFR_j` = reorganization gradient at node j
+- `d(i,j)` = network distance between nodes i and j
+- `Δ Φ_s` = change in mean structural potential
+- `2.0` = escape threshold (empirically calibrated)
+
+**Note**: U6 is **telemetry-based** (read-only safety check), NOT a sequence constraint like U1-U5.
+
+### Physical Derivation
+
+From the nodal equation and network topology:
+
+**Step 1: Structural potential emerges from ΔNFR distribution**
+```
+Each node contributes "structural pressure" to its neighbors
+Weight by inverse-square of distance (like gravitational field)
+
+Φ_s(i) = Σ_{j≠i} ΔNFR_j / d(i,j)²
+```
+
+**Step 2: Relationship to coherence**
+```
+From 2,400+ experiments across 5 topologies:
+
+corr(Δ Φ_s, ΔC) = -0.822 (R² ≈ 0.68)
+
+Strong negative correlation: displacement → coherence loss
+```
+
+**Step 3: Passive equilibrium mechanism**
+```
+Φ_s minima = passive equilibrium states (potential wells)
+
+Grammar-valid sequences: Δ Φ_s ≈ 0.6 (30% of threshold)
+Grammar-violating: Δ Φ_s ≈ 3.9 (195% of threshold)
+
+Reduction factor: 0.15× (85% safer)
+```
+
+**Step 4: Universal validation**
+```
+Tested topologies: ring, scale_free, small-world, tree, grid
+Coefficient of variation: CV = 0.1% (perfect universality)
+
+→ Φ_s dynamics fundamental to TNFR, not topology artifact
+```
+
+**Physical interpretation**:
+- Φ_s creates passive equilibrium landscape
+- Grammar (U1-U5) acts as **confinement mechanism** (not active attractor)
+- Valid sequences naturally maintain small Δ Φ_s
+- Violations push system toward fragmentation boundary
+
+This is **STRONG canonicity** - extensive empirical validation (2,400+ experiments), universal across topologies.
+
+### Implementation
+
+```python
+# From src/tnfr/physics/fields.py
+
+def compute_structural_potential(G, alpha=2.0):
+    """Compute Φ_s field: Σ_{j≠i} ΔNFR_j / d(i,j)^α
+    
+    Parameters
+    ----------
+    G : nx.Graph
+        TNFR network with 'dnfr' node attributes
+    alpha : float
+        Distance exponent (default: 2.0 for inverse-square)
+    
+    Returns
+    -------
+    dict
+        {node_id: Φ_s value}
+    """
+    from networkx import shortest_path_length
+    
+    phi_s = {}
+    for i in G.nodes():
+        potential = 0.0
+        for j in G.nodes():
+            if i == j:
+                continue
+            dnfr_j = G.nodes[j].get('dnfr', 0.0)
+            try:
+                dist = shortest_path_length(G, i, j)
+            except:
+                dist = float('inf')
+            
+            if dist > 0 and dist < float('inf'):
+                potential += dnfr_j / (dist ** alpha)
+        
+        phi_s[i] = potential
+    
+    return phi_s
+
+
+# From src/tnfr/operators/grammar.py
+
+def validate_structural_potential_confinement(
+    G, 
+    phi_s_before, 
+    phi_s_after, 
+    threshold=2.0
+):
+    """Validate U6: Structural potential confinement.
+    
+    Parameters
+    ----------
+    G : nx.Graph
+        TNFR network
+    phi_s_before : dict
+        Φ_s field before sequence
+    phi_s_after : dict
+        Φ_s field after sequence
+    threshold : float
+        Escape threshold (default: 2.0)
+    
+    Returns
+    -------
+    tuple[bool, float, str]
+        (is_valid, drift, message)
+    """
+    import numpy as np
+    
+    # Compute mean displacement
+    nodes = list(G.nodes())
+    phi_before_vals = [phi_s_before[n] for n in nodes]
+    phi_after_vals = [phi_s_after[n] for n in nodes]
+    
+    delta_phi = abs(np.mean(phi_after_vals) - np.mean(phi_before_vals))
+    
+    is_valid = delta_phi < threshold
+    
+    if is_valid:
+        msg = f"✓ U6: Δ Φ_s = {delta_phi:.3f} < {threshold} (safe)"
+    else:
+        msg = f"✗ U6: Δ Φ_s = {delta_phi:.3f} ≥ {threshold} (fragmentation risk)"
+    
+    return is_valid, delta_phi, msg
+```
+
+### Usage Example
+
+```python
+from tnfr.physics.fields import compute_structural_potential
+from tnfr.operators.grammar import validate_structural_potential_confinement
+from tnfr.operators.definitions import Emission, Dissonance, Coherence, Silence
+
+# Setup network
+G = create_test_network(topology='ring', n=50)
+
+# Compute Φ_s before sequence
+phi_s_before = compute_structural_potential(G, alpha=2.0)
+
+# Apply sequence
+sequence = [Emission(), Dissonance(), Coherence(), Silence()]
+for op in sequence:
+    apply_operator(G, target_node, op)
+    step(G, dt=1.0)
+
+# Compute Φ_s after sequence
+phi_s_after = compute_structural_potential(G, alpha=2.0)
+
+# Validate U6
+is_valid, drift, msg = validate_structural_potential_confinement(
+    G, phi_s_before, phi_s_after, threshold=2.0
+)
+
+print(msg)
+# ✓ U6: Δ Φ_s = 0.583 < 2.0 (safe)
+
+# For telemetry
+print(f"Drift as % of threshold: {drift/2.0*100:.1f}%")
+# Drift as % of threshold: 29.2%
+```
+
+### Valid vs Invalid Examples
+
+**✓ VALID: Grammar-respecting sequence**
+```python
+sequence = [
+    Emission(),        # Generator
+    Coherence(),       # Stabilizer
+    Dissonance(),      # Destabilizer
+    Coherence(),       # Balances destabilizer
+    Silence()          # Closure
+]
+
+# Expected: Δ Φ_s ≈ 0.6 (safe, ~30% of threshold)
+```
+
+**✗ INVALID: Grammar-violating sequence**
+```python
+sequence = [
+    Emission(),        # Generator
+    Dissonance(),      # Destabilizer
+    Dissonance(),      # Another destabilizer (no stabilizer!)
+    Dissonance(),      # Yet another!
+    Mutation()         # Transformer without context
+    # Missing closure, no stabilizers
+]
+
+# Expected: Δ Φ_s ≈ 3.9 (unsafe, ~195% of threshold)
+```
+
+### Tests
+
+```python
+def test_u6_structural_potential_confinement():
+    """Test U6: Valid sequences maintain small Δ Φ_s."""
+    G = create_test_network('ring', n=50)
+    
+    # Valid sequence
+    phi_before = compute_structural_potential(G)
+    apply_valid_sequence(G, node='n0')
+    phi_after = compute_structural_potential(G)
+    
+    is_valid, drift, _ = validate_structural_potential_confinement(
+        G, phi_before, phi_after, threshold=2.0
+    )
+    
+    assert is_valid, "Valid sequence should pass U6"
+    assert drift < 1.0, "Valid sequence should have small drift"
+    
+    # Invalid sequence (violates U2 - no stabilizers)
+    G2 = create_test_network('ring', n=50)
+    phi_before2 = compute_structural_potential(G2)
+    apply_invalid_sequence(G2, node='n0')  # Multiple destabilizers, no stabilizers
+    phi_after2 = compute_structural_potential(G2)
+    
+    is_valid2, drift2, _ = validate_structural_potential_confinement(
+        G2, phi_before2, phi_after2, threshold=2.0
+    )
+    
+    assert not is_valid2, "Invalid sequence should fail U6"
+    assert drift2 > 2.0, "Invalid sequence should have large drift"
+
+
+def test_u6_universality():
+    """Test U6 works across topologies."""
+    topologies = ['ring', 'scale_free', 'ws', 'tree', 'grid']
+    
+    for topology in topologies:
+        G = create_test_network(topology, n=50)
+        
+        phi_before = compute_structural_potential(G)
+        apply_valid_sequence(G, node='n0')
+        phi_after = compute_structural_potential(G)
+        
+        is_valid, drift, _ = validate_structural_potential_confinement(
+            G, phi_before, phi_after
+        )
+        
+        assert is_valid, f"U6 should work for {topology}"
+        assert drift < 1.0, f"Drift should be small for {topology}"
+```
+
+### Key Differences from U1-U5
+
+| Aspect | U1-U5 | U6 |
+|--------|-------|-----|
+| **Type** | Sequence constraints | Telemetry criterion |
+| **Enforcement** | Hard requirement | Safety monitoring |
+| **Timing** | Check during validation | Check after execution |
+| **Failure** | Reject sequence | Warning (fragmentation risk) |
+| **Usage** | Mandatory for all sequences | Optional but recommended |
+
+**Relationship to U2**:
+- **U2**: Temporal integral convergence (∫νf·ΔNFR dt < ∞)
+- **U6**: Spatial potential confinement (Δ Φ_s < 2.0)
+- **Independence**: U2 prevents divergence over time, U6 prevents escape in structural space
+
+### Related Documentation
+
+- **[U6_STRUCTURAL_POTENTIAL_CONFINEMENT.md](U6_STRUCTURAL_POTENTIAL_CONFINEMENT.md)** - Complete specification ⭐
+- **[UNIFIED_GRAMMAR_RULES.md § U6](../../UNIFIED_GRAMMAR_RULES.md)** - Physics derivation
+- **[TNFR_FORCES_EMERGENCE.md § 14-15](../TNFR_FORCES_EMERGENCE.md)** - Empirical validation
+- **[AGENTS.md § U6](../../AGENTS.md)** - Quick reference
+- **[src/tnfr/physics/fields.py](../../src/tnfr/physics/fields.py)** - Implementation
 
 ---
 
@@ -1529,6 +1839,7 @@ def test_u5_coherence_conservation():
 | **U4a** | Has {OZ, ZHIR} | Include {THOL, IL} | STRONG | Bifurcations need control |
 | **U4b** | Has {ZHIR, THOL} | Recent destabilizer + IL for ZHIR | STRONG | Threshold energy needed |
 | **U5** | REMESH depth>1 | Include {IL, THOL} within ±3 ops | STRONG | Hierarchical coherence conservation |
+| **U6** | All sequences | Monitor Δ Φ_s < 2.0 (telemetry) | STRONG | Structural potential confinement (2,400+ experiments) |
 
 ---
 

@@ -173,7 +173,7 @@ python docs/source/examples/urban_traffic_flow.py
 
 ### Technical Systems
 
-**File**: Available in main [`examples/`](../../../examples/) directory
+**File**: Available in main [`examples/`](https://github.com/fermga/TNFR-Python-Engine/tree/main/examples) directory
 
 Examples include:
 - Distributed computing
@@ -191,7 +191,7 @@ Examples include:
 
 ### Multi-scale Network
 
-**File**: Available in main [`examples/`](../../../examples/multiscale_network_demo.py)
+**File**: Available in main [`examples/multiscale_network_demo.py`](https://github.com/fermga/TNFR-Python-Engine/blob/main/examples/multiscale_network_demo.py)
 
 **Summary**: Demonstrates operational fractality with nested EPIs at multiple scales.
 
@@ -202,7 +202,7 @@ Examples include:
 
 ### Parallel Computation
 
-**File**: Available in main [`examples/`](../../../examples/parallel_computation_demo.py)
+**File**: Available in main [`examples/parallel_computation_demo.py`](https://github.com/fermga/TNFR-Python-Engine/blob/main/examples/parallel_computation_demo.py)
 
 **Summary**: Shows how to leverage JAX/PyTorch backends for GPU acceleration.
 
@@ -213,7 +213,7 @@ Examples include:
 
 ### Intelligent Caching
 
-**File**: Available in main [`examples/`](../../../examples/intelligent_caching_demo.py)
+**File**: Available in main [`examples/intelligent_caching_demo.py`](https://github.com/fermga/TNFR-Python-Engine/blob/main/examples/intelligent_caching_demo.py)
 
 **Summary**: Demonstrates caching strategies for large networks.
 
@@ -265,7 +265,7 @@ The CLI run writes telemetry to `history.json`, mirroring the metrics produced b
 
 Complete collection of examples in the main repository:
 
-**Location**: [`examples/`](../../../examples/) directory
+**Location**: [`examples/`](https://github.com/fermga/TNFR-Python-Engine/tree/main/examples) directory
 
 **Includes**:
 - `hello_world.py` - Simplest possible TNFR code

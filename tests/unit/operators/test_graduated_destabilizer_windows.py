@@ -2,7 +2,7 @@
 
 This module tests the graduated destabilizer intensity classification:
 - Strong (OZ): window of 4 operators
-- Moderate (NAV, VAL): window of 2 operators  
+- Moderate (NAV, VAL): window of 2 operators
 - Weak (EN): window of 1 operator (immediate predecessor only)
 
 References:
@@ -53,14 +53,35 @@ class TestStrongDestabilizer:
         """OZ → IL → NAV → ZHIR (3 steps)."""
         # Use TRANSITION (NAV) which is compatible with MUTATION
         result = validate_sequence(
-            [EMISSION, RECEPTION, COHERENCE, DISSONANCE, COHERENCE, TRANSITION, MUTATION, COHERENCE, SILENCE]
+            [
+                EMISSION,
+                RECEPTION,
+                COHERENCE,
+                DISSONANCE,
+                COHERENCE,
+                TRANSITION,
+                MUTATION,
+                COHERENCE,
+                SILENCE,
+            ]
         )
         assert result.passed
 
     def test_oz_window_4_three_operators(self):
         """OZ → IL → NAV → IL → ZHIR (4 steps - at window edge)."""
         result = validate_sequence(
-            [EMISSION, RECEPTION, COHERENCE, DISSONANCE, COHERENCE, TRANSITION, COHERENCE, MUTATION, COHERENCE, SILENCE]
+            [
+                EMISSION,
+                RECEPTION,
+                COHERENCE,
+                DISSONANCE,
+                COHERENCE,
+                TRANSITION,
+                COHERENCE,
+                MUTATION,
+                COHERENCE,
+                SILENCE,
+            ]
         )
         assert result.passed
 
@@ -68,9 +89,21 @@ class TestStrongDestabilizer:
         """OZ → IL → UM → IL → UM → ZHIR (5 steps - beyond window)."""
         with pytest.raises(SequenceSyntaxError) as excinfo:
             parse_sequence(
-                [EMISSION, RECEPTION, COHERENCE, DISSONANCE, COHERENCE, COUPLING, COHERENCE, COUPLING, MUTATION, COHERENCE, SILENCE]
+                [
+                    EMISSION,
+                    RECEPTION,
+                    COHERENCE,
+                    DISSONANCE,
+                    COHERENCE,
+                    COUPLING,
+                    COHERENCE,
+                    COUPLING,
+                    MUTATION,
+                    COHERENCE,
+                    SILENCE,
+                ]
             )
-        
+
         error = excinfo.value
         assert "mutation" in error.message.lower()
         assert "destabilizer" in error.message.lower()
@@ -84,14 +117,34 @@ class TestModerateDestabilizers:
         # NAV → IL → ZHIR shows 2-step window
         # Need OZ before NAV for valid transition
         result = validate_sequence(
-            [EMISSION, RECEPTION, COHERENCE, DISSONANCE, TRANSITION, COHERENCE, MUTATION, COHERENCE, SILENCE]
+            [
+                EMISSION,
+                RECEPTION,
+                COHERENCE,
+                DISSONANCE,
+                TRANSITION,
+                COHERENCE,
+                MUTATION,
+                COHERENCE,
+                SILENCE,
+            ]
         )
         assert result.passed
 
     def test_nav_window_2_one_operator(self):
         """NAV → IL → ZHIR (2 steps - at window edge)."""
         result = validate_sequence(
-            [EMISSION, RECEPTION, COHERENCE, DISSONANCE, TRANSITION, COHERENCE, MUTATION, COHERENCE, SILENCE]
+            [
+                EMISSION,
+                RECEPTION,
+                COHERENCE,
+                DISSONANCE,
+                TRANSITION,
+                COHERENCE,
+                MUTATION,
+                COHERENCE,
+                SILENCE,
+            ]
         )
         assert result.passed
 
@@ -122,9 +175,19 @@ class TestModerateDestabilizers:
         """VAL → IL → UM → ZHIR (3 steps - beyond window)."""
         with pytest.raises(SequenceSyntaxError) as excinfo:
             parse_sequence(
-                [EMISSION, RECEPTION, COHERENCE, EXPANSION, COHERENCE, COUPLING, MUTATION, COHERENCE, SILENCE]
+                [
+                    EMISSION,
+                    RECEPTION,
+                    COHERENCE,
+                    EXPANSION,
+                    COHERENCE,
+                    COUPLING,
+                    MUTATION,
+                    COHERENCE,
+                    SILENCE,
+                ]
             )
-        
+
         error = excinfo.value
         assert "mutation" in error.message.lower()
         assert "destabilizer" in error.message.lower()
@@ -139,20 +202,16 @@ class TestWeakDestabilizer:
         # But EN → ZHIR is blocked by compatibility, and EN → IL → ZHIR exceeds window
         # This test validates that EN alone doesn't satisfy bifurcation requirement
         with pytest.raises(SequenceSyntaxError) as excinfo:
-            parse_sequence(
-                [EMISSION, RECEPTION, COHERENCE, MUTATION, COHERENCE, SILENCE]
-            )
-        
+            parse_sequence([EMISSION, RECEPTION, COHERENCE, MUTATION, COHERENCE, SILENCE])
+
         error = excinfo.value
         assert "mutation" in error.message.lower()
 
     def test_en_with_intermediate_fails(self):
         """EN → IL → ZHIR (fails - EN requires immediate)."""
         with pytest.raises(SequenceSyntaxError) as excinfo:
-            parse_sequence(
-                [EMISSION, RECEPTION, COHERENCE, MUTATION, COHERENCE, SILENCE]
-            )
-        
+            parse_sequence([EMISSION, RECEPTION, COHERENCE, MUTATION, COHERENCE, SILENCE])
+
         error = excinfo.value
         assert "mutation" in error.message.lower()
         assert "destabilizer" in error.message.lower()
@@ -167,20 +226,18 @@ class TestWeakDestabilizer:
 
     def test_en_immediate_thol_also_requires_coherence(self):
         """EN → THOL fails because EN lacks coherent context for destabilization.
-        
+
         Updated with dual-role context validation: EN as weak destabilizer now
         requires prior coherence base. AL → EN → THOL fails because EN at position 1
         has no prior stabilizer (IL or THOL) to provide context for destabilization.
-        
+
         This is more precise than the generic "missing reception→coherence segment"
         error, as it specifically identifies that EN cannot destabilize THOL without
         structural preparation.
         """
         with pytest.raises(SequenceSyntaxError) as excinfo:
-            parse_sequence(
-                [EMISSION, RECEPTION, SELF_ORGANIZATION, SILENCE]
-            )
-        
+            parse_sequence([EMISSION, RECEPTION, SELF_ORGANIZATION, SILENCE])
+
         error = excinfo.value
         # With dual-role validation, fails on destabilizer requirement
         # (more specific than generic EN→IL segment requirement)
@@ -190,10 +247,8 @@ class TestWeakDestabilizer:
     def test_en_with_intermediate_thol_fails(self):
         """EN → IL → THOL (fails - EN requires immediate)."""
         with pytest.raises(SequenceSyntaxError) as excinfo:
-            parse_sequence(
-                [EMISSION, RECEPTION, COHERENCE, SELF_ORGANIZATION, SILENCE]
-            )
-        
+            parse_sequence([EMISSION, RECEPTION, COHERENCE, SELF_ORGANIZATION, SILENCE])
+
         error = excinfo.value
         assert "self_organization" in error.message.lower()
         assert "destabilizer" in error.message.lower()
@@ -207,7 +262,18 @@ class TestGraduatedMixedScenarios:
         # EN at index 1, OZ at index 3, ZHIR at index 7
         # OZ window (4) should allow this with compatible transitions
         result = validate_sequence(
-            [EMISSION, RECEPTION, COHERENCE, DISSONANCE, COHERENCE, COUPLING, COHERENCE, MUTATION, COHERENCE, SILENCE]
+            [
+                EMISSION,
+                RECEPTION,
+                COHERENCE,
+                DISSONANCE,
+                COHERENCE,
+                COUPLING,
+                COHERENCE,
+                MUTATION,
+                COHERENCE,
+                SILENCE,
+            ]
         )
         assert result.passed
 
@@ -224,14 +290,36 @@ class TestGraduatedMixedScenarios:
         """OZ (4) > VAL (2) > EN (1) for window size."""
         # OZ provides longest window - 4 operators
         result = validate_sequence(
-            [EMISSION, RECEPTION, COHERENCE, DISSONANCE, COHERENCE, COUPLING, COHERENCE, MUTATION, COHERENCE, SILENCE]
+            [
+                EMISSION,
+                RECEPTION,
+                COHERENCE,
+                DISSONANCE,
+                COHERENCE,
+                COUPLING,
+                COHERENCE,
+                MUTATION,
+                COHERENCE,
+                SILENCE,
+            ]
         )
         assert result.passed
-        
+
         # VAL cannot reach as far - only 2 operators
         with pytest.raises(SequenceSyntaxError):
             parse_sequence(
-                [EMISSION, RECEPTION, COHERENCE, EXPANSION, COHERENCE, COUPLING, COHERENCE, MUTATION, COHERENCE, SILENCE]
+                [
+                    EMISSION,
+                    RECEPTION,
+                    COHERENCE,
+                    EXPANSION,
+                    COHERENCE,
+                    COUPLING,
+                    COHERENCE,
+                    MUTATION,
+                    COHERENCE,
+                    SILENCE,
+                ]
             )
 
     def test_en_provides_weak_destabilization(self):
@@ -246,21 +334,29 @@ class TestGraduatedMixedScenarios:
         """Test THOL with graduated destabilizers."""
         # OZ allows THOL with 4-operator separation
         result = validate_sequence(
-            [EMISSION, RECEPTION, COHERENCE, DISSONANCE, COHERENCE, COUPLING, COHERENCE, SELF_ORGANIZATION, SILENCE]
+            [
+                EMISSION,
+                RECEPTION,
+                COHERENCE,
+                DISSONANCE,
+                COHERENCE,
+                COUPLING,
+                COHERENCE,
+                SELF_ORGANIZATION,
+                SILENCE,
+            ]
         )
         assert result.passed
-        
+
         # VAL allows THOL with 2-operator separation
         result = validate_sequence(
             [EMISSION, RECEPTION, COHERENCE, EXPANSION, COHERENCE, SELF_ORGANIZATION, SILENCE]
         )
         assert result.passed
-        
+
         # EN alone not sufficient (needs stronger destabilizer)
         with pytest.raises(SequenceSyntaxError):
-            parse_sequence(
-                [EMISSION, RECEPTION, COHERENCE, SELF_ORGANIZATION, SILENCE]
-            )
+            parse_sequence([EMISSION, RECEPTION, COHERENCE, SELF_ORGANIZATION, SILENCE])
 
 
 class TestBackwardCompatibility:
@@ -277,7 +373,18 @@ class TestBackwardCompatibility:
         """OZ window expanded from 3 to 4 - new sequences valid."""
         # This would have failed with window=3, now passes with window=4
         result = validate_sequence(
-            [EMISSION, RECEPTION, COHERENCE, DISSONANCE, COHERENCE, COUPLING, COHERENCE, MUTATION, COHERENCE, SILENCE]
+            [
+                EMISSION,
+                RECEPTION,
+                COHERENCE,
+                DISSONANCE,
+                COHERENCE,
+                COUPLING,
+                COHERENCE,
+                MUTATION,
+                COHERENCE,
+                SILENCE,
+            ]
         )
         assert result.passed
 
@@ -288,11 +395,21 @@ class TestBackwardCompatibility:
             [EMISSION, RECEPTION, COHERENCE, EXPANSION, COHERENCE, MUTATION, COHERENCE, SILENCE]
         )
         assert result.passed
-        
+
         # VAL at index 3, ZHIR at index 6: 3 steps (should fail)
         with pytest.raises(SequenceSyntaxError):
             parse_sequence(
-                [EMISSION, RECEPTION, COHERENCE, EXPANSION, COHERENCE, COUPLING, MUTATION, COHERENCE, SILENCE]
+                [
+                    EMISSION,
+                    RECEPTION,
+                    COHERENCE,
+                    EXPANSION,
+                    COHERENCE,
+                    COUPLING,
+                    MUTATION,
+                    COHERENCE,
+                    SILENCE,
+                ]
             )
 
 
@@ -303,7 +420,7 @@ class TestErrorMessagesGraduated:
         """Error should mention strong/moderate/weak options."""
         with pytest.raises(SequenceSyntaxError) as excinfo:
             parse_sequence([EMISSION, RECEPTION, COHERENCE, MUTATION, SILENCE])
-        
+
         error = excinfo.value
         # Should mention different window sizes
         assert "4" in error.message  # Strong window
@@ -316,7 +433,7 @@ class TestErrorMessagesGraduated:
         """Error should show graduated destabilizer options."""
         with pytest.raises(SequenceSyntaxError) as excinfo:
             parse_sequence([EMISSION, RECEPTION, COHERENCE, SELF_ORGANIZATION, SILENCE])
-        
+
         error = excinfo.value
         # Should describe the graduated structure
         assert "strong" in error.message.lower() or "4" in error.message

@@ -115,7 +115,6 @@ class FractalPartitioner:
         Uses spatial indexing for O(n log n) complexity when available.
         Adapts partition size based on network density when adaptive=True.
         """
-        import networkx as nx
 
         if len(graph) == 0:
             return []
@@ -208,7 +207,7 @@ class FractalPartitioner:
             elif avg_clustering < 0.2:
                 # Low clustering: use larger partitions
                 size_multiplier *= 1.2
-        except:
+        except (AttributeError, ZeroDivisionError, ValueError, TypeError):
             # If clustering calculation fails, skip adjustment
             pass
 
@@ -230,9 +229,7 @@ class FractalPartitioner:
             return
 
         # Extract νf and phase coordinates
-        def _get_node_attr(
-            node_id: Any, alias: tuple, fallback_key: str, default: float
-        ) -> float:
+        def _get_node_attr(node_id: Any, alias: tuple, fallback_key: str, default: float) -> float:
             """Get node attribute via TNFR alias or direct access."""
             return float(
                 get_attr(graph.nodes[node_id], alias, None)
@@ -360,9 +357,7 @@ class FractalPartitioner:
 
         # Use spatial index if available for faster neighbor finding
         if self.use_spatial_index and self._kdtree is not None:
-            candidates = set(
-                self._find_coherent_neighbors_spatial(graph, seed, available, k=50)
-            )
+            candidates = set(self._find_coherent_neighbors_spatial(graph, seed, available, k=50))
         else:
             neighbors = graph.neighbors(seed)
             candidates = set(neighbors) & available
@@ -373,9 +368,7 @@ class FractalPartitioner:
             best_coherence = -1.0
 
             for candidate in candidates:
-                coherence = self._compute_community_coherence(
-                    graph, community, candidate
-                )
+                coherence = self._compute_community_coherence(graph, community, candidate)
                 if coherence > best_coherence:
                     best_coherence = coherence
                     best_candidate = candidate
@@ -425,9 +418,7 @@ class FractalPartitioner:
         if not community:
             return 0.0
 
-        def _get_node_attr(
-            node_id: Any, alias: tuple, fallback_key: str, default: float
-        ) -> float:
+        def _get_node_attr(node_id: Any, alias: tuple, fallback_key: str, default: float) -> float:
             """Get node attribute via TNFR alias or direct access."""
             return float(
                 get_attr(graph.nodes[node_id], alias, None)

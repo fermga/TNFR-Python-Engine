@@ -159,9 +159,7 @@ def test_create_secure_redis_layer_with_secret():
     fake_client = _FakeRedis()
     secret = b"redis-secret"
 
-    layer = create_secure_redis_layer(
-        client=fake_client, secret=secret, namespace="test:cache"
-    )
+    layer = create_secure_redis_layer(client=fake_client, secret=secret, namespace="test:cache")
 
     assert layer._require_signature is True
     assert layer._signer is not None
@@ -216,9 +214,7 @@ def test_unsigned_shelve_layer_suppressed_by_env(tmp_path, monkeypatch):
         layer.close()
 
     # Check no SecurityWarning was issued
-    security_warnings = [
-        w for w in warning_list if issubclass(w.category, SecurityWarning)
-    ]
+    security_warnings = [w for w in warning_list if issubclass(w.category, SecurityWarning)]
     assert len(security_warnings) == 0
 
 
@@ -240,9 +236,7 @@ def test_unsigned_redis_layer_suppressed_by_env(monkeypatch):
         warnings.simplefilter("always")
         _layer = RedisCacheLayer(client=_FakeRedis())
 
-    security_warnings = [
-        w for w in warning_list if issubclass(w.category, SecurityWarning)
-    ]
+    security_warnings = [w for w in warning_list if issubclass(w.category, SecurityWarning)]
     assert len(security_warnings) == 0
 
 

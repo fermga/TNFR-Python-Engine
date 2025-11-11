@@ -70,9 +70,7 @@ def test_apply_selector_supports_custom_instance(monkeypatch, graph_canon):
 
     monkeypatch.setattr(selectors, "apply_glyph", fake_apply_glyph)
     monkeypatch.setattr(selectors, "on_applied_glyph", lambda *args, **kwargs: None)
-    monkeypatch.setattr(
-        selectors, "enforce_canonical_grammar", lambda graph, node, glyph: glyph
-    )
+    monkeypatch.setattr(selectors, "enforce_canonical_grammar", lambda graph, node, glyph: glyph)
 
     G.graph["glyph_selector"] = custom
     selector = selectors._apply_selector(G)

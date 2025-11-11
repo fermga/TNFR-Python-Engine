@@ -107,9 +107,7 @@ def test_parallel_chunks_cover_all_nodes_once(monkeypatch, graph_canon):
         def __enter__(self) -> "_RecordingExecutor":
             return self
 
-        def __exit__(
-            self, exc_type, exc, tb
-        ) -> None:  # noqa: D401 - standard context proto
+        def __exit__(self, exc_type, exc, tb) -> None:  # noqa: D401 - standard context proto
             return None
 
         def submit(self, func, G, node_ids: Iterable[int], grad_items, weights):
@@ -141,8 +139,7 @@ def test_parallel_chunks_cover_all_nodes_once(monkeypatch, graph_canon):
     assert max_workers_used == [4], "effective worker count respected"
 
     observed = {
-        node: get_attr(G_parallel.nodes[node], ALIAS_DNFR, 0.0)
-        for node in G_parallel.nodes
+        node: get_attr(G_parallel.nodes[node], ALIAS_DNFR, 0.0) for node in G_parallel.nodes
     }
     assert observed == expected
 
@@ -185,7 +182,5 @@ def test_pickle_failure_falls_back_to_serial(monkeypatch, graph_canon):
     # parallel execution fails. The executor may be instantiated but should
     # gracefully fall back to serial processing without raising exceptions.
 
-    observed = {
-        node: get_attr(G_serial.nodes[node], ALIAS_DNFR, 0.0) for node in G_serial.nodes
-    }
+    observed = {node: get_attr(G_serial.nodes[node], ALIAS_DNFR, 0.0) for node in G_serial.nodes}
     assert observed == expected

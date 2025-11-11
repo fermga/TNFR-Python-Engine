@@ -47,12 +47,8 @@ class TestOperatorInvariants:
 
     @PROPERTY_TEST_SETTINGS
     @given(
-        epi=st.floats(
-            min_value=-1.0, max_value=1.0, allow_nan=False, allow_infinity=False
-        ),
-        vf=st.floats(
-            min_value=0.0, max_value=1.0, allow_nan=False, allow_infinity=False
-        ),
+        epi=st.floats(min_value=-1.0, max_value=1.0, allow_nan=False, allow_infinity=False),
+        vf=st.floats(min_value=0.0, max_value=1.0, allow_nan=False, allow_infinity=False),
         theta=st.floats(
             min_value=0.0, max_value=2 * math.pi, allow_nan=False, allow_infinity=False
         ),
@@ -92,15 +88,9 @@ class TestOperatorInvariants:
 
     @PROPERTY_TEST_SETTINGS
     @given(
-        epi1=st.floats(
-            min_value=-1.0, max_value=1.0, allow_nan=False, allow_infinity=False
-        ),
-        epi2=st.floats(
-            min_value=-1.0, max_value=1.0, allow_nan=False, allow_infinity=False
-        ),
-        vf=st.floats(
-            min_value=0.01, max_value=1.0, allow_nan=False, allow_infinity=False
-        ),
+        epi1=st.floats(min_value=-1.0, max_value=1.0, allow_nan=False, allow_infinity=False),
+        epi2=st.floats(min_value=-1.0, max_value=1.0, allow_nan=False, allow_infinity=False),
+        vf=st.floats(min_value=0.01, max_value=1.0, allow_nan=False, allow_infinity=False),
     )
     def test_dnfr_gradient_direction(self, epi1: float, epi2: float, vf: float):
         """ΔNFR gradient should point from low to high EPI."""
@@ -140,12 +130,8 @@ class TestNodalEquationProperties:
 
     @PROPERTY_TEST_SETTINGS
     @given(
-        vf=st.floats(
-            min_value=0.0, max_value=1.0, allow_nan=False, allow_infinity=False
-        ),
-        dnfr=st.floats(
-            min_value=-2.0, max_value=2.0, allow_nan=False, allow_infinity=False
-        ),
+        vf=st.floats(min_value=0.0, max_value=1.0, allow_nan=False, allow_infinity=False),
+        dnfr=st.floats(min_value=-2.0, max_value=2.0, allow_nan=False, allow_infinity=False),
     )
     def test_zero_frequency_prevents_change(self, vf: float, dnfr: float):
         """When νf=0, ∂EPI/∂t should be 0 regardless of ΔNFR."""
@@ -155,15 +141,11 @@ class TestNodalEquationProperties:
         # ∂EPI/∂t = νf · ΔNFR = 0 · ΔNFR = 0
         depi_dt = vf * dnfr
         # Allow for floating point precision - if vf is 1e-8 and dnfr is 1, result is 1e-8
-        assert (
-            abs(depi_dt) < 1e-5
-        ), f"Expected near-zero change with vf≈0, got {depi_dt}"
+        assert abs(depi_dt) < 1e-5, f"Expected near-zero change with vf≈0, got {depi_dt}"
 
     @PROPERTY_TEST_SETTINGS
     @given(
-        vf=st.floats(
-            min_value=0.01, max_value=1.0, allow_nan=False, allow_infinity=False
-        ),
+        vf=st.floats(min_value=0.01, max_value=1.0, allow_nan=False, allow_infinity=False),
     )
     def test_zero_dnfr_prevents_change(self, vf: float):
         """When ΔNFR=0, ∂EPI/∂t should be 0 regardless of νf."""
@@ -175,12 +157,8 @@ class TestNodalEquationProperties:
 
     @PROPERTY_TEST_SETTINGS
     @given(
-        vf=st.floats(
-            min_value=0.1, max_value=1.0, allow_nan=False, allow_infinity=False
-        ),
-        dnfr=st.floats(
-            min_value=-1.0, max_value=1.0, allow_nan=False, allow_infinity=False
-        ),
+        vf=st.floats(min_value=0.1, max_value=1.0, allow_nan=False, allow_infinity=False),
+        dnfr=st.floats(min_value=-1.0, max_value=1.0, allow_nan=False, allow_infinity=False),
     )
     def test_nodal_equation_sign_preservation(self, vf: float, dnfr: float):
         """Sign of ∂EPI/∂t should match sign of ΔNFR when νf > 0."""
@@ -195,15 +173,9 @@ class TestNodalEquationProperties:
 
     @PROPERTY_TEST_SETTINGS
     @given(
-        vf=st.floats(
-            min_value=0.1, max_value=1.0, allow_nan=False, allow_infinity=False
-        ),
-        dnfr=st.floats(
-            min_value=-1.0, max_value=1.0, allow_nan=False, allow_infinity=False
-        ),
-        dt=st.floats(
-            min_value=0.01, max_value=1.0, allow_nan=False, allow_infinity=False
-        ),
+        vf=st.floats(min_value=0.1, max_value=1.0, allow_nan=False, allow_infinity=False),
+        dnfr=st.floats(min_value=-1.0, max_value=1.0, allow_nan=False, allow_infinity=False),
+        dt=st.floats(min_value=0.01, max_value=1.0, allow_nan=False, allow_infinity=False),
     )
     def test_nodal_equation_magnitude_scaling(self, vf: float, dnfr: float, dt: float):
         """∂EPI/∂t should scale linearly with both νf and ΔNFR."""
@@ -261,9 +233,7 @@ class TestPhaseProperties:
         # Minimum difference considering wrapping
         min_diff = min(diff, 2 * math.pi - diff) if diff > math.pi else diff
 
-        assert (
-            0.0 <= min_diff <= math.pi
-        ), f"Minimum phase difference {min_diff} outside [0, π]"
+        assert 0.0 <= min_diff <= math.pi, f"Minimum phase difference {min_diff} outside [0, π]"
 
 
 class TestStructuralConservation:
@@ -288,9 +258,7 @@ class TestStructuralConservation:
     @PROPERTY_TEST_SETTINGS
     @given(
         num_nodes=st.integers(min_value=2, max_value=10),
-        epi=st.floats(
-            min_value=-0.5, max_value=0.5, allow_nan=False, allow_infinity=False
-        ),
+        epi=st.floats(min_value=-0.5, max_value=0.5, allow_nan=False, allow_infinity=False),
     )
     def test_coherence_scales_with_size(self, num_nodes: int, epi: float):
         """Coherence should have consistent behavior as graph size changes."""
@@ -340,9 +308,7 @@ class TestBoundaryBehavior:
 
     @PROPERTY_TEST_SETTINGS
     @given(
-        epi_range=st.floats(
-            min_value=0.5, max_value=2.0, allow_nan=False, allow_infinity=False
-        ),
+        epi_range=st.floats(min_value=0.5, max_value=2.0, allow_nan=False, allow_infinity=False),
     )
     def test_large_epi_differences_handled(self, epi_range: float):
         """Large EPI differences between nodes should be handled."""
@@ -380,9 +346,7 @@ class TestGraphTopologyInvariants:
     @PROPERTY_TEST_SETTINGS
     @given(
         num_nodes=st.integers(min_value=1, max_value=8),
-        epi=st.floats(
-            min_value=-0.5, max_value=0.5, allow_nan=False, allow_infinity=False
-        ),
+        epi=st.floats(min_value=-0.5, max_value=0.5, allow_nan=False, allow_infinity=False),
     )
     def test_isolated_nodes_have_zero_dnfr(self, num_nodes: int, epi: float):
         """Isolated nodes should have ΔNFR ≈ 0."""

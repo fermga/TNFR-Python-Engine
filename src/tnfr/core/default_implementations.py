@@ -227,9 +227,7 @@ class DefaultTraceContext:
         return {
             "coherence": compute_coherence(graph),
             "node_count": graph.number_of_nodes(),
-            "edge_count": (
-                graph.number_of_edges() if hasattr(graph, "number_of_edges") else 0
-            ),
+            "edge_count": (graph.number_of_edges() if hasattr(graph, "number_of_edges") else 0),
         }
 
     def record_transition(

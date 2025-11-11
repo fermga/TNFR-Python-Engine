@@ -100,15 +100,11 @@ def test_run_sequence_validation_summary_aligns_with_metrics():
     summary = validation["summary"]
 
     post_metrics = result["post_metrics"]
-    assert summary["coherence"]["value"] == pytest.approx(
-        post_metrics["coherence_expectation"]
-    )
+    assert summary["coherence"]["value"] == pytest.approx(post_metrics["coherence_expectation"])
     freq_metric = summary["frequency"]
     assert isinstance(freq_metric, dict)
     assert freq_metric["value"] == pytest.approx(post_metrics["frequency_expectation"])
-    assert (
-        freq_metric["projection_passed"] is post_metrics["frequency_projection_passed"]
-    )
+    assert freq_metric["projection_passed"] is post_metrics["frequency_projection_passed"]
 
 
 def test_mathematical_dynamics_engine_matches_analytic_solution():
@@ -151,12 +147,8 @@ def test_mathematical_dynamics_engine_matches_scipy_when_available():
     pytest.importorskip("scipy.linalg")
     hilbert = HilbertSpace(2)
     generator = np.array([[0.3, 0.0], [0.0, -0.3]], dtype=np.complex128)
-    numpy_engine = make_dynamics_engine(
-        generator, hilbert_space=hilbert, use_scipy=False
-    )
-    scipy_engine = make_dynamics_engine(
-        generator, hilbert_space=hilbert, use_scipy=True
-    )
+    numpy_engine = make_dynamics_engine(generator, hilbert_space=hilbert, use_scipy=False)
+    scipy_engine = make_dynamics_engine(generator, hilbert_space=hilbert, use_scipy=True)
 
     state = np.array([np.sqrt(0.5) + 0j, np.sqrt(0.5) + 0j])
     numpy_step = numpy_engine.step(state, dt=0.5)
@@ -197,9 +189,7 @@ def test_operator_factory_wiring_creates_valid_node():
 def test_run_sequence_with_validation_is_reproducible_with_seed():
     summary_one, node_one = math_sequence_summary(DEFAULT_ACCEPTANCE_OPS, rng_seed=2024)
     summary_two, node_two = math_sequence_summary(DEFAULT_ACCEPTANCE_OPS, rng_seed=2024)
-    summary_three, _node_three = math_sequence_summary(
-        DEFAULT_ACCEPTANCE_OPS, rng_seed=2025
-    )
+    summary_three, _node_three = math_sequence_summary(DEFAULT_ACCEPTANCE_OPS, rng_seed=2025)
 
     np.testing.assert_allclose(summary_one["pre_state"], summary_two["pre_state"])
     np.testing.assert_allclose(summary_one["post_state"], summary_two["post_state"])

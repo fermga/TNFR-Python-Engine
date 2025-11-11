@@ -94,9 +94,7 @@ class CallbackManager:
 
         logger.exception("callback %r failed for %s: %s", spec.name, event, err)
         limit = self._error_limit_cache
-        err_list = G.graph.setdefault(
-            "_callback_errors", deque[CallbackError](maxlen=limit)
-        )
+        err_list = G.graph.setdefault("_callback_errors", deque[CallbackError](maxlen=limit))
         if err_list.maxlen != limit:
             err_list = deque[CallbackError](err_list, maxlen=limit)
             G.graph["_callback_errors"] = err_list
@@ -241,9 +239,7 @@ def _normalize_callbacks(entries: Any) -> dict[str, CallbackSpec]:
     """Return ``entries`` normalised into a callback mapping."""
     if isinstance(entries, Mapping):
         entries_iter = entries.values()
-    elif isinstance(entries, Iterable) and not isinstance(
-        entries, (str, bytes, bytearray)
-    ):
+    elif isinstance(entries, Iterable) and not isinstance(entries, (str, bytes, bytearray)):
         entries_iter = entries
     else:
         return {}

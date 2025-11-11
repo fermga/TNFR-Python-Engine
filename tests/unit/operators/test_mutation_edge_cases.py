@@ -31,12 +31,12 @@ class TestZHIRIsolatedNodes:
         G, node = create_nfr("test", epi=0.5, vf=1.0)
         # No edges - completely isolated
         assert G.degree(node) == 0
-        
+
         G.nodes[node]["epi_history"] = [0.3, 0.4, 0.5]
-        
+
         # Should not raise error (mutation is internal)
         Mutation()(G, node)
-        
+
         # Node should still be viable
         assert G.nodes[node]["νf"] > 0
         assert -1.0 <= G.nodes[node]["EPI"] <= 1.0
@@ -46,33 +46,32 @@ class TestZHIRIsolatedNodes:
         G, node = create_nfr("test", epi=0.5, vf=1.0, theta=0.5)
         G.nodes[node]["epi_history"] = [0.3, 0.4, 0.5]
         G.nodes[node]["delta_nfr"] = 0.4
-        
+
         theta_before = G.nodes[node]["theta"]
-        
+
         Mutation()(G, node)
-        
+
         theta_after = G.nodes[node]["theta"]
-        
+
         # Phase transformation should occur even without neighbors
-        assert theta_after != theta_before, \
-            "Isolated node phase not transformed"
+        assert theta_after != theta_before, "Isolated node phase not transformed"
 
     def test_zhir_isolated_preserves_all_contracts(self):
         """Isolated node should satisfy all ZHIR contracts."""
         G, node = create_nfr("test", epi=0.6, vf=1.2)
         G.nodes[node]["EPI_kind"] = "isolated_pattern"
         G.nodes[node]["epi_history"] = [0.4, 0.5, 0.6]
-        
+
         epi_before = G.nodes[node]["EPI"]
         vf_before = G.nodes[node]["νf"]
         sign_before = 1 if epi_before > 0 else -1
-        
+
         Mutation()(G, node)
-        
+
         epi_after = G.nodes[node]["EPI"]
         vf_after = G.nodes[node]["νf"]
         sign_after = 1 if epi_after > 0 else -1
-        
+
         # All contracts should hold
         assert sign_after == sign_before, "Sign contract violated"
         assert vf_after > 0, "νf contract violated"
@@ -87,11 +86,11 @@ class TestZHIRPhaseBoundaries:
         G, node = create_nfr("test", epi=0.5, vf=1.0, theta=0.0)
         G.nodes[node]["epi_history"] = [0.3, 0.4, 0.5]
         G.nodes[node]["delta_nfr"] = 0.3
-        
+
         Mutation()(G, node)
-        
+
         theta_after = G.nodes[node]["theta"]
-        
+
         # Should be in valid range
         assert 0 <= theta_after < 2 * math.pi
 
@@ -100,11 +99,11 @@ class TestZHIRPhaseBoundaries:
         G, node = create_nfr("test", epi=0.5, vf=1.0, theta=math.pi / 2)
         G.nodes[node]["epi_history"] = [0.3, 0.4, 0.5]
         G.nodes[node]["delta_nfr"] = 0.3
-        
+
         Mutation()(G, node)
-        
+
         theta_after = G.nodes[node]["theta"]
-        
+
         assert 0 <= theta_after < 2 * math.pi
 
     def test_zhir_at_pi(self):
@@ -112,11 +111,11 @@ class TestZHIRPhaseBoundaries:
         G, node = create_nfr("test", epi=0.5, vf=1.0, theta=math.pi)
         G.nodes[node]["epi_history"] = [0.3, 0.4, 0.5]
         G.nodes[node]["delta_nfr"] = 0.3
-        
+
         Mutation()(G, node)
-        
+
         theta_after = G.nodes[node]["theta"]
-        
+
         assert 0 <= theta_after < 2 * math.pi
 
     def test_zhir_near_2pi_wraps(self):
@@ -125,11 +124,11 @@ class TestZHIRPhaseBoundaries:
         G.nodes[node]["epi_history"] = [0.3, 0.4, 0.5]
         G.nodes[node]["delta_nfr"] = 0.5  # Will push past 2π
         G.graph["GLYPH_FACTORS"] = {"ZHIR_theta_shift_factor": 0.4}
-        
+
         Mutation()(G, node)
-        
+
         theta_after = G.nodes[node]["theta"]
-        
+
         # Should wrap into valid range
         assert 0 <= theta_after < 2 * math.pi
         # Should have wrapped to small value
@@ -144,18 +143,19 @@ class TestZHIRPhaseBoundaries:
             3 * math.pi / 2,
             1.99 * math.pi,  # Just before 2π
         ]
-        
+
         for boundary in boundaries:
             G, node = create_nfr(f"test_{boundary}", epi=0.5, vf=1.0, theta=boundary)
             G.nodes[node]["epi_history"] = [0.3, 0.4, 0.5]
             G.nodes[node]["delta_nfr"] = 0.3
-            
+
             # Should not raise error
             Mutation()(G, node)
-            
+
             theta_after = G.nodes[node]["theta"]
-            assert 0 <= theta_after < 2 * math.pi, \
-                f"Invalid phase after mutation at boundary {boundary}: {theta_after}"
+            assert (
+                0 <= theta_after < 2 * math.pi
+            ), f"Invalid phase after mutation at boundary {boundary}: {theta_after}"
 
 
 class TestZHIRReproducibility:
@@ -175,7 +175,7 @@ class TestZHIRReproducibility:
             "epi": G1.nodes[node1]["EPI"],
             "vf": G1.nodes[node1]["νf"],
         }
-        
+
         # Second run with same seed
         random.seed(42)
         np.random.seed(42)
@@ -188,7 +188,7 @@ class TestZHIRReproducibility:
             "epi": G2.nodes[node2]["EPI"],
             "vf": G2.nodes[node2]["νf"],
         }
-        
+
         # Should be identical
         assert abs(result1["theta"] - result2["theta"]) < 1e-10
         assert abs(result1["EPI"] - result2["EPI"]) < 1e-10
@@ -204,7 +204,7 @@ class TestZHIRReproducibility:
         G1.nodes[node1]["delta_nfr"] = 0.3
         Mutation()(G1, node1)
         theta1 = G1.nodes[node1]["theta"]
-        
+
         # Run with seed 2
         random.seed(2)
         np.random.seed(2)
@@ -213,7 +213,7 @@ class TestZHIRReproducibility:
         G2.nodes[node2]["delta_nfr"] = 0.3
         Mutation()(G2, node2)
         theta2 = G2.nodes[node2]["theta"]
-        
+
         # Results may be different if operator uses randomness
         # (If deterministic, they'll be the same - that's OK too)
 
@@ -226,7 +226,7 @@ class TestZHIRReproducibility:
         G1.nodes[node1]["epi_history"] = [0.35, 0.42, 0.50]
         run_sequence(G1, node1, [Coherence(), Dissonance(), Mutation()])
         state1 = G1.nodes[node1]["theta"]
-        
+
         # Second run with same seed
         random.seed(100)
         np.random.seed(100)
@@ -234,7 +234,7 @@ class TestZHIRReproducibility:
         G2.nodes[node2]["epi_history"] = [0.35, 0.42, 0.50]
         run_sequence(G2, node2, [Coherence(), Dissonance(), Mutation()])
         state2 = G2.nodes[node2]["theta"]
-        
+
         # Should be identical
         assert abs(state1 - state2) < 1e-10
 
@@ -246,9 +246,9 @@ class TestZHIRExtremeCases:
         """ZHIR near upper EPI bound."""
         G, node = create_nfr("test", epi=0.95, vf=1.0)
         G.nodes[node]["epi_history"] = [0.85, 0.90, 0.95]
-        
+
         Mutation()(G, node)
-        
+
         # Should not exceed bounds
         assert G.nodes[node]["EPI"] <= 1.0
 
@@ -256,9 +256,9 @@ class TestZHIRExtremeCases:
         """ZHIR near lower EPI bound."""
         G, node = create_nfr("test", epi=-0.95, vf=1.0)
         G.nodes[node]["epi_history"] = [-0.85, -0.90, -0.95]
-        
+
         Mutation()(G, node)
-        
+
         # Should not exceed bounds
         assert G.nodes[node]["EPI"] >= -1.0
 
@@ -266,10 +266,10 @@ class TestZHIRExtremeCases:
         """ZHIR with very high structural frequency."""
         G, node = create_nfr("test", epi=0.5, vf=9.5)  # Near maximum (10.0)
         G.nodes[node]["epi_history"] = [0.3, 0.4, 0.5]
-        
+
         # Should not raise error
         Mutation()(G, node)
-        
+
         # Should still be viable
         assert G.nodes[node]["νf"] > 0
 
@@ -278,10 +278,10 @@ class TestZHIRExtremeCases:
         G, node = create_nfr("test", epi=0.5, vf=1.0)
         G.nodes[node]["epi_history"] = [0.2, 0.35, 0.5]
         G.nodes[node]["delta_nfr"] = 5.0  # Very high
-        
+
         # Should not crash
         Mutation()(G, node)
-        
+
         # Should maintain bounds
         assert -1.0 <= G.nodes[node]["EPI"] <= 1.0
 
@@ -290,13 +290,13 @@ class TestZHIRExtremeCases:
         G, node = create_nfr("test", epi=0.5, vf=1.0, theta=1.0)
         G.nodes[node]["epi_history"] = [0.7, 0.6, 0.5]
         G.nodes[node]["delta_nfr"] = -0.8  # Strong contraction
-        
+
         theta_before = G.nodes[node]["theta"]
-        
+
         Mutation()(G, node)
-        
+
         theta_after = G.nodes[node]["theta"]
-        
+
         # Should still transform (direction depends on sign of ΔNFR)
         # Phase should have shifted backward
         shift = theta_after - theta_before
@@ -313,7 +313,7 @@ class TestZHIRUnusualConfigurations:
         """ZHIR should handle missing history keys gracefully."""
         G, node = create_nfr("test", epi=0.5, vf=1.0)
         # Explicitly don't set epi_history
-        
+
         # Should not crash (may log warning)
         Mutation()(G, node)
 
@@ -321,7 +321,7 @@ class TestZHIRUnusualConfigurations:
         """ZHIR with empty history should handle gracefully."""
         G, node = create_nfr("test", epi=0.5, vf=1.0)
         G.nodes[node]["epi_history"] = []  # Empty
-        
+
         # Should not crash (may log warning)
         Mutation()(G, node)
 
@@ -331,7 +331,7 @@ class TestZHIRUnusualConfigurations:
         G.nodes[node]["epi_history"] = [0.3, 0.4, 0.5]
         # Don't inject NaN - just ensure it wouldn't crash
         # (Actual NaN injection would violate TNFR invariants)
-        
+
         # Normal operation should work
         Mutation()(G, node)
 
@@ -339,11 +339,11 @@ class TestZHIRUnusualConfigurations:
         """Multiple immediate ZHIR applications (no intermediate ops)."""
         G, node = create_nfr("test", epi=0.5, vf=1.0)
         G.nodes[node]["epi_history"] = [0.3, 0.4, 0.5]
-        
+
         # Apply 5 times immediately
         for i in range(5):
             Mutation()(G, node)
-        
+
         # Node should still be viable
         assert G.nodes[node]["νf"] > 0
         assert -1.0 <= G.nodes[node]["EPI"] <= 1.0

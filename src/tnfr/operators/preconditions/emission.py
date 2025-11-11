@@ -91,9 +91,7 @@ def validate_emission_strict(G: TNFRGraph, node: Any) -> None:
     # Get configurable thresholds (allow override via graph metadata)
     epi_threshold = float(G.graph.get("EPI_LATENT_MAX", EPI_LATENT_MAX))
     vf_threshold = float(G.graph.get("VF_BASAL_THRESHOLD", VF_BASAL_THRESHOLD))
-    min_degree = int(
-        G.graph.get("MIN_NETWORK_DEGREE_COUPLING", MIN_NETWORK_DEGREE_COUPLING)
-    )
+    min_degree = int(G.graph.get("MIN_NETWORK_DEGREE_COUPLING", MIN_NETWORK_DEGREE_COUPLING))
 
     # Precondition 1: EPI must be below latent threshold (node in latent state)
     # Emission is for activating nascent/latent structures, not boosting active ones

@@ -1,1 +1,0 @@
-../../grammar/EXECUTIVE-SUMMARY.md

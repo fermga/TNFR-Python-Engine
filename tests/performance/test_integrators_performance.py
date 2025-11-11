@@ -48,8 +48,7 @@ def _build_graph_and_increments(
         staged = (base_rate + 0.08 * numpy.sin(phase))[:, None]
 
     increments = {
-        node: tuple(float(value) for value in staged[idx])
-        for idx, node in enumerate(graph.nodes)
+        node: tuple(float(value) for value in staged[idx]) for idx, node in enumerate(graph.nodes)
     }
 
     dt_step = 0.05

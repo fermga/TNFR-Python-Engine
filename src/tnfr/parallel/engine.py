@@ -6,7 +6,6 @@ while preserving all TNFR structural invariants.
 
 from __future__ import annotations
 
-from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
 from multiprocessing import cpu_count
 from typing import TYPE_CHECKING, Any, Dict, Optional
 
@@ -118,7 +117,7 @@ class TNFRParallelEngine:
                     for n in node_set
                 )
                 return vf_sum / len(node_set)
-            except:
+            except (ZeroDivisionError, AttributeError, KeyError, TypeError):
                 return 0.0
 
         sorted_partitions = sorted(partitions, key=partition_center)
@@ -138,9 +137,7 @@ class TNFRParallelEngine:
 
         return chunks
 
-    def compute_delta_nfr_parallel(
-        self, graph: TNFRGraph, **kwargs: Any
-    ) -> Dict[Any, float]:
+    def compute_delta_nfr_parallel(self, graph: TNFRGraph, **kwargs: Any) -> Dict[Any, float]:
         """Compute ΔNFR in parallel using fractal partitioning.
 
         Delegates to existing default_compute_delta_nfr with n_jobs parameter.

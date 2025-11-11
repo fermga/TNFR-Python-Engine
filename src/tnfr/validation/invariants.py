@@ -118,9 +118,7 @@ class Invariant1_EPIOnlyThroughOperators(TNFRInvariant):
                     if isinstance(epi_value, complex):
                         epi_value = abs(epi_value)
                     current_epi = (
-                        float(epi_value)
-                        if isinstance(epi_value, (int, float, complex))
-                        else 0.0
+                        float(epi_value) if isinstance(epi_value, (int, float, complex)) else 0.0
                     )
                 else:
                     # Skip validation for complex structures we can't interpret
@@ -145,9 +143,7 @@ class Invariant1_EPIOnlyThroughOperators(TNFRInvariant):
                 )
 
             # Verificar que EPI es un número finito
-            if not isinstance(current_epi, (int, float)) or not math.isfinite(
-                current_epi
-            ):
+            if not isinstance(current_epi, (int, float)) or not math.isfinite(current_epi):
                 violations.append(
                     InvariantViolation(
                         invariant_id=1,
@@ -189,11 +185,7 @@ class Invariant1_EPIOnlyThroughOperators(TNFRInvariant):
                     epi_val = epi_val[0]
                 if isinstance(epi_val, complex):
                     epi_val = abs(epi_val)
-                epi_value = (
-                    float(epi_val)
-                    if isinstance(epi_val, (int, float, complex))
-                    else 0.0
-                )
+                epi_value = float(epi_val) if isinstance(epi_val, (int, float, complex)) else 0.0
             elif isinstance(epi_value, complex):
                 epi_value = abs(epi_value)
 
@@ -535,9 +527,7 @@ class Invariant7_OperationalFractality(TNFRInvariant):
                         sub_epi = epi[key]
                         if isinstance(sub_epi, (tuple, list)):
                             for val in sub_epi:
-                                if isinstance(val, complex) and not math.isfinite(
-                                    abs(val)
-                                ):
+                                if isinstance(val, complex) and not math.isfinite(abs(val)):
                                     violations.append(
                                         InvariantViolation(
                                             invariant_id=7,

@@ -9,18 +9,15 @@ All functions reuse canonical utilities from glyph_history and alias modules.
 
 from __future__ import annotations
 
-from typing import Any, Mapping, Sequence
+from typing import Any, Sequence
 
 from ..alias import get_attr
-from ..constants.aliases import ALIAS_EPI, ALIAS_VF, ALIAS_DNFR
-from ..glyph_history import ensure_history, count_glyphs
+from ..constants.aliases import ALIAS_EPI
 from ..types import TNFRGraph, Glyph
 from ..config.operator_names import (
     COHERENCE,
     DISSONANCE,
-    EMISSION,
     MUTATION,
-    RECEPTION,
     RECURSIVITY,
     SELF_ORGANIZATION,
     SILENCE,

@@ -105,7 +105,7 @@ Hands-on exploration and visualization of TNFR concepts:
 
 ### From Theory to Practice
 - **Mathematical Foundations** → [API Overview](../api/overview.md)
-- **Classical Mechanics** → [Examples: Validation scripts](../../../examples/README.md)
+- **Classical Mechanics** → [Examples: Validation scripts](../examples/README.md)
 - **Euler-Lagrange** → [Operators Guide](../user-guide/OPERATORS_GUIDE.md)
 
 ### Related Documentation

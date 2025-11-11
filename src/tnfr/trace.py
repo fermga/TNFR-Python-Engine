@@ -212,9 +212,7 @@ EMPTY_MAPPING: Mapping[str, Any] = MappingProxyType({})
 
 def mapping_field(G: TNFRGraph, graph_key: str, out_key: str) -> TraceMetadata:
     """Copy mappings from ``G.graph`` into trace output."""
-    mapping = get_graph_mapping(
-        G, graph_key, f"G.graph[{graph_key!r}] is not a mapping; ignoring"
-    )
+    mapping = get_graph_mapping(G, graph_key, f"G.graph[{graph_key!r}] is not a mapping; ignoring")
     if mapping is None:
         return {}
     return {out_key: mapping}

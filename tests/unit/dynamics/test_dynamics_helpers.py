@@ -44,9 +44,7 @@ def test_init_and_refresh_dnfr_cache(graph_canon):
     for i in range(2):
         G.add_node(i, theta=0.1 * i, EPI=float(i), VF=float(i))
     nodes = list(G.nodes())
-    cache, idx, th, epi, vf, _cx, _sx, refreshed = _init_dnfr_cache(
-        G, nodes, None, 1, False
-    )
+    cache, idx, th, epi, vf, _cx, _sx, refreshed = _init_dnfr_cache(G, nodes, None, 1, False)
     assert refreshed
     _refresh_dnfr_vectors(G, nodes, cache)
     # When numpy is available, values are in numpy arrays, not Python lists
@@ -300,8 +298,7 @@ def test_compute_dnfr_common_numpy_matches_python(monkeypatch):
 
     dnfr_alias = get_aliases("DNFR")
     vector_values = [
-        get_attr(vector_graph.nodes[node], dnfr_alias, 0.0)
-        for node in vector_graph.nodes
+        get_attr(vector_graph.nodes[node], dnfr_alias, 0.0) for node in vector_graph.nodes
     ]
 
     with monkeypatch.context() as ctx:
@@ -311,8 +308,7 @@ def test_compute_dnfr_common_numpy_matches_python(monkeypatch):
         dnfr_module._compute_dnfr(python_graph, python_data)
 
     python_values = [
-        get_attr(python_graph.nodes[node], dnfr_alias, 0.0)
-        for node in python_graph.nodes
+        get_attr(python_graph.nodes[node], dnfr_alias, 0.0) for node in python_graph.nodes
     ]
 
     assert vector_values == pytest.approx(python_values, rel=1e-9, abs=1e-9)
@@ -351,9 +347,7 @@ def test_prepare_dnfr_falls_back_when_jobs_kw_rejected(graph_canon):
     assert "_sel_norms" not in G.graph
 
 
-def test_prepare_dnfr_handles_signature_errors(
-    monkeypatch, graph_canon, compute_delta_nfr_hook
-):
+def test_prepare_dnfr_handles_signature_errors(monkeypatch, graph_canon, compute_delta_nfr_hook):
     G = graph_canon()
     dnfr_alias = get_aliases("DNFR")
     hook, recorded = compute_delta_nfr_hook

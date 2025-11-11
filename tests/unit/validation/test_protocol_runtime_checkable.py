@@ -32,9 +32,7 @@ def test_validator_protocol_is_runtime_checkable() -> None:
     mock = MockValidator()
 
     # This should work because Validator has @runtime_checkable
-    assert isinstance(
-        mock, Validator
-    ), "MockValidator should satisfy Validator protocol"
+    assert isinstance(mock, Validator), "MockValidator should satisfy Validator protocol"
 
 
 def test_validator_protocol_rejects_incomplete_implementation() -> None:

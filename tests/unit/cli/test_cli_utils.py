@@ -40,9 +40,7 @@ def test_spec_respects_explicit_dest_and_default() -> None:
         ("Null", None),
     ],
 )
-def test_normalize_optional_int_accepts_known_sentinels(
-    raw: object, expected: int | None
-) -> None:
+def test_normalize_optional_int_accepts_known_sentinels(raw: object, expected: int | None) -> None:
     """The shared helper should normalise integers and reserved sentinel strings."""
 
     assert normalize_optional_int(raw, strict=True) == expected

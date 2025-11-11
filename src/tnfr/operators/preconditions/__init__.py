@@ -11,19 +11,13 @@ imports (from ..preconditions import validate_*) and new modular imports
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from ...types import NodeId, TNFRGraph
     import logging
 
 from ...alias import get_attr
-from ...config.operator_names import (
-    BIFURCATION_WINDOWS,
-    DESTABILIZERS_MODERATE,
-    DESTABILIZERS_STRONG,
-    DESTABILIZERS_WEAK,
-)
 from ...constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
 
 __all__ = [
@@ -114,9 +108,7 @@ def validate_reception(G: "TNFRGraph", node: "NodeId") -> None:
     """
     neighbors = list(G.neighbors(node))
     if not neighbors:
-        raise OperatorPreconditionError(
-            "Reception", "Node has no neighbors to receive energy from"
-        )
+        raise OperatorPreconditionError("Reception", "Node has no neighbors to receive energy from")
 
 
 def validate_coherence(G: "TNFRGraph", node: "NodeId") -> None:
@@ -313,7 +305,7 @@ def validate_coupling(G: "TNFRGraph", node: "NodeId") -> None:
     -----
     **IMPORTANT**: Phase compatibility check is now MANDATORY by default
     (UM_STRICT_PHASE_CHECK=True) to align with AGENTS.md Invariant #5 and U3.
-    
+
     [Legacy note: Previously referenced RC3. See docs/grammar/DEPRECATION-INDEX.md]
 
     Set UM_STRICT_PHASE_CHECK=False to disable (NOT RECOMMENDED - violates
@@ -337,16 +329,14 @@ def validate_coupling(G: "TNFRGraph", node: "NodeId") -> None:
     Coupling : UM operator that uses this validation
     AGENTS.md : Invariant #5 (phase check mandatory)
     UNIFIED_GRAMMAR_RULES.md : U3 derivation
-    
+
     [Legacy: Previously referenced EMERGENT_GRAMMAR_ANALYSIS.md RC3]
     """
     import math
 
     # Basic graph check - at least one other node required
     if G.number_of_nodes() <= 1:
-        raise OperatorPreconditionError(
-            "Coupling", "Graph has no other nodes to couple with"
-        )
+        raise OperatorPreconditionError("Coupling", "Graph has no other nodes to couple with")
 
     # Node must be active (non-zero EPI)
     epi = _get_node_attr(G, node, ALIAS_EPI)
@@ -494,22 +484,22 @@ def validate_silence(G: "TNFRGraph", node: "NodeId") -> None:
 
 def validate_expansion(G: "TNFRGraph", node: "NodeId") -> None:
     """VAL - Expansion requires comprehensive canonical preconditions.
-    
+
     Canonical Requirements (TNFR Physics):
     1. **νf < max_vf**: Structural frequency below saturation
     2. **ΔNFR > 0**: Positive reorganization gradient (growth pressure)
     3. **EPI >= min_epi**: Sufficient base coherence for expansion
     4. **(Optional) Network capacity**: Check if network can support expansion
-    
+
     Physical Basis:
     ----------------
     From nodal equation: ∂EPI/∂t = νf · ΔNFR(t)
-    
+
     For coherent expansion:
     - ΔNFR > 0 required: expansion needs outward pressure
     - EPI > threshold: must have coherent base to expand from
     - νf < max: must have capacity for increased reorganization
-    
+
     Parameters
     ----------
     G : TNFRGraph
@@ -552,12 +542,12 @@ def validate_expansion(G: "TNFRGraph", node: "NodeId") -> None:
     >>> # Invalid: negative ΔNFR
     >>> G.nodes[node]['delta_nfr'] = -0.1
     >>> validate_expansion(G, node)  # Raises OperatorPreconditionError
-    
+
     Notes
     -----
     VAL increases both EPI magnitude and νf, enabling exploration of new
     structural configurations while maintaining core identity (fractality).
-    
+
     See Also
     --------
     Expansion : VAL operator implementation
@@ -572,7 +562,7 @@ def validate_expansion(G: "TNFRGraph", node: "NodeId") -> None:
             f"Structural frequency at maximum (νf={vf:.3f} >= {max_vf:.3f}). "
             f"Node at reorganization capacity limit.",
         )
-    
+
     # 2. ΔNFR positivity check (NEW - CRITICAL)
     dnfr = _get_node_attr(G, node, ALIAS_DNFR)
     min_dnfr = float(G.graph.get("VAL_MIN_DNFR", 1e-6))
@@ -582,7 +572,7 @@ def validate_expansion(G: "TNFRGraph", node: "NodeId") -> None:
             f"ΔNFR must be positive for expansion (ΔNFR={dnfr:.3f} < {min_dnfr:.3f}). "
             f"No outward growth pressure detected. Consider OZ (Dissonance) to generate ΔNFR.",
         )
-    
+
     # 3. EPI minimum check (NEW - IMPORTANT)
     epi = _get_node_attr(G, node, ALIAS_EPI)
     min_epi = float(G.graph.get("VAL_MIN_EPI", 0.2))
@@ -592,7 +582,7 @@ def validate_expansion(G: "TNFRGraph", node: "NodeId") -> None:
             f"EPI too low for coherent expansion (EPI={epi:.3f} < {min_epi:.3f}). "
             f"Insufficient structural base. Consider AL (Emission) to activate node first.",
         )
-    
+
     # 4. Network capacity check (OPTIONAL - for large-scale systems)
     check_capacity = bool(G.graph.get("VAL_CHECK_NETWORK_CAPACITY", False))
     if check_capacity:
@@ -608,21 +598,21 @@ def validate_expansion(G: "TNFRGraph", node: "NodeId") -> None:
 
 def validate_contraction(G: "TNFRGraph", node: "NodeId") -> None:
     """NUL - Enhanced precondition validation with over-compression check.
-    
+
     Canonical Requirements (TNFR Physics):
     1. **νf > min_vf**: Structural frequency above minimum for reorganization
     2. **EPI >= min_epi**: Sufficient structural form to contract safely
     3. **density <= max_density**: Not already at critical compression
-    
+
     Physical Basis:
     ----------------
     From nodal equation: ∂EPI/∂t = νf · ΔNFR(t)
-    
+
     For safe contraction:
     - EPI must have sufficient magnitude (can't compress vacuum)
     - Density ρ = |ΔNFR| / EPI must not exceed critical threshold
     - Over-compression (ρ → ∞) causes structural collapse
-    
+
     Density is the structural pressure per unit form. When EPI contracts
     while ΔNFR increases (canonical densification), density rises. If already
     at critical density, further contraction risks fragmentation.
@@ -641,7 +631,7 @@ def validate_contraction(G: "TNFRGraph", node: "NodeId") -> None:
         - Structural frequency at minimum
         - EPI too low for safe contraction
         - Node already at critical density
-    
+
     Configuration Parameters
     ------------------------
     NUL_MIN_VF : float, default 0.1
@@ -650,7 +640,7 @@ def validate_contraction(G: "TNFRGraph", node: "NodeId") -> None:
         Minimum EPI for safe contraction
     NUL_MAX_DENSITY : float, default 10.0
         Maximum density threshold (ρ = |ΔNFR| / max(EPI, ε))
-    
+
     Examples
     --------
     >>> from tnfr.structural import create_nfr
@@ -669,7 +659,7 @@ def validate_contraction(G: "TNFRGraph", node: "NodeId") -> None:
     >>> G, node = create_nfr("over_compressed", epi=0.1, vf=1.0)
     >>> G.nodes[node]['delta_nfr'] = 2.0  # High ΔNFR
     >>> validate_contraction(G, node)  # Raises OperatorPreconditionError
-    
+
     See Also
     --------
     Contraction : NUL operator implementation
@@ -678,7 +668,7 @@ def validate_contraction(G: "TNFRGraph", node: "NodeId") -> None:
     vf = _get_node_attr(G, node, ALIAS_VF)
     epi = _get_node_attr(G, node, ALIAS_EPI)
     dnfr = _get_node_attr(G, node, ALIAS_DNFR)
-    
+
     # Check 1: νf must be above minimum
     min_vf = float(G.graph.get("NUL_MIN_VF", 0.1))
     if vf <= min_vf:
@@ -686,7 +676,7 @@ def validate_contraction(G: "TNFRGraph", node: "NodeId") -> None:
             "Contraction",
             f"Structural frequency at minimum (νf={vf:.3f} <= {min_vf:.3f})",
         )
-    
+
     # Check 2: EPI must be above minimum for contraction
     min_epi = float(G.graph.get("NUL_MIN_EPI", 0.1))
     if epi < min_epi:
@@ -695,7 +685,7 @@ def validate_contraction(G: "TNFRGraph", node: "NodeId") -> None:
             f"EPI too low for safe contraction (EPI={epi:.3f} < {min_epi:.3f}). "
             f"Cannot compress structure below minimum coherent form.",
         )
-    
+
     # Check 3: Density must not exceed critical threshold
     # Density ρ = |ΔNFR| / max(EPI, ε) - structural pressure per unit form
     epsilon = 1e-9
@@ -725,14 +715,14 @@ def validate_self_organization(G: "TNFRGraph", node: "NodeId") -> None:
     for telemetry and structural tracing purposes.
 
     **Bifurcation Threshold Validation (∂²EPI/∂t² > τ):**
-    
+
     According to TNFR.pdf §2.2.10, THOL bifurcation occurs only when structural
     acceleration exceeds threshold τ. This function now explicitly validates this
     condition and sets telemetry flags:
-    
+
     - If ∂²EPI/∂t² > τ: Bifurcation will occur (normal THOL behavior)
     - If ∂²EPI/∂t² ≤ τ: THOL executes but no sub-EPIs generated (warning logged)
-    
+
     The validation is NON-BLOCKING (warning only) because THOL can meaningfully
     execute without bifurcation - it still applies coherence and metabolic effects.
 
@@ -847,10 +837,10 @@ def validate_self_organization(G: "TNFRGraph", node: "NodeId") -> None:
     # This is NON-BLOCKING - THOL can execute without bifurcation
     # Note: SelfOrganization uses its own _compute_epi_acceleration which looks at 'epi_history'
     # while compute_d2epi_dt2 looks at '_epi_history'. We check both for compatibility.
-    
+
     # Get EPI history from node (try both keys for compatibility)
     history = G.nodes[node].get("_epi_history") or G.nodes[node].get("epi_history", [])
-    
+
     # Compute d²EPI/dt² directly from history (same logic as both functions)
     if len(history) >= 3:
         epi_t = float(history[-1])
@@ -950,23 +940,23 @@ def validate_mutation(G: "TNFRGraph", node: "NodeId") -> None:
     Notes
     -----
     **Canonical threshold verification (∂EPI/∂t > ξ)**:
-    
+
     ZHIR is a phase transformation that requires sufficient structural reorganization
     velocity to justify the transition. The threshold ξ represents the minimum rate
     of structural change needed for a phase shift to be physically meaningful.
-    
+
     - If ∂EPI/∂t < ξ: Logs warning (soft check for backward compatibility)
     - If ∂EPI/∂t ≥ ξ: Logs success, sets validation flag
     - If insufficient history: Logs warning, cannot verify
-    
+
     **U4b Validation (Grammar Rule)**:
-    
+
     When strict validation enabled (VALIDATE_OPERATOR_PRECONDITIONS=True):
     - **Part 1**: Prior IL (Coherence) required for stable base
     - **Part 2**: Recent destabilizer (OZ/VAL/etc) required within ~3 ops
-    
+
     Without strict validation: Only telemetry/warnings logged.
-    
+
     This function implements R4 Extended telemetry by analyzing the glyph_history
     to determine which destabilizer (strong/moderate/weak) enabled the mutation.
     The destabilizer context is stored in node metadata for structural tracing.
@@ -987,15 +977,15 @@ def validate_mutation(G: "TNFRGraph", node: "NodeId") -> None:
     # NEW: Threshold crossing validation (∂EPI/∂t > ξ)
     # Get EPI history - check both keys for compatibility
     epi_history = G.nodes[node].get("epi_history") or G.nodes[node].get("_epi_history", [])
-    
+
     if len(epi_history) >= 2:
         # Compute ∂EPI/∂t (discrete approximation using last two points)
         # For discrete operator applications with Δt=1: ∂EPI/∂t ≈ EPI_t - EPI_{t-1}
         depi_dt = abs(epi_history[-1] - epi_history[-2])
-        
+
         # Get threshold from configuration
         xi_threshold = float(G.graph.get("ZHIR_THRESHOLD_XI", 0.1))
-        
+
         # Verify threshold crossed
         if depi_dt < xi_threshold:
             # Allow mutation but log warning (soft check for backward compatibility)
@@ -1023,48 +1013,50 @@ def validate_mutation(G: "TNFRGraph", node: "NodeId") -> None:
     # Check if strict validation enabled
     strict_validation = bool(G.graph.get("VALIDATE_OPERATOR_PRECONDITIONS", False))
     require_il = strict_validation or bool(G.graph.get("ZHIR_REQUIRE_IL_PRECEDENCE", False))
-    
+
     if require_il:
         # Get glyph history
         glyph_history = G.nodes[node].get("glyph_history", [])
-        
+
         # Import glyph_function_name to convert glyphs to operator names
         from ..grammar import glyph_function_name
-        
+
         # Convert history to operator names
         history_names = [glyph_function_name(g) for g in glyph_history]
-        
+
         # Check for prior IL (coherence)
         il_found = "coherence" in history_names
-        
+
         if not il_found:
             raise OperatorPreconditionError(
                 "Mutation",
                 "U4b violation: ZHIR requires prior IL (Coherence) for stable transformation base. "
                 "Apply Coherence before mutation sequence. "
-                f"Recent history: {history_names[-5:] if len(history_names) > 5 else history_names}"
+                f"Recent history: {history_names[-5:] if len(history_names) > 5 else history_names}",
             )
-        
+
         logger.debug(f"Node {node}: ZHIR IL precedence satisfied (prior Coherence found)")
 
     # U4b Part 2: Recent Destabilizer Check (threshold energy for bifurcation)
     # R4 Extended: Detect and record destabilizer type for telemetry
     _record_destabilizer_context(G, node, logger)
-    
+
     # If strict validation enabled, enforce destabilizer requirement
-    require_destabilizer = strict_validation or bool(G.graph.get("ZHIR_REQUIRE_DESTABILIZER", False))
-    
+    require_destabilizer = strict_validation or bool(
+        G.graph.get("ZHIR_REQUIRE_DESTABILIZER", False)
+    )
+
     if require_destabilizer:
         context = G.nodes[node].get("_mutation_context", {})
         destabilizer_found = context.get("destabilizer_operator")
-        
+
         if destabilizer_found is None:
             recent_history = context.get("recent_history", [])
             raise OperatorPreconditionError(
                 "Mutation",
                 "U4b violation: ZHIR requires recent destabilizer (OZ/VAL/etc) within ~3 ops. "
                 f"Recent history: {recent_history}. "
-                "Apply Dissonance or Expansion to elevate ΔNFR first."
+                "Apply Dissonance or Expansion to elevate ΔNFR first.",
             )
 
 
@@ -1187,9 +1179,9 @@ def validate_transition(G: "TNFRGraph", node: "NodeId") -> None:
             # NAV works best after stabilizers or generators
             # Valid predecessors per TNFR.pdf §2.3.11 and AGENTS.md
             valid_predecessors = {
-                "emission",      # AL → NAV (activation-transition)
-                "coherence",     # IL → NAV (stable-transition)
-                "silence",       # SHA → NAV (latency-transition)
+                "emission",  # AL → NAV (activation-transition)
+                "coherence",  # IL → NAV (stable-transition)
+                "silence",  # SHA → NAV (latency-transition)
                 "self_organization",  # THOL → NAV (bifurcation-transition)
             }
 

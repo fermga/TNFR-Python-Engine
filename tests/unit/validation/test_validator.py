@@ -82,9 +82,7 @@ class TestTNFRValidator:
         assert len(all_violations) > 0
 
         # Filter only warnings
-        warnings = validator.validate_graph(
-            G, severity_filter=InvariantSeverity.WARNING
-        )
+        warnings = validator.validate_graph(G, severity_filter=InvariantSeverity.WARNING)
         assert len(warnings) > 0
         assert all(v.severity == InvariantSeverity.WARNING for v in warnings)
 
@@ -103,9 +101,7 @@ class TestTNFRValidator:
     def test_generate_report_with_violations(self):
         """Test report generation with violations."""
         G = nx.Graph()
-        G.add_node(
-            "node1", **{EPI_PRIMARY: 2.0, VF_PRIMARY: -1.0, THETA_PRIMARY: float("inf")}
-        )
+        G.add_node("node1", **{EPI_PRIMARY: 2.0, VF_PRIMARY: -1.0, THETA_PRIMARY: float("inf")})
 
         validator = TNFRValidator()
         violations = validator.validate_graph(G)
@@ -212,9 +208,5 @@ class TestTNFRValidator:
         violations = validator.validate_graph(G)
 
         # Should have a critical violation about validator failure
-        critical_violations = [
-            v for v in violations if v.severity == InvariantSeverity.CRITICAL
-        ]
-        assert any(
-            "Validator execution failed" in v.description for v in critical_violations
-        )
+        critical_violations = [v for v in violations if v.severity == InvariantSeverity.CRITICAL]
+        assert any("Validator execution failed" in v.description for v in critical_violations)

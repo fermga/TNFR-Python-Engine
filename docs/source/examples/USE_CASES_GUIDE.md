@@ -612,11 +612,11 @@ START: What is your primary goal?
 ### Going Deeper
 - Read [OPERATORS_GUIDE.md](../user-guide/OPERATORS_GUIDE.md) for operator details
 - Study [foundations.md](../foundations.md) for theoretical background
-- Explore [TNFR.pdf](../../../TNFR.pdf) for complete paradigm explanation
+- Explore [TNFR.pdf](https://github.com/fermga/TNFR-Python-Engine/blob/main/TNFR.pdf) for complete paradigm explanation
 - Check [API Reference](../api/overview.md) for implementation details
 
 ### Contributing Examples
-Have a new use case? See [CONTRIBUTING.md](../../../CONTRIBUTING.md) for guidelines on adding examples.
+Have a new use case? See [CONTRIBUTING.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/CONTRIBUTING.md) for guidelines on adding examples.
 
 ---
 
@@ -626,7 +626,7 @@ Have a new use case? See [CONTRIBUTING.md](../../../CONTRIBUTING.md) for guideli
 - **[Hello TNFR Tutorial](../getting-started/quickstart.md)** - Getting started
 - **[Operators Guide](../user-guide/OPERATORS_GUIDE.md)** - Detailed operator reference
 - **[API Documentation](../api/overview.md)** - Complete API
-- **[AGENTS.md](../../../AGENTS.md)** - Canonical invariants and rules
+- **[AGENTS.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/AGENTS.md)** - Canonical invariants and rules
 
 ---
 

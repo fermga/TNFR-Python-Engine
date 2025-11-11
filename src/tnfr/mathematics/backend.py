@@ -66,9 +66,7 @@ class MathematicsBackend(Protocol):
     def matrix_exp(self, matrix: Any) -> Any:
         """Compute the matrix exponential of ``matrix``."""
 
-    def norm(
-        self, value: Any, *, ord: Any | None = None, axis: Any | None = None
-    ) -> Any:
+    def norm(self, value: Any, *, ord: Any | None = None, axis: Any | None = None) -> Any:
         """Return the matrix or vector norm according to ``ord``."""
 
     def einsum(self, pattern: str, *operands: Any, **kwargs: Any) -> Any:
@@ -117,9 +115,7 @@ class _NumpyBackend:
         exp_vals = self._np.exp(eigvals)
         return eigvecs @ self._np.diag(exp_vals) @ inv
 
-    def norm(
-        self, value: Any, *, ord: Any | None = None, axis: Any | None = None
-    ) -> Any:
+    def norm(self, value: Any, *, ord: Any | None = None, axis: Any | None = None) -> Any:
         return self._np.linalg.norm(value, ord=ord, axis=axis)
 
     def einsum(self, pattern: str, *operands: Any, **kwargs: Any) -> Any:
@@ -161,9 +157,7 @@ class _JaxBackend:
     def matrix_exp(self, matrix: Any) -> Any:
         return self._jax_linalg.expm(matrix)
 
-    def norm(
-        self, value: Any, *, ord: Any | None = None, axis: Any | None = None
-    ) -> Any:
+    def norm(self, value: Any, *, ord: Any | None = None, axis: Any | None = None) -> Any:
         return self._jnp.linalg.norm(value, ord=ord, axis=axis)
 
     def einsum(self, pattern: str, *operands: Any, **kwargs: Any) -> Any:
@@ -254,9 +248,7 @@ class _TorchBackend:
     def matrix_exp(self, matrix: Any) -> Any:
         return self._torch_linalg.matrix_exp(matrix)
 
-    def norm(
-        self, value: Any, *, ord: Any | None = None, axis: Any | None = None
-    ) -> Any:
+    def norm(self, value: Any, *, ord: Any | None = None, axis: Any | None = None) -> Any:
         if axis is None:
             return self._torch.linalg.norm(value, ord=ord)
         return self._torch.linalg.norm(value, ord=ord, dim=axis)
@@ -407,9 +399,7 @@ def _make_numpy_backend() -> MathematicsBackend:
         raise BackendUnavailableError("NumPy is not installed")
     scipy_linalg = cached_import("scipy.linalg")
     if scipy_linalg is None:
-        logger.debug(
-            "SciPy not available; falling back to eigen decomposition for expm"
-        )
+        logger.debug("SciPy not available; falling back to eigen decomposition for expm")
     return _NumpyBackend(np_module, scipy_linalg)
 
 
@@ -432,9 +422,7 @@ def _make_torch_backend() -> MathematicsBackend:
         raise BackendUnavailableError("PyTorch is not installed")
     torch_linalg = cached_import("torch.linalg")
     if torch_linalg is None:
-        raise BackendUnavailableError(
-            "torch.linalg is required for linear algebra operations"
-        )
+        raise BackendUnavailableError("torch.linalg is required for linear algebra operations")
     return _TorchBackend(torch_module, torch_linalg)
 
 

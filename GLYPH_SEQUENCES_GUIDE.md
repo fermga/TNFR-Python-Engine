@@ -1759,7 +1759,7 @@ Operators enabling regenerative cycles:
 ### Implementation
 
 - **[src/tnfr/operators/grammar.py](src/tnfr/operators/grammar.py)**: Canonical implementation
-- **[src/tnfr/operators/patterns.py](src/tnfr/operators/patterns.py)**: Pattern detection
+- **[src/tnfr/operators/pattern_detection.py](src/tnfr/operators/pattern_detection.py)**: Pattern detection
 - **[src/tnfr/operators/health_analyzer.py](src/tnfr/operators/health_analyzer.py)**: Health metrics
 - **[src/tnfr/operators/cycle_detection.py](src/tnfr/operators/cycle_detection.py)**: R5 validation
 - **[src/tnfr/operators/definitions.py](src/tnfr/operators/definitions.py)**: Operator classes

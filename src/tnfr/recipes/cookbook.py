@@ -140,9 +140,7 @@ class TNFRCookbook:
             from pathlib import Path
 
             examples_path = (
-                Path(__file__).parent.parent.parent.parent
-                / "examples"
-                / "domain_applications"
+                Path(__file__).parent.parent.parent.parent / "examples" / "domain_applications"
             )
             sys.path.insert(0, str(examples_path))
             import therapeutic_patterns
@@ -415,9 +413,7 @@ class TNFRCookbook:
             ],
         )
 
-    def _load_domain_recipes(
-        self, domain: str, module: Any, recipe_specs: List[tuple]
-    ) -> None:
+    def _load_domain_recipes(self, domain: str, module: Any, recipe_specs: List[tuple]) -> None:
         """Load recipes for a specific domain.
 
         Parameters
@@ -492,9 +488,7 @@ class TNFRCookbook:
         Crisis Intervention
         """
         if domain not in self._recipes:
-            raise KeyError(
-                f"Domain '{domain}' not found. Available: {list(self._recipes.keys())}"
-            )
+            raise KeyError(f"Domain '{domain}' not found. Available: {list(self._recipes.keys())}")
 
         if use_case not in self._recipes[domain]:
             raise KeyError(
@@ -604,9 +598,7 @@ class TNFRCookbook:
                     continue
 
         # Sort by relevance then health
-        results.sort(
-            key=lambda x: (x[1], x[0].health_metrics.overall_health), reverse=True
-        )
+        results.sort(key=lambda x: (x[1], x[0].health_metrics.overall_health), reverse=True)
 
         return [r[0] for r in results]
 

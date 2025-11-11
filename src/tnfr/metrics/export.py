@@ -72,7 +72,6 @@ def export_metrics(
     PathTraversalError
         If path traversal is detected when output_dir is provided.
     """
-    from pathlib import Path
 
     hist = ensure_history(G)
     glyph = glyphogram_series(G)
@@ -81,9 +80,7 @@ def export_metrics(
     sigma_mag = hist.get("sense_sigma_mag", [])
     sigma_angle = hist.get("sense_sigma_angle", [])
     t_series = hist.get("sense_sigma_t", []) or glyph.get("t", [])
-    rows_raw = zip_longest(
-        t_series, sigma_x, sigma_y, sigma_mag, sigma_angle, fillvalue=None
-    )
+    rows_raw = zip_longest(t_series, sigma_x, sigma_y, sigma_mag, sigma_angle, fillvalue=None)
 
     def _clean(value: float | None) -> float:
         """Return ``0`` for ``None`` or ``NaN`` values."""
@@ -156,10 +153,7 @@ def export_metrics(
                 (
                     "_epi_support.csv",
                     ["t", "size", "epi_norm"],
-                    (
-                        [row.get("t"), row.get("size"), row.get("epi_norm")]
-                        for row in epi_supp
-                    ),
+                    ([row.get("t"), row.get("size"), row.get("epi_norm")] for row in epi_supp),
                 )
             )
         for suffix, headers, rows in specs:

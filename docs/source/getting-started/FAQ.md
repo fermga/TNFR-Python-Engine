@@ -85,7 +85,7 @@ An NFR is the minimum unit of structural coherence in TNFR. Think of it as a **t
 
 ### What is EPI?
 
-EPI (Estructura Primaria de Información / Primary Information Structure) is the coherent "form" or "identity" of a node. Like a musical chord has a specific structure, EPI defines the structural configuration of a node.
+EPI (Primary Information Structure) is the coherent "form" or "identity" of a node. Like a musical chord has a specific structure, EPI defines the structural configuration of a node.
 
 ### What is νf (structural frequency)?
 
@@ -321,7 +321,7 @@ See [Scalability](../../SCALABILITY.md) and [Performance Optimization](../advanc
 2. **Custom metrics**: Implement metric functions
 3. **Custom backends**: Add new computational backends
 
-See [Extending TNFR](../advanced/EXTENDING_TNFR.md) (coming soon).
+See [Advanced Topics](../advanced/ARCHITECTURE_GUIDE.md) for extension patterns.
 
 ### Where can I find the mathematical foundations?
 
@@ -333,7 +333,7 @@ See [Extending TNFR](../advanced/EXTENDING_TNFR.md) (coming soon).
 
 ### How can I contribute?
 
-See [CONTRIBUTING.md](../../CONTRIBUTING.md) for:
+See [CONTRIBUTING.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/CONTRIBUTING.md) for:
 - Code contributions
 - Documentation improvements
 - Bug reports
@@ -341,7 +341,7 @@ See [CONTRIBUTING.md](../../CONTRIBUTING.md) for:
 
 ### What are the TNFR invariants?
 
-TNFR has 10 canonical invariants that must be preserved. See [AGENTS.md](../../AGENTS.md) for the complete list, including:
+TNFR has 10 canonical invariants that must be preserved. See [AGENTS.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/AGENTS.md) for the complete list, including:
 1. EPI changes only through structural operators
 2. νf expressed in Hz_str units
 3. ΔNFR semantics (not ML gradient)

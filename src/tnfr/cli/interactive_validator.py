@@ -253,9 +253,7 @@ class TNFRInteractiveValidator:
         # Generate
         print(f"\nGenerating {pattern} sequence...")
         try:
-            result = self.generator.generate_for_pattern(
-                target_pattern=pattern, min_health=0.70
-            )
+            result = self.generator.generate_for_pattern(target_pattern=pattern, min_health=0.70)
             self._display_generated_sequence(result)
 
         except Exception as e:
@@ -278,9 +276,7 @@ class TNFRInteractiveValidator:
 
         # Ask for target health
         try:
-            target_input = input(
-                "Target health score (0.0-1.0, or Enter for default): "
-            ).strip()
+            target_input = input("Target health score (0.0-1.0, or Enter for default): ").strip()
             target_health = float(target_input) if target_input else None
         except ValueError:
             print("⚠ Invalid health score. Using default.\n")
@@ -369,9 +365,7 @@ class TNFRInteractiveValidator:
         sequence_input = sequence_input.replace(",", " ")
         return [op.strip() for op in sequence_input.split() if op.strip()]
 
-    def _display_success(
-        self, result: SequenceValidationResult, sequence: list[str]
-    ) -> None:
+    def _display_success(self, result: SequenceValidationResult, sequence: list[str]) -> None:
         """Display successful validation with health metrics."""
         print()
         print("✓ VALID SEQUENCE")
@@ -388,9 +382,7 @@ class TNFRInteractiveValidator:
         icon = self._health_icon(health.overall_health)
         bar = self._health_bar(health.overall_health)
         status = self._health_status(health.overall_health)
-        print(
-            f"│ Overall Health:      {bar} {health.overall_health:.2f} {icon} ({status})"
-        )
+        print(f"│ Overall Health:      {bar} {health.overall_health:.2f} {icon} ({status})")
 
         # Individual metrics
         print(
@@ -444,9 +436,7 @@ class TNFRInteractiveValidator:
             print(f"Type: {type(result.error).__name__}")
         print()
 
-    def _suggest_improvements(
-        self, sequence: list[str], health: SequenceHealthMetrics
-    ) -> None:
+    def _suggest_improvements(self, sequence: list[str], health: SequenceHealthMetrics) -> None:
         """Suggest improvements for moderate health sequences."""
         if not health.recommendations:
             return
@@ -477,9 +467,7 @@ class TNFRInteractiveValidator:
         print("✓ GENERATED SEQUENCE")
         print()
         print(f"Sequence:  {' → '.join(result.sequence)}")
-        print(
-            f"Health:    {result.health_score:.2f} {self._health_icon(result.health_score)}"
-        )
+        print(f"Health:    {result.health_score:.2f} {self._health_icon(result.health_score)}")
         print(f"Pattern:   {result.detected_pattern.upper()}")
 
         if result.domain:

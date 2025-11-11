@@ -47,9 +47,7 @@ def _resolve_operator_backend(operator: CoherenceOperator) -> tuple[Any, Any]:
     backend = getattr(operator, "backend", None) or get_backend()
     matrix_backend = getattr(operator, "_matrix_backend", None)
     if matrix_backend is None:
-        matrix_backend = ensure_array(
-            operator.matrix, dtype=np.complex128, backend=backend
-        )
+        matrix_backend = ensure_array(operator.matrix, dtype=np.complex128, backend=backend)
     return backend, matrix_backend
 
 
@@ -170,13 +168,9 @@ def stable_unitary(
         vector = vector / norm
     generator = -1j * matrix_backend
     unitary = backend.matrix_exp(generator)
-    evolved_backend = backend.matmul(unitary, vector[..., None]).reshape(
-        (hilbert_space.dimension,)
-    )
+    evolved_backend = backend.matmul(unitary, vector[..., None]).reshape((hilbert_space.dimension,))
     evolved = np.asarray(ensure_numpy(evolved_backend, backend=backend))
     norm_after = hilbert_space.norm(evolved)
     passed = bool(np.isclose(norm_after, 1.0, atol=atol))
-    _maybe_log(
-        "stable_unitary", {"label": label, "norm_after": norm_after, "passed": passed}
-    )
+    _maybe_log("stable_unitary", {"label": label, "norm_after": norm_after, "passed": passed})
     return passed, float(norm_after)

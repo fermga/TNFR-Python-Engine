@@ -77,7 +77,7 @@ def test_glyph_fallback_prefers_custom_and_canon():
 
     assert glyph_function_name(rules.glyph_fallback("OZ", fallbacks)) == EXPANSION
     assert glyph_function_name(rules.glyph_fallback("RA", fallbacks)) == COHERENCE
-    assert glyph_function_name(
-        rules.glyph_fallback("SHA", fallbacks)
-    ) == glyph_function_name(CANON_FALLBACK[Glyph.SHA])
+    assert glyph_function_name(rules.glyph_fallback("SHA", fallbacks)) == glyph_function_name(
+        CANON_FALLBACK[Glyph.SHA]
+    )
     assert rules.glyph_fallback("??", fallbacks) == "??"

@@ -174,8 +174,6 @@ class TherapeuticHealthAnalyzer:
             density = 0.0
 
         # Combine factors
-        alliance_strength = (
-            0.5 * connection_ratio + 0.3 * density + 0.2
-        ) + coherence_bonus
+        alliance_strength = (0.5 * connection_ratio + 0.3 * density + 0.2) + coherence_bonus
 
         return min(alliance_strength, 1.0)

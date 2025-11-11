@@ -136,9 +136,7 @@ def test_runtime_run_triggers_remesh_and_stop_early():
     assert integrator.calls == 3, "STOP_EARLY should halt after the stability window"
     assert len(hist.get("C_steps", [])) == integrator.calls
     assert len(hist.get("stable_frac", [])) == stable_seed_len + integrator.calls
-    assert hist["stable_frac"][-integrator.calls :] == pytest.approx(
-        [1.0] * integrator.calls
-    )
+    assert hist["stable_frac"][-integrator.calls :] == pytest.approx([1.0] * integrator.calls)
     assert len(hist.get("phase_sync", [])) == integrator.calls
     assert len(hist.get("kuramoto_R", [])) == integrator.calls
     assert len(hist.get("glyph_load_disr", [])) == integrator.calls
@@ -164,12 +162,8 @@ def test_runtime_run_triggers_remesh_and_stop_early():
     runtime.run(G, steps=5, dt=dt)
 
     hist = ensure_history(G)
-    assert (
-        integrator.calls == 4
-    ), "A single extra step should run before STOP_EARLY triggers again"
-    assert (
-        len(hist.get("remesh_events", [])) == 1
-    ), "Cooldown should block additional remeshes"
+    assert integrator.calls == 4, "A single extra step should run before STOP_EARLY triggers again"
+    assert len(hist.get("remesh_events", [])) == 1, "Cooldown should block additional remeshes"
     assert len(hist.get("stable_frac", [])) == stable_seed_len + integrator.calls
     assert G.graph["_last_remesh_step"] == remesh_step
     assert G.graph["_last_remesh_ts"] == remesh_ts

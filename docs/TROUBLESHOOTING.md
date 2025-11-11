@@ -611,11 +611,11 @@ if result.health_metrics.overall_health < 0.65:
 
 ## Resources
 
-- **[GLYPH_SEQUENCES_GUIDE.md](../GLYPH_SEQUENCES_GUIDE.md)**: Complete Grammar 2.0 guide
+- **[GLYPH_SEQUENCES_GUIDE.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/GLYPH_SEQUENCES_GUIDE.md)**: Complete Grammar 2.0 guide
 - **[MIGRATION_GUIDE_2.0.md](MIGRATION_GUIDE_2.0.md)**: Upgrading from 1.0
 - **[HEALTH_METRICS_GUIDE.md](HEALTH_METRICS_GUIDE.md)**: Health metrics deep dive
 - **[PATTERN_REFERENCE.md](PATTERN_REFERENCE.md)**: Pattern catalog
-- **[examples/domain_applications/](../examples/domain_applications/)**: Working examples
+- **[examples/domain_applications/](https://github.com/fermga/TNFR-Python-Engine/tree/main/examples/domain_applications)**: Working examples
 
 ---
 
@@ -623,9 +623,9 @@ if result.health_metrics.overall_health < 0.65:
 
 If your issue isn't covered here:
 
-1. Check the [complete guide](../GLYPH_SEQUENCES_GUIDE.md)
+1. Check the [complete guide](https://github.com/fermga/TNFR-Python-Engine/blob/main/GLYPH_SEQUENCES_GUIDE.md)
 2. Review [pattern reference](PATTERN_REFERENCE.md)
-3. Study [domain examples](../examples/domain_applications/)
+3. Study [domain examples](https://github.com/fermga/TNFR-Python-Engine/tree/main/examples/domain_applications)
 4. Open a GitHub issue with:
    - Sequence that causes issue
    - Error message or unexpected behavior

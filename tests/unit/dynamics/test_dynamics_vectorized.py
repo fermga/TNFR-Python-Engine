@@ -110,9 +110,7 @@ def test_default_compute_delta_nfr_paths(disable_numpy, monkeypatch):
 
 
 @pytest.mark.parametrize("numpy_mode", ["vectorized", "python"])
-def test_default_compute_delta_nfr_clamps_invalid_states(
-    numpy_mode, caplog, monkeypatch
-):
+def test_default_compute_delta_nfr_clamps_invalid_states(numpy_mode, caplog, monkeypatch):
     if numpy_mode == "vectorized":
         pytest.importorskip("numpy")
         context = nullcontext()
@@ -132,9 +130,7 @@ def test_default_compute_delta_nfr_clamps_invalid_states(
         assert dnfr[node] == pytest.approx(0.0)
 
     messages = [
-        record.getMessage()
-        for record in caplog.records
-        if record.name == "tnfr.utils.data"
+        record.getMessage() for record in caplog.records if record.name == "tnfr.utils.data"
     ]
     assert any("Could not convert value" in msg for msg in messages)
     assert any("Non-finite value" in msg for msg in messages)
@@ -534,9 +530,7 @@ def test_sparse_graph_prefers_edge_accumulation_and_matches_dnfr(monkeypatch):
     epi_id = id(cache.neighbor_epi_sum)
     vf_id = id(cache.neighbor_vf_sum)
     count_id = id(cache.neighbor_count)
-    deg_buffer_id = (
-        id(cache.neighbor_deg_sum) if cache.neighbor_deg_sum is not None else None
-    )
+    deg_buffer_id = id(cache.neighbor_deg_sum) if cache.neighbor_deg_sum is not None else None
     with numpy_disabled(monkeypatch):
         for _ in range(loops):
             _build_neighbor_sums_common(G_vector, loop_data, use_numpy=False)
@@ -954,18 +948,12 @@ def test_sparse_bincount_accumulation_matches_manual():
             if deg_vec is not None:
                 expected_deg[i] += deg_list[j] if deg_list is not None else deg_i
 
-    np.testing.assert_allclose(
-        np.asarray(x_vec, dtype=float), expected_x, rtol=1e-12, atol=1e-12
-    )
-    np.testing.assert_allclose(
-        np.asarray(y_vec, dtype=float), expected_y, rtol=1e-12, atol=1e-12
-    )
+    np.testing.assert_allclose(np.asarray(x_vec, dtype=float), expected_x, rtol=1e-12, atol=1e-12)
+    np.testing.assert_allclose(np.asarray(y_vec, dtype=float), expected_y, rtol=1e-12, atol=1e-12)
     np.testing.assert_allclose(
         np.asarray(epi_vec, dtype=float), expected_epi, rtol=1e-12, atol=1e-12
     )
-    np.testing.assert_allclose(
-        np.asarray(vf_vec, dtype=float), expected_vf, rtol=1e-12, atol=1e-12
-    )
+    np.testing.assert_allclose(np.asarray(vf_vec, dtype=float), expected_vf, rtol=1e-12, atol=1e-12)
 
     if count_vec is not None:
         np.testing.assert_allclose(

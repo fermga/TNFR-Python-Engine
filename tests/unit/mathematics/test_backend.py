@@ -79,9 +79,7 @@ def _mock_torch(monkeypatch: pytest.MonkeyPatch) -> Iterator[None]:
             inv = np.linalg.inv(vecs)
             return DummyTensor(vecs @ np.diag(np.exp(vals)) @ inv)
 
-        def norm(
-            self, value: object, ord: object = None, dim: object = None
-        ) -> DummyTensor:
+        def norm(self, value: object, ord: object = None, dim: object = None) -> DummyTensor:
             arr = _to_array(value)
             if dim is None:
                 return DummyTensor(np.linalg.norm(arr, ord=ord))
@@ -91,12 +89,8 @@ def _mock_torch(monkeypatch: pytest.MonkeyPatch) -> Iterator[None]:
         def as_tensor(self, value: object) -> DummyTensor:
             return DummyTensor(np.asarray(value))
 
-        def einsum(
-            self, pattern: str, *operands: object, **kwargs: object
-        ) -> DummyTensor:
-            return DummyTensor(
-                np.einsum(pattern, *(_to_array(o) for o in operands), **kwargs)
-            )
+        def einsum(self, pattern: str, *operands: object, **kwargs: object) -> DummyTensor:
+            return DummyTensor(np.einsum(pattern, *(_to_array(o) for o in operands), **kwargs))
 
         def matmul(self, a: object, b: object) -> DummyTensor:
             return DummyTensor(_to_array(a) @ _to_array(b))
@@ -110,9 +104,7 @@ def _mock_torch(monkeypatch: pytest.MonkeyPatch) -> Iterator[None]:
 
     original_cached_import = backend_module.cached_import
 
-    def fake_cached_import(
-        name: str, attr: str | None = None, **kwargs: object
-    ) -> object:
+    def fake_cached_import(name: str, attr: str | None = None, **kwargs: object) -> object:
         if name == "torch" and attr is None:
             return dummy_torch
         if name == "torch.linalg" and attr is None:
@@ -159,6 +151,4 @@ def test_context_flags_override(monkeypatch: pytest.MonkeyPatch) -> None:
 
 def test_register_backend_rejects_duplicates() -> None:
     with pytest.raises(ValueError):
-        backend_module.register_backend(
-            "numpy", lambda: backend_module.get_backend("numpy")
-        )
+        backend_module.register_backend("numpy", lambda: backend_module.get_backend("numpy"))

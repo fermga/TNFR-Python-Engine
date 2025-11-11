@@ -58,9 +58,9 @@ This is TNFR's model of **everything**: atoms, cells, thoughts, societies.
 **Every node in a TNFR network evolves according to this equation**.
 
 **Components**:
-- **EPI** (Estructura Primaria de Información): The coherent structural "form" of a node
-- **νf** (Frecuencia estructural): Structural frequency - rate of reorganization (Hz_str units)
-- **ΔNFR** (Gradiente nodal): Internal reorganization operator - "structural pressure"
+- **EPI** (Primary Information Structure): The coherent structural "form" of a node
+- **νf** (Structural frequency): Rate of reorganization (Hz_str units)
+- **ΔNFR** (Nodal gradient): Internal reorganization operator - "structural pressure"
 - **t**: Time
 
 **Physical Meaning**:

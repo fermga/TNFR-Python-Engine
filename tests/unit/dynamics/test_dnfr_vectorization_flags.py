@@ -171,9 +171,7 @@ def test_compute_dnfr_loop_path_without_numpy_module(monkeypatch):
 
     monkeypatch.delitem(sys.modules, "numpy", raising=False)
     monkeypatch.setattr(dnfr_module, "get_numpy", lambda: None)
-    monkeypatch.setattr(
-        dnfr_module, "_has_cached_numpy_buffers", lambda *_, **__: False
-    )
+    monkeypatch.setattr(dnfr_module, "_has_cached_numpy_buffers", lambda *_, **__: False)
 
     G = _graph_fixture()
     data = _prepare_dnfr_data(G)

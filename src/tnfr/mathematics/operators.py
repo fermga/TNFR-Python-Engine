@@ -135,9 +135,7 @@ class CoherenceOperator:
     def is_hermitian(self, *, atol: float = 1e-9) -> bool:
         """Return ``True`` when the operator matches its adjoint."""
 
-        return self._check_hermitian(
-            self._matrix_backend, atol=atol, backend=self.backend
-        )
+        return self._check_hermitian(self._matrix_backend, atol=atol, backend=self.backend)
 
     def is_positive_semidefinite(self, *, atol: float = 1e-9) -> bool:
         """Check that all eigenvalues are non-negative within ``atol``."""
@@ -184,9 +182,7 @@ class CoherenceOperator:
         expectation = ensure_numpy(expectation_backend, backend=self.backend)
         expectation_scalar = complex(np.asarray(expectation).reshape(()))
         if abs(expectation_scalar.imag) > atol:
-            raise ValueError(
-                "Expectation value carries an imaginary component beyond tolerance."
-            )
+            raise ValueError("Expectation value carries an imaginary component beyond tolerance.")
         eps = np.finfo(float).eps
         tol = max(1000.0, float(atol / eps)) if atol > 0 else 1000.0
         real_expectation = np.real_if_close(expectation_scalar, tol=tol)

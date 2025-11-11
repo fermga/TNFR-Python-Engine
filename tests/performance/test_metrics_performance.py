@@ -75,7 +75,5 @@ def test_neighbor_phase_mean_vectorized_outperforms_naive_wrapper():
     assert fast_time <= slow_time * 0.5
 
     fast_angles = [neighbor_phase_mean(graph_fast, node) for node in graph_fast.nodes]
-    slow_angles = [
-        _naive_neighbor_phase_mean(graph_slow, node) for node in graph_slow.nodes
-    ]
+    slow_angles = [_naive_neighbor_phase_mean(graph_slow, node) for node in graph_slow.nodes]
     npt.assert_allclose(fast_angles, slow_angles, rtol=1e-9, atol=1e-9)

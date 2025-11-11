@@ -79,8 +79,7 @@ except ImportError as _import_err:
             ) from _import_error
         else:
             raise ImportError(
-                "Visualization functions are not available. "
-                "Install with: pip install tnfr[viz]"
+                "Visualization functions are not available. " "Install with: pip install tnfr[viz]"
             ) from _import_error
 
     SequenceVisualizer = _missing_viz_dependency  # type: ignore[assignment]

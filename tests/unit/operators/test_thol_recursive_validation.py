@@ -59,11 +59,14 @@ class TestTholInvalidSubsequence:
         """Subsequence starting with IL (requires context) is invalid."""
         # THOL[ IL, ... ] - IL requires existing EPI
         invalid = [
-            EMISSION, RECEPTION, COHERENCE, DISSONANCE,
+            EMISSION,
+            RECEPTION,
+            COHERENCE,
+            DISSONANCE,
             SELF_ORGANIZATION,
-                COHERENCE,  # Invalid start - requires external EPI
-                RESONANCE,
-            SILENCE
+            COHERENCE,  # Invalid start - requires external EPI
+            RESONANCE,
+            SILENCE,
         ]
         result = validate_sequence(invalid)
         assert not result.passed
@@ -73,13 +76,16 @@ class TestTholInvalidSubsequence:
         """Subsequence without stabilizer (IL or THOL) is invalid."""
         # THOL[ AL, EN, RA, TRANSITION ] - missing IL stabilizer
         invalid = [
-            EMISSION, RECEPTION, COHERENCE, DISSONANCE,
+            EMISSION,
+            RECEPTION,
+            COHERENCE,
+            DISSONANCE,
             SELF_ORGANIZATION,
-                EMISSION,
-                RECEPTION,
-                RESONANCE,
-                TRANSITION,  # Valid end but no stabilizer
-            SILENCE
+            EMISSION,
+            RECEPTION,
+            RESONANCE,
+            TRANSITION,  # Valid end but no stabilizer
+            SILENCE,
         ]
         result = validate_sequence(invalid)
         assert not result.passed
@@ -90,13 +96,16 @@ class TestTholInvalidSubsequence:
         """Subsequence with ZHIR but no recent destabilizer is invalid."""
         # THOL[ AL, EN, IL, ZHIR, SHA ] - ZHIR without recent OZ
         invalid = [
-            EMISSION, RECEPTION, COHERENCE, DISSONANCE,
+            EMISSION,
+            RECEPTION,
+            COHERENCE,
+            DISSONANCE,
             SELF_ORGANIZATION,
-                EMISSION,
-                RECEPTION,
-                COHERENCE,
-                MUTATION,  # No recent destabilizer for ZHIR
-            SILENCE
+            EMISSION,
+            RECEPTION,
+            COHERENCE,
+            MUTATION,  # No recent destabilizer for ZHIR
+            SILENCE,
         ]
         result = validate_sequence(invalid)
         assert not result.passed
@@ -106,14 +115,17 @@ class TestTholInvalidSubsequence:
         """Example from issue: OZ→ZHIR violates R4/R6 inside THOL."""
         # ZHIR requires both recent destabilizer AND prior IL (C4)
         invalid = [
-            EMISSION, RECEPTION, COHERENCE, DISSONANCE,
+            EMISSION,
+            RECEPTION,
+            COHERENCE,
+            DISSONANCE,
             SELF_ORGANIZATION,
-                EMISSION,
-                RECEPTION,
-                DISSONANCE,
-                MUTATION,  # ZHIR without prior IL
-                TRANSITION,  # Valid end operator
-            SILENCE
+            EMISSION,
+            RECEPTION,
+            DISSONANCE,
+            MUTATION,  # ZHIR without prior IL
+            TRANSITION,  # Valid end operator
+            SILENCE,
         ]
         result = validate_sequence(invalid)
         assert not result.passed
@@ -127,11 +139,14 @@ class TestTholNonAutonomous:
     def test_thol_starting_with_coherence(self):
         """THOL starting with IL (non-autonomous) is invalid."""
         invalid = [
-            EMISSION, RECEPTION, COHERENCE, DISSONANCE,
+            EMISSION,
+            RECEPTION,
+            COHERENCE,
+            DISSONANCE,
             SELF_ORGANIZATION,
-                COHERENCE,  # Requires external EPI
-                RESONANCE,
-            SILENCE
+            COHERENCE,  # Requires external EPI
+            RESONANCE,
+            SILENCE,
         ]
         result = validate_sequence(invalid)
         assert not result.passed
@@ -140,11 +155,14 @@ class TestTholNonAutonomous:
     def test_thol_starting_with_dissonance(self):
         """THOL starting with OZ (non-autonomous) is invalid."""
         invalid = [
-            EMISSION, RECEPTION, COHERENCE, DISSONANCE,
+            EMISSION,
+            RECEPTION,
+            COHERENCE,
+            DISSONANCE,
             SELF_ORGANIZATION,
-                DISSONANCE,  # Requires existing structure to destabilize
-                COHERENCE,
-            SILENCE
+            DISSONANCE,  # Requires existing structure to destabilize
+            COHERENCE,
+            SILENCE,
         ]
         result = validate_sequence(invalid)
         assert not result.passed
@@ -153,13 +171,16 @@ class TestTholNonAutonomous:
     def test_thol_ending_with_dissonance(self):
         """THOL ending with OZ (no stabilization) is invalid."""
         invalid = [
-            EMISSION, RECEPTION, COHERENCE, DISSONANCE,
+            EMISSION,
+            RECEPTION,
+            COHERENCE,
+            DISSONANCE,
             SELF_ORGANIZATION,
-                EMISSION,
-                RECEPTION,
-                COHERENCE,
-                DISSONANCE,  # Does not stabilize
-            SILENCE
+            EMISSION,
+            RECEPTION,
+            COHERENCE,
+            DISSONANCE,  # Does not stabilize
+            SILENCE,
         ]
         result = validate_sequence(invalid)
         assert not result.passed
@@ -168,13 +189,16 @@ class TestTholNonAutonomous:
     def test_thol_ending_with_expansion(self):
         """THOL ending with VAL (no closure) is invalid."""
         invalid = [
-            EMISSION, RECEPTION, COHERENCE, DISSONANCE,
+            EMISSION,
+            RECEPTION,
+            COHERENCE,
+            DISSONANCE,
             SELF_ORGANIZATION,
-                EMISSION,
-                RECEPTION,
-                COHERENCE,
-                EXPANSION,  # Does not provide closure
-            SILENCE
+            EMISSION,
+            RECEPTION,
+            COHERENCE,
+            EXPANSION,  # Does not provide closure
+            SILENCE,
         ]
         result = validate_sequence(invalid)
         assert not result.passed
@@ -192,18 +216,18 @@ class TestTholNestedValidation:
             COHERENCE,
             DISSONANCE,
             SELF_ORGANIZATION,  # Level 1 open
-                EMISSION,
-                RECEPTION,
-                COHERENCE,
-                DISSONANCE,
-                SELF_ORGANIZATION,  # Level 2 open (nested)
-                    EMISSION,
-                    RECEPTION,
-                    COHERENCE,
-                SILENCE,  # Level 2 close
-                RESONANCE,
+            EMISSION,
+            RECEPTION,
+            COHERENCE,
+            DISSONANCE,
+            SELF_ORGANIZATION,  # Level 2 open (nested)
+            EMISSION,
+            RECEPTION,
+            COHERENCE,
+            SILENCE,  # Level 2 close
+            RESONANCE,
             SILENCE,  # Level 1 close
-            TRANSITION
+            TRANSITION,
         ]
         result = validate_sequence(nested)
         assert result.passed
@@ -216,15 +240,15 @@ class TestTholNestedValidation:
             COHERENCE,
             DISSONANCE,
             SELF_ORGANIZATION,  # Level 1 open
-                EMISSION,
-                RECEPTION,
-                COHERENCE,
-                DISSONANCE,
-                SELF_ORGANIZATION,  # Level 2 open (nested)
-                    COHERENCE,  # Invalid start - not autonomous
-                    RESONANCE,
-                SILENCE,  # Level 2 close
-            SILENCE  # Level 1 close
+            EMISSION,
+            RECEPTION,
+            COHERENCE,
+            DISSONANCE,
+            SELF_ORGANIZATION,  # Level 2 open (nested)
+            COHERENCE,  # Invalid start - not autonomous
+            RESONANCE,
+            SILENCE,  # Level 2 close
+            SILENCE,  # Level 1 close
         ]
         result = validate_sequence(nested)
         assert not result.passed
@@ -238,16 +262,16 @@ class TestTholNestedValidation:
             COHERENCE,
             DISSONANCE,
             SELF_ORGANIZATION,  # Level 1 open
-                EMISSION,
-                RECEPTION,
-                COHERENCE,
-                DISSONANCE,
-                SELF_ORGANIZATION,  # Level 2 open (nested)
-                    EMISSION,
-                    RECEPTION,
-                    COHERENCE,
-                # Missing Level 2 close!
-            SILENCE  # Level 1 close (but Level 2 still open)
+            EMISSION,
+            RECEPTION,
+            COHERENCE,
+            DISSONANCE,
+            SELF_ORGANIZATION,  # Level 2 open (nested)
+            EMISSION,
+            RECEPTION,
+            COHERENCE,
+            # Missing Level 2 close!
+            SILENCE,  # Level 1 close (but Level 2 still open)
         ]
         result = validate_sequence(nested)
         assert not result.passed
@@ -264,11 +288,11 @@ class TestTholValidAutonomous:
             COHERENCE,  # C3 stabilizer
             DISSONANCE,  # Destabilizer for THOL (C4)
             SELF_ORGANIZATION,  # THOL opening
-                EMISSION,  # C1 start
-                COHERENCE,  # C3 stabilizer
-                TRANSITION,  # C1 valid end (not a THOL closure)
+            EMISSION,  # C1 start
+            COHERENCE,  # C3 stabilizer
+            TRANSITION,  # C1 valid end (not a THOL closure)
             SILENCE,  # THOL closure
-            TRANSITION  # Sequence end (different from closure)
+            TRANSITION,  # Sequence end (different from closure)
         ]
         result = validate_sequence(valid)
         assert result.passed
@@ -280,10 +304,10 @@ class TestTholValidAutonomous:
             COHERENCE,
             DISSONANCE,
             SELF_ORGANIZATION,
-                EMISSION,
-                COHERENCE,
-                TRANSITION,  # C1 valid end
-            SILENCE  # THOL closure
+            EMISSION,
+            COHERENCE,
+            TRANSITION,  # C1 valid end
+            SILENCE,  # THOL closure
         ]
         result = validate_sequence(valid)
         assert result.passed
@@ -295,10 +319,10 @@ class TestTholValidAutonomous:
             COHERENCE,
             DISSONANCE,
             SELF_ORGANIZATION,
-                RECURSIVITY,  # C1 valid start
-                COHERENCE,  # C3 stabilizer
-                RECURSIVITY,  # C1 valid end
-            SILENCE  # THOL closure
+            RECURSIVITY,  # C1 valid start
+            COHERENCE,  # C3 stabilizer
+            RECURSIVITY,  # C1 valid end
+            SILENCE,  # THOL closure
         ]
         result = validate_sequence(valid)
         assert result.passed
@@ -310,10 +334,10 @@ class TestTholValidAutonomous:
             COHERENCE,
             DISSONANCE,
             SELF_ORGANIZATION,
-                EMISSION,
-                COHERENCE,
-                DISSONANCE,  # C1 valid end - preserves tension
-            SILENCE  # THOL closure
+            EMISSION,
+            COHERENCE,
+            DISSONANCE,  # C1 valid end - preserves tension
+            SILENCE,  # THOL closure
         ]
         result = validate_sequence(valid)
         assert result.passed
@@ -325,13 +349,13 @@ class TestTholValidAutonomous:
             COHERENCE,
             DISSONANCE,
             SELF_ORGANIZATION,
-                EMISSION,
-                COHERENCE,  # C4: Prior IL for ZHIR
-                DISSONANCE,  # C4: Recent destabilizer for ZHIR
-                MUTATION,  # Valid: satisfies C4
-                COHERENCE,  # C3: Stabilizer
-                SILENCE,  # C1: Valid end
-            SILENCE  # THOL closure
+            EMISSION,
+            COHERENCE,  # C4: Prior IL for ZHIR
+            DISSONANCE,  # C4: Recent destabilizer for ZHIR
+            MUTATION,  # Valid: satisfies C4
+            COHERENCE,  # C3: Stabilizer
+            SILENCE,  # C1: Valid end
+            SILENCE,  # THOL closure
         ]
         result = validate_sequence(valid)
         assert result.passed
@@ -343,16 +367,16 @@ class TestTholValidAutonomous:
             COHERENCE,
             DISSONANCE,
             SELF_ORGANIZATION,  # Level 1
-                EMISSION,
-                COHERENCE,
-                DISSONANCE,
-                SELF_ORGANIZATION,  # Level 2 (nested)
-                    EMISSION,
-                    COHERENCE,
-                    SILENCE,  # Level 2 ends validly
-                SILENCE,  # Close Level 2 THOL
-                TRANSITION,  # Level 1 subsequence ends validly
-            SILENCE  # Close Level 1 THOL
+            EMISSION,
+            COHERENCE,
+            DISSONANCE,
+            SELF_ORGANIZATION,  # Level 2 (nested)
+            EMISSION,
+            COHERENCE,
+            SILENCE,  # Level 2 ends validly
+            SILENCE,  # Close Level 2 THOL
+            TRANSITION,  # Level 1 subsequence ends validly
+            SILENCE,  # Close Level 1 THOL
         ]
         result = validate_sequence(valid)
         assert result.passed
@@ -369,11 +393,11 @@ class TestTholClosureValidation:
             COHERENCE,
             DISSONANCE,
             SELF_ORGANIZATION,
-                EMISSION,  # Valid start
-                RECEPTION,  # EN→IL segment
-                COHERENCE,  # IL stabilizer
-                SILENCE,  # Valid end
-            SILENCE  # Valid THOL closure
+            EMISSION,  # Valid start
+            RECEPTION,  # EN→IL segment
+            COHERENCE,  # IL stabilizer
+            SILENCE,  # Valid end
+            SILENCE,  # Valid THOL closure
         ]
         result = validate_sequence(valid)
         assert result.passed
@@ -386,11 +410,11 @@ class TestTholClosureValidation:
             COHERENCE,
             DISSONANCE,
             SELF_ORGANIZATION,
-                EMISSION,
-                RECEPTION,
-                COHERENCE,
-                SILENCE,  # Valid end for subsequence
-            CONTRACTION  # Valid THOL closure
+            EMISSION,
+            RECEPTION,
+            COHERENCE,
+            SILENCE,  # Valid end for subsequence
+            CONTRACTION,  # Valid THOL closure
         ]
         result = validate_sequence(valid)
         assert result.passed
@@ -404,7 +428,7 @@ class TestTholClosureValidation:
             EMISSION,
             RECEPTION,
             COHERENCE,
-            SILENCE  # Not a THOL closure context, just regular ending
+            SILENCE,  # Not a THOL closure context, just regular ending
         ]
         # This is actually valid - SHA can end a sequence normally
         result = validate_sequence(invalid)
@@ -422,18 +446,18 @@ class TestTholEdgeCases:
             COHERENCE,
             DISSONANCE,
             SELF_ORGANIZATION,
-                EMISSION,
-                RECEPTION,
-                COHERENCE,
-                SILENCE,  # Valid end for first THOL
+            EMISSION,
+            RECEPTION,
+            COHERENCE,
+            SILENCE,  # Valid end for first THOL
             SILENCE,  # Close first THOL
             DISSONANCE,
             SELF_ORGANIZATION,
-                EMISSION,
-                RECEPTION,
-                COHERENCE,
-                TRANSITION,  # Valid end for second THOL
-            CONTRACTION  # Close second THOL
+            EMISSION,
+            RECEPTION,
+            COHERENCE,
+            TRANSITION,  # Valid end for second THOL
+            CONTRACTION,  # Close second THOL
         ]
         result = validate_sequence(valid)
         assert result.passed
@@ -446,16 +470,16 @@ class TestTholEdgeCases:
             COHERENCE,
             DISSONANCE,
             SELF_ORGANIZATION,
-                EMISSION,  # Valid start
-                RECEPTION,  # EN→IL segment
-                COHERENCE,  # IL stabilizer
-                COUPLING,
-                RESONANCE,
-                DISSONANCE,
-                EXPANSION,
-                COHERENCE,  # Another stabilizer
-                SILENCE,  # Valid end
-            SILENCE
+            EMISSION,  # Valid start
+            RECEPTION,  # EN→IL segment
+            COHERENCE,  # IL stabilizer
+            COUPLING,
+            RESONANCE,
+            DISSONANCE,
+            EXPANSION,
+            COHERENCE,  # Another stabilizer
+            SILENCE,  # Valid end
+            SILENCE,
         ]
         result = validate_sequence(valid)
         assert result.passed
@@ -468,28 +492,28 @@ class TestTholEdgeCases:
             COHERENCE,
             DISSONANCE,
             SELF_ORGANIZATION,  # Level 1
-                EMISSION,
-                RECEPTION,
-                COHERENCE,
-                DISSONANCE,
-                SELF_ORGANIZATION,  # Level 2
-                    EMISSION,
-                    RECEPTION,
-                    COHERENCE,
-                    DISSONANCE,
-                    SELF_ORGANIZATION,  # Level 3
-                        EMISSION,
-                        RECEPTION,
-                        COHERENCE,
-                        SILENCE,  # Valid end Level 3
-                    SILENCE,  # Close Level 3
-                    RESONANCE,
-                    SILENCE,  # Valid end Level 2
-                SILENCE,  # Close Level 2
-                RESONANCE,
-                TRANSITION,  # Valid end Level 1
+            EMISSION,
+            RECEPTION,
+            COHERENCE,
+            DISSONANCE,
+            SELF_ORGANIZATION,  # Level 2
+            EMISSION,
+            RECEPTION,
+            COHERENCE,
+            DISSONANCE,
+            SELF_ORGANIZATION,  # Level 3
+            EMISSION,
+            RECEPTION,
+            COHERENCE,
+            SILENCE,  # Valid end Level 3
+            SILENCE,  # Close Level 3
+            RESONANCE,
+            SILENCE,  # Valid end Level 2
+            SILENCE,  # Close Level 2
+            RESONANCE,
+            TRANSITION,  # Valid end Level 1
             SILENCE,  # Close Level 1
-            TRANSITION  # Valid end for main sequence
+            TRANSITION,  # Valid end for main sequence
         ]
         result = validate_sequence(valid)
         assert result.passed

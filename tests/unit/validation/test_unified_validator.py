@@ -35,12 +35,8 @@ class TestTNFRValidatorUnifiedPipeline:
             }
         )
         # Use correct TNFR attribute names
-        self.graph.add_node(
-            "node_1", **{"EPI": 0.5, "νf": 1.0, "theta": 0.0, "ΔNFR": 0.0}
-        )
-        self.graph.add_node(
-            "node_2", **{"EPI": 0.3, "νf": 0.5, "theta": math.pi / 4, "ΔNFR": 0.0}
-        )
+        self.graph.add_node("node_1", **{"EPI": 0.5, "νf": 1.0, "theta": 0.0, "ΔNFR": 0.0})
+        self.graph.add_node("node_2", **{"EPI": 0.3, "νf": 0.5, "theta": math.pi / 4, "ΔNFR": 0.0})
 
     def test_validator_initialization(self):
         """Test validator can be initialized with various options."""
@@ -274,9 +270,7 @@ class TestTNFRValidatorInputValidation:
         config = {"EPI_MIN": 0.0, "EPI_MAX": 1.0}
 
         # Valid EPI
-        result = self.validator.validate_inputs(
-            epi=0.5, config=config, raise_on_error=False
-        )
+        result = self.validator.validate_inputs(epi=0.5, config=config, raise_on_error=False)
         assert "error" not in result
 
         # Invalid EPI (too high)
@@ -333,12 +327,8 @@ class TestTNFRValidatorOperatorPreconditions:
             }
         )
         # Use correct TNFR attribute names
-        self.graph.add_node(
-            "node_1", **{"EPI": 0.1, "νf": 1.0, "theta": 0.0, "ΔNFR": 0.0}
-        )
-        self.graph.add_node(
-            "node_2", **{"EPI": 0.8, "νf": 0.5, "theta": math.pi / 4, "ΔNFR": 0.0}
-        )
+        self.graph.add_node("node_1", **{"EPI": 0.1, "νf": 1.0, "theta": 0.0, "ΔNFR": 0.0})
+        self.graph.add_node("node_2", **{"EPI": 0.8, "νf": 0.5, "theta": math.pi / 4, "ΔNFR": 0.0})
         self.graph.add_edge("node_1", "node_2")
 
     def test_validate_emission_preconditions(self):
@@ -407,9 +397,7 @@ class TestTNFRValidatorPerformance:
 
         # Use correct TNFR attribute names
         for i in range(10):
-            self.graph.add_node(
-                f"node_{i}", **{"EPI": 0.5, "νf": 1.0, "theta": 0.0, "ΔNFR": 0.0}
-            )
+            self.graph.add_node(f"node_{i}", **{"EPI": 0.5, "νf": 1.0, "theta": 0.0, "ΔNFR": 0.0})
 
     def test_caching_improves_performance(self):
         """Test that caching improves performance."""

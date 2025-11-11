@@ -96,9 +96,7 @@ def merge_and_normalize_weights(
 def compute_dnfr_accel_max(G: GraphLike) -> dict[str, float]:
     """Compute absolute maxima of |ΔNFR| and |d²EPI/dt²|."""
 
-    return multi_recompute_abs_max(
-        G, {"dnfr_max": ALIAS_DNFR, "accel_max": ALIAS_D2EPI}
-    )
+    return multi_recompute_abs_max(G, {"dnfr_max": ALIAS_DNFR, "accel_max": ALIAS_D2EPI})
 
 
 def normalize_dnfr(nd: NodeAttrMap, max_val: float) -> float:

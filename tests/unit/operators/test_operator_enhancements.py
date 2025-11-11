@@ -139,18 +139,14 @@ class TestOperatorPreconditions:
         assert vf_after < 1.0, "νf should decrease toward structural silence"
 
         # 3. EPI preserved (form invariance during silence)
-        assert (
-            abs(epi_after - epi_before) < 1e-6
-        ), "SHA must preserve EPI (structural form)"
+        assert abs(epi_after - epi_before) < 1e-6, "SHA must preserve EPI (structural form)"
 
         # 4. Verify metrics track the reduction (using centralized function)
         from tnfr.operators.metrics import silence_metrics
 
         metrics = silence_metrics(G, "n1", vf_before, epi_before)
         assert metrics["vf_reduction"] == pytest.approx(vf_before - vf_after, abs=0.01)
-        assert (
-            metrics["epi_preservation"] < 1e-6
-        ), "Metrics should confirm EPI preservation"
+        assert metrics["epi_preservation"] < 1e-6, "Metrics should confirm EPI preservation"
 
     def test_expansion_precondition_max_vf(self):
         """VAL - Expansion should fail if νf at maximum."""

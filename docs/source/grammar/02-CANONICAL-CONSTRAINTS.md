@@ -1,1 +1,0 @@
-../../grammar/02-CANONICAL-CONSTRAINTS.md

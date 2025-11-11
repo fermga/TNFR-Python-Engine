@@ -109,9 +109,7 @@ def test_dissonance_sequence_tracks_bifurcation_pressure_and_stabilises() -> Non
 
     hist_store = G.graph["history"]
     assert "bifurcation_pressure" in hist_store
-    assert list(hist_store["bifurcation_pressure"]) == pytest.approx(
-        [0.8, 0.3, 0.1, 0.05]
-    )
+    assert list(hist_store["bifurcation_pressure"]) == pytest.approx([0.8, 0.3, 0.1, 0.05])
 
     assert history[-2:] == [Glyph.IL.value, Glyph.SHA.value]
     assert max(accel_progression) == pytest.approx(0.8)

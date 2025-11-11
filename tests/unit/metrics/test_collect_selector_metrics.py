@@ -78,9 +78,7 @@ def test_collect_selector_metrics_process_pool(monkeypatch, graph_canon):
 
     class StubExecutor:
         def __init__(self, *args, **kwargs):
-            captured["max_workers"] = kwargs.get("max_workers") or (
-                args[0] if args else None
-            )
+            captured["max_workers"] = kwargs.get("max_workers") or (args[0] if args else None)
 
         def __enter__(self):
             return self
@@ -96,9 +94,7 @@ def test_collect_selector_metrics_process_pool(monkeypatch, graph_canon):
     resolve_calls: list[tuple[int | None, int, dict[str, object]]] = []
     original_resolve = selectors_module.resolve_chunk_size
 
-    def tracking_resolve(
-        chunk_size: int | None, total_items: int, **kwargs: object
-    ) -> int:
+    def tracking_resolve(chunk_size: int | None, total_items: int, **kwargs: object) -> int:
         resolve_calls.append((chunk_size, total_items, dict(kwargs)))
         return original_resolve(chunk_size, total_items, **kwargs)
 

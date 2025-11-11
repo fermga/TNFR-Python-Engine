@@ -162,13 +162,8 @@ def test_adapt_vf_invalid_jobs_fallback_to_serial(graph_canon, monkeypatch, nump
         assert invalid_hint.nodes[node]["νf"] == pytest.approx(serial.nodes[node]["νf"])
         assert single_job.nodes[node]["νf"] == pytest.approx(serial.nodes[node]["νf"])
 
-        assert (
-            invalid_hint.nodes[node]["stable_count"]
-            == serial.nodes[node]["stable_count"]
-        )
-        assert (
-            single_job.nodes[node]["stable_count"] == serial.nodes[node]["stable_count"]
-        )
+        assert invalid_hint.nodes[node]["stable_count"] == serial.nodes[node]["stable_count"]
+        assert single_job.nodes[node]["stable_count"] == serial.nodes[node]["stable_count"]
 
 
 def test_adapt_vf_noop_on_empty_graph():
@@ -196,9 +191,7 @@ def test_adapt_vf_clamps_to_bounds(graph_canon, monkeypatch, mode):
         resolve_calls: list[tuple[int | None, int, dict[str, object]]] = []
         original_resolve = adaptation_module.resolve_chunk_size
 
-        def tracking_resolve(
-            chunk_size: int | None, total_items: int, **kwargs: object
-        ) -> int:
+        def tracking_resolve(chunk_size: int | None, total_items: int, **kwargs: object) -> int:
             resolve_calls.append((chunk_size, total_items, dict(kwargs)))
             return original_resolve(chunk_size, total_items, **kwargs)
 
@@ -221,9 +214,7 @@ def test_adapt_vf_clamps_to_bounds(graph_canon, monkeypatch, mode):
                     submitted_chunks.append(item)
                     yield _vf_adapt_chunk(item)
 
-        monkeypatch.setattr(
-            "tnfr.dynamics.adaptation.ProcessPoolExecutor", _DummyExecutor
-        )
+        monkeypatch.setattr("tnfr.dynamics.adaptation.ProcessPoolExecutor", _DummyExecutor)
         adapt_vf_by_coherence(G, n_jobs=2)
 
     assert G.nodes["clamp_high"]["νf"] == pytest.approx(vf_max)
@@ -232,14 +223,10 @@ def test_adapt_vf_clamps_to_bounds(graph_canon, monkeypatch, mode):
     if mode == "python":
         assert submitted_chunks, "parallel adaptation must submit work"
         total_items = sum(len(chunk[0]) for chunk in submitted_chunks)
-        assert resolve_calls == [
-            (math.ceil(total_items / 2), total_items, {"minimum": 1})
-        ]
+        assert resolve_calls == [(math.ceil(total_items / 2), total_items, {"minimum": 1})]
 
 
-def test_adapt_vf_python_resets_unstable_counts_with_missing_neighbors(
-    graph_canon, monkeypatch
-):
+def test_adapt_vf_python_resets_unstable_counts_with_missing_neighbors(graph_canon, monkeypatch):
     monkeypatch.setattr("tnfr.dynamics.get_numpy", lambda: None)
     monkeypatch.setattr("tnfr.dynamics.adaptation.get_numpy", lambda: None)
 
@@ -259,15 +246,11 @@ def test_adapt_vf_python_resets_unstable_counts_with_missing_neighbors(
         nd["ΔNFR"] = 0.5
 
     def _ensure_neighbors_with_ghost(graph):
-        mapping = {
-            node: tuple(list(graph.neighbors(node)) + ["ghost"]) for node in graph.nodes
-        }
+        mapping = {node: tuple(list(graph.neighbors(node)) + ["ghost"]) for node in graph.nodes}
         mapping["ghost"] = tuple(nodes)
         return mapping
 
-    monkeypatch.setattr(
-        adaptation_module, "ensure_neighbors_map", _ensure_neighbors_with_ghost
-    )
+    monkeypatch.setattr(adaptation_module, "ensure_neighbors_map", _ensure_neighbors_with_ghost)
 
     adapt_vf_by_coherence(G, n_jobs=None)
 

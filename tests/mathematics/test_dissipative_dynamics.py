@@ -23,9 +23,7 @@ def _steady_state_from_generator(generator: np.ndarray, dim: int) -> np.ndarray:
     density = 0.5 * (density + density.conj().T)
     trace = np.trace(density)
     if np.isclose(trace, 0.0):
-        raise ValueError(
-            "Steady state trace collapsed; generator lacks a stationary density."
-        )
+        raise ValueError("Steady state trace collapsed; generator lacks a stationary density.")
     return density / trace
 
 
@@ -54,9 +52,7 @@ def test_lindblad_generator_preserves_trace(hilbert_qubit: HilbertSpace) -> None
         nu_f=1.0,
     )
 
-    identity_vector = np.eye(hilbert_qubit.dimension, dtype=np.complex128).reshape(
-        -1, order="F"
-    )
+    identity_vector = np.eye(hilbert_qubit.dimension, dtype=np.complex128).reshape(-1, order="F")
     assert np.allclose(
         identity_vector.conj().T @ generator, np.zeros_like(identity_vector), atol=1e-9
     )
@@ -200,9 +196,7 @@ def test_qutrit_pure_dephasing_matches_ground_truth(
     steady = _steady_state_from_generator(generator, hilbert_qutrit.dimension)
     trajectory = engine.evolve(initial, steps=3, dt=dt)
     distances = [_trace_distance(state, steady) for state in trajectory]
-    assert all(
-        distances[k] >= distances[k + 1] - 1e-7 for k in range(len(distances) - 1)
-    )
+    assert all(distances[k] >= distances[k + 1] - 1e-7 for k in range(len(distances) - 1))
 
 
 def test_unitary_generator_remains_available(hilbert_qubit: HilbertSpace) -> None:

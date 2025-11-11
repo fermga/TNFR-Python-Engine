@@ -52,7 +52,4 @@ def test_validate_canon_is_consistent_with_graph_validator() -> None:
     validator = GraphCanonicalValidator()
     follow_up = validator.validate(graph)
     assert follow_up.summary["clamped"] == ()
-    assert (
-        validator.report(follow_up)
-        == "Graph canonical validation passed without adjustments."
-    )
+    assert validator.report(follow_up) == "Graph canonical validation passed without adjustments."

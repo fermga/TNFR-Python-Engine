@@ -26,9 +26,7 @@ def test_cli_main_exports():
 
     # Verify all symbols in __all__ are actually importable
     for symbol in cli.__all__:
-        assert hasattr(
-            cli, symbol
-        ), f"cli.__all__ declares '{symbol}' but it's not available"
+        assert hasattr(cli, symbol), f"cli.__all__ declares '{symbol}' but it's not available"
         value = getattr(cli, symbol)
         assert value is not None, f"cli.{symbol} is None"
 
@@ -51,9 +49,7 @@ def test_cli_arguments_parser_functions():
     ]
 
     for func_name in public_functions:
-        assert hasattr(
-            arguments, func_name
-        ), f"arguments module should export {func_name}"
+        assert hasattr(arguments, func_name), f"arguments module should export {func_name}"
         func = getattr(arguments, func_name)
         assert callable(func), f"arguments.{func_name} should be callable"
 
@@ -83,17 +79,15 @@ def test_callback_utils_backward_compatibility_removed():
     TNFR Invariants: #4 (Operator closure), #8 (Controlled determinism)
     """
     import sys
-    
+
     # The module should no longer exist
     # Note: We don't actually import it because it doesn't exist anymore
     # Just verify that the functionality is available via the correct path
     from tnfr.utils import callbacks
-    
+
     # Verify __all__ exists and is a tuple
-    assert hasattr(
-        callbacks, "__all__"
-    ), "callbacks module should define __all__"
-    
+    assert hasattr(callbacks, "__all__"), "callbacks module should define __all__"
+
     # Verify all symbols are actually importable from the correct location
     expected_symbols = [
         "CallbackEvent",
@@ -102,14 +96,10 @@ def test_callback_utils_backward_compatibility_removed():
         "CallbackError",
         "CallbackSpec",
     ]
-    
+
     for symbol in expected_symbols:
-        assert (
-            symbol in callbacks.__all__
-        ), f"callbacks.__all__ should include '{symbol}'"
-        assert hasattr(
-            callbacks, symbol
-        ), f"callbacks should export '{symbol}'"
+        assert symbol in callbacks.__all__, f"callbacks.__all__ should include '{symbol}'"
+        assert hasattr(callbacks, symbol), f"callbacks should export '{symbol}'"
 
 
 def test_utils_callbacks_exports():
@@ -133,9 +123,7 @@ def test_utils_callbacks_exports():
     ]
 
     for symbol in core_symbols:
-        assert (
-            symbol in callbacks.__all__
-        ), f"callbacks.__all__ should include '{symbol}'"
+        assert symbol in callbacks.__all__, f"callbacks.__all__ should include '{symbol}'"
         assert hasattr(callbacks, symbol), f"callbacks should export '{symbol}'"
 
     # Private helper functions (not in callbacks.__all__ but accessible)
@@ -206,9 +194,7 @@ def test_utils_main_exports():
 
     # Verify all symbols in __all__ are actually importable
     for symbol in utils.__all__:
-        assert hasattr(
-            utils, symbol
-        ), f"utils.__all__ declares '{symbol}' but it's not available"
+        assert hasattr(utils, symbol), f"utils.__all__ declares '{symbol}' but it's not available"
 
     # Specifically check callback-related exports
     callback_symbols = [
@@ -219,15 +205,11 @@ def test_utils_main_exports():
     ]
 
     for symbol in callback_symbols:
-        assert (
-            symbol in utils.__all__
-        ), f"utils.__all__ should include callback symbol '{symbol}'"
+        assert symbol in utils.__all__, f"utils.__all__ should include callback symbol '{symbol}'"
         assert hasattr(utils, symbol), f"utils should export callback symbol '{symbol}'"
 
     # Check SecurityError
-    assert (
-        "SecurityError" in utils.__all__
-    ), "utils.__all__ should include 'SecurityError'"
+    assert "SecurityError" in utils.__all__, "utils.__all__ should include 'SecurityError'"
     assert hasattr(utils, "SecurityError"), "utils should export 'SecurityError'"
 
 
@@ -263,9 +245,7 @@ def test_validation_exports():
     ]
 
     for symbol in expected_symbols:
-        assert (
-            symbol in validation.__all__
-        ), f"validation.__all__ should include '{symbol}'"
+        assert symbol in validation.__all__, f"validation.__all__ should include '{symbol}'"
         assert hasattr(validation, symbol), f"validation should export '{symbol}'"
 
 
@@ -320,25 +300,19 @@ def test_cross_module_import_consistency():
     from tnfr.utils import CallbackManager as CM1
     from tnfr.utils.callbacks import CallbackManager as CM2
 
-    assert (
-        CM1 is CM2
-    ), "CallbackManager should be same object via utils and utils.callbacks"
+    assert CM1 is CM2, "CallbackManager should be same object via utils and utils.callbacks"
 
     # Test 2: coerce_glyph accessible via validation
     from tnfr.validation import coerce_glyph as cg1
     from tnfr.validation.rules import coerce_glyph as cg2
 
-    assert (
-        cg1 is cg2
-    ), "coerce_glyph should be same function via validation and validation.rules"
+    assert cg1 is cg2, "coerce_glyph should be same function via validation and validation.rules"
 
     # Test 3: cached_node_list accessible via utils
     from tnfr.utils import cached_node_list as cnl1
     from tnfr.utils.cache import cached_node_list as cnl2
 
-    assert (
-        cnl1 is cnl2
-    ), "cached_node_list should be same function via utils and utils.cache"
+    assert cnl1 is cnl2, "cached_node_list should be same function via utils and utils.cache"
 
 
 def test_no_missing_stub_symbols():

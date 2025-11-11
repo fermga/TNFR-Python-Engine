@@ -1,1 +1,0 @@
-../../grammar/GLOSSARY.md

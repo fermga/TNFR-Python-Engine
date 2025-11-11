@@ -48,9 +48,7 @@ def _build_seed_graph():  # noqa: ANN001 - test helper
 
 def _snapshot_nodes(graph):  # noqa: ANN001 - test helper
     return {
-        node: {
-            key: float(value) for key, value in data.items() if isinstance(value, float)
-        }
+        node: {key: float(value) for key, value in data.items() if isinstance(value, float)}
         for node, data in graph.nodes(data=True)
     }
 

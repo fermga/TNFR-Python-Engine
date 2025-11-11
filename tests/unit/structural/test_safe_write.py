@@ -13,9 +13,7 @@ def test_safe_write_atomic(tmp_path: Path):
     assert dest.read_text() == "hi"
 
 
-def test_safe_write_cleans_temp_on_error(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-):
+def test_safe_write_cleans_temp_on_error(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     dest = tmp_path / "out.txt"
 
     def fake_replace(src, dst):  # pragma: no cover - monkeypatch helper
@@ -80,9 +78,7 @@ def test_safe_write_sync_non_atomic(tmp_path: Path, monkeypatch: pytest.MonkeyPa
 
 
 @pytest.mark.parametrize("atomic", [True, False])
-def test_safe_write_binary_mode(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, atomic: bool
-):
+def test_safe_write_binary_mode(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, atomic: bool):
     dest = tmp_path / ("binary_atomic.bin" if atomic else "binary_direct.bin")
     payload = b"\x00TNFR\xff\x10"
     original_open = builtins.open

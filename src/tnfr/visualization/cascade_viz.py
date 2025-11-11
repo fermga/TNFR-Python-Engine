@@ -98,9 +98,7 @@ def plot_cascade_propagation(G: TNFRGraph, figsize: tuple[int, int] = (12, 8)):
     pos = nx.spring_layout(G, seed=42)
 
     # Draw network structure
-    nx.draw_networkx_nodes(
-        G, pos, node_color=node_colors, node_size=node_sizes, ax=ax, alpha=0.8
-    )
+    nx.draw_networkx_nodes(G, pos, node_color=node_colors, node_size=node_sizes, ax=ax, alpha=0.8)
     nx.draw_networkx_edges(G, pos, alpha=0.3, ax=ax)
     nx.draw_networkx_labels(G, pos, ax=ax, font_size=10)
 

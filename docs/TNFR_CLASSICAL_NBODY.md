@@ -1109,7 +1109,7 @@ python examples/nbody_quantitative_validation.py
 
 **Dissonance (ε)**: Parameter measuring structural instability. As ε → 0, TNFR → classical mechanics.
 
-**EPI (Estructura Primaria de Información)**: Primary Information Structure. The coherent "form" of a node. Encodes position and velocity in classical limit.
+**EPI (Primary Information Structure)**: The coherent "form" of a node. Encodes position and velocity in classical limit.
 
 **Hz_str (Structural Hertz)**: Units of structural frequency νf. Measures rate of reorganization, not physical oscillation.
 

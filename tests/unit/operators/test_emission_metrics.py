@@ -18,7 +18,6 @@ Tests verify:
 - irreversibility_marker presence
 """
 
-
 from tnfr.operators.definitions import Emission, Reception, Coherence, Silence
 from tnfr.structural import create_nfr, run_sequence
 
@@ -280,9 +279,7 @@ def test_emission_metrics_types():
     assert isinstance(metrics["irreversibility_marker"], bool)
 
     # Optional timestamp (string or None)
-    assert metrics["emission_timestamp"] is None or isinstance(
-        metrics["emission_timestamp"], str
-    )
+    assert metrics["emission_timestamp"] is None or isinstance(metrics["emission_timestamp"], str)
 
 
 def test_emission_metrics_without_collection_flag():

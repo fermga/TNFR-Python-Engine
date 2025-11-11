@@ -21,7 +21,7 @@ References
 from __future__ import annotations
 
 import math
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from ..types import NodeId, TNFRGraph
@@ -128,9 +128,7 @@ def propagate_dissonance(
 
         # Compute frequency matching
         if propagation_mode == "frequency_weighted":
-            freq_ratio = min(neighbor_vf, source_vf) / max(
-                neighbor_vf, source_vf, 1e-10
-            )
+            freq_ratio = min(neighbor_vf, source_vf) / max(neighbor_vf, source_vf, 1e-10)
             freq_weight = freq_ratio
         else:
             freq_weight = 1.0
@@ -140,9 +138,7 @@ def propagate_dissonance(
         coupling_weight = edge_data.get("weight", 1.0) if edge_data else 1.0
 
         # Compute propagated dissonance
-        propagated_dnfr = (
-            dissonance_magnitude * coupling_weight * phase_weight * freq_weight
-        )
+        propagated_dnfr = dissonance_magnitude * coupling_weight * phase_weight * freq_weight
 
         if abs(propagated_dnfr) >= min_propagation:
             # Apply propagated dissonance to neighbor

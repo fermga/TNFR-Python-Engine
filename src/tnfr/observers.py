@@ -213,9 +213,7 @@ def phase_sync(
     return 1.0 / (1.0 + var)
 
 
-def kuramoto_order(
-    G: TNFRGraph, R: float | None = None, psi: float | None = None
-) -> float:
+def kuramoto_order(G: TNFRGraph, R: float | None = None, psi: float | None = None) -> float:
     """R in [0,1], 1 means perfectly aligned phases."""
     if not _ensure_nodes(G):
         return 1.0

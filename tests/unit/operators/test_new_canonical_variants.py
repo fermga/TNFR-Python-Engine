@@ -130,8 +130,7 @@ class TestContainedCrisisValidation:
         assert len(CONTAINED_CRISIS.use_cases) >= 3
         use_cases_text = " ".join(CONTAINED_CRISIS.use_cases).lower()
         assert any(
-            keyword in use_cases_text
-            for keyword in ["trauma", "crisis", "emergency", "protective"]
+            keyword in use_cases_text for keyword in ["trauma", "crisis", "emergency", "protective"]
         )
 
 
@@ -161,8 +160,7 @@ class TestResonancePeakHoldValidation:
         assert len(RESONANCE_PEAK_HOLD.use_cases) >= 3
         use_cases_text = " ".join(RESONANCE_PEAK_HOLD.use_cases).lower()
         assert any(
-            keyword in use_cases_text
-            for keyword in ["peak", "flow", "optimal", "coherence"]
+            keyword in use_cases_text for keyword in ["peak", "flow", "optimal", "coherence"]
         )
 
 
@@ -174,9 +172,7 @@ class TestMinimalCompressionValidation:
         sequence = [EMISSION, RECEPTION, COHERENCE, CONTRACTION, SILENCE]
         result = validate_sequence(sequence)
 
-        assert (
-            result.passed
-        ), f"MINIMAL_COMPRESSION failed validation: {result.message}"
+        assert result.passed, f"MINIMAL_COMPRESSION failed validation: {result.message}"
 
     def test_nul_sha_direct_transition(self):
         """Direct NUL → SHA transition should be allowed."""
@@ -194,8 +190,7 @@ class TestMinimalCompressionValidation:
         assert len(MINIMAL_COMPRESSION.use_cases) >= 3
         use_cases_text = " ".join(MINIMAL_COMPRESSION.use_cases).lower()
         assert any(
-            keyword in use_cases_text
-            for keyword in ["compress", "minimal", "storage", "essence"]
+            keyword in use_cases_text for keyword in ["compress", "minimal", "storage", "essence"]
         )
 
 
@@ -225,8 +220,7 @@ class TestPhaseLockValidation:
         assert len(PHASE_LOCK.use_cases) >= 3
         use_cases_text = " ".join(PHASE_LOCK.use_cases).lower()
         assert any(
-            keyword in use_cases_text
-            for keyword in ["phase", "identity", "mutation", "transform"]
+            keyword in use_cases_text for keyword in ["phase", "identity", "mutation", "transform"]
         )
 
 
@@ -237,9 +231,7 @@ class TestNewVariantsVsExistingSequences:
         """CONTAINED_CRISIS is simpler than BIFURCATED_BASE."""
         # CONTAINED_CRISIS: AL → EN → IL → OZ → SHA (5 operators)
         # BIFURCATED_BASE: AL → EN → IL → OZ → ZHIR → IL → SHA (7 operators)
-        assert len(CONTAINED_CRISIS.glyphs) < len(
-            CANONICAL_SEQUENCES["bifurcated_base"].glyphs
-        )
+        assert len(CONTAINED_CRISIS.glyphs) < len(CANONICAL_SEQUENCES["bifurcated_base"].glyphs)
         # Both contain OZ → ... → SHA path
         assert Glyph.OZ in CONTAINED_CRISIS.glyphs
         assert Glyph.SHA in CONTAINED_CRISIS.glyphs
@@ -248,9 +240,7 @@ class TestNewVariantsVsExistingSequences:
         """PHASE_LOCK is simpler than BIFURCATED_BASE."""
         # PHASE_LOCK: AL → EN → IL → OZ → ZHIR → SHA (6 operators)
         # BIFURCATED_BASE: AL → EN → IL → OZ → ZHIR → IL → SHA (7 operators)
-        assert len(PHASE_LOCK.glyphs) < len(
-            CANONICAL_SEQUENCES["bifurcated_base"].glyphs
-        )
+        assert len(PHASE_LOCK.glyphs) < len(CANONICAL_SEQUENCES["bifurcated_base"].glyphs)
         # PHASE_LOCK skips the IL stabilization after ZHIR
         assert PHASE_LOCK.glyphs[-2] == Glyph.ZHIR  # ZHIR before SHA
         bifurcated_base = CANONICAL_SEQUENCES["bifurcated_base"]
@@ -319,9 +309,9 @@ class TestFrequencyTransitionEnablement:
         ]:
             ref_text = variant.references.lower()
             # At least one frequency keyword should be in references
-            assert any(keyword in ref_text for keyword in frequency_keywords), (
-                f"{variant.name} should reference frequency transition in references"
-            )
+            assert any(
+                keyword in ref_text for keyword in frequency_keywords
+            ), f"{variant.name} should reference frequency transition in references"
 
 
 class TestCanonicalVariantUseCases:
@@ -366,6 +356,4 @@ class TestCanonicalVariantUseCases:
             MINIMAL_COMPRESSION,
             PHASE_LOCK,
         ]:
-            assert (
-                len(variant.use_cases) >= 3
-            ), f"{variant.name} should have at least 3 use cases"
+            assert len(variant.use_cases) >= 3, f"{variant.name} should have at least 3 use cases"

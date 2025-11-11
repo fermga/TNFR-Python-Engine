@@ -5,8 +5,8 @@ reference to plan trajectories for simulations, experiments, or CLI runs.
 
 > **📖 Extended Guides**: 
 > - See [OPERATORS_VISUAL_GUIDE.md](OPERATORS_VISUAL_GUIDE.md) for comprehensive visual documentation, ASCII diagrams, and interactive examples of all 13 operators
-> - See [GLYPH_SEQUENCES_GUIDE.md](../../../GLYPH_SEQUENCES_GUIDE.md) for comprehensive canonical sequences, multi-domain examples, and grammar compatibility patterns
-> - See [UNIFIED_GRAMMAR_RULES.md](../../../UNIFIED_GRAMMAR_RULES.md) for grammar validation rules (U1-U5) and physics derivations (temporal + multi-scale)
+> - See [GLYPH_SEQUENCES_GUIDE.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/GLYPH_SEQUENCES_GUIDE.md) for comprehensive canonical sequences, multi-domain examples, and grammar compatibility patterns
+> - See [UNIFIED_GRAMMAR_RULES.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/UNIFIED_GRAMMAR_RULES.md) for grammar validation rules (U1-U5) and physics derivations (temporal + multi-scale)
 > - See [NAV_GUIDE.md](../operators/NAV_GUIDE.md) for NAV (Transition) operator canonical sequences, anti-patterns, and troubleshooting
 
 ## Canonical operator map

@@ -32,9 +32,7 @@ def test_compute_Si_vectorized_uses_bulk_helper(monkeypatch, graph_canon):
         )
         return original_helper(edge_src, edge_dst, **kwargs)
 
-    monkeypatch.setattr(
-        "tnfr.metrics.sense_index.neighbor_phase_mean_bulk", capture_helper
-    )
+    monkeypatch.setattr("tnfr.metrics.sense_index.neighbor_phase_mean_bulk", capture_helper)
     monkeypatch.setattr("tnfr.metrics.sense_index.get_numpy", lambda: np)
 
     G = graph_canon()
@@ -78,12 +76,8 @@ def test_compute_Si_vectorized_avoids_abs_max_recompute(monkeypatch, graph_canon
     G = graph_canon()
     _configure_graph(G)
 
-    expected_vfmax = max(
-        abs(get_attr(G.nodes[node], ALIAS_VF, 0.0)) for node in G.nodes
-    )
-    expected_dnfrmax = max(
-        abs(get_attr(G.nodes[node], ALIAS_DNFR, 0.0)) for node in G.nodes
-    )
+    expected_vfmax = max(abs(get_attr(G.nodes[node], ALIAS_VF, 0.0)) for node in G.nodes)
+    expected_dnfrmax = max(abs(get_attr(G.nodes[node], ALIAS_DNFR, 0.0)) for node in G.nodes)
 
     vectorized = compute_Si(G, inplace=False)
 
@@ -286,9 +280,7 @@ def test_compute_Si_vectorized_chunked_results_match(monkeypatch, graph_canon):
         graph.add_nodes_from(range(node_count))
         graph.add_edges_from((i, i + 1) for i in range(node_count - 1))
         for node in graph.nodes:
-            set_attr(
-                graph.nodes[node], ALIAS_THETA, (node + 1) * math.pi / (node_count + 2)
-            )
+            set_attr(graph.nodes[node], ALIAS_THETA, (node + 1) * math.pi / (node_count + 2))
             set_attr(graph.nodes[node], ALIAS_VF, 0.15 + 0.07 * node)
             set_attr(graph.nodes[node], ALIAS_DNFR, 0.05 + 0.04 * node)
 
@@ -348,9 +340,7 @@ def test_compute_Si_vectorized_skips_isolated_nodes(monkeypatch, graph_canon):
         captured_masks.append(mask.copy())
         return mean_theta, mask
 
-    monkeypatch.setattr(
-        "tnfr.metrics.sense_index.neighbor_phase_mean_bulk", tracking_bulk
-    )
+    monkeypatch.setattr("tnfr.metrics.sense_index.neighbor_phase_mean_bulk", tracking_bulk)
 
     remainder_inputs: list[Any] = []
     original_remainder = np.remainder
@@ -466,9 +456,7 @@ def test_compute_Si_edge_indices_cache_invalidation(monkeypatch, graph_canon):
 
         return original_edge_cache(G, key, tracked_builder, **kwargs)
 
-    monkeypatch.setattr(
-        "tnfr.metrics.sense_index.edge_version_cache", tracking_edge_cache
-    )
+    monkeypatch.setattr("tnfr.metrics.sense_index.edge_version_cache", tracking_edge_cache)
 
     G = graph_canon()
     _configure_graph(G)
@@ -478,9 +466,7 @@ def test_compute_Si_edge_indices_cache_invalidation(monkeypatch, graph_canon):
     assert trig_cache.edge_src is not None
     assert trig_cache.edge_dst is not None
     edge_keys = [
-        key
-        for key in builder_counts
-        if isinstance(key, tuple) and key and key[0] == "_si_edges"
+        key for key in builder_counts if isinstance(key, tuple) and key and key[0] == "_si_edges"
     ]
     assert edge_keys and sum(builder_counts[key] for key in edge_keys) == 1
 
@@ -537,9 +523,7 @@ def test_compute_Si_reuses_structural_arrays(monkeypatch, graph_canon):
     assert rebuilds == 1
 
 
-def test_compute_Si_structural_cache_invalidated_on_attribute_change(
-    monkeypatch, graph_canon
-):
+def test_compute_Si_structural_cache_invalidated_on_attribute_change(monkeypatch, graph_canon):
     np = pytest.importorskip("numpy")
 
     monkeypatch.setattr("tnfr.metrics.sense_index.get_numpy", lambda: np)

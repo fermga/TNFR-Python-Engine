@@ -62,7 +62,4 @@ def test_manager_ignores_non_mapping_config(graph_canon) -> None:
 
     reloaded_manager = _graph_cache_manager(G.graph)
     assert reloaded_manager.export_config() == baseline_snapshot
-    assert (
-        reloaded_manager.get_capacity(DNFR_PREP_STATE_KEY)
-        == baseline_snapshot.default_capacity
-    )
+    assert reloaded_manager.get_capacity(DNFR_PREP_STATE_KEY) == baseline_snapshot.default_capacity

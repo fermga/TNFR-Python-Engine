@@ -50,9 +50,7 @@ def _as_matrix(
     return arr
 
 
-def _is_hermitian(
-    matrix: Any, *, atol: float = 1e-9, backend: MathematicsBackend
-) -> bool:
+def _is_hermitian(matrix: Any, *, atol: float = 1e-9, backend: MathematicsBackend) -> bool:
     matrix_np = ensure_numpy(matrix, backend=backend)
     return bool(np.allclose(matrix_np, matrix_np.conj().T, atol=atol))
 
@@ -164,9 +162,7 @@ class MathematicalDynamicsEngine:
         evolved = self.backend.matmul(unitary, vector)
         if normalize:
             norm_backend = self.backend.norm(evolved)
-            norm_numpy = float(
-                np.asarray(ensure_numpy(norm_backend, backend=self.backend))
-            )
+            norm_numpy = float(np.asarray(ensure_numpy(norm_backend, backend=self.backend)))
             if np.isclose(norm_numpy, 0.0, atol=self.atol):
                 raise ValueError("Cannot normalise a null state vector.")
             evolved = evolved / norm_backend

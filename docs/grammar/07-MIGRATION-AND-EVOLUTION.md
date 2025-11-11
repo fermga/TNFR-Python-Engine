@@ -1919,7 +1919,50 @@ Reason: Stabilize multi-scale structure
 
 ---
 
-### U6: Temporal Ordering (Under Consideration)
+### U6: STRUCTURAL POTENTIAL CONFINEMENT ✅ CANONICAL (2025-11-11)
+
+**Status:** **CANONICAL** - Promoted from research to canonical grammar constraint.
+
+**Concept:** Structural potential field (Φ_s) constrains sequences via passive equilibrium
+
+**Physical Basis:**
+```
+From nodal equation + network topology:
+  Φ_s(i) = Σ_{j≠i} ΔNFR_j / d(i,j)²
+  
+  Displacement from potential minima → coherence loss:
+    corr(Δ Φ_s, ΔC) = -0.822 (R² ≈ 0.68)
+  
+  Escape threshold: Δ Φ_s < 2.0
+```
+
+**Constraint:**
+```
+All sequences (telemetry-based safety criterion):
+  Monitor Δ Φ_s before and after sequence
+  
+  If Δ Φ_s ≥ 2.0:
+    → System approaching fragmentation boundary
+    
+Valid sequences typically maintain Δ Φ_s ≈ 0.6 (30% of threshold)
+```
+
+**Validation:**
+- **Experiments:** 2,400+ across 5 topologies (ring, scale_free, ws, tree, grid)
+- **Universality:** CV = 0.1% (perfect across topologies)
+- **Mechanism:** Passive protection (grammar acts as confinement, not attractor)
+- **Canonicity:** STRONG (extensive empirical validation)
+
+**See:**
+- [docs/grammar/U6_STRUCTURAL_POTENTIAL_CONFINEMENT.md](U6_STRUCTURAL_POTENTIAL_CONFINEMENT.md) - Complete specification
+- [UNIFIED_GRAMMAR_RULES.md § U6](../../UNIFIED_GRAMMAR_RULES.md) - Physics derivation
+- [TNFR_FORCES_EMERGENCE.md § 14-15](../TNFR_FORCES_EMERGENCE.md) - Validation details
+
+---
+
+### Proposed U7: Temporal Ordering (Research Stage - Formerly Experimental U6)
+
+**Status:** RESEARCH - Not canonical. Previously explored as "U6: Temporal Ordering" before Φ_s approach proved superior.
 
 **Concept:** Certain operators require minimum temporal separation
 
@@ -1942,14 +1985,21 @@ If OZ or ZHIR at position i:
 Reason: Allow structural relaxation
 ```
 
-**Status:**
+**Why Not Canonical:**
+- Φ_s (U6) showed stronger predictive power (|corr| = 0.822 vs τ_relax heuristics)
+- Temporal ordering may be emergent consequence of Φ_s constraint
+- Could be revisited as complementary heuristic or future U7/U8
+
+**Research Status:**
 - Canonicity: Possibly MODERATE (from bifurcation theory)
-- Research needed: Determine τ_relax precisely
-- Expected: v5.0+ (24+ months)
+- Research needed: Determine if τ_relax provides unique information beyond Φ_s
+- Expected: Post-v5.0 (if uniqueness demonstrated)
+
+**See:** [UNIFIED_GRAMMAR_RULES.md § Proposed U7](../../UNIFIED_GRAMMAR_RULES.md) - Historical context
 
 ---
 
-### U7: Network Topology Constraints (Research Stage)
+### U8: Network Topology Constraints (Research Stage)
 
 **Concept:** Coupling patterns must respect network structure
 
@@ -2057,20 +2107,25 @@ Have an idea for future constraint?
 
 ### Potential Extensions
 
+**Canonical (ADDED):**
+
+1. ✅ **U5: Multi-scale coherence** - Nested EPIs require stabilizers at each level (ADDED 2025-11-10, ABSOLUTE canonicity)
+2. ✅ **U6: Structural potential confinement** - Φ_s field safety criterion Δ Φ_s < 2.0 (PROMOTED 2025-11-11, STRONG canonicity)
+
 **Under consideration (not committed):**
 
-1. **U5: Multi-scale consistency** - Ensure nested EPIs maintain coherence across scales
-2. **U6: Temporal ordering** - Certain operators may need temporal separation
-3. **U7: Network topology** - Coupling patterns may need validation
+1. **Proposed U7: Temporal ordering** (formerly experimental U6) - Certain operators may need temporal separation via τ_relax
+2. **Proposed U8: Network topology** - Coupling patterns may need explicit network path validation
 
 **Requirements for inclusion:**
 - Must be physically inevitable
-- Must be non-derivable from U1-U4
+- Must be non-derivable from U1-U6
 - Must have ABSOLUTE or STRONG canonicity
 
 ### Research Topics
 
 **Open questions:**
+- Does τ_relax (temporal ordering) provide unique information beyond Φ_s?
 - Optimal stabilizer-destabilizer ratios
 - Phase synchronization dynamics
 - Bifurcation threshold detection
@@ -2100,7 +2155,7 @@ Have an idea for future constraint?
 2. [08-QUICK-REFERENCE.md](08-QUICK-REFERENCE.md) - Quick lookup
 3. GitHub discussions
 
-**Want to contribute?** See [../../CONTRIBUTING.md](../../CONTRIBUTING.md)
+**Want to contribute?** See [CONTRIBUTING.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/CONTRIBUTING.md)
 
 ---
 
@@ -2112,7 +2167,7 @@ Have an idea for future constraint?
 
 **For reference:**
 - [08-QUICK-REFERENCE.md](08-QUICK-REFERENCE.md) - Quick lookup
-- [../../UNIFIED_GRAMMAR_RULES.md](../../UNIFIED_GRAMMAR_RULES.md) - Complete formal proofs
+- [UNIFIED_GRAMMAR_RULES.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/UNIFIED_GRAMMAR_RULES.md) - Complete formal proofs
 
 ---
 

@@ -36,9 +36,7 @@ def _coerce_bridge_factor(raw: object) -> float:
     try:
         factor = float(raw)
     except (TypeError, ValueError) as exc:  # pragma: no cover - defensive guard
-        raise TypeError(
-            "HZ_STR_BRIDGE must be a real number convertible to float"
-        ) from exc
+        raise TypeError("HZ_STR_BRIDGE must be a real number convertible to float") from exc
 
     if factor <= 0.0:
         raise ValueError("HZ_STR_BRIDGE must be strictly positive")

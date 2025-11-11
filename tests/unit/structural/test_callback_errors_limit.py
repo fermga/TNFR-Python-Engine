@@ -14,9 +14,7 @@ def test_callback_error_list_resets_limit(graph_canon):
     def failing_cb(G, ctx):
         raise RuntimeError("boom")
 
-    callback_manager.register_callback(
-        G, CallbackEvent.BEFORE_STEP, failing_cb, name="fail"
-    )
+    callback_manager.register_callback(G, CallbackEvent.BEFORE_STEP, failing_cb, name="fail")
     original = deque(maxlen=None)
     G.graph["_callback_errors"] = original
 

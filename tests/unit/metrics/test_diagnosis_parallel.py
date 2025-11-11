@@ -108,9 +108,7 @@ def test_diagnosis_python_parallel_without_numpy(graph_canon, monkeypatch):
         resolve_calls: list[tuple[int | None, int, dict[str, object]]] = []
         original_resolve = diagnosis_module.resolve_chunk_size
 
-        def tracking_resolve(
-            chunk_size: int | None, total_items: int, **kwargs: object
-        ) -> int:
+        def tracking_resolve(chunk_size: int | None, total_items: int, **kwargs: object) -> int:
             resolve_calls.append((chunk_size, total_items, dict(kwargs)))
             return original_resolve(chunk_size, total_items, **kwargs)
 
@@ -143,9 +141,7 @@ def test_diagnosis_skips_symmetry_when_disabled(graph_canon, monkeypatch):
     def _fail_worker(*args, **kwargs):  # pragma: no cover - should not be called
         raise AssertionError("worker symmetry computation should be disabled")
 
-    monkeypatch.setattr(
-        "tnfr.metrics.diagnosis._neighbor_means_vectorized", _fail_vectorized
-    )
+    monkeypatch.setattr("tnfr.metrics.diagnosis._neighbor_means_vectorized", _fail_vectorized)
     monkeypatch.setattr("tnfr.metrics.diagnosis._neighbor_mean_worker", _fail_worker)
 
     _diagnosis_step(graph, n_jobs=1)
@@ -177,9 +173,7 @@ def test_diagnosis_invalid_jobs_fall_back_to_serial(graph_canon, monkeypatch, ba
 
     class _FailingExecutor:
         def __init__(self, *args, **kwargs):  # noqa: D401 - context manager protocol
-            raise AssertionError(
-                "ProcessPoolExecutor should not be used for invalid n_jobs"
-            )
+            raise AssertionError("ProcessPoolExecutor should not be used for invalid n_jobs")
 
     monkeypatch.setattr(
         "tnfr.metrics.diagnosis.ProcessPoolExecutor",

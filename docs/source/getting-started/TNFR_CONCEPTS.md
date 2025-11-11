@@ -73,7 +73,7 @@ Think of an NFR as a **tuning fork in a network of tuning forks**. Each fork:
 
 **Every NFR has three essential properties:**
 
-#### 1. EPI (Estructura Primaria de Información / Primary Information Structure)
+#### 1. EPI (Primary Information Structure)
 
 **What it is**: The coherent "shape" or "form" of a node - its structural identity.
 
@@ -659,7 +659,7 @@ except ImportError:
 
 5. **Study theoretical foundations**:
    - [foundations.md](../foundations.md) - Mathematical scaffolding
-   - [TNFR.pdf](../../../TNFR.pdf) - Complete theoretical framework
+    - [TNFR.pdf](https://github.com/fermga/TNFR-Python-Engine/blob/main/TNFR.pdf) - Complete theoretical framework
    - [theory/mathematical_foundations.md](../theory/mathematical_foundations.md) - Complete mathematical formalization
 
 ### Master the Tools
@@ -672,17 +672,17 @@ except ImportError:
 
 7. **See complete examples**:
    - [Examples Directory](../examples/README.md) - Runnable scenarios
-   - [Glyph Sequences Guide](../../../GLYPH_SEQUENCES_GUIDE.md) - Operator sequences
+    - [Glyph Sequences Guide](https://github.com/fermga/TNFR-Python-Engine/blob/main/GLYPH_SEQUENCES_GUIDE.md) - Operator sequences
 
 ### Advanced Topics
 
 8. **Understand the architecture**:
-   - [ARCHITECTURE.md](../../../ARCHITECTURE.md) - System design
-   - [GLOSSARY.md](../../../GLOSSARY.md) - Complete terminology reference
+    - [ARCHITECTURE.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/ARCHITECTURE.md) - System design
+    - [GLOSSARY.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/GLOSSARY.md) - Complete terminology reference
 
 9. **Contribute**:
-   - [CONTRIBUTING.md](../../../CONTRIBUTING.md) - Development guidelines
-   - [TESTING.md](../../../TESTING.md) - Test strategies
+    - [CONTRIBUTING.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/CONTRIBUTING.md) - Development guidelines
+    - [TESTING.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/TESTING.md) - Test strategies
 
 ### Key References
 

@@ -540,10 +540,10 @@ G.graph["VALIDATE_PRECONDITIONS"] = False  # Performance optimization
 
 ## Related Documentation
 
-- **[UNIFIED_GRAMMAR_RULES.md](../../../UNIFIED_GRAMMAR_RULES.md)** - Complete grammar derivations (U1-U5)
-- **[GLYPH_SEQUENCES_GUIDE.md](../../../GLYPH_SEQUENCES_GUIDE.md)** - Multi-domain sequence patterns
+- **[UNIFIED_GRAMMAR_RULES.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/UNIFIED_GRAMMAR_RULES.md)** - Complete grammar derivations (U1-U5)
+- **[GLYPH_SEQUENCES_GUIDE.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/GLYPH_SEQUENCES_GUIDE.md)** - Multi-domain sequence patterns
 - **[Operator Reference](../api/operators.md)** - All 13 canonical operators
-- **[GLOSSARY.md](../../../GLOSSARY.md)** - TNFR terminology and definitions
+- **[GLOSSARY.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/GLOSSARY.md)** - TNFR terminology and definitions
 - **[SHA_CLINICAL_APPLICATIONS.md](../examples/SHA_CLINICAL_APPLICATIONS.md)** - Silence operator guide
 
 ---

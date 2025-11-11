@@ -161,12 +161,10 @@ def test_init_node_attrs_respects_graph_configuration(data, init_config) -> None
         return copy.deepcopy(graph)
 
     collected = {
-        override: _collect_node_attrs(clone(), override=override)
-        for override in (True, False)
+        override: _collect_node_attrs(clone(), override=override) for override in (True, False)
     }
     repeated = {
-        override: _collect_node_attrs(clone(), override=override)
-        for override in (True, False)
+        override: _collect_node_attrs(clone(), override=override) for override in (True, False)
     }
 
     for override in (True, False):

@@ -31,9 +31,7 @@ def _seed_graph(node_count: int = 48) -> nx.Graph:
     return graph
 
 
-def _assert_profile_timings(
-    profile: dict[str, float | str], expected_path: str
-) -> None:
+def _assert_profile_timings(profile: dict[str, float | str], expected_path: str) -> None:
     assert profile.get("dnfr_path") == expected_path
     for key in _PROFILE_KEYS:
         value = profile.get(key)

@@ -55,9 +55,7 @@ def test_hilbert_space_projection(
         (space.basis[1] + space.basis[2]) / np.sqrt(2.0),
         (space.basis[1] - space.basis[2]) / np.sqrt(2.0),
     ]
-    expected = np.array(
-        [space.inner_product(b, vector) for b in custom_basis], dtype=space.dtype
-    )
+    expected = np.array([space.inner_product(b, vector) for b in custom_basis], dtype=space.dtype)
     projected = space.project(vector, basis=custom_basis)
     np.testing.assert_allclose(projected, expected, atol=structural_tolerances["atol"])
 

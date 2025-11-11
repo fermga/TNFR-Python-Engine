@@ -670,6 +670,6 @@ Each example:
 - ✅ Interprets results physically
 
 For more examples, see:
-- [Theory notebooks](../theory/) for interactive explorations
-- [API documentation](../api/metrics.html) for function references
+- [Theory notebooks](../theory/README.md) for interactive explorations
+- [API documentation](../api/telemetry.md) for function references
 - [Mathematical Foundations](../theory/mathematical_foundations.md) for complete derivations

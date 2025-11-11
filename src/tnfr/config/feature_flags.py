@@ -45,9 +45,7 @@ def _load_base_flags() -> MathFeatureFlags:
         backend = os.getenv("TNFR_MATH_BACKEND")
         backend_choice = backend.strip() if backend else "numpy"
         _BASE_FLAGS = MathFeatureFlags(
-            enable_math_validation=_parse_env_flag(
-                "TNFR_ENABLE_MATH_VALIDATION", False
-            ),
+            enable_math_validation=_parse_env_flag("TNFR_ENABLE_MATH_VALIDATION", False),
             enable_math_dynamics=_parse_env_flag("TNFR_ENABLE_MATH_DYNAMICS", False),
             log_performance=_parse_env_flag("TNFR_LOG_PERF", False),
             math_backend=backend_choice or "numpy",

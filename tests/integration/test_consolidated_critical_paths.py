@@ -229,9 +229,7 @@ def test_nodal_validator_bounds_unified(
     )
 
 
-@pytest.mark.parametrize(
-    "phase_value", [0.0, math.pi / 4, math.pi / 2, math.pi, 2 * math.pi]
-)
+@pytest.mark.parametrize("phase_value", [0.0, math.pi / 4, math.pi / 2, math.pi, 2 * math.pi])
 def test_nodal_validator_phase_wrapping_unified(phase_value: float):
     """Test phase wrapping across multiple values (consolidated).
 
@@ -275,9 +273,7 @@ def test_nodal_validator_multi_scale_consistency(
         assert EPI_PRIMARY in data
         assert VF_PRIMARY in data
         assert DNFR_PRIMARY in data
-        assert all(
-            math.isfinite(data[key]) for key in [EPI_PRIMARY, VF_PRIMARY, DNFR_PRIMARY]
-        )
+        assert all(math.isfinite(data[key]) for key in [EPI_PRIMARY, VF_PRIMARY, DNFR_PRIMARY])
 
 
 def test_nodal_validator_disconnected_components():

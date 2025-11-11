@@ -54,9 +54,7 @@ __all__ = (
 
 # Hypothesis guidance for CI runs.
 DEFAULT_PROPERTY_MAX_EXAMPLES = 25
-PROPERTY_TEST_SETTINGS = settings(
-    deadline=None, max_examples=DEFAULT_PROPERTY_MAX_EXAMPLES
-)
+PROPERTY_TEST_SETTINGS = settings(deadline=None, max_examples=DEFAULT_PROPERTY_MAX_EXAMPLES)
 
 DeltaHook = Callable[..., None]
 
@@ -426,9 +424,7 @@ def phase_bulk_scenarios(
             neighbour_counts=(),
         )
 
-    theta_values = draw(
-        st.lists(_finite_angle(), min_size=node_count, max_size=node_count)
-    )
+    theta_values = draw(st.lists(_finite_angle(), min_size=node_count, max_size=node_count))
     cos_values = [math.cos(theta) for theta in theta_values]
     sin_values = [math.sin(theta) for theta in theta_values]
 

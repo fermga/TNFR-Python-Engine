@@ -895,10 +895,10 @@ Aim for "good enough" for your use case.
 
 ## Resources
 
-- **[GLYPH_SEQUENCES_GUIDE.md](../GLYPH_SEQUENCES_GUIDE.md)**: Complete Grammar 2.0 guide
+- **[GLYPH_SEQUENCES_GUIDE.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/GLYPH_SEQUENCES_GUIDE.md)**: Complete Grammar 2.0 guide
 - **[MIGRATION_GUIDE_2.0.md](MIGRATION_GUIDE_2.0.md)**: Upgrading from 1.0
 - **[PATTERN_REFERENCE.md](PATTERN_REFERENCE.md)**: Pattern catalog
-- **[src/tnfr/operators/health_analyzer.py](../src/tnfr/operators/health_analyzer.py)**: Implementation
+- **[src/tnfr/operators/health_analyzer.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/operators/health_analyzer.py)**: Implementation
 
 ---
 

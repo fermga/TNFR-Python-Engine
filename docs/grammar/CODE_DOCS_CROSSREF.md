@@ -18,7 +18,7 @@
 | **U3: Resonant Coupling** | [02-CANONICAL-CONSTRAINTS.md](02-CANONICAL-CONSTRAINTS.md) | `GrammarValidator.validate_resonant_coupling()` in `src/tnfr/operators/grammar.py:616` |
 | **U4a: Bifurcation Triggers** | [02-CANONICAL-CONSTRAINTS.md](02-CANONICAL-CONSTRAINTS.md) | `GrammarValidator.validate_bifurcation_triggers()` in `src/tnfr/operators/grammar.py:672` |
 | **U4b: Transformer Context** | [02-CANONICAL-CONSTRAINTS.md](02-CANONICAL-CONSTRAINTS.md) | `GrammarValidator.validate_transformer_context()` in `src/tnfr/operators/grammar.py:727` |
-| **U2-REMESH** | [UNIFIED_GRAMMAR_RULES.md](../../UNIFIED_GRAMMAR_RULES.md) | `GrammarValidator.validate_remesh_amplification()` in `src/tnfr/operators/grammar.py:807` |
+| **U2-REMESH** | [UNIFIED_GRAMMAR_RULES.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/UNIFIED_GRAMMAR_RULES.md) | `GrammarValidator.validate_remesh_amplification()` in `src/tnfr/operators/grammar.py:807` |
 
 ### Operator Sets
 
@@ -61,7 +61,7 @@
 | `validate_resonant_coupling()` | 616 | [02-CANONICAL-CONSTRAINTS.md](02-CANONICAL-CONSTRAINTS.md) § U3, [examples/u3-resonant-coupling-examples.py](examples/u3-resonant-coupling-examples.py) |
 | `validate_bifurcation_triggers()` | 672 | [02-CANONICAL-CONSTRAINTS.md](02-CANONICAL-CONSTRAINTS.md) § U4a, [examples/u4-bifurcation-examples.py](examples/u4-bifurcation-examples.py) |
 | `validate_transformer_context()` | 727 | [02-CANONICAL-CONSTRAINTS.md](02-CANONICAL-CONSTRAINTS.md) § U4b, [examples/u4-bifurcation-examples.py](examples/u4-bifurcation-examples.py) |
-| `validate_remesh_amplification()` | 807 | [../../UNIFIED_GRAMMAR_RULES.md](../../UNIFIED_GRAMMAR_RULES.md) § U2-REMESH |
+| `validate_remesh_amplification()` | 807 | [UNIFIED_GRAMMAR_RULES.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/UNIFIED_GRAMMAR_RULES.md) § U2-REMESH |
 
 ### From Examples
 
@@ -108,12 +108,12 @@
 
 | Grammar Rule | Physics Basis | Code Implementation | Documentation |
 |--------------|---------------|---------------------|---------------|
-| U1a | ∂EPI/∂t undefined at EPI=0 | `validate_initiation()` checks `epi_initial == 0` | [UNIFIED_GRAMMAR_RULES.md](../../UNIFIED_GRAMMAR_RULES.md) § U1 |
-| U1b | Sequences need coherent endpoints | `validate_closure()` checks last operator | [UNIFIED_GRAMMAR_RULES.md](../../UNIFIED_GRAMMAR_RULES.md) § U1 |
-| U2 | ∫νf·ΔNFR dt must converge | `validate_convergence()` checks stabilizers | [UNIFIED_GRAMMAR_RULES.md](../../UNIFIED_GRAMMAR_RULES.md) § U2 |
-| U3 | \|φᵢ - φⱼ\| ≤ Δφ_max | Phase checked in operator preconditions | [UNIFIED_GRAMMAR_RULES.md](../../UNIFIED_GRAMMAR_RULES.md) § U3 |
-| U4a | ∂²EPI/∂t² > τ requires handlers | `validate_bifurcation_triggers()` | [UNIFIED_GRAMMAR_RULES.md](../../UNIFIED_GRAMMAR_RULES.md) § U4a |
-| U4b | Transformers need threshold energy | `validate_transformer_context()` checks window | [UNIFIED_GRAMMAR_RULES.md](../../UNIFIED_GRAMMAR_RULES.md) § U4b |
+| U1a | ∂EPI/∂t undefined at EPI=0 | `validate_initiation()` checks `epi_initial == 0` | [UNIFIED_GRAMMAR_RULES.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/UNIFIED_GRAMMAR_RULES.md) § U1 |
+| U1b | Sequences need coherent endpoints | `validate_closure()` checks last operator | [UNIFIED_GRAMMAR_RULES.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/UNIFIED_GRAMMAR_RULES.md) § U1 |
+| U2 | ∫νf·ΔNFR dt must converge | `validate_convergence()` checks stabilizers | [UNIFIED_GRAMMAR_RULES.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/UNIFIED_GRAMMAR_RULES.md) § U2 |
+| U3 | \|φᵢ - φⱼ\| ≤ Δφ_max | Phase checked in operator preconditions | [UNIFIED_GRAMMAR_RULES.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/UNIFIED_GRAMMAR_RULES.md) § U3 |
+| U4a | ∂²EPI/∂t² > τ requires handlers | `validate_bifurcation_triggers()` | [UNIFIED_GRAMMAR_RULES.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/UNIFIED_GRAMMAR_RULES.md) § U4a |
+| U4b | Transformers need threshold energy | `validate_transformer_context()` checks window | [UNIFIED_GRAMMAR_RULES.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/UNIFIED_GRAMMAR_RULES.md) § U4b |
 
 ---
 

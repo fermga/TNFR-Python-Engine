@@ -29,11 +29,7 @@ def reproducibility_script() -> Path:
         current = current.parent
 
     # Fallback to relative path if not found
-    return (
-        Path(__file__).parent.parent.parent
-        / "scripts"
-        / "run_reproducible_benchmarks.py"
-    )
+    return Path(__file__).parent.parent.parent / "scripts" / "run_reproducible_benchmarks.py"
 
 
 def test_reproducibility_script_runs_successfully(

@@ -236,9 +236,7 @@ def test_fallback_handles_missing_numpy_module(monkeypatch):
     # Remove numpy from both get_numpy() and sys.modules
     monkeypatch.setattr(dnfr_module, "get_numpy", lambda: None)
     monkeypatch.setattr(trig_cache_module, "get_numpy", lambda: None)
-    monkeypatch.setattr(
-        dnfr_module, "_has_cached_numpy_buffers", lambda *_, **__: False
-    )
+    monkeypatch.setattr(dnfr_module, "_has_cached_numpy_buffers", lambda *_, **__: False)
 
     # Should fall back to pure Python implementation
     G = _create_test_graph()

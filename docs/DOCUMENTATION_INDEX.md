@@ -4,7 +4,7 @@
 
 ## 📖 Main Navigation
 
-**Start Here**: [**Documentation Home (index.rst)**](source/index.rst) - Main hub with complete navigation
+**Start Here**: [**Documentation Home**](source/index.md) - Main hub with complete navigation
 
 ## 🚀 Quick Start by User Type
 
@@ -26,7 +26,7 @@
 → [**Performance Optimization**](source/advanced/PERFORMANCE_OPTIMIZATION.md)  
 → [**Mathematical Foundations**](source/theory/mathematical_foundations.md) ⭐ **CANONICAL MATH SOURCE**  
 → [API Reference](source/api/overview.md)  
-→ [Contributing](../CONTRIBUTING.md)
+→ [Contributing](https://github.com/fermga/TNFR-Python-Engine/blob/main/CONTRIBUTING.md)
 
 ---
 
@@ -87,10 +87,25 @@
 
 ## 🔗 Key Reference Files
 
-- [TNFR.pdf](../TNFR.pdf) - Complete theory
-- [AGENTS.md](../AGENTS.md) - Canonical invariants  
-- [GLOSSARY.md](../GLOSSARY.md) - Terms
-- [ARCHITECTURE.md](../ARCHITECTURE.md) - System design
+- [TNFR.pdf](https://github.com/fermga/TNFR-Python-Engine/blob/main/TNFR.pdf) - Complete theory
+- [AGENTS.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/AGENTS.md) - Canonical invariants and Φ_s status
+- [UNIFIED_GRAMMAR_RULES.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/UNIFIED_GRAMMAR_RULES.md) - Grammar U1-U6 derivations ⭐ **UPDATED: U6 CANONICAL**
+- [GLOSSARY.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/GLOSSARY.md) - Terms
+- [ARCHITECTURE.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/ARCHITECTURE.md) - System design
+
+### Physics & Forces
+- [docs/TNFR_FORCES_EMERGENCE.md](TNFR_FORCES_EMERGENCE.md) - ⭐ **Φ_s Validation & Four Forces (§ 14-15)**
+- [src/tnfr/physics/fields.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/fields.py) - Structural potential implementation
+
+### Grammar & Research
+- **U6: STRUCTURAL POTENTIAL CONFINEMENT** - ✅ **CANONICAL** (promoted 2025-11-11)
+  - Derivation: UNIFIED_GRAMMAR_RULES.md § U6
+  - Validation: docs/TNFR_FORCES_EMERGENCE.md § 14-15
+  - Implementation: src/tnfr/operators/grammar.py::validate_structural_potential_confinement
+  - Physics: src/tnfr/physics/fields.py::compute_structural_potential
+- [grammar/U6_TEMPORAL_ORDERING.md](grammar/U6_TEMPORAL_ORDERING.md) - ⚗️ **U7 Research Proposal** (experimental, renamed from U6)
+- [research/U6_INVESTIGATION_REPORT.md](research/U6_INVESTIGATION_REPORT.md) - U7 initial investigation (temporal ordering)
+- [GLYPH_SEQUENCES_GUIDE.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/GLYPH_SEQUENCES_GUIDE.md) - Grammar 2.0 sequences
 
 ## ℹ️ Legacy Documentation
 

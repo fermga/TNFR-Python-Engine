@@ -68,9 +68,7 @@ def accumulate_cos_sin(
     return sum_cos, sum_sin, True
 
 
-def _phase_mean_from_iter(
-    it: Iterable[tuple[float, float] | None], fallback: float
-) -> float:
+def _phase_mean_from_iter(it: Iterable[tuple[float, float] | None], fallback: float) -> float:
     """Return circular mean from an iterator of cosine/sine pairs.
 
     ``it`` yields optional ``(cos, sin)`` tuples. ``fallback`` is returned if
@@ -254,15 +252,9 @@ def neighbor_phase_mean_bulk(
         arr.fill(0.0)
         return arr, True
 
-    neighbor_cos_sum, has_cos_buffer = _coerce_buffer(
-        neighbor_cos_sum, name="neighbor_cos_sum"
-    )
-    neighbor_sin_sum, has_sin_buffer = _coerce_buffer(
-        neighbor_sin_sum, name="neighbor_sin_sum"
-    )
-    neighbor_counts, has_count_buffer = _coerce_buffer(
-        neighbor_counts, name="neighbor_counts"
-    )
+    neighbor_cos_sum, has_cos_buffer = _coerce_buffer(neighbor_cos_sum, name="neighbor_cos_sum")
+    neighbor_sin_sum, has_sin_buffer = _coerce_buffer(neighbor_sin_sum, name="neighbor_sin_sum")
+    neighbor_counts, has_count_buffer = _coerce_buffer(neighbor_counts, name="neighbor_counts")
 
     if edge_count:
         cos_bincount = np.bincount(
@@ -339,9 +331,7 @@ def neighbor_phase_mean(obj: "NodeProtocol", n: None = ...) -> Phase: ...
 def neighbor_phase_mean(obj: TNFRGraph, n: NodeId) -> Phase: ...
 
 
-def neighbor_phase_mean(
-    obj: "NodeProtocol" | TNFRGraph, n: NodeId | None = None
-) -> Phase:
+def neighbor_phase_mean(obj: "NodeProtocol" | TNFRGraph, n: NodeId | None = None) -> Phase:
     """Circular mean of neighbour phases for ``obj``.
 
     Parameters
@@ -359,15 +349,11 @@ def neighbor_phase_mean(
         raise ImportError("NodeNX is unavailable")
     if n is None:
         if hasattr(obj, "nodes"):
-            raise TypeError(
-                "neighbor_phase_mean requires a node identifier when passing a graph"
-            )
+            raise TypeError("neighbor_phase_mean requires a node identifier when passing a graph")
         node = obj
     else:
         if hasattr(obj, "nodes"):
             node = NodeNX(obj, n)
         else:
-            raise TypeError(
-                "neighbor_phase_mean received a node and an explicit identifier"
-            )
+            raise TypeError("neighbor_phase_mean received a node and an explicit identifier")
     return _neighbor_phase_mean_generic(node)

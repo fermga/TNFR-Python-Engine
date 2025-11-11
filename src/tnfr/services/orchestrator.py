@@ -218,15 +218,11 @@ class TNFROrchestrator:
         # Step 2: Execution with optional telemetry
         if enable_telemetry:
             with self._telemetry.trace_context(graph) as tracer:
-                self._execute_with_telemetry(
-                    graph, node, tokens, operator_instances, tracer
-                )
+                self._execute_with_telemetry(graph, node, tokens, operator_instances, tracer)
         else:
             self._execute_without_telemetry(graph, node, tokens, operator_instances)
 
-    def _execute_with_telemetry(
-        self, graph, node, tokens, operator_instances, tracer
-    ) -> None:
+    def _execute_with_telemetry(self, graph, node, tokens, operator_instances, tracer) -> None:
         """Execute sequence with telemetry capture."""
         for token, op_instance in zip(tokens, operator_instances):
             # Pre-execution: capture state
@@ -246,9 +242,7 @@ class TNFROrchestrator:
             post_state = tracer.capture_state(graph)
             tracer.record_transition(token, pre_state, post_state)
 
-    def _execute_without_telemetry(
-        self, graph, node, tokens, operator_instances
-    ) -> None:
+    def _execute_without_telemetry(self, graph, node, tokens, operator_instances) -> None:
         """Execute sequence without telemetry overhead."""
         for token, op_instance in zip(tokens, operator_instances):
             # Execution: apply operator

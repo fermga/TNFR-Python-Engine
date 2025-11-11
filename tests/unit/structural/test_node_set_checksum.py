@@ -59,9 +59,7 @@ def test_node_set_checksum_presorted_performance(graph_canon):
     nodes = list(G.nodes())
     nodes.sort(key=_sorting_key)
     t_unsorted = timeit.timeit(lambda: node_set_checksum(G, nodes), number=1)
-    t_presorted = timeit.timeit(
-        lambda: node_set_checksum(G, nodes, presorted=True), number=1
-    )
+    t_presorted = timeit.timeit(lambda: node_set_checksum(G, nodes, presorted=True), number=1)
     assert t_presorted <= t_unsorted * 3.0
 
 

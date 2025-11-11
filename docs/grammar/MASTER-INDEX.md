@@ -25,16 +25,18 @@ This document provides a **high-level conceptual map** of the entire TNFR gramma
 │  Physical Foundation                                            │
 │  ├─ Nodal Equation: ∂EPI/∂t = νf · ΔNFR(t)                    │
 │  ├─ Structural Triad: (EPI, νf, φ)                            │
-│  └─ Integral Convergence: ∫νf·ΔNFR dt < ∞                      │
+│  ├─ Integral Convergence: ∫νf·ΔNFR dt < ∞                      │
+│  └─ Structural Potential: Φ_s = Σ ΔNFR_j / d(i,j)²           │
 │                                                                 │
 │  ↓ Derives                                                      │
 │                                                                 │
-│  Grammar Constraints (U1-U5)                                    │
+│  Grammar Constraints (U1-U6) ✅ COMPLETE                        │
 │  ├─ U1: INITIATION & CLOSURE (generators, closures)           │
 │  ├─ U2: CONVERGENCE (stabilizers, destabilizers)              │
 │  ├─ U3: COUPLING (phase compatibility)                        │
 │  ├─ U4: BIFURCATION (triggers, handlers, transformers)        │
-│  └─ U5: MULTI-SCALE (hierarchical coherence conservation)     │
+│  ├─ U5: MULTI-SCALE (hierarchical coherence conservation)     │
+│  └─ U6: STRUCTURAL POTENTIAL (Δ Φ_s < 2.0 confinement)       │
 │                                                                 │
 │  ↓ Governs                                                      │
 │                                                                 │
@@ -59,6 +61,7 @@ This document provides a **high-level conceptual map** of the entire TNFR gramma
 │  Validation System                                              │
 │  ├─ validate_grammar(sequence, epi_initial)                   │
 │  ├─ validate_resonant_coupling(G, i, j)                       │
+│  ├─ validate_structural_potential_confinement(G, φs_before)   │
 │  └─ Test suite (unit, integration, property)                  │
 │                                                                 │
 └─────────────────────────────────────────────────────────────────┘

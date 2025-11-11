@@ -1,43 +1,60 @@
-name: Validate Documentation
+name: Build and Deploy Documentation
 
 on:
+  push:
+    branches: [ main ]
+  workflow_dispatch: {}
   pull_request:
-    branches: [main]
     paths:
-      - 'docs/**'
       - 'mkdocs.yml'
-      - '.github/workflows/docs.yml'
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
-permissions:
-  contents: read
+      - 'docs/**'
 
 jobs:
-  validate:
-    name: Build and validate documentation
+  build-deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v5
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-          cache: pip
 
-      - name: Install documentation dependencies
+      - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -r docs/requirements.txt
+          pip install -r docs/requirements.txt
 
-      - name: Build MkDocs site (validation)
-        run: mkdocs build --clean
-
-      - name: Check for broken links
+      - name: Build docs
         run: |
-          echo "Documentation built successfully for validation"
-          echo "Deployment to gh-pages happens only on main branch push"
+          mkdocs build
+
+      - name: Deploy to GitHub Pages
+        if: github.ref == 'refs/heads/main'
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./site
+          force_orphan: true
+          commit_message: "docs: deploy MkDocs site (${GITHUB_SHA})"
+
+  link-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install mkdocs mkdocs-material mkdocs-redirects
+      - name: Build (no deploy) & basic link check
+        run: |
+          mkdocs build
+          echo "(Basic build complete - consider adding lychee for deeper link checking)"

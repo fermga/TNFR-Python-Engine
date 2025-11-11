@@ -140,9 +140,9 @@ Tested and working on:
 ## Contributing
 
 This interactive documentation is part of the TNFR Python Engine. See main repository for contribution guidelines:
-- [CONTRIBUTING.md](../../CONTRIBUTING.md)
-- [AGENTS.md](../../AGENTS.md)
+- [CONTRIBUTING.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/CONTRIBUTING.md)
+- [AGENTS.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/AGENTS.md)
 
 ## License
 
-MIT License - See [LICENSE.md](../../LICENSE.md)
+MIT License - See [LICENSE.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/LICENSE.md)

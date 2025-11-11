@@ -49,9 +49,7 @@ class SequenceSemanticValidator:
             },
         }
 
-    def validate_semantic_sequence(
-        self, sequence: list[str]
-    ) -> list[InvariantViolation]:
+    def validate_semantic_sequence(self, sequence: list[str]) -> list[InvariantViolation]:
         """Validates semantics of the operator sequence.
 
         Parameters
@@ -104,9 +102,7 @@ class SequenceSemanticValidator:
                             invariant_id=0,
                             severity=rule["severity"],
                             description=f"Semantic rule violation: {rule['message']}",
-                            suggestion=rule.get(
-                                "suggestion", "Review operator sequence"
-                            ),
+                            suggestion=rule.get("suggestion", "Review operator sequence"),
                         )
                     )
                     continue

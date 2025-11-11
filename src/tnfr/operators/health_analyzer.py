@@ -222,9 +222,7 @@ class SequenceHealthAnalyzer:
         ) = analysis
 
         coherence = self._calculate_coherence(sequence, problematic_transitions)
-        balance = self._calculate_balance(
-            sequence, stabilizer_count, destabilizer_count
-        )
+        balance = self._calculate_balance(sequence, stabilizer_count, destabilizer_count)
         sustainability = self._calculate_sustainability(
             sequence, stabilizer_count, destabilizer_count, regenerator_count
         )
@@ -439,12 +437,7 @@ class SequenceHealthAnalyzer:
         if not sequence:
             return 0.0
 
-        # Assess structural value using pre-computed unique count
-        diversity_score = min(
-            1.0, unique_count / 6.0
-        )  # 6+ operators is excellent diversity
-
-        # Note: We still need to call _assess_pattern_value for category coverage
+        # Note: We call _assess_pattern_value for category coverage
         # This is minimal overhead as it's a single pass checking set memberships
         pattern_value = self._assess_pattern_value_optimized(sequence, unique_count)
 
@@ -524,9 +517,7 @@ class SequenceHealthAnalyzer:
         has_stabilization = stabilizer_count > 0
         has_completion = any(op in {"silence", "transition"} for op in sequence)
 
-        phase_count = sum(
-            [has_activation, has_transformation, has_stabilization, has_completion]
-        )
+        phase_count = sum([has_activation, has_transformation, has_stabilization, has_completion])
 
         # All 4 phases = 1.0, 3 phases = 0.75, 2 phases = 0.5, 1 phase = 0.25
         return phase_count / 4.0
@@ -638,9 +629,7 @@ class SequenceHealthAnalyzer:
 
         return unresolved
 
-    def _assess_pattern_value_optimized(
-        self, sequence: List[str], unique_count: int
-    ) -> float:
+    def _assess_pattern_value_optimized(self, sequence: List[str], unique_count: int) -> float:
         """Assess the structural value of the pattern using pre-computed unique count.
 
         Value is higher when:
@@ -664,9 +653,7 @@ class SequenceHealthAnalyzer:
             return 0.0
 
         # Diversity: use pre-computed unique count
-        diversity_score = min(
-            1.0, unique_count / 6.0
-        )  # 6+ operators is excellent diversity
+        diversity_score = min(1.0, unique_count / 6.0)  # 6+ operators is excellent diversity
 
         # Coverage: how many operator categories are represented
         # This is still a minimal single-pass check

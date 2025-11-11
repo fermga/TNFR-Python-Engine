@@ -150,9 +150,7 @@ def test_community_graph_handles_empty_community_and_partial_epi():
 
     assert set(community_graph.nodes) == {0, 1, 2}
     assert community_graph.nodes[1]["members"] == []
-    assert get_attr(community_graph.nodes[1], alias_epi, default=None) == pytest.approx(
-        0.0
-    )
+    assert get_attr(community_graph.nodes[1], alias_epi, default=None) == pytest.approx(0.0)
 
     expected_means = {
         0: pytest.approx(0.5),
@@ -160,10 +158,7 @@ def test_community_graph_handles_empty_community_and_partial_epi():
         2: pytest.approx(2.0),
     }
     for node_id, expected in expected_means.items():
-        assert (
-            get_attr(community_graph.nodes[node_id], alias_epi, default=None)
-            == expected
-        )
+        assert get_attr(community_graph.nodes[node_id], alias_epi, default=None) == expected
 
     expected_edges = {frozenset(edge) for edge in [(0, 1), (0, 2), (1, 2)]}
     actual_edges = {frozenset(edge) for edge in community_graph.edges}
@@ -382,9 +377,7 @@ def test_remesh_cooldown_gating_requires_ready_state(graph_canon, scenario):
         ),
     ],
 )
-def test_apply_remesh_respects_stability_gating(
-    graph_canon, metric_sequences, should_remesh
-):
+def test_apply_remesh_respects_stability_gating(graph_canon, metric_sequences, should_remesh):
     pytest.importorskip("networkx")
 
     G, hist = _prepare_graph_for_remesh(graph_canon)
@@ -416,12 +409,8 @@ def test_apply_remesh_respects_stability_gating(
         assert meta, "Remesh metadata should be recorded when gating passes"
         assert meta["tau_global"] == int(get_param(G, "REMESH_TAU_GLOBAL"))
         assert meta["tau_local"] == int(get_param(G, "REMESH_TAU_LOCAL"))
-        assert meta["phase_sync_last"] == pytest.approx(
-            metric_sequences["phase_sync"][-1]
-        )
-        assert meta["glyph_disr_last"] == pytest.approx(
-            metric_sequences["glyph_load_disr"][-1]
-        )
+        assert meta["phase_sync_last"] == pytest.approx(metric_sequences["phase_sync"][-1])
+        assert meta["glyph_disr_last"] == pytest.approx(metric_sequences["glyph_load_disr"][-1])
 
         events = hist.get("remesh_events")
         assert events and events[-1]["tau_global"] == meta["tau_global"]

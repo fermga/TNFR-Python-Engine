@@ -83,17 +83,13 @@ class TestValidateFilePath:
 
     def test_allowed_extensions_json(self):
         """Test file extension validation."""
-        result = validate_file_path(
-            "config.json", allowed_extensions=[".json", ".yaml"]
-        )
+        result = validate_file_path("config.json", allowed_extensions=[".json", ".yaml"])
         assert result.suffix == ".json"
 
     def test_reject_disallowed_extension(self):
         """Test rejection of disallowed file extensions."""
         with pytest.raises(ValueError, match="File extension.*not allowed"):
-            validate_file_path(
-                "malicious.exe", allowed_extensions=[".json", ".yaml", ".toml"]
-            )
+            validate_file_path("malicious.exe", allowed_extensions=[".json", ".yaml", ".toml"])
 
     def test_case_insensitive_extensions(self):
         """Test that extension matching is case-insensitive."""
@@ -184,15 +180,11 @@ class TestResolveSafePath:
         base_dir = tmp_path / "data"
         base_dir.mkdir()
 
-        result = resolve_safe_path(
-            "export.csv", base_dir, allowed_extensions=[".csv", ".json"]
-        )
+        result = resolve_safe_path("export.csv", base_dir, allowed_extensions=[".csv", ".json"])
         assert result.suffix == ".csv"
 
         with pytest.raises(ValueError, match="File extension.*not allowed"):
-            resolve_safe_path(
-                "malicious.exe", base_dir, allowed_extensions=[".csv", ".json"]
-            )
+            resolve_safe_path("malicious.exe", base_dir, allowed_extensions=[".csv", ".json"])
 
     def test_symlink_within_base(self, tmp_path):
         """Test that symlinks within base directory are allowed."""

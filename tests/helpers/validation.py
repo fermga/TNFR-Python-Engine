@@ -33,9 +33,7 @@ def assert_dnfr_balanced(
     AssertionError:
         If total ΔNFR violates conservation law.
     """
-    total_dnfr = sum(
-        float(data.get(DNFR_PRIMARY, 0.0)) for _, data in graph.nodes(data=True)
-    )
+    total_dnfr = sum(float(data.get(DNFR_PRIMARY, 0.0)) for _, data in graph.nodes(data=True))
     assert math.isclose(
         total_dnfr, 0.0, abs_tol=abs_tol
     ), f"ΔNFR not conserved: total={total_dnfr}, tolerance={abs_tol}"
@@ -139,9 +137,7 @@ def get_dnfr_values(graph: nx.Graph) -> list[float]:
     list[float]:
         Sorted list of ΔNFR values.
     """
-    return sorted(
-        float(data.get(DNFR_PRIMARY, 0.0)) for _, data in graph.nodes(data=True)
-    )
+    return sorted(float(data.get(DNFR_PRIMARY, 0.0)) for _, data in graph.nodes(data=True))
 
 
 def assert_dnfr_lists_close(

@@ -149,7 +149,7 @@ def validate_resonance_strict(
     if require_coupling:
         if not neighbors:
             raise ValueError(
-                f"RA requires network connectivity (node has no edges). "
+                "RA requires network connectivity (node has no edges). "
                 "Apply UM (Coupling) first to establish resonant links."
             )
     elif not neighbors:
@@ -279,9 +279,7 @@ def diagnose_resonance_readiness(G: TNFRGraph, node: Any) -> dict[str, Any]:
         checks["network_connectivity"] = "passed"
     else:
         checks["network_connectivity"] = "failed"
-        recommendations.append(
-            "Apply UM (Coupling) to establish network connections before RA"
-        )
+        recommendations.append("Apply UM (Coupling) to establish network connections before RA")
 
     # Check 3: Structural frequency
     if vf >= min_vf:
@@ -299,8 +297,7 @@ def diagnose_resonance_readiness(G: TNFRGraph, node: Any) -> dict[str, Any]:
     else:
         checks["controlled_dissonance"] = "failed"
         recommendations.append(
-            f"Apply IL (Coherence) to reduce |ΔNFR| from {dnfr:.3f} "
-            f"to <= {max_dissonance:.1f}"
+            f"Apply IL (Coherence) to reduce |ΔNFR| from {dnfr:.3f} " f"to <= {max_dissonance:.1f}"
         )
 
     # Check 5: Phase alignment (warning only)

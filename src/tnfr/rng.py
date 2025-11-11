@@ -73,9 +73,7 @@ def _sync_cache_size(G: TNFRGraph | GraphLike | None) -> None:
             _CACHE_MAXSIZE = _seed_hash_cache.maxsize
 
 
-def make_rng(
-    seed: int, key: int, G: TNFRGraph | GraphLike | None = None
-) -> random.Random:
+def make_rng(seed: int, key: int, G: TNFRGraph | GraphLike | None = None) -> random.Random:
     """Create a reproducible RNG instance from seed and key.
 
     This factory constructs a deterministic :class:`random.Random` generator

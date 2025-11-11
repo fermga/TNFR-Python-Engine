@@ -23,9 +23,7 @@ class _EPIValidators:
     _complex_dtype = np.complex128
 
     @staticmethod
-    def _as_array(
-        values: Sequence[complex] | np.ndarray, *, dtype: np.dtype
-    ) -> np.ndarray:
+    def _as_array(values: Sequence[complex] | np.ndarray, *, dtype: np.dtype) -> np.ndarray:
         array = np.asarray(values, dtype=dtype)
         if array.ndim != 1:
             raise ValueError("Inputs must be one-dimensional arrays.")
@@ -34,9 +32,7 @@ class _EPIValidators:
         return array
 
     @classmethod
-    def _validate_grid(
-        cls, grid: Sequence[float] | np.ndarray, expected_size: int
-    ) -> np.ndarray:
+    def _validate_grid(cls, grid: Sequence[float] | np.ndarray, expected_size: int) -> np.ndarray:
         array = np.asarray(grid, dtype=float)
         if array.ndim != 1:
             raise ValueError("x_grid must be one-dimensional.")
@@ -177,9 +173,7 @@ class BEPIElement(_EPIValidators):
             "grid": tuple(grid),
         }
 
-    def __setstate__(
-        self, state: dict[str, tuple[complex, ...] | tuple[float, ...]]
-    ) -> None:
+    def __setstate__(self, state: dict[str, tuple[complex, ...] | tuple[float, ...]]) -> None:
         """Deserialize BEPIElement from a dict representation.
 
         Restores the structural integrity by validating and converting back to numpy arrays.
@@ -198,9 +192,7 @@ class BEPIElement(_EPIValidators):
         if isinstance(other, (int, float)):
             # Scalar addition: broadcast to all components
             scalar = complex(other)
-            return BEPIElement(
-                self.f_continuous + scalar, self.a_discrete + scalar, self.x_grid
-            )
+            return BEPIElement(self.f_continuous + scalar, self.a_discrete + scalar, self.x_grid)
         elif isinstance(other, BEPIElement):
             # Element addition: use direct_sum
             return self.direct_sum(other)
@@ -214,9 +206,7 @@ class BEPIElement(_EPIValidators):
         """Subtract a scalar or another BEPIElement from this element."""
         if isinstance(other, (int, float)):
             scalar = complex(other)
-            return BEPIElement(
-                self.f_continuous - scalar, self.a_discrete - scalar, self.x_grid
-            )
+            return BEPIElement(self.f_continuous - scalar, self.a_discrete - scalar, self.x_grid)
         elif isinstance(other, BEPIElement):
             self._assert_compatible(other)
             return BEPIElement(
@@ -230,18 +220,14 @@ class BEPIElement(_EPIValidators):
         """Support reversed subtraction (scalar - BEPIElement)."""
         if isinstance(other, (int, float)):
             scalar = complex(other)
-            return BEPIElement(
-                scalar - self.f_continuous, scalar - self.a_discrete, self.x_grid
-            )
+            return BEPIElement(scalar - self.f_continuous, scalar - self.a_discrete, self.x_grid)
         return NotImplemented
 
     def __mul__(self, other: float | int) -> BEPIElement:
         """Multiply this element by a scalar."""
         if isinstance(other, (int, float)):
             scalar = complex(other)
-            return BEPIElement(
-                self.f_continuous * scalar, self.a_discrete * scalar, self.x_grid
-            )
+            return BEPIElement(self.f_continuous * scalar, self.a_discrete * scalar, self.x_grid)
         return NotImplemented
 
     def __rmul__(self, other: float | int) -> BEPIElement:
@@ -254,9 +240,7 @@ class BEPIElement(_EPIValidators):
             scalar = complex(other)
             if scalar == 0:
                 raise ZeroDivisionError("Cannot divide BEPIElement by zero")
-            return BEPIElement(
-                self.f_continuous / scalar, self.a_discrete / scalar, self.x_grid
-            )
+            return BEPIElement(self.f_continuous / scalar, self.a_discrete / scalar, self.x_grid)
         return NotImplemented
 
     def __eq__(self, other: object) -> bool:
@@ -266,12 +250,8 @@ class BEPIElement(_EPIValidators):
         """
         if isinstance(other, BEPIElement):
             return (
-                np.allclose(
-                    self.f_continuous, other.f_continuous, rtol=1e-12, atol=1e-12
-                )
-                and np.allclose(
-                    self.a_discrete, other.a_discrete, rtol=1e-12, atol=1e-12
-                )
+                np.allclose(self.f_continuous, other.f_continuous, rtol=1e-12, atol=1e-12)
+                and np.allclose(self.a_discrete, other.a_discrete, rtol=1e-12, atol=1e-12)
                 and np.allclose(self.x_grid, other.x_grid, rtol=1e-12, atol=1e-12)
             )
         elif isinstance(other, (int, float)):

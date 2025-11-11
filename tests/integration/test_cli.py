@@ -387,9 +387,7 @@ def test_cli_run_applies_config_overrides(monkeypatch, tmp_path):
         execution_mod.apply_cli_config(graph, args)
         return graph
 
-    def spy_run_cli_program(
-        args: argparse.Namespace, **kwargs: Any
-    ) -> tuple[int, nx.Graph | None]:
+    def spy_run_cli_program(args: argparse.Namespace, **kwargs: Any) -> tuple[int, nx.Graph | None]:
         code, graph = original_run_cli_program(args, **kwargs)
         recorded["code"] = code
         recorded["graph"] = graph
@@ -514,9 +512,7 @@ def test_build_basic_graph_erdos_default_probability(monkeypatch):
     sentinel_graph = object()
     recorded: list[float] = []
 
-    def fake_gnp_random_graph(
-        n: int, prob: float, seed=None
-    ):  # noqa: ANN001 - test helper
+    def fake_gnp_random_graph(n: int, prob: float, seed=None):  # noqa: ANN001 - test helper
         recorded.append(prob)
         return sentinel_graph
 
@@ -655,9 +651,7 @@ def test_cli_history_roundtrip(tmp_path, capsys, command, export_format):
         seq_file.write_text('[{"WAIT": 1}]', encoding="utf-8")
         args.extend(["--sequence-file", str(seq_file)])
 
-    args.extend(
-        ["--save-history", str(save_path), "--export-history-base", str(export_base)]
-    )
+    args.extend(["--save-history", str(save_path), "--export-history-base", str(export_base)])
     if export_format is not None:
         args.extend(["--export-format", export_format])
 
@@ -772,9 +766,7 @@ def test_run_program_delegates_to_dynamics_run(monkeypatch):
     G = _cli_execution().run_program(None, None, args)
 
     assert recorded["graph"] is G
-    assert (
-        recorded["steps"] == 0
-    )  # negative steps are clamped to preserve CLI behaviour
+    assert recorded["steps"] == 0  # negative steps are clamped to preserve CLI behaviour
     assert recorded["dt"] == pytest.approx(0.25)
     assert recorded["use_Si"] is False
     assert recorded["apply_glyphs"] is False

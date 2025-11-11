@@ -23,7 +23,6 @@ from ..config.operator_names import (
     CONTRACTION,
     EMISSION,
     EXPANSION,
-    RECURSIVITY,
     SILENCE,
 )
 

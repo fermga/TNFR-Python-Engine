@@ -184,9 +184,9 @@ All enhancements validated:
 ## 🔗 Quick Links
 
 **Theory**:
-- [TNFR.pdf](../../TNFR.pdf) - Complete theoretical foundation
-- [AGENTS.md](../../AGENTS.md) - Agent instructions and operator overview
-- [UNIFIED_GRAMMAR_RULES.md](../../UNIFIED_GRAMMAR_RULES.md) - Grammar physics derivations
+- [TNFR.pdf](https://github.com/fermga/TNFR-Python-Engine/blob/main/TNFR.pdf) - Complete theoretical foundation
+- [AGENTS.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/AGENTS.md) - Agent instructions and operator overview
+- [UNIFIED_GRAMMAR_RULES.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/UNIFIED_GRAMMAR_RULES.md) - Grammar physics derivations
 
 **Documentation**:
 - [03-OPERATORS-AND-GLYPHS.md](03-OPERATORS-AND-GLYPHS.md) - Complete operator catalog

@@ -12,7 +12,6 @@ entry point for all TNFR validation operations. It integrates:
 
 from __future__ import annotations
 
-import warnings
 from typing import Any, Mapping, Optional
 
 from .invariants import (
@@ -30,7 +29,7 @@ from .invariants import (
     Invariant10_DomainNeutrality,
     TNFRInvariant,
 )
-from ..types import Glyph, NodeId, TNFRGraph
+from ..types import NodeId, TNFRGraph
 
 __all__ = [
     "TNFRValidator",
@@ -254,9 +253,7 @@ class TNFRValidator:
                 )
                 if "error" in results["inputs"]:
                     results["passed"] = False
-                    results["errors"].append(
-                        f"Input validation: {results['inputs']['error']}"
-                    )
+                    results["errors"].append(f"Input validation: {results['inputs']['error']}")
             except Exception as e:
                 results["passed"] = False
                 results["errors"].append(f"Input validation failed: {str(e)}")
@@ -279,9 +276,7 @@ class TNFRValidator:
                         )
                 except Exception as e:
                     results["passed"] = False
-                    results["errors"].append(
-                        f"Graph structure validation failed: {str(e)}"
-                    )
+                    results["errors"].append(f"Graph structure validation failed: {str(e)}")
                     if raise_on_error:
                         raise
 
@@ -317,8 +312,7 @@ class TNFRValidator:
                         critical_violations = [
                             v
                             for v in violations
-                            if v.severity
-                            in (InvariantSeverity.ERROR, InvariantSeverity.CRITICAL)
+                            if v.severity in (InvariantSeverity.ERROR, InvariantSeverity.CRITICAL)
                         ]
                         if critical_violations:
                             results["passed"] = False
@@ -334,13 +328,11 @@ class TNFRValidator:
             # Operator preconditions validation
             if operator is not None and node_id is not None:
                 try:
-                    results["operator_preconditions"] = (
-                        self.validate_operator_preconditions(
-                            graph,
-                            node_id,
-                            operator,
-                            raise_on_error=raise_on_error,
-                        )
+                    results["operator_preconditions"] = self.validate_operator_preconditions(
+                        graph,
+                        node_id,
+                        operator,
+                        raise_on_error=raise_on_error,
                     )
                     if not results["operator_preconditions"]:
                         results["passed"] = False
@@ -349,9 +341,7 @@ class TNFRValidator:
                         )
                 except Exception as e:
                     results["passed"] = False
-                    results["errors"].append(
-                        f"Operator precondition validation failed: {str(e)}"
-                    )
+                    results["errors"].append(f"Operator precondition validation failed: {str(e)}")
                     if raise_on_error:
                         raise
 
@@ -524,7 +514,7 @@ class TNFRValidator:
         try:
             validator_func(graph, node)
             return True
-        except Exception as e:
+        except Exception:
             if raise_on_error:
                 raise
             return False
@@ -737,9 +727,7 @@ class TNFRValidator:
 
         # Filtrar por severidad si se especifica
         if severity_filter:
-            all_violations = [
-                v for v in all_violations if v.severity == severity_filter
-            ]
+            all_violations = [v for v in all_violations if v.severity == severity_filter]
 
         return all_violations
 
@@ -773,9 +761,7 @@ class TNFRValidator:
         }
 
         critical_violations = [
-            v
-            for v in violations
-            if severity_order[v.severity] >= severity_order[min_severity]
+            v for v in violations if severity_order[v.severity] >= severity_order[min_severity]
         ]
 
         if critical_violations:
@@ -836,9 +822,7 @@ class TNFRValidator:
                         report_lines.append(f"    Expected: {violation.expected_value}")
                         report_lines.append(f"    Actual: {violation.actual_value}")
                     if violation.suggestion:
-                        report_lines.append(
-                            f"    💡 Suggestion: {violation.suggestion}"
-                        )
+                        report_lines.append(f"    💡 Suggestion: {violation.suggestion}")
                     report_lines.append("")
 
         return "\n".join(report_lines)
@@ -866,9 +850,7 @@ class TNFRValidator:
                     "severity": v.severity.value,
                     "description": v.description,
                     "node_id": v.node_id,
-                    "expected_value": (
-                        str(v.expected_value) if v.expected_value else None
-                    ),
+                    "expected_value": (str(v.expected_value) if v.expected_value else None),
                     "actual_value": str(v.actual_value) if v.actual_value else None,
                     "suggestion": v.suggestion,
                 }
@@ -879,21 +861,13 @@ class TNFRValidator:
                 "total_violations": len(violations),
                 "by_severity": {
                     InvariantSeverity.CRITICAL.value: len(
-                        [
-                            v
-                            for v in violations
-                            if v.severity == InvariantSeverity.CRITICAL
-                        ]
+                        [v for v in violations if v.severity == InvariantSeverity.CRITICAL]
                     ),
                     InvariantSeverity.ERROR.value: len(
                         [v for v in violations if v.severity == InvariantSeverity.ERROR]
                     ),
                     InvariantSeverity.WARNING.value: len(
-                        [
-                            v
-                            for v in violations
-                            if v.severity == InvariantSeverity.WARNING
-                        ]
+                        [v for v in violations if v.severity == InvariantSeverity.WARNING]
                     ),
                     InvariantSeverity.INFO.value: len(
                         [v for v in violations if v.severity == InvariantSeverity.INFO]
@@ -971,7 +945,7 @@ class TNFRValidator:
             <h1>🚨 TNFR Validation Report</h1>
             <div class="summary">
                 <h2>Summary</h2>
-                <p><strong>Total Violations:</strong> {{}}</p>
+                <p><strong>Total Violations:</strong> {}</p>
         """.format(
                 len(violations)
             )
@@ -985,9 +959,7 @@ class TNFRValidator:
         ]:
             count = len(by_severity.get(severity, []))
             if count > 0:
-                html_parts.append(
-                    f"<p><strong>{severity.value.upper()}:</strong> {count}</p>"
-                )
+                html_parts.append(f"<p><strong>{severity.value.upper()}:</strong> {count}</p>")
 
         html_parts.append("</div>")
 
@@ -1082,9 +1054,7 @@ class TNFRValidationError(Exception):
                     "severity": v.severity.value,
                     "description": v.description,
                     "node_id": v.node_id,
-                    "expected_value": (
-                        str(v.expected_value) if v.expected_value else None
-                    ),
+                    "expected_value": (str(v.expected_value) if v.expected_value else None),
                     "actual_value": str(v.actual_value) if v.actual_value else None,
                     "suggestion": v.suggestion,
                 }
@@ -1095,21 +1065,13 @@ class TNFRValidationError(Exception):
                 "total_violations": len(violations),
                 "by_severity": {
                     InvariantSeverity.CRITICAL.value: len(
-                        [
-                            v
-                            for v in violations
-                            if v.severity == InvariantSeverity.CRITICAL
-                        ]
+                        [v for v in violations if v.severity == InvariantSeverity.CRITICAL]
                     ),
                     InvariantSeverity.ERROR.value: len(
                         [v for v in violations if v.severity == InvariantSeverity.ERROR]
                     ),
                     InvariantSeverity.WARNING.value: len(
-                        [
-                            v
-                            for v in violations
-                            if v.severity == InvariantSeverity.WARNING
-                        ]
+                        [v for v in violations if v.severity == InvariantSeverity.WARNING]
                     ),
                     InvariantSeverity.INFO.value: len(
                         [v for v in violations if v.severity == InvariantSeverity.INFO]
@@ -1172,15 +1134,15 @@ class TNFRValidationError(Exception):
         <head>
             <title>TNFR Validation Report</title>
             <style>
-                body { font-family: Arial, sans-serif; margin: 40px; background-color: #f5f5f5; }
-                h1 { color: #333; }
-                .summary { background: white; padding: 20px; border-radius: 5px; margin-bottom: 20px; }
-                .severity-section { background: white; padding: 20px; border-radius: 5px; margin-bottom: 20px; }
-                .severity-header { font-size: 20px; font-weight: bold; margin-bottom: 15px; }
-                .violation { background: #f9f9f9; padding: 15px; margin-bottom: 10px; border-left: 4px solid; border-radius: 3px; }
-                .violation-title { font-weight: bold; margin-bottom: 5px; }
-                .violation-detail { margin-left: 20px; color: #666; }
-                .suggestion { background: #e7f5ff; padding: 10px; margin-top: 10px; border-radius: 3px; }
+                body {{ font-family: Arial, sans-serif; margin: 40px; background-color: #f5f5f5; }}
+                h1 {{ color: #333; }}
+                .summary {{ background: white; padding: 20px; border-radius: 5px; margin-bottom: 20px; }}
+                .severity-section {{ background: white; padding: 20px; border-radius: 5px; margin-bottom: 20px; }}
+                .severity-header {{ font-size: 20px; font-weight: bold; margin-bottom: 15px; }}
+                .violation {{ background: #f9f9f9; padding: 15px; margin-bottom: 10px; border-left: 4px solid; border-radius: 3px; }}
+                .violation-title {{ font-weight: bold; margin-bottom: 5px; }}
+                .violation-detail {{ margin-left: 20px; color: #666; }}
+                .suggestion {{ background: #e7f5ff; padding: 10px; margin-top: 10px; border-radius: 3px; }}
             </style>
         </head>
         <body>
@@ -1201,9 +1163,7 @@ class TNFRValidationError(Exception):
         ]:
             count = len(by_severity.get(severity, []))
             if count > 0:
-                html_parts.append(
-                    f"<p><strong>{severity.value.upper()}:</strong> {count}</p>"
-                )
+                html_parts.append(f"<p><strong>{severity.value.upper()}:</strong> {count}</p>")
 
         html_parts.append("</div>")
 

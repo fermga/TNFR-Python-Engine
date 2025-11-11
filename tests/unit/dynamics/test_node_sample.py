@@ -166,9 +166,7 @@ def test_node_sample_deterministic_across_hashseed():
         pytest.param(120, id="exceeds-node-count"),
     ],
 )
-def test_node_sample_returns_cached_nodes_when_sampling_disabled(
-    candidate_count, graph_canon
-):
+def test_node_sample_returns_cached_nodes_when_sampling_disabled(candidate_count, graph_canon):
     clear_rng_cache()
     G = _build_graph(80, graph_canon)
     G.graph["RANDOM_SEED"] = 2024

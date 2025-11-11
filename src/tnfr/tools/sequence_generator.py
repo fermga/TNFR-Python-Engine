@@ -36,7 +36,7 @@ import random
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ..operators.grammar import StructuralPattern
+    pass
 
 from ..compat.dataclass import dataclass
 from ..config.operator_names import (
@@ -61,7 +61,7 @@ from ..validation.compatibility import (
     CompatibilityLevel,
     get_compatibility_level,
 )
-from .domain_templates import DOMAIN_TEMPLATES, get_template
+from .domain_templates import get_template
 
 __all__ = [
     "ContextualSequenceGenerator",
@@ -224,9 +224,7 @@ class ContextualSequenceGenerator:
 
         # If template already meets requirements, return it
         if health.overall_health >= min_health:
-            if required_pattern is None or self._matches_pattern(
-                base_sequence, required_pattern
-            ):
+            if required_pattern is None or self._matches_pattern(base_sequence, required_pattern):
                 return GenerationResult(
                     sequence=base_sequence,
                     health_score=health.overall_health,
@@ -249,9 +247,7 @@ class ContextualSequenceGenerator:
         for candidate in candidates:
             candidate_health = self.health_analyzer.analyze_health(candidate)
             if candidate_health.overall_health >= min_health:
-                if required_pattern is None or self._matches_pattern(
-                    candidate, required_pattern
-                ):
+                if required_pattern is None or self._matches_pattern(candidate, required_pattern):
                     valid_candidates.append((candidate, candidate_health))
 
         if not valid_candidates:
@@ -259,9 +255,7 @@ class ContextualSequenceGenerator:
             all_with_health = [
                 (seq, self.health_analyzer.analyze_health(seq)) for seq in candidates
             ]
-            best_seq, best_health = max(
-                all_with_health, key=lambda x: x[1].overall_health
-            )
+            best_seq, best_health = max(all_with_health, key=lambda x: x[1].overall_health)
 
             return GenerationResult(
                 sequence=best_seq,
@@ -359,9 +353,7 @@ class ContextualSequenceGenerator:
                 recommendations=health.recommendations,
                 metadata={
                     "target_pattern": target_pattern,
-                    "pattern_matched": self._matches_pattern(
-                        base_sequence, target_pattern
-                    ),
+                    "pattern_matched": self._matches_pattern(base_sequence, target_pattern),
                 },
             )
 
@@ -392,9 +384,7 @@ class ContextualSequenceGenerator:
                 + health.recommendations,
                 metadata={
                     "target_pattern": target_pattern,
-                    "pattern_matched": self._matches_pattern(
-                        base_sequence, target_pattern
-                    ),
+                    "pattern_matched": self._matches_pattern(base_sequence, target_pattern),
                     "constraint_met": False,
                 },
             )
@@ -547,9 +537,7 @@ class ContextualSequenceGenerator:
 
         return variations
 
-    def _select_compatible_operator(
-        self, prev: str | None, next_op: str | None
-    ) -> str | None:
+    def _select_compatible_operator(self, prev: str | None, next_op: str | None) -> str | None:
         """Select an operator compatible with neighbors."""
         all_operators = [
             EMISSION,
@@ -696,9 +684,7 @@ class ContextualSequenceGenerator:
 
         return signatures[pattern_name]
 
-    def _build_from_signature(
-        self, signature: dict[str, list[str]], max_length: int
-    ) -> list[str]:
+    def _build_from_signature(self, signature: dict[str, list[str]], max_length: int) -> list[str]:
         """Build sequence from pattern signature."""
         core = signature["core"]
         optional = signature.get("optional", [])
@@ -720,9 +706,7 @@ class ContextualSequenceGenerator:
                             CompatibilityLevel.EXCELLENT,
                             CompatibilityLevel.GOOD,
                         ):
-                            if next_op is None or get_compatibility_level(
-                                op, next_op
-                            ) in (
+                            if next_op is None or get_compatibility_level(op, next_op) in (
                                 CompatibilityLevel.EXCELLENT,
                                 CompatibilityLevel.GOOD,
                             ):
@@ -784,9 +768,7 @@ class ContextualSequenceGenerator:
 
         return improvements
 
-    def _explain_improvements(
-        self, original: list[str], improved: list[str]
-    ) -> list[str]:
+    def _explain_improvements(self, original: list[str], improved: list[str]) -> list[str]:
         """Generate explanations for improvements made."""
         recommendations = []
 
@@ -813,10 +795,7 @@ class ContextualSequenceGenerator:
                 f"Balance improved by {improved_health.balance_score - original_health.balance_score:.2f}"
             )
 
-        if (
-            improved_health.sustainability_index
-            > original_health.sustainability_index + 0.05
-        ):
+        if improved_health.sustainability_index > original_health.sustainability_index + 0.05:
             recommendations.append(
                 f"Sustainability improved by {improved_health.sustainability_index - original_health.sustainability_index:.2f}"
             )
@@ -826,11 +805,7 @@ class ContextualSequenceGenerator:
 
         original_counts = Counter(original)
         improved_counts = Counter(improved)
-        added = [
-            op
-            for op in improved_counts
-            if improved_counts[op] > original_counts.get(op, 0)
-        ]
+        added = [op for op in improved_counts if improved_counts[op] > original_counts.get(op, 0)]
         if added:
             recommendations.append(f"Added operators: {', '.join(set(added))}")
 

@@ -186,9 +186,7 @@ class TestPersistentTNFRCache:
             cache_dir = Path(tmpdir)
             cache = PersistentTNFRCache(cache_dir=cache_dir)
 
-            for i, level in enumerate(
-                [CacheLevel.GRAPH_STRUCTURE, CacheLevel.DERIVED_METRICS]
-            ):
+            for i, level in enumerate([CacheLevel.GRAPH_STRUCTURE, CacheLevel.DERIVED_METRICS]):
                 cache.set_persistent(
                     f"key{i}",
                     f"data{i}",

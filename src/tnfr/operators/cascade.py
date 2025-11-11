@@ -45,22 +45,25 @@ __all__ = [
 # Import cache utilities for performance optimization
 try:
     from ..utils.cache import cache_tnfr_computation, CacheLevel
+
     _CACHING_AVAILABLE = True
 except ImportError:  # pragma: no cover - defensive import for testing
     _CACHING_AVAILABLE = False
+
     # Dummy decorator if caching unavailable
     def cache_tnfr_computation(level, dependencies, cost_estimator=None):
         def decorator(func):
             return func
+
         return decorator
-    
+
     class CacheLevel:  # type: ignore
         DERIVED_METRICS = "derived_metrics"
 
 
 def _estimate_cascade_cost(G: TNFRGraph) -> float:
     """Estimate computational cost for cascade detection.
-    
+
     Used by cache eviction policy to prioritize expensive computations.
     Cost is proportional to number of propagation events to process.
     """
@@ -71,7 +74,7 @@ def _estimate_cascade_cost(G: TNFRGraph) -> float:
 
 @cache_tnfr_computation(
     level=CacheLevel.DERIVED_METRICS,
-    dependencies={'thol_propagations', 'cascade_config'},
+    dependencies={"thol_propagations", "cascade_config"},
     cost_estimator=_estimate_cascade_cost,
 )
 def detect_cascade(G: TNFRGraph) -> dict[str, Any]:
@@ -110,7 +113,7 @@ def detect_cascade(G: TNFRGraph) -> dict[str, Any]:
 
     Caching Strategy:
     - Cache level: DERIVED_METRICS (mid-persistence)
-    - Dependencies: 'thol_propagations' (propagation history), 
+    - Dependencies: 'thol_propagations' (propagation history),
                    'cascade_config' (threshold parameters)
     - Invalidation: Automatic when dependencies change
     - Cost: Proportional to number of propagation events
@@ -226,25 +229,25 @@ def measure_cascade_radius(G: TNFRGraph, source_node: NodeId) -> int:
 
 def invalidate_cascade_cache() -> int:
     """Invalidate cached cascade detection results across all graphs.
-    
+
     This function should be called when THOL propagations are added or
     cascade configuration parameters change. It triggers automatic cache
     invalidation via the dependency tracking system.
-    
+
     Returns
     -------
     int
         Number of cache entries invalidated.
-        
+
     Notes
     -----
     TNFR Caching: Uses canonical `invalidate_by_dependency()` mechanism.
     Dependencies invalidated: 'thol_propagations', 'cascade_config'.
-    
+
     This function is typically not needed explicitly, as cache invalidation
     happens automatically when G.graph["thol_propagations"] is modified.
     However, it's provided for manual cache management in edge cases.
-    
+
     Examples
     --------
     >>> # Add new propagations
@@ -255,13 +258,14 @@ def invalidate_cascade_cache() -> int:
     """
     if not _CACHING_AVAILABLE:
         return 0
-    
+
     try:
         from ..utils.cache import get_global_cache
+
         cache = get_global_cache()
         count = 0
-        count += cache.invalidate_by_dependency('thol_propagations')
-        count += cache.invalidate_by_dependency('cascade_config')
+        count += cache.invalidate_by_dependency("thol_propagations")
+        count += cache.invalidate_by_dependency("cascade_config")
         return count
     except (ImportError, AttributeError):  # pragma: no cover
         return 0

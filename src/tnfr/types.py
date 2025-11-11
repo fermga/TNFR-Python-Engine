@@ -17,7 +17,6 @@ from typing import (
     TYPE_CHECKING,
     Any,
     ContextManager,
-    Iterable,
     Protocol,
     TypedDict,
     runtime_checkable,
@@ -219,9 +218,7 @@ def ensure_bepi(value: Any) -> "BEPIElement":
             grid = value["grid"]
         except KeyError as exc:  # pragma: no cover - defensive
             missing = exc.args[0]
-            raise ValueError(
-                f"Missing '{missing}' key for BEPI serialization."
-            ) from exc
+            raise ValueError(f"Missing '{missing}' key for BEPI serialization.") from exc
         return _BEPIElement(continuous, discrete, grid)
     if isinstance(value, Sequence) and not isinstance(value, (str, bytes, bytearray)):
         if len(value) != 3:
@@ -726,9 +723,7 @@ GlyphogramRow: TypeAlias = MutableMapping[str, float]
 GlyphTimingTotals: TypeAlias = MutableMapping[str, float]
 """Aggregate glyph timing totals keyed by glyph code."""
 
-GlyphTimingByNode: TypeAlias = MutableMapping[
-    Any, MutableMapping[str, MutableSequence[float]]
-]
+GlyphTimingByNode: TypeAlias = MutableMapping[Any, MutableMapping[str, MutableSequence[float]]]
 """Glyph timing segments stored per node during audits."""
 
 GlyphCounts: TypeAlias = Mapping[str, int]

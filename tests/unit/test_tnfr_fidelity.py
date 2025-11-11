@@ -202,15 +202,11 @@ class TestNodalEquationFidelity:
         dnfr_epi_vf_mixed(G)
 
         # Compute total change rate
-        total_change_rate = sum(
-            G.nodes[i][VF_PRIMARY] * G.nodes[i][DNFR_PRIMARY] for i in range(4)
-        )
+        total_change_rate = sum(G.nodes[i][VF_PRIMARY] * G.nodes[i][DNFR_PRIMARY] for i in range(4))
 
         # Should be small (conservation)
         # Allow some numerical error
-        assert (
-            abs(total_change_rate) < 0.5
-        ), f"Total change rate {total_change_rate} too high"
+        assert abs(total_change_rate) < 0.5, f"Total change rate {total_change_rate} too high"
 
     def test_nodal_equation_stability_near_equilibrium(self):
         """Near equilibrium (uniform state), ΔNFR should be small."""
@@ -249,9 +245,7 @@ class TestOperatorEffects:
         # Emission operator should be available
         from tnfr.operators import OPERATORS
 
-        assert EMISSION in OPERATORS or EMISSION.lower() in [
-            k.lower() for k in OPERATORS.keys()
-        ]
+        assert EMISSION in OPERATORS or EMISSION.lower() in [k.lower() for k in OPERATORS.keys()]
 
         # Initial state is valid
         assert initial_epi == 0.0
@@ -263,9 +257,7 @@ class TestOperatorEffects:
         # According to TNFR, IL compresses ΔNFR drift
         from tnfr.operators import OPERATORS
 
-        assert COHERENCE in OPERATORS or COHERENCE.lower() in [
-            k.lower() for k in OPERATORS.keys()
-        ]
+        assert COHERENCE in OPERATORS or COHERENCE.lower() in [k.lower() for k in OPERATORS.keys()]
 
         # Theoretical property: coherence operator compresses drift
         # This would be tested in integration with actual operator application
@@ -349,9 +341,7 @@ class TestStructuralInvariants:
 
         # EPI should remain in bounds (though it might change after integration)
         epi = G.nodes["test"][EPI_PRIMARY]
-        assert (
-            epi_min <= epi <= epi_max
-        ), f"EPI {epi} outside bounds [{epi_min}, {epi_max}]"
+        assert epi_min <= epi <= epi_max, f"EPI {epi} outside bounds [{epi_min}, {epi_max}]"
 
 
 class TestMetricConsistency:

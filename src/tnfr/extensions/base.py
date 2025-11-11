@@ -7,7 +7,7 @@ health analyzers, and tools while maintaining canonical TNFR invariants.
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Type
+from typing import Any, Dict, List, Type
 
 
 @dataclass
@@ -114,7 +114,6 @@ class TNFRExtension(ABC):
         str
             Domain name (lowercase, underscore-separated).
         """
-        pass
 
     @abstractmethod
     def get_pattern_definitions(self) -> Dict[str, PatternDefinition]:
@@ -125,7 +124,6 @@ class TNFRExtension(ABC):
         Dict[str, PatternDefinition]
             Mapping of pattern names to their definitions.
         """
-        pass
 
     @abstractmethod
     def get_health_analyzers(self) -> Dict[str, Type]:
@@ -136,7 +134,6 @@ class TNFRExtension(ABC):
         Dict[str, Type]
             Mapping of analyzer names to analyzer classes.
         """
-        pass
 
     def get_cookbook_recipes(self) -> Dict[str, CookbookRecipe]:
         """Return validated recipes for common scenarios.

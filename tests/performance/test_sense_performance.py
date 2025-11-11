@@ -137,9 +137,7 @@ def test_compute_Si_large_graph_chunk_penalty_removed(graph_canon):
     compute_Si(graph, inplace=False)
 
     loops = 4
-    baseline_samples = [
-        _measure(lambda: compute_Si(graph, inplace=False), loops) for _ in range(3)
-    ]
+    baseline_samples = [_measure(lambda: compute_Si(graph, inplace=False), loops) for _ in range(3)]
     hinted_samples = [
         _measure(
             lambda: compute_Si(graph, inplace=False, chunk_size=32),
@@ -181,8 +179,7 @@ def test_compute_Si_buffer_cache_preserves_results(graph_canon):
 
     cached_loops = 3
     cached_samples = [
-        _measure(lambda: compute_Si(graph, inplace=False), cached_loops)
-        for _ in range(3)
+        _measure(lambda: compute_Si(graph, inplace=False), cached_loops) for _ in range(3)
     ]
     cached_time = min(cached_samples) / cached_loops
 

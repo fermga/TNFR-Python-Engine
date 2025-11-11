@@ -631,9 +631,7 @@ class ShelveCacheLayer(CacheLayer):
         self._validator = validator
         self._require_signature = require_signature
         if require_signature and (signer is None or validator is None):
-            raise ValueError(
-                "require_signature=True requires both signer and validator"
-            )
+            raise ValueError("require_signature=True requires both signer and validator")
 
         # Issue security warning when using unsigned pickle deserialization
         if not require_signature and os.environ.get(_TNFR_ALLOW_UNSIGNED_PICKLE) != "1":
@@ -703,14 +701,10 @@ class ShelveCacheLayer(CacheLayer):
                         valid = validator(payload, signature)
                     except Exception as exc:  # pragma: no cover - defensive
                         self.delete(name)
-                        raise SecurityError(
-                            "signature validator raised an exception"
-                        ) from exc
+                        raise SecurityError("signature validator raised an exception") from exc
                     if not valid:
                         self.delete(name)
-                        raise SecurityError(
-                            f"signature validation failed for cache entry {name!r}"
-                        )
+                        raise SecurityError(f"signature validation failed for cache entry {name!r}")
                 try:
                     return _decode_payload(mode, payload)
                 except Exception as exc:
@@ -764,9 +758,7 @@ class RedisCacheLayer(CacheLayer):
             try:  # pragma: no cover - import guarded for optional dependency
                 import redis  # type: ignore
             except Exception as exc:  # pragma: no cover - defensive import
-                raise RuntimeError(
-                    "redis-py is required to initialise RedisCacheLayer"
-                ) from exc
+                raise RuntimeError("redis-py is required to initialise RedisCacheLayer") from exc
             client = redis.Redis()
         self._client = client
         self._namespace = namespace.rstrip(":") or "tnfr:cache"
@@ -776,9 +768,7 @@ class RedisCacheLayer(CacheLayer):
         self._require_signature = require_signature
         self._protocol = pickle.HIGHEST_PROTOCOL if protocol is None else protocol
         if require_signature and (signer is None or validator is None):
-            raise ValueError(
-                "require_signature=True requires both signer and validator"
-            )
+            raise ValueError("require_signature=True requires both signer and validator")
 
         # Issue security warning when using unsigned pickle deserialization
         if not require_signature and os.environ.get(_TNFR_ALLOW_UNSIGNED_PICKLE) != "1":
@@ -820,14 +810,10 @@ class RedisCacheLayer(CacheLayer):
                         valid = validator(payload, signature)
                     except Exception as exc:  # pragma: no cover - defensive
                         self.delete(name)
-                        raise SecurityError(
-                            "signature validator raised an exception"
-                        ) from exc
+                        raise SecurityError("signature validator raised an exception") from exc
                     if not valid:
                         self.delete(name)
-                        raise SecurityError(
-                            f"signature validation failed for cache entry {name!r}"
-                        )
+                        raise SecurityError(f"signature validation failed for cache entry {name!r}")
                 try:
                     return _decode_payload(mode, payload)
                 except Exception as exc:
@@ -891,9 +877,7 @@ class CacheManager:
         else:
             extra_layers = tuple(layers)
             for layer in extra_layers:
-                if not isinstance(
-                    layer, CacheLayer
-                ):  # pragma: no cover - defensive typing
+                if not isinstance(layer, CacheLayer):  # pragma: no cover - defensive typing
                     raise TypeError(f"unsupported cache layer type: {type(layer)!r}")
         self._layers: tuple[CacheLayer, ...] = (mapping_layer, *extra_layers)
         self._storage_layer = mapping_layer
@@ -1132,9 +1116,7 @@ class CacheManager:
             return payload
         return decoder(payload)
 
-    def _store_layer(
-        self, name: str, entry: _CacheEntry, value: Any, *, layer_index: int
-    ) -> None:
+    def _store_layer(self, name: str, entry: _CacheEntry, value: Any, *, layer_index: int) -> None:
         layer = self._layers[layer_index]
         if layer_index == 0:
             payload = value
@@ -1306,9 +1288,7 @@ class CacheManager:
             aggregate = aggregate.merge(stats)
         return aggregate
 
-    def register_metrics_publisher(
-        self, publisher: Callable[[str, CacheStatistics], None]
-    ) -> None:
+    def register_metrics_publisher(self, publisher: Callable[[str, CacheStatistics], None]) -> None:
         """Register ``publisher`` to receive metrics snapshots on demand."""
 
         with self._registry_lock:
@@ -1419,9 +1399,7 @@ class InstrumentedLRUCache(MutableMapping[K, V], Generic[K, V]):
         telemetry_callbacks: (
             Iterable[Callable[[K, V], None]] | Callable[[K, V], None] | None
         ) = None,
-        eviction_callbacks: (
-            Iterable[Callable[[K, V], None]] | Callable[[K, V], None] | None
-        ) = None,
+        eviction_callbacks: Iterable[Callable[[K, V], None]] | Callable[[K, V], None] | None = None,
         locks: MutableMapping[K, Any] | None = None,
         getsizeof: Callable[[V], int] | None = None,
         count_overwrite_hit: bool = True,
@@ -1665,9 +1643,7 @@ class ManagedLRUCache(LRUCache[K, V]):
         *,
         manager: CacheManager | None = None,
         metrics_key: str | None = None,
-        eviction_callbacks: (
-            Iterable[Callable[[K, V], None]] | Callable[[K, V], None] | None
-        ) = None,
+        eviction_callbacks: Iterable[Callable[[K, V], None]] | Callable[[K, V], None] | None = None,
         telemetry_callbacks: (
             Iterable[Callable[[K, V], None]] | Callable[[K, V], None] | None
         ) = None,
@@ -1887,16 +1863,12 @@ def _build_redis_layer(spec: Mapping[str, Any]) -> RedisCacheLayer | None:
                 try:  # pragma: no cover - optional dependency
                     import redis  # type: ignore
                 except Exception:  # pragma: no cover - defensive logging
-                    logger.exception(
-                        "redis-py is required to build the configured Redis client"
-                    )
+                    logger.exception("redis-py is required to build the configured Redis client")
                     return None
                 try:
                     client = redis.Redis(**dict(kwargs))
                 except Exception:  # pragma: no cover - defensive logging
-                    logger.exception(
-                        "Failed to initialise redis client with %r", kwargs
-                    )
+                    logger.exception("Failed to initialise redis client with %r", kwargs)
                     return None
     try:
         if namespace is None:
@@ -1932,9 +1904,7 @@ def _close_cache_layers(manager: CacheManager | None) -> None:
             try:
                 close()
             except Exception:  # pragma: no cover - defensive logging
-                logger.exception(
-                    "Cache layer close failed for %s", layer.__class__.__name__
-                )
+                logger.exception("Cache layer close failed for %s", layer.__class__.__name__)
 
 
 def reset_global_cache_manager() -> None:
@@ -1996,9 +1966,7 @@ def _iter_node_digests(nodes: Iterable[Any], *, presorted: bool) -> Iterable[byt
         for node in nodes:
             yield _node_repr_digest(node)[1]
     else:
-        for _, digest in sorted(
-            (_node_repr_digest(n) for n in nodes), key=lambda x: x[0]
-        ):
+        for _, digest in sorted((_node_repr_digest(n) for n in nodes), key=lambda x: x[0]):
             yield digest
 
 
@@ -2086,9 +2054,7 @@ def _update_node_cache(
 ) -> None:
     """Store ``nodes`` and ``checksum`` in ``graph`` under ``key``."""
 
-    graph[f"{key}_cache"] = NodeCache(
-        checksum=checksum, nodes=nodes, sorted_nodes=sorted_nodes
-    )
+    graph[f"{key}_cache"] = NodeCache(checksum=checksum, nodes=nodes, sorted_nodes=sorted_nodes)
     graph[f"{key}_checksum"] = checksum
 
 
@@ -2159,9 +2125,7 @@ def _cache_node_list(G: nx.Graph) -> tuple[Any, ...]:
     sort_nodes = bool(graph.get("SORT_NODES", False))
 
     if invalid:
-        nodes = _refresh_node_list_cache(
-            G, graph, sort_nodes=sort_nodes, current_n=current_n
-        )
+        nodes = _refresh_node_list_cache(G, graph, sort_nodes=sort_nodes, current_n=current_n)
     elif cache and "_node_list_checksum" not in graph:
         _reuse_node_list_cache(
             graph,
@@ -2678,9 +2642,7 @@ class _SeedHashCache(MutableMapping[tuple[int, int], int]):
         default_maxsize: int = 128,
     ) -> None:
         self._default_maxsize = int(default_maxsize)
-        self._manager = manager or build_cache_manager(
-            default_capacity=self._default_maxsize
-        )
+        self._manager = manager or build_cache_manager(default_capacity=self._default_maxsize)
         self._state_key = state_key
         if not self._manager.has_override(self._state_key):
             self._manager.configure(overrides={self._state_key: self._default_maxsize})
@@ -2801,9 +2763,7 @@ class ScopedCounterCache(Generic[K]):
         requested = None if max_entries is None else int(max_entries)
         if requested is not None and requested < 0:
             raise ValueError("max_entries must be non-negative")
-        self._manager = manager or build_cache_manager(
-            default_capacity=self._default_max_entries
-        )
+        self._manager = manager or build_cache_manager(default_capacity=self._default_max_entries)
         if not self._manager.has_override(self._state_key):
             fallback = requested
             if fallback is None:
@@ -2889,11 +2849,7 @@ class ScopedCounterCache(Generic[K]):
             update_policy = True
 
         def _update(state: _CounterState[K] | None) -> _CounterState[K]:
-            if (
-                not isinstance(state, _CounterState)
-                or force
-                or state.max_entries != size
-            ):
+            if not isinstance(state, _CounterState) or force or state.max_entries != size:
                 locks: dict[K, threading.RLock] = {}
                 return _CounterState(
                     cache=InstrumentedLRUCache(
@@ -3959,9 +3915,7 @@ def track_node_property_update(
     if hasattr(graph, "graph"):
         tracker = graph.graph.get("_tnfr_change_tracker")
         if isinstance(tracker, GraphChangeTracker):
-            tracker.on_node_property_change(
-                node_id, property_name, old_value, new_value
-            )
+            tracker.on_node_property_change(node_id, property_name, old_value, new_value)
 
 
 # ============================================================================
@@ -4061,9 +4015,7 @@ class PersistentTNFRCache:
                     computation_cost = cached_data.get("computation_cost", 1.0)
 
                     # Load back into memory cache
-                    self._memory_cache.set(
-                        key, value, level, dependencies, computation_cost
-                    )
+                    self._memory_cache.set(key, value, level, dependencies, computation_cost)
 
                     return value
 
@@ -4112,13 +4064,13 @@ class PersistentTNFRCache:
                 "timestamp": time.time(),
             }
 
-            try:
-                with open(file_path, "wb") as f:
-                    pickle.dump(cache_data, f, protocol=pickle.HIGHEST_PROTOCOL)
-            except (pickle.PickleError, OSError) as e:
-                # Log error but don't fail
-                # In production, this should use proper logging
-                pass
+        try:
+            with open(file_path, "wb") as f:
+                pickle.dump(cache_data, f, protocol=pickle.HIGHEST_PROTOCOL)
+        except (pickle.PickleError, OSError):
+            # Log error but don't fail
+            # In production, this should use proper logging
+            pass
 
     def invalidate_by_dependency(self, dependency: str) -> int:
         """Invalidate memory and disk cache entries for a dependency.

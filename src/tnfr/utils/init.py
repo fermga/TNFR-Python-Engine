@@ -97,9 +97,7 @@ class WarnOnce:
     every invocation.
     """
 
-    def __init__(
-        self, logger: logging.Logger, msg: str, *, maxsize: int = 1024
-    ) -> None:
+    def __init__(self, logger: logging.Logger, msg: str, *, maxsize: int = 1024) -> None:
         self._logger = logger
         self._msg = msg
         self._maxsize = maxsize
@@ -302,15 +300,9 @@ def _get_import_cache_manager() -> CacheManager:
             if _IMPORT_CACHE_MANAGER is None:
                 from .cache import CacheManager
 
-                _IMPORT_CACHE_MANAGER = CacheManager(
-                    default_capacity=_DEFAULT_CACHE_SIZE
-                )
-                _IMPORT_CACHE_MANAGER.register(
-                    _SUCCESS_CACHE_NAME, _success_cache_factory
-                )
-                _IMPORT_CACHE_MANAGER.register(
-                    _FAILURE_CACHE_NAME, _failure_cache_factory
-                )
+                _IMPORT_CACHE_MANAGER = CacheManager(default_capacity=_DEFAULT_CACHE_SIZE)
+                _IMPORT_CACHE_MANAGER.register(_SUCCESS_CACHE_NAME, _success_cache_factory)
+                _IMPORT_CACHE_MANAGER.register(_FAILURE_CACHE_NAME, _failure_cache_factory)
     return _IMPORT_CACHE_MANAGER
 
 
@@ -701,9 +693,7 @@ def _normalise_warm_specs(
         if extra:
             raise ValueError("'attr' can only be combined with a single module name")
         if not isinstance(module, str):
-            raise TypeError(
-                "'attr' requires the first argument to be a module name string"
-            )
+            raise TypeError("'attr' requires the first argument to be a module name string")
         return [(module, attr)]
 
     specs: list[_ModuleSpec]
@@ -734,9 +724,7 @@ def _normalise_warm_specs(
                 raise TypeError("Invalid module specification for warm_cached_import")
             normalised.append((module_name, module_attr))
             continue
-        raise TypeError(
-            "Module specifications must be strings or (module, attr) tuples"
-        )
+        raise TypeError("Module specifications must be strings or (module, attr) tuples")
 
     return normalised
 

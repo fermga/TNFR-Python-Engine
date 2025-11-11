@@ -8,7 +8,7 @@ vectorized operations. Requires installation of optional dependencies:
 
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Any, Dict
 
 # Check for optional GPU backends
 try:
@@ -351,7 +351,6 @@ class TNFRGPUEngine:
         >>> len(result) == 3
         True
         """
-        import networkx as nx
 
         try:
             import numpy as np
@@ -374,23 +373,17 @@ class TNFRGPUEngine:
         # Extract node attributes
         def get_attr(node, attr_names, default):
             """Get attribute with fallbacks."""
-            for name in (
-                attr_names if isinstance(attr_names, (list, tuple)) else [attr_names]
-            ):
+            for name in (attr_names if isinstance(attr_names, (list, tuple)) else [attr_names]):
                 if name in graph.nodes[node]:
                     return float(graph.nodes[node][name])
             return default
 
         epi_vec = np.array([get_attr(node, ["epi", "EPI"], 0.5) for node in nodes])
         vf_vec = np.array([get_attr(node, ["nu_f", "vf", "νf"], 1.0) for node in nodes])
-        phase_vec = np.array(
-            [get_attr(node, ["phase", "theta"], 0.0) for node in nodes]
-        )
+        phase_vec = np.array([get_attr(node, ["phase", "theta"], 0.0) for node in nodes])
 
         # Compute ΔNFR using GPU
-        delta_nfr_array = self.compute_delta_nfr_gpu(
-            adj_matrix, epi_vec, vf_vec, phase_vec
-        )
+        delta_nfr_array = self.compute_delta_nfr_gpu(adj_matrix, epi_vec, vf_vec, phase_vec)
 
         # Convert back to dictionary
         if self.backend == "cupy" and HAS_CUPY:

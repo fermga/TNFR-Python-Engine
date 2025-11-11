@@ -155,6 +155,11 @@ from .callbacks import (
     callback_manager,
     CallbackSpec,
 )
+from .topology import (
+    compute_k_top_spectral,
+    compute_laplacian_spectrum,
+    compute_fiedler_value,
+)
 
 __all__ = (
     "IMPORT_LOG",
@@ -256,6 +261,10 @@ __all__ = (
     "CallbackManager",
     "callback_manager",
     "CallbackSpec",
+    # Topology / spectral analysis (experimental, U6 research)
+    "compute_k_top_spectral",
+    "compute_laplacian_spectrum",
+    "compute_fiedler_value",
 )
 
 #: Mapping of dynamically proxied names to the runtime types they expose.

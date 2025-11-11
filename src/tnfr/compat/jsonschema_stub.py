@@ -24,13 +24,9 @@ class _NotInstalledError(RuntimeError):
 class SchemaError(Exception):
     """Stub for jsonschema.exceptions.SchemaError."""
 
-    pass
-
 
 class ValidationError(Exception):
     """Stub for jsonschema.exceptions.ValidationError."""
-
-    pass
 
 
 class _ExceptionsStub:

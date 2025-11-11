@@ -147,9 +147,7 @@ def test_selector_n_jobs_one_is_sequential(monkeypatch, graph_canon):
 
     class FailExecutor:
         def __init__(self, *args, **kwargs):
-            raise AssertionError(
-                "ProcessPoolExecutor should not be used when n_jobs == 1"
-            )
+            raise AssertionError("ProcessPoolExecutor should not be used when n_jobs == 1")
 
     monkeypatch.setattr(selectors, "ProcessPoolExecutor", FailExecutor)
 

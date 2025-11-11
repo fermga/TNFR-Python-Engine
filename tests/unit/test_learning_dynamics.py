@@ -122,7 +122,9 @@ def test_learning_plasticity_with_reorganization():
     """Test plasticity increases with reorganization operators."""
     G, node = create_nfr("learner", epi=0.3, vf=1.0)
     # Apply operators that increase plasticity (grammar-compliant sequence)
-    run_sequence(G, node, [Emission(), Reception(), Coherence(), Dissonance(), SelfOrganization(), Silence()])
+    run_sequence(
+        G, node, [Emission(), Reception(), Coherence(), Dissonance(), SelfOrganization(), Silence()]
+    )
     plasticity = compute_learning_plasticity(G, node, window=10)
     assert plasticity > 0.0
     assert plasticity <= 1.0
@@ -166,17 +168,19 @@ def test_learning_efficiency_with_ops():
 def test_plasticity_consolidation_balance():
     """Test that plasticity and consolidation are complementary."""
     G, node = create_nfr("learner", epi=0.3, vf=1.0)
-    
+
     # Phase 1: High plasticity (reorganization) - grammar-compliant
-    run_sequence(G, node, [Emission(), Reception(), Coherence(), Dissonance(), SelfOrganization(), Silence()])
+    run_sequence(
+        G, node, [Emission(), Reception(), Coherence(), Dissonance(), SelfOrganization(), Silence()]
+    )
     plasticity1 = compute_learning_plasticity(G, node, window=10)
     consolidation1 = compute_consolidation_index(G, node, window=10)
-    
+
     # Phase 2: Add more consolidation - grammar-compliant
     run_sequence(G, node, [Emission(), Reception(), Coherence(), Silence()])
     plasticity2 = compute_learning_plasticity(G, node, window=10)
     consolidation2 = compute_consolidation_index(G, node, window=10)
-    
+
     # Consolidation should increase
     assert consolidation2 > consolidation1
     # Plasticity proportion should decrease as we add more stabilizers
@@ -200,10 +204,10 @@ def test_learn_from_input_no_dissonance():
     """Test learning from consonant input (no reorganization needed)."""
     G, node = create_nfr("learner", epi=0.3, vf=1.0)
     system = AdaptiveLearningSystem(G, node, learning_rate=1.0)
-    
+
     # Stimulus close to current EPI - no dissonance
     system.learn_from_input(stimulus=0.35, consolidate=True)
-    
+
     # Check that operators were applied - convert glyphs to operator names
     glyphs = list(G.nodes[node].get("glyph_history", []))
     history = glyph_history_to_operator_names(glyphs)
@@ -219,10 +223,10 @@ def test_learn_from_input_with_dissonance():
     """Test learning from dissonant input (reorganization triggered)."""
     G, node = create_nfr("learner", epi=0.3, vf=1.0)
     system = AdaptiveLearningSystem(G, node, learning_rate=0.5)
-    
+
     # Stimulus far from current EPI - dissonance
     system.learn_from_input(stimulus=0.9, consolidate=True)
-    
+
     # Check that operators were applied - convert glyphs to operator names
     glyphs = list(G.nodes[node].get("glyph_history", []))
     history = glyph_history_to_operator_names(glyphs)
@@ -240,9 +244,9 @@ def test_consolidate_memory():
     """Test memory consolidation cycle."""
     G, node = create_nfr("learner", epi=0.3, vf=1.0)
     system = AdaptiveLearningSystem(G, node)
-    
+
     system.consolidate_memory()
-    
+
     # Check that consolidation operators were applied - convert glyphs to operator names
     glyphs = list(G.nodes[node].get("glyph_history", []))
     history = glyph_history_to_operator_names(glyphs)
@@ -256,20 +260,24 @@ def test_adaptive_cycle():
     """Test adaptive learning cycle with iterations."""
     G, node = create_nfr("learner", epi=0.3, vf=1.0)
     system = AdaptiveLearningSystem(G, node, consolidation_threshold=0.5)
-    
+
     system.adaptive_cycle(num_iterations=3)
-    
+
     # Check that operators were applied - convert glyphs to operator names
     glyphs = list(G.nodes[node].get("glyph_history", []))
     history = glyph_history_to_operator_names(glyphs)
     assert len(history) > 0
-    
+
     # With GLYPH_HYSTERESIS_WINDOW=7 and 5 operators per iteration,
     # only last ~7 operators are visible in history
     # Should have at least 1 EMISSION and 1 SELF_ORGANIZATION visible
-    assert history.count(EMISSION) >= 1, f"Expected >=1 emission, got {history.count(EMISSION)} in {history}"
-    assert history.count(SELF_ORGANIZATION) >= 1, f"Expected >=1 self_organization, got {history.count(SELF_ORGANIZATION)} in {history}"
-    
+    assert (
+        history.count(EMISSION) >= 1
+    ), f"Expected >=1 emission, got {history.count(EMISSION)} in {history}"
+    assert (
+        history.count(SELF_ORGANIZATION) >= 1
+    ), f"Expected >=1 self_organization, got {history.count(SELF_ORGANIZATION)} in {history}"
+
     # Should have coherence pattern (AL->EN->IL->THOL->SHA sequence)
     assert RECEPTION in history
     assert COHERENCE in history
@@ -279,13 +287,13 @@ def test_deep_learning_cycle():
     """Test deep learning cycle execution."""
     G, node = create_nfr("learner", epi=0.3, vf=1.0)
     system = AdaptiveLearningSystem(G, node)
-    
+
     system.deep_learning_cycle()
-    
+
     # Verify sequence: AL→EN→IL→OZ→THOL→IL→(SHA or NUL) - grammar may choose closure
     glyphs = list(G.nodes[node].get("glyph_history", []))
     history = glyph_history_to_operator_names(glyphs)
-    
+
     # First 6 operators must match exactly
     expected_prefix = [
         EMISSION,
@@ -296,25 +304,29 @@ def test_deep_learning_cycle():
         COHERENCE,
     ]
     assert history[:6] == expected_prefix
-    
+
     # Last operator must be valid T'HOL closure (SILENCE or CONTRACTION)
     from tnfr.config.operator_names import CONTRACTION
+
     assert len(history) == 7
-    assert history[6] in [SILENCE, CONTRACTION], f"Expected SILENCE or CONTRACTION, got {history[6]}"
+    assert history[6] in [
+        SILENCE,
+        CONTRACTION,
+    ], f"Expected SILENCE or CONTRACTION, got {history[6]}"
 
 
 def test_exploratory_learning_cycle():
     """Test exploratory learning cycle execution."""
     G, node = create_nfr("learner", epi=0.3, vf=1.0)
     system = AdaptiveLearningSystem(G, node)
-    
+
     system.exploratory_learning_cycle()
-    
+
     # Verify sequence: AL->EN->IL->OZ->THOL->IL->(SHA or NUL)
     # Grammar-compliant sequence without problematic RESONANCE
     glyphs = list(G.nodes[node].get("glyph_history", []))
     history = glyph_history_to_operator_names(glyphs)
-    
+
     # First 6 operators must match
     expected_prefix = [
         EMISSION,
@@ -325,20 +337,24 @@ def test_exploratory_learning_cycle():
         COHERENCE,
     ]
     assert history[:6] == expected_prefix, f"Expected prefix {expected_prefix}, got {history[:6]}"
-    
+
     # Last operator: Terminal (SILENCE or CONTRACTION based on Si)
     from tnfr.config.operator_names import CONTRACTION
+
     assert len(history) == 7, f"Expected 7 operators, got {len(history)}"
-    assert history[6] in [SILENCE, CONTRACTION], f"Expected SILENCE or CONTRACTION, got {history[6]}"
+    assert history[6] in [
+        SILENCE,
+        CONTRACTION,
+    ], f"Expected SILENCE or CONTRACTION, got {history[6]}"
 
 
 def test_adaptive_mutation_cycle():
     """Test adaptive mutation cycle execution."""
     G, node = create_nfr("learner", epi=0.3, vf=1.0)
     system = AdaptiveLearningSystem(G, node)
-    
+
     system.adaptive_mutation_cycle()
-    
+
     # Verify sequence: AL->EN->IL->OZ->ZHIR->NAV - convert glyphs to operator names
     glyphs = list(G.nodes[node].get("glyph_history", []))
     history = glyph_history_to_operator_names(glyphs)
@@ -360,19 +376,19 @@ def test_full_learning_workflow():
     """Test complete learning workflow with metrics tracking."""
     G, node = create_nfr("learner", epi=0.2, vf=1.0)
     G.nodes[node]["epi_initial"] = 0.2
-    
+
     system = AdaptiveLearningSystem(G, node, learning_rate=0.5)
-    
+
     # Phase 1: Initial learning (dissonant input)
     system.learn_from_input(stimulus=0.8, consolidate=False)
     plasticity1 = compute_learning_plasticity(G, node)
     assert plasticity1 > 0.0  # Should show plasticity
-    
+
     # Phase 2: Consolidation
     system.consolidate_memory()
     consolidation = compute_consolidation_index(G, node)
     assert consolidation > 0.0  # Should show consolidation
-    
+
     # Phase 3: Measure efficiency
     efficiency = compute_learning_efficiency(G, node)
     assert efficiency >= 0.0
@@ -381,18 +397,17 @@ def test_full_learning_workflow():
 def test_learning_pattern_coherence_weights():
     """Test that learning patterns have correct coherence weights."""
     detector = AdvancedPatternDetector()
-    
+
     # Deep learning should have higher weight than basic
     assert (
-        detector.COHERENCE_WEIGHTS["DEEP_LEARNING"]
-        > detector.COHERENCE_WEIGHTS["BASIC_LEARNING"]
+        detector.COHERENCE_WEIGHTS["DEEP_LEARNING"] > detector.COHERENCE_WEIGHTS["BASIC_LEARNING"]
     )
-    
+
     # Exploratory learning should have same weight as deep learning
     assert (
         detector.COHERENCE_WEIGHTS["EXPLORATORY_LEARNING"]
         == detector.COHERENCE_WEIGHTS["DEEP_LEARNING"]
     )
-    
+
     # Consolidation should be level 1 (compositional)
     assert detector.COHERENCE_WEIGHTS["CONSOLIDATION_CYCLE"] == 1.0

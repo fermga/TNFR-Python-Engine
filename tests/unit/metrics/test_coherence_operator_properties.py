@@ -201,8 +201,7 @@ def test_coherence_matrix_hermiticity_python(graph_canon):
     for i in range(n):
         for j in range(n):
             assert abs(W_dense[i][j] - W_dense[j][i]) < 1e-10, (
-                f"Matrix not symmetric at ({i},{j}): "
-                f"{W_dense[i][j]} != {W_dense[j][i]}"
+                f"Matrix not symmetric at ({i},{j}): " f"{W_dense[i][j]} != {W_dense[j][i]}"
             )
 
 
@@ -316,4 +315,3 @@ def test_coherence_matrix_returns_valid_format(graph_canon):
         assert len(nodes_np) == 2
     except ImportError:
         pass  # NumPy not available, skip
-

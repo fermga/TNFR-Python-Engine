@@ -10,13 +10,13 @@ adjust thresholds, creating closed-loop structural regulation.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from ..types import TNFRGraph, NodeId
 
 from ..alias import get_attr
-from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_VF
+from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI
 from ..operators.registry import get_operator_class
 from ..config.operator_names import (
     COHERENCE,
@@ -237,7 +237,7 @@ class StructuralFeedbackLoop:
         """
         for step in range(num_steps):
             # Measure state before
-            coherence_before = self._compute_local_coherence()
+            self._compute_local_coherence()
 
             # Select and apply operator
             operator_name = self.regulate()

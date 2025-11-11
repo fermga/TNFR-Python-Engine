@@ -44,9 +44,7 @@ class ValidationOutcome(Generic[SubjectT]):
     artifacts: Mapping[str, Any] | None
 
 class Validator(Protocol[SubjectT]):
-    def validate(
-        self, subject: SubjectT, /, **kwargs: Any
-    ) -> ValidationOutcome[SubjectT]: ...
+    def validate(self, subject: SubjectT, /, **kwargs: Any) -> ValidationOutcome[SubjectT]: ...
     def report(self, outcome: ValidationOutcome[SubjectT]) -> str: ...
 
 __all__ = (

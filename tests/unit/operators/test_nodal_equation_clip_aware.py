@@ -295,9 +295,7 @@ class TestGraphConfiguration:
         G.nodes[node][EPI_PRIMARY] = epi_actual
 
         # Should use graph config (clip-aware mode)
-        result = validate_nodal_equation(
-            G, node, epi_before, epi_actual, dt, operator_name="test"
-        )
+        result = validate_nodal_equation(G, node, epi_before, epi_actual, dt, operator_name="test")
 
         assert result is True, "Graph config should enable clip-aware mode"
 
@@ -322,9 +320,7 @@ class TestGraphConfiguration:
         G.nodes[node][EPI_PRIMARY] = epi_actual
 
         # Should use graph config (classic mode)
-        result = validate_nodal_equation(
-            G, node, epi_before, epi_actual, dt, operator_name="test"
-        )
+        result = validate_nodal_equation(G, node, epi_before, epi_actual, dt, operator_name="test")
 
         assert result is False, "Graph config should enforce classic mode"
 
@@ -421,9 +417,7 @@ class TestToleranceLevels:
 
     def test_tolerance_from_graph_config(self):
         """Tolerance should be read from graph configuration."""
-        G, node = _create_test_nfr(
-            epi=0.5, vf=1.0, dnfr=0.1, NODAL_EQUATION_TOLERANCE=1e-6
-        )
+        G, node = _create_test_nfr(epi=0.5, vf=1.0, dnfr=0.1, NODAL_EQUATION_TOLERANCE=1e-6)
 
         epi_before = 0.5
         dt = 1.0
@@ -435,9 +429,7 @@ class TestToleranceLevels:
         G.nodes[node][EPI_PRIMARY] = epi_actual
 
         # Should use graph tolerance
-        result = validate_nodal_equation(
-            G, node, epi_before, epi_actual, dt, operator_name="test"
-        )
+        result = validate_nodal_equation(G, node, epi_before, epi_actual, dt, operator_name="test")
 
         assert result is True, "Should use tolerance from graph config"
 
@@ -447,9 +439,7 @@ class TestCustomBoundaries:
 
     def test_custom_boundaries_upper(self):
         """Clip-aware mode should respect custom upper boundary."""
-        G, node = _create_test_nfr(
-            epi=0.45, vf=1.0, dnfr=0.2, EPI_MAX=0.5  # Custom upper boundary
-        )
+        G, node = _create_test_nfr(epi=0.45, vf=1.0, dnfr=0.2, EPI_MAX=0.5)  # Custom upper boundary
 
         epi_before = 0.45
         dt = 1.0
@@ -575,9 +565,7 @@ class TestEdgeCases:
 
     def test_invalid_clip_mode_falls_back_to_hard(self):
         """Invalid CLIP_MODE should fall back to 'hard' mode."""
-        G, node = _create_test_nfr(
-            epi=0.95, vf=1.0, dnfr=0.2, CLIP_MODE="invalid_mode"
-        )
+        G, node = _create_test_nfr(epi=0.95, vf=1.0, dnfr=0.2, CLIP_MODE="invalid_mode")
 
         epi_before = 0.95
         dt = 1.0

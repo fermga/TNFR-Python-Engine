@@ -347,7 +347,5 @@ class TestIntegrationWithExistingCode:
 
         for vf, dnfr in test_cases:
             inline_result = vf * dnfr
-            canonical_result = compute_canonical_nodal_derivative(
-                vf, dnfr, validate_units=False
-            )
+            canonical_result = compute_canonical_nodal_derivative(vf, dnfr, validate_units=False)
             assert canonical_result.derivative == pytest.approx(inline_result)

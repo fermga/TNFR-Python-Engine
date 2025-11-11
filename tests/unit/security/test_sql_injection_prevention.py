@@ -138,9 +138,7 @@ class TestSecureQueryBuilder:
     def test_select_with_where(self) -> None:
         """Test SELECT with WHERE clause."""
         builder = SecureQueryBuilder()
-        query, params = (
-            builder.select("nfr_nodes", ["id", "nu_f"]).where("nu_f > ?", 0.5).build()
-        )
+        query, params = builder.select("nfr_nodes", ["id", "nu_f"]).where("nu_f > ?", 0.5).build()
 
         assert query == "SELECT id, nu_f FROM nfr_nodes WHERE nu_f > ?"
         assert params == [0.5]
@@ -161,9 +159,7 @@ class TestSecureQueryBuilder:
     def test_select_with_order_by(self) -> None:
         """Test SELECT with ORDER BY clause."""
         builder = SecureQueryBuilder()
-        query, params = (
-            builder.select("nfr_nodes", ["id", "nu_f"]).order_by("nu_f", "DESC").build()
-        )
+        query, params = builder.select("nfr_nodes", ["id", "nu_f"]).order_by("nu_f", "DESC").build()
 
         assert query == "SELECT id, nu_f FROM nfr_nodes ORDER BY nu_f DESC"
         assert params == []
@@ -208,10 +204,7 @@ class TestSecureQueryBuilder:
         """Test building an UPDATE query."""
         builder = SecureQueryBuilder()
         query, params = (
-            builder.update("nfr_nodes")
-            .set(nu_f=0.8, phase=1.57)
-            .where("id = ?", 123)
-            .build()
+            builder.update("nfr_nodes").set(nu_f=0.8, phase=1.57).where("id = ?", 123).build()
         )
 
         assert query == "UPDATE nfr_nodes SET nu_f = ?, phase = ? WHERE id = ?"
@@ -316,9 +309,7 @@ class TestExecuteParameterizedQuery:
         """Test detection of potentially unsafe queries."""
         # Note: This is a basic check, real implementations should be more sophisticated
         # Queries with SELECT/INSERT/UPDATE/DELETE are allowed to have quotes
-        execute_parameterized_query(
-            "SELECT name FROM users WHERE name = ?", ["O'Brien"]
-        )
+        execute_parameterized_query("SELECT name FROM users WHERE name = ?", ["O'Brien"])
 
 
 class TestSecurityIntegration:
@@ -377,9 +368,7 @@ class TestSecurityIntegration:
 
         # Update node structural frequency
         builder = SecureQueryBuilder()
-        query, params = (
-            builder.update("nfr_nodes").set(nu_f=0.8).where("id = ?", 123).build()
-        )
+        query, params = builder.update("nfr_nodes").set(nu_f=0.8).where("id = ?", 123).build()
         assert "UPDATE nfr_nodes" in query
         assert "SET nu_f = ?" in query
         assert params == [0.8, 123]

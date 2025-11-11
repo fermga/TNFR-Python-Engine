@@ -58,9 +58,7 @@ def test_normalize_job_overrides_handles_none_and_suffixes():
         (-3, True, -3),
     ],
 )
-def test_normalize_optional_int_matches_runtime_policy(
-    value, allow_non_positive, expected
-) -> None:
+def test_normalize_optional_int_matches_runtime_policy(value, allow_non_positive, expected) -> None:
     """Runtime job coercion should follow the shared helper semantics."""
 
     assert (

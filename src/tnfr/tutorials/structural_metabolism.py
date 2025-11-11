@@ -30,9 +30,6 @@ from __future__ import annotations
 from tnfr.constants import DNFR_PRIMARY, EPI_PRIMARY, VF_PRIMARY
 from tnfr.dynamics.metabolism import (
     StructuralMetabolism,
-    adaptive_metabolism,
-    cascading_reorganization,
-    digest_stimulus,
 )
 from tnfr.metrics.emergence import (
     compute_bifurcation_rate,
@@ -61,19 +58,19 @@ def example_1_basic_bifurcation():
     print("Initial state:")
     print(f"  EPI: {G.nodes[node][EPI_PRIMARY]:.3f}")
     print(f"  EPI history: {G.nodes[node]['epi_history']}")
-    print(f"  Acceleration: 0.1")
+    print("  Acceleration: 0.1")
 
     # Apply T'HOL with low threshold to trigger bifurcation
     SelfOrganization()(G, node, tau=0.08)
 
     # Check for bifurcation
     sub_epis = G.nodes[node].get("sub_epis", [])
-    print(f"\nAfter T'HOL:")
+    print("\nAfter T'HOL:")
     print(f"  EPI: {G.nodes[node][EPI_PRIMARY]:.3f}")
     print(f"  Bifurcations: {len(sub_epis)}")
 
     if sub_epis:
-        print(f"  Sub-EPI details:")
+        print("  Sub-EPI details:")
         for i, sub in enumerate(sub_epis):
             print(f"    [{i}] epi={sub['epi']:.3f}, d2_epi={sub['d2_epi']:.3f}")
 
@@ -99,7 +96,7 @@ def example_2_metabolic_cycle():
     metabolism = StructuralMetabolism(G, node)
     metabolism.digest(tau=0.08)
 
-    print(f"\nAfter metabolic cycle:")
+    print("\nAfter metabolic cycle:")
     # Get final EPI value safely using unified function
     from tnfr.alias import get_attr
     from tnfr.constants.aliases import ALIAS_EPI
@@ -173,7 +170,7 @@ def example_4_cascading_reorganization():
 
     sub_epis = G.nodes[node].get("sub_epis", [])
     final_epi = float(get_attr(G.nodes[node], ALIAS_EPI, 0.0))
-    print(f"\nAfter cascading reorganization (depth=3):")
+    print("\nAfter cascading reorganization (depth=3):")
     print(f"  EPI: {final_epi:.3f}")
     print(f"  Total bifurcations: {len(sub_epis)}")
 
@@ -210,7 +207,7 @@ def example_5_emergence_metrics():
     efficiency = compute_metabolic_efficiency(G, node)
     emergence = compute_emergence_index(G, node)
 
-    print(f"\nEmergence Metrics:")
+    print("\nEmergence Metrics:")
     print(f"  Structural complexity: {complexity}")
     print(f"  Bifurcation rate: {rate:.3f} per step")
     print(f"  Metabolic efficiency: {efficiency:.3f} EPI/THOL")

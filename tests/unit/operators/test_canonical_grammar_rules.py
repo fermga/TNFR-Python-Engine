@@ -35,16 +35,12 @@ class TestR1StartOperators:
 
     def test_valid_start_with_recursivity(self):
         """REMESH (recursivity) is a valid start operator."""
-        result = validate_sequence(
-            [RECURSIVITY, RECEPTION, COHERENCE, RESONANCE, SILENCE]
-        )
+        result = validate_sequence([RECURSIVITY, RECEPTION, COHERENCE, RESONANCE, SILENCE])
         assert result.passed
 
     def test_valid_start_with_transition(self):
         """NAV (transition) is a valid start operator (physics-derived)."""
-        result = validate_sequence(
-            [TRANSITION, RECEPTION, COHERENCE, RESONANCE, SILENCE]
-        )
+        result = validate_sequence([TRANSITION, RECEPTION, COHERENCE, RESONANCE, SILENCE])
         assert result.passed
 
     def test_invalid_start_with_reception(self):
@@ -99,31 +95,23 @@ class TestR3FinalizationOperators:
 
     def test_valid_end_with_transition(self):
         """Ending with NAV (transition) is valid."""
-        result = validate_sequence(
-            [EMISSION, RECEPTION, COHERENCE, RESONANCE, TRANSITION]
-        )
+        result = validate_sequence([EMISSION, RECEPTION, COHERENCE, RESONANCE, TRANSITION])
         assert result.passed
 
     def test_valid_end_with_recursivity(self):
         """Ending with RECURSIVITY is valid (REMESH glyph, NAV/transition operator)."""
-        result = validate_sequence(
-            [EMISSION, RECEPTION, COHERENCE, RESONANCE, RECURSIVITY]
-        )
+        result = validate_sequence([EMISSION, RECEPTION, COHERENCE, RESONANCE, RECURSIVITY])
         assert result.passed
 
     def test_invalid_end_with_emission(self):
         """Ending with AL (emission) is invalid."""
-        result = validate_sequence(
-            [EMISSION, RECEPTION, COHERENCE, RESONANCE, EMISSION]
-        )
+        result = validate_sequence([EMISSION, RECEPTION, COHERENCE, RESONANCE, EMISSION])
         assert not result.passed
         assert "must end" in result.message.lower()
 
     def test_invalid_end_with_coherence(self):
         """Ending with IL (coherence) is invalid."""
-        result = validate_sequence(
-            [EMISSION, RECEPTION, COHERENCE, RESONANCE, COHERENCE]
-        )
+        result = validate_sequence([EMISSION, RECEPTION, COHERENCE, RESONANCE, COHERENCE])
         assert not result.passed
         assert "must end" in result.message.lower()
 
@@ -166,13 +154,14 @@ class TestR5CompatibilityRules:
     def test_incompatible_silence_to_dissonance(self):
         """SHA → OZ is incompatible (silence followed by dissonance)."""
         with pytest.raises(SequenceSyntaxError) as excinfo:
-            parse_sequence(
-                [EMISSION, RECEPTION, COHERENCE, SILENCE, DISSONANCE, MUTATION, SILENCE]
-            )
+            parse_sequence([EMISSION, RECEPTION, COHERENCE, SILENCE, DISSONANCE, MUTATION, SILENCE])
 
         error = excinfo.value
         # Check that error message explains the physical incompatibility
-        assert "invalid after silence" in error.message.lower() or "contradicts" in error.message.lower()
+        assert (
+            "invalid after silence" in error.message.lower()
+            or "contradicts" in error.message.lower()
+        )
 
     def test_expansion_to_contraction_valid_with_medium_to_high(self):
         """VAL → NUL is valid (medium → high frequency transition)."""
@@ -218,9 +207,7 @@ class TestValidCanonicalSequences:
             ]
         )
         assert result.passed
-        assert (
-            result.metadata["detected_pattern"] == StructuralPattern.HIERARCHICAL.value
-        )
+        assert result.metadata["detected_pattern"] == StructuralPattern.HIERARCHICAL.value
 
     def test_cyclic_regenerative_sequence(self):
         """Test: NAV → AL → IL → RA → NAV → THOL (ciclo regenerativo)."""
@@ -260,9 +247,7 @@ class TestStructuralPatternDetection:
             [EMISSION, RECEPTION, COHERENCE, DISSONANCE, SELF_ORGANIZATION, SILENCE]
         )
         assert result.passed
-        assert (
-            result.metadata["detected_pattern"] == StructuralPattern.HIERARCHICAL.value
-        )
+        assert result.metadata["detected_pattern"] == StructuralPattern.HIERARCHICAL.value
 
     def test_detect_bifurcated_pattern(self):
         """OZ → ZHIR sequences should be detected as bifurcated."""
@@ -274,11 +259,11 @@ class TestStructuralPatternDetection:
 
     def test_detect_cyclic_pattern(self):
         """Multiple NAV occurrences suggest cyclic or fractal pattern.
-        
+
         Note: With coherence weighting, FRACTAL (NAV + RECURSIVITY) may be
         detected instead of CYCLIC when both are present, as FRACTAL represents
         deeper structural complexity (recursive structure across scales).
-        
+
         Note: R6 requires balance. NAV is a destabilizer, so multiple NAVs
         require additional stabilizers. Added IL to balance.
         """

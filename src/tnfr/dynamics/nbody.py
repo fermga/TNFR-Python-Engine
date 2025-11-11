@@ -21,7 +21,7 @@ It shows the correspondence:
 Classical Mechanics   ←→   TNFR Framework
 -------------------        ---------------
 Position q            ←→   EPI spatial component
-Velocity v            ←→   EPI velocity component  
+Velocity v            ←→   EPI velocity component
 Mass m                ←→   1/νf (structural inertia)
 Force F = -∇U         ←→   ΔNFR (ASSUMED from classical U)
 Newton's 2nd law      ←→   Nodal equation ∂EPI/∂t = νf·ΔNFR
@@ -147,7 +147,6 @@ from typing import TYPE_CHECKING, Any, Dict, List, Tuple, Optional
 import numpy as np
 from numpy.typing import NDArray
 
-from ..alias import get_attr
 from ..structural import create_nfr
 from ..types import TNFRGraph
 
@@ -509,9 +508,7 @@ class NBodySystem:
         kinetic = 0.5 * np.sum(self.masses * v_squared)
 
         # Potential energy: U = -Σ_{i<j} G m_i m_j / r_ij
-        potential = gravitational_potential(
-            self.positions, self.masses, self.G, self.softening
-        )
+        potential = gravitational_potential(self.positions, self.masses, self.G, self.softening)
 
         total = kinetic + potential
 
@@ -571,9 +568,7 @@ class NBodySystem:
         ∂EPI/∂t = νf · ΔNFR with νf = 1/m and ΔNFR = acceleration.
         """
         # Compute acceleration at current time: a(t) = ΔNFR
-        accel_t = compute_gravitational_dnfr(
-            self.positions, self.masses, self.G, self.softening
-        )
+        accel_t = compute_gravitational_dnfr(self.positions, self.masses, self.G, self.softening)
 
         # Update positions: r(t+dt) = r(t) + v(t)*dt + (1/2)*a(t)*dt²
         self.positions += self.velocities * dt + 0.5 * accel_t * dt**2
@@ -719,7 +714,6 @@ class NBodySystem:
         """
         try:
             import matplotlib.pyplot as plt
-            from mpl_toolkits.mplot3d import Axes3D
         except ImportError as exc:
             raise ImportError(
                 "matplotlib is required for plotting. "

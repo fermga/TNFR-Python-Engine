@@ -41,7 +41,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, Protocol, runtime_checkable
 
 if TYPE_CHECKING:
-    from ..types import TNFRGraph, NodeId
+    from ..types import TNFRGraph
     from ..operators.definitions import Operator
 
 __all__ = (

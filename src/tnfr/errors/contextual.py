@@ -83,7 +83,7 @@ class TNFRUserError(Exception):
             full_message += f"\n💡 Suggestion: {suggestion}\n"
 
         if context:
-            full_message += f"\n📊 Context:\n"
+            full_message += "\n📊 Context:\n"
             for key, value in context.items():
                 full_message += f"   • {key}: {value}\n"
 
@@ -185,9 +185,7 @@ class OperatorSequenceError(TNFRUserError):
 
         context = {
             "invalid_operator": invalid_operator,
-            "sequence_so_far": (
-                " → ".join(sequence_so_far) if sequence_so_far else "empty"
-            ),
+            "sequence_so_far": (" → ".join(sequence_so_far) if sequence_so_far else "empty"),
             "operator_count": len(sequence_so_far),
         }
 
@@ -287,9 +285,7 @@ class NetworkConfigError(TNFRUserError):
         suggestion_parts = []
         if valid_range:
             min_val, max_val = valid_range
-            suggestion_parts.append(
-                f"'{parameter}' must be in range [{min_val}, {max_val}]"
-            )
+            suggestion_parts.append(f"'{parameter}' must be in range [{min_val}, {max_val}]")
 
         if constraint_info:
             suggestion_parts.append(f"Unit: {constraint_info['unit']}")
@@ -300,9 +296,7 @@ class NetworkConfigError(TNFRUserError):
         context = {
             "parameter": parameter,
             "provided_value": value,
-            "valid_range": (
-                f"[{valid_range[0]}, {valid_range[1]}]" if valid_range else "see docs"
-            ),
+            "valid_range": (f"[{valid_range[0]}, {valid_range[1]}]" if valid_range else "see docs"),
         }
 
         super().__init__(

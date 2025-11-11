@@ -126,7 +126,7 @@ The internal sequence is validated **recursively**:
 - All operator transitions must be valid
 - THOL preconditions apply (requires destabilizer within 3-operator window per U4b)
 
-**See**: [UNIFIED_GRAMMAR_RULES.md](../UNIFIED_GRAMMAR_RULES.md) for complete grammar reference
+**See**: [UNIFIED_GRAMMAR_RULES.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/UNIFIED_GRAMMAR_RULES.md) for complete grammar reference
 
 **Example**:
 ```python
@@ -739,11 +739,11 @@ All three enforce phase compatibility before structural modifications, ensuring 
 ## Additional Resources
 
 - **[THOL_CONFIGURATION_REFERENCE.md](THOL_CONFIGURATION_REFERENCE.md)**: Complete THOL parameter reference with canonical constraints
-- **[GLYPH_SEQUENCES_GUIDE.md](../GLYPH_SEQUENCES_GUIDE.md)**: Complete operator sequence reference
-- **[GRAMMAR_2_0_TESTING_SUMMARY.md](../GRAMMAR_2_0_TESTING_SUMMARY.md)**: Grammar 2.0 validation rules
-- **[TNFR.pdf](../TNFR.pdf)**: Theoretical foundations of operational fractality
-- **[src/tnfr/operators/grammar.py](../src/tnfr/operators/grammar.py)**: Implementation details
-- **[AGENTS.md](../AGENTS.md)**: TNFR invariants and canonical principles
+- **[GLYPH_SEQUENCES_GUIDE.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/GLYPH_SEQUENCES_GUIDE.md)**: Complete operator sequence reference
+- **[GRAMMAR_2_0_TESTING_SUMMARY.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/GRAMMAR_2_0_TESTING_SUMMARY.md)**: Grammar 2.0 validation rules
+- **[TNFR.pdf](https://github.com/fermga/TNFR-Python-Engine/blob/main/TNFR.pdf)**: Theoretical foundations of operational fractality
+- **[src/tnfr/operators/grammar.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/operators/grammar.py)**: Implementation details
+- **[AGENTS.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/AGENTS.md)**: TNFR invariants and canonical principles
 
 ---
 

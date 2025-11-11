@@ -33,12 +33,12 @@ class TestZHIRPhaseTransformation:
         theta_before = 0.0
         G.nodes[node]["theta"] = theta_before
         G.nodes[node]["delta_nfr"] = 0.3  # Positive pressure
-        
+
         # Apply mutation
         Mutation()(G, node)
-        
+
         theta_after = G.nodes[node]["theta"]
-        
+
         # CRITICAL: Phase MUST have changed
         assert theta_after != theta_before, "ZHIR must transform phase, not just measure"
         assert abs(theta_after - theta_before) > 0.1, "Phase change must be significant"
@@ -49,18 +49,18 @@ class TestZHIRPhaseTransformation:
         theta_before = math.pi / 4  # 45°
         G.nodes[node]["theta"] = theta_before
         G.nodes[node]["delta_nfr"] = 0.5  # Positive reorganization pressure
-        
+
         # Apply mutation
         Mutation()(G, node)
-        
+
         theta_after = G.nodes[node]["theta"]
-        
+
         # Phase should shift forward (increase)
         # Note: May wrap around 2π, but shift should be positive
         shift = theta_after - theta_before
         if shift < -math.pi:  # Handle wrapping
             shift += 2 * math.pi
-        
+
         assert shift > 0, f"Positive ΔNFR should shift phase forward, got shift={shift}"
 
     def test_zhir_negative_dnfr_backward_shift(self):
@@ -69,45 +69,45 @@ class TestZHIRPhaseTransformation:
         theta_before = math.pi  # 180°
         G.nodes[node]["theta"] = theta_before
         G.nodes[node]["delta_nfr"] = -0.5  # Negative reorganization pressure
-        
+
         # Apply mutation
         Mutation()(G, node)
-        
+
         theta_after = G.nodes[node]["theta"]
-        
+
         # Phase should shift backward (decrease, modulo wrapping)
         shift = theta_after - theta_before
         if shift > math.pi:  # Handle wrapping
             shift -= 2 * math.pi
-        
+
         assert shift < 0, f"Negative ΔNFR should shift phase backward, got shift={shift}"
 
     def test_zhir_regime_change_detection(self):
         """ZHIR should detect regime changes (quadrant crossings)."""
         G, node = create_nfr("test", epi=0.5, vf=1.0)
         G.graph["COLLECT_OPERATOR_METRICS"] = True
-        
+
         # Start near quadrant boundary (π/2 - ε)
         theta_before = math.pi / 2 - 0.1
         G.nodes[node]["theta"] = theta_before
         G.nodes[node]["delta_nfr"] = 0.4  # Strong positive pressure
-        
+
         # Build EPI history to satisfy threshold
         G.nodes[node]["epi_history"] = [0.3, 0.4, 0.5]
-        
+
         # Apply mutation - should cross into next quadrant
         Mutation()(G, node)
-        
+
         # Check telemetry
         assert "_zhir_regime_changed" in G.nodes[node]
-        
+
         # Get metrics
         metrics = G.graph.get("operator_metrics", [])
         assert len(metrics) > 0
-        
+
         zhir_metric = metrics[-1]
         assert zhir_metric["glyph"] == "ZHIR"
-        
+
         # Should have regime change indicators
         assert "theta_regime_change" in zhir_metric
         assert "regime_before" in zhir_metric
@@ -117,25 +117,25 @@ class TestZHIRPhaseTransformation:
         """Small shifts within same quadrant should not trigger regime change."""
         G, node = create_nfr("test", epi=0.5, vf=1.0)
         G.graph["COLLECT_OPERATOR_METRICS"] = True
-        
+
         # Start in middle of quadrant
         theta_before = math.pi / 4  # 45°, in quadrant 0
         G.nodes[node]["theta"] = theta_before
         G.nodes[node]["delta_nfr"] = 0.1  # Small pressure
         G.nodes[node]["epi_history"] = [0.4, 0.45, 0.5]
-        
+
         # Apply mutation with small shift factor
         G.graph["GLYPH_FACTORS"] = {"ZHIR_theta_shift_factor": 0.1}
         Mutation()(G, node)
-        
+
         theta_after = G.nodes[node]["theta"]
-        
+
         # Should still be in same quadrant
         regime_before = int(theta_before // (math.pi / 2))
         regime_after = int(theta_after // (math.pi / 2))
-        
+
         assert regime_before == regime_after, "Small shift should stay in same regime"
-        
+
         # Metrics should reflect no regime change
         metrics = G.graph["operator_metrics"]
         zhir_metric = metrics[-1]
@@ -144,18 +144,18 @@ class TestZHIRPhaseTransformation:
     def test_zhir_phase_wrapping(self):
         """Phase transformation should wrap correctly at 2π boundary."""
         G, node = create_nfr("test", epi=0.5, vf=1.0)
-        
+
         # Start near 2π boundary
         theta_before = 2 * math.pi - 0.2
         G.nodes[node]["theta"] = theta_before
         G.nodes[node]["delta_nfr"] = 0.5  # Positive shift
         G.nodes[node]["epi_history"] = [0.3, 0.4, 0.5]
-        
+
         # Apply mutation
         Mutation()(G, node)
-        
+
         theta_after = G.nodes[node]["theta"]
-        
+
         # Phase should wrap to small positive value
         assert 0 <= theta_after < 2 * math.pi, "Phase must be in [0, 2π)"
         assert theta_after < 1.0, f"Should have wrapped to small value, got {theta_after}"
@@ -164,23 +164,23 @@ class TestZHIRPhaseTransformation:
         """Explicit ZHIR_theta_shift should override canonical behavior."""
         G, node = create_nfr("test", epi=0.5, vf=1.0)
         G.graph["COLLECT_OPERATOR_METRICS"] = True
-        
+
         theta_before = 0.0
         G.nodes[node]["theta"] = theta_before
         G.nodes[node]["delta_nfr"] = 0.8  # This should be ignored
         G.nodes[node]["epi_history"] = [0.3, 0.4, 0.5]
-        
+
         # Apply fixed shift (backward compatibility)
         fixed_shift = math.pi / 2  # 90°
         G.graph["GLYPH_FACTORS"] = {"ZHIR_theta_shift": fixed_shift}
-        
+
         Mutation()(G, node)
-        
+
         theta_after = G.nodes[node]["theta"]
-        
+
         # Should apply fixed shift, ignoring ΔNFR
         assert abs(theta_after - fixed_shift) < 0.01, "Fixed shift should be exact"
-        
+
         # Metrics should indicate fixed mode
         metrics = G.graph["operator_metrics"]
         zhir_metric = metrics[-1]
@@ -189,30 +189,30 @@ class TestZHIRPhaseTransformation:
     def test_zhir_magnitude_proportional_to_factor(self):
         """Transformation magnitude should scale with theta_shift_factor."""
         G, node = create_nfr("test", epi=0.5, vf=1.0)
-        
+
         theta_before = 1.0
         G.nodes[node]["theta"] = theta_before
         G.nodes[node]["delta_nfr"] = 0.5
         G.nodes[node]["epi_history"] = [0.3, 0.4, 0.5]
-        
+
         # Small factor
         G.graph["GLYPH_FACTORS"] = {"ZHIR_theta_shift_factor": 0.1}
         Mutation()(G, node)
         theta_small = G.nodes[node]["theta"]
         shift_small = abs(theta_small - theta_before)
-        
+
         # Reset
         G2, node2 = create_nfr("test2", epi=0.5, vf=1.0)
         G2.nodes[node2]["theta"] = theta_before
         G2.nodes[node2]["delta_nfr"] = 0.5
         G2.nodes[node2]["epi_history"] = [0.3, 0.4, 0.5]
-        
+
         # Large factor
         G2.graph["GLYPH_FACTORS"] = {"ZHIR_theta_shift_factor": 0.5}
         Mutation()(G2, node2)
         theta_large = G2.nodes[node2]["theta"]
         shift_large = abs(theta_large - theta_before)
-        
+
         # Larger factor should produce larger shift
         assert shift_large > shift_small, "Larger factor should produce larger phase shift"
 
@@ -224,19 +224,19 @@ class TestZHIRMetricsTelemetry:
         """Mutation metrics should include detailed transformation telemetry."""
         G, node = create_nfr("test", epi=0.5, vf=1.0)
         G.graph["COLLECT_OPERATOR_METRICS"] = True
-        
+
         G.nodes[node]["theta"] = 1.0
         G.nodes[node]["delta_nfr"] = 0.3
         G.nodes[node]["epi_history"] = [0.3, 0.4, 0.5]
-        
+
         Mutation()(G, node)
-        
+
         metrics = G.graph["operator_metrics"]
         assert len(metrics) > 0
-        
+
         zhir_metric = metrics[-1]
         assert zhir_metric["operator"] == "Mutation"
-        
+
         # Check transformation telemetry
         required_keys = [
             "theta_shift",
@@ -248,7 +248,7 @@ class TestZHIRMetricsTelemetry:
             "regime_after",
             "transformation_mode",
         ]
-        
+
         for key in required_keys:
             assert key in zhir_metric, f"Missing telemetry key: {key}"
 
@@ -256,17 +256,17 @@ class TestZHIRMetricsTelemetry:
         """Metrics should include signed shift (preserving direction)."""
         G, node = create_nfr("test", epi=0.5, vf=1.0)
         G.graph["COLLECT_OPERATOR_METRICS"] = True
-        
+
         theta_before = 1.0
         G.nodes[node]["theta"] = theta_before
         G.nodes[node]["delta_nfr"] = -0.4  # Negative ΔNFR
         G.nodes[node]["epi_history"] = [0.3, 0.4, 0.5]
-        
+
         Mutation()(G, node)
-        
+
         metrics = G.graph["operator_metrics"]
         zhir_metric = metrics[-1]
-        
+
         # Signed shift should be negative
         assert zhir_metric["theta_shift_signed"] < 0, "Negative ΔNFR should produce negative shift"
 
@@ -278,7 +278,7 @@ class TestZHIRReproducibility:
         """Same seed should produce identical transformations."""
         import random
         import numpy as np
-        
+
         # First run
         random.seed(42)
         np.random.seed(42)
@@ -288,7 +288,7 @@ class TestZHIRReproducibility:
         G1.nodes[node1]["epi_history"] = [0.3, 0.4, 0.5]
         Mutation()(G1, node1)
         theta1 = G1.nodes[node1]["theta"]
-        
+
         # Second run with same seed
         random.seed(42)
         np.random.seed(42)
@@ -298,7 +298,7 @@ class TestZHIRReproducibility:
         G2.nodes[node2]["epi_history"] = [0.3, 0.4, 0.5]
         Mutation()(G2, node2)
         theta2 = G2.nodes[node2]["theta"]
-        
+
         # Should be identical
         assert abs(theta1 - theta2) < 1e-10, "Same seed should produce identical results"
 
@@ -310,18 +310,18 @@ class TestZHIRCanonicalSequences:
         """OZ → ZHIR sequence should apply phase transformation."""
         G, node = create_nfr("test", epi=0.4, vf=1.0)
         G.graph["COLLECT_OPERATOR_METRICS"] = True
-        
+
         theta_before = G.nodes[node]["theta"]
         G.nodes[node]["epi_history"] = [0.35, 0.38, 0.40]
-        
+
         # Apply canonical destabilizer → mutation sequence
         run_sequence(G, node, [Dissonance(), Mutation()])
-        
+
         theta_after = G.nodes[node]["theta"]
-        
+
         # Phase must have changed
         assert theta_after != theta_before, "OZ → ZHIR must transform phase"
-        
+
         # Check metrics captured transformation
         metrics = G.graph["operator_metrics"]
         zhir_metrics = [m for m in metrics if m.get("glyph") == "ZHIR"]
@@ -332,22 +332,22 @@ class TestZHIRCanonicalSequences:
         """Full stabilize-destabilize-mutate-stabilize sequence."""
         G, node = create_nfr("test", epi=0.4, vf=1.0)
         G.graph["COLLECT_OPERATOR_METRICS"] = True
-        
+
         theta_initial = G.nodes[node]["theta"]
         G.nodes[node]["epi_history"] = [0.35, 0.38, 0.40]
-        
+
         # IL → OZ → ZHIR → IL (canonical mutation pattern)
         run_sequence(G, node, [Coherence(), Dissonance(), Mutation(), Coherence()])
-        
+
         theta_final = G.nodes[node]["theta"]
-        
+
         # Phase should have transformed during ZHIR
         assert theta_final != theta_initial, "ZHIR in full sequence must transform phase"
-        
+
         # Verify sequence was successful
         metrics = G.graph["operator_metrics"]
         operators = [m.get("operator") for m in metrics]
-        
+
         # Should have all four operators
         assert "Coherence" in operators
         assert "Dissonance" in operators

@@ -12,7 +12,6 @@ They act as a coherence boundary between user input and system command execution
 
 from __future__ import annotations
 
-import os
 import re
 import subprocess
 from pathlib import Path
@@ -103,8 +102,7 @@ def validate_git_ref(ref: str) -> str:
     # Additional security: prevent path traversal patterns
     if ".." in ref or ref.startswith("/") or ref.startswith("~"):
         raise CommandValidationError(
-            f"Invalid git reference: {ref!r}. "
-            "References cannot contain path traversal patterns."
+            f"Invalid git reference: {ref!r}. " "References cannot contain path traversal patterns."
         )
 
     return ref
@@ -182,9 +180,7 @@ def validate_path_safe(path: str | Path) -> Path:
 
     # Check for absolute paths in untrusted input
     if path_obj.is_absolute():
-        raise CommandValidationError(
-            f"Absolute paths not allowed in user input: {path_str!r}"
-        )
+        raise CommandValidationError(f"Absolute paths not allowed in user input: {path_str!r}")
 
     # Check for path traversal
     if ".." in path_obj.parts:
@@ -399,8 +395,7 @@ def resolve_safe_path(
         resolved.relative_to(base_path)
     except ValueError as e:
         raise PathTraversalError(
-            f"Path {path!r} escapes base directory {base_dir!r}. "
-            f"Resolved path: {resolved}"
+            f"Path {path!r} escapes base directory {base_dir!r}. " f"Resolved path: {resolved}"
         ) from e
 
     # Check existence if required

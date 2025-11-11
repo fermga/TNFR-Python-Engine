@@ -178,9 +178,7 @@ def test_seed_hash_evictions_recorded():
 def test_scoped_counter_cache_evictions():
     import tnfr.rng as rng_module
 
-    cache = ScopedCounterCache(
-        "test", max_entries=2, manager=rng_module._RNG_CACHE_MANAGER
-    )
+    cache = ScopedCounterCache("test", max_entries=2, manager=rng_module._RNG_CACHE_MANAGER)
     manager = rng_module._RNG_CACHE_MANAGER
     try:
         before = manager.get_metrics(cache._state_key)  # type: ignore[attr-defined]

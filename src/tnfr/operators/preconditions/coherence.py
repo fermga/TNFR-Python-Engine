@@ -270,9 +270,7 @@ def diagnose_coherence_readiness(G: TNFRGraph, node: Any) -> dict:
         recommendations.append("Apply AL (Emission) to activate node")
 
     if checks["epi_active"] and not checks["epi_not_saturated"]:
-        recommendations.append(
-            "Apply NUL (Contraction) to consolidate saturated structure"
-        )
+        recommendations.append("Apply NUL (Contraction) to consolidate saturated structure")
 
     if not checks["vf_active"]:
         recommendations.append("Apply AL (Emission) or NAV (Transition) to activate νf")
@@ -284,9 +282,7 @@ def diagnose_coherence_readiness(G: TNFRGraph, node: Any) -> dict:
         recommendations.append("⚠ High ΔNFR - consider OZ (Dissonance) → IL sequence")
 
     if not checks["has_connections"]:
-        recommendations.append(
-            "⚠ Isolated node - consider UM (Coupling) to enable phase locking"
-        )
+        recommendations.append("⚠ Isolated node - consider UM (Coupling) to enable phase locking")
 
     if all_critical_passed:
         recommendations.insert(0, "✓ Node ready for IL (Coherence)")

@@ -74,9 +74,7 @@ def test_dcoh_orthogonal_states_follow_operator_overlap(
     weighted_overlap = np.vdot(psi1, hermitian_operator.matrix @ psi2)
     expect1 = hermitian_operator.expectation(psi1)
     expect2 = hermitian_operator.expectation(psi2)
-    expected_dcoh = np.arccos(
-        np.sqrt((np.abs(weighted_overlap) ** 2) / (expect1 * expect2))
-    )
+    expected_dcoh = np.arccos(np.sqrt((np.abs(weighted_overlap) ** 2) / (expect1 * expect2)))
 
     result = dcoh(psi1, psi2, hermitian_operator)
 
@@ -93,9 +91,7 @@ def test_dcoh_satisfies_triangle_inequality(
     psi2 = (psi1 + psi3) / np.sqrt(2.0)
 
     direct = dcoh(psi1, psi3, hermitian_operator)
-    via_intermediate = dcoh(psi1, psi2, hermitian_operator) + dcoh(
-        psi2, psi3, hermitian_operator
-    )
+    via_intermediate = dcoh(psi1, psi2, hermitian_operator) + dcoh(psi2, psi3, hermitian_operator)
 
     assert direct <= via_intermediate + 1e-12
 
@@ -108,9 +104,7 @@ def test_dcoh_rejects_zero_expectation(
     psi, _ = orthonormal_basis
     singular_operator = CoherenceOperator([[0.0, 0.0], [0.0, 1.0]])
 
-    with pytest.raises(
-        ValueError, match="Coherence expectation must remain strictly positive"
-    ):
+    with pytest.raises(ValueError, match="Coherence expectation must remain strictly positive"):
         dcoh(psi, psi, singular_operator)
 
 
@@ -122,9 +116,7 @@ def test_dcoh_respects_tolerance_thresholds(
     psi1, psi2 = orthonormal_basis
     near_null_operator = CoherenceOperator([1e-12, 1.0])
 
-    with pytest.raises(
-        ValueError, match="Coherence expectation must remain strictly positive"
-    ):
+    with pytest.raises(ValueError, match="Coherence expectation must remain strictly positive"):
         dcoh(psi1, psi2, near_null_operator)
 
     result = dcoh(psi1, psi2, near_null_operator, atol=1e-13)

@@ -94,10 +94,7 @@ class TestZHIRThresholdVerification:
             validate_mutation(G, node)
 
         # Verify warning about insufficient history
-        assert any(
-            "without sufficient EPI history" in record.message
-            for record in caplog.records
-        )
+        assert any("without sufficient EPI history" in record.message for record in caplog.records)
 
         # Verify unknown flag set
         assert G.nodes[node].get("_zhir_threshold_unknown") is True

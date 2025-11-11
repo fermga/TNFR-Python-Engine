@@ -30,9 +30,7 @@ class TestSequenceSemanticValidator:
         validator = SequenceSemanticValidator()
         violations = validator.validate_semantic_sequence(sequence)
 
-        warning_violations = [
-            v for v in violations if v.severity == InvariantSeverity.WARNING
-        ]
+        warning_violations = [v for v in violations if v.severity == InvariantSeverity.WARNING]
         assert any("Mutation" in v.description for v in warning_violations)
         assert any("stabilization" in v.description for v in warning_violations)
 
@@ -60,13 +58,8 @@ class TestSequenceSemanticValidator:
         validator = SequenceSemanticValidator()
         violations = validator.validate_semantic_sequence(sequence)
 
-        error_violations = [
-            v for v in violations if v.severity == InvariantSeverity.ERROR
-        ]
-        assert any(
-            "Excessive consecutive dissonance" in v.description
-            for v in error_violations
-        )
+        error_violations = [v for v in violations if v.severity == InvariantSeverity.ERROR]
+        assert any("Excessive consecutive dissonance" in v.description for v in error_violations)
 
     def test_two_dissonance_allowed(self):
         """Test that two consecutive dissonances are allowed."""
@@ -91,9 +84,7 @@ class TestSequenceSemanticValidator:
         validator = SequenceSemanticValidator()
         violations = validator.validate_semantic_sequence(sequence)
 
-        error_violations = [
-            v for v in violations if v.severity == InvariantSeverity.ERROR
-        ]
+        error_violations = [v for v in violations if v.severity == InvariantSeverity.ERROR]
         assert any("Transition" in v.description for v in error_violations)
         assert any("perturbation" in v.description for v in error_violations)
 
@@ -138,9 +129,7 @@ class TestSequenceSemanticValidator:
         validator = SequenceSemanticValidator()
         violations = validator.validate_semantic_sequence(sequence)
 
-        warning_violations = [
-            v for v in violations if v.severity == InvariantSeverity.WARNING
-        ]
+        warning_violations = [v for v in violations if v.severity == InvariantSeverity.WARNING]
         assert any("Resonance" in v.description for v in warning_violations)
 
     def test_resonance_with_coupling_allowed(self):
@@ -203,9 +192,7 @@ class TestSequenceSemanticValidator:
         assert len(violations) >= 2
 
         # Should have excessive dissonance error
-        assert any(
-            "Excessive consecutive dissonance" in v.description for v in violations
-        )
+        assert any("Excessive consecutive dissonance" in v.description for v in violations)
 
         # Should have mutation without stabilization warning
         # (transition doesn't count as stabilization)

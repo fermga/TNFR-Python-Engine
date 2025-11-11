@@ -7,20 +7,18 @@ learning cycles. All functionality reuses existing TNFR infrastructure.
 
 from __future__ import annotations
 
-from typing import Any, Sequence
+from typing import Any
 
 from ..alias import get_attr
 from ..constants.aliases import ALIAS_EPI, ALIAS_DNFR
 from ..operators.definitions import (
     Coherence,
-    Contraction,
     Dissonance,
     Emission,
     Mutation,
     Operator,
     Reception,
     Recursivity,
-    Resonance,
     SelfOrganization,
     Silence,
     Transition,

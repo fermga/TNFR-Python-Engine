@@ -53,12 +53,10 @@ def test_cache_manager_publish_metrics_dispatches_and_handles_errors(
 
     assert received
     assert all(
-        isinstance(name, str) and isinstance(stats, CacheStatistics)
-        for name, stats in received
+        isinstance(name, str) and isinstance(stats, CacheStatistics) for name, stats in received
     )
     assert any(
-        "Cache metrics publisher failed for" in record.getMessage()
-        for record in caplog.records
+        "Cache metrics publisher failed for" in record.getMessage() for record in caplog.records
     )
 
     explicit: list[tuple[str, CacheStatistics]] = []
@@ -86,9 +84,7 @@ def test_cache_manager_logs_metrics(caplog: pytest.LogCaptureFixture):
     aggregate = manager.aggregate_metrics()
     assert len(caplog.records) == 1
     message = caplog.records[0].getMessage()
-    assert message == (
-        "cache=primary hits=5 misses=4 evictions=2 timings=1 total_time=0.500000"
-    )
+    assert message == ("cache=primary hits=5 misses=4 evictions=2 timings=1 total_time=0.500000")
     assert aggregate.hits == 5
     assert aggregate.misses == 4
     assert pytest.approx(aggregate.total_time, rel=0, abs=1e-9) == 0.5

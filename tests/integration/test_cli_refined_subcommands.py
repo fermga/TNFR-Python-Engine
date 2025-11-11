@@ -200,11 +200,7 @@ class TestEpiValidateSubcommand:
         assert rc == 0
 
         captured = capsys.readouterr()
-        assert (
-            "Coherence" in captured.out
-            or "[PASS]" in captured.out
-            or "[SKIP]" in captured.out
-        )
+        assert "Coherence" in captured.out or "[PASS]" in captured.out or "[SKIP]" in captured.out
 
     def test_epi_validate_checks_frequency(self, capsys):
         """Test that epi.validate reports frequency checks."""
@@ -342,12 +338,8 @@ class TestYAMLPresets:
 
             metadata = data["metadata"]
             assert "name" in metadata, f"{yaml_file.name} metadata should have name"
-            assert (
-                "description" in metadata
-            ), f"{yaml_file.name} metadata should have description"
-            assert (
-                "operators" in metadata
-            ), f"{yaml_file.name} metadata should have operators"
+            assert "description" in metadata, f"{yaml_file.name} metadata should have description"
+            assert "operators" in metadata, f"{yaml_file.name} metadata should have operators"
 
 
 class TestCLIStdoutStderrCapture:

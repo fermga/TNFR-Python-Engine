@@ -51,9 +51,7 @@ class TestValidationConfig:
             )
 
             assert validation_config.validate_invariants == (not original_invariants)
-            assert validation_config.enable_semantic_validation == (
-                not original_semantic
-            )
+            assert validation_config.enable_semantic_validation == (not original_semantic)
         finally:
             # Restore original values
             configure_validation(

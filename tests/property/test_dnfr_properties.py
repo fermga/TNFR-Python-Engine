@@ -47,12 +47,8 @@ def _expected_dnfr_mixed(graph, node) -> float:
         return 0.0
     epi_val = float(graph.nodes[node][EPI_PRIMARY])
     vf_val = float(graph.nodes[node][VF_PRIMARY])
-    epi_avg = sum(float(graph.nodes[neigh][EPI_PRIMARY]) for neigh in neighbors) / len(
-        neighbors
-    )
-    vf_avg = sum(float(graph.nodes[neigh][VF_PRIMARY]) for neigh in neighbors) / len(
-        neighbors
-    )
+    epi_avg = sum(float(graph.nodes[neigh][EPI_PRIMARY]) for neigh in neighbors) / len(neighbors)
+    vf_avg = sum(float(graph.nodes[neigh][VF_PRIMARY]) for neigh in neighbors) / len(neighbors)
     return 0.5 * (epi_avg - epi_val) + 0.5 * (vf_avg - vf_val)
 
 
@@ -147,15 +143,9 @@ def _apply_noise(
     noise_pairs: Iterable[tuple[float, float]],
 ):
     graph = copy.deepcopy(base_graph)
-    for (node, data), (noise_dnfr, noise_depi) in zip(
-        graph.nodes(data=True), noise_pairs
-    ):
-        data[DNFR_PRIMARY] = (
-            float(data.get(DNFR_PRIMARY, 0.0)) + noise_scale * noise_dnfr
-        )
-        data[dEPI_PRIMARY] = (
-            float(data.get(dEPI_PRIMARY, 0.0)) + noise_scale * noise_depi
-        )
+    for (node, data), (noise_dnfr, noise_depi) in zip(graph.nodes(data=True), noise_pairs):
+        data[DNFR_PRIMARY] = float(data.get(DNFR_PRIMARY, 0.0)) + noise_scale * noise_dnfr
+        data[dEPI_PRIMARY] = float(data.get(dEPI_PRIMARY, 0.0)) + noise_scale * noise_depi
     return graph
 
 
@@ -171,12 +161,8 @@ def test_compute_coherence_decreases_with_noise(data, graph) -> None:
 
     noise_pair = data.draw(
         st.tuples(
-            st.floats(
-                min_value=0.0, max_value=0.5, allow_nan=False, allow_infinity=False
-            ),
-            st.floats(
-                min_value=0.0, max_value=0.5, allow_nan=False, allow_infinity=False
-            ),
+            st.floats(min_value=0.0, max_value=0.5, allow_nan=False, allow_infinity=False),
+            st.floats(min_value=0.0, max_value=0.5, allow_nan=False, allow_infinity=False),
         ),
         label="noise_pair",
     )
@@ -208,12 +194,8 @@ def test_compute_coherence_decreases_with_noise(data, graph) -> None:
     small_graph = _apply_noise(graph, small_scale, noise_vectors)
     large_graph = _apply_noise(graph, large_scale, noise_vectors)
 
-    small_coherence, small_dnfr, small_depi = compute_coherence(
-        small_graph, return_means=True
-    )
-    large_coherence, large_dnfr, large_depi = compute_coherence(
-        large_graph, return_means=True
-    )
+    small_coherence, small_dnfr, small_depi = compute_coherence(small_graph, return_means=True)
+    large_coherence, large_dnfr, large_depi = compute_coherence(large_graph, return_means=True)
 
     tol = 1e-9
     assert small_dnfr + tol >= base_dnfr

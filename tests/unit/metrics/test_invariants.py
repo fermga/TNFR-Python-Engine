@@ -86,9 +86,7 @@ def test_remesh_cooldown_if_present(G_small):
     snap = {n: get_attr(G_small.nodes[n], ALIAS_EPI, 0.0) for n in G_small.nodes()}
     from collections import deque
 
-    G_small.graph["_epi_hist"] = deque(
-        [snap.copy() for _ in range(tau_g + 1)], maxlen=tau_g + 1
-    )
+    G_small.graph["_epi_hist"] = deque([snap.copy() for _ in range(tau_g + 1)], maxlen=tau_g + 1)
 
     apply_remesh_if_globally_stable(G_small)
     events = list(ensure_history(G_small).get("remesh_events", []))

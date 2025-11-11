@@ -133,9 +133,7 @@ class CoreDefaults:
     SELECTOR_THRESHOLDS: dict[str, float] = field(
         default_factory=lambda: dict(SELECTOR_THRESHOLD_DEFAULTS)
     )
-    GAMMA: dict[str, Any] = field(
-        default_factory=lambda: {"type": "none", "beta": 0.0, "R0": 0.0}
-    )
+    GAMMA: dict[str, Any] = field(default_factory=lambda: {"type": "none", "beta": 0.0, "R0": 0.0})
     CALLBACKS_STRICT: bool = False
     VALIDATORS_STRICT: bool = False
     PROGRAM_TRACE_MAXLEN: int = 50
@@ -164,7 +162,9 @@ class CoreDefaults:
 
     # VAL (Expansion) precondition thresholds
     VAL_MAX_VF: float = 10.0  # Maximum structural frequency threshold
-    VAL_MIN_DNFR: float = 1e-6  # Minimum positive ΔNFR for coherent expansion (very low to minimize breaking changes)
+    VAL_MIN_DNFR: float = (
+        1e-6  # Minimum positive ΔNFR for coherent expansion (very low to minimize breaking changes)
+    )
     VAL_MIN_EPI: float = 0.2  # Minimum EPI for coherent expansion base
     VAL_CHECK_NETWORK_CAPACITY: bool = False  # Optional network capacity validation
     VAL_MAX_NETWORK_SIZE: int = 1000  # Maximum network size if capacity checking enabled

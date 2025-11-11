@@ -9,13 +9,11 @@ structural transformation and adaptation.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from ..types import NodeId, TNFRGraph
 
-from ..alias import get_attr
-from ..constants.aliases import ALIAS_DNFR
 
 __all__ = [
     "StructuralMetabolism",

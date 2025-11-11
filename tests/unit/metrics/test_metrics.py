@@ -185,9 +185,7 @@ def test_track_stability_parallel_fallback(monkeypatch, graph_canon):
     resolve_calls: list[tuple[int | None, int, dict[str, object]]] = []
     original_resolve = coherence_module.resolve_chunk_size
 
-    def tracking_resolve(
-        chunk_size: int | None, total_items: int, **kwargs: object
-    ) -> int:
+    def tracking_resolve(chunk_size: int | None, total_items: int, **kwargs: object) -> int:
         resolve_calls.append((chunk_size, total_items, dict(kwargs)))
         return original_resolve(chunk_size, total_items, **kwargs)
 
@@ -386,8 +384,7 @@ def test_metrics_unknown_verbosity_warns_and_defaults(graph_canon, caplog):
         _metrics_step(G)
 
     assert any(
-        "Unknown METRICS verbosity 'unexpected'" in message
-        and METRICS_VERBOSITY_DEFAULT in message
+        "Unknown METRICS verbosity 'unexpected'" in message and METRICS_VERBOSITY_DEFAULT in message
         for message in caplog.messages
     )
 
@@ -551,9 +548,7 @@ def test_aggregate_si_python_parallel(monkeypatch, graph_canon):
     resolve_calls: list[tuple[int | None, int, dict[str, object]]] = []
     original_resolve = coherence_module.resolve_chunk_size
 
-    def tracking_resolve(
-        chunk_size: int | None, total_items: int, **kwargs: object
-    ) -> int:
+    def tracking_resolve(chunk_size: int | None, total_items: int, **kwargs: object) -> int:
         resolve_calls.append((chunk_size, total_items, dict(kwargs)))
         return original_resolve(chunk_size, total_items, **kwargs)
 
@@ -573,9 +568,7 @@ def test_aggregate_si_python_parallel(monkeypatch, graph_canon):
     assert hist["Si_lo_frac"][0] == pytest.approx(1 / 3)
 
     expected_total = G.number_of_nodes()
-    assert resolve_calls == [
-        (math.ceil(expected_total / 2), expected_total, {"minimum": 1})
-    ]
+    assert resolve_calls == [(math.ceil(expected_total / 2), expected_total, {"minimum": 1})]
 
 
 def test_compute_advanced_metrics_populates_history(graph_canon):
@@ -720,15 +713,9 @@ def test_build_metrics_summary_reuses_metrics_helpers(monkeypatch):
 def test_build_metrics_summary_handles_empty_latency(monkeypatch):
     G = object()
 
-    monkeypatch.setattr(
-        "tnfr.metrics.reporting.Tg_global", lambda *_args, **_kwargs: {}
-    )
-    monkeypatch.setattr(
-        "tnfr.metrics.reporting.latency_series", lambda *_: {"value": []}
-    )
-    monkeypatch.setattr(
-        "tnfr.metrics.reporting.glyphogram_series", lambda *_: {"t": []}
-    )
+    monkeypatch.setattr("tnfr.metrics.reporting.Tg_global", lambda *_args, **_kwargs: {})
+    monkeypatch.setattr("tnfr.metrics.reporting.latency_series", lambda *_: {"value": []})
+    monkeypatch.setattr("tnfr.metrics.reporting.glyphogram_series", lambda *_: {"t": []})
     monkeypatch.setattr("tnfr.metrics.reporting.sigma_rose", lambda *_: {})
 
     summary, has_latency = build_metrics_summary(G)
@@ -740,12 +727,8 @@ def test_build_metrics_summary_handles_empty_latency(monkeypatch):
 def test_build_metrics_summary_accepts_unbounded_limit(monkeypatch):
     G = object()
 
-    monkeypatch.setattr(
-        "tnfr.metrics.reporting.Tg_global", lambda *_args, **_kwargs: {}
-    )
-    monkeypatch.setattr(
-        "tnfr.metrics.reporting.latency_series", lambda *_: {"value": [1.0]}
-    )
+    monkeypatch.setattr("tnfr.metrics.reporting.Tg_global", lambda *_args, **_kwargs: {})
+    monkeypatch.setattr("tnfr.metrics.reporting.latency_series", lambda *_: {"value": [1.0]})
     monkeypatch.setattr(
         "tnfr.metrics.reporting.glyphogram_series",
         lambda *_: {"t": list(range(12)), "AL": list(range(12))},
@@ -842,9 +825,7 @@ def test_advanced_metrics_vectorized_path(monkeypatch, graph_canon):
         def __init__(
             self, *args, **kwargs
         ):  # noqa: D401 - signature enforced by ProcessPoolExecutor
-            raise AssertionError(
-                "ProcessPoolExecutor should not be used with NumPy available"
-            )
+            raise AssertionError("ProcessPoolExecutor should not be used with NumPy available")
 
     monkeypatch.setattr("tnfr.metrics.glyph_timing.ProcessPoolExecutor", FailExecutor)
 
@@ -915,9 +896,7 @@ def test_advanced_metrics_process_pool_fallback(monkeypatch, graph_canon):
     resolve_calls: list[tuple[int | None, int, dict[str, object]]] = []
     original_resolve = glyph_timing_module.resolve_chunk_size
 
-    def tracking_resolve(
-        chunk_size: int | None, total_items: int, **kwargs: object
-    ) -> int:
+    def tracking_resolve(chunk_size: int | None, total_items: int, **kwargs: object) -> int:
         resolve_calls.append((chunk_size, total_items, dict(kwargs)))
         return original_resolve(chunk_size, total_items, **kwargs)
 

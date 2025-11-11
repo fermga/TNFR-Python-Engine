@@ -42,7 +42,7 @@ from tnfr.operators.grammar import (
 
 class TestR6StructuralConvergence:
     """Test R6 respects R3 endings - no additional convergence validation.
-    
+
     R6 simplified: Only validates controlled mutation (IL → ZHIR).
     Does NOT reject OZ endings or validate balance.
     All R3-valid endings (SHA, NAV, REMESH, OZ) are accepted by R6.
@@ -68,7 +68,7 @@ class TestR6StructuralConvergence:
 
     def test_valid_ending_with_dissonance(self):
         """Sequence ending with dissonance is valid (therapeutic/activation).
-        
+
         OZ endings are always destabilizing (increase ΔNFR at end) but valid
         for therapeutic tension, system activation, multi-sequence chains.
         R2 ensures coherence base exists (IL or THOL required).
@@ -80,7 +80,7 @@ class TestR6StructuralConvergence:
 
 class TestR6ControlledMutation:
     """Test R6 controlled mutation validation (IL → ZHIR).
-    
+
     R6 simplified: ONLY validates controlled mutation.
     Does NOT validate destabilizer/stabilizer balance.
     """
@@ -90,10 +90,10 @@ class TestR6ControlledMutation:
         sequence = [
             EMISSION,
             RECEPTION,
-            COHERENCE,      # Coherent base
-            DISSONANCE,     # Destabilizer (R4 requirement for ZHIR)
-            MUTATION,       # ZHIR after IL (controlled)
-            COHERENCE,      # Stabilize after transformation
+            COHERENCE,  # Coherent base
+            DISSONANCE,  # Destabilizer (R4 requirement for ZHIR)
+            MUTATION,  # ZHIR after IL (controlled)
+            COHERENCE,  # Stabilize after transformation
             SILENCE,
         ]
         result = validate_sequence(sequence)
@@ -101,14 +101,14 @@ class TestR6ControlledMutation:
 
     def test_invalid_mutation_without_coherence(self):
         """Mutation without any coherence base fails.
-        
+
         ZHIR requires prior IL for stable transformation foundation.
         """
         sequence = [
             EMISSION,
             RECEPTION,
-            DISSONANCE,     # Destabilizer for ZHIR (R4)
-            MUTATION,       # ZHIR without any IL
+            DISSONANCE,  # Destabilizer for ZHIR (R4)
+            MUTATION,  # ZHIR without any IL
             SILENCE,
         ]
         result = validate_sequence(sequence)
@@ -119,15 +119,15 @@ class TestR6ControlledMutation:
 
     def test_invalid_mutation_before_coherence(self):
         """Mutation before coherence fails (ungrounded transformation).
-        
+
         IL must come BEFORE ZHIR to provide stable base.
         """
         sequence = [
             EMISSION,
             RECEPTION,
-            DISSONANCE,     # Destabilizer for ZHIR (R4)
-            MUTATION,       # ZHIR before IL
-            COHERENCE,      # IL after ZHIR (wrong order)
+            DISSONANCE,  # Destabilizer for ZHIR (R4)
+            MUTATION,  # ZHIR before IL
+            COHERENCE,  # IL after ZHIR (wrong order)
             SILENCE,
         ]
         result = validate_sequence(sequence)
@@ -139,7 +139,7 @@ class TestR6ControlledMutation:
 
 class TestR6FrequencyBalance:
     """Test R6 frequency balance calculation (informational).
-    
+
     Frequency balance is currently computed but not enforced as error.
     These tests verify the calculation works correctly for future use.
     """
@@ -198,7 +198,7 @@ class TestR6EdgeCases:
             COHERENCE,
             DISSONANCE,  # Required for THOL (R4)
             SELF_ORGANIZATION,
-            SILENCE,     # THOL closure operator
+            SILENCE,  # THOL closure operator
         ]
         result = validate_sequence(sequence)
         assert result.passed
@@ -226,10 +226,10 @@ class TestR6ErrorMessages:
             RECEPTION,
             COHERENCE,
             DISSONANCE,
-            TRANSITION,     # Destabilizer 2
-            EXPANSION,      # Destabilizer 3
+            TRANSITION,  # Destabilizer 2
+            EXPANSION,  # Destabilizer 3
             RESONANCE,
-            TRANSITION,     # NAV ending (needs balance)
+            TRANSITION,  # NAV ending (needs balance)
         ]
         result = validate_sequence(sequence)
         assert not result.passed
@@ -265,12 +265,12 @@ class TestR6Integration:
 
     def test_r6_complements_r3_end_validation(self):
         """R6 adds semantic validation on top of R3 syntactic validation.
-        
+
         R3 allows VALID_END_OPERATORS: SHA, NAV, REMESH, OZ
         R6 validates two aspects:
         1. Ending convergence/closure: Rejects OZ (divergent)
         2. Operational closure balance: Validates destabilizers ≤ stabilizers
-        
+
         NAV is a destabilizer, so sequences ending with NAV must have balance.
         """
         # OZ (dissonance) is valid per R3 but divergent per R6
@@ -280,7 +280,7 @@ class TestR6Integration:
         # Should fail R6 (divergent ending)
         assert "R6" in result.message
         assert "divergent" in result.message.lower()
-        
+
         # NAV is valid per R3 but requires balance per R6
         # This sequence is balanced: EN(1 if has context, but no prior IL), NAV(1) vs IL(1), RA(1)
         # Actually EN at pos 1 doesn't have prior coherence for destabilizer role
@@ -297,9 +297,9 @@ class TestR6Integration:
             RECEPTION,
             COHERENCE,
             DISSONANCE,  # Destabilizer for ZHIR (R4)
-            MUTATION,    # ZHIR requires recent destabilizer (R4)
-            COHERENCE,   # Stabilizer for closure (R6)
-            SILENCE,     # Convergent ending (R6)
+            MUTATION,  # ZHIR requires recent destabilizer (R4)
+            COHERENCE,  # Stabilizer for closure (R6)
+            SILENCE,  # Convergent ending (R6)
         ]
         result = validate_sequence(sequence)
         assert result.passed
@@ -308,11 +308,11 @@ class TestR6Integration:
         """R6 operational closure works with R5 frequency validation."""
         # Sequence with valid frequency transitions (R5) and closure (R6)
         sequence = [
-            EMISSION,     # high
-            RECEPTION,    # medium (high → medium: valid)
-            COHERENCE,    # medium (medium → medium: valid)
-            RESONANCE,    # high (medium → high: valid)
-            SILENCE,      # zero (high → zero: valid per R5)
+            EMISSION,  # high
+            RECEPTION,  # medium (high → medium: valid)
+            COHERENCE,  # medium (medium → medium: valid)
+            RESONANCE,  # high (medium → high: valid)
+            SILENCE,  # zero (high → zero: valid per R5)
         ]
         result = validate_sequence(sequence)
         assert result.passed

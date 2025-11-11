@@ -41,9 +41,7 @@ class JitterCache:
     ) -> None:
         self._manager = manager or build_cache_manager()
         if not self._manager.has_override("scoped_counter:jitter"):
-            self._manager.configure(
-                overrides={"scoped_counter:jitter": int(max_entries)}
-            )
+            self._manager.configure(overrides={"scoped_counter:jitter": int(max_entries)})
         self._sequence = ScopedCounterCache(
             "jitter",
             max_entries=None,

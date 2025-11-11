@@ -41,35 +41,31 @@ def build_valid_sequence_strategy():
     """Build a strategy for generating likely-valid sequences."""
     # Start with emission or recursivity
     starts = st.sampled_from(["emission", "recursivity"])
-    
+
     # Middle can be various operators
-    middles = st.lists(
-        st.sampled_from(ALL_OPERATORS),
-        min_size=0,
-        max_size=10
-    )
-    
+    middles = st.lists(st.sampled_from(ALL_OPERATORS), min_size=0, max_size=10)
+
     # Must end with valid ending
     ends = st.sampled_from(VALID_ENDINGS)
-    
+
     @st.composite
     def sequence_strategy(draw):
         start = draw(starts)
         middle = draw(middles)
         end = draw(ends)
-        
+
         # Build sequence: start + middle + end
         seq = [start] + middle + [end]
-        
+
         # Try to ensure reception → coherence if we have reception
         # This is a soft requirement to increase valid sequence rate
         if "reception" in seq and "coherence" not in seq:
             # Insert coherence after reception
             idx = seq.index("reception")
             seq.insert(idx + 1, "coherence")
-        
+
         return seq
-    
+
     return sequence_strategy()
 
 
@@ -84,7 +80,7 @@ class TestGrammarInvariants:
         result = validate_sequence(sequence)
         if not result.passed:
             return  # Skip invalid sequences
-        
+
         analyzer = SequenceHealthAnalyzer()
         health = analyzer.analyze_health(sequence)
 
@@ -106,7 +102,7 @@ class TestGrammarInvariants:
         result = validate_sequence(sequence)
         if not result.passed:
             return
-        
+
         detector = AdvancedPatternDetector()
 
         # Detect pattern multiple times
@@ -125,7 +121,7 @@ class TestGrammarInvariants:
         result = validate_sequence(sequence)
         if not result.passed:
             return
-        
+
         analyzer = SequenceHealthAnalyzer()
 
         # Analyze multiple times
@@ -146,7 +142,7 @@ class TestGrammarInvariants:
         result = validate_sequence(sequence)
         if not result.passed:
             return
-        
+
         analyzer = SequenceHealthAnalyzer()
         health = analyzer.analyze_health(sequence)
 
@@ -161,30 +157,28 @@ class TestGrammarInvariants:
         result = validate_sequence(sequence)
         if not result.passed:
             return
-        
+
         # Find regenerators in sequence
         regenerators = ["transition", "recursivity", "silence"]
-        regenerator_indices = [
-            i for i, op in enumerate(sequence) if op in regenerators
-        ]
-        
+        regenerator_indices = [i for i, op in enumerate(sequence) if op in regenerators]
+
         if not regenerator_indices:
             return  # Skip if no regenerators
-        
+
         cycle_detector = CycleDetector()
-        
+
         for idx in regenerator_indices:
             analysis = cycle_detector.analyze_potential_cycle(sequence, idx)
-            
+
             # Health score should be in valid range
             assert 0.0 <= analysis.health_score <= 1.0
-            
+
             # Balance score should be in valid range
             assert 0.0 <= analysis.balance_score <= 1.0
-            
+
             # Diversity score should be in valid range
             assert 0.0 <= analysis.diversity_score <= 1.0
-            
+
             # Coherence score should be in valid range
             assert 0.0 <= analysis.coherence_score <= 1.0
 
@@ -213,7 +207,7 @@ class TestGrammarInvariants:
         result = validate_sequence(sequence)
         if not result.passed:
             return
-        
+
         detector = AdvancedPatternDetector()
         composition = detector.analyze_sequence_composition(sequence)
 
@@ -246,7 +240,7 @@ class TestGrammarInvariants:
     def test_health_analyzer_never_crashes(self, sequence):
         """Health analyzer should handle any sequence without crashing."""
         analyzer = SequenceHealthAnalyzer()
-        
+
         # Should complete without exception (even for invalid sequences)
         try:
             health = analyzer.analyze_health(sequence)
@@ -261,13 +255,13 @@ class TestGrammarInvariants:
     def test_pattern_detector_never_crashes(self, sequence):
         """Pattern detector should handle any sequence without crashing."""
         detector = AdvancedPatternDetector()
-        
+
         # Should complete without exception
         try:
             pattern = detector.detect_pattern(sequence)
             # If it completes, should return a valid StructuralPattern
             assert pattern is not None
-            assert hasattr(pattern, 'value')
+            assert hasattr(pattern, "value")
         except Exception as e:
             pytest.fail(f"Pattern detector crashed on sequence {sequence}: {e}")
 
@@ -279,7 +273,7 @@ class TestGrammarInvariants:
         result = validate_sequence(sequence)
         if not result.passed:
             return
-        
+
         analyzer = SequenceHealthAnalyzer()
         health = analyzer.analyze_health(sequence)
 

@@ -11,12 +11,8 @@ _language_check = importlib.util.module_from_spec(_spec)
 sys.modules.setdefault("tnfr_language_check", _language_check)
 _spec.loader.exec_module(_language_check)
 
-DATA_MODULE_PATH = (
-    Path(__file__).resolve().parents[3] / "scripts" / "language_policy_data.py"
-)
-_data_spec = importlib.util.spec_from_file_location(
-    "tnfr_language_policy_data", DATA_MODULE_PATH
-)
+DATA_MODULE_PATH = Path(__file__).resolve().parents[3] / "scripts" / "language_policy_data.py"
+_data_spec = importlib.util.spec_from_file_location("tnfr_language_policy_data", DATA_MODULE_PATH)
 assert _data_spec and _data_spec.loader
 _language_policy_data = importlib.util.module_from_spec(_data_spec)
 sys.modules.setdefault("tnfr_language_policy_data", _language_policy_data)
@@ -37,12 +33,9 @@ _RECENT_KEYWORD_CODES = (
 
 def test_default_policy_contains_recent_tokens() -> None:
     expected = {
-        token.lower()
-        for token in _language_policy_data.decode_keyword_codes(_RECENT_KEYWORD_CODES)
+        token.lower() for token in _language_policy_data.decode_keyword_codes(_RECENT_KEYWORD_CODES)
     }
-    policy_tokens = {
-        word.lower() for word in _language_check.DEFAULT_POLICY.disallowed_keywords
-    }
+    policy_tokens = {word.lower() for word in _language_check.DEFAULT_POLICY.disallowed_keywords}
     assert expected.issubset(policy_tokens)
 
 

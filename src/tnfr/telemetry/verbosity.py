@@ -21,9 +21,7 @@ class TelemetryVerbosity(str, Enum):
     DEBUG = "debug"
 
 
-TELEMETRY_VERBOSITY_LEVELS: tuple[str, ...] = tuple(
-    level.value for level in TelemetryVerbosity
-)
+TELEMETRY_VERBOSITY_LEVELS: tuple[str, ...] = tuple(level.value for level in TelemetryVerbosity)
 """Ordered tuple of canonical telemetry verbosity identifiers."""
 
 TELEMETRY_VERBOSITY_DEFAULT: str = TelemetryVerbosity.DEBUG.value

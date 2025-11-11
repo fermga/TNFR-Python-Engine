@@ -61,9 +61,16 @@ Physical Intuition → Mathematical Formalization → Code Implementation → Te
 - **U4: BIFURCATION DYNAMICS**
   - U4a: Triggers need handlers
   - U4b: Transformers need context
+- **U5: MULTI-SCALE COHERENCE** (added 2025-11-10)
+  - Hierarchical coherence conservation
+  - C_parent ≥ α·ΣC_child inequality
+- **U6: STRUCTURAL POTENTIAL CONFINEMENT** (promoted 2025-11-11)
+  - Φ_s field: Σ ΔNFR_j / d(i,j)²
+  - Δ Φ_s < 2.0 escape threshold
+  - 2,400+ experiments validation
 - **Each constraint includes:** Intuition → Derivation → Implementation → Tests
 - **Audience:** Developers implementing validation, advanced contributors
-- **Reading time:** 45-60 minutes
+- **Reading time:** 60-75 minutes
 
 #### **Level 3: Canonical Operators**
 
@@ -227,7 +234,7 @@ Physical Intuition → Mathematical Formalization → Code Implementation → Te
 
 1. **[04-VALID-SEQUENCES.md](04-VALID-SEQUENCES.md)** - Patterns and anti-patterns
 2. **[02-CANONICAL-CONSTRAINTS.md](02-CANONICAL-CONSTRAINTS.md)** - U1-U5 constraints
-3. **[examples/](examples/)** - Run intermediate and advanced examples
+3. **[examples/README.md](examples/README.md)** - Run intermediate and advanced examples
 4. **[08-QUICK-REFERENCE.md](08-QUICK-REFERENCE.md)** - Quick lookup
 
 **Total time:** ~90 minutes
@@ -250,21 +257,21 @@ Physical Intuition → Mathematical Formalization → Code Implementation → Te
 
 ### Main Repository Documentation
 
-- **[../../README.md](../../README.md)** - TNFR project overview
-- **[../../UNIFIED_GRAMMAR_RULES.md](../../UNIFIED_GRAMMAR_RULES.md)** - Complete formal derivations (original source)
-- **[../../AGENTS.md](../../AGENTS.md)** - Canonical invariants and contracts
-- **[../../GLOSSARY.md](../../GLOSSARY.md)** - General project glossary
-- **[../../TNFR.pdf](../../TNFR.pdf)** - Complete theoretical foundations
+- **Project Overview**: https://github.com/fermga/TNFR-Python-Engine/blob/main/README.md
+- **Unified Grammar Rules**: https://github.com/fermga/TNFR-Python-Engine/blob/main/UNIFIED_GRAMMAR_RULES.md
+- **Canonical Invariants (AGENTS.md)**: https://github.com/fermga/TNFR-Python-Engine/blob/main/AGENTS.md
+- **Project Glossary**: https://github.com/fermga/TNFR-Python-Engine/blob/main/GLOSSARY.md
+- **Theory Reference**: [TNFR_FORCES_EMERGENCE.md](../TNFR_FORCES_EMERGENCE.md)
 
 ### Implementation
 
-- **[../../src/tnfr/operators/grammar.py](../../src/tnfr/operators/grammar.py)** - Canonical implementation
-- **[../../src/tnfr/operators/definitions.py](../../src/tnfr/operators/definitions.py)** - Operator definitions
-- **[../../tests/unit/operators/test_unified_grammar.py](../../tests/unit/operators/test_unified_grammar.py)** - Test suite
+- **Canonical implementation**: https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/operators/grammar.py
+- **Operator definitions**: https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/operators/definitions.py
+- **Test suite**: https://github.com/fermga/TNFR-Python-Engine/blob/main/tests/unit/operators/test_unified_grammar.py
 
 ### Documentation Sync Tool
 
-- **[../../tools/sync_documentation.py](../../tools/sync_documentation.py)** - Centralized sync tool
+- **Sync tool**: https://github.com/fermga/TNFR-Python-Engine/blob/main/tools/sync_documentation.py
 - **[CODE_DOCS_CROSSREF.md](CODE_DOCS_CROSSREF.md)** - Bidirectional cross-references
 
 **Run sync check:**
@@ -410,7 +417,7 @@ This documentation exists to make that traceability **explicit, navigable, and m
 - Then consult specific document for your level
 
 **Want to contribute?**
-- Read [../../CONTRIBUTING.md](../../CONTRIBUTING.md)
+- Read [CONTRIBUTING.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/CONTRIBUTING.md)
 - Then review "Contributing to This Documentation" section above
 
 ---

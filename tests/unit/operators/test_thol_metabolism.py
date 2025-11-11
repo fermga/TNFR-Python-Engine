@@ -243,8 +243,12 @@ class TestTHOLMetabolismIntegration:
         """THOL sub-EPIs should reflect network EPI pressure."""
         # Create network with gradient
         G = nx.Graph()
-        G.add_node(0, **{EPI_PRIMARY: 0.50, VF_PRIMARY: 1.0, DNFR_PRIMARY: 0.10, THETA_PRIMARY: 0.1})
-        G.add_node(1, **{EPI_PRIMARY: 0.80, VF_PRIMARY: 1.0, DNFR_PRIMARY: 0.05, THETA_PRIMARY: 0.15})
+        G.add_node(
+            0, **{EPI_PRIMARY: 0.50, VF_PRIMARY: 1.0, DNFR_PRIMARY: 0.10, THETA_PRIMARY: 0.1}
+        )
+        G.add_node(
+            1, **{EPI_PRIMARY: 0.80, VF_PRIMARY: 1.0, DNFR_PRIMARY: 0.05, THETA_PRIMARY: 0.15}
+        )
         G.add_edge(0, 1)
 
         # Enable history for d²EPI computation with acceleration
@@ -291,7 +295,9 @@ class TestTHOLMetabolismIntegration:
         """THOL should generate larger sub-EPIs in complex (high phase variance) fields."""
         # Create dissonant network
         G_dissonant = nx.Graph()
-        G_dissonant.add_node(0, **{EPI_PRIMARY: 0.50, VF_PRIMARY: 1.0, DNFR_PRIMARY: 0.15, THETA_PRIMARY: 0.0})
+        G_dissonant.add_node(
+            0, **{EPI_PRIMARY: 0.50, VF_PRIMARY: 1.0, DNFR_PRIMARY: 0.15, THETA_PRIMARY: 0.0}
+        )
         G_dissonant.add_node(1, **{EPI_PRIMARY: 0.50, VF_PRIMARY: 1.0, THETA_PRIMARY: 0.5})
         G_dissonant.add_node(2, **{EPI_PRIMARY: 0.50, VF_PRIMARY: 1.0, THETA_PRIMARY: 1.5})
         G_dissonant.add_edge(0, 1)
@@ -306,7 +312,9 @@ class TestTHOLMetabolismIntegration:
 
         # Compare with coherent field
         G_coherent = nx.Graph()
-        G_coherent.add_node(0, **{EPI_PRIMARY: 0.50, VF_PRIMARY: 1.0, DNFR_PRIMARY: 0.15, THETA_PRIMARY: 0.0})
+        G_coherent.add_node(
+            0, **{EPI_PRIMARY: 0.50, VF_PRIMARY: 1.0, DNFR_PRIMARY: 0.15, THETA_PRIMARY: 0.0}
+        )
         G_coherent.add_node(1, **{EPI_PRIMARY: 0.50, VF_PRIMARY: 1.0, THETA_PRIMARY: 0.05})
         G_coherent.add_node(2, **{EPI_PRIMARY: 0.50, VF_PRIMARY: 1.0, THETA_PRIMARY: 0.10})
         G_coherent.add_edge(0, 1)
@@ -324,7 +332,9 @@ class TestTHOLMetabolismIntegration:
         """THOL metabolism can be disabled via configuration."""
         # Create network with gradient
         G = nx.Graph()
-        G.add_node(0, **{EPI_PRIMARY: 0.50, VF_PRIMARY: 1.0, DNFR_PRIMARY: 0.10, THETA_PRIMARY: 0.1})
+        G.add_node(
+            0, **{EPI_PRIMARY: 0.50, VF_PRIMARY: 1.0, DNFR_PRIMARY: 0.10, THETA_PRIMARY: 0.1}
+        )
         G.add_node(1, **{EPI_PRIMARY: 0.80, VF_PRIMARY: 1.0, THETA_PRIMARY: 0.15})
         G.add_edge(0, 1)
 
@@ -350,7 +360,9 @@ class TestTHOLMetabolismIntegration:
     def test_thol_respects_custom_weights(self):
         """THOL respects custom metabolic weights from graph config."""
         G = nx.Graph()
-        G.add_node(0, **{EPI_PRIMARY: 0.50, VF_PRIMARY: 1.0, DNFR_PRIMARY: 0.10, THETA_PRIMARY: 0.0})
+        G.add_node(
+            0, **{EPI_PRIMARY: 0.50, VF_PRIMARY: 1.0, DNFR_PRIMARY: 0.10, THETA_PRIMARY: 0.0}
+        )
         G.add_node(1, **{EPI_PRIMARY: 0.80, VF_PRIMARY: 1.0, THETA_PRIMARY: 0.1})
         G.add_edge(0, 1)
 
@@ -367,7 +379,9 @@ class TestTHOLMetabolismIntegration:
 
         # Compare with default weights
         G2 = nx.Graph()
-        G2.add_node(0, **{EPI_PRIMARY: 0.50, VF_PRIMARY: 1.0, DNFR_PRIMARY: 0.10, THETA_PRIMARY: 0.0})
+        G2.add_node(
+            0, **{EPI_PRIMARY: 0.50, VF_PRIMARY: 1.0, DNFR_PRIMARY: 0.10, THETA_PRIMARY: 0.0}
+        )
         G2.add_node(1, **{EPI_PRIMARY: 0.80, VF_PRIMARY: 1.0, THETA_PRIMARY: 0.1})
         G2.add_edge(0, 1)
         G2.nodes[0]["epi_history"] = [0.05, 0.33, 0.50]
@@ -382,7 +396,9 @@ class TestTHOLMetabolismIntegration:
     def test_thol_metadata_records_metabolic_state(self):
         """Sub-EPI records contain metabolic metadata for traceability."""
         G = nx.Graph()
-        G.add_node(0, **{EPI_PRIMARY: 0.50, VF_PRIMARY: 1.0, DNFR_PRIMARY: 0.10, THETA_PRIMARY: 0.0})
+        G.add_node(
+            0, **{EPI_PRIMARY: 0.50, VF_PRIMARY: 1.0, DNFR_PRIMARY: 0.10, THETA_PRIMARY: 0.0}
+        )
         G.add_node(1, **{EPI_PRIMARY: 0.70, VF_PRIMARY: 1.0, THETA_PRIMARY: 0.1})
         G.add_edge(0, 1)
 
@@ -414,7 +430,9 @@ class TestBackwardCompatibility:
     def test_thol_still_requires_acceleration_threshold(self):
         """THOL doesn't bifurcate if d²EPI/dt² < τ, even with metabolism."""
         G = nx.Graph()
-        G.add_node(0, **{EPI_PRIMARY: 0.50, VF_PRIMARY: 1.0, DNFR_PRIMARY: 0.10, THETA_PRIMARY: 0.0})
+        G.add_node(
+            0, **{EPI_PRIMARY: 0.50, VF_PRIMARY: 1.0, DNFR_PRIMARY: 0.10, THETA_PRIMARY: 0.0}
+        )
         G.add_node(1, **{EPI_PRIMARY: 0.80, VF_PRIMARY: 1.0, THETA_PRIMARY: 0.1})
         G.add_edge(0, 1)
 
@@ -430,7 +448,9 @@ class TestBackwardCompatibility:
     def test_thol_parent_epi_still_increases(self):
         """Parent EPI still increases after bifurcation (emergence contribution)."""
         G = nx.Graph()
-        G.add_node(0, **{EPI_PRIMARY: 0.50, VF_PRIMARY: 1.0, DNFR_PRIMARY: 0.10, THETA_PRIMARY: 0.0})
+        G.add_node(
+            0, **{EPI_PRIMARY: 0.50, VF_PRIMARY: 1.0, DNFR_PRIMARY: 0.10, THETA_PRIMARY: 0.0}
+        )
         G.add_node(1, **{EPI_PRIMARY: 0.70, VF_PRIMARY: 1.0, THETA_PRIMARY: 0.1})
         G.add_edge(0, 1)
 

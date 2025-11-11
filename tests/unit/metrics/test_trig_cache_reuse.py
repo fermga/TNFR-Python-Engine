@@ -137,9 +137,7 @@ def test_trig_cache_rebuilds_after_direct_theta_mutation(monkeypatch, graph_cano
     assert sin_calls == 4
 
 
-def test_trig_cache_rebuilds_after_direct_theta_mutation_numpy(
-    monkeypatch, graph_canon
-):
+def test_trig_cache_rebuilds_after_direct_theta_mutation_numpy(monkeypatch, graph_canon):
     np = pytest.importorskip("numpy")
 
     cos_calls = 0

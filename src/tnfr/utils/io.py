@@ -14,7 +14,9 @@ from .init import LazyImportProxy, cached_import, get_logger, warn_once
 
 logger = get_logger(__name__)
 
-_ORJSON_PARAMS_MSG = "'ensure_ascii', 'separators', 'cls' and extra kwargs are ignored when using orjson: %s"
+_ORJSON_PARAMS_MSG = (
+    "'ensure_ascii', 'separators', 'cls' and extra kwargs are ignored when using orjson: %s"
+)
 
 _warn_ignored_params_once = warn_once(logger, _ORJSON_PARAMS_MSG)
 
@@ -529,9 +531,7 @@ def safe_write(
             try:
                 os.replace(tmp_path, path)
             except OSError as e:
-                logger.error(
-                    "Atomic replace failed for %s -> %s: %s", tmp_path, path, e
-                )
+                logger.error("Atomic replace failed for %s -> %s: %s", tmp_path, path, e)
                 raise
         else:
             with open(path, **open_params) as fd:

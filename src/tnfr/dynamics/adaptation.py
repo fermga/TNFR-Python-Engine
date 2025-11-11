@@ -204,12 +204,8 @@ def adapt_vf_by_coherence(G: TNFRGraph, n_jobs: int | None = None) -> None:
     vf_list = [float(val) for val in vf_values]
 
     prev_counts = [int(G.nodes[node].get("stable_count", 0)) for node in nodes]
-    stable_flags = [
-        si >= si_hi and dnfr <= eps_dnfr for si, dnfr in zip(si_list, dnfr_list)
-    ]
-    new_counts = [
-        prev + 1 if flag else 0 for prev, flag in zip(prev_counts, stable_flags)
-    ]
+    stable_flags = [si >= si_hi and dnfr <= eps_dnfr for si, dnfr in zip(si_list, dnfr_list)]
+    new_counts = [prev + 1 if flag else 0 for prev, flag in zip(prev_counts, stable_flags)]
 
     for node, count in zip(nodes, new_counts):
         G.nodes[node]["stable_count"] = int(count)
@@ -222,9 +218,7 @@ def adapt_vf_by_coherence(G: TNFRGraph, n_jobs: int | None = None) -> None:
         for node in eligible_nodes:
             idx = node_index[node]
             neigh_indices = [
-                node_index[nbr]
-                for nbr in neighbors_map.get(node, ())
-                if nbr in node_index
+                node_index[nbr] for nbr in neighbors_map.get(node, ()) if nbr in node_index
             ]
             if neigh_indices:
                 total = math.fsum(vf_list[i] for i in neigh_indices)
@@ -249,9 +243,7 @@ def adapt_vf_by_coherence(G: TNFRGraph, n_jobs: int | None = None) -> None:
         len(work_items),
         minimum=1,
     )
-    chunks = [
-        work_items[i : i + chunk_size] for i in range(0, len(work_items), chunk_size)
-    ]
+    chunks = [work_items[i : i + chunk_size] for i in range(0, len(work_items), chunk_size)]
     vf_tuple = tuple(vf_list)
     updates: dict[Any, float] = {}
     with ProcessPoolExecutor(max_workers=jobs) as executor:

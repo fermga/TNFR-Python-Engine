@@ -68,9 +68,7 @@ def test_diagnosis_step_large_graph_runtime_and_history() -> None:
     edge_probability = 0.18
     seed = 9021
 
-    graph = _build_large_graph(
-        seed=seed, nodes=node_count, probability=edge_probability
-    )
+    graph = _build_large_graph(seed=seed, nodes=node_count, probability=edge_probability)
     register_metrics_callbacks(graph)
     ensure_history(graph)
 

@@ -24,9 +24,7 @@ def test_prepare_network_records_callback_error_when_observer_missing(monkeypatc
 
     prepare_network(G)
 
-    assert G.graph["_callback_errors"] == [
-        {"event": "attach_std_observer", "error": "ImportError"}
-    ]
+    assert G.graph["_callback_errors"] == [{"event": "attach_std_observer", "error": "ImportError"}]
 
 
 def test_prepare_network_attaches_standard_observer(monkeypatch):
@@ -38,9 +36,7 @@ def test_prepare_network_attaches_standard_observer(monkeypatch):
     def _stub_attach_observer(graph):
         calls.append(graph)
 
-    monkeypatch.setattr(
-        "tnfr.ontosim.cached_import", lambda *_, **__: _stub_attach_observer
-    )
+    monkeypatch.setattr("tnfr.ontosim.cached_import", lambda *_, **__: _stub_attach_observer)
 
     returned = prepare_network(G)
 
@@ -65,10 +61,7 @@ def test_prepare_network_respects_override_defaults_flag():
 
     prepare_network(G_override, override_defaults=True, REMESH_TAU_GLOBAL=5)
 
-    assert (
-        G_override.graph["PHASE_HISTORY_MAXLEN"]
-        == METRIC_DEFAULTS["PHASE_HISTORY_MAXLEN"]
-    )
+    assert G_override.graph["PHASE_HISTORY_MAXLEN"] == METRIC_DEFAULTS["PHASE_HISTORY_MAXLEN"]
     assert G_override.graph["REMESH_TAU_GLOBAL"] == 5
 
 

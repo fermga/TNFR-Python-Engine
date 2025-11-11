@@ -134,9 +134,7 @@ class AliasAccessor(Generic[T]):
     :func:`set_attr` delegate to a module-level instance of this class.
     """
 
-    def __init__(
-        self, conv: Callable[[Any], T] | None = None, default: T | None = None
-    ) -> None:
+    def __init__(self, conv: Callable[[Any], T] | None = None, default: T | None = None) -> None:
         self._conv = conv
         self._default = default
         # expose cache for testing and manual control
@@ -211,16 +209,12 @@ class AliasAccessor(Generic[T]):
         aliases, conv, default = self._prepare(aliases, conv, default)
         cache_key, key = self._resolve_cache_key(d, aliases)
         if key is not None:
-            ok, value = convert_value(
-                d[key], conv, strict=strict, key=key, log_level=log_level
-            )
+            ok, value = convert_value(d[key], conv, strict=strict, key=key, log_level=log_level)
             if ok:
                 return value
         for key in aliases:
             if key in d:
-                ok, value = convert_value(
-                    d[key], conv, strict=strict, key=key, log_level=log_level
-                )
+                ok, value = convert_value(d[key], conv, strict=strict, key=key, log_level=log_level)
                 if ok:
                     with self._lock:
                         self._key_cache[cache_key] = (key, len(d))
@@ -354,9 +348,7 @@ def collect_attr(
         return float(get_attr(G.nodes[node], aliases, default))
 
     if np is not None:
-        values: FloatArray = np.fromiter(
-            (_value(n) for n in nodes_iter), float, count=size
-        )
+        values: FloatArray = np.fromiter((_value(n) for n in nodes_iter), float, count=size)
         return values
     return [_value(n) for n in nodes_iter]
 
@@ -384,9 +376,7 @@ def collect_theta_attr(
         return float(get_theta_attr(G.nodes[node], default))
 
     if np is not None:
-        values: FloatArray = np.fromiter(
-            (_value(n) for n in nodes_iter), float, count=size
-        )
+        values: FloatArray = np.fromiter((_value(n) for n in nodes_iter), float, count=size)
         return values
 
     return [_value(n) for n in nodes_iter]
@@ -513,10 +503,7 @@ def multi_recompute_abs_max(
     items = list(alias_map.items())
     for _, nd in G.nodes(data=True):
         maxima.update(
-            {
-                key: max(maxima[key], abs(get_attr(nd, aliases, 0.0)))
-                for key, aliases in items
-            }
+            {key: max(maxima[key], abs(get_attr(nd, aliases, 0.0))) for key, aliases in items}
         )
     return {k: float(v) for k, v in maxima.items()}
 
@@ -640,9 +627,7 @@ SCALAR_SETTERS: dict[str, dict[str, Any]] = {
 }
 
 
-def _make_scalar_setter(
-    name: str, spec: dict[str, Any]
-) -> Callable[..., AbsMaxResult | None]:
+def _make_scalar_setter(name: str, spec: dict[str, Any]) -> Callable[..., AbsMaxResult | None]:
     alias = spec["alias"]
     cache = spec.get("cache")
     extra = spec.get("extra")
@@ -663,9 +648,7 @@ def _make_scalar_setter(
 
     else:
 
-        def setter(
-            G: "networkx.Graph", n: Hashable, value: float
-        ) -> AbsMaxResult | None:
+        def setter(G: "networkx.Graph", n: Hashable, value: float) -> AbsMaxResult | None:
             return set_scalar(G, n, alias, value, cache=cache, extra=extra)
 
     setter.__name__ = f"set_{name}"
@@ -685,9 +668,7 @@ _set_theta_impl = cast(
 )
 
 
-def _set_theta_with_compat(
-    G: "networkx.Graph", n: Hashable, value: float
-) -> AbsMaxResult | None:
+def _set_theta_with_compat(G: "networkx.Graph", n: Hashable, value: float) -> AbsMaxResult | None:
     nd = cast(MutableMapping[str, Any], G.nodes[n])
     result = _set_theta_impl(G, n, value)
     theta_val = get_theta_attr(nd, value)

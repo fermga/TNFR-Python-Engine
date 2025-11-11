@@ -53,9 +53,7 @@ class ExtensionRegistry:
             If extension does not inherit from TNFRExtension.
         """
         if not isinstance(extension, TNFRExtension):
-            raise TypeError(
-                f"Extension must inherit from TNFRExtension, got {type(extension)}"
-            )
+            raise TypeError(f"Extension must inherit from TNFRExtension, got {type(extension)}")
 
         domain_name = extension.get_domain_name()
 

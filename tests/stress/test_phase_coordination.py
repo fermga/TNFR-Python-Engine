@@ -82,9 +82,7 @@ def test_coordinate_phase_parallel_matches_sequential(
     probability = 0.065
     workers = 4
 
-    base_graph = _build_reproducible_graph(
-        seed=seed, nodes=node_count, probability=probability
-    )
+    base_graph = _build_reproducible_graph(seed=seed, nodes=node_count, probability=probability)
 
     sequential_graph = copy.deepcopy(base_graph)
     parallel_graph = copy.deepcopy(base_graph)
@@ -102,9 +100,7 @@ def test_coordinate_phase_parallel_matches_sequential(
     recorded_resolve_calls: list[tuple[int | None, int, dict[str, object]]] = []
     original_resolve = coordination_module.resolve_chunk_size
 
-    def tracking_resolve(
-        chunk_size: int | None, total_items: int, **kwargs: object
-    ) -> int:
+    def tracking_resolve(chunk_size: int | None, total_items: int, **kwargs: object) -> int:
         recorded_resolve_calls.append((chunk_size, total_items, dict(kwargs)))
         return original_resolve(chunk_size, total_items, **kwargs)
 

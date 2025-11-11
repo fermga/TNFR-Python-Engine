@@ -26,10 +26,7 @@ class TestEdgeAwareScaleFunctions:
     def test_val_far_from_boundary(self):
         """VAL with EPI far from boundary should use full scale."""
         scale = _compute_val_edge_aware_scale(
-            epi_current=0.5,
-            scale=1.05,
-            epi_max=1.0,
-            epsilon=1e-12
+            epi_current=0.5, scale=1.05, epi_max=1.0, epsilon=1e-12
         )
         assert scale == 1.05
 
@@ -38,10 +35,7 @@ class TestEdgeAwareScaleFunctions:
         # EPI = 0.96, scale = 1.05 would give 1.008 > 1.0
         # Should adapt to roughly 1.0/0.96 ≈ 1.0417
         scale = _compute_val_edge_aware_scale(
-            epi_current=0.96,
-            scale=1.05,
-            epi_max=1.0,
-            epsilon=1e-12
+            epi_current=0.96, scale=1.05, epi_max=1.0, epsilon=1e-12
         )
         assert scale < 1.05  # Adapted
         assert abs(scale - 1.0417) < 0.001
@@ -51,10 +45,7 @@ class TestEdgeAwareScaleFunctions:
     def test_val_at_boundary(self):
         """VAL with EPI exactly at boundary should use scale of 1.0."""
         scale = _compute_val_edge_aware_scale(
-            epi_current=1.0,
-            scale=1.05,
-            epi_max=1.0,
-            epsilon=1e-12
+            epi_current=1.0, scale=1.05, epi_max=1.0, epsilon=1e-12
         )
         assert scale == 1.0  # Can't expand further
         assert 1.0 * scale <= 1.0
@@ -62,50 +53,35 @@ class TestEdgeAwareScaleFunctions:
     def test_val_negative_epi_far_from_boundary(self):
         """VAL with negative EPI far from boundary should use full scale."""
         scale = _compute_val_edge_aware_scale(
-            epi_current=-0.5,
-            scale=1.05,
-            epi_max=1.0,
-            epsilon=1e-12
+            epi_current=-0.5, scale=1.05, epi_max=1.0, epsilon=1e-12
         )
         assert scale == 1.05
 
     def test_val_near_zero(self):
         """VAL with EPI near zero should use full scale safely."""
         scale = _compute_val_edge_aware_scale(
-            epi_current=1e-13,
-            scale=1.05,
-            epi_max=1.0,
-            epsilon=1e-12
+            epi_current=1e-13, scale=1.05, epi_max=1.0, epsilon=1e-12
         )
         assert scale == 1.05
 
     def test_nul_positive_epi(self):
         """NUL with positive EPI should use full scale (safe contraction)."""
         scale = _compute_nul_edge_aware_scale(
-            epi_current=0.5,
-            scale=0.85,
-            epi_min=-1.0,
-            epsilon=1e-12
+            epi_current=0.5, scale=0.85, epi_min=-1.0, epsilon=1e-12
         )
         assert scale == 0.85
 
     def test_nul_negative_epi_far_from_boundary(self):
         """NUL with negative EPI far from boundary should use full scale."""
         scale = _compute_nul_edge_aware_scale(
-            epi_current=-0.5,
-            scale=0.85,
-            epi_min=-1.0,
-            epsilon=1e-12
+            epi_current=-0.5, scale=0.85, epi_min=-1.0, epsilon=1e-12
         )
         assert scale == 0.85
 
     def test_nul_negative_epi_near_lower_boundary(self):
         """NUL with EPI near lower boundary contracts safely toward center."""
         scale = _compute_nul_edge_aware_scale(
-            epi_current=-0.95,
-            scale=0.85,
-            epi_min=-1.0,
-            epsilon=1e-12
+            epi_current=-0.95, scale=0.85, epi_min=-1.0, epsilon=1e-12
         )
         # No adaptation needed - contraction is safe
         assert scale == 0.85
@@ -117,10 +93,7 @@ class TestEdgeAwareScaleFunctions:
     def test_nul_at_lower_boundary(self):
         """NUL with EPI exactly at lower boundary contracts safely toward center."""
         scale = _compute_nul_edge_aware_scale(
-            epi_current=-1.0,
-            scale=0.85,
-            epi_min=-1.0,
-            epsilon=1e-12
+            epi_current=-1.0, scale=0.85, epi_min=-1.0, epsilon=1e-12
         )
         # NUL with scale < 1.0 always contracts toward zero (safe)
         assert scale == 0.85
@@ -130,10 +103,7 @@ class TestEdgeAwareScaleFunctions:
     def test_nul_near_zero_negative(self):
         """NUL with negative EPI near zero should use full scale safely."""
         scale = _compute_nul_edge_aware_scale(
-            epi_current=-1e-13,
-            scale=0.85,
-            epi_min=-1.0,
-            epsilon=1e-12
+            epi_current=-1e-13, scale=0.85, epi_min=-1.0, epsilon=1e-12
         )
         assert scale == 0.85
 
@@ -147,11 +117,11 @@ class TestVALOperatorEdgeAware:
         G.add_node("n1", **{EPI_PRIMARY: 0.5, VF_PRIMARY: 1.0})
         G.graph["EDGE_AWARE_ENABLED"] = True
         G.graph["VAL_scale"] = 1.05
-        
+
         node = NodeNX.from_graph(G, "n1")
         op = GLYPH_OPERATIONS[Glyph.VAL]
         op(node, G.graph.get("GLYPH_FACTORS", {}))
-        
+
         # νf should be scaled
         assert abs(node.vf - 1.05) < 1e-9
 
@@ -163,13 +133,13 @@ class TestVALOperatorEdgeAware:
         G.graph["EPI_MAX"] = 1.0
         G.graph["EDGE_AWARE_EPSILON"] = 1e-12
         G.graph["GLYPH_FACTORS"] = {"VAL_scale": 1.05}
-        
+
         node = NodeNX.from_graph(G, "n1")
         epi_before = node.EPI
-        
+
         op = GLYPH_OPERATIONS[Glyph.VAL]
         op(node, G.graph["GLYPH_FACTORS"])
-        
+
         # EPI should be scaled
         expected_epi = epi_before * 1.05
         assert abs(node.EPI - expected_epi) < 1e-9
@@ -182,12 +152,12 @@ class TestVALOperatorEdgeAware:
         G.graph["EPI_MAX"] = 1.0
         G.graph["EDGE_AWARE_EPSILON"] = 1e-12
         G.graph["GLYPH_FACTORS"] = {"VAL_scale": 1.05}
-        
+
         node = NodeNX.from_graph(G, "n1")
-        
+
         op = GLYPH_OPERATIONS[Glyph.VAL]
         op(node, G.graph["GLYPH_FACTORS"])
-        
+
         # EPI should not exceed EPI_MAX
         assert float(node.EPI) <= 1.0
         # EPI should be scaled but not by full 1.05
@@ -201,17 +171,17 @@ class TestVALOperatorEdgeAware:
         G.graph["EPI_MAX"] = 1.0
         G.graph["EDGE_AWARE_EPSILON"] = 1e-12
         G.graph["GLYPH_FACTORS"] = {"VAL_scale": 1.05}
-        
+
         node = NodeNX.from_graph(G, "n1")
-        
+
         op = GLYPH_OPERATIONS[Glyph.VAL]
         op(node, G.graph["GLYPH_FACTORS"])
-        
+
         # Check telemetry was recorded
         assert "edge_aware_interventions" in G.graph
         interventions = G.graph["edge_aware_interventions"]
         assert len(interventions) > 0
-        
+
         last_intervention = interventions[-1]
         assert last_intervention["adapted"] is True
         assert last_intervention["scale_requested"] == 1.05
@@ -226,12 +196,12 @@ class TestVALOperatorEdgeAware:
         G.graph["EPI_MAX"] = 1.0
         G.graph["EDGE_AWARE_EPSILON"] = 1e-12
         G.graph["GLYPH_FACTORS"] = {"VAL_scale": 1.05}
-        
+
         node = NodeNX.from_graph(G, "n1")
-        
+
         op = GLYPH_OPERATIONS[Glyph.VAL]
         op(node, G.graph["GLYPH_FACTORS"])
-        
+
         # No adaptation needed, no telemetry
         interventions = G.graph.get("edge_aware_interventions", [])
         assert len(interventions) == 0
@@ -242,13 +212,13 @@ class TestVALOperatorEdgeAware:
         G.add_node("n1", **{EPI_PRIMARY: 0.96, VF_PRIMARY: 1.0})
         G.graph["EDGE_AWARE_ENABLED"] = False
         G.graph["GLYPH_FACTORS"] = {"VAL_scale": 1.05}
-        
+
         node = NodeNX.from_graph(G, "n1")
         epi_before = node.EPI
-        
+
         op = GLYPH_OPERATIONS[Glyph.VAL]
         op(node, G.graph["GLYPH_FACTORS"])
-        
+
         # νf scaled
         assert abs(node.vf - 1.05) < 1e-9
         # EPI unchanged
@@ -264,11 +234,11 @@ class TestNULOperatorEdgeAware:
         G.add_node("n1", **{EPI_PRIMARY: 0.5, VF_PRIMARY: 1.0})
         G.graph["EDGE_AWARE_ENABLED"] = True
         G.graph["GLYPH_FACTORS"] = {"NUL_scale": 0.85}
-        
+
         node = NodeNX.from_graph(G, "n1")
         op = GLYPH_OPERATIONS[Glyph.NUL]
         op(node, G.graph["GLYPH_FACTORS"])
-        
+
         # νf should be scaled
         assert abs(node.vf - 0.85) < 1e-9
 
@@ -280,13 +250,13 @@ class TestNULOperatorEdgeAware:
         G.graph["EPI_MIN"] = -1.0
         G.graph["EDGE_AWARE_EPSILON"] = 1e-12
         G.graph["GLYPH_FACTORS"] = {"NUL_scale": 0.85}
-        
+
         node = NodeNX.from_graph(G, "n1")
         epi_before = node.EPI
-        
+
         op = GLYPH_OPERATIONS[Glyph.NUL]
         op(node, G.graph["GLYPH_FACTORS"])
-        
+
         # EPI should be scaled
         expected_epi = epi_before * 0.85
         assert abs(node.EPI - expected_epi) < 1e-9
@@ -299,12 +269,12 @@ class TestNULOperatorEdgeAware:
         G.graph["EPI_MIN"] = -1.0
         G.graph["EDGE_AWARE_EPSILON"] = 1e-12
         G.graph["GLYPH_FACTORS"] = {"NUL_scale": 0.85}
-        
+
         node = NodeNX.from_graph(G, "n1")
-        
+
         op = GLYPH_OPERATIONS[Glyph.NUL]
         op(node, G.graph["GLYPH_FACTORS"])
-        
+
         # EPI should not go below EPI_MIN
         assert float(node.EPI) >= -1.0
 
@@ -316,12 +286,12 @@ class TestNULOperatorEdgeAware:
         G.graph["EPI_MIN"] = -1.0
         G.graph["EDGE_AWARE_EPSILON"] = 1e-12
         G.graph["GLYPH_FACTORS"] = {"NUL_scale": 0.85}
-        
+
         node = NodeNX.from_graph(G, "n1")
-        
+
         op = GLYPH_OPERATIONS[Glyph.NUL]
         op(node, G.graph["GLYPH_FACTORS"])
-        
+
         # Positive EPI contracts toward zero (always safe)
         expected = 0.8 * 0.85
         assert abs(node.EPI - expected) < 1e-9
@@ -332,13 +302,13 @@ class TestNULOperatorEdgeAware:
         G.add_node("n1", **{EPI_PRIMARY: -0.95, VF_PRIMARY: 1.0})
         G.graph["EDGE_AWARE_ENABLED"] = False
         G.graph["GLYPH_FACTORS"] = {"NUL_scale": 0.85}
-        
+
         node = NodeNX.from_graph(G, "n1")
         epi_before = node.EPI
-        
+
         op = GLYPH_OPERATIONS[Glyph.NUL]
         op(node, G.graph["GLYPH_FACTORS"])
-        
+
         # νf scaled
         assert abs(node.vf - 0.85) < 1e-9
         # EPI unchanged
@@ -357,19 +327,19 @@ class TestCombinedSequences:
         G.graph["EPI_MAX"] = 1.0
         G.graph["EDGE_AWARE_EPSILON"] = 1e-12
         G.graph["GLYPH_FACTORS"] = {"VAL_scale": 1.05, "NUL_scale": 0.85}
-        
+
         node = NodeNX.from_graph(G, "n1")
-        
+
         val_op = GLYPH_OPERATIONS[Glyph.VAL]
         nul_op = GLYPH_OPERATIONS[Glyph.NUL]
-        
+
         # Apply sequence
         val_op(node, G.graph["GLYPH_FACTORS"])
         assert -1.0 <= float(node.EPI) <= 1.0
-        
+
         nul_op(node, G.graph["GLYPH_FACTORS"])
         assert -1.0 <= float(node.EPI) <= 1.0
-        
+
         val_op(node, G.graph["GLYPH_FACTORS"])
         assert -1.0 <= float(node.EPI) <= 1.0
 
@@ -381,10 +351,10 @@ class TestCombinedSequences:
         G.graph["EPI_MAX"] = 1.0
         G.graph["EDGE_AWARE_EPSILON"] = 1e-12
         G.graph["GLYPH_FACTORS"] = {"VAL_scale": 1.05}
-        
+
         node = NodeNX.from_graph(G, "n1")
         val_op = GLYPH_OPERATIONS[Glyph.VAL]
-        
+
         # Apply VAL multiple times
         for _ in range(5):
             val_op(node, G.graph["GLYPH_FACTORS"])
@@ -398,10 +368,10 @@ class TestCombinedSequences:
         G.graph["EPI_MIN"] = -1.0
         G.graph["EDGE_AWARE_EPSILON"] = 1e-12
         G.graph["GLYPH_FACTORS"] = {"NUL_scale": 0.85}
-        
+
         node = NodeNX.from_graph(G, "n1")
         nul_op = GLYPH_OPERATIONS[Glyph.NUL]
-        
+
         # Apply NUL multiple times
         for _ in range(5):
             nul_op(node, G.graph["GLYPH_FACTORS"])

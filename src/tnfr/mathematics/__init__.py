@@ -19,6 +19,12 @@ from .backend import (
 from .dynamics import ContractiveDynamicsEngine, MathematicalDynamicsEngine
 from .epi import BEPIElement, CoherenceEvaluation, evaluate_coherence_transform
 from .generators import build_delta_nfr, build_lindblad_delta_nfr
+from .liouville import (
+    compute_liouvillian_spectrum,
+    get_liouvillian_spectrum,
+    get_slow_relaxation_mode,
+    store_liouvillian_spectrum,
+)
 from .metrics import dcoh
 from .operators import CoherenceOperator, FrequencyOperator
 from .operators_factory import make_coherence_operator, make_frequency_operator
@@ -57,6 +63,10 @@ __all__ = [
     "MathematicalDynamicsEngine",
     "build_delta_nfr",
     "build_lindblad_delta_nfr",
+    "compute_liouvillian_spectrum",
+    "get_liouvillian_spectrum",
+    "get_slow_relaxation_mode",
+    "store_liouvillian_spectrum",
     "make_coherence_operator",
     "make_frequency_operator",
     "IsometryFactory",

@@ -128,7 +128,7 @@ class TestPhaseDependentForces:
         # The key is they should have opposite signs and similar magnitudes
         assert abs(accel[0, 0]) > 0  # Non-zero acceleration
         assert abs(accel[1, 0]) > 0  # Non-zero acceleration
-        
+
         # Should be opposite directions (attraction)
         assert accel[0, 0] * accel[1, 0] < 0
 
@@ -278,9 +278,7 @@ class TestCoherenceBasedDynamics:
         )
 
         # Compute coherence potential
-        U = compute_tnfr_coherence_potential(
-            system.graph, system.positions, system.hbar_str
-        )
+        U = compute_tnfr_coherence_potential(system.graph, system.positions, system.hbar_str)
 
         # Should be a finite number
         assert np.isfinite(U)

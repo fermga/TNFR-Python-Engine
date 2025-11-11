@@ -110,9 +110,7 @@ def merge_overrides(G, **overrides):
         if key not in DEFAULTS:
             raise KeyError(f"Unknown parameter: '{key}'")
         G.graph[key] = (
-            value
-            if _is_immutable(value)
-            else cast(TNFRConfigValue, copy.deepcopy(value))
+            value if _is_immutable(value) else cast(TNFRConfigValue, copy.deepcopy(value))
         )
 
 

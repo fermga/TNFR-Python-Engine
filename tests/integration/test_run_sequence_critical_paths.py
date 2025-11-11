@@ -435,9 +435,7 @@ def test_compile_sequence_deeply_nested_blocks(nesting_depth) -> None:
         (5, 15),
     ],
 )
-def test_run_sequence_multiple_target_switches(
-    graph_canon, num_targets, num_operations
-) -> None:
+def test_run_sequence_multiple_target_switches(graph_canon, num_targets, num_operations) -> None:
     """Test run_sequence with multiple rapid target switches.
 
     Adds coverage for complex target switching patterns.

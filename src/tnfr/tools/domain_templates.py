@@ -409,9 +409,7 @@ def get_template(domain: str, objective: str | None = None) -> list[str]:
     ['emission', 'reception', 'coherence', 'resonance', 'silence']
     """
     if domain not in DOMAIN_TEMPLATES:
-        raise KeyError(
-            f"Domain '{domain}' not found. Available: {list(DOMAIN_TEMPLATES.keys())}"
-        )
+        raise KeyError(f"Domain '{domain}' not found. Available: {list(DOMAIN_TEMPLATES.keys())}")
 
     domain_dict = DOMAIN_TEMPLATES[domain]
 
@@ -471,8 +469,6 @@ def list_objectives(domain: str) -> list[str]:
     ['crisis_intervention', 'process_therapy', 'healing_cycle', 'trauma_processing']
     """
     if domain not in DOMAIN_TEMPLATES:
-        raise KeyError(
-            f"Domain '{domain}' not found. Available: {list(DOMAIN_TEMPLATES.keys())}"
-        )
+        raise KeyError(f"Domain '{domain}' not found. Available: {list(DOMAIN_TEMPLATES.keys())}")
 
     return list(DOMAIN_TEMPLATES[domain].keys())

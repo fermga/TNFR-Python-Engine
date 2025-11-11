@@ -38,35 +38,35 @@ class TestTutorialExecution:
     def test_biological_example_runs(self):
         """Test biological_example executes and returns results."""
         results = biological_example(interactive=False, random_seed=42)
-        
+
         assert isinstance(results, dict)
         assert "coherence" in results
         assert "sense_indices" in results
         assert "interpretation" in results
-        
+
         # Coherence should be in valid range [0, 1]
         assert 0 <= results["coherence"] <= 1
 
     def test_social_network_example_runs(self):
         """Test social_network_example executes and returns results."""
         results = social_network_example(interactive=False, random_seed=42)
-        
+
         assert isinstance(results, dict)
         assert "coherence" in results
-        
+
         # Coherence should be in valid range [0, 1]
         assert 0 <= results["coherence"] <= 1
 
     def test_team_communication_example_runs(self):
         """Test team_communication_example executes and returns results."""
         results = team_communication_example(interactive=False, random_seed=42)
-        
+
         assert isinstance(results, dict)
         assert "random" in results
         assert "ring" in results
         assert "small_world" in results
         assert "best_structure" in results
-        
+
         # Each structure should have coherence
         for structure in ["random", "ring", "small_world"]:
             assert "coherence" in results[structure]
@@ -75,17 +75,17 @@ class TestTutorialExecution:
     def test_adaptive_ai_example_runs(self):
         """Test adaptive_ai_example executes and returns results."""
         results = adaptive_ai_example(interactive=False, random_seed=42)
-        
+
         assert isinstance(results, dict)
         assert "initial_coherence" in results
         assert "final_coherence" in results
         assert "improvement" in results
         assert "coherence_trajectory" in results
-        
+
         # Coherence values should be in valid range
         assert 0 <= results["initial_coherence"] <= 1
         assert 0 <= results["final_coherence"] <= 1
-        
+
         # Trajectory should have multiple points
         assert len(results["coherence_trajectory"]) > 1
 
@@ -97,7 +97,7 @@ class TestTutorialReproducibility:
         """Test biological_example is reproducible with same seed."""
         results1 = biological_example(interactive=False, random_seed=42)
         results2 = biological_example(interactive=False, random_seed=42)
-        
+
         # Should get same coherence with same seed (reasonable tolerance)
         assert abs(results1["coherence"] - results2["coherence"]) < 1e-6
 
@@ -106,7 +106,7 @@ class TestTutorialReproducibility:
         try:
             results1 = team_communication_example(interactive=False, random_seed=42)
             results2 = team_communication_example(interactive=False, random_seed=42)
-            
+
             # Coherence values should be reasonably close
             # Note: Network dynamics can cause variation, especially with different topologies
             # We use 0.05 (5%) tolerance as reasonable for network simulations
@@ -126,7 +126,7 @@ class TestTutorialReproducibility:
         # Allow validation errors as they may occur with certain sequences
         try:
             results = adaptive_ai_example(interactive=False, random_seed=42)
-            
+
             # Basic checks
             assert "initial_coherence" in results
             assert "final_coherence" in results
@@ -147,11 +147,11 @@ class TestTutorialInvariants:
         """Test all tutorials produce coherence in [0, 1]."""
         bio_results = biological_example(interactive=False, random_seed=42)
         assert 0 <= bio_results["coherence"] <= 1
-        
+
         team_results = team_communication_example(interactive=False, random_seed=42)
         for structure in ["random", "ring", "small_world"]:
             assert 0 <= team_results[structure]["coherence"] <= 1
-        
+
         ai_results = adaptive_ai_example(interactive=False, random_seed=42)
         assert 0 <= ai_results["initial_coherence"] <= 1
         assert 0 <= ai_results["final_coherence"] <= 1
@@ -159,6 +159,6 @@ class TestTutorialInvariants:
     def test_sense_indices_valid(self):
         """Test sense indices are in valid range."""
         results = biological_example(interactive=False, random_seed=42)
-        
+
         for node_id, si in results["sense_indices"].items():
             assert 0 <= si <= 1, f"Si for {node_id} out of range: {si}"

@@ -121,9 +121,10 @@ class TestLatencyTransition:
         """Warn if transitioning after extended silence."""
         G, node = create_nfr("test", epi=0.3, vf=0.2)
         G.nodes[node]["latent"] = True
-        
+
         # Set start time to 100 seconds ago
         from datetime import timedelta
+
         start_time = datetime.now(timezone.utc) - timedelta(seconds=100)
         G.nodes[node]["latency_start_time"] = start_time.isoformat()
         G.graph["MAX_SILENCE_DURATION"] = 50.0  # Max 50 seconds
@@ -149,12 +150,13 @@ class TestStructuralTransitions:
     def test_latent_to_active_transition(self):
         """Latent → Active: νf × 1.2, θ + 0.1, ΔNFR × 0.7."""
         G, node = create_nfr("test", epi=0.2, vf=0.5, theta=0.5)
-        
+
         # Set ΔNFR manually
         from tnfr.alias import set_attr
         from tnfr.constants.aliases import ALIAS_DNFR
+
         set_attr(G.nodes[node], ALIAS_DNFR, 0.3)
-        
+
         # Apply SHA → NAV as single sequence (proper validation)
         run_sequence(G, node, [Silence(), Transition()])
 
@@ -165,20 +167,21 @@ class TestStructuralTransitions:
 
         # νf should increase by ~20% (may vary slightly due to grammar effects)
         assert vf_after >= 0.5, "νf should not decrease for latent → active"
-        
+
         # θ should have changed
         assert theta_after != 0.5, "θ should change"
-        
+
         # ΔNFR should decrease (× 0.7)
         assert dnfr_after <= 0.3, "ΔNFR should not increase"
 
     def test_active_regime_transition(self):
         """Active regime: νf × 1.0, θ + 0.2, ΔNFR × 0.8."""
         G, node = create_nfr("test", epi=0.4, vf=0.6, theta=1.0)
-        
+
         # Set ΔNFR manually
         from tnfr.alias import set_attr
         from tnfr.constants.aliases import ALIAS_DNFR
+
         set_attr(G.nodes[node], ALIAS_DNFR, 0.5)
 
         # Apply NAV - should detect active regime
@@ -192,17 +195,18 @@ class TestStructuralTransitions:
         # θ should shift by ~0.2 rad (from initial 1.0)
         # Note: Emission will also affect theta, so we check relative change
         assert theta_after != 1.0, "θ should change"
-        
+
         # ΔNFR should decrease (× 0.8)
         assert dnfr_after < 0.5, "ΔNFR should decrease"
 
     def test_resonant_to_active_transition(self):
         """Resonant → Active: νf × 0.95, θ + 0.15, ΔNFR × 0.9."""
         G, node = create_nfr("test", epi=0.7, vf=0.9, theta=2.0)
-        
+
         # Set ΔNFR manually
         from tnfr.alias import set_attr
         from tnfr.constants.aliases import ALIAS_DNFR
+
         set_attr(G.nodes[node], ALIAS_DNFR, 0.6)
 
         # Apply NAV - should detect resonant regime
@@ -216,11 +220,11 @@ class TestStructuralTransitions:
 
         # νf should decrease slightly (× 0.95) for stability
         assert vf_after < 0.9, "νf should decrease slightly for resonant → active"
-        
+
         # θ should shift by ~0.15 rad
         # Note: Emission will also affect theta
         assert theta_after != 2.0, "θ should change"
-        
+
         # ΔNFR should decrease gently (× 0.9)
         assert dnfr_after < 0.6, "ΔNFR should decrease gently"
 
@@ -234,7 +238,7 @@ class TestStructuralTransitions:
 
         theta_after = float(get_attr(G.nodes[node], ALIAS_THETA, 0.0))
         expected_theta = (0.5 + 0.5) % (2 * math.pi)
-        
+
         # Should be close to expected (accounting for grammar effects)
         assert abs(theta_after - expected_theta) < 0.2, "Custom phase_shift should be applied"
 
@@ -243,13 +247,13 @@ class TestStructuralTransitions:
         G, node = create_nfr("test", epi=0.4, vf=0.5)
 
         vf_before = 0.5
-        
+
         # Apply NAV with custom vf_factor
         transition = Transition()
         transition(G, node, vf_factor=1.5)
 
         vf_after = float(get_attr(G.nodes[node], ALIAS_VF, 0.0))
-        
+
         # νf should increase significantly
         assert vf_after > vf_before, "νf should increase with vf_factor > 1.0"
 
@@ -260,7 +264,7 @@ class TestEPIPreservation:
     def test_latent_transition_preserves_epi(self):
         """Latent → Active transition should preserve EPI."""
         G, node = create_nfr("test", epi=0.3, vf=0.2)
-        
+
         epi_before = float(get_attr(G.nodes[node], ALIAS_EPI, 0.0))
 
         # Enter latency via SHA, then transition out
@@ -274,7 +278,7 @@ class TestEPIPreservation:
     def test_active_transition_preserves_epi(self):
         """Active regime transition should preserve EPI."""
         G, node = create_nfr("test", epi=0.5, vf=0.6)
-        
+
         epi_before = float(get_attr(G.nodes[node], ALIAS_EPI, 0.0))
 
         # Precede with valid operator for semantic validation
@@ -289,7 +293,7 @@ class TestEPIPreservation:
     def test_resonant_transition_preserves_epi(self):
         """Resonant → Active transition should preserve EPI."""
         G, node = create_nfr("test", epi=0.7, vf=0.9)
-        
+
         epi_before = float(get_attr(G.nodes[node], ALIAS_EPI, 0.0))
 
         # Precede with valid operator for semantic validation
@@ -319,10 +323,11 @@ class TestTelemetry:
     def test_telemetry_records_transition(self):
         """NAV should record transition details."""
         G, node = create_nfr("test", epi=0.4, vf=0.6, theta=0.5)
-        
+
         # Set ΔNFR manually
         from tnfr.alias import set_attr
         from tnfr.constants.aliases import ALIAS_DNFR
+
         set_attr(G.nodes[node], ALIAS_DNFR, 0.3)
 
         # Precede with valid operator
@@ -404,7 +409,7 @@ class TestSequenceIntegration:
         # NAV should work in valid sequences (NAV is both generator and closure)
         # Test as closure after emission
         run_sequence(G, node, [Emission(), Reception(), Transition()])
-        
+
         # Verify no grammar violations occurred
         # (would raise exception if grammar violated)
         assert True, "Grammar compliance maintained"
@@ -421,7 +426,7 @@ class TestPhaseWraparound:
         run_sequence(G, node, [Emission(), Transition()])
 
         theta_after = float(get_attr(G.nodes[node], ALIAS_THETA, 0.0))
-        
+
         # Should wrap around (modulo 2π)
         assert 0.0 <= theta_after < 2 * math.pi, "Phase should be within [0, 2π)"
 

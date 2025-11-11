@@ -666,9 +666,9 @@ G.graph["BIFURCATION_THRESHOLD_TAU"] = 0.5         # Higher threshold
 ### Related Documentation
 
 - **[THOL_ENCAPSULATION_GUIDE.md](THOL_ENCAPSULATION_GUIDE.md)** — Operator sequence behavior and grammar rules
-- **[UNIFIED_GRAMMAR_RULES.md](../UNIFIED_GRAMMAR_RULES.md)** — U4 (Bifurcation Dynamics) derivation
-- **[AGENTS.md](../AGENTS.md)** — Invariant #7 (Operational Fractality)
-- **[TNFR.pdf](../TNFR.pdf)** — §2.2.10 (Self-organization operator theory)
+- **[UNIFIED_GRAMMAR_RULES.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/UNIFIED_GRAMMAR_RULES.md)** — U4 (Bifurcation Dynamics) derivation
+- **[AGENTS.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/AGENTS.md)** — Invariant #7 (Operational Fractality)
+- **[TNFR.pdf](https://github.com/fermga/TNFR-Python-Engine/blob/main/TNFR.pdf)** — §2.2.10 (Self-organization operator theory)
 
 ### Source Code References
 
@@ -691,4 +691,4 @@ G.graph["BIFURCATION_THRESHOLD_TAU"] = 0.5         # Higher threshold
 
 *This reference is maintained as the **single source of truth** for THOL configuration. All parameter defaults are verified against source code.*
 
-*For questions or corrections, see [CONTRIBUTING.md](../CONTRIBUTING.md).*
+*For questions or corrections, see [CONTRIBUTING.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/CONTRIBUTING.md).*

@@ -1,26 +1,45 @@
 """Operator-specific metrics collection for TNFR structural operators.
 
 Each operator produces characteristic metrics that reflect its structural
-effects on nodes. This module provides metric collectors for telemetry
-and analysis.
+effects on nodes.
+
+Terminology (TNFR semantics):
+- "node" == resonant locus (coherent structural anchor); retained for NetworkX compatibility.
+- Not related to the Node.js runtime; purely graph-theoretic locus.
+- Future migration may introduce `locus` aliases without breaking public API.
+
+This module provides metric collectors for telemetry and analysis.
 """
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
 if TYPE_CHECKING:
     from ..types import NodeId, TNFRGraph
+else:
+    NodeId = Any  # runtime fallback
+    TNFRGraph = Any  # runtime fallback
 
 from ..alias import get_attr, get_attr_str
 from ..constants.aliases import (
-    ALIAS_EPI,
-    ALIAS_VF,
-    ALIAS_DNFR,
-    ALIAS_THETA,
     ALIAS_D2EPI,
-    ALIAS_EMISSION_TIMESTAMP,
+    ALIAS_DNFR,
+    ALIAS_EPI,
+    ALIAS_THETA,
+    ALIAS_VF,
 )
+
+# Emission timestamp alias - defensive runtime check
+_HAS_EMISSION_TIMESTAMP_ALIAS = False
+_ALIAS_EMISSION_TIMESTAMP_TUPLE: tuple[str, ...] = ()
+try:
+    from ..constants.aliases import ALIAS_EMISSION_TIMESTAMP as _ALIAS_TS  # type: ignore
+
+    _ALIAS_EMISSION_TIMESTAMP_TUPLE = _ALIAS_TS
+    _HAS_EMISSION_TIMESTAMP_ALIAS = True
+except Exception:
+    pass
 
 __all__ = [
     "emission_metrics",
@@ -36,19 +55,22 @@ __all__ = [
     "mutation_metrics",
     "transition_metrics",
     "recursivity_metrics",
+    "measure_tau_relax_observed",
+    "measure_nonlinear_accumulation",
+    "compute_bifurcation_index",
 ]
 
 
-def _get_node_attr(
-    G: TNFRGraph, node: NodeId, aliases: tuple[str, ...], default: float = 0.0
-) -> float:
+def _get_node_attr(G, node, aliases: tuple[str, ...], default: float = 0.0) -> float:
     """Get node attribute using alias fallback."""
-    return float(get_attr(G.nodes[node], aliases, default))
+    value = get_attr(G.nodes[node], aliases, default)
+    try:
+        return float(cast(float, value))
+    except Exception:
+        return float(default)
 
 
-def emission_metrics(
-    G: TNFRGraph, node: NodeId, epi_before: float, vf_before: float
-) -> dict[str, Any]:
+def emission_metrics(G, node, epi_before: float, vf_before: float) -> dict[str, Any]:
     """AL - Emission metrics with structural fidelity indicators.
 
     Collects emission-specific metrics that reflect canonical AL effects:
@@ -88,14 +110,16 @@ def emission_metrics(
     dnfr = _get_node_attr(G, node, ALIAS_DNFR)
     theta = _get_node_attr(G, node, ALIAS_THETA)
 
-    # Fetch emission timestamp using alias system
+    # Emission timestamp via alias system with guarded fallback
     emission_timestamp = None
-    try:
-        emission_timestamp = get_attr_str(
-            G.nodes[node], ALIAS_EMISSION_TIMESTAMP, default=None
-        )
-    except (AttributeError, KeyError, ImportError):
-        # Fallback if alias system unavailable or node lacks timestamp
+    if _HAS_EMISSION_TIMESTAMP_ALIAS and _ALIAS_EMISSION_TIMESTAMP_TUPLE:
+        try:
+            emission_timestamp = get_attr_str(
+                G.nodes[node], _ALIAS_EMISSION_TIMESTAMP_TUPLE, default=None
+            )
+        except Exception:
+            pass
+    if emission_timestamp is None:
         emission_timestamp = G.nodes[node].get("emission_timestamp")
 
     # Compute deltas
@@ -137,7 +161,7 @@ def emission_metrics(
     }
 
 
-def reception_metrics(G: TNFRGraph, node: NodeId, epi_before: float) -> dict[str, Any]:
+def reception_metrics(G, node, epi_before: float) -> dict[str, Any]:
     """EN - Reception metrics: EPI integration, source tracking, integration efficiency.
 
     Extended metrics for Reception (EN) operator that track emission sources,
@@ -201,9 +225,7 @@ def reception_metrics(G: TNFRGraph, node: NodeId, epi_before: float) -> dict[str
 
     # Average phase compatibility across all sources
     phase_compatibility_avg = (
-        sum(compat for _, compat, _ in sources) / num_sources
-        if num_sources > 0
-        else 0.0
+        sum(compat for _, compat, _ in sources) / num_sources if num_sources > 0 else 0.0
     )
 
     # Stabilization effectiveness (ΔNFR reduced?)
@@ -230,7 +252,7 @@ def reception_metrics(G: TNFRGraph, node: NodeId, epi_before: float) -> dict[str
     }
 
 
-def coherence_metrics(G: TNFRGraph, node: NodeId, dnfr_before: float) -> dict[str, Any]:
+def coherence_metrics(G, node, dnfr_before: float) -> dict[str, Any]:
     """IL - Coherence metrics: ΔC(t), stability gain, ΔNFR reduction, phase alignment.
 
     Extended to include ΔNFR reduction percentage, C(t) coherence metrics,
@@ -263,9 +285,10 @@ def coherence_metrics(G: TNFRGraph, node: NodeId, dnfr_before: float) -> dict[st
         - stabilization_quality: Combined metric (C_local * (1.0 - dnfr_after))
         - epi_final, vf_final: Final structural state
     """
-    # Import here to avoid circular import
-    from ..metrics.coherence import compute_global_coherence, compute_local_coherence
+    # Import minimal dependencies (avoid unavailable symbols)
     from ..metrics.phase_coherence import compute_phase_alignment
+    from ..metrics.common import compute_coherence as _compute_global_coherence
+    from ..metrics.local_coherence import compute_local_coherence_fallback
 
     dnfr_after = _get_node_attr(G, node, ALIAS_DNFR)
     epi = _get_node_attr(G, node, ALIAS_EPI)
@@ -273,13 +296,13 @@ def coherence_metrics(G: TNFRGraph, node: NodeId, dnfr_before: float) -> dict[st
 
     # Compute reduction metrics
     dnfr_reduction = dnfr_before - dnfr_after
-    dnfr_reduction_pct = (
-        (dnfr_reduction / dnfr_before * 100.0) if dnfr_before > 0 else 0.0
-    )
+    dnfr_reduction_pct = (dnfr_reduction / dnfr_before * 100.0) if dnfr_before > 0 else 0.0
 
-    # Compute coherence metrics
-    C_global = compute_global_coherence(G)
-    C_local = compute_local_coherence(G, node)
+    # Compute global coherence using shared common implementation
+    C_global = _compute_global_coherence(G)
+
+    # Local coherence via extracted helper
+    C_local = compute_local_coherence_fallback(G, node)
 
     # Compute phase alignment (Kuramoto order parameter)
     phase_alignment = compute_phase_alignment(G, node)
@@ -304,9 +327,7 @@ def coherence_metrics(G: TNFRGraph, node: NodeId, dnfr_before: float) -> dict[st
     }
 
 
-def dissonance_metrics(
-    G: TNFRGraph, node: NodeId, dnfr_before: float, theta_before: float
-) -> dict[str, Any]:
+def dissonance_metrics(G, node, dnfr_before, theta_before):
     """OZ - Comprehensive dissonance and bifurcation metrics.
 
     Collects extended metrics for the Dissonance (OZ) operator, including
@@ -479,9 +500,7 @@ def dissonance_metrics(
     # 6. Recovery estimate (how many IL needed to resolve)
     # Assumes ~15% ΔNFR reduction per IL application
     il_reduction_rate = 0.15
-    recovery_estimate = (
-        int(abs(dnfr_after) / il_reduction_rate) + 1 if dnfr_after != 0 else 1
-    )
+    recovery_estimate = int(abs(dnfr_after) / il_reduction_rate) + 1 if dnfr_after != 0 else 1
 
     # 7. Propagation analysis (if propagation occurred)
     propagation_data = {}
@@ -540,9 +559,7 @@ def dissonance_metrics(
         # Network impact
         "neighbor_count": len(neighbors),
         "impacted_neighbors": impacted_neighbors,
-        "network_impact_radius": (
-            impacted_neighbors / len(neighbors) if neighbors else 0.0
-        ),
+        "network_impact_radius": (impacted_neighbors / len(neighbors) if neighbors else 0.0),
         # Recovery guidance
         "recovery_estimate_IL": recovery_estimate,
         "dissonance_level": abs(dnfr_after),
@@ -554,14 +571,14 @@ def dissonance_metrics(
 
 
 def coupling_metrics(
-    G: TNFRGraph,
-    node: NodeId,
-    theta_before: float,
-    dnfr_before: float = None,
-    vf_before: float = None,
-    edges_before: int = None,
-    epi_before: float = None,
-) -> dict[str, Any]:
+    G,
+    node,
+    theta_before,
+    dnfr_before=None,
+    vf_before=None,
+    edges_before=None,
+    epi_before=None,
+):
     """UM - Coupling metrics: phase alignment, link formation, synchrony, ΔNFR reduction.
 
     Extended metrics for Coupling (UM) operator that track structural changes,
@@ -758,11 +775,11 @@ def coupling_metrics(
 
 
 def resonance_metrics(
-    G: TNFRGraph,
-    node: NodeId,
-    epi_before: float,
-    vf_before: float | None = None,
-) -> dict[str, Any]:
+    G,
+    node,
+    epi_before,
+    vf_before=None,
+):
     """RA - Resonance metrics: EPI propagation, νf amplification, phase strengthening.
 
     Canonical TNFR resonance metrics include:
@@ -832,8 +849,7 @@ def resonance_metrics(
         "neighbor_count": neighbor_count,
         "neighbor_epi_mean": neighbor_epi_mean,
         "resonance_strength": resonance_strength,
-        "propagation_successful": neighbor_count > 0
-        and abs(epi_after - neighbor_epi_mean) < 0.5,
+        "propagation_successful": neighbor_count > 0 and abs(epi_after - neighbor_epi_mean) < 0.5,
         # Canonical TNFR effects
         "vf_amplification": vf_amplification,  # Canonical: νf increases through resonance
         "vf_before": vf_before if vf_before is not None else vf_after,
@@ -843,7 +859,7 @@ def resonance_metrics(
     }
 
 
-def _compute_epi_variance(G: TNFRGraph, node: NodeId) -> float:
+def _compute_epi_variance(G, node) -> float:
     """Compute EPI variance during silence period.
 
     Measures the standard deviation of EPI values recorded during silence,
@@ -899,7 +915,7 @@ def _compute_preservation_integrity(preserved_epi: float, epi_after: float) -> f
     return max(0.0, integrity)
 
 
-def _compute_reactivation_readiness(G: TNFRGraph, node: NodeId) -> float:
+def _compute_reactivation_readiness(G, node) -> float:
     """Compute readiness score for reactivation from silence.
 
     Evaluates if the node can reactivate effectively based on:
@@ -945,7 +961,7 @@ def _compute_reactivation_readiness(G: TNFRGraph, node: NodeId) -> float:
     return (vf_score + epi_score + duration_score + network_score) / 4.0
 
 
-def _estimate_time_to_collapse(G: TNFRGraph, node: NodeId) -> float:
+def _estimate_time_to_collapse(G, node) -> float:
     """Estimate time until nodal collapse during silence.
 
     Estimates how long silence can be maintained before structural collapse
@@ -981,9 +997,7 @@ def _estimate_time_to_collapse(G: TNFRGraph, node: NodeId) -> float:
     return abs(preserved_epi / drift_rate)
 
 
-def silence_metrics(
-    G: TNFRGraph, node: NodeId, vf_before: float, epi_before: float
-) -> dict[str, Any]:
+def silence_metrics(G, node, vf_before, epi_before):
     """SHA - Silence metrics: νf reduction, EPI preservation, duration tracking.
 
     Extended metrics for deep analysis of structural preservation effectiveness.
@@ -1077,9 +1091,7 @@ def silence_metrics(
     return {**core, **extended}
 
 
-def expansion_metrics(
-    G: TNFRGraph, node: NodeId, vf_before: float, epi_before: float
-) -> dict[str, Any]:
+def expansion_metrics(G, node, vf_before: float, epi_before: float) -> dict[str, Any]:
     """VAL - Enhanced expansion metrics with structural indicators (Issue #2724).
 
     Captures comprehensive metrics reflecting canonical VAL effects:
@@ -1202,18 +1214,13 @@ def expansion_metrics(
     # Growth rates (relative to initial values)
     epi_growth_rate = (delta_epi / epi_before) if epi_before > 1e-9 else 0.0
     vf_growth_rate = (delta_vf / vf_before) if vf_before > 1e-9 else 0.0
-    growth_ratio = (
-        vf_growth_rate / epi_growth_rate if abs(epi_growth_rate) > 1e-9 else 0.0
-    )
+    growth_ratio = vf_growth_rate / epi_growth_rate if abs(epi_growth_rate) > 1e-9 else 0.0
 
     # Coherence preservation
-    try:
-        from ..metrics.coherence import compute_local_coherence
+    # Local coherence via extracted helper
+    from ..metrics.local_coherence import compute_local_coherence_fallback
 
-        c_local = compute_local_coherence(G, node)
-    except (ImportError, AttributeError):
-        # Fallback if coherence module not available
-        c_local = 0.0
+    c_local = compute_local_coherence_fallback(G, node)
 
     # Phase coherence with neighbors
     if neighbor_count > 0:
@@ -1226,9 +1233,7 @@ def expansion_metrics(
         phase_coherence_neighbors = 0.0
 
     # Bifurcation magnitude (ratio to threshold)
-    bifurcation_magnitude = (
-        abs(d2epi) / bifurcation_threshold if bifurcation_threshold > 0 else 0.0
-    )
+    bifurcation_magnitude = abs(d2epi) / bifurcation_threshold if bifurcation_threshold > 0 else 0.0
 
     # Boolean indicators
     bifurcation_risk = abs(d2epi) > bifurcation_threshold
@@ -1244,10 +1249,7 @@ def expansion_metrics(
 
     # Overall health indicator
     expansion_healthy = (
-        dnfr_positive
-        and not bifurcation_risk
-        and coherence_preserved
-        and fractal_preserved
+        dnfr_positive and not bifurcation_risk and coherence_preserved and fractal_preserved
     )
 
     return {
@@ -1289,9 +1291,7 @@ def expansion_metrics(
     }
 
 
-def contraction_metrics(
-    G: TNFRGraph, node: NodeId, vf_before: float, epi_before: float
-) -> dict[str, Any]:
+def contraction_metrics(G, node, vf_before, epi_before):
     """NUL - Contraction metrics: νf decrease, core concentration, ΔNFR densification.
 
     Collects comprehensive contraction metrics including structural density dynamics
@@ -1356,7 +1356,7 @@ def contraction_metrics(
     """
     # Small epsilon for numerical stability
     EPSILON = 1e-9
-    
+
     vf_after = _get_node_attr(G, node, ALIAS_VF)
     epi_after = _get_node_attr(G, node, ALIAS_EPI)
     dnfr_after = _get_node_attr(G, node, ALIAS_DNFR)
@@ -1373,12 +1373,16 @@ def contraction_metrics(
 
     # Calculate structural density before and after
     # Density = |ΔNFR| / max(EPI, ε)
-    density_before = abs(dnfr_before) / max(abs(epi_before), EPSILON) if dnfr_before is not None else 0.0
+    density_before = (
+        abs(dnfr_before) / max(abs(epi_before), EPSILON) if dnfr_before is not None else 0.0
+    )
     density_after = abs(dnfr_after) / max(abs(epi_after), EPSILON)
-    
+
     # Calculate densification ratio (how much density increased)
-    densification_ratio = density_after / density_before if density_before > EPSILON else float('inf')
-    
+    densification_ratio = (
+        density_after / density_before if density_before > EPSILON else float("inf")
+    )
+
     # Get critical density threshold from graph config or use default
     critical_density_threshold = float(G.graph.get("CRITICAL_DENSITY_THRESHOLD", 5.0))
     is_critical_density = density_after > critical_density_threshold
@@ -1393,7 +1397,7 @@ def contraction_metrics(
         "dnfr_final": dnfr_after,
         "contraction_factor": vf_after / vf_before if vf_before > 0 else 1.0,
     }
-    
+
     # Add densification metrics if available
     if densification_factor is not None:
         metrics["densification_factor"] = densification_factor
@@ -1401,19 +1405,17 @@ def contraction_metrics(
     if dnfr_before is not None:
         metrics["dnfr_before"] = dnfr_before
         metrics["dnfr_increase"] = dnfr_after - dnfr_before if dnfr_before else 0.0
-    
+
     # Add NEW structural density metrics
     metrics["density_before"] = density_before
     metrics["density_after"] = density_after
     metrics["densification_ratio"] = densification_ratio
     metrics["is_critical_density"] = is_critical_density
-    
+
     return metrics
 
 
-def self_organization_metrics(
-    G: TNFRGraph, node: NodeId, epi_before: float, vf_before: float
-) -> dict[str, Any]:
+def self_organization_metrics(G, node, epi_before, vf_before):
     """THOL - Enhanced metrics with cascade dynamics and collective coherence.
 
     Collects comprehensive THOL metrics including bifurcation, cascade propagation,
@@ -1535,20 +1537,18 @@ def self_organization_metrics(
         "subepi_coherence": subepi_coherence,
         "metabolic_activity_index": metabolic_activity,
         # NEW: Network emergence indicator
-        "network_emergence": (
-            cascade_analysis["is_cascade"] and subepi_coherence > 0.5
-        ),
+        "network_emergence": (cascade_analysis["is_cascade"] and subepi_coherence > 0.5),
     }
 
 
 def mutation_metrics(
-    G: TNFRGraph,
-    node: NodeId,
-    theta_before: float,
-    epi_before: float,
-    vf_before: float | None = None,
-    dnfr_before: float | None = None,
-) -> dict[str, Any]:
+    G,
+    node,
+    theta_before,
+    epi_before,
+    vf_before=None,
+    dnfr_before=None,
+):
     """ZHIR - Comprehensive mutation metrics with canonical structural indicators.
 
     Collects extended metrics reflecting canonical ZHIR effects:
@@ -1677,9 +1677,7 @@ def mutation_metrics(
 
     # === THRESHOLD VERIFICATION ===
     # Compute ∂EPI/∂t from history
-    epi_history = G.nodes[node].get("epi_history") or G.nodes[node].get(
-        "_epi_history", []
-    )
+    epi_history = G.nodes[node].get("epi_history") or G.nodes[node].get("_epi_history", [])
     if len(epi_history) >= 2:
         depi_dt = abs(epi_history[-1] - epi_history[-2])
     else:
@@ -1718,9 +1716,7 @@ def mutation_metrics(
 
     # === BIFURCATION ANALYSIS ===
     tau = float(
-        G.graph.get(
-            "BIFURCATION_THRESHOLD_TAU", G.graph.get("ZHIR_BIFURCATION_THRESHOLD", 0.5)
-        )
+        G.graph.get("BIFURCATION_THRESHOLD_TAU", G.graph.get("ZHIR_BIFURCATION_THRESHOLD", 0.5))
     )
     bifurcation_potential = d2epi > tau
 
@@ -1739,9 +1735,7 @@ def mutation_metrics(
     # === STRUCTURAL PRESERVATION ===
     epi_kind_before = G.nodes[node].get("_epi_kind_before")
     epi_kind_after = G.nodes[node].get("epi_kind")
-    identity_preserved = (
-        epi_kind_before == epi_kind_after if epi_kind_before is not None else True
-    )
+    identity_preserved = epi_kind_before == epi_kind_after if epi_kind_before is not None else True
 
     # Track frequency and pressure changes
     delta_vf = vf_after - vf_before if vf_before is not None else 0.0
@@ -1767,9 +1761,7 @@ def mutation_metrics(
                 # Check if neighbor has changed recently (has history)
                 neighbor_theta_history = G.nodes[n].get("theta_history", [])
                 if len(neighbor_theta_history) >= 2:
-                    neighbor_change = abs(
-                        neighbor_theta_history[-1] - neighbor_theta_history[-2]
-                    )
+                    neighbor_change = abs(neighbor_theta_history[-1] - neighbor_theta_history[-2])
                     if neighbor_change > 0.05:  # Neighbor experienced change
                         impacted_neighbors += 1
 
@@ -1795,9 +1787,7 @@ def mutation_metrics(
     il_precedence_found = any("IL" in str(g) for g in glyph_history)
 
     # Check if destabilizer is recent (within ~3 operators)
-    destabilizer_recent = (
-        destabilizer_distance is not None and destabilizer_distance <= 3
-    )
+    destabilizer_recent = destabilizer_distance is not None and destabilizer_distance <= 3
 
     grammar_u4b_satisfied = il_precedence_found and destabilizer_recent
 
@@ -1828,7 +1818,8 @@ def mutation_metrics(
         "theta_regime_before": regime_before,
         "theta_regime_after": regime_after,
         "regime_changed": regime_changed or (regime_before != regime_after),
-        "theta_regime_change": regime_changed or (regime_before != regime_after),  # Backwards compat
+        "theta_regime_change": regime_changed
+        or (regime_before != regime_after),  # Backwards compat
         "regime_before": regime_before,  # Backwards compat
         "regime_after": regime_after,  # Backwards compat
         "theta_shift_direction": math.copysign(1.0, theta_shift),
@@ -1877,13 +1868,13 @@ def mutation_metrics(
 
 
 def transition_metrics(
-    G: TNFRGraph,
-    node: NodeId,
-    dnfr_before: float,
-    vf_before: float,
-    theta_before: float,
-    epi_before: float | None = None,
-) -> dict[str, Any]:
+    G,
+    node,
+    dnfr_before,
+    vf_before,
+    theta_before,
+    epi_before=None,
+):
     """NAV - Transition metrics: regime classification, phase shift, frequency scaling.
 
     Collects comprehensive transition metrics including regime origin/destination,
@@ -1946,7 +1937,7 @@ def transition_metrics(
     Notes
     -----
     **Regime Classification**:
-    
+
     - **Latent**: latent flag set OR νf < 0.05
     - **Active**: Default operational state
     - **Resonant**: EPI > 0.5 AND νf > 0.8
@@ -1966,12 +1957,12 @@ def transition_metrics(
     --------
     >>> from tnfr.structural import create_nfr, run_sequence
     >>> from tnfr.operators.definitions import Silence, Transition
-    >>> 
+    >>>
     >>> # Example: SHA → NAV reactivation
     >>> G, node = create_nfr("test", epi=0.5, vf=0.8)
     >>> G.graph["COLLECT_OPERATOR_METRICS"] = True
     >>> run_sequence(G, node, [Silence(), Transition()])
-    >>> 
+    >>>
     >>> metrics = G.graph["operator_metrics"][-1]
     >>> assert metrics["operator"] == "Transition"
     >>> assert metrics["transition_type"] == "reactivation"
@@ -2097,9 +2088,7 @@ def _detect_regime_from_state(epi: float, vf: float, latent: bool) -> str:
         return "active"
 
 
-def recursivity_metrics(
-    G: TNFRGraph, node: NodeId, epi_before: float, vf_before: float
-) -> dict[str, Any]:
+def recursivity_metrics(G, node, epi_before, vf_before):
     """REMESH - Recursivity metrics: fractal propagation, multi-scale coherence.
 
     Parameters
@@ -2136,3 +2125,21 @@ def recursivity_metrics(
         "fractal_depth": echo_count,
         "multi_scale_active": echo_count > 0,
     }
+
+
+try:  # Re-export experimental U6 telemetry without redefining
+    from .metrics_u6 import (
+        measure_tau_relax_observed,
+        measure_nonlinear_accumulation,
+        compute_bifurcation_index,
+    )
+except Exception:  # pragma: no cover - if missing, provide inert fallbacks
+
+    def measure_tau_relax_observed(*args: Any, **kwargs: Any) -> dict[str, Any]:
+        return {"error": "metrics_u6 missing", "metric_type": "u6_relaxation_time"}
+
+    def measure_nonlinear_accumulation(*args: Any, **kwargs: Any) -> dict[str, Any]:
+        return {"error": "metrics_u6 missing", "metric_type": "u6_nonlinear_accumulation"}
+
+    def compute_bifurcation_index(*args: Any, **kwargs: Any) -> dict[str, Any]:
+        return {"error": "metrics_u6 missing", "metric_type": "u6_bifurcation_index"}

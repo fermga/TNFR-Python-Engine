@@ -41,11 +41,11 @@ class TestU4bILPrecedence:
         """ZHIR without IL should pass when strict validation disabled (default)."""
         G, node = create_nfr("test", epi=0.5, vf=1.0)
         # Default: VALIDATE_OPERATOR_PRECONDITIONS=False
-        
+
         # Build history without IL
         G.nodes[node]["epi_history"] = [0.3, 0.4, 0.5]
         G.nodes[node]["glyph_history"] = []  # Empty history, no IL
-        
+
         # Should not raise - strict validation disabled
         validate_mutation(G, node)
 
@@ -53,17 +53,18 @@ class TestU4bILPrecedence:
         """ZHIR without prior IL should fail when strict validation enabled."""
         G, node = create_nfr("test", epi=0.5, vf=1.0)
         G.graph["VALIDATE_OPERATOR_PRECONDITIONS"] = True  # Enable strict validation
-        
+
         # Build history without IL
         G.nodes[node]["epi_history"] = [0.3, 0.4, 0.5]
         from tnfr.types import Glyph
+
         # Add non-IL operators to history
         G.nodes[node]["glyph_history"] = [Glyph.AL, Glyph.OZ]  # Emission, Dissonance (no Coherence)
-        
+
         # Should raise error
         with pytest.raises(OperatorPreconditionError) as exc_info:
             validate_mutation(G, node)
-        
+
         error_msg = str(exc_info.value)
         assert "U4b violation" in error_msg
         assert "prior IL" in error_msg or "Coherence" in error_msg
@@ -73,16 +74,17 @@ class TestU4bILPrecedence:
         """ZHIR with prior IL should pass strict validation."""
         G, node = create_nfr("test", epi=0.5, vf=1.0)
         G.graph["VALIDATE_OPERATOR_PRECONDITIONS"] = True
-        
+
         # Build history WITH IL
         G.nodes[node]["epi_history"] = [0.3, 0.4, 0.5]
         from tnfr.types import Glyph
+
         G.nodes[node]["glyph_history"] = [
-            Glyph.AL,   # Emission
-            Glyph.IL,   # Coherence - REQUIRED
-            Glyph.OZ,   # Dissonance
+            Glyph.AL,  # Emission
+            Glyph.IL,  # Coherence - REQUIRED
+            Glyph.OZ,  # Dissonance
         ]
-        
+
         # Should not raise
         validate_mutation(G, node)
 
@@ -91,16 +93,17 @@ class TestU4bILPrecedence:
         G, node = create_nfr("test", epi=0.5, vf=1.0)
         # Don't enable VALIDATE_OPERATOR_PRECONDITIONS
         G.graph["ZHIR_REQUIRE_IL_PRECEDENCE"] = True  # But enable this specific flag
-        
+
         # Build history without IL
         G.nodes[node]["epi_history"] = [0.3, 0.4, 0.5]
         from tnfr.types import Glyph
+
         G.nodes[node]["glyph_history"] = [Glyph.OZ]  # Only Dissonance, no IL
-        
+
         # Should raise error
         with pytest.raises(OperatorPreconditionError) as exc_info:
             validate_mutation(G, node)
-        
+
         assert "U4b violation" in str(exc_info.value)
         assert "prior IL" in str(exc_info.value)
 
@@ -108,18 +111,19 @@ class TestU4bILPrecedence:
         """IL anywhere in history satisfies precedence requirement."""
         G, node = create_nfr("test", epi=0.5, vf=1.0)
         G.graph["VALIDATE_OPERATOR_PRECONDITIONS"] = True
-        
+
         # IL early in history
         from tnfr.types import Glyph
+
         G.nodes[node]["glyph_history"] = [
-            Glyph.AL,   # Emission
-            Glyph.IL,   # Coherence - early
-            Glyph.EN,   # Reception
-            Glyph.RA,   # Resonance
-            Glyph.OZ,   # Dissonance
+            Glyph.AL,  # Emission
+            Glyph.IL,  # Coherence - early
+            Glyph.EN,  # Reception
+            Glyph.RA,  # Resonance
+            Glyph.OZ,  # Dissonance
         ]
         G.nodes[node]["epi_history"] = [0.2, 0.3, 0.4, 0.45, 0.5]
-        
+
         # Should pass - IL found anywhere before mutation
         validate_mutation(G, node)
 
@@ -131,12 +135,13 @@ class TestU4bDestabilizerRequirement:
         """ZHIR without destabilizer should pass when strict validation disabled."""
         G, node = create_nfr("test", epi=0.5, vf=1.0)
         # Default: strict validation off
-        
+
         # Build history without destabilizer
         G.nodes[node]["epi_history"] = [0.3, 0.4, 0.5]
         from tnfr.types import Glyph
+
         G.nodes[node]["glyph_history"] = [Glyph.AL, Glyph.IL]  # No destabilizer
-        
+
         # Should not raise (only warning logged)
         validate_mutation(G, node)
 
@@ -144,20 +149,21 @@ class TestU4bDestabilizerRequirement:
         """ZHIR without recent destabilizer should fail when strict validation enabled."""
         G, node = create_nfr("test", epi=0.5, vf=1.0)
         G.graph["VALIDATE_OPERATOR_PRECONDITIONS"] = True
-        
+
         # Build history: IL present (satisfies Part 1) but no destabilizer
         from tnfr.types import Glyph
+
         G.nodes[node]["glyph_history"] = [
-            Glyph.AL,   # Emission
-            Glyph.IL,   # Coherence (satisfies IL requirement)
-            Glyph.RA,   # Resonance (not a destabilizer)
+            Glyph.AL,  # Emission
+            Glyph.IL,  # Coherence (satisfies IL requirement)
+            Glyph.RA,  # Resonance (not a destabilizer)
         ]
         G.nodes[node]["epi_history"] = [0.3, 0.4, 0.5]
-        
+
         # Should raise error
         with pytest.raises(OperatorPreconditionError) as exc_info:
             validate_mutation(G, node)
-        
+
         error_msg = str(exc_info.value)
         assert "U4b violation" in error_msg
         assert "destabilizer" in error_msg.lower()
@@ -166,16 +172,17 @@ class TestU4bDestabilizerRequirement:
         """ZHIR with recent OZ (Dissonance) should pass strict validation."""
         G, node = create_nfr("test", epi=0.5, vf=1.0)
         G.graph["VALIDATE_OPERATOR_PRECONDITIONS"] = True
-        
+
         # Build valid history: IL + recent OZ
         from tnfr.types import Glyph
+
         G.nodes[node]["glyph_history"] = [
-            Glyph.AL,   # Emission
-            Glyph.IL,   # Coherence (IL precedence)
-            Glyph.OZ,   # Dissonance (destabilizer)
+            Glyph.AL,  # Emission
+            Glyph.IL,  # Coherence (IL precedence)
+            Glyph.OZ,  # Dissonance (destabilizer)
         ]
         G.nodes[node]["epi_history"] = [0.3, 0.4, 0.5]
-        
+
         # Should pass
         validate_mutation(G, node)
 
@@ -183,15 +190,16 @@ class TestU4bDestabilizerRequirement:
         """ZHIR with recent VAL (Expansion) should pass strict validation."""
         G, node = create_nfr("test", epi=0.5, vf=1.0)
         G.graph["VALIDATE_OPERATOR_PRECONDITIONS"] = True
-        
+
         # Build valid history: IL + recent VAL
         from tnfr.types import Glyph
+
         G.nodes[node]["glyph_history"] = [
-            Glyph.IL,   # Coherence
+            Glyph.IL,  # Coherence
             Glyph.VAL,  # Expansion (destabilizer)
         ]
         G.nodes[node]["epi_history"] = [0.4, 0.5]
-        
+
         # Should pass
         validate_mutation(G, node)
 
@@ -199,16 +207,20 @@ class TestU4bDestabilizerRequirement:
         """ZHIR_REQUIRE_DESTABILIZER flag enforces destabilizer even without strict validation."""
         G, node = create_nfr("test", epi=0.5, vf=1.0)
         G.graph["ZHIR_REQUIRE_DESTABILIZER"] = True  # Enable specific flag
-        
+
         # Build history without destabilizer
         from tnfr.types import Glyph
-        G.nodes[node]["glyph_history"] = [Glyph.IL, Glyph.SHA]  # No destabilizer (Silence is not a destabilizer)
+
+        G.nodes[node]["glyph_history"] = [
+            Glyph.IL,
+            Glyph.SHA,
+        ]  # No destabilizer (Silence is not a destabilizer)
         G.nodes[node]["epi_history"] = [0.4, 0.5]
-        
+
         # Should raise error
         with pytest.raises(OperatorPreconditionError) as exc_info:
             validate_mutation(G, node)
-        
+
         assert "U4b violation" in str(exc_info.value)
         assert "destabilizer" in str(exc_info.value).lower()
 
@@ -220,19 +232,20 @@ class TestU4bDestabilizerWindows:
         """OZ (strong destabilizer) should be valid within 4 ops of ZHIR."""
         G, node = create_nfr("test", epi=0.5, vf=1.0)
         G.graph["VALIDATE_OPERATOR_PRECONDITIONS"] = True
-        
+
         # OZ at distance 4 from mutation (should still be valid for strong)
         from tnfr.types import Glyph
+
         G.nodes[node]["glyph_history"] = [
-            Glyph.IL,   # 0: Coherence
-            Glyph.OZ,   # 1: Dissonance (strong destabilizer)
+            Glyph.IL,  # 0: Coherence
+            Glyph.OZ,  # 1: Dissonance (strong destabilizer)
             Glyph.SHA,  # 2: Silence
             Glyph.SHA,  # 3: Silence
             Glyph.SHA,  # 4: Silence
             # Position 5 will be ZHIR - distance from OZ = 4
         ]
         G.nodes[node]["epi_history"] = [0.2, 0.3, 0.35, 0.40, 0.45, 0.5]
-        
+
         # Should pass - OZ within window of 4
         validate_mutation(G, node)
 
@@ -240,12 +253,13 @@ class TestU4bDestabilizerWindows:
         """OZ beyond window of 4 ops should fail."""
         G, node = create_nfr("test", epi=0.5, vf=1.0)
         G.graph["VALIDATE_OPERATOR_PRECONDITIONS"] = True
-        
+
         # OZ at distance > 4 from mutation
         from tnfr.types import Glyph
+
         G.nodes[node]["glyph_history"] = [
-            Glyph.IL,   # 0: Coherence
-            Glyph.OZ,   # 1: Dissonance
+            Glyph.IL,  # 0: Coherence
+            Glyph.OZ,  # 1: Dissonance
             Glyph.SHA,  # 2: Silence
             Glyph.SHA,  # 3: Silence
             Glyph.SHA,  # 4: Silence
@@ -254,28 +268,29 @@ class TestU4bDestabilizerWindows:
             # Position 7 will be ZHIR - distance from OZ = 6 > 4
         ]
         G.nodes[node]["epi_history"] = [0.1, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5]
-        
+
         # Should fail - OZ too far
         with pytest.raises(OperatorPreconditionError) as exc_info:
             validate_mutation(G, node)
-        
+
         assert "destabilizer" in str(exc_info.value).lower()
 
     def test_moderate_destabilizer_window_is_2_ops(self):
         """VAL (moderate destabilizer) should be valid within 2 ops of ZHIR."""
         G, node = create_nfr("test", epi=0.5, vf=1.0)
         G.graph["VALIDATE_OPERATOR_PRECONDITIONS"] = True
-        
+
         # VAL at distance 2 from mutation
         from tnfr.types import Glyph
+
         G.nodes[node]["glyph_history"] = [
-            Glyph.IL,   # Coherence
+            Glyph.IL,  # Coherence
             Glyph.VAL,  # Expansion (moderate destabilizer)
             Glyph.SHA,  # Silence
             # Next will be ZHIR - distance from VAL = 2
         ]
         G.nodes[node]["epi_history"] = [0.3, 0.4, 0.45, 0.5]
-        
+
         # Should pass - VAL within window of 2
         validate_mutation(G, node)
 
@@ -287,16 +302,17 @@ class TestU4bIntegration:
         """Canonical sequence IL → OZ → ZHIR should pass all U4b checks."""
         G, node = create_nfr("test", epi=0.5, vf=1.0)
         G.graph["VALIDATE_OPERATOR_PRECONDITIONS"] = True
-        
+
         # Perfect canonical sequence
         from tnfr.types import Glyph
+
         G.nodes[node]["glyph_history"] = [
-            Glyph.AL,   # Emission
-            Glyph.IL,   # Coherence (IL precedence ✓)
-            Glyph.OZ,   # Dissonance (recent destabilizer ✓)
+            Glyph.AL,  # Emission
+            Glyph.IL,  # Coherence (IL precedence ✓)
+            Glyph.OZ,  # Dissonance (recent destabilizer ✓)
         ]
         G.nodes[node]["epi_history"] = [0.3, 0.4, 0.5]
-        
+
         # Should pass all checks
         validate_mutation(G, node)
 
@@ -304,16 +320,17 @@ class TestU4bIntegration:
         """Missing both IL and destabilizer should fail with IL error first."""
         G, node = create_nfr("test", epi=0.5, vf=1.0)
         G.graph["VALIDATE_OPERATOR_PRECONDITIONS"] = True
-        
+
         # No IL, no destabilizer
         from tnfr.types import Glyph
+
         G.nodes[node]["glyph_history"] = [Glyph.AL, Glyph.EN]  # Only non-IL, non-destabilizers
         G.nodes[node]["epi_history"] = [0.4, 0.5]
-        
+
         # Should fail on IL check first (checked before destabilizer)
         with pytest.raises(OperatorPreconditionError) as exc_info:
             validate_mutation(G, node)
-        
+
         # First error should be about IL
         assert "prior IL" in str(exc_info.value) or "Coherence" in str(exc_info.value)
 
@@ -321,17 +338,21 @@ class TestU4bIntegration:
         """Test full operator sequence with strict validation."""
         G, node = create_nfr("test", epi=0.4, vf=1.0)
         G.graph["VALIDATE_OPERATOR_PRECONDITIONS"] = True
-        
+
         # Build initial history
         G.nodes[node]["epi_history"] = [0.35, 0.38, 0.40]
-        
+
         # Valid sequence: IL → OZ → ZHIR
-        run_sequence(G, node, [
-            Coherence(),    # Provides IL precedence
-            Dissonance(),   # Provides destabilizer
-            Mutation(),     # Should pass U4b
-        ])
-        
+        run_sequence(
+            G,
+            node,
+            [
+                Coherence(),  # Provides IL precedence
+                Dissonance(),  # Provides destabilizer
+                Mutation(),  # Should pass U4b
+            ],
+        )
+
         # Should complete without error
         # Verify mutation context was recorded
         assert "_mutation_context" in G.nodes[node]
@@ -342,30 +363,38 @@ class TestU4bIntegration:
         """Sequence without IL should fail when strict validation enabled."""
         G, node = create_nfr("test", epi=0.4, vf=1.0)
         G.graph["VALIDATE_OPERATOR_PRECONDITIONS"] = True
-        
+
         # Try invalid sequence: OZ → ZHIR (no IL)
         with pytest.raises(OperatorPreconditionError) as exc_info:
-            run_sequence(G, node, [
-                Emission(),     # Not IL
-                Dissonance(),   # Destabilizer present
-                Mutation(),     # Should fail - no IL
-            ])
-        
+            run_sequence(
+                G,
+                node,
+                [
+                    Emission(),  # Not IL
+                    Dissonance(),  # Destabilizer present
+                    Mutation(),  # Should fail - no IL
+                ],
+            )
+
         assert "prior IL" in str(exc_info.value) or "Coherence" in str(exc_info.value)
 
     def test_run_sequence_fails_without_destabilizer(self):
         """Sequence without recent destabilizer should fail when strict validation enabled."""
         G, node = create_nfr("test", epi=0.4, vf=1.0)
         G.graph["VALIDATE_OPERATOR_PRECONDITIONS"] = True
-        
+
         # Try invalid sequence: IL → ZHIR (no destabilizer)
         with pytest.raises(OperatorPreconditionError) as exc_info:
-            run_sequence(G, node, [
-                Coherence(),    # IL present
-                Silence(),      # Not a destabilizer
-                Mutation(),     # Should fail - no destabilizer
-            ])
-        
+            run_sequence(
+                G,
+                node,
+                [
+                    Coherence(),  # IL present
+                    Silence(),  # Not a destabilizer
+                    Mutation(),  # Should fail - no destabilizer
+                ],
+            )
+
         assert "destabilizer" in str(exc_info.value).lower()
 
 
@@ -376,14 +405,15 @@ class TestU4bErrorMessages:
         """IL precedence error should show recent history for debugging."""
         G, node = create_nfr("test", epi=0.5, vf=1.0)
         G.graph["VALIDATE_OPERATOR_PRECONDITIONS"] = True
-        
+
         from tnfr.types import Glyph
+
         G.nodes[node]["glyph_history"] = [Glyph.AL, Glyph.OZ, Glyph.EN]
         G.nodes[node]["epi_history"] = [0.3, 0.4, 0.5]
-        
+
         with pytest.raises(OperatorPreconditionError) as exc_info:
             validate_mutation(G, node)
-        
+
         error_msg = str(exc_info.value)
         # Should include history in error message
         assert "history" in error_msg.lower() or "emission" in error_msg.lower()
@@ -393,14 +423,15 @@ class TestU4bErrorMessages:
         G, node = create_nfr("test", epi=0.5, vf=1.0)
         G.graph["VALIDATE_OPERATOR_PRECONDITIONS"] = True
         G.graph["ZHIR_REQUIRE_DESTABILIZER"] = True
-        
+
         from tnfr.types import Glyph
+
         G.nodes[node]["glyph_history"] = [Glyph.IL, Glyph.RA, Glyph.SHA]  # No destabilizers
         G.nodes[node]["epi_history"] = [0.3, 0.4, 0.5]
-        
+
         with pytest.raises(OperatorPreconditionError) as exc_info:
             validate_mutation(G, node)
-        
+
         error_msg = str(exc_info.value)
         # Should include recent history
         assert "history" in error_msg.lower()
@@ -413,12 +444,13 @@ class TestU4bBackwardCompatibility:
         """Without VALIDATE_OPERATOR_PRECONDITIONS, U4b checks are soft (warnings only)."""
         G, node = create_nfr("test", epi=0.5, vf=1.0)
         # Don't set VALIDATE_OPERATOR_PRECONDITIONS (default False)
-        
+
         # Invalid sequence - but should pass (warnings only)
         from tnfr.types import Glyph
+
         G.nodes[node]["glyph_history"] = [Glyph.AL, Glyph.SHA]  # No IL, no destabilizer
         G.nodes[node]["epi_history"] = [0.4, 0.5]
-        
+
         # Should not raise
         validate_mutation(G, node)
 
@@ -427,18 +459,19 @@ class TestU4bBackwardCompatibility:
         G, node = create_nfr("test", epi=0.5, vf=1.0)
         # Global strict validation OFF
         assert G.graph.get("VALIDATE_OPERATOR_PRECONDITIONS", False) is False
-        
+
         # But enable IL requirement specifically
         G.graph["ZHIR_REQUIRE_IL_PRECEDENCE"] = True
-        
+
         from tnfr.types import Glyph
+
         G.nodes[node]["glyph_history"] = [Glyph.OZ]  # No IL
         G.nodes[node]["epi_history"] = [0.4, 0.5]
-        
+
         # Should fail on IL even though global strict validation is off
         with pytest.raises(OperatorPreconditionError) as exc_info:
             validate_mutation(G, node)
-        
+
         assert "prior IL" in str(exc_info.value)
 
 

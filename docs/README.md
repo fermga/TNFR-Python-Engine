@@ -161,8 +161,8 @@ MkDocs will warn about broken links during build. Check the build output for war
 ## 🔗 Related Documentation
 
 - **Grammar Documentation**: [docs/grammar/README.md](grammar/README.md)
-- **Main README**: [../README.md](../README.md)
-- **Contributing Guide**: [../CONTRIBUTING.md](../CONTRIBUTING.md)
+- **Main README**: [Repository README](https://github.com/fermga/TNFR-Python-Engine/blob/main/README.md)
+- **Contributing Guide**: [CONTRIBUTING.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/CONTRIBUTING.md)
 
 ---
 

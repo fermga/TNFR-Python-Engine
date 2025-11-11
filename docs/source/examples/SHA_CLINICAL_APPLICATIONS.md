@@ -847,11 +847,11 @@ Each example generates expected telemetry and validates against protocol specifi
 
 ## Glossary
 
-**EPI (Estructura Primaria de Información)**: Primary Information Structure - the coherent "form" or pattern of a node
+**EPI (Primary Information Structure)**: The coherent "form" or pattern of a node
 
-**νf (Frecuencia estructural)**: Structural frequency - the rate of internal reorganization, measured in Hz_str
+**νf (Structural frequency)**: The rate of internal reorganization, measured in Hz_str
 
-**ΔNFR (Gradiente Nodal)**: Internal reorganization operator - the "pressure" driving structural change
+**ΔNFR (Nodal Gradient)**: Internal reorganization operator - the "pressure" driving structural change
 
 **Phase (φ, θ)**: Relative synchrony with network neighbors
 

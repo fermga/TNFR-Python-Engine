@@ -254,9 +254,7 @@ class _SelectorLifecycle(Protocol):
     def prepare(self, graph: TNFRGraph, nodes: Sequence[NodeId]) -> None: ...
     def select(self, graph: TNFRGraph, node: NodeId) -> GlyphCode: ...
 
-GlyphSelector: TypeAlias = Union[
-    Callable[[TNFRGraph, NodeId], GlyphCode], _SelectorLifecycle
-]
+GlyphSelector: TypeAlias = Union[Callable[[TNFRGraph, NodeId], GlyphCode], _SelectorLifecycle]
 SelectorPreselectionMetrics: TypeAlias = Mapping[Any, SelectorMetrics]
 SelectorPreselectionChoices: TypeAlias = Mapping[Any, Union[Glyph, str]]
 SelectorPreselectionPayload: TypeAlias = tuple[
@@ -321,13 +319,9 @@ NeighborStats: TypeAlias = tuple[
 
 GlyphogramRow: TypeAlias = MutableMapping[str, float]
 GlyphTimingTotals: TypeAlias = MutableMapping[str, float]
-GlyphTimingByNode: TypeAlias = MutableMapping[
-    Any, MutableMapping[str, MutableSequence[float]]
-]
+GlyphTimingByNode: TypeAlias = MutableMapping[Any, MutableMapping[str, MutableSequence[float]]]
 GlyphCounts: TypeAlias = Mapping[str, int]
-GlyphMetricsHistoryValue: TypeAlias = Union[
-    MutableMapping[Any, Any], MutableSequence[Any]
-]
+GlyphMetricsHistoryValue: TypeAlias = Union[MutableMapping[Any, Any], MutableSequence[Any]]
 GlyphMetricsHistory: TypeAlias = MutableMapping[str, GlyphMetricsHistoryValue]
 MetricsListHistory: TypeAlias = MutableMapping[str, list[Any]]
 
