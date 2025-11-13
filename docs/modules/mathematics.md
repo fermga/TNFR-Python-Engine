@@ -14,7 +14,6 @@ If any other document disagrees with this README on core computational mathemati
 
 Quick pointers:
 - Formal theory: [docs/source/theory/mathematical_foundations.md](../../../docs/source/theory/mathematical_foundations.md)
-- Symbolic suite: [src/tnfr/math](../math/README.md)
 - Fields (Φ_s, |∇φ|, K_φ, ξ_C): [src/tnfr/physics/fields.py](../physics/fields.py) and docs sections below
 - Number theory guide (ΔNFR prime criterion): [docs/TNFR_NUMBER_THEORY_GUIDE.md](../../../docs/TNFR_NUMBER_THEORY_GUIDE.md)
 - Interactive notebook: [examples/tnfr_prime_checker.ipynb](../../../examples/tnfr_prime_checker.ipynb)
