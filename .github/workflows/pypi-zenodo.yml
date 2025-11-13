@@ -1,0 +1,52 @@
+name: PyPI and Zenodo Integration
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      force_publish:
+        description: 'Force publish to PyPI'
+        required: false
+        default: false
+        type: boolean
+
+jobs:
+  pypi-publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write  # For trusted publishing to PyPI
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install build dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install build setuptools-scm[toml] twine
+    
+    - name: Build distribution
+      run: python -m build
+    
+    - name: Check distribution
+      run: python -m twine check dist/*
+    
+    - name: Publish to PyPI
+      if: github.event_name == 'release' || inputs.force_publish
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        verbose: true
+    
+    - name: Upload to Zenodo
+      if: github.event_name == 'release'
+      run: |
+        echo "Zenodo integration will be triggered automatically via GitHub-Zenodo webhook"
+        echo "Make sure Zenodo webhook is configured at https://zenodo.org/account/settings/github/"
