@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" id="html-root">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,10 +13,10 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Georgia', 'Times New Roman', serif;
+            line-height: 1.8;
+            color: #e0e0e0;
+            background: #0a0a0a;
             min-height: 100vh;
         }
 
@@ -26,309 +26,527 @@
             padding: 2rem;
         }
 
+        .lang-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .lang-button {
+            background: #1a1a1a;
+            color: #e0e0e0;
+            border: 1px solid #333;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            font-family: 'Georgia', 'Times New Roman', serif;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .lang-button:hover {
+            background: #2a2a2a;
+            border-color: #666;
+        }
+
+        .lang-button.active {
+            background: #2d2d2d;
+            border-color: #888;
+        }
+
         header {
             text-align: center;
             padding: 3rem 0;
-            color: white;
+            border-bottom: 1px solid #333;
         }
 
         h1 {
             font-size: 3rem;
             margin-bottom: 1rem;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            font-weight: 300;
+            letter-spacing: 0.05em;
+            color: #f0f0f0;
         }
 
         .tagline {
-            font-size: 1.5rem;
-            opacity: 0.95;
-            margin-bottom: 2rem;
+            font-size: 1.3rem;
+            opacity: 0.8;
+            margin-bottom: 1rem;
+            font-style: italic;
+            color: #b0b0b0;
         }
 
         .main-content {
-            background: white;
-            border-radius: 12px;
+            background: #121212;
+            border: 1px solid #333;
             padding: 3rem;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            margin-bottom: 2rem;
+            margin: 2rem 0;
         }
 
         h2 {
-            color: #667eea;
-            font-size: 2rem;
-            margin: 2rem 0 1rem 0;
-            border-bottom: 3px solid #667eea;
+            font-size: 1.8rem;
+            margin: 3rem 0 1.5rem 0;
+            font-weight: 400;
+            letter-spacing: 0.03em;
+            color: #f0f0f0;
+            border-bottom: 1px solid #444;
             padding-bottom: 0.5rem;
         }
 
         h3 {
-            color: #764ba2;
-            font-size: 1.5rem;
-            margin: 1.5rem 0 1rem 0;
+            font-size: 1.3rem;
+            margin: 2rem 0 1rem 0;
+            font-weight: 400;
+            color: #d0d0d0;
         }
 
         p {
-            margin-bottom: 1rem;
-            font-size: 1.1rem;
+            margin-bottom: 1.2rem;
+            font-size: 1.05rem;
+            text-align: justify;
         }
 
         .intro {
-            font-size: 1.2rem;
-            line-height: 1.8;
-            color: #555;
-            border-left: 4px solid #667eea;
-            padding-left: 1.5rem;
-            margin: 2rem 0;
-            background: #f8f9fa;
-            padding: 1.5rem;
-            border-radius: 8px;
+            font-size: 1.1rem;
+            line-height: 1.9;
+            color: #c0c0c0;
+            border-left: 3px solid #555;
+            padding-left: 2rem;
+            margin: 2.5rem 0;
+            background: #1a1a1a;
+            padding: 2rem;
+            font-style: italic;
         }
 
         .key-concepts {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 2rem;
-            margin: 2rem 0;
+            margin: 3rem 0;
         }
 
         .concept-card {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            background: #1a1a1a;
             padding: 2rem;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            transition: transform 0.3s ease;
+            border: 1px solid #333;
+            transition: all 0.3s ease;
         }
 
         .concept-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
-        }
-
-        .concept-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
+            background: #222;
+            border-color: #555;
         }
 
         .equation {
-            background: #2d3748;
-            color: #fff;
-            padding: 1.5rem;
-            border-radius: 8px;
+            background: #1a1a1a;
+            color: #f0f0f0;
+            padding: 2rem;
+            border: 1px solid #333;
             font-family: 'Courier New', monospace;
             font-size: 1.3rem;
             text-align: center;
-            margin: 2rem 0;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            margin: 2.5rem 0;
+            letter-spacing: 0.05em;
         }
 
         .highlight-box {
-            background: #fff3cd;
-            border-left: 5px solid #ffc107;
-            padding: 1.5rem;
-            margin: 2rem 0;
-            border-radius: 4px;
+            background: #1a1a1a;
+            border-left: 3px solid #666;
+            padding: 2rem;
+            margin: 2.5rem 0;
         }
 
         ul {
-            margin: 1rem 0 1rem 2rem;
+            margin: 1.5rem 0 1.5rem 3rem;
         }
 
         li {
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.8rem;
             font-size: 1.05rem;
         }
 
         .cta-section {
             text-align: center;
             margin: 3rem 0;
-            padding: 2rem;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-radius: 12px;
+            padding: 3rem;
+            background: #1a1a1a;
+            border: 1px solid #333;
         }
 
         .cta-button {
             display: inline-block;
             padding: 1rem 2rem;
-            background: white;
-            color: #667eea;
+            background: #2a2a2a;
+            color: #e0e0e0;
             text-decoration: none;
-            border-radius: 50px;
-            font-weight: bold;
-            font-size: 1.2rem;
+            border: 1px solid #444;
+            font-weight: 400;
+            font-size: 1rem;
             margin: 1rem 0.5rem;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: all 0.3s ease;
+            font-family: 'Georgia', 'Times New Roman', serif;
         }
 
         .cta-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+            background: #333;
+            border-color: #666;
         }
 
         footer {
             text-align: center;
-            color: white;
-            padding: 2rem 0;
-            opacity: 0.9;
+            padding: 3rem 0;
+            border-top: 1px solid #333;
+            opacity: 0.7;
         }
 
         footer a {
-            color: white;
+            color: #b0b0b0;
             text-decoration: none;
             margin: 0 1rem;
-            font-weight: bold;
         }
 
         footer a:hover {
             text-decoration: underline;
+            color: #e0e0e0;
+        }
+
+        strong {
+            color: #f0f0f0;
+            font-weight: 500;
+        }
+
+        .lang-content {
+            display: none;
+        }
+
+        .lang-content.active {
+            display: block;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>🌊 TNFR</h1>
-            <p class="tagline">Resonant Fractal Nature Theory</p>
-            <p>Model reality as coherent resonance, not isolated objects</p>
-        </header>
-
-        <div class="main-content">
-            <div class="intro">
-                <strong>TNFR</strong> (Resonant Fractal Nature Theory) is a physics-grounded computational paradigm 
-                that proposes a radical reconceptualization of reality: <em>reality is modeled as coherent patterns 
-                that persist through resonance</em>, not as isolated "things" with static properties.
-            </div>
-
-            <h2>🎯 The Central Insight</h2>
-            <p>
-                Reality is not made of "things" but of <strong>coherence</strong>—structures that persist in networks 
-                because they <strong>resonate</strong> with their environment. A pattern exists not because it's "stored" 
-                somewhere, but because it continuously <strong>reorganizes</strong> while maintaining <strong>structural 
-                integrity</strong> through <strong>network coupling</strong>.
-            </p>
-
-            <div class="highlight-box">
-                <h3>💡 The Whirlpool Analogy</h3>
-                <p>Think of a whirlpool in a river:</p>
-                <ul>
-                    <li>Not a "thing" you can pick up</li>
-                    <li>Exists as a <strong>coherent pattern</strong> in flowing water</li>
-                    <li>Persists because water flow <strong>resonates</strong> with vortex geometry</li>
-                    <li>Disappears when flow-geometry coupling breaks</li>
-                    <li>Can nest (smaller eddies within larger vortex)</li>
-                </ul>
-                <p><strong>This is TNFR's model of everything</strong>: atoms, cells, thoughts, societies.</p>
-            </div>
-
-            <h2>⚛️ The Nodal Equation</h2>
-            <p>At the heart of TNFR is the <strong>nodal equation</strong>, which describes how every node 
-            in a TNFR network evolves:</p>
-
-            <div class="equation">
-                ∂EPI/∂t = νf · ΔNFR(t)
-            </div>
-
-            <p><strong>Components:</strong></p>
-            <ul>
-                <li><strong>EPI</strong> (Primary Information Structure): The coherent structural "form" of a node</li>
-                <li><strong>νf</strong> (Structural frequency): Rate of reorganization (Hz_str units)</li>
-                <li><strong>ΔNFR</strong> (Nodal gradient): Internal reorganization operator - "structural pressure"</li>
-                <li><strong>t</strong>: Time</li>
-            </ul>
-
-            <p><strong>Physical Meaning:</strong></p>
-            <div class="equation">
-                Rate of structural change = Reorganization capacity × Structural pressure
-            </div>
-
-            <h2>🔑 Key Concepts</h2>
-            <div class="key-concepts">
-                <div class="concept-card">
-                    <div class="concept-icon">🌀</div>
-                    <h3>Coherence</h3>
-                    <p>Patterns persist not through static existence but through continuous reorganization that 
-                    maintains structural integrity. Coherence is measured by C(t), ranging from 0 to 1.</p>
-                </div>
-
-                <div class="concept-card">
-                    <div class="concept-icon">📡</div>
-                    <h3>Resonance</h3>
-                    <p>Patterns synchronize and amplify when their phases align. Resonance enables information 
-                    propagation without loss of identity across network structures.</p>
-                </div>
-
-                <div class="concept-card">
-                    <div class="concept-icon">🔄</div>
-                    <h3>Operators</h3>
-                    <p>13 canonical structural operators (Emission, Reception, Coherence, Dissonance, etc.) 
-                    govern how nodes reorganize. These are the only ways to modify patterns in TNFR.</p>
-                </div>
-
-                <div class="concept-card">
-                    <div class="concept-icon">🎼</div>
-                    <h3>Grammar</h3>
-                    <p>Operator sequences must follow unified grammar rules (U1-U4) derived from physics. 
-                    Valid sequences preserve coherence and enable predictable system evolution.</p>
-                </div>
-
-                <div class="concept-card">
-                    <div class="concept-icon">🌳</div>
-                    <h3>Fractality</h3>
-                    <p>Patterns can nest within patterns without losing identity. TNFR operates across all scales: 
-                    quantum, molecular, biological, social, cosmic.</p>
-                </div>
-
-                <div class="concept-card">
-                    <div class="concept-icon">🔬</div>
-                    <h3>Metrics</h3>
-                    <p>Quantitative measures include Coherence C(t), Sense Index Si, structural frequency νf, 
-                    and phase φ. All dynamics are observable and reproducible.</p>
-                </div>
-            </div>
-
-            <h2>🌟 The Paradigm Shift</h2>
-            <p><strong>Traditional View → TNFR View:</strong></p>
-            <ul>
-                <li>Objects exist independently → <strong>Patterns exist through resonance</strong></li>
-                <li>Causality (A causes B) → <strong>Co-organization (A and B synchronize)</strong></li>
-                <li>Static properties → <strong>Dynamic reorganization</strong></li>
-                <li>Isolated systems → <strong>Coupled networks</strong></li>
-                <li>Descriptive models → <strong>Generative dynamics</strong></li>
-            </ul>
-
-            <h2>🚀 Applications</h2>
-            <p>TNFR has been applied to model:</p>
-            <ul>
-                <li><strong>Molecular Chemistry</strong>: Chemical bonds as phase synchronization, reactions as operator sequences</li>
-                <li><strong>Fundamental Particles</strong>: Particle emergence from coherent attractors</li>
-                <li><strong>Biological Systems</strong>: Cellular organization and life emergence</li>
-                <li><strong>Social Dynamics</strong>: Group formation and collective behavior</li>
-                <li><strong>AI and Neural Networks</strong>: Learning as structural reorganization</li>
-                <li><strong>Distributed Systems</strong>: Network synchronization and resilience</li>
-            </ul>
-        </div>
-
-        <div class="cta-section">
-            <h2>Ready to Explore TNFR?</h2>
-            <p>Dive into the computational implementation and start modeling coherence</p>
-            <a href="https://github.com/fermga/TNFR-Python-Engine" class="cta-button" target="_blank">
-                📦 View on GitHub
-            </a>
-            <a href="https://pypi.org/project/tnfr/" class="cta-button" target="_blank">
-                🐍 Install from PyPI
-            </a>
-        </div>
-
-        <footer>
-            <p>&copy; 2024-2025 TNFR Python Engine | Licensed under MIT</p>
-            <p>
-                <a href="https://github.com/fermga/TNFR-Python-Engine" target="_blank">GitHub</a> |
-                <a href="https://doi.org/10.5281/zenodo.17602861" target="_blank">DOI: 10.5281/zenodo.17602861</a> |
-                <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/LICENSE.md" target="_blank">License</a>
-            </p>
-            <p style="margin-top: 1rem; font-style: italic;">
-                Reality is not made of things—it's made of resonance.
-            </p>
-        </footer>
+    <div class="lang-toggle">
+        <button class="lang-button active" onclick="setLanguage('en')" id="btn-en">English</button>
+        <button class="lang-button" onclick="setLanguage('es')" id="btn-es">Español</button>
     </div>
+
+    <div class="container">
+        <!-- English Content -->
+        <div class="lang-content active" id="content-en">
+            <header>
+                <h1>TNFR</h1>
+                <p class="tagline">Resonant Fractal Nature Theory</p>
+                <p>Model reality as coherent resonance, not isolated objects</p>
+            </header>
+
+            <div class="main-content">
+                <div class="intro">
+                    <strong>TNFR</strong> (Resonant Fractal Nature Theory) is a physics-grounded computational paradigm 
+                    that proposes a radical reconceptualization of reality: <em>reality is modeled as coherent patterns 
+                    that persist through resonance</em>, not as isolated "things" with static properties.
+                </div>
+
+                <h2>The Central Insight</h2>
+                <p>
+                    Reality is not made of "things" but of <strong>coherence</strong>—structures that persist in networks 
+                    because they <strong>resonate</strong> with their environment. A pattern exists not because it's "stored" 
+                    somewhere, but because it continuously <strong>reorganizes</strong> while maintaining <strong>structural 
+                    integrity</strong> through <strong>network coupling</strong>.
+                </p>
+
+                <div class="highlight-box">
+                    <h3>The Whirlpool Analogy</h3>
+                    <p>Think of a whirlpool in a river:</p>
+                    <ul>
+                        <li>Not a "thing" you can pick up</li>
+                        <li>Exists as a <strong>coherent pattern</strong> in flowing water</li>
+                        <li>Persists because water flow <strong>resonates</strong> with vortex geometry</li>
+                        <li>Disappears when flow-geometry coupling breaks</li>
+                        <li>Can nest (smaller eddies within larger vortex)</li>
+                    </ul>
+                    <p><strong>This is TNFR's model of everything</strong>: atoms, cells, thoughts, societies.</p>
+                </div>
+
+                <h2>The Nodal Equation</h2>
+                <p>At the heart of TNFR is the <strong>nodal equation</strong>, which describes how every node 
+                in a TNFR network evolves:</p>
+
+                <div class="equation">
+                    ∂EPI/∂t = νf · ΔNFR(t)
+                </div>
+
+                <p><strong>Components:</strong></p>
+                <ul>
+                    <li><strong>EPI</strong> (Primary Information Structure): The coherent structural "form" of a node</li>
+                    <li><strong>νf</strong> (Structural frequency): Rate of reorganization (Hz_str units)</li>
+                    <li><strong>ΔNFR</strong> (Nodal gradient): Internal reorganization operator - "structural pressure"</li>
+                    <li><strong>t</strong>: Time</li>
+                </ul>
+
+                <p><strong>Physical Meaning:</strong></p>
+                <div class="equation">
+                    Rate of structural change = Reorganization capacity × Structural pressure
+                </div>
+
+                <h2>Key Concepts</h2>
+                <div class="key-concepts">
+                    <div class="concept-card">
+                        <h3>Coherence</h3>
+                        <p>Patterns persist not through static existence but through continuous reorganization that 
+                        maintains structural integrity. Coherence is measured by C(t), ranging from 0 to 1.</p>
+                    </div>
+
+                    <div class="concept-card">
+                        <h3>Resonance</h3>
+                        <p>Patterns synchronize and amplify when their phases align. Resonance enables information 
+                        propagation without loss of identity across network structures.</p>
+                    </div>
+
+                    <div class="concept-card">
+                        <h3>Operators</h3>
+                        <p>13 canonical structural operators (Emission, Reception, Coherence, Dissonance, etc.) 
+                        govern how nodes reorganize. These are the only ways to modify patterns in TNFR.</p>
+                    </div>
+
+                    <div class="concept-card">
+                        <h3>Grammar</h3>
+                        <p>Operator sequences must follow unified grammar rules (U1-U4) derived from physics. 
+                        Valid sequences preserve coherence and enable predictable system evolution.</p>
+                    </div>
+
+                    <div class="concept-card">
+                        <h3>Fractality</h3>
+                        <p>Patterns can nest within patterns without losing identity. TNFR operates across all scales: 
+                        quantum, molecular, biological, social, cosmic.</p>
+                    </div>
+
+                    <div class="concept-card">
+                        <h3>Metrics</h3>
+                        <p>Quantitative measures include Coherence C(t), Sense Index Si, structural frequency νf, 
+                        and phase φ. All dynamics are observable and reproducible.</p>
+                    </div>
+                </div>
+
+                <h2>The Paradigm Shift</h2>
+                <p><strong>Traditional View → TNFR View:</strong></p>
+                <ul>
+                    <li>Objects exist independently → <strong>Patterns exist through resonance</strong></li>
+                    <li>Causality (A causes B) → <strong>Co-organization (A and B synchronize)</strong></li>
+                    <li>Static properties → <strong>Dynamic reorganization</strong></li>
+                    <li>Isolated systems → <strong>Coupled networks</strong></li>
+                    <li>Descriptive models → <strong>Generative dynamics</strong></li>
+                </ul>
+
+                <h2>Applications</h2>
+                <p>TNFR has been applied to model:</p>
+                <ul>
+                    <li><strong>Molecular Chemistry</strong>: Chemical bonds as phase synchronization, reactions as operator sequences</li>
+                    <li><strong>Fundamental Particles</strong>: Particle emergence from coherent attractors</li>
+                    <li><strong>Biological Systems</strong>: Cellular organization and life emergence</li>
+                    <li><strong>Social Dynamics</strong>: Group formation and collective behavior</li>
+                    <li><strong>AI and Neural Networks</strong>: Learning as structural reorganization</li>
+                    <li><strong>Distributed Systems</strong>: Network synchronization and resilience</li>
+                </ul>
+            </div>
+
+            <div class="cta-section">
+                <h2>Ready to Explore TNFR?</h2>
+                <p>Dive into the computational implementation and start modeling coherence</p>
+                <a href="https://github.com/fermga/TNFR-Python-Engine" class="cta-button" target="_blank">
+                    View on GitHub
+                </a>
+                <a href="https://pypi.org/project/tnfr/" class="cta-button" target="_blank">
+                    Install from PyPI
+                </a>
+            </div>
+
+            <footer>
+                <p>&copy; 2024-2025 TNFR Python Engine | Licensed under MIT</p>
+                <p>
+                    <a href="https://github.com/fermga/TNFR-Python-Engine" target="_blank">GitHub</a> |
+                    <a href="https://doi.org/10.5281/zenodo.17602861" target="_blank">DOI: 10.5281/zenodo.17602861</a> |
+                    <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/LICENSE.md" target="_blank">License</a>
+                </p>
+                <p style="margin-top: 1rem; font-style: italic;">
+                    Reality is not made of things—it's made of resonance.
+                </p>
+            </footer>
+        </div>
+
+        <!-- Spanish Content -->
+        <div class="lang-content" id="content-es">
+            <header>
+                <h1>TNFR</h1>
+                <p class="tagline">Teoría Resonante de la Naturaleza Fractal</p>
+                <p>Modelar la realidad como resonancia coherente, no como objetos aislados</p>
+            </header>
+
+            <div class="main-content">
+                <div class="intro">
+                    <strong>TNFR</strong> (Teoría Resonante de la Naturaleza Fractal) es un paradigma computacional 
+                    fundamentado en la física que propone una reconceptualización radical de la realidad: <em>la realidad 
+                    se modela como patrones coherentes que persisten a través de la resonancia</em>, no como "cosas" 
+                    aisladas con propiedades estáticas.
+                </div>
+
+                <h2>La Comprensión Central</h2>
+                <p>
+                    La realidad no está hecha de "cosas" sino de <strong>coherencia</strong>—estructuras que persisten 
+                    en redes porque <strong>resuenan</strong> con su entorno. Un patrón existe no porque esté "almacenado" 
+                    en algún lugar, sino porque continuamente se <strong>reorganiza</strong> mientras mantiene su 
+                    <strong>integridad estructural</strong> a través del <strong>acoplamiento de red</strong>.
+                </p>
+
+                <div class="highlight-box">
+                    <h3>La Analogía del Remolino</h3>
+                    <p>Piense en un remolino en un río:</p>
+                    <ul>
+                        <li>No es una "cosa" que se pueda recoger</li>
+                        <li>Existe como un <strong>patrón coherente</strong> en el agua que fluye</li>
+                        <li>Persiste porque el flujo del agua <strong>resuena</strong> con la geometría del vórtice</li>
+                        <li>Desaparece cuando se rompe el acoplamiento flujo-geometría</li>
+                        <li>Puede anidarse (remolinos más pequeños dentro de un vórtice mayor)</li>
+                    </ul>
+                    <p><strong>Este es el modelo de TNFR para todo</strong>: átomos, células, pensamientos, sociedades.</p>
+                </div>
+
+                <h2>La Ecuación Nodal</h2>
+                <p>En el corazón de TNFR está la <strong>ecuación nodal</strong>, que describe cómo evoluciona 
+                cada nodo en una red TNFR:</p>
+
+                <div class="equation">
+                    ∂EPI/∂t = νf · ΔNFR(t)
+                </div>
+
+                <p><strong>Componentes:</strong></p>
+                <ul>
+                    <li><strong>EPI</strong> (Estructura de Información Primaria): La "forma" estructural coherente de un nodo</li>
+                    <li><strong>νf</strong> (Frecuencia estructural): Tasa de reorganización (unidades Hz_str)</li>
+                    <li><strong>ΔNFR</strong> (Gradiente nodal): Operador de reorganización interna - "presión estructural"</li>
+                    <li><strong>t</strong>: Tiempo</li>
+                </ul>
+
+                <p><strong>Significado Físico:</strong></p>
+                <div class="equation">
+                    Tasa de cambio estructural = Capacidad de reorganización × Presión estructural
+                </div>
+
+                <h2>Conceptos Clave</h2>
+                <div class="key-concepts">
+                    <div class="concept-card">
+                        <h3>Coherencia</h3>
+                        <p>Los patrones persisten no a través de la existencia estática sino mediante la reorganización 
+                        continua que mantiene la integridad estructural. La coherencia se mide por C(t), con rango de 0 a 1.</p>
+                    </div>
+
+                    <div class="concept-card">
+                        <h3>Resonancia</h3>
+                        <p>Los patrones se sincronizan y amplifican cuando sus fases se alinean. La resonancia permite 
+                        la propagación de información sin pérdida de identidad a través de estructuras de red.</p>
+                    </div>
+
+                    <div class="concept-card">
+                        <h3>Operadores</h3>
+                        <p>13 operadores estructurales canónicos (Emisión, Recepción, Coherencia, Disonancia, etc.) 
+                        gobiernan cómo se reorganizan los nodos. Estas son las únicas formas de modificar patrones en TNFR.</p>
+                    </div>
+
+                    <div class="concept-card">
+                        <h3>Gramática</h3>
+                        <p>Las secuencias de operadores deben seguir reglas gramaticales unificadas (U1-U4) derivadas 
+                        de la física. Las secuencias válidas preservan la coherencia y permiten una evolución predecible del sistema.</p>
+                    </div>
+
+                    <div class="concept-card">
+                        <h3>Fractalidad</h3>
+                        <p>Los patrones pueden anidarse dentro de patrones sin perder identidad. TNFR opera a través de 
+                        todas las escalas: cuántica, molecular, biológica, social, cósmica.</p>
+                    </div>
+
+                    <div class="concept-card">
+                        <h3>Métricas</h3>
+                        <p>Las medidas cuantitativas incluyen Coherencia C(t), Índice de Sentido Si, frecuencia estructural 
+                        νf y fase φ. Todas las dinámicas son observables y reproducibles.</p>
+                    </div>
+                </div>
+
+                <h2>El Cambio de Paradigma</h2>
+                <p><strong>Visión Tradicional → Visión TNFR:</strong></p>
+                <ul>
+                    <li>Los objetos existen independientemente → <strong>Los patrones existen a través de la resonancia</strong></li>
+                    <li>Causalidad (A causa B) → <strong>Co-organización (A y B se sincronizan)</strong></li>
+                    <li>Propiedades estáticas → <strong>Reorganización dinámica</strong></li>
+                    <li>Sistemas aislados → <strong>Redes acopladas</strong></li>
+                    <li>Modelos descriptivos → <strong>Dinámicas generativas</strong></li>
+                </ul>
+
+                <h2>Aplicaciones</h2>
+                <p>TNFR se ha aplicado para modelar:</p>
+                <ul>
+                    <li><strong>Química Molecular</strong>: Enlaces químicos como sincronización de fase, reacciones como secuencias de operadores</li>
+                    <li><strong>Partículas Fundamentales</strong>: Emergencia de partículas desde atractores coherentes</li>
+                    <li><strong>Sistemas Biológicos</strong>: Organización celular y emergencia de vida</li>
+                    <li><strong>Dinámicas Sociales</strong>: Formación de grupos y comportamiento colectivo</li>
+                    <li><strong>IA y Redes Neuronales</strong>: Aprendizaje como reorganización estructural</li>
+                    <li><strong>Sistemas Distribuidos</strong>: Sincronización de red y resiliencia</li>
+                </ul>
+            </div>
+
+            <div class="cta-section">
+                <h2>¿Listo para Explorar TNFR?</h2>
+                <p>Sumérjase en la implementación computacional y comience a modelar coherencia</p>
+                <a href="https://github.com/fermga/TNFR-Python-Engine" class="cta-button" target="_blank">
+                    Ver en GitHub
+                </a>
+                <a href="https://pypi.org/project/tnfr/" class="cta-button" target="_blank">
+                    Instalar desde PyPI
+                </a>
+            </div>
+
+            <footer>
+                <p>&copy; 2024-2025 TNFR Python Engine | Licenciado bajo MIT</p>
+                <p>
+                    <a href="https://github.com/fermga/TNFR-Python-Engine" target="_blank">GitHub</a> |
+                    <a href="https://doi.org/10.5281/zenodo.17602861" target="_blank">DOI: 10.5281/zenodo.17602861</a> |
+                    <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/LICENSE.md" target="_blank">Licencia</a>
+                </p>
+                <p style="margin-top: 1rem; font-style: italic;">
+                    La realidad no está hecha de cosas—está hecha de resonancia.
+                </p>
+            </footer>
+        </div>
+    </div>
+
+    <script>
+        function setLanguage(lang) {
+            // Hide all content
+            document.querySelectorAll('.lang-content').forEach(el => {
+                el.classList.remove('active');
+            });
+            
+            // Show selected content
+            document.getElementById('content-' + lang).classList.add('active');
+            
+            // Update button states
+            document.querySelectorAll('.lang-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.getElementById('btn-' + lang).classList.add('active');
+            
+            // Update HTML lang attribute
+            document.getElementById('html-root').setAttribute('lang', lang);
+            
+            // Store preference
+            localStorage.setItem('tnfr-lang', lang);
+        }
+        
+        // Load saved language preference
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedLang = localStorage.getItem('tnfr-lang');
+            if (savedLang && savedLang !== 'en') {
+                setLanguage(savedLang);
+            }
+        });
+    </script>
 </body>
 </html>
