@@ -31,11 +31,13 @@ If you use TNFR-Python-Engine in your research, please cite:
   author = {FMG},
   year = {2025},
   url = {https://github.com/fermga/TNFR-Python-Engine},
-  doi = {10.5281/zenodo.17602861}
+  doi = {10.5281/zenodo.17602861},
+  note = {ORCID: 0009-0007-6116-0613}
 }
 ```
 
-**DOI**: [10.5281/zenodo.17602861](https://doi.org/10.5281/zenodo.17602861)
+**DOI**: [10.5281/zenodo.17602861](https://doi.org/10.5281/zenodo.17602861)  
+**Author ORCID**: [0009-0007-6116-0613](https://orcid.org/0009-0007-6116-0613)
 
 ### Minimal Example
 ```python

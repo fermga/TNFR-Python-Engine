@@ -2,13 +2,25 @@ cff-version: 1.2.0
 title: "TNFR-Python-Engine: Resonant Fractal Nature Theory Implementation"
 message: "If you use this software, please cite it as below."
 type: software
+version: "9.0.2"
+date-released: "2025-11-13"
 authors:
   - given-names: "FMG"
     family-names: ""
     affiliation: "TNFR Research"
+    orcid: "https://orcid.org/0009-0007-6116-0613"
 repository-code: "https://github.com/fermga/TNFR-Python-Engine"
 url: "https://pypi.org/project/tnfr/"
 doi: "10.5281/zenodo.17602861"
+license: "MIT"
+keywords:
+  - "TNFR"
+  - "Resonant Fractal Nature Theory"
+  - "complex systems"
+  - "network dynamics"
+  - "structural operators"
+  - "coherence theory"
+  - "physics simulation"
 abstract: >-
   Canonical computational implementation of TNFR - a paradigm shift from 
   modeling 'things' to modeling coherent patterns that persist through resonance. 
