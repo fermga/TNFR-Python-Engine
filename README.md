@@ -7,7 +7,7 @@
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17602861.svg)](https://doi.org/10.5281/zenodo.17602861)
 [![PyPI](https://img.shields.io/pypi/v/tnfr)](https://pypi.org/project/tnfr/)
 [![Python](https://img.shields.io/pypi/pyversions/tnfr)](https://pypi.org/project/tnfr/)
-[![License](https://img.shields.io/github/license/fermga/TNFR-Python-Engine)](LICENSE.md)
+[![License](https://img.shields.io/github/license/fermga/TNFR-Python-Engine)](https://github.com/fermga/TNFR-Python-Engine/blob/main/LICENSE.md)
 [![Documentation](https://img.shields.io/badge/docs-latest-brightgreen)](https://fermga.github.io/TNFR-Python-Engine/)
 
 **🎓 Academic Citation**: [DOI: 10.5281/zenodo.17602861](https://doi.org/10.5281/zenodo.17602861)
