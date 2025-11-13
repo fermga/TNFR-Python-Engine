@@ -5,9 +5,9 @@ type: software
 version: "9.0.2"
 date-released: "2025-11-13"
 authors:
-  - given-names: "FMG"
+  - given-names: "F. F. Martinez Gamo"
     family-names: ""
-    affiliation: "TNFR Research"
+    affiliation: ""
     orcid: "https://orcid.org/0009-0007-6116-0613"
 repository-code: "https://github.com/fermga/TNFR-Python-Engine"
 url: "https://pypi.org/project/tnfr/"
