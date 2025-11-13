@@ -59,7 +59,7 @@
   </head>
   
   
-    <body dir="ltr">
+    <body dir="ltr" data-md-color-scheme="default">
   
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
@@ -112,7 +112,13 @@
     </div>
     
     
-      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>      
+      
+        <button class="md-header__button md-icon theme-toggle-button" title="Toggle dark/light mode" aria-label="Toggle theme" onclick="toggleTheme()">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" id="theme-icon-light"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.13 7.13 0 0 0 2.38 4.14zm11.3 3.5-1.77-3.79a7.05 7.05 0 0 0 2.38-4.15l4.16-.35c-.14.79-.39 1.55-.83 2.29a7.2 7.2 0 0 1-1.56 1.85zm6.99-10-4.16.35A7.2 7.2 0 0 0 18.06 8.5c.44-.74.69-1.5.83-2.29l1.76 3.77z"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" id="theme-icon-dark" style="display: none;"><path d="M17.75 4.09 15.22 6.62l1.42 1.42 2.53-2.53zM5.34 10.42l-3.53 3.53 1.41 1.42L6.75 12zm12.01 1.42-3.53 3.53 1.42 1.41 3.53-3.53zM21 13h-4v2h4zM3 11h4v2H3zm9.5-8v4h-2V3zM12 19.5v4h-2v-4z"/></svg>
+        </button>
+
     
     
     
@@ -1230,7 +1236,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../grammar/GLOSSARY.md" class="md-nav__link">
+      <a href="../GLOSSARY/" class="md-nav__link">
         
   
   
@@ -1483,7 +1489,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../grammar/DEPRECATION-INDEX.md" class="md-nav__link">
+      <a href="../grammar/" class="md-nav__link">
         
   
   
@@ -3481,17 +3487,17 @@
 <h2 id="quick-start">🎯 Quick Start<a class="headerlink" href="#quick-start" title="Permanent link">&para;</a></h2>
 <p><strong>New to TNFR?</strong> Start here:</p>
 <ol>
-<li><strong><a href="README.md">README.md</a></strong> - Project overview and installation (5 min)</li>
+<li><strong><a href="README/">README.md</a></strong> - Project overview and installation (5 min)</li>
 <li><strong><a href="../GLOSSARY/">GLOSSARY.md</a></strong> - Core concepts quick reference (10 min)</li>
-<li><strong><a href="docs/grammar/01-FUNDAMENTAL-CONCEPTS.md">docs/grammar/01-FUNDAMENTAL-CONCEPTS.md</a></strong> - Paradigm shift explained (20 min)</li>
-<li><strong><a href="docs/grammar/02-CANONICAL-CONSTRAINTS.md">docs/grammar/02-CANONICAL-CONSTRAINTS.md</a></strong> - Grammar rules U1-U6 (60 min)</li>
+<li><strong><a href="grammar/01-FUNDAMENTAL-CONCEPTS/">docs/grammar/01-FUNDAMENTAL-CONCEPTS.md</a></strong> - Paradigm shift explained (20 min)</li>
+<li><strong><a href="grammar/02-CANONICAL-CONSTRAINTS/">docs/grammar/02-CANONICAL-CONSTRAINTS.md</a></strong> - Grammar rules U1-U6 (60 min)</li>
 </ol>
 <hr />
 <h2 id="core-documentation">📚 Core Documentation<a class="headerlink" href="#core-documentation" title="Permanent link">&para;</a></h2>
 <h3 id="canonical-hierarchy">Canonical Hierarchy<a class="headerlink" href="#canonical-hierarchy" title="Permanent link">&para;</a></h3>
 <p><strong><a href="../CANONICAL_SOURCES/">CANONICAL_SOURCES.md</a></strong> - Documentation hierarchy and single source of truth rules</p>
-<p><strong><a href="docs/DOCUMENTATION_HIERARCHY.md">docs/DOCUMENTATION_HIERARCHY.md</a></strong> - Visual diagrams (Mermaid) of documentation structure</p>
-<p><strong><a href="docs/CROSS_REFERENCE_MATRIX.md">docs/CROSS_REFERENCE_MATRIX.md</a></strong> - Complete traceability matrix (Physics ↔ Math ↔ Code)</p>
+<p><strong><a href="DOCUMENTATION_HIERARCHY/">docs/DOCUMENTATION_HIERARCHY.md</a></strong> - Visual diagrams (Mermaid) of documentation structure</p>
+<p><strong><a href="CROSS_REFERENCE_MATRIX/">docs/CROSS_REFERENCE_MATRIX.md</a></strong> - Complete traceability matrix (Physics ↔ Math ↔ Code)</p>
 <p>These documents establish which sources are authoritative for each concept and how everything traces from physics to code. <strong>Read these first</strong> to understand documentation organization and cross-references.</p>
 <h3 id="foundation-documents-essential-reading">Foundation Documents (Essential Reading)<a class="headerlink" href="#foundation-documents-essential-reading" title="Permanent link">&para;</a></h3>
 <table>
@@ -3542,57 +3548,57 @@
 </thead>
 <tbody>
 <tr>
-<td><strong><a href="docs/grammar/README.md">README.md</a></strong></td>
+<td><strong><a href="grammar/README/">README.md</a></strong></td>
 <td>Grammar documentation hub</td>
 <td>✅ Active</td>
 </tr>
 <tr>
-<td><strong><a href="docs/grammar/01-FUNDAMENTAL-CONCEPTS.md">01-FUNDAMENTAL-CONCEPTS.md</a></strong></td>
+<td><strong><a href="grammar/01-FUNDAMENTAL-CONCEPTS/">01-FUNDAMENTAL-CONCEPTS.md</a></strong></td>
 <td>TNFR ontology &amp; nodal equation</td>
 <td>✅ Active</td>
 </tr>
 <tr>
-<td><strong><a href="docs/grammar/02-CANONICAL-CONSTRAINTS.md">02-CANONICAL-CONSTRAINTS.md</a></strong></td>
+<td><strong><a href="grammar/02-CANONICAL-CONSTRAINTS/">02-CANONICAL-CONSTRAINTS.md</a></strong></td>
 <td>U1-U6 complete specifications</td>
 <td>✅ Active</td>
 </tr>
 <tr>
-<td><strong><a href="docs/grammar/03-OPERATORS-AND-GLYPHS.md">03-OPERATORS-AND-GLYPHS.md</a></strong></td>
+<td><strong><a href="grammar/03-OPERATORS-AND-GLYPHS/">03-OPERATORS-AND-GLYPHS.md</a></strong></td>
 <td>13 canonical operators catalog</td>
 <td>✅ Active</td>
 </tr>
 <tr>
-<td><strong><a href="docs/grammar/04-VALID-SEQUENCES.md">04-VALID-SEQUENCES.md</a></strong></td>
+<td><strong><a href="grammar/04-VALID-SEQUENCES/">04-VALID-SEQUENCES.md</a></strong></td>
 <td>Pattern library &amp; anti-patterns</td>
 <td>✅ Active</td>
 </tr>
 <tr>
-<td><strong><a href="docs/grammar/05-TECHNICAL-IMPLEMENTATION.md">05-TECHNICAL-IMPLEMENTATION.md</a></strong></td>
+<td><strong><a href="grammar/05-TECHNICAL-IMPLEMENTATION/">05-TECHNICAL-IMPLEMENTATION.md</a></strong></td>
 <td>Code architecture</td>
 <td>✅ Active</td>
 </tr>
 <tr>
-<td><strong><a href="docs/grammar/06-VALIDATION-AND-TESTING.md">06-VALIDATION-AND-TESTING.md</a></strong></td>
+<td><strong><a href="grammar/06-VALIDATION-AND-TESTING/">06-VALIDATION-AND-TESTING.md</a></strong></td>
 <td>Test strategies</td>
 <td>✅ Active</td>
 </tr>
 <tr>
-<td><strong><a href="docs/grammar/07-MIGRATION-AND-EVOLUTION.md">07-MIGRATION-AND-EVOLUTION.md</a></strong></td>
+<td><strong><a href="grammar/07-MIGRATION-AND-EVOLUTION/">07-MIGRATION-AND-EVOLUTION.md</a></strong></td>
 <td>Grammar evolution history</td>
 <td>✅ Active</td>
 </tr>
 <tr>
-<td><strong><a href="docs/grammar/08-QUICK-REFERENCE.md">08-QUICK-REFERENCE.md</a></strong></td>
+<td><strong><a href="grammar/08-QUICK-REFERENCE/">08-QUICK-REFERENCE.md</a></strong></td>
 <td>Cheat sheet</td>
 <td>✅ Active</td>
 </tr>
 <tr>
-<td><strong><a href="docs/grammar/U6_STRUCTURAL_POTENTIAL_CONFINEMENT.md">U6_STRUCTURAL_POTENTIAL_CONFINEMENT.md</a></strong></td>
+<td><strong><a href="grammar/U6_STRUCTURAL_POTENTIAL_CONFINEMENT/">U6_STRUCTURAL_POTENTIAL_CONFINEMENT.md</a></strong></td>
 <td>U6 complete specification</td>
 <td>✅ Canonical</td>
 </tr>
 <tr>
-<td><strong><a href="docs/grammar/MASTER-INDEX.md">MASTER-INDEX.md</a></strong></td>
+<td><strong><a href="grammar/MASTER-INDEX/">MASTER-INDEX.md</a></strong></td>
 <td>System conceptual map</td>
 <td>✅ Active</td>
 </tr>
@@ -3649,22 +3655,22 @@
 </thead>
 <tbody>
 <tr>
-<td><strong><a href="CONTRIBUTING.md">CONTRIBUTING.md</a></strong></td>
+<td><strong><a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/CONTRIBUTING/">CONTRIBUTING.md</a></strong></td>
 <td>Contribution guidelines</td>
 <td>Before first PR</td>
 </tr>
 <tr>
-<td><strong><a href="TESTING.md">TESTING.md</a></strong></td>
+<td><strong><a href="TESTING/">TESTING.md</a></strong></td>
 <td>Test conventions</td>
 <td>Writing tests</td>
 </tr>
 <tr>
-<td><strong><a href="MIGRATION_GUIDE.md">MIGRATION_GUIDE.md</a></strong></td>
+<td><strong><a href="MIGRATION_GUIDE/">MIGRATION_GUIDE.md</a></strong></td>
 <td>Modular architecture migration</td>
 <td>Upgrading code</td>
 </tr>
 <tr>
-<td><strong><a href="SECURITY.md">SECURITY.md</a></strong></td>
+<td><strong><a href="SECURITY/">SECURITY.md</a></strong></td>
 <td>Security policies</td>
 <td>Reporting issues</td>
 </tr>
@@ -3681,27 +3687,27 @@
 </thead>
 <tbody>
 <tr>
-<td><strong><a href="SHA_ALGEBRA_PHYSICS.md">SHA_ALGEBRA_PHYSICS.md</a></strong></td>
+<td><strong><a href="SHA_ALGEBRA_PHYSICS/">SHA_ALGEBRA_PHYSICS.md</a></strong></td>
 <td>Silence operator physics</td>
 <td>Physics researchers</td>
 </tr>
 <tr>
-<td><strong><a href="GLYPH_SEQUENCES_GUIDE.md">GLYPH_SEQUENCES_GUIDE.md</a></strong></td>
+<td><strong><a href="GLYPH_SEQUENCES_GUIDE/">GLYPH_SEQUENCES_GUIDE.md</a></strong></td>
 <td>Operator sequence patterns</td>
 <td>Sequence designers</td>
 </tr>
 <tr>
-<td><strong><a href="docs/TNFR_FORCES_EMERGENCE.md">docs/TNFR_FORCES_EMERGENCE.md</a></strong></td>
+<td><strong><a href="TNFR_FORCES_EMERGENCE/">docs/TNFR_FORCES_EMERGENCE.md</a></strong></td>
 <td>Structural fields (Φ_s) validation</td>
 <td>U6 researchers</td>
 </tr>
 <tr>
-<td><strong><a href="docs/NBODY_COMPARISON.md">docs/NBODY_COMPARISON.md</a></strong></td>
+<td><strong><a href="NBODY_COMPARISON/">docs/NBODY_COMPARISON.md</a></strong></td>
 <td>TNFR vs classical N-body</td>
 <td>Physicists</td>
 </tr>
 <tr>
-<td><strong><a href="docs/TNFR_NUMBER_THEORY_GUIDE.md">docs/TNFR_NUMBER_THEORY_GUIDE.md</a></strong></td>
+<td><strong><a href="TNFR_NUMBER_THEORY_GUIDE/">docs/TNFR_NUMBER_THEORY_GUIDE.md</a></strong></td>
 <td>Number theory from TNFR: ΔNFR prime criterion, UM/RA on arithmetic graph, field telemetry (</td>
 <td>∇φ</td>
 </tr>
@@ -3719,22 +3725,22 @@
 </thead>
 <tbody>
 <tr>
-<td><strong><a href="docs/MOLECULAR_CHEMISTRY_HUB.md">docs/MOLECULAR_CHEMISTRY_HUB.md</a></strong></td>
+<td><strong><a href="MOLECULAR_CHEMISTRY_HUB/">docs/MOLECULAR_CHEMISTRY_HUB.md</a></strong></td>
 <td><strong>🏛️ CENTRAL HUB</strong> - Complete navigation &amp; theory consolidation</td>
 <td>⭐ <strong>CANONICAL</strong></td>
 </tr>
 <tr>
-<td><strong><a href="docs/examples/MOLECULAR_CHEMISTRY_FROM_NODAL_DYNAMICS.md">docs/examples/MOLECULAR_CHEMISTRY_FROM_NODAL_DYNAMICS.md</a></strong></td>
+<td><strong><a href="examples/MOLECULAR_CHEMISTRY_FROM_NODAL_DYNAMICS/">docs/examples/MOLECULAR_CHEMISTRY_FROM_NODAL_DYNAMICS.md</a></strong></td>
 <td><strong>Complete derivation</strong> - Chemistry from nodal equation</td>
 <td>⭐ <strong>CANONICAL</strong></td>
 </tr>
 <tr>
-<td><strong><a href="docs/examples/AU_EXISTENCE_FROM_NODAL_EQUATION.md">docs/examples/AU_EXISTENCE_FROM_NODAL_EQUATION.md</a></strong></td>
+<td><strong><a href="examples/AU_EXISTENCE_FROM_NODAL_EQUATION/">docs/examples/AU_EXISTENCE_FROM_NODAL_EQUATION.md</a></strong></td>
 <td>Au emergence from structural fields</td>
 <td>✅ Validated</td>
 </tr>
 <tr>
-<td><strong><a href="src/tnfr/physics/README.md">src/tnfr/physics/README.md</a></strong> § 9-10</td>
+<td><strong><a href="https://github.com/fermga/TNFR-Python-Engine/tree/main/src/tnfr/physics/README">src/tnfr/physics/README.md</a></strong> § 9-10</td>
 <td>Implementation guide - Signatures &amp; patterns</td>
 <td>✅ Technical</td>
 </tr>
@@ -3816,27 +3822,27 @@
 <h2 id="finding-what-you-need">🔍 Finding What You Need<a class="headerlink" href="#finding-what-you-need" title="Permanent link">&para;</a></h2>
 <h3 id="i-want-to">I want to...<a class="headerlink" href="#i-want-to" title="Permanent link">&para;</a></h3>
 <p><strong>...understand TNFR philosophy</strong>
-→ <a href="../AGENTS/">AGENTS.md</a> § Core Mission, <a href="docs/grammar/01-FUNDAMENTAL-CONCEPTS.md">01-FUNDAMENTAL-CONCEPTS.md</a></p>
+→ <a href="../AGENTS/">AGENTS.md</a> § Core Mission, <a href="grammar/01-FUNDAMENTAL-CONCEPTS/">01-FUNDAMENTAL-CONCEPTS.md</a></p>
 <p><strong>...learn the grammar rules</strong>
-→ <a href="docs/grammar/02-CANONICAL-CONSTRAINTS.md">02-CANONICAL-CONSTRAINTS.md</a>, <a href="../UNIFIED_GRAMMAR_RULES/">UNIFIED_GRAMMAR_RULES.md</a></p>
+→ <a href="grammar/02-CANONICAL-CONSTRAINTS/">02-CANONICAL-CONSTRAINTS.md</a>, <a href="../UNIFIED_GRAMMAR_RULES/">UNIFIED_GRAMMAR_RULES.md</a></p>
 <p><strong>...implement a sequence</strong>
-→ <a href="docs/grammar/04-VALID-SEQUENCES.md">04-VALID-SEQUENCES.md</a>, <a href="GLYPH_SEQUENCES_GUIDE.md">GLYPH_SEQUENCES_GUIDE.md</a></p>
+→ <a href="grammar/04-VALID-SEQUENCES/">04-VALID-SEQUENCES.md</a>, <a href="GLYPH_SEQUENCES_GUIDE/">GLYPH_SEQUENCES_GUIDE.md</a></p>
 <p><strong>...understand U6 (structural potential)</strong>
-→ <a href="docs/grammar/U6_STRUCTURAL_POTENTIAL_CONFINEMENT.md">U6_STRUCTURAL_POTENTIAL_CONFINEMENT.md</a></p>
+→ <a href="grammar/U6_STRUCTURAL_POTENTIAL_CONFINEMENT/">U6_STRUCTURAL_POTENTIAL_CONFINEMENT.md</a></p>
 <p><strong>...understand how chemistry emerges from TNFR</strong> ⭐ <strong>BREAKTHROUGH</strong>
-→ <a href="docs/MOLECULAR_CHEMISTRY_HUB.md">MOLECULAR_CHEMISTRY_HUB.md</a> (central navigation), <a href="docs/examples/MOLECULAR_CHEMISTRY_FROM_NODAL_DYNAMICS.md">Complete theory</a></p>
+→ <a href="MOLECULAR_CHEMISTRY_HUB/">MOLECULAR_CHEMISTRY_HUB.md</a> (central navigation), <a href="examples/MOLECULAR_CHEMISTRY_FROM_NODAL_DYNAMICS/">Complete theory</a></p>
 <p><strong>...see Au emergence from first principles</strong>
-→ <a href="docs/examples/AU_EXISTENCE_FROM_NODAL_EQUATION.md">AU_EXISTENCE_FROM_NODAL_EQUATION.md</a></p>
+→ <a href="examples/AU_EXISTENCE_FROM_NODAL_EQUATION/">AU_EXISTENCE_FROM_NODAL_EQUATION.md</a></p>
 <p><strong>...look up a term</strong>
 → <a href="../GLOSSARY/">GLOSSARY.md</a></p>
 <p><strong>...understand an operator</strong>
-→ <a href="docs/grammar/03-OPERATORS-AND-GLYPHS.md">03-OPERATORS-AND-GLYPHS.md</a></p>
+→ <a href="grammar/03-OPERATORS-AND-GLYPHS/">03-OPERATORS-AND-GLYPHS.md</a></p>
 <p><strong>...write tests</strong>
-→ <a href="TESTING.md">TESTING.md</a>, <a href="docs/grammar/06-VALIDATION-AND-TESTING.md">06-VALIDATION-AND-TESTING.md</a></p>
+→ <a href="TESTING/">TESTING.md</a>, <a href="grammar/06-VALIDATION-AND-TESTING/">06-VALIDATION-AND-TESTING.md</a></p>
 <p><strong>...contribute code</strong>
-→ <a href="CONTRIBUTING.md">CONTRIBUTING.md</a>, <a href="../ARCHITECTURE/">ARCHITECTURE.md</a></p>
+→ <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/CONTRIBUTING/">CONTRIBUTING.md</a>, <a href="../ARCHITECTURE/">ARCHITECTURE.md</a></p>
 <p><strong>...migrate from old grammar</strong>
-→ <a href="docs/grammar/07-MIGRATION-AND-EVOLUTION.md">07-MIGRATION-AND-EVOLUTION.md</a></p>
+→ <a href="grammar/07-MIGRATION-AND-EVOLUTION/">07-MIGRATION-AND-EVOLUTION.md</a></p>
 <hr />
 <h2 id="documentation-quality-status">📊 Documentation Quality Status<a class="headerlink" href="#documentation-quality-status" title="Permanent link">&para;</a></h2>
 <p><strong>Language</strong>: ✅ 100% English (0 Spanish)<br />
@@ -3845,7 +3851,7 @@
 <strong>Cross-References</strong>: ✅ Comprehensive bidirectional linking<br />
 <strong>Broken Links</strong>: ✅ 91% reduced (637 → 58)<br />
 <strong>Single Source of Truth</strong>: ✅ Established (AGENTS + UNIFIED_GRAMMAR_RULES + GLOSSARY)</p>
-<p><strong>Last Audit</strong>: 2025-11-11 (<a href="docs/archive/audits/DOCUMENTATION_AUDIT_REPORT.md">Report</a>)</p>
+<p><strong>Last Audit</strong>: 2025-11-11 (<a href="archive/audits/DOCUMENTATION_AUDIT_REPORT/">Report</a>)</p>
 <hr />
 <h2 id="maintenance">🔄 Maintenance<a class="headerlink" href="#maintenance" title="Permanent link">&para;</a></h2>
 <p>This index is actively maintained. If you find:
@@ -3920,5 +3926,61 @@
       <script src="../assets/javascripts/bundle.e71a0d61.min.js"></script>
       
     
-  </body>
+  
+<script>
+function toggleTheme() {
+  const body = document.body;
+  const currentScheme = body.getAttribute('data-md-color-scheme') || 'default';
+  const newScheme = currentScheme === 'slate' ? 'default' : 'slate';
+  
+  body.setAttribute('data-md-color-scheme', newScheme);
+  
+  // Toggle icon visibility
+  const lightIcon = document.getElementById('theme-icon-light');
+  const darkIcon = document.getElementById('theme-icon-dark');
+  if (lightIcon && darkIcon) {
+    if (newScheme === 'slate') {
+      lightIcon.style.display = 'none';
+      darkIcon.style.display = 'block';
+    } else {
+      lightIcon.style.display = 'block';
+      darkIcon.style.display = 'none';
+    }
+  }
+  
+  // Save preference
+  localStorage.setItem('theme-preference', newScheme);
+}
+
+// Initialize theme immediately
+(function() {
+  const savedTheme = localStorage.getItem('theme-preference') || 'default';
+  const body = document.body;
+  body.setAttribute('data-md-color-scheme', savedTheme);
+  
+  // Wait for DOM to set icon visibility
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+      updateThemeIcons(savedTheme);
+    });
+  } else {
+    updateThemeIcons(savedTheme);
+  }
+  
+  function updateThemeIcons(theme) {
+    const lightIcon = document.getElementById('theme-icon-light');
+    const darkIcon = document.getElementById('theme-icon-dark');
+    if (lightIcon && darkIcon) {
+      if (theme === 'slate') {
+        lightIcon.style.display = 'none';
+        darkIcon.style.display = 'block';
+      } else {
+        lightIcon.style.display = 'block';
+        darkIcon.style.display = 'none';
+      }
+    }
+  }
+})();
+</script>
+</body>
 </html>
