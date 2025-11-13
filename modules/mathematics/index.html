@@ -1230,7 +1230,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../grammar/GLOSSARY.md" class="md-nav__link">
+      <a href="../../GLOSSARY/" class="md-nav__link">
         
   
   
@@ -1483,7 +1483,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../grammar/DEPRECATION-INDEX.md" class="md-nav__link">
+      <a href="../../grammar/" class="md-nav__link">
         
   
   
@@ -3510,10 +3510,10 @@
 - English-only documentation; historic non-English references are mapped to English</p>
 <p>If any other document disagrees with this README on core computational mathematics, defer to this README and file an issue to reconcile the inconsistency.</p>
 <p>Quick pointers:
-- Formal theory: <a href="../../../docs/source/theory/mathematical_foundations.md">docs/source/theory/mathematical_foundations.md</a>
-- Symbolic suite: <a href="../math/README.md">src/tnfr/math</a>
+- Formal theory: <a href="../../../source/theory/">docs/source/theory/mathematical_foundations.md</a>
+- Symbolic suite: <a href="../math/README/">src/tnfr/math</a>
 - Fields (Φ_s, |∇φ|, K_φ, ξ_C): <a href="../physics/fields.py">src/tnfr/physics/fields.py</a> and docs sections below
-- Number theory guide (ΔNFR prime criterion): <a href="../../../docs/TNFR_NUMBER_THEORY_GUIDE.md">docs/TNFR_NUMBER_THEORY_GUIDE.md</a>
+- Number theory guide (ΔNFR prime criterion): <a href="../../../TNFR_NUMBER_THEORY_GUIDE/">docs/TNFR_NUMBER_THEORY_GUIDE.md</a>
 - Interactive notebook: <a href="../../../examples/tnfr_prime_checker.ipynb">examples/tnfr_prime_checker.ipynb</a></p>
 <h2 id="module-organization">Module Organization<a class="headerlink" href="#module-organization" title="Permanent link">&para;</a></h2>
 <h3 id="backend-abstraction-backendpy">Backend Abstraction (<a href="backend.py">backend.py</a>)<a class="headerlink" href="#backend-abstraction-backendpy" title="Permanent link">&para;</a></h3>
@@ -3655,9 +3655,9 @@
 <ul>
 <li><a href="../../../docs/source/advanced/ARCHITECTURE_GUIDE.md#factory-patterns">Architecture Guide — Factory Patterns</a> — Comprehensive factory design patterns</li>
 <li><a href="../../../TNFR.pdf">TNFR Paradigm</a> — Theoretical foundations</li>
-<li><a href="../../../AGENTS.md">AGENTS.md</a> — Structural invariants and contracts</li>
-<li><a href="../../../docs/source/api/overview.md">API Overview</a> — Package-level documentation</li>
-<li><a href="../../../docs/source/theory/mathematical_foundations.md">Mathematical Foundations (theory)</a> — Complete derivations</li>
+<li><a href="../../../AGENTS/">AGENTS.md</a> — Structural invariants and contracts</li>
+<li><a href="../../../source/api/">API Overview</a> — Package-level documentation</li>
+<li><a href="../../../source/theory/">Mathematical Foundations (theory)</a> — Complete derivations</li>
 </ul>
 <h2 id="canonical-equations-and-contracts">Canonical equations and contracts<a class="headerlink" href="#canonical-equations-and-contracts" title="Permanent link">&para;</a></h2>
 <p>Nodal equation (code-level contract):</p>
@@ -3677,7 +3677,7 @@ EPI(t_f) = EPI(t_0) + ∫[t_0..t_f] νf(τ) · ΔNFR(τ) dτ, with the integral 
 <li>K_φ(i) = φ_i − (1/deg(i)) Σ_{j∈N(i)} φ_j — Phase curvature (geometric confinement)</li>
 <li>ξ_C from C(r) ~ exp(−r/ξ_C) — Coherence length (spatial correlation scale)</li>
 </ul>
-<p>Implementation: see <a href="../physics/fields.py">src/tnfr/physics/fields.py</a>. Safety thresholds and empirical validation are summarized in <a href="../../../AGENTS.md">AGENTS.md</a> and field-specific docs.</p>
+<p>Implementation: see <a href="../physics/fields.py">src/tnfr/physics/fields.py</a>. Safety thresholds and empirical validation are summarized in <a href="../../../AGENTS/">AGENTS.md</a> and field-specific docs.</p>
 <h2 id="symbolic-analysis-suite-tnfrmath">Symbolic analysis suite (tnfr.math)<a class="headerlink" href="#symbolic-analysis-suite-tnfrmath" title="Permanent link">&para;</a></h2>
 <p>For formal, symbolic checks and analytical tooling, use the tnfr.math package (this is the computational mathematics lab that complements the present module):</p>
 <ul>
@@ -3686,7 +3686,7 @@ EPI(t_f) = EPI(t_0) + ∫[t_0..t_f] νf(τ) · ΔNFR(τ) dτ, with the integral 
 <li>U4 bifurcation risk via ∂²EPI/∂t²</li>
 <li>Closed-form solutions under constant parameters</li>
 </ul>
-<p>See: <a href="../math/README.md">src/tnfr/math/README.md</a> and <a href="../../../examples/math_symbolic_usage.py">examples/math_symbolic_usage.py</a>.</p>
+<p>See: <a href="../math/README/">src/tnfr/math/README.md</a> and <a href="../../../examples/math_symbolic_usage.py">examples/math_symbolic_usage.py</a>.</p>
 <h2 id="prime-emergence-arithmetic-tnfr-network">Prime emergence (Arithmetic TNFR Network) ⭐<a class="headerlink" href="#prime-emergence-arithmetic-tnfr-network" title="Permanent link">&para;</a></h2>
 <p>An arithmetic TNFR network demonstrates primes as structural attractors. Each integer n becomes a TNFR node with EPI (form), νf (structural frequency), and ΔNFR (factorization pressure). Primes emerge with ΔNFR = 0 (exact) under TNFR equations, providing a physics-based characterization of primality.</p>
 <h3 id="theoretical-core">Theoretical core<a class="headerlink" href="#theoretical-core" title="Permanent link">&para;</a></h3>
@@ -3774,9 +3774,9 @@ python<span class="w"> </span>benchmarks/_run_arith_large.py
 - For large n, build the network with <code>max_number ≥ n</code> and evaluate ΔNFR_n.</p>
 <h2 id="classical-mechanics-emergence-cross-reference">Classical mechanics emergence (cross-reference)<a class="headerlink" href="#classical-mechanics-emergence-cross-reference" title="Permanent link">&para;</a></h2>
 <p>For the emergence of classical mechanics from TNFR (mass m = 1/νf; force as coherence gradient), see:
-- <a href="../../../docs/source/theory/07_emergence_classical_mechanics.md">docs/source/theory/07_emergence_classical_mechanics.md</a>
-- <a href="../../../docs/source/theory/08_classical_mechanics_euler_lagrange.md">docs/source/theory/08_classical_mechanics_euler_lagrange.md</a>
-- <a href="../../../docs/source/theory/09_classical_mechanics_numerical_validation.md">docs/source/theory/09_classical_mechanics_numerical_validation.md</a></p>
+- <a href="../../../source/theory/">docs/source/theory/07_emergence_classical_mechanics.md</a>
+- <a href="../../../source/theory/">docs/source/theory/08_classical_mechanics_euler_lagrange.md</a>
+- <a href="../../../source/theory/">docs/source/theory/09_classical_mechanics_numerical_validation.md</a></p>
 <p>This README serves as the hub; the above documents contain full derivations and validation results.</p>
 
 

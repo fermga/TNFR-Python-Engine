@@ -1230,7 +1230,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../grammar/GLOSSARY.md" class="md-nav__link">
+      <a href="../GLOSSARY/" class="md-nav__link">
         
   
   
@@ -1483,7 +1483,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../grammar/DEPRECATION-INDEX.md" class="md-nav__link">
+      <a href="../grammar/" class="md-nav__link">
         
   
   
@@ -3742,7 +3742,7 @@
 <p>Quick operational reference for the Resonant Fractal Nature Theory (TNFR). This document provides <strong>API-focused definitions for code use only</strong>.</p>
 <blockquote>
 <p><strong>📐 SINGLE SOURCE OF TRUTH FOR MATHEMATICS</strong>: </p>
-<h3 id="mathematical-foundations-of-tnfr"><a href="docs/source/theory/mathematical_foundations.md">Mathematical Foundations of TNFR</a><a class="headerlink" href="#mathematical-foundations-of-tnfr" title="Permanent link">&para;</a></h3>
+<h3 id="mathematical-foundations-of-tnfr"><a href="source/theory/">Mathematical Foundations of TNFR</a><a class="headerlink" href="#mathematical-foundations-of-tnfr" title="Permanent link">&para;</a></h3>
 <p><strong>All mathematical formalization lives there</strong>: rigorous definitions, derivations, axioms, proofs, spectral theory, operator algebra, Hilbert spaces, and theoretical foundations.</p>
 <p><strong>This glossary</strong> contains only <strong>operational quick reference</strong> for developers implementing TNFR networks.</p>
 </blockquote>
@@ -3800,7 +3800,7 @@
 <strong>Range:</strong> ([0, 1^+]) typically, higher = more stable reorganization<br />
 <strong>What:</strong> Capacity for stable structural reorganization<br />
 <strong>Weights:</strong> (\alpha + \beta + \gamma = 1) (default: 0.4, 0.3, 0.3)<br />
-<strong>Math:</strong> <a href="docs/source/theory/mathematical_foundations.md">Mathematical Foundations - Metrics</a></p>
+<strong>Math:</strong> <a href="source/theory/">Mathematical Foundations - Metrics</a></p>
 <hr />
 <h3 id="structural-potential-_s">Structural Potential (Φ_s)<a class="headerlink" href="#structural-potential-_s" title="Permanent link">&para;</a></h3>
 <p><strong>Code:</strong> <code>compute_structural_potential(G, alpha=2.0)</code> → Dict[NodeId, float]<br />
@@ -3815,7 +3815,7 @@
 <strong>Validation:</strong> <code>tnfr.operators.grammar.validate_structural_potential_confinement()</code><br />
 <strong>Math/Physics:</strong> 
 - <a href="../UNIFIED_GRAMMAR_RULES/">UNIFIED_GRAMMAR_RULES.md § U6</a> - Complete derivation
-- <a href="docs/TNFR_FORCES_EMERGENCE.md">TNFR_FORCES_EMERGENCE.md § 14-15</a> - Empirical validation
+- <a href="TNFR_FORCES_EMERGENCE/">TNFR_FORCES_EMERGENCE.md § 14-15</a> - Empirical validation
 - <a href="src/tnfr/physics/fields.py">src/tnfr/physics/fields.py</a> - Implementation</p>
 <p><strong>Interpretation:</strong>
 - Φ_s minima = passive equilibrium states
@@ -3965,7 +3965,7 @@
 - <code>validate_sequence(ops)</code> - Check grammar compliance</p>
 <p><strong>Grammar:</strong> See <a href="../UNIFIED_GRAMMAR_RULES/">UNIFIED_GRAMMAR_RULES.md</a> for complete rules<br />
 <strong>Detailed Specs:</strong> See <a href="../AGENTS/#-the-13-canonical-operators">AGENTS.md § The 13 Canonical Operators</a><br />
-<strong>Math:</strong> <a href="docs/source/theory/mathematical_foundations.md">Mathematical Foundations §5</a></p>
+<strong>Math:</strong> <a href="source/theory/">Mathematical Foundations §5</a></p>
 <hr />
 <h2 id="invariants-must-preserve">Invariants (Must Preserve)<a class="headerlink" href="#invariants-must-preserve" title="Permanent link">&para;</a></h2>
 <p>From <a href="../AGENTS/">AGENTS.md</a>:</p>
@@ -4165,8 +4165,8 @@
 <p><strong>See Also:</strong>
 - <a href="../UNIFIED_GRAMMAR_RULES/">UNIFIED_GRAMMAR_RULES.md</a> - Complete derivations from physics
 - <a href="../AGENTS/#-unified-grammar-u1-u6">AGENTS.md § Unified Grammar</a> - Quick reference
-- <a href="docs/grammar/U6_STRUCTURAL_POTENTIAL_CONFINEMENT.md">docs/grammar/U6_STRUCTURAL_POTENTIAL_CONFINEMENT.md</a> - U6 complete specification
-- <a href="docs/TNFR_FORCES_EMERGENCE.md">TNFR_FORCES_EMERGENCE.md § 14-15</a> - U6 validation details
+- <a href="grammar/U6_STRUCTURAL_POTENTIAL_CONFINEMENT/">docs/grammar/U6_STRUCTURAL_POTENTIAL_CONFINEMENT.md</a> - U6 complete specification
+- <a href="TNFR_FORCES_EMERGENCE/">TNFR_FORCES_EMERGENCE.md § 14-15</a> - U6 validation details
 - <a href="src/tnfr/physics/fields.py">src/tnfr/physics/fields.py</a> - Φ_s implementation</p>
 <hr />
 <h3 id="generator-operator">Generator Operator<a class="headerlink" href="#generator-operator" title="Permanent link">&para;</a></h3>
@@ -4230,34 +4230,34 @@
 <ul>
 <li><strong><a href="../AGENTS/">AGENTS.md</a></strong> ⭐ - Single source of truth for TNFR agent guidance, invariants, and philosophy</li>
 <li><strong><a href="../UNIFIED_GRAMMAR_RULES/">UNIFIED_GRAMMAR_RULES.md</a></strong> ⭐ - Grammar single source of truth (U1-U6 complete derivations)</li>
-<li><strong><a href="docs/source/theory/mathematical_foundations.md">Mathematical Foundations</a></strong> ⭐ - <strong>SINGLE SOURCE FOR ALL MATH</strong> (formalization, proofs, spectral theory)</li>
+<li><strong><a href="source/theory/">Mathematical Foundations</a></strong> ⭐ - <strong>SINGLE SOURCE FOR ALL MATH</strong> (formalization, proofs, spectral theory)</li>
 </ul>
 <h3 id="theory-physics">Theory &amp; Physics<a class="headerlink" href="#theory-physics" title="Permanent link">&para;</a></h3>
 <ul>
 <li><a href="TNFR.pdf">TNFR.pdf</a> - Original theoretical companion (paradigm, nodal equation, foundational physics)</li>
-<li><a href="docs/grammar/U6_STRUCTURAL_POTENTIAL_CONFINEMENT.md">docs/grammar/U6_STRUCTURAL_POTENTIAL_CONFINEMENT.md</a> - U6 complete specification</li>
-<li><a href="docs/TNFR_FORCES_EMERGENCE.md">TNFR_FORCES_EMERGENCE.md</a> - Structural fields validation (Φ_s, phase gradients)</li>
-<li><a href="SHA_ALGEBRA_PHYSICS.md">SHA_ALGEBRA_PHYSICS.md</a> - Silence operator physical basis</li>
+<li><a href="grammar/U6_STRUCTURAL_POTENTIAL_CONFINEMENT/">docs/grammar/U6_STRUCTURAL_POTENTIAL_CONFINEMENT.md</a> - U6 complete specification</li>
+<li><a href="TNFR_FORCES_EMERGENCE/">TNFR_FORCES_EMERGENCE.md</a> - Structural fields validation (Φ_s, phase gradients)</li>
+<li><a href="SHA_ALGEBRA_PHYSICS/">SHA_ALGEBRA_PHYSICS.md</a> - Silence operator physical basis</li>
 </ul>
 <h3 id="implementation-api">Implementation &amp; API<a class="headerlink" href="#implementation-api" title="Permanent link">&para;</a></h3>
 <ul>
 <li><a href="../ARCHITECTURE/">ARCHITECTURE.md</a> - System design and architecture patterns</li>
-<li><a href="docs/source/foundations.md">Foundations</a> - Runtime/API guide</li>
-<li><a href="docs/source/api/overview.md">API Overview</a> - Package architecture</li>
-<li><a href="docs/source/api/operators.md">Structural Operators</a> - Operator implementation details</li>
-<li><a href="docs/source/examples/README.md">Examples</a> - Runnable scenarios across domains</li>
+<li><a href="source/">Foundations</a> - Runtime/API guide</li>
+<li><a href="source/api/">API Overview</a> - Package architecture</li>
+<li><a href="source/api/">Structural Operators</a> - Operator implementation details</li>
+<li><a href="source/examples/">Examples</a> - Runnable scenarios across domains</li>
 </ul>
 <h3 id="grammar-migration">Grammar &amp; Migration<a class="headerlink" href="#grammar-migration" title="Permanent link">&para;</a></h3>
 <ul>
-<li><a href="MIGRATION_GUIDE.md">MIGRATION_GUIDE.md</a> - Migration from C1-C3/RC1-RC4 to U1-U6</li>
+<li><a href="MIGRATION_GUIDE/">MIGRATION_GUIDE.md</a> - Migration from C1-C3/RC1-RC4 to U1-U6</li>
 <li><a href="docs/grammar/">docs/grammar/</a> - Grammar documentation directory (U6, fundamental concepts, etc.)</li>
-<li><a href="GLYPH_SEQUENCES_GUIDE.md">GLYPH_SEQUENCES_GUIDE.md</a> - Operator sequence patterns</li>
+<li><a href="GLYPH_SEQUENCES_GUIDE/">GLYPH_SEQUENCES_GUIDE.md</a> - Operator sequence patterns</li>
 </ul>
 <h3 id="testing-development">Testing &amp; Development<a class="headerlink" href="#testing-development" title="Permanent link">&para;</a></h3>
 <ul>
-<li><a href="TESTING.md">TESTING.md</a> - Test conventions and invariant verification</li>
-<li><a href="CONTRIBUTING.md">CONTRIBUTING.md</a> - Detailed contribution guidelines</li>
-<li><a href="docs/REPRODUCIBILITY.md">REPRODUCIBILITY.md</a> - Determinism requirements</li>
+<li><a href="TESTING/">TESTING.md</a> - Test conventions and invariant verification</li>
+<li><a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/CONTRIBUTING/">CONTRIBUTING.md</a> - Detailed contribution guidelines</li>
+<li><a href="REPRODUCIBILITY/">REPRODUCIBILITY.md</a> - Determinism requirements</li>
 </ul>
 <h3 id="see-also-cross-references">See Also Cross-References<a class="headerlink" href="#see-also-cross-references" title="Permanent link">&para;</a></h3>
 <p>This glossary is bidirectionally linked with:
@@ -4296,19 +4296,19 @@
 <strong>TNFR:</strong> ΔNFR minimization in coupled network topology<br />
 <strong>Prediction:</strong> Stable configurations minimize reorganization pressure<br />
 <strong>API:</strong> Network topology analysis after coupling sequences  </p>
-<p><strong>Complete Theory:</strong> <a href="docs/examples/MOLECULAR_CHEMISTRY_FROM_NODAL_DYNAMICS.md">MOLECULAR_CHEMISTRY_FROM_NODAL_DYNAMICS.md</a><br />
-<strong>Implementation:</strong> <a href="src/tnfr/physics/README.md">Physics README § 9-10</a></p>
+<p><strong>Complete Theory:</strong> <a href="examples/MOLECULAR_CHEMISTRY_FROM_NODAL_DYNAMICS/">MOLECULAR_CHEMISTRY_FROM_NODAL_DYNAMICS.md</a><br />
+<strong>Implementation:</strong> <a href="https://github.com/fermga/TNFR-Python-Engine/tree/main/src/tnfr/physics/README">Physics README § 9-10</a></p>
 <hr />
 <h2 id="contributing">Contributing<a class="headerlink" href="#contributing" title="Permanent link">&para;</a></h2>
 <p>When adding new functionality:</p>
 <ol>
-<li><strong>Verify math</strong>: Check <a href="docs/source/theory/mathematical_foundations.md">Mathematical Foundations</a></li>
+<li><strong>Verify math</strong>: Check <a href="source/theory/">Mathematical Foundations</a></li>
 <li><strong>Preserve invariants</strong>: Follow <a href="../AGENTS/">AGENTS.md</a> rules</li>
 <li><strong>Use canonical terms</strong>: Reference this glossary</li>
 <li><strong>Update docs</strong>: If introducing new concepts</li>
-<li><strong>Write tests</strong>: Cover invariants (see <a href="TESTING.md">TESTING.md</a>)</li>
+<li><strong>Write tests</strong>: Cover invariants (see <a href="TESTING/">TESTING.md</a>)</li>
 </ol>
-<p>For detailed contribution guidelines, see <a href="CONTRIBUTING.md">CONTRIBUTING.md</a>.</p>
+<p>For detailed contribution guidelines, see <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/CONTRIBUTING/">CONTRIBUTING.md</a>.</p>
 
 
 
