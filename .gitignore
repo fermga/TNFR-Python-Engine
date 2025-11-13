@@ -39,3 +39,15 @@ semgrep.sarif
 
 # Validation outputs (generated)
 validation_outputs/
+
+# Generated results and outputs (not needed in repo)
+results/
+outputs/
+dist-test/
+test-env/
+
+# Large benchmark result files
+benchmarks/results/*_telemetry.jsonl
+benchmarks/results/phase_gradient_full_study.jsonl
+benchmarks/results/u6_aggressive_results.jsonl
+benchmarks/results/*_5000_*.jsonl
