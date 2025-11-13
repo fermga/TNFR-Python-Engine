@@ -8,7 +8,7 @@
 [![PyPI](https://img.shields.io/pypi/v/tnfr)](https://pypi.org/project/tnfr/)
 [![Python](https://img.shields.io/pypi/pyversions/tnfr)](https://pypi.org/project/tnfr/)
 [![License](https://img.shields.io/github/license/fermga/TNFR-Python-Engine)](https://github.com/fermga/TNFR-Python-Engine/blob/main/LICENSE.md)
-[![Documentation](https://img.shields.io/badge/docs-latest-brightgreen)](https://fermga.github.io/TNFR-Python-Engine/)
+[![Documentation](https://img.shields.io/badge/docs-local%20build-brightgreen)](#-documentation)
 
 **🎓 Academic Citation**: [DOI: 10.5281/zenodo.17602861](https://doi.org/10.5281/zenodo.17602861)
 
@@ -40,6 +40,23 @@ If you use TNFR-Python-Engine in your research, please cite:
 
 **DOI**: [10.5281/zenodo.17602861](https://doi.org/10.5281/zenodo.17602861)  
 **Author ORCID**: [0009-0007-6116-0613](https://orcid.org/0009-0007-6116-0613)
+
+## 📖 Documentation
+
+Documentation is built locally using MkDocs. To build and serve the documentation:
+
+```bash
+# Install documentation dependencies
+pip install -e ".[docs]"
+
+# Build and serve locally (auto-reload on changes)
+mkdocs serve
+
+# Build static documentation
+mkdocs build  # Output in site/
+```
+
+The documentation will be available at `http://localhost:8000`
 
 ### Minimal Example
 ```python

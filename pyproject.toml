@@ -171,7 +171,6 @@ PyPI = "https://pypi.org/project/tnfr/"
 Citation = "https://doi.org/10.5281/zenodo.17602861"
 Zenodo = "https://zenodo.org/records/17602861"
 Issues = "https://github.com/fermga/TNFR-Python-Engine/issues"
-Documentation = "https://fermga.github.io/TNFR-Python-Engine/"
 GPT = "https://chatgpt.com/g/g-67abc78885a88191b2d67f94fd60dc97-tnfr-resonant-fractal-nature-theory"
 
 [tool.setuptools.package-data]

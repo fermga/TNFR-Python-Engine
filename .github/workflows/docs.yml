@@ -1,16 +1,19 @@
-name: Build and Deploy Documentation
+name: Build and Deploy Documentation (DISABLED)
 
-on:
-  push:
-    branches: [ main ]
-  workflow_dispatch: {}
-  pull_request:
-    paths:
-      - 'mkdocs.yml'
-      - 'docs/**'
-      - 'README.md'
-      - 'src/**/README.md'
-      - '*.md'
+# DISABLED: Documentation now built locally only
+# To re-enable, remove this comment and uncomment the 'on' section below
+
+# on:
+#   push:
+#     branches: [ main ]
+#   workflow_dispatch: {}
+#   pull_request:
+#     paths:
+#       - 'mkdocs.yml'
+#       - 'docs/**'
+#       - 'README.md'
+#       - 'src/**/README.md'
+#       - '*.md'
 
 jobs:
   build-deploy:
