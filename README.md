@@ -10,6 +10,8 @@
 [![License](https://img.shields.io/github/license/fermga/TNFR-Python-Engine)](LICENSE.md)
 [![Documentation](https://img.shields.io/badge/docs-latest-brightgreen)](https://fermga.github.io/TNFR-Python-Engine/)
 
+**🎓 Academic Citation**: [DOI: 10.5281/zenodo.17602861](https://doi.org/10.5281/zenodo.17602861)
+
 </div>
 
 TNFR (Resonant Fractal Nature Theory) is a physics-grounded computational paradigm: reality is modeled as **coherent patterns that persist through resonance**. Structures reorganize according to the nodal equation (∂EPI/∂t = νf · ΔNFR) under canonical grammar constraints (U1–U6) and invariants.
