@@ -6,7 +6,7 @@ repo_name: TNFR Python Engine
 docs_dir: docs
 site_dir: site
 nav:
-  - Home: README.md
+  - Home: index.md
   - Getting Started:
       - Welcome to TNFR: source/getting-started/README.md
       - Learning Paths: source/getting-started/LEARNING_PATHS.md
@@ -45,30 +45,47 @@ nav:
           - Tooling and Automation: grammar/TOOLING-AND-AUTOMATION.md
           - Testing Summary: grammar/TESTING-SUMMARY.md
           - Deprecation Index: grammar/DEPRECATION-INDEX.md
-  - Examples: source/examples/README.md
-    - Notebooks & Patterns:
-            - Fundamental Particles TNFR Atlas (Notebook - GitHub): https://github.com/fermga/TNFR-Python-Engine/blob/main/notebooks/Fundamental_Particles_TNFR_Atlas.ipynb
-            - TNFR Patterns (Module Guide): https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/README.md
-        - Interaction Sequences Guide: INTERACTIONS_GUIDE.md
+  - Examples: 
+      - Overview: source/examples/README.md
+      - Notebooks & Patterns:
+          - Fundamental Particles TNFR Atlas (Notebook - GitHub): https://github.com/fermga/TNFR-Python-Engine/blob/main/notebooks/Fundamental_Particles_TNFR_Atlas.ipynb
+          - TNFR Patterns (Module Guide): https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/README.md
+      - Interaction Sequences Guide: INTERACTIONS_GUIDE.md
   - API Reference:
       - Overview: source/api/overview.md
       - Structural Operators: source/api/operators.md
       - Operators Visual Guide: source/api/OPERATORS_VISUAL_GUIDE.md
       - Telemetry & Utilities: source/api/telemetry.md
-      - Physics Module Guide (GitHub): https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/README.md
       - Docstring Style: source/api/docstring_style.md
+  - Module Documentation:
+      - Mathematics Hub: modules/mathematics.md
+      - Physics Hub: modules/physics.md
+      - Operators Hub: modules/operators.md
+      - Dynamics Hub: modules/dynamics.md
+      - Metrics Hub: modules/metrics.md
+      - SDK Hub: modules/sdk.md
+      - Telemetry Hub: modules/telemetry.md
+      - Tutorials Hub: modules/tutorials.md
+      - Extensions Hub: modules/extensions.md
+  - Core Documentation:
+      - Documentation Index: DOCUMENTATION_INDEX.md
+      - Canonical Sources: CANONICAL_SOURCES.md
+      - Unified Grammar Rules: UNIFIED_GRAMMAR_RULES.md
+      - Agents Guide: AGENTS.md
+      - Architecture: ARCHITECTURE.md
+      - Glossary: GLOSSARY.md
   - Advanced Topics:
       - Architecture Guide: source/advanced/ARCHITECTURE_GUIDE.md
       - Performance Optimization: source/advanced/PERFORMANCE_OPTIMIZATION.md
       - Testing Strategies: source/advanced/TESTING_STRATEGIES.md
       - Development Workflow: source/advanced/DEVELOPMENT_WORKFLOW.md
       - Mathematical Foundations: source/foundations.md
-        - Forces Emergence (Research): TNFR_FORCES_EMERGENCE.md
-        - Operator Completeness (Research): OPERATOR_COMPLETENESS.md
-            - Life Emergence: LIFE_EMERGENCE_FROM_TNFR.md
-            - Cell Emergence: CELL_EMERGENCE_FROM_TNFR.md
+      - Research Documents:
+          - Forces Emergence: TNFR_FORCES_EMERGENCE.md
+          - Operator Completeness: OPERATOR_COMPLETENESS.md
+          - Life Emergence: LIFE_EMERGENCE_FROM_TNFR.md
+          - Cell Emergence: CELL_EMERGENCE_FROM_TNFR.md
       - CLI Reference: source/tools/CLI.md
-    # Notebooks removed from nav to simplify build; still present under docs/source/theory for future use.
   - Security:
       - Monitoring: source/security/monitoring.md
       - Dependency Auditing: source/security/dependency-auditing.md

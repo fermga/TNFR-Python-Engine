@@ -8,6 +8,9 @@ on:
     paths:
       - 'mkdocs.yml'
       - 'docs/**'
+      - 'README.md'
+      - 'src/**/README.md'
+      - '*.md'
 
 jobs:
   build-deploy:
@@ -27,6 +30,10 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r docs/requirements.txt
+
+      - name: Sync README files
+        run: |
+          python scripts/sync-readme-docs.py
 
       - name: Build docs
         run: |

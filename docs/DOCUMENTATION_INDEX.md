@@ -1,121 +1,230 @@
 # TNFR Documentation Index
 
-**Welcome to TNFR!** This index helps you navigate the reorganized documentation.
+**Single source of truth for navigating TNFR documentation**
 
-## 📖 Main Navigation
-
-**Start Here**: [**Documentation Home**](source/index.md) - Main hub with complete navigation
-
-## 🚀 Quick Start by User Type
-
-### 🔰 For Beginners
-→ [**Welcome to TNFR**](source/getting-started/README.md) ⭐ **START HERE**  
-→ [Quickstart Tutorial](source/getting-started/quickstart.md)  
-→ [Core Concepts](source/getting-started/TNFR_CONCEPTS.md)  
-→ [FAQ](source/getting-started/FAQ.md)
-
-### 👤 For Users  
-→ [**Operators Guide**](source/user-guide/OPERATORS_GUIDE.md)  
-→ [**Pattern Cookbook**](PATTERN_COOKBOOK.md) ⭐ **NEW** - Ready-to-use recipes  
-→ [**Canonical OZ Sequences**](CANONICAL_OZ_SEQUENCES.md) ⭐ **NEW** - OZ dissonance patterns  
-→ [Metrics Interpretation](source/user-guide/METRICS_INTERPRETATION.md)  
-→ [Troubleshooting](source/user-guide/TROUBLESHOOTING.md)  
-→ [Examples Catalog](source/examples/README.md)
-
-### 💻 For Developers
-→ [**Performance Optimization**](source/advanced/PERFORMANCE_OPTIMIZATION.md)  
-→ [**Computational Mathematics Hub**](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/mathematics/README.md) ⭐ **CANONICAL (computational)**  
-→ [**Mathematical Foundations**](source/theory/mathematical_foundations.md) — Formal theory and complete derivations  
-→ [API Reference](source/api/overview.md)  
-→ [Contributing](https://github.com/fermga/TNFR-Python-Engine/blob/main/CONTRIBUTING.md)
+**Last Updated**: 2025-11-11  
+**Status**: ✅ ACTIVE - Complete documentation map
 
 ---
 
-## 📚 Complete Documentation Structure
+## 🎯 Quick Start
 
-### Getting Started (`source/getting-started/`)
-- **[README.md](source/getting-started/README.md)** - What is TNFR? Installation, first network
-- [quickstart.md](source/getting-started/quickstart.md) - Step-by-step tutorial  
-- [TNFR_CONCEPTS.md](source/getting-started/TNFR_CONCEPTS.md) - Fundamental concepts
-- [FAQ.md](source/getting-started/FAQ.md) - Frequently asked questions
-- [INTERACTIVE_TUTORIAL.md](source/getting-started/INTERACTIVE_TUTORIAL.md) - Hands-on learning
-- [math-backends.md](source/getting-started/math-backends.md) - NumPy/JAX/PyTorch
-- [optional-dependencies.md](source/getting-started/optional-dependencies.md) - Extras
+**New to TNFR?** Start here:
 
-### User Guide (`source/user-guide/`)
-- **[OPERATORS_GUIDE.md](source/user-guide/OPERATORS_GUIDE.md)** - Complete guide to 13 operators
-- [METRICS_INTERPRETATION.md](source/user-guide/METRICS_INTERPRETATION.md) - Understanding C(t), Si, νf, phase, ΔNFR  
-- [TROUBLESHOOTING.md](source/user-guide/TROUBLESHOOTING.md) - Common problems & solutions
-- **[PATTERN_COOKBOOK.md](PATTERN_COOKBOOK.md)** ⭐ **NEW** - Validated recipes by domain
-- **[CANONICAL_OZ_SEQUENCES.md](CANONICAL_OZ_SEQUENCES.md)** ⭐ **NEW** - OZ dissonance operator sequences
-
-### Examples (`source/examples/`)
-- **[README.md](source/examples/README.md)** - Categorized example catalog
-- [controlled_dissonance.py](source/examples/controlled_dissonance.py) - Basic example
-- [optical_cavity_feedback.py](source/examples/optical_cavity_feedback.py) - Advanced
-
-### API Reference (`source/api/`)
-- [overview.md](source/api/overview.md) - Package structure
-- [operators.md](source/api/operators.md) - Operator API
-- [telemetry.md](source/api/telemetry.md) - Metrics API
-
-### Advanced Topics (`source/advanced/`)
-- **[PERFORMANCE_OPTIMIZATION.md](source/advanced/PERFORMANCE_OPTIMIZATION.md)** - Backends, caching, factories
-
-### Theory (`source/theory/`)
-- **[mathematical_foundations.md](source/theory/mathematical_foundations.md)** — Formal theoretical foundations (complete derivations)
-- **Computational hub**: [`src/tnfr/mathematics/README.md`](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/mathematics/README.md) ⭐ **CANONICAL (computational)**
-- **Classical Mechanics Emergence Series:**
-  - [07_emergence_classical_mechanics.md](source/theory/07_emergence_classical_mechanics.md) - Direct derivation from TNFR
-  - [08_classical_mechanics_euler_lagrange.md](source/theory/08_classical_mechanics_euler_lagrange.md) - Variational formulation
-  - [09_classical_mechanics_numerical_validation.md](source/theory/09_classical_mechanics_numerical_validation.md) - Computational validation
-- Jupyter notebooks with mathematical examples and visualizations
-- Primers and operator/validator notebooks
+1. **[README.md](README.md)** - Project overview and installation (5 min)
+2. **[GLOSSARY.md](GLOSSARY.md)** - Core concepts quick reference (10 min)
+3. **[docs/grammar/01-FUNDAMENTAL-CONCEPTS.md](docs/grammar/01-FUNDAMENTAL-CONCEPTS.md)** - Paradigm shift explained (20 min)
+4. **[docs/grammar/02-CANONICAL-CONSTRAINTS.md](docs/grammar/02-CANONICAL-CONSTRAINTS.md)** - Grammar rules U1-U6 (60 min)
 
 ---
 
-## 🗺️ Quick Learning Paths
+## 📚 Core Documentation
 
-**Path 1: Quickest (15 min)**  
-`Welcome → Quickstart → First Example`
+### Canonical Hierarchy
 
-**Path 2: Comprehensive (2-3 hours)**  
-`Welcome → Concepts → Operators → Examples → API`
+**[CANONICAL_SOURCES.md](CANONICAL_SOURCES.md)** - Documentation hierarchy and single source of truth rules
 
-**Path 3: Theory-First (3-4 hours)**  
-`Concepts → Mathematical Foundations → Math Notebooks → Examples`
+**[docs/DOCUMENTATION_HIERARCHY.md](docs/DOCUMENTATION_HIERARCHY.md)** - Visual diagrams (Mermaid) of documentation structure
+
+**[docs/CROSS_REFERENCE_MATRIX.md](docs/CROSS_REFERENCE_MATRIX.md)** - Complete traceability matrix (Physics ↔ Math ↔ Code)
+
+These documents establish which sources are authoritative for each concept and how everything traces from physics to code. **Read these first** to understand documentation organization and cross-references.
+
+### Foundation Documents (Essential Reading)
+
+| Document | Purpose | Audience | Time |
+|----------|---------|----------|------|
+| **[AGENTS.md](AGENTS.md)** | AI agent guidance + invariants | AI agents, advanced devs | 60 min |
+| **[GLOSSARY.md](GLOSSARY.md)** | Canonical term definitions | Everyone | Reference |
+| **[UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md)** | Complete U1-U6 derivations | Advanced devs | 90 min |
+| **[ARCHITECTURE.md](ARCHITECTURE.md)** | System design & patterns | Contributors | 45 min |
+
+### Grammar System (`docs/grammar/`)
+
+Complete specification of TNFR grammar constraints (U1-U6):
+
+| Document | Contents | Status |
+|----------|----------|--------|
+| **[README.md](docs/grammar/README.md)** | Grammar documentation hub | ✅ Active |
+| **[01-FUNDAMENTAL-CONCEPTS.md](docs/grammar/01-FUNDAMENTAL-CONCEPTS.md)** | TNFR ontology & nodal equation | ✅ Active |
+| **[02-CANONICAL-CONSTRAINTS.md](docs/grammar/02-CANONICAL-CONSTRAINTS.md)** | U1-U6 complete specifications | ✅ Active |
+| **[03-OPERATORS-AND-GLYPHS.md](docs/grammar/03-OPERATORS-AND-GLYPHS.md)** | 13 canonical operators catalog | ✅ Active |
+| **[04-VALID-SEQUENCES.md](docs/grammar/04-VALID-SEQUENCES.md)** | Pattern library & anti-patterns | ✅ Active |
+| **[05-TECHNICAL-IMPLEMENTATION.md](docs/grammar/05-TECHNICAL-IMPLEMENTATION.md)** | Code architecture | ✅ Active |
+| **[06-VALIDATION-AND-TESTING.md](docs/grammar/06-VALIDATION-AND-TESTING.md)** | Test strategies | ✅ Active |
+| **[07-MIGRATION-AND-EVOLUTION.md](docs/grammar/07-MIGRATION-AND-EVOLUTION.md)** | Grammar evolution history | ✅ Active |
+| **[08-QUICK-REFERENCE.md](docs/grammar/08-QUICK-REFERENCE.md)** | Cheat sheet | ✅ Active |
+| **[U6_STRUCTURAL_POTENTIAL_CONFINEMENT.md](docs/grammar/U6_STRUCTURAL_POTENTIAL_CONFINEMENT.md)** | U6 complete specification | ✅ Canonical |
+| **[MASTER-INDEX.md](docs/grammar/MASTER-INDEX.md)** | System conceptual map | ✅ Active |
+
+### API & Theory Documentation (`docs/source/`)
+
+Generated from code + narrative docs:
+
+| Section | Path | Purpose |
+|---------|------|---------|
+| **Getting Started** | `docs/source/getting-started/` | Tutorials & first steps |
+| **Theory** | `docs/source/theory/` | Mathematical foundations (formal). Canonical computational hub: `src/tnfr/mathematics/README.md` |
+| **API Reference** | `docs/source/api/` | Package & module docs |
+| **Examples** | `docs/source/examples/` | Domain applications |
+| **Advanced** | `docs/source/advanced/` | Architecture & testing |
 
 ---
 
-## 🔗 Key Reference Files
+## 🔧 Development & Contributing
 
-- [TNFR.pdf](https://github.com/fermga/TNFR-Python-Engine/blob/main/TNFR.pdf) - Complete theory
-- [AGENTS.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/AGENTS.md) - Canonical invariants and Φ_s status
-- [UNIFIED_GRAMMAR_RULES.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/UNIFIED_GRAMMAR_RULES.md) - Grammar U1-U6 derivations ⭐ **UPDATED: U6 CANONICAL**
-- [GLOSSARY.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/GLOSSARY.md) - Terms
-- [ARCHITECTURE.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/ARCHITECTURE.md) - System design
+### For Contributors
 
-### Physics & Forces
-- [STRUCTURAL_FIELDS_TETRAD.md](STRUCTURAL_FIELDS_TETRAD.md) - ⭐ CANONICAL Structural Field Tetrad (Φ_s, |∇φ|, K_φ, ξ_C)
-- [docs/TNFR_FORCES_EMERGENCE.md](TNFR_FORCES_EMERGENCE.md) - ⭐ **Φ_s Validation & Four Forces (§ 14-15)**
-- [src/tnfr/physics/fields.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/fields.py) - Structural potential implementation
+| Document | Purpose | When to Use |
+|----------|---------|-------------|
+| **[CONTRIBUTING.md](CONTRIBUTING.md)** | Contribution guidelines | Before first PR |
+| **[TESTING.md](TESTING.md)** | Test conventions | Writing tests |
+| **[MIGRATION_GUIDE.md](MIGRATION_GUIDE.md)** | Modular architecture migration | Upgrading code |
+| **[SECURITY.md](SECURITY.md)** | Security policies | Reporting issues |
 
-### Grammar & Research
-- **U6: STRUCTURAL POTENTIAL CONFINEMENT** - ✅ **CANONICAL** (promoted 2025-11-11)
-  - Derivation: UNIFIED_GRAMMAR_RULES.md § U6
-  - Validation: docs/TNFR_FORCES_EMERGENCE.md § 14-15
-  - Implementation: src/tnfr/operators/grammar.py::validate_structural_potential_confinement
-  - Physics: src/tnfr/physics/fields.py::compute_structural_potential
- - [docs/grammar/U6_STRUCTURAL_POTENTIAL_CONFINEMENT.md](grammar/U6_STRUCTURAL_POTENTIAL_CONFINEMENT.md) - ✅ U6 canonical specification
-- [research/U6_INVESTIGATION_REPORT.md](research/U6_INVESTIGATION_REPORT.md) - U7 initial investigation (temporal ordering)
-- [GLYPH_SEQUENCES_GUIDE.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/GLYPH_SEQUENCES_GUIDE.md) - Grammar 2.0 sequences
+### Specialized Topics
 
-## ℹ️ Legacy Documentation
+| Document | Topic | Audience |
+|----------|-------|----------|
+| **[SHA_ALGEBRA_PHYSICS.md](SHA_ALGEBRA_PHYSICS.md)** | Silence operator physics | Physics researchers |
+| **[GLYPH_SEQUENCES_GUIDE.md](GLYPH_SEQUENCES_GUIDE.md)** | Operator sequence patterns | Sequence designers |
+| **[docs/TNFR_FORCES_EMERGENCE.md](docs/TNFR_FORCES_EMERGENCE.md)** | Structural fields (Φ_s) validation | U6 researchers |
+| **[docs/NBODY_COMPARISON.md](docs/NBODY_COMPARISON.md)** | TNFR vs classical N-body | Physicists |
+| **[docs/TNFR_NUMBER_THEORY_GUIDE.md](docs/TNFR_NUMBER_THEORY_GUIDE.md)** | Number theory from TNFR: ΔNFR prime criterion, UM/RA on arithmetic graph, field telemetry (|∇φ|, K_φ, ξ_C) | Math researchers |
 
-Detailed technical documents (factory patterns, cache optimization, dependency analysis) remain in `docs/` for reference.
+### 🧬 Molecular Chemistry from TNFR (BREAKTHROUGH)
 
-See [legacy/README.md](legacy/README.md) for details.
+**Revolutionary paradigm**: Complete chemistry emerges from TNFR nodal dynamics without additional postulates
+
+| Document | Focus | Status |
+|----------|-------|--------|
+| **[docs/MOLECULAR_CHEMISTRY_HUB.md](docs/MOLECULAR_CHEMISTRY_HUB.md)** | **🏛️ CENTRAL HUB** - Complete navigation & theory consolidation | ⭐ **CANONICAL** |
+| **[docs/examples/MOLECULAR_CHEMISTRY_FROM_NODAL_DYNAMICS.md](docs/examples/MOLECULAR_CHEMISTRY_FROM_NODAL_DYNAMICS.md)** | **Complete derivation** - Chemistry from nodal equation | ⭐ **CANONICAL** |
+| **[docs/examples/AU_EXISTENCE_FROM_NODAL_EQUATION.md](docs/examples/AU_EXISTENCE_FROM_NODAL_EQUATION.md)** | Au emergence from structural fields | ✅ Validated |
+| **[src/tnfr/physics/README.md](src/tnfr/physics/README.md)** § 9-10 | Implementation guide - Signatures & patterns | ✅ Technical |
+
+### 🔬 Research Notebooks (Hands-on)
+
+| Notebook | Purpose | Output |
+|----------|---------|--------|
+| **[docs/research/OPERATOR_SEQUENCES_MOLECULAR_STABILITY.ipynb](docs/research/OPERATOR_SEQUENCES_MOLECULAR_STABILITY.ipynb)** | Explore operator-like sequence motifs, enforce U3 coupling, and sweep parameters to find stable molecules | JSONL results in `docs/research/results/`
 
 ---
 
-**Ready?** Go to [**Welcome to TNFR**](source/getting-started/README.md) →
+## 📖 Learning Paths
+
+### Path 1: Quick Start (30 minutes)
+```
+README → GLOSSARY → docs/grammar/01-FUNDAMENTAL-CONCEPTS → Hello World example
+```
+
+### Path 2: Grammar Mastery (3-4 hours)
+```
+01-FUNDAMENTAL-CONCEPTS → 02-CANONICAL-CONSTRAINTS → 03-OPERATORS-AND-GLYPHS 
+→ 04-VALID-SEQUENCES → 08-QUICK-REFERENCE
+```
+
+### Path 3: Advanced Development (Full week)
+```
+Grammar Mastery + UNIFIED_GRAMMAR_RULES + AGENTS + ARCHITECTURE 
++ Source code reading + Example implementations
+```
+
+### Path 4: AI Agent Onboarding (2 hours)
+```
+AGENTS.md → GLOSSARY.md → UNIFIED_GRAMMAR_RULES.md → Invariants review
+```
+
+### Path 5: Molecular Chemistry Revolution (90 minutes) ⭐ **NEW**
+```
+01-FUNDAMENTAL-CONCEPTS (nodal equation) → MOLECULAR_CHEMISTRY_HUB.md (central navigation)
+→ Follow guided learning path (Beginner/Intermediate) → Run examples
+```
+
+---
+
+## 🗂️ Archive
+
+Historical documents (preserved for reference):
+
+| Category | Location | Contents |
+|----------|----------|----------|
+| **Audits** | `docs/archive/audits/` | Documentation & consistency audits |
+| **Phases** | `docs/archive/phases/` | Development phase reports |
+| **Legacy** | `docs/legacy/` | Pre-v2.0 documentation |
+| **Research** | `docs/research/` | Experimental proposals |
+
+**Note**: Archived documents are frozen and may be outdated. Always prefer active documentation.
+
+---
+
+## 🔍 Finding What You Need
+
+### I want to...
+
+**...understand TNFR philosophy**
+→ [AGENTS.md](AGENTS.md) § Core Mission, [01-FUNDAMENTAL-CONCEPTS.md](docs/grammar/01-FUNDAMENTAL-CONCEPTS.md)
+
+**...learn the grammar rules**
+→ [02-CANONICAL-CONSTRAINTS.md](docs/grammar/02-CANONICAL-CONSTRAINTS.md), [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md)
+
+**...implement a sequence**
+→ [04-VALID-SEQUENCES.md](docs/grammar/04-VALID-SEQUENCES.md), [GLYPH_SEQUENCES_GUIDE.md](GLYPH_SEQUENCES_GUIDE.md)
+
+**...understand U6 (structural potential)**
+→ [U6_STRUCTURAL_POTENTIAL_CONFINEMENT.md](docs/grammar/U6_STRUCTURAL_POTENTIAL_CONFINEMENT.md)
+
+**...understand how chemistry emerges from TNFR** ⭐ **BREAKTHROUGH**
+→ [MOLECULAR_CHEMISTRY_HUB.md](docs/MOLECULAR_CHEMISTRY_HUB.md) (central navigation), [Complete theory](docs/examples/MOLECULAR_CHEMISTRY_FROM_NODAL_DYNAMICS.md)
+
+**...see Au emergence from first principles**
+→ [AU_EXISTENCE_FROM_NODAL_EQUATION.md](docs/examples/AU_EXISTENCE_FROM_NODAL_EQUATION.md)
+
+**...look up a term**
+→ [GLOSSARY.md](GLOSSARY.md)
+
+**...understand an operator**
+→ [03-OPERATORS-AND-GLYPHS.md](docs/grammar/03-OPERATORS-AND-GLYPHS.md)
+
+**...write tests**
+→ [TESTING.md](TESTING.md), [06-VALIDATION-AND-TESTING.md](docs/grammar/06-VALIDATION-AND-TESTING.md)
+
+**...contribute code**
+→ [CONTRIBUTING.md](CONTRIBUTING.md), [ARCHITECTURE.md](ARCHITECTURE.md)
+
+**...migrate from old grammar**
+→ [07-MIGRATION-AND-EVOLUTION.md](docs/grammar/07-MIGRATION-AND-EVOLUTION.md)
+
+---
+
+## 📊 Documentation Quality Status
+
+**Language**: ✅ 100% English (0 Spanish)  
+**U6 Status**: ✅ Canonical (2,400+ experiments validated)  
+**Grammar Coverage**: ✅ Complete (U1-U6 fully documented)  
+**Cross-References**: ✅ Comprehensive bidirectional linking  
+**Broken Links**: ✅ 91% reduced (637 → 58)  
+**Single Source of Truth**: ✅ Established (AGENTS + UNIFIED_GRAMMAR_RULES + GLOSSARY)
+
+**Last Audit**: 2025-11-11 ([Report](docs/archive/audits/DOCUMENTATION_AUDIT_REPORT.md))
+
+---
+
+## 🔄 Maintenance
+
+This index is actively maintained. If you find:
+- Broken links
+- Missing documents
+- Outdated information
+- Unclear navigation
+
+Please open an issue or PR.
+
+**Maintainers**: Keep this index updated when adding/moving/removing major documentation files.
+
+---
+
+**Version**: 3.0  
+**Canonical Status**: ✅ ACTIVE  
+**Next Review**: 2026-02-11
+
