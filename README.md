@@ -30,7 +30,7 @@ If you use TNFR-Python-Engine in your research, please cite:
 ```bibtex
 @software{fermga_tnfr_2025,
   title = {TNFR-Python-Engine: Resonant Fractal Nature Theory Implementation},
-  author = {FMG},
+  author = {F. F. Martinez Gamo},
   year = {2025},
   url = {https://github.com/fermga/TNFR-Python-Engine},
   doi = {10.5281/zenodo.17602861},
