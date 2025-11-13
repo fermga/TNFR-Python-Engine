@@ -1,0 +1,66 @@
+# Include the license file  
+include LICENSE.md
+
+# Include the readme
+include README.md
+
+# Include all package source files
+recursive-include src/tnfr *.py *.pyi *.typed *.json
+
+# Include only essential scripts
+include scripts/tnfr_is_prime.py
+
+# Exclude test files from source distribution
+exclude tests
+recursive-exclude tests *
+
+# Exclude development files and directories
+exclude .gitignore
+exclude .pre-commit-config.yaml
+exclude pyrightconfig.json
+exclude bandit.yaml
+exclude Makefile
+exclude setup.py
+
+# Exclude large development directories
+exclude benchmarks
+recursive-exclude benchmarks *
+exclude results
+recursive-exclude results *
+exclude outputs
+recursive-exclude outputs *
+exclude notebooks
+recursive-exclude notebooks *
+exclude examples/output
+recursive-exclude examples/output *
+exclude tools
+recursive-exclude tools *
+exclude meta
+recursive-exclude meta *
+exclude docs
+recursive-exclude docs *
+
+# Exclude development and debug files
+exclude *.zip
+exclude *.txt
+exclude *.md
+exclude *.jsonl
+exclude *.png
+exclude *.svg
+exclude *.html
+exclude *.csv
+exclude *.parquet
+exclude debug_*.py
+exclude test_*.py
+exclude analyze_*.py
+exclude audit_*.py
+exclude check_*.py
+exclude validate_*.py
+exclude verify_*.py
+
+# Exclude temporary and cache files
+global-exclude *.pyc
+global-exclude *.pyo
+global-exclude __pycache__
+global-exclude .pytest_cache
+global-exclude *.egg-info
