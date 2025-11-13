@@ -364,14 +364,15 @@ def test_coherence_tracking_accumulates():
 
     G.nodes[node][DNFR_PRIMARY] = 0.30
 
-    # Apply Coherence 3 times in canonical sequences
-    # First sequence
-    run_sequence(G, node, [Emission(), Reception(), Coherence(), Silence()])
-
-    # Subsequent sequences need reactivation: SHA → IL → AL
-    for _ in range(2):
-        Coherence()(G, node)  # Reactivate from silence (zero → medium)
-        run_sequence(G, node, [Emission(), Reception(), Coherence(), Silence()])
+    # Apply Coherence 3 times in 3 separate canonical sequences
+    sequences = [
+        [Emission(), Reception(), Coherence(), Silence()],
+        [Emission(), Reception(), Coherence(), Silence()],
+        [Emission(), Reception(), Coherence(), Silence()]
+    ]
+    
+    for seq in sequences:
+        run_sequence(G, node, seq)
 
     # Verify 3 tracking events logged
     assert "IL_coherence_tracking" in G.graph

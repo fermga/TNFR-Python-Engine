@@ -1,0 +1,1 @@
+{"sequence": ["UM", "SHA", "UM", "NAV"], "coherence_change": 0.0, "sense_index_change": 0.06671108598746289, "phi_s_change": 0.0, "grad_phi_change": -0.4187201638351048, "k_phi_change": 0.5520782261655596, "xi_c_change": 0.0, "phase_sync_change": 0.13818842318924596, "epi_magnitude_change": 0.0, "hash_signature": "78b9744845044836", "sequence_str": "UM -> SHA -> UM -> NAV"}

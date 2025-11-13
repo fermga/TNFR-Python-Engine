@@ -1,4 +1,6 @@
 # VAL (Expansion) Canonical Implementation Summary
+# VAL Operator Implementation Summary
+> DEPRECATION NOTICE: This document is archived and not part of the centralized documentation. For current operator specifications, see `AGENTS.md` and `docs/source/api/operators.md`.
 
 **Issue**: #2722 - Profundizar implementación canónica del operador Expansión (VAL)  
 **Status**: ✅ COMPLETED  

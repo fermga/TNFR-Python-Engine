@@ -275,8 +275,9 @@ class TestOZBifurcationIntegration:
         G.nodes[node]["epi_history"] = [0.4, 0.5, 0.7]
         G.graph["BIFURCATION_THRESHOLD_TAU"] = 0.08
 
-        # Apply OZ directly (not via run_sequence, to avoid grammar validation)
-        Dissonance()(G, node)
+        # Apply grammar-compliant sequence: need IL before ZHIR (U4b)
+        Coherence()(G, node)  # Establish stable base
+        Dissonance()(G, node)  # Create bifurcation readiness
 
         # Verify bifurcation detected
         assert G.nodes[node].get("_bifurcation_ready", False)
@@ -285,7 +286,7 @@ class TestOZBifurcationIntegration:
         paths = get_bifurcation_paths(G, node)
         assert Glyph.ZHIR in paths
 
-        # ZHIR should execute successfully
+        # ZHIR should execute successfully (now has required IL precedence)
         Mutation()(G, node)  # Should not raise
 
     def test_oz_to_nul_sequence(self):

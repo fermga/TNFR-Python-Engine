@@ -12,7 +12,7 @@ Theoretical foundation:
     EPI(t_final) = EPI(t_initial) + ∫_{t_0}^{t_f} νf(t) · ΔNFR(t) dt
 
 References:
-- Issue: [GRAMÁTICA CANÓNICA] Añadir validación de clausura operatorial
+- Issue: [CANONICAL GRAMMAR] Add operational closure validation
 - TNFR.pdf Section 2.1.4: Nodal stability conditions
 """
 
@@ -112,9 +112,9 @@ class TestR6ControlledMutation:
             SILENCE,
         ]
         result = validate_sequence(sequence)
-        # Should fail R6: no coherence base
+        # Should fail U2: missing stabilizer (coherence or self_organization)
         assert not result.passed
-        assert "R6" in result.message
+        assert "missing stabilizer" in result.message
         assert "coherence" in result.message.lower()
 
     def test_invalid_mutation_before_coherence(self):
@@ -131,10 +131,11 @@ class TestR6ControlledMutation:
             SILENCE,
         ]
         result = validate_sequence(sequence)
-        # Should fail R6: wrong order
+        # Should fail on transition compatibility: reception → dissonance
         assert not result.passed
-        assert "R6" in result.message
-        assert "must follow" in result.message.lower() or "before" in result.message.lower()
+        assert "transition" in result.message
+        assert ("contradicts" in result.message or
+                "incompatible" in result.message)
 
 
 class TestR6FrequencyBalance:
@@ -180,9 +181,9 @@ class TestR6EdgeCases:
             EMISSION,
             RECEPTION,
             COHERENCE,
-            COUPLING,
-            RESONANCE,
             DISSONANCE,
+            RESONANCE,
+            COUPLING,
             COHERENCE,
             SILENCE,
         ]
@@ -208,38 +209,33 @@ class TestR6ErrorMessages:
     """Test that R6 error messages are clear and informative."""
 
     def test_convergence_error_message_clarity(self):
-        """Convergence error message identifies divergent operator."""
-        sequence = [EMISSION, RECEPTION, COHERENCE, DISSONANCE]
+        """Convergence error message identifies missing stabilizers."""
+        # Create imbalanced sequence with multiple destabilizers
+        sequence = [EMISSION, DISSONANCE, DISSONANCE, SILENCE]
         result = validate_sequence(sequence)
         assert not result.passed
-        assert "R6" in result.message
-        assert "divergent" in result.message.lower()
-        # Should mention acceptable endings
-        assert "silence" in result.message.lower() or "transition" in result.message.lower()
+        assert ("missing stabilizer" in result.message.lower() or
+                "convergence" in result.message.lower())
+        # Should mention stabilizers needed
+        assert ("coherence" in result.message.lower() or
+                "self_organization" in result.message.lower())
 
     def test_closure_error_message_clarity(self):
         """Closure error message explains destabilizer/stabilizer imbalance."""
-        # Create sequence with excess destabilizers and NAV ending (not SHA)
-        # NAV requires balance, but this has imbalance
+        # Create sequence with excess destabilizers without stabilizers
         sequence = [
             EMISSION,
-            RECEPTION,
-            COHERENCE,
-            DISSONANCE,
-            TRANSITION,  # Destabilizer 2
-            EXPANSION,  # Destabilizer 3
-            RESONANCE,
-            TRANSITION,  # NAV ending (needs balance)
+            DISSONANCE,  # Destabilizer 1
+            EXPANSION,   # Destabilizer 2
+            SILENCE,     # Valid closure
         ]
         result = validate_sequence(sequence)
         assert not result.passed
-        assert "R6" in result.message
-        assert "closure" in result.message.lower()
+        assert ("missing stabilizer" in result.message.lower() or
+                "convergence" in result.message.lower())
         # Should mention balance concept
-        assert any(
-            word in result.message.lower()
-            for word in ["destabilizer", "stabilizer", "balance", "sustainability"]
-        )
+        words = ["destabilizer", "stabilizer", "balance", "sustainability"]
+        assert any(word in result.message.lower() for word in words)
 
 
 class TestR6Integration:
@@ -267,31 +263,35 @@ class TestR6Integration:
         """R6 adds semantic validation on top of R3 syntactic validation.
 
         R3 allows VALID_END_OPERATORS: SHA, NAV, REMESH, OZ
-        R6 validates two aspects:
-        1. Ending convergence/closure: Rejects OZ (divergent)
-        2. Operational closure balance: Validates destabilizers ≤ stabilizers
+        R6 validates operational closure balance: destabilizers ≤ stabilizers
 
         NAV is a destabilizer, so sequences ending with NAV must have balance.
         """
-        # OZ (dissonance) is valid per R3 but divergent per R6
-        sequence = [EMISSION, RECEPTION, COHERENCE, DISSONANCE]
+        # Test with invalid ending not in CLOSURES (hypothetical operator)
+        # Since all current VALID_END_OPERATORS are valid CLOSURES,
+        # we test balance instead
+        # Test imbalanced destabilizers (more destabilizers than stabilizers)
+        # 2 destabilizers, 0 stabilizers
+        sequence = [EMISSION, DISSONANCE, DISSONANCE, SILENCE]
         result = validate_sequence(sequence)
         assert not result.passed
-        # Should fail R6 (divergent ending)
-        assert "R6" in result.message
-        assert "divergent" in result.message.lower()
+        # Should fail on balance (U2 convergence requirement)
+        assert ("missing stabilizer" in result.message.lower() or
+                "convergence" in result.message.lower())
 
         # NAV is valid per R3 but requires balance per R6
-        # This sequence is balanced: EN(1 if has context, but no prior IL), NAV(1) vs IL(1), RA(1)
-        # Actually EN at pos 1 doesn't have prior coherence for destabilizer role
-        # So: NAV(1) destabilizers vs IL(1), RA(1) stabilizers = 1 vs 2, balanced
+        # This sequence is balanced: EN(1 if has context, but no prior IL),
+        # NAV(1) vs IL(1), RA(1)
+        # Actually EN at pos 1 doesn't have prior coherence for destabilizer
+        # So: NAV(1) destabilizers vs IL(1), RA(1) stabilizers = 1 vs 2
         sequence_nav = [EMISSION, RECEPTION, COHERENCE, RESONANCE, TRANSITION]
         result_nav = validate_sequence(sequence_nav)
-        assert result_nav.passed, f"NAV with balance should pass R6: {result_nav.message}"
+        msg = f"NAV with balance should pass: {result_nav.message}"
+        assert result_nav.passed, msg
 
     def test_r6_works_with_r4_bifurcation_control(self):
         """R6 operational closure works with R4 bifurcation requirements."""
-        # Sequence with mutation after destabilizer (R4) and balanced closure (R6)
+        # Sequence with mutation after destabilizer (R4) and balanced closure
         sequence = [
             EMISSION,
             RECEPTION,

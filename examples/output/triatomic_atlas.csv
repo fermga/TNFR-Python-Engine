@@ -1,0 +1,3 @@
+formula,central,geometry,angle_deg,signature,xi_c,mean_grad,mean_kphi,mean_path_length,local_frac,u6_ok,u6_drift
+HOH,B,bent,104.5,stressed,0.000000,0.000000,0.000000,4.311688,0.025974,PASS,0.461806
+OCO,B,linear,180.0,stressed,0.000000,0.000000,0.000000,5.746169,0.013793,PASS,0.550433

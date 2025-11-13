@@ -212,7 +212,7 @@ For detailed recipe documentation including:
 - Variations and adaptations
 - Quick reference tables
 
-See: **[docs/PATTERN_COOKBOOK.md](../../docs/PATTERN_COOKBOOK.md)**
+See: **[docs/PATTERN_COOKBOOK.md](../../../docs/PATTERN_COOKBOOK.md)**
 
 ## Integration with Other Components
 
@@ -263,4 +263,4 @@ See cookbook documentation for detailed contribution guidelines.
 
 ## License
 
-Part of the TNFR Python Engine. See [LICENSE.md](../../LICENSE.md).
+Part of the TNFR Python Engine. See [LICENSE.md](../../../LICENSE.md).

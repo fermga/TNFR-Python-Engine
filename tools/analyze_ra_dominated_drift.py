@@ -20,9 +20,11 @@ import json
 import numpy as np
 from pathlib import Path
 
-print("\n" + "="*70)
+BASE = Path('benchmarks') / 'results'
+
+print("\n" + "=" * 70)
 print("=== Φ_s Drift: RA-Dominated vs Violation Sequences ===")
-print("="*70)
+print("=" * 70)
 
 print("\nHypothesis:")
 print("  - Violations (OZ-heavy): Passive drift AWAY from Φ_s minima")
@@ -33,17 +35,16 @@ print()
 print("Step 1: Analyze violation sequences (destabilizer-heavy)\n")
 
 violation_files = [
-    'u6_fine_i203.jsonl',
-    'u6_fine_i207.jsonl',
-    'u6_fine_i208.jsonl',
-    'u6_fine_i209.jsonl',
+    BASE / 'u6_fine_i203.jsonl',
+    BASE / 'u6_fine_i207.jsonl',
+    BASE / 'u6_fine_i208.jsonl',
+    BASE / 'u6_fine_i209.jsonl',
 ]
 
 violation_drifts = []
 violation_delta_c = []
 
-for filename in violation_files:
-    path = Path(filename)
+for path in violation_files:
     if not path.exists():
         continue
     
@@ -58,8 +59,7 @@ for filename in violation_files:
         c_init = r.get('coherence_initial', np.nan)
         c_final = r.get('coherence_final', np.nan)
         
-        if not (np.isfinite(phi_init) and np.isfinite(phi_final) and 
-                np.isfinite(c_init) and np.isfinite(c_final)):
+        if not (np.isfinite(phi_init) and np.isfinite(phi_final) and np.isfinite(c_init) and np.isfinite(c_final)):
             continue
         
         violation_drifts.append(phi_final - phi_init)
@@ -76,8 +76,7 @@ print("\n\nStep 2: Analyze valid sequences (stabilizer-balanced)\n")
 valid_drifts = []
 valid_delta_c = []
 
-for filename in violation_files:
-    path = Path(filename)
+for path in violation_files:
     if not path.exists():
         continue
     
@@ -92,8 +91,7 @@ for filename in violation_files:
         c_init = r.get('coherence_initial', np.nan)
         c_final = r.get('coherence_final', np.nan)
         
-        if not (np.isfinite(phi_init) and np.isfinite(phi_final) and 
-                np.isfinite(c_init) and np.isfinite(c_final)):
+        if not (np.isfinite(phi_init) and np.isfinite(phi_final) and np.isfinite(c_init) and np.isfinite(c_final)):
             continue
         
         valid_drifts.append(phi_final - phi_init)
@@ -170,4 +168,4 @@ else:
     print("  → Coupling strength depends on sequence type")
     print("  → May indicate operator-specific Φ_s dynamics")
 
-print("\n" + "="*70)
+print("\n" + "=" * 70)

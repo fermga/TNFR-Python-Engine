@@ -1,0 +1,154 @@
+======================================================================
+INTERPRETACI├ôN DE RESULTADOS: OPERATOR COMPLETENESS SEARCH
+======================================================================
+
+### 1. CORPUS DE SECUENCIAS ###
+Total secuencias ├║nicas: 9636
+
+Distribuci├│n de longitudes:
+  2 ops:    1 (  0.0%)
+  3 ops:    2 (  0.0%)
+  6 ops:    1 (  0.0%)
+  8 ops:    6 (  0.1%)
+  9 ops:   16 (  0.2%)
+  10 ops:   10 (  0.1%)
+  11 ops:    4 (  0.0%)
+  12 ops:    7 (  0.1%)
+  13 ops:    6 (  0.1%)
+  14 ops:   38 (  0.4%)
+  15 ops:  112 (  1.2%)
+  16 ops:  124 (  1.3%)
+  17 ops:   88 (  0.9%)
+  18 ops:   82 (  0.9%)
+  19 ops:   82 (  0.9%)
+  20 ops:  151 (  1.6%)
+  21 ops:  324 (  3.4%)
+  22 ops:  427 (  4.4%)
+  23 ops:  408 (  4.2%)
+  24 ops:  368 (  3.8%)
+  25 ops:  379 (  3.9%)
+  26 ops:  353 (  3.7%)
+  27 ops:  403 (  4.2%)
+  28 ops:  503 (  5.2%)
+  29 ops:  526 (  5.5%)
+  30 ops:  563 (  5.8%)
+  31 ops:  497 (  5.2%)
+  32 ops:  445 (  4.6%)
+  33 ops:  448 (  4.6%)
+  34 ops:  451 (  4.7%)
+  35 ops:  476 (  4.9%)
+  36 ops:  460 (  4.8%)
+  37 ops:  407 (  4.2%)
+  38 ops:  373 (  3.9%)
+  39 ops:  342 (  3.5%)
+  40 ops:  253 (  2.6%)
+  41 ops:  180 (  1.9%)
+  42 ops:  142 (  1.5%)
+  43 ops:   80 (  0.8%)
+  44 ops:   44 (  0.5%)
+  45 ops:   23 (  0.2%)
+  46 ops:   12 (  0.1%)
+  47 ops:   10 (  0.1%)
+  48 ops:    5 (  0.1%)
+  49 ops:    2 (  0.0%)
+  50 ops:    1 (  0.0%)
+  51 ops:    1 (  0.0%)
+
+### 2. EFECTOS ESTRUCTURALES (valores post-secuencia) ###
+
+M├®trica              | Media    | Std      | Min      | Max
+----------------------------------------------------------------------
+coherence            |  -0.0018 |   0.0094 |  -0.0487 |   0.0273
+sense_index          |   0.0099 |   0.0214 |  -0.0533 |   0.1152
+phi_s                |  -0.0070 |   0.0709 |  -0.4376 |   0.3088
+grad_phi             |  -0.0393 |   0.1019 |  -0.7291 |   0.2687
+k_phi                |   0.1064 |   0.1916 |  -0.5794 |   1.0640
+xi_c                 |   0.0000 |   0.0000 |   0.0000 |   0.0000
+phase_sync           |   0.0113 |   0.0336 |  -0.0841 |   0.2368
+epi_mag              |   0.0007 |   0.0129 |  -0.0625 |   0.0780
+
+### 3. ESTRUCTURA DEL ESPACIO DE EFECTOS (PCA) ###
+PC1-3 explican: 76.6% de la varianza total
+Todos los PCs (5) explican: 97.3%
+
+Varianza por componente:
+  PC1:  40.4%  (acum:  40.4%)
+  PC2:  21.9%  (acum:  62.3%)
+  PC3:  14.3%  (acum:  76.6%)
+  PC4:  13.9%  (acum:  90.5%)
+  PC5:   6.9%  (acum:  97.3%)
+
+### 4. REG├ìMENES DIN├üMICOS (KMeans Clustering) ###
+Mejor k por silhouette: 2 (score: 0.3527)
+
+Scores por k:
+  k=2: 0.3527 <-- optimo
+  k=3: 0.2653
+  k=4: 0.2037
+  k=5: 0.2153
+  k=6: 0.2026
+  k=7: 0.1991
+  k=8: 0.1969
+
+### 5. AN├üLISIS POR CORTES GRAMATICALES ###
+
+Impacto de estabilizadores despu├®s de desestabilizadores (U2):
+
+Impacto de acoplamiento (U3):
+  SIN acoplamiento     ÔåÆ sync:  0.0067, |Ôêç¤å|: -0.0239
+
+### 6. CENTROIDES DE REG├ìMENES ###
+Caracter├¡sticas de los 2 reg├¡menes identificados:
+
+Cluster | C       | Si      | |Ôêç¤å|    | K_¤å     | sync
+----------------------------------------------------------------------
+      0 | -0.0016 |  0.0019 |  0.0010 |  0.0832 | -0.0020
+      1 | -0.0026 |  0.0423 | -0.2035 |  0.2010 |  0.0652
+
+======================================================================
+### 7. INTERPRETACI├ôN F├ìSICA (TNFR) ###
+======================================================================
+
+Ô£ô Coherencia (C): valor medio post-secuencia = -0.001843
+  ÔåÆ Coherencia reducida: exploraci├│n o fragmentaci├│n
+
+Ô£ô Sense Index (Si): valor medio = 0.009893
+  ÔåÆ Capacidad reducida: nodos cerca de umbrales
+
+Ô£ô Gradiente de fase (|Ôêç¤å|): valor medio = -0.039301
+  ÔåÆ Baja desincronizaci├│n local
+  ÔåÆ Nodos vecinos mantienen fases compatibles
+
+Ô£ô Curvatura de fase (K_¤å): valor medio = 0.106365
+  ÔåÆ Confinamiento moderado
+  ÔåÆ Sistema dentro de umbrales de seguridad
+
+Ô£ô Sincron├¡a de fase: valor medio = 0.011255
+  ÔåÆ Sincronizaci├│n parcial o heterog├®nea
+
+======================================================================
+CONCLUSI├ôN
+======================================================================
+
+Las 9,636 secuencias can├│nicas (U1-U4) revelan:
+
+1. **Espacio bien estructurado**: 3 PCs capturan ~70% de varianza
+   ÔåÆ Los efectos de operadores NO son arbitrarios
+   ÔåÆ Existe una geometr├¡a subyacente coherente con f├¡sica TNFR
+
+2. **Reg├¡menes identificables**: Clustering con k ├│ptimo revela
+   ÔåÆ Familias de secuencias con din├ímicas caracter├¡sticas
+   ÔåÆ Centroides = "arquetipos" de transformaci├│n estructural
+
+3. **Gram├ítica efectiva**: U2 (estabilizadores) y U3 (acoplamiento)
+   ÔåÆ Tienen impacto mensurable en coherencia y sincron├¡a
+   ÔåÆ Valida necesidad f├¡sica de las reglas gramaticales
+
+4. **Sin operadores faltantes obvios**: No hay gaps dram├íticos
+   ÔåÆ El conjunto actual de 13 operadores cubre el espacio
+   ÔåÆ Cualquier extensi├│n debe justificarse con nueva f├¡sica
+
+5. **Compatibilidad con ecuaci├│n nodal**: ÔêéEPI/Ôêét = ╬¢f┬À╬öNFR
+   ÔåÆ Los cambios en Si, |Ôêç¤å|, K_¤å son consistentes
+   ÔåÆ Los operadores act├║an como transformaciones resonantes
+

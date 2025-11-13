@@ -1,7 +1,7 @@
 """Test suite for SHA algebraic properties validation.
 
 This module validates the algebraic properties of SHA (Silence) operator
-according to TNFR.pdf Section 3.2.4 "Notación funcional de operadores glíficos".
+according to TNFR.pdf Section 3.2.4 "Functional notation of glyph operators".
 
 Theoretical Foundation
 ----------------------

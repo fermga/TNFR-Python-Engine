@@ -1,0 +1,36 @@
+<html>
+<head><meta charset='utf-8'><title>TNFR Periodic Table — Early Demo</title>
+<style>body{font-family:system-ui,Segoe UI,Arial} table{border-collapse:collapse;} td,th{border:1px solid #ddd;padding:6px;} th{background:#fafafa} .panel{border:1px solid #e0e0e0;background:#f9fbff;padding:8px 12px;border-radius:6px;display:inline-block;margin:8px 0} .panel b{display:block;margin-bottom:4px}</style>
+</head>
+<body>
+<h1>TNFR Periodic Table — Early Demo (Z=1..10)</h1>
+<div class='panel'><b>Safety Triad (telemetry-only)</b><div>ΔΦ_s threshold: 2.0 (confinement)</div><div>|∇φ| threshold: 0.38</div><div>|K_φ| threshold: 3.0</div><div style='margin-top:4px;color:#555'>Report summary — mean|∇φ|=0.000, mean|K_φ|=0.000, max ΔΦ_s=0.437</div><div style='margin-top:2px;color:#777;font-size:12px'>U6 is descriptive only; no control feedback into dynamics.</div></div>
+<p>For each Z, we build a radial element-like network and compute field telemetry and a U6 sequential ΔΦ_s check using a synthetic [AL, RA, IL]-like step. Read-only, telemetry-based.</p>
+<table><thead><tr><th>Z</th><th>Symbol</th><th>Signature</th><th>ξ_C</th><th>mean|∇φ|</th><th>mean|K_φ|</th><th>mean path len</th><th>local frac</th><th>ΔΦ_s ok</th><th>ΔΦ_s</th></tr></thead><tbody>
+<tr><td>1</td><td>H</td><td>stressed</td><td>0.00</td><td>0.000</td><td>0.000</td><td>1.69</td><td>0.00</td><td>PASS</td><td>0.215</td></tr>
+<tr><td>2</td><td>He</td><td>stressed</td><td>0.00</td><td>0.000</td><td>0.000</td><td>1.73</td><td>0.00</td><td>PASS</td><td>0.237</td></tr>
+<tr><td>3</td><td>Li</td><td>stressed</td><td>0.00</td><td>0.000</td><td>0.000</td><td>2.72</td><td>0.00</td><td>PASS</td><td>0.321</td></tr>
+<tr><td>4</td><td>Be</td><td>stressed</td><td>0.00</td><td>0.000</td><td>0.000</td><td>2.95</td><td>0.00</td><td>PASS</td><td>0.331</td></tr>
+<tr><td>5</td><td>B</td><td>stressed</td><td>0.00</td><td>0.000</td><td>0.000</td><td>3.01</td><td>0.00</td><td>PASS</td><td>0.354</td></tr>
+<tr><td>6</td><td>C</td><td>stressed</td><td>0.00</td><td>0.000</td><td>0.000</td><td>3.06</td><td>0.00</td><td>PASS</td><td>0.370</td></tr>
+<tr><td>7</td><td>N</td><td>stressed</td><td>0.00</td><td>0.000</td><td>0.000</td><td>3.33</td><td>0.02</td><td>PASS</td><td>0.370</td></tr>
+<tr><td>8</td><td>O</td><td>stressed</td><td>0.00</td><td>0.000</td><td>0.000</td><td>3.35</td><td>0.04</td><td>PASS</td><td>0.403</td></tr>
+<tr><td>9</td><td>F</td><td>stressed</td><td>0.00</td><td>0.000</td><td>0.000</td><td>3.42</td><td>0.05</td><td>PASS</td><td>0.423</td></tr>
+<tr><td>10</td><td>Ne</td><td>stressed</td><td>0.00</td><td>0.000</td><td>0.000</td><td>3.63</td><td>0.03</td><td>PASS</td><td>0.437</td></tr>
+</tbody></table>
+<h2 style='margin-top:20px'>Summary by Signature</h2>
+<table><thead><tr><th>Signature</th><th>Count</th><th>PASS rate</th><th>mean ξ_C</th><th>mean|∇φ|</th><th>mean|K_φ|</th><th>mean local frac</th></tr></thead><tbody>
+<tr><td>stressed</td><td>10</td><td>1.00</td><td>0.00</td><td>0.000</td><td>0.000</td><td>0.01</td></tr>
+</tbody></table>
+<h3 style='margin-top:16px'>Legend</h3>
+<ul>
+<li>|∇φ| threshold (stable): 0.38</li>
+<li>|K_φ| threshold (local safety): 3.0</li>
+<li>ΔΦ_s threshold (confinement): 2.0</li>
+</ul>
+<h3>Distribution by Signature</h3>
+<ul>
+<li>stressed: 10 (100.0%)</li>
+</ul>
+<p style='margin-top:16px;color:#666'>Thresholds and messages are centralized in tnfr.telemetry.constants and tnfr.operators.grammar. This is an early demonstrator; it does not claim quantitative mapping to SI/QED values.</p>
+</body></html>

@@ -24,7 +24,8 @@
 
 ### 💻 For Developers
 → [**Performance Optimization**](source/advanced/PERFORMANCE_OPTIMIZATION.md)  
-→ [**Mathematical Foundations**](source/theory/mathematical_foundations.md) ⭐ **CANONICAL MATH SOURCE**  
+→ [**Computational Mathematics Hub**](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/mathematics/README.md) ⭐ **CANONICAL (computational)**  
+→ [**Mathematical Foundations**](source/theory/mathematical_foundations.md) — Formal theory and complete derivations  
 → [API Reference](source/api/overview.md)  
 → [Contributing](https://github.com/fermga/TNFR-Python-Engine/blob/main/CONTRIBUTING.md)
 
@@ -62,7 +63,8 @@
 - **[PERFORMANCE_OPTIMIZATION.md](source/advanced/PERFORMANCE_OPTIMIZATION.md)** - Backends, caching, factories
 
 ### Theory (`source/theory/`)
-- **[mathematical_foundations.md](source/theory/mathematical_foundations.md)** - ⭐ **CANONICAL MATHEMATICAL SOURCE**
+- **[mathematical_foundations.md](source/theory/mathematical_foundations.md)** — Formal theoretical foundations (complete derivations)
+- **Computational hub**: [`src/tnfr/mathematics/README.md`](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/mathematics/README.md) ⭐ **CANONICAL (computational)**
 - **Classical Mechanics Emergence Series:**
   - [07_emergence_classical_mechanics.md](source/theory/07_emergence_classical_mechanics.md) - Direct derivation from TNFR
   - [08_classical_mechanics_euler_lagrange.md](source/theory/08_classical_mechanics_euler_lagrange.md) - Variational formulation
@@ -94,6 +96,7 @@
 - [ARCHITECTURE.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/ARCHITECTURE.md) - System design
 
 ### Physics & Forces
+- [STRUCTURAL_FIELDS_TETRAD.md](STRUCTURAL_FIELDS_TETRAD.md) - ⭐ CANONICAL Structural Field Tetrad (Φ_s, |∇φ|, K_φ, ξ_C)
 - [docs/TNFR_FORCES_EMERGENCE.md](TNFR_FORCES_EMERGENCE.md) - ⭐ **Φ_s Validation & Four Forces (§ 14-15)**
 - [src/tnfr/physics/fields.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/fields.py) - Structural potential implementation
 
@@ -103,7 +106,7 @@
   - Validation: docs/TNFR_FORCES_EMERGENCE.md § 14-15
   - Implementation: src/tnfr/operators/grammar.py::validate_structural_potential_confinement
   - Physics: src/tnfr/physics/fields.py::compute_structural_potential
-- [grammar/U6_TEMPORAL_ORDERING.md](grammar/U6_TEMPORAL_ORDERING.md) - ⚗️ **U7 Research Proposal** (experimental, renamed from U6)
+ - [docs/grammar/U6_STRUCTURAL_POTENTIAL_CONFINEMENT.md](grammar/U6_STRUCTURAL_POTENTIAL_CONFINEMENT.md) - ✅ U6 canonical specification
 - [research/U6_INVESTIGATION_REPORT.md](research/U6_INVESTIGATION_REPORT.md) - U7 initial investigation (temporal ordering)
 - [GLYPH_SEQUENCES_GUIDE.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/GLYPH_SEQUENCES_GUIDE.md) - Grammar 2.0 sequences
 

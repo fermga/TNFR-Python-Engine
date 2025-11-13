@@ -13,10 +13,11 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ..types import Glyph, NodeId, TNFRGraph
+    from ..types import NodeId, TNFRGraph
 
 from ..alias import get_attr
 from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_VF
+from ..types import Glyph
 
 __all__ = [
     "get_bifurcation_paths",

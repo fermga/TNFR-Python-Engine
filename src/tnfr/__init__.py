@@ -122,6 +122,39 @@ EXPORT_DEPENDENCIES: dict[str, dict[str, tuple[str, ...]]] = {
         ),
         "third_party": ("networkx",),
     },
+    # Math module symbolic analysis functions
+    "get_nodal_equation": {
+        "submodules": ("tnfr.math",),
+        "third_party": ("sympy",),
+    },
+    "solve_nodal_equation_constant_params": {
+        "submodules": ("tnfr.math",),
+        "third_party": ("sympy",),
+    },
+    "integrated_evolution_symbolic": {
+        "submodules": ("tnfr.math",),
+        "third_party": ("sympy",),
+    },
+    "check_convergence_exponential": {
+        "submodules": ("tnfr.math",),
+        "third_party": ("sympy",),
+    },
+    "compute_second_derivative_symbolic": {
+        "submodules": ("tnfr.math",),
+        "third_party": ("sympy",),
+    },
+    "evaluate_bifurcation_risk": {
+        "submodules": ("tnfr.math",),
+        "third_party": ("sympy",),
+    },
+    "latex_export": {
+        "submodules": ("tnfr.math",),
+        "third_party": ("sympy",),
+    },
+    "pretty_print": {
+        "submodules": ("tnfr.math",),
+        "third_party": ("sympy",),
+    },
 }
 
 try:  # pragma: no cover - exercised in version resolution tests
@@ -314,6 +347,21 @@ _HAS_STRUCTURAL_EXPORTS = _assign_exports(
 
 _assign_exports("units", ("get_hz_bridge", "hz_str_to_hz", "hz_to_hz_str"))
 
+# Export math module for symbolic analysis
+_assign_exports(
+    "math",
+    (
+        "get_nodal_equation",
+        "solve_nodal_equation_constant_params",
+        "integrated_evolution_symbolic",
+        "check_convergence_exponential",
+        "compute_second_derivative_symbolic",
+        "evaluate_bifurcation_risk",
+        "latex_export",
+        "pretty_print",
+    ),
+)
+
 
 def _emit_missing_dependency_warning() -> None:
     if not _MISSING_EXPORTS:
@@ -340,6 +388,15 @@ __all__ = [
     "get_hz_bridge",
     "hz_str_to_hz",
     "hz_to_hz_str",
+    # Math module symbolic analysis
+    "get_nodal_equation",
+    "solve_nodal_equation_constant_params",
+    "integrated_evolution_symbolic",
+    "check_convergence_exponential",
+    "compute_second_derivative_symbolic",
+    "evaluate_bifurcation_risk",
+    "latex_export",
+    "pretty_print",
     # SDK exports (lazily loaded)
     "TNFRNetwork",
     "TNFRTemplates",

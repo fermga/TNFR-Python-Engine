@@ -30,13 +30,12 @@ theory.
   [security/](security/monitoring.md).
 - **Releases** – version-by-version summaries in the [release notes](releases.md).
 
-!!! important "Mathematical Foundations"
-    The [Mathematical Foundations](theory/mathematical_foundations.md) document is the **single source of truth**
-    for the canonical nodal equation and structural operators. It includes complete derivations,
-    operator formalism, and spectral theory. Interactive notebooks (structural frequency, phase synchrony,
-    ΔNFR gradient fields, coherence metrics, sense index, and recursivity cascades) provide
-    hands-on exploration with visualizations. Refer to the unified foundations document whenever you need
-    to validate analytical assumptions or reproduce the derivations behind telemetry outputs.
+!!! important "Mathematics: theory vs implementation"
+    - Formal theory: The [Mathematical Foundations](theory/mathematical_foundations.md) document is the **single source of truth**
+      for derivations of the nodal equation, operator formalism, and spectral theory.
+    - Computational hub (canonical): The canonical, implementation-focused mathematics hub lives in
+      [`src/tnfr/mathematics/README.md`](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/mathematics/README.md),
+      consolidating equations-as-implemented, validations, number theory results, and links to experiments.
 
 !!! tip "Quick-start pathways"
     * **New to TNFR?** Read the [TNFR Fundamental Concepts](getting-started/TNFR_CONCEPTS.md) guide to understand the paradigm first (10 minutes).

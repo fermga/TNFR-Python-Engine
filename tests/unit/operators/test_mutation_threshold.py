@@ -24,6 +24,7 @@ from tnfr.operators.definitions import (
     Mutation,
     Coherence,
     Reception,
+    Silence,
 )
 from tnfr.operators.preconditions import validate_mutation, OperatorPreconditionError
 
@@ -108,9 +109,10 @@ class TestZHIRThresholdVerification:
         # Build initial history
         G.nodes[node]["epi_history"] = [0.35, 0.38, 0.40]
 
-        # Apply canonical sequence: IL → OZ → ZHIR
+        # Apply canonical sequence: AL → IL → OZ → ZHIR → SHA
         # OZ should elevate ΔNFR and increase EPI enough to cross threshold
-        run_sequence(G, node, [Coherence(), Dissonance(), Mutation()])
+        run_sequence(G, node, [Emission(), Coherence(), Dissonance(),
+                               Mutation(), Silence()])
 
         # Verify metrics were collected
         assert "operator_metrics" in G.graph

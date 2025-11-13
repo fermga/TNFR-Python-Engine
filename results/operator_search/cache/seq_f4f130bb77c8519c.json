@@ -1,0 +1,1 @@
+{"sequence": ["THOL", "VAL", "REMESH"], "coherence_change": 0.004188740408666791, "sense_index_change": 0.003718629415340735, "phi_s_change": 0.03186828480326265, "grad_phi_change": 0.0, "k_phi_change": 0.0, "xi_c_change": 0.0, "phase_sync_change": 0.0, "epi_magnitude_change": 0.013549996631933903, "hash_signature": "5e34a8d439a2d04b", "sequence_str": "THOL -> VAL -> REMESH"}

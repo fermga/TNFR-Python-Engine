@@ -1,0 +1,1 @@
+{"sequence": ["NAV", "REMESH", "OZ"], "coherence_change": -0.00940379143753578, "sense_index_change": 0.0017044530099682431, "phi_s_change": 0.07949987688874183, "grad_phi_change": 0.0, "k_phi_change": 0.0, "xi_c_change": 0.0, "phase_sync_change": 0.0, "epi_magnitude_change": 0.0013859807894904819, "hash_signature": "c786b782167c2317", "sequence_str": "NAV -> REMESH -> OZ"}

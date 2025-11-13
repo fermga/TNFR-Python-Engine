@@ -1,5 +1,7 @@
 # U4b Grammar Validation Audit - Final Report
 
+> DEPRECATION NOTICE: This audit report is archived and not part of the centralized documentation. For current grammar specifications, see `UNIFIED_GRAMMAR_RULES.md` and `docs/source/theory/mathematical_foundations.md`.
+
 **Date**: 2025-11-09  
 **Issue**: [ZHIR][Testing] Auditoría completa de validación de grammar U4b para mutaciones  
 **Status**: ✅ COMPLETE - All requirements met

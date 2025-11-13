@@ -1,0 +1,10 @@
+{
+  "timestamp": "20251112_155434",
+  "counts": {
+    "rows": 100,
+    "outliers": 17,
+    "sparse": 10,
+    "violations": 0
+  },
+  "explained_variance_2d": 0.6607732438417415
+}

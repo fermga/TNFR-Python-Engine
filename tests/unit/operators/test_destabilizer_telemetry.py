@@ -69,9 +69,16 @@ class TestMutationTelemetry:
         G, node = nfr_with_validation
 
         # Apply sequence: AL → EN → IL → VAL → IL → ZHIR
+        # Note: VAL requires positive ΔNFR, so we need to set it up
         Emission()(G, node)
         Reception()(G, node)
         Coherence()(G, node)
+        
+        # Set up positive ΔNFR for expansion (VAL requirement)
+        from tnfr.constants.aliases import ALIAS_DNFR
+        dnfr_key = list(ALIAS_DNFR)[0]
+        G.nodes[node][dnfr_key] = 0.1  # Positive reorganization pressure
+        
         Expansion()(G, node)
         Coherence()(G, node)
         Mutation()(G, node)

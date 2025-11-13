@@ -77,29 +77,55 @@ These documents cover specific aspects in depth. They MAY provide context but MU
    - Code standards
    - **Must reference**: AGENTS.md for invariants, operators
 
+### Tier 2b: Molecular Chemistry Module ⭐ **BREAKTHROUGH**
+
+Revolutionary extension: Complete chemistry emerges from TNFR nodal dynamics.
+
+9. **[docs/MOLECULAR_CHEMISTRY_HUB.md](docs/MOLECULAR_CHEMISTRY_HUB.md)** - **CENTRAL CHEMISTRY HUB**
+   - Single source navigation for molecular chemistry breakthrough
+   - Theory consolidation and learning paths
+   - Complete cross-reference matrix for chemistry derivation
+   - **Must reference**: AGENTS.md for nodal equation foundations
+
+10. **[docs/examples/MOLECULAR_CHEMISTRY_FROM_NODAL_DYNAMICS.md](docs/examples/MOLECULAR_CHEMISTRY_FROM_NODAL_DYNAMICS.md)** - **CANONICAL CHEMISTRY THEORY**
+    - Complete derivation: nodal equation → molecular chemistry  
+    - Chemical bonds as phase synchronization (U3)
+    - Reactions as operator sequences [OZ→ZHIR→UM→IL]
+    - Molecular geometry from ΔNFR minimization
+    - **Must reference**: AGENTS.md for nodal equation, operators, U3 constraint
+
+11. **[docs/examples/AU_EXISTENCE_FROM_NODAL_EQUATION.md](docs/examples/AU_EXISTENCE_FROM_NODAL_EQUATION.md)** - Au emergence theory
+    - Physics-grounded derivation: fields → signatures → Au-like patterns
+    - **Must reference**: AGENTS.md for structural fields, nodal equation
+
+12. **[src/tnfr/physics/README.md](src/tnfr/physics/README.md)** § 9-10 - Implementation guide
+    - Element signatures API (`tnfr.physics.signatures`)
+    - Element pattern builders (`tnfr.physics.patterns`)
+    - **Must reference**: MOLECULAR_CHEMISTRY_HUB.md for complete theory navigation
+
 ### Tier 3: Supporting Documentation (References Only)
 
 These documents provide guidance, tutorials, examples. They MUST NOT define canonical concepts - only reference and use them.
 
-9. **[README.md](README.md)** - Entry point
-   - Project overview
-   - Installation
-   - Quick examples
-   - Navigation links
-   - **Role**: Landing page with minimal context
+13. **[README.md](README.md)** - Entry point
+    - Project overview
+    - Installation
+    - Quick examples
+    - Navigation links
+    - **Role**: Landing page with minimal context
 
-10. **[DOCUMENTATION_INDEX.md](DOCUMENTATION_INDEX.md)** - Navigation hub
+14. **[DOCUMENTATION_INDEX.md](DOCUMENTATION_INDEX.md)** - Navigation hub
     - Complete documentation map
     - Learning paths
     - Document finder
     - **Role**: Pure navigation, no definitions
 
-11. **[docs/grammar/README.md](docs/grammar/README.md)** - Grammar navigation
+15. **[docs/grammar/README.md](docs/grammar/README.md)** - Grammar navigation
     - Grammar documentation index
     - Learning sequence
     - **Role**: Navigation within grammar system
 
-12. **docs/source/** - Extended documentation
+16. **docs/source/** - Extended documentation
     - API references
     - Tutorials
     - Theory elaborations

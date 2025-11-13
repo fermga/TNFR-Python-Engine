@@ -1,3 +1,12 @@
+"""Telemetry constants namespace.
+
+Centralized thresholds and labels live in ``tnfr.telemetry.constants``.
+Import directly from that module to avoid accidental import-time side effects.
+"""
+
+__all__ = [
+    "constants",
+]
 """Telemetry helpers for shared observability settings."""
 
 from .cache_metrics import (

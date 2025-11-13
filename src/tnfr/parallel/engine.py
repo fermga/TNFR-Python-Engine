@@ -7,10 +7,7 @@ while preserving all TNFR structural invariants.
 from __future__ import annotations
 
 from multiprocessing import cpu_count
-from typing import TYPE_CHECKING, Any, Dict, Optional
-
-if TYPE_CHECKING:  # pragma: no cover
-    from ..types import TNFRGraph
+from typing import Any, Dict, Optional
 
 from .partitioner import FractalPartitioner
 
@@ -70,9 +67,13 @@ class TNFRParallelEngine:
         self.max_workers = max_workers
         self.execution_mode = execution_mode
         self.cache_aware = cache_aware
-        self.partitioner = FractalPartitioner(max_partition_size=partition_size)
+        self.partitioner = FractalPartitioner(
+            max_partition_size=partition_size
+        )
 
-    def _distribute_work_cache_aware(self, partitions: list, num_workers: int) -> list:
+    def _distribute_work_cache_aware(
+        self, partitions: list, num_workers: int
+    ) -> list:
         """Distribute work across workers in a cache-aware manner.
 
         Groups related partitions together to improve cache locality
@@ -92,7 +93,7 @@ class TNFRParallelEngine:
         """
         if not self.cache_aware or len(partitions) <= num_workers:
             # Simple round-robin distribution
-            chunks = [[] for _ in range(num_workers)]
+            chunks: list = [[] for _ in range(num_workers)]
             for i, partition in enumerate(partitions):
                 chunks[i % num_workers].append(partition)
             return chunks
@@ -101,7 +102,7 @@ class TNFRParallelEngine:
         # This reduces cache misses when processing related nodes
 
         # Sort partitions by their "center" (average νf of nodes)
-        def partition_center(partition_info):
+        def partition_center(partition_info: Any) -> float:
             node_set, subgraph = partition_info
             if not node_set:
                 return 0.0
@@ -131,13 +132,16 @@ class TNFRParallelEngine:
         start_idx = 0
         for worker_id in range(num_workers):
             # Give some workers an extra partition to handle remainder
-            end_idx = start_idx + chunk_size + (1 if worker_id < remainder else 0)
+            extra = 1 if worker_id < remainder else 0
+            end_idx = start_idx + chunk_size + extra
             chunks[worker_id] = sorted_partitions[start_idx:end_idx]
             start_idx = end_idx
 
         return chunks
 
-    def compute_delta_nfr_parallel(self, graph: TNFRGraph, **kwargs: Any) -> Dict[Any, float]:
+    def compute_delta_nfr_parallel(
+        self, graph: Any, **kwargs: Any
+    ) -> Dict[Any, float]:
         """Compute ΔNFR in parallel using fractal partitioning.
 
         Delegates to existing default_compute_delta_nfr with n_jobs parameter.
@@ -172,11 +176,15 @@ class TNFRParallelEngine:
 
         # Extract results
         return {
-            node_id: float(get_attr(graph.nodes[node_id], ALIAS_DNFR, 0.0))
+            node_id: float(
+                get_attr(graph.nodes[node_id], ALIAS_DNFR, 0.0) or 0.0
+            )
             for node_id in graph.nodes()
         }
 
-    def compute_si_parallel(self, graph: TNFRGraph, **kwargs: Any) -> Dict[Any, float]:
+    def compute_si_parallel(
+        self, graph: Any, **kwargs: Any
+    ) -> Dict[Any, float]:
         """Compute sense index in parallel.
 
         Delegates to existing compute_Si with n_jobs parameter.

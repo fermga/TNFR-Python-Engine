@@ -304,7 +304,7 @@ Before proceeding to other documents, understand these essential terms:
 - Operator that can end a sequence
 - Required for all sequences (U1b)
 
-For complete definitions, see [GLOSSARY.md](GLOSSARY.md)
+For complete definitions, see [GLOSSARY.md](../../GLOSSARY.md)
 
 ---
 
@@ -467,7 +467,7 @@ To work effectively with TNFR, you need to **think differently**:
 ### What Comes Next
 
 **If you're new to TNFR:**
-- Read [GLOSSARY.md](GLOSSARY.md) next for term definitions
+- Read [GLOSSARY.md](../../GLOSSARY.md) next for term definitions
 - Then proceed to [02-CANONICAL-CONSTRAINTS.md](02-CANONICAL-CONSTRAINTS.md)
 
 **If you're ready to code:**
@@ -485,7 +485,7 @@ To work effectively with TNFR, you need to **think differently**:
 
 - **[02-CANONICAL-CONSTRAINTS.md](02-CANONICAL-CONSTRAINTS.md)** - Formal U1-U5 derivations
 - **[03-OPERATORS-AND-GLYPHS.md](03-OPERATORS-AND-GLYPHS.md)** - Complete operator catalog
-- **[GLOSSARY.md](GLOSSARY.md)** - Operational definitions
+- **[GLOSSARY.md](../../GLOSSARY.md)** - Operational definitions
 - **[MASTER-INDEX.md](MASTER-INDEX.md)** - Conceptual map
 
 ### Repository Documentation

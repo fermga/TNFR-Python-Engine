@@ -224,9 +224,9 @@ assert 'technology' in results
    - Experiment with different configurations
 
 5. **Deep dive:**
-   - Read [TNFR theory](../../TNFR.pdf)
-   - Explore [API documentation](../source/api/overview.md)
-   - Study [canonical invariants](../../AGENTS.md)
+   - Read [TNFR theory](../../../TNFR.pdf)
+   - Explore [API documentation](../../../docs/source/api/overview.md)
+   - Study [canonical invariants](../../../AGENTS.md)
 
 ## Tutorial Outputs
 
@@ -307,7 +307,7 @@ All tutorials maintain TNFR canonical invariants:
 - ✅ **Invariant #8**: Controlled determinism (via seeds)
 - ✅ **Invariant #9**: Structural metrics (C(t), Si)
 
-See [AGENTS.md](../../AGENTS.md) for full invariant list.
+See [AGENTS.md](../../../AGENTS.md) for full invariant list.
 
 ## Troubleshooting
 
@@ -388,15 +388,15 @@ Want to add a tutorial?
 5. Test with `interactive=False` and `interactive=True`
 6. Document operators used
 
-See [CONTRIBUTING.md](../../CONTRIBUTING.md) for details.
+See [CONTRIBUTING.md](../../../CONTRIBUTING.md) for details.
 
 ## Further Reading
 
-- [Quick Start Guide](../source/getting-started/QUICKSTART_NEW.md)
-- [SDK Documentation](../src/tnfr/sdk/README.md)
-- [API Overview](../source/api/overview.md)
-- [TNFR Theory](../../TNFR.pdf)
-- [Canonical Invariants](../../AGENTS.md)
+- [Quick Start Guide](../../../docs/source/getting-started/QUICKSTART_NEW.md)
+- [SDK Documentation](../sdk/README.md)
+- [API Overview](../../../docs/source/api/overview.md)
+- [TNFR Theory](../../../TNFR.pdf)
+- [Canonical Invariants](../../../AGENTS.md)
 
 ---
 

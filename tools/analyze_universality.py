@@ -38,6 +38,9 @@ def compute_frag_rate_by_topology(rows: List[dict]) -> Dict[str, float]:
     return rates
 
 
+BASE = Path('benchmarks') / 'results'
+
+
 def estimate_critical_intensity_by_topology() -> Dict[str, float]:
     """Estimate I_c per topology using bisection from sweep data."""
     intensity_files = [
@@ -55,7 +58,7 @@ def estimate_critical_intensity_by_topology() -> Dict[str, float]:
     topo_intensity_frag: Dict[str, List[Tuple[float, float]]] = defaultdict(list)
     
     for intensity, filepath in intensity_files:
-        rows = load_jsonl(Path(filepath))
+        rows = load_jsonl(BASE / filepath)
         if not rows:
             continue
         rates = compute_frag_rate_by_topology(rows)
@@ -143,7 +146,7 @@ def analyze_universality():
     topo_intensity_frag: Dict[str, List[Tuple[float, float]]] = defaultdict(list)
     
     for intensity, filepath in intensity_files:
-        rows = load_jsonl(Path(filepath))
+        rows = load_jsonl(BASE / filepath)
         if not rows:
             continue
         rates = compute_frag_rate_by_topology(rows)

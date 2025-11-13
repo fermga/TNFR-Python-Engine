@@ -28,6 +28,8 @@ from tnfr.operators.definitions import (
     Coherence,
     Dissonance,
     Emission,
+    Silence,
+    Transition,
 )
 
 
@@ -81,7 +83,7 @@ class TestZHIREPISignPreservation:
         sign_initial = 1 if epi_initial > 0 else -1
 
         # Apply canonical sequence
-        run_sequence(G, node, [Coherence(), Dissonance(), Mutation()])
+        run_sequence(G, node, [Transition(), Coherence(), Dissonance(), Mutation(), Silence()])
 
         epi_final = G.nodes[node]["EPI"]
         sign_final = 1 if epi_final > 0 else -1
@@ -112,7 +114,7 @@ class TestZHIREPISignPreservation:
         assert epi_before > 0
 
         # Apply with strong destabilizer first
-        run_sequence(G, node, [Dissonance(), Mutation()])
+        run_sequence(G, node, [Transition(), Dissonance(), Mutation(), Coherence(), Silence()])
 
         epi_after = G.nodes[node]["EPI"]
 
@@ -166,7 +168,7 @@ class TestZHIRVfPreservation:
 
         # Apply 5 mutation cycles
         for i in range(5):
-            run_sequence(G, node, [Coherence(), Dissonance(), Mutation()])
+            run_sequence(G, node, [Transition(), Coherence(), Dissonance(), Mutation(), Silence()])
 
         vf_final = G.nodes[node]["νf"]
 
@@ -223,7 +225,7 @@ class TestZHIRStructuralBounds:
         G.nodes[node]["delta_nfr"] = 0.5  # Strong expansion pressure
 
         # Apply with destabilizer
-        run_sequence(G, node, [Dissonance(), Mutation()])
+        run_sequence(G, node, [Transition(), Dissonance(), Mutation(), Coherence(), Silence()])
 
         epi_after = G.nodes[node]["EPI"]
 
@@ -237,7 +239,7 @@ class TestZHIRStructuralBounds:
         G.nodes[node]["delta_nfr"] = -0.5  # Strong contraction pressure
 
         # Apply with destabilizer
-        run_sequence(G, node, [Dissonance(), Mutation()])
+        run_sequence(G, node, [Transition(), Dissonance(), Mutation(), Coherence(), Silence()])
 
         epi_after = G.nodes[node]["EPI"]
 
@@ -268,21 +270,34 @@ class TestZHIRContractIntegration:
     def test_all_contracts_satisfied_in_typical_use(self):
         """Typical ZHIR usage should satisfy all contracts."""
         G, node = create_nfr("test", epi=0.5, vf=1.0, theta=1.0)
-        G.nodes[node]["EPI_kind"] = "test_pattern"
+        G.nodes[node]["structural_type"] = "test_pattern"
         G.nodes[node]["epi_history"] = [0.3, 0.4, 0.5]
+        # Enable postcondition validation
+        G.graph["VALIDATE_OPERATOR_POSTCONDITIONS"] = True
 
         epi_before = G.nodes[node]["EPI"]
         vf_before = G.nodes[node]["νf"]
         sign_before = 1 if epi_before > 0 else -1
-        identity_before = G.nodes[node]["EPI_kind"]
+        identity_before = G.nodes[node]["structural_type"]
 
         # Apply canonical sequence
-        run_sequence(G, node, [Coherence(), Dissonance(), Mutation(), Coherence()])
+        run_sequence(
+            G,
+            node,
+            [
+                Transition(),
+                Coherence(),
+                Dissonance(),
+                Mutation(),
+                Coherence(),
+                Silence(),
+            ],
+        )
 
         epi_after = G.nodes[node]["EPI"]
         vf_after = G.nodes[node]["νf"]
         sign_after = 1 if epi_after > 0 else -1
-        identity_after = G.nodes[node]["EPI_kind"]
+        identity_after = G.nodes[node]["structural_type"]
         theta_after = G.nodes[node]["theta"]
 
         # Check all contracts
@@ -305,7 +320,7 @@ class TestZHIRContractIntegration:
 
         # Apply with extreme conditions
         G.graph["GLYPH_FACTORS"] = {"ZHIR_theta_shift_factor": 0.9}
-        run_sequence(G, node, [Dissonance(), Mutation()])
+        run_sequence(G, node, [Transition(), Dissonance(), Mutation(), Coherence(), Silence()])
 
         epi_after = G.nodes[node]["EPI"]
         vf_after = G.nodes[node]["νf"]

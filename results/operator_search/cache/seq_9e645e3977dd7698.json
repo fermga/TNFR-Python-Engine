@@ -1,0 +1,1 @@
+{"sequence": ["SHA", "THOL", "REMESH"], "coherence_change": 0.005939974527731096, "sense_index_change": -4.7086003560625755e-05, "phi_s_change": 0.06470390895316092, "grad_phi_change": 0.0, "k_phi_change": 0.0, "xi_c_change": 0.0, "phase_sync_change": 0.0, "epi_magnitude_change": 0.001184682347464383, "hash_signature": "6f280ae3ba33a1e7", "sequence_str": "SHA -> THOL -> REMESH"}

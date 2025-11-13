@@ -2,7 +2,7 @@
 
 **Mermaid diagrams showing TNFR documentation structure**
 
-See [CANONICAL_SOURCES.md](CANONICAL_SOURCES.md) for complete hierarchy specification.
+See [CANONICAL_SOURCES.md](../CANONICAL_SOURCES.md) for complete hierarchy specification.
 
 ---
 
@@ -187,7 +187,7 @@ graph TB
 ---
 
 **Related**:
-- [CANONICAL_SOURCES.md](CANONICAL_SOURCES.md) - Complete hierarchy specification
+- [CANONICAL_SOURCES.md](../CANONICAL_SOURCES.md) - Complete hierarchy specification
 - [DOCUMENTATION_INDEX.md](DOCUMENTATION_INDEX.md) - Full documentation map
-- [AGENTS.md](AGENTS.md) - Primary canonical source
+- [AGENTS.md](../AGENTS.md) - Primary canonical source
 

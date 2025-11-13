@@ -1,5 +1,7 @@
 # ZHIR Bifurcation Detection Implementation Summary
 
+> DEPRECATION NOTICE: This document is archived and not part of the centralized documentation. For current operator specifications, see `AGENTS.md` and `docs/source/api/operators.md`.
+
 ## Overview
 
 This implementation adds bifurcation potential detection to the ZHIR (Mutation) operator according to **AGENTS.md §U4a (Bifurcation Dynamics)**. When structural acceleration ∂²EPI/∂t² exceeds threshold τ, ZHIR detects and records the bifurcation potential through telemetry flags.

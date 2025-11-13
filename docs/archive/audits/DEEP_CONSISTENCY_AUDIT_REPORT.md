@@ -94,28 +94,16 @@
 | EPI | 75 | 70 | ⚠️ Too many variations |
 | νf | 78 | 71 | ⚠️ Too many variations |
 | ΔNFR | 84 | 78 | ⚠️ Too many variations |
-| U1-U6 | 19-67 each | Similar | ⚠️ Capitalization varies |
-
-**Analysis**:
-- Most definitions are conceptually consistent
 - Variations in wording, examples, emphasis
 - NOT contradictory, just redundant
-- **Root cause**: Copy-paste with local adaptation
-
-**Recommendation**:
 - Keep redundancy for context-specific explanations
 - Ensure GLOSSARY.md has THE canonical definition
 - Other files reference GLOSSARY.md explicitly
 
-### 5. Cross-Reference Issues
-
-**Missing bidirectional references**:
-- GLOSSARY.md → ARCHITECTURE.md
 - UNIFIED_GRAMMAR_RULES.md → GLOSSARY.md
 - UNIFIED_GRAMMAR_RULES.md → ARCHITECTURE.md
 - ARCHITECTURE.md → GLOSSARY.md
 
-**Impact**: Users may not find related documentation
 **Recommendation**: Add "See also" sections with cross-references
 
 ---
@@ -146,14 +134,10 @@
 2. ⚠️ **Improve cross-references**
    - Add "See also" sections to key docs
    - Ensure bidirectional linking
-
 3. ⚠️ **U5 clarification**
    - Standardize name: "Multi-Scale Coherence" or "Recursion Depth Safety"
    - Update all references consistently
 
----
-
-## Validation
 
 ### Files Audited
 - 157 markdown files
@@ -163,11 +147,7 @@
 ### Tests Performed
 1. ✅ Grammar rule definition search (U1-U6)
 2. ✅ Operator documentation completeness check
-3. ✅ Cross-reference validation
-4. ✅ Definition conflict analysis
-5. ✅ U6 specific deep dive
 
-### Tools Used
 - `audit_docs.py` - Basic documentation audit
 - `audit_python_spanish.py` - Language check
 - `audit_deep_consistency.py` - Deep consistency analysis
@@ -182,7 +162,7 @@
    ```markdown
    ## Operators Quick Reference
    
-   For complete operator specifications, see [AGENTS.md § The 13 Canonical Operators](AGENTS.md#the-13-canonical-operators)
+   For complete operator specifications, see [AGENTS.md § The 13 Canonical Operators](../../../AGENTS.md#the-13-canonical-operators)
    
    | Operator | Name | Physics | Grammar Sets |
    |----------|------|---------|-------------|
@@ -210,28 +190,15 @@
 5. **Create grammar rules index**
    - Single page with all U1-U6 in brief
    - Links to detailed specifications
-
 6. **Add operator contracts table**
    - Pre/post-conditions for each operator
    - Grammar set membership
 
----
-
-## Quality Metrics
-
 ### Before Deep Audit
 - U6 definition: CONFLICTING ❌
-- Operator docs: Incomplete (0/13 in GLOSSARY)
-- Cross-refs: Missing (4 key links)
-- Consistency: 32 total issues
-
 ### After Deep Audit
 - U6 definition: RESOLVED ✅
-- Operator docs: Still incomplete (need GLOSSARY section)
-- Cross-refs: Still missing (need additions)
-- Consistency: 3 remaining issues (lower priority)
 
-### Improvement
 - Critical issues: 1 → 0 (100% resolved)
 - Documentation clarity: Significantly improved
 - U6 canonical status: Now crystal clear

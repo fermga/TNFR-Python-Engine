@@ -1,0 +1,10 @@
+{
+  "pattern": "plane_wave",
+  "side": 32,
+  "kx": 0.25,
+  "ky": 0.0,
+  "grad_mean": 0.125,
+  "grad_std": 0.0142636082683637,
+  "kphi_mean": 0.0,
+  "kphi_absmax": 0.125
+}

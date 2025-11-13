@@ -55,7 +55,7 @@ from ..config.operator_names import (
     TRANSITION,
 )
 from ..operators.health_analyzer import SequenceHealthAnalyzer
-from ..operators.patterns import AdvancedPatternDetector
+from ..sequencing.patterns import AdvancedPatternDetector
 from ..validation.compatibility import (
     GRADUATED_COMPATIBILITY,
     CompatibilityLevel,

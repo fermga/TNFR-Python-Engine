@@ -2,7 +2,7 @@
 
 **Global conceptual map and relationship diagram**
 
-[🏠 Home](README.md) • [🌊 Concepts](01-FUNDAMENTAL-CONCEPTS.md) • [📚 Glossary](GLOSSARY.md)
+[🏠 Home](README.md) • [🌊 Concepts](01-FUNDAMENTAL-CONCEPTS.md) • [📚 Glossary](../../GLOSSARY.md)
 
 ---
 
@@ -556,17 +556,17 @@ Code changes as needed
 **Nodal Equation:**
 - [01-FUNDAMENTAL-CONCEPTS.md](01-FUNDAMENTAL-CONCEPTS.md) § Nodal Equation
 - [02-CANONICAL-CONSTRAINTS.md](02-CANONICAL-CONSTRAINTS.md) § Physical Derivation
-- [GLOSSARY.md](GLOSSARY.md) § N
+- [GLOSSARY.md](../../GLOSSARY.md) § N
 
 **Operators:**
 - [03-OPERATORS-AND-GLYPHS.md](03-OPERATORS-AND-GLYPHS.md) § All 13 operators
 - [05-TECHNICAL-IMPLEMENTATION.md](05-TECHNICAL-IMPLEMENTATION.md) § Operator Sets
-- [GLOSSARY.md](GLOSSARY.md) § O
+- [GLOSSARY.md](../../GLOSSARY.md) § O
 
 **Constraints:**
 - [02-CANONICAL-CONSTRAINTS.md](02-CANONICAL-CONSTRAINTS.md) § U1-U5
 - [08-QUICK-REFERENCE.md](08-QUICK-REFERENCE.md) § Five Canonical Constraints
-- [GLOSSARY.md](GLOSSARY.md) § U1-U5
+- [GLOSSARY.md](../../GLOSSARY.md) § U1-U5
 
 **Sequences:**
 - [04-VALID-SEQUENCES.md](04-VALID-SEQUENCES.md) § Canonical Patterns

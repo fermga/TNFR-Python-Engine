@@ -6,7 +6,7 @@ This document provides a **centralized reference** for all configurable paramete
 
 **TNFR Canonical Principle** (TNFR.pdf §2.2.10):
 
-> "THOL es el glifo de la autoorganización activa. No necesita intervención externa, ni programación, ni control — su función es reorganizar la forma desde dentro, en respuesta a la coherencia vibracional del campo."
+> "THOL is the glyph of active self-organization. It requires no external intervention, programming, or control — its function is to reorganize form from within, in response to the field’s vibrational coherence."
 
 This reference consolidates parameters currently dispersed across multiple modules:
 - `src/tnfr/operators/preconditions/__init__.py` — Precondition validators

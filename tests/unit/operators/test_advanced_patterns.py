@@ -23,7 +23,7 @@ from tnfr.config.operator_names import (
     TRANSITION,
 )
 from tnfr.operators.grammar import StructuralPattern
-from tnfr.operators.patterns import AdvancedPatternDetector
+from tnfr.sequencing.patterns import AdvancedPatternDetector
 from tnfr.validation import parse_sequence, validate_sequence
 
 

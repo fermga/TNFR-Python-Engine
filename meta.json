@@ -49,7 +49,7 @@
     "topology": "Connection pattern among nodes that influences coupling and propagation."
   },
   "install": {"pip": "pip install tnfr"},
-  "compatibility": {"python": ">=3.9"},
+  "compatibility": {"python": ">=3.10"},
   "links": {
     "repository": "https://github.com/fermga/TNFR-Python-Engine",
     "package": "https://pypi.org/project/tnfr/",

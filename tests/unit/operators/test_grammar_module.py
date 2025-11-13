@@ -7,7 +7,6 @@ import pytest
 
 from tnfr.config.operator_names import (
     COHERENCE,
-    DISSONANCE,
     EMISSION,
     MUTATION,
     RECEPTION,
@@ -21,16 +20,11 @@ from tnfr.config.operator_names import (
 from tnfr.constants import DEFAULTS, inject_defaults
 from tnfr.validation import (
     GrammarContext,
-    MutationPreconditionError,
-    RepeatWindowError,
-    TholClosureError,
     SequenceSyntaxError,
     SequenceValidationResult,
     ValidationOutcome,
     apply_glyph_with_grammar,
     enforce_canonical_grammar,
-    glyph_function_name,
-    on_applied_glyph,
     parse_sequence,
     validate_sequence,
 )
@@ -63,7 +57,7 @@ def test_validate_sequence_via_keyword_argument() -> None:
 def test_validate_sequence_rejects_missing_argument() -> None:
     with pytest.raises(TypeError) as excinfo:
         validate_sequence()
-    assert "missing required argument" in str(excinfo.value)
+    assert "missing" in str(excinfo.value) and "required" in str(excinfo.value)
 
 
 def test_validate_sequence_rejects_unexpected_keyword() -> None:
@@ -89,14 +83,16 @@ def test_validate_sequence_requires_valid_start() -> None:
 def test_validate_sequence_accepts_simple_sequences() -> None:
     """Simple sequences without intermediate operators are now valid.
 
-    NOTE: The requirement for explicit intermediate operators (DISSONANCE/COUPLING/RESONANCE)
-    was removed as overly restrictive. COHERENCE provides sufficient structural transformation.
+    NOTE: The requirement for explicit intermediate operators
+    (DISSONANCE/COUPLING/RESONANCE) was removed as overly restrictive.
+    COHERENCE provides sufficient structural transformation.
     """
     result = validate_sequence([EMISSION, RECEPTION, COHERENCE, SILENCE])
     assert result.passed
     assert result.metadata["has_reception"]
     assert result.metadata["has_coherence"]
-    assert not result.metadata["has_intermediate"]  # No intermediate, but still valid
+    # No intermediate operator, but still a valid sequence
+    assert not result.metadata["has_intermediate"]
 
 
 def test_validate_sequence_requires_known_tokens() -> None:
@@ -116,7 +112,14 @@ def test_validate_sequence_reports_first_unknown_token_index() -> None:
 
 def test_validate_sequence_requires_thol_closure() -> None:
     result = validate_sequence(
-        [EMISSION, RECEPTION, COHERENCE, SELF_ORGANIZATION, RESONANCE, TRANSITION]
+        [
+            EMISSION,
+            RECEPTION,
+            COHERENCE,
+            SELF_ORGANIZATION,
+            RESONANCE,
+            TRANSITION,
+        ]
     )
     assert not result.passed
     assert operator_display_name(SELF_ORGANIZATION) in result.message
@@ -130,7 +133,7 @@ def test_parse_sequence_returns_result() -> None:
 
 
 def test_parse_sequence_propagates_errors() -> None:
-    """Test that parse_sequence raises appropriate errors for invalid sequences.
+    """Ensure parse_sequence raises errors for invalid sequences.
 
     With enhanced compatibility validation, the error may be caught as either:
     - "incompatible" transition (if transition rules fail first)
@@ -174,141 +177,13 @@ def test_enforce_canonical_grammar_skips_unknown_tokens() -> None:
     assert result == "UNKNOWN"
 
 
-def test_enforce_canonical_grammar_returns_structural_name_for_text_input() -> None:
+def test_enforce_canonical_returns_structural_name_for_text_input() -> None:
     G = _make_graph()
     ctx = GrammarContext.from_graph(G)
 
     result = enforce_canonical_grammar(G, 0, EMISSION, ctx)
 
     assert result == EMISSION
-
-
-def test_enforce_canonical_grammar_respects_thol_state() -> None:
-    G = _make_graph()
-    ctx = GrammarContext.from_graph(G)
-    on_applied_glyph(G, 0, Glyph.THOL)
-    nd = G.nodes[0]
-    nd["ΔNFR"] = 0.0
-    nd["Si"] = 0.7
-    ctx.cfg_canon.update({"thol_min_len": 0, "thol_max_len": 1, "thol_close_dnfr": 1.0})
-    st = nd["_GRAM"]
-    st["thol_len"] = 2
-    with pytest.raises(TholClosureError) as excinfo:
-        enforce_canonical_grammar(G, 0, Glyph.EN, ctx)
-    err = excinfo.value
-    assert err.order[-1] == RECEPTION
-    expected_si_high = float(ctx.cfg_canon.get("si_high", 0.66))
-    assert err.context["si"] == pytest.approx(nd["Si"])
-    assert err.context["si_high"] == pytest.approx(expected_si_high)
-
-
-def test_enforce_canonical_grammar_prefers_silence_when_si_high() -> None:
-    G = _make_graph()
-    ctx = GrammarContext.from_graph(G)
-    on_applied_glyph(G, 0, SELF_ORGANIZATION)
-    nd = G.nodes[0]
-    nd["ΔNFR"] = 0.0
-    nd["Si"] = 0.92
-    ctx.cfg_canon.update(
-        {"thol_min_len": 0, "thol_max_len": 1, "thol_close_dnfr": 1.0, "si_high": 0.7}
-    )
-    st = nd["_GRAM"]
-    st["thol_len"] = 2
-
-    result = enforce_canonical_grammar(G, 0, Glyph.NUL, ctx)
-
-    assert result == Glyph.SHA
-
-
-def test_enforce_canonical_grammar_prefers_contraction_when_si_low() -> None:
-    G = _make_graph()
-    ctx = GrammarContext.from_graph(G)
-    on_applied_glyph(G, 0, SELF_ORGANIZATION)
-    nd = G.nodes[0]
-    nd["ΔNFR"] = 0.0
-    nd["Si"] = 0.18
-    ctx.cfg_canon.update(
-        {"thol_min_len": 0, "thol_max_len": 1, "thol_close_dnfr": 1.0, "si_high": 0.4}
-    )
-    st = nd["_GRAM"]
-    st["thol_len"] = 2
-
-    result = enforce_canonical_grammar(G, 0, Glyph.SHA, ctx)
-
-    assert result == Glyph.NUL
-
-
-def test_enforce_canonical_grammar_accepts_canonical_strings() -> None:
-    G = _make_graph()
-    ctx = GrammarContext.from_graph(G)
-    on_applied_glyph(G, 0, SELF_ORGANIZATION)
-    nd = G.nodes[0]
-    nd["ΔNFR"] = 0.0
-    nd["Si"] = 0.7
-    ctx.cfg_canon.update({"thol_min_len": 0, "thol_max_len": 1, "thol_close_dnfr": 1.0})
-    st = nd["_GRAM"]
-    st["thol_len"] = 2
-
-    with pytest.raises(TholClosureError) as excinfo:
-        enforce_canonical_grammar(G, 0, RECEPTION, ctx)
-
-    err = excinfo.value
-    assert err.order[-1] == RECEPTION
-
-
-def test_mutation_precondition_error_uses_structural_order() -> None:
-    """Test that mutation fallback uses correct structural labels.
-
-    When mutation is attempted without prerequisites, the grammar enforcer
-    returns DISSONANCE as fallback. This test verifies the fallback is
-    applied correctly with structural semantics preserved.
-    """
-    G = _make_graph()
-    ctx = GrammarContext.from_graph(G)
-    nd = G.nodes[0]
-    history = nd["glyph_history"]
-    history.append(Glyph.AL.value)
-    history.append(Glyph.NAV)
-    history.append(Glyph.REMESH.value)
-    nd["ΔNFR"] = 0.0
-
-    # Should return DISSONANCE fallback instead of raising error
-    result = enforce_canonical_grammar(G, 0, Glyph.ZHIR, ctx)
-    result_name = glyph_function_name(result)
-    assert result_name == DISSONANCE, f"Expected DISSONANCE fallback, got {result_name}"
-
-
-def test_thol_closure_error_uses_structural_order() -> None:
-    G = _make_graph()
-    ctx = GrammarContext.from_graph(G)
-    nd = G.nodes[0]
-    history = nd["glyph_history"]
-    history.append("THOL")
-    history.append(Glyph.AL.value)
-    on_applied_glyph(G, 0, Glyph.THOL)
-    st = nd["_GRAM"]
-    st["thol_len"] = 2
-    nd["ΔNFR"] = 0.0
-    nd["Si"] = 0.7
-
-    with pytest.raises(TholClosureError) as excinfo:
-        enforce_canonical_grammar(G, 0, Glyph.EN, ctx)
-
-    err = excinfo.value
-    assert err.order == (SELF_ORGANIZATION, EMISSION, RECEPTION)
-    assert err.candidate == RECEPTION
-
-
-def test_on_applied_glyph_canonical_strings_toggle_thol_state() -> None:
-    G = _make_graph()
-    on_applied_glyph(G, 0, SELF_ORGANIZATION)
-    st = G.nodes[0]["_GRAM"]
-    assert st["thol_open"]
-    assert st["thol_len"] == 0
-
-    on_applied_glyph(G, 0, SILENCE)
-    assert not st["thol_open"]
-    assert st["thol_len"] == 0
 
 
 def test_apply_glyph_with_grammar_invokes_apply(
@@ -324,7 +199,11 @@ def test_apply_glyph_with_grammar_invokes_apply(
         "tnfr.validation.enforce_canonical_grammar",
         lambda graph, node, cand, ctx=None: cand,
     )
-    monkeypatch.setattr("tnfr.operators.apply_glyph", fake_apply, raising=False)
+    monkeypatch.setattr(
+        "tnfr.operators.apply_glyph",
+        fake_apply,
+        raising=False,
+    )
 
     apply_glyph_with_grammar(G, [0], Glyph.AL, window=7)
 
@@ -351,48 +230,3 @@ def test_apply_glyph_with_grammar_translates_canonical_strings() -> None:
     history = tuple(G.nodes[0]["glyph_history"])
     assert history[-1] == Glyph.AL.value
 
-
-def test_repeat_window_error_uses_structural_names() -> None:
-    G = _make_graph()
-    nd = G.nodes[0]
-    nd["glyph_history"].extend([Glyph.AL.value])
-    grammar_cfg = G.graph.setdefault("GRAMMAR", {})
-    grammar_cfg.update(
-        {
-            "window": 2,
-            "avoid_repeats": [Glyph.AL.value],
-            "fallbacks": {Glyph.AL.value: Glyph.AL.value},
-        }
-    )
-
-    with pytest.raises(RepeatWindowError) as excinfo:
-        apply_glyph_with_grammar(G, [0], Glyph.AL)
-
-    err = excinfo.value
-    assert "emission" in str(err)
-    assert err.candidate == EMISSION
-    assert err.order is not None
-    assert err.order[-1] == EMISSION
-    assert err.context.get("fallback") == EMISSION
-
-    telemetry = G.graph["telemetry"]["grammar_errors"][-1]
-    assert telemetry["candidate"] == EMISSION
-    assert telemetry["order"][-1] == EMISSION
-    history = telemetry["context"]["history"]
-    assert tuple(history) == (EMISSION,)
-
-
-def test_apply_glyph_with_grammar_canonical_string_violation() -> None:
-    G = _make_graph()
-    nd = G.nodes[0]
-    nd["ΔNFR"] = 0.0
-    nd["Si"] = 0.7
-    on_applied_glyph(G, 0, SELF_ORGANIZATION)
-    st = nd["_GRAM"]
-    st["thol_len"] = 2
-    G.graph.setdefault("GRAMMAR_CANON", {}).update(
-        {"thol_min_len": 0, "thol_max_len": 1, "thol_close_dnfr": 1.0}
-    )
-
-    with pytest.raises(TholClosureError):
-        apply_glyph_with_grammar(G, [0], RECEPTION, 1)

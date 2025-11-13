@@ -1,0 +1,27 @@
+{
+  "chunks": 10,
+  "total_count": 9636,
+  "seed": 42,
+  "timestamp": "2025-11-12T15:28:58.669763Z",
+  "git_commit": "ad4e05f0189c642872987013817ffcf5108dbc9c",
+  "backend": "real",
+  "parquet": true,
+  "paths": {
+    "dir": "C:\\TNFR-Python-Engine\\results\\operator_search\\full"
+  },
+  "fields_tetrad": [
+    "phi_s",
+    "grad_phi",
+    "k_phi",
+    "xi_c"
+  ],
+  "grammar_rules": [
+    "U1",
+    "U2",
+    "U3",
+    "U4",
+    "U5",
+    "U6"
+  ],
+  "nodal_equation": "dEPI/dt = nu_f * DeltaNFR"
+}

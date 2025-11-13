@@ -3,7 +3,7 @@ name = "tnfr"
 dynamic = ["version"]
 description = "Modular structural-based dynamics on networks."
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 license = { text = "MIT" }
 authors = [{ name = "fmg" }]
 keywords = [
@@ -14,7 +14,6 @@ keywords = [
 classifiers = [
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3 :: Only",
-  "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
@@ -31,7 +30,6 @@ dependencies = [
   "cachetools>=5.0,<7.0",
   "numpy>=1.24,<3.0",
   "scipy>=1.9,<2.0",
-  "typing-extensions>=4.4; python_version < \"3.10\"",
 ]
 
 [project.optional-dependencies]
@@ -164,6 +162,7 @@ release = [
 [project.scripts]
 tnfr = "tnfr.cli:main"
 tnfr-validate = "tnfr.cli.validate:main"
+tnfr-is-prime = "tnfr.tools.tnfr_is_prime_cli:main"
 
 [project.urls]
 Homepage = "https://pypi.org/project/tnfr/"
@@ -172,6 +171,11 @@ GPT = "https://chatgpt.com/g/g-67abc78885a88191b2d67f94fd60dc97-tnfr-resonant-fr
 
 [tool.setuptools.package-data]
 tnfr = ["py.typed", "schemas/*.json"]
+
+[tool.setuptools.packages.find]
+# Ensure all tnfr subpackages (including newly added modules like 'physics')
+# are included in builds and editable installs.
+include = ["tnfr", "tnfr.*"]
 
 [tool.setuptools_scm]
 tag_regex = '^v(?P<version>[0-9]+\.[0-9]+\.[0-9]+)$'
@@ -243,6 +247,7 @@ markers = [
   "canonical: Tests validating canonical TNFR invariants",
   "nodal_equation: Tests validating fundamental nodal equation",
   "fractality: Tests validating fractal preservation",
+  "integration: Integration tests that touch IO or external boundaries",
 ]
 
 [tool.mypy]

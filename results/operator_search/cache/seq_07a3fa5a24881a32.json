@@ -1,0 +1,1 @@
+{"sequence": ["AL", "NUL", "VAL", "NUL", "REMESH"], "coherence_change": 0.0, "sense_index_change": -0.006227100477369962, "phi_s_change": 0.0, "grad_phi_change": 0.0, "k_phi_change": 0.0, "xi_c_change": 0.0, "phase_sync_change": 0.0, "epi_magnitude_change": -0.01746705439351559, "hash_signature": "ef57395604f8e6f7", "sequence_str": "AL -> NUL -> VAL -> NUL -> REMESH"}

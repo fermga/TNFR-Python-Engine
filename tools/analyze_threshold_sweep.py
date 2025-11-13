@@ -22,13 +22,16 @@ def load_jsonl(path: Path) -> List[dict]:
     return rows
 
 
+BASE = Path('benchmarks') / 'results'
+
+
 def analyze_threshold_sweep(intensity_files: List[Tuple[float, str]]) -> None:
     print("\n=== Fragmentation Threshold Sweep ===\n")
     print(f"{'Intensity':>10} | {'Valid Frag':>12} | {'Violate Frag':>14} | {'Total':>7}")
     print("-" * 60)
     
     for intensity, filepath in sorted(intensity_files):
-        rows = load_jsonl(Path(filepath))
+        rows = load_jsonl(BASE / filepath)
         if not rows:
             print(f"{intensity:>10.2f} | {'N/A':>12} | {'N/A':>14} | {'0':>7}")
             continue
@@ -43,7 +46,7 @@ def analyze_threshold_sweep(intensity_files: List[Tuple[float, str]]) -> None:
     
     # Analyze fields at threshold
     print("\n=== Structural Fields at Critical Intensity (2.05) ===")
-    rows_205 = load_jsonl(Path('u6_threshold_i205.jsonl'))
+    rows_205 = load_jsonl(BASE / 'u6_threshold_i205.jsonl')
     if rows_205:
         violate_205 = [r for r in rows_205 if r.get('sequence_type') == 'violate_u6']
         frag_205 = [r for r in violate_205 if r.get('fragmentation')]
@@ -62,10 +65,10 @@ def analyze_threshold_sweep(intensity_files: List[Tuple[float, str]]) -> None:
             
             print(f"\n{'Metric':>20} | {'Fragmented':>12} | {'Non-Frag':>12}")
             print("-" * 50)
-            print(f"{'|K_φ|_max':>20} | {sum(curv_frag)/len(curv_frag):>10.3f} | {sum(curv_no_frag)/len(curv_no_frag):>10.3f}")
-            print(f"{'|∇φ|_mean':>20} | {sum(grad_frag)/len(grad_frag):>10.3f} | {sum(grad_no_frag)/len(grad_no_frag):>10.3f}")
+            print(f"{'|K_φ|_max':>20} | {sum(curv_frag) / len(curv_frag):>10.3f} | {sum(curv_no_frag) / len(curv_no_frag):>10.3f}")
+            print(f"{'|∇φ|_mean':>20} | {sum(grad_frag) / len(grad_frag):>10.3f} | {sum(grad_no_frag) / len(grad_no_frag):>10.3f}")
             if xi_frag and xi_no_frag:
-                print(f"{'ξ_C':>20} | {sum(xi_frag)/len(xi_frag):>10.3f} | {sum(xi_no_frag)/len(xi_no_frag):>10.3f}")
+                print(f"{'ξ_C':>20} | {sum(xi_frag) / len(xi_frag):>10.3f} | {sum(xi_no_frag) / len(xi_no_frag):>10.3f}")
 
 
 if __name__ == '__main__':

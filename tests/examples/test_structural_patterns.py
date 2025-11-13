@@ -8,7 +8,7 @@ RESONATE, COMPRESS, and COMPLEX patterns.
 import pytest
 from tnfr.operators.grammar import validate_sequence_with_health
 from tnfr.operators.health_analyzer import SequenceHealthAnalyzer
-from tnfr.operators.patterns import AdvancedPatternDetector
+from tnfr.sequencing.patterns import AdvancedPatternDetector
 
 # Import structural examples
 import sys

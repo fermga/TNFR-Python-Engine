@@ -75,7 +75,10 @@ class TestU5ShallowRecursion:
             Silence(),
         ]
 
-        is_valid, messages = UnifiedGrammarValidator.validate(sequence, epi_initial=0.0)
+        validator = UnifiedGrammarValidator()
+
+
+        is_valid, messages = validator.validate(sequence, epi_initial=0.0)
 
         # Should pass all rules including U5
         assert is_valid, f"Shallow REMESH should pass: {messages}"
@@ -96,7 +99,10 @@ class TestU5ShallowRecursion:
             Silence(),
         ]
 
-        is_valid, messages = UnifiedGrammarValidator.validate(sequence, epi_initial=0.0)
+        validator = UnifiedGrammarValidator()
+
+
+        is_valid, messages = validator.validate(sequence, epi_initial=0.0)
         assert is_valid, f"Default REMESH should pass: {messages}"
 
     def test_shallow_remesh_with_stabilizer_valid(self):
@@ -111,7 +117,10 @@ class TestU5ShallowRecursion:
             Silence(),
         ]
 
-        is_valid, messages = UnifiedGrammarValidator.validate(sequence, epi_initial=0.0)
+        validator = UnifiedGrammarValidator()
+
+
+        is_valid, messages = validator.validate(sequence, epi_initial=0.0)
         assert is_valid
 
 
@@ -135,7 +144,10 @@ class TestU5DeepRecursionViolations:
             Silence(),
         ]
 
-        is_valid, messages = UnifiedGrammarValidator.validate(sequence, epi_initial=0.0)
+        validator = UnifiedGrammarValidator()
+
+
+        is_valid, messages = validator.validate(sequence, epi_initial=0.0)
 
         # Should fail specifically on U5
         assert not is_valid, "Deep REMESH without stabilizer should fail U5"
@@ -158,7 +170,10 @@ class TestU5DeepRecursionViolations:
             Silence(),
         ]
 
-        is_valid, messages = UnifiedGrammarValidator.validate(sequence, epi_initial=0.0)
+        validator = UnifiedGrammarValidator()
+
+
+        is_valid, messages = validator.validate(sequence, epi_initial=0.0)
         assert not is_valid
 
     def test_deep_remesh_depth_10_no_stabilizer_fails(self):
@@ -173,7 +188,10 @@ class TestU5DeepRecursionViolations:
             Silence(),
         ]
 
-        is_valid, messages = UnifiedGrammarValidator.validate(sequence, epi_initial=0.0)
+        validator = UnifiedGrammarValidator()
+
+
+        is_valid, messages = validator.validate(sequence, epi_initial=0.0)
         assert not is_valid
 
 
@@ -193,7 +211,10 @@ class TestU5DeepRecursionWithStabilizers:
             Silence(),
         ]
 
-        is_valid, messages = UnifiedGrammarValidator.validate(sequence, epi_initial=0.0)
+        validator = UnifiedGrammarValidator()
+
+
+        is_valid, messages = validator.validate(sequence, epi_initial=0.0)
         assert is_valid, f"Deep REMESH with IL should pass: {messages}"
 
         # Check U5 specifically
@@ -217,7 +238,10 @@ class TestU5DeepRecursionWithStabilizers:
             Silence(),
         ]
 
-        is_valid, messages = UnifiedGrammarValidator.validate(sequence, epi_initial=0.0)
+        validator = UnifiedGrammarValidator()
+
+
+        is_valid, messages = validator.validate(sequence, epi_initial=0.0)
         assert is_valid, f"Deep REMESH with THOL should pass: {messages}"
 
     def test_deep_remesh_stabilizer_before_valid(self):
@@ -233,7 +257,10 @@ class TestU5DeepRecursionWithStabilizers:
             Silence(),
         ]
 
-        is_valid, messages = UnifiedGrammarValidator.validate(sequence, epi_initial=0.0)
+        validator = UnifiedGrammarValidator()
+
+
+        is_valid, messages = validator.validate(sequence, epi_initial=0.0)
         assert is_valid
 
     def test_deep_remesh_stabilizer_after_valid(self):
@@ -248,7 +275,10 @@ class TestU5DeepRecursionWithStabilizers:
             Silence(),
         ]
 
-        is_valid, messages = UnifiedGrammarValidator.validate(sequence, epi_initial=0.0)
+        validator = UnifiedGrammarValidator()
+
+
+        is_valid, messages = validator.validate(sequence, epi_initial=0.0)
         assert is_valid
 
 
@@ -269,7 +299,10 @@ class TestU5StabilizerWindow:
             Silence(),
         ]
 
-        is_valid, _ = UnifiedGrammarValidator.validate(sequence, epi_initial=0.0)
+        validator = UnifiedGrammarValidator()
+
+
+        is_valid, _ = validator.validate(sequence, epi_initial=0.0)
         assert is_valid, "Stabilizer at window start should be valid"
 
     def test_stabilizer_at_window_end_valid(self):
@@ -286,7 +319,10 @@ class TestU5StabilizerWindow:
             Silence(),
         ]
 
-        is_valid, _ = UnifiedGrammarValidator.validate(sequence, epi_initial=0.0)
+        validator = UnifiedGrammarValidator()
+
+
+        is_valid, _ = validator.validate(sequence, epi_initial=0.0)
         assert is_valid, "Stabilizer at window end should be valid"
 
     def test_stabilizer_outside_window_fails(self):
@@ -305,7 +341,10 @@ class TestU5StabilizerWindow:
             Silence(),
         ]
 
-        is_valid, _ = UnifiedGrammarValidator.validate(sequence, epi_initial=0.0)
+        validator = UnifiedGrammarValidator()
+
+
+        is_valid, _ = validator.validate(sequence, epi_initial=0.0)
         assert not is_valid, "Stabilizer outside window should fail"
 
     def test_multiple_deep_remesh_each_needs_stabilizer(self):
@@ -325,7 +364,10 @@ class TestU5StabilizerWindow:
             Silence(),
         ]
 
-        is_valid, _ = UnifiedGrammarValidator.validate(sequence, epi_initial=0.0)
+        validator = UnifiedGrammarValidator()
+
+
+        is_valid, _ = validator.validate(sequence, epi_initial=0.0)
         assert not is_valid, "Second REMESH lacks stabilizer"
 
 
@@ -354,7 +396,9 @@ class TestU5EdgeCases:
         Physics: No REMESH present.
         """
         sequence = []
-        is_valid, messages = UnifiedGrammarValidator.validate(sequence, epi_initial=1.0)
+        validator = UnifiedGrammarValidator()
+
+        is_valid, messages = validator.validate(sequence, epi_initial=1.0)
 
         # Will fail on U1b (no closure) but not on U5
         u5_messages = [msg for msg in messages if msg.startswith("U5:")]
@@ -372,7 +416,10 @@ class TestU5EdgeCases:
             Silence(),
         ]
 
-        is_valid, messages = UnifiedGrammarValidator.validate(sequence, epi_initial=0.0)
+        validator = UnifiedGrammarValidator()
+
+
+        is_valid, messages = validator.validate(sequence, epi_initial=0.0)
         assert is_valid
 
         u5_messages = [msg for msg in messages if msg.startswith("U5:")]
@@ -406,7 +453,9 @@ class TestU5PhysicalBasis:
         assert not valid_u5, "U5 should fail (no scale stabilizer)"
 
         # Full validation should fail on U5, not U2
-        is_valid, messages = UnifiedGrammarValidator.validate(sequence, epi_initial=0.0)
+        validator = UnifiedGrammarValidator()
+
+        is_valid, messages = validator.validate(sequence, epi_initial=0.0)
         assert not is_valid
 
         u2_msg = [m for m in messages if m.startswith("U2:")][0]
@@ -456,7 +505,9 @@ class TestU5PhysicalBasis:
         ]
 
         # Should fail both rules
-        is_valid, messages = UnifiedGrammarValidator.validate(sequence, epi_initial=0.0)
+        validator = UnifiedGrammarValidator()
+
+        is_valid, messages = validator.validate(sequence, epi_initial=0.0)
         assert not is_valid
 
         # Both U2-REMESH and U5 should be violated
@@ -475,7 +526,10 @@ class TestU5PhysicalBasis:
             Silence(),
         ]
 
-        is_valid_fixed, _ = UnifiedGrammarValidator.validate(sequence_fixed, epi_initial=0.0)
+        validator = UnifiedGrammarValidator()
+
+
+        is_valid_fixed, _ = validator.validate(sequence_fixed, epi_initial=0.0)
         assert is_valid_fixed
 
 
@@ -520,7 +574,10 @@ class TestU5Integration:
             Silence(),  # U1b: Closure
         ]
 
-        is_valid, messages = UnifiedGrammarValidator.validate(sequence, epi_initial=0.0)
+        validator = UnifiedGrammarValidator()
+
+
+        is_valid, messages = validator.validate(sequence, epi_initial=0.0)
         assert is_valid, f"Complex sequence should pass all rules: {messages}"
 
         # All rules should be satisfied

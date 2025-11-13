@@ -1,0 +1,350 @@
+{
+  "grid": {
+    "task_counts": {
+      "field_interaction_matrix": 6,
+      "composite_field_metrics": 6,
+      "force_regime_phase_diagram": 36,
+      "temporal_orchestration": 6,
+      "operator_field_coupling": 36
+    },
+    "composite_field_metrics": {
+      "S_local": {
+        "mean": 1.3838373002305869e-16,
+        "std": 3.6111492296951257e-16
+      },
+      "S_global": {
+        "mean": 7.631795738226361,
+        "std": 8.826948892295288
+      }
+    },
+    "regimes": {
+      "critical_global": 30,
+      "high_stress": 6
+    },
+    "correlations": {
+      "grad_phi__abs_k_phi": 0.9041847442813271,
+      "phi_s__coh_local": 0.14272490607925645,
+      "dnfr__coh_local": -0.9999519949906905,
+      "grad_phi__dnfr": -0.03831230059149288
+    },
+    "operator_field_coupling": {
+      "emission": {
+        "d_phi_s": 0.0,
+        "d_grad_phi": 0.0,
+        "d_abs_k_phi_max": 0.0,
+        "d_xi_c": 0.0
+      },
+      "coherence": {
+        "d_phi_s": -0.056886221712661444,
+        "d_grad_phi": 0.0,
+        "d_abs_k_phi_max": 0.0,
+        "d_xi_c": 0.0
+      },
+      "dissonance": {
+        "d_phi_s": 1.8662978248212534,
+        "d_grad_phi": -0.0023814809161500435,
+        "d_abs_k_phi_max": 0.07490216360129344,
+        "d_xi_c": 0.0
+      },
+      "mutation": {
+        "d_phi_s": 2.332872281026566,
+        "d_grad_phi": 0.017885404784411085,
+        "d_abs_k_phi_max": 0.09018119785556117,
+        "d_xi_c": 0.0
+      },
+      "expansion": {
+        "d_phi_s": 1.3861542800245032,
+        "d_grad_phi": 0.0,
+        "d_abs_k_phi_max": 0.0,
+        "d_xi_c": 0.0
+      },
+      "silence": {
+        "d_phi_s": -0.028443110856330733,
+        "d_grad_phi": 0.0,
+        "d_abs_k_phi_max": 0.0,
+        "d_xi_c": 0.0
+      }
+    }
+  },
+  "ring": {
+    "task_counts": {
+      "field_interaction_matrix": 6,
+      "composite_field_metrics": 6,
+      "force_regime_phase_diagram": 36,
+      "temporal_orchestration": 6,
+      "operator_field_coupling": 36
+    },
+    "composite_field_metrics": {
+      "S_local": {
+        "mean": 2.4116511257135343e-16,
+        "std": 3.887743051091277e-16
+      },
+      "S_global": {
+        "mean": 18.126512067862915,
+        "std": 9.178817814279697
+      }
+    },
+    "regimes": {
+      "high_stress": 24,
+      "critical_global": 12
+    },
+    "correlations": {
+      "grad_phi__abs_k_phi": 0.8940856033864466,
+      "phi_s__coh_local": -0.009685463271953918,
+      "dnfr__coh_local": -0.9999515260671754,
+      "grad_phi__dnfr": -0.08048318752149582
+    },
+    "operator_field_coupling": {
+      "emission": {
+        "d_phi_s": 0.0,
+        "d_grad_phi": 0.0,
+        "d_abs_k_phi_max": 0.0,
+        "d_xi_c": 0.0
+      },
+      "coherence": {
+        "d_phi_s": -0.02969560902648297,
+        "d_grad_phi": 0.0,
+        "d_abs_k_phi_max": 0.0,
+        "d_xi_c": 0.0
+      },
+      "dissonance": {
+        "d_phi_s": 0.9667869398820508,
+        "d_grad_phi": 0.0059011158669189856,
+        "d_abs_k_phi_max": -0.022854723864303927,
+        "d_xi_c": 0.0
+      },
+      "mutation": {
+        "d_phi_s": 1.2084836748525636,
+        "d_grad_phi": 0.023108650675334182,
+        "d_abs_k_phi_max": -0.038018583751824035,
+        "d_xi_c": 0.0
+      },
+      "expansion": {
+        "d_phi_s": 0.7172902038279926,
+        "d_grad_phi": 0.0,
+        "d_abs_k_phi_max": 0.0,
+        "d_xi_c": 0.0
+      },
+      "silence": {
+        "d_phi_s": -0.01484780451324149,
+        "d_grad_phi": 0.0,
+        "d_abs_k_phi_max": 0.0,
+        "d_xi_c": 0.0
+      }
+    }
+  },
+  "scale_free": {
+    "task_counts": {
+      "field_interaction_matrix": 6,
+      "composite_field_metrics": 6,
+      "force_regime_phase_diagram": 36,
+      "temporal_orchestration": 6,
+      "operator_field_coupling": 36
+    },
+    "composite_field_metrics": {
+      "S_local": {
+        "mean": 2.3129646346357432e-17,
+        "std": 4.388330530471315e-16
+      },
+      "S_global": {
+        "mean": 3.9919171100584534,
+        "std": 1.7653588471497876
+      }
+    },
+    "regimes": {
+      "critical_global": 34,
+      "high_stress": 2
+    },
+    "correlations": {
+      "grad_phi__abs_k_phi": 0.9228159774879874,
+      "phi_s__coh_local": 0.023550292199868667,
+      "dnfr__coh_local": -0.9999515260671754,
+      "grad_phi__dnfr": 0.016202705098498863
+    },
+    "operator_field_coupling": {
+      "emission": {
+        "d_phi_s": 0.0,
+        "d_grad_phi": 0.0,
+        "d_abs_k_phi_max": 0.0,
+        "d_xi_c": 0.0
+      },
+      "coherence": {
+        "d_phi_s": -0.08987715694112969,
+        "d_grad_phi": 0.0,
+        "d_abs_k_phi_max": 0.0,
+        "d_xi_c": 0.0
+      },
+      "dissonance": {
+        "d_phi_s": 2.912064996580401,
+        "d_grad_phi": 0.009366430934813213,
+        "d_abs_k_phi_max": 0.021496770672171414,
+        "d_xi_c": 0.0
+      },
+      "mutation": {
+        "d_phi_s": 3.6400812457255007,
+        "d_grad_phi": 0.035229675911465835,
+        "d_abs_k_phi_max": 0.022518882752630986,
+        "d_xi_c": 0.0
+      },
+      "expansion": {
+        "d_phi_s": 2.1498590143484835,
+        "d_grad_phi": 0.0,
+        "d_abs_k_phi_max": 0.0,
+        "d_xi_c": 0.0
+      },
+      "silence": {
+        "d_phi_s": -0.044938578470564865,
+        "d_grad_phi": 0.0,
+        "d_abs_k_phi_max": 0.0,
+        "d_xi_c": 0.0
+      }
+    }
+  },
+  "tree": {
+    "task_counts": {
+      "field_interaction_matrix": 6,
+      "composite_field_metrics": 6,
+      "force_regime_phase_diagram": 36,
+      "temporal_orchestration": 6,
+      "operator_field_coupling": 36
+    },
+    "composite_field_metrics": {
+      "S_local": {
+        "mean": 7.802400700837906e-17,
+        "std": 2.962876299545952e-16
+      },
+      "S_global": {
+        "mean": 11.443524118305776,
+        "std": 8.482752373450055
+      }
+    },
+    "regimes": {
+      "critical_global": 36
+    },
+    "correlations": {
+      "grad_phi__abs_k_phi": 0.9261967292950408,
+      "phi_s__coh_local": 0.08577309082306532,
+      "dnfr__coh_local": -0.9999515260671754,
+      "grad_phi__dnfr": -0.10348649233236662
+    },
+    "operator_field_coupling": {
+      "emission": {
+        "d_phi_s": 0.0,
+        "d_grad_phi": 0.0,
+        "d_abs_k_phi_max": 0.0,
+        "d_xi_c": 0.0
+      },
+      "coherence": {
+        "d_phi_s": -0.03741040802037359,
+        "d_grad_phi": 0.0,
+        "d_abs_k_phi_max": 0.0,
+        "d_xi_c": 0.0
+      },
+      "dissonance": {
+        "d_phi_s": 1.2139223353983066,
+        "d_grad_phi": 0.015125714007877537,
+        "d_abs_k_phi_max": 0.019518314531029816,
+        "d_xi_c": 0.0
+      },
+      "mutation": {
+        "d_phi_s": 1.517402919247883,
+        "d_grad_phi": 0.03145373812622266,
+        "d_abs_k_phi_max": 0.020486354549090282,
+        "d_xi_c": 0.0
+      },
+      "expansion": {
+        "d_phi_s": 0.9013695302679898,
+        "d_grad_phi": 0.0,
+        "d_abs_k_phi_max": 0.0,
+        "d_xi_c": 0.0
+      },
+      "silence": {
+        "d_phi_s": -0.018705204010186795,
+        "d_grad_phi": 0.0,
+        "d_abs_k_phi_max": 0.0,
+        "d_xi_c": 0.0
+      }
+    }
+  },
+  "unknown": {
+    "task_counts": {
+      "cross_domain_unification": 10
+    },
+    "composite_field_metrics": {},
+    "regimes": {},
+    "correlations": {
+      "grad_phi__abs_k_phi": 0.0,
+      "phi_s__coh_local": 0.0,
+      "dnfr__coh_local": 0.0,
+      "grad_phi__dnfr": 0.0
+    },
+    "operator_field_coupling": {}
+  },
+  "ws": {
+    "task_counts": {
+      "field_interaction_matrix": 6,
+      "composite_field_metrics": 6,
+      "force_regime_phase_diagram": 36,
+      "temporal_orchestration": 6,
+      "operator_field_coupling": 36
+    },
+    "composite_field_metrics": {
+      "S_local": {
+        "mean": 2.0465882075468594e-16,
+        "std": 5.153164506950236e-16
+      },
+      "S_global": {
+        "mean": 12.229082282047246,
+        "std": 13.300228225919284
+      }
+    },
+    "regimes": {
+      "critical_global": 35,
+      "high_stress": 1
+    },
+    "correlations": {
+      "grad_phi__abs_k_phi": 0.8868879715988086,
+      "phi_s__coh_local": 0.008803072407847357,
+      "dnfr__coh_local": -0.9999515260671754,
+      "grad_phi__dnfr": -0.03363624343328706
+    },
+    "operator_field_coupling": {
+      "emission": {
+        "d_phi_s": 0.0,
+        "d_grad_phi": 0.0,
+        "d_abs_k_phi_max": 0.0,
+        "d_xi_c": 0.0
+      },
+      "coherence": {
+        "d_phi_s": -0.08113362856586634,
+        "d_grad_phi": 0.0,
+        "d_abs_k_phi_max": 0.0,
+        "d_xi_c": 0.0
+      },
+      "dissonance": {
+        "d_phi_s": 2.645962540600269,
+        "d_grad_phi": 0.004466561538980622,
+        "d_abs_k_phi_max": 0.0028440290643554356,
+        "d_xi_c": 0.0
+      },
+      "mutation": {
+        "d_phi_s": 3.307453175750336,
+        "d_grad_phi": 0.0333300405451455,
+        "d_abs_k_phi_max": 0.016536317189186828,
+        "d_xi_c": 0.0
+      },
+      "expansion": {
+        "d_phi_s": 1.959123479785014,
+        "d_grad_phi": 0.0,
+        "d_abs_k_phi_max": 0.0,
+        "d_xi_c": 0.0
+      },
+      "silence": {
+        "d_phi_s": -0.040566814282933183,
+        "d_grad_phi": 0.0,
+        "d_abs_k_phi_max": 0.0,
+        "d_xi_c": 0.0
+      }
+    }
+  }
+}

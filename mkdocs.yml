@@ -19,6 +19,7 @@ nav:
       - Migrating from Remesh Window: source/getting-started/migrating-remesh-window.md
   - User Guide:
       - Operators Guide: source/user-guide/OPERATORS_GUIDE.md
+      - Structural Field Tetrad (Canonical): STRUCTURAL_FIELDS_TETRAD.md
       - Metrics Interpretation: source/user-guide/METRICS_INTERPRETATION.md
       - Troubleshooting: TROUBLESHOOTING.md
   - Grammar Documentation:
@@ -45,11 +46,16 @@ nav:
           - Testing Summary: grammar/TESTING-SUMMARY.md
           - Deprecation Index: grammar/DEPRECATION-INDEX.md
   - Examples: source/examples/README.md
+    - Notebooks & Patterns:
+            - Fundamental Particles TNFR Atlas (Notebook - GitHub): https://github.com/fermga/TNFR-Python-Engine/blob/main/notebooks/Fundamental_Particles_TNFR_Atlas.ipynb
+            - TNFR Patterns (Module Guide): https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/README.md
+        - Interaction Sequences Guide: INTERACTIONS_GUIDE.md
   - API Reference:
       - Overview: source/api/overview.md
       - Structural Operators: source/api/operators.md
       - Operators Visual Guide: source/api/OPERATORS_VISUAL_GUIDE.md
       - Telemetry & Utilities: source/api/telemetry.md
+      - Physics Module Guide (GitHub): https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/README.md
       - Docstring Style: source/api/docstring_style.md
   - Advanced Topics:
       - Architecture Guide: source/advanced/ARCHITECTURE_GUIDE.md
@@ -57,6 +63,10 @@ nav:
       - Testing Strategies: source/advanced/TESTING_STRATEGIES.md
       - Development Workflow: source/advanced/DEVELOPMENT_WORKFLOW.md
       - Mathematical Foundations: source/foundations.md
+        - Forces Emergence (Research): TNFR_FORCES_EMERGENCE.md
+        - Operator Completeness (Research): OPERATOR_COMPLETENESS.md
+            - Life Emergence: LIFE_EMERGENCE_FROM_TNFR.md
+            - Cell Emergence: CELL_EMERGENCE_FROM_TNFR.md
       - CLI Reference: source/tools/CLI.md
     # Notebooks removed from nav to simplify build; still present under docs/source/theory for future use.
   - Security:

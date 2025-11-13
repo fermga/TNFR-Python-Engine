@@ -1,3 +1,6 @@
+# Documentation Consolidation Report
+
+> DEPRECATION NOTICE: This document is archived and not part of the centralized documentation. For current content, see `docs/source/index.rst`, `docs/DOCUMENTATION_INDEX.md`, and the computational hub at `src/tnfr/mathematics/README.md`.
 # Documentation Consolidation Summary
 
 **Date**: 2025-11-06  
@@ -9,7 +12,7 @@ This consolidation effort reduced 25+ scattered technical documentation files in
 
 ## New Consolidated Guides
 
-### 📚 [Architecture Guide](docs/source/advanced/ARCHITECTURE_GUIDE.md)
+### 📚 [Architecture Guide](../source/advanced/ARCHITECTURE_GUIDE.md)
 **Consolidates**: 10 files (FACTORY_*, DEPENDENCY_*, MODULE_*, CONSOLIDATION_AUDIT)
 
 **Contents**:
@@ -23,7 +26,7 @@ This consolidation effort reduced 25+ scattered technical documentation files in
 
 ---
 
-### 🧪 [Testing Strategies](docs/source/advanced/TESTING_STRATEGIES.md)
+### 🧪 [Testing Strategies](../source/advanced/TESTING_STRATEGIES.md)
 **Consolidates**: 3 files (TESTING_COMPATIBILITY, TEST_OPTIMIZATION, STUB_AUTOMATION)
 
 **Contents**:
@@ -37,7 +40,7 @@ This consolidation effort reduced 25+ scattered technical documentation files in
 
 ---
 
-### 🔧 [Development Workflow](docs/source/advanced/DEVELOPMENT_WORKFLOW.md)
+### 🔧 [Development Workflow](../source/advanced/DEVELOPMENT_WORKFLOW.md)
 **Consolidates**: Workflow content from multiple sources
 
 **Contents**:
@@ -51,7 +54,7 @@ This consolidation effort reduced 25+ scattered technical documentation files in
 
 ---
 
-### ⚡ [Performance Optimization](docs/source/advanced/PERFORMANCE_OPTIMIZATION.md)
+### ⚡ [Performance Optimization](../source/advanced/PERFORMANCE_OPTIMIZATION.md)
 **Enhanced**: Already contained cache and optimization content
 
 **Contents**:
@@ -110,13 +113,13 @@ The main README.md has been updated with links to these guides in the "Documenta
 
 | Old File | New Location |
 |----------|-------------|
-| `FACTORY_PATTERNS.md` | [Architecture Guide - Factory Patterns](docs/source/advanced/ARCHITECTURE_GUIDE.md#factory-patterns) |
-| `STUB_AUTOMATION.md` | [Architecture Guide - Type Stub Automation](docs/source/advanced/ARCHITECTURE_GUIDE.md#type-stub-automation) |
-| `DEPENDENCY_ANALYSIS.md` | [Architecture Guide - Module Dependencies](docs/source/advanced/ARCHITECTURE_GUIDE.md#module-dependencies) |
-| `TESTING_COMPATIBILITY.md` | [Testing Strategies - Dependency Compatibility](docs/source/advanced/TESTING_STRATEGIES.md#dependency-compatibility) |
-| `TEST_OPTIMIZATION.md` | [Testing Strategies - Test Optimization](docs/source/advanced/TESTING_STRATEGIES.md#test-optimization) |
-| `CACHE_OPTIMIZATION.md` | [Performance Optimization - Caching Strategies](docs/source/advanced/PERFORMANCE_OPTIMIZATION.md#caching-strategies) |
-| `OPTIMIZATION_GUIDE.md` | [Performance Optimization](docs/source/advanced/PERFORMANCE_OPTIMIZATION.md) |
+| `FACTORY_PATTERNS.md` | [Architecture Guide - Factory Patterns](../source/advanced/ARCHITECTURE_GUIDE.md#factory-patterns) |
+| `STUB_AUTOMATION.md` | [Architecture Guide - Type Stub Automation](../source/advanced/ARCHITECTURE_GUIDE.md#type-stub-automation) |
+| `DEPENDENCY_ANALYSIS.md` | [Architecture Guide - Module Dependencies](../source/advanced/ARCHITECTURE_GUIDE.md#module-dependencies) |
+| `TESTING_COMPATIBILITY.md` | [Testing Strategies - Dependency Compatibility](../source/advanced/TESTING_STRATEGIES.md#dependency-compatibility) |
+| `TEST_OPTIMIZATION.md` | [Testing Strategies - Test Optimization](../source/advanced/TESTING_STRATEGIES.md#test-optimization) |
+| `CACHE_OPTIMIZATION.md` | [Performance Optimization - Caching Strategies](../source/advanced/PERFORMANCE_OPTIMIZATION.md#caching-strategies) |
+| `OPTIMIZATION_GUIDE.md` | [Performance Optimization](../source/advanced/PERFORMANCE_OPTIMIZATION.md) |
 
 ### If you referenced these files in code or docs:
 

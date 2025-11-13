@@ -184,9 +184,10 @@ class TestStructuralTransitions:
 
         set_attr(G.nodes[node], ALIAS_DNFR, 0.5)
 
-        # Apply NAV - should detect active regime
-        # Need to precede with valid operator for semantic validation
-        run_sequence(G, node, [Emission(), Transition()])
+        # Apply NAV with required stabilizer and closure (per U2, U1b)
+        run_sequence(
+            G, node, [Emission(), Transition(), Coherence(), Silence()]
+        )
 
         # Check transformations
         theta_after = float(get_attr(G.nodes[node], ALIAS_THETA, 0.0))

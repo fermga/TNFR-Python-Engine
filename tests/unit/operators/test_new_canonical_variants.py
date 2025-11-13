@@ -307,11 +307,12 @@ class TestFrequencyTransitionEnablement:
             MINIMAL_COMPRESSION,
             PHASE_LOCK,
         ]:
-            ref_text = variant.references.lower()
+            # Join references list into a single string, then lowercase
+            ref_text = " ".join(variant.references).lower()
             # At least one frequency keyword should be in references
             assert any(
                 keyword in ref_text for keyword in frequency_keywords
-            ), f"{variant.name} should reference frequency transition in references"
+            ), f"{variant.name} should reference frequency transition"
 
 
 class TestCanonicalVariantUseCases:

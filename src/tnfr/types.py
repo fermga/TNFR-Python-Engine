@@ -361,17 +361,21 @@ TNFRConfigSequence: TypeAlias = Sequence[TNFRConfigScalar]
 """Homogeneous sequence of scalar TNFR configuration values."""
 
 TNFRConfigValue: TypeAlias = (
-    TNFRConfigScalar | TNFRConfigSequence | MutableMapping[str, "TNFRConfigValue"]
+    TNFRConfigScalar
+    | TNFRConfigSequence
+    | MutableMapping[str, "TNFRConfigValue"]
 )
 """Permissible configuration entry for TNFR coherence defaults.
 
 The alias captures the recursive structure used by TNFR defaults: scalars
-express structural thresholds, booleans toggle operators, and nested mappings
+express structural thresholds, booleans toggle operators, and nested
+mappings
 or sequences describe coherent parameter bundles such as γ grammars,
 selector advice or trace capture lists.
 
-Configuration dictionaries support the full :class:`~collections.abc.MutableMapping`
-protocol, enabling dict-like operations such as ``.get()``, ``__setitem__``,
+Configuration dictionaries support the full
+:class:`~collections.abc.MutableMapping` protocol, enabling dict-like
+operations such as ``.get()``, ``__setitem__``,
 and ``.update()`` for runtime configuration adjustments.
 """
 
@@ -526,7 +530,8 @@ class GraphLike(Protocol):
         ...
 
     def __getitem__(self, node: Any) -> MutableMapping[Any, Any]:
-        """Expose adjacency metadata for ``node`` using ``G[node]`` semantics."""
+        """Expose adjacency metadata for ``node`` using ``G[node]``
+        semantics."""
 
         ...
 
@@ -555,7 +560,8 @@ class IntegratorProtocol(Protocol):
         method: str | None,
         n_jobs: int | None,
     ) -> None:
-        """Advance the nodal equation for ``graph`` using integrator configuration."""
+        """Advance the nodal equation for ``graph`` using integrator
+        configuration."""
 
         ...
 
@@ -567,8 +573,8 @@ class Glyph(str, Enum):
     application of structural operators. Each structural operator (Emission,
     Reception, Coherence, etc.) is associated with a specific glyph symbol.
 
-    For public-facing documentation and APIs, refer to these by their structural
-    operator names rather than the internal glyph codes.
+    For public-facing documentation and APIs, refer to these by their
+    structural operator names rather than the internal glyph codes.
     """
 
     AL = "AL"
@@ -587,10 +593,12 @@ class Glyph(str, Enum):
 
 
 GlyphCode: TypeAlias = Glyph | str
-"""Structural operator symbol (glyph) identifier accepted by selector pipelines and grammars."""
+"""Structural operator symbol (glyph) identifier accepted by selector
+pipelines and grammars."""
 
 GlyphLoadDistribution: TypeAlias = dict[Glyph | str, float]
-"""Normalised load proportions keyed by structural operator symbol (glyph) or aggregate labels."""
+"""Normalised load proportions keyed by structural operator symbol
+(glyph) or aggregate labels."""
 
 
 @runtime_checkable
@@ -610,14 +618,18 @@ class _SelectorLifecycle(Protocol):
     def select(self, graph: TNFRGraph, node: NodeId) -> GlyphCode: ...
 
 
-GlyphSelector: TypeAlias = Callable[[TNFRGraph, NodeId], GlyphCode] | _SelectorLifecycle
-"""Selector callable or object returning the structural operator symbol (glyph) to apply for a node."""
+GlyphSelector: TypeAlias = (
+    Callable[[TNFRGraph, NodeId], GlyphCode] | _SelectorLifecycle
+)
+"""Selector callable or object returning the structural operator symbol
+(glyph) to apply for a node."""
 
 SelectorPreselectionMetrics: TypeAlias = Mapping[Any, SelectorMetrics]
 """Mapping of nodes to their normalised selector metrics."""
 
 SelectorPreselectionChoices: TypeAlias = Mapping[Any, Glyph | str]
-"""Mapping of nodes to their preferred structural operator symbol (glyph) prior to grammar filters."""
+"""Mapping of nodes to their preferred structural operator symbol
+(glyph) prior to grammar filters."""
 
 SelectorPreselectionPayload: TypeAlias = tuple[
     SelectorPreselectionMetrics,
@@ -626,7 +638,8 @@ SelectorPreselectionPayload: TypeAlias = tuple[
 #: Tuple grouping selector metrics and base decisions for preselection steps.
 
 TraceFieldFn: TypeAlias = Callable[[TNFRGraph], "TraceMetadata"]
-#: Callable producing :class:`tnfr.trace.TraceMetadata` from a :data:`TNFRGraph`.
+#: Callable producing :class:`tnfr.trace.TraceMetadata` from a
+#: :data:`TNFRGraph`.
 
 TraceFieldMap: TypeAlias = Mapping[str, "TraceFieldFn"]
 #: Mapping of trace field names to their producers for a given phase.
@@ -701,10 +714,12 @@ DnfrCacheVectors: TypeAlias = tuple[
     np.ndarray | None,
     np.ndarray | None,
 ]
-"""Tuple grouping cached NumPy vectors for θ, EPI, νf and trigonometric projections."""
+"""Tuple grouping cached NumPy vectors for θ, EPI, νf and trigonometric
+projections."""
 
 DnfrVectorMap: TypeAlias = dict[str, np.ndarray | None]
-"""Mapping of TNFR state aliases to their NumPy buffers synchronized from lists."""
+"""Mapping of TNFR state aliases to their NumPy buffers synchronized
+from lists."""
 
 NeighborStats: TypeAlias = tuple[
     Sequence[float],
@@ -715,7 +730,8 @@ NeighborStats: TypeAlias = tuple[
     Sequence[float] | None,
     Sequence[float] | None,
 ]
-"""Bundle of neighbour accumulators for cosine, sine, EPI, νf and topology totals."""
+"""Bundle of neighbour accumulators for cosine, sine, EPI, νf and
+topology totals."""
 
 GlyphogramRow: TypeAlias = MutableMapping[str, float]
 """Row exported by glyph timing summaries."""
@@ -723,13 +739,17 @@ GlyphogramRow: TypeAlias = MutableMapping[str, float]
 GlyphTimingTotals: TypeAlias = MutableMapping[str, float]
 """Aggregate glyph timing totals keyed by glyph code."""
 
-GlyphTimingByNode: TypeAlias = MutableMapping[Any, MutableMapping[str, MutableSequence[float]]]
+GlyphTimingByNode: TypeAlias = MutableMapping[
+    Any, MutableMapping[str, MutableSequence[float]]
+]
 """Glyph timing segments stored per node during audits."""
 
 GlyphCounts: TypeAlias = Mapping[str, int]
 """Glyph occurrence counters keyed by glyph code."""
 
-GlyphMetricsHistoryValue: TypeAlias = MutableMapping[Any, Any] | MutableSequence[Any]
+GlyphMetricsHistoryValue: TypeAlias = (
+    MutableMapping[Any, Any] | MutableSequence[Any]
+)
 """Flexible container used by glyph history accumulators."""
 
 GlyphMetricsHistory: TypeAlias = MutableMapping[str, GlyphMetricsHistoryValue]

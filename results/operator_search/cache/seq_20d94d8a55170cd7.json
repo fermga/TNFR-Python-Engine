@@ -1,0 +1,1 @@
+{"sequence": ["RA", "VAL", "NAV"], "coherence_change": 0.0, "sense_index_change": 0.01790914944447819, "phi_s_change": 0.0, "grad_phi_change": -0.05795624191440396, "k_phi_change": 0.3669348016224755, "xi_c_change": 0.0, "phase_sync_change": 0.014608778985193305, "epi_magnitude_change": 0.01286287238599515, "hash_signature": "f6995da2564dc32e", "sequence_str": "RA -> VAL -> NAV"}

@@ -116,7 +116,7 @@ When writing factory functions, follow these steps to maintain stub synchronizat
 3. **Verify the stub**: Check that `.pyi` matches your signatures
 4. **Commit both files**: `.py` and `.pyi` together
 
-See [docs/FACTORY_PATTERNS.md](../docs/FACTORY_PATTERNS.md) for factory function guidelines.
+See [Architecture Guide — Factory Patterns](../docs/source/advanced/ARCHITECTURE_GUIDE.md#factory-patterns) for factory function guidelines.
 
 ### Troubleshooting
 
@@ -142,8 +142,8 @@ If a file is reported as outdated but hasn't changed:
 
 ### Related Documentation
 
-- [FACTORY_PATTERNS.md](../docs/FACTORY_PATTERNS.md) - Factory function guidelines
-- [FACTORY_INVENTORY_2025.md](../docs/FACTORY_INVENTORY_2025.md) - Complete factory audit
+- [Architecture Guide — Factory Patterns](../docs/source/advanced/ARCHITECTURE_GUIDE.md#factory-patterns) - Factory function guidelines
+- [Architecture Guide](../docs/source/advanced/ARCHITECTURE_GUIDE.md) - Consolidated architecture and patterns
 - [mypy stubgen documentation](https://mypy.readthedocs.io/en/stable/stubgen.html)
 
 ## Other Scripts

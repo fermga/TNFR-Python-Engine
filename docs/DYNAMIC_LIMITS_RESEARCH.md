@@ -13,11 +13,9 @@ This research investigates whether fixed canonical limits (EPI_MAX, VF_MAX) cont
 **Do fixed canonical limits contradict TNFR's core principles?**
 
 TNFR paradigm states:
-> "La realidad consiste de patrones coherentes que persisten porque resuenan"  
-> (Reality consists of coherent patterns that persist because they resonate)
+> "Reality consists of coherent patterns that persist because they resonate."
 
-> "Los NFRs pueden anidarse jerárquicamente sin perder coherencia estructural"  
-> (NFRs can nest hierarchically without losing structural coherence)
+> "NFRs can nest hierarchically without losing structural coherence."
 
 Three potential contradictions identified:
 

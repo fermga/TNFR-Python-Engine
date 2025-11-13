@@ -163,7 +163,7 @@ Physical Intuition → Mathematical Formalization → Code Implementation → Te
 
 ### 📚 Complementary Documents
 
-**[GLOSSARY.md](GLOSSARY.md)**
+**[GLOSSARY.md](../../GLOSSARY.md)**
 - Operational definitions of all TNFR terms
 - Format: Term → Symbol → Code → Meaning → Reference
 - **Audience:** Everyone
@@ -221,7 +221,7 @@ Physical Intuition → Mathematical Formalization → Code Implementation → Te
 **Recommended learning path:**
 
 1. **[01-FUNDAMENTAL-CONCEPTS.md](01-FUNDAMENTAL-CONCEPTS.md)** - Understand TNFR paradigm
-2. **[GLOSSARY.md](GLOSSARY.md)** - Familiarize with key terms
+2. **[GLOSSARY.md](../../GLOSSARY.md)** - Familiarize with key terms
 3. **[03-OPERATORS-AND-GLYPHS.md](03-OPERATORS-AND-GLYPHS.md)** - Learn the 13 operators
 4. **[examples/01-basic-bootstrap.py](examples/01-basic-bootstrap.py)** - Run first example
 5. **[08-QUICK-REFERENCE.md](08-QUICK-REFERENCE.md)** - Keep handy during development

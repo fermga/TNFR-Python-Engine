@@ -1,0 +1,1 @@
+{"sequence": ["SHA", "NUL", "SHA", "SHA"], "coherence_change": 0.0, "sense_index_change": 0.002259473990948835, "phi_s_change": 0.0, "grad_phi_change": 0.0, "k_phi_change": 0.0, "xi_c_change": 0.0, "phase_sync_change": 0.0, "epi_magnitude_change": -0.02487739096157504, "hash_signature": "1efa8d74bb8c2eb3", "sequence_str": "SHA -> NUL -> SHA -> SHA"}

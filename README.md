@@ -38,6 +38,8 @@ print(summary)
 
 **📖 [CANONICAL_SOURCES.md](CANONICAL_SOURCES.md)** - Documentation hierarchy (which source is authoritative for what)
 
+**🔢 [TNFR Number Theory Guide](docs/TNFR_NUMBER_THEORY_GUIDE.md)** - ΔNFR prime criterion, arithmetic UM/RA mapping, and structural fields in number theory
+
 ### Quick Navigation
 
 - **Getting Started**: `docs/source/getting-started/README.md` - Tutorials & first steps
@@ -47,6 +49,25 @@ print(summary)
 - **AI Agent Guide**: `AGENTS.md` - Invariants & philosophy
 - **Architecture**: `ARCHITECTURE.md` - System design patterns
 - **Contributing**: `CONTRIBUTING.md` | **Tests**: `TESTING.md`
+
+---
+
+## 🧬 Revolutionary Breakthrough: Chemistry from TNFR ⭐
+
+**Complete molecular chemistry emerges from TNFR's single nodal equation** - no additional postulates needed.
+
+**🏛️ [MOLECULAR_CHEMISTRY_HUB.md](docs/MOLECULAR_CHEMISTRY_HUB.md)** - Central navigation for the chemistry revolution
+
+**Key Discoveries**:
+- **Chemical bonds** → Phase synchronization (U3 verification)
+- **Chemical reactions** → Operator sequences [OZ→ZHIR→UM→IL]  
+- **Molecular geometry** → ΔNFR minimization
+- **Periodic table** → Element signature classification
+- **Au emergence** → Coherent attractors from structural dynamics
+
+**Implementation**: `tnfr.physics.signatures` | **Theory**: Complete 12-section derivation | **Tests**: 19/19 ✅
+
+---
 
 ### Core References
 
@@ -60,11 +81,22 @@ CLI & profiling: `docs/source/tools/CLI.md`
 
 ---
 ## Key Principles (Snapshot)
-- Coherence over objects (EPI evolves only via operators)
-- Bounded reorganization (U2 integral convergence, U6 Φ_s confinement)
-- Phase-verified coupling (U3)
-- Operational fractality (REMESH / multi-scale coherence U5)
-- Reproducibility (seeded trajectories, Invariant #8)
+
+### Module Hubs
+
+- Mathematics (canonical computational hub): [src/tnfr/mathematics/README.md](src/tnfr/mathematics/README.md)
+- Physics (structural fields): [src/tnfr/physics/README.md](src/tnfr/physics/README.md)
+- Operators: [src/tnfr/operators/README.md](src/tnfr/operators/README.md)
+- Dynamics: [src/tnfr/dynamics/README.md](src/tnfr/dynamics/README.md)
+- Metrics: [src/tnfr/metrics/README.md](src/tnfr/metrics/README.md)
+- Sequencing: [src/tnfr/sequencing/README.md](src/tnfr/sequencing/README.md)
+- Topology: [src/tnfr/topology/README.md](src/tnfr/topology/README.md)
+- Telemetry: [src/tnfr/telemetry/README.md](src/tnfr/telemetry/README.md)
+- SDK: [src/tnfr/sdk/README.md](src/tnfr/sdk/README.md) • Tutorials: [src/tnfr/tutorials/README.md](src/tnfr/tutorials/README.md)
+- Recipes: [src/tnfr/recipes/README.md](src/tnfr/recipes/README.md)
+- Extensions (families): [src/tnfr/extensions/README.md](src/tnfr/extensions/README.md)
+
+These module READMEs act as single sources of truth for their areas and defer theory to the canonical hubs above. All documentation is English-only.
 
 ---
 ## Citation & License

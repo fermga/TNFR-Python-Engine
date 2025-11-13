@@ -57,14 +57,14 @@ Complete specification of TNFR grammar constraints (U1-U6):
 | **[U6_STRUCTURAL_POTENTIAL_CONFINEMENT.md](docs/grammar/U6_STRUCTURAL_POTENTIAL_CONFINEMENT.md)** | U6 complete specification | ✅ Canonical |
 | **[MASTER-INDEX.md](docs/grammar/MASTER-INDEX.md)** | System conceptual map | ✅ Active |
 
-### API Documentation (`docs/source/`)
+### API & Theory Documentation (`docs/source/`)
 
 Generated from code + narrative docs:
 
 | Section | Path | Purpose |
 |---------|------|---------|
 | **Getting Started** | `docs/source/getting-started/` | Tutorials & first steps |
-| **Theory** | `docs/source/theory/` | Mathematical foundations |
+| **Theory** | `docs/source/theory/` | Mathematical foundations (formal). Canonical computational hub: `src/tnfr/mathematics/README.md` |
 | **API Reference** | `docs/source/api/` | Package & module docs |
 | **Examples** | `docs/source/examples/` | Domain applications |
 | **Advanced** | `docs/source/advanced/` | Architecture & testing |
@@ -90,6 +90,24 @@ Generated from code + narrative docs:
 | **[GLYPH_SEQUENCES_GUIDE.md](GLYPH_SEQUENCES_GUIDE.md)** | Operator sequence patterns | Sequence designers |
 | **[docs/TNFR_FORCES_EMERGENCE.md](docs/TNFR_FORCES_EMERGENCE.md)** | Structural fields (Φ_s) validation | U6 researchers |
 | **[docs/NBODY_COMPARISON.md](docs/NBODY_COMPARISON.md)** | TNFR vs classical N-body | Physicists |
+| **[docs/TNFR_NUMBER_THEORY_GUIDE.md](docs/TNFR_NUMBER_THEORY_GUIDE.md)** | Number theory from TNFR: ΔNFR prime criterion, UM/RA on arithmetic graph, field telemetry (|∇φ|, K_φ, ξ_C) | Math researchers |
+
+### 🧬 Molecular Chemistry from TNFR (BREAKTHROUGH)
+
+**Revolutionary paradigm**: Complete chemistry emerges from TNFR nodal dynamics without additional postulates
+
+| Document | Focus | Status |
+|----------|-------|--------|
+| **[docs/MOLECULAR_CHEMISTRY_HUB.md](docs/MOLECULAR_CHEMISTRY_HUB.md)** | **🏛️ CENTRAL HUB** - Complete navigation & theory consolidation | ⭐ **CANONICAL** |
+| **[docs/examples/MOLECULAR_CHEMISTRY_FROM_NODAL_DYNAMICS.md](docs/examples/MOLECULAR_CHEMISTRY_FROM_NODAL_DYNAMICS.md)** | **Complete derivation** - Chemistry from nodal equation | ⭐ **CANONICAL** |
+| **[docs/examples/AU_EXISTENCE_FROM_NODAL_EQUATION.md](docs/examples/AU_EXISTENCE_FROM_NODAL_EQUATION.md)** | Au emergence from structural fields | ✅ Validated |
+| **[src/tnfr/physics/README.md](src/tnfr/physics/README.md)** § 9-10 | Implementation guide - Signatures & patterns | ✅ Technical |
+
+### 🔬 Research Notebooks (Hands-on)
+
+| Notebook | Purpose | Output |
+|----------|---------|--------|
+| **[docs/research/OPERATOR_SEQUENCES_MOLECULAR_STABILITY.ipynb](docs/research/OPERATOR_SEQUENCES_MOLECULAR_STABILITY.ipynb)** | Explore operator-like sequence motifs, enforce U3 coupling, and sweep parameters to find stable molecules | JSONL results in `docs/research/results/`
 
 ---
 
@@ -115,6 +133,12 @@ Grammar Mastery + UNIFIED_GRAMMAR_RULES + AGENTS + ARCHITECTURE
 ### Path 4: AI Agent Onboarding (2 hours)
 ```
 AGENTS.md → GLOSSARY.md → UNIFIED_GRAMMAR_RULES.md → Invariants review
+```
+
+### Path 5: Molecular Chemistry Revolution (90 minutes) ⭐ **NEW**
+```
+01-FUNDAMENTAL-CONCEPTS (nodal equation) → MOLECULAR_CHEMISTRY_HUB.md (central navigation)
+→ Follow guided learning path (Beginner/Intermediate) → Run examples
 ```
 
 ---
@@ -149,6 +173,12 @@ Historical documents (preserved for reference):
 
 **...understand U6 (structural potential)**
 → [U6_STRUCTURAL_POTENTIAL_CONFINEMENT.md](docs/grammar/U6_STRUCTURAL_POTENTIAL_CONFINEMENT.md)
+
+**...understand how chemistry emerges from TNFR** ⭐ **BREAKTHROUGH**
+→ [MOLECULAR_CHEMISTRY_HUB.md](docs/MOLECULAR_CHEMISTRY_HUB.md) (central navigation), [Complete theory](docs/examples/MOLECULAR_CHEMISTRY_FROM_NODAL_DYNAMICS.md)
+
+**...see Au emergence from first principles**
+→ [AU_EXISTENCE_FROM_NODAL_EQUATION.md](docs/examples/AU_EXISTENCE_FROM_NODAL_EQUATION.md)
 
 **...look up a term**
 → [GLOSSARY.md](GLOSSARY.md)

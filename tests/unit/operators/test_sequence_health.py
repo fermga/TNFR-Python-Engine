@@ -1,7 +1,10 @@
 """Tests for sequence health metrics analyzer."""
 
 from tnfr.operators.health_analyzer import SequenceHealthAnalyzer, SequenceHealthMetrics
-from tnfr.operators.grammar import validate_sequence_with_health, SequenceValidationResult
+from tnfr.operators.grammar import (
+    validate_sequence_with_health,
+    SequenceValidationResultWithHealth,
+)
 from tnfr.config.operator_names import (
     EMISSION,
     RECEPTION,
@@ -403,7 +406,7 @@ class TestValidateSequenceWithHealth:
         """Valid sequences should include health metrics."""
         result = validate_sequence_with_health([EMISSION, RECEPTION, COHERENCE, SILENCE])
 
-        assert isinstance(result, SequenceValidationResult)
+        assert isinstance(result, SequenceValidationResultWithHealth)
         assert result.passed
         assert result.health_metrics is not None
         assert isinstance(result.health_metrics, SequenceHealthMetrics)

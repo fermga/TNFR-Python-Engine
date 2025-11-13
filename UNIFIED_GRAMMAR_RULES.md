@@ -1391,20 +1391,20 @@ Experimental setup (benchmarks/u6_sequence_simulator.py):
 - Topologies: star, ring, small-world (ws), scale-free
 - Sizes: n ∈ {20, 50}
 - Structural frequencies: νf ∈ {0.5, 1.0, 2.0, 4.0}
-- Sequences: valid_U6 (espaciado) vs violate_U6 (destabilizadores consecutivos)
-- Runs: 5 por combinación (total: 320 experimentos)
-- Métricas: C(t) mínima, pasos de recuperación, fragmentación (C(t) < 0.3 sostenida), τ_relax (Liouvilliano si disponible, proxy espectral si no), α_empírica = τ_relax · 2π · νf, min_spacing_steps
+- Sequences: valid_U6 (spaced) vs violate_U6 (consecutive destabilizers)
+- Runs: 5 per combination (total: 320 experiments)
+- Metrics: minimum C(t), recovery steps, fragmentation (sustained C(t) < 0.3), τ_relax (Liouvillian if available, spectral proxy otherwise), empirical α = τ_relax · 2π · νf, min_spacing_steps
 
 Findings:
-1. Coherence dip: violate_U6 reduce sistemáticamente la coherencia mínima respecto a valid_U6 (p.ej., 0.448 vs 0.616 en promedio en el lote).
-2. Fragmentación: no se observó bajo los parámetros actuales (ventana=5, umbral=0.3), por lo que las correlaciones con fragmentación resultan nulas.
-3. Recuperación: recovery_steps ≈ 0 en este régimen; perturbaciones son moderadas y el sistema no cruza umbrales severos.
-4. α_empírica: escala lineal con νf y depende de topología (star < ws < scale_free < ring). Magnitudes altas (orden 10^3–10^4) indican que α_emp directa no es comparable con el rango propuesto 0.5–0.9 sin normalización estructural.
+1. Coherence dip: violate_U6 systematically reduces minimum coherence vs. valid_U6 (e.g., 0.448 vs. 0.616 on average in the batch).
+2. Fragmentation: not observed under current parameters (window=5, threshold=0.3), so correlations with fragmentation are null.
+3. Recovery: recovery_steps ≈ 0 in this regime; perturbations are moderate and the system does not cross severe thresholds.
+4. Empirical α: scales linearly with νf and depends on topology (star < ws < scale_free < ring). Large magnitudes (order 10^3–10^4) indicate direct α_emp is not comparable to the proposed 0.5–0.9 range without structural normalization.
 
 Implications:
-- U6 muestra efecto suave (depresión de coherencia mínima) pero no prueba fragmentación aún; canonicidad permanece MODERATE.
-- Se requieren condiciones más agresivas (νf mayores, secuencias más largas y más densas en OZ/ZHIR/VAL) para explorar umbrales de fragmentación.
-- Para comparar α con el rango propuesto, normalizar α_emp por escala topológica (p.ej., α_norm = (τ_relax · 2π · νf) / (N · k_eff) con k_eff ≈ grado medio o λ₁).
+- U6 shows a gentle effect (depression of minimum coherence) but does not yet evidence fragmentation; canonicity remains MODERATE.
+- More aggressive conditions are required (higher νf, longer sequences with denser OZ/ZHIR/VAL) to explore fragmentation thresholds.
+- To compare α with the proposed range, normalize α_emp by topological scale (e.g., α_norm = (τ_relax · 2π · νf) / (N · k_eff) with k_eff ≈ average degree or λ₁).
 
 Next steps (empirical):
 - Extend sequences with triple/quintuple destabilizers and longer windows.
@@ -1483,7 +1483,7 @@ validator = UnifiedGrammarValidator(u6_spacing=2, u6_alpha=0.7)
 - **RESUMEN_FINAL_GRAMATICA.md**: Grammar evolution documentation
 - **EMERGENT_GRAMMAR_ANALYSIS.md**: Detailed physics analysis
 - **Bifurcation Theory:** Kuznetsov (2004), "Elements of Applied Bifurcation Theory"
-- **U6 Research:** "El pulso que nos atraviesa.pdf" § Caos estructural resonante
+- **U6 Research:** "The Pulse That Traverses Us.pdf" § Resonant structural chaos
 
 ---
 

@@ -1,5 +1,7 @@
 # Pattern Detection Consolidation Guide
 
+> DEPRECATION NOTICE: This document is archived and not part of the centralized documentation. See `docs/source/index.rst` and `docs/DOCUMENTATION_INDEX.md` for active content.
+
 ## Overview
 
 This document explains the consolidation of pattern detection modules in TNFR Python Engine, consolidating `canonical_patterns.py` and `patterns.py` into a unified `pattern_detection.py` module with explicit U1-U5 grammar rule mappings (U1-U4 temporal + U5 multi-scale coherence).

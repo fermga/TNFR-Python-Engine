@@ -129,13 +129,16 @@ class TestCouplingPreconditions:
         validate_coupling(G, node)
 
     def test_validate_coupling_phase_check_disabled_by_default(self):
-        """Phase compatibility not checked by default."""
+        """Phase compatibility not checked when explicitly disabled."""
         G, node = create_nfr("node1", epi=0.15, vf=0.50, theta=0.0)
         G.add_node("node2")
         set_attr(G.nodes["node2"], ALIAS_THETA, math.pi)  # Opposite phase
         set_attr(G.nodes["node2"], ALIAS_EPI, 0.15)
         set_attr(G.nodes["node2"], ALIAS_VF, 0.50)
         G.add_edge(node, "node2")
+        
+        # Explicitly disable strict phase check
+        G.graph["UM_STRICT_PHASE_CHECK"] = False
 
         # Should pass even though phase difference is π (max incompatibility)
         validate_coupling(G, node)

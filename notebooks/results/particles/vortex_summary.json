@@ -1,0 +1,13 @@
+{
+  "pattern": "vortex",
+  "side": 32,
+  "center": [
+    16,
+    16
+  ],
+  "kphi_absmax": 2.356194490192345,
+  "hotspots_ge_3": 0,
+  "xi_C": 23934.82431825856,
+  "cycle_len": 24,
+  "Q": 1
+}

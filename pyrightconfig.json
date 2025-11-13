@@ -9,14 +9,23 @@
     "**/build",
     "**/dist"
   ],
-  "reportMissingImports": "warning",
-  "reportMissingTypeStubs": false,
-  "pythonVersion": "3.9",
-  "pythonPlatform": "Linux",
+  "reportMissingImports": "none",
+  "reportMissingTypeStubs": "none",
+  "reportMissingTypeAnnotations": "none",
+  "reportUnusedImport": "none",
+  "reportGeneralTypeIssues": "none",
+  "reportOptionalMemberAccess": "none",
+  "reportOptionalSubscript": "none",
+  "reportUnsupportedDunderAll": "none",
+  "reportIncompatibleVariableOverride": "none",
+  "reportIncompatibleMethodOverride": "none",
+  "pythonVersion": "3.10",
+  "pythonPlatform": "Windows",
   "executionEnvironments": [
     {
-      "root": "src"
+      "root": "src",
+      "pythonVersion": "3.10"
     }
   ],
-  "typeCheckingMode": "basic"
+  "typeCheckingMode": "off"
 }

@@ -1,0 +1,1 @@
+{"sequence": ["AL", "NAV", "REMESH", "NAV"], "coherence_change": 0.0, "sense_index_change": 0.0019494474979344645, "phi_s_change": 0.0, "grad_phi_change": 0.0, "k_phi_change": 0.0, "xi_c_change": 0.0, "phase_sync_change": 0.0, "epi_magnitude_change": -0.004285489984314661, "hash_signature": "c895f2075a0dc1bc", "sequence_str": "AL -> NAV -> REMESH -> NAV"}

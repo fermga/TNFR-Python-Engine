@@ -40,15 +40,15 @@ The TNFR-Python-Engine repository documentation has been audited and cleaned to 
 - `docs/TNFR_CLASSICAL_NBODY.md` (1 occurrence)
 - `site/` folder (5 occurrences - **DELETED** as auto-generated)
 
-**Key Translations**:
-- "Estructura Primaria de Información" → "Primary Information Structure (EPI)"
-- "Frecuencia estructural" → "Structural frequency"
-- "gradiente nodal" → "nodal gradient"
-- "Monitorear" → "Monitor"
-- "Registrar" → "Record"
-- "Medir" → "Measure"
-- "Caracterizar" → "Characterize"
-- "Objetivo" → "Objective"
+**Key Terminology Standardized (English-only)**:
+- Primary Information Structure (EPI)
+- Structural frequency
+- Nodal gradient
+- Monitor
+- Record
+- Measure
+- Characterize
+- Objective
 
 **Python Files Fixed**:
 - `benchmarks/u6_sequence_simulator.py` (entire docstring translated + 3 comments)

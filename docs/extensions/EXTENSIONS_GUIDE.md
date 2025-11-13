@@ -1,5 +1,7 @@
 # TNFR Extensions Guide
 
+> DEPRECATION NOTICE: This guide is not part of the centralized documentation. Extension development notes are reference-only; prefer `docs/source/**` for canonical docs.
+
 ## Overview
 
 TNFR Grammar 2.0 introduces a **community-driven extension system** that enables domain experts to contribute specialized patterns, health analyzers, and tools for specific application domains. This guide explains how to develop, validate, and contribute extensions to the TNFR ecosystem.

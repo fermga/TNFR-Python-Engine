@@ -25,7 +25,7 @@ import pytest
 
 from tnfr.alias import get_attr, set_attr
 from tnfr.constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
-from tnfr.operators.definitions import Coherence, Silence, Transition
+from tnfr.operators.definitions import Coherence, Emission, Silence, Transition
 from tnfr.structural import create_nfr, run_sequence
 
 
@@ -286,8 +286,8 @@ class TestLatencyDurationMetrics:
         G, node = create_nfr("test", epi=0.5, vf=0.8)
         G.graph["COLLECT_OPERATOR_METRICS"] = True
 
-        # Apply Silence to enter latency
-        run_sequence(G, node, [Silence()])
+        # Apply Emission → Coherence → Silence to enter latency (per U1a, U2)
+        run_sequence(G, node, [Emission(), Coherence(), Silence()])
 
         # Apply Transition
         Transition()(G, node)

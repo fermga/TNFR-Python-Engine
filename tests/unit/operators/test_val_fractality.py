@@ -43,6 +43,7 @@ from tnfr.operators.definitions import (
     Coherence,
     Mutation,
     Emission,
+    Silence,
 )
 from tnfr.structural import create_nfr, run_sequence
 
@@ -66,19 +67,17 @@ class TestVALStructuralIdentity:
         G.nodes[node][dnfr_key] = 0.1
 
         # Structural signature before
-        epi_key = list(ALIAS_EPI)[0]
-        vf_key = list(ALIAS_VF)[0]
-
-        epi_0 = G.nodes[node][epi_key]
-        vf_0 = G.nodes[node][vf_key]
+        epi_0 = float(get_attr(G.nodes[node], ALIAS_EPI, 0.0))
+        vf_0 = float(get_attr(G.nodes[node], ALIAS_VF, 0.0))
         signature_0 = epi_0 / vf_0 if vf_0 > 0 else 0
 
-        # Apply VAL
-        run_sequence(G, node, [Expansion()])
+        # Apply VAL with grammar compliance (U1a + U2 + U1b)
+        sequence = [Emission(), Expansion(), Coherence(), Silence()]
+        run_sequence(G, node, sequence)
 
         # Structural signature after
-        epi_1 = G.nodes[node][epi_key]
-        vf_1 = G.nodes[node][vf_key]
+        epi_1 = float(get_attr(G.nodes[node], ALIAS_EPI, 0.0))
+        vf_1 = float(get_attr(G.nodes[node], ALIAS_VF, 0.0))
         signature_1 = epi_1 / vf_1 if vf_1 > 0 else 0
 
         # Signature should change proportionally (fractal scaling)
@@ -111,9 +110,11 @@ class TestVALStructuralIdentity:
             G, node = create_nfr(name, epi=epi, vf=vf)
             G.nodes[node][dnfr_key] = 0.1
 
-            epi_before = G.nodes[node][epi_key]
-            run_sequence(G, node, [Expansion()])
-            epi_after = G.nodes[node][epi_key]
+            epi_before = float(get_attr(G.nodes[node], ALIAS_EPI, 0.0))
+            # Apply systematic U1a + U2 + U1b pattern for grammar compliance
+            sequence = [Emission(), Expansion(), Coherence(), Silence()]
+            run_sequence(G, node, sequence)
+            epi_after = float(get_attr(G.nodes[node], ALIAS_EPI, 0.0))
 
             relative_change = (epi_after - epi_before) / epi_before if epi_before > 0 else 0
             relative_changes.append(relative_change)
@@ -145,20 +146,24 @@ class TestVALStructuralIdentity:
         G.nodes[node][dnfr_key] = 0.1
 
         epi_key = list(ALIAS_EPI)[0]
-        epi_before = G.nodes[node][epi_key]
+        epi_before = float(get_attr(G.nodes[node], ALIAS_EPI, 0.0))
 
         # Set up hook for structural change
         from tnfr.dynamics import set_delta_nfr_hook
 
         def form_preserving_hook(graph):
             # Expand while preserving form type (scalar positive)
-            graph.nodes[node][epi_key] += 0.05
+            current_epi = float(get_attr(graph.nodes[node], ALIAS_EPI, 0.0))
+            from tnfr.alias import set_attr
+            set_attr(graph.nodes[node], ALIAS_EPI, current_epi + 0.05)
 
         set_delta_nfr_hook(G, form_preserving_hook)
 
-        run_sequence(G, node, [Emission(), Expansion()])
+        # Apply U1a + U2 + U1b pattern - add coherence stabilizer and closure
+        sequence = [Emission(), Expansion(), Coherence(), Silence()]
+        run_sequence(G, node, sequence)
 
-        epi_after = G.nodes[node][epi_key]
+        epi_after = float(get_attr(G.nodes[node], ALIAS_EPI, 0.0))
 
         # Form should remain valid (positive, bounded)
         assert epi_after > 0, "EPI should remain positive"
@@ -182,16 +187,18 @@ class TestVALStructuralIdentity:
             # Set ΔNFR for expansion
             G.nodes[node][dnfr_key] = 0.1
 
-            epi = G.nodes[node][epi_key]
-            vf = G.nodes[node][vf_key]
+            epi = float(get_attr(G.nodes[node], ALIAS_EPI, 0.0))
+            vf = float(get_attr(G.nodes[node], ALIAS_VF, 0.0))
             signature = epi / vf if vf > 0 else 0
             signatures.append(signature)
 
-            run_sequence(G, node, [Expansion()])
+            # Apply systematic U1a + U2 + U1b pattern for grammar compliance
+            sequence = [Emission(), Expansion(), Coherence(), Silence()]
+            run_sequence(G, node, sequence)
 
         # Final signature
-        epi_final = G.nodes[node][epi_key]
-        vf_final = G.nodes[node][vf_key]
+        epi_final = float(get_attr(G.nodes[node], ALIAS_EPI, 0.0))
+        vf_final = float(get_attr(G.nodes[node], ALIAS_VF, 0.0))
         signature_final = epi_final / vf_final if vf_final > 0 else 0
         signatures.append(signature_final)
 
@@ -224,21 +231,23 @@ class TestVALPhaseCoherence:
         G.nodes[node][dnfr_key] = 0.1
 
         theta_key = list(ALIAS_THETA)[0]
-        theta_0 = G.nodes[node][theta_key]
+        theta_0 = float(get_attr(G.nodes[node], ALIAS_THETA, 0.0))
 
-        run_sequence(G, node, [Expansion()])
+        # Apply systematic U1a + U2 + U1b pattern for grammar compliance
+        sequence = [Emission(), Expansion(), Coherence(), Silence()]
+        run_sequence(G, node, sequence)
 
-        theta_1 = G.nodes[node][theta_key]
+        theta_final = float(get_attr(G.nodes[node], ALIAS_THETA, 0.0))
 
         # Phase shift should be moderate
-        phase_shift = abs(theta_1 - theta_0)
+        phase_shift = abs(theta_final - theta_0)
         # Normalize to [0, π] (shortest path on circle)
         if phase_shift > np.pi:
             phase_shift = 2 * np.pi - phase_shift
 
         assert phase_shift < np.pi / 2, (
             f"VAL caused excessive phase shift: "
-            f"{theta_0:.3f} -> {theta_1:.3f} (Δθ = {phase_shift:.3f} > π/2)"
+            f"{theta_0:.3f} -> {theta_final:.3f} (Δθ = {phase_shift:.3f} > π/2)"
         )
 
     def test_val_phase_shift_less_than_mutation(self):
@@ -254,11 +263,13 @@ class TestVALPhaseCoherence:
         G1.nodes[node1][dnfr_key] = 0.1
 
         theta_key = list(ALIAS_THETA)[0]
-        theta_val_before = G1.nodes[node1][theta_key]
+        theta_val_before = float(get_attr(G1.nodes[node1], ALIAS_THETA, 0.0))
 
-        run_sequence(G1, node1, [Expansion()])
+        # Apply systematic U1a + U2 + U1b pattern for grammar compliance
+        sequence = [Emission(), Expansion(), Coherence(), Silence()]
+        run_sequence(G1, node1, sequence)
 
-        theta_val_after = G1.nodes[node1][theta_key]
+        theta_val_after = float(get_attr(G1.nodes[node1], ALIAS_THETA, 0.0))
         val_phase_shift = abs(theta_val_after - theta_val_before)
         if val_phase_shift > np.pi:
             val_phase_shift = 2 * np.pi - val_phase_shift
@@ -267,20 +278,17 @@ class TestVALPhaseCoherence:
         G2, node2 = create_nfr("zhir_test", epi=0.5, vf=1.0, theta=0.5)
         G2.nodes[node2][dnfr_key] = 0.2  # High ΔNFR for mutation
 
-        theta_zhir_before = G2.nodes[node2][theta_key]
+        theta_zhir_before = float(get_attr(G2.nodes[node2], ALIAS_THETA, 0.0))
 
-        # Apply IL first (ZHIR requires prior stabilization per U4b)
-        run_sequence(G2, node2, [Coherence()])
-
-        # Then apply dissonance to enable mutation
+        # Apply proper sequence: U1a + destabilizer + mutation + U2 + U1b
         from tnfr.operators.definitions import Dissonance
+        sequence = [
+            Emission(), Coherence(), Dissonance(), 
+            Mutation(), Coherence(), Silence()
+        ]
+        run_sequence(G2, node2, sequence)
 
-        run_sequence(G2, node2, [Dissonance()])
-
-        # Now apply mutation
-        run_sequence(G2, node2, [Mutation()])
-
-        theta_zhir_after = G2.nodes[node2][theta_key]
+        theta_zhir_after = float(get_attr(G2.nodes[node2], ALIAS_THETA, 0.0))
         zhir_phase_shift = abs(theta_zhir_after - theta_zhir_before)
         if zhir_phase_shift > np.pi:
             zhir_phase_shift = 2 * np.pi - zhir_phase_shift
@@ -300,12 +308,13 @@ class TestVALPhaseCoherence:
         G.nodes[node][dnfr_key] = 0.1
 
         theta_key = list(ALIAS_THETA)[0]
-        theta_initial = G.nodes[node][theta_key]
+        theta_initial = float(get_attr(G.nodes[node], ALIAS_THETA, 0.0))
 
-        # Apply VAL
-        run_sequence(G, node, [Expansion()])
+        # Apply systematic U1a + U2 + U1b pattern for grammar compliance
+        sequence = [Emission(), Expansion(), Coherence(), Silence()]
+        run_sequence(G, node, sequence)
 
-        theta_final = G.nodes[node][theta_key]
+        theta_final = float(get_attr(G.nodes[node], ALIAS_THETA, 0.0))
 
         # Phase should remain in [0, 2π]
         assert 0 <= theta_final <= 2 * np.pi, f"Phase should remain valid: θ={theta_final:.3f}"
@@ -335,14 +344,16 @@ class TestVALPhaseCoherence:
         phase_shifts = []
 
         for i in range(3):
-            theta_before = G.nodes[node][theta_key]
+            theta_before = float(get_attr(G.nodes[node], ALIAS_THETA, 0.0))
 
             # Set ΔNFR
             G.nodes[node][dnfr_key] = 0.1
 
-            run_sequence(G, node, [Expansion()])
+            # Apply systematic U1a + U2 + U1b pattern for grammar compliance
+            sequence = [Emission(), Expansion(), Coherence(), Silence()]
+            run_sequence(G, node, sequence)
 
-            theta_after = G.nodes[node][theta_key]
+            theta_after = float(get_attr(G.nodes[node], ALIAS_THETA, 0.0))
 
             phase_shift = abs(theta_after - theta_before)
             if phase_shift > np.pi:
@@ -381,13 +392,15 @@ class TestVALProportionalGrowth:
         epi_key = list(ALIAS_EPI)[0]
         vf_key = list(ALIAS_VF)[0]
 
-        epi_before = G.nodes[node][epi_key]
-        vf_before = G.nodes[node][vf_key]
+        epi_before = float(get_attr(G.nodes[node], ALIAS_EPI, 0.0))
+        vf_before = float(get_attr(G.nodes[node], ALIAS_VF, 0.0))
 
-        run_sequence(G, node, [Expansion()])
+        # Apply systematic U1a + U2 + U1b pattern for grammar compliance
+        sequence = [Emission(), Expansion(), Coherence(), Silence()]
+        run_sequence(G, node, sequence)
 
-        epi_after = G.nodes[node][epi_key]
-        vf_after = G.nodes[node][vf_key]
+        epi_after = float(get_attr(G.nodes[node], ALIAS_EPI, 0.0))
+        vf_after = float(get_attr(G.nodes[node], ALIAS_VF, 0.0))
 
         # Both should increase
         assert epi_after >= epi_before, "EPI should increase"
@@ -414,11 +427,12 @@ class TestVALProportionalGrowth:
         epi_key = list(ALIAS_EPI)[0]
         vf_key = list(ALIAS_VF)[0]
 
-        # Apply VAL
-        run_sequence(G, node, [Expansion()])
+        # Apply systematic U1a + U2 + U1b pattern for grammar compliance
+        sequence = [Emission(), Expansion(), Coherence(), Silence()]
+        run_sequence(G, node, sequence)
 
-        epi_after = G.nodes[node][epi_key]
-        vf_after = G.nodes[node][vf_key]
+        epi_after = float(get_attr(G.nodes[node], ALIAS_EPI, 0.0))
+        vf_after = float(get_attr(G.nodes[node], ALIAS_VF, 0.0))
 
         # Compute structural health indicator
         # Simple metric: both should be positive and reasonable
@@ -462,17 +476,18 @@ class TestVALProportionalGrowth:
         G.nodes[node3][dnfr_key] = 0.1
 
         # Phases before expansion
-        theta_0_before = G.nodes[node1][theta_key]
-        theta_1_before = G.nodes[node2][theta_key]
+        theta_0_before = float(get_attr(G.nodes[node1], ALIAS_THETA, 0.0))
+        theta_1_before = float(get_attr(G.nodes[node2], ALIAS_THETA, 0.0))
 
         phase_diff_before = abs(theta_1_before - theta_0_before)
 
-        # Expand node 0
-        run_sequence(G, node1, [Emission(), Expansion()])
+        # Apply U1a + U2 + U1b pattern - add coherence stabilizer and closure
+        sequence = [Emission(), Expansion(), Coherence(), Silence()]
+        run_sequence(G, node1, sequence)
 
         # Phases after expansion
-        theta_0_after = G.nodes[node1][theta_key]
-        theta_1_after = G.nodes[node2][theta_key]
+        theta_0_after = float(get_attr(G.nodes[node1], ALIAS_THETA, 0.0))
+        theta_1_after = float(get_attr(G.nodes[node2], ALIAS_THETA, 0.0))
 
         phase_diff_after = abs(theta_1_after - theta_0_after)
 

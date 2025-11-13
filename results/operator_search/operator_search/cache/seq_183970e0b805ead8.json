@@ -1,0 +1,1 @@
+{"sequence": ["RA", "REMESH"], "coherence_change": 0.0, "sense_index_change": 0.008841097209566828, "phi_s_change": 0.0, "grad_phi_change": -0.05530576353795502, "k_phi_change": -0.08718262014580785, "xi_c_change": 0.0, "phase_sync_change": 0.01808623365620765, "epi_magnitude_change": 0.001516127488375596, "hash_signature": "4ebc61ac47e1235f", "sequence_str": "RA -> REMESH"}

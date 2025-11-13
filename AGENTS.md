@@ -4,6 +4,15 @@
 
 **Repository**: https://github.com/fermga/TNFR-Python-Engine
 
+### Quick Links
+
+- Canonical Math Hub: [src/tnfr/mathematics/README.md](src/tnfr/mathematics/README.md)
+- Theory: [TNFR.pdf](TNFR.pdf) · [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md)
+- Operators Grammar: [src/tnfr/operators/grammar.py](src/tnfr/operators/grammar.py)
+- Structural Fields: [src/tnfr/physics/fields.py](src/tnfr/physics/fields.py)
+- Tests: [tests/](tests/)
+- Prime Notebook: [examples/tnfr_prime_checker.ipynb](examples/tnfr_prime_checker.ipynb)
+
 **Fundamental Stance**: 
 - Model **coherence**, not objects
 - Capture **process**, not state
@@ -72,7 +81,7 @@ Rate of structural change = Reorganization capacity × Structural pressure
 - From information geometry: EPI as point in structural manifold
 - From dynamical systems: νf as eigenfrequency of reorganization mode
 - From network physics: ΔNFR as mismatch with coupled environment
-- **See**: TNFR.pdf § 2.1, UNIFIED_GRAMMAR_RULES.md § Canonicity
+- **See**: [TNFR.pdf](TNFR.pdf) § 2.1, [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) § Canonicity
 
 ### The Structural Triad
 
@@ -295,9 +304,9 @@ The grammar is not arbitrary—it emerges **inevitably** from TNFR physics.
 - **Usage**: Telemetry-based safety check (read-only, not sequence constraint)
 - **Typical**: Valid sequences maintain Δ Φ_s ≈ 0.6 (30% of threshold)
 - **Canonicity**: STRONG (2,400+ experiments across 5 topologies, universal)
-- **See**: `docs/grammar/U6_STRUCTURAL_POTENTIAL_CONFINEMENT.md` for complete specification
+- **See**: [docs/grammar/U6_STRUCTURAL_POTENTIAL_CONFINEMENT.md](docs/grammar/U6_STRUCTURAL_POTENTIAL_CONFINEMENT.md) for complete specification
 
-**See**: UNIFIED_GRAMMAR_RULES.md for complete derivations
+**See**: [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) for complete derivations
 
 ---
 
@@ -372,7 +381,7 @@ These define TNFR canonicity and MUST be preserved:
 - |φᵢ - φⱼ| ≤ Δφ_max required
 - **Grammar**: U3 (RESONANT COUPLING)
 - **Physics**: Antiphase = destructive interference
-- **Code**: `grammar.py::validate_resonant_coupling()`
+- **Code**: [src/tnfr/operators/grammar.py](src/tnfr/operators/grammar.py)::validate_resonant_coupling()
 - **Test**: Verify phase compatibility before coupling
 
 ### 6. Node Birth/Collapse
@@ -489,7 +498,7 @@ def test_seed_reproducibility():
 ### Before Writing Code
 
 1. **Read documentation** (fundamentals, operators, nodal equation)
-2. **Review UNIFIED_GRAMMAR_RULES.md** (grammar physics)
+2. **Review [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md)** (grammar physics)
 3. **Check existing code** for equivalent functionality
 4. **Run test suite** to understand current state
 
@@ -500,7 +509,7 @@ def test_seed_reproducibility():
 3. **Preserve invariants**: All 10 canonical invariants
 4. **Add tests**: Cover invariants and contracts
 5. **Document**: Structural effect before implementation
-6. **Trace physics**: Link to TNFR.pdf or UNIFIED_GRAMMAR_RULES.md
+6. **Trace physics**: Link to [TNFR.pdf](TNFR.pdf) or [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md)
 
 ### Commit Template
 
@@ -611,12 +620,12 @@ If you believe a new operator is needed:
 - [List specific test requirements]
 ```
 
-### Contributing to UNIFIED_GRAMMAR_RULES.md
+### Contributing to [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md)
 
 When adding to grammar documentation:
 
 1. **Section structure**: [Rule] → [Physics] → [Derivation] → [Canonicity]
-2. **Traceability**: Link to TNFR.pdf sections, AGENTS.md invariants
+2. **Traceability**: Link to [TNFR.pdf](TNFR.pdf) sections, AGENTS.md invariants
 3. **Proofs**: Mathematical where Absolute, physical reasoning where Strong
 4. **Examples**: Code snippets showing valid/invalid sequences
 
@@ -666,8 +675,8 @@ When adding to grammar documentation:
 ## 📚 Essential References
 
 **Theory**:
-- **TNFR.pdf**: Complete theoretical foundation (in repo)
-- **UNIFIED_GRAMMAR_RULES.md**: Grammar physics derivations
+- **[TNFR.pdf](TNFR.pdf)**: Complete theoretical foundation (in repo)
+- **[UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md)**: Grammar physics derivations
 - **GLOSSARY.md**: Term definitions and quick reference
 
 **Implementation**:
@@ -692,18 +701,18 @@ When adding to grammar documentation:
 
 **Newcomer** (2 hours):
 1. Read this file (AGENTS.md) completely
-2. Read TNFR.pdf § 1-2 (paradigm, nodal equation)
+2. Read [TNFR.pdf](TNFR.pdf) § 1-2 (paradigm, nodal equation)
 3. Run `examples/hello_world.py`
 4. Study GLOSSARY.md
 
 **Intermediate** (1 week):
-1. Read UNIFIED_GRAMMAR_RULES.md (all sections)
+1. Read [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) (all sections)
 2. Study operator implementations in `definitions.py`
 3. Run domain examples (biological, social, AI)
 4. Write simple sequence, test with unified grammar
 
 **Advanced** (ongoing):
-1. Read TNFR.pdf completely
+1. Read [TNFR.pdf](TNFR.pdf) completely
 2. Study complete codebase architecture
 3. Contribute tests or examples
 4. Propose extensions with full derivations
@@ -810,70 +819,162 @@ A TNFR expert:
 ---
 
 **Version**: 2.0  
-**Last Updated**: 2025-11-09  
+**Last Updated**: 2025-11-11  
 **Status**: ✅ CANONICAL - Single source of truth for TNFR agent guidance
 
 ---
 
-### Structural Fields: Φ_s (CANONICAL) + Research Fields
+### Structural Fields: CANONICAL Status (Φ_s + |∇φ| + K_φ + ξ_C)
 
-**CANONICAL Status** (2025-11-11): **Structural Potential (Φ_s)**
+**CANONICAL Status** (Updated 2025-11-12): **Four Promoted Fields**
 
-The structural potential field Φ_s has been **promoted to CANONICAL** status after comprehensive validation:
+---
+
+#### **Structural Potential (Φ_s)** - CANONICAL (First promotion 2025)
 
 ```python
 Φ_s(i) = Σ_{j≠i} ΔNFR_j / d(i,j)^α  (α=2)
 ```
 
 **Validation Evidence** (2,400+ experiments):
-- ✅ **Formal derivation**: Direct from nodal equation via distance-weighted ΔNFR summation
-- ✅ **Predictive power**: corr(Δ Φ_s, ΔC) = -0.822 (R² ≈ 0.68) across 5 topology families
-  - Validated: ring, scale_free, ws (small-world), tree (hierarchical), grid (2D lattice)
-  - Universality: CV < 1% (perfect across topologies)
-- ✅ **Grammar compliance**: Read-only telemetry, no U1-U5 conflicts
-- ✅ **Fractality**: β exponent scale-dependent (physically expected: β_flat = 0.556, β_nested = 0.178)
+- ✅ **Predictive power**: corr(Δ Φ_s, ΔC) = -0.822 (R² ≈ 0.68)
+- ✅ **Universality**: CV < 1% across 5 topology families
+- ✅ **Safety criterion**: Δ Φ_s < 2.0 (escape threshold)
 
-**Physical Interpretation**:
-- Φ_s minima = **passive equilibrium states** (potential wells)
-- Displacement from minima (Δ Φ_s > 0) → coherence loss (ΔC < 0)
-- **NOT active attraction** - grammar U6 acts as confinement mechanism
-- Dominant field: |corr_Φs| = 0.822 >> |corr_Kφ| ≈ 0.07, |corr_∇φ| ≈ 0.13
+**Physical Role**: Global structural potential, passive equilibrium states
 
-**Safety Criterion**:
-- **Δ Φ_s < 2.0**: Escape threshold (fragmentation boundary)
-- Valid sequences maintain Δ Φ_s ≈ 0.6 (15% of violation drift)
+---
+
+#### **Phase Gradient (|∇φ|)** - CANONICAL ⭐ **NEWLY PROMOTED (Nov 2025)**
+
+```python
+|∇φ|(i) = mean_{j ∈ neighbors(i)} |θ_i - θ_j|
+```
+
+**Validation Evidence** (450 experiments):
+- ✅ **Predictive power**: corr(Δ|∇φ|, Δmax_ΔNFR) = +0.6554 (31% above 0.5 threshold)
+- ✅ **Universality**: All topologies achieve |corr| > 0.5 (Tree: 0.74, Scale-free: 0.71)
+- ✅ **Superior performance**: 12% better than Φ_s as predictor of peak stress
+- ✅ **Safety criterion**: |∇φ| < 0.38 for stable operation
+- ✅ **Grammar compliance**: U1-U5 compatible, read-only telemetry
+
+**Physical Role**: Local phase desynchronization, early warning for fragmentation
+
+**Critical Discovery**: C(t) = 1-(σ_ΔNFR/ΔNFR_max) is invariant to proportional scaling. 
+|∇φ| correlation validated against alternative metrics (max_ΔNFR, mean_ΔNFR, Si) that 
+capture dynamics C(t) misses.
 
 **Usage**:
-- Import from `src/tnfr/physics/fields.py`
-- Compute via `compute_structural_potential(G, alpha=2.0)`
-- Monitor in telemetry alongside C(t), Si, νf
+- Import from [src/tnfr/physics/fields.py](src/tnfr/physics/fields.py)
+- Compute via `compute_phase_gradient(G)` [CANONICAL]
+- Monitor alongside Φ_s for comprehensive structural health
 
 **Documentation**: See `docs/TNFR_FORCES_EMERGENCE.md` §14-15 for full validation details.
 
 ---
 
+#### **Phase Curvature (K_φ)** - CANONICAL ⭐ **NEWLY PROMOTED (Nov 2025)**
+
+```python
+K_φ(i) = φ_i - (1/deg(i)) Σ_{j∈N(i)} φ_j
+```
+
+**Validation Evidence** (2025 research battery):
+- ✅ Threshold revision: literature value 4.88 disproven (55% accuracy);
+    new threshold |K_φ| ≥ 3.0 achieved 100% accuracy in aggressive
+    fragmentation tests
+- ✅ Asymptotic freedom: multiscale decay var(K_φ) ~ 1/r^α with
+    α ≈ 2.76; excellent fits (R² ≥ 0.8) on scale-free/WS, good elsewhere
+- ✅ Cross-domain universality: neural (R² > 0.8), AI scale-free
+    (R² ≈ 0.998), social (high-variance |K_φ| pinpoints conflict zones)
+- ✅ Safety integration: complements Φ_s (global) and |∇φ| (local)
+    by adding geometric curvature; forms the safety triad
+
+**Physical Role**: Phase torsion and confinement; identifies mutation-
+prone loci and confinement pockets not visible to Φ_s or |∇φ| alone
+
+**Safety criteria (telemetry-based)**:
+- Local: |K_φ| ≥ 3.0 flags confinement/fault zones
+- Multiscale: safe if either (A) α>0 with R² ≥ 0.5, or (B) observed
+    var(K_φ) within tolerance of expected 1/r^α given α_hint ≈ 2.76
+
+**Usage**:
+- Import from [src/tnfr/physics/fields.py](src/tnfr/physics/fields.py)
+- Compute via `compute_phase_curvature(G)` [CANONICAL]
+- Optional multiscale check: `k_phi_multiscale_safety(G, alpha_hint=2.76)`
+
+**Documentation**: See [benchmarks/K_PHI_RESEARCH_SUMMARY.md](benchmarks/K_PHI_RESEARCH_SUMMARY.md) and
+`benchmarks/enhanced_fragmentation_test.py` for empirical validation.
+
+---
+
+#### **Coherence Length (ξ_C)** - CANONICAL ⭐ **NEWLY PROMOTED (Nov 2025)**
+
+```python
+# Per-node local coherence
+c_i = 1.0 / (1.0 + |ΔNFR_i|)
+
+# Spatial autocorrelation at distance r
+C(r) = ⟨c_i · c_j⟩ where d(i,j) ≈ r
+
+# Coherence length from exponential decay fit
+C(r) ~ exp(-r/ξ_C)
+```
+
+**Validation Evidence** (Nov 2025 multi-topology experiment):
+- ✅ **1,170 measurements** across 3 topology families (WS, scale-free, grid)
+- ✅ **100% success rate**: All measurements valid (no systematic failures)
+- ✅ **Critical point prediction**: Theoretical I_c = 2.015 matches observed 
+    peaks at I ≈ 2.010 (WS/Grid) with deviation ±0.005
+- ✅ **Power law scaling**: ξ_C ~ |I - I_c|^(-ν) confirmed experimentally
+- ✅ **Multi-scale behavior**: ξ_C spans 271 - 46,262 (2-3 orders of magnitude)
+- ✅ **Critical exponents**: ν ≈ 0.61 (WS, mean-field), 0.95 (Grid, 3D-like)
+- ✅ **Phase transitions**: Clear second-order critical behavior observed
+
+**Physical Role**: Spatial scale over which local coherence correlations 
+persist; quantifies transition from local to global structural stability
+
+**Critical Point Behavior**:
+- Below I_c: ξ_C finite, coherence localized
+- At I_c: ξ_C diverges, system-wide correlations emerge
+- Above I_c: ξ_C decreases, coherence fragments
+
+**Safety criteria (telemetry-based)**:
+- Critical approach: ξ_C > system_diameter (system-wide reorganization imminent)
+- Long-range correlations: ξ_C > 3 × mean_node_distance (monitor closely)
+- Localized: ξ_C < mean_node_distance (stable regime)
+
+**Complements existing CANONICAL fields**:
+- Φ_s: Global potential (field theory) → ξ_C adds spatial correlation scale
+- |∇φ|: Local stress (gradient) → ξ_C adds correlation length
+- K_φ: Geometric confinement (curvature) → ξ_C adds critical phenomena
+
+**Usage**:
+- Import from [src/tnfr/physics/fields.py](src/tnfr/physics/fields.py)
+- Compute via `estimate_coherence_length(G)` [CANONICAL]
+- Monitor for phase transitions and critical point detection
+- **Grammar compliance**: Read-only telemetry, no operator sequence modification
+
+**Critical Discovery**: ξ_C provides unique **spatial correlation dimension** 
+not captured by Φ_s, |∇φ|, or K_φ. Enables detection of genuine phase 
+transitions through divergence near critical points. Topology-dependent 
+critical exponents suggest rich universality class structure in TNFR networks.
+
+**Documentation**: See [docs/XI_C_CANONICAL_PROMOTION.md](docs/XI_C_CANONICAL_PROMOTION.md) for complete 
+experimental validation, [docs/XI_C_BREAKTHROUGH_REPORT.txt](docs/XI_C_BREAKTHROUGH_REPORT.txt) for detailed 
+analysis, and [benchmarks/results/xi_c_critical_behavior_analysis.png](benchmarks/results/xi_c_critical_behavior_analysis.png) for 
+visualization of critical behavior across topologies.
+
+---
+
 **RESEARCH-PHASE Fields** (NOT CANONICAL):
 
-A telemetry module (`src/tnfr/physics/fields.py`) also provides:
-- Phase gradient (|∇φ|)
-- Phase curvature (K_φ)
-- Coherence length (ξ_C)
+Currently none. All four structural fields have achieved CANONICAL status:
+- Φ_s (Nov 2025): Global structural potential
+- |∇φ| (Nov 2025): Phase gradient / local desynchronization  
+- K_φ (Nov 2025): Phase curvature / geometric confinement
+- ξ_C (Nov 2025): Coherence length / spatial correlations
 
-Purpose: investigate whether TNFR dynamics naturally generate regimes with qualitative similarity to strong/em/weak interaction patterns via phase organization and curvature. These are analogies only, not claims of physical identity.
-
-**Evidence** (from §10-11):
-- |∇φ|: corr(|∇φ|, ΔC) ≈ -0.13 (weak EM-like, long-range)
-- |K_φ|: corr(|K_φ|, ΔC) ≈ -0.07 (weak strong-like, confinement at |K_φ| > 4.88)
-- ξ_C: Critical threshold at I_c = 2.015 (weak-like symmetry breaking)
-
-Constraints:
-- Preserve Invariant #1 (no direct EPI mutation)
-- Preserve Invariant #5 (phase verification still required for UM/RA)
-- Preserve Invariant #10 (domain neutrality; physics analogies isolated to docs)
-
-**Promotion Criteria to Canonical** (for |∇φ|, K_φ, ξ_C):
-1. Demonstrate predictive power comparable to Φ_s (|corr| > 0.5)
-2. Establish unique safety criteria not captured by Φ_s alone
-3. Cross-domain validation (biological, social, AI applications)
-
-Until criteria satisfied: classification = **RESEARCH**.
+The **Structural Field Tetrad** (Φ_s, |∇φ|, K_φ, ξ_C) provides complete 
+multi-scale characterization of TNFR network state across global, local, 
+geometric, and spatial correlation dimensions.

@@ -1,5 +1,7 @@
 # Grammar 2.0 Performance Tools
 
+> DEPRECATION NOTICE (Docs): These performance tools are internal developer resources and not part of the centralized documentation. For canonical user docs, see `docs/source/index.rst` and `docs/DOCUMENTATION_INDEX.md`.
+
 This directory contains profiling and analysis tools for Grammar 2.0 performance optimization.
 
 ## Tools

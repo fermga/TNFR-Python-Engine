@@ -1,0 +1,4 @@
+formula,signature,xi_c,mean_grad,mean_kphi,mean_path_length,local_frac,u6_ok,u6_drift
+HH,stressed,0.000000,0.000000,0.000000,3.012308,0.038462,PASS,0.292548
+FF,stressed,0.000000,0.000000,0.000000,4.879566,0.027273,PASS,0.531085
+LiF,stressed,0.000000,0.000000,0.000000,4.510534,0.023256,PASS,0.490270

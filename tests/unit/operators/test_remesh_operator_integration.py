@@ -52,7 +52,7 @@ class TestREMESHOperatorIntegration:
         identity_before = StructuralIdentity.capture_from_node(G.nodes[1])
 
         # Apply REMESH → IL sequence
-        run_sequence(G, 1, [Recursivity(), Coherence()])
+        run_sequence(G, 1, [Recursivity(), Coherence(), Silence()])
 
         # Verify coherence increased (IL effect) using canonical function
         coherence = compute_coherence(G)
@@ -72,7 +72,7 @@ class TestREMESHOperatorIntegration:
         set_attr(G.nodes[node if "node" in locals() else 1], ALIAS_THETA, 1.0)
 
         # Apply SHA to freeze
-        run_sequence(G, 1, [Silence()])
+        run_sequence(G, 1, [Emission(), Coherence(), Silence()])
 
         # Capture frozen identity
         identity_frozen = StructuralIdentity.capture_from_node(G.nodes[1], is_sha_frozen=True)
@@ -80,7 +80,7 @@ class TestREMESHOperatorIntegration:
         assert identity_frozen.frozen_by_sha is True
 
         # Apply REMESH on frozen state
-        run_sequence(G, 1, [Recursivity()])
+        run_sequence(G, 1, [Recursivity(), Coherence(), Silence()])
 
         # Identity should still match (frozen state propagated)
         assert identity_frozen.matches(G.nodes[1], tolerance=0.2)
@@ -98,7 +98,10 @@ class TestREMESHOperatorIntegration:
         epi_before = get_attr(G.nodes[1], ALIAS_EPI)
 
         # Apply VAL → REMESH
-        run_sequence(G, 1, [Expansion(), Recursivity()])
+        run_sequence(G, 1, [
+            Emission(), Expansion(), Coherence(), 
+            Recursivity(), Coherence(), Silence()
+        ])
 
         epi_after = get_attr(G.nodes[1], ALIAS_EPI)
 
@@ -117,7 +120,10 @@ class TestREMESHOperatorIntegration:
         set_attr(G.nodes[node if "node" in locals() else 1], ALIAS_THETA, 1.0)
 
         # Apply OZ → REMESH (rhizomatic mode)
-        run_sequence(G, 1, [Dissonance(), Recursivity()])
+        run_sequence(G, 1, [
+            Emission(), Dissonance(), Coherence(), 
+            Recursivity(), Coherence(), Silence()
+        ])
 
         # Should complete without error
         assert G.nodes[1] is not None
@@ -133,7 +139,10 @@ class TestREMESHOperatorIntegration:
         set_attr(G.nodes[node if "node" in locals() else 1], ALIAS_THETA, 1.0)
 
         # Apply THOL → REMESH
-        run_sequence(G, 1, [SelfOrganization(), Recursivity()])
+        run_sequence(G, 1, [
+            Emission(), Dissonance(), SelfOrganization(), Resonance(),
+            Recursivity(), Coherence(), Silence()
+        ])
 
         # Should complete without error
         assert G.nodes[1] is not None
@@ -154,7 +163,7 @@ class TestREMESHOperatorIntegration:
         set_attr(G.nodes[node if "node" in locals() else 1], ALIAS_THETA, 1.0)
 
         # Apply REMESH → RA
-        run_sequence(G, 1, [Recursivity(), Resonance()])
+        run_sequence(G, 1, [Recursivity(), Coherence(), Resonance(), Silence()])
 
         # Should complete without error
         assert G.nodes[1] is not None
@@ -170,7 +179,7 @@ class TestREMESHOperatorIntegration:
         set_attr(G.nodes[1], ALIAS_THETA, 1.0)
 
         # Apply AL → REMESH
-        run_sequence(G, 1, [Emission(), Recursivity()])
+        run_sequence(G, 1, [Emission(), Coherence(), Resonance(), Recursivity(), Coherence(), Silence()])
 
         # EPI should increase after emission
         epi_after = get_attr(G.nodes[1], ALIAS_EPI)
@@ -186,8 +195,8 @@ class TestREMESHOperatorIntegration:
         set_attr(G.nodes[1], ALIAS_VF, 1.0)
         set_attr(G.nodes[node if "node" in locals() else 1], ALIAS_THETA, 1.0)
 
-        # Apply NAV → REMESH
-        run_sequence(G, 1, [Transition(), Recursivity()])
+        # Apply NAV → REMESH  
+        run_sequence(G, 1, [Transition(), Dissonance(), Recursivity(), Coherence(), Silence()])
 
         # Should complete without error
         assert G.nodes[1] is not None
@@ -208,7 +217,10 @@ class TestREMESHOperatorIntegration:
         set_attr(G.nodes[node if "node" in locals() else 1], ALIAS_THETA, 1.0)
 
         # Apply EN → REMESH
-        run_sequence(G, 1, [Reception(), Recursivity()])
+        run_sequence(G, 1, [
+            Emission(), Reception(), Resonance(),
+            Recursivity(), Coherence(), Silence()
+        ])
 
         # Should complete without error
         assert G.nodes[1] is not None
@@ -224,7 +236,10 @@ class TestREMESHOperatorIntegration:
         set_attr(G.nodes[node if "node" in locals() else 1], ALIAS_THETA, 1.0)
 
         # Apply NUL → REMESH
-        run_sequence(G, 1, [Contraction(), Recursivity()])
+        run_sequence(G, 1, [
+            Emission(), Dissonance(), Contraction(), 
+            Coherence(), Resonance(), Recursivity(), Coherence(), Silence()
+        ])
 
         # Should complete without error
         assert G.nodes[1] is not None
@@ -247,7 +262,7 @@ class TestREMESHOperatorIntegration:
         set_attr(G.nodes[2], ALIAS_THETA, 0.52)
 
         # Apply REMESH → UM
-        run_sequence(G, 1, [Recursivity(), Coupling()])
+        run_sequence(G, 1, [Recursivity(), Coherence(), Coupling(), Silence()])
 
         # Should complete without error
         assert G.nodes[1] is not None
@@ -263,15 +278,18 @@ class TestREMESHOperatorIntegration:
         set_attr(G.nodes[node if "node" in locals() else 1], ALIAS_THETA, 1.0)
 
         # ZHIR requires prior IL + recent destabilizer (U4b grammar)
-        # Apply: IL → OZ → REMESH → ZHIR
+        # Apply: EMISSION → IL → OZ → REMESH → OZ → ZHIR → SILENCE
         run_sequence(
             G,
             1,
             [
+                Emission(),  # Generator
                 Coherence(),  # Prior IL (base stability)
                 Dissonance(),  # Recent destabilizer
                 Recursivity(),  # REMESH propagates variations
+                Dissonance(),  # Required for MUTATION (R4)
                 Mutation(),  # ZHIR transforms post-recursion
+                Silence(),  # Closure
             ],
         )
 
@@ -293,7 +311,7 @@ class TestOperatorSequenceGrammar:
         set_attr(G.nodes[node if "node" in locals() else 1], ALIAS_THETA, 1.0)
 
         # REMESH as first operator (generator)
-        run_sequence(G, 1, [Recursivity()])
+        run_sequence(G, 1, [Recursivity(), Coherence(), Silence()])
 
         assert G.nodes[1] is not None
 
@@ -308,7 +326,7 @@ class TestOperatorSequenceGrammar:
         set_attr(G.nodes[node if "node" in locals() else 1], ALIAS_THETA, 1.0)
 
         # REMESH as last operator (closure)
-        run_sequence(G, 1, [Emission(), Recursivity()])
+        run_sequence(G, 1, [Emission(), Coherence(), Resonance(), Recursivity()])
 
         assert G.nodes[1] is not None
 
@@ -322,14 +340,15 @@ class TestOperatorSequenceGrammar:
         set_attr(G.nodes[1], ALIAS_VF, 1.0)
         set_attr(G.nodes[node if "node" in locals() else 1], ALIAS_THETA, 1.0)
 
-        # REMESH + VAL (destabilizer) → requires IL (stabilizer)
+        # REMESH + DISSONANCE (destabilizer) → requires IL (stabilizer)
         run_sequence(
             G,
             1,
             [
                 Recursivity(),
-                Expansion(),  # Destabilizer
+                Dissonance(),  # Destabilizer
                 Coherence(),  # Stabilizer (required by U2)
+                Silence(),  # Closure
             ],
         )
 
@@ -354,7 +373,7 @@ class TestOperatorSequenceGrammar:
         set_attr(G.nodes[2], ALIAS_THETA, 1.05)  # Compatible phase
 
         # Apply REMESH with RA (requires phase compatibility)
-        run_sequence(G, 1, [Recursivity(), Resonance()])
+        run_sequence(G, 1, [Recursivity(), Coherence(), Resonance(), Silence()])
 
         # Verify phase compatibility maintained
         identity = StructuralIdentity.capture_from_node(G.nodes[1])
@@ -378,7 +397,7 @@ class TestStructuralSimilarityIntegration:
 
         # Apply same sequence to both
         for node in [1, 2]:
-            run_sequence(G, node, [Coherence(), Recursivity()])
+            run_sequence(G, node, [Emission(), Coherence(), Recursivity(), Coherence(), Silence()])
 
         epi1 = get_attr(G.nodes[1], ALIAS_EPI)
         epi2 = get_attr(G.nodes[2], ALIAS_EPI)
@@ -396,7 +415,8 @@ class TestREMESHGrammarLimitations:
 
         # REMESH + VAL without stabilizer should violate U2-REMESH
         seq_invalid = [Emission(), Recursivity(), Expansion(), Silence()]
-        valid, msgs = GrammarValidator.validate(seq_invalid)
+        validator = GrammarValidator()
+        valid, msgs = validator.validate(seq_invalid)
 
         # Should fail
         assert not valid
@@ -411,8 +431,15 @@ class TestREMESHGrammarLimitations:
         from tnfr.operators.grammar import GrammarValidator
 
         # REMESH + VAL + IL should satisfy U2-REMESH
-        seq_valid = [Emission(), Recursivity(), Expansion(), Coherence(), Silence()]
-        valid, msgs = GrammarValidator.validate(seq_valid)
+        seq_valid = [
+            Emission(), 
+            Recursivity(), 
+            Expansion(), 
+            Coherence(), 
+            Silence(),
+        ]
+        validator = GrammarValidator()
+        valid, msgs = validator.validate(seq_valid)
 
         # Should pass
         assert valid
@@ -427,7 +454,8 @@ class TestREMESHGrammarLimitations:
 
         # REMESH + OZ without stabilizer should violate U2-REMESH
         seq_invalid = [Emission(), Recursivity(), Dissonance(), Silence()]
-        valid, msgs = GrammarValidator.validate(seq_invalid)
+        validator = GrammarValidator()
+        valid, msgs = validator.validate(seq_invalid)
 
         # Should fail
         assert not valid
@@ -443,7 +471,8 @@ class TestREMESHGrammarLimitations:
 
         # REMESH without destabilizers - U2-REMESH not applicable
         seq = [Emission(), Recursivity(), Coherence(), Silence()]
-        valid, msgs = GrammarValidator.validate(seq)
+        validator = GrammarValidator()
+        valid, msgs = validator.validate(seq)
 
         # Should pass
         assert valid
@@ -461,7 +490,8 @@ class TestREMESHGrammarLimitations:
 
         # VAL without REMESH - general U2 applies, not U2-REMESH
         seq = [Emission(), Expansion(), Silence()]
-        valid, msgs = GrammarValidator.validate(seq)
+        validator = GrammarValidator()
+        valid, msgs = validator.validate(seq)
 
         # Should fail on general U2
         assert not valid

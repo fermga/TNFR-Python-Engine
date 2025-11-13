@@ -1,0 +1,71 @@
+{
+  "canonical_promotions": {
+    "J_\u03c6": {
+      "function": "<function compute_phase_current at 0x00000203B7B78680>",
+      "validation_metrics": {
+        "correlation_target": "K_\u03c6",
+        "expected_correlation": 0.592,
+        "correlation_std": 0.092,
+        "sign_consistency": 1.0,
+        "validation_samples": 48
+      },
+      "physics_interpretation": "Geometric phase confinement drives directed transport",
+      "computational_complexity": "O(N\u00b7k) where k = avg_degree",
+      "integration_priority": "HIGH"
+    },
+    "J_\u0394NFR": {
+      "function": "<function compute_dnfr_flux at 0x00000203B7B78A40>",
+      "validation_metrics": {
+        "correlation_target": "\u03a6_s",
+        "expected_correlation": -0.471,
+        "correlation_std": 0.159,
+        "sign_consistency": 1.0,
+        "validation_samples": 48
+      },
+      "physics_interpretation": "Potential-driven reorganization transport",
+      "computational_complexity": "O(N\u00b7k) where k = avg_degree",
+      "integration_priority": "HIGH"
+    }
+  },
+  "standard_spectral_metrics": {
+    "\u03bdf_variance": {
+      "function": "<function compute_vf_variance_canonical at 0x00000203B7B78720>",
+      "validation_metrics": {
+        "correlation_target": "\u03a6_s",
+        "expected_correlation": 0.478,
+        "correlation_std": 0.05,
+        "validation_samples": 1
+      },
+      "physics_interpretation": "Local reorganization rate dispersion",
+      "computational_complexity": "O(N\u00b7k\u00b7r) where r = radius",
+      "integration_priority": "MEDIUM"
+    }
+  },
+  "calibration_systems": {
+    "tc_xi_correlation": {
+      "function": "<function calibrate_tc_xi_correlation at 0x00000203B7C49120>",
+      "supported_topologies": [
+        "WS",
+        "BA",
+        "Grid"
+      ],
+      "calibration_profiles": {
+        "WS": "TopologyCalibrationProfile(topology_name='Watts-Strogatz', expected_correlation=0.122, correlation_std=0.133, parameter_dependencies={'n_nodes': 0.05, 'k_degree': -0.12, 'p_rewire': 0.08}, sample_size=32, calibration_function=None)",
+        "BA": "TopologyCalibrationProfile(topology_name='Barab\u00e1si-Albert', expected_correlation=0.118, correlation_std=0.145, parameter_dependencies={'n_nodes': 0.03, 'm_attach': 0.15}, sample_size=16, calibration_function=None)",
+        "Grid": "TopologyCalibrationProfile(topology_name='Grid_2D', expected_correlation=0.09, correlation_std=0.12, parameter_dependencies={'n_side': -0.08}, sample_size=8, calibration_function=None)"
+      },
+      "integration_priority": "MEDIUM"
+    }
+  },
+  "temporal_analysis": {
+    "operator_sequence_effects": {
+      "function": "<function simulate_operator_sequence_effects at 0x00000203B7B7BE20>",
+      "supported_operators": [
+        "Coherence",
+        "Dissonance",
+        "Resonance"
+      ],
+      "integration_priority": "LOW"
+    }
+  }
+}

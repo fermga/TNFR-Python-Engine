@@ -1,0 +1,17 @@
+{
+  "timestamp": "2025-11-12T23:56:01.301962+00:00",
+  "exp1_life_emergence": {
+    "threshold_time": -1.0,
+    "A_max": 3307.930797423269,
+    "accept": false
+  },
+  "exp2_self_maintenance": {
+    "C_final": 0.9962568832991271,
+    "C_std_last": 0.0063867344552275265,
+    "accept": true
+  },
+  "exp3_replication_fidelity": {
+    "Fr": 0.859499690783313,
+    "accept": true
+  }
+}

@@ -7,6 +7,9 @@ Compare with original topologies (ring, scale_free, ws).
 import json
 import numpy as np
 from pathlib import Path
+from collections import defaultdict
+
+BASE = Path('benchmarks') / 'results'
 
 
 def load_and_analyze(jsonl_path: Path, label: str):
@@ -24,9 +27,8 @@ def load_and_analyze(jsonl_path: Path, label: str):
         phi_final = r.get('phi_s_mean_final', np.nan)
         c_init = r.get('coherence_initial', np.nan)
         c_final = r.get('coherence_final', np.nan)
-        
-        if not (np.isfinite(phi_init) and np.isfinite(phi_final) and 
-                np.isfinite(c_init) and np.isfinite(c_final)):
+
+        if not (np.isfinite(phi_init) and np.isfinite(phi_final) and np.isfinite(c_init) and np.isfinite(c_final)):
             continue
         
         phi_s_drift.append(phi_final - phi_init)
@@ -52,9 +54,9 @@ def load_and_analyze(jsonl_path: Path, label: str):
     }
 
 
-print("\n" + "="*70)
+print("\n" + "=" * 70)
 print("=== Φ_s Universality Test: Hierarchical Topologies ===")
-print("="*70)
+print("=" * 70)
 
 # Original topologies (combined from fine-grained experiments)
 print("\nStep 1: Load original topology data (ring, scale_free, ws)")
@@ -67,13 +69,12 @@ original_files = [
 
 all_original = []
 for f in original_files:
-    path = Path(f)
+    path = BASE / f
     if path.exists():
         data = [json.loads(line) for line in open(path)]
         all_original.extend(data)
 
 # Combine and analyze by topology
-from collections import defaultdict
 by_topo_orig = defaultdict(list)
 for r in all_original:
     by_topo_orig[r['topology']].append(r)
@@ -90,8 +91,7 @@ for topo, records in by_topo_orig.items():
         c_init = r.get('coherence_initial', np.nan)
         c_final = r.get('coherence_final', np.nan)
         
-        if not (np.isfinite(phi_init) and np.isfinite(phi_final) and 
-                np.isfinite(c_init) and np.isfinite(c_final)):
+        if not (np.isfinite(phi_init) and np.isfinite(phi_final) and np.isfinite(c_init) and np.isfinite(c_final)):
             continue
         
         phi_s_drift.append(phi_final - phi_init)
@@ -119,7 +119,7 @@ hier_files = [
 ]
 
 for filepath, label in hier_files:
-    path = Path(filepath)
+    path = BASE / filepath
     if path.exists():
         data = [json.loads(line) for line in open(path)]
         by_topo = defaultdict(list)
@@ -136,8 +136,7 @@ for filepath, label in hier_files:
                 c_init = r.get('coherence_initial', np.nan)
                 c_final = r.get('coherence_final', np.nan)
                 
-                if not (np.isfinite(phi_init) and np.isfinite(phi_final) and 
-                        np.isfinite(c_init) and np.isfinite(c_final)):
+                if not (np.isfinite(phi_init) and np.isfinite(phi_final) and np.isfinite(c_init) and np.isfinite(c_final)):
                     continue
                 
                 phi_s_drift.append(phi_final - phi_init)
@@ -177,7 +176,7 @@ print(f"{'Metric':>20} | {'Value':>12}")
 print("-" * 40)
 print(f"{'Mean correlation':>20} | {mean_corr:>12.3f}")
 print(f"{'Std Dev':>20} | {std_corr:>12.3f}")
-print(f"{'CV (%)':>20} | {cv*100:>12.1f}")
+print(f"{'CV (%)':>20} | {cv * 100:>12.1f}")
 print(f"{'N topologies':>20} | {len(corrs):>12}")
 
 if cv < 0.15:
@@ -202,4 +201,4 @@ else:
     print("  → High variation suggests topology-dependent effects")
     print("  → Φ_s may not be universal across all network families")
 
-print("\n" + "="*70)
+print("\n" + "=" * 70)

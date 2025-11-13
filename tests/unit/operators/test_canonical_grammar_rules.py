@@ -26,7 +26,7 @@ from tnfr.operators.grammar import (
 
 
 class TestR1StartOperators:
-    """Test R1: Toda secuencia debe comenzar con AL o NAV (glifo generador)."""
+    """Test R1: Every sequence must start with AL or NAV (generator glyph)."""
 
     def test_valid_start_with_emission(self):
         """AL (emission) is a valid start operator."""
@@ -57,7 +57,7 @@ class TestR1StartOperators:
 
 
 class TestR2RequiredStabilizer:
-    """Test R2: Debe contener al menos un estabilizador (IL o THOL)."""
+    """Test R2: Must contain at least one stabilizer (IL or THOL)."""
 
     def test_valid_with_coherence_stabilizer(self):
         """Sequence with IL (coherence) as stabilizer is valid."""
@@ -86,7 +86,7 @@ class TestR2RequiredStabilizer:
 
 
 class TestR3FinalizationOperators:
-    """Test R3: Debe finalizar con NUL o SHA para evitar colapso."""
+    """Test R3: Must end with NUL or SHA to avoid collapse."""
 
     def test_valid_end_with_silence(self):
         """Ending with SHA (silence) is valid."""
@@ -117,7 +117,7 @@ class TestR3FinalizationOperators:
 
 
 class TestR4MutationRequiresDissonance:
-    """Test R4: ZHIR debe ir precedido por OZ (no muta sin disonancia)."""
+    """Test R4: ZHIR must be preceded by OZ (no mutation without dissonance)."""
 
     def test_valid_mutation_after_dissonance(self):
         """ZHIR (mutation) after OZ (dissonance) is valid."""
@@ -207,7 +207,8 @@ class TestValidCanonicalSequences:
             ]
         )
         assert result.passed
-        assert result.metadata["detected_pattern"] == StructuralPattern.HIERARCHICAL.value
+        expected_pattern = StructuralPattern.THERAPEUTIC.value
+        assert result.metadata["detected_pattern"] == expected_pattern
 
     def test_cyclic_regenerative_sequence(self):
         """Test: NAV → AL → IL → RA → NAV → THOL (ciclo regenerativo)."""
@@ -241,13 +242,14 @@ class TestStructuralPatternDetection:
         assert result.metadata["detected_pattern"] == StructuralPattern.LINEAR.value
 
     def test_detect_hierarchical_pattern(self):
-        """Sequences with THOL should be detected as hierarchical."""
+        """Sequences with THOL and dissonance should be detected as therapeutic."""
         # Updated: Added DISSONANCE before THOL (R4 evolved rule requires destabilizer)
         result = validate_sequence(
             [EMISSION, RECEPTION, COHERENCE, DISSONANCE, SELF_ORGANIZATION, SILENCE]
         )
         assert result.passed
-        assert result.metadata["detected_pattern"] == StructuralPattern.HIERARCHICAL.value
+        expected_pattern = StructuralPattern.THERAPEUTIC.value
+        assert result.metadata["detected_pattern"] == expected_pattern
 
     def test_detect_bifurcated_pattern(self):
         """OZ → ZHIR sequences should be detected as bifurcated."""

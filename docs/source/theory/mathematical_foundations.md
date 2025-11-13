@@ -26,7 +26,8 @@ These properties make TNFR particularly suited for domains where emergence, self
 
 ### 1.3 About This Document
 
-**Status**: This is the **single unified source of truth** for TNFR mathematical formalization.
+**Status**: This is the **single unified source of truth** for the formal theoretical derivations of TNFR.
+For the canonical computational mathematics hub (equations-as-implemented, experiments, and cross-links), see `src/tnfr/mathematics/README.md`.
 
 **What's included**:
 - Complete mathematical foundations (Sections 2-8)

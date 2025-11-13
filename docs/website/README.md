@@ -1,5 +1,7 @@
 # TNFR Grammar 2.0 - Interactive Web Documentation
 
+> DEPRECATION NOTICE: This website directory is not part of the centralized documentation. Prefer `docs/source/**`, `docs/DOCUMENTATION_INDEX.md`, and `src/tnfr/mathematics/README.md` for canonical content.
+
 This directory contains the interactive web documentation for TNFR Grammar 2.0, designed to provide a progressive learning experience from fundamentals to advanced applications.
 
 ## Structure

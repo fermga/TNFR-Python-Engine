@@ -1,0 +1,70 @@
+<html>
+<head><meta charset='utf-8'><title>TNFR Particle Atlas</title>
+<style>body{font-family:system-ui,Segoe UI,Arial} table{border-collapse:collapse;} td,th{border:1px solid #ddd;padding:6px;} th{background:#fafafa} .panel{border:1px solid #e0e0e0;background:#f9fbff;padding:8px 12px;border-radius:6px;display:inline-block;margin:8px 0} .panel b{display:block;margin-bottom:4px}</style>
+</head>
+<body>
+<h1>TNFR Structural Quanta — Minimal Atlas</h1>
+<div class='panel'><b>Safety Triad (telemetry-only)</b><div>ΔΦ_s threshold: 2.0 (confinement)</div><div>|∇φ| threshold: 0.38</div><div>|K_φ| threshold: 3.0</div><div style='margin-top:2px;color:#777;font-size:12px'>U6 is descriptive only; no control feedback into dynamics.</div></div>
+<p>Read-only telemetry demo. Thresholds: |∇φ|<0.38, |K_φ|<3.0; locality gate uses ξ_C vs mean path length.</p>
+<h2>Global Summaries</h2>
+<p>Φ_s snapshot — mean: 3.803, min: 2.540, max: 5.186</p>
+<p>ξ_C (coherence length): 0.00 — regime: local</p>
+<h3>Telemetry Messages</h3>
+<ul><li>U6 (|∇φ|): WARN - mean=1.561, max=2.403 ≥ 0.38. Flagged 50/50 loci (frac=1.00).</li><li>U6 (K_φ): WARN - hotspots=3 (|K_φ|≥3.00), max|K_φ|=3.129, multiscale_safe=False.</li><li>U6 (ξ_C): PASS - ξ_C=0.00 < mean_path_length≈3.64 (stable regime).</li></ul>
+<h2>Loci Table</h2>
+<table><thead><tr><th>Node</th><th>|∇φ|</th><th>|K_φ|</th><th>Particle-like</th></tr></thead><tbody>
+<tr><td>0</td><td>1.714</td><td>2.222</td><td></td></tr>
+<tr><td>1</td><td>1.814</td><td>2.874</td><td></td></tr>
+<tr><td>2</td><td>1.188</td><td>0.592</td><td></td></tr>
+<tr><td>3</td><td>1.800</td><td>2.197</td><td></td></tr>
+<tr><td>4</td><td>2.173</td><td>2.900</td><td></td></tr>
+<tr><td>5</td><td>1.451</td><td>1.006</td><td></td></tr>
+<tr><td>6</td><td>1.549</td><td>1.532</td><td></td></tr>
+<tr><td>7</td><td>2.194</td><td>2.805</td><td></td></tr>
+<tr><td>8</td><td>1.633</td><td>1.955</td><td></td></tr>
+<tr><td>9</td><td>1.324</td><td>1.086</td><td></td></tr>
+<tr><td>10</td><td>1.838</td><td>2.601</td><td></td></tr>
+<tr><td>11</td><td>2.403</td><td>3.075</td><td></td></tr>
+<tr><td>12</td><td>0.831</td><td>0.334</td><td></td></tr>
+<tr><td>13</td><td>1.251</td><td>1.253</td><td></td></tr>
+<tr><td>14</td><td>0.924</td><td>0.262</td><td></td></tr>
+<tr><td>15</td><td>1.550</td><td>1.625</td><td></td></tr>
+<tr><td>16</td><td>1.623</td><td>1.681</td><td></td></tr>
+<tr><td>17</td><td>2.011</td><td>2.445</td><td></td></tr>
+<tr><td>18</td><td>0.959</td><td>0.309</td><td></td></tr>
+<tr><td>19</td><td>1.632</td><td>1.890</td><td></td></tr>
+<tr><td>20</td><td>1.883</td><td>2.254</td><td></td></tr>
+<tr><td>21</td><td>1.756</td><td>1.739</td><td></td></tr>
+<tr><td>22</td><td>1.553</td><td>2.041</td><td></td></tr>
+<tr><td>23</td><td>0.772</td><td>0.428</td><td></td></tr>
+<tr><td>24</td><td>2.258</td><td>2.462</td><td></td></tr>
+<tr><td>25</td><td>1.438</td><td>0.757</td><td></td></tr>
+<tr><td>26</td><td>1.490</td><td>1.428</td><td></td></tr>
+<tr><td>27</td><td>2.319</td><td>2.310</td><td></td></tr>
+<tr><td>28</td><td>0.597</td><td>0.173</td><td></td></tr>
+<tr><td>29</td><td>1.665</td><td>2.776</td><td></td></tr>
+<tr><td>30</td><td>0.963</td><td>0.168</td><td></td></tr>
+<tr><td>31</td><td>2.110</td><td>2.799</td><td></td></tr>
+<tr><td>32</td><td>2.397</td><td>3.067</td><td></td></tr>
+<tr><td>33</td><td>1.286</td><td>0.790</td><td></td></tr>
+<tr><td>34</td><td>1.803</td><td>2.329</td><td></td></tr>
+<tr><td>35</td><td>1.416</td><td>0.541</td><td></td></tr>
+<tr><td>36</td><td>1.328</td><td>1.260</td><td></td></tr>
+<tr><td>37</td><td>2.292</td><td>3.129</td><td></td></tr>
+<tr><td>38</td><td>1.572</td><td>1.795</td><td></td></tr>
+<tr><td>39</td><td>2.132</td><td>2.458</td><td></td></tr>
+<tr><td>40</td><td>1.564</td><td>2.162</td><td></td></tr>
+<tr><td>41</td><td>1.478</td><td>1.497</td><td></td></tr>
+<tr><td>42</td><td>1.661</td><td>2.349</td><td></td></tr>
+<tr><td>43</td><td>1.603</td><td>1.630</td><td></td></tr>
+<tr><td>44</td><td>1.130</td><td>0.373</td><td></td></tr>
+<tr><td>45</td><td>0.911</td><td>0.381</td><td></td></tr>
+<tr><td>46</td><td>1.715</td><td>1.717</td><td></td></tr>
+<tr><td>47</td><td>0.750</td><td>0.575</td><td></td></tr>
+<tr><td>48</td><td>1.026</td><td>0.761</td><td></td></tr>
+<tr><td>49</td><td>1.306</td><td>1.043</td><td></td></tr>
+</tbody></table>
+<h2>U6 sequence check (synthetic [AL, RA, IL])</h2>
+<p>U6: PASS - Δ Φ_s = 0.380 < 2.000 (confined). System remains in safe regime. (ΔΦ_s = 0.380)</p>
+<p style='margin-top:16px;color:#666'>This demo computes ΔΦ_s using a lightweight synthetic sequence to emulate [AL, RA, IL] without mutating EPI.</p>
+</body></html>

@@ -36,7 +36,7 @@ from tnfr.operators.definitions import (
     Silence,
 )
 from tnfr.operators.grammar import StructuralPattern
-from tnfr.operators.patterns import AdvancedPatternDetector
+from tnfr.sequencing.patterns import AdvancedPatternDetector
 from tnfr.structural import create_nfr, run_sequence
 from tnfr.types import Glyph
 

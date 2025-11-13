@@ -33,7 +33,15 @@ TNFR canonical physics (∂EPI/∂t = νf · ΔNFR(t)).
 import pytest
 
 from tnfr.constants import DNFR_PRIMARY, EPI_PRIMARY, VF_PRIMARY
-from tnfr.operators.definitions import Coherence, Contraction, Expansion
+from tnfr.operators.definitions import (
+    Coherence,
+    Contraction,
+    Dissonance,
+    Emission,
+    Expansion,
+    Silence,
+    Transition,
+)
 from tnfr.operators.preconditions import OperatorPreconditionError
 from tnfr.structural import create_nfr, run_sequence
 
@@ -168,9 +176,9 @@ def test_nul_rejects_low_vf():
     G, node = create_nfr("test", vf=0.05)
     G.graph["VALIDATE_OPERATOR_PRECONDITIONS"] = True
 
-    # Should raise OperatorPreconditionError
+    # Should raise OperatorPreconditionError when applying operator directly
     with pytest.raises(OperatorPreconditionError) as exc_info:
-        run_sequence(G, node, [Contraction()])
+        Contraction()(G, node)
 
     error_msg = str(exc_info.value)
     assert (
@@ -179,17 +187,17 @@ def test_nul_rejects_low_vf():
 
 
 def test_nul_rejects_low_epi():
-    """Test 5: Verify that NUL rejects nodes with insufficient EPI.
+    """Test 5: Verify that NUL rejects nodes with insufficient structural form.
 
-    Minimum EPI validation prevents attempting to compress structures that
+    Minimum EPI validation prevents compression of structural patterns that
     are already too small to maintain coherent form.
     """
     G, node = create_nfr("test", epi=0.05, vf=1.0)
     G.graph["VALIDATE_OPERATOR_PRECONDITIONS"] = True
 
-    # Should raise OperatorPreconditionError
+    # Should raise OperatorPreconditionError when applying operator directly
     with pytest.raises(OperatorPreconditionError) as exc_info:
-        run_sequence(G, node, [Contraction()])
+        Contraction()(G, node)
 
     error_msg = str(exc_info.value)
     assert "EPI" in error_msg, f"Error should mention EPI. Got: {error_msg}"
@@ -206,9 +214,9 @@ def test_nul_rejects_critical_density():
     G.graph["VALIDATE_OPERATOR_PRECONDITIONS"] = True
     G.graph["NUL_MAX_DENSITY"] = 10.0
 
-    # Should raise OperatorPreconditionError
+    # Should raise OperatorPreconditionError when applying operator directly
     with pytest.raises(OperatorPreconditionError) as exc_info:
-        run_sequence(G, node, [Contraction()])
+        Contraction()(G, node)
 
     error_msg = str(exc_info.value)
     assert (
@@ -233,8 +241,12 @@ def test_nul_collects_density_metrics():
     G.nodes[node][DNFR_PRIMARY] = 0.15
     G.graph["COLLECT_OPERATOR_METRICS"] = True
 
-    # Apply Contraction via run_sequence
-    run_sequence(G, node, [Contraction()])
+    # Apply Contraction in valid grammar sequence (with stabilizer)
+    run_sequence(
+        G,
+        node,
+        [Transition(), Dissonance(), Contraction(), Coherence(), Silence()],
+    )
 
     # Check if metrics were collected
     # Metrics may be in various locations depending on implementation
@@ -290,15 +302,24 @@ def test_expansion_contraction_coherence_cycle():
     epi_initial = G.nodes[node][EPI_PRIMARY]
 
     # Apply sequence: Expand, contract, stabilize
-    run_sequence(G, node, [Expansion(), Contraction(), Coherence()])
+    run_sequence(
+        G,
+        node,
+        [Emission(), Expansion(), Contraction(), Coherence(), Silence()],
+    )
 
     epi_final = G.nodes[node][EPI_PRIMARY]
     dnfr_final = abs(G.nodes[node][DNFR_PRIMARY])
 
     # Handle complex EPI
-    if isinstance(epi_initial, complex):
+    if isinstance(epi_initial, dict) and "continuous" in epi_initial:
+        epi_initial = abs(epi_initial["continuous"][0])
+    elif isinstance(epi_initial, complex):
         epi_initial = abs(epi_initial)
-    if isinstance(epi_final, complex):
+    
+    if isinstance(epi_final, dict) and "continuous" in epi_final:
+        epi_final = abs(epi_final["continuous"][0])
+    elif isinstance(epi_final, complex):
         epi_final = abs(epi_final)
 
     # Should return to similar EPI (within 50% tolerance due to cycle effects)
@@ -385,7 +406,7 @@ def test_nul_respects_nodal_equation():
     # Should not raise equation validation error
     # If nodal equation is violated, the validation will raise an error
     try:
-        run_sequence(G, node, [Contraction()])
+        run_sequence(G, node, [Emission(), Contraction(), Coherence(), Silence()])
     except Exception as e:
         # If any error occurs, it should not be about nodal equation violation
         error_msg = str(e).lower()
@@ -455,7 +476,11 @@ def test_nul_preserves_coherence_boundaries():
     G.nodes[node][DNFR_PRIMARY] = 0.15
 
     # Apply Contraction
-    run_sequence(G, node, [Contraction()])
+    run_sequence(
+        G,
+        node,
+        [Transition(), Dissonance(), Contraction(), Coherence(), Silence()],
+    )
 
     # Verify coherence boundaries
     epi_after = G.nodes[node][EPI_PRIMARY]
@@ -463,7 +488,9 @@ def test_nul_preserves_coherence_boundaries():
     dnfr_after = G.nodes[node][DNFR_PRIMARY]
 
     # Handle complex EPI
-    if isinstance(epi_after, complex):
+    if isinstance(epi_after, dict) and "continuous" in epi_after:
+        epi_after = abs(epi_after["continuous"][0])
+    elif isinstance(epi_after, complex):
         epi_after = abs(epi_after)
 
     # Check boundaries

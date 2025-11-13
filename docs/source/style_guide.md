@@ -263,7 +263,7 @@ f(x) = \begin{cases}
 
 ```markdown
 The similarity components are computed by 
-[`compute_wij_phase_epi_vf_si()`](../api/metrics.html#tnfr.metrics.coherence.compute_wij_phase_epi_vf_si)
+[`compute_wij_phase_epi_vf_si()`](../../src/tnfr/metrics/coherence.py)
 ```
 
 **In docstrings, use Sphinx cross-references**:

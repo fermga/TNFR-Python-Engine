@@ -1024,7 +1024,7 @@ Create, couple, and amplify.
 
 **For reference:**
 - **[08-QUICK-REFERENCE.md](08-QUICK-REFERENCE.md)** - Quick lookup
-- **[GLOSSARY.md](GLOSSARY.md)** - Definitions
+- **[GLOSSARY.md](../../GLOSSARY.md)** - Definitions
 
 ---
 

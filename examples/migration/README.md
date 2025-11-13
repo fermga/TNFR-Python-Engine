@@ -1,5 +1,7 @@
 # Grammar 2.0 Migration Examples
 
+> DEPRECATION NOTICE (Scope): Canonical examples are indexed in `docs/source/examples/README.md`. Migration examples are non-central reference material; prefer the centralized docs for current guidance.
+
 This directory contains comprehensive examples to help you migrate from Grammar 1.0 to Grammar 2.0.
 
 ## Examples

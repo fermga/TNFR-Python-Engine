@@ -1,0 +1,8 @@
+{"pattern": "photon_like", "|grad|_mean": 0.10000000000000002, "Kphi_absmax": 0.10000000000000009, "xi_C": 0.0, "Q": null}
+{"pattern": "electron_like", "|grad|_mean": 0.04742591003752028, "Kphi_absmax": 2.356194490192345, "xi_C": 127216.0638072588, "Q": 1}
+{"pattern": "wz_helical", "|grad|_mean": 0.10216911726052999, "Kphi_absmax": 0.8681035476358367, "xi_C": 33629.79041215145, "Q": null}
+{"pattern": "graviton_like", "|grad|_mean": 0.023500000000000004, "Kphi_absmax": 0.046499999999999986, "xi_C": 0.0, "Q": null}
+{"pattern": "gluon_like", "|grad|_mean": 0.2322560541065371, "Kphi_absmax": 0.7853981633974483, "xi_C": 0.0, "Q": null}
+{"pattern": "neutrino_like", "|grad|_mean": 0.020000000000000004, "Kphi_absmax": 0.020000000000000018, "xi_C": 0.0, "Q": null}
+{"pattern": "higgs_like", "|grad|_mean": 4.287147874551504e-05, "Kphi_absmax": 1.9455154349312664e-05, "xi_C": 23085.20633161798, "Q": 0}
+{"pattern": "quark_triplet", "|grad|_mean": 0.046868641237478706, "Kphi_absmax": 2.356194490192345, "xi_C": 30956.68671395926, "Q": 1}

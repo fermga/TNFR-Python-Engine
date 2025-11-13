@@ -483,7 +483,8 @@ class TestIntegration:
         Physics: Basic activation with coupling and stabilization.
         """
         seq = [Emission(), Coupling(), Coherence()]
-        valid, messages = UnifiedGrammarValidator.validate(seq, epi_initial=0.0)
+        validator = UnifiedGrammarValidator()
+        valid, messages = validator.validate(seq, epi_initial=0.0)
         # Note: This will fail U1b (no closure), but tests integration
         assert not valid  # Missing closure
         assert any("U1b violated" in m for m in messages)
@@ -491,7 +492,8 @@ class TestIntegration:
     def test_valid_bootstrap_with_closure(self):
         """Complete bootstrap: AL → UM → IL → SHA."""
         seq = [Emission(), Coupling(), Coherence(), Silence()]
-        valid, messages = UnifiedGrammarValidator.validate(seq, epi_initial=0.0)
+        validator = UnifiedGrammarValidator()
+        valid, messages = validator.validate(seq, epi_initial=0.0)
         assert valid
         # All constraints should be satisfied or not applicable
         assert all("violated" not in m for m in messages)
@@ -510,7 +512,9 @@ class TestIntegration:
             Coherence(),
             Silence(),
         ]
-        valid, messages = UnifiedGrammarValidator.validate(seq, epi_initial=0.0)
+        validator = UnifiedGrammarValidator()
+
+        valid, messages = validator.validate(seq, epi_initial=0.0)
         assert valid
         assert all("violated" not in m for m in messages)
 
@@ -524,7 +528,9 @@ class TestIntegration:
         """
         # Use sequence without stabilizer (Coherence is a stabilizer)
         seq = [Coupling(), Dissonance(), Expansion()]
-        valid, messages = UnifiedGrammarValidator.validate(seq, epi_initial=0.0)
+        validator = UnifiedGrammarValidator()
+
+        valid, messages = validator.validate(seq, epi_initial=0.0)
         assert not valid
         assert any("U1a violated" in m for m in messages)
         assert any("U1b violated" in m for m in messages)
@@ -558,14 +564,18 @@ class TestIntegration:
             SelfOrganization(),  # Transformer + stabilizer + handler
             Silence(),  # Closure
         ]
-        valid, messages = UnifiedGrammarValidator.validate(seq, epi_initial=0.0)
+        validator = UnifiedGrammarValidator()
+
+        valid, messages = validator.validate(seq, epi_initial=0.0)
         assert valid
         assert all("violated" not in m for m in messages)
 
     def test_resonance_requires_phase_check(self):
         """Sequences with resonance trigger U3 awareness."""
         seq = [Emission(), Resonance(), Coherence(), Silence()]
-        valid, messages = UnifiedGrammarValidator.validate(seq, epi_initial=0.0)
+        validator = UnifiedGrammarValidator()
+
+        valid, messages = validator.validate(seq, epi_initial=0.0)
         assert valid
         # Find U3 message and verify it mentions phase
         u3_msg = [m for m in messages if "U3:" in m][0]
@@ -574,7 +584,9 @@ class TestIntegration:
     def test_all_messages_include_constraint_label(self):
         """All validation messages should include U1a, U1b, U2, U3, U4a, U4b, U2-REMESH, or U5 label."""
         seq = [Emission(), Coherence(), Silence()]
-        valid, messages = UnifiedGrammarValidator.validate(seq, epi_initial=0.0)
+        validator = UnifiedGrammarValidator()
+
+        valid, messages = validator.validate(seq, epi_initial=0.0)
 
         # Should have exactly 8 messages (one for each constraint including U2-REMESH and U5)
         assert len(messages) == 8
@@ -592,13 +604,17 @@ class TestEdgeCases:
         """Single operator that is both generator and closure."""
         # Transition is both generator and closure
         seq = [Transition()]
-        valid, messages = UnifiedGrammarValidator.validate(seq, epi_initial=0.0)
+        validator = UnifiedGrammarValidator()
+
+        valid, messages = validator.validate(seq, epi_initial=0.0)
         assert valid
 
     def test_empty_sequence_validation(self):
         """Empty sequence should fail initiation and closure."""
         seq = []
-        valid, messages = UnifiedGrammarValidator.validate(seq, epi_initial=0.0)
+        validator = UnifiedGrammarValidator()
+
+        valid, messages = validator.validate(seq, epi_initial=0.0)
         assert not valid
         assert any("U1a violated" in m for m in messages)
         assert any("U1b violated" in m for m in messages)
@@ -610,7 +626,9 @@ class TestEdgeCases:
         Using only Coherence which is stabilizer but not transformer.
         """
         seq = [Emission(), Coherence(), Reception(), Silence()]
-        valid, messages = UnifiedGrammarValidator.validate(seq, epi_initial=0.0)
+        validator = UnifiedGrammarValidator()
+
+        valid, messages = validator.validate(seq, epi_initial=0.0)
         assert valid
 
     def test_destabilizer_at_window_boundary(self):
@@ -644,7 +662,9 @@ class TestEdgeCases:
     def test_recursivity_as_generator_and_closure(self):
         """REMESH can serve as both generator and closure in same sequence."""
         seq = [Recursivity(), Coherence(), Recursivity()]
-        valid, messages = UnifiedGrammarValidator.validate(seq, epi_initial=0.0)
+        validator = UnifiedGrammarValidator()
+
+        valid, messages = validator.validate(seq, epi_initial=0.0)
         assert valid
 
 
@@ -695,7 +715,9 @@ class TestOperatorNameHandling:
         """Operator names should be normalized to lowercase."""
         # The validator uses op.name.lower()
         seq = [Emission(), Coherence(), Silence()]
-        valid, _ = UnifiedGrammarValidator.validate(seq, epi_initial=0.0)
+        validator = UnifiedGrammarValidator()
+
+        valid, _ = validator.validate(seq, epi_initial=0.0)
         assert valid
 
 

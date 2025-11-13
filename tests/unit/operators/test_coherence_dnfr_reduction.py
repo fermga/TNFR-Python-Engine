@@ -173,12 +173,7 @@ def test_coherence_multiple_applications_converge_to_zero():
     G.nodes[node][DNFR_PRIMARY] = initial_dnfr
 
     # Apply Coherence operator 10 times in canonical sequences
-    # First application
-    run_sequence(G, node, [Emission(), Reception(), Coherence(), Silence()])
-
-    # Subsequent applications need reactivation: SHA → IL → AL
-    for _ in range(9):
-        Coherence()(G, node)  # Reactivate from silence
+    for _ in range(10):
         run_sequence(G, node, [Emission(), Reception(), Coherence(), Silence()])
 
     final_dnfr = G.nodes[node][DNFR_PRIMARY]
@@ -234,14 +229,15 @@ def test_coherence_telemetry_accumulates():
 
     G.nodes[node][DNFR_PRIMARY] = 0.20
 
-    # Apply Coherence 3 times in canonical sequences
-    # First application
-    run_sequence(G, node, [Emission(), Reception(), Coherence(), Silence()])
-
-    # Subsequent applications need reactivation
-    for _ in range(2):
-        Coherence()(G, node)  # Reactivate from silence
-        run_sequence(G, node, [Emission(), Reception(), Coherence(), Silence()])
+    # Apply Coherence 3 times in 3 separate canonical sequences
+    sequences = [
+        [Emission(), Reception(), Coherence(), Silence()],
+        [Emission(), Reception(), Coherence(), Silence()],
+        [Emission(), Reception(), Coherence(), Silence()]
+    ]
+    
+    for seq in sequences:
+        run_sequence(G, node, seq)
 
     # Verify 3 telemetry events logged
     assert "IL_dnfr_reductions" in G.graph
@@ -359,12 +355,7 @@ def test_coherence_nodal_equation_compliance():
     G.nodes[node][DNFR_PRIMARY] = initial_dnfr
 
     # Apply Coherence multiple times in canonical sequences
-    # First application
-    run_sequence(G, node, [Emission(), Reception(), Coherence(), Silence()])
-
-    # Subsequent applications need reactivation
-    for i in range(4):
-        Coherence()(G, node)  # Reactivate from silence
+    for i in range(5):
         run_sequence(G, node, [Emission(), Reception(), Coherence(), Silence()])
 
         # Verify ΔNFR is decreasing

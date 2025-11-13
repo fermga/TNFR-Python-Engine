@@ -327,12 +327,12 @@ class TestTransitionIntegration:
         validate_transition(G, node)
 
     def test_transition_sha_nav_sequence_canonical(self):
-        """SHA → NAV canonical sequence should pass all validations."""
+        """NAV canonical sequence (SHA cannot start sequences per U1a)."""
         G, node = create_nfr("test", epi=0.3, vf=0.8)
         set_attr(G.nodes[node], ALIAS_DNFR, 0.4)
 
-        # Apply SHA → NAV sequence
-        run_sequence(G, node, [Silence(), Transition()])
+        # Apply NAV + stabilizer + closure sequence (per U1a, U2, U1b)
+        run_sequence(G, node, [Transition(), Coherence(), Silence()])
 
         # Should complete without errors
         assert True
@@ -342,8 +342,10 @@ class TestTransitionIntegration:
         G, node = create_nfr("test", epi=0.2, vf=0.8)
         set_attr(G.nodes[node], ALIAS_DNFR, 0.3)
 
-        # Apply AL → NAV → IL sequence
-        run_sequence(G, node, [Emission(), Transition(), Coherence()])
+        # Apply AL → NAV → IL → closure sequence (per U1b)
+        run_sequence(
+            G, node, [Emission(), Transition(), Coherence(), Silence()]
+        )
 
         # Should complete without errors
         assert True

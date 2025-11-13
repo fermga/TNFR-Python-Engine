@@ -255,7 +255,7 @@ class CycleDetector:
 
         # Use existing pattern detector for consistent health metrics
         detector = AdvancedPatternDetector()
-        health_metrics = detector._calculate_health_metrics(sequence)
+        health_metrics = detector._structural_health(sequence)
 
         # Adapt balance calculation for cycle validation
         # Cycles need good balance (not too much stabilization, not too chaotic)
@@ -278,14 +278,8 @@ class CycleDetector:
         Reuses complexity calculation from AdvancedPatternDetector which
         includes diversity as a component.
         """
-        from .patterns import AdvancedPatternDetector
-
         if not sequence:
             return 0.0
-
-        detector = AdvancedPatternDetector()
-        # Complexity includes diversity as a factor
-        detector._calculate_complexity(sequence)
 
         # For cycles, we primarily care about diversity component
         unique_count = len(set(sequence))
@@ -311,7 +305,7 @@ class CycleDetector:
             return 0.0
 
         detector = AdvancedPatternDetector()
-        health_metrics = detector._calculate_health_metrics(sequence)
+        health_metrics = detector._structural_health(sequence)
 
         score = 0.0
 

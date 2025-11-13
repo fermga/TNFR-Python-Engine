@@ -106,6 +106,31 @@ src/tnfr/validation/ (Runtime validation)
 - ✅ TESTING.md references AGENTS.md for definitions (added 2025-11-11)
 - ✅ Test examples for Invariants 1, 2, 5, 8
 
+### 5. Molecular Chemistry Chain ⭐ **BREAKTHROUGH**
+
+**Physics** → **Theory** → **Implementation** → **Validation**
+
+```
+Nodal equation: ∂EPI/∂t = νf · ΔNFR(t)
+    ↓ (structural fields)
+Structural Field Tetrad: Φ_s, |∇φ|, K_φ, ξ_C
+    ↓ (element signatures)
+docs/examples/MOLECULAR_CHEMISTRY_FROM_NODAL_DYNAMICS.md (complete theory)
+    ↓ (centralized implementation)
+src/tnfr/physics/patterns.py + signatures.py
+    ↓ (computational validation)
+tests/unit/physics/test_molecular_chemistry.py (10/10 tests ✅)
+```
+
+**Revolutionary Achievement**: Complete chemistry emerges from TNFR without additional postulates
+
+**Verification**:
+- ✅ Physics README § 9-10 documents implementation
+- ✅ Element signature utilities with Au detection
+- ✅ Chemical bonds redefined as phase synchronization (U3)
+- ✅ Chemical reactions as operator sequences [OZ→ZHIR→UM→IL]
+- ✅ Molecular geometry from ΔNFR minimization
+
 ---
 
 ## 📐 Concept Coverage Matrix
@@ -121,8 +146,11 @@ src/tnfr/validation/ (Runtime validation)
 | **10 Invariants** | ✅ Complete | ✅ Referenced | ✅ List | ✅ Referenced | ✅ Enforced | ✅ Contracts |
 | **Phase (φ)** | ✅ Complete | ✅ U3 basis | ✅ Term | ✅ U3 | ✅ Phase checks | ✅ Usage |
 | **Coherence C(t)** | ✅ Complete | ✅ Referenced | ✅ Term | ✅ U2/U5 | ✅ Validation | — |
+| **Element Signatures** | ✅ § 10 | — | ✅ New section | — | — | ✅ Physics module |
+| **Molecular Chemistry** | ✅ § 9 ref | — | ✅ New section | — | — | ✅ Physics module |
+| **Au Emergence** | ✅ § 10 | — | ✅ Au-like def | — | — | ✅ Signatures |
 
-**Coverage**: 11/11 key concepts present across all major documents ✅
+**Coverage**: 14/14 key concepts present across major documents ✅
 
 ---
 

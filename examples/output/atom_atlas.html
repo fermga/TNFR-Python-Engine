@@ -1,0 +1,45 @@
+<html>
+<head><meta charset='utf-8'><title>TNFR Atom Atlas</title>
+<style>body{font-family:system-ui,Segoe UI,Arial} table{border-collapse:collapse;} td,th{border:1px solid #ddd;padding:6px;} th{background:#fafafa} .panel{border:1px solid #e0e0e0;background:#f9fbff;padding:8px 12px;border-radius:6px;display:inline-block;margin:8px 0} .panel b{display:block;margin-bottom:4px}</style>
+</head>
+<body>
+<h1>TNFR Hydrogen-like Atom — Minimal Atlas</h1>
+<div class='panel'><b>Safety Triad (telemetry-only)</b><div>ΔΦ_s threshold: 2.0 (confinement)</div><div>|∇φ| threshold: 0.38</div><div>|K_φ| threshold: 3.0</div><div style='margin-top:2px;color:#777;font-size:12px'>U6 is descriptive only; no control feedback into dynamics.</div></div>
+<p>Read-only telemetry demo on a radial topology (nucleus + shell). Thresholds: |∇φ|<0.38, |K_φ|<3.0; locality gate uses ξ_C vs mean path length.</p>
+<h2>Global Summaries</h2>
+<p>Φ_s snapshot — mean: 3.654, min: 3.045, max: 10.448</p>
+<p>ξ_C (coherence length): 0.00 — regime: local</p>
+<h3>Telemetry Messages</h3>
+<ul><li>U6 (|∇φ|): WARN - mean=1.667, max=2.638 ≥ 0.38. Flagged 25/25 loci (frac=1.00).</li><li>U6 (K_φ): WARN - hotspots=1 (|K_φ|≥3.00), max|K_φ|=3.039, multiscale_safe=True.</li><li>U6 (ξ_C): PASS - ξ_C=0.00 < mean_path_length≈1.84 (stable regime).</li></ul>
+<h2>Loci Table</h2>
+<table><thead><tr><th>Node</th><th>|∇φ|</th><th>|K_φ|</th><th>Role</th><th>Atom-like (local)</th></tr></thead><tbody>
+<tr><td>0</td><td>1.600</td><td>1.729</td><td>nucleus</td><td></td></tr>
+<tr><td>1</td><td>2.485</td><td>2.482</td><td>shell</td><td></td></tr>
+<tr><td>2</td><td>1.496</td><td>0.042</td><td>shell</td><td></td></tr>
+<tr><td>3</td><td>1.840</td><td>1.786</td><td>shell</td><td></td></tr>
+<tr><td>4</td><td>1.866</td><td>2.741</td><td>shell</td><td></td></tr>
+<tr><td>5</td><td>1.709</td><td>2.008</td><td>shell</td><td></td></tr>
+<tr><td>6</td><td>2.002</td><td>2.785</td><td>shell</td><td></td></tr>
+<tr><td>7</td><td>1.710</td><td>2.822</td><td>shell</td><td></td></tr>
+<tr><td>8</td><td>2.638</td><td>2.996</td><td>shell</td><td></td></tr>
+<tr><td>9</td><td>1.224</td><td>0.527</td><td>shell</td><td></td></tr>
+<tr><td>10</td><td>1.331</td><td>1.110</td><td>shell</td><td></td></tr>
+<tr><td>11</td><td>2.404</td><td>2.901</td><td>shell</td><td></td></tr>
+<tr><td>12</td><td>1.752</td><td>2.340</td><td>shell</td><td></td></tr>
+<tr><td>13</td><td>1.747</td><td>1.702</td><td>shell</td><td></td></tr>
+<tr><td>14</td><td>1.034</td><td>0.171</td><td>shell</td><td></td></tr>
+<tr><td>15</td><td>1.003</td><td>0.880</td><td>shell</td><td></td></tr>
+<tr><td>16</td><td>1.114</td><td>0.559</td><td>shell</td><td></td></tr>
+<tr><td>17</td><td>1.821</td><td>1.789</td><td>shell</td><td></td></tr>
+<tr><td>18</td><td>1.410</td><td>1.205</td><td>shell</td><td></td></tr>
+<tr><td>19</td><td>0.862</td><td>0.870</td><td>shell</td><td></td></tr>
+<tr><td>20</td><td>1.464</td><td>0.545</td><td>shell</td><td></td></tr>
+<tr><td>21</td><td>2.170</td><td>3.039</td><td>shell</td><td></td></tr>
+<tr><td>22</td><td>1.277</td><td>0.713</td><td>shell</td><td></td></tr>
+<tr><td>23</td><td>1.986</td><td>2.590</td><td>shell</td><td></td></tr>
+<tr><td>24</td><td>1.738</td><td>2.434</td><td>shell</td><td></td></tr>
+</tbody></table>
+<h2>U6 sequence check (synthetic [AL, RA, IL])</h2>
+<p>U6: PASS - Δ Φ_s = 0.365 < 2.000 (confined). System remains in safe regime. (ΔΦ_s = 0.365)</p>
+<p style='margin-top:16px;color:#666'>This demo computes ΔΦ_s using a lightweight synthetic sequence to emulate [AL, RA, IL] without mutating EPI.</p>
+</body></html>

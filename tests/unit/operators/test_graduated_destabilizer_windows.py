@@ -6,8 +6,8 @@ This module tests the graduated destabilizer intensity classification:
 - Weak (EN): window of 1 operator (immediate predecessor only)
 
 References:
-    - Issue: [OZ] Ampliar ventana de bifurcación con destabilizadores unificados
-    - Theory: TNFR PDF "Bifurcación y emergencia"
+    - Issue: [OZ] Expand bifurcation window with unified destabilizers
+    - Theory: TNFR PDF "Bifurcation and Emergence"
 """
 
 import pytest
@@ -106,7 +106,9 @@ class TestStrongDestabilizer:
 
         error = excinfo.value
         assert "mutation" in error.message.lower()
-        assert "destabilizer" in error.message.lower()
+        # Updated: Error now specifically mentions R4 rule requirement
+        assert ("dissonance" in error.message.lower() or
+                "r4" in error.message.lower())
 
 
 class TestModerateDestabilizers:
@@ -190,7 +192,9 @@ class TestModerateDestabilizers:
 
         error = excinfo.value
         assert "mutation" in error.message.lower()
-        assert "destabilizer" in error.message.lower()
+        # Updated: Error now specifically mentions R4 rule requirement
+        assert ("dissonance" in error.message.lower() or
+                "r4" in error.message.lower())
 
 
 class TestWeakDestabilizer:

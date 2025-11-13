@@ -1,5 +1,7 @@
 # Microbenchmarks
 
+> DEPRECATION NOTICE (Docs): Benchmark documentation is developer-focused and not part of the centralized user documentation. For canonical docs, start with `docs/source/index.rst` and `docs/DOCUMENTATION_INDEX.md`.
+
 This directory hosts **targeted microbenchmarks** for hot paths in the TNFR
 engine. Each script isolates a specific optimisation and contrasts it with a
 reference implementation. Use them to validate performance regressions after

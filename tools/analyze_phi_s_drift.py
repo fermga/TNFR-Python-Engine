@@ -32,6 +32,8 @@ sys.path.insert(0, str(Path(__file__).parent.parent / 'src'))
 
 from tnfr.physics.fields import compute_structural_potential
 
+BASE = Path('benchmarks') / 'results'
+
 
 def load_u6_results(jsonl_path: Path) -> List[Dict]:
     """Load JSONL results from U6 simulator."""
@@ -209,10 +211,10 @@ def analyze_phi_s_drift():
     
     # Load data from universality experiments
     data_files = [
-        'u6_fine_i203.jsonl',
-        'u6_fine_i207.jsonl',
-        'u6_fine_i208.jsonl',
-        'u6_fine_i209.jsonl',
+        BASE / 'u6_fine_i203.jsonl',
+        BASE / 'u6_fine_i207.jsonl',
+        BASE / 'u6_fine_i208.jsonl',
+        BASE / 'u6_fine_i209.jsonl',
     ]
     
     all_results = []
@@ -220,14 +222,13 @@ def analyze_phi_s_drift():
     print(f"{'File':>30} | {'Records':>8} | {'Status':>10}")
     print("-" * 60)
     
-    for filename in data_files:
-        filepath = Path(filename)
+    for filepath in data_files:
         results = load_u6_results(filepath)
         if results:
             all_results.extend(results)
-            print(f"{filename:>30} | {len(results):>8} | {'✓ Loaded':>10}")
+            print(f"{filepath.name:>30} | {len(results):>8} | {'✓ Loaded':>10}")
         else:
-            print(f"{filename:>30} | {0:>8} | {'Missing':>10}")
+            print(f"{filepath.name:>30} | {0:>8} | {'Missing':>10}")
     
     if not all_results:
         print("\nNo data available for analysis.")
@@ -293,9 +294,9 @@ def analyze_phi_s_drift():
             print(f"{status_str:>15} | {'N/A':>12} | {'N/A':>10} | {0:>6}")
     
     # Final interpretation
-    print("\n\n" + "="*70)
+    print("\n\n" + "=" * 70)
     print("EMERGENT DYNAMICS INTERPRETATION")
-    print("="*70)
+    print("=" * 70)
     
     corr = corr_results['correlation']
     mean_drift = corr_results['mean_drift']
@@ -346,7 +347,7 @@ def analyze_phi_s_drift():
         print("  - Structural potential does NOT act as universal attractor")
         print("  - Gravity-like regime NOT emergent from TNFR dynamics")
     
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
 
 
 if __name__ == '__main__':

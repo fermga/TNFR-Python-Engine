@@ -21,11 +21,14 @@ References:
 
 import pytest
 
+from tnfr.alias import get_attr
 from tnfr.constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_VF, ALIAS_D2EPI
 from tnfr.operators.definitions import (
     Expansion,
     Coherence,
     Dissonance,
+    Emission,
+    Silence,
     SelfOrganization,
 )
 from tnfr.operators.preconditions import (
@@ -123,15 +126,15 @@ class TestVALNodalEquationCompliance:
         G, node = create_nfr("expanding", epi=0.5, vf=2.0)
         G.nodes[node]["delta_nfr"] = 0.1
 
-        epi_before = G.nodes[node][list(ALIAS_EPI)[0]]
-        vf_before = G.nodes[node][list(ALIAS_VF)[0]]
+        epi_before = float(get_attr(G.nodes[node], ALIAS_EPI, 0.0))
+        vf_before = float(get_attr(G.nodes[node], ALIAS_VF, 0.0))
 
         # Apply expansion
         G.graph["COLLECT_OPERATOR_METRICS"] = True
         Expansion()(G, node, collect_metrics=True)
 
-        epi_after = G.nodes[node][list(ALIAS_EPI)[0]]
-        vf_after = G.nodes[node][list(ALIAS_VF)[0]]
+        epi_after = float(get_attr(G.nodes[node], ALIAS_EPI, 0.0))
+        vf_after = float(get_attr(G.nodes[node], ALIAS_VF, 0.0))
 
         # Verify expansion occurred
         assert epi_after > epi_before, "EPI should increase"
@@ -139,7 +142,7 @@ class TestVALNodalEquationCompliance:
 
         # Verify changes are proportional to ΔNFR and νf
         delta_epi = epi_after - epi_before
-        dnfr = G.nodes[node][list(ALIAS_DNFR)[0]]
+        dnfr = float(get_attr(G.nodes[node], ALIAS_DNFR, 0.0))
 
         # Rough proportionality check (exact depends on dynamics)
         assert delta_epi > 0, "EPI increase should be positive"
@@ -158,9 +161,9 @@ class TestVALMetricsEnhanced:
         G.graph["COLLECT_OPERATOR_METRICS"] = True
         Expansion()(G, node, collect_metrics=True)
 
-        # Check metrics were collected
-        assert "operator_metrics" in G.nodes[node]
-        metrics = G.nodes[node]["operator_metrics"]
+        # Check metrics were collected - metrics stored in graph level
+        assert "operator_metrics" in G.graph
+        metrics = G.graph["operator_metrics"][-1]  # Get last metrics entry
 
         # Verify bifurcation risk metrics
         assert "bifurcation_risk" in metrics
@@ -173,7 +176,7 @@ class TestVALMetricsEnhanced:
     def test_val_metrics_include_network_impact(self):
         """VAL metrics track network impact (neighbors affected)."""
         G, node1 = create_nfr("node1", epi=0.5, vf=2.0)
-        _, node2 = create_nfr("node2", epi=0.5, vf=2.0, G=G)
+        _, node2 = create_nfr("node2", epi=0.5, vf=2.0, graph=G)
         G.add_edge(node1, node2)
 
         G.nodes[node1]["delta_nfr"] = 0.1
@@ -181,13 +184,13 @@ class TestVALMetricsEnhanced:
         G.graph["COLLECT_OPERATOR_METRICS"] = True
         Expansion()(G, node1, collect_metrics=True)
 
-        metrics = G.nodes[node1]["operator_metrics"]
+        metrics = G.graph["operator_metrics"][-1]  # Get last metrics entry
 
         # Verify network metrics
         assert "neighbor_count" in metrics
-        assert "network_impact_radius" in metrics
+        assert "network_coupled" in metrics
         assert metrics["neighbor_count"] == 1
-        assert metrics["network_impact_radius"] is True
+        assert metrics["network_coupled"] is True
 
     def test_val_metrics_include_fractality_indicators(self):
         """VAL metrics include fractality preservation indicators."""
@@ -197,15 +200,17 @@ class TestVALMetricsEnhanced:
         G.graph["COLLECT_OPERATOR_METRICS"] = True
         Expansion()(G, node, collect_metrics=True)
 
-        metrics = G.nodes[node]["operator_metrics"]
+        metrics = G.graph["operator_metrics"][-1]  # Get last metrics entry
 
         # Verify fractality indicators
-        assert "structural_complexity_increase" in metrics
-        assert "frequency_complexity_ratio" in metrics
-        assert "expansion_quality" in metrics
+        assert "fractal_preserved" in metrics
+        assert "expansion_factor" in metrics
+        assert "expansion_healthy" in metrics
 
-        # Quality should be "coherent" with valid expansion
-        assert metrics["expansion_quality"] in ["coherent", "threshold"]
+        # Quality should be preserved with valid expansion
+        assert metrics["fractal_preserved"] is True
+        # Expansion should occur with positive factor
+        assert metrics["expansion_factor"] > 1.0  # Growth occurred
 
 
 class TestVALCanonicalSequences:
@@ -220,13 +225,13 @@ class TestVALCanonicalSequences:
         G, node = create_nfr("expand_stabilize", epi=0.5, vf=2.0)
         G.nodes[node]["delta_nfr"] = 0.1
 
-        # Apply canonical sequence
-        sequence = [Expansion(), Coherence()]
+        # Apply canonical sequence with generator (per U1a)
+        sequence = [Emission(), Expansion(), Coherence(), Silence()]
         run_sequence(G, node, sequence)
 
         # After IL, system should be more stable
         # (exact metrics depend on dynamics implementation)
-        assert G.nodes[node][list(ALIAS_EPI)[0]] > 0.5  # Expanded
+        assert float(get_attr(G.nodes[node], ALIAS_EPI, 0.0)) > 0.5  # Expanded
 
     def test_oz_to_val_exploratory(self):
         """OZ → VAL: Dissonance enables expansion (canonical pattern).
@@ -236,12 +241,19 @@ class TestVALCanonicalSequences:
         """
         G, node = create_nfr("explore", epi=0.5, vf=2.0)
 
-        # Apply canonical sequence
-        sequence = [Dissonance(), Expansion()]
+        # Apply canonical sequence respecting compatibility and grammar
+        sequence = [
+            Emission(),  # Generator (U1a)
+            Dissonance(),  # Exploration pressure
+            Coherence(),  # Stabilizer after OZ (U2)
+            Expansion(),  # Expansion phase
+            Coherence(),  # Re-stabilize post-expansion
+            Silence(),  # Closure (U1b)
+        ]
         run_sequence(G, node, sequence)
 
         # After sequence, node should have explored new structure
-        dnfr = G.nodes[node][list(ALIAS_DNFR)[0]]
+        dnfr = float(get_attr(G.nodes[node], ALIAS_DNFR, 0.0))
         assert dnfr >= 0  # ΔNFR maintained or increased
 
     def test_val_to_thol_emergence(self):
@@ -256,13 +268,19 @@ class TestVALCanonicalSequences:
         # Build EPI history for THOL precondition
         G.nodes[node]["epi_history"] = [0.4, 0.45, 0.5]
 
-        # Apply canonical sequence
-        sequence = [Expansion(), SelfOrganization()]
+        # Apply canonical sequence with generator, stabilizer, closure
+        sequence = [
+            Emission(),  # Generator (U1a)
+            Expansion(),  # Increase structural complexity
+            Coherence(),  # Stabilize post-expansion (U2)
+            SelfOrganization(),  # Trigger emergent structuring
+            Silence(),  # Closure per THOL requirement (U1b)
+        ]
         run_sequence(G, node, sequence)
 
         # After THOL, structure should be reorganized
         # (specific effects depend on THOL implementation)
-        assert G.nodes[node][list(ALIAS_EPI)[0]] >= 0.5
+        assert float(get_attr(G.nodes[node], ALIAS_EPI, 0.0)) >= 0.5
 
 
 class TestVALFractalityPreservation:
@@ -277,19 +295,19 @@ class TestVALFractalityPreservation:
         G, node = create_nfr("fractal", epi=0.5, vf=2.0)
         G.nodes[node]["delta_nfr"] = 0.1
 
-        epi_before = G.nodes[node][list(ALIAS_EPI)[0]]
+        epi_before = float(get_attr(G.nodes[node], ALIAS_EPI, 0.0))
 
         # Apply expansion
         Expansion()(G, node)
 
-        epi_after = G.nodes[node][list(ALIAS_EPI)[0]]
+        epi_after = float(get_attr(G.nodes[node], ALIAS_EPI, 0.0))
 
         # EPI should increase but remain coherent (not fragment)
         assert epi_after > epi_before
         assert epi_after < epi_before * 2  # Bounded growth
 
         # Structural parameters should remain in valid range
-        vf_after = G.nodes[node][list(ALIAS_VF)[0]]
+        vf_after = float(get_attr(G.nodes[node], ALIAS_VF, 0.0))
         assert 0 < vf_after < 20  # Reasonable νf range
 
 

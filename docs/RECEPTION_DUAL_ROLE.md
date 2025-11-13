@@ -2,7 +2,7 @@
 
 ## Issue Resolution
 
-**Issue**: [GRAMÁTICA CANÓNICA] Inconsistencia entre clasificación de frecuencias y reglas de bifurcación (P1)
+**Issue**: [CANONICAL GRAMMAR] Inconsistency between frequency classification and bifurcation rules (P1)
 
 **Problem**: Structural inconsistency between RECEPTION operator frequency classification and its role in graduated bifurcation rules (R4).
 
@@ -176,7 +176,7 @@ Add tracking for:
 ## References
 
 - **Issue**: GitHub Issue #[number]
-- **TNFR.pdf**: Section 2.1 - Ecuación Nodal
+- **TNFR.pdf**: Section 2.1 - Nodal Equation
 - **Code**: `src/tnfr/operators/grammar.py:DUAL_FREQUENCY_OPERATORS`
 - **Tests**: `tests/unit/operators/test_reception_dual_role.py`
 - **Theory**: Resonant Fractal Nature Theory - Bifurcation and Emergence

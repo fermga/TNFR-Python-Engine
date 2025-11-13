@@ -1,0 +1,1 @@
+{"sequence": ["SHA", "UM", "UM", "SHA"], "coherence_change": 0.0, "sense_index_change": 0.02036859405571545, "phi_s_change": 0.0, "grad_phi_change": -0.1337479914144155, "k_phi_change": 0.292291563019864, "xi_c_change": 0.0, "phase_sync_change": 0.047511379981667545, "epi_magnitude_change": 0.0, "hash_signature": "ccd8ecb37035616c", "sequence_str": "SHA -> UM -> UM -> SHA"}

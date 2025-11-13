@@ -20,7 +20,9 @@ import math
 import random
 import numpy as np
 from tnfr.structural import create_nfr, run_sequence
-from tnfr.operators.definitions import Mutation, Coherence, Dissonance
+from tnfr.operators.definitions import (
+    Mutation, Coherence, Dissonance, Emission, Silence
+)
 
 
 class TestZHIRIsolatedNodes:
@@ -59,8 +61,10 @@ class TestZHIRIsolatedNodes:
     def test_zhir_isolated_preserves_all_contracts(self):
         """Isolated node should satisfy all ZHIR contracts."""
         G, node = create_nfr("test", epi=0.6, vf=1.2)
-        G.nodes[node]["EPI_kind"] = "isolated_pattern"
+        G.nodes[node]["structural_type"] = "isolated_pattern"
         G.nodes[node]["epi_history"] = [0.4, 0.5, 0.6]
+        # Enable postcondition validation
+        G.graph["VALIDATE_OPERATOR_POSTCONDITIONS"] = True
 
         epi_before = G.nodes[node]["EPI"]
         vf_before = G.nodes[node]["νf"]
@@ -75,7 +79,7 @@ class TestZHIRIsolatedNodes:
         # All contracts should hold
         assert sign_after == sign_before, "Sign contract violated"
         assert vf_after > 0, "νf contract violated"
-        assert G.nodes[node]["EPI_kind"] == "isolated_pattern", "Identity contract violated"
+        assert G.nodes[node]["structural_type"] == "isolated_pattern", "Identity contract violated"
 
 
 class TestZHIRPhaseBoundaries:
@@ -191,8 +195,8 @@ class TestZHIRReproducibility:
 
         # Should be identical
         assert abs(result1["theta"] - result2["theta"]) < 1e-10
-        assert abs(result1["EPI"] - result2["EPI"]) < 1e-10
-        assert abs(result1["νf"] - result2["νf"]) < 1e-10
+        assert abs(result1["epi"] - result2["epi"]) < 1e-10
+        assert abs(result1["vf"] - result2["vf"]) < 1e-10
 
     def test_zhir_different_seeds_produce_different_results(self):
         """Different seeds should produce different results (if stochastic)."""
@@ -224,7 +228,8 @@ class TestZHIRReproducibility:
         np.random.seed(100)
         G1, node1 = create_nfr("test1", epi=0.5, vf=1.0)
         G1.nodes[node1]["epi_history"] = [0.35, 0.42, 0.50]
-        run_sequence(G1, node1, [Coherence(), Dissonance(), Mutation()])
+        run_sequence(G1, node1, [Emission(), Coherence(), Dissonance(),
+                                 Mutation(), Silence()])
         state1 = G1.nodes[node1]["theta"]
 
         # Second run with same seed
@@ -232,7 +237,8 @@ class TestZHIRReproducibility:
         np.random.seed(100)
         G2, node2 = create_nfr("test2", epi=0.5, vf=1.0)
         G2.nodes[node2]["epi_history"] = [0.35, 0.42, 0.50]
-        run_sequence(G2, node2, [Coherence(), Dissonance(), Mutation()])
+        run_sequence(G2, node2, [Emission(), Coherence(), Dissonance(),
+                                 Mutation(), Silence()])
         state2 = G2.nodes[node2]["theta"]
 
         # Should be identical

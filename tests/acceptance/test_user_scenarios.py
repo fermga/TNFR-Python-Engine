@@ -8,21 +8,17 @@ import pytest
 
 from tnfr.operators.grammar import validate_sequence
 from tnfr.operators.health_analyzer import SequenceHealthAnalyzer
-from tnfr.operators.patterns import AdvancedPatternDetector
+from tnfr.sequencing.patterns import AdvancedPatternDetector
 from tnfr.operators.cycle_detection import CycleDetector
 
 
 def validate_sequence_with_health(sequence):
     """Helper function to validate sequence and compute health metrics."""
-    result = validate_sequence(sequence)
-    if result.passed:
-        analyzer = SequenceHealthAnalyzer()
-        health = analyzer.analyze_health(sequence)
-        # Attach health metrics to result
-        result.health_metrics = health
-    else:
-        result.health_metrics = None
-    return result
+    # Import the fixed implementation from grammar module
+    from tnfr.operators.grammar import (
+        validate_sequence_with_health as grammar_validate,
+    )
+    return grammar_validate(sequence)
 
 
 class TestUserScenarios:

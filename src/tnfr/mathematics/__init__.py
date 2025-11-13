@@ -6,6 +6,12 @@ Use :func:`get_backend` to retrieve a numerical backend compatible with TNFR's
 structural operators.  The selection order is ``name`` → ``TNFR_MATH_BACKEND``
 → :func:`tnfr.config.get_flags`.  NumPy remains the canonical default so
 existing code continues to operate even when optional dependencies are absent.
+
+Symbolic Analysis
+-----------------
+This module also includes symbolic mathematical tools from the tnfr.math module
+for analyzing TNFR dynamics, including nodal equation derivations and
+convergence analysis.
 """
 
 from .backend import (
@@ -46,8 +52,30 @@ from .transforms import (
     ensure_coherence_monotonicity,
     validate_norm_preservation,
 )
+from .number_theory import ArithmeticTNFRNetwork, run_basic_validation
+
+"""Symbolic analysis exports
+We import from tnfr.math.symbolic and bind the names so lint won't flag them as unused.
+"""
+try:
+    from ..math import symbolic as _symbolic
+    from .. import math as _math
+    get_nodal_equation = _symbolic.get_nodal_equation
+    solve_nodal_equation_constant_params = _symbolic.solve_nodal_equation_constant_params
+    integrated_evolution_symbolic = _symbolic.integrated_evolution_symbolic
+    check_convergence_exponential = _symbolic.check_convergence_exponential
+    compute_second_derivative_symbolic = _symbolic.compute_second_derivative_symbolic
+    evaluate_bifurcation_risk = _symbolic.evaluate_bifurcation_risk
+    latex_export = _symbolic.latex_export
+    pretty_print = _symbolic.pretty_print
+    # Re-export the math module under 'math'
+    math = _math
+    _HAS_SYMBOLIC = True
+except Exception:
+    _HAS_SYMBOLIC = False
 
 __all__ = [
+    # Backend operations
     "MathematicsBackend",
     "ensure_array",
     "ensure_numpy",
@@ -86,4 +114,21 @@ __all__ = [
     "available_backends",
     "get_backend",
     "register_backend",
+    # Number theory (prime emergence)
+    "ArithmeticTNFRNetwork",
+    "run_basic_validation",
 ]
+
+# Add symbolic analysis functions if available
+if _HAS_SYMBOLIC:
+    __all__.extend([
+        "get_nodal_equation",
+        "solve_nodal_equation_constant_params",
+        "integrated_evolution_symbolic",
+        "check_convergence_exponential",
+        "compute_second_derivative_symbolic",
+        "evaluate_bifurcation_risk",
+        "latex_export",
+        "pretty_print",
+        "math",  # Also export the entire math module
+    ])

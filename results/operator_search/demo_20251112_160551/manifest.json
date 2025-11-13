@@ -1,0 +1,23 @@
+{
+  "timestamp": "20251112_160551",
+  "backend": "real",
+  "tnfr_available": true,
+  "counts": {
+    "rows": 100,
+    "outliers": 15,
+    "sparse": 10,
+    "violations": 2
+  },
+  "explained_variance_2d": 0.6404228782611255,
+  "metric_means": {
+    "coherence": -0.003126769959109148,
+    "sense_index": 0.006520695085312108,
+    "phi_s": -0.014544193926555371,
+    "grad_phi": -0.026619012642445695,
+    "k_phi": 0.0656731008545166,
+    "xi_c": 0.0,
+    "phase_sync": 0.00741620586781316,
+    "epi_mag": -0.0003459423012628582
+  },
+  "nodal_equation": "∂EPI/∂t = νf · ΔNFR(t)"
+}

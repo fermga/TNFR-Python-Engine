@@ -4,9 +4,9 @@ This module validates the implementation of canonical precondition requirements
 for the Dissonance (OZ) operator according to TNFR theory:
 
 1. Minimum coherence base (EPI >= 0.2) - node must withstand disruption
-2. ΔNFR not critically high (|ΔNFR| < 0.8) - avoid sobrecarga/collapse
+2. ΔNFR not critically high (|ΔNFR| < 0.8) - avoid overload/collapse
 3. Sufficient νf (>= 0.1) - capacity to respond to dissonance
-4. No overload pattern - detect sobrecarga disonante (multiple OZ without resolution)
+4. No overload pattern - detect dissonant overload (multiple OZ without resolution)
 5. Network connectivity - warn if isolated (bifurcation requires paths)
 
 These tests ensure OZ is only applied when the node has sufficient structural
@@ -14,8 +14,8 @@ resilience to benefit from controlled dissonance rather than collapse.
 
 References
 ----------
-- TNFR.pdf §2.3.6: Sobrecarga disonante
-- Issue: [OZ] Fortalecer precondiciones estructurales con validación de coherencia base
+- TNFR.pdf §2.3.6: Dissonant overload
+- Issue: [OZ] Strengthen structural preconditions with base coherence validation
 """
 
 import warnings

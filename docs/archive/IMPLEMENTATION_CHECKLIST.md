@@ -1,5 +1,7 @@
 # Implementation Checklist - TNFR Usability Improvements
 
+> DEPRECATION NOTICE: This document is archived and not part of the centralized documentation. For current guidance, start at `docs/source/index.rst` and `docs/DOCUMENTATION_INDEX.md`.
+
 ## ✅ Completed Tasks
 
 ### Phase 1: Contextual Error Messages

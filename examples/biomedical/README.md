@@ -1,5 +1,7 @@
 # Biomedical Applications of TNFR
 
+> DEPRECATION NOTICE (Scope): Canonical examples are indexed in `docs/source/examples/README.md`. These domain-specific examples are non-central and may change or move; prefer the centralized examples for authoritative guidance.
+
 This directory contains executable examples demonstrating TNFR structural operators in biomedical and clinical contexts, with emphasis on the **SHA (Silence)** operator.
 
 ## Overview

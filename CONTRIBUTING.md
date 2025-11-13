@@ -157,6 +157,28 @@ Fill out each field with concise, review-ready information:
 - **Equivalence map** — Document any renamed APIs or reorganized entry points
   so downstream integrations can adjust.
 
+## Physics documentation contributions
+
+When contributing documentation that explains or extends TNFR physics (nodal equation, grammar rules, or structural fields):
+
+- Start with the module hub: `src/tnfr/physics/README.md` (includes an expandable guide and a dedicated section “How to contribute physics docs”).
+- Use the canonical tetrad guide: `docs/STRUCTURAL_FIELDS_TETRAD.md` for physics → math → API → thresholds → workflows.
+- Trace rules to grammar: `UNIFIED_GRAMMAR_RULES.md` (U1–U6), and invariants to `AGENTS.md`.
+- Reference research context and validation: `docs/TNFR_FORCES_EMERGENCE.md` (§14–15) for field/emergence evidence.
+
+Principles:
+- Physics-first; avoid duplication by linking to canonical sources.
+- English only; concise sections with headings; math with KaTeX; runnable examples.
+- Read-only telemetry for physics utilities; EPI mutations only via operators.
+- Preserve units (Hz_str) and canonical invariants; include seeds for reproducibility.
+
+PR checklist (physics docs):
+- [ ] Links to canonical sources (tetrad guide, grammar, AGENTS) are present
+- [ ] No redundant duplicate of canonical content; cross-links instead
+- [ ] Examples runnable; seeds and inputs specified
+- [ ] Units/invariants preserved; statements trace back to the nodal equation
+- [ ] If adding research content, it is clearly marked non-canonical until promoted
+
 ## Changelog fragments
 
 All pull requests that touch structural code paths must ship a changelog

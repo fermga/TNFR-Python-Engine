@@ -1,5 +1,7 @@
 # TNFR Examples
 
+> DEPRECATION NOTICE (Scope): Canonical examples are those referenced in `docs/source/examples/README.md`. Other example files in this directory are non-centralized and may be deprecated in future releases. Prefer the centralized examples and documentation paths.
+
 This directory contains Jupyter notebooks and Python examples demonstrating TNFR (Resonant Fractal Nature Theory) concepts and computations.
 
 > **New to TNFR?** Start with the [TNFR Fundamental Concepts Guide](../docs/source/getting-started/TNFR_CONCEPTS.md) to understand the paradigm before diving into examples.

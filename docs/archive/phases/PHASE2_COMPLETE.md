@@ -1,5 +1,7 @@
 # Phase 2: Unified Cache System - ✅ COMPLETE
 
+> DEPRECATION NOTICE: Historical phase report. Not part of centralized docs. See `docs/source/index.rst` and `docs/DOCUMENTATION_INDEX.md`.
+
 **Date**: 2025-11-05  
 **Status**: ✅ Complete  
 **Result**: SUCCESS  

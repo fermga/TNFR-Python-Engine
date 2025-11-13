@@ -7,7 +7,7 @@ This directory contains the complete theoretical foundation of TNFR (Resonant Fr
 ## 📐 Foundational Documents
 
 ### 1. [Mathematical Foundations](mathematical_foundations.md) ⭐ **START HERE**
-**The canonical source for all TNFR mathematics**
+Formal theoretical foundation (complete derivations). For the canonical computational mathematics hub and cross-links to experiments, see `src/tnfr/mathematics/README.md`.
 
 - Hilbert space H_NFR and Banach space B_EPI
 - Coherence operator Ĉ (spectral theory, complete proofs)

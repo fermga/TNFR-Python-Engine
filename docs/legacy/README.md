@@ -1,5 +1,7 @@
 # Legacy Documentation Files
 
+> DEPRECATION NOTICE: This directory is archived and not part of the centralized documentation. For current docs, see `docs/source/index.rst` and `docs/DOCUMENTATION_INDEX.md`.
+
 This directory contains reference documentation that provides detailed implementation notes, audits, and historical context. These files are preserved for completeness but are **not part of the main documentation navigation**.
 
 ## Status

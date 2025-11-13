@@ -231,9 +231,9 @@ def main():
     print("  OZ DISSONANCE NETWORK PROPAGATION DEMONSTRATION")
     print("=" * 60)
     print("\nTNFR Canonical Principle:")
-    print("  'Interferencia nodal: Disonancia entre nodos que")
-    print("   perturba la coherencia. Puede inducir reorganización")
-    print("   o colapso.'")
+    print("  'Nodal interference: Dissonance between nodes that")
+    print("   perturbs coherence. It can induce reorganization")
+    print("   or collapse.'")
     
     demonstrate_basic_propagation()
     demonstrate_phase_filtering()

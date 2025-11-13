@@ -75,6 +75,7 @@ def test_context_valid_configuration_passes_and_integrates(monkeypatch):
         "si_high": 0.7,
     }
     ctx = GrammarContext.from_graph(_graph_with_configs(cfg_soft, cfg_canon))
+    # Window value should be preserved from graph configuration
     assert ctx.cfg_soft["window"] == 4
     # ensure the automaton pipeline still accepts the validated context
     result = enforce_canonical_grammar(ctx.G, 0, Glyph.AL, ctx=ctx)

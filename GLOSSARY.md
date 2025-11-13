@@ -446,7 +446,7 @@ Operators that perform graduated destabilization for phase transitions.
 - [Examples](docs/source/examples/README.md) - Runnable scenarios across domains
 
 ### Grammar & Migration
-- [GRAMMAR_MIGRATION_GUIDE.md](GRAMMAR_MIGRATION_GUIDE.md) - Migration from C1-C3/RC1-RC4 to U1-U6
+- [MIGRATION_GUIDE.md](MIGRATION_GUIDE.md) - Migration from C1-C3/RC1-RC4 to U1-U6
 - [docs/grammar/](docs/grammar/) - Grammar documentation directory (U6, fundamental concepts, etc.)
 - [GLYPH_SEQUENCES_GUIDE.md](GLYPH_SEQUENCES_GUIDE.md) - Operator sequence patterns
 
@@ -461,6 +461,53 @@ This glossary is bidirectionally linked with:
 - **UNIFIED_GRAMMAR_RULES.md** references this glossary for quick lookups
 - **ARCHITECTURE.md** references this glossary for technical terms
 - This glossary references all above documents for complete specifications
+
+---
+
+## Molecular Chemistry from TNFR ⭐ **BREAKTHROUGH**
+
+**Revolutionary paradigm**: Chemistry emerges from TNFR nodal dynamics without additional postulates.
+
+### Element Signatures
+
+**Code:** `tnfr.physics.signatures`  
+**What:** Structural field-based classification of coherent patterns  
+**Metrics:** ξ_C, |∇φ|, |K_φ|, ΔΦ_s drift, stability classification  
+**API:** `compute_element_signature(G)`, `compute_au_like_signature(G)`  
+**Physics:** Elements as coherent attractors in structural space  
+
+### Au-like Patterns
+
+**Symbol:** Au (from Latin 'aurum')  
+**What:** Complex coherent patterns exhibiting metallic properties  
+**Criteria:** Extended ξ_C, phase synchrony (|∇φ| < 2.0), evolution stability  
+**Detection:** `compute_au_like_signature()["is_au_like"]`  
+**Physics:** Optimal multi-scale coordination under nodal dynamics  
+
+### Chemical Bonds (TNFR Redefinition)
+
+**Traditional:** Force between atoms  
+**TNFR:** Phase synchronization with U3 verification: |φᵢ - φⱼ| ≤ Δφ_max  
+**API:** Coupling operators with phase compatibility check  
+**Strength:** Determined by phase coherence and coupling stability  
+
+### Chemical Reactions (TNFR Redefinition)
+
+**Traditional:** Collision/transition state theory  
+**TNFR:** Operator sequences: [Dissonance→Mutation→Coupling→Coherence]  
+**Grammar:** Must satisfy U1-U6 constraints  
+**API:** Sequence validation via `grammar.py`  
+**Example:** Bond formation = [OZ, ZHIR, UM, IL] sequence  
+
+### Molecular Geometry (TNFR Redefinition)
+
+**Traditional:** VSEPR, orbital hybridization  
+**TNFR:** ΔNFR minimization in coupled network topology  
+**Prediction:** Stable configurations minimize reorganization pressure  
+**API:** Network topology analysis after coupling sequences  
+
+**Complete Theory:** [MOLECULAR_CHEMISTRY_FROM_NODAL_DYNAMICS.md](docs/examples/MOLECULAR_CHEMISTRY_FROM_NODAL_DYNAMICS.md)  
+**Implementation:** [Physics README § 9-10](src/tnfr/physics/README.md)
 
 ---
 

@@ -268,7 +268,7 @@ All structural field correlations with ΔC(t) and fragmentation returned 0.000:
 
 ### Data Availability
 
-Full results: `u6_results_with_fields.jsonl` (320 experiments)
+Full results: `benchmarks/results/u6_results_with_fields.jsonl` (320 experiments)
 Analysis script: `tools/analyze_u6_results.py`
 Simulator: `benchmarks/u6_sequence_simulator.py`
 

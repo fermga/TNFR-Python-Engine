@@ -1,8 +1,15 @@
-"""Canonical TNFR compatibility tables expressed via structural operators."""
+"""Compatibility matrices and validation for operator sequences in TNFR.
+
+Physics Basis:
+- Adjacent operators must have resonant phase compatibility
+- Incompatible sequences lead to destructive interference
+- See UNIFIED_GRAMMAR_RULES.md for complete derivations
+"""
 
 from __future__ import annotations
 
 from enum import Enum
+from typing import Any
 
 from ..config.operator_names import (
     COHERENCE,
@@ -19,15 +26,16 @@ from ..config.operator_names import (
     SILENCE,
     TRANSITION,
 )
-from ..operators import grammar as _grammar
 from ..types import Glyph
+# NOTE: Cannot import grammar at module level (circular dependency)
+# Import happens lazily in _translate_structural()
 
 __all__ = [
-    "CANON_COMPAT",
-    "CANON_FALLBACK",
     "CompatibilityLevel",
     "GRADUATED_COMPATIBILITY",
     "get_compatibility_level",
+    "get_canon_compat",
+    "get_canon_fallback",
 ]
 
 
@@ -215,14 +223,16 @@ GRADUATED_COMPATIBILITY: dict[str, dict[str, list[str]]] = {
             RESONANCE,
             COHERENCE,
         ],  # Exploration → linking/amplification/stabilization
-        "good": [TRANSITION],  # Handoff after expansion
+        "good": [
+            TRANSITION,
+            CONTRACTION,
+        ],  # Handoff or compression after expansion
         "caution": [],
         "avoid": [
             EMISSION,
             RECEPTION,
             DISSONANCE,
             SILENCE,
-            CONTRACTION,
             MUTATION,
             SELF_ORGANIZATION,
             RECURSIVITY,
@@ -235,14 +245,13 @@ GRADUATED_COMPATIBILITY: dict[str, dict[str, list[str]]] = {
             EMISSION,
             COHERENCE,
         ],  # Concentration → re-initiation or stabilization
-        "good": [],
+        "good": [SILENCE],  # Contraction can close with silence
         "caution": [],
         "avoid": [
             RECEPTION,
             DISSONANCE,
             COUPLING,
             RESONANCE,
-            SILENCE,
             EXPANSION,
             MUTATION,
             TRANSITION,
@@ -298,7 +307,8 @@ GRADUATED_COMPATIBILITY: dict[str, dict[str, list[str]]] = {
             RESONANCE,
             COHERENCE,
             COUPLING,
-        ],  # Handoff → amplification/stabilization/linking
+            RECEPTION,
+        ],  # Handoff → amplification/stabilization/linking/anchoring
         "good": [
             DISSONANCE,
             MUTATION,
@@ -308,7 +318,6 @@ GRADUATED_COMPATIBILITY: dict[str, dict[str, list[str]]] = {
         "caution": [],
         "avoid": [
             EMISSION,
-            RECEPTION,
             EXPANSION,
             CONTRACTION,
             SELF_ORGANIZATION,
@@ -418,13 +427,19 @@ _STRUCTURAL_COMPAT: dict[str, set[str]] = _generate_binary_compat()
 
 
 def _name_to_glyph(name: str) -> Glyph:
+    # Lazy import to avoid circular dependency
+    from ..operators import grammar as _grammar
+
     glyph = _grammar.function_name_to_glyph(name)
     if glyph is None:
         raise KeyError(f"No glyph mapped to structural operator '{name}'")
     return glyph
 
 
-def _translate_structural() -> tuple[dict[Glyph, set[Glyph]], dict[Glyph, Glyph]]:
+def _translate_structural() -> (
+    tuple[dict[Glyph, set[Glyph]], dict[Glyph, Glyph]]
+):
+    """Translate structural operator names to Glyph enums."""
     compat: dict[Glyph, set[Glyph]] = {}
     for src, targets in _STRUCTURAL_COMPAT.items():
         src_glyph = _name_to_glyph(src)
@@ -452,7 +467,38 @@ _STRUCTURAL_FALLBACK: dict[str, str] = {
     RECURSIVITY: COHERENCE,  # Fractal echo → stabilization
 }
 
-CANON_COMPAT, CANON_FALLBACK = _translate_structural()
+# Lazy initialization to avoid circular import
+_CANON_COMPAT: dict[Glyph, set[Glyph]] | None = None
+_CANON_FALLBACK: dict[Glyph, Glyph] | None = None
+
+
+def _ensure_translated() -> None:
+    """Ensure glyph tables are translated (lazy initialization)."""
+    global _CANON_COMPAT, _CANON_FALLBACK
+    if _CANON_COMPAT is None or _CANON_FALLBACK is None:
+        _CANON_COMPAT, _CANON_FALLBACK = _translate_structural()
+
+
+def get_canon_compat() -> dict[Glyph, set[Glyph]]:
+    """Get canonical compatibility table (glyph → allowed next glyphs)."""
+    _ensure_translated()
+    return _CANON_COMPAT  # type: ignore[return-value]
+
+
+def get_canon_fallback() -> dict[Glyph, Glyph]:
+    """Get canonical fallback table (glyph → fallback glyph)."""
+    _ensure_translated()
+    return _CANON_FALLBACK  # type: ignore[return-value]
+
+
+# For backward compatibility, provide module-level names that trigger lazy init
+def __getattr__(name: str) -> Any:
+    if name == "CANON_COMPAT":
+        return get_canon_compat()
+    elif name == "CANON_FALLBACK":
+        return get_canon_fallback()
+    raise AttributeError(f"module '{__name__}' has no attribute '{name}'")
+
 
 # Re-export structural tables for internal consumers that operate on functional
 # identifiers without exposing them as part of the public API.

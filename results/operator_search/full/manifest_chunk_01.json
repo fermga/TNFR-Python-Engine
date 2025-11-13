@@ -1,0 +1,12 @@
+{
+  "chunk_index": 1,
+  "count": 1000,
+  "cache_hits": 54,
+  "duration_sec": 6.586,
+  "seed": 42,
+  "timestamp": "2025-11-12T15:28:05.697884Z",
+  "git_commit": "ad4e05f0189c642872987013817ffcf5108dbc9c",
+  "nodal_equation": "dEPI/dt = nu_f * DeltaNFR",
+  "backend": "real",
+  "parquet": true
+}

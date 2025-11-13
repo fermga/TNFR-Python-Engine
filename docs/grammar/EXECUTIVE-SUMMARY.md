@@ -325,7 +325,7 @@ The grammar system validates that computational sequences follow **five fundamen
 ### Documentation
 - **Main Guide**: [docs/grammar/README.md](README.md)
 - **Quick Reference**: [docs/grammar/08-QUICK-REFERENCE.md](08-QUICK-REFERENCE.md)
-- **Glossary**: [docs/grammar/GLOSSARY.md](GLOSSARY.md)
+- **Glossary**: [GLOSSARY.md](../../GLOSSARY.md)
 
 ### Code
 - **Repository**: https://github.com/fermga/TNFR-Python-Engine
