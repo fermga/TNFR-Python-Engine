@@ -55,7 +55,7 @@
   </head>
   
   
-    <body dir="ltr">
+    <body dir="ltr" data-md-color-scheme="default">
   
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
@@ -108,7 +108,13 @@
     </div>
     
     
-      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>      
+      
+        <button class="md-header__button md-icon theme-toggle-button" title="Toggle dark/light mode" aria-label="Toggle theme" onclick="toggleTheme()">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" id="theme-icon-light"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.13 7.13 0 0 0 2.38 4.14zm11.3 3.5-1.77-3.79a7.05 7.05 0 0 0 2.38-4.15l4.16-.35c-.14.79-.39 1.55-.83 2.29a7.2 7.2 0 0 1-1.56 1.85zm6.99-10-4.16.35A7.2 7.2 0 0 0 18.06 8.5c.44-.74.69-1.5.83-2.29l1.76 3.77z"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" id="theme-icon-dark" style="display: none;"><path d="M17.75 4.09 15.22 6.62l1.42 1.42 2.53-2.53zM5.34 10.42l-3.53 3.53 1.41 1.42L6.75 12zm12.01 1.42-3.53 3.53 1.42 1.41 3.53-3.53zM21 13h-4v2h4zM3 11h4v2H3zm9.5-8v4h-2V3zM12 19.5v4h-2v-4z"/></svg>
+        </button>
+
     
     
     
@@ -3313,5 +3319,61 @@
       <script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>
       
     
-  </body>
+  
+<script>
+function toggleTheme() {
+  const body = document.body;
+  const currentScheme = body.getAttribute('data-md-color-scheme') || 'default';
+  const newScheme = currentScheme === 'slate' ? 'default' : 'slate';
+  
+  body.setAttribute('data-md-color-scheme', newScheme);
+  
+  // Toggle icon visibility
+  const lightIcon = document.getElementById('theme-icon-light');
+  const darkIcon = document.getElementById('theme-icon-dark');
+  if (lightIcon && darkIcon) {
+    if (newScheme === 'slate') {
+      lightIcon.style.display = 'none';
+      darkIcon.style.display = 'block';
+    } else {
+      lightIcon.style.display = 'block';
+      darkIcon.style.display = 'none';
+    }
+  }
+  
+  // Save preference
+  localStorage.setItem('theme-preference', newScheme);
+}
+
+// Initialize theme immediately
+(function() {
+  const savedTheme = localStorage.getItem('theme-preference') || 'default';
+  const body = document.body;
+  body.setAttribute('data-md-color-scheme', savedTheme);
+  
+  // Wait for DOM to set icon visibility
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+      updateThemeIcons(savedTheme);
+    });
+  } else {
+    updateThemeIcons(savedTheme);
+  }
+  
+  function updateThemeIcons(theme) {
+    const lightIcon = document.getElementById('theme-icon-light');
+    const darkIcon = document.getElementById('theme-icon-dark');
+    if (lightIcon && darkIcon) {
+      if (theme === 'slate') {
+        lightIcon.style.display = 'none';
+        darkIcon.style.display = 'block';
+      } else {
+        lightIcon.style.display = 'block';
+        darkIcon.style.display = 'none';
+      }
+    }
+  }
+})();
+</script>
+</body>
 </html>
