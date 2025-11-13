@@ -6,7 +6,7 @@ readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
 license-files = ["LICENSE.md"]
-authors = [{ name = "FMG", orcid = "0009-0007-6116-0613" }]
+authors = [{ name = "F. F. Martinez Gamo", orcid = "0009-0007-6116-0613" }]
 keywords = [
   "TNFR", "Resonant Fractal Nature Theory", "complex systems", "fractals", "resonance", 
   "networks", "structural dynamics", "structural operators", "coherence theory",
