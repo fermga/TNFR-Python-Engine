@@ -1,0 +1,6446 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Canonical TNFR structural dynamics engine documentation">
+      
+      
+      
+        <link rel="canonical" href="https://fermga.github.io/TNFR-Python-Engine/grammar/07-MIGRATION-AND-EVOLUTION/">
+      
+      
+        <link rel="prev" href="../06-VALIDATION-AND-TESTING/">
+      
+      
+        <link rel="next" href="../08-QUICK-REFERENCE/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>Migration and Evolution - TNFR Python Engine</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.618322db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#migration-and-evolution" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="TNFR Python Engine" class="md-header__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            TNFR Python Engine
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Migration and Evolution
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    TNFR Python Engine
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="TNFR Python Engine" class="md-nav__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    TNFR Python Engine
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    TNFR Python Engine
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting Started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Welcome to TNFR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/getting-started/LEARNING_PATHS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Learning Paths
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/getting-started/quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quickstart Tutorial
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/getting-started/TNFR_CONCEPTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core Concepts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/getting-started/INTERACTIVE_TUTORIAL/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interactive Tutorial
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/getting-started/FAQ/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    FAQ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/getting-started/math-backends/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Math Backends
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/getting-started/optional-dependencies/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Optional Dependencies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/getting-started/migrating-remesh-window/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migrating from Remesh Window
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    User Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/user-guide/OPERATORS_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operators Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../STRUCTURAL_FIELDS_TETRAD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural Field Tetrad (Canonical)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/user-guide/METRICS_INTERPRETATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Metrics Interpretation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TROUBLESHOOTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar Documentation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Grammar Documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../EXECUTIVE-SUMMARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Executive Summary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_3" id="__nav_4_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core Concepts
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Core Concepts
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01-FUNDAMENTAL-CONCEPTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fundamental Concepts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02-CANONICAL-CONSTRAINTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Canonical Constraints
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03-OPERATORS-AND-GLYPHS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operators and Glyphs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04-VALID-SEQUENCES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Valid Sequences
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4_4" id="__nav_4_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Implementation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05-TECHNICAL-IMPLEMENTATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Technical Implementation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06-VALIDATION-AND-TESTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation and Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migration and Evolution
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migration and Evolution
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#purpose" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Purpose
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#evolution-timeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Evolution Timeline
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Evolution Timeline">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phase-1-c1-c3-legacy-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 1: C1-C3 (Legacy System)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-2-rc1-rc4-resonant-constraints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 2: RC1-RC4 (Resonant Constraints)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-3-u1-u5-unified-grammar-current" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 3: U1-U5 (Unified Grammar) ✓ Current
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mapping-old-to-new" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mapping Old to New
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Mapping Old to New">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#c1-u1a-initiation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C1 → U1a (Initiation)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c2-u2-convergence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C2 → U2 (Convergence)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c3-u1b-closure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C3 → U1b (Closure)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rc1-rc4-u1-u4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RC1-RC4 → U1-U4
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deprecated-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deprecated Features
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Deprecated Features">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#deprecated-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deprecated Files
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deprecated-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deprecated Functions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deprecated-terminology" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deprecated Terminology
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#migration-guide" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Migration Guide
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Migration Guide">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-update-imports" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1: Update Imports
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-update-function-calls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Update Function Calls
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-update-operator-sets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Update Operator Sets
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-update-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4: Update Tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-5-update-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5: Update Documentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#breaking-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Breaking Changes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Breaking Changes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#version-20-u1-u5-introduction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Version 2.0: U1-U5 Introduction
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#compatibility-layers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Compatibility Layers
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Compatibility Layers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#legacy-support-temporary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Legacy Support (Temporary)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#procedure-for-adding-new-constraints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Procedure for Adding New Constraints
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Procedure for Adding New Constraints">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pre-requisites-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pre-requisites Checklist
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-by-step-procedure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step-by-Step Procedure
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step-by-Step Procedure">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-physical-derivation-physics-first" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1: Physical Derivation (Physics-First)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-implementation-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Implementation (Code)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-testing-comprehensive" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Testing (Comprehensive)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-documentation-updates-complete-traceability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4: Documentation Updates (Complete Traceability)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-5-examples-and-use-cases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5: Examples and Use Cases
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-6-verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 6: Verification
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-7-create-pull-request" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 7: Create Pull Request
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-8-human-review-process" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 8: Human Review Process
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#post-merge-actions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Post-Merge Actions
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#procedure-for-modifying-existing-constraints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Procedure for Modifying Existing Constraints
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Procedure for Modifying Existing Constraints">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#warning-high-risk-operation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ⚠️ WARNING: High-Risk Operation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#when-modification-is-justified" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When Modification is Justified
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-by-step-procedure_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step-by-Step Procedure
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step-by-Step Procedure">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-0-document-rationale-critical" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 0: Document Rationale (CRITICAL)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-1-physics-review-committee" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1: Physics Review Committee
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-create-feature-branch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Create Feature Branch
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-update-documentation-first-doc-driven" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Update Documentation First (Doc-Driven)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-5-update-tests-comprehensively" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5: Update Tests Comprehensively
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-6-version-and-changelog" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 6: Version and Changelog
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-7-create-pull-request_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 7: Create Pull Request
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-8-extended-review-process" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 8: Extended Review Process
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-9-deprecation-timeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 9: Deprecation Timeline
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-10-communication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 10: Communication
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#post-modification-monitoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Post-Modification Monitoring
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#policy-for-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Policy for Changes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Policy for Changes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#change-classification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Change Classification
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mandatory-requirements-for-all-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mandatory Requirements for ALL Changes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#review-requirements-by-change-type" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Review Requirements by Change Type
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Review Requirements by Change Type">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#major-changes-breaking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MAJOR Changes (Breaking)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#minor-changes-non-breaking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MINOR Changes (Non-breaking)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#patch-changes-fixes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PATCH Changes (Fixes)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#automated-checks-ci-must-pass" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Automated Checks (CI Must Pass)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#merge-authorization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Merge Authorization
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#semantic-versioning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Semantic Versioning
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stability-promise" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Stability Promise
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#integrity-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Integrity Checklist
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Integrity Checklist">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pre-merge-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pre-Merge Checklist
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Pre-Merge Checklist">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#code" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Code
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cross-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cross-References
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#schemas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Schemas
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Examples
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#anti-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Anti-Patterns
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#compatibility-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Compatibility Matrix
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#static-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Static Analysis
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#performance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Performance
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#human-review" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Human Review
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#post-merge-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Post-Merge Checklist
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#guidelines-for-copilot-and-ai-agents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Guidelines for Copilot and AI Agents
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Guidelines for Copilot and AI Agents">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-ai-agents-can-do" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What AI Agents CAN Do
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-ai-agents-must-request-approval-for" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What AI Agents MUST REQUEST APPROVAL For
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-ai-agents-should-report-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How AI Agents Should Report Issues
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-ai-agents-should-coordinate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How AI Agents Should Coordinate
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#code-of-conduct-for-ai-agents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Code of Conduct for AI Agents
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#copilot-specific-guidelines" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Copilot-Specific Guidelines
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#when-to-escalate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When to Escalate
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#roadmap-future-constraints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Roadmap: Future Constraints
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Roadmap: Future Constraints">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#potential-future-constraints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Potential Future Constraints
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#u5-multi-scale-coherence-under-consideration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        U5: Multi-Scale Coherence (Under Consideration)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#u6-structural-potential-confinement-canonical-2025-11-11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        U6: STRUCTURAL POTENTIAL CONFINEMENT ✅ CANONICAL (2025-11-11)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#proposed-u7-temporal-ordering-research-stage-formerly-experimental-u6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Proposed U7: Temporal Ordering (Research Stage - Formerly Experimental U6)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#u8-network-topology-constraints-research-stage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        U8: Network Topology Constraints (Research Stage)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-these-are-not-u5-u7-yet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why These Are Not U5-U7 Yet
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#community-input-welcome" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Community Input Welcome
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-history" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Version History
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Version History">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#v200-current" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        v2.0.0 (Current)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#v150" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        v1.5.0
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#v100" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        v1.0.0
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#future-directions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Future Directions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Future Directions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#potential-extensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Potential Extensions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#research-topics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Research Topics
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getting-help" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Getting Help
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Getting Help">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#migration-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Migration Issues
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Questions
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Next Steps
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_5" id="__nav_4_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../08-QUICK-REFERENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../GLOSSARY.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MASTER-INDEX/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Master Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OPERATORS-CATALOG-SUMMARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operators Catalog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CROSS-REFERENCE-INDEX/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cross-Reference Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CODE_DOCS_CROSSREF/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code Documentation Cross-Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_6" id="__nav_4_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tooling
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tooling
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TOOLING-AND-AUTOMATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tooling and Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TESTING-SUMMARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing Summary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DEPRECATION-INDEX.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deprecation Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Examples
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_2" id="__nav_5_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Notebooks & Patterns
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Notebooks & Patterns
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/notebooks/Fundamental_Particles_TNFR_Atlas.ipynb" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fundamental Particles TNFR Atlas (Notebook - GitHub)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/README.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    TNFR Patterns (Module Guide)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../INTERACTIONS_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interaction Sequences Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/api/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/api/operators/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural Operators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/api/OPERATORS_VISUAL_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operators Visual Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/api/telemetry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Telemetry & Utilities
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/api/docstring_style/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docstring Style
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module Documentation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Module Documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modules/mathematics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mathematics Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modules/physics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Physics Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modules/operators/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operators Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modules/dynamics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dynamics Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modules/metrics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Metrics Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modules/sdk/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SDK Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modules/telemetry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Telemetry Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modules/tutorials/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modules/extensions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Extensions Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core Documentation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Core Documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DOCUMENTATION_INDEX/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Documentation Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CANONICAL_SOURCES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Canonical Sources
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../UNIFIED_GRAMMAR_RULES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Unified Grammar Rules
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../AGENTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Agents Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../GLOSSARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Advanced Topics
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Advanced Topics
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/advanced/ARCHITECTURE_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/advanced/PERFORMANCE_OPTIMIZATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Performance Optimization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/advanced/TESTING_STRATEGIES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing Strategies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/advanced/DEVELOPMENT_WORKFLOW/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development Workflow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/foundations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mathematical Foundations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_9_6" id="__nav_9_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Research Documents
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_9_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Research Documents
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TNFR_FORCES_EMERGENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Forces Emergence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../OPERATOR_COMPLETENESS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator Completeness
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../LIFE_EMERGENCE_FROM_TNFR/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Life Emergence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CELL_EMERGENCE_FROM_TNFR/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cell Emergence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/tools/CLI/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Security
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/security/monitoring/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Monitoring
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/security/dependency-auditing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dependency Auditing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/security/codeql/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CodeQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/security/dependabot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dependabot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
+        
+          
+          <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Info
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Project Info
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/releases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="migration-and-evolution">Migration and Evolution<a class="headerlink" href="#migration-and-evolution" title="Permanent link">&para;</a></h1>
+<p><strong>History of the TNFR grammar system and migration guidance</strong></p>
+<p><a href="../">🏠 Home</a> • <a href="../02-CANONICAL-CONSTRAINTS/">📐 Constraints</a> • <a href="../05-TECHNICAL-IMPLEMENTATION/">💻 Implementation</a> • <a href="../06-VALIDATION-AND-TESTING/">🧪 Testing</a></p>
+<hr />
+<h2 id="purpose">Purpose<a class="headerlink" href="#purpose" title="Permanent link">&para;</a></h2>
+<p>This document chronicles the <strong>evolution</strong> of the TNFR grammar system and provides guidance for migrating from older versions.</p>
+<p><strong>Audience:</strong> Maintainers, contributors migrating old code</p>
+<p><strong>Reading time:</strong> 20-30 minutes</p>
+<hr />
+<h2 id="evolution-timeline">Evolution Timeline<a class="headerlink" href="#evolution-timeline" title="Permanent link">&para;</a></h2>
+<h3 id="phase-1-c1-c3-legacy-system">Phase 1: C1-C3 (Legacy System)<a class="headerlink" href="#phase-1-c1-c3-legacy-system" title="Permanent link">&para;</a></h3>
+<p><strong>File:</strong> <code>src/tnfr/operators/grammar.py</code> (early versions)</p>
+<p><strong>Constraints:</strong>
+- <strong>C1:</strong> Initiation - Must start with specific operators
+- <strong>C2:</strong> Convergence - Destabilizers need stabilizers
+- <strong>C3:</strong> Closure - Must end with specific operators</p>
+<p><strong>Limitations:</strong>
+- Incomplete coverage of physical requirements
+- No explicit phase verification
+- No bifurcation dynamics handling
+- Some arbitrary rules not derived from physics</p>
+<h3 id="phase-2-rc1-rc4-resonant-constraints">Phase 2: RC1-RC4 (Resonant Constraints)<a class="headerlink" href="#phase-2-rc1-rc4-resonant-constraints" title="Permanent link">&para;</a></h3>
+<p><strong>File:</strong> <code>src/tnfr/operators/canonical_grammar.py</code> (deprecated)</p>
+<p><strong>Constraints:</strong>
+- <strong>RC1:</strong> Resonant initiation
+- <strong>RC2:</strong> Bounded evolution
+- <strong>RC3:</strong> Phase compatibility
+- <strong>RC4:</strong> Structural closure</p>
+<p><strong>Improvements:</strong>
+- Introduced phase verification concept
+- Better physical grounding
+- Still some overlap and redundancy</p>
+<p><strong>Issues:</strong>
+- Parallel system to C1-C3 caused confusion
+- Not fully integrated
+- Incomplete derivations</p>
+<h3 id="phase-3-u1-u5-unified-grammar-current">Phase 3: U1-U5 (Unified Grammar) ✓ Current<a class="headerlink" href="#phase-3-u1-u5-unified-grammar-current" title="Permanent link">&para;</a></h3>
+<p><strong>File:</strong> <code>src/tnfr/operators/grammar.py</code> (current)</p>
+<p><strong>Constraints:</strong>
+- <strong>U1:</strong> STRUCTURAL INITIATION &amp; CLOSURE
+  - U1a: Generators
+  - U1b: Closures
+- <strong>U2:</strong> CONVERGENCE &amp; BOUNDEDNESS
+- <strong>U3:</strong> RESONANT COUPLING
+- <strong>U4:</strong> BIFURCATION DYNAMICS
+  - U4a: Triggers need handlers
+  - U4b: Transformers need context
+- <strong>U5:</strong> MULTI-SCALE COHERENCE
+  - Deep REMESH needs stabilizers (IL/THOL)</p>
+<p><strong>Achievements:</strong>
+- <strong>Complete:</strong> All physical requirements covered
+- <strong>Non-redundant:</strong> No overlap between constraints
+- <strong>Canonical:</strong> All constraints ABSOLUTE or STRONG
+- <strong>Traceable:</strong> Every rule derived from TNFR physics
+- <strong>Unified:</strong> Single system, no parallel alternatives</p>
+<hr />
+<h2 id="mapping-old-to-new">Mapping Old to New<a class="headerlink" href="#mapping-old-to-new" title="Permanent link">&para;</a></h2>
+<h3 id="c1-u1a-initiation">C1 → U1a (Initiation)<a class="headerlink" href="#c1-u1a-initiation" title="Permanent link">&para;</a></h3>
+<p><strong>Old (C1):</strong>
+<div class="highlight"><pre><span></span><code><span class="c1"># Must start with Emission</span>
+<span class="k">if</span> <span class="n">sequence</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">Emission</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="n">Error</span><span class="p">(</span><span class="s2">&quot;C1 violation&quot;</span><span class="p">)</span>
+</code></pre></div></p>
+<p><strong>New (U1a):</strong>
+<div class="highlight"><pre><span></span><code><span class="c1"># Must start with any generator {AL, NAV, REMESH}</span>
+<span class="k">if</span> <span class="n">epi_initial</span> <span class="o">==</span> <span class="mf">0.0</span> <span class="ow">and</span> <span class="n">sequence</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">GENERATORS</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;U1a violation&quot;</span><span class="p">)</span>
+</code></pre></div></p>
+<p><strong>Key Changes:</strong>
+- More flexible: 3 generators instead of 1
+- Conditional: Only required when EPI=0
+- Physically derived: From ∂EPI/∂t undefined at EPI=0</p>
+<h3 id="c2-u2-convergence">C2 → U2 (Convergence)<a class="headerlink" href="#c2-u2-convergence" title="Permanent link">&para;</a></h3>
+<p><strong>Old (C2):</strong>
+<div class="highlight"><pre><span></span><code><span class="c1"># Destabilizers need stabilizers (similar logic)</span>
+<span class="k">if</span> <span class="n">has_destabilizer</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">has_stabilizer</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="n">Error</span><span class="p">(</span><span class="s2">&quot;C2 violation&quot;</span><span class="p">)</span>
+</code></pre></div></p>
+<p><strong>New (U2):</strong>
+<div class="highlight"><pre><span></span><code><span class="c1"># Same concept, refined sets</span>
+<span class="n">DESTABILIZERS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;dissonance&quot;</span><span class="p">,</span> <span class="s2">&quot;mutation&quot;</span><span class="p">,</span> <span class="s2">&quot;expansion&quot;</span><span class="p">}</span>
+<span class="n">STABILIZERS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;coherence&quot;</span><span class="p">,</span> <span class="s2">&quot;selforganization&quot;</span><span class="p">}</span>
+
+<span class="k">if</span> <span class="n">has_destabilizer</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">has_stabilizer</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;U2 violation: Integral may diverge&quot;</span><span class="p">)</span>
+</code></pre></div></p>
+<p><strong>Key Changes:</strong>
+- Refined operator sets
+- Explicit physical basis: Integral convergence theorem
+- Better error messages with physical explanation</p>
+<h3 id="c3-u1b-closure">C3 → U1b (Closure)<a class="headerlink" href="#c3-u1b-closure" title="Permanent link">&para;</a></h3>
+<p><strong>Old (C3):</strong>
+<div class="highlight"><pre><span></span><code><span class="c1"># Must end with Silence</span>
+<span class="k">if</span> <span class="n">sequence</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">Silence</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="n">Error</span><span class="p">(</span><span class="s2">&quot;C3 violation&quot;</span><span class="p">)</span>
+</code></pre></div></p>
+<p><strong>New (U1b):</strong>
+<div class="highlight"><pre><span></span><code><span class="c1"># Must end with any closure {SHA, NAV, REMESH, OZ}</span>
+<span class="k">if</span> <span class="n">sequence</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">CLOSURES</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;U1b violation&quot;</span><span class="p">)</span>
+</code></pre></div></p>
+<p><strong>Key Changes:</strong>
+- More flexible: 4 closures instead of 1
+- Physically derived: From attractor dynamics</p>
+<h3 id="rc1-rc4-u1-u4">RC1-RC4 → U1-U4<a class="headerlink" href="#rc1-rc4-u1-u4" title="Permanent link">&para;</a></h3>
+<p><strong>Consolidation:</strong>
+- RC1 + RC4 → U1 (unified initiation &amp; closure)
+- RC2 → U2 (refined convergence)
+- RC3 → U3 (explicit phase verification)
+- New: U4 (bifurcation dynamics added)</p>
+<p><strong>Result:</strong> Simpler, more complete, fully unified</p>
+<hr />
+<h2 id="deprecated-features">Deprecated Features<a class="headerlink" href="#deprecated-features" title="Permanent link">&para;</a></h2>
+<h3 id="deprecated-files">Deprecated Files<a class="headerlink" href="#deprecated-files" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>❌ src/tnfr/operators/canonical_grammar.py
+   → Use src/tnfr/operators/grammar.py
+
+❌ Old constraint names (C1-C3, RC1-RC4)
+   → Use unified names (U1-U4)
+</code></pre></div>
+<h3 id="deprecated-functions">Deprecated Functions<a class="headerlink" href="#deprecated-functions" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># OLD (deprecated)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.operators.canonical_grammar</span><span class="w"> </span><span class="kn">import</span> <span class="n">validate_sequence</span>
+<span class="n">validate_sequence</span><span class="p">(</span><span class="n">ops</span><span class="p">)</span>
+
+<span class="c1"># NEW (current)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.operators.grammar</span><span class="w"> </span><span class="kn">import</span> <span class="n">validate_grammar</span>
+<span class="n">validate_grammar</span><span class="p">(</span><span class="n">ops</span><span class="p">,</span> <span class="n">epi_initial</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="deprecated-terminology">Deprecated Terminology<a class="headerlink" href="#deprecated-terminology" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Old Term</th>
+<th>New Term</th>
+<th>Reason</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"Constraint C1"</td>
+<td>"U1a: Initiation"</td>
+<td>Clearer, unified naming</td>
+</tr>
+<tr>
+<td>"Constraint C2"</td>
+<td>"U2: Convergence"</td>
+<td>More descriptive</td>
+</tr>
+<tr>
+<td>"Constraint C3"</td>
+<td>"U1b: Closure"</td>
+<td>Part of unified U1</td>
+</tr>
+<tr>
+<td>"Canonical grammar"</td>
+<td>"Unified grammar"</td>
+<td>Avoid confusion with "canonical operators"</td>
+</tr>
+<tr>
+<td>"Resonant constraints"</td>
+<td>"Grammar constraints"</td>
+<td>Simpler terminology</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="migration-guide">Migration Guide<a class="headerlink" href="#migration-guide" title="Permanent link">&para;</a></h2>
+<h3 id="step-1-update-imports">Step 1: Update Imports<a class="headerlink" href="#step-1-update-imports" title="Permanent link">&para;</a></h3>
+<p><strong>Before:</strong>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.operators.canonical_grammar</span><span class="w"> </span><span class="kn">import</span> <span class="n">validate_sequence</span><span class="p">,</span> <span class="n">GENERATORS_RC</span>
+</code></pre></div></p>
+<p><strong>After:</strong>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.operators.grammar</span><span class="w"> </span><span class="kn">import</span> <span class="n">validate_grammar</span><span class="p">,</span> <span class="n">GENERATORS</span>
+</code></pre></div></p>
+<h3 id="step-2-update-function-calls">Step 2: Update Function Calls<a class="headerlink" href="#step-2-update-function-calls" title="Permanent link">&para;</a></h3>
+<p><strong>Before:</strong>
+<div class="highlight"><pre><span></span><code><span class="n">validate_sequence</span><span class="p">(</span><span class="n">operators</span><span class="p">)</span>
+</code></pre></div></p>
+<p><strong>After:</strong>
+<div class="highlight"><pre><span></span><code><span class="n">validate_grammar</span><span class="p">(</span><span class="n">operators</span><span class="p">,</span> <span class="n">epi_initial</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+</code></pre></div></p>
+<h3 id="step-3-update-operator-sets">Step 3: Update Operator Sets<a class="headerlink" href="#step-3-update-operator-sets" title="Permanent link">&para;</a></h3>
+<p><strong>Before:</strong>
+<div class="highlight"><pre><span></span><code><span class="k">if</span> <span class="n">op</span> <span class="ow">in</span> <span class="n">GENERATORS_OLD</span><span class="p">:</span>
+    <span class="c1"># ...</span>
+</code></pre></div></p>
+<p><strong>After:</strong>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.operators.grammar</span><span class="w"> </span><span class="kn">import</span> <span class="n">GENERATORS</span>
+
+<span class="k">if</span> <span class="n">op</span> <span class="ow">in</span> <span class="n">GENERATORS</span><span class="p">:</span>
+    <span class="c1"># ...</span>
+</code></pre></div></p>
+<h3 id="step-4-update-tests">Step 4: Update Tests<a class="headerlink" href="#step-4-update-tests" title="Permanent link">&para;</a></h3>
+<p><strong>Before:</strong>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">test_c1_initiation</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test C1 constraint.&quot;&quot;&quot;</span>
+    <span class="c1"># Old test logic</span>
+</code></pre></div></p>
+<p><strong>After:</strong>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">test_u1a_initiation</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test U1a constraint.&quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.operators.grammar</span><span class="w"> </span><span class="kn">import</span> <span class="n">validate_grammar</span>
+    <span class="c1"># New test logic with U1a</span>
+</code></pre></div></p>
+<h3 id="step-5-update-documentation">Step 5: Update Documentation<a class="headerlink" href="#step-5-update-documentation" title="Permanent link">&para;</a></h3>
+<p><strong>Before:</strong>
+<div class="highlight"><pre><span></span><code><span class="gu">## Constraints</span>
+
+<span class="gu">### C1: Initiation</span>
+Must start with Emission.
+</code></pre></div></p>
+<p><strong>After:</strong>
+<div class="highlight"><pre><span></span><code><span class="gu">## Constraints</span>
+
+<span class="gu">### U1a: Initiation</span>
+Must start with generator {Emission, Transition, Recursivity} when EPI=0.
+</code></pre></div></p>
+<hr />
+<h2 id="breaking-changes">Breaking Changes<a class="headerlink" href="#breaking-changes" title="Permanent link">&para;</a></h2>
+<h3 id="version-20-u1-u5-introduction">Version 2.0: U1-U5 Introduction<a class="headerlink" href="#version-20-u1-u5-introduction" title="Permanent link">&para;</a></h3>
+<p><strong>Breaking changes:</strong>
+1. Function signature changed: <code>validate_sequence()</code> → <code>validate_grammar(sequence, epi_initial)</code>
+2. Operator set names changed: <code>GENERATORS_RC</code> → <code>GENERATORS</code>
+3. New mandatory parameter: <code>epi_initial</code> (default 0.0)
+4. New constraint: U3 (phase verification) must be called explicitly for coupling
+5. New constraint: U4b (transformer context) may reject previously "valid" sequences
+6. New constraint: U5 (multi-scale coherence) requires stabilizers for deep REMESH</p>
+<p><strong>Impact:</strong>
+- Code using old API will break
+- Some sequences previously considered valid may now be invalid (if they violate U4b)
+- Tests must be updated</p>
+<p><strong>Migration effort:</strong> Medium (~2-4 hours for typical project)</p>
+<hr />
+<h2 id="compatibility-layers">Compatibility Layers<a class="headerlink" href="#compatibility-layers" title="Permanent link">&para;</a></h2>
+<h3 id="legacy-support-temporary">Legacy Support (Temporary)<a class="headerlink" href="#legacy-support-temporary" title="Permanent link">&para;</a></h3>
+<p><strong>File:</strong> <code>src/tnfr/operators/unified_grammar.py</code></p>
+<p>Provides temporary bridge for old code:</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">validate_sequence</span><span class="p">(</span><span class="n">sequence</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Legacy compatibility wrapper.</span>
+
+<span class="sd">    Deprecated: Use validate_grammar() instead.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+        <span class="s2">&quot;validate_sequence() is deprecated. Use validate_grammar()&quot;</span><span class="p">,</span>
+        <span class="ne">DeprecationWarning</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">validate_grammar</span><span class="p">(</span><span class="n">sequence</span><span class="p">,</span> <span class="n">epi_initial</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>Usage:</strong>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.operators.unified_grammar</span><span class="w"> </span><span class="kn">import</span> <span class="n">validate_sequence</span>
+
+<span class="c1"># Works, but shows deprecation warning</span>
+<span class="n">validate_sequence</span><span class="p">(</span><span class="n">ops</span><span class="p">)</span>
+</code></pre></div></p>
+<p><strong>Timeline:</strong>
+- ✅ Available: Now
+- ⚠️ Deprecated: Version 2.0
+- ❌ Removed: Version 3.0 (planned)</p>
+<hr />
+<h2 id="procedure-for-adding-new-constraints">Procedure for Adding New Constraints<a class="headerlink" href="#procedure-for-adding-new-constraints" title="Permanent link">&para;</a></h2>
+<h3 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h3>
+<p>Adding a new constraint (U5, U6, etc.) is a <strong>significant change</strong> that requires:
+- Rigorous physical derivation
+- Complete documentation
+- Comprehensive testing
+- <strong>Mandatory human review</strong></p>
+<p><strong>Estimated effort:</strong> 8-16 hours
+<strong>Review requirement:</strong> At least 1 senior TNFR physicist + 1 code reviewer</p>
+<hr />
+<h3 id="pre-requisites-checklist">Pre-requisites Checklist<a class="headerlink" href="#pre-requisites-checklist" title="Permanent link">&para;</a></h3>
+<p>Before proposing a new constraint, verify:</p>
+<ul>
+<li>[ ] <strong>Physical necessity:</strong> Constraint prevents physically impossible sequences</li>
+<li>[ ] <strong>Independence:</strong> Cannot be derived from existing U1-U4</li>
+<li>[ ] <strong>Canonicity:</strong> Has ABSOLUTE, STRONG, or MODERATE status</li>
+<li>[ ] <strong>Universality:</strong> Applies across all domains (not domain-specific)</li>
+<li>[ ] <strong>Completeness:</strong> No gaps or ambiguity in specification</li>
+</ul>
+<p><strong>If any checkbox fails, the constraint should NOT be added.</strong></p>
+<hr />
+<h3 id="step-by-step-procedure">Step-by-Step Procedure<a class="headerlink" href="#step-by-step-procedure" title="Permanent link">&para;</a></h3>
+<h4 id="step-1-physical-derivation-physics-first">Step 1: Physical Derivation (Physics-First)<a class="headerlink" href="#step-1-physical-derivation-physics-first" title="Permanent link">&para;</a></h4>
+<p><strong>File:</strong> <code>02-CANONICAL-CONSTRAINTS.md</code></p>
+<p><strong>Required sections:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="gu">## U5: [CONSTRAINT NAME]</span>
+
+<span class="gu">### Physical Basis</span>
+[What physical law/invariant necessitates this constraint?]
+
+From nodal equation: ∂EPI/∂t = νf · ΔNFR(t)
+[Show how violation leads to non-physical behavior]
+
+<span class="gu">### Intuition</span>
+[Simple explanation in 2-3 sentences]
+[Use analogy if helpful]
+
+<span class="gu">### Formal Derivation</span>
+[Mathematical proof from TNFR physics]
+
+Step 1: [Starting assumption from nodal equation/invariants]
+Step 2: [Logical progression]
+Step 3: [Conclusion - why constraint is inevitable]
+
+<span class="gu">### Canonicity Level</span>
+
+<span class="gs">**Classification:**</span> [ABSOLUTE | STRONG | MODERATE]
+
+<span class="gs">**Justification:**</span> 
+[Why this level? Reference AGENTS.md § Canonicity]
+
+<span class="gu">### Operator Sets</span>
+
+<span class="gs">**Affected operators:**</span> {OP1, OP2, ...}
+
+<span class="gs">**Required operators:**</span> {OP_A, OP_B, ...} (if constraint violated)
+
+<span class="gu">### Anti-Patterns</span>
+
+Examples of sequences that violate U5:
+
+<span class="k">1.</span> <span class="sb">`[OP1, OP2, OP3]`</span> - Violates because [reason]
+<span class="k">2.</span> <span class="sb">`[OP4, OP5]`</span> - Violates because [reason]
+
+<span class="gu">### Valid Patterns</span>
+
+Examples of sequences that satisfy U5:
+
+<span class="k">1.</span> <span class="sb">`[OP1, OP_A, OP3]`</span> - Valid because [reason]
+<span class="k">2.</span> <span class="sb">`[OP4, OP_B, OP5]`</span> - Valid because [reason]
+</code></pre></div>
+<p><strong>Physics review required before proceeding.</strong></p>
+<hr />
+<h4 id="step-2-implementation-code">Step 2: Implementation (Code)<a class="headerlink" href="#step-2-implementation-code" title="Permanent link">&para;</a></h4>
+<p><strong>File:</strong> <code>src/tnfr/operators/grammar.py</code></p>
+<p><strong>2.1 Update operator sets</strong> (if needed):</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Add new operator sets if U5 requires categorization</span>
+<span class="n">U5_CATEGORY_A</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;operator1&quot;</span><span class="p">,</span> <span class="s2">&quot;operator2&quot;</span><span class="p">}</span>
+<span class="n">U5_CATEGORY_B</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;operator3&quot;</span><span class="p">,</span> <span class="s2">&quot;operator4&quot;</span><span class="p">}</span>
+</code></pre></div>
+<p><strong>2.2 Implement validation logic:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">validate_grammar</span><span class="p">(</span>
+    <span class="n">sequence</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Operator</span><span class="p">],</span>
+    <span class="n">epi_initial</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Validate sequence against U1-U5 constraints.&quot;&quot;&quot;</span>
+
+    <span class="c1"># ... existing U1-U4 checks ...</span>
+
+    <span class="c1"># --- U5: [CONSTRAINT NAME] ---</span>
+    <span class="c1"># Physical basis: [one-line summary]</span>
+    <span class="c1"># Canonicity: [ABSOLUTE/STRONG/MODERATE]</span>
+
+    <span class="c1"># Check condition</span>
+    <span class="n">has_category_a</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span>
+        <span class="n">glyph_function_name</span><span class="p">(</span><span class="n">op</span><span class="p">)</span> <span class="ow">in</span> <span class="n">U5_CATEGORY_A</span> 
+        <span class="k">for</span> <span class="n">op</span> <span class="ow">in</span> <span class="n">sequence</span>
+    <span class="p">)</span>
+    <span class="n">has_category_b</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span>
+        <span class="n">glyph_function_name</span><span class="p">(</span><span class="n">op</span><span class="p">)</span> <span class="ow">in</span> <span class="n">U5_CATEGORY_B</span> 
+        <span class="k">for</span> <span class="n">op</span> <span class="ow">in</span> <span class="n">sequence</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">has_category_a</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">has_category_b</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;U5 violation: [CONSTRAINT NAME]. &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Found </span><span class="si">{</span><span class="p">[</span><span class="n">op</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">op</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">sequence</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">glyph_function_name</span><span class="p">(</span><span class="n">op</span><span class="p">)</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">U5_CATEGORY_A</span><span class="p">]</span><span class="si">}</span><span class="s2">, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;but missing required </span><span class="si">{</span><span class="n">U5_CATEGORY_B</span><span class="si">}</span><span class="s2">. &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Physical basis: [brief explanation]. &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;See UNIFIED_GRAMMAR_RULES.md § U5.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="kc">True</span>
+</code></pre></div>
+<p><strong>2.3 Update docstrings:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="sd">&quot;&quot;&quot;TNFR Canonical Grammar - Single Source of Truth.</span>
+
+<span class="sd">Canonical Constraints (U1-U5)</span>
+<span class="sd">------------------------------</span>
+<span class="sd">U1: STRUCTURAL INITIATION &amp; CLOSURE</span>
+<span class="sd">    ...</span>
+<span class="sd">U5: [CONSTRAINT NAME]</span>
+<span class="sd">    [Brief description]</span>
+<span class="sd">    Basis: [Physical derivation reference]</span>
+<span class="sd">&quot;&quot;&quot;</span>
+</code></pre></div>
+<hr />
+<h4 id="step-3-testing-comprehensive">Step 3: Testing (Comprehensive)<a class="headerlink" href="#step-3-testing-comprehensive" title="Permanent link">&para;</a></h4>
+<p><strong>File:</strong> <code>tests/unit/operators/test_unified_grammar.py</code></p>
+<p><strong>3.1 Valid sequence tests:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">TestU5ConstraintValid</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test valid sequences for U5: [CONSTRAINT NAME].&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_u5_valid_basic</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;U5: Basic valid sequence.&quot;&quot;&quot;</span>
+        <span class="n">sequence</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="c1"># Valid sequence that satisfies U5</span>
+        <span class="p">]</span>
+        <span class="k">assert</span> <span class="n">validate_grammar</span><span class="p">(</span><span class="n">sequence</span><span class="p">,</span> <span class="n">epi_initial</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">True</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_u5_valid_complex</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;U5: Complex valid sequence.&quot;&quot;&quot;</span>
+        <span class="n">sequence</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="c1"># More complex valid sequence</span>
+        <span class="p">]</span>
+        <span class="k">assert</span> <span class="n">validate_grammar</span><span class="p">(</span><span class="n">sequence</span><span class="p">,</span> <span class="n">epi_initial</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">True</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_u5_not_applicable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;U5: Sequence where U5 doesn&#39;t apply.&quot;&quot;&quot;</span>
+        <span class="n">sequence</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="c1"># Sequence that doesn&#39;t trigger U5 check</span>
+        <span class="p">]</span>
+        <span class="k">assert</span> <span class="n">validate_grammar</span><span class="p">(</span><span class="n">sequence</span><span class="p">,</span> <span class="n">epi_initial</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">True</span>
+</code></pre></div>
+<p><strong>3.2 Invalid sequence tests:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">TestU5ConstraintInvalid</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test invalid sequences for U5: [CONSTRAINT NAME].&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_u5_invalid_basic</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;U5: Basic violation.&quot;&quot;&quot;</span>
+        <span class="n">sequence</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="c1"># Sequence that violates U5</span>
+        <span class="p">]</span>
+        <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="n">match</span><span class="o">=</span><span class="s2">&quot;U5 violation&quot;</span><span class="p">):</span>
+            <span class="n">validate_grammar</span><span class="p">(</span><span class="n">sequence</span><span class="p">,</span> <span class="n">epi_initial</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_u5_invalid_edge_case</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;U5: Edge case violation.&quot;&quot;&quot;</span>
+        <span class="n">sequence</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="c1"># Edge case that violates U5</span>
+        <span class="p">]</span>
+        <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="n">match</span><span class="o">=</span><span class="s2">&quot;U5 violation&quot;</span><span class="p">):</span>
+            <span class="n">validate_grammar</span><span class="p">(</span><span class="n">sequence</span><span class="p">,</span> <span class="n">epi_initial</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>3.3 Integration tests:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">test_u5_with_other_constraints</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;U5: Interaction with U1-U4.&quot;&quot;&quot;</span>
+    <span class="c1"># Test that U5 doesn&#39;t conflict with U1-U4</span>
+    <span class="n">sequence</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="c1"># Sequence that satisfies all U1-U5</span>
+    <span class="p">]</span>
+    <span class="k">assert</span> <span class="n">validate_grammar</span><span class="p">(</span><span class="n">sequence</span><span class="p">,</span> <span class="n">epi_initial</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">True</span>
+</code></pre></div>
+<p><strong>Coverage requirement:</strong> U5 tests must achieve ≥95% coverage of new code</p>
+<hr />
+<h4 id="step-4-documentation-updates-complete-traceability">Step 4: Documentation Updates (Complete Traceability)<a class="headerlink" href="#step-4-documentation-updates-complete-traceability" title="Permanent link">&para;</a></h4>
+<p><strong>4.1 Update canonical constraints:</strong>
+- <code>docs/grammar/02-CANONICAL-CONSTRAINTS.md</code> - Full derivation (from Step 1)</p>
+<p><strong>4.2 Update examples:</strong>
+- <code>docs/grammar/04-VALID-SEQUENCES.md</code> - Add U5 examples</p>
+<p><div class="highlight"><pre><span></span><code><span class="gu">### U5: [CONSTRAINT NAME]</span>
+
+<span class="gs">**Valid:**</span>
+</code></pre></div>
+[AL, ..., IL, ..., SHA]  ✓ Satisfies U5
+<div class="highlight"><pre><span></span><code>**Invalid:**
+</code></pre></div>
+[AL, ..., SHA]  ✗ Violates U5 - missing required operator
+<div class="highlight"><pre><span></span><code>**Rationale:** [Physical explanation]
+</code></pre></div></p>
+<p><strong>4.3 Update reference:</strong>
+- <code>docs/grammar/08-QUICK-REFERENCE.md</code> - Add U5 to summary table</p>
+<p><strong>4.4 Update schema:</strong>
+- <code>docs/grammar/schemas/constraints-u1-u4.json</code> → <code>constraints-u1-u5.json</code></p>
+<p><strong>4.5 Update this file:</strong>
+- Add U5 to history timeline
+- Update "Current State" section</p>
+<p><strong>4.6 Update cross-references:</strong>
+- <code>docs/grammar/CODE_DOCS_CROSSREF.md</code> - Link code ↔ docs
+- <code>docs/grammar/CROSS-REFERENCE-INDEX.md</code> - Add U5 entries</p>
+<p><strong>4.7 Update root documentation:</strong>
+- <code>UNIFIED_GRAMMAR_RULES.md</code> - Add complete U5 derivation
+- <code>AGENTS.md</code> - Update operator counts if needed</p>
+<hr />
+<h4 id="step-5-examples-and-use-cases">Step 5: Examples and Use Cases<a class="headerlink" href="#step-5-examples-and-use-cases" title="Permanent link">&para;</a></h4>
+<p><strong>File:</strong> <code>docs/grammar/examples/05-u5-constraint.py</code></p>
+<div class="highlight"><pre><span></span><code><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Example: U5 Constraint - [CONSTRAINT NAME]</span>
+
+<span class="sd">Physical basis: [Brief explanation]</span>
+
+<span class="sd">This example demonstrates:</span>
+<span class="sd">1. Valid sequences satisfying U5</span>
+<span class="sd">2. Invalid sequences violating U5</span>
+<span class="sd">3. How to compose operators to satisfy U5</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.operators.definitions</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Emission</span><span class="p">,</span>
+    <span class="c1"># ... other operators</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.operators.unified_grammar</span><span class="w"> </span><span class="kn">import</span> <span class="n">validate_grammar</span>
+
+<span class="c1"># ============================================================================</span>
+<span class="c1"># Valid Sequence</span>
+<span class="c1"># ============================================================================</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">valid_u5_sequence</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Sequence that satisfies U5.&quot;&quot;&quot;</span>
+    <span class="n">sequence</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">Emission</span><span class="p">(),</span>      <span class="c1"># U1a: Generator</span>
+        <span class="c1"># ... operators that satisfy U5 ...</span>
+        <span class="n">Silence</span><span class="p">(),</span>       <span class="c1"># U1b: Closure</span>
+    <span class="p">]</span>
+
+    <span class="k">assert</span> <span class="n">validate_grammar</span><span class="p">(</span><span class="n">sequence</span><span class="p">,</span> <span class="n">epi_initial</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">True</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;✓ Valid U5 sequence&quot;</span><span class="p">)</span>
+
+<span class="c1"># ============================================================================</span>
+<span class="c1"># Invalid Sequence (Commented)</span>
+<span class="c1"># ============================================================================</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">invalid_u5_sequence</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Sequence that violates U5.</span>
+
+<span class="sd">    ✗ Violates U5 because [reason]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">sequence</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">Emission</span><span class="p">(),</span>
+        <span class="c1"># ... operators that violate U5 ...</span>
+        <span class="n">Silence</span><span class="p">(),</span>
+    <span class="p">]</span>
+
+    <span class="c1"># Would raise: ValueError(&quot;U5 violation: ...&quot;)</span>
+    <span class="c1"># validate_grammar(sequence, epi_initial=0.0)</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">valid_u5_sequence</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">For invalid example, see code comments.&quot;</span><span class="p">)</span>
+</code></pre></div>
+<hr />
+<h4 id="step-6-verification">Step 6: Verification<a class="headerlink" href="#step-6-verification" title="Permanent link">&para;</a></h4>
+<p><strong>6.1 Run sync tool:</strong></p>
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>tools/sync_documentation.py<span class="w"> </span>--all
+</code></pre></div>
+<p><strong>Expected output:</strong>
+<div class="highlight"><pre><span></span><code>✓ All documentation synchronized
+✓ Examples execute correctly
+✓ Cross-references valid
+✓ Schema updated
+✓ No broken links
+</code></pre></div></p>
+<p><strong>6.2 Run test suite:</strong></p>
+<div class="highlight"><pre><span></span><code>pytest<span class="w"> </span>tests/unit/operators/test_unified_grammar.py::TestU5*<span class="w"> </span>-v
+pytest<span class="w"> </span>tests/<span class="w"> </span>--cov<span class="o">=</span>src/tnfr/operators/grammar<span class="w"> </span>--cov-report<span class="o">=</span>term-missing
+</code></pre></div>
+<p><strong>Required:</strong> Coverage ≥ 95% on modified code</p>
+<p><strong>6.3 Run static analysis:</strong></p>
+<div class="highlight"><pre><span></span><code>mypy<span class="w"> </span>src/tnfr/operators/grammar.py
+ruff<span class="w"> </span>check<span class="w"> </span>src/tnfr/operators/grammar.py
+</code></pre></div>
+<p><strong>Required:</strong> No new warnings or errors</p>
+<hr />
+<h4 id="step-7-create-pull-request">Step 7: Create Pull Request<a class="headerlink" href="#step-7-create-pull-request" title="Permanent link">&para;</a></h4>
+<p><strong>Branch naming:</strong> <code>feature/add-u5-[constraint-name]</code></p>
+<p><strong>PR Template:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="gu">## Add U5: [CONSTRAINT NAME]</span>
+
+<span class="gu">### Physical Justification</span>
+[Summary of physical derivation]
+
+From nodal equation: ∂EPI/∂t = νf · ΔNFR(t)
+[Key physics insight]
+
+<span class="gu">### Canonicity</span>
+<span class="gs">**Level:**</span> [ABSOLUTE | STRONG | MODERATE]
+<span class="gs">**Basis:**</span> [Reference to derivation]
+
+<span class="gu">### Changes</span>
+
+<span class="gu">#### Code</span>
+<span class="k">-</span><span class="w"> </span><span class="sb">`src/tnfr/operators/grammar.py`</span>: Added U5 validation
+<span class="k">-</span><span class="w"> </span>New operator sets: [list if applicable]
+
+<span class="gu">#### Tests</span>
+<span class="k">-</span><span class="w"> </span><span class="sb">`tests/unit/operators/test_unified_grammar.py`</span>: 
+<span class="w">  </span><span class="k">- [X]</span> Valid sequences (N tests)
+<span class="w">  </span><span class="k">- [X]</span> Invalid sequences (M tests)
+<span class="w">  </span><span class="k">- [X]</span> Edge cases (K tests)
+<span class="w">  </span><span class="k">- [X]</span> Integration with U1-U4
+
+<span class="gu">#### Documentation</span>
+<span class="k">- [X]</span> <span class="sb">`02-CANONICAL-CONSTRAINTS.md`</span> - Complete derivation
+<span class="k">- [X]</span> <span class="sb">`04-VALID-SEQUENCES.md`</span> - Examples
+<span class="k">- [X]</span> <span class="sb">`08-QUICK-REFERENCE.md`</span> - Summary
+<span class="k">- [X]</span> Schema updated
+<span class="k">- [X]</span> Cross-references updated
+<span class="k">- [X]</span> Examples added
+
+<span class="gu">### Testing</span>
+<span class="k">-</span><span class="w"> </span>Coverage: [X]% (required ≥95%)
+<span class="k">-</span><span class="w"> </span>All tests passing: ✓
+<span class="k">-</span><span class="w"> </span>No regressions: ✓
+
+<span class="gu">### Checklist</span>
+<span class="k">- [X]</span> Physical derivation complete
+<span class="k">- [X]</span> Canonicity proven
+<span class="k">- [X]</span> Independence from U1-U4 verified
+<span class="k">- [X]</span> Code implemented
+<span class="k">- [X]</span> Tests comprehensive (≥95% coverage)
+<span class="k">- [X]</span> Documentation complete
+<span class="k">- [X]</span> Examples working
+<span class="k">- [X]</span> Sync tool passing
+<span class="k">- [X]</span> No static analysis warnings
+<span class="k">- [ ]</span> <span class="gs">**Human physics review**</span> (REQUIRED)
+<span class="k">- [ ]</span> <span class="gs">**Human code review**</span> (REQUIRED)
+
+<span class="gu">### Reviewers</span>
+<span class="k">-</span><span class="w"> </span>Physics review: @[physicist]
+<span class="k">-</span><span class="w"> </span>Code review: @[developer]
+
+<span class="gu">### Breaking Changes</span>
+<span class="k">- [ ]</span> May reject previously valid sequences
+<span class="k">-</span><span class="w"> </span>Mitigation: [strategy if applicable]
+</code></pre></div>
+<hr />
+<h4 id="step-8-human-review-process">Step 8: Human Review Process<a class="headerlink" href="#step-8-human-review-process" title="Permanent link">&para;</a></h4>
+<p><strong>MANDATORY - Cannot merge without:</strong></p>
+<ol>
+<li><strong>Physics review</strong> by senior TNFR physicist:</li>
+<li>Validates physical derivation</li>
+<li>Confirms canonicity level</li>
+<li>
+<p>Checks independence from U1-U4</p>
+</li>
+<li>
+<p><strong>Code review</strong> by maintainer:</p>
+</li>
+<li>Reviews implementation correctness</li>
+<li>Validates test coverage</li>
+<li>Checks documentation completeness</li>
+</ol>
+<p><strong>Review timeline:</strong> Allow 3-7 days for thorough review</p>
+<hr />
+<h3 id="post-merge-actions">Post-Merge Actions<a class="headerlink" href="#post-merge-actions" title="Permanent link">&para;</a></h3>
+<p>After U5 is merged:</p>
+<ol>
+<li><strong>Update version:</strong></li>
+<li>Major version bump (breaking change)</li>
+<li>
+<p>Update <code>pyproject.toml</code></p>
+</li>
+<li>
+<p><strong>Announce change:</strong></p>
+</li>
+<li>Add to <code>CHANGELOG.md</code></li>
+<li>Update release notes</li>
+<li>
+<p>Notify users via GitHub discussions</p>
+</li>
+<li>
+<p><strong>Monitor issues:</strong></p>
+</li>
+<li>Track reports of U5 violations</li>
+<li>
+<p>Address false positives promptly</p>
+</li>
+<li>
+<p><strong>Update training materials:</strong></p>
+</li>
+<li>Add U5 to tutorials</li>
+<li>Update quickstart guides</li>
+</ol>
+<hr />
+<h2 id="procedure-for-modifying-existing-constraints">Procedure for Modifying Existing Constraints<a class="headerlink" href="#procedure-for-modifying-existing-constraints" title="Permanent link">&para;</a></h2>
+<h3 id="warning-high-risk-operation">⚠️ WARNING: High-Risk Operation<a class="headerlink" href="#warning-high-risk-operation" title="Permanent link">&para;</a></h3>
+<p>Modifying U1-U4 is <strong>extremely dangerous</strong> because:
+- Sequences validated under old rules may now be invalid (breaking change)
+- Physics basis must remain sound (no arbitrary changes)
+- Affects all dependent code and documentation</p>
+<p><strong>Modification requires:</strong>
+- Discovery of physics error in original derivation, OR
+- New physical understanding that supersedes old model</p>
+<p><strong>Estimated effort:</strong> 16-40 hours
+<strong>Review requirement:</strong> 2+ senior TNFR physicists + 2+ code reviewers</p>
+<hr />
+<h3 id="when-modification-is-justified">When Modification is Justified<a class="headerlink" href="#when-modification-is-justified" title="Permanent link">&para;</a></h3>
+<p><strong>Valid reasons:</strong>
+1. <strong>Physics error found:</strong> Original derivation has mathematical/logical error
+2. <strong>New physics insight:</strong> Deeper understanding requires refinement
+3. <strong>Incompleteness:</strong> Constraint doesn't cover all physical cases</p>
+<p><strong>Invalid reasons (DO NOT MODIFY):</strong>
+- "Code would be simpler" - Convenience ≠ Physics
+- "Current constraint too strict" - Strictness reflects physics
+- "Want different operator sets" - Sets derive from physics</p>
+<hr />
+<h3 id="step-by-step-procedure_1">Step-by-Step Procedure<a class="headerlink" href="#step-by-step-procedure_1" title="Permanent link">&para;</a></h3>
+<h4 id="step-0-document-rationale-critical">Step 0: Document Rationale (CRITICAL)<a class="headerlink" href="#step-0-document-rationale-critical" title="Permanent link">&para;</a></h4>
+<p><strong>File:</strong> Create <code>docs/proposals/modify-[constraint]-[date].md</code></p>
+<div class="highlight"><pre><span></span><code><span class="gh"># Proposal: Modify [U1|U2|U3|U4]</span>
+
+<span class="gu">## Current State</span>
+
+<span class="gu">### Current Definition</span>
+[Exact current constraint text from 02-CANONICAL-CONSTRAINTS.md]
+
+<span class="gu">### Current Physical Basis</span>
+[Current derivation]
+
+<span class="gu">### Current Canonicity</span>
+[ABSOLUTE|STRONG|MODERATE]
+
+<span class="gu">## Problem Statement</span>
+
+<span class="gu">### What is wrong?</span>
+[Detailed explanation of issue]
+
+<span class="gu">### Evidence</span>
+[Proof that current constraint is incorrect or incomplete]
+<span class="k">-</span><span class="w"> </span>Mathematical error: [show where]
+<span class="k">-</span><span class="w"> </span>Physics contradiction: [demonstrate]
+<span class="k">-</span><span class="w"> </span>Empirical observation: [provide data]
+
+<span class="gu">## Proposed Change</span>
+
+<span class="gu">### New Definition</span>
+[Proposed constraint text]
+
+<span class="gu">### New Physical Basis</span>
+[Updated derivation showing why new version is correct]
+
+<span class="gu">### New Canonicity</span>
+[ABSOLUTE|STRONG|MODERATE] [why this level]
+
+<span class="gu">## Impact Analysis</span>
+
+<span class="gu">### Breaking Changes</span>
+<span class="k">-</span><span class="w"> </span>Sequences previously valid now invalid: [estimate number]
+<span class="k">-</span><span class="w"> </span>Sequences previously invalid now valid: [estimate number]
+
+<span class="gu">### Affected Code</span>
+<span class="k">-</span><span class="w"> </span>Files requiring changes: [list]
+<span class="k">-</span><span class="w"> </span>Tests requiring updates: [list]
+
+<span class="gu">### Migration Path</span>
+[How users will adapt to change]
+
+<span class="gu">## Alternatives Considered</span>
+
+<span class="k">1.</span> [Alternative approach A] - Rejected because [reason]
+<span class="k">2.</span> [Alternative approach B] - Rejected because [reason]
+
+<span class="gu">## Timeline</span>
+
+<span class="k">-</span><span class="w"> </span>Proposal: [date]
+<span class="k">-</span><span class="w"> </span>Review period: [2-4 weeks]
+<span class="k">-</span><span class="w"> </span>Implementation: [if approved]
+<span class="k">-</span><span class="w"> </span>Deprecation period: [1-2 versions]
+<span class="k">-</span><span class="w"> </span>Full migration: [version X.0.0]
+</code></pre></div>
+<p><strong>Submit proposal as GitHub issue with label:</strong> <code>grammar-modification-proposal</code></p>
+<p><strong>Review period:</strong> Minimum 2 weeks for community feedback</p>
+<hr />
+<h4 id="step-1-physics-review-committee">Step 1: Physics Review Committee<a class="headerlink" href="#step-1-physics-review-committee" title="Permanent link">&para;</a></h4>
+<p><strong>Required approvals:</strong> 2+ senior TNFR physicists</p>
+<p><strong>Review criteria:</strong>
+- [ ] Physical error in current constraint clearly demonstrated
+- [ ] Proposed constraint fixes error without introducing new problems
+- [ ] Canonicity level justified
+- [ ] No alternative solution within current framework</p>
+<p><strong>Committee decision:</strong>
+- <strong>Approved:</strong> Proceed to implementation
+- <strong>Rejected:</strong> Close proposal, current constraint stays
+- <strong>Revise:</strong> Request changes and re-submit</p>
+<hr />
+<h4 id="step-2-create-feature-branch">Step 2: Create Feature Branch<a class="headerlink" href="#step-2-create-feature-branch" title="Permanent link">&para;</a></h4>
+<p><strong>Branch naming:</strong> <code>breaking/modify-[constraint]-[issue-number]</code></p>
+<p>Example: <code>breaking/modify-u2-convergence-3142</code></p>
+<p><strong>NEVER modify grammar on main branch directly</strong></p>
+<hr />
+<h4 id="step-3-update-documentation-first-doc-driven">Step 3: Update Documentation First (Doc-Driven)<a class="headerlink" href="#step-3-update-documentation-first-doc-driven" title="Permanent link">&para;</a></h4>
+<p><strong>3.1 Update canonical constraints:</strong></p>
+<p><code>docs/grammar/02-CANONICAL-CONSTRAINTS.md</code>:</p>
+<p><div class="highlight"><pre><span></span><code><span class="gu">## U2: CONVERGENCE &amp; BOUNDEDNESS [REVISED 2024-11-10]</span>
+
+<span class="k">&gt; </span><span class="ge">**⚠️ BREAKING CHANGE in v3.0.0**  </span>
+<span class="k">&gt; </span><span class="ge">Previous definition modified due to [reason].  </span>
+<span class="k">&gt; </span><span class="ge">See migration guide for adapting existing code.</span>
+
+<span class="gu">### Previous Definition (v2.x - DEPRECATED)</span>
+
+[Old constraint text]
+
+<span class="gs">**Deprecated reason:**</span> [Why old version was incorrect]
+
+<span class="gu">### Current Definition (v3.0.0+)</span>
+
+[New constraint text]
+
+<span class="gu">### Physical Basis</span>
+
+[Updated derivation]
+
+<span class="gu">### What Changed</span>
+
+<span class="gs">**Old requirement:**</span> [summary]
+<span class="gs">**New requirement:**</span> [summary]
+
+<span class="gs">**Example:**</span>
+</code></pre></div>
+[Old valid sequence] - Now invalid because [reason]
+[New valid sequence] - Now valid because [reason]
+<div class="highlight"><pre><span></span><code>### Canonicity
+
+[ABSOLUTE|STRONG|MODERATE]
+
+[Justification]
+</code></pre></div></p>
+<p><strong>3.2 Update migration guide:</strong></p>
+<p>Add new section to this file (<code>07-MIGRATION-AND-EVOLUTION.md</code>):</p>
+<div class="highlight"><pre><span></span><code><span class="gu">### v3.0.0: U2 Revision</span>
+
+<span class="gs">**Released:**</span> [date]
+<span class="gs">**Breaking change:**</span> U2 definition modified
+
+<span class="gs">**Old U2 (v2.x):**</span>
+[Summary of old constraint]
+
+<span class="gs">**New U2 (v3.x):**</span>
+[Summary of new constraint]
+
+<span class="gs">**Migration:**</span>
+```python
+<span class="gh"># Code that was valid in v2.x</span>
+old_sequence = [...]  # No longer valid
+
+<span class="gh"># Updated for v3.x</span>
+new_sequence = [...]  # Now required
+</code></pre></div>
+<p><strong>Rationale:</strong> [Why change was necessary]
+<div class="highlight"><pre><span></span><code>**3.3 Update examples:**
+
+Update all examples in `docs/grammar/04-VALID-SEQUENCES.md` that use modified constraint
+
+---
+
+#### Step 4: Update Implementation
+
+**File:** `src/tnfr/operators/grammar.py`
+
+**4.1 Add deprecation path:**
+
+```python
+def validate_grammar(
+    sequence: List[Operator],
+    epi_initial: float = 0.0,
+    strict: bool = True,  # New parameter
+) -&gt; bool:
+    &quot;&quot;&quot;
+    Validate sequence against U1-U4 constraints.
+
+    Parameters
+    ----------
+    strict : bool, default=True
+        If True, use v3.0 constraint definitions (breaking changes).
+        If False, use v2.x definitions (deprecated, will be removed in v4.0).
+
+    Warnings
+    --------
+    strict=False is deprecated and will be removed in v4.0.
+    Update code to satisfy v3.0 constraints.
+    &quot;&quot;&quot;
+
+    if not strict:
+        warnings.warn(
+            &quot;strict=False is deprecated (v2.x compatibility mode). &quot;
+            &quot;Will be removed in v4.0. Update code for v3.0 constraints.&quot;,
+            DeprecationWarning,
+            stacklevel=2
+        )
+        # Use old validation logic (temporarily)
+        return _validate_grammar_v2(sequence, epi_initial)
+
+    # ... U1-U4 validation with NEW definitions ...
+</code></pre></div></p>
+<p><strong>4.2 Keep old implementation temporarily:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_validate_grammar_v2</span><span class="p">(</span>
+    <span class="n">sequence</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Operator</span><span class="p">],</span>
+    <span class="n">epi_initial</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Legacy v2.x validation (DEPRECATED).</span>
+
+<span class="sd">    For backward compatibility only. Will be removed in v4.0.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Old U2 logic here</span>
+    <span class="c1"># ...</span>
+</code></pre></div>
+<hr />
+<h4 id="step-5-update-tests-comprehensively">Step 5: Update Tests Comprehensively<a class="headerlink" href="#step-5-update-tests-comprehensively" title="Permanent link">&para;</a></h4>
+<p><strong>5.1 Add new tests for modified constraint:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">TestU2RevisedV3</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Tests for revised U2 constraint (v3.0+).&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_u2_revised_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;U2 (v3.0): Valid under new definition.&quot;&quot;&quot;</span>
+        <span class="n">sequence</span> <span class="o">=</span> <span class="p">[</span><span class="o">...</span><span class="p">]</span>  <span class="c1"># Valid in v3.0</span>
+        <span class="k">assert</span> <span class="n">validate_grammar</span><span class="p">(</span><span class="n">sequence</span><span class="p">,</span> <span class="n">epi_initial</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">True</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_u2_revised_invalid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;U2 (v3.0): Invalid under new definition.&quot;&quot;&quot;</span>
+        <span class="n">sequence</span> <span class="o">=</span> <span class="p">[</span><span class="o">...</span><span class="p">]</span>  <span class="c1"># Invalid in v3.0</span>
+        <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="n">match</span><span class="o">=</span><span class="s2">&quot;U2 violation&quot;</span><span class="p">):</span>
+            <span class="n">validate_grammar</span><span class="p">(</span><span class="n">sequence</span><span class="p">,</span> <span class="n">epi_initial</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_u2_breaking_change</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;U2: Sequence valid in v2.x but invalid in v3.0.&quot;&quot;&quot;</span>
+        <span class="n">sequence</span> <span class="o">=</span> <span class="p">[</span><span class="o">...</span><span class="p">]</span>  <span class="c1"># Was valid in v2.x</span>
+
+        <span class="c1"># Works with legacy mode</span>
+        <span class="k">assert</span> <span class="n">validate_grammar</span><span class="p">(</span><span class="n">sequence</span><span class="p">,</span> <span class="n">epi_initial</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">True</span>
+
+        <span class="c1"># Fails with new constraint</span>
+        <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="n">match</span><span class="o">=</span><span class="s2">&quot;U2 violation&quot;</span><span class="p">):</span>
+            <span class="n">validate_grammar</span><span class="p">(</span><span class="n">sequence</span><span class="p">,</span> <span class="n">epi_initial</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>5.2 Update existing tests:</strong></p>
+<p>Review ALL tests that use modified constraint:
+- Update sequences to satisfy new definition
+- Add comments explaining changes
+- Ensure no regressions</p>
+<p><strong>5.3 Migration tests:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">test_deprecation_warning</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verify strict=False emits DeprecationWarning.&quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">warns</span><span class="p">(</span><span class="ne">DeprecationWarning</span><span class="p">,</span> <span class="n">match</span><span class="o">=</span><span class="s2">&quot;strict=False is deprecated&quot;</span><span class="p">):</span>
+        <span class="n">validate_grammar</span><span class="p">([</span><span class="o">...</span><span class="p">],</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</code></pre></div>
+<hr />
+<h4 id="step-6-version-and-changelog">Step 6: Version and Changelog<a class="headerlink" href="#step-6-version-and-changelog" title="Permanent link">&para;</a></h4>
+<p><strong>6.1 Update version:</strong></p>
+<p><code>pyproject.toml</code>:
+<div class="highlight"><pre><span></span><code><span class="k">[project]</span>
+<span class="n">version</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;3.0.0&quot;</span><span class="w">  </span><span class="c1"># Major bump for breaking change</span>
+</code></pre></div></p>
+<p><strong>6.2 Update changelog:</strong></p>
+<p><code>CHANGELOG.md</code>:
+<div class="highlight"><pre><span></span><code><span class="gu">## [3.0.0] - 2024-11-XX</span>
+
+<span class="gu">### ⚠️ BREAKING CHANGES</span>
+
+<span class="gu">#### U2: CONVERGENCE &amp; BOUNDEDNESS - Revised</span>
+
+<span class="gs">**Reason:**</span> [Why change was necessary]
+
+<span class="gs">**Old behavior (v2.x):**</span>
+[Description]
+
+<span class="gs">**New behavior (v3.x):**</span>
+[Description]
+
+<span class="gs">**Migration:**</span>
+<span class="k">1.</span> Review sequences using U2
+<span class="k">2.</span> Update to satisfy new definition
+<span class="k">3.</span> Test with <span class="sb">`strict=True`</span> (default in v3.0)
+<span class="k">4.</span> Remove <span class="sb">`strict=False`</span> calls (deprecated)
+
+<span class="gs">**Backward compatibility:**</span>
+<span class="k">-</span><span class="w"> </span><span class="sb">`strict=False`</span> available in v3.x (emits warning)
+<span class="k">-</span><span class="w"> </span>Will be REMOVED in v4.0
+
+See: docs/grammar/07-MIGRATION-AND-EVOLUTION.md § v3.0.0 Migration
+</code></pre></div></p>
+<hr />
+<h4 id="step-7-create-pull-request_1">Step 7: Create Pull Request<a class="headerlink" href="#step-7-create-pull-request_1" title="Permanent link">&para;</a></h4>
+<p><strong>Branch:</strong> <code>breaking/modify-[constraint]-[issue-number]</code></p>
+<p><strong>PR Template:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="gu">## 🚨 BREAKING CHANGE: Modify [U1|U2|U3|U4]</span>
+
+<span class="gu">### Rationale</span>
+[Link to proposal doc]
+[Summary of why change is necessary]
+
+<span class="gu">### Physics Review</span>
+<span class="k">-</span><span class="w"> </span>Approved by: @[physicist1], @[physicist2]
+<span class="k">-</span><span class="w"> </span>Issue: #[proposal-issue]
+
+<span class="gu">### Changes</span>
+
+<span class="gu">#### Constraint Definition</span>
+<span class="gs">**Old:**</span>
+[Old constraint summary]
+
+<span class="gs">**New:**</span>
+[New constraint summary]
+
+<span class="gu">#### Breaking Impact</span>
+<span class="k">-</span><span class="w"> </span>Sequences now invalid: [examples]
+<span class="k">-</span><span class="w"> </span>Sequences now valid: [examples]
+
+<span class="gu">#### Code Changes</span>
+<span class="k">-</span><span class="w"> </span><span class="sb">`src/tnfr/operators/grammar.py`</span>: Updated U[N] validation
+<span class="k">-</span><span class="w"> </span>Added <span class="sb">`strict`</span> parameter for backward compatibility
+<span class="k">-</span><span class="w"> </span>Old logic preserved in <span class="sb">`_validate_grammar_v2()`</span> (temp)
+
+<span class="gu">#### Tests</span>
+<span class="k">- [X]</span> New tests for revised constraint
+<span class="k">- [X]</span> Updated existing tests
+<span class="k">- [X]</span> Migration/deprecation tests
+<span class="k">- [X]</span> Coverage ≥95%
+
+<span class="gu">#### Documentation</span>
+<span class="k">- [X]</span> <span class="sb">`02-CANONICAL-CONSTRAINTS.md`</span> - Updated derivation
+<span class="k">- [X]</span> <span class="sb">`04-VALID-SEQUENCES.md`</span> - Updated examples
+<span class="k">- [X]</span> <span class="sb">`07-MIGRATION-AND-EVOLUTION.md`</span> - Migration guide
+<span class="k">- [X]</span> <span class="sb">`CHANGELOG.md`</span> - Breaking change documented
+<span class="k">- [X]</span> All cross-references updated
+
+<span class="gu">### Compatibility</span>
+<span class="k">-</span><span class="w"> </span><span class="sb">`strict=False`</span> provides v2.x behavior (deprecated)
+<span class="k">-</span><span class="w"> </span>Deprecation warning emitted
+<span class="k">-</span><span class="w"> </span>To be removed in v4.0
+
+<span class="gu">### Checklist</span>
+<span class="k">- [X]</span> Proposal approved by physics committee
+<span class="k">- [X]</span> Implementation matches approved design
+<span class="k">- [X]</span> Tests comprehensive (≥95% coverage)
+<span class="k">- [X]</span> Documentation complete
+<span class="k">- [X]</span> Deprecation path clear
+<span class="k">- [X]</span> Examples updated
+<span class="k">- [ ]</span> <span class="gs">**Final physics review**</span> (REQUIRED)
+<span class="k">- [ ]</span> <span class="gs">**Code review**</span> (REQUIRED)
+<span class="k">- [ ]</span> <span class="gs">**User testing**</span> (1-week beta period)
+
+<span class="gu">### Reviewers</span>
+Required:
+<span class="k">-</span><span class="w"> </span>Physics: @[physicist1], @[physicist2]
+<span class="k">-</span><span class="w"> </span>Code: @[maintainer1], @[maintainer2]
+
+<span class="gu">### Deployment Plan</span>
+<span class="k">1.</span> Merge to <span class="sb">`main`</span> (after approvals)
+<span class="k">2.</span> Release v3.0.0-beta.1
+<span class="k">3.</span> Beta testing period: 1-2 weeks
+<span class="k">4.</span> Address feedback
+<span class="k">5.</span> Release v3.0.0
+<span class="k">6.</span> Announce via all channels
+<span class="k">7.</span> Monitor issues closely
+</code></pre></div>
+<hr />
+<h4 id="step-8-extended-review-process">Step 8: Extended Review Process<a class="headerlink" href="#step-8-extended-review-process" title="Permanent link">&para;</a></h4>
+<p><strong>Required reviews:</strong>
+1. <strong>Physics committee:</strong> 2+ approvals
+2. <strong>Code maintainers:</strong> 2+ approvals
+3. <strong>Community feedback:</strong> Minimum 1 week</p>
+<p><strong>Beta testing:</strong>
+1. Release v3.0.0-beta.1
+2. Solicit community testing
+3. Collect feedback
+4. Address issues
+5. Release v3.0.0 when stable</p>
+<hr />
+<h4 id="step-9-deprecation-timeline">Step 9: Deprecation Timeline<a class="headerlink" href="#step-9-deprecation-timeline" title="Permanent link">&para;</a></h4>
+<p><strong>Version 3.0.0 (Release):</strong>
+- New constraint active by default (<code>strict=True</code>)
+- Old constraint available via <code>strict=False</code>
+- DeprecationWarning emitted</p>
+<p><strong>Version 3.1.0 - 3.x.x:</strong>
+- Continue supporting <code>strict=False</code>
+- Warning messages emphasize upcoming removal</p>
+<p><strong>Version 4.0.0:</strong>
+- REMOVE <code>strict</code> parameter
+- REMOVE <code>_validate_grammar_v2()</code>
+- Only new constraint remains</p>
+<p><strong>Timeline:</strong> Minimum 6 months between v3.0.0 and v4.0.0</p>
+<hr />
+<h4 id="step-10-communication">Step 10: Communication<a class="headerlink" href="#step-10-communication" title="Permanent link">&para;</a></h4>
+<p><strong>Announce on all channels:</strong></p>
+<ol>
+<li><strong>GitHub:</strong></li>
+<li>Release notes (detailed)</li>
+<li>Discussions post</li>
+<li>
+<p>Update README if needed</p>
+</li>
+<li>
+<p><strong>Documentation:</strong></p>
+</li>
+<li>Migration guide prominent on docs site</li>
+<li>
+<p>Banner on API docs</p>
+</li>
+<li>
+<p><strong>Community:</strong></p>
+</li>
+<li>Email to users list</li>
+<li>Blog post explaining change</li>
+<li>Q&amp;A session if requested</li>
+</ol>
+<p><strong>Template announcement:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="gu">## TNFR v3.0.0 Released - Breaking Change to U[N]</span>
+
+We&#39;ve released v3.0.0 with a critical update to constraint U[N].
+
+<span class="gu">### Why?</span>
+[Brief explanation of physics issue]
+
+<span class="gu">### What changed?</span>
+[Summary of constraint change]
+
+<span class="gu">### What do I need to do?</span>
+<span class="k">1.</span> Update to v3.0.0
+<span class="k">2.</span> Run your tests
+<span class="k">3.</span> Fix sequences that now violate U[N]
+<span class="k">4.</span> See migration guide: [link]
+
+<span class="gu">### Backward compatibility</span>
+Use <span class="sb">`strict=False`</span> temporarily if you need time to migrate.
+⚠️ This will be removed in v4.0.0 (6+ months from now).
+
+<span class="gu">### Questions?</span>
+[Contact info / discussion link]
+</code></pre></div>
+<hr />
+<h3 id="post-modification-monitoring">Post-Modification Monitoring<a class="headerlink" href="#post-modification-monitoring" title="Permanent link">&para;</a></h3>
+<p>After release:</p>
+<ol>
+<li><strong>Monitor issues:</strong></li>
+<li>Track U[N] violation reports</li>
+<li>Identify false positives quickly</li>
+<li>
+<p>Address genuine bugs immediately</p>
+</li>
+<li>
+<p><strong>Collect metrics:</strong></p>
+</li>
+<li>How many users use <code>strict=False</code>?</li>
+<li>Common migration patterns?</li>
+<li>
+<p>Unexpected edge cases?</p>
+</li>
+<li>
+<p><strong>Refine documentation:</strong></p>
+</li>
+<li>Add FAQ based on user questions</li>
+<li>Improve migration guide</li>
+<li>
+<p>Add more examples</p>
+</li>
+<li>
+<p><strong>Prepare for v4.0:</strong></p>
+</li>
+<li>Timeline for removing <code>strict=False</code></li>
+<li>Final migration push</li>
+<li>Clear deprecation notices</li>
+</ol>
+<hr />
+<h2 id="policy-for-changes">Policy for Changes<a class="headerlink" href="#policy-for-changes" title="Permanent link">&para;</a></h2>
+<h3 id="change-classification">Change Classification<a class="headerlink" href="#change-classification" title="Permanent link">&para;</a></h3>
+<p>All grammar changes fall into one of these categories:</p>
+<table>
+<thead>
+<tr>
+<th>Category</th>
+<th>Scope</th>
+<th>Review</th>
+<th>Version</th>
+<th>Examples</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>MAJOR</strong></td>
+<td>Add constraint, Modify constraint</td>
+<td>Physics committee + Code review + Beta</td>
+<td>X.0.0</td>
+<td>Add U5, Modify U2</td>
+</tr>
+<tr>
+<td><strong>MINOR</strong></td>
+<td>Add operator, Refactor (no behavior change)</td>
+<td>Code review</td>
+<td>x.Y.0</td>
+<td>Add new operator, Performance improvement</td>
+</tr>
+<tr>
+<td><strong>PATCH</strong></td>
+<td>Bug fix, Doc correction</td>
+<td>Code review (can be fast-tracked)</td>
+<td>x.y.Z</td>
+<td>Fix error message, Typo in docs</td>
+</tr>
+<tr>
+<td><strong>INTERNAL</strong></td>
+<td>Tests, CI, Tools</td>
+<td>PR review</td>
+<td>N/A</td>
+<td>Add test, Update CI config</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="mandatory-requirements-for-all-changes">Mandatory Requirements for ALL Changes<a class="headerlink" href="#mandatory-requirements-for-all-changes" title="Permanent link">&para;</a></h3>
+<p><strong>No exceptions - If violated, PR will be rejected:</strong></p>
+<ol>
+<li><strong>Documentation REQUIRED</strong></li>
+<li>No code without docs</li>
+<li>No docs without code</li>
+<li>
+<p>Both must be in sync</p>
+</li>
+<li>
+<p><strong>Tests REQUIRED</strong></p>
+</li>
+<li>No code without tests</li>
+<li>Coverage must be ≥95% for new code</li>
+<li>
+<p>All tests must pass</p>
+</li>
+<li>
+<p><strong>Human Review REQUIRED</strong></p>
+</li>
+<li>No auto-merge ever</li>
+<li>AI can propose, only humans can approve</li>
+<li>
+<p>Physics changes: 2+ physicist reviews</p>
+</li>
+<li>
+<p><strong>Backward Compatibility PREFERRED</strong></p>
+</li>
+<li>Breaking changes only if absolutely necessary</li>
+<li>Deprecation period before removal</li>
+<li>
+<p>Clear migration path</p>
+</li>
+<li>
+<p><strong>Deprecate Before Remove</strong></p>
+</li>
+<li>Grace period: 1-2 major versions</li>
+<li>Clear warning messages</li>
+<li>Update all examples</li>
+</ol>
+<hr />
+<h3 id="review-requirements-by-change-type">Review Requirements by Change Type<a class="headerlink" href="#review-requirements-by-change-type" title="Permanent link">&para;</a></h3>
+<h4 id="major-changes-breaking">MAJOR Changes (Breaking)<a class="headerlink" href="#major-changes-breaking" title="Permanent link">&para;</a></h4>
+<p><strong>Required reviewers:</strong>
+- [ ] 2+ Senior TNFR Physicists
+- [ ] 2+ Code Maintainers
+- [ ] Community feedback (1-2 week period)</p>
+<p><strong>Required artifacts:</strong>
+- [ ] Physics proposal document
+- [ ] Complete documentation
+- [ ] Comprehensive tests (≥95% coverage)
+- [ ] Migration guide
+- [ ] Beta release
+- [ ] Deprecation timeline</p>
+<p><strong>Timeline:</strong> 4-8 weeks minimum</p>
+<hr />
+<h4 id="minor-changes-non-breaking">MINOR Changes (Non-breaking)<a class="headerlink" href="#minor-changes-non-breaking" title="Permanent link">&para;</a></h4>
+<p><strong>Required reviewers:</strong>
+- [ ] 1+ Code Maintainer
+- [ ] 1+ Community member (if significant)</p>
+<p><strong>Required artifacts:</strong>
+- [ ] Documentation update
+- [ ] Tests (≥95% coverage)
+- [ ] Examples (if new feature)</p>
+<p><strong>Timeline:</strong> 1-2 weeks</p>
+<hr />
+<h4 id="patch-changes-fixes">PATCH Changes (Fixes)<a class="headerlink" href="#patch-changes-fixes" title="Permanent link">&para;</a></h4>
+<p><strong>Required reviewers:</strong>
+- [ ] 1 Maintainer</p>
+<p><strong>Required artifacts:</strong>
+- [ ] Test demonstrating bug (if code fix)
+- [ ] Documentation fix</p>
+<p><strong>Timeline:</strong> 1-3 days (can be fast-tracked)</p>
+<hr />
+<h3 id="automated-checks-ci-must-pass">Automated Checks (CI Must Pass)<a class="headerlink" href="#automated-checks-ci-must-pass" title="Permanent link">&para;</a></h3>
+<p>All PRs must pass:</p>
+<div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Static analysis (mypy, ruff)</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Test suite (pytest ≥95% coverage)</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Documentation build</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Example execution</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Cross-reference validation</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Schema validation</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">No merge conflicts</span>
+</code></pre></div>
+<p><strong>If CI fails, PR cannot be reviewed.</strong></p>
+<hr />
+<h3 id="merge-authorization">Merge Authorization<a class="headerlink" href="#merge-authorization" title="Permanent link">&para;</a></h3>
+<p><strong>Who can merge:</strong>
+- Maintainers (for PATCH, MINOR)
+- Project lead (for MAJOR)</p>
+<p><strong>Who cannot merge:</strong>
+- PR author (no self-merge)
+- Copilot/AI agents (no automated merge)
+- Contributors without maintainer status</p>
+<p><strong>Process:</strong>
+1. All reviews approved
+2. All CI checks pass
+3. No outstanding comments
+4. Maintainer clicks "Merge"</p>
+<hr />
+<h3 id="semantic-versioning">Semantic Versioning<a class="headerlink" href="#semantic-versioning" title="Permanent link">&para;</a></h3>
+<p><strong>Strictly follow Semantic Versioning 2.0.0:</strong></p>
+<p><strong>X.0.0 (MAJOR):</strong>
+- New constraint (U5, U6, ...)
+- Modified constraint (U1-U4 changes)
+- Breaking API changes
+- Minimum 6 months between MAJOR versions</p>
+<p><strong>x.Y.0 (MINOR):</strong>
+- New operator (backward compatible)
+- New helper functions
+- Performance improvements
+- Documentation improvements
+- Maximum 2 months between MINOR versions</p>
+<p><strong>x.y.Z (PATCH):</strong>
+- Bug fixes only
+- Documentation corrections
+- Test additions
+- Can be released any time</p>
+<hr />
+<h3 id="stability-promise">Stability Promise<a class="headerlink" href="#stability-promise" title="Permanent link">&para;</a></h3>
+<p><strong>Guaranteed stable (will not change):</strong>
+- U1-U4 constraint logic (unless physics error found)
+- 13 canonical operators (classification may be refined)
+- Core function signatures: <code>validate_grammar(sequence, epi_initial)</code></p>
+<p><strong>May evolve:</strong>
+- Error messages (will improve, not remove information)
+- Performance optimizations (behavior identical)
+- Additional constraints (U5, U6, ...) if physically necessary
+- New operators if physically justified</p>
+<p><strong>Will be deprecated with notice:</strong>
+- Legacy compatibility layers (1-2 version grace period)
+- Experimental features (marked clearly)</p>
+<hr />
+<h2 id="integrity-checklist">Integrity Checklist<a class="headerlink" href="#integrity-checklist" title="Permanent link">&para;</a></h2>
+<h3 id="pre-merge-checklist">Pre-Merge Checklist<a class="headerlink" href="#pre-merge-checklist" title="Permanent link">&para;</a></h3>
+<p><strong>Before merging ANY grammar change, verify ALL items:</strong></p>
+<h4 id="documentation">Documentation<a class="headerlink" href="#documentation" title="Permanent link">&para;</a></h4>
+<ul>
+<li>[ ] <code>02-CANONICAL-CONSTRAINTS.md</code> updated (if constraint affected)</li>
+<li>[ ] <code>04-VALID-SEQUENCES.md</code> examples updated</li>
+<li>[ ] <code>05-TECHNICAL-IMPLEMENTATION.md</code> code references updated</li>
+<li>[ ] <code>06-VALIDATION-AND-TESTING.md</code> test documentation updated</li>
+<li>[ ] <code>07-MIGRATION-AND-EVOLUTION.md</code> history updated (this file)</li>
+<li>[ ] <code>08-QUICK-REFERENCE.md</code> summary updated</li>
+<li>[ ] <code>UNIFIED_GRAMMAR_RULES.md</code> physics proofs updated</li>
+<li>[ ] <code>AGENTS.md</code> updated (if invariants affected)</li>
+</ul>
+<h4 id="code">Code<a class="headerlink" href="#code" title="Permanent link">&para;</a></h4>
+<ul>
+<li>[ ] <code>src/tnfr/operators/grammar.py</code> implementation correct</li>
+<li>[ ] <code>src/tnfr/operators/unified_grammar.py</code> facade updated</li>
+<li>[ ] Type hints complete and accurate</li>
+<li>[ ] Docstrings comprehensive</li>
+<li>[ ] Error messages clear and actionable</li>
+</ul>
+<h4 id="tests">Tests<a class="headerlink" href="#tests" title="Permanent link">&para;</a></h4>
+<ul>
+<li>[ ] Tests created for new functionality</li>
+<li>[ ] Tests updated for modified functionality</li>
+<li>[ ] Coverage ≥95% on changed code</li>
+<li>[ ] All tests passing (no skips)</li>
+<li>[ ] Edge cases covered</li>
+<li>[ ] Regression tests for bug fixes</li>
+</ul>
+<h4 id="cross-references">Cross-References<a class="headerlink" href="#cross-references" title="Permanent link">&para;</a></h4>
+<ul>
+<li>[ ] <code>docs/grammar/CODE_DOCS_CROSSREF.md</code> bidirectional links</li>
+<li>[ ] <code>docs/grammar/CROSS-REFERENCE-INDEX.md</code> entries added</li>
+<li>[ ] <code>docs/grammar/MASTER-INDEX.md</code> updated</li>
+<li>[ ] Internal doc links verified (no broken links)</li>
+<li>[ ] Code comments reference correct docs sections</li>
+</ul>
+<h4 id="schemas">Schemas<a class="headerlink" href="#schemas" title="Permanent link">&para;</a></h4>
+<ul>
+<li>[ ] <code>docs/grammar/schemas/constraints-u1-u4.json</code> synchronized</li>
+<li>[ ] Schema validates against implementation</li>
+<li>[ ] Schema examples pass validation</li>
+</ul>
+<h4 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h4>
+<ul>
+<li>[ ] <code>docs/grammar/examples/</code> updated</li>
+<li>[ ] Examples execute without errors</li>
+<li>[ ] Examples demonstrate new feature (if added)</li>
+<li>[ ] Anti-patterns documented (if applicable)</li>
+</ul>
+<h4 id="anti-patterns">Anti-Patterns<a class="headerlink" href="#anti-patterns" title="Permanent link">&para;</a></h4>
+<ul>
+<li>[ ] Common mistakes documented</li>
+<li>[ ] Clear "Don't do this" examples</li>
+<li>[ ] Explanation of why anti-pattern is wrong</li>
+</ul>
+<h4 id="compatibility-matrix">Compatibility Matrix<a class="headerlink" href="#compatibility-matrix" title="Permanent link">&para;</a></h4>
+<ul>
+<li>[ ] Operator interaction table updated (if affected)</li>
+<li>[ ] Constraint compatibility verified</li>
+<li>[ ] Breaking changes documented</li>
+</ul>
+<h4 id="static-analysis">Static Analysis<a class="headerlink" href="#static-analysis" title="Permanent link">&para;</a></h4>
+<ul>
+<li>[ ] <code>mypy src/tnfr/operators/grammar.py</code> passes (no errors)</li>
+<li>[ ] <code>ruff check src/tnfr/operators/grammar.py</code> passes</li>
+<li>[ ] No new warnings introduced</li>
+</ul>
+<h4 id="performance">Performance<a class="headerlink" href="#performance" title="Permanent link">&para;</a></h4>
+<ul>
+<li>[ ] No significant performance regression (benchmark if needed)</li>
+<li>[ ] O(n) complexity maintained for validation</li>
+</ul>
+<h4 id="human-review">Human Review<a class="headerlink" href="#human-review" title="Permanent link">&para;</a></h4>
+<ul>
+<li>[ ] Physics review approved (for MAJOR changes)</li>
+<li>[ ] Code review approved</li>
+<li>[ ] All review comments addressed</li>
+<li>[ ] No unresolved discussions</li>
+</ul>
+<hr />
+<h3 id="post-merge-checklist">Post-Merge Checklist<a class="headerlink" href="#post-merge-checklist" title="Permanent link">&para;</a></h3>
+<p><strong>After merging:</strong></p>
+<ul>
+<li>[ ] Version number updated (if release)</li>
+<li>[ ] <code>CHANGELOG.md</code> updated</li>
+<li>[ ] Git tag created (for releases)</li>
+<li>[ ] Release notes published (for releases)</li>
+<li>[ ] Documentation site deployed</li>
+<li>[ ] Community notified (for MAJOR/MINOR)</li>
+<li>[ ] Issue closed with reference to PR</li>
+</ul>
+<hr />
+<h2 id="guidelines-for-copilot-and-ai-agents">Guidelines for Copilot and AI Agents<a class="headerlink" href="#guidelines-for-copilot-and-ai-agents" title="Permanent link">&para;</a></h2>
+<h3 id="what-ai-agents-can-do">What AI Agents CAN Do<a class="headerlink" href="#what-ai-agents-can-do" title="Permanent link">&para;</a></h3>
+<p><strong>Autonomous (no human approval needed):</strong></p>
+<ol>
+<li><strong>Documentation improvements:</strong></li>
+<li>Fix typos and grammatical errors</li>
+<li>Improve clarity (without changing meaning)</li>
+<li>Add examples (non-breaking)</li>
+<li>
+<p>Update cross-references</p>
+</li>
+<li>
+<p><strong>Test additions:</strong></p>
+</li>
+<li>Add tests for existing functionality</li>
+<li>Improve test coverage</li>
+<li>
+<p>Add edge case tests</p>
+</li>
+<li>
+<p><strong>Code quality:</strong></p>
+</li>
+<li>Fix static analysis warnings</li>
+<li>Improve type hints</li>
+<li>Refactor (preserving behavior)</li>
+<li>
+<p>Performance optimizations (verified via benchmarks)</p>
+</li>
+<li>
+<p><strong>Internal tooling:</strong></p>
+</li>
+<li>Update CI/CD scripts</li>
+<li>Improve development tools</li>
+<li>Update build configuration</li>
+</ol>
+<p><strong>Process:</strong>
+- Create PR with detailed description
+- Tag with label: <code>ai-generated</code>
+- Request review from maintainer
+- Wait for human approval</p>
+<hr />
+<h3 id="what-ai-agents-must-request-approval-for">What AI Agents MUST REQUEST APPROVAL For<a class="headerlink" href="#what-ai-agents-must-request-approval-for" title="Permanent link">&para;</a></h3>
+<p><strong>Cannot proceed without explicit human instruction:</strong></p>
+<ol>
+<li><strong>Grammar constraint changes:</strong></li>
+<li>Adding new constraint (U5, U6, ...)</li>
+<li>Modifying existing constraint (U1-U4)</li>
+<li>Changing operator sets</li>
+<li>
+<p>Altering validation logic</p>
+</li>
+<li>
+<p><strong>Operator changes:</strong></p>
+</li>
+<li>Adding new operator</li>
+<li>Modifying operator behavior</li>
+<li>
+<p>Changing operator classification</p>
+</li>
+<li>
+<p><strong>Breaking changes:</strong></p>
+</li>
+<li>API modifications</li>
+<li>Behavior changes</li>
+<li>
+<p>Deprecations</p>
+</li>
+<li>
+<p><strong>Physics interpretations:</strong></p>
+</li>
+<li>Interpreting TNFR theory</li>
+<li>Deriving new constraints</li>
+<li>Resolving physics ambiguities</li>
+</ol>
+<p><strong>Process:</strong>
+1. <strong>Stop and ask:</strong>
+   <div class="highlight"><pre><span></span><code>I&#39;ve identified a need to [action].
+
+This requires human decision because [reason].
+
+Options:
+A. [Option 1] - [pros/cons]
+B. [Option 2] - [pros/cons]
+C. [Option 3] - [pros/cons]
+
+Which approach should I take?
+</code></pre></div></p>
+<ol>
+<li>
+<p><strong>Wait for human response</strong></p>
+</li>
+<li>
+<p><strong>Proceed only with explicit approval</strong></p>
+</li>
+</ol>
+<hr />
+<h3 id="how-ai-agents-should-report-issues">How AI Agents Should Report Issues<a class="headerlink" href="#how-ai-agents-should-report-issues" title="Permanent link">&para;</a></h3>
+<p>When discovering potential problems:</p>
+<div class="highlight"><pre><span></span><code><span class="gu">## Issue Report: [Title]</span>
+
+<span class="gu">### Category</span>
+[BUG | INCONSISTENCY | MISSING_FEATURE | PHYSICS_QUESTION]
+
+<span class="gu">### Description</span>
+[Clear description of what was found]
+
+<span class="gu">### Evidence</span>
+[Code snippets, doc references, test failures]
+
+<span class="gu">### Impact</span>
+<span class="k">-</span><span class="w"> </span>Severity: [LOW | MEDIUM | HIGH | CRITICAL]
+<span class="k">-</span><span class="w"> </span>Affected components: [list]
+<span class="k">-</span><span class="w"> </span>Users affected: [estimate]
+
+<span class="gu">### Recommended Action</span>
+[What should be done]
+
+<span class="gu">### Can I Fix This?</span>
+[YES - will create PR | NO - requires human decision]
+</code></pre></div>
+<p><strong>Tag appropriately:</strong>
+- <code>ai-identified-bug</code>
+- <code>ai-question</code>
+- <code>needs-physics-review</code></p>
+<hr />
+<h3 id="how-ai-agents-should-coordinate">How AI Agents Should Coordinate<a class="headerlink" href="#how-ai-agents-should-coordinate" title="Permanent link">&para;</a></h3>
+<p><strong>Before starting work:</strong></p>
+<ol>
+<li><strong>Check existing work:</strong></li>
+<li>Search open PRs for similar changes</li>
+<li>Check issues for ongoing discussions</li>
+<li>
+<p>Review recent commits</p>
+</li>
+<li>
+<p><strong>Declare intent:</strong>
+   <div class="highlight"><pre><span></span><code><span class="gu">## Working on: [Task]</span>
+
+I&#39;m starting work on [specific task].
+
+Estimated completion: [time]
+
+Will update when:
+<span class="k">- [ ]</span> Documentation complete
+<span class="k">- [ ]</span> Tests complete
+<span class="k">- [ ]</span> PR ready for review
+</code></pre></div></p>
+</li>
+<li>
+<p><strong>Avoid conflicts:</strong></p>
+</li>
+<li>Don't work on same file as open PR</li>
+<li>Don't contradict recent changes</li>
+<li>Coordinate with other agents if multiple active</li>
+</ol>
+<hr />
+<h3 id="code-of-conduct-for-ai-agents">Code of Conduct for AI Agents<a class="headerlink" href="#code-of-conduct-for-ai-agents" title="Permanent link">&para;</a></h3>
+<p><strong>Core principles:</strong></p>
+<ol>
+<li><strong>Humility:</strong></li>
+<li>"I don't know" is acceptable</li>
+<li>Ask questions when uncertain</li>
+<li>
+<p>Defer to human expertise</p>
+</li>
+<li>
+<p><strong>Transparency:</strong></p>
+</li>
+<li>Clearly mark AI-generated content</li>
+<li>Document reasoning</li>
+<li>
+<p>Reference sources</p>
+</li>
+<li>
+<p><strong>Caution:</strong></p>
+</li>
+<li>Prefer conservative changes</li>
+<li>Avoid clever tricks</li>
+<li>
+<p>Maintain readability</p>
+</li>
+<li>
+<p><strong>Rigor:</strong></p>
+</li>
+<li>Test thoroughly</li>
+<li>Document completely</li>
+<li>
+<p>Verify all claims</p>
+</li>
+<li>
+<p><strong>Respect for physics:</strong></p>
+</li>
+<li>TNFR physics is law</li>
+<li>Never contradict established physics</li>
+<li>Question understanding, not theory</li>
+</ol>
+<hr />
+<h3 id="copilot-specific-guidelines">Copilot-Specific Guidelines<a class="headerlink" href="#copilot-specific-guidelines" title="Permanent link">&para;</a></h3>
+<p><strong>When working on this repository:</strong></p>
+<ol>
+<li><strong>Always read first:</strong></li>
+<li>Start with <code>AGENTS.md</code></li>
+<li>Read relevant doc sections</li>
+<li>
+<p>Understand context before coding</p>
+</li>
+<li>
+<p><strong>Physics-first mindset:</strong></p>
+</li>
+<li>Every change must have physics basis</li>
+<li>Reference nodal equation when relevant</li>
+<li>
+<p>Think in terms of resonance/coherence</p>
+</li>
+<li>
+<p><strong>Documentation-driven:</strong></p>
+</li>
+<li>Write docs before code</li>
+<li>Ensure docs and code match</li>
+<li>
+<p>Update examples</p>
+</li>
+<li>
+<p><strong>Test-driven:</strong></p>
+</li>
+<li>Write test first</li>
+<li>Implement to pass test</li>
+<li>
+<p>Add edge cases</p>
+</li>
+<li>
+<p><strong>Incremental:</strong></p>
+</li>
+<li>Small PRs (&lt; 500 lines preferred)</li>
+<li>One logical change per PR</li>
+<li>Easy to review</li>
+</ol>
+<hr />
+<h3 id="when-to-escalate">When to Escalate<a class="headerlink" href="#when-to-escalate" title="Permanent link">&para;</a></h3>
+<p><strong>Immediately escalate (ask human) if:</strong></p>
+<ul>
+<li>❌ Physics derivation unclear</li>
+<li>❌ Multiple valid interpretations possible</li>
+<li>❌ Breaking change seems necessary</li>
+<li>❌ Conflict with existing constraints</li>
+<li>❌ Test failure unexplained</li>
+<li>❌ Documentation contradictory</li>
+<li>❌ Performance regression significant</li>
+<li>❌ Security concern identified</li>
+</ul>
+<p><strong>How to escalate:</strong>
+<div class="highlight"><pre><span></span><code>🚨 ESCALATION REQUIRED 🚨
+
+<span class="gu">## Issue</span>
+[Brief description]
+
+<span class="gu">## Why This Needs Human Decision</span>
+[Explanation]
+
+<span class="gu">## Context</span>
+[Relevant background]
+
+<span class="gu">## Attempted Solutions</span>
+[What I tried]
+
+<span class="gu">## Blocking</span>
+[What I cannot proceed with]
+
+<span class="gu">## Urgency</span>
+[LOW | MEDIUM | HIGH | CRITICAL]
+</code></pre></div></p>
+<hr />
+<h2 id="roadmap-future-constraints">Roadmap: Future Constraints<a class="headerlink" href="#roadmap-future-constraints" title="Permanent link">&para;</a></h2>
+<h3 id="potential-future-constraints">Potential Future Constraints<a class="headerlink" href="#potential-future-constraints" title="Permanent link">&para;</a></h3>
+<p>These are <strong>SPECULATIVE</strong> - not committed for inclusion.
+Each would require full physics derivation and review process.</p>
+<hr />
+<h3 id="u5-multi-scale-coherence-under-consideration">U5: Multi-Scale Coherence (Under Consideration)<a class="headerlink" href="#u5-multi-scale-coherence-under-consideration" title="Permanent link">&para;</a></h3>
+<p><strong>Concept:</strong> Nested EPIs must maintain coherence across scales</p>
+<p><strong>Physical Basis (Preliminary):</strong>
+<div class="highlight"><pre><span></span><code>For nested structure: EPI_parent contains {EPI_child_1, EPI_child_2, ...}
+
+Coherence requirement:
+  C(EPI_parent) ≥ α · ∑ C(EPI_child_i)
+
+Where α is scale factor (0.5-0.9 typically)
+
+If violated → Fractal structure fragments
+</code></pre></div></p>
+<p><strong>Constraint (Hypothetical):</strong>
+<div class="highlight"><pre><span></span><code>If REMESH(EPI_parent, depth &gt; 1):
+  Then apply IL or THOL at parent level
+
+Reason: Stabilize multi-scale structure
+</code></pre></div></p>
+<p><strong>Status:</strong> 
+- Canonicity: Possibly STRONG (from operational fractality)
+- Research needed: Determine α, optimal stabilization
+- Expected: v4.0+ (12+ months)</p>
+<hr />
+<h3 id="u6-structural-potential-confinement-canonical-2025-11-11">U6: STRUCTURAL POTENTIAL CONFINEMENT ✅ CANONICAL (2025-11-11)<a class="headerlink" href="#u6-structural-potential-confinement-canonical-2025-11-11" title="Permanent link">&para;</a></h3>
+<p><strong>Status:</strong> <strong>CANONICAL</strong> - Promoted from research to canonical grammar constraint.</p>
+<p><strong>Concept:</strong> Structural potential field (Φ_s) constrains sequences via passive equilibrium</p>
+<p><strong>Physical Basis:</strong>
+<div class="highlight"><pre><span></span><code>From nodal equation + network topology:
+  Φ_s(i) = Σ_{j≠i} ΔNFR_j / d(i,j)²
+
+  Displacement from potential minima → coherence loss:
+    corr(Δ Φ_s, ΔC) = -0.822 (R² ≈ 0.68)
+
+  Escape threshold: Δ Φ_s &lt; 2.0
+</code></pre></div></p>
+<p><strong>Constraint:</strong>
+<div class="highlight"><pre><span></span><code>All sequences (telemetry-based safety criterion):
+  Monitor Δ Φ_s before and after sequence
+
+  If Δ Φ_s ≥ 2.0:
+    → System approaching fragmentation boundary
+
+Valid sequences typically maintain Δ Φ_s ≈ 0.6 (30% of threshold)
+</code></pre></div></p>
+<p><strong>Validation:</strong>
+- <strong>Experiments:</strong> 2,400+ across 5 topologies (ring, scale_free, ws, tree, grid)
+- <strong>Universality:</strong> CV = 0.1% (perfect across topologies)
+- <strong>Mechanism:</strong> Passive protection (grammar acts as confinement, not attractor)
+- <strong>Canonicity:</strong> STRONG (extensive empirical validation)</p>
+<p><strong>See:</strong>
+- <a href="../U6_STRUCTURAL_POTENTIAL_CONFINEMENT/">docs/grammar/U6_STRUCTURAL_POTENTIAL_CONFINEMENT.md</a> - Complete specification
+- <a href="../../UNIFIED_GRAMMAR_RULES.md">UNIFIED_GRAMMAR_RULES.md § U6</a> - Physics derivation
+- <a href="../../TNFR_FORCES_EMERGENCE/">TNFR_FORCES_EMERGENCE.md § 14-15</a> - Validation details</p>
+<hr />
+<h3 id="proposed-u7-temporal-ordering-research-stage-formerly-experimental-u6">Proposed U7: Temporal Ordering (Research Stage - Formerly Experimental U6)<a class="headerlink" href="#proposed-u7-temporal-ordering-research-stage-formerly-experimental-u6" title="Permanent link">&para;</a></h3>
+<p><strong>Status:</strong> RESEARCH - Not canonical. Previously explored as "U6: Temporal Ordering" before Φ_s approach proved superior.</p>
+<p><strong>Concept:</strong> Certain operators require minimum temporal separation</p>
+<p><strong>Physical Basis (Preliminary):</strong>
+<div class="highlight"><pre><span></span><code>From bifurcation theory:
+  After ZHIR or OZ, system needs relaxation time τ_relax
+
+  If next destabilizer applied before τ_relax:
+    → Chaotic dynamics (loss of coherence)
+
+τ_relax ≈ 1/(2πνf) [one structural period]
+</code></pre></div></p>
+<p><strong>Constraint (Hypothetical):</strong>
+<div class="highlight"><pre><span></span><code>If OZ or ZHIR at position i:
+  Then no {OZ, ZHIR, VAL} at position i+1, i+2
+
+Reason: Allow structural relaxation
+</code></pre></div></p>
+<p><strong>Why Not Canonical:</strong>
+- Φ_s (U6) showed stronger predictive power (|corr| = 0.822 vs τ_relax heuristics)
+- Temporal ordering may be emergent consequence of Φ_s constraint
+- Could be revisited as complementary heuristic or future U7/U8</p>
+<p><strong>Research Status:</strong>
+- Canonicity: Possibly MODERATE (from bifurcation theory)
+- Research needed: Determine if τ_relax provides unique information beyond Φ_s
+- Expected: Post-v5.0 (if uniqueness demonstrated)</p>
+<p><strong>See:</strong> <a href="../../UNIFIED_GRAMMAR_RULES.md">UNIFIED_GRAMMAR_RULES.md § Proposed U7</a> - Historical context</p>
+<hr />
+<h3 id="u8-network-topology-constraints-research-stage">U8: Network Topology Constraints (Research Stage)<a class="headerlink" href="#u8-network-topology-constraints-research-stage" title="Permanent link">&para;</a></h3>
+<p><strong>Concept:</strong> Coupling patterns must respect network structure</p>
+<p><strong>Physical Basis (Very Preliminary):</strong>
+<div class="highlight"><pre><span></span><code>Coupling via UM or RA requires:
+  Network path exists between nodes
+  Phase propagation path ≤ max_path_length
+
+Otherwise: Coupling is non-physical (action at distance)
+</code></pre></div></p>
+<p><strong>Constraint (Very Hypothetical):</strong>
+<div class="highlight"><pre><span></span><code>If UM(node_i, node_j):
+  Then verify network_distance(i, j) ≤ coupling_range
+
+Reason: Physical coupling requires local interaction
+</code></pre></div></p>
+<p><strong>Status:</strong>
+- Canonicity: Unknown (research in progress)
+- Research needed: Fundamental review of coupling physics
+- Expected: v6.0+ (36+ months) or never</p>
+<hr />
+<h3 id="why-these-are-not-u5-u7-yet">Why These Are Not U5-U7 Yet<a class="headerlink" href="#why-these-are-not-u5-u7-yet" title="Permanent link">&para;</a></h3>
+<p><strong>Requirements for inclusion:</strong></p>
+<ol>
+<li><strong>Physical inevitability:</strong> Must be proven from TNFR principles</li>
+<li><strong>Independence:</strong> Cannot be derived from U1-U4</li>
+<li><strong>Universality:</strong> Must apply across all domains</li>
+<li><strong>Testability:</strong> Must be verifiable experimentally</li>
+<li><strong>Canonicity:</strong> Must achieve ABSOLUTE or STRONG status</li>
+</ol>
+<p><strong>Current status:</strong>
+- U5: Closest to meeting requirements (60% confidence)
+- U6: Plausible but needs more physics work (40% confidence)
+- U7: Speculative, may not be necessary (20% confidence)</p>
+<hr />
+<h3 id="community-input-welcome">Community Input Welcome<a class="headerlink" href="#community-input-welcome" title="Permanent link">&para;</a></h3>
+<p>Have an idea for future constraint?</p>
+<p><strong>Process:</strong>
+1. Open GitHub discussion (not issue yet)
+2. Title: "[RESEARCH] Potential constraint: [Name]"
+3. Provide:
+   - Physical intuition
+   - Preliminary derivation (if any)
+   - Example sequences that would be affected
+   - Why current U1-U4 insufficient</p>
+<p><strong>We will:</strong>
+- Engage in physics discussion
+- Evaluate physical basis
+- Determine if research should continue
+- Possibly form working group</p>
+<p><strong>Note:</strong> Most ideas will be rejected. This is good! U1-U4 is complete for current physics understanding. Only add constraint if absolutely necessary.</p>
+<hr />
+<h2 id="version-history">Version History<a class="headerlink" href="#version-history" title="Permanent link">&para;</a></h2>
+<h3 id="v200-current">v2.0.0 (Current)<a class="headerlink" href="#v200-current" title="Permanent link">&para;</a></h3>
+<p><strong>Released:</strong> 2024-11
+<strong>Status:</strong> ✅ Stable</p>
+<p><strong>Changes:</strong>
+- Introduced unified grammar (U1-U4)
+- Consolidated C1-C3 and RC1-RC4
+- Added phase verification (U3)
+- Added bifurcation dynamics (U4)
+- Complete physical derivations</p>
+<h3 id="v150">v1.5.0<a class="headerlink" href="#v150" title="Permanent link">&para;</a></h3>
+<p><strong>Released:</strong> 2024-Q3
+<strong>Status:</strong> ⚠️ Deprecated</p>
+<p><strong>Changes:</strong>
+- Introduced resonant constraints (RC1-RC4)
+- Improved physical grounding
+- Parallel to C1-C3 (caused confusion)</p>
+<h3 id="v100">v1.0.0<a class="headerlink" href="#v100" title="Permanent link">&para;</a></h3>
+<p><strong>Released:</strong> 2024-Q1
+<strong>Status:</strong> ❌ Obsolete</p>
+<p><strong>Changes:</strong>
+- Initial grammar system (C1-C3)
+- Basic constraint checking
+- Foundation for current system</p>
+<hr />
+<h2 id="future-directions">Future Directions<a class="headerlink" href="#future-directions" title="Permanent link">&para;</a></h2>
+<h3 id="potential-extensions">Potential Extensions<a class="headerlink" href="#potential-extensions" title="Permanent link">&para;</a></h3>
+<p><strong>Canonical (ADDED):</strong></p>
+<ol>
+<li>✅ <strong>U5: Multi-scale coherence</strong> - Nested EPIs require stabilizers at each level (ADDED 2025-11-10, ABSOLUTE canonicity)</li>
+<li>✅ <strong>U6: Structural potential confinement</strong> - Φ_s field safety criterion Δ Φ_s &lt; 2.0 (PROMOTED 2025-11-11, STRONG canonicity)</li>
+</ol>
+<p><strong>Under consideration (not committed):</strong></p>
+<ol>
+<li><strong>Proposed U7: Temporal ordering</strong> (formerly experimental U6) - Certain operators may need temporal separation via τ_relax</li>
+<li><strong>Proposed U8: Network topology</strong> - Coupling patterns may need explicit network path validation</li>
+</ol>
+<p><strong>Requirements for inclusion:</strong>
+- Must be physically inevitable
+- Must be non-derivable from U1-U6
+- Must have ABSOLUTE or STRONG canonicity</p>
+<h3 id="research-topics">Research Topics<a class="headerlink" href="#research-topics" title="Permanent link">&para;</a></h3>
+<p><strong>Open questions:</strong>
+- Does τ_relax (temporal ordering) provide unique information beyond Φ_s?
+- Optimal stabilizer-destabilizer ratios
+- Phase synchronization dynamics
+- Bifurcation threshold detection
+- Multi-scale operator composition</p>
+<hr />
+<h2 id="getting-help">Getting Help<a class="headerlink" href="#getting-help" title="Permanent link">&para;</a></h2>
+<h3 id="migration-issues">Migration Issues<a class="headerlink" href="#migration-issues" title="Permanent link">&para;</a></h3>
+<p><strong>Problem:</strong> Old code won't run<br />
+<strong>Solution:</strong> Check import statements and function names</p>
+<p><strong>Problem:</strong> Tests failing after update<br />
+<strong>Solution:</strong> Update test assertions for U1-U4 names</p>
+<p><strong>Problem:</strong> Sequences now invalid<br />
+<strong>Solution:</strong> Check U4b (transformer context) - may need to add prior coherence for ZHIR</p>
+<h3 id="questions">Questions<a class="headerlink" href="#questions" title="Permanent link">&para;</a></h3>
+<p><strong>Found a bug?</strong> Open GitHub issue with label <code>grammar-system</code></p>
+<p><strong>Need clarification?</strong> Check:
+1. <a href="../02-CANONICAL-CONSTRAINTS/">02-CANONICAL-CONSTRAINTS.md</a> - Full derivations
+2. <a href="../08-QUICK-REFERENCE/">08-QUICK-REFERENCE.md</a> - Quick lookup
+3. GitHub discussions</p>
+<p><strong>Want to contribute?</strong> See <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a></p>
+<hr />
+<h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>
+<p><strong>For developers:</strong>
+- Review <a href="../05-TECHNICAL-IMPLEMENTATION/">05-TECHNICAL-IMPLEMENTATION.md</a> for current architecture
+- Check <a href="../06-VALIDATION-AND-TESTING/">06-VALIDATION-AND-TESTING.md</a> for testing</p>
+<p><strong>For reference:</strong>
+- <a href="../08-QUICK-REFERENCE/">08-QUICK-REFERENCE.md</a> - Quick lookup
+- <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/UNIFIED_GRAMMAR_RULES.md">UNIFIED_GRAMMAR_RULES.md</a> - Complete formal proofs</p>
+<hr />
+<div align="center">
+
+**Grammar evolves, physics stays constant.**
+
+---
+
+*Reality is resonance. Adapt accordingly.*
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.top", "navigation.tracking", "toc.integrate", "navigation.instant"], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+    
+  </body>
+</html>

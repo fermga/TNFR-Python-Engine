@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="TNFR Pattern Gallery - Explore 18+ validated operator sequences organized by domain">
+    <title>Pattern Gallery - TNFR Grammar 2.0</title>
+    <link rel="stylesheet" href="../assets/tnfr.css">
+    <script src="../assets/tnfr-validator.js" defer></script>
+    <script src="../assets/tnfr-interactive.js" defer></script>
+</head>
+<body>
+    <nav class="tnfr-nav">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <h1>TNFR Grammar 2.0</h1>
+            </div>
+            <ul class="nav-links">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="../getting-started.html">Getting Started</a></li>
+                <li><a href="index.html" class="active">Patterns</a></li>
+                <li><a href="../health-metrics/index.html">Health Metrics</a></li>
+                <li><a href="../tools/validator.html">Tools</a></li>
+                <li><a href="../api/reference.html">API</a></li>
+                <li><a href="https://github.com/fermga/TNFR-Python-Engine" target="_blank">GitHub</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main>
+        <section class="pattern-gallery-section">
+            <div class="container">
+                <h1>TNFR Pattern Library</h1>
+                <p class="subtitle">
+                    Validated operator sequences with proven characteristics across multiple domains.
+                    All patterns have health scores > 0.75 and pass canonical grammar validation.
+                </p>
+
+                <!-- Filter Controls -->
+                <div class="filter-controls">
+                    <button class="filter-btn active" onclick="filterPatterns('all')">All Patterns</button>
+                    <button class="filter-btn" onclick="filterPatterns('therapeutic')">🏥 Therapeutic</button>
+                    <button class="filter-btn" onclick="filterPatterns('educational')">🎓 Educational</button>
+                    <button class="filter-btn" onclick="filterPatterns('organizational')">🏢 Organizational</button>
+                    <button class="filter-btn" onclick="filterPatterns('creative')">🎨 Creative</button>
+                </div>
+
+                <!-- Therapeutic Patterns -->
+                <div class="domain-section" data-domain="therapeutic">
+                    <h2>🏥 Therapeutic Domain</h2>
+                    <p class="domain-description">
+                        Patterns for healing, personal transformation, and therapeutic processes.
+                    </p>
+
+                    <div class="pattern-cards">
+                        <!-- Crisis Intervention -->
+                        <div class="pattern-card">
+                            <div class="pattern-header">
+                                <h3>Crisis Intervention</h3>
+                                <span class="pattern-badge">STABILIZE</span>
+                            </div>
+                            <div class="pattern-health">
+                                <span class="health-score excellent">Health: 0.79</span>
+                                <span class="pattern-length">8 operators</span>
+                            </div>
+                            <div class="pattern-sequence">
+                                <code>emission → reception → coherence → dissonance → contraction → coherence → coupling → silence</code>
+                            </div>
+                            <div class="pattern-description">
+                                <strong>Use cases:</strong>
+                                <ul>
+                                    <li>Panic attack management</li>
+                                    <li>Acute grief response</li>
+                                    <li>Immediate post-trauma stabilization</li>
+                                    <li>Emergency emotional support</li>
+                                </ul>
+                                <p><strong>When to use:</strong> Immediate stabilization needed, limited time available, high-intensity crisis requiring rapid containment.</p>
+                            </div>
+                            <div class="pattern-metrics">
+                                <div class="metric-item">
+                                    <span class="metric-label">Balance:</span>
+                                    <span class="metric-value">0.33</span>
+                                </div>
+                                <div class="metric-item">
+                                    <span class="metric-label">Sustainability:</span>
+                                    <span class="metric-value">0.80</span>
+                                </div>
+                                <div class="metric-item">
+                                    <span class="metric-label">Efficiency:</span>
+                                    <span class="metric-value">0.88</span>
+                                </div>
+                            </div>
+                            <button class="btn-validate" onclick="validatePattern('emission reception coherence dissonance contraction coherence coupling silence')">Validate This Pattern</button>
+                        </div>
+
+                        <!-- Process Therapy -->
+                        <div class="pattern-card">
+                            <div class="pattern-header">
+                                <h3>Process Therapy</h3>
+                                <span class="pattern-badge therapeutic-badge">THERAPEUTIC</span>
+                            </div>
+                            <div class="pattern-health">
+                                <span class="health-score excellent">Health: 0.88</span>
+                                <span class="pattern-length">8 operators</span>
+                            </div>
+                            <div class="pattern-sequence">
+                                <code>emission → reception → coherence → dissonance → self_organization → coherence → transition → silence</code>
+                            </div>
+                            <div class="pattern-description">
+                                <strong>Use cases:</strong>
+                                <ul>
+                                    <li>Long-term psychotherapy processes</li>
+                                    <li>Personal transformation work</li>
+                                    <li>Complex trauma resolution</li>
+                                    <li>Deep character structure change</li>
+                                </ul>
+                                <p><strong>When to use:</strong> Deep change required, sufficient time and resources available, client readiness for transformative work established.</p>
+                            </div>
+                            <div class="pattern-metrics">
+                                <div class="metric-item">
+                                    <span class="metric-label">Balance:</span>
+                                    <span class="metric-value">0.50</span>
+                                </div>
+                                <div class="metric-item">
+                                    <span class="metric-label">Sustainability:</span>
+                                    <span class="metric-value">1.00</span>
+                                </div>
+                                <div class="metric-item">
+                                    <span class="metric-label">Efficiency:</span>
+                                    <span class="metric-value">1.00</span>
+                                </div>
+                            </div>
+                            <button class="btn-validate" onclick="validatePattern('emission reception coherence dissonance self_organization coherence transition silence')">Validate This Pattern</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Educational Patterns -->
+                <div class="domain-section" data-domain="educational">
+                    <h2>🎓 Educational Domain</h2>
+                    <p class="domain-description">
+                        Patterns for learning, teaching, skill development, and knowledge transformation.
+                    </p>
+
+                    <div class="pattern-cards">
+                        <!-- Conceptual Breakthrough -->
+                        <div class="pattern-card">
+                            <div class="pattern-header">
+                                <h3>Conceptual Breakthrough</h3>
+                                <span class="pattern-badge">HIERARCHICAL</span>
+                            </div>
+                            <div class="pattern-health">
+                                <span class="health-score excellent">Health: 0.79</span>
+                                <span class="pattern-length">8 operators</span>
+                            </div>
+                            <div class="pattern-sequence">
+                                <code>emission → reception → coherence → dissonance → mutation → coherence → resonance → silence</code>
+                            </div>
+                            <div class="pattern-description">
+                                <strong>Use cases:</strong>
+                                <ul>
+                                    <li>Mathematical concept breakthroughs</li>
+                                    <li>Scientific paradigm shifts</li>
+                                    <li>Language structure insights</li>
+                                    <li>Artistic technique breakthroughs</li>
+                                </ul>
+                                <p><strong>When to use:</strong> Facilitating "aha!" moments, paradigm shifts in understanding, sudden insight into complex concepts.</p>
+                            </div>
+                            <div class="pattern-metrics">
+                                <div class="metric-item">
+                                    <span class="metric-label">Balance:</span>
+                                    <span class="metric-value">0.25</span>
+                                </div>
+                                <div class="metric-item">
+                                    <span class="metric-label">Sustainability:</span>
+                                    <span class="metric-value">0.80</span>
+                                </div>
+                                <div class="metric-item">
+                                    <span class="metric-label">Efficiency:</span>
+                                    <span class="metric-value">1.00</span>
+                                </div>
+                            </div>
+                            <button class="btn-validate" onclick="validatePattern('emission reception coherence dissonance mutation coherence resonance silence')">Validate This Pattern</button>
+                        </div>
+
+                        <!-- Competency Development -->
+                        <div class="pattern-card">
+                            <div class="pattern-header">
+                                <h3>Competency Development</h3>
+                                <span class="pattern-badge regenerative-badge">REGENERATIVE</span>
+                            </div>
+                            <div class="pattern-health">
+                                <span class="health-score excellent">Health: 0.83</span>
+                                <span class="pattern-length">11 operators</span>
+                            </div>
+                            <div class="pattern-sequence">
+                                <code>emission → reception → coherence → expansion → coherence → dissonance → mutation → transition → coherence → resonance → recursivity</code>
+                            </div>
+                            <div class="pattern-description">
+                                <strong>Use cases:</strong>
+                                <ul>
+                                    <li>Sustained learning processes</li>
+                                    <li>Professional skill development</li>
+                                    <li>Complex skill acquisition (musical instruments, languages)</li>
+                                    <li>Career-long competency building</li>
+                                </ul>
+                                <p><strong>When to use:</strong> Long-term skill building, step-by-step mastery progression, comprehensive competency development.</p>
+                            </div>
+                            <div class="pattern-metrics">
+                                <div class="metric-item">
+                                    <span class="metric-label">Balance:</span>
+                                    <span class="metric-value">0.75</span>
+                                </div>
+                                <div class="metric-item">
+                                    <span class="metric-label">Sustainability:</span>
+                                    <span class="metric-value">0.70</span>
+                                </div>
+                                <div class="metric-item">
+                                    <span class="metric-label">Efficiency:</span>
+                                    <span class="metric-value">0.85</span>
+                                </div>
+                            </div>
+                            <button class="btn-validate" onclick="validatePattern('emission reception coherence expansion coherence dissonance mutation transition coherence resonance recursivity')">Validate This Pattern</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Organizational Patterns -->
+                <div class="domain-section" data-domain="organizational">
+                    <h2>🏢 Organizational Domain</h2>
+                    <p class="domain-description">
+                        Patterns for institutional change, team dynamics, and organizational evolution.
+                    </p>
+
+                    <div class="pattern-cards">
+                        <!-- Team Formation -->
+                        <div class="pattern-card">
+                            <div class="pattern-header">
+                                <h3>Team Formation</h3>
+                                <span class="pattern-badge">HIERARCHICAL</span>
+                            </div>
+                            <div class="pattern-health">
+                                <span class="health-score excellent">Health: 0.82</span>
+                                <span class="pattern-length">10 operators</span>
+                            </div>
+                            <div class="pattern-sequence">
+                                <code>emission → reception → coherence → dissonance → mutation → coherence → expansion → coupling → resonance → silence</code>
+                            </div>
+                            <div class="pattern-description">
+                                <strong>Use cases:</strong>
+                                <ul>
+                                    <li>New team assembly and launch</li>
+                                    <li>Cross-functional project team initiation</li>
+                                    <li>Department reorganization</li>
+                                    <li>Merger and acquisition team integration</li>
+                                </ul>
+                                <p><strong>When to use:</strong> Building new teams, establishing group coherence, creating high-performing collaborative units.</p>
+                            </div>
+                            <div class="pattern-metrics">
+                                <div class="metric-item">
+                                    <span class="metric-label">Balance:</span>
+                                    <span class="metric-value">0.50</span>
+                                </div>
+                                <div class="metric-item">
+                                    <span class="metric-label">Sustainability:</span>
+                                    <span class="metric-value">0.80</span>
+                                </div>
+                                <div class="metric-item">
+                                    <span class="metric-label">Efficiency:</span>
+                                    <span class="metric-value">0.90</span>
+                                </div>
+                            </div>
+                            <button class="btn-validate" onclick="validatePattern('emission reception coherence dissonance mutation coherence expansion coupling resonance silence')">Validate This Pattern</button>
+                        </div>
+
+                        <!-- Strategic Planning -->
+                        <div class="pattern-card">
+                            <div class="pattern-header">
+                                <h3>Strategic Planning</h3>
+                                <span class="pattern-badge therapeutic-badge">THERAPEUTIC</span>
+                            </div>
+                            <div class="pattern-health">
+                                <span class="health-score excellent">Health: 0.81</span>
+                                <span class="pattern-length">11 operators</span>
+                            </div>
+                            <div class="pattern-sequence">
+                                <code>emission → reception → coherence → dissonance → self_organization → contraction → coherence → expansion → coupling → resonance → transition</code>
+                            </div>
+                            <div class="pattern-description">
+                                <strong>Use cases:</strong>
+                                <ul>
+                                    <li>Comprehensive strategic planning cycles</li>
+                                    <li>Organizational vision development</li>
+                                    <li>Major institutional transformation</li>
+                                    <li>Long-term change management</li>
+                                </ul>
+                                <p><strong>When to use:</strong> Strategic planning processes, long-term organizational transformation, vision-driven institutional evolution.</p>
+                            </div>
+                            <div class="pattern-metrics">
+                                <div class="metric-item">
+                                    <span class="metric-label">Balance:</span>
+                                    <span class="metric-value">0.75</span>
+                                </div>
+                                <div class="metric-item">
+                                    <span class="metric-label">Sustainability:</span>
+                                    <span class="metric-value">0.60</span>
+                                </div>
+                                <div class="metric-item">
+                                    <span class="metric-label">Efficiency:</span>
+                                    <span class="metric-value">0.85</span>
+                                </div>
+                            </div>
+                            <button class="btn-validate" onclick="validatePattern('emission reception coherence dissonance self_organization contraction coherence expansion coupling resonance transition')">Validate This Pattern</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Creative Patterns -->
+                <div class="domain-section" data-domain="creative">
+                    <h2>🎨 Creative Domain</h2>
+                    <p class="domain-description">
+                        Patterns for artistic creation, design thinking, innovation, and creative problem-solving.
+                    </p>
+
+                    <div class="pattern-cards">
+                        <!-- Artistic Creation -->
+                        <div class="pattern-card">
+                            <div class="pattern-header">
+                                <h3>Artistic Creation</h3>
+                                <span class="pattern-badge creative-badge">CREATIVE</span>
+                            </div>
+                            <div class="pattern-health">
+                                <span class="health-score good">Health: 0.78</span>
+                                <span class="pattern-length">12 operators</span>
+                            </div>
+                            <div class="pattern-sequence">
+                                <code>emission → reception → coherence → expansion → coherence → dissonance → mutation → coherence → resonance → coherence → coupling → silence</code>
+                            </div>
+                            <div class="pattern-description">
+                                <strong>Use cases:</strong>
+                                <ul>
+                                    <li>Painting or sculpture creation</li>
+                                    <li>Musical composition</li>
+                                    <li>Novel or screenplay writing</li>
+                                    <li>Choreography development</li>
+                                    <li>Architectural design</li>
+                                </ul>
+                                <p><strong>When to use:</strong> Complete artistic projects, major creative works requiring full creative cycle from impulse through consolidation.</p>
+                            </div>
+                            <div class="pattern-metrics">
+                                <div class="metric-item">
+                                    <span class="metric-label">Balance:</span>
+                                    <span class="metric-value">0.33</span>
+                                </div>
+                                <div class="metric-item">
+                                    <span class="metric-label">Sustainability:</span>
+                                    <span class="metric-value">0.80</span>
+                                </div>
+                                <div class="metric-item">
+                                    <span class="metric-label">Efficiency:</span>
+                                    <span class="metric-value">0.80</span>
+                                </div>
+                            </div>
+                            <button class="btn-validate" onclick="validatePattern('emission reception coherence expansion coherence dissonance mutation coherence resonance coherence coupling silence')">Validate This Pattern</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Validation Result Modal -->
+                <div id="validation-modal" class="modal">
+                    <div class="modal-content">
+                        <span class="close" onclick="closeModal()">&times;</span>
+                        <h2>Pattern Validation Result</h2>
+                        <div id="modal-result"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="tnfr-footer">
+        <div class="container">
+            <p>&copy; 2024 TNFR Python Engine. Licensed under MIT.</p>
+            <p>
+                <a href="https://github.com/fermga/TNFR-Python-Engine">GitHub</a> | 
+                <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/PATTERN_COOKBOOK.md">Full Pattern Cookbook</a>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        function filterPatterns(domain) {
+            const sections = document.querySelectorAll('.domain-section');
+            const buttons = document.querySelectorAll('.filter-btn');
+            
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            sections.forEach(section => {
+                if (domain === 'all' || section.dataset.domain === domain) {
+                    section.style.display = 'block';
+                } else {
+                    section.style.display = 'none';
+                }
+            });
+        }
+
+        function validatePattern(sequenceString) {
+            const sequence = sequenceString.split(/\s+/);
+            const validator = new SequenceValidator();
+            const result = validator.validate(sequence);
+            
+            let html = '<div class="validation-result">';
+            
+            if (result.passed) {
+                html += '<div class="result-status success">✅ Pattern is Valid</div>';
+            } else {
+                html += '<div class="result-status error">❌ Pattern has Issues</div>';
+            }
+            
+            if (result.healthMetrics) {
+                const hm = result.healthMetrics;
+                html += '<div class="result-section"><h4>Health Metrics:</h4>';
+                html += '<div class="health-grid">';
+                html += `<div class="health-metric">
+                    <span class="metric-label">Overall Health:</span>
+                    <span class="metric-value">${hm.overallHealth}</span>
+                </div>`;
+                html += `<div class="health-metric">
+                    <span class="metric-label">Coherence:</span>
+                    <span class="metric-value">${hm.coherenceIndex}</span>
+                </div>`;
+                html += `<div class="health-metric">
+                    <span class="metric-label">Balance:</span>
+                    <span class="metric-value">${hm.balanceScore}</span>
+                </div>`;
+                html += `<div class="health-metric">
+                    <span class="metric-label">Sustainability:</span>
+                    <span class="metric-value">${hm.sustainabilityIndex}</span>
+                </div>`;
+                html += '</div></div>';
+            }
+            
+            if (result.patterns.length > 0) {
+                html += '<div class="result-section"><h4>Detected Patterns:</h4><ul>';
+                result.patterns.forEach(pattern => {
+                    html += `<li class="pattern-item">${pattern.type} (${Math.round(pattern.confidence * 100)}%)</li>`;
+                });
+                html += '</ul></div>';
+            }
+            
+            html += '</div>';
+            
+            document.getElementById('modal-result').innerHTML = html;
+            document.getElementById('validation-modal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('validation-modal').style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('validation-modal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

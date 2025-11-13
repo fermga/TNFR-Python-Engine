@@ -1,0 +1,3938 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Canonical TNFR structural dynamics engine documentation">
+      
+      
+      
+        <link rel="canonical" href="https://fermga.github.io/TNFR-Python-Engine/modules/physics/">
+      
+      
+        <link rel="prev" href="../mathematics/">
+      
+      
+        <link rel="next" href="../operators/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>Physics Hub - TNFR Python Engine</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.618322db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#tnfr-physics-from-nodal-dynamics-to-cellular-life" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="TNFR Python Engine" class="md-header__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            TNFR Python Engine
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Physics Hub
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    TNFR Python Engine
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="TNFR Python Engine" class="md-nav__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    TNFR Python Engine
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    TNFR Python Engine
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting Started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Welcome to TNFR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/getting-started/LEARNING_PATHS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Learning Paths
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/getting-started/quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quickstart Tutorial
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/getting-started/TNFR_CONCEPTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core Concepts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/getting-started/INTERACTIVE_TUTORIAL/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interactive Tutorial
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/getting-started/FAQ/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    FAQ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/getting-started/math-backends/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Math Backends
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/getting-started/optional-dependencies/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Optional Dependencies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/getting-started/migrating-remesh-window/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migrating from Remesh Window
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    User Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/user-guide/OPERATORS_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operators Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../STRUCTURAL_FIELDS_TETRAD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural Field Tetrad (Canonical)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/user-guide/METRICS_INTERPRETATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Metrics Interpretation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TROUBLESHOOTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar Documentation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Grammar Documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/EXECUTIVE-SUMMARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Executive Summary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_3" id="__nav_4_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core Concepts
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Core Concepts
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/01-FUNDAMENTAL-CONCEPTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fundamental Concepts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/02-CANONICAL-CONSTRAINTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Canonical Constraints
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/03-OPERATORS-AND-GLYPHS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operators and Glyphs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/04-VALID-SEQUENCES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Valid Sequences
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_4" id="__nav_4_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Implementation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/05-TECHNICAL-IMPLEMENTATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Technical Implementation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/06-VALIDATION-AND-TESTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation and Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/07-MIGRATION-AND-EVOLUTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migration and Evolution
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_5" id="__nav_4_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/08-QUICK-REFERENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/GLOSSARY.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/MASTER-INDEX/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Master Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/OPERATORS-CATALOG-SUMMARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operators Catalog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/CROSS-REFERENCE-INDEX/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cross-Reference Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/CODE_DOCS_CROSSREF/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code Documentation Cross-Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_6" id="__nav_4_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tooling
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tooling
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/TOOLING-AND-AUTOMATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tooling and Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/TESTING-SUMMARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing Summary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/DEPRECATION-INDEX.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deprecation Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Examples
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_2" id="__nav_5_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Notebooks & Patterns
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Notebooks & Patterns
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/notebooks/Fundamental_Particles_TNFR_Atlas.ipynb" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fundamental Particles TNFR Atlas (Notebook - GitHub)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/README.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    TNFR Patterns (Module Guide)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../INTERACTIONS_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interaction Sequences Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/api/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/api/operators/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural Operators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/api/OPERATORS_VISUAL_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operators Visual Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/api/telemetry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Telemetry & Utilities
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/api/docstring_style/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docstring Style
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module Documentation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Module Documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mathematics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mathematics Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Physics Hub
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Physics Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-nodal-equation-foundation-of-everything" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🌊 The Nodal Equation: Foundation of Everything
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#structural-fields-system-telemetry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📐 Structural Fields: System Telemetry
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📐 Structural Fields: System Telemetry">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#structural-tetrad-docsstructural_fields_tetradmd" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Structural Tetrad → docs/STRUCTURAL_FIELDS_TETRAD.md
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#primary-patterns-coherent-initialization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎵 Primary Patterns: Coherent Initialization
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#life-emergence-autopoiesis-from-tnfr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧬 Life Emergence: Autopoiesis from TNFR
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🧬 Life Emergence: Autopoiesis from TNFR">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#life-criterion-a-10-autopoietic-coefficient" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Life Criterion: A &gt; 1.0 (Autopoietic Coefficient)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cellular-emergence-from-autopoiesis-to-compartmentalization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔬 Cellular Emergence: From Autopoiesis to Compartmentalization
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔬 Cellular Emergence: From Autopoiesis to Compartmentalization">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#extended-nodal-equation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Extended Nodal Equation:
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cellular-criteria-all-simultaneous" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cellular Criteria (all simultaneous):
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#molecular-chemistry-elements-as-coherent-attractors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ⚛️ Molecular Chemistry: Elements as Coherent Attractors
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fundamental-interactions-operational-sequences" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔄 Fundamental Interactions: Operational Sequences
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#analysis-and-validation-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📊 Analysis and Validation Tools
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📊 Analysis and Validation Tools">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#system-calibration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        System Calibration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#spectral-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Spectral Metrics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#extended-fields-research" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Extended Fields (Research)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#unified-evolutionary-discourse-the-complete-path" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎯 Unified Evolutionary Discourse: The Complete Path
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🎯 Unified Evolutionary Discourse: The Complete Path">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#level-1-nodal-foundation-base-equation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Level 1: Nodal Foundation → Base equation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#level-2-emergent-fields-structural-tetrad" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Level 2: Emergent Fields → Structural Tetrad
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#level-3-coherent-patterns-organized-initialization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Level 3: Coherent Patterns → Organized initialization
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#level-4-vital-emergence-a-10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Level 4: Vital Emergence → A &gt; 1.0
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#level-5-cellular-organization-compartmentalization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Level 5: Cellular Organization → Compartmentalization
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#level-6-molecular-chemistry-elemental-attractors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Level 6: Molecular Chemistry → Elemental attractors
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#centralized-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📚 Centralized References
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📚 Centralized References">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#canonical-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Canonical Documentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#experimental-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Experimental Validation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#complete-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Complete API
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#development-principles-and-invariants" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🛡️ Development Principles and Invariants
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🛡️ Development Principles and Invariants">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#canonical-invariants-never-break" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Canonical Invariants (Never Break)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#development-principles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Development Principles
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quick-start-exploring-the-complete-discourse" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🚀 Quick Start: Exploring the Complete Discourse
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🚀 Quick Start: Exploring the Complete Discourse">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#for-users-1-hour" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        For Users (1 hour)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#for-researchers-1-week" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        For Researchers (1 week)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#for-developers-ongoing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        For Developers (ongoing)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#changelog" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📝 Changelog
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📝 Changelog">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#2025-11-13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2025-11-13:
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2025-11-12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2025-11-12:
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../operators/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operators Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dynamics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dynamics Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../metrics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Metrics Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sdk/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SDK Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../telemetry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Telemetry Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extensions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Extensions Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core Documentation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Core Documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DOCUMENTATION_INDEX/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Documentation Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CANONICAL_SOURCES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Canonical Sources
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../UNIFIED_GRAMMAR_RULES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Unified Grammar Rules
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../AGENTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Agents Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../GLOSSARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Advanced Topics
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Advanced Topics
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/advanced/ARCHITECTURE_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/advanced/PERFORMANCE_OPTIMIZATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Performance Optimization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/advanced/TESTING_STRATEGIES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing Strategies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/advanced/DEVELOPMENT_WORKFLOW/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development Workflow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/foundations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mathematical Foundations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_9_6" id="__nav_9_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Research Documents
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_9_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Research Documents
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TNFR_FORCES_EMERGENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Forces Emergence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../OPERATOR_COMPLETENESS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator Completeness
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../LIFE_EMERGENCE_FROM_TNFR/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Life Emergence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CELL_EMERGENCE_FROM_TNFR/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cell Emergence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/tools/CLI/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Security
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/security/monitoring/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Monitoring
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/security/dependency-auditing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dependency Auditing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/security/codeql/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CodeQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/security/dependabot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dependabot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
+        
+          
+          <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Info
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Project Info
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/releases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="tnfr-physics-from-nodal-dynamics-to-cellular-life">TNFR Physics: From Nodal Dynamics to Cellular Life<a class="headerlink" href="#tnfr-physics-from-nodal-dynamics-to-cellular-life" title="Permanent link">&para;</a></h1>
+<p><strong>Status</strong>: CANONICAL • <strong>Last Updated</strong>: 2025-11-13</p>
+<p>This documentation presents the <strong>unified discourse</strong> of TNFR physics, tracing the natural evolution from the nodal equation to cellular life emergence. Each stage emerges naturally from the previous one, without additional postulates.</p>
+<hr />
+<h2 id="the-nodal-equation-foundation-of-everything">🌊 The Nodal Equation: Foundation of Everything<a class="headerlink" href="#the-nodal-equation-foundation-of-everything" title="Permanent link">&para;</a></h2>
+<p>TNFR dynamics begins with a fundamental equation governing each node:</p>
+<div class="highlight"><pre><span></span><code>∂EPI/∂t = νf · ΔNFR(t)
+</code></pre></div>
+<p><strong>Physical components</strong>:
+- <strong>EPI</strong>: Coherent structural form (changes only via operators)
+- <strong>νf</strong>: Structural frequency (Hz_str) 
+- <strong>ΔNFR</strong>: Reorganization gradient (structural pressure)</p>
+<p><strong>Emergent principles</strong> from this equation:
+- <strong>U1-U6</strong>: Unified grammar → <a href="../../../UNIFIED_GRAMMAR_RULES.md"><code>UNIFIED_GRAMMAR_RULES.md</code></a>
+- <strong>Canonical invariants</strong> → <a href="../../../AGENTS.md"><code>AGENTS.md</code></a>
+- <strong>Physical foundations</strong> → <a href="../../../TNFR.pdf"><code>TNFR.pdf</code></a> §1-2</p>
+<hr />
+<h2 id="structural-fields-system-telemetry">📐 Structural Fields: System Telemetry<a class="headerlink" href="#structural-fields-system-telemetry" title="Permanent link">&para;</a></h2>
+<p>From the nodal equation emerge <strong>four canonical fields</strong> that characterize the system state:</p>
+<h3 id="structural-tetrad-docsstructural_fields_tetradmd"><strong>Structural Tetrad</strong> → <a href="../../../docs/STRUCTURAL_FIELDS_TETRAD.md"><code>docs/STRUCTURAL_FIELDS_TETRAD.md</code></a><a class="headerlink" href="#structural-tetrad-docsstructural_fields_tetradmd" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Φs (Structural Potential)</strong>: Global field from ΔNFR distribution</li>
+<li><strong>|∇φ| (Phase Gradient)</strong>: Local desynchronization </li>
+<li><strong>Kφ (Phase Curvature)</strong>: Geometric confinement</li>
+<li><strong>ξC (Coherence Length)</strong>: Spatial correlation scale</li>
+</ol>
+<p><strong>Implementation</strong>: <a href="fields.py"><code>src/tnfr/physics/fields.py</code></a><br />
+<strong>Safety thresholds</strong>: ΔΦs &lt; 2.0, |∇φ| &lt; 0.38, |Kφ| ≥ 3.0, ξC divergent near Ic</p>
+<hr />
+<h2 id="primary-patterns-coherent-initialization">🎵 Primary Patterns: Coherent Initialization<a class="headerlink" href="#primary-patterns-coherent-initialization" title="Permanent link">&para;</a></h2>
+<p><strong>Fundamental patterns</strong> provide TNFR-native initializations for studying emergence:</p>
+<p><strong>Module</strong>: <a href="patterns.py"><code>src/tnfr/physics/patterns.py</code></a></p>
+<ul>
+<li><strong>Plane waves</strong>: <code>apply_plane_wave()</code> - photonic coherence (Q≈0)</li>
+<li><strong>Vortices</strong>: <code>apply_vortex()</code> - localized patterns (Q=±1)</li>
+<li><strong>Helical packets</strong>: <code>apply_helical_packet()</code> - massive gauge (Q≈0)</li>
+<li><strong>Scalar bumps</strong>: <code>apply_scalar_bump()</code> - Higgs-like</li>
+<li><strong>Quark clusters</strong>: <code>apply_quark_triplet_cluster()</code> - three vortices (Q≈3)</li>
+</ul>
+<p><strong>Visual atlas</strong>: <a href="../../../notebooks/TNFR_Particle_Atlas_U6_Sequential.ipynb"><code>notebooks/TNFR_Particle_Atlas_U6_Sequential.ipynb</code></a></p>
+<hr />
+<h2 id="life-emergence-autopoiesis-from-tnfr">🧬 Life Emergence: Autopoiesis from TNFR<a class="headerlink" href="#life-emergence-autopoiesis-from-tnfr" title="Permanent link">&para;</a></h2>
+<p>When patterns achieve <strong>sufficient self-organization</strong>, autopoietic behavior emerges:</p>
+<h3 id="life-criterion-a-10-autopoietic-coefficient"><strong>Life Criterion</strong>: A &gt; 1.0 (Autopoietic Coefficient)<a class="headerlink" href="#life-criterion-a-10-autopoietic-coefficient" title="Permanent link">&para;</a></h3>
+<p><strong>Module</strong>: <a href="life.py"><code>src/tnfr/physics/life.py</code></a></p>
+<p><strong>Fundamental metrics</strong>:
+- <strong>Vi (Vitality Index)</strong>: Vital reorganization capacity
+- <strong>A (Autopoietic Coefficient)</strong>: Self-maintenance vs degradation<br />
+- <strong>S (Self-Organization Index)</strong>: Spontaneous structure emergence
+- <strong>M (Stability Margin)</strong>: Robustness against perturbations</p>
+<p><strong>Theoretical documentation</strong>:
+- Conceptual framework → <a href="../../../docs/LIFE_EMERGENCE_THEORETICAL_FRAMEWORK.md"><code>docs/LIFE_EMERGENCE_THEORETICAL_FRAMEWORK.md</code></a>
+- Mathematical derivation → <a href="../../../docs/LIFE_MATHEMATICAL_DERIVATION.md"><code>docs/LIFE_MATHEMATICAL_DERIVATION.md</code></a></p>
+<p><strong>Experimental validation</strong>: <a href="../../../examples/life_experiments.py"><code>examples/life_experiments.py</code></a></p>
+<hr />
+<h2 id="cellular-emergence-from-autopoiesis-to-compartmentalization">🔬 Cellular Emergence: From Autopoiesis to Compartmentalization<a class="headerlink" href="#cellular-emergence-from-autopoiesis-to-compartmentalization" title="Permanent link">&para;</a></h2>
+<p>Upon the autopoietic foundation (A &gt; 1.0), <strong>cellular organization</strong> emerges through spatial compartmentalization:</p>
+<h3 id="extended-nodal-equation"><strong>Extended Nodal Equation</strong>:<a class="headerlink" href="#extended-nodal-equation" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>∂EPI_cell/∂t = νf_internal · ΔNFR_internal + J_membrane(φ_ext, φ_int)
+</code></pre></div>
+<p><strong>Module</strong>: <a href="cell.py"><code>src/tnfr/physics/cell.py</code></a></p>
+<h3 id="cellular-criteria-all-simultaneous"><strong>Cellular Criteria</strong> (all simultaneous):<a class="headerlink" href="#cellular-criteria-all-simultaneous" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>C_boundary &gt; 0.8</strong>: Strong membrane coherence</li>
+<li><strong>ρ_selectivity &gt; 0.6</strong>: Preferential internal coupling  </li>
+<li><strong>H_index &gt; 0.5</strong>: Homeostatic regulatory capacity</li>
+<li><strong>I_compartment &gt; 0.7</strong>: Compartmentalization integrity</li>
+</ol>
+<p><strong>Cellular metrics</strong>:
+- <strong>Boundary coherence</strong>: <code>compute_boundary_coherence()</code>
+- <strong>Selectivity index</strong>: <code>compute_selectivity_index()</code> 
+- <strong>Homeostatic index</strong>: <code>compute_homeostatic_index()</code>
+- <strong>Membrane integrity</strong>: <code>compute_membrane_integrity()</code></p>
+<p><strong>Theoretical documentation</strong>: <a href="../../../docs/CELL_EMERGENCE_FROM_TNFR.md"><code>docs/CELL_EMERGENCE_FROM_TNFR.md</code></a><br />
+<strong>Experimental validation</strong>: <a href="../../../examples/cell_experiments.py"><code>examples/cell_experiments.py</code></a></p>
+<hr />
+<h2 id="molecular-chemistry-elements-as-coherent-attractors">⚛️ Molecular Chemistry: Elements as Coherent Attractors<a class="headerlink" href="#molecular-chemistry-elements-as-coherent-attractors" title="Permanent link">&para;</a></h2>
+<p><strong>Chemical elements</strong> emerge as optimal coherent attractors in TNFR structural space:</p>
+<p><strong>Module</strong>: <a href="signatures.py"><code>src/tnfr/physics/signatures.py</code></a></p>
+<p><strong>Implemented elements</strong>:
+- <strong>H, C, N, O</strong>: Fundamental light elements
+- <strong>Au (Gold)</strong>: Optimal multi-scale attractor (computationally verified)</p>
+<p><strong>Physical principle</strong>: Elements are <strong>stable coherence patterns</strong> that emerge naturally from nodal dynamics, not prescribed chemistry.</p>
+<p><strong>Documentation hub</strong>: <a href="../../../docs/MOLECULAR_CHEMISTRY_HUB.md"><code>docs/MOLECULAR_CHEMISTRY_HUB.md</code></a><br />
+<strong>Validation</strong>: <a href="../../../examples/elements_signature_study.py"><code>examples/elements_signature_study.py</code></a></p>
+<hr />
+<h2 id="fundamental-interactions-operational-sequences">🔄 Fundamental Interactions: Operational Sequences<a class="headerlink" href="#fundamental-interactions-operational-sequences" title="Permanent link">&para;</a></h2>
+<p><strong>Physical interactions</strong> (electromagnetic, weak, strong, gravitational) are implemented as canonical operator sequences:</p>
+<p><strong>Module</strong>: <a href="interactions.py"><code>src/tnfr/physics/interactions.py</code></a></p>
+<p><strong>Implemented</strong>:
+- <code>electromagnetic_interaction()</code>: EM-type sequences
+- <code>weak_interaction()</code>: Decay processes
+- <code>strong_interaction()</code>: Nuclear confinement<br />
+- <code>gravitational_interaction()</code>: Space-time deformation</p>
+<p><strong>Principle</strong>: All forces emerge from <strong>operator composition</strong> respecting unified grammar (U1-U6).</p>
+<hr />
+<h2 id="analysis-and-validation-tools">📊 Analysis and Validation Tools<a class="headerlink" href="#analysis-and-validation-tools" title="Permanent link">&para;</a></h2>
+<h3 id="system-calibration"><strong>System Calibration</strong><a class="headerlink" href="#system-calibration" title="Permanent link">&para;</a></h3>
+<p><strong>Module</strong>: <a href="calibration.py"><code>src/tnfr/physics/calibration.py</code></a>
+- TNFR parameter configuration
+- Canonical threshold validation</p>
+<h3 id="spectral-metrics"><strong>Spectral Metrics</strong><a class="headerlink" href="#spectral-metrics" title="Permanent link">&para;</a></h3>
+<p><strong>Module</strong>: <a href="spectral_metrics.py"><code>src/tnfr/physics/spectral_metrics.py</code></a>
+- Frequency analysis of TNFR dynamics
+- Structural resonance detection</p>
+<h3 id="extended-fields-research"><strong>Extended Fields (Research)</strong><a class="headerlink" href="#extended-fields-research" title="Permanent link">&para;</a></h3>
+<p><strong>Module</strong>: <a href="extended_canonical_fields.py"><code>src/tnfr/physics/extended_canonical_fields.py</code></a><br />
+- Research-phase fields (non-canonical)
+- Experimental tetrad extensions</p>
+<hr />
+<h2 id="unified-evolutionary-discourse-the-complete-path">🎯 Unified Evolutionary Discourse: The Complete Path<a class="headerlink" href="#unified-evolutionary-discourse-the-complete-path" title="Permanent link">&para;</a></h2>
+<h3 id="level-1-nodal-foundation-base-equation"><strong>Level 1: Nodal Foundation</strong> → Base equation<a class="headerlink" href="#level-1-nodal-foundation-base-equation" title="Permanent link">&para;</a></h3>
+<p><strong>Input</strong>: Nodes with EPI, νf, ΔNFR<br />
+<strong>Output</strong>: Basic structural dynamics<br />
+<strong>Implementation</strong>: Grammar U1-U6, canonical operators</p>
+<h3 id="level-2-emergent-fields-structural-tetrad"><strong>Level 2: Emergent Fields</strong> → Structural Tetrad<a class="headerlink" href="#level-2-emergent-fields-structural-tetrad" title="Permanent link">&para;</a></h3>
+<p><strong>Input</strong>: Dynamic nodal states<br />
+<strong>Output</strong>: Φs, |∇φ|, Kφ, ξC (system telemetry)<br />
+<strong>Implementation</strong>: <a href="fields.py"><code>fields.py</code></a></p>
+<h3 id="level-3-coherent-patterns-organized-initialization"><strong>Level 3: Coherent Patterns</strong> → Organized initialization<a class="headerlink" href="#level-3-coherent-patterns-organized-initialization" title="Permanent link">&para;</a></h3>
+<p><strong>Input</strong>: Structural fields + seed patterns<br />
+<strong>Output</strong>: Waves, vortices, helicoids, scalar bumps<br />
+<strong>Implementation</strong>: <a href="patterns.py"><code>patterns.py</code></a></p>
+<h3 id="level-4-vital-emergence-a-10"><strong>Level 4: Vital Emergence</strong> → A &gt; 1.0<a class="headerlink" href="#level-4-vital-emergence-a-10" title="Permanent link">&para;</a></h3>
+<p><strong>Input</strong>: Self-organized patterns<br />
+<strong>Output</strong>: Autopoietic behavior (Vi, A, S, M)<br />
+<strong>Implementation</strong>: <a href="life.py"><code>life.py</code></a> + <a href="../../../examples/life_experiments.py"><code>examples/life_experiments.py</code></a></p>
+<h3 id="level-5-cellular-organization-compartmentalization"><strong>Level 5: Cellular Organization</strong> → Compartmentalization<a class="headerlink" href="#level-5-cellular-organization-compartmentalization" title="Permanent link">&para;</a></h3>
+<p><strong>Input</strong>: Autopoietic foundation (A &gt; 1.0)<br />
+<strong>Output</strong>: Cells with selective membranes (C_boundary, ρ_selectivity, H_index, I_compartment)<br />
+<strong>Implementation</strong>: <a href="cell.py"><code>cell.py</code></a> + <a href="../../../examples/cell_experiments.py"><code>examples/cell_experiments.py</code></a></p>
+<h3 id="level-6-molecular-chemistry-elemental-attractors"><strong>Level 6: Molecular Chemistry</strong> → Elemental attractors<a class="headerlink" href="#level-6-molecular-chemistry-elemental-attractors" title="Permanent link">&para;</a></h3>
+<p><strong>Input</strong>: Cellular organization + multi-scale optimization<br />
+<strong>Output</strong>: Chemical elements as stable patterns (H, C, N, O, Au)<br />
+<strong>Implementation</strong>: <a href="signatures.py"><code>signatures.py</code></a> + <a href="../../../examples/elements_signature_study.py"><code>examples/elements_signature_study.py</code></a></p>
+<hr />
+<h2 id="centralized-references">📚 Centralized References<a class="headerlink" href="#centralized-references" title="Permanent link">&para;</a></h2>
+<h3 id="canonical-documentation"><strong>Canonical Documentation</strong><a class="headerlink" href="#canonical-documentation" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Foundations</strong>: <a href="../../../TNFR.pdf"><code>TNFR.pdf</code></a>, <a href="../../../AGENTS.md"><code>AGENTS.md</code></a></li>
+<li><strong>Grammar</strong>: <a href="../../../UNIFIED_GRAMMAR_RULES.md"><code>UNIFIED_GRAMMAR_RULES.md</code></a></li>
+<li><strong>Fields</strong>: <a href="../../../docs/STRUCTURAL_FIELDS_TETRAD.md"><code>docs/STRUCTURAL_FIELDS_TETRAD.md</code></a></li>
+<li><strong>Life</strong>: <a href="../../../docs/LIFE_EMERGENCE_THEORETICAL_FRAMEWORK.md"><code>docs/LIFE_EMERGENCE_THEORETICAL_FRAMEWORK.md</code></a></li>
+<li><strong>Cells</strong>: <a href="../../../docs/CELL_EMERGENCE_FROM_TNFR.md"><code>docs/CELL_EMERGENCE_FROM_TNFR.md</code></a></li>
+<li><strong>Chemistry</strong>: <a href="../../../docs/MOLECULAR_CHEMISTRY_HUB.md"><code>docs/MOLECULAR_CHEMISTRY_HUB.md</code></a></li>
+</ul>
+<h3 id="experimental-validation"><strong>Experimental Validation</strong><a class="headerlink" href="#experimental-validation" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Fields</strong>: <a href="../../../notebooks/Force_Fields_Tetrad_Exploration.ipynb"><code>notebooks/Force_Fields_Tetrad_Exploration.ipynb</code></a></li>
+<li><strong>Life</strong>: <a href="../../../examples/life_experiments.py"><code>examples/life_experiments.py</code></a></li>
+<li><strong>Cells</strong>: <a href="../../../examples/cell_experiments.py"><code>examples/cell_experiments.py</code></a></li>
+<li><strong>Chemistry</strong>: <a href="../../../examples/elements_signature_study.py"><code>examples/elements_signature_study.py</code></a></li>
+</ul>
+<h3 id="complete-api"><strong>Complete API</strong><a class="headerlink" href="#complete-api" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Fields</strong>: <code>fields.py</code> (compute_structural_potential, compute_phase_gradient, etc.)</li>
+<li><strong>Patterns</strong>: <code>patterns.py</code> (apply_plane_wave, apply_vortex, etc.)</li>
+<li><strong>Life</strong>: <code>life.py</code> (detect_life, compute_vitality_index, etc.)</li>
+<li><strong>Cells</strong>: <code>cell.py</code> (detect_cell_formation, compute_boundary_coherence, etc.)</li>
+<li><strong>Interactions</strong>: <code>interactions.py</code> (electromagnetic_interaction, etc.)</li>
+</ul>
+<hr />
+<h2 id="development-principles-and-invariants">🛡️ Development Principles and Invariants<a class="headerlink" href="#development-principles-and-invariants" title="Permanent link">&para;</a></h2>
+<h3 id="canonical-invariants-never-break"><strong>Canonical Invariants</strong> (Never Break)<a class="headerlink" href="#canonical-invariants-never-break" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>EPI</strong>: Changes only via structural operators  </li>
+<li><strong>Units</strong>: νf in Hz_str (structural hertz)</li>
+<li><strong>ΔNFR</strong>: Structural pressure, NOT ML gradient</li>
+<li><strong>Grammar</strong>: U1-U6 always respected</li>
+<li><strong>Telemetry</strong>: Read-only (no direct mutation)</li>
+</ul>
+<h3 id="development-principles"><strong>Development Principles</strong><a class="headerlink" href="#development-principles" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Physics first</strong>: Derive from nodal equation/invariants</li>
+<li><strong>Single source</strong>: Avoid duplication, use links  </li>
+<li><strong>Reproducibility</strong>: Seeds, clear steps</li>
+<li><strong>Traceability</strong>: Clear theory → code chain</li>
+</ol>
+<hr />
+<h2 id="quick-start-exploring-the-complete-discourse">🚀 Quick Start: Exploring the Complete Discourse<a class="headerlink" href="#quick-start-exploring-the-complete-discourse" title="Permanent link">&para;</a></h2>
+<h3 id="for-users-1-hour"><strong>For Users</strong> (1 hour)<a class="headerlink" href="#for-users-1-hour" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Foundations</strong>: Read <a href="../../../AGENTS.md"><code>AGENTS.md</code></a> (nodal equation, invariants)</li>
+<li><strong>Fields</strong>: Run <a href="../../../notebooks/Force_Fields_Tetrad_Exploration.ipynb"><code>notebooks/Force_Fields_Tetrad_Exploration.ipynb</code></a>  </li>
+<li><strong>Life</strong>: Run <a href="../../../examples/life_experiments.py"><code>examples/life_experiments.py</code></a></li>
+<li><strong>Cells</strong>: Run <a href="../../../examples/cell_experiments.py"><code>examples/cell_experiments.py</code></a></li>
+</ol>
+<h3 id="for-researchers-1-week"><strong>For Researchers</strong> (1 week)<a class="headerlink" href="#for-researchers-1-week" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Complete theory</strong>: <a href="../../../TNFR.pdf"><code>TNFR.pdf</code></a> + <a href="../../../UNIFIED_GRAMMAR_RULES.md"><code>UNIFIED_GRAMMAR_RULES.md</code></a></li>
+<li><strong>Theoretical frameworks</strong>: Life (<a href="../../../docs/LIFE_EMERGENCE_THEORETICAL_FRAMEWORK.md"><code>docs/LIFE_EMERGENCE_THEORETICAL_FRAMEWORK.md</code></a>), Cells (<a href="../../../docs/CELL_EMERGENCE_FROM_TNFR.md"><code>docs/CELL_EMERGENCE_FROM_TNFR.md</code></a>)</li>
+<li><strong>Validation</strong>: Run all experiments + notebooks</li>
+<li><strong>API</strong>: Explore modules <code>fields.py</code>, <code>life.py</code>, <code>cell.py</code></li>
+</ol>
+<h3 id="for-developers-ongoing"><strong>For Developers</strong> (ongoing)<a class="headerlink" href="#for-developers-ongoing" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Architecture</strong>: <a href="../../../ARCHITECTURE.md"><code>ARCHITECTURE.md</code></a>, tests in <code>tests/</code></li>
+<li><strong>Contributions</strong>: Follow development principles above  </li>
+<li><strong>Extensions</strong>: New modules always derived from nodal equation</li>
+</ol>
+<hr />
+<h2 id="changelog">📝 Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h2>
+<h3 id="2025-11-13"><strong>2025-11-13</strong>:<a class="headerlink" href="#2025-11-13" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>UNIFIED DISCOURSE</strong>: Complete README simplification and reorganization with evolutionary discourse from nodal equation to cellular formation</li>
+<li><strong>CENTRALIZED LINKS</strong>: Direct references to all modules, experiments and theoretical documentation  </li>
+<li><strong>CLEAR NAVIGATION</strong>: 6-level structure (Nodal → Fields → Patterns → Life → Cells → Chemistry)</li>
+</ul>
+<h3 id="2025-11-12"><strong>2025-11-12</strong>:<a class="headerlink" href="#2025-11-12" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>CELLULAR EMERGENCE INTEGRATION</strong>: Complete Cell Emergence module integrated</li>
+<li><strong>BREAKTHROUGH DOCUMENTATION</strong>: Molecular chemistry documentation centralized</li>
+<li><strong>TETRAD CANONICAL</strong>: Structural fields promoted to canonical status</li>
+</ul>
+<hr />
+<p><strong>Last updated</strong>: 2025-11-13 • <strong>Status</strong>: CANONICAL • <strong>Discourse</strong>: Nodal Equation → Cellular Emergence</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.top", "navigation.tracking", "toc.integrate", "navigation.instant"], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+    
+  </body>
+</html>

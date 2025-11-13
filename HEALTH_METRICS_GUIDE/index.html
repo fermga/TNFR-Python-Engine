@@ -1,0 +1,4191 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Canonical TNFR structural dynamics engine documentation">
+      
+      
+      
+        <link rel="canonical" href="https://fermga.github.io/TNFR-Python-Engine/HEALTH_METRICS_GUIDE/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>TNFR Health Metrics Guide - TNFR Python Engine</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.618322db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#tnfr-health-metrics-guide" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="TNFR Python Engine" class="md-header__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            TNFR Python Engine
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              TNFR Health Metrics Guide
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    TNFR Python Engine
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="TNFR Python Engine" class="md-nav__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    TNFR Python Engine
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    TNFR Python Engine
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting Started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Welcome to TNFR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/getting-started/LEARNING_PATHS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Learning Paths
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/getting-started/quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quickstart Tutorial
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/getting-started/TNFR_CONCEPTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core Concepts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/getting-started/INTERACTIVE_TUTORIAL/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interactive Tutorial
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/getting-started/FAQ/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    FAQ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/getting-started/math-backends/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Math Backends
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/getting-started/optional-dependencies/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Optional Dependencies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/getting-started/migrating-remesh-window/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migrating from Remesh Window
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    User Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/user-guide/OPERATORS_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operators Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STRUCTURAL_FIELDS_TETRAD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural Field Tetrad (Canonical)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/user-guide/METRICS_INTERPRETATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Metrics Interpretation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TROUBLESHOOTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar Documentation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Grammar Documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/EXECUTIVE-SUMMARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Executive Summary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_3" id="__nav_4_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core Concepts
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Core Concepts
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/01-FUNDAMENTAL-CONCEPTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fundamental Concepts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/02-CANONICAL-CONSTRAINTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Canonical Constraints
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/03-OPERATORS-AND-GLYPHS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operators and Glyphs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/04-VALID-SEQUENCES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Valid Sequences
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_4" id="__nav_4_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Implementation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/05-TECHNICAL-IMPLEMENTATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Technical Implementation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/06-VALIDATION-AND-TESTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation and Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/07-MIGRATION-AND-EVOLUTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migration and Evolution
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_5" id="__nav_4_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/08-QUICK-REFERENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/GLOSSARY.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/MASTER-INDEX/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Master Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/OPERATORS-CATALOG-SUMMARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operators Catalog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/CROSS-REFERENCE-INDEX/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cross-Reference Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/CODE_DOCS_CROSSREF/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code Documentation Cross-Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_6" id="__nav_4_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tooling
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tooling
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/TOOLING-AND-AUTOMATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tooling and Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/TESTING-SUMMARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing Summary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/DEPRECATION-INDEX.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deprecation Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Examples
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_2" id="__nav_5_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Notebooks & Patterns
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Notebooks & Patterns
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/notebooks/Fundamental_Particles_TNFR_Atlas.ipynb" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fundamental Particles TNFR Atlas (Notebook - GitHub)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/README.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    TNFR Patterns (Module Guide)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../INTERACTIONS_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interaction Sequences Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/api/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/api/operators/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural Operators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/api/OPERATORS_VISUAL_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operators Visual Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/api/telemetry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Telemetry & Utilities
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/api/docstring_style/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docstring Style
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module Documentation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Module Documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/mathematics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mathematics Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/physics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Physics Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/operators/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operators Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/dynamics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dynamics Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/metrics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Metrics Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/sdk/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SDK Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/telemetry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Telemetry Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/tutorials/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/extensions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Extensions Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core Documentation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Core Documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DOCUMENTATION_INDEX/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Documentation Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CANONICAL_SOURCES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Canonical Sources
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../UNIFIED_GRAMMAR_RULES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Unified Grammar Rules
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AGENTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Agents Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../GLOSSARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Advanced Topics
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Advanced Topics
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/advanced/ARCHITECTURE_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/advanced/PERFORMANCE_OPTIMIZATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Performance Optimization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/advanced/TESTING_STRATEGIES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing Strategies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/advanced/DEVELOPMENT_WORKFLOW/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development Workflow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/foundations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mathematical Foundations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_9_6" id="__nav_9_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Research Documents
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_9_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Research Documents
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TNFR_FORCES_EMERGENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Forces Emergence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OPERATOR_COMPLETENESS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator Completeness
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LIFE_EMERGENCE_FROM_TNFR/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Life Emergence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CELL_EMERGENCE_FROM_TNFR/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cell Emergence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/tools/CLI/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Security
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/security/monitoring/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Monitoring
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/security/dependency-auditing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dependency Auditing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/security/codeql/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CodeQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/security/dependabot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dependabot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
+        
+          
+          <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Info
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Project Info
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/releases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="tnfr-health-metrics-guide">TNFR Health Metrics Guide<a class="headerlink" href="#tnfr-health-metrics-guide" title="Permanent link">&para;</a></h1>
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<p>Grammar 2.0 introduces <strong>Structural Health Metrics</strong> - a quantitative assessment system for evaluating TNFR operator sequence quality. All metrics range from 0.0 (poor) to 1.0 (excellent), providing objective measures aligned with TNFR canonical principles.</p>
+<p><strong>Purpose</strong>: Enable data-driven optimization of operator sequences through measurable quality indicators.</p>
+<hr />
+<h2 id="quick-start">Quick Start<a class="headerlink" href="#quick-start" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.operators.grammar</span><span class="w"> </span><span class="kn">import</span> <span class="n">validate_sequence_with_health</span>
+
+<span class="c1"># Analyze any sequence</span>
+<span class="n">sequence</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;emission&quot;</span><span class="p">,</span> <span class="s2">&quot;reception&quot;</span><span class="p">,</span> <span class="s2">&quot;coherence&quot;</span><span class="p">,</span> <span class="s2">&quot;silence&quot;</span><span class="p">]</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">validate_sequence_with_health</span><span class="p">(</span><span class="n">sequence</span><span class="p">)</span>
+
+<span class="c1"># Access health metrics</span>
+<span class="n">health</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">health_metrics</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Overall Health: </span><span class="si">{</span><span class="n">health</span><span class="o">.</span><span class="n">overall_health</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># Composite score</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Coherence: </span><span class="si">{</span><span class="n">health</span><span class="o">.</span><span class="n">coherence_index</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>      <span class="c1"># Flow quality</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Balance: </span><span class="si">{</span><span class="n">health</span><span class="o">.</span><span class="n">balance_score</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>          <span class="c1"># Force equilibrium</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Sustainability: </span><span class="si">{</span><span class="n">health</span><span class="o">.</span><span class="n">sustainability_index</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># Long-term viability</span>
+
+<span class="c1"># Get improvement recommendations</span>
+<span class="k">for</span> <span class="n">rec</span> <span class="ow">in</span> <span class="n">health</span><span class="o">.</span><span class="n">recommendations</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  - </span><span class="si">{</span><span class="n">rec</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<hr />
+<h2 id="the-seven-health-dimensions">The Seven Health Dimensions<a class="headerlink" href="#the-seven-health-dimensions" title="Permanent link">&para;</a></h2>
+<h3 id="1-coherence-index">1. Coherence Index<a class="headerlink" href="#1-coherence-index" title="Permanent link">&para;</a></h3>
+<p><strong>Measures</strong>: Global sequential flow quality<br />
+<strong>Range</strong>: 0.0 (chaotic) to 1.0 (perfect flow)<br />
+<strong>Weight in overall</strong>: 20%</p>
+<h4 id="what-it-measures">What It Measures<a class="headerlink" href="#what-it-measures" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Valid Transitions</strong>: Ratio of compatible operator pairs</li>
+<li><strong>Pattern Structure</strong>: Whether sequence forms recognizable pattern</li>
+<li><strong>Structural Closure</strong>: Proper ending with valid terminator</li>
+</ul>
+<h4 id="scoring-formula">Scoring Formula<a class="headerlink" href="#scoring-formula" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code>coherence_index = (transition_quality + pattern_clarity + structural_closure) / 3.0
+</code></pre></div>
+<p>Where:
+- <code>transition_quality</code>: Valid transitions / total transitions
+- <code>pattern_clarity</code>: Pattern match score (0.0-1.0)
+- <code>structural_closure</code>: 1.0 if ends with valid terminator, else 0.0</p>
+<h4 id="interpretation">Interpretation<a class="headerlink" href="#interpretation" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Score</th>
+<th>Quality</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0.85-1.00</td>
+<td>Excellent</td>
+<td>Clear pattern, all transitions valid, proper ending</td>
+</tr>
+<tr>
+<td>0.70-0.84</td>
+<td>Good</td>
+<td>Recognizable structure, mostly valid transitions</td>
+</tr>
+<tr>
+<td>0.50-0.69</td>
+<td>Fair</td>
+<td>Some structure, mix of valid/CAUTION transitions</td>
+</tr>
+<tr>
+<td>0.30-0.49</td>
+<td>Poor</td>
+<td>Unclear structure, many problematic transitions</td>
+</tr>
+<tr>
+<td>0.00-0.29</td>
+<td>Very Poor</td>
+<td>No clear pattern, mostly invalid transitions</td>
+</tr>
+</tbody>
+</table>
+<h4 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># High coherence (0.92)</span>
+<span class="p">[</span><span class="s2">&quot;emission&quot;</span><span class="p">,</span> <span class="s2">&quot;reception&quot;</span><span class="p">,</span> <span class="s2">&quot;coherence&quot;</span><span class="p">,</span> <span class="s2">&quot;silence&quot;</span><span class="p">]</span>
+<span class="c1"># - All transitions COMPATIBLE</span>
+<span class="c1"># - Clear STABILIZE pattern</span>
+<span class="c1"># - Ends with valid terminator (SILENCE)</span>
+
+<span class="c1"># Medium coherence (0.65)</span>
+<span class="p">[</span><span class="s2">&quot;emission&quot;</span><span class="p">,</span> <span class="s2">&quot;silence&quot;</span><span class="p">,</span> <span class="s2">&quot;transition&quot;</span><span class="p">]</span>
+<span class="c1"># - Has CAUTION transition (EMISSION → SILENCE)</span>
+<span class="c1"># - Partial pattern recognition</span>
+<span class="c1"># - Ends properly but flow disrupted</span>
+
+<span class="c1"># Low coherence (0.35)</span>
+<span class="p">[</span><span class="s2">&quot;mutation&quot;</span><span class="p">,</span> <span class="s2">&quot;expansion&quot;</span><span class="p">,</span> <span class="s2">&quot;contraction&quot;</span><span class="p">]</span>
+<span class="c1"># - Random transitions</span>
+<span class="c1"># - No recognizable pattern</span>
+<span class="c1"># - Doesn&#39;t end with preferred stabilizer</span>
+</code></pre></div>
+<h4 id="improving-coherence">Improving Coherence<a class="headerlink" href="#improving-coherence" title="Permanent link">&para;</a></h4>
+<ol>
+<li><strong>Use recognized patterns</strong>: BOOTSTRAP, THERAPEUTIC, STABILIZE, etc.</li>
+<li><strong>Avoid random transitions</strong>: Follow compatibility matrix</li>
+<li><strong>End properly</strong>: Use COHERENCE, SILENCE, or RESONANCE</li>
+<li><strong>Keep it simple</strong>: Shorter sequences often have better coherence</li>
+</ol>
+<hr />
+<h3 id="2-balance-score">2. Balance Score<a class="headerlink" href="#2-balance-score" title="Permanent link">&para;</a></h3>
+<p><strong>Measures</strong>: Equilibrium between stabilizing and destabilizing forces<br />
+<strong>Range</strong>: 0.0 (imbalanced) to 1.0 (perfectly balanced)<br />
+<strong>Weight in overall</strong>: 20%</p>
+<h4 id="what-it-measures_1">What It Measures<a class="headerlink" href="#what-it-measures_1" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Stabilizer Ratio</strong>: Proportion of COHERENCE, SELF_ORGANIZATION, SILENCE, RESONANCE</li>
+<li><strong>Destabilizer Ratio</strong>: Proportion of DISSONANCE, MUTATION, CONTRACTION</li>
+<li><strong>Equilibrium</strong>: How well these forces counterbalance each other</li>
+</ul>
+<h4 id="scoring-formula_1">Scoring Formula<a class="headerlink" href="#scoring-formula_1" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code>stabilizer_ratio = count(stabilizers) / len(sequence)
+destabilizer_ratio = count(destabilizers) / len(sequence)
+
+if stabilizer_ratio == 0 and destabilizer_ratio == 0:
+    balance = 0.5  # Neutral (no forces)
+elif destabilizer_ratio == 0:
+    balance = min(1.0, 0.5 + stabilizer_ratio * 0.5)  # All stabilizers
+elif stabilizer_ratio == 0:
+    balance = max(0.0, 0.5 - destabilizer_ratio * 0.5)  # All destabilizers
+else:
+    ratio = min(stabilizer_ratio, destabilizer_ratio) / max(stabilizer_ratio, destabilizer_ratio)
+    balance = 0.5 + (ratio * 0.5)  # Balance measure
+</code></pre></div>
+<p><strong>Ideal</strong>: Approximately equal numbers of stabilizers and destabilizers (balance ≈ 1.0).</p>
+<h4 id="interpretation_1">Interpretation<a class="headerlink" href="#interpretation_1" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Score</th>
+<th>Balance</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0.85-1.00</td>
+<td>Excellent</td>
+<td>Well-balanced forces</td>
+</tr>
+<tr>
+<td>0.70-0.84</td>
+<td>Good</td>
+<td>Slightly favors one side</td>
+</tr>
+<tr>
+<td>0.50-0.69</td>
+<td>Fair</td>
+<td>Moderate imbalance</td>
+</tr>
+<tr>
+<td>0.30-0.49</td>
+<td>Poor</td>
+<td>Heavy imbalance</td>
+</tr>
+<tr>
+<td>0.00-0.29</td>
+<td>Very Poor</td>
+<td>Extreme imbalance, unstable</td>
+</tr>
+</tbody>
+</table>
+<h4 id="examples_1">Examples<a class="headerlink" href="#examples_1" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># High balance (0.88)</span>
+<span class="p">[</span><span class="s2">&quot;dissonance&quot;</span><span class="p">,</span> <span class="s2">&quot;coherence&quot;</span><span class="p">,</span> <span class="s2">&quot;mutation&quot;</span><span class="p">,</span> <span class="s2">&quot;self_organization&quot;</span><span class="p">,</span> <span class="s2">&quot;coherence&quot;</span><span class="p">]</span>
+<span class="c1"># - 3 stabilizers (coherence, self_organization, coherence)</span>
+<span class="c1"># - 2 destabilizers (dissonance, mutation)</span>
+<span class="c1"># - Good equilibrium</span>
+
+<span class="c1"># Medium balance (0.58)</span>
+<span class="p">[</span><span class="s2">&quot;emission&quot;</span><span class="p">,</span> <span class="s2">&quot;dissonance&quot;</span><span class="p">,</span> <span class="s2">&quot;mutation&quot;</span><span class="p">,</span> <span class="s2">&quot;contraction&quot;</span><span class="p">,</span> <span class="s2">&quot;coherence&quot;</span><span class="p">]</span>
+<span class="c1"># - 1 stabilizer (coherence)</span>
+<span class="c1"># - 3 destabilizers (dissonance, mutation, contraction)</span>
+<span class="c1"># - Skewed toward destabilization</span>
+
+<span class="c1"># Low balance (0.25)</span>
+<span class="p">[</span><span class="s2">&quot;dissonance&quot;</span><span class="p">,</span> <span class="s2">&quot;mutation&quot;</span><span class="p">,</span> <span class="s2">&quot;contraction&quot;</span><span class="p">]</span>
+<span class="c1"># - 0 stabilizers</span>
+<span class="c1"># - 3 destabilizers</span>
+<span class="c1"># - No counterbalancing forces</span>
+</code></pre></div>
+<h4 id="improving-balance">Improving Balance<a class="headerlink" href="#improving-balance" title="Permanent link">&para;</a></h4>
+<ol>
+<li><strong>Add stabilizers after destabilizers</strong>: DISSONANCE → COHERENCE</li>
+<li><strong>Avoid consecutive destabilizers</strong>: Use COHERENCE between them</li>
+<li><strong>End with stabilizer</strong>: Final COHERENCE or SILENCE</li>
+<li><strong>Use SELF_ORGANIZATION</strong>: Counts as stabilizer while enabling emergence</li>
+</ol>
+<hr />
+<h3 id="3-sustainability-index">3. Sustainability Index<a class="headerlink" href="#3-sustainability-index" title="Permanent link">&para;</a></h3>
+<p><strong>Measures</strong>: Capacity for long-term structural maintenance<br />
+<strong>Range</strong>: 0.0 (unsustainable) to 1.0 (highly sustainable)<br />
+<strong>Weight in overall</strong>: 20%</p>
+<h4 id="what-it-measures_2">What It Measures<a class="headerlink" href="#what-it-measures_2" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Final Stabilization</strong>: Ends with stabilizer operator</li>
+<li><strong>Resolved Dissonance</strong>: All DISSONANCE followed by resolution</li>
+<li><strong>Regenerative Elements</strong>: Contains TRANSITION, RECURSIVITY, or SILENCE</li>
+<li><strong>Closure Quality</strong>: Proper termination structure</li>
+</ul>
+<h4 id="scoring-formula_2">Scoring Formula<a class="headerlink" href="#scoring-formula_2" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code>final_stabilizer_score = 1.0 if ends_with_stabilizer else 0.0
+resolved_dissonance_score = resolved_dissonances / total_dissonances
+regenerative_score = 1.0 if has_regenerators else 0.5
+
+sustainability = (
+    final_stabilizer_score * 0.4 +
+    resolved_dissonance_score * 0.4 +
+    regenerative_score * 0.2
+)
+</code></pre></div>
+<h4 id="interpretation_2">Interpretation<a class="headerlink" href="#interpretation_2" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Score</th>
+<th>Sustainability</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0.85-1.00</td>
+<td>Excellent</td>
+<td>Self-sustaining, stable long-term</td>
+</tr>
+<tr>
+<td>0.70-0.84</td>
+<td>Good</td>
+<td>Mostly stable, minor sustainability issues</td>
+</tr>
+<tr>
+<td>0.50-0.69</td>
+<td>Fair</td>
+<td>Some sustainability, needs maintenance</td>
+</tr>
+<tr>
+<td>0.30-0.49</td>
+<td>Poor</td>
+<td>Low sustainability, likely to degrade</td>
+</tr>
+<tr>
+<td>0.00-0.29</td>
+<td>Very Poor</td>
+<td>Unsustainable, will collapse</td>
+</tr>
+</tbody>
+</table>
+<h4 id="examples_2">Examples<a class="headerlink" href="#examples_2" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># High sustainability (0.92)</span>
+<span class="p">[</span><span class="s2">&quot;emission&quot;</span><span class="p">,</span> <span class="s2">&quot;dissonance&quot;</span><span class="p">,</span> <span class="s2">&quot;coherence&quot;</span><span class="p">,</span> <span class="s2">&quot;transition&quot;</span><span class="p">,</span> <span class="s2">&quot;silence&quot;</span><span class="p">]</span>
+<span class="c1"># - Ends with SILENCE (stabilizer)</span>
+<span class="c1"># - DISSONANCE resolved with COHERENCE</span>
+<span class="c1"># - Contains regenerators (TRANSITION, SILENCE)</span>
+
+<span class="c1"># Medium sustainability (0.55)</span>
+<span class="p">[</span><span class="s2">&quot;emission&quot;</span><span class="p">,</span> <span class="s2">&quot;reception&quot;</span><span class="p">,</span> <span class="s2">&quot;coherence&quot;</span><span class="p">,</span> <span class="s2">&quot;dissonance&quot;</span><span class="p">]</span>
+<span class="c1"># - Ends with DISSONANCE (destabilizer) - POOR</span>
+<span class="c1"># - No final stabilization</span>
+<span class="c1"># - Has some stable elements earlier</span>
+
+<span class="c1"># Low sustainability (0.20)</span>
+<span class="p">[</span><span class="s2">&quot;dissonance&quot;</span><span class="p">,</span> <span class="s2">&quot;mutation&quot;</span><span class="p">,</span> <span class="s2">&quot;contraction&quot;</span><span class="p">]</span>
+<span class="c1"># - Ends with CONTRACTION (destabilizer)</span>
+<span class="c1"># - No resolution</span>
+<span class="c1"># - No regenerative elements</span>
+</code></pre></div>
+<h4 id="improving-sustainability">Improving Sustainability<a class="headerlink" href="#improving-sustainability" title="Permanent link">&para;</a></h4>
+<ol>
+<li><strong>End with stabilizer</strong>: Add COHERENCE, SILENCE, or RESONANCE at end</li>
+<li><strong>Resolve dissonance</strong>: Every DISSONANCE should have COHERENCE after</li>
+<li><strong>Add regenerators</strong>: Include TRANSITION, RECURSIVITY, or SILENCE</li>
+<li><strong>Use full cycles</strong>: Complete patterns (THERAPEUTIC, REGENERATIVE)</li>
+</ol>
+<hr />
+<h3 id="4-complexity-efficiency">4. Complexity Efficiency<a class="headerlink" href="#4-complexity-efficiency" title="Permanent link">&para;</a></h3>
+<p><strong>Measures</strong>: Value-to-complexity ratio (inverse of redundancy)<br />
+<strong>Range</strong>: 0.0 (inefficient) to 1.0 (maximally efficient)<br />
+<strong>Weight in overall</strong>: 15%</p>
+<h4 id="what-it-measures_3">What It Measures<a class="headerlink" href="#what-it-measures_3" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Sequence Length</strong>: Penalty for overly long sequences</li>
+<li><strong>Redundancy</strong>: Penalty for repeated operators</li>
+<li><strong>Structural Value</strong>: Bonus for complete patterns</li>
+<li><strong>Compactness</strong>: Ratio of value to length</li>
+</ul>
+<h4 id="scoring-formula_3">Scoring Formula<a class="headerlink" href="#scoring-formula_3" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code>base_efficiency = 1.0 / (1.0 + (length / 10.0))  # Length penalty
+
+redundancy_penalty = repeated_operators * 0.1
+pattern_bonus = 0.2 if pattern_detected else 0.0
+
+efficiency = max(0.0, min(1.0, 
+    base_efficiency - redundancy_penalty + pattern_bonus
+))
+</code></pre></div>
+<h4 id="interpretation_3">Interpretation<a class="headerlink" href="#interpretation_3" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Score</th>
+<th>Efficiency</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0.85-1.00</td>
+<td>Excellent</td>
+<td>Concise, no redundancy, high value</td>
+</tr>
+<tr>
+<td>0.70-0.84</td>
+<td>Good</td>
+<td>Reasonably efficient, minor redundancy</td>
+</tr>
+<tr>
+<td>0.50-0.69</td>
+<td>Fair</td>
+<td>Some inefficiency, longer than needed</td>
+</tr>
+<tr>
+<td>0.30-0.49</td>
+<td>Poor</td>
+<td>Inefficient, redundant, bloated</td>
+</tr>
+<tr>
+<td>0.00-0.29</td>
+<td>Very Poor</td>
+<td>Extremely inefficient, very redundant</td>
+</tr>
+</tbody>
+</table>
+<h4 id="examples_3">Examples<a class="headerlink" href="#examples_3" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># High efficiency (0.92)</span>
+<span class="p">[</span><span class="s2">&quot;emission&quot;</span><span class="p">,</span> <span class="s2">&quot;coherence&quot;</span><span class="p">]</span>
+<span class="c1"># - Very short (2 operators)</span>
+<span class="c1"># - No redundancy</span>
+<span class="c1"># - Clear pattern (MINIMAL)</span>
+
+<span class="c1"># Medium efficiency (0.65)</span>
+<span class="p">[</span><span class="s2">&quot;emission&quot;</span><span class="p">,</span> <span class="s2">&quot;reception&quot;</span><span class="p">,</span> <span class="s2">&quot;coherence&quot;</span><span class="p">,</span> <span class="s2">&quot;resonance&quot;</span><span class="p">,</span> <span class="s2">&quot;coupling&quot;</span><span class="p">,</span> <span class="s2">&quot;coherence&quot;</span><span class="p">]</span>
+<span class="c1"># - Moderate length (6 operators)</span>
+<span class="c1"># - One repeated operator (coherence)</span>
+<span class="c1"># - Recognizable pattern</span>
+
+<span class="c1"># Low efficiency (0.35)</span>
+<span class="p">[</span><span class="s2">&quot;emission&quot;</span><span class="p">,</span> <span class="s2">&quot;emission&quot;</span><span class="p">,</span> <span class="s2">&quot;coherence&quot;</span><span class="p">,</span> <span class="s2">&quot;coherence&quot;</span><span class="p">,</span> <span class="s2">&quot;silence&quot;</span><span class="p">,</span> <span class="s2">&quot;silence&quot;</span><span class="p">,</span> <span class="s2">&quot;emission&quot;</span><span class="p">]</span>
+<span class="c1"># - Long (7 operators)</span>
+<span class="c1"># - High redundancy (3 operators repeated)</span>
+<span class="c1"># - Unclear value</span>
+</code></pre></div>
+<h4 id="improving-efficiency">Improving Efficiency<a class="headerlink" href="#improving-efficiency" title="Permanent link">&para;</a></h4>
+<ol>
+<li><strong>Remove redundancy</strong>: Avoid repeating operators unnecessarily</li>
+<li><strong>Keep it concise</strong>: Use minimum operators for goal</li>
+<li><strong>Use patterns</strong>: Recognized patterns get bonus</li>
+<li><strong>Avoid bloat</strong>: Every operator should serve a purpose</li>
+</ol>
+<hr />
+<h3 id="5-frequency-harmony">5. Frequency Harmony<a class="headerlink" href="#5-frequency-harmony" title="Permanent link">&para;</a></h3>
+<p><strong>Measures</strong>: Structural frequency transition smoothness (R5)<br />
+<strong>Range</strong>: 0.0 (inharmonic) to 1.0 (perfectly harmonic)<br />
+<strong>Weight in overall</strong>: 10%</p>
+<h4 id="what-it-measures_4">What It Measures<a class="headerlink" href="#what-it-measures_4" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Valid Transitions</strong>: High ↔ Medium, Medium ↔ Zero</li>
+<li><strong>Invalid Jumps</strong>: Zero → High (without Medium bridge)</li>
+<li><strong>Frequency Gradient</strong>: Smoothness of νf changes</li>
+</ul>
+<h4 id="scoring-formula_4">Scoring Formula<a class="headerlink" href="#scoring-formula_4" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code>valid_freq_transitions = 0
+total_transitions = len(sequence) - 1
+
+for i in range(total_transitions):
+    is_valid, _ = validate_frequency_transition(seq[i], seq[i+1])
+    if is_valid:
+        valid_freq_transitions += 1
+
+frequency_harmony = valid_freq_transitions / total_transitions if total_transitions &gt; 0 else 1.0
+</code></pre></div>
+<h4 id="interpretation_4">Interpretation<a class="headerlink" href="#interpretation_4" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Score</th>
+<th>Harmony</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0.90-1.00</td>
+<td>Excellent</td>
+<td>All transitions harmonic</td>
+</tr>
+<tr>
+<td>0.75-0.89</td>
+<td>Good</td>
+<td>Mostly harmonic, 1-2 minor issues</td>
+</tr>
+<tr>
+<td>0.50-0.74</td>
+<td>Fair</td>
+<td>Some inharmonic transitions</td>
+</tr>
+<tr>
+<td>0.30-0.49</td>
+<td>Poor</td>
+<td>Many inharmonic transitions</td>
+</tr>
+<tr>
+<td>0.00-0.29</td>
+<td>Very Poor</td>
+<td>Chaotic frequency changes</td>
+</tr>
+</tbody>
+</table>
+<h4 id="frequency-categories">Frequency Categories<a class="headerlink" href="#frequency-categories" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>High</strong> (νf &gt; 0.8): EMISSION, DISSONANCE, RESONANCE, MUTATION, CONTRACTION</li>
+<li><strong>Medium</strong> (0.3 &lt; νf ≤ 0.8): RECEPTION, COHERENCE, COUPLING, EXPANSION, SELF_ORGANIZATION, TRANSITION, RECURSIVITY</li>
+<li><strong>Zero</strong> (νf ≈ 0): SILENCE</li>
+</ul>
+<h4 id="valid-transitions">Valid Transitions<a class="headerlink" href="#valid-transitions" title="Permanent link">&para;</a></h4>
+<ul>
+<li>✅ High → High</li>
+<li>✅ High → Medium</li>
+<li>✅ Medium → High</li>
+<li>✅ Medium → Medium</li>
+<li>✅ Medium → Zero</li>
+<li>✅ Zero → Medium</li>
+<li>❌ Zero → High (must go through Medium)</li>
+</ul>
+<h4 id="examples_4">Examples<a class="headerlink" href="#examples_4" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># High harmony (0.95)</span>
+<span class="p">[</span><span class="s2">&quot;silence&quot;</span><span class="p">,</span> <span class="s2">&quot;transition&quot;</span><span class="p">,</span> <span class="s2">&quot;emission&quot;</span><span class="p">,</span> <span class="s2">&quot;coherence&quot;</span><span class="p">]</span>
+<span class="c1"># - Zero → Medium (valid)</span>
+<span class="c1"># - Medium → High (valid)</span>
+<span class="c1"># - High → Medium (valid)</span>
+
+<span class="c1"># Medium harmony (0.67)</span>
+<span class="p">[</span><span class="s2">&quot;emission&quot;</span><span class="p">,</span> <span class="s2">&quot;silence&quot;</span><span class="p">,</span> <span class="s2">&quot;coherence&quot;</span><span class="p">]</span>
+<span class="c1"># - High → Zero (valid)</span>
+<span class="c1"># - Zero → Medium (valid)</span>
+<span class="c1"># But better with bridge: emission → coherence → silence</span>
+
+<span class="c1"># Low harmony (0.40)</span>
+<span class="p">[</span><span class="s2">&quot;silence&quot;</span><span class="p">,</span> <span class="s2">&quot;emission&quot;</span><span class="p">,</span> <span class="s2">&quot;silence&quot;</span><span class="p">,</span> <span class="s2">&quot;mutation&quot;</span><span class="p">]</span>
+<span class="c1"># - Zero → High (INVALID)</span>
+<span class="c1"># - High → Zero (valid)</span>
+<span class="c1"># - Zero → High (INVALID)</span>
+</code></pre></div>
+<h4 id="improving-frequency-harmony">Improving Frequency Harmony<a class="headerlink" href="#improving-frequency-harmony" title="Permanent link">&para;</a></h4>
+<ol>
+<li><strong>Avoid Zero → High</strong>: Insert Medium bridge (TRANSITION, COHERENCE)</li>
+<li><strong>Use gradual transitions</strong>: High → Medium → Zero</li>
+<li><strong>Check operator frequencies</strong>: Use STRUCTURAL_FREQUENCIES dict</li>
+<li><strong>Fix warnings</strong>: Address all R5 frequency warnings</li>
+</ol>
+<hr />
+<h3 id="6-pattern-completeness">6. Pattern Completeness<a class="headerlink" href="#6-pattern-completeness" title="Permanent link">&para;</a></h3>
+<p><strong>Measures</strong>: How complete the detected pattern is<br />
+<strong>Range</strong>: 0.0 (incomplete/fragmented) to 1.0 (complete cycle)<br />
+<strong>Weight in overall</strong>: 10%</p>
+<h4 id="what-it-measures_5">What It Measures<a class="headerlink" href="#what-it-measures_5" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Full Cycle</strong>: Whether pattern includes all required elements</li>
+<li><strong>Required Operators</strong>: Presence of pattern-specific operators</li>
+<li><strong>Structural Closure</strong>: Pattern reaches natural conclusion</li>
+</ul>
+<h4 id="scoring-logic">Scoring Logic<a class="headerlink" href="#scoring-logic" title="Permanent link">&para;</a></h4>
+<p>Different patterns have different completeness criteria:</p>
+<p><strong>Domain Patterns</strong> (THERAPEUTIC, EDUCATIONAL, etc.):
+- Complete: All required operators present
+- Partial: Missing some but structure recognizable</p>
+<p><strong>Compositional Patterns</strong> (BOOTSTRAP, EXPLORE, etc.):
+- Complete: Core structure present
+- Partial: Incomplete structure</p>
+<p><strong>Fundamental Patterns</strong> (LINEAR, CYCLIC, etc.):
+- Complete: Full cycle or expected length
+- Partial: Fragment of expected pattern</p>
+<h4 id="interpretation_5">Interpretation<a class="headerlink" href="#interpretation_5" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Score</th>
+<th>Completeness</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0.90-1.00</td>
+<td>Excellent</td>
+<td>Complete pattern, full cycle</td>
+</tr>
+<tr>
+<td>0.75-0.89</td>
+<td>Good</td>
+<td>Nearly complete, minor omissions</td>
+</tr>
+<tr>
+<td>0.50-0.74</td>
+<td>Fair</td>
+<td>Partial pattern, recognizable</td>
+</tr>
+<tr>
+<td>0.30-0.49</td>
+<td>Poor</td>
+<td>Fragment, incomplete</td>
+</tr>
+<tr>
+<td>0.00-0.29</td>
+<td>Very Poor</td>
+<td>Barely recognizable pattern</td>
+</tr>
+</tbody>
+</table>
+<h4 id="examples_5">Examples<a class="headerlink" href="#examples_5" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># High completeness (0.95) - THERAPEUTIC</span>
+<span class="p">[</span>
+    <span class="s2">&quot;reception&quot;</span><span class="p">,</span> <span class="s2">&quot;emission&quot;</span><span class="p">,</span> <span class="s2">&quot;coherence&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;dissonance&quot;</span><span class="p">,</span> <span class="s2">&quot;self_organization&quot;</span><span class="p">,</span> <span class="s2">&quot;coherence&quot;</span>
+<span class="p">]</span>
+<span class="c1"># - All THERAPEUTIC elements present</span>
+<span class="c1"># - Full healing cycle</span>
+
+<span class="c1"># Medium completeness (0.60) - Partial THERAPEUTIC</span>
+<span class="p">[</span><span class="s2">&quot;reception&quot;</span><span class="p">,</span> <span class="s2">&quot;emission&quot;</span><span class="p">,</span> <span class="s2">&quot;coherence&quot;</span><span class="p">]</span>
+<span class="c1"># - Start of THERAPEUTIC</span>
+<span class="c1"># - Missing crisis resolution (dissonance, self_organization)</span>
+
+<span class="c1"># Low completeness (0.30) - Fragment</span>
+<span class="p">[</span><span class="s2">&quot;dissonance&quot;</span><span class="p">,</span> <span class="s2">&quot;mutation&quot;</span><span class="p">]</span>
+<span class="c1"># - Part of EXPLORE pattern</span>
+<span class="c1"># - Missing stabilizing coherence at end</span>
+</code></pre></div>
+<h4 id="improving-completeness">Improving Completeness<a class="headerlink" href="#improving-completeness" title="Permanent link">&para;</a></h4>
+<ol>
+<li><strong>Complete cycles</strong>: Add missing pattern elements</li>
+<li><strong>Use templates</strong>: Follow documented pattern structures</li>
+<li><strong>Add resolution</strong>: Ensure patterns conclude properly</li>
+<li><strong>Check requirements</strong>: Verify all required operators present</li>
+</ol>
+<hr />
+<h3 id="7-transition-smoothness">7. Transition Smoothness<a class="headerlink" href="#7-transition-smoothness" title="Permanent link">&para;</a></h3>
+<p><strong>Measures</strong>: Quality of operator-to-operator transitions<br />
+<strong>Range</strong>: 0.0 (rough) to 1.0 (perfectly smooth)<br />
+<strong>Weight in overall</strong>: 5%</p>
+<h4 id="what-it-measures_6">What It Measures<a class="headerlink" href="#what-it-measures_6" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>COMPATIBLE Transitions</strong>: ✅ Highly compatible pairs</li>
+<li><strong>CAUTION Transitions</strong>: ⚠️ Context-specific pairs</li>
+<li><strong>INCOMPATIBLE Transitions</strong>: ❌ Invalid pairs</li>
+</ul>
+<h4 id="scoring-formula_5">Scoring Formula<a class="headerlink" href="#scoring-formula_5" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code>compatible_count = sum(1 for trans in transitions if trans == COMPATIBLE)
+caution_count = sum(1 for trans in transitions if trans == CAUTION)
+total_transitions = len(sequence) - 1
+
+smoothness = (compatible_count + 0.5 * caution_count) / total_transitions if total_transitions &gt; 0 else 1.0
+</code></pre></div>
+<h4 id="interpretation_6">Interpretation<a class="headerlink" href="#interpretation_6" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Score</th>
+<th>Smoothness</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0.90-1.00</td>
+<td>Excellent</td>
+<td>All transitions COMPATIBLE</td>
+</tr>
+<tr>
+<td>0.75-0.89</td>
+<td>Good</td>
+<td>Mostly COMPATIBLE, some CAUTION</td>
+</tr>
+<tr>
+<td>0.50-0.74</td>
+<td>Fair</td>
+<td>Mix of COMPATIBLE and CAUTION</td>
+</tr>
+<tr>
+<td>0.30-0.49</td>
+<td>Poor</td>
+<td>Many CAUTION transitions</td>
+</tr>
+<tr>
+<td>0.00-0.29</td>
+<td>Very Poor</td>
+<td>Many INCOMPATIBLE transitions (shouldn't validate)</td>
+</tr>
+</tbody>
+</table>
+<h4 id="examples_6">Examples<a class="headerlink" href="#examples_6" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># High smoothness (0.95)</span>
+<span class="p">[</span><span class="s2">&quot;emission&quot;</span><span class="p">,</span> <span class="s2">&quot;reception&quot;</span><span class="p">,</span> <span class="s2">&quot;coherence&quot;</span><span class="p">]</span>
+<span class="c1"># - EMISSION → RECEPTION: COMPATIBLE</span>
+<span class="c1"># - RECEPTION → COHERENCE: COMPATIBLE</span>
+
+<span class="c1"># Medium smoothness (0.75)</span>
+<span class="p">[</span><span class="s2">&quot;emission&quot;</span><span class="p">,</span> <span class="s2">&quot;silence&quot;</span><span class="p">,</span> <span class="s2">&quot;transition&quot;</span><span class="p">]</span>
+<span class="c1"># - EMISSION → SILENCE: CAUTION</span>
+<span class="c1"># - SILENCE → TRANSITION: COMPATIBLE</span>
+
+<span class="c1"># Low smoothness (0.33)</span>
+<span class="p">[</span><span class="s2">&quot;emission&quot;</span><span class="p">,</span> <span class="s2">&quot;silence&quot;</span><span class="p">,</span> <span class="s2">&quot;coherence&quot;</span><span class="p">]</span>
+<span class="c1"># - EMISSION → SILENCE: CAUTION</span>
+<span class="c1"># - SILENCE → COHERENCE: COMPATIBLE</span>
+<span class="c1"># Only 1/2 fully compatible</span>
+</code></pre></div>
+<h4 id="improving-smoothness">Improving Smoothness<a class="headerlink" href="#improving-smoothness" title="Permanent link">&para;</a></h4>
+<ol>
+<li><strong>Use COMPATIBLE transitions</strong>: Check compatibility matrix</li>
+<li><strong>Avoid CAUTION pairs</strong>: Replace with smoother alternatives</li>
+<li><strong>Fix INCOMPATIBLE</strong>: Should never occur in valid sequence</li>
+<li><strong>Follow patterns</strong>: Recognized patterns have smooth transitions</li>
+</ol>
+<hr />
+<h2 id="overall-health-score">Overall Health Score<a class="headerlink" href="#overall-health-score" title="Permanent link">&para;</a></h2>
+<h3 id="computation">Computation<a class="headerlink" href="#computation" title="Permanent link">&para;</a></h3>
+<p>The overall health score is a <strong>weighted average</strong> of all seven dimensions:</p>
+<div class="highlight"><pre><span></span><code><span class="n">overall_health</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">coherence_index</span>       <span class="o">*</span> <span class="mf">0.20</span> <span class="o">+</span>  <span class="c1"># 20% - Flow quality</span>
+    <span class="n">balance_score</span>         <span class="o">*</span> <span class="mf">0.20</span> <span class="o">+</span>  <span class="c1"># 20% - Force equilibrium</span>
+    <span class="n">sustainability_index</span>  <span class="o">*</span> <span class="mf">0.20</span> <span class="o">+</span>  <span class="c1"># 20% - Long-term viability</span>
+    <span class="n">complexity_efficiency</span> <span class="o">*</span> <span class="mf">0.15</span> <span class="o">+</span>  <span class="c1"># 15% - Value/complexity ratio</span>
+    <span class="n">frequency_harmony</span>     <span class="o">*</span> <span class="mf">0.10</span> <span class="o">+</span>  <span class="c1"># 10% - R5 smoothness</span>
+    <span class="n">pattern_completeness</span>  <span class="o">*</span> <span class="mf">0.10</span> <span class="o">+</span>  <span class="c1"># 10% - Cycle completion</span>
+    <span class="n">transition_smoothness</span> <span class="o">*</span> <span class="mf">0.05</span>    <span class="c1">#  5% - Transition quality</span>
+<span class="p">)</span>
+</code></pre></div>
+<h3 id="weights-rationale">Weights Rationale<a class="headerlink" href="#weights-rationale" title="Permanent link">&para;</a></h3>
+<p><strong>Primary metrics (20% each)</strong>:
+- <strong>Coherence</strong>: Flow quality is fundamental
+- <strong>Balance</strong>: Force equilibrium is essential for stability
+- <strong>Sustainability</strong>: Long-term viability matters most</p>
+<p><strong>Secondary metrics (10-15% each)</strong>:
+- <strong>Efficiency</strong>: Important but not critical
+- <strong>Frequency</strong>: R5 harmony enhances quality
+- <strong>Completeness</strong>: Pattern completion is valuable</p>
+<p><strong>Tertiary metrics (5%)</strong>:
+- <strong>Smoothness</strong>: Important but covered by coherence</p>
+<h3 id="interpretation_7">Interpretation<a class="headerlink" href="#interpretation_7" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Score</th>
+<th>Quality</th>
+<th>Recommendation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0.90-1.00</td>
+<td>Exceptional</td>
+<td>Optimal sequence, no changes needed</td>
+</tr>
+<tr>
+<td>0.80-0.89</td>
+<td>Excellent</td>
+<td>High quality, minor optimizations possible</td>
+</tr>
+<tr>
+<td>0.70-0.79</td>
+<td>Good</td>
+<td>Solid sequence, consider improvements</td>
+</tr>
+<tr>
+<td>0.60-0.69</td>
+<td>Fair</td>
+<td>Acceptable but should optimize</td>
+</tr>
+<tr>
+<td>0.50-0.59</td>
+<td>Mediocre</td>
+<td>Significant improvements needed</td>
+</tr>
+<tr>
+<td>0.00-0.49</td>
+<td>Poor</td>
+<td>Redesign recommended</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="recommendations-system">Recommendations System<a class="headerlink" href="#recommendations-system" title="Permanent link">&para;</a></h2>
+<h3 id="how-recommendations-work">How Recommendations Work<a class="headerlink" href="#how-recommendations-work" title="Permanent link">&para;</a></h3>
+<p>The health analyzer automatically generates <strong>actionable recommendations</strong> when specific issues are detected:</p>
+<div class="highlight"><pre><span></span><code><span class="n">result</span> <span class="o">=</span> <span class="n">validate_sequence_with_health</span><span class="p">(</span><span class="n">sequence</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">rec</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">health_metrics</span><span class="o">.</span><span class="n">recommendations</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  - </span><span class="si">{</span><span class="n">rec</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="recommendation-types">Recommendation Types<a class="headerlink" href="#recommendation-types" title="Permanent link">&para;</a></h3>
+<h4 id="1-balance-recommendations">1. Balance Recommendations<a class="headerlink" href="#1-balance-recommendations" title="Permanent link">&para;</a></h4>
+<p><strong>Trigger</strong>: <code>balance_score &lt; 0.6</code></p>
+<p><strong>Examples</strong>:
+- "Add stabilizer after destabilizer at position 2"
+- "Sequence too destabilizer-heavy, add COHERENCE"
+- "Balance destabilizers with stabilizers"</p>
+<h4 id="2-sustainability-recommendations">2. Sustainability Recommendations<a class="headerlink" href="#2-sustainability-recommendations" title="Permanent link">&para;</a></h4>
+<p><strong>Trigger</strong>: <code>sustainability_index &lt; 0.6</code></p>
+<p><strong>Examples</strong>:
+- "End sequence with stabilizer (coherence, silence, or resonance)"
+- "Resolve DISSONANCE at position 3 with COHERENCE"
+- "Add regenerative element (transition, recursivity, or silence)"</p>
+<h4 id="3-frequency-recommendations">3. Frequency Recommendations<a class="headerlink" href="#3-frequency-recommendations" title="Permanent link">&para;</a></h4>
+<p><strong>Trigger</strong>: <code>frequency_harmony &lt; 0.7</code></p>
+<p><strong>Examples</strong>:
+- "Insert medium-frequency operator between silence and emission"
+- "Fix Zero → High frequency jump at position 2"
+- "Use TRANSITION or COHERENCE as frequency bridge"</p>
+<h4 id="4-completeness-recommendations">4. Completeness Recommendations<a class="headerlink" href="#4-completeness-recommendations" title="Permanent link">&para;</a></h4>
+<p><strong>Trigger</strong>: <code>pattern_completeness &lt; 0.7</code></p>
+<p><strong>Examples</strong>:
+- "Complete THERAPEUTIC pattern by adding: dissonance, self_organization"
+- "Add final stabilizer to complete cycle"
+- "EXPLORE pattern incomplete, add final COHERENCE"</p>
+<h4 id="5-efficiency-recommendations">5. Efficiency Recommendations<a class="headerlink" href="#5-efficiency-recommendations" title="Permanent link">&para;</a></h4>
+<p><strong>Trigger</strong>: <code>complexity_efficiency &lt; 0.6</code></p>
+<p><strong>Examples</strong>:
+- "Remove redundant operator at position 4"
+- "Simplify sequence, consider using recognized pattern"
+- "Replace operators 3-5 with single TRANSITION"</p>
+<hr />
+<h2 id="usage-patterns">Usage Patterns<a class="headerlink" href="#usage-patterns" title="Permanent link">&para;</a></h2>
+<h3 id="pattern-1-quality-gate">Pattern 1: Quality Gate<a class="headerlink" href="#pattern-1-quality-gate" title="Permanent link">&para;</a></h3>
+<p>Use health metrics as a quality gate in production:</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">require_minimum_health</span><span class="p">(</span><span class="n">sequence</span><span class="p">,</span> <span class="n">min_health</span><span class="o">=</span><span class="mf">0.70</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Enforce minimum health threshold.&quot;&quot;&quot;</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">validate_sequence_with_health</span><span class="p">(</span><span class="n">sequence</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="o">.</span><span class="n">passed</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Sequence invalid: </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">health</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">health_metrics</span><span class="o">.</span><span class="n">overall_health</span>
+    <span class="k">if</span> <span class="n">health</span> <span class="o">&lt;</span> <span class="n">min_health</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Health </span><span class="si">{</span><span class="n">health</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> below threshold </span><span class="si">{</span><span class="n">min_health</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Recommendations:</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> 
+            <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  - </span><span class="si">{</span><span class="n">r</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">health_metrics</span><span class="o">.</span><span class="n">recommendations</span><span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">result</span>
+
+<span class="c1"># Use it</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">require_minimum_health</span><span class="p">(</span><span class="n">my_sequence</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;✅ Sequence passed with health </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">health_metrics</span><span class="o">.</span><span class="n">overall_health</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;❌ </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="pattern-2-iterative-optimization">Pattern 2: Iterative Optimization<a class="headerlink" href="#pattern-2-iterative-optimization" title="Permanent link">&para;</a></h3>
+<p>Optimize sequence based on health feedback:</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">optimize_sequence</span><span class="p">(</span><span class="n">initial_sequence</span><span class="p">,</span> <span class="n">target_health</span><span class="o">=</span><span class="mf">0.80</span><span class="p">,</span> <span class="n">max_iterations</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Iteratively improve sequence based on recommendations.&quot;&quot;&quot;</span>
+    <span class="n">sequence</span> <span class="o">=</span> <span class="n">initial_sequence</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">iteration</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_iterations</span><span class="p">):</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">validate_sequence_with_health</span><span class="p">(</span><span class="n">sequence</span><span class="p">)</span>
+        <span class="n">health</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">health_metrics</span><span class="o">.</span><span class="n">overall_health</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Iteration </span><span class="si">{</span><span class="n">iteration</span><span class="si">}</span><span class="s2">: Health = </span><span class="si">{</span><span class="n">health</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">health</span> <span class="o">&gt;=</span> <span class="n">target_health</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;✅ Target health reached!&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">sequence</span><span class="p">,</span> <span class="n">result</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="o">.</span><span class="n">health_metrics</span><span class="o">.</span><span class="n">recommendations</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;⚠️ No more recommendations&quot;</span><span class="p">)</span>
+            <span class="k">break</span>
+
+        <span class="c1"># Apply first recommendation (simplified)</span>
+        <span class="n">rec</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">health_metrics</span><span class="o">.</span><span class="n">recommendations</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Applying: </span><span class="si">{</span><span class="n">rec</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># TODO: Parse and apply recommendation</span>
+        <span class="c1"># This would require recommendation parsing logic</span>
+
+    <span class="k">return</span> <span class="n">sequence</span><span class="p">,</span> <span class="n">result</span>
+</code></pre></div>
+<h3 id="pattern-3-comparative-analysis">Pattern 3: Comparative Analysis<a class="headerlink" href="#pattern-3-comparative-analysis" title="Permanent link">&para;</a></h3>
+<p>Compare multiple sequences:</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compare_sequences</span><span class="p">(</span><span class="n">sequences</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compare health metrics across sequences.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">names</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;Sequence </span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sequences</span><span class="p">))]</span>
+
+    <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">seq</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="n">sequences</span><span class="p">):</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">validate_sequence_with_health</span><span class="p">(</span><span class="n">seq</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">passed</span><span class="p">:</span>
+            <span class="n">health</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">health_metrics</span>
+            <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
+                <span class="s1">&#39;overall&#39;</span><span class="p">:</span> <span class="n">health</span><span class="o">.</span><span class="n">overall_health</span><span class="p">,</span>
+                <span class="s1">&#39;coherence&#39;</span><span class="p">:</span> <span class="n">health</span><span class="o">.</span><span class="n">coherence_index</span><span class="p">,</span>
+                <span class="s1">&#39;balance&#39;</span><span class="p">:</span> <span class="n">health</span><span class="o">.</span><span class="n">balance_score</span><span class="p">,</span>
+                <span class="s1">&#39;sustainability&#39;</span><span class="p">:</span> <span class="n">health</span><span class="o">.</span><span class="n">sustainability_index</span><span class="p">,</span>
+            <span class="p">})</span>
+
+    <span class="c1"># Sort by overall health</span>
+    <span class="n">results</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="s1">&#39;overall&#39;</span><span class="p">],</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># Display</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;Sequence&#39;</span><span class="si">:</span><span class="s2">&lt;20</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39;Overall&#39;</span><span class="si">:</span><span class="s2">&gt;8</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39;Coherence&#39;</span><span class="si">:</span><span class="s2">&gt;10</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39;Balance&#39;</span><span class="si">:</span><span class="s2">&gt;8</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39;Sustain&#39;</span><span class="si">:</span><span class="s2">&gt;8</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">&lt;20</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;overall&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">&gt;8.2f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;coherence&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">&gt;10.2f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;balance&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">&gt;8.2f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;sustain&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">&gt;8.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Use it</span>
+<span class="n">sequences</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;Therapeutic&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;reception&quot;</span><span class="p">,</span> <span class="s2">&quot;emission&quot;</span><span class="p">,</span> <span class="s2">&quot;coherence&quot;</span><span class="p">,</span> <span class="s2">&quot;dissonance&quot;</span><span class="p">,</span> <span class="s2">&quot;self_organization&quot;</span><span class="p">,</span> <span class="s2">&quot;coherence&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;Bootstrap&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;emission&quot;</span><span class="p">,</span> <span class="s2">&quot;coupling&quot;</span><span class="p">,</span> <span class="s2">&quot;coherence&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;Explore&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;dissonance&quot;</span><span class="p">,</span> <span class="s2">&quot;mutation&quot;</span><span class="p">,</span> <span class="s2">&quot;coherence&quot;</span><span class="p">],</span>
+<span class="p">}</span>
+<span class="n">compare_sequences</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">sequences</span><span class="o">.</span><span class="n">values</span><span class="p">()),</span> <span class="nb">list</span><span class="p">(</span><span class="n">sequences</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+</code></pre></div>
+<h3 id="pattern-4-health-based-sequence-selection">Pattern 4: Health-Based Sequence Selection<a class="headerlink" href="#pattern-4-health-based-sequence-selection" title="Permanent link">&para;</a></h3>
+<p>Choose best sequence from options:</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">select_best_sequence</span><span class="p">(</span><span class="n">candidates</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Select sequence with highest weighted health score.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">weights</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">weights</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;overall&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">}</span>  <span class="c1"># Default to overall health</span>
+
+    <span class="n">best_score</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="n">best_sequence</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">best_result</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">for</span> <span class="n">seq</span> <span class="ow">in</span> <span class="n">candidates</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">validate_sequence_with_health</span><span class="p">(</span><span class="n">seq</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="o">.</span><span class="n">passed</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="n">health</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">health_metrics</span>
+        <span class="n">score</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span>
+            <span class="nb">getattr</span><span class="p">(</span><span class="n">health</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span> <span class="o">*</span> <span class="n">weight</span>
+            <span class="k">for</span> <span class="n">metric</span><span class="p">,</span> <span class="n">weight</span> <span class="ow">in</span> <span class="n">weights</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">score</span> <span class="o">&gt;</span> <span class="n">best_score</span><span class="p">:</span>
+            <span class="n">best_score</span> <span class="o">=</span> <span class="n">score</span>
+            <span class="n">best_sequence</span> <span class="o">=</span> <span class="n">seq</span>
+            <span class="n">best_result</span> <span class="o">=</span> <span class="n">result</span>
+
+    <span class="k">return</span> <span class="n">best_sequence</span><span class="p">,</span> <span class="n">best_result</span>
+
+<span class="c1"># Use it</span>
+<span class="n">candidates</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">[</span><span class="s2">&quot;emission&quot;</span><span class="p">,</span> <span class="s2">&quot;coherence&quot;</span><span class="p">],</span>
+    <span class="p">[</span><span class="s2">&quot;emission&quot;</span><span class="p">,</span> <span class="s2">&quot;reception&quot;</span><span class="p">,</span> <span class="s2">&quot;coherence&quot;</span><span class="p">,</span> <span class="s2">&quot;silence&quot;</span><span class="p">],</span>
+    <span class="p">[</span><span class="s2">&quot;reception&quot;</span><span class="p">,</span> <span class="s2">&quot;emission&quot;</span><span class="p">,</span> <span class="s2">&quot;coherence&quot;</span><span class="p">,</span> <span class="s2">&quot;dissonance&quot;</span><span class="p">,</span> <span class="s2">&quot;self_organization&quot;</span><span class="p">,</span> <span class="s2">&quot;coherence&quot;</span><span class="p">],</span>
+<span class="p">]</span>
+
+<span class="c1"># Prioritize sustainability</span>
+<span class="n">weights</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;overall_health&#39;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
+    <span class="s1">&#39;sustainability_index&#39;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">,</span>
+    <span class="s1">&#39;balance_score&#39;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">best</span><span class="p">,</span> <span class="n">result</span> <span class="o">=</span> <span class="n">select_best_sequence</span><span class="p">(</span><span class="n">candidates</span><span class="p">,</span> <span class="n">weights</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Best sequence: </span><span class="si">{</span><span class="n">best</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Health: </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">health_metrics</span><span class="o">.</span><span class="n">overall_health</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<hr />
+<h2 id="advanced-topics">Advanced Topics<a class="headerlink" href="#advanced-topics" title="Permanent link">&para;</a></h2>
+<h3 id="custom-health-thresholds">Custom Health Thresholds<a class="headerlink" href="#custom-health-thresholds" title="Permanent link">&para;</a></h3>
+<p>Different applications may require different health thresholds:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># High-stakes therapeutic applications</span>
+<span class="n">THERAPEUTIC_MIN_HEALTH</span> <span class="o">=</span> <span class="mf">0.85</span>
+<span class="n">THERAPEUTIC_MIN_SUSTAINABILITY</span> <span class="o">=</span> <span class="mf">0.90</span>
+
+<span class="c1"># Experimental/exploratory sequences</span>
+<span class="n">EXPERIMENTAL_MIN_HEALTH</span> <span class="o">=</span> <span class="mf">0.60</span>
+
+<span class="c1"># Production/stable sequences</span>
+<span class="n">PRODUCTION_MIN_HEALTH</span> <span class="o">=</span> <span class="mf">0.75</span>
+<span class="n">PRODUCTION_MIN_BALANCE</span> <span class="o">=</span> <span class="mf">0.70</span>
+</code></pre></div>
+<h3 id="health-trends-over-time">Health Trends Over Time<a class="headerlink" href="#health-trends-over-time" title="Permanent link">&para;</a></h3>
+<p>Track health improvements across iterations:</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">track_health_evolution</span><span class="p">(</span><span class="n">sequence_versions</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Track health metrics across sequence iterations.&quot;&quot;&quot;</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
+    <span class="n">metrics</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;overall&#39;</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="s1">&#39;coherence&#39;</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="s1">&#39;balance&#39;</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="s1">&#39;sustainability&#39;</span><span class="p">:</span> <span class="p">[],</span>
+    <span class="p">}</span>
+
+    <span class="k">for</span> <span class="n">seq</span> <span class="ow">in</span> <span class="n">sequence_versions</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">validate_sequence_with_health</span><span class="p">(</span><span class="n">seq</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">passed</span><span class="p">:</span>
+            <span class="n">h</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">health_metrics</span>
+            <span class="n">metrics</span><span class="p">[</span><span class="s1">&#39;overall&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">h</span><span class="o">.</span><span class="n">overall_health</span><span class="p">)</span>
+            <span class="n">metrics</span><span class="p">[</span><span class="s1">&#39;coherence&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">h</span><span class="o">.</span><span class="n">coherence_index</span><span class="p">)</span>
+            <span class="n">metrics</span><span class="p">[</span><span class="s1">&#39;balance&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">h</span><span class="o">.</span><span class="n">balance_score</span><span class="p">)</span>
+            <span class="n">metrics</span><span class="p">[</span><span class="s1">&#39;sustainability&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">h</span><span class="o">.</span><span class="n">sustainability_index</span><span class="p">)</span>
+
+    <span class="c1"># Plot evolution</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">values</span> <span class="ow">in</span> <span class="n">metrics</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)),</span> <span class="n">values</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">name</span><span class="o">.</span><span class="n">title</span><span class="p">())</span>
+
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Iteration&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Score&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Health Metrics Evolution&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<hr />
+<h2 id="faq">FAQ<a class="headerlink" href="#faq" title="Permanent link">&para;</a></h2>
+<h3 id="q-whats-a-good-overall-health-score">Q: What's a "good" overall health score?<a class="headerlink" href="#q-whats-a-good-overall-health-score" title="Permanent link">&para;</a></h3>
+<p><strong>A</strong>: Depends on context:
+- <strong>Therapeutic/Production</strong>: &gt;0.80 (excellent quality)
+- <strong>General Use</strong>: &gt;0.70 (good quality)
+- <strong>Experimental</strong>: &gt;0.60 (acceptable)
+- <strong>Below 0.60</strong>: Needs improvement</p>
+<h3 id="q-why-is-my-health-score-low-despite-valid-sequence">Q: Why is my health score low despite valid sequence?<a class="headerlink" href="#q-why-is-my-health-score-low-despite-valid-sequence" title="Permanent link">&para;</a></h3>
+<p><strong>A</strong>: Validation checks correctness; health measures quality. A sequence can be:
+- Valid but imbalanced (low balance score)
+- Valid but inefficient (low efficiency score)
+- Valid but unsustainable (low sustainability score)</p>
+<p>Use recommendations to improve.</p>
+<h3 id="q-can-i-weight-metrics-differently">Q: Can I weight metrics differently?<a class="headerlink" href="#q-can-i-weight-metrics-differently" title="Permanent link">&para;</a></h3>
+<p><strong>A</strong>: Yes! You can manually compute custom overall scores:</p>
+<div class="highlight"><pre><span></span><code><span class="n">result</span> <span class="o">=</span> <span class="n">validate_sequence_with_health</span><span class="p">(</span><span class="n">sequence</span><span class="p">)</span>
+<span class="n">h</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">health_metrics</span>
+
+<span class="c1"># Custom weights</span>
+<span class="n">custom_score</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">h</span><span class="o">.</span><span class="n">coherence_index</span> <span class="o">*</span> <span class="mf">0.3</span> <span class="o">+</span>
+    <span class="n">h</span><span class="o">.</span><span class="n">sustainability_index</span> <span class="o">*</span> <span class="mf">0.4</span> <span class="o">+</span>
+    <span class="n">h</span><span class="o">.</span><span class="n">balance_score</span> <span class="o">*</span> <span class="mf">0.3</span>
+<span class="p">)</span>
+</code></pre></div>
+<h3 id="q-how-do-recommendations-work">Q: How do recommendations work?<a class="headerlink" href="#q-how-do-recommendations-work" title="Permanent link">&para;</a></h3>
+<p><strong>A</strong>: The analyzer detects specific issues (low balance, missing stabilizer, frequency jumps) and generates targeted suggestions. Recommendations are rule-based and actionable.</p>
+<h3 id="q-should-i-always-aim-for-10-health">Q: Should I always aim for 1.0 health?<a class="headerlink" href="#q-should-i-always-aim-for-10-health" title="Permanent link">&para;</a></h3>
+<p><strong>A</strong>: Not necessarily. Context matters:
+- Some applications prioritize sustainability over efficiency
+- Exploratory sequences may intentionally have lower balance
+- Short sequences may have lower completeness (expected)</p>
+<p>Aim for "good enough" for your use case.</p>
+<hr />
+<h2 id="resources">Resources<a class="headerlink" href="#resources" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong><a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/GLYPH_SEQUENCES_GUIDE.md">GLYPH_SEQUENCES_GUIDE.md</a></strong>: Complete Grammar 2.0 guide</li>
+<li><strong><a href="../MIGRATION_GUIDE_2.0/">MIGRATION_GUIDE_2.0.md</a></strong>: Upgrading from 1.0</li>
+<li><strong><a href="../PATTERN_REFERENCE/">PATTERN_REFERENCE.md</a></strong>: Pattern catalog</li>
+<li><strong><a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/operators/health_analyzer.py">src/tnfr/operators/health_analyzer.py</a></strong>: Implementation</li>
+</ul>
+<hr />
+<p><em>Last updated: 2025-11-07</em><br />
+<em>Grammar version: 2.0</em></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections", "navigation.top", "navigation.tracking", "toc.integrate", "navigation.instant"], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+    
+  </body>
+</html>

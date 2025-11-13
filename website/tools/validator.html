@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="TNFR Interactive Tools - Web-based sequence validator and analyzer">
+    <title>Interactive Tools - TNFR Grammar 2.0</title>
+    <link rel="stylesheet" href="../assets/tnfr.css">
+    <script src="../assets/tnfr-validator.js" defer></script>
+    <script src="../assets/tnfr-interactive.js" defer></script>
+</head>
+<body>
+    <nav class="tnfr-nav">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <h1>TNFR Grammar 2.0</h1>
+            </div>
+            <ul class="nav-links">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="../getting-started.html">Getting Started</a></li>
+                <li><a href="../patterns/index.html">Patterns</a></li>
+                <li><a href="../health-metrics/index.html">Health Metrics</a></li>
+                <li><a href="validator.html" class="active">Tools</a></li>
+                <li><a href="../api/reference.html">API</a></li>
+                <li><a href="https://github.com/fermga/TNFR-Python-Engine" target="_blank">GitHub</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main>
+        <section class="tools-section">
+            <div class="container">
+                <h1>Interactive TNFR Tools</h1>
+                <p class="subtitle">
+                    Web-based tools for validating, analyzing, and exploring TNFR operator sequences
+                </p>
+
+                <!-- Sequence Validator -->
+                <div class="tool-box">
+                    <h2>🔍 Sequence Validator</h2>
+                    <p>Validate operator sequences and get detailed health metrics analysis</p>
+                    
+                    <div class="validator-interface">
+                        <div class="input-section">
+                            <label for="validator-input">Enter sequence (space-separated operators):</label>
+                            <textarea 
+                                id="validator-input" 
+                                rows="3" 
+                                placeholder="emission reception coherence silence"
+                            >emission reception coherence silence</textarea>
+                            
+                            <div class="tool-actions">
+                                <button onclick="runValidator()" class="btn-primary">
+                                    Validate Sequence
+                                </button>
+                                <button onclick="clearValidator()" class="btn-secondary">
+                                    Clear
+                                </button>
+                                <button onclick="loadExample()" class="btn-secondary">
+                                    Load Example
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div id="validator-result" class="tool-result"></div>
+                    </div>
+                </div>
+
+                <!-- Pattern Explorer -->
+                <div class="tool-box">
+                    <h2>🎨 Pattern Explorer</h2>
+                    <p>Explore pre-validated patterns and their characteristics</p>
+                    
+                    <div class="pattern-explorer">
+                        <select id="pattern-selector" onchange="loadPattern()">
+                            <option value="">Select a pattern...</option>
+                            <option value="BOOTSTRAP">BOOTSTRAP - Basic initialization</option>
+                            <option value="THERAPEUTIC">THERAPEUTIC - Complete transformation</option>
+                            <option value="EDUCATIONAL">EDUCATIONAL - Transformative learning</option>
+                            <option value="ORGANIZATIONAL">ORGANIZATIONAL - Institutional evolution</option>
+                            <option value="RESONATE">RESONATE - Amplification through coupling</option>
+                        </select>
+                        
+                        <div id="pattern-display" class="pattern-display"></div>
+                    </div>
+                </div>
+
+                <!-- Quick Reference -->
+                <div class="tool-box">
+                    <h2>📚 Operator Quick Reference</h2>
+                    <p>Reference guide for the 13 canonical structural operators</p>
+                    
+                    <div class="operators-grid">
+                        <div class="operator-ref">
+                            <h4>Emission (AL)</h4>
+                            <p>Initiates a resonant pattern. Increases νf and creates positive ΔNFR.</p>
+                        </div>
+                        <div class="operator-ref">
+                            <h4>Reception (EN)</h4>
+                            <p>Receives and integrates external patterns. Updates EPI based on incoming resonance.</p>
+                        </div>
+                        <div class="operator-ref">
+                            <h4>Coherence (IL)</h4>
+                            <p>Stabilizes structural form. Increases C(t), reduces |ΔNFR|.</p>
+                        </div>
+                        <div class="operator-ref">
+                            <h4>Dissonance (OZ)</h4>
+                            <p>Introduces controlled instability. Increases |ΔNFR|, may trigger bifurcation.</p>
+                        </div>
+                        <div class="operator-ref">
+                            <h4>Coupling (UM)</h4>
+                            <p>Creates structural links between nodes. Phase synchronization, information exchange.</p>
+                        </div>
+                        <div class="operator-ref">
+                            <h4>Resonance (RA)</h4>
+                            <p>Amplifies and propagates patterns. Increases effective coupling, preserves EPI identity.</p>
+                        </div>
+                        <div class="operator-ref">
+                            <h4>Silence (SHA)</h4>
+                            <p>Temporarily freezes evolution. Sets νf ≈ 0, EPI unchanged.</p>
+                        </div>
+                        <div class="operator-ref">
+                            <h4>Expansion (VAL)</h4>
+                            <p>Increases structural complexity. EPI dimensionality grows.</p>
+                        </div>
+                        <div class="operator-ref">
+                            <h4>Contraction (NUL)</h4>
+                            <p>Reduces structural complexity. EPI dimensionality decreases.</p>
+                        </div>
+                        <div class="operator-ref">
+                            <h4>Self-organization (THOL)</h4>
+                            <p>Spontaneous pattern formation. Creates sub-EPIs while preserving global form.</p>
+                        </div>
+                        <div class="operator-ref">
+                            <h4>Mutation (ZHIR)</h4>
+                            <p>Phase transformation. θ → θ' when structural threshold crossed.</p>
+                        </div>
+                        <div class="operator-ref">
+                            <h4>Transition (NAV)</h4>
+                            <p>Movement between structural states. Controlled EPI evolution along path.</p>
+                        </div>
+                        <div class="operator-ref">
+                            <h4>Recursivity (REMESH)</h4>
+                            <p>Nested operator application. Maintains operational fractality.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="tnfr-footer">
+        <div class="container">
+            <p>&copy; 2024 TNFR Python Engine. Licensed under MIT.</p>
+            <p>
+                <a href="https://github.com/fermga/TNFR-Python-Engine">GitHub</a> | 
+                <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/PATTERN_COOKBOOK.md">Pattern Cookbook</a>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        function runValidator() {
+            const input = document.getElementById('validator-input');
+            const resultDiv = document.getElementById('validator-result');
+            
+            const sequence = input.value.trim().split(/\s+/);
+            const validator = new SequenceValidator();
+            const result = validator.validate(sequence);
+            
+            let html = '<div class="validation-result">';
+            
+            if (result.passed) {
+                html += '<div class="result-status success">✅ Valid Sequence</div>';
+            } else {
+                html += '<div class="result-status error">❌ Invalid Sequence</div>';
+            }
+            
+            if (result.errors.length > 0) {
+                html += '<div class="result-section"><h4>Errors:</h4><ul>';
+                result.errors.forEach(err => {
+                    html += `<li class="error-item">${err}</li>`;
+                });
+                html += '</ul></div>';
+            }
+            
+            if (result.warnings.length > 0) {
+                html += '<div class="result-section"><h4>Warnings:</h4><ul>';
+                result.warnings.forEach(warn => {
+                    html += `<li class="warning-item">${warn}</li>`;
+                });
+                html += '</ul></div>';
+            }
+            
+            if (result.patterns.length > 0) {
+                html += '<div class="result-section"><h4>Detected Patterns:</h4><ul>';
+                result.patterns.forEach(pattern => {
+                    html += `<li class="pattern-item">${pattern.type} (${Math.round(pattern.confidence * 100)}%)</li>`;
+                });
+                html += '</ul></div>';
+            }
+            
+            if (result.healthMetrics) {
+                const hm = result.healthMetrics;
+                html += '<div class="result-section"><h4>Health Metrics:</h4>';
+                html += '<div class="health-grid">';
+                html += `<div class="health-metric">
+                    <span class="metric-label">Overall Health:</span>
+                    <span class="metric-value ${getHealthClass(hm.overallHealth)}">${hm.overallHealth}</span>
+                </div>`;
+                html += `<div class="health-metric">
+                    <span class="metric-label">Coherence:</span>
+                    <span class="metric-value">${hm.coherenceIndex}</span>
+                </div>`;
+                html += `<div class="health-metric">
+                    <span class="metric-label">Balance:</span>
+                    <span class="metric-value">${hm.balanceScore}</span>
+                </div>`;
+                html += `<div class="health-metric">
+                    <span class="metric-label">Sustainability:</span>
+                    <span class="metric-value">${hm.sustainabilityIndex}</span>
+                </div>`;
+                html += '</div></div>';
+            }
+            
+            html += '</div>';
+            resultDiv.innerHTML = html;
+        }
+
+        function clearValidator() {
+            document.getElementById('validator-input').value = '';
+            document.getElementById('validator-result').innerHTML = '';
+        }
+
+        function loadExample() {
+            const examples = [
+                'emission reception coherence silence',
+                'emission reception coherence dissonance self_organization coherence transition silence',
+                'emission reception expansion transition coherence resonance silence',
+                'emission coupling expansion self_organization coherence resonance silence'
+            ];
+            const randomExample = examples[Math.floor(Math.random() * examples.length)];
+            document.getElementById('validator-input').value = randomExample;
+            runValidator();
+        }
+
+        function loadPattern() {
+            const selector = document.getElementById('pattern-selector');
+            const displayDiv = document.getElementById('pattern-display');
+            const patternType = selector.value;
+            
+            if (!patternType) {
+                displayDiv.innerHTML = '';
+                return;
+            }
+            
+            const example = PatternExamples.getExample(patternType);
+            if (!example) {
+                displayDiv.innerHTML = '<p>Pattern not found</p>';
+                return;
+            }
+            
+            const validator = new SequenceValidator();
+            const result = validator.validate(example.sequence);
+            
+            let html = '<div class="pattern-info">';
+            html += `<h3>${patternType}</h3>`;
+            html += `<p><strong>Description:</strong> ${example.description}</p>`;
+            html += `<p><strong>Use Case:</strong> ${example.useCase}</p>`;
+            html += `<div class="pattern-sequence">
+                <code>${example.sequence.join(' → ')}</code>
+            </div>`;
+            
+            if (result.healthMetrics) {
+                const hm = result.healthMetrics;
+                html += '<div class="pattern-health-summary">';
+                html += `<div class="health-item">Overall Health: <strong>${hm.overallHealth}</strong></div>`;
+                html += `<div class="health-item">Coherence: <strong>${hm.coherenceIndex}</strong></div>`;
+                html += `<div class="health-item">Balance: <strong>${hm.balanceScore}</strong></div>`;
+                html += '</div>';
+            }
+            
+            html += '</div>';
+            displayDiv.innerHTML = html;
+        }
+    </script>
+</body>
+</html>

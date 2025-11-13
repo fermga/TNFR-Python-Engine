@@ -1,0 +1,7 @@
+{
+  "UM_FUNCTIONAL_LINKS": true,
+  "UM_CANDIDATE_COUNT": 2,
+  "UM_CANDIDATE_MODE": "proximity",
+  "OZ_NOISE_MODE": false,
+  "SIGMA": {"enabled": false}
+}

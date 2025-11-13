@@ -1,0 +1,3893 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Canonical TNFR structural dynamics engine documentation">
+      
+      
+      
+        <link rel="canonical" href="https://fermga.github.io/TNFR-Python-Engine/THOL_ENCAPSULATION_GUIDE/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>THOL Encapsulation Guide - TNFR Python Engine</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.618322db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#thol-encapsulation-guide" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="TNFR Python Engine" class="md-header__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            TNFR Python Engine
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              THOL Encapsulation Guide
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    TNFR Python Engine
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="TNFR Python Engine" class="md-nav__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    TNFR Python Engine
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    TNFR Python Engine
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting Started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Welcome to TNFR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/getting-started/LEARNING_PATHS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Learning Paths
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/getting-started/quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quickstart Tutorial
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/getting-started/TNFR_CONCEPTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core Concepts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/getting-started/INTERACTIVE_TUTORIAL/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interactive Tutorial
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/getting-started/FAQ/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    FAQ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/getting-started/math-backends/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Math Backends
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/getting-started/optional-dependencies/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Optional Dependencies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/getting-started/migrating-remesh-window/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migrating from Remesh Window
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    User Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/user-guide/OPERATORS_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operators Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STRUCTURAL_FIELDS_TETRAD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural Field Tetrad (Canonical)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/user-guide/METRICS_INTERPRETATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Metrics Interpretation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TROUBLESHOOTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar Documentation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Grammar Documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/EXECUTIVE-SUMMARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Executive Summary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_3" id="__nav_4_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core Concepts
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Core Concepts
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/01-FUNDAMENTAL-CONCEPTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fundamental Concepts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/02-CANONICAL-CONSTRAINTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Canonical Constraints
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/03-OPERATORS-AND-GLYPHS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operators and Glyphs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/04-VALID-SEQUENCES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Valid Sequences
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_4" id="__nav_4_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Implementation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/05-TECHNICAL-IMPLEMENTATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Technical Implementation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/06-VALIDATION-AND-TESTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation and Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/07-MIGRATION-AND-EVOLUTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migration and Evolution
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_5" id="__nav_4_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/08-QUICK-REFERENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/GLOSSARY.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/MASTER-INDEX/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Master Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/OPERATORS-CATALOG-SUMMARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operators Catalog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/CROSS-REFERENCE-INDEX/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cross-Reference Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/CODE_DOCS_CROSSREF/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code Documentation Cross-Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_6" id="__nav_4_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tooling
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tooling
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/TOOLING-AND-AUTOMATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tooling and Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/TESTING-SUMMARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing Summary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/DEPRECATION-INDEX.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deprecation Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Examples
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_2" id="__nav_5_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Notebooks & Patterns
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Notebooks & Patterns
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/notebooks/Fundamental_Particles_TNFR_Atlas.ipynb" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fundamental Particles TNFR Atlas (Notebook - GitHub)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/README.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    TNFR Patterns (Module Guide)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../INTERACTIONS_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interaction Sequences Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/api/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/api/operators/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural Operators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/api/OPERATORS_VISUAL_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operators Visual Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/api/telemetry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Telemetry & Utilities
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/api/docstring_style/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docstring Style
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module Documentation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Module Documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/mathematics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mathematics Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/physics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Physics Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/operators/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operators Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/dynamics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dynamics Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/metrics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Metrics Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/sdk/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SDK Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/telemetry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Telemetry Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/tutorials/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/extensions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Extensions Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core Documentation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Core Documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DOCUMENTATION_INDEX/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Documentation Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CANONICAL_SOURCES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Canonical Sources
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../UNIFIED_GRAMMAR_RULES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Unified Grammar Rules
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AGENTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Agents Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../GLOSSARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Advanced Topics
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Advanced Topics
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/advanced/ARCHITECTURE_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/advanced/PERFORMANCE_OPTIMIZATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Performance Optimization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/advanced/TESTING_STRATEGIES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing Strategies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/advanced/DEVELOPMENT_WORKFLOW/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development Workflow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/foundations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mathematical Foundations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_9_6" id="__nav_9_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Research Documents
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_9_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Research Documents
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TNFR_FORCES_EMERGENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Forces Emergence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OPERATOR_COMPLETENESS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator Completeness
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LIFE_EMERGENCE_FROM_TNFR/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Life Emergence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CELL_EMERGENCE_FROM_TNFR/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cell Emergence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/tools/CLI/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Security
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/security/monitoring/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Monitoring
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/security/dependency-auditing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dependency Auditing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/security/codeql/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CodeQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/security/dependabot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dependabot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
+        
+          
+          <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Info
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Project Info
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/releases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="thol-encapsulation-guide">THOL Encapsulation Guide<a class="headerlink" href="#thol-encapsulation-guide" title="Permanent link">&para;</a></h1>
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<p>This guide explains the <strong>encapsulation behavior</strong> of THOL (SELF_ORGANIZATION) in TNFR Grammar 2.0, essential for correctly designing operator sequences that include self-organization.</p>
+<p><strong>Key Principle</strong>: THOL creates <strong>bifurcation windows</strong> that encapsulate internal operators, isolating them from the main sequence. This reflects TNFR's operational fractality where sub-EPIs are independent NFR nodes.</p>
+<hr />
+<h2 id="what-is-thol-encapsulation">What is THOL Encapsulation?<a class="headerlink" href="#what-is-thol-encapsulation" title="Permanent link">&para;</a></h2>
+<h3 id="physical-basis">Physical Basis<a class="headerlink" href="#physical-basis" title="Permanent link">&para;</a></h3>
+<p>From <code>SelfOrganization.__call__</code>:
+- Sub-EPIs are created as <strong>independent NFR nodes</strong> (not just metadata)
+- This enables <strong>operational fractality</strong>: recursive bifurcation, hierarchical metrics, multi-level structure
+- Key quote: <em>"reorganizes external experience into </em><em>internal structure</em><em> without external instruction"</em></p>
+<p><strong>Implication</strong>: Operators inside THOL bifurcation windows are <strong>internal structures</strong>, isolated from the main sequence.</p>
+<h3 id="grammar-behavior">Grammar Behavior<a class="headerlink" href="#grammar-behavior" title="Permanent link">&para;</a></h3>
+<p>When THOL appears in a sequence:
+1. <strong>Opens bifurcation window</strong>: Checks if first operator after THOL is a valid sequence start
+2. <strong>Empty window</strong> (no bifurcation): First operator is NOT valid start → operators remain external
+3. <strong>Non-empty window</strong> (bifurcation): First operator IS valid start → operators are encapsulated
+4. <strong>Auto-closure</strong>: Window closes when internal sequence validates successfully
+5. <strong>Main sequence validation</strong>: Uses only non-encapsulated operators</p>
+<hr />
+<h2 id="the-two-cases">The Two Cases<a class="headerlink" href="#the-two-cases" title="Permanent link">&para;</a></h2>
+<h3 id="case-1-empty-thol-window-no-bifurcation">Case 1: Empty THOL Window (No Bifurcation)<a class="headerlink" href="#case-1-empty-thol-window-no-bifurcation" title="Permanent link">&para;</a></h3>
+<p><strong>Condition</strong>: First operator after THOL is <strong>NOT</strong> a valid sequence start</p>
+<p><strong>Physics</strong>: <code>∂²EPI/∂t² ≤ τ</code> (bifurcation threshold not reached)</p>
+<p><strong>Behavior</strong>: THOL applies without creating sub-structures; following operators remain part of main sequence</p>
+<p><strong>Example</strong>:
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.operators.grammar</span><span class="w"> </span><span class="kn">import</span> <span class="n">validate_sequence</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.config.operator_names</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+
+<span class="c1"># Valid: Empty THOL window</span>
+<span class="n">sequence</span> <span class="o">=</span> <span class="p">[</span><span class="n">EMISSION</span><span class="p">,</span> <span class="n">COHERENCE</span><span class="p">,</span> <span class="n">DISSONANCE</span><span class="p">,</span> <span class="n">SELF_ORGANIZATION</span><span class="p">,</span> <span class="n">SILENCE</span><span class="p">]</span>
+<span class="c1">#          ^^^^^^^^^^^^^^^^^^^^^^ Main sequence start</span>
+<span class="c1">#                                 ^^^^^^^^^^^^^^^^^^^ THOL applied</span>
+<span class="c1">#                                                     ^^^^^^^ Main sequence end</span>
+
+<span class="n">result</span> <span class="o">=</span> <span class="n">validate_sequence</span><span class="p">(</span><span class="n">sequence</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">passed</span>
+<span class="c1"># SILENCE is external (not encapsulated) - valid main sequence ending</span>
+</code></pre></div></p>
+<p><strong>Valid Sequence Starts</strong> (for non-empty windows):
+- EMISSION (AL)
+- RECEPTION (EN) 
+- TRANSITION (NAV)
+- RECURSIVITY (REMESH)</p>
+<p><strong>Not Valid Starts</strong> (trigger empty window):
+- COHERENCE (IL) - requires existing EPI
+- DISSONANCE (OZ) - requires existing structure<br />
+- SILENCE (SHA) - requires existing state
+- COUPLING (UM) - requires network context
+- etc.</p>
+<h3 id="case-2-non-empty-thol-window-bifurcation">Case 2: Non-Empty THOL Window (Bifurcation)<a class="headerlink" href="#case-2-non-empty-thol-window-bifurcation" title="Permanent link">&para;</a></h3>
+<p><strong>Condition</strong>: First operator after THOL <strong>IS</strong> a valid sequence start</p>
+<p><strong>Physics</strong>: <code>∂²EPI/∂t² &gt; τ</code> (bifurcation occurs, sub-EPIs created)</p>
+<p><strong>Behavior</strong>: THOL creates internal bifurcation window; operators inside are <strong>encapsulated</strong> and isolated from main sequence</p>
+<p><strong>Example</strong>:
+<div class="highlight"><pre><span></span><code><span class="c1"># INVALID: Encapsulated operators, no external ending</span>
+<span class="n">sequence</span> <span class="o">=</span> <span class="p">[</span><span class="n">EMISSION</span><span class="p">,</span> <span class="n">COHERENCE</span><span class="p">,</span> <span class="n">DISSONANCE</span><span class="p">,</span> 
+            <span class="n">SELF_ORGANIZATION</span><span class="p">,</span> <span class="n">EMISSION</span><span class="p">,</span> <span class="n">COHERENCE</span><span class="p">,</span> <span class="n">SILENCE</span><span class="p">]</span>
+<span class="c1">#          ^^^^^^^^^^^^^^^^^^^^^^ Main sequence start</span>
+<span class="c1">#                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^ THOL window (encapsulated)</span>
+<span class="c1"># Main sequence ends with THOL → INVALID (no valid ending operator)</span>
+
+<span class="n">result</span> <span class="o">=</span> <span class="n">validate_sequence</span><span class="p">(</span><span class="n">sequence</span><span class="p">)</span>
+<span class="k">assert</span> <span class="ow">not</span> <span class="n">result</span><span class="o">.</span><span class="n">passed</span>
+<span class="c1"># Error: Main sequence must end with valid operator (SILENCE is encapsulated)</span>
+
+<span class="c1"># VALID: Add external operator after THOL window</span>
+<span class="n">sequence_fixed</span> <span class="o">=</span> <span class="p">[</span><span class="n">EMISSION</span><span class="p">,</span> <span class="n">COHERENCE</span><span class="p">,</span> <span class="n">DISSONANCE</span><span class="p">,</span>
+                  <span class="n">SELF_ORGANIZATION</span><span class="p">,</span> <span class="n">EMISSION</span><span class="p">,</span> <span class="n">COHERENCE</span><span class="p">,</span> <span class="n">SILENCE</span><span class="p">,</span>
+                  <span class="n">TRANSITION</span><span class="p">]</span>
+<span class="c1">#                ^^^^^^^^^^^^^^^^^^^^^^ Main sequence start</span>
+<span class="c1">#                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^ THOL window (encapsulated)</span>
+<span class="c1">#                                                                   ^^^^^^^^^^ External ending</span>
+
+<span class="n">result</span> <span class="o">=</span> <span class="n">validate_sequence_fixed</span><span class="p">(</span><span class="n">sequence_fixed</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">passed</span>
+<span class="c1"># TRANSITION is external - valid main sequence ending</span>
+</code></pre></div></p>
+<hr />
+<h2 id="window-closure-rules">Window Closure Rules<a class="headerlink" href="#window-closure-rules" title="Permanent link">&para;</a></h2>
+<h3 id="automatic-closure">Automatic Closure<a class="headerlink" href="#automatic-closure" title="Permanent link">&para;</a></h3>
+<p>THOL windows close <strong>automatically</strong> when the internal sequence:
+1. Ends with a <strong>valid sequence ending operator</strong>:
+   - SILENCE (SHA)
+   - TRANSITION (NAV)<br />
+   - RECURSIVITY (REMESH)
+   - DISSONANCE (OZ)
+2. <strong>Validates successfully</strong> against all unified grammar rules (U1-U5)</p>
+<h3 id="validation">Validation<a class="headerlink" href="#validation" title="Permanent link">&para;</a></h3>
+<p>The internal sequence is validated <strong>recursively</strong>:
+- Must follow all unified grammar constraints (U1-U5)
+- Must start with valid generator (U1a)
+- Must end with valid closure operator (U1b)
+- All operator transitions must be valid
+- THOL preconditions apply (requires destabilizer within 3-operator window per U4b)</p>
+<p><strong>See</strong>: <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/UNIFIED_GRAMMAR_RULES.md">UNIFIED_GRAMMAR_RULES.md</a> for complete grammar reference</p>
+<p><strong>Example</strong>:
+<div class="highlight"><pre><span></span><code><span class="c1"># Valid nested sequence</span>
+<span class="p">[</span><span class="n">EMISSION</span><span class="p">,</span> <span class="n">COHERENCE</span><span class="p">,</span> <span class="n">DISSONANCE</span><span class="p">,</span>
+ <span class="n">SELF_ORGANIZATION</span><span class="p">,</span>
+    <span class="n">EMISSION</span><span class="p">,</span>      <span class="c1"># Valid start ✓</span>
+    <span class="n">COHERENCE</span><span class="p">,</span>     <span class="c1"># Valid transition ✓</span>
+    <span class="n">SILENCE</span><span class="p">,</span>       <span class="c1"># Valid end ✓ - window closes here</span>
+ <span class="n">TRANSITION</span><span class="p">]</span>       <span class="c1"># External - main sequence ending</span>
+
+<span class="c1"># Invalid nested sequence  </span>
+<span class="p">[</span><span class="n">EMISSION</span><span class="p">,</span> <span class="n">COHERENCE</span><span class="p">,</span> <span class="n">DISSONANCE</span><span class="p">,</span>
+ <span class="n">SELF_ORGANIZATION</span><span class="p">,</span>
+    <span class="n">COHERENCE</span><span class="p">,</span>     <span class="c1"># INVALID start ✗ (requires existing EPI)</span>
+    <span class="n">SILENCE</span><span class="p">,</span>
+ <span class="n">TRANSITION</span><span class="p">]</span>
+<span class="c1"># Error: THOL subsequence invalid start operator</span>
+</code></pre></div></p>
+<hr />
+<h2 id="nested-thol-operational-fractality">Nested THOL (Operational Fractality)<a class="headerlink" href="#nested-thol-operational-fractality" title="Permanent link">&para;</a></h2>
+<p>THOL windows can be <strong>nested</strong> to arbitrary depth, reflecting TNFR's fractal structure.</p>
+<p><strong>Example</strong>:
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.operators.grammar</span><span class="w"> </span><span class="kn">import</span> <span class="n">validate_sequence</span>
+
+<span class="c1"># Valid 2-level nested THOL</span>
+<span class="n">sequence</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">EMISSION</span><span class="p">,</span> <span class="n">COHERENCE</span><span class="p">,</span> <span class="n">DISSONANCE</span><span class="p">,</span>        <span class="c1"># Main sequence start</span>
+    <span class="n">SELF_ORGANIZATION</span><span class="p">,</span>                      <span class="c1"># Level 1 THOL opens</span>
+        <span class="n">EMISSION</span><span class="p">,</span> <span class="n">COHERENCE</span><span class="p">,</span> <span class="n">DISSONANCE</span><span class="p">,</span>    <span class="c1"># Level 1 internal sequence</span>
+        <span class="n">SELF_ORGANIZATION</span><span class="p">,</span>                  <span class="c1"># Level 2 THOL opens (nested)</span>
+            <span class="n">EMISSION</span><span class="p">,</span> <span class="n">COHERENCE</span><span class="p">,</span> <span class="n">SILENCE</span><span class="p">,</span>   <span class="c1"># Level 2 internal - closes here</span>
+        <span class="n">TRANSITION</span><span class="p">,</span>                         <span class="c1"># Level 1 continues - closes here</span>
+    <span class="n">SILENCE</span>                                 <span class="c1"># Main sequence ending (external)</span>
+<span class="p">]</span>
+
+<span class="n">result</span> <span class="o">=</span> <span class="n">validate_sequence</span><span class="p">(</span><span class="n">sequence</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">passed</span>
+<span class="c1"># All three levels validated independently</span>
+</code></pre></div></p>
+<p><strong>Structure</strong>:
+<div class="highlight"><pre><span></span><code>Main: [EMISSION, COHERENCE, DISSONANCE, THOL₁, SILENCE]
+│
+└─ THOL₁: [EMISSION, COHERENCE, DISSONANCE, THOL₂, TRANSITION]
+   │
+   └─ THOL₂: [EMISSION, COHERENCE, SILENCE]
+</code></pre></div></p>
+<p><strong>Physical Interpretation</strong>:
+- Level 0 (Main): Primary system
+- Level 1 (THOL₁): Sub-EPI created by primary bifurcation
+- Level 2 (THOL₂): Sub-sub-EPI created by secondary bifurcation</p>
+<p>Each level operates <strong>independently</strong> with its own structural dynamics.</p>
+<hr />
+<h2 id="common-patterns-and-anti-patterns">Common Patterns and Anti-Patterns<a class="headerlink" href="#common-patterns-and-anti-patterns" title="Permanent link">&para;</a></h2>
+<h3 id="valid-patterns">✅ Valid Patterns<a class="headerlink" href="#valid-patterns" title="Permanent link">&para;</a></h3>
+<h4 id="pattern-1-empty-thol-applied-without-bifurcation">Pattern 1: Empty THOL (Applied Without Bifurcation)<a class="headerlink" href="#pattern-1-empty-thol-applied-without-bifurcation" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="p">[</span><span class="n">EMISSION</span><span class="p">,</span> <span class="n">COHERENCE</span><span class="p">,</span> <span class="n">DISSONANCE</span><span class="p">,</span> <span class="n">SELF_ORGANIZATION</span><span class="p">,</span> <span class="n">TRANSITION</span><span class="p">]</span>
+<span class="c1"># THOL applied, no bifurcation, TRANSITION external</span>
+</code></pre></div>
+<h4 id="pattern-2-simple-bifurcation">Pattern 2: Simple Bifurcation<a class="headerlink" href="#pattern-2-simple-bifurcation" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="p">[</span><span class="n">EMISSION</span><span class="p">,</span> <span class="n">COHERENCE</span><span class="p">,</span> <span class="n">DISSONANCE</span><span class="p">,</span>
+ <span class="n">SELF_ORGANIZATION</span><span class="p">,</span> <span class="n">EMISSION</span><span class="p">,</span> <span class="n">COHERENCE</span><span class="p">,</span> <span class="n">SILENCE</span><span class="p">,</span>
+ <span class="n">TRANSITION</span><span class="p">]</span>
+<span class="c1"># THOL bifurcates, internal [EMISSION, COHERENCE, SILENCE], external TRANSITION</span>
+</code></pre></div>
+<h4 id="pattern-3-multiple-external-operators-after-thol">Pattern 3: Multiple External Operators After THOL<a class="headerlink" href="#pattern-3-multiple-external-operators-after-thol" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="p">[</span><span class="n">EMISSION</span><span class="p">,</span> <span class="n">COHERENCE</span><span class="p">,</span> <span class="n">DISSONANCE</span><span class="p">,</span>
+ <span class="n">SELF_ORGANIZATION</span><span class="p">,</span> <span class="n">EMISSION</span><span class="p">,</span> <span class="n">COHERENCE</span><span class="p">,</span> <span class="n">SILENCE</span><span class="p">,</span>
+ <span class="n">RESONANCE</span><span class="p">,</span> <span class="n">COUPLING</span><span class="p">,</span> <span class="n">TRANSITION</span><span class="p">]</span>
+<span class="c1"># Internal: [EMISSION, COHERENCE, SILENCE]</span>
+<span class="c1"># External continuation: [RESONANCE, COUPLING, TRANSITION]</span>
+</code></pre></div>
+<h4 id="pattern-4-nested-thol">Pattern 4: Nested THOL<a class="headerlink" href="#pattern-4-nested-thol" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="p">[</span><span class="n">EMISSION</span><span class="p">,</span> <span class="n">COHERENCE</span><span class="p">,</span> <span class="n">DISSONANCE</span><span class="p">,</span>
+ <span class="n">SELF_ORGANIZATION</span><span class="p">,</span>
+    <span class="n">EMISSION</span><span class="p">,</span> <span class="n">COHERENCE</span><span class="p">,</span> <span class="n">DISSONANCE</span><span class="p">,</span>
+    <span class="n">SELF_ORGANIZATION</span><span class="p">,</span>
+        <span class="n">EMISSION</span><span class="p">,</span> <span class="n">COHERENCE</span><span class="p">,</span> <span class="n">SILENCE</span><span class="p">,</span>
+    <span class="n">TRANSITION</span><span class="p">,</span>
+ <span class="n">SILENCE</span><span class="p">]</span>
+<span class="c1"># Two levels of bifurcation, both validated independently</span>
+</code></pre></div>
+<h4 id="pattern-5-multiple-thols-in-sequence">Pattern 5: Multiple THOLs in Sequence<a class="headerlink" href="#pattern-5-multiple-thols-in-sequence" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="p">[</span><span class="n">EMISSION</span><span class="p">,</span> <span class="n">COHERENCE</span><span class="p">,</span> <span class="n">DISSONANCE</span><span class="p">,</span>
+ <span class="n">SELF_ORGANIZATION</span><span class="p">,</span> <span class="n">EMISSION</span><span class="p">,</span> <span class="n">COHERENCE</span><span class="p">,</span> <span class="n">SILENCE</span><span class="p">,</span>
+ <span class="n">TRANSITION</span><span class="p">,</span> <span class="n">DISSONANCE</span><span class="p">,</span>
+ <span class="n">SELF_ORGANIZATION</span><span class="p">,</span> <span class="n">EMISSION</span><span class="p">,</span> <span class="n">COHERENCE</span><span class="p">,</span> <span class="n">SILENCE</span><span class="p">,</span>
+ <span class="n">TRANSITION</span><span class="p">]</span>
+<span class="c1"># Two independent THOL windows at same level</span>
+</code></pre></div>
+<h3 id="invalid-patterns-anti-patterns">❌ Invalid Patterns (Anti-Patterns)<a class="headerlink" href="#invalid-patterns-anti-patterns" title="Permanent link">&para;</a></h3>
+<h4 id="anti-pattern-1-main-sequence-ending-inside-thol">Anti-Pattern 1: Main Sequence Ending Inside THOL<a class="headerlink" href="#anti-pattern-1-main-sequence-ending-inside-thol" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># ❌ INVALID</span>
+<span class="p">[</span><span class="n">EMISSION</span><span class="p">,</span> <span class="n">COHERENCE</span><span class="p">,</span> <span class="n">DISSONANCE</span><span class="p">,</span>
+ <span class="n">SELF_ORGANIZATION</span><span class="p">,</span> <span class="n">EMISSION</span><span class="p">,</span> <span class="n">COHERENCE</span><span class="p">,</span> <span class="n">SILENCE</span><span class="p">]</span>
+<span class="c1"># Problem: SILENCE is encapsulated, main sequence ends with THOL (invalid)</span>
+
+<span class="c1"># ✅ FIX: Add external operator</span>
+<span class="p">[</span><span class="n">EMISSION</span><span class="p">,</span> <span class="n">COHERENCE</span><span class="p">,</span> <span class="n">DISSONANCE</span><span class="p">,</span>
+ <span class="n">SELF_ORGANIZATION</span><span class="p">,</span> <span class="n">EMISSION</span><span class="p">,</span> <span class="n">COHERENCE</span><span class="p">,</span> <span class="n">SILENCE</span><span class="p">,</span>
+ <span class="n">TRANSITION</span><span class="p">]</span>
+</code></pre></div>
+<h4 id="anti-pattern-2-invalid-thol-internal-sequence">Anti-Pattern 2: Invalid THOL Internal Sequence<a class="headerlink" href="#anti-pattern-2-invalid-thol-internal-sequence" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># ❌ INVALID</span>
+<span class="p">[</span><span class="n">EMISSION</span><span class="p">,</span> <span class="n">COHERENCE</span><span class="p">,</span> <span class="n">DISSONANCE</span><span class="p">,</span>
+ <span class="n">SELF_ORGANIZATION</span><span class="p">,</span> <span class="n">COHERENCE</span><span class="p">,</span> <span class="n">SILENCE</span><span class="p">,</span>
+ <span class="n">TRANSITION</span><span class="p">]</span>
+<span class="c1"># Problem: COHERENCE invalid start (requires existing EPI)</span>
+
+<span class="c1"># ✅ FIX: Start with valid initiator</span>
+<span class="p">[</span><span class="n">EMISSION</span><span class="p">,</span> <span class="n">COHERENCE</span><span class="p">,</span> <span class="n">DISSONANCE</span><span class="p">,</span>
+ <span class="n">SELF_ORGANIZATION</span><span class="p">,</span> <span class="n">EMISSION</span><span class="p">,</span> <span class="n">COHERENCE</span><span class="p">,</span> <span class="n">SILENCE</span><span class="p">,</span>
+ <span class="n">TRANSITION</span><span class="p">]</span>
+</code></pre></div>
+<h4 id="anti-pattern-3-unclosed-thol-window">Anti-Pattern 3: Unclosed THOL Window<a class="headerlink" href="#anti-pattern-3-unclosed-thol-window" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># ❌ INVALID</span>
+<span class="p">[</span><span class="n">EMISSION</span><span class="p">,</span> <span class="n">COHERENCE</span><span class="p">,</span> <span class="n">DISSONANCE</span><span class="p">,</span>
+ <span class="n">SELF_ORGANIZATION</span><span class="p">,</span> <span class="n">EMISSION</span><span class="p">,</span> <span class="n">COHERENCE</span><span class="p">]</span>
+<span class="c1"># Problem: Internal sequence doesn&#39;t end with valid ending operator</span>
+
+<span class="c1"># ✅ FIX: Close internal sequence properly</span>
+<span class="p">[</span><span class="n">EMISSION</span><span class="p">,</span> <span class="n">COHERENCE</span><span class="p">,</span> <span class="n">DISSONANCE</span><span class="p">,</span>
+ <span class="n">SELF_ORGANIZATION</span><span class="p">,</span> <span class="n">EMISSION</span><span class="p">,</span> <span class="n">COHERENCE</span><span class="p">,</span> <span class="n">SILENCE</span><span class="p">,</span>
+ <span class="n">TRANSITION</span><span class="p">]</span>
+</code></pre></div>
+<h4 id="anti-pattern-4-thol-without-destabilizer">Anti-Pattern 4: THOL Without Destabilizer<a class="headerlink" href="#anti-pattern-4-thol-without-destabilizer" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># ❌ INVALID</span>
+<span class="p">[</span><span class="n">EMISSION</span><span class="p">,</span> <span class="n">COHERENCE</span><span class="p">,</span>
+ <span class="n">SELF_ORGANIZATION</span><span class="p">,</span> <span class="n">EMISSION</span><span class="p">,</span> <span class="n">COHERENCE</span><span class="p">,</span> <span class="n">SILENCE</span><span class="p">,</span>
+ <span class="n">TRANSITION</span><span class="p">]</span>
+<span class="c1"># Problem: No destabilizer (OZ/ZHIR/NUL) within 3 operators before THOL</span>
+
+<span class="c1"># ✅ FIX: Add destabilizer</span>
+<span class="p">[</span><span class="n">EMISSION</span><span class="p">,</span> <span class="n">COHERENCE</span><span class="p">,</span> <span class="n">DISSONANCE</span><span class="p">,</span>
+ <span class="n">SELF_ORGANIZATION</span><span class="p">,</span> <span class="n">EMISSION</span><span class="p">,</span> <span class="n">COHERENCE</span><span class="p">,</span> <span class="n">SILENCE</span><span class="p">,</span>
+ <span class="n">TRANSITION</span><span class="p">]</span>
+</code></pre></div>
+<hr />
+<h2 id="design-guidelines">Design Guidelines<a class="headerlink" href="#design-guidelines" title="Permanent link">&para;</a></h2>
+<h3 id="when-to-use-empty-thol-windows">When to Use Empty THOL Windows<a class="headerlink" href="#when-to-use-empty-thol-windows" title="Permanent link">&para;</a></h3>
+<p>Use empty windows when:
+- <strong>THOL is applied structurally</strong> but bifurcation conditions not met
+- <strong>Simplest THOL application</strong> without internal complexity
+- <strong>Testing THOL without full bifurcation</strong> </p>
+<p><strong>Example Use Cases</strong>:
+<div class="highlight"><pre><span></span><code><span class="c1"># Gentle self-organization attempt</span>
+<span class="p">[</span><span class="n">EMISSION</span><span class="p">,</span> <span class="n">COHERENCE</span><span class="p">,</span> <span class="n">DISSONANCE</span><span class="p">,</span> <span class="n">SELF_ORGANIZATION</span><span class="p">,</span> <span class="n">TRANSITION</span><span class="p">]</span>
+
+<span class="c1"># THOL as structural marker without bifurcation</span>
+<span class="p">[</span><span class="n">TRANSITION</span><span class="p">,</span> <span class="n">DISSONANCE</span><span class="p">,</span> <span class="n">SELF_ORGANIZATION</span><span class="p">,</span> <span class="n">SILENCE</span><span class="p">]</span>
+</code></pre></div></p>
+<h3 id="when-to-use-non-empty-thol-windows">When to Use Non-Empty THOL Windows<a class="headerlink" href="#when-to-use-non-empty-thol-windows" title="Permanent link">&para;</a></h3>
+<p>Use non-empty windows when:
+- <strong>Modeling actual bifurcation</strong> (sub-EPI creation)
+- <strong>Hierarchical structure formation</strong> required
+- <strong>Isolated internal reorganization</strong> needed
+- <strong>Operational fractality</strong> is goal</p>
+<p><strong>Example Use Cases</strong>:
+<div class="highlight"><pre><span></span><code><span class="c1"># Therapeutic reorganization with internal process</span>
+<span class="p">[</span><span class="n">RECEPTION</span><span class="p">,</span> <span class="n">EMISSION</span><span class="p">,</span> <span class="n">COHERENCE</span><span class="p">,</span> <span class="n">DISSONANCE</span><span class="p">,</span>
+ <span class="n">SELF_ORGANIZATION</span><span class="p">,</span>
+    <span class="n">EMISSION</span><span class="p">,</span> <span class="n">DISSONANCE</span><span class="p">,</span> <span class="n">MUTATION</span><span class="p">,</span> <span class="n">COHERENCE</span><span class="p">,</span> <span class="n">SILENCE</span><span class="p">,</span>
+ <span class="n">RESONANCE</span><span class="p">,</span> <span class="n">TRANSITION</span><span class="p">]</span>
+<span class="c1"># Internal crisis resolution isolated from main therapeutic flow</span>
+
+<span class="c1"># Organizational transformation with protected innovation</span>
+<span class="p">[</span><span class="n">TRANSITION</span><span class="p">,</span> <span class="n">EMISSION</span><span class="p">,</span> <span class="n">RECEPTION</span><span class="p">,</span> <span class="n">COUPLING</span><span class="p">,</span> <span class="n">DISSONANCE</span><span class="p">,</span>
+ <span class="n">SELF_ORGANIZATION</span><span class="p">,</span>
+    <span class="n">EMISSION</span><span class="p">,</span> <span class="n">EXPANSION</span><span class="p">,</span> <span class="n">DISSONANCE</span><span class="p">,</span> <span class="n">MUTATION</span><span class="p">,</span> <span class="n">COHERENCE</span><span class="p">,</span> <span class="n">SILENCE</span><span class="p">,</span>
+ <span class="n">RESONANCE</span><span class="p">,</span> <span class="n">COUPLING</span><span class="p">,</span> <span class="n">COHERENCE</span><span class="p">]</span>
+<span class="c1"># Innovation happens in protected bifurcation window</span>
+</code></pre></div></p>
+<h3 id="choosing-external-operators">Choosing External Operators<a class="headerlink" href="#choosing-external-operators" title="Permanent link">&para;</a></h3>
+<p>After a non-empty THOL window, choose external operators that:
+1. <strong>Continue main sequence logic</strong> (not internal logic)
+2. <strong>Provide valid ending</strong> if near sequence end
+3. <strong>Integrate bifurcation results</strong> back to main flow</p>
+<p><strong>Recommended External Continuations</strong>:
+- <strong>TRANSITION (NAV)</strong>: Hand-off to next phase
+- <strong>RESONANCE (RA)</strong>: Propagate bifurcation results
+- <strong>COUPLING (UM)</strong>: Integrate into network
+- <strong>COHERENCE (IL)</strong>: Stabilize after bifurcation
+- <strong>SILENCE (SHA)</strong>: Pause after reorganization</p>
+<p><strong>Example</strong>:
+<div class="highlight"><pre><span></span><code><span class="c1"># Good: RESONANCE propagates bifurcation results</span>
+<span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">SELF_ORGANIZATION</span><span class="p">,</span> <span class="o">...</span><span class="p">(</span><span class="n">internal</span><span class="p">)</span><span class="o">...</span><span class="p">,</span> <span class="n">RESONANCE</span><span class="p">,</span> <span class="n">COUPLING</span><span class="p">,</span> <span class="n">SILENCE</span><span class="p">]</span>
+
+<span class="c1"># Good: TRANSITION hands-off to next phase</span>
+<span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">SELF_ORGANIZATION</span><span class="p">,</span> <span class="o">...</span><span class="p">(</span><span class="n">internal</span><span class="p">)</span><span class="o">...</span><span class="p">,</span> <span class="n">TRANSITION</span><span class="p">,</span> <span class="n">EMISSION</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+
+<span class="c1"># Good: COHERENCE stabilizes after bifurcation</span>
+<span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">SELF_ORGANIZATION</span><span class="p">,</span> <span class="o">...</span><span class="p">(</span><span class="n">internal</span><span class="p">)</span><span class="o">...</span><span class="p">,</span> <span class="n">COHERENCE</span><span class="p">,</span> <span class="n">SILENCE</span><span class="p">]</span>
+</code></pre></div></p>
+<hr />
+<h2 id="validation-and-testing">Validation and Testing<a class="headerlink" href="#validation-and-testing" title="Permanent link">&para;</a></h2>
+<h3 id="manual-validation">Manual Validation<a class="headerlink" href="#manual-validation" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.operators.grammar</span><span class="w"> </span><span class="kn">import</span> <span class="n">validate_sequence</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.config.operator_names</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+
+<span class="c1"># Test sequence</span>
+<span class="n">sequence</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">EMISSION</span><span class="p">,</span> <span class="n">COHERENCE</span><span class="p">,</span> <span class="n">DISSONANCE</span><span class="p">,</span>
+    <span class="n">SELF_ORGANIZATION</span><span class="p">,</span> <span class="n">EMISSION</span><span class="p">,</span> <span class="n">COHERENCE</span><span class="p">,</span> <span class="n">SILENCE</span><span class="p">,</span>
+    <span class="n">TRANSITION</span>
+<span class="p">]</span>
+
+<span class="n">result</span> <span class="o">=</span> <span class="n">validate_sequence</span><span class="p">(</span><span class="n">sequence</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="o">.</span><span class="n">passed</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Validation failed: </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">error</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error: </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">error</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Sequence valid!&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Detected pattern: </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;detected_pattern&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;unknown&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="testing-encapsulation">Testing Encapsulation<a class="headerlink" href="#testing-encapsulation" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">test_thol_encapsulation</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verify THOL encapsulation behavior.&quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.operators.grammar</span><span class="w"> </span><span class="kn">import</span> <span class="n">validate_sequence</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.config.operator_names</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+
+    <span class="c1"># Test 1: Empty window (no encapsulation)</span>
+    <span class="n">empty_window</span> <span class="o">=</span> <span class="p">[</span><span class="n">EMISSION</span><span class="p">,</span> <span class="n">COHERENCE</span><span class="p">,</span> <span class="n">DISSONANCE</span><span class="p">,</span> <span class="n">SELF_ORGANIZATION</span><span class="p">,</span> <span class="n">SILENCE</span><span class="p">]</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">validate_sequence</span><span class="p">(</span><span class="n">empty_window</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">passed</span><span class="p">,</span> <span class="s2">&quot;Empty THOL window should be valid&quot;</span>
+
+    <span class="c1"># Test 2: Non-empty window without external operator (invalid)</span>
+    <span class="n">no_external</span> <span class="o">=</span> <span class="p">[</span><span class="n">EMISSION</span><span class="p">,</span> <span class="n">COHERENCE</span><span class="p">,</span> <span class="n">DISSONANCE</span><span class="p">,</span>
+                   <span class="n">SELF_ORGANIZATION</span><span class="p">,</span> <span class="n">EMISSION</span><span class="p">,</span> <span class="n">COHERENCE</span><span class="p">,</span> <span class="n">SILENCE</span><span class="p">]</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">validate_sequence</span><span class="p">(</span><span class="n">no_external</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="ow">not</span> <span class="n">result</span><span class="o">.</span><span class="n">passed</span><span class="p">,</span> <span class="s2">&quot;THOL without external operator should fail&quot;</span>
+
+    <span class="c1"># Test 3: Non-empty window with external operator (valid)</span>
+    <span class="n">with_external</span> <span class="o">=</span> <span class="p">[</span><span class="n">EMISSION</span><span class="p">,</span> <span class="n">COHERENCE</span><span class="p">,</span> <span class="n">DISSONANCE</span><span class="p">,</span>
+                     <span class="n">SELF_ORGANIZATION</span><span class="p">,</span> <span class="n">EMISSION</span><span class="p">,</span> <span class="n">COHERENCE</span><span class="p">,</span> <span class="n">SILENCE</span><span class="p">,</span>
+                     <span class="n">TRANSITION</span><span class="p">]</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">validate_sequence</span><span class="p">(</span><span class="n">with_external</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">passed</span><span class="p">,</span> <span class="s2">&quot;THOL with external operator should be valid&quot;</span>
+
+    <span class="c1"># Test 4: Nested THOL (valid)</span>
+    <span class="n">nested</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">EMISSION</span><span class="p">,</span> <span class="n">COHERENCE</span><span class="p">,</span> <span class="n">DISSONANCE</span><span class="p">,</span>
+        <span class="n">SELF_ORGANIZATION</span><span class="p">,</span>
+            <span class="n">EMISSION</span><span class="p">,</span> <span class="n">COHERENCE</span><span class="p">,</span> <span class="n">DISSONANCE</span><span class="p">,</span>
+            <span class="n">SELF_ORGANIZATION</span><span class="p">,</span>
+                <span class="n">EMISSION</span><span class="p">,</span> <span class="n">COHERENCE</span><span class="p">,</span> <span class="n">SILENCE</span><span class="p">,</span>
+            <span class="n">TRANSITION</span><span class="p">,</span>
+        <span class="n">SILENCE</span>
+    <span class="p">]</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">validate_sequence</span><span class="p">(</span><span class="n">nested</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">passed</span><span class="p">,</span> <span class="s2">&quot;Nested THOL should be valid&quot;</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;All encapsulation tests passed!&quot;</span><span class="p">)</span>
+
+<span class="c1"># Run tests</span>
+<span class="n">test_thol_encapsulation</span><span class="p">()</span>
+</code></pre></div>
+<hr />
+<h2 id="migration-guide-pre-20-20">Migration Guide (Pre-2.0 → 2.0)<a class="headerlink" href="#migration-guide-pre-20-20" title="Permanent link">&para;</a></h2>
+<h3 id="breaking-change">Breaking Change<a class="headerlink" href="#breaking-change" title="Permanent link">&para;</a></h3>
+<p><strong>Pre-2.0 Behavior</strong>: THOL operators were part of main sequence</p>
+<p><strong>2.0 Behavior</strong>: THOL operators in non-empty windows are <strong>encapsulated</strong></p>
+<h3 id="migration-steps">Migration Steps<a class="headerlink" href="#migration-steps" title="Permanent link">&para;</a></h3>
+<h4 id="step-1-identify-thol-sequences">Step 1: Identify THOL Sequences<a class="headerlink" href="#step-1-identify-thol-sequences" title="Permanent link">&para;</a></h4>
+<p>Find all sequences containing SELF_ORGANIZATION:
+<div class="highlight"><pre><span></span><code>grep<span class="w"> </span>-r<span class="w"> </span><span class="s2">&quot;SELF_ORGANIZATION\|self_organization&quot;</span><span class="w"> </span>your_code/
+</code></pre></div></p>
+<h4 id="step-2-check-for-encapsulation-issues">Step 2: Check for Encapsulation Issues<a class="headerlink" href="#step-2-check-for-encapsulation-issues" title="Permanent link">&para;</a></h4>
+<p>Run validation on each sequence:
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.operators.grammar</span><span class="w"> </span><span class="kn">import</span> <span class="n">validate_sequence</span>
+
+<span class="c1"># Your existing sequence</span>
+<span class="n">old_sequence</span> <span class="o">=</span> <span class="p">[</span><span class="n">EMISSION</span><span class="p">,</span> <span class="n">COHERENCE</span><span class="p">,</span> <span class="n">DISSONANCE</span><span class="p">,</span>
+                <span class="n">SELF_ORGANIZATION</span><span class="p">,</span> <span class="n">EMISSION</span><span class="p">,</span> <span class="n">COHERENCE</span><span class="p">,</span> <span class="n">SILENCE</span><span class="p">]</span>
+
+<span class="n">result</span> <span class="o">=</span> <span class="n">validate_sequence</span><span class="p">(</span><span class="n">old_sequence</span><span class="p">)</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="o">.</span><span class="n">passed</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Migration needed: </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div></p>
+<h4 id="step-3-fix-sequences">Step 3: Fix Sequences<a class="headerlink" href="#step-3-fix-sequences" title="Permanent link">&para;</a></h4>
+<p>Add external operators after THOL windows:
+<div class="highlight"><pre><span></span><code><span class="c1"># Before (may fail in 2.0)</span>
+<span class="p">[</span><span class="n">EMISSION</span><span class="p">,</span> <span class="n">COHERENCE</span><span class="p">,</span> <span class="n">DISSONANCE</span><span class="p">,</span>
+ <span class="n">SELF_ORGANIZATION</span><span class="p">,</span> <span class="n">EMISSION</span><span class="p">,</span> <span class="n">COHERENCE</span><span class="p">,</span> <span class="n">SILENCE</span><span class="p">]</span>
+
+<span class="c1"># After (valid in 2.0)</span>
+<span class="p">[</span><span class="n">EMISSION</span><span class="p">,</span> <span class="n">COHERENCE</span><span class="p">,</span> <span class="n">DISSONANCE</span><span class="p">,</span>
+ <span class="n">SELF_ORGANIZATION</span><span class="p">,</span> <span class="n">EMISSION</span><span class="p">,</span> <span class="n">COHERENCE</span><span class="p">,</span> <span class="n">SILENCE</span><span class="p">,</span>
+ <span class="n">TRANSITION</span><span class="p">]</span>  <span class="c1"># Added external operator</span>
+</code></pre></div></p>
+<h4 id="step-4-verify-semantics">Step 4: Verify Semantics<a class="headerlink" href="#step-4-verify-semantics" title="Permanent link">&para;</a></h4>
+<p>Ensure the added operator makes <strong>semantic sense</strong> for your application:
+- Don't just add arbitrary operators
+- Choose operators that continue the main sequence logic
+- Consider domain-specific meaning</p>
+<hr />
+<h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
+<h3 id="error-main-sequence-must-end-with-valid-operator">Error: "Main sequence must end with valid operator"<a class="headerlink" href="#error-main-sequence-must-end-with-valid-operator" title="Permanent link">&para;</a></h3>
+<p><strong>Cause</strong>: Last operator in sequence is encapsulated inside THOL window</p>
+<p><strong>Solution</strong>: Add external operator after THOL
+<div class="highlight"><pre><span></span><code><span class="c1"># Add valid ending operator</span>
+<span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">SELF_ORGANIZATION</span><span class="p">,</span> <span class="o">...</span><span class="p">(</span><span class="n">internal</span><span class="p">)</span><span class="o">...</span><span class="p">,</span> <span class="n">TRANSITION</span><span class="p">]</span>
+</code></pre></div></p>
+<h3 id="error-thol-subsequence-invalid-start-operator">Error: "THOL subsequence invalid start operator"<a class="headerlink" href="#error-thol-subsequence-invalid-start-operator" title="Permanent link">&para;</a></h3>
+<p><strong>Cause</strong>: First operator after THOL is not a valid sequence start (for non-empty windows)</p>
+<p><strong>Solution</strong>: Either:
+1. Use valid start operator (EMISSION, RECEPTION, TRANSITION, RECURSIVITY)
+2. Or accept empty window if intentional</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Fix: Use valid start</span>
+<span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">SELF_ORGANIZATION</span><span class="p">,</span> <span class="n">EMISSION</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+
+<span class="c1"># Or: Empty window (if intentional)</span>
+<span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">SELF_ORGANIZATION</span><span class="p">,</span> <span class="n">COHERENCE</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>  <span class="c1"># Triggers empty window</span>
+</code></pre></div>
+<h3 id="error-thol-subsequence-must-end-with-valid-operator">Error: "THOL subsequence must end with valid operator"<a class="headerlink" href="#error-thol-subsequence-must-end-with-valid-operator" title="Permanent link">&para;</a></h3>
+<p><strong>Cause</strong>: Internal sequence doesn't close properly</p>
+<p><strong>Solution</strong>: End internal sequence with valid ending operator
+<div class="highlight"><pre><span></span><code><span class="c1"># Fix: Add valid ending</span>
+<span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">SELF_ORGANIZATION</span><span class="p">,</span> <span class="n">EMISSION</span><span class="p">,</span> <span class="n">COHERENCE</span><span class="p">,</span> <span class="n">SILENCE</span><span class="p">,</span> <span class="n">TRANSITION</span><span class="p">]</span>
+<span class="c1">#                                              ^^^^^^^ Valid end</span>
+</code></pre></div></p>
+<h3 id="warning-thol-bifurcation-depth-exceeds-recommended-maximum">Warning: "THOL bifurcation depth exceeds recommended maximum"<a class="headerlink" href="#warning-thol-bifurcation-depth-exceeds-recommended-maximum" title="Permanent link">&para;</a></h3>
+<p><strong>Cause</strong>: Too many nested THOL levels (&gt;3)</p>
+<p><strong>Solution</strong>: Consider flattening structure or validating that deep nesting is necessary for your use case</p>
+<hr />
+<h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
+<h3 id="key-takeaways">Key Takeaways<a class="headerlink" href="#key-takeaways" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>THOL creates bifurcation windows</strong> that encapsulate internal operators</li>
+<li><strong>Empty windows</strong>: First operator not valid start → no encapsulation</li>
+<li><strong>Non-empty windows</strong>: First operator is valid start → encapsulation</li>
+<li><strong>Main sequence uses only non-encapsulated operators</strong> for ending validation</li>
+<li><strong>Internal sequences validated recursively</strong> with full grammar rules</li>
+<li><strong>Nested THOL supported</strong> for operational fractality (multi-level structure)</li>
+<li><strong>Always add external operator</strong> after non-empty THOL windows</li>
+</ol>
+<h3 id="quick-reference">Quick Reference<a class="headerlink" href="#quick-reference" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Scenario</th>
+<th>First Op After THOL</th>
+<th>Window State</th>
+<th>Following Ops</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Empty window</td>
+<td>Not valid start</td>
+<td>Empty</td>
+<td>External (part of main)</td>
+</tr>
+<tr>
+<td>Non-empty window</td>
+<td>Valid start</td>
+<td>Non-empty</td>
+<td>Internal (encapsulated) until closure</td>
+</tr>
+<tr>
+<td>After closure</td>
+<td>Any</td>
+<td>N/A</td>
+<td>External (part of main)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="best-practices">Best Practices<a class="headerlink" href="#best-practices" title="Permanent link">&para;</a></h3>
+<p>✅ <strong>DO</strong>:
+- Add external operators after non-empty THOL windows
+- Validate sequences after adding/modifying THOL
+- Use meaningful external continuations (RESONANCE, TRANSITION, COHERENCE)
+- Test both empty and non-empty window cases
+- Document intended bifurcation behavior</p>
+<p>❌ <strong>DON'T</strong>:
+- End main sequence inside THOL window
+- Use invalid start operators in non-empty windows
+- Leave THOL windows unclosed
+- Nest beyond 3 levels without good reason
+- Add arbitrary operators just to pass validation</p>
+<hr />
+<h2 id="phase-compatibility-in-propagation">Phase Compatibility in Propagation<a class="headerlink" href="#phase-compatibility-in-propagation" title="Permanent link">&para;</a></h2>
+<p><strong>CRITICAL</strong>: THOL propagation respects <strong>AGENTS.md Invariant #5</strong>: "No coupling is valid without explicit phase verification."</p>
+<h3 id="physical-basis_1">Physical Basis<a class="headerlink" href="#physical-basis_1" title="Permanent link">&para;</a></h3>
+<p>Sub-EPI propagation follows resonance physics, not arbitrary connectivity. Antiphase nodes (Δθ ≈ π) create <strong>destructive interference</strong>, preventing coherent propagation regardless of network topology.</p>
+<h3 id="implementation">Implementation<a class="headerlink" href="#implementation" title="Permanent link">&para;</a></h3>
+<p>From <code>src/tnfr/operators/metabolism.py::propagate_subepi_to_network()</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Compute coupling strength (phase alignment)</span>
+<span class="n">phase_diff</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">angle_diff</span><span class="p">(</span><span class="n">neighbor_theta</span><span class="p">,</span> <span class="n">parent_theta</span><span class="p">))</span>
+<span class="n">coupling_strength</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="p">(</span><span class="n">phase_diff</span> <span class="o">/</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+
+<span class="c1"># Propagate only if sufficiently coupled</span>
+<span class="k">if</span> <span class="n">coupling_strength</span> <span class="o">&gt;=</span> <span class="n">min_coupling_strength</span><span class="p">:</span>
+    <span class="c1"># Attenuate and inject sub-EPI</span>
+    <span class="n">attenuated_epi</span> <span class="o">=</span> <span class="n">sub_epi_magnitude</span> <span class="o">*</span> <span class="n">attenuation</span> <span class="o">*</span> <span class="n">coupling_strength</span>
+    <span class="c1"># ...</span>
+</code></pre></div>
+<p><strong>Formula</strong>: 
+<div class="highlight"><pre><span></span><code>coupling_strength = 1.0 - (|Δθ| / π)
+</code></pre></div></p>
+<p>Where:
+- <code>Δθ</code> = phase difference between parent and neighbor (radians)
+- <code>coupling_strength</code> ∈ [0, 1]
+- Propagation occurs only if <code>coupling_strength ≥ threshold</code> (default: 0.5)</p>
+<h3 id="phase-compatibility-table">Phase Compatibility Table<a class="headerlink" href="#phase-compatibility-table" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Phase Difference (Δθ)</th>
+<th>Coupling Strength</th>
+<th>Propagates? (threshold=0.5)</th>
+<th>Physics</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0 (in-phase)</td>
+<td>1.0</td>
+<td>✅ Yes</td>
+<td>Perfect resonance</td>
+</tr>
+<tr>
+<td>π/4 (45°)</td>
+<td>0.75</td>
+<td>✅ Yes</td>
+<td>Strong coupling</td>
+</tr>
+<tr>
+<td>π/2 (90°)</td>
+<td>0.5</td>
+<td>✅ Yes (at threshold)</td>
+<td>Moderate coupling</td>
+</tr>
+<tr>
+<td>3π/4 (135°)</td>
+<td>0.25</td>
+<td>❌ No</td>
+<td>Weak coupling</td>
+</tr>
+<tr>
+<td>π (antiphase)</td>
+<td>0.0</td>
+<td>❌ No</td>
+<td>Destructive interference</td>
+</tr>
+</tbody>
+</table>
+<h3 id="canonical-constraints">Canonical Constraints<a class="headerlink" href="#canonical-constraints" title="Permanent link">&para;</a></h3>
+<p><strong>From AGENTS.md Invariant #5</strong>:</p>
+<p>Sub-EPIs propagate <strong>ONLY</strong> to neighbors with:
+1. <strong>Phase compatibility</strong>: <code>|Δθ| ≤ Δθ_max</code> (typically π/2)
+2. <strong>Coupling threshold</strong>: <code>coupling_strength ≥ threshold</code> (default: 0.5)
+3. <strong>Explicit verification</strong>: Phase difference computed before propagation</p>
+<p><strong>Why This Matters</strong>:</p>
+<ul>
+<li><strong>TNFR Physics</strong>: Resonance requires phase alignment, not just network edges</li>
+<li><strong>Prevents Chaos</strong>: Antiphase propagation would create destructive interference</li>
+<li><strong>Canonical Compliance</strong>: Same phase verification as UM (Coupling) and RA (Resonance)</li>
+</ul>
+<h3 id="example-phase-barrier-blocking-cascade">Example: Phase Barrier Blocking Cascade<a class="headerlink" href="#example-phase-barrier-blocking-cascade" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">networkx</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nx</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.operators.definitions</span><span class="w"> </span><span class="kn">import</span> <span class="n">SelfOrganization</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">EPI_PRIMARY</span><span class="p">,</span> <span class="n">THETA_PRIMARY</span><span class="p">,</span> <span class="n">VF_PRIMARY</span><span class="p">,</span> <span class="n">DNFR_PRIMARY</span>
+
+<span class="c1"># Create network with phase barrier</span>
+<span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
+
+<span class="c1"># Cluster A: coherent phases</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="p">{</span><span class="n">EPI_PRIMARY</span><span class="p">:</span> <span class="mf">0.50</span><span class="p">,</span> <span class="n">THETA_PRIMARY</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span> <span class="n">VF_PRIMARY</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">DNFR_PRIMARY</span><span class="p">:</span> <span class="mf">0.10</span><span class="p">})</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="p">{</span><span class="n">EPI_PRIMARY</span><span class="p">:</span> <span class="mf">0.45</span><span class="p">,</span> <span class="n">THETA_PRIMARY</span><span class="p">:</span> <span class="mf">0.12</span><span class="p">,</span> <span class="n">VF_PRIMARY</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">DNFR_PRIMARY</span><span class="p">:</span> <span class="mf">0.10</span><span class="p">})</span>
+
+<span class="c1"># Node 2: phase barrier (antiphase)</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="o">**</span><span class="p">{</span><span class="n">EPI_PRIMARY</span><span class="p">:</span> <span class="mf">0.45</span><span class="p">,</span> <span class="n">THETA_PRIMARY</span><span class="p">:</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">VF_PRIMARY</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">DNFR_PRIMARY</span><span class="p">:</span> <span class="mf">0.10</span><span class="p">})</span>
+
+<span class="c1"># Cluster B: isolated by barrier</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="o">**</span><span class="p">{</span><span class="n">EPI_PRIMARY</span><span class="p">:</span> <span class="mf">0.45</span><span class="p">,</span> <span class="n">THETA_PRIMARY</span><span class="p">:</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span> <span class="o">+</span> <span class="mf">0.1</span><span class="p">,</span> <span class="n">VF_PRIMARY</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">DNFR_PRIMARY</span><span class="p">:</span> <span class="mf">0.10</span><span class="p">})</span>
+
+<span class="c1"># Connect: 0-1-2-3</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">([(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)])</span>
+
+<span class="c1"># Enable propagation</span>
+<span class="n">G</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="s2">&quot;THOL_PROPAGATION_ENABLED&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;epi_history&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.33</span><span class="p">,</span> <span class="mf">0.50</span><span class="p">]</span>  <span class="c1"># Bifurcation conditions</span>
+
+<span class="c1"># Trigger cascade from node 0</span>
+<span class="n">SelfOrganization</span><span class="p">()(</span><span class="n">G</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+<span class="c1"># Result: Propagation reaches node 1, stops at phase barrier (node 2)</span>
+<span class="c1"># Node 3 is NOT affected due to phase incompatibility</span>
+</code></pre></div>
+<h3 id="testing-phase-verification">Testing Phase Verification<a class="headerlink" href="#testing-phase-verification" title="Permanent link">&para;</a></h3>
+<p>From <code>tests/integration/test_thol_propagation.py</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">test_thol_rejects_antiphase_propagation</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;THOL must reject propagation to antiphase neighbors (Invariant #5).&quot;&quot;&quot;</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+
+    <span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
+    <span class="n">G</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">epi</span><span class="o">=</span><span class="mf">0.50</span><span class="p">,</span> <span class="n">vf</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">theta</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">delta_nfr</span><span class="o">=</span><span class="mf">0.15</span><span class="p">)</span>
+    <span class="n">G</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">epi</span><span class="o">=</span><span class="mf">0.50</span><span class="p">,</span> <span class="n">vf</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">theta</span><span class="o">=</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">delta_nfr</span><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span>  <span class="c1"># Antiphase</span>
+    <span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">G</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="s2">&quot;THOL_PROPAGATION_ENABLED&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;epi_history&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.33</span><span class="p">,</span> <span class="mf">0.50</span><span class="p">]</span>
+
+    <span class="n">epi_1_before</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s2">&quot;epi&quot;</span><span class="p">]</span>
+    <span class="n">SelfOrganization</span><span class="p">()(</span><span class="n">G</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">epi_1_after</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s2">&quot;epi&quot;</span><span class="p">]</span>
+
+    <span class="c1"># Antiphase neighbor should be rejected</span>
+    <span class="k">assert</span> <span class="n">epi_1_after</span> <span class="o">==</span> <span class="n">epi_1_before</span><span class="p">,</span> <span class="s2">&quot;Invariant #5 violation&quot;</span>
+</code></pre></div>
+<h3 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h3>
+<p>Control phase verification via graph parameters:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Strict phase compatibility (default)</span>
+<span class="n">G</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="s2">&quot;THOL_MIN_COUPLING_FOR_PROPAGATION&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span>  <span class="c1"># Δθ ≤ π/2</span>
+
+<span class="c1"># Relaxed (allow weaker coupling)</span>
+<span class="n">G</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="s2">&quot;THOL_MIN_COUPLING_FOR_PROPAGATION&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.3</span>  <span class="c1"># Δθ ≤ ~2.2 rad</span>
+
+<span class="c1"># Very strict (only near-in-phase)</span>
+<span class="n">G</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="s2">&quot;THOL_MIN_COUPLING_FOR_PROPAGATION&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.8</span>  <span class="c1"># Δθ ≤ ~0.6 rad</span>
+</code></pre></div>
+<p><strong>Canonical Default</strong>: 0.5 (π/2 maximum phase difference)</p>
+<h3 id="cross-operator-consistency">Cross-Operator Consistency<a class="headerlink" href="#cross-operator-consistency" title="Permanent link">&para;</a></h3>
+<p>THOL phase verification is <strong>consistent</strong> with other TNFR operators:</p>
+<table>
+<thead>
+<tr>
+<th>Operator</th>
+<th>Phase Verification</th>
+<th>Formula</th>
+<th>Use Case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>UM</strong> (Coupling)</td>
+<td>Consensus phase</td>
+<td><code>arctan2(Σsin(θ), Σcos(θ))</code></td>
+<td>Bidirectional synchronization</td>
+</tr>
+<tr>
+<td><strong>RA</strong> (Resonance)</td>
+<td>Circular mean</td>
+<td><code>\|⟨e^(iθ)⟩\|</code> (Kuramoto)</td>
+<td>Network-wide propagation</td>
+</tr>
+<tr>
+<td><strong>THOL</strong> (Propagation)</td>
+<td>Direct difference</td>
+<td><code>1.0 - (\|Δθ\| / π)</code></td>
+<td>Unidirectional sub-EPI transfer</td>
+</tr>
+</tbody>
+</table>
+<p>All three enforce phase compatibility before structural modifications, ensuring resonance physics integrity.</p>
+<h3 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>AGENTS.md</strong>: Invariant #5 (Phase Verification)</li>
+<li><strong>UNIFIED_GRAMMAR_RULES.md</strong>: U3 (Resonant Coupling)</li>
+<li><strong>src/tnfr/operators/metabolism.py</strong>: Lines 284-331 (propagate_subepi_to_network)</li>
+<li><strong>src/tnfr/utils/numeric.py</strong>: Lines 72-75 (angle_diff utility)</li>
+<li><strong>tests/integration/test_thol_propagation.py</strong>: Lines 220-290 (test_thol_rejects_antiphase_propagation)</li>
+</ul>
+<hr />
+<h2 id="additional-resources">Additional Resources<a class="headerlink" href="#additional-resources" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong><a href="../THOL_CONFIGURATION_REFERENCE/">THOL_CONFIGURATION_REFERENCE.md</a></strong>: Complete THOL parameter reference with canonical constraints</li>
+<li><strong><a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/GLYPH_SEQUENCES_GUIDE.md">GLYPH_SEQUENCES_GUIDE.md</a></strong>: Complete operator sequence reference</li>
+<li><strong><a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/GRAMMAR_2_0_TESTING_SUMMARY.md">GRAMMAR_2_0_TESTING_SUMMARY.md</a></strong>: Grammar 2.0 validation rules</li>
+<li><strong><a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/TNFR.pdf">TNFR.pdf</a></strong>: Theoretical foundations of operational fractality</li>
+<li><strong><a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/operators/grammar.py">src/tnfr/operators/grammar.py</a></strong>: Implementation details</li>
+<li><strong><a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/AGENTS.md">AGENTS.md</a></strong>: TNFR invariants and canonical principles</li>
+</ul>
+<hr />
+<p><em>Last updated: 2025-11-09</em><br />
+<em>Version: 1.1.0 (Added Phase Compatibility section)</em><br />
+<em>Related PR: Verify phase validation in THOL sub-EPI propagation (Invariant #5)</em></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections", "navigation.top", "navigation.tracking", "toc.integrate", "navigation.instant"], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+    
+  </body>
+</html>

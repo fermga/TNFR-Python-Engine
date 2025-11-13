@@ -1,0 +1,3664 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Canonical TNFR structural dynamics engine documentation">
+      
+      
+      
+        <link rel="canonical" href="https://fermga.github.io/TNFR-Python-Engine/PATTERN_COOKBOOK/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>TNFR Pattern Cookbook - Proven Sequences by Domain - TNFR Python Engine</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.618322db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#tnfr-pattern-cookbook-proven-sequences-by-domain" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="TNFR Python Engine" class="md-header__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            TNFR Python Engine
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              TNFR Pattern Cookbook - Proven Sequences by Domain
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    TNFR Python Engine
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="TNFR Python Engine" class="md-nav__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    TNFR Python Engine
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    TNFR Python Engine
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting Started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Welcome to TNFR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/getting-started/LEARNING_PATHS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Learning Paths
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/getting-started/quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quickstart Tutorial
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/getting-started/TNFR_CONCEPTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core Concepts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/getting-started/INTERACTIVE_TUTORIAL/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interactive Tutorial
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/getting-started/FAQ/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    FAQ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/getting-started/math-backends/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Math Backends
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/getting-started/optional-dependencies/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Optional Dependencies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/getting-started/migrating-remesh-window/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migrating from Remesh Window
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    User Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/user-guide/OPERATORS_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operators Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STRUCTURAL_FIELDS_TETRAD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural Field Tetrad (Canonical)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/user-guide/METRICS_INTERPRETATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Metrics Interpretation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TROUBLESHOOTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar Documentation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Grammar Documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/EXECUTIVE-SUMMARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Executive Summary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_3" id="__nav_4_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core Concepts
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Core Concepts
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/01-FUNDAMENTAL-CONCEPTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fundamental Concepts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/02-CANONICAL-CONSTRAINTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Canonical Constraints
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/03-OPERATORS-AND-GLYPHS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operators and Glyphs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/04-VALID-SEQUENCES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Valid Sequences
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_4" id="__nav_4_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Implementation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/05-TECHNICAL-IMPLEMENTATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Technical Implementation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/06-VALIDATION-AND-TESTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation and Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/07-MIGRATION-AND-EVOLUTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migration and Evolution
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_5" id="__nav_4_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/08-QUICK-REFERENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/GLOSSARY.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/MASTER-INDEX/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Master Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/OPERATORS-CATALOG-SUMMARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operators Catalog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/CROSS-REFERENCE-INDEX/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cross-Reference Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/CODE_DOCS_CROSSREF/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code Documentation Cross-Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_6" id="__nav_4_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tooling
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tooling
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/TOOLING-AND-AUTOMATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tooling and Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/TESTING-SUMMARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing Summary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/DEPRECATION-INDEX.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deprecation Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Examples
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_2" id="__nav_5_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Notebooks & Patterns
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Notebooks & Patterns
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/notebooks/Fundamental_Particles_TNFR_Atlas.ipynb" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fundamental Particles TNFR Atlas (Notebook - GitHub)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/README.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    TNFR Patterns (Module Guide)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../INTERACTIONS_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interaction Sequences Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/api/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/api/operators/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural Operators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/api/OPERATORS_VISUAL_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operators Visual Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/api/telemetry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Telemetry & Utilities
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/api/docstring_style/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docstring Style
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module Documentation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Module Documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/mathematics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mathematics Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/physics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Physics Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/operators/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operators Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/dynamics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dynamics Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/metrics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Metrics Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/sdk/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SDK Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/telemetry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Telemetry Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/tutorials/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/extensions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Extensions Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core Documentation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Core Documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DOCUMENTATION_INDEX/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Documentation Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CANONICAL_SOURCES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Canonical Sources
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../UNIFIED_GRAMMAR_RULES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Unified Grammar Rules
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AGENTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Agents Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../GLOSSARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Advanced Topics
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Advanced Topics
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/advanced/ARCHITECTURE_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/advanced/PERFORMANCE_OPTIMIZATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Performance Optimization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/advanced/TESTING_STRATEGIES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing Strategies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/advanced/DEVELOPMENT_WORKFLOW/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development Workflow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/foundations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mathematical Foundations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_9_6" id="__nav_9_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Research Documents
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_9_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Research Documents
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TNFR_FORCES_EMERGENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Forces Emergence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OPERATOR_COMPLETENESS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator Completeness
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LIFE_EMERGENCE_FROM_TNFR/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Life Emergence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CELL_EMERGENCE_FROM_TNFR/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cell Emergence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/tools/CLI/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Security
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/security/monitoring/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Monitoring
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/security/dependency-auditing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dependency Auditing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/security/codeql/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CodeQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/security/dependabot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dependabot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
+        
+          
+          <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Info
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Project Info
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/releases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="tnfr-pattern-cookbook-proven-sequences-by-domain">TNFR Pattern Cookbook - Proven Sequences by Domain<a class="headerlink" href="#tnfr-pattern-cookbook-proven-sequences-by-domain" title="Permanent link">&para;</a></h1>
+<p><strong>A comprehensive library of validated, ready-to-use TNFR operator sequences organized by application domain.</strong></p>
+<hr />
+<h2 id="how-to-use-this-cookbook">📖 How to Use This Cookbook<a class="headerlink" href="#how-to-use-this-cookbook" title="Permanent link">&para;</a></h2>
+<p>This cookbook provides <strong>battle-tested operator sequences</strong> validated against TNFR Grammar 2.0. Each recipe includes:</p>
+<ul>
+<li><strong>Validated sequence</strong>: Operators that pass canonical grammar validation</li>
+<li><strong>Health metrics</strong>: Quantitative quality assessment (all recipes &gt; 0.75 health)</li>
+<li><strong>Domain context</strong>: When and how to apply the pattern</li>
+<li><strong>Use cases</strong>: Specific real-world applications  </li>
+<li><strong>Variations</strong>: Adaptations for related contexts</li>
+<li><strong>Critical insights</strong>: Key structural mechanisms and success factors</li>
+</ul>
+<h3 id="recipe-structure">Recipe Structure<a class="headerlink" href="#recipe-structure" title="Permanent link">&para;</a></h3>
+<p>Each recipe follows this format:</p>
+<div class="highlight"><pre><span></span><code>### Pattern Name (Category)
+**Sequence**: operator₁ → operator₂ → ... → operatorₙ
+**Health**: 0.XX | **Pattern**: TYPE | **Length**: N ops
+
+**Use cases**:
+- Specific application 1
+- Specific application 2
+
+**When to use**: Context description
+
+**Structural flow**:
+1. operator₁: Effect and purpose
+2. operator₂: Effect and purpose
+...
+
+**Key insights**:
+- Critical mechanism 1
+- Success factor 2
+
+**Variations**:
+- Adaptation A: modification (+/- health impact)
+</code></pre></div>
+<h3 id="quality-guarantees">Quality Guarantees<a class="headerlink" href="#quality-guarantees" title="Permanent link">&para;</a></h3>
+<p>✅ All sequences validated with TNFR Grammar 2.0<br />
+✅ Health scores &gt; 0.75 (good structural quality)<br />
+✅ Tested patterns with known characteristics<br />
+✅ Domain-specific context and mapping provided</p>
+<hr />
+<h2 id="therapeutic-domain">🏥 Therapeutic Domain<a class="headerlink" href="#therapeutic-domain" title="Permanent link">&para;</a></h2>
+<p>Patterns for healing, personal transformation, and therapeutic processes.</p>
+<h3 id="crisis-intervention-rapid-stabilization">Crisis Intervention (Rapid Stabilization)<a class="headerlink" href="#crisis-intervention-rapid-stabilization" title="Permanent link">&para;</a></h3>
+<p><strong>Sequence</strong>: <code>emission → reception → coherence → dissonance → contraction → coherence → coupling → silence</code><br />
+<strong>Health</strong>: 0.79 | <strong>Pattern</strong>: STABILIZE | <strong>Length</strong>: 8 ops</p>
+<p><strong>Use cases</strong>:
+- Panic attack management
+- Acute grief response
+- Immediate post-trauma stabilization
+- Emergency emotional support</p>
+<p><strong>When to use</strong>: Immediate stabilization needed, limited time available, high-intensity crisis requiring rapid containment.</p>
+<p><strong>Structural flow</strong>:
+1. <strong>Emission (AL)</strong>: Create immediate safe container, establish therapeutic presence
+2. <strong>Reception (EN)</strong>: Non-judgmental reception of crisis without validation requirements
+3. <strong>Coherence (IL)</strong>: Emergency stabilization, grounding in present moment
+4. <strong>Dissonance (OZ)</strong>: Acknowledge crisis tension (brief, contained)
+5. <strong>Contraction (NUL)</strong>: Focus on immediate coping essentials only
+6. <strong>Coherence (IL)</strong>: Deeper stabilization layer
+7. <strong>Coupling (UM)</strong>: Connect to immediate support/resources
+8. <strong>Silence (SHA)</strong>: Reparative pause, minimal integration</p>
+<p><strong>Key insights</strong>:
+- Fast stabilization prioritized over deep transformation
+- Controlled dissonance acknowledged but not explored
+- Contraction focuses attention on manageable coping strategies
+- High sustainability (0.80) for maintaining gains post-intervention</p>
+<p><strong>Metrics</strong>:
+- Balance: 0.33 (stabilizer-heavy, appropriate for crisis)
+- Sustainability: 0.80 (good short-term maintenance)
+- Complexity Efficiency: 0.88 (efficient for length)</p>
+<p><strong>Variations</strong>:
+- Add <code>resonance</code> after first coherence for enhanced emotional regulation (+0.03 health)
+- Replace <code>silence</code> with <code>transition</code> for continuity to follow-up session (-0.02 health)
+- Remove <code>coupling</code> if external support unavailable (simpler but -0.05 health)</p>
+<hr />
+<h3 id="process-therapy-complete-transformation">Process Therapy (Complete Transformation)<a class="headerlink" href="#process-therapy-complete-transformation" title="Permanent link">&para;</a></h3>
+<p><strong>Sequence</strong>: <code>emission → reception → coherence → dissonance → self_organization → coherence → transition → silence</code><br />
+<strong>Health</strong>: 0.88 | <strong>Pattern</strong>: THERAPEUTIC | <strong>Length</strong>: 8 ops</p>
+<p><strong>Use cases</strong>:
+- Long-term psychotherapy processes
+- Personal transformation work
+- Complex trauma resolution
+- Deep character structure change</p>
+<p><strong>When to use</strong>: Deep change required, sufficient time and resources available, client readiness for transformative work established.</p>
+<p><strong>Structural flow</strong>:
+1. <strong>Emission (AL)</strong>: Opening of therapeutic process, intention setting
+2. <strong>Reception (EN)</strong>: Deep empathic reception, active listening
+3. <strong>Coherence (IL)</strong>: Establish therapeutic alliance, baseline stability
+4. <strong>Dissonance (OZ)</strong>: Explore central tension/conflict (controlled environment)
+5. <strong>Self-organization (THOL)</strong>: Facilitate autonomous reorganization, client discovers own solutions
+6. <strong>Coherence (IL)</strong>: Integrate new insights and resources
+7. <strong>Transition (NAV)</strong>: Transition to new life phase or identity structure
+8. <strong>Silence (SHA)</strong>: Final consolidation and integration</p>
+<p><strong>Key insights</strong>:
+- <code>dissonance → self_organization</code>: Core therapeutic mechanism for autonomous change
+- <code>transition</code> enables sustainable transformation beyond therapy
+- High sustainability (1.00) indicates excellent long-term change maintenance
+- Balanced structure (0.50 balance) with both challenge and support</p>
+<p><strong>Metrics</strong>:
+- Balance: 0.50 (optimal stability/dynamism equilibrium)
+- Sustainability: 1.00 (excellent long-term maintenance)
+- Complexity Efficiency: 1.00 (perfect value-to-complexity ratio)</p>
+<p><strong>Variations</strong>:
+- Add <code>resonance</code> before final coherence to amplify insights (+0.02 health, +session time)
+- Insert <code>recursivity</code> at end for meta-therapeutic reflection (-0.03 health but deeper integration)
+- Replace <code>transition</code> with <code>mutation</code> for more dramatic phase shifts (riskier, -0.05 health)</p>
+<hr />
+<h2 id="educational-domain">🎓 Educational Domain<a class="headerlink" href="#educational-domain" title="Permanent link">&para;</a></h2>
+<p>Patterns for learning, teaching, skill development, and knowledge transformation.</p>
+<h3 id="conceptual-breakthrough-rapid-insight">Conceptual Breakthrough (Rapid Insight)<a class="headerlink" href="#conceptual-breakthrough-rapid-insight" title="Permanent link">&para;</a></h3>
+<p><strong>Sequence</strong>: <code>emission → reception → coherence → dissonance → mutation → coherence → resonance → silence</code><br />
+<strong>Health</strong>: 0.79 | <strong>Pattern</strong>: HIERARCHICAL | <strong>Length</strong>: 8 ops</p>
+<p><strong>Use cases</strong>:
+- Mathematical concept breakthroughs (understanding calculus, proofs)
+- Scientific paradigm shifts (grasping quantum mechanics, relativity)
+- Language structure insights (suddenly "getting" grammar rules)
+- Artistic technique breakthroughs ("aha!" moments)</p>
+<p><strong>When to use</strong>: Facilitating "aha!" moments, paradigm shifts in understanding, sudden insight into complex concepts.</p>
+<p><strong>Pedagogical mapping</strong>:
+1. <strong>Emission (AL)</strong>: Open cognitive space, activate learning mode and curiosity
+2. <strong>Reception (EN)</strong>: Encounter with new concept/problem/contradiction
+3. <strong>Coherence (IL)</strong>: Initial attempt to organize with existing mental schema
+4. <strong>Dissonance (OZ)</strong>: Recognition of contradiction or gap in current understanding
+5. <strong>Mutation (ZHIR)</strong>: Cognitive restructuring - paradigm shift, the "aha!" moment
+6. <strong>Coherence (IL)</strong>: New conceptual integration and schema stabilization
+7. <strong>Resonance (RA)</strong>: Apply understanding across multiple contexts and problems
+8. <strong>Silence (SHA)</strong>: Consolidation period for new schema embodiment</p>
+<p><strong>Key insights</strong>:
+- <code>dissonance → mutation</code>: Cognitive conflict precedes conceptual breakthrough
+- High complexity efficiency (1.00) - maximum learning per cognitive load
+- Moderate sustainability (0.80) - rapid change requires consolidation
+- Hierarchical pattern indicates nested level of understanding achieved</p>
+<p><strong>Metrics</strong>:
+- Balance: 0.25 (transformation-focused, less stabilization needed)
+- Sustainability: 0.80 (consolidation required for retention)
+- Complexity Efficiency: 1.00 (optimal insight per cognitive effort)</p>
+<p><strong>Variations</strong>:
+- Add <code>expansion</code> before dissonance to explore puzzle space first (+0.04 health)
+- Replace <code>silence</code> with <code>recursivity</code> for meta-cognitive reflection (+depth, -0.02 health)
+- Insert <code>coupling</code> before resonance for peer discussion of breakthrough (+social learning)</p>
+<hr />
+<h3 id="competency-development-skill-mastery">Competency Development (Skill Mastery)<a class="headerlink" href="#competency-development-skill-mastery" title="Permanent link">&para;</a></h3>
+<p><strong>Sequence</strong>: <code>emission → reception → coherence → expansion → coherence → dissonance → mutation → transition → coherence → resonance → recursivity</code><br />
+<strong>Health</strong>: 0.83 | <strong>Pattern</strong>: REGENERATIVE | <strong>Length</strong>: 11 ops</p>
+<p><strong>Use cases</strong>:
+- Sustained learning processes with progressive mastery
+- Professional skill development and certification
+- Complex skill acquisition (musical instruments, languages, crafts)
+- Career-long competency building</p>
+<p><strong>When to use</strong>: Long-term skill building, step-by-step mastery progression, comprehensive competency development.</p>
+<p><strong>Pedagogical mapping</strong>:
+1. <strong>Emission (AL)</strong>: Set learning intention/goal, open learning space
+2. <strong>Reception (EN)</strong>: Absorb foundational knowledge and instruction
+3. <strong>Coherence (IL)</strong>: Organize basic understanding into initial schema
+4. <strong>Expansion (VAL)</strong>: Explore applications, variations, connections
+5. <strong>Coherence (IL)</strong>: Stabilize expanded understanding
+6. <strong>Dissonance (OZ)</strong>: Challenge/stretch current limits, encounter difficulties
+7. <strong>Mutation (ZHIR)</strong>: Transform to next competency level - skill breakthrough
+8. <strong>Transition (NAV)</strong>: Move to advanced competency phase or level
+9. <strong>Coherence (IL)</strong>: Stabilize new skill level
+10. <strong>Resonance (RA)</strong>: Apply and propagate new competency across contexts
+11. <strong>Recursivity (REMESH)</strong>: Reflect and generalize learning process fractally</p>
+<p><strong>Key insights</strong>:
+- Complete educational cycle with nested learning loops
+- <code>mutation → transition</code>: Breakthrough enables phase transition to new level
+- <code>recursivity</code> enables transfer to new domains (learning to learn)
+- Excellent balance (0.75) between challenge and consolidation
+- Moderate sustainability (0.70) - ongoing practice required</p>
+<p><strong>Metrics</strong>:
+- Balance: 0.75 (excellent challenge/support equilibrium)
+- Sustainability: 0.70 (requires continued practice)
+- Complexity Efficiency: 0.85 (good value for comprehensive development)</p>
+<hr />
+<h2 id="organizational-domain">🏢 Organizational Domain<a class="headerlink" href="#organizational-domain" title="Permanent link">&para;</a></h2>
+<p>Patterns for institutional change, team dynamics, and organizational evolution.</p>
+<h3 id="team-formation-group-coherence">Team Formation (Group Coherence)<a class="headerlink" href="#team-formation-group-coherence" title="Permanent link">&para;</a></h3>
+<p><strong>Sequence</strong>: <code>emission → reception → coherence → dissonance → mutation → coherence → expansion → coupling → resonance → silence</code><br />
+<strong>Health</strong>: 0.82 | <strong>Pattern</strong>: HIERARCHICAL | <strong>Length</strong>: 10 ops</p>
+<p><strong>Use cases</strong>:
+- New team assembly and launch
+- Cross-functional project team initiation
+- Department reorganization
+- Merger and acquisition team integration</p>
+<p><strong>When to use</strong>: Building new teams, establishing group coherence, creating high-performing collaborative units.</p>
+<p><strong>Organizational mapping</strong>:
+1. <strong>Emission (AL)</strong>: Team vision and purpose articulation by leadership
+2. <strong>Reception (EN)</strong>: Team members share skills, perspectives, expectations
+3. <strong>Coherence (IL)</strong>: Establish team norms and initial working agreements
+4. <strong>Dissonance (OZ)</strong>: Surface role conflicts and diverse approaches constructively
+5. <strong>Mutation (ZHIR)</strong>: Team identity breakthrough - "we are a team" moment
+6. <strong>Coherence (IL)</strong>: Stabilize team identity and cohesion
+7. <strong>Expansion (VAL)</strong>: Explore team capabilities and potential
+8. <strong>Coupling (UM)</strong>: Deep synchronization of team rhythms and practices
+9. <strong>Resonance (RA)</strong>: Amplify effective team patterns across projects
+10. <strong>Silence (SHA)</strong>: Team reflection and consolidation</p>
+<p><strong>Key insights</strong>:
+- <code>dissonance → mutation</code>: Healthy conflict precedes team identity formation
+- <code>coupling</code> critical for team synchronization and flow state
+- High balance (0.50) - optimal stability/dynamism for teams
+- High sustainability (0.80) - team structures persist</p>
+<p><strong>Metrics</strong>:
+- Balance: 0.50 (optimal team dynamics equilibrium)
+- Sustainability: 0.80 (team cohesion maintained)
+- Complexity Efficiency: 0.90 (efficient team formation)</p>
+<hr />
+<h3 id="strategic-planning-long-term-transformation">Strategic Planning (Long-term Transformation)<a class="headerlink" href="#strategic-planning-long-term-transformation" title="Permanent link">&para;</a></h3>
+<p><strong>Sequence</strong>: <code>emission → reception → coherence → dissonance → self_organization → contraction → coherence → expansion → coupling → resonance → transition</code><br />
+<strong>Health</strong>: 0.81 | <strong>Pattern</strong>: THERAPEUTIC | <strong>Length</strong>: 11 ops</p>
+<p><strong>Use cases</strong>:
+- Comprehensive strategic planning cycles (3-5 year plans)
+- Organizational vision development and alignment
+- Major institutional transformation initiatives
+- Long-term change management programs</p>
+<p><strong>When to use</strong>: Strategic planning processes, long-term organizational transformation, vision-driven institutional evolution.</p>
+<p><strong>Organizational mapping</strong>:
+1. <strong>Emission (AL)</strong>: Vision articulation by leadership
+2. <strong>Reception (EN)</strong>: Environmental scanning and stakeholder input
+3. <strong>Coherence (IL)</strong>: Strategy formulation and initial alignment
+4. <strong>Dissonance (OZ)</strong>: Surface strategic tensions and trade-offs
+5. <strong>Self-organization (THOL)</strong>: Bottom-up strategy refinement and adaptation
+6. <strong>Contraction (NUL)</strong>: Focus on key strategic priorities (say no to distractions)
+7. <strong>Coherence (IL)</strong>: Intermediate strategic alignment checkpoint
+8. <strong>Expansion (VAL)</strong>: Explore strategic options and scenarios
+9. <strong>Coupling (UM)</strong>: Coordinate planning across organizational units
+10. <strong>Resonance (RA)</strong>: Strategy execution amplification and cascading
+11. <strong>Transition (NAV)</strong>: Move from planning to implementation phase</p>
+<p><strong>Key insights</strong>:
+- <code>self_organization → contraction</code>: Bottom-up input then focused priorities
+- <code>expansion</code> after contraction balances focus with option exploration
+- Therapeutic pattern indicates deep structural change
+- Excellent balance (0.75) for sustainable strategic change</p>
+<p><strong>Metrics</strong>:
+- Balance: 0.75 (excellent stability/change equilibrium)
+- Sustainability: 0.60 (requires ongoing strategic renewal)
+- Complexity Efficiency: 0.85 (good value for strategic complexity)</p>
+<hr />
+<h2 id="creative-domain">🎨 Creative Domain<a class="headerlink" href="#creative-domain" title="Permanent link">&para;</a></h2>
+<p>Patterns for artistic creation, design thinking, innovation, and creative problem-solving.</p>
+<h3 id="artistic-creation-complete-creative-process">Artistic Creation (Complete Creative Process)<a class="headerlink" href="#artistic-creation-complete-creative-process" title="Permanent link">&para;</a></h3>
+<p><strong>Sequence</strong>: <code>emission → reception → coherence → expansion → coherence → dissonance → mutation → coherence → resonance → coherence → coupling → silence</code><br />
+<strong>Health</strong>: 0.78 | <strong>Pattern</strong>: CREATIVE | <strong>Length</strong>: 12 ops</p>
+<p><strong>Use cases</strong>:
+- Painting or sculpture creation
+- Musical composition
+- Novel or screenplay writing
+- Choreography development
+- Architectural design</p>
+<p><strong>When to use</strong>: Complete artistic projects, major creative works requiring full creative cycle from impulse through consolidation.</p>
+<p><strong>Creative process mapping</strong>:
+1. <strong>Emission (AL)</strong>: Creative impulse emerges, artistic intention forms
+2. <strong>Reception (EN)</strong>: Receive inspirations, aesthetic influences, muse contact
+3. <strong>Coherence (IL)</strong>: Initial conceptual framework and vision
+4. <strong>Expansion (VAL)</strong>: Explore possibilities, brainstorm variations
+5. <strong>Coherence (IL)</strong>: Stabilize exploration, select promising directions
+6. <strong>Dissonance (OZ)</strong>: Creative tension, productive conflict, aesthetic challenge
+7. <strong>Mutation (ZHIR)</strong>: Artistic breakthrough, key creative insight or innovation
+8. <strong>Coherence (IL)</strong>: Integrate breakthrough insights into work
+9. <strong>Resonance (RA)</strong>: Amplify successful aesthetic elements, repeat motifs
+10. <strong>Coherence (IL)</strong>: Further integration and refinement
+11. <strong>Coupling (UM)</strong>: Final integration, compositional unity
+12. <strong>Silence (SHA)</strong>: Contemplative consolidation, work completion</p>
+<p><strong>Key insights</strong>:
+- Multiple <code>coherence</code> layers reflect iterative refinement nature of art
+- <code>dissonance → mutation</code>: Creative tension catalyzes artistic breakthrough
+- <code>resonance</code> propagates successful aesthetic elements through work
+- High sustainability (0.80) - artworks persist and resonate</p>
+<p><strong>Metrics</strong>:
+- Balance: 0.33 (exploration-heavy, appropriate for creative work)
+- Sustainability: 0.80 (artistic works endure)
+- Complexity Efficiency: 0.80 (good for complex creative process)</p>
+<hr />
+<h3 id="design-thinking-human-centered-design">Design Thinking (Human-Centered Design)<a class="headerlink" href="#design-thinking-human-centered-design" title="Permanent link">&para;</a></h3>
+<p><strong>Sequence</strong>: <code>emission → reception → coherence → expansion → coherence → dissonance → mutation → coherence → coupling → transition → silence</code><br />
+<strong>Health</strong>: 0.91 | <strong>Pattern</strong>: REGENERATIVE | <strong>Length</strong>: 11 ops</p>
+<p><strong>Use cases</strong>:
+- Product design and development
+- Service design projects
+- User experience (UX) design
+- Human-centered innovation
+- Design sprints and workshops</p>
+<p><strong>When to use</strong>: Design thinking processes, human-centered problem solving, empathy-driven innovation.</p>
+<p><strong>Design thinking phases</strong>:
+1. <strong>Emission (AL)</strong>: Design challenge framing and intention
+2. <strong>Reception (EN)</strong>: Empathize - deeply understand user needs and context
+3. <strong>Coherence (IL)</strong>: Define - synthesize insights into problem statement
+4. <strong>Expansion (VAL)</strong>: Ideate - generate wide range of possible solutions
+5. <strong>Coherence (IL)</strong>: Converge on most promising design directions
+6. <strong>Dissonance (OZ)</strong>: Challenge assumptions, identify design tensions
+7. <strong>Mutation (ZHIR)</strong>: Prototype - breakthrough design solution emerges
+8. <strong>Coherence (IL)</strong>: Refine prototype based on testing feedback
+9. <strong>Coupling (UM)</strong>: Test with users - integrate user feedback
+10. <strong>Transition (NAV)</strong>: Move to implementation or next design iteration
+11. <strong>Silence (SHA)</strong>: Reflection and design learning consolidation</p>
+<p><strong>Key insights</strong>:
+- Maps to classic design thinking: Empathize → Define → Ideate → Prototype → Test
+- <code>expansion → coherence</code>: Divergent then convergent thinking
+- <code>coupling</code> represents critical user testing and co-creation
+- Excellent health (0.91) - one of highest scoring patterns
+- Perfect sustainability (1.00) - designs persist and scale</p>
+<p><strong>Metrics</strong>:
+- Balance: 0.75 (excellent exploration/refinement balance)
+- Sustainability: 1.00 (designs endure and scale)
+- Complexity Efficiency: 0.85 (very good for design complexity)</p>
+<hr />
+<h2 id="quick-reference">📊 Quick Reference<a class="headerlink" href="#quick-reference" title="Permanent link">&para;</a></h2>
+<h3 id="by-domain">By Domain<a class="headerlink" href="#by-domain" title="Permanent link">&para;</a></h3>
+<p><strong>Therapeutic</strong> (5 patterns):
+- Crisis Intervention (0.79)
+- Process Therapy (0.88) ⭐
+- Regenerative Healing (0.80)
+- Insight Integration (0.77)
+- Relapse Prevention (0.76)</p>
+<p><strong>Educational</strong> (5 patterns):
+- Conceptual Breakthrough (0.79)
+- Competency Development (0.83)
+- Knowledge Spiral (0.85)
+- Collaborative Learning (0.83)
+- Practice Mastery (0.82)</p>
+<p><strong>Organizational</strong> (6 patterns):
+- Crisis Management (0.82)
+- Team Formation (0.82)
+- Strategic Planning (0.81)
+- Innovation Cycle (0.81)
+- Organizational Transformation (0.78)
+- Change Resistance Resolution (0.84)</p>
+<p><strong>Creative</strong> (5 patterns):
+- Artistic Creation (0.78)
+- Design Thinking (0.91) ⭐
+- Innovation Cycle (0.82)
+- Creative Flow (0.76)
+- Creative Block Resolution (0.82)</p>
+<p>⭐ = Highest health score in domain</p>
+<h3 id="by-health-score">By Health Score<a class="headerlink" href="#by-health-score" title="Permanent link">&para;</a></h3>
+<p><strong>Excellent (0.85-1.00)</strong>:
+- Design Thinking (0.91)
+- Process Therapy (0.88)
+- Knowledge Spiral (0.85)</p>
+<p><strong>Very Good (0.80-0.84)</strong>:
+- Change Resistance Resolution (0.84)
+- Competency Development (0.83)
+- Collaborative Learning (0.83)
+- Team Formation (0.82)
+- Crisis Management (0.82)
+- Practice Mastery (0.82)
+- Creative Block Resolution (0.82)
+- Innovation Cycle (0.82)
+- Strategic Planning (0.81)</p>
+<p><strong>Good (0.75-0.79)</strong>:
+- Regenerative Healing (0.80)
+- Conceptual Breakthrough (0.79)
+- Crisis Intervention (0.79)
+- Organizational Transformation (0.78)
+- Artistic Creation (0.78)
+- Insight Integration (0.77)
+- Creative Flow (0.76)
+- Relapse Prevention (0.76)</p>
+<h3 id="by-length">By Length<a class="headerlink" href="#by-length" title="Permanent link">&para;</a></h3>
+<p><strong>Short (5-8 ops)</strong>: Quick interventions
+- Crisis Intervention (8)
+- Process Therapy (8)
+- Conceptual Breakthrough (8)
+- Crisis Management (8)</p>
+<p><strong>Medium (9-11 ops)</strong>: Full cycles
+- Competency Development (11)
+- Strategic Planning (11)
+- Design Thinking (11)
+- Team Formation (10)
+- Innovation Cycle (10-11)
+- Knowledge Spiral (9)
+- Insight Integration (9)
+- Collaborative Learning (9)
+- Practice Mastery (9)
+- Relapse Prevention (9)
+- Change Resistance Resolution (9)
+- Creative Block Resolution (10)
+- Creative Flow (11)</p>
+<p><strong>Long (12+ ops)</strong>: Complex transformations
+- Artistic Creation (12)
+- Organizational Transformation (13)</p>
+<hr />
+<h2 id="using-the-cookbook-api">🔧 Using the Cookbook API<a class="headerlink" href="#using-the-cookbook-api" title="Permanent link">&para;</a></h2>
+<p>Programmatic access to all recipes is available through the <code>TNFRCookbook</code> class:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.recipes</span><span class="w"> </span><span class="kn">import</span> <span class="n">TNFRCookbook</span>
+
+<span class="c1"># Initialize cookbook</span>
+<span class="n">cookbook</span> <span class="o">=</span> <span class="n">TNFRCookbook</span><span class="p">()</span>
+
+<span class="c1"># Get specific recipe</span>
+<span class="n">crisis_recipe</span> <span class="o">=</span> <span class="n">cookbook</span><span class="o">.</span><span class="n">get_recipe</span><span class="p">(</span>
+    <span class="n">domain</span><span class="o">=</span><span class="s2">&quot;therapeutic&quot;</span><span class="p">,</span>
+    <span class="n">use_case</span><span class="o">=</span><span class="s2">&quot;crisis_intervention&quot;</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Sequence: </span><span class="si">{</span><span class="n">crisis_recipe</span><span class="o">.</span><span class="n">sequence</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Health: </span><span class="si">{</span><span class="n">crisis_recipe</span><span class="o">.</span><span class="n">health_metrics</span><span class="o">.</span><span class="n">overall_health</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># List all recipes in a domain</span>
+<span class="n">therapeutic_recipes</span> <span class="o">=</span> <span class="n">cookbook</span><span class="o">.</span><span class="n">list_recipes</span><span class="p">(</span>
+    <span class="n">domain</span><span class="o">=</span><span class="s2">&quot;therapeutic&quot;</span><span class="p">,</span>
+    <span class="n">min_health</span><span class="o">=</span><span class="mf">0.75</span>
+<span class="p">)</span>
+
+<span class="c1"># Search recipes by keyword</span>
+<span class="n">learning_recipes</span> <span class="o">=</span> <span class="n">cookbook</span><span class="o">.</span><span class="n">search_recipes</span><span class="p">(</span><span class="s2">&quot;learning&quot;</span><span class="p">)</span>
+
+<span class="c1"># Get recommendation based on context</span>
+<span class="n">recommended</span> <span class="o">=</span> <span class="n">cookbook</span><span class="o">.</span><span class="n">recommend_recipe</span><span class="p">(</span>
+    <span class="n">context</span><span class="o">=</span><span class="s2">&quot;Need rapid team formation for crisis project&quot;</span><span class="p">,</span>
+    <span class="n">constraints</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;max_length&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s2">&quot;min_health&quot;</span><span class="p">:</span> <span class="mf">0.80</span><span class="p">}</span>
+<span class="p">)</span>
+</code></pre></div>
+<hr />
+<h2 id="additional-resources">📚 Additional Resources<a class="headerlink" href="#additional-resources" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>TNFR Fundamentals</strong>: See <code>TNFR.pdf</code> for theoretical foundation</li>
+<li><strong>Grammar Reference</strong>: See <code>docs/PATTERN_REFERENCE.md</code> for operator details</li>
+<li><strong>Health Metrics Guide</strong>: See <code>docs/HEALTH_METRICS_GUIDE.md</code> for metric interpretation</li>
+<li><strong>Sequence Generator</strong>: See <code>docs/sequence_generator.md</code> for custom pattern creation</li>
+<li><strong>Domain Examples</strong>: See <code>examples/domain_applications/</code> for extended examples</li>
+<li><strong>Pattern Library</strong>: See <code>examples/domain_applications/pattern_library.py</code> for structural patterns</li>
+</ul>
+<hr />
+<h2 id="contributing-new-recipes">🤝 Contributing New Recipes<a class="headerlink" href="#contributing-new-recipes" title="Permanent link">&para;</a></h2>
+<p>To contribute validated recipes to the cookbook:</p>
+<ol>
+<li><strong>Create and validate</strong>: Design sequence, validate with grammar, achieve &gt;0.75 health</li>
+<li><strong>Document thoroughly</strong>: Include all recipe components (context, flow, insights, variations)</li>
+<li><strong>Test in domain</strong>: Apply in real-world context, gather feedback</li>
+<li><strong>Submit</strong>: Add to appropriate domain section with complete documentation</li>
+</ol>
+<p><strong>Recipe Requirements</strong>:
+- ✅ Passes TNFR Grammar 2.0 validation
+- ✅ Health score ≥ 0.75
+- ✅ Clear domain context and use cases
+- ✅ Documented structural flow with operator rationale
+- ✅ Key insights and success factors identified
+- ✅ At least 2 variations or adaptations
+- ✅ Real-world testing in domain context</p>
+<hr />
+<p><em>Last updated: 2025-11-07</em><br />
+<em>Version: 1.0</em><br />
+<em>Recipes validated: 21</em><br />
+<em>Domains covered: 4 (Therapeutic, Educational, Organizational, Creative)</em></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections", "navigation.top", "navigation.tracking", "toc.integrate", "navigation.instant"], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+    
+  </body>
+</html>

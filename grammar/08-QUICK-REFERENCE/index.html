@@ -1,0 +1,4399 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Canonical TNFR structural dynamics engine documentation">
+      
+      
+      
+        <link rel="canonical" href="https://fermga.github.io/TNFR-Python-Engine/grammar/08-QUICK-REFERENCE/">
+      
+      
+        <link rel="prev" href="../07-MIGRATION-AND-EVOLUTION/">
+      
+      
+        <link rel="next" href="../MASTER-INDEX/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>Quick Reference - TNFR Python Engine</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.618322db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#tnfr-grammar-quick-reference" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="TNFR Python Engine" class="md-header__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            TNFR Python Engine
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Quick Reference
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    TNFR Python Engine
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="TNFR Python Engine" class="md-nav__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    TNFR Python Engine
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    TNFR Python Engine
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting Started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Welcome to TNFR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/getting-started/LEARNING_PATHS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Learning Paths
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/getting-started/quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quickstart Tutorial
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/getting-started/TNFR_CONCEPTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core Concepts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/getting-started/INTERACTIVE_TUTORIAL/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interactive Tutorial
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/getting-started/FAQ/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    FAQ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/getting-started/math-backends/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Math Backends
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/getting-started/optional-dependencies/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Optional Dependencies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/getting-started/migrating-remesh-window/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migrating from Remesh Window
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    User Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/user-guide/OPERATORS_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operators Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../STRUCTURAL_FIELDS_TETRAD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural Field Tetrad (Canonical)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/user-guide/METRICS_INTERPRETATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Metrics Interpretation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TROUBLESHOOTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar Documentation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Grammar Documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../EXECUTIVE-SUMMARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Executive Summary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_3" id="__nav_4_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core Concepts
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Core Concepts
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01-FUNDAMENTAL-CONCEPTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fundamental Concepts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02-CANONICAL-CONSTRAINTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Canonical Constraints
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03-OPERATORS-AND-GLYPHS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operators and Glyphs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04-VALID-SEQUENCES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Valid Sequences
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_4" id="__nav_4_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Implementation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05-TECHNICAL-IMPLEMENTATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Technical Implementation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06-VALIDATION-AND-TESTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation and Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07-MIGRATION-AND-EVOLUTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migration and Evolution
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4_5" id="__nav_4_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Reference
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-five-canonical-constraints-temporal-multi-scale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎯 The Five Canonical Constraints (Temporal + Multi-Scale)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#operator-classification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📋 Operator Classification
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-sequence-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔄 Common Sequence Patterns
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔄 Common Sequence Patterns">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#valid-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ✅ Valid Patterns
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#anti-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ❌ Anti-Patterns
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quick-code-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        💻 Quick Code Reference
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="💻 Quick Code Reference">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#validate-a-sequence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Validate a Sequence
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#check-operator-sets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Check Operator Sets
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#apply-operators" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Apply Operators
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase Verification
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#decision-tree" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔍 Decision Tree
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#13x13-operator-compatibility-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📊 13x13 Operator Compatibility Matrix
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📊 13x13 Operator Compatibility Matrix">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#matrix-can-operator-row-follow-operator-column" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Matrix: Can Operator [Row] → Follow → Operator [Column]?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key-patterns-from-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Patterns from Matrix
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#usage-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Usage Examples
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#error-destabilizer-without-stabilizer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error: "Destabilizer without stabilizer"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#error-transformer-needs-recent-destabilizer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error: "Transformer needs recent destabilizer"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#error-mutation-needs-prior-coherence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error: "Mutation needs prior coherence"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#error-sequence-must-end-with-closure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error: "Sequence must end with closure"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#error-phase-mismatch-in-coupling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error: "Phase mismatch in coupling"
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#grammar-rule-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📊 Grammar Rule Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#operator-quick-lookup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎯 Operator Quick Lookup
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🎯 Operator Quick Lookup">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#by-purpose" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        By Purpose
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#by-effect-on-epit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        By Effect on ∂EPI/∂t
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#metrics-to-monitor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📈 Metrics to Monitor
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#further-reading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔗 Further Reading
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quick-help" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📞 Quick Help
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../GLOSSARY.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MASTER-INDEX/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Master Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OPERATORS-CATALOG-SUMMARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operators Catalog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CROSS-REFERENCE-INDEX/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cross-Reference Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CODE_DOCS_CROSSREF/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code Documentation Cross-Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_6" id="__nav_4_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tooling
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tooling
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TOOLING-AND-AUTOMATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tooling and Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TESTING-SUMMARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing Summary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DEPRECATION-INDEX.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deprecation Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Examples
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_2" id="__nav_5_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Notebooks & Patterns
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Notebooks & Patterns
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/notebooks/Fundamental_Particles_TNFR_Atlas.ipynb" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fundamental Particles TNFR Atlas (Notebook - GitHub)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/README.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    TNFR Patterns (Module Guide)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../INTERACTIONS_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interaction Sequences Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/api/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/api/operators/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural Operators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/api/OPERATORS_VISUAL_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operators Visual Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/api/telemetry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Telemetry & Utilities
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/api/docstring_style/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docstring Style
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module Documentation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Module Documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modules/mathematics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mathematics Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modules/physics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Physics Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modules/operators/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operators Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modules/dynamics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dynamics Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modules/metrics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Metrics Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modules/sdk/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SDK Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modules/telemetry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Telemetry Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modules/tutorials/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modules/extensions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Extensions Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core Documentation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Core Documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DOCUMENTATION_INDEX/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Documentation Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CANONICAL_SOURCES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Canonical Sources
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../UNIFIED_GRAMMAR_RULES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Unified Grammar Rules
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../AGENTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Agents Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../GLOSSARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Advanced Topics
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Advanced Topics
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/advanced/ARCHITECTURE_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/advanced/PERFORMANCE_OPTIMIZATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Performance Optimization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/advanced/TESTING_STRATEGIES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing Strategies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/advanced/DEVELOPMENT_WORKFLOW/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development Workflow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/foundations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mathematical Foundations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_9_6" id="__nav_9_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Research Documents
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_9_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Research Documents
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TNFR_FORCES_EMERGENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Forces Emergence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../OPERATOR_COMPLETENESS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator Completeness
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../LIFE_EMERGENCE_FROM_TNFR/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Life Emergence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CELL_EMERGENCE_FROM_TNFR/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cell Emergence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/tools/CLI/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Security
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/security/monitoring/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Monitoring
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/security/dependency-auditing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dependency Auditing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/security/codeql/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CodeQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/security/dependabot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dependabot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
+        
+          
+          <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Info
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Project Info
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/releases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="tnfr-grammar-quick-reference">TNFR Grammar Quick Reference<a class="headerlink" href="#tnfr-grammar-quick-reference" title="Permanent link">&para;</a></h1>
+<p><strong>One-page cheat sheet for TNFR grammar validation</strong></p>
+<p><a href="../">📖 Full Docs</a> • <a href="../02-CANONICAL-CONSTRAINTS/">🔬 Deep Dive</a> • <a href="../../GLOSSARY.md">📚 Glossary</a></p>
+<hr />
+<h2 id="the-five-canonical-constraints-temporal-multi-scale">🎯 The Five Canonical Constraints (Temporal + Multi-Scale)<a class="headerlink" href="#the-five-canonical-constraints-temporal-multi-scale" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code>┌─────────────────────────────────────────────────────────────────┐
+│ U1: STRUCTURAL INITIATION &amp; CLOSURE                             │
+│     U1a: Start with generators {AL, NAV, REMESH}               │
+│     U1b: End with closures {SHA, NAV, REMESH, OZ}              │
+│                                                                 │
+│ U2: CONVERGENCE &amp; BOUNDEDNESS                                   │
+│     If destabilizers {OZ, ZHIR, VAL}                           │
+│     Then include stabilizers {IL, THOL}                        │
+│                                                                 │
+│ U3: RESONANT COUPLING                                           │
+│     If coupling/resonance {UM, RA}                             │
+│     Then verify phase |φᵢ - φⱼ| ≤ Δφ_max                       │
+│                                                                 │
+│ U4: BIFURCATION DYNAMICS                                        │
+│     U4a: If triggers {OZ, ZHIR}                                │
+│          Then include handlers {THOL, IL}                      │
+│     U4b: If transformers {ZHIR, THOL}                          │
+│          Then recent destabilizer (~3 ops)                     │
+│          + ZHIR needs prior IL                                 │
+│                                                                 │
+│ U5: MULTI-SCALE COHERENCE                                        │
+│     If deep REMESH (recursion depth &gt; 1)                        │
+│     Then include scale stabilizer {IL, THOL} within ±3 ops      │
+│     Conservation: C_parent ≥ α·ΣC_child                         │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre></div>
+<hr />
+<h2 id="operator-classification">📋 Operator Classification<a class="headerlink" href="#operator-classification" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Operator</th>
+<th>Glyph</th>
+<th>Generator</th>
+<th>Closure</th>
+<th>Stabilizer</th>
+<th>Destabilizer</th>
+<th>Trigger</th>
+<th>Handler</th>
+<th>Transformer</th>
+<th>Coupling</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Emission</td>
+<td>AL</td>
+<td>✓</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Reception</td>
+<td>EN</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Coherence</td>
+<td>IL</td>
+<td></td>
+<td></td>
+<td>✓</td>
+<td></td>
+<td></td>
+<td>✓</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Dissonance</td>
+<td>OZ</td>
+<td></td>
+<td>✓</td>
+<td></td>
+<td>✓</td>
+<td>✓</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Coupling</td>
+<td>UM</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>✓</td>
+</tr>
+<tr>
+<td>Resonance</td>
+<td>RA</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>✓</td>
+</tr>
+<tr>
+<td>Silence</td>
+<td>SHA</td>
+<td></td>
+<td>✓</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Expansion</td>
+<td>VAL</td>
+<td></td>
+<td></td>
+<td></td>
+<td>✓</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Contraction</td>
+<td>NUL</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>SelfOrganization</td>
+<td>THOL</td>
+<td></td>
+<td></td>
+<td>✓</td>
+<td></td>
+<td></td>
+<td>✓</td>
+<td>✓</td>
+<td></td>
+</tr>
+<tr>
+<td>Mutation</td>
+<td>ZHIR</td>
+<td></td>
+<td></td>
+<td></td>
+<td>✓</td>
+<td>✓</td>
+<td></td>
+<td>✓</td>
+<td></td>
+</tr>
+<tr>
+<td>Transition</td>
+<td>NAV</td>
+<td>✓</td>
+<td>✓</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Recursivity</td>
+<td>REMESH</td>
+<td>✓</td>
+<td>✓</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="common-sequence-patterns">🔄 Common Sequence Patterns<a class="headerlink" href="#common-sequence-patterns" title="Permanent link">&para;</a></h2>
+<h3 id="valid-patterns">✅ Valid Patterns<a class="headerlink" href="#valid-patterns" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Bootstrap (minimal)</span>
+<span class="p">[</span><span class="n">Emission</span><span class="p">,</span> <span class="n">Coherence</span><span class="p">,</span> <span class="n">Silence</span><span class="p">]</span>
+
+<span class="c1"># Basic Activation</span>
+<span class="p">[</span><span class="n">Emission</span><span class="p">,</span> <span class="n">Reception</span><span class="p">,</span> <span class="n">Coherence</span><span class="p">,</span> <span class="n">Silence</span><span class="p">]</span>
+
+<span class="c1"># Controlled Exploration</span>
+<span class="p">[</span><span class="n">Emission</span><span class="p">,</span> <span class="n">Dissonance</span><span class="p">,</span> <span class="n">Coherence</span><span class="p">,</span> <span class="n">Silence</span><span class="p">]</span>
+
+<span class="c1"># Bifurcation with Handling</span>
+<span class="p">[</span><span class="n">Emission</span><span class="p">,</span> <span class="n">Coherence</span><span class="p">,</span> <span class="n">Dissonance</span><span class="p">,</span> <span class="n">SelfOrganization</span><span class="p">,</span> <span class="n">Coherence</span><span class="p">,</span> <span class="n">Silence</span><span class="p">]</span>
+
+<span class="c1"># Mutation with Context</span>
+<span class="p">[</span><span class="n">Emission</span><span class="p">,</span> <span class="n">Coherence</span><span class="p">,</span> <span class="n">Dissonance</span><span class="p">,</span> <span class="n">Mutation</span><span class="p">,</span> <span class="n">Coherence</span><span class="p">,</span> <span class="n">Silence</span><span class="p">]</span>
+
+<span class="c1"># Propagation</span>
+<span class="p">[</span><span class="n">Emission</span><span class="p">,</span> <span class="n">Coupling</span><span class="p">,</span> <span class="n">Resonance</span><span class="p">,</span> <span class="n">Coherence</span><span class="p">,</span> <span class="n">Silence</span><span class="p">]</span>
+
+<span class="c1"># Multi-scale (U5-compliant)</span>
+<span class="p">[</span><span class="n">Emission</span><span class="p">,</span> <span class="n">SelfOrganization</span><span class="p">,</span> <span class="n">Recursivity</span><span class="p">,</span> <span class="n">Coherence</span><span class="p">,</span> <span class="n">Silence</span><span class="p">]</span>
+</code></pre></div>
+<h3 id="anti-patterns">❌ Anti-Patterns<a class="headerlink" href="#anti-patterns" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># ✗ No generator when EPI=0</span>
+<span class="p">[</span><span class="n">Coherence</span><span class="p">,</span> <span class="n">Silence</span><span class="p">]</span>  <span class="c1"># Violates U1a</span>
+
+<span class="c1"># ✗ No closure</span>
+<span class="p">[</span><span class="n">Emission</span><span class="p">,</span> <span class="n">Coherence</span><span class="p">]</span>  <span class="c1"># Violates U1b</span>
+
+<span class="c1"># ✗ Destabilizer without stabilizer</span>
+<span class="p">[</span><span class="n">Emission</span><span class="p">,</span> <span class="n">Dissonance</span><span class="p">,</span> <span class="n">Silence</span><span class="p">]</span>  <span class="c1"># Violates U2</span>
+
+<span class="c1"># ✗ Mutation without context</span>
+<span class="p">[</span><span class="n">Emission</span><span class="p">,</span> <span class="n">Mutation</span><span class="p">,</span> <span class="n">Silence</span><span class="p">]</span>  <span class="c1"># Violates U4b</span>
+
+<span class="c1"># ✗ Deep recursion without scale stabilizer (violates U5)</span>
+<span class="p">[</span><span class="n">Emission</span><span class="p">,</span> <span class="n">Recursivity</span><span class="p">,</span> <span class="n">Recursivity</span><span class="p">,</span> <span class="n">Expansion</span><span class="p">,</span> <span class="n">Silence</span><span class="p">]</span>
+</code></pre></div>
+<hr />
+<h2 id="quick-code-reference">💻 Quick Code Reference<a class="headerlink" href="#quick-code-reference" title="Permanent link">&para;</a></h2>
+<h3 id="validate-a-sequence">Validate a Sequence<a class="headerlink" href="#validate-a-sequence" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.operators.grammar</span><span class="w"> </span><span class="kn">import</span> <span class="n">validate_grammar</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.operators.definitions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Emission</span><span class="p">,</span> <span class="n">Coherence</span><span class="p">,</span> <span class="n">Silence</span>
+
+<span class="n">sequence</span> <span class="o">=</span> <span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Silence</span><span class="p">()]</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">is_valid</span> <span class="o">=</span> <span class="n">validate_grammar</span><span class="p">(</span><span class="n">sequence</span><span class="p">,</span> <span class="n">epi_initial</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;✓ Valid sequence&quot;</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;✗ Invalid: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="check-operator-sets">Check Operator Sets<a class="headerlink" href="#check-operator-sets" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.operators.grammar</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">GENERATORS</span><span class="p">,</span>
+    <span class="n">CLOSURES</span><span class="p">,</span>
+    <span class="n">STABILIZERS</span><span class="p">,</span>
+    <span class="n">DESTABILIZERS</span><span class="p">,</span>
+    <span class="n">COUPLING_RESONANCE</span><span class="p">,</span>
+    <span class="n">BIFURCATION_TRIGGERS</span><span class="p">,</span>
+    <span class="n">BIFURCATION_HANDLERS</span><span class="p">,</span>
+    <span class="n">TRANSFORMERS</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># Check if operator is in a set</span>
+<span class="k">if</span> <span class="s2">&quot;emission&quot;</span> <span class="ow">in</span> <span class="n">GENERATORS</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Emission is a generator&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="apply-operators">Apply Operators<a class="headerlink" href="#apply-operators" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.operators.definitions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Emission</span><span class="p">,</span> <span class="n">Coherence</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">networkx</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nx</span>
+
+<span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">EPI</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">vf</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">theta</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">dnfr</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+
+<span class="c1"># Apply operator</span>
+<span class="n">Emission</span><span class="p">()(</span><span class="n">G</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">Coherence</span><span class="p">()(</span><span class="n">G</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;EPI: </span><span class="si">{</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;EPI&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="phase-verification">Phase Verification<a class="headerlink" href="#phase-verification" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.operators.grammar</span><span class="w"> </span><span class="kn">import</span> <span class="n">validate_resonant_coupling</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="c1"># Check phase compatibility</span>
+<span class="n">phi_i</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;theta&#39;</span><span class="p">]</span>
+<span class="n">phi_j</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;theta&#39;</span><span class="p">]</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">validate_resonant_coupling</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">delta_phi_max</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;✓ Phase compatible&quot;</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;✗ Phase mismatch: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<hr />
+<h2 id="decision-tree">🔍 Decision Tree<a class="headerlink" href="#decision-tree" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code>Is EPI=0?
+├─ Yes → Start with generator {AL, NAV, REMESH}
+└─ No  → Any operator OK
+
+Does sequence have destabilizers {OZ, ZHIR, VAL}?
+├─ Yes → Include stabilizer {IL, THOL}
+└─ No  → Continue
+
+Does sequence have coupling/resonance {UM, RA}?
+├─ Yes → Verify phase at runtime
+└─ No  → Continue
+
+Does sequence have bifurcation triggers {OZ, ZHIR}?
+├─ Yes → Include handler {THOL, IL}
+└─ No  → Continue
+
+Does sequence have transformers {ZHIR, THOL}?
+├─ Yes → Ensure recent destabilizer (~3 ops)
+│        → For ZHIR: Ensure prior IL
+└─ No  → Continue
+
+Deep REMESH (recursion depth&gt;1)?
+├─ Yes → Include {IL, THOL} near recursion (U5)
+└─ No  → Continue
+
+Does sequence end with closure {SHA, NAV, REMESH, OZ}?
+├─ Yes → ✓ Valid
+└─ No  → ✗ Add closure
+</code></pre></div>
+<hr />
+<h2 id="13x13-operator-compatibility-matrix">📊 13x13 Operator Compatibility Matrix<a class="headerlink" href="#13x13-operator-compatibility-matrix" title="Permanent link">&para;</a></h2>
+<p><strong>Legend:</strong>
+- ✅ = Naturally compatible / Common pattern
+- ⚠️ = Valid but needs grammar compliance (stabilizers, handlers, etc.)
+- 🔒 = Requires explicit checks (e.g., phase verification for UM/RA)
+- ❌ = Anti-pattern / Violates physics or grammar
+- ➖ = Neutral / Depends on context</p>
+<h3 id="matrix-can-operator-row-follow-operator-column">Matrix: Can Operator [Row] → Follow → Operator [Column]?<a class="headerlink" href="#matrix-can-operator-row-follow-operator-column" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th style="text-align: center;">AL</th>
+<th style="text-align: center;">EN</th>
+<th style="text-align: center;">IL</th>
+<th style="text-align: center;">OZ</th>
+<th style="text-align: center;">UM</th>
+<th style="text-align: center;">RA</th>
+<th style="text-align: center;">SHA</th>
+<th style="text-align: center;">VAL</th>
+<th style="text-align: center;">NUL</th>
+<th style="text-align: center;">THOL</th>
+<th style="text-align: center;">ZHIR</th>
+<th style="text-align: center;">NAV</th>
+<th style="text-align: center;">REMESH</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>AL</strong></td>
+<td style="text-align: center;">➖</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">⚠️</td>
+<td style="text-align: center;">🔒</td>
+<td style="text-align: center;">➖</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">⚠️</td>
+<td style="text-align: center;">➖</td>
+<td style="text-align: center;">⚠️</td>
+<td style="text-align: center;">❌</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+</tr>
+<tr>
+<td><strong>EN</strong></td>
+<td style="text-align: center;">➖</td>
+<td style="text-align: center;">➖</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">⚠️</td>
+<td style="text-align: center;">🔒</td>
+<td style="text-align: center;">➖</td>
+<td style="text-align: center;">⚠️</td>
+<td style="text-align: center;">⚠️</td>
+<td style="text-align: center;">➖</td>
+<td style="text-align: center;">⚠️</td>
+<td style="text-align: center;">❌</td>
+<td style="text-align: center;">➖</td>
+<td style="text-align: center;">➖</td>
+</tr>
+<tr>
+<td><strong>IL</strong></td>
+<td style="text-align: center;">➖</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">➖</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">🔒</td>
+<td style="text-align: center;">🔒</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">➖</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">❌</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+</tr>
+<tr>
+<td><strong>OZ</strong></td>
+<td style="text-align: center;">➖</td>
+<td style="text-align: center;">➖</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">❌</td>
+<td style="text-align: center;">➖</td>
+<td style="text-align: center;">➖</td>
+<td style="text-align: center;">⚠️</td>
+<td style="text-align: center;">❌</td>
+<td style="text-align: center;">➖</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">⚠️</td>
+<td style="text-align: center;">➖</td>
+<td style="text-align: center;">➖</td>
+</tr>
+<tr>
+<td><strong>UM</strong></td>
+<td style="text-align: center;">➖</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">⚠️</td>
+<td style="text-align: center;">🔒</td>
+<td style="text-align: center;">🔒</td>
+<td style="text-align: center;">⚠️</td>
+<td style="text-align: center;">⚠️</td>
+<td style="text-align: center;">➖</td>
+<td style="text-align: center;">⚠️</td>
+<td style="text-align: center;">❌</td>
+<td style="text-align: center;">➖</td>
+<td style="text-align: center;">➖</td>
+</tr>
+<tr>
+<td><strong>RA</strong></td>
+<td style="text-align: center;">➖</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">⚠️</td>
+<td style="text-align: center;">🔒</td>
+<td style="text-align: center;">➖</td>
+<td style="text-align: center;">⚠️</td>
+<td style="text-align: center;">⚠️</td>
+<td style="text-align: center;">➖</td>
+<td style="text-align: center;">⚠️</td>
+<td style="text-align: center;">❌</td>
+<td style="text-align: center;">➖</td>
+<td style="text-align: center;">➖</td>
+</tr>
+<tr>
+<td><strong>SHA</strong></td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">❌</td>
+<td style="text-align: center;">❌</td>
+<td style="text-align: center;">❌</td>
+<td style="text-align: center;">❌</td>
+<td style="text-align: center;">❌</td>
+<td style="text-align: center;">➖</td>
+<td style="text-align: center;">❌</td>
+<td style="text-align: center;">❌</td>
+<td style="text-align: center;">❌</td>
+<td style="text-align: center;">❌</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+</tr>
+<tr>
+<td><strong>VAL</strong></td>
+<td style="text-align: center;">➖</td>
+<td style="text-align: center;">➖</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">⚠️</td>
+<td style="text-align: center;">➖</td>
+<td style="text-align: center;">➖</td>
+<td style="text-align: center;">⚠️</td>
+<td style="text-align: center;">❌</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">⚠️</td>
+<td style="text-align: center;">➖</td>
+<td style="text-align: center;">➖</td>
+</tr>
+<tr>
+<td><strong>NUL</strong></td>
+<td style="text-align: center;">➖</td>
+<td style="text-align: center;">➖</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">⚠️</td>
+<td style="text-align: center;">➖</td>
+<td style="text-align: center;">➖</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">➖</td>
+<td style="text-align: center;">➖</td>
+<td style="text-align: center;">➖</td>
+<td style="text-align: center;">❌</td>
+<td style="text-align: center;">➖</td>
+<td style="text-align: center;">➖</td>
+</tr>
+<tr>
+<td><strong>THOL</strong></td>
+<td style="text-align: center;">➖</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">⚠️</td>
+<td style="text-align: center;">🔒</td>
+<td style="text-align: center;">🔒</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">⚠️</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">➖</td>
+<td style="text-align: center;">❌</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+</tr>
+<tr>
+<td><strong>ZHIR</strong></td>
+<td style="text-align: center;">➖</td>
+<td style="text-align: center;">➖</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">❌</td>
+<td style="text-align: center;">➖</td>
+<td style="text-align: center;">➖</td>
+<td style="text-align: center;">⚠️</td>
+<td style="text-align: center;">❌</td>
+<td style="text-align: center;">➖</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">❌</td>
+<td style="text-align: center;">➖</td>
+<td style="text-align: center;">➖</td>
+</tr>
+<tr>
+<td><strong>NAV</strong></td>
+<td style="text-align: center;">➖</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">⚠️</td>
+<td style="text-align: center;">🔒</td>
+<td style="text-align: center;">➖</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">⚠️</td>
+<td style="text-align: center;">➖</td>
+<td style="text-align: center;">⚠️</td>
+<td style="text-align: center;">❌</td>
+<td style="text-align: center;">➖</td>
+<td style="text-align: center;">✅</td>
+</tr>
+<tr>
+<td><strong>REMESH</strong></td>
+<td style="text-align: center;">➖</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">⚠️</td>
+<td style="text-align: center;">🔒</td>
+<td style="text-align: center;">➖</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">⚠️</td>
+<td style="text-align: center;">➖</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">❌</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">➖</td>
+</tr>
+</tbody>
+</table>
+<h3 id="key-patterns-from-matrix">Key Patterns from Matrix<a class="headerlink" href="#key-patterns-from-matrix" title="Permanent link">&para;</a></h3>
+<p><strong>✅ Most Compatible Pairs:</strong>
+- AL → EN → IL (Bootstrap: emit, receive, stabilize)
+- IL → OZ → IL (Controlled exploration)
+- OZ → THOL → IL (Bifurcation handling)
+- UM/RA → EN (Network propagation)</p>
+<p><strong>⚠️ Valid but Needs Care:</strong>
+- Any → OZ/VAL/ZHIR → Must follow with IL/THOL (U2)
+- OZ/IL → ZHIR → IL (U4b: prior IL + recent dest + handler)
+- THOL needs recent destabilizer (~3 ops before)</p>
+<p><strong>🔒 Phase Verification Required:</strong>
+- Anything → UM/RA (Must call <code>validate_resonant_coupling()</code>)</p>
+<p><strong>❌ Anti-Patterns:</strong>
+- SHA → Any except generators (Node frozen, needs reactivation)
+- Any → ZHIR without proper context (U4b violations)
+- OZ → OZ, VAL → VAL (Cascading destabilization without stabilizers)
+- Destabilizers → ZHIR without IL first</p>
+<h3 id="usage-examples">Usage Examples<a class="headerlink" href="#usage-examples" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># ✅ Valid: Bootstrap pattern</span>
+<span class="p">[</span><span class="n">Emission</span><span class="p">,</span> <span class="n">Reception</span><span class="p">,</span> <span class="n">Coherence</span><span class="p">,</span> <span class="n">Silence</span><span class="p">]</span>  <span class="c1"># AL → EN → IL → SHA</span>
+
+<span class="c1"># ✅ Valid: Exploration with stabilization</span>
+<span class="p">[</span><span class="n">Emission</span><span class="p">,</span> <span class="n">Coherence</span><span class="p">,</span> <span class="n">Dissonance</span><span class="p">,</span> <span class="n">Coherence</span><span class="p">,</span> <span class="n">Silence</span><span class="p">]</span>  <span class="c1"># OZ balanced by IL</span>
+
+<span class="c1"># ⚠️ Valid but complex: Mutation with full context</span>
+<span class="p">[</span><span class="n">Emission</span><span class="p">,</span> <span class="n">Coherence</span><span class="p">,</span> <span class="n">Dissonance</span><span class="p">,</span> <span class="n">Mutation</span><span class="p">,</span> <span class="n">Coherence</span><span class="p">,</span> <span class="n">Silence</span><span class="p">]</span>
+<span class="c1">#                ^prior IL  ^recent  ^ZHIR    ^handler</span>
+
+<span class="c1"># ❌ Invalid: Destabilizer without stabilizer</span>
+<span class="p">[</span><span class="n">Emission</span><span class="p">,</span> <span class="n">Dissonance</span><span class="p">,</span> <span class="n">Silence</span><span class="p">]</span>  <span class="c1"># Violates U2</span>
+
+<span class="c1"># ❌ Invalid: Silence in middle</span>
+<span class="p">[</span><span class="n">Emission</span><span class="p">,</span> <span class="n">Silence</span><span class="p">,</span> <span class="n">Coherence</span><span class="p">]</span>  <span class="c1"># Node frozen, can&#39;t apply Coherence</span>
+
+<span class="c1"># 🔒 Valid with check: Coupling requires phase verification</span>
+<span class="p">[</span><span class="n">Emission</span><span class="p">,</span> <span class="n">Coupling</span><span class="p">,</span> <span class="n">Resonance</span><span class="p">,</span> <span class="n">Silence</span><span class="p">]</span>  <span class="c1"># UM/RA need phase check</span>
+</code></pre></div>
+<hr />
+<p>└─ No  → ✗ Add closure
+<div class="highlight"><pre><span></span><code>---
+
+## 🐛 Common Errors &amp; Solutions
+
+### Error: &quot;Need generator when EPI=0&quot;
+
+**Cause:** Sequence doesn&#39;t start with generator when `epi_initial=0.0`
+
+**Solution:**
+```python
+# ✗ Wrong
+sequence = [Coherence(), Silence()]
+
+# ✓ Fixed
+sequence = [Emission(), Coherence(), Silence()]
+
+# OR set epi_initial &gt; 0 if starting from existing structure
+validate_grammar(sequence, epi_initial=1.0)
+</code></pre></div></p>
+<h3 id="error-destabilizer-without-stabilizer">Error: "Destabilizer without stabilizer"<a class="headerlink" href="#error-destabilizer-without-stabilizer" title="Permanent link">&para;</a></h3>
+<p><strong>Cause:</strong> {OZ, ZHIR, VAL} present but no {IL, THOL}</p>
+<p><strong>Solution:</strong>
+<div class="highlight"><pre><span></span><code><span class="c1"># ✗ Wrong</span>
+<span class="n">sequence</span> <span class="o">=</span> <span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Dissonance</span><span class="p">(),</span> <span class="n">Silence</span><span class="p">()]</span>
+
+<span class="c1"># ✓ Fixed</span>
+<span class="n">sequence</span> <span class="o">=</span> <span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Dissonance</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Silence</span><span class="p">()]</span>
+</code></pre></div></p>
+<h3 id="error-transformer-needs-recent-destabilizer">Error: "Transformer needs recent destabilizer"<a class="headerlink" href="#error-transformer-needs-recent-destabilizer" title="Permanent link">&para;</a></h3>
+<p><strong>Cause:</strong> {ZHIR, THOL} without recent destabilizer</p>
+<p><strong>Solution:</strong>
+<div class="highlight"><pre><span></span><code><span class="c1"># ✗ Wrong</span>
+<span class="n">sequence</span> <span class="o">=</span> <span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Mutation</span><span class="p">(),</span> <span class="n">Silence</span><span class="p">()]</span>
+
+<span class="c1"># ✓ Fixed - destabilizer within ~3 ops</span>
+<span class="n">sequence</span> <span class="o">=</span> <span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Dissonance</span><span class="p">(),</span> <span class="n">Mutation</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Silence</span><span class="p">()]</span>
+</code></pre></div></p>
+<h3 id="error-mutation-needs-prior-coherence">Error: "Mutation needs prior coherence"<a class="headerlink" href="#error-mutation-needs-prior-coherence" title="Permanent link">&para;</a></h3>
+<p><strong>Cause:</strong> ZHIR without IL before it</p>
+<p><strong>Solution:</strong>
+<div class="highlight"><pre><span></span><code><span class="c1"># ✗ Wrong</span>
+<span class="n">sequence</span> <span class="o">=</span> <span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Dissonance</span><span class="p">(),</span> <span class="n">Mutation</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Silence</span><span class="p">()]</span>
+
+<span class="c1"># ✓ Fixed - Coherence before Mutation</span>
+<span class="n">sequence</span> <span class="o">=</span> <span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Dissonance</span><span class="p">(),</span> <span class="n">Mutation</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Silence</span><span class="p">()]</span>
+</code></pre></div></p>
+<h3 id="error-sequence-must-end-with-closure">Error: "Sequence must end with closure"<a class="headerlink" href="#error-sequence-must-end-with-closure" title="Permanent link">&para;</a></h3>
+<p><strong>Cause:</strong> Last operator is not in {SHA, NAV, REMESH, OZ}</p>
+<p><strong>Solution:</strong>
+<div class="highlight"><pre><span></span><code><span class="c1"># ✗ Wrong</span>
+<span class="n">sequence</span> <span class="o">=</span> <span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">()]</span>
+
+<span class="c1"># ✓ Fixed</span>
+<span class="n">sequence</span> <span class="o">=</span> <span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Silence</span><span class="p">()]</span>
+</code></pre></div></p>
+<h3 id="error-phase-mismatch-in-coupling">Error: "Phase mismatch in coupling"<a class="headerlink" href="#error-phase-mismatch-in-coupling" title="Permanent link">&para;</a></h3>
+<p><strong>Cause:</strong> |φᵢ - φⱼ| &gt; Δφ_max (typically π/2)</p>
+<p><strong>Solution:</strong>
+<div class="highlight"><pre><span></span><code><span class="c1"># Check phase before coupling</span>
+<span class="n">delta_phi</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;theta&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="s1">&#39;theta&#39;</span><span class="p">])</span>
+<span class="k">if</span> <span class="n">delta_phi</span> <span class="o">&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">:</span>
+    <span class="c1"># Adjust phase or don&#39;t couple these nodes</span>
+    <span class="k">pass</span>
+</code></pre></div></p>
+<hr />
+<h2 id="grammar-rule-summary">📊 Grammar Rule Summary<a class="headerlink" href="#grammar-rule-summary" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Rule</th>
+<th>When</th>
+<th>What</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>U1a</td>
+<td>EPI=0</td>
+<td AL_="AL," NAV_="NAV," REMESH="REMESH">Start with</td>
+<td>∂EPI/∂t undefined at EPI=0</td>
+</tr>
+<tr>
+<td>U1b</td>
+<td>Always</td>
+<td NAV_="NAV," OZ="OZ" REMESH_="REMESH," SHA_="SHA,">End with</td>
+<td>Sequences need endpoints</td>
+</tr>
+<tr>
+<td>U2</td>
+<td OZ_="OZ," VAL="VAL" ZHIR_="ZHIR,">Has</td>
+<td IL_="IL," THOL="THOL">Include</td>
+<td>∫νf·ΔNFR dt must converge</td>
+</tr>
+<tr>
+<td>U3</td>
+<td RA="RA" UM_="UM,">Has</td>
+<td>Verify |φᵢ - φⱼ| ≤ Δφ_max</td>
+<td>Resonance physics</td>
+</tr>
+<tr>
+<td>U4a</td>
+<td OZ_="OZ," ZHIR="ZHIR">Has</td>
+<td IL="IL" THOL_="THOL,">Include</td>
+<td>Bifurcations need control</td>
+</tr>
+<tr>
+<td>U4b</td>
+<td THOL="THOL" ZHIR_="ZHIR,">Has</td>
+<td>Recent destabilizer + ZHIR needs IL</td>
+<td>Threshold energy needed</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="operator-quick-lookup">🎯 Operator Quick Lookup<a class="headerlink" href="#operator-quick-lookup" title="Permanent link">&para;</a></h2>
+<h3 id="by-purpose">By Purpose<a class="headerlink" href="#by-purpose" title="Permanent link">&para;</a></h3>
+<p><strong>Initialize:</strong> AL (Emission), NAV (Transition), REMESH (Recursivity)<br />
+<strong>Stabilize:</strong> IL (Coherence), THOL (SelfOrganization)<br />
+<strong>Destabilize:</strong> OZ (Dissonance), ZHIR (Mutation), VAL (Expansion)<br />
+<strong>Propagate:</strong> UM (Coupling), RA (Resonance)<br />
+<strong>Pause:</strong> SHA (Silence)<br />
+<strong>Transform:</strong> ZHIR (Mutation), THOL (SelfOrganization)<br />
+<strong>Adjust:</strong> VAL (Expansion), NUL (Contraction)</p>
+<h3 id="by-effect-on-epit">By Effect on ∂EPI/∂t<a class="headerlink" href="#by-effect-on-epit" title="Permanent link">&para;</a></h3>
+<p><strong>Increase:</strong> AL, EN, OZ, VAL, RA<br />
+<strong>Decrease:</strong> IL, THOL, NUL<br />
+<strong>Zero:</strong> SHA<br />
+<strong>Transform:</strong> ZHIR, NAV, REMESH<br />
+<strong>Couple:</strong> UM, RA</p>
+<hr />
+<h2 id="metrics-to-monitor">📈 Metrics to Monitor<a class="headerlink" href="#metrics-to-monitor" title="Permanent link">&para;</a></h2>
+<p><strong>Essential telemetry for every simulation:</strong></p>
+<ul>
+<li><strong>C(t)</strong>: Total Coherence [0, 1]</li>
+<li>&gt; 0.7 = strong coherence</li>
+<li>
+<p>&lt; 0.3 = fragmentation risk</p>
+</li>
+<li>
+<p><strong>Si</strong>: Sense Index [0, 1⁺]</p>
+</li>
+<li>&gt; 0.8 = excellent stability</li>
+<li>
+<p>&lt; 0.4 = changes may cause bifurcation</p>
+</li>
+<li>
+<p><strong>ΔNFR</strong>: Reorganization Gradient</p>
+</li>
+<li>Sign: + expansion, - contraction</li>
+<li>
+<p>Magnitude: pressure intensity</p>
+</li>
+<li>
+<p><strong>νf</strong>: Structural Frequency (Hz_str)</p>
+</li>
+<li>νf → 0 = node death</li>
+<li>
+<p>νf &gt; 0 = active evolution</p>
+</li>
+<li>
+<p><strong>φ (theta)</strong>: Phase [0, 2π]</p>
+</li>
+<li>Δφ determines coupling compatibility</li>
+<li>|Δφ| &lt; π/2 typically required</li>
+</ul>
+<hr />
+<h2 id="further-reading">🔗 Further Reading<a class="headerlink" href="#further-reading" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong><a href="../01-FUNDAMENTAL-CONCEPTS/">01-FUNDAMENTAL-CONCEPTS.md</a></strong> - TNFR basics</li>
+<li><strong><a href="../02-CANONICAL-CONSTRAINTS/">02-CANONICAL-CONSTRAINTS.md</a></strong> - Full U1-U5 derivations</li>
+<li><strong><a href="../03-OPERATORS-AND-GLYPHS/">03-OPERATORS-AND-GLYPHS.md</a></strong> - Complete operator catalog</li>
+<li><strong><a href="../04-VALID-SEQUENCES/">04-VALID-SEQUENCES.md</a></strong> - Pattern examples</li>
+<li><strong><a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/UNIFIED_GRAMMAR_RULES.md">UNIFIED_GRAMMAR_RULES.md</a></strong> - Mathematical proofs</li>
+<li><strong><a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/AGENTS.md">AGENTS.md</a></strong> - Canonical invariants</li>
+</ul>
+<hr />
+<h2 id="quick-help">📞 Quick Help<a class="headerlink" href="#quick-help" title="Permanent link">&para;</a></h2>
+<p><strong>Getting started?</strong> → <a href="../01-FUNDAMENTAL-CONCEPTS/">01-FUNDAMENTAL-CONCEPTS.md</a><br />
+<strong>Sequence failing?</strong> → Check decision tree above<br />
+<strong>Need examples?</strong> → <a href="examples/">examples/</a><br />
+<strong>Deep dive?</strong> → <a href="../02-CANONICAL-CONSTRAINTS/">02-CANONICAL-CONSTRAINTS.md</a><br />
+<strong>API reference?</strong> → <code>src/tnfr/operators/grammar.py</code>  </p>
+<hr />
+<div align="center">
+
+**Keep this reference handy while developing TNFR sequences!**
+
+*Reality is resonance. Code accordingly.*
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.top", "navigation.tracking", "toc.integrate", "navigation.instant"], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+    
+  </body>
+</html>

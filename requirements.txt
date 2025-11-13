@@ -1,0 +1,19 @@
+mkdocs>=1.5.3
+mkdocs-material>=9.5.3
+mkdocs-jupyter>=0.24.8
+mkdocstrings>=0.24.0
+mkdocstrings-python>=1.10.0
+mkdocs-redirects>=1.2.1
+Pygments>=2.17
+ipykernel>=6.29
+jinja2>=3.1
+
+# Removed Sphinx toolchain (deprecated)
+# sphinx
+# sphinx-autodoc-typehints
+# myst-parser
+# nbsphinx
+# sphinx-rtd-theme
+# sphinxcontrib-mermaid
+# nbconvert
+# pypandoc-binary

@@ -1,0 +1,5284 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Canonical TNFR structural dynamics engine documentation">
+      
+      
+      
+        <link rel="canonical" href="https://fermga.github.io/TNFR-Python-Engine/UNIFIED_GRAMMAR_RULES/">
+      
+      
+        <link rel="prev" href="../CANONICAL_SOURCES/">
+      
+      
+        <link rel="next" href="../AGENTS/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>Unified Grammar Rules - TNFR Python Engine</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.618322db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#unified-tnfr-grammar-single-source-of-truth" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="TNFR Python Engine" class="md-header__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            TNFR Python Engine
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Unified Grammar Rules
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    TNFR Python Engine
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="TNFR Python Engine" class="md-nav__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    TNFR Python Engine
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    TNFR Python Engine
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting Started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Welcome to TNFR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/getting-started/LEARNING_PATHS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Learning Paths
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/getting-started/quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quickstart Tutorial
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/getting-started/TNFR_CONCEPTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core Concepts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/getting-started/INTERACTIVE_TUTORIAL/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interactive Tutorial
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/getting-started/FAQ/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    FAQ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/getting-started/math-backends/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Math Backends
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/getting-started/optional-dependencies/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Optional Dependencies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/getting-started/migrating-remesh-window/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migrating from Remesh Window
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    User Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/user-guide/OPERATORS_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operators Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STRUCTURAL_FIELDS_TETRAD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural Field Tetrad (Canonical)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/user-guide/METRICS_INTERPRETATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Metrics Interpretation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TROUBLESHOOTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar Documentation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Grammar Documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/EXECUTIVE-SUMMARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Executive Summary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_3" id="__nav_4_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core Concepts
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Core Concepts
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/01-FUNDAMENTAL-CONCEPTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fundamental Concepts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/02-CANONICAL-CONSTRAINTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Canonical Constraints
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/03-OPERATORS-AND-GLYPHS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operators and Glyphs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/04-VALID-SEQUENCES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Valid Sequences
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_4" id="__nav_4_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Implementation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/05-TECHNICAL-IMPLEMENTATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Technical Implementation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/06-VALIDATION-AND-TESTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation and Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/07-MIGRATION-AND-EVOLUTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migration and Evolution
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_5" id="__nav_4_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/08-QUICK-REFERENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/GLOSSARY.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/MASTER-INDEX/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Master Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/OPERATORS-CATALOG-SUMMARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operators Catalog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/CROSS-REFERENCE-INDEX/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cross-Reference Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/CODE_DOCS_CROSSREF/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code Documentation Cross-Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_6" id="__nav_4_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tooling
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tooling
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/TOOLING-AND-AUTOMATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tooling and Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/TESTING-SUMMARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing Summary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/DEPRECATION-INDEX.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deprecation Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Examples
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_2" id="__nav_5_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Notebooks & Patterns
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Notebooks & Patterns
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/notebooks/Fundamental_Particles_TNFR_Atlas.ipynb" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fundamental Particles TNFR Atlas (Notebook - GitHub)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/README.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    TNFR Patterns (Module Guide)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../INTERACTIONS_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interaction Sequences Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/api/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/api/operators/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural Operators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/api/OPERATORS_VISUAL_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operators Visual Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/api/telemetry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Telemetry & Utilities
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/api/docstring_style/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docstring Style
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module Documentation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Module Documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/mathematics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mathematics Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/physics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Physics Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/operators/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operators Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/dynamics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dynamics Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/metrics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Metrics Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/sdk/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SDK Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/telemetry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Telemetry Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/tutorials/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/extensions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Extensions Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core Documentation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Core Documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DOCUMENTATION_INDEX/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Documentation Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CANONICAL_SOURCES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Canonical Sources
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Unified Grammar Rules
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Unified Grammar Rules
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#purpose" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Purpose
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#previous-state-two-separate-systems" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Previous State: Two Separate Systems
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Previous State: Two Separate Systems">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#system-1-grammarpy-c1-c3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        System 1: grammar.py (C1-C3)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#system-2-canonical_grammarpy-rc1-rc4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        System 2: canonical_grammar.py (RC1-RC4)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#problems-with-dual-systems" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Problems with Dual Systems
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#unified-grammar-six-canonical-constraints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Unified Grammar: Six Canonical Constraints
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Unified Grammar: Six Canonical Constraints">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#rule-u1-structural-initiation-closure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rule U1: STRUCTURAL INITIATION &amp; CLOSURE
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rule-u2-convergence-boundedness" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rule U2: CONVERGENCE &amp; BOUNDEDNESS
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rule-u3-resonant-coupling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rule U3: RESONANT COUPLING
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rule-u4-bifurcation-dynamics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rule U4: BIFURCATION DYNAMICS
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rule-u5-multi-scale-coherence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rule U5: MULTI-SCALE COHERENCE
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rule-u6-structural-potential-confinement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rule U6: STRUCTURAL POTENTIAL CONFINEMENT
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#unified-rule-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Unified Rule Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mapping-old-rules-unified-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mapping: Old Rules → Unified Rules
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Mapping: Old Rules → Unified Rules">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#from-grammarpy-c1-c3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        From grammar.py (C1-C3)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#from-canonical_grammarpy-rc1-rc4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        From canonical_grammar.py (RC1-RC4)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#previously-removed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Previously Removed
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#canonicity-and-physical-basis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Canonicity and Physical Basis
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Canonicity and Physical Basis">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#summary-table-canonicity-verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary Table: Canonicity Verification
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#u1a-structural-initiation-canonicity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        U1a: Structural Initiation - Canonicity
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#u1b-structural-closure-canonicity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        U1b: Structural Closure - Canonicity
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#u2-convergence-boundedness-canonicity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        U2: Convergence &amp; Boundedness - Canonicity
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#u3-resonant-coupling-canonicity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        U3: Resonant Coupling - Canonicity
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#u4a-bifurcation-triggers-need-handlers-canonicity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        U4a: Bifurcation Triggers Need Handlers - Canonicity
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#u4b-transformers-need-context-graduated-destabilization-canonicity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        U4b: Transformers Need Context (Graduated Destabilization) - Canonicity
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#u5-multi-scale-coherence-canonicity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        U5: Multi-Scale Coherence - Canonicity
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#u6-structural-potential-confinement-canonicity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        U6: Structural Potential Confinement - Canonicity
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#summary-why-these-rules-are-canonical" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary: Why These Rules Are Canonical
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#physics-derivation-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Physics Derivation Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implementation-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implementation Strategy
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Implementation Strategy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phase-1-create-unified-module" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 1: Create Unified Module
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-2-update-existing-modules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 2: Update Existing Modules
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-3-update-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 3: Update Documentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-4-update-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 4: Update Tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#validation-criteria" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Validation Criteria
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Validation Criteria">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#completeness" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Completeness
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#physics-correctness" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Physics Correctness
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#practical-utility" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Practical Utility
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#conclusion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Conclusion
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#proposed-constraints-under-research" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Proposed Constraints Under Research
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Proposed Constraints Under Research">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#proposed-u7-temporal-ordering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Proposed U7: TEMPORAL ORDERING
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Proposed U7: TEMPORAL ORDERING">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#physical-motivation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Physical Motivation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gap-analysis-does-u6-add-constraints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gap Analysis: Does U6 Add Constraints?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#limitations-preventing-canonical-status" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Limitations Preventing Canonical Status
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#comparison-with-canonical-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Comparison with Canonical Rules
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#research-needed-for-elevation-to-strong" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Research Needed for Elevation to STRONG
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#theoretical-derivation-sketch-from-nodal-equation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Theoretical Derivation (Sketch) from Nodal Equation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#preliminary-empirical-results-2025-11-11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Preliminary Empirical Results (2025-11-11)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implementation-strategy-if-elevated-to-strong" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implementation Strategy (If Elevated to STRONG)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#current-recommendation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Current Recommendation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#timeline-estimate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Timeline Estimate
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        References
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AGENTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Agents Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../GLOSSARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Advanced Topics
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Advanced Topics
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/advanced/ARCHITECTURE_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/advanced/PERFORMANCE_OPTIMIZATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Performance Optimization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/advanced/TESTING_STRATEGIES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing Strategies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/advanced/DEVELOPMENT_WORKFLOW/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development Workflow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/foundations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mathematical Foundations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_9_6" id="__nav_9_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Research Documents
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_9_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Research Documents
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TNFR_FORCES_EMERGENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Forces Emergence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OPERATOR_COMPLETENESS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator Completeness
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LIFE_EMERGENCE_FROM_TNFR/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Life Emergence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CELL_EMERGENCE_FROM_TNFR/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cell Emergence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/tools/CLI/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Security
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/security/monitoring/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Monitoring
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/security/dependency-auditing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dependency Auditing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/security/codeql/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CodeQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/security/dependabot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dependabot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
+        
+          
+          <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Info
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Project Info
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/releases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="unified-tnfr-grammar-single-source-of-truth">Unified TNFR Grammar: Single Source of Truth<a class="headerlink" href="#unified-tnfr-grammar-single-source-of-truth" title="Permanent link">&para;</a></h1>
+<h2 id="purpose">Purpose<a class="headerlink" href="#purpose" title="Permanent link">&para;</a></h2>
+<p>This document defines the <strong>unified canonical grammar</strong> for TNFR that consolidates and reconciles the previously separate rule systems (C1-C3 in <code>grammar.py</code> and RC1-RC4 in <code>canonical_grammar.py</code>) into a single, coherent source of truth.</p>
+<p><strong>Goal:</strong> One grammar, derived 100% from TNFR physics, with no duplication or inconsistency.</p>
+<p><strong>Related Documentation:</strong>
+- <strong><a href="../AGENTS/">AGENTS.md</a></strong> - Concise grammar reference for developers
+- <strong><a href="docs/grammar/02-CANONICAL-CONSTRAINTS.md">docs/grammar/02-CANONICAL-CONSTRAINTS.md</a></strong> - Technical specifications with implementation examples
+- <strong><a href="../GLOSSARY/">GLOSSARY.md</a></strong> - Quick term reference
+- <strong><a href="src/tnfr/operators/grammar.py">src/tnfr/operators/grammar.py</a></strong> - Canonical implementation</p>
+<hr />
+<h2 id="previous-state-two-separate-systems">Previous State: Two Separate Systems<a class="headerlink" href="#previous-state-two-separate-systems" title="Permanent link">&para;</a></h2>
+<h3 id="system-1-grammarpy-c1-c3">System 1: grammar.py (C1-C3)<a class="headerlink" href="#system-1-grammarpy-c1-c3" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>C1: EXISTENCE &amp; CLOSURE</strong> - Start with generators, end with closures</li>
+<li><strong>C2: BOUNDEDNESS</strong> - Stabilizers prevent divergence</li>
+<li><strong>C3: THRESHOLD PHYSICS</strong> - Bifurcations require context</li>
+</ul>
+<h3 id="system-2-canonical_grammarpy-rc1-rc4">System 2: canonical_grammar.py (RC1-RC4)<a class="headerlink" href="#system-2-canonical_grammarpy-rc1-rc4" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>RC1: Initialization</strong> - If EPI=0, start with generator</li>
+<li><strong>RC2: Convergence</strong> - If destabilizers, include stabilizer  </li>
+<li><strong>RC3: Phase Verification</strong> - Coupling/resonance requires phase check</li>
+<li><strong>RC4: Bifurcation Limits</strong> - If bifurcation triggers, require handlers</li>
+</ul>
+<h3 id="problems-with-dual-systems">Problems with Dual Systems<a class="headerlink" href="#problems-with-dual-systems" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Duplication</strong>: C1 ≈ RC1, C2 = RC2, C3 ≈ RC4</li>
+<li><strong>Inconsistency</strong>: C1 includes end states, RC1 doesn't (RNC1 was removed)</li>
+<li><strong>Missing coverage</strong>: RC3 (phase) has no equivalent in C1-C3</li>
+<li><strong>Confusion</strong>: Two sources of truth for the same physics</li>
+<li><strong>Maintenance burden</strong>: Changes must be synchronized across both</li>
+</ol>
+<hr />
+<h2 id="unified-grammar-six-canonical-constraints">Unified Grammar: Six Canonical Constraints<a class="headerlink" href="#unified-grammar-six-canonical-constraints" title="Permanent link">&para;</a></h2>
+<p>All rules derive inevitably from the nodal equation <strong>∂EPI/∂t = νf · ΔNFR(t)</strong>, invariants, and formal contracts.</p>
+<h3 id="rule-u1-structural-initiation-closure">Rule U1: STRUCTURAL INITIATION &amp; CLOSURE<a class="headerlink" href="#rule-u1-structural-initiation-closure" title="Permanent link">&para;</a></h3>
+<p><strong>Physics Basis:</strong>
+- <strong>Initiation</strong>: ∂EPI/∂t undefined when EPI = 0 (no structure to evolve)
+- <strong>Closure</strong>: Sequences are temporal segments requiring coherent endpoints</p>
+<p><strong>Derivation:</strong>
+<div class="highlight"><pre><span></span><code>If EPI₀ = 0:
+  ∂EPI/∂t|_{EPI=0} = undefined (no gradient on empty space)
+  → System CANNOT evolve
+  → MUST use generator to create initial structure
+
+Sequences as action potentials:
+  Like physical waves: must have emission source AND absorption/termination
+  → Start: Operators that create EPI from vacuum/dormant states
+  → End: Operators that stabilize system in coherent attractor states
+</code></pre></div></p>
+<p><strong>Requirements:</strong></p>
+<p><strong>U1a: Initiation (Start Operators)</strong>
+- <strong>When:</strong> Always (if operating from EPI=0 or starting new sequence)
+- <strong>Operators:</strong> {AL (Emission), NAV (Transition), REMESH (Recursivity)}
+- <strong>Why these?</strong> Only operators that can generate/activate structure from null/dormant states:
+  - <strong>AL</strong>: Generates EPI from vacuum via emission
+  - <strong>NAV</strong>: Activates latent EPI through regime transition
+  - <strong>REMESH</strong>: Echoes dormant structure across scales</p>
+<p><strong>U1b: Closure (End Operators)</strong>
+- <strong>When:</strong> Always (sequences must end in coherent states)
+- <strong>Operators:</strong> {SHA (Silence), NAV (Transition), REMESH (Recursivity), OZ (Dissonance)}
+- <strong>Why these?</strong> Only operators that leave system in stable attractor states:
+  - <strong>SHA</strong>: Terminal closure - freezes evolution (νf → 0)
+  - <strong>NAV</strong>: Handoff closure - transfers to next regime
+  - <strong>REMESH</strong>: Recursive closure - distributes across scales<br />
+  - <strong>OZ</strong>: Intentional closure - preserves activation/tension</p>
+<p><strong>Physical Interpretation:</strong>
+Sequences are bounded action potentials in structural space with:
+- <strong>Source</strong> (generator creates EPI)
+- <strong>Sink</strong> (closure preserves coherence)</p>
+<p><strong>Consolidates:</strong> C1 (EXISTENCE &amp; CLOSURE) + RC1 (Initialization) + removed RNC1</p>
+<hr />
+<h3 id="rule-u2-convergence-boundedness">Rule U2: CONVERGENCE &amp; BOUNDEDNESS<a class="headerlink" href="#rule-u2-convergence-boundedness" title="Permanent link">&para;</a></h3>
+<p><strong>Physics Basis:</strong>
+From integrated nodal equation:
+<div class="highlight"><pre><span></span><code>EPI(t_f) = EPI(t_0) + ∫_{t_0}^{t_f} νf(τ) · ΔNFR(τ) dτ
+</code></pre></div></p>
+<p><strong>Derivation:</strong>
+<div class="highlight"><pre><span></span><code>Without stabilizers:
+  ΔNFR can grow unbounded (positive feedback)
+  d(ΔNFR)/dt &gt; 0 always
+  ⟹ ΔNFR(t) ~ e^(λt) (exponential growth)
+  ⟹ ∫ νf · ΔNFR dt → ∞ (DIVERGES)
+  → System fragments into incoherent noise
+
+With stabilizers:
+  Negative feedback limits ΔNFR growth
+  d(ΔNFR)/dt can be &lt; 0
+  ⟹ ΔNFR(t) → bounded attractor
+  ⟹ ∫ νf · ΔNFR dt converges (bounded evolution)
+  → System maintains coherence
+</code></pre></div></p>
+<p><strong>Requirements:</strong></p>
+<p><strong>When:</strong> If sequence contains destabilizing operators
+- <strong>Destabilizers:</strong> {OZ (Dissonance), ZHIR (Mutation), VAL (Expansion)}
+- <strong>Must include:</strong> {IL (Coherence), THOL (Self-organization)}</p>
+<p><strong>Why IL or THOL?</strong>
+Only operators with strong negative-feedback physics:
+- <strong>IL</strong>: Direct coherence restoration (explicitly reduces |ΔNFR|)
+- <strong>THOL</strong>: Autopoietic closure (creates self-limiting boundaries)</p>
+<p><strong>Physical Interpretation:</strong>
+Stabilizers are "structural gravity" preventing fragmentation. Like gravity preventing cosmic dispersal, they ensure bounded evolution.</p>
+<p><strong>Consolidates:</strong> C2 (BOUNDEDNESS) = RC2 (Convergence)</p>
+<hr />
+<h3 id="rule-u3-resonant-coupling">Rule U3: RESONANT COUPLING<a class="headerlink" href="#rule-u3-resonant-coupling" title="Permanent link">&para;</a></h3>
+<p><strong>Physics Basis:</strong>
+From AGENTS.md Invariant #5:</p>
+<blockquote>
+<p>"Phase check: no coupling is valid without explicit phase verification (synchrony)"</p>
+</blockquote>
+<p><strong>Derivation:</strong>
+<div class="highlight"><pre><span></span><code>Resonance physics:
+  Two oscillators resonate ⟺ phases compatible
+  Condition: |φᵢ - φⱼ| ≤ Δφ_max (typically π/2)
+
+Without phase verification:
+  Nodes with incompatible phases (e.g., φᵢ ≈ π, φⱼ ≈ 0) attempt coupling
+  → Antiphase → destructive interference
+  → Violates resonance physics
+  → Non-physical &quot;coupling&quot;
+
+With phase verification:
+  Only synchronous nodes couple
+  → Constructive interference
+  → Valid resonance
+  → Physical coupling
+</code></pre></div></p>
+<p><strong>Requirements:</strong></p>
+<p><strong>When:</strong> Sequence contains coupling/resonance operators
+- <strong>Operators:</strong> {UM (Coupling), RA (Resonance)}
+- <strong>Must:</strong> Verify phase compatibility |φᵢ - φⱼ| ≤ Δφ_max</p>
+<p><strong>Physical Interpretation:</strong>
+Structural coupling requires phase synchrony. Like radio tuning: receiver must match transmitter frequency AND phase for clear signal.</p>
+<p><strong>Source:</strong> RC3 (Phase Verification) - No equivalent in C1-C3 system</p>
+<hr />
+<h3 id="rule-u4-bifurcation-dynamics">Rule U4: BIFURCATION DYNAMICS<a class="headerlink" href="#rule-u4-bifurcation-dynamics" title="Permanent link">&para;</a></h3>
+<p><strong>Physics Basis:</strong>
+From bifurcation theory and AGENTS.md Contract OZ:</p>
+<blockquote>
+<p>"Dissonance may trigger bifurcation if ∂²EPI/∂t² &gt; τ"</p>
+</blockquote>
+<p><strong>Derivation:</strong>
+<div class="highlight"><pre><span></span><code>Bifurcation physics:
+  Phase transitions require crossing critical thresholds
+  Condition: |ΔNFR| &gt; ΔNFR_critical OR ∂²EPI/∂t² &gt; τ
+
+ZHIR (Mutation) requirements:
+  1. Stable base (prior IL): prevents transformation from chaos
+  2. Threshold energy (recent destabilizer): provides bifurcation energy
+  Without: transformation fails or creates unstable state
+
+THOL (Self-organization) requirements:
+  1. Threshold energy (recent destabilizer): provides disorder to organize
+  Without: insufficient ΔNFR for spontaneous structuring
+</code></pre></div></p>
+<p><strong>Requirements:</strong></p>
+<p><strong>U4a: Bifurcation Triggers Need Handlers</strong>
+- <strong>When:</strong> Sequence contains {OZ (Dissonance), ZHIR (Mutation)}
+- <strong>Must include:</strong> {THOL (Self-organization), IL (Coherence)}
+- <strong>Why:</strong> Manage structural reorganization when ∂²EPI/∂t² &gt; τ</p>
+<p><strong>U4b: Transformations Need Context (Graduated Destabilization)</strong>
+- <strong>When:</strong> Sequence contains {ZHIR (Mutation), THOL (Self-organization)}
+- <strong>Must have:</strong> Recent destabilizer (within ~3 operators)
+- <strong>Why:</strong> Insufficient |ΔNFR| → bifurcation fails
+- <strong>Additional for ZHIR:</strong> Prior IL for stable transformation base</p>
+<p><strong>Physical Interpretation:</strong>
+Bifurcations are phase transitions in structural space. Like water→ice transition needs:
+- Temperature threshold (destabilizer provides energy)
+- Nucleation site (IL provides stable base for ZHIR)
+- Proper conditions (handlers manage transition)</p>
+<p><strong>Consolidates:</strong> C3 (THRESHOLD PHYSICS) + RC4 (Bifurcation Limits)</p>
+<hr />
+<h3 id="rule-u5-multi-scale-coherence">Rule U5: MULTI-SCALE COHERENCE<a class="headerlink" href="#rule-u5-multi-scale-coherence" title="Permanent link">&para;</a></h3>
+<p><strong>Physics Basis:</strong>
+From the nodal equation applied to hierarchical systems with nested EPIs created by REMESH with depth&gt;1.</p>
+<p><strong>Derivation from Nodal Equation:</strong></p>
+<div class="highlight"><pre><span></span><code>Step 1: Nodal equation at each hierarchical level
+  Parent level:  ∂EPI_parent/∂t = νf_parent · ΔNFR_parent(t)
+  Child level i: ∂EPI_child_i/∂t = νf_child_i · ΔNFR_child_i(t)
+
+Step 2: Hierarchical coupling (structural interdependence)
+  EPI_parent = f(EPI_child_1, EPI_child_2, ..., EPI_child_N)
+
+  This is the essence of hierarchy: parent structure depends on children
+  Example: Cell EPI depends on {Nucleus, Mitochondria, ...} EPIs
+
+Step 3: Chain rule for time evolution
+  ∂EPI_parent/∂t = Σ (∂f/∂EPI_child_i) · ∂EPI_child_i/∂t
+                  = Σ w_i · (νf_child_i · ΔNFR_child_i)
+
+  where w_i = ∂f/∂EPI_child_i are coupling weights
+
+Step 4: Equate with parent&#39;s nodal equation
+  νf_parent · ΔNFR_parent = Σ w_i · νf_child_i · ΔNFR_child_i
+
+  Rearranging:
+  ΔNFR_parent = (1/νf_parent) · Σ w_i · νf_child_i · ΔNFR_child_i
+
+Step 5: Coherence definition
+  C(t) = structural stability = 1/|ΔNFR(t)|
+
+  Higher coherence ⟺ Lower reorganization pressure
+  This is Invariant #9: Structural Metrics
+
+Step 6: Coherence relationship
+  C_parent ~ 1/|ΔNFR_parent|
+          ~ νf_parent / |Σ w_i · νf_child_i · ΔNFR_child_i|
+
+  C_child_i ~ 1/|ΔNFR_child_i|
+
+Step 7: Conservation inequality
+  For bounded evolution, parent coherence must be bounded below:
+
+  C_parent ≥ α · Σ C_child_i
+
+  Where α emerges from coupling structure:
+    α = (1/√N) · η_phase(N) · η_coupling(N)
+
+  Components:
+  - 1/√N: Scale factor from weight distribution (central limit theorem)
+  - η_phase: Phase synchronization efficiency (from U3, Invariant #5)
+  - η_coupling: Structural coupling efficiency (from w_i distribution)
+  - Typical range: α ∈ [0.1, 0.4]
+
+Step 8: Physical necessity of stabilizers
+  Without stabilizers:
+    Each ΔNFR_child_i evolves independently
+    → |ΔNFR_parent| = |Σ w_i · νf_child_i · ΔNFR_child_i| grows
+    → C_parent decreases below α·ΣC_child
+    → CONSERVATION VIOLATED → Fragmentation
+
+  With stabilizers (IL or THOL):
+    IL reduces |ΔNFR| at each level (Contract IL)
+    THOL creates self-limiting boundaries (Contract THOL)
+    → |ΔNFR_parent| bounded
+    → C_parent ≥ α·ΣC_child maintained
+    → CONSERVATION PRESERVED → Bounded evolution
+
+Conclusion: U5 emerges INEVITABLY from:
+  1. Nodal equation: ∂EPI/∂t = νf · ΔNFR(t)
+  2. Hierarchical coupling: EPI_parent = f(EPI_child_1, ..., EPI_child_N)
+  3. Chain rule: ∂f/∂t must account for all child contributions
+  4. Coherence definition: C ~ 1/|ΔNFR|
+  5. Conservation requirement: Bounded evolution needs C_parent ≥ α·ΣC_child
+</code></pre></div>
+<p><strong>Requirements:</strong></p>
+<p><strong>When:</strong> Sequence contains deep REMESH (depth &gt; 1)
+- <strong>Deep recursion:</strong> REMESH with depth &gt; 1 creates hierarchical nesting
+- <strong>Must include:</strong> {IL (Coherence), THOL (Self-organization)} within ±3 operators
+- <strong>Window:</strong> Stabilizer must be within ~3 operators before or after REMESH</p>
+<p><strong>Why IL or THOL?</strong>
+From operator contracts, only these provide multi-scale stabilization:
+- <strong>IL (Contract)</strong>: Reduces |ΔNFR| → increases C → direct coherence restoration
+- <strong>THOL (Contract)</strong>: Creates sub-EPIs with autopoietic closure → multi-level stability</p>
+<p><strong>Physical Interpretation:</strong>
+Multi-scale structures require conservation of coherence across hierarchy levels. Just as thermodynamic entropy must increase globally while local order can increase with work input, hierarchical coherence requires "work" (stabilization) to maintain C_parent ≥ α·ΣC_child against natural tendency toward fragmentation.</p>
+<p><strong>Dimensionality:</strong>
+- <strong>U1-U4</strong>: TEMPORAL dimension (operator sequences in time)
+- <strong>U5</strong>: SPATIAL dimension (hierarchical nesting in structure)</p>
+<p><strong>Independence from U2+U4b:</strong>
+Decisive test case that passes U2+U4b but fails U5:
+<div class="highlight"><pre><span></span><code><span class="p">[</span><span class="n">AL</span><span class="p">,</span> <span class="n">REMESH</span><span class="p">(</span><span class="n">depth</span><span class="o">=</span><span class="mi">3</span><span class="p">),</span> <span class="n">SHA</span><span class="p">]</span>
+  <span class="n">U2</span><span class="p">:</span>  <span class="err">✓</span> <span class="n">No</span> <span class="n">destabilizers</span> <span class="p">(</span><span class="n">trivially</span> <span class="n">convergent</span><span class="p">)</span>
+  <span class="n">U4b</span><span class="p">:</span> <span class="err">✓</span> <span class="n">REMESH</span> <span class="ow">not</span> <span class="n">a</span> <span class="n">transformer</span> <span class="p">(</span><span class="n">U4b</span> <span class="n">doesn</span><span class="s1">&#39;t apply)</span>
+  <span class="n">U5</span><span class="p">:</span>  <span class="err">✗</span> <span class="n">Deep</span> <span class="n">recursivity</span> <span class="n">without</span> <span class="n">stabilization</span> <span class="err">→</span> <span class="n">fragmentation</span>
+</code></pre></div></p>
+<p>This proves U5 captures a physical constraint (spatial hierarchy) not covered by existing temporal rules (U2, U4b).</p>
+<p><strong>Source:</strong> 
+- Research in "El pulso que nos atraviesa.pdf"
+- Direct derivation from nodal equation + hierarchical coupling</p>
+<p><strong>Canonicity Level</strong>: <strong>STRONG</strong> - Mathematical inevitability from nodal equation applied to hierarchical systems. Violating it produces C_parent &lt; α·ΣC_child → fragmentation.</p>
+<p><strong>Traceability</strong>: 
+- <strong>TNFR.pdf § 2.1</strong>: Nodal equation ∂EPI/∂t = νf · ΔNFR(t)
+- <strong>Chain rule</strong>: Standard calculus for composite functions
+- <strong>AGENTS.md § Invariant #7</strong>: Operational Fractality (EPIs can nest)
+- <strong>AGENTS.md § Invariant #9</strong>: Structural Metrics (C, Si, etc.)
+- <strong>Contract IL</strong>: Reduces |ΔNFR| (stabilization at each level)
+- <strong>Contract THOL</strong>: Autopoietic closure (multi-level boundaries)</p>
+<hr />
+<h3 id="rule-u6-structural-potential-confinement">Rule U6: STRUCTURAL POTENTIAL CONFINEMENT<a class="headerlink" href="#rule-u6-structural-potential-confinement" title="Permanent link">&para;</a></h3>
+<p><strong>Physics Basis:</strong>
+From emergent structural potential field Φ_s derived from weighted ΔNFR distribution across network.</p>
+<p><strong>Derivation from Nodal Equation:</strong></p>
+<div class="highlight"><pre><span></span><code>Step 1: Structural potential definition
+  Φ_s(i) = Σ_{j≠i} ΔNFR_j / d(i,j)^α  (α=2)
+
+  Physical meaning: Aggregates structural pressure from all network nodes
+  weighted by coupling distance (inverse-square law analog)
+
+Step 2: Relationship to coherence
+  From 2,400+ experiments across 5 topology families:
+
+  corr(Δ Φ_s, ΔC) = -0.822 (R² ≈ 0.68)
+
+  Strong negative correlation: displacement from Φ_s minima → coherence loss
+
+Step 3: Universality validation
+  Tested topologies: ring, scale_free, small-world, tree, grid
+  Coefficient of variation: CV = 0.1% (perfect universality)
+
+  → Φ_s dynamics independent of topology
+  → Fundamental structural physics, not topology artifact
+
+Step 4: Passive equilibrium mechanism
+  Φ_s minima = passive equilibrium states (potential wells)
+  Grammar-valid sequences show Δ Φ_s = +0.583
+  Grammar-violating sequences show Δ Φ_s = +3.879
+
+  Reduction factor: 0.15× (85% reduction in escape tendency)
+
+  Physical interpretation:
+  - NOT active attraction toward minima (no force pulling back)
+  - Passive protection: grammar acts as confinement mechanism
+  - Valid sequences naturally maintain proximity to equilibrium
+
+Step 5: Safety criterion from empirical threshold
+  Escape threshold (fragmentation boundary): Δ Φ_s &lt; 2.0
+
+  Valid sequences: Δ Φ_s ≈ 0.6 (30% of threshold)
+  Violations: Δ Φ_s ≈ 3.9 (195% of threshold)
+
+  → 2.0 threshold separates stable from fragmenting regimes
+
+Step 6: Scale-dependent universality
+  β exponent (fragmentation criticality):
+  - Flat networks: β = 0.556
+  - Nested EPIs: β = 0.178
+
+  Different universality classes for different scales (physically expected)
+  Φ_s correlation universal across both: corr = -0.822 ± 0.001
+
+Conclusion: U6 emerges INEVITABLY from:
+  1. Nodal equation: ΔNFR as structural pressure
+  2. Distance-weighted field: Φ_s from network topology
+  3. Empirical validation: 2,400+ experiments, 5 topologies
+  4. Conservation: Grammar as passive stabilizer
+  5. Threshold physics: Δ Φ_s &lt; 2.0 escape boundary
+</code></pre></div>
+<p><strong>Requirements:</strong></p>
+<p><strong>When:</strong> All sequences (telemetry-based safety criterion)
+- <strong>Compute:</strong> Φ_s before and after sequence application
+- <strong>Verify:</strong> Δ Φ_s &lt; 2.0 (escape threshold)
+- <strong>Typical:</strong> Valid sequences show Δ Φ_s ≈ 0.6</p>
+<p><strong>Why Δ Φ_s &lt; 2.0?</strong>
+From empirical calibration:
+- <strong>Below 2.0:</strong> System remains in stable regime, C(t) bounded
+- <strong>Above 2.0:</strong> Escape from potential well → fragmentation risk
+- <strong>Physical analog:</strong> Escape velocity from gravitational well</p>
+<p><strong>Physical Interpretation:</strong>
+Φ_s field creates passive equilibrium landscape. Nodes exist at potential minima. Sequences that respect grammar (U1-U5) naturally maintain small Δ Φ_s (~0.6). Grammar violations create large Δ Φ_s (~3.9), pushing system toward fragmentation threshold.</p>
+<p><strong>Validation Evidence:</strong>
+- <strong>Experiments:</strong> 2,400+ across 5 topologies (ring, scale_free, ws, tree, grid)
+- <strong>Correlation:</strong> corr(Δ Φ_s, ΔC) = -0.822 (R² ≈ 0.68)
+- <strong>Universality:</strong> CV = 0.1% (perfect across topologies)
+- <strong>Fractality:</strong> β scale-dependent (0.178 nested vs 0.556 flat)
+- <strong>Mechanism:</strong> Passive protection (grammar as stabilizer, not attractor)</p>
+<p><strong>Distinction from U2 (Boundedness):</strong>
+- <strong>U2:</strong> Temporal integral convergence (∫νf·ΔNFR dt &lt; ∞)
+- <strong>U6:</strong> Spatial potential confinement (Δ Φ_s &lt; 2.0)
+- <strong>Independence:</strong> U2 prevents divergence over time, U6 prevents escape in structural space</p>
+<p><strong>Usage as Telemetry:</strong>
+U6 is a <strong>read-only safety check</strong>, not a sequence constraint like U1-U5:
+- Does NOT dictate which operators to use
+- Does NOT require specific operator patterns
+- DOES provide early warning when Δ Φ_s approaches 2.0
+- DOES validate that grammar-compliant sequences naturally stay confined</p>
+<p><strong>Canonicity Level</strong>: <strong>CANONICAL</strong> (promoted 2025-11-11)
+- Formal derivation from ΔNFR field theory
+- Strong predictive power (R² = 0.68)
+- Universal across topologies (CV = 0.1%)
+- Grammar-compliant (read-only, no U1-U5 conflicts)
+- Validated: 2,400+ experiments</p>
+<p><strong>Traceability</strong>: 
+- <strong>TNFR.pdf § 2.1</strong>: Nodal equation ∂EPI/∂t = νf · ΔNFR(t)
+- <strong>docs/TNFR_FORCES_EMERGENCE.md § 14-15</strong>: Complete derivation and validation
+- <strong>AGENTS.md § Structural Fields</strong>: Φ_s canonical status with safety criteria
+- <strong>src/tnfr/physics/fields.py</strong>: Implementation of compute_structural_potential()</p>
+<hr />
+<h2 id="unified-rule-summary">Unified Rule Summary<a class="headerlink" href="#unified-rule-summary" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code>┌─────────────────────────────────────────────────────────────────┐
+│ Unified TNFR Grammar: Six Canonical Constraints                │
+├─────────────────────────────────────────────────────────────────┤
+│ U1: STRUCTURAL INITIATION &amp; CLOSURE                             │
+│     U1a: Start with generators {AL, NAV, REMESH}               │
+│     U1b: End with closures {SHA, NAV, REMESH, OZ}              │
+│     Basis: ∂EPI/∂t undefined at EPI=0, sequences need closure  │
+│                                                                 │
+│ U2: CONVERGENCE &amp; BOUNDEDNESS                                   │
+│     If destabilizers {OZ, ZHIR, VAL}                           │
+│     Then include stabilizers {IL, THOL}                        │
+│     Basis: ∫νf·ΔNFR dt must converge                           │
+│                                                                 │
+│ U3: RESONANT COUPLING                                           │
+│     If coupling/resonance {UM, RA}                             │
+│     Then verify phase |φᵢ - φⱼ| ≤ Δφ_max                       │
+│     Basis: Invariant #5 + resonance physics                    │
+│                                                                 │
+│ U4: BIFURCATION DYNAMICS                                        │
+│     U4a: If triggers {OZ, ZHIR}                                │
+│          Then include handlers {THOL, IL}                      │
+│     U4b: If transformers {ZHIR, THOL}                          │
+│          Then recent destabilizer (~3 ops)                     │
+│          Additionally ZHIR needs prior IL                      │
+│     Basis: Contract OZ + bifurcation theory                    │
+│                                                                 │
+│ U5: MULTI-SCALE COHERENCE                                       │
+│     If deep REMESH (depth&gt;1)                                   │
+│     Then include scale stabilizers {IL, THOL} within ±3 ops   │
+│     Basis: C_parent ≥ α·ΣC_child (coherence conservation)     │
+│                                                                 │
+│ U6: STRUCTURAL POTENTIAL CONFINEMENT                            │
+│     Verify Δ Φ_s &lt; 2.0 (escape threshold)                      │
+│     Telemetry-based safety check (read-only)                  │
+│     Basis: Emergent Φ_s field, empirical threshold            │
+│     Evidence: 2,400+ exp, corr = -0.822, CV = 0.1%            │
+└─────────────────────────────────────────────────────────────────┘
+
+All rules emerge inevitably from:
+  ∂EPI/∂t = νf · ΔNFR(t) + Invariants + Contracts
+</code></pre></div>
+<hr />
+<h2 id="mapping-old-rules-unified-rules">Mapping: Old Rules → Unified Rules<a class="headerlink" href="#mapping-old-rules-unified-rules" title="Permanent link">&para;</a></h2>
+<h3 id="from-grammarpy-c1-c3">From grammar.py (C1-C3)<a class="headerlink" href="#from-grammarpy-c1-c3" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>C1: EXISTENCE &amp; CLOSURE</strong> → <strong>U1: STRUCTURAL INITIATION &amp; CLOSURE</strong></li>
+<li>C1 start requirements → U1a</li>
+<li>
+<p>C1 end requirements → U1b</p>
+</li>
+<li>
+<p><strong>C2: BOUNDEDNESS</strong> → <strong>U2: CONVERGENCE &amp; BOUNDEDNESS</strong></p>
+</li>
+<li>
+<p>Direct 1:1 mapping, same physics</p>
+</li>
+<li>
+<p><strong>C3: THRESHOLD PHYSICS</strong> → <strong>U4: BIFURCATION DYNAMICS</strong></p>
+</li>
+<li>C3 ZHIR/THOL requirements → U4b</li>
+<li>Extended with handler requirements (U4a)</li>
+</ul>
+<h3 id="from-canonical_grammarpy-rc1-rc4">From canonical_grammar.py (RC1-RC4)<a class="headerlink" href="#from-canonical_grammarpy-rc1-rc4" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>RC1: Initialization</strong> → <strong>U1a: Initiation</strong></li>
+<li>RC1 generator requirement → U1a</li>
+<li>
+<p>Extended with closure requirement (U1b)</p>
+</li>
+<li>
+<p><strong>RC2: Convergence</strong> → <strong>U2: CONVERGENCE &amp; BOUNDEDNESS</strong></p>
+</li>
+<li>
+<p>Direct 1:1 mapping, same physics</p>
+</li>
+<li>
+<p><strong>RC3: Phase Verification</strong> → <strong>U3: RESONANT COUPLING</strong></p>
+</li>
+<li>
+<p>Direct 1:1 mapping, NEW in unified grammar</p>
+</li>
+<li>
+<p><strong>RC4: Bifurcation Limits</strong> → <strong>U4a: Bifurcation Triggers</strong></p>
+</li>
+<li>RC4 handler requirement → U4a</li>
+<li>Extended with transformer context (U4b)</li>
+</ul>
+<h3 id="previously-removed">Previously Removed<a class="headerlink" href="#previously-removed" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>RNC1: Terminators</strong> → <strong>U1b: Closure</strong></li>
+<li>RNC1 was organizational convention</li>
+<li>U1b has PHYSICAL basis (sequences need coherent endpoints)</li>
+<li>Different operators (SHA, NAV, REMESH, OZ vs old RNC1 list)</li>
+</ul>
+<hr />
+<h2 id="canonicity-and-physical-basis">Canonicity and Physical Basis<a class="headerlink" href="#canonicity-and-physical-basis" title="Permanent link">&para;</a></h2>
+<p>This section provides the comprehensive justification for why each unified rule (U1-U6) is <strong>canonical</strong> - that is, inevitably derived from TNFR physics rather than organizational convention.</p>
+<h3 id="summary-table-canonicity-verification">Summary Table: Canonicity Verification<a class="headerlink" href="#summary-table-canonicity-verification" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Rule</th>
+<th>Canonicity</th>
+<th>Necessity</th>
+<th>Physical Base</th>
+<th>Reference</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>U1a</td>
+<td>✅ CANONICAL</td>
+<td>Absolute</td>
+<td>∂EPI/∂t undefined at EPI=0</td>
+<td>Nodal equation</td>
+</tr>
+<tr>
+<td>U1b</td>
+<td>✅ CANONICAL</td>
+<td>Strong</td>
+<td>Sequences as action potentials</td>
+<td>Wave physics</td>
+</tr>
+<tr>
+<td>U2</td>
+<td>✅ CANONICAL</td>
+<td>Absolute</td>
+<td>Integral convergence theorem</td>
+<td>Analysis</td>
+</tr>
+<tr>
+<td>U3</td>
+<td>✅ CANONICAL</td>
+<td>Absolute</td>
+<td>Resonance physics + Inv. #5</td>
+<td>AGENTS.md</td>
+</tr>
+<tr>
+<td>U4a</td>
+<td>✅ CANONICAL</td>
+<td>Strong</td>
+<td>Contract OZ + bifurcation</td>
+<td>Contracts</td>
+</tr>
+<tr>
+<td>U4b</td>
+<td>✅ CANONICAL</td>
+<td>Strong</td>
+<td>Threshold physics + timing</td>
+<td>Bifurcation theory</td>
+</tr>
+<tr>
+<td>U5</td>
+<td>✅ CANONICAL</td>
+<td>Strong</td>
+<td>Coherence conservation + hierarchy</td>
+<td>Conservation</td>
+</tr>
+<tr>
+<td>U6</td>
+<td>✅ CANONICAL</td>
+<td>Strong</td>
+<td>Structural potential field + empirical</td>
+<td>TNFR_FORCES_EMERGENCE.md</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Key</strong>: 
+- <strong>Absolute</strong>: Mathematical necessity (cannot be otherwise)
+- <strong>Strong</strong>: Physical requirement (violating it produces non-physical states)</p>
+<hr />
+<h3 id="u1a-structural-initiation-canonicity">U1a: Structural Initiation - Canonicity<a class="headerlink" href="#u1a-structural-initiation-canonicity" title="Permanent link">&para;</a></h3>
+<p><strong>Derivation from Nodal Equation:</strong></p>
+<div class="highlight"><pre><span></span><code>Given: ∂EPI/∂t = νf · ΔNFR(t)
+
+At EPI = 0 (null state):
+  ΔNFR(0) = f(EPI, topology, phase) where EPI=0
+  → ΔNFR(0) is undefined or null
+  → ∂EPI/∂t|_{EPI=0} = νf · 0 = 0 OR undefined
+
+Conclusion: System CANNOT evolve from EPI=0 without generator
+</code></pre></div>
+<p><strong>Physical Necessity:</strong>
+- Like a wave equation: cannot have wave propagation without source
+- Like thermodynamics: cannot have heat flow without temperature difference
+- Like structural mechanics: cannot have deformation without initial geometry</p>
+<p><strong>Why These Generators?</strong>
+- <strong>Emission (AL)</strong>: Creates EPI from vacuum via resonant emission
+- <strong>Transition (NAV)</strong>: Activates latent/dormant EPI through regime change
+- <strong>Recursivity (REMESH)</strong>: Echoes existing structure across scales</p>
+<p>Only these three operators have the <strong>physical capacity</strong> to generate structure from null states.</p>
+<p><strong>Canonicity Level</strong>: <strong>ABSOLUTE</strong> - Mathematical impossibility to evolve from EPI=0 without generation.</p>
+<p><strong>Traceability</strong>: TNFR.pdf § 2.1 (Nodal Equation) → Direct mathematical consequence</p>
+<hr />
+<h3 id="u1b-structural-closure-canonicity">U1b: Structural Closure - Canonicity<a class="headerlink" href="#u1b-structural-closure-canonicity" title="Permanent link">&para;</a></h3>
+<p><strong>Derivation from Wave Physics:</strong></p>
+<div class="highlight"><pre><span></span><code>Sequences as temporal action potentials:
+  Like electromagnetic pulses: must have source AND termination
+  Like neural spikes: must have depolarization AND repolarization
+  Like sound waves: must have emission AND absorption/decay
+
+Physical requirement:
+  Bounded temporal segments need coherent endpoints
+  → Start: Generator creates initial perturbation
+  → End: Closure absorbs/stabilizes final state
+</code></pre></div>
+<p><strong>Analogy with Classical Physics:</strong>
+- <strong>Electromagnetic</strong>: Every emission needs absorption (energy conservation)
+- <strong>Mechanical</strong>: Every force pulse needs damping (stability)
+- <strong>Thermodynamic</strong>: Every process needs equilibrium endpoint (2nd law)</p>
+<p><strong>Why These Closures?</strong>
+- <strong>Silence (SHA)</strong>: Terminal closure - freezes evolution (νf → 0)
+- <strong>Transition (NAV)</strong>: Handoff closure - transfers to next regime
+- <strong>Recursivity (REMESH)</strong>: Recursive closure - distributes across scales
+- <strong>Dissonance (OZ)</strong>: Intentional closure - preserves activation for next cycle</p>
+<p>Each leaves system in a <strong>coherent attractor state</strong> rather than mid-evolution.</p>
+<p><strong>Canonicity Level</strong>: <strong>STRONG</strong> - Physical requirement for bounded sequences (like action potentials must repolarize).</p>
+<p><strong>Traceability</strong>: Wave physics + TNFR structural dynamics → Sequences need endpoints</p>
+<hr />
+<h3 id="u2-convergence-boundedness-canonicity">U2: Convergence &amp; Boundedness - Canonicity<a class="headerlink" href="#u2-convergence-boundedness-canonicity" title="Permanent link">&para;</a></h3>
+<p><strong>Derivation from Integral Analysis:</strong></p>
+<div class="highlight"><pre><span></span><code>Integrated nodal equation:
+  EPI(t_f) = EPI(t_0) + ∫_{t_0}^{t_f} νf(τ) · ΔNFR(τ) dτ
+
+Without stabilizers (only destabilizers):
+  dΔNFR/dt &gt; 0 always (positive feedback)
+  → ΔNFR(t) ~ e^(λt) (exponential growth)
+  → ∫ νf · ΔNFR dt → ∞ (DIVERGES)
+  → EPI(t) → ∞ (structural fragmentation)
+
+With stabilizers:
+  dΔNFR/dt can be &lt; 0 (negative feedback)
+  → ΔNFR(t) → bounded attractor
+  → ∫ νf · ΔNFR dt converges
+  → EPI(t) remains bounded (coherence preserved)
+</code></pre></div>
+<p><strong>Physical Necessity:</strong>
+- Like feedback control: need negative feedback to prevent runaway
+- Like ecological systems: need limiting factors to prevent population explosion
+- Like chemical reactions: need inhibitors to prevent autocatalytic divergence</p>
+<p><strong>Mathematical Proof:</strong>
+1. Destabilizers create positive feedback: dΔNFR/dt &gt; 0
+2. Without negative feedback, integral diverges (proven via comparison test)
+3. Divergent integral → unbounded EPI → fragmentation (non-physical)
+4. Stabilizers provide negative feedback → convergence → bounded evolution</p>
+<p><strong>Canonicity Level</strong>: <strong>ABSOLUTE</strong> - Mathematical theorem from integral convergence.</p>
+<p><strong>Traceability</strong>: Analysis (integral convergence) + Nodal equation → Direct mathematical necessity</p>
+<hr />
+<h3 id="u3-resonant-coupling-canonicity">U3: Resonant Coupling - Canonicity<a class="headerlink" href="#u3-resonant-coupling-canonicity" title="Permanent link">&para;</a></h3>
+<p><strong>Derivation from Resonance Physics:</strong></p>
+<div class="highlight"><pre><span></span><code>Classical resonance condition:
+  Two oscillators couple ⟺ frequency AND phase compatibility
+
+Frequency condition: ω_i ≈ ω_j (met by structural frequency matching)
+Phase condition: |φ_i - φ_j| ≤ Δφ_max (typically π/2)
+
+Without phase verification:
+  Nodes attempt coupling with φ_i ≈ π, φ_j ≈ 0 (antiphase)
+  → Wave interference: A_i sin(ωt) + A_j sin(ωt + π) = 0
+  → Destructive interference (pattern cancellation)
+  → NO effective coupling (non-physical &quot;ghost coupling&quot;)
+
+With phase verification:
+  Only synchronous nodes couple (constructive interference)
+  → A_i sin(ωt) + A_j sin(ωt + δ) ≈ 2A sin(ωt) for δ ≈ 0
+  → Resonant amplification (physical coupling)
+</code></pre></div>
+<p><strong>Physical Analogy:</strong>
+- <strong>Radio tuning</strong>: Must match frequency AND phase for signal lock
+- <strong>Laser coherence</strong>: Photons must be phase-aligned for beam coherence
+- <strong>AC circuits</strong>: Phase matters for power transmission (power factor)</p>
+<p><strong>AGENTS.md Invariant #5:</strong></p>
+<blockquote>
+<p>"Phase check: no coupling is valid without explicit phase verification (synchrony)"</p>
+</blockquote>
+<p>This is not a convention - it's a <strong>physical requirement</strong> of wave mechanics.</p>
+<p><strong>Canonicity Level</strong>: <strong>ABSOLUTE</strong> - Direct consequence of wave interference physics + explicit invariant.</p>
+<p><strong>Traceability</strong>: 
+- Resonance physics (classical mechanics) → Phase requirement
+- AGENTS.md Invariant #5 → Explicit TNFR requirement
+- grammar.py → Implementation of physical law</p>
+<hr />
+<h3 id="u4a-bifurcation-triggers-need-handlers-canonicity">U4a: Bifurcation Triggers Need Handlers - Canonicity<a class="headerlink" href="#u4a-bifurcation-triggers-need-handlers-canonicity" title="Permanent link">&para;</a></h3>
+<p><strong>Derivation from Bifurcation Theory:</strong></p>
+<div class="highlight"><pre><span></span><code>Bifurcation condition (from AGENTS.md Contract OZ):
+  System undergoes phase transition when ∂²EPI/∂t² &gt; τ
+
+Dissonance (OZ) and Mutation (ZHIR):
+  Explicitly designed to trigger ∂²EPI/∂t² &gt; τ
+  → Create structural instability (bifurcation point)
+
+Without handlers:
+  System crosses bifurcation → chaos/fragmentation
+  → No mechanism to organize new phase
+  → Non-physical &quot;explosion&quot; of ΔNFR
+
+With handlers (Self-organization, Coherence):
+  Bifurcation → transient chaos → self-organization → new stable phase
+  → Autopoietic closure (THOL) or explicit stabilization (IL)
+  → Physical phase transition (like water → ice with nucleation)
+</code></pre></div>
+<p><strong>Physical Analogy:</strong>
+- <strong>Water → Ice</strong>: Need nucleation sites (handlers) for orderly crystallization
+- <strong>Laser threshold</strong>: Need cavity stabilization for coherent emission
+- <strong>Chemical reactions</strong>: Need catalysts (handlers) for controlled reactions</p>
+<p><strong>Contract OZ (from AGENTS.md):</strong></p>
+<blockquote>
+<p>"Dissonance may trigger bifurcation if ∂²EPI/∂t² &gt; τ"</p>
+</blockquote>
+<p>Without handlers, bifurcations are uncontrolled → fragmentation.</p>
+<p><strong>Canonicity Level</strong>: <strong>STRONG</strong> - Physical requirement from bifurcation theory + explicit contract.</p>
+<p><strong>Traceability</strong>: 
+- Contract OZ → Bifurcation physics
+- Bifurcation theory → Need for stability mechanisms
+- grammar.py → Implementation of controlled phase transitions</p>
+<hr />
+<h3 id="u4b-transformers-need-context-graduated-destabilization-canonicity">U4b: Transformers Need Context (Graduated Destabilization) - Canonicity<a class="headerlink" href="#u4b-transformers-need-context-graduated-destabilization-canonicity" title="Permanent link">&para;</a></h3>
+<p><strong>Derivation from Threshold Physics:</strong></p>
+<div class="highlight"><pre><span></span><code>Phase transition requirements:
+  1. Threshold energy: E &gt; E_critical
+  2. Proper timing: Energy must be &quot;fresh&quot; (recent)
+
+Mutation (ZHIR) and Self-organization (THOL):
+  Perform structural phase transitions
+  → Require |ΔNFR| &gt; threshold (energy condition)
+
+Without recent destabilizer:
+  |ΔNFR| may have decayed below threshold
+  → Insufficient energy for phase transition
+  → Transformation fails or produces unstable state
+
+With recent destabilizer (~3 ops):
+  |ΔNFR| still elevated (energy available)
+  → Sufficient gradient for threshold crossing
+  → Physical phase transition succeeds
+
+Additional for ZHIR (Mutation):
+  Needs prior Coherence (IL) for stable transformation base
+  → Like crystal growth: needs stable seed
+</code></pre></div>
+<p><strong>Physical Analogy:</strong>
+- <strong>Nuclear reactions</strong>: Need recent energy input for activation
+- <strong>Chemical kinetics</strong>: Reaction rate depends on "fresh" reactants
+- <strong>Phase transitions</strong>: Need proper energy timing (not stale conditions)</p>
+<p><strong>Timing Constraint (~3 operators):</strong>
+- Based on typical ΔNFR decay time
+- Ensures gradient hasn't dissipated below threshold
+- Like half-life in nuclear physics</p>
+<p><strong>Canonicity Level</strong>: <strong>STRONG</strong> - Physical requirement from threshold/timing physics.</p>
+<p><strong>Traceability</strong>: 
+- Threshold energy physics → Energy requirement
+- ΔNFR decay dynamics → Timing constraint
+- Bifurcation stability → Prior IL for ZHIR</p>
+<hr />
+<h3 id="u5-multi-scale-coherence-canonicity">U5: Multi-Scale Coherence - Canonicity<a class="headerlink" href="#u5-multi-scale-coherence-canonicity" title="Permanent link">&para;</a></h3>
+<p><strong>Derivation from Nodal Equation + Hierarchical Coupling:</strong></p>
+<div class="highlight"><pre><span></span><code>Step 1: Nodal equation at each level (mathematical necessity)
+  ∂EPI_parent/∂t = νf_parent · ΔNFR_parent
+  ∂EPI_child_i/∂t = νf_child_i · ΔNFR_child_i
+
+Step 2: Hierarchical coupling (from Invariant #7: Operational Fractality)
+  EPI_parent = f(EPI_child_1, ..., EPI_child_N)
+
+  Physical meaning: Parent structure depends on children
+  Example: Cell depends on {nucleus, mitochondria, ribosomes}
+
+Step 3: Chain rule (standard calculus - inevitable)
+  ∂EPI_parent/∂t = Σ (∂f/∂EPI_child_i) · ∂EPI_child_i/∂t
+                  = Σ w_i · νf_child_i · ΔNFR_child_i
+
+Step 4: Coherence relationship (from Invariant #9: Structural Metrics)
+  C ~ 1/|ΔNFR|  (coherence inversely proportional to reorganization pressure)
+
+  Parent coherence depends on aggregate child reorganization:
+  |ΔNFR_parent| ~ |Σ w_i · νf_child_i · ΔNFR_child_i|
+
+  Therefore: C_parent ~ 1/|Σ w_i · νf_child_i · ΔNFR_child_i|
+
+Step 5: Statistical mechanics of coupling weights
+  From central limit theorem with N independent children:
+  |Σ w_i · X_i| ~ √N · |w_typical| · |X_typical|
+
+  This gives α ~ 1/√N factor in coherence conservation
+
+Step 6: Phase synchronization (from U3/Invariant #5)
+  Only phase-compatible children contribute coherently
+  Efficiency η_phase decreases with N (harder to sync many nodes)
+
+Step 7: Conservation inequality (mathematical consequence)
+  For bounded |ΔNFR_parent| (required for coherence):
+
+  C_parent ≥ α · Σ C_child_i
+
+  where α = (1/√N) · η_phase · η_coupling
+
+Step 8: Physical necessity of stabilizers
+  Without IL/THOL:
+    Each child evolves independently with own ΔNFR_child_i
+    → Parent ΔNFR grows from uncorrelated fluctuations
+    → C_parent drops below α·ΣC_child
+    → CONSERVATION VIOLATED → Fragmentation
+
+  With IL/THOL (from operator contracts):
+    IL reduces |ΔNFR| at each level → maintains coherence
+    THOL creates self-limiting boundaries → prevents runaway
+    → C_parent ≥ α·ΣC_child maintained
+    → Bounded hierarchical evolution
+</code></pre></div>
+<p><strong>Why This Is Inevitable:</strong></p>
+<ol>
+<li><strong>Nodal equation</strong>: Given as axiomatic (∂EPI/∂t = νf · ΔNFR)</li>
+<li><strong>Hierarchical coupling</strong>: Follows from Invariant #7 (Fractality)</li>
+<li><strong>Chain rule</strong>: Standard calculus - cannot be otherwise</li>
+<li><strong>Coherence definition</strong>: Follows from Invariant #9 (Metrics)</li>
+<li><strong>Conservation inequality</strong>: Mathematical consequence of above</li>
+<li><strong>Stabilizer necessity</strong>: Only way to maintain conservation</li>
+</ol>
+<p><strong>Physical Analogies:</strong>
+- <strong>Thermodynamics</strong>: Nested systems must exchange energy to maintain local order
+- <strong>Structural engineering</strong>: Multi-story buildings need support at each level
+- <strong>Biological hierarchy</strong>: Cells need homeostasis at tissue, organ, organism levels
+- <strong>Neural hierarchies</strong>: Cortical areas need inter-layer stabilization</p>
+<p><strong>Contract Requirements:</strong>
+- <strong>IL (Coherence)</strong>: "Reduces |ΔNFR|" → Direct stabilization at each level
+- <strong>THOL (Self-organization)</strong>: "Creates sub-EPIs with boundaries" → Multi-level closure</p>
+<p><strong>Independence from U2/U4b:</strong>
+<div class="highlight"><pre><span></span><code>Decisive test: [AL, REMESH(depth=3), SHA]
+
+U2 (Convergence):
+  No destabilizers present → ∫νf·ΔNFR dt trivially bounded
+  ✓ PASSES (temporal constraint satisfied)
+
+U4b (Transformer Context):
+  REMESH is generator/closure, not transformer
+  ✓ PASSES (temporal constraint not applicable)
+
+U5 (Multi-Scale):
+  3 hierarchical levels without stabilizers
+  → C_parent &lt; α·ΣC_child (spatial conservation violated)
+  ✗ FAILS (spatial constraint violated)
+
+Conclusion: U5 captures SPATIAL (hierarchy) physics
+            U2/U4b capture TEMPORAL (sequence) physics
+            INDEPENDENT dimensions, INDEPENDENT constraints
+</code></pre></div></p>
+<p><strong>Canonicity Level</strong>: <strong>STRONG</strong> - Emerges inevitably from:
+1. Nodal equation (axiomatic)
+2. Hierarchical coupling (Invariant #7)
+3. Chain rule (mathematical necessity)
+4. Coherence definition (Invariant #9)
+5. Conservation requirement (bounded evolution)</p>
+<p><strong>Traceability</strong>: 
+- <strong>TNFR.pdf § 2.1</strong>: Nodal equation foundation
+- <strong>AGENTS.md § Invariant #7</strong>: Operational Fractality enables nesting
+- <strong>AGENTS.md § Invariant #9</strong>: Structural Metrics define C(t)
+- <strong>Contract IL</strong>: Stabilizer reducing |ΔNFR|
+- <strong>Contract THOL</strong>: Multi-level autopoietic closure
+- <strong>grammar.py</strong>: Implementation with depth parameter</p>
+<p><strong>Why "STRONG" not "ABSOLUTE":</strong>
+- Requires Invariant #7 (fractality) which is empirical
+- α factor has empirical component (η_phase, η_coupling)
+- But given fractality, the rest follows inevitably</p>
+<hr />
+<h3 id="u6-structural-potential-confinement-canonicity">U6: Structural Potential Confinement - Canonicity<a class="headerlink" href="#u6-structural-potential-confinement-canonicity" title="Permanent link">&para;</a></h3>
+<p><strong>Derivation from Network ΔNFR Field:</strong></p>
+<div class="highlight"><pre><span></span><code>Step 1: Structural potential definition (from nodal equation)
+  Starting from: ∂EPI/∂t = νf · ΔNFR(t)
+
+  ΔNFR represents local structural pressure at each node
+  Network aggregate: Φ_s(i) = Σ_{j≠i} ΔNFR_j / d(i,j)^α  (α=2)
+
+  Physical interpretation: Distance-weighted sum of reorganization pressures
+  Analogous to gravitational potential: Φ_g = Σ G·m_j/r_ij
+
+Step 2: Empirical validation (2,400+ experiments)
+  Correlation: corr(Δ Φ_s, ΔC) = -0.822 (R² ≈ 0.68)
+
+  Physical meaning: Displacement from Φ_s minima → coherence loss
+  Strong predictive power comparable to fundamental field theories
+
+Step 3: Topology universality (5 families tested)
+  Networks: ring, scale_free, small-world (ws), tree, grid
+  Coefficient of variation: CV = 0.1%
+
+  → Φ_s-coherence relationship independent of topology
+  → Universal structural physics, not architecture artifact
+
+Step 4: Passive equilibrium mechanism (from sequence analysis)
+  Grammar-valid sequences: Δ Φ_s = +0.583
+  Grammar-violating sequences: Δ Φ_s = +3.879
+  Reduction factor: 0.15× (85% protection)
+
+  Physical interpretation:
+  - Φ_s minima = passive equilibrium states (potential wells)
+  - Grammar U1-U5 = confinement mechanism (not active attractor)
+  - Valid sequences naturally maintain proximity to equilibrium
+  - No &quot;force&quot; pulling back - only passive resistance to escape
+
+Step 5: Safety threshold (empirical calibration)
+  Escape threshold: Δ Φ_s &lt; 2.0
+
+  Below 2.0: System remains confined, C(t) bounded
+  Above 2.0: Escape from well → fragmentation risk
+
+  Valid sequences: Δ Φ_s ≈ 0.6 (30% of threshold)
+  Violations: Δ Φ_s ≈ 3.9 (195% of threshold)
+
+  Clear separation between stable and fragmenting regimes
+
+Step 6: Scale-dependent universality (fractality test)
+  β exponent (fragmentation criticality):
+  - Flat networks: β = 0.556 (standard universality class)
+  - Nested EPIs: β = 0.178 (hierarchical universality class)
+
+  Despite different β, Φ_s correlation remains universal: -0.822 ± 0.001
+  → Φ_s captures fundamental coherence-pressure relationship across scales
+
+Step 7: Independence from U2 (Boundedness)
+  U2 (temporal): ∫νf·ΔNFR dt &lt; ∞ (integral convergence over TIME)
+  U6 (spatial): Δ Φ_s &lt; 2.0 (potential confinement in STRUCTURE SPACE)
+
+  Different dimensions:
+  - U2: Time-integrated evolution must not diverge
+  - U6: Spatial displacement must not exceed escape velocity
+
+  Analogy: Rocket trajectory
+  - U2: Total fuel expenditure must be finite
+  - U6: Current position must stay within planet&#39;s gravity well
+
+Step 8: Usage as telemetry-based safety check
+  U6 is READ-ONLY (no operator dictation like U1-U5):
+  - Does NOT require specific operator patterns
+  - Does NOT modify sequence generation
+  - DOES provide early warning: Δ Φ_s approaching 2.0
+  - DOES validate: Grammar-compliant sequences naturally stay confined
+
+  Physical basis: Grammar U1-U5 EMERGENTLY confines Φ_s dynamics
+  → U6 observes and quantifies this emergent confinement
+
+Conclusion: U6 emerges from:
+  1. Nodal equation: ΔNFR as field source
+  2. Distance-weighted aggregation: Φ_s field definition
+  3. Empirical validation: 2,400+ experiments, 5 topologies
+  4. Universal correlation: R² = 0.68, CV = 0.1%
+  5. Grammar as confinement: Passive protection mechanism
+  6. Threshold physics: Escape boundary at Δ Φ_s = 2.0
+</code></pre></div>
+<p><strong>Why This Is Canonical:</strong></p>
+<ol>
+<li><strong>Formal derivation</strong>: Φ_s directly from ΔNFR field theory (nodal equation)</li>
+<li><strong>Strong predictive power</strong>: R² = 0.68 (comparable to established field theories)</li>
+<li><strong>Topology universality</strong>: CV = 0.1% across 5 diverse network families</li>
+<li><strong>Grammar compliance</strong>: Read-only telemetry, no conflicts with U1-U5</li>
+<li><strong>Extensive validation</strong>: 2,400+ experiments with reproducible results</li>
+<li><strong>Scale-independent</strong>: Universal correlation despite scale-dependent β</li>
+</ol>
+<p><strong>Physical Interpretation:</strong>
+Φ_s is the structural potential landscape emerging from ΔNFR distribution. Nodes reside at potential minima (equilibrium). Grammar U1-U5 acts as passive confinement mechanism preventing escape (Δ Φ_s → 2.0). This is NOT active attraction but passive stabilization - like a bowl containing marbles without pulling them down.</p>
+<p><strong>Distinction from Other Fields:</strong>
+- <strong>Φ_s (CANONICAL)</strong>: corr = -0.822, dominant field
+- <strong>|∇φ| (research)</strong>: corr ≈ -0.13, weak EM-like
+- <strong>K_φ (research)</strong>: corr ≈ -0.07, weak strong-like
+- <strong>ξ_C (research)</strong>: threshold behavior, weak-like</p>
+<p>Only Φ_s has met canonicity criteria.</p>
+<p><strong>Contract Requirements:</strong>
+No operator contracts required (telemetry-based, not prescriptive). However:
+- Grammar U1-U5 compliance NATURALLY maintains Δ Φ_s &lt; 2.0
+- Violations NATURALLY produce Δ Φ_s &gt; 2.0
+- U6 OBSERVES this emergent relationship</p>
+<p><strong>Independence from U1-U5:</strong>
+U6 does NOT duplicate any existing rule:
+- <strong>vs U1</strong>: U1 dictates start/end operators; U6 measures resulting Φ_s
+- <strong>vs U2</strong>: U2 prevents temporal divergence; U6 prevents spatial escape
+- <strong>vs U3</strong>: U3 requires phase checks; U6 aggregates global field
+- <strong>vs U4</strong>: U4 manages bifurcations; U6 measures overall stability
+- <strong>vs U5</strong>: U5 hierarchical stabilization; U6 flat+nested universality</p>
+<p><strong>Canonicity Level</strong>: <strong>STRONG</strong> (promoted 2025-11-11)</p>
+<p><strong>Why "STRONG" not "ABSOLUTE":</strong>
+- Threshold (2.0) is empirically calibrated, not analytically derived
+- α exponent (2) chosen by physics analogy (inverse-square), not proven optimal
+- Correlation (-0.822) strong but not perfect (R² = 0.68, not 1.0)
+- However: Universality (CV = 0.1%) and predictive power justify canonical status</p>
+<p><strong>Traceability</strong>: 
+- <strong>TNFR.pdf § 2.1</strong>: Nodal equation ∂EPI/∂t = νf · ΔNFR(t)
+- <strong>docs/TNFR_FORCES_EMERGENCE.md § 14</strong>: Φ_s drift analysis (corr = -0.822)
+- <strong>docs/TNFR_FORCES_EMERGENCE.md § 15</strong>: Complete canonicity validation
+- <strong>AGENTS.md § Structural Fields</strong>: Φ_s canonical status and usage
+- <strong>src/tnfr/physics/fields.py</strong>: compute_structural_potential() implementation</p>
+<p><strong>Evidence Base:</strong>
+- <strong>Experiments</strong>: 2,400+ simulations (360 drift + 480 universality + 1,200 nested + 360 RA-dominated)
+- <strong>Topologies</strong>: ring, scale_free, ws (small-world), tree (hierarchical), grid (lattice)
+- <strong>Sequence types</strong>: 2 glyphs × 2 phases × 30 intensities × 3 reps each
+- <strong>Validation date</strong>: 2025-11-11</p>
+<hr />
+<h3 id="summary-why-these-rules-are-canonical">Summary: Why These Rules Are Canonical<a class="headerlink" href="#summary-why-these-rules-are-canonical" title="Permanent link">&para;</a></h3>
+<p><strong>U1a (Initiation)</strong>: Mathematical impossibility to evolve from EPI=0 → <strong>ABSOLUTE</strong></p>
+<p><strong>U1b (Closure)</strong>: Wave physics requires bounded sequences have endpoints → <strong>STRONG</strong></p>
+<p><strong>U2 (Convergence)</strong>: Integral divergence theorem + feedback control → <strong>ABSOLUTE</strong></p>
+<p><strong>U3 (Phase)</strong>: Wave interference physics + explicit invariant → <strong>ABSOLUTE</strong></p>
+<p><strong>U4a (Handlers)</strong>: Bifurcation theory + explicit contract → <strong>STRONG</strong></p>
+<p><strong>U4b (Context)</strong>: Threshold energy + timing physics → <strong>STRONG</strong></p>
+<p><strong>U5 (Multi-Scale)</strong>: Nodal equation + hierarchical coupling + chain rule → <strong>STRONG</strong></p>
+<p><strong>U6 (Confinement)</strong>: ΔNFR field + empirical validation + universality → <strong>STRONG</strong></p>
+<p><strong>All eight sub-rules</strong> emerge inevitably from:
+1. The nodal equation: ∂EPI/∂t = νf · ΔNFR(t)
+2. Mathematical analysis (integrals, chain rule, wave interference, field theory)
+3. Physical laws (resonance, bifurcations, thresholds, conservation, potentials)
+4. Explicit invariants/contracts (AGENTS.md)
+5. Empirical validation (2,400+ experiments, 5 topologies)</p>
+<p><strong>Conclusion</strong>: The unified grammar (U1-U6) is <strong>100% canonical</strong> - no organizational conventions, only physics.</p>
+<p><strong>Reproducibility &amp; Legacy</strong>: This analysis provides indisputable scientific basis for grammar rules, ensuring:
+- Theoretical robustness
+- Implementation fidelity
+- Educational clarity
+- Long-term maintenance certainty</p>
+<hr />
+<h2 id="physics-derivation-summary">Physics Derivation Summary<a class="headerlink" href="#physics-derivation-summary" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Rule</th>
+<th>Source</th>
+<th>Type</th>
+<th>Inevitability</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>U1a</td>
+<td>∂EPI/∂t undefined at EPI=0</td>
+<td>Mathematical</td>
+<td>Absolute</td>
+</tr>
+<tr>
+<td>U1b</td>
+<td>Sequences as bounded action potentials</td>
+<td>Physical</td>
+<td>Strong</td>
+</tr>
+<tr>
+<td>U2</td>
+<td>Integral convergence theorem</td>
+<td>Mathematical</td>
+<td>Absolute</td>
+</tr>
+<tr>
+<td>U3</td>
+<td>Invariant #5 + resonance physics</td>
+<td>Physical</td>
+<td>Absolute</td>
+</tr>
+<tr>
+<td>U4a</td>
+<td>Contract OZ + bifurcation theory</td>
+<td>Physical</td>
+<td>Strong</td>
+</tr>
+<tr>
+<td>U4b</td>
+<td>Threshold energy for phase transitions</td>
+<td>Physical</td>
+<td>Strong</td>
+</tr>
+<tr>
+<td>U5</td>
+<td>Nodal equation + hierarchical coupling</td>
+<td>Mathematical+Physical</td>
+<td>Strong</td>
+</tr>
+<tr>
+<td>U6</td>
+<td>ΔNFR field + empirical validation</td>
+<td>Physical+Empirical</td>
+<td>Strong</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Inevitability Levels:</strong>
+- <strong>Absolute</strong>: Mathematical necessity from nodal equation
+- <strong>Strong</strong>: Physical requirement from invariants/contracts/validation
+- <strong>Moderate</strong>: Physical preference (not used in unified grammar)</p>
+<hr />
+<h2 id="implementation-strategy">Implementation Strategy<a class="headerlink" href="#implementation-strategy" title="Permanent link">&para;</a></h2>
+<h3 id="phase-1-create-unified-module">Phase 1: Create Unified Module<a class="headerlink" href="#phase-1-create-unified-module" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Create <code>src/tnfr/operators/grammar.py</code></li>
+<li>Implement all 4 unified rules (U1-U4)</li>
+<li>Comprehensive docstrings with physics derivations</li>
+<li>Export unified validator and rule sets</li>
+</ol>
+<h3 id="phase-2-update-existing-modules">Phase 2: Update Existing Modules<a class="headerlink" href="#phase-2-update-existing-modules" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>grammar.py</strong>: Import from unified_grammar, keep API compatible</li>
+<li><strong>canonical_grammar.py</strong>: Import from unified_grammar, mark as legacy/alias</li>
+<li>Deprecation warnings pointing to unified module</li>
+</ol>
+<h3 id="phase-3-update-documentation">Phase 3: Update Documentation<a class="headerlink" href="#phase-3-update-documentation" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Create UNIFIED_GRAMMAR.md (this file)</li>
+<li>Update RESUMEN_FINAL_GRAMATICA.md</li>
+<li>Update EXECUTIVE_SUMMARY.md</li>
+<li>Update AGENTS.md references</li>
+</ol>
+<h3 id="phase-4-update-tests">Phase 4: Update Tests<a class="headerlink" href="#phase-4-update-tests" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Create tests/unit/operators/test_grammar.py</li>
+<li>Update existing tests to use unified rules</li>
+<li>Verify all tests pass</li>
+</ol>
+<hr />
+<h2 id="validation-criteria">Validation Criteria<a class="headerlink" href="#validation-criteria" title="Permanent link">&para;</a></h2>
+<h3 id="completeness">Completeness<a class="headerlink" href="#completeness" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[x] All C1-C3 constraints mapped</li>
+<li>[x] All RC1-RC4 constraints mapped</li>
+<li>[x] No rule duplication</li>
+<li>[x] No rule conflicts</li>
+</ul>
+<h3 id="physics-correctness">Physics Correctness<a class="headerlink" href="#physics-correctness" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[x] All rules derive from nodal equation, invariants, or contracts</li>
+<li>[x] No organizational conventions</li>
+<li>[x] Mathematical proofs provided where applicable</li>
+<li>[x] Physical interpretations clear</li>
+</ul>
+<h3 id="practical-utility">Practical Utility<a class="headerlink" href="#practical-utility" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[x] Rules are implementable in code</li>
+<li>[x] Rules can be validated automatically</li>
+<li>[x] Rules cover all necessary constraints</li>
+<li>[x] Rules don't over-constrain valid sequences</li>
+</ul>
+<hr />
+<h2 id="conclusion">Conclusion<a class="headerlink" href="#conclusion" title="Permanent link">&para;</a></h2>
+<p>The unified grammar consolidates two previously separate rule systems into a single source of truth. All five rules (U1-U5) emerge inevitably from TNFR physics with no duplication, no inconsistency, and 100% physical basis.</p>
+<p><strong>Key Improvements:</strong>
+1. <strong>Single source of truth</strong> - No more dual systems
+2. <strong>Complete coverage</strong> - Includes phase verification (U3) and multi-scale coherence (U5)
+3. <strong>Consistent</strong> - U1b restores closure physics (removed with RNC1)
+4. <strong>100% physics</strong> - Every rule derived from equation/invariants/contracts
+5. <strong>Well-documented</strong> - Clear derivations and physical interpretations
+6. <strong>Dimensionally complete</strong> - Covers both temporal (U1-U4) and spatial (U5) constraints</p>
+<p><strong>Result:</strong> A unified TNFR grammar that is physically inevitable, mathematically rigorous, and practically useful.</p>
+<p><strong>Extension History:</strong>
+- <strong>2025-11-08</strong>: Original U1-U4 unified grammar
+- <strong>2025-11-10</strong>: Added U5 Multi-Scale Coherence for hierarchical structures</p>
+<hr />
+<hr />
+<h2 id="proposed-constraints-under-research">Proposed Constraints Under Research<a class="headerlink" href="#proposed-constraints-under-research" title="Permanent link">&para;</a></h2>
+<p>This section documents grammar constraints that have physical motivation but do not yet meet the canonicity threshold (STRONG/ABSOLUTE) for implementation. They remain under investigation pending empirical validation.</p>
+<h3 id="proposed-u7-temporal-ordering">Proposed U7: TEMPORAL ORDERING<a class="headerlink" href="#proposed-u7-temporal-ordering" title="Permanent link">&para;</a></h3>
+<p><strong>Status:</strong> 🔬 RESEARCH PHASE - Not Implemented<br />
+<strong>Canonicity Level:</strong> MODERATE (40% confidence)<br />
+<strong>Investigation Date:</strong> 2025-11-10<br />
+<strong>Note:</strong> Previously labeled as "U6" before structural potential confinement was promoted to canonical status (2025-11-11).</p>
+<h4 id="physical-motivation">Physical Motivation<a class="headerlink" href="#physical-motivation" title="Permanent link">&para;</a></h4>
+<p><strong>Proposed Rule:</strong>
+<div class="highlight"><pre><span></span><code>If bifurcation trigger {OZ, ZHIR} at position i,
+Then do NOT apply {OZ, ZHIR, VAL} at positions i+1, i+2
+</code></pre></div></p>
+<p><strong>Physics Basis:</strong></p>
+<p>From bifurcation theory, systems experience <strong>structural relaxation time</strong> after phase transitions:</p>
+<p>$$
+\tau_{\text{relax}} \approx \frac{\alpha}{2\pi\nu_f}
+$$</p>
+<p>where:
+- α is scale factor (typically 0.5-0.9, context-dependent)
+- νf is structural frequency (Hz_str)
+- For νf = 1.0 Hz_str: τ_relax ≈ 0.159 seconds structural</p>
+<p><strong>Rationale:</strong>
+1. <strong>Post-bifurcation delay:</strong> Systems exhibit ε^(2/3) delay after fold bifurcations
+2. <strong>Structural instability:</strong> Non-hyperbolic transitions cause extreme sensitivity
+3. <strong>TNFR evidence:</strong> "Caos estructural resonante" when νf high and ΔNFR grows rapidly</p>
+<p><strong>Physical Analogies:</strong>
+- <strong>Neuronal refractory period:</strong> Neurons cannot fire immediately after action potential
+- <strong>Thermal equilibration:</strong> Phase transitions require relaxation time
+- <strong>Oscillator synchronization:</strong> After perturbation, need reconvergence time</p>
+<h4 id="gap-analysis-does-u6-add-constraints">Gap Analysis: Does U6 Add Constraints?<a class="headerlink" href="#gap-analysis-does-u6-add-constraints" title="Permanent link">&para;</a></h4>
+<p>Testing reveals U6 DOES identify sequences that pass U1-U5 but may be problematic:</p>
+<p><strong>Example Sequences Passing U1-U5 but Flagged by U6:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Case 1: Consecutive destabilizers</span>
+<span class="p">[</span><span class="n">Emission</span><span class="p">,</span> <span class="n">Dissonance</span><span class="p">,</span> <span class="n">Dissonance</span><span class="p">,</span> <span class="n">Coherence</span><span class="p">,</span> <span class="n">Silence</span><span class="p">]</span>  
+<span class="c1"># ✓ U1-U5, ✗ U6 (OZ at i, OZ at i+1)</span>
+
+<span class="c1"># Case 2: Immediate OZ → ZHIR</span>
+<span class="p">[</span><span class="n">Emission</span><span class="p">,</span> <span class="n">Coherence</span><span class="p">,</span> <span class="n">Dissonance</span><span class="p">,</span> <span class="n">Mutation</span><span class="p">,</span> <span class="n">Coherence</span><span class="p">,</span> <span class="n">Silence</span><span class="p">]</span>
+<span class="c1"># ✓ U1-U5, ✗ U6 (OZ→ZHIR without spacing)</span>
+
+<span class="c1"># Case 3: Triple destabilizers</span>
+<span class="p">[</span><span class="n">Emission</span><span class="p">,</span> <span class="n">Dissonance</span><span class="p">,</span> <span class="n">Expansion</span><span class="p">,</span> <span class="n">Dissonance</span><span class="p">,</span> <span class="n">Coherence</span><span class="p">,</span> <span class="n">Silence</span><span class="p">]</span>
+<span class="c1"># ✓ U1-U5, ✗ U6 (consecutive destabilization)</span>
+</code></pre></div>
+<p><strong>Gap Coverage:</strong> 5 out of 6 test cases (83% coverage improvement over U1-U5)</p>
+<p><strong>Control (Valid under both):</strong>
+<div class="highlight"><pre><span></span><code><span class="p">[</span><span class="n">Emission</span><span class="p">,</span> <span class="n">Dissonance</span><span class="p">,</span> <span class="n">Coherence</span><span class="p">,</span> <span class="n">SelfOrganization</span><span class="p">,</span> <span class="n">Dissonance</span><span class="p">,</span> <span class="n">Coherence</span><span class="p">,</span> <span class="n">Silence</span><span class="p">]</span>
+<span class="c1"># ✓ U1-U5, ✓ U6 (3 operators spacing between OZ)</span>
+</code></pre></div></p>
+<h4 id="limitations-preventing-canonical-status">Limitations Preventing Canonical Status<a class="headerlink" href="#limitations-preventing-canonical-status" title="Permanent link">&para;</a></h4>
+<p><strong>Why NOT Canonical (Yet):</strong></p>
+<ol>
+<li><strong>Not Derived from Nodal Equation</strong></li>
+<li>Formula τ_relax = α/(2πνf) borrowed from oscillator period</li>
+<li>No formal proof from ∂EPI/∂t = νf · ΔNFR(t)</li>
+<li>
+<p>Heuristic "2 operator positions" approximation</p>
+</li>
+<li>
+<p><strong>Parameter Dependence</strong></p>
+</li>
+<li>α varies (0.5-0.9) → context-dependent, not universal</li>
+<li>No methodology for determining α from first principles</li>
+<li>
+<p>Domain-specific calibration required</p>
+</li>
+<li>
+<p><strong>Temporal-Logical Conflation</strong></p>
+</li>
+<li>Sequences are LOGICAL orderings (abstract)</li>
+<li>U6 assumes fixed temporal spacing between operators</li>
+<li>
+<p>Actual Δt between operators may vary by domain/implementation</p>
+</li>
+<li>
+<p><strong>Empirical Validation Pending</strong></p>
+</li>
+<li>No simulation studies confirming τ_relax values</li>
+<li>Problem statement explicitly notes: "validación experimental pendiente"</li>
+<li>
+<p>Unknown: How often do U6 violations actually cause fragmentation?</p>
+</li>
+<li>
+<p><strong>Possible Partial Redundancy</strong></p>
+</li>
+<li>U2 requires stabilizers after destabilizers</li>
+<li>U4a requires handlers after triggers</li>
+<li>Question: Do U2+U4a enforcement timings already prevent worst cases?</li>
+</ol>
+<h4 id="comparison-with-canonical-rules">Comparison with Canonical Rules<a class="headerlink" href="#comparison-with-canonical-rules" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>U1-U5</th>
+<th>Proposed U6</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Derivation</strong></td>
+<td>Direct from nodal equation</td>
+<td>Borrowed from oscillator theory</td>
+</tr>
+<tr>
+<td><strong>Parameters</strong></td>
+<td>None (or implicit in physics)</td>
+<td>α varies 0.5-0.9</td>
+</tr>
+<tr>
+<td><strong>Domain</strong></td>
+<td>Universal</td>
+<td>Time-spacing may vary</td>
+</tr>
+<tr>
+<td><strong>Evidence</strong></td>
+<td>Mathematical/physical necessity</td>
+<td>Empirical validation needed</td>
+</tr>
+<tr>
+<td><strong>Type</strong></td>
+<td>ABSOLUTE/STRONG</td>
+<td>MODERATE</td>
+</tr>
+</tbody>
+</table>
+<h4 id="research-needed-for-elevation-to-strong">Research Needed for Elevation to STRONG<a class="headerlink" href="#research-needed-for-elevation-to-strong" title="Permanent link">&para;</a></h4>
+<p>To elevate U6 to canonical status (60-80% confidence), the following research is required:</p>
+<p><strong>1. Computational Validation (Priority: HIGH)</strong>
+- Run extensive simulations with varying νf values
+- Measure actual relaxation times after bifurcations
+- Determine empirical distribution of α across domains
+- Test: Does violating U6 CONSISTENTLY cause C(t) fragmentation?</p>
+<p><strong>2. Theoretical Derivation (Priority: HIGH)</strong>
+- Attempt rigorous derivation from integrated nodal equation
+- Prove (or disprove): ∫νf·ΔNFR dt diverges without temporal spacing
+- Determine if τ_relax can be expressed purely in terms of TNFR primitives
+- Analyze: Can U6 be reformulated to remove α parameter?</p>
+<p><strong>3. Alternative Formulations (Priority: MEDIUM)</strong>
+- Test operator-count spacing vs. actual time-based spacing
+- Investigate: Should U6 apply only to specific operator pairs?
+- Consider: Graduated spacing (OZ→OZ vs. OZ→ZHIR may differ)
+- Explore: Can U4a/U4b be strengthened to subsume U6?</p>
+<p><strong>4. Cross-Domain Validation (Priority: MEDIUM)</strong>
+- Test U6 violations in biological, social, AI domains
+- Measure domain-specific α values
+- Document: Which domains show strongest U6 effects?
+- Determine: Is U6 universal or domain-conditional?</p>
+<p><strong>5. Failure Mode Analysis (Priority: LOW)</strong>
+- Characterize: What exactly happens when U6 violated?
+- Measure: C(t), Si, νf trajectories for U6 violations
+- Compare: U6 violations vs. U2/U4 violations
+- Quantify: How severe is U6 violation vs. other rules?</p>
+<h4 id="theoretical-derivation-sketch-from-nodal-equation">Theoretical Derivation (Sketch) from Nodal Equation<a class="headerlink" href="#theoretical-derivation-sketch-from-nodal-equation" title="Permanent link">&para;</a></h4>
+<p>We outline a physics-based bridge from the nodal equation to a relaxation timescale that motivates U6.</p>
+<p>1) Linearization around a coherent attractor</p>
+<p>Let EPI<em> denote a coherent form (attractor). For small deviations δEPI(t) = EPI(t) − EPI</em>, assume ΔNFR is linearizable:</p>
+<p>ΔNFR(δEPI) ≈ L · δEPI</p>
+<p>where L is a linear operator capturing local reorganization response (a structural Liouvillian). The nodal equation becomes:</p>
+<p>d(δEPI)/dt = νf · L · δEPI</p>
+<p>2) Modal decomposition and decay</p>
+<p>If v_k are eigenmodes of L with eigenvalues λ_k (Re λ_k ≤ 0 for contractivity), then</p>
+<p>δEPI_k(t) = c_k · exp(νf · λ_k · t)</p>
+<p>The slowest decay rate is set by the mode with the smallest magnitude of negative real part, λ_slow (Re λ_slow &lt; 0). Therefore, the characteristic relaxation time is</p>
+<p>τ_relax = 1 / (νf · |Re(λ_slow)|)</p>
+<p>3) Relation to practical Liouvillian spectrum</p>
+<p>In practice, when the full time-generator ℒ is constructed (e.g., Lindblad Liouvillian), its eigenvalues already carry temporal units (Hz_str). In that case, the evolution is</p>
+<p>d(δEPI)/dt = ℒ · δEPI  ⇒  δEPI_k(t) = c_k · exp(λ_k · t)</p>
+<p>and the relaxation time simplifies to</p>
+<p>τ_relax = 1 / |Re(λ_slow)|</p>
+<p>This matches the implementation in mathematics/liouville.py and operators/metrics_u6.py, where we prefer Liouvillian slow-mode when available.</p>
+<p>4) Recovery threshold and minimal spacing</p>
+<p>For a target recovery factor ε ∈ (0, 1), requiring ||δEPI(Δt)|| ≤ ε · ||δEPI(0)|| yields</p>
+<p>Δt ≥ ln(1/ε) / (νf · |Re(λ_slow)|)</p>
+<p>Hence a minimum spacing Δt on the order of τ_relax between destabilizers allows δEPI to decay towards the attractor before the next perturbation, giving a physics-grounded rationale for U6.</p>
+<p>5) Integral boundedness link (U2)</p>
+<p>Integrating the nodal equation gives</p>
+<p>EPI(t_f) = EPI(t_0) + ∫_{t_0}^{t_f} νf(τ) · ΔNFR(τ) dτ</p>
+<p>Under the linear regime, ΔNFR(τ) ~ L · δEPI(τ) and δEPI(τ) decays as above. The integral converges provided Re(νf · λ_k) &lt; 0. Imposing Δt ≥ O(τ_relax) after a destabilizer allows δEPI to decay sufficiently, keeping the integral bounded and coherence preserved—consistent with U2 and clarifying U6’s temporal role.</p>
+<p>Notes:
+- If the spectrum is computed from a structural operator L without temporal scaling, include νf explicitly: τ_relax = 1/(νf · |Re(λ_slow)|).
+- If using a full time-generator (Liouvillian) ℒ, νf is already absorbed: τ_relax = 1/|Re(λ_slow)|.</p>
+<h4 id="preliminary-empirical-results-2025-11-11">Preliminary Empirical Results (2025-11-11)<a class="headerlink" href="#preliminary-empirical-results-2025-11-11" title="Permanent link">&para;</a></h4>
+<p>Experimental setup (benchmarks/u6_sequence_simulator.py):
+- Topologies: star, ring, small-world (ws), scale-free
+- Sizes: n ∈ {20, 50}
+- Structural frequencies: νf ∈ {0.5, 1.0, 2.0, 4.0}
+- Sequences: valid_U6 (spaced) vs violate_U6 (consecutive destabilizers)
+- Runs: 5 per combination (total: 320 experiments)
+- Metrics: minimum C(t), recovery steps, fragmentation (sustained C(t) &lt; 0.3), τ_relax (Liouvillian if available, spectral proxy otherwise), empirical α = τ_relax · 2π · νf, min_spacing_steps</p>
+<p>Findings:
+1. Coherence dip: violate_U6 systematically reduces minimum coherence vs. valid_U6 (e.g., 0.448 vs. 0.616 on average in the batch).
+2. Fragmentation: not observed under current parameters (window=5, threshold=0.3), so correlations with fragmentation are null.
+3. Recovery: recovery_steps ≈ 0 in this regime; perturbations are moderate and the system does not cross severe thresholds.
+4. Empirical α: scales linearly with νf and depends on topology (star &lt; ws &lt; scale_free &lt; ring). Large magnitudes (order 10^3–10^4) indicate direct α_emp is not comparable to the proposed 0.5–0.9 range without structural normalization.</p>
+<p>Implications:
+- U6 shows a gentle effect (depression of minimum coherence) but does not yet evidence fragmentation; canonicity remains MODERATE.
+- More aggressive conditions are required (higher νf, longer sequences with denser OZ/ZHIR/VAL) to explore fragmentation thresholds.
+- To compare α with the proposed range, normalize α_emp by topological scale (e.g., α_norm = (τ_relax · 2π · νf) / (N · k_eff) with k_eff ≈ average degree or λ₁).</p>
+<p>Next steps (empirical):
+- Extend sequences with triple/quintuple destabilizers and longer windows.
+- Increase νf beyond 4.0 and vary connectivities (modularity and bottlenecks) to induce violations crossing the threshold.
+- Record λ₁ per experiment and report α_norm to facilitate cross-topology comparisons.</p>
+<h4 id="implementation-strategy-if-elevated-to-strong">Implementation Strategy (If Elevated to STRONG)<a class="headerlink" href="#implementation-strategy-if-elevated-to-strong" title="Permanent link">&para;</a></h4>
+<p><strong>Phase 1: Experimental Flag</strong>
+<div class="highlight"><pre><span></span><code><span class="n">validator</span> <span class="o">=</span> <span class="n">UnifiedGrammarValidator</span><span class="p">(</span><span class="n">experimental_u6</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">violations</span> <span class="o">=</span> <span class="n">validator</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">sequence</span><span class="p">,</span> <span class="n">epi_initial</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+</code></pre></div></p>
+<p><strong>Phase 2: Configurable Parameter</strong>
+<div class="highlight"><pre><span></span><code><span class="n">validator</span> <span class="o">=</span> <span class="n">UnifiedGrammarValidator</span><span class="p">(</span><span class="n">u6_spacing</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">u6_alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>
+</code></pre></div></p>
+<p><strong>Phase 3: Canonical Integration</strong>
+- Add U6 to grammar.py operator sets
+- Update UNIFIED_GRAMMAR_RULES.md derivation section
+- Comprehensive test suite (bifurcation simulations)
+- Update AGENTS.md invariants if needed</p>
+<h4 id="current-recommendation">Current Recommendation<a class="headerlink" href="#current-recommendation" title="Permanent link">&para;</a></h4>
+<p><strong>DO NOT IMPLEMENT</strong> U6 as canonical constraint at this time.</p>
+<p><strong>Rationale:</strong>
+1. Canonicity MODERATE (40%) below threshold for inclusion
+2. Requires empirical validation not yet performed
+3. Parameter α needs principled determination method
+4. May introduce false positives (overly restrictive)
+5. Alternative: Strengthen U4a/U4b to cover temporal aspects</p>
+<p><strong>Alternative Approach:</strong>
+- Document U6 as "physically motivated constraint under research"
+- Provide experimental validation framework in research tools
+- Gather data from domain applications
+- Revisit in 6-12 months with empirical evidence
+- Consider elevation if canonicity reaches STRONG (60-80%)</p>
+<p><strong>Alignment with TNFR Philosophy:</strong>
+- <strong>"Physics First"</strong> - wait for complete derivation
+- <strong>"No Arbitrary Choices"</strong> - resolve α parameter issue
+- <strong>"Reproducibility Always"</strong> - need validation studies
+- <strong>"Coherence Over Convenience"</strong> - don't prematurely constrain</p>
+<h4 id="timeline-estimate">Timeline Estimate<a class="headerlink" href="#timeline-estimate" title="Permanent link">&para;</a></h4>
+<p><strong>Realistic elevation timeline:</strong> 6-12 months</p>
+<p><strong>Milestones:</strong>
+- Month 1-2: Simulation framework for τ_relax measurement
+- Month 3-4: Cross-domain validation studies
+- Month 5-6: Theoretical derivation attempts
+- Month 7-9: α parameter methodology development
+- Month 10-11: Comprehensive testing and refinement
+- Month 12: Decision on canonical promotion</p>
+<p><strong>Success Criteria:</strong>
+- Empirical data: &gt;80% of U6 violations cause measurable coherence loss
+- Theoretical: Derivation from nodal equation (even if approximate)
+- Parameter: α determinable from node properties (not free parameter)
+- Universality: Works across 3+ distinct domains without re-tuning</p>
+<hr />
+<h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>TNFR.pdf</strong>: Section 2.1 (Nodal Equation), bifurcation theory</li>
+<li><strong>AGENTS.md</strong>: Invariants (#1-#10), Contracts (Coherence, Dissonance, etc.)</li>
+<li><strong>grammar.py</strong>: Original C1-C3 implementation</li>
+<li><strong>canonical_grammar.py</strong>: Original RC1-RC4 implementation</li>
+<li><strong>RESUMEN_FINAL_GRAMATICA.md</strong>: Grammar evolution documentation</li>
+<li><strong>EMERGENT_GRAMMAR_ANALYSIS.md</strong>: Detailed physics analysis</li>
+<li><strong>Bifurcation Theory:</strong> Kuznetsov (2004), "Elements of Applied Bifurcation Theory"</li>
+<li><strong>U6 Research:</strong> "The Pulse That Traverses Us.pdf" § Resonant structural chaos</li>
+</ul>
+<hr />
+<p><strong>Date:</strong> 2025-11-08 (U1-U4), 2025-11-10 (U5, U6 research documented)<br />
+<strong>Status:</strong> ✅ IMPLEMENTED - U1-U5 canonical grammar complete with tests<br />
+<strong>Research:</strong> 🔬 U6 proposed, documented, awaiting empirical validation</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections", "navigation.top", "navigation.tracking", "toc.integrate", "navigation.instant"], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+    
+  </body>
+</html>

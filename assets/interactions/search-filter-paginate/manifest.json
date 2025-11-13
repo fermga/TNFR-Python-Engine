@@ -1,0 +1,49 @@
+{
+  "sequence": "search-filter-paginate",
+  "artifacts": [
+    {
+      "name": "latency",
+      "png": "assets\\interactions\\search-filter-paginate\\latency.png",
+      "svg": "assets\\interactions\\search-filter-paginate\\latency.svg",
+      "caption": "Latency for search-filter-paginate",
+      "alt": "latency plot for sequence search-filter-paginate"
+    },
+    {
+      "name": "throughput",
+      "png": "assets\\interactions\\search-filter-paginate\\throughput.png",
+      "svg": "assets\\interactions\\search-filter-paginate\\throughput.svg",
+      "caption": "Throughput for search-filter-paginate",
+      "alt": "throughput plot for sequence search-filter-paginate"
+    },
+    {
+      "name": "errors",
+      "png": "assets\\interactions\\search-filter-paginate\\errors.png",
+      "svg": "assets\\interactions\\search-filter-paginate\\errors.svg",
+      "caption": "Errors for search-filter-paginate",
+      "alt": "errors plot for sequence search-filter-paginate"
+    },
+    {
+      "name": "distributions",
+      "png": "assets\\interactions\\search-filter-paginate\\distributions.png",
+      "svg": "assets\\interactions\\search-filter-paginate\\distributions.svg",
+      "caption": "Distributions for search-filter-paginate",
+      "alt": "distributions plot for sequence search-filter-paginate"
+    }
+  ],
+  "table_csv": "assets\\interactions\\search-filter-paginate\\telemetry.csv",
+  "summary": {
+    "rows": 320,
+    "duration_s": 320.0,
+    "hash": "9dbfaa8fda2a045928ef2ad16618aed07e831cefa7d5818d6cc3c2b6e1c17d61"
+  },
+  "env": {
+    "python": "3.13.6",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "seed": 1337,
+    "numpy": "2.3.4",
+    "pandas": "2.2.3",
+    "matplotlib": "3.10.7",
+    "seaborn": "0.13.2",
+    "pyyaml": "6.0.2"
+  }
+}
