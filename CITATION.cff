@@ -8,6 +8,7 @@ authors:
     affiliation: "TNFR Research"
 repository-code: "https://github.com/fermga/TNFR-Python-Engine"
 url: "https://pypi.org/project/tnfr/"
+doi: "10.5281/zenodo.17602861"
 abstract: >-
   Canonical computational implementation of TNFR - a paradigm shift from 
   modeling 'things' to modeling coherent patterns that persist through resonance. 

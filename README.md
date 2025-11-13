@@ -4,6 +4,7 @@
 
 **Model reality as coherent resonance, not isolated objects**
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17602861.svg)](https://doi.org/10.5281/zenodo.17602861)
 [![PyPI](https://img.shields.io/pypi/v/tnfr)](https://pypi.org/project/tnfr/)
 [![Python](https://img.shields.io/pypi/pyversions/tnfr)](https://pypi.org/project/tnfr/)
 [![License](https://img.shields.io/github/license/fermga/TNFR-Python-Engine)](LICENSE.md)
@@ -19,6 +20,22 @@ TNFR (Resonant Fractal Nature Theory) is a physics-grounded computational paradi
 pip install tnfr
 ```
 Optional GPU / extras: see Getting Started.
+
+## 📄 Citation
+
+If you use TNFR-Python-Engine in your research, please cite:
+
+```bibtex
+@software{fermga_tnfr_2025,
+  title = {TNFR-Python-Engine: Resonant Fractal Nature Theory Implementation},
+  author = {FMG},
+  year = {2025},
+  url = {https://github.com/fermga/TNFR-Python-Engine},
+  doi = {10.5281/zenodo.17602861}
+}
+```
+
+**DOI**: [10.5281/zenodo.17602861](https://doi.org/10.5281/zenodo.17602861)
 
 ### Minimal Example
 ```python
