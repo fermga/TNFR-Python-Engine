@@ -1,0 +1,4503 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Canonical TNFR structural dynamics engine documentation">
+      
+      
+      
+        <link rel="canonical" href="https://fermga.github.io/TNFR-Python-Engine/TNFR_CLASSICAL_NBODY/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>Classical N-Body Mechanics: Emergence from TNFR Structural Coherence - TNFR Python Engine</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.618322db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#classical-n-body-mechanics-emergence-from-tnfr-structural-coherence" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="TNFR Python Engine" class="md-header__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            TNFR Python Engine
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Classical N-Body Mechanics: Emergence from TNFR Structural Coherence
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    TNFR Python Engine
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="TNFR Python Engine" class="md-nav__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    TNFR Python Engine
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    TNFR Python Engine
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting Started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Welcome to TNFR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/getting-started/LEARNING_PATHS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Learning Paths
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/getting-started/quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quickstart Tutorial
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/getting-started/TNFR_CONCEPTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core Concepts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/getting-started/INTERACTIVE_TUTORIAL/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interactive Tutorial
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/getting-started/FAQ/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    FAQ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/getting-started/math-backends/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Math Backends
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/getting-started/optional-dependencies/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Optional Dependencies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/getting-started/migrating-remesh-window/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migrating from Remesh Window
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    User Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/user-guide/OPERATORS_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operators Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STRUCTURAL_FIELDS_TETRAD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural Field Tetrad (Canonical)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/user-guide/METRICS_INTERPRETATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Metrics Interpretation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TROUBLESHOOTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar Documentation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Grammar Documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/EXECUTIVE-SUMMARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Executive Summary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_3" id="__nav_4_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core Concepts
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Core Concepts
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/01-FUNDAMENTAL-CONCEPTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fundamental Concepts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/02-CANONICAL-CONSTRAINTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Canonical Constraints
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/03-OPERATORS-AND-GLYPHS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operators and Glyphs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/04-VALID-SEQUENCES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Valid Sequences
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_4" id="__nav_4_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Implementation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/05-TECHNICAL-IMPLEMENTATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Technical Implementation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/06-VALIDATION-AND-TESTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation and Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/07-MIGRATION-AND-EVOLUTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migration and Evolution
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_5" id="__nav_4_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/08-QUICK-REFERENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/GLOSSARY.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/MASTER-INDEX/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Master Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/OPERATORS-CATALOG-SUMMARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operators Catalog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/CROSS-REFERENCE-INDEX/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cross-Reference Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/CODE_DOCS_CROSSREF/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code Documentation Cross-Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_6" id="__nav_4_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tooling
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tooling
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/TOOLING-AND-AUTOMATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tooling and Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/TESTING-SUMMARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing Summary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/DEPRECATION-INDEX.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deprecation Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Examples
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_2" id="__nav_5_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Notebooks & Patterns
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Notebooks & Patterns
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/notebooks/Fundamental_Particles_TNFR_Atlas.ipynb" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fundamental Particles TNFR Atlas (Notebook - GitHub)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/README.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    TNFR Patterns (Module Guide)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../INTERACTIONS_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interaction Sequences Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/api/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/api/operators/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural Operators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/api/OPERATORS_VISUAL_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operators Visual Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/api/telemetry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Telemetry & Utilities
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/api/docstring_style/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docstring Style
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module Documentation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Module Documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/mathematics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mathematics Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/physics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Physics Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/operators/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operators Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/dynamics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dynamics Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/metrics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Metrics Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/sdk/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SDK Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/telemetry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Telemetry Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/tutorials/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/extensions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Extensions Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core Documentation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Core Documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DOCUMENTATION_INDEX/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Documentation Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CANONICAL_SOURCES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Canonical Sources
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../UNIFIED_GRAMMAR_RULES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Unified Grammar Rules
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AGENTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Agents Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../GLOSSARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Advanced Topics
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Advanced Topics
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/advanced/ARCHITECTURE_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/advanced/PERFORMANCE_OPTIMIZATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Performance Optimization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/advanced/TESTING_STRATEGIES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing Strategies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/advanced/DEVELOPMENT_WORKFLOW/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development Workflow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/foundations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mathematical Foundations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_9_6" id="__nav_9_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Research Documents
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_9_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Research Documents
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TNFR_FORCES_EMERGENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Forces Emergence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OPERATOR_COMPLETENESS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator Completeness
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LIFE_EMERGENCE_FROM_TNFR/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Life Emergence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CELL_EMERGENCE_FROM_TNFR/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cell Emergence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/tools/CLI/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Security
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/security/monitoring/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Monitoring
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/security/dependency-auditing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dependency Auditing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/security/codeql/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CodeQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/security/dependabot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dependabot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
+        
+          
+          <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Info
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Project Info
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../source/releases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="classical-n-body-mechanics-emergence-from-tnfr-structural-coherence">Classical N-Body Mechanics: Emergence from TNFR Structural Coherence<a class="headerlink" href="#classical-n-body-mechanics-emergence-from-tnfr-structural-coherence" title="Permanent link">&para;</a></h1>
+<p><strong>Status</strong>: Formal Documentation — Scientific Reference<br />
+<strong>Version</strong>: 1.0<br />
+<strong>Last Updated</strong>: 2025-11-07</p>
+<hr />
+<h2 id="executive-summary">Executive Summary<a class="headerlink" href="#executive-summary" title="Permanent link">&para;</a></h2>
+<p>This document establishes the <strong>formal correspondence</strong> between <strong>TNFR structural dynamics</strong> and <strong>classical n-body mechanics</strong>. We demonstrate that Newton's laws, conservation principles, and complex gravitational phenomena emerge naturally from the TNFR paradigm as manifestations of resonant coherence in low-dissonance networks.</p>
+<p><strong>Key Result</strong>: Classical mechanics is <strong>not assumed</strong>—it <strong>emerges</strong> from TNFR's nodal equation <code>∂EPI/∂t = νf · ΔNFR(t)</code> when structural dissonance approaches zero (ε → 0).</p>
+<h3 id="what-this-document-provides">What This Document Provides<a class="headerlink" href="#what-this-document-provides" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Formal Variable Mapping</strong>: Complete correspondence TNFR ↔ Classical observables</li>
+<li><strong>Mathematical Derivations</strong>: Summarized proofs from foundational theory documents</li>
+<li><strong>Conservation Laws</strong>: Emergence from network symmetries (Noether correspondence)</li>
+<li><strong>Numerical Protocols</strong>: Reproducible simulation methods with validation criteria</li>
+<li><strong>Dynamical Regimes</strong>: Distinguishing criteria for chaos, bifurcations, and collective modes</li>
+<li><strong>Code Examples</strong>: Practical implementation with working scripts</li>
+</ol>
+<h3 id="intended-audience">Intended Audience<a class="headerlink" href="#intended-audience" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Researchers validating TNFR against established physics</li>
+<li>Scientists exploring multi-scale coherence phenomena</li>
+<li>Engineers implementing gravitational simulations in TNFR</li>
+<li>Educators teaching emergence from first principles</li>
+</ul>
+<h3 id="visual-summary-tnfr-classical-mechanics-emergence">Visual Summary: TNFR → Classical Mechanics Emergence<a class="headerlink" href="#visual-summary-tnfr-classical-mechanics-emergence" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>┌───────────────────────────────────────────────────────────────────┐
+│                    TNFR PARADIGM                                  │
+│                  (Structural Coherence)                           │
+│                                                                   │
+│  Fundamental Equation:  ∂EPI/∂t = νf · ΔNFR(t)                  │
+│                                                                   │
+│  Key Variables:                                                   │
+│    • EPI    → Structural form (coherent configuration)           │
+│    • νf     → Structural frequency (reorganization rate)         │
+│    • ΔNFR   → Reorganization gradient (structural pressure)      │
+│    • θ      → Phase (network synchrony)                          │
+│    • C(t)   → Total coherence (network stability)                │
+└───────────────────────────────────────────────────────────────────┘
+                                ↓
+                    Low-Dissonance Limit (ε → 0)
+                    Network Symmetries Applied
+                                ↓
+┌───────────────────────────────────────────────────────────────────┐
+│               CLASSICAL MECHANICS                                 │
+│              (Observable Dynamics)                                │
+│                                                                   │
+│  Newton&#39;s Second Law:  F = ma                                     │
+│                                                                   │
+│  Emergent Variables:                                              │
+│    • q = EPI_q    → Position                                     │
+│    • v = EPI_v    → Velocity                                     │
+│    • m = 1/νf     → Mass (structural inertia)                    │
+│    • F = -∇U      → Force (coherence gradient)                   │
+│    • E = K + U    → Energy (total coherence)                     │
+│                                                                   │
+│  Conservation Laws (from Noether):                                │
+│    ✓ Energy        (time translation symmetry)                    │
+│    ✓ Momentum      (spatial translation symmetry)                 │
+│    ✓ Angular Mom.  (rotational symmetry)                          │
+└───────────────────────────────────────────────────────────────────┘
+</code></pre></div>
+<p><strong>Key Insight</strong>: Classical mechanics is not a separate framework—it is TNFR dynamics in the coherent, observable limit.</p>
+<hr />
+<h2 id="table-of-contents">Table of Contents<a class="headerlink" href="#table-of-contents" title="Permanent link">&para;</a></h2>
+<ol>
+<li><a href="#1-fundamental-correspondence-tnfr--classical-mechanics">Fundamental Correspondence: TNFR ↔ Classical Mechanics</a></li>
+<li><a href="#2-mathematical-derivations-summary">Mathematical Derivations Summary</a></li>
+<li><a href="#3-conservation-laws-from-network-symmetries">Conservation Laws from Network Symmetries</a></li>
+<li><a href="#4-the-n-body-problem-in-tnfr">The N-Body Problem in TNFR</a></li>
+<li><a href="#5-numerical-protocols-and-validation">Numerical Protocols and Validation</a></li>
+<li><a href="#6-dynamical-regimes-chaos-bifurcations-collective-modes">Dynamical Regimes: Chaos, Bifurcations, Collective Modes</a></li>
+<li><a href="#7-practical-examples-with-code">Practical Examples with Code</a></li>
+<li><a href="#8-references-and-further-reading">References and Further Reading</a></li>
+</ol>
+<hr />
+<h2 id="1-fundamental-correspondence-tnfr-classical-mechanics">1. Fundamental Correspondence: TNFR ↔ Classical Mechanics<a class="headerlink" href="#1-fundamental-correspondence-tnfr-classical-mechanics" title="Permanent link">&para;</a></h2>
+<h3 id="11-the-paradigm-shift">1.1 The Paradigm Shift<a class="headerlink" href="#11-the-paradigm-shift" title="Permanent link">&para;</a></h3>
+<p><strong>Classical View</strong>: Reality consists of material objects with intrinsic mass that exert forces on each other through gravitational fields.</p>
+<p><strong>TNFR View</strong>: Reality consists of coherent structural patterns (NFR nodes) that persist through resonance with their network environment. What we perceive as "mass" and "force" are <strong>emergent properties</strong> of structural coherence.</p>
+<h3 id="12-complete-variable-mapping">1.2 Complete Variable Mapping<a class="headerlink" href="#12-complete-variable-mapping" title="Permanent link">&para;</a></h3>
+<p>The following table establishes the <strong>canonical correspondence</strong> between TNFR structural variables and classical observables:</p>
+<table>
+<thead>
+<tr>
+<th>Classical Observable</th>
+<th>Symbol</th>
+<th>TNFR Structural Equivalent</th>
+<th>Symbol</th>
+<th>Relationship</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Position</strong></td>
+<td><strong>q</strong></td>
+<td>EPI spatial component</td>
+<td><strong>EPI_q</strong></td>
+<td>Direct mapping: q ↔ EPI_q</td>
+</tr>
+<tr>
+<td><strong>Velocity</strong></td>
+<td><strong>v = dq/dt</strong></td>
+<td>EPI velocity component</td>
+<td><strong>EPI_v</strong></td>
+<td>Direct mapping: v ↔ EPI_v</td>
+</tr>
+<tr>
+<td><strong>Mass</strong></td>
+<td><strong>m</strong></td>
+<td>Inverse structural frequency</td>
+<td><strong>1/νf</strong></td>
+<td><strong>m = 1/νf</strong> (Hz_str⁻¹)</td>
+</tr>
+<tr>
+<td><strong>Momentum</strong></td>
+<td><strong>p = mv</strong></td>
+<td>Structural momentum</td>
+<td><strong>p = EPI_v/νf</strong></td>
+<td>p = (1/νf) · EPI_v</td>
+</tr>
+<tr>
+<td><strong>Force</strong></td>
+<td><strong>F = ma</strong></td>
+<td>Coherence gradient</td>
+<td><strong>-∇U</strong></td>
+<td>F = -∇U(coherence potential)</td>
+</tr>
+<tr>
+<td><strong>Acceleration</strong></td>
+<td><strong>a = dv/dt</strong></td>
+<td>ΔNFR projection</td>
+<td><strong>νf · ΔNFR</strong></td>
+<td>a = νf · ΔNFR</td>
+</tr>
+<tr>
+<td><strong>Energy</strong></td>
+<td><strong>E = K + U</strong></td>
+<td>Total coherence</td>
+<td><strong>C_total</strong></td>
+<td>E = K(motion) + U(configuration)</td>
+</tr>
+<tr>
+<td><strong>Kinetic Energy</strong></td>
+<td><strong>K = ½mv²</strong></td>
+<td>Reorganization coherence</td>
+<td><strong>½(v²/νf)</strong></td>
+<td>K = ½</td>
+</tr>
+<tr>
+<td><strong>Potential Energy</strong></td>
+<td><strong>U(q)</strong></td>
+<td>Coherence potential</td>
+<td><strong>U_coh(EPI)</strong></td>
+<td>U measures structural stability</td>
+</tr>
+<tr>
+<td><strong>Angular Momentum</strong></td>
+<td><strong>L = q × p</strong></td>
+<td>Rotational coherence</td>
+<td><strong>L_struct</strong></td>
+<td>L = EPI_q × (EPI_v/νf)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Key Insights</strong>:</p>
+<ol>
+<li><strong>Mass as Structural Inertia</strong>: High mass (m ↑) = low structural frequency (νf ↓) = slow reorganization = high inertia</li>
+<li><strong>Force as Coherence Gradient</strong>: Systems evolve toward configurations of higher coherence (lower U)</li>
+<li><strong>Energy as Coherence</strong>: Kinetic and potential energy are dual aspects of structural coherence</li>
+</ol>
+<h3 id="13-the-nodal-equation-newtons-second-law">1.3 The Nodal Equation → Newton's Second Law<a class="headerlink" href="#13-the-nodal-equation-newtons-second-law" title="Permanent link">&para;</a></h3>
+<p><strong>Starting Point</strong> (TNFR fundamental equation):</p>
+<div class="highlight"><pre><span></span><code>∂EPI/∂t = νf · ΔNFR(t)
+</code></pre></div>
+<p><strong>Low-Dissonance Regime</strong> (ε → 0): ΔNFR becomes a smooth coherence gradient:</p>
+<div class="highlight"><pre><span></span><code>ΔNFR = -∇U(EPI)  (plus small dissipation D·v and residual r)
+</code></pre></div>
+<p><strong>Projection onto Position Coordinates</strong>:</p>
+<div class="highlight"><pre><span></span><code>dq/dt = v                          (velocity definition)
+dv/dt = νf · ΔNFR                  (nodal equation)
+      = νf · (-∇U)                 (low-dissonance limit)
+</code></pre></div>
+<p><strong>Multiply by m = 1/νf</strong>:</p>
+<div class="highlight"><pre><span></span><code>m · dv/dt = (1/νf) · νf · (-∇U)
+m · a = -∇U
+</code></pre></div>
+<p><strong>Identifying F = -∇U</strong>:</p>
+<div class="highlight"><pre><span></span><code>F = ma  ← Newton&#39;s Second Law
+</code></pre></div>
+<p><strong>Conclusion</strong>: Newton's law is not postulated—it <strong>emerges</strong> from TNFR nodal dynamics in the coherent limit.</p>
+<h3 id="14-units-and-dimensional-analysis">1.4 Units and Dimensional Analysis<a class="headerlink" href="#14-units-and-dimensional-analysis" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Quantity</th>
+<th>Classical Units</th>
+<th>TNFR Structural Units</th>
+<th>Conversion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Time</td>
+<td>seconds (s)</td>
+<td>structural time (t_str)</td>
+<td>Context-dependent</td>
+</tr>
+<tr>
+<td>Frequency</td>
+<td>Hz (s⁻¹)</td>
+<td>Hz_str (t_str⁻¹)</td>
+<td>νf always in Hz_str</td>
+</tr>
+<tr>
+<td>Mass</td>
+<td>kg</td>
+<td>Hz_str⁻¹</td>
+<td>m = 1/νf</td>
+</tr>
+<tr>
+<td>Length</td>
+<td>meters (m)</td>
+<td>coherence units (ℓ_coh)</td>
+<td>EPI encodes position</td>
+</tr>
+<tr>
+<td>Force</td>
+<td>Newtons (N = kg·m/s²)</td>
+<td>Coherence gradient</td>
+<td>-∇U</td>
+</tr>
+<tr>
+<td>Energy</td>
+<td>Joules (J = kg·m²/s²)</td>
+<td>Coherence (dimensionless)</td>
+<td>C(t) ∈ [0,1]</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Important</strong>: TNFR operates in <strong>structural units</strong>. Physical units emerge when mapping to specific domains.</p>
+<hr />
+<h2 id="2-mathematical-derivations-summary">2. Mathematical Derivations Summary<a class="headerlink" href="#2-mathematical-derivations-summary" title="Permanent link">&para;</a></h2>
+<p>This section summarizes the rigorous mathematical derivations from the foundational theory documents. Full proofs are provided in the references.</p>
+<h3 id="21-from-nodal-equation-to-lagrangian-mechanics">2.1 From Nodal Equation to Lagrangian Mechanics<a class="headerlink" href="#21-from-nodal-equation-to-lagrangian-mechanics" title="Permanent link">&para;</a></h3>
+<p><strong>Source</strong>: <a href="../source/theory/08_classical_mechanics_euler_lagrange/">docs/source/theory/08_classical_mechanics_euler_lagrange.md</a></p>
+<p><strong>Key Steps</strong>:</p>
+<ol>
+<li><strong>Define Action Functional</strong> (integrated coherence flow):
+   <div class="highlight"><pre><span></span><code>S[q] = ∫[t₁ to t₂] L(q, q̇, t) dt
+</code></pre></div>
+   where the Lagrangian is:
+   <div class="highlight"><pre><span></span><code>L = K - U = ½ q̇ᵀ M(q) q̇ - U(q)
+</code></pre></div></li>
+<li><strong>K</strong>: Kinetic coherence (reorganization velocity)</li>
+<li><strong>U</strong>: Potential coherence (configuration stability)</li>
+<li>
+<p><strong>M(q)</strong>: Inertial metric, M = diag(1/νf₁, ..., 1/νfₙ)</p>
+</li>
+<li>
+<p><strong>Principle of Stationary Action</strong>: Actual trajectories extremize S:
+   <div class="highlight"><pre><span></span><code>δS = 0  (variational principle)
+</code></pre></div></p>
+</li>
+<li>
+<p><strong>Euler-Lagrange Equations</strong> emerge from δS = 0:
+   <div class="highlight"><pre><span></span><code>d/dt(∂L/∂q̇) - ∂L/∂q = 0
+</code></pre></div></p>
+</li>
+<li>
+<p><strong>Explicit Form</strong>:
+   <div class="highlight"><pre><span></span><code>M(q)q̈ + ∇U(q) = 0  (in the limit ε → 0)
+</code></pre></div>
+   This is Newton's law in generalized coordinates.</p>
+</li>
+</ol>
+<p><strong>Significance</strong>: The variational formulation of mechanics—central to modern physics—is <strong>not an axiom</strong> but a <strong>structural consequence</strong> of resonant coherence dynamics.</p>
+<h3 id="22-conservation-laws-from-symmetry-noethers-theorem">2.2 Conservation Laws from Symmetry (Noether's Theorem)<a class="headerlink" href="#22-conservation-laws-from-symmetry-noethers-theorem" title="Permanent link">&para;</a></h3>
+<p><strong>Source</strong>: <a href="../source/theory/07_emergence_classical_mechanics/">docs/source/theory/07_emergence_classical_mechanics.md</a>, §3</p>
+<p><strong>Noether's Theorem</strong>: Every continuous symmetry of the action corresponds to a conserved quantity.</p>
+<h4 id="energy-conservation-time-translation-symmetry">Energy Conservation (Time Translation Symmetry)<a class="headerlink" href="#energy-conservation-time-translation-symmetry" title="Permanent link">&para;</a></h4>
+<p><strong>Symmetry</strong>: L does not depend explicitly on time (∂L/∂t = 0)</p>
+<p><strong>Conserved Quantity</strong>: Hamiltonian (total energy)
+<div class="highlight"><pre><span></span><code>H = q̇ᵀ ∂L/∂q̇ - L = ½ q̇ᵀ M q̇ + U(q) = K + U
+</code></pre></div></p>
+<p><strong>Proof</strong>:
+<div class="highlight"><pre><span></span><code>dE/dt = d/dt(K + U)
+      = q̇ᵀ M q̈ + q̇ᵀ ∇U
+      = q̇ᵀ (M q̈ + ∇U)
+      = q̇ᵀ · 0  (by Euler-Lagrange)
+      = 0
+</code></pre></div></p>
+<p><strong>TNFR Interpretation</strong>: Energy conservation reflects <strong>temporal homogeneity</strong> of the NFR network. Total coherence (C_total) remains constant in isolated, time-invariant systems.</p>
+<h4 id="momentum-conservation-spatial-translation-symmetry">Momentum Conservation (Spatial Translation Symmetry)<a class="headerlink" href="#momentum-conservation-spatial-translation-symmetry" title="Permanent link">&para;</a></h4>
+<p><strong>Symmetry</strong>: U(q) depends only on relative positions (not absolute position)</p>
+<p><strong>Conserved Quantity</strong>: Total linear momentum
+<div class="highlight"><pre><span></span><code>P = Σᵢ mᵢ vᵢ = Σᵢ (1/νfᵢ) · q̇ᵢ
+</code></pre></div></p>
+<p><strong>Proof</strong>:
+<div class="highlight"><pre><span></span><code>dP/dt = Σᵢ mᵢ aᵢ = Σᵢ Fᵢ = Σᵢ (-∇ᵢU) = 0
+</code></pre></div>
+(The sum of internal forces vanishes by Newton's third law)</p>
+<p><strong>TNFR Interpretation</strong>: Momentum conservation emerges from <strong>spatial homogeneity</strong> of the NFR network. If all locations have equivalent structural properties, there's no preferred direction for coherence flow.</p>
+<h4 id="angular-momentum-conservation-rotational-symmetry">Angular Momentum Conservation (Rotational Symmetry)<a class="headerlink" href="#angular-momentum-conservation-rotational-symmetry" title="Permanent link">&para;</a></h4>
+<p><strong>Symmetry</strong>: U(q) is rotationally invariant (U depends only on |qᵢ - qⱼ|)</p>
+<p><strong>Conserved Quantity</strong>: Total angular momentum
+<div class="highlight"><pre><span></span><code>L = Σᵢ qᵢ × pᵢ = Σᵢ qᵢ × (mᵢ vᵢ)
+</code></pre></div></p>
+<p><strong>Proof</strong>:
+<div class="highlight"><pre><span></span><code>dL/dt = Σᵢ (qᵢ × Fᵢ) = Σᵢ (qᵢ × (-∇ᵢU))
+</code></pre></div>
+For central forces (∇ᵢU ∥ qᵢ), cross product vanishes: qᵢ × ∇ᵢU = 0</p>
+<p><strong>TNFR Interpretation</strong>: Angular momentum conservation emerges from <strong>isotropic coupling</strong> in the NFR network. Rotations preserve coherence patterns, so rotational flow is conserved.</p>
+<h3 id="23-quasi-conservation-and-dissonance">2.3 Quasi-Conservation and Dissonance<a class="headerlink" href="#23-quasi-conservation-and-dissonance" title="Permanent link">&para;</a></h3>
+<p>In realistic TNFR systems (ε &gt; 0), conservation laws become <strong>quasi-conserved</strong>:</p>
+<div class="highlight"><pre><span></span><code>|dE/dt| = O(ε)    (Energy drifts slowly with dissonance)
+|dP/dt| = O(ε)    (Momentum drift)
+|dL/dt| = O(ε)    (Angular momentum drift)
+</code></pre></div>
+<p><strong>Numerical Validation Criterion</strong>: For a simulation to be in the classical limit:
+<div class="highlight"><pre><span></span><code>|E(t) - E(0)| / |E(0)| &lt; 10⁻⁴  (over integration time)
+</code></pre></div></p>
+<hr />
+<h2 id="3-conservation-laws-from-network-symmetries">3. Conservation Laws from Network Symmetries<a class="headerlink" href="#3-conservation-laws-from-network-symmetries" title="Permanent link">&para;</a></h2>
+<h3 id="31-symmetry-table-network-structure-conservation-law">3.1 Symmetry Table: Network Structure → Conservation Law<a class="headerlink" href="#31-symmetry-table-network-structure-conservation-law" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Network Symmetry</th>
+<th>TNFR Property</th>
+<th>Conserved Quantity</th>
+<th>Classical Law</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Time translation</strong></td>
+<td>Structural dynamics time-invariant</td>
+<td>Total coherence C_total</td>
+<td>Energy conservation (dE/dt = 0)</td>
+</tr>
+<tr>
+<td><strong>Spatial translation</strong></td>
+<td>Homogeneous NFR network</td>
+<td>Net coherence flow P</td>
+<td>Momentum conservation (dP/dt = 0)</td>
+</tr>
+<tr>
+<td><strong>Rotation</strong></td>
+<td>Isotropic coupling</td>
+<td>Rotational coherence L</td>
+<td>Angular momentum conservation (dL/dt = 0)</td>
+</tr>
+<tr>
+<td><strong>Galilean boost</strong></td>
+<td>Velocity-independent potential</td>
+<td>Center-of-mass motion</td>
+<td>Galilean invariance</td>
+</tr>
+<tr>
+<td><strong>Discrete symmetry</strong></td>
+<td>Reflection invariance</td>
+<td>Parity</td>
+<td>No classical analog (quantum)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="32-diagram-from-tnfr-network-to-classical-conservation">3.2 Diagram: From TNFR Network to Classical Conservation<a class="headerlink" href="#32-diagram-from-tnfr-network-to-classical-conservation" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>┌────────────────────────────────────────────────────────────┐
+│                    TNFR NETWORK                             │
+│                                                            │
+│  Nodes: {NFR₁, NFR₂, ..., NFRₙ}                          │
+│  Each node i has:                                         │
+│    - EPIᵢ (structural form)                               │
+│    - νfᵢ  (structural frequency)                          │
+│    - θᵢ   (phase)                                         │
+│                                                            │
+│  Coupling: U_coh(EPI₁, ..., EPIₙ)                        │
+│            (coherence potential)                           │
+└────────────────────────────────────────────────────────────┘
+                          │
+                          │ Low-dissonance limit (ε → 0)
+                          │ + Symmetry analysis
+                          ▼
+┌────────────────────────────────────────────────────────────┐
+│              EMERGENT CLASSICAL SYSTEM                      │
+│                                                            │
+│  Particles: {1, 2, ..., n}                                │
+│  Each particle i has:                                     │
+│    - qᵢ (position)     ← EPIᵢ,q                          │
+│    - vᵢ (velocity)     ← EPIᵢ,v                          │
+│    - mᵢ (mass)         ← 1/νfᵢ                           │
+│                                                            │
+│  Interactions: U(q₁, ..., qₙ) ← U_coh                    │
+│                                                            │
+│  Conservation Laws:                                        │
+│    ✓ Energy:           E = ½Σmᵢvᵢ² + U                  │
+│    ✓ Momentum:         P = Σmᵢvᵢ                         │
+│    ✓ Angular Momentum: L = Σqᵢ × mᵢvᵢ                    │
+└────────────────────────────────────────────────────────────┘
+</code></pre></div>
+<h3 id="33-noethers-theorem-in-tnfr-language">3.3 Noether's Theorem in TNFR Language<a class="headerlink" href="#33-noethers-theorem-in-tnfr-language" title="Permanent link">&para;</a></h3>
+<p><strong>Classical Statement</strong>: Continuous symmetry → Conserved quantity</p>
+<p><strong>TNFR Reformulation</strong>: Network structural invariance → Coherence flow conservation</p>
+<p><strong>Examples</strong>:</p>
+<ol>
+<li>
+<p><strong>If</strong> NFR network properties are invariant under time shifts (t → t + τ)<br />
+<strong>Then</strong> total coherence C_total is conserved<br />
+<strong>Classical</strong>: Energy conservation</p>
+</li>
+<li>
+<p><strong>If</strong> NFR coupling U_coh depends only on relative positions (qᵢ - qⱼ)<br />
+<strong>Then</strong> net coherence momentum P_struct is conserved<br />
+<strong>Classical</strong>: Momentum conservation</p>
+</li>
+<li>
+<p><strong>If</strong> NFR coupling U_coh is rotationally symmetric<br />
+<strong>Then</strong> angular coherence L_struct is conserved<br />
+<strong>Classical</strong>: Angular momentum conservation</p>
+</li>
+</ol>
+<hr />
+<h2 id="4-the-n-body-problem-in-tnfr">4. The N-Body Problem in TNFR<a class="headerlink" href="#4-the-n-body-problem-in-tnfr" title="Permanent link">&para;</a></h2>
+<h3 id="41-gravitational-n-body-as-coherence-network">4.1 Gravitational N-Body as Coherence Network<a class="headerlink" href="#41-gravitational-n-body-as-coherence-network" title="Permanent link">&para;</a></h3>
+<p><strong>Classical Formulation</strong>: N particles with masses {m₁, ..., mₙ} interacting via Newtonian gravity:</p>
+<div class="highlight"><pre><span></span><code>F_ij = -G mᵢ mⱼ / |qᵢ - qⱼ|² · (qᵢ - qⱼ) / |qᵢ - qⱼ|
+</code></pre></div>
+<p><strong>TNFR Reformulation</strong>: N resonant fractal nodes with structural frequencies {νf₁, ..., νfₙ} coupled through gravitational coherence potential:</p>
+<div class="highlight"><pre><span></span><code>U_grav(q₁, ..., qₙ) = -Σ_{i&lt;j} G (1/νfᵢ)(1/νfⱼ) / |qᵢ - qⱼ|
+                     = -Σ_{i&lt;j} G mᵢ mⱼ / |qᵢ - qⱼ|
+</code></pre></div>
+<p><strong>Key Structural Properties</strong>:</p>
+<ol>
+<li><strong>Negative Potential</strong>: Lower U → higher coherence → gravitational attraction</li>
+<li><strong>Pairwise Coupling</strong>: Each (i,j) pair contributes independently (linear superposition)</li>
+<li><strong>Scale Invariance</strong>: U is invariant under uniform scaling</li>
+<li><strong>Central Force</strong>: Force on i from j is along the line connecting them</li>
+</ol>
+<h3 id="42-tnfr-n-body-evolution-equations">4.2 TNFR N-Body Evolution Equations<a class="headerlink" href="#42-tnfr-n-body-evolution-equations" title="Permanent link">&para;</a></h3>
+<p>From the nodal equation ∂EPI/∂t = νf · ΔNFR, we derive:</p>
+<p><strong>Position Evolution</strong>:
+<div class="highlight"><pre><span></span><code>dqᵢ/dt = vᵢ
+</code></pre></div></p>
+<p><strong>Velocity Evolution</strong>:
+<div class="highlight"><pre><span></span><code>dvᵢ/dt = νfᵢ · ΔNFR_i
+       = νfᵢ · (-∇ᵢU_grav)  (low-dissonance limit)
+       = -νfᵢ · Σⱼ≠ᵢ [G (1/νfⱼ) · (qᵢ - qⱼ) / |qᵢ - qⱼ|³]
+       = -Σⱼ≠ᵢ [G mⱼ · (qᵢ - qⱼ) / |qᵢ - qⱼ|³]
+</code></pre></div></p>
+<p><strong>Acceleration</strong>:
+<div class="highlight"><pre><span></span><code>aᵢ = -Σⱼ≠ᵢ G mⱼ (qᵢ - qⱼ) / |qᵢ - qⱼ|³
+</code></pre></div></p>
+<p>This is exactly Newton's gravitational law!</p>
+<h3 id="43-two-body-problem-earth-moon-system">4.3 Two-Body Problem (Earth-Moon System)<a class="headerlink" href="#43-two-body-problem-earth-moon-system" title="Permanent link">&para;</a></h3>
+<p><strong>Setup</strong>:
+- Node 1 (Earth): m₁ = 1.0, νf₁ = 1.0 Hz_str
+- Node 2 (Moon): m₂ = 0.3, νf₂ = 3.33 Hz_str
+- Initial separation: r = 1.0
+- Gravitational constant: G = 1.0 (dimensionless units)</p>
+<p><strong>Circular Orbit Condition</strong>:
+<div class="highlight"><pre><span></span><code>v_orbit = √[G(m₁ + m₂) / r] = √[1.0 · 1.3 / 1.0] ≈ 1.14
+</code></pre></div></p>
+<p><strong>Predicted Period</strong>:
+<div class="highlight"><pre><span></span><code>T = 2π r / v_orbit ≈ 5.5 structural time units
+</code></pre></div></p>
+<p><strong>Conservation</strong>:
+- Energy: E = -½ G m₁m₂/r + ½ (m₁m₂/(m₁+m₂)) v² = constant
+- Angular momentum: L = μ r v (μ = reduced mass)</p>
+<p><strong>See Code Example</strong>: <a href="#71-two-body-circular-orbit">Section 7.1</a></p>
+<h3 id="44-three-body-systems">4.4 Three-Body Systems<a class="headerlink" href="#44-three-body-systems" title="Permanent link">&para;</a></h3>
+<h4 id="lagrange-points-equilateral-triangle-configuration">Lagrange Points (Equilateral Triangle Configuration)<a class="headerlink" href="#lagrange-points-equilateral-triangle-configuration" title="Permanent link">&para;</a></h4>
+<p><strong>Setup</strong>: Three equal masses in rotating frame</p>
+<p><strong>TNFR Coherence View</strong>: System achieves stable coherence when nodes form equilateral triangle</p>
+<p><strong>Structural Frequency Balance</strong>: All three νf equal → symmetric mass distribution → stable collective mode</p>
+<h4 id="figure-8-orbit-choreographic-solution">Figure-8 Orbit (Choreographic Solution)<a class="headerlink" href="#figure-8-orbit-choreographic-solution" title="Permanent link">&para;</a></h4>
+<p><strong>Discovery</strong>: Chenciner &amp; Montgomery (2000) - periodic solution where three equal masses chase each other along a figure-8 path</p>
+<p><strong>TNFR Interpretation</strong>: 
+- High coherence C(t) remains stable throughout orbit
+- Phase synchronization: nodes maintain fixed phase relationships
+- Collective mode: system exhibits operational fractality</p>
+<p><strong>See Code Example</strong>: <a href="#72-three-body-figure-8-orbit">Section 7.2</a></p>
+<h3 id="45-many-body-systems-solar-system">4.5 Many-Body Systems (Solar System)<a class="headerlink" href="#45-many-body-systems-solar-system" title="Permanent link">&para;</a></h3>
+<p><strong>TNFR Implementation</strong>: Sun (central massive node) + planets (lighter coupled nodes)</p>
+<p><strong>Hierarchical Coherence</strong>:
+- Inner structure: Sun-planet pairs (high coupling)
+- Outer structure: Planet-planet interactions (weak perturbations)
+- Emergent stability from nested coherence</p>
+<p><strong>Numerical Challenges</strong>:
+- Wide mass range: νf spans multiple orders of magnitude
+- Long-term integration: Need symplectic integrators
+- Chaos: Small perturbations can grow (Lyapunov exponent &gt; 0)</p>
+<hr />
+<h2 id="5-numerical-protocols-and-validation">5. Numerical Protocols and Validation<a class="headerlink" href="#5-numerical-protocols-and-validation" title="Permanent link">&para;</a></h2>
+<p><strong>Source</strong>: <a href="../source/theory/09_classical_mechanics_numerical_validation/">docs/source/theory/09_classical_mechanics_numerical_validation.md</a></p>
+<h3 id="51-time-integration-schemes">5.1 Time Integration Schemes<a class="headerlink" href="#51-time-integration-schemes" title="Permanent link">&para;</a></h3>
+<h4 id="511-velocity-verlet-symplectic">5.1.1 Velocity Verlet (Symplectic)<a class="headerlink" href="#511-velocity-verlet-symplectic" title="Permanent link">&para;</a></h4>
+<p><strong>When to Use</strong>: Conservative systems (D = 0, ε ≈ 0)</p>
+<p><strong>Advantages</strong>:
+- Preserves phase space volume (symplectic)
+- Bounded energy drift: |E(t) - E(0)| = O(h²t)
+- Long-term orbital stability</p>
+<p><strong>Algorithm</strong>:
+<div class="highlight"><pre><span></span><code><span class="c1"># Given: q(t), v(t), dt</span>
+<span class="c1"># Compute: q(t+dt), v(t+dt)</span>
+
+<span class="c1"># 1. Half-step velocity update</span>
+<span class="n">a</span> <span class="o">=</span> <span class="n">F</span><span class="p">(</span><span class="n">q</span><span class="p">)</span> <span class="o">/</span> <span class="n">m</span>  <span class="c1"># F = -∇U</span>
+<span class="n">v_half</span> <span class="o">=</span> <span class="n">v</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">dt</span> <span class="o">*</span> <span class="n">a</span>
+
+<span class="c1"># 2. Full-step position update</span>
+<span class="n">q_new</span> <span class="o">=</span> <span class="n">q</span> <span class="o">+</span> <span class="n">dt</span> <span class="o">*</span> <span class="n">v_half</span>
+
+<span class="c1"># 3. Half-step velocity update (with new force)</span>
+<span class="n">a_new</span> <span class="o">=</span> <span class="n">F</span><span class="p">(</span><span class="n">q_new</span><span class="p">)</span> <span class="o">/</span> <span class="n">m</span>
+<span class="n">v_new</span> <span class="o">=</span> <span class="n">v_half</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">dt</span> <span class="o">*</span> <span class="n">a_new</span>
+</code></pre></div></p>
+<p><strong>TNFR Interpretation</strong>: Verlet respects time-reversal symmetry, ensuring coherence conservation.</p>
+<h4 id="512-runge-kutta-4-rk4">5.1.2 Runge-Kutta 4 (RK4)<a class="headerlink" href="#512-runge-kutta-4-rk4" title="Permanent link">&para;</a></h4>
+<p><strong>When to Use</strong>: Dissipative or forced systems (D ≠ 0 or external forcing)</p>
+<p><strong>Advantages</strong>:
+- High accuracy: local error O(h⁵), global error O(h⁴)
+- Stable for dissipative dynamics
+- Handles time-dependent forces</p>
+<p><strong>Algorithm</strong>:
+<div class="highlight"><pre><span></span><code><span class="c1"># Given: state y = [q, v], dy/dt = f(y, t)</span>
+<span class="c1"># Compute: y(t+dt)</span>
+
+<span class="n">k1</span> <span class="o">=</span> <span class="n">dt</span> <span class="o">*</span> <span class="n">f</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+<span class="n">k2</span> <span class="o">=</span> <span class="n">dt</span> <span class="o">*</span> <span class="n">f</span><span class="p">(</span><span class="n">y</span> <span class="o">+</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">k1</span><span class="p">,</span> <span class="n">t</span> <span class="o">+</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">dt</span><span class="p">)</span>
+<span class="n">k3</span> <span class="o">=</span> <span class="n">dt</span> <span class="o">*</span> <span class="n">f</span><span class="p">(</span><span class="n">y</span> <span class="o">+</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">k2</span><span class="p">,</span> <span class="n">t</span> <span class="o">+</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">dt</span><span class="p">)</span>
+<span class="n">k4</span> <span class="o">=</span> <span class="n">dt</span> <span class="o">*</span> <span class="n">f</span><span class="p">(</span><span class="n">y</span> <span class="o">+</span> <span class="n">k3</span><span class="p">,</span> <span class="n">t</span> <span class="o">+</span> <span class="n">dt</span><span class="p">)</span>
+
+<span class="n">y_new</span> <span class="o">=</span> <span class="n">y</span> <span class="o">+</span> <span class="p">(</span><span class="n">k1</span> <span class="o">+</span> <span class="mi">2</span><span class="o">*</span><span class="n">k2</span> <span class="o">+</span> <span class="mi">2</span><span class="o">*</span><span class="n">k3</span> <span class="o">+</span> <span class="n">k4</span><span class="p">)</span> <span class="o">/</span> <span class="mi">6</span>
+</code></pre></div></p>
+<h4 id="513-timestep-selection">5.1.3 Timestep Selection<a class="headerlink" href="#513-timestep-selection" title="Permanent link">&para;</a></h4>
+<p><strong>Conservative Systems</strong>: Choose Δt ≪ 2π/ω_max where ω_max is the highest natural frequency</p>
+<p><strong>Typical Rule</strong>: Δt ≈ T_min / 50 (50 steps per smallest period)</p>
+<p><strong>TNFR Consideration</strong>: Δt should resolve fastest νf in the network</p>
+<h3 id="52-validation-experiments-6-canonical-tests">5.2 Validation Experiments (6 Canonical Tests)<a class="headerlink" href="#52-validation-experiments-6-canonical-tests" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Experiment</th>
+<th>System</th>
+<th>Validates</th>
+<th>Success Criterion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1. Harmonic Oscillator</strong></td>
+<td>m-k system</td>
+<td>m = 1/νf scaling</td>
+<td>|T_num - T_theo|/T_theo &lt; 10⁻³</td>
+</tr>
+<tr>
+<td><strong>2. Free Particle</strong></td>
+<td>Single body</td>
+<td>Momentum conservation</td>
+<td>|P(t) - P(0)|/|P(0)| &lt; 10⁻⁶</td>
+</tr>
+<tr>
+<td><strong>3. Central Potential</strong></td>
+<td>Kepler 2-body</td>
+<td>Energy, ang. momentum</td>
+<td>|E(t) - E(0)|/|E(0)| &lt; 10⁻⁴</td>
+</tr>
+<tr>
+<td><strong>4. Kepler Orbit</strong></td>
+<td>Earth-Sun</td>
+<td>Orbital period</td>
+<td>|T_num - T_Kepler|/T_Kepler &lt; 10⁻³</td>
+</tr>
+<tr>
+<td><strong>5. Lagrange 3-Body</strong></td>
+<td>Equilateral triangle</td>
+<td>Collective stability</td>
+<td>C(t) &gt; 0.7 for t ∈ [0, 100]</td>
+</tr>
+<tr>
+<td><strong>6. Chaotic System</strong></td>
+<td>Perturbed 3-body</td>
+<td>Lyapunov exponent</td>
+<td>λ &gt; 0 detected</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Reproducibility Requirement</strong>: All experiments use fixed random seed (SEED = 42)</p>
+<h3 id="53-coherence-metrics-monitoring">5.3 Coherence Metrics Monitoring<a class="headerlink" href="#53-coherence-metrics-monitoring" title="Permanent link">&para;</a></h3>
+<p>During n-body simulations, track:</p>
+<ol>
+<li>
+<p><strong>Total Coherence C(t)</strong>:
+   <div class="highlight"><pre><span></span><code>C(t) = Tr(Ĉ ρ)  where ρ is the network density matrix
+</code></pre></div>
+   <strong>Classical Limit</strong>: C(t) → 1 as ε → 0 (perfect coherence)</p>
+</li>
+<li>
+<p><strong>Sense Index Si(t)</strong>:
+   <div class="highlight"><pre><span></span><code>Si = α·νf_norm + β·(1 - disp_θ) + γ·(1 - |ΔNFR|_norm)
+</code></pre></div>
+   <strong>Interpretation</strong>: Higher Si → more stable structural reorganization</p>
+</li>
+<li>
+<p><strong>Phase Coherence</strong> (Kuramoto order parameter):
+   <div class="highlight"><pre><span></span><code>r(t) = |⟨exp(iθ_j)⟩_j|
+</code></pre></div>
+   <strong>Classical Limit</strong>: r(t) → 1 (all nodes synchronized)</p>
+</li>
+<li>
+<p><strong>Energy Drift</strong>:
+   <div class="highlight"><pre><span></span><code>ΔE_rel(t) = |E(t) - E(0)| / |E(0)|
+</code></pre></div>
+   <strong>Validation Target</strong>: ΔE_rel &lt; 10⁻⁴ for classical mechanics validity</p>
+</li>
+</ol>
+<h3 id="54-reproducibility-protocol">5.4 Reproducibility Protocol<a class="headerlink" href="#54-reproducibility-protocol" title="Permanent link">&para;</a></h3>
+<p><strong>Step 1</strong>: Set deterministic seed
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+</code></pre></div></p>
+<p><strong>Step 2</strong>: Initialize system with documented parameters
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.dynamics.nbody</span><span class="w"> </span><span class="kn">import</span> <span class="n">NBodySystem</span>
+
+<span class="n">system</span> <span class="o">=</span> <span class="n">NBodySystem</span><span class="p">(</span>
+    <span class="n">n_bodies</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">masses</span><span class="o">=</span><span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">],</span>
+    <span class="n">G</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">seed</span><span class="o">=</span><span class="mi">42</span>  <span class="c1"># Reproducibility</span>
+<span class="p">)</span>
+</code></pre></div></p>
+<p><strong>Step 3</strong>: Evolve with fixed timestep
+<div class="highlight"><pre><span></span><code><span class="n">history</span> <span class="o">=</span> <span class="n">system</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+    <span class="n">t_final</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>
+    <span class="n">dt</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
+    <span class="n">method</span><span class="o">=</span><span class="s1">&#39;verlet&#39;</span>  <span class="c1"># Specify integrator</span>
+<span class="p">)</span>
+</code></pre></div></p>
+<p><strong>Step 4</strong>: Validate conservation
+<div class="highlight"><pre><span></span><code><span class="n">E0</span> <span class="o">=</span> <span class="n">history</span><span class="p">[</span><span class="s1">&#39;energy&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">E_final</span> <span class="o">=</span> <span class="n">history</span><span class="p">[</span><span class="s1">&#39;energy&#39;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">energy_drift</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">E_final</span> <span class="o">-</span> <span class="n">E0</span><span class="p">)</span> <span class="o">/</span> <span class="nb">abs</span><span class="p">(</span><span class="n">E0</span><span class="p">)</span>
+
+<span class="k">assert</span> <span class="n">energy_drift</span> <span class="o">&lt;</span> <span class="mf">1e-4</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Energy drift </span><span class="si">{</span><span class="n">energy_drift</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2"> exceeds tolerance&quot;</span>
+</code></pre></div></p>
+<p><strong>Step 5</strong>: Log metrics
+<div class="highlight"><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Initial coherence: </span><span class="si">{</span><span class="n">history</span><span class="p">[</span><span class="s1">&#39;coherence&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Final coherence: </span><span class="si">{</span><span class="n">history</span><span class="p">[</span><span class="s1">&#39;coherence&#39;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Average Si: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">history</span><span class="p">[</span><span class="s1">&#39;sense_index&#39;</span><span class="p">])</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div></p>
+<hr />
+<h2 id="6-dynamical-regimes-chaos-bifurcations-collective-modes">6. Dynamical Regimes: Chaos, Bifurcations, Collective Modes<a class="headerlink" href="#6-dynamical-regimes-chaos-bifurcations-collective-modes" title="Permanent link">&para;</a></h2>
+<h3 id="61-classification-of-dynamical-regimes">6.1 Classification of Dynamical Regimes<a class="headerlink" href="#61-classification-of-dynamical-regimes" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Regime</th>
+<th>Characteristics</th>
+<th>TNFR Signatures</th>
+<th>Classical Analog</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Stable</strong></td>
+<td>Bounded trajectories, periodic</td>
+<td>C(t) &gt; 0.7, low ΔNFR variance</td>
+<td>Regular orbits, quasi-periodic</td>
+</tr>
+<tr>
+<td><strong>Bifurcated</strong></td>
+<td>Qualitative change in dynamics</td>
+<td>Si drops, ΔNFR spikes</td>
+<td>Period-doubling, symmetry breaking</td>
+</tr>
+<tr>
+<td><strong>Chaotic</strong></td>
+<td>Sensitive dependence on IC</td>
+<td>C(t) fluctuates, λ &gt; 0</td>
+<td>Deterministic chaos (Lorenz, 3-body)</td>
+</tr>
+<tr>
+<td><strong>Collective</strong></td>
+<td>Synchronized group motion</td>
+<td>High phase coherence r(t)</td>
+<td>Normal modes, resonances</td>
+</tr>
+</tbody>
+</table>
+<h3 id="62-chaos-detection-criteria">6.2 Chaos Detection Criteria<a class="headerlink" href="#62-chaos-detection-criteria" title="Permanent link">&para;</a></h3>
+<h4 id="lyapunov-exponent">Lyapunov Exponent<a class="headerlink" href="#lyapunov-exponent" title="Permanent link">&para;</a></h4>
+<p><strong>Definition</strong>: Exponential rate of separation of nearby trajectories
+<div class="highlight"><pre><span></span><code>|δq(t)| ≈ |δq(0)| exp(λt)
+</code></pre></div></p>
+<p><strong>Computation</strong>:
+1. Initialize two nearby trajectories: q₁(0), q₂(0) = q₁(0) + δq₀
+2. Evolve both for time Δt
+3. Measure separation: δ(Δt) = |q₂(Δt) - q₁(Δt)|
+4. Renormalize to prevent overflow
+5. Repeat and average</p>
+<p><strong>TNFR Interpretation</strong>:
+- λ &gt; 0: Chaotic (coherence is fragile, small ΔNFR perturbations amplify)
+- λ = 0: Marginally stable (neutral coherence)
+- λ &lt; 0: Stable (coherence is robust, perturbations decay)</p>
+<p><strong>Code Implementation</strong>: See <a href="#73-lyapunov-exponent-computation">Section 7.3</a></p>
+<h4 id="poincare-section">Poincaré Section<a class="headerlink" href="#poincare-section" title="Permanent link">&para;</a></h4>
+<p><strong>Method</strong>: Sample phase space when trajectory crosses a specific hyperplane</p>
+<p><strong>Chaos Signature</strong>:
+- <strong>Regular motion</strong>: Points lie on smooth curves (invariant tori)
+- <strong>Chaotic motion</strong>: Points fill regions densely (strange attractor)</p>
+<p><strong>TNFR Interpretation</strong>: Poincaré section reveals the <strong>coherence manifold</strong> structure</p>
+<h3 id="63-bifurcation-analysis">6.3 Bifurcation Analysis<a class="headerlink" href="#63-bifurcation-analysis" title="Permanent link">&para;</a></h3>
+<p><strong>Bifurcation</strong>: Qualitative change in dynamics as a parameter varies</p>
+<p><strong>Common Types</strong>:</p>
+<ol>
+<li><strong>Saddle-Node Bifurcation</strong>: Two fixed points (attractors) collide and annihilate</li>
+<li>
+<p><strong>TNFR</strong>: Two coherent configurations merge, ΔNFR changes sign</p>
+</li>
+<li>
+<p><strong>Period-Doubling Bifurcation</strong>: Periodic orbit's period doubles</p>
+</li>
+<li>
+<p><strong>TNFR</strong>: Phase synchronization breaks, new sub-harmonic emerges</p>
+</li>
+<li>
+<p><strong>Hopf Bifurcation</strong>: Fixed point becomes unstable, limit cycle appears</p>
+</li>
+<li><strong>TNFR</strong>: Static coherence → oscillatory coherence</li>
+</ol>
+<p><strong>Detection</strong>: Monitor C(t), Si(t), and ΔNFR variance as parameter varies</p>
+<h3 id="64-collective-modes-and-normal-modes">6.4 Collective Modes and Normal Modes<a class="headerlink" href="#64-collective-modes-and-normal-modes" title="Permanent link">&para;</a></h3>
+<p><strong>Definition</strong>: Patterns where multiple nodes move in coordinated fashion</p>
+<p><strong>Classical Examples</strong>:
+- <strong>Normal modes</strong>: Eigenmodes of coupled oscillators
+- <strong>Center-of-mass motion</strong>: All nodes translate together
+- <strong>Relative motion</strong>: Nodes orbit common center</p>
+<p><strong>TNFR Formulation</strong>:</p>
+<p><strong>Collective EPI</strong>: Superposition of individual EPIs
+<div class="highlight"><pre><span></span><code>EPI_collective = Σᵢ cᵢ EPIᵢ  (linear combination)
+</code></pre></div></p>
+<p><strong>Collective Frequency</strong>: Weighted average
+<div class="highlight"><pre><span></span><code>νf_collective = Σᵢ wᵢ νfᵢ / Σᵢ wᵢ
+</code></pre></div></p>
+<p><strong>Phase Lock</strong>: All nodes share common phase θ_collective
+<div class="highlight"><pre><span></span><code>θᵢ - θⱼ = constant for all (i,j)
+</code></pre></div></p>
+<p><strong>Signature</strong>: High Kuramoto order parameter r(t) ≈ 1</p>
+<h3 id="65-distinguishing-criteria-summary">6.5 Distinguishing Criteria Summary<a class="headerlink" href="#65-distinguishing-criteria-summary" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Question</th>
+<th>Metric to Check</th>
+<th>Threshold/Criterion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Is system chaotic?</td>
+<td>Lyapunov exponent λ</td>
+<td>λ &gt; 0</td>
+</tr>
+<tr>
+<td>Is coherence stable?</td>
+<td>C(t) variance</td>
+<td>σ_C &lt; 0.1</td>
+</tr>
+<tr>
+<td>Are nodes synchronized?</td>
+<td>Phase coherence r(t)</td>
+<td>r &gt; 0.8</td>
+</tr>
+<tr>
+<td>Is energy conserved?</td>
+<td>ΔE_rel</td>
+<td>&lt; 10⁻⁴</td>
+</tr>
+<tr>
+<td>Is bifurcation occurring?</td>
+<td>Si(t) drop + ΔNFR spike</td>
+<td>Si drops &gt; 20%</td>
+</tr>
+<tr>
+<td>Is motion periodic?</td>
+<td>Poincaré section</td>
+<td>Points on curves</td>
+</tr>
+<tr>
+<td>Are there collective modes?</td>
+<td>Phase locking + r(t)</td>
+<td>All θᵢ - θⱼ constant, r &gt; 0.9</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="7-practical-examples-with-code">7. Practical Examples with Code<a class="headerlink" href="#7-practical-examples-with-code" title="Permanent link">&para;</a></h2>
+<p>All examples use the <code>tnfr</code> package. Install via:
+<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>tnfr
+</code></pre></div></p>
+<h3 id="71-two-body-circular-orbit">7.1 Two-Body Circular Orbit<a class="headerlink" href="#71-two-body-circular-orbit" title="Permanent link">&para;</a></h3>
+<p><strong>Physical System</strong>: Earth-Moon system (dimensionless units)</p>
+<p><strong>TNFR Implementation</strong>:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.dynamics.nbody</span><span class="w"> </span><span class="kn">import</span> <span class="n">NBodySystem</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
+<span class="c1"># Create 2-body system</span>
+<span class="n">M_earth</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="n">M_moon</span> <span class="o">=</span> <span class="mf">0.3</span>
+<span class="n">system</span> <span class="o">=</span> <span class="n">NBodySystem</span><span class="p">(</span>
+    <span class="n">n_bodies</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">masses</span><span class="o">=</span><span class="p">[</span><span class="n">M_earth</span><span class="p">,</span> <span class="n">M_moon</span><span class="p">],</span>
+    <span class="n">G</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">seed</span><span class="o">=</span><span class="mi">42</span>
+<span class="p">)</span>
+
+<span class="c1"># Initial conditions for circular orbit</span>
+<span class="n">r</span> <span class="o">=</span> <span class="mf">1.0</span>  <span class="c1"># Separation</span>
+<span class="n">v_orbit</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">system</span><span class="o">.</span><span class="n">G</span> <span class="o">*</span> <span class="p">(</span><span class="n">M_earth</span> <span class="o">+</span> <span class="n">M_moon</span><span class="p">)</span> <span class="o">/</span> <span class="n">r</span><span class="p">)</span>
+
+<span class="n">positions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+    <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>      <span class="c1"># Earth at origin</span>
+    <span class="p">[</span><span class="n">r</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span>         <span class="c1"># Moon at distance r</span>
+<span class="p">])</span>
+<span class="n">velocities</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+    <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>              <span class="c1"># Earth at rest (CM frame)</span>
+    <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">v_orbit</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span>           <span class="c1"># Moon tangential velocity</span>
+<span class="p">])</span>
+
+<span class="n">system</span><span class="o">.</span><span class="n">set_state</span><span class="p">(</span><span class="n">positions</span><span class="p">,</span> <span class="n">velocities</span><span class="p">)</span>
+
+<span class="c1"># Evolve system</span>
+<span class="n">history</span> <span class="o">=</span> <span class="n">system</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span><span class="n">t_final</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;verlet&#39;</span><span class="p">)</span>
+
+<span class="c1"># Validate energy conservation</span>
+<span class="n">E0</span> <span class="o">=</span> <span class="n">history</span><span class="p">[</span><span class="s1">&#39;energy&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">E_final</span> <span class="o">=</span> <span class="n">history</span><span class="p">[</span><span class="s1">&#39;energy&#39;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">energy_drift</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">E_final</span> <span class="o">-</span> <span class="n">E0</span><span class="p">)</span> <span class="o">/</span> <span class="nb">abs</span><span class="p">(</span><span class="n">E0</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Energy drift: </span><span class="si">{</span><span class="n">energy_drift</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Plot trajectories</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">history</span><span class="p">[</span><span class="s1">&#39;positions&#39;</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">history</span><span class="p">[</span><span class="s1">&#39;positions&#39;</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;b-&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Earth&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">history</span><span class="p">[</span><span class="s1">&#39;positions&#39;</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">history</span><span class="p">[</span><span class="s1">&#39;positions&#39;</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;r-&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Moon&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Earth-Moon System (TNFR Structural Dynamics)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;equal&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="c1"># TNFR structural metrics</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Initial coherence C(0): </span><span class="si">{</span><span class="n">history</span><span class="p">[</span><span class="s1">&#39;coherence&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Final coherence C(T): </span><span class="si">{</span><span class="n">history</span><span class="p">[</span><span class="s1">&#39;coherence&#39;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Average sense index Si: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">history</span><span class="p">[</span><span class="s1">&#39;sense_index&#39;</span><span class="p">])</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>Expected Output</strong>:
+- Energy drift &lt; 10⁻⁴
+- Coherence C(t) ≈ 0.95 (high, stable)
+- Circular trajectories in xy-plane
+- Period T ≈ 2π√(r³/G(M₁+M₂)) ≈ 5.5 time units</p>
+<p><strong>TNFR Insight</strong>: High coherence indicates stable resonant coupling between nodes.</p>
+<h3 id="72-three-body-figure-8-orbit">7.2 Three-Body Figure-8 Orbit<a class="headerlink" href="#72-three-body-figure-8-orbit" title="Permanent link">&para;</a></h3>
+<p><strong>Physical System</strong>: Three equal masses following figure-8 choreographic solution</p>
+<p><strong>Initial Conditions</strong> (Chenciner &amp; Montgomery, 2000):
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.dynamics.nbody</span><span class="w"> </span><span class="kn">import</span> <span class="n">NBodySystem</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="c1"># Three equal masses</span>
+<span class="n">system</span> <span class="o">=</span> <span class="n">NBodySystem</span><span class="p">(</span><span class="n">n_bodies</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">masses</span><span class="o">=</span><span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span> <span class="n">G</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+
+<span class="c1"># Figure-8 initial conditions (approximate)</span>
+<span class="n">positions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+    <span class="p">[</span><span class="o">-</span><span class="mf">0.97000436</span><span class="p">,</span> <span class="mf">0.24308753</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+    <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+    <span class="p">[</span><span class="mf">0.97000436</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.24308753</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span>
+<span class="p">])</span>
+<span class="n">velocities</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+    <span class="p">[</span><span class="mf">0.46620368</span><span class="p">,</span> <span class="mf">0.43236573</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+    <span class="p">[</span><span class="o">-</span><span class="mf">0.93240737</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.86473146</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+    <span class="p">[</span><span class="mf">0.46620368</span><span class="p">,</span> <span class="mf">0.43236573</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span>
+<span class="p">])</span>
+
+<span class="n">system</span><span class="o">.</span><span class="n">set_state</span><span class="p">(</span><span class="n">positions</span><span class="p">,</span> <span class="n">velocities</span><span class="p">)</span>
+
+<span class="c1"># Evolve for one period</span>
+<span class="n">T_period</span> <span class="o">=</span> <span class="mf">6.32591398</span>  <span class="c1"># Known period</span>
+<span class="n">history</span> <span class="o">=</span> <span class="n">system</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span><span class="n">t_final</span><span class="o">=</span><span class="n">T_period</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;verlet&#39;</span><span class="p">)</span>
+
+<span class="c1"># Plot trajectories</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">history</span><span class="p">[</span><span class="s1">&#39;positions&#39;</span><span class="p">][:,</span> <span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> 
+             <span class="n">history</span><span class="p">[</span><span class="s1">&#39;positions&#39;</span><span class="p">][:,</span> <span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> 
+             <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;Body </span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Figure-8 Orbit (TNFR Collective Mode)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;equal&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="c1"># Check periodicity (should return to initial state)</span>
+<span class="n">pos_final</span> <span class="o">=</span> <span class="n">history</span><span class="p">[</span><span class="s1">&#39;positions&#39;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">pos_error</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">pos_final</span> <span class="o">-</span> <span class="n">positions</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Periodicity error: </span><span class="si">{</span><span class="n">pos_error</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># TNFR collective mode analysis</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Phase coherence r(t): </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">history</span><span class="p">[</span><span class="s1">&#39;phase_coherence&#39;</span><span class="p">])</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Coherence stability: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">history</span><span class="p">[</span><span class="s1">&#39;coherence&#39;</span><span class="p">])</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div></p>
+<p><strong>Expected Output</strong>:
+- Periodicity error &lt; 10⁻³
+- Phase coherence r(t) &gt; 0.9 (strong collective mode)
+- All three bodies trace same figure-8 path with phase offset</p>
+<p><strong>TNFR Insight</strong>: Figure-8 orbit is a <strong>resonant collective mode</strong> where nodes maintain fixed phase relationships.</p>
+<h3 id="73-lyapunov-exponent-computation">7.3 Lyapunov Exponent Computation<a class="headerlink" href="#73-lyapunov-exponent-computation" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose</strong>: Detect chaos in n-body systems</p>
+<p><strong>Implementation</strong>:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.dynamics.nbody</span><span class="w"> </span><span class="kn">import</span> <span class="n">NBodySystem</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_lyapunov</span><span class="p">(</span><span class="n">system</span><span class="p">,</span> <span class="n">t_final</span><span class="o">=</span><span class="mf">100.0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">delta_0</span><span class="o">=</span><span class="mf">1e-8</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute largest Lyapunov exponent for n-body system.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    system : NBodySystem</span>
+<span class="sd">        Initialized system</span>
+<span class="sd">    t_final : float</span>
+<span class="sd">        Total integration time</span>
+<span class="sd">    dt : float</span>
+<span class="sd">        Timestep</span>
+<span class="sd">    delta_0 : float</span>
+<span class="sd">        Initial perturbation magnitude</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    lambda_max : float</span>
+<span class="sd">        Largest Lyapunov exponent</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Save initial state</span>
+    <span class="n">q0</span> <span class="o">=</span> <span class="n">system</span><span class="o">.</span><span class="n">positions</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">v0</span> <span class="o">=</span> <span class="n">system</span><span class="o">.</span><span class="n">velocities</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="c1"># Create perturbed state</span>
+    <span class="n">dq0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="o">*</span><span class="n">q0</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">*</span> <span class="n">delta_0</span>
+    <span class="n">dq0</span> <span class="o">/=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">dq0</span><span class="p">)</span>  <span class="c1"># Normalize</span>
+
+    <span class="n">q1</span> <span class="o">=</span> <span class="n">q0</span> <span class="o">+</span> <span class="n">dq0</span> <span class="o">*</span> <span class="n">delta_0</span>
+    <span class="n">v1</span> <span class="o">=</span> <span class="n">v0</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="c1"># Initialize</span>
+    <span class="n">lambda_sum</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">n_renorm</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">renorm_interval</span> <span class="o">=</span> <span class="mi">10</span>  <span class="c1"># Renormalize every 10 steps</span>
+
+    <span class="n">steps</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">t_final</span> <span class="o">/</span> <span class="n">dt</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">steps</span><span class="p">):</span>
+        <span class="c1"># Evolve reference trajectory</span>
+        <span class="n">system</span><span class="o">.</span><span class="n">set_state</span><span class="p">(</span><span class="n">q0</span><span class="p">,</span> <span class="n">v0</span><span class="p">)</span>
+        <span class="n">system</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
+        <span class="n">q0</span> <span class="o">=</span> <span class="n">system</span><span class="o">.</span><span class="n">positions</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">v0</span> <span class="o">=</span> <span class="n">system</span><span class="o">.</span><span class="n">velocities</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="c1"># Evolve perturbed trajectory</span>
+        <span class="n">system</span><span class="o">.</span><span class="n">set_state</span><span class="p">(</span><span class="n">q1</span><span class="p">,</span> <span class="n">v1</span><span class="p">)</span>
+        <span class="n">system</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
+        <span class="n">q1</span> <span class="o">=</span> <span class="n">system</span><span class="o">.</span><span class="n">positions</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">v1</span> <span class="o">=</span> <span class="n">system</span><span class="o">.</span><span class="n">velocities</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="c1"># Measure separation</span>
+        <span class="n">delta_q</span> <span class="o">=</span> <span class="n">q1</span> <span class="o">-</span> <span class="n">q0</span>
+        <span class="n">delta_norm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">delta_q</span><span class="p">)</span>
+
+        <span class="c1"># Renormalize periodically</span>
+        <span class="k">if</span> <span class="n">step</span> <span class="o">%</span> <span class="n">renorm_interval</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">lambda_sum</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">delta_norm</span> <span class="o">/</span> <span class="n">delta_0</span><span class="p">)</span>
+            <span class="n">n_renorm</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="c1"># Renormalize perturbation</span>
+            <span class="n">q1</span> <span class="o">=</span> <span class="n">q0</span> <span class="o">+</span> <span class="p">(</span><span class="n">delta_q</span> <span class="o">/</span> <span class="n">delta_norm</span><span class="p">)</span> <span class="o">*</span> <span class="n">delta_0</span>
+            <span class="n">v1</span> <span class="o">=</span> <span class="n">v0</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="c1"># Compute average</span>
+    <span class="n">lambda_max</span> <span class="o">=</span> <span class="n">lambda_sum</span> <span class="o">/</span> <span class="p">(</span><span class="n">n_renorm</span> <span class="o">*</span> <span class="n">renorm_interval</span> <span class="o">*</span> <span class="n">dt</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">lambda_max</span>
+
+<span class="c1"># Example: Perturbed 3-body system</span>
+<span class="n">system</span> <span class="o">=</span> <span class="n">NBodySystem</span><span class="p">(</span><span class="n">n_bodies</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">masses</span><span class="o">=</span><span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span> <span class="n">G</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+
+<span class="c1"># Random initial conditions (likely chaotic)</span>
+<span class="n">positions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.5</span>
+<span class="n">velocities</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.3</span>
+<span class="n">system</span><span class="o">.</span><span class="n">set_state</span><span class="p">(</span><span class="n">positions</span><span class="p">,</span> <span class="n">velocities</span><span class="p">)</span>
+
+<span class="c1"># Compute Lyapunov exponent</span>
+<span class="n">lambda_max</span> <span class="o">=</span> <span class="n">compute_lyapunov</span><span class="p">(</span><span class="n">system</span><span class="p">,</span> <span class="n">t_final</span><span class="o">=</span><span class="mf">100.0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Largest Lyapunov exponent: </span><span class="si">{</span><span class="n">lambda_max</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">lambda_max</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;System is CHAOTIC&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Divergence timescale: </span><span class="si">{</span><span class="mi">1</span><span class="o">/</span><span class="n">lambda_max</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> time units&quot;</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;System is REGULAR (not chaotic)&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>Interpretation</strong>:
+- λ_max &gt; 0.1: Strong chaos
+- 0 &lt; λ_max &lt; 0.1: Weak chaos
+- λ_max ≈ 0: Marginally stable
+- λ_max &lt; 0: Stable (unlikely for gravitational systems)</p>
+<h3 id="74-full-validation-suite">7.4 Full Validation Suite<a class="headerlink" href="#74-full-validation-suite" title="Permanent link">&para;</a></h3>
+<p><strong>Location</strong>: <code>examples/nbody_quantitative_validation.py</code></p>
+<p><strong>Run All 6 Canonical Experiments</strong>:
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>examples/nbody_quantitative_validation.py
+</code></pre></div></p>
+<p><strong>Output</strong>: Generates figures and quantitative tables in <code>validation_outputs/</code></p>
+<p><strong>Tests</strong>:
+1. Harmonic oscillator mass scaling (m = 1/νf)
+2. Free particle momentum conservation
+3. Central potential energy conservation
+4. Kepler orbit period validation
+5. Lagrange equilateral triangle stability
+6. Chaos detection in perturbed 3-body</p>
+<p><strong>Validation Criteria</strong>: All tests must pass with errors &lt; 10⁻³</p>
+<hr />
+<h2 id="8-references-and-further-reading">8. References and Further Reading<a class="headerlink" href="#8-references-and-further-reading" title="Permanent link">&para;</a></h2>
+<h3 id="81-tnfr-theory-documents">8.1 TNFR Theory Documents<a class="headerlink" href="#81-tnfr-theory-documents" title="Permanent link">&para;</a></h3>
+<p><strong>Mathematical Foundations</strong>:
+- <a href="../source/theory/mathematical_foundations/">Mathematical Foundations of TNFR</a> — Complete formalization (1246 lines)
+  - Hilbert space H_NFR, Banach space B_EPI
+  - Operator algebra, spectral theory
+  - Nodal equation derivation</p>
+<p><strong>Classical Mechanics Emergence</strong>:
+- <a href="../source/theory/07_emergence_classical_mechanics/">Emergence of Classical Mechanics from TNFR</a> (797 lines)
+  - Mass as inverse frequency (m = 1/νf)
+  - Force as coherence gradient (F = -∇U)
+  - Conservation laws from symmetry (Noether)</p>
+<ul>
+<li><a href="../source/theory/08_classical_mechanics_euler_lagrange/">Euler-Lagrange Correspondence</a> (657 lines)</li>
+<li>Variational principles from resonance</li>
+<li>Action as coherence flow</li>
+<li>Lagrangian mechanics as structural limit</li>
+</ul>
+<p><strong>Numerical Validation</strong>:
+- <a href="../source/theory/09_classical_mechanics_numerical_validation/">Classical Mechanics Numerical Validation</a> (1202 lines)
+  - 6 canonical experiments
+  - Time integration schemes (Verlet, RK4)
+  - Reproducibility protocols</p>
+<h3 id="82-implementation">8.2 Implementation<a class="headerlink" href="#82-implementation" title="Permanent link">&para;</a></h3>
+<p><strong>Core N-Body Module</strong>:
+- <code>src/tnfr/dynamics/nbody.py</code> — NBodySystem class, integrators, metrics</p>
+<p><strong>Example Scripts</strong>:
+- <code>examples/nbody_quantitative_validation.py</code> — Full validation suite
+- <code>examples/domain_applications/nbody_gravitational.py</code> — Introductory examples</p>
+<p><strong>Tests</strong>:
+- <code>tests/validation/test_nbody_validation.py</code> — 7 passing unit tests</p>
+<h3 id="83-tnfr-paradigm-documents">8.3 TNFR Paradigm Documents<a class="headerlink" href="#83-tnfr-paradigm-documents" title="Permanent link">&para;</a></h3>
+<p><strong>Core Principles</strong>:
+- <code>AGENTS.md</code> — Canonical invariants, operator guide
+- <code>GLOSSARY.md</code> — Quick reference for TNFR variables
+- <code>GLYPH_SEQUENCES_GUIDE.md</code> — Structural operator sequences (Grammar 2.0)
+- <code>TNFR.pdf</code> — Foundational paradigm document</p>
+<p><strong>Contributing</strong>:
+- <code>CONTRIBUTING.md</code> — How to contribute (structural commits required)</p>
+<h3 id="84-classical-mechanics-references">8.4 Classical Mechanics References<a class="headerlink" href="#84-classical-mechanics-references" title="Permanent link">&para;</a></h3>
+<p><strong>Textbooks</strong>:
+- Goldstein, H., Poole, C., &amp; Safko, J. (2002). <em>Classical Mechanics</em> (3rd ed.). Addison Wesley.
+- Arnold, V. I. (1989). <em>Mathematical Methods of Classical Mechanics</em> (2nd ed.). Springer.</p>
+<p><strong>N-Body Problem</strong>:
+- Chenciner, A., &amp; Montgomery, R. (2000). "A remarkable periodic solution of the three-body problem in the case of equal masses." <em>Annals of Mathematics</em>, 152(3), 881-901.
+- Sundman, K. F. (1913). "Mémoire sur le problème des trois corps." <em>Acta Mathematica</em>, 36, 105-179.</p>
+<p><strong>Chaos and Dynamics</strong>:
+- Strogatz, S. H. (2015). <em>Nonlinear Dynamics and Chaos</em> (2nd ed.). Westview Press.
+- Ott, E. (2002). <em>Chaos in Dynamical Systems</em> (2nd ed.). Cambridge University Press.</p>
+<h3 id="85-noethers-theorem">8.5 Noether's Theorem<a class="headerlink" href="#85-noethers-theorem" title="Permanent link">&para;</a></h3>
+<p><strong>Original Paper</strong>:
+- Noether, E. (1918). "Invariante Variationsprobleme." <em>Nachrichten von der Gesellschaft der Wissenschaften zu Göttingen</em>, 235-257.</p>
+<p><strong>Modern Treatments</strong>:
+- Olver, P. J. (1993). <em>Applications of Lie Groups to Differential Equations</em> (2nd ed.). Springer.</p>
+<hr />
+<h2 id="appendix-a-quick-reference-tables">Appendix A: Quick Reference Tables<a class="headerlink" href="#appendix-a-quick-reference-tables" title="Permanent link">&para;</a></h2>
+<h3 id="a1-tnfr-classical-variable-mapping">A.1 TNFR → Classical Variable Mapping<a class="headerlink" href="#a1-tnfr-classical-variable-mapping" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>TNFR</th>
+<th>Symbol</th>
+<th>Classical</th>
+<th>Symbol</th>
+<th>Relation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Structural frequency</td>
+<td>νf</td>
+<td>Inverse mass</td>
+<td>1/m</td>
+<td>m = 1/νf</td>
+</tr>
+<tr>
+<td>EPI position</td>
+<td>EPI_q</td>
+<td>Position</td>
+<td>q</td>
+<td>Direct</td>
+</tr>
+<tr>
+<td>EPI velocity</td>
+<td>EPI_v</td>
+<td>Velocity</td>
+<td>v</td>
+<td>Direct</td>
+</tr>
+<tr>
+<td>ΔNFR</td>
+<td>ΔNFR</td>
+<td>Acceleration</td>
+<td>a</td>
+<td>a = νf · ΔNFR</td>
+</tr>
+<tr>
+<td>Coherence potential</td>
+<td>U_coh</td>
+<td>Potential energy</td>
+<td>U</td>
+<td>Direct</td>
+</tr>
+<tr>
+<td>Total coherence</td>
+<td>C(t)</td>
+<td>Energy</td>
+<td>E</td>
+<td>E = K + U</td>
+</tr>
+</tbody>
+</table>
+<h3 id="a2-conservation-laws">A.2 Conservation Laws<a class="headerlink" href="#a2-conservation-laws" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Symmetry</th>
+<th>TNFR Network Property</th>
+<th>Conserved Quantity</th>
+<th>Classical Law</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Time translation</td>
+<td>Time-invariant dynamics</td>
+<td>Total coherence</td>
+<td>Energy</td>
+</tr>
+<tr>
+<td>Space translation</td>
+<td>Homogeneous network</td>
+<td>Net momentum</td>
+<td>Linear momentum</td>
+</tr>
+<tr>
+<td>Rotation</td>
+<td>Isotropic coupling</td>
+<td>Angular coherence</td>
+<td>Angular momentum</td>
+</tr>
+</tbody>
+</table>
+<h3 id="a3-validation-criteria">A.3 Validation Criteria<a class="headerlink" href="#a3-validation-criteria" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Test</th>
+<th>Quantity</th>
+<th>Criterion</th>
+<th>Interpretation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Energy conservation</td>
+<td>ΔE_rel</td>
+<td>&lt; 10⁻⁴</td>
+<td>Classical limit valid</td>
+</tr>
+<tr>
+<td>Mass scaling</td>
+<td>|T_num - T_theo|/T_theo</td>
+<td>&lt; 10⁻³</td>
+<td>m = 1/νf confirmed</td>
+</tr>
+<tr>
+<td>Coherence stability</td>
+<td>C(t)</td>
+<td>&gt; 0.7</td>
+<td>Strong structural coupling</td>
+</tr>
+<tr>
+<td>Phase synchrony</td>
+<td>r(t)</td>
+<td>&gt; 0.8</td>
+<td>Collective mode present</td>
+</tr>
+<tr>
+<td>Chaos detection</td>
+<td>λ_max</td>
+<td>&gt; 0</td>
+<td>Chaotic dynamics</td>
+</tr>
+</tbody>
+</table>
+<h3 id="a4-numerical-integration">A.4 Numerical Integration<a class="headerlink" href="#a4-numerical-integration" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Best For</th>
+<th>Preserves</th>
+<th>Timestep Rule</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Verlet</td>
+<td>Conservative systems</td>
+<td>Symplectic structure, energy</td>
+<td>Δt ≪ 2π/ω_max</td>
+</tr>
+<tr>
+<td>RK4</td>
+<td>Dissipative, forced</td>
+<td>High accuracy</td>
+<td>Δt ≈ T_min/50</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="appendix-b-glossary-of-terms">Appendix B: Glossary of Terms<a class="headerlink" href="#appendix-b-glossary-of-terms" title="Permanent link">&para;</a></h2>
+<p><strong>Classical Mechanics</strong>: Branch of physics describing motion of macroscopic objects under forces. Emerges from TNFR as low-dissonance limit.</p>
+<p><strong>Coherence (C(t))</strong>: Global measure of network stability in TNFR. Range [0,1]. Relates to energy conservation in classical limit.</p>
+<p><strong>ΔNFR (Delta NFR)</strong>: Internal reorganization operator. The "structural pressure" driving nodal evolution. Projects to acceleration in classical mechanics.</p>
+<p><strong>Dissonance (ε)</strong>: Parameter measuring structural instability. As ε → 0, TNFR → classical mechanics.</p>
+<p><strong>EPI (Primary Information Structure)</strong>: The coherent "form" of a node. Encodes position and velocity in classical limit.</p>
+<p><strong>Hz_str (Structural Hertz)</strong>: Units of structural frequency νf. Measures rate of reorganization, not physical oscillation.</p>
+<p><strong>Lyapunov Exponent (λ)</strong>: Measures chaos. λ &gt; 0 indicates sensitive dependence on initial conditions.</p>
+<p><strong>Noether's Theorem</strong>: Symmetry → conservation law. Time invariance → energy conservation, etc.</p>
+<p><strong>Nodal Equation</strong>: ∂EPI/∂t = νf · ΔNFR(t). Fundamental equation of TNFR evolution.</p>
+<p><strong>Resonant Fractal Node (NFR)</strong>: Minimum unit of structural coherence in TNFR. Analog of "particle" in classical mechanics.</p>
+<p><strong>Sense Index (Si)</strong>: Capacity for stable structural reorganization. Higher Si → more robust dynamics.</p>
+<p><strong>Structural Frequency (νf)</strong>: Rate of internal reorganization of a node. Measured in Hz_str. Inverse mass: m = 1/νf.</p>
+<p><strong>Symplectic Integrator</strong>: Numerical method preserving phase space volume (e.g., Verlet). Essential for long-term conservative dynamics.</p>
+<hr />
+<h2 id="document-history">Document History<a class="headerlink" href="#document-history" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Date</th>
+<th>Changes</th>
+<th>Author</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1.0</td>
+<td>2025-11-07</td>
+<td>Initial formal documentation</td>
+<td>TNFR Development Team</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><strong>License</strong>: This document is part of the TNFR Python Engine project and follows the repository license.</p>
+<p><strong>Citation</strong>:
+<div class="highlight"><pre><span></span><code>TNFR Development Team. (2025). Classical N-Body Mechanics: Emergence from TNFR Structural Coherence.
+TNFR Python Engine Documentation. https://github.com/fermga/TNFR-Python-Engine
+</code></pre></div></p>
+<p><strong>Questions or Issues?</strong> Open an issue at: https://github.com/fermga/TNFR-Python-Engine/issues</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections", "navigation.top", "navigation.tracking", "toc.integrate", "navigation.instant"], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+    
+  </body>
+</html>

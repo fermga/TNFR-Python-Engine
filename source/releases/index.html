@@ -1,0 +1,4183 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Canonical TNFR structural dynamics engine documentation">
+      
+      
+      
+        <link rel="canonical" href="https://fermga.github.io/TNFR-Python-Engine/source/releases/">
+      
+      
+        <link rel="prev" href="../security/dependabot/">
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>Releases - TNFR Python Engine</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.618322db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#release-notes" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="TNFR Python Engine" class="md-header__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            TNFR Python Engine
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Releases
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    TNFR Python Engine
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="TNFR Python Engine" class="md-nav__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    TNFR Python Engine
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    TNFR Python Engine
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting Started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Welcome to TNFR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/LEARNING_PATHS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Learning Paths
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quickstart Tutorial
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/TNFR_CONCEPTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core Concepts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/INTERACTIVE_TUTORIAL/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interactive Tutorial
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/FAQ/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    FAQ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/math-backends/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Math Backends
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/optional-dependencies/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Optional Dependencies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/migrating-remesh-window/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migrating from Remesh Window
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    User Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user-guide/OPERATORS_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operators Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../STRUCTURAL_FIELDS_TETRAD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural Field Tetrad (Canonical)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user-guide/METRICS_INTERPRETATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Metrics Interpretation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TROUBLESHOOTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar Documentation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Grammar Documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/EXECUTIVE-SUMMARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Executive Summary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_3" id="__nav_4_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core Concepts
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Core Concepts
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/01-FUNDAMENTAL-CONCEPTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fundamental Concepts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/02-CANONICAL-CONSTRAINTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Canonical Constraints
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/03-OPERATORS-AND-GLYPHS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operators and Glyphs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/04-VALID-SEQUENCES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Valid Sequences
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_4" id="__nav_4_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Implementation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/05-TECHNICAL-IMPLEMENTATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Technical Implementation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/06-VALIDATION-AND-TESTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation and Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/07-MIGRATION-AND-EVOLUTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migration and Evolution
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_5" id="__nav_4_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/08-QUICK-REFERENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/GLOSSARY.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/MASTER-INDEX/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Master Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/OPERATORS-CATALOG-SUMMARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operators Catalog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/CROSS-REFERENCE-INDEX/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cross-Reference Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/CODE_DOCS_CROSSREF/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code Documentation Cross-Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_6" id="__nav_4_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tooling
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tooling
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/TOOLING-AND-AUTOMATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tooling and Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/TESTING-SUMMARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing Summary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grammar/DEPRECATION-INDEX.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deprecation Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Examples
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_2" id="__nav_5_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Notebooks & Patterns
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Notebooks & Patterns
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/notebooks/Fundamental_Particles_TNFR_Atlas.ipynb" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fundamental Particles TNFR Atlas (Notebook - GitHub)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/README.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    TNFR Patterns (Module Guide)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../INTERACTIONS_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interaction Sequences Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/operators/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural Operators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/OPERATORS_VISUAL_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operators Visual Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/telemetry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Telemetry & Utilities
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/docstring_style/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docstring Style
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module Documentation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Module Documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modules/mathematics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mathematics Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modules/physics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Physics Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modules/operators/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operators Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modules/dynamics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dynamics Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modules/metrics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Metrics Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modules/sdk/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SDK Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modules/telemetry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Telemetry Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modules/tutorials/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modules/extensions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Extensions Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core Documentation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Core Documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DOCUMENTATION_INDEX/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Documentation Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CANONICAL_SOURCES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Canonical Sources
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../UNIFIED_GRAMMAR_RULES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Unified Grammar Rules
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../AGENTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Agents Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../GLOSSARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Advanced Topics
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Advanced Topics
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../advanced/ARCHITECTURE_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../advanced/PERFORMANCE_OPTIMIZATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Performance Optimization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../advanced/TESTING_STRATEGIES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing Strategies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../advanced/DEVELOPMENT_WORKFLOW/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development Workflow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../foundations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mathematical Foundations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_9_6" id="__nav_9_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Research Documents
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_9_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Research Documents
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TNFR_FORCES_EMERGENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Forces Emergence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../OPERATOR_COMPLETENESS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator Completeness
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../LIFE_EMERGENCE_FROM_TNFR/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Life Emergence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CELL_EMERGENCE_FROM_TNFR/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cell Emergence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tools/CLI/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Security
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/monitoring/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Monitoring
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/dependency-auditing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dependency Auditing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/codeql/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CodeQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/dependabot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dependabot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Info
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Project Info
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#rollback-runbook" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rollback runbook
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Rollback runbook">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#activation-criteria" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Activation criteria
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#retrieval-of-signed-assets-and-validation-logs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Retrieval of signed assets and validation logs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pypi-yank-procedure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PyPI yank procedure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#git-tag-and-github-release-rollback" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Git tag and GitHub release rollback
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#restore-tnfr-to-the-last-coherent-version" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Restore TNFR to the last coherent version
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#automation-helper" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Automation helper
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#semantic-release-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Semantic release workflow
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Semantic release workflow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#automated-changelog-assembly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Automated changelog assembly
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#commit-taxonomy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Commit taxonomy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#workflow-orchestration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Workflow orchestration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tnfr-safeguards-during-bumps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TNFR safeguards during bumps
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#historical-ledger" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Historical ledger
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Historical ledger">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#upcoming-validation-api-unification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Upcoming (validation API unification)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rollback-automation-script" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rollback automation script
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Rollback automation script">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#behaviour" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Behaviour
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1600-glyph-load-history-cleanup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        16.0.0 (glyph load history cleanup)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1400-spanish-compatibility-messaging-retired" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        14.0.0 (Spanish compatibility messaging retired)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1310-preset-legacy-tuple-removed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13.1.0 (preset legacy tuple removed)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1300-selector-norms-alias-removed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13.0.0 (selector norms alias removed)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1210-selector-norms-helper-renamed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12.1.0 (selector norms helper renamed)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1200-diagnosis-state-spanish-shim-removed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12.0.0 (diagnosis state Spanish shim removed)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1120-operator-collections-english-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11.2.0 (operator collections English-only)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1110-glyph-load-spanish-aggregates-removed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11.1.0 (glyph load Spanish aggregates removed)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1100-si-dispersion-legacy-keys-removed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11.0.0 (Si dispersion legacy keys removed)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1000-remesh-stability-window-keyword-removal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.0.0 (remesh stability window keyword removal)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1500-legacy-migration-helpers-removed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        15.0.0 (legacy migration helpers removed)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#900-canonical-preset-rename" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.0.0 (canonical preset rename)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#810-remesh-cooldown-alias-removal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.1.0 (remesh cooldown alias removal)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#800-phase-alias-enforcement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.0.0 (phase alias enforcement)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#701-english-deprecation-messaging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.0.1 (English deprecation messaging)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#700-spanish-identifiers-removed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.0.0 (Spanish identifiers removed)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#610-preset-alias-deprecation-window" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1.0 (preset alias deprecation window)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#600-node-aliases-removed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.0.0 (node aliases removed)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#500-prepare_network-alias-retired" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.0.0 (prepare_network alias retired)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#200-spanish-alias-removal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.0.0 (Spanish alias removal)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1x-compatibility-window-historical" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.x compatibility window (historical)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="release-notes">Release notes<a class="headerlink" href="#release-notes" title="Permanent link">&para;</a></h1>
+<h2 id="rollback-runbook">Rollback runbook<a class="headerlink" href="#rollback-runbook" title="Permanent link">&para;</a></h2>
+<h3 id="activation-criteria">Activation criteria<a class="headerlink" href="#activation-criteria" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>PyPI anomaly</strong>: integrity regressions, mis-signed artefacts, or validation
+  gaps discovered after publication that compromise C(t), νf traces, or the
+  reproducibility contract.</li>
+<li><strong>GitHub release mismatch</strong>: the tagged source diverges from the validated
+  QA ledger or omits a structural fix that shipped with the previous version.</li>
+<li><strong>Downstream instability</strong>: partners report ΔNFR spikes or phase drifts that
+  reproduce on the freshly published build while the prior release stays
+  coherent.</li>
+</ul>
+<p>Triggering any of these conditions escalates to the release shepherd who owns
+the rollback decision.</p>
+<h3 id="retrieval-of-signed-assets-and-validation-logs">Retrieval of signed assets and validation logs<a class="headerlink" href="#retrieval-of-signed-assets-and-validation-logs" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Navigate to the <strong>Release</strong> workflow run that produced the faulty build.</li>
+<li>Download the <code>tnfr-&lt;version&gt;-dist</code> artifact containing the wheels,
+   sdist, and detached signatures, plus the optional <code>qa-validation-&lt;version&gt;</code>
+   validation log bundle uploaded by the pipeline.</li>
+<li>Store the artifacts in the incident folder before beginning remediation so
+   the structural history remains auditable.</li>
+</ol>
+<h3 id="pypi-yank-procedure">PyPI yank procedure<a class="headerlink" href="#pypi-yank-procedure" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>twine
+python<span class="w"> </span>-m<span class="w"> </span>twine<span class="w"> </span>yank<span class="w"> </span>tnfr<span class="w"> </span>&lt;version&gt;<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--repository<span class="w"> </span><span class="nv">$PYPI_REPOSITORY</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--username<span class="w"> </span>__token__<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--password<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$PYPI_API_TOKEN</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--comment<span class="w"> </span><span class="s2">&quot;Yanked due to &lt;reason&gt;&quot;</span>
+</code></pre></div>
+<ul>
+<li>Use <code>PYPI_REPOSITORY=pypi</code> for production and <code>testpypi</code> for staging.</li>
+<li>Share the yank rationale with the TNFR release list to keep the incident
+  traceable.</li>
+</ul>
+<h3 id="git-tag-and-github-release-rollback">Git tag and GitHub release rollback<a class="headerlink" href="#git-tag-and-github-release-rollback" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>fetch<span class="w"> </span>--tags<span class="w"> </span>origin
+git<span class="w"> </span>tag<span class="w"> </span>-d<span class="w"> </span>v&lt;version&gt;
+git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </span>:refs/tags/v&lt;version&gt;
+gh<span class="w"> </span>release<span class="w"> </span>delete<span class="w"> </span>v&lt;version&gt;<span class="w"> </span>--cleanup-tag
+</code></pre></div>
+<ul>
+<li>Deleting the GitHub release removes the public notes while the tag cleanup
+  prevents accidental reinstalls from source distributions.</li>
+<li>When automation created a changelog commit, revert it or cherry-pick the
+  previous <code>docs/releases.md</code> state to keep the ledger aligned.</li>
+</ul>
+<h3 id="restore-tnfr-to-the-last-coherent-version">Restore TNFR to the last coherent version<a class="headerlink" href="#restore-tnfr-to-the-last-coherent-version" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="nv">PREVIOUS</span><span class="o">=</span><span class="k">$(</span>git<span class="w"> </span>tag<span class="w"> </span>--list<span class="w"> </span><span class="s1">&#39;v*&#39;</span><span class="w"> </span>--sort<span class="o">=</span>-v:refname<span class="w"> </span><span class="p">|</span><span class="w"> </span>sed<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;2p&#39;</span><span class="k">)</span>
+git<span class="w"> </span>checkout<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$PREVIOUS</span><span class="s2">&quot;</span>
+python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>dist/tnfr-<span class="s2">&quot;</span><span class="si">${</span><span class="nv">PREVIOUS</span><span class="p">#v</span><span class="si">}</span><span class="s2">&quot;</span>-py3-none-any.whl
+</code></pre></div>
+<ul>
+<li>Coordinate with infrastructure owners to redeploy the prior container or
+  wheel so operational nodes remain on the coherent release.</li>
+<li>Monitor C(t), Si, and phase telemetry for at least one observation window to
+  confirm stability after restoration.</li>
+</ul>
+<h3 id="automation-helper">Automation helper<a class="headerlink" href="#automation-helper" title="Permanent link">&para;</a></h3>
+<p>Invoke :mod:<code>scripts.rollback_release</code> to drive the full sequence, including
+PyPI yanks, tag deletion, and environment rewinds::</p>
+<div class="highlight"><pre><span></span><code>python scripts/rollback_release.py --version &lt;version-to-revoke&gt;
+</code></pre></div>
+<p>The helper prints the planned actions, prompts for confirmation, and supports
+<code>--dry-run</code> rehearsals. See :ref:<code>rollback-script</code> for parameters and
+authentication expectations.</p>
+<h2 id="semantic-release-workflow">Semantic release workflow<a class="headerlink" href="#semantic-release-workflow" title="Permanent link">&para;</a></h2>
+<p>We manage versions with <code>python-semantic-release</code>, deriving release tags directly from the TNFR commit history so the ledger reflects actual structural reorganisations.</p>
+<h3 id="automated-changelog-assembly">Automated changelog assembly<a class="headerlink" href="#automated-changelog-assembly" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>towncrier</code> fragments under <code>docs/changelog.d/</code> encode every relevant structural change before it merges.</li>
+<li>The release workflow compiles those fragments after resolving the next semantic version, regenerates <code>docs/releases.md</code>, and pushes the refreshed ledger together with the fragment cleanup.</li>
+<li>The freshly generated notes for the release are attached to the GitHub release body and the rendered <code>docs/releases.md</code> joins the published assets, keeping the TNFR changelog reproducible from a single source of truth.</li>
+</ul>
+<h3 id="commit-taxonomy">Commit taxonomy<a class="headerlink" href="#commit-taxonomy" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>feat:</code> or <code>structure:</code> — publish a <strong>minor</strong> bump describing new coherence capabilities or structural monitoring.</li>
+<li><code>fix:</code>, <code>perf:</code>, <code>refactor:</code>, <code>docs:</code>, <code>test:</code>, <code>build:</code>, <code>ci:</code>, <code>style:</code>, or <code>chore:</code> — issue a <strong>patch</strong> bump covering stabilisation and instrumentation work.</li>
+<li>Append <code>!</code> to the type or add a <code>BREAKING CHANGE:</code> footer to flag a <strong>major</strong> bump that requires downstream synchronisation.</li>
+</ul>
+<h3 id="workflow-orchestration">Workflow orchestration<a class="headerlink" href="#workflow-orchestration" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Pushing to <code>main</code> triggers the <code>Release</code> workflow.</li>
+<li>The <code>prepare</code> job runs <code>python -m semantic_release version --skip-build --no-vcs-release</code> to compute the next version, apply the TNFR-aware templates under <code>meta/semantic_release/templates</code>, and push the resulting <code>vX.Y.Z</code> tag.</li>
+<li>The computed version is exposed as a workflow output and reused by the packaging job for builds, uploads, and GitHub releases.</li>
+<li>The publishing job now performs the full QA suite (<code>python -m pip install .[test,typecheck]</code> followed by <code>./scripts/run_tests.sh</code>) before any build step. A failing lint, type check, or test aborts the job and blocks the PyPI/GitHub publication, keeping the release aligned with the TNFR invariants.</li>
+<li><code>actions/setup-python</code> caching for pip and a dedicated pytest cache keep runtime predictable without skipping any verification stages.</li>
+</ul>
+<h3 id="tnfr-safeguards-during-bumps">TNFR safeguards during bumps<a class="headerlink" href="#tnfr-safeguards-during-bumps" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Release notes generated from the custom templates reiterate the preservation of coherence C(t), phase synchrony, and structural frequency νf.</li>
+<li>The build job exports the resolved version through the <code>TNFR_VERSION</code> environment variable so :mod:<code>tnfr._version</code> stays aligned with the freshly tagged metadata.</li>
+<li>Semantic-release commits do not introduce new operators; they document validated reorganisations and keep ΔNFR semantics intact.</li>
+</ul>
+<h2 id="historical-ledger">Historical ledger<a class="headerlink" href="#historical-ledger" title="Permanent link">&para;</a></h2>
+<!-- version history -->
+
+<h3 id="upcoming-validation-api-unification">Upcoming (validation API unification)<a class="headerlink" href="#upcoming-validation-api-unification" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Centralised all grammar and runtime validators under :mod:<code>tnfr.validation</code>.
+  Legacy attributes in :mod:<code>tnfr.dynamics</code>, :mod:<code>tnfr.operators</code>, and
+  :mod:<code>tnfr.mathematics</code> now emit :class:<code>DeprecationWarning</code> while delegating
+  to the unified facade so downstream integrations migrate progressively.</li>
+<li>Updated tests, CLI helpers, and documentation to import grammar primitives
+  from :mod:<code>tnfr.validation</code>, keeping the public surface consistent with the
+  consolidated module.</li>
+<li>Removed the :mod:<code>tnfr.dynamics</code> runtime shims for
+  :func:<code>~tnfr.validation.apply_canonical_clamps</code>,
+  :func:<code>~tnfr.validation.validate_canon</code>, and related grammar hooks to complete
+  the migration. Downstream code should import these helpers directly from
+  :mod:<code>tnfr.validation</code>.</li>
+</ul>
+<p>.. _rollback-script:</p>
+<h2 id="rollback-automation-script">Rollback automation script<a class="headerlink" href="#rollback-automation-script" title="Permanent link">&para;</a></h2>
+<p>The :mod:<code>scripts.rollback_release</code> helper coordinates the yank, tag cleanup,
+and restoration steps without bypassing TNFR safeguards.</p>
+<h3 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>scripts/rollback_release.py<span class="w"> </span>--version<span class="w"> </span><span class="m">16</span>.0.0<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--pypi-repository<span class="w"> </span>pypi<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--username<span class="w"> </span>__token__<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--password<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$PYPI_API_TOKEN</span><span class="s2">&quot;</span>
+</code></pre></div>
+<ul>
+<li><code>--dry-run</code> prints the planned actions without executing them.</li>
+<li><code>--confirm</code> skips the interactive prompt for automation contexts.</li>
+<li>Credentials may be provided via <code>PYPI_USERNAME</code>/<code>PYPI_PASSWORD</code> or the
+  CLI flags; API tokens remain the preferred authentication method.</li>
+</ul>
+<h3 id="behaviour">Behaviour<a class="headerlink" href="#behaviour" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>PyPI yank</strong>: performs <code>twine yank</code> with the provided version, capturing
+  the rationale in the package metadata when <code>--reason</code> is supplied.</li>
+<li><strong>Tag rollback</strong>: deletes <code>v&lt;version&gt;</code> locally and remotely to avoid stale
+  installs, then checks out the previous semantic-release tag.</li>
+<li><strong>State restoration</strong>: surfaces the prior version and offers to reinstall it
+  so local TNFR simulations match the redeployed environment.</li>
+<li>Structured logging documents each operator invoked (yank, tag deletion,
+  checkout) to keep the rollback trace consistent with the TNFR audit ledger.</li>
+</ul>
+<h3 id="1600-glyph-load-history-cleanup">16.0.0 (glyph load history cleanup)<a class="headerlink" href="#1600-glyph-load-history-cleanup" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Breaking change</strong>: Removed the deprecated glyph load history identifier that
+  predated the English rename. Metrics initialisation and the coherence
+  observers now raise :class:<code>ValueError</code> as soon as a retired glyph load key
+  appears in a payload, preventing silent mirroring into
+  <code>"glyph_load_stabilizers"</code>.</li>
+<li>Migration guidance: audit stored histories and ensure only the canonical
+  English keys such as <code>"glyph_load_stabilizers"</code> remain before loading a
+  graph into this release. Persist the rewritten payloads so downstream tooling
+  reads the same identifiers.</li>
+</ul>
+<h3 id="1400-spanish-compatibility-messaging-retired">14.0.0 (Spanish compatibility messaging retired)<a class="headerlink" href="#1400-spanish-compatibility-messaging-retired" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Finalised the English-only surface by removing Spanish-specific guidance from
+  :mod:<code>tnfr.alias</code>, :mod:<code>tnfr.metrics.sense_index</code>, and the operator registry
+  modules. Alias helpers now ignore untranslated payloads instead of raising
+  bespoke errors and the sense index validates sensitivity mappings using
+  generic key checks.</li>
+<li>Dropped the compatibility accessors in
+  :mod:<code>tnfr.config.constants</code>, :mod:<code>tnfr.config.operator_names</code>, and
+  :mod:<code>tnfr.operators.registry</code>. Accessing retired identifiers now surfaces the
+  standard :class:<code>AttributeError</code> without custom wording.</li>
+<li>Documented the retirement timeline for the archival migration helpers,
+  clarifying that they would remain available only until <code>tnfr</code> 15.0.0
+  completed the migration window.</li>
+<li>Updated guides and release notes to describe the final English-only contract
+  and the requirement to normalise archives with the compatibility helpers.</li>
+</ul>
+<h3 id="1310-preset-legacy-tuple-removed">13.1.0 (preset legacy tuple removed)<a class="headerlink" href="#1310-preset-legacy-tuple-removed" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Breaking change</strong>: Removed the exported
+  :data:<code>tnfr.config.presets.REMOVED_PRESET_NAMES</code> tuple now that only the
+  canonical English preset identifiers remain supported. Downstream tooling that
+  introspected the tuple for migration support should ship its own static
+  mapping.</li>
+<li>The :func:<code>tnfr.config.presets.get_preset</code> helper only consults canonical
+  English identifiers. Any other token now raises
+  <code>KeyError('Preset not found: …')</code> without additional guidance, matching the
+  behaviour for unknown presets.</li>
+</ul>
+<h3 id="1300-selector-norms-alias-removed">13.0.0 (selector norms alias removed)<a class="headerlink" href="#1300-selector-norms-alias-removed" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Breaking change</strong>: Removed the deprecated
+  :func:<code>tnfr.selector._norms_para_selector</code> alias. Callers must import and use
+  :func:<code>tnfr.selector._selector_norms</code> directly to fetch ΔNFR and acceleration
+  maxima.</li>
+<li>Updated selector utilities documentation and tests to reference only the
+  English helper so downstream projects surface the rename during upgrades.</li>
+</ul>
+<h3 id="1210-selector-norms-helper-renamed">12.1.0 (selector norms helper renamed)<a class="headerlink" href="#1210-selector-norms-helper-renamed" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Renamed the selector norms helper to the English-only
+  :func:<code>tnfr.selector._selector_norms</code> identifier to align selector internals
+  with the ongoing terminology migration.</li>
+<li>Added a temporary compatibility shim for the legacy Spanish helper name that
+  emitted :class:<code>DeprecationWarning</code> ahead of its removal in version 13.0.0.</li>
+<li>Updated :mod:<code>tnfr.dynamics</code> and the selector unit tests to consume the new
+  helper, keeping the cached norms behaviour unchanged.</li>
+</ul>
+<h3 id="1200-diagnosis-state-spanish-shim-removed">12.0.0 (diagnosis state Spanish shim removed)<a class="headerlink" href="#1200-diagnosis-state-spanish-shim-removed" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Removed the :func:<code>tnfr.constants.enable_spanish_state_tokens</code> and
+  :func:<code>tnfr.constants.disable_spanish_state_tokens</code> compatibility helpers along
+  with the <code>TNFR_ENABLE_SPANISH_STATE_TOKENS</code> environment flag. The diagnosis
+  pipeline now rejects legacy literals instead of silently rewriting them at
+  runtime.</li>
+<li>:func:<code>tnfr.constants.normalise_state_token</code> accepts only the canonical English
+  tokens (<code>"stable"</code>, <code>"transition"</code>, <code>"dissonant"</code>) and raises
+  :class:<code>ValueError</code> when historical payloads still carry encoded legacy
+  values. The stricter contract propagates to :mod:<code>tnfr.metrics.diagnosis</code>,
+  :mod:<code>tnfr.dynamics</code>, and :mod:<code>tnfr.glyph_history</code>, allowing integrations to
+  surface explicit migrations instead of implicit rewrites.</li>
+<li>
+<p><strong>Breaking change migration guidance</strong>: run a preprocessing pass that
+  rewrites stored states before upgrading, for example::</p>
+<p>def upgrade_state_token(value: str) -&gt; str:
+      token = value.strip().lower()
+      if token in {"stable", "transition", "dissonant"}:
+          return token
+      raise ValueError(f"Unsupported diagnosis state: {value!r}")</p>
+<p>payload["state"] = upgrade_state_token(payload["state"])</p>
+</li>
+</ul>
+<p>Persist the rewritten payloads before installing <strong>TNFR 12.0.0</strong> to avoid the
+  new <code>ValueError</code> exceptions when loading historical archives.</p>
+<h3 id="1120-operator-collections-english-only">11.2.0 (operator collections English-only)<a class="headerlink" href="#1120-operator-collections-english-only" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Removed the Spanish compatibility aliases from
+  :mod:<code>tnfr.config.operator_names</code>. Accessing the retired names now raises
+  :class:<code>AttributeError</code> pointing to the canonical English constant.</li>
+<li>Dropped the non-English alias from :mod:<code>tnfr.operators.registry</code>; only the
+  English :data:<code>OPERATORS</code> registry is exported.</li>
+<li>Updated tests and helpers to enforce the English-only contract for operator
+  collections, reflecting the final step in the migration announced in earlier
+  releases.</li>
+</ul>
+<h3 id="1110-glyph-load-spanish-aggregates-removed">11.1.0 (glyph load Spanish aggregates removed)<a class="headerlink" href="#1110-glyph-load-spanish-aggregates-removed" title="Permanent link">&para;</a></h3>
+<ul>
+<li>:func:<code>tnfr.observers.glyph_load</code> now reports only the English aggregate
+  keys <code>"_stabilizers"</code> and <code>"_disruptors"</code>. The runtime no longer mirrors
+  retired aggregate labels or performs compatibility rewrites.</li>
+<li>Consumers in :mod:<code>tnfr.metrics.coherence</code> and :mod:<code>tnfr.dynamics</code> now read
+  the English keys exclusively. Custom integrations should update any
+  post-processing code that still expected the encoded legacy aggregate keys.</li>
+<li>Updated the structural and metrics unit tests to enforce the English-only
+  contract and removed the fixtures that patched Spanish aggregate labels.</li>
+</ul>
+<h3 id="1100-si-dispersion-legacy-keys-removed">11.0.0 (Si dispersion legacy keys removed)<a class="headerlink" href="#1100-si-dispersion-legacy-keys-removed" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Removed the legacy Si dispersion attribute from the sense index sensitivity
+  cache. Loading graphs or configuration payloads that still define the retired
+  key now raises :class:<code>ValueError</code> with guidance to use the English
+  <code>dSi_dphase_disp</code> identifier.</li>
+<li>Updated :func:<code>tnfr.metrics.sense_index.compute_Si_node</code> so deprecated
+  sensitivity keywords are rejected with :class:<code>TypeError</code>. Callers must
+  provide the <code>phase_dispersion</code> keyword when invoking the helper.</li>
+<li>Added migration guidance to the README for rewriting stored Si sensitivity
+  mappings and configuration files that still carry the legacy identifiers.</li>
+<li>Migration guidance: ensure <code>G.graph.get("_Si_sensitivity")</code> contains only
+  the <code>"dSi_dphase_disp"</code> entry before upgrading. Remove any other key and
+  persist the rewritten payload so the runtime no longer encounters retired
+  identifiers.</li>
+</ul>
+<h3 id="1000-remesh-stability-window-keyword-removal">10.0.0 (remesh stability window keyword removal)<a class="headerlink" href="#1000-remesh-stability-window-keyword-removal" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Removed the transitional remesh stability keyword alias from
+  :func:<code>tnfr.operators.apply_remesh_if_globally_stable</code>. Passing any
+  non-canonical identifier now raises :class:<code>TypeError</code> with guidance to use
+  the English <code>stable_step_window</code> parameter.</li>
+<li>Updated :mod:<code>tnfr.operators</code> documentation, telemetry guidance, and
+  structural tests to reference only <code>stable_step_window</code>.</li>
+<li>Published a migration guide covering the required code updates and how to
+  audit stored configurations. See :doc:<code>getting-started/migrating-remesh-window</code>
+  for detailed steps.</li>
+</ul>
+<h3 id="1500-legacy-migration-helpers-removed">15.0.0 (legacy migration helpers removed)<a class="headerlink" href="#1500-legacy-migration-helpers-removed" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Finalised the English-only payload contract by removing the bundled phase and
+  remesh cooldown migration helpers. Projects must now persist <code>"theta"</code>,
+  <code>"phase"</code> and <code>"REMESH_COOLDOWN_WINDOW"</code> directly because the runtime no
+  longer rewrites non-English aliases or the standalone theta symbol on import.</li>
+<li>The archival migration window announced in TNFR 14.x expired on 2025-03-31.
+  Upgrade pipelines should refuse to import graphs that still contain retired
+  keys instead of attempting a best-effort rewrite.</li>
+<li>Recommended pre-upgrade step: validate stored graphs to ensure each node
+  exposes <code>"theta"</code> and <code>"phase"</code> consistently, drop any stray <code>"θ"</code>
+  attribute, and promote cooldown metadata to <code>"REMESH_COOLDOWN_WINDOW"</code>
+  before installing this release.</li>
+<li>Added documentation in :doc:<code>getting-started/migrating-remesh-window</code> that
+  summarises the deadline and required checks before adopting this release.</li>
+</ul>
+<h3 id="900-canonical-preset-rename">9.0.0 (canonical preset rename)<a class="headerlink" href="#900-canonical-preset-rename" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Renamed the canonical tutorial preset to the English-only identifier
+  <code>"canonical_example"</code>. The previous tutorial alias now raises a
+  :class:<code>KeyError</code> pointing to the supported name instead of being silently
+  resolved.</li>
+<li>Updated :mod:<code>tnfr.execution</code> so :data:<code>tnfr.execution.CANONICAL_PRESET_NAME</code>
+  exposes the English identifier, aligning the helper with
+  :mod:<code>tnfr.config.presets</code>.</li>
+<li>Simplified the preset resolution layer by removing the remaining runtime
+  aliases. <code>get_preset()</code> now rejects the retired identifiers with explicit
+  guidance and the CLI surfaces the same migration message.</li>
+<li>Revised the CLI help strings, error handling, and documentation to mention
+  only the English preset names. Downstream automation should update any stored
+  configuration that still references the encoded legacy token.</li>
+</ul>
+<h3 id="810-remesh-cooldown-alias-removal">8.1.0 (remesh cooldown alias removal)<a class="headerlink" href="#810-remesh-cooldown-alias-removal" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Removed the remesh cooldown alias from :mod:<code>tnfr.constants.core.RemeshDefaults</code>
+  and from the remesh operator pipeline. Configuration loaders and runtime
+  helpers now require the English <code>"REMESH_COOLDOWN_WINDOW"</code> key and raise
+  :class:<code>ValueError</code> when a retired attribute is encountered, pointing to the
+  migration utility below.</li>
+<li>Added :func:<code>tnfr.utils.migrate_legacy_remesh_cooldown</code> to rewrite persisted
+  graphs in place. The helper removes the legacy key and promotes its value to
+  the English attribute when necessary so stored payloads can be upgraded
+  before running the new release.</li>
+<li>Updated tests and documentation to reflect the English-only remesh cooldown
+  contract.</li>
+</ul>
+<p>Migration snippet::</p>
+<div class="highlight"><pre><span></span><code>  from tnfr.utils import migrate_legacy_remesh_cooldown
+
+  G = load_graph()  # application-specific loader
+  migrate_legacy_remesh_cooldown(G)
+  inject_defaults(G)  # optional, keeps defaults in sync
+</code></pre></div>
+<h3 id="800-phase-alias-enforcement">8.0.0 (phase alias enforcement)<a class="headerlink" href="#800-phase-alias-enforcement" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Finalised the phase attribute migration by rejecting the legacy phase alias.
+  Access helpers in :mod:<code>tnfr.alias</code> now operate strictly on the English
+  <code>"theta"</code>/<code>"phase"</code> attributes and raise :class:<code>ValueError</code> when a
+  retired key is encountered.</li>
+<li>Added :func:<code>tnfr.utils.migrate_legacy_phase_attributes</code> to help upgrade
+  stored graphs. The helper rewrites payloads that contain the deprecated alias
+  or the <code>"θ"</code> symbol, populating the canonical English keys before
+  interacting with the alias layer.</li>
+<li>Updated documentation and tests to reflect the English-only phase contract
+  and removed the automatic rewrites for the legacy alias.</li>
+</ul>
+<h3 id="701-english-deprecation-messaging">7.0.1 (English deprecation messaging)<a class="headerlink" href="#701-english-deprecation-messaging" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Reworded the remaining deprecation warnings and validation errors that still
+  surfaced Spanish text. Downstream tooling now emits English-only guidance
+  across the CLI, registry, and metrics helpers.</li>
+<li>Retired the long-standing compatibility modules :mod:<code>tnfr.constants_glyphs</code>,
+  :mod:<code>tnfr.presets</code>, and :mod:<code>tnfr.grammar</code>. The deprecated shims have been
+  removed; import :mod:<code>tnfr.config.constants</code>, :mod:<code>tnfr.config.presets</code>, and
+  the unified :mod:<code>tnfr.validation</code> facade instead.</li>
+</ul>
+<h3 id="700-spanish-identifiers-removed">7.0.0 (Spanish identifiers removed)<a class="headerlink" href="#700-spanish-identifiers-removed" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Removed the legacy glyph constants that mirrored the English
+  :data:<code>tnfr.config.constants.STABILIZERS</code> and
+  :data:<code>tnfr.config.constants.DISRUPTORS</code> names from
+  :mod:<code>tnfr.config.constants</code>. Accessing the old identifiers now raises
+  :class:<code>AttributeError</code> after emitting a final :class:<code>FutureWarning</code>
+  explaining the required substitution.</li>
+<li>Finalised the state token migration. Spanish literals now require an explicit
+  opt-in via :func:<code>tnfr.constants.enable_spanish_state_tokens</code> or by setting
+  the :envvar:<code>TNFR_ENABLE_SPANISH_STATE_TOKENS</code> environment variable. The shim
+  warns with :class:<code>FutureWarning</code> and is scheduled for removal in TNFR 8.0.</li>
+<li>Removed the <code>SPANISH_PRESET_ALIASES</code> helper and the runtime resolution of
+  non-English preset identifiers. Passing deprecated tokens to <code>get_preset()</code>
+  now raises :class:<code>KeyError</code> indicating the English replacement. Only English
+  preset names remain in the public API.</li>
+<li>Updated tests and documentation to reflect the English-only contract across
+  glyph constants, preset helpers, and diagnostic state utilities.</li>
+</ul>
+<h3 id="610-preset-alias-deprecation-window">6.1.0 (preset alias deprecation window)<a class="headerlink" href="#610-preset-alias-deprecation-window" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Announced the removal of the non-English preset identifiers scheduled for
+  <strong>TNFR 7.0</strong>. The engine now emits :class:<code>FutureWarning</code> when deprecated names
+  are resolved so pipelines can surface the upcoming breakage.</li>
+<li>Added the <code>tnfr.config.presets.SPANISH_PRESET_ALIASES</code> mapping to help audit
+  configurations. Existing presets should switch to the English equivalents
+  (<code>resonant_bootstrap</code>, <code>contained_mutation</code>, <code>coupling_exploration</code>)
+  before upgrading to 7.0. The helper was removed in TNFR 7.0 once the migration
+  period ended; downstream projects should now keep a local mapping during the
+  final substitution pass.</li>
+<li>Migration helper: update YAML/JSON payloads or CLI arguments with a simple
+  substitution pass using the provided mapping so that persisted data stores
+  only the English preset names.</li>
+</ul>
+<h3 id="600-node-aliases-removed">6.0.0 (node aliases removed)<a class="headerlink" href="#600-node-aliases-removed" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Removed the module-level aliases that mirrored the node class names from
+  :mod:<code>tnfr.node</code>. Code importing those symbols must switch to the canonical
+  :class:<code>tnfr.node.NodeNX</code> and :class:<code>tnfr.node.NodeProtocol</code> definitions
+  immediately.</li>
+<li>Deleted :func:<code>tnfr.utils.get_nodonx</code>. Downstream helpers should import and
+  call :func:<code>tnfr.utils.get_nodenx</code>, which keeps returning
+  :class:<code>tnfr.node.NodeNX</code> through the cached import layer.</li>
+<li>Pruned the typing stubs, tests, and utilities that referenced the encoded
+  legacy names so static analysis and runtime behaviour now agree on the
+  English-only surface area.</li>
+<li>Published the backward-incompatible change as <strong>TNFR 6.0.0</strong> to honour the
+  semantic versioning contract and flag the immediate API removal.</li>
+</ul>
+<h3 id="500-prepare_network-alias-retired">5.0.0 (prepare_network alias retired)<a class="headerlink" href="#500-prepare_network-alias-retired" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Removed the helper alias constructed as
+  <code>"".join(chr(cp) for cp in (112, 114, 101, 112, 97, 114, 97, 114, 95, 114, 101, 100))</code>.
+  The network preparation pipeline now ships exclusively under the English
+  :func:<code>tnfr.prepare_network</code> name. Codebases that still relied on the encoded
+  alias must update their imports before upgrading.</li>
+<li>Updated the typing stubs, integration tests, and documentation to
+  reflect the canonical helper set.</li>
+<li>Bumped the package version to <strong>5.0.0</strong> to flag the
+  backward-incompatible API change.</li>
+</ul>
+<h3 id="200-spanish-alias-removal">2.0.0 (Spanish alias removal)<a class="headerlink" href="#200-spanish-alias-removal" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Removed the Spanish compatibility tables from :mod:<code>tnfr.config.operator_names</code>.
+  Only the English tokens (<code>emission</code>, <code>reception</code>, <code>coherence</code>, etc.) are
+  accepted by validation helpers, the operator registry, and the CLI parser.</li>
+<li>Removed :mod:<code>tnfr.operators.compat</code> and the Spanish class wrappers that
+  previously emitted :class:<code>DeprecationWarning</code>. All structural orchestration
+  must now import the English operator classes from
+  :mod:<code>tnfr.operators.definitions</code> or :mod:<code>tnfr.structural</code>.</li>
+<li>Trimmed Spanish re-exports from :mod:<code>tnfr.structural</code> and its typing stubs so
+  only the English operator classes remain in the public <code>__all__</code>.</li>
+<li>Impacted entry points:</li>
+<li>Stored operator sequences (YAML/JSON fixtures, CLI configs) must be rewritten
+    to use the English identifiers.</li>
+<li>Programmatic calls to :func:<code>tnfr.structural.run_sequence</code>,
+    :func:<code>tnfr.validation.validate_sequence</code>, and
+    :func:<code>tnfr.operators.registry.get_operator_class</code> will now reject Spanish
+    tokens.</li>
+<li>Import sites that referenced <code>tnfr.operators.compat</code> or the Spanish class
+    names exported from :mod:<code>tnfr.structural</code> must update their imports to the
+    English equivalents.</li>
+<li>Diagnostics relying on the deprecated non-English transition constant should
+    switch to the English <code>TRANSITION</code> constant from
+    :mod:<code>tnfr.config.operator_names</code>.</li>
+<li>Versioning and communication plan:</li>
+<li>Publish this change as <strong>TNFR 2.0.0</strong> and note the breaking removal in the
+    release announcement.</li>
+<li>No transition shims remain—migrating to the English tokens is mandatory
+    before adopting 2.0.</li>
+<li>Ship an upgrade checklist highlighting the required token substitutions and
+    the removal of <code>tnfr.operators.compat</code>.</li>
+<li>Update API docs, tutorials, and CLI references to show only English tokens.</li>
+</ul>
+<h3 id="1x-compatibility-window-historical">1.x compatibility window (historical)<a class="headerlink" href="#1x-compatibility-window-historical" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<p>English operator identifiers became canonical in 1.x. The registry published
+  the English tokens and the CLI expected the same literals while the Spanish
+  class names remained available in :mod:<code>tnfr.operators.compat</code> as wrappers
+  that raised :class:<code>DeprecationWarning</code>.</p>
+</li>
+<li>
+<p>Renamed the network preparation helper to <code>prepare_network</code> for
+  consistency with the English-facing API. The previous non-English alias
+  emitted a :class:<code>DeprecationWarning</code> and has now been removed in <strong>TNFR 5.0</strong>.
+  Use the English helper directly to stay within the supported contract.</p>
+</li>
+<li>
+<p>Unified the node wrappers under the English identifiers
+  :class:<code>tnfr.node.NodeNX</code> and :class:<code>tnfr.node.NodeProtocol</code>. The former
+  non-English counterparts were deprecated in the 1.x cycle and have now been
+  removed in <strong>TNFR 6.0</strong>. Import the English names directly to remain within
+  the supported contract.</p>
+</li>
+</ul>
+<p>All other helpers continue to honour the existing dependency manifest
+and import semantics.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.top", "navigation.tracking", "toc.integrate", "navigation.instant"], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+    
+  </body>
+</html>

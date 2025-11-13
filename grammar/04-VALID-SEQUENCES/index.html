@@ -1,0 +1,5206 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Canonical TNFR structural dynamics engine documentation">
+      
+      
+      
+        <link rel="canonical" href="https://fermga.github.io/TNFR-Python-Engine/grammar/04-VALID-SEQUENCES/">
+      
+      
+        <link rel="prev" href="../03-OPERATORS-AND-GLYPHS/">
+      
+      
+        <link rel="next" href="../05-TECHNICAL-IMPLEMENTATION/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>Valid Sequences - TNFR Python Engine</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.618322db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#valid-sequences-and-patterns" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="TNFR Python Engine" class="md-header__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            TNFR Python Engine
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Valid Sequences
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    TNFR Python Engine
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="TNFR Python Engine" class="md-nav__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    TNFR Python Engine
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    TNFR Python Engine
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting Started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Welcome to TNFR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/getting-started/LEARNING_PATHS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Learning Paths
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/getting-started/quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quickstart Tutorial
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/getting-started/TNFR_CONCEPTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core Concepts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/getting-started/INTERACTIVE_TUTORIAL/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interactive Tutorial
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/getting-started/FAQ/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    FAQ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/getting-started/math-backends/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Math Backends
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/getting-started/optional-dependencies/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Optional Dependencies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/getting-started/migrating-remesh-window/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migrating from Remesh Window
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    User Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/user-guide/OPERATORS_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operators Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../STRUCTURAL_FIELDS_TETRAD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural Field Tetrad (Canonical)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/user-guide/METRICS_INTERPRETATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Metrics Interpretation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TROUBLESHOOTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar Documentation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Grammar Documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../EXECUTIVE-SUMMARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Executive Summary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4_3" id="__nav_4_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core Concepts
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Core Concepts
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01-FUNDAMENTAL-CONCEPTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fundamental Concepts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02-CANONICAL-CONSTRAINTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Canonical Constraints
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03-OPERATORS-AND-GLYPHS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operators and Glyphs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Valid Sequences
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Valid Sequences
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#purpose" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Purpose
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#canonical-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Canonical Patterns
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Canonical Patterns">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-bootstrap-minimal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Bootstrap (Minimal)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-basic-activation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Basic Activation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-controlled-exploration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Controlled Exploration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-bifurcation-with-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Bifurcation with Handling
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-mutation-with-context" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Mutation with Context
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-propagation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Propagation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-multi-scale-organization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Multi-scale Organization
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-dimension-reduction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Dimension Reduction
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#9-network-bootstrap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Network Bootstrap
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#10-controlled-expansion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Controlled Expansion
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#11-deep-exploration-cycle" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Deep Exploration Cycle
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-fractal-replication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. Fractal Replication
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-transition-based-reorganization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13. Transition-Based Reorganization
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#anti-patterns-invalid-sequences" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Anti-Patterns (Invalid Sequences)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Anti-Patterns (Invalid Sequences)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-no-generator-from-vacuum" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ❌ 1. No Generator from Vacuum
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-no-closure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ❌ 2. No Closure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-destabilizer-without-stabilizer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ❌ 3. Destabilizer Without Stabilizer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-mutation-without-context" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ❌ 4. Mutation Without Context
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-mutation-without-prior-coherence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ❌ 5. Mutation Without Prior Coherence
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-coupling-without-phase-check" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ❌ 6. Coupling Without Phase Check
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-bifurcation-trigger-without-handler" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ❌ 7. Bifurcation Trigger Without Handler
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-expansion-without-stabilization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ❌ 8. Expansion Without Stabilization
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#9-self-organization-without-recent-destabilizer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ❌ 9. Self-Organization Without Recent Destabilizer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#10-resonance-on-antiphase-nodes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ❌ 10. Resonance on Antiphase Nodes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#11-multiple-destabilizers-without-adequate-stabilization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ❌ 11. Multiple Destabilizers Without Adequate Stabilization
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-recursivity-without-proper-context" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ❌ 12. Recursivity Without Proper Context
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-reception-without-network-connectivity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ❌ 13. Reception Without Network Connectivity
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-transition-without-state-change-logic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ❌ 14. Transition Without State Change Logic
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1313-operator-transition-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13×13 Operator Transition Matrix
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="13×13 Operator Transition Matrix">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Matrix
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#transition-notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Transition Notes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reading-the-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reading the Matrix
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-by-step-validation-logic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step-by-Step Validation Logic
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step-by-Step Validation Logic">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#complete-validation-algorithm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Complete Validation Algorithm
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#validation-decision-tree" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Validation Decision Tree
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#runtime-validation-u3-phase-compatibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Runtime Validation: U3 Phase Compatibility
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#validation-timing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Validation Timing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#validation-strictness-levels" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Validation Strictness Levels
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#complex-sequence-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Complex Sequence Examples
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Complex Sequence Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example-1-multi-step-exploration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example 1: Multi-Step Exploration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-2-hierarchical-construction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example 2: Hierarchical Construction
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-3-phase-transformation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example 3: Phase Transformation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#structural-pattern-detection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Structural Pattern Detection
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Structural Pattern Detection">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pattern-categories" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pattern Categories
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-use-cases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common Use Cases
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Common Use Cases">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#initialization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Initialization
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#information-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Information Integration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#controlled-perturbation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Controlled Perturbation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#network-propagation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Network Propagation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-transition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase Transition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hierarchy-creation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hierarchy Creation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#testing-sequences" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Testing Sequences
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Testing Sequences">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#test-template" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test Template
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quick-decision-tree" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quick Decision Tree
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-do-i-lookup-guide" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        "How Do I...?" Lookup Guide
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="&#34;How Do I...?&#34; Lookup Guide">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#creation-initialization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Creation &amp; Initialization
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exploration-perturbation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exploration &amp; Perturbation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#network-operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Network Operations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#structural-transformation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Structural Transformation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hierarchical-structures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hierarchical Structures
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#regime-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Regime Changes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#complex-workflows" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Complex Workflows
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#debugging-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Debugging &amp; Validation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#performance-efficiency" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Performance &amp; Efficiency
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#domain-specific-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Domain-Specific Patterns
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quick-pattern-finder" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quick Pattern Finder
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Next Steps
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_4" id="__nav_4_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Implementation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05-TECHNICAL-IMPLEMENTATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Technical Implementation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06-VALIDATION-AND-TESTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation and Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07-MIGRATION-AND-EVOLUTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migration and Evolution
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_5" id="__nav_4_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../08-QUICK-REFERENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../GLOSSARY.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MASTER-INDEX/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Master Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OPERATORS-CATALOG-SUMMARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operators Catalog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CROSS-REFERENCE-INDEX/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cross-Reference Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CODE_DOCS_CROSSREF/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code Documentation Cross-Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_6" id="__nav_4_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tooling
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tooling
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TOOLING-AND-AUTOMATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tooling and Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TESTING-SUMMARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing Summary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DEPRECATION-INDEX.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deprecation Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Examples
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_2" id="__nav_5_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Notebooks & Patterns
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Notebooks & Patterns
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/notebooks/Fundamental_Particles_TNFR_Atlas.ipynb" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fundamental Particles TNFR Atlas (Notebook - GitHub)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/README.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    TNFR Patterns (Module Guide)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../INTERACTIONS_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interaction Sequences Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/api/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/api/operators/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural Operators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/api/OPERATORS_VISUAL_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operators Visual Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/api/telemetry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Telemetry & Utilities
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/api/docstring_style/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docstring Style
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Module Documentation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Module Documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modules/mathematics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mathematics Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modules/physics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Physics Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modules/operators/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operators Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modules/dynamics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dynamics Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modules/metrics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Metrics Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modules/sdk/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SDK Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modules/telemetry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Telemetry Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modules/tutorials/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modules/extensions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Extensions Hub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core Documentation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Core Documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DOCUMENTATION_INDEX/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Documentation Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CANONICAL_SOURCES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Canonical Sources
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../UNIFIED_GRAMMAR_RULES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Unified Grammar Rules
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../AGENTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Agents Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../GLOSSARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Advanced Topics
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Advanced Topics
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/advanced/ARCHITECTURE_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/advanced/PERFORMANCE_OPTIMIZATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Performance Optimization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/advanced/TESTING_STRATEGIES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing Strategies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/advanced/DEVELOPMENT_WORKFLOW/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development Workflow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/foundations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mathematical Foundations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_9_6" id="__nav_9_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Research Documents
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_9_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Research Documents
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TNFR_FORCES_EMERGENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Forces Emergence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../OPERATOR_COMPLETENESS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator Completeness
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../LIFE_EMERGENCE_FROM_TNFR/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Life Emergence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CELL_EMERGENCE_FROM_TNFR/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cell Emergence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/tools/CLI/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Security
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/security/monitoring/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Monitoring
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/security/dependency-auditing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dependency Auditing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/security/codeql/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CodeQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/security/dependabot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dependabot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
+        
+          
+          <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Info
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Project Info
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../source/releases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="valid-sequences-and-patterns">Valid Sequences and Patterns<a class="headerlink" href="#valid-sequences-and-patterns" title="Permanent link">&para;</a></h1>
+<p><strong>Catalog of valid operator sequences and anti-patterns</strong></p>
+<p><a href="../">🏠 Home</a> • <a href="../02-CANONICAL-CONSTRAINTS/">📐 Constraints</a> • <a href="../03-OPERATORS-AND-GLYPHS/">⚙️ Operators</a> • <a href="../05-TECHNICAL-IMPLEMENTATION/">💻 Implementation</a></p>
+<hr />
+<h2 id="purpose">Purpose<a class="headerlink" href="#purpose" title="Permanent link">&para;</a></h2>
+<p>This document provides a <strong>pattern library</strong> of valid and invalid operator sequences. Learn from canonical patterns and understand why certain combinations fail.</p>
+<p><strong>Prerequisites:</strong> <a href="../02-CANONICAL-CONSTRAINTS/">02-CANONICAL-CONSTRAINTS.md</a>, <a href="../03-OPERATORS-AND-GLYPHS/">03-OPERATORS-AND-GLYPHS.md</a></p>
+<p><strong>Reading time:</strong> 30-45 minutes</p>
+<hr />
+<h2 id="canonical-patterns">Canonical Patterns<a class="headerlink" href="#canonical-patterns" title="Permanent link">&para;</a></h2>
+<h3 id="1-bootstrap-minimal">1. Bootstrap (Minimal)<a class="headerlink" href="#1-bootstrap-minimal" title="Permanent link">&para;</a></h3>
+<p><strong>Pattern:</strong> <code>[Generator → Stabilizer → Closure]</code></p>
+<p><strong>Purpose:</strong> Create and stabilize new structure from vacuum</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Silence</span><span class="p">()]</span>
+</code></pre></div></p>
+<p><strong>Satisfies:</strong>
+- U1a: Starts with generator (Emission)
+- U1b: Ends with closure (Silence)
+- U2: No destabilizers, no stabilizer needed
+- Clean and minimal</p>
+<p><strong>Use when:</strong> Initializing new nodes or structures</p>
+<hr />
+<h3 id="2-basic-activation">2. Basic Activation<a class="headerlink" href="#2-basic-activation" title="Permanent link">&para;</a></h3>
+<p><strong>Pattern:</strong> <code>[Generator → Reception → Stabilizer → Closure]</code></p>
+<p><strong>Purpose:</strong> Create, gather information, stabilize</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Reception</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Silence</span><span class="p">()]</span>
+</code></pre></div></p>
+<p><strong>Satisfies:</strong> All constraints
+<strong>Use when:</strong> Creating nodes that need network input</p>
+<hr />
+<h3 id="3-controlled-exploration">3. Controlled Exploration<a class="headerlink" href="#3-controlled-exploration" title="Permanent link">&para;</a></h3>
+<p><strong>Pattern:</strong> <code>[Generator → Stabilizer → Destabilizer → Stabilizer → Closure]</code></p>
+<p><strong>Purpose:</strong> Explore while maintaining stability</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Dissonance</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Silence</span><span class="p">()]</span>
+</code></pre></div></p>
+<p><strong>Satisfies:</strong>
+- U1a, U1b: Generator and closure
+- U2: Destabilizer balanced by stabilizers
+- U4a: Trigger (Dissonance) has handler (Coherence)</p>
+<p><strong>Use when:</strong> Breaking local optima, controlled perturbation</p>
+<hr />
+<h3 id="4-bifurcation-with-handling">4. Bifurcation with Handling<a class="headerlink" href="#4-bifurcation-with-handling" title="Permanent link">&para;</a></h3>
+<p><strong>Pattern:</strong> <code>[Generator → Stabilizer → Trigger → Handler → Stabilizer → Closure]</code></p>
+<p><strong>Purpose:</strong> Controlled bifurcation and structural reorganization</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Dissonance</span><span class="p">(),</span> <span class="n">SelfOrganization</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Silence</span><span class="p">()]</span>
+</code></pre></div></p>
+<p><strong>Satisfies:</strong>
+- U2: Destabilizers balanced
+- U4a: Trigger has handler
+- U4b: Transformer (THOL) has recent destabilizer</p>
+<p><strong>Use when:</strong> Creating hierarchical or multi-scale structures</p>
+<hr />
+<h3 id="5-mutation-with-context">5. Mutation with Context<a class="headerlink" href="#5-mutation-with-context" title="Permanent link">&para;</a></h3>
+<p><strong>Pattern:</strong> <code>[Generator → Coherence → Destabilizer → Mutation → Stabilizer → Closure]</code></p>
+<p><strong>Purpose:</strong> Phase transformation with proper context</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Dissonance</span><span class="p">(),</span> <span class="n">Mutation</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Silence</span><span class="p">()]</span>
+</code></pre></div></p>
+<p><strong>Satisfies:</strong>
+- U4b: ZHIR has prior IL (first Coherence)
+- U4b: ZHIR has recent destabilizer (Dissonance)
+- U2, U4a: All balanced</p>
+<p><strong>Use when:</strong> Qualitative state changes, regime shifts</p>
+<hr />
+<h3 id="6-propagation">6. Propagation<a class="headerlink" href="#6-propagation" title="Permanent link">&para;</a></h3>
+<p><strong>Pattern:</strong> <code>[Generator → Coupling → Resonance → Stabilizer → Closure]</code></p>
+<p><strong>Purpose:</strong> Create structure and propagate through network</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Coupling</span><span class="p">(),</span> <span class="n">Resonance</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Silence</span><span class="p">()]</span>
+</code></pre></div></p>
+<p><strong>Satisfies:</strong>
+- U3: Phase compatibility must be verified before coupling
+- All standard constraints</p>
+<p><strong>Use when:</strong> Spreading patterns through network</p>
+<hr />
+<h3 id="7-multi-scale-organization">7. Multi-scale Organization<a class="headerlink" href="#7-multi-scale-organization" title="Permanent link">&para;</a></h3>
+<p><strong>Pattern:</strong> <code>[Generator → Coupling → Destabilizer → SelfOrganization → Recursivity]</code></p>
+<p><strong>Purpose:</strong> Create nested hierarchical structures</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Coupling</span><span class="p">(),</span> <span class="n">Dissonance</span><span class="p">(),</span> <span class="n">SelfOrganization</span><span class="p">(),</span> <span class="n">Recursivity</span><span class="p">()]</span>
+</code></pre></div></p>
+<p><strong>Satisfies:</strong>
+- U4b: THOL has recent destabilizer
+- U1b: Recursivity is closure
+- Creates fractal structure</p>
+<p><strong>Use when:</strong> Building hierarchies, nested patterns</p>
+<hr />
+<h3 id="8-dimension-reduction">8. Dimension Reduction<a class="headerlink" href="#8-dimension-reduction" title="Permanent link">&para;</a></h3>
+<p><strong>Pattern:</strong> <code>[Generator → Stabilizer → Contraction → Stabilizer → Closure]</code></p>
+<p><strong>Purpose:</strong> Simplify structure while maintaining coherence</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Contraction</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Silence</span><span class="p">()]</span>
+</code></pre></div></p>
+<p><strong>Satisfies:</strong>
+- U2: Contraction (no destabilizer classification, but structural change) balanced by stabilizers
+- U1a, U1b: Generator and closure
+- Reduces dimensional complexity</p>
+<p><strong>Use when:</strong> Simplifying over-complex structures, dimension reduction</p>
+<hr />
+<h3 id="9-network-bootstrap">9. Network Bootstrap<a class="headerlink" href="#9-network-bootstrap" title="Permanent link">&para;</a></h3>
+<p><strong>Pattern:</strong> <code>[Generator → Coupling → Reception → Coherence → Closure]</code></p>
+<p><strong>Purpose:</strong> Create node connected to network and integrate information</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Coupling</span><span class="p">(),</span> <span class="n">Reception</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Silence</span><span class="p">()]</span>
+</code></pre></div></p>
+<p><strong>Satisfies:</strong>
+- All constraints
+- Establishes network connectivity early</p>
+<p><strong>Use when:</strong> Creating nodes that need immediate network integration</p>
+<hr />
+<h3 id="10-controlled-expansion">10. Controlled Expansion<a class="headerlink" href="#10-controlled-expansion" title="Permanent link">&para;</a></h3>
+<p><strong>Pattern:</strong> <code>[Generator → Stabilizer → Expansion → Stabilizer → Closure]</code></p>
+<p><strong>Purpose:</strong> Increase structural complexity safely</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Expansion</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Silence</span><span class="p">()]</span>
+</code></pre></div></p>
+<p><strong>Satisfies:</strong>
+- U2: Expansion (destabilizer) balanced by Coherence (stabilizer)
+- Safe complexity increase</p>
+<p><strong>Use when:</strong> Growing structure dimensionality, adding degrees of freedom</p>
+<hr />
+<h3 id="11-deep-exploration-cycle">11. Deep Exploration Cycle<a class="headerlink" href="#11-deep-exploration-cycle" title="Permanent link">&para;</a></h3>
+<p><strong>Pattern:</strong> <code>[Generator → [Coherence → Dissonance]* → Coherence → Closure]</code></p>
+<p><strong>Purpose:</strong> Multiple rounds of exploration with stabilization</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Dissonance</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Dissonance</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Silence</span><span class="p">()]</span>
+</code></pre></div></p>
+<p><strong>Satisfies:</strong>
+- Multiple U2-balanced destabilizer-stabilizer pairs
+- Repeated exploration cycles</p>
+<p><strong>Use when:</strong> Thorough exploration of structural space, optimization</p>
+<hr />
+<h3 id="12-fractal-replication">12. Fractal Replication<a class="headerlink" href="#12-fractal-replication" title="Permanent link">&para;</a></h3>
+<p><strong>Pattern:</strong> <code>[Generator → Coupling → SelfOrganization → Recursivity]</code></p>
+<p><strong>Purpose:</strong> Create self-similar hierarchical structures</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Coupling</span><span class="p">(),</span> <span class="n">Dissonance</span><span class="p">(),</span> <span class="n">SelfOrganization</span><span class="p">(),</span> <span class="n">Recursivity</span><span class="p">()]</span>
+</code></pre></div></p>
+<p><strong>Satisfies:</strong>
+- U4b: THOL has recent destabilizer (Dissonance)
+- U1b: Recursivity provides closure with nested structure
+- Operational fractality</p>
+<p><strong>Use when:</strong> Creating multi-scale self-similar patterns</p>
+<hr />
+<h3 id="13-transition-based-reorganization">13. Transition-Based Reorganization<a class="headerlink" href="#13-transition-based-reorganization" title="Permanent link">&para;</a></h3>
+<p><strong>Pattern:</strong> <code>[Transition → Operations → Transition]</code></p>
+<p><strong>Purpose:</strong> Move between regime states</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="p">[</span><span class="n">Transition</span><span class="p">(),</span> <span class="n">Coupling</span><span class="p">(),</span> <span class="n">Reception</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Transition</span><span class="p">()]</span>
+</code></pre></div></p>
+<p><strong>Satisfies:</strong>
+- U1a: Transition is generator
+- U1b: Transition is closure
+- Regime shift semantics</p>
+<p><strong>Use when:</strong> Switching between behavioral modes or attractor states</p>
+<hr />
+<h2 id="anti-patterns-invalid-sequences">Anti-Patterns (Invalid Sequences)<a class="headerlink" href="#anti-patterns-invalid-sequences" title="Permanent link">&para;</a></h2>
+<h3 id="1-no-generator-from-vacuum">❌ 1. No Generator from Vacuum<a class="headerlink" href="#1-no-generator-from-vacuum" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># INVALID</span>
+<span class="p">[</span><span class="n">Coherence</span><span class="p">(),</span> <span class="n">Silence</span><span class="p">()]</span>
+
+<span class="c1"># Error: U1a violation</span>
+<span class="c1"># Cannot start without generator when EPI=0</span>
+</code></pre></div>
+<p><strong>Why invalid:</strong> ∂EPI/∂t undefined at EPI=0, need external input</p>
+<p><strong>Fix:</strong> Add generator at start
+<div class="highlight"><pre><span></span><code><span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Silence</span><span class="p">()]</span>  <span class="c1"># ✓ Valid</span>
+</code></pre></div></p>
+<hr />
+<h3 id="2-no-closure">❌ 2. No Closure<a class="headerlink" href="#2-no-closure" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># INVALID</span>
+<span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">()]</span>
+
+<span class="c1"># Error: U1b violation</span>
+<span class="c1"># Sequence must end with closure</span>
+</code></pre></div>
+<p><strong>Why invalid:</strong> No stable endpoint, system left in transient state</p>
+<p><strong>Fix:</strong> Add closure
+<div class="highlight"><pre><span></span><code><span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Silence</span><span class="p">()]</span>  <span class="c1"># ✓ Valid</span>
+</code></pre></div></p>
+<hr />
+<h3 id="3-destabilizer-without-stabilizer">❌ 3. Destabilizer Without Stabilizer<a class="headerlink" href="#3-destabilizer-without-stabilizer" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># INVALID</span>
+<span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Dissonance</span><span class="p">(),</span> <span class="n">Silence</span><span class="p">()]</span>
+
+<span class="c1"># Error: U2 violation</span>
+<span class="c1"># Destabilizer without stabilizer</span>
+</code></pre></div>
+<p><strong>Why invalid:</strong> Integral may diverge, coherence not preserved</p>
+<p><strong>Fix:</strong> Add stabilizer
+<div class="highlight"><pre><span></span><code><span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Dissonance</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Silence</span><span class="p">()]</span>  <span class="c1"># ✓ Valid</span>
+</code></pre></div></p>
+<hr />
+<h3 id="4-mutation-without-context">❌ 4. Mutation Without Context<a class="headerlink" href="#4-mutation-without-context" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># INVALID</span>
+<span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Mutation</span><span class="p">(),</span> <span class="n">Silence</span><span class="p">()]</span>
+
+<span class="c1"># Error: U4b violation</span>
+<span class="c1"># Mutation needs recent destabilizer</span>
+</code></pre></div>
+<p><strong>Why invalid:</strong> Cannot reach threshold without elevated ΔNFR</p>
+<p><strong>Fix:</strong> Add destabilizer and prior coherence
+<div class="highlight"><pre><span></span><code><span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Dissonance</span><span class="p">(),</span> <span class="n">Mutation</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Silence</span><span class="p">()]</span>  <span class="c1"># ✓ Valid</span>
+</code></pre></div></p>
+<hr />
+<h3 id="5-mutation-without-prior-coherence">❌ 5. Mutation Without Prior Coherence<a class="headerlink" href="#5-mutation-without-prior-coherence" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># INVALID</span>
+<span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Dissonance</span><span class="p">(),</span> <span class="n">Mutation</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Silence</span><span class="p">()]</span>
+
+<span class="c1"># Error: U4b violation</span>
+<span class="c1"># ZHIR needs prior IL (stable base)</span>
+</code></pre></div>
+<p><strong>Why invalid:</strong> No stable configuration to transform from</p>
+<p><strong>Fix:</strong> Add coherence before destabilizer
+<div class="highlight"><pre><span></span><code><span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Dissonance</span><span class="p">(),</span> <span class="n">Mutation</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Silence</span><span class="p">()]</span>  <span class="c1"># ✓ Valid</span>
+</code></pre></div></p>
+<hr />
+<h3 id="6-coupling-without-phase-check">❌ 6. Coupling Without Phase Check<a class="headerlink" href="#6-coupling-without-phase-check" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># INVALID (runtime error if phases incompatible)</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">theta</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">theta</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>  <span class="c1"># Antiphase!</span>
+
+<span class="n">Coupling</span><span class="p">()(</span><span class="n">G</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># Error if U3 validation enabled</span>
+
+<span class="c1"># Error: U3 violation</span>
+<span class="c1"># Phase mismatch</span>
+</code></pre></div>
+<p><strong>Why invalid:</strong> Destructive interference, physically meaningless</p>
+<p><strong>Fix:</strong> Verify phase compatibility first
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.operators.grammar</span><span class="w"> </span><span class="kn">import</span> <span class="n">validate_resonant_coupling</span>
+
+<span class="n">validate_resonant_coupling</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># Check first</span>
+<span class="n">Coupling</span><span class="p">()(</span><span class="n">G</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># Then couple</span>
+</code></pre></div></p>
+<hr />
+<h3 id="7-bifurcation-trigger-without-handler">❌ 7. Bifurcation Trigger Without Handler<a class="headerlink" href="#7-bifurcation-trigger-without-handler" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># INVALID</span>
+<span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Dissonance</span><span class="p">(),</span> <span class="n">Silence</span><span class="p">()]</span>
+
+<span class="c1"># Error: U4a violation  </span>
+<span class="c1"># Trigger without handler</span>
+</code></pre></div>
+<p><strong>Why invalid:</strong> Uncontrolled bifurcation may lead to chaos</p>
+<p><strong>Fix:</strong> Add handler
+<div class="highlight"><pre><span></span><code><span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Dissonance</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Silence</span><span class="p">()]</span>  <span class="c1"># ✓ Valid</span>
+</code></pre></div></p>
+<hr />
+<h3 id="8-expansion-without-stabilization">❌ 8. Expansion Without Stabilization<a class="headerlink" href="#8-expansion-without-stabilization" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># INVALID</span>
+<span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Expansion</span><span class="p">(),</span> <span class="n">Silence</span><span class="p">()]</span>
+
+<span class="c1"># Error: U2 violation</span>
+<span class="c1"># Destabilizer (Expansion) without stabilizer</span>
+</code></pre></div>
+<p><strong>Why invalid:</strong> Unbounded growth, integral diverges</p>
+<p><strong>Fix:</strong> Add stabilizer
+<div class="highlight"><pre><span></span><code><span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Expansion</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Silence</span><span class="p">()]</span>  <span class="c1"># ✓ Valid</span>
+</code></pre></div></p>
+<hr />
+<h3 id="9-self-organization-without-recent-destabilizer">❌ 9. Self-Organization Without Recent Destabilizer<a class="headerlink" href="#9-self-organization-without-recent-destabilizer" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># INVALID</span>
+<span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">SelfOrganization</span><span class="p">(),</span> <span class="n">Silence</span><span class="p">()]</span>
+
+<span class="c1"># Error: U4b violation</span>
+<span class="c1"># Transformer needs recent destabilizer (within ~3 ops)</span>
+</code></pre></div>
+<p><strong>Why invalid:</strong> Cannot organize without elevated ΔNFR</p>
+<p><strong>Fix:</strong> Add destabilizer before THOL
+<div class="highlight"><pre><span></span><code><span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Dissonance</span><span class="p">(),</span> <span class="n">SelfOrganization</span><span class="p">(),</span> <span class="n">Silence</span><span class="p">()]</span>  <span class="c1"># ✓ Valid</span>
+</code></pre></div></p>
+<hr />
+<h3 id="10-resonance-on-antiphase-nodes">❌ 10. Resonance on Antiphase Nodes<a class="headerlink" href="#10-resonance-on-antiphase-nodes" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># INVALID (runtime error)</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">theta</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">theta</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>  <span class="c1"># 180° phase difference</span>
+
+<span class="c1"># Sequence is valid, but runtime fails U3</span>
+<span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Coupling</span><span class="p">(),</span> <span class="n">Resonance</span><span class="p">(),</span> <span class="n">Silence</span><span class="p">()]</span>
+<span class="n">Resonance</span><span class="p">()(</span><span class="n">G</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># Error: antiphase nodes</span>
+
+<span class="c1"># Error: U3 violation at runtime</span>
+<span class="c1"># |θ₀ - θ₁| = π &gt; Δθ_max</span>
+</code></pre></div>
+<p><strong>Why invalid:</strong> Destructive interference, physically meaningless coupling</p>
+<p><strong>Fix:</strong> Ensure phase compatibility
+<div class="highlight"><pre><span></span><code><span class="n">G</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">theta</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">theta</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>  <span class="c1"># Compatible phase</span>
+
+<span class="c1"># Now valid</span>
+<span class="n">Resonance</span><span class="p">()(</span><span class="n">G</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># ✓ Works</span>
+</code></pre></div></p>
+<hr />
+<h3 id="11-multiple-destabilizers-without-adequate-stabilization">❌ 11. Multiple Destabilizers Without Adequate Stabilization<a class="headerlink" href="#11-multiple-destabilizers-without-adequate-stabilization" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># INVALID</span>
+<span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Dissonance</span><span class="p">(),</span> <span class="n">Expansion</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Silence</span><span class="p">()]</span>
+
+<span class="c1"># Error: U2 violation</span>
+<span class="c1"># Two destabilizers with only one stabilizer may not be sufficient</span>
+</code></pre></div>
+<p><strong>Why invalid:</strong> Cumulative instability may exceed single stabilizer capacity</p>
+<p><strong>Fix:</strong> Balance with multiple stabilizers
+<div class="highlight"><pre><span></span><code><span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Dissonance</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Expansion</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Silence</span><span class="p">()]</span>  <span class="c1"># ✓ Valid</span>
+</code></pre></div></p>
+<hr />
+<h3 id="12-recursivity-without-proper-context">❌ 12. Recursivity Without Proper Context<a class="headerlink" href="#12-recursivity-without-proper-context" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># INVALID (semantic)</span>
+<span class="p">[</span><span class="n">Recursivity</span><span class="p">(),</span> <span class="n">Silence</span><span class="p">()]</span>  <span class="c1"># Technically passes grammar</span>
+
+<span class="c1"># Error: Logical violation</span>
+<span class="c1"># Recursivity references prior structure but none exists</span>
+</code></pre></div>
+<p><strong>Why invalid:</strong> Cannot echo structure that doesn't exist yet</p>
+<p><strong>Fix:</strong> Build structure first
+<div class="highlight"><pre><span></span><code><span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Dissonance</span><span class="p">(),</span> <span class="n">SelfOrganization</span><span class="p">(),</span> <span class="n">Recursivity</span><span class="p">()]</span>  <span class="c1"># ✓ Valid</span>
+</code></pre></div></p>
+<hr />
+<h3 id="13-reception-without-network-connectivity">❌ 13. Reception Without Network Connectivity<a class="headerlink" href="#13-reception-without-network-connectivity" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># INVALID (runtime/semantic)</span>
+<span class="c1"># Node has no edges, yet using Reception</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">EPI</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.1</span><span class="p">]),</span> <span class="o">...</span><span class="p">)</span>
+<span class="c1"># No edges!</span>
+
+<span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Reception</span><span class="p">(),</span> <span class="n">Silence</span><span class="p">()]</span>
+<span class="n">Reception</span><span class="p">()(</span><span class="n">G</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>  <span class="c1"># Warning: no neighbors</span>
+
+<span class="c1"># Error: Semantic violation</span>
+<span class="c1"># Reception with no information sources</span>
+</code></pre></div>
+<p><strong>Why invalid:</strong> Cannot integrate information from non-existent network</p>
+<p><strong>Fix:</strong> Establish connectivity first
+<div class="highlight"><pre><span></span><code><span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Coupling</span><span class="p">(),</span> <span class="n">Reception</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Silence</span><span class="p">()]</span>  <span class="c1"># ✓ Valid</span>
+</code></pre></div></p>
+<hr />
+<h3 id="14-transition-without-state-change-logic">❌ 14. Transition Without State Change Logic<a class="headerlink" href="#14-transition-without-state-change-logic" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># INVALID (semantic)</span>
+<span class="p">[</span><span class="n">Transition</span><span class="p">(),</span> <span class="n">Transition</span><span class="p">()]</span>  <span class="c1"># Passes grammar but illogical</span>
+
+<span class="c1"># Error: Semantic violation</span>
+<span class="c1"># Transition to what? No operations between states</span>
+</code></pre></div>
+<p><strong>Why invalid:</strong> Transition without operations is meaningless</p>
+<p><strong>Fix:</strong> Add meaningful operations
+<div class="highlight"><pre><span></span><code><span class="p">[</span><span class="n">Transition</span><span class="p">(),</span> <span class="n">Coupling</span><span class="p">(),</span> <span class="n">Reception</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Transition</span><span class="p">()]</span>  <span class="c1"># ✓ Valid</span>
+</code></pre></div></p>
+<hr />
+<h2 id="1313-operator-transition-matrix">13×13 Operator Transition Matrix<a class="headerlink" href="#1313-operator-transition-matrix" title="Permanent link">&para;</a></h2>
+<p>This matrix shows the validity of transitions between operators. Read as "Can operator X be followed by operator Y?"</p>
+<p><strong>Legend:</strong>
+- ✓ = Generally valid transition
+- ⚠️ = Valid but needs additional context (see notes)
+- ❌ = Generally invalid or problematic
+- ⭐ = Recommended pattern</p>
+<p><strong>Notes:</strong>
+- All transitions must still satisfy U1-U5 constraints
+- Phase compatibility required for UM/RA (U3)
+- Stabilizers needed for destabilizers (U2)
+- Handlers needed for triggers (U4a)
+- Transformers need recent destabilizers (U4b)
+- Deep REMESH needs scale stabilizers IL/THOL (U5)</p>
+<h3 id="matrix">Matrix<a class="headerlink" href="#matrix" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>           │ AL │ EN │ IL │ OZ │ UM │ RA │SHA│VAL│NUL│THO│ZHI│NAV│REM│
+───────────┼────┼────┼────┼────┼────┼────┼───┼───┼───┼───┼───┼───┼───┤
+AL  Emiss  │ ⚠️ │ ⭐ │ ⭐ │ ⚠️ │ ⭐ │ ⚠️ │ ✓ │ ⚠️ │ ✓ │ ⚠️ │ ❌ │ ✓ │ ⚠️ │
+EN  Recept │ ⚠️ │ ⚠️ │ ⭐ │ ⚠️ │ ✓ │ ⚠️ │ ✓ │ ⚠️ │ ✓ │ ⭐ │ ❌ │ ✓ │ ✓ │
+IL  Coher  │ ⚠️ │ ✓ │ ⚠️ │ ⭐ │ ✓ │ ✓ │ ⭐ │ ✓ │ ✓ │ ⚠️ │ ⚠️ │ ⭐ │ ⭐ │
+OZ  Disson │ ⚠️ │ ✓ │ ⭐ │ ❌ │ ✓ │ ✓ │ ⚠️ │ ⚠️ │ ✓ │ ⭐ │ ⭐ │ ✓ │ ✓ │
+UM  Coupl  │ ⚠️ │ ⭐ │ ⭐ │ ⚠️ │ ⚠️ │ ⭐ │ ✓ │ ⚠️ │ ✓ │ ⚠️ │ ❌ │ ✓ │ ✓ │
+RA  Reson  │ ⚠️ │ ⭐ │ ⭐ │ ⚠️ │ ✓ │ ⚠️ │ ✓ │ ⚠️ │ ✓ │ ⚠️ │ ❌ │ ✓ │ ✓ │
+SHA Silenc │ ─  │ ─  │ ─  │ ─  │ ─  │ ─  │ ─ │ ─ │ ─ │ ─ │ ─ │ ─ │ ─ │
+VAL Expan  │ ⚠️ │ ✓ │ ⭐ │ ⚠️ │ ✓ │ ✓ │ ⚠️ │ ❌ │ ⚠️ │ ⭐ │ ❌ │ ✓ │ ✓ │
+NUL Contra │ ⚠️ │ ✓ │ ⭐ │ ⚠️ │ ✓ │ ✓ │ ✓ │ ⚠️ │ ⚠️ │ ⚠️ │ ❌ │ ✓ │ ✓ │
+THO SelfO  │ ⚠️ │ ✓ │ ⭐ │ ⚠️ │ ✓ │ ✓ │ ✓ │ ⚠️ │ ✓ │ ⚠️ │ ⚠️ │ ✓ │ ⭐ │
+ZHI Mutat  │ ⚠️ │ ✓ │ ⭐ │ ❌ │ ✓ │ ✓ │ ⚠️ │ ⚠️ │ ✓ │ ⭐ │ ❌ │ ✓ │ ✓ │
+NAV Trans  │ ⭐ │ ⭐ │ ✓ │ ⚠️ │ ⭐ │ ⚠️ │ ─ │ ⚠️ │ ✓ │ ⚠️ │ ❌ │ ⚠️ │ ⚠️ │
+REM Recurs │ ─  │ ─  │ ─  │ ─  │ ─  │ ─  │ ─ │ ─ │ ─ │ ─ │ ─ │ ─ │ ─ │
+</code></pre></div>
+<h3 id="transition-notes">Transition Notes<a class="headerlink" href="#transition-notes" title="Permanent link">&para;</a></h3>
+<p><strong>Emission (AL):</strong>
+- ⭐ → EN, IL, UM: Bootstrap patterns
+- ⚠️ → AL: Redundant unless transitioning regimes
+- ❌ → ZHIR: Cannot mutate immediately after creation
+- ⚠️ → OZ, VAL, THOL: Needs balancing</p>
+<p><strong>Reception (EN):</strong>
+- ⭐ → IL, THOL: Integrate then stabilize
+- ⚠️ → AL, EN: Redundant activation/reception
+- ❌ → ZHIR: Cannot mutate immediately after reception</p>
+<p><strong>Coherence (IL):</strong>
+- ⭐ → OZ, SHA, NAV, REM: Common stabilize-then patterns
+- ⚠️ → IL: Redundant unless needed
+- ⚠️ → AL: Unusual to emit after coherence</p>
+<p><strong>Dissonance (OZ):</strong>
+- ⭐ → IL, THOL, ZHIR: Destabilize then handle/transform
+- ❌ → OZ: Compounding instability dangerous
+- ⚠️ → SHA: Should stabilize before silence</p>
+<p><strong>Coupling (UM):</strong>
+- ⭐ → EN, RA, IL: Connect then integrate/propagate/stabilize
+- ⚠️ → UM: Multiple couplings need phase checks
+- ❌ → ZHIR: Cannot mutate immediately after coupling</p>
+<p><strong>Resonance (RA):</strong>
+- ⭐ → EN, IL: Resonate then integrate/stabilize
+- ⚠️ → RA: Cascading resonance needs control
+- ❌ → ZHIR: Cannot mutate immediately after resonance</p>
+<p><strong>Silence (SHA):</strong>
+- ─ = Closure operator, ends sequence (no followers)</p>
+<p><strong>Expansion (VAL):</strong>
+- ⭐ → IL, THOL: Grow then stabilize/organize
+- ❌ → VAL, ZHIR: Compounding expansion or immediate mutation
+- ⚠️ → SHA: Should stabilize first</p>
+<p><strong>Contraction (NUL):</strong>
+- ⭐ → IL: Contract then stabilize
+- ⚠️ → NUL: Excessive contraction risky
+- ❌ → ZHIR: Cannot mutate immediately</p>
+<p><strong>Self-Organization (THOL):</strong>
+- ⭐ → IL, REM: Organize then stabilize/nest
+- ⚠️ → THOL: Nested organization needs context
+- ⚠️ → ZHIR: Sequential transforms need careful context</p>
+<p><strong>Mutation (ZHIR):</strong>
+- ⭐ → IL, THOL: Transform then stabilize/organize
+- ❌ → OZ, ZHIR: Cannot immediately destabilize/mutate again
+- ⚠️ → SHA: Should stabilize first</p>
+<p><strong>Transition (NAV):</strong>
+- ⭐ → AL, EN, UM: Regime shift then activate/connect
+- ⚠️ → NAV: Multiple transitions need purpose
+- ❌ → ZHIR: Transition to mutation without context</p>
+<p><strong>Recursivity (REM):</strong>
+- ─ = Closure operator, ends sequence (no followers)</p>
+<h3 id="reading-the-matrix">Reading the Matrix<a class="headerlink" href="#reading-the-matrix" title="Permanent link">&para;</a></h3>
+<p><strong>Example 1:</strong> Can Emission (AL) → Coherence (IL)?
+- Row: AL, Column: IL → ⭐ (Recommended)
+- Common bootstrap pattern</p>
+<p><strong>Example 2:</strong> Can Dissonance (OZ) → Mutation (ZHIR)?
+- Row: OZ, Column: ZHIR → ⭐ (Recommended)
+- Classic destabilize-then-transform pattern</p>
+<p><strong>Example 3:</strong> Can Mutation (ZHIR) → Mutation (ZHIR)?
+- Row: ZHIR, Column: ZHIR → ❌ (Invalid)
+- Cannot perform consecutive mutations</p>
+<p><strong>Example 4:</strong> Can Coherence (IL) → Dissonance (OZ)?
+- Row: IL, Column: OZ → ⭐ (Recommended)
+- Stabilize-then-explore pattern</p>
+<hr />
+<h2 id="step-by-step-validation-logic">Step-by-Step Validation Logic<a class="headerlink" href="#step-by-step-validation-logic" title="Permanent link">&para;</a></h2>
+<h3 id="complete-validation-algorithm">Complete Validation Algorithm<a class="headerlink" href="#complete-validation-algorithm" title="Permanent link">&para;</a></h3>
+<p>This section documents the precise algorithms used to validate U1-U5 constraints. This is the canonical implementation that matches <code>tnfr.operators.grammar.validate_grammar()</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">validate_sequence_comprehensive</span><span class="p">(</span><span class="n">sequence</span><span class="p">,</span> <span class="n">epi_initial</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Complete validation algorithm for TNFR sequences.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    sequence : List[Operator]</span>
+<span class="sd">        List of operator instances</span>
+<span class="sd">    epi_initial : float</span>
+<span class="sd">        Initial EPI magnitude (0.0 for vacuum state)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    is_valid : bool</span>
+<span class="sd">        True if sequence passes all constraints</span>
+<span class="sd">    violations : List[str]</span>
+<span class="sd">        List of violation messages (empty if valid)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">violations</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1"># ========================================</span>
+    <span class="c1"># STEP 1: U1a (Initiation)</span>
+    <span class="c1"># ========================================</span>
+    <span class="c1"># When EPI=0, must start with generator</span>
+    <span class="k">if</span> <span class="n">epi_initial</span> <span class="o">==</span> <span class="mf">0.0</span> <span class="ow">or</span> <span class="n">is_effectively_zero</span><span class="p">(</span><span class="n">epi_initial</span><span class="p">):</span>
+        <span class="n">first_op</span> <span class="o">=</span> <span class="n">get_operator_name</span><span class="p">(</span><span class="n">sequence</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">first_op</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">GENERATORS</span><span class="p">:</span>
+            <span class="n">violations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;U1a: When EPI=0, must start with generator &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="se">{{</span><span class="s2">emission, transition, recursivity</span><span class="se">}}</span><span class="s2">. &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Found: &#39;</span><span class="si">{</span><span class="n">first_op</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+            <span class="p">)</span>
+
+    <span class="c1"># ========================================</span>
+    <span class="c1"># STEP 2: U1b (Closure)</span>
+    <span class="c1"># ========================================</span>
+    <span class="c1"># All sequences must end with closure operator</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sequence</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">violations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;U1b: Empty sequence has no closure&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">last_op</span> <span class="o">=</span> <span class="n">get_operator_name</span><span class="p">(</span><span class="n">sequence</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">last_op</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">CLOSURES</span><span class="p">:</span>
+            <span class="n">violations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;U1b: Sequence must end with closure &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="se">{{</span><span class="s2">silence, transition, recursivity, dissonance</span><span class="se">}}</span><span class="s2">. &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Found: &#39;</span><span class="si">{</span><span class="n">last_op</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+            <span class="p">)</span>
+
+    <span class="c1"># ========================================</span>
+    <span class="c1"># STEP 3: U2 (Convergence &amp; Boundedness)</span>
+    <span class="c1"># ========================================</span>
+    <span class="c1"># Destabilizers must be balanced by stabilizers</span>
+    <span class="c1"># for integral ∫νf·ΔNFR dt to converge</span>
+    <span class="n">has_destabilizer</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span>
+        <span class="n">get_operator_name</span><span class="p">(</span><span class="n">op</span><span class="p">)</span> <span class="ow">in</span> <span class="n">DESTABILIZERS</span> 
+        <span class="k">for</span> <span class="n">op</span> <span class="ow">in</span> <span class="n">sequence</span>
+    <span class="p">)</span>
+    <span class="n">has_stabilizer</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span>
+        <span class="n">get_operator_name</span><span class="p">(</span><span class="n">op</span><span class="p">)</span> <span class="ow">in</span> <span class="n">STABILIZERS</span> 
+        <span class="k">for</span> <span class="n">op</span> <span class="ow">in</span> <span class="n">sequence</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">has_destabilizer</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">has_stabilizer</span><span class="p">:</span>
+        <span class="n">destabilizers_found</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">get_operator_name</span><span class="p">(</span><span class="n">op</span><span class="p">)</span> <span class="k">for</span> <span class="n">op</span> <span class="ow">in</span> <span class="n">sequence</span> 
+            <span class="k">if</span> <span class="n">get_operator_name</span><span class="p">(</span><span class="n">op</span><span class="p">)</span> <span class="ow">in</span> <span class="n">DESTABILIZERS</span>
+        <span class="p">]</span>
+        <span class="n">violations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;U2: Destabilizers </span><span class="si">{</span><span class="n">destabilizers_found</span><span class="si">}</span><span class="s2"> require &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;stabilizers </span><span class="se">{{</span><span class="s2">coherence, self_organization</span><span class="se">}}</span><span class="s2"> &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;to ensure integral convergence (∫νf·ΔNFR dt &lt; ∞)&quot;</span>
+        <span class="p">)</span>
+
+    <span class="c1"># ========================================</span>
+    <span class="c1"># STEP 4: U3 (Resonant Coupling)</span>
+    <span class="c1"># ========================================</span>
+    <span class="c1"># Phase verification is runtime, not sequence-level</span>
+    <span class="c1"># We note that phase checks will be needed</span>
+    <span class="n">has_coupling_resonance</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span>
+        <span class="n">get_operator_name</span><span class="p">(</span><span class="n">op</span><span class="p">)</span> <span class="ow">in</span> <span class="n">COUPLING_RESONANCE</span> 
+        <span class="k">for</span> <span class="n">op</span> <span class="ow">in</span> <span class="n">sequence</span>
+    <span class="p">)</span>
+
+    <span class="c1"># This is informational only - actual phase check happens at runtime</span>
+    <span class="c1"># when operators are applied to specific nodes</span>
+
+    <span class="c1"># ========================================</span>
+    <span class="c1"># STEP 5: U4a (Bifurcation Triggers Need Handlers)</span>
+    <span class="c1"># ========================================</span>
+    <span class="c1"># When ∂²EPI/∂t² &gt; τ, need handlers to control reorganization</span>
+    <span class="n">has_trigger</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span>
+        <span class="n">get_operator_name</span><span class="p">(</span><span class="n">op</span><span class="p">)</span> <span class="ow">in</span> <span class="n">BIFURCATION_TRIGGERS</span> 
+        <span class="k">for</span> <span class="n">op</span> <span class="ow">in</span> <span class="n">sequence</span>
+    <span class="p">)</span>
+    <span class="n">has_handler</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span>
+        <span class="n">get_operator_name</span><span class="p">(</span><span class="n">op</span><span class="p">)</span> <span class="ow">in</span> <span class="n">BIFURCATION_HANDLERS</span> 
+        <span class="k">for</span> <span class="n">op</span> <span class="ow">in</span> <span class="n">sequence</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">has_trigger</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">has_handler</span><span class="p">:</span>
+        <span class="n">triggers_found</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">get_operator_name</span><span class="p">(</span><span class="n">op</span><span class="p">)</span> <span class="k">for</span> <span class="n">op</span> <span class="ow">in</span> <span class="n">sequence</span> 
+            <span class="k">if</span> <span class="n">get_operator_name</span><span class="p">(</span><span class="n">op</span><span class="p">)</span> <span class="ow">in</span> <span class="n">BIFURCATION_TRIGGERS</span>
+        <span class="p">]</span>
+        <span class="n">violations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;U4a: Bifurcation triggers </span><span class="si">{</span><span class="n">triggers_found</span><span class="si">}</span><span class="s2"> require &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;handlers </span><span class="se">{{</span><span class="s2">coherence, self_organization</span><span class="se">}}</span><span class="s2"> &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;to control reorganization when ∂²EPI/∂t² &gt; τ&quot;</span>
+        <span class="p">)</span>
+
+    <span class="c1"># ========================================</span>
+    <span class="c1"># STEP 6: U4b (Transformers Need Context)</span>
+    <span class="c1"># ========================================</span>
+    <span class="c1"># Transformers need recent destabilizer for elevated ΔNFR</span>
+    <span class="c1"># ZHIR specifically needs prior IL (stable base)</span>
+    <span class="n">TRANSFORMER_WINDOW</span> <span class="o">=</span> <span class="mi">3</span>  <span class="c1"># Recent = within 3 operators</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">op</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sequence</span><span class="p">):</span>
+        <span class="n">op_name</span> <span class="o">=</span> <span class="n">get_operator_name</span><span class="p">(</span><span class="n">op</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">op_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">TRANSFORMERS</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="c1"># Check recent destabilizer (within window)</span>
+        <span class="n">window_start</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">i</span> <span class="o">-</span> <span class="n">TRANSFORMER_WINDOW</span><span class="p">)</span>
+        <span class="n">recent_window</span> <span class="o">=</span> <span class="n">sequence</span><span class="p">[</span><span class="n">window_start</span><span class="p">:</span><span class="n">i</span><span class="p">]</span>
+
+        <span class="n">has_recent_destabilizer</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span>
+            <span class="n">get_operator_name</span><span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="ow">in</span> <span class="n">DESTABILIZERS</span> 
+            <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">recent_window</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">has_recent_destabilizer</span><span class="p">:</span>
+            <span class="n">violations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;U4b: Transformer &#39;</span><span class="si">{</span><span class="n">op_name</span><span class="si">}</span><span class="s2">&#39; at position </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2"> &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;needs recent destabilizer (within </span><span class="si">{</span><span class="n">TRANSFORMER_WINDOW</span><span class="si">}</span><span class="s2"> ops). &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Window: </span><span class="si">{</span><span class="p">[</span><span class="n">get_operator_name</span><span class="p">(</span><span class="n">w</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">w</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">recent_window</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+        <span class="c1"># ZHIR-specific: needs prior IL (stable base before destabilization)</span>
+        <span class="k">if</span> <span class="n">op_name</span> <span class="o">==</span> <span class="s2">&quot;mutation&quot;</span><span class="p">:</span>
+            <span class="c1"># Check for coherence BEFORE the destabilizer window</span>
+            <span class="n">prior_to_window</span> <span class="o">=</span> <span class="n">sequence</span><span class="p">[:</span><span class="n">window_start</span><span class="p">]</span>
+            <span class="n">has_prior_coherence</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span>
+                <span class="n">get_operator_name</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;coherence&quot;</span> 
+                <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">prior_to_window</span>
+            <span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">has_prior_coherence</span><span class="p">:</span>
+                <span class="n">violations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;U4b: Mutation at position </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2"> needs prior &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;coherence (stable base before destabilization). &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;Prior ops: </span><span class="si">{</span><span class="p">[</span><span class="n">get_operator_name</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">prior_to_window</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+
+    <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">violations</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="n">violations</span>
+</code></pre></div>
+<h3 id="validation-decision-tree">Validation Decision Tree<a class="headerlink" href="#validation-decision-tree" title="Permanent link">&para;</a></h3>
+<p>Visual representation of validation logic flow:</p>
+<div class="highlight"><pre><span></span><code>START
+  │
+  ├─&gt; Is EPI = 0?
+  │   ├─&gt; YES: First op in GENERATORS? → NO: FAIL U1a
+  │   └─&gt; NO: Continue
+  │
+  ├─&gt; Last op in CLOSURES?
+  │   ├─&gt; NO: FAIL U1b
+  │   └─&gt; YES: Continue
+  │
+  ├─&gt; Any DESTABILIZERS in sequence?
+  │   ├─&gt; YES: Any STABILIZERS? → NO: FAIL U2
+  │   └─&gt; NO: Continue
+  │
+  ├─&gt; Any COUPLING_RESONANCE in sequence?
+  │   └─&gt; YES: Note runtime phase check needed (U3)
+  │
+  ├─&gt; Any BIFURCATION_TRIGGERS in sequence?
+  │   ├─&gt; YES: Any HANDLERS? → NO: FAIL U4a
+  │   └─&gt; NO: Continue
+  │
+  ├─&gt; For each TRANSFORMER at position i:
+  │   ├─&gt; Recent DESTABILIZER (i-3 to i)?
+  │   │   ├─&gt; NO: FAIL U4b
+  │   │   └─&gt; YES: Continue
+  │   │
+  │   └─&gt; If MUTATION:
+  │       └─&gt; Prior COHERENCE (before i-3)?
+  │           ├─&gt; NO: FAIL U4b (ZHIR-specific)
+  │           └─&gt; YES: Continue
+  │
+  └─&gt; PASS (all constraints satisfied)
+</code></pre></div>
+<h3 id="runtime-validation-u3-phase-compatibility">Runtime Validation: U3 Phase Compatibility<a class="headerlink" href="#runtime-validation-u3-phase-compatibility" title="Permanent link">&para;</a></h3>
+<p>Phase validation happens when operators are actually applied, not during sequence validation:</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">validate_phase_compatibility_runtime</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">node_i</span><span class="p">,</span> <span class="n">node_j</span><span class="p">,</span> <span class="n">delta_theta_max</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Runtime validation for U3 (Resonant Coupling).</span>
+
+<span class="sd">    Called when Coupling or Resonance operators are applied.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : TNFRGraph</span>
+<span class="sd">        Network graph</span>
+<span class="sd">    node_i, node_j : NodeId</span>
+<span class="sd">        Nodes to couple</span>
+<span class="sd">    delta_theta_max : float</span>
+<span class="sd">        Maximum allowed phase difference (default π/2)</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    PhaseCompatibilityError</span>
+<span class="sd">        If phase difference exceeds threshold</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">theta_i</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">node_i</span><span class="p">][</span><span class="s1">&#39;theta&#39;</span><span class="p">]</span>
+    <span class="n">theta_j</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">node_j</span><span class="p">][</span><span class="s1">&#39;theta&#39;</span><span class="p">]</span>
+
+    <span class="c1"># Phase difference</span>
+    <span class="n">delta_theta</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">theta_i</span> <span class="o">-</span> <span class="n">theta_j</span><span class="p">)</span>
+
+    <span class="c1"># Normalize to [0, π] (symmetry: θ and θ+π are equivalent)</span>
+    <span class="k">if</span> <span class="n">delta_theta</span> <span class="o">&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">:</span>
+        <span class="n">delta_theta</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">-</span> <span class="n">delta_theta</span>
+
+    <span class="c1"># Check threshold</span>
+    <span class="k">if</span> <span class="n">delta_theta</span> <span class="o">&gt;</span> <span class="n">delta_theta_max</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">PhaseCompatibilityError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;U3: Cannot couple nodes </span><span class="si">{</span><span class="n">node_i</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">node_j</span><span class="si">}</span><span class="s2">. &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Phase difference |θᵢ - θⱼ| = </span><span class="si">{</span><span class="n">delta_theta</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> rad &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;exceeds Δθ_max = </span><span class="si">{</span><span class="n">delta_theta_max</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> rad. &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Antiphase coupling causes destructive interference.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="kc">True</span>
+</code></pre></div>
+<h3 id="validation-timing">Validation Timing<a class="headerlink" href="#validation-timing" title="Permanent link">&para;</a></h3>
+<p><strong>Sequence-Level Validation</strong> (U1a, U1b, U2, U4a, U4b):
+- Performed BEFORE sequence execution
+- Static analysis of operator list
+- Fast, no graph required
+- Use: <code>validate_grammar(sequence, epi_initial)</code></p>
+<p><strong>Runtime Validation</strong> (U3):
+- Performed DURING operator application
+- Requires actual graph state (phase values)
+- Dynamic check per coupling/resonance
+- Automatic in operator implementations</p>
+<h3 id="validation-strictness-levels">Validation Strictness Levels<a class="headerlink" href="#validation-strictness-levels" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ValidationMode</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Validation strictness levels.&quot;&quot;&quot;</span>
+    <span class="n">STRICT</span> <span class="o">=</span> <span class="s2">&quot;strict&quot;</span>      <span class="c1"># Fail on any violation</span>
+    <span class="n">WARNING</span> <span class="o">=</span> <span class="s2">&quot;warning&quot;</span>    <span class="c1"># Warn but allow</span>
+    <span class="n">DISABLED</span> <span class="o">=</span> <span class="s2">&quot;disabled&quot;</span>  <span class="c1"># No validation</span>
+</code></pre></div>
+<p><strong>STRICT</strong> (default):
+- All violations cause errors
+- Recommended for production
+- Ensures physics integrity</p>
+<p><strong>WARNING</strong>:
+- Violations logged but not fatal
+- Useful for experimentation
+- Risk: may violate physics</p>
+<p><strong>DISABLED</strong>:
+- No validation
+- Only for testing/debugging
+- Not recommended</p>
+<hr />
+<h2 id="complex-sequence-examples">Complex Sequence Examples<a class="headerlink" href="#complex-sequence-examples" title="Permanent link">&para;</a></h2>
+<h3 id="example-1-multi-step-exploration">Example 1: Multi-Step Exploration<a class="headerlink" href="#example-1-multi-step-exploration" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="n">sequence</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">Emission</span><span class="p">(),</span>          <span class="c1"># U1a: Generator</span>
+    <span class="n">Reception</span><span class="p">(),</span>         <span class="c1"># Gather info</span>
+    <span class="n">Coherence</span><span class="p">(),</span>         <span class="c1"># Stabilize base</span>
+    <span class="n">Dissonance</span><span class="p">(),</span>        <span class="c1"># Explore (destabilizer, trigger)</span>
+    <span class="n">Reception</span><span class="p">(),</span>         <span class="c1"># Gather more info</span>
+    <span class="n">Coherence</span><span class="p">(),</span>         <span class="c1"># Stabilize (U2, U4a)</span>
+    <span class="n">Expansion</span><span class="p">(),</span>         <span class="c1"># Grow (destabilizer)</span>
+    <span class="n">Coherence</span><span class="p">(),</span>         <span class="c1"># Stabilize again (U2)</span>
+    <span class="n">Silence</span><span class="p">()</span>            <span class="c1"># U1b: Closure</span>
+<span class="p">]</span>
+
+<span class="c1"># Satisfies all constraints</span>
+<span class="c1"># Multiple destabilizer-stabilizer pairs</span>
+</code></pre></div>
+<h3 id="example-2-hierarchical-construction">Example 2: Hierarchical Construction<a class="headerlink" href="#example-2-hierarchical-construction" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="n">sequence</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">Emission</span><span class="p">(),</span>                <span class="c1"># Generator</span>
+    <span class="n">Coupling</span><span class="p">(),</span>                <span class="c1"># Connect to network</span>
+    <span class="n">Reception</span><span class="p">(),</span>               <span class="c1"># Gather information</span>
+    <span class="n">Coherence</span><span class="p">(),</span>               <span class="c1"># Stabilize</span>
+    <span class="n">Dissonance</span><span class="p">(),</span>              <span class="c1"># Perturb (destabilizer, trigger)</span>
+    <span class="n">SelfOrganization</span><span class="p">(),</span>        <span class="c1"># Create hierarchy (handler, transformer, stabilizer)</span>
+    <span class="n">Coherence</span><span class="p">(),</span>               <span class="c1"># Final stabilization</span>
+    <span class="n">Recursivity</span><span class="p">()</span>              <span class="c1"># Closure with recursion</span>
+<span class="p">]</span>
+
+<span class="c1"># Creates multi-scale structure with proper handling</span>
+</code></pre></div>
+<h3 id="example-3-phase-transformation">Example 3: Phase Transformation<a class="headerlink" href="#example-3-phase-transformation" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="n">sequence</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">Emission</span><span class="p">(),</span>          <span class="c1"># Generator</span>
+    <span class="n">Coherence</span><span class="p">(),</span>         <span class="c1"># Stable base (prior IL for ZHIR)</span>
+    <span class="n">Coupling</span><span class="p">(),</span>          <span class="c1"># Network connection</span>
+    <span class="n">Reception</span><span class="p">(),</span>         <span class="c1"># Information gathering</span>
+    <span class="n">Dissonance</span><span class="p">(),</span>        <span class="c1"># Elevate ΔNFR (destabilizer)</span>
+    <span class="n">Mutation</span><span class="p">(),</span>          <span class="c1"># Phase change (transformer, has prior IL + recent destabilizer)</span>
+    <span class="n">SelfOrganization</span><span class="p">(),</span>  <span class="c1"># Organize new phase (handler, stabilizer)</span>
+    <span class="n">Coherence</span><span class="p">(),</span>         <span class="c1"># Final stabilization (handler, stabilizer)</span>
+    <span class="n">Silence</span><span class="p">()</span>            <span class="c1"># Closure</span>
+<span class="p">]</span>
+
+<span class="c1"># Complete transformation with all safeguards</span>
+</code></pre></div>
+<hr />
+<h2 id="structural-pattern-detection">Structural Pattern Detection<a class="headerlink" href="#structural-pattern-detection" title="Permanent link">&para;</a></h2>
+<h3 id="pattern-categories">Pattern Categories<a class="headerlink" href="#pattern-categories" title="Permanent link">&para;</a></h3>
+<p><strong>Linear Patterns:</strong>
+<div class="highlight"><pre><span></span><code>Generator → Operations → Closure
+</code></pre></div>
+Simple, single-path sequences</p>
+<p><strong>Branching Patterns:</strong>
+<div class="highlight"><pre><span></span><code>Generator → Coupling → [Node A operations | Node B operations] → Closure
+</code></pre></div>
+Network operations across multiple nodes</p>
+<p><strong>Cyclic Patterns:</strong>
+<div class="highlight"><pre><span></span><code>Generator → [Destabilize → Stabilize]* → Closure
+</code></pre></div>
+Repeated exploration cycles</p>
+<p><strong>Nested Patterns:</strong>
+<div class="highlight"><pre><span></span><code>Generator → SelfOrg[Sub-sequence] → Closure
+</code></pre></div>
+Hierarchical with nested operations</p>
+<hr />
+<h2 id="common-use-cases">Common Use Cases<a class="headerlink" href="#common-use-cases" title="Permanent link">&para;</a></h2>
+<h3 id="initialization">Initialization<a class="headerlink" href="#initialization" title="Permanent link">&para;</a></h3>
+<p><div class="highlight"><pre><span></span><code><span class="p">[</span><span class="n">Emission</span><span class="p">,</span> <span class="n">Coherence</span><span class="p">,</span> <span class="n">Silence</span><span class="p">]</span>
+</code></pre></div>
+Bootstrap a new node</p>
+<h3 id="information-integration">Information Integration<a class="headerlink" href="#information-integration" title="Permanent link">&para;</a></h3>
+<p><div class="highlight"><pre><span></span><code><span class="p">[</span><span class="n">Emission</span><span class="p">,</span> <span class="n">Coupling</span><span class="p">,</span> <span class="n">Reception</span><span class="p">,</span> <span class="n">Coherence</span><span class="p">,</span> <span class="n">Silence</span><span class="p">]</span>
+</code></pre></div>
+Create and integrate network information</p>
+<h3 id="controlled-perturbation">Controlled Perturbation<a class="headerlink" href="#controlled-perturbation" title="Permanent link">&para;</a></h3>
+<p><div class="highlight"><pre><span></span><code><span class="p">[</span><span class="n">Emission</span><span class="p">,</span> <span class="n">Coherence</span><span class="p">,</span> <span class="n">Dissonance</span><span class="p">,</span> <span class="n">Coherence</span><span class="p">,</span> <span class="n">Silence</span><span class="p">]</span>
+</code></pre></div>
+Explore without losing stability</p>
+<h3 id="network-propagation">Network Propagation<a class="headerlink" href="#network-propagation" title="Permanent link">&para;</a></h3>
+<p><div class="highlight"><pre><span></span><code><span class="p">[</span><span class="n">Emission</span><span class="p">,</span> <span class="n">Coupling</span><span class="p">,</span> <span class="n">Resonance</span><span class="p">,</span> <span class="n">Coherence</span><span class="p">,</span> <span class="n">Silence</span><span class="p">]</span>
+</code></pre></div>
+Spread pattern through network</p>
+<h3 id="phase-transition">Phase Transition<a class="headerlink" href="#phase-transition" title="Permanent link">&para;</a></h3>
+<p><div class="highlight"><pre><span></span><code><span class="p">[</span><span class="n">Emission</span><span class="p">,</span> <span class="n">Coherence</span><span class="p">,</span> <span class="n">Dissonance</span><span class="p">,</span> <span class="n">Mutation</span><span class="p">,</span> <span class="n">Coherence</span><span class="p">,</span> <span class="n">Silence</span><span class="p">]</span>
+</code></pre></div>
+Qualitative transformation</p>
+<h3 id="hierarchy-creation">Hierarchy Creation<a class="headerlink" href="#hierarchy-creation" title="Permanent link">&para;</a></h3>
+<p><div class="highlight"><pre><span></span><code><span class="p">[</span><span class="n">Emission</span><span class="p">,</span> <span class="n">Dissonance</span><span class="p">,</span> <span class="n">SelfOrganization</span><span class="p">,</span> <span class="n">Recursivity</span><span class="p">]</span>
+</code></pre></div>
+Build nested structures</p>
+<hr />
+<h2 id="testing-sequences">Testing Sequences<a class="headerlink" href="#testing-sequences" title="Permanent link">&para;</a></h2>
+<h3 id="test-template">Test Template<a class="headerlink" href="#test-template" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">test_sequence_validity</span><span class="p">(</span><span class="n">sequence</span><span class="p">,</span> <span class="n">epi_initial</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test if sequence is valid.&quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">tnfr.operators.grammar</span><span class="w"> </span><span class="kn">import</span> <span class="n">validate_grammar</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">is_valid</span> <span class="o">=</span> <span class="n">validate_grammar</span><span class="p">(</span><span class="n">sequence</span><span class="p">,</span> <span class="n">epi_initial</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;Valid&quot;</span>
+    <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+<span class="c1"># Test valid sequence</span>
+<span class="n">valid_seq</span> <span class="o">=</span> <span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Silence</span><span class="p">()]</span>
+<span class="n">is_valid</span><span class="p">,</span> <span class="n">msg</span> <span class="o">=</span> <span class="n">test_sequence_validity</span><span class="p">(</span><span class="n">valid_seq</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">is_valid</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Expected valid, got: </span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="s2">&quot;</span>
+
+<span class="c1"># Test invalid sequence</span>
+<span class="n">invalid_seq</span> <span class="o">=</span> <span class="p">[</span><span class="n">Coherence</span><span class="p">(),</span> <span class="n">Silence</span><span class="p">()]</span>  <span class="c1"># No generator</span>
+<span class="n">is_valid</span><span class="p">,</span> <span class="n">msg</span> <span class="o">=</span> <span class="n">test_sequence_validity</span><span class="p">(</span><span class="n">invalid_seq</span><span class="p">)</span>
+<span class="k">assert</span> <span class="ow">not</span> <span class="n">is_valid</span><span class="p">,</span> <span class="s2">&quot;Expected invalid&quot;</span>
+<span class="k">assert</span> <span class="s2">&quot;U1a&quot;</span> <span class="ow">in</span> <span class="n">msg</span><span class="p">,</span> <span class="s2">&quot;Should fail U1a&quot;</span>
+</code></pre></div>
+<hr />
+<h2 id="quick-decision-tree">Quick Decision Tree<a class="headerlink" href="#quick-decision-tree" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code>Building a sequence?
+
+1. Starting from EPI=0?
+   YES → Start with {Emission, Transition, Recursivity}
+   NO  → Can start with any operator
+
+2. Using destabilizers {Dissonance, Mutation, Expansion}?
+   YES → Include {Coherence, SelfOrganization}
+   NO  → Continue
+
+3. Using coupling/resonance {Coupling, Resonance}?
+   YES → Verify phase compatibility at runtime
+   NO  → Continue
+
+4. Using triggers {Dissonance, Mutation}?
+   YES → Include handlers {Coherence, SelfOrganization}
+   NO  → Continue
+
+5. Using Mutation?
+   YES → Ensure:
+         - Prior Coherence (before destabilizer)
+         - Recent destabilizer (within ~3 ops)
+   NO  → Continue
+
+6. Using SelfOrganization?
+   YES → Ensure recent destabilizer (within ~3 ops)
+   NO  → Continue
+
+7. Ending sequence?
+   ALWAYS → End with {Silence, Transition, Recursivity, Dissonance}
+</code></pre></div>
+<hr />
+<h2 id="how-do-i-lookup-guide">"How Do I...?" Lookup Guide<a class="headerlink" href="#how-do-i-lookup-guide" title="Permanent link">&para;</a></h2>
+<p>This section provides quick answers to common questions. Find your goal, get the sequence.</p>
+<h3 id="creation-initialization">Creation &amp; Initialization<a class="headerlink" href="#creation-initialization" title="Permanent link">&para;</a></h3>
+<p><strong>Q: How do I create a new node from scratch?</strong>
+<div class="highlight"><pre><span></span><code><span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Silence</span><span class="p">()]</span>
+</code></pre></div>
+Minimal bootstrap pattern.</p>
+<p><strong>Q: How do I create a node connected to a network?</strong>
+<div class="highlight"><pre><span></span><code><span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Coupling</span><span class="p">(),</span> <span class="n">Reception</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Silence</span><span class="p">()]</span>
+</code></pre></div>
+Creates node, connects it, integrates network info, stabilizes.</p>
+<p><strong>Q: How do I initialize multiple nodes at once?</strong>
+<div class="highlight"><pre><span></span><code><span class="c1"># For each node i:</span>
+<span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Silence</span><span class="p">()]</span>
+<span class="c1"># Then couple them:</span>
+<span class="p">[</span><span class="n">Coupling</span><span class="p">(),</span> <span class="n">Resonance</span><span class="p">(),</span> <span class="n">Silence</span><span class="p">()]</span>
+</code></pre></div>
+Bootstrap individually, then connect.</p>
+<hr />
+<h3 id="exploration-perturbation">Exploration &amp; Perturbation<a class="headerlink" href="#exploration-perturbation" title="Permanent link">&para;</a></h3>
+<p><strong>Q: How do I explore alternative states safely?</strong>
+<div class="highlight"><pre><span></span><code><span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Dissonance</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Silence</span><span class="p">()]</span>
+</code></pre></div>
+Stabilize-explore-restabilize pattern.</p>
+<p><strong>Q: How do I perform deep exploration with multiple iterations?</strong>
+<div class="highlight"><pre><span></span><code><span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Dissonance</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> 
+ <span class="n">Dissonance</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Silence</span><span class="p">()]</span>
+</code></pre></div>
+Multiple stabilize-explore cycles.</p>
+<p><strong>Q: How do I break out of a local optimum?</strong>
+<div class="highlight"><pre><span></span><code><span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Dissonance</span><span class="p">(),</span> <span class="n">SelfOrganization</span><span class="p">(),</span> <span class="n">Silence</span><span class="p">()]</span>
+</code></pre></div>
+Destabilize then reorganize into new configuration.</p>
+<hr />
+<h3 id="network-operations">Network Operations<a class="headerlink" href="#network-operations" title="Permanent link">&para;</a></h3>
+<p><strong>Q: How do I connect two existing nodes?</strong>
+<div class="highlight"><pre><span></span><code><span class="c1"># Verify phase compatibility first, then:</span>
+<span class="p">[</span><span class="n">Coupling</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Silence</span><span class="p">()]</span>
+</code></pre></div>
+Note: Must check |θᵢ - θⱼ| ≤ Δθ_max (U3).</p>
+<p><strong>Q: How do I propagate a pattern through the network?</strong>
+<div class="highlight"><pre><span></span><code><span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Coupling</span><span class="p">(),</span> <span class="n">Resonance</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Silence</span><span class="p">()]</span>
+</code></pre></div>
+Create, connect, resonate, stabilize.</p>
+<p><strong>Q: How do I integrate information from neighbors?</strong>
+<div class="highlight"><pre><span></span><code><span class="p">[</span><span class="n">Reception</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Silence</span><span class="p">()]</span>
+</code></pre></div>
+Requires existing network connectivity.</p>
+<hr />
+<h3 id="structural-transformation">Structural Transformation<a class="headerlink" href="#structural-transformation" title="Permanent link">&para;</a></h3>
+<p><strong>Q: How do I change a node's phase (qualitative transformation)?</strong>
+<div class="highlight"><pre><span></span><code><span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Dissonance</span><span class="p">(),</span> <span class="n">Mutation</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Silence</span><span class="p">()]</span>
+</code></pre></div>
+Must have prior IL, recent destabilizer for ZHIR.</p>
+<p><strong>Q: How do I increase structural complexity?</strong>
+<div class="highlight"><pre><span></span><code><span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Expansion</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Silence</span><span class="p">()]</span>
+</code></pre></div>
+Balanced growth with stabilization.</p>
+<p><strong>Q: How do I simplify an over-complex structure?</strong>
+<div class="highlight"><pre><span></span><code><span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Contraction</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Silence</span><span class="p">()]</span>
+</code></pre></div>
+Dimension reduction with stabilization.</p>
+<hr />
+<h3 id="hierarchical-structures">Hierarchical Structures<a class="headerlink" href="#hierarchical-structures" title="Permanent link">&para;</a></h3>
+<p><strong>Q: How do I create a hierarchical/nested structure?</strong>
+<div class="highlight"><pre><span></span><code><span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Dissonance</span><span class="p">(),</span> <span class="n">SelfOrganization</span><span class="p">(),</span> <span class="n">Recursivity</span><span class="p">()]</span>
+</code></pre></div>
+Destabilize to enable reorganization, organize into hierarchy, nest.</p>
+<p><strong>Q: How do I build multi-scale fractal patterns?</strong>
+<div class="highlight"><pre><span></span><code><span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Coupling</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Dissonance</span><span class="p">(),</span> 
+ <span class="n">SelfOrganization</span><span class="p">(),</span> <span class="n">Recursivity</span><span class="p">()]</span>
+</code></pre></div>
+Connect, stabilize, perturb, self-organize, nest recursively.</p>
+<p><strong>Q: How do I organize chaotic structure?</strong>
+<div class="highlight"><pre><span></span><code><span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Dissonance</span><span class="p">(),</span> <span class="n">SelfOrganization</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Silence</span><span class="p">()]</span>
+</code></pre></div>
+Perturb, let self-organize, stabilize result.</p>
+<hr />
+<h3 id="regime-changes">Regime Changes<a class="headerlink" href="#regime-changes" title="Permanent link">&para;</a></h3>
+<p><strong>Q: How do I switch between behavioral modes?</strong>
+<div class="highlight"><pre><span></span><code><span class="p">[</span><span class="n">Transition</span><span class="p">(),</span> <span class="n">Coupling</span><span class="p">(),</span> <span class="n">Reception</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Transition</span><span class="p">()]</span>
+</code></pre></div>
+Transition operators for regime shifts.</p>
+<p><strong>Q: How do I pause evolution temporarily?</strong>
+<div class="highlight"><pre><span></span><code><span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Silence</span><span class="p">()]</span>
+</code></pre></div>
+Silence freezes evolution (νf → 0).</p>
+<p><strong>Q: How do I resume evolution after silence?</strong>
+<div class="highlight"><pre><span></span><code><span class="c1"># New sequence starting from existing EPI:</span>
+<span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="o">...</span><span class="p">]</span>  <span class="c1"># epi_initial &gt; 0</span>
+</code></pre></div>
+Or use Transition to activate latent EPI.</p>
+<hr />
+<h3 id="complex-workflows">Complex Workflows<a class="headerlink" href="#complex-workflows" title="Permanent link">&para;</a></h3>
+<p><strong>Q: How do I implement a learning cycle?</strong>
+<div class="highlight"><pre><span></span><code><span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Coupling</span><span class="p">(),</span> <span class="n">Reception</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span>      <span class="c1"># Gather info</span>
+ <span class="n">Dissonance</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span>                              <span class="c1"># Explore</span>
+ <span class="n">SelfOrganization</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Silence</span><span class="p">()]</span>             <span class="c1"># Consolidate</span>
+</code></pre></div>
+Integrate → Explore → Organize pattern.</p>
+<p><strong>Q: How do I perform iterative optimization?</strong>
+<div class="highlight"><pre><span></span><code><span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span>
+ <span class="n">Dissonance</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span>  <span class="c1"># Iteration 1</span>
+ <span class="n">Dissonance</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span>  <span class="c1"># Iteration 2</span>
+ <span class="n">Dissonance</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span>  <span class="c1"># Iteration 3</span>
+ <span class="n">Silence</span><span class="p">()]</span>
+</code></pre></div>
+Repeated explore-stabilize cycles.</p>
+<p><strong>Q: How do I implement adaptive reorganization?</strong>
+<div class="highlight"><pre><span></span><code><span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Coupling</span><span class="p">(),</span> <span class="n">Reception</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span>
+ <span class="n">Dissonance</span><span class="p">(),</span> <span class="n">Mutation</span><span class="p">(),</span> <span class="n">SelfOrganization</span><span class="p">(),</span>
+ <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Recursivity</span><span class="p">()]</span>
+</code></pre></div>
+Sense environment → Transform → Reorganize → Nest.</p>
+<hr />
+<h3 id="debugging-validation">Debugging &amp; Validation<a class="headerlink" href="#debugging-validation" title="Permanent link">&para;</a></h3>
+<p><strong>Q: My sequence fails U1a. What's wrong?</strong>
+- <strong>Check:</strong> Starting from EPI=0? Must begin with {Emission, Transition, Recursivity}
+- <strong>Fix:</strong> Add generator at start</p>
+<p><strong>Q: My sequence fails U1b. What's wrong?</strong>
+- <strong>Check:</strong> Does sequence end with {Silence, Transition, Recursivity, Dissonance}?
+- <strong>Fix:</strong> Add closure operator at end</p>
+<p><strong>Q: My sequence fails U2. What's wrong?</strong>
+- <strong>Check:</strong> Using {Dissonance, Mutation, Expansion}? Need {Coherence, SelfOrganization}
+- <strong>Fix:</strong> Add stabilizer after destabilizers</p>
+<p><strong>Q: My sequence fails U3 at runtime. What's wrong?</strong>
+- <strong>Check:</strong> Phase difference |θᵢ - θⱼ| ≤ Δθ_max?
+- <strong>Fix:</strong> Only couple phase-compatible nodes</p>
+<p><strong>Q: My sequence fails U4a. What's wrong?</strong>
+- <strong>Check:</strong> Using {Dissonance, Mutation}? Need handlers {Coherence, SelfOrganization}
+- <strong>Fix:</strong> Add handler after triggers</p>
+<p><strong>Q: My sequence fails U4b. What's wrong?</strong>
+- <strong>Check 1:</strong> Transformer has recent destabilizer (within 3 ops)?
+- <strong>Check 2:</strong> If Mutation, has prior Coherence?
+- <strong>Fix:</strong> Add destabilizer before transformer, ensure prior IL for ZHIR</p>
+<hr />
+<h3 id="performance-efficiency">Performance &amp; Efficiency<a class="headerlink" href="#performance-efficiency" title="Permanent link">&para;</a></h3>
+<p><strong>Q: What's the shortest valid sequence?</strong>
+<div class="highlight"><pre><span></span><code><span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Silence</span><span class="p">()]</span>
+</code></pre></div>
+Just creation and closure (only valid from EPI=0).</p>
+<p><strong>Q: What's the most stable pattern?</strong>
+<div class="highlight"><pre><span></span><code><span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Silence</span><span class="p">()]</span>
+</code></pre></div>
+Extra stabilization for maximum C(t).</p>
+<p><strong>Q: What's the most exploratory pattern?</strong>
+<div class="highlight"><pre><span></span><code><span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Dissonance</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span>
+ <span class="n">Dissonance</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Dissonance</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Silence</span><span class="p">()]</span>
+</code></pre></div>
+Maximum exploration with safety (multiple cycles).</p>
+<hr />
+<h3 id="domain-specific-patterns">Domain-Specific Patterns<a class="headerlink" href="#domain-specific-patterns" title="Permanent link">&para;</a></h3>
+<p><strong>Q: How do I model neural learning?</strong>
+<div class="highlight"><pre><span></span><code><span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Coupling</span><span class="p">(),</span> <span class="n">Reception</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span>      <span class="c1"># Input integration</span>
+ <span class="n">Dissonance</span><span class="p">(),</span> <span class="n">Mutation</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span>                 <span class="c1"># Weight adjustment</span>
+ <span class="n">Resonance</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Silence</span><span class="p">()]</span>                   <span class="c1"># Output propagation</span>
+</code></pre></div></p>
+<p><strong>Q: How do I model biological growth?</strong>
+<div class="highlight"><pre><span></span><code><span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Expansion</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span>     <span class="c1"># Growth</span>
+ <span class="n">SelfOrganization</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Silence</span><span class="p">()]</span>            <span class="c1"># Differentiation</span>
+</code></pre></div></p>
+<p><strong>Q: How do I model social consensus formation?</strong>
+<div class="highlight"><pre><span></span><code><span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Coupling</span><span class="p">(),</span> <span class="n">Resonance</span><span class="p">(),</span> <span class="n">Reception</span><span class="p">(),</span>      <span class="c1"># Information sharing</span>
+ <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Dissonance</span><span class="p">(),</span> <span class="n">SelfOrganization</span><span class="p">(),</span>         <span class="c1"># Debate &amp; alignment</span>
+ <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Silence</span><span class="p">()]</span>                                 <span class="c1"># Consensus reached</span>
+</code></pre></div></p>
+<p><strong>Q: How do I model quantum decoherence?</strong>
+<div class="highlight"><pre><span></span><code><span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Dissonance</span><span class="p">(),</span>                 <span class="c1"># Perturbation</span>
+ <span class="n">Contraction</span><span class="p">(),</span> <span class="n">Silence</span><span class="p">()]</span>                              <span class="c1"># Collapse to eigenstate</span>
+</code></pre></div></p>
+<hr />
+<h3 id="quick-pattern-finder">Quick Pattern Finder<a class="headerlink" href="#quick-pattern-finder" title="Permanent link">&para;</a></h3>
+<p><strong>Goal → Pattern Type → Sequence</strong></p>
+<table>
+<thead>
+<tr>
+<th>Goal</th>
+<th>Pattern</th>
+<th>Sequence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Create new</td>
+<td>Bootstrap</td>
+<td><code>[AL, IL, SHA]</code></td>
+</tr>
+<tr>
+<td>Explore</td>
+<td>Exploration</td>
+<td><code>[AL, IL, OZ, IL, SHA]</code></td>
+</tr>
+<tr>
+<td>Connect</td>
+<td>Network</td>
+<td><code>[AL, UM, EN, IL, SHA]</code></td>
+</tr>
+<tr>
+<td>Propagate</td>
+<td>Resonance</td>
+<td><code>[AL, UM, RA, IL, SHA]</code></td>
+</tr>
+<tr>
+<td>Transform</td>
+<td>Mutation</td>
+<td><code>[AL, IL, OZ, ZHIR, IL, SHA]</code></td>
+</tr>
+<tr>
+<td>Organize</td>
+<td>Hierarchy</td>
+<td><code>[AL, OZ, THOL, REM]</code></td>
+</tr>
+<tr>
+<td>Expand</td>
+<td>Growth</td>
+<td><code>[AL, IL, VAL, IL, SHA]</code></td>
+</tr>
+<tr>
+<td>Contract</td>
+<td>Reduction</td>
+<td><code>[AL, IL, NUL, IL, SHA]</code></td>
+</tr>
+<tr>
+<td>Transition</td>
+<td>Regime shift</td>
+<td><code>[NAV, UM, EN, IL, NAV]</code></td>
+</tr>
+<tr>
+<td>Learn</td>
+<td>Adaptive</td>
+<td><code>[AL, UM, EN, IL, OZ, IL, THOL, SHA]</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Legend:</strong>
+- AL=Emission, EN=Reception, IL=Coherence, OZ=Dissonance
+- UM=Coupling, RA=Resonance, SHA=Silence, VAL=Expansion
+- NUL=Contraction, THOL=SelfOrganization, ZHIR=Mutation
+- NAV=Transition, REM=Recursivity</p>
+<hr />
+<h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>
+<p><strong>Continue learning:</strong>
+- <strong><a href="../05-TECHNICAL-IMPLEMENTATION/">05-TECHNICAL-IMPLEMENTATION.md</a></strong> - How validation is implemented
+- <strong><a href="../06-VALIDATION-AND-TESTING/">06-VALIDATION-AND-TESTING.md</a></strong> - Testing strategies
+- <strong><a href="examples/">examples/</a></strong> - Executable examples</p>
+<p><strong>For reference:</strong>
+- <strong><a href="../08-QUICK-REFERENCE/">08-QUICK-REFERENCE.md</a></strong> - Quick lookup</p>
+<hr />
+<div align="center">
+
+**Learn from patterns, avoid anti-patterns.**
+
+---
+
+*Reality is resonance. Sequence accordingly.*
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.top", "navigation.tracking", "toc.integrate", "navigation.instant"], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+    
+  </body>
+</html>
