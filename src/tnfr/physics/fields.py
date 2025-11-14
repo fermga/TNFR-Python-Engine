@@ -583,22 +583,28 @@ def compute_phase_gradient(G: Any) -> Dict[Any, float]:
     """
 
     grad: Dict[Any, float] = {}
-    for i in G.nodes():
+    
+    # Pre-extract all phases for vectorization
+    nodes = list(G.nodes())
+    phases = {node: _get_phase(G, node) for node in nodes}
+    
+    for i in nodes:
         neighbors = list(G.neighbors(i))
         if not neighbors:
             grad[i] = 0.0
             continue
         
-        phi_i = _get_phase(G, i)
+        phi_i = phases[i]
         
-        # Compute mean absolute phase difference with neighbors
-        phase_diffs = []
-        for j in neighbors:
-            phi_j = _get_phase(G, j)
-            # Use wrapped difference to respect circular topology
-            phase_diffs.append(abs(_wrap_angle(phi_i - phi_j)))
+        # Vectorized phase difference computation
+        neighbor_phases = np.array([phases[j] for j in neighbors])
+        # Compute wrapped differences in batch
+        diffs = phi_i - neighbor_phases
+        # Vectorized wrapping: map to [-π, π]
+        wrapped_diffs = (diffs + np.pi) % (2 * np.pi) - np.pi
         
-        grad[i] = sum(phase_diffs) / len(phase_diffs)
+        # Mean absolute difference
+        grad[i] = float(np.mean(np.abs(wrapped_diffs)))
     
     return grad
 
@@ -665,30 +671,38 @@ def compute_phase_curvature(G: Any) -> Dict[Any, float]:
     """
 
     curvature: Dict[Any, float] = {}
-    for i in G.nodes():
+    
+    # Pre-extract phases for vectorization
+    nodes = list(G.nodes())
+    phases = {node: _get_phase(G, node) for node in nodes}
+    
+    for i in nodes:
         neighbors = list(G.neighbors(i))
         if not neighbors:
             curvature[i] = 0.0
             continue
 
-        phi_i = _get_phase(G, i)
-        # Circular mean of neighbor phases via unit vectors
-        neigh_phases = [
-            _get_phase(G, j) for j in neighbors
-        ]
-        if not neigh_phases:
+        phi_i = phases[i]
+        
+        # Vectorized circular mean computation
+        neigh_phases = np.array([phases[j] for j in neighbors])
+        
+        if len(neigh_phases) == 0:
             curvature[i] = 0.0
             continue
 
-        mean_vec = complex(
-            float(np.mean([math.cos(p) for p in neigh_phases])),
-            float(np.mean([math.sin(p) for p in neigh_phases]))
-        )
-        # If mean vector length ~ 0 (highly dispersed), fallback to simple mean
-        if abs(mean_vec) < 1e-9:
+        # Circular mean via unit vectors (vectorized)
+        cos_vals = np.cos(neigh_phases)
+        sin_vals = np.sin(neigh_phases)
+        mean_cos = float(np.mean(cos_vals))
+        mean_sin = float(np.mean(sin_vals))
+        
+        # If mean vector length ~ 0 (highly dispersed), fallback
+        mean_vec_length = np.sqrt(mean_cos**2 + mean_sin**2)
+        if mean_vec_length < 1e-9:
             mean_phase = float(np.mean(neigh_phases))
         else:
-            mean_phase = math.atan2(mean_vec.imag, mean_vec.real)
+            mean_phase = math.atan2(mean_sin, mean_cos)
 
         # Curvature as wrapped deviation from neighbor circular mean
         curvature[i] = float(_wrap_angle(phi_i - mean_phase))
