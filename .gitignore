@@ -28,6 +28,8 @@ Thumbs.db
 artifacts/
 profiles/
 *.pstats
+*.stats
+profile_*.txt
 
 # Security scan results (temporary)
 bandit.json
