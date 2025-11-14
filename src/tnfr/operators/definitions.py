@@ -44,6 +44,11 @@ from .introspection import (
     get_operator_meta,
     iter_operator_meta,
 )
+from .grammar_error_factory import (
+    ExtendedGrammarError,
+    collect_grammar_errors,
+    make_grammar_error,
+)
 
 __all__ = [
     "Operator",
@@ -65,4 +70,7 @@ __all__ = [
     "OPERATOR_METADATA",
     "get_operator_meta",
     "iter_operator_meta",
+    "ExtendedGrammarError",
+    "collect_grammar_errors",
+    "make_grammar_error",
 ]
