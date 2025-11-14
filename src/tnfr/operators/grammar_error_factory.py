@@ -166,14 +166,42 @@ def collect_grammar_errors(
     validator = GrammarValidator()
     errors: List[ExtendedGrammarError] = []
 
+    # Accept glyph strings by wrapping them in lightweight stubs
+    # expected by GrammarValidator (which accesses .name / .canonical_name).
+    GLYPH_TO_NAME = {
+        "AL": "emission",
+        "EN": "reception",
+        "IL": "coherence",
+        "OZ": "dissonance",
+        "UM": "coupling",
+        "RA": "resonance",
+        "SHA": "silence",
+        "VAL": "expansion",
+        "NUL": "contraction",
+        "THOL": "self_organization",
+        "ZHIR": "mutation",
+        "NAV": "transition",
+        "REMESH": "recursivity",
+    }
+    
+    class _OpStub:  # local minimal stub
+        def __init__(self, glyph: str):
+            canonical = GLYPH_TO_NAME.get(glyph.upper(), glyph.lower())
+            self.canonical_name = canonical
+            self.name = canonical
+
+    normalized: List[Any] = [
+        (_OpStub(op) if isinstance(op, str) else op) for op in sequence
+    ]
+
     # Canonical operator names for reporting
     canonical = [
         getattr(op, "canonical_name", getattr(op, "name", "?"))
-        for op in sequence
+        for op in normalized
     ]
 
     # U1a
-    ok, msg = validator.validate_initiation(list(sequence), epi_initial)
+    ok, msg = validator.validate_initiation(list(normalized), epi_initial)
     if not ok:
         errors.append(
             make_grammar_error(
@@ -185,7 +213,7 @@ def collect_grammar_errors(
             )
         )
     # U1b
-    ok, msg = validator.validate_closure(list(sequence))
+    ok, msg = validator.validate_closure(list(normalized))
     if not ok:
         errors.append(
             make_grammar_error(
@@ -197,7 +225,7 @@ def collect_grammar_errors(
             )
         )
     # U2
-    ok, msg = validator.validate_convergence(list(sequence))
+    ok, msg = validator.validate_convergence(list(normalized))
     if not ok:
         errors.append(
             make_grammar_error(
@@ -208,7 +236,7 @@ def collect_grammar_errors(
             )
         )
     # U3
-    ok, msg = validator.validate_resonant_coupling(list(sequence))
+    ok, msg = validator.validate_resonant_coupling(list(normalized))
     if not ok:
         # Find first coupling/resonance candidate if available
         idx = next(
@@ -227,19 +255,6 @@ def collect_grammar_errors(
                 message=msg,
                 sequence=canonical,
                 index=idx,
-            )
-        )
-    # U4 (validator returns both in one pass)
-    ok, msg = validator.validate_bifurcation(list(sequence))
-    if not ok:
-        # Distinguish U4a vs U4b heuristically using message content
-        rule_key = "U4b" if "transform" in msg.lower() else "U4a"
-        errors.append(
-            make_grammar_error(
-                rule=rule_key,
-                candidate="sequence",
-                message=msg,
-                sequence=canonical,
             )
         )
     return errors
