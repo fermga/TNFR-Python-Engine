@@ -66,6 +66,7 @@ from ..physics.fields import (
     compute_phase_curvature,
     estimate_coherence_length,
 )
+from ..performance.guardrails import PerformanceRegistry
 
 __all__ = [
     "ValidationReport",
@@ -132,6 +133,8 @@ def run_structural_validation(
     xi_c_watch_multiplier: float = 3.0,
     # Optional baselines for drift calculations
     baseline_structural_potential: Dict[Any, float] | None = None,
+    # Performance instrumentation (opt-in)
+    perf_registry: PerformanceRegistry | None = None,
 ) -> ValidationReport:
     """Run enhanced structural validation aggregating grammar + field safety.
 
@@ -168,6 +171,15 @@ def run_structural_validation(
     """
 
     notes: List[str] = []
+
+    # Performance start (if instrumentation active)
+    start_time = None
+    if perf_registry is not None:
+        try:
+            import time as _t
+            start_time = _t.perf_counter()
+        except Exception:  # pragma: no cover
+            start_time = None
 
     # Grammar errors (read-only enrichment)
     grammar_errors: List[ExtendedGrammarError] = []
@@ -314,7 +326,7 @@ def run_structural_validation(
         "mean_node_distance": mean_node_distance,
     }
 
-    return ValidationReport(
+    report = ValidationReport(
         status=status,
         risk_level=risk_level,
         grammar_errors=grammar_errors,
@@ -323,3 +335,31 @@ def run_structural_validation(
         sequence=tuple(sequence or []),
         notes=notes,
     )
+
+    if perf_registry is not None and start_time is not None:
+        try:
+            import time as _t
+            perf_registry.record(
+                "validation",
+                _t.perf_counter() - start_time,
+                meta={
+                    "nodes": (
+                        G.number_of_nodes()
+                        if hasattr(G, "number_of_nodes")
+                        else None
+                    ),
+                    "edges": (
+                        G.number_of_edges()
+                        if hasattr(G, "number_of_edges")
+                        else None
+                    ),
+                    "sequence_len": (
+                        len(sequence) if sequence is not None else 0
+                    ),
+                    "status": status,
+                },
+            )
+        except Exception:  # pragma: no cover
+            pass
+
+    return report
