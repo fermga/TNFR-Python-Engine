@@ -1,6 +1,6 @@
-"""Tests for the interactive CLI validator."""
-
 from __future__ import annotations
+
+"""Tests for the interactive CLI validator."""
 
 import io
 from contextlib import redirect_stdout
