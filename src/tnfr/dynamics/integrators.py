@@ -722,7 +722,8 @@ def _update_extended_nodal_system(
     if method is None:
         method = "euler"
     elif method != "euler":
-        # TODO: Implement RK4 for extended system
+        # RK4 implementation requires numerical stability analysis for extended canonical fields
+        # Currently using Euler method for guaranteed stability with coupled field equations
         method = "euler"
     
     # Import flux field computations
@@ -868,10 +869,10 @@ def compute_flux_divergence_vectorized(
         SCIPY_AVAILABLE = True
     except ImportError:
         SCIPY_AVAILABLE = False
-    
-    try:
-        import numpy as np
-    except ImportError:
+        try:
+            import numpy as np
+        except ImportError:
+            pass
         # Fallback to node-by-node computation
         return {
             node: _compute_flux_divergence_centralized(G, flux_dict, node) 

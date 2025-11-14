@@ -11,9 +11,12 @@ Validation: Multi-topology robustness testing with >90% statistical confidence
 Extended Canonical Hexad: Φ_s, |∇φ|, K_φ, ξ_C, J_φ, J_ΔNFR
 """
 
+import logging
 import numpy as np
 import networkx as nx
-from typing import Dict, Any, Optional
+from typing import Dict, Any
+
+logger = logging.getLogger(__name__)
 
 # Import cache infrastructure for performance optimization
 try:
@@ -235,7 +238,7 @@ def compute_extended_canonical_suite(G: nx.Graph, **kwargs) -> Dict[str, Dict[An
         )
     except ImportError:
         # Fallback for testing/development
-        print("Warning: Could not import canonical tetrad functions. Using minimal implementations.")
+        logger.warning(" Could not import canonical tetrad functions. Using minimal implementations.")
         return {
             'J_φ': compute_phase_current(G, kwargs.get('theta_attr', 'theta')),
             'J_ΔNFR': compute_dnfr_flux(G, kwargs.get('dnfr_attr', 'ΔNFR'))
