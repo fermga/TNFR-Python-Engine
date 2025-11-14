@@ -314,33 +314,52 @@ print(perf.summary())  # {'validation': {'count': 1, 'total': 0.023, ...}}
 
 ## 🔜 Next Steps (Priority Order)
 
-### High Priority
+### ✅ **COMPLETE: Optimization Cycle Finished**
 
-1. **Profile hot paths** in `default_compute_delta_nfr` and `compute_coherence`
-   - Target: Identify functions taking >10% of validation time
-   - Tool: `cProfile` + `snakeviz` or `py-spy`
+**Profiling Results** (November 14, 2025 - see `docs/DNFR_PROFILING_ANALYSIS.md`):
 
-2. **NumPy vectorization opportunities** in phase operations
-   - Batch phase difference computations instead of Python loops
-   - Use `np.vectorize` or broadcasting for `_wrap_angle`
+- **Total validation time**: 1.724s (500 nodes, 10 runs)
+- **Φ_s dominance**: 1.438s (83.4%) - **EXPECTED and ACCEPTABLE**
+- **Eccentricity**: 0.244s (14.2%) - Successfully optimized from 2.3s
+- **Other overhead**: 0.042s (2.4%) - Negligible
 
-3. **Edge cache tuning** for repeated simulations
-   - Review `EdgeCacheManager` capacity defaults
-   - Add telemetry to track cache hit rates
+**Conclusion**: **No significant bottlenecks remain**. Φ_s computational cost is intrinsic O(N²) APSP requirement for accurate structural potential. Cache works perfectly (0.000s on repeated graphs).
 
-### Medium Priority
+---
 
-4. **Grammar validation short-circuits**
-   - Early exit on first error (currently collects all)
-   - Optional flag: `stop_on_first_error=True`
+### 🔬 Future Optimization Paths (Optional, Lower ROI)
 
-5. **Sparse matrix optimizations** for large graphs
-   - Use `scipy.sparse` for adjacency in ΔNFR computation
-   - Benchmark against dense NumPy arrays (trade-off point)
+**Only pursue if working with graphs >5K nodes or real-time validation loops**
 
-6. **Parallel field computation** for independent fields
+### High Priority (If Needed)
+
+### High Priority (If Needed)
+
+1. **Sparse matrix Φ_s** for large graphs (>2K nodes)
+   - Replace NetworkX APSP with `scipy.sparse.csgraph.dijkstra`
+   - Expected gain: 20-40% on large sparse graphs
+   - Trade-off: Memory overhead for distance matrix storage
+   - **TNFR Alignment**: Preserves exact distances, cache still works
+
+2. **Parallel field computation**
    - Φ_s, |∇φ|, K_φ, ξ_C can compute in parallel
-   - Use `concurrent.futures.ThreadPoolExecutor` (GIL-friendly for NumPy)
+   - Use `ThreadPoolExecutor` (NumPy releases GIL)
+   - Expected gain: 30-50% *only if* Φ_s doesn't dominate
+   - **Reality**: Φ_s is 84% → minimal benefit currently
+
+3. **Approximate Φ_s via sampling** (Research required)
+   - Landmark-based distance estimation
+   - Expected gain: 50-80% reduction in Φ_s time
+   - **Risk**: May violate CANONICAL status without extensive validation
+   - **NOT RECOMMENDED** without 2,400+ experiment validation
+
+### Medium Priority (Deferred)
+
+4. **Edge cache telemetry** (Previously High Priority #3)
+   - Add hit rate logging to `EdgeCacheManager`
+   - Tune capacity based on real workloads
+   - Target: >80% hit rate
+   - **Status**: Lower priority after profiling shows overhead negligible
 
 ### Low Priority
 
