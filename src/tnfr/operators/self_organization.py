@@ -16,7 +16,6 @@ from ..config.operator_names import SELF_ORGANIZATION
 from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI
 from ..types import Glyph, TNFRGraph
 from .definitions_base import Operator
-from .registry import register_operator
 
 # Private module constants for THOL bifurcation
 _THOL_SUB_EPI_SCALING = 0.25  # Sub-EPI is 25% of parent (first-order bifurcation)

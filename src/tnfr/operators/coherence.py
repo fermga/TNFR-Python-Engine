@@ -17,7 +17,6 @@ from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI
 from ..types import Glyph, TNFRGraph
 from ..utils import get_numpy
 from .definitions_base import Operator
-from .registry import register_operator
 
 
 class Coherence(Operator):

@@ -16,7 +16,6 @@ from ..config.operator_names import CONTRACTION
 from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI
 from ..types import Glyph, TNFRGraph
 from .definitions_base import Operator
-from .registry import register_operator
 
 
 class Contraction(Operator):
