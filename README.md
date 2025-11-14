@@ -21,24 +21,6 @@ pip install tnfr
 ```
 Optional GPU / extras: see Getting Started.
 
-## 📄 Citation
-
-If you use TNFR-Python-Engine in your research, please cite:
-
-```bibtex
-@software{fermga_tnfr_2025,
-  title = {TNFR-Python-Engine: Resonant Fractal Nature Theory Implementation},
-  author = {F. F. Martinez Gamo},
-  year = {2025},
-  url = {https://github.com/fermga/TNFR-Python-Engine},
-  doi = {10.5281/zenodo.17602861},
-  note = {ORCID: 0009-0007-6116-0613}
-}
-```
-
-**DOI**: [10.5281/zenodo.17602861](https://doi.org/10.5281/zenodo.17602861)  
-**Author ORCID**: [0009-0007-6116-0613](https://orcid.org/0009-0007-6116-0613)
-
 ## 📖 Documentation
 
 Documentation is built locally using MkDocs. To build and serve the documentation:
