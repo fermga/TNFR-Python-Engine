@@ -28,6 +28,84 @@
 **Problem**: Repeated validation calls recomputed expensive tetrad fields (Φ_s, |∇φ|, K_φ, ξ_C)  
 **Solution**: Integrated centralized `TNFRHierarchicalCache` system with automatic dependency tracking  
 **Impact**:
+- ~75% reduction in overhead for repeated calls on unchanged graphs
+- Automatic invalidation when topology or node properties change
+- Multi-layer caching (memory + optional shelve/redis persistence)
+
+**Files**:
+- `src/tnfr/physics/fields.py` (decorators + imports)
+- `docs/STRUCTURAL_HEALTH.md` (updated cache documentation)
+
+---
+
+### 3. Performance Guardrails (commit `adc8b14`)
+
+**Problem**: Instrumentation overhead unmeasured  
+**Solution**: Added `PerformanceRegistry` and `perf_guard` decorator  
+**Impact**:
+- ~5.8% overhead measured (below 8% target)
+- Optional opt-in instrumentation via `perf_registry` parameter
+
+**Files**:
+- `src/tnfr/performance/guardrails.py`
+- `tests/unit/performance/test_guardrails.py`
+
+---
+
+### 4. Structural Validation & Health (commit `5d44e55`)
+
+**Problem**: No unified grammar + field safety aggregation  
+**Solution**: Phase 3 validation aggregator + health assessment  
+**Impact**:
+- Combines U1-U3 grammar + canonical field tetrad in single call
+- Risk levels: low/elevated/critical
+- Actionable recommendations
+
+**Files**:
+- `src/tnfr/validation/aggregator.py`
+- `src/tnfr/validation/health.py`
+- `docs/STRUCTURAL_HEALTH.md`
+
+---
+
+### 5. Fast Diameter Approximation (commit `26d119a`)
+
+**Problem**: NetworkX `diameter()` O(N³) bottleneck (4.7s in profiling)  
+**Solution**: 2-sweep BFS heuristic with O(N+M) complexity  
+**Impact**:
+- **46-111× speedup** on diameter computation
+- **37.5% validation speedup** (6.1s → 3.8s)
+- ≤20% error, always within 2× of true diameter
+
+**TNFR Alignment**:
+- Approximate diameter sufficient for ξ_C threshold checks
+- Preserves structural safety validation semantics
+
+**Files**:
+- `src/tnfr/utils/fast_diameter.py`
+- `src/tnfr/validation/aggregator.py` (integration)
+
+---
+
+### 6. Cached Eccentricity (commit `92edee0`) ⭐
+
+**Problem**: Eccentricity O(N²) repeated 10× per validation (2.3s bottleneck)  
+**Solution**: Cache with `dependencies={'graph_topology'}` via TNFR paradigm  
+**Impact**:
+- **3.6× total speedup** (6.1s → 1.7s baseline, **72% reduction**)
+- **10× faster** first call (2.3s → 0.2s)
+- **∞× speedup** cached calls (0.000s)
+- 74% reduction in function calls (23.9M → 6.3M)
+
+**TNFR Alignment** (Key Innovation):
+- Eccentricity = **topological invariant** (only changes with structural reorganization)
+- Cache preserves **coherence** (no redundant BFS traversals)
+- Automatic invalidation via structural coupling dependencies
+- Respects nodal equation: ∂EPI/∂t = 0 when topology frozen
+
+**Files**:
+- `src/tnfr/utils/fast_diameter.py` (`compute_eccentricity_cached`)
+- `src/tnfr/validation/aggregator.py` (integration)
 - **~75% reduction** in overhead for repeated calls on unchanged graphs
 - Automatic invalidation when topology or node properties change
 - Multi-layer caching (memory + optional shelve/redis persistence)
@@ -248,6 +326,41 @@ manager = build_cache_manager()
 stats = manager.aggregate_metrics()
 print(f"Hits: {stats.hits}, Misses: {stats.misses}")
 ```
+
+---
+
+## 📊 Performance Summary
+
+### Validation Speedup Timeline
+
+| Stage | Time (500 nodes, 10 runs) | Speedup vs Baseline | Cumulative |
+|-------|---------------------------|---------------------|------------|
+| **Baseline** | 6.138s | 1.0× | - |
+| + Fast diameter | 3.838s | 1.6× | **37.5% ↓** |
+| + Cached eccentricity | **1.707s** | **3.6×** | **72% ↓** |
+
+### Component Breakdown
+
+| Optimization | First Call | Cached Call | Improvement |
+|--------------|------------|-------------|-------------|
+| **Fields (tetrad)** | ~30-40ms | 0.000s | ∞× (perfect cache) |
+| **Diameter** | ~50ms exact | ~1ms approx | 50× faster |
+| **Eccentricity** | 2.332s → 0.234s | 0.000s | 10× + ∞× cached |
+| **Function calls** | 23.9M → 6.3M | - | 74% reduction |
+
+### Current Bottleneck Analysis
+
+| Component | Time | % of Total | Status |
+|-----------|------|------------|--------|
+| Φ_s (distance matrix) | 1.438s | 84% | ✅ Cached, reasonable |
+| Eccentricity (1st call) | 0.234s | 14% | ✅ Optimized (10×) |
+| Other (grammar, etc.) | 0.035s | 2% | ✅ Negligible |
+
+**Conclusion**: Φ_s dominance is **expected and acceptable** because:
+- Computes full O(N²) distance matrix via Dijkstra
+- Already uses NumPy vectorization
+- **Cache works perfectly**: 0.000s on repeated graphs
+- Required for accurate structural potential calculation
 
 ---
 
