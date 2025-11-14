@@ -87,7 +87,82 @@
 
 ---
 
-### 6. Cached Eccentricity (commit `92edee0`) ⭐
+### 7. Vectorized Phase Operations (commit `a0940fe`) ⭐
+
+**Problem**: Python loops in phase gradient/curvature (nested neighbor iterations)  
+**Solution**: NumPy vectorization with broadcasting + pre-extracted phases  
+**Impact**:
+- **Additional 2% speedup** (1.707s → 1.670s)
+- Phase gradient: Vectorized wrapped differences via `(diffs + π) % 2π - π`
+- Phase curvature: Vectorized circular mean via `np.cos`/`np.sin` arrays
+- Eliminates nested Python loops over neighbors
+
+**TNFR Alignment**:
+- Batch operations = **coherent phase computations** (vs sequential)
+- Respects circular topology in phase space (wrapped differences)
+- Read-only, preserves all field semantics
+
+**Code Changes**:
+- Pre-extract phases dict: `{node: _get_phase(G, node) for node in nodes}`
+- Batch neighbor phases: `np.array([phases[j] for j in neighbors])`
+- Vectorized wrapping, mean, cos/sin operations
+
+**Files**:
+- `src/tnfr/physics/fields.py` (gradient + curvature functions)
+
+---
+
+### 8. Grammar Early Exit (commit `a0940fe`)
+
+**Problem**: Grammar validation checks all 8 rules even after first failure  
+**Solution**: Optional `stop_on_first_error` parameter for early exit  
+**Impact**:
+- **10-30% speedup** when sequences invalid (depends on error location)
+- Default: `False` (preserves comprehensive diagnostic reporting)
+- Use case: High-throughput validation where first error sufficient
+
+**TNFR Alignment**:
+- Optional optimization (respects need for complete diagnostics)
+- Does not weaken grammar - same validation logic
+- Trade-off: Performance vs diagnostic completeness
+
+**Code Changes**:
+```python
+def validate_sequence(..., stop_on_first_error: bool = False):
+    # Check U1a
+    if stop_on_first_error and not valid_init:
+        return False, messages
+    # ... repeat for U1b, U2, U3, U4a, U4b, U5
+```
+
+**Files**:
+- `src/tnfr/operators/grammar_core.py` (validate_sequence method)
+
+---
+
+## 📊 Performance Summary
+
+### Validation Speedup Timeline (Updated)
+
+| Stage | Time (500 nodes, 10 runs) | Speedup vs Baseline | Cumulative |
+|-------|---------------------------|---------------------|------------|
+| **Baseline** | 6.138s | 1.0× | - |
+| + Fast diameter | 3.838s | 1.6× | **37.5% ↓** |
+| + Cached eccentricity | 1.707s | 3.6× | **72% ↓** |
+| + Vectorized phases | **1.670s** | **3.7×** | **73% ↓** |
+
+### Cumulative Improvements
+
+| Metric | Baseline | Current | Improvement |
+|--------|----------|---------|-------------|
+| **Total time** | 6.138s | 1.670s | **3.7× faster (73% ↓)** |
+| **Function calls** | 23.9M | 6.3M | **74% reduction** |
+| **Diameter** | ~50ms | ~1ms | **50× faster** |
+| **Eccentricity (1st)** | 2.3s | 0.2s | **10× faster** |
+| **Eccentricity (cached)** | 2.3s | 0.000s | **∞× speedup** |
+| **Phase ops** | ~5-10ms | ~2-4ms | **2-3× faster** |
+
+### Current Bottleneck: Φ_s (Expected)
 
 **Problem**: Eccentricity O(N²) repeated 10× per validation (2.3s bottleneck)  
 **Solution**: Cache with `dependencies={'graph_topology'}` via TNFR paradigm  
