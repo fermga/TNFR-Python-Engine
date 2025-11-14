@@ -53,7 +53,7 @@ emitter in subsequent Phase 3 steps.
 from __future__ import annotations
 
 from dataclasses import dataclass, asdict
-from datetime import datetime
+from datetime import datetime, UTC
 from pathlib import Path
 from typing import Any, Iterable, Mapping, MutableMapping
 import json
@@ -263,8 +263,9 @@ class TelemetryEmitter:
         else:
             _compute()
 
+        # Use timezone-aware UTC to avoid deprecation of datetime.utcnow()
         event = TelemetryEvent(
-            t_iso=datetime.utcnow().isoformat(timespec="seconds") + "Z",
+            t_iso=datetime.now(UTC).isoformat(timespec="seconds"),
             t_epoch=time.time(),
             step=step,
             operator=operator,
