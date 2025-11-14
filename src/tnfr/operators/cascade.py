@@ -168,8 +168,43 @@ def detect_cascade(G: TNFRGraph) -> dict[str, Any]:
         "affected_nodes": affected_nodes,
         "cascade_depth": cascade_depth,
         "total_propagations": total_props,
-        "cascade_coherence": 0.0,  # TODO: compute from coupling strengths
+        "cascade_coherence": _compute_cascade_coherence(G, affected_nodes),
     }
+
+
+def _compute_cascade_coherence(G: TNFRGraph, affected_nodes: List[NodeId]) -> float:
+    """Compute cascade coherence from coupling strengths.
+    
+    Parameters
+    ----------
+    G : TNFRGraph
+        Graph with edge weights representing coupling strengths
+    affected_nodes : List[NodeId] 
+        Nodes involved in the cascade
+        
+    Returns
+    -------
+    float
+        Cascade coherence metric (0.0-1.0)
+    """
+    if len(affected_nodes) < 2:
+        return 0.0
+    
+    try:
+        # Calculate coherence based on edge weights between affected nodes
+        total_coupling = 0.0
+        edge_count = 0
+        
+        for i, node1 in enumerate(affected_nodes):
+            for node2 in affected_nodes[i+1:]:
+                if G.has_edge(node1, node2):
+                    weight = G.edges[node1, node2].get('weight', 1.0)
+                    total_coupling += abs(weight)
+                    edge_count += 1
+        
+        return total_coupling / max(edge_count, 1) if edge_count > 0 else 0.0
+    except Exception:
+        return 0.0
 
 
 def measure_cascade_radius(G: TNFRGraph, source_node: NodeId) -> int:

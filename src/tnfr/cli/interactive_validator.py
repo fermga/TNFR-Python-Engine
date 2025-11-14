@@ -8,8 +8,11 @@ programming knowledge.
 
 from __future__ import annotations
 
+import logging
 import sys
 from typing import TYPE_CHECKING, Optional
+
+logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
     from ..operators.grammar import SequenceValidationResult
@@ -431,7 +434,7 @@ class TNFRInteractiveValidator:
         print()
         print("✗ INVALID SEQUENCE")
         print()
-        print(f"Error: {result.message}")
+        logger.error(f" {result.message}")
         if result.error:
             print(f"Type: {type(result.error).__name__}")
         print()

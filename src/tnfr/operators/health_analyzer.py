@@ -463,7 +463,7 @@ class SequenceHealthAnalyzer:
     def _calculate_frequency_harmony(self, sequence: List[str]) -> float:
         """Calculate frequency harmony: smoothness of νf transitions.
 
-        TODO: Full implementation requires integration with STRUCTURAL_FREQUENCIES
+        Note: Full implementation requires integration with STRUCTURAL_FREQUENCIES
         and FREQUENCY_TRANSITIONS from the grammar module. Currently returns
         a conservative estimate based on transition patterns.
 

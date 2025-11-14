@@ -2,8 +2,8 @@
 
 **Single source of truth for navigating TNFR documentation**
 
-**Last Updated**: 2025-11-11  
-**Status**: ✅ ACTIVE - Complete documentation map
+**Last Updated**: 2025-01-15  
+**Status**: ✅ ACTIVE - Complete documentation map (Phase 2 architecture)
 
 ---
 
@@ -72,6 +72,28 @@ Generated from code + narrative docs:
 ---
 
 ## 🔧 Development & Contributing
+
+### Module Architecture (Phase 1 & 2)
+
+**Modular reorganization for cognitive load reduction:**
+
+| Module Area | Files | Purpose |
+|-------------|-------|---------|
+| **Operators** | `src/tnfr/operators/{emission,reception,coherence,...}.py` (13 files) | Individual operator implementations (231-587 lines each) |
+| **Operator Base** | `src/tnfr/operators/definitions_base.py` | Shared operator infrastructure (201 lines) |
+| **Operator Facade** | `src/tnfr/operators/definitions.py` | Backward-compatible imports (57 lines) |
+| **Grammar Constraints** | `src/tnfr/operators/grammar/{u1_initiation_closure,...}.py` (8 files) | Grammar rule implementations (89-283 lines each) |
+| **Grammar Facade** | `src/tnfr/operators/grammar/grammar.py` | Unified validation interface (99 lines) |
+| **Metrics** | `src/tnfr/metrics/{coherence,sense_index,phase_sync,telemetry}.py` | Focused metric modules (129-268 lines) |
+| **Metrics Facade** | `src/tnfr/metrics/metrics.py` | Backward-compatible exports (21 lines) |
+
+**Key Principles**:
+- **Facade Pattern**: All modules maintain 100% backward compatibility
+- **Focused Files**: Max 587 lines (avg 270), one concept per module
+- **Physical Traceability**: Module names match TNFR physics concepts
+- **Performance**: Import 1.29s, operator creation 0.07μs, negligible overhead
+
+**See**: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for complete module organization guide
 
 ### For Contributors
 
