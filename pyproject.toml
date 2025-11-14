@@ -6,7 +6,11 @@ readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
 license-files = ["LICENSE.md"]
-authors = [{ name = "F. F. Martinez Gamo", orcid = "0009-0007-6116-0613" }]
+authors = [{ name = "F. F. Martinez Gamo" }]
+
+[tool.tnfr.metadata]
+# ORCID retained outside PEP 621 authors block to satisfy strict validators
+primary_author_orcid = "0009-0007-6116-0613"
 keywords = [
   "TNFR", "Resonant Fractal Nature Theory", "complex systems", "fractals", "resonance", 
   "networks", "structural dynamics", "structural operators", "coherence theory",
@@ -171,6 +175,7 @@ PyPI = "https://pypi.org/project/tnfr/"
 Citation = "https://doi.org/10.5281/zenodo.17602861"
 Zenodo = "https://zenodo.org/records/17602861"
 Issues = "https://github.com/fermga/TNFR-Python-Engine/issues"
+Documentation = "https://fermga.github.io/TNFR-Python-Engine/"
 GPT = "https://chatgpt.com/g/g-67abc78885a88191b2d67f94fd60dc97-tnfr-resonant-fractal-nature-theory"
 
 [tool.setuptools.package-data]
