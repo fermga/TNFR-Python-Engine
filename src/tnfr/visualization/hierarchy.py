@@ -18,16 +18,20 @@ visualization dependencies.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from io import StringIO
+from typing import TYPE_CHECKING, TextIO
 
 if TYPE_CHECKING:
     from ..types import NodeId, TNFRGraph
+
+import sys
 
 from ..alias import get_attr
 from ..constants.aliases import ALIAS_EPI
 
 __all__ = [
     "print_bifurcation_hierarchy",
+    "get_bifurcation_hierarchy_text",
     "get_hierarchy_info",
 ]
 
@@ -37,6 +41,7 @@ def print_bifurcation_hierarchy(
     node: NodeId,
     indent: int = 0,
     max_depth: int | None = None,
+    stream: TextIO | None = None,
 ) -> None:
     """Print ASCII tree of bifurcation hierarchy.
 
@@ -53,6 +58,11 @@ def print_bifurcation_hierarchy(
         Current indentation level (used internally for recursion), by default 0
     max_depth : int | None, optional
         Maximum depth to display (None = unlimited), by default None
+
+    Parameters
+    ----------
+    stream : TextIO, optional
+        Destination for the ASCII tree (default: sys.stdout).
 
     Notes
     -----
@@ -90,6 +100,8 @@ def print_bifurcation_hierarchy(
     ├─ Sub-EPI 1 (epi=0.21, level=1) [...]
     └─ Sub-EPI 2 (epi=0.18, level=1) [...]
     """
+    output = stream or sys.stdout
+
     # Check depth limit
     if max_depth is not None and indent >= max_depth:
         return
@@ -100,7 +112,10 @@ def print_bifurcation_hierarchy(
 
     # Print current node
     prefix = "  " * indent
-    print(f"{prefix}Node {node} (EPI={node_epi:.2f}, level={node_level})")
+    _write_line(
+        output,
+        f"{prefix}Node {node} (EPI={node_epi:.2f}, level={node_level})",
+    )
 
     # Get sub-EPIs
     sub_epis = G.nodes[node].get("sub_epis", [])
@@ -123,13 +138,16 @@ def print_bifurcation_hierarchy(
             # Check if sub-EPI has further nesting
             sub_node_id = sub_epi.get("node_id")
             if sub_node_id and sub_node_id in G.nodes:
-                sub_has_children = bool(G.nodes[sub_node_id].get("sub_epis", []))
+                sub_has_children = bool(
+                    G.nodes[sub_node_id].get("sub_epis", [])
+                )
                 if sub_has_children:
                     truncated = " [...]"
 
-        print(
+        _write_line(
+            output,
             f"{prefix}{branch} Sub-EPI {i+1} "
-            f"(epi={sub_epi_value:.2f}, level={sub_level}){truncated}"
+            f"(epi={sub_epi_value:.2f}, level={sub_level}){truncated}",
         )
 
         # Recurse into sub-node if it exists and we haven't hit depth limit
@@ -144,7 +162,7 @@ def print_bifurcation_hierarchy(
                         child_indent = indent + 1
                         "  " * child_indent
                         # Print vertical continuation
-                        print(f"{prefix}{continuation}")
+                        _write_line(output, f"{prefix}{continuation}")
                         # Recurse with continuation context
                         _print_sub_hierarchy(
                             G,
@@ -153,6 +171,7 @@ def print_bifurcation_hierarchy(
                             parent_continuation=continuation,
                             parent_prefix=prefix,
                             max_depth=max_depth,
+                            stream=output,
                         )
                 else:
                     # Last child - no continuation line
@@ -166,6 +185,7 @@ def print_bifurcation_hierarchy(
                             parent_continuation="  ",
                             parent_prefix=prefix,
                             max_depth=max_depth,
+                            stream=output,
                         )
 
 
@@ -176,6 +196,7 @@ def _print_sub_hierarchy(
     parent_continuation: str,
     parent_prefix: str,
     max_depth: int | None,
+    stream: TextIO,
 ) -> None:
     """Helper to print sub-hierarchy with proper indentation.
 
@@ -204,13 +225,16 @@ def _print_sub_hierarchy(
         if max_depth is not None and indent + 1 >= max_depth:
             sub_node_id = sub_epi.get("node_id")
             if sub_node_id and sub_node_id in G.nodes:
-                sub_has_children = bool(G.nodes[sub_node_id].get("sub_epis", []))
+                sub_has_children = bool(
+                    G.nodes[sub_node_id].get("sub_epis", [])
+                )
                 if sub_has_children:
                     truncated = " [...]"
 
-        print(
+        _write_line(
+            stream,
             f"{full_prefix}{branch} Sub-EPI {i+1} "
-            f"(epi={sub_epi_value:.2f}, level={sub_level}){truncated}"
+            f"(epi={sub_epi_value:.2f}, level={sub_level}){truncated}",
         )
 
         # Recurse if node exists
@@ -226,7 +250,56 @@ def _print_sub_hierarchy(
                         parent_continuation=parent_continuation + continuation,
                         parent_prefix=parent_prefix,
                         max_depth=max_depth,
+                        stream=stream,
                     )
+
+
+def _write_line(stream: TextIO, message: str) -> None:
+    """Write a message with newline to the provided stream."""
+
+    stream.write(f"{message}\n")
+
+
+def get_bifurcation_hierarchy_text(
+    G: TNFRGraph,
+    node: NodeId,
+    max_depth: int | None = None,
+) -> str:
+    """Get bifurcation hierarchy as a formatted text string.
+
+    Convenience wrapper around print_bifurcation_hierarchy that captures
+    the ASCII tree output and returns it as a string, suitable for
+    embedding in UIs, notebooks, or reports.
+
+    Parameters
+    ----------
+    G : TNFRGraph
+        Graph containing bifurcation structure
+    node : NodeId
+        Root node to start visualization from
+    max_depth : int | None, optional
+        Maximum depth to display (None = unlimited), by default None
+
+    Returns
+    -------
+    str
+        Formatted ASCII tree representation of the bifurcation hierarchy
+
+    Examples
+    --------
+    >>> hierarchy_text = get_bifurcation_hierarchy_text(G, node)
+    >>> print(hierarchy_text)
+    Node 0 (EPI=0.82, level=0)
+    ├─ Sub-EPI 1 (epi=0.21, level=1)
+    └─ Sub-EPI 2 (epi=0.18, level=1)
+
+    >>> # Embed in a UI or notebook
+    >>> from IPython.display import display, HTML
+    >>> display(HTML(f"<pre>{hierarchy_text}</pre>"))  # doctest: +SKIP
+    """
+    buffer = StringIO()
+    print_bifurcation_hierarchy(G, node, max_depth=max_depth, stream=buffer)
+    return buffer.getvalue()
 
 
 def get_hierarchy_info(G: TNFRGraph, node: NodeId) -> dict:

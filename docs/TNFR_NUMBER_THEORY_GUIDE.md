@@ -36,6 +36,27 @@ Empirically, ROC/AUC calibration up to N=10000 and N=100000 shows AUC=1.0 with t
 
 Local coherence is c_n = 1/(1 + |ΔNFR_n|), which equals 1 for primes and <1 for composites.
 
+### 2.1 Structural terms and prime certificates
+
+`src/tnfr/mathematics/number_theory.py` now exposes canonical dataclasses so downstream code can reason about TNFR arithmetic without duplicating formulas:
+
+- `ArithmeticStructuralTerms`: encapsulates τ(n), σ(n), ω(n). Retrieve via `net.get_structural_terms(n)` and convert to dict with `.as_dict()` when exporting telemetry.
+- `PrimeCertificate`: immutable proof object produced by `net.get_prime_certificate(n)` or `net.detect_prime_candidates(..., return_certificates=True)`. It stores ΔNFR, tolerance, the structural terms, and the component-level pressures (factorization, divisor, sigma) that sum to ΔNFR.
+- `ArithmeticTNFRFormalism`: static helpers for EPI, νf, ΔNFR, component breakdowns, local coherence, and symbolic expressions. Methods are shared between runtime code and documentation so the physics is written exactly once.
+
+Example usage:
+
+```python
+from tnfr.mathematics import ArithmeticTNFRNetwork
+
+net = ArithmeticTNFRNetwork(max_number=50)
+certificate = net.get_prime_certificate(29)
+assert certificate.structural_prime
+print(certificate.components)  # {'factorization_pressure': 0.0, 'divisor_pressure': 0.0, ...}
+```
+
+Certificates can be generated for arbitrary subsets with `net.generate_prime_certificates(numbers=[...])`, enabling JSONL exports or notebook tables that include ΔNFR components without recalculating the physics.
+
 
 ## 3. Operators on the arithmetic graph (UM/RA)
 

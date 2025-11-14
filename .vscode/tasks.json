@@ -5,138 +5,130 @@
     {
       "label": "Export TNFR tetrad HTML report",
       "type": "shell",
-      "command": "powershell",
+      "command": "./make.cmd",
       "args": [
-        "-NoProfile",
-        "-ExecutionPolicy", "Bypass",
-        "-Command",
-        // Set PYTHONPATH to src and run nbconvert with classic template
-        "$env:PYTHONPATH = (Resolve-Path -Path ./src).Path; & \"C:/Program Files/Python313/python.exe\" -m nbconvert --to html --execute --template classic --ExecutePreprocessor.timeout=900 --output-dir results/reports notebooks/Force_Fields_Tetrad_Exploration.ipynb"
+        "report-tetrad"
       ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
       "group": { "kind": "build", "isDefault": true },
       "problemMatcher": []
     },
     {
       "label": "Run Triatomic Atlas (script)",
       "type": "shell",
-      "command": "powershell",
+      "command": "./make.cmd",
       "args": [
-        "-NoProfile",
-        "-ExecutionPolicy", "Bypass",
-        "-Command",
-        // Ensure output dir, set PYTHONPATH, run triatomic_atlas.py
-        "$ErrorActionPreference='Stop'; if (!(Test-Path -Path 'examples/output')) { New-Item -ItemType Directory -Path 'examples/output' | Out-Null }; $env:PYTHONPATH=(Resolve-Path -Path ./src).Path; & \"C:/Program Files/Python313/python.exe\" examples/triatomic_atlas.py"
+        "triatomic-atlas-script"
       ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
       "group": { "kind": "build" },
       "problemMatcher": []
     },
     {
       "label": "Run Phase-Gated Coupling Demo (script)",
       "type": "shell",
-      "command": "powershell",
+      "command": "./make.cmd",
       "args": [
-        "-NoProfile",
-        "-ExecutionPolicy", "Bypass",
-        "-Command",
-        // Ensure output dir, set PYTHONPATH, run demo
-        "$ErrorActionPreference='Stop'; if (!(Test-Path -Path 'examples/output')) { New-Item -ItemType Directory -Path 'examples/output' | Out-Null }; $env:PYTHONPATH=(Resolve-Path -Path ./src).Path; & \"C:/Program Files/Python313/python.exe\" examples/phase_gated_coupling_demo.py"
+        "phase-gated-script"
       ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
       "group": { "kind": "build" },
       "problemMatcher": []
     },
     {
       "label": "Run Elements Signature Study (script)",
       "type": "shell",
-      "command": "powershell",
+      "command": "./make.cmd",
       "args": [
-        "-NoProfile",
-        "-ExecutionPolicy", "Bypass",
-        "-Command",
-        "$ErrorActionPreference='Stop'; if (!(Test-Path -Path 'examples/output')) { New-Item -ItemType Directory -Path 'examples/output' | Out-Null }; $env:PYTHONPATH=(Resolve-Path -Path ./src).Path; & \"C:/Program Files/Python313/python.exe\" examples/elements_signature_study.py"
+        "elements-signature-script"
       ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
       "group": { "kind": "build" },
       "problemMatcher": []
     },
     {
       "label": "Export Atoms & Molecules Study (HTML - classic)",
       "type": "shell",
-      "command": "powershell",
+      "command": "./make.cmd",
       "args": [
-        "-NoProfile",
-        "-ExecutionPolicy", "Bypass",
-        "-Command",
-        "$ErrorActionPreference='Stop'; if (!(Test-Path -Path 'results/reports')) { New-Item -ItemType Directory -Path 'results/reports' | Out-Null }; $env:PYTHONPATH=(Resolve-Path -Path ./src).Path; & \"C:/Program Files/Python313/python.exe\" -m nbconvert --to html --execute --template classic --ExecutePreprocessor.timeout=900 --output-dir results/reports notebooks/TNFR_Atoms_And_Molecules_Study.ipynb"
+        "report-atoms-molecules"
       ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
       "group": { "kind": "build" },
       "problemMatcher": []
     },
     {
       "label": "Export Phase-Gated Coupling Demo (HTML - classic)",
       "type": "shell",
-      "command": "powershell",
+      "command": "./make.cmd",
       "args": [
-        "-NoProfile",
-        "-ExecutionPolicy", "Bypass",
-        "-Command",
-        // Export the TNFR_Phase_Gated_Coupling_Demo notebook with classic template
-        "$ErrorActionPreference='Stop'; if (!(Test-Path -Path 'results/reports')) { New-Item -ItemType Directory -Path 'results/reports' | Out-Null }; $env:PYTHONPATH=(Resolve-Path -Path ./src).Path; & \"C:/Program Files/Python313/python.exe\" -m nbconvert --to html --execute --template classic --ExecutePreprocessor.timeout=900 --output-dir results/reports notebooks/TNFR_Phase_Gated_Coupling_Demo.ipynb"
+        "report-phase-gated"
       ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
       "group": { "kind": "build" },
       "problemMatcher": []
     },
     {
       "label": "Export Triatomic Atlas (HTML - classic)",
       "type": "shell",
-      "command": "powershell",
+      "command": "./make.cmd",
       "args": [
-        "-NoProfile",
-        "-ExecutionPolicy", "Bypass",
-        "-Command",
-        // Export the TNFR_Triatomic_Atlas notebook with classic template
-        "$ErrorActionPreference='Stop'; if (!(Test-Path -Path 'results/reports')) { New-Item -ItemType Directory -Path 'results/reports' | Out-Null }; $env:PYTHONPATH=(Resolve-Path -Path ./src).Path; & \"C:/Program Files/Python313/python.exe\" -m nbconvert --to html --execute --template classic --ExecutePreprocessor.timeout=1200 --output-dir results/reports notebooks/TNFR_Triatomic_Atlas.ipynb"
+        "report-triatomic-atlas"
       ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
       "group": { "kind": "build" },
       "problemMatcher": []
     },
     {
       "label": "Export Molecule Atlas (HTML - classic)",
       "type": "shell",
-      "command": "powershell",
+      "command": "./make.cmd",
       "args": [
-        "-NoProfile",
-        "-ExecutionPolicy", "Bypass",
-        "-Command",
-        // Export the TNFR_Molecule_Atlas notebook with classic template
-        "$ErrorActionPreference='Stop'; if (!(Test-Path -Path 'results/reports')) { New-Item -ItemType Directory -Path 'results/reports' | Out-Null }; $env:PYTHONPATH=(Resolve-Path -Path ./src).Path; & \"C:/Program Files/Python313/python.exe\" -m nbconvert --to html --execute --template classic --ExecutePreprocessor.timeout=1200 --output-dir results/reports notebooks/TNFR_Molecule_Atlas.ipynb"
+        "report-molecule-atlas"
       ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
       "group": { "kind": "build" },
       "problemMatcher": []
     },
     {
       "label": "Run Molecule Atlas (script)",
       "type": "shell",
-      "command": "powershell",
+      "command": "./make.cmd",
       "args": [
-        "-NoProfile",
-        "-ExecutionPolicy", "Bypass",
-        "-Command",
-        // Ensure output dir, set PYTHONPATH, run molecule_atlas.py
-        "$ErrorActionPreference='Stop'; if (!(Test-Path -Path 'examples/output')) { New-Item -ItemType Directory -Path 'examples/output' | Out-Null }; $env:PYTHONPATH=(Resolve-Path -Path ./src).Path; & \"C:/Program Files/Python313/python.exe\" examples/molecule_atlas.py"
+        "molecule-atlas-script"
       ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
       "group": { "kind": "build" },
       "problemMatcher": []
     },
     {
       "label": "Export Operator Completeness (HTML - classic)",
       "type": "shell",
-      "command": "powershell",
+      "command": "./make.cmd",
       "args": [
-        "-NoProfile",
-        "-ExecutionPolicy", "Bypass",
-        "-Command",
-        // Export Operator_Completeness_Search with classic template
-        "$ErrorActionPreference='Stop'; if (!(Test-Path -Path 'results/reports')) { New-Item -ItemType Directory -Path 'results/reports' | Out-Null }; $env:PYTHONPATH=(Resolve-Path -Path ./src).Path; & \"C:/Program Files/Python313/python.exe\" -m nbconvert --to html --execute --template classic --ExecutePreprocessor.timeout=1200 --output-dir results/reports notebooks/Operator_Completeness_Search.ipynb"
+        "report-operator-completeness"
       ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
       "problemMatcher": []
     },
     {
@@ -148,7 +140,7 @@
         "-ExecutionPolicy", "Bypass",
         "-Command",
         // Print-friendly export: hide code and prompts, light theme
-        "$ErrorActionPreference='Stop'; if (!(Test-Path -Path 'results/reports')) { New-Item -ItemType Directory -Path 'results/reports' | Out-Null }; $env:PYTHONPATH=(Resolve-Path -Path ./src).Path; & \"C:/Program Files/Python313/python.exe\" -m nbconvert --to html --execute --template lab --HTMLExporter.theme=light --HTMLExporter.exclude_input=True --HTMLExporter.exclude_input_prompt=True --HTMLExporter.exclude_output_prompt=True --ExecutePreprocessor.timeout=1200 --output-dir results/reports notebooks/Operator_Completeness_Search.ipynb"
+        "$ErrorActionPreference=[System.Management.Automation.ActionPreference]::Stop; if (!(Test-Path -Path \"results/reports\")) { New-Item -ItemType Directory -Path \"results/reports\" | Out-Null }; $env:PYTHONPATH=(Resolve-Path -Path ./src).Path; & \"C:/Program Files/Python313/python.exe\" -m nbconvert --to html --execute --template lab --HTMLExporter.theme=light --HTMLExporter.exclude_input=True --HTMLExporter.exclude_input_prompt=True --HTMLExporter.exclude_output_prompt=True --ExecutePreprocessor.timeout=1200 --output-dir results/reports notebooks/Operator_Completeness_Search.ipynb"
       ],
       "problemMatcher": []
     },
@@ -161,97 +153,93 @@
         "-ExecutionPolicy", "Bypass",
         "-Command",
         // Print-friendly HTML for Interaction_Sequences: light theme, hide code/prompts
-        "$ErrorActionPreference='Stop'; if (!(Test-Path -Path 'results/reports')) { New-Item -ItemType Directory -Path 'results/reports' | Out-Null }; $env:PYTHONPATH=(Resolve-Path -Path ./src).Path; & \"C:/Program Files/Python313/python.exe\" -m nbconvert --to html --execute --template lab --HTMLExporter.theme=light --HTMLExporter.exclude_input=True --HTMLExporter.exclude_input_prompt=True --HTMLExporter.exclude_output_prompt=True --ExecutePreprocessor.timeout=900 --output-dir results/reports notebooks/Interaction_Sequences.ipynb"
+        "$ErrorActionPreference=[System.Management.Automation.ActionPreference]::Stop; if (!(Test-Path -Path \"results/reports\")) { New-Item -ItemType Directory -Path \"results/reports\" | Out-Null }; $env:PYTHONPATH=(Resolve-Path -Path ./src).Path; & \"C:/Program Files/Python313/python.exe\" -m nbconvert --to html --execute --template lab --HTMLExporter.theme=light --HTMLExporter.exclude_input=True --HTMLExporter.exclude_input_prompt=True --HTMLExporter.exclude_output_prompt=True --ExecutePreprocessor.timeout=900 --output-dir results/reports notebooks/Interaction_Sequences.ipynb"
       ],
       "problemMatcher": []
     },
     {
       "label": "Export Emergent Particles HTML report",
       "type": "shell",
-      "command": "powershell",
+      "command": "./make.cmd",
       "args": [
-        "-NoProfile",
-        "-ExecutionPolicy", "Bypass",
-        "-Command",
-        // Set PYTHONPATH to src and export Emergent_Particles notebook with classic template
-        "$env:PYTHONPATH = (Resolve-Path -Path ./src).Path; & \"C:/Program Files/Python313/python.exe\" -m nbconvert --to html --execute --template classic --ExecutePreprocessor.timeout=900 --output-dir results/reports notebooks/Emergent_Particles_From_TNFR.ipynb"
+        "report-emergent-particles"
       ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
       "problemMatcher": []
     },
     {
       "label": "Generate force study plots",
       "type": "shell",
-      "command": "powershell",
+      "command": "./make.cmd",
       "args": [
-        "-NoProfile",
-        "-ExecutionPolicy", "Bypass",
-        "-Command",
-        "$env:PYTHONPATH = (Resolve-Path -Path ./src).Path; & \"C:/Program Files/Python313/python.exe\" benchmarks/plot_force_study_summaries.py"
+        "force-study-plots"
       ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
       "problemMatcher": []
     },
     {
       "label": "Export Fundamental Particles Atlas (HTML - classic)",
       "type": "shell",
-      "command": "powershell",
+      "command": "./make.cmd",
       "args": [
-        "-NoProfile",
-        "-ExecutionPolicy", "Bypass",
-        "-Command",
-        // Export the Fundamental Particles TNFR Atlas notebook with classic template
-        "$ErrorActionPreference='Stop'; if (!(Test-Path -Path 'results/reports')) { New-Item -ItemType Directory -Path 'results/reports' | Out-Null }; $env:PYTHONPATH = (Resolve-Path -Path ./src).Path; & \"C:/Program Files/Python313/python.exe\" -m nbconvert --to html --execute --template classic --ExecutePreprocessor.timeout=900 --output-dir results/reports notebooks/Fundamental_Particles_TNFR_Atlas.ipynb"
+        "report-fundamental-particles"
       ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
       "problemMatcher": []
     },
     {
       "label": "Export Fundamental Particles Atlas (HTML - print-friendly)",
       "type": "shell",
-      "command": "powershell",
+      "command": "./make.cmd",
       "args": [
-        "-NoProfile",
-        "-ExecutionPolicy", "Bypass",
-        "-Command",
-        // Print-friendly HTML: light theme, hide code cells & prompts using HTMLExporter traits
-        "$ErrorActionPreference='Stop'; if (!(Test-Path -Path 'results/reports')) { New-Item -ItemType Directory -Path 'results/reports' | Out-Null }; $env:PYTHONPATH=(Resolve-Path -Path ./src).Path; & \"C:/Program Files/Python313/python.exe\" -m nbconvert --to html --execute --template lab --HTMLExporter.theme=light --HTMLExporter.exclude_input=True --HTMLExporter.exclude_input_prompt=True --HTMLExporter.exclude_output_prompt=True --ExecutePreprocessor.timeout=900 --output-dir results/reports notebooks/Fundamental_Particles_TNFR_Atlas.ipynb"
+        "report-fundamental-particles-print"
       ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
       "problemMatcher": []
     },
     {
       "label": "Export Interaction Sequences (HTML - classic)",
       "type": "shell",
-      "command": "powershell",
+      "command": "./make.cmd",
       "args": [
-        "-NoProfile",
-        "-ExecutionPolicy", "Bypass",
-        "-Command",
-        // Export the Interaction_Sequences notebook with classic template
-        "$ErrorActionPreference='Stop'; if (!(Test-Path -Path 'results/reports')) { New-Item -ItemType Directory -Path 'results/reports' | Out-Null }; $env:PYTHONPATH = (Resolve-Path -Path ./src).Path; & \"C:/Program Files/Python313/python.exe\" -m nbconvert --to html --execute --template classic --ExecutePreprocessor.timeout=900 --output-dir results/reports notebooks/Interaction_Sequences.ipynb"
+        "report-interaction-sequences"
       ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
       "problemMatcher": []
     },
     {
       "label": "Export All TNFR Reports",
       "type": "shell",
-      "command": "powershell",
+      "command": "./make.cmd",
       "args": [
-        "-NoProfile",
-        "-ExecutionPolicy", "Bypass",
-        "-Command",
-        "$ErrorActionPreference='Stop'; if (!(Test-Path -Path 'results/reports')) { New-Item -ItemType Directory -Path 'results/reports' | Out-Null }; $env:PYTHONPATH=(Resolve-Path -Path ./src).Path; & \"C:/Program Files/Python313/python.exe\" -m nbconvert --to html --execute --template classic --ExecutePreprocessor.timeout=900 --output-dir results/reports notebooks/Force_Fields_Tetrad_Exploration.ipynb; & \"C:/Program Files/Python313/python.exe\" -m nbconvert --to html --execute --template classic --ExecutePreprocessor.timeout=900 --output-dir results/reports notebooks/Emergent_Particles_From_TNFR.ipynb; & \"C:/Program Files/Python313/python.exe\" -m nbconvert --to html --execute --template classic --ExecutePreprocessor.timeout=900 --output-dir results/reports notebooks/Fundamental_Particles_TNFR_Atlas.ipynb; & \"C:/Program Files/Python313/python.exe\" -m nbconvert --to html --execute --template classic --ExecutePreprocessor.timeout=900 --output-dir results/reports notebooks/Interaction_Sequences.ipynb"
+        "report-all-classic"
       ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
       "group": { "kind": "build" },
       "problemMatcher": []
   },
   {
       "label": "Export All TNFR Reports (print-friendly)",
       "type": "shell",
-      "command": "powershell",
+      "command": "./make.cmd",
       "args": [
-        "-NoProfile",
-        "-ExecutionPolicy", "Bypass",
-        "-Command",
-        "$ErrorActionPreference='Stop'; if (!(Test-Path -Path 'results/reports')) { New-Item -ItemType Directory -Path 'results/reports' | Out-Null }; $env:PYTHONPATH=(Resolve-Path -Path ./src).Path; & \"C:/Program Files/Python313/python.exe\" -m nbconvert --to html --execute --template lab --HTMLExporter.theme=light --HTMLExporter.exclude_input=True --HTMLExporter.exclude_input_prompt=True --HTMLExporter.exclude_output_prompt=True --ExecutePreprocessor.timeout=900 --output-dir results/reports notebooks/Force_Fields_Tetrad_Exploration.ipynb; & \"C:/Program Files/Python313/python.exe\" -m nbconvert --to html --execute --template lab --HTMLExporter.theme=light --HTMLExporter.exclude_input=True --HTMLExporter.exclude_input_prompt=True --HTMLExporter.exclude_output_prompt=True --ExecutePreprocessor.timeout=900 --output-dir results/reports notebooks/Emergent_Particles_From_TNFR.ipynb; & \"C:/Program Files/Python313/python.exe\" -m nbconvert --to html --execute --template lab --HTMLExporter.theme=light --HTMLExporter.exclude_input=True --HTMLExporter.exclude_input_prompt=True --HTMLExporter.exclude_output_prompt=True --ExecutePreprocessor.timeout=900 --output-dir results/reports notebooks/Fundamental_Particles_TNFR_Atlas.ipynb; & \"C:/Program Files/Python313/python.exe\" -m nbconvert --to html --execute --template lab --HTMLExporter.theme=light --HTMLExporter.exclude_input=True --HTMLExporter.exclude_input_prompt=True --HTMLExporter.exclude_output_prompt=True --ExecutePreprocessor.timeout=900 --output-dir results/reports notebooks/Interaction_Sequences.ipynb; & \"C:/Program Files/Python313/python.exe\" -m nbconvert --to html --execute --template lab --HTMLExporter.theme=light --HTMLExporter.exclude_input=True --HTMLExporter.exclude_input_prompt=True --HTMLExporter.exclude_output_prompt=True --ExecutePreprocessor.timeout=1200 --output-dir results/reports notebooks/Operator_Completeness_Search.ipynb"
+        "report-all-print"
       ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
       "group": { "kind": "build" },
       "problemMatcher": []
     }
@@ -259,70 +247,65 @@
     {
       "label": "Run Atom Atlas (script)",
       "type": "shell",
-      "command": "powershell",
+      "command": "./make.cmd",
       "args": [
-        "-NoProfile",
-        "-ExecutionPolicy", "Bypass",
-        "-Command",
-        // Ensure output dir, set PYTHONPATH, run atom_atlas.py
-        "$ErrorActionPreference='Stop'; if (!(Test-Path -Path 'examples/output')) { New-Item -ItemType Directory -Path 'examples/output' | Out-Null }; $env:PYTHONPATH=(Resolve-Path -Path ./src).Path; & \"C:/Program Files/Python313/python.exe\" examples/atom_atlas.py"
+        "atom-atlas-script"
       ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
       "group": { "kind": "build" },
       "problemMatcher": []
     },
     {
       "label": "Run Periodic Table Atlas (script)",
       "type": "shell",
-      "command": "powershell",
+      "command": "./make.cmd",
       "args": [
-        "-NoProfile",
-        "-ExecutionPolicy", "Bypass",
-        "-Command",
-        // Ensure output dir, set PYTHONPATH, run periodic_table_atlas.py
-        "$ErrorActionPreference='Stop'; if (!(Test-Path -Path 'examples/output')) { New-Item -ItemType Directory -Path 'examples/output' | Out-Null }; $env:PYTHONPATH=(Resolve-Path -Path ./src).Path; & \"C:/Program Files/Python313/python.exe\" examples/periodic_table_atlas.py"
+        "periodic-table-script"
       ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
       "group": { "kind": "build" },
       "problemMatcher": []
     },
     {
       "label": "Export Particle Atlas U6 Sequential (HTML - classic)",
       "type": "shell",
-      "command": "powershell",
+      "command": "./make.cmd",
       "args": [
-        "-NoProfile",
-        "-ExecutionPolicy", "Bypass",
-        "-Command",
-        // Export the TNFR_Particle_Atlas_U6_Sequential notebook with classic template
-        "$ErrorActionPreference='Stop'; if (!(Test-Path -Path 'results/reports')) { New-Item -ItemType Directory -Path 'results/reports' | Out-Null }; $env:PYTHONPATH=(Resolve-Path -Path ./src).Path; & \"C:/Program Files/Python313/python.exe\" -m nbconvert --to html --execute --template classic --ExecutePreprocessor.timeout=1200 --output-dir results/reports notebooks/TNFR_Particle_Atlas_U6_Sequential.ipynb"
+        "report-particle-atlas-u6"
       ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
       "group": { "kind": "build" },
       "problemMatcher": []
     },
     {
       "label": "Export Periodic Table Atlas (HTML - classic)",
       "type": "shell",
-      "command": "powershell",
+      "command": "./make.cmd",
       "args": [
-        "-NoProfile",
-        "-ExecutionPolicy", "Bypass",
-        "-Command",
-        // Export the TNFR_Periodic_Table_Atlas notebook with classic template
-        "$ErrorActionPreference='Stop'; if (!(Test-Path -Path 'results/reports')) { New-Item -ItemType Directory -Path 'results/reports' | Out-Null }; $env:PYTHONPATH=(Resolve-Path -Path ./src).Path; & \"C:/Program Files/Python313/python.exe\" -m nbconvert --to html --execute --template classic --ExecutePreprocessor.timeout=1500 --output-dir results/reports notebooks/TNFR_Periodic_Table_Atlas.ipynb"
+        "report-periodic-table-classic"
       ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
       "group": { "kind": "build" },
       "problemMatcher": []
     },
     {
       "label": "Run focused tests (examples + telemetry)",
       "type": "shell",
-      "command": "powershell",
+      "command": "./make.cmd",
       "args": [
-        "-NoProfile",
-        "-ExecutionPolicy", "Bypass",
-        "-Command",
-        // Run a subset of fast, focused tests
-        "$ErrorActionPreference='Stop'; $env:PYTHONPATH=(Resolve-Path -Path ./src).Path; & \"C:/Program Files/Python313/python.exe\" -m pytest -q tests/examples/test_u6_sequential_demo.py tests/unit/operators/test_telemetry_warnings_extended.py tests/examples/test_atom_atlas_minimal.py tests/examples/test_periodic_table_basic.py"
+        "smoke-tests"
       ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
       "group": { "kind": "test", "isDefault": true },
       "problemMatcher": []
     }

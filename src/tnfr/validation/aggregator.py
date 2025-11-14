@@ -163,6 +163,8 @@ def run_structural_validation(
     baseline_structural_potential : dict | None
         Optional prior Φ_s snapshot to compute drift; if omitted
         ΔΦ_s not computed.
+    perf_registry : PerformanceRegistry | None
+        Optional registry for timing measurements (opt-in overhead).
 
     Returns
     -------

@@ -15,6 +15,9 @@ metabolism into autonomous structural evolution.
 
 - Basic TNFR concepts (NFR, operators, coherence)
 - Understanding of structural metrics (C(t), Si, ΔNFR)
+
+All examples are designed as narrated console walkthroughs, so they emit
+human-readable print statements instead of structured logs when run.
 """
 
 from __future__ import annotations
@@ -66,7 +69,10 @@ def example_1_feedback_loop():
         print(f"    Coherence: {coherence_before:.3f}")
         print(f"    Selected operator: {operator}")
 
-    print("\nFeedback loop maintains coherence through adaptive operator selection.")
+    print(
+        "\nFeedback loop maintains coherence through adaptive operator "
+        "selection."
+    )
 
 
 def example_2_adaptive_sequences():
@@ -109,7 +115,10 @@ def example_2_adaptive_sequences():
             avg = sum(perfs) / len(perfs)
             print(f"    {name}: avg = {avg:.3f} ({len(perfs)} samples)")
 
-    print("\nAdaptive selection learns from experience to optimize trajectories.")
+    print(
+        "\nAdaptive selection learns from experience to optimize "
+        "trajectories."
+    )
 
 
 def example_3_homeostasis():
@@ -202,7 +211,10 @@ def example_5_multi_node_network():
     G.add_edge(nodes[0], nodes[1])
     G.add_edge(nodes[1], nodes[2])
 
-    print(f"\nCreated network with {len(nodes)} nodes and {G.number_of_edges()} edges")
+    print(
+        f"\nCreated network with {len(nodes)} nodes "
+        f"and {G.number_of_edges()} edges"
+    )
 
     # Create adaptive system for each node
     systems = [TNFRAdaptiveSystem(G, node) for node in nodes]

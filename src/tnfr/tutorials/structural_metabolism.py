@@ -1,7 +1,7 @@
 """Tutorial: T'HOL Structural Metabolism and Bifurcation
 
-This tutorial demonstrates the canonical implementation of T'HOL (Self-Organization)
-as structural metabolism, including:
+This tutorial demonstrates the canonical implementation of T'HOL
+(Self-Organization) as structural metabolism, including:
 
 1. Bifurcation dynamics (∂²EPI/∂t² > τ)
 2. Metabolic cycles (EN → THOL → IL)
@@ -12,17 +12,22 @@ Theory
 ------
 T'HOL is not just self-organization - it's **structural metabolism**:
 
-> "T'HOL no reacciona: reorganiza. No adapta: reinventa. T'HOL es el corazón del
+> "T'HOL no reacciona: reorganiza. No adapta: reinventa. T'HOL es el
 > metabolismo estructural: permite que una forma se reorganice sin romperse."
 
 **Key Characteristics:**
 - **Bifurcation nodal**: When acceleration exceeds threshold, spawns sub-EPIs
 - **Autonomous reorganization**: No external instruction required
-- **Vibrational metabolism**: Digests external experience into internal structure
+- **Vibrational metabolism**: Digests external experience into internal
+    structure
 - **Emergence engine**: Creates complexity and novelty
 
 Examples
 --------
+This tutorial intentionally prints narrative walkthroughs to stdout so
+readers can follow each metabolic phase when running the module directly.
+These messages provide step-by-step context and are not meant to be routed
+through the shared logging infrastructure.
 """
 
 from __future__ import annotations
@@ -72,7 +77,9 @@ def example_1_basic_bifurcation():
     if sub_epis:
         print("  Sub-EPI details:")
         for i, sub in enumerate(sub_epis):
-            print(f"    [{i}] epi={sub['epi']:.3f}, d2_epi={sub['d2_epi']:.3f}")
+            print(
+                f"    [{i}] epi={sub['epi']:.3f}, d2_epi={sub['d2_epi']:.3f}"
+            )
 
 
 def example_2_metabolic_cycle():
@@ -123,13 +130,17 @@ def example_3_adaptive_metabolism():
     G_stress.nodes[node_stress]["epi_history"] = [0.4, 0.5, 0.7]
 
     print("High stress (>= 0.5):")
-    initial_epi_stress = float(get_attr(G_stress.nodes[node_stress], ALIAS_EPI, 0.0))
+    initial_epi_stress = float(
+        get_attr(G_stress.nodes[node_stress], ALIAS_EPI, 0.0)
+    )
     print(f"  Initial EPI: {initial_epi_stress:.3f}")
 
     metabolism_stress = StructuralMetabolism(G_stress, node_stress)
     metabolism_stress.adaptive_metabolism(stress_level=0.7)
 
-    final_epi_stress = float(get_attr(G_stress.nodes[node_stress], ALIAS_EPI, 0.0))
+    final_epi_stress = float(
+        get_attr(G_stress.nodes[node_stress], ALIAS_EPI, 0.0)
+    )
     print(f"  After adaptive metabolism: EPI={final_epi_stress:.3f}")
 
     # Low stress scenario
@@ -194,7 +205,11 @@ def example_5_emergence_metrics():
 
     for i in range(3):
         # Update history to show acceleration
-        G.nodes[node]["epi_history"] = [0.3 + i * 0.1, 0.4 + i * 0.1, 0.6 + i * 0.1]
+        G.nodes[node]["epi_history"] = [
+            0.3 + i * 0.1,
+            0.4 + i * 0.1,
+            0.6 + i * 0.1,
+        ]
         SelfOrganization()(G, node, tau=0.08)
 
     print("After 3 T'HOL applications:")

@@ -227,6 +227,25 @@ try:
 except ImportError:  # pragma: no cover
     nx = None  # type: ignore
 
+# Import TNFR cache system for automatic field caching
+try:
+    from ..utils.cache import (  # type: ignore
+        cache_tnfr_computation,
+        CacheLevel,
+    )
+    _CACHE_AVAILABLE = True
+except ImportError:  # pragma: no cover
+    _CACHE_AVAILABLE = False
+
+    # Fallback no-op decorator if cache not available
+    def cache_tnfr_computation(*args, **kwargs):  # type: ignore
+        def decorator(func):  # type: ignore
+            return func
+        return decorator
+
+    class CacheLevel:  # type: ignore
+        DERIVED_METRICS = None
+
 # Import TNFR aliases for proper attribute access
 try:
     from ..constants.aliases import ALIAS_THETA, ALIAS_DNFR  # type: ignore
@@ -287,6 +306,10 @@ def _get_dnfr(G: Any, node: Any) -> float:
     return 0.0
 
 
+@cache_tnfr_computation(
+    level=CacheLevel.DERIVED_METRICS if _CACHE_AVAILABLE else None,
+    dependencies={'graph_topology', 'node_dnfr'},
+)
 def compute_structural_potential(
     G: Any, alpha: float = 2.0
 ) -> Dict[Any, float]:
@@ -295,6 +318,9 @@ def compute_structural_potential(
     **Canonical Status**: Promoted to CANONICAL on 2025-11-11 after
     comprehensive validation (2,400+ experiments, 5 topology families,
     CV = 0.1%).
+
+    **Caching**: Automatically cached at CacheLevel.DERIVED_METRICS.
+    Invalidated when graph topology or ΔNFR values change.
 
     Definition
     ----------
@@ -477,6 +503,10 @@ def compute_structural_potential(
     return potential
 
 
+@cache_tnfr_computation(
+    level=CacheLevel.DERIVED_METRICS if _CACHE_AVAILABLE else None,
+    dependencies={'graph_topology', 'node_phase'},
+)
 def compute_phase_gradient(G: Any) -> Dict[Any, float]:
     """Compute magnitude of discrete phase gradient |∇φ| per locus.
     [CANONICAL]
@@ -484,6 +514,9 @@ def compute_phase_gradient(G: Any) -> Dict[Any, float]:
     Status
     ------
     CANONICAL (promoted November 11, 2025)
+
+    **Caching**: Automatically cached at CacheLevel.DERIVED_METRICS.
+    Invalidated when graph topology or phase values change.
 
     Definition
     ----------
@@ -564,12 +597,19 @@ def compute_phase_gradient(G: Any) -> Dict[Any, float]:
     return grad
 
 
+@cache_tnfr_computation(
+    level=CacheLevel.DERIVED_METRICS if _CACHE_AVAILABLE else None,
+    dependencies={'graph_topology', 'node_phase'},
+)
 def compute_phase_curvature(G: Any) -> Dict[Any, float]:
     """Compute discrete Laplacian curvature K_φ of the phase field. [CANONICAL]
 
     Status
     ------
     CANONICAL (promoted November 11, 2025)
+
+    **Caching**: Automatically cached at CacheLevel.DERIVED_METRICS.
+    Invalidated when graph topology or phase values change.
 
         Physical Interpretation
         ----------------------
@@ -869,6 +909,10 @@ def k_phi_multiscale_safety(
     }
 
 
+@cache_tnfr_computation(
+    level=CacheLevel.DERIVED_METRICS if _CACHE_AVAILABLE else None,
+    dependencies={'graph_topology', 'node_dnfr', 'node_coherence'},
+)
 def estimate_coherence_length(
     G: Any, *, coherence_key: str = "coherence"
 ) -> float:
@@ -878,6 +922,9 @@ def estimate_coherence_length(
     Promoted after comprehensive multi-topology validation demonstrating
     critical point prediction, power law scaling, and phase transition
     detection capabilities.
+
+    **Caching**: Automatically cached at CacheLevel.DERIVED_METRICS.
+    Invalidated when graph topology, ΔNFR, or coherence values change.
 
     Validation Evidence
     -------------------

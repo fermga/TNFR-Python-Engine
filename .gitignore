@@ -46,9 +46,17 @@ outputs/
 benchmarks/results/
 dist-test/
 test-env/
+examples/output/
 
 # Large benchmark result files
 benchmarks/results/*_telemetry.jsonl
 benchmarks/results/phase_gradient_full_study.jsonl
 benchmarks/results/u6_aggressive_results.jsonl
 benchmarks/results/*_5000_*.jsonl
+
+debug_scratch/
+*.tmp
+*.temp
+
+# Type checking cache
+.mypy_cache/

@@ -27,7 +27,7 @@ validate_sequence
 from __future__ import annotations
 
 from copy import deepcopy
-from typing import Iterable, Mapping, Sequence
+from typing import Iterable, Mapping, Sequence, cast
 
 import networkx as nx
 
@@ -71,11 +71,14 @@ from .operators.definitions import (
 )
 from .operators.registry import OPERATORS
 from .types import DeltaNFRHook, NodeId, TNFRGraph
+from .utils import get_logger
 
 try:  # pragma: no cover - optional dependency path exercised in CI extras
     import numpy as np
 except ImportError:  # pragma: no cover - optional dependency path exercised in CI extras
     np = None  # type: ignore[assignment]
+
+logger = get_logger(__name__)
 
 # ---------------------------------------------------------------------------
 # 1) NFR factory
@@ -641,8 +644,17 @@ def run_sequence(G: TNFRGraph, node: NodeId, ops: Iterable[Operator]) -> None:
 
                 # Show warnings if allowed
                 if warning_violations and validation_config.allow_semantic_warnings:
-                    report = run_sequence._invariant_validator.generate_report(warning_violations)  # type: ignore[attr-defined]
-                    print(f"⚠️  Semantic sequence warnings:\n{report}")
+                    invariant_validator = cast(
+                        InvariantValidator,
+                        run_sequence._invariant_validator,
+                    )
+                    report = invariant_validator.generate_report(
+                        warning_violations
+                    )
+                    logger.warning(
+                        "⚠️  Semantic sequence warnings:\n%s",
+                        report,
+                    )
 
     # Pre-execution invariant validation (if enabled)
     if validation_config.validate_invariants:

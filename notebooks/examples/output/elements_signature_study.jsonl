@@ -1,0 +1,6 @@
+{"Z": 1, "symbol": "H", "label": "H", "xi_c": 0.0, "mean_grad": 0.0, "mean_kphi": 0.0, "mean_path_length": 1.6923076923076923, "u6_ok": true, "u6_drift": 0.29290073026517266}
+{"Z": 6, "symbol": "C", "label": "C", "xi_c": 0.0, "mean_grad": 0.0, "mean_kphi": 0.0, "mean_path_length": 3.062015503875969, "u6_ok": true, "u6_drift": 0.4053203993896099}
+{"Z": 7, "symbol": "N", "label": "N", "xi_c": 0.0, "mean_grad": 0.0, "mean_kphi": 0.0, "mean_path_length": 3.330249768732655, "u6_ok": true, "u6_drift": 0.44293133839897836}
+{"Z": 8, "symbol": "O", "label": "O", "xi_c": 0.0, "mean_grad": 0.0, "mean_kphi": 0.0, "mean_path_length": 3.348235294117647, "u6_ok": true, "u6_drift": 0.4629823487523243}
+{"Z": 79, "symbol": "Au", "label": "Au", "xi_c": 0.0, "mean_grad": 0.0, "mean_kphi": 0.0, "mean_path_length": 9.342961837518992, "u6_ok": true, "u6_drift": 1.3609642052857507}
+{"Z": 79, "symbol": "Au-net", "label": "Au-network (n=4)", "xi_c": 0.0, "mean_grad": 0.0, "mean_kphi": 0.0, "mean_path_length": 10.715869494944991, "u6_ok": false, "u6_drift": 3.0073362993133137}
