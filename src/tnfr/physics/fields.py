@@ -246,6 +246,12 @@ except ImportError:  # pragma: no cover
     class CacheLevel:  # type: ignore
         DERIVED_METRICS = None
 
+try:
+    from ..utils.fast_diameter import approximate_diameter_2sweep  # type: ignore
+except ImportError:  # pragma: no cover
+    # Fallback to exact (slow) diameter if fast version unavailable
+    approximate_diameter_2sweep = None  # type: ignore
+
 # Import TNFR aliases for proper attribute access
 try:
     from ..constants.aliases import ALIAS_THETA, ALIAS_DNFR  # type: ignore

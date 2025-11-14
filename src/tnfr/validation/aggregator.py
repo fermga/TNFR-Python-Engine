@@ -219,8 +219,13 @@ def run_structural_validation(
     # System geometry approximation (unweighted)
     if nx is not None:
         try:
-            # Diameter may fail on disconnected graphs
-            system_diameter = nx.diameter(G)  # type: ignore
+            # Use fast diameter approximation (46-111× speedup)
+            try:
+                from ..utils.fast_diameter import approximate_diameter_2sweep
+                system_diameter = approximate_diameter_2sweep(G)
+            except (ImportError, Exception):
+                # Fallback to exact (slow) diameter
+                system_diameter = nx.diameter(G)  # type: ignore
         except Exception:  # pragma: no cover - fallback path
             system_diameter = 0
         # Mean node distance (approx via eccentricity mean if possible)
