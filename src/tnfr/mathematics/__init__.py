@@ -52,7 +52,13 @@ from .transforms import (
     ensure_coherence_monotonicity,
     validate_norm_preservation,
 )
-from .number_theory import ArithmeticTNFRNetwork, run_basic_validation
+from .number_theory import (
+    ArithmeticTNFRFormalism,
+    ArithmeticStructuralTerms,
+    ArithmeticTNFRNetwork,
+    PrimeCertificate,
+    run_basic_validation,
+)
 
 """Symbolic analysis exports
 We import from tnfr.math.symbolic and bind the names so lint won't flag them as unused.
@@ -115,7 +121,10 @@ __all__ = [
     "get_backend",
     "register_backend",
     # Number theory (prime emergence)
+    "ArithmeticTNFRFormalism",
+    "ArithmeticStructuralTerms",
     "ArithmeticTNFRNetwork",
+    "PrimeCertificate",
     "run_basic_validation",
 ]
 

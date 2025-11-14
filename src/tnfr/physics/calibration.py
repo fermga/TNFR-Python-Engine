@@ -10,7 +10,7 @@ Validation: Multi-topology parameter sweeps with confidence intervals
 
 import numpy as np
 import networkx as nx
-from typing import Dict, Any, Optional, List
+from typing import Dict, Any
 from dataclasses import dataclass
 
 

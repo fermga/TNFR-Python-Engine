@@ -113,8 +113,8 @@ class JAXBackend(TNFRBackend):
         profile : MutableMapping[str, float] or None, optional
             Dict to collect timing metrics
         """
-        # TODO: Implement JIT-compiled JAX version
-        # For now, delegate to NumPy backend
+        # JAX implementation planned for v2.0 - high-performance JIT compilation
+        # Currently delegates to NumPy backend for compatibility
         from ..dynamics.dnfr import default_compute_delta_nfr
 
         default_compute_delta_nfr(
@@ -159,8 +159,8 @@ class JAXBackend(TNFRBackend):
         dict[Any, float] or numpy.ndarray
             Node-to-Si mapping or array of Si values
         """
-        # TODO: Implement JIT-compiled JAX version
-        # For now, delegate to NumPy backend
+        # JAX implementation planned for v2.0 - high-performance JIT compilation  
+        # Currently delegates to NumPy backend for compatibility
         from ..metrics.sense_index import compute_Si
 
         return compute_Si(

@@ -25,6 +25,7 @@ import matplotlib.pyplot as plt
 
 from ..alias import get_attr
 from ..constants.aliases import ALIAS_EPI
+from ..utils import get_logger
 
 try:
     import networkx as nx
@@ -37,6 +38,9 @@ __all__ = [
     "plot_cascade_propagation",
     "plot_cascade_timeline",
 ]
+
+
+logger = get_logger(__name__)
 
 
 def plot_cascade_propagation(G: TNFRGraph, figsize: tuple[int, int] = (12, 8)):
@@ -86,7 +90,10 @@ def plot_cascade_propagation(G: TNFRGraph, figsize: tuple[int, int] = (12, 8)):
         bifurcated_nodes.add(prop["source_node"])
 
     # Node colors: red = bifurcated, lightblue = normal
-    node_colors = ["red" if n in bifurcated_nodes else "lightblue" for n in G.nodes]
+    node_colors = [
+        "red" if n in bifurcated_nodes else "lightblue"
+        for n in G.nodes
+    ]
 
     # Node sizes based on EPI magnitude
     node_sizes = []
@@ -98,7 +105,14 @@ def plot_cascade_propagation(G: TNFRGraph, figsize: tuple[int, int] = (12, 8)):
     pos = nx.spring_layout(G, seed=42)
 
     # Draw network structure
-    nx.draw_networkx_nodes(G, pos, node_color=node_colors, node_size=node_sizes, ax=ax, alpha=0.8)
+    nx.draw_networkx_nodes(
+        G,
+        pos,
+        node_color=node_colors,
+        node_size=node_sizes,
+        ax=ax,
+        alpha=0.8,
+    )
     nx.draw_networkx_edges(G, pos, alpha=0.3, ax=ax)
     nx.draw_networkx_labels(G, pos, ax=ax, font_size=10)
 
@@ -162,7 +176,7 @@ def plot_cascade_timeline(G: TNFRGraph, figsize: tuple[int, int] = (10, 5)):
     propagations = G.graph.get("thol_propagations", [])
 
     if not propagations:
-        print("No cascade events to plot")
+        logger.info("Cascade timeline skipped: no propagation events recorded")
         return None
 
     timestamps = [p["timestamp"] for p in propagations]
@@ -225,29 +239,65 @@ def plot_cascade_metrics_summary(
 
     # Panel 1: Cascade depth distribution
     depths = [m.get("cascade_depth", 0) for m in node_metrics.values()]
-    axes[0].hist(depths, bins=range(max(depths) + 2), alpha=0.7, color="steelblue")
+    axes[0].hist(
+        depths,
+        bins=range(max(depths) + 2),
+        alpha=0.7,
+        color="steelblue",
+    )
     axes[0].set_xlabel("Cascade Depth", fontsize=11)
     axes[0].set_ylabel("Count", fontsize=11)
-    axes[0].set_title("Cascade Depth Distribution", fontsize=12, fontweight="bold")
+    axes[0].set_title(
+        "Cascade Depth Distribution",
+        fontsize=12,
+        fontweight="bold",
+    )
     axes[0].grid(alpha=0.3)
 
     # Panel 2: Sub-EPI coherence
     coherences = [m.get("subepi_coherence", 0) for m in node_metrics.values()]
     node_ids = list(node_metrics.keys())
-    axes[1].bar(range(len(node_ids)), coherences, alpha=0.7, color="forestgreen")
+    axes[1].bar(
+        range(len(node_ids)),
+        coherences,
+        alpha=0.7,
+        color="forestgreen",
+    )
     axes[1].set_xlabel("Node Index", fontsize=11)
     axes[1].set_ylabel("Coherence [0,1]", fontsize=11)
-    axes[1].set_title("Sub-EPI Collective Coherence", fontsize=12, fontweight="bold")
-    axes[1].axhline(0.5, color="red", linestyle="--", alpha=0.5, label="Threshold")
+    axes[1].set_title(
+        "Sub-EPI Collective Coherence",
+        fontsize=12,
+        fontweight="bold",
+    )
+    axes[1].axhline(
+        0.5,
+        color="red",
+        linestyle="--",
+        alpha=0.5,
+        label="Threshold",
+    )
     axes[1].legend()
     axes[1].grid(alpha=0.3)
 
     # Panel 3: Metabolic activity index
-    activities = [m.get("metabolic_activity_index", 0) for m in node_metrics.values()]
-    axes[2].bar(range(len(node_ids)), activities, alpha=0.7, color="darkorange")
+    activities = [
+        m.get("metabolic_activity_index", 0)
+        for m in node_metrics.values()
+    ]
+    axes[2].bar(
+        range(len(node_ids)),
+        activities,
+        alpha=0.7,
+        color="darkorange",
+    )
     axes[2].set_xlabel("Node Index", fontsize=11)
     axes[2].set_ylabel("Activity [0,1]", fontsize=11)
-    axes[2].set_title("Metabolic Activity Index", fontsize=12, fontweight="bold")
+    axes[2].set_title(
+        "Metabolic Activity Index",
+        fontsize=12,
+        fontweight="bold",
+    )
     axes[2].grid(alpha=0.3)
 
     plt.tight_layout()

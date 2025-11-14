@@ -227,6 +227,31 @@ try:
 except ImportError:  # pragma: no cover
     nx = None  # type: ignore
 
+# Import TNFR cache system for automatic field caching
+try:
+    from ..utils.cache import (  # type: ignore
+        cache_tnfr_computation,
+        CacheLevel,
+    )
+    _CACHE_AVAILABLE = True
+except ImportError:  # pragma: no cover
+    _CACHE_AVAILABLE = False
+
+    # Fallback no-op decorator if cache not available
+    def cache_tnfr_computation(*args, **kwargs):  # type: ignore
+        def decorator(func):  # type: ignore
+            return func
+        return decorator
+
+    class CacheLevel:  # type: ignore
+        DERIVED_METRICS = None
+
+try:
+    from ..utils.fast_diameter import approximate_diameter_2sweep  # type: ignore
+except ImportError:  # pragma: no cover
+    # Fallback to exact (slow) diameter if fast version unavailable
+    approximate_diameter_2sweep = None  # type: ignore
+
 # Import TNFR aliases for proper attribute access
 try:
     from ..constants.aliases import ALIAS_THETA, ALIAS_DNFR  # type: ignore
@@ -287,6 +312,10 @@ def _get_dnfr(G: Any, node: Any) -> float:
     return 0.0
 
 
+@cache_tnfr_computation(
+    level=CacheLevel.DERIVED_METRICS if _CACHE_AVAILABLE else None,
+    dependencies={'graph_topology', 'node_dnfr'},
+)
 def compute_structural_potential(
     G: Any, alpha: float = 2.0
 ) -> Dict[Any, float]:
@@ -295,6 +324,9 @@ def compute_structural_potential(
     **Canonical Status**: Promoted to CANONICAL on 2025-11-11 after
     comprehensive validation (2,400+ experiments, 5 topology families,
     CV = 0.1%).
+
+    **Caching**: Automatically cached at CacheLevel.DERIVED_METRICS.
+    Invalidated when graph topology or ΔNFR values change.
 
     Definition
     ----------
@@ -477,6 +509,10 @@ def compute_structural_potential(
     return potential
 
 
+@cache_tnfr_computation(
+    level=CacheLevel.DERIVED_METRICS if _CACHE_AVAILABLE else None,
+    dependencies={'graph_topology', 'node_phase'},
+)
 def compute_phase_gradient(G: Any) -> Dict[Any, float]:
     """Compute magnitude of discrete phase gradient |∇φ| per locus.
     [CANONICAL]
@@ -484,6 +520,9 @@ def compute_phase_gradient(G: Any) -> Dict[Any, float]:
     Status
     ------
     CANONICAL (promoted November 11, 2025)
+
+    **Caching**: Automatically cached at CacheLevel.DERIVED_METRICS.
+    Invalidated when graph topology or phase values change.
 
     Definition
     ----------
@@ -544,32 +583,45 @@ def compute_phase_gradient(G: Any) -> Dict[Any, float]:
     """
 
     grad: Dict[Any, float] = {}
-    for i in G.nodes():
+    
+    # Pre-extract all phases for vectorization
+    nodes = list(G.nodes())
+    phases = {node: _get_phase(G, node) for node in nodes}
+    
+    for i in nodes:
         neighbors = list(G.neighbors(i))
         if not neighbors:
             grad[i] = 0.0
             continue
         
-        phi_i = _get_phase(G, i)
+        phi_i = phases[i]
         
-        # Compute mean absolute phase difference with neighbors
-        phase_diffs = []
-        for j in neighbors:
-            phi_j = _get_phase(G, j)
-            # Use wrapped difference to respect circular topology
-            phase_diffs.append(abs(_wrap_angle(phi_i - phi_j)))
+        # Vectorized phase difference computation
+        neighbor_phases = np.array([phases[j] for j in neighbors])
+        # Compute wrapped differences in batch
+        diffs = phi_i - neighbor_phases
+        # Vectorized wrapping: map to [-π, π]
+        wrapped_diffs = (diffs + np.pi) % (2 * np.pi) - np.pi
         
-        grad[i] = sum(phase_diffs) / len(phase_diffs)
+        # Mean absolute difference
+        grad[i] = float(np.mean(np.abs(wrapped_diffs)))
     
     return grad
 
 
+@cache_tnfr_computation(
+    level=CacheLevel.DERIVED_METRICS if _CACHE_AVAILABLE else None,
+    dependencies={'graph_topology', 'node_phase'},
+)
 def compute_phase_curvature(G: Any) -> Dict[Any, float]:
     """Compute discrete Laplacian curvature K_φ of the phase field. [CANONICAL]
 
     Status
     ------
     CANONICAL (promoted November 11, 2025)
+
+    **Caching**: Automatically cached at CacheLevel.DERIVED_METRICS.
+    Invalidated when graph topology or phase values change.
 
         Physical Interpretation
         ----------------------
@@ -619,30 +671,38 @@ def compute_phase_curvature(G: Any) -> Dict[Any, float]:
     """
 
     curvature: Dict[Any, float] = {}
-    for i in G.nodes():
+    
+    # Pre-extract phases for vectorization
+    nodes = list(G.nodes())
+    phases = {node: _get_phase(G, node) for node in nodes}
+    
+    for i in nodes:
         neighbors = list(G.neighbors(i))
         if not neighbors:
             curvature[i] = 0.0
             continue
 
-        phi_i = _get_phase(G, i)
-        # Circular mean of neighbor phases via unit vectors
-        neigh_phases = [
-            _get_phase(G, j) for j in neighbors
-        ]
-        if not neigh_phases:
+        phi_i = phases[i]
+        
+        # Vectorized circular mean computation
+        neigh_phases = np.array([phases[j] for j in neighbors])
+        
+        if len(neigh_phases) == 0:
             curvature[i] = 0.0
             continue
 
-        mean_vec = complex(
-            float(np.mean([math.cos(p) for p in neigh_phases])),
-            float(np.mean([math.sin(p) for p in neigh_phases]))
-        )
-        # If mean vector length ~ 0 (highly dispersed), fallback to simple mean
-        if abs(mean_vec) < 1e-9:
+        # Circular mean via unit vectors (vectorized)
+        cos_vals = np.cos(neigh_phases)
+        sin_vals = np.sin(neigh_phases)
+        mean_cos = float(np.mean(cos_vals))
+        mean_sin = float(np.mean(sin_vals))
+        
+        # If mean vector length ~ 0 (highly dispersed), fallback
+        mean_vec_length = np.sqrt(mean_cos**2 + mean_sin**2)
+        if mean_vec_length < 1e-9:
             mean_phase = float(np.mean(neigh_phases))
         else:
-            mean_phase = math.atan2(mean_vec.imag, mean_vec.real)
+            mean_phase = math.atan2(mean_sin, mean_cos)
 
         # Curvature as wrapped deviation from neighbor circular mean
         curvature[i] = float(_wrap_angle(phi_i - mean_phase))
@@ -869,6 +929,10 @@ def k_phi_multiscale_safety(
     }
 
 
+@cache_tnfr_computation(
+    level=CacheLevel.DERIVED_METRICS if _CACHE_AVAILABLE else None,
+    dependencies={'graph_topology', 'node_dnfr', 'node_coherence'},
+)
 def estimate_coherence_length(
     G: Any, *, coherence_key: str = "coherence"
 ) -> float:
@@ -878,6 +942,9 @@ def estimate_coherence_length(
     Promoted after comprehensive multi-topology validation demonstrating
     critical point prediction, power law scaling, and phase transition
     detection capabilities.
+
+    **Caching**: Automatically cached at CacheLevel.DERIVED_METRICS.
+    Invalidated when graph topology, ΔNFR, or coherence values change.
 
     Validation Evidence
     -------------------

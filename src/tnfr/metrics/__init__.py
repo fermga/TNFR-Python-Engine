@@ -45,6 +45,11 @@ from .reporting import (
     glyphogram_series,
     latency_series,
 )
+from .telemetry import (
+    TelemetryEmitter,
+    TelemetryEvent,
+    stream_telemetry,
+)
 
 __all__ = (
     "register_metrics_callbacks",
@@ -76,4 +81,7 @@ __all__ = (
     "compute_phase_coupling_strength",
     "is_phase_compatible",
     "compute_network_phase_alignment",
+    "TelemetryEmitter",
+    "TelemetryEvent",
+    "stream_telemetry",
 )

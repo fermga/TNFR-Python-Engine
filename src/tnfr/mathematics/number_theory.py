@@ -1,3 +1,4 @@
+
 """
 TNFR Arithmetic Network: Prime Numbers as Structural Attractors
 
@@ -11,11 +12,14 @@ Status: IMPLEMENTATION PROTOTYPE
 
 from __future__ import annotations
 
+import logging
 import math
 from dataclasses import dataclass
-from typing import Dict, List, Tuple, Optional
+from typing import Dict, List, Tuple, Optional, Iterable, Union
 import numpy as np
 import networkx as nx
+
+logger = logging.getLogger(__name__)
 
 # Centralized TNFR cache infrastructure (robust, shared across repo)
 try:
@@ -50,7 +54,7 @@ try:
     HAS_SYMPY = True
 except ImportError:
     HAS_SYMPY = False
-    print("Warning: sympy not available. Using basic implementations.")
+    logger.warning(" sympy not available. Using basic implementations.")
 
 
 # ============================================================================
@@ -75,6 +79,131 @@ class ArithmeticTNFRParameters:
     zeta: float = 1.0     # Factorization pressure weight
     eta: float = 0.8      # Divisor pressure weight
     theta: float = 0.6    # Sigma pressure weight
+
+
+@dataclass(frozen=True)
+class ArithmeticStructuralTerms:
+    """Canonical arithmetic invariants per natural number node."""
+
+    tau: int
+    sigma: int
+    omega: int
+
+    def as_dict(self) -> Dict[str, int]:
+        return {'tau': self.tau, 'sigma': self.sigma, 'omega': self.omega}
+
+
+@dataclass(frozen=True)
+class PrimeCertificate:
+    """Structured report for the TNFR prime criterion ΔNFR = 0."""
+
+    number: int
+    delta_nfr: float
+    structural_prime: bool
+    tolerance: float
+    tau: int
+    sigma: int
+    omega: int
+    explanation: str
+    components: Optional[Dict[str, float]] = None
+
+    def as_dict(self) -> Dict[str, object]:
+        return {
+            'number': self.number,
+            'delta_nfr': self.delta_nfr,
+            'structural_prime': self.structural_prime,
+            'tolerance': self.tolerance,
+            'tau': self.tau,
+            'sigma': self.sigma,
+            'omega': self.omega,
+            'components': dict(self.components) if self.components is not None else None,
+            'explanation': self.explanation,
+        }
+
+
+class ArithmeticTNFRFormalism:
+    """Explicit formulas that tie TNFR physics to arithmetic invariants."""
+
+    @staticmethod
+    def epi_value(n: int, terms: ArithmeticStructuralTerms, params: ArithmeticTNFRParameters) -> float:
+        divisor_complexity = params.beta * math.log(max(terms.tau, 1))
+        divisor_excess = params.gamma * (terms.sigma / n - 1)
+        factorization_complexity = params.alpha * terms.omega
+        return 1.0 + factorization_complexity + divisor_complexity + divisor_excess
+
+    @staticmethod
+    def frequency_value(n: int, terms: ArithmeticStructuralTerms, params: ArithmeticTNFRParameters) -> float:
+        divisor_density = params.delta * terms.tau / n
+        factorization_term = params.epsilon * terms.omega / math.log(n)
+        return params.nu_0 * (1.0 + divisor_density + factorization_term)
+
+    @staticmethod
+    def delta_nfr_value(n: int, terms: ArithmeticStructuralTerms, params: ArithmeticTNFRParameters) -> float:
+        factorization_pressure = params.zeta * (terms.omega - 1)
+        divisor_pressure = params.eta * (terms.tau - 2)
+        sigma_pressure = params.theta * (terms.sigma / n - (1 + 1 / n))
+        return factorization_pressure + divisor_pressure + sigma_pressure
+
+    @staticmethod
+    def component_breakdown(n: int, terms: ArithmeticStructuralTerms, params: ArithmeticTNFRParameters) -> Dict[str, float]:
+        return {
+            'factorization_pressure': params.zeta * (terms.omega - 1),
+            'divisor_pressure': params.eta * (terms.tau - 2),
+            'sigma_pressure': params.theta * (terms.sigma / n - (1 + 1 / n)),
+        }
+
+    @staticmethod
+    def local_coherence(delta_nfr: float) -> float:
+        return 1.0 / (1.0 + abs(delta_nfr))
+
+    @staticmethod
+    def symbolic_delta_nfr(params: Optional[ArithmeticTNFRParameters] = None):
+        params = params or ArithmeticTNFRParameters()
+        try:
+            import sympy as sp  # type: ignore
+
+            omega, tau, sigma, n = sp.symbols('omega tau sigma n', positive=True)
+            expr = (
+                params.zeta * (omega - 1)
+                + params.eta * (tau - 2)
+                + params.theta * (sigma / n - (1 + 1 / n))
+            )
+            return expr
+        except Exception:
+            return (
+                f"ΔNFR(n)= {params.zeta}(ω-1) + {params.eta}(τ-2) + "
+                f"{params.theta}(σ/n - (1+1/n))"
+            )
+
+    @staticmethod
+    def prime_certificate(
+        n: int,
+        terms: ArithmeticStructuralTerms,
+        params: ArithmeticTNFRParameters,
+        *,
+        tolerance: float = 1e-12,
+        components: Optional[Dict[str, float]] = None,
+    ) -> PrimeCertificate:
+        if components is None:
+            components = ArithmeticTNFRFormalism.component_breakdown(n, terms, params)
+        delta = ArithmeticTNFRFormalism.delta_nfr_value(n, terms, params)
+        structural_prime = abs(delta) <= tolerance
+        explanation = (
+            "ΔNFR vanishes within tolerance; node is a structural attractor"
+            if structural_prime else
+            "ΔNFR ≠ 0, coherence pressure reveals composite structure"
+        )
+        return PrimeCertificate(
+            number=n,
+            delta_nfr=float(delta),
+            structural_prime=structural_prime,
+            tolerance=float(tolerance),
+            tau=terms.tau,
+            sigma=terms.sigma,
+            omega=terms.omega,
+            components=components,
+            explanation=explanation,
+        )
 
 
 class ArithmeticTNFRNetwork:
@@ -149,21 +278,27 @@ class ArithmeticTNFRNetwork:
             tau_n = self._divisor_count(n)
             sigma_n = self._divisor_sum(n)
             omega_n = self._prime_factor_count(n)
+            terms = ArithmeticStructuralTerms(tau=tau_n, sigma=sigma_n, omega=omega_n)
             
-            # Compute TNFR properties
-            epi_n = self._compute_epi(n, tau_n, sigma_n, omega_n)
-            nu_f_n = self._compute_nu_f(n, tau_n, omega_n)
-            delta_nfr_n = self._compute_delta_nfr(n, tau_n, sigma_n, omega_n)
-            
-            # Store in graph
+            # Compute TNFR properties via the formalism helpers
+            epi_n = ArithmeticTNFRFormalism.epi_value(n, terms, self.params)
+            nu_f_n = ArithmeticTNFRFormalism.frequency_value(n, terms, self.params)
+            delta_nfr_n = ArithmeticTNFRFormalism.delta_nfr_value(n, terms, self.params)
+            local_coherence = ArithmeticTNFRFormalism.local_coherence(delta_nfr_n)
+            component_pressures = ArithmeticTNFRFormalism.component_breakdown(n, terms, self.params)
+
+            # Store TNFR telemetry for this number node
             self.graph.nodes[n].update({
-                'tau': tau_n,           # Number of divisors
-                'sigma': sigma_n,       # Sum of divisors
-                'omega': omega_n,       # Prime factor count (with multiplicity)
-                'EPI': epi_n,           # Structural form
-                'nu_f': nu_f_n,         # Structural frequency
+                'tau': tau_n,            # Number of divisors
+                'sigma': sigma_n,        # Sum of divisors
+                'omega': omega_n,        # Prime factor count (with multiplicity)
+                'EPI': epi_n,            # Structural form
+                'nu_f': nu_f_n,          # Structural frequency
                 'DELTA_NFR': delta_nfr_n,  # Factorization pressure
-                'is_prime': self._is_prime(n)  # Ground truth for validation
+                'is_prime': self._is_prime(n),  # Ground truth for validation
+                'structural_terms': terms,
+                'delta_components': component_pressures,
+                'coherence_local': local_coherence,
             })
     
     # ========================================================================
@@ -232,45 +367,23 @@ class ArithmeticTNFRNetwork:
             return True
     
     # ========================================================================
-    # TNFR PROPERTY COMPUTATIONS
-    # ========================================================================
-    
-    def _compute_epi(self, n: int, tau_n: int, sigma_n: int, omega_n: int) -> float:
-        """Compute arithmetic structural form EPI(n)."""
-        factorization_complexity = self.params.alpha * omega_n
-        divisor_complexity = self.params.beta * math.log(tau_n)
-        divisor_excess = self.params.gamma * (sigma_n / n - 1)
-        
-        epi = 1.0 + factorization_complexity + divisor_complexity + divisor_excess
-        return epi
-    
-    def _compute_nu_f(self, n: int, tau_n: int, omega_n: int) -> float:
-        """Compute arithmetic frequency νf(n)."""
-        divisor_density_term = self.params.delta * tau_n / n
-        factorization_term = self.params.epsilon * omega_n / math.log(n)
-        
-        nu_f = self.params.nu_0 * (1 + divisor_density_term + factorization_term)
-        return nu_f
-    
-    def _compute_delta_nfr(self, n: int, tau_n: int, sigma_n: int, omega_n: int) -> float:
-        """Compute factorization pressure ΔNFR(n)."""
-        factorization_pressure = self.params.zeta * (omega_n - 1)
-        divisor_pressure = self.params.eta * (tau_n - 2)
-        sigma_pressure = self.params.theta * (sigma_n / n - (1 + 1 / n))
-        
-        delta_nfr = factorization_pressure + divisor_pressure + sigma_pressure
-        return delta_nfr
-    
-    # ========================================================================
     # PRIME DETECTION AND ANALYSIS
     # ========================================================================
     
-    def detect_prime_candidates(self, delta_nfr_threshold: float = 0.1) -> List[Tuple[int, float]]:
+    def detect_prime_candidates(
+        self,
+        delta_nfr_threshold: float = 0.1,
+        *,
+        tolerance: float = 1e-12,
+        return_certificates: bool = False,
+    ) -> List[Union[Tuple[int, float], PrimeCertificate]]:
         """
         Detect numbers that behave like primes (low ΔNFR).
         
         Args:
             delta_nfr_threshold: Maximum ΔNFR for prime candidates
+            tolerance: Absolute tolerance for ΔNFR when returning certificates
+            return_certificates: When True, return full PrimeCertificate objects
             
         Returns:
             List of (number, ΔNFR) pairs for prime candidates
@@ -280,11 +393,85 @@ class ArithmeticTNFRNetwork:
         for n in self.graph.nodes():
             delta_nfr = self.graph.nodes[n]['DELTA_NFR']
             if abs(delta_nfr) <= delta_nfr_threshold:
-                candidates.append((n, delta_nfr))
+                if return_certificates:
+                    candidates.append(self.get_prime_certificate(n, tolerance=tolerance))
+                else:
+                    candidates.append((n, delta_nfr))
                 
         # Sort by ΔNFR (most stable first)
-        candidates.sort(key=lambda x: abs(x[1]))
+        if return_certificates:
+            candidates.sort(key=lambda cert: abs(cert.delta_nfr))
+        else:
+            candidates.sort(key=lambda x: abs(x[1]))
         return candidates
+
+    def get_structural_terms(self, n: int) -> ArithmeticStructuralTerms:
+        """Return the canonical structural terms (τ, σ, ω) for node n."""
+        if n not in self.graph.nodes:
+            raise ValueError(f"Number {n} not in network (max: {self.max_number})")
+        terms = self.graph.nodes[n].get('structural_terms')
+        if isinstance(terms, ArithmeticStructuralTerms):
+            return terms
+        # Reconstruct if older cache stored dicts
+        return ArithmeticStructuralTerms(
+            tau=int(self.graph.nodes[n]['tau']),
+            sigma=int(self.graph.nodes[n]['sigma']),
+            omega=int(self.graph.nodes[n]['omega']),
+        )
+
+    def get_delta_components(self, n: int) -> Dict[str, float]:
+        """Return component-level contributions to ΔNFR for node n."""
+        if n not in self.graph.nodes:
+            raise ValueError(f"Number {n} not in network (max: {self.max_number})")
+        components = self.graph.nodes[n].get('delta_components')
+        if components is None:
+            terms = self.get_structural_terms(n)
+            components = ArithmeticTNFRFormalism.component_breakdown(n, terms, self.params)
+            self.graph.nodes[n]['delta_components'] = components
+        return dict(components)
+
+    def get_prime_certificate(
+        self,
+        n: int,
+        *,
+        tolerance: float = 1e-12,
+        include_components: bool = True,
+    ) -> PrimeCertificate:
+        """Generate a PrimeCertificate using the stored TNFR telemetry."""
+        if n not in self.graph.nodes:
+            raise ValueError(f"Number {n} not in network (max: {self.max_number})")
+        terms = self.get_structural_terms(n)
+        components = self.get_delta_components(n) if include_components else None
+        return ArithmeticTNFRFormalism.prime_certificate(
+            n,
+            terms,
+            self.params,
+            tolerance=tolerance,
+            components=components,
+        )
+
+    def generate_prime_certificates(
+        self,
+        numbers: Optional[Iterable[int]] = None,
+        *,
+        tolerance: float = 1e-12,
+        include_components: bool = True,
+    ) -> List[PrimeCertificate]:
+        """Return PrimeCertificates for the provided numbers (or all nodes)."""
+        if numbers is None:
+            numbers = list(self.graph.nodes())
+        certificates: List[PrimeCertificate] = []
+        for n in numbers:
+            if n in self.graph.nodes:
+                certificates.append(
+                    self.get_prime_certificate(
+                        n,
+                        tolerance=tolerance,
+                        include_components=include_components,
+                    )
+                )
+        certificates.sort(key=lambda cert: cert.number)
+        return certificates
     
     def validate_prime_detection(self, delta_nfr_threshold: float = 0.1) -> Dict[str, float]:
         """
@@ -334,7 +521,10 @@ class ArithmeticTNFRNetwork:
             'EPI': node_data['EPI'],
             'nu_f': node_data['nu_f'],
             'DELTA_NFR': node_data['DELTA_NFR'],
-            'is_prime': node_data['is_prime']
+            'is_prime': node_data['is_prime'],
+            'structural_terms': node_data['structural_terms'].as_dict() if isinstance(node_data.get('structural_terms'), ArithmeticStructuralTerms) else node_data.get('structural_terms'),
+            'delta_components': dict(node_data['delta_components']) if node_data.get('delta_components') is not None else None,
+            'coherence_local': node_data.get('coherence_local'),
         }
     
     def analyze_prime_characteristics(self) -> Dict[str, List[float]]:
@@ -985,42 +1175,42 @@ class ArithmeticTNFRNetwork:
 
 def run_basic_validation(max_number: int = 50) -> None:
     """Run basic validation of TNFR prime detection."""
-    print("=" * 60)
-    print("TNFR ARITHMETIC NETWORK: Prime Detection Validation")
-    print("=" * 60)
+    logger.info("=" * 60)
+    logger.info("TNFR ARITHMETIC NETWORK: Prime Detection Validation")
+    logger.info("=" * 60)
     
     # Create network
-    print(f"Creating arithmetic TNFR network (n ≤ {max_number})...")
+    logger.info(f"Creating arithmetic TNFR network (n ≤ {max_number})...")
     network = ArithmeticTNFRNetwork(max_number)
     
     # Summary statistics
     stats = network.summary_statistics()
-    print("\nNetwork Statistics:")
-    print(f"  Total numbers: {stats['total_numbers']}")
-    print(f"  Known primes: {stats['prime_count']}")
-    print(f"  Prime ratio: {stats['prime_ratio']:.3f}")
-    print(f"  Prime mean ΔNFR: {stats['prime_mean_DELTA_NFR']:.6f}")
-    print(f"  Composite mean ΔNFR: {stats['composite_mean_DELTA_NFR']:.6f}")
-    print(f"  ΔNFR separation: {stats['DELTA_NFR_separation']:.6f}")
+    logger.info("Network Statistics:")
+    logger.info(f"  Total numbers: {stats['total_numbers']}")
+    logger.info(f"  Known primes: {stats['prime_count']}")
+    logger.info(f"  Prime ratio: {stats['prime_ratio']:.3f}")
+    logger.info(f"  Prime mean ΔNFR: {stats['prime_mean_DELTA_NFR']:.6f}")
+    logger.info(f"  Composite mean ΔNFR: {stats['composite_mean_DELTA_NFR']:.6f}")
+    logger.info(f"  ΔNFR separation: {stats['DELTA_NFR_separation']:.6f}")
     
     # Test prime detection
-    print("\nTesting prime detection...")
+    logger.info("Testing prime detection...")
     validation = network.validate_prime_detection(delta_nfr_threshold=0.1)
-    print(f"  Precision: {validation['precision']:.3f}")
-    print(f"  Recall: {validation['recall']:.3f}")
-    print(f"  F1-score: {validation['f1_score']:.3f}")
+    logger.info(f"  Precision: {validation['precision']:.3f}")
+    logger.info(f"  Recall: {validation['recall']:.3f}")
+    logger.info(f"  F1-score: {validation['f1_score']:.3f}")
     
     if validation['false_alarms']:
-        print(f"  False alarms: {validation['false_alarms']}")
+        logger.info(f"  False alarms: {validation['false_alarms']}")
     if validation['missed_primes']:
-        print(f"  Missed primes: {validation['missed_primes']}")
+        logger.info(f"  Missed primes: {validation['missed_primes']}")
     
     # Show first few primes
-    print("\nFirst 10 primes with TNFR properties:")
+    logger.info("First 10 primes with TNFR properties:")
     primes = [n for n in range(2, max_number + 1) if network._is_prime(n)][:10]
     for p in primes:
         props = network.get_tnfr_properties(p)
-        print(f"  {p:2d}: EPI={props['EPI']:.3f}, νf={props['nu_f']:.3f}, ΔNFR={props['DELTA_NFR']:.6f}")
+        logger.info(f"  {p:2d}: EPI={props['EPI']:.3f}, νf={props['nu_f']:.3f}, ΔNFR={props['DELTA_NFR']:.6f}")
 
 
 if __name__ == "__main__":

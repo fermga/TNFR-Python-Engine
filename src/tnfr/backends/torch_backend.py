@@ -368,8 +368,8 @@ class TorchBackend(TNFRBackend):
         memory-efficient computation on large graphs, selectable via
         graph.graph["TORCH_DTYPE"] = torch.float16
         """
-        # TODO: Implement GPU-accelerated PyTorch version
-        # For now, delegate to NumPy backend
+        # PyTorch GPU implementation planned for v2.0 - mixed precision support
+        # Currently delegates to NumPy backend for compatibility
         from ..metrics.sense_index import compute_Si
 
         return compute_Si(

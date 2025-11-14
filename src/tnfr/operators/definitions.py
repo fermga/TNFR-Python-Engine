@@ -38,6 +38,17 @@ from .self_organization import SelfOrganization
 from .mutation import Mutation
 from .transition import Transition
 from .recursivity import Recursivity
+from .introspection import (
+    OperatorMeta,
+    OPERATOR_METADATA,
+    get_operator_meta,
+    iter_operator_meta,
+)
+from .grammar_error_factory import (
+    ExtendedGrammarError,
+    collect_grammar_errors,
+    make_grammar_error,
+)
 
 __all__ = [
     "Operator",
@@ -54,4 +65,12 @@ __all__ = [
     "Mutation",
     "Transition",
     "Recursivity",
+    # Introspection exports
+    "OperatorMeta",
+    "OPERATOR_METADATA",
+    "get_operator_meta",
+    "iter_operator_meta",
+    "ExtendedGrammarError",
+    "collect_grammar_errors",
+    "make_grammar_error",
 ]

@@ -227,7 +227,7 @@ def compute_second_derivative_symbolic() -> Derivative:
     See: AGENTS.md § U4: BIFURCATION DYNAMICS
     """
     # First derivative (nodal equation)
-    first_deriv = nu_f * DELTA_NFR
+    nu_f * DELTA_NFR
     
     # Second derivative (product rule)
     nu_f_func = Function('nu_f')

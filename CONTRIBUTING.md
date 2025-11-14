@@ -126,6 +126,29 @@ ruff check src/
 mypy src/tnfr/
 ```
 
+### 3a. Phase 3 Structural Instrumentation
+
+If adding validation, health, or telemetry logic:
+
+- Use `run_structural_validation` to produce a `ValidationReport`.
+- Derive `compute_structural_health(report)` for recommendations.
+- Include performance timing (pass `perf_registry=PerformanceRegistry()`).
+- Ensure added overhead ratio < 0.10 baseline (see perf tests).
+- Never mutate graph state inside validation / health functions.
+- Document physics traceability (why each threshold is used).
+
+Telemetry additions must:
+
+- Remain read-only (no operator side effects).
+- Export coherence (`coherence_total`), sense index, Φ_s, |∇φ|, K_φ, ξ_C.
+- Provide deterministic timestamps when seeds fixed.
+
+Performance guardrails:
+
+- Wrap optional expensive helpers with `perf_guard(label, registry)`.
+- Add/adjust tests under `tests/unit/performance/` for new instrumentation.
+- Avoid micro-optimizing at expense of clarity unless overhead > target.
+
 ### 4. Update Documentation
 
 - Add docstrings to new functions/classes
@@ -241,25 +264,30 @@ from tnfr.utils import get_logger
 The TNFR codebase is organized into focused modules for maintainability and cognitive load reduction:
 
 **Operators** (`tnfr.operators.*`):
+
 - **Individual operator modules**: `emission.py`, `coherence.py`, etc. (13 operators)
 - **Base class**: `definitions_base.py` - Shared operator infrastructure
 - **Facade**: `definitions.py` - Backward-compatible imports
 
 **Grammar** (`tnfr.operators.grammar.*`):
+
 - **Constraint modules**: `u1_initiation_closure.py`, `u2_convergence_boundedness.py`, etc. (8 rules)
 - **Facade**: `grammar.py` - Unified validation interface
 
 **Metrics** (`tnfr.metrics.*`):
+
 - **Focused metrics**: `coherence.py`, `sense_index.py`, `phase_sync.py`, `telemetry.py`
 - **Facade**: `metrics.py` - Backward-compatible exports
 
 **Adding New Code**:
+
 - **New operator**: Add to appropriate operator file (e.g., `coupling.py` for coupling modifications)
 - **New metric**: Create new file in `tnfr.metrics/` or extend existing metric module
 - **New grammar rule**: Add to relevant constraint module or create new `uN_*.py` file
 - **Always update facades**: If adding new exports, add to facade files for backward compatibility
 
 **Module Guidelines**:
+
 - Keep files under 600 lines (ideally 200-400)
 - One primary concept per module
 - Use facade pattern for public APIs
