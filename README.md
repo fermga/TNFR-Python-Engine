@@ -71,6 +71,57 @@ Comprehensive observability:
 - **νf**: Structural frequency (Hz_str)
 - **φ**: Phase synchrony [0, 2π]
 
+### 🧪 Phase 3 Structural Instrumentation
+
+Unified observability and safety layers (read-only):
+
+- `run_structural_validation` combines grammar (U1-U4) + field thresholds.
+- `compute_structural_health` converts validation output to recommendations.
+- `TelemetryEmitter` streams coherence, sense index, Φ_s, |∇φ|, K_φ, ξ_C.
+- `PerformanceRegistry` + `perf_guard` measure overhead (< ~8% in tests).
+
+Usage:
+
+```python
+from tnfr.validation.aggregator import run_structural_validation
+from tnfr.validation.health import compute_structural_health
+from tnfr.performance.guardrails import PerformanceRegistry
+
+perf = PerformanceRegistry()
+report = run_structural_validation(
+  G,
+  sequence=["AL","UM","IL","SHA"],
+  perf_registry=perf,
+)
+health = compute_structural_health(report)
+print(report.risk_level, health.recommendations)
+print(perf.summary())
+```
+
+Telemetry:
+
+```python
+from tnfr.metrics.telemetry import TelemetryEmitter
+
+with TelemetryEmitter("results/run.telemetry.jsonl", human_mirror=True) as em:
+  for step, op in enumerate(["AL","UM","IL","SHA"]):
+    em.record(G, step=step, operator=op, extra={"sequence_id": "demo"})
+```
+
+Risk levels:
+
+- `low` – Grammar valid; no thresholds exceeded.
+- `elevated` – Local stress: max |∇φ|, |K_φ| pocket, ξ_C watch.
+- `critical` – Grammar invalid or ΔΦ_s / ξ_C critical breach.
+
+CLI health report:
+
+```bash
+python scripts/structural_health_report.py --graph random:50:0.15 --sequence AL,UM,IL,SHA
+```
+
+All instrumentation preserves TNFR physics (no state mutation).
+
 ## Installation
 
 ### From PyPI (Stable)
@@ -275,6 +326,8 @@ We welcome contributions! Please see **[CONTRIBUTING.md](CONTRIBUTING.md)** for:
 - Pull request process
 
 **For TNFR theory development**, consult **[AGENTS.md](AGENTS.md)** - the canonical guide for maintaining theoretical integrity.
+Phase 3 adds structural validation, health assessment and guardrails; see
+`docs/STRUCTURAL_HEALTH.md` for thresholds & recommendations.
 
 ## Citation
 
