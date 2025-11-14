@@ -1,1 +1,0 @@
-{"sequence": ["NAV", "NUL", "REMESH", "AL", "SHA"], "coherence_change": 0.0, "sense_index_change": -0.000141454425142018, "phi_s_change": 0.0, "grad_phi_change": 0.0, "k_phi_change": 0.0, "xi_c_change": 0.0, "phase_sync_change": 0.0, "epi_magnitude_change": -0.013106977564275368, "hash_signature": "25ab52f94adcae2d", "sequence_str": "NAV -> NUL -> REMESH -> AL -> SHA"}

@@ -1,1 +1,0 @@
-{"sequence": ["RA", "ZHIR", "RA", "SHA"], "coherence_change": 0.0, "sense_index_change": 0.016614082118203477, "phi_s_change": 0.0, "grad_phi_change": -0.1613991660673757, "k_phi_change": -0.1345254484188783, "xi_c_change": 0.0, "phase_sync_change": 0.046849132100128865, "epi_magnitude_change": 0.0, "hash_signature": "f4f5377c8dc27efb", "sequence_str": "RA -> ZHIR -> RA -> SHA"}

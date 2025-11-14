@@ -1,1 +1,0 @@
-{"sequence": ["NUL", "IL", "REMESH"], "coherence_change": 0.00585673858557012, "sense_index_change": 0.004119161360844892, "phi_s_change": 0.023406207926296663, "grad_phi_change": 0.0, "k_phi_change": 0.0, "xi_c_change": 0.0, "phase_sync_change": 0.0, "epi_magnitude_change": -0.009831334603453201, "hash_signature": "3c0324285dcf3906", "sequence_str": "NUL -> IL -> REMESH"}

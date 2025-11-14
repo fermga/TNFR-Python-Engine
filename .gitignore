@@ -43,6 +43,7 @@ validation_outputs/
 # Generated results and outputs (not needed in repo)
 results/
 outputs/
+benchmarks/results/
 dist-test/
 test-env/
 

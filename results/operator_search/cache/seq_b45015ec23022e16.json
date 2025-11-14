@@ -1,1 +1,0 @@
-{"sequence": ["NAV", "SHA", "IL", "SHA"], "coherence_change": 0.005977072674478889, "sense_index_change": -0.0002978503534499799, "phi_s_change": -0.006633374224812361, "grad_phi_change": 0.0, "k_phi_change": 0.0, "xi_c_change": 0.0, "phase_sync_change": 0.0, "epi_magnitude_change": 0.0, "hash_signature": "ca028496510fabfa", "sequence_str": "NAV -> SHA -> IL -> SHA"}

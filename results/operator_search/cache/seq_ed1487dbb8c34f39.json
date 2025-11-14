@@ -1,1 +1,0 @@
-{"sequence": ["THOL", "NAV", "REMESH"], "coherence_change": 0.006095579012229679, "sense_index_change": -0.01130783059536955, "phi_s_change": 0.040398154390327456, "grad_phi_change": 0.0, "k_phi_change": 0.0, "xi_c_change": 0.0, "phase_sync_change": 0.0, "epi_magnitude_change": 0.0016110268000915084, "hash_signature": "c805ab1ec760ebda", "sequence_str": "THOL -> NAV -> REMESH"}

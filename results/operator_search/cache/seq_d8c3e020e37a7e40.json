@@ -1,1 +1,0 @@
-{"sequence": ["REMESH", "NAV", "SHA", "SHA"], "coherence_change": 0.0, "sense_index_change": 0.005140202741097055, "phi_s_change": 0.0, "grad_phi_change": 0.0, "k_phi_change": 0.0, "xi_c_change": 0.0, "phase_sync_change": 0.0, "epi_magnitude_change": 0.0012979550078131563, "hash_signature": "dd40a68d44c66255", "sequence_str": "REMESH -> NAV -> SHA -> SHA"}

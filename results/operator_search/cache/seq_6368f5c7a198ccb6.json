@@ -1,1 +1,0 @@
-{"sequence": ["VAL", "IL", "REMESH"], "coherence_change": 0.006918522945970285, "sense_index_change": -0.00855257389843056, "phi_s_change": 0.10554412901666121, "grad_phi_change": 0.0, "k_phi_change": 0.0, "xi_c_change": 0.0, "phase_sync_change": 0.0, "epi_magnitude_change": 0.020220002447349117, "hash_signature": "2899b172dd9f92ee", "sequence_str": "VAL -> IL -> REMESH"}
