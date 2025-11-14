@@ -1,0 +1,63 @@
+{
+  "metadata": {
+    "timestamp": "2025-11-14T16:45:00",
+    "phase": "Phase 2 - Task 1 Complete",
+    "commit": "993f16263",
+    "description": "Performance baseline after definitions.py split into per-operator modules",
+    "python_version": "3.13.6",
+    "platform": "Windows"
+  },
+  "import_times_ms": {
+    "tnfr.operators.definitions": 936.40,
+    "tnfr.operators.grammar": 118.32,
+    "tnfr.operators.metrics": 116.78,
+    "tnfr": 115.24,
+    "total": 1286.73
+  },
+  "operator_instantiation_us": {
+    "Recursivity": 0.11,
+    "Coherence": 0.07,
+    "Expansion": 0.07,
+    "Dissonance": 0.07,
+    "Reception": 0.07,
+    "Emission": 0.07,
+    "Resonance": 0.07,
+    "Coupling": 0.07,
+    "Silence": 0.07,
+    "Contraction": 0.06,
+    "SelfOrganization": 0.06,
+    "Mutation": 0.06,
+    "Transition": 0.06,
+    "average": 0.07
+  },
+  "grammar_validation_ms": {
+    "simple_valid": 0.001,
+    "complex_valid": 0.001,
+    "invalid": 0.000
+  },
+  "operator_execution_ms": {
+    "emission_with_metrics": 0.223,
+    "coherence_with_metrics": 0.084
+  },
+  "memory_usage_mb": {
+    "baseline_imports": 108.91,
+    "with_10_graphs": 108.97,
+    "delta": 0.06,
+    "per_graph": 0.006
+  },
+  "analysis": {
+    "import_performance": "Excellent - ~1.3s cold start for full framework",
+    "operator_creation": "Excellent - <0.1μs per operator instantiation",
+    "grammar_validation": "Excellent - <0.001ms per validation",
+    "execution_speed": "Excellent - 0.2ms for Emission with metrics",
+    "memory_footprint": "Excellent - 6KB per graph, minimal overhead",
+    "overall_assessment": "All metrics within excellent range. Split has minimal performance impact."
+  },
+  "regression_thresholds": {
+    "import_time_max_ms": 1500,
+    "operator_creation_max_us": 1.0,
+    "grammar_validation_max_ms": 0.01,
+    "operator_execution_max_ms": 1.0,
+    "memory_per_graph_max_mb": 0.1
+  }
+}
