@@ -38,6 +38,12 @@ from .self_organization import SelfOrganization
 from .mutation import Mutation
 from .transition import Transition
 from .recursivity import Recursivity
+from .introspection import (
+    OperatorMeta,
+    OPERATOR_METADATA,
+    get_operator_meta,
+    iter_operator_meta,
+)
 
 __all__ = [
     "Operator",
@@ -54,4 +60,9 @@ __all__ = [
     "Mutation",
     "Transition",
     "Recursivity",
+    # Introspection exports
+    "OperatorMeta",
+    "OPERATOR_METADATA",
+    "get_operator_meta",
+    "iter_operator_meta",
 ]
