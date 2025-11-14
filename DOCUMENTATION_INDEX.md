@@ -81,6 +81,7 @@ Generated from code + narrative docs:
 | **[TESTING.md](TESTING.md)** | Test conventions | Writing tests |
 | **[MIGRATION_GUIDE.md](MIGRATION_GUIDE.md)** | Modular architecture migration | Upgrading code |
 | **[SECURITY.md](SECURITY.md)** | Security policies | Reporting issues |
+| **[OPTIMIZATION_PHASE_2_ROADMAP.md](OPTIMIZATION_PHASE_2_ROADMAP.md)** | Phase 2 optimization plan | Active development |
 
 ### Specialized Topics
 
