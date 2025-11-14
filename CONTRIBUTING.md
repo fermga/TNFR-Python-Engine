@@ -1,641 +1,498 @@
-# Contributing
+# Contributing to TNFR Python Engine
 
-This project now uses English for **all** code identifiers and docstrings. The
-legacy Spanish operator names were removed in TNFR 2.0 as part of the language
-consolidation. New contributions must reference the English operator tokens and
-descriptors exclusively.
+Thank you for your interest in contributing to TNFR! This document provides guidelines for contributing to the Resonant Fractal Nature Theory computational engine.
 
-When contributing:
+## Table of Contents
 
-- Use descriptive English names for every variable, function, class, and
-  module.
-- Write docstrings and comments in English and reference operators by their
-  canonical English identifiers. Follow the
-  [NumPy-style docstring guide](docs/source/api/docstring_style.md), including the
-  dedicated templates for `tnfr.operators.definitions` and
-  `tnfr.metrics.sense_index`, so automated tools and reviewers can trace how
-  each API reorganises EPI, νf, ΔNFR, and phase. Module headers, public
-  classes, public methods/functions, and magic methods must now include a
-  docstring; targeted ``# noqa: Dxxx`` suppressions require a short
-  justification beside the directive.
-- Update existing code to migrate any remaining legacy strings to the English
-  tokens.
+- [Code of Conduct](#code-of-conduct)
+- [Getting Started](#getting-started)
+- [Development Workflow](#development-workflow)
+- [TNFR Principles](#tnfr-principles)
+- [Code Standards](#code-standards)
+- [Testing Requirements](#testing-requirements)
+- [Documentation](#documentation)
+- [Pull Request Process](#pull-request-process)
+- [Theoretical Contributions](#theoretical-contributions)
 
-Use the following summary as a quick reminder of the expected docstring
-sections when creating or updating public APIs:
+## Code of Conduct
+
+### Our Pledge
+
+We are committed to providing a welcoming and inclusive environment for all contributors, regardless of background, identity, or experience level.
+
+### Our Standards
+
+**Expected behavior:**
+
+- Use welcoming and inclusive language
+- Respect differing viewpoints and experiences
+- Accept constructive criticism gracefully
+- Focus on what's best for the community
+  Show empathy towards other community members
+
+**Unacceptable behavior:**
+
+- Harassment, discrimination, or derogatory comments
+- Trolling, insulting, or personal attacks
+- Public or private harassment
+- Publishing others' private information without permission
+- Other conduct inappropriate for a professional setting
+
+### Enforcement
+
+Instances of unacceptable behavior may be reported to the project maintainers. All complaints will be reviewed and investigated promptly and fairly.
+
+## Getting Started
+
+### Prerequisites
+
+- Python 3.10 or higher
+- Git
+- Basic understanding of TNFR concepts (see [TNFR_CONCEPTS.md](docs/source/getting-started/TNFR_CONCEPTS.md))
+
+### Development Setup
+
+1. **Fork and clone the repository:**
+
+   ```bash
+   git clone https://github.com/YOUR_USERNAME/TNFR-Python-Engine.git
+   cd TNFR-Python-Engine
+   ```
+
+2. **Create a virtual environment:**
+
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
+
+3. **Install in development mode:**
+
+   ```bash
+   pip install -e ".[dev-minimal]"
+   ```
+
+4. **Install pre-commit hooks (optional but recommended):**
+
+   ```bash
+   pre-commit install
+   ```
+
+5. **Verify installation:**
+
+   ```bash
+   pytest tests/examples/test_u6_sequential_demo.py
+   ```
+
+## Development Workflow
+
+### 1. Create a Feature Branch
+
+```bash
+git checkout -b feature/your-feature-name
+# or
+git checkout -b fix/issue-description
+```
+
+**Branch naming conventions:**
+
+- `feature/` - New functionality
+- `fix/` - Bug fixes
+- `docs/` - Documentation improvements
+- `refactor/` - Code restructuring without behavior changes
+- `test/` - Test additions or improvements
+- `perf/` - Performance optimizations
+
+### 2. Make Your Changes
+
+- Follow TNFR principles (see below)
+- Write clear, descriptive commit messages
+- Keep commits focused and atomic
+- Add tests for new functionality
+- Update documentation as needed
+
+### 3. Test Your Changes
+
+```bash
+# Run smoke tests (fast validation)
+make smoke-tests  # Unix/Linux
+.\make.cmd smoke-tests  # Windows
+
+# Run full test suite
+pytest
+
+# Check code quality
+ruff check src/
+mypy src/tnfr/
+```
+
+### 4. Update Documentation
+
+- Add docstrings to new functions/classes
+- Update relevant README files
+- Add examples if introducing new features
+- Update CHANGELOG.md if applicable
+
+### 5. Submit a Pull Request
+
+See [Pull Request Process](#pull-request-process) below.
+
+## TNFR Principles
+
+**Before contributing, familiarize yourself with [AGENTS.md](AGENTS.md)** - the canonical guide for TNFR development.
+
+### Core Principles
+
+1. **Physics First**: Every feature must derive from TNFR physics
+2. **No Arbitrary Choices**: All decisions traceable to nodal equation or invariants
+3. **Coherence Over Convenience**: Preserve theoretical integrity even if code is harder
+4. **Reproducibility Always**: Every simulation must be reproducible
+5. **Document the Chain**: Theory → Math → Code → Tests
+
+### The 10 Canonical Invariants
+
+**All contributions must preserve these invariants:**
+
+1. **EPI as Coherent Form** - Changes only via structural operators
+2. **Structural Units** - νf in Hz_str, never relabel
+3. **ΔNFR Semantics** - Physical reorganization gradient, not ML loss
+4. **Operator Closure** - Composition must yield valid TNFR states
+5. **Phase Verification** - No coupling without |φᵢ - φⱼ| ≤ Δφ_max check
+6. **Node Birth/Collapse** - Explicit lifecycle conditions
+7. **Operational Fractality** - EPIs can nest without losing identity
+8. **Controlled Determinism** - Stochastic but reproducible (seeds)
+9. **Structural Metrics** - Expose C(t), Si, phase, νf in telemetry
+10. **Domain Neutrality** - Trans-scale, trans-domain core
+
+### Decision Framework
 
 ```python
-"""One-line summary of the structural effect.
-
-Parameters
-----------
-name : type
-    Describe how the argument influences EPI, νf, ΔNFR, or phase.
-
-Returns
--------
-return_type
-    State the structural outcome exposed to callers.
-
-Raises
-------
-ExceptionType
-    Mention validation or dissonance guards when relevant.
-
-Examples
---------
->>> # Provide runnable snippets that respect TNFR invariants
-"""
+def should_implement(feature):
+    """Decision framework for TNFR changes."""
+    if weakens_tnfr_fidelity(feature):
+        return False  # Reject, even if "cleaner"
+    
+    if not maps_to_operators(feature):
+        return False  # Must map or be new operator
+    
+    if violates_invariants(feature):
+        return False  # Hard constraint
+    
+    if not derivable_from_physics(feature):
+        return False  # No organizational convenience ≠ physical necessity
+    
+    if not testable(feature):
+        return False  # No untestable magic
+    
+    return True  # Implement with full documentation
 ```
 
-The canonical operator identifiers are:
+## Code Standards
 
-| Identifier | Description |
-| --- | --- |
-| `emission` | Emission |
-| `reception` | Reception |
-| `coherence` | Coherence |
-| `dissonance` | Dissonance |
-| `coupling` | Coupling |
-| `resonance` | Resonance |
-| `silence` | Silence |
-| `expansion` | Expansion |
-| `contraction` | Contraction |
-| `self_organization` | Self-organization |
-| `mutation` | Mutation |
-| `transition` | Transition |
-| `recursivity` | Recursivity |
+### Style Guidelines
 
-## Pre-commit hooks
+- **Follow PEP 8** with line length ≤ 100 characters
+- **Use type hints** for all function signatures
+- **Prefer explicit over implicit** - clarity trumps brevity
+- **Document intent, not just behavior** - explain *why*, not just *what*
 
-Run the repository's pre-commit hooks to keep formatting aligned with the
-canonical configuration:
+### Code Quality Tools
 
 ```bash
-python -m pip install --upgrade pre-commit
-pre-commit install
+# Linting
+ruff check src/
+
+# Type checking
+mypy src/tnfr/
+
+# Formatting (if using black)
+black src/ --line-length 100
 ```
 
-The hooks execute [Black](https://github.com/psf/black) and
-[isort](https://github.com/PyCQA/isort) using the shared settings in
-`pyproject.toml`, and verify that all Python modules have corresponding `.pyi`
-stub files. They run automatically on each commit after installation, but
-you can also trigger them manually with `pre-commit run --all-files` before
-submitting changes.
+### Naming Conventions
 
-## Factory patterns and type stubs
+- **Functions/methods**: `snake_case`
+- **Classes**: `PascalCase`
+- **Constants**: `UPPER_SNAKE_CASE`
+- **Private members**: `_leading_underscore`
+- **Operators**: Canonical names (AL, EN, IL, OZ, UM, RA, SHA, VAL, NUL, THOL, ZHIR, NAV, REMESH)
 
-When creating factory functions for operators, generators, or mathematical
-constructs, follow the patterns documented in the [Architecture Guide](docs/source/advanced/ARCHITECTURE_GUIDE.md).
-Key principles:
+### Imports
 
-- Use `make_*` prefix for operator factories that return concrete instances
-- Use `build_*` prefix for generators that return raw matrices/data
-- Include full type annotations and generate corresponding `.pyi` stubs
-- Validate inputs and verify structural invariants after construction
+```python
+# Standard library
+from __future__ import annotations
+import sys
+from pathlib import Path
+from typing import Optional, List, Dict
 
-**Comprehensive Guides:**
-- [Architecture Guide](docs/source/advanced/ARCHITECTURE_GUIDE.md) - Factory patterns, type stubs, and dependencies
-- [Testing Strategies](docs/source/advanced/TESTING_STRATEGIES.md) - Testing best practices and stub automation
-- [Development Workflow](docs/source/advanced/DEVELOPMENT_WORKFLOW.md) - Complete contributor guide
+# Third-party
+import networkx as nx
+import numpy as np
 
-### Stub Generation and Synchronization
+# TNFR modules
+from tnfr.operators.definitions import Emission, Coherence
+from tnfr.metrics.coherence import compute_coherence
+from tnfr.utils import get_logger
+```
 
-To maintain type safety and prevent drift between implementations and stubs:
+### Module Organization (Phase 1 & 2)
+
+The TNFR codebase is organized into focused modules for maintainability and cognitive load reduction:
+
+**Operators** (`tnfr.operators.*`):
+- **Individual operator modules**: `emission.py`, `coherence.py`, etc. (13 operators)
+- **Base class**: `definitions_base.py` - Shared operator infrastructure
+- **Facade**: `definitions.py` - Backward-compatible imports
+
+**Grammar** (`tnfr.operators.grammar.*`):
+- **Constraint modules**: `u1_initiation_closure.py`, `u2_convergence_boundedness.py`, etc. (8 rules)
+- **Facade**: `grammar.py` - Unified validation interface
+
+**Metrics** (`tnfr.metrics.*`):
+- **Focused metrics**: `coherence.py`, `sense_index.py`, `phase_sync.py`, `telemetry.py`
+- **Facade**: `metrics.py` - Backward-compatible exports
+
+**Adding New Code**:
+- **New operator**: Add to appropriate operator file (e.g., `coupling.py` for coupling modifications)
+- **New metric**: Create new file in `tnfr.metrics/` or extend existing metric module
+- **New grammar rule**: Add to relevant constraint module or create new `uN_*.py` file
+- **Always update facades**: If adding new exports, add to facade files for backward compatibility
+
+**Module Guidelines**:
+- Keep files under 600 lines (ideally 200-400)
+- One primary concept per module
+- Use facade pattern for public APIs
+- Document module purpose at top of file
+
+## Testing Requirements
+
+### Test Coverage Goals
+
+- **Core modules**: ≥90% coverage
+- **Operators**: 100% coverage (all contracts verified)
+- **Grammar rules**: 100% coverage (U1-U6)
+- **Utilities**: ≥80% coverage
+
+### Required Test Types
+
+1. **Unit tests** - Test individual functions/classes
+2. **Integration tests** - Test operator sequences
+3. **Property tests** - Verify invariants hold (using Hypothesis)
+4. **Example tests** - Validate domain applications
+
+### Writing Tests
+
+```python
+def test_coherence_monotonicity():
+    """Coherence operator must not decrease C(t)."""
+    G = nx.erdos_renyi_graph(20, 0.3)
+    initialize_network(G)
+    
+    C_before = compute_coherence(G)
+    apply_operator(G, node, Coherence())
+    C_after = compute_coherence(G)
+    
+    assert C_after >= C_before, "Coherence must not decrease"
+```
+
+### Test Naming
+
+- `test_<function_name>` - Unit tests
+- `test_<feature>_<scenario>` - Integration tests
+- `test_invariant_<invariant_name>` - Invariant verification
+
+### Running Tests
 
 ```bash
-make stubs               # Generate .pyi files for modules missing them
-make stubs-check         # Verify all modules have stub files (CI)
-make stubs-check-sync    # Check if stubs are outdated (CI)
-make stubs-sync          # Regenerate outdated stubs
+# Smoke tests (fast)
+make smoke-tests
+
+# Full suite
+pytest
+
+# Specific module
+pytest tests/unit/operators/
+
+# With coverage
+pytest --cov=src/tnfr --cov-report=html
 ```
 
-The pre-commit hook will automatically check for missing stubs before allowing
-commits to proceed. When you modify a `.py` file:
+## Documentation
 
-1. Update type annotations as needed
-2. Run `make stubs-sync` to regenerate the `.pyi` stub
-3. Review the generated stub for accuracy
-4. Commit both `.py` and `.pyi` files together
+### Docstring Format
 
-See [Architecture Guide - Type Stub Automation](docs/source/advanced/ARCHITECTURE_GUIDE.md#type-stub-automation) 
-and [Testing Strategies - Type Stub Testing](docs/source/advanced/TESTING_STRATEGIES.md#type-stub-testing) for 
-complete documentation on the automated stub generation system, including troubleshooting and advanced usage.
+Use **Google style** docstrings:
 
-## Commit message format
-
-Every commit **must** follow the `AGENT_COMMIT_TEMPLATE` documented for this
-repository. Copy the header exactly and fill in each field before writing the
-rest of the commit body so human maintainers can audit how the change aligns
-with the TNFR invariants. Refer to [AGENTS.md](AGENTS.md) for the authoritative
-source of this template and any future adjustments.
-
-```text
-Intent: (which coherence is improved)
-Operators involved: [Emission|Reception|...]
-Affected invariants: [#1, #4, ...]
-Key changes: (bullet list)
-Expected risks/dissonances: (and how they’re contained)
-Metrics: (C(t), Si, νf, phase) before/after expectations
-Equivalence map: (if you renamed APIs)
+```python
+def apply_operator(G: nx.Graph, node: int, operator: Operator) -> None:
+    """Apply a structural operator to a network node.
+    
+    Args:
+        G: NetworkX graph representing TNFR network
+        node: Node identifier to apply operator to
+        operator: Structural operator instance (AL, EN, IL, etc.)
+        
+    Raises:
+        ValueError: If node not in graph
+        GrammarViolation: If operator application violates grammar
+        
+    Examples:
+        >>> G = nx.erdos_renyi_graph(10, 0.3)
+        >>> apply_operator(G, 0, Emission())
+        >>> apply_operator(G, 0, Coherence())
+    """
 ```
 
-Fill out each field with concise, review-ready information:
+### Documentation Requirements
 
-- **Intent** — Summarize the structural coherence or capability the commit
-  reorganizes.
-- **Operators involved** — List every structural operator touched so reviewers
-  can verify closure and semantics.
-- **Affected invariants** — Reference the numbered canonical invariants that
-  change or require revalidation.
-- **Key changes** — Provide the high-level bullet list that mirrors the diff’s
-  structural impact.
-- **Expected risks/dissonances** — Note possible regressions or dissonant
-  dynamics and describe the containment strategy.
-- **Metrics** — Describe anticipated shifts in C(t), Si, νf, or phase to align
-  expectations with telemetry.
-- **Equivalence map** — Document any renamed APIs or reorganized entry points
-  so downstream integrations can adjust.
+All contributions must include:
 
-## Physics documentation contributions
+1. **Docstrings** for all public functions/classes
+2. **Type hints** for function signatures
+3. **Examples** demonstrating usage
+4. **Physics rationale** linking to TNFR theory
+5. **Tests** covering documented behavior
 
-When contributing documentation that explains or extends TNFR physics (nodal equation, grammar rules, or structural fields):
+### README Updates
 
-- Start with the module hub: `src/tnfr/physics/README.md` (includes an expandable guide and a dedicated section “How to contribute physics docs”).
-- Use the canonical tetrad guide: `docs/STRUCTURAL_FIELDS_TETRAD.md` for physics → math → API → thresholds → workflows.
-- Trace rules to grammar: `UNIFIED_GRAMMAR_RULES.md` (U1–U6), and invariants to `AGENTS.md`.
-- Reference research context and validation: `docs/TNFR_FORCES_EMERGENCE.md` (§14–15) for field/emergence evidence.
+If adding features, update:
 
-Principles:
-- Physics-first; avoid duplication by linking to canonical sources.
-- English only; concise sections with headings; math with KaTeX; runnable examples.
-- Read-only telemetry for physics utilities; EPI mutations only via operators.
-- Preserve units (Hz_str) and canonical invariants; include seeds for reproducibility.
+- Main README.md (if user-facing)
+- Relevant subsystem READMEs
+- Examples directory
+- API documentation
 
-PR checklist (physics docs):
-- [ ] Links to canonical sources (tetrad guide, grammar, AGENTS) are present
-- [ ] No redundant duplicate of canonical content; cross-links instead
-- [ ] Examples runnable; seeds and inputs specified
-- [ ] Units/invariants preserved; statements trace back to the nodal equation
-- [ ] If adding research content, it is clearly marked non-canonical until promoted
+## Pull Request Process
 
-## Changelog fragments
+### Before Submitting
 
-All pull requests that touch structural code paths must ship a changelog
-fragment so the release ledger stays synchronised with the TNFR invariants.
-Fragments live under `docs/changelog.d/` and follow the
-`<ticket-or-topic>.<type>.md` naming pattern. The supported fragment types are
-aligned with TNFR semantics:
+- [ ] Tests pass locally (`make smoke-tests`)
+- [ ] Code follows style guidelines (`ruff check`)
+- [ ] Documentation updated
+- [ ] Commit messages are clear and descriptive
+- [ ] Branch is up to date with main
+- [ ] CHANGELOG.md updated (if applicable)
 
-| Type directory | When to use it |
-| --- | --- |
-| `coherence` | New operators, public APIs, telemetry, or other capabilities that expand coherent behaviour. |
-| `stability` | Fixes, performance tuning, regression guards, or contract hardening. |
-| `documentation` | User-facing docs, tutorials, or narrative updates worth highlighting. |
-| `infrastructure` | CI, packaging, or build-system changes that affect downstream consumers. |
+### PR Template
 
-Create a fragment with `towncrier` (installed via `pip install .[release]` or
-`pip install towncrier`) so filenames stay consistent:
+```markdown
+## Description
 
-```bash
-towncrier --config docs/towncrier.toml create 451.coherence --edit
-```
+[Clear description of what this PR does]
 
-The command scaffolds `docs/changelog.d/451.coherence.md` and opens it in the
-default editor. Describe the structural effect in a short paragraph or a set of
-bullets; the release workflow will render the Markdown as-is. The CI gate
-(`scripts/check_changelog.py`) fails whenever a pull request modifies
-`src/`, `tests/`, `scripts/`, or `benchmarks/` without introducing at least one
-new fragment, preventing merges that would silently skip the release ledger.
-The shared configuration lives at `docs/towncrier.toml`, keeping the rendered
-ledger aligned with `docs/releases.md` and the fragment taxonomy above.
+## Motivation
 
-During releases the automation compiles the pending fragments, regenerates
-`docs/releases.md`, and removes the consumed fragment files. The generated
-release notes feed both the GitHub release body and the versioned ledger under
-`docs/`, so maintainers only need to review the fragment text during code
-review.
+[Why is this change needed? What problem does it solve?]
+
+## TNFR Alignment
+
+- [ ] Preserves all 10 canonical invariants
+- [ ] Maps to structural operators (specify which)
+- [ ] Derivable from TNFR physics (reference TNFR.pdf or UNIFIED_GRAMMAR_RULES.md)
+- [ ] Maintains reproducibility (seeds, determinism)
 
 ## Testing
 
-### Before opening a pull request
+- [ ] Unit tests added/updated
+- [ ] Integration tests added/updated
+- [ ] Examples demonstrate usage
+- [ ] All tests pass locally
 
-Run `python -m mypy src/tnfr` (or the consolidated `./scripts/run_tests.sh`
-helper described below) from the project root before filing a pull request.
-The **CI** GitHub Action (`.github/workflows/ci.yml`) validates
-the same invocation on every PR and will block the merge if local changes skip
-the type-checking gate, so matching its behaviour locally keeps CI green on the
-first try.
+## Documentation
 
-### Quality gate script
+- [ ] Docstrings added/updated
+- [ ] README updated (if needed)
+- [ ] Examples added (if new feature)
+- [ ] Physics rationale documented
 
-Run the full quality gate from the project root with:
+## Checklist
 
-```bash
-./scripts/run_tests.sh
+- [ ] Code follows style guidelines
+- [ ] Self-review completed
+- [ ] No unintended files committed
+- [ ] Branch name follows conventions
+- [ ] Commit messages are descriptive
+
+## Affected Components
+
+[List modules/files modified]
+
+## Breaking Changes
+
+[List any breaking changes, or write "None"]
+
+## Additional Notes
+
+[Any other context, screenshots, or information]
 ```
 
-The helper sets up `PYTHONPATH` and orchestrates the tooling invoked by the
-continuous integration workflow. Each tool inherits the strict configuration
-captured in `pyproject.toml`, so local runs match CI expectations:
+### Review Process
 
-- `python -m pip install --quiet ".[test,typecheck]"` ensures the combined test
-  and type-checking extras are present before validations begin, just like CI.
-- `python -m pydocstyle --add-ignore=D202 src/tnfr/selector.py src/tnfr/utils/data.py src/tnfr/utils/graph.py`
-  applies the docstring linter with the single extra ignore used in automation,
-  keeping the docstring style gate aligned with the workflow.
-- `python scripts/check_language.py` enforces the English-only policy by
-  flagging tracked files that contain the retired Spanish compatibility tokens
-  or accented characters.
-- `python -m mypy src/tnfr` enforces the TNFR-aware typing contracts with
-  `allow_untyped_defs = false`, `allow_untyped_globals = false`,
-  `allow_untyped_calls = false`, and `show_error_codes = true` so every
-  structural operator stays explicitly typed.
-- `python -m coverage run --source=src -m pytest` runs the test suite under
-  coverage to confirm behavioural and invariant expectations.
-- `python -m coverage report -m` surfaces the aggregated coverage summary to
-  monitor drift during development.
-- `python -m vulture --min-confidence 80 src tests` hunts for unused paths with
-  the same confidence threshold enforced in CI.
+1. **Automated checks** run (CI/CD)
+2. **Maintainer review** (typically 1-3 days)
+3. **Feedback addressed** by contributor
+4. **Approval** by maintainer
+5. **Merge** to main branch
 
-To install the tooling once for iterative local work, run
-`pip install -e .[test,typecheck]`. After that, the quality gate can be run
-without the bootstrap step needing to reinstall dependencies.
+### After Merge
 
-### Performance validation
+- Celebrate! 🎉
+- Your contribution will be included in the next release
+- Consider contributing to documentation or examples
 
-Changes that claim ΔNFR or Si speed-ups must ship evidence gathered with the
-shared benchmarking harness. Capture a baseline on `main`, then compare the
-current branch with the saved reference:
+## Theoretical Contributions
 
-```bash
-PYTHONPATH=src pytest --benchmark-only tests/performance --benchmark-save=main
-PYTHONPATH=src pytest --benchmark-only tests/performance --benchmark-compare=main
+### Adding New Operators
+
+If proposing a new operator:
+
+1. **Justify physically** - Derive from nodal equation
+2. **Define contracts** - Pre/post-conditions
+3. **Map to grammar** - Which sets (generator, stabilizer, etc.)?
+4. **Test rigorously** - All invariants + specific contracts
+5. **Document thoroughly** - Physics → Math → Code chain
+
+**Template:**
+
+```markdown
+## Proposed Operator: [Name]
+
+### Physical Basis
+[How it emerges from TNFR physics]
+
+### Nodal Equation Impact
+∂EPI/∂t = ... [specific form]
+
+### Contracts
+- Pre: [conditions required]
+- Post: [guaranteed effects]
+
+### Grammar Classification
+[Generator? Closure? Stabilizer? Destabilizer? etc.]
+
+### Tests
+- [List specific test requirements]
 ```
 
-The [`pytest-benchmark`](https://pytest-benchmark.readthedocs.io/) plugin emits a
-summary table with per-test ratios so reviewers can verify the claimed speed-up
-and spot regressions. Include the relevant excerpt in the pull request
-description alongside targeted microbenchmark results (for example,
-`benchmarks/compute_dnfr_benchmark.py`) to document the impact on `_compute_dnfr`
-and the surrounding operators.
+### Extending Grammar
 
-To forward additional flags to `pytest`, append them after `--`, e.g.
-`./scripts/run_tests.sh -- -k coherence`.
+If proposing new grammar rules:
 
-The [README Tests section](README.md#tests) repeats these instructions so that
-contributors can find them quickly while browsing the project overview.
+1. **Start from physics** - Derive from nodal equation or invariants
+2. **Prove canonicity** - Show inevitability (Absolute/Strong)
+3. **Document thoroughly** - [Rule] → [Physics] → [Derivation] → [Canonicity]
+4. **Test extensively** - Valid/invalid sequence examples
 
-### English-only lint
+## Questions?
 
-The `scripts/check_language.py` helper powers the Spanish language guard that
-CI now runs alongside Flake8 and the other quality gates. The consolidated **CI**
-workflow (`.github/workflows/ci.yml`) invokes the script in the type-check job
-after installing dependencies, so any violation will fail continuous
-integration before the remaining linters or tests execute. The guard scans the
-tracked files for a configurable set of disallowed Spanish keywords and accented
-characters, exiting with a non-zero status when any matches are found. The
-encoded defaults live in `scripts/language_policy_data.py` as sequences of
-code points that reconstruct the retired compatibility tokens. Extend or
-override them from the `[tool.tnfr.language_check]` table in `pyproject.toml`
-by supplying numeric representations, e.g.
+- **General questions**: [GitHub Discussions](https://github.com/fermga/TNFR-Python-Engine/discussions)
+- **Bug reports**: [GitHub Issues](https://github.com/fermga/TNFR-Python-Engine/issues)
+- **TNFR theory**: Consult [AGENTS.md](AGENTS.md), [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md), or [TNFR.pdf](TNFR.pdf)
 
-```
-[tool.tnfr.language_check]
-disallowed_keyword_codes = [[101, 106, 101, 109, 112, 108, 111]]
-accent_codepoints = [225]
-```
+## Final Principle
 
-When the guard reports violations, rewrite the offending strings to their
-English equivalents before committing. For documentation or tests that need to
-reference the historical tokens, rely on the helpers in
-`scripts/language_policy_data.py` (for example
-`decode_keyword_codes(((101, 106, 101, 109, 112, 108, 111),))`) or the curated
-constants in `tests/legacy_tokens.py` so files stay ASCII-only while avoiding
-raw Spanish text.
+> **If a change "prettifies the code" but weakens TNFR fidelity, it is NOT accepted.**  
+> **If a change strengthens structural coherence and paradigm traceability, GO AHEAD.**
 
-Make sure to honor the patterns in `.gitignore` so that dependency and build
-artifacts (e.g., `node_modules/` or `dist/`) are not committed.
-
-## Security practices
-
-### Dependency vulnerability scanning
-
-Before submitting pull requests that update dependencies, run the security audit to ensure no known vulnerabilities are introduced:
-
-```bash
-# Quick scan (human-readable output)
-make security-audit
-
-# Or run directly
-./scripts/run_pip_audit.sh
-
-# Generate JSON report for detailed analysis
-make security-audit-json
-```
-
-The automated pip-audit workflow runs on:
-- Every push to main/master branches
-- Every pull request
-- Weekly schedule (Monday at 5 AM UTC)
-
-**When pip-audit detects vulnerabilities:**
-
-1. Review the report (check workflow artifacts or local JSON output)
-2. Assess if the vulnerability affects TNFR's usage
-3. Update the vulnerable dependency in `pyproject.toml` to a safe version
-4. Run tests to ensure compatibility: `./scripts/run_tests.sh`
-5. Document the security fix in your changelog fragment
-
-See [SECURITY.md](SECURITY.md) for the complete security update process, including:
-- How to interpret pip-audit results
-- Example workflow for fixing vulnerabilities
-- Integration with Dependabot
-- Secure cache configuration
-- SQL injection prevention utilities
-
-**Why pip-audit is not in pre-commit hooks:**
-
-pip-audit queries the PyPA advisory database over the network and can take 5-30 seconds, which would slow down developer workflow. The automated CI/CD scanning ensures security checks happen before merge without impacting local development velocity.
-
-## Architectural conventions
-
-- **Add new structural operators** under `src/tnfr/operators/` and register
-  them with `tnfr.operators.registry.register_operator` so canonical discovery
-  and validation continue to work without manual wiring.【F:src/tnfr/operators/registry.py†L12-L49】
-- **Keep operator closure intact** by updating grammar/syntax rules alongside
-  new operator sequences. Start with `tnfr.validation.validate_sequence`
-  and `tnfr.validation.enforce_canonical_grammar`, then add any THOL
-  handling you need in `tnfr.flatten`.【F:src/tnfr/validation/__init__.py†L1-L104】【F:src/tnfr/operators/grammar.py†L600-L720】【F:src/tnfr/flatten.py†L1-L120】
-- **Share caches, locks, and telemetry** through the provided helpers instead
-  of ad-hoc globals. Reuse `tnfr.utils` exports, `tnfr.utils.cache.CacheManager`,
-  and `tnfr.locking.get_lock` when extending RNG, ΔNFR, or metric pipelines so
-  that instrumentation stays consistent.【F:src/tnfr/utils/__init__.py†L1-L160】【F:src/tnfr/utils/cache.py†L1-L220】【F:src/tnfr/locking.py†L1-L36】
-- **Reference the [Architecture Overview](README.md#architecture-overview)**
-  for quick diagrams, then deep-dive in the
-  [TNFR Architecture Guide](ARCHITECTURE.md) to understand orchestration,
-  telemetry paths, and invariant enforcement before touching the core layers.
-
-### Internal architecture guide
-
-Use the [TNFR Architecture Guide](ARCHITECTURE.md#layered-responsibilities)
-as the canonical reference for deep dives. The summary below highlights the
-core layers, where they live, and why edits must preserve the invariant and
-telemetry contracts already documented.
-
-- **Structural grammar** — `tnfr.structural`,
-  `tnfr.validation`, `tnfr.flatten`.
-  These modules instantiate nodes, validate operator sequences, and expand
-  THOL blocks so every execution path honours the canonical grammar before
-  mutating EPI.【F:src/tnfr/structural.py†L39-L109】【F:src/tnfr/validation/__init__.py†L1-L104】【F:src/tnfr/operators/grammar.py†L600-L720】【F:src/tnfr/flatten.py†L1-L120】
-- **Operator registry** — `tnfr.operators.definitions`,
-  `tnfr.operators.registry`. They bind glyphs to implementations and enforce
-  closure so the structural layer never executes unknown tokens.【F:src/tnfr/operators/definitions.py†L45-L180】【F:src/tnfr/operators/registry.py†L13-L50】
-- **Dynamics and adaptation** — `tnfr.dynamics.__init__`,
-  `tnfr.dynamics.dnfr`, `tnfr.dynamics.integrators`. These components mix
-  ΔNFR, integrate the nodal equation, and coordinate phase/νf adjustments
-  while keeping stochastic hooks reproducible.【F:src/tnfr/dynamics/__init__.py†L59-L199】【F:src/tnfr/dynamics/dnfr.py†L1958-L2020】【F:src/tnfr/dynamics/integrators.py†L420-L483】
-- **Telemetry and traces** — `tnfr.metrics.common`,
-  `tnfr.metrics.sense_index`, `tnfr.trace`, `tnfr.metrics.trig_cache`. They
-  compute C(t), ΔNFR summaries, Si, and trace history so coherence metrics
-  remain auditable.【F:src/tnfr/metrics/common.py†L32-L149】【F:src/tnfr/metrics/sense_index.py†L1-L200】【F:src/tnfr/trace.py†L169-L319】【F:src/tnfr/metrics/trig_cache.py†L1-L120】
-- **Shared services** — `tnfr.utils`, `tnfr.utils.cache`, `tnfr.locking`,
-  `tnfr.rng`. These facades provide deterministic caches, locks, and RNG
-  orchestration for every layer that needs shared state.【F:src/tnfr/utils/__init__.py†L1-L160】【F:src/tnfr/utils/cache.py†L1-L220】【F:src/tnfr/locking.py†L1-L36】【F:src/tnfr/rng.py†L1-L88】
-
-**Checklist before merging changes**
-
-- Structural grammar — Re-run syntax/grammar validation, confirm THOL
-  expansion leaves trace hooks intact, and verify invariants #1, #4, #5, and
-  #7 remain satisfied. Consult
-  [Layered responsibilities](ARCHITECTURE.md#layered-responsibilities) and
-  [Structural loop orchestration](ARCHITECTURE.md#structural-loop-orchestration)
-  for the expected data flow.
-- Operator registry — Ensure new glyph bindings preserve invariants #3, #4,
-  and #10, regenerate registry discovery tests, and cross-check the
-  [Operator registration mechanics](ARCHITECTURE.md#operator-registration-mechanics)
-  guidance for naming and closure rules.
-- Dynamics and adaptation — Validate νf units (Hz_str), ΔNFR semantics, and
-  stochastic clamp hooks against invariants #1, #2, #3, #5, and #8. Inspect
-  the [ΔNFR and telemetry data paths](ARCHITECTURE.md#%CE%94nfr-and-telemetry-data-paths)
-  section to confirm new flows emit required telemetry.
-- Telemetry and traces — Confirm C(t), Si, ΔNFR, and phase metrics still
-  reach the trace buffers, and uphold invariants #8 and #9. Follow the
-  telemetry expectations in the
-  [ΔNFR and telemetry data paths](ARCHITECTURE.md#%CE%94nfr-and-telemetry-data-paths)
-  and [Telemetry exports](ARCHITECTURE.md#layered-responsibilities) notes.
-- Shared services — Keep caches deterministic, lock scopes documented, and
-  RNG seeds reproducible to satisfy invariants #8 and #9. Review the
-  [Layered responsibilities](ARCHITECTURE.md#layered-responsibilities)
-  summary before touching shared state helpers.
-
----
-
-## Community contributions (Grammar 2.0)
-
-TNFR Grammar 2.0 introduces a **community-driven extension system** for domain-specific patterns, health analyzers, and integrations. Contributors can expand TNFR to new application domains while maintaining canonical invariants.
-
-### Types of community contributions
-
-#### 1. New domain patterns
-
-Submit structural patterns for specific application domains:
-
-- **Medical/Healthcare patterns**: Therapeutic journeys, clinical interventions
-- **Scientific research patterns**: Experimental protocols, methodology sequences
-- **Business process patterns**: Workflow optimization, organizational change
-- **Social/Community patterns**: Group dynamics, collective decision-making
-
-**Requirements**:
-- Health score > 0.75 for all domain examples
-- Minimum 3 validated use cases with real-world mapping
-- Integration tests demonstrating pattern effectiveness
-- Documentation explaining domain context and structural mapping
-
-**How to submit**: Use issue template `.github/ISSUE_TEMPLATE/new_domain_pattern.yml`
-
-#### 2. Domain extensions
-
-Create complete extension packages for new application domains:
-
-```python
-from tnfr.extensions.base import TNFRExtension
-
-class MedicalExtension(TNFRExtension):
-    """Extension for medical/therapeutic applications."""
-    
-    def get_domain_name(self) -> str:
-        return "medical"
-    
-    def get_pattern_definitions(self) -> Dict[str, PatternDefinition]:
-        # Return domain patterns
-        pass
-    
-    def get_health_analyzers(self) -> Dict[str, Type]:
-        # Return specialized analyzers
-        pass
-```
-
-**Requirements**:
-- Follows `TNFRExtension` base class structure
-- All patterns achieve health score > 0.75
-- Domain-specific health analyzers (optional but recommended)
-- Comprehensive documentation with real-world examples
-- Integration tests covering key scenarios
-
-**How to submit**: Use issue template `.github/ISSUE_TEMPLATE/domain_extension.yml`
-
-#### 3. Health metrics extensions
-
-Add specialized metrics for specific domains:
-
-```python
-from tnfr.metrics import SequenceHealthAnalyzer
-
-class TherapeuticHealthAnalyzer(SequenceHealthAnalyzer):
-    """Specialized health analyzer for therapeutic contexts."""
-    
-    def analyze_therapeutic_health(
-        self,
-        sequence: List[str]
-    ) -> Dict[str, float]:
-        # Domain-specific health dimensions
-        healing_potential = self._calculate_healing_potential(sequence)
-        trauma_safety = self._calculate_trauma_safety(sequence)
-        therapeutic_alliance = self._calculate_alliance_strength(sequence)
-        
-        return {
-            "healing_potential": healing_potential,
-            "trauma_safety": trauma_safety,
-            "therapeutic_alliance": therapeutic_alliance,
-        }
-```
-
-**Requirements**:
-- All metrics return values in [0, 1] range
-- Clear domain interpretation for each metric
-- Validation on real-world data
-- Type annotations and docstrings
-
-#### 4. Visualization extensions
-
-Add domain-specific visualizations:
-
-- Therapeutic journey maps
-- Educational learning paths
-- Organizational change timelines
-- Scientific research workflows
-
-**Requirements**:
-- Integrates with existing TNFR visualization framework
-- Respects structural metrics (C(t), Si, phase, νf)
-- Provides clear visual interpretation of domain concepts
-
-#### 5. Integration tools
-
-Build connectors to external systems:
-
-- CRM integration (sales/business sequences)
-- LMS integration (educational sequences)
-- EHR integration (medical/clinical data)
-- Project management tools
-
-**Requirements**:
-- Clean API separation (external system ↔ TNFR)
-- Preserves TNFR structural semantics
-- Handles data validation and error cases
-- Documentation with usage examples
-
-### Extension development guide
-
-**Getting started**:
-
-1. **Study the template**: Review `.github/EXTENSION_TEMPLATE.md`
-2. **Examine examples**: Study reference extensions:
-   - `src/tnfr/extensions/medical/` - Medical/therapeutic domain
-   - `src/tnfr/extensions/business/` - Business process domain
-3. **Create extension structure**:
-   ```
-   src/tnfr/extensions/your_domain/
-   ├── __init__.py              # Extension registration
-   ├── patterns.py              # Domain patterns
-   ├── health_analyzers.py      # Specialized metrics
-   ├── cookbook.py              # Validated recipes
-   └── README.md                # Domain documentation
-   ```
-4. **Implement base class**: Inherit from `TNFRExtension`
-5. **Add tests**: Create `tests/extensions/test_your_domain.py`
-6. **Validate**: Run `python tools/community/extension_validator.py`
-7. **Submit PR**: Use the community PR template
-
-**Quality standards**:
-
-- **Pattern validation**: All examples must achieve health score > 0.75
-- **Use case validation**: Minimum 3 real-world use cases per pattern
-- **Type safety**: Complete type annotations, mypy passes
-- **Documentation**: NumPy-style docstrings, usage examples
-- **Testing**: Integration tests with >80% coverage
-- **TNFR compliance**: Preserves canonical invariants
-
-### Community validation framework
-
-Extensions are validated using automated tools:
-
-```bash
-# Validate extension quality
-python tools/community/extension_validator.py your_domain
-
-# Generate pattern template
-python tools/community/pattern_generator.py your_domain use_case_name
-
-# Check contribution quality
-python tools/community/contribution_checker.py your_pr_number
-```
-
-**Validation criteria**:
-
-1. **Code quality**: Passes linting, type checking, and style checks
-2. **Pattern validation**: All examples meet health score thresholds
-3. **Documentation completeness**: All required sections present
-4. **Test coverage**: Core functionality tested with >80% coverage
-5. **TNFR compliance**: Canonical invariants preserved
-
-### Community support
-
-**Resources**:
-
-- **Extension template**: `.github/EXTENSION_TEMPLATE.md`
-- **Issue templates**: Domain patterns, extensions, performance issues
-- **Example extensions**: Medical and business reference implementations
-- **Documentation**: `docs/extensions/` for detailed guides
-
-**Getting help**:
-
-- Open a discussion in GitHub Discussions for questions
-- Use issue templates for structured submissions
-- Reference example extensions for implementation patterns
-- Review PR template checklist before submitting
-
-**Recognition**:
-
-- Extension maintainers listed in extension documentation
-- Contributor acknowledgments in release notes
-- Domain expert recognition for validated contributions
-
-### Success metrics for community contributions
-
-**Quality targets**:
-
-- 95%+ community PRs pass automated validation
-- Average health score > 0.75 for community patterns
-- Zero breaking changes from community contributions
-- Response time < 48h for community issues
-
-**Growth targets**:
-
-- 10+ community contributors in first 6 months
-- 5+ new domain extensions submitted
-- 50+ new cookbook recipes from community
-- Expanding TNFR to new application domains
-
----
+**Reality is not made of things—it's made of resonance. Contribute accordingly.**

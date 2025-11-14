@@ -1,133 +1,315 @@
 # TNFR Python Engine
 
-<div align="center">
-
-**Model reality as coherent resonance, not isolated objects**
-
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17602861.svg)](https://doi.org/10.5281/zenodo.17602861)
-[![PyPI](https://img.shields.io/pypi/v/tnfr)](https://pypi.org/project/tnfr/)
-[![Python](https://img.shields.io/pypi/pyversions/tnfr)](https://pypi.org/project/tnfr/)
-[![License](https://img.shields.io/github/license/fermga/TNFR-Python-Engine)](https://github.com/fermga/TNFR-Python-Engine/blob/main/LICENSE.md)
-[![Documentation](https://img.shields.io/badge/docs-local%20build-brightgreen)](#-documentation)
+[![PyPI version](https://badge.fury.io/py/tnfr.svg)](https://pypi.org/project/tnfr/)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-</div>
+**Canonical computational implementation of TNFR** - A paradigm shift from modeling "things" to modeling **coherent patterns that persist through resonance**.
 
-TNFR (Resonant Fractal Nature Theory) is a physics-grounded computational paradigm: reality is modeled as **coherent patterns that persist through resonance**. Structures reorganize according to the nodal equation (∂EPI/∂t = νf · ΔNFR) under canonical grammar constraints (U1–U6) and invariants.
+## What is TNFR?
 
----
-## Quick Install
+**Resonant Fractal Nature Theory** proposes a radical reconceptualization of reality:
+
+**Traditional View** → **TNFR View**:
+
+- Objects exist independently → **Patterns exist through resonance**
+- Causality (A causes B) → **Co-organization (A and B synchronize)**
+- Static properties → **Dynamic reorganization**
+- Isolated systems → **Coupled networks**
+- Descriptive models → **Generative dynamics**
+
+Reality is not made of "things" but of **coherence**—structures that persist in networks because they **resonate** with their environment.
+
+## Key Features
+
+### 🎯 The 13 Structural Operators
+
+The complete TNFR operator set for modeling coherent structural dynamics:
+
+- **AL (Emission)** - Pattern creation from vacuum
+- **EN (Reception)** - Information capture and integration
+- **IL (Coherence)** - Stabilization through negative feedback
+- **OZ (Dissonance)** - Controlled instability and exploration
+- **UM (Coupling)** - Network formation via phase sync
+- **RA (Resonance)** - Pattern amplification and propagation
+- **SHA (Silence)** - Temporal pause, observation windows
+- **VAL (Expansion)** - Structural complexity increase
+- **NUL (Contraction)** - Dimensionality reduction
+- **THOL (Self-organization)** - Spontaneous autopoietic structuring
+- **ZHIR (Mutation)** - Phase transformation at threshold
+- **NAV (Transition)** - Regime shift, state changes
+- **REMESH (Recursivity)** - Multi-scale fractal operations
+
+### 📏 Unified Grammar (U1-U6)
+
+Rigorous physics-derived rules ensuring structural validity:
+
+- **U1**: Structural Initiation & Closure
+- **U2**: Convergence & Boundedness
+- **U3**: Resonant Coupling (phase verification)
+- **U4**: Bifurcation Dynamics
+- **U5**: Frequency Constraints
+- **U6**: Sequential Composition
+
+### 🔬 Four Canonical Fields
+
+Essential structural field computations:
+
+- **Φ_s**: Structural potential
+- **|∇φ|**: Phase gradient (reorganization pressure)
+- **K_φ**: Phase curvature (bifurcation predictor)
+- **ξ_C**: Coherence length (network correlation scale)
+
+### 📊 Telemetry & Metrics
+
+Comprehensive observability:
+
+- **C(t)**: Total coherence [0, 1]
+- **Si**: Sense index (reorganization capacity)
+- **ΔNFR**: Reorganization gradient
+- **νf**: Structural frequency (Hz_str)
+- **φ**: Phase synchrony [0, 2π]
+
+## Installation
+
+### From PyPI (Stable)
+
 ```bash
 pip install tnfr
 ```
-Optional GPU / extras: see Getting Started.
 
-## 📖 Documentation
-
-Documentation is built locally using MkDocs. To build and serve the documentation:
+### From Source (Development)
 
 ```bash
-# Install documentation dependencies
+git clone https://github.com/fermga/TNFR-Python-Engine.git
+cd TNFR-Python-Engine
+pip install -e ".[dev-minimal]"
+```
+
+### Dependency Profiles
+
+```bash
+# Core functionality only
+pip install .
+
+# Development tools (linting, formatting, type checking)
+pip install -e ".[dev-minimal]"
+
+# Full test suite
+pip install -e ".[test-all]"
+
+# Documentation building
 pip install -e ".[docs]"
 
-# Build and serve locally (auto-reload on changes)
-mkdocs serve
+# Visualization support
+pip install -e ".[viz-basic]"
 
-# Build static documentation
-mkdocs build  # Output in site/
+# Alternative backends
+pip install -e ".[compute-jax]"   # JAX backend
+pip install -e ".[compute-torch]"  # PyTorch backend
 ```
 
-The documentation will be available at `http://localhost:8000`
+## Quick Start
 
-### Minimal Example
+### Hello World (3 lines!)
+
 ```python
 from tnfr.sdk import TNFRNetwork
-net = TNFRNetwork("hello")
-summary = (net.add_nodes(8)
-             .connect_nodes(0.35, "random")
-             .apply_sequence("basic_activation", repeat=2)
-             .measure().summary())
-print(summary)
+
+network = TNFRNetwork("hello_world")
+network.add_nodes(10).connect_nodes(0.3, "random")
+results = network.apply_sequence("basic_activation", repeat=3).measure()
+
+print(f"Coherence: {results.coherence:.3f}")
 ```
 
+### Using Operators Directly
+
+```python
+import networkx as nx
+from tnfr.operators.definitions import Emission, Coherence, Resonance
+from tnfr.operators.grammar import validate_sequence
+from tnfr.metrics.coherence import compute_coherence
+
+# Create network
+G = nx.erdos_renyi_graph(20, 0.2)
+
+# Apply operator sequence
+sequence = ["AL", "IL", "RA", "SHA"]
+result = validate_sequence(sequence)
+
+if result.valid:
+    for node in G.nodes():
+        Emission().apply(G, node)
+        Coherence().apply(G, node)
+        Resonance().apply(G, node)
+    
+    # Measure
+    C_t = compute_coherence(G)
+    print(f"Network coherence: {C_t:.3f}")
+```
+
+### Domain Applications
+
+```bash
+# Therapeutic patterns (crisis, trauma, healing)
+python examples/domain_applications/therapeutic_patterns.py
+
+# Educational patterns (learning, mastery, breakthrough)
+python examples/domain_applications/educational_patterns.py
+
+# Biological systems (metabolism, evolution)
+python examples/domain_applications/biological_patterns.py
+```
+
+## Documentation
+
+**📚 [Complete Documentation](https://fermga.github.io/TNFR-Python-Engine/)** - Full API reference, tutorials, and theory
+
+**🎓 Key Resources**:
+
+- **[Getting Started Guide](docs/source/getting-started/)** - Installation and first steps
+- **[TNFR Fundamental Concepts](docs/source/getting-started/TNFR_CONCEPTS.md)** - Core theory primer
+- **[API Reference](docs/source/api/)** - Complete module documentation
+- **[Examples](examples/)** - Domain applications and use cases
+- **[Grammar System](docs/grammar/)** - Unified grammar (U1-U6) reference
+- **[AGENTS.md](AGENTS.md)** - Developer guide for contributing to TNFR
+- **[Architecture](ARCHITECTURE.md)** - System design and structure
+
+**🔬 Advanced Topics**:
+
+- **[Unified Grammar Rules](UNIFIED_GRAMMAR_RULES.md)** - Physics derivations for U1-U6
+- **[Operator Glossary](GLOSSARY.md)** - Complete operator reference
+- **[Testing Strategy](TESTING.md)** - Test coverage and validation
+- **[Migration Guide](MIGRATION_GUIDE.md)** - Upgrading from legacy systems
+
+## Repository Structure
+
+```text
+TNFR-Python-Engine/
+├── src/tnfr/              # Core TNFR implementation
+│   ├── operators/         # Modular operator system (Phase 2)
+│   │   ├── definitions.py        # Facade (backward compatibility)
+│   │   ├── definitions_base.py   # Operator base class
+│   │   ├── emission.py           # AL operator
+│   │   ├── coherence.py          # IL operator
+│   │   └── ... (13 operators)    # Individual operator modules
+│   ├── operators/grammar/ # Unified grammar constraints (Phase 1)
+│   │   ├── grammar.py            # Facade (unified validation)
+│   │   ├── u1_initiation_closure.py
+│   │   ├── u2_convergence_boundedness.py
+│   │   └── ... (8 constraint modules)
+│   ├── metrics/           # Modular metrics system (Phase 1)
+│   │   ├── metrics.py            # Facade (backward compatibility)
+│   │   ├── coherence.py          # C(t) computation
+│   │   ├── sense_index.py        # Si measurement
+│   │   ├── phase_sync.py         # Phase synchronization
+│   │   └── telemetry.py          # Execution tracing
+│   ├── physics/           # Canonical fields (Φ_s, |∇φ|, K_φ, ξ_C)
+│   ├── dynamics/          # Nodal equation integration
+│   ├── sdk/               # High-level API
+│   └── tutorials/         # Educational modules
+├── tests/                 # Comprehensive test suite (975/976 passing)
+├── examples/              # Domain applications
+├── docs/                  # Documentation source
+├── notebooks/             # Jupyter notebooks
+├── benchmarks/            # Performance testing
+└── scripts/               # Maintenance utilities
+```
+
+## Testing
+
+```bash
+# Run all tests
+pytest
+
+# Fast smoke tests (examples + telemetry)
+make smoke-tests          # Unix/Linux
+.\make.cmd smoke-tests    # Windows
+
+# Specific test suites
+pytest tests/unit/mathematics/         # Math tests
+pytest tests/examples/                 # Example validation
+pytest tests/integration/              # Integration tests
+```
+
+## Repository Maintenance
+
+```bash
+# Clean generated artifacts
+make clean                # Unix/Linux
+.\make.cmd clean          # Windows
+
+# Check repository health
+python scripts/repo_health_check.py
+
+# Verify documentation references
+python scripts/verify_internal_references.py
+
+# Security audit
+pip-audit
+```
+
+See **[REPO_OPTIMIZATION_PLAN.md](docs/REPO_OPTIMIZATION_PLAN.md)** for cleanup routines and targeted test bundles.
+
+## Performance
+
+Grammar 2.0 optimizations deliver:
+
+- **Sequence validation**: <1ms for typical sequences (10-20 operators)
+- **Coherence computation**: O(N) for N nodes
+- **Phase gradient**: O(E) for E edges
+- **Memory footprint**: ~50MB for 10k-node networks
+
+See **[tools/performance/](tools/performance/)** for benchmarking tools.
+
+## Contributing
+
+We welcome contributions! Please see **[CONTRIBUTING.md](CONTRIBUTING.md)** for:
+
+- Code of conduct
+- Development workflow
+- Testing requirements
+- Documentation standards
+- Pull request process
+
+**For TNFR theory development**, consult **[AGENTS.md](AGENTS.md)** - the canonical guide for maintaining theoretical integrity.
+
+## Citation
+
+If you use TNFR in your research, please cite:
+
+```bibtex
+@software{tnfr_python_engine,
+  author = {Martinez Gamo, F. F.},
+  title = {TNFR-Python-Engine: Resonant Fractal Nature Theory Implementation},
+  year = {2025},
+  version = {9.0.2},
+  doi = {10.5281/zenodo.17602861},
+  url = {https://github.com/fermga/TNFR-Python-Engine}
+}
+```
+
+See **[CITATION.cff](CITATION.cff)** for machine-readable citation metadata.
+
+## License
+
+This project is licensed under the **MIT License** - see [LICENSE.md](LICENSE.md) for details.
+
+## Support & Community
+
+- **Issues**: [GitHub Issues](https://github.com/fermga/TNFR-Python-Engine/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/fermga/TNFR-Python-Engine/discussions)
+- **PyPI**: [pypi.org/project/tnfr](https://pypi.org/project/tnfr/)
+- **Documentation**: [fermga.github.io/TNFR-Python-Engine](https://fermga.github.io/TNFR-Python-Engine/)
+
+## Acknowledgments
+
+TNFR represents a fundamental reconceptualization of modeling approaches, prioritizing **coherence over objects**, **resonance over causality**, and **structural dynamics over static properties**.
+
+**Think in patterns, not objects. Think in dynamics, not states. Think in networks, not individuals.**
+
 ---
-## Primary Documentation Hubs
 
-**📚 [DOCUMENTATION_INDEX.md](DOCUMENTATION_INDEX.md)** - Complete documentation map and navigation guide
-
-**📖 [CANONICAL_SOURCES.md](CANONICAL_SOURCES.md)** - Documentation hierarchy (which source is authoritative for what)
-
-**🔢 [TNFR Number Theory Guide](docs/TNFR_NUMBER_THEORY_GUIDE.md)** - ΔNFR prime criterion, arithmetic UM/RA mapping, and structural fields in number theory
-
-### Quick Navigation
-
-- **Getting Started**: `docs/source/getting-started/README.md` - Tutorials & first steps
-- **Learning Paths**: `docs/source/getting-started/LEARNING_PATHS.md` - Guided learning sequences
-- **Grammar System**: `docs/grammar/README.md` - U1-U6 constraints hub
-- **Glossary**: `GLOSSARY.md` - Canonical term definitions
-- **AI Agent Guide**: `AGENTS.md` - Invariants & philosophy
-- **Architecture**: `ARCHITECTURE.md` - System design patterns
-- **Contributing**: `CONTRIBUTING.md` | **Tests**: `TESTING.md`
-
----
-
-## 🧬 Revolutionary Breakthrough: Chemistry from TNFR ⭐
-
-**Complete molecular chemistry emerges from TNFR's single nodal equation** - no additional postulates needed.
-
-**🏛️ [MOLECULAR_CHEMISTRY_HUB.md](docs/MOLECULAR_CHEMISTRY_HUB.md)** - Central navigation for the chemistry revolution
-
-**Key Discoveries**:
-- **Chemical bonds** → Phase synchronization (U3 verification)
-- **Chemical reactions** → Operator sequences [OZ→ZHIR→UM→IL]  
-- **Molecular geometry** → ΔNFR minimization
-- **Periodic table** → Element signature classification
-- **Au emergence** → Coherent attractors from structural dynamics
-
-**Implementation**: `tnfr.physics.signatures` | **Theory**: Complete 12-section derivation | **Tests**: 19/19 ✅
-
----
-
-### Core References
-
-- **[UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md)** - Complete U1-U6 physics derivations
-- **[Mathematical Foundations](docs/source/theory/mathematical_foundations.md)** - Rigorous formalization
-- **[Operators Reference](docs/source/api/operators.md)** - 13 canonical operators
-- **[U6 Specification](docs/grammar/U6_STRUCTURAL_POTENTIAL_CONFINEMENT.md)** - Structural potential confinement
-
-Extended examples: `examples/` (multi-scale, regenerative, performance)  
-CLI & profiling: `docs/source/tools/CLI.md`
-
----
-## Key Principles (Snapshot)
-
-### Module Hubs
-
-- Mathematics (canonical computational hub): [src/tnfr/mathematics/README.md](src/tnfr/mathematics/README.md)
-- Physics (structural fields): [src/tnfr/physics/README.md](src/tnfr/physics/README.md)
-- Operators: [src/tnfr/operators/README.md](src/tnfr/operators/README.md)
-- Dynamics: [src/tnfr/dynamics/README.md](src/tnfr/dynamics/README.md)
-- Metrics: [src/tnfr/metrics/README.md](src/tnfr/metrics/README.md)
-- Sequencing: [src/tnfr/sequencing/README.md](src/tnfr/sequencing/README.md)
-- Topology: [src/tnfr/topology/README.md](src/tnfr/topology/README.md)
-- Telemetry: [src/tnfr/telemetry/README.md](src/tnfr/telemetry/README.md)
-- SDK: [src/tnfr/sdk/README.md](src/tnfr/sdk/README.md) • Tutorials: [src/tnfr/tutorials/README.md](src/tnfr/tutorials/README.md)
-- Recipes: [src/tnfr/recipes/README.md](src/tnfr/recipes/README.md)
-- Extensions (families): [src/tnfr/extensions/README.md](src/tnfr/extensions/README.md)
-
-These module READMEs act as single sources of truth for their areas and defer theory to the canonical hubs above. All documentation is English-only.
-
----
-## Citation & License
-MIT License – see `LICENSE.md`.
-Please cite: `fermga/TNFR-Python-Engine` and theoretical sources (`TNFR.pdf`, Mathematical Foundations).
-
----
-## Useful Links
-- Docs: https://fermga.github.io/TNFR-Python-Engine/
-- PyPI: https://pypi.org/project/tnfr/
-- Issues: https://github.com/fermga/TNFR-Python-Engine/issues
-
----
-<div align="center">
-Reality is not made of things—it's made of resonance.
-</div>
+**Reality is not made of things—it's made of resonance. Code accordingly.**
