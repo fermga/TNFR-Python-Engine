@@ -71,7 +71,7 @@ docs = [
 ]
 # Testing - modular groups
 test-unit = [
-  "pytest>=7,<9",
+  "pytest>=7,<10",
   "pytest-cov>=4,<8",
   "pytest-timeout>=2,<3",
 ]
@@ -92,7 +92,7 @@ test-quality = [
   "vulture>=2,<3",
 ]
 test-all = [
-  "pytest>=7,<9",
+  "pytest>=7,<10",
   "pytest-cov>=4,<8",
   "pytest-timeout>=2,<3",
   "hypothesis>=6,<7",
@@ -106,7 +106,7 @@ test-all = [
   "matplotlib>=3.7,<4.0",
 ]
 test = [  # Legacy alias
-  "pytest>=7,<9",
+  "pytest>=7,<10",
   "pytest-cov>=4,<8",
   "pytest-timeout>=2,<3",
   "hypothesis>=6,<7",
@@ -131,12 +131,12 @@ typecheck = [
 dev-minimal = [
   "mypy>=1.8,<2.0",
   "black>=23,<26",
-  "pytest>=7,<9",
+  "pytest>=7,<10",
   "pytest-cov>=4,<8",
   "pytest-timeout>=2,<3",
 ]
 dev-full = [
-  "pytest>=7,<9",
+  "pytest>=7,<10",
   "pytest-cov>=4,<8",
   "pytest-timeout>=2,<3",
   "hypothesis>=6,<7",
