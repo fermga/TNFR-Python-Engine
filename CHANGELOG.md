@@ -26,6 +26,10 @@ All notable changes to this project will be documented in this file.
 ### Internal
 
 - Optional `perf_registry` parameter in `run_structural_validation` (read-only timing).
+- Canonical operator registry frozen (removed dynamic auto-registration, cache
+  invalidation, metaclass telemetry, reload script). Attempting dynamic
+  registration now raises. Ensures strict adherence to unified grammar (U1-U4)
+  and prevents non-canonical transformations.
 
 ### Deferred
 
@@ -34,6 +38,9 @@ All notable changes to this project will be documented in this file.
 ### Integrity
 
 - All changes preserve TNFR canonical invariants (no EPI mutation; phase verification intact; read-only telemetry/validation).
+- Registry immutability strengthens invariants #1 (EPI only via operators), #4
+  (operator closure) and #5 (phase verification untouched). Tests updated:
+  removed dynamic registration tests; added `test_canonical_operator_set`.
 
 ## [9.0.2]
 

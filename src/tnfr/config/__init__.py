@@ -34,6 +34,17 @@ from .defaults import (
 )
 from .feature_flags import context_flags, get_flags
 from .init import apply_config, load_config
+from .precision_modes import (
+    DiagnosticsLevel,
+    PrecisionMode,
+    TelemetryDensity,
+    get_diagnostics_level,
+    get_precision_mode,
+    get_telemetry_density,
+    set_diagnostics_level,
+    set_precision_mode,
+    set_telemetry_density,
+)
 from .thresholds import (
     EPSILON_MIN_EMISSION,
     EPI_LATENT_MAX,
@@ -172,6 +183,16 @@ __all__ = (
     # Feature flags
     "get_flags",
     "context_flags",
+    # Precision/telemetry/diagnostics modes
+    "PrecisionMode",
+    "TelemetryDensity",
+    "DiagnosticsLevel",
+    "get_precision_mode",
+    "set_precision_mode",
+    "get_telemetry_density",
+    "set_telemetry_density",
+    "get_diagnostics_level",
+    "set_diagnostics_level",
     # Defaults and sections
     "DEFAULTS",
     "DEFAULT_SECTIONS",

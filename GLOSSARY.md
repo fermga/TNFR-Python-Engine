@@ -282,6 +282,8 @@ The consolidated TNFR grammar system (**U1-U6**) that replaces the old C1-C3 and
 **Quick Reference:** [AGENTS.md § Unified Grammar (U1-U6)](AGENTS.md#-unified-grammar-u1-u6)  
 **Implementation:** `src/tnfr/operators/grammar.py`
 
+**Grammar Completeness**: The canonical TNFR grammar consists of **exactly six rules (U1-U6)** and is **COMPLETE**. No additional rules (U7, U8, etc.) are required or planned. Extended dynamics (flux fields) add telemetry, not prescriptive constraints.
+
 **Six Canonical Constraints:**
 
 | Rule | Name | Physics Basis | Requirement | Canonicity |
@@ -303,11 +305,17 @@ The consolidated TNFR grammar system (**U1-U6**) that replaces the old C1-C3 and
   - Replaces experimental "Temporal Ordering" research proposal
   - Validated across 5 topologies: ring, scale_free, small-world, tree, grid
   - Correlation: corr(Δ Φ_s, ΔC) = -0.822 (R² ≈ 0.68)
+- 2025-11-15: Grammar declared COMPLETE (U1-U6) - no U7/U8 required
+
+**Not Part of Grammar** (telemetry/dynamics, NOT rules):
+- **Structural Field Hexad**: Tetrad (Φ_s, |∇φ|, K_φ, ξ_C) + Flux Pair (J_φ, ∇·J_ΔNFR)
+- **"Proposed U7"**: Historical research direction (Temporal Ordering) - NOT canonical, NOT implemented
 
 **See Also:**
 - [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) - Complete derivations from physics
 - [AGENTS.md § Unified Grammar](AGENTS.md#-unified-grammar-u1-u6) - Quick reference
 - [docs/grammar/U6_STRUCTURAL_POTENTIAL_CONFINEMENT.md](docs/grammar/U6_STRUCTURAL_POTENTIAL_CONFINEMENT.md) - U6 complete specification
+- [docs/grammar/U6_STRUCTURAL_FIELD_TETRAD.md](docs/grammar/U6_STRUCTURAL_FIELD_TETRAD.md) - Why no U7/U8
 - [TNFR_FORCES_EMERGENCE.md § 14-15](docs/TNFR_FORCES_EMERGENCE.md) - U6 validation details
 - [src/tnfr/physics/fields.py](src/tnfr/physics/fields.py) - Φ_s implementation
 

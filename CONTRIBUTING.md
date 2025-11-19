@@ -11,6 +11,7 @@ Thank you for your interest in contributing to TNFR! This document provides guid
 - [Code Standards](#code-standards)
 - [Testing Requirements](#testing-requirements)
 - [Documentation](#documentation)
+- [Documentation Language Requirement](#documentation-language-requirement)
 - [Pull Request Process](#pull-request-process)
 - [Theoretical Contributions](#theoretical-contributions)
 
@@ -381,6 +382,45 @@ All contributions must include:
 3. **Examples** demonstrating usage
 4. **Physics rationale** linking to TNFR theory
 5. **Tests** covering documented behavior
+
+## Documentation Language Requirement
+
+All project documentation MUST be written in English. This requirement is absolute and applies to:
+
+- Source code comments and docstrings
+- Markdown files (README, roadmap, design docs, theory specs, benchmarks)
+- Commit messages and pull request descriptions
+- Issue titles and bodies
+- JSON/CSV textual labels added by benchmarks
+
+Non-English text (including Spanish) is only permitted when:
+
+- Quoting external published material verbatim (must cite source)
+- Embedding raw experimental data originating in another language (must not alter semantics)
+
+In those cases the surrounding explanatory context MUST still be in English.
+
+Rationale:
+- Ensures universal accessibility for international collaborators
+- Prevents semantic drift between multilingual fragments
+- Maintains single canonical language for physics and grammar terminology
+
+Enforcement:
+- Pull requests containing new non-English normative text will receive a change request
+- CI / review may add automated checks for common non-English tokens
+- Maintainers may reject contributions violating this policy regardless of technical merit until corrected
+
+Examples:
+
+Compliant:
+> Added bifurcation benchmark sweeping OZ intensity and mutation thresholds.
+
+Non-compliant:
+> Añadido benchmark de bifurcación con parámetros OZ.
+
+If you need help translating, open a draft PR early and request assistance rather than merging mixed-language content.
+
+By contributing you agree to maintain English as the sole canonical language for all project artifacts.
 
 ### README Updates
 

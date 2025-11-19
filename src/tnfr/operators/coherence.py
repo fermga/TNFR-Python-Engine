@@ -1,154 +1,30 @@
-"""TNFR Operator: Coherence
+"""Coherence (IL) operator.
 
-Coherence structural operator - Stabilization of structural alignment.
-
-**Physics**: See AGENTS.md § Coherence
-**Grammar**: UNIFIED_GRAMMAR_RULES.md
+Purpose: stabilize form; reduce delta NFR; raise coherence.
+Physics: negative feedback drives delta NFR toward 0.
+Grammar: stabilizer (U2); safe closure component.
+Effects: pressure lowers; EPI preserved; optional phase locking.
+Preconditions: active structure; prior destabilizer if recent IL already.
+Typical: AL->UM->IL; OZ->IL; VAL->IL. Avoid redundant IL chains.
 """
 
 from __future__ import annotations
 
-import warnings
 from typing import Any, ClassVar
 
 from ..alias import get_attr
 from ..config.operator_names import COHERENCE
-from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI
+from ..constants.aliases import ALIAS_DNFR
 from ..types import Glyph, TNFRGraph
 from ..utils import get_numpy
 from .definitions_base import Operator
 
 
 class Coherence(Operator):
-    """Coherence structural operator - Stabilization of structural alignment.
+    """Stabilize alignment; compress delta NFR; boost coherence.
 
-    Activates the Coherence operator to compress ΔNFR drift and raise the local C(t),
-    reinforcing structural alignment across nodes and stabilizing emergent forms.
-
-    TNFR Context
-    ------------
-    Coherence represents the fundamental stabilization process in TNFR. When applied,
-    it reduces ΔNFR (reorganization pressure) and increases C(t) (global coherence),
-    effectively "sealing" structural forms into stable configurations. This is the primary
-    operator for maintaining nodal equation balance: ∂EPI/∂t → 0 as ΔNFR → 0.
-
-    **Key Elements:**
-
-    - **Structural Stabilization**: Reduces reorganization pressure (ΔNFR)
-    - **Coherence Amplification**: Increases global C(t) through local stability
-    - **Form Preservation**: Maintains EPI integrity across time
-    - **Phase Locking**: Synchronizes node with network phase structure
-
-    Use Cases
-    ---------
-    **Biomedical**:
-
-    - **Cardiac Coherence**: Stabilizing heart rate variability patterns
-    - **Neural Coherence**: Maintaining synchronized brain wave states
-    - **Homeostatic Balance**: Stabilizing physiological regulatory systems
-    - **Therapeutic Integration**: Consolidating healing states post-intervention
-
-    **Cognitive**:
-
-    - **Concept Consolidation**: Stabilizing newly learned information
-    - **Mental Clarity**: Reducing cognitive noise and confusion
-    - **Focus Maintenance**: Sustaining attention on coherent thought patterns
-    - **Memory Formation**: Consolidating experience into stable memories
-
-    **Social**:
-
-    - **Team Alignment**: Stabilizing collaborative working patterns
-    - **Cultural Coherence**: Maintaining shared values and practices
-    - **Ritual Completion**: Sealing ceremonial transformations
-    - **Group Synchrony**: Stabilizing collective resonance states
-
-    Typical Sequences
-    ---------------------------
-    - **Emission → Reception → Coherence**: Safe activation with stabilization
-    - **Reception → Coherence**: Integrated reception consolidated
-    - **Coherence → Mutation**: Coherence enabling controlled mutation (stable transformation)
-    - **Resonance → Coherence**: Resonance followed by stabilization (propagation consolidation)
-    - **Coupling → Coherence**: Network coupling stabilized into coherent form
-
-    Preconditions
-    -------------
-    - Node must have active EPI (non-zero form)
-    - ΔNFR should be present (though Coherence reduces it)
-    - Sufficient network coupling for phase alignment
-
-    Structural Effects
-    ------------------
-    - **EPI**: May increment slightly as form stabilizes
-    - **ΔNFR**: Significantly reduces (primary effect)
-    - **C(t)**: Increases at both local and global levels
-    - **νf**: May slightly increase as stability enables higher frequency
-    - **θ**: Aligns with network phase (phase locking)
-
-    Metrics
-    -----------------
-    - ΔNFR reduction: Primary metric of stabilization success
-    - C(t) increase: Global coherence improvement
-    - Phase alignment: Degree of network synchronization
-    - EPI stability: Variance reduction in form over time
-
-    Compatibility
-    ---------------------
-    **Compatible with**: ALL operators - Coherence is universally stabilizing
-
-    **Especially effective after**: Emission, Reception, Dissonance, Transition
-
-    **Natural progressions**: Coherence often concludes sequences or prepares for
-    controlled transformation (Mutation, Transition)
-
-    Examples
-    --------
-    **Cardiac Coherence Training:**
-
-    >>> from tnfr.structural import create_nfr, run_sequence
-    >>> from tnfr.operators.definitions import Emission, Reception, Coherence, Coupling, Resonance, Transition
-    >>> from tnfr.alias import get_attr
-    >>> from tnfr.constants.aliases import ALIAS_EPI
-    >>>
-    >>> # Stabilizing heart rhythm during breath-focus training
-    >>> G_heart, heart = create_nfr("cardiac_rhythm", epi=0.40, vf=1.10)
-    >>>
-    >>> # Valid sequence: Emission → Reception → Coherence → Coupling → Resonance → Transition
-    >>> run_sequence(G_heart, heart,
-    ...     [Emission(), Reception(), Coherence(), Coupling(), Resonance(), Transition()])
-    >>>
-    >>> # Result: HRV pattern stabilizes, ΔNFR reduces
-    >>> epi_final = float(get_attr(G_heart.nodes[heart], ALIAS_EPI, 0.0))
-    >>> # Patient enters sustained coherent state
-
-    **Learning Consolidation:**
-
-    >>> # Student consolidating newly understood concept
-    >>> G_study, mind = create_nfr("student_understanding", epi=0.30, vf=1.05)
-    >>>
-    >>> # Receive teaching and consolidate understanding
-    >>> run_sequence(G_study, mind,
-    ...     [Emission(), Reception(), Coherence(), Coupling(), Resonance(), Transition()])
-    >>>
-    >>> # Result: Knowledge structure stabilizes, confusion reduces
-    >>> # Concept becomes part of stable mental model
-
-    **Team Alignment:**
-
-    >>> # Collaborative team stabilizing after creative session
-    >>> G_team, group = create_nfr("team_consensus", epi=0.55, vf=1.00)
-    >>>
-    >>> # Build consensus through coupling and coherence
-    >>> run_sequence(G_team, group,
-    ...     [Emission(), Reception(), Coupling(), Coherence(), Resonance(), Transition()])
-    >>>
-    >>> # Result: Group coherence increases, conflicts resolve
-    >>> # Team operates with unified purpose
-
-    See Also
-    --------
-    Dissonance : Creates instability that Coherence later resolves
-    Emission : Often followed by Coherence for safe activation
-    Mutation : Coherence enables controlled phase changes
+    Drives local equilibrium (delta NFR down). Often follows
+    Emission/Coupling or contains OZ/VAL effects. Phase locking optional.
     """
 
     __slots__ = ()
@@ -156,7 +32,7 @@ class Coherence(Operator):
     glyph: ClassVar[Glyph] = Glyph.IL
 
     def __call__(self, G: TNFRGraph, node: Any, **kw: Any) -> None:
-        """Apply Coherence with explicit ΔNFR reduction, C(t) coherence tracking, and phase locking.
+        """Reduce delta NFR; track coherence; optional phase lock.
 
         Parameters
         ----------
@@ -165,37 +41,31 @@ class Coherence(Operator):
         node : Any
             Identifier or object representing the target node within ``G``.
         **kw : Any
-            Additional keyword arguments forwarded to grammar layer via parent __call__.
-            Special keys:
-            - coherence_radius (int): Radius for local coherence computation (default: 1)
-            - phase_locking_coefficient (float): Phase alignment strength α ∈ [0.1, 0.5] (default: 0.3)
+            Optional keys:
+            - coherence_radius: local coherence radius (default 1)
+            - phase_locking_coefficient: phase lock strength in [0.1,0.5]
 
         Notes
         -----
-        This implementation enforces the canonical Coherence structural effect:
-        ΔNFR → ΔNFR * (1 - ρ) where ρ ≈ 0.3 (30% reduction).
+        Canonical effect: dnfr -> dnfr * (1 - rho) rho≈0.3.
 
-        The reduction is applied by the grammar layer using the Coherence dnfr_factor
-        from global glyph factors. This method adds explicit telemetry logging for
-        structural traceability.
+        Reduction applied by grammar layer (dnfr_factor). Adds telemetry.
 
         **C(t) Coherence Tracking:**
 
-        Captures global and local coherence before and after Coherence application:
-        - C_global: Network-wide coherence using C(t) = 1 - (σ_ΔNFR / ΔNFR_max)
-        - C_local: Node neighborhood coherence with configurable radius
+        Captures global/local coherence before & after:
+        - C_global: 1 - (sigma_dnfr / dnfr_max)
+        - C_local: neighborhood coherence (radius)
 
-        Both metrics are stored in G.graph["IL_coherence_tracking"] for analysis.
+        Stored in G.graph['IL_coherence_tracking'].
 
-        **Phase Locking:**
+        Phase Locking:
 
-        Aligns node phase θ with network neighborhood phase:
-        - θ_node → θ_node + α * (θ_network - θ_node)
-        - Uses circular mean for proper phase wrap-around handling
-        - Telemetry stored in G.graph["IL_phase_locking"]
+        Phase align:
+        - theta_new = theta + a*(theta_net - theta)
+        Stored in telemetry list.
 
-        To customize the reduction factor, set GLYPH_FACTORS["IL_dnfr_factor"] in
-        the graph before calling this operator. Default is 0.7 (30% reduction).
+        Adjust rho via GLYPH_FACTORS['IL_dnfr_factor'] (default 0.7).
         """
         # Import here to avoid circular import
         from ..metrics.coherence import (
@@ -205,12 +75,16 @@ class Coherence(Operator):
 
         # Capture C(t) before Coherence application
         C_global_before = compute_global_coherence(G)
-        C_local_before = compute_local_coherence(G, node, radius=kw.get("coherence_radius", 1))
+        C_local_before = compute_local_coherence(
+            G,
+            node,
+            radius=kw.get("coherence_radius", 1),
+        )
 
         # Capture ΔNFR before Coherence application for telemetry
         dnfr_before = float(get_attr(G.nodes[node], ALIAS_DNFR, 0.0))
 
-        # Delegate to parent __call__ which applies grammar (including Coherence reduction)
+        # Parent __call__ applies grammar (includes reduction)
         super().__call__(G, node, **kw)
 
         # Apply phase locking after grammar application
@@ -219,7 +93,11 @@ class Coherence(Operator):
 
         # Capture C(t) after IL application
         C_global_after = compute_global_coherence(G)
-        C_local_after = compute_local_coherence(G, node, radius=kw.get("coherence_radius", 1))
+        C_local_after = compute_local_coherence(
+            G,
+            node,
+            radius=kw.get("coherence_radius", 1),
+        )
 
         # Capture ΔNFR after IL application for telemetry
         dnfr_after = float(get_attr(G.nodes[node], ALIAS_DNFR, 0.0))
@@ -245,9 +123,10 @@ class Coherence(Operator):
             G.graph["IL_dnfr_reductions"] = []
 
         # Calculate actual reduction factor from before/after values
-        actual_reduction_factor = (
-            (dnfr_before - dnfr_after) / dnfr_before if dnfr_before > 0 else 0.0
-        )
+        if dnfr_before > 0:
+            actual_reduction_factor = (dnfr_before - dnfr_after) / dnfr_before
+        else:
+            actual_reduction_factor = 0.0
 
         G.graph["IL_dnfr_reductions"].append(
             {
@@ -276,49 +155,32 @@ class Coherence(Operator):
     def _apply_phase_locking(
         self, G: TNFRGraph, node: Any, locking_coefficient: float = 0.3
     ) -> None:
-        """Align node phase θ with network neighborhood phase.
-
-        Implements canonical IL phase locking:
-        θ_node → θ_node + α * (θ_network - θ_node)
-
-        where α ∈ [0.1, 0.5] is the phase locking coefficient (default: 0.3).
+        """Align node phase with neighborhood mean.
 
         Parameters
         ----------
-        G : TNFRGraph
-            Network graph
-        node : Any
-            Target node
         locking_coefficient : float
-            Phase alignment strength α, default 0.3
+            Phase alignment strength a (default 0.3).
 
         Notes
         -----
         **Canonical Specification:**
 
-        IL operator synchronizes node phase with its network neighborhood:
-
-        1. Compute network phase θ_network as circular mean of neighbor phases
-        2. Compute phase difference Δθ = θ_network - θ_node (shortest arc)
-        3. Apply locking: θ_new = θ_node + α * Δθ
-        4. Normalize θ_new to [0, 2π]
+        Steps:
+        1. Network phase = circular mean of neighbors
+        2. delta = shortest angular diff
+        3. theta_new = theta + a*delta
+        4. normalize to [0,2*pi]
 
         **Circular Statistics:**
 
-        Phase averaging uses complex exponentials to handle wrap-around at 2π:
-        - Convert phases to e^(iθ)
-        - Compute mean of complex phasors
-        - Extract angle as network phase
+        Circular mean via complex exponential averaging.
 
-        This ensures correct averaging (e.g., 0.1 and 6.2 radians average to ~0).
+        Handles wrap-around (e.g., 0.1 & 6.2 -> ~0).
 
         **Telemetry:**
 
-        Stores detailed phase locking information in G.graph["IL_phase_locking"]:
-        - theta_before, theta_after: Node phase before/after locking
-        - theta_network: Network neighborhood mean phase
-        - delta_theta: Phase difference (shortest arc)
-        - alignment_achieved: Residual misalignment after locking
+        Telemetry stored in G.graph['IL_phase_locking'].
 
         **Special Cases:**
 
@@ -328,7 +190,7 @@ class Coherence(Operator):
 
         See Also
         --------
-        metrics.phase_coherence.compute_phase_alignment : Measure alignment quality
+        metrics.phase_coherence.compute_phase_alignment: phase alignment
         """
         from ..alias import set_attr
         from ..constants.aliases import ALIAS_THETA
@@ -341,7 +203,10 @@ class Coherence(Operator):
         if not neighbors:
             return  # No neighbors, no phase locking
 
-        theta_neighbors = [float(get_attr(G.nodes[n], ALIAS_THETA, 0.0)) for n in neighbors]
+        theta_neighbors = [
+            float(get_attr(G.nodes[n], ALIAS_THETA, 0.0))
+            for n in neighbors
+        ]
 
         # Compute mean phase using circular mean (angles wrap around 2π)
         # Convert to complex exponentials for circular averaging
@@ -379,11 +244,17 @@ class Coherence(Operator):
             import math
 
             # Convert phases to complex exponentials
-            complex_phases = [cmath.exp(1j * theta) for theta in theta_neighbors]
+            complex_phases = [
+                cmath.exp(1j * theta) for theta in theta_neighbors
+            ]
 
             # Compute mean complex phasor
-            mean_real = sum(z.real for z in complex_phases) / len(complex_phases)
-            mean_imag = sum(z.imag for z in complex_phases) / len(complex_phases)
+            mean_real = sum(z.real for z in complex_phases) / len(
+                complex_phases
+            )
+            mean_imag = sum(z.imag for z in complex_phases) / len(
+                complex_phases
+            )
             mean_complex = complex(mean_real, mean_imag)
 
             # Extract angle (in [-π, π])
@@ -422,6 +293,7 @@ class Coherence(Operator):
                 "theta_after": theta_new,
                 "theta_network": theta_network,
                 "delta_theta": delta_theta,
-                "alignment_achieved": abs(delta_theta) * (1 - locking_coefficient),
+                "alignment_achieved": abs(delta_theta)
+                * (1 - locking_coefficient),
             }
         )

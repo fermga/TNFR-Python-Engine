@@ -86,6 +86,18 @@ pytest --cov=tnfr --cov-report=html
 pytest -v -s
 ```
 
+### Artifact Guards
+
+Telemetry dashboards are part of the reproducibility surface. A lightweight regression test (`tests/test_precision_walk_dashboard_artifact.py`) ensures `benchmarks/results/precision_walk_dashboard.json` is valid JSON (no `NaN` literals) and remains loadable by downstream tooling. It now runs automatically via:
+
+```bash
+# Curated smoke bundle (includes dashboard JSON guard)
+make smoke-tests
+
+# Run the guard directly when iterating on telemetry scripts
+pytest tests/test_precision_walk_dashboard_artifact.py
+```
+
 ### Test Markers
 
 Tests are marked for selective execution:
@@ -137,6 +149,7 @@ markers = [
 **Purpose**: Test individual modules and functions in isolation.
 
 **Coverage Areas**:
+
 - Structural operators (emission, reception, coherence, etc.)
 - Dynamics (ΔNFR computation, nodal equation integration)
 - Cache layers (Shelve, Redis, Memory)
@@ -144,6 +157,7 @@ markers = [
 - Telemetry (coherence, sense index, traces)
 
 **Example**:
+
 ```python
 def test_coherence_operator_stabilizes_epi(simple_graph):
     """Coherence operator should increase stability."""
@@ -161,12 +175,14 @@ def test_coherence_operator_stabilizes_epi(simple_graph):
 **Purpose**: Test interactions between subsystems and operator sequences.
 
 **Coverage Areas**:
+
 - Canonical glyph sequences (emission→reception→coherence)
 - Operator chaining and graph state evolution
 - Telemetry pipeline end-to-end
 - Validation and execution coordination
 
 **Example**:
+
 ```python
 def test_canonical_sequence_execution():
     """Test canonical TNFR sequence executes without errors."""
@@ -184,12 +200,14 @@ def test_canonical_sequence_execution():
 **Purpose**: Use Hypothesis to generate test cases validating TNFR invariants.
 
 **Coverage Areas**:
+
 - Operator invariants (bounds preservation, no NaN/inf)
 - Coherence monotonicity
 - Phase coupling symmetry
 - Frequency scaling laws
 
 **Example**:
+
 ```python
 @given(
     epi=st.floats(min_value=0.1, max_value=10.0),
@@ -210,12 +228,14 @@ def test_coherence_operator_preserves_bounds(epi, vf):
 **Purpose**: Validate behavior under extreme conditions and large scales.
 
 **Coverage Areas**:
+
 - Large networks (1000+ nodes)
 - Long sequences (100+ operators)
 - Memory usage patterns
 - Parallel execution stability
 
 **Example**:
+
 ```python
 @pytest.mark.slow
 def test_large_network_coherence():
@@ -235,6 +255,7 @@ def test_large_network_coherence():
 **Purpose**: Guard against performance regressions in critical paths.
 
 **Coverage Areas**:
+
 - ΔNFR computation pipeline
 - Alias cache effectiveness
 - Trigonometric metric calculations
@@ -419,7 +440,6 @@ Use `pytest.mark.parametrize` for multiple test cases:
 def test_operator_preserves_structure(operator):
     """All operators should preserve graph structure."""
     G, node = create_nfr("test", epi=1.0, vf=1.0)
-    
     apply_operator(G, node, operator)
     
     assert node in G.nodes
@@ -428,6 +448,7 @@ def test_operator_preserves_structure(operator):
 ### 4. Document Test Intent
 
 Every test should have a clear docstring explaining:
+
 - What structural behavior is being validated
 - Which TNFR invariant(s) are checked
 - Why the test matters for coherence
@@ -477,6 +498,7 @@ These are documented and should not block PR approval unless your changes introd
 ### Continuous Integration
 
 All PRs must:
+
 1. Pass the default test suite (`pytest -m "not slow"`)
 2. Maintain or improve coverage
 3. Not introduce new failures (beyond pre-existing)
@@ -485,6 +507,7 @@ All PRs must:
 ### Test Optimization
 
 When optimizing tests:
+
 1. Consolidate redundant tests across directories
 2. Use shared fixtures to reduce duplication
 3. Parametrize instead of copying test functions

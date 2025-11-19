@@ -3650,7 +3650,23 @@ def cache_tnfr_computation(
             cache = cache_instance if cache_instance is not None else get_global_cache()
 
             # Generate cache key
-            cache_key = _generate_cache_key(func_name, args, kwargs)
+            # Bind defaults so implicit kwargs (alpha, landmark_ratio)
+            # are included in the cache key deterministically.
+            try:
+                import inspect
+
+                sig = inspect.signature(func)
+                bound = sig.bind_partial(*args, **kwargs)
+                bound.apply_defaults()
+                norm_kwargs = dict(bound.arguments)
+                cache_key = _generate_cache_key(
+                    func_name,
+                    tuple(),
+                    norm_kwargs,
+                )
+            except Exception:
+                # Fallback to raw args/kwargs if binding fails
+                cache_key = _generate_cache_key(func_name, args, kwargs)
 
             # Try to get from cache
             cached_result = cache.get(cache_key, level)
@@ -3740,7 +3756,11 @@ class GraphChangeTracker:
     Examples
     --------
     >>> import networkx as nx
-    >>> from tnfr.cache import TNFRHierarchicalCache, GraphChangeTracker, CacheLevel
+    >>> from tnfr.cache import (
+    ...     TNFRHierarchicalCache,
+    ...     GraphChangeTracker,
+    ...     CacheLevel,
+    ... )
     >>> cache = TNFRHierarchicalCache()
     >>> G = nx.Graph()
     >>> tracker = GraphChangeTracker(cache)
@@ -3915,7 +3935,12 @@ def track_node_property_update(
     if hasattr(graph, "graph"):
         tracker = graph.graph.get("_tnfr_change_tracker")
         if isinstance(tracker, GraphChangeTracker):
-            tracker.on_node_property_change(node_id, property_name, old_value, new_value)
+            tracker.on_node_property_change(
+                node_id,
+                property_name,
+                old_value,
+                new_value,
+            )
 
 
 # ============================================================================
@@ -3955,7 +3980,10 @@ class PersistentTNFRCache:
     ...     persist_to_disk=True
     ... )
     >>> # Later, in a new session
-    >>> result = cache.get_persistent("coherence_large_graph", CacheLevel.DERIVED_METRICS)
+    >>> result = cache.get_persistent(
+    ...     "coherence_large_graph",
+    ...     CacheLevel.DERIVED_METRICS,
+    ... )
     """
 
     def __init__(
@@ -4015,7 +4043,13 @@ class PersistentTNFRCache:
                     computation_cost = cached_data.get("computation_cost", 1.0)
 
                     # Load back into memory cache
-                    self._memory_cache.set(key, value, level, dependencies, computation_cost)
+                    self._memory_cache.set(
+                        key,
+                        value,
+                        level,
+                        dependencies,
+                        computation_cost,
+                    )
 
                     return value
 
@@ -4052,7 +4086,13 @@ class PersistentTNFRCache:
             Whether to persist this entry to disk.
         """
         # Always store in memory
-        self._memory_cache.set(key, value, level, dependencies, computation_cost)
+        self._memory_cache.set(
+            key,
+            value,
+            level,
+            dependencies,
+            computation_cost,
+        )
 
         # Persist to disk if requested and level supports it
         if persist_to_disk and level in self._persist_levels:
@@ -4093,7 +4133,9 @@ class PersistentTNFRCache:
 
         return count
 
-    def clear_persistent_cache(self, level: Optional[CacheLevel] = None) -> None:
+    def clear_persistent_cache(
+        self, level: Optional[CacheLevel] = None
+    ) -> None:
         """Clear persistent cache files.
 
         Parameters
@@ -4164,7 +4206,7 @@ class PersistentTNFRCache:
 
         return stats
 
-    def _get_cache_file_path(self, key: str, level: CacheLevel) -> Any:  # -> Path
+    def _get_cache_file_path(self, key: str, level: CacheLevel) -> Any:
         """Get file path for a cache entry.
 
         Organizes cache files by level in subdirectories.

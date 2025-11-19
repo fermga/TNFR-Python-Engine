@@ -1,0 +1,120 @@
+....F..............FF.FFF...............x.FFFFF......................... [  1%]
+.................................................................FFFF..F [  2%]
+.FFFF.........F...F.FFFFFFF............................................. [  3%]
+.....F.F........................................F....................... [  5%]
+...FF...F.F.....F......FFFF...........F................................. [  6%]
+......................ss.....F.......................................... [  7%]
+........................................................................ [  8%]
+.....................................................F.FFFFFFF.F.FF.FF.F [ 10%]
+F.................................................................F..... [ 11%]
+..FFF...........................F.........F.......F..................... [ 12%]
+....F................................................................... [ 14%]
+...............................................................FFFFFFFFF [ 15%]
+FFFFFFFFFFFF.......F.....F.........................ssssssss.ss.ss.sss... [ 16%]
+....F................................................................... [ 17%]
+.......................................EEEEE.......FEEEEE....FFFsss..... [ 19%]
+..................F.F....F.............................................. [ 20%]
+...........F............................................................ [ 21%]
+...FF..........................................s........................ [ 23%]
+..............................F.F.................F.....F............... [ 24%]
+.F......F............................................................... [ 25%]
+........................................................................ [ 26%]
+................FF...................................................... [ 28%]
+........................................................................ [ 29%]
+.................................................FF..................... [ 30%]
+..........................................F......F.........FF....F....F. [ 32%]
+..............F......F............................................F....F [ 33%]
+.......F.........FF.........F..F........................F............... [ 34%]
+.........F......FF.FF.F.FFFFFFF....FFFF................................. [ 35%]
+.........FF............................................................. [ 37%]
+...........F..F.F.F.........FF.F.F...F.....................F............ [ 38%]
+........................................F............................... [ 39%]
+.......FF............................................................... [ 41%]
+...............................FF...........FF.F..FFFFFF..............FF [ 42%]
+F......................................................FF..F.F..F.....FF [ 43%]
+F...F...F....F.......................................................... [ 44%]
+.........FF.........FFFFF............................................... [ 46%]
+........................................................................ [ 47%]
+...........................FF........................................... [ 48%]
+...................FF................................................... [ 50%]
+.........................FFF............................................ [ 51%]
+................................................................F.F..... [ 52%]
+...............F...FF...F.FFF........................................... [ 53%]
+........................................................................ [ 55%]
+........................................................................ [ 56%]
+........................................................................ [ 57%]
+........................................................................ [ 59%]
+................FF.FFF..................FF.............................. [ 60%]
+..........................................F............................. [ 61%]
+.................................................................F...... [ 62%]
+.....F.F..........F....................F................................ [ 64%]
+..........................F............................................. [ 65%]
+........................F...............FFFF.FFFFF...................... [ 66%]
+............F...FF....FF...F...F..........FFFF.......................... [ 68%]
+........................................................................ [ 69%]
+....FFFF..FFFFFFFF.FFFFFF.FFF.........FF.F..FFFFFF.FFFF................. [ 70%]
+.....F.........................................................FFF...... [ 71%]
+........................................................................ [ 73%]
+...........................FFF.F.........................F.............. [ 74%]
+..................FFFFFFFFFF..........F......................F.......... [ 75%]
+.....FFF....FFFFFFFFFFFFFFFF.FFFFFFF.FFF.sFFFFFFFFF..FFFFFFFFFFFF.FFFFFF [ 77%]
+......................FF...F..F..F...FF...F.................Fs.......... [ 78%]
+........................................................................ [ 79%]
+........................................................................ [ 80%]
+................................................................FF.FFFsF [ 82%]
+..........................sFF.F......................................... [ 83%]
+...............................................F........................ [ 84%]
+........................................................................ [ 86%]
+.............F.........................F................................ [ 87%]
+...........FF.......F..F........FF........s............................. [ 88%]
+...........FF.......................................FF.........s....F... [ 89%]
+F..F..F................................................................. [ 91%]
+....FF..................s............................................... [ 92%]
+.....................................FFF.F................F............. [ 93%]
+...........FF............FFF............................FFF...F....F..F. [ 95%]
+.........FFF........................................................F... [ 96%]
+FFFFF..FF............................................................... [ 97%]
+.................................FF.FF.FF..F.FF.FF.FF...F.F............. [ 98%]
+.F..F.......FFF...........FF.F.......F...................E               [100%]
+=================================== ERRORS ====================================
+_ ERROR at setup of TestCascadeDetectionScaling.test_cascade_detection_time[100] _
+file C:\TNFR-Python-Engine\tests\performance\test_cascade_detection.py, line 101
+      @pytest.mark.parametrize("n_nodes", [100, 500, 1000, 5000])
+      def test_cascade_detection_time(self, n_nodes, benchmark):
+E       fixture 'benchmark' not found
+>       available fixtures: boundary_test_cases, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, cov, doctest_namespace, graph_canon, monkeypatch, no_cover, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, reset_cached_import, reset_global_state, structural_rng, structural_tolerances, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+C:\TNFR-Python-Engine\tests\performance\test_cascade_detection.py:101
+_ ERROR at setup of TestCascadeDetectionScaling.test_cascade_detection_time[500] _
+file C:\TNFR-Python-Engine\tests\performance\test_cascade_detection.py, line 101
+      @pytest.mark.parametrize("n_nodes", [100, 500, 1000, 5000])
+      def test_cascade_detection_time(self, n_nodes, benchmark):
+E       fixture 'benchmark' not found
+>       available fixtures: boundary_test_cases, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, cov, doctest_namespace, graph_canon, monkeypatch, no_cover, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, reset_cached_import, reset_global_state, structural_rng, structural_tolerances, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+C:\TNFR-Python-Engine\tests\performance\test_cascade_detection.py:101
+_ ERROR at setup of TestCascadeDetectionScaling.test_cascade_detection_time[1000] _
+file C:\TNFR-Python-Engine\tests\performance\test_cascade_detection.py, line 101
+      @pytest.mark.parametrize("n_nodes", [100, 500, 1000, 5000])
+      def test_cascade_detection_time(self, n_nodes, benchmark):
+E       fixture 'benchmark' not found
+>       available fixtures: boundary_test_cases, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, cov, doctest_namespace, graph_canon, monkeypatch, no_cover, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, reset_cached_import, reset_global_state, structural_rng, structural_tolerances, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+C:\TNFR-Python-Engine\tests\performance\test_cascade_detection.py:101
+_ ERROR at setup of TestCascadeDetectionScaling.test_cascade_detection_time[5000] _
+file C:\TNFR-Python-Engine\tests\performance\test_cascade_detection.py, line 101
+      @pytest.mark.parametrize("n_nodes", [100, 500, 1000, 5000])
+      def test_cascade_detection_time(self, n_nodes, benchmark):
+E       fixture 'benchmark' not found
+>       available fixtures: boundary_test_cases, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, cov, doctest_namespace, graph_canon, monkeypatch, no_cover, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, reset_cached_import, reset_global_state, structural_rng, structural_tolerances, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+C:\TNFR-Python-Engine\tests\performance\test_cascade_detection.py:101
+_ ERROR at setup of TestCascadeDetectionScaling.test_cascade_detection_10k_nodes _
+file C:\TNFR-Python-Engine\tests\performance\test_cascade_detection.py, line 133
+      def test_cascade_detection_10k_nodes(self, benchmark):
+E       fixture 'benchmark' not found
+>       available fixtures: boundary_test_cases, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, cov, doctest_namespace, graph_canon, monkeypatch, no_cover, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, reset_cached_import, reset_global_state, structural_rng, structural_tolerances, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory

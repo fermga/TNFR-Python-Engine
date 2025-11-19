@@ -1,13 +1,11 @@
-"""TNFR Canonical Grammar - Single Source of Truth.
+"""TNFR Canonical Grammar (single source of truth).
 
-This module implements the canonical TNFR grammar constraints that emerge
-inevitably from TNFR physics.
+Implements grammar constraints emerging from TNFR physics.
 
 Terminology (TNFR semantics):
-- "node" in this file means resonant locus (structural coherence site) and is kept
-    for compatibility with underlying graph libraries (e.g., NetworkX). It is unrelated
-    to the Node.js runtime.
-- Future semantic aliasing ("locus") must preserve public API stability.
+- "node" here means resonant locus (coherence site); kept for
+    compatibility with graph libraries. Unrelated to Node.js runtime.
+- Future aliasing ("locus") must preserve public API stability.
 
 All rules derive from the nodal equation ∂EPI/∂t = νf · ΔNFR(t), canonical
 invariants, and formal contracts. No organizational conventions.
@@ -33,8 +31,9 @@ U4: BIFURCATION DYNAMICS
     Basis: Contract OZ + bifurcation theory
 
 U5: MULTI-SCALE COHERENCE
-    If deep REMESH (recursivity with depth>1), require scale stabilizers (IL / THOL)
-    Basis: Hierarchical nodal equation + coherence conservation (C_parent ≥ α·ΣC_child)
+    If deep REMESH (depth > 1), require scale stabilizers (IL/THOL).
+    Basis: Hierarchical nodal equation + coherence conservation
+    (C_parent ≥ α·ΣC_child).
 
 U6: STRUCTURAL POTENTIAL CONFINEMENT (Promoted 2025-11-11)
     Verify Δ Φ_s < 2.0 (escape threshold)
@@ -52,19 +51,18 @@ References
 
 from __future__ import annotations
 
-from enum import Enum
-from typing import TYPE_CHECKING, Any, List, Mapping, Sequence, Tuple
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from ..types import NodeId, TNFRGraph, Glyph
-    from .definitions import Operator
+    from .definitions import Operator  # noqa: F401
 else:
     # Runtime fallbacks to avoid type expression errors in string annotations
     NodeId = Any  # type: ignore  # Runtime alias
     TNFRGraph = Any  # type: ignore  # Runtime alias
-    from ..types import Glyph
+    from ..types import Glyph  # noqa: F401
 
-from ..config.operator_names import (
+from ..config.operator_names import (  # noqa: F401
     BIFURCATION_WINDOWS,
     CANONICAL_OPERATOR_NAMES,
     DESTABILIZERS_MODERATE,
@@ -76,17 +74,14 @@ from ..config.operator_names import (
     VALID_END_OPERATORS,
     VALID_START_OPERATORS,
 )
-from ..validation.base import ValidationOutcome
-from ..validation.compatibility import (
+from ..validation.base import ValidationOutcome  # noqa: F401
+from ..validation.compatibility import (  # noqa: F401
     CompatibilityLevel,
     get_compatibility_level,
 )
 
 
-
-# Re-export all grammar components for backward compatibility
-
-# Types and exceptions
+# Re-export all grammar components (backward compatibility)
 from .grammar_types import (
     StructuralPattern,
     StructuralGrammarError,
@@ -153,6 +148,76 @@ from .grammar_patterns import (
     IL_ANTIPATTERNS,
 )
 
+# Operator registry & glyph mappings (backward compatibility)
+from .definitions import (
+    Emission,
+    Reception,
+    Coherence,
+    Dissonance,
+    Coupling,
+    Resonance,
+    Silence,
+    Expansion,
+    Contraction,
+    SelfOrganization,
+    Mutation,
+    Transition,
+    Recursivity,
+)
+from .registry import discover_operators, OPERATORS
+from .grammar_types import GLYPH_TO_FUNCTION, FUNCTION_TO_GLYPH
+
+# Ensure registry populated for tests expecting direct name lookups
+discover_operators()
+
+# Provide a name→class mapping including canonical aliases (auto-registered)
+OPERATOR_NAME_TO_CLASS = {n: cls for n, cls in OPERATORS.items()}
+
+# Backward compatibility: keep operator classes referenced so import tools
+# and static analyzers treat them as intentionally re-exported.
+_BACKWARD_COMPAT_OPERATORS = (
+    Emission,
+    Reception,
+    Coherence,
+    Dissonance,
+    Coupling,
+    Resonance,
+    Silence,
+    Expansion,
+    Contraction,
+    SelfOrganization,
+    Mutation,
+    Transition,
+    Recursivity,
+)
+
+
+def get_grammar_cache_stats() -> dict[str, dict[str, int]]:
+    """Return cache statistics for grammar-level cached functions.
+
+    Inspects imported callables for a ``cache_info`` attribute (from
+    ``functools.lru_cache``). Returns mapping ``{function_name: cache_info}``
+    where ``cache_info`` is converted to a plain dict.
+    Physics-neutral: read-only telemetry; does not modify caches.
+    """
+    stats: dict[str, dict[str, int]] = {}
+    import inspect
+    for name, obj in list(globals().items()):
+        if inspect.isfunction(obj) and hasattr(obj, "cache_info"):
+            try:  # pragma: no cover - defensive
+                info = obj.cache_info()
+                maxsize = info.maxsize if info.maxsize is not None else -1
+                stats[name] = {
+                    "hits": info.hits,
+                    "misses": info.misses,
+                    "maxsize": maxsize,
+                    "currsize": info.currsize,
+                }
+            except Exception:  # pragma: no cover
+                pass
+    return stats
+
+
 __all__ = [
     # Types
     "StructuralPattern",
@@ -205,4 +270,11 @@ __all__ = [
     "TRANSFORMERS",
     "RECURSIVE_GENERATORS",
     "SCALE_STABILIZERS",
+    # Registry & glyph compatibility exports
+    "GLYPH_TO_FUNCTION",
+    "FUNCTION_TO_GLYPH",
+    "OPERATORS",
+    "OPERATOR_NAME_TO_CLASS",
+    # Telemetry helpers
+    "get_grammar_cache_stats",
 ]

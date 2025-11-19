@@ -10,6 +10,7 @@ import sys
 import json
 import random
 from pathlib import Path
+import argparse
 
 import numpy as np
 import networkx as nx
@@ -38,8 +39,30 @@ def _convert_numpy_types(obj):
     return obj
 
 
-def confinement_zone_investigation():
-    """Investigate K_φ confinement zones and ΔNFR localization."""
+def confinement_zone_investigation(topologies=None, n_nodes=30, n_tests=10,
+                                   high_resolution=False, seed=42,
+                                   quiet=False):
+    """Investigate K_φ confinement zones and ΔNFR localization.
+
+    Parameters
+    ----------
+    topologies : list[str] | None
+        Topologies to test; uses default canonical subset if None.
+    n_nodes : int
+        Node count per topology.
+    n_tests : int
+        Number of seed experiments per topology.
+    high_resolution : bool
+        If True, include additional K_φ thresholds for finer mapping.
+    seed : int
+        Base RNG seed for reproducible per-test seeds.
+    quiet : bool
+        Suppress progress output (CI/test mode).
+    """
+    if topologies is None:
+        topologies = ['ring', 'scale_free', 'ws']
+
+    rng = random.Random(seed)
     # Lazy project imports to satisfy linter and ensure sys.path is set
     PROJECT_ROOT = Path(__file__).parent.parent
     if str(PROJECT_ROOT) not in sys.path:
@@ -56,29 +79,35 @@ def confinement_zone_investigation():
         Mutation,
     )
     from src.tnfr.config import DNFR_PRIMARY  # noqa: E402
-    print("🔒 K_φ Confinement Zone Mapping Investigation")
-    print("=" * 50)
-    
+    if not quiet:
+        print("🔒 K_φ Confinement Zone Mapping Investigation")
+        print("=" * 50)
+        print(f"Topologies: {topologies}")
+        print(f"Nodes per topology: {n_nodes}")
+        print(f"Tests per topology: {n_tests}")
+        print(f"High-resolution: {high_resolution}")
+
     results = []
-    topologies = ['ring', 'scale_free', 'ws']
-    n_nodes = 30
-    n_tests = 10
-    
-    # Different K_φ thresholds to test
     k_phi_thresholds = [3.0, 4.0, 4.88, 5.5, 6.0]
+    if high_resolution:
+        # Add finer threshold granularity around revised 3.0 value
+        extra_thresholds = [2.5, 3.25, 3.75, 5.25, 6.5]
+        k_phi_thresholds = sorted(set(k_phi_thresholds + extra_thresholds))
     
     for topology in topologies:
-        print(f"\n🌊 {topology.upper()} - Confinement Zone Analysis:")
+        if not quiet:
+            print(f"\n🌊 {topology.upper()} - Confinement Zone Analysis:")
         
         for test_id in range(n_tests):
-            seed = random.randint(1000, 9999)
+            local_seed = rng.randint(1000, 9999)
             
             try:
                 # Create and initialize graph
-                G = create_tnfr_topology(topology, n_nodes, seed)
-                initialize_tnfr_nodes(G, seed=seed)
+                G = create_tnfr_topology(topology, n_nodes, local_seed)
+                initialize_tnfr_nodes(G, seed=local_seed)
                 
-                print(f"  Test {test_id:2d}: ", end="")
+                if not quiet:
+                    print(f"  Test {test_id:2d}: ", end="")
                 
                 # === PHASE 1: Pre-disruption baseline ===
                 k_phi_baseline = compute_phase_curvature(G)
@@ -164,12 +193,14 @@ def confinement_zone_investigation():
                     'test_id': test_id,
                     'n_nodes': len(G.nodes()),
                     'n_edges': len(G.edges()),
-                    'seed': seed,
+                    'seed': local_seed,
                     'baseline_stats': baseline_stats,
                     'disrupted_stats': disrupted_stats,
                     'stabilized_stats': stabilized_stats,
                     'confinement_analysis': confinement_analysis,
-                    'disruption_targets': disruption_targets
+                    'disruption_targets': disruption_targets,
+                    'thresholds': k_phi_thresholds,
+                    'high_resolution': high_resolution,
                 }
                 
                 results.append(result)
@@ -190,18 +221,21 @@ def confinement_zone_investigation():
                     'stabilized_max': stabilized_stats['k_phi_max']
                 }
                 
-                print(f"K_φ: {k_phi_evolution['baseline_max']:.1f}→"
-                      f"{k_phi_evolution['disrupted_max']:.1f}→"
-                      f"{k_phi_evolution['stabilized_max']:.1f} | "
-                      f"Zones: {best_zones} | Capture: {best_capture:.2f}")
+                if not quiet:
+                    print(
+                        f"K_φ: {k_phi_evolution['baseline_max']:.1f}→"
+                        f"{k_phi_evolution['disrupted_max']:.1f}→"
+                        f"{k_phi_evolution['stabilized_max']:.1f} | "
+                        f"Zones: {best_zones} | Capture: {best_capture:.2f}"
+                    )
                       
             except Exception as e:
                 print(f"ERROR: {e}")
                 continue
     
     # === COMPREHENSIVE ANALYSIS ===
-    if results:
-        print(f"\n📊 CONFINEMENT ZONE ANALYSIS SUMMARY:")
+    if results and not quiet:
+        print("\n📊 CONFINEMENT ZONE ANALYSIS SUMMARY:")
         print(f"Total experiments: {len(results)}")
         
         # Threshold performance analysis
@@ -453,4 +487,39 @@ def analyze_zone_connectivity(G, zones):
 
 
 if __name__ == "__main__":
-    confinement_zone_investigation()
+    parser = argparse.ArgumentParser(
+        description="K_phi confinement zone benchmark (ΔNFR localization)"
+    )
+    parser.add_argument(
+        "--topologies", nargs="+", default=["ring", "scale_free"],
+        help="Topologies to test (default: ring scale_free)"
+    )
+    parser.add_argument(
+        "--nodes", type=int, default=30,
+        help="Nodes per topology (default: 30)"
+    )
+    parser.add_argument(
+        "--seeds", type=int, default=10,
+        help="Number of seed runs per topology (default: 10)"
+    )
+    parser.add_argument(
+        "--high-resolution", action="store_true",
+        help="Add extra K_phi thresholds for finer mapping"
+    )
+    parser.add_argument(
+        "--seed", type=int, default=42,
+        help="Base RNG seed"
+    )
+    parser.add_argument(
+        "--quiet", action="store_true",
+        help="Suppress progress output"
+    )
+    cli_args = parser.parse_args()
+    confinement_zone_investigation(
+        topologies=cli_args.topologies,
+        n_nodes=cli_args.nodes,
+        n_tests=cli_args.seeds,
+        high_resolution=cli_args.high_resolution,
+        seed=cli_args.seed,
+        quiet=cli_args.quiet,
+    )

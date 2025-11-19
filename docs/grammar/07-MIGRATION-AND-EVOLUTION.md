@@ -78,6 +78,31 @@ This document chronicles the **evolution** of the TNFR grammar system and provid
 
 ---
 
+## Capacity Reinvestment (Precision & Telemetry) — No Grammar Changes
+
+As of Nov 2025, TNFR reinvests computational capacity into higher numeric precision and richer passive telemetry without altering the unified grammar (U1–U6) or operator physics. These changes are strictly observational or numerical; they do not modify the semantics of coherence evolution or operator contracts.
+
+Key points:
+
+- Precision modes (standard | high | research) affect internal dtypes/algorithms in canonical field computations only; decisions governed by U1–U6 remain identical across modes.
+- Telemetry density (low | medium | high) controls sampling richness for the structural field tetrad (Φ_s, |∇φ|, K_φ, ξ_C). Telemetry is read-only; it does not change ΔNFR, νf, phases, or EPI.
+- Phase 5 bifurcation telemetry adds passive metrics and CLI sweeps to assess none/incipient/bifurcation/fragmentation classifications; operators (OZ, IL, THOL, optional ZHIR) remain the only source of EPI changes and are grammar-checked per U2–U4.
+
+Migration impact:
+
+- No code changes are required for existing simulations; defaults preserve prior behavior.
+- Opt-in controls are available via existing CLIs and configuration where applicable (e.g., bifurcation sweeps and benchmark flags).
+
+References:
+
+- Roadmap: docs/TNFR_PRECISION_AND_TELEMETRY_ROADMAP.md (Phases 1–5)
+- Canonical fields: src/tnfr/physics/fields.py (Φ_s, |∇φ|, K_φ, ξ_C)
+- Bifurcation sweeps: benchmarks/bifurcation_landscape.py
+- Regression harness: tools/run_tetrad_regression.py
+- Invariants and canonicity: AGENTS.md (§ Telemetry & Metrics)
+
+---
+
 ## Mapping Old to New
 
 ### C1 → U1a (Initiation)
@@ -1960,13 +1985,15 @@ Valid sequences typically maintain Δ Φ_s ≈ 0.6 (30% of threshold)
 
 ---
 
-### Proposed U7: Temporal Ordering (Research Stage - Formerly Experimental U6)
+### Historical Research: "Proposed U7" Temporal Ordering (NOT CANONICAL - DO NOT IMPLEMENT)
 
-**Status:** RESEARCH - Not canonical. Previously explored as "U6: Temporal Ordering" before Φ_s approach proved superior.
+**⚠️ IMPORTANT:** This is a **historical research proposal only**. It is **NOT canonical**, **NOT implemented**, and **NOT part of TNFR grammar**. The canonical grammar is **complete with U1-U6**; no U7 exists or is planned.
 
-**Concept:** Certain operators require minimum temporal separation
+**Status:** RESEARCH ONLY - Previously explored as "U6: Temporal Ordering" before Φ_s approach proved superior. Decision: **DO NOT IMPLEMENT**.
 
-**Physical Basis (Preliminary):**
+**Concept (Historical):** Certain operators require minimum temporal separation
+
+**Physical Basis (Preliminary - Never validated):**
 ```
 From bifurcation theory:
   After ZHIR or OZ, system needs relaxation time τ_relax
@@ -1974,10 +2001,10 @@ From bifurcation theory:
   If next destabilizer applied before τ_relax:
     → Chaotic dynamics (loss of coherence)
     
-τ_relax ≈ 1/(2πνf) [one structural period]
+τ_relax ≈ α/(2πνf) [approximately one structural period]
 ```
 
-**Constraint (Hypothetical):**
+**Constraint (Hypothetical - NOT enforced):**
 ```
 If OZ or ZHIR at position i:
   Then no {OZ, ZHIR, VAL} at position i+1, i+2
@@ -1985,17 +2012,24 @@ If OZ or ZHIR at position i:
 Reason: Allow structural relaxation
 ```
 
-**Why Not Canonical:**
-- Φ_s (U6) showed stronger predictive power (|corr| = 0.822 vs τ_relax heuristics)
-- Temporal ordering may be emergent consequence of Φ_s constraint
-- Could be revisited as complementary heuristic or future U7/U8
+**Why NOT Canonical (5 Problems):**
+1. **Not derived from nodal equation** - borrowed from oscillator theory, not TNFR physics
+2. **α parameter variable** - ranges 0.5-0.9, no canonical value
+3. **Temporal-logical conflation** - mixes timing (τ_relax) with sequence logic (position i+1)
+4. **No empirical validation** - never tested, Φ_s approach chosen instead
+5. **Canonicity insufficient** - MODERATE (40%) below STRONG threshold (70%)
 
-**Research Status:**
-- Canonicity: Possibly MODERATE (from bifurcation theory)
-- Research needed: Determine if τ_relax provides unique information beyond Φ_s
-- Expected: Post-v5.0 (if uniqueness demonstrated)
+**Why No U7/U8 Required:**
+- Extended dynamics (J_φ phase flux, ∇·J_ΔNFR conservation) don't alter nodal equation
+- U1-U6 already cover all preconditions for flux dynamics
+- Flux fields add **telemetry**, not **prescriptive constraints**
+- Grammar is **COMPLETE** with exactly 6 rules
 
-**See:** [UNIFIED_GRAMMAR_RULES.md § Proposed U7](../../UNIFIED_GRAMMAR_RULES.md) - Historical context
+**Final Decision:** DO NOT IMPLEMENT. If temporal patterns needed in future, they emerge from U1-U6 + extended dynamics, not new grammar rules.
+
+**See:** 
+- [UNIFIED_GRAMMAR_RULES.md § Grammar Completeness: Why No U7/U8](../../UNIFIED_GRAMMAR_RULES.md) - Complete explanation
+- [results/u7_investigation_report.txt](../../results/u7_investigation_report.txt) - Investigation findings (Nov 2025)
 
 ---
 

@@ -1,9 +1,10 @@
-"""TNFR Operator: Transition
+"""Transition (NAV) operator.
 
-Transition structural operator (NAV) - Controlled regime handoff.
-
-**Physics**: See AGENTS.md § Transition
-**Grammar**: UNIFIED_GRAMMAR_RULES.md
+Purpose: controlled regime handoff (latent/active/resonant).
+Physics: adjusts θ, νf, ΔNFR for smooth state change.
+Grammar: generator/closure compatible; sequence bridge.
+Telemetry: stores origin regime and before/after values.
+Typical: AL->NAV->IL, SHA->NAV->AL, NAV->ZHIR, IL->NAV->OZ.
 """
 
 from __future__ import annotations
@@ -12,57 +13,16 @@ import math
 import warnings
 from typing import Any, ClassVar
 
-from ..alias import get_attr
 from ..config.operator_names import TRANSITION
-from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI
 from ..types import Glyph, TNFRGraph
 from .definitions_base import Operator
-
+ 
 
 class Transition(Operator):
-    """Transition structural operator (NAV) - Controlled regime handoff.
+    """Guide structural handoff; adjust θ, νf, ΔNFR per regime.
 
-    Activates glyph ``NAV`` to guide the node through a controlled transition between
-    structural regimes, managing hand-offs across states.
-
-    TNFR Context: Transition (NAV) manages movement between coherence regimes with minimal
-    disruption. NAV adjusts θ, νf, and ΔNFR to navigate thresholds smoothly, preventing
-    collapse during regime shifts. Essential for change management.
-
-    Use Cases: State transitions, regime changes, threshold crossings, transformation
-    processes, managed evolution.
-
-    Typical Sequences: AL → NAV → IL (activate-transition-stabilize), NAV → ZHIR (transition
-    enables mutation), SHA → NAV → AL (silence-transition-reactivation), IL → NAV → OZ
-    (stable-transition-explore).
-
-    Versatility: NAV is highly compatible with most operators as transition manager.
-
-    Examples
-    --------
-    >>> from tnfr.constants import DNFR_PRIMARY, THETA_PRIMARY, VF_PRIMARY
-    >>> from tnfr.dynamics import set_delta_nfr_hook
-    >>> from tnfr.structural import create_nfr, run_sequence
-    >>> from tnfr.operators.definitions import Transition
-    >>> G, node = create_nfr("mu", vf=0.85, theta=0.40)
-    >>> ramps = iter([(0.12, -0.25)])
-    >>> def handoff(graph):
-    ...     d_vf, d_theta = next(ramps)
-    ...     graph.nodes[node][VF_PRIMARY] += d_vf
-    ...     graph.nodes[node][THETA_PRIMARY] += d_theta
-    ...     graph.nodes[node][DNFR_PRIMARY] = abs(d_vf) * 0.5
-    >>> set_delta_nfr_hook(G, handoff)
-    >>> run_sequence(G, node, [Transition()])
-    >>> round(G.nodes[node][VF_PRIMARY], 2)
-    0.97
-    >>> round(G.nodes[node][THETA_PRIMARY], 2)
-    0.15
-    >>> round(G.nodes[node][DNFR_PRIMARY], 2)
-    0.06
-
-    **Biomedical**: Sleep stage transitions, developmental phases, recovery processes
-    **Cognitive**: Learning phase transitions, attention shifts, mode switching
-    **Social**: Organizational change, cultural transitions, leadership handoffs
+    Regimes: latent (reactivate), active (scale νf), resonant (dampen).
+    Metrics: regime_origin, before/after vf, theta, dnfr, phase_shift.
     """
 
     __slots__ = ()
@@ -70,48 +30,7 @@ class Transition(Operator):
     glyph: ClassVar[Glyph] = Glyph.NAV
 
     def __call__(self, G: TNFRGraph, node: Any, **kw: Any) -> None:
-        """Apply NAV with regime detection and controlled transition.
-
-        Implements TNFR.pdf §2.3.11 canonical transition logic:
-        1. Detect current structural regime (latent/active/resonant)
-        2. Handle latency reactivation if node was in silence (SHA → NAV)
-        3. Apply grammar and structural transformation
-        4. Collect metrics (if enabled)
-
-        Parameters
-        ----------
-        G : TNFRGraph
-            Graph storing TNFR nodes and structural operator history.
-        node : Any
-            Identifier or object representing the target node within ``G``.
-        **kw : Any
-            Additional keyword arguments:
-            - phase_shift (float): Override default phase shift per regime
-            - vf_factor (float): Override νf scaling for active regime (default: 1.0)
-            - Other args forwarded to grammar layer
-
-        Notes
-        -----
-        Regime-specific transformations (TNFR.pdf §2.3.11):
-
-        **Latent → Active** (νf < 0.05 or latent flag):
-        - νf × 1.2 (20% increase for gradual reactivation)
-        - θ + 0.1 rad (small phase shift)
-        - ΔNFR × 0.7 (30% reduction for smooth transition)
-
-        **Active** (baseline state):
-        - νf × vf_factor (default 1.0, configurable)
-        - θ + 0.2 rad (standard phase shift)
-        - ΔNFR × 0.8 (20% reduction)
-
-        **Resonant → Active** (EPI > 0.5 AND νf > 0.8):
-        - νf × 0.95 (5% reduction for stability)
-        - θ + 0.15 rad (careful phase shift)
-        - ΔNFR × 0.9 (10% reduction, gentle)
-
-        Telemetry stored in G.graph["_nav_transitions"] tracks:
-        - regime_origin, vf_before/after, theta_before/after, dnfr_before/after
-        """
+        """Detect regime; apply grammar; adjust θ, νf, ΔNFR; log metrics."""
         from ..alias import get_attr
         from ..constants.aliases import ALIAS_EPI
 
@@ -124,8 +43,9 @@ class Transition(Operator):
             self._handle_latency_transition(G, node)
 
         # 3. Validate preconditions (if enabled)
-        validate_preconditions = kw.get("validate_preconditions", True) or G.graph.get(
-            "VALIDATE_PRECONDITIONS", False
+        validate_preconditions = (
+            kw.get("validate_preconditions", True)
+            or G.graph.get("VALIDATE_PRECONDITIONS", False)
         )
         if validate_preconditions:
             self._validate_preconditions(G, node)
@@ -134,8 +54,9 @@ class Transition(Operator):
         collect_metrics = kw.get("collect_metrics", False) or G.graph.get(
             "COLLECT_OPERATOR_METRICS", False
         )
-        validate_equation = kw.get("validate_nodal_equation", False) or G.graph.get(
-            "VALIDATE_NODAL_EQUATION", False
+        validate_equation = (
+            kw.get("validate_nodal_equation", False)
+            or G.graph.get("VALIDATE_NODAL_EQUATION", False)
         )
 
         state_before = None
@@ -176,27 +97,7 @@ class Transition(Operator):
             G.graph["operator_metrics"].append(metrics)
 
     def _detect_regime(self, G: TNFRGraph, node: Any) -> str:
-        """Detect current structural regime: latent/active/resonant.
-
-        Parameters
-        ----------
-        G : TNFRGraph
-            Graph containing the node.
-        node : Any
-            Target node.
-
-        Returns
-        -------
-        str
-            Regime classification: "latent", "active", or "resonant"
-
-        Notes
-        -----
-        Classification criteria:
-        - **Latent**: latent flag set OR νf < 0.05 (minimal reorganization capacity)
-        - **Resonant**: EPI > 0.5 AND νf > 0.8 (high form + high frequency)
-        - **Active**: Default (baseline operational state)
-        """
+        """Return regime label: latent | active | resonant."""
         from ..alias import get_attr
         from ..constants.aliases import ALIAS_EPI, ALIAS_VF
 
@@ -212,31 +113,7 @@ class Transition(Operator):
             return "active"
 
     def _handle_latency_transition(self, G: TNFRGraph, node: Any) -> None:
-        """Handle transition from latent state (SHA → NAV flow).
-
-        Similar to Emission._check_reactivation but for NAV-specific transitions.
-        Validates silence duration and clears latency attributes.
-
-        Parameters
-        ----------
-        G : TNFRGraph
-            Graph containing the node.
-        node : Any
-            Target node being reactivated.
-
-        Warnings
-        --------
-        - Warns if node transitioning after extended silence (duration > MAX_SILENCE_DURATION)
-        - Warns if EPI drifted significantly during silence (> 1% tolerance)
-
-        Notes
-        -----
-        Clears latency-related attributes:
-        - latent (flag)
-        - latency_start_time (ISO timestamp)
-        - preserved_epi (EPI snapshot from SHA)
-        - silence_duration (computed duration)
-        """
+        """Reactivate; check silence duration & epi drift; clear flags."""
         from datetime import datetime, timezone
 
         # Verify silence duration if timestamp available
@@ -265,9 +142,10 @@ class Transition(Operator):
             # Allow small numerical drift (1% tolerance)
             if epi_drift > 0.01 * abs(preserved_epi):
                 warnings.warn(
-                    f"Node {node} EPI drifted during silence "
-                    f"(preserved: {preserved_epi:.3f}, current: {current_epi:.3f}, "
-                    f"drift: {epi_drift:.3f})",
+                    (
+                        f"Node {node} EPI drift drift={epi_drift:.3f} "
+                        f"pres={preserved_epi:.3f} cur={current_epi:.3f}"
+                    ),
                     stacklevel=4,
                 )
 
@@ -279,30 +157,10 @@ class Transition(Operator):
             del G.nodes[node]["preserved_epi"]
         # Keep silence_duration for telemetry/metrics - don't delete it
 
-    def _apply_structural_transition(self, G: TNFRGraph, node: Any, regime: str, **kw: Any) -> None:
-        """Apply structural transformation based on regime origin.
-
-        Parameters
-        ----------
-        G : TNFRGraph
-            Graph containing the node.
-        node : Any
-            Target node.
-        regime : str
-            Origin regime: "latent", "active", or "resonant"
-        **kw : Any
-            Optional overrides:
-            - phase_shift (float): Custom phase shift
-            - vf_factor (float): Custom νf scaling for active regime
-
-        Notes
-        -----
-        Applies regime-specific transformations to θ, νf, and ΔNFR following
-        TNFR.pdf §2.3.11. All changes use canonical alias system (set_attr)
-        to ensure proper attribute resolution.
-
-        Telemetry appended to G.graph["_nav_transitions"] for analysis.
-        """
+    def _apply_structural_transition(
+        self, G: TNFRGraph, node: Any, regime: str, **kw: Any
+    ) -> None:
+        """Adjust θ, νf, ΔNFR per regime; append transition telemetry."""
         from ..alias import get_attr, set_attr
         from ..constants.aliases import ALIAS_DNFR, ALIAS_THETA, ALIAS_VF
 
@@ -354,7 +212,7 @@ class Transition(Operator):
         )
 
     def _validate_preconditions(self, G: TNFRGraph, node: Any) -> None:
-        """Validate NAV-specific preconditions."""
+        """Run NAV precondition validator."""
         from .preconditions import validate_transition
 
         validate_transition(G, node)
@@ -362,7 +220,7 @@ class Transition(Operator):
     def _collect_metrics(
         self, G: TNFRGraph, node: Any, state_before: dict[str, Any]
     ) -> dict[str, Any]:
-        """Collect NAV-specific metrics."""
+        """Collect NAV metrics for operator telemetry."""
         from .metrics import transition_metrics
 
         return transition_metrics(

@@ -134,14 +134,8 @@ def run_intensity_sweep(
                 # Final ΔNFR calculation after evolution
                 default_compute_delta_nfr(G)
                 
-                # Add per-node coherence for coherence length calculation
-                for node in G.nodes():
-                    dnfr = abs(G.nodes[node].get(DNFR_PRIMARY, 0.0))
-                    # Per-node coherence: 1/(1 + |ΔNFR|)
-                    G.nodes[node]['coherence'] = 1.0 / (1.0 + dnfr)
-                
-                # Measure coherence length
-                xi_c = estimate_coherence_length(G, coherence_key="coherence")
+                # Measure coherence length (uses delta_nfr attribute)
+                xi_c = estimate_coherence_length(G)
                 xi_c_runs.append(xi_c)
                 
                 # Measure phase symmetry
@@ -361,4 +355,154 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    from cli_utils import (
+        create_benchmark_parser,
+        resolve_seeds,
+        resolve_node_sizes,
+        setup_output_dir,
+        apply_precision_config,
+        get_param_grid_points,
+    )
+    
+    # Create CLI parser
+    parser = create_benchmark_parser(
+        description="Coherence Length Critical Exponent Extraction",
+        default_nodes=50,
+        default_seeds=30,
+        default_topologies=["ws", "scale_free"],
+        add_precision_flags=True,
+        add_param_grid=True,
+    )
+    # Lightweight Phase 4 test harness skip
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help=(
+            "Parse arguments and configuration, then exit without "
+            "executing sweeps"
+        ),
+    )
+    
+    args = parser.parse_args()
+    
+    # Apply precision/telemetry configuration
+    apply_precision_config(args)
+    
+    # Resolve parameters
+    seeds = resolve_seeds(args)
+    node_sizes = resolve_node_sizes(args)
+    topologies = args.topologies
+    
+    # Generate intensity grid
+    if hasattr(args, "param_grid_resolution"):
+        param_range = (
+            args.param_range if hasattr(args, "param_range")
+            else None
+        )
+        intensities = get_param_grid_points(
+            resolution=args.param_grid_resolution,
+            critical_point=I_C,
+            param_range=param_range,
+        )
+    else:
+        # Default intensity range
+        intensities = list(np.linspace(1.8, 2.2, 25))
+    
+    # Setup output
+    output_dir = setup_output_dir(args)
+    
+    # Store precision mode for use in results
+    precision = args.precision if hasattr(args, "precision") else "standard"
+    
+    # Run main experiment with CLI parameters
+    if not args.quiet:
+        print("Configuration:")
+        print(f"  Topologies: {topologies}")
+        print(f"  Node sizes: {node_sizes}")
+        print(f"  Seeds: {len(seeds)} runs")
+        print(f"  Intensities: {len(intensities)} points")
+        precision = (
+            args.precision if hasattr(args, "precision")
+            else "standard"
+        )
+        print(f"  Precision: {precision}")
+        print(f"  Output: {output_dir}")
+        print()
+
+    if getattr(args, "dry_run", False):
+        # Early exit for CLI parameter validation tests
+        if not args.quiet:
+            print(
+                "[DRY-RUN] Skipping intensity sweeps; CLI parameters "
+                "validated."
+            )
+        sys.exit(0)
+    
+    # Run experiments for each configuration
+    for n_nodes in node_sizes:
+        if not args.quiet:
+            print(f"\n{'='*60}")
+            print(f"Network size: {n_nodes} nodes")
+            print(f"{'='*60}")
+        
+        # Call original main() logic with CLI params
+        # (Would need to refactor main() to accept parameters)
+        # For now, run inline
+        
+        timestamp = time.strftime("%Y%m%d_%H%M%S")
+        filename = f"xi_c_critical_{n_nodes}nodes_{timestamp}.jsonl"
+        results_file = output_dir / filename
+        
+        all_results = []
+        
+        for topology in topologies:
+            if not args.quiet:
+                print(f"\nRunning {topology} experiments...")
+            start_time = time.time()
+            
+            # Run intensity sweep with CLI parameters
+            topo_results = run_intensity_sweep(
+                topology=topology,
+                intensities=intensities,
+                n_runs=len(seeds),
+                n_nodes=n_nodes,
+                seed_base=args.seed
+            )
+            
+            # Analyze critical exponent
+            analysis = analyze_critical_exponent(topo_results)
+            
+            # Combine results
+            combined_result = {
+                "timestamp": timestamp,
+                "experiment": "coherence_length_critical_exponent_cli",
+                "topology": topology,
+                "n_nodes": n_nodes,
+                "n_seeds": len(seeds),
+                "precision_mode": precision,
+                "raw_data": topo_results,
+                "analysis": analysis,
+                "duration_seconds": time.time() - start_time
+            }
+            
+            all_results.append(combined_result)
+            
+            # Save incremental results
+            with open(results_file, "a") as f:
+                f.write(json.dumps(combined_result) + "\n")
+            
+            if not args.quiet:
+                # Print summary
+                if analysis["exponent_fit"]["success"]:
+                    nu = analysis["exponent_fit"]["nu"]
+                    nu_err = analysis["exponent_fit"]["nu_error"]
+                    univ_class = analysis["exponent_fit"]["universality_class"]
+                    print(f"  Critical exponent: nu = {nu:.3f} ± {nu_err:.3f}")
+                    print(f"  Universality class: {univ_class}")
+                else:
+                    print(f"  Fit failed: {analysis['exponent_fit']['error']}")
+                
+                print(f"  Duration: {time.time() - start_time:.1f}s")
+        
+        if not args.quiet:
+            print(f"\nResults saved to: {results_file}")

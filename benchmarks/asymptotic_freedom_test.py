@@ -10,6 +10,7 @@ import sys
 import json
 import random
 from pathlib import Path
+import argparse
 
 import numpy as np
 import networkx as nx
@@ -25,69 +26,82 @@ from benchmarks.benchmark_utils import (create_tnfr_topology,
 from src.tnfr.operators.definitions import Dissonance, Coherence
 
 
-def asymptotic_freedom_investigation():
-    """Test scale-dependent K_φ variance for asymptotic freedom."""
-    print("🌌 K_φ Asymptotic Freedom Investigation")
-    print("=" * 45)
-    
+def asymptotic_freedom_investigation(topologies=None, n_nodes=50, n_tests=8, high_resolution=False, seed=42, quiet=False):
+    """Test scale-dependent K_φ variance for asymptotic freedom.
+
+    Parameters
+    ----------
+    topologies : list[str] | None
+        Topologies to test. Defaults to ['ring','scale_free','tree','ws'] if None.
+    n_nodes : int
+        Number of nodes per topology.
+    n_tests : int
+        Number of seed experiments per topology.
+    high_resolution : bool
+        If True, extend hop distances for finer scaling analysis.
+    seed : int
+        Base RNG seed controlling per-test seeds.
+    quiet : bool
+        Suppress verbose progress & summary output (used in CI tests).
+    """
+    if topologies is None:
+        topologies = ['ring', 'scale_free', 'tree', 'ws']
+
+    if not quiet:
+        print("🌌 K_φ Asymptotic Freedom Investigation")
+        print("=" * 45)
+        print(f"Topologies: {topologies}")
+        print(f"Nodes per topology: {n_nodes}")
+        print(f"Tests per topology: {n_tests}")
+        print(f"High-resolution: {high_resolution}")
+
+    # Base hop distances
+    scales = [1, 2, 3, 4, 5, 7, 10]
+    if high_resolution:
+        scales = sorted(set(scales + [6, 8, 9, 12, 15]))
+
+    rng = random.Random(seed)
     results = []
-    topologies = ['ring', 'scale_free', 'tree', 'ws']
-    n_nodes = 50  # Larger networks for multi-scale analysis
-    scales = [1, 2, 3, 4, 5, 7, 10]  # Hop distances
-    n_tests = 8
-    
+
     for topology in topologies:
-        print(f"\n🔭 {topology.upper()} - Multi-Scale K_φ Analysis:")
-        
+        if not quiet:
+            print(f"\n🔭 {topology.upper()} - Multi-Scale K_φ Analysis:")
         for test_id in range(n_tests):
-            seed = random.randint(1000, 9999)
-            
+            local_seed = rng.randint(1000, 9999)
             try:
-                # Create larger network
-                G = create_tnfr_topology(topology, n_nodes, seed)
-                initialize_tnfr_nodes(G, seed=seed)
-                
-                print(f"  Test {test_id}: ", end="")
-                
-                # Apply some dynamics for realistic K_φ distribution
+                G = create_tnfr_topology(topology, n_nodes, local_seed)
+                initialize_tnfr_nodes(G, seed=local_seed)
+                if not quiet:
+                    print(f"  Test {test_id}: ", end="")
                 dynamic_state = apply_dynamics_sequence(G)
-                
-                # Compute K_φ field
                 k_phi = compute_phase_curvature(G)
-                
-                # Multi-scale variance analysis
                 scale_analysis = analyze_multiscale_variance(G, k_phi, scales)
-                
-                # Fit power law: var(K_φ) ~ 1/r^α
                 power_law_fit = fit_asymptotic_freedom_law(scale_analysis)
-                
                 result = {
                     'topology': topology,
                     'test_id': test_id,
                     'n_nodes': len(G.nodes()),
                     'n_edges': len(G.edges()),
-                    'seed': seed,
+                    'seed': local_seed,
                     'dynamic_state': dynamic_state,
                     'scale_analysis': scale_analysis,
-                    'power_law_fit': power_law_fit
+                    'power_law_fit': power_law_fit,
+                    'scales': scales,
+                    'high_resolution': high_resolution,
                 }
-                
                 results.append(result)
-                
-                # Real-time feedback
                 alpha = power_law_fit['alpha']
                 r_squared = power_law_fit['r_squared']
                 evidence = "✅" if (alpha > 0 and r_squared > 0.5) else "❌"
-                
-                print(f"α={alpha:.2f} R²={r_squared:.3f} {evidence}")
-                
+                if not quiet:
+                    print(f"α={alpha:.2f} R²={r_squared:.3f} {evidence}")
             except Exception as e:
-                print(f"ERROR: {e}")
+                if not quiet:
+                    print(f"ERROR: {e}")
                 continue
-    
-    # === COMPREHENSIVE ANALYSIS ===
-    if results:
-        print(f"\n📊 ASYMPTOTIC FREEDOM ANALYSIS SUMMARY:")
+
+    if results and not quiet:
+        print("\n📊 ASYMPTOTIC FREEDOM ANALYSIS SUMMARY:")
         print(f"Total experiments: {len(results)}")
         
         # Power law statistics
@@ -97,8 +111,11 @@ def asymptotic_freedom_investigation():
         positive_alphas = [a for a in alphas if a > 0]
         good_fits = [r for r in r_squareds if r > 0.5]
         
-        print(f"\n🔬 Power Law Fit Statistics:")
-        print(f"   Alpha (α) mean: {np.mean(alphas):.3f} ± {np.std(alphas):.3f}")
+        print("\n🔬 Power Law Fit Statistics:")
+        print(
+            "   Alpha (α) mean: "
+            f"{np.mean(alphas):.3f} ± {np.std(alphas):.3f}"
+        )
         print(f"   Positive α rate: {len(positive_alphas)}/{len(alphas)} "
               f"({100*len(positive_alphas)/len(alphas):.1f}%)")
         print(f"   Good fits (R²>0.5): {len(good_fits)}/{len(r_squareds)} "
@@ -106,47 +123,80 @@ def asymptotic_freedom_investigation():
         print(f"   Mean R²: {np.mean(r_squareds):.3f}")
         
         # Asymptotic freedom evidence classification
-        strong_evidence = sum(1 for r in results 
-                            if r['power_law_fit']['alpha'] > 0 
-                            and r['power_law_fit']['r_squared'] > 0.7)
+        strong_evidence = sum(
+            1 for r in results
+            if (
+                r['power_law_fit']['alpha'] > 0 and
+                r['power_law_fit']['r_squared'] > 0.7
+            )
+        )
+
+        moderate_evidence = sum(
+            1 for r in results
+            if (
+                r['power_law_fit']['alpha'] > 0 and
+                r['power_law_fit']['r_squared'] > 0.5
+            )
+        )
         
-        moderate_evidence = sum(1 for r in results
-                              if r['power_law_fit']['alpha'] > 0
-                              and r['power_law_fit']['r_squared'] > 0.5)
-        
-        print(f"\n🎯 Asymptotic Freedom Evidence:")
-        print(f"   Strong evidence (α>0, R²>0.7): {strong_evidence}/{len(results)} "
-              f"({100*strong_evidence/len(results):.1f}%)")
-        print(f"   Moderate evidence (α>0, R²>0.5): {moderate_evidence}/{len(results)} "
-              f"({100*moderate_evidence/len(results):.1f}%)")
+        print("\n🎯 Asymptotic Freedom Evidence:")
+        print(
+            "   Strong evidence (α>0, R²>0.7): "
+            f"{strong_evidence}/{len(results)} "
+            f"({100*strong_evidence/len(results):.1f}%)"
+        )
+        print(
+            "   Moderate evidence (α>0, R²>0.5): "
+            f"{moderate_evidence}/{len(results)} "
+            f"({100*moderate_evidence/len(results):.1f}%)"
+        )
         
         # Topology-specific analysis
-        print(f"\n🗺️ Topology-Specific Asymptotic Behavior:")
-        print(f"{'Topology':<12} {'Mean α':<8} {'Mean R²':<8} {'Evidence':<12}")
+        print("\n🗺️ Topology-Specific Asymptotic Behavior:")
+        print(
+            f"{'Topology':<12} {'Mean α':<8} "
+            f"{'Mean R²':<8} {'Evidence':<12}"
+        )
         print("-" * 50)
         
         for topology in topologies:
             topo_results = [r for r in results if r['topology'] == topology]
             
             if topo_results:
-                topo_alphas = [r['power_law_fit']['alpha'] for r in topo_results]
-                topo_r2s = [r['power_law_fit']['r_squared'] for r in topo_results]
+                topo_alphas = [
+                    r['power_law_fit']['alpha'] for r in topo_results
+                ]
+                topo_r2s = [
+                    r['power_law_fit']['r_squared'] for r in topo_results
+                ]
                 
                 mean_alpha = np.mean(topo_alphas)
                 mean_r2 = np.mean(topo_r2s)
                 
                 # Evidence classification for topology
-                topo_evidence = sum(1 for r in topo_results 
-                                  if r['power_law_fit']['alpha'] > 0 
-                                  and r['power_law_fit']['r_squared'] > 0.5)
+                topo_evidence = sum(
+                    1 for r in topo_results
+                    if (
+                        r['power_law_fit']['alpha'] > 0 and
+                        r['power_law_fit']['r_squared'] > 0.5
+                    )
+                )
                 
                 evidence_rate = topo_evidence / len(topo_results)
-                evidence_label = "Strong" if evidence_rate > 0.6 else "Weak" if evidence_rate > 0.3 else "None"
+                if evidence_rate > 0.6:
+                    evidence_label = "Strong"
+                elif evidence_rate > 0.3:
+                    evidence_label = "Weak"
+                else:
+                    evidence_label = "None"
                 
-                print(f"{topology:<12} {mean_alpha:<8.3f} {mean_r2:<8.3f} {evidence_label:<12}")
+                print(
+                    f"{topology:<12} {mean_alpha:<8.3f} "
+                    f"{mean_r2:<8.3f} {evidence_label:<12}"
+                )
         
         # Scale-dependent patterns
-        print(f"\n📏 Scale-Dependent K_φ Variance Patterns:")
+        print("\n📏 Scale-Dependent K_φ Variance Patterns:")
         
         # Aggregate variance by scale across all experiments
         all_scales = scales
@@ -158,7 +208,10 @@ def asymptotic_freedom_investigation():
                 if scale in scale_variances:
                     scale_variances[scale].append(scale_data['variance'])
         
-        print(f"{'Scale (hops)':<12} {'Mean Var':<10} {'Std Var':<10} {'N_samples':<10}")
+        print(
+            f"{'Scale (hops)':<12} {'Mean Var':<10} "
+            f"{'Std Var':<10} {'N_samples':<10}"
+        )
         print("-" * 50)
         
         for scale in all_scales:
@@ -167,10 +220,16 @@ def asymptotic_freedom_investigation():
                 std_var = np.std(scale_variances[scale])
                 n_samples = len(scale_variances[scale])
                 
-                print(f"{scale:<12} {mean_var:<10.4f} {std_var:<10.4f} {n_samples:<10}")
+                print(
+                    f"{scale:<12} {mean_var:<10.4f} "
+                    f"{std_var:<10.4f} {n_samples:<10}"
+                )
         
         # Save results
-        output_file = PROJECT_ROOT / "benchmarks" / "results" / "asymptotic_freedom_analysis.jsonl"
+        output_file = (
+            PROJECT_ROOT / "benchmarks" / "results" /
+            "asymptotic_freedom_analysis.jsonl"
+        )
         with open(output_file, 'w') as f:
             for result in results:
                 # Convert numpy types to native Python for JSON serialization
@@ -180,38 +239,50 @@ def asymptotic_freedom_investigation():
         print(f"\n💾 Results saved to: {output_file}")
         
         # === CONCLUSIONS ===
-        print(f"\n🔍 ASYMPTOTIC FREEDOM CONCLUSIONS:")
+        print("\n🔍 ASYMPTOTIC FREEDOM CONCLUSIONS:")
         
         overall_evidence_rate = moderate_evidence / len(results)
         
         if overall_evidence_rate > 0.6:
-            print(f"   ✅ STRONG ASYMPTOTIC FREEDOM EVIDENCE")
-            print(f"      - {overall_evidence_rate:.1%} of experiments show var(K_φ) ~ 1/r^α")
-            print(f"      - Mean α = {np.mean([a for a in alphas if a > 0]):.3f}")
-            print(f"      - Supports strong-like interaction analogy")
-            print(f"      - Contributes to K_φ canonical promotion")
+            print("   ✅ STRONG ASYMPTOTIC FREEDOM EVIDENCE")
+            print(
+                "      - " f"{overall_evidence_rate:.1%} of experiments show "
+                "var(K_φ) ~ 1/r^α"
+            )
+            print(
+                "      - Mean α = "
+                f"{np.mean([a for a in alphas if a > 0]):.3f}"
+            )
+            print("      - Supports strong-like interaction analogy")
+            print("      - Contributes to K_φ canonical promotion")
         elif overall_evidence_rate > 0.3:
-            print(f"   ⚠️ MODERATE ASYMPTOTIC FREEDOM EVIDENCE")  
-            print(f"      - {overall_evidence_rate:.1%} of experiments show power law behavior")
-            print(f"      - Evidence varies by topology")
-            print(f"      - May support qualified canonical status")
+            print("   ⚠️ MODERATE ASYMPTOTIC FREEDOM EVIDENCE")
+            print(
+                "      - " f"{overall_evidence_rate:.1%} of experiments show "
+                "power law behavior"
+            )
+            print("      - Evidence varies by topology")
+            print("      - May support qualified canonical status")
         else:
-            print(f"   ❌ WEAK ASYMPTOTIC FREEDOM EVIDENCE")
-            print(f"      - Only {overall_evidence_rate:.1%} show clear power law")
-            print(f"      - K_φ may not exhibit strong-like scale dependence") 
-            print(f"      - Challenges canonical promotion pathway")
+            print("   ❌ WEAK ASYMPTOTIC FREEDOM EVIDENCE")
+            print(
+                "      - Only "
+                f"{overall_evidence_rate:.1%} show clear power law"
+            )
+            print("      - K_φ may not exhibit strong-like scale dependence")
+            print("      - Challenges canonical promotion pathway")
         
         # Recommendations
         if strong_evidence > len(results) * 0.4:
-            print(f"\n🚀 RECOMMENDATIONS:")
-            print(f"   1. Proceed with K_φ canonical promotion")
-            print(f"   2. Document asymptotic freedom as key evidence")
-            print(f"   3. Include scale-dependent analysis in safety criteria")
+            print("\n🚀 RECOMMENDATIONS:")
+            print("   1. Proceed with K_φ canonical promotion")
+            print("   2. Document asymptotic freedom as key evidence")
+            print("   3. Include scale-dependent analysis in safety criteria")
         else:
-            print(f"\n🔄 RECOMMENDATIONS:")
-            print(f"   1. Investigate topology-specific scaling laws")
-            print(f"   2. Test alternative scale-dependent metrics")
-            print(f"   3. Consider ensemble averaging for cleaner signals")
+            print("\n🔄 RECOMMENDATIONS:")
+            print("   1. Investigate topology-specific scaling laws")
+            print("   2. Test alternative scale-dependent metrics")
+            print("   3. Consider ensemble averaging for cleaner signals")
 
 
 def apply_dynamics_sequence(G):
@@ -227,7 +298,7 @@ def apply_dynamics_sequence(G):
             dissonance(G, node)
             operations_applied.append(('dissonance', node))
         
-        if random.random() < 0.3:  # 30% get coherence  
+        if random.random() < 0.3:  # 30% get coherence
             coherence = Coherence()
             coherence(G, node)
             operations_applied.append(('coherence', node))
@@ -254,7 +325,9 @@ def analyze_multiscale_variance(G, k_phi, scales):
                 
                 # Compute coarse-grained K_φ (average over r-hop neighborhood)
                 if ego_nodes:
-                    ego_k_phi_values = [k_phi[n] for n in ego_nodes if n in k_phi]
+                    ego_k_phi_values = [
+                        k_phi[n] for n in ego_nodes if n in k_phi
+                    ]
                     if ego_k_phi_values:
                         scale_k_phi[node] = np.mean(ego_k_phi_values)
                     else:
@@ -273,7 +346,10 @@ def analyze_multiscale_variance(G, k_phi, scales):
             'scale': r,
             'variance': variance,
             'n_nodes_analyzed': len(k_phi_values),
-            'mean_k_phi': np.mean([abs(k) for k in k_phi_values]) if k_phi_values else 0.0
+            'mean_k_phi': (
+                np.mean([abs(k) for k in k_phi_values])
+                if k_phi_values else 0.0
+            )
         })
     
     return scale_analysis
@@ -283,7 +359,9 @@ def fit_asymptotic_freedom_law(scale_analysis):
     """Fit power law: var(K_φ) ~ 1/r^α to scale analysis data."""
     # Extract scales and variances
     scales = [s['scale'] for s in scale_analysis if s['variance'] > 1e-10]
-    variances = [s['variance'] for s in scale_analysis if s['variance'] > 1e-10]
+    variances = [
+        s['variance'] for s in scale_analysis if s['variance'] > 1e-10
+    ]
     
     if len(scales) < 3:  # Need at least 3 points for meaningful fit
         return {
@@ -307,7 +385,12 @@ def fit_asymptotic_freedom_law(scale_analysis):
         alpha = -slope
         r_squared = r_value**2
         
-        fit_quality = 'excellent' if r_squared > 0.8 else 'good' if r_squared > 0.6 else 'poor'
+        if r_squared > 0.8:
+            fit_quality = 'excellent'
+        elif r_squared > 0.6:
+            fit_quality = 'good'
+        else:
+            fit_quality = 'poor'
         
         return {
             'alpha': alpha,
@@ -328,7 +411,7 @@ def fit_asymptotic_freedom_law(scale_analysis):
 
 
 def convert_numpy_types(obj):
-    """Recursively convert numpy types to native Python for JSON serialization."""
+    """Convert numpy types to native Python for JSON serialization."""
     if isinstance(obj, dict):
         return {key: convert_numpy_types(value) for key, value in obj.items()}
     elif isinstance(obj, list):
@@ -344,4 +427,39 @@ def convert_numpy_types(obj):
 
 
 if __name__ == "__main__":
-    asymptotic_freedom_investigation()
+    parser = argparse.ArgumentParser(
+        description="K_phi asymptotic freedom benchmark (variance scaling)"
+    )
+    parser.add_argument(
+        "--topologies", nargs="+", default=["ring", "scale_free"],
+        help="Topologies to test (default: ring scale_free)"
+    )
+    parser.add_argument(
+        "--nodes", type=int, default=50,
+        help="Nodes per topology (default: 50)"
+    )
+    parser.add_argument(
+        "--seeds", type=int, default=8,
+        help="Number of seed runs per topology (default: 8)"
+    )
+    parser.add_argument(
+        "--high-resolution", action="store_true",
+        help="Enable extended hop distances"
+    )
+    parser.add_argument(
+        "--seed", type=int, default=42,
+        help="Base RNG seed"
+    )
+    parser.add_argument(
+        "--quiet", action="store_true",
+        help="Suppress progress output"
+    )
+    cli_args = parser.parse_args()
+    asymptotic_freedom_investigation(
+        topologies=cli_args.topologies,
+        n_nodes=cli_args.nodes,
+        n_tests=cli_args.seeds,
+        high_resolution=cli_args.high_resolution,
+        seed=cli_args.seed,
+        quiet=cli_args.quiet,
+    )

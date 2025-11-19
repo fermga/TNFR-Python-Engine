@@ -4,7 +4,7 @@ Emission structural operator (AL) - Foundational activation of nodal resonance.
 
 **Physics**: See AGENTS.md § Emission
 **Grammar**: UNIFIED_GRAMMAR_RULES.md
-"""
+"""  # flake8: noqa
 
 from __future__ import annotations
 
@@ -19,28 +19,33 @@ from .definitions_base import Operator
 
 
 class Emission(Operator):
-    """Emission structural operator (AL) - Foundational activation of nodal resonance.
+    """Emission structural operator (AL).
+
+    Foundational activation of nodal resonance.
 
     Activates structural symbol ``AL`` to initialise outward resonance around a
     nascent node, initiating the first phase of structural reorganization.
 
     TNFR Context
     ------------
-    In the Resonant Fractal Nature paradigm, Emission (AL) represents the moment when
-    a latent Primary Information Structure (EPI) begins to emit coherence toward its
-    surrounding network. This is not passive information broadcast but active structural
-    reorganization that increases the node's νf (structural frequency) and initiates
-    positive ΔNFR flow.
+    In the Resonant Fractal Nature paradigm, Emission (AL) represents
+    the moment when a latent Primary Information Structure (EPI) begins
+    to emit coherence toward its surrounding network. This is not passive
+    information broadcast but active structural reorganization that
+    increases the node's νf (structural frequency) and initiates positive
+    ΔNFR flow.
 
     **Key Elements:**
-    - **Coherent Emergence**: Node exists because it resonates; AL initiates resonance
+        - **Coherent Emergence**: Node exists because it resonates;
+            AL starts resonance
     - **Structural Frequency**: Activates νf (Hz_str) to enable reorganization
     - **Network Coupling**: Prepares node for phase alignment
     - **Nodal Equation**: Implements ∂EPI/∂t = νf · ΔNFR(t) with positive ΔNFR
 
     **Structural Irreversibility (TNFR.pdf §2.2.1):**
-    AL is inherently irreversible - once activated, it leaves a persistent structural
-    trace that cannot be undone. Each emission marks "time zero" for the node and
+    AL is inherently irreversible - once activated, it leaves a persistent
+    structural trace that cannot be undone. Each emission marks "time
+    zero" for the node and
     establishes genealogical traceability:
 
     - **emission_timestamp**: ISO 8601 UTC timestamp of first activation
@@ -52,11 +57,12 @@ class Emission(Operator):
       - ``derived_nodes``: List for tracking EPI emergence (future use)
       - ``parent_emission``: Reference to parent node (future use)
 
-    Re-activation increments ``activation_count`` while preserving original timestamp.
+    Re-activation increments ``activation_count`` while preserving the
+    original timestamp.
 
     Use Cases
     ---------
-    **Biomedical**: HRV coherence training, neural activation, therapeutic initiation
+    **Biomedical**: HRV coherence training, neural activation, therapy start
     **Cognitive**: Idea germination, learning initiation, creative spark
     **Social**: Team activation, community emergence, ritual initiation
 
@@ -84,13 +90,21 @@ class Emission(Operator):
     >>> from tnfr.constants import DNFR_PRIMARY, EPI_PRIMARY, VF_PRIMARY
     >>> from tnfr.dynamics import set_delta_nfr_hook
     >>> from tnfr.structural import create_nfr, run_sequence
-    >>> from tnfr.operators.definitions import Emission, Reception, Coherence, Silence
+    >>> from tnfr.operators.definitions import (
+    ...     Emission, Reception, Coherence, Silence
+    ... )
     >>> G, node = create_nfr("seed", epi=0.18, vf=1.0)
-    >>> run_sequence(G, node, [Emission(), Reception(), Coherence(), Silence()])
+    >>> run_sequence(
+    ...     G,
+    ...     node,
+    ...     [Emission(), Reception(), Coherence(), Silence()]
+    ... )
     >>> # Verify irreversibility
     >>> assert G.nodes[node]["_emission_activated"] is True
     >>> assert "emission_timestamp" in G.nodes[node]
-    >>> print(f"Activated at: {G.nodes[node]['emission_timestamp']}")  # doctest: +SKIP
+    >>> print(
+    ...     f"Activated at: {G.nodes[node]['emission_timestamp']}"
+    ... )  # doctest: +SKIP
     Activated at: 2025-11-07T15:47:10.209731+00:00
 
     See Also
@@ -144,7 +158,7 @@ class Emission(Operator):
 
         Warnings
         --------
-        - Warns if node is being reactivated after extended silence (duration check)
+        - Warns if node is reactivated after extended silence (duration check)
         - Warns if EPI has drifted from preserved value during silence
         """
         if G.nodes[node].get("latent", False):
@@ -158,14 +172,15 @@ class Emission(Operator):
             if silence_duration > max_silence:
                 warnings.warn(
                     f"Node {node} reactivating after extended silence "
-                    f"(duration: {silence_duration:.2f}, max: {max_silence:.2f})",
+                    f"(duration: {silence_duration:.2f}, "
+                    f"max: {max_silence:.2f})",
                     stacklevel=3,
                 )
 
             # Check EPI preservation integrity
             preserved_epi = G.nodes[node].get("preserved_epi")
             if preserved_epi is not None:
-                from ..alias import get_attr
+                # get_attr already imported at module top
 
                 current_epi = float(get_attr(G.nodes[node], ALIAS_EPI, 0.0))
                 epi_drift = abs(current_epi - preserved_epi)
@@ -174,7 +189,8 @@ class Emission(Operator):
                 if epi_drift > 0.01 * abs(preserved_epi):
                     warnings.warn(
                         f"Node {node} EPI drifted during silence "
-                        f"(preserved: {preserved_epi:.3f}, current: {current_epi:.3f}, "
+                        f"(preserved: {preserved_epi:.3f}, "
+                        f"current: {current_epi:.3f}, "
                         f"drift: {epi_drift:.3f})",
                         stacklevel=3,
                     )
@@ -191,7 +207,8 @@ class Emission(Operator):
     def _mark_irreversibility(self, G: TNFRGraph, node: Any) -> None:
         """Mark structural irreversibility for AL operator.
 
-        According to TNFR.pdf §2.2.1, AL (Emission) is structurally irreversible:
+        According to TNFR.pdf §2.2.1, AL (Emission) is structurally
+        irreversible:
         "Una vez activado, AL reorganiza el campo. No puede deshacerse."
 
         This method establishes:
@@ -228,8 +245,10 @@ class Emission(Operator):
             # Generate UTC timestamp in ISO format
             emission_timestamp = datetime.now(timezone.utc).isoformat()
 
-            # Set canonical timestamp using alias system (use set_attr_str for string values)
-            set_attr_str(G.nodes[node], ALIAS_EMISSION_TIMESTAMP, emission_timestamp)
+            # Set canonical timestamp using alias system (string values)
+            set_attr_str(
+                G.nodes[node], ALIAS_EMISSION_TIMESTAMP, emission_timestamp
+            )
 
             # Set persistent activation flag (immutable marker)
             G.nodes[node]["_emission_activated"] = True
@@ -245,7 +264,7 @@ class Emission(Operator):
                 "parent_emission": None,  # If derived from another node
             }
         else:
-            # Re-activation case: increment counter, preserve original timestamp
+            # Re-activation: increment counter, keep original timestamp
             if "_structural_lineage" in G.nodes[node]:
                 G.nodes[node]["_structural_lineage"]["activation_count"] += 1
 
@@ -272,4 +291,9 @@ class Emission(Operator):
         """Collect AL-specific metrics."""
         from .metrics import emission_metrics
 
-        return emission_metrics(G, node, state_before["epi"], state_before["vf"])
+        return emission_metrics(
+            G,
+            node,
+            state_before["epi"],
+            state_before["vf"],
+        )

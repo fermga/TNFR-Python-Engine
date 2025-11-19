@@ -25,7 +25,12 @@ Reality is not made of "things" but of **coherence**—structures that persist i
 
 ### 🎯 The 13 Structural Operators
 
-The complete TNFR operator set for modeling coherent structural dynamics:
+The complete TNFR operator set for modeling coherent structural dynamics.
+
+Canonical Status: The operator registry is now **immutable** – exactly these
+13 operators, no more. Dynamic discovery, auto-registration decorators,
+metaclass telemetry and reload scripts were removed (see CHANGELOG 9.1.0).
+All structural evolution MUST occur through this fixed set (grammar U1-U4).
 
 - **AL (Emission)** - Pattern creation from vacuum
 - **EN (Reception)** - Information capture and integration
@@ -240,12 +245,12 @@ python examples/domain_applications/biological_patterns.py
 ```text
 TNFR-Python-Engine/
 ├── src/tnfr/              # Core TNFR implementation
-│   ├── operators/         # Modular operator system (Phase 2)
+│   ├── operators/         # Canonical operator system (immutable registry)
 │   │   ├── definitions.py        # Facade (backward compatibility)
-│   │   ├── definitions_base.py   # Operator base class
+│   │   ├── definitions_base.py   # Operator base class (no dynamic metaclass)
 │   │   ├── emission.py           # AL operator
 │   │   ├── coherence.py          # IL operator
-│   │   └── ... (13 operators)    # Individual operator modules
+│   │   └── ... (13 operators)    # Individual operator modules (canonical)
 │   ├── operators/grammar/ # Unified grammar constraints (Phase 1)
 │   │   ├── grammar.py            # Facade (unified validation)
 │   │   ├── u1_initiation_closure.py
@@ -314,6 +319,74 @@ Grammar 2.0 optimizations deliver:
 - **Memory footprint**: ~50MB for 10k-node networks
 
 See **[tools/performance/](tools/performance/)** for benchmarking tools.
+
+Note on Python executable for local runs
+
+- Windows: prefer `./test-env/Scripts/python.exe`
+- macOS/Linux: prefer `./test-env/bin/python`
+
+Using the workspace virtual environment avoids mismatches with system Pythons
+that may lack the latest telemetry aliases or configuration.
+
+### Parse precision_modes drift (benchmark_results.json)
+
+After running `./test-env/Scripts/python.exe run_benchmark.py` (Windows) or
+`./test-env/bin/python run_benchmark.py` (macOS/Linux), parse numeric drift for
+the `precision_modes` track:
+
+```python
+import json
+
+with open("benchmark_results.json", "r", encoding="utf-8") as f:
+  data = json.load(f)
+
+drift_entries = data.get("precision_modes", {}).get("drift", [])
+for entry in drift_entries:
+  size = entry.get("size")
+  phi_s = entry.get("phi_s_max_abs")
+  grad = entry.get("grad_max_abs")
+  curv = entry.get("curv_max_abs")
+  xi_c = entry.get("xi_c_abs")
+  print(
+    f"N={size:>4}  ΔΦ_s_max={phi_s:.3e}  |∇φ|_max={grad:.3e}  "
+    f"K_φ_max={curv:.3e}  ξ_C_abs={xi_c if xi_c is not None else 'nan'}"
+  )
+```
+
+This reports the maximum absolute difference between `standard` and `high` precision modes for the canonical fields per graph size.
+
+PowerShell one-liners (Windows)
+
+```powershell
+# Largest ΔΦ_s drift row
+Get-Content .\benchmark_results.json | ConvertFrom-Json |
+  Select-Object -ExpandProperty precision_modes |
+  Select-Object -ExpandProperty drift |
+  Sort-Object -Property phi_s_max_abs -Descending |
+  Select-Object -First 1
+
+# Largest |∇φ| drift row
+Get-Content .\benchmark_results.json | ConvertFrom-Json |
+  Select-Object -ExpandProperty precision_modes |
+  Select-Object -ExpandProperty drift |
+  Sort-Object -Property grad_max_abs -Descending |
+  Select-Object -First 1
+
+# Largest K_φ drift row
+Get-Content .\benchmark_results.json | ConvertFrom-Json |
+  Select-Object -ExpandProperty precision_modes |
+  Select-Object -ExpandProperty drift |
+  Sort-Object -Property curv_max_abs -Descending |
+  Select-Object -First 1
+
+# Largest ξ_C drift row (skip NaNs)
+Get-Content .\benchmark_results.json | ConvertFrom-Json |
+  Select-Object -ExpandProperty precision_modes |
+  Select-Object -ExpandProperty drift |
+  Where-Object { $_.xi_c_abs -ne $null -and -not [double]::IsNaN([double]$_.xi_c_abs) } |
+  Sort-Object -Property xi_c_abs -Descending |
+  Select-Object -First 1
+```
 
 ## Contributing
 

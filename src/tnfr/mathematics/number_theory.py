@@ -1115,19 +1115,37 @@ class ArithmeticTNFRNetwork:
         decay: float = 0.1,
         delta_phi_max: float = math.pi / 2,
         normalize: bool = True,
+        seed: Optional[int] = None,
+        jitter: bool = True,
     ) -> List[Dict[int, float]]:
-        """Seed activation on primes and run RA propagation for a few steps.
+        """Seed activation on primes and run RA propagation.
 
-        Returns a list of activation dicts for steps [0..steps]. Step 0 is the seed.
+        Returns a list of activation dicts for steps [0..steps].
+        Step 0 is the seed activation (possibly jittered for seed fairness).
         """
-        primes = [n for n in self.graph.nodes() if self.graph.nodes[n].get('is_prime', False)]
-        act: Dict[int, float] = {n: (init_value if n in primes else 0.0) for n in self.graph.nodes()}
+        if seed is not None:
+            # Controlled determinism for activation jitter
+            import random
+            random.seed(seed)
+            np.random.seed(seed)
+        primes = [
+            n for n in self.graph.nodes()
+            if self.graph.nodes[n].get('is_prime', False)
+        ]
+        act: Dict[int, float] = {
+            n: (init_value if n in primes else 0.0)
+            for n in self.graph.nodes()
+        }
         if normalize:
             # normalizing initial seed
             m0 = max(act.values()) if act else 1.0
             if m0 > 0:
                 for k in act:
                     act[k] /= m0
+        if jitter and primes:
+            # Introduce infinitesimal jitter to distinguish seeds if needed
+            for p in primes:
+                act[p] *= (1.0 + np.random.uniform(-1e-6, 1e-6))
 
         history: List[Dict[int, float]] = [dict(act)]
         # Apply UM for bookkeeping/telemetry
@@ -1148,14 +1166,22 @@ class ArithmeticTNFRNetwork:
         self.graph.graph['ra_delta_phi_max'] = float(delta_phi_max)
         return history
 
-    def resonance_metrics(self, activation: Dict[int, float]) -> Dict[str, float]:
+    def resonance_metrics(
+        self, activation: Dict[int, float]
+    ) -> Dict[str, float]:
         """Compute simple metrics on an activation field for analysis."""
         values = np.array(list(activation.values()), dtype=float)
         mean_act = float(np.mean(values)) if values.size else 0.0
         frac_high = float(np.mean(values >= 0.5)) if values.size else 0.0
         # Correlation with prime indicator
-        y = np.array([1.0 if self.graph.nodes[n].get('is_prime', False) else 0.0 for n in sorted(self.graph.nodes())], dtype=float)
-        x = np.array([activation.get(n, 0.0) for n in sorted(self.graph.nodes())], dtype=float)
+        y = np.array([
+            1.0 if self.graph.nodes[n].get('is_prime', False) else 0.0
+            for n in sorted(self.graph.nodes())
+        ], dtype=float)
+        x = np.array([
+            activation.get(n, 0.0)
+            for n in sorted(self.graph.nodes())
+        ], dtype=float)
         if x.size and y.size:
             xm, ym = x - x.mean(), y - y.mean()
             denom = float(np.sqrt((xm**2).sum()) * np.sqrt((ym**2).sum()))
@@ -1167,6 +1193,148 @@ class ArithmeticTNFRNetwork:
             'fraction_ge_0_5': frac_high,
             'corr_with_primes': corr,
         }
+
+    # ====================================================================
+    # TELEMETRY EXPORT FUNCTIONS (JSONL / CSV)
+    # ====================================================================
+
+    def export_prime_certificates(
+        self,
+        path: str,
+        *,
+        delta_nfr_threshold: float = 0.2,
+        fmt: str = "jsonl",
+        include_components: bool = True,
+    ) -> int:
+        """Export prime certificates for all numbers up to max_number.
+
+        Parameters
+        ----------
+        path : str
+            Output file path.
+        delta_nfr_threshold : float, default 0.2
+            Threshold used for candidate detection (telemetry context).
+        fmt : {"jsonl","csv"}, default "jsonl"
+            Output format.
+        include_components : bool, default True
+            Include component breakdown (zeta/eta/theta contributions).
+
+        Returns
+        -------
+        int
+            Number of certificates exported.
+        """
+        import json
+        import csv
+        import os
+        os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
+        candidates = self.detect_prime_candidates(
+            delta_nfr_threshold=delta_nfr_threshold
+        )
+        count = 0
+        if fmt.lower() == "jsonl":
+            with open(path, "w", encoding="utf-8") as f:
+                for n, _delta in candidates:
+                    cert = self.get_prime_certificate(n)
+                    data = cert.as_dict()
+                    if not include_components:
+                        data.pop("components", None)
+                    f.write(json.dumps(data, ensure_ascii=False) + "\n")
+                    count += 1
+        elif fmt.lower() == "csv":
+            # Determine fields
+            sample_cert = (
+                self.get_prime_certificate(candidates[0][0]).as_dict()
+                if candidates else {}
+            )
+            if not include_components:
+                sample_cert.pop("components", None)
+            fields = list(sample_cert.keys())
+            with open(path, "w", newline="", encoding="utf-8") as f:
+                writer = csv.DictWriter(f, fieldnames=fields)
+                writer.writeheader()
+                for n, _delta in candidates:
+                    cert = self.get_prime_certificate(n).as_dict()
+                    if not include_components:
+                        cert.pop("components", None)
+                    writer.writerow(cert)
+                    count += 1
+        else:
+            raise ValueError(f"Unsupported format: {fmt}")
+        logger.info(
+            f"Exported {count} prime certificates to {path} (fmt={fmt})"
+        )
+        return count
+
+    def export_structural_fields(
+        self,
+        path: str,
+        *,
+        phase_method: str = "logn",
+        fmt: str = "jsonl",
+    ) -> int:
+        """Export structural field telemetry (φ, |∇φ|, K_φ, Φ_s, ξ_C).
+
+        The coherence length ξ_C is exported as its summary entries.
+        Returns number of nodes exported.
+        """
+        import json
+        import csv
+        import os
+        os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
+        fields = self.compute_structural_fields(phase_method=phase_method)
+        phi = fields['phi']
+        grad = fields['phi_grad']
+        kphi = fields['k_phi']
+        phi_s = fields['phi_s']
+        xi = fields['xi_c']  # dict with summary stats
+        nodes = sorted(self.graph.nodes())
+        count = 0
+        if fmt.lower() == "jsonl":
+            with open(path, "w", encoding="utf-8") as f:
+                for n in nodes:
+                    row = {
+                        'n': n,
+                        'phi': float(phi.get(n, 0.0)),
+                        'phi_grad': float(grad.get(n, 0.0)),
+                        'k_phi': float(kphi.get(n, 0.0)),
+                        'phi_s': float(phi_s.get(n, 0.0)),
+                    }
+                    f.write(json.dumps(row, ensure_ascii=False) + "\n")
+                    count += 1
+            # Append coherence length summary as a separate JSON object
+            with open(path, "a", encoding="utf-8") as f:
+                f.write(
+                    json.dumps({'xi_c_summary': xi}, ensure_ascii=False) + "\n"
+                )
+        elif fmt.lower() == "csv":
+            with open(path, "w", newline="", encoding="utf-8") as f:
+                writer = csv.writer(f)
+                writer.writerow(["n", "phi", "phi_grad", "k_phi", "phi_s"])
+                for n in nodes:
+                    writer.writerow([
+                        n,
+                        float(phi.get(n, 0.0)),
+                        float(grad.get(n, 0.0)),
+                        float(kphi.get(n, 0.0)),
+                        float(phi_s.get(n, 0.0)),
+                    ])
+                    count += 1
+                # Write ξ_C summary below as key,value pairs
+                writer.writerow([])
+                writer.writerow(["xi_c_summary_key", "xi_c_summary_value"])
+                for k, v in xi.items():
+                    writer.writerow([k, v])
+        else:
+            raise ValueError(f"Unsupported format: {fmt}")
+        logger.info(
+            "Exported structural fields for %d nodes to %s (fmt=%s)" % (
+                count,
+                path,
+                fmt,
+            )
+        )
+        return count
 
 
 # ============================================================================
@@ -1190,7 +1358,9 @@ def run_basic_validation(max_number: int = 50) -> None:
     logger.info(f"  Known primes: {stats['prime_count']}")
     logger.info(f"  Prime ratio: {stats['prime_ratio']:.3f}")
     logger.info(f"  Prime mean ΔNFR: {stats['prime_mean_DELTA_NFR']:.6f}")
-    logger.info(f"  Composite mean ΔNFR: {stats['composite_mean_DELTA_NFR']:.6f}")
+    logger.info(
+        f"  Composite mean ΔNFR: {stats['composite_mean_DELTA_NFR']:.6f}"
+    )
     logger.info(f"  ΔNFR separation: {stats['DELTA_NFR_separation']:.6f}")
     
     # Test prime detection
@@ -1210,7 +1380,14 @@ def run_basic_validation(max_number: int = 50) -> None:
     primes = [n for n in range(2, max_number + 1) if network._is_prime(n)][:10]
     for p in primes:
         props = network.get_tnfr_properties(p)
-        logger.info(f"  {p:2d}: EPI={props['EPI']:.3f}, νf={props['nu_f']:.3f}, ΔNFR={props['DELTA_NFR']:.6f}")
+        logger.info(
+            "  %2d: EPI=%.3f, νf=%.3f, ΔNFR=%.6f" % (
+                p,
+                props['EPI'],
+                props['nu_f'],
+                props['DELTA_NFR'],
+            )
+        )
 
 
 if __name__ == "__main__":

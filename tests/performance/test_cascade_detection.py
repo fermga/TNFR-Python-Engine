@@ -13,8 +13,15 @@ import time
 import networkx as nx
 import pytest
 
+# Gracefully degrade when pytest-benchmark plugin not installed.
+try:  # pragma: no cover - optional performance dependency
+    import pytest_benchmark  # noqa: F401
+    _HAS_BENCH = True
+except Exception:  # pragma: no cover
+    _HAS_BENCH = False
+
 from tnfr.operators.cascade import detect_cascade
-from tnfr.structural import create_nfr
+# from tnfr.structural import create_nfr  # unused (removed to satisfy lint)
 
 
 def create_test_network_with_cascade(n_nodes, cascade_length=None):
@@ -99,6 +106,10 @@ class TestCascadeDetectionScaling:
     """Test cascade detection performance vs network size."""
 
     @pytest.mark.parametrize("n_nodes", [100, 500, 1000, 5000])
+    @pytest.mark.skipif(
+        not _HAS_BENCH,
+        reason="pytest-benchmark plugin not available",
+    )
     def test_cascade_detection_time(self, n_nodes, benchmark):
         """Measure cascade detection time for various network sizes.
 
@@ -122,19 +133,29 @@ class TestCascadeDetectionScaling:
             # Small networks should be fast even without optimization
             assert (
                 benchmark.stats.median < 0.1
-            ), f"Detection too slow for n={n_nodes}: {benchmark.stats.median:.3f}s"
+            ), (
+                f"Detection too slow for n={n_nodes}: "
+                f"{benchmark.stats.median:.3f}s"
+            )
         elif n_nodes <= 5000:
             # Mid-size networks: current implementation may struggle
             # After optimization, should be <50ms
             assert (
                 benchmark.stats.median < 0.5
-            ), f"Detection too slow for n={n_nodes}: {benchmark.stats.median:.3f}s"
+            ), (
+                f"Detection too slow for n={n_nodes}: "
+                f"{benchmark.stats.median:.3f}s"
+            )
 
+    @pytest.mark.skipif(
+        not _HAS_BENCH,
+        reason="pytest-benchmark plugin not available",
+    )
     def test_cascade_detection_10k_nodes(self, benchmark):
         """Test detection on large 10k node network.
 
         This is the target scenario from the issue.
-        Current implementation may be slow; after optimization should be <100ms.
+        Current impl may be slow; target optimized <100ms.
         """
         n_nodes = 10000
         G = create_test_network_with_cascade(n_nodes)

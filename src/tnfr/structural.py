@@ -22,6 +22,30 @@ OPERATORS
 validate_sequence
     Grammar guard that ensures operator trajectories stay within TNFR
     closure rules before execution.
+
+CRITICAL TECHNICAL NOTE (Context Override for Pre-existing EPI - Nov 2025):
+---------------------------------------------------------------------------
+run_sequence() automatically detects when a node has pre-existing EPI (EPI ≠ 0)
+and passes context={'initial_epi_nonzero': True} to validate_sequence().
+
+This bypasses the U1a generator requirement, which states that sequences
+must start with a generator {AL, NAV, REMESH} when EPI=0.
+
+**Physics Rationale**:
+- U1a exists because ∂EPI/∂t is undefined at EPI=0 (no structure to evolve)
+- When EPI already exists, the node has structure that CAN evolve
+- Applying operators like Coherence, Resonance, etc. is physically valid
+- Strict U1a enforcement would prevent legitimate operations on existing nodes
+
+**Implementation**: check_epi_nonzero() examines node EPI attribute:
+  - If EPI ≠ 0: auto-pass context override to grammar validator
+  - If EPI = 0: strict U1a enforcement (must start with generator)
+
+**Canonicity Preserved**: This does NOT weaken grammar. U1a's physical
+basis (undefined evolution at EPI=0) does not apply when structure exists.
+The override is a necessary operational flexibility, not a violation.
+
+See: run_sequence() context detection, grammar_patterns._check_start_rule()
 """
 
 from __future__ import annotations
@@ -53,6 +77,7 @@ from tnfr.validation import (
     InvariantSeverity,
     validation_config,
 )
+from tnfr.config.operator_names import VALID_START_OPERATORS
 from .operators.definitions import (
     Coherence,
     Contraction,
@@ -617,7 +642,20 @@ def run_sequence(G: TNFRGraph, node: NodeId, ops: Iterable[Operator]) -> None:
 
     # Skip validation for empty sequences (TNFR: empty sequence is structural identity)
     if names:
-        outcome = validate_sequence(names)
+        # Birth context detection: if node already has non-zero EPI and
+        # sequence begins with a non-generator we allow context override.
+        epi_val = G.nodes[node].get(EPI_PRIMARY, 0.0)
+        if names[0] not in VALID_START_OPERATORS and epi_val:
+            logger.info(
+                "U1a override (EPI≠0) node=%s; start=%s",
+                node,
+                names[0],
+            )
+            outcome = validate_sequence(
+                names, context={"initial_epi_nonzero": True}
+            )
+        else:
+            outcome = validate_sequence(names)
         if not outcome.passed:
             summary_message = outcome.summary.get("message", "validation failed")
             raise ValueError(f"Invalid sequence: {summary_message}")

@@ -48,7 +48,10 @@ from .reporting import (
 from .telemetry import (
     TelemetryEmitter,
     TelemetryEvent,
-    stream_telemetry,
+)
+from .tetrad import (
+    collect_tetrad_snapshot,
+    get_tetrad_sample_interval,
 )
 
 __all__ = (
@@ -83,5 +86,6 @@ __all__ = (
     "compute_network_phase_alignment",
     "TelemetryEmitter",
     "TelemetryEvent",
-    "stream_telemetry",
+    "collect_tetrad_snapshot",
+    "get_tetrad_sample_interval",
 )

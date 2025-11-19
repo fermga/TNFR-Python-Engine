@@ -13,32 +13,37 @@ import warnings
 from typing import Any, ClassVar
 
 from ..alias import get_attr
-from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI
+from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
 from ..types import Glyph, TNFRGraph
-from ..utils import get_numpy
+from .registry import OperatorMetaAuto
+from ..utils import get_numpy  # noqa: F401 (compatibility)
+
+# Metaclass removed – canonical operator set is immutable (see registry).
+# Historical dynamic auto-registration deprecated for TNFR grammar purity.
 
 __all__ = ["Operator"]
 
 # T'HOL canonical bifurcation constants
-_THOL_SUB_EPI_SCALING = 0.25  # Sub-EPI is 25% of parent (first-order bifurcation)
-_THOL_EMERGENCE_CONTRIBUTION = 0.1  # Parent EPI increases by 10% of sub-EPI
+_THOL_SUB_EPI_SCALING = 0.25  # Sub-EPI ~25% of parent (first-order)
+_THOL_EMERGENCE_CONTRIBUTION = 0.1  # Parent EPI +10% of sub-EPI
 
 
-class Operator:
+class Operator(metaclass=OperatorMetaAuto):
     """Base class for TNFR structural operators.
 
-    Structural operators (Emission, Reception, Coherence, etc.) are the public-facing
-    API for applying TNFR transformations. Each operator defines a ``name`` (ASCII
-    identifier) and ``glyph`` (structural symbol like AL, EN, IL, etc.) that represents
-    the transformation. Calling an operator instance applies its structural transformation
-    to the target node.
+    Structural operators (Emission, Reception, Coherence, etc.) expose the
+    public API for TNFR transformations. Each operator defines a ``name`` and
+    ``glyph`` (AL, EN, IL, etc.). Invoking an instance applies its structural
+    change to the target node.
     """
 
     name: ClassVar[str] = "operator"
+    # Canonical base class – dynamic registration disabled
+    __register__ = False  # retained only for backward compatibility guards
     glyph: ClassVar[Glyph | None] = None
 
     def __call__(self, G: TNFRGraph, node: Any, **kw: Any) -> None:
-        """Apply the structural operator to ``node`` under canonical grammar control.
+        """Apply the operator to ``node`` under canonical grammar control.
 
         Parameters
         ----------
@@ -50,9 +55,9 @@ class Operator:
         **kw : Any
             Additional keyword arguments forwarded to the grammar layer.
             Supported keys include:
-            - ``window``: constrain the grammar window
-            - ``validate_preconditions``: enable/disable precondition checks (default: True)
-            - ``collect_metrics``: enable/disable metrics collection (default: False)
+            - ``window``: constrain grammar window
+            - ``validate_preconditions``: toggle precondition checks
+            - ``collect_metrics``: toggle metrics collection
 
         Raises
         ------
@@ -73,15 +78,17 @@ class Operator:
 
         # Optional precondition validation
         validate_preconditions = kw.get("validate_preconditions", True)
-        if validate_preconditions and G.graph.get("VALIDATE_OPERATOR_PRECONDITIONS", False):
+        if validate_preconditions and G.graph.get(
+            "VALIDATE_OPERATOR_PRECONDITIONS", False
+        ):
             self._validate_preconditions(G, node)
 
         # Capture state before operator application for metrics and validation
         collect_metrics = kw.get("collect_metrics", False) or G.graph.get(
             "COLLECT_OPERATOR_METRICS", False
         )
-        validate_equation = kw.get("validate_nodal_equation", False) or G.graph.get(
-            "VALIDATE_NODAL_EQUATION", False
+        validate_equation = kw.get("validate_nodal_equation", False) or (
+            G.graph.get("VALIDATE_NODAL_EQUATION", False)
         )
 
         state_before = None
@@ -94,11 +101,8 @@ class Operator:
 
         # Optional nodal equation validation (∂EPI/∂t = νf · ΔNFR(t))
         if validate_equation and state_before is not None:
-            from ..alias import get_attr
-            from ..constants.aliases import ALIAS_EPI
             from .nodal_equation import validate_nodal_equation
-
-            dt = float(kw.get("dt", 1.0))  # Time step, default 1.0 for discrete ops
+            dt = float(kw.get("dt", 1.0))  # discrete time step
             strict = G.graph.get("NODAL_EQUATION_STRICT", False)
             epi_after = float(get_attr(G.nodes[node], ALIAS_EPI, 0.0))
 
@@ -144,9 +148,6 @@ class Operator:
         float
             Attribute value
         """
-        from ..alias import get_attr
-        from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
-
         alias_map = {
             "epi": ALIAS_EPI,
             "vf": ALIAS_VF,
@@ -162,9 +163,6 @@ class Operator:
 
         Returns dict with relevant state for metrics computation.
         """
-        from ..alias import get_attr
-        from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
-
         return {
             "epi": float(get_attr(G.nodes[node], ALIAS_EPI, 0.0)),
             "vf": float(get_attr(G.nodes[node], ALIAS_VF, 0.0)),
@@ -180,20 +178,24 @@ class Operator:
         Override in subclasses to implement specific metrics.
         Base implementation returns basic state change.
         """
-        from ..alias import get_attr
-        from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
-
         # Safely access glyph value
         glyph_value = None
         if self.glyph is not None:
-            glyph_value = self.glyph.value if hasattr(self.glyph, "value") else str(self.glyph)
+            if hasattr(self.glyph, "value"):
+                glyph_value = self.glyph.value
+            else:
+                glyph_value = str(self.glyph)
 
         return {
             "operator": self.name,
             "glyph": glyph_value,
-            "delta_epi": float(get_attr(G.nodes[node], ALIAS_EPI, 0.0)) - state_before["epi"],
-            "delta_vf": float(get_attr(G.nodes[node], ALIAS_VF, 0.0)) - state_before["vf"],
-            "delta_dnfr": float(get_attr(G.nodes[node], ALIAS_DNFR, 0.0)) - state_before["dnfr"],
-            "delta_theta": float(get_attr(G.nodes[node], ALIAS_THETA, 0.0)) - state_before["theta"],
+            "delta_epi": float(get_attr(G.nodes[node], ALIAS_EPI, 0.0))
+            - state_before["epi"],
+            "delta_vf": float(get_attr(G.nodes[node], ALIAS_VF, 0.0))
+            - state_before["vf"],
+            "delta_dnfr": float(get_attr(G.nodes[node], ALIAS_DNFR, 0.0))
+            - state_before["dnfr"],
+            "delta_theta": float(get_attr(G.nodes[node], ALIAS_THETA, 0.0))
+            - state_before["theta"],
         }
 

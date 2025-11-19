@@ -75,7 +75,8 @@ smoke-tests:
 		tests/examples/test_u6_sequential_demo.py \
 		tests/unit/operators/test_telemetry_warnings_extended.py \
 		tests/examples/test_atom_atlas_minimal.py \
-		tests/examples/test_periodic_table_basic.py
+		tests/examples/test_periodic_table_basic.py \
+		tests/test_precision_walk_dashboard_artifact.py
 
 report-tetrad:
 	@echo "Exporting Force Fields Tetrad notebook (classic template)..."
