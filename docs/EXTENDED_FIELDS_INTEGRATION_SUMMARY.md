@@ -12,14 +12,21 @@ We have successfully **completed the full pipeline** from extended fields resear
 
 ### **Extended Canonical Hexad** (Previously Tetrad)
 
-| Field | Status | Physics | Validation |
-|-------|--------|---------|------------|
-| **Φ_s** | CANONICAL | Global structural potential | r(Δ Φ_s, ΔC) = -0.822 |
-| **\|∇φ\|** | CANONICAL | Phase gradient/desynchronization | r(Δ\|∇φ\|, Δmax_ΔNFR) = +0.655 |
-| **K_φ** | CANONICAL | Phase curvature/confinement | \|K_φ\| ≥ 3.0 threshold (100% accuracy) |
-| **ξ_C** | CANONICAL | Coherence length/spatial correlations | Critical point I_c = 2.015 |
-| **J_φ** | 🆕 CANONICAL | Phase current/directed transport | r(J_φ, K_φ) = +0.592 ± 0.092 |
-| **J_ΔNFR** | 🆕 CANONICAL | ΔNFR flux/reorganization transport | r(J_ΔNFR, Φ_s) = -0.471 ± 0.159 |
+The **formal definitions, safety criteria, and physics** of the structural tetrad (Φ_s, \|∇φ\|, K_φ, ξ_C) are centralized in:
+
+- `docs/STRUCTURAL_FIELDS_TETRAD.md` – canonical field definitions and thresholds
+- `docs/grammar/U6_STRUCTURAL_FIELD_TETRAD.md` – U6 umbrella, safety roles, and Hexad taxonomy
+
+This summary only tracks **integration status** and implementation surfaces:
+
+| Field | Status | Role |
+|-------|--------|------|
+| **Φ_s** | CANONICAL | Global structural potential (see canonical tetrad docs) |
+| **\|∇φ\|** | CANONICAL | Phase gradient/desynchronization (see canonical tetrad docs) |
+| **K_φ** | CANONICAL | Phase curvature/confinement (see canonical tetrad docs) |
+| **ξ_C** | CANONICAL | Coherence length/spatial correlations (see canonical tetrad docs) |
+| **J_φ** | 🆕 CANONICAL | Phase current/directed transport (flux pair, dynamics) |
+| **J_ΔNFR** | 🆕 CANONICAL | ΔNFR flux/reorganization transport (flux pair, dynamics) |
 
 ---
 

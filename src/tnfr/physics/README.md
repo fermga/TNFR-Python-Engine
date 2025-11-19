@@ -28,17 +28,26 @@ TNFR dynamics begins with a fundamental equation governing each node:
 
 ## 📐 Structural Fields: System Telemetry
 
-From the nodal equation emerge **four canonical fields** that characterize the system state:
+From the nodal equation emerge **four canonical fields** that characterize the system state.
 
-### **Structural Tetrad** → [`docs/STRUCTURAL_FIELDS_TETRAD.md`](../../../docs/STRUCTURAL_FIELDS_TETRAD.md)
+### **Structural Tetrad (Canonical Definitions)**
 
-1. **Φs (Structural Potential)**: Global field from ΔNFR distribution
-2. **|∇φ| (Phase Gradient)**: Local desynchronization 
-3. **Kφ (Phase Curvature)**: Geometric confinement
-4. **ξC (Coherence Length)**: Spatial correlation scale
+- Physics, equations, and thresholds → [`docs/STRUCTURAL_FIELDS_TETRAD.md`](../../../docs/STRUCTURAL_FIELDS_TETRAD.md)
+- Grammar / U6 safety roles and Hexad taxonomy → [`docs/grammar/U6_STRUCTURAL_FIELD_TETRAD.md`](../../../docs/grammar/U6_STRUCTURAL_FIELD_TETRAD.md)
+
+Brief overview (see docs above for full details):
+
+1. **Φ_s (Structural Potential)**: Global field from ΔNFR distribution (U6 confinement)
+2. **|∇φ| (Phase Gradient)**: Local desynchronization / stress proxy
+3. **K_φ (Phase Curvature)**: Geometric confinement / torsion
+4. **ξ_C (Coherence Length)**: Spatial correlation scale / critical behavior
 
 **Implementation**: [`src/tnfr/physics/fields.py`](fields.py)  
-**Safety thresholds**: ΔΦs < 2.0, |∇φ| < 0.38, |Kφ| ≥ 3.0, ξC divergent near Ic
+**Extended canonical fields (flux pair & spectra)**: see [`docs/EXTENDED_FIELDS_INTEGRATION_SUMMARY.md`](../../../docs/EXTENDED_FIELDS_INTEGRATION_SUMMARY.md)
+
+**OZ→IL precision walks & telemetry behavior** (Φ_s, |∇φ|, K_φ, ξ_C under dissonance/coherence sequences):
+- Canonical correlation narrative → [`benchmarks/results/ozil_hi_correlation_summary.md`](../../../benchmarks/results/ozil_hi_correlation_summary.md)
+- Aggregated snapshots / dashboards → [`benchmarks/results/precision_walk_dashboard.md`](../../../benchmarks/results/precision_walk_dashboard.md)
 
 ---
 

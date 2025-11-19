@@ -8,7 +8,7 @@ Scope: Extends U6 (Structural Potential Confinement) into a multi-field safety s
 
 ## Summary
 
-We formalize the Structural Field Hexad as two complementary groups with distinct roles:
+We formalize the Structural Field Hexad as two complementary groups with distinct roles. This document **assumes the field definitions from `docs/STRUCTURAL_FIELDS_TETRAD.md`** and focuses on their role within the grammar (U6 umbrella), safety criteria, and Hexad taxonomy rather than re-deriving their physics.
 
 - Telemetry Tetrad (read-only, U6 umbrella):
   - Φ_s: Global structural potential (field-theoretic aggregate of ΔNFR)

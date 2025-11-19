@@ -2,7 +2,7 @@
 
 Status: CANONICAL (Updated 2025-11-12)
 
-This guide centralizes the physics, math, implementation, telemetry, and usage of the four structural fields that characterize TNFR networks across scales. It avoids duplication by pointing to definitive sources where appropriate and gives a single operational entry point for engineers and researchers.
+This guide centralizes the physics, math, implementation, telemetry, and usage of the four structural fields that characterize TNFR networks across scales. It is the **single canonical source** for formal definitions of Φ_s, \|∇φ\|, K_φ, and ξ_C; other documents SHOULD reference this file instead of restating the equations.
 
 - Structural Potential (Φ_s): Global potential from ΔNFR distribution (inverse-square law analog)
 - Phase Gradient (|∇φ|): Local phase desynchronization (stress proxy)
