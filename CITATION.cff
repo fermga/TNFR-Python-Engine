@@ -2,8 +2,6 @@ cff-version: 1.2.0
 title: "TNFR-Python-Engine: Resonant Fractal Nature Theory Implementation"
 message: "If you use this software, please cite it as below."
 type: software
-version: "9.0.2"
-date-released: "2025-11-13"
 authors:
   - given-names: "F. F. Martinez Gamo"
     family-names: ""
@@ -11,7 +9,7 @@ authors:
     orcid: "https://orcid.org/0009-0007-6116-0613"
 repository-code: "https://github.com/fermga/TNFR-Python-Engine"
 url: "https://pypi.org/project/tnfr/"
-doi: "10.5281/zenodo.17602861"
+doi: "https://doi.org/10.5281/zenodo.17646845"
 license: "MIT"
 keywords:
   - "TNFR"
@@ -38,5 +36,5 @@ keywords:
   - "coherence"
   - "phase synchronization"
 license: MIT
-version: "9.0.0"
-date-released: "2025-11-13"
+version: "9.0.4"
+date-released: "2025-11-19"
