@@ -1,6 +1,6 @@
 [project]
 name = "tnfr"
-dynamic = ["version"]
+version = "9.5.1"
 description = "Resonant Fractal Nature Theory (TNFR) - Computational engine for modeling coherent patterns through resonance dynamics"
 readme = "README.md"
 requires-python = ">=3.10"
