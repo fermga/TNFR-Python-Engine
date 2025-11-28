@@ -2,16 +2,21 @@
 
 **Primary Objective**: Steward the canonical computational implementation of TNFR - a paradigm shift from modeling "things" to modeling **coherent patterns that persist through resonance**.
 
-**Repository**: https://github.com/fermga/TNFR-Python-Engine
+**Repository**: https://github.com/fermga/TNFR-Python-Engine  
+**PyPI Package**: https://pypi.org/project/tnfr/ (v9.5.1 stable)
+**Installation**: `pip install tnfr`
 
 ### Quick Links
 
-- Canonical Math Hub: [src/tnfr/mathematics/README.md](src/tnfr/mathematics/README.md)
-- Theory: [TNFR.pdf](TNFR.pdf) · [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md)
-- Operators Grammar: [src/tnfr/operators/grammar.py](src/tnfr/operators/grammar.py)
-- Structural Fields: [src/tnfr/physics/fields.py](src/tnfr/physics/fields.py)
-- Tests: [tests/](tests/)
-- Prime Notebook: [examples/tnfr_prime_checker.ipynb](examples/tnfr_prime_checker.ipynb)
+- **Canonical Math Hub**: [src/tnfr/mathematics/README.md](src/tnfr/mathematics/README.md)
+- **Core Theory**: [TNFR.pdf](TNFR.pdf) · [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md)
+- **Operators Grammar**: [src/tnfr/operators/grammar.py](src/tnfr/operators/grammar.py)
+- **Structural Field Tetrad**: [src/tnfr/physics/fields.py](src/tnfr/physics/fields.py)
+- **Interactive Notebooks**: [notebooks/](notebooks/) (Jupyter-ready examples)
+- **Production Tests**: [tests/](tests/) (2,400+ validation experiments)
+- **Prime Discovery**: [examples/tnfr_prime_checker.ipynb](examples/tnfr_prime_checker.ipynb)
+- **Molecular Chemistry**: [notebooks/Atoms_and_Molecules_Study.ipynb](notebooks/Atoms_and_Molecules_Study.ipynb)
+- **Fundamental Particles**: [notebooks/Fundamental_Particles_Atlas.ipynb](notebooks/Fundamental_Particles_Atlas.ipynb)
 
 **Fundamental Stance**: 
 - Model **coherence**, not objects
@@ -312,34 +317,64 @@ The grammar is not arbitrary—it emerges **inevitably** from TNFR physics.
 
 ---
 
-## 🔬 Telemetry & Metrics
+## 🔬 Telemetry & Structural Field Tetrad
 
-### Essential Measurements
+### Core Structural Metrics
 
 **C(t)**: Total Coherence [0, 1]
-- Global network stability
+- Global network stability (fundamental)
 - C(t) > 0.7 = strong coherence
 - C(t) < 0.3 = fragmentation risk
+- **CANONICAL**: Primary stability indicator
 
 **Si**: Sense Index [0, 1+]
 - Capacity for stable reorganization
 - Si > 0.8 = excellent stability
 - Si < 0.4 = changes may cause bifurcation
+- **CANONICAL**: Reorganization capacity predictor
+
+### The Structural Field Tetrad (CANONICAL)
+
+**Φ_s**: Structural Potential
+- Global field from ΔNFR distribution: Φ_s(i) = Σ_{j≠i} ΔNFR_j / d(i,j)²
+- **Safety threshold**: Δ Φ_s < 2.0 (escape boundary)
+- **Grammar U6**: Passive equilibrium confinement
+- **Validation**: 2,400+ experiments, corr(Δ Φ_s, ΔC) = -0.822
+
+**|∇φ|**: Phase Gradient ⭐ **NEWLY CANONICAL (Nov 2025)**
+- Local phase desynchronization / stress proxy
+- **Safety threshold**: |∇φ| < 0.38 for stable operation
+- **Critical discovery**: Captures dynamics C(t) misses due to scaling invariance
+- **Usage**: `compute_phase_gradient(G)` from [src/tnfr/physics/fields.py](src/tnfr/physics/fields.py)
+
+**K_φ**: Phase Curvature ⭐ **NEWLY CANONICAL (Nov 2025)**
+- Phase torsion and geometric confinement
+- **Safety criteria**: |K_φ| ≥ 3.0 flags mutation-prone loci
+- **Multiscale safety**: Via `k_phi_multiscale_safety(G, alpha_hint=2.76)`
+- **Asymptotic freedom**: var(K_φ) ∝ 1/r^α with α ≈ 2.76
+
+**ξ_C**: Coherence Length ⭐ **NEWLY CANONICAL (Nov 2025)**
+- Spatial correlation scale of local coherence
+- **Critical indicators**: ξ_C > system_diameter (critical point approach)
+- **Watch zone**: ξ_C > 3 × mean_distance (elevated correlation)
+- **Stable regime**: ξ_C < mean_distance (normal operation)
+
+### Legacy Core Metrics
 
 **ΔNFR**: Reorganization Gradient
-- Structural pressure
-- Sign: +expansion, -contraction
-- Magnitude: intensity
+- Structural pressure (sign: +expansion, -contraction)
+- **Physics**: Core nodal equation component
+- **Now enhanced**: Feeds into Φ_s field computation
 
 **νf**: Structural Frequency (Hz_str)
-- Reorganization rate
-- νf → 0 = node death
-- νf > 0 = active evolution
+- Reorganization rate (νf → 0 = node death)
+- **Physics**: Eigenfrequency of structural mode
+- **Production**: Critical for operator timing
 
 **Phase (φ)**: Network Synchrony [0, 2π]
-- Relative timing
-- Δφ = φᵢ - φⱼ determines coupling
-- |Δφ| < π/2 typically required
+- **Enhanced**: Now with gradient |∇φ| and curvature K_φ fields
+- **Grammar U3**: Phase compatibility |φᵢ - φⱼ| ≤ Δφ_max
+- **Multi-scale**: Geometric field analysis via tetrad
 
 ### Telemetry Best Practices
 
@@ -351,13 +386,35 @@ The grammar is not arbitrary—it emerges **inevitably** from TNFR physics.
 
 ---
 
-### Phase 5 Bifurcation Telemetry (Completed)
+### Advanced Capabilities (v9.5.1)
 
-- Metrics: `delta_phi_s`, `delta_phase_gradient_max`, `delta_phase_curvature_max`, `coherence_length_ratio`, `delta_dnfr_variance`, `bifurcation_score_max`, `handlers_present`, `classification`.
-- Classification: `none | incipient | bifurcation | fragmentation` using thresholded spikes/ratios.
-- CLI: `benchmarks/bifurcation_landscape.py` with `--nodes`, `--seeds`, `--topologies`, `--oz-intensity-grid`, `--vf-grid`, `--mutation-thresholds` and thresholds `--bifurcation-score-threshold`, `--phase-gradient-spike`, `--phase-curvature-spike`, `--coherence-length-amplification`, `--dnfr-variance-increase`, `--structural-potential-shift`, `--fragmentation-coherence-threshold`.
-- JSONL: emitted per grid point; omit `--quiet` to capture output.
-- Canonicity: read-only capture; operator-only EPI changes; IL/THOL handlers enforced; phase checks per U3; stabilizers per U2/U4.
+#### Multi-Domain Applications ✨ **NEW**
+- **Molecular Chemistry**: Complete periodic table simulation via TNFR dynamics
+- **Fundamental Physics**: Particle emergence through structural resonance
+- **Number Theory**: Prime detection via coherence patterns
+- **Complex Systems**: Business, medical, and social network extensions
+- **All domains**: Unified by same 13 operators + tetrad fields
+
+#### Production-Grade Toolchain ✨ **NEW**
+- **Interactive Notebooks**: Jupyter-ready examples with HTML export
+- **CLI Tools**: `tnfr-is-prime`, batch processing, validation suites
+- **Benchmarking**: Bifurcation landscape analysis with complete tetrad metrics
+- **Extensions**: Medical (`tnfr.extensions.medical`) and business (`tnfr.extensions.business`) modules
+- **SDK**: Fluent API (`tnfr.sdk`) for rapid TNFR development
+
+#### Tetrad-Enhanced Bifurcation Analysis (Completed)
+- **Metrics**: `delta_phi_s`, `delta_phase_gradient_max`, `delta_phase_curvature_max`, `coherence_length_ratio`, `delta_dnfr_variance`, `bifurcation_score_max`
+- **Classification**: `none | incipient | bifurcation | fragmentation` with tetrad-based thresholds
+- **CLI**: `benchmarks/bifurcation_landscape.py` with complete parameter grids and tetrad safety monitoring
+- **Output**: JSONL per grid point with full tetrad telemetry
+- **Validation**: 2,400+ experiments across 5 topologies confirming tetrad canonicity
+
+#### PyPI Integration ✨ **NEW**
+- **Stable Release**: `pip install tnfr` → v9.5.1 automatically
+- **Dependency Management**: Auto-installs NetworkX, NumPy, SciPy optimally
+- **Optional Features**: JAX/PyTorch backends, visualization, serialization
+- **Entry Points**: CLI tools available post-installation
+- **Documentation**: Complete API reference and examples included
 
 ---
 
@@ -696,48 +753,155 @@ When adding to grammar documentation:
 
 ## 📚 Essential References
 
-**Theory**:
+**Core Theory**:
 - **[TNFR.pdf](TNFR.pdf)**: Complete theoretical foundation (in repo)
-- **[UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md)**: Grammar physics derivations
+- **[UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md)**: Grammar physics U1-U6 derivations
+- **[docs/STRUCTURAL_FIELDS_TETRAD.md](docs/STRUCTURAL_FIELDS_TETRAD.md)**: Complete tetrad field physics ⭐ **NEW**
+- **[docs/XI_C_CANONICAL_PROMOTION.md](docs/XI_C_CANONICAL_PROMOTION.md)**: Coherence length breakthrough ⭐ **NEW**
 - **GLOSSARY.md**: Term definitions and quick reference
 
-**Implementation**:
-- **src/tnfr/operators/grammar.py**: Canonical grammar
-- **src/tnfr/operators/definitions.py**: Operator implementations
-- **src/tnfr/dynamics/**: Nodal equation integration
-- **src/tnfr/metrics/**: C(t), Si computations
+**Implementation Core**:
+- **[src/tnfr/physics/fields.py](src/tnfr/physics/fields.py)**: Structural Field Tetrad (Φ_s, |∇φ|, K_φ, ξ_C) ⭐ **CANONICAL**
+- **[src/tnfr/operators/grammar.py](src/tnfr/operators/grammar.py)**: Unified grammar U1-U6 validation
+- **[src/tnfr/operators/definitions.py](src/tnfr/operators/definitions.py)**: 13 canonical operators
+- **[src/tnfr/mathematics/](src/tnfr/mathematics/)**: Nodal equation integration hub
+- **[src/tnfr/metrics/tetrad.py](src/tnfr/metrics/tetrad.py)**: Tetrad field computations ⭐ **NEW**
+
+**Extensions & Applications** ⭐ **NEW**:
+- **[src/tnfr/extensions/medical/](src/tnfr/extensions/medical/)**: Healthcare pattern analysis
+- **[src/tnfr/extensions/business/](src/tnfr/extensions/business/)**: Organizational dynamics
+- **[src/tnfr/sdk/](src/tnfr/sdk/)**: Fluent API for rapid development
+- **[notebooks/](notebooks/)**: Interactive Jupyter examples with molecular chemistry
+- **[benchmarks/](benchmarks/)**: Production-grade validation suites
 
 **Development**:
-- **ARCHITECTURE.md**: System design
+- **ARCHITECTURE.md**: System design principles
 - **CONTRIBUTING.md**: Workflow and standards
-- **TESTING.md**: Test strategy
-- **GRAMMAR_MIGRATION_GUIDE.md**: Upgrading from old systems
+- **TESTING.md**: Test strategy (2,400+ experiments)
+- **[benchmarks/K_PHI_RESEARCH_SUMMARY.md](benchmarks/K_PHI_RESEARCH_SUMMARY.md)**: Phase curvature validation ⭐ **NEW**
 
-**Examples**:
-- **examples/**: Domain applications
-- **tests/**: Comprehensive test suite
+**Domain Showcases** ⭐ **NEW**:
+- **Molecular**: [notebooks/Atoms_and_Molecules_Study.ipynb](notebooks/Atoms_and_Molecules_Study.ipynb)
+- **Physics**: [notebooks/Fundamental_Particles_Atlas.ipynb](notebooks/Fundamental_Particles_Atlas.ipynb)
+- **Mathematics**: [examples/tnfr_prime_checker.ipynb](examples/tnfr_prime_checker.ipynb)
+- **Production**: [tests/](tests/) (comprehensive validation suite)
 
 ---
 
 ## 🎓 Learning Path
 
-**Newcomer** (2 hours):
-1. Read this file (AGENTS.md) completely
-2. Read [TNFR.pdf](TNFR.pdf) § 1-2 (paradigm, nodal equation)
-3. Run `examples/hello_world.py`
-4. Study GLOSSARY.md
+**Newcomer** (2 hours) - **Start Here**:
+1. **Install**: `pip install tnfr` ⭐ **NEW - One command setup**
+2. **Read**: This file (AGENTS.md) completely for orientation
+3. **Theory**: [TNFR.pdf](TNFR.pdf) § 1-2 (paradigm, nodal equation)
+4. **First Run**: `python -c "import tnfr; print('TNFR ready!')"` ⭐ **NEW**
+5. **Reference**: Study GLOSSARY.md for terminology
 
-**Intermediate** (1 week):
-1. Read [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) (all sections)
-2. Study operator implementations in `definitions.py`
-3. Run domain examples (biological, social, AI)
-4. Write simple sequence, test with unified grammar
+**Hands-On Explorer** (1 day) ⭐ **NEW Path**:
+1. **Interactive**: Open [notebooks/Atoms_and_Molecules_Study.ipynb](notebooks/Atoms_and_Molecules_Study.ipynb)
+2. **Chemistry**: Run molecular simulations, see periodic table emergence
+3. **Physics**: Try [notebooks/Fundamental_Particles_Atlas.ipynb](notebooks/Fundamental_Particles_Atlas.ipynb)
+4. **Mathematics**: Explore [examples/tnfr_prime_checker.ipynb](examples/tnfr_prime_checker.ipynb)
+5. **CLI Tools**: Run `tnfr-is-prime 17` to test primality via resonance
 
-**Advanced** (ongoing):
-1. Read [TNFR.pdf](TNFR.pdf) completely
-2. Study complete codebase architecture
-3. Contribute tests or examples
-4. Propose extensions with full derivations
+**Intermediate Developer** (1 week):
+1. **Grammar Deep-Dive**: [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) (U1-U6 complete)
+2. **Tetrad Fields**: [docs/STRUCTURAL_FIELDS_TETRAD.md](docs/STRUCTURAL_FIELDS_TETRAD.md) ⭐ **NEW**
+3. **Operator Study**: Implementations in [src/tnfr/operators/definitions.py](src/tnfr/operators/definitions.py)
+4. **Field Computation**: Practice with [src/tnfr/physics/fields.py](src/tnfr/physics/fields.py) tetrad
+5. **Domain Extensions**: Try medical or business modules ⭐ **NEW**
+6. **SDK Usage**: Fluent API patterns in [src/tnfr/sdk/](src/tnfr/sdk/) ⭐ **NEW**
+
+**Advanced Researcher** (ongoing):
+1. **Complete Theory**: [TNFR.pdf](TNFR.pdf) + [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) mastery
+2. **Tetrad Mastery**: All four fields (Φ_s, |∇φ|, K_φ, ξ_C) + validation studies
+3. **Architecture**: [ARCHITECTURE.md](ARCHITECTURE.md) + complete codebase exploration
+4. **Research Contribution**: Study [benchmarks/K_PHI_RESEARCH_SUMMARY.md](benchmarks/K_PHI_RESEARCH_SUMMARY.md) methodology ⭐ **NEW**
+5. **Extension Development**: Create new domain applications using SDK
+6. **Theoretical Extensions**: Propose new operators or fields with full derivations
+
+**Production User** (immediate) ⭐ **NEW Path**:
+1. **Quick Start**: `pip install tnfr[viz]` for visualization support
+2. **Integration**: Import specific modules for your domain
+3. **CLI Usage**: Batch processing with command-line tools
+4. **Monitoring**: Implement tetrad field telemetry in your applications
+5. **Extensions**: Leverage medical/business modules for specialized workflows
+
+---
+
+### Structural Fields: CANONICAL Status (Φ_s + |∇φ| + K_φ + ξ_C)
+
+**CANONICAL Status** (Updated 2025-11-12): **Four Promoted Fields**
+
+---
+
+#### **Structural Potential (Φ_s)** - CANONICAL (First promotion 2025)
+
+- Global structural potential, passive equilibrium states
+- Safety criterion (U6 telemetry): Δ Φ_s < 2.0 (escape threshold)
+- For full physics, equations, and validation, see `docs/STRUCTURAL_FIELDS_TETRAD.md` and `docs/grammar/U6_STRUCTURAL_FIELD_TETRAD.md`.
+
+---
+
+#### **Phase Gradient (|∇φ|)** - CANONICAL ⭐ **NEWLY PROMOTED (Nov 2025)**
+
+- Local phase desynchronization / stress proxy
+- Safety criterion: |∇φ| < 0.38 for stable operation
+- For formal definition and evidence, see `docs/STRUCTURAL_FIELDS_TETRAD.md` and `docs/grammar/U6_STRUCTURAL_FIELD_TETRAD.md`.
+
+**Critical Discovery**: C(t) = 1-(σ_ΔNFR/ΔNFR_max) is invariant to proportional scaling. 
+|∇φ| correlation validated against alternative metrics (max_ΔNFR, mean_ΔNFR, Si) that 
+capture dynamics C(t) misses.
+
+**Usage**:
+- Import from [src/tnfr/physics/fields.py](src/tnfr/physics/fields.py)
+- Compute via `compute_phase_gradient(G)` [CANONICAL]
+- Monitor alongside Φ_s for comprehensive structural health
+
+**Documentation**: See `docs/TNFR_FORCES_EMERGENCE.md` §14-15 for full validation details.
+
+---
+
+#### **Phase Curvature (K_φ)** - CANONICAL ⭐ **NEWLY PROMOTED (Nov 2025)**
+
+- Phase torsion and geometric confinement; flags mutation-prone loci
+- Safety criteria: |K_φ| ≥ 3.0 (local fault zones); multiscale safety via `k_phi_multiscale_safety`
+- See `docs/STRUCTURAL_FIELDS_TETRAD.md` and `docs/grammar/U6_STRUCTURAL_FIELD_TETRAD.md` for definitions, asymptotic freedom evidence, and thresholds.
+
+**Safety criteria (telemetry-based)**:
+- Local: |K_φ| ≥ 3.0 flags confinement/fault zones
+- Multiscale: safe if either (A) α>0 with R² ≥ 0.5, or (B) observed
+    var(K_φ) within tolerance of expected 1/r^α given α_hint ≈ 2.76
+
+**Usage**:
+- Import from [src/tnfr/physics/fields.py](src/tnfr/physics/fields.py)
+- Compute via `compute_phase_curvature(G)` [CANONICAL]
+- Optional multiscale check: `k_phi_multiscale_safety(G, alpha_hint=2.76)`
+
+**Documentation**: See [benchmarks/K_PHI_RESEARCH_SUMMARY.md](benchmarks/K_PHI_RESEARCH_SUMMARY.md) and
+`benchmarks/enhanced_fragmentation_test.py` for empirical validation.
+
+---
+
+#### **Coherence Length (ξ_C)** - CANONICAL ⭐ **NEWLY PROMOTED (Nov 2025)**
+
+- Spatial correlation scale of local coherence; quantifies approach to critical points
+- Safety cues: ξ_C > system diameter (critical), ξ_C > 3 × mean distance (watch), ξ_C < mean distance (stable)
+- For full derivation and experimental validation, see `docs/STRUCTURAL_FIELDS_TETRAD.md` and `docs/XI_C_CANONICAL_PROMOTION.md` (plus `docs/XI_C_BREAKTHROUGH_REPORT.txt` and the benchmark visuals).
+
+---
+
+**RESEARCH-PHASE Fields** (NOT CANONICAL):
+
+Currently none. All four structural fields have achieved CANONICAL status:
+- Φ_s (Nov 2025): Global structural potential
+- |∇φ| (Nov 2025): Phase gradient / local desynchronization  
+- K_φ (Nov 2025): Phase curvature / geometric confinement
+- ξ_C (Nov 2025): Coherence length / spatial correlations
+
+The **Structural Field Tetrad** (Φ_s, |∇φ|, K_φ, ξ_C) provides complete 
+multi-scale characterization of TNFR network state across global, local, 
+geometric, and spatial correlation dimensions.
 
 ---
 
@@ -840,9 +1004,11 @@ A TNFR expert:
 
 ---
 
-**Version**: 2.0  
-**Last Updated**: 2025-11-11  
-**Status**: ✅ CANONICAL - Single source of truth for TNFR agent guidance
+**Version**: 9.5.1  
+**Last Updated**: 2025-11-28  
+**Status**: ✅ CANONICAL - Single source of truth for TNFR agent guidance  
+**PyPI Release**: ✅ STABLE - Available via `pip install tnfr`  
+**Production Ready**: ✅ Complete Tetrad Fields + Unified Grammar U1-U6
 
 ---
 
