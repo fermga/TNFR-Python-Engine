@@ -1,0 +1,28 @@
+{
+  "tasks": [
+    {
+      "id": 1,
+      "title": "Auditar scripts sueltos en raíz",
+      "description": "Revisar audit_*.py, check_*.py, validate_*.py, verify_*.py y test_circular_import_fix.py para determinar último uso, dependencias y si siguen en pipelines.",
+  "status": "completed"
+    },
+    {
+      "id": 2,
+      "title": "Verificar archivos meta en raíz",
+      "description": "Comprobar si meta.json, CANONICAL_SOURCES.md, DOCUMENTATION_INDEX.md y SECURITY.md reflejan el estado actual; documentar si requieren actualización.",
+      "status": "completed"
+    },
+    {
+      "id": 3,
+      "title": "Organizar resultados y datos históricos",
+      "description": "Evaluar benchmark_results*.txt y u6_*.jsonl; decidir si se archivan en benchmarks/results o data/archive con README, o si hay alternativa externa.",
+      "status": "pending"
+    },
+    {
+      "id": 4,
+      "title": "Auditar carpetas raíz huérfanas",
+      "description": "Inspeccionar conventional/, presets/, scripts/ y otras carpetas similares para entender su vigencia, dependencias y plan de consolidación.",
+      "status": "pending"
+    }
+  ]
+}

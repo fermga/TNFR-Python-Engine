@@ -1,0 +1,131 @@
+# Dependabot configuration for TNFR-Python-Engine
+# Automates dependency updates to maintain security and compatibility
+# See: https://docs.github.com/en/code-security/dependabot/dependabot-version-updates
+
+version: 2
+updates:
+  # Python dependencies (pyproject.toml)
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+      day: "monday"
+      time: "09:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "python"
+      - "automated"
+    commit-message:
+      prefix: "deps"
+      include: "scope"
+    reviewers:
+      - "fermga"
+    groups:
+      # Core computational dependencies
+      compute:
+        patterns:
+          - "numpy"
+          - "scipy"
+          - "numba"
+        update-types:
+          - "minor"
+          - "patch"
+      
+      # Backend acceleration frameworks
+      backends:
+        patterns:
+          - "jax*"
+          - "torch"
+          - "cupy*"
+        update-types:
+          - "minor"
+          - "patch"
+      
+      # Testing infrastructure
+      testing:
+        patterns:
+          - "pytest*"
+          - "hypothesis"
+          - "coverage"
+        update-types:
+          - "minor"
+          - "patch"
+      
+      # Development tools
+      dev-tools:
+        patterns:
+          - "ruff"
+          - "mypy"
+          - "black"
+          - "isort"
+          - "bandit"
+        update-types:
+          - "minor"
+          - "patch"
+      
+      # Documentation system
+      docs:
+        patterns:
+          - "sphinx*"
+          - "myst*"
+          - "nbconvert"
+        update-types:
+          - "minor"
+          - "patch"
+      
+      # Visualization
+      viz:
+        patterns:
+          - "matplotlib"
+          - "seaborn"
+          - "plotly"
+        update-types:
+          - "minor"
+          - "patch"
+    
+    # Version update strategy
+    versioning-strategy: "increase"
+    
+    # Ignore specific versions if needed
+    ignore:
+      # Critical: Never auto-update major versions
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+
+  # GitHub Actions workflows
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+      day: "monday"
+      time: "09:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 3
+    labels:
+      - "dependencies"
+      - "ci-cd"
+      - "automated"
+    commit-message:
+      prefix: "ci"
+      include: "scope"
+    reviewers:
+      - "fermga"
+
+# Strategy:
+# - Monthly updates (changed from weekly) to balance security with stability
+# - Group related packages to reduce PR noise (6 groups)
+# - Patch/minor updates grouped, major updates blocked (manual review required)
+# - 5 Python PRs + 3 Actions PRs max to avoid overwhelming review queue
+# - All PRs labeled for easy filtering
+# - Auto-assign to maintainer for review
+#
+# Review workflow:
+# 1. Dependabot opens PR with grouped updates
+# 2. CI runs full test suite (100/100 health check)
+# 3. If all tests pass + patch updates only → consider auto-merge
+# 4. If minor/major updates → manual review required
+# 5. Check CHANGELOG and breaking changes before merge
+#
+# TNFR Canonicity: Zero risk - configuration only, no code changes

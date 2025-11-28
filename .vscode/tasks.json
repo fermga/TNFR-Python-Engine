@@ -1,0 +1,313 @@
+{
+  // VS Code tasks to export TNFR notebooks and regenerate plots
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Export TNFR tetrad HTML report",
+      "type": "shell",
+      "command": "./make.cmd",
+      "args": [
+        "report-tetrad"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "group": { "kind": "build", "isDefault": true },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Triatomic Atlas (script)",
+      "type": "shell",
+      "command": "./make.cmd",
+      "args": [
+        "triatomic-atlas-script"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "group": { "kind": "build" },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Phase-Gated Coupling Demo (script)",
+      "type": "shell",
+      "command": "./make.cmd",
+      "args": [
+        "phase-gated-script"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "group": { "kind": "build" },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Elements Signature Study (script)",
+      "type": "shell",
+      "command": "./make.cmd",
+      "args": [
+        "elements-signature-script"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "group": { "kind": "build" },
+      "problemMatcher": []
+    },
+    {
+      "label": "Export Atoms & Molecules Study (HTML - classic)",
+      "type": "shell",
+      "command": "./make.cmd",
+      "args": [
+        "report-atoms-molecules"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "group": { "kind": "build" },
+      "problemMatcher": []
+    },
+    {
+      "label": "Export Phase-Gated Coupling Demo (HTML - classic)",
+      "type": "shell",
+      "command": "./make.cmd",
+      "args": [
+        "report-phase-gated"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "group": { "kind": "build" },
+      "problemMatcher": []
+    },
+    {
+      "label": "Export Triatomic Atlas (HTML - classic)",
+      "type": "shell",
+      "command": "./make.cmd",
+      "args": [
+        "report-triatomic-atlas"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "group": { "kind": "build" },
+      "problemMatcher": []
+    },
+    {
+      "label": "Export Molecule Atlas (HTML - classic)",
+      "type": "shell",
+      "command": "./make.cmd",
+      "args": [
+        "report-molecule-atlas"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "group": { "kind": "build" },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Molecule Atlas (script)",
+      "type": "shell",
+      "command": "./make.cmd",
+      "args": [
+        "molecule-atlas-script"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "group": { "kind": "build" },
+      "problemMatcher": []
+    },
+    {
+      "label": "Export Operator Completeness (HTML - classic)",
+      "type": "shell",
+      "command": "./make.cmd",
+      "args": [
+        "report-operator-completeness"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Export Operator Completeness (HTML - print-friendly)",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy", "Bypass",
+        "-Command",
+        // Print-friendly export: hide code and prompts, light theme
+        "$ErrorActionPreference=[System.Management.Automation.ActionPreference]::Stop; if (!(Test-Path -Path \"results/reports\")) { New-Item -ItemType Directory -Path \"results/reports\" | Out-Null }; $env:PYTHONPATH=(Resolve-Path -Path ./src).Path; & \"C:/Program Files/Python313/python.exe\" -m nbconvert --to html --execute --template lab --HTMLExporter.theme=light --HTMLExporter.exclude_input=True --HTMLExporter.exclude_input_prompt=True --HTMLExporter.exclude_output_prompt=True --ExecutePreprocessor.timeout=1200 --output-dir results/reports notebooks/Operator_Completeness_Search.ipynb"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "Export Interaction Sequences (HTML - print-friendly)",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy", "Bypass",
+        "-Command",
+        // Print-friendly HTML for Interaction_Sequences: light theme, hide code/prompts
+        "$ErrorActionPreference=[System.Management.Automation.ActionPreference]::Stop; if (!(Test-Path -Path \"results/reports\")) { New-Item -ItemType Directory -Path \"results/reports\" | Out-Null }; $env:PYTHONPATH=(Resolve-Path -Path ./src).Path; & \"C:/Program Files/Python313/python.exe\" -m nbconvert --to html --execute --template lab --HTMLExporter.theme=light --HTMLExporter.exclude_input=True --HTMLExporter.exclude_input_prompt=True --HTMLExporter.exclude_output_prompt=True --ExecutePreprocessor.timeout=900 --output-dir results/reports notebooks/Interaction_Sequences.ipynb"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "Export Emergent Particles HTML report",
+      "type": "shell",
+      "command": "./make.cmd",
+      "args": [
+        "report-emergent-particles"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Generate force study plots",
+      "type": "shell",
+      "command": "./make.cmd",
+      "args": [
+        "force-study-plots"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Export Fundamental Particles Atlas (HTML - classic)",
+      "type": "shell",
+      "command": "./make.cmd",
+      "args": [
+        "report-fundamental-particles"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Export Fundamental Particles Atlas (HTML - print-friendly)",
+      "type": "shell",
+      "command": "./make.cmd",
+      "args": [
+        "report-fundamental-particles-print"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Export Interaction Sequences (HTML - classic)",
+      "type": "shell",
+      "command": "./make.cmd",
+      "args": [
+        "report-interaction-sequences"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Export All TNFR Reports",
+      "type": "shell",
+      "command": "./make.cmd",
+      "args": [
+        "report-all-classic"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "group": { "kind": "build" },
+      "problemMatcher": []
+  },
+  {
+      "label": "Export All TNFR Reports (print-friendly)",
+      "type": "shell",
+      "command": "./make.cmd",
+      "args": [
+        "report-all-print"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "group": { "kind": "build" },
+      "problemMatcher": []
+    }
+    ,
+    {
+      "label": "Run Atom Atlas (script)",
+      "type": "shell",
+      "command": "./make.cmd",
+      "args": [
+        "atom-atlas-script"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "group": { "kind": "build" },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Periodic Table Atlas (script)",
+      "type": "shell",
+      "command": "./make.cmd",
+      "args": [
+        "periodic-table-script"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "group": { "kind": "build" },
+      "problemMatcher": []
+    },
+    {
+      "label": "Export Particle Atlas U6 Sequential (HTML - classic)",
+      "type": "shell",
+      "command": "./make.cmd",
+      "args": [
+        "report-particle-atlas-u6"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "group": { "kind": "build" },
+      "problemMatcher": []
+    },
+    {
+      "label": "Export Periodic Table Atlas (HTML - classic)",
+      "type": "shell",
+      "command": "./make.cmd",
+      "args": [
+        "report-periodic-table-classic"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "group": { "kind": "build" },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run focused tests (examples + telemetry)",
+      "type": "shell",
+      "command": "./make.cmd",
+      "args": [
+        "smoke-tests"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "group": { "kind": "test", "isDefault": true },
+      "problemMatcher": []
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+from typing import Any
+
+Operator: Any
+Emission: Any
+Reception: Any
+Coherence: Any
+Dissonance: Any
+Coupling: Any
+Resonance: Any
+Silence: Any
+Expansion: Any
+Contraction: Any
+SelfOrganization: Any
+Mutation: Any
+Transition: Any
+Recursivity: Any
+GLYPH_OPERATIONS: Any
+JitterCache: Any
+JitterCacheManager: Any
+OPERATORS: Any
+apply_glyph: Any
+apply_glyph_obj: Any
+apply_network_remesh: Any
+apply_remesh_if_globally_stable: Any
+apply_topological_remesh: Any
+discover_operators: Any
+get_glyph_factors: Any
+get_jitter_manager: Any
+get_neighbor_epi: Any
+random_jitter: Any
+reset_jitter_manager: Any

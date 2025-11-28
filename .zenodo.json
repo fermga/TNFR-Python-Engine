@@ -1,0 +1,60 @@
+{
+  "title": "TNFR-Python-Engine: Resonant Fractal Nature Theory Implementation",
+  "description": "Canonical computational implementation of TNFR - a paradigm shift from modeling 'things' to modeling coherent patterns that persist through resonance. This Python package provides the complete TNFR physics engine including the 13 structural operators, unified grammar validation (U1-U6), and the four canonical structural fields (Φ_s, |∇φ|, K_φ, ξ_C). Features include: nodal equation dynamics (∂EPI/∂t = νf·ΔNFR), structural potential confinement, phase synchronization, and multi-scale coherence analysis.",
+  "version": "9.0.2",
+  "publication_date": "2025-11-13",
+  "doi": "10.5281/zenodo.17602861",
+  "creators": [
+    {
+      "name": "FMG",
+      "affiliation": "TNFR Research",
+      "orcid": "0009-0007-6116-0613"
+    }
+  ],
+  "keywords": [
+    "TNFR",
+    "complex systems", 
+    "fractals",
+    "resonance",
+    "networks",
+    "structural dynamics",
+    "structural analysis",
+    "nodal equation",
+    "coherence",
+    "phase synchronization"
+  ],
+  "license": "MIT",
+  "upload_type": "software",
+  "access_right": "open",
+  "language": "eng",
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/fermga/TNFR-Python-Engine",
+      "relation": "isSupplementTo",
+      "resource_type": "software"
+    },
+    {
+      "identifier": "https://pypi.org/project/tnfr/",
+      "relation": "isIdenticalTo",
+      "resource_type": "software"
+    }
+  ],
+  "subjects": [
+    {
+      "term": "Complex Systems",
+      "scheme": "keyword"
+    },
+    {
+      "term": "Network Theory",
+      "scheme": "keyword"
+    },
+    {
+      "term": "Fractal Dynamics",
+      "scheme": "keyword"
+    },
+    {
+      "term": "Structural Analysis",
+      "scheme": "keyword"
+    }
+  ]
+}

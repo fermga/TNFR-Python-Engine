@@ -1,0 +1,226 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  prepare:
+    name: Plan semantic release
+    if: ${{ github.event_name == 'workflow_dispatch' || !contains(github.event.head_commit.message, '[skip release]') }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    outputs:
+      released: ${{ steps.plan.outputs.released }}
+      version: ${{ steps.plan.outputs.version }}
+      tag: ${{ steps.tag.outputs.tag }}
+      notes: ${{ steps.release_notes.outputs.notes }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Install semantic release tooling
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install python-semantic-release build towncrier
+
+      - name: Detect next version
+        id: plan
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PYTHON_KEYRING_BACKEND: keyring.backends.null.Keyring
+        run: |
+          set +e
+          VERSION_OUTPUT=$(python -m semantic_release version --print 2>&1)
+          STATUS=$?
+          set -e
+          echo "$VERSION_OUTPUT"
+          if [ "$STATUS" -ne 0 ]; then
+            echo "released=false" >> "$GITHUB_OUTPUT"
+            echo "version=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          VERSION=$(echo "$VERSION_OUTPUT" | tail -n 1 | tr -d ' \n')
+          if [ -z "$VERSION" ]; then
+            echo "released=false" >> "$GITHUB_OUTPUT"
+            echo "version=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "released=true" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Compile release notes draft
+        id: release_notes
+        if: steps.plan.outputs.released == 'true'
+        env:
+          VERSION: ${{ steps.plan.outputs.version }}
+        run: |
+          NOTES_FILE=$(mktemp)
+          towncrier build --config docs/towncrier.toml --draft --version "$VERSION" > "$NOTES_FILE"
+          cat "$NOTES_FILE"
+          NOTES_CONTENT=$(cat "$NOTES_FILE")
+          NOTES_CONTENT="${NOTES_CONTENT//'%'/'%25'}"
+          NOTES_CONTENT="${NOTES_CONTENT//$'\n'/'%0A'}"
+          NOTES_CONTENT="${NOTES_CONTENT//$'\r'/'%0D'}"
+          echo "notes=$NOTES_CONTENT" >> "$GITHUB_OUTPUT"
+
+      - name: Regenerate versioned changelog
+        if: steps.plan.outputs.released == 'true'
+        env:
+          VERSION: ${{ steps.plan.outputs.version }}
+        run: towncrier build --config docs/towncrier.toml --yes --version "$VERSION"
+
+      - name: Commit changelog updates
+        if: steps.plan.outputs.released == 'true'
+        env:
+          VERSION: ${{ steps.plan.outputs.version }}
+        run: |
+          git add docs/releases.md
+          git add -A docs/changelog.d
+          if git diff --cached --quiet; then
+            echo "No changelog updates to commit."
+            exit 0
+          fi
+          git config user.name "tnfr-release-bot"
+          git config user.email "release-bot@users.noreply.github.com"
+          git commit -m "chore(release-notes): update changelog for v$VERSION [skip release]"
+          git push origin HEAD:main
+
+      - name: Apply release tag
+        if: steps.plan.outputs.released == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PYTHON_KEYRING_BACKEND: keyring.backends.null.Keyring
+        run: python -m semantic_release version --skip-build --no-vcs-release
+
+      - name: Emit tag output
+        id: tag
+        if: steps.plan.outputs.released == 'true'
+        run: |
+          echo "tag=v${VERSION}" >> "$GITHUB_OUTPUT"
+        env:
+          VERSION: ${{ steps.plan.outputs.version }}
+
+  publish:
+    name: Build and publish release
+    needs: prepare
+    if: needs.prepare.outputs.released == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - name: Checkout release tag
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          ref: ${{ needs.prepare.outputs.tag }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+          cache-dependency-path: |
+            pyproject.toml
+
+      - name: Cache pytest state
+        uses: actions/cache@v4
+        with:
+          path: |
+            .pytest_cache
+            ~/.cache/pytest
+          key: ${{ runner.os }}-pytest-${{ hashFiles('pyproject.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-pytest-
+
+      - name: Install QA dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install .[test,typecheck]
+
+      - name: Run QA checks
+        id: qa
+        run: |
+          set -o pipefail
+          mkdir -p artifacts
+          ./scripts/run_tests.sh | tee artifacts/qa-validation.log
+
+      - name: Upload validation logs
+        if: ${{ always() && steps.qa.outcome != 'skipped' }}
+        uses: actions/upload-artifact@v5
+        with:
+          name: qa-validation-${{ needs.prepare.outputs.version }}
+          path: artifacts/qa-validation.log
+          if-no-files-found: ignore
+
+      - name: Install build tooling
+        run: |
+          python -m pip install build python-semantic-release
+
+      - name: Import PyPI signing key
+        if: ${{ secrets.PYPI_SIGNING_KEY != '' && secrets.PYPI_SIGNING_KEY_ID != '' }}
+        env:
+          PYPI_SIGNING_KEY: ${{ secrets.PYPI_SIGNING_KEY }}
+        run: |
+          printf '%s' "$PYPI_SIGNING_KEY" | gpg --batch --import
+
+      - name: Build distributions
+        id: build
+        env:
+          TNFR_VERSION: ${{ needs.prepare.outputs.version }}
+        run: python -m build
+
+      - name: Sign distributions
+        if: ${{ secrets.PYPI_SIGNING_KEY != '' && secrets.PYPI_SIGNING_KEY_ID != '' && steps.build.outcome == 'success' }}
+        env:
+          GPG_KEY_ID: ${{ secrets.PYPI_SIGNING_KEY_ID }}
+          GPG_PASSPHRASE: ${{ secrets.PYPI_SIGNING_KEY_PASSPHRASE }}
+        run: |
+          for artifact in dist/*; do
+            [ -f "$artifact" ] || continue
+            if [ -n "$GPG_PASSPHRASE" ]; then
+              gpg --batch --yes --pinentry-mode loopback --passphrase "$GPG_PASSPHRASE" --local-user "$GPG_KEY_ID" --armor --detach-sign "$artifact"
+            else
+              gpg --batch --yes --local-user "$GPG_KEY_ID" --armor --detach-sign "$artifact"
+            fi
+          done
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}
+          skip-existing: true
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.prepare.outputs.tag }}
+          body: ${{ needs.prepare.outputs.notes }}
+          files: |
+            dist/*
+            docs/releases.md
+
+      - name: Upload signed distributions
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        uses: actions/upload-artifact@v5
+        with:
+          name: tnfr-${{ needs.prepare.outputs.version }}-dist
+          path: dist/*

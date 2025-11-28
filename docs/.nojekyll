@@ -1,0 +1,6 @@
+# This file prevents GitHub Pages from processing the site with Jekyll
+# Documentation is now built locally only using MkDocs
+# 
+# To build documentation locally:
+# 1. pip install -e ".[docs]"  
+# 2. mkdocs serve

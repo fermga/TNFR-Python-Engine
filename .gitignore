@@ -1,0 +1,64 @@
+# JavaScript dependencies
+node_modules/
+__pycache__/
+*.pyc
+dist/
+build/
+site/
+docs/_build/
+*.egg-info/
+*.egg
+.semantic_release/
+src/tnfr/_generated_version.py
+.venv/
+.env
+.pytest_cache/
+.hypothesis/
+cover/
+*.cover
+.coverage
+coverage.xml
+.tox/
+*.log
+.DS_Store
+Thumbs.db
+.benchmarks/
+
+# Reproducibility artifacts
+artifacts/
+profiles/
+*.pstats
+*.stats
+profile_*.txt
+
+# Security scan results (temporary)
+bandit.json
+bandit-fixed.json
+bandit.sarif
+pip-audit*.json
+semgrep.json
+semgrep.sarif
+
+# Validation outputs (generated)
+validation_outputs/
+
+# Generated results and outputs (not needed in repo)
+results/
+outputs/
+benchmarks/results/
+dist-test/
+test-env/
+examples/output/
+
+# Large benchmark result files
+benchmarks/results/*_telemetry.jsonl
+benchmarks/results/phase_gradient_full_study.jsonl
+benchmarks/results/u6_aggressive_results.jsonl
+benchmarks/results/*_5000_*.jsonl
+
+debug_scratch/
+*.tmp
+*.temp
+
+# Type checking cache
+.mypy_cache/
