@@ -1,13 +1,13 @@
 # TNFR Python Engine
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17602861.svg)](https://doi.org/10.5281/zenodo.17602861)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17761312.svg)](https://doi.org/10.5281/zenodo.17761312)
 [![PyPI version](https://badge.fury.io/py/tnfr.svg)](https://pypi.org/project/tnfr/)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 **Computational implementation of Resonant Fractal Nature Theory (TNFR)** - A framework for modeling coherent patterns in networked systems.
 
-**Version**: 9.7.0 (November 29, 2025)  
+**Version**: 0.0.1 (November 29, 2025)  
 **Foundation**: Universal Tetrahedral Correspondence (φ↔Φ_s, γ↔|∇φ|, π↔K_φ, e↔ξ_C)  
 **Installation**: `pip install tnfr`
 
@@ -490,8 +490,8 @@ To cite this software:
   author = {Martinez Gamo, F. F.},
   title = {TNFR-Python-Engine: Resonant Fractal Nature Theory Implementation},
   year = {2025},
-  version = {9.7.0},
-  doi = {10.5281/zenodo.17602861},
+  version = {0.0.1},
+  doi = {10.5281/zenodo.17761312},
   url = {https://github.com/fermga/TNFR-Python-Engine}
 }
 ```
