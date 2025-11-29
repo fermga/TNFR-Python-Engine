@@ -128,7 +128,7 @@ class Invariant1_EPIOnlyThroughOperators(TNFRInvariant):
                 # For complex numbers, use magnitude
                 current_epi = abs(current_epi)
 
-            # Verificar rango válido de EPI
+            # Verify valid EPI range
             if not (epi_min <= current_epi <= epi_max):
                 violations.append(
                     InvariantViolation(
@@ -142,7 +142,7 @@ class Invariant1_EPIOnlyThroughOperators(TNFRInvariant):
                     )
                 )
 
-            # Verificar que EPI es un número finito
+            # Verify that EPI is a finite number
             if not isinstance(current_epi, (int, float)) or not math.isfinite(current_epi):
                 violations.append(
                     InvariantViolation(
@@ -212,7 +212,7 @@ class Invariant2_VfInHzStr(TNFRInvariant):
             node_data = graph.nodes[node_id]
             vf = node_data.get(VF_PRIMARY, 0.0)
 
-            # Verificar rango estructural válido (Hz_str)
+            # Verify valid structural range (Hz_str)
             if not (vf_min <= vf <= vf_max):
                 violations.append(
                     InvariantViolation(
@@ -226,7 +226,7 @@ class Invariant2_VfInHzStr(TNFRInvariant):
                     )
                 )
 
-            # Verificar que sea un número válido
+            # Verify that it's a valid number
             if not isinstance(vf, (int, float)) or not math.isfinite(vf):
                 violations.append(
                     InvariantViolation(
@@ -273,7 +273,7 @@ class Invariant5_ExplicitPhaseChecks(TNFRInvariant):
             node_data = graph.nodes[node_id]
             phase = node_data.get(THETA_PRIMARY, 0.0)
 
-            # Verificar que phase sea un número finito
+            # Verify that phase is a finite number
             if not isinstance(phase, (int, float)) or not math.isfinite(phase):
                 violations.append(
                     InvariantViolation(
@@ -290,7 +290,7 @@ class Invariant5_ExplicitPhaseChecks(TNFRInvariant):
 
             # Verificar rango de fase [0, 2π] o normalizable
             # TNFR permite fases fuera de este rango si se pueden normalizar
-            # Emitir warning si la fase no está en el rango canónico
+            # Emit warning if phase is not in canonical range
             if not (0.0 <= phase <= 2 * math.pi):
                 violations.append(
                     InvariantViolation(
@@ -304,14 +304,14 @@ class Invariant5_ExplicitPhaseChecks(TNFRInvariant):
                     )
                 )
 
-        # Verificar sincronización en nodos acoplados (edges)
+        # Verify synchronization in coupled nodes (edges)
         if hasattr(graph, "edges"):
             for edge in graph.edges():
                 node1, node2 = edge
                 phase1 = graph.nodes[node1].get(THETA_PRIMARY, 0.0)
                 phase2 = graph.nodes[node2].get(THETA_PRIMARY, 0.0)
 
-                # Verificar que ambas fases sean números finitos antes de calcular diferencia
+                # Verify that both phases are finite numbers before calculating difference
                 if not (
                     isinstance(phase1, (int, float))
                     and math.isfinite(phase1)
@@ -354,7 +354,7 @@ class Invariant3_DNFRSemantics(TNFRInvariant):
             node_data = graph.nodes[node_id]
             dnfr = node_data.get(DNFR_PRIMARY, 0.0)
 
-            # Verificar que ΔNFR es un número finito
+            # Verify that ΔNFR is a finite number
             if not isinstance(dnfr, (int, float)) or not math.isfinite(dnfr):
                 violations.append(
                     InvariantViolation(
@@ -369,9 +369,9 @@ class Invariant3_DNFRSemantics(TNFRInvariant):
                 )
 
             # Verificar que ΔNFR no se trata como error/loss gradient
-            # (esto es más conceptual, pero podemos verificar rangos razonables)
+            # (this is more conceptual, but we can verify reasonable ranges)
             if isinstance(dnfr, (int, float)) and math.isfinite(dnfr):
-                # ΔNFR excesivamente grande podría indicar tratamiento erróneo
+                # Excessively large ΔNFR could indicate erroneous treatment
                 if abs(dnfr) > 1000.0:
                     violations.append(
                         InvariantViolation(
@@ -397,7 +397,7 @@ class Invariant4_OperatorClosure(TNFRInvariant):
     def validate(self, graph: TNFRGraph) -> list[InvariantViolation]:
         violations = []
 
-        # Verificar que el grafo mantiene estado válido después de operadores
+        # Verify that graph maintains valid state after operators
         for node_id in graph.nodes():
             node_data = graph.nodes[node_id]
 
@@ -456,7 +456,7 @@ class Invariant6_NodeBirthCollapse(TNFRInvariant):
             if isinstance(dnfr, dict):
                 continue  # Skip complex structures
 
-            # Condiciones mínimas de nacimiento: νf suficiente
+            # Minimum birth conditions: sufficient νf
             if isinstance(vf, (int, float)) and vf < 0.001:
                 violations.append(
                     InvariantViolation(
@@ -521,7 +521,7 @@ class Invariant7_OperationalFractality(TNFRInvariant):
                         )
                     )
 
-                # Verificar que los sub-EPIs tienen valores válidos
+                # Verify that sub-EPIs have valid values
                 for key in ["continuous", "discrete"]:
                     if key in epi:
                         sub_epi = epi[key]
@@ -594,14 +594,14 @@ class Invariant9_StructuralMetrics(TNFRInvariant):
     def validate(self, graph: TNFRGraph) -> list[InvariantViolation]:
         violations = []
 
-        # Verificar que los nodos exponen métricas estructurales
+        # Verify that nodes expose structural metrics
         for node_id in graph.nodes():
             node_data = graph.nodes[node_id]
 
-            # Verificar métricas básicas (νf, phase ya verificados en otros invariantes)
-            # Aquí verificamos métricas derivadas si existen
+            # Verify basic metrics (νf, phase already verified in other invariants)
+            # Here we verify derived metrics if they exist
 
-            # Si hay métrica Si (sense index), verificar que es válida
+            # If Si metric (sense index) exists, verify it's valid
             if "Si" in node_data or "si" in node_data:
                 si = node_data.get("Si", node_data.get("si", 0.0))
                 if isinstance(si, (int, float)):
@@ -618,7 +618,7 @@ class Invariant9_StructuralMetrics(TNFRInvariant):
                             )
                         )
 
-        # Verificar que hay métricas globales de coherencia
+        # Verify that there are global coherence metrics
         if hasattr(graph, "graph"):
             config = graph.graph
             has_coherence_metric = (
@@ -653,7 +653,7 @@ class Invariant10_DomainNeutrality(TNFRInvariant):
         if hasattr(graph, "graph"):
             config = graph.graph
 
-            # Buscar claves que sugieran assumptions específicas de dominio
+            # Search for keys suggesting domain-specific assumptions
             domain_specific_keys = [
                 "physical_units",
                 "meters",
@@ -678,11 +678,11 @@ class Invariant10_DomainNeutrality(TNFRInvariant):
                     )
                 )
 
-        # Verificar que las unidades son estructurales (Hz_str, no Hz físicos)
+        # Verify that units are structural (Hz_str, not physical Hz)
         for node_id in graph.nodes():
             node_data = graph.nodes[node_id]
 
-            # Si hay unidades explícitas, deben ser estructurales
+            # If explicit units exist, they must be structural
             if "units" in node_data:
                 units = node_data["units"]
                 if isinstance(units, dict) and "vf" in units:

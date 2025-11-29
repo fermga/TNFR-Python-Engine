@@ -196,7 +196,7 @@ def compute_dynamic_limits(
     # Compute coherence metrics
     C_t = compute_coherence(G)
 
-    # Compute average sense index (OPTIMIZED: Backend matemático)
+    # Compute average sense index (OPTIMIZED: Mathematical backend)
     if _HAS_OPTIMIZATIONS:
         backend = get_backend()
         si_values = collect_attr(G, G.nodes, ALIAS_SI, DEFAULT_SI_FALLBACK, np=None)

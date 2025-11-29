@@ -1,19 +1,20 @@
-# 🌟 Contributing to TNFR Python Engine
+# Contributing to TNFR
 
-**Version**: 9.6.0-mathematical-purity  
-**Status**: ✅ **100% Mathematically Pure Framework**  
-**Achievement**: 🎯 **497+ Magic Numbers Eliminated**
+**Version**: 9.7.0  
+**Status**: Complete theoretical framework with Universal Tetrahedral Correspondence  
+**Authority**: Canonical constants derived from TNFR theory  
+**Quality**: Production-ready with comprehensive test coverage  
 
-Thank you for your interest in contributing to **TNFR** - the world's first **mathematically pure complex systems framework**! This document provides guidelines for contributing to the Resonant Fractal Nature Theory computational engine.
+This document provides guidelines for contributing to the TNFR (Resonant Fractal Nature Theory) project. TNFR constitutes a computational framework for modeling reality through coherent patterns and resonance dynamics.
 
-## 🧮 Mathematical Purity Requirement
+## Mathematical Foundation Requirement
 
-**CRITICAL**: All contributions must maintain **100% mathematical purity**. This means:
+All contributions must maintain theoretical consistency. Requirements:
 
-✅ **No Magic Numbers**: All parameters must derive from universal constants (φ, γ, π, e)  
-✅ **Canonical Constants Only**: Use `from tnfr.constants.canonical import *`  
-✅ **Physics-Based Design**: Trace all decisions to nodal equation or Universal Tetrahedral Correspondence  
-✅ **Grammar Compliance**: Operator sequences must satisfy U1-U6 rules
+- **Derived Parameters**: All numerical values must derive from universal constants (φ, γ, π, e)  
+- **Canonical Constants**: Use `from tnfr.constants.canonical import *`  
+- **Physics-Based Design**: Trace all decisions to nodal equation or Universal Tetrahedral Correspondence  
+- **Grammar Compliance**: Operator sequences must satisfy U1-U6 rules
 
 ## Table of Contents
 
@@ -56,18 +57,18 @@ We are committed to providing a welcoming and inclusive environment for all cont
 
 Instances of unacceptable behavior may be reported to the project maintainers. All complaints will be reviewed and investigated promptly and fairly.
 
-## 🚀 Getting Started (2025)
+## Getting Started
 
-### 📋 Prerequisites
+### Prerequisites
 
 - **Python 3.10+** (production requirement)  
-- **Mathematical mindset** (derive parameters, don't guess them)  
+- **Mathematical foundation** (theoretical derivation over empirical fitting)  
 - **TNFR theory understanding** (read [AGENTS.md](AGENTS.md) first)  
 
-### ⚡ Quick Setup
+### Development Setup
 
 ```bash
-# Install from PyPI (production-ready)
+# Install from PyPI (stable release)
 pip install tnfr[viz,dev]
 
 # Or clone for development
@@ -75,27 +76,30 @@ git clone https://github.com/fermga/TNFR-Python-Engine.git
 cd TNFR-Python-Engine
 pip install -e .[dev]
 
-# Verify mathematical purity
+# Verify installation
 python -c "from tnfr.constants.canonical import *; print(f'φ={PHI:.6f}, γ={GAMMA:.6f}')"
 ```
 
-### 🧮 Canonical Constants Requirement
+### Canonical Constants Framework
 
-**Before writing ANY code**, familiarize yourself with the canonical constants:
+All development must utilize theoretically derived canonical constants:
 
 ```python
 from tnfr.constants.canonical import *
 
-# ✅ GOOD: Use canonical constants
+# Correct: Use canonical constants
 threshold = MIN_BUSINESS_COHERENCE  # (e×φ)/(π+e) ≈ 0.751
 
-# ❌ BAD: Magic numbers
-threshold = 0.75  # Where did this come from?
+# Incorrect: Arbitrary numerical values
+threshold = 0.75  # Lacks theoretical foundation
 ```
-- Git
-- Basic understanding of TNFR concepts (see [TNFR_CONCEPTS.md](docs/source/getting-started/TNFR_CONCEPTS.md))
 
-### Development Setup
+### Additional Requirements
+
+- Git
+- Basic understanding of TNFR concepts (see [AGENTS.md](AGENTS.md))
+
+### Development Environment
 
 1. **Fork and clone the repository:**
 
@@ -217,20 +221,16 @@ See [Pull Request Process](#pull-request-process) below.
 4. **Reproducibility Always**: Every simulation must be reproducible
 5. **Document the Chain**: Theory → Math → Code → Tests
 
-### The 10 Canonical Invariants
+### The 6 Canonical Invariants
 
 **All contributions must preserve these invariants:**
 
-1. **EPI as Coherent Form** - Changes only via structural operators
-2. **Structural Units** - νf in Hz_str, never relabel
-3. **ΔNFR Semantics** - Physical reorganization gradient, not ML loss
-4. **Operator Closure** - Composition must yield valid TNFR states
-5. **Phase Verification** - No coupling without |φᵢ - φⱼ| ≤ Δφ_max check
-6. **Node Birth/Collapse** - Explicit lifecycle conditions
-7. **Operational Fractality** - EPIs can nest without losing identity
-8. **Controlled Determinism** - Stochastic but reproducible (seeds)
-9. **Structural Metrics** - Expose C(t), Si, phase, νf in telemetry
-10. **Domain Neutrality** - Trans-scale, trans-domain core
+1. **Nodal Equation Integrity** - EPI evolution via ∂EPI/∂t = νf · ΔNFR(t) only
+2. **Phase-Coherent Coupling** - Resonance requires |φᵢ - φⱼ| ≤ Δφ_max verification
+3. **Multi-Scale Fractality** - Operational fractality and nested EPI support
+4. **Grammar Compliance** - Operator sequences satisfy unified grammar U1-U6
+5. **Structural Metrology** - νf in Hz_str units, proper telemetry exposure
+6. **Reproducible Dynamics** - Deterministic evolution with seed control
 
 ### Decision Framework
 
@@ -445,11 +445,13 @@ Non-English text (including Spanish) is only permitted when:
 In those cases the surrounding explanatory context MUST still be in English.
 
 Rationale:
+
 - Ensures universal accessibility for international collaborators
 - Prevents semantic drift between multilingual fragments
 - Maintains single canonical language for physics and grammar terminology
 
 Enforcement:
+
 - Pull requests containing new non-English normative text will receive a change request
 - CI / review may add automated checks for common non-English tokens
 - Maintainers may reject contributions violating this policy regardless of technical merit until corrected

@@ -17,17 +17,17 @@ and follow the referenced sources for full derivations.
 | Physics Derivation | `TNFR.pdf` (root of repo) | Full derivation of the nodal equation, structural triad, and physical invariants. |
 | Grammar Proofs | `UNIFIED_GRAMMAR_RULES.md` | Rigorous proofs of U1–U6 from the nodal equation; sequencing constraints. |
 | Operational Guidance | `AGENTS.md` | Canonical invariants, operator discipline, learning paths. |
-| Mathematical Foundations (Formal write-up) | `docs/source/theory/mathematical_foundations.md` | Hilbert/Banach spaces, operators, spectral theory, FAQ. |
-| Computational Implementation | `src/tnfr/mathematics/README.md` | How mathematics modules are structured inside the engine. |
-| Applied Arithmetic Example | `docs/TNFR_NUMBER_THEORY_GUIDE.md` & `src/tnfr/mathematics/number_theory.py` | ΔNFR prime criterion, structural telemetry on ℕ. |
-| Field Telemetry | `docs/TNFR_FORCES_EMERGENCE.md`, `docs/grammar/U6_STRUCTURAL_POTENTIAL_CONFINEMENT.md` | Φ_s, |∇φ|, K_φ, ξ_C derivations and safety thresholds. |
-| Molecular Extension | `docs/MOLECULAR_CHEMISTRY_HUB.md` | Chemistry-as-emergence reference (maps proofs back to nodal equation). |
+| Mathematical Foundations (Formal write-up) | `src/tnfr/mathematics/README.md` | Hilbert/Banach spaces, operators, spectral theory implementation. |
+| Computational Implementation | `src/tnfr/mathematics/` modules | How mathematics modules are structured inside the engine. |
+| Applied Arithmetic Example | `src/tnfr/mathematics/number_theory.py` | ΔNFR prime criterion, structural telemetry on ℕ. |
+| Field Telemetry | `docs/TNFR_FORCES_EMERGENCE.md`, `docs/STRUCTURAL_FIELDS_TETRAD.md` | Φ_s, |∇φ|, K_φ, ξ_C derivations and safety thresholds. |
+| Molecular Chemistry Examples | `examples/` & `benchmarks/` folders | Chemistry-as-emergence demonstrations via TNFR dynamics. |
 
 ## 2. Structural Equation & Triad
 
 - **Nodal Equation**: `∂EPI/∂t = νf · ΔNFR(t)` – derived in `TNFR.pdf`, §2.
-- **Structural Triad**: (EPI, νf, φ) – defined in `AGENTS.md` (§Structural Triad) and
-  formalized mathematically in `docs/source/theory/mathematical_foundations.md` §§2–3.
+- **Structural Triad**: (EPI, νf, φ) – defined in `AGENTS.md` (§Foundational Physics) and
+  formalized mathematically in `src/tnfr/mathematics/README.md` and implementation modules.
 - **Integration Requirement**: `∫ νf(τ) · ΔNFR(τ) dτ < ∞` for bounded coherence (Grammar U2).
 
 Use this document to trace where each quantity is defined:

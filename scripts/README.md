@@ -1,10 +1,28 @@
-# TNFR Scripts
+# TNFR Scripts - Essential Utilities Only
 
-This directory contains utility scripts for maintaining the TNFR Python Engine codebase.
+This directory contains **essential utility scripts** for maintaining the TNFR Python Engine codebase. Only scripts actively used in CI/CD, build system, or core TNFR functionality are maintained here.
+
+## 📋 Essential Scripts Inventory
+
+### 🔧 **Build & Infrastructure**
+- **`windows_make.py`** - Windows shim for Makefile (used by `make.cmd`)
+- **`run_tests.sh`** - Test execution script (used in release workflow)
+
+### 🤖 **CI/CD Integration**  
+- **`check_language.py`** - English-only policy enforcement
+- **`generate_stubs.py`** - Type stub generation and synchronization
+- **`check_changelog.py`** - Changelog validation for PRs
+- **`sync-readme-docs.py`** - Documentation synchronization
+- **`verify_internal_references.py`** - Internal reference validation
+- **`run_reproducible_benchmarks.py`** - Reproducible benchmark execution
+- **`compare_manifests.py`** - Build manifest comparison
+
+### 🧮 **TNFR Tools**
+- **`tnfr_is_prime.py`** - Prime number verification using TNFR physics
+
+---
 
 ## Stub Generation (`generate_stubs.py`)
-
-Automated `.pyi` type stub generation and synchronization using `mypy.stubgen`.
 
 ### Purpose
 

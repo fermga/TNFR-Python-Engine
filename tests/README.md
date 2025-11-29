@@ -1,14 +1,15 @@
-# Test suite overview
+# TNFR Mathematical Purity Era Test Suite
 
-This document describes the purpose of tests in the suite that monitor internal debugging, diagnostic features, and performance regressions. Default `pytest` options (such as marker selection and benchmark skipping) are configured in the `[tool.pytest.ini_options]` section of `pyproject.toml`, so invocations without extra flags automatically inherit that configuration.
+This document describes the completely rewritten test suite for TNFR after achieving **497+ canonical constants** and **pure mathematical framework** status. All tests now validate mathematical purity, canonical parameter usage, and fundamental TNFR physics.
 
-## Test Organization
+## Test Organization (Mathematical Purity Era)
 
-- **unit/** - Unit tests for individual modules and components
-- **integration/** - Integration tests for combined functionality
-- **validation/** - Quantitative validation tests against theoretical predictions
-- **performance/** - Performance regression tests
-- **property/** - Property-based tests using Hypothesis
+- **mathematical_purity/** - TIER 1: Canonical constants and zero empirical fitting validation
+- **core_physics/** - TIER 2: Nodal equation, structural fields, and fundamental physics
+- **grammar_operators/** - TIER 3: Unified grammar U1-U6 and 13 canonical operators  
+- **integration/** - TIER 4: End-to-end pure TNFR engine workflows
+- **validation/** - TIER 5: Performance and regression with canonical constants
+- **archive/pre_purification/** - Archived tests from before mathematical purity achievement
 
 ## Quantitative Validation Suite
 

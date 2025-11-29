@@ -1,33 +1,37 @@
-"""Simplified SDK for non-expert TNFR users.
+"""**TNFR SDK** - Simple & Powerful API for TNFR Networks ⭐ **OPTIMIZED**
 
-This module provides a high-level, user-friendly API for creating and
-simulating TNFR networks without requiring deep knowledge of the underlying
-theory. The SDK maintains full theoretical fidelity while hiding complexity
-through fluent interfaces, pre-configured templates, and domain-specific
-patterns.
+The TNFR SDK provides an intuitive, production-ready interface for creating,
+evolving, and analyzing Resonant Fractal Networks with complete theoretical
+fidelity. Designed for both newcomers and experts.
 
-Public API
+**CORE PHILOSOPHY**: Maximum power, minimum complexity.
+
+**QUICK START**:
+```python
+from tnfr.sdk import TNFR
+
+# One-line network creation and evolution
+results = TNFR.create(10).ring().evolve(5).results()
+print(f'Coherence: {results.coherence:.3f}')
+```
+
+**PRIMARY API** ⭐ **SIMPLIFIED**:
 ----------
-TNFRNetwork
-    Fluent API for creating and evolving TNFR networks with method chaining.
-TNFRTemplates
-    Pre-configured templates for common domain-specific use cases.
-TNFRExperimentBuilder
-    Builder pattern for standard TNFR experiment workflows.
-NetworkResults
-    Structured results container for TNFR metrics and graph state.
-NetworkConfig
-    Configuration dataclass for network settings.
+**TNFR**
+    Static factory for instant network creation with method chaining.
+**Network**
+    Core network class with essential TNFR operations.
+**Results**
+    Lightweight results container with key metrics.
 
-Utilities
+**ADVANCED FEATURES**:
 ---------
-compare_networks
-    Compare metrics across multiple networks.
-compute_network_statistics
-    Compute extended statistics for a network.
-export_to_json
-    Export network data to JSON file.
-import_from_json
+**auto_optimize()**
+    One-line self-optimization using unified field analysis.
+**template(name)**
+    Pre-configured networks for common use cases.
+**compare(*networks)**
+    Multi-network analysis and comparison.
     Import network data from JSON file.
 format_comparison_table
     Format network comparison as readable table.

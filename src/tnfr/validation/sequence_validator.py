@@ -115,13 +115,13 @@ class SequenceSemanticValidator:
                         if next_op not in rule["not_followed_by"]:
                             violations.append(
                                 InvariantViolation(
-                                    invariant_id=0,  # Semántica, no invariante numérico
+                                    invariant_id=0,  # Semantic, not numeric invariant
                                     severity=rule["severity"],
                                     description=f"Semantic rule violation: {rule['message']}",
                                     suggestion=f"Consider adding one of: {rule['not_followed_by']}",
                                 )
                             )
-                    # Si es el último operador y la regla requiere algo después
+                    # If it's the last operator and the rule requires something after
                     elif next_pos == len(sequence):
                         violations.append(
                             InvariantViolation(

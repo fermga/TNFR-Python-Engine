@@ -49,8 +49,8 @@ INV_E = 1.0 / E              # 1/e ≈ 0.367879441171442
 # Frequently occurring patterns in TNFR dynamics
 PHI_MINUS_ONE = PHI - 1.0                   # φ-1 ≈ 0.618 (same as 1/φ)
 GAMMA_PI_RATIO = GAMMA / (PI + GAMMA)       # γ/(π+γ) ≈ 0.155 (euleriano-pi ratio)
-GAMMA_PHI_RATIO = GAMMA / PHI               # γ/φ ≈ 0.357 (euleriano-áureo ratio)
-PHI_GAMMA_NORMALIZED = PHI / (PHI + GAMMA)  # φ/(φ+γ) ≈ 0.737 (áurea-euleriana norm)
+GAMMA_PHI_RATIO = GAMMA / PHI               # γ/φ ≈ 0.357 (euler-golden ratio)
+PHI_GAMMA_NORMALIZED = PHI / (PHI + GAMMA)  # φ/(φ+γ) ≈ 0.737 (golden-euler norm)
 
 # Exponential decay patterns
 EXP_HALF_NEG = math.exp(-0.5)              # e^(-1/2) ≈ 0.607 (half-decay)
@@ -58,9 +58,9 @@ EXP_DOUBLE_NEG = math.exp(-2.0)            # e^(-2) ≈ 0.135 (double decay)
 EXP_PHI_NEG = math.exp(-PHI)               # e^(-φ) ≈ 0.198 (golden decay)
 
 # Semi-inverse patterns  
-HALF_INV_PHI = 1.0 / (2.0 * PHI)           # 1/(2φ) ≈ 0.309 (semi-inverse áurea)
+HALF_INV_PHI = 1.0 / (2.0 * PHI)           # 1/(2φ) ≈ 0.309 (semi-inverse golden)
 HALF_INV_PI = 1.0 / (2.0 * PI)             # 1/(2π) ≈ 0.159 (semi-inverse circular)
-INV_FOUR_PHI_SQ = 1.0 / (4.0 * PHI * PHI)  # 1/(4φ²) ≈ 0.095 (cuadrático-áureo)
+INV_FOUR_PHI_SQ = 1.0 / (4.0 * PHI * PHI)  # 1/(4φ²) ≈ 0.095 (quadratic-golden)
 
 # Transcendental differences
 PI_MINUS_E = PI - E                         # π-e ≈ 0.423 (transcendental diff)
@@ -179,31 +179,31 @@ THERAPEUTIC_EXCELLENT_CANONICAL = math.sin(PI / 3)         # sin(π/3) ≈ 0.866
 # ============================================================================
 
 # Cycle Detection Balance Constants (canonical derivations)
-CYCLE_OPTIMAL_BALANCE_CANONICAL = 1.0 / (PI + 1.0)         # 1/(π+1) ≈ 0.2415 (balance áureo)
-CYCLE_BALANCE_RANGE_LOW_CANONICAL = -GAMMA / (E + PI)       # -γ/(e+π) ≈ -0.0985 (límite inferior)
-CYCLE_BALANCE_RANGE_HIGH_CANONICAL = PHI / (E + GAMMA)      # φ/(e+γ) ≈ 0.4910 (límite superior)
-CYCLE_BALANCE_MULTIPLIER_CANONICAL = PHI                    # φ ≈ 1.6180 (multiplicador áureo)
+CYCLE_OPTIMAL_BALANCE_CANONICAL = 1.0 / (PI + 1.0)         # 1/(π+1) ≈ 0.2415 (golden balance)
+CYCLE_BALANCE_RANGE_LOW_CANONICAL = -GAMMA / (E + PI)       # -γ/(e+π) ≈ -0.0985 (lower limit)
+CYCLE_BALANCE_RANGE_HIGH_CANONICAL = PHI / (E + GAMMA)      # φ/(e+γ) ≈ 0.4910 (upper limit)
+CYCLE_BALANCE_MULTIPLIER_CANONICAL = PHI                    # φ ≈ 1.6180 (golden multiplier)
 CYCLE_FALLBACK_SCORE_CANONICAL = PI / (PI + E)             # π/(π+e) ≈ 0.5359 (score fallback)
-CYCLE_MIN_HEALTH_CANONICAL = PHI / (E + GAMMA)             # φ/(e+γ) ≈ 0.4910 (salud mínima)
+CYCLE_MIN_HEALTH_CANONICAL = PHI / (E + GAMMA)             # φ/(e+γ) ≈ 0.4910 (minimum health)
 
 # Pattern Weight Constants (canonical structural multipliers)
-PATTERN_BASE_WEIGHT_CANONICAL = 1.0                        # 1.0 (unidad canónica)
-PATTERN_THERAPEUTIC_WEIGHT_CANONICAL = PHI / GAMMA         # φ/γ ≈ 2.8032 (boost terapéutico)
+PATTERN_BASE_WEIGHT_CANONICAL = 1.0                        # 1.0 (canonical unit)
+PATTERN_THERAPEUTIC_WEIGHT_CANONICAL = PHI / GAMMA         # φ/γ ≈ 2.8032 (therapeutic boost)
 PATTERN_EDUCATIONAL_WEIGHT_CANONICAL = PHI / (PHI + GAMMA) # φ/(φ+γ) ≈ 0.7371 (boost educacional)
 PATTERN_ORGANIZATIONAL_WEIGHT_CANONICAL = GAMMA / (PI + GAMMA)  # γ/(π+γ) ≈ 0.1552 (boost organizacional)
 PATTERN_CREATIVE_WEIGHT_CANONICAL = PHI / (PHI + GAMMA)    # φ/(φ+γ) ≈ 0.7371 (mismo que educacional)
 PATTERN_REGENERATIVE_WEIGHT_CANONICAL = PHI / E            # φ/e ≈ 0.5952 (boost regenerativo)
-PATTERN_BOOTSTRAP_WEIGHT_CANONICAL = 1.0 + GAMMA/(PI*E)   # 1+γ/(π×e) ≈ 1.0676 (boost mínimo)
+PATTERN_BOOTSTRAP_WEIGHT_CANONICAL = 1.0 + GAMMA/(PI*E)   # 1+γ/(π×e) ≈ 1.0676 (minimum boost)
 PATTERN_EXPLORE_WEIGHT_CANONICAL = PATTERN_BOOTSTRAP_WEIGHT_CANONICAL  # Mismo que bootstrap
-PATTERN_STABILIZE_WEIGHT_CANONICAL = PHI / (PHI + 1.0)     # φ/(φ+1) ≈ 0.6180 (estabilización)
+PATTERN_STABILIZE_WEIGHT_CANONICAL = PHI / (PHI + 1.0)     # φ/(φ+1) ≈ 0.6180 (stabilization)
 PATTERN_COMPLEX_WEIGHT_CANONICAL = PATTERN_STABILIZE_WEIGHT_CANONICAL   # Mismo que estabilizar
-PATTERN_COMPRESS_WEIGHT_CANONICAL = 1.0 - GAMMA/(PI*E)    # 1-γ/(π×e) ≈ 0.9324 (compresión)
-PATTERN_LINEAR_WEIGHT_CANONICAL = GAMMA / PI               # γ/π ≈ 0.1837 (lineal mínimo)
+PATTERN_COMPRESS_WEIGHT_CANONICAL = 1.0 - GAMMA/(PI*E)    # 1-γ/(π×e) ≈ 0.9324 (compression)
+PATTERN_LINEAR_WEIGHT_CANONICAL = GAMMA / PI               # γ/π ≈ 0.1837 (linear minimum)
 
 # Algebraic Tolerance Constants (canonical precision parameters)
-ALGEBRA_EPI_TOLERANCE_CANONICAL = GAMMA / (PI * E * PHI)   # γ/(π×e×φ) ≈ 0.0418 (precisión EPI)
-ALGEBRA_VF_TOLERANCE_CANONICAL = GAMMA / (PI + E)          # γ/(π+e) ≈ 0.0985 (precisión νf)
-ALGEBRA_COMBINED_TOLERANCE_CANONICAL = GAMMA / (E * PI * PHI)  # γ/(e×π×φ) ≈ 0.0418 (precisión combinada)
+ALGEBRA_EPI_TOLERANCE_CANONICAL = GAMMA / (PI * E * PHI)   # γ/(π×e×φ) ≈ 0.0418 (EPI precision)
+ALGEBRA_VF_TOLERANCE_CANONICAL = GAMMA / (PI + E)          # γ/(π+e) ≈ 0.0985 (νf precision)
+ALGEBRA_COMBINED_TOLERANCE_CANONICAL = GAMMA / (E * PI * PHI)  # γ/(e×π×φ) ≈ 0.0418 (combined precision)
 
 # ============================================================================
 # PHASE 5: MATHEMATICS AND PHYSICS CONSTANTS (Advanced Systems Canonicalization)
@@ -214,19 +214,19 @@ MATH_DELTA_NFR_THRESHOLD_CANONICAL = GAMMA / (E * PI)       # γ/(e×π) ≈ 0.0
 MATH_DELTA_NFR_THRESHOLD_2X_CANONICAL = 2 * GAMMA / (E * PI)  # 2γ/(e×π) ≈ 0.1352 (emergent patterns threshold)
 
 # Physics/Calibration Constants (network topology correlations)
-PHYSICS_CONFIDENCE_LEVEL_CANONICAL = PHI / (PHI + GAMMA)    # φ/(φ+γ) ≈ 0.7371 (confianza áurea)
-PHYSICS_EXPECTED_CORRELATION_WS_CANONICAL = GAMMA / (PI + E)  # γ/(π+e) ≈ 0.0985 (correlación esperada WS)
-PHYSICS_CORRELATION_STD_WS_CANONICAL = GAMMA / (E + PHI - PI)  # γ/(e+φ-π) ≈ 0.3476 (desviación estándar WS)
+PHYSICS_CONFIDENCE_LEVEL_CANONICAL = PHI / (PHI + GAMMA)    # φ/(φ+γ) ≈ 0.7371 (golden confidence)
+PHYSICS_EXPECTED_CORRELATION_WS_CANONICAL = GAMMA / (PI + E)  # γ/(π+e) ≈ 0.0985 (expected WS correlation)
+PHYSICS_CORRELATION_STD_WS_CANONICAL = GAMMA / (E + PHI - PI)  # γ/(e+φ-π) ≈ 0.3476 (WS standard deviation)
 PHYSICS_N_NODES_DEPENDENCY_CANONICAL = GAMMA / (PI * E * PHI)  # γ/(π×e×φ) ≈ 0.0418 (dependencia de nodos)
 PHYSICS_K_DEGREE_DEPENDENCY_CANONICAL = -GAMMA / (PI + GAMMA)  # -γ/(π+γ) ≈ -0.1552 (dependencia grado negativa)
 PHYSICS_P_REWIRE_DEPENDENCY_CANONICAL = GAMMA / (PI + E + GAMMA)  # γ/(π+e+γ) ≈ 0.0890 (dependencia rewiring)
 PHYSICS_M_ATTACH_DEPENDENCY_CANONICAL = GAMMA / (E + PHI)   # γ/(e+φ) ≈ 0.1310 (dependencia attachment)
-PHYSICS_EXPECTED_CORRELATION_BA_CANONICAL = GAMMA / (PI + E)  # γ/(π+e) ≈ 0.0985 (correlación Barabási-Albert)
-PHYSICS_EXPECTED_CORRELATION_GRID_CANONICAL = GAMMA / (PI + E + PHI)  # γ/(π+e+φ) ≈ 0.0759 (correlación grid)
+PHYSICS_EXPECTED_CORRELATION_BA_CANONICAL = GAMMA / (PI + E)  # γ/(π+e) ≈ 0.0985 (Barabási-Albert correlation)
+PHYSICS_EXPECTED_CORRELATION_GRID_CANONICAL = GAMMA / (PI + E + PHI)  # γ/(π+e+φ) ≈ 0.0759 (grid correlation)
 
 # Dynamics/Adelic Constants (temporal evolution and resonance)
-DYNAMICS_ADELIC_DRIFT_CANONICAL = GAMMA / (E + PI)         # γ/(e+π) ≈ 0.0985 (deriva adélica)
-DYNAMICS_ADELIC_DT_STEP_CANONICAL = GAMMA / (PI * E * PHI)  # γ/(π×e×φ) ≈ 0.0418 (paso temporal adélico)
+DYNAMICS_ADELIC_DRIFT_CANONICAL = GAMMA / (E + PI)         # γ/(e+π) ≈ 0.0985 (adelic drift)
+DYNAMICS_ADELIC_DT_STEP_CANONICAL = GAMMA / (PI * E * PHI)  # γ/(π×e×φ) ≈ 0.0418 (adelic time step)
 
 # Dynamics/Adaptation Constants (adaptive structural evolution)
 DYNAMICS_SI_HI_THRESHOLD_CANONICAL = PHI / (PHI + 1.0)     # φ/(φ+1) ≈ 0.6180 (threshold Si alto)
@@ -714,7 +714,7 @@ def print_canonical_summary() -> None:
     print(f"  |K_φ| threshold: {K_PHI_THRESHOLD:.6f}")
     print()
     
-    print("PHASE 8 SDK & Extensions Constants:")
+    print("PHASE 8 SDK & Visualization Constants:")
     print(f"  SDK rewiring prob: {SDK_REWIRING_PROB_DEFAULT:.6f}")
     print(f"  Medical NF moderate: {MEDICAL_NF_MODERATE:.6f}")
     print(f"  Business coherence baseline: {BUSINESS_COHERENCE_BASELINE:.6f}")
@@ -722,7 +722,7 @@ def print_canonical_summary() -> None:
 
 
 # ============================================================================
-# PHASE 8: SDK & EXTENSIONS CONSTANTS
+# PHASE 8: SDK & VISUALIZATION CONSTANTS
 # ============================================================================
 
 # SDK Network Builder Constants (canonical network construction parameters)

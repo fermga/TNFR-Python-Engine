@@ -270,28 +270,28 @@ pytest -m performance tests/performance
 
 ## Invariant Tests
 
-These tests validate TNFR canonical invariants. For complete invariant definitions and physics, see **[AGENTS.md § Canonical Invariants](AGENTS.md#-canonical-invariants-never-break)**.
+These tests validate the 6 TNFR canonical invariants. For complete invariant definitions and physics, see **[AGENTS.md § Canonical Invariants](AGENTS.md#canonical-invariants)**.
 
-### Invariant 1: EPI Changes Only Through Operators
+### Invariant 1: Nodal Equation Integrity
 
 ```python
-def test_epi_only_changes_via_operators():
-    """EPI should only change through structural operators."""
+def test_nodal_equation_integrity():
+    """EPI evolution must follow ∂EPI/∂t = νf · ΔNFR(t) only."""
     G, node = create_nfr("test", epi=1.0, vf=1.0)
     initial_epi = G.nodes[node]["epi"].copy()
     
-    # Direct mutation should not happen
-    # Only operator application should change EPI
+    # Changes occur only via structural operators
+    # Validates nodal equation constraint
     apply_operator(G, node, "coherence")
     
     assert not np.array_equal(G.nodes[node]["epi"], initial_epi)
 ```
 
-### Invariant 2: Structural Frequency in Hz_str
+### Invariant 5: Structural Metrology
 
 ```python
-def test_vf_preserved_in_hz_str():
-    """Structural frequency should remain in Hz_str units."""
+def test_structural_metrology_units():
+    """Structural frequency must remain in Hz_str units with proper telemetry."""
     G, node = create_nfr("test", epi=1.0, vf=2.5)
     
     apply_operator(G, node, "mutation")
@@ -566,4 +566,4 @@ pytest -W error
 ---
 
 **Last Updated**: November 2025  
-**Version**: 1.0
+**Version**: 9.7.0

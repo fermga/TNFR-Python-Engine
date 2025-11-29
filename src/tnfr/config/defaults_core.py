@@ -56,7 +56,7 @@ class CoreDefaults:
     CLIP_SOFT_K: float = PI  # π ≈ 3.14159 (geometric steepness for smooth transitions)
     DNFR_WEIGHTS: dict[str, float] = field(
         default_factory=lambda: {
-            "phase": round(PHI_GAMMA_NORMALIZED, 3),      # φ/(φ+γ) ≈ 0.737 (áurea-euleriana dominante)
+            "phase": round(PHI_GAMMA_NORMALIZED, 3),      # φ/(φ+γ) ≈ 0.737 (dominant golden-euler)
             "epi": round(GAMMA_PI_RATIO, 3),             # γ/(π+γ) ≈ 0.155 (euleriana-pi estabilizadora)
             "vf": round(PI_MINUS_E_OVER_PI * (2 / 3), 3),   # ((π-e)/π) * (2/3) ≈ 0.089 (transcendental moderada)
             "topo": 0.0,                                 # Topological weight remains zero
@@ -64,13 +64,13 @@ class CoreDefaults:
     )
     SI_WEIGHTS: dict[str, float] = field(
         default_factory=lambda: {
-            "alpha": round(PHI_GAMMA_NORMALIZED, 3),     # φ/(φ+γ) ≈ 0.737 (coherencia áurea)
+            "alpha": round(PHI_GAMMA_NORMALIZED, 3),     # φ/(φ+γ) ≈ 0.737 (golden coherence)
             "beta": round(GAMMA_PI_RATIO, 3),            # γ/(π+γ) ≈ 0.155 (estabilidad euleriana)
             "gamma": round(GAMMA / (PHI * PI), 3)  # γ/(φ×π) ≈ 0.113 (tetrahedral reorganization via Euler constant constrained by golden-geometric product)
         }
     )
-    PHASE_K_GLOBAL: float = round(GAMMA_OVER_PI_PLUS_E / 2, 4)  # γ/(π+e) / 2 ≈ 0.0495 (global phase coupling canónico)
-    PHASE_K_LOCAL: float = round(GAMMA_PI_RATIO, 3)            # γ/(π+γ) ≈ 0.155 (local phase coupling canónico)
+    PHASE_K_GLOBAL: float = round(GAMMA_OVER_PI_PLUS_E / 2, 4)  # γ/(π+e) / 2 ≈ 0.0495 (canonical global phase coupling)
+    PHASE_K_LOCAL: float = round(GAMMA_PI_RATIO, 3)            # γ/(π+γ) ≈ 0.155 (canonical local phase coupling)
     PHASE_ADAPT: dict[str, Any] = field(
         default_factory=lambda: {
             "enabled": True,
@@ -100,8 +100,8 @@ class CoreDefaults:
         default_factory=lambda: {
             "AL_boost": AL_BOOST_CANONICAL,  # 1/(π×e) ≈ 0.1171 (transcendental emission)
             "EN_mix": EN_MIX_FACTOR,  # 1/(π+1) ≈ 0.2413 (canonical reception mixing)
-            "IL_dnfr_factor": round(PHI_GAMMA_NORMALIZED, 3),  # φ/(φ+γ) ≈ 0.737 (coherencia áurea)
-            "OZ_dnfr_factor": round(NUL_DENSIFICATION_FACTOR, 3),  # φ/γ ≈ 2.803 (disonancia áurea)
+            "IL_dnfr_factor": round(PHI_GAMMA_NORMALIZED, 3),  # φ/(φ+γ) ≈ 0.737 (golden coherence)
+            "OZ_dnfr_factor": round(NUL_DENSIFICATION_FACTOR, 3),  # φ/γ ≈ 2.803 (golden dissonance)
             "UM_theta_push": UM_THETA_PUSH,  # 1/(π+1) ≈ 0.2413 (canonical coupling phase push)
             "UM_vf_sync": 0.10,
             "UM_dnfr_reduction": 0.15,

@@ -4,45 +4,68 @@
 [![PyPI version](https://badge.fury.io/py/tnfr.svg)](https://pypi.org/project/tnfr/)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Mathematical Purity: 100%](https://img.shields.io/badge/Mathematical%20Purity-100%25-gold.svg)](MAGIC_NUMBERS_SEARCH_COMPLETE_FINAL_REPORT.md)
 
-**Canonical computational implementation of TNFR** - A paradigm shift from modeling "things" to modeling **coherent patterns that persist through resonance**.
+**Computational implementation of Resonant Fractal Nature Theory (TNFR)** - A framework for modeling coherent patterns in networked systems.
 
-## 🌟 MATHEMATICAL PURITY ACHIEVED ✨
+**Version**: 9.7.0 (November 29, 2025)  
+**Foundation**: Universal Tetrahedral Correspondence (φ↔Φ_s, γ↔|∇φ|, π↔K_φ, e↔ξ_C)  
+**Installation**: `pip install tnfr`
 
-**Historic Achievement**: ✅ **497+ Magic Numbers Eliminated**  
-**Status**: 🎯 **100% Mathematically Pure Framework**  
-**Foundation**: 🧮 **Universal Tetrahedral Correspondence** (φ↔Φ_s, γ↔|∇φ|, π↔K_φ, e↔ξ_C)
+## Getting Started
 
-TNFR Engine is now **completely free of empirical constants** - every parameter derives from the **4 universal mathematical relationships** that govern coherent reality. This represents the **first computationally complete implementation** of a complex systems theory with **zero empirical tuning**.
+### New to TNFR?
 
-📊 **[Full Canonicalization Report](MAGIC_NUMBERS_SEARCH_COMPLETE_FINAL_REPORT.md)** - Detailed journey from 497+ magic numbers to mathematical purity.
+1. **Installation**: `pip install tnfr`
+2. **Learn the basics**: Read [AGENTS.md](AGENTS.md) (complete theory reference)
+3. **Run examples**: Start with `python examples/01_hello_world.py`
+4. **API reference**: See [theory/GLOSSARY.md](theory/GLOSSARY.md) for operational definitions
+
+### Key Concepts to Understand
+
+- **Nodal Equation**: `∂EPI/∂t = νf · ΔNFR(t)` - fundamental evolution law
+- **Structural Operators**: 13 canonical operators for system modification
+- **Grammar Rules**: U1-U6 constraints derived from physics
+- **Structural Fields**: Four canonical telemetry fields (Φ_s, |∇φ|, K_φ, ξ_C)
+
+### Learning Path
+
+**Beginner** (2 hours):
+1. Install TNFR: `pip install tnfr`
+2. Read [AGENTS.md](AGENTS.md) - theoretical foundation
+3. Run `python examples/01_hello_world.py`
+
+**Intermediate** (1 week):
+1. Study [theory/UNIFIED_GRAMMAR_RULES.md](theory/UNIFIED_GRAMMAR_RULES.md) - physics derivations
+2. Work through [examples/](examples/) sequential tutorials
+3. Explore [src/tnfr/physics/fields.py](src/tnfr/physics/fields.py) - field implementations
+
+**Advanced** (ongoing):
+1. Complete theoretical study: [theory/FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md](theory/FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md)
+2. Architecture understanding: [ARCHITECTURE.md](ARCHITECTURE.md)
+3. Contribute following [CONTRIBUTING.md](CONTRIBUTING.md)
 
 ## What is TNFR?
 
-**Resonant Fractal Nature Theory** proposes a radical reconceptualization of reality based on the **Universal Tetrahedral Correspondence** between the 4 fundamental mathematical constants of the universe and the 4 structural fields that emerge from TNFR formalism.
+**Resonant Fractal Nature Theory** models reality as coherent patterns that persist through resonance mechanisms. The framework establishes correspondence between four universal mathematical constants (φ, γ, π, e) and four structural fields that characterize networked systems.
 
-**📖 For complete theoretical foundation, see [AGENTS.md](AGENTS.md) - Single Source of Truth. Detailed mathematical treatment: [FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md](FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md)**
+**Core Principle**: Systems are modeled as patterns that exist through resonant coupling with their environment rather than as discrete objects with independent properties.
 
-**Traditional View** → **TNFR View**:
+**Theoretical Foundation**: [AGENTS.md](AGENTS.md) - Complete theory reference  
+**Mathematical Details**: [theory/FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md](theory/FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md)  
+**Theory Hub**: [theory/README.md](theory/README.md) - Comprehensive theoretical documentation  
+**Implementation**: This repository provides computational tools for TNFR analysis
 
-- Objects exist independently → **Patterns exist through resonance**
-- Causality (A causes B) → **Co-organization (A and B synchronize)**
-- Static properties → **Dynamic reorganization**
-- Isolated systems → **Coupled networks**
-- Descriptive models → **Generative dynamics**
-
-Reality is not made of "things" but of **coherence**—structures that persist in networks because they **resonate** with their environment through **4 fundamental correspondences**: φ↔Φ_s, γ↔|∇φ|, π↔K_φ, e↔ξ_C.
+**Modeling Approach**:
+- **Patterns** rather than objects
+- **Resonant coupling** rather than causality
+- **Dynamic reorganization** rather than static properties
+- **Network coherence** rather than isolated systems
 
 ## Key Features
 
-### 🎯 The 13 Structural Operators
+### The 13 Canonical Structural Operators
 
-The complete TNFR operator set for modeling coherent structural dynamics.
-
-**Canonical Status**: The operator set is **complete and immutable** - exactly these 13 operators with rigorous mathematical foundations. Each operator has specific physics, contracts, and grammar rules.
-metaclass telemetry and reload scripts were removed (see CHANGELOG 9.1.0).
-All structural evolution MUST occur through this fixed set (grammar U1-U4).
+TNFR provides a complete set of 13 operators for modeling structural dynamics. All system evolution occurs through these operators according to unified grammar rules (U1-U6).
 
 - **AL (Emission)** - Pattern creation from vacuum
 - **EN (Reception)** - Information capture and integration
@@ -58,44 +81,88 @@ All structural evolution MUST occur through this fixed set (grammar U1-U4).
 - **NAV (Transition)** - Regime shift, state changes
 - **REMESH (Recursivity)** - Multi-scale fractal operations
 
-### 📏 Unified Grammar (U1-U6)
+### Unified Grammar (U1-U6)
 
-Rigorous physics-derived rules ensuring structural validity:
+Physics-derived constraints for valid operator sequences:
 
 - **U1**: Structural Initiation & Closure
 - **U2**: Convergence & Boundedness
 - **U3**: Resonant Coupling (phase verification)
 - **U4**: Bifurcation Dynamics
-- **U5**: Frequency Constraints
-- **U6**: Sequential Composition
+- **U5**: Multi-Scale Coherence
+- **U6**: Structural Potential Confinement
 
-### 🔬 Four Canonical Fields
+**Reference**: [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) for complete derivations
 
-Essential structural field computations:
+### Structural Field Tetrad (Canonical)
 
-- **Φ_s**: Structural potential
-- **|∇φ|**: Phase gradient (reorganization pressure)
-- **K_φ**: Phase curvature (bifurcation predictor)
-- **ξ_C**: Coherence length (network correlation scale)
+Four fields characterizing system state:
 
-### 📊 Telemetry & Metrics
+- **Φ_s**: Structural potential (global field)
+- **|∇φ|**: Phase gradient (local desynchronization)
+- **K_φ**: Phase curvature (geometric confinement)
+- **ξ_C**: Coherence length (spatial correlations)
 
-Comprehensive observability:
+**Implementation**: `tnfr.physics.fields`  
+**Documentation**: [docs/STRUCTURAL_FIELDS_TETRAD.md](docs/STRUCTURAL_FIELDS_TETRAD.md)
+
+### TNFR Engines Hub
+
+Centralized mathematical and optimization engines for advanced TNFR applications:
+
+#### **Self-Optimization Engine** (`tnfr.engines.self_optimization`)
+- **TNFRSelfOptimizingEngine**: Automatic network optimization using TNFR operators
+- **Physics**: Based on ∂EPI/∂t = νf · ΔNFR(t) nodal equation
+- **Capabilities**: Smart node targeting, multi-operator optimization, real-time metrics
+- **Usage**: Direct engine or via SDK `auto_optimize()`
+
+#### **Pattern Discovery Engines** (`tnfr.engines.pattern_discovery`)
+- **TNFREmergentPatternEngine**: Mathematical pattern detection and emergence analysis
+- **UnifiedPatternDetector**: Operator sequence pattern recognition
+- **Discoveries**: Eigenmodes, spectral cascades, fractal scaling, symmetry breaking
+- **Applications**: Research insights, system analysis, predictive modeling
+
+#### **Computation Engines** (`tnfr.engines.computation`)
+- **GPUEngine**: GPU-accelerated TNFR computations for high-performance analysis
+- **FFTEngine**: Fast Fourier Transform processing for spectral analysis
+- **Performance**: Parallel processing, optimized algorithms
+
+#### **Integration Engines** (`tnfr.engines.integration`)
+- **EmergentIntegrationEngine**: Multi-scale analysis and hierarchical coupling
+- **Capabilities**: Cross-scale information flow, emergent behavior detection
+
+**Quick Usage**:
+```python
+# Via SDK (recommended)
+from tnfr.sdk import TNFR
+net = TNFR.create(50).random(0.3).auto_optimize()
+
+# Direct engine access
+from tnfr.engines.self_optimization import TNFRSelfOptimizingEngine
+engine = TNFRSelfOptimizingEngine(network)
+success, metrics = engine.step(node_id)
+```
+
+**Documentation**: [src/tnfr/engines/README.md](src/tnfr/engines/README.md)
+
+### Core Metrics
+
+Structural system telemetry:
 
 - **C(t)**: Total coherence [0, 1]
 - **Si**: Sense index (reorganization capacity)
-- **ΔNFR**: Reorganization gradient
+- **ΔNFR**: Internal reorganization operator
 - **νf**: Structural frequency (Hz_str)
 - **φ**: Phase synchrony [0, 2π]
 
-### 🧪 Phase 3 Structural Instrumentation
+### Validation & Health Monitoring
 
-Unified observability and safety layers (read-only):
+Structural validation and monitoring tools:
 
-- `run_structural_validation` combines grammar (U1-U4) + field thresholds.
-- `compute_structural_health` converts validation output to recommendations.
-- `TelemetryEmitter` streams coherence, sense index, Φ_s, |∇φ|, K_φ, ξ_C.
-- `PerformanceRegistry` + `perf_guard` measure overhead (< ~8% in tests).
+- `run_structural_validation`: Grammar validation with field thresholds
+- `compute_structural_health`: Health assessment and recommendations
+- `TelemetryEmitter`: Comprehensive telemetry streaming
+- `PerformanceRegistry`: Performance monitoring
 
 Usage:
 
@@ -180,12 +247,13 @@ pip install -e ".[compute-torch]"  # PyTorch backend
 
 ## Quick Start
 
-### Hello World (3 lines!)
+### Basic Usage
 
 ```python
 from tnfr.sdk import TNFRNetwork
 
-network = TNFRNetwork("hello_world")
+# Create and configure network
+network = TNFRNetwork("example")
 network.add_nodes(10).connect_nodes(0.3, "random")
 results = network.apply_sequence("basic_activation", repeat=3).measure()
 
@@ -233,39 +301,24 @@ python examples/domain_applications/biological_patterns.py
 
 ## Documentation
 
-**📚 [Complete Documentation](https://fermga.github.io/TNFR-Python-Engine/)** - Full API reference, tutorials, and theory
+**Complete Documentation**: [fermga.github.io/TNFR-Python-Engine](https://fermga.github.io/TNFR-Python-Engine/)
 
-**🎓 Key Resources**:
+### Essential References
 
-- **[Getting Started Guide](docs/source/getting-started/)** - Installation and first steps
-- **[TNFR Fundamental Concepts](docs/source/getting-started/TNFR_CONCEPTS.md)** - Core theory primer
-- **[API Reference](docs/source/api/)** - Complete module documentation
-- **[Examples](examples/)** - Domain applications and use cases
-- **[Grammar System](docs/grammar/)** - Unified grammar (U1-U6) reference
-- **[AGENTS.md](AGENTS.md)** - Developer guide for contributing to TNFR
-- **[Architecture](ARCHITECTURE.md)** - System design and structure
+**Theory & Foundations**:
+- **[AGENTS.md](AGENTS.md)** - Complete TNFR theory and development guide
+- **[UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md)** - Grammar physics (U1-U6)
+- **[FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md](FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md)** - Mathematical foundations
 
-**🔬 Advanced Topics**:
+**Implementation**:
+- **[ARCHITECTURE.md](ARCHITECTURE.md)** - System design and structure
+- **[docs/STRUCTURAL_FIELDS_TETRAD.md](docs/STRUCTURAL_FIELDS_TETRAD.md)** - Field specifications
+- **[GLOSSARY.md](GLOSSARY.md)** - Operational reference
 
-## 📚 Canonical Documentation (Single Source of Truth)
-
-### 🏆 PRIMARY SOURCES
-- **[AGENTS.md](AGENTS.md)** - 🌟 **ULTIMATE SINGLE SOURCE OF TRUTH**
-  - Complete TNFR theory + Universal Tetrahedral Correspondence
-  - 497+ canonical constants achievement + development guidelines
-- **[CANONICAL_DOCUMENTATION_MANIFEST.md](CANONICAL_DOCUMENTATION_MANIFEST.md)** - 📋 **DOCUMENTATION AUTHORITY**
-  - Single source of truth hierarchy + eliminated duplicates inventory
-- **[MAGIC_NUMBERS_SEARCH_COMPLETE_FINAL_REPORT.md](MAGIC_NUMBERS_SEARCH_COMPLETE_FINAL_REPORT.md)** - 🎯 **Mathematical purity journey**
-
-### 🔧 IMPLEMENTATION AUTHORITY
-- **[src/tnfr/constants/canonical.py](src/tnfr/constants/canonical.py)** - 🧮 **497+ universal constants**
-- **[UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md)** - 📐 **Grammar physics (U1-U6)**
-- **[ARCHITECTURE.md](ARCHITECTURE.md)** - 🏗️ **System design (2025 mathematical purity era)**
-
-### 📖 SUPPORTING REFERENCES
-- **[DOCUMENTATION_INDEX.md](DOCUMENTATION_INDEX.md)** - Navigation guide
-- **[CONTRIBUTING.md](CONTRIBUTING.md)** - Development workflow (canonical requirements)
-- **[docs/STRUCTURAL_FIELDS_TETRAD.md](docs/STRUCTURAL_FIELDS_TETRAD.md)** - Tetrad technical specs
+**Development**:
+- **[CONTRIBUTING.md](CONTRIBUTING.md)** - Development workflow
+- **[examples/](examples/)** - Usage examples and tutorials
+- **[TESTING.md](TESTING.md)** - Test requirements
 
 ## Repository Structure
 
@@ -336,16 +389,14 @@ pip-audit
 
 See **[REPO_OPTIMIZATION_PLAN.md](docs/REPO_OPTIMIZATION_PLAN.md)** for cleanup routines and targeted test bundles.
 
-## Performance
-
-Grammar 2.0 optimizations deliver:
+## Performance Characteristics
 
 - **Sequence validation**: <1ms for typical sequences (10-20 operators)
 - **Coherence computation**: O(N) for N nodes
 - **Phase gradient**: O(E) for E edges
 - **Memory footprint**: ~50MB for 10k-node networks
 
-See **[tools/performance/](tools/performance/)** for benchmarking tools.
+Benchmarking tools: [tools/performance/](tools/performance/)
 
 Note on Python executable for local runs
 
@@ -417,36 +468,35 @@ Get-Content .\benchmark_results.json | ConvertFrom-Json |
 
 ## Contributing
 
-We welcome contributions! Please see **[CONTRIBUTING.md](CONTRIBUTING.md)** for:
+See [CONTRIBUTING.md](CONTRIBUTING.md) for:
 
-- Code of conduct
 - Development workflow
 - Testing requirements
 - Documentation standards
 - Pull request process
 
-**For TNFR theory development**, consult **[AGENTS.md](AGENTS.md)** - the canonical guide for maintaining theoretical integrity.
+**Theoretical development**: Follow guidelines in [AGENTS.md](AGENTS.md) for maintaining theoretical integrity.
 
-**For mathematical foundations and tetrad fields**, see:
-- **[docs/STRUCTURAL_FIELDS_TETRAD.md](docs/STRUCTURAL_FIELDS_TETRAD.md)** - Complete tetrad physics and thresholds
-- **[docs/STRUCTURAL_HEALTH.md](docs/STRUCTURAL_HEALTH.md)** - Health monitoring and validation
+**Technical references**:
+- [docs/STRUCTURAL_FIELDS_TETRAD.md](docs/STRUCTURAL_FIELDS_TETRAD.md) - Field specifications
+- [TESTING.md](TESTING.md) - Test requirements
 
 ## Citation
 
-If you use TNFR in your research, please cite:
+To cite this software:
 
 ```bibtex
 @software{tnfr_python_engine,
   author = {Martinez Gamo, F. F.},
   title = {TNFR-Python-Engine: Resonant Fractal Nature Theory Implementation},
   year = {2025},
-  version = {9.0.2},
+  version = {9.7.0},
   doi = {10.5281/zenodo.17602861},
   url = {https://github.com/fermga/TNFR-Python-Engine}
 }
 ```
 
-See **[CITATION.cff](CITATION.cff)** for machine-readable citation metadata.
+See [CITATION.cff](CITATION.cff) for machine-readable citation metadata.
 
 ## License
 
@@ -459,14 +509,12 @@ This project is licensed under the **MIT License** - see [LICENSE.md](LICENSE.md
 - **PyPI**: [pypi.org/project/tnfr](https://pypi.org/project/tnfr/)
 - **Documentation**: [fermga.github.io/TNFR-Python-Engine](https://fermga.github.io/TNFR-Python-Engine/)
 
-## Acknowledgments
+## Development Philosophy
 
-TNFR represents a fundamental reconceptualization of modeling approaches, prioritizing **coherence over objects**, **resonance over causality**, and **structural dynamics over static properties**.
+TNFR implements a modeling approach based on:
+- **Coherence** rather than objects
+- **Resonance** rather than causality  
+- **Dynamic reorganization** rather than static properties
+- **Network patterns** rather than isolated entities
 
-**Latest Achievement**: The **14-Engine Unified Optimization Ecosystem** demonstrates that computational performance improvements can emerge **inevitably from mathematical structure** rather than requiring engineering optimization tricks. This achievement completes the computational embodiment of TNFR's theoretical foundation.
-
-**Think in patterns, not objects. Think in dynamics, not states. Think in networks, not individuals.**
-
----
-
-**Reality is not made of things—it's made of resonance. Code accordingly.**
+Development follows theoretical foundations established in [AGENTS.md](AGENTS.md) with adherence to canonical invariants and unified grammar constraints.

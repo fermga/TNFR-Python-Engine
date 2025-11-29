@@ -1,364 +1,176 @@
-# 🌟 TNFR Examples - Interactive Learning Hub
+# 🌟 TNFR Examples - Modern Learning Hub
 
-**Welcome to the ultimate TNFR examples collection!** Each example is carefully crafted to demonstrate core TNFR concepts with production-quality code.
+**Purpose**: Production-quality examples demonstrating TNFR theory through the lens of the **nodal equation** `∂EPI/∂t = νf · ΔNFR(t)`.
 
----
-
-## 🚀 Quick Start (Choose Your Path)
-
-### 👶 **Complete Beginner**
-```bash
-python hello_world.py                    # 3-line TNFR introduction
-python tnfr_prime_checker.ipynb         # Interactive prime number analysis
-python basic_network_dynamics.py        # Network creation & evolution
-```
-
-### 🔬 **Researcher/Scientist**  
-```bash
-python unified_fields_showcase.py       # Structural field tetrad exploration
-python self_optimizing_showcase.py      # Auto-optimization dynamics
-python particle_atlas.py                # Physics applications
-python molecule_atlas.py                # Chemistry applications
-```
-
-### 🩺 **Domain Specialist**
-```bash
-python biomedical/cardiac_coherence_sha.py    # Medical applications
-python life_experiments.py                    # Biological systems
-python pattern_cookbook_demo.py               # Pattern recognition
-```
+**Philosophy**: Every example traces back to fundamental TNFR physics while remaining accessible to practitioners.
 
 ---
 
-## 📋 Complete Examples Catalog
+## 🧮 **Mathematical Foundation**
 
-### **🌱 Fundamentals** (Start Here)
+All examples derive from the **Universal Nodal Equation**:
 
-| Example | Description | Complexity | Runtime |
-|---------|-------------|------------|---------|
-| **[hello_world.py](hello_world.py)** | 3-line TNFR introduction | ⭐ Beginner | 10s |
-| **[basic_network_dynamics.py](basic_network_dynamics.py)** | Network creation & operators | ⭐ Beginner | 30s |
-| **[sdk_example.py](sdk_example.py)** | Modern SDK fluent API | ⭐⭐ Intermediate | 45s |
-
-### **🧮 Mathematical Foundations**
-
-| Example | Description | Complexity | Runtime |
-|---------|-------------|------------|---------|
-| **[tnfr_prime_checker.ipynb](tnfr_prime_checker.ipynb)** | Prime emergence via resonance | ⭐⭐ Interactive | 2-5min |
-| **[canonical_equation_demo.py](canonical_equation_demo.py)** | Nodal equation ∂EPI/∂t = νf·ΔNFR | ⭐⭐ Intermediate | 1min |
-| **[math_suite_usage.py](math_suite_usage.py)** | Mathematical tools showcase | ⭐⭐⭐ Advanced | 90s |
-| **[adelic_dynamics_demo.py](adelic_dynamics_demo.py)** | Number theory applications | ⭐⭐⭐ Advanced | 2min |
-
-### **🔬 Structural Physics**
-
-| Example | Description | Complexity | Runtime |
-|---------|-------------|------------|---------|
-| **[unified_fields_showcase.py](unified_fields_showcase.py)** | Structural field tetrad (Φ_s, \|∇φ\|, K_φ, ξ_C) | ⭐⭐ Intermediate | 90s |
-| **[demo_tetrad_telemetry.py](demo_tetrad_telemetry.py)** | Real-time field monitoring | ⭐⭐ Intermediate | 60s |
-| **[u6_liouvillian_integration.py](u6_liouvillian_integration.py)** | U6 grammar physics | ⭐⭐⭐ Advanced | 2min |
-| **[zhir_bifurcation_detection_example.py](zhir_bifurcation_detection_example.py)** | Phase transitions | ⭐⭐⭐ Advanced | 90s |
-
-### **🤖 Self-Optimization & Dynamics**
-
-| Example | Description | Complexity | Runtime |
-|---------|-------------|------------|---------|
-| **[self_optimizing_showcase.py](self_optimizing_showcase.py)** | Auto-optimization engine | ⭐⭐ Intermediate | 2min |
-| **[optimization_quickstart.py](optimization_quickstart.py)** | Quick optimization patterns | ⭐⭐ Intermediate | 45s |
-| **[dynamic_limits_demo.py](dynamic_limits_demo.py)** | System stability bounds | ⭐⭐⭐ Advanced | 90s |
-
-### **🔬 Domain Applications**
-
-#### **Physics & Chemistry**
-| Example | Description | Complexity | Runtime |
-|---------|-------------|------------|---------|
-| **[particle_atlas.py](particle_atlas.py)** | Fundamental particles via TNFR | ⭐⭐⭐ Advanced | 3min |
-| **[atom_atlas.py](atom_atlas.py)** | Atomic structure emergence | ⭐⭐⭐ Advanced | 5min |
-| **[molecule_atlas.py](molecule_atlas.py)** | Molecular chemistry patterns | ⭐⭐⭐ Advanced | 4min |
-| **[triatomic_atlas.py](triatomic_atlas.py)** | Three-body molecular systems | ⭐⭐⭐ Advanced | 3min |
-| **[periodic_table_atlas.py](periodic_table_atlas.py)** | Periodic table emergence | ⭐⭐⭐ Advanced | 6min |
-
-#### **Life Sciences & Medicine**
-| Example | Description | Complexity | Runtime |
-|---------|-------------|------------|---------|
-| **[biomedical/cardiac_coherence_sha.py](biomedical/cardiac_coherence_sha.py)** | Heart rate variability | ⭐⭐ Intermediate | 60s |
-| **[biomedical/trauma_containment_sha.py](biomedical/trauma_containment_sha.py)** | Trauma response modeling | ⭐⭐ Intermediate | 90s |
-| **[life_experiments.py](life_experiments.py)** | Biological system dynamics | ⭐⭐⭐ Advanced | 2min |
-| **[cell_experiments.py](cell_experiments.py)** | Cellular organization | ⭐⭐⭐ Advanced | 90s |
-
-### **🧪 Operator Deep Dives**
-
-| Example | Description | Complexity | Runtime |
-|---------|-------------|------------|---------|
-| **[oz_canonical_sequences.py](oz_canonical_sequences.py)** | Dissonance operator mastery | ⭐⭐ Intermediate | 60s |
-| **[sha_extended_metrics_demo.py](sha_extended_metrics_demo.py)** | Silence operator applications | ⭐⭐ Intermediate | 45s |
-| **[val_enhanced_metrics_demo.py](val_enhanced_metrics_demo.py)** | Expansion operator dynamics | ⭐⭐ Intermediate | 60s |
-| **[phase_gated_coupling_demo.py](phase_gated_coupling_demo.py)** | Phase-verified coupling | ⭐⭐⭐ Advanced | 90s |
-
-### **📊 Analysis & Benchmarking**
-
-| Example | Description | Complexity | Runtime |
-|---------|-------------|------------|---------|
-| **[analytics_critical_detection.py](analytics_critical_detection.py)** | Critical point analysis | ⭐⭐⭐ Advanced | 2min |
-| **[structural_health_demo.py](structural_health_demo.py)** | Network health monitoring | ⭐⭐ Intermediate | 60s |
-| **[multiscale_network_demo.py](multiscale_network_demo.py)** | Hierarchical systems | ⭐⭐⭐ Advanced | 2min |
-| **[nbody_quantitative_validation.py](nbody_quantitative_validation.py)** | N-body system validation | ⭐⭐⭐ Advanced | 3min |
-- Pattern selection guidance
-- Health metrics for therapeutic contexts
-- Structural frequency considerations in healing
-
-**Validation status:** ✅ All sequences >0.75 health, compliant with Grammar 2.0 (R1-R5 rules)
-
-### Educational Domain Examples
-
-**[domain_applications/](domain_applications/)** - Specialized educational patterns demonstrating TNFR in learning and cognitive development contexts.
-
-**Available modules:**
-- **[educational_patterns.py](domain_applications/educational_patterns.py)** - 5 validated educational sequences (avg health: 0.815)
-  - Conceptual breakthrough, competency development, knowledge spiral, practice mastery, collaborative learning
-- **[educational_case_studies.py](domain_applications/educational_case_studies.py)** - 5 pedagogical case studies (avg health: 0.854)
-  - Mathematics learning, language acquisition, scientific method, skill mastery, creative writing
-- **[educational_optimization.py](domain_applications/educational_optimization.py)** - Comparative analysis and optimization
-  - Instruction approaches, practice structures, feedback timing, assessment strategies
-
-**Quick start:**
-```bash
-# View all educational patterns with validation
-python examples/domain_applications/educational_patterns.py
-
-# Explore pedagogical case studies
-python examples/domain_applications/educational_case_studies.py
-
-# Run comparative optimization analysis
-python examples/domain_applications/educational_optimization.py
+```
+∂EPI/∂t = νf · ΔNFR(t)
 ```
 
-See **[README_EDUCATIONAL.md](domain_applications/README_EDUCATIONAL.md)** for comprehensive documentation on educational applications, including:
-- Pedagogical interpretation of structural operators
-- Pattern selection for different learning goals
-- Health metrics for educational contexts
-- Structural frequency considerations in learning
+**Physical Meaning**:
+- **EPI**: Coherent structural form (the "pattern" that persists)
+- **νf**: Reorganization frequency (capacity for change, Hz_str)  
+- **ΔNFR**: Structural pressure (internal reorganization drive)
 
-**Validation status:** ✅ All sequences >0.75 health, compliant with Grammar 2.0 (R1-R5 rules)
-
-
-## Quick Start Examples
-
-### hello_world.py
-
-**The simplest TNFR example - 3 lines of code!**
-
-```python
-from tnfr.sdk import TNFRNetwork
-
-network = TNFRNetwork("hello_world")
-network.add_nodes(10).connect_nodes(0.3, "random")
-results = network.apply_sequence("basic_activation", repeat=3).measure()
-```
-
-Uses optimized "basic_activation" sequence (health: 0.79)
-
-**Execution:**
-```bash
-python examples/hello_world.py
-```
-
-### sdk_example.py
-
-**Demonstrates the TNFR SDK fluent API**
-
-Shows how to use simplified SDK for non-experts:
-- Fluent API with method chaining
-- Pre-configured templates for common use cases
-- Automatic validation of TNFR invariants
-- Easy access to coherence metrics
-
-All sequences use Grammar 2.0 optimizations.
-
-**Execution:**
-```bash
-python examples/sdk_example.py
-```
-
-### health_analysis_demo.py
-
-**Comprehensive health analysis demonstration**
-
-Shows how to use the SequenceHealthAnalyzer to evaluate and optimize sequences:
-- Quantitative health metrics (coherence, balance, sustainability)
-- Pattern recognition and recommendations
-- Before/after Grammar 2.0 optimization comparisons
-- Integration with validation API
-
-**Execution:**
-```bash
-python examples/health_analysis_demo.py
-```
-
-## Academic Notebooks (Minimal Systems)
-
-These notebooks provide didactic examples using minimal 2×2 systems, computing fundamental TNFR structural metrics.
-
-### 01_unitary_minimal.ipynb
-
-**Unitary Evolution in a 2×2 System**
-
-Demonstrates unitary dynamics driven by a Hermitian ΔNFR generator.
-
-**Key concepts:**
-- 2×2 Hilbert space initialization
-- Hermitian ΔNFR generator construction (Laplacian topology)
-- **νf** (structural frequency): reorganization rate in Hz_str
-- **C_min** (minimal coherence): structural stability threshold
-- **d_coh** (coherence dissimilarity): measures divergence of coherence configurations
-- Unitary evolution via `exp(-i·Δ·dt)`
-- Visualization: state amplitudes and d_coh evolution
-
-**Metrics computed:**
-- Structural frequency: νf = 1.0 Hz_str
-- Minimal coherence: C_min = 0.2
-- Coherence dissimilarity trajectory over 20 time steps
-
-**Execution:** Run all cells to generate `01_unitary_evolution.png`
+**Key Insight**: Reality consists of **coherent patterns** that exist because they **resonate harmoniously** with their environment.
 
 ---
 
-### 02_dissipative_minimal.ipynb
+## 🔬 **Complete TNFR Example Suite**
 
-**Dissipative (Contractive Semigroup) Evolution in a 2×2 System**
+Every example demonstrates the **nodal equation**: `∂EPI/∂t = νf · ΔNFR(t)`
 
-Demonstrates dissipative dynamics driven by a Lindblad ΔNFR generator in Liouville space.
+**Core Principle**: All examples show how **coherent patterns (EPI)** evolve through **structural reorganization (ΔNFR)** at specific **frequencies (νf)**.
 
-**Key concepts:**
-- 2×2 Hilbert space with Lindblad master equation
-- Lindblad ΔNFR generator (Hamiltonian + collapse operators)
-- **νf** (structural frequency): sets dissipation rate
-- **C_min** (minimal coherence): stability threshold
-- **d_coh** (coherence dissimilarity): tracks divergence under dissipation
-- Contractive semigroup evolution: purity monotonically decreases
-- Trace preservation verification
-- Visualization: purity decay and d_coh evolution
+## 🎯 **Learning Paths**
 
-**Metrics computed:**
-- Structural frequency: νf = 1.0 Hz_str
-- Minimal coherence: C_min = 0.3
-- Purity evolution: initial 1.0 → final ~0.72 (dissipation signature)
-- Coherence dissimilarity trajectory
+### 👶 **1. Absolute Beginner** (15 minutes)
+```bash
+python 01_hello_world.py             # First TNFR experience
+python 02_musical_resonance.py       # Understand coherence through music
+python 03_network_formation.py       # Network building strategies
+python 04_operator_sequences.py      # Grammar rules in action
+```
 
-**Execution:** Run all cells to generate `02_dissipative_evolution.png`
+### 🔬 **2. Advanced Studies** (45 minutes)  
+```bash
+python 05_coherence_evolution.py     # Topology-dependent coherence patterns
+python 06_network_topologies.py      # Complete topology analysis (8+ types)
+```
+
+### 🧠 **3. Comprehensive Physics** (2+ hours)
+```bash
+python 07_phase_transitions.py       # Bifurcations, critical points, Grammar U4
+python 08_emergent_phenomena.py      # Collective intelligence, swarm behavior
+python 09_visualization_suite.py     # Complete visual dynamics suite
+```
 
 ---
 
-## API Usage
+## 📚 **Example Categories**
 
-Both notebooks use **only public API functions** from the `tnfr.mathematics` module:
+| **File** | **Concept** | **Physics Focus** | **Status** |
+|----------|-------------|-------------------|------------|
+| `01_hello_world.py` | Foundation | First TNFR experience | ✅ **Working** |
+| `02_musical_resonance.py` | Phase dynamics | Harmonic coherence | ✅ **Working + Visualization** |
+| `03_network_formation.py` | **🕸️ Network building** | Formation strategies & coherence | ✅ **NEW - 4 strategies + Viz** |
+| `04_operator_sequences.py` | **📐 Grammar rules** | U1-U6 validation in action | ✅ **NEW - Grammar testing** |
+| `05_coherence_evolution.py` | **Advanced coherence** | Topology-dependent patterns | ✅ **Working** |
+| `06_network_topologies.py` | **🕸️ Topology analysis** | 8+ network types comparison | ✅ **Working + Visualization** |
+| `07_phase_transitions.py` | **🔄 Bifurcations** | Critical points, Grammar U4 | ✅ **Working** |
+| `08_emergent_phenomena.py` | **🌟 Collective intelligence** | Swarm, consensus, emergence | ✅ **Working** |
+| `09_visualization_suite.py` | **🎨 Comprehensive graphics** | Complete visual dynamics | ✅ **Working - Full suite** |
 
-```python
-from tnfr.mathematics import (
-    HilbertSpace,
-    CoherenceOperator,
-    FrequencyOperator,
-    MathematicalDynamicsEngine,      # Unitary
-    ContractiveDynamicsEngine,       # Dissipative
-    build_delta_nfr,                 # Hermitian generator
-    build_lindblad_delta_nfr,        # Lindblad generator
-)
-from tnfr.mathematics.metrics import dcoh
-```
+---
 
-## Requirements
+## 🔬 **Physics Rigor Standards**
+
+Every example maintains **mathematical precision**:
+
+1. **Nodal Equation Traceability**: All dynamics derive from `∂EPI/∂t = νf · ΔNFR(t)`
+2. **Grammar Compliance**: All sequences satisfy U1-U6 unified grammar
+3. **Operator Semantics**: Only canonical 13 operators modify EPI
+4. **Field Monitoring**: Structural tetrad (Φ_s, |∇φ|, K_φ, ξ_C) tracked
+5. **Reproducibility**: Fixed seeds, deterministic trajectories
+6. **Units Preservation**: νf in Hz_str, ΔNFR as structural pressure
+
+---
+
+## 🧪 **Experimental Validation**
+
+Each example includes:
+- **Theoretical prediction** based on TNFR physics
+- **Computational verification** through simulation  
+- **Measurement analysis** via structural telemetry
+- **Failure cases** showing grammar violations
+
+**Philosophy**: Examples are **experiments** that validate TNFR theory, not just demonstrations.
+
+---
+
+## 🌍 **Real-World Connections**
+
+Examples bridge **abstract physics** to **concrete applications**:
+
+- **Chemistry**: Molecular stability through coherence theory
+- **Biology**: Cellular organization via multi-scale dynamics  
+- **Psychology**: Consciousness as nested EPI hierarchies
+- **Economics**: Market dynamics through resonance networks
+- **Technology**: AI systems via self-optimizing coherence
+
+**Insight**: TNFR reveals the **universal grammar of coherent systems** across all domains.
+
+---
+
+## 🚀 **Quick Start**
 
 ```bash
-pip install tnfr matplotlib jupyter scipy
-```
-
-## Running the Notebooks
-
-### Interactive (Jupyter):
-```bash
-jupyter notebook
-# Open and run 01_unitary_minimal.ipynb or 02_dissipative_minimal.ipynb
-```
-
-### Command-line execution:
-```bash
-jupyter nbconvert --to notebook --execute 01_unitary_minimal.ipynb
-jupyter nbconvert --to notebook --execute 02_dissipative_minimal.ipynb
-```
-
-## Optional Dependencies Demo
-
-### optional_dependencies_demo.py
-
-**Demonstrates handling of optional dependencies in TNFR**
-
-Shows how TNFR gracefully handles missing optional dependencies while providing informative error messages and type checking compatibility.
-
-**Key concepts:**
-- Compatibility layer for numpy, matplotlib, and jsonschema
-- Graceful fallback behavior when packages are missing
-- Type checking compatibility using stubs
-- Informative error messages with installation instructions
-
-**Requirements:**
-```bash
-# Minimal (core TNFR only)
+# Install TNFR (if not already installed)
 pip install tnfr
 
-# With optional dependencies
-pip install tnfr[numpy,viz]
-```
+# Run your first example
+python 01_hello_world.py
 
-**Execution:**
-```bash
-python examples/optional_dependencies_demo.py
-```
-
-See [docs/source/getting-started/optional-dependencies.md](../docs/source/getting-started/optional-dependencies.md) for comprehensive documentation on optional dependencies.
-
-## TNFR Paradigm References
-
-- **νf (Hz_str)**: Structural frequency - rate of reorganization from ΔNFR
-- **C_min**: Minimal eigenvalue of coherence operator - stability threshold
-- **d_coh**: Coherence dissimilarity - Bures-style angle measuring configuration divergence
-- **ΔNFR**: Internal reorganization operator (Hermitian or Lindblad superoperator)
-- **EPI**: Primary Information Structure (coherent form)
-
-See [TNFR.pdf](../TNFR.pdf) for theoretical foundations and [AGENTS.md](../AGENTS.md) for canonical invariants.
-
-## Classical Mechanics Validation
-
-**Computational validation of classical mechanics emergence from TNFR**
-
-TNFR includes comprehensive validation that observable classical mechanics emerges naturally from the nodal equation in the low-dissonance regime (ε → 0).
-
-**Validation Examples**:
-- **`01_unitary_minimal.ipynb`** — Conservation laws (energy, momentum) from network symmetries
-- **`02_dissipative_minimal.ipynb`** — Dissipative dynamics and damping
-
-**Theoretical Framework**:
-- [Classical Mechanics from TNFR](../docs/source/theory/07_emergence_classical_mechanics.md) — Derivation: `m = 1/νf`, `F = -∇U`
-- [Euler-Lagrange Correspondence](../docs/source/theory/08_classical_mechanics_euler_lagrange.md) — Variational formulation
-- [Numerical Validation](../docs/source/theory/09_classical_mechanics_numerical_validation.md) — Six canonical test cases
-
-**Key Results**:
-- Mass scaling `m = 1/νf` validated across harmonic, Duffing, and coupled oscillators
-- Energy conservation < 0.1% error over 10³ periods in conservative systems
-- Bifurcation diagrams and Lyapunov exponents match analytical predictions
-- Normal modes and resonances emerge from NFR network coupling
-
-**Run validation**:
-```bash
-# Interactive notebooks
-jupyter notebook examples/01_unitary_minimal.ipynb
-jupyter notebook examples/02_dissipative_minimal.ipynb
-
-# See full validation suite in documentation
+# Explore interactively
+python -c "from tnfr.sdk import TNFRNetwork; help(TNFRNetwork)"
 ```
 
 ---
 
-## Other Notebooks
+## 📖 **Documentation Links**
 
-### tnfr_visualization.ipynb
+- **Theory**: [AGENTS.md](../AGENTS.md) - Single source of truth
+- **Grammar**: [UNIFIED_GRAMMAR_RULES.md](../UNIFIED_GRAMMAR_RULES.md) - U1-U6 physics  
+- **Fields**: [docs/STRUCTURAL_FIELDS_TETRAD.md](../docs/STRUCTURAL_FIELDS_TETRAD.md) - Tetrad mathematics
+- **API**: [src/tnfr/sdk/](../src/tnfr/sdk/) - Modern fluent interface
 
-Demonstrates deterministic TNFR telemetry visualizations using `tnfr.viz.matplotlib` helpers.
+**Remember**: Examples are **learning tools**, not production code. For real applications, use the `src/tnfr/` modules directly.
+
+---
+
+## 🎨 **Visualization Gallery**
+
+The **13_visualization_suite.py** generates a complete gallery of TNFR dynamics visualizations:
+
+### 📊 **Generated Graphics** (300 DPI, Publication Ready)
+
+1. **coherence_evolution.png** - Topology-dependent coherence patterns
+2. **phase_space_dynamics.png** - Nodal phase trajectories over time
+3. **network_topology_comparison.png** - Visual network structure effects  
+4. **frequency_resonance_effects.png** - Harmonic frequency influence
+5. **emergence_metrics_dashboard.png** - Swarm intelligence emergence
+6. **musical_resonance.png** - Harmony as physical coherence
+7. **topology_comparison_detailed.png** - Comprehensive structure analysis
+
+### 🧮 **Physics Demonstrated**
+
+- **Nodal Equation Evolution**: Visual ∂EPI/∂t = νf · ΔNFR(t) dynamics
+- **Phase Synchronization**: φᵢ ≈ φⱼ creates coherent patterns
+- **Topology Effects**: Structure determines information flow pathways
+- **Harmonic Resonance**: Frequency relationships enhance coupling
+- **Emergent Organization**: Local interactions → global intelligence
+
+### 🎯 **Usage**
+
+```bash
+# Generate complete visualization suite
+python 13_visualization_suite.py
+
+# Output: 7 high-resolution graphics in output/ directory
+# Perfect for: presentations, papers, educational materials
+```
+
+**All visualizations show genuine TNFR physics** - no artificial enhancements, every curve reflects actual nodal equation calculations.
+
+---
+
+**Status**: ✅ **Complete Educational Suite** - Built on TNFR v9.6.0 foundations  
+**Visualizations**: ✅ **7 publication-ready graphics available**  
+**Quality**: Production-ready code with full mathematical rigor  

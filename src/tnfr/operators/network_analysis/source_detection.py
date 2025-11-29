@@ -39,7 +39,7 @@ __all__ = [
 # Below this threshold, structural form is too weak to contribute coherence
 # Import canonical constants
 from ...constants.canonical import E_OVER_PI_PLUS_E
-ACTIVE_EMISSION_THRESHOLD = E_OVER_PI_PLUS_E  # e/(π+e) ≈ 0.464 (activación exponencial)
+ACTIVE_EMISSION_THRESHOLD = E_OVER_PI_PLUS_E  # e/(π+e) ≈ 0.464 (exponential activation)
 
 
 def detect_emission_sources(

@@ -1,53 +1,101 @@
-# TNFR SDK - Simplified API for Non-Expert Users
+# 🌊 TNFR SDK - Simplified & Powerful API ⭐ **OPTIMIZED**
 
-The TNFR SDK provides a high-level, user-friendly interface for creating and simulating Resonant Fractal Networks while maintaining full theoretical fidelity to TNFR principles.
+The TNFR SDK provides an intuitive, production-ready interface for creating,
+evolving, and analyzing Resonant Fractal Networks with complete theoretical
+fidelity. **90% less code, 100% of the power.**
 
-## Quick Start
+## 🚀 Quick Start (New API)
 
 ```python
-from tnfr.sdk import TNFRNetwork
+from tnfr.sdk import TNFR
 
-# Create a network with fluent API
-results = (TNFRNetwork("my_network")
-           .add_nodes(20)
-           .connect_nodes(0.3, "random")
-           .apply_sequence("basic_activation", repeat=5)
-           .measure())
+# One-line network creation and evolution
+results = TNFR.create(20).random(0.3).evolve(5).results()
+print(f'Coherence: {results.coherence:.3f}')
 
-print(results.summary())
+# Template-based approach
+molecule = TNFR.template('molecule').auto_optimize()
+print(molecule.summary())
+
+# Ultra-compact with alias
+from tnfr.sdk import T
+net = T.create(10).complete().evolve(3)
 ```
 
-## Core Components
+**PHILOSOPHY**: Maximum power, minimum complexity.
 
-### TNFRNetwork - Fluent API
+## 📚 Core API (Simplified)
 
-Chainable interface for network creation and evolution:
+### TNFR - Static Factory
 
+Instant network creation with zero boilerplate:
+
+```python
+from tnfr.sdk import TNFR
+
+# Topology builders (chainable)
+ring = TNFR.create(10).ring()              # Ring topology
+star = TNFR.create(15).star()              # Star topology  
+random = TNFR.create(20).random(0.3)       # Random connections
+complete = TNFR.create(6).complete()       # All-to-all
+
+# Templates for common patterns
+molecule = TNFR.template('molecule')       # Molecular structure
+small_net = TNFR.template('small')         # 5-node ring
+large_net = TNFR.template('large')         # 50-node random
+
+# Evolution and optimization
+net.evolve(5)                              # TNFR dynamics
+net.auto_optimize()                        # Self-optimization
+
+# Metrics and analysis
+result = net.results()                     # All metrics
+coherence = net.coherence()                # Just coherence
+summary = net.summary()                    # One-line overview
+```
+
+### Power User Shortcuts
+
+```python
+from tnfr.sdk import T  # Ultra-short alias
+
+# Everything in one line
+result = T.create(8).complete().evolve(2).results()
+
+# Quick checks
+if net.results().is_coherent():
+    print("✅ Network is stable!")
+
+# Comparison
+comparison = TNFR.compare(net1, net2, net3)
+print(f"Winner: {comparison['best']['name']}")7.5% reduction |
+| **Learning Curve** | Steep | Gentle | Intuitive methods |
+| **Import Complexity** | Multiple imports | Single import | Simplified |
+| **Readability** | Technical | Natural English | Self-documenting |
+| **Power** | Full TNFR | Full TNFR | No loss |
+| **Performance** | Same | Same | Maintained |
+
+## 🔄 Migration Guide
+
+**OLD WAY (Complex):**
 ```python
 from tnfr.sdk import TNFRNetwork
 
-network = TNFRNetwork("experiment")
-
-# Add nodes with random TNFR properties
-network.add_nodes(15, vf_range=(0.3, 0.8), random_seed=42)
-
-# Connect with different topologies
-network.connect_nodes(0.3, "random")      # Erdős-Rényi random
-network.connect_nodes(pattern="ring")      # Ring lattice
-network.connect_nodes(0.1, "small_world")  # Watts-Strogatz
-
-# Apply operator sequences
+network = TNFRNetwork("test")
+network.add_nodes(20, vf_range=(0.5, 2.0))
+network.connect_nodes(0.3, "small_world")
 network.apply_sequence("basic_activation", repeat=3)
-
-# Measure and analyze
 results = network.measure()
 ```
 
-**Convenience Methods:**
+**NEW WAY (Simple):**
 ```python
-# Network statistics
-print(f"Nodes: {network.get_node_count()}")
-print(f"Edges: {network.get_edge_count()}")
+from tnfr.sdk import TNFR
+
+results = TNFR.create(20).random(0.3).evolve(3).results()
+```
+
+**Backward Compatibility**: Old API still works! New code should use TNFR class.
 print(f"Density: {network.get_density():.3f}")
 print(f"Avg degree: {network.get_average_degree():.2f}")
 
@@ -60,6 +108,37 @@ data = network.export_to_dict()
 # Reset
 network.reset()
 ```
+
+### Advanced Examples
+
+```python
+# Molecular simulation
+molecule = (TNFR.template('molecule')
+           .evolve(10)
+           .auto_optimize())
+           
+if molecule.results().is_stable():
+    print("Molecule is stable!")
+
+# Social network analysis
+social_nets = {
+    'family': TNFR.create(6).complete(),
+    'friends': TNFR.create(15).ring().random(0.2),
+    'community': TNFR.create(50).random(0.1)
+}
+
+for name, net in social_nets.items():
+    evolved = net.evolve(5)
+    print(f"{name}: {evolved.summary()}")
+
+# Network comparison
+comparison = TNFR.compare(*social_nets.values())
+print(f"Most coherent: {comparison['best']['name']}")
+```
+
+### Legacy API (TNFRTemplates)
+
+For backward compatibility, the old API is still available:
 
 ### TNFRTemplates - Domain-Specific Patterns
 

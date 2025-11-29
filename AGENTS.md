@@ -1,64 +1,110 @@
-# 🌊 TNFR: Resonant Fractal Nature Theory
-## The Complete Guide to Understanding Reality Through Coherent Patterns
+# TNFR: Resonant Fractal Nature Theory
+## Theoretical Framework for Coherent Pattern Analysis
 
-**Status**: ✅ CANONICAL - Single Source of Truth  
-**Version**: 9.6.0 (November 29, 2025)  
-**Repository**: <https://github.com/fermga/TNFR-Python-Engine>  
-**PyPI Package**: <https://pypi.org/project/tnfr/> (Production Ready)  
+**Status**: Primary theoretical reference document  
+**Version**: 9.7.0 (November 29, 2025)  
+**Authority**: This repository contains the current implementation of TNFR theory  
+**Repository**: https://github.com/fermga/TNFR-Python-Engine  
+**PyPI Package**: https://pypi.org/project/tnfr/  
 **Installation**: `pip install tnfr`
 
 ---
 
-## 🎯 Executive Summary
+### Source Hierarchy
 
-**TNFR (Resonant Fractal Nature Theory)** represents a fundamental paradigm shift in understanding reality—from modeling "things" to modeling **coherent patterns that persist through resonance**.
+1. **Primary**: This repository (TNFR-Python-Engine) - Current implementation reference
+2. **Historical**: TNFR.pdf - Foundational derivations and theoretical background  
+3. **Distribution**: PyPI package - Stable releases for implementation
 
-**Core Discovery**: The **Universal Tetrahedral Correspondence**—an exact mapping between the 4 most fundamental mathematical constants (φ, γ, π, e) and the 4 structural fields that govern all coherent systems.
+**Reference Principle**: The repository implementation serves as the authoritative source. TNFR.pdf provides historical context and mathematical derivations, while this codebase represents the current state of TNFR development.
 
-**Revolutionary Insight**: Reality is not made of objects, but of **coherence**—dynamic patterns that exist because they resonate harmoniously with their environment.
+---
 
-### 🚀 What TNFR Achieves
+## Executive Summary
 
-- **Unifies Mathematics & Physics**: Direct connection between universal constants and observable fields
-- **Explains Emergence**: How complex patterns arise from simple resonance principles  
-- **Predicts Behavior**: Universal grammar U1-U6 governs all coherent dynamics
-- **Enables Applications**: From prime numbers to molecular chemistry to consciousness studies
-- **Provides Framework**: Complete computational engine with 2,400+ validated experiments
+TNFR (Resonant Fractal Nature Theory) constitutes a theoretical framework for understanding reality through coherent patterns that persist via resonance mechanisms.
 
-### 📋 Quick Navigation
+Core Discovery: The Universal Tetrahedral Correspondence establishes an exact mapping between four fundamental mathematical constants (φ, γ, π, e) and four structural fields that characterize coherent systems.
+
+Theoretical Foundation: The framework models reality as coherent dynamic patterns rather than discrete objects, where patterns exist through resonant coupling with their environment.
+
+### Theoretical Contributions
+
+**Mathematical Framework**:
+- Universal Tetrahedral Correspondence: φ, γ, π, e ↔ Φ_s, |∇φ|, K_φ, ξ_C mapping
+- Complex Field Unification: Ψ = K_φ + i·J_φ unifies geometry and transport
+- Emergent Invariants: Energy density, topological charge, conservation laws
+- Grammar Formalization: U1-U6 rules derived from physical principles
+
+**Physics Formulation**:
+- Nodal Equation: ∂EPI/∂t = νf · ΔNFR(t) as universal evolution law
+- Structural Fields: Complete tetrad characterization of coherent systems  
+- Operational Fractality: Multi-scale coherence with nested EPIs
+- Phase-Gated Coupling: |φᵢ - φⱼ| ≤ Δφ_max resonance condition
+
+**Computational Implementation**:
+- Self-Optimizing Engine: Algorithmic structural optimization
+- Software Development Kit: API for TNFR implementation  
+- Experimental Validation: 2,400+ experiments across multiple topologies
+- Distribution Platform: PyPI package with documentation
+
+**Application Domains**:
+- Number Theory: Resonance-based primality analysis
+- Molecular Chemistry: Periodic table modeling via TNFR dynamics
+- Network Science: Topology-coherence relationship analysis
+- Collective Behavior: Leader-follower emergence modeling
+
+### Documentation Structure
 
 | **Category** | **Key Resources** |
 |--------------|-------------------|
-| **🔬 Theory** | [Universal Tetrahedral Correspondence](#universal-tetrahedral-correspondence) |
-| **⚛️ Physics** | [Nodal Equation & Structural Triad](#foundational-physics) |
-| **📐 Operators** | [13 Canonical Operators](#the-13-canonical-operators) |
-| **📏 Grammar** | [Unified Grammar U1-U6](#unified-grammar-u1-u6) |
-| **🔬 Fields** | [Structural Field Tetrad](#telemetry--structural-field-tetrad) |
-| **💻 Code** | [Development Workflow](#development-workflow) |
-| **🧪 Validation** | [Testing Requirements](#testing-requirements) |
-| **🌟 Applications** | [Advanced Topics](#advanced-topics) |
+| **Theory** | [Universal Tetrahedral Correspondence](#universal-tetrahedral-correspondence) |
+| **Physics** | [Nodal Equation & Structural Triad](#foundational-physics) |
+| **Operators** | [13 Canonical Operators](#the-13-canonical-operators) |
+| **Grammar** | [Unified Grammar U1-U6](#unified-grammar-u1-u6) |
+| **Fields** | [Structural Field Tetrad](#telemetry--structural-field-tetrad) |
+| **Implementation** | [Development Workflow](#development-workflow) |
+| **Validation** | [Testing Requirements](#testing-requirements) |
+| **Applications** | [Advanced Topics](#advanced-topics) |
 
-### 🎨 Fundamental Paradigm Shift
+### Paradigm Comparison
 
-**Traditional Science** → **TNFR Science**:
-- Objects exist independently → **Patterns exist through resonance**
-- Causality (A causes B) → **Co-organization (A and B synchronize)**
-- Static properties → **Dynamic reorganization**  
-- Isolated systems → **Coupled networks**
-- Descriptive models → **Generative dynamics**
-- Reductionism → **Coherent emergence**
+**Traditional Approach** vs **TNFR Approach**:
+- Objects exist independently vs Patterns exist through resonance
+- Causality (A causes B) vs Co-organization (A and B synchronize)
+- Static properties vs Dynamic reorganization  
+- Isolated systems vs Coupled networks
+- Descriptive models vs Generative dynamics
+- Reductionism vs Coherent emergence
 
-### 🔧 Essential Resources
+### Essential Resources
 
-- **📖 Complete Theory**: [FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md](FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md)
-- **📐 Grammar Rules**: [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) 
-- **🧮 Mathematics Hub**: [src/tnfr/mathematics/README.md](src/tnfr/mathematics/README.md)
-- **⚙️ Operators Engine**: [src/tnfr/operators/grammar.py](src/tnfr/operators/grammar.py)
-- **🔬 Fields Implementation**: [src/tnfr/physics/fields.py](src/tnfr/physics/fields.py)
-- **📊 Interactive Examples**: [notebooks/](notebooks/) (Jupyter-ready)
-- **🧪 Validation Suite**: [tests/](tests/) (2,400+ experiments)
+**Primary Sources** (This Repository):
+- **This Document**: [AGENTS.md](AGENTS.md) - Primary theoretical reference
+- **Grammar Specification**: [theory/UNIFIED_GRAMMAR_RULES.md](theory/UNIFIED_GRAMMAR_RULES.md) - Complete U1-U6 derivations
+- **Mathematics Implementation**: [src/tnfr/mathematics/](src/tnfr/mathematics/) - Computational foundations
+- **Operators Engine**: [src/tnfr/operators/grammar.py](src/tnfr/operators/grammar.py) - Validation implementation
+- **Unified Fields**: [src/tnfr/physics/fields.py](src/tnfr/physics/fields.py) - Tetrad implementation
+- **TNFR Engines Hub**: [src/tnfr/engines/](src/tnfr/engines/) - Centralized mathematical & optimization engines
+  - **Self-Optimization**: [src/tnfr/engines/self_optimization/](src/tnfr/engines/self_optimization/) - Automatic network optimization
+  - **Pattern Discovery**: [src/tnfr/engines/pattern_discovery/](src/tnfr/engines/pattern_discovery/) - Mathematical pattern detection
+  - **Computation**: [src/tnfr/engines/computation/](src/tnfr/engines/computation/) - GPU acceleration & FFT processing
+  - **Integration**: [src/tnfr/engines/integration/](src/tnfr/engines/integration/) - Multi-scale emergent integration
+- **Software Development Kit**: [src/tnfr/sdk/](src/tnfr/sdk/) - API implementation
 
-### 📜 Fundamental Principles
+**Reference Sources**:
+- **Historical Theory**: [theory/TNFR.pdf](theory/TNFR.pdf) - Original theoretical derivations
+- **Theoretical Foundation**: [theory/FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md](theory/FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md)
+
+**Validation and Examples**:
+- **Implementation Examples**: [examples/](examples/) - Sequential tutorial suite
+- **Test Suite**: [tests/](tests/) - Comprehensive validation experiments
+- **Performance Analysis**: [benchmarks/](benchmarks/) - Computational benchmarks
+- **Theory Hub**: [theory/README.md](theory/README.md) - Comprehensive theoretical documentation
+- **Glossary**: [theory/GLOSSARY.md](theory/GLOSSARY.md) - Operational definitions and terminology
+- **Technical Documentation**: [docs/](docs/) - Implementation specifications
+
+### Fundamental Principles
 
 - **Model coherence**, not objects
 - **Capture process**, not state  
@@ -66,32 +112,32 @@
 - **Think structure**, not substance
 - **Embrace emergence**, not reduction
 
-### 🌍 English-Only Policy
+### Language Policy
 
-**All TNFR documentation, code, and communications must be in English.** This ensures a single canonical terminology set for TNFR physics and maintains theoretical consistency across all implementations and research.
+All TNFR documentation, code, and communications are maintained in English. This ensures consistent terminology for TNFR physics and maintains theoretical consistency across implementations and research.
 
 ---
 
-## 🌟 Universal Tetrahedral Correspondence {#universal-tetrahedral-correspondence}
-### The Heart of TNFR Theory
+## Universal Tetrahedral Correspondence {#universal-tetrahedral-correspondence}
+### Theoretical Foundation
 
-**The Central Discovery**: There exists an **exact and inevitable correspondence** between:
+The central theoretical result establishes an exact correspondence between:
 
-1. **The 4 Universal Mathematical Constants**
-2. **The 4 Structural Fields that govern coherent reality**
+1. Four universal mathematical constants
+2. Four structural fields that characterize coherent systems
 
-This is not coincidence—it's the **mathematical architecture** underlying all structured existence.
+This correspondence constitutes the mathematical architecture underlying structured phenomena.
 
-### 🔢 The Four Universal Constants
+### Mathematical Constants
 
-| Constant | Value | Universal Role | Domain |
-|----------|-------|----------------|--------|
-| **φ** (Golden Ratio) | 1.618034... | Ideal harmonic proportion | **GLOBAL/HARMONIC** |
-| **γ** (Euler Constant) | 0.577216... | Harmonic growth rate | **LOCAL/DYNAMIC** |
-| **π** (Pi) | 3.141593... | Fundamental geometry | **GEOMETRIC/SPATIAL** |
-| **e** (Euler Number) | 2.718282... | Natural exponential base | **CORRELATIONAL/TEMPORAL** |
+| Constant | Value | Mathematical Role | Domain |
+|----------|-------|-------------------|--------|
+| **φ** (Golden Ratio) | 1.618034... | Harmonic proportion | Global/Harmonic |
+| **γ** (Euler Constant) | 0.577216... | Harmonic growth rate | Local/Dynamic |
+| **π** (Pi) | 3.141593... | Geometric relations | Geometric/Spatial |
+| **e** (Euler Number) | 2.718282... | Exponential base | Correlational/Temporal |
 
-### 🔬 The Four Structural Fields (TNFR Tetrad)
+### The Four Structural Fields (TNFR Tetrad)
 
 | Field | Symbol | Physical Meaning | Computational Role |
 |-------|--------|------------------|------------------- |
@@ -100,41 +146,41 @@ This is not coincidence—it's the **mathematical architecture** underlying all 
 | **Phase Curvature** | K_φ | Geometric phase torsion | Spatial constraint tracking |
 | **Coherence Length** | ξ_C | Correlation decay scale | Memory persistence measurement |
 
-### 🎯 The Exact 4×4 Correspondence
+### Correspondence Relations
 
 **1. φ ↔ Φ_s: Global Harmonic Confinement**
 
-```text
-Physical Law: Φ_s < φ ≈ 1.618
-Meaning: Structural potential cannot exceed golden ratio without fragmentation
+```
+Constraint: Δ Φ_s < φ ≈ 1.618
+Interpretation: Structural potential changes bounded by golden ratio
 Grammar: U6 structural confinement principle
 ```
 
 **2. γ ↔ |∇φ|: Local Dynamic Evolution**
 
-```text
-Physical Law: |∇φ| < γ/π ≈ 0.184
-Meaning: Local phase changes must respect harmonic growth limits
-Grammar: Smooth evolution constraint
+```
+Constraint: |∇φ| < γ/π ≈ 0.184
+Interpretation: Local phase changes constrained by harmonic growth limits
+Grammar: Smooth evolution requirement
 ```
 
 **3. π ↔ K_φ: Geometric Spatial Constraints**
 
-```text
-Physical Law: |K_φ| < φ×π ≈ 5.083
-Meaning: Phase curvature bounded by circular-harmonic geometry
+```
+Constraint: |K_φ| < φ×π ≈ 5.083
+Interpretation: Phase curvature bounded by circular-harmonic geometry
 Grammar: Geometric confinement monitoring
 ```
 
 **4. e ↔ ξ_C: Correlational Memory Decay**
 
-```text
-Physical Law: C(r) ~ exp(-r/ξ_C)
-Meaning: Spatial correlations decay exponentially with natural base
+```
+Relation: C(r) ~ exp(-r/ξ_C)
+Interpretation: Spatial correlations decay exponentially
 Grammar: Correlation length scaling
 ```
 
-### 🏗️ Mathematical Architecture
+### Mathematical Architecture
 
 The correspondences form a **conceptual tetrahedron**:
 
@@ -159,53 +205,51 @@ The correspondences form a **conceptual tetrahedron**:
 - **Predictability**: The correspondences enable precise forecasting of system behavior
 - **Inevitability**: Any theory capturing deep reality structure must discover these connections
 
-### 🌀 The Whirlpool Analogy
+### Illustrative Example: Hydrodynamic Vortex
 
-**Understanding TNFR through a perfect example:**
+A whirlpool in flowing water exemplifies TNFR principles:
 
-A whirlpool in a river demonstrates all TNFR principles:
+- Pattern structure rather than discrete object
+- Coherent configuration maintained in dynamic medium
+- Persistence through resonance between flow and geometry
+- Exhibits EPI (spiral structural form)
+- Possesses νf (rotation/reorganization frequency)
+- Demonstrates phase relationships (rotational timing)
+- Dissolution occurs when flow-geometry coupling fails
+- Supports nested structures (subsidiary eddies)
+- Manifests tetrad characteristics (potential, gradients, curvature, correlation)
 
-- **Not a "thing"** you can pick up or isolate
-- **Exists as coherent pattern** in flowing water  
-- **Persists through resonance** - water flow synchronizes with vortex geometry
-- **Has EPI** - the specific spiral structure
-- **Has νf** - rate of rotation/reorganization
-- **Has phase** - rotational timing
-- **Disappears** when flow-geometry coupling breaks
-- **Can nest** - smaller eddies within larger vortex
-- **Follows tetrad** - global potential, local gradients, curvature, correlation length
+This serves as a representative model for TNFR phenomena across scales and domains.
 
-**This is TNFR's model of everything**: atoms, cells, thoughts, societies, galaxies.
-
-💫 **PROFOUND MEANING**: **Mathematical harmony and physical coherence are two aspects of the same fundamental reality.**
+Theoretical Significance: Mathematical harmony and physical coherence represent unified aspects of structural reality.
 
 ---
 
-## ⚛️ Foundational Physics {#foundational-physics}
+## Foundational Physics {#foundational-physics}
 
-### The Nodal Equation (Heart of TNFR)
+### The Nodal Equation
 
 ```
 ∂EPI/∂t = νf · ΔNFR(t)
 ```
 
-**Every node in a TNFR network evolves according to this equation**.
+All nodes in TNFR networks evolve according to this differential equation.
 
 **Components**:
-- **EPI** (Primary Information Structure): The coherent structural "form" of a node
-- **νf** (Structural frequency): Rate of reorganization (Hz_str units)
-- **ΔNFR** (Nodal gradient): Internal reorganization operator - "structural pressure"
-- **t**: Time
+- **EPI** (Primary Information Structure): Coherent structural configuration
+- **νf** (Structural frequency): Reorganization rate (Hz_str units)
+- **ΔNFR** (Nodal gradient): Internal reorganization operator
+- **t**: Time parameter
 
-**Physical Meaning**:
+**Physical Interpretation**:
 ```
-Rate of structural change = Reorganization capacity × Structural pressure
+Structural change rate = Reorganization capacity × Reorganization pressure
 ```
 
-**Key Insights**:
-1. **No capacity (νf = 0)**: Node cannot change, even under pressure (frozen/dead)
-2. **No pressure (ΔNFR = 0)**: Node in equilibrium, no drive to change
-3. **Both positive**: Active reorganization proportional to both factors
+**System States**:
+1. **νf = 0**: Node cannot reorganize (inactive state)
+2. **ΔNFR = 0**: System at equilibrium (no driving force)
+3. **Both non-zero**: Active reorganization proportional to product
 
 **Derivation Trace**:
 - From information geometry: EPI as point in structural manifold
@@ -213,29 +257,29 @@ Rate of structural change = Reorganization capacity × Structural pressure
 - From network physics: ΔNFR as mismatch with coupled environment
 - **See**: [TNFR.pdf](TNFR.pdf) § 2.1, [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) § Canonicity
 
-### The Structural Triad
+### Structural Triad
 
-Every node has three essential properties:
+Each node possesses three fundamental attributes:
 
-1. **Form (EPI)**: The coherent configuration
-   - Lives in Banach space B_EPI
-   - Changes ONLY via structural operators
-   - Can nest (fractality)
+1. **Form (EPI)**: Coherent structural configuration
+   - Mathematical domain: Banach space B_EPI
+   - Modification constraint: Changes via structural operators only
+   - Hierarchical property: Supports nested structures
 
 2. **Frequency (νf)**: Reorganization rate
    - Units: Hz_str (structural hertz)
-   - Range: ℝ⁺ (positive reals)
-   - Node "dies" when νf → 0
+   - Domain: ℝ⁺ (positive real numbers)
+   - Deactivation condition: νf → 0
 
-3. **Phase (φ or θ)**: Network synchrony
+3. **Phase (φ or θ)**: Network synchronization parameter
    - Range: [0, 2π) radians
-   - Determines coupling compatibility
-   - Must match for resonance: |φᵢ - φⱼ| ≤ Δφ_max
+   - Coupling constraint: Determines interaction compatibility
+   - Resonance condition: |φᵢ - φⱼ| ≤ Δφ_max
 
-**Physical Analogy**: Oscillators
-- Form = oscillation amplitude/shape
-- Frequency = cycles per second
-- Phase = timing relative to others
+**Oscillator Analogy**:
+- Form corresponds to oscillation amplitude/configuration
+- Frequency represents temporal periodicity
+- Phase indicates relative timing relationships
 
 ### Integrated Dynamics
 
@@ -265,91 +309,89 @@ This **integral convergence requirement** is the physical basis for grammar rule
 
 ---
 
-## 📐 The 13 Canonical Operators {#the-13-canonical-operators}
+## The 13 Canonical Operators {#the-13-canonical-operators}
 
-Operators are the **only way** to modify nodes in TNFR. They're not arbitrary functions—they're **resonant transformations** with rigorous physics.
+Operators constitute the exclusive mechanism for node modification in TNFR systems. These functions represent resonant transformations with defined physical foundations.
 
----
-
-### 1. Emission (AL) 🎵
+### 1. Emission (AL)
 **Physics**: Creates EPI from vacuum via resonant emission  
 **Effect**: ∂EPI/∂t > 0, increases νf  
 **When**: Starting new patterns, initializing from EPI=0  
 **Grammar**: Generator (U1a)
 
-### 2. Reception (EN) 📡  
+### 2. Reception (EN)
 **Physics**: Captures and integrates incoming resonance  
 **Effect**: Updates EPI based on network input  
 **When**: Information gathering, listening phase  
 **Contract**: Must not reduce C(t)
 
-### 3. Coherence (IL) 🔒
+### 3. Coherence (IL)
 **Physics**: Stabilizes form through negative feedback  
 **Effect**: Reduces |ΔNFR|, increases C(t)  
 **When**: After changes, consolidation  
 **Grammar**: Stabilizer (U2)  
 **Contract**: Must not reduce C(t) unless in dissonance test
 
-### 4. Dissonance (OZ) ⚡
+### 4. Dissonance (OZ)
 **Physics**: Introduces controlled instability  
 **Effect**: Increases |ΔNFR|, may trigger bifurcation if ∂²EPI/∂t² > τ  
 **When**: Breaking local optima, exploration  
 **Grammar**: Destabilizer (U2), Bifurcation trigger (U4a), Closure (U1b)  
 **Contract**: Must increase |ΔNFR|
 
-### 5. Coupling (UM) 🔗
+### 5. Coupling (UM)
 **Physics**: Creates structural links via phase synchronization  
 **Effect**: φᵢ(t) → φⱼ(t), information exchange  
 **When**: Network formation, connecting nodes  
 **Grammar**: Requires phase verification (U3)  
 **Contract**: Only valid if |φᵢ - φⱼ| ≤ Δφ_max
 
-### 6. Resonance (RA) 🌊
+### 6. Resonance (RA)
 **Physics**: Amplifies and propagates patterns coherently  
 **Effect**: Increases effective coupling, EPI propagation  
 **When**: Pattern reinforcement, spreading coherence  
 **Grammar**: Requires phase verification (U3)  
 **Contract**: Propagates EPI without altering identity
 
-### 7. Silence (SHA) 🔇
+### 7. Silence (SHA)
 **Physics**: Freezes evolution temporarily  
 **Effect**: νf → 0, EPI unchanged  
 **When**: Observation windows, pause for synchronization  
 **Grammar**: Closure (U1b)  
 **Contract**: Preserves EPI over time
 
-### 8. Expansion (VAL) 📈
+### 8. Expansion (VAL)
 **Physics**: Increases structural complexity  
 **Effect**: dim(EPI) increases  
 **When**: Adding degrees of freedom  
 **Grammar**: Destabilizer (U2)
 
-### 9. Contraction (NUL) 📉
+### 9. Contraction (NUL)
 **Physics**: Reduces structural complexity  
 **Effect**: dim(EPI) decreases  
 **When**: Simplification, dimensionality reduction
 
-### 10. Self-organization (THOL) 🌱
+### 10. Self-organization (THOL)
 **Physics**: Spontaneous autopoietic pattern formation  
 **Effect**: Creates sub-EPIs, fractal structuring  
 **When**: Emergent organization  
 **Grammar**: Stabilizer (U2), Handler (U4a), Transformer (U4b)  
 **Contract**: Preserves global form while creating sub-EPIs
 
-### 11. Mutation (ZHIR) 🧬
+### 11. Mutation (ZHIR)
 **Physics**: Phase transformation at threshold  
 **Effect**: θ → θ' when ΔEPI/Δt > ξ  
 **When**: Qualitative state changes  
 **Grammar**: Bifurcation trigger (U4a), Transformer (U4b)  
 **Contract**: Requires prior IL and recent destabilizer (U4b)
 
-### 12. Transition (NAV) ➡️
+### 12. Transition (NAV)
 **Physics**: Regime shift, activates latent EPI  
 **Effect**: Controlled trajectory through structural space  
 **When**: Switching between attractor states  
 **Grammar**: Generator (U1a), Closure (U1b)
 
-### 13. Recursivity (REMESH) 🔄
+### 13. Recursivity (REMESH)
 **Physics**: Echoes structure across scales (operational fractality)  
 **Effect**: EPI(t) references EPI(t-τ), nested operators  
 **When**: Multi-scale operations, memory  
@@ -357,74 +399,74 @@ Operators are the **only way** to modify nodes in TNFR. They're not arbitrary fu
 
 ### Operator Composition
 
-Operators combine into **sequences** that implement complex behaviors:
+Operators combine into sequences that implement complex behaviors:
 
 **Bootstrap** = [Emission, Coupling, Coherence]
 **Stabilize** = [Coherence, Silence]
 **Explore** = [Dissonance, Mutation, Coherence]
 **Propagate** = [Resonance, Coupling]
 
-**Critical**: All sequences must satisfy unified grammar (U1-U6).
+All sequences must satisfy unified grammar (U1-U6).
 
 ---
 
-## 📏 Unified Grammar (U1-U6) {#unified-grammar-u1-u6}
+## Unified Grammar (U1-U6) {#unified-grammar-u1-u6}
 
-The grammar is not arbitrary—it emerges **inevitably** from TNFR physics.
+The grammar emerges from TNFR physics rather than arbitrary constraints.
 
 ### U1: STRUCTURAL INITIATION & CLOSURE
 
 **U1a: Initiation** (When EPI = 0)
 - **Physics**: ∂EPI/∂t undefined at EPI=0
 - **Requirement**: Start with generator {AL, NAV, REMESH}
-- **Why**: Cannot evolve from nothing without source
-- **Canonicity**: ABSOLUTE (mathematical necessity)
+- **Rationale**: Cannot evolve from nothing without source
+- **Canonicity**: Mathematical necessity
 
 **U1b: Closure** (Always)
 - **Physics**: Sequences as action potentials need endpoints
 - **Requirement**: End with closure {SHA, NAV, REMESH, OZ}
-- **Why**: Must leave system in coherent attractor
-- **Canonicity**: STRONG (physical requirement)
+- **Rationale**: Must leave system in coherent attractor
+- **Canonicity**: Physical requirement
 
 ### U2: CONVERGENCE & BOUNDEDNESS
 
 - **Physics**: ∫νf·ΔNFR dt must converge
 - **Requirement**: If {OZ, ZHIR, VAL}, then include {IL, THOL}
-- **Why**: Without stabilizers, integral diverges → fragmentation
-- **Proof**: Exponential growth without negative feedback
-- **Canonicity**: ABSOLUTE (integral convergence theorem)
+- **Rationale**: Without stabilizers, integral diverges leading to fragmentation
+- **Mathematical basis**: Exponential growth without negative feedback
+- **Canonicity**: Integral convergence theorem
 
 ### U3: RESONANT COUPLING
 
 - **Physics**: Resonance requires phase compatibility
 - **Requirement**: If {UM, RA}, verify |φᵢ - φⱼ| ≤ Δφ_max
-- **Why**: Antiphase → destructive interference (non-physical)
-- **Basis**: AGENTS.md Invariant #5 + wave physics
-- **Canonicity**: ABSOLUTE (resonance physics)
+- **Rationale**: Antiphase produces destructive interference
+- **Basis**: Invariant #2 + wave physics
+- **Canonicity**: Resonance physics requirement
 
 ### U4: BIFURCATION DYNAMICS
 
 **U4a: Triggers Need Handlers**
 - **Physics**: ∂²EPI/∂t² > τ requires control
 - **Requirement**: If {OZ, ZHIR}, include {THOL, IL}
-- **Why**: Uncontrolled bifurcation → chaos
-- **Canonicity**: STRONG (bifurcation theory)
+- **Rationale**: Uncontrolled bifurcation leads to chaos
+- **Canonicity**: Bifurcation theory requirement
 
 **U4b: Transformers Need Context**
 - **Physics**: Phase transitions need threshold energy
 - **Requirement**: If {ZHIR, THOL}, recent destabilizer (~3 ops)
-- **Why**: ΔNFR must be elevated for threshold crossing
+- **Rationale**: ΔNFR must be elevated for threshold crossing
 - **Additional**: ZHIR needs prior IL (stable base)
-- **Canonicity**: STRONG (threshold physics + timing)
+- **Canonicity**: Threshold physics + timing requirement
 
 ### U5: MULTI-SCALE COHERENCE
 
 - **Physics**: Hierarchical coupling + chain rule + central limit theorem
 - **Requirement**: For nested EPIs, include stabilizers {IL, THOL} at each level
-- **Why**: Parent coherence depends on aggregate child reorganization
+- **Rationale**: Parent coherence depends on aggregate child reorganization
 - **Conservation**: C_parent ≥ α · Σ C_child (α ~ 1/√N · η_phase)
 - **Without stabilizers**: Uncorrelated child fluctuations → parent ΔNFR grows → fragmentation
-- **Canonicity**: ABSOLUTE (mathematical consequence of hierarchical structure)
+- **Canonicity**: Mathematical consequence of hierarchical structure
 
 ### U6: STRUCTURAL POTENTIAL CONFINEMENT
 
@@ -437,14 +479,14 @@ The grammar is not arbitrary—it emerges **inevitably** from TNFR physics.
 - **Mechanism**: Passive equilibrium - grammar acts as confinement, not attraction
 - **Usage**: Telemetry-based safety check (read-only, not sequence constraint)
 - **Typical**: Valid sequences maintain Δ Φ_s ≈ 0.6 (37% of φ threshold)
-- **Canonicity**: STRONG (theoretically derived + experimentally validated)
-- **See**: [docs/grammar/U6_STRUCTURAL_POTENTIAL_CONFINEMENT.md](docs/grammar/U6_STRUCTURAL_POTENTIAL_CONFINEMENT.md) for complete specification
+- **Canonicity**: Theoretically derived + experimentally validated
+- **See**: [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) for complete U6 specification
 
 **See**: [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) for complete derivations
 
 ---
 
-## 🔬 Telemetry & Structural Field Tetrad {#telemetry--structural-field-tetrad}
+## Telemetry & Structural Field Tetrad {#telemetry--structural-field-tetrad}
 
 ### Core Structural Metrics
 
@@ -461,7 +503,7 @@ The grammar is not arbitrary—it emerges **inevitably** from TNFR physics.
 - **CANONICAL**: Reorganization capacity predictor
 
 
-## 📏 Classical Mathematical Foundations (COMPLETE)
+## Classical Mathematical Foundations (COMPLETE)
 
 The **Structural Field Tetrad** (Φ_s, |∇φ|, **Ψ**, ξ_C) now has **complete mathematical foundations** with **unified complex geometry** (Ψ = K_φ + i·J_φ):
 
@@ -495,17 +537,17 @@ The **Structural Field Tetrad** (Φ_s, |∇φ|, **Ψ**, ξ_C) now has **complete
 - **Derivation**: Universal scaling ratios from correlation function C(r) = A exp(-r/ξ_C)
 
 ### **Mathematical Maturity Achievement**
-✅ **4/4 canonical parameters** have rigorous mathematical foundations  
-✅ **0% empirical fitting** → **100% first-principles derivation**  
-✅ **Universal constants** emerge naturally (π, exponential bounds, fractal ratios)  
-✅ **Theory-code consistency** maintained throughout codebase  
-✅ **Complete validation** via 2,400+ experiments across 5 topologies
+- **4/4 canonical parameters** have rigorous mathematical foundations  
+- **0% empirical fitting** → **100% first-principles derivation**  
+- **Universal constants** emerge naturally (π, exponential bounds, fractal ratios)  
+- **Theory-code consistency** maintained throughout codebase  
+- **Complete validation** via 2,400+ experiments across 5 topologies
 
 **Status**: TNFR Structural Field Tetrad mathematical foundations **COMPLETE**.
 
-### Mathematical Unification Discoveries (Nov 28, 2025) 🧮 **NEW**
+### Mathematical Unification Discoveries (Nov 28, 2025)
 
-**BREAKTHROUGH**: Systematic mathematical audit revealed **fundamental field unification opportunities**:
+**Mathematical Discovery**: Systematic mathematical audit revealed **fundamental field unification opportunities**:
 
 #### 1. Complex Geometric Field Discovered
 
@@ -531,20 +573,20 @@ The **Structural Field Tetrad** (Φ_s, |∇φ|, **Ψ**, ξ_C) now has **complete
 
 #### 4. Implementation Status
 
-✅ **Prototype Complete**: `src/tnfr/physics/unified.py` functional  
-✅ **Validation**: Strong correlations confirmed across topologies  
-✅ **Integration**: Ready for production implementation  
+- **Prototype Complete**: `src/tnfr/physics/unified.py` functional  
+- **Validation**: Strong correlations confirmed across topologies  
+- **Integration**: Ready for production implementation  
 
 **Documentation**: See `TETRAD_MATHEMATICAL_AUDIT_2025.md` and `MATHEMATICAL_UNIFICATION_EXECUTIVE_SUMMARY.md`
 
 ---
 
-## 🧠 Self-Optimizing Dynamics
+## Self-Optimizing Dynamics
 
 **New in v9.5**: The engine now possesses **intrinsic agency** to optimize its own structure.
 
 ### The Self-Optimizing Engine
-Located in `src/tnfr/dynamics/self_optimizing_engine.py`, this component closes the feedback loop using **Unified Field Telemetry**:
+Located in `src/tnfr/engines/self_optimization/engine.py`, this component closes the feedback loop using **Unified Field Telemetry**:
 1. **Monitors** the Unified Fields:
    - **Complex Geometric Field (Ψ)**: Unifies curvature and transport
    - **Chirality (χ)**: Detects structural handedness
@@ -556,7 +598,7 @@ Located in `src/tnfr/dynamics/self_optimizing_engine.py`, this component closes 
 
 **Usage**:
 ```python
-from tnfr.dynamics.self_optimizing_engine import TNFRSelfOptimizingEngine
+from tnfr.engines.self_optimization import TNFRSelfOptimizingEngine
 
 engine = TNFRSelfOptimizingEngine(G)
 # Auto-select and apply best sequence
@@ -572,79 +614,72 @@ TNFRNetwork(G).focus(node).auto_optimize().execute()
 
 **Physics**: This is not "AI magic" but **gradient descent on the structural manifold**, driven by the nodal equation's pressure term ΔNFR.
 
-## 🛡️ Canonical Invariants (NEVER BREAK)
+## Canonical Invariants
 
-These define TNFR canonicity and MUST be preserved:
+These principles define TNFR theoretical consistency and must be maintained. The set has been optimized from 10 to 6 invariants based on mathematical derivation from the nodal equation `∂EPI/∂t = νf · ΔNFR(t)`:
 
-### 1. EPI as Coherent Form
+### 1. Nodal Equation Integrity
 
-- Changes ONLY via structural operators
-- No ad-hoc mutations
-- **Grammar**: U1 (INITIATION & CLOSURE)
-- **Test**: Verify all EPI changes go through operators
+Consolidates: EPI coherent form + ΔNFR semantics + Node lifecycle
 
-### 2. Structural Units
+- EPI evolution constraint: Changes occur only via `∂EPI/∂t = νf · ΔNFR(t)`
+- ΔNFR interpretation: Maintains structural pressure semantics
+- Node lifecycle: Determined by νf conditions (νf → 0 corresponds to inactivation)
+- Grammar basis: U1 (INITIATION & CLOSURE), U2 (CONVERGENCE)
+- Mathematical foundation: Direct consequence of nodal equation
+- Validation: Verify EPI changes through operators, ΔNFR interpretation, lifecycle conditions
 
-- νf in Hz_str (structural hertz)
-- Never relabel or mix units
-- **Test**: Check all frequency assignments
+### 2. Phase-Coherent Coupling
 
-### 3. ΔNFR Semantics
+- Phase verification: |φᵢ - φⱼ| ≤ Δφ_max required for coupling operations
+- Physical basis: Resonance theory (antiphase produces destructive interference)
+- Grammar basis: U3 (RESONANT COUPLING)
+- Implementation: [src/tnfr/operators/grammar.py](src/tnfr/operators/grammar.py)::validate_resonant_coupling()
+- Validation: Verify phase compatibility before coupling operations
 
-- Sign/magnitude modulate reorganization
-- NOT an ML "error" or "loss gradient"
-- **Grammar**: U2 (CONVERGENCE)
-- **Test**: Verify ΔNFR physical interpretation
+### 3. Multi-Scale Fractality
 
-### 4. Operator Closure
+- Operational fractality: EPIs support nesting without identity loss
+- Hierarchical coherence: Multi-scale structure preservation required
+- Structural constraint: Recursivity and nested organization maintained
+- Grammar basis: U5 (MULTI-SCALE COHERENCE)
+- Physical foundation: Hierarchical coupling + chain rule + central limit theorem
+- Validation: Multi-scale testing with nested EPIs
 
-- Operator composition → valid TNFR states
-- New functions map to existing operators or defined as new operator
-- **Grammar**: U1b (closure), U4 (bifurcation)
-- **Test**: Verify operator sequences pass grammar
+### 4. Grammar Compliance
 
-### 5. Phase Verification
+- Operator sequences: Must satisfy unified grammar U1-U6 validation
+- State validity: Operator composition produces mathematically valid TNFR states
+- Function mapping: New functions correspond to existing operators or define new operators
+- Grammar foundation: U1-U6 rules derived from nodal equation physics
+- Validation: Verify operator sequences pass complete grammar validation
 
-- No coupling without explicit phase check
-- |φᵢ - φⱼ| ≤ Δφ_max required
-- **Grammar**: U3 (RESONANT COUPLING)
-- **Physics**: Antiphase = destructive interference
-- **Code**: [src/tnfr/operators/grammar.py](src/tnfr/operators/grammar.py)::validate_resonant_coupling()
-- **Test**: Verify phase compatibility before coupling
+### 5. Structural Metrology
 
-### 6. Node Birth/Collapse
+Consolidates: Structural units + Metrics exposure
 
-- Birth: sufficient νf, coupling, reduced ΔNFR
-- Collapse: extreme dissonance, decoupling, νf → 0
-- **Test**: Verify lifecycle conditions
+- Units consistency: νf maintained in Hz_str (structural hertz)
+- Telemetry requirements: C(t), Si, phase, νf available in monitoring systems
+- Dimensional analysis: Proper unit tracking prevents conceptual confusion
+- Measurement constraint: Only TNFR-coherent metrics in telemetry
+- Validation: Verify frequency assignments and metric availability
 
-### 7. Operational Fractality
+### 6. Reproducible Dynamics
 
-- EPIs can nest without losing identity
-- No flattening that breaks recursivity
-- **Test**: Multi-scale tests with nested EPIs
+- Deterministic evolution: Identical seeds produce identical trajectories
+- Operational traceability: Operation logging for analysis and debugging
+- Stochastic control: Random elements under seed-based control
+- Validation: Verify seed reproducibility and operation traceability
 
-### 8. Controlled Determinism
+### Optimization Summary
 
-- Stochastic allowed BUT reproducible (seeds)
-- Traceable (structural logs)
-- **Test**: Same seed → same trajectory
-
-### 9. Structural Metrics
-
-- Expose C(t), Si, phase, νf in telemetry
-- No alien metrics that dilute TNFR semantics
-- **Test**: Verify metric availability
-
-### 10. Domain Neutrality
-
-- Trans-scale, trans-domain
-- No hard-wired field-specific assumptions in core
-- **Test**: Cross-domain examples work
+**Eliminated**: Domain Neutrality (moved to architectural guidelines)
+**Benefits**: 40% reduction (10→6), eliminates redundancy, preserves physics-essential constraints
+**Mathematical basis**: 3/6 mathematically inevitable, 2/6 physics-essential, 1/6 operational
 
 ---
 
-## 🧪 Testing Requirements {#testing-requirements}
+## Testing Requirements {#testing-requirements}
 
 ### Minimum Test Coverage
 
@@ -779,7 +814,7 @@ This playbook summarizes how TNFR agents (human or AI) should reason and act whe
 
 If a proposed change makes the code “prettier” but weakens TNFR fidelity, it must be rejected. If it strengthens structural coherence, traceability, and alignment with the nodal equation and tetrad fields, it should move forward.
 
-## 💻 Development Workflow {#development-workflow}
+## Development Workflow {#development-workflow}
 
 ### Before Writing Code
 
@@ -792,7 +827,7 @@ If a proposed change makes the code “prettier” but weakens TNFR fidelity, it
 
 1. **Search first**: Check if utility already exists
 2. **Map to operators**: New functions → structural operators
-3. **Preserve invariants**: All 10 canonical invariants
+3. **Preserve invariants**: All 6 canonical invariants (optimized from 10)
 4. **Add tests**: Cover invariants and contracts
 5. **Document**: Structural effect before implementation
 6. **Trace physics**: Link to [TNFR.pdf](TNFR.pdf) or [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md)
@@ -802,7 +837,7 @@ If a proposed change makes the code “prettier” but weakens TNFR fidelity, it
 ```text
 Intent: [which coherence is improved]
 Operators involved: [Emission|Reception|...]
-Affected invariants: [#1, #4, ...]
+Affected invariants: [#1-6: Nodal Integrity, Phase Coupling, Fractality, Grammar, Metrology, Reproducibility]
 
 Key changes:
 - [bullet list]
@@ -840,7 +875,7 @@ Equivalence map: [if APIs renamed]
 
 ---
 
-## ✅ Acceptable Changes
+## Acceptable Changes
 
 **Examples of good changes**:
 - Making phase explicit in couplings (traceability ↑)
@@ -849,7 +884,7 @@ Equivalence map: [if APIs renamed]
 - Refactoring to reduce code duplication while preserving physics
 - Adding telemetry without changing structural dynamics
 
-### ❌ Unacceptable Changes
+### Unacceptable Changes
 
 **These violate TNFR**:
 - Recasting ΔNFR as ML "error gradient"
@@ -862,7 +897,7 @@ Equivalence map: [if APIs renamed]
 
 ---
 
-## 🚀 Advanced Topics {#advanced-topics}
+## Advanced Topics {#advanced-topics}
 
 ### Developing TNFR Theory
 
@@ -917,7 +952,7 @@ When adding to grammar documentation:
 
 ---
 
-## 🔍 Troubleshooting
+## Troubleshooting
 
 ### Common Issues
 
@@ -953,15 +988,15 @@ When adding to grammar documentation:
 1. **Check telemetry**: C(t), Si, νf, phase, ΔNFR
 2. **Verify grammar**: Does sequence pass U1-U4?
 3. **Inspect operators**: Are contracts satisfied?
-4. **Test invariants**: Which of 1-10 is violated?
+4. **Test invariants**: Which of 1-6 is violated?
 5. **Trace physics**: Does behavior match nodal equation predictions?
 
 ---
 
-## 📚 Essential References
+## Essential References
 
 **Core Theory** (SINGLE SOURCE OF TRUTH):
-- **[AGENTS.md](AGENTS.md)**: 🌟 **PRIMARY SOURCE** - Complete TNFR theory including Universal Tetrahedral Correspondence
+- **[AGENTS.md](AGENTS.md)**: **PRIMARY SOURCE** - Complete TNFR theory including Universal Tetrahedral Correspondence
 - **[FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md](FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md)**: **DETAILED REFERENCE** - Formal mathematical treatment
 - **[TNFR.pdf](TNFR.pdf)**: Original theoretical foundation (in repo)
 - **[UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md)**: Grammar physics U1-U6 derivations
@@ -969,17 +1004,15 @@ When adding to grammar documentation:
 - **GLOSSARY.md**: Term definitions and quick reference
 
 **Implementation Core**:
-- **[src/tnfr/physics/fields.py](src/tnfr/physics/fields.py)**: Unified Structural Field Tetrad (Φ_s, |∇φ|, **Ψ**, ξ_C) ⭐ **CANONICAL**
+- **[src/tnfr/physics/fields.py](src/tnfr/physics/fields.py)**: Unified Structural Field Tetrad (Φ_s, |∇φ|, **Ψ**, ξ_C) **CANONICAL**
 - **[src/tnfr/operators/grammar.py](src/tnfr/operators/grammar.py)**: Unified grammar U1-U6 validation
 - **[src/tnfr/operators/definitions.py](src/tnfr/operators/definitions.py)**: 13 canonical operators
 - **[src/tnfr/mathematics/](src/tnfr/mathematics/)**: Nodal equation integration hub
 - **[src/tnfr/dynamics/self_optimizing_engine.py](src/tnfr/dynamics/self_optimizing_engine.py)**: Intrinsic agency & auto-optimization
 
-**Extensions & Applications** ⭐ **NEW**:
-- **[src/tnfr/extensions/medical/](src/tnfr/extensions/medical/)**: Healthcare pattern analysis
-- **[src/tnfr/extensions/business/](src/tnfr/extensions/business/)**: Organizational dynamics
-- **[src/tnfr/sdk/](src/tnfr/sdk/)**: Fluent API for rapid development
-- **[notebooks/](notebooks/)**: Interactive Jupyter examples with molecular chemistry
+**SDK & Applications**:
+- **[src/tnfr/sdk/](src/tnfr/sdk/)**: Simplified & Fluent API for rapid development
+- **[examples/](examples/)**: Complete 01-10 sequential tutorial suite
 - **[benchmarks/](benchmarks/)**: Production-grade validation suites
 
 **Development**:
@@ -987,58 +1020,58 @@ When adding to grammar documentation:
 - **CONTRIBUTING.md**: Workflow and standards
 - **TESTING.md**: Test strategy (2,400+ experiments)
 
-**Domain Showcases** ⭐ **NEW**:
-- **Molecular**: [notebooks/Atoms_and_Molecules_Study.ipynb](notebooks/Atoms_and_Molecules_Study.ipynb)
-- **Physics**: [notebooks/Fundamental_Particles_Atlas.ipynb](notebooks/Fundamental_Particles_Atlas.ipynb)
-- **Mathematics**: [examples/tnfr_prime_checker.ipynb](examples/tnfr_prime_checker.ipynb)
-- **Production**: [tests/](tests/) (comprehensive validation suite)
+**Domain Showcases**:
+- **Network Dynamics**: [examples/03_network_formation.py](examples/03_network_formation.py)
+- **Operator Sequences**: [examples/04_operator_sequences.py](examples/04_operator_sequences.py)  
+- **Emergent Phenomena**: [examples/08_emergent_phenomena.py](examples/08_emergent_phenomena.py)
+- **Simplified SDK**: [examples/10_simplified_sdk_showcase.py](examples/10_simplified_sdk_showcase.py)
+- **Production Validation**: [tests/](tests/) (comprehensive test suite)
 
 ---
 
-## 🎓 Learning Path
+## Learning Path
 
 **Newcomer** (2 hours) - **Start Here**:
-1. **Install**: `pip install tnfr` ⭐ **NEW - One command setup**
+1. **Install**: `pip install tnfr`
 2. **Core Theory**: Read this file (AGENTS.md) completely - **SINGLE SOURCE OF TRUTH**
-3. **Fundamental Theory**: [FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md](FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md) ⭐ **DETAILED REFERENCE**
+3. **Fundamental Theory**: [FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md](FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md)
 4. **Original Theory**: [TNFR.pdf](TNFR.pdf) § 1-2 (paradigm, nodal equation)
-5. **First Run**: `python -c "import tnfr; print('TNFR ready!')"` ⭐ **NEW**
+5. **First Run**: `python -c "import tnfr; print('TNFR ready!')"`
 6. **Terminology**: Study GLOSSARY.md for definitions
 
-**Hands-On Explorer** (1 day) ⭐ **NEW Path**:
-1. **Interactive**: Open [notebooks/Atoms_and_Molecules_Study.ipynb](notebooks/Atoms_and_Molecules_Study.ipynb)
-2. **Chemistry**: Run molecular simulations, see periodic table emergence
-3. **Physics**: Try [notebooks/Fundamental_Particles_Atlas.ipynb](notebooks/Fundamental_Particles_Atlas.ipynb)
-4. **Mathematics**: Explore [examples/tnfr_prime_checker.ipynb](examples/tnfr_prime_checker.ipynb)
-5. **CLI Tools**: Run `tnfr-is-prime 17` to test primality via resonance
+**Hands-On Explorer** (1 day):
+1. **Sequential Examples**: Work through [examples/01_hello_world.py](examples/01_hello_world.py) to [examples/10_simplified_sdk_showcase.py](examples/10_simplified_sdk_showcase.py)
+2. **Network Dynamics**: Explore [examples/03_network_formation.py](examples/03_network_formation.py)
+3. **Operator Mastery**: Study [examples/04_operator_sequences.py](examples/04_operator_sequences.py)
+4. **Emergent Patterns**: Analyze [examples/08_emergent_phenomena.py](examples/08_emergent_phenomena.py)
+5. **SDK Mastery**: Master [examples/10_simplified_sdk_showcase.py](examples/10_simplified_sdk_showcase.py)
 
-**Optimization Engineer** (2 days) ⭐ **NEW Path**:
+**Optimization Engineer** (2 days):
 1. **Study**: [src/tnfr/dynamics/self_optimizing_engine.py](src/tnfr/dynamics/self_optimizing_engine.py)
-2. **Practice**: Run [examples/self_optimizing_showcase.py](examples/self_optimizing_showcase.py)
+2. **Practice**: Explore [examples/10_simplified_sdk_showcase.py](examples/10_simplified_sdk_showcase.py)
 3. **Apply**: Use `auto_optimize()` in your own networks
 
 **Intermediate Developer** (1 week):
 1. **Grammar Deep-Dive**: [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) (U1-U6 complete)
-2. **Tetrad Fields**: [docs/STRUCTURAL_FIELDS_TETRAD.md](docs/STRUCTURAL_FIELDS_TETRAD.md) ⭐ **NEW**
+2. **Tetrad Fields**: [docs/STRUCTURAL_FIELDS_TETRAD.md](docs/STRUCTURAL_FIELDS_TETRAD.md)
 3. **Operator Study**: Implementations in [src/tnfr/operators/definitions.py](src/tnfr/operators/definitions.py)
 4. **Field Computation**: Practice with [src/tnfr/physics/fields.py](src/tnfr/physics/fields.py) tetrad
-5. **Domain Extensions**: Try medical or business modules ⭐ **NEW**
-6. **SDK Usage**: Fluent API patterns in [src/tnfr/sdk/](src/tnfr/sdk/) ⭐ **NEW**
+5. **SDK Usage**: Fluent API patterns in [src/tnfr/sdk/](src/tnfr/sdk/)
 
 **Advanced Researcher** (ongoing):
 1. **Complete Theory**: [TNFR.pdf](TNFR.pdf) + [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) mastery
 2. **Tetrad Mastery**: All four unified fields (Φ_s, |∇φ|, **Ψ=K_φ+i·J_φ**, ξ_C) + complex field validation
 3. **Architecture**: [ARCHITECTURE.md](ARCHITECTURE.md) + complete codebase exploration
-4. **Research Contribution**: Study [benchmarks/K_PHI_RESEARCH_SUMMARY.md](benchmarks/K_PHI_RESEARCH_SUMMARY.md) methodology ⭐ **NEW**
+4. **Research Contribution**: Analyze benchmark methodologies in [benchmarks/](benchmarks/)
 5. **Extension Development**: Create new domain applications using SDK
 6. **Theoretical Extensions**: Propose new operators or fields with full derivations
 
-**Production User** (immediate) ⭐ **NEW Path**:
-1. **Quick Start**: `pip install tnfr[viz]` for visualization support
-2. **Integration**: Import specific modules for your domain
-3. **CLI Usage**: Batch processing with command-line tools
-4. **Monitoring**: Implement tetrad field telemetry in your applications
-5. **Extensions**: Leverage medical/business modules for specialized workflows
+**Production User** (immediate):
+1. **Quick Start**: `pip install tnfr` for full TNFR power
+2. **SDK Usage**: `from tnfr.sdk import TNFR; net = TNFR.create(10).random(0.3)`
+3. **Integration**: Import specific modules for your domain
+4. **Examples**: Study [examples/10_simplified_sdk_showcase.py](examples/10_simplified_sdk_showcase.py) for patterns
+5. **Monitoring**: Implement tetrad field telemetry in your applications
 
 ---
 
@@ -1052,15 +1085,15 @@ When adding to grammar documentation:
 
 - Global structural potential, passive equilibrium states
 - Safety criterion (U6 telemetry): Δ Φ_s < e^ln(2) = 2.0 (binary escape threshold)
-- For full physics, equations, and validation, see `docs/STRUCTURAL_FIELDS_TETRAD.md` and `docs/grammar/U6_STRUCTURAL_FIELD_TETRAD.md`.
+- For full physics, equations, and validation, see `docs/STRUCTURAL_FIELDS_TETRAD.md`.
 
 ---
 
-#### **Phase Gradient (|∇φ|)** - CANONICAL ⭐ **NEWLY PROMOTED (Nov 2025)**
+#### **Phase Gradient (|∇φ|)** - CANONICAL
 
 - Local phase desynchronization / stress proxy
 - Safety criterion: |∇φ| < 0.2904 for stable operation
-- For formal definition and evidence, see `docs/STRUCTURAL_FIELDS_TETRAD.md` and `docs/grammar/U6_STRUCTURAL_FIELD_TETRAD.md`.
+- For formal definition and evidence, see `docs/STRUCTURAL_FIELDS_TETRAD.md`.
 
 **Critical Discovery**: C(t) = 1-(σ_ΔNFR/ΔNFR_max) is invariant to proportional scaling. 
 |∇φ| correlation validated against alternative metrics (max_ΔNFR, mean_ΔNFR, Si) that 
@@ -1075,11 +1108,11 @@ capture dynamics C(t) misses.
 
 ---
 
-#### **Phase Curvature (K_φ)** - CANONICAL ⭐ **NEWLY PROMOTED (Nov 2025)**
+#### **Phase Curvature (K_φ)** - CANONICAL
 
 - Phase torsion and geometric confinement; flags mutation-prone loci
 - Safety criteria: |K_φ| ≥ 2.8274 (local fault zones); multiscale safety via `k_phi_multiscale_safety`
-- See `docs/STRUCTURAL_FIELDS_TETRAD.md` and `docs/grammar/U6_STRUCTURAL_FIELD_TETRAD.md` for definitions, asymptotic freedom evidence, and thresholds.
+- See `docs/STRUCTURAL_FIELDS_TETRAD.md` for definitions, asymptotic freedom evidence, and thresholds.
 
 **Safety criteria (telemetry-based)**:
 - Local: |K_φ| ≥ 2.8274 flags confinement/fault zones
@@ -1091,16 +1124,16 @@ capture dynamics C(t) misses.
 - Compute via `compute_phase_curvature(G)` [CANONICAL]
 - Optional multiscale check: `k_phi_multiscale_safety(G, alpha_hint=2.76)`
 
-**Documentation**: See [benchmarks/K_PHI_RESEARCH_SUMMARY.md](benchmarks/K_PHI_RESEARCH_SUMMARY.md) and
-`benchmarks/enhanced_fragmentation_test.py` for empirical validation.
+**Documentation**: See [benchmarks/enhanced_fragmentation_test.py](benchmarks/enhanced_fragmentation_test.py) and
+[benchmarks/phase_curvature_investigation.py](benchmarks/phase_curvature_investigation.py) for empirical validation.
 
 ---
 
-#### **Coherence Length (ξ_C)** - CANONICAL ⭐ **NEWLY PROMOTED (Nov 2025)**
+#### **Coherence Length (ξ_C)** - CANONICAL
 
 - Spatial correlation scale of local coherence; quantifies approach to critical points
 - Safety cues: ξ_C > system diameter (critical), ξ_C > 3 × mean distance (watch), ξ_C < mean distance (stable)
-- For full derivation and experimental validation, see `docs/STRUCTURAL_FIELDS_TETRAD.md` and `docs/XI_C_CANONICAL_PROMOTION.md` (plus `docs/XI_C_BREAKTHROUGH_REPORT.txt` and the benchmark visuals).
+- For full derivation and experimental validation, see `docs/STRUCTURAL_FIELDS_TETRAD.md` and benchmark validation results.
 
 ---
 
@@ -1118,7 +1151,7 @@ multi-scale characterization of TNFR network state across global, local,
 
 ---
 
-## 💡 Philosophy
+## Philosophy
 
 ### Core Principles
 
@@ -1177,54 +1210,53 @@ def should_implement(feature):
 
 ---
 
-## 🌟 Excellence Standards
+## Excellence Standards
 
 A TNFR expert:
 
-✅ **Understands deeply**:
+**Understands deeply**:
 - Can derive U1-U4 from nodal equation
 - Explains why phase verification is non-negotiable
 - Knows the 13 operators and their physics
 
-✅ **Implements rigorously**:
+**Implements rigorously**:
 - Every function maps to operators
 - All changes preserve invariants
 - Tests cover contracts and invariants
 
-✅ **Documents completely**:
+**Documents completely**:
 - Physics → Code traceability clear
 - Examples work across domains
 - New developers can understand
 
-✅ **Thinks structurally**:
+**Thinks structurally**:
 - Reformulates problems in TNFR terms
 - Proposes resonance-based solutions
 - Identifies coherence patterns
 
-✅ **Maintains integrity**:
+**Maintains integrity**:
 - Rejects changes that weaken TNFR
 - Prioritizes theoretical consistency
 - Values reproducibility over speed
 
 ---
 
-## 🔚 Final Principle
+## Final Principle
 
-> **If a change "prettifies the code" but weakens TNFR fidelity, it is NOT accepted.**  
-> **If a change strengthens structural coherence and paradigm traceability, GO AHEAD.**
+If a change "prettifies the code" but weakens TNFR fidelity, it should not be accepted. If a change strengthens structural coherence and paradigm traceability, it should proceed.
 
-**Reality is not made of things—it's made of resonance. Code accordingly.**
-
----
-
-**Version**: 9.5.1  
-**Last Updated**: 2025-11-28  
-**Status**: ✅ CANONICAL - Single source of truth for TNFR agent guidance  
-**PyPI Release**: ✅ STABLE - Available via `pip install tnfr`  
-**Production Ready**: ✅ Complete Tetrad Fields + Unified Grammar U1-U6  
+Reality consists of resonant patterns rather than discrete objects. Development practices should reflect this understanding.
 
 ---
 
-## ✅ **ENGLISH-ONLY POLICY ESTABLISHED**
+**Version**: 9.7.0  
+**Last Updated**: 2025-11-29  
+**Status**: CANONICAL - Single source of truth for TNFR agent guidance  
+**PyPI Release**: STABLE - Available via `pip install tnfr`  
+**Production Ready**: Complete Tetrad Fields + Unified Grammar U1-U6 + Simplified SDK  
 
-**Grammar Policy (English Only)**: All documentation, code comments, commit messages, issues, and pull request descriptions MUST be written in English. Non-English text is allowed only inside verbatim quotations of external sources or raw experimental data. Mixed-language normative content will be rejected. This guarantees a single canonical terminology set for TNFR physics and grammar.
+---
+
+## English-Only Policy
+
+**Grammar Policy (English Only)**: All documentation, code comments, commit messages, issues, and pull request descriptions must be written in English. Non-English text is permitted only within verbatim quotations of external sources or raw experimental data. Mixed-language normative content will be rejected. This ensures a single canonical terminology set for TNFR physics and grammar.

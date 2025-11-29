@@ -33,8 +33,7 @@ src/tnfr/
 ├── 🔬 mathematics/               # Number theory + nodal equation
 ├── 📊 telemetry/                 # Unified field monitoring
 ├── 🎨 sdk/                       # Fluent API + builders
-├── 🏥 extensions/medical/        # Healthcare applications
-├── 💼 extensions/business/       # Organizational dynamics
+
 └── 🎬 visualization/             # Interactive plotting
 ```
 
@@ -210,8 +209,7 @@ The TNFR grammar system is **mathematically derived** from the **4 universal rel
 | **🧠 Dynamics Engine** | `dynamics/self_optimizing_engine.py`<br/>`dynamics/canonical.py` | Nodal equation ∂EPI/∂t = νf·ΔNFR(t) | **Self-optimization** - autonomous structural improvement |
 | **🔬 Telemetry System** | `telemetry/emit.py`<br/>`metrics/telemetry.py` | Structural coherence mathematics C(t), Si | **Complete monitoring** - all structural changes tracked |
 | **🎨 SDK Interface** | `sdk/fluent.py`<br/>`sdk/builders.py` | Canonical parameter injection | **Mathematical consistency** - user-friendly canonical access |
-| **🏥 Medical Extension** | `extensions/medical/patterns.py` | Therapeutic thresholds via φ/(π+e) ≈ 0.276 | **Healthcare canonicity** - medical AI with universal base |
-| **💼 Business Extension** | `extensions/business/patterns.py` | Organizational metrics via harmonic ratios | **Enterprise canonicity** - business intelligence with math purity |
+| **🎬 Visualization Engine** | `visualization/sequence_plotter.py` | Interactive plotting with canonical parameters | **Visual coherence** - mathematical beauty in plots |
 
 ### Structural loop orchestration
 
@@ -523,7 +521,7 @@ well-documented location.
 | **⚛️ Physics Engine** | ✅ COMPLETE | Unified field tetrad implementation |
 | **🧠 Self-Optimization** | ✅ COMPLETE | Autonomous structural improvement |
 | **🔬 Telemetry** | ✅ COMPLETE | Complete system observability |
-| **🎨 Developer Experience** | ✅ COMPLETE | Fluent API + SDK + extensions |
+| **🎨 Developer Experience** | ✅ COMPLETE | Fluent API + SDK + visualization |
 | **📊 Production Readiness** | ✅ COMPLETE | 2,400+ tests + benchmarks + validation |
 
 ### 🎯 Architectural Principles (Canonical)
@@ -544,7 +542,7 @@ well-documented location.
 - **🏭 Industrial IoT Integration**: TNFR-powered smart manufacturing
 - **🔬 Research Infrastructure**: Academic collaboration frameworks
 
-**Mathematical Foundation**: All future extensions will inherit the **497+ canonical constants** and maintain **100% mathematical purity**.
+**Mathematical Foundation**: All future applications will inherit the **497+ canonical constants** and maintain **100% mathematical purity**.
 
 ### 📚 Essential Architecture References
 

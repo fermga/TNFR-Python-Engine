@@ -1,8 +1,20 @@
 # TNFR API Contracts and Structural Invariants
 
+**Status**: ✅ **ACTIVE** - Complete operator specifications  
+**Version**: 2.1.0 (Enhanced with optimization patterns)  
+**Last Updated**: November 29, 2025  
+
 ## Purpose
 
 This document formalizes the **structural invariants** and **API contracts** for key TNFR functions, inspired by the 13 canonical structural operators. Each contract specifies preconditions, postconditions, and the structural effects on the Primary Information Structure (EPI), structural frequency (νf), phase (θ), and internal reorganization operator (ΔNFR).
+
+### 🎯 What This Document Provides
+
+1. **Formal Operator Specifications**: Mathematical contracts for all 13 canonical operators
+2. **Implementation Guidelines**: How to implement operators while preserving TNFR physics
+3. **Optimization Patterns**: Common patterns for improving operator sequences
+4. **Debugging Reference**: Contract violations and how to fix them
+5. **Extension Framework**: How to add new operators while maintaining canonicity
 
 ---
 
@@ -538,6 +550,306 @@ Flake8 analysis identified only minor style issues:
 1. **Keep Current Structure**: The dependency hierarchy is clean and well-organized
 2. **Remove `callback_utils.py`**: After deprecation period expires
 3. **Document Import Rationale**: Comments added where non-obvious
+
+---
+
+## 🚀 Advanced Optimization Patterns
+
+### Pattern 1: Therapeutic Transformation Cycle
+
+**Purpose**: Transform unstable or problematic sequences into stable therapeutic patterns.
+
+**Template**:
+```python
+# Before: Unstable transformation (health ≈ 0.60)
+unstable = [EMISSION, DISSONANCE, MUTATION, COHERENCE]
+
+# After: Full therapeutic cycle (health ≈ 0.89)
+therapeutic = [
+    EMISSION,           # AL: Initialize therapeutic space
+    RECEPTION,          # EN: Gather contextual information
+    COHERENCE,          # IL: Establish baseline stability
+    DISSONANCE,         # OZ: Controlled destabilization
+    SELF_ORGANIZATION,  # THOL: Emergent reorganization
+    COHERENCE,          # IL: Consolidate transformation
+    SILENCE             # SHA: Integration period
+]
+```
+
+**Key Improvements**:
+- **+0.29 health improvement** through proper stabilization
+- **Grammar compliance**: U2 (destabilizer + stabilizer), U1b (proper closure)
+- **Pattern recognition**: Canonical therapeutic sequence
+
+### Pattern 2: Enhanced Activation with Amplification
+
+**Purpose**: Upgrade basic activation patterns with resonant amplification.
+
+**Template**:
+```python
+# Before: Basic activation (health ≈ 0.66)
+basic = [EMISSION, RECEPTION, COHERENCE, SILENCE]
+
+# After: Enhanced with resonance (health ≈ 0.85)
+enhanced = [
+    EMISSION,    # AL: Seed activation
+    RECEPTION,   # EN: Information gathering
+    COHERENCE,   # IL: Baseline stability
+    RESONANCE,   # RA: Amplify coherent patterns
+    SILENCE      # SHA: Preserve amplified state
+]
+```
+
+**Key Improvements**:
+- **+0.19 health improvement** through resonant amplification
+- **Enhanced pattern**: Basic activation → Activation with amplification
+- **Preserved simplicity**: Minimal operator addition
+
+### Pattern 3: Exploration with Controlled Bifurcation
+
+**Purpose**: Enable safe exploration through controlled destabilization and recovery.
+
+**Template**:
+```python
+controlled_exploration = [
+    EMISSION,           # AL: Initialize exploration space
+    RECEPTION,          # EN: Gather environmental context
+    COHERENCE,          # IL: Establish safety baseline
+    EXPANSION,          # VAL: Increase exploration volume
+    COHERENCE,          # IL: Stabilize expansion (U2)
+    DISSONANCE,         # OZ: First exploration wave
+    MUTATION,           # ZHIR: Alternative trajectory (U4b)
+    COHERENCE,          # IL: Checkpoint stability
+    DISSONANCE,         # OZ: Second exploration wave
+    SELF_ORGANIZATION,  # THOL: Emergent structure (U4a)
+    COHERENCE,          # IL: Final consolidation
+    SILENCE             # SHA: Integration
+]
+```
+
+**Key Features**:
+- **Multi-wave exploration**: Two destabilization cycles
+- **Safety checkpoints**: Coherence after each major operation
+- **Grammar compliance**: U2, U4a, U4b all satisfied
+- **Health target**: > 0.68 (moderate due to exploration complexity)
+
+### Pattern 4: Network Synchronization Protocol
+
+**Purpose**: Establish coherent coupling across network nodes with phase verification.
+
+**Template**:
+```python
+network_sync = [
+    EMISSION,     # AL: Initialize local coherence
+    RECEPTION,    # EN: Sense network state
+    COHERENCE,    # IL: Local stabilization
+    COUPLING,     # UM: Form phase-verified links (U3)
+    RESONANCE,    # RA: Network-wide amplification
+    COUPLING,     # UM: Strengthen synchronization
+    RESONANCE,    # RA: Reinforce coherent patterns
+    COHERENCE,    # IL: Network consolidation
+    SILENCE       # SHA: Maintain synchrony
+]
+```
+
+**Critical Requirements**:
+- **Phase verification**: Each COUPLING must satisfy |φᵢ - φⱼ| ≤ Δφ_max (U3)
+- **Network topology**: Requires connected network with multiple nodes
+- **Health target**: > 0.80 for strong network coherence
+
+### Pattern 5: Compression and Essence Extraction
+
+**Purpose**: Simplify complex structures while preserving essential information.
+
+**Template**:
+```python
+compression = [
+    EMISSION,      # AL: Initialize from complex state
+    RECEPTION,     # EN: Understand full complexity
+    COHERENCE,     # IL: Baseline stability
+    EXPANSION,     # VAL: Temporarily increase complexity
+    COHERENCE,     # IL: Stabilize expansion (U2)
+    CONTRACTION,   # NUL: First compression wave
+    COHERENCE,     # IL: Stabilize compression
+    CONTRACTION,   # NUL: Second compression wave
+    COHERENCE,     # IL: Final consolidation
+    SILENCE        # SHA: Preserve essence
+]
+```
+
+**Key Features**:
+- **Expand then compress**: Counter-intuitive but effective pattern
+- **Multiple compression waves**: Progressive simplification
+- **Essence preservation**: Each contraction followed by stabilization
+
+---
+
+## 🔬 Optimization Strategies
+
+### Strategy 1: Health-Driven Optimization
+
+```python
+def optimize_by_health(sequence, target_health=0.80):
+    """Iterative health improvement strategy."""
+    current = sequence.copy()
+    
+    while compute_health(current) < target_health:
+        # 1. Check grammar violations
+        violations = validate_grammar(current)
+        if violations:
+            current = fix_grammar_violations(current, violations)
+            continue
+        
+        # 2. Apply common improvements
+        if needs_stabilization(current):
+            current = add_stabilizers(current)
+        elif lacks_amplification(current):
+            current = add_resonance(current)
+        elif missing_closure(current):
+            current = fix_closure(current)
+        else:
+            break  # No obvious improvements
+    
+    return current
+```
+
+### Strategy 2: Pattern-Based Enhancement
+
+```python
+def enhance_with_patterns(sequence):
+    """Upgrade sequences using canonical patterns."""
+    pattern_type = classify_sequence(sequence)
+    
+    if pattern_type == "basic_activation":
+        return upgrade_to_enhanced_activation(sequence)
+    elif pattern_type == "unstable_transformation":
+        return convert_to_therapeutic(sequence)
+    elif pattern_type == "incomplete_exploration":
+        return complete_exploration_cycle(sequence)
+    else:
+        return apply_generic_improvements(sequence)
+```
+
+### Strategy 3: Grammar-First Optimization
+
+```python
+def grammar_compliant_optimization(sequence):
+    """Ensure grammar compliance while optimizing."""
+    # 1. Fix U1 violations (initiation/closure)
+    if not starts_with_generator(sequence):
+        sequence = [EMISSION] + sequence
+    if not ends_with_closure(sequence):
+        sequence = sequence + [SILENCE]
+    
+    # 2. Fix U2 violations (convergence/boundedness)
+    sequence = balance_destabilizers(sequence)
+    
+    # 3. Fix U3 violations (resonant coupling)
+    sequence = verify_phase_compatibility(sequence)
+    
+    # 4. Fix U4 violations (bifurcation dynamics)
+    sequence = handle_bifurcation_triggers(sequence)
+    
+    return sequence
+```
+
+---
+
+## 📊 Performance Optimization Guidelines
+
+### Memory Optimization
+
+1. **Use inplace operations** when possible: `compute_si(G, inplace=True)`
+2. **Enable node caching** for repeated calculations: `TNFR_CACHE_ENABLED=1`
+3. **Batch operations** on multiple nodes to amortize overhead
+4. **Profile memory usage** with `OperatorMetrics` collection
+
+### Computational Optimization
+
+1. **Backend selection**: Choose appropriate backend for network size
+   - **Numpy**: Networks < 100 nodes
+   - **Numba**: Networks 100-1000 nodes  
+   - **GPU**: Networks > 1000 nodes
+
+2. **Operator composition**: Combine compatible operators to reduce overhead
+
+3. **Sequence caching**: Cache validated sequences to avoid re-validation
+
+### Network Architecture Optimization
+
+1. **Topology awareness**: Choose operators based on network topology
+   - **Dense networks**: Favor coupling and resonance
+   - **Sparse networks**: Use expansion carefully
+   - **Scale-free**: Focus on hub stabilization
+
+2. **Load balancing**: Distribute operations across high-degree nodes
+
+3. **Hierarchical processing**: Use operational fractality for multi-scale networks
+
+---
+
+## 🛠️ Extension Framework
+
+### Adding Custom Operators
+
+To add new operators while maintaining canonicity:
+
+```python
+from tnfr.operators import Operator
+from tnfr.operators.glyphs import Glyph
+
+class CustomOperator(Operator):
+    """Custom operator following TNFR physics."""
+    
+    name: ClassVar[str] = "custom_name"
+    glyph: ClassVar[Glyph] = Glyph.CUSTOM  # Define new glyph
+    
+    def _validate_preconditions(self, G, node):
+        """Validate custom preconditions."""
+        # Implement physics-based validation
+        pass
+    
+    def _apply_operation(self, G, node):
+        """Apply custom structural transformation."""
+        # Must preserve nodal equation: ∂EPI/∂t = νf · ΔNFR
+        pass
+    
+    def _collect_metrics(self, G, node, state_before):
+        """Collect custom metrics."""
+        # Return metrics dict
+        pass
+```
+
+### Grammar Integration
+
+New operators must be classified in grammar rules:
+
+- **Generators** (U1a): Can start sequences from EPI=0
+- **Closures** (U1b): Can end sequences safely
+- **Stabilizers** (U2): Reduce ΔNFR, increase C(t)
+- **Destabilizers** (U2): Increase ΔNFR, require stabilizers
+- **Coupling-based** (U3): Require phase verification
+- **Bifurcation triggers** (U4): Need careful handling
+
+### Testing Requirements
+
+All new operators must pass:
+
+1. **Physics compliance**: Preserve nodal equation
+2. **Grammar validation**: Follow U1-U6 rules
+3. **Invariant preservation**: Maintain 10 canonical invariants
+4. **Health metrics**: Provide predictable health impact
+5. **Multi-topology testing**: Work across different network topologies
+
+---
+
+## 📚 Related Documentation
+
+- **[AGENTS.md](../AGENTS.md)**: Complete TNFR theory and canonical invariants
+- **[TROUBLESHOOTING.md](TROUBLESHOOTING.md)**: Grammar validation error solutions
+- **[CANONICAL_OZ_SEQUENCES.md](CANONICAL_OZ_SEQUENCES.md)**: Dissonance-based patterns
+- **[examples/04_operator_sequences.py](../examples/04_operator_sequences.py)**: Live operator examples
+- **[src/tnfr/operators/](../src/tnfr/operators/)**: Implementation source code
 4. **Maintain TYPE_CHECKING Guards**: For forward references without runtime cycles
 5. **Continue Modular Design**: New utilities should follow same layered approach
 

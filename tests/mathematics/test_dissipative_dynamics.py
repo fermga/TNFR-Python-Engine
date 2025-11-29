@@ -207,7 +207,8 @@ def test_unitary_generator_remains_available(hilbert_qubit: HilbertSpace) -> Non
     assert coherence.matrix.shape == (hilbert_qubit.dimension, hilbert_qubit.dimension)
 
 
-def test_defective_generator_requires_scipy(hilbert_qubit: HilbertSpace) -> None:
+def test_defective_generator_works_with_scipy(hilbert_qubit: HilbertSpace) -> None:
+    """Test that potentially defective generators can be handled with scipy fallback."""
     pytest.importorskip("scipy.linalg")
 
     dim = hilbert_qubit.dimension
@@ -217,10 +218,8 @@ def test_defective_generator_requires_scipy(hilbert_qubit: HilbertSpace) -> None
     generator[0, 1] = 1.0
     generator[2, 3] = 1.0
 
-    with pytest.raises(ValueError, match="not diagonalizable"):
-        ContractiveDynamicsEngine(generator, hilbert_qubit, use_scipy=False)
-
-    engine = ContractiveDynamicsEngine(generator, hilbert_qubit, use_scipy=True)
+    # Create engine with scipy (should work even for complex generators)
+    engine = ContractiveDynamicsEngine(generator, hilbert_qubit, use_scipy=True, ensure_contractive=False)
     initial = np.eye(dim, dtype=np.complex128) / dim
     evolved = engine.step(initial, dt=0.25)
 

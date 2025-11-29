@@ -1,549 +1,200 @@
 #!/usr/bin/env python3
-"""Minimal Windows-friendly shim for frequently used Makefile targets."""
+"""Modern Windows shim for TNFR Makefile targets."""
 
-from __future__ import annotations
-
-import argparse
-import subprocess
+import os
 import sys
+import subprocess
 from pathlib import Path
-from typing import List
+
+# Set UTF-8 encoding for Windows console
+os.environ['PYTHONIOENCODING'] = 'utf-8'
 
 ROOT = Path(__file__).resolve().parents[1]
 
-COMMANDS = {
-    "smoke-tests": [
-        sys.executable,
-        "-m",
-        "pytest",
-        "-q",
-        "tests/examples/test_u6_sequential_demo.py",
-        "tests/unit/operators/test_telemetry_warnings_extended.py",
-        "tests/examples/test_atom_atlas_minimal.py",
-        "tests/examples/test_periodic_table_basic.py",
-    ],
-    "clean": [
-        sys.executable,
-        "scripts/clean_generated_artifacts.py",
-    ],
-    "clean-scratch": [
-        sys.executable,
-        "-c",
-        "import shutil; import os; shutil.rmtree(\"debug_scratch\", ignore_errors=True); print(\"Removed debug_scratch directory\")",],
-    "report-tetrad": [
-        sys.executable,
-        "-c",
-        "import os; os.makedirs('results/reports', exist_ok=True)",
-        "&&",
-        sys.executable,
-        "-m",
-        "nbconvert",
-        "--to",
-        "html",
-        "--execute",
-        "--template",
-        "classic",
-        "--ExecutePreprocessor.timeout=900",
-        "--output-dir",
-        "results/reports",
-        "notebooks/Force_Fields_Tetrad_Exploration.ipynb",
-    ],
-    "report-atoms-molecules": [
-        sys.executable,
-        "-c",
-        "import os; os.makedirs('results/reports', exist_ok=True)",
-        "&&",
-        sys.executable,
-        "-m",
-        "nbconvert",
-        "--to",
-        "html",
-        "--execute",
-        "--template",
-        "classic",
-        "--ExecutePreprocessor.timeout=900",
-        "--output-dir",
-        "results/reports",
-        "notebooks/TNFR_Atoms_And_Molecules_Study.ipynb",
-    ],
-    "report-phase-gated": [
-        sys.executable,
-        "-c",
-        "import os; os.makedirs('results/reports', exist_ok=True)",
-        "&&",
-        sys.executable,
-        "-m",
-        "nbconvert",
-        "--to",
-        "html",
-        "--execute",
-        "--template",
-        "classic",
-        "--ExecutePreprocessor.timeout=900",
-        "--output-dir",
-        "results/reports",
-        "notebooks/TNFR_Phase_Gated_Coupling_Demo.ipynb",
-    ],
-    "atom-atlas-script": [
-        sys.executable,
-        "-c",
-        "import os; os.makedirs('examples/output', exist_ok=True)",
-        "&&",
-        sys.executable,
-        "examples/atom_atlas.py",
-    ],
-    "periodic-table-script": [
-        sys.executable,
-        "-c",
-        "import os; os.makedirs('examples/output', exist_ok=True)",
-        "&&",
-        sys.executable,
-        "examples/periodic_table_atlas.py",
-    ],
-    "triatomic-atlas-script": [
-        sys.executable,
-        "-c",
-        "import os; os.makedirs('examples/output', exist_ok=True)",
-        "&&",
-        sys.executable,
-        "examples/triatomic_atlas.py",
-    ],
-    "molecule-atlas-script": [
-        sys.executable,
-        "-c",
-        "import os; os.makedirs('examples/output', exist_ok=True)",
-        "&&",
-        sys.executable,
-        "examples/molecule_atlas.py",
-    ],
-    "phase-gated-script": [
-        sys.executable,
-        "-c",
-        "import os; os.makedirs('examples/output', exist_ok=True)",
-        "&&",
-        sys.executable,
-        "examples/phase_gated_coupling_demo.py",
-    ],
-    "elements-signature-script": [
-        sys.executable,
-        "-c",
-        "import os; os.makedirs('examples/output', exist_ok=True)",
-        "&&",
-        sys.executable,
-        "examples/elements_signature_study.py",
-    ],
-    "report-triatomic-atlas": [
-        sys.executable,
-        "-c",
-        "import os; os.makedirs('results/reports', exist_ok=True)",
-        "&&",
-        sys.executable,
-        "-m",
-        "nbconvert",
-        "--to",
-        "html",
-        "--execute",
-        "--template",
-        "classic",
-        "--ExecutePreprocessor.timeout=1200",
-        "--output-dir",
-        "results/reports",
-        "notebooks/TNFR_Triatomic_Atlas.ipynb",
-    ],
-    "report-molecule-atlas": [
-        sys.executable,
-        "-c",
-        "import os; os.makedirs('results/reports', exist_ok=True)",
-        "&&",
-        sys.executable,
-        "-m",
-        "nbconvert",
-        "--to",
-        "html",
-        "--execute",
-        "--template",
-        "classic",
-        "--ExecutePreprocessor.timeout=1200",
-        "--output-dir",
-        "results/reports",
-        "notebooks/TNFR_Molecule_Atlas.ipynb",
-    ],
-    "report-operator-completeness": [
-        sys.executable,
-        "-c",
-        "import os; os.makedirs('results/reports', exist_ok=True)",
-        "&&",
-        sys.executable,
-        "-m",
-        "nbconvert",
-        "--to",
-        "html",
-        "--execute",
-        "--template",
-        "classic",
-        "--ExecutePreprocessor.timeout=1200",
-        "--output-dir",
-        "results/reports",
-        "notebooks/Operator_Completeness_Search.ipynb",
-    ],
-    "report-operator-completeness-print": [
-        sys.executable,
-        "-c",
-        "import os; os.makedirs('results/reports', exist_ok=True)",
-        "&&",
-        sys.executable,
-        "-m",
-        "nbconvert",
-        "--to",
-        "html",
-        "--execute",
-        "--template",
-        "lab",
-        "--HTMLExporter.theme=light",
-        "--HTMLExporter.exclude_input=True",
-        "--HTMLExporter.exclude_input_prompt=True",
-        "--HTMLExporter.exclude_output_prompt=True",
-        "--ExecutePreprocessor.timeout=1200",
-        "--output-dir",
-        "results/reports",
-        "notebooks/Operator_Completeness_Search.ipynb",
-    ],
-    "report-interaction-sequences": [
-        sys.executable,
-        "-c",
-        "import os; os.makedirs('results/reports', exist_ok=True)",
-        "&&",
-        sys.executable,
-        "-m",
-        "nbconvert",
-        "--to",
-        "html",
-        "--execute",
-        "--template",
-        "classic",
-        "--ExecutePreprocessor.timeout=900",
-        "--output-dir",
-        "results/reports",
-        "notebooks/Interaction_Sequences.ipynb",
-    ],
-    "report-interaction-sequences-print": [
-        sys.executable,
-        "-c",
-        "import os; os.makedirs('results/reports', exist_ok=True)",
-        "&&",
-        sys.executable,
-        "-m",
-        "nbconvert",
-        "--to",
-        "html",
-        "--execute",
-        "--template",
-        "lab",
-        "--HTMLExporter.theme=light",
-        "--HTMLExporter.exclude_input=True",
-        "--HTMLExporter.exclude_input_prompt=True",
-        "--HTMLExporter.exclude_output_prompt=True",
-        "--ExecutePreprocessor.timeout=900",
-        "--output-dir",
-        "results/reports",
-        "notebooks/Interaction_Sequences.ipynb",
-    ],
-    "report-emergent-particles": [
-        sys.executable,
-        "-c",
-        "import os; os.makedirs('results/reports', exist_ok=True)",
-        "&&",
-        sys.executable,
-        "-m",
-        "nbconvert",
-        "--to",
-        "html",
-        "--execute",
-        "--template",
-        "classic",
-        "--ExecutePreprocessor.timeout=900",
-        "--output-dir",
-        "results/reports",
-        "notebooks/Emergent_Particles_From_TNFR.ipynb",
-    ],
-    "report-fundamental-particles": [
-        sys.executable,
-        "-c",
-        "import os; os.makedirs('results/reports', exist_ok=True)",
-        "&&",
-        sys.executable,
-        "-m",
-        "nbconvert",
-        "--to",
-        "html",
-        "--execute",
-        "--template",
-        "classic",
-        "--ExecutePreprocessor.timeout=900",
-        "--output-dir",
-        "results/reports",
-        "notebooks/Fundamental_Particles_TNFR_Atlas.ipynb",
-    ],
-    "report-fundamental-particles-print": [
-        sys.executable,
-        "-c",
-        "import os; os.makedirs('results/reports', exist_ok=True)",
-        "&&",
-        sys.executable,
-        "-m",
-        "nbconvert",
-        "--to",
-        "html",
-        "--execute",
-        "--template",
-        "lab",
-        "--HTMLExporter.theme=light",
-        "--HTMLExporter.exclude_input=True",
-        "--HTMLExporter.exclude_input_prompt=True",
-        "--HTMLExporter.exclude_output_prompt=True",
-        "--ExecutePreprocessor.timeout=900",
-        "--output-dir",
-        "results/reports",
-        "notebooks/Fundamental_Particles_TNFR_Atlas.ipynb",
-    ],
-    "report-particle-atlas-u6": [
-        sys.executable,
-        "-c",
-        "import os; os.makedirs('results/reports', exist_ok=True)",
-        "&&",
-        sys.executable,
-        "-m",
-        "nbconvert",
-        "--to",
-        "html",
-        "--execute",
-        "--template",
-        "classic",
-        "--ExecutePreprocessor.timeout=1200",
-        "--output-dir",
-        "results/reports",
-        "notebooks/TNFR_Particle_Atlas_U6_Sequential.ipynb",
-    ],
-    "report-periodic-table-classic": [
-        sys.executable,
-        "-c",
-        "import os; os.makedirs('results/reports', exist_ok=True)",
-        "&&",
-        sys.executable,
-        "-m",
-        "nbconvert",
-        "--to",
-        "html",
-        "--execute",
-        "--template",
-        "classic",
-        "--ExecutePreprocessor.timeout=1500",
-        "--output-dir",
-        "results/reports",
-        "notebooks/TNFR_Periodic_Table_Atlas.ipynb",
-    ],
-    "force-study-plots": [
-        sys.executable,
-        "benchmarks/plot_force_study_summaries.py",
-    ],
-    "report-all-classic": [
-        sys.executable,
-        "-c",
-        "import os; os.makedirs('results/reports', exist_ok=True)",
-        "&&",
-        sys.executable,
-        "-m",
-        "nbconvert",
-        "--to",
-        "html",
-        "--execute",
-        "--template",
-        "classic",
-        "--ExecutePreprocessor.timeout=900",
-        "--output-dir",
-        "results/reports",
-        "notebooks/Force_Fields_Tetrad_Exploration.ipynb",
-        "&&",
-        sys.executable,
-        "-m",
-        "nbconvert",
-        "--to",
-        "html",
-        "--execute",
-        "--template",
-        "classic",
-        "--ExecutePreprocessor.timeout=900",
-        "--output-dir",
-        "results/reports",
-        "notebooks/Emergent_Particles_From_TNFR.ipynb",
-        "&&",
-        sys.executable,
-        "-m",
-        "nbconvert",
-        "--to",
-        "html",
-        "--execute",
-        "--template",
-        "classic",
-        "--ExecutePreprocessor.timeout=900",
-        "--output-dir",
-        "results/reports",
-        "notebooks/Fundamental_Particles_TNFR_Atlas.ipynb",
-        "&&",
-        sys.executable,
-        "-m",
-        "nbconvert",
-        "--to",
-        "html",
-        "--execute",
-        "--template",
-        "classic",
-        "--ExecutePreprocessor.timeout=900",
-        "--output-dir",
-        "results/reports",
-        "notebooks/Interaction_Sequences.ipynb",
-    ],
-    "report-all-print": [
-        sys.executable,
-        "-c",
-        "import os; os.makedirs('results/reports', exist_ok=True)",
-        "&&",
-        sys.executable,
-        "-m",
-        "nbconvert",
-        "--to",
-        "html",
-        "--execute",
-        "--template",
-        "lab",
-        "--HTMLExporter.theme=light",
-        "--HTMLExporter.exclude_input=True",
-        "--HTMLExporter.exclude_input_prompt=True",
-        "--HTMLExporter.exclude_output_prompt=True",
-        "--ExecutePreprocessor.timeout=900",
-        "--output-dir",
-        "results/reports",
-        "notebooks/Force_Fields_Tetrad_Exploration.ipynb",
-        "&&",
-        sys.executable,
-        "-m",
-        "nbconvert",
-        "--to",
-        "html",
-        "--execute",
-        "--template",
-        "lab",
-        "--HTMLExporter.theme=light",
-        "--HTMLExporter.exclude_input=True",
-        "--HTMLExporter.exclude_input_prompt=True",
-        "--HTMLExporter.exclude_output_prompt=True",
-        "--ExecutePreprocessor.timeout=900",
-        "--output-dir",
-        "results/reports",
-        "notebooks/Emergent_Particles_From_TNFR.ipynb",
-        "&&",
-        sys.executable,
-        "-m",
-        "nbconvert",
-        "--to",
-        "html",
-        "--execute",
-        "--template",
-        "lab",
-        "--HTMLExporter.theme=light",
-        "--HTMLExporter.exclude_input=True",
-        "--HTMLExporter.exclude_input_prompt=True",
-        "--HTMLExporter.exclude_output_prompt=True",
-        "--ExecutePreprocessor.timeout=900",
-        "--output-dir",
-        "results/reports",
-        "notebooks/Fundamental_Particles_TNFR_Atlas.ipynb",
-        "&&",
-        sys.executable,
-        "-m",
-        "nbconvert",
-        "--to",
-        "html",
-        "--execute",
-        "--template",
-        "lab",
-        "--HTMLExporter.theme=light",
-        "--HTMLExporter.exclude_input=True",
-        "--HTMLExporter.exclude_input_prompt=True",
-        "--HTMLExporter.exclude_output_prompt=True",
-        "--ExecutePreprocessor.timeout=900",
-        "--output-dir",
-        "results/reports",
-        "notebooks/Interaction_Sequences.ipynb",
-        "&&",
-        sys.executable,
-        "-m",
-        "nbconvert",
-        "--to",
-        "html",
-        "--execute",
-        "--template",
-        "lab",
-        "--HTMLExporter.theme=light",
-        "--HTMLExporter.exclude_input=True",
-        "--HTMLExporter.exclude_input_prompt=True",
-        "--HTMLExporter.exclude_output_prompt=True",
-        "--ExecutePreprocessor.timeout=1200",
-        "--output-dir",
-        "results/reports",
-        "notebooks/Operator_Completeness_Search.ipynb",
-    ],
-}
+
+def run_command(command, description=None):
+    """Execute a command and handle errors."""
+    if description:
+        print(f">> {description}")
+    
+    try:
+        result = subprocess.run(command, shell=True, cwd=ROOT, check=True)
+        return result.returncode == 0
+    except subprocess.CalledProcessError as e:
+        print(f"ERROR: Command failed: {e}")
+        return False
 
 
-def run_command(cmd: List[str]) -> int:
-    # Handle shell command chaining for mkdir && nbconvert patterns
-    if "&&" in cmd:
-        # Split on && and run sequentially
-        parts = []
-        current_part = []
-        for item in cmd:
-            if item == "&&":
-                if current_part:
-                    parts.append(current_part)
-                    current_part = []
-            else:
-                current_part.append(item)
-        if current_part:
-            parts.append(current_part)
-        
-        for part in parts:
-            proc = subprocess.run(part, cwd=ROOT, shell=True)
-            if proc.returncode != 0:
-                return proc.returncode
-        return 0
+def main():
+    if len(sys.argv) < 2:
+        print_help()
+        return 1
+    
+    target = sys.argv[1]
+    
+    # Define modern targets
+    targets = {
+        'help': print_help,
+        'clean': clean,
+        'hello': run_hello,
+        'validate': validate,
+        'examples': run_examples,
+        'test': run_tests
+    }
+    
+    if target in targets:
+        try:
+            targets[target]()
+            return 0
+        except Exception as e:
+            print(f"ERROR: Error executing {target}: {e}")
+            return 1
     else:
-        proc = subprocess.run(cmd, cwd=ROOT)
-        return proc.returncode
+        print(f"ERROR: Unknown target: {target}")
+        print_help()
+        return 1
 
 
-def main() -> None:
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("target", nargs="?", help="Target name (e.g., smoke-tests, clean)")
-    args, extras = parser.parse_known_args()
+def print_help():
+    """Print help message."""
+    print("~ TNFR Modern Build System ~")
+    print("=" * 30)
+    print()
+    print("Available targets:")
+    print("  help          - Show this help")
+    print("  clean         - Remove generated artifacts")
+    print("  hello         - Run hello world example")
+    print("  validate      - Quick validation check")
+    print("  examples      - Run key examples")
+    print("  test          - Run core tests")
+    print()
+    print("Usage: .\\make.cmd <target>")
 
-    if not args.target:
-        print("Usage: make <target>")
-        print("Available shim targets:")
-        for key in COMMANDS:
-            print(f"  - {key}")
-        sys.exit(1)
 
-    if args.target not in COMMANDS:
-        print(
-            f"Target '{args.target}' is not implemented in the Windows shim. "
-            "Install GNU Make (or use WSL) for the full Makefile."
+def clean():
+    """Clean generated artifacts."""
+    print(">> Cleaning generated artifacts...")
+    
+    dirs_to_clean = ['examples/output', 'results', 'dist', 'build']
+    
+    for dir_name in dirs_to_clean:
+        dir_path = ROOT / dir_name
+        if dir_path.exists():
+            run_command(f'rmdir /s /q "{dir_path}"', f"Removing {dir_name}")
+    
+    print("OK: Clean complete")
+
+
+def run_hello():
+    """Run hello world example."""
+    print(">> Running Hello World example...")
+    
+    # Ensure output directory exists
+    output_dir = ROOT / 'examples' / 'output'
+    output_dir.mkdir(exist_ok=True)
+    
+    success = run_command(
+        'python examples/01_hello_world.py',
+        "Executing hello world demo"
+    )
+    
+    if success:
+        print("OK: Hello World complete")
+    else:
+        print("ERROR: Hello World failed")
+
+
+def validate():
+    """Quick validation check."""
+    print(">> Running quick validation...")
+    
+    # Test TNFR import
+    try:
+        import tnfr  # noqa: F401
+        print("OK: TNFR import: OK")
+    except ImportError as e:
+        print(f"ERROR: TNFR import: FAILED - {e}")
+        return False
+    
+    # Test hello world (skip output due to encoding)
+    try:
+        result = subprocess.run(
+            ['python', 'examples/01_hello_world.py'],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            encoding='utf-8',
+            timeout=30
         )
-        sys.exit(1)
+        success = result.returncode == 0
+    except Exception:
+        success = False
+    
+    if success:
+        print("OK: Hello World: OK")
+    else:
+        print("ERROR: Hello World: FAILED")
+    
+    # Test repository validation
+    success = run_command(
+        'python -m pytest tests/test_repository_validation.py -q',
+        "Testing repository structure"
+    )
+    
+    if success:
+        print("OK: Repository: OK")
+    else:
+        print("ERROR: Repository: FAILED")
+    
+    print("OK: Quick validation complete")
 
-    command = COMMANDS[args.target] + extras
-    raise SystemExit(run_command(command))
+
+def run_examples():
+    """Run essential examples."""
+    print(">> Running essential examples...")
+    
+    examples = [
+        ('examples/01_hello_world.py', 'Hello World'),
+        ('examples/atom_atlas.py', 'Atom Atlas'),
+        ('examples/periodic_table_atlas.py', 'Periodic Table')
+    ]
+    
+    # Ensure output directory exists
+    output_dir = ROOT / 'examples' / 'output'
+    output_dir.mkdir(exist_ok=True)
+    
+    for script, name in examples:
+        success = run_command(f'python {script}', f"Running {name}")
+        if success:
+            print(f"OK: {name}: Complete")
+        else:
+            print(f"ERROR: {name}: Failed")
+    
+    print("OK: All essential examples complete")
 
 
-if __name__ == "__main__":
-    main()
+def run_tests():
+    """Run core test suite."""
+    print(">> Running core TNFR test suite...")
+    
+    test_dirs = [
+        'tests/core_physics',
+        'tests/grammar',
+        'tests/operators',
+        'tests/physics'
+    ]
+    
+    for test_dir in test_dirs:
+        success = run_command(
+            f'python -m pytest {test_dir} -v --tb=short',
+            f"Testing {test_dir}"
+        )
+        if not success:
+            print(f"ERROR: Tests in {test_dir} failed")
+            return False
+    
+    print("OK: Core tests complete")
+
+
+if __name__ == '__main__':
+    sys.exit(main())

@@ -443,7 +443,7 @@ def _compute_phase_transport_derivative(
     from ..constants.canonical import INV_PHI, GAMMA_PI_RATIO, PI_MINUS_E_OVER_PI
     
     # Physics coefficients (RECALIBRATED from canonical constants)
-    alpha = INV_PHI                 # 1/φ ≈ 0.618 (autoorganización áurea inversa)
+    alpha = INV_PHI                 # 1/φ ≈ 0.618 (inverse golden self-organization)
     beta = GAMMA_PI_RATIO           # γ/(π+γ) ≈ 0.155 (sensibilidad euleriana-pi)  
     gamma = PI_MINUS_E_OVER_PI      # (π-e)/π ≈ 0.135 (eficiencia transcendental)
     
