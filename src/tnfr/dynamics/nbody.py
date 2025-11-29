@@ -147,6 +147,7 @@ from typing import TYPE_CHECKING, Any, Dict, List, Tuple, Optional
 import numpy as np
 from numpy.typing import NDArray
 
+from ..constants.canonical import EPI_MAX_CANONICAL
 from ..structural import create_nfr
 from ..types import TNFRGraph
 
@@ -384,8 +385,8 @@ class NBodySystem:
         self.softening = float(softening)
 
         # State vectors
-        self.positions = np.zeros((n_bodies, 3), dtype=float)
-        self.velocities = np.zeros((n_bodies, 3), dtype=float)
+        self.positions: NDArray[np.floating] = np.zeros((n_bodies, 3), dtype=float)
+        self.velocities: NDArray[np.floating] = np.zeros((n_bodies, 3), dtype=float)
         self.time = 0.0
 
         # Create TNFR graph representation
@@ -406,6 +407,9 @@ class NBodySystem:
         self.graph: TNFRGraph = nx.Graph()
         self.graph.graph["name"] = "nbody_system"
 
+        # Canonical EPI seed stays below validation bound (φ/e ≈ 0.5952).
+        epi_seed = min(0.5, EPI_MAX_CANONICAL * 0.95)
+
         # Add nodes with TNFR attributes
         for i in range(self.n_bodies):
             node_id = f"body_{i}"
@@ -416,7 +420,7 @@ class NBodySystem:
             # Create NFR node
             _, _ = create_nfr(
                 node_id,
-                epi=1.0,  # Will be overwritten by set_state
+                epi=epi_seed,  # Will be overwritten by set_state
                 vf=nu_f,
                 theta=0.0,  # Phase (for rotating systems)
                 graph=self.graph,
@@ -739,7 +743,7 @@ class NBodySystem:
                 traj[:, 1],
                 traj[:, 2],
                 color=colors[i],
-                label=f"Body {i+1} (m={self.masses[i]:.2f})",
+                label=f"Body {i + 1} (m={self.masses[i]:.2f})",
                 alpha=0.7,
             )
             # Mark initial position

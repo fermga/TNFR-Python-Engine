@@ -44,6 +44,7 @@ else:  # pragma: no cover - runtime fallback without numpy.typing
 
 __all__ = (
     "TNFRGraph",
+    "TNFRNode",
     "Graph",
     "ValidatorFunc",
     "NodeId",
@@ -128,6 +129,9 @@ else:  # pragma: no cover - runtime fallback without networkx
     _HistoryDict = Any  # type: ignore[assignment]
     _Token = Any  # type: ignore[assignment]
 #: Graph container storing TNFR nodes, edges and their coherence telemetry.
+
+TNFRNode: TypeAlias = MutableMapping[str, Any]
+#: Mutable mapping representing a TNFR node's state (EPI, νf, ΔNFR, etc.).
 
 if TYPE_CHECKING:
     FloatArray: TypeAlias = npt.NDArray[np.float64]

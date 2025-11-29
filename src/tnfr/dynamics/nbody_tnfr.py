@@ -90,6 +90,7 @@ from typing import TYPE_CHECKING, Any, Dict, List, Tuple
 import numpy as np
 from numpy.typing import NDArray
 
+from ..constants.canonical import EPI_MAX_CANONICAL
 from ..structural import create_nfr
 from ..types import TNFRGraph
 from ..operators.hamiltonian import InternalHamiltonian
@@ -322,6 +323,8 @@ class TNFRNBodySystem:
         self.graph.graph["H_COUPLING_STRENGTH"] = self.coupling_strength
         self.graph.graph["H_COH_STRENGTH"] = self.coherence_strength
 
+        epi_seed = min(0.5, EPI_MAX_CANONICAL * 0.95)
+
         # Add nodes with TNFR attributes
         for i in range(self.n_bodies):
             node_id = f"body_{i}"
@@ -339,7 +342,7 @@ class TNFRNBodySystem:
             # We'll override it immediately
             _, _ = create_nfr(
                 node_id,
-                epi=1.0,  # Temporary, will be overwritten
+                epi=epi_seed,  # Temporary, will be overwritten
                 vf=nu_f,
                 theta=float(self.phases[i]),
                 graph=self.graph,
@@ -508,7 +511,7 @@ class TNFRNBodySystem:
 
         # Phase diffs: theta_j - theta_i
         theta = self.phases
-        phase_diff = theta[None, :] - theta[:, None]
+        phase_diff: NDArray[np.floating] = theta[None, :] - theta[:, None]
 
         # Coherence factor: positive when in-phase, negative when anti-phase
         coherence_factor = np.cos(phase_diff)
@@ -701,7 +704,7 @@ class TNFRNBodySystem:
                 traj[:, 1],
                 traj[:, 2],
                 color=colors[i],
-                label=f"Body {i+1} (m={self.masses[i]:.2f})",
+                label=f"Body {i + 1} (m={self.masses[i]:.2f})",
                 alpha=0.7,
             )
             ax_3d.scatter(traj[0, 0], traj[0, 1], traj[0, 2], color=colors[i], s=100, marker="o")
@@ -748,7 +751,7 @@ class TNFRNBodySystem:
                     time,
                     phases[:, i],
                     color=colors[i],
-                    label=f"Body {i+1}",
+                    label=f"Body {i + 1}",
                     linewidth=2,
                 )
 
