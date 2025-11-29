@@ -1,6 +1,6 @@
 # Contributing to TNFR
 
-**Version**: 9.7.0  
+**Version**: 0.0.1  
 **Status**: Complete theoretical framework with Universal Tetrahedral Correspondence  
 **Authority**: Canonical constants derived from TNFR theory  
 **Quality**: Production-ready with comprehensive test coverage  

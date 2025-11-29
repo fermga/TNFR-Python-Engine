@@ -1249,7 +1249,7 @@ Reality consists of resonant patterns rather than discrete objects. Development 
 
 ---
 
-**Version**: 9.7.0  
+**Version**: 0.0.1  
 **Last Updated**: 2025-11-29  
 **Status**: CANONICAL - Single source of truth for TNFR agent guidance  
 **PyPI Release**: STABLE - Available via `pip install tnfr`  

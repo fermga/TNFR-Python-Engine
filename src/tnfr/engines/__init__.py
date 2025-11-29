@@ -67,5 +67,5 @@ except ImportError:
     pass
 
 # Version info
-__version__ = "9.7.0"
+__version__ = "0.0.1"
 __engines_hub_version__ = "1.0.0"

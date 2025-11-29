@@ -76,4 +76,4 @@ All engines implement TNFR principles:
 - **Canonical invariants**: 6 fundamental preservation laws
 - **Structural field tetrad**: Complete multi-scale characterization
 
-**Status**: Production ready, fully integrated with TNFR v9.7.0
+**Status**: Production ready, fully integrated with TNFR v0.0.1

@@ -172,8 +172,8 @@ tnfr-is-prime = "tnfr.tools.tnfr_is_prime_cli:main"
 Homepage = "https://github.com/fermga/TNFR-Python-Engine"
 Repository = "https://github.com/fermga/TNFR-Python-Engine"
 PyPI = "https://pypi.org/project/tnfr/"
-Citation = "https://doi.org/10.5281/zenodo.17602861"
-Zenodo = "https://zenodo.org/records/17602861"
+Citation = "https://doi.org/10.5281/zenodo.17761312"
+Zenodo = "https://zenodo.org/records/17761312"
 Issues = "https://github.com/fermga/TNFR-Python-Engine/issues"
 Documentation = "https://fermga.github.io/TNFR-Python-Engine/"
 GPT = "https://chatgpt.com/g/g-67abc78885a88191b2d67f94fd60dc97-tnfr-resonant-fractal-nature-theory"
@@ -191,7 +191,7 @@ include = ["tnfr", "tnfr.*"]
 tag_regex = '^v(?P<version>[0-9]+\.[0-9]+\.[0-9]+)$'
 local_scheme = "no-local-version"
 write_to = "src/tnfr/_generated_version.py"
-fallback_version = "9.7.0"
+fallback_version = "0.0.1"
 
 [tool.semantic_release]
 version_source = "tag"
