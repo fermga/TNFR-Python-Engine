@@ -195,7 +195,16 @@ def _check_adjacent_compatibility(
         level = get_compatibility_level(prev, cur)
         if level == CompatibilityLevel.AVOID:
             if prev == "silence":
-                msg = f"invalid after silence: {prev} → {cur}"
+                if cur == "silence":
+                    msg = f"redundant consecutive silence operations: {prev} → {cur} (duplicate effect, no structural purpose)"
+                elif cur == "dissonance":
+                    msg = (
+                        "silence → dissonance contradicts structural theory: "
+                        "νf≈0 (paused) cannot generate ΔNFR tension. "
+                        "Alternatives: SHA→AL→OZ or SHA→NAV→OZ"
+                    )
+                else:
+                    msg = f"invalid after silence: {prev} → {cur}"
             elif cur == "mutation":
                 # Special case: mutation requires dissonance (R4)
                 msg = (
@@ -203,7 +212,7 @@ def _check_adjacent_compatibility(
                     f"Transition {prev} → {cur} incompatible"
                 )
             else:
-                msg = f"transition {prev} → {cur} contradicts canonical flow"
+                msg = f"operator transition {prev} → {cur} contradicts canonical flow"
             return False, i, msg
         prev = cur
     return True, None, None
@@ -398,8 +407,12 @@ def validate_sequence(
             metadata=meta,
         )
 
-    # Must have stabilizer (IL or THOL) unless diagnostic ephemeral pattern
-    if not any(t in {"coherence", "self_organization"} for t in tokens):
+    # U2: Destabilizers require stabilizers (IL or THOL)
+    destabilizers = {"dissonance", "mutation", "expansion", "contraction"}
+    has_destabilizer = any(t in destabilizers for t in tokens)
+    has_stabilizer = any(t in {"coherence", "self_organization"} for t in tokens)
+    
+    if has_destabilizer and not has_stabilizer:
         diag = bool(context.get("diagnostic", False)) if context else False
         if not (
             diag and len(tokens) == 2 and tokens == ["dissonance", "mutation"]

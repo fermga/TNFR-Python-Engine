@@ -48,6 +48,15 @@ try:
 except ImportError:
     HAS_MATH_BACKENDS = False
 
+# Import PHASE 6 FINAL Canonical Constants for magic number elimination
+from ..constants.canonical import (
+    FFT_ARITHMETIC_IMPORTANCE_CANONICAL,  # π ≈ 3.1416 (3.0 → canonical)
+    FFT_LOW_CUTOFF_CANONICAL,            # φ/(φ+π) ≈ 0.3399 (0.5 → canonical)
+    FFT_HIGH_CUTOFF_CANONICAL,           # φ/e ≈ 0.5952 (1.5 → canonical)
+    FFT_BANDWIDTH_CANONICAL,             # γ/(π+e) ≈ 0.0985 (0.1 → canonical)
+    FFT_COHERENT_THRESHOLD_CANONICAL     # φ/(φ+1) ≈ 0.6180 (0.5 → canonical)
+)
+
 # Import spectral analysis
 try:
     from ..mathematics.spectral import get_laplacian_spectrum, gft, igft
@@ -207,7 +216,7 @@ class TNFRAdvancedFFTEngine:
                     CacheEntryType.SPECTRAL_DECOMPOSITION,
                     G,
                     computation_func=lambda: get_laplacian_spectrum(G),
-                    mathematical_importance=3.0
+                    mathematical_importance=FFT_ARITHMETIC_IMPORTANCE_CANONICAL  # π ≈ 3.1416 → canonical
                 )
             else:
                 eigenvalues, eigenvectors = get_laplacian_spectrum(G)
@@ -491,12 +500,12 @@ class TNFRAdvancedFFTEngine:
             attenuation = np.maximum(safe_cutoff - frequencies, 0.0)
             response = 1.0 - np.exp(-attenuation * filter_order / safe_cutoff)
         elif filter_type == "bandpass":
-            low_cutoff = safe_cutoff * 0.5
-            high_cutoff = safe_cutoff * 1.5
+            low_cutoff = safe_cutoff * FFT_LOW_CUTOFF_CANONICAL  # φ/(φ+π) ≈ 0.3399 → canonical
+            high_cutoff = safe_cutoff * FFT_HIGH_CUTOFF_CANONICAL  # φ/e ≈ 0.5952 → canonical
             response = np.exp(-np.maximum(low_cutoff - frequencies, 0.0) * filter_order / safe_cutoff)
             response *= np.exp(-np.maximum(frequencies - high_cutoff, 0.0) * filter_order / safe_cutoff)
         elif filter_type == "notch":
-            bandwidth = safe_cutoff * 0.1
+            bandwidth = safe_cutoff * FFT_BANDWIDTH_CANONICAL  # γ/(π+e) ≈ 0.0985 → canonical
             distance = np.abs(frequencies - safe_cutoff)
             response = 1.0 - np.exp(-(bandwidth - distance).clip(min=0.0) * filter_order / safe_cutoff)
         else:
@@ -556,7 +565,7 @@ class TNFRAdvancedFFTEngine:
         # Compute overall coherence metrics
         mean_coherence = np.mean(coherence)
         max_coherence = np.max(coherence)
-        coherent_bandwidth = np.sum(coherence > 0.5) / len(coherence)  # Fraction above threshold
+        coherent_bandwidth = np.sum(coherence > FFT_COHERENT_THRESHOLD_CANONICAL) / len(coherence)  # φ/(φ+1) ≈ 0.6180 → canonical (Fraction above threshold)
         
         execution_time = time.perf_counter() - start_time
         

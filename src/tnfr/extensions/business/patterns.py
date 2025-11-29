@@ -1,5 +1,14 @@
 """Business domain pattern definitions."""
 
+from ...config.defaults_core import MIN_BUSINESS_COHERENCE, MIN_BUSINESS_SENSE_INDEX
+from ...constants.canonical import (
+    BUSINESS_COHERENCE_BASELINE,
+    BUSINESS_COHERENCE_GOOD,
+    BUSINESS_COHERENCE_EXCELLENT,
+    BUSINESS_SI_BASELINE,
+    BUSINESS_SI_GOOD,
+    BUSINESS_SI_EXCELLENT,
+)
 from ..base import PatternDefinition
 
 # Change Management Pattern
@@ -13,8 +22,8 @@ CHANGE_MANAGEMENT = PatternDefinition(
         "Cultural change program",
     ],
     health_requirements={
-        "min_coherence": 0.75,
-        "min_sense_index": 0.70,
+        "min_coherence": MIN_BUSINESS_COHERENCE,
+        "min_sense_index": MIN_BUSINESS_SENSE_INDEX,
     },
     domain_context={
         "real_world_mapping": (
@@ -43,7 +52,7 @@ CHANGE_MANAGEMENT = PatternDefinition(
                 "self_organization",
                 "coherence",
             ],
-            "health_metrics": {"C_t": 0.81, "Si": 0.77},
+            "health_metrics": {"C_t": BUSINESS_COHERENCE_BASELINE * 1.019, "Si": BUSINESS_SI_BASELINE * 1.017},  # Digital transformation canonical
         },
         {
             "name": "Cultural Shift",
@@ -55,7 +64,7 @@ CHANGE_MANAGEMENT = PatternDefinition(
                 "self_organization",
                 "coherence",
             ],
-            "health_metrics": {"C_t": 0.79, "Si": 0.75},
+            "health_metrics": {"C_t": BUSINESS_COHERENCE_GOOD * 0.976, "Si": BUSINESS_SI_GOOD * 0.963},  # Cultural shift canonical
         },
         {
             "name": "Merger Integration",
@@ -83,8 +92,8 @@ WORKFLOW_OPTIMIZATION = PatternDefinition(
         "Bottleneck elimination",
     ],
     health_requirements={
-        "min_coherence": 0.75,
-        "min_sense_index": 0.70,
+        "min_coherence": MIN_BUSINESS_COHERENCE,
+        "min_sense_index": MIN_BUSINESS_SENSE_INDEX,
     },
     domain_context={
         "real_world_mapping": (
@@ -134,8 +143,8 @@ TEAM_ALIGNMENT = PatternDefinition(
         "Strategic alignment meeting",
     ],
     health_requirements={
-        "min_coherence": 0.75,
-        "min_sense_index": 0.70,
+        "min_coherence": MIN_BUSINESS_COHERENCE,
+        "min_sense_index": MIN_BUSINESS_SENSE_INDEX,
     },
     domain_context={
         "real_world_mapping": (

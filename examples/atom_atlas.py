@@ -138,7 +138,7 @@ def render_html(result: Dict[str, Any], *, out_path: str) -> None:
                 "kphi": PHASE_CURVATURE_ABS_THRESHOLD,
             }
         ),
-        "<p>Read-only telemetry demo on a radial topology (nucleus + shell). Thresholds: |∇φ|<0.38, |K_φ|<3.0; locality gate uses ξ_C vs mean path length.</p>",
+        "<p>Read-only telemetry demo on a radial topology (nucleus + shell). Thresholds: |∇φ|<0.2904, |K_φ|<3.0; locality gate uses ξ_C vs mean path length.</p>",
         "<h2>Global Summaries</h2>",
         f"<p>Φ_s snapshot — mean: {phi['mean']:.3f}, min: {phi['min']:.3f}, max: {phi['max']:.3f}</p>",
         f"<p>ξ_C (coherence length): {xi_c:.2f} — regime: {'local' if regime_local else 'non-local'}</p>",

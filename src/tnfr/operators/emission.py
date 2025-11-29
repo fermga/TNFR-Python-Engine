@@ -16,6 +16,7 @@ from ..config.operator_names import EMISSION
 from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI
 from ..types import Glyph, TNFRGraph
 from .definitions_base import Operator
+from ..dynamics.feedback import StructuralFeedbackLoop
 
 
 class Emission(Operator):
@@ -185,13 +186,29 @@ class Emission(Operator):
                 current_epi = float(get_attr(G.nodes[node], ALIAS_EPI, 0.0))
                 epi_drift = abs(current_epi - preserved_epi)
 
-                # Allow small numerical drift (1% tolerance)
-                if epi_drift > 0.01 * abs(preserved_epi):
+                # Enhanced tolerance for initial nodes and dynamic networks
+                # For initial nodes (preserved_epi ≈ 0), use absolute threshold
+                # For established nodes, use relative threshold
+                if abs(preserved_epi) < 1e-6:  # Initial node
+                    # Theoretical tolerance from Tetrahedral Correspondence (φ, γ, π, e)
+                    # EPI_THRESHOLD = (1/(φ + γ/π)) * φ/e ≈ 0.330
+                    # This respects TNFR nodal dynamics: ∂EPI/∂t = νf · ΔNFR
+                    # Initial nodes can evolve according to canonical limits
+                    tolerance = StructuralFeedbackLoop.EPI_THRESHOLD  # ≈ 0.330
+                    should_warn = epi_drift > tolerance
+                else:  # Established node
+                    # Use 1% relative tolerance for established nodes
+                    tolerance = 0.01 * abs(preserved_epi)
+                    should_warn = epi_drift > tolerance
+
+                if should_warn:
+                    # Different message based on node type
+                    node_type = "initial" if abs(preserved_epi) < 1e-6 else "established"
                     warnings.warn(
-                        f"Node {node} EPI drifted during silence "
+                        f"Node {node} ({node_type}) EPI drifted during silence "
                         f"(preserved: {preserved_epi:.3f}, "
                         f"current: {current_epi:.3f}, "
-                        f"drift: {epi_drift:.3f})",
+                        f"drift: {epi_drift:.3f}, tolerance: {tolerance:.3f})",
                         stacklevel=3,
                     )
 
@@ -203,6 +220,8 @@ class Emission(Operator):
                 del G.nodes[node]["preserved_epi"]
             if "silence_duration" in G.nodes[node]:
                 del G.nodes[node]["silence_duration"]
+            if "was_initial_on_silence" in G.nodes[node]:
+                del G.nodes[node]["was_initial_on_silence"]
 
     def _mark_irreversibility(self, G: TNFRGraph, node: Any) -> None:
         """Mark structural irreversibility for AL operator.

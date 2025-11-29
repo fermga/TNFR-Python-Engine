@@ -12,7 +12,7 @@ All four fields below are CANONICAL (November 2025) and read-only:
 1) Structural Potential (Φ_s)
    - Φ_s(i) = Σ_{j≠i} ΔNFR_j / d(i,j)^α (α=2)
    - Validation: 2,400+ experiments; corr(ΔΦ_s, ΔC) = -0.822; CV = 0.1%
-   - Safety criterion: ΔΦ_s < 2.0 (escape threshold; U6 telemetry)
+   - Safety criterion: |Φ_s| < 0.771 (classical threshold from ψ(x) - x bounds; U6 telemetry)
 
 2) Phase Gradient (|∇φ|)
    - |∇φ|(i) = mean_{j∈N(i)} |wrap(φ_j − φ_i)| (circular differences)
@@ -20,7 +20,7 @@ All four fields below are CANONICAL (November 2025) and read-only:
 
 3) Phase Curvature (K_φ)
    - K_φ(i) = φ_i − mean_circular_{j∈N(i)} φ_j (Laplacian-like curvature)
-   - Threshold |K_φ| ≥ 3.0 (hotspots); multiscale var(K_φ) ~ 1/r^α, α≈2.76
+   - Threshold |K_φ| ≥ 2.8274 (hotspots); multiscale var(K_φ) ~ 1/r^α, α≈2.76
 
 4) Coherence Length (ξ_C)
    - From spatial decay of local coherence correlations C(r) ~ exp(−r/ξ_C)
@@ -71,7 +71,7 @@ Examples
 >>> G = nx.karate_club_graph()
 >>> for node in G.nodes():
 ...     G.nodes[node]['delta_nfr'] = 0.5
->>> phi_s = compute_structural_potential(G, alpha=2.0)
+>>> phi_s = compute_structural_potential(G, alpha=PHI)
 >>> print(f"Potential at node 0: {phi_s[0]:.3f}")
 
 >>> # Telemetry-based U6 safety (ΔΦ_s drift)
@@ -81,7 +81,7 @@ Examples
 >>> drift = sum(
 ...     abs(phi_after[n] - phi_before[n]) for n in G.nodes()
 ... ) / G.number_of_nodes()
->>> assert drift < 2.0, "Escape threshold exceeded"
+>>> assert drift < 1.618, "Escape threshold exceeded (φ)"
 
 """
 

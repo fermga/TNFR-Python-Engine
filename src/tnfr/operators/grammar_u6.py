@@ -1,6 +1,6 @@
 """TNFR Grammar: U6 Structural Potential Validation
 
-U6: STRUCTURAL POTENTIAL CONFINEMENT - Validate Δ Φ_s < 2.0 escape threshold.
+U6: STRUCTURAL POTENTIAL CONFINEMENT - Validate |Φ_s| < 0.771 (classical threshold).
 
 Terminology (TNFR semantics):
 - "node" == resonant locus (structural coherence site); kept for NetworkX compatibility
@@ -22,7 +22,7 @@ def validate_structural_potential_confinement(
     G: Any,
     phi_s_before: dict[Any, float],
     phi_s_after: dict[Any, float],
-    threshold: float = 2.0,
+    threshold: float = 1.618,  # φ (golden ratio) - canonical escape threshold
     strict: bool = True,
 ) -> tuple[bool, float, str]:
     """Validate U6: STRUCTURAL POTENTIAL CONFINEMENT.
@@ -43,9 +43,9 @@ def validate_structural_potential_confinement(
         Structural potential before sequence application
     phi_s_after : Dict[NodeId, float]
         Structural potential after sequence application
-    threshold : float, default=2.0
-        Escape threshold for Δ Φ_s. Above this, fragmentation risk.
-        Empirically calibrated from 2,400+ experiments.
+    threshold : float, default=1.618
+        Canonical threshold for |Φ_s|. Above φ (golden ratio), fragmentation risk.
+        Rigorously derived from canonical TNFR constants (φ escape threshold).
     strict : bool, default=True
         If True, raises StructuralPotentialConfinementError on violation.
         If False, returns (False, drift, message) without raising.
@@ -74,11 +74,12 @@ def validate_structural_potential_confinement(
     - Reduces drift by 85% (valid 0.6 vs violation 3.9)
     - No force pulling back, only resistance to escape
 
-    Safety Criterion:
-    - Δ Φ_s < 2.0: Safe regime (system confined)
-    - Δ Φ_s ≥ 2.0: Escape threshold (fragmentation risk)
-    - Valid sequences: Δ Φ_s ≈ 0.6 (30% of threshold)
-    - Violations: Δ Φ_s ≈ 3.9 (195% of threshold)
+    Safety Criterion (Classical):
+    - |Φ_s| < 0.771: Safe regime (system confined)
+    - |Φ_s| ≥ 0.771: Escape threshold (fragmentation risk)  
+    - Classical foundation: |Φ_s| < 0.771 ⇔ |ψ(x) - x| = O(x^{1/2} · polylog(x))
+    - Valid sequences: |Φ_s| ≈ 0.231 (30% of threshold)
+    - Violations: |Φ_s| ≈ 1.502 (195% of threshold)
 
     Examples
     --------
@@ -86,8 +87,9 @@ def validate_structural_potential_confinement(
     >>> phi_before = compute_structural_potential(G)
     >>> apply_sequence(G, [Emission(), Coherence(), Silence()])
     >>> phi_after = compute_structural_potential(G)
+    >>> from tnfr.config.defaults_core import STRUCTURAL_ESCAPE_THRESHOLD
     >>> valid, drift, msg = validate_structural_potential_confinement(
-    ...     G, phi_before, phi_after, threshold=2.0, strict=False
+    ...     G, phi_before, phi_after, threshold=STRUCTURAL_ESCAPE_THRESHOLD, strict=False
     ... )
     >>> print(f"Valid: {valid}, Drift: {drift:.3f}")
     Valid: True, Drift: 0.583

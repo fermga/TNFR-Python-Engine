@@ -16,9 +16,12 @@ Status: EXPERIMENTAL → CANONICAL TRANSITION
 """
 
 import numpy as np
-from typing import Dict, Any, Optional, Tuple, List, Union
+from typing import Dict, Any, Optional, Tuple, List, Union, TYPE_CHECKING
 from dataclasses import dataclass
 import time
+
+if TYPE_CHECKING:
+    from .fft_cache_coordinator import FFTCacheCoordinator
 
 try:
     import networkx as nx
@@ -44,11 +47,15 @@ except ImportError:
 
 # Import FFT cache coordinator
 try:
-    from .fft_cache_coordinator import FFTCacheCoordinator, get_fft_cache_coordinator
+    from .fft_cache_coordinator import get_fft_cache_coordinator
     HAS_FFT_CACHE = True
 except ImportError:
     HAS_FFT_CACHE = False
-    FFTCacheCoordinator = None
+
+# Import PHASE 6 FINAL Canonical Constants for magic number elimination
+from ..constants.canonical import (
+    FFT_ENGINE_COUPLING_CANONICAL  # γ/(π+e) ≈ 0.0985 (0.1 → canonical)
+)
 
 
 @dataclass
@@ -73,7 +80,7 @@ class FFTDynamicsEngine:
     def __init__(
         self, 
         enable_caching: bool = True,
-        cache_coordinator: Optional[FFTCacheCoordinator] = None
+        cache_coordinator: Optional["FFTCacheCoordinator"] = None
     ):
         self.enable_caching = enable_caching
         self.cache_coordinator = (
@@ -234,7 +241,7 @@ class FFTDynamicsEngine:
         
         # Add coupling effects (simplified Kuramoto dynamics)
         if HAS_NETWORKX and G is not None:
-            coupling_strength = 0.1
+            coupling_strength = FFT_ENGINE_COUPLING_CANONICAL  # γ/(π+e) ≈ 0.0985 → canonical
             nodes = list(G.nodes())
             
             for i, node in enumerate(nodes):

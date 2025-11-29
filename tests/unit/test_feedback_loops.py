@@ -27,17 +27,17 @@ from tnfr.sdk.adaptive_system import TNFRAdaptiveSystem
 def test_feedback_loop_initialization():
     """Test feedback loop initializes with correct parameters."""
     G, node = create_nfr("test_node")
-    loop = StructuralFeedbackLoop(G, node, target_coherence=0.7, tau_adaptive=0.1)
+    loop = StructuralFeedbackLoop(G, node, target_coherence=0.737061493693243, tau_adaptive=0.098503076588036)
 
-    assert loop.target_coherence == 0.7
-    assert loop.tau_adaptive == 0.1
-    assert loop.learning_rate == 0.05  # default
+    assert abs(loop.target_coherence - 0.737061493693243) < 1e-10  # φ/(φ+γ) - canonical coherence
+    assert abs(loop.tau_adaptive - 0.098503076588036) < 1e-10  # γ/(π+e) - canonical tolerance
+    assert abs(loop.learning_rate - 0.043213918263772) < 1e-10  # e^(-π) - canonical learning rate
 
 
 def test_feedback_loop_regulate_low_coherence():
     """Test feedback loop selects coherence for low coherence."""
     G, node = create_nfr("test_node")
-    loop = StructuralFeedbackLoop(G, node, target_coherence=0.7)
+    loop = StructuralFeedbackLoop(G, node, target_coherence=0.737061493693243)
 
     # Set high ΔNFR to simulate low coherence
     set_attr(G.nodes[node], ALIAS_DNFR, 0.8)
@@ -97,7 +97,7 @@ def test_feedback_loop_compute_local_coherence():
 def test_feedback_loop_adapt_thresholds():
     """Test threshold adaptation based on performance."""
     G, node = create_nfr("test_node")
-    loop = StructuralFeedbackLoop(G, node, target_coherence=0.7, tau_adaptive=0.1)
+    loop = StructuralFeedbackLoop(G, node, target_coherence=0.737061493693243, tau_adaptive=0.098503076588036)
 
     initial_tau = loop.tau_adaptive
 

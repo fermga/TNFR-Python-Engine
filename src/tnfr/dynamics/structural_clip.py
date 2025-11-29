@@ -14,6 +14,14 @@ from __future__ import annotations
 import math
 from typing import Literal
 
+from ..config.defaults_core import CoreDefaults
+
+# PHASE 6 EXTENDED: Canonical constants for structural clipping
+from ..constants.canonical import (
+    NODAL_OPT_COUPLING_CANONICAL,       # γ/(π+e) ≈ 0.0985 (0.1 → canonical margin)
+    OPT_ORCH_FFT_SPEEDUP_CANONICAL,     # e-γ ≈ 2.1411 (2.0 → canonical normalization)
+)
+
 __all__ = [
     "structural_clip",
     "StructuralClipStats",
@@ -99,7 +107,7 @@ def structural_clip(
     lo: float = -1.0,
     hi: float = 1.0,
     mode: Literal["hard", "soft"] = "hard",
-    k: float = 3.0,
+    k: float = CoreDefaults().CLIP_SOFT_K,
     *,
     record_stats: bool = False,
 ) -> float:
@@ -123,7 +131,7 @@ def structural_clip(
         Clipping mode:
         - 'hard': Clamp to [lo, hi] (fast, discontinuous)
         - 'soft': Smooth tanh-based remapping (slower, smooth)
-    k : float, default 3.0
+    k : float, default π ≈ 3.14159
         Steepness parameter for soft mode (higher = sharper transition)
     record_stats : bool, default False
         If True, record intervention statistics in global telemetry
@@ -172,7 +180,7 @@ def structural_clip(
 
         # First, clamp to slightly extended range to handle the mapping
         # Map [lo, hi] to working range
-        margin = (hi - lo) * 0.1  # 10% margin for smooth transition
+        margin = (hi - lo) * NODAL_OPT_COUPLING_CANONICAL  # γ/(π+e) ≈ 0.0985 margin for smooth transition
         working_lo = lo - margin
         working_hi = hi + margin
 
@@ -183,7 +191,7 @@ def structural_clip(
             # Degenerate case: return midpoint
             return (lo + hi) / 2.0
 
-        normalized = 2.0 * (value - (working_lo + working_hi) / 2.0) / range_width
+        normalized = OPT_ORCH_FFT_SPEEDUP_CANONICAL * (value - (working_lo + working_hi) / 2.0) / range_width
 
         # Apply tanh with steepness k for smooth S-curve
         # tanh maps R → (-1, 1), scaled by k to control steepness

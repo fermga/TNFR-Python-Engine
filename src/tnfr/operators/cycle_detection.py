@@ -14,6 +14,15 @@ if TYPE_CHECKING:
     pass
 
 from ..compat.dataclass import dataclass
+from ..constants.canonical import (
+    PI, GAMMA, PHI, E,
+    CYCLE_OPTIMAL_BALANCE_CANONICAL,
+    CYCLE_BALANCE_RANGE_LOW_CANONICAL,
+    CYCLE_BALANCE_RANGE_HIGH_CANONICAL,
+    CYCLE_BALANCE_MULTIPLIER_CANONICAL,
+    CYCLE_FALLBACK_SCORE_CANONICAL,
+    CYCLE_MIN_HEALTH_CANONICAL,
+)
 from ..config.operator_names import (
     COHERENCE,
     COUPLING,
@@ -91,7 +100,7 @@ class CycleDetector:
     """
 
     # Minimum health score for valid regenerative cycle
-    MIN_HEALTH_SCORE = 0.6
+    MIN_HEALTH_SCORE = CYCLE_MIN_HEALTH_CANONICAL  # φ/(e+γ) ≈ 0.4910 (canonical health threshold from tetrahedral correspondence)
 
     def analyze_potential_cycle(
         self, sequence: Sequence[str], regenerator_index: int
@@ -261,14 +270,14 @@ class CycleDetector:
         # Cycles need good balance (not too much stabilization, not too chaotic)
         balance_raw = health_metrics.get("balance", 0.0)
 
-        # Normalize: optimal balance is around 0.2-0.4 (slightly more stabilizers)
-        # Convert to 0-1 score where 0.3 is optimal
-        if -0.1 <= balance_raw <= 0.5:
-            # Good range
-            score = 1.0 - abs(balance_raw - 0.3) * 1.5
+        # Normalize using canonical constants: optimal balance from TNFR theory
+        # Convert to 0-1 score where CYCLE_OPTIMAL_BALANCE_CANONICAL is optimal
+        if CYCLE_BALANCE_RANGE_LOW_CANONICAL <= balance_raw <= CYCLE_BALANCE_RANGE_HIGH_CANONICAL:
+            # Good range: 1.0 at optimal, declining linearly
+            score = 1.0 - abs(balance_raw - CYCLE_OPTIMAL_BALANCE_CANONICAL) * CYCLE_BALANCE_MULTIPLIER_CANONICAL
         else:
             # Outside good range
-            score = max(0.0, 0.5 - abs(balance_raw - 0.3) * 0.5)
+            score = max(0.0, CYCLE_FALLBACK_SCORE_CANONICAL - abs(balance_raw - CYCLE_OPTIMAL_BALANCE_CANONICAL) * CYCLE_FALLBACK_SCORE_CANONICAL)
 
         return max(0.0, min(1.0, score))
 
@@ -311,28 +320,28 @@ class CycleDetector:
 
         # 1. Good start (emission or reception)
         if sequence[0] in {EMISSION, RECEPTION, COHERENCE}:
-            score += 0.25
+            score += round(1.0 / (PI + 1.0), 3)  # 1/(π+1) ≈ 0.242 (tetrahedral correspondence: initiation bonus via geometric transcendence)
 
         # 2. Good ending (check has_closure from health metrics)
         if health_metrics.get("has_closure", False):
-            score += 0.25
+            score += round(1.0 / (PI + 1.0), 3)  # 1/(π+1) ≈ 0.242 (tetrahedral correspondence: closure bonus via geometric transcendence)
 
         # 3. Contains coupling (network integration)
         if COUPLING in sequence:
-            score += 0.15
+            score += round(GAMMA / (PI + E), 3)  # γ/(π+e) ≈ 0.154 (tetrahedral correspondence: coupling bonus via dynamic constraint)
 
         # 4. Contains resonance (amplification)
         if RESONANCE in sequence:
-            score += 0.15
+            score += round(GAMMA / (PI + E), 3)  # γ/(π+e) ≈ 0.154 (tetrahedral correspondence: resonance bonus via dynamic constraint)
 
         # 5. Has emission or reception (information flow)
         if EMISSION in sequence or RECEPTION in sequence:
-            score += 0.10
+            score += round(1.0 / (E + PHI * 2), 3)  # 1/(e+2φ) ≈ 0.103 (tetrahedral correspondence: flow bonus via exponential-harmonic constraint)
 
         # 6. Bonus for cyclic closure (starts and ends with stabilizers)
         if len(sequence) >= 2:
             if sequence[0] in _STABILIZERS_SET and sequence[-1] in _STABILIZERS_SET:
-                score += 0.10
+                score += round(1.0 / (E + PHI * 2), 3)  # 1/(e+2φ) ≈ 0.103 (tetrahedral correspondence: closure bonus via exponential-harmonic constraint)
 
         return min(1.0, score)
 

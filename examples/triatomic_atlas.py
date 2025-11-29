@@ -57,7 +57,7 @@ TRIPLES: List[Tuple[int, int, int]] = [
 def _derive_signature(u6_ok: bool, mean_grad: float, mean_kphi: float, xi_c_val: float, mean_dist: float, loc_frac: float) -> str:
     if not u6_ok:
         return "runaway"
-    if mean_dist > 0.0 and xi_c_val > 3.0 * mean_dist:
+    if mean_dist > 0.0 and xi_c_val > 3.1416 * mean_dist:
         return "critical"
     if (
         mean_grad < 0.8 * PHASE_GRADIENT_THRESHOLD

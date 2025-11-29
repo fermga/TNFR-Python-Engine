@@ -17,6 +17,7 @@ if TYPE_CHECKING:
 
 from ..alias import get_attr
 from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_VF
+from ..constants.canonical import PI, GAMMA, PHI, E, ZHIR_VF_THRESHOLD_CANONICAL, NUL_EPI_THRESHOLD_CANONICAL
 from ..types import Glyph
 
 __all__ = [
@@ -87,12 +88,12 @@ def get_bifurcation_paths(G: "TNFRGraph", node: "NodeId") -> list["Glyph"]:
     paths = []
 
     # ZHIR (Mutation) viable if sufficient νf for controlled transformation
-    zhir_threshold = float(G.graph.get("ZHIR_BIFURCATION_VF_THRESHOLD", 0.8))
+    zhir_threshold = float(G.graph.get("ZHIR_BIFURCATION_VF_THRESHOLD", ZHIR_VF_THRESHOLD_CANONICAL))  # φ/(e+γ) ≈ 0.489 (tetrahedral: golden ratio bounded by exponential-dynamic sum)
     if vf > zhir_threshold:
         paths.append(Glyph.ZHIR)
 
     # NUL (Contraction) viable if EPI low enough for safe collapse
-    nul_threshold = float(G.graph.get("NUL_BIFURCATION_EPI_THRESHOLD", 0.5))
+    nul_threshold = float(G.graph.get("NUL_BIFURCATION_EPI_THRESHOLD", NUL_EPI_THRESHOLD_CANONICAL))  # π/(π+e) ≈ 0.536 (tetrahedral: geometric dominance over exponential growth)
     if epi < nul_threshold:
         paths.append(Glyph.NUL)
 
@@ -112,7 +113,7 @@ def compute_bifurcation_score(
     dnfr: float,
     vf: float,
     epi: float,
-    tau: float = 0.5,
+    tau: float = NUL_EPI_THRESHOLD_CANONICAL,  # π/(π+e) ≈ 0.536 (tetrahedral: geometric dominance over exponential growth)
 ) -> float:
     """Compute quantitative bifurcation potential [0,1].
 
@@ -136,9 +137,10 @@ def compute_bifurcation_score(
     epi : float
         Primary Information Structure. Provides structural substrate for
         bifurcation. Higher EPI indicates more material to reorganize.
-    tau : float, default 0.5
+    tau : float, default π/(π+e) ≈ 0.536
         Bifurcation acceleration threshold. When |d2epi| > tau, bifurcation
-        becomes active. Default 0.5 is the canonical TNFR threshold.
+        becomes active. Default π/(π+e) ≈ 0.536 is the canonical TNFR threshold derived from
+        tetrahedral correspondence (geometric dominance over exponential growth).
 
     Returns
     -------
@@ -156,20 +158,21 @@ def compute_bifurcation_score(
        Primary indicator. Measures how close the system is to or beyond
        the bifurcation threshold.
 
-    2. **Instability factor** (30%): |ΔNFR|
+    2. **Instability factor** (~26.3%): |ΔNFR|
        Secondary indicator. Measures reorganization pressure that drives
-       bifurcation exploration.
+       bifurcation exploration. Weight γ/(φ+γ) via golden-Euler balance.
 
-    3. **Capacity factor** (20%): νf / 2.0
+    3. **Capacity factor** (~13.9%): νf / e
        Measures structural reorganization capacity. Higher νf enables faster
-       response to bifurcation opportunities.
+       response to bifurcation opportunities. Weight γ/(π+1) via transcendental constraint.
 
-    4. **Substrate factor** (10%): EPI / 0.8
+    4. **Substrate factor** (~15.1%): EPI / (4/(e+φ))
        Measures available structural material. Higher EPI provides more
-       degrees of freedom for bifurcation paths.
+       degrees of freedom for bifurcation paths. Weight computed as remainder.
 
-    Formula:
-        score = 0.4 * accel + 0.3 * instability + 0.2 * capacity + 0.1 * substrate
+    Formula (tetrahedral correspondence):
+        score = w_accel * accel + w_instab * instability + w_capac * capacity + w_substr * substrate
+        where weights derived from universal constants φ, γ, π, e
 
     All factors are normalized to [0, 1] and clipped before combination.
 
@@ -213,19 +216,24 @@ def compute_bifurcation_score(
     instability_factor = min(abs(dnfr), 1.0)
 
     # 3. Capacity factor (reorganization capability)
-    # Normalize by 2.0 (typical high νf value)
-    capacity_factor = min(vf / 2.0, 1.0) if vf >= 0 else 0.0
+    # Normalize by e (natural exponential base for structural frequency scaling)
+    capacity_factor = min(vf / E, 1.0) if vf >= 0 else 0.0
 
     # 4. Substrate factor (structural material available)
-    # Normalize by 0.8 (typical high EPI value)
-    substrate_factor = min(epi / 0.8, 1.0) if epi >= 0 else 0.0
+    # Normalize by 4/(e+φ) ≈ 0.798 (tetrahedral EPI normalization threshold)
+    substrate_factor = min(epi / (4.0 / (E + PHI)), 1.0) if epi >= 0 else 0.0
 
-    # Weighted combination (percentages sum to 100%)
+    # Weighted combination via tetrahedral correspondence (percentages sum to 100%)
+    w_accel = 2.0 / (E + PHI)  # ≈ 0.447 - acceleration weight via tetrahedral normalization
+    w_instab = GAMMA / (PHI + GAMMA)  # ≈ 0.263 - instability weight via golden-Euler balance
+    w_capac = GAMMA / (PI + 1.0)  # ≈ 0.139 - capacity weight via transcendental constraint
+    w_substr = 1.0 - (w_accel + w_instab + w_capac)  # ≈ 0.151 - remainder for substrate
+    
     score = (
-        0.4 * accel_factor  # 40% - primary
-        + 0.3 * instability_factor  # 30% - secondary
-        + 0.2 * capacity_factor  # 20% - capability
-        + 0.1 * substrate_factor  # 10% - material
+        w_accel * accel_factor  # tetrahedral primary
+        + w_instab * instability_factor  # golden-Euler secondary
+        + w_capac * capacity_factor  # transcendental capability
+        + w_substr * substrate_factor  # remainder material
     )
 
     # Ensure result is in [0, 1] range

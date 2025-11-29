@@ -12,6 +12,14 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+# TNFR Optimizations Integration
+try:
+    from ..mathematics.backend import get_backend
+    from ..utils.cache import cache_tnfr_computation
+    _HAS_OPTIMIZATIONS = True
+except ImportError:
+    _HAS_OPTIMIZATIONS = False
+
 if TYPE_CHECKING:
     from ..types import TNFRGraph, NodeId
 
@@ -97,23 +105,25 @@ class StructuralFeedbackLoop:
     """
 
     # Regulation thresholds
-    COHERENCE_TOL_LOW = 0.2  # Deviation below target triggers stabilization
-    COHERENCE_TOL_HIGH = 0.1  # Deviation above target triggers exploration
-    DNFR_THRESHOLD = 0.15  # ΔNFR threshold for self-organization
-    EPI_THRESHOLD = 0.3  # EPI threshold for emission
+    # Canonical derivations from φ, γ, π, e (Phase 2 recalibration)
+    COHERENCE_TOL_LOW = 0.5772156649015329 / (3.141592653589793 + 1)  # γ/(π+1) ≈ 0.139
+    COHERENCE_TOL_HIGH = 0.5772156649015329 / (3.141592653589793 + 2.718281828459045)  # γ/(π+e) ≈ 0.099
+    DNFR_THRESHOLD = (0.5772156649015329 / (3.141592653589793 + 1) * 0.5772156649015329 / (3.141592653589793 + 2.718281828459045)) ** 0.5  # √(tol_low × tol_high) ≈ 0.117
+    EPI_THRESHOLD = (1 / (1.618033988749895 + 0.5772156649015329 / 3.141592653589793)) * 1.618033988749895 / 2.718281828459045  # Canonical combo ≈ 0.330
 
     def __init__(
         self,
         graph: TNFRGraph,
         node: NodeId,
-        target_coherence: float = 0.7,
-        tau_adaptive: float = 0.1,
-        learning_rate: float = 0.05,
+        target_coherence: float = 0.7370610757229365,  # φ/(φ+γ) ≈ 0.737
+        tau_adaptive: float = 0.15521503901534167,  # γ/(π+γ) ≈ 0.155
+        learning_rate: float = 0.04321391826377226,  # e^(-π) ≈ 0.043
         coherence_tolerance_low: float = COHERENCE_TOL_LOW,
         coherence_tolerance_high: float = COHERENCE_TOL_HIGH,
         dnfr_threshold: float = DNFR_THRESHOLD,
         epi_threshold: float = EPI_THRESHOLD,
     ) -> None:
+        """Initialize feedback loop with optimized mathematical backend."""
         self.G = graph
         self.node = node
         self.target_coherence = float(target_coherence)
@@ -123,6 +133,14 @@ class StructuralFeedbackLoop:
         self.COHERENCE_TOL_HIGH = float(coherence_tolerance_high)
         self.DNFR_THRESHOLD = float(dnfr_threshold)
         self.EPI_THRESHOLD = float(epi_threshold)
+        
+        # Initialize optimized backend for mathematical operations
+        if _HAS_OPTIMIZATIONS:
+            self.backend = get_backend()
+            self._use_optimizations = True
+        else:
+            self.backend = None
+            self._use_optimizations = False
 
     def regulate(self) -> str:
         """Select appropriate operator based on current structural state.

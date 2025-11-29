@@ -6,6 +6,7 @@ import math
 from dataclasses import asdict
 
 from ..compat.dataclass import dataclass
+from ..constants.canonical import CONFIG_INIT_VF_MEAN_CANONICAL, CONFIG_INIT_VF_STD_CANONICAL
 
 
 @dataclass(frozen=True, slots=True)
@@ -22,8 +23,8 @@ class InitDefaults:
     INIT_VF_MODE: str = "uniform"
     INIT_VF_MIN: float | None = None
     INIT_VF_MAX: float | None = None
-    INIT_VF_MEAN: float = 0.5
-    INIT_VF_STD: float = 0.15
+    INIT_VF_MEAN: float = CONFIG_INIT_VF_MEAN_CANONICAL
+    INIT_VF_STD: float = CONFIG_INIT_VF_STD_CANONICAL
     INIT_VF_CLAMP_TO_LIMITS: bool = True
     INIT_SI_MIN: float = 0.4
     INIT_SI_MAX: float = 0.7

@@ -49,6 +49,39 @@ except ImportError:
     HAS_NETWORKX = False
     nx = None
 
+# Import canonical constants for Phase 6 magic number elimination
+from ..constants.canonical import (
+    INTEGRATION_COMPUTATION_REDUCTION_CANONICAL,
+    INTEGRATION_MEMORY_SAVINGS_CANONICAL,
+    INTEGRATION_CACHE_EFFICIENCY_CANONICAL,
+    INTEGRATION_CONFIDENCE_HIGH_CANONICAL,
+    INTEGRATION_CENTRALITY_THRESHOLD_CANONICAL,
+    INTEGRATION_HIT_RATE_IMPROVE_CANONICAL,
+    INTEGRATION_MEMORY_REDUCE_CANONICAL,
+    INTEGRATION_ACCESS_TIME_CANONICAL,
+    INTEGRATION_CONFIDENCE_MEDIUM_CANONICAL,
+    INTEGRATION_SPEEDUP_CANONICAL,
+    INTEGRATION_EFFICIENCY_CANONICAL,
+    INTEGRATION_CPU_UTIL_CANONICAL,
+    INTEGRATION_CONFIDENCE_LOW_CANONICAL,
+    INTEGRATION_PRECOMPUTE_SUCCESS_CANONICAL,
+    INTEGRATION_COMPUTATION_AVOID_CANONICAL,
+    INTEGRATION_RESPONSE_TIME_CANONICAL,
+    INTEGRATION_CONFIDENCE_MINIMAL_CANONICAL,
+    INTEGRATION_SYNC_THRESHOLD_CANONICAL,
+    INTEGRATION_PREFETCH_ACCURACY_CANONICAL,
+    INTEGRATION_CACHE_EFF_CANONICAL,
+    INTEGRATION_SYNC_PREDICTION_CANONICAL,
+    INTEGRATION_CONFIDENCE_SYNC_CANONICAL,
+    INTEGRATION_MEMORY_MB_CANONICAL,
+    INTEGRATION_COMPUTATION_TIME_CANONICAL,
+    INTEGRATION_COMPUTATION_BASELINE_CANONICAL,
+    INTEGRATION_MEMORY_BASELINE_CANONICAL,
+    INTEGRATION_CACHE_HIT_BASELINE_CANONICAL,
+    INTEGRATION_CPU_BASELINE_CANONICAL,
+    INTEGRATION_CONFIDENCE_THRESHOLD_CANONICAL,
+)
+
 # Import all TNFR engines for integration analysis
 try:
     from .unified_mathematical_cache_orchestrator import TNFRUnifiedMathematicalCacheOrchestrator
@@ -235,15 +268,15 @@ class TNFREmergentIntegrationEngine:
                     "coordination_engine": "spectral_structural_fusion"
                 },
                 expected_benefit={
-                    "computation_time_reduction": 0.3,
-                    "memory_savings": 0.4,
-                    "cache_efficiency": 0.2
+                    "computation_time_reduction": INTEGRATION_COMPUTATION_REDUCTION_CANONICAL,
+                    "memory_savings": INTEGRATION_MEMORY_SAVINGS_CANONICAL,
+                    "cache_efficiency": INTEGRATION_CACHE_EFFICIENCY_CANONICAL
                 },
                 mathematical_requirements=[
                     "eigendecomposition_consistency",
                     "spectral_accuracy_preservation"
                 ],
-                confidence_score=0.85
+                confidence_score=INTEGRATION_CONFIDENCE_HIGH_CANONICAL
             )
             
         return None
@@ -264,19 +297,19 @@ class TNFREmergentIntegrationEngine:
                 involved_engines={"cache_orchestrator", "emergent_centralization", "structural_cache"},
                 integration_strategy={
                     "method": "centrality_guided_placement",
-                    "centrality_threshold": 0.7,
+                    "centrality_threshold": INTEGRATION_CENTRALITY_THRESHOLD_CANONICAL,
                     "coordination_frequency": "adaptive"
                 },
                 expected_benefit={
-                    "cache_hit_rate_improvement": 0.25,
-                    "memory_usage_reduction": 0.15,
-                    "access_time_improvement": 0.2
+                    "cache_hit_rate_improvement": INTEGRATION_HIT_RATE_IMPROVE_CANONICAL,
+                    "memory_usage_reduction": INTEGRATION_MEMORY_REDUCE_CANONICAL,
+                    "access_time_improvement": INTEGRATION_ACCESS_TIME_CANONICAL
                 },
                 mathematical_requirements=[
                     "centrality_consistency",
                     "cache_coherence_maintained"
                 ],
-                confidence_score=0.78
+                confidence_score=INTEGRATION_CONFIDENCE_MEDIUM_CANONICAL
             )
             
         return None
@@ -301,15 +334,15 @@ class TNFREmergentIntegrationEngine:
                     "vectorization_threshold": 8
                 },
                 expected_benefit={
-                    "computation_speedup": 0.4,
-                    "memory_efficiency": 0.2,
-                    "cpu_utilization": 0.3
+                    "computation_speedup": INTEGRATION_SPEEDUP_CANONICAL,
+                    "memory_efficiency": INTEGRATION_EFFICIENCY_CANONICAL,
+                    "cpu_utilization": INTEGRATION_CPU_UTIL_CANONICAL
                 },
                 mathematical_requirements=[
                     "nodal_equation_compliance",
                     "vectorization_accuracy"
                 ],
-                confidence_score=0.72
+                confidence_score=INTEGRATION_CONFIDENCE_LOW_CANONICAL
             )
             
         return None
@@ -330,18 +363,18 @@ class TNFREmergentIntegrationEngine:
             integration_strategy={
                 "method": "predictive_evolution_caching",
                 "prediction_horizon": 5,  # time steps
-                "confidence_threshold": 0.8
+                "confidence_threshold": INTEGRATION_CONFIDENCE_THRESHOLD_CANONICAL
             },
             expected_benefit={
-                "cache_precomputation_success": 0.6,
-                "computation_avoidance": 0.3,
-                "response_time_improvement": 0.25
+                "cache_precomputation_success": INTEGRATION_PRECOMPUTE_SUCCESS_CANONICAL,
+                "computation_avoidance": INTEGRATION_COMPUTATION_AVOID_CANONICAL,
+                "response_time_improvement": INTEGRATION_RESPONSE_TIME_CANONICAL
             },
             mathematical_requirements=[
                 "temporal_consistency",
                 "evolution_accuracy"
             ],
-            confidence_score=0.68
+            confidence_score=INTEGRATION_CONFIDENCE_MINIMAL_CANONICAL
         )
     
     def _analyze_phase_informed_caching_opportunities(self, G: Any) -> Optional[IntegrationPattern]:
@@ -361,19 +394,19 @@ class TNFREmergentIntegrationEngine:
                     involved_engines={"coordination", "cache_orchestrator", "structural_cache"},
                     integration_strategy={
                         "method": "phase_guided_prefetch",
-                        "synchronization_threshold": 0.7,
+                        "synchronization_threshold": INTEGRATION_SYNC_THRESHOLD_CANONICAL,
                         "prefetch_distance": 2
                     },
                     expected_benefit={
-                        "prefetch_accuracy": 0.5,
-                        "cache_efficiency": 0.2,
-                        "synchronization_prediction": 0.3
+                        "prefetch_accuracy": INTEGRATION_PREFETCH_ACCURACY_CANONICAL,
+                        "cache_efficiency": INTEGRATION_CACHE_EFF_CANONICAL,
+                        "synchronization_prediction": INTEGRATION_SYNC_PREDICTION_CANONICAL
                     },
                     mathematical_requirements=[
                         "phase_synchronization_preservation",
                         "kuramoto_consistency"
                     ],
-                    confidence_score=0.65
+                    confidence_score=INTEGRATION_CONFIDENCE_SYNC_CANONICAL
                 )
         except Exception:
             pass
@@ -459,7 +492,7 @@ class TNFREmergentIntegrationEngine:
                 return True, {
                     "shared_eigendecomposition": True,
                     "fields_computed": len(shared_fields) if isinstance(shared_fields, dict) else 1,
-                    "resource_savings": {"memory_mb": 10.0, "computation_time": 0.02}
+                    "resource_savings": {"memory_mb": INTEGRATION_MEMORY_MB_CANONICAL, "computation_time": INTEGRATION_COMPUTATION_TIME_CANONICAL}
                 }
         except Exception as e:
             return False, {"error": str(e)}
@@ -477,7 +510,7 @@ class TNFREmergentIntegrationEngine:
                     return True, {
                         "coordination_patterns": len(patterns_discovered),
                         "cache_adaptations": coordination_stats.get("topology_adaptations", 0),
-                        "resource_savings": {"cache_efficiency": 0.15}
+                        "resource_savings": {"cache_efficiency": INTEGRATION_CACHE_EFFICIENCY_CANONICAL}
                     }
         except Exception as e:
             return False, {"error": str(e)}
@@ -497,7 +530,7 @@ class TNFREmergentIntegrationEngine:
                 return batch_success, {
                     "batch_size": len(nodes),
                     "vectorization_applied": True,
-                    "resource_savings": {"computation_speedup": 0.25}
+                    "resource_savings": {"computation_speedup": INTEGRATION_SPEEDUP_CANONICAL}
                 }
         except Exception as e:
             return False, {"error": str(e)}
@@ -515,7 +548,7 @@ class TNFREmergentIntegrationEngine:
                 return True, {
                     "prediction_horizon": prediction_horizon,
                     "predictive_entries_created": prediction_horizon * 2,
-                    "resource_savings": {"cache_precomputation": 0.3}
+                    "resource_savings": {"cache_precomputation": INTEGRATION_SYNC_PREDICTION_CANONICAL}
                 }
         except Exception as e:
             return False, {"error": str(e)}
@@ -527,12 +560,12 @@ class TNFREmergentIntegrationEngine:
         try:
             # Simulate phase-guided cache prefetch
             if len(G.nodes()) > 0:
-                synchronization_threshold = pattern.integration_strategy.get("synchronization_threshold", 0.7)
+                synchronization_threshold = pattern.integration_strategy.get("synchronization_threshold", INTEGRATION_CENTRALITY_THRESHOLD_CANONICAL)
                 
                 return True, {
                     "synchronization_threshold": synchronization_threshold,
                     "phase_guided_prefetches": len(G.nodes()) // 2,
-                    "resource_savings": {"prefetch_accuracy": 0.2}
+                    "resource_savings": {"prefetch_accuracy": INTEGRATION_PREFETCH_ACCURACY_CANONICAL}
                 }
         except Exception as e:
             return False, {"error": str(e)}
@@ -542,10 +575,10 @@ class TNFREmergentIntegrationEngine:
     def _measure_baseline_performance(self, G: Any, pattern: IntegrationPattern) -> Dict[str, float]:
         """Measure baseline performance metrics."""
         return {
-            "computation_time": 0.1,  # Placeholder baseline
-            "memory_usage_mb": 50.0,
-            "cache_hit_rate": 0.6,
-            "cpu_utilization": 0.4
+            "computation_time": INTEGRATION_COMPUTATION_BASELINE_CANONICAL,  # Placeholder baseline
+            "memory_usage_mb": INTEGRATION_MEMORY_BASELINE_CANONICAL,
+            "cache_hit_rate": INTEGRATION_CACHE_HIT_BASELINE_CANONICAL,
+            "cpu_utilization": INTEGRATION_CPU_BASELINE_CANONICAL
         }
     
     def _validate_mathematical_consistency(self, G: Any, pattern: IntegrationPattern) -> bool:
@@ -635,7 +668,7 @@ def discover_and_apply_integrations(
     # Auto-apply high-confidence opportunities
     if auto_apply:
         for opportunity in opportunities:
-            if opportunity.confidence_score > 0.7:  # High confidence threshold
+            if opportunity.confidence_score > INTEGRATION_CENTRALITY_THRESHOLD_CANONICAL:  # High confidence threshold
                 integration_result = engine.apply_integration_pattern(
                     opportunity, G, validate_mathematics
                 )

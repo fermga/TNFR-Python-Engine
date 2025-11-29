@@ -10,6 +10,12 @@ that can be overridden via graph metadata or configuration presets.
 
 from __future__ import annotations
 
+from ..constants.canonical import (
+    CONFIG_EPI_LATENT_MAX_CANONICAL,
+    CONFIG_VF_BASAL_CANONICAL,
+    CONFIG_EPSILON_MIN_CANONICAL,
+)
+
 __all__ = [
     "EPI_LATENT_MAX",
     "VF_BASAL_THRESHOLD",
@@ -33,16 +39,16 @@ __all__ = [
 
 # Maximum EPI for latent state - AL requires nodes in latent/low-activation state
 # According to TNFR.pdf §2.2.1, emission activates nascent structures
-EPI_LATENT_MAX: float = 0.8
+EPI_LATENT_MAX: float = CONFIG_EPI_LATENT_MAX_CANONICAL
 
 # Minimum structural frequency (νf) for emission - ensures sufficient
 # reorganization capacity. Below this threshold, the node cannot sustain
 # the structural frequency activation that AL initiates.
-VF_BASAL_THRESHOLD: float = 0.5
+VF_BASAL_THRESHOLD: float = CONFIG_VF_BASAL_CANONICAL
 
 # Minimum coherence gradient (epsilon) for meaningful emission
 # This represents the minimum structural pressure needed to justify activation
-EPSILON_MIN_EMISSION: float = 0.1
+EPSILON_MIN_EMISSION: float = CONFIG_EPSILON_MIN_CANONICAL
 
 # Minimum network degree for effective phase coupling
 # Nodes with degree below this threshold will trigger a warning (not error)

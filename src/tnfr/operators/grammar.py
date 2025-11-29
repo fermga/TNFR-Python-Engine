@@ -36,7 +36,7 @@ U5: MULTI-SCALE COHERENCE
     (C_parent ≥ α·ΣC_child).
 
 U6: STRUCTURAL POTENTIAL CONFINEMENT (Promoted 2025-11-11)
-    Verify Δ Φ_s < 2.0 (escape threshold)
+    Verify Δ Φ_s < φ ≈ 1.618 (golden escape threshold)
     Basis: Emergent Φ_s field from ΔNFR distribution + empirical validation
     Status: CANONICAL - 2,400+ experiments, corr(Δ Φ_s, ΔC) = -0.822, CV = 0.1%
 

@@ -247,29 +247,25 @@ python examples/domain_applications/biological_patterns.py
 
 **🔬 Advanced Topics**:
 
-- **[Unified Grammar Rules](UNIFIED_UNIFIED_GRAMMAR_RULES.md)** - Physics derivations for U1-U6
-- **[Operator Glossary](GLOSSARY.md)** - Complete operator reference
-- **[Testing Strategy](TESTING.md)** - Test coverage and validation
-- **[Migration Guide](MIGRATION_GUIDE.md)** - Upgrading from legacy systems
+## 📚 Canonical Documentation (Single Source of Truth)
 
-## Documentation
+### 🏆 PRIMARY SOURCES
+- **[AGENTS.md](AGENTS.md)** - 🌟 **ULTIMATE SINGLE SOURCE OF TRUTH**
+  - Complete TNFR theory + Universal Tetrahedral Correspondence
+  - 497+ canonical constants achievement + development guidelines
+- **[CANONICAL_DOCUMENTATION_MANIFEST.md](CANONICAL_DOCUMENTATION_MANIFEST.md)** - 📋 **DOCUMENTATION AUTHORITY**
+  - Single source of truth hierarchy + eliminated duplicates inventory
+- **[MAGIC_NUMBERS_SEARCH_COMPLETE_FINAL_REPORT.md](MAGIC_NUMBERS_SEARCH_COMPLETE_FINAL_REPORT.md)** - 🎯 **Mathematical purity journey**
 
-### Core Theory & Implementation
-- **[AGENTS.md](AGENTS.md)** - Complete TNFR theory, operators, and canonical invariants
-- **[UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md)** - Mathematical derivations for U1-U6 grammar
-- **[GLOSSARY.md](GLOSSARY.md)** - Term definitions and quick reference
+### 🔧 IMPLEMENTATION AUTHORITY
+- **[src/tnfr/constants/canonical.py](src/tnfr/constants/canonical.py)** - 🧮 **497+ universal constants**
+- **[UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md)** - 📐 **Grammar physics (U1-U6)**
+- **[ARCHITECTURE.md](ARCHITECTURE.md)** - 🏗️ **System design (2025 mathematical purity era)**
 
-### Architecture & Development
-- **[ARCHITECTURE.md](ARCHITECTURE.md)** - System design and module structure
-- **[CONTRIBUTING.md](CONTRIBUTING.md)** - Development workflow and standards
-- **[TESTING.md](TESTING.md)** - Test strategy and coverage
-
-### Mathematical Foundations & References
-
-- **[docs/STRUCTURAL_FIELDS_TETRAD.md](docs/STRUCTURAL_FIELDS_TETRAD.md)** - Technical tetrad reference (Φ_s, |∇φ|, K_φ, ξ_C)
-- **[DOCUMENTATION_INDEX.md](DOCUMENTATION_INDEX.md)** - Complete documentation map  
-- **[GLOSSARY.md](GLOSSARY.md)** - Term definitions and quick reference
-- **[CHANGELOG.md](CHANGELOG.md)** - Version history and updates
+### 📖 SUPPORTING REFERENCES
+- **[DOCUMENTATION_INDEX.md](DOCUMENTATION_INDEX.md)** - Navigation guide
+- **[CONTRIBUTING.md](CONTRIBUTING.md)** - Development workflow (canonical requirements)
+- **[docs/STRUCTURAL_FIELDS_TETRAD.md](docs/STRUCTURAL_FIELDS_TETRAD.md)** - Tetrad technical specs
 
 ## Repository Structure
 

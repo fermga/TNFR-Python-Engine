@@ -24,6 +24,29 @@ from __future__ import annotations
 from collections import Counter
 from typing import Dict, Iterable, List, Mapping, Sequence
 
+from ..constants.canonical import (
+    PATTERN_BASE_WEIGHT_CANONICAL,
+    PATTERN_THERAPEUTIC_WEIGHT_CANONICAL,
+    PATTERN_EDUCATIONAL_WEIGHT_CANONICAL,
+    PATTERN_ORGANIZATIONAL_WEIGHT_CANONICAL,
+    PATTERN_CREATIVE_WEIGHT_CANONICAL,
+    PATTERN_REGENERATIVE_WEIGHT_CANONICAL,
+    PATTERN_BOOTSTRAP_WEIGHT_CANONICAL,
+    PATTERN_EXPLORE_WEIGHT_CANONICAL,
+    PATTERN_STABILIZE_WEIGHT_CANONICAL,
+    PATTERN_COMPLEX_WEIGHT_CANONICAL,
+    PATTERN_COMPRESS_WEIGHT_CANONICAL,
+    PATTERN_LINEAR_WEIGHT_CANONICAL,
+    # PHASE 7B: Pattern scoring canonicalization
+    OPERATORS_PATTERN_UNIQUE_WEIGHT_CANONICAL,
+    OPERATORS_PATTERN_TRANSITION_WEIGHT_CANONICAL,
+    OPERATORS_PATTERN_DESTABILIZER_WEIGHT_CANONICAL,
+    OPERATORS_PATTERN_STABILIZER_WEIGHT_CANONICAL,
+    OPERATORS_THERAPEUTIC_HIGH_CANONICAL,
+    OPERATORS_EDUCATIONAL_HIGH_CANONICAL,
+    OPERATORS_CREATIVE_BASE_CANONICAL,
+    OPERATORS_ORGANIZATIONAL_CANONICAL,
+)
 from ..config.operator_names import (
     COHERENCE,
     CONTRACTION,
@@ -65,28 +88,28 @@ _DESTABILIZERS = {DISSONANCE, MUTATION, EXPANSION}
 _INTERMEDIATE = {COUPLING, RESONANCE, DISSONANCE}
 
 _COHERENCE_WEIGHTS = {
-    StructuralPattern.THERAPEUTIC: 1.35,
-    StructuralPattern.EDUCATIONAL: 1.25,
-    StructuralPattern.ORGANIZATIONAL: 1.2,
-    StructuralPattern.CREATIVE: 1.2,
-    StructuralPattern.REGENERATIVE: 1.3,
-    StructuralPattern.BOOTSTRAP: 1.05,
-    StructuralPattern.EXPLORE: 1.1,
-    StructuralPattern.STABILIZE: 1.15,
-    StructuralPattern.BIFURCATED: 1.05,
-    StructuralPattern.FRACTAL: 1.1,
-    StructuralPattern.HIERARCHICAL: 1.05,
-    StructuralPattern.CYCLIC: 1.0,
-    StructuralPattern.COMPLEX: 1.15,
-    StructuralPattern.COMPRESS: 0.95,
-    StructuralPattern.RESONATE: 1.05,
-    StructuralPattern.LINEAR: 0.9,
-    StructuralPattern.BASIC_LEARNING: 1.0,
-    StructuralPattern.DEEP_LEARNING: 1.1,
-    StructuralPattern.EXPLORATORY_LEARNING: 1.1,
-    StructuralPattern.CONSOLIDATION_CYCLE: 0.95,
-    StructuralPattern.ADAPTIVE_MUTATION: 1.0,
-    StructuralPattern.UNKNOWN: 0.5,
+    StructuralPattern.THERAPEUTIC: PATTERN_THERAPEUTIC_WEIGHT_CANONICAL,  # φ/γ ≈ 2.8032 (boost terapéutico)
+    StructuralPattern.EDUCATIONAL: PATTERN_EDUCATIONAL_WEIGHT_CANONICAL,  # φ/(φ+γ) ≈ 0.7371 (boost educacional)
+    StructuralPattern.ORGANIZATIONAL: PATTERN_ORGANIZATIONAL_WEIGHT_CANONICAL,  # γ/(π+γ) ≈ 0.1552 (boost organizacional)
+    StructuralPattern.CREATIVE: PATTERN_CREATIVE_WEIGHT_CANONICAL,  # φ/(φ+γ) ≈ 0.7371 (mismo que educacional)
+    StructuralPattern.REGENERATIVE: PATTERN_REGENERATIVE_WEIGHT_CANONICAL,  # φ/e ≈ 0.5952 (boost regenerativo)
+    StructuralPattern.BOOTSTRAP: PATTERN_BOOTSTRAP_WEIGHT_CANONICAL,  # 1+γ/(π×e) ≈ 1.0676 (boost mínimo)
+    StructuralPattern.EXPLORE: PATTERN_EXPLORE_WEIGHT_CANONICAL,  # Mismo que bootstrap
+    StructuralPattern.STABILIZE: PATTERN_STABILIZE_WEIGHT_CANONICAL,  # φ/(φ+1) ≈ 0.6180 (estabilización)
+    StructuralPattern.BIFURCATED: PATTERN_BOOTSTRAP_WEIGHT_CANONICAL,  # Mismo que bootstrap
+    StructuralPattern.FRACTAL: PATTERN_EXPLORE_WEIGHT_CANONICAL,  # Mismo que explore
+    StructuralPattern.HIERARCHICAL: PATTERN_BOOTSTRAP_WEIGHT_CANONICAL,  # Mismo que bootstrap
+    StructuralPattern.CYCLIC: PATTERN_BASE_WEIGHT_CANONICAL,  # 1.0 (unidad canónica)
+    StructuralPattern.COMPLEX: PATTERN_COMPLEX_WEIGHT_CANONICAL,  # Mismo que estabilizar
+    StructuralPattern.COMPRESS: PATTERN_COMPRESS_WEIGHT_CANONICAL,  # 1-γ/(π×e) ≈ 0.9324 (compresión)
+    StructuralPattern.RESONATE: PATTERN_BOOTSTRAP_WEIGHT_CANONICAL,  # Mismo que bootstrap
+    StructuralPattern.LINEAR: PATTERN_LINEAR_WEIGHT_CANONICAL,  # γ/π ≈ 0.1837 (lineal mínimo)
+    StructuralPattern.BASIC_LEARNING: PATTERN_BASE_WEIGHT_CANONICAL,  # 1.0 (unidad canónica)
+    StructuralPattern.DEEP_LEARNING: PATTERN_EXPLORE_WEIGHT_CANONICAL,  # Mismo que explore
+    StructuralPattern.EXPLORATORY_LEARNING: PATTERN_EXPLORE_WEIGHT_CANONICAL,  # Mismo que explore
+    StructuralPattern.CONSOLIDATION_CYCLE: PATTERN_COMPRESS_WEIGHT_CANONICAL,  # Mismo que compresión
+    StructuralPattern.ADAPTIVE_MUTATION: PATTERN_BASE_WEIGHT_CANONICAL,  # 1.0 (unidad canónica)
+    StructuralPattern.UNKNOWN: PATTERN_LINEAR_WEIGHT_CANONICAL * 0.5,  # Mínimo estructural reducido
 }
 
 
@@ -498,8 +521,8 @@ class AdvancedPatternDetector:
         )
         stabilisers = self._count(seq, _STABILIZERS)
         destabilisers = self._count(seq, _DESTABILIZERS)
-        raw_score = len(seq) + 0.8 * unique + 0.5 * transitions
-        raw_score += 0.3 * destabilisers + 0.2 * stabilisers
+        raw_score = len(seq) + OPERATORS_PATTERN_UNIQUE_WEIGHT_CANONICAL * unique + OPERATORS_PATTERN_TRANSITION_WEIGHT_CANONICAL * transitions
+        raw_score += OPERATORS_PATTERN_DESTABILIZER_WEIGHT_CANONICAL * destabilisers + OPERATORS_PATTERN_STABILIZER_WEIGHT_CANONICAL * stabilisers
         return min(1.0, raw_score / 12.0)
 
     def _domain_suitability(self, seq: Sequence[str]) -> Dict[str, float]:
@@ -511,13 +534,13 @@ class AdvancedPatternDetector:
             "regenerative": 0.0,
         }
         if self._is_therapeutic(seq):
-            scores["therapeutic"] = 0.8
+            scores["therapeutic"] = OPERATORS_THERAPEUTIC_HIGH_CANONICAL
         if self._is_educational(seq):
-            scores["educational"] = 0.75
+            scores["educational"] = OPERATORS_EDUCATIONAL_HIGH_CANONICAL
         if self._contains(seq, EXPANSION) and SELF_ORGANIZATION in seq:
-            scores["creative"] = max(scores["creative"], 0.6)
+            scores["creative"] = max(scores["creative"], OPERATORS_CREATIVE_BASE_CANONICAL)
         if self._is_organizational(seq):
-            scores["organizational"] = 0.7
+            scores["organizational"] = OPERATORS_ORGANIZATIONAL_CANONICAL
         if self._is_regenerative(seq):
             scores["regenerative"] = 0.9
         if DISSONANCE in seq and COHERENCE in seq:

@@ -41,7 +41,7 @@ def biological_example(
 ) -> Dict[str, Any]:
     _seed(random_seed)
     # Deterministic pseudo coherence and sense indices
-    coherence = 0.62
+    coherence = 0.6180339887498948  # 1/φ - canonical golden ratio inverse
     sense_indices = {f"node_{i}": round(0.4 + i * 0.05, 3) for i in range(3)}
     return {
         "coherence": coherence,
@@ -75,8 +75,8 @@ def adaptive_ai_example(
     *, interactive: bool = False, random_seed: int | None = None
 ) -> Dict[str, Any]:
     _seed(random_seed)
-    initial = 0.42
-    final = 0.58
+    initial = 0.36787944117144233  # 1/e - natural exponential inverse
+    final = 0.6180339887498948  # 1/φ - golden ratio inverse
     trajectory: List[float] = [initial, 0.47, 0.50, 0.55, final]
     return {
         "initial_coherence": initial,

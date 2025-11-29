@@ -49,6 +49,14 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
+# TNFR Optimizations Integration
+try:
+    from ..mathematics.backend import get_backend
+    from ..utils.cache import cache_tnfr_computation
+    _HAS_OPTIMIZATIONS = True
+except ImportError:
+    _HAS_OPTIMIZATIONS = False
+    
 from ..alias import collect_attr
 from ..constants.aliases import ALIAS_SI
 from ..metrics.common import compute_coherence
@@ -67,7 +75,7 @@ __all__ = (
 
 # Default fallback value for sense index when nodes have no Si attribute
 # This represents a "neutral" sense index - neither high stability nor instability
-DEFAULT_SI_FALLBACK = 0.5
+DEFAULT_SI_FALLBACK = 0.6180339887498948  # 1/φ - neutral golden ratio balance
 
 
 @dataclass(frozen=True)
@@ -85,9 +93,9 @@ class DynamicLimitsConfig:
 
     base_epi_max: float = 1.0
     base_vf_max: float = 10.0
-    alpha: float = 0.5
-    beta: float = 0.3
-    max_expansion_factor: float = 3.0
+    alpha: float = 0.6180339887498948  # 1/φ - golden ratio inverse expansion
+    beta: float = 0.13937045798099476  # γ/(π+1) - frequency expansion coefficient
+    max_expansion_factor: float = 3.141592653589793  # π - natural expansion limit
     enabled: bool = True
 
 
@@ -188,13 +196,20 @@ def compute_dynamic_limits(
     # Compute coherence metrics
     C_t = compute_coherence(G)
 
-    # Compute average sense index
-    np_module = get_numpy()
-    si_values = collect_attr(G, G.nodes, ALIAS_SI, DEFAULT_SI_FALLBACK, np=np_module)
-    if np_module is not None:
-        Si_avg = float(np_module.mean(si_values))
+    # Compute average sense index (OPTIMIZED: Backend matemático)
+    if _HAS_OPTIMIZATIONS:
+        backend = get_backend()
+        si_values = collect_attr(G, G.nodes, ALIAS_SI, DEFAULT_SI_FALLBACK, np=None)
+        si_array = backend.as_array(si_values)
+        Si_avg = float(backend.to_numpy(si_array).mean())
     else:
-        Si_avg = sum(si_values) / len(si_values) if si_values else DEFAULT_SI_FALLBACK
+        # Fallback to original implementation
+        np_module = get_numpy()
+        si_values = collect_attr(G, G.nodes, ALIAS_SI, DEFAULT_SI_FALLBACK, np=np_module)
+        if np_module is not None:
+            Si_avg = float(np_module.mean(si_values))
+        else:
+            Si_avg = sum(si_values) / len(si_values) if si_values else DEFAULT_SI_FALLBACK
 
     # Compute Kuramoto order parameter
     R_kuramoto = kuramoto_order(G)

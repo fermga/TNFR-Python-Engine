@@ -1,0 +1,18 @@
+[
+  {
+    "label": "demo_range_250_252",
+    "t_min": 250.0,
+    "t_max": 252.0,
+    "step": 0.5,
+    "threshold": 1e-5
+  },
+  {
+    "label": "demo_range_252_255",
+    "t_min": 252.0,
+    "t_max": 255.0,
+    "step": 0.5,
+    "threshold": 1e-5,
+    "refinement_window": 0.8,
+    "refinement_iterations": 5
+  }
+]

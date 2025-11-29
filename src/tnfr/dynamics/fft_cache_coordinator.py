@@ -46,6 +46,13 @@ try:
 except ImportError:  # pragma: no cover - cache infra optional in some builds
     _CORE_CACHE_AVAILABLE = False
 
+# PHASE 6 EXTENDED: Canonical constants for FFT cache coordination
+from ..constants.canonical import (
+    PI,                                    # π ≈ 3.1416 (3.0 → canonical)
+    OPT_ORCH_ARITHMETIC_BOOST_CANONICAL,   # e·φ/π ≈ 1.4048 (1.5 → canonical)
+    FFT_OPT_SEQUENTIAL_IMPROVEMENT_CANONICAL,  # φ·γ/(π·e) ≈ 0.1095 (mathematical importance scaling)
+)
+
 try:
     from .multi_modal_cache import get_unified_cache, CacheEntryType
     HAS_UNIFIED_CACHE = True
@@ -125,7 +132,7 @@ class FFTCacheCoordinator:
                 G,
                 parameters={"signature": signature},
                 computation_func=lambda: (eigenvalues, eigenvectors),
-                mathematical_importance=3.0,
+                mathematical_importance=PI,
             )
 
         basis = SpectralBasis(
@@ -148,7 +155,7 @@ class FFTCacheCoordinator:
             G,
             parameters={"kind": "spectral_state"},
             computation_func=lambda: spectral_state,
-            mathematical_importance=2.5,
+            mathematical_importance=OPT_ORCH_ARITHMETIC_BOOST_CANONICAL,
         )
 
     # ------------------------------------------------------------------
@@ -182,7 +189,7 @@ class FFTCacheCoordinator:
                 G,
                 parameters=combined_params,
                 computation_func=lambda: kernel,
-                mathematical_importance=1.5,
+                mathematical_importance=OPT_ORCH_ARITHMETIC_BOOST_CANONICAL,
             )
 
         return kernel
@@ -209,7 +216,7 @@ class FFTCacheCoordinator:
             G,
             parameters=params,
             computation_func=lambda: fft_result,
-            mathematical_importance=1.8,
+            mathematical_importance=FFT_OPT_SEQUENTIAL_IMPROVEMENT_CANONICAL,
         )
 
     # ------------------------------------------------------------------

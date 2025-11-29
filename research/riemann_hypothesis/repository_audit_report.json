@@ -1,0 +1,147 @@
+{
+  "timestamp": "2025-11-29T00:54:46.111732",
+  "migration_status": "canonical_constants",
+  "audit_results": {
+    "constants_usage": {
+      "parameters_updated": true,
+      "canonical_constants": {
+        "PHI": 1.618033988749895,
+        "GAMMA": 0.5772156649015329,
+        "PI": 3.141592653589793,
+        "E": 2.718281828459045,
+        "INV_PHI": 0.6180339887498948
+      },
+      "parameter_verification": {
+        "alpha": {
+          "expected": 0.6180339887498948,
+          "actual": 0.6180339887498948,
+          "matches": true,
+          "relative_error": 0.0
+        },
+        "beta": {
+          "expected": 0.1552152236595249,
+          "actual": 0.1552152236595249,
+          "matches": true,
+          "relative_error": 0.0
+        },
+        "gamma": {
+          "expected": 0.18373345259830798,
+          "actual": 0.18373345259830798,
+          "matches": true,
+          "relative_error": 0.0
+        },
+        "nu_0": {
+          "expected": 0.8922769185211629,
+          "actual": 0.8922769185211629,
+          "matches": true,
+          "relative_error": 0.0
+        },
+        "delta": {
+          "expected": 0.11355351857612202,
+          "actual": 0.11355351857612202,
+          "matches": true,
+          "relative_error": 0.0
+        },
+        "epsilon": {
+          "expected": 0.04321391826377226,
+          "actual": 0.04321391826377226,
+          "matches": true,
+          "relative_error": 0.0
+        },
+        "zeta": {
+          "expected": 0.93395456464955,
+          "actual": 0.93395456464955,
+          "matches": true,
+          "relative_error": 0.0
+        },
+        "eta": {
+          "expected": 1.120728306698076,
+          "actual": 1.120728306698076,
+          "matches": true,
+          "relative_error": 0.0
+        },
+        "theta": {
+          "expected": 0.6180339887498948,
+          "actual": 0.6180339887498948,
+          "matches": true,
+          "relative_error": 0.0
+        }
+      }
+    },
+    "module_imports": {
+      "tnfr.mathematics.number_theory": {
+        "importable": true,
+        "error": null
+      },
+      "tnfr.constants.canonical": {
+        "importable": true,
+        "error": null
+      },
+      "tnfr.physics.fields": {
+        "importable": true,
+        "error": null
+      },
+      "tnfr.operators.grammar": {
+        "importable": true,
+        "error": null
+      },
+      "tnfr.dynamics.self_optimizing_engine": {
+        "importable": true,
+        "error": null
+      },
+      "tnfr.sdk": {
+        "importable": true,
+        "error": null
+      }
+    },
+    "core_tests": {
+      "arithmetic": {
+        "exit_code": 0,
+        "passed": true,
+        "stdout": "prime_detection_precision PASSED [ 42%]\ntests/test_arithmetic_tnfr.py::TestArithmeticTNFRNetwork::test_prime_candidates PASSED [ 45%]\ntests/test_arithmetic_tnfr.py::TestArithmeticTNFRNetwork::test_prime_certificate PASSED [ 48%]\ntests/test_arithmetic_tnfr.py::TestArithmeticTNFRNetwork::test_summary_statistics PASSED [ 51%]\ntests/test_arithmetic_tnfr.py::TestArithmeticTNFRNetwork::test_separation_primes_vs_composites PASSED [ 54%]\ntests/test_arithmetic_tnfr.py::TestStructuralFields::test_phase_computation PASSED [ 57%]\ntests/test_arithmetic_tnfr.py::TestStructuralFields::test_phase_gradient_computation PASSED [ 60%]\ntests/test_arithmetic_tnfr.py::TestStructuralFields::test_phase_curvature_computation PASSED [ 62%]\ntests/test_arithmetic_tnfr.py::TestStructuralFields::test_structural_potential_computation PASSED [ 65%]\ntests/test_arithmetic_tnfr.py::TestStructuralFields::test_coherence_length_computation PASSED [ 68%]\ntests/test_arithmetic_tnfr.py::TestStructuralFields::test_all_fields_suite PASSED [ 71%]\ntests/test_arithmetic_tnfr.py::TestOperators::test_coupling_application PASSED [ 74%]\ntests/test_arithmetic_tnfr.py::TestOperators::test_resonance_step PASSED [ 77%]\ntests/test_arithmetic_tnfr.py::TestOperators::test_resonance_propagation PASSED [ 80%]\ntests/test_arithmetic_tnfr.py::TestOperators::test_resonance_metrics PASSED [ 82%]\ntests/test_arithmetic_tnfr.py::TestGrammarCompliance::test_no_epi_mutations PASSED [ 85%]\ntests/test_arithmetic_tnfr.py::TestGrammarCompliance::test_coherence_monotonicity PASSED [ 88%]\ntests/test_arithmetic_tnfr.py::TestGrammarCompliance::test_frequency_positivity PASSED [ 91%]\ntests/test_arithmetic_tnfr.py::TestGrammarCompliance::test_operator_idempotence_phase PASSED [ 94%]\ntests/test_arithmetic_tnfr.py::TestScalability::test_medium_network_accuracy PASSED [ 97%]\ntests/test_arithmetic_tnfr.py::TestScalability::test_large_network_construction PASSED [100%]\n\n============================= 35 passed in 0.59s ==============================\n",
+        "stderr": ""
+      },
+      "mathematics": {
+        "exit_code": 1,
+        "passed": false,
+        "stdout": "dissipative_dynamics.py::test_contractive_engine_matches_qubit_ground_truth PASSED [ 24%]\ntests/mathematics/test_dissipative_dynamics.py::test_qutrit_pure_dephasing_matches_ground_truth PASSED [ 25%]\ntests/mathematics/test_dissipative_dynamics.py::test_unitary_generator_remains_available PASSED [ 26%]\ntests/mathematics/test_dissipative_dynamics.py::test_defective_generator_requires_scipy FAILED [ 27%]\n\n================================== FAILURES ===================================\n___________________ test_defective_generator_requires_scipy ___________________\ntests\\mathematics\\test_dissipative_dynamics.py:220: in test_defective_generator_requires_scipy\n    with pytest.raises(ValueError, match=\"not diagonalizable\"):\nE   Failed: DID NOT RAISE <class 'ValueError'>\n============================== warnings summary ===============================\ntests/mathematics/test_autodiff.py::test_jax_norm_gradient_matches_analytic\ntests/mathematics/test_autodiff.py::test_jax_expectation_gradient_matches_closed_form\ntests/mathematics/test_autodiff.py::test_jax_contractive_step_supports_autodiff\ntests/mathematics/test_autodiff.py::test_jax_contractive_step_autodiff_with_controls\ntests/mathematics/test_backends.py::test_coherence_operator_matches_numpy[jax]\ntests/mathematics/test_backends.py::test_mathematical_dynamics_matches_numpy[jax]\ntests/mathematics/test_backends.py::test_contractive_dynamics_matches_numpy[jax]\n  C:\\TNFR-Python-Engine\\src\\tnfr\\utils\\init.py:487: RuntimeWarning: Failed to import module 'jax.numpy': No module named 'jax'\n    \"warn\": lambda msg: _emit(msg, \"warn\"),\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ===========================\nFAILED tests/mathematics/test_dissipative_dynamics.py::test_defective_generator_requires_scipy\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!\n============= 1 failed, 18 passed, 7 skipped, 7 warnings in 2.55s =============\n",
+        "stderr": ""
+      },
+      "integration": {
+        "exit_code": 1,
+        "passed": false,
+        "stdout": "s.py::test_iterative_operator_application_stability[5] PASSED [  3%]\ntests/integration/test_additional_critical_paths.py::test_iterative_operator_application_stability[10] PASSED [  3%]\ntests/integration/test_cache_metrics_publisher.py::test_publish_graph_cache_metrics_emits_edge_cache_snapshots PASSED [  3%]\ntests/integration/test_canonical_sequences.py::TestCanonicalSequencesRegistry::test_registry_has_all_sequences PASSED [  3%]\ntests/integration/test_canonical_sequences.py::TestCanonicalSequencesRegistry::test_all_sequences_have_oz FAILED [  4%]\n\n================================== FAILURES ===================================\n__________ TestCanonicalSequencesRegistry.test_all_sequences_have_oz __________\ntests\\integration\\test_canonical_sequences.py:42: in test_all_sequences_have_oz\n    assert Glyph.OZ in seq.glyphs, f\"Sequence {name} missing OZ\"\nE   AssertionError: Sequence theory_system missing OZ\nE   assert <Glyph.OZ: 'OZ'> in [<Glyph.AL: 'AL'>, <Glyph.NAV: 'NAV'>, <Glyph.UM: 'UM'>, <Glyph.RA: 'RA'>, <Glyph.IL: 'IL'>, <Glyph.SHA: 'SHA'>]\nE    +  where <Glyph.OZ: 'OZ'> = Glyph.OZ\nE    +  and   [<Glyph.AL: 'AL'>, <Glyph.NAV: 'NAV'>, <Glyph.UM: 'UM'>, <Glyph.RA: 'RA'>, <Glyph.IL: 'IL'>, <Glyph.SHA: 'SHA'>] = CanonicalSequence(name='theory_system', glyphs=[<Glyph.AL: 'AL'>, <Glyph.NAV: 'NAV'>, <Glyph.UM: 'UM'>, <Glyph.RA: 'RA'>, <Glyph.IL: 'IL'>, <Glyph.SHA: 'SHA'>], pattern_type=<StructuralPattern.HIERARCHICAL: 'hierarchical'>, description='Cognitive theory consolidation with coupling and resonance', use_cases=['cognitive', 'learning'], domain='cognitive', references=['UNIFIED_GRAMMAR_RULES.md §U3', 'docs/']).glyphs\n=========================== short test summary info ===========================\nFAILED tests/integration/test_canonical_sequences.py::TestCanonicalSequencesRegistry::test_all_sequences_have_oz\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!\n======================== 1 failed, 26 passed in 1.55s =========================\n",
+        "stderr": ""
+      },
+      "telemetry": {
+        "exit_code": 0,
+        "passed": true,
+        "stdout": "============================= test session starts =============================\nplatform win32 -- Python 3.13.6, pytest-8.3.3, pluggy-1.6.0 -- C:\\Program Files\\Python313\\python.exe\ncachedir: .pytest_cache\nhypothesis profile 'default'\nbenchmark: 5.2.3 (defaults: timer=time.perf_counter disable_gc=False min_rounds=5 min_time=0.000005 max_time=1.0 calibration_precision=10 warmup=False warmup_iterations=100000)\nrootdir: C:\\TNFR-Python-Engine\nconfigfile: pyproject.toml\nplugins: anyio-4.9.0, hypothesis-6.147.0, benchmark-5.2.3, cov-7.0.0, timeout-2.4.0, xdist-3.8.0\ncollecting ... collected 4 items\n\ntests/telemetry/test_nu_f.py::test_nu_f_poisson_snapshot_matches_mle PASSED [ 25%]\ntests/telemetry/test_nu_f.py::test_nu_f_zero_counts_retains_zero_rate PASSED [ 50%]\ntests/telemetry/test_nu_f.py::test_nu_f_history_survives_runtime_summary PASSED [ 75%]\ntests/telemetry/test_nu_f.py::test_custom_confidence_level_survives_repeated_ensure PASSED [100%]\n\n============================== 4 passed in 0.38s ==============================\n",
+        "stderr": ""
+      }
+    },
+    "examples_execution": {
+      "examples/self_optimizing_showcase.py": {
+        "executed": true,
+        "exit_code": 1,
+        "success": false,
+        "stdout": "",
+        "stderr": "py\", line 40, in <module>\n    print(\"\\U0001f916 TNFR Self-Optimizing Mathematical Engine Showcase\")\n    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Program Files\\Python313\\Lib\\encodings\\cp1252.py\", line 19, in encode\n    return codecs.charmap_encode(input,self.errors,encoding_table)[0]\n           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nUnicodeEncodeError: 'charmap' codec can't encode character '\\U0001f916' in position 0: character maps to <undefined>\n"
+      }
+    },
+    "zeta_validation": {
+      "validator_importable": true,
+      "test_accuracy": 1.0,
+      "test_zeros": 10,
+      "threshold": 0.01,
+      "meets_expectation": true
+    }
+  },
+  "summary": {
+    "total_audits": 5,
+    "passed_audits": 3,
+    "success_rate": 0.6,
+    "overall_status": "PARTIAL",
+    "migration_compatible": false
+  }
+}

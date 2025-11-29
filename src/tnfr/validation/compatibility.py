@@ -95,18 +95,21 @@ GRADUATED_COMPATIBILITY: dict[str, dict[str, list[str]]] = {
         "excellent": [
             COHERENCE,
             COUPLING,
+        ],  # Anchoring → stabilization/linking (integrate received energy)
+        "good": [
             SELF_ORGANIZATION,
-        ],  # Anchoring → stabilization/linking/autonomous cascades
-        "good": [RESONANCE],  # Amplification after receiving
-        "caution": [],
+            RESONANCE,
+            TRANSITION,
+        ],  # Autonomous cascades, amplification, handoff after anchoring
+        "caution": [
+            EXPANSION,
+        ],  # EN->VAL needs context - ensure received energy supports expansion
         "avoid": [
             SILENCE,
             EMISSION,
             DISSONANCE,
-            EXPANSION,
             CONTRACTION,
             MUTATION,
-            TRANSITION,
             RECURSIVITY,
             RECEPTION,
         ],
@@ -115,16 +118,16 @@ GRADUATED_COMPATIBILITY: dict[str, dict[str, list[str]]] = {
     COHERENCE: {
         "excellent": [
             RESONANCE,
-            EXPANSION,
             COUPLING,
-        ],  # Stability → amplification/exploration/linking
+        ],  # Stability → amplification/linking (coherent propagation)
         "good": [
+            EXPANSION,
             SILENCE,
             TRANSITION,
             CONTRACTION,
             SELF_ORGANIZATION,
             RECURSIVITY,
-        ],  # Valid progressions
+        ],  # Exploration, pause, handoff, compression, cascades, fractality
         "caution": [
             MUTATION,
             DISSONANCE,
@@ -133,40 +136,52 @@ GRADUATED_COMPATIBILITY: dict[str, dict[str, list[str]]] = {
             EMISSION,
             RECEPTION,
             COHERENCE,
-        ],  # Cannot re-initiate, re-anchor, or re-stabilize
+        ],  # Cannot re-initiate, re-anchor, or double-stabilize
     },
     # DISSONANCE (OZ) - Injects controlled tension for probes
     DISSONANCE: {
         "excellent": [
             MUTATION,
+            COHERENCE,
+        ],  # Tension → transformation or immediate stabilization
+        "good": [
             TRANSITION,
             SELF_ORGANIZATION,
-        ],  # Tension → transformation/handoff/reorganization
-        "good": [
             CONTRACTION,
+        ],  # Handoff, reorganization, concentration after tension
+        "caution": [
             RESONANCE,
             RECURSIVITY,
-            COHERENCE,
-        ],  # Concentration, amplification, fractal echo, stabilization
-        "caution": [DISSONANCE],  # Repeated dissonance needs careful management
-        "avoid": [SILENCE, EMISSION, RECEPTION, COUPLING, EXPANSION],
+            DISSONANCE,
+        ],  # Amplifying tension needs context, repeated dissonance careful
+        "avoid": [
+            SILENCE,
+            EMISSION,
+            RECEPTION,
+            COUPLING,
+            EXPANSION,
+        ],
     },
     # COUPLING (UM) - Synchronizes bidirectional coherence links
     COUPLING: {
         "excellent": [
             RESONANCE,
             COHERENCE,
+        ],  # Linking → amplification/stabilization (synchronized propagation)
+        "good": [
             EXPANSION,
-        ],  # Linking → amplification/stabilization/exploration
-        "good": [TRANSITION, SILENCE],  # Handoff or pause after coupling
-        "caution": [],
+            TRANSITION,
+            SILENCE,
+        ],  # Exploration, handoff, or pause after coupling
+        "caution": [
+            SELF_ORGANIZATION,
+        ],  # UM->THOL needs phase compatibility verification
         "avoid": [
             EMISSION,
             RECEPTION,
             DISSONANCE,
             CONTRACTION,
             MUTATION,
-            SELF_ORGANIZATION,
             RECURSIVITY,
             COUPLING,
         ],
@@ -175,16 +190,17 @@ GRADUATED_COMPATIBILITY: dict[str, dict[str, list[str]]] = {
     RESONANCE: {
         "excellent": [
             COHERENCE,
-            EXPANSION,
             COUPLING,
-        ],  # Amplification → stabilization/exploration/linking
+        ],  # Amplification → stabilization/linking (preserve amplified state)
         "good": [
+            EXPANSION,
             TRANSITION,
             SILENCE,
-            EMISSION,
             RECURSIVITY,
-        ],  # Handoff, pause, re-initiation, fractal echo
-        "caution": [],
+        ],  # Exploration, handoff, pause, fractal echo after amplification
+        "caution": [
+            EMISSION,
+        ],  # RA->AL requires context - amplified state to new initiation
         "avoid": [
             RECEPTION,
             DISSONANCE,
@@ -200,17 +216,19 @@ GRADUATED_COMPATIBILITY: dict[str, dict[str, list[str]]] = {
             EMISSION,
             RECEPTION,
         ],  # Resume from pause → initiation or anchoring
-        "good": [],
-        "caution": [],
+        "good": [
+            TRANSITION,
+        ],  # SHA->NAV (latency->transition) - reactivation
+        "caution": [
+            COUPLING,
+        ],  # SHA->UM may need phase verification when reactivating
         "avoid": [
             COHERENCE,
             DISSONANCE,
-            COUPLING,
             RESONANCE,
             EXPANSION,
             CONTRACTION,
             MUTATION,
-            TRANSITION,
             SELF_ORGANIZATION,
             RECURSIVITY,
             SILENCE,
@@ -219,20 +237,21 @@ GRADUATED_COMPATIBILITY: dict[str, dict[str, list[str]]] = {
     # EXPANSION (VAL) - Dilates structure to explore volume
     EXPANSION: {
         "excellent": [
+            COHERENCE,
+        ],  # Exploration → stabilization (consolidate expanded structure)
+        "good": [
             COUPLING,
             RESONANCE,
-            COHERENCE,
-        ],  # Exploration → linking/amplification/stabilization
-        "good": [
             TRANSITION,
             CONTRACTION,
-        ],  # Handoff or compression after expansion
-        "caution": [],
+        ],  # Linking, amplification, handoff, or compression after expansion
+        "caution": [
+            SILENCE,
+        ],  # VAL->SHA requires careful timing (preserve expanded state)
         "avoid": [
             EMISSION,
             RECEPTION,
             DISSONANCE,
-            SILENCE,
             MUTATION,
             SELF_ORGANIZATION,
             RECURSIVITY,
@@ -242,10 +261,13 @@ GRADUATED_COMPATIBILITY: dict[str, dict[str, list[str]]] = {
     # CONTRACTION (NUL) - Concentrates trajectories into core
     CONTRACTION: {
         "excellent": [
-            EMISSION,
             COHERENCE,
-        ],  # Concentration → re-initiation or stabilization
-        "good": [SILENCE],  # Contraction can close with silence
+        ],  # Concentration → stabilization (preserve concentrated form)
+        "good": [
+            EMISSION,
+            SILENCE,
+            TRANSITION,
+        ],  # Re-initiation after concentration, pause, or handoff
         "caution": [],
         "avoid": [
             RECEPTION,
@@ -254,7 +276,6 @@ GRADUATED_COMPATIBILITY: dict[str, dict[str, list[str]]] = {
             RESONANCE,
             EXPANSION,
             MUTATION,
-            TRANSITION,
             SELF_ORGANIZATION,
             RECURSIVITY,
             CONTRACTION,
@@ -264,20 +285,25 @@ GRADUATED_COMPATIBILITY: dict[str, dict[str, list[str]]] = {
     SELF_ORGANIZATION: {
         "excellent": [
             COHERENCE,
+        ],  # Autonomous cascades → stabilization (consolidate emergent structure)
+        "good": [
             COUPLING,
             RESONANCE,
-        ],  # Autonomous cascades → stabilization/linking/amplification
-        "good": [
-            DISSONANCE,
-            MUTATION,
             TRANSITION,
             SILENCE,
+            SELF_ORGANIZATION,
+        ],  # Linking, amplification, handoff, pause, nested organization
+        "caution": [
+            DISSONANCE,
+            MUTATION,
             CONTRACTION,
             EMISSION,
-            SELF_ORGANIZATION,
-        ],  # Nested/sequential self-organization
-        "caution": [],
-        "avoid": [RECEPTION, EXPANSION, RECURSIVITY],
+        ],  # Context-dependent transitions after self-organization
+        "avoid": [
+            RECEPTION,
+            EXPANSION,
+            RECURSIVITY,
+        ],
     },
     # MUTATION (ZHIR) - Pivots node across structural thresholds
     MUTATION: {

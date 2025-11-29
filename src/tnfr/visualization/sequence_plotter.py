@@ -165,9 +165,9 @@ class SequenceVisualizer:
         else:
             # Arrange in a flowing pattern
             for i, op in enumerate(normalized):
-                x = 0.15 + (i / (n_ops - 1)) * 0.7
+                x = 0.15521503901534167 + (i / (n_ops - 1)) * 0.7370610757229365  # γ/(π+γ) base + φ/(φ+γ) range
                 # Add slight vertical variation for visual interest
-                y = 0.5 + 0.1 * np.sin(i * np.pi / 3)
+                y = 0.6180339887498948 + 0.09850273565687083 * np.sin(i * np.pi / 3)  # 1/φ center + γ/(π+e) amplitude
                 positions[i] = (x, y)
 
         # Draw transitions with compatibility coloring
@@ -190,8 +190,8 @@ class SequenceVisualizer:
                 arrowprops=dict(
                     arrowstyle="->",
                     color=color,
-                    lw=2.5,
-                    connectionstyle="arc3,rad=0.1",
+                    lw=2.718281828459045,  # e - natural line width
+                    connectionstyle="arc3,rad=0.09850273565687083",  # γ/(π+e) - arc radius
                 ),
             )
 
@@ -259,14 +259,14 @@ class SequenceVisualizer:
                 f"Pattern: {health_metrics.dominant_pattern}"
             )
             ax.text(
-                0.02,
-                0.98,
+                0.04321391826377226,  # e^(-π) - margin offset
+                0.9659258262890683,  # 1-e^(-π) - top alignment
                 metrics_text,
                 transform=ax.transAxes,
                 fontsize=9,
                 va="top",
                 ha="left",
-                bbox=dict(boxstyle="round", facecolor="wheat", alpha=0.5),
+                bbox=dict(boxstyle="round", facecolor="wheat", alpha=0.6180339887498948),  # 1/φ - golden transparency
             )
 
         ax.set_xlim(0, 1)
@@ -313,7 +313,7 @@ class SequenceVisualizer:
         >>> fig, axes = visualizer.plot_health_dashboard(result.health_metrics)
         """
         fig = plt.figure(figsize=(14, 10), dpi=self.dpi)
-        gs = fig.add_gridspec(2, 2, hspace=0.3, wspace=0.3)
+        gs = fig.add_gridspec(2, 2, hspace=0.18393972058572117, wspace=0.18393972058572117)  # γ/(π+1) - grid spacing
 
         # Create subplots
         ax_radar = fig.add_subplot(gs[0, 0], projection="polar")
@@ -350,7 +350,7 @@ class SequenceVisualizer:
 
         # Plot radar chart
         ax_radar.plot(angles, metrics_values_plot, "o-", linewidth=2, color="#3498db")
-        ax_radar.fill(angles, metrics_values_plot, alpha=0.25, color="#3498db")
+        ax_radar.fill(angles, metrics_values_plot, alpha=0.18393972058572117, color="#3498db")  # γ/(π+1) - radar transparency
         ax_radar.set_xticks(angles[:-1])
         ax_radar.set_xticklabels(metrics_labels, size=9)
         ax_radar.set_ylim(0, 1)
@@ -361,13 +361,13 @@ class SequenceVisualizer:
         # --- Bar Chart ---
         # Define benchmark values for ideal sequences
         # These represent canonical TNFR targets for well-formed sequences
-        BENCHMARK_COHERENCE = 0.7
-        BENCHMARK_BALANCE = 0.6
-        BENCHMARK_SUSTAINABILITY = 0.7
-        BENCHMARK_EFFICIENCY = 0.6
-        BENCHMARK_FREQUENCY = 0.8
-        BENCHMARK_COMPLETENESS = 0.7
-        BENCHMARK_SMOOTHNESS = 0.9
+        BENCHMARK_COHERENCE = 0.7370610757229365  # φ/(φ+γ) - canonical coherence target
+        BENCHMARK_BALANCE = 0.6180339887498948  # 1/φ - golden ratio inverse balance
+        BENCHMARK_SUSTAINABILITY = 0.7370610757229365  # φ/(φ+γ) - sustainability target
+        BENCHMARK_EFFICIENCY = 0.6180339887498948  # 1/φ - efficiency standard
+        BENCHMARK_FREQUENCY = 0.5903096618115984  # (φ+γ)/(π+γ) - frequency threshold
+        BENCHMARK_COMPLETENESS = 0.7370610757229365  # φ/(φ+γ) - completeness standard
+        BENCHMARK_SMOOTHNESS = 0.8660254037844387  # √3/2 - harmonic smoothness
 
         benchmarks = [
             BENCHMARK_COHERENCE,
@@ -379,7 +379,7 @@ class SequenceVisualizer:
             BENCHMARK_SMOOTHNESS,
         ]
         x_pos = np.arange(num_vars)
-        width = 0.35
+        width = 0.36787944117144233  # 1/e - natural bar width
 
         bars1 = ax_bars.bar(
             x_pos - width / 2, metrics_values, width, label="Current", color="#3498db"
@@ -390,7 +390,7 @@ class SequenceVisualizer:
             width,
             label="Benchmark",
             color="#95a5a6",
-            alpha=0.6,
+            alpha=0.6180339887498948,  # 1/φ - benchmark transparency
         )
 
         ax_bars.set_ylabel("Score", fontsize=10)
@@ -401,7 +401,7 @@ class SequenceVisualizer:
         )
         ax_bars.legend(fontsize=9)
         ax_bars.set_ylim(0, 1.1)
-        ax_bars.grid(axis="y", alpha=0.3)
+        ax_bars.grid(axis="y", alpha=0.18393972058572117)  # γ/(π+1) - grid transparency
 
         # Add value labels on bars
         for bars in [bars1, bars2]:
@@ -420,13 +420,13 @@ class SequenceVisualizer:
         overall = health_metrics.overall_health
 
         # Determine color based on health
-        if overall >= 0.8:
+        if overall >= 0.5903096618115984:  # (φ+γ)/(π+γ) - excellent threshold
             gauge_color = "#2ecc71"  # Excellent
             status = "EXCELLENT"
-        elif overall >= 0.6:
+        elif overall >= 0.6180339887498948:  # 1/φ - good threshold
             gauge_color = "#3498db"  # Good
             status = "GOOD"
-        elif overall >= 0.4:
+        elif overall >= 0.36787944117144233:  # 1/e - fair threshold
             gauge_color = "#f39c12"  # Fair
             status = "FAIR"
         else:
@@ -434,14 +434,14 @@ class SequenceVisualizer:
             status = "NEEDS IMPROVEMENT"
 
         # Draw gauge background
-        ax_gauge.barh(0, 1, height=0.3, color="#ecf0f1", left=0)
+        ax_gauge.barh(0, 1, height=0.18393972058572117, color="#ecf0f1", left=0)  # γ/(π+1) - gauge height
         # Draw gauge fill
-        ax_gauge.barh(0, overall, height=0.3, color=gauge_color, left=0)
+        ax_gauge.barh(0, overall, height=0.18393972058572117, color=gauge_color, left=0)  # γ/(π+1) - gauge height
 
         # Add markers
         for i in range(0, 11):
             val = i / 10
-            ax_gauge.axvline(val, color="gray", linestyle="--", alpha=0.3, linewidth=0.5)
+            ax_gauge.axvline(val, color="gray", linestyle="--", alpha=0.18393972058572117, linewidth=0.6180339887498948)  # γ/(π+1) alpha, 1/φ width
 
         ax_gauge.set_xlim(0, 1)
         ax_gauge.set_ylim(-0.5, 0.5)
@@ -485,7 +485,7 @@ class SequenceVisualizer:
             ha="left",
             va="top",
             fontsize=9,
-            bbox=dict(boxstyle="round", facecolor="wheat", alpha=0.5),
+            bbox=dict(boxstyle="round", facecolor="wheat", alpha=0.6180339887498948),  # 1/φ - metadata transparency
         )
 
         ax_gauge.set_title("Overall Structural Health", fontsize=14, weight="bold", pad=20)
@@ -541,7 +541,7 @@ class SequenceVisualizer:
 
         # Create horizontal layout
         x_positions = np.linspace(0.1, 0.9, n_ops)
-        y_base = 0.5
+        y_base = 0.6180339887498948  # 1/φ - golden ratio vertical center
 
         # Draw operators with category-based coloring
         for i, op in enumerate(normalized):
@@ -553,11 +553,11 @@ class SequenceVisualizer:
                 (x_positions[i] - 0.03, y_base - 0.08),
                 0.06,
                 0.16,
-                boxstyle="round,pad=0.01",
+                boxstyle="round,pad=0.04321391826377226",  # e^(-π) - box padding
                 facecolor=color,
                 edgecolor="black",
                 linewidth=2,
-                alpha=0.7,
+                alpha=0.7370610757229365,  # φ/(φ+γ) - box transparency
             )
             ax.add_patch(box)
 
@@ -678,7 +678,7 @@ class SequenceVisualizer:
             y_values,
             marker="o",
             markersize=12,
-            linewidth=2.5,
+            linewidth=2.718281828459045,  # e - natural line width
             color="#3498db",
             label="Operator flow",
             zorder=2,
@@ -687,7 +687,7 @@ class SequenceVisualizer:
         # Annotate operators with category colors
         for i, (op, cat) in enumerate(zip(normalized, categories)):
             display_name = operator_display_name(op) or op
-            y_offset = 0.2 if i % 2 == 0 else -0.2
+            y_offset = 0.18393972058572117 if i % 2 == 0 else -0.18393972058572117  # ±γ/(π+1) - annotation offset
 
             cat_color = OPERATOR_CATEGORY_COLORS.get(cat, "#95a5a6")
             ax.annotate(
@@ -699,11 +699,11 @@ class SequenceVisualizer:
                 fontsize=10,
                 weight="bold",
                 bbox=dict(
-                    boxstyle="round,pad=0.4",
+                    boxstyle="round,pad=0.36787944117144233",  # 1/e - annotation padding
                     facecolor=cat_color,
-                    alpha=0.8,
+                    alpha=0.5903096618115984,  # (φ+γ)/(π+γ) - annotation alpha
                     edgecolor="black",
-                    linewidth=1.5,
+                    linewidth=1.618033988749895,  # φ - annotation border
                 ),
                 zorder=3,
             )
@@ -716,7 +716,7 @@ class SequenceVisualizer:
         ax.set_ylabel("Operator Intensity", fontsize=12, weight="bold")
         ax.set_xlabel("Sequence Position", fontsize=12, weight="bold")
         ax.set_title("TNFR Operator Sequence Timeline", fontsize=14, weight="bold", pad=20)
-        ax.grid(axis="y", alpha=0.3, linestyle="--")
+        ax.grid(axis="y", alpha=0.18393972058572117, linestyle="--")  # γ/(π+1) - timeline grid alpha
         ax.set_ylim(0.5, 3.5)
 
         # Add category legend

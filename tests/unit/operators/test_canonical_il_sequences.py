@@ -339,11 +339,11 @@ class TestGrammarCompliance:
         assert level == CompatibilityLevel.EXCELLENT
 
     def test_dissonance_coherence_compatible(self):
-        """dissonance → coherence has GOOD compatibility."""
+        """dissonance → coherence has EXCELLENT compatibility."""
         from tnfr.validation.compatibility import get_compatibility_level, CompatibilityLevel
 
         level = get_compatibility_level(DISSONANCE, COHERENCE)
-        assert level == CompatibilityLevel.GOOD
+        assert level == CompatibilityLevel.EXCELLENT
 
     def test_resonance_coherence_compatible(self):
         """resonance → coherence has EXCELLENT compatibility."""

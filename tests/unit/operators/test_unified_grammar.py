@@ -37,6 +37,7 @@ from tnfr.operators.unified_grammar import (
     UnifiedGrammarValidator,
     validate_unified,
 )
+from tnfr.config.defaults_core import STRUCTURAL_ESCAPE_THRESHOLD
 
 
 class TestOperatorSets:
@@ -761,7 +762,7 @@ class TestU6StructuralPotentialConfinement:
 
         # Validate confinement
         valid, drift, msg = validate_structural_potential_confinement(
-            G, phi_before, phi_after, threshold=2.0, strict=False
+            G, phi_before, phi_after, threshold=STRUCTURAL_ESCAPE_THRESHOLD, strict=False
         )
 
         assert valid, f"Expected confinement, got: {msg}"
@@ -797,7 +798,7 @@ class TestU6StructuralPotentialConfinement:
 
         # Validate - should fail
         valid, drift, msg = validate_structural_potential_confinement(
-            G, phi_before, phi_after, threshold=2.0, strict=False
+            G, phi_before, phi_after, threshold=STRUCTURAL_ESCAPE_THRESHOLD, strict=False
         )
 
         assert not valid, f"Expected escape violation, got: {msg}"
@@ -829,7 +830,7 @@ class TestU6StructuralPotentialConfinement:
         # Should raise in strict mode
         with pytest.raises(StructuralPotentialConfinementError) as exc_info:
             validate_structural_potential_confinement(
-                G, phi_before, phi_after, threshold=2.0, strict=True
+                G, phi_before, phi_after, threshold=STRUCTURAL_ESCAPE_THRESHOLD, strict=True
             )
 
         err = exc_info.value
@@ -856,9 +857,9 @@ class TestU6StructuralPotentialConfinement:
             G.nodes[node]["delta_nfr"] = 1.5 if i % 3 == 0 else 0.2
         phi_after = compute_structural_potential(G, alpha=2.001)
 
-        # Should pass with threshold=2.0
+        # Should pass with threshold=STRUCTURAL_ESCAPE_THRESHOLD
         valid_high, drift, _ = validate_structural_potential_confinement(
-            G, phi_before, phi_after, threshold=2.0, strict=False
+            G, phi_before, phi_after, threshold=STRUCTURAL_ESCAPE_THRESHOLD, strict=False
         )
         assert valid_high
 
@@ -870,7 +871,7 @@ class TestU6StructuralPotentialConfinement:
 
         # Drift should be the same regardless of threshold
         _, drift_high, _ = validate_structural_potential_confinement(
-            G, phi_before, phi_after, threshold=2.0, strict=False
+            G, phi_before, phi_after, threshold=STRUCTURAL_ESCAPE_THRESHOLD, strict=False
         )
         _, drift_low, _ = validate_structural_potential_confinement(
             G, phi_before, phi_after, threshold=0.5, strict=False
@@ -888,7 +889,7 @@ class TestU6StructuralPotentialConfinement:
         phi_after = {}
 
         valid, drift, msg = validate_structural_potential_confinement(
-            G, phi_before, phi_after, threshold=2.0, strict=False
+            G, phi_before, phi_after, threshold=STRUCTURAL_ESCAPE_THRESHOLD, strict=False
         )
 
         assert valid
@@ -916,7 +917,7 @@ class TestU6StructuralPotentialConfinement:
         phi_valid_after = compute_structural_potential(G, alpha=2.001)
 
         valid_ok, drift_valid, _ = validate_structural_potential_confinement(
-            G, phi_valid_before, phi_valid_after, threshold=2.0, strict=False
+            G, phi_valid_before, phi_valid_after, threshold=STRUCTURAL_ESCAPE_THRESHOLD, strict=False
         )
 
         # Test 2: Grammar-violating behavior (large drift ~3.9)
@@ -929,7 +930,7 @@ class TestU6StructuralPotentialConfinement:
         phi_viol_after = compute_structural_potential(G, alpha=2.101)
 
         valid_bad, drift_viol, _ = validate_structural_potential_confinement(
-            G, phi_viol_before, phi_viol_after, threshold=2.0, strict=False
+            G, phi_viol_before, phi_viol_after, threshold=STRUCTURAL_ESCAPE_THRESHOLD, strict=False
         )
 
         # Verify passive protection: valid drift < violation drift
@@ -970,7 +971,7 @@ class TestU6StructuralPotentialConfinement:
             phi_after = compute_structural_potential(G, alpha=2.0)
 
             valid, drift, msg = validate_structural_potential_confinement(
-                G, phi_before, phi_after, threshold=2.0, strict=False
+                G, phi_before, phi_after, threshold=STRUCTURAL_ESCAPE_THRESHOLD, strict=False
             )
 
             assert valid, f"Topology {name} should pass U6: {msg}"

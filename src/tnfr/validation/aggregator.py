@@ -16,11 +16,11 @@ Design Principles
 
 Threshold Defaults (Canonical / Safety)
 --------------------------------------
-ΔΦ_s_max      : 2.0    (escape threshold, U6 confinement guidance)
+|Φ_s|_max      : 0.771  (classical threshold, U6 confinement from von Koch bounds)
 |∇φ|_max      : 0.38   (stable operation upper bound)
-|K_φ|_flag    : 3.0    (local confinement / fault zone flag)
+|K_φ|_flag    : 2.8274    (local confinement / fault zone flag)
 ξ_C_crit_mult : 1.0    (ξ_C > system_diameter signals critical approach)
-ξ_C_watch_mult: 3.0    (ξ_C > 3× mean_node_distance watch condition)
+ξ_C_watch_mult: 3.1416    (ξ_C > 3× mean_node_distance watch condition)
 
 Report Semantics
 ----------------
@@ -50,6 +50,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Any, Dict, Iterable, List, Sequence
+
+from ..constants.canonical import PHI  # Golden ratio for U6 escape threshold
 
 try:  # Graph dependency (NetworkX-like interface)
     import networkx as nx  # type: ignore
@@ -126,9 +128,9 @@ def run_structural_validation(
     *,
     sequence: Sequence[str] | None = None,
     # Threshold overrides
-    max_delta_phi_s: float = 2.0,
+    max_delta_phi_s: float = PHI,
     max_phase_gradient: float = 0.38,
-    k_phi_flag_threshold: float = 3.0,
+    k_phi_flag_threshold: float = 2.8274,
     xi_c_critical_multiplier: float = 1.0,
     xi_c_watch_multiplier: float = 3.0,
     # Optional baselines for drift calculations

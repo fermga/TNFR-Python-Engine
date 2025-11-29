@@ -1,52 +1,107 @@
-# TNFR Examples
+# 🌟 TNFR Examples - Interactive Learning Hub
 
-> DEPRECATION NOTICE (Scope): Canonical examples are those referenced in `docs/source/examples/README.md`. Other example files in this directory are non-centralized and may be deprecated in future releases. Prefer the centralized examples and documentation paths.
+**Welcome to the ultimate TNFR examples collection!** Each example is carefully crafted to demonstrate core TNFR concepts with production-quality code.
 
-This directory contains Jupyter notebooks and Python examples demonstrating TNFR (Resonant Fractal Nature Theory) concepts and computations.
+---
 
-> **New to TNFR?** Start with the [TNFR Fundamental Concepts Guide](../docs/source/getting-started/TNFR_CONCEPTS.md) to understand the paradigm before diving into examples.
+## 🚀 Quick Start (Choose Your Path)
 
-## 🆕 Grammar 2.0 Optimization Guides
-
-All examples have been optimized using Grammar 2.0 features for improved structural health:
-
-- **[OPTIMIZATION_GUIDE.md](OPTIMIZATION_GUIDE.md)** - Comprehensive guide to optimizing TNFR sequences
-- **[HEALTH_BENCHMARKS.md](HEALTH_BENCHMARKS.md)** - Before/after comparisons of all optimizations
-
-**Key improvements:**
-- All SDK sequences now have health ≥ 0.70 (good structural quality)
-- Balanced stabilizers and destabilizers for better structural dynamics
-- Harmonic frequency transitions following Grammar 2.0 principles
-- Educational comments explaining optimization patterns
-
-## 🌱 Domain-Specific Applications
-
-### Therapeutic Domain Examples
-
-**[domain_applications/](domain_applications/)** - Specialized therapeutic patterns demonstrating TNFR in healing and personal transformation contexts.
-
-**Available modules:**
-- **[therapeutic_patterns.py](domain_applications/therapeutic_patterns.py)** - 5 validated therapeutic sequences (avg health: 0.800)
-  - Crisis intervention, process therapy, regenerative healing, insight integration, relapse prevention
-- **[therapeutic_case_studies.py](domain_applications/therapeutic_case_studies.py)** - 4 clinical case studies (avg health: 0.786)
-  - Trauma recovery, addiction healing, depression emergence, relationship repair
-- **[therapeutic_optimization.py](domain_applications/therapeutic_optimization.py)** - Comparative analysis and optimization
-  - Speed vs. depth trade-offs, intensity calibration, strategy selection, modality comparison
-
-**Quick start:**
+### 👶 **Complete Beginner**
 ```bash
-# View all therapeutic patterns with validation
-python examples/domain_applications/therapeutic_patterns.py
-
-# Explore clinical case studies
-python examples/domain_applications/therapeutic_case_studies.py
-
-# Run comparative optimization analysis
-python examples/domain_applications/therapeutic_optimization.py
+python hello_world.py                    # 3-line TNFR introduction
+python tnfr_prime_checker.ipynb         # Interactive prime number analysis
+python basic_network_dynamics.py        # Network creation & evolution
 ```
 
-See **[README_THERAPEUTIC.md](domain_applications/README_THERAPEUTIC.md)** for comprehensive documentation on therapeutic applications, including:
-- Clinical interpretation of structural operators
+### 🔬 **Researcher/Scientist**  
+```bash
+python unified_fields_showcase.py       # Structural field tetrad exploration
+python self_optimizing_showcase.py      # Auto-optimization dynamics
+python particle_atlas.py                # Physics applications
+python molecule_atlas.py                # Chemistry applications
+```
+
+### 🩺 **Domain Specialist**
+```bash
+python biomedical/cardiac_coherence_sha.py    # Medical applications
+python life_experiments.py                    # Biological systems
+python pattern_cookbook_demo.py               # Pattern recognition
+```
+
+---
+
+## 📋 Complete Examples Catalog
+
+### **🌱 Fundamentals** (Start Here)
+
+| Example | Description | Complexity | Runtime |
+|---------|-------------|------------|---------|
+| **[hello_world.py](hello_world.py)** | 3-line TNFR introduction | ⭐ Beginner | 10s |
+| **[basic_network_dynamics.py](basic_network_dynamics.py)** | Network creation & operators | ⭐ Beginner | 30s |
+| **[sdk_example.py](sdk_example.py)** | Modern SDK fluent API | ⭐⭐ Intermediate | 45s |
+
+### **🧮 Mathematical Foundations**
+
+| Example | Description | Complexity | Runtime |
+|---------|-------------|------------|---------|
+| **[tnfr_prime_checker.ipynb](tnfr_prime_checker.ipynb)** | Prime emergence via resonance | ⭐⭐ Interactive | 2-5min |
+| **[canonical_equation_demo.py](canonical_equation_demo.py)** | Nodal equation ∂EPI/∂t = νf·ΔNFR | ⭐⭐ Intermediate | 1min |
+| **[math_suite_usage.py](math_suite_usage.py)** | Mathematical tools showcase | ⭐⭐⭐ Advanced | 90s |
+| **[adelic_dynamics_demo.py](adelic_dynamics_demo.py)** | Number theory applications | ⭐⭐⭐ Advanced | 2min |
+
+### **🔬 Structural Physics**
+
+| Example | Description | Complexity | Runtime |
+|---------|-------------|------------|---------|
+| **[unified_fields_showcase.py](unified_fields_showcase.py)** | Structural field tetrad (Φ_s, \|∇φ\|, K_φ, ξ_C) | ⭐⭐ Intermediate | 90s |
+| **[demo_tetrad_telemetry.py](demo_tetrad_telemetry.py)** | Real-time field monitoring | ⭐⭐ Intermediate | 60s |
+| **[u6_liouvillian_integration.py](u6_liouvillian_integration.py)** | U6 grammar physics | ⭐⭐⭐ Advanced | 2min |
+| **[zhir_bifurcation_detection_example.py](zhir_bifurcation_detection_example.py)** | Phase transitions | ⭐⭐⭐ Advanced | 90s |
+
+### **🤖 Self-Optimization & Dynamics**
+
+| Example | Description | Complexity | Runtime |
+|---------|-------------|------------|---------|
+| **[self_optimizing_showcase.py](self_optimizing_showcase.py)** | Auto-optimization engine | ⭐⭐ Intermediate | 2min |
+| **[optimization_quickstart.py](optimization_quickstart.py)** | Quick optimization patterns | ⭐⭐ Intermediate | 45s |
+| **[dynamic_limits_demo.py](dynamic_limits_demo.py)** | System stability bounds | ⭐⭐⭐ Advanced | 90s |
+
+### **🔬 Domain Applications**
+
+#### **Physics & Chemistry**
+| Example | Description | Complexity | Runtime |
+|---------|-------------|------------|---------|
+| **[particle_atlas.py](particle_atlas.py)** | Fundamental particles via TNFR | ⭐⭐⭐ Advanced | 3min |
+| **[atom_atlas.py](atom_atlas.py)** | Atomic structure emergence | ⭐⭐⭐ Advanced | 5min |
+| **[molecule_atlas.py](molecule_atlas.py)** | Molecular chemistry patterns | ⭐⭐⭐ Advanced | 4min |
+| **[triatomic_atlas.py](triatomic_atlas.py)** | Three-body molecular systems | ⭐⭐⭐ Advanced | 3min |
+| **[periodic_table_atlas.py](periodic_table_atlas.py)** | Periodic table emergence | ⭐⭐⭐ Advanced | 6min |
+
+#### **Life Sciences & Medicine**
+| Example | Description | Complexity | Runtime |
+|---------|-------------|------------|---------|
+| **[biomedical/cardiac_coherence_sha.py](biomedical/cardiac_coherence_sha.py)** | Heart rate variability | ⭐⭐ Intermediate | 60s |
+| **[biomedical/trauma_containment_sha.py](biomedical/trauma_containment_sha.py)** | Trauma response modeling | ⭐⭐ Intermediate | 90s |
+| **[life_experiments.py](life_experiments.py)** | Biological system dynamics | ⭐⭐⭐ Advanced | 2min |
+| **[cell_experiments.py](cell_experiments.py)** | Cellular organization | ⭐⭐⭐ Advanced | 90s |
+
+### **🧪 Operator Deep Dives**
+
+| Example | Description | Complexity | Runtime |
+|---------|-------------|------------|---------|
+| **[oz_canonical_sequences.py](oz_canonical_sequences.py)** | Dissonance operator mastery | ⭐⭐ Intermediate | 60s |
+| **[sha_extended_metrics_demo.py](sha_extended_metrics_demo.py)** | Silence operator applications | ⭐⭐ Intermediate | 45s |
+| **[val_enhanced_metrics_demo.py](val_enhanced_metrics_demo.py)** | Expansion operator dynamics | ⭐⭐ Intermediate | 60s |
+| **[phase_gated_coupling_demo.py](phase_gated_coupling_demo.py)** | Phase-verified coupling | ⭐⭐⭐ Advanced | 90s |
+
+### **📊 Analysis & Benchmarking**
+
+| Example | Description | Complexity | Runtime |
+|---------|-------------|------------|---------|
+| **[analytics_critical_detection.py](analytics_critical_detection.py)** | Critical point analysis | ⭐⭐⭐ Advanced | 2min |
+| **[structural_health_demo.py](structural_health_demo.py)** | Network health monitoring | ⭐⭐ Intermediate | 60s |
+| **[multiscale_network_demo.py](multiscale_network_demo.py)** | Hierarchical systems | ⭐⭐⭐ Advanced | 2min |
+| **[nbody_quantitative_validation.py](nbody_quantitative_validation.py)** | N-body system validation | ⭐⭐⭐ Advanced | 3min |
 - Pattern selection guidance
 - Health metrics for therapeutic contexts
 - Structural frequency considerations in healing

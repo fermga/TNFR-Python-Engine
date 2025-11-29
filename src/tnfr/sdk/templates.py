@@ -27,6 +27,16 @@ from __future__ import annotations
 from typing import Optional
 
 from .fluent import TNFRNetwork, NetworkResults
+from ..constants.canonical import (
+    SDK_CONNECTIVITY_DEFAULT,
+    SDK_INTERACTION_STRENGTH,
+    SDK_INSPIRATION_LEVEL,
+    SDK_VF_RANGE_LOW_MIN,
+    SDK_VF_RANGE_LOW_MAX,
+    SDK_VF_RANGE_MODERATE_MIN,
+    SDK_VF_RANGE_MODERATE_MAX,
+    SDK_COUPLING_STRENGTH_WEAK,
+)
 
 __all__ = ["TNFRTemplates"]
 
@@ -88,7 +98,7 @@ class TNFRTemplates:
             network._config.random_seed = random_seed
 
         # Human timescale frequencies: moderate reorganization rates
-        network.add_nodes(people, vf_range=(0.3, 0.7))
+        network.add_nodes(people, vf_range=(SDK_VF_RANGE_LOW_MIN, SDK_VF_RANGE_MODERATE_MAX))  # Human timescale canonical
 
         # Small-world topology reflects real social structures
         network.connect_nodes(connection_prob, "small_world")
@@ -110,7 +120,7 @@ class TNFRTemplates:
     @staticmethod
     def neural_network_model(
         neurons: int = 100,
-        connectivity: float = 0.15,
+        connectivity: float = SDK_CONNECTIVITY_DEFAULT,  # Canonical neural connectivity
         activation_cycles: int = 30,
         random_seed: Optional[int] = None,
     ) -> NetworkResults:
@@ -148,7 +158,7 @@ class TNFRTemplates:
             network._config.random_seed = random_seed
 
         # Neural frequencies: high end of valid range (0.5-1.0 Hz_str)
-        network.add_nodes(neurons, vf_range=(0.5, 1.0))
+        network.add_nodes(neurons, vf_range=(SDK_VF_RANGE_MODERATE_MIN, SDK_VF_RANGE_MODERATE_MAX))  # Neural frequencies canonical
 
         # Sparse random connectivity typical of cortical networks
         network.connect_nodes(connectivity, "random")
@@ -161,7 +171,7 @@ class TNFRTemplates:
     @staticmethod
     def ecosystem_dynamics(
         species: int = 25,
-        interaction_strength: float = 0.25,
+        interaction_strength: float = SDK_INTERACTION_STRENGTH,  # Canonical interaction strength
         evolution_steps: int = 50,
         random_seed: Optional[int] = None,
     ) -> NetworkResults:
@@ -198,7 +208,7 @@ class TNFRTemplates:
             network._config.random_seed = random_seed
 
         # Biological timescales: diversity within bounds (0.2-0.9 Hz_str)
-        network.add_nodes(species, vf_range=(0.2, 0.9))
+        network.add_nodes(species, vf_range=(SDK_VF_RANGE_LOW_MIN, SDK_VF_RANGE_MODERATE_MAX))  # Biological timescales canonical
 
         # Random interaction network
         network.connect_nodes(interaction_strength, "random")
@@ -223,7 +233,7 @@ class TNFRTemplates:
     @staticmethod
     def creative_process_model(
         ideas: int = 15,
-        inspiration_level: float = 0.4,
+        inspiration_level: float = SDK_INSPIRATION_LEVEL,  # Canonical creative inspiration
         development_cycles: int = 12,
         random_seed: Optional[int] = None,
     ) -> NetworkResults:
@@ -260,10 +270,10 @@ class TNFRTemplates:
             network._config.random_seed = random_seed
 
         # Diverse frequencies for creative exploration (0.3-0.9 Hz_str)
-        network.add_nodes(ideas, vf_range=(0.3, 0.9))
+        network.add_nodes(ideas, vf_range=(SDK_VF_RANGE_LOW_MIN, SDK_VF_RANGE_MODERATE_MAX))  # Creative exploration canonical
 
         # Sparse initial connectivity: ideas start disconnected
-        network.connect_nodes(0.1, "random")
+        network.connect_nodes(SDK_CONNECTIVITY_DEFAULT, "random")  # Canonical sparse connectivity
 
         # Creative process in phases
         cycles_per_phase = development_cycles // 3
@@ -318,7 +328,7 @@ class TNFRTemplates:
             network._config.random_seed = random_seed
 
         # Organizational timescales: moderate frequencies
-        network.add_nodes(agents, vf_range=(0.2, 0.8))
+        network.add_nodes(agents, vf_range=(SDK_VF_RANGE_LOW_MIN, SDK_VF_RANGE_LOW_MAX))  # Market agent canonical frequencies
 
         # Small-world topology approximates organizational structure
         # (local teams + cross-functional connections)

@@ -72,6 +72,15 @@ try:
 except ImportError:
     HAS_SPECTRAL = False
 
+# PHASE 6 EXTENDED: Canonical constants for cache-aware FFT operations
+from ..constants.canonical import (
+    EMERGENT_FREQ_BALANCE_CANONICAL,      # e/(π+e) ≈ 0.4638 (0.5 → canonical)
+    EMERGENT_EFFICIENCY_GAIN_CANONICAL,   # γ/π ≈ 0.1837 (0.25 → canonical)
+    EMERGENT_COORDINATION_BOOST_CANONICAL,  # 2·φ/π ≈ 1.0309 (2.0 → canonical)
+    EMERGENT_COUPLING_STRENGTH_CANONICAL,   # φ/(π+γ) ≈ 0.7320 (0.75 → canonical)
+    ARITHMETIC_FFT_ENHANCEMENT_CANONICAL,   # φ²/π ≈ 0.8326 (4.0 → 4·φ²/π canonical)
+)
+
 
 class FFTOperationType(Enum):
     """Types of cache-optimized FFT operations."""
@@ -318,7 +327,7 @@ class TNFRCacheAwareFFTEngine:
             raise RuntimeError("Spectral analysis not available")
             
         if scales is None:
-            scales = [0.5, 1.0, 2.0, 4.0]
+            scales = [EMERGENT_FREQ_BALANCE_CANONICAL, 1.0, EMERGENT_COORDINATION_BOOST_CANONICAL, ARITHMETIC_FFT_ENHANCEMENT_CANONICAL]
             
         start_time = time.perf_counter()
         
@@ -395,7 +404,7 @@ class TNFRCacheAwareFFTEngine:
             raise RuntimeError("FFT engine not available")
             
         if coherence_bands is None:
-            coherence_bands = [(0.0, 0.25), (0.25, 0.5), (0.5, 0.75), (0.75, 1.0)]
+            coherence_bands = [(0.0, EMERGENT_EFFICIENCY_GAIN_CANONICAL), (EMERGENT_EFFICIENCY_GAIN_CANONICAL, EMERGENT_FREQ_BALANCE_CANONICAL), (EMERGENT_FREQ_BALANCE_CANONICAL, EMERGENT_COUPLING_STRENGTH_CANONICAL), (EMERGENT_COUPLING_STRENGTH_CANONICAL, 1.0)]
             
         start_time = time.perf_counter()
         

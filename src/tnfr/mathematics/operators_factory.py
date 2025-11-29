@@ -6,6 +6,7 @@ import numpy as np
 
 from .backend import ensure_array, ensure_numpy, get_backend
 from .operators import CoherenceOperator, FrequencyOperator
+from ..constants.canonical import MATH_COHERENCE_MIN_CANONICAL
 
 __all__ = ["make_coherence_operator", "make_frequency_operator"]
 
@@ -24,7 +25,7 @@ def make_coherence_operator(
     dim: int,
     *,
     spectrum: np.ndarray | None = None,
-    c_min: float = 0.1,
+    c_min: float = MATH_COHERENCE_MIN_CANONICAL,
 ) -> CoherenceOperator:
     """Return a Hermitian positive semidefinite :class:`CoherenceOperator`.
 

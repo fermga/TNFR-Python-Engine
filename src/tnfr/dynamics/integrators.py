@@ -32,6 +32,18 @@ import networkx as nx
 from .._compat import TypeAlias
 from ..alias import collect_attr, get_attr, get_attr_str, set_attr, set_attr_str
 from ..constants import DEFAULTS
+from ..config.defaults_core import PI
+from ..constants.canonical import (
+    INTEGRATORS_RK4_SIXTH_CANONICAL,
+    INTEGRATORS_HALF_STEP_CANONICAL,
+    INTEGRATORS_EPI_MARGIN_CANONICAL,
+    INTEGRATORS_DNFR_BOUNDS_CANONICAL,
+    INTEGRATORS_CLIP_SOFT_K_CANONICAL,
+    INTEGRATORS_J_PHI_SCALE_CANONICAL,
+    INTEGRATORS_SYNTHETIC_DIV_CANONICAL,
+    INTEGRATORS_FLUX_FALLBACK_CANONICAL,
+    INTEGRATORS_SIGMOID_OFFSET_CANONICAL,
+)
 from ..constants.aliases import (
     ALIAS_D2EPI,
     ALIAS_DEPI,
@@ -117,7 +129,7 @@ def _apply_increment_chunk(
     for node, epi_i, dEPI_prev, ks in chunk:
         if method == "rk4":
             k1, k2, k3, k4 = ks
-            epi = epi_i + (dt_step / 6.0) * (k1 + 2 * k2 + 2 * k3 + k4)
+            epi = epi_i + (dt_step / INTEGRATORS_RK4_SIXTH_CANONICAL) * (k1 + 2 * k2 + 2 * k3 + k4)
             dEPI_dt = k4
         else:
             (k1,) = ks
@@ -185,7 +197,10 @@ def prepare_integration_params(
     time.
     """
     if dt is None:
-        dt = float(G.graph.get("DT", DEFAULTS["DT"]))
+        # Import canonical time step from constants
+        from ..constants.canonical import INV_FOUR_PHI_SQ
+        dt_canonical = INV_FOUR_PHI_SQ  # 1/(4φ²) ≈ 0.095 (tiempo estructural natural)
+        dt = float(G.graph.get("DT", DEFAULTS.get("DT", dt_canonical)))
     else:
         if not isinstance(dt, (int, float)):
             raise TypeError("dt must be a number")
@@ -251,7 +266,7 @@ def _apply_increments(
         if method == "rk4":
             if k_arr.ndim != 2 or k_arr.shape[1] != 4:
                 raise ValueError("rk4 increments require four staged values")
-            dt_factor = dt_step / 6.0
+            dt_factor = dt_step / INTEGRATORS_RK4_SIXTH_CANONICAL
             k1 = k_arr[:, 0]
             k2 = k_arr[:, 1]
             k3 = k_arr[:, 2]
@@ -446,7 +461,7 @@ def _build_gamma_increments(
         return _collect_nodal_increments(G, gamma_maps, method=method)
 
     if method == "rk4":
-        t_mid = t_local + dt_step / 2.0
+        t_mid = t_local + dt_step / INTEGRATORS_HALF_STEP_CANONICAL
         t_end = t_local + dt_step
         g1_map = _evaluate_gamma_map(G, nodes, t_local, n_jobs=n_jobs)
         g_mid_map = _evaluate_gamma_map(G, nodes, t_mid, n_jobs=n_jobs)
@@ -544,7 +559,7 @@ def _integrate_vectorized_step(
     clip_mode = str(G.graph.get("CLIP_MODE", "hard"))
     if clip_mode not in ("hard", "soft"):
         clip_mode = "hard"
-    clip_k = float(G.graph.get("CLIP_SOFT_K", 3.0))
+    clip_k = float(G.graph.get("CLIP_SOFT_K", PI))
 
     t_local = t0
 
@@ -560,7 +575,7 @@ def _integrate_vectorized_step(
             k1 = base + gamma1
 
             # k2
-            gamma2 = eval_gamma_vectorized(G, theta, t_local + dt_step / 2.0, np)
+            gamma2 = eval_gamma_vectorized(G, theta, t_local + dt_step / INTEGRATORS_HALF_STEP_CANONICAL, np)
             k2 = base + gamma2
 
             # k3
@@ -572,7 +587,7 @@ def _integrate_vectorized_step(
             k4 = base + gamma4
 
             # Update
-            epi = epi + (dt_step / 6.0) * (k1 + 2 * k2 + 2 * k3 + k4)
+            epi = epi + (dt_step / INTEGRATORS_RK4_SIXTH_CANONICAL) * (k1 + 2 * k2 + 2 * k3 + k4)
             dEPI = k4
 
         else:  # Euler
@@ -595,20 +610,20 @@ def _integrate_vectorized_step(
             if epi_min == epi_max:
                 epi[:] = epi_min
             else:
-                margin = (epi_max - epi_min) * 0.1
+                margin = (epi_max - epi_min) * INTEGRATORS_EPI_MARGIN_CANONICAL
                 working_lo = epi_min - margin
                 working_hi = epi_max + margin
                 range_width = working_hi - working_lo
 
                 if abs(range_width) < 1e-10:
-                    epi[:] = (epi_min + epi_max) / 2.0
+                    epi[:] = (epi_min + epi_max) / INTEGRATORS_HALF_STEP_CANONICAL
                 else:
-                    mid = (working_lo + working_hi) / 2.0
-                    normalized = 2.0 * (epi - mid) / range_width
+                    mid = (working_lo + working_hi) / INTEGRATORS_HALF_STEP_CANONICAL
+                    normalized = INTEGRATORS_HALF_STEP_CANONICAL * (epi - mid) / range_width
                     smooth_normalized = np.tanh(clip_k * normalized)
 
-                    mid_out = (epi_min + epi_max) / 2.0
-                    half_range = (epi_max - epi_min) / 2.0
+                    mid_out = (epi_min + epi_max) / INTEGRATORS_HALF_STEP_CANONICAL
+                    half_range = (epi_max - epi_min) / INTEGRATORS_HALF_STEP_CANONICAL
                     epi = mid_out + smooth_normalized * half_range
 
                     # Final safety clamp
@@ -689,7 +704,7 @@ class DefaultIntegrator(AbstractIntegrator):
                 if clip_mode_str not in ("hard", "soft"):
                     clip_mode_str = "hard"
                 clip_mode: Literal["hard", "soft"] = clip_mode_str  # type: ignore[assignment]
-                clip_k = float(graph.graph.get("CLIP_SOFT_K", 3.0))
+                clip_k = float(graph.graph.get("CLIP_SOFT_K", INTEGRATORS_CLIP_SOFT_K_CANONICAL))
 
                 epi_clipped = structural_clip(
                     epi,
@@ -923,7 +938,7 @@ def _update_extended_nodal_system(
         
         # Apply clipping for numerical stability
         new_epi = max(0.0, min(1.0, new_epi))  # EPI ∈ [0, 1]
-        new_dnfr = max(-2.0, min(2.0, new_dnfr))  # ΔNFR bounded
+        new_dnfr = max(-INTEGRATORS_DNFR_BOUNDS_CANONICAL, min(INTEGRATORS_DNFR_BOUNDS_CANONICAL, new_dnfr))  # ΔNFR bounded
         
         # Update node attributes  
         set_attr(nd, ALIAS_EPI, new_epi)
@@ -1091,7 +1106,7 @@ def _compute_synthetic_phase_current(G: TNFRGraph, node: NodeId) -> float:
     
     # Scale by coupling strength and local network properties
     coupling = _estimate_local_coupling_strength(G, node)
-    synthetic_j_phi = 0.1 * mean_gradient * coupling  # Scale factor for realism
+    synthetic_j_phi = INTEGRATORS_J_PHI_SCALE_CANONICAL * mean_gradient * coupling  # Scale factor for realism
     
     return synthetic_j_phi
 
@@ -1118,7 +1133,7 @@ def _compute_synthetic_dnfr_divergence(G: TNFRGraph, node: NodeId) -> float:
     
     # Synthetic divergence with conservation physics
     # Positive gradient (neighbors higher) → convergent flow → negative divergence
-    synthetic_div = -0.2 * mean_gradient  # Conservation coefficient
+    synthetic_div = INTEGRATORS_SYNTHETIC_DIV_CANONICAL * mean_gradient  # Conservation coefficient
     
     return synthetic_div
 
@@ -1133,7 +1148,7 @@ def _approximate_flux_divergence(G: TNFRGraph, node: NodeId, central_flux: float
     for neighbor in G.neighbors(node):
         # Simplified: use same flux value for neighbors
         # In full implementation, would compute flux for each neighbor
-        neighbor_flux = G.nodes[neighbor].get('j_flux_cache', central_flux * 0.9)
+        neighbor_flux = G.nodes[neighbor].get('j_flux_cache', central_flux * INTEGRATORS_FLUX_FALLBACK_CANONICAL)
         neighbor_fluxes.append(neighbor_flux)
     
     if not neighbor_fluxes:
@@ -1156,6 +1171,9 @@ def _estimate_local_coupling_strength(G: TNFRGraph, node: NodeId) -> float:
     
     # Sigmoid coupling: stronger for well-connected nodes
     normalized_degree = min(degree / 10.0, 1.0)  # Saturation at degree 10
-    coupling = 1.0 / (1.0 + math.exp(-5 * (normalized_degree - 0.5)))
+    # Import canonical coupling factor
+    from ..constants.canonical import PI_PLUS_E_HALF
+    coupling_factor = PI_PLUS_E_HALF  # π + e/2 ≈ 4.500 (sensibilidad transcendental)
+    coupling = 1.0 / (1.0 + math.exp(-coupling_factor * (normalized_degree - INTEGRATORS_SIGMOID_OFFSET_CANONICAL)))
     
     return coupling

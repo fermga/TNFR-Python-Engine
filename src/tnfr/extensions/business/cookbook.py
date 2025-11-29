@@ -1,5 +1,6 @@
 """Cookbook recipes for common business scenarios."""
 
+from ...config.defaults_core import MIN_BUSINESS_COHERENCE, MIN_BUSINESS_SENSE_INDEX
 from ..base import CookbookRecipe
 
 # Change Initiative Recipe
@@ -13,9 +14,9 @@ CHANGE_INITIATIVE = CookbookRecipe(
         "duration_weeks": 12,  # 3-month change cycle
     },
     expected_health={
-        "min_C_t": 0.75,
-        "min_Si": 0.70,
-        "min_change_readiness": 0.75,
+        "min_C_t": MIN_BUSINESS_COHERENCE,
+        "min_Si": MIN_BUSINESS_SENSE_INDEX,
+        "min_change_readiness": MIN_BUSINESS_COHERENCE,
     },
     validation={
         "tested_cases": 15,
@@ -39,8 +40,8 @@ PROCESS_IMPROVEMENT = CookbookRecipe(
         "improvement_cycles": 3,  # PDCA iterations
     },
     expected_health={
-        "min_C_t": 0.75,
-        "min_Si": 0.70,
+        "min_C_t": MIN_BUSINESS_COHERENCE,
+        "min_Si": MIN_BUSINESS_SENSE_INDEX,
         "min_efficiency_potential": 0.78,
     },
     validation={
@@ -65,8 +66,8 @@ TEAM_ALIGNMENT_RECIPE = CookbookRecipe(
         "meeting_duration_hours": 4,  # Half-day session
     },
     expected_health={
-        "min_C_t": 0.75,
-        "min_Si": 0.70,
+        "min_C_t": MIN_BUSINESS_COHERENCE,
+        "min_Si": MIN_BUSINESS_SENSE_INDEX,
         "min_alignment_strength": 0.80,
     },
     validation={

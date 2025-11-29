@@ -8,6 +8,10 @@ from typing import Any, cast
 
 from ..alias import collect_attr, set_vf
 from ..constants import get_graph_param
+from ..constants.canonical import (
+    DYNAMICS_SI_HI_THRESHOLD_CANONICAL,
+    DYNAMICS_VF_ADAPT_MU_CANONICAL,
+)
 from ..utils import clamp, resolve_chunk_size
 from ..metrics.common import ensure_neighbors_map
 from ..types import CoherenceMetric, DeltaNFR, TNFRGraph
@@ -108,7 +112,7 @@ def adapt_vf_by_coherence(G: TNFRGraph, n_jobs: int | None = None) -> None:
     thr_def = get_graph_param(G, "GLYPH_THRESHOLDS", dict)
     si_hi = cast(
         CoherenceMetric,
-        float(thr_sel.get("si_hi", thr_def.get("hi", 0.66))),
+        float(thr_sel.get("si_hi", thr_def.get("hi", DYNAMICS_SI_HI_THRESHOLD_CANONICAL))),
     )
     vf_min = float(get_graph_param(G, "VF_MIN"))
     vf_max = float(get_graph_param(G, "VF_MAX"))

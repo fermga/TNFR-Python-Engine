@@ -1,0 +1,35 @@
+{
+  "optimal_lambda": 0.05462277217684343,
+  "separation_ratio": 1.8135083701234005,
+  "classification_accuracy": 0.9230769230769231,
+  "grid_search_points": 100,
+  "method": "Simplified grid search with standard Python arithmetic",
+  "known_zeros_tested": 5,
+  "counterexamples_tested": 8,
+  "validation_summary": {
+    "lambda": 0.05462277217684343,
+    "separation_ratio": 1.8135083701234005,
+    "accuracy": 0.9230769230769231,
+    "avg_zeros": 0.01185085444034843,
+    "avg_nonzeros": 0.2667530702034771,
+    "min_zeros": 0.0050553304632281,
+    "min_nonzeros": 0.009167884108803967,
+    "zero_discriminants": [
+      0.027215126918210875,
+      0.012337253785652565,
+      0.008730818057479732,
+      0.005915742977170889,
+      0.0050553304632281
+    ],
+    "nonzero_discriminants": [
+      0.10199123721460368,
+      0.10269663294521127,
+      0.009167884108803967,
+      0.6921724908606656,
+      0.5375086657824614,
+      0.11511448235760316,
+      0.11257854311751277,
+      0.46279462524095505
+    ]
+  }
+}

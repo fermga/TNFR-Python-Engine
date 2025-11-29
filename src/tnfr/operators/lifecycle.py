@@ -22,6 +22,7 @@ if TYPE_CHECKING:
 
 from ..alias import get_attr
 from ..constants.aliases import ALIAS_EPI, ALIAS_VF, ALIAS_DNFR, ALIAS_THETA
+from ..constants.canonical import MAX_STRUCTURAL_FREQUENCY  # φ×π ≈ 5.083 for mutation threshold
 
 __all__ = [
     "LifecycleState",
@@ -115,7 +116,7 @@ def get_lifecycle_state(
         - stabilization_dnfr: Max |ΔNFR| for stabilization (default: 1.0)
         - stabilization_coherence: Min coherence for stabilization (default: 0.8)
         - propagation_coupling: Min phase coupling for propagation (default: 0.7)
-        - mutation_dnfr: Min |ΔNFR| for mutation state (default: 5.0)
+        - mutation_dnfr: Min |ΔNFR| for mutation state (default: φ×π ≈ 5.083)
 
     Returns
     -------
@@ -150,7 +151,7 @@ def get_lifecycle_state(
     stabilization_dnfr = _get_threshold("stabilization_dnfr", 1.0)
     stabilization_coherence = _get_threshold("stabilization_coherence", 0.8)
     propagation_coupling = _get_threshold("propagation_coupling", 0.7)
-    mutation_dnfr = _get_threshold("mutation_dnfr", 5.0)
+    mutation_dnfr = _get_threshold("mutation_dnfr", MAX_STRUCTURAL_FREQUENCY)
 
     # Get node structural parameters
     vf = _get_node_attr(G, node, ALIAS_VF)

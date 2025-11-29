@@ -1,0 +1,19 @@
+{
+  "configuration": {
+    "max_zeros": 5000,
+    "precision": 30,
+    "threshold": 0.001
+  },
+  "results": {
+    "accuracy": 14.76,
+    "mean_discriminant": 0.1039405488628873,
+    "improvement_factor": 22.707692307692305,
+    "computation_time": 32.45592141151428,
+    "throughput": 154.05509326338725
+  },
+  "theoretical_analysis": {
+    "high_t_mean": 0.04840542593086547,
+    "high_t_std": 0.16979511643619344,
+    "decay_rate": 3.028143365533343
+  }
+}

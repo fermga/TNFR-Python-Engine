@@ -12,6 +12,12 @@ import numpy as np
 from typing import List, Tuple, Optional, Dict, Any
 from dataclasses import dataclass
 
+from ..constants.canonical import (
+    PHI,  # Golden ratio for structural potential
+    DYNAMICS_ADELIC_DRIFT_CANONICAL,
+    DYNAMICS_ADELIC_DT_STEP_CANONICAL,
+)
+
 try:
     import networkx as nx
 except ImportError:
@@ -161,7 +167,7 @@ class AdelicDynamics:
             
         # Compute fields using centralized physics engine
         # We use a dummy alpha since we don't have real NFR distribution
-        phi_s = compute_structural_potential(G, alpha=2.0)
+        phi_s = compute_structural_potential(G, alpha=PHI)
         grad_phi = compute_phase_gradient(G)
         phase_current = compute_phase_current(G)
         dnfr_flux = compute_dnfr_flux(G)
@@ -292,7 +298,7 @@ class AdelicDynamics:
         
         # Apply a small constant drift to keep scanning if gradient is small
         # (Exploration term)
-        drift = 0.1 
+        drift = DYNAMICS_ADELIC_DRIFT_CANONICAL  # γ/(e+π) ≈ 0.0985 (canonical adelic drift) 
         
         time_step = (flow_rate + drift) * dt
         new_time = state.time + time_step
@@ -310,7 +316,7 @@ class AdelicDynamics:
             time=new_time
         )
 
-    def run_resonance_search(self, start_t: float, end_t: float, dt: float = 0.01) -> Dict[str, List[float]]:
+    def run_resonance_search(self, start_t: float, end_t: float, dt: float = DYNAMICS_ADELIC_DT_STEP_CANONICAL) -> Dict[str, List[float]]:
         """
         Run the dynamics to find resonances (Zeros).
         Returns the trajectory of the system.

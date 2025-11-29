@@ -44,6 +44,13 @@ try:
 except ImportError:
     _CACHE_AVAILABLE = False
 
+# Import PHASE 6 FINAL Canonical Constants for magic number elimination
+from ..constants.canonical import (
+    MULTIMODAL_CACHE_TARGET_CANONICAL,           # φ/(φ+γ) ≈ 0.7371 (0.8 → canonical)
+    MULTIMODAL_CACHE_SPECTRAL_IMPORTANCE_CANONICAL,  # π/e ≈ 1.1557 (2.0 → canonical)
+    MULTIMODAL_CACHE_TETRAD_IMPORTANCE_CANONICAL     # π ≈ 3.1416 (3.0 → canonical)
+)
+
 
 class CacheEntryType(Enum):
     """Types of cached computations."""
@@ -308,7 +315,7 @@ class TNFRUnifiedMultiModalCache:
         eviction_candidates.sort(key=lambda x: x[0])
         
         # Evict until we're under 80% of max size
-        target_size = self.max_size_mb * 0.8
+        target_size = self.max_size_mb * MULTIMODAL_CACHE_TARGET_CANONICAL  # φ/(φ+γ) ≈ 0.7371 → canonical
         
         for score, key, entry in eviction_candidates:
             if self.stats.total_size_mb <= target_size:
@@ -471,7 +478,7 @@ def cache_unified_computation(
     Decorator for caching unified computations.
     
     Usage:
-    @cache_unified_computation(CacheEntryType.SPECTRAL_DECOMPOSITION, importance=2.0)
+    @cache_unified_computation(CacheEntryType.SPECTRAL_DECOMPOSITION, importance=MULTIMODAL_CACHE_SPECTRAL_IMPORTANCE_CANONICAL)  # π/e ≈ 1.1557 → canonical
     def compute_spectrum(G):
         # computation here
         return eigenvalues, eigenvectors
@@ -510,7 +517,7 @@ def cache_spectral_decomposition(G: Any, computation_func: Callable) -> Any:
         CacheEntryType.SPECTRAL_DECOMPOSITION,
         G,
         computation_func=computation_func,
-        mathematical_importance=3.0  # Very important - many things depend on this
+        mathematical_importance=MULTIMODAL_CACHE_TETRAD_IMPORTANCE_CANONICAL  # π ≈ 3.1416 → canonical (Very important - many things depend on this)
     )
 
 
@@ -522,7 +529,7 @@ def cache_structural_fields(G: Any, computation_func: Callable, field_params: Di
         G,
         parameters=field_params,
         computation_func=computation_func,
-        mathematical_importance=2.0
+        mathematical_importance=MULTIMODAL_CACHE_SPECTRAL_IMPORTANCE_CANONICAL  # π/e ≈ 1.1557 → canonical
     )
 
 

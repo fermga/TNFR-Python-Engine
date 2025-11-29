@@ -16,7 +16,9 @@ from typing import Any, ClassVar
 from ..config.operator_names import SELF_ORGANIZATION
 from ..types import Glyph, TNFRGraph
 from .definitions_base import Operator
-_THOL_SUB_EPI_SCALING = 0.25  # sub-EPI scale factor
+# Import canonical constants
+from ..constants.canonical import HALF_INV_PHI
+_THOL_SUB_EPI_SCALING = HALF_INV_PHI  # 1/(2φ) ≈ 0.309 (escala fractal áurea)
 _THOL_EMERGENCE_CONTRIBUTION = 0.1  # parent epi increment fraction
 
 

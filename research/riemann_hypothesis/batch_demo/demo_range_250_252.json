@@ -1,0 +1,30 @@
+{
+  "config": {
+    "t_min": 250.0,
+    "t_max": 252.0,
+    "step": 0.5,
+    "refinement_window": 1.0,
+    "refinement_iterations": 6,
+    "discriminant_threshold": 1e-05,
+    "zeta_threshold": 1e-08,
+    "lambda_coeff": 0.05462277217684343,
+    "results_path": "batch_demo\\demo_range_250_252.json",
+    "csv_path": "batch_demo\\demo_range_250_252.csv",
+    "chunk_index": null,
+    "chunk_count": null
+  },
+  "summary": {
+    "count": 0,
+    "message": "No candidates detected in the scanned range."
+  },
+  "telemetry": {
+    "total_samples": 5,
+    "threshold_hits": 0,
+    "refinement_calls": 0,
+    "evaluation_time_s": 0.039749199990183115,
+    "min_discriminant": 0.00014413441465508793,
+    "max_discriminant": 0.5254725557908669
+  },
+  "candidates": [],
+  "generated_at": "2025-11-28T22:30:53.891233Z"
+}

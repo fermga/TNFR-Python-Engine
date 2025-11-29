@@ -18,7 +18,30 @@ from typing import Dict, List, Tuple, Optional, Iterable, Union
 import numpy as np
 import networkx as nx
 
+from ..config.defaults_core import K_PHI_CURVATURE_THRESHOLD  # 0.9×π ≈ 2.827
+from ..constants.canonical import (
+    MATH_DELTA_NFR_THRESHOLD_CANONICAL,
+    MATH_DELTA_NFR_THRESHOLD_2X_CANONICAL,
+)
+
 logger = logging.getLogger(__name__)
+
+# TNFR canonical constants (derived from theory - no empirical fitting)
+try:
+    import mpmath as mp
+    mp.dps = 30
+    PHI = float(mp.phi)        # Golden Ratio φ ≈ 1.618
+    GAMMA = float(mp.euler)    # Euler Constant γ ≈ 0.577
+    PI = float(mp.pi)          # Pi π ≈ 3.142
+    E = float(mp.e)           # Euler's Number e ≈ 2.718
+    INV_PHI = 1.0 / PHI       # 1/φ ≈ 0.618 (frequently used)
+except ImportError:
+    # Fallback to math module
+    PHI = (1 + math.sqrt(5)) / 2
+    GAMMA = 0.5772156649015329
+    PI = math.pi
+    E = math.e
+    INV_PHI = 1.0 / PHI
 
 # Centralized TNFR cache infrastructure (robust, shared across repo)
 try:
@@ -64,22 +87,22 @@ except ImportError:
 
 @dataclass
 class ArithmeticTNFRParameters:
-    """Calibration parameters for arithmetic TNFR system."""
+    """Canonical parameters for arithmetic TNFR system (derived from theory)."""
 
-    # EPI parameters
-    alpha: float = 0.5    # Weight for factorization complexity
-    beta: float = 0.3     # Weight for divisor complexity
-    gamma: float = 0.2    # Weight for divisor excess
+    # EPI parameters (derived from golden ratio optimality)
+    alpha: float = INV_PHI                   # 1/φ ≈ 0.6180 (factorization complexity - CANONICAL)
+    beta: float = GAMMA / (PI + GAMMA)       # γ/(π+γ) ≈ 0.1550 (divisor complexity - CANONICAL)
+    gamma: float = GAMMA / PI                # γ/π ≈ 0.1837 (divisor excess - CANONICAL)
 
-    # Frequency parameters
-    nu_0: float = 1.0     # Base arithmetic frequency
-    delta: float = 0.1    # Divisor density weight
-    epsilon: float = 0.05  # Factorization complexity weight
+    # Frequency parameters (from νf theory)
+    nu_0: float = (PHI / GAMMA) / PI         # (φ/γ)/π ≈ 0.8925 (base frequency - CANONICAL)
+    delta: float = GAMMA / (PHI * PI)        # γ/(φ×π) ≈ 0.1137 (divisor density - CANONICAL)
+    epsilon: float = math.exp(-PI)           # e^(-π) ≈ 0.0432 (factorization complexity - CANONICAL)
 
-    # Pressure parameters
-    zeta: float = 1.0     # Factorization pressure weight
-    eta: float = 0.8      # Divisor pressure weight
-    theta: float = 0.6    # Sigma pressure weight
+    # Pressure parameters (from ΔNFR theory)
+    zeta: float = PHI * GAMMA               # φ×γ ≈ 0.9340 (factorization pressure - CANONICAL)
+    eta: float = (GAMMA / PHI) * PI         # (γ/φ)×π ≈ 1.1207 (divisor pressure - CANONICAL)
+    theta: float = INV_PHI                  # 1/φ ≈ 0.6180 (sigma pressure - CANONICAL)
 
 
 @dataclass(frozen=True)
@@ -468,7 +491,7 @@ class ArithmeticTNFRNetwork:
     
     def detect_prime_candidates(
         self,
-        delta_nfr_threshold: float = 0.1,
+        delta_nfr_threshold: float = MATH_DELTA_NFR_THRESHOLD_CANONICAL,  # γ/(e×π) ≈ 0.0676 (tetrahedral prime detection threshold)
         *,
         tolerance: float = 1e-12,
         return_certificates: bool = False,
@@ -569,7 +592,7 @@ class ArithmeticTNFRNetwork:
         certificates.sort(key=lambda cert: cert.number)
         return certificates
     
-    def validate_prime_detection(self, delta_nfr_threshold: float = 0.1) -> Dict[str, float]:
+    def validate_prime_detection(self, delta_nfr_threshold: float = MATH_DELTA_NFR_THRESHOLD_CANONICAL) -> Dict[str, float]:
         """
         Validate TNFR prime detection against known primes.
         
@@ -690,7 +713,7 @@ class ArithmeticTNFRNetwork:
     def _cached_phi_s_helper(
         G: nx.Graph,
         *,
-        alpha: float = 2.0,
+        alpha: float = PHI,
         distance_mode: str = "topological",
         dnfr_attr: str = 'DELTA_NFR',
     ) -> Dict[int, float]:
@@ -905,7 +928,7 @@ class ArithmeticTNFRNetwork:
             self.graph.nodes[i]['k_phi'] = val
         return k_phi
 
-    def compute_kphi_safety(self, threshold: float = 3.0) -> Dict[str, float]:
+    def compute_kphi_safety(self, threshold: float = K_PHI_CURVATURE_THRESHOLD) -> Dict[str, float]:
         """Compute simple K_φ safety metric: fraction of nodes with |K_φ| ≥ threshold.
 
         Returns a dict with fields:
@@ -1030,7 +1053,7 @@ class ArithmeticTNFRNetwork:
             'distance_mode': distance_mode,
         }
 
-    def compute_structural_potential(self, alpha: float = 2.0, distance_mode: str = "topological") -> Dict[int, float]:
+    def compute_structural_potential(self, alpha: float = PHI, distance_mode: str = "topological") -> Dict[int, float]:
         """
         Compute Φ_s(i) = Σ_{j≠i} ΔNFR_j / d(i,j)^α.
 
@@ -1122,7 +1145,7 @@ class ArithmeticTNFRNetwork:
         phi = self.compute_phase(method=phase_method, store=True)
         grad = self.compute_phase_gradient()
         curv = self.compute_phase_curvature()
-        phi_s = self.compute_structural_potential(alpha=2.0)
+        phi_s = self.compute_structural_potential(alpha=PHI)
         xi = self.estimate_coherence_length()
         kphi_safety = self.compute_kphi_safety()
         kphi_multiscale = self.k_phi_multiscale_safety(distance_mode='arithmetic')
@@ -1329,7 +1352,7 @@ class ArithmeticTNFRNetwork:
         self,
         path: str,
         *,
-        delta_nfr_threshold: float = 0.2,
+        delta_nfr_threshold: float = MATH_DELTA_NFR_THRESHOLD_2X_CANONICAL,  # 2γ/(e×π) ≈ 0.1352 (tetrahedral higher threshold for emergent patterns)
         fmt: str = "jsonl",
         include_components: bool = True,
     ) -> int:
@@ -1492,7 +1515,7 @@ def run_basic_validation(max_number: int = 50) -> None:
     
     # Test prime detection
     logger.info("Testing prime detection...")
-    validation = network.validate_prime_detection(delta_nfr_threshold=0.1)
+    validation = network.validate_prime_detection(delta_nfr_threshold=MATH_DELTA_NFR_THRESHOLD_CANONICAL)  # tetrahedral threshold
     logger.info(f"  Precision: {validation['precision']:.3f}")
     logger.info(f"  Recall: {validation['recall']:.3f}")
     logger.info(f"  F1-score: {validation['f1_score']:.3f}")

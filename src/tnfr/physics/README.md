@@ -39,7 +39,7 @@ Brief overview (see docs above for full details):
 
 1. **Φ_s (Structural Potential)**: Global field from ΔNFR distribution (U6 confinement)
 2. **|∇φ| (Phase Gradient)**: Local desynchronization / stress proxy
-3. **K_φ (Phase Curvature)**: Geometric confinement / torsion
+3. **Ψ (Complex Geometric Field)**: K_φ + i·J_φ (unified geometry-transport)
 4. **ξ_C (Coherence Length)**: Spatial correlation scale / critical behavior
 
 **Implementation**: [`src/tnfr/physics/fields.py`](fields.py)  

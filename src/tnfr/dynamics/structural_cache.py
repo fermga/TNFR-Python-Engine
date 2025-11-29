@@ -21,6 +21,13 @@ from dataclasses import dataclass, field
 from functools import wraps
 import hashlib
 
+from ..constants.canonical import (
+    PHI,  # Golden ratio for structural potential
+    # PHASE 6 FINAL Canonical Constants for magic number elimination
+    STRUCT_CACHE_INTERPOLATE_CANONICAL,  # γ/(π+e) ≈ 0.0985 (0.1 → canonical)
+    STRUCT_CACHE_EVICTION_CANONICAL      # φ/(φ+γ) ≈ 0.7371 (0.8 → canonical)
+)
+
 try:
     import networkx as nx
     HAS_NETWORKX = True
@@ -124,7 +131,7 @@ class StructuralCoherenceCache:
         self,
         G: Any,
         force_recompute: bool = False,
-        interpolate_threshold: float = 0.1,
+        interpolate_threshold: float = STRUCT_CACHE_INTERPOLATE_CANONICAL,  # γ/(π+e) ≈ 0.0985 → canonical
         spectral_basis: Optional[Any] = None
     ) -> StructuralCacheEntry:
         """
@@ -175,7 +182,7 @@ class StructuralCoherenceCache:
             
         try:
             # Compute canonical structural fields
-            phi_s = compute_structural_potential(G, alpha=2.0)
+            phi_s = compute_structural_potential(G, alpha=PHI)
             grad_phi = compute_phase_gradient(G)
             k_phi = compute_phase_curvature(G)
             xi_c = estimate_coherence_length(G)
@@ -384,7 +391,7 @@ class StructuralCoherenceCache:
         # Simple eviction: remove oldest entries
         if len(self._structural_cache) > self.max_entries:
             # Remove 20% of oldest entries
-            to_remove = len(self._structural_cache) - int(0.8 * self.max_entries)
+            to_remove = len(self._structural_cache) - int(STRUCT_CACHE_EVICTION_CANONICAL * self.max_entries)  # φ/(φ+γ) ≈ 0.7371 → canonical
             keys_to_remove = list(self._structural_cache.keys())[:to_remove]
             for k in keys_to_remove:
                 del self._structural_cache[k]

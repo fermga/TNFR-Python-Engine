@@ -42,6 +42,60 @@ except ImportError:
 
 HAS_SCIPY = True  # Assume available for mathematical analysis
 
+# Import canonical constants for Phase 6 magic number elimination
+from ..constants.canonical import (
+    SELF_OPT_CACHE_SIZE_CANONICAL,
+    SELF_OPT_COMPRESSION_HIGH_CANONICAL,
+    SELF_OPT_HORIZON_HIGH_CANONICAL,
+    SELF_OPT_CHIRALITY_THRESHOLD_CANONICAL,
+    SELF_OPT_SYMMETRY_THRESHOLD_CANONICAL,
+    SELF_OPT_COUPLING_LOW_CANONICAL,
+    SELF_OPT_CHARGE_THRESHOLD_CANONICAL,
+    SELF_OPT_ENERGY_HIGH_CANONICAL,
+    SELF_OPT_EPI_VARIANCE_LOW_CANONICAL,
+    SELF_OPT_VF_RANGE_LOW_CANONICAL,
+    SELF_OPT_DNFR_HIGH_CANONICAL,
+    SELF_OPT_DENSITY_SPARSE_CANONICAL,
+    SELF_OPT_DENSITY_DENSE_CANONICAL,
+    SELF_OPT_IMPROVEMENT_SIGNIFICANT_CANONICAL,
+    SELF_OPT_CACHE_LOW_FRACTION_CANONICAL,
+    SELF_OPT_SPEEDUP_HIGH_CANONICAL,
+    SELF_OPT_CACHE_EXPANSION_CANONICAL,
+    SELF_OPT_CACHE_HIGH_FRACTION_CANONICAL,
+    SELF_OPT_SPEEDUP_LOW_CANONICAL,
+    SELF_OPT_CACHE_CONTRACTION_CANONICAL,
+    # PHASE 6 EXTENDED: Additional constants for remaining magic numbers
+    PI,                               # π ≈ 3.1416 (3.0 → canonical)
+    NODAL_OPT_COUPLING_CANONICAL,     # γ/(π+e) ≈ 0.0985 (0.1 → canonical)
+)
+
+
+def _extract_scalar_epi(val: Any) -> float:
+    """Extract scalar magnitude from potentially complex/dict EPI value."""
+    if isinstance(val, (int, float)):
+        return float(val)
+    if isinstance(val, complex):
+        return float(np.abs(val))
+    if isinstance(val, dict):
+        if 'continuous' in val:
+            c = val['continuous']
+            if isinstance(c, (tuple, list)) and len(c) > 0:
+                v = c[0]
+                return float(np.abs(v)) if isinstance(v, complex) else float(v)
+    return 0.0
+
+
+# Import Unified Fields (New Nov 2025)
+try:
+    from ..physics.fields import (
+        compute_unified_telemetry,
+        compute_complex_geometric_field,
+        compute_tensor_invariants
+    )
+    HAS_UNIFIED_FIELDS = True
+except ImportError:
+    HAS_UNIFIED_FIELDS = False
+
 # Import TNFR engines
 try:
     from .unified_backend import TNFRUnifiedBackend
@@ -184,6 +238,50 @@ class TNFRSelfOptimizingEngine:
         num_edges = len(G.edges())
         density = (2 * num_edges) / (num_nodes * (num_nodes - 1)) if num_nodes > 1 else 0
         
+        # Unified Field Analysis (New Nov 2025)
+        unified_insights = {}
+        if HAS_UNIFIED_FIELDS:
+            try:
+                # Compute full unified telemetry
+                telemetry = compute_unified_telemetry(G)
+                
+                # Extract Complex Field
+                complex_data = telemetry.get("complex_field", {})
+                psi_mag_array = complex_data.get("magnitude", np.array([]))
+                psi_scalar = np.mean(psi_mag_array) if len(psi_mag_array) > 0 else 0.0
+                
+                # Extract Emergent Fields
+                emergent_data = telemetry.get("emergent_fields", {})
+                chi_array = emergent_data.get("chirality", np.array([]))
+                sb_array = emergent_data.get("symmetry_breaking", np.array([]))
+                cc_array = emergent_data.get("coherence_coupling", np.array([]))
+                
+                chi_scalar = np.mean(np.abs(chi_array)) if len(chi_array) > 0 else 0.0
+                sb_scalar = np.mean(sb_array) if len(sb_array) > 0 else 0.0
+                cc_scalar = np.mean(cc_array) if len(cc_array) > 0 else 0.0
+                
+                # Extract Tensor Invariants
+                tensor_data = telemetry.get("tensor_invariants", {})
+                ed_array = tensor_data.get("energy_density", np.array([]))
+                tc_array = tensor_data.get("topological_charge", np.array([]))
+                
+                ed_scalar = np.mean(ed_array) if len(ed_array) > 0 else 0.0
+                tc_scalar = np.mean(np.abs(tc_array)) if len(tc_array) > 0 else 0.0
+                
+                unified_insights = {
+                    "psi_magnitude": float(psi_scalar),
+                    "chirality": float(chi_scalar),
+                    "symmetry_breaking": float(sb_scalar),
+                    "coherence_coupling": float(cc_scalar),
+                    "energy_density": float(ed_scalar),
+                    "topological_charge": float(tc_scalar)
+                }
+                
+                insights["unified_field_analysis"] = unified_insights
+            except Exception as e:
+                # Fallback if computation fails
+                insights["unified_field_error"] = str(e)
+
         # Mathematical structure analysis
         insights["graph_structure"] = {
             "nodes": num_nodes,
@@ -200,9 +298,9 @@ class TNFRSelfOptimizingEngine:
             # Extract optimization hints from discovered patterns
             optimization_hints = []
             for pattern in pattern_result.discovered_patterns:
-                if pattern.compression_ratio > 2.0:
+                if pattern.compression_ratio > SELF_OPT_COMPRESSION_HIGH_CANONICAL:
                     optimization_hints.append(f"use_compression_{pattern.pattern_type.value}")
-                if pattern.prediction_horizon > 3.0:
+                if pattern.prediction_horizon > PI:
                     optimization_hints.append(f"use_prediction_{pattern.pattern_type.value}")
                 if pattern.pattern_type == EmergentPatternType.EIGENMODE_RESONANCE:
                     optimization_hints.append("use_spectral_methods")
@@ -214,7 +312,7 @@ class TNFRSelfOptimizingEngine:
             insights["compression_potential"] = pattern_result.compression_potential
             
         # Nodal equation analysis
-        epi_values = [G.nodes[node].get('EPI', 0.0) for node in G.nodes()]
+        epi_values = [_extract_scalar_epi(G.nodes[node].get('EPI', 0.0)) for node in G.nodes()]
         vf_values = [G.nodes[node].get('vf', 1.0) for node in G.nodes()]
         dnfr_values = [G.nodes[node].get('DNFR', 0.0) for node in G.nodes()]
         
@@ -226,17 +324,41 @@ class TNFRSelfOptimizingEngine:
         # Optimization recommendations based on mathematical properties
         recommendations = []
         
+        # Unified Field Recommendations (New Nov 2025)
+        if "unified_field_analysis" in insights:
+            ufa = insights["unified_field_analysis"]
+            
+            # Chirality-based optimization
+            if abs(ufa.get("chirality", 0)) > SELF_OPT_CHIRALITY_THRESHOLD_CANONICAL:
+                recommendations.append("use_chiral_optimization")
+                
+            # Symmetry breaking handling
+            if ufa.get("symmetry_breaking", 0) > SELF_OPT_SYMMETRY_THRESHOLD_CANONICAL:
+                recommendations.append("use_phase_transition_handling")
+                
+            # Coherence coupling optimization
+            if ufa.get("coherence_coupling", 0) < SELF_OPT_COUPLING_LOW_CANONICAL:
+                recommendations.append("enhance_coherence_coupling")
+                
+            # Topological charge handling
+            if abs(ufa.get("topological_charge", 0)) > NODAL_OPT_COUPLING_CANONICAL:
+                recommendations.append("topological_defect_correction")
+                
+            # Energy density optimization
+            if ufa.get("energy_density", 0) > SELF_OPT_ENERGY_HIGH_CANONICAL:
+                recommendations.append("high_energy_stabilization")
+
         if epi_variance < 0.01:
             recommendations.append("low_variance_epi_optimization")
-        if vf_range < 0.1:
+        if vf_range < NODAL_OPT_COUPLING_CANONICAL:
             recommendations.append("uniform_vf_optimization")
         if dnfr_magnitude > 1.0:
             recommendations.append("high_dnfr_stabilization")
         if num_nodes > 100:
             recommendations.append("large_graph_optimization")
-        if density > 0.8:
+        if density > SELF_OPT_DENSITY_DENSE_CANONICAL:
             recommendations.append("dense_graph_optimization")
-        elif density < 0.2:
+        elif density < SELF_OPT_DENSITY_SPARSE_CANONICAL:
             recommendations.append("sparse_graph_optimization")
             
         insights["nodal_equation_analysis"] = {
@@ -282,7 +404,7 @@ class TNFRSelfOptimizingEngine:
                 
                 # Discretize conditions for pattern recognition
                 size_bucket = "small" if graph_size < 20 else "medium" if graph_size < 100 else "large"
-                density_bucket = "sparse" if density < 0.2 else "medium" if density < 0.8 else "dense"
+                density_bucket = "sparse" if density < SELF_OPT_DENSITY_SPARSE_CANONICAL else "medium" if density < SELF_OPT_DENSITY_DENSE_CANONICAL else "dense"
                 
                 condition_key = (size_bucket, density_bucket, operation)
                 condition_groups[condition_key].append(exp)
@@ -309,7 +431,7 @@ class TNFRSelfOptimizingEngine:
                         best_avg_improvement = avg_improvement
                         best_strategy = strategy
                         
-                if best_strategy and best_avg_improvement > 1.2:  # Significant improvement
+                if best_strategy and best_avg_improvement > SELF_OPT_IMPROVEMENT_SIGNIFICANT_CANONICAL:  # Significant improvement
                     policy = OptimizationPolicy(
                         policy_name=f"{size_bucket}_{density_bucket}_{operation}_policy",
                         objective=self.optimization_objective,
@@ -345,7 +467,7 @@ class TNFRSelfOptimizingEngine:
         density = experience.graph_properties.get("density", 0.0)
         
         exp_size_bucket = "small" if graph_size < 20 else "medium" if graph_size < 100 else "large"
-        exp_density_bucket = "sparse" if density < 0.2 else "medium" if density < 0.8 else "dense"
+        exp_density_bucket = "sparse" if density < SELF_OPT_DENSITY_SPARSE_CANONICAL else "medium" if density < SELF_OPT_DENSITY_DENSE_CANONICAL else "dense"
         
         return (exp_size_bucket == size_bucket and 
                 exp_density_bucket == density_bucket and
@@ -374,10 +496,10 @@ class TNFRSelfOptimizingEngine:
             avg_memory = np.mean(memory_usage)
             avg_speedup = np.mean(speedups)
             
-            if avg_memory < self.adaptive_config["cache_size_mb"] * 0.7 and avg_speedup > 2.0:
-                self.adaptive_config["cache_size_mb"] *= 1.2
-            elif avg_memory > self.adaptive_config["cache_size_mb"] * 0.9 and avg_speedup < 1.5:
-                self.adaptive_config["cache_size_mb"] *= 0.9
+            if avg_memory < self.adaptive_config["cache_size_mb"] * SELF_OPT_CACHE_LOW_FRACTION_CANONICAL and avg_speedup > SELF_OPT_SPEEDUP_HIGH_CANONICAL:
+                self.adaptive_config["cache_size_mb"] *= SELF_OPT_CACHE_EXPANSION_CANONICAL
+            elif avg_memory > self.adaptive_config["cache_size_mb"] * SELF_OPT_CACHE_HIGH_FRACTION_CANONICAL and avg_speedup < SELF_OPT_SPEEDUP_LOW_CANONICAL:
+                self.adaptive_config["cache_size_mb"] *= SELF_OPT_CACHE_CONTRACTION_CANONICAL
                 
         # Update backend preference
         backend_performance = defaultdict(list)
@@ -413,7 +535,7 @@ class TNFRSelfOptimizingEngine:
             density = (2 * num_edges) / (num_nodes * (num_nodes - 1)) if num_nodes > 1 else 0
             
             size_bucket = "small" if num_nodes < 20 else "medium" if num_nodes < 100 else "large"
-            density_bucket = "sparse" if density < 0.2 else "medium" if density < 0.8 else "dense"
+            density_bucket = "sparse" if density < SELF_OPT_DENSITY_SPARSE_CANONICAL else "medium" if density < SELF_OPT_DENSITY_DENSE_CANONICAL else "dense"
             
             for policy in self.learned_policies:
                 conditions = policy.conditions

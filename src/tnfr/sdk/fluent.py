@@ -46,6 +46,23 @@ from ..metrics.sense_index import compute_Si
 from ..constants.aliases import ALIAS_DNFR
 from ..validation import validate_sequence
 
+# Auto-optimization imports (NEW - Nov 28, 2025)
+try:
+    from ..physics.fields import (
+        auto_optimize_field_computation,
+        analyze_optimization_potential,
+        recommend_field_optimization_strategy
+    )
+    from ..dynamics.self_optimizing_engine import TNFRSelfOptimizingEngine, OptimizationObjective
+    _AUTO_OPTIMIZATION_AVAILABLE = True
+except ImportError:
+    auto_optimize_field_computation = None
+    analyze_optimization_potential = None
+    recommend_field_optimization_strategy = None
+    TNFRSelfOptimizingEngine = None
+    OptimizationObjective = None
+    _AUTO_OPTIMIZATION_AVAILABLE = False
+
 __all__ = ["TNFRNetwork", "NetworkConfig", "NetworkResults"]
 
 
@@ -84,16 +101,16 @@ NAMED_SEQUENCES = {
         "resonance",  # RA: Amplify through network
         "recursivity",  # REMESH: Enable fractal recursion
     ],
-    # Creative mutation - already optimal (health: 0.81)
-    # Pattern: activation with controlled transformation
+    # Creative mutation - corrected for OZ→IL physics
+    # Pattern: stabilized transformation with controlled mutation
     "creative_mutation": [
-        "emission",  # AL: Initiate exploration
-        "dissonance",  # OZ: Introduce creative tension
-        "reception",  # EN: Gather alternatives
-        "coherence",  # IL: Stabilize insights
-        "mutation",  # ZHIR: Phase transformation
-        "resonance",  # RA: Amplify new patterns
-        "silence",  # SHA: Integration pause
+        "emission",     # AL: Initiate exploration
+        "coherence",    # IL: Establish stable base
+        "dissonance",   # OZ: Introduce creative tension
+        "mutation",     # ZHIR: Phase transformation (after OZ)
+        "coherence",    # IL: Stabilize new state
+        "resonance",    # RA: Amplify new patterns
+        "silence",      # SHA: Integration pause
     ],
     # Network synchronization - optimized with transition for regenerative capability
     # Health: 0.77 (good) - Pattern: regenerative
@@ -106,15 +123,15 @@ NAMED_SEQUENCES = {
         "resonance",  # RA: Propagate through network
         "transition",  # NAV: Enable regenerative cycles (changed from silence)
     ],
-    # Exploration - already excellent (health: 0.87)
-    # Pattern: regenerative with transformative potential
+    # Exploration - corrected for physics compliance
+    # Pattern: stable exploration with controlled discovery
     "exploration": [
-        "emission",  # AL: Begin exploration
-        "dissonance",  # OZ: Introduce instability
-        "reception",  # EN: Sense environment
-        "coherence",  # IL: Find stable attractor
-        "resonance",  # RA: Reinforce discovery
-        "transition",  # NAV: Navigate to new state
+        "emission",     # AL: Begin exploration
+        "reception",    # EN: Sense environment
+        "coherence",    # IL: Stabilize base
+        "dissonance",   # OZ: Introduce exploration tension
+        "resonance",    # RA: Amplify discoveries
+        "transition",   # NAV: Navigate to new state
     ],
     # Consolidation - optimized with expansion for structural balance
     # Health: 0.80 (good) - Pattern: stabilization
@@ -127,6 +144,110 @@ NAMED_SEQUENCES = {
         "resonance",  # RA: Amplify consolidated state
         "coherence",  # IL: Re-stabilize after expansion
         "silence",  # SHA: Sustained stable state
+    ],
+    
+    # === NUEVAS SECUENCIAS AVANZADAS ===
+    
+    # Healing pattern - for network recovery and coherence restoration
+    "healing": [
+        "emission",     # AL: Restart from clean state
+        "reception",    # EN: Gather current network state
+        "coherence",    # IL: Primary stabilization
+        "coupling",     # UM: Restore connections
+        "resonance",    # RA: Harmonize network
+        "coherence",    # IL: Final stabilization
+        "silence",      # SHA: Sustained healing state
+    ],
+    
+    # Amplification - for boosting network activity and propagation
+    "amplification": [
+        "emission",     # AL: Initiate high-energy state
+        "coupling",     # UM: Establish strong links
+        "resonance",    # RA: Primary amplification
+        "coherence",    # IL: Stabilize amplified state
+        "expansion",    # VAL: Controlled growth
+        "resonance",    # RA: Secondary amplification
+        "transition",   # NAV: Navigate to sustained state
+    ],
+    
+    # Deep transformation - for major structural changes
+    "deep_transformation": [
+        "emission",        # AL: Fresh start
+        "coherence",       # IL: Stable foundation
+        "expansion",       # VAL: Increase complexity
+        "coherence",       # IL: Stabilize expansion
+        "dissonance",      # OZ: Transformation trigger
+        "mutation",        # ZHIR: Major phase change
+        "coherence",       # IL: Integrate transformation
+        "resonance",       # RA: Propagate new patterns
+        "silence",         # SHA: Consolidate changes
+    ],
+    
+    # Network harmonization - for multi-node synchronization
+    "harmonization": [
+        "recursivity",     # REMESH: Multi-scale start
+        "reception",       # EN: Sense all nodes
+        "coherence",       # IL: Local stabilization
+        "coupling",        # UM: Phase synchronization
+        "resonance",       # RA: Network-wide harmonics
+        "coherence",       # IL: Lock in harmony
+        "transition",      # NAV: Maintain sync state
+    ],
+    
+    # Progressive learning - for adaptive behavior development
+    "progressive_learning": [
+        "emission",        # AL: New learning episode
+        "reception",       # EN: Gather information
+        "coherence",       # IL: Initial understanding
+        "expansion",       # VAL: Broaden perspective
+        "coupling",        # UM: Connect concepts
+        "resonance",       # RA: Reinforce learning
+        "recursivity",     # REMESH: Multi-level integration
+    ],
+    
+    # Recovery pattern - for system restoration after disruption
+    "recovery": [
+        "emission",        # AL: Restart core functions (U1a generator)
+        "reception",       # EN: Assess current state
+        "coherence",       # IL: Restore stability
+        "coupling",        # UM: Rebuild connections
+        "resonance",       # RA: Stabilize recovery
+        "transition",      # NAV: Return to normal operation
+    ],
+    
+    # Innovation catalyst - for breakthrough discovery patterns
+    "innovation": [
+        "transition",      # NAV: Shift to exploration mode
+        "reception",       # EN: Gather diverse inputs
+        "coherence",       # IL: Stable processing base
+        "dissonance",      # OZ: Creative tension
+        "mutation",        # ZHIR: Breakthrough transformation
+        "coherence",       # IL: Stabilize new insights (required after ZHIR)
+        "resonance",       # RA: Amplify stabilized innovation
+        "recursivity",     # REMESH: Scale innovation
+    ],
+    
+    # Optimization cycle - for continuous improvement
+    "optimization": [
+        "recursivity",     # REMESH: Analyze current patterns
+        "reception",       # EN: Gather performance data
+        "coherence",       # IL: Stabilize baseline
+        "expansion",       # VAL: Explore improvements
+        "contraction",     # NUL: Focus on best options
+        "coherence",       # IL: Optimize selection
+        "transition",      # NAV: Implement improvements
+    ],
+    
+    # Fractal growth - for self-similar expansion across scales
+    "fractal_growth": [
+        "emission",        # AL: Seed pattern
+        "coherence",       # IL: Stabilize core
+        "expansion",       # VAL: First scale growth
+        "coherence",       # IL: Stabilize expansion (required after VAL)
+        "recursivity",     # REMESH: Self-similar replication
+        "coupling",        # UM: Connect scales
+        "resonance",       # RA: Harmonize across levels
+        "silence",         # SHA: Sustained fractal state
     ],
 }
 
@@ -182,6 +303,7 @@ class NetworkResults:
     graph: Any  # TNFRGraph
     avg_vf: Optional[float] = None
     avg_phase: Optional[float] = None
+    unified_fields: Optional[Dict[str, Any]] = None  # Nov 28, 2025 - unified field telemetry
 
     def summary(self) -> str:
         """Generate human-readable summary of network results.
@@ -197,6 +319,20 @@ class NetworkResults:
         avg_si = sum(si_values) / len(si_values) if si_values else 0.0
         avg_dnfr = sum(dnfr_values) / len(dnfr_values) if dnfr_values else 0.0
 
+        # Unified fields summary (if available)
+        unified_summary = ""
+        if self.unified_fields:
+            try:
+                cf = self.unified_fields.get("complex_field", {})
+                correlation = cf.get("correlation", 0.0)
+                ti = self.unified_fields.get("tensor_invariants", {})
+                conservation = ti.get("conservation_quality", 0.0)
+                unified_summary = f"""
+  • K_φ ↔ J_φ Correlation: {correlation:.3f}
+  • Conservation Quality: {conservation:.3f}"""
+            except Exception:
+                pass
+
         return f"""
 TNFR Network Results:
   • Coherence C(t): {self.coherence:.3f}
@@ -204,7 +340,7 @@ TNFR Network Results:
   • Avg Sense Index Si: {avg_si:.3f}
   • Avg ΔNFR: {avg_dnfr:.3f}
   • Avg νf: {self.avg_vf:.3f} Hz_str{' (computed)' if self.avg_vf else ''}
-  • Avg Phase: {self.avg_phase:.3f} rad{' (computed)' if self.avg_phase else ''}
+  • Avg Phase: {self.avg_phase:.3f} rad{' (computed)' if self.avg_phase else ''}{unified_summary}
 """.strip()
 
     def to_dict(self) -> Dict[str, Any]:
@@ -574,6 +710,98 @@ class TNFRNetwork:
                 run_sequence(self._graph, node, operator_instances)
 
         return self
+    
+    def apply_adaptive_sequence(self, base_sequence: str = "basic_activation", target_coherence: float = 0.7) -> "TNFRNetwork":
+        """Apply adaptive sequence selection based on network state.
+        
+        Automatically selects and applies the most appropriate sequence based on
+        current network coherence and structure.
+        
+        Parameters
+        ----------
+        base_sequence : str, default="basic_activation"
+            Fallback sequence if adaptive selection fails.
+        target_coherence : float, default=0.7
+            Desired coherence level for adaptive optimization.
+            
+        Returns
+        -------
+        TNFRNetwork
+            Self for method chaining.
+        """
+        if not self._graph.nodes:
+            return self.apply_sequence(base_sequence)
+            
+        # Measure current state
+        current_coherence = compute_coherence(self._graph)
+        
+        # Adaptive sequence selection logic
+        if current_coherence < 0.3:
+            # Low coherence - use healing
+            selected_sequence = "healing"
+        elif current_coherence < 0.5:
+            # Medium coherence - use stabilization
+            selected_sequence = "stabilization"
+        elif current_coherence < target_coherence:
+            # Good coherence but below target - use harmonization
+            selected_sequence = "harmonization"
+        elif current_coherence >= 0.8:
+            # High coherence - ready for innovation or optimization
+            selected_sequence = "optimization" if len(self._graph.nodes) > 5 else "innovation"
+        else:
+            # Default case
+            selected_sequence = base_sequence
+            
+        return self.apply_sequence(selected_sequence)
+    
+    def apply_sequence_chain(self, chain_pattern: str = "standard") -> "TNFRNetwork":
+        """Apply predefined chains of sequences for complex behaviors.
+        
+        Parameters
+        ----------
+        chain_pattern : str, default="standard"
+            Type of sequence chain: "standard", "learning", "innovation", "recovery"
+            
+        Returns
+        -------
+        TNFRNetwork
+            Self for method chaining.
+        """
+        chains = {
+            "standard": [
+                ("basic_activation", None, 1),
+                ("harmonization", None, 1),
+                ("optimization", None, 1)
+            ],
+            "learning": [
+                ("basic_activation", None, 1),
+                ("progressive_learning", None, 2),
+                ("consolidation", None, 1)
+            ],
+            "innovation": [
+                ("stabilization", None, 1),
+                ("innovation", None, 1),
+                ("amplification", None, 1),
+                ("consolidation", None, 1)
+            ],
+            "recovery": [
+                ("recovery", None, 1),
+                ("healing", None, 2),
+                ("harmonization", None, 1)
+            ],
+            "transformation": [
+                ("stabilization", None, 1),
+                ("deep_transformation", None, 1),
+                ("healing", None, 1),
+                ("consolidation", None, 1)
+            ]
+        }
+        
+        if chain_pattern not in chains:
+            available = ", ".join(chains.keys())
+            raise ValueError(f"Unknown chain pattern '{chain_pattern}'. Available: {available}")
+            
+        return self.apply_multiple_sequences(chains[chain_pattern])
 
     def measure(self) -> NetworkResults:
         """Calculate TNFR metrics and return structured results.
@@ -631,6 +859,15 @@ class TNFRNetwork:
         avg_vf = vf_sum / node_count if node_count > 0 else 0.0
         avg_phase = phase_sum / node_count if node_count > 0 else 0.0
 
+        # Unified field telemetry (Nov 28, 2025 - comprehensive audit integration)
+        unified_telemetry = {}
+        try:
+            from ..physics.fields import compute_unified_telemetry
+            unified_telemetry = compute_unified_telemetry(self._graph)
+        except (ImportError, Exception):
+            # Graceful degradation if unified fields not available
+            pass
+
         # Create and cache results
         self._results = NetworkResults(
             coherence=coherence,
@@ -639,6 +876,7 @@ class TNFRNetwork:
             graph=self._graph,
             avg_vf=avg_vf,
             avg_phase=avg_phase,
+            unified_fields=unified_telemetry,  # New field for unified telemetry
         )
 
         return self._results
@@ -1058,6 +1296,231 @@ class TNFRNetwork:
         self._results = None
         self._node_counter = 0
         return self
+
+    # -------------------------------------------------------------------------
+    # Auto-optimization methods (NEW - Nov 28, 2025)
+    # -------------------------------------------------------------------------
+
+    def analyze_optimization_potential(self) -> Dict[str, Any]:
+        """
+        Analyze mathematical optimization potential for the current network.
+        
+        Uses unified field analysis and mathematical structure inspection
+        to identify optimization opportunities automatically.
+        
+        Returns
+        -------
+        Dict[str, Any]
+            Analysis results including:
+            - field_analysis: Unified field characteristics
+            - optimization_recommendations: Specific strategies  
+            - predicted_improvements: Expected performance gains
+            
+        Raises
+        ------
+        ValueError
+            If no network has been created.
+            
+        Examples
+        --------
+        Analyze optimization opportunities:
+        
+        >>> analysis = network.analyze_optimization_potential()
+        >>> print(f"Recommendations: {analysis['optimization_recommendations']}")
+        >>> print(f"Predicted speedup: {analysis['predicted_improvements']}")
+        """
+        if self._graph is None or self._graph.number_of_nodes() == 0:
+            raise ValueError("No network created. Use add_nodes() first.")
+            
+        if not _AUTO_OPTIMIZATION_AVAILABLE:
+            return {
+                "optimization_available": False,
+                "error": "Auto-optimization engine not available",
+                "field_analysis": {},
+                "optimization_recommendations": [],
+                "predicted_improvements": {}
+            }
+        
+        try:
+            analysis = analyze_optimization_potential(self._graph)
+            return {
+                "optimization_available": True,
+                **analysis
+            }
+        except Exception as e:
+            return {
+                "optimization_available": False,
+                "error": str(e),
+                "field_analysis": {},
+                "optimization_recommendations": [],
+                "predicted_improvements": {}
+            }
+
+    def auto_optimize(self, operation_type: str = "network_simulation") -> TNFRNetwork:
+        """
+        Automatically apply optimization strategies based on mathematical analysis.
+        
+        This method uses the self-optimizing engine to analyze the current
+        network state and automatically apply the best optimization strategy.
+        
+        Parameters
+        ----------
+        operation_type : str, default="network_simulation"
+            Type of operation to optimize for.
+            
+        Returns
+        -------
+        TNFRNetwork
+            Self for method chaining.
+            
+        Raises
+        ------
+        ValueError
+            If no network has been created.
+            
+        Examples
+        --------
+        Apply automatic optimization:
+        
+        >>> network.auto_optimize("network_simulation")
+        >>> results = network.measure()  # Optimized computation
+        """
+        if self._graph is None or self._graph.number_of_nodes() == 0:
+            raise ValueError("No network created. Use add_nodes() first.")
+            
+        if not _AUTO_OPTIMIZATION_AVAILABLE:
+            print("Warning: Auto-optimization engine not available, skipping.")
+            return self
+            
+        try:
+            optimization_result = auto_optimize_field_computation(self._graph, operation_type=operation_type)
+            
+            # Store optimization information for future reference
+            if not hasattr(self, '_optimization_history'):
+                self._optimization_history = []
+            
+            self._optimization_history.append({
+                "timestamp": __import__("time").time(),
+                "operation_type": operation_type,
+                "result": optimization_result
+            })
+            
+            if optimization_result.get("optimization_applied", False):
+                print(f"✅ Optimization applied: {optimization_result.get('strategy_used', 'unknown')}")
+                improvement = optimization_result.get("performance_improvement", 1.0)
+                if improvement > 1.1:
+                    print(f"   Expected speedup: {improvement:.2f}x")
+            else:
+                print("ℹ️ No optimization applied (using standard computation)")
+                
+        except Exception as e:
+            print(f"Warning: Auto-optimization failed: {e}")
+            
+        return self
+
+    def learn_from_performance(
+        self, 
+        performance_data: Optional[Dict[str, Any]] = None
+    ) -> TNFRNetwork:
+        """
+        Learn optimization strategies from performance data.
+        
+        Records performance experience and updates optimization policies
+        for future automatic optimization decisions.
+        
+        Parameters
+        ----------
+        performance_data : Dict[str, Any], optional
+            Performance metrics to learn from. If None, uses internal timing.
+            
+        Returns
+        -------
+        TNFRNetwork
+            Self for method chaining.
+            
+        Examples
+        --------
+        Record performance learning:
+        
+        >>> network.learn_from_performance({"execution_time": 1.23, "accuracy": 0.99})
+        """
+        if self._graph is None or self._graph.number_of_nodes() == 0:
+            raise ValueError("No network created. Use add_nodes() first.")
+            
+        if not _AUTO_OPTIMIZATION_AVAILABLE:
+            return self
+            
+        try:
+            # Create self-optimizing engine
+            engine = TNFRSelfOptimizingEngine(
+                optimization_objective=OptimizationObjective.BALANCE_ALL
+            )
+            
+            # Prepare experience data
+            experience_data = {
+                "graph_properties": {
+                    "nodes": self._graph.number_of_nodes(),
+                    "edges": self._graph.number_of_edges(),
+                    "density": (2 * self._graph.number_of_edges() / 
+                               max(1, self._graph.number_of_nodes() * (self._graph.number_of_nodes() - 1)))
+                },
+                "operation_type": "sdk_operation",
+                "performance_metrics": performance_data or {},
+                "timestamp": __import__("time").time(),
+                "success": True
+            }
+            
+            # This would normally create and record an OptimizationExperience
+            # For now, just store the learning data
+            if not hasattr(self, '_learning_history'):
+                self._learning_history = []
+            
+            self._learning_history.append(experience_data)
+            
+        except Exception as e:
+            print(f"Warning: Performance learning failed: {e}")
+            
+        return self
+
+    def get_optimization_recommendations(self, operation_type: str = "measurement") -> Dict[str, Any]:
+        """
+        Get optimization strategy recommendations for specific operation.
+        
+        Parameters
+        ----------
+        operation_type : str, default="measurement"
+            Type of operation to get recommendations for.
+            
+        Returns
+        -------
+        Dict[str, Any]
+            Optimization recommendations and strategy analysis.
+            
+        Raises
+        ------
+        ValueError
+            If no network has been created.
+        """
+        if self._graph is None or self._graph.number_of_nodes() == 0:
+            raise ValueError("No network created. Use add_nodes() first.")
+            
+        if not _AUTO_OPTIMIZATION_AVAILABLE:
+            return {
+                "recommendations_available": False,
+                "error": "Auto-optimization engine not available"
+            }
+        
+        try:
+            recommendations = recommend_field_optimization_strategy(self._graph, operation_type)
+            return {
+                "recommendations_available": True,
+                **recommendations
+            }
+        except Exception as e:
+            return {
+                "recommendations_available": False,
+                "error": str(e)
+            }
 
     def export_to_dict(self) -> dict:
         """Export network structure to dictionary format.

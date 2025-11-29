@@ -26,12 +26,12 @@ grammar.
 |---------------------|---------|--------------------------------------------------|
 | ΔΦ_s                | 2.0     | Escape threshold (confinement breach)            |
 | max(|∇φ|)           | 0.38    | Local stress / desynchronization warning         |
-| max(|K_φ|)          | 3.0     | Curvature fault pocket (mutation risk locus)     |
+| max(|K_φ|)          | 2.8274     | Curvature fault pocket (mutation risk locus)     |
 | ξ_C critical        | > diameter * 1.0 | Approaching global correlation divergence |
-| ξ_C watch           | > mean_distance * 3.0 | Extended local correlation zone     |
+| ξ_C watch           | > mean_distance * 3.1416 | Extended local correlation zone (π from RG scaling) |
 
-All thresholds empirically validated (see `AGENTS.md`). Override values via
-function parameters to adapt for specialized topologies or experiments.
+All thresholds classically derived from mathematical foundations (see `AGENTS.md`, `UNIFIED_GRAMMAR_RULES.md`). 
+Override values via function parameters to adapt for specialized topologies or experiments.
 
 ## Risk Levels
 

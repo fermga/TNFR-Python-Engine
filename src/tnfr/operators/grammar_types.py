@@ -12,6 +12,8 @@ from __future__ import annotations
 from enum import Enum
 from typing import TYPE_CHECKING, Any, List, Mapping, Sequence, Tuple
 
+from ..constants.canonical import PHI  # Golden ratio for U6 escape threshold
+
 if TYPE_CHECKING:
     from ..types import NodeId, TNFRGraph, Glyph
     from .definitions import Operator
@@ -371,12 +373,12 @@ class TransitionCompatibilityError(StructuralGrammarError):
 class StructuralPotentialConfinementError(StructuralGrammarError):
     """Error for structural potential drift exceeding escape threshold (U6).
 
-    Raised when Δ Φ_s ≥ 2.0, indicating system escaping potential well
+    Raised when Δ Φ_s ≥ φ ≈ 1.618, indicating system escaping potential well
     and entering fragmentation regime.
     """
 
     def __init__(
-        self, delta_phi_s: float, threshold: float = 2.0, sequence: list[str] | None = None
+        self, delta_phi_s: float, threshold: float = PHI, sequence: list[str] | None = None
     ):
         msg = (
             f"U6 STRUCTURAL POTENTIAL CONFINEMENT violated: "

@@ -1,13 +1,15 @@
 """Unified telemetry for TNFR structural fields.
 
 This module provides a centralized, optimized pass for computing the
-Canonical Structural Tetrad (Φ_s, |∇φ|, K_φ, ξ_C) and other metrics.
+Canonical Structural Triad (Φ_s, |∇φ|, K_φ) and experimental ξ_C correlation analysis.
 It minimizes redundant data extraction and distance matrix computations.
 """
 
 from __future__ import annotations
 
 from typing import Any, Dict
+
+from ..constants.canonical import PHI  # Golden ratio for structural potential
 
 try:
     import networkx as nx
@@ -33,7 +35,7 @@ from .vectorized_ops import (
 def compute_structural_telemetry(G: Any) -> Dict[str, Any]:
     """Compute the full Canonical Structural Suite in a single optimized pass.
     
-    Includes the Canonical Tetrad (Φ_s, |∇φ|, K_φ, ξ_C) and the
+    Includes the Canonical Structural Triad (Φ_s, |∇φ|, K_φ) and the
     Extended Canonical Fluxes (J_φ, J_ΔNFR).
     
     Returns
@@ -112,7 +114,7 @@ def compute_structural_telemetry(G: Any) -> Dict[str, Any]:
     
     # 4. Compute Structural Potential (O(N^2) with precomputed D)
     phi_s = compute_phi_s_exact_vectorized(
-        G, nodes, dnfr_map, alpha=2.0, dtype=dtype, distance_matrix=distance_matrix
+        G, nodes, dnfr_map, alpha=PHI, dtype=dtype, distance_matrix=distance_matrix
     )
     
     # 5. Compute Coherence Length (O(N^2) with precomputed D)

@@ -37,6 +37,31 @@ except ImportError:
     HAS_NETWORKX = False
     nx = None
 
+# Import canonical constants for Phase 6 magic number elimination
+from ..constants.canonical import (
+    CACHE_OPT_PREFETCH_TIME_CANONICAL,
+    CACHE_OPT_SHARED_MEMORY_CANONICAL,
+    CACHE_OPT_FIELD_MEMORY_CANONICAL,
+    CACHE_OPT_HIGH_PRIORITY_CANONICAL,
+    CACHE_OPT_MEDIUM_PRIORITY_CANONICAL,
+    CACHE_OPT_LOW_PRIORITY_CANONICAL,
+    CACHE_OPT_PRESERVED_MEMORY_CANONICAL,
+    CACHE_OPT_ENTRY_SIZE_CANONICAL,
+    CACHE_OPT_MAX_EVICTION_CANONICAL,
+    CACHE_OPT_COMPRESSION_BASE_CANONICAL,
+    CACHE_OPT_COMPRESSION_SCALE_CANONICAL,
+    CACHE_OPT_COMPRESSION_MAX_CANONICAL,
+    CACHE_OPT_LOCALITY_BASE_CANONICAL,
+    CACHE_OPT_LOCALITY_MAX_CANONICAL,
+    CACHE_OPT_LOCALITY_TIME_CANONICAL,
+    CACHE_OPT_LOCALITY_MEMORY_CANONICAL,
+    CACHE_OPT_LOCALITY_HIT_CANONICAL,
+    CACHE_OPT_SPECTRAL_TIME_CANONICAL,
+    CACHE_OPT_SPECTRAL_MEMORY_CANONICAL,
+    # PHASE 6 EXTENDED: Additional canonical constant
+    NODAL_OPT_COUPLING_CANONICAL,         # γ/(π+e) ≈ 0.0985 (0.1 → canonical)
+)
+
 # Import TNFR cache infrastructure
 try:
     from ..utils.cache import (
@@ -239,7 +264,7 @@ class TNFRAdvancedCacheOptimizer:
                 nodes_processed=len(G.nodes()) if HAS_NETWORKX and G else 0,
                 cache_hits_improved=prefetched_items,
                 prefetch_accuracy=accuracy,
-                computation_time_saved=prefetched_items * 0.1  # Estimate 0.1s per prefetch
+                computation_time_saved=prefetched_items * CACHE_OPT_PREFETCH_TIME_CANONICAL  # Estimate canonical time per prefetch
             )
     
     def _optimize_cross_engine_sharing(self, G: Any) -> CacheOptimizationResult:
@@ -262,20 +287,20 @@ class TNFRAdvancedCacheOptimizer:
             fft_stats = self.fft_cache.get_stats()
             if fft_stats["spectral_hits"] > 0:
                 shared_items += fft_stats["spectral_hits"]
-                memory_saved += shared_items * 0.5  # Estimate 0.5MB per shared spectrum
+                memory_saved += shared_items * CACHE_OPT_SHARED_MEMORY_CANONICAL  # Estimate canonical memory per shared spectrum
         
         # Share structural fields between optimization engines
         if self.structural_cache:
             struct_stats = self.structural_cache.get_cache_stats()
             shared_items += struct_stats["hits"]
-            memory_saved += struct_stats["hits"] * 0.1  # Estimate 0.1MB per field set
+            memory_saved += struct_stats["hits"] * CACHE_OPT_FIELD_MEMORY_CANONICAL  # Estimate canonical memory per field set
             
         return CacheOptimizationResult(
             strategy=CacheOptimizationStrategy.CROSS_ENGINE_SHARING,
             nodes_processed=len(G.nodes()) if HAS_NETWORKX and G else 0,
             cache_hits_improved=shared_items,
             memory_saved_mb=memory_saved,
-            computation_time_saved=shared_items * 0.05  # Estimate 0.05s per shared item
+            computation_time_saved=shared_items * CACHE_OPT_LOCALITY_MEMORY_CANONICAL  # Estimate canonical time per shared item
         )
     
     def _optimize_dependency_preservation(self, G: Any) -> CacheOptimizationResult:
@@ -300,16 +325,16 @@ class TNFRAdvancedCacheOptimizer:
             # Estimate preservation potential based on entry type stability
             if entry_type in ["spectral_decomp", "topology_analysis"]:
                 # High stability - preserve most entries
-                preserved_entries += int(count * 0.8)
+                preserved_entries += int(count * CACHE_OPT_HIGH_PRIORITY_CANONICAL)
             elif entry_type in ["structural_fields", "cross_correlation"]:
                 # Medium stability - preserve some entries
-                preserved_entries += int(count * 0.5)
+                preserved_entries += int(count * CACHE_OPT_MEDIUM_PRIORITY_CANONICAL)
             else:
                 # Low stability - preserve few entries
-                preserved_entries += int(count * 0.2)
+                preserved_entries += int(count * CACHE_OPT_LOW_PRIORITY_CANONICAL)
         
-        memory_saved = preserved_entries * 0.2  # Estimate 0.2MB per preserved entry
-        time_saved = preserved_entries * 0.08   # Estimate 0.08s per preserved computation
+        memory_saved = preserved_entries * CACHE_OPT_PRESERVED_MEMORY_CANONICAL  # Estimate canonical memory per preserved entry
+        time_saved = preserved_entries * CACHE_OPT_LOCALITY_TIME_CANONICAL   # Estimate canonical time per preserved computation
         
         return CacheOptimizationResult(
             strategy=CacheOptimizationStrategy.DEPENDENCY_PRESERVATION,
@@ -343,10 +368,10 @@ class TNFRAdvancedCacheOptimizer:
             evict_size = current_size - target_memory_mb
             
             # Estimate evicted entries (low importance first)
-            evicted_entries = int(evict_size / 0.15)  # Estimate 0.15MB per entry
+            evicted_entries = int(evict_size / CACHE_OPT_ENTRY_SIZE_CANONICAL)  # Estimate canonical MB per entry
             
             # Memory saved is the evicted amount
-            memory_saved = min(evict_size, current_size * 0.3)  # Max 30% eviction
+            memory_saved = min(evict_size, current_size * CACHE_OPT_MAX_EVICTION_CANONICAL)  # Max canonical% eviction
             
             return CacheOptimizationResult(
                 strategy=CacheOptimizationStrategy.IMPORTANCE_WEIGHTING,
@@ -378,17 +403,17 @@ class TNFRAdvancedCacheOptimizer:
         # Estimate compression based on structural regularity
         if nodes > 0:
             # Higher compression for more regular structures
-            compression_ratio = 1.5 + (nodes / 100) * 0.1  # 1.5x to ~2.5x compression
-            compression_ratio = min(compression_ratio, 3.0)
+            compression_ratio = CACHE_OPT_COMPRESSION_BASE_CANONICAL + (nodes / 100) * CACHE_OPT_COMPRESSION_SCALE_CANONICAL  # Canonical compression scaling
+            compression_ratio = min(compression_ratio, CACHE_OPT_COMPRESSION_MAX_CANONICAL)
             
-            memory_saved = nodes * 0.01 * (compression_ratio - 1.0) / compression_ratio
+            memory_saved = nodes * CACHE_OPT_LOCALITY_MEMORY_CANONICAL * (compression_ratio - 1.0) / compression_ratio
             
             return CacheOptimizationResult(
                 strategy=CacheOptimizationStrategy.PATTERN_COMPRESSION,
                 nodes_processed=nodes,
                 memory_saved_mb=memory_saved,
                 compression_ratio=compression_ratio,
-                computation_time_saved=0.02 * nodes  # Time saved from faster I/O
+                computation_time_saved=CACHE_OPT_LOCALITY_MEMORY_CANONICAL * nodes  # Time saved from faster I/O
             )
         
         return CacheOptimizationResult(
@@ -406,15 +431,15 @@ class TNFRAdvancedCacheOptimizer:
         
         if recent_access_count > 10:
             # Estimate locality improvement
-            locality_factor = min(recent_access_count / 50, 2.0)  # Up to 2x improvement
+            locality_factor = min(recent_access_count / CACHE_OPT_LOCALITY_BASE_CANONICAL, CACHE_OPT_LOCALITY_MAX_CANONICAL)  # Up to canonical improvement
             
-            time_saved = locality_factor * 0.1 * recent_access_count
-            memory_saved = locality_factor * 0.05 * recent_access_count
+            time_saved = locality_factor * NODAL_OPT_COUPLING_CANONICAL * recent_access_count
+            memory_saved = locality_factor * CACHE_OPT_LOCALITY_MEMORY_CANONICAL * recent_access_count
             
             return CacheOptimizationResult(
                 strategy=CacheOptimizationStrategy.TEMPORAL_LOCALITY,
                 nodes_processed=len(G.nodes()) if HAS_NETWORKX and G else 0,
-                cache_hits_improved=int(recent_access_count * locality_factor * 0.3),
+                cache_hits_improved=int(recent_access_count * locality_factor * CACHE_OPT_LOCALITY_HIT_CANONICAL),
                 memory_saved_mb=memory_saved,
                 computation_time_saved=time_saved
             )
@@ -444,11 +469,11 @@ class TNFRAdvancedCacheOptimizer:
             nodes = len(G.nodes()) if HAS_NETWORKX and G else 1
             
             # Spectral decomposition is O(N³), reuse saves significant time
-            time_saved_per_reuse = (nodes ** 2) * 0.0001  # Estimate based on N²
+            time_saved_per_reuse = (nodes ** 2) * CACHE_OPT_SPECTRAL_TIME_CANONICAL  # Estimate based on N²
             total_time_saved = spectral_reuse * time_saved_per_reuse
             
             # Memory saved by not recomputing
-            memory_saved = spectral_reuse * nodes * 0.008  # Estimate 8KB per node
+            memory_saved = spectral_reuse * nodes * CACHE_OPT_SPECTRAL_MEMORY_CANONICAL  # Estimate canonical KB per node
             
             return CacheOptimizationResult(
                 strategy=CacheOptimizationStrategy.SPECTRAL_PERSISTENCE,

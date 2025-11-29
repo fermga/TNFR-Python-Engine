@@ -1,5 +1,10 @@
 """Medical domain pattern definitions."""
 
+from ...config.defaults_core import MIN_BUSINESS_COHERENCE, MIN_BUSINESS_SENSE_INDEX
+from ...constants.canonical import (
+    MEDICAL_COHERENCE_THRESHOLD,
+    MEDICAL_SI_THRESHOLD,
+)
 from ..base import PatternDefinition
 
 # Therapeutic Alliance Pattern
@@ -13,8 +18,8 @@ THERAPEUTIC_ALLIANCE = PatternDefinition(
         "Deepening therapeutic relationship",
     ],
     health_requirements={
-        "min_coherence": 0.75,
-        "min_sense_index": 0.70,
+        "min_coherence": MIN_BUSINESS_COHERENCE,
+        "min_sense_index": MIN_BUSINESS_SENSE_INDEX,
     },
     domain_context={
         "real_world_mapping": (
@@ -36,19 +41,19 @@ THERAPEUTIC_ALLIANCE = PatternDefinition(
             "name": "Initial Session - Trust Building",
             "context": "First meeting with new patient, establishing safety",
             "sequence": ["emission", "reception", "coherence", "resonance"],
-            "health_metrics": {"C_t": 0.82, "Si": 0.76},
+            "health_metrics": {"C_t": MEDICAL_COHERENCE_THRESHOLD * 1.025, "Si": MEDICAL_SI_THRESHOLD * 1.013},  # Enhanced therapeutic alliance
         },
         {
             "name": "Alliance Repair",
             "context": "After misunderstanding, rebuilding connection",
             "sequence": ["emission", "reception", "coherence", "resonance"],
-            "health_metrics": {"C_t": 0.79, "Si": 0.74},
+            "health_metrics": {"C_t": MEDICAL_COHERENCE_THRESHOLD * 0.9875, "Si": MEDICAL_SI_THRESHOLD * 0.987},  # Repair phase
         },
         {
             "name": "Deepening Phase",
             "context": "Moving from surface to deeper therapeutic work",
             "sequence": ["emission", "reception", "coherence", "resonance"],
-            "health_metrics": {"C_t": 0.85, "Si": 0.81},
+            "health_metrics": {"C_t": MEDICAL_COHERENCE_THRESHOLD * 1.063, "Si": MEDICAL_SI_THRESHOLD * 1.08},  # Deep therapeutic work
         },
     ],
 )
@@ -64,8 +69,8 @@ CRISIS_INTERVENTION = PatternDefinition(
         "Crisis situation requiring immediate stabilization",
     ],
     health_requirements={
-        "min_coherence": 0.75,
-        "min_sense_index": 0.70,
+        "min_coherence": MIN_BUSINESS_COHERENCE,
+        "min_sense_index": MIN_BUSINESS_SENSE_INDEX,
     },
     domain_context={
         "real_world_mapping": (
@@ -115,8 +120,8 @@ INTEGRATION_PHASE = PatternDefinition(
         "Expanding awareness to include new perspectives",
     ],
     health_requirements={
-        "min_coherence": 0.75,
-        "min_sense_index": 0.70,
+        "min_coherence": MIN_BUSINESS_COHERENCE,
+        "min_sense_index": MIN_BUSINESS_SENSE_INDEX,
     },
     domain_context={
         "real_world_mapping": (

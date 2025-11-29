@@ -439,10 +439,13 @@ def _compute_phase_transport_derivative(
     - Pressure response: β·ΔNFR [linear response to reorganization]  
     - Transport: γ·J_φ·κ [directed flux with coupling efficiency]
     """
-    # Physics coefficients (from prototype validation)
-    alpha = 0.5   # νf-θ autoorganization strength
-    beta = 0.3    # ΔNFR pressure sensitivity  
-    gamma = 0.2   # J_φ transport efficiency
+    # Import canonical constants
+    from ..constants.canonical import INV_PHI, GAMMA_PI_RATIO, PI_MINUS_E_OVER_PI
+    
+    # Physics coefficients (RECALIBRATED from canonical constants)
+    alpha = INV_PHI                 # 1/φ ≈ 0.618 (autoorganización áurea inversa)
+    beta = GAMMA_PI_RATIO           # γ/(π+γ) ≈ 0.155 (sensibilidad euleriana-pi)  
+    gamma = PI_MINUS_E_OVER_PI      # (π-e)/π ≈ 0.135 (eficiencia transcendental)
     
     # Autoorganization term: nonlinear νf-θ coupling
     autoorg_term = alpha * nu_f * math.sin(math.pi * delta_nfr)
@@ -466,8 +469,11 @@ def _compute_dnfr_conservation_derivative(j_dnfr_divergence: float) -> float:
     - Conservation: -∇·J_ΔNFR [flow continuity]
     - Decay: λ·|∇·J| [natural relaxation, prevents accumulation]
     """
-    # Physics coefficients
-    decay_rate = 0.05   # Natural relaxation rate
+    # Import canonical constants
+    from ..constants.canonical import EXP_DOUBLE_NEG
+    
+    # Physics coefficients (RECALIBRATED from canonical constants)
+    decay_rate = EXP_DOUBLE_NEG     # e^(-2) ≈ 0.135 (decaimiento exponencial natural doble)
     
     # Conservation term: flux in increases ΔNFR, flux out decreases it
     conservation_term = -j_dnfr_divergence

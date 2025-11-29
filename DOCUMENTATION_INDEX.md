@@ -50,17 +50,34 @@
 - **[docs/README.md](docs/README.md)** - Extended documentation overview
 - **[benchmarks/README.md](benchmarks/README.md)** - Benchmarking framework
 
+### 🏛️ Production Documentation Framework
+
+- **[UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md)** - Grammar Physics (U1-U6)
+- **[ARCHITECTURE.md](ARCHITECTURE.md)** - System Design (2025 mathematical purity era)
+- **[CONTRIBUTING.md](CONTRIBUTING.md)** - Development Workflow (canonical requirements)
+
+### 🗂️ Canonical Hierarchy
+
+- **[CANONICAL_DOCUMENTATION_MANIFEST.md](CANONICAL_DOCUMENTATION_MANIFEST.md)** - 📋 **DOCUMENTATION AUTHORITY**
+  - Single source of truth hierarchy
+  - Eliminated duplicates inventory
+  - Canonical update protocol
+
+---
+
 ## 🚀 Quick Navigation
 
-**New to TNFR?** → Start with [AGENTS.md](AGENTS.md) - complete canonical source
+**🆕 New to TNFR?** → Start with **[AGENTS.md](AGENTS.md)** - ultimate single source of truth
 
-**Implementing operators?** → [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) + [AGENTS.md](AGENTS.md) operator section
+**🔬 Implementing operators?** → **[UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md)** + **[AGENTS.md](AGENTS.md)** operator section
 
-**Building applications?** → [ARCHITECTURE.md](ARCHITECTURE.md) + [examples/](examples/) + [notebooks/](notebooks/)
+**🏗️ Building applications?** → **[ARCHITECTURE.md](ARCHITECTURE.md)** + **[src/tnfr/constants/canonical.py](src/tnfr/constants/canonical.py)**
 
-**Contributing?** → [CONTRIBUTING.md](CONTRIBUTING.md) + [TESTING.md](TESTING.md)
+**👥 Contributing?** → **[CANONICAL_DOCUMENTATION_MANIFEST.md](CANONICAL_DOCUMENTATION_MANIFEST.md)** + **[CONTRIBUTING.md](CONTRIBUTING.md)**
 
-**Mathematical foundations?** → [AGENTS.md](AGENTS.md) § "Classical Mathematical Foundations"
+**🧮 Mathematical foundations?** → **[AGENTS.md](AGENTS.md)** § "Universal Tetrahedral Correspondence"
+
+**📊 Mathematical purity journey?** → **[MAGIC_NUMBERS_SEARCH_COMPLETE_FINAL_REPORT.md](MAGIC_NUMBERS_SEARCH_COMPLETE_FINAL_REPORT.md)**
 
 ---
 

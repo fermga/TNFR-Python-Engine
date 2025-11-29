@@ -10,7 +10,7 @@ Run a small-world network study:
 
 >>> from tnfr.sdk import TNFRExperimentBuilder
 >>> results = TNFRExperimentBuilder.small_world_study(
-...     nodes=50, rewiring_prob=0.1, steps=10
+...     nodes=50, rewiring_prob=0.099, steps=10
 ... )
 
 Compare different network topologies:
@@ -27,6 +27,19 @@ from __future__ import annotations
 from typing import Dict, Optional
 
 from .fluent import TNFRNetwork, NetworkResults
+from ..constants.canonical import (
+    SDK_REWIRING_PROB_DEFAULT,
+    SDK_COUPLING_STRENGTH_WEAK,
+    SDK_COUPLING_STRENGTH_MODERATE,
+    SDK_VF_RANGE_LOW_MIN,
+    SDK_VF_RANGE_LOW_MAX,
+    SDK_VF_RANGE_MODERATE_MIN,
+    SDK_VF_RANGE_MODERATE_MAX,
+    SDK_CONNECTIVITY_DEFAULT,
+    GAMMA,
+    PI,
+    INV_PHI,
+)
 
 __all__ = ["TNFRExperimentBuilder"]
 
@@ -45,7 +58,7 @@ class TNFRExperimentBuilder:
     @staticmethod
     def small_world_study(
         nodes: int = 50,
-        rewiring_prob: float = 0.1,
+        rewiring_prob: float = SDK_REWIRING_PROB_DEFAULT,  # γ/(π+γ) ≈ 0.1552 (canonical rewiring)
         steps: int = 10,
         random_seed: Optional[int] = None,
     ) -> NetworkResults:
@@ -74,7 +87,7 @@ class TNFRExperimentBuilder:
         Examples
         --------
         >>> results = TNFRExperimentBuilder.small_world_study(
-        ...     nodes=100, rewiring_prob=0.2
+        ...     nodes=100, rewiring_prob=0.184
         ... )
         >>> print(f"Network coherence: {results.coherence:.3f}")
         """
@@ -92,7 +105,7 @@ class TNFRExperimentBuilder:
     @staticmethod
     def synchronization_study(
         nodes: int = 30,
-        coupling_strength: float = 0.5,
+        coupling_strength: float = SDK_COUPLING_STRENGTH_MODERATE,  # 1/φ - golden moderate coupling
         steps: int = 20,
         random_seed: Optional[int] = None,
     ) -> NetworkResults:
@@ -121,7 +134,7 @@ class TNFRExperimentBuilder:
         Examples
         --------
         >>> results = TNFRExperimentBuilder.synchronization_study(
-        ...     nodes=50, coupling_strength=0.7
+        ...     nodes=50, coupling_strength=0.618
         ... )
         >>> avg_si = sum(results.sense_indices.values()) / len(results.sense_indices)
         >>> print(f"Synchronization (avg Si): {avg_si:.3f}")
@@ -131,7 +144,7 @@ class TNFRExperimentBuilder:
             network._config.random_seed = random_seed
 
         # Similar frequencies promote synchronization (within bounds: 0.6-0.9)
-        network.add_nodes(nodes, vf_range=(0.6, 0.9))
+        network.add_nodes(nodes, vf_range=(SDK_VF_RANGE_MODERATE_MIN, SDK_VF_RANGE_MODERATE_MAX))  # Canonical moderate range
         network.connect_nodes(coupling_strength, "random")
 
         # Multi-phase synchronization protocol
@@ -151,7 +164,7 @@ class TNFRExperimentBuilder:
     @staticmethod
     def creativity_emergence(
         nodes: int = 20,
-        mutation_intensity: float = 0.3,
+        mutation_intensity: float = GAMMA / (PI + 1),  # γ/(π+1) - controlled mutation
         steps: int = 15,
         random_seed: Optional[int] = None,
     ) -> NetworkResults:
@@ -187,8 +200,8 @@ class TNFRExperimentBuilder:
             network._config.random_seed = random_seed
 
         return (
-            network.add_nodes(nodes, vf_range=(0.2, 0.8))  # High diversity
-            .connect_nodes(0.2, "ring")  # Conservative connectivity
+            network.add_nodes(nodes, vf_range=(SDK_VF_RANGE_LOW_MIN, SDK_VF_RANGE_LOW_MAX))  # High diversity canonical
+            .connect_nodes(SDK_CONNECTIVITY_DEFAULT, "ring")  # Conservative canonical connectivity
             .apply_sequence("creative_mutation", repeat=steps)
             .measure()
         )
@@ -242,7 +255,7 @@ class TNFRExperimentBuilder:
                 network._config.random_seed = random_seed
 
             network.add_nodes(node_count)
-            network.connect_nodes(0.3, topology)
+            network.connect_nodes(SDK_COUPLING_STRENGTH_WEAK, topology)  # Canonical weak coupling
             network.apply_sequence("basic_activation", repeat=steps)
 
             results[topology] = network.measure()
@@ -252,8 +265,8 @@ class TNFRExperimentBuilder:
     @staticmethod
     def phase_transition_study(
         nodes: int = 50,
-        initial_coupling: float = 0.1,
-        final_coupling: float = 0.9,
+        initial_coupling: float = 0.09850273565687083,  # γ/(π+e) ≈ 0.099
+        final_coupling: float = 1 - INV_PHI,  # 1-1/φ - harmonic maximum canonical
         steps_per_level: int = 5,
         coupling_levels: int = 5,
         random_seed: Optional[int] = None,
@@ -355,7 +368,7 @@ class TNFRExperimentBuilder:
 
         # Phase 1: Establish stable network
         network.add_nodes(nodes)
-        network.connect_nodes(0.3, "small_world")
+        network.connect_nodes(SDK_COUPLING_STRENGTH_WEAK, "small_world")  # Canonical weak coupling
         network.apply_sequence("stabilization", repeat=initial_steps)
         results["initial"] = network.measure()
 

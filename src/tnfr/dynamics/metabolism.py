@@ -137,15 +137,22 @@ class StructuralMetabolism:
         if stress_level >= 0.5:
             # High stress: dissonance + deep reorganization
             # Apply operators individually to avoid grammar restrictions
+            # Import canonical constants
+            from ..constants.canonical import GAMMA_OVER_PI_PLUS_E
+            tau_rapid = GAMMA_OVER_PI_PLUS_E  # γ/(π+e) ≈ 0.099
+            
             Dissonance()(self.G, self.node)  # Introduce controlled instability
             SelfOrganization()(
-                self.G, self.node, tau=0.08
+                self.G, self.node, tau=tau_rapid
             )  # Deep reorganization (likely bifurcates)
             Coherence()(self.G, self.node)  # Stabilize new configuration
         else:
             # Moderate stress: gentle reorganization
             # Higher tau reduces bifurcation probability
-            SelfOrganization()(self.G, self.node, tau=0.15)
+            # Import canonical constants  
+            from ..constants.canonical import PI_MINUS_E_OVER_PI
+            tau_self_org = PI_MINUS_E_OVER_PI * 1.5  # ((π-e)/π) * 1.5 ≈ 0.203
+            SelfOrganization()(self.G, self.node, tau=tau_self_org)
 
     def cascading_reorganization(self, depth: int = 3) -> None:
         """Execute recursive T'HOL cascade.
@@ -163,7 +170,7 @@ class StructuralMetabolism:
 
         Notes
         -----
-        Each level uses tau = 0.1 * (0.8 ^ level), creating progressively
+        Each level uses tau = base_tau * (level_decay ^ level), creating progressively
         more sensitive bifurcation at deeper levels.
 
         **Warning**: Deep cascades (depth > 5) may create highly complex
@@ -173,7 +180,11 @@ class StructuralMetabolism:
 
         for level in range(depth):
             # Decreasing threshold: deeper levels bifurcate more easily
-            tau = 0.1 * (0.8**level)
+            # Import canonical constants
+            from ..constants.canonical import HALF_INV_PI, EXP_HALF_NEG
+            base_tau = HALF_INV_PI * 0.32  # (1/(2π)) * 0.32 ≈ 0.051 (tiempo circular natural)
+            level_decay = EXP_HALF_NEG    # e^(-1/2) ≈ 0.607 (decaimiento exponencial fraccionario)
+            tau = base_tau * (level_decay**level)
             SelfOrganization()(self.G, self.node, tau=tau)
 
 

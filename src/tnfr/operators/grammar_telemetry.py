@@ -11,6 +11,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from ..config.defaults_core import K_PHI_CURVATURE_THRESHOLD  # 0.9×π ≈ 2.827 canonical threshold
+
 def warn_phase_gradient_telemetry(
     G: Any,
     *,
@@ -25,7 +27,7 @@ def warn_phase_gradient_telemetry(
     Returns (safe, stats, message, flagged_nodes) where safe indicates
     mean and max are below threshold (stable regime). Always non-blocking.
 
-    Safety criterion: |∇φ| < 0.38 (stable operation)
+    Safety criterion: |∇φ| < 0.2904 (stable operation)
 
     References: AGENTS.md Structural Fields; fields.compute_phase_gradient
     """
@@ -69,7 +71,7 @@ def warn_phase_gradient_telemetry(
 def warn_phase_curvature_telemetry(
     G: Any,
     *,
-    abs_threshold: float = 3.0,
+    abs_threshold: float = K_PHI_CURVATURE_THRESHOLD,
     multiscale_check: bool = True,
     alpha_hint: float | None = 2.76,
     tolerance_factor: float = 2.0,
@@ -78,7 +80,7 @@ def warn_phase_curvature_telemetry(
     """Emit non-blocking telemetry warning for K_φ (phase curvature).
 
     Checks two safety aspects:
-    - Local hotspots: count of nodes with |K_φ| ≥ abs_threshold (default 3.0)
+    - Local hotspots: count of nodes with |K_φ| ≥ abs_threshold (default 0.9×π ≈ 2.827)
     - Multiscale safety: var(K_φ) ~ 1/r^α behavior via k_phi_multiscale_safety
 
     Returns (safe, stats, message, hotspots).

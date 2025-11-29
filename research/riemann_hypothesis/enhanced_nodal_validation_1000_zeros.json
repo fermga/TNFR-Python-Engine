@@ -1,0 +1,25 @@
+{
+  "configuration": {
+    "max_zeros": 1000,
+    "adaptive_threshold": true,
+    "convergence_acceleration": true,
+    "precision": 30
+  },
+  "accuracy_metrics": {
+    "accuracy": 0.0,
+    "mean_discriminant": 0.1619714731977506,
+    "detection_count": "0",
+    "total_tested": 1000
+  },
+  "nodal_dynamics": {
+    "mean_resonance_strength": 0.9998572150702855,
+    "mean_phase_coupling": 4.090647285979284e-21,
+    "mean_convergence_order": 1.902,
+    "mean_zero_probability": 4.033442773736447e-21
+  },
+  "performance": {
+    "total_time": 4.4864208698272705,
+    "throughput": 222.89482619103913,
+    "avg_time_per_zero": 0.004486420869827271
+  }
+}

@@ -235,7 +235,8 @@ def compute_k_top_spectral(
 
     if lambda_1 < 1e-6:
         # Graph is disconnected or trivial
-        return 2.0  # Assume slow relaxation
+        from ..constants.canonical import K_TOP_FALLBACK_CANONICAL
+        return K_TOP_FALLBACK_CANONICAL  # Canonical slow relaxation
 
     if method == "fiedler_inverse":
         # k_top ∝ 1/λ₁ (diffusion time scaling)
@@ -256,15 +257,17 @@ def compute_k_top_spectral(
             avg_path_length = nx.average_shortest_path_length(G)
             k_top = diameter / max(avg_path_length, 1.0)
         except nx.NetworkXError:
-            # Graph disconnected
-            k_top = 2.0
+            # Graph disconnected - use canonical fallback
+            from ..constants.canonical import K_TOP_FALLBACK_CANONICAL
+            k_top = K_TOP_FALLBACK_CANONICAL
     else:
         raise ValueError(
             f"Unknown method '{method}'. "
             f"Valid: ['fiedler_inverse', 'spectral_gap', 'diameter_scaled']"
         )
 
-    # Clamp to reasonable range
-    k_top = np.clip(k_top, 0.05, 5.0)
+    # Clamp to canonical range (TNFR tetrahedral bounds)
+    from ..constants.canonical import K_TOP_MIN_CANONICAL, K_TOP_MAX_CANONICAL
+    k_top = np.clip(k_top, K_TOP_MIN_CANONICAL, K_TOP_MAX_CANONICAL)
 
     return float(k_top)

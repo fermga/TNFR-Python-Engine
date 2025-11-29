@@ -1,0 +1,98 @@
+{
+  "timestamp": "2025-11-29",
+  "migration_context": "canonical_constants",
+  "classical_thresholds": {
+    "phi_s": 0.771,
+    "grad_phi": 0.2904,
+    "k_phi": 2.8274,
+    "xi_c": 3.141592653589793
+  },
+  "recommended_thresholds": {
+    "phi_s": 0.7452189284595783,
+    "grad_phi": 0.2591172171385457,
+    "k_phi": 3.2274501946934873,
+    "xi_c": 2.917524097022105
+  },
+  "analysis_results": {
+    "networks": {
+      "stable_small": {
+        "nodes": 19,
+        "edges": 126,
+        "fields": {
+          "phi_s_max": 0.0,
+          "grad_phi_mean": 0.0,
+          "k_phi_max": 0.0,
+          "xi_c_ratio": 0.0
+        },
+        "threshold_status": {
+          "phi_s_safe": true,
+          "grad_phi_safe": true,
+          "k_phi_normal": true,
+          "xi_c_adequate": false
+        }
+      },
+      "prime_medium": {
+        "nodes": 49,
+        "edges": 904,
+        "fields": {
+          "phi_s_max": 0.0,
+          "grad_phi_mean": 0.0,
+          "k_phi_max": 0.0,
+          "xi_c_ratio": 0.0
+        },
+        "threshold_status": {
+          "phi_s_safe": true,
+          "grad_phi_safe": true,
+          "k_phi_normal": true,
+          "xi_c_adequate": false
+        }
+      },
+      "large": {
+        "nodes": 99,
+        "edges": 3814,
+        "fields": {
+          "phi_s_max": 0.0,
+          "grad_phi_mean": 0.0,
+          "k_phi_max": 0.0,
+          "xi_c_ratio": 0.0
+        },
+        "threshold_status": {
+          "phi_s_safe": true,
+          "grad_phi_safe": true,
+          "k_phi_normal": true,
+          "xi_c_adequate": false
+        }
+      },
+      "stress": {
+        "nodes": 15,
+        "edges": 105,
+        "fields": {
+          "phi_s_max": 0.0,
+          "grad_phi_mean": 0.0,
+          "k_phi_max": 0.0,
+          "xi_c_ratio": 0.0
+        },
+        "threshold_status": {
+          "phi_s_safe": true,
+          "grad_phi_safe": true,
+          "k_phi_normal": true,
+          "xi_c_adequate": false
+        }
+      }
+    },
+    "threshold_analysis": {},
+    "recommendations": {}
+  },
+  "parameter_changes": {
+    "old_empirical": {
+      "alpha": 0.5,
+      "beta": 0.3,
+      "gamma": 0.2
+    },
+    "new_canonical": {
+      "alpha": 0.6180339887498948,
+      "beta": 0.1552152236595249,
+      "gamma": 0.18373345259830798
+    }
+  }
+}

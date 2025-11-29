@@ -45,8 +45,9 @@ class TNFRAdaptiveSystem:
         Graph containing the evolving node
     node : NodeId
         Identifier of the adaptive node
-    stress_normalization : float, default=0.2
-        ΔNFR value that corresponds to maximum stress (1.0)
+    stress_normalization : float, default=γ/(π+e)
+        ΔNFR value that corresponds to maximum stress (1.0) - tetrahedral threshold
+
 
     Attributes
     ----------
@@ -88,7 +89,10 @@ class TNFRAdaptiveSystem:
     This creates self-regulating, adaptive structural dynamics.
     """
 
-    STRESS_NORM = 0.2  # ΔNFR value corresponding to maximum stress
+    # ΔNFR normalization constant: γ/(π+e) ≈ 0.0993 (tetrahedral dynamic threshold)
+    # Represents canonical maximum stress before structural reorganization required
+    from ..config import defaults_core
+    STRESS_NORM = defaults_core.GAMMA / (defaults_core.PI + defaults_core.E)
 
     def __init__(
         self,
@@ -159,10 +163,10 @@ class TNFRAdaptiveSystem:
 
         Notes
         -----
-        Stress mapping:
+        Stress mapping (tetrahedral correspondence γ/(π+e) ≈ 0.0993):
 
         - ΔNFR = 0.0 → stress = 0.0 (no pressure)
-        - ΔNFR = 0.2 → stress = 1.0 (maximum pressure)
+        - ΔNFR = γ/(π+e) → stress = 1.0 (maximum pressure threshold)
         - Linear interpolation between
 
         This normalization allows consistent stress response across

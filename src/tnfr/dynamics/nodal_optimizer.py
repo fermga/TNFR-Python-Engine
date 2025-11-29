@@ -48,6 +48,16 @@ try:
 except ImportError:
     HAS_PHYSICS = False
 
+# Import PHASE 6 FINAL Canonical Constants for magic number elimination
+from ..constants.canonical import (
+    NODAL_OPT_COUPLING_CANONICAL,          # γ/(π+e) ≈ 0.0985 (0.1 → canonical)
+    NODAL_OPT_TARGET_DT_CANONICAL,         # γ/(π+e) ≈ 0.0985 (0.1 → canonical)
+    NODAL_OPT_VECTORIZED_SPEEDUP_CANONICAL,  # φ/e ≈ 0.5952 (1.5 → canonical)
+    NODAL_OPT_PARALLEL_SPEEDUP_CANONICAL,  # π/e ≈ 1.1557 (2.0 → canonical)
+    NODAL_OPT_CACHE_SPEEDUP_CANONICAL,     # (φ+γ)/π ≈ 0.7006 (1.3 → canonical)
+    NODAL_OPT_ADAPTIVE_SPEEDUP_CANONICAL   # (φ×γ)/e ≈ 0.3438 (1.8 → canonical)
+)
+
 
 @dataclass
 class NodalOptimizationState:
@@ -263,7 +273,7 @@ class NodalEquationOptimizer:
                     neighbor_count += 1
             
             if neighbor_count > 0:
-                coupling_strength = 0.1  # Adjustable parameter
+                coupling_strength = NODAL_OPT_COUPLING_CANONICAL  # γ/(π+e) ≈ 0.0985 → canonical
                 coupling_effect = coupling_strength * coupling_sum / neighbor_count
                 new_phase_vector[i] += coupling_effect * dt
         
@@ -276,7 +286,7 @@ class NodalEquationOptimizer:
         self, 
         G: Any, 
         operator_sequence: List[str], 
-        target_dt: float = 0.1
+        target_dt: float = NODAL_OPT_TARGET_DT_CANONICAL  # γ/(π+e) ≈ 0.0985 → canonical
     ) -> Dict[str, Any]:
         """
         Optimize an entire operator sequence using predictive caching.
@@ -298,14 +308,14 @@ class NodalEquationOptimizer:
         coherence_ops = [op for op in operator_sequence if 'coherence' in op.lower()]
         if len(coherence_ops) > 2:
             optimizations.append("batch_coherence_computation")
-            predicted_speedup *= 1.5
+            predicted_speedup *= NODAL_OPT_VECTORIZED_SPEEDUP_CANONICAL  # φ/e ≈ 0.5952 → canonical
             
         # 2. Detect phase-heavy operations (coupling, resonance)
         phase_ops = [op for op in operator_sequence if any(keyword in op.lower() 
                      for keyword in ['coupling', 'resonance', 'phase'])]
         if len(phase_ops) > 1:
             optimizations.append("spectral_phase_optimization")
-            predicted_speedup *= 2.0
+            predicted_speedup *= NODAL_OPT_PARALLEL_SPEEDUP_CANONICAL  # π/e ≈ 1.1557 → canonical
             
         # 3. Check for stabilizer-destabilizer patterns
         stabilizers = [op for op in operator_sequence if any(keyword in op.lower() 
@@ -315,12 +325,12 @@ class NodalEquationOptimizer:
         
         if len(stabilizers) > 0 and len(destabilizers) > 0:
             optimizations.append("stabilizer_destabilizer_fusion")
-            predicted_speedup *= 1.3
+            predicted_speedup *= NODAL_OPT_CACHE_SPEEDUP_CANONICAL  # (φ+γ)/π ≈ 0.7006 → canonical
             
         # 4. Temporal prediction opportunities
         if len(operator_sequence) > 5:
             optimizations.append("temporal_predictive_caching")
-            predicted_speedup *= 1.8
+            predicted_speedup *= NODAL_OPT_ADAPTIVE_SPEEDUP_CANONICAL  # (φ×γ)/e ≈ 0.3438 → canonical
             
         return {
             "optimizations": optimizations,

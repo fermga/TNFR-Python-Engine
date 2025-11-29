@@ -46,7 +46,7 @@ Definition (α = 2 by default):
 \[\Phi_s(i) = \sum_{j\neq i} \frac{\Delta NFR_j}{d(i,j)^\alpha}\]
 
 - Long-range, global potential derived from ΔNFR distribution
-- Safety criterion (telemetry-based): ΔΦ_s < 2.0 typical; escape threshold at ~2.0
+- Safety criterion (telemetry-based): ΔΦ_s < 2.0 typical; escape threshold at ~2.0 (classical: von Koch bounds)
 - Implementation: `compute_structural_potential(G, alpha=2.0)`
 
 ### 2.2 Phase Gradient |∇φ| (Local stress)
@@ -56,7 +56,7 @@ Wrapped neighbor differences (circular topology):
 \[|\nabla\varphi|(i) = \operatorname{mean}_{j\in N(i)} \big|\operatorname{wrap}(\varphi_j-\varphi_i)\big|\]
 
 - Early warning for fragmentation via local desynchronization
-- Safety criterion: |∇φ| < 0.38 for stable operation (empirical)
+- Safety criterion: |∇φ| < 0.2904 for stable operation (classical: harmonic analysis + Kuramoto)
 - Implementation: `compute_phase_gradient(G)`
 
 ### 2.3 Phase Curvature K_φ (Geometric confinement)
@@ -66,7 +66,7 @@ Deviation from circular neighbor mean:
 \[K_\varphi(i) = \varphi_i - \frac{1}{\deg(i)} \sum_{j\in N(i)} \varphi_j\]
 
 - Use circular mean (unit vectors) and wrap deltas to (−π, π]
-- Local threshold: |K_φ| ≥ 3.0 flags confinement/fault zones
+- Local threshold: |K_φ| ≥ 2.8274 flags confinement/fault zones (classical: 90% of theoretical maximum π)
 - Multiscale behavior: var(K_φ) ~ 1/r^α with α≈2.76 (asymptotic freedom)
 - Implementation:
   - `compute_phase_curvature(G)`
@@ -81,7 +81,7 @@ Local coherence: \(c_i = 1 / (1 + |\Delta NFR_i|)\) and spatial autocorrelation 
 \[C(r) \sim \exp(-r/\xi_C)\]
 
 - Critical point behavior: ξ_C diverges near I_c (phase transitions)
-- Safety cues: ξ_C > system diameter → system-wide reorganization imminent
+- Safety cues: ξ_C > system diameter (critical), ξ_C > π × mean_distance (watch, π≈3.1416), ξ_C < mean_distance (stable)
 - Implementation:
   - `estimate_coherence_length(G, coherence_key='coherence')`
   - `fit_correlation_length_exponent(Is, xi_vals, I_c, min_distance)`
@@ -124,7 +124,7 @@ Each function documents parameters and return types inline in `fields.py`.
 Canonical telemetry thresholds (empirical, cross-topology):
 - Φ_s: maintain ΔΦ_s < 2.0 (escape threshold)  — see AGENTS.md (U6)
 - |∇φ|: keep < 0.38 for stable operation; track spikes as early warning
-- K_φ: flag |K_φ| ≥ 3.0 as hotspots; assess multiscale decay var(K_φ) ~ 1/r^α
+- K_φ: flag |K_φ| ≥ 2.8274 as hotspots; assess multiscale decay var(K_φ) ~ 1/r^α
 - ξ_C: monitor divergence around I_c; large ξ_C indicates global reorganization
 
 Minimum tests (see tests/ and AGENTS.md):
@@ -212,7 +212,7 @@ Q2. Why are phase differences wrapped? Can I just subtract angles?
 Q3. How should I choose α in Φ_s?
 - α = 2.0 is canonical (inverse-square analog) and validated across topologies. Deviations are research-only; if you change α, document and justify the physics in your application.
 
-Q4. Are thresholds (ΔΦ_s < 2.0, |∇φ| < 0.38, |K_φ| ≥ 3.0) universal?
+Q4. Are thresholds (ΔΦ_s < 2.0, |∇φ| < 0.2904, |K_φ| ≥ 2.8274) universal?
 - They are telemetry-based and robust across the tested families (WS, scale-free, grid, trees) but still empirical. Treat them as safety guidance, not as hard correctness proofs. Monitor trends over time, not just single snapshots.
 
 Q5. What graphs are supported? Weighted? Directed?

@@ -1,0 +1,27 @@
+{
+  "total_accuracy": 1.52,
+  "mean_discriminant": 0.3119501492836386,
+  "detections": 76,
+  "total_tested": 5000,
+  "computation_time": 11.16923713684082,
+  "throughput": 447.65814699268105,
+  "height_analysis": {
+    "low_height": {
+      "count": 10,
+      "accuracy": 0.0
+    },
+    "mid_height": {
+      "count": 259,
+      "accuracy": 0.0
+    },
+    "high_height": {
+      "count": 4731,
+      "accuracy": 1.606425702811245
+    }
+  },
+  "threshold_stats": {
+    "mean_threshold": 0.09770443299326953,
+    "min_threshold": 0.01,
+    "max_threshold": 0.1
+  }
+}

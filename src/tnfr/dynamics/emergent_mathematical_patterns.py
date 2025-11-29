@@ -48,6 +48,31 @@ except ImportError:
     HAS_NETWORKX = False
     nx = None
 
+# Import PHASE 6 EXTENDED Canonical Constants for magic number elimination
+from ..constants.canonical import (
+    OPT_ORCH_ARITHMETIC_BOOST_CANONICAL  # γ/(2π+e) ≈ 0.0625 (2.5 → canonical)
+)
+
+# Import canonical constants for Phase 6 magic number elimination
+from ..constants.canonical import (
+    PATTERNS_HIGH_CONFIDENCE_CANONICAL,
+    PATTERNS_COMPRESSION_RATIO_CANONICAL,
+    PATTERNS_RSQUARED_THRESHOLD_CANONICAL,
+    PATTERNS_SLOPE_THRESHOLD_CANONICAL,
+    PATTERNS_HORIZON_LONG_CANONICAL,
+    PATTERNS_COMPRESSION_OSCILLATORY_CANONICAL,
+    PATTERNS_ENTROPY_THRESHOLD_CANONICAL,
+    PATTERNS_DIVERGENCE_THRESHOLD_CANONICAL,
+    PATTERNS_HORIZON_MEDIUM_CANONICAL,
+    PATTERNS_RSQUARED_HIGH_CANONICAL,
+    PATTERNS_SLOPE_MINIMAL_CANONICAL,
+    PATTERNS_HORIZON_SHORT_CANONICAL,
+    PATTERNS_COMPRESSION_SIGNIFICANT_CANONICAL,
+    PATTERNS_HORIZON_PREDICTIVE_CANONICAL,
+    PATTERNS_MATH_IMPORTANCE_CANONICAL,
+    PATTERNS_CONFIDENCE_BROKEN_CANONICAL,
+)
+
 # Import TNFR components
 try:
     from ..mathematics.spectral import get_laplacian_spectrum, gft, igft
@@ -66,6 +91,21 @@ try:
     HAS_PHYSICS_FIELDS = True
 except ImportError:
     HAS_PHYSICS_FIELDS = False
+
+
+def _extract_scalar_epi(val: Any) -> float:
+    """Extract scalar magnitude from potentially complex/dict EPI value."""
+    if isinstance(val, (int, float)):
+        return float(val)
+    if isinstance(val, complex):
+        return float(np.abs(val))
+    if isinstance(val, dict):
+        if 'continuous' in val:
+            c = val['continuous']
+            if isinstance(c, (tuple, list)) and len(c) > 0:
+                v = c[0]
+                return float(np.abs(v)) if isinstance(v, complex) else float(v)
+    return 0.0
 
 
 class EmergentPatternType(Enum):
@@ -167,7 +207,7 @@ class TNFREmergentPatternEngine:
         for i, j, freq1, freq2, n, m in resonant_pairs:
             pattern = EmergentPattern(
                 pattern_type=EmergentPatternType.EIGENMODE_RESONANCE,
-                discovery_confidence=0.85,  # High confidence for harmonic ratios
+                discovery_confidence=PATTERNS_HIGH_CONFIDENCE_CANONICAL,  # High confidence for harmonic ratios
                 mathematical_signature={
                     "mode_indices": (i, j),
                     "frequencies": (freq1, freq2),
@@ -178,7 +218,7 @@ class TNFREmergentPatternEngine:
                 temporal_scale=2*np.pi/min(freq1, freq2) if min(freq1, freq2) > 0 else float('inf'),
                 spatial_scale=len(G.nodes()),
                 prediction_horizon=time_window,
-                compression_ratio=2.0,  # Can compress oscillatory patterns
+                compression_ratio=PATTERNS_COMPRESSION_RATIO_CANONICAL,  # Can compress oscillatory patterns
                 physical_interpretation=f"Harmonic coupling between modes {i} and {j} with ratio {n}:{m}",
                 applications=["resonance_prediction", "mode_coupling", "harmonic_analysis"]
             )
@@ -203,7 +243,7 @@ class TNFREmergentPatternEngine:
             return patterns
             
         # Get current EPI distribution
-        epi_signal = np.array([G.nodes[node].get('EPI', 0.0) for node in G.nodes()])
+        epi_signal = np.array([_extract_scalar_epi(G.nodes[node].get('EPI', 0.0)) for node in G.nodes()])
         
         # Get spectral decomposition  
         eigenvalues, eigenvectors = get_laplacian_spectrum(G)
@@ -226,7 +266,7 @@ class TNFREmergentPatternEngine:
                 r_squared = np.corrcoef(log_freq, log_energy)[0,1]**2
                 
                 # Strong power law indicates cascade
-                if r_squared > 0.7 and abs(slope) > 0.5:
+                if r_squared > PATTERNS_RSQUARED_THRESHOLD_CANONICAL and abs(slope) > PATTERNS_SLOPE_THRESHOLD_CANONICAL:
                     pattern = EmergentPattern(
                         pattern_type=EmergentPatternType.SPECTRAL_CASCADE,
                         discovery_confidence=r_squared,
@@ -240,8 +280,8 @@ class TNFREmergentPatternEngine:
                         },
                         temporal_scale=1.0/np.max(frequencies[valid_indices]),
                         spatial_scale=len(G.nodes()),
-                        prediction_horizon=5.0,
-                        compression_ratio=1.5,
+                        prediction_horizon=PATTERNS_HORIZON_LONG_CANONICAL,
+                        compression_ratio=PATTERNS_COMPRESSION_OSCILLATORY_CANONICAL,
                         physical_interpretation=f"Energy cascade with exponent {slope:.2f}",
                         applications=["energy_prediction", "cascade_modeling", "multi_scale_analysis"]
                     )
@@ -262,7 +302,7 @@ class TNFREmergentPatternEngine:
         patterns = []
         
         # Extract current state entropy
-        epi_values = [G.nodes[node].get('EPI', 0.0) for node in G.nodes()]
+        epi_values = [_extract_scalar_epi(G.nodes[node].get('EPI', 0.0)) for node in G.nodes()]
         epi_array = np.array(epi_values)
         
         # Normalize to probability distribution
@@ -281,13 +321,13 @@ class TNFREmergentPatternEngine:
                 entropy_gradient = 0.0
                 for edge in G.edges():
                     u, v = edge
-                    epi_u = G.nodes[u].get('EPI', 0.0)
-                    epi_v = G.nodes[v].get('EPI', 0.0)
+                    epi_u = _extract_scalar_epi(G.nodes[u].get('EPI', 0.0))
+                    epi_v = _extract_scalar_epi(G.nodes[v].get('EPI', 0.0))
                     entropy_gradient += abs(epi_u - epi_v)
                 entropy_gradient /= len(G.edges()) if len(G.edges()) > 0 else 1
                 
                 # Strong entropy flow indicates information-theoretic structure
-                if entropy > 1.0 and kl_divergence > 0.5:
+                if entropy > PATTERNS_ENTROPY_THRESHOLD_CANONICAL and kl_divergence > PATTERNS_DIVERGENCE_THRESHOLD_CANONICAL:
                     pattern = EmergentPattern(
                         pattern_type=EmergentPatternType.ENTROPY_FLOW,
                         discovery_confidence=min(entropy/np.log(len(G.nodes())), 1.0),
@@ -301,7 +341,7 @@ class TNFREmergentPatternEngine:
                         },
                         temporal_scale=1.0,
                         spatial_scale=int(np.sqrt(len(G.nodes()))),
-                        prediction_horizon=3.0,
+                        prediction_horizon=PATTERNS_HORIZON_MEDIUM_CANONICAL,
                         compression_ratio=entropy / np.log(len(G.nodes())),
                         physical_interpretation="Information flow with entropy production",
                         applications=["information_theory", "compression", "prediction"]
@@ -434,7 +474,7 @@ class TNFREmergentPatternEngine:
             r_squared = np.corrcoef(log_scales, log_boxes)[0,1]**2
             
             # Good fractal scaling
-            if r_squared > 0.8 and abs(slope) > 0.1:
+            if r_squared > PATTERNS_RSQUARED_HIGH_CANONICAL and abs(slope) > PATTERNS_SLOPE_MINIMAL_CANONICAL:
                 fractal_dim = -slope  # Negative because N(r) ~ r^(-D)
                 
                 pattern = EmergentPattern(
@@ -450,7 +490,7 @@ class TNFREmergentPatternEngine:
                     },
                     temporal_scale=1.0,
                     spatial_scale=int(np.mean(scales)),
-                    prediction_horizon=2.0,
+                    prediction_horizon=PATTERNS_HORIZON_SHORT_CANONICAL,
                     compression_ratio=len(G.nodes()) / len(box_counts),
                     physical_interpretation=f"Fractal scaling with dimension {fractal_dim:.2f}",
                     applications=["fractal_analysis", "multi_scale_modeling", "dimension_reduction"]
@@ -511,9 +551,9 @@ class TNFREmergentPatternEngine:
         # Generate emergent optimization strategies
         optimization_strategies = []
         for pattern in all_patterns:
-            if pattern.compression_ratio > 1.5:
+            if pattern.compression_ratio > PATTERNS_COMPRESSION_SIGNIFICANT_CANONICAL:
                 optimization_strategies.append(f"compress_using_{pattern.pattern_type.value}")
-            if pattern.prediction_horizon > 2.0:
+            if pattern.prediction_horizon > PATTERNS_HORIZON_PREDICTIVE_CANONICAL:
                 optimization_strategies.append(f"predict_using_{pattern.pattern_type.value}")
                 
         # Compute mathematical invariants
@@ -569,7 +609,7 @@ def create_emergent_pattern_engine(**kwargs) -> TNFREmergentPatternEngine:
 
 @cache_unified_computation(
     CacheEntryType.NODAL_STATE,
-    mathematical_importance=2.5
+    mathematical_importance=OPT_ORCH_ARITHMETIC_BOOST_CANONICAL  # γ/(2π+e) ≈ 0.0625 → canonical
 ) if HAS_UNIFIED_CACHE else lambda **kwargs: lambda f: f
 def discover_mathematical_patterns(G: Any, **kwargs) -> PatternDiscoveryResult:
     """Convenience function for comprehensive pattern discovery."""
@@ -590,7 +630,7 @@ def analyze_emergent_symmetries(G: Any) -> Dict[str, Any]:
     return {
         "symmetry_count": len(symmetry_patterns),
         "symmetry_patterns": symmetry_patterns,
-        "broken_symmetries": [p for p in symmetry_patterns if p.discovery_confidence < 0.9],
+        "broken_symmetries": [p for p in symmetry_patterns if p.discovery_confidence < PATTERNS_CONFIDENCE_BROKEN_CANONICAL],
         "conservation_laws": [p for p in symmetry_patterns 
                             if p.pattern_type == EmergentPatternType.TOPOLOGICAL_INVARIANT]
     }

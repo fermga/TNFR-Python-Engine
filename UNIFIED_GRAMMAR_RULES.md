@@ -409,14 +409,18 @@ Conclusion: U6 emerges INEVITABLY from:
 
 **When:** All sequences (telemetry-based safety criterion)
 - **Compute:** Φ_s before and after sequence application
-- **Verify:** Δ Φ_s < 2.0 (escape threshold)
-- **Typical:** Valid sequences show Δ Φ_s ≈ 0.6
+- **Verify:** Δ Φ_s < φ ≈ 1.618 (golden escape threshold)
+- **Typical:** Valid sequences show Δ Φ_s ≈ 0.6 (37% of threshold)
 
-**Why Δ Φ_s < 2.0?**
-From empirical calibration:
-- **Below 2.0:** System remains in stable regime, C(t) bounded
-- **Above 2.0:** Escape from potential well → fragmentation risk
-- **Physical analog:** Escape velocity from gravitational well
+**Why Δ Φ_s < φ ≈ 1.618?**
+
+From Universal Tetrahedral Correspondence:
+
+- **Theory:** φ ↔ Φ_s (golden ratio corresponds to structural potential field)
+- **Derivation:** Harmonic confinement - structural potential cannot exceed golden ratio
+- **Below φ:** System remains in harmonic regime, structural confinement
+- **Above φ:** Harmonic breakdown → fragmentation (coherent → incoherent)
+- **Physical analog:** Golden ratio stability in natural systems
 
 **Physical Interpretation:**
 Φ_s field creates passive equilibrium landscape. Nodes exist at potential minima. Sequences that respect grammar (U1-U5) naturally maintain small Δ Φ_s (~0.6). Grammar violations create large Δ Φ_s (~3.9), pushing system toward fragmentation threshold.
@@ -1005,7 +1009,7 @@ Conclusion: U6 emerges from:
   3. Empirical validation: 2,400+ experiments, 5 topologies
   4. Universal correlation: R² = 0.68, CV = 0.1%
   5. Grammar as confinement: Passive protection mechanism
-  6. Threshold physics: Escape boundary at Δ Φ_s = 2.0
+  6. Threshold physics: Escape boundary at Δ Φ_s < φ ≈ 1.618 (golden ratio)
 ```
 
 **Why This Is Canonical:**
@@ -1346,6 +1350,7 @@ from tnfr.physics.canonical import (
     compute_structural_potential,
     validate_structural_potential_confinement
 )
+from tnfr.config.defaults_core import STRUCTURAL_ESCAPE_THRESHOLD
 
 # Compute structural potential before sequence
 phi_before = compute_structural_potential(G, alpha=2.0)
@@ -1358,7 +1363,7 @@ phi_after = compute_structural_potential(G, alpha=2.0)
 
 # Validate confinement (telemetry check)
 valid, drift, msg = validate_structural_potential_confinement(
-    G, phi_before, phi_after, threshold=2.0, strict=False
+    G, phi_before, phi_after, threshold=STRUCTURAL_ESCAPE_THRESHOLD, strict=False
 )
 
 if not valid:
@@ -1699,3 +1704,41 @@ for i, node in enumerate(G.nodes()):
 **Date:** 2025-11-08 (U1-U4), 2025-11-10 (U5), 2025-11-15 (U6 promoted to CANONICAL, technical discoveries documented)  
 **Status:** ✅ CANONICAL - U1-U6 complete with empirical validation (2,400+ experiments for U6)  
 **Implementation:** All six rules implemented in `src/tnfr/operators/grammar.py` and validated in test suite
+
+---
+
+## Implementation Architecture
+
+The unified grammar is implemented in a modular but consolidated structure within `src/tnfr/operators/`.
+
+### Core Components
+
+*   **`src/tnfr/operators/grammar.py`**: The single source of truth for validation logic. It implements the `GrammarValidator` class which enforces U1-U6.
+*   **`src/tnfr/operators/definitions.py`**: Contains the implementation of the 13 canonical operators. Each operator class is tagged with its grammar role (Generator, Stabilizer, etc.).
+
+### Operator Categories
+
+The grammar relies on strict categorization of operators:
+
+*   **Generators (U1a)**: `{AL, NAV, REMESH}` - Can initiate structure from vacuum.
+*   **Closures (U1b)**: `{SHA, NAV, REMESH, OZ}` - Valid endpoints for sequences.
+*   **Stabilizers (U2)**: `{IL, THOL}` - Provide negative feedback to bound energy.
+*   **Destabilizers (U2)**: `{OZ, ZHIR, VAL}` - Introduce positive feedback or expansion.
+*   **Coupling/Resonance (U3)**: `{UM, RA}` - Require phase synchronization.
+*   **Bifurcation Triggers (U4a)**: `{OZ, ZHIR}` - Push system towards instability.
+*   **Transformers (U4b)**: `{ZHIR, THOL}` - Require context (recent destabilization).
+
+### Validation Flow
+
+1.  **Sequence Check**: The `validate_grammar()` function accepts a sequence of operators.
+2.  **Context Initialization**: A `GrammarContext` tracks state (EPI, cumulative ΔNFR, phase).
+3.  **Rule Application**:
+    *   **U1a**: Checks the first operator against `GENERATORS` if initial EPI is zero.
+    *   **U2/U4**: Iterates through the sequence, maintaining a window of recent operators to ensure stabilizers follow destabilizers.
+    *   **U3**: Checks for phase compatibility (simulated or actual).
+    *   **U5**: Checks for scale stabilizers if recursion depth > 1.
+    *   **U6**: (Runtime only) Monitors structural potential telemetry.
+4.  **U1b**: Checks the last operator against `CLOSURES`.
+
+This architecture ensures that every sequence executed by the engine is physically valid before it runs.
+

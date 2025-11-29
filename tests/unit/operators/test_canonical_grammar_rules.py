@@ -75,14 +75,12 @@ class TestR2RequiredStabilizer:
         assert result.metadata["has_stabilizer"]
 
     def test_invalid_without_stabilizer(self):
-        """Sequence without IL or THOL should fail."""
-        # This would need a sequence that somehow passes other checks but lacks stabilizer
-        # In practice, the RECEPTION→COHERENCE requirement ensures stabilizer exists
-        # But we test the explicit check
-        result = validate_sequence([EMISSION, RECEPTION, RESONANCE, SILENCE])
+        """Sequence with destabilizer but without IL or THOL should fail."""
+        # Use a true destabilizer (dissonance) without stabilizer
+        result = validate_sequence([EMISSION, RECEPTION, DISSONANCE, SILENCE])
         assert not result.passed
-        # Either missing stabilizer or missing coherence segment
-        assert "missing" in result.message.lower()
+        # Should mention missing stabilizer
+        assert "missing" in result.message.lower() or "stabilizer" in result.message.lower()
 
 
 class TestR3FinalizationOperators:

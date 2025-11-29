@@ -30,6 +30,11 @@ try:
     )
     from ..operators.metrics import compute_coherence, compute_sense_index
     from ..constants.aliases import ALIAS_THETA, ALIAS_DNFR
+    from ..config.defaults_core import (
+        K_PHI_CURVATURE_THRESHOLD,
+        PHASE_GRADIENT_THRESHOLD
+    )
+    from .constants import PHI_S_CLASSICAL_THRESHOLD
     _FIELDS_AVAILABLE = True
 except ImportError:
     _FIELDS_AVAILABLE = False
@@ -128,9 +133,9 @@ class TelemetryEmitter:
 
         # Default field thresholds from canonical research
         default_thresholds = {
-            'phase_grad': 0.38,  # |∇φ| stability threshold
-            'phase_curv_abs': 3.0,  # |K_φ| confinement threshold
-            'phi_s_drift': 2.0,  # Φ_s escape threshold (U6)
+            'phase_grad': PHASE_GRADIENT_THRESHOLD,  # γ/π ≈ 0.1837 (canonical)
+            'phase_curv_abs': K_PHI_CURVATURE_THRESHOLD,  # 0.9×π ≈ 2.8274 (canonical)
+            'phi_s_drift': PHI_S_CLASSICAL_THRESHOLD,  # φ/(φ+γ) ≈ 0.737 (canonical)
         }
         if field_thresholds:
             default_thresholds.update(field_thresholds)
@@ -356,13 +361,13 @@ class TelemetryEmitter:
 
         # Phase curvature threshold
         if (event.phase_curv_abs_max is not None and
-            event.phase_curv_abs_max >= self.thresholds.get('phase_curv_abs', 3.0)):
+            event.phase_curv_abs_max >= self.thresholds.get('phase_curv_abs', K_PHI_CURVATURE_THRESHOLD)):
             warnings.append(f"High phase curvature: {event.phase_curv_abs_max:.3f}")
 
-        # Structural potential drift (U6)
+        # Structural potential drift (U6) - classical threshold
         if (event.phi_s_drift is not None and
-            event.phi_s_drift >= self.thresholds.get('phi_s_drift', 2.0)):
-            warnings.append(f"Φ_s drift exceeds U6 threshold: {event.phi_s_drift:.3f}")
+            event.phi_s_drift >= self.thresholds.get('phi_s_drift', PHI_S_CLASSICAL_THRESHOLD)):
+            warnings.append(f"Φ_s drift exceeds U6 classical threshold: {event.phi_s_drift:.3f}")
 
         if warnings:
             if event.metadata is None:

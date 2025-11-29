@@ -50,6 +50,11 @@ try:
 except ImportError:
     HAS_ALL_CACHES = False
 
+# Import PHASE 6 FINAL Canonical Constants for magic number elimination
+from ..constants.canonical import (
+    UNIFIED_CACHE_MIN_COHERENCE_CANONICAL  # φ/(φ+1) ≈ 0.6180 (0.5 → canonical)
+)
+
 # Import mathematical engines
 try:
     from .spectral_structural_fusion import TNFRSpectralStructuralFusionEngine
@@ -387,7 +392,7 @@ class TNFRUnifiedMathematicalCacheOrchestrator:
             data=result_data,
             computation_signature=signature,
             mathematical_dependencies=dependencies,
-            coherence_requirements={"min_coherence": 0.5}  # Default requirement
+            coherence_requirements={"min_coherence": UNIFIED_CACHE_MIN_COHERENCE_CANONICAL}  # φ/(φ+1) ≈ 0.6180 → canonical (Default requirement)
         )
         
         self._cache_signatures[signature] = entry

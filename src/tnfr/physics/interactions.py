@@ -22,8 +22,8 @@ Operator–Grammar Mapping (informative):
 
 Telemetry (read-only):
 - |∇φ|: phase gradient; early stress indicator (threshold ≈ 0.38)
-- K_φ: phase curvature; confinement hotspots (|K_φ| ≥ 3.0)
-- Φ_s: structural potential; mean absolute drift as passive safety (ΔΦ_s < 2.0)
+- K_φ: phase curvature (part of unified Ψ); confinement hotspots (|K_φ| ≥ 2.8274)
+- Φ_s: structural potential; mean absolute drift as passive safety (ΔΦ_s < φ ≈ 1.618)
 
 Contracts (summary):
 - EM-like: [UM → RA → IL]. Preserve identity; phase-verified coupling (U3).
@@ -60,6 +60,12 @@ try:
 except Exception:  # pragma: no cover
     nx = None  # type: ignore
 
+from ..constants.canonical import (
+    PHI,  # Golden ratio for escape threshold
+    PHYSICS_GRAD_THRESHOLD_CANONICAL,
+    PHYSICS_CURVATURE_HOTSPOT_CANONICAL, 
+    PHYSICS_HOTSPOT_FRACTION_CANONICAL,
+)
 from ..operators.definitions import (
     Coupling,
     Resonance,
@@ -141,7 +147,7 @@ def em_like(
     nodes: Iterable[Any],
     *,
     compute_phi_s: bool = False,
-    grad_threshold: float = 0.38,
+    grad_threshold: float = PHYSICS_GRAD_THRESHOLD_CANONICAL,
 ) -> InteractionResult:
     """EM-like sequence: [Coupling → Resonance → Coherence].
 
@@ -165,8 +171,8 @@ def em_like(
         Nodes to which the operator sequence will be applied.
     compute_phi_s : bool, default False
         If True, compute Φ_s before/after and report mean drift.
-    grad_threshold : float, default 0.38
-        Threshold for mean |∇φ| warning.
+    grad_threshold : float, default PHYSICS_GRAD_THRESHOLD_CANONICAL
+        Threshold for mean |∇φ| warning (π/(4√2) ≈ 0.2904).
 
     Returns
     -------
@@ -196,11 +202,11 @@ def em_like(
                 f"{grad_mean_a:.3f} ≥ {grad_threshold}"
             )
         )
-    if aft.get("phi_drift") is not None and float(aft["phi_drift"]) >= 2.0:
+    if aft.get("phi_drift") is not None and float(aft["phi_drift"]) >= PHI:
         warnings.append(
             (
                 "structural potential drift exceeded threshold: "
-                f"{float(aft['phi_drift']):.3f} ≥ 2.0"
+                f"{float(aft['phi_drift']):.3f} ≥ {PHI:.3f}"
             )
         )
 
@@ -224,7 +230,7 @@ def weak_like(
     *,
     compute_phi_s: bool = False,
     ensure_stable_base: bool = True,
-    grad_threshold: float = 0.38,
+    grad_threshold: float = PHYSICS_GRAD_THRESHOLD_CANONICAL,
 ) -> InteractionResult:
     """Weak-like sequence: [IL (optional) → Dissonance → Mutation → Coherence].
 
@@ -244,8 +250,8 @@ def weak_like(
     ----------
     ensure_stable_base : bool, default True
         Insert IL before OZ→ZHIR to satisfy U4b stable base requirement.
-    grad_threshold : float, default 0.38
-        Threshold for mean |∇φ| warning.
+    grad_threshold : float, default PHYSICS_GRAD_THRESHOLD_CANONICAL
+        Threshold for mean |∇φ| warning (π/(4√2) ≈ 0.2904).
 
     Returns
     -------
@@ -278,11 +284,11 @@ def weak_like(
                 f"{grad_mean_a:.3f} ≥ {grad_threshold}"
             )
         )
-    if aft.get("phi_drift") is not None and float(aft["phi_drift"]) >= 2.0:
+    if aft.get("phi_drift") is not None and float(aft["phi_drift"]) >= PHI:
         warnings.append(
             (
                 "structural potential drift exceeded threshold: "
-                f"{float(aft['phi_drift']):.3f} ≥ 2.0"
+                f"{float(aft['phi_drift']):.3f} ≥ {PHI:.3f}"
             )
         )
 
@@ -305,7 +311,7 @@ def strong_like(
     nodes: Iterable[Any],
     *,
     compute_phi_s: bool = False,
-    curvature_hotspot_threshold: float = 3.0,
+    curvature_hotspot_threshold: float = PHYSICS_CURVATURE_HOTSPOT_CANONICAL,
 ) -> InteractionResult:
     """Strong-like sequence: [Coupling → Coherence → SelfOrganization].
 
@@ -323,8 +329,8 @@ def strong_like(
 
     Parameters
     ----------
-    curvature_hotspot_threshold : float, default 3.0
-        Canonical |K_φ| threshold for hotspot flagging.
+    curvature_hotspot_threshold : float, default PHYSICS_CURVATURE_HOTSPOT_CANONICAL
+        Canonical |K_φ| threshold for hotspot flagging (0.9×π ≈ 2.8274).
 
     Returns
     -------
@@ -348,18 +354,18 @@ def strong_like(
         )
 
     warnings: List[str] = []
-    if hotspot_frac > 0.1:  # heuristic
+    if hotspot_frac > PHYSICS_HOTSPOT_FRACTION_CANONICAL:  # heuristic
         warnings.append(
             (
                 "curvature hotspots after Strong-like: "
-                f"{hotspot_frac*100:.1f}% ≥ 10.0%"
+                f"{hotspot_frac * 100:.1f}% ≥ {PHYSICS_HOTSPOT_FRACTION_CANONICAL * 100:.1f}%"
             )
         )
-    if aft.get("phi_drift") is not None and float(aft["phi_drift"]) >= 2.0:
+    if aft.get("phi_drift") is not None and float(aft["phi_drift"]) >= PHI:
         warnings.append(
             (
                 "structural potential drift exceeded threshold: "
-                f"{float(aft['phi_drift']):.3f} ≥ 2.0"
+                f"{float(aft['phi_drift']):.3f} ≥ {PHI:.3f}"
             )
         )
 
@@ -420,11 +426,11 @@ def gravity_like(
 
     aft = _telemetry_after(G, snap, compute_phi_s=compute_phi_s)
     warnings: List[str] = []
-    if aft.get("phi_drift") is not None and float(aft["phi_drift"]) >= 2.0:
+    if aft.get("phi_drift") is not None and float(aft["phi_drift"]) >= PHI:
         warnings.append(
             (
                 "structural potential drift exceeded threshold: "
-                f"{float(aft['phi_drift']):.3f} ≥ 2.0"
+                f"{float(aft['phi_drift']):.3f} ≥ {PHI:.3f}"
             )
         )
 

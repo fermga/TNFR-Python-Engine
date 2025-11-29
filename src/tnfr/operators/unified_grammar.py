@@ -1,5 +1,8 @@
 """Unified TNFR Grammar - Facade to GrammarValidator.
 
+DEPRECATED: This module is a facade for backward compatibility.
+Please import directly from `tnfr.operators.grammar`.
+
 This module provides a clean facade to the canonical grammar validation
 implemented in grammar.py. It exports the unified grammar constraints (U1-U5)
 and the validator for use in tests and applications.

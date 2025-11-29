@@ -50,6 +50,15 @@ try:
 except ImportError:
     HAS_SPECTRAL = False
 
+# PHASE 6 EXTENDED: Canonical constants for emergent centralization
+from ..constants.canonical import (
+    EMERGENT_COUPLING_STRENGTH_CANONICAL,  # φ/(π+γ) ≈ 0.7320 (0.7 → canonical)
+    EMERGENT_FREQ_BALANCE_CANONICAL,       # e/(π+e) ≈ 0.4638 (0.5 → canonical) 
+    NODAL_OPT_COUPLING_CANONICAL,          # γ/(π+e) ≈ 0.0985 (0.1 → canonical)
+    EMERGENT_EFFICIENCY_GAIN_CANONICAL,    # γ/π ≈ 0.1837 (0.2 → canonical)
+    EMERGENT_COORDINATION_BOOST_CANONICAL, # 2·φ/π ≈ 1.0309 (2.0 → canonical)
+)
+
 try:
     from .spectral_structural_fusion import TNFRSpectralStructuralFusionEngine
     HAS_SPECTRAL_STRUCTURAL_FUSION = True
@@ -119,10 +128,10 @@ class TNFREmergentCentralizationEngine:
         self.current_coordination_nodes = {}
         self.performance_history = []
         
-        # Mathematical thresholds
-        self.centrality_threshold = 0.7
-        self.coordination_threshold = 0.5
-        self.stability_threshold = 0.8
+        # Mathematical thresholds (canonical derivations from φ, γ, π, e)
+        self.centrality_threshold = 0.7370610757229365  # φ/(φ+γ) ≈ 0.737
+        self.coordination_threshold = 0.5550110513847934  # 1/(φ + γ/π) ≈ 0.555
+        self.stability_threshold = 0.5903096618115984  # (φ+γ)/(π+γ) ≈ 0.590
         
         # Performance tracking
         self.centralization_attempts = 0
@@ -203,7 +212,7 @@ class TNFREmergentCentralizationEngine:
                         
                         # Find connected cluster
                         neighbors = list(G.neighbors(node))
-                        cluster = [node] + neighbors[:int(degree * 0.7)]  # Include most connected neighbors
+                        cluster = [node] + neighbors[:int(degree * EMERGENT_COUPLING_STRENGTH_CANONICAL)]  # Include most connected neighbors
                         
                         coord_node = CentralizationNode(
                             node_id=node,
@@ -242,7 +251,7 @@ class TNFREmergentCentralizationEngine:
                 epi_fraction = epi / total_epi
                 
                 # High EPI concentration indicates coordination potential
-                if epi_fraction > 0.1:  # Significant EPI concentration
+                if epi_fraction > 0.09850273565687083:  # γ/(π+e) ≈ 0.099 - Significant EPI concentration
                     # Analyze information flow capacity
                     neighbors = list(G.neighbors(node))
                     neighbor_epi = [abs(epi_values.get(n, 0.0)) for n in neighbors]
@@ -268,7 +277,7 @@ class TNFREmergentCentralizationEngine:
                         similar_nodes = [
                             n
                             for n in neighbors
-                            if abs(epi_values.get(n, 0.0) - epi) < info_gradient * 0.5
+                            if abs(epi_values.get(n, 0.0) - epi) < info_gradient * EMERGENT_FREQ_BALANCE_CANONICAL
                         ]
                         cluster = [node] + similar_nodes
                         
@@ -308,7 +317,7 @@ class TNFREmergentCentralizationEngine:
             vf = vf_values[node]
             relative_frequency = vf / max_vf if max_vf > 0 else 0
             
-            if relative_frequency > 0.8:  # Top 20% frequency nodes
+            if relative_frequency > 0.5903096618115984:  # (φ+γ)/(π+γ) ≈ 0.590 - Top frequency nodes
                 # Calculate coordination capacity based on frequency advantage
                 neighbors = list(G.neighbors(node))
                 neighbor_vf = [vf_values.get(n, 1.0) for n in neighbors]
@@ -330,7 +339,7 @@ class TNFREmergentCentralizationEngine:
                     }
                     
                     # Cluster includes nodes that can synchronize with this frequency
-                    sync_threshold = vf * 0.7  # Within 30% of coordinator frequency
+                    sync_threshold = vf * EMERGENT_COUPLING_STRENGTH_CANONICAL  # Within 30% of coordinator frequency
                     sync_neighbors = [
                         n for n in neighbors if vf_values.get(n, 1.0) >= sync_threshold
                     ]
@@ -382,7 +391,7 @@ class TNFREmergentCentralizationEngine:
                 vf = G.nodes[node].get('vf', 1.0)
                 coordination_capacity = phase_coherence * len(neighbors) * vf
                 
-                if phase_coherence > 0.7 and coordination_capacity > self.coordination_threshold:
+                if phase_coherence > 0.7370610757229365 and coordination_capacity > self.coordination_threshold:  # φ/(φ+γ) ≈ 0.737
                     signature = {
                         "phase_coherence": phase_coherence,
                         "average_phase_difference": avg_phase_diff,
@@ -440,7 +449,7 @@ class TNFREmergentCentralizationEngine:
                 avg_centrality = np.mean([node.centrality_score for node in coordination_nodes])
                 
                 # Efficiency gain estimate (more coordination nodes = better load distribution)
-                efficiency_gain = min(len(coordination_nodes) / len(G.nodes()) * 2.0, 1.0)
+                efficiency_gain = min(len(coordination_nodes) / len(G.nodes()) * EMERGENT_COORDINATION_BOOST_CANONICAL, 1.0)
                 
                 # Stability measure (higher centrality = more stable)
                 stability_measure = avg_centrality
@@ -467,7 +476,7 @@ class TNFREmergentCentralizationEngine:
                     coordination_nodes=coordination_nodes,
                     efficiency_gain=efficiency_gain,
                     stability_measure=stability_measure,
-                    adaptation_rate=0.1,  # Default adaptation rate
+                    adaptation_rate=NODAL_OPT_COUPLING_CANONICAL,  # Default adaptation rate
                     mathematical_basis=mathematical_basis,
                     load_distribution=load_distribution
                 )
@@ -542,7 +551,7 @@ class TNFREmergentCentralizationEngine:
                 node.node_id: node for node in best_pattern.coordination_nodes
             }
             self.centralization_attempts += 1
-            if best_pattern.efficiency_gain > 0.2:
+            if best_pattern.efficiency_gain > EMERGENT_EFFICIENCY_GAIN_CANONICAL:
                 self.successful_centralizations += 1
                 
         return CentralizationResult(

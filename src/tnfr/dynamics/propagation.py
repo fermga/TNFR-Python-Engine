@@ -28,6 +28,7 @@ if TYPE_CHECKING:
 
 from ..alias import get_attr
 from ..constants.aliases import ALIAS_DNFR, ALIAS_THETA, ALIAS_VF
+from ..constants.canonical import EMERGENT_FREQ_BALANCE_CANONICAL
 
 __all__ = [
     "propagate_dissonance",
@@ -214,7 +215,7 @@ def compute_network_dissonance_field(
     source_dnfr = abs(float(get_attr(G.nodes[source_node], ALIAS_DNFR, 0.0)))
 
     # Get decay factor from graph config
-    decay_factor = float(G.graph.get("OZ_DECAY_FACTOR", 0.5))
+    decay_factor = float(G.graph.get("OZ_DECAY_FACTOR", EMERGENT_FREQ_BALANCE_CANONICAL))
 
     # BFS to propagate with distance decay
     # Optimized implementation using single_source_shortest_path_length
@@ -233,7 +234,7 @@ def compute_network_dissonance_field(
 def detect_bifurcation_cascade(
     G: TNFRGraph,
     source_node: NodeId,
-    threshold: float = 0.5,
+    threshold: float = EMERGENT_FREQ_BALANCE_CANONICAL,
 ) -> list[NodeId]:
     """Detect if OZ triggers bifurcation cascade in network.
 

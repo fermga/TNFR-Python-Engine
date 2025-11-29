@@ -13,6 +13,18 @@ import networkx as nx
 from typing import Dict, Any
 from dataclasses import dataclass
 
+from ..constants.canonical import (
+    PHYSICS_CONFIDENCE_LEVEL_CANONICAL,
+    PHYSICS_EXPECTED_CORRELATION_WS_CANONICAL,
+    PHYSICS_CORRELATION_STD_WS_CANONICAL,
+    PHYSICS_N_NODES_DEPENDENCY_CANONICAL,
+    PHYSICS_K_DEGREE_DEPENDENCY_CANONICAL,
+    PHYSICS_P_REWIRE_DEPENDENCY_CANONICAL,
+    PHYSICS_M_ATTACH_DEPENDENCY_CANONICAL,
+    PHYSICS_EXPECTED_CORRELATION_BA_CANONICAL,
+    PHYSICS_EXPECTED_CORRELATION_GRID_CANONICAL,
+)
+
 
 @dataclass
 class CalibrationProfile:
@@ -40,12 +52,12 @@ def create_topology_calibration_profiles() -> Dict[str, CalibrationProfile]:
     # Watts-Strogatz calibration profile
     profiles['WS'] = CalibrationProfile(
         topology_name='Watts-Strogatz',
-        expected_correlation=+0.122,  # From parameter sweep analysis
+        expected_correlation=PHYSICS_EXPECTED_CORRELATION_WS_CANONICAL,  # γ/(π+e) ≈ 0.0985 (canonical WS correlation)
         correlation_std=0.133,
         parameter_dependencies={
-            'n_nodes': 0.05,      # Weak dependency on network size
-            'k_degree': -0.12,    # Stronger dependency on connectivity
-            'p_rewire': +0.08,    # Moderate dependency on rewiring probability
+            'n_nodes': PHYSICS_N_NODES_DEPENDENCY_CANONICAL,      # γ/(π×e×φ) ≈ 0.0418 (weak dependency on network size)
+            'k_degree': PHYSICS_K_DEGREE_DEPENDENCY_CANONICAL,    # -γ/(π+γ) ≈ -0.1552 (stronger dependency on connectivity)
+            'p_rewire': PHYSICS_P_REWIRE_DEPENDENCY_CANONICAL,    # γ/(π+e+γ) ≈ 0.0890 (moderate dependency on rewiring probability)
         },
         sample_size=32,
         confidence_level=0.95

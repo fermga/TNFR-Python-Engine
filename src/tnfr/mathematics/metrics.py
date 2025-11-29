@@ -7,6 +7,7 @@ from typing import Sequence
 import numpy as np
 
 from .operators import CoherenceOperator
+from ..constants.canonical import MATH_PRECISION_ENHANCEMENT_CANONICAL
 
 __all__ = ["dcoh"]
 
@@ -106,7 +107,7 @@ def dcoh(
         )
 
     ratio = (np.abs(cross) ** 2) / denominator
-    eps = max(np.finfo(float).eps * 10.0, atol)
+    eps = max(np.finfo(float).eps * MATH_PRECISION_ENHANCEMENT_CANONICAL, atol)
     if ratio < -eps:
         raise ValueError("Overlap produced a negative coherence ratio.")
     if ratio < 0.0:

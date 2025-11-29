@@ -39,7 +39,11 @@ class Silence(Operator):
         super().__call__(G, node, **kw)
 
     def _mark_latency_state(self, G: TNFRGraph, node: Any) -> None:
-        """Set latent flag, timestamp, preserved epi, duration=0.0."""
+        """Set latent flag, timestamp, preserved epi, duration=0.0.
+        
+        Enhanced for initial nodes: respects TNFR nodal dynamics while
+        providing appropriate EPI preservation tracking.
+        """
         from datetime import datetime, timezone
 
         G.nodes[node]["latent"] = True
@@ -50,6 +54,9 @@ class Silence(Operator):
         epi_value = float(epi_attr)
         G.nodes[node]["preserved_epi"] = epi_value
         G.nodes[node]["silence_duration"] = 0.0
+        
+        # Mark initial node status for enhanced tolerance
+        G.nodes[node]["was_initial_on_silence"] = abs(epi_value) < 1e-6
 
     def _validate_preconditions(self, G: TNFRGraph, node: Any) -> None:
         """Validate SHA-specific preconditions."""

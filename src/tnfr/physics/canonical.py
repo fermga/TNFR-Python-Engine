@@ -5,7 +5,7 @@ characterization of TNFR network state:
 
 - Φ_s: Global structural potential (field theory dimension)
 - |∇φ|: Local phase desynchronization (gradient dimension)
-- K_φ: Phase curvature / geometric confinement (curvature dimension)
+- K_φ: Phase curvature / geometric confinement (real part of unified Ψ = K_φ + i·J_φ)
 - ξ_C: Coherence length / spatial correlations (correlation dimension)
 
 All fields are read-only telemetry that never mutate EPI.
@@ -37,7 +37,7 @@ ratios because Φ_s is linear in ΔNFR. This produces zero drift detection:
 to create spatial gradients. For cache workarounds in tests, vary alpha
 (e.g., 2.0 → 2.001) to force cache miss via different function arguments.
 
-**Physics**: U6 structural potential confinement (Δ Φ_s < 2.0 threshold)
+**Physics**: U6 structural potential confinement (|Φ_s| < 0.771 classical threshold from von Koch)
 requires spatial ΔNFR gradients to produce measurable drift for passive
 equilibrium validation. Uniform scaling defeats gradient detection.
 

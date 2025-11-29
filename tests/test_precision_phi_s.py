@@ -16,6 +16,7 @@ from tnfr.config import (
 )
 from tnfr.physics.fields import compute_structural_potential
 from tnfr.metrics.common import compute_coherence
+from tnfr.config.defaults_core import STRUCTURAL_ESCAPE_THRESHOLD
 
 
 @pytest.fixture(autouse=True)
@@ -123,8 +124,8 @@ def test_u6_invariant_across_precision():
         for n in G.nodes()
     )
     
-    # U6 threshold is 2.0
-    u6_threshold = 2.0
+    # U6 threshold from canonical constants
+    u6_threshold = STRUCTURAL_ESCAPE_THRESHOLD
     
     # Decision should be identical
     violates_u6_std = drift_std >= u6_threshold

@@ -922,7 +922,7 @@ class GrammarValidator:
         self,
         G: Any,
         *,
-        phi_grad_threshold: float = 0.38,
+        phi_grad_threshold: float = 0.2904,
         kphi_abs_threshold: float = 3.0,
         kphi_multiscale: bool = True,
         kphi_alpha_hint: float | None = 2.76,

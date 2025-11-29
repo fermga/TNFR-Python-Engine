@@ -9,6 +9,7 @@ import numpy as np
 
 from ..compat.dataclass import dataclass
 from .backend import MathematicsBackend, ensure_array, ensure_numpy, get_backend
+from ..constants.canonical import MATH_COHERENCE_MIN_CANONICAL, MATH_TOLERANCE_CANONICAL
 
 if TYPE_CHECKING:  # pragma: no cover - typing imports only
     import numpy.typing as npt
@@ -21,7 +22,7 @@ else:  # pragma: no cover - runtime alias
 
 __all__ = ["CoherenceOperator", "FrequencyOperator"]
 
-DEFAULT_C_MIN: float = 0.1
+DEFAULT_C_MIN: float = MATH_COHERENCE_MIN_CANONICAL
 _C_MIN_UNSET = object()
 
 
@@ -184,7 +185,7 @@ class CoherenceOperator:
         if abs(expectation_scalar.imag) > atol:
             raise ValueError("Expectation value carries an imaginary component beyond tolerance.")
         eps = np.finfo(float).eps
-        tol = max(1000.0, float(atol / eps)) if atol > 0 else 1000.0
+        tol = max(MATH_TOLERANCE_CANONICAL, float(atol / eps)) if atol > 0 else MATH_TOLERANCE_CANONICAL
         real_expectation = np.real_if_close(expectation_scalar, tol=tol)
         if np.iscomplexobj(real_expectation):
             raise ValueError("Expectation remained complex after coercion.")

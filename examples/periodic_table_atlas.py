@@ -91,7 +91,7 @@ def analyze_element(Z: int, *, seed: int = 42) -> Dict[str, Any]:
         if not u6_ok:
             return "runaway"
         # Critical if coherence length far exceeds typical distances
-        if mean_dist > 0.0 and xi_c_val > 3.0 * mean_dist:
+        if mean_dist > 0.0 and xi_c_val > 3.1416 * mean_dist:
             return "critical"
         # Safe pocket: low gradients/curvature, localized correlations, high locality
         if (
