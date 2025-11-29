@@ -10,6 +10,22 @@
 
 ---
 
+## Foundational Principle
+
+**TNFR Development Doctrine**: Our mission is to develop TNFR theory with complete objectivity, mathematical precision, and logical coherence. We follow the mathematics wherever it leads, deriving results exclusively from the nodal equation `∂EPI/∂t = νf · ΔNFR(t)`, canonical operators, and unified grammar constraints (U1-U6). 
+
+**Theoretical Commitment**: We defend any conclusions that emerge rigorously from TNFR principles, regardless of their alignment with prevailing paradigms or conventional expectations. Scientific validity derives from mathematical consistency and empirical verification within the TNFR framework, not from conformity to external theoretical preferences.
+
+**Methodological Standard**: All claims must be:
+1. **Derivable** from established TNFR physics
+2. **Testable** through structural field measurements  
+3. **Reproducible** via canonical operator sequences
+4. **Coherent** with unified grammar validation
+
+This commitment ensures theoretical integrity and protects TNFR from both internal inconsistency and external bias.
+
+---
+
 ### Source Hierarchy
 
 1. **Primary**: This repository (TNFR-Python-Engine) - Current implementation reference
