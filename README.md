@@ -1,65 +1,68 @@
-# TNFR Python Engine
+# TNFR: Resonant Fractal Nature Theory
+## Computational Framework for Coherent Pattern Analysis
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17761312.svg)](https://doi.org/10.5281/zenodo.17761312)
 [![PyPI version](https://badge.fury.io/py/tnfr.svg)](https://pypi.org/project/tnfr/)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**Computational implementation of Resonant Fractal Nature Theory (TNFR)** - A framework for modeling coherent patterns in networked systems.
+**TNFR (Resonant Fractal Nature Theory)** provides a mathematical framework for modeling coherent patterns in complex systems through resonance-based dynamics.
 
 **Version**: 0.0.1 (November 29, 2025)  
-**Foundation**: Universal Tetrahedral Correspondence (φ↔Φ_s, γ↔|∇φ|, π↔K_φ, e↔ξ_C)  
+**Theoretical Foundation**: Universal Tetrahedral Correspondence (φ↔Φ_s, γ↔|∇φ|, π↔K_φ, e↔ξ_C)  
 **Installation**: `pip install tnfr`
 
 ## Getting Started
 
-### New to TNFR?
+### Getting Started
 
-1. **Installation**: `pip install tnfr`
-2. **Learn the basics**: Read [AGENTS.md](AGENTS.md) (complete theory reference)
-3. **Run examples**: Start with `python examples/01_hello_world.py`
-4. **API reference**: See [theory/GLOSSARY.md](theory/GLOSSARY.md) for operational definitions
+**Installation**: `pip install tnfr`
 
-### Key Concepts to Understand
-
+**Essential Concepts**:
 - **Nodal Equation**: `∂EPI/∂t = νf · ΔNFR(t)` - fundamental evolution law
-- **Structural Operators**: 13 canonical operators for system modification
-- **Grammar Rules**: U1-U6 constraints derived from physics
-- **Structural Fields**: Four canonical telemetry fields (Φ_s, |∇φ|, K_φ, ξ_C)
+- **Canonical Operators**: 13 structural operators for system modification
+- **Unified Grammar**: U1-U6 constraint rules derived from theoretical physics
+- **Structural Fields**: Tetrahedral field system (Φ_s, |∇φ|, K_φ, ξ_C)
+
+**First Steps**:
+1. Install package: `pip install tnfr`
+2. Read theoretical foundation: [AGENTS.md](AGENTS.md)
+3. Run basic example: `python examples/01_hello_world.py`
+4. Study terminology: [theory/GLOSSARY.md](theory/GLOSSARY.md)
 
 ### Learning Path
 
 **Beginner** (2 hours):
 1. Install TNFR: `pip install tnfr`
-2. Read [AGENTS.md](AGENTS.md) - theoretical foundation
+2. Read [AGENTS.md](AGENTS.md) - complete theoretical foundation
 3. Run `python examples/01_hello_world.py`
 
 **Intermediate** (1 week):
 1. Study [theory/UNIFIED_GRAMMAR_RULES.md](theory/UNIFIED_GRAMMAR_RULES.md) - physics derivations
-2. Work through [examples/](examples/) sequential tutorials
+2. Work through [examples/](examples/) sequential tutorials (01-10)
 3. Explore [src/tnfr/physics/fields.py](src/tnfr/physics/fields.py) - field implementations
 
 **Advanced** (ongoing):
-1. Complete theoretical study: [theory/FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md](theory/FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md)
-2. Architecture understanding: [ARCHITECTURE.md](ARCHITECTURE.md)
+1. **TNFR-Riemann Program**: [theory/TNFR_RIEMANN_RESEARCH_NOTES.md](theory/TNFR_RIEMANN_RESEARCH_NOTES.md) - Complete framework connecting discrete operators to Riemann Hypothesis
+2. Technical derivations: [theory/TUTORIAL_FROM_NODAL_EQUATION_TO_COSMOS.md](theory/TUTORIAL_FROM_NODAL_EQUATION_TO_COSMOS.md)
 3. Contribute following [CONTRIBUTING.md](CONTRIBUTING.md)
 
 ## What is TNFR?
 
-**Resonant Fractal Nature Theory** models reality as coherent patterns that persist through resonance mechanisms. The framework establishes correspondence between four universal mathematical constants (φ, γ, π, e) and four structural fields that characterize networked systems.
+**Resonant Fractal Nature Theory** provides a mathematical framework for modeling coherent patterns in complex systems. The theory establishes correspondence between four universal mathematical constants (φ, γ, π, e) and four structural fields that characterize system dynamics.
 
-**Core Principle**: Systems are modeled as patterns that exist through resonant coupling with their environment rather than as discrete objects with independent properties.
+**Core Principle**: Systems are modeled as coherent patterns maintained through resonant coupling rather than as discrete objects with independent properties.
 
 **Theoretical Foundation**: [AGENTS.md](AGENTS.md) - Complete theory reference  
 **Mathematical Details**: [theory/FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md](theory/FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md)  
 **Theory Hub**: [theory/README.md](theory/README.md) - Comprehensive theoretical documentation  
 **Implementation**: This repository provides computational tools for TNFR analysis
 
-**Modeling Approach**:
-- **Patterns** rather than objects
-- **Resonant coupling** rather than causality
-- **Dynamic reorganization** rather than static properties
-- **Network coherence** rather than isolated systems
+**Theoretical Approach**:
+- **Pattern analysis** over discrete objects
+- **Resonant coupling** over causal relationships
+- **Dynamic processes** over static properties
+- **Network coherence** over isolated systems
 
 ## Key Features
 
@@ -303,22 +306,22 @@ python examples/domain_applications/biological_patterns.py
 
 **Complete Documentation**: [fermga.github.io/TNFR-Python-Engine](https://fermga.github.io/TNFR-Python-Engine/)
 
-### Essential References
+### Primary References
 
-**Theory & Foundations**:
-- **[AGENTS.md](AGENTS.md)** - Complete TNFR theory and development guide
-- **[UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md)** - Grammar physics (U1-U6)
-- **[FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md](FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md)** - Mathematical foundations
+**Theoretical Foundation**:
+- **[AGENTS.md](AGENTS.md)** - Primary theoretical reference and development guide
+- **[theory/UNIFIED_GRAMMAR_RULES.md](theory/UNIFIED_GRAMMAR_RULES.md)** - Grammar constraint derivations (U1-U6)
+- **[theory/FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md](theory/FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md)** - Mathematical foundations
 
-**Implementation**:
-- **[ARCHITECTURE.md](ARCHITECTURE.md)** - System design and structure
-- **[docs/STRUCTURAL_FIELDS_TETRAD.md](docs/STRUCTURAL_FIELDS_TETRAD.md)** - Field specifications
-- **[GLOSSARY.md](GLOSSARY.md)** - Operational reference
+**Implementation Guide**:
+- **[ARCHITECTURE.md](ARCHITECTURE.md)** - System architecture and design
+- **[docs/STRUCTURAL_FIELDS_TETRAD.md](docs/STRUCTURAL_FIELDS_TETRAD.md)** - Field implementation specifications
+- **[theory/GLOSSARY.md](theory/GLOSSARY.md)** - Technical definitions and terminology
 
-**Development**:
-- **[CONTRIBUTING.md](CONTRIBUTING.md)** - Development workflow
-- **[examples/](examples/)** - Usage examples and tutorials
-- **[TESTING.md](TESTING.md)** - Test requirements
+**Development Resources**:
+- **[CONTRIBUTING.md](CONTRIBUTING.md)** - Development workflow and standards
+- **[examples/](examples/)** - Sequential tutorials and usage examples
+- **[TESTING.md](TESTING.md)** - Testing framework and requirements
 
 ## Repository Structure
 
@@ -468,18 +471,18 @@ Get-Content .\benchmark_results.json | ConvertFrom-Json |
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for:
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development guidelines:
 
-- Development workflow
-- Testing requirements
-- Documentation standards
-- Pull request process
+- Development workflow and standards
+- Testing requirements and procedures
+- Documentation standards and formatting
+- Pull request process and review criteria
 
-**Theoretical development**: Follow guidelines in [AGENTS.md](AGENTS.md) for maintaining theoretical integrity.
+**Theoretical Development**: Follow theoretical integrity guidelines in [AGENTS.md](AGENTS.md).
 
-**Technical references**:
-- [docs/STRUCTURAL_FIELDS_TETRAD.md](docs/STRUCTURAL_FIELDS_TETRAD.md) - Field specifications
-- [TESTING.md](TESTING.md) - Test requirements
+**Technical References**:
+- [docs/STRUCTURAL_FIELDS_TETRAD.md](docs/STRUCTURAL_FIELDS_TETRAD.md) - Field implementation specifications
+- [TESTING.md](TESTING.md) - Testing framework requirements
 
 ## Citation
 
@@ -509,12 +512,12 @@ This project is licensed under the **MIT License** - see [LICENSE.md](LICENSE.md
 - **PyPI**: [pypi.org/project/tnfr](https://pypi.org/project/tnfr/)
 - **Documentation**: [fermga.github.io/TNFR-Python-Engine](https://fermga.github.io/TNFR-Python-Engine/)
 
-## Development Philosophy
+## Theoretical Foundation
 
-TNFR implements a modeling approach based on:
-- **Coherence** rather than objects
-- **Resonance** rather than causality  
-- **Dynamic reorganization** rather than static properties
-- **Network patterns** rather than isolated entities
+TNFR implements pattern-based modeling principles:
+- **Pattern coherence** over discrete objects
+- **Resonant coupling** over causal relationships
+- **Dynamic processes** over static properties
+- **Network structures** over isolated entities
 
-Development follows theoretical foundations established in [AGENTS.md](AGENTS.md) with adherence to canonical invariants and unified grammar constraints.
+Implementation follows theoretical foundations in [AGENTS.md](AGENTS.md) with adherence to canonical invariants and unified grammar constraints.

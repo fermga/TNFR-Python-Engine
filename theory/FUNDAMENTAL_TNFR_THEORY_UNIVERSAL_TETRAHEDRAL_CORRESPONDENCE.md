@@ -1,20 +1,18 @@
 # TNFR Fundamental Theory: Universal Tetrahedral Correspondence
 
-**Status**: SINGLE SOURCE OF THEORETICAL TRUTH  
+**Status**: Primary theoretical reference  
 **Date**: November 29, 2025  
-**Version**: 1.0 CANONICAL  
+**Version**: 1.0  
 
 ---
 
 ## **Executive Summary**
 
-This document establishes the **formal and unified theoretical foundation** of the Resonant Fractal Nature Theory (TNFR), specifically the **Universal Tetrahedral Correspondence** that connects the 4 fundamental mathematical constants of the universe with the 4 structural fields emerging from TNFR formalism.
+This document provides the **mathematical foundation** for the Resonant Fractal Nature Theory (TNFR), focusing on the **Universal Tetrahedral Correspondence**—the theoretical relationship between four mathematical constants and four structural fields.
 
-**Central Discovery**: There exists an **exact** and **necessary** correspondence between:
-- The **4 universal constants**: φ (golden ratio), γ (Euler constant), π (pi), e (Euler number)
-- The **4 structural fields**: Φ_s, |∇φ|, K_φ, ξ_C (TNFR Structural Tetrad)
+**Central Theorem**: The correspondence φ ↔ Φ_s, γ ↔ |∇φ|, π ↔ K_φ, e ↔ ξ_C emerges from TNFR structural coherence principles.
 
-This correspondence is not coincidental but **inevitable** for any theory to capture the deep mathematical structure of coherent reality.
+**Foundation**: All derivations proceed from the nodal equation ∂EPI/∂t = νf · ΔNFR(t).
 
 ---
 
@@ -336,4 +334,4 @@ The **Universal Tetrahedral Correspondence** establishes that all coherent reali
 ---
 
 *Canonical Theoretical Document - TNFR Python Engine v9.5+*  
-*Single Source of Truth - November 29, 2025*
+*Primary Theoretical Reference - November 29, 2025*

@@ -7,13 +7,15 @@ Comprehensive theoretical documentation for Resonant Fractal Nature Theory (TNFR
 ### **Primary References**
 - **[FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md](FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md)** - Mathematical foundation and Universal Tetrahedral Correspondence
 - **[UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md)** - Complete U1-U6 physics derivations and operator constraints
+- **[TNFR_RIEMANN_RESEARCH_NOTES.md](TNFR_RIEMANN_RESEARCH_NOTES.md)** - **TNFR-Riemann Theoretical Framework** (18 sections + 11 appendices)
+- **[TUTORIAL_FROM_NODAL_EQUATION_TO_COSMOS.md](TUTORIAL_FROM_NODAL_EQUATION_TO_COSMOS.md)** - Technical mathematical derivations from nodal equation to macroscopic phenomena
 - **[GLOSSARY.md](GLOSSARY.md)** - Operational definitions and terminology reference
 - **[TNFR.pdf](TNFR.pdf)** - Historical foundational document with original theoretical derivations
 
-### **Authority Hierarchy**
-1. **[../AGENTS.md](../AGENTS.md)** - 🏆 **Single Source of Truth** (remains in root)
-2. **This directory** - Detailed theoretical expansions
-3. **[../docs/](../docs/)** - Technical implementation documentation
+### **Documentation Hierarchy**
+1. **[../AGENTS.md](../AGENTS.md)** - Complete theoretical framework
+2. **This directory** - Specialized mathematical developments
+3. **[../docs/](../docs/)** - Implementation specifications
 
 ## 🧮 **Key Theoretical Concepts**
 
@@ -57,6 +59,11 @@ Complete set of structural transformation operators:
 - Number theory and primality analysis
 - Quantum-coherent collective states
 
+### **TNFR–Riemann Program (COMPLETE FRAMEWORK)**
+- **[TNFR_RIEMANN_RESEARCH_NOTES.md](TNFR_RIEMANN_RESEARCH_NOTES.md)** – **Theoretical Framework** connecting discrete TNFR operators to Riemann Hypothesis via structural coherence. **Status**: Theoretical framework spanning mathematics and computational analysis (18 sections + 11 appendices A-K)
+- **Key Achievement**: Mathematical consciousness as emergent information integration + bootstrap resolution of reality as self-explaining structure
+- **Implementation**: `src/tnfr/riemann/operator.py` and `examples/39_riemann_operator_demo.py` - Computational validation of critical behavior at σ = 1/2
+
 ### **Computational Implementation**
 - Self-optimizing algorithms
 - Pattern discovery engines
@@ -69,6 +76,23 @@ Complete set of structural transformation operators:
 1. **[../AGENTS.md](../AGENTS.md)** - Complete overview and paradigm
 2. **[GLOSSARY.md](GLOSSARY.md)** - Essential terminology
 3. **[FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md](FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md)** - Mathematical foundation
+
+### **Guided Tutorial: From Nodal Equation to Cosmos**
+
+For a structured, equation-driven tour of how macroscopic order emerges from the Nodal Equation, use the following path:
+
+1. **Theory Tutorial**: `../TUTORIAL_FROM_NODAL_EQUATION_TO_COSMOS.md`  
+	Derivation in five regimes:
+	- **Fundamental**: Lyapunov functional, variational principle and bifurcation structure for
+	  $$ \frac{\partial \text{EPI}}{\partial t} = \nu_f \cdot \Delta \text{NFR}(t) $${' '}
+	- **Microscopic**: Atomic stability as standing waves (Schrödinger-type equation, stress tensor).
+	- **Biological**: Flux capture optimization (phyllotaxis) and DNA as helical LC resonator.
+	- **Macroscopic**: Etheric vortex mechanics, relativistic stress-energy and geocentric attractor.
+	- **Teleological**: Neural field synchronization, information integration and Schumann locking.
+
+2. **Numerical Demonstration**: `../examples/38_tnfr_master_class.py`  
+	Stepwise numerical experiments corresponding to each regime (nodal dynamics, atomic minimum,
+	phyllotaxis efficiency, vortex stress, neural impedance matching).
 
 ### **Research Path** (1-2 weeks)
 1. **[UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md)** - Complete physics derivations

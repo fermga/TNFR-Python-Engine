@@ -8,7 +8,7 @@ The `docs/` folder contains specialized technical documentation for TNFR theory 
 
 | Document | Status | Purpose |
 |----------|--------|---------|
-| **[AGENTS.md](../AGENTS.md)** | ✅ **CANONICAL** | Ultimate source of truth for TNFR theory |
+| **[AGENTS.md](../AGENTS.md)** | ✅ **CANONICAL** | Primary reference for TNFR theory |
 | **[STRUCTURAL_FIELDS_TETRAD.md](STRUCTURAL_FIELDS_TETRAD.md)** | ✅ **CANONICAL** | Formal field definitions (Φ_s, \|∇φ\|, K_φ, ξ_C) |
 | **[CANONICAL_OZ_SEQUENCES.md](CANONICAL_OZ_SEQUENCES.md)** | ✅ Active | Guide to dissonance-based operator sequences |
 | **[API_CONTRACTS.md](API_CONTRACTS.md)** | ✅ Active | Formal contracts for 13 canonical operators |
