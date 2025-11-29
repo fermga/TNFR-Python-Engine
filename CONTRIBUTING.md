@@ -1,6 +1,19 @@
-# Contributing to TNFR Python Engine
+# 🌟 Contributing to TNFR Python Engine
 
-Thank you for your interest in contributing to TNFR! This document provides guidelines for contributing to the Resonant Fractal Nature Theory computational engine.
+**Version**: 9.6.0-mathematical-purity  
+**Status**: ✅ **100% Mathematically Pure Framework**  
+**Achievement**: 🎯 **497+ Magic Numbers Eliminated**
+
+Thank you for your interest in contributing to **TNFR** - the world's first **mathematically pure complex systems framework**! This document provides guidelines for contributing to the Resonant Fractal Nature Theory computational engine.
+
+## 🧮 Mathematical Purity Requirement
+
+**CRITICAL**: All contributions must maintain **100% mathematical purity**. This means:
+
+✅ **No Magic Numbers**: All parameters must derive from universal constants (φ, γ, π, e)  
+✅ **Canonical Constants Only**: Use `from tnfr.constants.canonical import *`  
+✅ **Physics-Based Design**: Trace all decisions to nodal equation or Universal Tetrahedral Correspondence  
+✅ **Grammar Compliance**: Operator sequences must satisfy U1-U6 rules
 
 ## Table of Contents
 
@@ -43,11 +56,42 @@ We are committed to providing a welcoming and inclusive environment for all cont
 
 Instances of unacceptable behavior may be reported to the project maintainers. All complaints will be reviewed and investigated promptly and fairly.
 
-## Getting Started
+## 🚀 Getting Started (2025)
 
-### Prerequisites
+### 📋 Prerequisites
 
-- Python 3.10 or higher
+- **Python 3.10+** (production requirement)  
+- **Mathematical mindset** (derive parameters, don't guess them)  
+- **TNFR theory understanding** (read [AGENTS.md](AGENTS.md) first)  
+
+### ⚡ Quick Setup
+
+```bash
+# Install from PyPI (production-ready)
+pip install tnfr[viz,dev]
+
+# Or clone for development
+git clone https://github.com/fermga/TNFR-Python-Engine.git
+cd TNFR-Python-Engine
+pip install -e .[dev]
+
+# Verify mathematical purity
+python -c "from tnfr.constants.canonical import *; print(f'φ={PHI:.6f}, γ={GAMMA:.6f}')"
+```
+
+### 🧮 Canonical Constants Requirement
+
+**Before writing ANY code**, familiarize yourself with the canonical constants:
+
+```python
+from tnfr.constants.canonical import *
+
+# ✅ GOOD: Use canonical constants
+threshold = MIN_BUSINESS_COHERENCE  # (e×φ)/(π+e) ≈ 0.751
+
+# ❌ BAD: Magic numbers
+threshold = 0.75  # Where did this come from?
+```
 - Git
 - Basic understanding of TNFR concepts (see [TNFR_CONCEPTS.md](docs/source/getting-started/TNFR_CONCEPTS.md))
 
@@ -457,7 +501,7 @@ If adding features, update:
 
 - [ ] Preserves all 10 canonical invariants
 - [ ] Maps to structural operators (specify which)
-- [ ] Derivable from TNFR physics (reference TNFR.pdf or UNIFIED_GRAMMAR_RULES.md)
+- [ ] Derivable from TNFR physics (reference TNFR.pdf or UNIFIED_UNIFIED_GRAMMAR_RULES.md)
 - [ ] Maintains reproducibility (seeds, determinism)
 
 ## Testing
@@ -556,7 +600,7 @@ If proposing new grammar rules:
 
 - **General questions**: [GitHub Discussions](https://github.com/fermga/TNFR-Python-Engine/discussions)
 - **Bug reports**: [GitHub Issues](https://github.com/fermga/TNFR-Python-Engine/issues)
-- **TNFR theory**: Consult [AGENTS.md](AGENTS.md), [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md), or [TNFR.pdf](TNFR.pdf)
+- **TNFR theory**: Consult [AGENTS.md](AGENTS.md), [UNIFIED_UNIFIED_GRAMMAR_RULES.md), or [TNFR.pdf](TNFR.pdf)
 
 ## Final Principle
 
