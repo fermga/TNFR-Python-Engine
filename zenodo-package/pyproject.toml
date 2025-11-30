@@ -1,0 +1,43 @@
+[tool.poetry]
+name = "tnfr-primality"
+version = "1.0.0"
+description = "Advanced TNFR-based primality testing with full repository integration and structural coherence analysis"
+authors = ["F. F. Martinez Gamo"]
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/fermga/TNFR-Python-Engine"
+homepage = "https://doi.org/10.5281/zenodo.17764749"
+keywords = ["primality", "tnfr", "number-theory", "mathematics", "algorithms", "structural-coherence"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Science/Research", 
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9", 
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Mathematics",
+    "Topic :: Software Development :: Libraries :: Python Modules"
+]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+numpy = "^1.20"
+sympy = {version = "^1.12", optional = true}
+
+[tool.poetry.extras]
+advanced = ["sympy"]
+
+[tool.poetry.scripts]
+tnfr-primality = "tnfr_primality.cli:main"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.0"
+black = "^22.0"
+flake8 = "^5.0"

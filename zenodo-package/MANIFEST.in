@@ -1,0 +1,16 @@
+include README.md
+include LICENSE
+include .zenodo.json
+include pyproject.toml
+include test_installation.py
+
+recursive-include docs *.md
+recursive-include examples *.py
+recursive-include benchmarks *.py
+
+# Exclude development files
+exclude .gitignore
+recursive-exclude * __pycache__
+recursive-exclude * *.py[co]
+recursive-exclude * *.pyo
+recursive-exclude * .DS_Store
