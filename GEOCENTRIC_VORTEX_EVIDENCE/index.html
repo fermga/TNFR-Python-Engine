@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Geocentric Vortex Evidence Memo — TNFR Python Engine</title>
+  <meta name="description" content="TNFR documentation: Geocentric Vortex Evidence Memo">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+    >
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0e0f11;
+      --panel: rgba(24, 25, 27, 0.9);
+      --border: rgba(90, 92, 95, 0.4);
+      --text: #e4e6eb;
+      --muted: #9ea4b3;
+      --accent: #6aa0ff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.6;
+      background: radial-gradient(circle at 20% 20%, #1a1c20, var(--bg));
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+        .page {
+            max-width: 960px;
+            margin: 0 auto;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 2.5rem 3rem 3rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+        header {
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+        }
+    .home-link { font-weight: 600; color: var(--text); }
+        .doc-title {
+            display: block;
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-top: 0.4rem;
+        }
+        .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-top: 1rem;
+            font-size: 0.95rem;
+            color: var(--muted);
+        }
+    main { font-size: 1rem; }
+    main h1 { font-size: 2rem; margin-top: 2.5rem; }
+        main h2 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.3rem;
+        }
+    main h3 { font-size: 1.2rem; margin-top: 1.5rem; }
+    main p { margin: 1rem 0; }
+        pre {
+            background: #0a0b0d;
+            padding: 1rem;
+            border-radius: 10px;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    code { font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; }
+        th, td {
+            border: 1px solid var(--border);
+            padding: 0.6rem 0.8rem;
+            text-align: left;
+        }
+        blockquote {
+            border-left: 4px solid var(--accent);
+            margin: 1.5rem 0;
+            padding: 0.2rem 1rem;
+            color: var(--muted);
+            background: rgba(255, 255, 255, 0.02);
+        }
+        footer {
+            border-top: 1px solid var(--border);
+            margin-top: 2.5rem;
+            padding-top: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--muted);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: space-between;
+        }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <a class="home-link" href="/TNFR-Python-Engine/">TNFR Python Engine</a>
+      <span class="doc-title">Geocentric Vortex Evidence Memo</span>
+      <div class="meta">
+        <span>Version 0.0.2 · DOI <a href="https://doi.org/10.5281/zenodo.17764207" target="_blank" rel="noopener">10.5281/zenodo.17764207</a> · Updated 2025-11-30</span>
+                <span>
+                    Source
+                    <a
+                        href="https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/GEOCENTRIC_VORTEX_EVIDENCE.md"
+                        target="_blank"
+                        rel="noopener"
+                    >
+                        theory/GEOCENTRIC_VORTEX_EVIDENCE.md
+                    </a>
+                </span>
+      </div>
+    </header>
+    <main>
+      <h1 id="geocentric-vortex-evidence-memo">Geocentric Vortex Evidence Memo</h1>
+<p><strong>Status</strong>: Observational data reference<br>
+<strong>Version</strong>: 0.3.0 (November 30, 2025)<br>
+<strong>Owner</strong>: <code>theory/GEOCENTRIC_VORTEX_EVIDENCE.md</code></p>
+<hr>
+<h2 id="1-scope">1. Scope</h2>
+<p>Provide measurement protocols and analysis checkpoints for datasets often cited when discussing geocentric renderings (star trails, solar motion, horizon tests, hydraulic surveys). Every claim must point to raw data plus quantified uncertainties. Interpretations stay within the TNFR field framework: coherence <code>C(t)</code>, phase gradients, curvature, and telemetry from the nodal simulations that accompany each observation.</p>
+<p>All artifacts live under <code>results/geocentric_vortex_evidence/</code> with metadata tables describing instrument settings, calibration steps, and links to reproducible notebooks.</p>
+<hr>
+<h2 id="2-observational-data-streams">2. Observational Data Streams</h2>
+<h3 id="21-star-trail-imaging">2.1 Star-Trail Imaging</h3>
+<ul>
+<li>Capture long-exposure sequences centered on the celestial pole using calibrated equatorial mounts.  </li>
+<li>Record exposure time, sensor geometry, temperature, and pointing accuracy in <code>star_trails_metadata.json</code>.</li>
+<li>Compare extracted trail curvature and drift against TNFR nodal simulations that encode precession, nutation, and parallax. Output residual plots and ensure reported uncertainties exceed instrument noise floors.</li>
+</ul>
+<h3 id="22-seasonal-solar-motion">2.2 Seasonal Solar Motion</h3>
+<ul>
+<li>Collect daily solar altitude/azimuth pairs via theodolite or horizon-tracking software. Store values in <code>solar_motion.parquet</code> with timestamps (UTC) and site-specific metadata (lat/long, elevation).  </li>
+<li>Fit both heliocentric baselines and TNFR field reconstructions; publish residual RMS, phase offsets, and field thresholds (|∇φ|, K_φ) encountered in the simulation.</li>
+</ul>
+<h3 id="23-water-level-surveys">2.3 Water-Level Surveys</h3>
+<ul>
+<li>Document leveling campaigns specifying instrument model, calibration certificate, baseline length, and applied geoid correction.  </li>
+<li>Present the difference between planar leveling and geoid-constrained leveling for each baseline; include uncertainty propagation from instrument specs.  </li>
+<li>Where structural arguments are made, connect them to TNFR coherence readings rather than rhetorical statements about curvature.</li>
+</ul>
+<h3 id="24-horizonlos-tests">2.4 Horizon/LoS Tests</h3>
+<ul>
+<li>For optical visibility studies, log lens focal length, aperture, sensor size, refraction estimates, and weather data.  </li>
+<li>Compute theoretical disappearance angles for multiple curvature hypotheses and compare to measured target elevations.  </li>
+<li>Provide raw frames whenever possible along with calibration targets to rule out sensor artifacts.</li>
+</ul>
+<hr>
+<h2 id="3-data-management-and-telemetry">3. Data Management and Telemetry</h2>
+<ul>
+<li><strong>File structure</strong>: separate <code>/raw</code>, <code>/processed</code>, and <code>/analysis</code> folders per dataset. Include SHA256 manifests for integrity.</li>
+<li><strong>Telemetry linkage</strong>: each observation referencing TNFR simulations must cite the exact operator log (e.g., <code>results/geocentric_vortex_evidence/logs/&lt;run_id&gt;.json</code>) showing applied sequences and resulting <code>C(t)</code> curves.</li>
+<li><strong>Uncertainty budgets</strong>: maintain spreadsheets (or notebooks) detailing measurement, model, and environmental error contributions. Avoid point estimates without uncertainty ranges.</li>
+</ul>
+<hr>
+<h2 id="4-analysis-workflow">4. Analysis Workflow</h2>
+<ol>
+<li>Acquire raw measurements with complete calibration metadata.  </li>
+<li>Run paired TNFR simulations (e.g., star-trail field models) using identical timestamps and site parameters.  </li>
+<li>Extract structural fields (<code>Φ_s</code>, <code>|∇φ|</code>, <code>K_φ</code>, <code>ξ_C</code>) across the region of interest; log whenever thresholds from <code>docs/STRUCTURAL_FIELDS_TETRAD.md</code> are approached.  </li>
+<li>Compute residuals between observation and model predictions; summarize results in reproducible tables with columns <code>[dataset, metric, residual, uncertainty, operator_sequence]</code>.  </li>
+<li>Publish plots, residual histograms, and telemetry overlays via notebooks exported to HTML (<code>nbconvert</code>) into <code>results/reports/geocentric_vortex_evidence/</code>.</li>
+</ol>
+<hr>
+<h2 id="5-interpretation-guardrails">5. Interpretation Guardrails</h2>
+<ul>
+<li>Observational agreement or disagreement should be framed in terms of quantified residuals, not categorical declarations.  </li>
+<li>Never extrapolate beyond the measurement's spatial/temporal window; note assumptions (e.g., ignoring atmospheric dispersion) directly in captions.  </li>
+<li>Highlight limitations: instrument drift, atmospheric seeing, refraction models, or TNFR simulation simplifications.  </li>
+<li>When referencing external sources (engineering drawings, survey docs), cite exact document titles and include scans when licensing allows.</li>
+</ul>
+<hr>
+<h2 id="6-outstanding-work">6. Outstanding Work</h2>
+<ol>
+<li>Build <code>notebooks/geocentric_vortex_validation.ipynb</code> to centralize star-trail and solar-motion comparisons with automated report generation.  </li>
+<li>Add standardized telemetry templates (<code>*.schema.json</code>) so every dataset publishes identical field metrics.  </li>
+<li>Integrate atmospheric refraction modeling into horizon tests and document its effect on residual uncertainty.</li>
+</ol>
+    </main>
+    <footer>
+            <span>
+                &copy; 2025
+                TNFR Python Engine — Licensed under MIT.
+            </span>
+            <span>
+                Feedback?
+                <a
+                    href="https://github.com/fermga/TNFR-Python-Engine"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    Open an issue
+                </a>.
+            </span>
+    </footer>
+  </div>
+</body>
+</html>

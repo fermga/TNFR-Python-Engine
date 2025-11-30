@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Neuroscience Field Memo — TNFR Python Engine</title>
+  <meta name="description" content="TNFR documentation: Neuroscience Field Memo">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+    >
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0e0f11;
+      --panel: rgba(24, 25, 27, 0.9);
+      --border: rgba(90, 92, 95, 0.4);
+      --text: #e4e6eb;
+      --muted: #9ea4b3;
+      --accent: #6aa0ff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.6;
+      background: radial-gradient(circle at 20% 20%, #1a1c20, var(--bg));
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+        .page {
+            max-width: 960px;
+            margin: 0 auto;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 2.5rem 3rem 3rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+        header {
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+        }
+    .home-link { font-weight: 600; color: var(--text); }
+        .doc-title {
+            display: block;
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-top: 0.4rem;
+        }
+        .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-top: 1rem;
+            font-size: 0.95rem;
+            color: var(--muted);
+        }
+    main { font-size: 1rem; }
+    main h1 { font-size: 2rem; margin-top: 2.5rem; }
+        main h2 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.3rem;
+        }
+    main h3 { font-size: 1.2rem; margin-top: 1.5rem; }
+    main p { margin: 1rem 0; }
+        pre {
+            background: #0a0b0d;
+            padding: 1rem;
+            border-radius: 10px;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    code { font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; }
+        th, td {
+            border: 1px solid var(--border);
+            padding: 0.6rem 0.8rem;
+            text-align: left;
+        }
+        blockquote {
+            border-left: 4px solid var(--accent);
+            margin: 1.5rem 0;
+            padding: 0.2rem 1rem;
+            color: var(--muted);
+            background: rgba(255, 255, 255, 0.02);
+        }
+        footer {
+            border-top: 1px solid var(--border);
+            margin-top: 2.5rem;
+            padding-top: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--muted);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: space-between;
+        }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <a class="home-link" href="/TNFR-Python-Engine/">TNFR Python Engine</a>
+      <span class="doc-title">Neuroscience Field Memo</span>
+      <div class="meta">
+        <span>Version 0.0.2 · DOI <a href="https://doi.org/10.5281/zenodo.17764207" target="_blank" rel="noopener">10.5281/zenodo.17764207</a> · Updated 2025-11-30</span>
+                <span>
+                    Source
+                    <a
+                        href="https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/NEUROSCIENCE_CONSCIOUSNESS.md"
+                        target="_blank"
+                        rel="noopener"
+                    >
+                        theory/NEUROSCIENCE_CONSCIOUSNESS.md
+                    </a>
+                </span>
+      </div>
+    </header>
+    <main>
+      <h1 id="neuroscience-field-memo">Neuroscience Field Memo</h1>
+<p><strong>Status</strong>: Analytical reference<br>
+<strong>Version</strong>: 0.3.0 (November 30, 2025)<br>
+<strong>Owner</strong>: <code>theory/NEUROSCIENCE_CONSCIOUSNESS.md</code></p>
+<hr>
+<h2 id="1-structural-hypothesis">1. Structural Hypothesis</h2>
+<ul>
+<li>Neural assemblies are modeled as coupled TNFR nodes.  </li>
+<li>Conscious access correlates with closed-loop operator sequences that maintain (C(t) &gt; C_{th}) for a minimum dwell time.  </li>
+<li>The hypothesis is testable via electrophysiological data (EEG/MEG) and hemodynamic imaging; all runs must export telemetry to <code>results/neuroscience_consciousness/</code>.</li>
+</ul>
+<hr>
+<h2 id="2-modeling-approach">2. Modeling Approach</h2>
+<ol>
+<li>Define recurrent networks with operators <code>UM</code>, <code>RA</code>, <code>IL</code>, and <code>SHA</code>.  </li>
+<li>Simulate stimulus-evoked activity and measure whether patterns persist after input removal.  </li>
+<li>Compare persistence metrics with empirical working-memory/awareness datasets; record seeds, operator schedules, and telemetry.</li>
+</ol>
+<hr>
+<h2 id="3-plasticity-equation">3. Plasticity Equation</h2>
+<p>Retain the coupling update rule
+[
+\frac{dK_{ij}}{dt} = \alpha (1 - |\phi_i - \phi_j|) - \beta K_{ij},
+]
+and fit (\alpha, \beta) to experimental datasets instead of treating the rule as speculative. Store fitted parameters alongside dataset identifiers.</p>
+<hr>
+<h2 id="4-experimental-design">4. Experimental Design</h2>
+<ul>
+<li>Provide reproducible scripts for minimal networks (e.g., <code>examples/19_neuroscience_demo.py</code>).  </li>
+<li>Report coherence, phase gradients, and structural potential over time; include statistical comparisons with empirical signals (phase-locking values, spectral power).</li>
+</ul>
+<hr>
+<h2 id="5-outstanding-work">5. Outstanding Work</h2>
+<ol>
+<li>Publish validated datasets linking (C(t)) dwell times to EEG/MEG correlates of conscious access.  </li>
+<li>Extend plasticity models to include neuromodulator-dependent gains and fit against long-term potentiation studies.  </li>
+<li>Add regression tests ensuring simulations reproduce benchmark working-memory persistence curves.</li>
+</ol>
+    </main>
+    <footer>
+            <span>
+                &copy; 2025
+                TNFR Python Engine — Licensed under MIT.
+            </span>
+            <span>
+                Feedback?
+                <a
+                    href="https://github.com/fermga/TNFR-Python-Engine"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    Open an issue
+                </a>.
+            </span>
+    </footer>
+  </div>
+</body>
+</html>

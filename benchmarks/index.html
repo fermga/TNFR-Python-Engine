@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Microbenchmarks — TNFR Python Engine</title>
+  <meta name="description" content="TNFR documentation: Microbenchmarks">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+    >
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0e0f11;
+      --panel: rgba(24, 25, 27, 0.9);
+      --border: rgba(90, 92, 95, 0.4);
+      --text: #e4e6eb;
+      --muted: #9ea4b3;
+      --accent: #6aa0ff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.6;
+      background: radial-gradient(circle at 20% 20%, #1a1c20, var(--bg));
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+        .page {
+            max-width: 960px;
+            margin: 0 auto;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 2.5rem 3rem 3rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+        header {
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+        }
+    .home-link { font-weight: 600; color: var(--text); }
+        .doc-title {
+            display: block;
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-top: 0.4rem;
+        }
+        .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-top: 1rem;
+            font-size: 0.95rem;
+            color: var(--muted);
+        }
+    main { font-size: 1rem; }
+    main h1 { font-size: 2rem; margin-top: 2.5rem; }
+        main h2 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.3rem;
+        }
+    main h3 { font-size: 1.2rem; margin-top: 1.5rem; }
+    main p { margin: 1rem 0; }
+        pre {
+            background: #0a0b0d;
+            padding: 1rem;
+            border-radius: 10px;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    code { font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; }
+        th, td {
+            border: 1px solid var(--border);
+            padding: 0.6rem 0.8rem;
+            text-align: left;
+        }
+        blockquote {
+            border-left: 4px solid var(--accent);
+            margin: 1.5rem 0;
+            padding: 0.2rem 1rem;
+            color: var(--muted);
+            background: rgba(255, 255, 255, 0.02);
+        }
+        footer {
+            border-top: 1px solid var(--border);
+            margin-top: 2.5rem;
+            padding-top: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--muted);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: space-between;
+        }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <a class="home-link" href="/TNFR-Python-Engine/">TNFR Python Engine</a>
+      <span class="doc-title">Microbenchmarks</span>
+      <div class="meta">
+        <span>Version 0.0.2 · DOI <a href="https://doi.org/10.5281/zenodo.17764207" target="_blank" rel="noopener">10.5281/zenodo.17764207</a> · Updated 2025-11-30</span>
+                <span>
+                    Source
+                    <a
+                        href="https://github.com/fermga/TNFR-Python-Engine/blob/main/benchmarks/README.md"
+                        target="_blank"
+                        rel="noopener"
+                    >
+                        benchmarks/README.md
+                    </a>
+                </span>
+      </div>
+    </header>
+    <main>
+      <h1 id="microbenchmarks">Microbenchmarks</h1>
+<blockquote>
+<p>DEPRECATION NOTICE (Docs): Benchmark documentation is developer-focused and not part of the centralized user documentation. For canonical docs, start with <code>docs/source/index.rst</code> and <code>docs/DOCUMENTATION_INDEX.md</code>.</p>
+</blockquote>
+<p>This directory hosts <strong>targeted microbenchmarks</strong> for hot paths in the TNFR
+engine. Each script isolates a specific optimisation and contrasts it with a
+reference implementation. Use them to validate performance regressions after
+refactoring core operators.</p>
+<h2 id="usage">Usage</h2>
+<div class="codehilite"><pre><span></span><code><span class="nv">PYTHONPATH</span><span class="o">=</span>src<span class="w"> </span>python<span class="w"> </span>benchmarks/&lt;script&gt;.py
+</code></pre></div>
+
+<ul>
+<li>Set <code>PYTHONPATH=src</code> so the interpreter can import the in-repo <code>tnfr</code>
+  package without installing it.</li>
+<li>Scripts emit warnings for optional dependencies (NumPy, YAML, orjson). Those
+  warnings are harmless during ad-hoc benchmarks.</li>
+</ul>
+<h3 id="reproducibility">Reproducibility</h3>
+<p>For deterministic benchmark execution with checksum verification:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Run all reproducible benchmarks with default seed (42)</span>
+make<span class="w"> </span>reproduce
+
+<span class="c1"># Run specific benchmarks with custom seed</span>
+python<span class="w"> </span>scripts/run_reproducible_benchmarks.py<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--benchmarks<span class="w"> </span>comprehensive_cache_profiler<span class="w"> </span>full_pipeline_profile<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--seed<span class="w"> </span><span class="m">123</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--output-dir<span class="w"> </span>artifacts
+
+<span class="c1"># Verify checksums against manifest</span>
+make<span class="w"> </span>reproduce-verify
+<span class="c1"># Or manually:</span>
+python<span class="w"> </span>scripts/run_reproducible_benchmarks.py<span class="w"> </span>--verify<span class="w"> </span>artifacts/manifest.json
+</code></pre></div>
+
+<p>The reproducibility script ensures:
+- Global seeds are set consistently across all benchmarks
+- Output artifacts are generated with SHA256 checksums
+- A manifest file tracks all benchmark runs for verification
+- CI can detect when benchmark outputs change unexpectedly</p>
+<h2 id="maintained-benchmarks">Maintained benchmarks</h2>
+<table>
+<thead>
+<tr>
+<th>Script</th>
+<th>Focus</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>cached_abs_max.py</code></td>
+<td>Cache-aware updates for absolute maxima (<code>tnfr.alias.set_attr_with_max</code>).</td>
+<td>Demonstrates how cached maxima avoid scanning the graph via <code>multi_recompute_abs_max</code> on every assignment.</td>
+</tr>
+<tr>
+<td><code>collect_attr.py</code></td>
+<td>Vectorised collection of nodal attributes (<code>tnfr.alias.collect_attr</code>).</td>
+<td>Requires NumPy; the script exits gracefully when the module is unavailable.</td>
+</tr>
+<tr>
+<td><code>contractive_vs_unitary.py</code></td>
+<td>Unitary vs. Lindblad ΔNFR evolution (<code>tnfr.mathematics.MathematicalDynamicsEngine</code> vs. <code>ContractiveDynamicsEngine</code>).</td>
+<td>Compares wall-clock timings and Frobenius contractivity after repeated semigroup steps.</td>
+</tr>
+<tr>
+<td><code>evolution_backend_speedup.py</code></td>
+<td>Backend comparison for evolution engines (<code>MathematicalDynamicsEngine</code>, <code>ContractiveDynamicsEngine</code>).</td>
+<td>Measures per-backend timings, speed-up ratios, and persists JSON artefacts for reproducibility.</td>
+</tr>
+<tr>
+<td><code>default_compute_delta_nfr.py</code></td>
+<td>Core ΔNFR update speed (<code>tnfr.dynamics.default_compute_delta_nfr</code>).</td>
+<td>Runs multiple passes on random graphs and reports best/median/mean/worst timings. Accepts <code>--profile</code> to dump per-function timings.</td>
+</tr>
+<tr>
+<td><code>compute_dnfr_benchmark.py</code></td>
+<td><code>_compute_dnfr</code> vectorised vs. fallback execution.</td>
+<td>Explores how graph size/density impacts the NumPy and pure-Python paths, reporting summary stats and speed-up ratios.</td>
+</tr>
+<tr>
+<td><code>compute_si_profile.py</code></td>
+<td>Sense Index profiling (<code>tnfr.metrics.sense_index.compute_Si</code>).</td>
+<td>Captures cProfile stats for NumPy and pure-Python runs, exporting <code>.pstats</code> or JSON summaries.</td>
+</tr>
+<tr>
+<td><code>full_pipeline_profile.py</code></td>
+<td>Full telemetry + ΔNFR pipeline profiling (<code>compute_Si</code>, <code>_prepare_dnfr_data</code>, <code>_compute_dnfr_common</code>, <code>default_compute_delta_nfr</code>).</td>
+<td>Produces paired <code>.pstats</code> and JSON reports for vectorised and fallback runs, supports multi-configuration chunk/worker sweeps, and records per-operator wall-clock summaries.</td>
+</tr>
+<tr>
+<td><code>neighbor_phase_mean.py</code></td>
+<td>Fast phase averaging for neighbourhoods (<code>tnfr.metrics.trig.neighbor_phase_mean</code>).</td>
+<td>Includes a <code>NodeNX</code>-based reference to highlight the benefit of the shared <code>trig_cache</code> module.</td>
+</tr>
+<tr>
+<td><code>prepare_dnfr_data.py</code></td>
+<td>ΔNFR data preparation reuse (<code>tnfr.dynamics._prepare_dnfr_data</code>).</td>
+<td>Exercises cache reuse when assembling phase/EPI/νf arrays.</td>
+</tr>
+<tr>
+<td><code>neighbor_accumulation_comparison.py</code></td>
+<td>Broadcast neighbour accumulation (<code>tnfr.dynamics.dnfr._accumulate_neighbors_numpy</code>).</td>
+<td>Benchmarks the single <code>np.add.at</code> accumulator against the legacy stack kernel; on 320 random nodes (p=0.65) with Python 3.11/NumPy 2.3.4 it delivered ~1.9× lower median runtime (0.097 s vs 0.185 s).</td>
+</tr>
+<tr>
+<td><code>riemann_program.py</code></td>
+<td>TNFR–Riemann σ-critical regression.</td>
+<td>Scans <code>H_TNFR</code> over a σ grid, estimates σ_c^{(k)}, and exports telemetry via <code>tnfr.riemann.telemetry</code> to populate <code>results/riemann_program/</code>; executed automatically by <code>make test</code> (target <code>riemann-benchmark</code>).</td>
+</tr>
+</tbody>
+</table>
+<h3 id="evolution-backend-speed-ups">Evolution backend speed-ups</h3>
+<p>Use the evolution benchmark to compare how the mathematics backends handle the unitary and contractive engines. The script honours the new CLI selector (<code>--backends</code>) and the <code>TNFR_MATH_BACKEND</code> environment variable, automatically skipping adapters when the corresponding dependencies (JAX, PyTorch) are missing. Results are reproducible thanks to the explicit RNG seed and optional JSON export:</p>
+<div class="codehilite"><pre><span></span><code><span class="nv">PYTHONPATH</span><span class="o">=</span>src<span class="w"> </span>python<span class="w"> </span>benchmarks/evolution_backend_speedup.py<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--sizes<span class="w"> </span><span class="m">2</span><span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="m">8</span><span class="w"> </span>--steps<span class="w"> </span><span class="m">16</span><span class="w"> </span>--repeats<span class="w"> </span><span class="m">3</span><span class="w"> </span>--dt<span class="w"> </span><span class="m">0</span>.05<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--output<span class="w"> </span>results/evolution_backends.json
+</code></pre></div>
+
+<p>Sample output on Python 3.11 with NumPy 2.3.4 (JAX/PyTorch unavailable) illustrates the reported tables:</p>
+<p>Unitary mean time (milliseconds per run)</p>
+<table>
+<thead>
+<tr>
+<th>dim</th>
+<th>numpy</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2</td>
+<td>1.808 ms</td>
+</tr>
+<tr>
+<td>4</td>
+<td>0.872 ms</td>
+</tr>
+</tbody>
+</table>
+<p>Contractive mean time (milliseconds per run)</p>
+<table>
+<thead>
+<tr>
+<th>dim</th>
+<th>numpy</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2</td>
+<td>1.774 ms</td>
+</tr>
+<tr>
+<td>4</td>
+<td>3.437 ms</td>
+</tr>
+</tbody>
+</table>
+<p>Unitary speed-up vs. NumPy baseline</p>
+<table>
+<thead>
+<tr>
+<th>dim</th>
+<th>numpy</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2</td>
+<td>1.000 x</td>
+</tr>
+<tr>
+<td>4</td>
+<td>1.000 x</td>
+</tr>
+</tbody>
+</table>
+<p>Contractive speed-up vs. NumPy baseline</p>
+<table>
+<thead>
+<tr>
+<th>dim</th>
+<th>numpy</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2</td>
+<td>1.000 x</td>
+</tr>
+<tr>
+<td>4</td>
+<td>1.000 x</td>
+</tr>
+</tbody>
+</table>
+<p>When additional backends are available, their columns appear automatically in all four tables (unitary timing, contractive timing, and their respective speed-up ratios).</p>
+<h3 id="broadcast-accumulator-regression-check">Broadcast accumulator regression check</h3>
+<p>The performance test suite now covers the vectorised accumulator that relies on
+<code>numpy.bincount</code> to collapse neighbour contributions. Run the slow-marked test
+to validate both speed and numerical parity against the pure-Python path:</p>
+<div class="codehilite"><pre><span></span><code><span class="nv">PYTHONPATH</span><span class="o">=</span>src<span class="w"> </span>pytest<span class="w"> </span>tests/performance/test_dynamics_performance.py<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-k<span class="w"> </span>broadcast_neighbor_accumulator_stays_faster_and_correct<span class="w"> </span>-m<span class="w"> </span>slow
+</code></pre></div>
+
+<p>The command prints per-test timings; the assertion requires the NumPy path to
+complete at least 10 % faster while matching the fallback values within
+<code>1e-9</code> relative/absolute tolerance. Use it to capture before/after measurements
+when iterating on <code>_accumulate_neighbors_broadcasted</code> or related kernels.</p>
+<h2 id="retired-scripts">Retired scripts</h2>
+<p>Older benchmarks covering glyph history trimming, usage counters, or glyph
+timing updates have been removed because the optimised paths now mirror the
+reference implementations. Keeping them would create maintenance noise without
+providing actionable performance signals.</p>
+<h2 id="profiling-workflows">Profiling workflows</h2>
+<h3 id="nfr-default-pipeline">ΔNFR default pipeline</h3>
+<p>Run the benchmark with profiling enabled to capture cumulative timings for the
+entire ΔNFR pipeline. Choose the output format that best fits your tooling:</p>
+<div class="codehilite"><pre><span></span><code><span class="nv">PYTHONPATH</span><span class="o">=</span>src<span class="w"> </span>python<span class="w"> </span>benchmarks/default_compute_delta_nfr.py<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--nodes<span class="w"> </span><span class="m">320</span><span class="w"> </span>--edge-probability<span class="w"> </span><span class="m">0</span>.22<span class="w"> </span>--repeats<span class="w"> </span><span class="m">3</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--profile<span class="w"> </span>profiles/dnfr_default.pstats
+</code></pre></div>
+
+<ul>
+<li>Use <code>--profile-format json</code> to export an ordered JSON array with the
+  <code>totaltime</code> and <code>inlinetime</code> for each function.</li>
+<li>Inspect <code>.pstats</code> files via <code>python -m pstats profiles/dnfr_default.pstats</code> and
+  sort on <code>cumtime</code> (cumulative time) or <code>tottime</code> (self time) to spot hotspots.</li>
+</ul>
+<h3 id="sense-index-vectorised-vs-fallback-paths">Sense Index vectorised vs. fallback paths</h3>
+<p>The profiling script mirrors the setup from <code>tests/performance/test_sense_performance.py</code>
+to compare vectorised and pure-Python Si computations:</p>
+<div class="codehilite"><pre><span></span><code><span class="nv">PYTHONPATH</span><span class="o">=</span>src<span class="w"> </span>python<span class="w"> </span>benchmarks/compute_si_profile.py<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--nodes<span class="w"> </span><span class="m">512</span><span class="w"> </span>--loops<span class="w"> </span><span class="m">8</span><span class="w"> </span>--format<span class="w"> </span>json<span class="w"> </span>--output-dir<span class="w"> </span>profiles
+</code></pre></div>
+
+<p>The command writes two files:</p>
+<ul>
+<li><code>compute_Si_numpy.*</code> – profile captured when NumPy is available.</li>
+<li><code>compute_Si_python.*</code> – profile captured with NumPy disabled, exercising the
+  fallback path.</li>
+</ul>
+<p>Inspect the top entries sorted by <code>cumtime</code> (cumulative time per function) to
+spot the phases consuming most wall-clock time. Compare both outputs to confirm
+that vectorisation shifts time into array primitives rather than Python loops.</p>
+<h3 id="full-pipeline-profiling-si-nfr">Full pipeline profiling (Si + ΔNFR)</h3>
+<div class="codehilite"><pre><span></span><code><span class="nv">PYTHONPATH</span><span class="o">=</span>src<span class="w"> </span>python<span class="w"> </span>benchmarks/full_pipeline_profile.py<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--nodes<span class="w"> </span><span class="m">384</span><span class="w"> </span>--edge-probability<span class="w"> </span><span class="m">0</span>.28<span class="w"> </span>--loops<span class="w"> </span><span class="m">6</span><span class="w"> </span>--output-dir<span class="w"> </span>profiles<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--si-chunk-sizes<span class="w"> </span>auto<span class="w"> </span><span class="m">2048</span><span class="w"> </span>--dnfr-chunk-sizes<span class="w"> </span>auto<span class="w"> </span><span class="m">4096</span>
+</code></pre></div>
+
+<p>The profiler iterates over the Cartesian product of the requested Si and ΔNFR
+chunk sizes (and, when provided, worker counts via <code>--si-workers</code> and
+<code>--dnfr-workers</code>). Each combination is tagged as <code>cfgXX</code> and encoded in the
+artefact name, for example
+<code>full_pipeline_vectorized_cfg01_si_auto_dn_auto_siw_auto_dnw_auto.json</code>.</p>
+<p>For every configuration + execution-mode pair the script writes matching
+<code>.pstats</code> and <code>.json</code> files. The JSON schema now includes:</p>
+<ul>
+<li><code>configuration</code> – the label, ordinal, textual description, and raw knob
+  values (<code>SI_CHUNK_SIZE</code>, <code>DNFR_CHUNK_SIZE</code>, <code>SI_N_JOBS</code>, <code>DNFR_N_JOBS</code>).</li>
+<li><code>metadata</code> – runtime context covering vectorisation, graph size, and the
+  requested/resolved chunk sizes and worker counts applied to the seeded graph.</li>
+<li><code>operator_totals</code> – raw wall-clock totals for each explicit operator call in
+  the benchmark loop.</li>
+<li><code>operator_timings</code> – totals and per-loop averages per operator (mirrored under
+  <code>manual_timings</code> for backwards compatibility).</li>
+<li><code>compute_Si_breakdown</code> – wall-clock totals, per-loop averages, and execution
+  path counts for the Sense Index sub-stages (cache rebuilds, vectorised
+  neighbour aggregation, normalisation/clamp, and in-place writes). Use the
+  <code>path_counts</code> entry to verify whether the NumPy kernels or the pure-Python
+  fallback handled the run.</li>
+<li><code>target_functions</code> – cumulative profiler statistics (<code>cumtime</code>, <code>totaltime</code>)
+  for the four canonical operators. Use this section to compare how much time
+  each function spends (including callees) in vectorised vs. fallback modes.</li>
+<li><code>rows</code> – the complete, sorted profiler table, matching the <code>.pstats</code> export.
+  Inspect it when a hotspot needs deeper call-tree analysis.</li>
+</ul>
+<p>Contrast the vectorised and fallback JSON summaries to confirm that NumPy shifts
+most cumulative time from <code>_compute_dnfr_common</code> into array-based kernels and
+that <code>compute_Si</code> benefits from the same optimisation. The console output now
+prints the same Sense Index breakdown, making it easier to spot whether cache
+reconstruction or neighbour aggregation dominates the runtime. Cross-check the
+<code>path_counts</code> field—vectorised runs should report NumPy activity while fallback
+profiles stay in the Python bucket. Significant regressions should surface as
+higher <code>cumtime</code> values or inflated per-loop wall-clock figures across both the
+top-level operator timings and the Si sub-stages.</p>
+<h3 id="_compute_dnfr-vectorisation-checks"><code>_compute_dnfr</code> vectorisation checks</h3>
+<p>Use the microbenchmark to compare the NumPy and pure-Python branches directly
+across multiple graph sizes and densities:</p>
+<div class="codehilite"><pre><span></span><code><span class="nv">PYTHONPATH</span><span class="o">=</span>src<span class="w"> </span>python<span class="w"> </span>benchmarks/compute_dnfr_benchmark.py<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--nodes<span class="w"> </span><span class="m">192</span><span class="w"> </span><span class="m">384</span><span class="w"> </span><span class="m">768</span><span class="w"> </span>--edge-probabilities<span class="w"> </span><span class="m">0</span>.05<span class="w"> </span><span class="m">0</span>.12<span class="w"> </span><span class="m">0</span>.3<span class="w"> </span>--repeats<span class="w"> </span><span class="m">8</span>
+</code></pre></div>
+
+<p>The output prints a compact table per configuration with:</p>
+<ul>
+<li><strong>Vectorised best/median/mean/worst</strong> – summary timings in seconds when
+  NumPy is available.</li>
+<li><strong>Fallback best/median/mean/worst</strong> – the pure-Python execution statistics.</li>
+<li><strong>Ratio (fallback ÷ vectorized)</strong> – the average slow-down when vectorisation
+  is disabled. Ratios significantly above <code>1.00×</code> confirm that dense kernels are
+  exercised and provide a guardrail for regressions.</li>
+</ul>
+<p>Pass <code>--force-dense</code> to ensure the dense accumulator path is exercised when the
+automatic heuristics might prefer sparse accumulation. The script gracefully
+degrades to reporting only the fallback timings whenever NumPy is unavailable.</p>
+<h3 id="chunked-execution-switches">Chunked execution switches</h3>
+<p>Both benchmarks honour the new batching knobs exposed by the engine:</p>
+<ul>
+<li>Set <code>graph.graph["SI_CHUNK_SIZE"] = 2048</code> (or pass
+  <code>chunk_size=2048</code> when calling <code>compute_Si</code>) inside
+  <code>compute_si_profile.py</code> to process nodes in deterministic batches. This is
+  helpful when profiling large (&gt;10k nodes) graphs on memory-constrained
+  machines.</li>
+<li>Set <code>graph.graph["DNFR_CHUNK_SIZE"] = 4096</code> before invoking
+  <code>default_compute_delta_nfr</code> to bound the accumulator size in the ΔNFR
+  benchmark. Larger chunks favour throughput, while smaller ones keep the
+  temporary buffers inside stricter memory budgets.</li>
+</ul>
+<p>Leave both settings unset for medium-sized runs; the automatic heuristics use
+CPU availability and a conservative memory estimate to choose a balanced chunk
+size.</p>
+<h2 id="cache-profiling">Cache Profiling</h2>
+<h3 id="comprehensive-cache-analysis">Comprehensive Cache Analysis</h3>
+<p>The <code>comprehensive_cache_profiler.py</code> tool tracks buffer allocation effectiveness across all TNFR hot paths:</p>
+<div class="codehilite"><pre><span></span><code><span class="nv">PYTHONPATH</span><span class="o">=</span>src<span class="w"> </span>python<span class="w"> </span>benchmarks/comprehensive_cache_profiler.py<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--nodes<span class="w"> </span><span class="m">200</span><span class="w"> </span>--steps<span class="w"> </span><span class="m">50</span><span class="w"> </span>--buffer-cache-size<span class="w"> </span><span class="m">256</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--output<span class="w"> </span>cache_report.json
+</code></pre></div>
+
+<p><strong>Key Metrics Reported:</strong></p>
+<ul>
+<li><strong>Buffer Reuse Rate</strong>: Should remain near 100% (indicates effective buffer caching)</li>
+<li><strong>Edge Cache Hit Rate</strong>: Per-hot-path buffer allocation cache effectiveness</li>
+<li><strong>TNFR Cache Hit Rate</strong>: DNFR preparation state and structural cache hits</li>
+<li><strong>Cache Entry Count</strong>: Memory usage tracking</li>
+</ul>
+<p><strong>Sample Results</strong> (100 nodes, 20 steps):</p>
+<ul>
+<li><code>coherence_matrix</code>: 97.5% hit rate, 100% buffer reuse ⭐</li>
+<li><code>default_compute_delta_nfr</code>: 96.7% hit rate, 100% buffer reuse ⭐</li>
+<li><code>sense_index</code>: 0.7% hit rate, 100% buffer reuse (expected - creates new structural arrays)</li>
+<li><code>dnfr_laplacian</code>: 0.0% hit rate, 100% buffer reuse (by design - stateless gradients)</li>
+</ul>
+<p>For detailed analysis see <code>docs/CACHE_OPTIMIZATION_ANALYSIS.md</code> and <code>ARCHITECTURE.md</code>.</p>
+<p><strong>Usage Examples:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Basic profiling</span>
+python<span class="w"> </span>benchmarks/comprehensive_cache_profiler.py<span class="w"> </span>--nodes<span class="w"> </span><span class="m">100</span><span class="w"> </span>--steps<span class="w"> </span><span class="m">20</span>
+
+<span class="c1"># Detailed per-step metrics</span>
+python<span class="w"> </span>benchmarks/comprehensive_cache_profiler.py<span class="w"> </span>--nodes<span class="w"> </span><span class="m">200</span><span class="w"> </span>--steps<span class="w"> </span><span class="m">50</span><span class="w"> </span>--verbose
+
+<span class="c1"># Export JSON report</span>
+python<span class="w"> </span>benchmarks/comprehensive_cache_profiler.py<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--nodes<span class="w"> </span><span class="m">150</span><span class="w"> </span>--steps<span class="w"> </span><span class="m">30</span><span class="w"> </span>--buffer-cache-size<span class="w"> </span><span class="m">256</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--output<span class="w"> </span>cache_analysis.json
+
+<span class="c1"># Test different cache sizes</span>
+python<span class="w"> </span>benchmarks/comprehensive_cache_profiler.py<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--nodes<span class="w"> </span><span class="m">500</span><span class="w"> </span>--steps<span class="w"> </span><span class="m">100</span><span class="w"> </span>--buffer-cache-size<span class="w"> </span><span class="m">512</span>
+</code></pre></div>
+
+<p><strong>Interpreting Results:</strong></p>
+<ol>
+<li><strong>Buffer Reuse Rate = 100%</strong> ✅ Optimal - buffers are being reused perfectly</li>
+<li><strong>Buffer Reuse Rate &lt; 95%</strong> ⚠️ Investigation needed - possible cache thrashing</li>
+<li><strong>High Edge Cache Misses + 100% Buffer Reuse</strong> ✅ Normal for Si/Laplacian (creates new entries but reuses buffers)</li>
+<li><strong>High Eviction Rate</strong> ⚠️ Consider increasing <code>--buffer-cache-size</code></li>
+</ol>
+<p>The comprehensive profiler supersedes the basic <code>cache_hot_path_profiler.py</code> by tracking all cache layers.</p>
+    </main>
+    <footer>
+            <span>
+                &copy; 2025
+                TNFR Python Engine — Licensed under MIT.
+            </span>
+            <span>
+                Feedback?
+                <a
+                    href="https://github.com/fermga/TNFR-Python-Engine"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    Open an issue
+                </a>.
+            </span>
+    </footer>
+  </div>
+</body>
+</html>

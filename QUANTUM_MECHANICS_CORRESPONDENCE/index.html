@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Quantum Correspondence Memo — TNFR Python Engine</title>
+  <meta name="description" content="TNFR documentation: Quantum Correspondence Memo">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+    >
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0e0f11;
+      --panel: rgba(24, 25, 27, 0.9);
+      --border: rgba(90, 92, 95, 0.4);
+      --text: #e4e6eb;
+      --muted: #9ea4b3;
+      --accent: #6aa0ff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.6;
+      background: radial-gradient(circle at 20% 20%, #1a1c20, var(--bg));
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+        .page {
+            max-width: 960px;
+            margin: 0 auto;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 2.5rem 3rem 3rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+        header {
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+        }
+    .home-link { font-weight: 600; color: var(--text); }
+        .doc-title {
+            display: block;
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-top: 0.4rem;
+        }
+        .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-top: 1rem;
+            font-size: 0.95rem;
+            color: var(--muted);
+        }
+    main { font-size: 1rem; }
+    main h1 { font-size: 2rem; margin-top: 2.5rem; }
+        main h2 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.3rem;
+        }
+    main h3 { font-size: 1.2rem; margin-top: 1.5rem; }
+    main p { margin: 1rem 0; }
+        pre {
+            background: #0a0b0d;
+            padding: 1rem;
+            border-radius: 10px;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    code { font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; }
+        th, td {
+            border: 1px solid var(--border);
+            padding: 0.6rem 0.8rem;
+            text-align: left;
+        }
+        blockquote {
+            border-left: 4px solid var(--accent);
+            margin: 1.5rem 0;
+            padding: 0.2rem 1rem;
+            color: var(--muted);
+            background: rgba(255, 255, 255, 0.02);
+        }
+        footer {
+            border-top: 1px solid var(--border);
+            margin-top: 2.5rem;
+            padding-top: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--muted);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: space-between;
+        }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <a class="home-link" href="/TNFR-Python-Engine/">TNFR Python Engine</a>
+      <span class="doc-title">Quantum Correspondence Memo</span>
+      <div class="meta">
+        <span>Version 0.0.2 · DOI <a href="https://doi.org/10.5281/zenodo.17764207" target="_blank" rel="noopener">10.5281/zenodo.17764207</a> · Updated 2025-11-30</span>
+                <span>
+                    Source
+                    <a
+                        href="https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/QUANTUM_MECHANICS_CORRESPONDENCE.md"
+                        target="_blank"
+                        rel="noopener"
+                    >
+                        theory/QUANTUM_MECHANICS_CORRESPONDENCE.md
+                    </a>
+                </span>
+      </div>
+    </header>
+    <main>
+      <h1 id="quantum-correspondence-memo">Quantum Correspondence Memo</h1>
+<p><strong>Status</strong>: Technical reference<br>
+<strong>Version</strong>: 0.3.0 (November 30, 2025)<br>
+<strong>Owner</strong>: <code>theory/QUANTUM_MECHANICS_CORRESPONDENCE.md</code></p>
+<hr>
+<h2 id="1-scope">1. Scope</h2>
+<p>Summarize how the high-dissonance regime of TNFR reproduces standard quantum-mechanical behavior, document the mapping of observables, and link to reproducible simulations. Serve as the reference for <code>examples/13_quantum_mechanics_demo.py</code> and related experiments.</p>
+<hr>
+<h2 id="2-correspondence-table">2. Correspondence Table</h2>
+<table>
+<thead>
+<tr>
+<th>Quantum quantity</th>
+<th>Symbol</th>
+<th>TNFR analogue</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Wavefunction</td>
+<td>(\psi)</td>
+<td>Complex structural field (\Psi = K_\phi + i J_\phi)</td>
+<td>Store both curvature and current components.</td>
+</tr>
+<tr>
+<td>Energy</td>
+<td>(E)</td>
+<td>Structural frequency (\nu_f)</td>
+<td>Proportional via domain-specific constant.</td>
+</tr>
+<tr>
+<td>Potential</td>
+<td>(V(x))</td>
+<td>Structural potential (\Phi_s(x))</td>
+<td>Use identical boundary conditions.</td>
+</tr>
+<tr>
+<td>Quantum number</td>
+<td>(n)</td>
+<td>Winding number (w)</td>
+<td>Enforced via (\oint \nabla \phi = 2\pi w).</td>
+</tr>
+<tr>
+<td>Collapse</td>
+<td>-</td>
+<td>Decoherence via stabilizers (<code>IL</code>, <code>SHA</code>)</td>
+<td>Implementation follows grammar rule U2.</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="3-quantization-mechanism">3. Quantization Mechanism</h2>
+<ol>
+<li><strong>Evolution</strong> - Nodes follow (\partial \text{EPI} / \partial t = \nu_f \Delta \text{NFR}).  </li>
+<li><strong>Boundary feedback</strong> - Reflections inside finite domains superimpose outgoing and incoming phase waves.  </li>
+<li><strong>Interference outcome</strong> - Coherent modes occur when accumulated phase matches integer multiples of (2\pi); otherwise (|\nabla \phi|) spikes and coherence degrades.  </li>
+<li><strong>Selection</strong> - Stabilizers drive the system toward minimal (\Delta \text{NFR}), leaving only resonant modes. Quantized spectra arise without adding axioms.</li>
+</ol>
+<p>Telemetry requirements: log (C(t)), (\nu_f(t)), winding number estimates, and structural potential profiles for each run in <code>results/quantum_demo/run_&lt;seed&gt;.csv</code>.</p>
+<hr>
+<h2 id="4-one-dimensional-cavity-benchmark">4. One-Dimensional Cavity Benchmark</h2>
+<p>Experiment steps implemented in <code>examples/13_quantum_mechanics_demo.py</code>:</p>
+<ol>
+<li>Define cavity length (L) and boundary operators enforcing reflective conditions.  </li>
+<li>Initialize node with random (\nu_f) and phase profile while keeping (C(t_0)) above 0.6.  </li>
+<li>Integrate using the high-dissonance solver until (\nu_f) converges or a timeout occurs.  </li>
+<li>Record converged frequencies (\nu_n), standing-wave shapes, and convergence rates.</li>
+</ol>
+<p>Expected outcome: discrete (\nu_n) proportional to (n^2) (for linear dispersion) or (n) (for other media). Deviations should be flagged with the seed and configuration file for review.</p>
+<hr>
+<h2 id="5-artifacts">5. Artifacts</h2>
+<ul>
+<li><code>results/quantum_demo/01_quantization_levels.png</code> - histogram of observed (\nu_n).  </li>
+<li><code>results/quantum_demo/02_convergence.png</code> - time series of coherence and (\nu_f) per run.  </li>
+<li><code>results/quantum_demo/03_wavefunctions.png</code> - reconstructed (\Psi) amplitudes for the first few modes.  </li>
+<li><code>results/quantum_demo/run_&lt;seed&gt;.csv</code> - full telemetry with (C(t)), (\nu_f), (|\nabla \phi|), and winding numbers.</li>
+</ul>
+<p>Ensure files include metadata (seed, cavity length, integration step, operator schedule).</p>
+<hr>
+<h2 id="6-outstanding-work">6. Outstanding Work</h2>
+<ol>
+<li>Add uncertainty quantification by rerunning the benchmark over randomized boundary conditions and reporting (\nu_n) variance.  </li>
+<li>Extend mapping examples to multi-node entanglement analogues (phase-locked pairs) with explicit telemetry.  </li>
+<li>Integrate these runs into CI so quantization regressions fail when discretization artifacts appear.</li>
+</ol>
+    </main>
+    <footer>
+            <span>
+                &copy; 2025
+                TNFR Python Engine — Licensed under MIT.
+            </span>
+            <span>
+                Feedback?
+                <a
+                    href="https://github.com/fermga/TNFR-Python-Engine"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    Open an issue
+                </a>.
+            </span>
+    </footer>
+  </div>
+</body>
+</html>

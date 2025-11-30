@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Geocentric Dynamics Memo — TNFR Python Engine</title>
+  <meta name="description" content="TNFR documentation: Geocentric Dynamics Memo">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+    >
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0e0f11;
+      --panel: rgba(24, 25, 27, 0.9);
+      --border: rgba(90, 92, 95, 0.4);
+      --text: #e4e6eb;
+      --muted: #9ea4b3;
+      --accent: #6aa0ff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.6;
+      background: radial-gradient(circle at 20% 20%, #1a1c20, var(--bg));
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+        .page {
+            max-width: 960px;
+            margin: 0 auto;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 2.5rem 3rem 3rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+        header {
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+        }
+    .home-link { font-weight: 600; color: var(--text); }
+        .doc-title {
+            display: block;
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-top: 0.4rem;
+        }
+        .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-top: 1rem;
+            font-size: 0.95rem;
+            color: var(--muted);
+        }
+    main { font-size: 1rem; }
+    main h1 { font-size: 2rem; margin-top: 2.5rem; }
+        main h2 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.3rem;
+        }
+    main h3 { font-size: 1.2rem; margin-top: 1.5rem; }
+    main p { margin: 1rem 0; }
+        pre {
+            background: #0a0b0d;
+            padding: 1rem;
+            border-radius: 10px;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    code { font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; }
+        th, td {
+            border: 1px solid var(--border);
+            padding: 0.6rem 0.8rem;
+            text-align: left;
+        }
+        blockquote {
+            border-left: 4px solid var(--accent);
+            margin: 1.5rem 0;
+            padding: 0.2rem 1rem;
+            color: var(--muted);
+            background: rgba(255, 255, 255, 0.02);
+        }
+        footer {
+            border-top: 1px solid var(--border);
+            margin-top: 2.5rem;
+            padding-top: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--muted);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: space-between;
+        }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <a class="home-link" href="/TNFR-Python-Engine/">TNFR Python Engine</a>
+      <span class="doc-title">Geocentric Dynamics Memo</span>
+      <div class="meta">
+        <span>Version 0.0.2 · DOI <a href="https://doi.org/10.5281/zenodo.17764207" target="_blank" rel="noopener">10.5281/zenodo.17764207</a> · Updated 2025-11-30</span>
+                <span>
+                    Source
+                    <a
+                        href="https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/GEOCENTRIC_DYNAMICS.md"
+                        target="_blank"
+                        rel="noopener"
+                    >
+                        theory/GEOCENTRIC_DYNAMICS.md
+                    </a>
+                </span>
+      </div>
+    </header>
+    <main>
+      <h1 id="geocentric-dynamics-memo">Geocentric Dynamics Memo</h1>
+<p><strong>Status</strong>: Technical reference<br>
+<strong>Version</strong>: 0.2.0 (November 30, 2025)<br>
+<strong>Owner</strong>: <code>theory/GEOCENTRIC_DYNAMICS.md</code></p>
+<hr>
+<h2 id="1-scope">1. Scope</h2>
+<p>Model apparent planetary motion from Earth using TNFR phase-field representations with reproducible simulation steps and telemetry. This memo specifies inputs, integration workflow, and validation criteria.</p>
+<hr>
+<h2 id="2-phase-field-formulation">2. Phase-Field Formulation</h2>
+<p>Parameterize the sky plane in polar coordinates ((r, \theta)) and define:</p>
+<ol>
+<li>Background rotation (\phi_{bg}(\theta, t) = \omega_{bg} t).  </li>
+<li>Solar driver (\phi_{\odot}(t) = \omega_{\odot} t + \phi_0).  </li>
+<li>Planetary evolution:
+    [
+    \frac{d}{dt} \text{EPI}<em>p = \nu_f^p \Delta \text{NFR}(\phi</em>{bg}, \phi_{\odot}).
+    ]</li>
+</ol>
+<p>Retrograde loops appear when (\dot{\phi}<em>{\odot} - \dot{\phi}</em>{bg}) changes sign locally.</p>
+<p>Telemetry requirements: track (C(t)), (\Phi_s), (|\nabla \phi|), applied operators, and ephemeris references.</p>
+<hr>
+<h2 id="3-simulation-workflow">3. Simulation Workflow</h2>
+<ol>
+<li>Load (\omega_{bg}) and (\omega_{\odot}) from astronomical datasets.  </li>
+<li>Configure operator sequences satisfying U1–U6; record seeds and schedules.  </li>
+<li>Integrate planetary nodes across the desired time window.  </li>
+<li>Produce trajectory plots (e.g., spirograph patterns) and store data under <code>results/geocentric_dynamics/</code>.  </li>
+<li>Document assumptions (projection, coordinate transforms, observation site).</li>
+</ol>
+<hr>
+<h2 id="4-validation">4. Validation</h2>
+<ul>
+<li>Compare simulated retrograde intervals with JPL ephemerides; report phase/timing residuals.  </li>
+<li>Run statistical checks to ensure deviations stay within configured tolerances.  </li>
+<li>Include raw comparison tables (CSV) for peer review.</li>
+</ul>
+<hr>
+<h2 id="5-outstanding-tasks">5. Outstanding Tasks</h2>
+<ol>
+<li>Automate ephemeris ingestion and comparison in <code>benchmarks/</code>.  </li>
+<li>Add sensitivity analysis for (\omega_{bg}) perturbations.  </li>
+<li>Document limitations (atmospheric refraction, observation geometry) affecting telemetry.</li>
+</ol>
+    </main>
+    <footer>
+            <span>
+                &copy; 2025
+                TNFR Python Engine — Licensed under MIT.
+            </span>
+            <span>
+                Feedback?
+                <a
+                    href="https://github.com/fermga/TNFR-Python-Engine"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    Open an issue
+                </a>.
+            </span>
+    </footer>
+  </div>
+</body>
+</html>

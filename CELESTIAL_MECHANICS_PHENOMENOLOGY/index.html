@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Celestial Mechanics Phenomenology Memo — TNFR Python Engine</title>
+  <meta name="description" content="TNFR documentation: Celestial Mechanics Phenomenology Memo">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+    >
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0e0f11;
+      --panel: rgba(24, 25, 27, 0.9);
+      --border: rgba(90, 92, 95, 0.4);
+      --text: #e4e6eb;
+      --muted: #9ea4b3;
+      --accent: #6aa0ff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.6;
+      background: radial-gradient(circle at 20% 20%, #1a1c20, var(--bg));
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+        .page {
+            max-width: 960px;
+            margin: 0 auto;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 2.5rem 3rem 3rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+        header {
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+        }
+    .home-link { font-weight: 600; color: var(--text); }
+        .doc-title {
+            display: block;
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-top: 0.4rem;
+        }
+        .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-top: 1rem;
+            font-size: 0.95rem;
+            color: var(--muted);
+        }
+    main { font-size: 1rem; }
+    main h1 { font-size: 2rem; margin-top: 2.5rem; }
+        main h2 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.3rem;
+        }
+    main h3 { font-size: 1.2rem; margin-top: 1.5rem; }
+    main p { margin: 1rem 0; }
+        pre {
+            background: #0a0b0d;
+            padding: 1rem;
+            border-radius: 10px;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    code { font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; }
+        th, td {
+            border: 1px solid var(--border);
+            padding: 0.6rem 0.8rem;
+            text-align: left;
+        }
+        blockquote {
+            border-left: 4px solid var(--accent);
+            margin: 1.5rem 0;
+            padding: 0.2rem 1rem;
+            color: var(--muted);
+            background: rgba(255, 255, 255, 0.02);
+        }
+        footer {
+            border-top: 1px solid var(--border);
+            margin-top: 2.5rem;
+            padding-top: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--muted);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: space-between;
+        }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <a class="home-link" href="/TNFR-Python-Engine/">TNFR Python Engine</a>
+      <span class="doc-title">Celestial Mechanics Phenomenology Memo</span>
+      <div class="meta">
+        <span>Version 0.0.2 · DOI <a href="https://doi.org/10.5281/zenodo.17764207" target="_blank" rel="noopener">10.5281/zenodo.17764207</a> · Updated 2025-11-30</span>
+                <span>
+                    Source
+                    <a
+                        href="https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/CELESTIAL_MECHANICS_PHENOMENOLOGY.md"
+                        target="_blank"
+                        rel="noopener"
+                    >
+                        theory/CELESTIAL_MECHANICS_PHENOMENOLOGY.md
+                    </a>
+                </span>
+      </div>
+    </header>
+    <main>
+      <h1 id="celestial-mechanics-phenomenology-memo">Celestial Mechanics Phenomenology Memo</h1>
+<p><strong>Status</strong>: Technical reference<br>
+<strong>Version</strong>: 0.2.0 (November 30, 2025)<br>
+<strong>Owner</strong>: <code>theory/CELESTIAL_MECHANICS_PHENOMENOLOGY.md</code></p>
+<hr>
+<h2 id="1-scope">1. Scope</h2>
+<p>Define reproducible experiments for modeling observed orbital behavior via TNFR observables ((\nu_f, \Phi_s, |\nabla \phi|, K_\phi)). Emphasize telemetry, operator schedules, and validation criteria instead of qualitative narratives.</p>
+<hr>
+<h2 id="2-phase-gradient-model">2. Phase-Gradient Model</h2>
+<ul>
+<li>Central node phase field:
+    [
+    \phi(r, \theta, t) = \omega_0 t - k r + m \theta.
+    ]</li>
+<li>Secondary nodes minimize (|\Delta \phi|) under the nodal equation, yielding effective attraction.  </li>
+<li>Stability requirements: (|\nabla \phi| &lt; 0.2904), coupling via <code>UM</code>/<code>RA</code> must satisfy U3, and <code>OZ</code> events signal resonance loss.</li>
+</ul>
+<p>Telemetry: log phase gradients, coherence, and applied operators for every run.</p>
+<hr>
+<h2 id="3-orbit-construction-workflow">3. Orbit Construction Workflow</h2>
+<ol>
+<li>Define 2D domain (projection of visible sky).  </li>
+<li>Initialize vortex field with specified (\omega_0) and radial decay parameters (store in config file).  </li>
+<li>Integrate node trajectories using phase-gradient feedback only.  </li>
+<li>Record (C(t)), (\Phi_s), (K_\phi), and trajectory geometry.  </li>
+<li>Compare resulting limit cycles with observational ephemerides; report residuals (phase, distance).</li>
+</ol>
+<hr>
+<h2 id="4-interpretation-guidelines">4. Interpretation Guidelines</h2>
+<ul>
+<li>Identify regions where (|\Delta \phi|) remains constant to classify circular/elliptical paths.  </li>
+<li>Deviations show up as shifts in (K_\phi) and reductions in coherence; document thresholds triggering correction operators.  </li>
+<li>Kepler-like relations emerge from synchronization rather than imposed force laws; support conclusions with telemetry plots.</li>
+</ul>
+<hr>
+<h2 id="5-next-actions">5. Next Actions</h2>
+<ol>
+<li>Add automated comparison against JPL ephemerides in <code>benchmarks/</code>.  </li>
+<li>Publish reference datasets (phase fields, trajectories, telemetry) under <code>results/celestial_mechanics/</code>.  </li>
+<li>Study sensitivity to (\omega_0) perturbations and document tolerance bands.</li>
+</ol>
+    </main>
+    <footer>
+            <span>
+                &copy; 2025
+                TNFR Python Engine — Licensed under MIT.
+            </span>
+            <span>
+                Feedback?
+                <a
+                    href="https://github.com/fermga/TNFR-Python-Engine"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    Open an issue
+                </a>.
+            </span>
+    </footer>
+  </div>
+</body>
+</html>

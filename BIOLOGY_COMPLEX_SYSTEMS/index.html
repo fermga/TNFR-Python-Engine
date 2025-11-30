@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TNFR Biology &amp; Complex Systems Memo — TNFR Python Engine</title>
+  <meta name="description" content="TNFR documentation: TNFR Biology &amp; Complex Systems Memo">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+    >
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0e0f11;
+      --panel: rgba(24, 25, 27, 0.9);
+      --border: rgba(90, 92, 95, 0.4);
+      --text: #e4e6eb;
+      --muted: #9ea4b3;
+      --accent: #6aa0ff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.6;
+      background: radial-gradient(circle at 20% 20%, #1a1c20, var(--bg));
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+        .page {
+            max-width: 960px;
+            margin: 0 auto;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 2.5rem 3rem 3rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+        header {
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+        }
+    .home-link { font-weight: 600; color: var(--text); }
+        .doc-title {
+            display: block;
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-top: 0.4rem;
+        }
+        .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-top: 1rem;
+            font-size: 0.95rem;
+            color: var(--muted);
+        }
+    main { font-size: 1rem; }
+    main h1 { font-size: 2rem; margin-top: 2.5rem; }
+        main h2 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.3rem;
+        }
+    main h3 { font-size: 1.2rem; margin-top: 1.5rem; }
+    main p { margin: 1rem 0; }
+        pre {
+            background: #0a0b0d;
+            padding: 1rem;
+            border-radius: 10px;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    code { font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; }
+        th, td {
+            border: 1px solid var(--border);
+            padding: 0.6rem 0.8rem;
+            text-align: left;
+        }
+        blockquote {
+            border-left: 4px solid var(--accent);
+            margin: 1.5rem 0;
+            padding: 0.2rem 1rem;
+            color: var(--muted);
+            background: rgba(255, 255, 255, 0.02);
+        }
+        footer {
+            border-top: 1px solid var(--border);
+            margin-top: 2.5rem;
+            padding-top: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--muted);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: space-between;
+        }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <a class="home-link" href="/TNFR-Python-Engine/">TNFR Python Engine</a>
+      <span class="doc-title">TNFR Biology &amp; Complex Systems Memo</span>
+      <div class="meta">
+        <span>Version 0.0.2 · DOI <a href="https://doi.org/10.5281/zenodo.17764207" target="_blank" rel="noopener">10.5281/zenodo.17764207</a> · Updated 2025-11-30</span>
+                <span>
+                    Source
+                    <a
+                        href="https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/BIOLOGY_COMPLEX_SYSTEMS.md"
+                        target="_blank"
+                        rel="noopener"
+                    >
+                        theory/BIOLOGY_COMPLEX_SYSTEMS.md
+                    </a>
+                </span>
+      </div>
+    </header>
+    <main>
+      <h1 id="tnfr-biology-complex-systems-memo">TNFR Biology &amp; Complex Systems Memo</h1>
+<p><strong>Status</strong>: Analytical memo<br>
+<strong>Version</strong>: 0.3.0 (November 30, 2025)<br>
+<strong>Owner</strong>: <code>theory/BIOLOGY_COMPLEX_SYSTEMS.md</code></p>
+<hr>
+<h2 id="1-purpose-and-definitions">1. Purpose and Definitions</h2>
+<p>This note specifies how “life-like” behavior is evaluated inside TNFR simulations. Life is treated as a self-stabilizing region of the structural field where coherence remains above a configured threshold while the rest of the lattice relaxes. No philosophical claims are made; only reproducible criteria are accepted.</p>
+<h3 id="working-definition">Working Definition</h3>
+<p>An aggregate qualifies as “biologically active” when:</p>
+<ol>
+<li>(C(t) \geq C_{th}) over a dwell window (\Delta t).</li>
+<li>The operators used to maintain the state conform to grammar rules (e.g., destabilizers followed by stabilizers per U2/U4).</li>
+<li>Telemetry shows bounded structural pressure: (\int_{t_0}^{t_0+\Delta t} \nu_f(\tau) \Delta \text{NFR}(\tau) d\tau &lt; \kappa).</li>
+</ol>
+<p>These are measurable conditions implementable in code/tests.</p>
+<hr>
+<h2 id="2-modeling-stack">2. Modeling Stack</h2>
+<table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>Description</th>
+<th>Implementation Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Lattice</td>
+<td>Discrete grid or graph hosting TNFR nodes.</td>
+<td>Define boundary conditions (periodic/Neumann) and seed.</td>
+</tr>
+<tr>
+<td>Operator scheduler</td>
+<td>Applies sequences such as <code>[AL, VAL, IL]</code>.</td>
+<td>Must log operator order for audit trails.</td>
+</tr>
+<tr>
+<td>Telemetry engine</td>
+<td>Computes (C(t)), (\lvert \nabla \phi \rvert), (K_\phi), (\xi_C).</td>
+<td>Required for validation and comparisons.</td>
+</tr>
+<tr>
+<td>Analysis suite</td>
+<td>Detects “life-like” regions using coherence thresholds.</td>
+<td>Provide CSV + plots in <code>results/biology_complex_systems/</code>.</td>
+</tr>
+</tbody>
+</table>
+<p>All components should expose deterministic seeds so experiments can be rerun.</p>
+<hr>
+<h2 id="3-emergence-experiments">3. Emergence Experiments</h2>
+<h3 id="31-random-synchronization-baseline">3.1 Random Synchronization Baseline</h3>
+<p>Run a lattice with stochastic initial phases and no feedback operators to quantify background synchronization probability.</p>
+<ul>
+<li>Input: lattice size (N), noise spectrum, diffusion coefficient.  </li>
+<li>Output: histogram of cluster sizes surpassing (C_{th}) and their lifetimes.  </li>
+<li>Purpose: establishes the null model for comparison.</li>
+</ul>
+<h3 id="32-feedback-enabled-growth">3.2 Feedback-enabled Growth</h3>
+<p>Introduce operator sequences <code>[AL, EN, IL, RA]</code> to study whether coherence persists longer than the baseline. All parameters (gain, frequency, nutrient budget) must be recorded. Analyze:</p>
+<ul>
+<li>Change in average (C(t)) relative to control.  </li>
+<li>Energy budget: cumulative (\nu_f \Delta \text{NFR}).  </li>
+<li>Sensitivity to threshold variations.</li>
+</ul>
+<h3 id="33-controlled-bifurcation">3.3 Controlled Bifurcation</h3>
+<p>Implement <code>[VAL, OZ, THOL, IL]</code> to test whether expansion leads to repeatable division events. Criteria:</p>
+<ol>
+<li><code>OZ</code> must elevate (|\nabla \phi|) beyond a scripted limit.  </li>
+<li><code>THOL</code> should create child EPIs whose coherence remains within tolerance of the parent.  </li>
+<li><code>IL</code> must restore (C(t)) above (C_{th}) within a fixed recovery time.</li>
+</ol>
+<p>Record the before/after coherence lengths (\xi_C) and publish the time-series data.</p>
+<hr>
+<h2 id="4-simulation-template">4. Simulation Template</h2>
+<ol>
+<li>Initialize lattice and set random seed.  </li>
+<li>Apply emission (<code>AL</code>) to the seed region.  </li>
+<li>Loop through operator schedule, logging after every iteration.  </li>
+<li>Compute telemetry and annotate frames when criteria for activity/bifurcation are met.  </li>
+<li>Export artifacts:  </li>
+<li><code>results/biology_complex_systems/run_&lt;seed&gt;.csv</code> (telemetry).  </li>
+<li><code>results/biology_complex_systems/run_&lt;seed&gt;.mp4</code> (optional visualization).  </li>
+<li>Document configuration in <code>results/biology_complex_systems/run_&lt;seed&gt;.yml</code> including operator parameters, thresholds, and boundary conditions.</li>
+</ol>
+<hr>
+<h2 id="5-validation-and-reporting">5. Validation and Reporting</h2>
+<ul>
+<li>Include control runs for every experiment.  </li>
+<li>Provide statistical comparisons (e.g., differences in survival time) with p-values or confidence intervals.  </li>
+<li>Share notebooks/scripts used for analysis under <code>notebooks/biology_complex_systems/</code>.  </li>
+<li>Avoid extrapolating results beyond what telemetry supports; statements about “purpose” or “meaning” are out of scope.</li>
+</ul>
+<hr>
+<h2 id="6-outstanding-work">6. Outstanding Work</h2>
+<ol>
+<li>Add automated regression tests verifying that benchmark simulations reproduce expected coherence curves.  </li>
+<li>Extend the telemetry module to report nutrient/energy budgets so metabolic analogies are quantitative.  </li>
+<li>Investigate adaptive scheduling strategies (time-varying operator gains) and report whether they improve stability.</li>
+</ol>
+    </main>
+    <footer>
+            <span>
+                &copy; 2025
+                TNFR Python Engine — Licensed under MIT.
+            </span>
+            <span>
+                Feedback?
+                <a
+                    href="https://github.com/fermga/TNFR-Python-Engine"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    Open an issue
+                </a>.
+            </span>
+    </footer>
+  </div>
+</body>
+</html>

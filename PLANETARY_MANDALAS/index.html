@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Planetary Mandalas Memo — TNFR Python Engine</title>
+  <meta name="description" content="TNFR documentation: Planetary Mandalas Memo">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+    >
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0e0f11;
+      --panel: rgba(24, 25, 27, 0.9);
+      --border: rgba(90, 92, 95, 0.4);
+      --text: #e4e6eb;
+      --muted: #9ea4b3;
+      --accent: #6aa0ff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.6;
+      background: radial-gradient(circle at 20% 20%, #1a1c20, var(--bg));
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+        .page {
+            max-width: 960px;
+            margin: 0 auto;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 2.5rem 3rem 3rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+        header {
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+        }
+    .home-link { font-weight: 600; color: var(--text); }
+        .doc-title {
+            display: block;
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-top: 0.4rem;
+        }
+        .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-top: 1rem;
+            font-size: 0.95rem;
+            color: var(--muted);
+        }
+    main { font-size: 1rem; }
+    main h1 { font-size: 2rem; margin-top: 2.5rem; }
+        main h2 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.3rem;
+        }
+    main h3 { font-size: 1.2rem; margin-top: 1.5rem; }
+    main p { margin: 1rem 0; }
+        pre {
+            background: #0a0b0d;
+            padding: 1rem;
+            border-radius: 10px;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    code { font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; }
+        th, td {
+            border: 1px solid var(--border);
+            padding: 0.6rem 0.8rem;
+            text-align: left;
+        }
+        blockquote {
+            border-left: 4px solid var(--accent);
+            margin: 1.5rem 0;
+            padding: 0.2rem 1rem;
+            color: var(--muted);
+            background: rgba(255, 255, 255, 0.02);
+        }
+        footer {
+            border-top: 1px solid var(--border);
+            margin-top: 2.5rem;
+            padding-top: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--muted);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: space-between;
+        }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <a class="home-link" href="/TNFR-Python-Engine/">TNFR Python Engine</a>
+      <span class="doc-title">Planetary Mandalas Memo</span>
+      <div class="meta">
+        <span>Version 0.0.2 · DOI <a href="https://doi.org/10.5281/zenodo.17764207" target="_blank" rel="noopener">10.5281/zenodo.17764207</a> · Updated 2025-11-30</span>
+                <span>
+                    Source
+                    <a
+                        href="https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/PLANETARY_MANDALAS.md"
+                        target="_blank"
+                        rel="noopener"
+                    >
+                        theory/PLANETARY_MANDALAS.md
+                    </a>
+                </span>
+      </div>
+    </header>
+    <main>
+      <h1 id="planetary-mandalas-memo">Planetary Mandalas Memo</h1>
+<p><strong>Status</strong>: Technical reference (orbital visualization)<br>
+<strong>Version</strong>: 0.2.0 (November 30, 2025)<br>
+<strong>Owner</strong>: <code>theory/PLANETARY_MANDALAS.md</code></p>
+<hr>
+<h2 id="1-scope">1. Scope</h2>
+<p>Document a reproducible workflow for constructing geocentric resonance patterns (“mandalas”) from TNFR nodal simulations. All claims must derive from telemetry: coherence <code>C(t)</code>, phase gradients <code>|∇φ|</code>, curvature <code>K_φ</code>, and recorded frequency ratios. Narrative descriptions of symbolic meaning are out of scope.</p>
+<p>Reference implementation: <code>examples/22_planetary_mandalas.py</code> → outputs PNG assets under <code>results/geocentric_vortex_study/</code>.</p>
+<hr>
+<h2 id="2-inputs-and-configuration">2. Inputs and Configuration</h2>
+<ul>
+<li><strong>Orbital data</strong>: Adopt synodic periods and semi-major axes from JPL Horizons (store CSV snapshot in <code>data/planetary_periods.csv</code>).</li>
+<li><strong>Simulation grid</strong>: 2D geocentric plane with Earth fixed at origin; each planet modeled as a secondary node with angular velocity <code>ω_p = 2π / T_p</code>.</li>
+<li><strong>Time resolution</strong>: Default <code>DT = 0.01</code> (structural years); adjust to capture high-frequency planets without aliasing.</li>
+<li><strong>Run duration</strong>: Integrate over the least common multiple of Earth and planet periods (e.g., Venus 8 yr, Mars 16 yr) to close loops.</li>
+<li><strong>Operators</strong>: Use <code>UM</code>/<code>RA</code> to maintain coupling during integration; apply <code>IL</code> when coherence drops below 0.8; forbid <code>OZ</code> unless explicitly testing bifurcation.</li>
+</ul>
+<p>Store configuration files (<code>yaml</code>) per target planet under <code>configs/mandalas/</code> so that runs remain reproducible.</p>
+<hr>
+<h2 id="3-simulation-workflow">3. Simulation Workflow</h2>
+<ol>
+<li>Load orbital parameters and generate node objects (class <code>GeocentricPlanet</code>).</li>
+<li>Integrate nodal equation for both Earth and target planet; compute geocentric vector via difference (epicycle analogy).<br>
+<code>x_geo = x_p - x_e</code>, <code>y_geo = y_p - y_e</code>.</li>
+<li>Sample trajectories at uniform time steps, store arrays in <code>results/geocentric_vortex_study/&lt;planet&gt;_path.npy</code>.</li>
+<li>Plot trajectories with consistent axes, add coherence annotations, and export PNG/SVG along with JSON metadata capturing telemetry and rational frequency fits.</li>
+<li>Record summary table (planet, duration, ratio, residual RMS, max |∇φ|, mean K_φ) in <code>results/geocentric_vortex_study/summary.csv</code>.</li>
+</ol>
+<p>Example execution:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">python</span> <span class="n">examples</span><span class="p">/</span><span class="n">22_planetary_mandalas</span><span class="p">.</span><span class="n">py</span>
+</code></pre></div>
+
+<hr>
+<h2 id="4-telemetry-and-validation">4. Telemetry and Validation</h2>
+<ul>
+<li><strong>Frequency ratios</strong>: Fit rational approximations <code>n:m</code> to angular velocity ratios; report residual &lt; 1e-3 where loops appear closed.</li>
+<li><strong>Field thresholds</strong>: Ensure <code>|∇φ| &lt; 0.2904</code> and <code>|K_φ| &lt; 2.8274</code> throughout the run. Flag frames violating these limits.</li>
+<li><strong>Coherence</strong>: Track <code>C(t)</code>; mandala plots are only published when coherence stays above 0.75. Attach <code>results/geocentric_vortex_study/&lt;planet&gt;_telemetry.parquet</code> for audit.</li>
+<li><strong>Observation comparison</strong>: Overlay simulated polar coordinates with ephemeris samples (monthly) and compute phase drift, amplitude error. Report metrics in validation log.</li>
+</ul>
+<hr>
+<h2 id="5-interpretation-guidelines">5. Interpretation Guidelines</h2>
+<ul>
+<li>Closed figures indicate near-rational ratios of structural frequencies, not metaphysical alignment. Document the ratio, error bars, and telemetry evidence.</li>
+<li>Distortions or cusp-like features correlate with coherence drops or curvature spikes; note operator interventions used to stabilize the run.</li>
+<li>Highlight deviations between TNFR integration and ephemeris data, especially secular trends not captured by circular models.</li>
+</ul>
+<hr>
+<h2 id="6-outstanding-work">6. Outstanding Work</h2>
+<ol>
+<li>Extend model to include perturbations (e.g., Jupiter influence on Mars) and document resulting changes in <code>C(t)</code> and <code>|∇φ|</code>.</li>
+<li>Publish raw telemetry files and plotting notebooks under <code>notebooks/planetary_mandalas.ipynb</code> with nbconvert HTML exports.</li>
+<li>Automate rational fit reporting and regression tests comparing to latest JPL ephemerides.</li>
+</ol>
+    </main>
+    <footer>
+            <span>
+                &copy; 2025
+                TNFR Python Engine — Licensed under MIT.
+            </span>
+            <span>
+                Feedback?
+                <a
+                    href="https://github.com/fermga/TNFR-Python-Engine"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    Open an issue
+                </a>.
+            </span>
+    </footer>
+  </div>
+</body>
+</html>

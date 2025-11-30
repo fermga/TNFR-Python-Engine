@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TNFR Physics: From Nodal Dynamics to Cellular Life — TNFR Python Engine</title>
+  <meta name="description" content="TNFR documentation: TNFR Physics: From Nodal Dynamics to Cellular Life">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+    >
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0e0f11;
+      --panel: rgba(24, 25, 27, 0.9);
+      --border: rgba(90, 92, 95, 0.4);
+      --text: #e4e6eb;
+      --muted: #9ea4b3;
+      --accent: #6aa0ff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.6;
+      background: radial-gradient(circle at 20% 20%, #1a1c20, var(--bg));
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+        .page {
+            max-width: 960px;
+            margin: 0 auto;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 2.5rem 3rem 3rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+        header {
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+        }
+    .home-link { font-weight: 600; color: var(--text); }
+        .doc-title {
+            display: block;
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-top: 0.4rem;
+        }
+        .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-top: 1rem;
+            font-size: 0.95rem;
+            color: var(--muted);
+        }
+    main { font-size: 1rem; }
+    main h1 { font-size: 2rem; margin-top: 2.5rem; }
+        main h2 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.3rem;
+        }
+    main h3 { font-size: 1.2rem; margin-top: 1.5rem; }
+    main p { margin: 1rem 0; }
+        pre {
+            background: #0a0b0d;
+            padding: 1rem;
+            border-radius: 10px;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    code { font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; }
+        th, td {
+            border: 1px solid var(--border);
+            padding: 0.6rem 0.8rem;
+            text-align: left;
+        }
+        blockquote {
+            border-left: 4px solid var(--accent);
+            margin: 1.5rem 0;
+            padding: 0.2rem 1rem;
+            color: var(--muted);
+            background: rgba(255, 255, 255, 0.02);
+        }
+        footer {
+            border-top: 1px solid var(--border);
+            margin-top: 2.5rem;
+            padding-top: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--muted);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: space-between;
+        }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <a class="home-link" href="/TNFR-Python-Engine/">TNFR Python Engine</a>
+      <span class="doc-title">TNFR Physics: From Nodal Dynamics to Cellular Life</span>
+      <div class="meta">
+        <span>Version 0.0.2 · DOI <a href="https://doi.org/10.5281/zenodo.17764207" target="_blank" rel="noopener">10.5281/zenodo.17764207</a> · Updated 2025-11-30</span>
+                <span>
+                    Source
+                    <a
+                        href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/README.md"
+                        target="_blank"
+                        rel="noopener"
+                    >
+                        src/tnfr/physics/README.md
+                    </a>
+                </span>
+      </div>
+    </header>
+    <main>
+      <h1 id="tnfr-physics-from-nodal-dynamics-to-cellular-life">TNFR Physics: From Nodal Dynamics to Cellular Life</h1>
+<p><strong>Status</strong>: CANONICAL • <strong>Last Updated</strong>: 2025-11-13</p>
+<p>This documentation presents the <strong>unified discourse</strong> of TNFR physics, tracing the natural evolution from the nodal equation to cellular life emergence. Each stage emerges naturally from the previous one, without additional postulates.</p>
+<hr>
+<h2 id="the-nodal-equation-foundation-of-everything">🌊 The Nodal Equation: Foundation of Everything</h2>
+<p>TNFR dynamics begins with a fundamental equation governing each node:</p>
+<div class="codehilite"><pre><span></span><code>∂EPI/∂t = νf · ΔNFR(t)
+</code></pre></div>
+
+<p><strong>Physical components</strong>:
+- <strong>EPI</strong>: Coherent structural form (changes only via operators)
+- <strong>νf</strong>: Structural frequency (Hz_str) 
+- <strong>ΔNFR</strong>: Reorganization gradient (structural pressure)</p>
+<p><strong>Emergent principles</strong> from this equation:
+- <strong>U1-U6</strong>: Unified grammar → <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/UNIFIED_GRAMMAR_RULES.md"><code>UNIFIED_GRAMMAR_RULES.md</code></a>
+- <strong>Canonical invariants</strong> → <a href="/TNFR-Python-Engine/AGENTS/"><code>AGENTS.md</code></a>
+- <strong>Physical foundations</strong> → <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/TNFR.pdf"><code>TNFR.pdf</code></a> §1-2</p>
+<hr>
+<h2 id="structural-fields-system-telemetry">📐 Structural Fields: System Telemetry</h2>
+<p>From the nodal equation emerge <strong>four canonical fields</strong> that characterize the system state.</p>
+<h3 id="structural-tetrad-canonical-definitions"><strong>Structural Tetrad (Canonical Definitions)</strong></h3>
+<ul>
+<li>Physics, equations, and thresholds → <a href="/TNFR-Python-Engine/STRUCTURAL_FIELDS_TETRAD/"><code>docs/STRUCTURAL_FIELDS_TETRAD.md</code></a></li>
+<li>Grammar / U6 safety roles and Hexad taxonomy → <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/grammar/U6_STRUCTURAL_FIELD_TETRAD.md"><code>docs/grammar/U6_STRUCTURAL_FIELD_TETRAD.md</code></a></li>
+</ul>
+<p>Brief overview (see docs above for full details):</p>
+<ol>
+<li><strong>Φ_s (Structural Potential)</strong>: Global field from ΔNFR distribution (U6 confinement)</li>
+<li><strong>|∇φ| (Phase Gradient)</strong>: Local desynchronization / stress proxy</li>
+<li><strong>Ψ (Complex Geometric Field)</strong>: K_φ + i·J_φ (unified geometry-transport)</li>
+<li><strong>ξ_C (Coherence Length)</strong>: Spatial correlation scale / critical behavior</li>
+</ol>
+<p><strong>Implementation</strong>: <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/fields.py"><code>src/tnfr/physics/fields.py</code></a><br>
+<strong>Extended canonical fields (flux pair &amp; spectra)</strong>: see <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/EXTENDED_FIELDS_INTEGRATION_SUMMARY.md"><code>docs/EXTENDED_FIELDS_INTEGRATION_SUMMARY.md</code></a></p>
+<p><strong>OZ→IL precision walks &amp; telemetry behavior</strong> (Φ_s, |∇φ|, K_φ, ξ_C under dissonance/coherence sequences):
+- Canonical correlation narrative → <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/benchmarks/results/ozil_hi_correlation_summary.md"><code>benchmarks/results/ozil_hi_correlation_summary.md</code></a>
+- Aggregated snapshots / dashboards → <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/benchmarks/results/precision_walk_dashboard.md"><code>benchmarks/results/precision_walk_dashboard.md</code></a></p>
+<hr>
+<h2 id="primary-patterns-coherent-initialization">🎵 Primary Patterns: Coherent Initialization</h2>
+<p><strong>Fundamental patterns</strong> provide TNFR-native initializations for studying emergence:</p>
+<p><strong>Module</strong>: <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/patterns.py"><code>src/tnfr/physics/patterns.py</code></a></p>
+<ul>
+<li><strong>Plane waves</strong>: <code>apply_plane_wave()</code> - photonic coherence (Q≈0)</li>
+<li><strong>Vortices</strong>: <code>apply_vortex()</code> - localized patterns (Q=±1)</li>
+<li><strong>Helical packets</strong>: <code>apply_helical_packet()</code> - massive gauge (Q≈0)</li>
+<li><strong>Scalar bumps</strong>: <code>apply_scalar_bump()</code> - Higgs-like</li>
+<li><strong>Quark clusters</strong>: <code>apply_quark_triplet_cluster()</code> - three vortices (Q≈3)</li>
+</ul>
+<p><strong>Visual atlas</strong>: <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/notebooks/TNFR_Particle_Atlas_U6_Sequential.ipynb"><code>notebooks/TNFR_Particle_Atlas_U6_Sequential.ipynb</code></a></p>
+<hr>
+<h2 id="life-emergence-autopoiesis-from-tnfr">🧬 Life Emergence: Autopoiesis from TNFR</h2>
+<p>When patterns achieve <strong>sufficient self-organization</strong>, autopoietic behavior emerges:</p>
+<h3 id="life-criterion-a-10-autopoietic-coefficient"><strong>Life Criterion</strong>: A &gt; 1.0 (Autopoietic Coefficient)</h3>
+<p><strong>Module</strong>: <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/life.py"><code>src/tnfr/physics/life.py</code></a></p>
+<p><strong>Fundamental metrics</strong>:
+- <strong>Vi (Vitality Index)</strong>: Vital reorganization capacity
+- <strong>A (Autopoietic Coefficient)</strong>: Self-maintenance vs degradation<br>
+- <strong>S (Self-Organization Index)</strong>: Spontaneous structure emergence
+- <strong>M (Stability Margin)</strong>: Robustness against perturbations</p>
+<p><strong>Theoretical documentation</strong>:
+- Conceptual framework → <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/LIFE_EMERGENCE_THEORETICAL_FRAMEWORK.md"><code>docs/LIFE_EMERGENCE_THEORETICAL_FRAMEWORK.md</code></a>
+- Mathematical derivation → <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/LIFE_MATHEMATICAL_DERIVATION.md"><code>docs/LIFE_MATHEMATICAL_DERIVATION.md</code></a></p>
+<p><strong>Experimental validation</strong>: <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/examples/life_experiments.py"><code>examples/life_experiments.py</code></a></p>
+<hr>
+<h2 id="cellular-emergence-from-autopoiesis-to-compartmentalization">🔬 Cellular Emergence: From Autopoiesis to Compartmentalization</h2>
+<p>Upon the autopoietic foundation (A &gt; 1.0), <strong>cellular organization</strong> emerges through spatial compartmentalization:</p>
+<h3 id="extended-nodal-equation"><strong>Extended Nodal Equation</strong>:</h3>
+<div class="codehilite"><pre><span></span><code>∂EPI_cell/∂t = νf_internal · ΔNFR_internal + J_membrane(φ_ext, φ_int)
+</code></pre></div>
+
+<p><strong>Module</strong>: <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/cell.py"><code>src/tnfr/physics/cell.py</code></a></p>
+<h3 id="cellular-criteria-all-simultaneous"><strong>Cellular Criteria</strong> (all simultaneous):</h3>
+<ol>
+<li><strong>C_boundary &gt; 0.8</strong>: Strong membrane coherence</li>
+<li><strong>ρ_selectivity &gt; 0.6</strong>: Preferential internal coupling  </li>
+<li><strong>H_index &gt; 0.5</strong>: Homeostatic regulatory capacity</li>
+<li><strong>I_compartment &gt; 0.7</strong>: Compartmentalization integrity</li>
+</ol>
+<p><strong>Cellular metrics</strong>:
+- <strong>Boundary coherence</strong>: <code>compute_boundary_coherence()</code>
+- <strong>Selectivity index</strong>: <code>compute_selectivity_index()</code> 
+- <strong>Homeostatic index</strong>: <code>compute_homeostatic_index()</code>
+- <strong>Membrane integrity</strong>: <code>compute_membrane_integrity()</code></p>
+<p><strong>Theoretical documentation</strong>: <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/CELL_EMERGENCE_FROM_TNFR.md"><code>docs/CELL_EMERGENCE_FROM_TNFR.md</code></a><br>
+<strong>Experimental validation</strong>: <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/examples/cell_experiments.py"><code>examples/cell_experiments.py</code></a></p>
+<hr>
+<h2 id="molecular-chemistry-elements-as-coherent-attractors">⚛️ Molecular Chemistry: Elements as Coherent Attractors</h2>
+<p><strong>Chemical elements</strong> emerge as optimal coherent attractors in TNFR structural space:</p>
+<p><strong>Module</strong>: <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/signatures.py"><code>src/tnfr/physics/signatures.py</code></a></p>
+<p><strong>Implemented elements</strong>:
+- <strong>H, C, N, O</strong>: Fundamental light elements
+- <strong>Au (Gold)</strong>: Optimal multi-scale attractor (computationally verified)</p>
+<p><strong>Physical principle</strong>: Elements are <strong>stable coherence patterns</strong> that emerge naturally from nodal dynamics, not prescribed chemistry.</p>
+<p><strong>Documentation hub</strong>: <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/MOLECULAR_CHEMISTRY_HUB.md"><code>docs/MOLECULAR_CHEMISTRY_HUB.md</code></a><br>
+<strong>Validation</strong>: <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/examples/elements_signature_study.py"><code>examples/elements_signature_study.py</code></a></p>
+<hr>
+<h2 id="fundamental-interactions-operational-sequences">🔄 Fundamental Interactions: Operational Sequences</h2>
+<p><strong>Physical interactions</strong> (electromagnetic, weak, strong, gravitational) are implemented as canonical operator sequences:</p>
+<p><strong>Module</strong>: <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/interactions.py"><code>src/tnfr/physics/interactions.py</code></a></p>
+<p><strong>Implemented</strong>:
+- <code>electromagnetic_interaction()</code>: EM-type sequences
+- <code>weak_interaction()</code>: Decay processes
+- <code>strong_interaction()</code>: Nuclear confinement<br>
+- <code>gravitational_interaction()</code>: Space-time deformation</p>
+<p><strong>Principle</strong>: All forces emerge from <strong>operator composition</strong> respecting unified grammar (U1-U6).</p>
+<hr>
+<h2 id="analysis-and-validation-tools">📊 Analysis and Validation Tools</h2>
+<h3 id="system-calibration"><strong>System Calibration</strong></h3>
+<p><strong>Module</strong>: <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/calibration.py"><code>src/tnfr/physics/calibration.py</code></a>
+- TNFR parameter configuration
+- Canonical threshold validation</p>
+<h3 id="spectral-metrics"><strong>Spectral Metrics</strong></h3>
+<p><strong>Module</strong>: <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/spectral_metrics.py"><code>src/tnfr/physics/spectral_metrics.py</code></a>
+- Frequency analysis of TNFR dynamics
+- Structural resonance detection</p>
+<h3 id="extended-fields-research"><strong>Extended Fields (Research)</strong></h3>
+<p><strong>Module</strong>: <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/extended_canonical_fields.py"><code>src/tnfr/physics/extended_canonical_fields.py</code></a><br>
+- Research-phase fields (non-canonical)
+- Experimental tetrad extensions</p>
+<hr>
+<h2 id="unified-evolutionary-discourse-the-complete-path">🎯 Unified Evolutionary Discourse: The Complete Path</h2>
+<h3 id="level-1-nodal-foundation-base-equation"><strong>Level 1: Nodal Foundation</strong> → Base equation</h3>
+<p><strong>Input</strong>: Nodes with EPI, νf, ΔNFR<br>
+<strong>Output</strong>: Basic structural dynamics<br>
+<strong>Implementation</strong>: Grammar U1-U6, canonical operators</p>
+<h3 id="level-2-emergent-fields-structural-tetrad"><strong>Level 2: Emergent Fields</strong> → Structural Tetrad</h3>
+<p><strong>Input</strong>: Dynamic nodal states<br>
+<strong>Output</strong>: Φs, |∇φ|, Kφ, ξC (system telemetry)<br>
+<strong>Implementation</strong>: <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/fields.py"><code>fields.py</code></a></p>
+<h3 id="level-3-coherent-patterns-organized-initialization"><strong>Level 3: Coherent Patterns</strong> → Organized initialization</h3>
+<p><strong>Input</strong>: Structural fields + seed patterns<br>
+<strong>Output</strong>: Waves, vortices, helicoids, scalar bumps<br>
+<strong>Implementation</strong>: <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/patterns.py"><code>patterns.py</code></a></p>
+<h3 id="level-4-vital-emergence-a-10"><strong>Level 4: Vital Emergence</strong> → A &gt; 1.0</h3>
+<p><strong>Input</strong>: Self-organized patterns<br>
+<strong>Output</strong>: Autopoietic behavior (Vi, A, S, M)<br>
+<strong>Implementation</strong>: <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/life.py"><code>life.py</code></a> + <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/examples/life_experiments.py"><code>examples/life_experiments.py</code></a></p>
+<h3 id="level-5-cellular-organization-compartmentalization"><strong>Level 5: Cellular Organization</strong> → Compartmentalization</h3>
+<p><strong>Input</strong>: Autopoietic foundation (A &gt; 1.0)<br>
+<strong>Output</strong>: Cells with selective membranes (C_boundary, ρ_selectivity, H_index, I_compartment)<br>
+<strong>Implementation</strong>: <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/cell.py"><code>cell.py</code></a> + <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/examples/cell_experiments.py"><code>examples/cell_experiments.py</code></a></p>
+<h3 id="level-6-molecular-chemistry-elemental-attractors"><strong>Level 6: Molecular Chemistry</strong> → Elemental attractors</h3>
+<p><strong>Input</strong>: Cellular organization + multi-scale optimization<br>
+<strong>Output</strong>: Chemical elements as stable patterns (H, C, N, O, Au)<br>
+<strong>Implementation</strong>: <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/signatures.py"><code>signatures.py</code></a> + <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/examples/elements_signature_study.py"><code>examples/elements_signature_study.py</code></a></p>
+<hr>
+<h2 id="centralized-references">📚 Centralized References</h2>
+<h3 id="canonical-documentation"><strong>Canonical Documentation</strong></h3>
+<ul>
+<li><strong>Foundations</strong>: <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/TNFR.pdf"><code>TNFR.pdf</code></a>, <a href="/TNFR-Python-Engine/AGENTS/"><code>AGENTS.md</code></a></li>
+<li><strong>Grammar</strong>: <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/UNIFIED_GRAMMAR_RULES.md"><code>UNIFIED_GRAMMAR_RULES.md</code></a></li>
+<li><strong>Fields</strong>: <a href="/TNFR-Python-Engine/STRUCTURAL_FIELDS_TETRAD/"><code>docs/STRUCTURAL_FIELDS_TETRAD.md</code></a></li>
+<li><strong>Life</strong>: <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/LIFE_EMERGENCE_THEORETICAL_FRAMEWORK.md"><code>docs/LIFE_EMERGENCE_THEORETICAL_FRAMEWORK.md</code></a></li>
+<li><strong>Cells</strong>: <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/CELL_EMERGENCE_FROM_TNFR.md"><code>docs/CELL_EMERGENCE_FROM_TNFR.md</code></a></li>
+<li><strong>Chemistry</strong>: <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/MOLECULAR_CHEMISTRY_HUB.md"><code>docs/MOLECULAR_CHEMISTRY_HUB.md</code></a></li>
+</ul>
+<h3 id="experimental-validation"><strong>Experimental Validation</strong></h3>
+<ul>
+<li><strong>Fields</strong>: <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/notebooks/Force_Fields_Tetrad_Exploration.ipynb"><code>notebooks/Force_Fields_Tetrad_Exploration.ipynb</code></a></li>
+<li><strong>Life</strong>: <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/examples/life_experiments.py"><code>examples/life_experiments.py</code></a></li>
+<li><strong>Cells</strong>: <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/examples/cell_experiments.py"><code>examples/cell_experiments.py</code></a></li>
+<li><strong>Chemistry</strong>: <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/examples/elements_signature_study.py"><code>examples/elements_signature_study.py</code></a></li>
+</ul>
+<h3 id="complete-api"><strong>Complete API</strong></h3>
+<ul>
+<li><strong>Fields</strong>: <code>fields.py</code> (compute_structural_potential, compute_phase_gradient, etc.)</li>
+<li><strong>Patterns</strong>: <code>patterns.py</code> (apply_plane_wave, apply_vortex, etc.)</li>
+<li><strong>Life</strong>: <code>life.py</code> (detect_life, compute_vitality_index, etc.)</li>
+<li><strong>Cells</strong>: <code>cell.py</code> (detect_cell_formation, compute_boundary_coherence, etc.)</li>
+<li><strong>Interactions</strong>: <code>interactions.py</code> (electromagnetic_interaction, etc.)</li>
+</ul>
+<hr>
+<h2 id="development-principles-and-invariants">🛡️ Development Principles and Invariants</h2>
+<h3 id="canonical-invariants-never-break"><strong>Canonical Invariants</strong> (Never Break)</h3>
+<ul>
+<li><strong>EPI</strong>: Changes only via structural operators  </li>
+<li><strong>Units</strong>: νf in Hz_str (structural hertz)</li>
+<li><strong>ΔNFR</strong>: Structural pressure, NOT ML gradient</li>
+<li><strong>Grammar</strong>: U1-U6 always respected</li>
+<li><strong>Telemetry</strong>: Read-only (no direct mutation)</li>
+</ul>
+<h3 id="development-principles"><strong>Development Principles</strong></h3>
+<ol>
+<li><strong>Physics first</strong>: Derive from nodal equation/invariants</li>
+<li><strong>Single source</strong>: Avoid duplication, use links  </li>
+<li><strong>Reproducibility</strong>: Seeds, clear steps</li>
+<li><strong>Traceability</strong>: Clear theory → code chain</li>
+</ol>
+<hr>
+<h2 id="quick-start-exploring-the-complete-discourse">🚀 Quick Start: Exploring the Complete Discourse</h2>
+<h3 id="for-users-1-hour"><strong>For Users</strong> (1 hour)</h3>
+<ol>
+<li><strong>Foundations</strong>: Read <a href="/TNFR-Python-Engine/AGENTS/"><code>AGENTS.md</code></a> (nodal equation, invariants)</li>
+<li><strong>Fields</strong>: Run <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/notebooks/Force_Fields_Tetrad_Exploration.ipynb"><code>notebooks/Force_Fields_Tetrad_Exploration.ipynb</code></a>  </li>
+<li><strong>Life</strong>: Run <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/examples/life_experiments.py"><code>examples/life_experiments.py</code></a></li>
+<li><strong>Cells</strong>: Run <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/examples/cell_experiments.py"><code>examples/cell_experiments.py</code></a></li>
+</ol>
+<h3 id="for-researchers-1-week"><strong>For Researchers</strong> (1 week)</h3>
+<ol>
+<li><strong>Complete theory</strong>: <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/TNFR.pdf"><code>TNFR.pdf</code></a> + <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/UNIFIED_GRAMMAR_RULES.md"><code>UNIFIED_GRAMMAR_RULES.md</code></a></li>
+<li><strong>Theoretical frameworks</strong>: Life (<a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/LIFE_EMERGENCE_THEORETICAL_FRAMEWORK.md"><code>docs/LIFE_EMERGENCE_THEORETICAL_FRAMEWORK.md</code></a>), Cells (<a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/CELL_EMERGENCE_FROM_TNFR.md"><code>docs/CELL_EMERGENCE_FROM_TNFR.md</code></a>)</li>
+<li><strong>Validation</strong>: Run all experiments + notebooks</li>
+<li><strong>API</strong>: Explore modules <code>fields.py</code>, <code>life.py</code>, <code>cell.py</code></li>
+</ol>
+<h3 id="for-developers-ongoing"><strong>For Developers</strong> (ongoing)</h3>
+<ol>
+<li><strong>Architecture</strong>: <a href="/TNFR-Python-Engine/ARCHITECTURE/"><code>ARCHITECTURE.md</code></a>, tests in <code>tests/</code></li>
+<li><strong>Contributions</strong>: Follow development principles above  </li>
+<li><strong>Extensions</strong>: New modules always derived from nodal equation</li>
+</ol>
+<hr>
+<h2 id="changelog">📝 Changelog</h2>
+<h3 id="2025-11-13"><strong>2025-11-13</strong>:</h3>
+<ul>
+<li><strong>UNIFIED DISCOURSE</strong>: Complete README simplification and reorganization with evolutionary discourse from nodal equation to cellular formation</li>
+<li><strong>CENTRALIZED LINKS</strong>: Direct references to all modules, experiments and theoretical documentation  </li>
+<li><strong>CLEAR NAVIGATION</strong>: 6-level structure (Nodal → Fields → Patterns → Life → Cells → Chemistry)</li>
+</ul>
+<h3 id="2025-11-12"><strong>2025-11-12</strong>:</h3>
+<ul>
+<li><strong>CELLULAR EMERGENCE INTEGRATION</strong>: Complete Cell Emergence module integrated</li>
+<li><strong>DOCUMENTATION UPDATE</strong>: Molecular chemistry documentation centralized</li>
+<li><strong>TETRAD CANONICAL</strong>: Structural fields promoted to canonical status</li>
+</ul>
+<hr>
+<p><strong>Last updated</strong>: 2025-11-13 • <strong>Status</strong>: CANONICAL • <strong>Discourse</strong>: Nodal Equation → Cellular Emergence</p>
+    </main>
+    <footer>
+            <span>
+                &copy; 2025
+                TNFR Python Engine — Licensed under MIT.
+            </span>
+            <span>
+                Feedback?
+                <a
+                    href="https://github.com/fermga/TNFR-Python-Engine"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    Open an issue
+                </a>.
+            </span>
+    </footer>
+  </div>
+</body>
+</html>

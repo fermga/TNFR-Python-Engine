@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Particle Collision Modeling Memo — TNFR Python Engine</title>
+  <meta name="description" content="TNFR documentation: Particle Collision Modeling Memo">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+    >
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0e0f11;
+      --panel: rgba(24, 25, 27, 0.9);
+      --border: rgba(90, 92, 95, 0.4);
+      --text: #e4e6eb;
+      --muted: #9ea4b3;
+      --accent: #6aa0ff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.6;
+      background: radial-gradient(circle at 20% 20%, #1a1c20, var(--bg));
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+        .page {
+            max-width: 960px;
+            margin: 0 auto;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 2.5rem 3rem 3rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+        header {
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+        }
+    .home-link { font-weight: 600; color: var(--text); }
+        .doc-title {
+            display: block;
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-top: 0.4rem;
+        }
+        .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-top: 1rem;
+            font-size: 0.95rem;
+            color: var(--muted);
+        }
+    main { font-size: 1rem; }
+    main h1 { font-size: 2rem; margin-top: 2.5rem; }
+        main h2 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.3rem;
+        }
+    main h3 { font-size: 1.2rem; margin-top: 1.5rem; }
+    main p { margin: 1rem 0; }
+        pre {
+            background: #0a0b0d;
+            padding: 1rem;
+            border-radius: 10px;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    code { font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; }
+        th, td {
+            border: 1px solid var(--border);
+            padding: 0.6rem 0.8rem;
+            text-align: left;
+        }
+        blockquote {
+            border-left: 4px solid var(--accent);
+            margin: 1.5rem 0;
+            padding: 0.2rem 1rem;
+            color: var(--muted);
+            background: rgba(255, 255, 255, 0.02);
+        }
+        footer {
+            border-top: 1px solid var(--border);
+            margin-top: 2.5rem;
+            padding-top: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--muted);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: space-between;
+        }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <a class="home-link" href="/TNFR-Python-Engine/">TNFR Python Engine</a>
+      <span class="doc-title">Particle Collision Modeling Memo</span>
+      <div class="meta">
+        <span>Version 0.0.2 · DOI <a href="https://doi.org/10.5281/zenodo.17764207" target="_blank" rel="noopener">10.5281/zenodo.17764207</a> · Updated 2025-11-30</span>
+                <span>
+                    Source
+                    <a
+                        href="https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/PARTICLE_PHYSICS_COLLIDER.md"
+                        target="_blank"
+                        rel="noopener"
+                    >
+                        theory/PARTICLE_PHYSICS_COLLIDER.md
+                    </a>
+                </span>
+      </div>
+    </header>
+    <main>
+      <h1 id="particle-collision-modeling-memo">Particle Collision Modeling Memo</h1>
+<p><strong>Status</strong>: Analytical memo<br>
+<strong>Version</strong>: 0.3.0 (November 30, 2025)<br>
+<strong>Owner</strong>: <code>theory/PARTICLE_PHYSICS_COLLIDER.md</code></p>
+<hr>
+<h2 id="1-scope">1. Scope</h2>
+<p>This memo outlines how to model high-energy collisions within the TNFR framework using reproducible operator sequences and telemetry. Subatomic particles are represented as coherent EPIs; collisions are treated as controlled bifurcations. The focus is documenting the modeling pipeline and validation steps, not asserting new physics.</p>
+<hr>
+<h2 id="2-node-specification">2. Node Specification</h2>
+<table>
+<thead>
+<tr>
+<th>Quantity</th>
+<th>Description</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>(\nu_f)</td>
+<td>Structural frequency of the node (maps to energy).</td>
+<td>Extracted from accelerator settings or simulation inputs.</td>
+</tr>
+<tr>
+<td>(\mathbf{J}_\phi)</td>
+<td>Phase current (momentum proxy).</td>
+<td>Track both magnitude and direction.</td>
+</tr>
+<tr>
+<td>(C(t))</td>
+<td>Coherence during acceleration and collision.</td>
+<td>Required for verifying stability before impact.</td>
+</tr>
+<tr>
+<td>Operator schedule</td>
+<td><code>[AL, RA, IL, ...]</code> used to prepare nodes.</td>
+<td>Must obey U1–U6; log exact order.</td>
+</tr>
+</tbody>
+</table>
+<p>Parameters should be stored in <code>results/collider_demo/config_&lt;run&gt;.yml</code> so headless runs can reproduce the same setup.</p>
+<hr>
+<h2 id="3-collision-pipeline">3. Collision Pipeline</h2>
+<ol>
+<li><strong>Preparation</strong> – Initialize two nodes (e.g., proton analogues) with target (\nu_f) and (\mathbf{J}_\phi). Apply stabilizers to ensure (C(t)) exceeds the threshold before acceleration.  </li>
+<li><strong>Acceleration</strong> – Increase (\mathbf{J}_\phi) using scripted operators or external forces while logging energy input.  </li>
+<li><strong>Overlap phase</strong> – When positions converge, record phase differences and structural pressure (\Delta \text{NFR}).  </li>
+<li><strong>Bifurcation handling</strong> – If (\Delta \text{NFR}) exceeds tolerance, invoke handler sequences (<code>THOL</code>, <code>IL</code>) to form child EPIs.  </li>
+<li><strong>Propagation</strong> – Track the child nodes (“jets”) and collect telemetry per node ((\nu_f), (\mathbf{J}_\phi), (C(t))).</li>
+</ol>
+<p>All steps should include deterministic seeds and metadata (time step, integration method) for auditing.</p>
+<hr>
+<h2 id="4-conservation-telemetry-checks">4. Conservation &amp; Telemetry Checks</h2>
+<p>Collisions must satisfy conservation relationships within numerical tolerance:</p>
+<p>[
+\sum_i \nu_f^{(i)}(t_0^-) \approx \sum_j \nu_f^{(j)}(t_0^+), \qquad \sum_i \mathbf{J}<em>\phi^{(i)}(t_0^-) = \sum_j \mathbf{J}</em>\phi^{(j)}(t_0^+).
+]</p>
+<p>Automated tests should compute relative errors and fail runs that exceed configured thresholds. Additional checks include:</p>
+<ul>
+<li>Coherence budgets before/after impact.  </li>
+<li>Spatial distribution of (\Phi_s) to confirm detector-region balance.  </li>
+<li>Compliance with grammar rule U4 (destabilizer/handler pairing).</li>
+</ul>
+<hr>
+<h2 id="5-artifacts">5. Artifacts</h2>
+<p><code>examples/16_particle_collider_demo.py</code> produces reference datasets:</p>
+<ul>
+<li><code>results/collider_demo/01_collision_event.png</code> – 2D event display showing incoming nodes and resulting jets.  </li>
+<li><code>results/collider_demo/02_energy_spectrum.png</code> – Histogram of child (\nu_f) values.  </li>
+<li><code>results/collider_demo/run_&lt;seed&gt;.csv</code> – Telemetry table (time, (\nu_f), (\mathbf{J}_\phi), (C(t))).</li>
+</ul>
+<p>Files must include headers documenting units, integrator details, and operator sequences. Store SHA manifests in <code>results/collider_demo/manifest.json</code>.</p>
+<hr>
+<h2 id="6-outstanding-work">6. Outstanding Work</h2>
+<ol>
+<li>Integrate the collision benchmark into CI with deterministic seeds.  </li>
+<li>Add uncertainty estimates by running ensembles with slightly varied initial phases and reporting variance in (\nu_f) and (\mathbf{J}_\phi).  </li>
+<li>Compare TNFR-derived spectra with published collider data (where available) to quantify predictive value; document residuals and uncertainties.  </li>
+<li>Record numerical stability limits (time-step restrictions, lattice resolution) to guide future experiments.</li>
+</ol>
+    </main>
+    <footer>
+            <span>
+                &copy; 2025
+                TNFR Python Engine — Licensed under MIT.
+            </span>
+            <span>
+                Feedback?
+                <a
+                    href="https://github.com/fermga/TNFR-Python-Engine"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    Open an issue
+                </a>.
+            </span>
+    </footer>
+  </div>
+</body>
+</html>

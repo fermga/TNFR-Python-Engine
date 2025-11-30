@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TNFR Glossary — TNFR Python Engine</title>
+  <meta name="description" content="TNFR documentation: TNFR Glossary">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+    >
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0e0f11;
+      --panel: rgba(24, 25, 27, 0.9);
+      --border: rgba(90, 92, 95, 0.4);
+      --text: #e4e6eb;
+      --muted: #9ea4b3;
+      --accent: #6aa0ff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.6;
+      background: radial-gradient(circle at 20% 20%, #1a1c20, var(--bg));
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+        .page {
+            max-width: 960px;
+            margin: 0 auto;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 2.5rem 3rem 3rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+        header {
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+        }
+    .home-link { font-weight: 600; color: var(--text); }
+        .doc-title {
+            display: block;
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-top: 0.4rem;
+        }
+        .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-top: 1rem;
+            font-size: 0.95rem;
+            color: var(--muted);
+        }
+    main { font-size: 1rem; }
+    main h1 { font-size: 2rem; margin-top: 2.5rem; }
+        main h2 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.3rem;
+        }
+    main h3 { font-size: 1.2rem; margin-top: 1.5rem; }
+    main p { margin: 1rem 0; }
+        pre {
+            background: #0a0b0d;
+            padding: 1rem;
+            border-radius: 10px;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    code { font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; }
+        th, td {
+            border: 1px solid var(--border);
+            padding: 0.6rem 0.8rem;
+            text-align: left;
+        }
+        blockquote {
+            border-left: 4px solid var(--accent);
+            margin: 1.5rem 0;
+            padding: 0.2rem 1rem;
+            color: var(--muted);
+            background: rgba(255, 255, 255, 0.02);
+        }
+        footer {
+            border-top: 1px solid var(--border);
+            margin-top: 2.5rem;
+            padding-top: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--muted);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: space-between;
+        }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <a class="home-link" href="/TNFR-Python-Engine/">TNFR Python Engine</a>
+      <span class="doc-title">TNFR Glossary</span>
+      <div class="meta">
+        <span>Version 0.0.2 · DOI <a href="https://doi.org/10.5281/zenodo.17764207" target="_blank" rel="noopener">10.5281/zenodo.17764207</a> · Updated 2025-11-30</span>
+                <span>
+                    Source
+                    <a
+                        href="https://github.com/fermga/TNFR-Python-Engine/blob/main/GLOSSARY.md"
+                        target="_blank"
+                        rel="noopener"
+                    >
+                        GLOSSARY.md
+                    </a>
+                </span>
+      </div>
+    </header>
+    <main>
+      <h1 id="tnfr-glossary">TNFR Glossary</h1>
+<p><strong>Purpose</strong>: Operational quick reference for the Resonant Fractal Nature Theory (TNFR) v0.0.1<br>
+<strong>Status</strong>: Complete reference for current implementation<br>
+<strong>Version</strong>: November 29, 2025<br>
+<strong>Authority</strong>: Aligned with <a href="/TNFR-Python-Engine/AGENTS/">AGENTS.md</a> as single source of truth  </p>
+<p><strong>Scope</strong>: This glossary provides <strong>API-focused definitions</strong> for developers implementing TNFR networks. For complete theoretical foundations, see <a href="/TNFR-Python-Engine/AGENTS/">AGENTS.md</a> and <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/UNIFIED_GRAMMAR_RULES.md">UNIFIED_GRAMMAR_RULES.md</a>.</p>
+<hr>
+<h2 id="core-variables">Core Variables</h2>
+<h3 id="primary-information-structure-epi">Primary Information Structure (EPI)</h3>
+<p><strong>Code:</strong> <code>G.nodes[n]['EPI']</code>, <code>ALIAS_EPI</code><br>
+<strong>Symbol:</strong> (\text{EPI}) or (E)<br>
+<strong>What:</strong> Coherent structural form of a node<br>
+<strong>Space:</strong> (B_{\text{EPI}}) (Banach space)<br>
+<strong>Rules:</strong> Modified only via structural operators, never directly<br>
+<strong>API:</strong> <code>tnfr.structural</code> operators<br>
+<strong>Math:</strong> <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/source/theory/mathematical_foundations.md#22-banach-space-b_epi">§2.2 Banach Space B_EPI</a></p>
+<h3 id="structural-frequency-f">Structural Frequency (νf)</h3>
+<p><strong>Code:</strong> <code>G.nodes[n]['vf']</code>, <code>ALIAS_VF</code><br>
+<strong>Symbol:</strong> (\nu_f)<br>
+<strong>Units:</strong> Hz_str (structural hertz)<br>
+<strong>Range:</strong> (\mathbb{R}^+) (positive reals; node collapse when (\nu_f \to 0))<br>
+<strong>What:</strong> Rate of structural reorganization<br>
+<strong>API:</strong> <code>adapt_vf_by_coherence()</code>, operators<br>
+<strong>Math:</strong> <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/source/theory/mathematical_foundations.md#32-frequency-operator-ĵ">§3.2 Frequency Operator Ĵ</a></p>
+<h3 id="internal-reorganization-operator-nfr">Internal Reorganization Operator (ΔNFR)</h3>
+<p><strong>Code:</strong> <code>G.nodes[n]['dnfr']</code>, <code>ALIAS_DNFR</code><br>
+<strong>Symbol:</strong> (\Delta\text{NFR})<br>
+<strong>What:</strong> Structural evolution gradient (drives reorganization)<br>
+<strong>Sign:</strong> Positive = expansion, Negative = contraction<br>
+<strong>Compute:</strong> Via <code>default_compute_delta_nfr</code> hook, automatic in <code>step()</code><br>
+<strong>Math:</strong> <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/source/theory/mathematical_foundations.md#33-reorganization-operator-δnfr">§3.3 Reorganization Operator</a></p>
+<h3 id="phase">Phase (φ, θ)</h3>
+<p><strong>Code:</strong> <code>G.nodes[n]['theta']</code>, <code>collect_theta_attr()</code><br>
+<strong>Symbol:</strong> (\theta) or (\phi)<br>
+<strong>Range:</strong> ([0, 2\pi)) or ([-\pi, \pi)) radians<br>
+<strong>What:</strong> Network synchrony parameter (relative timing)<br>
+<strong>Phase difference:</strong> (\Delta\theta = \theta_i - \theta_j)<br>
+<strong>API:</strong> Phase adaptation in dynamics<br>
+<strong>Math:</strong> <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/source/theory/mathematical_foundations.md#4-the-nodal-equation-complete-derivation">§4 Nodal Equation</a></p>
+<h3 id="total-coherence-ct">Total Coherence (C(t))</h3>
+<p><strong>Code:</strong> <code>compute_coherence(G)</code> → float ∈ [0,1]<br>
+<strong>Symbol:</strong> (C(t))<br>
+<strong>Formula:</strong> (C(t) = \text{Tr}(\hat{C}\rho)) where (\hat{C}) is the coherence operator<br>
+<strong>Range:</strong> ([0, 1]) where 1 = perfect coherence, 0 = total fragmentation<br>
+<strong>What:</strong> Global network stability measure<br>
+<strong>Math:</strong> <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/source/theory/mathematical_foundations.md#31-coherence-operator-ĉ">§3.1 Coherence Operator Ĉ</a></p>
+<h3 id="coherence-operator-c">Coherence Operator (Ĉ)</h3>
+<p><strong>Code:</strong> <code>coherence_matrix(G)</code> → (nodes, W)<br>
+<strong>Symbol:</strong> (\hat{C})<br>
+<strong>Matrix element:</strong> (w_{ij} \approx \langle i | \hat{C} | j \rangle)<br>
+<strong>Properties:</strong> Hermitian ((\hat{C}^\dagger = \hat{C})), positive semi-definite<br>
+<strong>What:</strong> Operator measuring structural stability between nodes<br>
+<strong>Math:</strong> <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/source/theory/mathematical_foundations.md#31-coherence-operator-ĉ">§3.1 Theory</a> + <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/source/theory/mathematical_foundations.md#311-implementation-bridge-theory-to-code">§3.1.1 Implementation</a></p>
+<h3 id="sense-index-si">Sense Index (Si)</h3>
+<p><strong>Code:</strong> <code>G.nodes[n]['Si']</code>, <code>ALIAS_SI</code>, <code>compute_Si_node()</code><br>
+<strong>Symbol:</strong> (\text{Si}) (global) or (S_i) (node i)<br>
+<strong>Formula:</strong> (\text{Si} = \alpha \cdot \nu_{f,\text{norm}} + \beta \cdot (1 - \text{disp}<em>\theta) + \gamma \cdot (1 - |\Delta\text{NFR}|</em>{\text{norm}}))<br>
+<strong>Range:</strong> ([0, 1^+]) typically, higher = more stable reorganization<br>
+<strong>What:</strong> Capacity for stable structural reorganization<br>
+<strong>Weights:</strong> (\alpha + \beta + \gamma = 1) (default: 0.4, 0.3, 0.3)<br>
+<strong>Math:</strong> <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/source/theory/mathematical_foundations.md">Mathematical Foundations - Metrics</a></p>
+<h3 id="phase-gradient-canonical">Phase Gradient (|∇φ|) - CANONICAL</h3>
+<p><strong>Code:</strong> <code>compute_phase_gradient(G)</code> → Dict[NodeId, float]<br>
+<strong>Symbol:</strong> (|\nabla\phi|(i))<br>
+<strong>Formula:</strong> (|\nabla\phi|(i) = \text{mean}_{j \in N(i)} |\theta_i - \theta_j|) (circular mean)<br>
+<strong>What:</strong> Local phase desynchronization / stress proxy field<br>
+<strong>Status:</strong> <strong>CANONICAL</strong> (Nov 2025)<br>
+<strong>Physics:</strong> Captures dynamics C(t) misses due to scaling invariance<br>
+<strong>Threshold:</strong> Classical bound |∇φ| &lt; 0.2904 (harmonic oscillator stability)<br>
+<strong>API:</strong> <code>tnfr.physics.fields.compute_phase_gradient()</code><br>
+<strong>Usage:</strong> Stress detection, local instability prediction<br>
+<strong>Documentation:</strong> <a href="/TNFR-Python-Engine/STRUCTURAL_FIELDS_TETRAD/">docs/STRUCTURAL_FIELDS_TETRAD.md</a></p>
+<h3 id="phase-curvature-k_-canonical">Phase Curvature (K_φ) - CANONICAL</h3>
+<p><strong>Code:</strong> <code>compute_phase_curvature(G)</code> → Dict[NodeId, float]<br>
+<strong>Symbol:</strong> (K_\phi(i))<br>
+<strong>Formula:</strong> (K_\phi = \text{wrap_angle}(\phi_i - \text{circular_mean}(\text{neighbors})))<br>
+<strong>What:</strong> Phase torsion and geometric confinement field<br>
+<strong>Status:</strong> <strong>CANONICAL</strong> (Nov 2025)<br>
+<strong>Physics:</strong> Flags mutation-prone loci via geometric constraints<br>
+<strong>Threshold:</strong> Classical bound |K_φ| &lt; 2.8274 (90% of π theoretical maximum)<br>
+<strong>API:</strong> <code>tnfr.physics.fields.compute_phase_curvature()</code><br>
+<strong>Usage:</strong> Geometric confinement monitoring, bifurcation prediction<br>
+<strong>Documentation:</strong> <a href="/TNFR-Python-Engine/STRUCTURAL_FIELDS_TETRAD/">docs/STRUCTURAL_FIELDS_TETRAD.md</a></p>
+<h3 id="coherence-length-_c-canonical">Coherence Length (ξ_C) - CANONICAL</h3>
+<p><strong>Code:</strong> <code>estimate_coherence_length(G)</code> → float<br>
+<strong>Symbol:</strong> (\xi_C)<br>
+<strong>Formula:</strong> Spatial correlation function (C(r) = A \exp(-r/\xi_C))<br>
+<strong>What:</strong> Spatial correlation scale of local coherence<br>
+<strong>Status:</strong> <strong>CANONICAL</strong> (Nov 2025)<br>
+<strong>Physics:</strong> Critical phenomena and finite-size scaling analysis<br>
+<strong>Thresholds:</strong><br>
+- Critical: ξ_C &gt; 1.0 × diameter (finite-size scaling dominates)<br>
+- Watch: ξ_C &gt; π ≈ 3.14 × mean_distance (RG scaling)<br>
+- Stable: ξ_C &lt; mean_distance (bulk behavior)<br>
+<strong>API:</strong> <code>tnfr.physics.fields.estimate_coherence_length()</code><br>
+<strong>Usage:</strong> Critical point detection, correlation analysis<br>
+<strong>Documentation:</strong> <a href="/TNFR-Python-Engine/STRUCTURAL_FIELDS_TETRAD/">docs/STRUCTURAL_FIELDS_TETRAD.md</a></p>
+<hr>
+<h3 id="structural-potential-_s-canonical">Structural Potential (Φ_s) - CANONICAL</h3>
+<p><strong>Code:</strong> <code>compute_structural_potential(G, alpha=2.0)</code> → Dict[NodeId, float]<br>
+<strong>Symbol:</strong> (\Phi_s(i))<br>
+<strong>Formula:</strong> (\Phi_s(i) = \sum_{j \neq i} \frac{\Delta\text{NFR}_j}{d(i,j)^\alpha}) where (\alpha = 2)<br>
+<strong>What:</strong> Global structural potential field from ΔNFR distribution<br>
+<strong>Status:</strong> <strong>CANONICAL</strong> (Nov 2025)<br>
+<strong>Validation:</strong> 2,400+ experiments across 5 topologies<br>
+<strong>Physics:</strong> Passive equilibrium confinement landscape<br>
+<strong>Grammar:</strong> U6 STRUCTURAL POTENTIAL CONFINEMENT (Δ Φ_s &lt; 2.0 escape threshold)<br>
+<strong>API:</strong> <code>tnfr.physics.fields.compute_structural_potential()</code><br>
+<strong>Threshold:</strong> Classical bound |Φ_s| &lt; 0.771 (von Koch fractal theory)<br>
+<strong>Documentation:</strong> <a href="/TNFR-Python-Engine/STRUCTURAL_FIELDS_TETRAD/">docs/STRUCTURAL_FIELDS_TETRAD.md</a>
+- <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/fields.py">src/tnfr/physics/fields.py</a> - Implementation</p>
+<p><strong>Interpretation:</strong>
+- Φ_s minima = passive equilibrium states
+- Δ Φ_s &lt; 2.0 = system confined (safe regime)
+- Δ Φ_s ≥ 2.0 = escape threshold (fragmentation risk)
+- Valid sequences: Δ Φ_s ≈ 0.6 (30% of threshold)
+- Violations: Δ Φ_s ≈ 3.9 (195% of threshold)</p>
+<p><strong>Mechanism:</strong> Grammar U1-U5 acts as passive confinement (NOT active attractor). Reduces escape drift by 85%.</p>
+<hr>
+<h2 id="the-nodal-equation">The Nodal Equation</h2>
+<p><strong>The fundamental equation of TNFR</strong> governs structural evolution:</p>
+<p>[
+\frac{\partial \text{EPI}}{\partial t} = \nu_f \cdot \Delta\text{NFR}(t)
+]</p>
+<p><strong>Where:</strong>
+- (\frac{\partial \text{EPI}}{\partial t}): Rate of change of structure
+- (\nu_f): Structural frequency (reorganization rate) in Hz_str
+- (\Delta\text{NFR}(t)): Reorganization gradient (driving pressure)</p>
+<p><strong>Interpretation:</strong>
+- Structure changes <strong>only when</strong> both (\nu_f &gt; 0) (capacity) and (\Delta\text{NFR} \neq 0) (pressure) exist
+- Rate of change is <strong>proportional</strong> to both frequency and gradient
+- When (\nu_f \to 0), evolution freezes (node collapse)
+- When (\Delta\text{NFR} = 0), structure reaches equilibrium</p>
+<p><strong>Implementation:</strong> See <code>src/tnfr/dynamics/</code> for numerical integration<br>
+<strong>Theory:</strong> <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/source/theory/mathematical_foundations.md#4-the-nodal-equation-complete-derivation">§4 The Nodal Equation</a></p>
+<hr>
+<h2 id="structural-operators">Structural Operators</h2>
+<p>The 13 canonical operators are the <strong>only way</strong> to modify nodes in TNFR. They're not arbitrary functions—they're <strong>resonant transformations</strong> with rigorous physics.</p>
+<p>For complete specifications with physics derivations, contracts, and usage examples, see <strong><a href="/TNFR-Python-Engine/AGENTS/#-the-13-canonical-operators">AGENTS.md § The 13 Canonical Operators</a></strong>.</p>
+<h3 id="quick-reference">Quick Reference</h3>
+<table>
+<thead>
+<tr>
+<th>Symbol</th>
+<th>Name</th>
+<th>Physics</th>
+<th>Grammar Sets</th>
+<th>When to Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>AL</strong></td>
+<td>Emission</td>
+<td>Creates EPI from vacuum via resonant emission</td>
+<td>Generator (U1a)</td>
+<td>Starting new patterns, initializing from EPI=0</td>
+</tr>
+<tr>
+<td><strong>EN</strong></td>
+<td>Reception</td>
+<td>Captures and integrates incoming resonance</td>
+<td>-</td>
+<td>Information gathering, listening phase</td>
+</tr>
+<tr>
+<td><strong>IL</strong></td>
+<td>Coherence</td>
+<td>Stabilizes form through negative feedback</td>
+<td>Stabilizer (U2)</td>
+<td>After changes, consolidation</td>
+</tr>
+<tr>
+<td><strong>OZ</strong></td>
+<td>Dissonance</td>
+<td>Introduces controlled instability</td>
+<td>Destabilizer (U2), Bifurcation trigger (U4a), Closure (U1b)</td>
+<td>Breaking local optima, exploration</td>
+</tr>
+<tr>
+<td><strong>UM</strong></td>
+<td>Coupling</td>
+<td>Creates structural links via phase synchronization</td>
+<td>Requires phase verification (U3)</td>
+<td>Network formation, connecting nodes</td>
+</tr>
+<tr>
+<td><strong>RA</strong></td>
+<td>Resonance</td>
+<td>Amplifies and propagates patterns coherently</td>
+<td>Requires phase verification (U3)</td>
+<td>Pattern reinforcement, spreading coherence</td>
+</tr>
+<tr>
+<td><strong>SHA</strong></td>
+<td>Silence</td>
+<td>Freezes evolution temporarily (νf → 0)</td>
+<td>Closure (U1b)</td>
+<td>Observation windows, pause for synchronization</td>
+</tr>
+<tr>
+<td><strong>VAL</strong></td>
+<td>Expansion</td>
+<td>Increases structural complexity (dim ↑)</td>
+<td>Destabilizer (U2)</td>
+<td>Adding degrees of freedom</td>
+</tr>
+<tr>
+<td><strong>NUL</strong></td>
+<td>Contraction</td>
+<td>Reduces structural complexity (dim ↓)</td>
+<td>-</td>
+<td>Simplification, dimensionality reduction</td>
+</tr>
+<tr>
+<td><strong>THOL</strong></td>
+<td>Self-organization</td>
+<td>Spontaneous autopoietic pattern formation</td>
+<td>Stabilizer (U2), Handler (U4a), Transformer (U4b)</td>
+<td>Emergent organization, fractal structuring</td>
+</tr>
+<tr>
+<td><strong>ZHIR</strong></td>
+<td>Mutation</td>
+<td>Phase transformation at threshold</td>
+<td>Bifurcation trigger (U4a), Transformer (U4b)</td>
+<td>Qualitative state changes</td>
+</tr>
+<tr>
+<td><strong>NAV</strong></td>
+<td>Transition</td>
+<td>Regime shift, activates latent EPI</td>
+<td>Generator (U1a), Closure (U1b)</td>
+<td>Switching between attractor states</td>
+</tr>
+<tr>
+<td><strong>REMESH</strong></td>
+<td>Recursivity</td>
+<td>Echoes structure across scales</td>
+<td>Generator (U1a), Closure (U1b)</td>
+<td>Multi-scale operations, memory</td>
+</tr>
+</tbody>
+</table>
+<h3 id="operator-composition">Operator Composition</h3>
+<p>Operators combine into <strong>sequences</strong> that implement complex behaviors:</p>
+<ul>
+<li><strong>Bootstrap</strong> = [Emission, Coupling, Coherence]</li>
+<li><strong>Stabilize</strong> = [Coherence, Silence]</li>
+<li><strong>Explore</strong> = [Dissonance, Mutation, Coherence]</li>
+<li><strong>Propagate</strong> = [Resonance, Coupling]</li>
+</ul>
+<p><strong>Critical</strong>: All sequences must satisfy unified grammar (U1-U6).</p>
+<p><strong>API:</strong> 
+- <code>tnfr.structural.&lt;OperatorName&gt;()</code> - Individual operators
+- <code>run_sequence(G, node, ops)</code> - Execute operator sequences
+- <code>validate_sequence(ops)</code> - Check grammar compliance</p>
+<p><strong>Grammar:</strong> See <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/UNIFIED_GRAMMAR_RULES.md">UNIFIED_GRAMMAR_RULES.md</a> for complete rules<br>
+<strong>Detailed Specs:</strong> See <a href="/TNFR-Python-Engine/AGENTS/#-the-13-canonical-operators">AGENTS.md § The 13 Canonical Operators</a><br>
+<strong>Math:</strong> <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/source/theory/mathematical_foundations.md">Mathematical Foundations §5</a></p>
+<hr>
+<h2 id="canonical-invariants-optimized-set">Canonical Invariants (Optimized Set)</h2>
+<p>From <a href="/TNFR-Python-Engine/AGENTS/">AGENTS.md</a> - Optimized from 10 to 6 invariants based on mathematical derivation:</p>
+<ol>
+<li><strong>Nodal Equation Integrity</strong>: EPI evolution only via ∂EPI/∂t = νf · ΔNFR(t)</li>
+<li><strong>Phase-Coherent Coupling</strong>: |φᵢ - φⱼ| ≤ Δφ_max required for resonant operations</li>
+<li><strong>Multi-Scale Fractality</strong>: Operational fractality and nested EPIs maintained</li>
+<li><strong>Grammar Compliance</strong>: All operator sequences must satisfy U1-U6 validation</li>
+<li><strong>Structural Metrology</strong>: Units consistency (νf in Hz_str) and telemetry exposure</li>
+<li><strong>Reproducible Dynamics</strong>: Deterministic evolution with seed-based control</li>
+</ol>
+<hr>
+<h2 id="quick-reference-tables">Quick Reference Tables</h2>
+<h3 id="variable-summary">Variable Summary</h3>
+<table>
+<thead>
+<tr>
+<th>Symbol</th>
+<th>Mathematical</th>
+<th>Code Attribute</th>
+<th>Units</th>
+<th>Range</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>(\text{EPI})</td>
+<td>Primary Information Structure</td>
+<td><code>'EPI'</code></td>
+<td>dimensionless</td>
+<td>(B_{\text{EPI}})</td>
+<td>Coherent form</td>
+</tr>
+<tr>
+<td>(\nu_f)</td>
+<td>Structural frequency</td>
+<td><code>'vf'</code></td>
+<td>Hz_str</td>
+<td>(\mathbb{R}^+)</td>
+<td>Reorganization rate</td>
+</tr>
+<tr>
+<td>(\Delta\text{NFR})</td>
+<td>Reorganization operator</td>
+<td><code>'dnfr'</code></td>
+<td>dimensionless</td>
+<td>(\mathbb{R})</td>
+<td>Evolution gradient</td>
+</tr>
+<tr>
+<td>(\theta), (\phi)</td>
+<td>Phase angle</td>
+<td><code>'theta'</code></td>
+<td>radians</td>
+<td>([0, 2\pi))</td>
+<td>Network synchrony</td>
+</tr>
+<tr>
+<td>(C(t))</td>
+<td>Total coherence</td>
+<td><code>compute_coherence()</code></td>
+<td>dimensionless</td>
+<td>([0, 1])</td>
+<td>Global stability</td>
+</tr>
+<tr>
+<td>(\text{Si})</td>
+<td>Sense Index</td>
+<td><code>'Si'</code></td>
+<td>dimensionless</td>
+<td>([0, 1^+])</td>
+<td>Reorganization stability</td>
+</tr>
+</tbody>
+</table>
+<h3 id="common-api-patterns">Common API Patterns</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Access node attributes</span>
+<span class="n">epi</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">node_id</span><span class="p">][</span><span class="s1">&#39;EPI&#39;</span><span class="p">]</span>
+<span class="n">vf</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">node_id</span><span class="p">][</span><span class="s1">&#39;vf&#39;</span><span class="p">]</span>
+<span class="n">theta</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">node_id</span><span class="p">][</span><span class="s1">&#39;theta&#39;</span><span class="p">]</span>
+
+<span class="c1"># Compute metrics</span>
+<span class="n">C_t</span> <span class="o">=</span> <span class="n">compute_coherence</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+<span class="n">nodes</span><span class="p">,</span> <span class="n">W</span> <span class="o">=</span> <span class="n">coherence_matrix</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+<span class="n">Si</span> <span class="o">=</span> <span class="n">compute_Si_node</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">node_id</span><span class="p">)</span>
+
+<span class="c1"># Apply operators</span>
+<span class="kn">from</span> <span class="nn">tnfr.structural</span> <span class="kn">import</span> <span class="n">Emission</span><span class="p">,</span> <span class="n">Coherence</span><span class="p">,</span> <span class="n">Resonance</span>
+<span class="n">run_sequence</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">node_id</span><span class="p">,</span> <span class="p">[</span><span class="n">Emission</span><span class="p">(),</span> <span class="n">Coherence</span><span class="p">(),</span> <span class="n">Resonance</span><span class="p">()])</span>
+
+<span class="c1"># Evolution step</span>
+<span class="kn">from</span> <span class="nn">tnfr.dynamics</span> <span class="kn">import</span> <span class="n">step</span>
+<span class="n">step</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">use_Si</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">apply_glyphs</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</code></pre></div>
+
+<hr>
+<h2 id="telemetry-traces">Telemetry &amp; Traces</h2>
+<p>Expose in telemetry:
+- <code>C(t)</code> - Total coherence
+- <code>νf</code> per node - Structural frequency
+- <code>phase</code> per node - Synchrony state
+- <code>Si</code> per node/network - Sense index
+- <code>ΔNFR</code> per node - Reorganization gradient
+- Operator history - Applied transformations
+- Events - Birth, bifurcation, collapse</p>
+<p><strong>API:</strong> <code>tnfr.utils.callback_manager</code>, history tracking in <code>G.graph['_hist']</code></p>
+<hr>
+<h2 id="domain-neutrality">Domain Neutrality</h2>
+<p>TNFR is <strong>trans-scale</strong> and <strong>trans-domain</strong>:
+- Works from quantum to social systems
+- No built-in assumptions about specific domains
+- Structural operators apply universally</p>
+<p><strong>Guideline:</strong> Avoid domain-specific hard-coding in core engine</p>
+<hr>
+<h2 id="reproducibility">Reproducibility</h2>
+<p>All simulations must be:
+1. <strong>Seeded:</strong> Explicit RNG seeds
+2. <strong>Traceable:</strong> Log operators, parameters, states
+3. <strong>Deterministic:</strong> Same seed → same trajectory</p>
+<p><strong>Tools:</strong> RNG scaffolding, structural history, telemetry caches</p>
+<hr>
+<h2 id="unified-grammar-terms">Unified Grammar Terms</h2>
+<h3 id="unified-grammar">Unified Grammar</h3>
+<p>The consolidated TNFR grammar system (<strong>U1-U6</strong>) that replaces the old C1-C3 and RC1-RC4 systems.</p>
+<p><strong>Source of Truth:</strong> <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/UNIFIED_GRAMMAR_RULES.md">UNIFIED_GRAMMAR_RULES.md</a><br>
+<strong>Quick Reference:</strong> <a href="/TNFR-Python-Engine/AGENTS/#-unified-grammar-u1-u6">AGENTS.md § Unified Grammar (U1-U6)</a><br>
+<strong>Implementation:</strong> <code>src/tnfr/operators/grammar.py</code></p>
+<p><strong>Grammar Completeness</strong>: The canonical TNFR grammar consists of <strong>exactly six rules (U1-U6)</strong> and is <strong>COMPLETE</strong>. No additional rules (U7, U8, etc.) are required or planned. Extended dynamics (flux fields) add telemetry, not prescriptive constraints.</p>
+<p><strong>Six Canonical Constraints:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Rule</th>
+<th>Name</th>
+<th>Physics Basis</th>
+<th>Requirement</th>
+<th>Canonicity</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>U1</strong></td>
+<td>STRUCTURAL INITIATION &amp; CLOSURE</td>
+<td>∂EPI/∂t undefined at EPI=0</td>
+<td>Start with generator {AL, NAV, REMESH}, End with closure {SHA, NAV, REMESH, OZ}</td>
+<td>ABSOLUTE</td>
+</tr>
+<tr>
+<td><strong>U2</strong></td>
+<td>CONVERGENCE &amp; BOUNDEDNESS</td>
+<td>∫νf·ΔNFR dt must converge</td>
+<td>If destabilizer {OZ, ZHIR, VAL}, then include stabilizer {IL, THOL}</td>
+<td>ABSOLUTE</td>
+</tr>
+<tr>
+<td><strong>U3</strong></td>
+<td>RESONANT COUPLING</td>
+<td>Phase compatibility required for resonance</td>
+<td>If coupling {UM, RA}, verify |φᵢ - φⱼ| ≤ Δφ_max</td>
+<td>ABSOLUTE</td>
+</tr>
+<tr>
+<td><strong>U4</strong></td>
+<td>BIFURCATION DYNAMICS</td>
+<td>∂²EPI/∂t² &gt; τ requires control</td>
+<td>Triggers {OZ, ZHIR} need handlers {THOL, IL}; Transformers need context</td>
+<td>STRONG</td>
+</tr>
+<tr>
+<td><strong>U5</strong></td>
+<td>MULTI-SCALE COHERENCE</td>
+<td>Hierarchical coupling + chain rule</td>
+<td>Nested EPIs require stabilizers {IL, THOL} at each level</td>
+<td>ABSOLUTE</td>
+</tr>
+<tr>
+<td><strong>U6</strong></td>
+<td>STRUCTURAL POTENTIAL CONFINEMENT</td>
+<td>Emergent Φ_s field: Φ_s(i) = Σ ΔNFR_j/d(i,j)²</td>
+<td>Monitor Δ Φ_s &lt; 2.0 (telemetry-based safety)</td>
+<td>STRONG</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Canonicity Levels:</strong>
+- <strong>ABSOLUTE</strong>: Mathematical necessity (direct consequence of nodal equation)
+- <strong>STRONG</strong>: Strong empirical/theoretical support (2,400+ experiments for U6)</p>
+<p><strong>Recent Updates:</strong>
+- U5 added 2025-11-10 (hierarchical REMESH stabilization)
+- U6 promoted to canonical 2025-11-11 (Φ_s field validation complete)
+  - Replaces experimental "Temporal Ordering" research proposal
+  - Validated across 5 topologies: ring, scale_free, small-world, tree, grid
+  - Correlation: corr(Δ Φ_s, ΔC) = -0.822 (R² ≈ 0.68)
+- 2025-11-15: Grammar declared COMPLETE (U1-U6) - no U7/U8 required</p>
+<p><strong>Not Part of Grammar</strong> (telemetry/dynamics, NOT rules):
+- <strong>Structural Field Hexad</strong>: Tetrad (Φ_s, |∇φ|, K_φ, ξ_C) + Flux Pair (J_φ, ∇·J_ΔNFR)
+- <strong>"Proposed U7"</strong>: Historical research direction (Temporal Ordering) - NOT canonical, NOT implemented</p>
+<p><strong>See Also:</strong>
+- <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/UNIFIED_GRAMMAR_RULES.md">UNIFIED_GRAMMAR_RULES.md</a> - Complete derivations from physics
+- <a href="/TNFR-Python-Engine/AGENTS/#-unified-grammar-u1-u6">AGENTS.md § Unified Grammar</a> - Quick reference
+- <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/grammar/U6_STRUCTURAL_POTENTIAL_CONFINEMENT.md">docs/grammar/U6_STRUCTURAL_POTENTIAL_CONFINEMENT.md</a> - U6 complete specification
+- <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/grammar/U6_STRUCTURAL_FIELD_TETRAD.md">docs/grammar/U6_STRUCTURAL_FIELD_TETRAD.md</a> - Why no U7/U8
+- <a href="/TNFR-Python-Engine/TNFR_FORCES_EMERGENCE/">TNFR_FORCES_EMERGENCE.md § 14-15</a> - U6 validation details
+- <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/fields.py">src/tnfr/physics/fields.py</a> - Φ_s implementation</p>
+<hr>
+<h3 id="generator-operator">Generator Operator</h3>
+<p>Operator that can create EPI from null/dormant states.</p>
+<p><strong>Set:</strong> GENERATORS = {emission, transition, recursivity}</p>
+<p><strong>Physics:</strong> Only these operators can initialize when EPI=0</p>
+<p><strong>Grammar Rule:</strong> U1a (STRUCTURAL INITIATION)</p>
+<p><strong>See:</strong> UNIFIED_GRAMMAR_RULES.md § U1a</p>
+<hr>
+<h3 id="closure-operator">Closure Operator</h3>
+<p>Operator that leaves system in coherent attractor state.</p>
+<p><strong>Set:</strong> CLOSURES = {silence, transition, recursivity, dissonance}</p>
+<p><strong>Physics:</strong> Terminal states preserving coherence</p>
+<p><strong>Grammar Rule:</strong> U1b (STRUCTURAL CLOSURE)</p>
+<p><strong>See:</strong> UNIFIED_GRAMMAR_RULES.md § U1b</p>
+<hr>
+<h3 id="stabilizer-operator">Stabilizer Operator</h3>
+<p>Operator that provides negative feedback for convergence.</p>
+<p><strong>Set:</strong> STABILIZERS = {coherence, self_organization}</p>
+<p><strong>Physics:</strong> Ensures ∫νf·ΔNFR dt converges (bounded evolution)</p>
+<p><strong>Grammar Rule:</strong> U2 (CONVERGENCE &amp; BOUNDEDNESS)</p>
+<p><strong>See:</strong> UNIFIED_GRAMMAR_RULES.md § U2</p>
+<hr>
+<h3 id="destabilizer-operator">Destabilizer Operator</h3>
+<p>Operator that increases |ΔNFR| through positive feedback.</p>
+<p><strong>Set:</strong> DESTABILIZERS = {dissonance, mutation, expansion}</p>
+<p><strong>Physics:</strong> Without stabilizers, leads to divergence</p>
+<p><strong>Grammar Rule:</strong> U2 (CONVERGENCE &amp; BOUNDEDNESS)</p>
+<p><strong>See:</strong> UNIFIED_GRAMMAR_RULES.md § U2</p>
+<hr>
+<h3 id="couplingresonance-operator">Coupling/Resonance Operator</h3>
+<p>Operators that require phase verification for valid coupling.</p>
+<p><strong>Set:</strong> COUPLING_RESONANCE = {coupling, resonance}</p>
+<p><strong>Physics:</strong> Resonance requires |φᵢ - φⱼ| ≤ Δφ_max</p>
+<p><strong>Grammar Rule:</strong> U3 (RESONANT COUPLING)</p>
+<p><strong>See:</strong> UNIFIED_GRAMMAR_RULES.md § U3</p>
+<hr>
+<h2 id="universal-tetrahedral-correspondence">Universal Tetrahedral Correspondence</h2>
+<p><strong>Theory:</strong> Central TNFR discovery establishing exact correspondence between four universal mathematical constants and four structural fields.</p>
+<h3 id="mathematical-constants">Mathematical Constants</h3>
+<table>
+<thead>
+<tr>
+<th>Constant</th>
+<th>Value</th>
+<th>Role</th>
+<th>Domain</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>φ</strong> (Golden Ratio)</td>
+<td>1.618034...</td>
+<td>Harmonic proportion</td>
+<td>Global/Harmonic</td>
+</tr>
+<tr>
+<td><strong>γ</strong> (Euler Constant)</td>
+<td>0.577216...</td>
+<td>Harmonic growth rate</td>
+<td>Local/Dynamic</td>
+</tr>
+<tr>
+<td><strong>π</strong> (Pi)</td>
+<td>3.141593...</td>
+<td>Geometric relations</td>
+<td>Geometric/Spatial</td>
+</tr>
+<tr>
+<td><strong>e</strong> (Euler Number)</td>
+<td>2.718282...</td>
+<td>Exponential base</td>
+<td>Correlational/Temporal</td>
+</tr>
+</tbody>
+</table>
+<h3 id="structural-field-correspondences">Structural Field Correspondences</h3>
+<ol>
+<li><strong>φ ↔ Φ_s</strong>: Global harmonic confinement (Δ Φ_s &lt; φ ≈ 1.618)</li>
+<li><strong>γ ↔ |∇φ|</strong>: Local dynamic evolution (|∇φ| &lt; γ/π ≈ 0.184)</li>
+<li><strong>π ↔ K_φ</strong>: Geometric spatial constraints (|K_φ| &lt; φ×π ≈ 5.083)</li>
+<li><strong>e ↔ ξ_C</strong>: Correlational memory decay (C(r) ~ exp(-r/ξ_C))</li>
+</ol>
+<p><strong>Documentation:</strong> <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md">Structural Fields and Universal Tetrahedral Correspondence</a></p>
+<hr>
+<h3 id="bifurcation-trigger">Bifurcation Trigger</h3>
+<p>Operators that may trigger phase transitions.</p>
+<p><strong>Set:</strong> BIFURCATION_TRIGGERS = {dissonance, mutation}</p>
+<p><strong>Physics:</strong> Can cause ∂²EPI/∂t² &gt; τ (bifurcation)</p>
+<p><strong>Grammar Rule:</strong> U4a (requires handlers)</p>
+<p><strong>See:</strong> UNIFIED_GRAMMAR_RULES.md § U4a</p>
+<hr>
+<h3 id="bifurcation-handler">Bifurcation Handler</h3>
+<p>Operators that manage structural reorganization during bifurcations.</p>
+<p><strong>Set:</strong> BIFURCATION_HANDLERS = {self_organization, coherence}</p>
+<p><strong>Physics:</strong> Provide stability during phase transitions</p>
+<p><strong>Grammar Rule:</strong> U4a (BIFURCATION DYNAMICS)</p>
+<p><strong>See:</strong> UNIFIED_GRAMMAR_RULES.md § U4a</p>
+<hr>
+<h3 id="transformer-operator">Transformer Operator</h3>
+<p>Operators that perform graduated destabilization for phase transitions.</p>
+<p><strong>Set:</strong> TRANSFORMERS = {mutation, self_organization}</p>
+<p><strong>Physics:</strong> Require recent destabilizer for threshold energy</p>
+<p><strong>Grammar Rule:</strong> U4b (requires context + prior IL for ZHIR)</p>
+<p><strong>See:</strong> UNIFIED_GRAMMAR_RULES.md § U4b</p>
+<hr>
+<h2 id="related-documentation">Related Documentation</h2>
+<h3 id="core-references-essential">Core References (Essential)</h3>
+<ul>
+<li><strong><a href="/TNFR-Python-Engine/AGENTS/">AGENTS.md</a></strong> ⭐ - Single source of truth for TNFR agent guidance, invariants, and philosophy</li>
+<li><strong><a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/UNIFIED_GRAMMAR_RULES.md">UNIFIED_GRAMMAR_RULES.md</a></strong> ⭐ - Grammar single source of truth (U1-U6 complete derivations)</li>
+<li><strong><a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/source/theory/mathematical_foundations.md">Mathematical Foundations</a></strong> ⭐ - <strong>SINGLE SOURCE FOR ALL MATH</strong> (formalization, proofs, spectral theory)</li>
+</ul>
+<h3 id="theory-physics">Theory &amp; Physics</h3>
+<ul>
+<li><a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/TNFR.pdf">TNFR.pdf</a> - Original theoretical companion (paradigm, nodal equation, foundational physics)</li>
+<li><a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/grammar/U6_STRUCTURAL_POTENTIAL_CONFINEMENT.md">docs/grammar/U6_STRUCTURAL_POTENTIAL_CONFINEMENT.md</a> - U6 complete specification</li>
+<li><a href="/TNFR-Python-Engine/TNFR_FORCES_EMERGENCE/">TNFR_FORCES_EMERGENCE.md</a> - Structural fields validation (Φ_s, phase gradients)</li>
+<li><a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/SHA_ALGEBRA_PHYSICS.md">SHA_ALGEBRA_PHYSICS.md</a> - Silence operator physical basis</li>
+</ul>
+<h3 id="implementation-api">Implementation &amp; API</h3>
+<ul>
+<li><a href="/TNFR-Python-Engine/ARCHITECTURE/">ARCHITECTURE.md</a> - System design and architecture patterns</li>
+<li><a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/source/foundations.md">Foundations</a> - Runtime/API guide</li>
+<li><a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/source/api/overview.md">API Overview</a> - Package architecture</li>
+<li><a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/source/api/operators.md">Structural Operators</a> - Operator implementation details</li>
+<li><a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/source/examples/README.md">Examples</a> - Runnable scenarios across domains</li>
+</ul>
+<h3 id="grammar-migration">Grammar &amp; Migration</h3>
+<ul>
+<li><a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/MIGRATION_GUIDE.md">MIGRATION_GUIDE.md</a> - Migration from C1-C3/RC1-RC4 to U1-U6</li>
+<li><a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/grammar">docs/grammar/</a> - Grammar documentation directory (U6, fundamental concepts, etc.)</li>
+<li><a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/GLYPH_SEQUENCES_GUIDE.md">GLYPH_SEQUENCES_GUIDE.md</a> - Operator sequence patterns</li>
+</ul>
+<h3 id="testing-development">Testing &amp; Development</h3>
+<ul>
+<li><a href="/TNFR-Python-Engine/TESTING/">TESTING.md</a> - Test conventions and invariant verification</li>
+<li><a href="/TNFR-Python-Engine/CONTRIBUTING/">CONTRIBUTING.md</a> - Detailed contribution guidelines</li>
+<li><a href="/TNFR-Python-Engine/REPRODUCIBILITY/">REPRODUCIBILITY.md</a> - Determinism requirements</li>
+</ul>
+<h3 id="cross-references-and-documentation-hub">Cross-References and Documentation Hub</h3>
+<p><strong>Primary Sources:</strong><br>
+- <strong><a href="/TNFR-Python-Engine/AGENTS/">AGENTS.md</a></strong> - Single source of truth for TNFR theory<br>
+- <strong><a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/UNIFIED_GRAMMAR_RULES.md">UNIFIED_GRAMMAR_RULES.md</a></strong> - Complete U1-U6 grammar derivations<br>
+- <strong><a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md">Structural Fields and Universal Tetrahedral Correspondence</a></strong> - Mathematical foundations</p>
+<p><strong>Implementation References:</strong><br>
+- <strong><a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/fields.py">src/tnfr/physics/fields.py</a></strong> - Unified Structural Field Tetrad (Canonical)<br>
+- <strong><a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/dynamics/self_optimizing_engine.py">src/tnfr/dynamics/self_optimizing_engine.py</a></strong> - Intrinsic agency &amp; auto-optimization<br>
+- <strong><a href="/TNFR-Python-Engine/STRUCTURAL_FIELDS_TETRAD/">docs/STRUCTURAL_FIELDS_TETRAD.md</a></strong> - Technical field specifications<br>
+- <strong><a href="/TNFR-Python-Engine/grammar_PHYSICS_VERIFICATION/">docs/grammar/PHYSICS_VERIFICATION.md</a></strong> - Grammar physics verification</p>
+<p><strong>Development Resources:</strong><br>
+- <strong><a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/sdk">src/tnfr/sdk/</a></strong> - Simplified &amp; Fluent API<br>
+- <strong><a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/examples">examples/</a></strong> - Complete tutorial suite<br>
+- <strong><a href="/TNFR-Python-Engine/ARCHITECTURE/">ARCHITECTURE.md</a></strong> - System design patterns</p>
+<hr>
+<h2 id="molecular-chemistry-from-tnfr-breakthrough">Molecular Chemistry from TNFR ⭐ <strong>BREAKTHROUGH</strong></h2>
+<p><strong>Revolutionary paradigm</strong>: Chemistry emerges from TNFR nodal dynamics without additional postulates.</p>
+<h3 id="element-signatures">Element Signatures</h3>
+<p><strong>Code:</strong> <code>tnfr.physics.signatures</code><br>
+<strong>What:</strong> Structural field-based classification of coherent patterns<br>
+<strong>Metrics:</strong> ξ_C, |∇φ|, |K_φ|, ΔΦ_s drift, stability classification<br>
+<strong>API:</strong> <code>compute_element_signature(G)</code>, <code>compute_au_like_signature(G)</code><br>
+<strong>Physics:</strong> Elements as coherent attractors in structural space  </p>
+<h3 id="au-like-patterns">Au-like Patterns</h3>
+<p><strong>Symbol:</strong> Au (from Latin 'aurum')<br>
+<strong>What:</strong> Complex coherent patterns exhibiting metallic properties<br>
+<strong>Criteria:</strong> Extended ξ_C, phase synchrony (|∇φ| &lt; 2.0), evolution stability<br>
+<strong>Detection:</strong> <code>compute_au_like_signature()["is_au_like"]</code><br>
+<strong>Physics:</strong> Optimal multi-scale coordination under nodal dynamics  </p>
+<h3 id="chemical-bonds-tnfr-redefinition">Chemical Bonds (TNFR Redefinition)</h3>
+<p><strong>Traditional:</strong> Force between atoms<br>
+<strong>TNFR:</strong> Phase synchronization with U3 verification: |φᵢ - φⱼ| ≤ Δφ_max<br>
+<strong>API:</strong> Coupling operators with phase compatibility check<br>
+<strong>Strength:</strong> Determined by phase coherence and coupling stability  </p>
+<h3 id="chemical-reactions-tnfr-redefinition">Chemical Reactions (TNFR Redefinition)</h3>
+<p><strong>Traditional:</strong> Collision/transition state theory<br>
+<strong>TNFR:</strong> Operator sequences: [Dissonance→Mutation→Coupling→Coherence]<br>
+<strong>Grammar:</strong> Must satisfy U1-U6 constraints<br>
+<strong>API:</strong> Sequence validation via <code>grammar.py</code><br>
+<strong>Example:</strong> Bond formation = [OZ, ZHIR, UM, IL] sequence  </p>
+<h3 id="molecular-geometry-tnfr-redefinition">Molecular Geometry (TNFR Redefinition)</h3>
+<p><strong>Traditional:</strong> VSEPR, orbital hybridization<br>
+<strong>TNFR:</strong> ΔNFR minimization in coupled network topology<br>
+<strong>Prediction:</strong> Stable configurations minimize reorganization pressure<br>
+<strong>API:</strong> Network topology analysis after coupling sequences  </p>
+<p><strong>Complete Theory:</strong> <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/examples/MOLECULAR_CHEMISTRY_FROM_NODAL_DYNAMICS.md">MOLECULAR_CHEMISTRY_FROM_NODAL_DYNAMICS.md</a><br>
+<strong>Implementation:</strong> <a href="/TNFR-Python-Engine/src/tnfr/physics/">Physics README § 9-10</a></p>
+<h2 id="self-optimizing-engine-v001">Self-Optimizing Engine (v0.0.1)</h2>
+<p><strong>Intrinsic Agency:</strong> The TNFR engine possesses self-optimization capabilities using unified field telemetry.</p>
+<h3 id="core-components">Core Components</h3>
+<p><strong>TNFRSelfOptimizingEngine:</strong> <code>src/tnfr/dynamics/self_optimizing_engine.py</code><br>
+<strong>Purpose:</strong> Closes feedback loop via unified field monitoring<br>
+<strong>Monitors:</strong> Complex Geometric Field (Ψ), Chirality (χ), Symmetry Breaking (𝒮), Coherence Coupling (𝒞)<br>
+<strong>Detects:</strong> Inefficiencies via tensor invariants (Energy Density ℰ, Topological Charge 𝒬)<br>
+<strong>Usage:</strong> <code>engine = TNFRSelfOptimizingEngine(G); success, metrics = engine.step(node_id)</code></p>
+<h3 id="auto-optimization-api">Auto-Optimization API</h3>
+<p><strong>Fluent Integration:</strong> <code>TNFRNetwork(G).focus(node).auto_optimize().execute()</code><br>
+<strong>Field Analysis:</strong> <code>analyze_optimization_potential(G)</code> - Mathematical structure analysis<br>
+<strong>Strategy Recommendations:</strong> <code>recommend_field_optimization_strategy(G)</code> - Optimization strategies<br>
+<strong>Automatic Execution:</strong> <code>auto_optimize_field_computation(G)</code> - Self-optimizing computation</p>
+<h2 id="unified-field-framework-nov-2025">Unified Field Framework (Nov 2025)</h2>
+<p><strong>Mathematical Unification:</strong> Discovery of complex field relationships and conservation laws.</p>
+<h3 id="complex-geometric-field">Complex Geometric Field (Ψ)</h3>
+<p><strong>Definition:</strong> Ψ = K_φ + i·J_φ (unifies geometry + transport)<br>
+<strong>Evidence:</strong> r(K_φ, J_φ) = -0.854 to -0.997 (near-perfect anticorrelation)<br>
+<strong>API:</strong> <code>compute_complex_geometric_field(G)</code><br>
+<strong>Usage:</strong> Unified geometry-transport analysis</p>
+<h3 id="emergent-fields">Emergent Fields</h3>
+<p><strong>Chirality (χ):</strong> <code>χ = |∇φ|·K_φ - J_φ·J_ΔNFR</code> - Handedness detection<br>
+<strong>Symmetry Breaking (𝒮):</strong> Phase transition indicator<br>
+<strong>Coherence Coupling (𝒞):</strong> Multi-scale connector field<br>
+<strong>API:</strong> <code>compute_emergent_fields(G)</code></p>
+<h3 id="tensor-invariants">Tensor Invariants</h3>
+<p><strong>Energy Density (ℰ):</strong> <code>ℰ = Φ_s² + |∇φ|² + K_φ² + J_φ² + J_ΔNFR²</code><br>
+<strong>Topological Charge (𝒬):</strong> <code>𝒬 = |∇φ|·J_φ - K_φ·J_ΔNFR</code><br>
+<strong>Conservation Law:</strong> ∂ρ/∂t + ∇·𝐉 = 0<br>
+<strong>API:</strong> <code>compute_tensor_invariants(G)</code></p>
+<p><strong>Unified Telemetry:</strong> <code>compute_unified_telemetry(G)</code> - Complete field suite</p>
+<hr>
+<h2 id="contributing-guidelines">Contributing Guidelines</h2>
+<p>When adding new functionality:</p>
+<ol>
+<li><strong>Verify theoretical foundation</strong>: Align with <a href="/TNFR-Python-Engine/AGENTS/">AGENTS.md</a> physics  </li>
+<li><strong>Preserve canonical invariants</strong>: Follow optimized 6-invariant set  </li>
+<li><strong>Use established terminology</strong>: Reference this glossary for consistency  </li>
+<li><strong>Map to canonical operators</strong>: All functions must correspond to 13 canonical operators  </li>
+<li><strong>Validate grammar compliance</strong>: Ensure U1-U6 satisfaction  </li>
+<li><strong>Maintain English-only policy</strong>: All documentation in English for canonical terminology  </li>
+<li><strong>Write comprehensive tests</strong>: Cover invariants and operator contracts</li>
+</ol>
+<p><strong>Development Workflow:</strong><br>
+1. Read <a href="/TNFR-Python-Engine/AGENTS/">AGENTS.md</a> completely - <strong>SINGLE SOURCE OF TRUTH</strong><br>
+2. Study <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/UNIFIED_GRAMMAR_RULES.md">UNIFIED_GRAMMAR_RULES.md</a> for physics foundations<br>
+3. Follow <a href="/TNFR-Python-Engine/CONTRIBUTING/">CONTRIBUTING.md</a> for detailed guidelines<br>
+4. Test with <a href="/TNFR-Python-Engine/TESTING/">TESTING.md</a> requirements</p>
+<p><strong>Version</strong>: 0.0.1 (November 29, 2025)<br>
+<strong>Status</strong>: Complete operational reference for current TNFR implementation<br>
+<strong>Language</strong>: English only (canonical documentation policy)</p>
+    </main>
+    <footer>
+            <span>
+                &copy; 2025
+                TNFR Python Engine — Licensed under MIT.
+            </span>
+            <span>
+                Feedback?
+                <a
+                    href="https://github.com/fermga/TNFR-Python-Engine"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    Open an issue
+                </a>.
+            </span>
+    </footer>
+  </div>
+</body>
+</html>

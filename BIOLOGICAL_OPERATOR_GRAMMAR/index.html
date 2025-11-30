@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Biological Operator Grammar Memo — TNFR Python Engine</title>
+  <meta name="description" content="TNFR documentation: Biological Operator Grammar Memo">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+    >
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0e0f11;
+      --panel: rgba(24, 25, 27, 0.9);
+      --border: rgba(90, 92, 95, 0.4);
+      --text: #e4e6eb;
+      --muted: #9ea4b3;
+      --accent: #6aa0ff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.6;
+      background: radial-gradient(circle at 20% 20%, #1a1c20, var(--bg));
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+        .page {
+            max-width: 960px;
+            margin: 0 auto;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 2.5rem 3rem 3rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+        header {
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+        }
+    .home-link { font-weight: 600; color: var(--text); }
+        .doc-title {
+            display: block;
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-top: 0.4rem;
+        }
+        .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-top: 1rem;
+            font-size: 0.95rem;
+            color: var(--muted);
+        }
+    main { font-size: 1rem; }
+    main h1 { font-size: 2rem; margin-top: 2.5rem; }
+        main h2 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.3rem;
+        }
+    main h3 { font-size: 1.2rem; margin-top: 1.5rem; }
+    main p { margin: 1rem 0; }
+        pre {
+            background: #0a0b0d;
+            padding: 1rem;
+            border-radius: 10px;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    code { font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; }
+        th, td {
+            border: 1px solid var(--border);
+            padding: 0.6rem 0.8rem;
+            text-align: left;
+        }
+        blockquote {
+            border-left: 4px solid var(--accent);
+            margin: 1.5rem 0;
+            padding: 0.2rem 1rem;
+            color: var(--muted);
+            background: rgba(255, 255, 255, 0.02);
+        }
+        footer {
+            border-top: 1px solid var(--border);
+            margin-top: 2.5rem;
+            padding-top: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--muted);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: space-between;
+        }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <a class="home-link" href="/TNFR-Python-Engine/">TNFR Python Engine</a>
+      <span class="doc-title">Biological Operator Grammar Memo</span>
+      <div class="meta">
+        <span>Version 0.0.2 · DOI <a href="https://doi.org/10.5281/zenodo.17764207" target="_blank" rel="noopener">10.5281/zenodo.17764207</a> · Updated 2025-11-30</span>
+                <span>
+                    Source
+                    <a
+                        href="https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/BIOLOGICAL_OPERATOR_GRAMMAR.md"
+                        target="_blank"
+                        rel="noopener"
+                    >
+                        theory/BIOLOGICAL_OPERATOR_GRAMMAR.md
+                    </a>
+                </span>
+      </div>
+    </header>
+    <main>
+      <h1 id="biological-operator-grammar-memo">Biological Operator Grammar Memo</h1>
+<p><strong>Status</strong>: Technical reference<br>
+<strong>Version</strong>: 0.3.0 (November 30, 2025)<br>
+<strong>Owner</strong>: <code>theory/BIOLOGICAL_OPERATOR_GRAMMAR.md</code></p>
+<hr>
+<h2 id="1-scope-and-assumptions">1. Scope and Assumptions</h2>
+<ul>
+<li>Model biological structures as EPIs embedded in a mesoscopic medium.  </li>
+<li>Operator assignments must preserve contracts defined in <code>AGENTS.md</code> and <code>theory/UNIFIED_GRAMMAR_RULES.md</code>.  </li>
+<li>Consider only phenomena with measurable telemetry (coherence, phase gradients, structural frequencies) stored under <code>results/biological_operator_grammar/</code>.</li>
+</ul>
+<hr>
+<h2 id="2-operator-mapping">2. Operator Mapping</h2>
+<table>
+<thead>
+<tr>
+<th>Biological Function</th>
+<th>Dominant Operator</th>
+<th>Contract Alignment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Morphogen emission / zygote activation</td>
+<td><code>AL</code></td>
+<td>Initializes EPI with (\nu_f &gt; 0).</td>
+</tr>
+<tr>
+<td>Nutrient uptake and signal transduction</td>
+<td><code>EN</code></td>
+<td>Integrates external flux while monitoring (\Delta \text{NFR}).</td>
+</tr>
+<tr>
+<td>Tissue elongation or volumetric growth</td>
+<td><code>VAL</code></td>
+<td>Increases dimensionality subject to U2 bounds.</td>
+</tr>
+<tr>
+<td>Stress relief, repair, and homeostasis</td>
+<td><code>IL</code></td>
+<td>Reduces gradients; enforces (\Delta \Phi_s &lt; 2.0).</td>
+</tr>
+<tr>
+<td>Branching morphogenesis</td>
+<td><code>OZ</code> followed by <code>THOL</code></td>
+<td>Controlled symmetry breaking with handlers.</td>
+</tr>
+<tr>
+<td>Cell-cycle duplication</td>
+<td><code>REMESH</code> + <code>THOL</code></td>
+<td>Copies EPI state then partitions it.</td>
+</tr>
+<tr>
+<td>Programmed cell death</td>
+<td><code>SHA</code></td>
+<td>Drives (\nu_f \to 0) while preserving surrounding coherence.</td>
+</tr>
+</tbody>
+</table>
+<p>Telemetry requirement: for every mapping, log (C(t)), (|\nabla \phi|), (K_\phi), (\Phi_s), and operator sequences per sample and store them in <code>results/biological_operator_grammar/mapping/*.csv</code>.</p>
+<hr>
+<h2 id="3-growth-sequences">3. Growth Sequences</h2>
+<p>Phyllotaxis can be represented as
+[\text{Sequence} = [AL, VAL, OZ, THOL, IL]_{\text{loop}}.
+]
+<code>OZ</code> introduces angular offsets, <code>THOL</code> creates subsidiary EPIs (primordia), and <code>IL</code> enforces U2. Predictive metrics include:</p>
+<ul>
+<li>Divergence angle derived from accumulated (K_\phi).</li>
+<li>Coherence length (\xi_C) along the stem vs. leaf emergence zones.</li>
+</ul>
+<hr>
+<h2 id="4-mitosis-as-controlled-bifurcation">4. Mitosis as Controlled Bifurcation</h2>
+<p>The mitotic pathway is described as:</p>
+<ol>
+<li><code>VAL</code>: volume increase with monotonic (C(t)).</li>
+<li><code>REMESH</code>: duplication of regulatory EPIs; (|\nabla \phi|) rises.</li>
+<li><code>OZ</code>: spindle assembly introduces deliberate dissonance.</li>
+<li><code>THOL</code>: partitioning into two EPIs; handlers ensure (\nu_f) remains finite.</li>
+<li><code>IL</code>: post-division stabilization.</li>
+</ol>
+<p>Deviations (e.g., unchecked <code>VAL</code> + <code>REMESH</code>) violate U2 and manifest as exponential (\Phi_s) drift, matching observed dysplasia metrics.</p>
+<hr>
+<h2 id="5-information-substrates">5. Information Substrates</h2>
+<p>DNA sequences specify operator timing through regulatory networks. Epigenetic modifications modulate operator parameters (gain, thresholds). Implementation guidelines:
+Implementation guidelines:</p>
+<ul>
+<li>Express control logic as state machines referencing operator identifiers.  </li>
+<li>Validate using reproducible simulations (seeded stochastic models).  </li>
+<li>Report telemetry in structural units (Hz_str, coherence indices).</li>
+</ul>
+<hr>
+<h2 id="6-outstanding-work">6. Outstanding Work</h2>
+<ol>
+<li>Integrate high-resolution microscopy datasets to estimate (\Phi_s) and (|\nabla \phi|) during development, linking raw images to operator logs.  </li>
+<li>Build automated grammar-check routines for biological simulations to flag sequences that violate U2/U4 contracts.  </li>
+<li>
+<p>Publish standardized schemas for <code>results/biological_operator_grammar/*.csv</code> so downstream analyses remain reproducible.</p>
+</li>
+<li>
+<p>Biological narratives are replaced by operator-level descriptions.</p>
+</li>
+<li>Diagnostics should track grammar compliance rather than qualitative metaphors.</li>
+<li>Future work: integrate high-resolution microscopy data to estimate (\Phi_s) and (|\nabla \phi|) during development.</li>
+</ol>
+    </main>
+    <footer>
+            <span>
+                &copy; 2025
+                TNFR Python Engine — Licensed under MIT.
+            </span>
+            <span>
+                Feedback?
+                <a
+                    href="https://github.com/fermga/TNFR-Python-Engine"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    Open an issue
+                </a>.
+            </span>
+    </footer>
+  </div>
+</body>
+</html>

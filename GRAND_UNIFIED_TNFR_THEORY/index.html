@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Grand Unified TNFR Memo — TNFR Python Engine</title>
+  <meta name="description" content="TNFR documentation: Grand Unified TNFR Memo">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+    >
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0e0f11;
+      --panel: rgba(24, 25, 27, 0.9);
+      --border: rgba(90, 92, 95, 0.4);
+      --text: #e4e6eb;
+      --muted: #9ea4b3;
+      --accent: #6aa0ff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.6;
+      background: radial-gradient(circle at 20% 20%, #1a1c20, var(--bg));
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+        .page {
+            max-width: 960px;
+            margin: 0 auto;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 2.5rem 3rem 3rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+        header {
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+        }
+    .home-link { font-weight: 600; color: var(--text); }
+        .doc-title {
+            display: block;
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-top: 0.4rem;
+        }
+        .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-top: 1rem;
+            font-size: 0.95rem;
+            color: var(--muted);
+        }
+    main { font-size: 1rem; }
+    main h1 { font-size: 2rem; margin-top: 2.5rem; }
+        main h2 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.3rem;
+        }
+    main h3 { font-size: 1.2rem; margin-top: 1.5rem; }
+    main p { margin: 1rem 0; }
+        pre {
+            background: #0a0b0d;
+            padding: 1rem;
+            border-radius: 10px;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    code { font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; }
+        th, td {
+            border: 1px solid var(--border);
+            padding: 0.6rem 0.8rem;
+            text-align: left;
+        }
+        blockquote {
+            border-left: 4px solid var(--accent);
+            margin: 1.5rem 0;
+            padding: 0.2rem 1rem;
+            color: var(--muted);
+            background: rgba(255, 255, 255, 0.02);
+        }
+        footer {
+            border-top: 1px solid var(--border);
+            margin-top: 2.5rem;
+            padding-top: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--muted);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: space-between;
+        }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <a class="home-link" href="/TNFR-Python-Engine/">TNFR Python Engine</a>
+      <span class="doc-title">Grand Unified TNFR Memo</span>
+      <div class="meta">
+        <span>Version 0.0.2 · DOI <a href="https://doi.org/10.5281/zenodo.17764207" target="_blank" rel="noopener">10.5281/zenodo.17764207</a> · Updated 2025-11-30</span>
+                <span>
+                    Source
+                    <a
+                        href="https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/GRAND_UNIFIED_TNFR_THEORY.md"
+                        target="_blank"
+                        rel="noopener"
+                    >
+                        theory/GRAND_UNIFIED_TNFR_THEORY.md
+                    </a>
+                </span>
+      </div>
+    </header>
+    <main>
+      <h1 id="grand-unified-tnfr-memo">Grand Unified TNFR Memo</h1>
+<p><strong>Status</strong>: Technical overview<br>
+<strong>Version</strong>: 0.3.0 (November 30, 2025)<br>
+<strong>Owner</strong>: <code>theory/GRAND_UNIFIED_TNFR_THEORY.md</code></p>
+<hr>
+<h2 id="1-scope">1. Scope</h2>
+<p>Summarize how TNFR constructs map across cosmology, chemistry, biology, and cognition. The memo ties each domain to the nodal equation, operator grammar, telemetry requirements, and validation targets. Claims must be grounded in reproducible simulations or datasets located under <code>results/</code> directories corresponding to each domain.</p>
+<hr>
+<h2 id="2-core-equation-and-grammar">2. Core Equation and Grammar</h2>
+<p>The nodal equation</p>
+<p>[
+\frac{\partial \text{EPI}}{\partial t} = \nu_f \Delta \text{NFR}(t)
+]</p>
+<p>remains the foundation. Unified grammar (U1–U6) constrains operator sequences. Refer to <code>AGENTS.md</code> and <code>theory/UNIFIED_GRAMMAR_RULES.md</code> before defining new workflows.</p>
+<hr>
+<h2 id="3-multiscale-mapping">3. Multiscale Mapping</h2>
+<table>
+<thead>
+<tr>
+<th>Domain</th>
+<th>Operator Focus</th>
+<th>Telemetry Requirements</th>
+<th>Validation Targets</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cosmology</td>
+<td><code>AL</code>, <code>IL</code></td>
+<td>(\Phi_s) gradients, (C(t))</td>
+<td>Large-scale coherence metrics, field telemetry vs. observations</td>
+</tr>
+<tr>
+<td>Chemistry</td>
+<td><code>UM</code>, <code>RA</code></td>
+<td>(\Phi_s) redistribution, (\xi_C)</td>
+<td>Spectroscopy, bonding energies</td>
+</tr>
+<tr>
+<td>Biology</td>
+<td><code>VAL</code>, <code>REMESH</code>, <code>IL</code></td>
+<td>(C(t)), (|\nabla \phi|)</td>
+<td>Developmental patterns, morphological data</td>
+</tr>
+<tr>
+<td>Cognition</td>
+<td><code>EN</code>, <code>THOL</code>, <code>SHA</code></td>
+<td>(Si), information integration metrics</td>
+<td>Neural telemetry, signal coherence</td>
+</tr>
+</tbody>
+</table>
+<p>Each row should map to specific scripts/notebooks plus result files (e.g., <code>results/cosmology/*</code>, <code>results/chemistry/*</code>).</p>
+<hr>
+<h2 id="4-structural-tetrad-usage">4. Structural Tetrad Usage</h2>
+<ul>
+<li>(\Phi_s): global structural potential; report distributions and gradients.  </li>
+<li>(|\nabla \phi|): local stress indicator; monitor for threshold violations.  </li>
+<li>(K_\phi): geometric confinement metric; use to flag mutation-prone regions.  </li>
+<li>(\xi_C): coherence length; track multi-scale integration.</li>
+</ul>
+<p>Researchers must quantify these fields in every study rather than substituting metaphorical labels.</p>
+<hr>
+<h2 id="5-outstanding-work">5. Outstanding Work</h2>
+<ol>
+<li>Publish per-domain manifest files summarizing operators, telemetry, and datasets referenced above.  </li>
+<li>Build cross-domain dashboards (nbconvert HTML) showing how (\Phi_s), (|\nabla \phi|), (K_\phi), and (\xi_C) scale across systems.  </li>
+<li>Ensure each domain’s README links back to this memo with current version numbers and result paths.</li>
+</ol>
+    </main>
+    <footer>
+            <span>
+                &copy; 2025
+                TNFR Python Engine — Licensed under MIT.
+            </span>
+            <span>
+                Feedback?
+                <a
+                    href="https://github.com/fermga/TNFR-Python-Engine"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    Open an issue
+                </a>.
+            </span>
+    </footer>
+  </div>
+</body>
+</html>

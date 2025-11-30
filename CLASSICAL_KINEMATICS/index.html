@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Classical Kinematics Memo — TNFR Python Engine</title>
+  <meta name="description" content="TNFR documentation: Classical Kinematics Memo">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+    >
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0e0f11;
+      --panel: rgba(24, 25, 27, 0.9);
+      --border: rgba(90, 92, 95, 0.4);
+      --text: #e4e6eb;
+      --muted: #9ea4b3;
+      --accent: #6aa0ff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.6;
+      background: radial-gradient(circle at 20% 20%, #1a1c20, var(--bg));
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+        .page {
+            max-width: 960px;
+            margin: 0 auto;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 2.5rem 3rem 3rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+        header {
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+        }
+    .home-link { font-weight: 600; color: var(--text); }
+        .doc-title {
+            display: block;
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-top: 0.4rem;
+        }
+        .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-top: 1rem;
+            font-size: 0.95rem;
+            color: var(--muted);
+        }
+    main { font-size: 1rem; }
+    main h1 { font-size: 2rem; margin-top: 2.5rem; }
+        main h2 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.3rem;
+        }
+    main h3 { font-size: 1.2rem; margin-top: 1.5rem; }
+    main p { margin: 1rem 0; }
+        pre {
+            background: #0a0b0d;
+            padding: 1rem;
+            border-radius: 10px;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    code { font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; }
+        th, td {
+            border: 1px solid var(--border);
+            padding: 0.6rem 0.8rem;
+            text-align: left;
+        }
+        blockquote {
+            border-left: 4px solid var(--accent);
+            margin: 1.5rem 0;
+            padding: 0.2rem 1rem;
+            color: var(--muted);
+            background: rgba(255, 255, 255, 0.02);
+        }
+        footer {
+            border-top: 1px solid var(--border);
+            margin-top: 2.5rem;
+            padding-top: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--muted);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: space-between;
+        }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <a class="home-link" href="/TNFR-Python-Engine/">TNFR Python Engine</a>
+      <span class="doc-title">Classical Kinematics Memo</span>
+      <div class="meta">
+        <span>Version 0.0.2 · DOI <a href="https://doi.org/10.5281/zenodo.17764207" target="_blank" rel="noopener">10.5281/zenodo.17764207</a> · Updated 2025-11-30</span>
+                <span>
+                    Source
+                    <a
+                        href="https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/CLASSICAL_KINEMATICS.md"
+                        target="_blank"
+                        rel="noopener"
+                    >
+                        theory/CLASSICAL_KINEMATICS.md
+                    </a>
+                </span>
+      </div>
+    </header>
+    <main>
+      <h1 id="classical-kinematics-memo">Classical Kinematics Memo</h1>
+<p><strong>Status</strong>: Technical memo<br>
+<strong>Version</strong>: 0.3.0 (November 30, 2025)<br>
+<strong>Owner</strong>: <code>theory/CLASSICAL_KINEMATICS.md</code></p>
+<hr>
+<h2 id="1-scope-and-inertial-regime">1. Scope and Inertial Regime</h2>
+<p>When nodes experience zero structural pressure the nodal equation reduces to the classical constant-velocity form:</p>
+<p>[
+\Delta \text{NFR} = 0 \quad \Rightarrow \quad \frac{\partial \text{EPI}}{\partial t} = 0 \text{ (co-moving frame)}.
+]</p>
+<p>Practical checklist:</p>
+<ul>
+<li>Ensure operator schedules exclude destabilizers (no OZ/VAL) so (\Delta \text{NFR} = 0).  </li>
+<li>Confirm telemetry shows (|\nabla \phi| &lt; 10^{-4}) and (K_\phi \approx 0) over the interval.  </li>
+<li>Record initial phase current (J_\phi) as the momentum analog and log (C(t)) to verify coherence remains &gt;0.99.</li>
+</ul>
+<hr>
+<h2 id="2-worked-example-two-train-scenario">2. Worked Example: Two-Train Scenario</h2>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Train A</th>
+<th>Train B</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Initial position</td>
+<td>(x=0\,\text{km})</td>
+<td>(x=600\,\text{km})</td>
+</tr>
+<tr>
+<td>Velocity</td>
+<td>(+300\,\text{km/h})</td>
+<td>(-250\,\text{km/h})</td>
+</tr>
+<tr>
+<td>Operators</td>
+<td><code>[AL, IL, SHA]</code></td>
+<td><code>[AL, IL, SHA]</code></td>
+</tr>
+</tbody>
+</table>
+<p>Simulation workflow:</p>
+<ol>
+<li>Initialize two nodes in a 1D manifold with the parameters above; store configuration in <code>configs/kinematics/train_pair.yaml</code>.  </li>
+<li>Integrate using the zero-force symplectic kernel (see <code>examples/15_train_crossing_demo.py</code>).  </li>
+<li>Detect the time (t_c) when positions intersect and log (C(t)), (\Phi_s), and (J_\phi) histories to <code>results/kinematics_demo/run_&lt;seed&gt;.csv</code>.</li>
+</ol>
+<p>Analytical prediction for the intersection:</p>
+<p>[
+t_c = \frac{600}{300 + 250} \text{ h} \approx 1.0909 \text{ h}, \quad x_c = v_A t_c \approx 327.27 \text{ km}.
+]</p>
+<p>Numerical runs should match these values within integration tolerance (baseline example uses (\Delta t = 0.1\,\text{min})). Deviations larger than (10^{-3}) indicate insufficient resolution or unintended structural forces (check for sneaky OZ/VAL events).</p>
+<hr>
+<h2 id="3-artifacts-and-telemetry">3. Artifacts and Telemetry</h2>
+<p>Running <code>python examples/15_train_crossing_demo.py</code> produces:</p>
+<ul>
+<li><code>results/kinematics_demo/01_train_crossing.png</code> – overlay of simulated trajectories with the analytical intersection point.  </li>
+<li><code>results/kinematics_demo/run_&lt;seed&gt;.csv</code> – time series containing (x_A), (x_B), (J_\phi), and (C(t)).</li>
+</ul>
+<p>Artifacts must include metadata (seed, (\Delta t), integrator) plus telemetry columns for (|\nabla \phi|), (K_\phi), and (C(t)). Store SHA256 manifests under <code>results/kinematics_demo/manifest.json</code>.</p>
+<hr>
+<h2 id="4-outstanding-work">4. Outstanding Work</h2>
+<ol>
+<li>Document how non-zero (\Delta \text{NFR}) reintroduces acceleration and cross-link to <code>theory/CLASSICAL_MECHANICS_CORRESPONDENCE.md</code>.  </li>
+<li>Add regression tests comparing simulated crossings against analytic solutions for multiple velocity pairs (store expected values in <code>tests/data/kinematics_cases.json</code>).  </li>
+<li>Report floating-point sensitivity (single vs. double precision) for long trajectories and note any impacts on (C(t)) or (J_\phi).</li>
+</ol>
+    </main>
+    <footer>
+            <span>
+                &copy; 2025
+                TNFR Python Engine — Licensed under MIT.
+            </span>
+            <span>
+                Feedback?
+                <a
+                    href="https://github.com/fermga/TNFR-Python-Engine"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    Open an issue
+                </a>.
+            </span>
+    </footer>
+  </div>
+</body>
+</html>

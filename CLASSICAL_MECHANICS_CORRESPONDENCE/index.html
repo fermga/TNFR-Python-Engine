@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Classical Mechanics Correspondence Memo — TNFR Python Engine</title>
+  <meta name="description" content="TNFR documentation: Classical Mechanics Correspondence Memo">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+    >
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0e0f11;
+      --panel: rgba(24, 25, 27, 0.9);
+      --border: rgba(90, 92, 95, 0.4);
+      --text: #e4e6eb;
+      --muted: #9ea4b3;
+      --accent: #6aa0ff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.6;
+      background: radial-gradient(circle at 20% 20%, #1a1c20, var(--bg));
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+        .page {
+            max-width: 960px;
+            margin: 0 auto;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 2.5rem 3rem 3rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+        header {
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+        }
+    .home-link { font-weight: 600; color: var(--text); }
+        .doc-title {
+            display: block;
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-top: 0.4rem;
+        }
+        .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-top: 1rem;
+            font-size: 0.95rem;
+            color: var(--muted);
+        }
+    main { font-size: 1rem; }
+    main h1 { font-size: 2rem; margin-top: 2.5rem; }
+        main h2 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.3rem;
+        }
+    main h3 { font-size: 1.2rem; margin-top: 1.5rem; }
+    main p { margin: 1rem 0; }
+        pre {
+            background: #0a0b0d;
+            padding: 1rem;
+            border-radius: 10px;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    code { font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; }
+        th, td {
+            border: 1px solid var(--border);
+            padding: 0.6rem 0.8rem;
+            text-align: left;
+        }
+        blockquote {
+            border-left: 4px solid var(--accent);
+            margin: 1.5rem 0;
+            padding: 0.2rem 1rem;
+            color: var(--muted);
+            background: rgba(255, 255, 255, 0.02);
+        }
+        footer {
+            border-top: 1px solid var(--border);
+            margin-top: 2.5rem;
+            padding-top: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--muted);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: space-between;
+        }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <a class="home-link" href="/TNFR-Python-Engine/">TNFR Python Engine</a>
+      <span class="doc-title">Classical Mechanics Correspondence Memo</span>
+      <div class="meta">
+        <span>Version 0.0.2 · DOI <a href="https://doi.org/10.5281/zenodo.17764207" target="_blank" rel="noopener">10.5281/zenodo.17764207</a> · Updated 2025-11-30</span>
+                <span>
+                    Source
+                    <a
+                        href="https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/CLASSICAL_MECHANICS_CORRESPONDENCE.md"
+                        target="_blank"
+                        rel="noopener"
+                    >
+                        theory/CLASSICAL_MECHANICS_CORRESPONDENCE.md
+                    </a>
+                </span>
+      </div>
+    </header>
+    <main>
+      <h1 id="classical-mechanics-correspondence-memo">Classical Mechanics Correspondence Memo</h1>
+<p><strong>Status</strong>: Technical reference<br>
+<strong>Version</strong>: 0.3.0 (November 30, 2025)<br>
+<strong>Owner</strong>: <code>theory/CLASSICAL_MECHANICS_CORRESPONDENCE.md</code></p>
+<hr>
+<h2 id="1-scope">1. Scope</h2>
+<p>Document the precise conditions under which TNFR nodal dynamics reduce to classical constant-mass mechanics, list implementation hooks, and summarize validation artifacts. The memo confines itself to reproducible limits and telemetry.</p>
+<hr>
+<h2 id="2-mapping-conditions">2. Mapping Conditions</h2>
+<p>Low-dissonance regime:</p>
+<p>[
+|\nabla \phi| \rightarrow 0, \qquad \nu_f = \text{constant}, \qquad C(t) \approx 1.
+]</p>
+<p>Under these constraints the nodal equation becomes equivalent to Newton’s equations. The working dictionary is summarized below.</p>
+<table>
+<thead>
+<tr>
+<th>Classical item</th>
+<th>Symbol</th>
+<th>TNFR quantity</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Position</td>
+<td>(q)</td>
+<td>Spatial component of EPI</td>
+<td>Extract via <code>ClassicalMechanicsMapper.position</code>.</td>
+</tr>
+<tr>
+<td>Velocity</td>
+<td>(\dot q)</td>
+<td>Flow component</td>
+<td>Same accessor.</td>
+</tr>
+<tr>
+<td>Mass</td>
+<td>(m)</td>
+<td>(1/\nu_f)</td>
+<td>Stored in telemetry for audits.</td>
+</tr>
+<tr>
+<td>Force</td>
+<td>(F)</td>
+<td>(\Delta \text{NFR})</td>
+<td>Must be reported in structural units.</td>
+</tr>
+<tr>
+<td>Potential</td>
+<td>(V)</td>
+<td>(\Phi_s)</td>
+<td>Map gradients directly.</td>
+</tr>
+<tr>
+<td>Action</td>
+<td>(S)</td>
+<td>Phase accumulation</td>
+<td>Optional for diagnostics.</td>
+</tr>
+</tbody>
+</table>
+<p>Derivation sketch:</p>
+<p>[
+\frac{\partial \text{EPI}}{\partial t} = \nu_f \Delta \text{NFR} \Rightarrow \frac{dv}{dt} = \nu_f \Delta \text{NFR}_{\text{force}}.
+]</p>
+<p>Substituting (\nu_f = 1/m) yields (F = m a). Provide derivation references to <code>AGENTS.md</code> (Foundational Physics) when citing this result.</p>
+<hr>
+<h2 id="3-structural-interpretation-of-standard-forces">3. Structural Interpretation of Standard Forces</h2>
+<table>
+<thead>
+<tr>
+<th>Classical label</th>
+<th>TNFR mechanism</th>
+<th>Observable</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Gravity</td>
+<td>Phase-coherence gradient</td>
+<td>Monitor (-\nabla \Phi_s) along trajectories.</td>
+</tr>
+<tr>
+<td>Friction</td>
+<td>Coherence stabilizer (IL)</td>
+<td>Track reduction in high-frequency (\Delta \text{NFR}).</td>
+</tr>
+<tr>
+<td>Harmonic restoring</td>
+<td>Phase-gradient confinement</td>
+<td>Measure (\lvert \nabla \phi \rvert) deviation and resulting pressure.</td>
+</tr>
+</tbody>
+</table>
+<p>Each entry should be backed by telemetry traces before publication; speculative language has been removed.</p>
+<hr>
+<h2 id="4-symplectic-structure-and-workflow">4. Symplectic Structure and Workflow</h2>
+<ul>
+<li><code>src/tnfr/dynamics/symplectic.py</code> hosts Verlet/Yoshida schemes used for constant-mass integrations.</li>
+<li><code>src/tnfr/physics/classical_mechanics.py</code> maps TNFR states into ((q, p)) tuples and exposes Poisson-bracket utilities.</li>
+<li><code>tests/test_classical_mechanics.py</code> checks conservation of structural invariants and regression outputs.</li>
+</ul>
+<p>Workflow:</p>
+<ol>
+<li>Select the integrator order (default 4th-order Yoshida) and record it in run metadata.  </li>
+<li>Ensure low-dissonance conditions by verifying (|\nabla \phi|) and (K_\phi) remain within canonical thresholds during integration.  </li>
+<li>After each run, export telemetry (<code>C(t)</code>, (\Phi_s), (|\nabla \phi|)) alongside classical observables (<code>q</code>, <code>p</code>, energy) to <code>results/classical_demo/run_&lt;seed&gt;.csv</code>.  </li>
+<li>Compare outputs with analytic references; flag deviations beyond tolerances in the regression report.</li>
+</ol>
+<p>The integrator preserves coherence analogously to Liouville’s theorem; cite test logs rather than informal statements.</p>
+<hr>
+<h2 id="5-example-experiment-kepler-benchmark">5. Example Experiment (Kepler Benchmark)</h2>
+<p><code>examples/12_classical_mechanics_demo.py</code> configures a single node in a coherence-gradient potential to approximate an ellipse with eccentricity (e \approx 0.5).</p>
+<p>Artifacts:</p>
+<ul>
+<li><code>results/classical_demo/01_trajectory.png</code> – orbital path overlay.  </li>
+<li><code>results/classical_demo/02_phase_space.png</code> – ((q, p)) loop confirming bounded motion.  </li>
+<li><code>results/classical_demo/03_conservation.png</code> – relative drift of total energy/ang. momentum (target &lt; (10^{-4})).</li>
+</ul>
+<p>Metadata (seed, (\Delta t), integrator order) lives in <code>results/classical_demo/run_&lt;seed&gt;.json</code>. Runs should be rerun whenever integrator changes occur.</p>
+<hr>
+<h2 id="6-outstanding-work">6. Outstanding Work</h2>
+<ol>
+<li>Extend regression coverage to include oscillators and free-fall trajectories with analytic comparisons.  </li>
+<li>Publish a unit-conversion note mapping structural units to SI when benchmarking against laboratory data.  </li>
+<li>Automate telemetry capture (<code>C(t)</code>, (\Phi_s), (|\nabla \phi|)) for every example run to document compliance with the low-dissonance assumption.</li>
+</ol>
+    </main>
+    <footer>
+            <span>
+                &copy; 2025
+                TNFR Python Engine — Licensed under MIT.
+            </span>
+            <span>
+                Feedback?
+                <a
+                    href="https://github.com/fermga/TNFR-Python-Engine"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    Open an issue
+                </a>.
+            </span>
+    </footer>
+  </div>
+</body>
+</html>

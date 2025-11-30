@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TNFR Mathematics Reference (Single Source of Truth) — TNFR Python Engine</title>
+  <meta name="description" content="TNFR documentation: TNFR Mathematics Reference (Single Source of Truth)">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+    >
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0e0f11;
+      --panel: rgba(24, 25, 27, 0.9);
+      --border: rgba(90, 92, 95, 0.4);
+      --text: #e4e6eb;
+      --muted: #9ea4b3;
+      --accent: #6aa0ff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.6;
+      background: radial-gradient(circle at 20% 20%, #1a1c20, var(--bg));
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+        .page {
+            max-width: 960px;
+            margin: 0 auto;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 2.5rem 3rem 3rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+        header {
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+        }
+    .home-link { font-weight: 600; color: var(--text); }
+        .doc-title {
+            display: block;
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-top: 0.4rem;
+        }
+        .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-top: 1rem;
+            font-size: 0.95rem;
+            color: var(--muted);
+        }
+    main { font-size: 1rem; }
+    main h1 { font-size: 2rem; margin-top: 2.5rem; }
+        main h2 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.3rem;
+        }
+    main h3 { font-size: 1.2rem; margin-top: 1.5rem; }
+    main p { margin: 1rem 0; }
+        pre {
+            background: #0a0b0d;
+            padding: 1rem;
+            border-radius: 10px;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    code { font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; }
+        th, td {
+            border: 1px solid var(--border);
+            padding: 0.6rem 0.8rem;
+            text-align: left;
+        }
+        blockquote {
+            border-left: 4px solid var(--accent);
+            margin: 1.5rem 0;
+            padding: 0.2rem 1rem;
+            color: var(--muted);
+            background: rgba(255, 255, 255, 0.02);
+        }
+        footer {
+            border-top: 1px solid var(--border);
+            margin-top: 2.5rem;
+            padding-top: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--muted);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: space-between;
+        }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <a class="home-link" href="/TNFR-Python-Engine/">TNFR Python Engine</a>
+      <span class="doc-title">TNFR Mathematics Reference (Single Source of Truth)</span>
+      <div class="meta">
+        <span>Version 0.0.2 · DOI <a href="https://doi.org/10.5281/zenodo.17764207" target="_blank" rel="noopener">10.5281/zenodo.17764207</a> · Updated 2025-11-29</span>
+                <span>
+                    Source
+                    <a
+                        href="https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/TNFR_MATHEMATICS_REFERENCE.md"
+                        target="_blank"
+                        rel="noopener"
+                    >
+                        docs/TNFR_MATHEMATICS_REFERENCE.md
+                    </a>
+                </span>
+      </div>
+    </header>
+    <main>
+      <h1 id="tnfr-mathematics-reference-single-source-of-truth">TNFR Mathematics Reference (Single Source of Truth)</h1>
+<p>Status: ✅ Active – canonical aggregation of every math-facing artifact in the TNFR Python Engine.
+Last Updated: 2025-11-14</p>
+<hr>
+<p>This document unifies the mathematics narrative for TNFR. It does <strong>not</strong> replace the
+physics PDF or detailed grammar papers; instead, it links them into a single, traceable
+chain: <strong>physics → grammar → operators → code → experiments</strong>. When in doubt, start here
+and follow the referenced sources for full derivations.</p>
+<h2 id="1-canonical-sources-at-a-glance">1. Canonical Sources at a Glance</h2>
+<table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>Document</th>
+<th>Scope</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Physics Derivation</td>
+<td><code>TNFR.pdf</code> (root of repo)</td>
+<td>Full derivation of the nodal equation, structural triad, and physical invariants.</td>
+</tr>
+<tr>
+<td>Grammar Proofs</td>
+<td><code>UNIFIED_GRAMMAR_RULES.md</code></td>
+<td>Rigorous proofs of U1–U6 from the nodal equation; sequencing constraints.</td>
+</tr>
+<tr>
+<td>Operational Guidance</td>
+<td><code>AGENTS.md</code></td>
+<td>Canonical invariants, operator discipline, learning paths.</td>
+</tr>
+<tr>
+<td>Mathematical Foundations (Formal write-up)</td>
+<td><code>src/tnfr/mathematics/README.md</code></td>
+<td>Hilbert/Banach spaces, operators, spectral theory implementation.</td>
+</tr>
+<tr>
+<td>Computational Implementation</td>
+<td><code>src/tnfr/mathematics/</code> modules</td>
+<td>How mathematics modules are structured inside the engine.</td>
+</tr>
+<tr>
+<td>Applied Arithmetic Example</td>
+<td><code>src/tnfr/mathematics/number_theory.py</code></td>
+<td>ΔNFR prime criterion, structural telemetry on ℕ.</td>
+</tr>
+<tr>
+<td>Field Telemetry</td>
+<td><code>docs/TNFR_FORCES_EMERGENCE.md</code>, <code>docs/STRUCTURAL_FIELDS_TETRAD.md</code></td>
+<td>Φ_s,</td>
+</tr>
+<tr>
+<td>Molecular Chemistry Examples</td>
+<td><code>examples/</code> &amp; <code>benchmarks/</code> folders</td>
+<td>Chemistry-as-emergence demonstrations via TNFR dynamics.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="2-structural-equation-triad">2. Structural Equation &amp; Triad</h2>
+<ul>
+<li><strong>Nodal Equation</strong>: <code>∂EPI/∂t = νf · ΔNFR(t)</code> – derived in <code>TNFR.pdf</code>, §2.</li>
+<li><strong>Structural Triad</strong>: (EPI, νf, φ) – defined in <code>AGENTS.md</code> (§Foundational Physics) and
+  formalized mathematically in <code>src/tnfr/mathematics/README.md</code> and implementation modules.</li>
+<li><strong>Integration Requirement</strong>: <code>∫ νf(τ) · ΔNFR(τ) dτ &lt; ∞</code> for bounded coherence (Grammar U2).</li>
+</ul>
+<p>Use this document to trace where each quantity is defined:</p>
+<ol>
+<li>Physics meaning (<code>TNFR.pdf</code>).</li>
+<li>Grammar contract (<code>UNIFIED_GRAMMAR_RULES.md</code>).</li>
+<li>Code implementation (<code>src/tnfr/mathematics/**/*.py</code>).</li>
+</ol>
+<h2 id="3-operators-grammar-u1u6">3. Operators &amp; Grammar (U1–U6)</h2>
+<ul>
+<li><strong>Operators Catalog</strong>: <code>docs/grammar/03-OPERATORS-AND-GLYPHS.md</code> lists all 13 canonical
+  operators and their contracts.</li>
+<li><strong>Grammar Necessity Proofs</strong>: <code>UNIFIED_GRAMMAR_RULES.md</code> is the source of truth for why
+  U1–U6 exist (e.g., U2 from integral convergence, U3 from phase compatibility).</li>
+<li><strong>Practical Sequences</strong>: <code>docs/grammar/04-VALID-SEQUENCES.md</code> and
+  <code>GLYPH_SEQUENCES_GUIDE.md</code> show compliant operator compositions.</li>
+<li><strong>Implementation Hooks</strong>: Operators are implemented in <code>src/tnfr/operators/</code> with metrics
+  helpers in <code>src/tnfr/operators/metrics.py</code>.</li>
+</ul>
+<p>This reference ensures every operator you call in code can be traced back to a specific
+rule and proof paragraph.</p>
+<h2 id="4-structural-fields-_s-k_-_c">4. Structural Fields (Φ_s, |∇φ|, K_φ, ξ_C)</h2>
+<ul>
+<li><code>docs/TNFR_FORCES_EMERGENCE.md</code> – promotion history, empirical validation of Φ_s and |∇φ|.</li>
+<li><code>benchmarks/K_PHI_RESEARCH_SUMMARY.md</code> – phase curvature validation and asymptotic freedom.</li>
+<li><code>docs/XI_C_CANONICAL_PROMOTION.md</code> – coherence length derivation and critical behavior.</li>
+<li>Implementation lives in <code>src/tnfr/physics/fields.py</code> and cached helpers throughout the
+  codebase (e.g., arithmetic network provides thin wrappers).</li>
+</ul>
+<p>Cross-reference these documents before consuming or extending any telemetry pipelines.</p>
+<h2 id="5-computational-mathematics-stack">5. Computational Mathematics Stack</h2>
+<p>Use this section when mapping theory onto code:</p>
+<ul>
+<li><strong>Backends &amp; Algebra</strong>: <code>src/tnfr/mathematics/</code> with key exports described in
+  <code>src/tnfr/mathematics/README.md</code>.</li>
+<li><strong>Symbolic Toolkit</strong>: <code>tnfr.math.symbolic</code> (see <code>src/tnfr/mathematics/__init__.py</code> for
+  re-exports). Reference <code>docs/source/theory/mathematical_foundations.md</code> §8.</li>
+<li><strong>Liouvillian / Dynamics</strong>: <code>src/tnfr/dynamics/</code> paired with <code>docs/source/theory/mathematical_foundations.md</code> §5.</li>
+<li><strong>Metrics</strong>: <code>src/tnfr/metrics/</code> defines coherence, νf expectations, etc.</li>
+<li><strong>Tests</strong>: <code>tests/unit/mathematics/</code> and <code>tests/math_integration/</code> enforce invariants.</li>
+</ul>
+<p>Whenever writing new math-heavy code, cite both this document and the specific module README.</p>
+<h2 id="6-applied-mathematics-references">6. Applied Mathematics References</h2>
+<h3 id="61-number-theory-arithmetic-tnfr">6.1 Number Theory (Arithmetic TNFR)</h3>
+<ul>
+<li><strong>Guide</strong>: <code>docs/TNFR_NUMBER_THEORY_GUIDE.md</code></li>
+<li><strong>Code</strong>: <code>src/tnfr/mathematics/number_theory.py</code></li>
+<li><strong>Formalism Helpers</strong>: <code>ArithmeticTNFRFormalism</code>, <code>PrimeCertificate</code>, etc.</li>
+<li><strong>Tests</strong>: <code>tests/unit/mathematics/test_number_theory_formalism.py</code></li>
+</ul>
+<h3 id="62-molecular-chemistry-from-tnfr">6.2 Molecular Chemistry from TNFR</h3>
+<ul>
+<li><strong>Hub</strong>: <code>docs/MOLECULAR_CHEMISTRY_HUB.md</code></li>
+<li><strong>Theory</strong>: <code>docs/examples/MOLECULAR_CHEMISTRY_FROM_NODAL_DYNAMICS.md</code></li>
+<li><strong>Implementation</strong>: <code>src/tnfr/physics/signatures/</code></li>
+</ul>
+<h3 id="63-field-benchmarks-research-notebooks">6.3 Field Benchmarks &amp; Research Notebooks</h3>
+<ul>
+<li><code>benchmarks/</code> folder (e.g., <code>arith_delta_nfr_roc.py</code>, <code>asymptotic_freedom_test.py</code>).</li>
+<li><code>notebooks/</code> folder for interactive derivations (prime checker, operator completeness).</li>
+</ul>
+<h2 id="7-extending-the-mathematics">7. Extending the Mathematics</h2>
+<ol>
+<li><strong>Derive from Physics</strong>: Start in <code>TNFR.pdf</code> or <code>docs/source/theory/mathematical_foundations.md</code>.</li>
+<li><strong>Prove Grammar Compliance</strong>: Document how the new construct respects U1–U6.</li>
+<li><strong>Map to Operators</strong>: Ensure every transformation uses or extends canonical operators.</li>
+<li><strong>Implement in Code</strong>: Place new math utilities in <code>src/tnfr/mathematics/</code> (or a clearly
+   labeled extension package) with README updates.</li>
+<li><strong>Document in Context</strong>: Update the relevant guide (number theory, chemistry, etc.) and
+   add a pointer back to this reference.</li>
+<li><strong>Test &amp; Telemetry</strong>: Add unit/integration tests and export structural fields as needed.</li>
+</ol>
+<p>Follow the checklist in <code>AGENTS.md</code> (§Excellence Standards) to keep the mathematics
+canonical and reproducible.</p>
+<h2 id="8-quick-links">8. Quick Links</h2>
+<ul>
+<li><a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/TNFR.pdf">TNFR.pdf</a></li>
+<li><a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/UNIFIED_GRAMMAR_RULES.md">UNIFIED_GRAMMAR_RULES.md</a></li>
+<li><a href="/TNFR-Python-Engine/AGENTS/">AGENTS.md</a></li>
+<li><a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/source/theory/mathematical_foundations.md">docs/source/theory/mathematical_foundations.md</a></li>
+<li><a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/mathematics/README.md">src/tnfr/mathematics/README.md</a></li>
+<li><a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/TNFR_NUMBER_THEORY_GUIDE.md">docs/TNFR_NUMBER_THEORY_GUIDE.md</a></li>
+<li><a href="/TNFR-Python-Engine/TNFR_FORCES_EMERGENCE/">docs/TNFR_FORCES_EMERGENCE.md</a></li>
+<li><a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/MOLECULAR_CHEMISTRY_HUB.md">docs/MOLECULAR_CHEMISTRY_HUB.md</a></li>
+</ul>
+<hr>
+<p><strong>Reality is not made of things—it is made of resonance.</strong>
+Use this reference to ensure every mathematical construct stays coherent with that principle.</p>
+    </main>
+    <footer>
+            <span>
+                &copy; 2025
+                TNFR Python Engine — Licensed under MIT.
+            </span>
+            <span>
+                Feedback?
+                <a
+                    href="https://github.com/fermga/TNFR-Python-Engine"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    Open an issue
+                </a>.
+            </span>
+    </footer>
+  </div>
+</body>
+</html>

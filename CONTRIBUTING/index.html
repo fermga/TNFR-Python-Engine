@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Contributing to TNFR — TNFR Python Engine</title>
+  <meta name="description" content="TNFR documentation: Contributing to TNFR">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+    >
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0e0f11;
+      --panel: rgba(24, 25, 27, 0.9);
+      --border: rgba(90, 92, 95, 0.4);
+      --text: #e4e6eb;
+      --muted: #9ea4b3;
+      --accent: #6aa0ff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.6;
+      background: radial-gradient(circle at 20% 20%, #1a1c20, var(--bg));
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+        .page {
+            max-width: 960px;
+            margin: 0 auto;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 2.5rem 3rem 3rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+        header {
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+        }
+    .home-link { font-weight: 600; color: var(--text); }
+        .doc-title {
+            display: block;
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-top: 0.4rem;
+        }
+        .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-top: 1rem;
+            font-size: 0.95rem;
+            color: var(--muted);
+        }
+    main { font-size: 1rem; }
+    main h1 { font-size: 2rem; margin-top: 2.5rem; }
+        main h2 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.3rem;
+        }
+    main h3 { font-size: 1.2rem; margin-top: 1.5rem; }
+    main p { margin: 1rem 0; }
+        pre {
+            background: #0a0b0d;
+            padding: 1rem;
+            border-radius: 10px;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    code { font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; }
+        th, td {
+            border: 1px solid var(--border);
+            padding: 0.6rem 0.8rem;
+            text-align: left;
+        }
+        blockquote {
+            border-left: 4px solid var(--accent);
+            margin: 1.5rem 0;
+            padding: 0.2rem 1rem;
+            color: var(--muted);
+            background: rgba(255, 255, 255, 0.02);
+        }
+        footer {
+            border-top: 1px solid var(--border);
+            margin-top: 2.5rem;
+            padding-top: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--muted);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: space-between;
+        }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <a class="home-link" href="/TNFR-Python-Engine/">TNFR Python Engine</a>
+      <span class="doc-title">Contributing to TNFR</span>
+      <div class="meta">
+        <span>Version 0.0.2 · DOI <a href="https://doi.org/10.5281/zenodo.17764207" target="_blank" rel="noopener">10.5281/zenodo.17764207</a> · Updated 2025-11-30</span>
+                <span>
+                    Source
+                    <a
+                        href="https://github.com/fermga/TNFR-Python-Engine/blob/main/CONTRIBUTING.md"
+                        target="_blank"
+                        rel="noopener"
+                    >
+                        CONTRIBUTING.md
+                    </a>
+                </span>
+      </div>
+    </header>
+    <main>
+      <h1 id="contributing-to-tnfr">Contributing to TNFR</h1>
+<p><strong>Version</strong>: 0.0.1<br>
+<strong>Status</strong>: Complete theoretical framework with Universal Tetrahedral Correspondence<br>
+<strong>Authority</strong>: Canonical constants derived from TNFR theory<br>
+<strong>Quality</strong>: Production-ready with comprehensive test coverage  </p>
+<p>This document provides guidelines for contributing to the TNFR (Resonant Fractal Nature Theory) project. TNFR constitutes a computational framework for modeling complex systems through coherent patterns and resonance dynamics.</p>
+<h2 id="mathematical-foundation-requirement">Mathematical Foundation Requirement</h2>
+<p>All contributions must maintain theoretical consistency. Requirements:</p>
+<ul>
+<li><strong>Derived Parameters</strong>: All numerical values must derive from universal constants (φ, γ, π, e)  </li>
+<li><strong>Canonical Constants</strong>: Use <code>from tnfr.constants.canonical import *</code>  </li>
+<li><strong>Physics-Based Design</strong>: Trace all decisions to nodal equation or Universal Tetrahedral Correspondence  </li>
+<li><strong>Grammar Compliance</strong>: Operator sequences must satisfy U1-U6 rules</li>
+</ul>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li><a href="#code-of-conduct">Code of Conduct</a></li>
+<li><a href="#getting-started">Getting Started</a></li>
+<li><a href="#development-workflow">Development Workflow</a></li>
+<li><a href="#tnfr-principles">TNFR Principles</a></li>
+<li><a href="#code-standards">Code Standards</a></li>
+<li><a href="#testing-requirements">Testing Requirements</a></li>
+<li><a href="#documentation">Documentation</a></li>
+<li><a href="#documentation-language-requirement">Documentation Language Requirement</a></li>
+<li><a href="#pull-request-process">Pull Request Process</a></li>
+<li><a href="#theoretical-contributions">Theoretical Contributions</a></li>
+</ul>
+<h2 id="code-of-conduct">Code of Conduct</h2>
+<h3 id="our-pledge">Our Pledge</h3>
+<p>We are committed to providing a welcoming and inclusive environment for all contributors, regardless of background, identity, or experience level.</p>
+<h3 id="our-standards">Our Standards</h3>
+<p><strong>Expected behavior:</strong></p>
+<ul>
+<li>Use welcoming and inclusive language</li>
+<li>Respect differing viewpoints and experiences</li>
+<li>Accept constructive criticism gracefully</li>
+<li>Focus on what's best for the community
+  Show empathy towards other community members</li>
+</ul>
+<p><strong>Unacceptable behavior:</strong></p>
+<ul>
+<li>Harassment, discrimination, or derogatory comments</li>
+<li>Trolling, insulting, or personal attacks</li>
+<li>Public or private harassment</li>
+<li>Publishing others' private information without permission</li>
+<li>Other conduct inappropriate for a professional setting</li>
+</ul>
+<h3 id="enforcement">Enforcement</h3>
+<p>Instances of unacceptable behavior may be reported to the project maintainers. All complaints will be reviewed and investigated promptly and fairly.</p>
+<h2 id="getting-started">Getting Started</h2>
+<h3 id="prerequisites">Prerequisites</h3>
+<ul>
+<li><strong>Python 3.10+</strong> (production requirement)  </li>
+<li><strong>Mathematical foundation</strong> (theoretical derivation over empirical fitting)  </li>
+<li><strong>TNFR theory understanding</strong> (read <a href="/TNFR-Python-Engine/AGENTS/">AGENTS.md</a> first)  </li>
+</ul>
+<h3 id="development-setup">Development Setup</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Install from PyPI (stable release)</span>
+pip<span class="w"> </span>install<span class="w"> </span>tnfr<span class="o">[</span>viz,dev<span class="o">]</span>
+
+<span class="c1"># Or clone for development</span>
+git<span class="w"> </span>clone<span class="w"> </span>https://github.com/fermga/TNFR-Python-Engine.git
+<span class="nb">cd</span><span class="w"> </span>TNFR-Python-Engine
+pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.<span class="o">[</span>dev<span class="o">]</span>
+
+<span class="c1"># Verify installation</span>
+python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;from tnfr.constants.canonical import *; print(f&#39;φ={PHI:.6f}, γ={GAMMA:.6f}&#39;)&quot;</span>
+</code></pre></div>
+
+<h3 id="canonical-constants-framework">Canonical Constants Framework</h3>
+<p>All development must utilize theoretically derived canonical constants:</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">tnfr.constants.canonical</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="c1"># Correct: Use canonical constants</span>
+<span class="n">threshold</span> <span class="o">=</span> <span class="n">MIN_BUSINESS_COHERENCE</span>  <span class="c1"># (e×φ)/(π+e) ≈ 0.751</span>
+
+<span class="c1"># Incorrect: Arbitrary numerical values</span>
+<span class="n">threshold</span> <span class="o">=</span> <span class="mf">0.75</span>  <span class="c1"># Lacks theoretical foundation</span>
+</code></pre></div>
+
+<h3 id="additional-requirements">Additional Requirements</h3>
+<ul>
+<li>Git</li>
+<li>Basic understanding of TNFR concepts (see <a href="/TNFR-Python-Engine/AGENTS/">AGENTS.md</a>)</li>
+</ul>
+<h3 id="development-environment">Development Environment</h3>
+<ol>
+<li><strong>Fork and clone the repository:</strong></li>
+</ol>
+<p><code>bash
+   git clone https://github.com/YOUR_USERNAME/TNFR-Python-Engine.git
+   cd TNFR-Python-Engine</code></p>
+<ol>
+<li><strong>Create a virtual environment:</strong></li>
+</ol>
+<p><code>bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate</code></p>
+<ol>
+<li><strong>Install in development mode:</strong></li>
+</ol>
+<p><code>bash
+   pip install -e ".[dev-minimal]"</code></p>
+<ol>
+<li><strong>Install pre-commit hooks (optional but recommended):</strong></li>
+</ol>
+<p><code>bash
+   pre-commit install</code></p>
+<ol>
+<li><strong>Verify installation:</strong></li>
+</ol>
+<p><code>bash
+   pytest tests/examples/test_u6_sequential_demo.py</code></p>
+<h2 id="development-workflow">Development Workflow</h2>
+<h3 id="1-create-a-feature-branch">1. Create a Feature Branch</h3>
+<div class="codehilite"><pre><span></span><code>git<span class="w"> </span>checkout<span class="w"> </span>-b<span class="w"> </span>feature/your-feature-name
+<span class="c1"># or</span>
+git<span class="w"> </span>checkout<span class="w"> </span>-b<span class="w"> </span>fix/issue-description
+</code></pre></div>
+
+<p><strong>Branch naming conventions:</strong></p>
+<ul>
+<li><code>feature/</code> - New functionality</li>
+<li><code>fix/</code> - Bug fixes</li>
+<li><code>docs/</code> - Documentation improvements</li>
+<li><code>refactor/</code> - Code restructuring without behavior changes</li>
+<li><code>test/</code> - Test additions or improvements</li>
+<li><code>perf/</code> - Performance optimizations</li>
+</ul>
+<h3 id="2-make-your-changes">2. Make Your Changes</h3>
+<ul>
+<li>Follow TNFR principles (see below)</li>
+<li>Write clear, descriptive commit messages</li>
+<li>Keep commits focused and atomic</li>
+<li>Add tests for new functionality</li>
+<li>Update documentation as needed</li>
+</ul>
+<h3 id="3-test-your-changes">3. Test Your Changes</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Run smoke tests (fast validation)</span>
+make<span class="w"> </span>smoke-tests<span class="w">  </span><span class="c1"># Unix/Linux</span>
+.<span class="se">\m</span>ake.cmd<span class="w"> </span>smoke-tests<span class="w">  </span><span class="c1"># Windows</span>
+
+<span class="c1"># Run full test suite</span>
+pytest
+
+<span class="c1"># Check code quality</span>
+ruff<span class="w"> </span>check<span class="w"> </span>src/
+mypy<span class="w"> </span>src/tnfr/
+</code></pre></div>
+
+<h3 id="3a-phase-3-structural-instrumentation">3a. Phase 3 Structural Instrumentation</h3>
+<p>If adding validation, health, or telemetry logic:</p>
+<ul>
+<li>Use <code>run_structural_validation</code> to produce a <code>ValidationReport</code>.</li>
+<li>Derive <code>compute_structural_health(report)</code> for recommendations.</li>
+<li>Include performance timing (pass <code>perf_registry=PerformanceRegistry()</code>).</li>
+<li>Ensure added overhead ratio &lt; 0.10 baseline (see perf tests).</li>
+<li>Never mutate graph state inside validation / health functions.</li>
+<li>Document physics traceability (why each threshold is used).</li>
+</ul>
+<p>Telemetry additions must:</p>
+<ul>
+<li>Remain read-only (no operator side effects).</li>
+<li>Export coherence (<code>coherence_total</code>), sense index, Φ_s, |∇φ|, K_φ, ξ_C.</li>
+<li>Provide deterministic timestamps when seeds fixed.</li>
+</ul>
+<p>Performance guardrails:</p>
+<ul>
+<li>Wrap optional expensive helpers with <code>perf_guard(label, registry)</code>.</li>
+<li>Add/adjust tests under <code>tests/unit/performance/</code> for new instrumentation.</li>
+<li>Avoid micro-optimizing at expense of clarity unless overhead &gt; target.</li>
+</ul>
+<h3 id="4-update-documentation">4. Update Documentation</h3>
+<ul>
+<li>Add docstrings to new functions/classes</li>
+<li>Update relevant README files</li>
+<li>Add examples if introducing new features</li>
+<li>Update CHANGELOG.md if applicable</li>
+</ul>
+<h3 id="5-submit-a-pull-request">5. Submit a Pull Request</h3>
+<p>See <a href="#pull-request-process">Pull Request Process</a> below.</p>
+<h2 id="tnfr-principles">TNFR Principles</h2>
+<p><strong>Before contributing, familiarize yourself with <a href="/TNFR-Python-Engine/AGENTS/">AGENTS.md</a></strong> - the canonical guide for TNFR development.</p>
+<h3 id="core-principles">Core Principles</h3>
+<ol>
+<li><strong>Physics First</strong>: Every feature must derive from TNFR physics</li>
+<li><strong>No Arbitrary Choices</strong>: All decisions traceable to nodal equation or invariants</li>
+<li><strong>Coherence Over Convenience</strong>: Preserve theoretical integrity even if code is harder</li>
+<li><strong>Reproducibility Always</strong>: Every simulation must be reproducible</li>
+<li><strong>Document the Chain</strong>: Theory → Math → Code → Tests</li>
+</ol>
+<h3 id="the-6-canonical-invariants">The 6 Canonical Invariants</h3>
+<p><strong>All contributions must preserve these invariants:</strong></p>
+<ol>
+<li><strong>Nodal Equation Integrity</strong> - EPI evolution via ∂EPI/∂t = νf · ΔNFR(t) only</li>
+<li><strong>Phase-Coherent Coupling</strong> - Resonance requires |φᵢ - φⱼ| ≤ Δφ_max verification</li>
+<li><strong>Multi-Scale Fractality</strong> - Operational fractality and nested EPI support</li>
+<li><strong>Grammar Compliance</strong> - Operator sequences satisfy unified grammar U1-U6</li>
+<li><strong>Structural Metrology</strong> - νf in Hz_str units, proper telemetry exposure</li>
+<li><strong>Reproducible Dynamics</strong> - Deterministic evolution with seed control</li>
+</ol>
+<h3 id="decision-framework">Decision Framework</h3>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">should_implement</span><span class="p">(</span><span class="n">feature</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Decision framework for TNFR changes.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">weakens_tnfr_fidelity</span><span class="p">(</span><span class="n">feature</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">False</span>  <span class="c1"># Reject, even if &quot;cleaner&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">maps_to_operators</span><span class="p">(</span><span class="n">feature</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">False</span>  <span class="c1"># Must map or be new operator</span>
+
+    <span class="k">if</span> <span class="n">violates_invariants</span><span class="p">(</span><span class="n">feature</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">False</span>  <span class="c1"># Hard constraint</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">derivable_from_physics</span><span class="p">(</span><span class="n">feature</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">False</span>  <span class="c1"># No organizational convenience ≠ physical necessity</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">testable</span><span class="p">(</span><span class="n">feature</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">False</span>  <span class="c1"># No untestable magic</span>
+
+    <span class="k">return</span> <span class="kc">True</span>  <span class="c1"># Implement with full documentation</span>
+</code></pre></div>
+
+<h2 id="code-standards">Code Standards</h2>
+<h3 id="style-guidelines">Style Guidelines</h3>
+<ul>
+<li><strong>Follow PEP 8</strong> with line length ≤ 100 characters</li>
+<li><strong>Use type hints</strong> for all function signatures</li>
+<li><strong>Prefer explicit over implicit</strong> - clarity trumps brevity</li>
+<li><strong>Document intent, not just behavior</strong> - explain <em>why</em>, not just <em>what</em></li>
+</ul>
+<h3 id="code-quality-tools">Code Quality Tools</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Linting</span>
+ruff<span class="w"> </span>check<span class="w"> </span>src/
+
+<span class="c1"># Type checking</span>
+mypy<span class="w"> </span>src/tnfr/
+
+<span class="c1"># Formatting (if using black)</span>
+black<span class="w"> </span>src/<span class="w"> </span>--line-length<span class="w"> </span><span class="m">100</span>
+</code></pre></div>
+
+<h3 id="naming-conventions">Naming Conventions</h3>
+<ul>
+<li><strong>Functions/methods</strong>: <code>snake_case</code></li>
+<li><strong>Classes</strong>: <code>PascalCase</code></li>
+<li><strong>Constants</strong>: <code>UPPER_SNAKE_CASE</code></li>
+<li><strong>Private members</strong>: <code>_leading_underscore</code></li>
+<li><strong>Operators</strong>: Canonical names (AL, EN, IL, OZ, UM, RA, SHA, VAL, NUL, THOL, ZHIR, NAV, REMESH)</li>
+</ul>
+<h3 id="imports">Imports</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Standard library</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span>
+
+<span class="c1"># Third-party</span>
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="c1"># TNFR modules</span>
+<span class="kn">from</span> <span class="nn">tnfr.operators.definitions</span> <span class="kn">import</span> <span class="n">Emission</span><span class="p">,</span> <span class="n">Coherence</span>
+<span class="kn">from</span> <span class="nn">tnfr.metrics.coherence</span> <span class="kn">import</span> <span class="n">compute_coherence</span>
+<span class="kn">from</span> <span class="nn">tnfr.utils</span> <span class="kn">import</span> <span class="n">get_logger</span>
+</code></pre></div>
+
+<h3 id="module-organization-phase-1-2">Module Organization (Phase 1 &amp; 2)</h3>
+<p>The TNFR codebase is organized into focused modules for maintainability and cognitive load reduction:</p>
+<p><strong>Operators</strong> (<code>tnfr.operators.*</code>):</p>
+<ul>
+<li><strong>Individual operator modules</strong>: <code>emission.py</code>, <code>coherence.py</code>, etc. (13 operators)</li>
+<li><strong>Base class</strong>: <code>definitions_base.py</code> - Shared operator infrastructure</li>
+<li><strong>Facade</strong>: <code>definitions.py</code> - Backward-compatible imports</li>
+</ul>
+<p><strong>Grammar</strong> (<code>tnfr.operators.grammar.*</code>):</p>
+<ul>
+<li><strong>Constraint modules</strong>: <code>u1_initiation_closure.py</code>, <code>u2_convergence_boundedness.py</code>, etc. (8 rules)</li>
+<li><strong>Facade</strong>: <code>grammar.py</code> - Unified validation interface</li>
+</ul>
+<p><strong>Metrics</strong> (<code>tnfr.metrics.*</code>):</p>
+<ul>
+<li><strong>Focused metrics</strong>: <code>coherence.py</code>, <code>sense_index.py</code>, <code>phase_sync.py</code>, <code>telemetry.py</code></li>
+<li><strong>Facade</strong>: <code>metrics.py</code> - Backward-compatible exports</li>
+</ul>
+<p><strong>Adding New Code</strong>:</p>
+<ul>
+<li><strong>New operator</strong>: Add to appropriate operator file (e.g., <code>coupling.py</code> for coupling modifications)</li>
+<li><strong>New metric</strong>: Create new file in <code>tnfr.metrics/</code> or extend existing metric module</li>
+<li><strong>New grammar rule</strong>: Add to relevant constraint module or create new <code>uN_*.py</code> file</li>
+<li><strong>Always update facades</strong>: If adding new exports, add to facade files for backward compatibility</li>
+</ul>
+<p><strong>Module Guidelines</strong>:</p>
+<ul>
+<li>Keep files under 600 lines (ideally 200-400)</li>
+<li>One primary concept per module</li>
+<li>Use facade pattern for public APIs</li>
+<li>Document module purpose at top of file</li>
+</ul>
+<h2 id="testing-requirements">Testing Requirements</h2>
+<h3 id="test-coverage-goals">Test Coverage Goals</h3>
+<ul>
+<li><strong>Core modules</strong>: ≥90% coverage</li>
+<li><strong>Operators</strong>: 100% coverage (all contracts verified)</li>
+<li><strong>Grammar rules</strong>: 100% coverage (U1-U6)</li>
+<li><strong>Utilities</strong>: ≥80% coverage</li>
+</ul>
+<h3 id="required-test-types">Required Test Types</h3>
+<ol>
+<li><strong>Unit tests</strong> - Test individual functions/classes</li>
+<li><strong>Integration tests</strong> - Test operator sequences</li>
+<li><strong>Property tests</strong> - Verify invariants hold (using Hypothesis)</li>
+<li><strong>Example tests</strong> - Validate domain applications</li>
+</ol>
+<h3 id="writing-tests">Writing Tests</h3>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">test_coherence_monotonicity</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Coherence operator must not decrease C(t).&quot;&quot;&quot;</span>
+    <span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">erdos_renyi_graph</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">)</span>
+    <span class="n">initialize_network</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+
+    <span class="n">C_before</span> <span class="o">=</span> <span class="n">compute_coherence</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+    <span class="n">apply_operator</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">Coherence</span><span class="p">())</span>
+    <span class="n">C_after</span> <span class="o">=</span> <span class="n">compute_coherence</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+
+    <span class="k">assert</span> <span class="n">C_after</span> <span class="o">&gt;=</span> <span class="n">C_before</span><span class="p">,</span> <span class="s2">&quot;Coherence must not decrease&quot;</span>
+</code></pre></div>
+
+<h3 id="test-naming">Test Naming</h3>
+<ul>
+<li><code>test_&lt;function_name&gt;</code> - Unit tests</li>
+<li><code>test_&lt;feature&gt;_&lt;scenario&gt;</code> - Integration tests</li>
+<li><code>test_invariant_&lt;invariant_name&gt;</code> - Invariant verification</li>
+</ul>
+<h3 id="running-tests">Running Tests</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Smoke tests (fast)</span>
+make<span class="w"> </span>smoke-tests
+
+<span class="c1"># Full suite</span>
+pytest
+
+<span class="c1"># Specific module</span>
+pytest<span class="w"> </span>tests/unit/operators/
+
+<span class="c1"># With coverage</span>
+pytest<span class="w"> </span>--cov<span class="o">=</span>src/tnfr<span class="w"> </span>--cov-report<span class="o">=</span>html
+</code></pre></div>
+
+<h2 id="documentation">Documentation</h2>
+<h3 id="docstring-format">Docstring Format</h3>
+<p>Use <strong>Google style</strong> docstrings:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">apply_operator</span><span class="p">(</span><span class="n">G</span><span class="p">:</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">operator</span><span class="p">:</span> <span class="n">Operator</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Apply a structural operator to a network node.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        G: NetworkX graph representing TNFR network</span>
+<span class="sd">        node: Node identifier to apply operator to</span>
+<span class="sd">        operator: Structural operator instance (AL, EN, IL, etc.)</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: If node not in graph</span>
+<span class="sd">        GrammarViolation: If operator application violates grammar</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; G = nx.erdos_renyi_graph(10, 0.3)</span>
+<span class="sd">        &gt;&gt;&gt; apply_operator(G, 0, Emission())</span>
+<span class="sd">        &gt;&gt;&gt; apply_operator(G, 0, Coherence())</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+</code></pre></div>
+
+<h3 id="documentation-requirements">Documentation Requirements</h3>
+<p>All contributions must include:</p>
+<ol>
+<li><strong>Docstrings</strong> for all public functions/classes</li>
+<li><strong>Type hints</strong> for function signatures</li>
+<li><strong>Examples</strong> demonstrating usage</li>
+<li><strong>Physics rationale</strong> linking to TNFR theory</li>
+<li><strong>Tests</strong> covering documented behavior</li>
+</ol>
+<h2 id="documentation-language-requirement">Documentation Language Requirement</h2>
+<p>All project documentation MUST be written in English. This requirement is absolute and applies to:</p>
+<ul>
+<li>Source code comments and docstrings</li>
+<li>Markdown files (README, roadmap, design docs, theory specs, benchmarks)</li>
+<li>Commit messages and pull request descriptions</li>
+<li>Issue titles and bodies</li>
+<li>JSON/CSV textual labels added by benchmarks</li>
+</ul>
+<p>Non-English text (including Spanish) is only permitted when:</p>
+<ul>
+<li>Quoting external published material verbatim (must cite source)</li>
+<li>Embedding raw experimental data originating in another language (must not alter semantics)</li>
+</ul>
+<p>In those cases the surrounding explanatory context MUST still be in English.</p>
+<p>Rationale:</p>
+<ul>
+<li>Ensures universal accessibility for international collaborators</li>
+<li>Prevents semantic drift between multilingual fragments</li>
+<li>Maintains single canonical language for physics and grammar terminology</li>
+</ul>
+<p>Enforcement:</p>
+<ul>
+<li>Pull requests containing new non-English normative text will receive a change request</li>
+<li>CI / review may add automated checks for common non-English tokens</li>
+<li>Maintainers may reject contributions violating this policy regardless of technical merit until corrected</li>
+</ul>
+<p>Examples:</p>
+<p>Compliant:</p>
+<blockquote>
+<p>Added bifurcation benchmark sweeping OZ intensity and mutation thresholds.</p>
+</blockquote>
+<p>Non-compliant:</p>
+<blockquote>
+<p>Añadido benchmark de bifurcación con parámetros OZ.</p>
+</blockquote>
+<p>If you need help translating, open a draft PR early and request assistance rather than merging mixed-language content.</p>
+<p>By contributing you agree to maintain English as the sole canonical language for all project artifacts.</p>
+<h3 id="readme-updates">README Updates</h3>
+<p>If adding features, update:</p>
+<ul>
+<li>Main README.md (if user-facing)</li>
+<li>Relevant subsystem READMEs</li>
+<li>Examples directory</li>
+<li>API documentation</li>
+</ul>
+<h2 id="pull-request-process">Pull Request Process</h2>
+<h3 id="before-submitting">Before Submitting</h3>
+<ul>
+<li>[ ] Tests pass locally (<code>make smoke-tests</code>)</li>
+<li>[ ] Code follows style guidelines (<code>ruff check</code>)</li>
+<li>[ ] Documentation updated</li>
+<li>[ ] Commit messages are clear and descriptive</li>
+<li>[ ] Branch is up to date with main</li>
+<li>[ ] CHANGELOG.md updated (if applicable)</li>
+</ul>
+<h3 id="pr-template">PR Template</h3>
+<div class="codehilite"><pre><span></span><code><span class="gu">## Description</span>
+
+[Clear description of what this PR does]
+
+<span class="gu">## Motivation</span>
+
+[Why is this change needed? What problem does it solve?]
+
+<span class="gu">## TNFR Alignment</span>
+
+<span class="k">- [ ]</span> Preserves all 10 canonical invariants
+<span class="k">- [ ]</span> Maps to structural operators (specify which)
+<span class="k">- [ ]</span> Derivable from TNFR physics (reference TNFR.pdf or UNIFIED_UNIFIED_GRAMMAR_RULES.md)
+<span class="k">- [ ]</span> Maintains reproducibility (seeds, determinism)
+
+<span class="gu">## Testing</span>
+
+<span class="k">- [ ]</span> Unit tests added/updated
+<span class="k">- [ ]</span> Integration tests added/updated
+<span class="k">- [ ]</span> Examples demonstrate usage
+<span class="k">- [ ]</span> All tests pass locally
+
+<span class="gu">## Documentation</span>
+
+<span class="k">- [ ]</span> Docstrings added/updated
+<span class="k">- [ ]</span> README updated (if needed)
+<span class="k">- [ ]</span> Examples added (if new feature)
+<span class="k">- [ ]</span> Physics rationale documented
+
+<span class="gu">## Checklist</span>
+
+<span class="k">- [ ]</span> Code follows style guidelines
+<span class="k">- [ ]</span> Self-review completed
+<span class="k">- [ ]</span> No unintended files committed
+<span class="k">- [ ]</span> Branch name follows conventions
+<span class="k">- [ ]</span> Commit messages are descriptive
+
+<span class="gu">## Affected Components</span>
+
+[List modules/files modified]
+
+<span class="gu">## Breaking Changes</span>
+
+[List any breaking changes, or write &quot;None&quot;]
+
+<span class="gu">## Additional Notes</span>
+
+[Any other context, screenshots, or information]
+</code></pre></div>
+
+<h3 id="review-process">Review Process</h3>
+<ol>
+<li><strong>Automated checks</strong> run (CI/CD)</li>
+<li><strong>Maintainer review</strong> (typically 1-3 days)</li>
+<li><strong>Feedback addressed</strong> by contributor</li>
+<li><strong>Approval</strong> by maintainer</li>
+<li><strong>Merge</strong> to main branch</li>
+</ol>
+<h3 id="after-merge">After Merge</h3>
+<ul>
+<li>Celebrate! 🎉</li>
+<li>Your contribution will be included in the next release</li>
+<li>Consider contributing to documentation or examples</li>
+</ul>
+<h2 id="theoretical-contributions">Theoretical Contributions</h2>
+<h3 id="adding-new-operators">Adding New Operators</h3>
+<p>If proposing a new operator:</p>
+<ol>
+<li><strong>Justify physically</strong> - Derive from nodal equation</li>
+<li><strong>Define contracts</strong> - Pre/post-conditions</li>
+<li><strong>Map to grammar</strong> - Which sets (generator, stabilizer, etc.)?</li>
+<li><strong>Test rigorously</strong> - All invariants + specific contracts</li>
+<li><strong>Document thoroughly</strong> - Physics → Math → Code chain</li>
+</ol>
+<p><strong>Template:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="gu">## Proposed Operator: [Name]</span>
+
+<span class="gu">### Physical Basis</span>
+[How it emerges from TNFR physics]
+
+<span class="gu">### Nodal Equation Impact</span>
+∂EPI/∂t = ... [specific form]
+
+<span class="gu">### Contracts</span>
+<span class="k">-</span><span class="w"> </span>Pre: [conditions required]
+<span class="k">-</span><span class="w"> </span>Post: [guaranteed effects]
+
+<span class="gu">### Grammar Classification</span>
+[Generator? Closure? Stabilizer? Destabilizer? etc.]
+
+<span class="gu">### Tests</span>
+<span class="k">-</span><span class="w"> </span>[List specific test requirements]
+</code></pre></div>
+
+<h3 id="extending-grammar">Extending Grammar</h3>
+<p>If proposing new grammar rules:</p>
+<ol>
+<li><strong>Start from physics</strong> - Derive from nodal equation or invariants</li>
+<li><strong>Prove canonicity</strong> - Show inevitability (Absolute/Strong)</li>
+<li><strong>Document thoroughly</strong> - [Rule] → [Physics] → [Derivation] → [Canonicity]</li>
+<li><strong>Test extensively</strong> - Valid/invalid sequence examples</li>
+</ol>
+<h2 id="questions">Questions?</h2>
+<ul>
+<li><strong>General questions</strong>: <a href="https://github.com/fermga/TNFR-Python-Engine/discussions">GitHub Discussions</a></li>
+<li><strong>Bug reports</strong>: <a href="https://github.com/fermga/TNFR-Python-Engine/issues">GitHub Issues</a></li>
+<li><strong>TNFR theory</strong>: Consult <a href="/TNFR-Python-Engine/AGENTS/">AGENTS.md</a>, [UNIFIED_UNIFIED_GRAMMAR_RULES.md), or <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/TNFR.pdf">TNFR.pdf</a></li>
+</ul>
+<h2 id="final-principle">Final Principle</h2>
+<blockquote>
+<p><strong>If a change "prettifies the code" but weakens TNFR fidelity, it is NOT accepted.</strong><br>
+<strong>If a change strengthens structural coherence and paradigm traceability, GO AHEAD.</strong></p>
+</blockquote>
+<p><strong>Reality is not made of things—it's made of resonance. Contribute accordingly.</strong></p>
+    </main>
+    <footer>
+            <span>
+                &copy; 2025
+                TNFR Python Engine — Licensed under MIT.
+            </span>
+            <span>
+                Feedback?
+                <a
+                    href="https://github.com/fermga/TNFR-Python-Engine"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    Open an issue
+                </a>.
+            </span>
+    </footer>
+  </div>
+</body>
+</html>

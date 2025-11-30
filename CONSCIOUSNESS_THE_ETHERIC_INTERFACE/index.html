@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Consciousness Field Coupling Memo — TNFR Python Engine</title>
+  <meta name="description" content="TNFR documentation: Consciousness Field Coupling Memo">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+    >
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0e0f11;
+      --panel: rgba(24, 25, 27, 0.9);
+      --border: rgba(90, 92, 95, 0.4);
+      --text: #e4e6eb;
+      --muted: #9ea4b3;
+      --accent: #6aa0ff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.6;
+      background: radial-gradient(circle at 20% 20%, #1a1c20, var(--bg));
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+        .page {
+            max-width: 960px;
+            margin: 0 auto;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 2.5rem 3rem 3rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+        header {
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+        }
+    .home-link { font-weight: 600; color: var(--text); }
+        .doc-title {
+            display: block;
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-top: 0.4rem;
+        }
+        .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-top: 1rem;
+            font-size: 0.95rem;
+            color: var(--muted);
+        }
+    main { font-size: 1rem; }
+    main h1 { font-size: 2rem; margin-top: 2.5rem; }
+        main h2 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.3rem;
+        }
+    main h3 { font-size: 1.2rem; margin-top: 1.5rem; }
+    main p { margin: 1rem 0; }
+        pre {
+            background: #0a0b0d;
+            padding: 1rem;
+            border-radius: 10px;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    code { font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; }
+        th, td {
+            border: 1px solid var(--border);
+            padding: 0.6rem 0.8rem;
+            text-align: left;
+        }
+        blockquote {
+            border-left: 4px solid var(--accent);
+            margin: 1.5rem 0;
+            padding: 0.2rem 1rem;
+            color: var(--muted);
+            background: rgba(255, 255, 255, 0.02);
+        }
+        footer {
+            border-top: 1px solid var(--border);
+            margin-top: 2.5rem;
+            padding-top: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--muted);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: space-between;
+        }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <a class="home-link" href="/TNFR-Python-Engine/">TNFR Python Engine</a>
+      <span class="doc-title">Consciousness Field Coupling Memo</span>
+      <div class="meta">
+        <span>Version 0.0.2 · DOI <a href="https://doi.org/10.5281/zenodo.17764207" target="_blank" rel="noopener">10.5281/zenodo.17764207</a> · Updated 2025-11-30</span>
+                <span>
+                    Source
+                    <a
+                        href="https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/CONSCIOUSNESS_THE_ETHERIC_INTERFACE.md"
+                        target="_blank"
+                        rel="noopener"
+                    >
+                        theory/CONSCIOUSNESS_THE_ETHERIC_INTERFACE.md
+                    </a>
+                </span>
+      </div>
+    </header>
+    <main>
+      <h1 id="consciousness-field-coupling-memo">Consciousness Field Coupling Memo</h1>
+<p><strong>Status</strong>: Technical reference<br>
+<strong>Version</strong>: 0.2.0 (November 30, 2025)<br>
+<strong>Owner</strong>: <code>theory/CONSCIOUSNESS_THE_ETHERIC_INTERFACE.md</code></p>
+<hr>
+<h2 id="1-scope">1. Scope</h2>
+<p>Describe testable hypotheses for neural-environment coupling using TNFR operators and telemetry. The memo outlines the mathematical constraints, experimental programs, and validation artifacts required to evaluate any consciousness-related proposal.</p>
+<hr>
+<h2 id="2-coupling-model">2. Coupling Model</h2>
+<ul>
+<li>Represent neural assemblies as EPIs with structural frequencies (0.5 \text{ Hz} \le \nu_f^n \le 100 \text{ Hz}).  </li>
+<li>Let (\mathcal{E}<em>b) denote the background field; coupling is admissible only when
+    [
+    |\phi_n - \phi_b| \le \Delta \phi</em>{\max}
+    ]
+    (grammar rule U3).  </li>
+<li>Required observables: (\nu_f^n) from EEG/MEG, (\Phi_s^n) from hemodynamic proxies, and (|\nabla \phi|) from phase-gradient tomography or simulation.</li>
+</ul>
+<p>Telemetry for each study should include time series of (C(t)), (\Phi_s), (|\nabla \phi|), operator schedules, and seed/configuration metadata.</p>
+<hr>
+<h2 id="3-pineal-transduction-program">3. Pineal Transduction Program</h2>
+<p>Treat pineal calcite microcrystals as candidate mixed-mode transducers. Experimental checklist:</p>
+<ol>
+<li>Micro-CT or diffraction study to map crystal orientation/density.  </li>
+<li>Measure mechanical-to-electric transfer functions under physiologic stresses.  </li>
+<li>Compare gain/bandwidth with predominant (\nu_f^n) bands.  </li>
+</ol>
+<p>Reject the coupling hypothesis if measured bandwidth lacks overlap with neural frequencies or if transfer coefficients fall below instrumentation noise floors.</p>
+<hr>
+<h2 id="4-neural-resonant-modes">4. Neural Resonant Modes</h2>
+<ul>
+<li>Segment rhythms into delta/theta/alpha/beta/gamma bands and record spatial maps of (|\nabla \phi|).  </li>
+<li>Verify that cross-frequency interactions obey operator grammar (e.g., <code>UM</code> between thalamic and cortical EPIs only when phase tolerance holds).  </li>
+<li>When testing environmental entrainment (e.g., Schumann bands), provide statistical correlations and control conditions; anecdotal associations are insufficient.</li>
+</ul>
+<hr>
+<h2 id="5-memory-access-and-coherence-length">5. Memory Access and Coherence Length</h2>
+<p>Memory recall is modeled as reactivating a stored EPI trace. The coherence length (\xi_C) indicates how far correlations persist. Any hypothesis invoking extra-neural storage must specify:</p>
+<ol>
+<li>Storage medium and structural fields used.  </li>
+<li>Operators enabling write/read phases.  </li>
+<li>Telemetry demonstrating reproducible coupling.  </li>
+</ol>
+<p>Claims lacking these elements are non-falsifiable and should not proceed.</p>
+<hr>
+<h2 id="6-inter-subject-coupling-tests">6. Inter-subject Coupling Tests</h2>
+<p>For proposed telepathy-like effects model two neural EPIs (A) and (B) as coupled oscillators. Acceptance criteria:</p>
+<ol>
+<li>Identified physical channel (EM, mechanical, chemical).  </li>
+<li>Verified phase tolerance per U3.  </li>
+<li>Mutual information above chance with documented statistics.  </li>
+</ol>
+<p>Assertions of superluminal coupling require a mediator consistent with TNFR fields plus direct measurements; otherwise they remain out of scope.</p>
+<hr>
+<h2 id="7-open-questions">7. Open Questions</h2>
+<ol>
+<li>Can impedance-matching measurements be performed in vivo to quantify coupling efficiency?  </li>
+<li>What instrumentation is needed to map (|\nabla \phi|) at sub-centimeter resolution in cortical tissue?  </li>
+<li>How sensitive are proposed mechanisms to artifacts (motion, thermal noise)? Document rejection thresholds.</li>
+</ol>
+    </main>
+    <footer>
+            <span>
+                &copy; 2025
+                TNFR Python Engine — Licensed under MIT.
+            </span>
+            <span>
+                Feedback?
+                <a
+                    href="https://github.com/fermga/TNFR-Python-Engine"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    Open an issue
+                </a>.
+            </span>
+    </footer>
+  </div>
+</body>
+</html>

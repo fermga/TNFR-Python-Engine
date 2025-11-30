@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Security Policy — TNFR Python Engine</title>
+  <meta name="description" content="TNFR documentation: Security Policy">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+    >
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0e0f11;
+      --panel: rgba(24, 25, 27, 0.9);
+      --border: rgba(90, 92, 95, 0.4);
+      --text: #e4e6eb;
+      --muted: #9ea4b3;
+      --accent: #6aa0ff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.6;
+      background: radial-gradient(circle at 20% 20%, #1a1c20, var(--bg));
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+        .page {
+            max-width: 960px;
+            margin: 0 auto;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 2.5rem 3rem 3rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+        header {
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+        }
+    .home-link { font-weight: 600; color: var(--text); }
+        .doc-title {
+            display: block;
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-top: 0.4rem;
+        }
+        .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-top: 1rem;
+            font-size: 0.95rem;
+            color: var(--muted);
+        }
+    main { font-size: 1rem; }
+    main h1 { font-size: 2rem; margin-top: 2.5rem; }
+        main h2 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.3rem;
+        }
+    main h3 { font-size: 1.2rem; margin-top: 1.5rem; }
+    main p { margin: 1rem 0; }
+        pre {
+            background: #0a0b0d;
+            padding: 1rem;
+            border-radius: 10px;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    code { font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; }
+        th, td {
+            border: 1px solid var(--border);
+            padding: 0.6rem 0.8rem;
+            text-align: left;
+        }
+        blockquote {
+            border-left: 4px solid var(--accent);
+            margin: 1.5rem 0;
+            padding: 0.2rem 1rem;
+            color: var(--muted);
+            background: rgba(255, 255, 255, 0.02);
+        }
+        footer {
+            border-top: 1px solid var(--border);
+            margin-top: 2.5rem;
+            padding-top: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--muted);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: space-between;
+        }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <a class="home-link" href="/TNFR-Python-Engine/">TNFR Python Engine</a>
+      <span class="doc-title">Security Policy</span>
+      <div class="meta">
+        <span>Version 0.0.2 · DOI <a href="https://doi.org/10.5281/zenodo.17764207" target="_blank" rel="noopener">10.5281/zenodo.17764207</a> · Updated 2025-11-28</span>
+                <span>
+                    Source
+                    <a
+                        href="https://github.com/fermga/TNFR-Python-Engine/blob/main/SECURITY.md"
+                        target="_blank"
+                        rel="noopener"
+                    >
+                        SECURITY.md
+                    </a>
+                </span>
+      </div>
+    </header>
+    <main>
+      <h1 id="security-policy">Security Policy</h1>
+<h2 id="supported-versions">Supported Versions</h2>
+<p>We release patches for security vulnerabilities in the following versions:</p>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Supported</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1.x.x</td>
+<td>:white_check_mark:</td>
+</tr>
+<tr>
+<td>&lt; 1.0</td>
+<td>:x:</td>
+</tr>
+</tbody>
+</table>
+<h2 id="reporting-a-vulnerability">Reporting a Vulnerability</h2>
+<p>The TNFR Python Engine team takes security vulnerabilities seriously. We appreciate your efforts to responsibly disclose your findings and will make every effort to acknowledge your contributions.</p>
+<h3 id="how-to-report-a-security-vulnerability">How to Report a Security Vulnerability</h3>
+<p><strong>Please do not report security vulnerabilities through public GitHub issues.</strong></p>
+<p>Instead, please report them via one of the following methods:</p>
+<ol>
+<li><strong>GitHub Security Advisories</strong>: Use the <a href="https://github.com/fermga/TNFR-Python-Engine/security/advisories/new">Security Advisory</a> feature (preferred)</li>
+<li><strong>Email</strong>: Contact the maintainers directly (check repository for current contact)</li>
+</ol>
+<p>Please include the following information in your report:</p>
+<ul>
+<li>Type of vulnerability</li>
+<li>Full paths of source file(s) related to the manifestation of the vulnerability</li>
+<li>The location of the affected source code (tag/branch/commit or direct URL)</li>
+<li>Step-by-step instructions to reproduce the vulnerability</li>
+<li>Proof-of-concept or exploit code (if possible)</li>
+<li>Impact of the vulnerability, including how an attacker might exploit it</li>
+</ul>
+<h3 id="response-timeline">Response Timeline</h3>
+<ul>
+<li><strong>Initial Response</strong>: Within 48 hours of report submission</li>
+<li><strong>Status Update</strong>: Within 7 days with assessment and potential timeline</li>
+<li><strong>Resolution</strong>: Varies by severity; critical issues prioritized</li>
+</ul>
+<h3 id="disclosure-policy">Disclosure Policy</h3>
+<ul>
+<li>Security vulnerabilities will be coordinated with reporters before public disclosure</li>
+<li>We aim to patch critical vulnerabilities within 30 days</li>
+<li>Public disclosure will occur after patch is released and users have time to update</li>
+</ul>
+<h2 id="security-best-practices-for-users">Security Best Practices for Users</h2>
+<h3 id="sql-injection-prevention">SQL Injection Prevention</h3>
+<p><strong>TNFR provides proactive SQL injection prevention utilities:</strong></p>
+<p>The TNFR engine currently uses in-memory NetworkX graphs and file-based persistence (JSON, YAML, Pickle). While no SQL databases are currently used, the codebase includes comprehensive SQL injection prevention utilities for future database functionality.</p>
+<p><strong>Security Utilities Available:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">tnfr.security</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">SecureQueryBuilder</span><span class="p">,</span>
+    <span class="n">validate_identifier</span><span class="p">,</span>
+    <span class="n">sanitize_string_input</span><span class="p">,</span>
+    <span class="n">validate_nodal_input</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># Always use parameterized queries</span>
+<span class="n">builder</span> <span class="o">=</span> <span class="n">SecureQueryBuilder</span><span class="p">()</span>
+<span class="n">query</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">&quot;nfr_nodes&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;nu_f&quot;</span><span class="p">,</span> <span class="s2">&quot;phase&quot;</span><span class="p">])</span>\
+    <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s2">&quot;nu_f &gt; ?&quot;</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>\
+    <span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;nu_f&quot;</span><span class="p">,</span> <span class="s2">&quot;DESC&quot;</span><span class="p">)</span>\
+    <span class="o">.</span><span class="n">build</span><span class="p">()</span>
+
+<span class="c1"># Validate all identifiers (table/column names)</span>
+<span class="n">table_name</span> <span class="o">=</span> <span class="n">validate_identifier</span><span class="p">(</span><span class="s2">&quot;nfr_nodes&quot;</span><span class="p">)</span>
+<span class="n">column_name</span> <span class="o">=</span> <span class="n">validate_identifier</span><span class="p">(</span><span class="s2">&quot;nu_f&quot;</span><span class="p">)</span>
+
+<span class="c1"># Sanitize string inputs</span>
+<span class="n">user_input</span> <span class="o">=</span> <span class="n">sanitize_string_input</span><span class="p">(</span><span class="n">user_provided_data</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+
+<span class="c1"># Validate TNFR structural data before persistence</span>
+<span class="n">node_data</span> <span class="o">=</span> <span class="n">validate_nodal_input</span><span class="p">({</span>
+    <span class="s2">&quot;nu_f&quot;</span><span class="p">:</span> <span class="mf">0.75</span><span class="p">,</span>
+    <span class="s2">&quot;phase&quot;</span><span class="p">:</span> <span class="mf">1.57</span><span class="p">,</span>
+    <span class="s2">&quot;coherence&quot;</span><span class="p">:</span> <span class="mf">0.85</span><span class="p">,</span>
+<span class="p">})</span>
+</code></pre></div>
+
+<p><strong>Security Principles:</strong></p>
+<ol>
+<li><strong>Parameterized Queries</strong>: Always use placeholders (?, :name) for values</li>
+<li><strong>Identifier Validation</strong>: Validate table/column names against whitelist pattern</li>
+<li><strong>No String Concatenation</strong>: Never build queries with f-strings or + operators</li>
+<li><strong>Input Sanitization</strong>: Validate and sanitize all user inputs</li>
+<li><strong>TNFR Structural Validation</strong>: Ensure structural frequency, phase, and coherence values are valid</li>
+</ol>
+<p><strong>Example of Safe vs Unsafe Patterns:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># ❌ UNSAFE: Never do this!</span>
+<span class="c1"># query = f&quot;SELECT * FROM nfr_nodes WHERE id = {user_input}&quot;</span>
+
+<span class="c1"># ✓ SAFE: Use parameterized queries</span>
+<span class="n">builder</span> <span class="o">=</span> <span class="n">SecureQueryBuilder</span><span class="p">()</span>
+<span class="n">query</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">&quot;nfr_nodes&quot;</span><span class="p">)</span>\
+    <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s2">&quot;id = ?&quot;</span><span class="p">,</span> <span class="n">user_input</span><span class="p">)</span>\
+    <span class="o">.</span><span class="n">build</span><span class="p">()</span>
+<span class="c1"># Execute: cursor.execute(query, params)</span>
+</code></pre></div>
+
+<h3 id="secret-and-credential-management">Secret and Credential Management</h3>
+<p><strong>TNFR follows strict security practices to prevent hardcoded secrets:</strong></p>
+<ol>
+<li><strong>No Hardcoded Secrets</strong>: All API keys, passwords, tokens, and credentials are loaded from environment variables</li>
+<li><strong>Environment Variables</strong>: Use <code>.env</code> files for local development (never commit these!)</li>
+<li><strong>Configuration Template</strong>: Copy <code>.env.example</code> to <code>.env</code> and fill in your credentials</li>
+<li><strong>Secure Defaults</strong>: Development defaults are safe and non-functional placeholders</li>
+</ol>
+<p><strong>Environment Configuration:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Copy the example configuration</span>
+cp<span class="w"> </span>.env.example<span class="w"> </span>.env
+
+<span class="c1"># Edit .env with your actual credentials</span>
+<span class="c1"># This file is gitignored and will not be committed</span>
+</code></pre></div>
+
+<p><strong>Using Configuration Utilities:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">tnfr.secure_config</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">load_pypi_credentials</span><span class="p">,</span>
+    <span class="n">load_github_credentials</span><span class="p">,</span>
+    <span class="n">load_redis_config</span><span class="p">,</span>
+    <span class="n">get_cache_secret</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># Load credentials from environment</span>
+<span class="n">pypi_creds</span> <span class="o">=</span> <span class="n">load_pypi_credentials</span><span class="p">()</span>
+<span class="n">github_creds</span> <span class="o">=</span> <span class="n">load_github_credentials</span><span class="p">()</span>
+<span class="n">redis_config</span> <span class="o">=</span> <span class="n">load_redis_config</span><span class="p">()</span>
+
+<span class="c1"># Get cache signing secret</span>
+<span class="n">cache_secret</span> <span class="o">=</span> <span class="n">get_cache_secret</span><span class="p">()</span>
+</code></pre></div>
+
+<p><strong>Security Best Practices:</strong></p>
+<ul>
+<li>Use API tokens instead of passwords (e.g., PyPI tokens, GitHub tokens)</li>
+<li>Rotate credentials regularly</li>
+<li>Use different credentials for development, staging, and production</li>
+<li>Store production secrets in secure secret management systems (AWS Secrets Manager, HashiCorp Vault, etc.)</li>
+<li>Grant minimal necessary permissions to all tokens</li>
+<li>Revoke tokens immediately if compromised</li>
+</ul>
+<p><strong>Automated Security Testing:</strong></p>
+<p>TNFR includes automated tests that scan for hardcoded secrets:
+- GitHub token detection
+- PyPI token detection
+- Suspicious long strings that might be secrets
+- Verification of <code>.env</code> in <code>.gitignore</code></p>
+<h3 id="pickle-serialization-warning">Pickle Serialization Warning</h3>
+<p>The TNFR engine uses Python's <code>pickle</code> module for caching complex TNFR structures (NetworkX graphs, EPIs, coherence states). <strong>Pickle can execute arbitrary code during deserialization.</strong></p>
+<p><strong>Important Security Considerations:</strong></p>
+<ol>
+<li><strong>ShelveCacheLayer</strong>: Only load shelf files from trusted sources</li>
+<li><strong>RedisCacheLayer</strong>: </li>
+<li>Use Redis authentication (AUTH command or ACL)</li>
+<li>Implement network access controls</li>
+<li>Use TLS for Redis connections</li>
+<li>Never cache untrusted user input</li>
+</ol>
+<p><strong>Security Warnings:</strong></p>
+<p>Starting from version 1.x, TNFR will emit <code>SecurityWarning</code> when cache layers are created without signature validation. To suppress these warnings in trusted environments, set:</p>
+<div class="codehilite"><pre><span></span><code><span class="nb">export</span><span class="w"> </span><span class="nv">TNFR_ALLOW_UNSIGNED_PICKLE</span><span class="o">=</span><span class="m">1</span>
+</code></pre></div>
+
+<h3 id="secure-cache-configuration-recommended">Secure Cache Configuration (Recommended)</h3>
+<p>TNFR provides convenient helper functions to create secure cache layers with HMAC signature validation. <strong>This is the recommended approach for production deployments.</strong></p>
+<h4 id="quick-start-with-secure-caches">Quick Start with Secure Caches</h4>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">tnfr.utils</span> <span class="kn">import</span> <span class="n">create_secure_shelve_layer</span><span class="p">,</span> <span class="n">create_secure_redis_layer</span>
+
+<span class="c1"># Set your cache secret via environment variable (recommended)</span>
+<span class="c1"># export TNFR_CACHE_SECRET=&quot;your-secure-random-secret-key&quot;</span>
+
+<span class="c1"># Create secure cache layers (reads secret from environment)</span>
+<span class="n">shelf_layer</span> <span class="o">=</span> <span class="n">create_secure_shelve_layer</span><span class="p">(</span><span class="s2">&quot;coherence.db&quot;</span><span class="p">)</span>
+<span class="n">redis_layer</span> <span class="o">=</span> <span class="n">create_secure_redis_layer</span><span class="p">()</span>
+
+<span class="c1"># Store and retrieve TNFR structures safely</span>
+<span class="n">shelf_layer</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="s2">&quot;nfr_state&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;epi&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">2.3</span><span class="p">],</span> <span class="s2">&quot;theta&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">]})</span>
+<span class="n">restored</span> <span class="o">=</span> <span class="n">shelf_layer</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;nfr_state&quot;</span><span class="p">)</span>
+</code></pre></div>
+
+<h4 id="environment-variables">Environment Variables</h4>
+<ul>
+<li><code>TNFR_CACHE_SECRET</code>: Secret key for HMAC signature validation (required for secure layers)</li>
+<li><code>TNFR_ALLOW_UNSIGNED_PICKLE</code>: Set to <code>1</code> to suppress security warnings for unsigned pickle usage</li>
+</ul>
+<h4 id="manual-hmac-configuration">Manual HMAC Configuration</h4>
+<p>For more control, you can use the HMAC helper functions:</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">tnfr.utils</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">create_hmac_signer</span><span class="p">,</span>
+    <span class="n">create_hmac_validator</span><span class="p">,</span>
+    <span class="n">ShelveCacheLayer</span><span class="p">,</span>
+    <span class="n">RedisCacheLayer</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># Create HMAC signer and validator</span>
+<span class="n">secret</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;your-secure-secret-key&quot;</span>
+<span class="n">signer</span> <span class="o">=</span> <span class="n">create_hmac_signer</span><span class="p">(</span><span class="n">secret</span><span class="p">)</span>
+<span class="n">validator</span> <span class="o">=</span> <span class="n">create_hmac_validator</span><span class="p">(</span><span class="n">secret</span><span class="p">)</span>
+
+<span class="c1"># Create cache layers with signature validation</span>
+<span class="n">shelf_layer</span> <span class="o">=</span> <span class="n">ShelveCacheLayer</span><span class="p">(</span>
+    <span class="s2">&quot;cache.db&quot;</span><span class="p">,</span>
+    <span class="n">signer</span><span class="o">=</span><span class="n">signer</span><span class="p">,</span>
+    <span class="n">validator</span><span class="o">=</span><span class="n">validator</span><span class="p">,</span>
+    <span class="n">require_signature</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">redis_layer</span> <span class="o">=</span> <span class="n">RedisCacheLayer</span><span class="p">(</span>
+    <span class="n">namespace</span><span class="o">=</span><span class="s2">&quot;tnfr:cache&quot;</span><span class="p">,</span>
+    <span class="n">signer</span><span class="o">=</span><span class="n">signer</span><span class="p">,</span>
+    <span class="n">validator</span><span class="o">=</span><span class="n">validator</span><span class="p">,</span>
+    <span class="n">require_signature</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+</code></pre></div>
+
+<h3 id="hardened-cache-signatures">Hardened Cache Signatures</h3>
+<p><code>ShelveCacheLayer</code> and <code>RedisCacheLayer</code> support payload signing to detect tampering in environments where cache files or Redis instances are not fully trusted.</p>
+<ul>
+<li>Configure a shared secret HMAC (or any signing/verification callable pair) using the <code>signer</code> and <code>validator</code> parameters.</li>
+<li>Enable <code>require_signature=True</code> to activate hardened mode. In hardened mode the cache deletes unsigned or invalid entries and raises a :class:<code>tnfr.utils.SecurityError</code>.</li>
+<li><strong>New in 1.x</strong>: Warnings are emitted when creating cache layers without signatures. Use the secure helper functions for best practices.</li>
+</ul>
+<p><strong>Example with custom signing:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">hashlib</span>
+<span class="kn">import</span> <span class="nn">hmac</span>
+
+<span class="kn">from</span> <span class="nn">tnfr.utils</span> <span class="kn">import</span> <span class="n">RedisCacheLayer</span><span class="p">,</span> <span class="n">SecurityError</span><span class="p">,</span> <span class="n">ShelveCacheLayer</span>
+
+<span class="n">SECRET</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;tnfr-shared-secret&quot;</span>
+
+<span class="k">def</span> <span class="nf">signer</span><span class="p">(</span><span class="n">payload</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">hmac</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">SECRET</span><span class="p">,</span> <span class="n">payload</span><span class="p">,</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span><span class="p">)</span><span class="o">.</span><span class="n">digest</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">validator</span><span class="p">(</span><span class="n">payload</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">signature</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="n">expected</span> <span class="o">=</span> <span class="n">hmac</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">SECRET</span><span class="p">,</span> <span class="n">payload</span><span class="p">,</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span><span class="p">)</span><span class="o">.</span><span class="n">digest</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">hmac</span><span class="o">.</span><span class="n">compare_digest</span><span class="p">(</span><span class="n">expected</span><span class="p">,</span> <span class="n">signature</span><span class="p">)</span>
+
+<span class="n">shelf_layer</span> <span class="o">=</span> <span class="n">ShelveCacheLayer</span><span class="p">(</span>
+    <span class="s2">&quot;cache.db&quot;</span><span class="p">,</span>
+    <span class="n">signer</span><span class="o">=</span><span class="n">signer</span><span class="p">,</span>
+    <span class="n">validator</span><span class="o">=</span><span class="n">validator</span><span class="p">,</span>
+    <span class="n">require_signature</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">redis_layer</span> <span class="o">=</span> <span class="n">RedisCacheLayer</span><span class="p">(</span>
+    <span class="n">namespace</span><span class="o">=</span><span class="s2">&quot;tnfr:cache&quot;</span><span class="p">,</span>
+    <span class="n">signer</span><span class="o">=</span><span class="n">signer</span><span class="p">,</span>
+    <span class="n">validator</span><span class="o">=</span><span class="n">validator</span><span class="p">,</span>
+    <span class="n">require_signature</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">shelf_layer</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="s2">&quot;alpha&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">shelf_layer</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;alpha&quot;</span><span class="p">)</span>
+<span class="k">except</span> <span class="n">SecurityError</span><span class="p">:</span>
+    <span class="c1"># Hardened mode rejected tampered payload</span>
+    <span class="o">...</span>
+</code></pre></div>
+
+<p><strong>Tamper Detection:</strong></p>
+<p>When hardened mode is active, any tampered cache entry is automatically purged and causes an immediate <code>SecurityError</code>, preventing poisoned payloads from propagating through TNFR simulations.</p>
+<h3 id="migration-guide">Migration Guide</h3>
+<p>If you're using <code>ShelveCacheLayer</code> or <code>RedisCacheLayer</code> without signatures:</p>
+<ol>
+<li>
+<p><strong>For trusted, local-only caches</strong> (development):
+   <code>bash
+   export TNFR_ALLOW_UNSIGNED_PICKLE=1</code></p>
+</li>
+<li>
+<p><strong>For production deployments</strong> (recommended):
+   ```python
+   # Before
+   layer = ShelveCacheLayer("cache.db")</p>
+</li>
+</ol>
+<p># After (secure)
+   from tnfr.utils import create_secure_shelve_layer
+   layer = create_secure_shelve_layer("cache.db")
+   ```</p>
+<ol>
+<li><strong>Set environment variable</strong> in production:
+   <code>bash
+   export TNFR_CACHE_SECRET="$(openssl rand -hex 32)"</code></li>
+</ol>
+<h3 id="dependency-management">Dependency Management</h3>
+<p>All project dependencies are continuously monitored for security vulnerabilities using automated tools and processes.</p>
+<h4 id="pip-audit-automated-dependency-vulnerability-scanning">pip-audit: Automated Dependency Vulnerability Scanning</h4>
+<p><strong>What is pip-audit?</strong></p>
+<p><code>pip-audit</code> is a tool that scans Python dependencies for known security vulnerabilities by checking them against the Python Packaging Advisory Database (PyPA).</p>
+<p><strong>Automated Scanning Schedule:</strong></p>
+<ul>
+<li><strong>On every push</strong> to main/master branches</li>
+<li><strong>On every pull request</strong> to main/master branches</li>
+<li><strong>Weekly scheduled scan</strong> (every Monday at 5 AM UTC)</li>
+</ul>
+<p><strong>How to Run pip-audit Locally:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Install pip-audit</span>
+pip<span class="w"> </span>install<span class="w"> </span>pip-audit
+
+<span class="c1"># Install project dependencies</span>
+pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.<span class="o">[</span>all<span class="o">]</span>
+
+<span class="c1"># Scan installed packages in your environment</span>
+pip-audit
+
+<span class="c1"># Or scan a specific site-packages directory</span>
+<span class="nv">SITE_PACKAGES</span><span class="o">=</span><span class="k">$(</span>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import sysconfig; print(sysconfig.get_path(&#39;purelib&#39;))&quot;</span><span class="k">)</span>
+pip-audit<span class="w"> </span>--path<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$SITE_PACKAGES</span><span class="s2">&quot;</span>
+</code></pre></div>
+
+<p><strong>Understanding pip-audit Results:</strong></p>
+<p>When vulnerabilities are found, pip-audit reports:
+- <strong>Package name and version</strong>: The vulnerable dependency
+- <strong>Vulnerability ID</strong>: GHSA-<em>, PYSEC-</em>, or CVE identifier
+- <strong>Fix versions</strong>: The version(s) that resolve the vulnerability
+- <strong>Severity</strong>: Critical, High, Medium, or Low (when available)</p>
+<p><strong>Security Update Process:</strong></p>
+<p>When pip-audit detects vulnerabilities in the CI/CD pipeline:</p>
+<ol>
+<li><strong>Automatic Detection</strong>: The pip-audit workflow runs and uploads a JSON report as an artifact</li>
+<li><strong>Review</strong>: Maintainers review the <code>pip-audit-report</code> artifact from the workflow run</li>
+<li><strong>Assessment</strong>: Evaluate if the vulnerability affects TNFR's use case:</li>
+<li>Check if the vulnerable code path is actually used by TNFR</li>
+<li>Assess the severity and exploitability in TNFR's context</li>
+<li>Review available fixes and their compatibility</li>
+<li><strong>Resolution Options</strong>:</li>
+<li><strong>Update dependency</strong>: Update to the fixed version in <code>pyproject.toml</code></li>
+<li><strong>Pin to safe version</strong>: If latest version causes breaking changes, pin to nearest safe version</li>
+<li><strong>Document exception</strong>: If the vulnerability doesn't affect TNFR, document why in a security review</li>
+<li><strong>Find alternatives</strong>: Consider replacing the dependency if no safe version exists</li>
+<li><strong>Testing</strong>: Run full test suite to ensure the update doesn't break functionality</li>
+<li><strong>Document</strong>: Update changelog with security fix information</li>
+</ol>
+<p><strong>Example Workflow for Fixing a Vulnerability:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># 1. Review the pip-audit report (download from GitHub Actions artifacts)</span>
+cat<span class="w"> </span>pip-audit.json
+
+<span class="c1"># 2. Update the vulnerable dependency in pyproject.toml</span>
+<span class="c1"># For example, if networkx 2.6 is vulnerable and 3.0 fixes it:</span>
+<span class="c1"># Change: &quot;networkx&gt;=2.6,&lt;3.0&quot;</span>
+<span class="c1"># To:     &quot;networkx&gt;=3.0,&lt;4.0&quot;</span>
+
+<span class="c1"># 3. Update your local environment</span>
+pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.<span class="o">[</span>all<span class="o">]</span>
+
+<span class="c1"># 4. Run pip-audit again to verify the fix</span>
+pip-audit
+
+<span class="c1"># 5. Run the test suite</span>
+pytest
+
+<span class="c1"># 6. Commit and create a pull request</span>
+git<span class="w"> </span>add<span class="w"> </span>pyproject.toml
+git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;fix: update networkx to resolve GHSA-xxxx-xxxx-xxxx&quot;</span>
+git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </span>fix/update-networkx
+</code></pre></div>
+
+<p><strong>Why pip-audit is NOT in pre-commit hooks:</strong></p>
+<p>While pip-audit is valuable for CI/CD, it is <strong>not included in pre-commit hooks</strong> because:
+- It requires network access to query the PyPA advisory database
+- It can be slow (5-30 seconds depending on network and number of packages)
+- It would slow down developer workflow for every commit
+- The automated CI/CD scanning catches issues before merge</p>
+<p><strong>Dependabot Integration:</strong></p>
+<p>In addition to pip-audit, Dependabot is enabled to:
+- Automatically create pull requests for dependency updates
+- Monitor dependencies for security advisories
+- Suggest version updates with changelogs</p>
+<p>Both tools work together to ensure dependencies remain secure and up-to-date.</p>
+<h3 id="static-analysis">Static Analysis</h3>
+<p>The repository uses multiple security scanning tools:</p>
+<ul>
+<li><strong>Bandit</strong>: Python code security scanner</li>
+<li><strong>Semgrep</strong>: Pattern-based code analysis</li>
+<li><strong>CodeQL</strong>: Semantic code analysis</li>
+<li><strong>pip-audit</strong>: Dependency vulnerability scanner</li>
+</ul>
+<p>All security scans run automatically on pull requests and commits to the main branch.</p>
+<h2 id="security-features">Security Features</h2>
+<h3 id="tnfr-structural-integrity">TNFR Structural Integrity</h3>
+<p>TNFR maintains structural fidelity through canonical invariants that prevent:</p>
+<ol>
+<li><strong>Uncontrolled mutations</strong>: EPI changes only through structural operators</li>
+<li><strong>Non-deterministic behavior</strong>: Reproducible simulations with seed control</li>
+<li><strong>Phase violations</strong>: Explicit phase verification for all couplings</li>
+<li><strong>Frequency failures</strong>: Validation of structural frequency (νf) in Hz_str</li>
+</ol>
+<p>These invariants ensure predictable, auditable behavior across all TNFR operations.</p>
+<h3 id="domain-neutrality">Domain Neutrality</h3>
+<p>The TNFR engine is domain-neutral by design, supporting:</p>
+<ul>
+<li>Multiple backend choices (NumPy, JAX, PyTorch)</li>
+<li>Configurable determinism for reproducibility</li>
+<li>Transparent structural logging for audit trails</li>
+</ul>
+<h2 id="known-security-considerations">Known Security Considerations</h2>
+<h3 id="documented-pickle-usage">Documented Pickle Usage</h3>
+<p>The following components use pickle serialization with documented security warnings:</p>
+<ol>
+<li><strong><code>src/tnfr/utils/cache.py</code></strong>:</li>
+<li><code>ShelveCacheLayer</code>: Persistent file-based caching</li>
+<li>
+<p><code>RedisCacheLayer</code>: Distributed Redis-based caching</p>
+</li>
+<li>
+<p><strong><code>src/tnfr/dynamics/dnfr.py</code></strong>:</p>
+</li>
+<li>Pickle serialization check for parallel processing compatibility</li>
+</ol>
+<p>All pickle usage includes:
+- Comprehensive security warnings in docstrings
+- Clear documentation of trust requirements
+- <code># nosec</code> annotations where risk is accepted and documented</p>
+<h3 id="excluded-security-checks">Excluded Security Checks</h3>
+<p>The following Bandit checks are intentionally excluded in <code>bandit.yaml</code>:</p>
+<ul>
+<li><strong>B610</strong>: Django QuerySet.extra - Not applicable (TNFR uses internal callables only)</li>
+<li><strong>B324</strong>: SHA1 usage - Non-cryptographic use (topology fingerprints for logging/caching)</li>
+</ul>
+<h2 id="security-update-policy">Security Update Policy</h2>
+<ol>
+<li><strong>Critical vulnerabilities</strong>: Patched within 48-72 hours</li>
+<li><strong>High severity</strong>: Patched within 1 week</li>
+<li><strong>Medium/Low severity</strong>: Patched in next minor release</li>
+<li><strong>Dependency updates</strong>: Applied automatically via Dependabot</li>
+</ol>
+<h2 id="attribution">Attribution</h2>
+<p>We believe in responsible disclosure and will credit security researchers who report vulnerabilities (unless they prefer to remain anonymous).</p>
+<h2 id="questions">Questions?</h2>
+<p>If you have questions about this security policy, please open a <a href="https://github.com/fermga/TNFR-Python-Engine/discussions">GitHub Discussion</a> or contact the maintainers.</p>
+<hr>
+<p><strong>Last Updated</strong>: November 2025
+<strong>Policy Version</strong>: 1.0</p>
+    </main>
+    <footer>
+            <span>
+                &copy; 2025
+                TNFR Python Engine — Licensed under MIT.
+            </span>
+            <span>
+                Feedback?
+                <a
+                    href="https://github.com/fermga/TNFR-Python-Engine"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    Open an issue
+                </a>.
+            </span>
+    </footer>
+  </div>
+</body>
+</html>

@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Resonant Biology Field Memo — TNFR Python Engine</title>
+  <meta name="description" content="TNFR documentation: Resonant Biology Field Memo">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+    >
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0e0f11;
+      --panel: rgba(24, 25, 27, 0.9);
+      --border: rgba(90, 92, 95, 0.4);
+      --text: #e4e6eb;
+      --muted: #9ea4b3;
+      --accent: #6aa0ff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.6;
+      background: radial-gradient(circle at 20% 20%, #1a1c20, var(--bg));
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+        .page {
+            max-width: 960px;
+            margin: 0 auto;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 2.5rem 3rem 3rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+        header {
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+        }
+    .home-link { font-weight: 600; color: var(--text); }
+        .doc-title {
+            display: block;
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-top: 0.4rem;
+        }
+        .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-top: 1rem;
+            font-size: 0.95rem;
+            color: var(--muted);
+        }
+    main { font-size: 1rem; }
+    main h1 { font-size: 2rem; margin-top: 2.5rem; }
+        main h2 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.3rem;
+        }
+    main h3 { font-size: 1.2rem; margin-top: 1.5rem; }
+    main p { margin: 1rem 0; }
+        pre {
+            background: #0a0b0d;
+            padding: 1rem;
+            border-radius: 10px;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    code { font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; }
+        th, td {
+            border: 1px solid var(--border);
+            padding: 0.6rem 0.8rem;
+            text-align: left;
+        }
+        blockquote {
+            border-left: 4px solid var(--accent);
+            margin: 1.5rem 0;
+            padding: 0.2rem 1rem;
+            color: var(--muted);
+            background: rgba(255, 255, 255, 0.02);
+        }
+        footer {
+            border-top: 1px solid var(--border);
+            margin-top: 2.5rem;
+            padding-top: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--muted);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: space-between;
+        }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <a class="home-link" href="/TNFR-Python-Engine/">TNFR Python Engine</a>
+      <span class="doc-title">Resonant Biology Field Memo</span>
+      <div class="meta">
+        <span>Version 0.0.2 · DOI <a href="https://doi.org/10.5281/zenodo.17764207" target="_blank" rel="noopener">10.5281/zenodo.17764207</a> · Updated 2025-11-30</span>
+                <span>
+                    Source
+                    <a
+                        href="https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/RESONANT_BIOLOGY_MORPHOGENESIS.md"
+                        target="_blank"
+                        rel="noopener"
+                    >
+                        theory/RESONANT_BIOLOGY_MORPHOGENESIS.md
+                    </a>
+                </span>
+      </div>
+    </header>
+    <main>
+      <h1 id="resonant-biology-field-memo">Resonant Biology Field Memo</h1>
+<h2 id="morphogenesis-dna-telemetry-and-structural-health-requirements">Morphogenesis, DNA telemetry, and structural health requirements</h2>
+<p><strong>Status</strong>: Analytical reference<br>
+<strong>Version</strong>: 0.3.0 (November 30, 2025)<br>
+<strong>Owner</strong>: <code>theory/RESONANT_BIOLOGY_MORPHOGENESIS.md</code>  </p>
+<hr>
+<h2 id="1-scope">1. Scope</h2>
+<p>This memo documents how TNFR structural metrics (EPI, (\nu_f), (\Phi_s), (|\nabla \phi|), (K_\phi), (\xi_C)) are applied to biological systems. Claims are limited to measurable effects; speculative narratives and metaphysical terminology have been removed. Each subsection lists the data products required to validate the associated hypothesis.</p>
+<hr>
+<h2 id="2-structural-representation-of-biological-tissue">2. Structural Representation of Biological Tissue</h2>
+<ol>
+<li><strong>Node model</strong> – Cells or functional ensembles are represented as TNFR nodes with state (\text{EPI}_i(t)) and structural frequency (\nu_f^i).  </li>
+<li><strong>Coupling</strong> – Interactions (gap junctions, extracellular matrix, neural synapses) map to operator sequences {<code>UM</code>, <code>RA</code>, <code>IL</code>} subject to grammar rules U1–U6.  </li>
+<li><strong>Telemetry</strong> – Experiments should export (C(t)), (|\nabla \phi|), and (\Phi_s) traces computed from imaging/electrophysiology so model outputs can be compared directly with observations.  </li>
+<li><strong>Health indicator</strong> – Coherence thresholds (e.g., (C(t) &gt; 0.75)) are treated as hypotheses that must be justified with longitudinal datasets rather than assumed.</li>
+</ol>
+<hr>
+<h2 id="3-electrodynamic-properties-of-dna">3. Electrodynamic Properties of DNA</h2>
+<p>DNA’s double-helix geometry can be approximated as a helical resonator with pitch (p), radius (r), and conductivity informed by ionic surroundings. Any claim that DNA behaves as an antenna must satisfy the following checklist:</p>
+<ul>
+<li>Provide measured or simulated impedance curves across 0.1–100 MHz (or the relevant band).  </li>
+<li>Demonstrate coupling efficiency to external fields using reproducible protocols (e.g., patch-clamp, dielectric spectroscopy).  </li>
+<li>Document how detected fields influence TNFR state variables (changes in (\nu_f) or (C(t))).  </li>
+<li>Treat historical reports (e.g., “phantom DNA effect”, Montagnier transmissions) as unverified until independently replicated with modern instrumentation. This repository does <strong>not</strong> cite them as evidence.</li>
+</ul>
+<h3 id="open-work-items">Open Work Items</h3>
+<ol>
+<li>Extend <code>examples/33_biological_operator_sequences.py</code> with a DNA resonator surrogate and publish the parameter files.  </li>
+<li>Store raw measurement data under <code>results/biology/dna_electrodynamics/*.csv</code> with calibration notes.  </li>
+<li>Add validation tests comparing simulated resonance peaks to laboratory measurements.</li>
+</ol>
+<hr>
+<h2 id="4-morphogenesis-and-phyllotaxis">4. Morphogenesis and Phyllotaxis</h2>
+<p>Biological growth is modeled as coupled operator sequences (<code>VAL</code>, <code>REMESH</code>, <code>IL</code>) acting on nested EPIs.</p>
+<ul>
+<li><strong>Phyllotaxis</strong>: Spiral arrangements are reproduced by enforcing rotation increments near the golden angle ((137.5^\circ)) and measuring resulting (|\nabla \phi|) distributions. The connection to light capture or transport efficiency must be quantified via simulations/observations, not narrative explanations.  </li>
+<li><strong>Tissue patterning</strong>: Morphogen gradients are represented as spatial variations in (\Phi_s) and (\xi_C). Researchers must specify diffusion constants, production rates, and boundary conditions.  </li>
+<li><strong>Validation</strong>: Compare predicted pattern wavelengths and coherence lengths with microscopy data (e.g., confocal stacks) and share image analysis scripts.</li>
+</ul>
+<h3 id="required-deliverables">Required Deliverables</h3>
+<ol>
+<li><code>results/biology/phyllotaxis_fit.csv</code> – golden-angle fit residuals for multiple species.  </li>
+<li><code>results/biology/morphogenesis_field_maps.h5</code> – volumetric (\Phi_s) and (|\nabla \phi|) reconstructions from imaging data.  </li>
+<li>Benchmark tests verifying that <code>benchmarks/biological_pattern_suite.py</code> reproduces published datasets within tolerance.</li>
+</ol>
+<hr>
+<h2 id="5-cardiovascular-flow-and-vortex-hypotheses">5. Cardiovascular Flow and Vortex Hypotheses</h2>
+<p>Swirling blood flow has been observed in ventricular cavities; TNFR treats this as an energy-efficient mechanism for maintaining coherence in hemodynamic EPIs. The following constraints keep the discussion testable:</p>
+<ul>
+<li>Retain standard fluid-dynamics equations (Navier–Stokes) and measure whether vortex solutions reduce (|\nabla \phi|) or maintain (C(t)) better than purely laminar models.  </li>
+<li>Any statement about the heart acting as a “vortex pump” must cite velocity-field measurements (MRI, Doppler ultrasound) and specify operator sequences responsible for energy transfer.  </li>
+<li>Classical pressure-pump mechanics remain the baseline; TNFR additions are evaluated as corrections, not replacements, unless data show otherwise.</li>
+</ul>
+<h3 id="suggested-experiments">Suggested Experiments</h3>
+<ol>
+<li>Re-process open cardiac MRI datasets to extract rotational components and compute associated (\Delta \text{NFR}).  </li>
+<li>Compare patient cohorts (healthy vs. heart failure) to see whether vortex metrics correlate with structural coherence indicators.  </li>
+<li>Publish the processing pipeline under <code>notebooks/biology_vortex_flow.ipynb</code> with seed locking for reproducibility.</li>
+</ol>
+<hr>
+<h2 id="6-environmental-coupling-schumanngeomagnetic-bands">6. Environmental Coupling (Schumann/Geomagnetic Bands)</h2>
+<p>Some hypotheses propose that biological systems entrain to external electromagnetic bands (e.g., Schumann resonance). Within TNFR this requires:</p>
+<ul>
+<li>Dual telemetry: simultaneous recording of local field measurements and biological signals (EEG/ECG).  </li>
+<li>Phase-locking analysis that quantifies whether (|\phi_{bio} - \phi_{env}|) stays below (\Delta \phi_{max}) more often than chance.  </li>
+<li>Clear disclosure of filtering, artifact rejection, and statistical significance thresholds.</li>
+</ul>
+<p>Until such data are shared, references to environmental entrainment remain proposals rather than findings.</p>
+<hr>
+<h2 id="7-summary-and-review-checklist">7. Summary and Review Checklist</h2>
+<ul>
+<li>Every biological claim must map to explicit operator sequences and telemetry outputs.  </li>
+<li>Unsupported statements (e.g., “life as etheric resonance”, “disease as dissonance”) have been removed; contributors should not reintroduce them without data.  </li>
+<li>Reviewers should verify that new contributions include seeds, datasets, and code pointers so results can be replicated end-to-end.</li>
+</ul>
+    </main>
+    <footer>
+            <span>
+                &copy; 2025
+                TNFR Python Engine — Licensed under MIT.
+            </span>
+            <span>
+                Feedback?
+                <a
+                    href="https://github.com/fermga/TNFR-Python-Engine"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    Open an issue
+                </a>.
+            </span>
+    </footer>
+  </div>
+</body>
+</html>

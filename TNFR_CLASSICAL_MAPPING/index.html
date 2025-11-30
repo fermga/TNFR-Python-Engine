@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TNFR ↔ Classical Mechanics Mapping — TNFR Python Engine</title>
+  <meta name="description" content="TNFR documentation: TNFR ↔ Classical Mechanics Mapping">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+    >
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0e0f11;
+      --panel: rgba(24, 25, 27, 0.9);
+      --border: rgba(90, 92, 95, 0.4);
+      --text: #e4e6eb;
+      --muted: #9ea4b3;
+      --accent: #6aa0ff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.6;
+      background: radial-gradient(circle at 20% 20%, #1a1c20, var(--bg));
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+        .page {
+            max-width: 960px;
+            margin: 0 auto;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 2.5rem 3rem 3rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+        header {
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+        }
+    .home-link { font-weight: 600; color: var(--text); }
+        .doc-title {
+            display: block;
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-top: 0.4rem;
+        }
+        .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-top: 1rem;
+            font-size: 0.95rem;
+            color: var(--muted);
+        }
+    main { font-size: 1rem; }
+    main h1 { font-size: 2rem; margin-top: 2.5rem; }
+        main h2 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.3rem;
+        }
+    main h3 { font-size: 1.2rem; margin-top: 1.5rem; }
+    main p { margin: 1rem 0; }
+        pre {
+            background: #0a0b0d;
+            padding: 1rem;
+            border-radius: 10px;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    code { font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; }
+        th, td {
+            border: 1px solid var(--border);
+            padding: 0.6rem 0.8rem;
+            text-align: left;
+        }
+        blockquote {
+            border-left: 4px solid var(--accent);
+            margin: 1.5rem 0;
+            padding: 0.2rem 1rem;
+            color: var(--muted);
+            background: rgba(255, 255, 255, 0.02);
+        }
+        footer {
+            border-top: 1px solid var(--border);
+            margin-top: 2.5rem;
+            padding-top: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--muted);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: space-between;
+        }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <a class="home-link" href="/TNFR-Python-Engine/">TNFR Python Engine</a>
+      <span class="doc-title">TNFR ↔ Classical Mechanics Mapping</span>
+      <div class="meta">
+        <span>Version 0.0.2 · DOI <a href="https://doi.org/10.5281/zenodo.17764207" target="_blank" rel="noopener">10.5281/zenodo.17764207</a> · Updated 2025-11-29</span>
+                <span>
+                    Source
+                    <a
+                        href="https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/TNFR_CLASSICAL_MAPPING.md"
+                        target="_blank"
+                        rel="noopener"
+                    >
+                        docs/TNFR_CLASSICAL_MAPPING.md
+                    </a>
+                </span>
+      </div>
+    </header>
+    <main>
+      <h1 id="tnfr-classical-mechanics-mapping">TNFR ↔ Classical Mechanics Mapping</h1>
+<p><strong>Status</strong>: Research-to-canonical pipeline (documentation phase)<br>
+<strong>Purpose</strong>: Provide an explicit dictionary between TNFR structural quantities and the objects of classical mechanics (positions, momenta, energies) to guide experiments, proofs, and SDK usage.<br>
+<strong>Scope</strong>: Applies to low-dissonance, high-coherence regimes where TNFR reproduces Newtonian behavior (see <code>src/tnfr/dynamics/nbody.py</code>).</p>
+<hr>
+<h2 id="1-high-level-correspondence">1. High-Level Correspondence</h2>
+<p>Classical mechanics emerges from TNFR when the nodal equation <code>∂EPI/∂t = νf · ΔNFR</code> is evaluated on slowly varying, phase-synchronized EPIs. The table below summarizes the mapping.</p>
+<table>
+<thead>
+<tr>
+<th>TNFR Quantity</th>
+<th>Definition (TNFR)</th>
+<th>Classical Analog</th>
+<th>Notes &amp; References</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>EPI</strong> (Primary Information Structure)</td>
+<td>Coherent form storing spatial + kinematic state.</td>
+<td>Generalized coordinates <code>q</code> and velocities <code>\dot{q}</code>.</td>
+<td>See <code>AGENTS.md</code> (Structural Triad) and <code>src/tnfr/dynamics/nbody.py</code> docstring.</td>
+</tr>
+<tr>
+<td><strong>νf</strong> (Structural frequency)</td>
+<td>Reorganization rate (Hz_str).</td>
+<td>Inertial mass via <code>m = 1/νf</code>.</td>
+<td>High νf → low inertia; matches remarks in <code>nbody.py</code>.</td>
+</tr>
+<tr>
+<td><strong>ΔNFR</strong> (Nodal gradient)</td>
+<td>Structural pressure from Hamiltonian or assumed potential.</td>
+<td>Generalized force <code>F = -∇U</code>.</td>
+<td>Pure TNFR: <code>ΔNFR = i[H_int, ·]/ℏ_str</code> (<code>nbody_tnfr.py</code>).</td>
+</tr>
+<tr>
+<td><strong>Φ_s</strong> (Structural potential)</td>
+<td>Inverse-square accumulation of ΔNFR; monitors confinement.</td>
+<td>Potential energy landscape <code>U(q)</code>.</td>
+<td>Grammar rule U6 treats Φ_s minima like gravitational wells (<code>AGENTS.md</code>).</td>
+</tr>
+<tr>
+<td><strong>|∇φ|</strong> (Phase gradient)</td>
+<td>Local desynchronization measure.</td>
+<td>Stress/strain rate or tidal gradients.</td>
+<td>Bounded analog to shear forces in continuum mechanics.</td>
+</tr>
+<tr>
+<td><strong>K_φ</strong> (Phase curvature)</td>
+<td>Geometric torsion of phase field.</td>
+<td>Curvature-induced forces (e.g., centripetal).</td>
+<td>References: <code>docs/STRUCTURAL_FIELDS_TETRAD.md</code>.</td>
+</tr>
+<tr>
+<td><strong>ξ_C</strong> (Coherence length)</td>
+<td>Correlation decay scale.</td>
+<td>Interaction range / mean free path.</td>
+<td>Large ξ_C → long-range forces like gravity.</td>
+</tr>
+<tr>
+<td><strong>Ψ = K_φ + i·J_φ</strong></td>
+<td>Complex geometric field coupling curvature and current.</td>
+<td>Complexified action density (Hamilton-Jacobi).</td>
+<td>Emerging invariant from unified field audit.</td>
+</tr>
+<tr>
+<td><strong>Operator sequences</strong></td>
+<td>Canonical transformations (AL, IL, UM, …).</td>
+<td>Work/impulse protocols (impulses, damping, coupling).</td>
+<td>Grammar U1-U6 enforces mechanical admissibility.</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="2-derivation-highlights">2. Derivation Highlights</h2>
+<h3 id="21-nodal-equation-newtons-second-law">2.1 Nodal Equation ↔ Newton's Second Law</h3>
+<p>Starting from the nodal equation:</p>
+<div class="codehilite"><pre><span></span><code>∂EPI/∂t = νf · ΔNFR
+</code></pre></div>
+
+<ul>
+<li>Write EPI components explicitly: <code>EPI = (q, \dot{q})</code> (stored structurally).</li>
+<li>Substitute <code>m = 1/νf</code> to obtain <code>m · ∂²q/∂t² = F</code>, with <code>F ≡ ΔNFR</code>.</li>
+<li>Therefore Newton's law is the low-dissonance limit of TNFR where ΔNFR arises from a classical potential.</li>
+</ul>
+<h3 id="22-structural-triad-phase-space">2.2 Structural Triad ↔ Phase Space</h3>
+<table>
+<thead>
+<tr>
+<th>TNFR Triad</th>
+<th>Classical Object</th>
+<th>Commentary</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Form (EPI)</td>
+<td>Canonical coordinates <code>(q, p)</code></td>
+<td>EPI stores both spatial configuration and flow information.</td>
+</tr>
+<tr>
+<td>Frequency (νf)</td>
+<td>Mass/inertia <code>m</code></td>
+<td>Structural inertia resists reorganization exactly like mass resists acceleration.</td>
+</tr>
+<tr>
+<td>Phase (φ/θ)</td>
+<td>Canonical phase (angle variable)</td>
+<td>Phase locking enforces resonance (analogous to action-angle coordinates).</td>
+</tr>
+</tbody>
+</table>
+<h3 id="23-field-tetrad-energetics">2.3 Field Tetrad ↔ Energetics</h3>
+<ul>
+<li><strong>Φ_s</strong> corresponds to potential wells; maintaining <code>ΔΦ_s &lt; φ</code> (golden ratio) mirrors confining a system inside a bounded potential energy basin.</li>
+<li><strong>|∇φ|</strong> measures local stress similarly to the gradient of velocity potential in fluid mechanics.</li>
+<li><strong>K_φ</strong> detects torsion, which maps to curvature-induced forces (think centripetal/Coriolis terms) in classical dynamics.</li>
+<li><strong>ξ_C</strong> sets the interaction range. Long ξ_C reproduces long-range classical forces (gravity, electromagnetism), short ξ_C mimics contact forces.</li>
+</ul>
+<p>These analogies follow the derivations in <code>docs/STRUCTURAL_FIELDS_TETRAD.md</code> and the universality analysis in <code>docs/TNFR_FORCES_EMERGENCE.md</code>.</p>
+<hr>
+<h2 id="3-validation-pathway">3. Validation Pathway</h2>
+<ol>
+<li><strong>Analytical</strong></li>
+<li>Start from the TNFR Hamiltonian <code>H_int = H_coh + H_freq + H_coupling</code> (<code>src/tnfr/operators/hamiltonian.py</code>).</li>
+<li>Evaluate the commutator to obtain <code>ΔNFR = i[H_int, ·]/ℏ_str</code>.</li>
+<li>
+<p>Show that in phase-synchronized regimes this reduces to <code>-∇U</code> with <code>U</code> identified as the coherence potential.</p>
+</li>
+<li>
+<p><strong>Numerical</strong></p>
+</li>
+<li>Use <code>src/tnfr/dynamics/nbody.py</code> (classical assumption) and <code>src/tnfr/dynamics/nbody_tnfr.py</code> (pure TNFR) on identical initial conditions.</li>
+<li>Regime: nearly synchronized phases, large ξ_C, small |∇φ|.</li>
+<li>
+<p>Metrics: compare trajectories, total energy drift, momentum conservation, and Φ_s telemetry.</p>
+</li>
+<li>
+<p><strong>Telemetry Mapping</strong></p>
+</li>
+<li>Log <code>Φ_s</code>, <code>|∇φ|</code>, <code>K_φ</code>, <code>ξ_C</code> alongside classical quantities (U, |F|, curvature, interaction range).</li>
+<li>Demonstrate monotonic relationships to cement the mapping.</li>
+</ol>
+<hr>
+<h2 id="4-reference-experiment-examples11_classical_limit_comparisonpy">4. Reference Experiment (<code>examples/11_classical_limit_comparison.py</code>)</h2>
+<p>To make the correspondence tangible, run the paired simulation script:</p>
+<div class="codehilite"><pre><span></span><code>python<span class="w"> </span>examples/11_classical_limit_comparison.py<span class="w"> </span>--t-final<span class="w"> </span><span class="m">15</span>.0<span class="w"> </span>--dt<span class="w"> </span><span class="m">0</span>.01
+</code></pre></div>
+
+<p><strong>What it does</strong>:</p>
+<ul>
+<li>Evolves the classical solver (<code>NBodySystem</code>) and the pure TNFR solver (<code>TNFRNBodySystem</code>) with identical initial conditions (two-body low-dissonance orbit).</li>
+<li>Annotates both graphs with ΔNFR telemetry (accelerations for the classical case, Hamiltonian-derived ΔNFR for TNFR) before calling <code>compute_structural_telemetry()</code>.</li>
+<li>Prints per-system diagnostics: energy drift %, potential energy, and statistical summaries of Φ_s, |∇φ|, |K_φ|, ξ_C.</li>
+</ul>
+<p><strong>How to interpret</strong>:</p>
+<ul>
+<li>Energy drift values should match within numerical tolerances, confirming that the TNFR Hamiltonian reproduces Newtonian conservation laws in this regime.</li>
+<li>Φ_s mean tracks the classical potential energy (up to scaling), while |∇φ| mirrors classical force magnitudes; ξ_C remaining high indicates the long-range coupling characteristic of gravity.</li>
+<li>Deviations appear only when phases desynchronize (raising |∇φ|) or when coherence length shrinks, signaling departure from the classical limit.</li>
+</ul>
+<p>Researchers can extend the script with additional logging/plots or port it into a notebook to capture trajectory overlays.</p>
+<hr>
+<h2 id="5-next-steps">5. Next Steps</h2>
+<ol>
+<li><strong>Derivation Expansion</strong>: Extend §2 with full Lagrangian/Hamiltonian calculus (reference <code>docs/source/theory/08_classical_mechanics_euler_lagrange.md</code>).</li>
+<li><strong>Notebook Demonstration</strong>: Create a Jupyter notebook comparing <code>nbody.py</code> vs <code>nbody_tnfr.py</code>, highlighting convergence in low-dissonance conditions.</li>
+<li><strong>Operator-Level Mapping</strong>: Document how specific operator sequences (e.g., <code>UM → RA → IL</code>) emulate classical impulses, damping, and coupling.</li>
+<li><strong>Publish Telemetry Plots</strong>: Add plots showing Φ_s tracking classical potential energy for canonical examples (Kepler orbit, harmonic oscillator).</li>
+</ol>
+<p>This document becomes the canonical entry point for researchers extending TNFR into classical mechanics, ensuring that every analogue is traceable back to the nodal equation and structural field tetrad.</p>
+    </main>
+    <footer>
+            <span>
+                &copy; 2025
+                TNFR Python Engine — Licensed under MIT.
+            </span>
+            <span>
+                Feedback?
+                <a
+                    href="https://github.com/fermga/TNFR-Python-Engine"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    Open an issue
+                </a>.
+            </span>
+    </footer>
+  </div>
+</body>
+</html>

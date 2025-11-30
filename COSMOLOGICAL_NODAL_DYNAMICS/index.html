@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cosmological Nodal Dynamics Memo — TNFR Python Engine</title>
+  <meta name="description" content="TNFR documentation: Cosmological Nodal Dynamics Memo">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+    >
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0e0f11;
+      --panel: rgba(24, 25, 27, 0.9);
+      --border: rgba(90, 92, 95, 0.4);
+      --text: #e4e6eb;
+      --muted: #9ea4b3;
+      --accent: #6aa0ff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.6;
+      background: radial-gradient(circle at 20% 20%, #1a1c20, var(--bg));
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+        .page {
+            max-width: 960px;
+            margin: 0 auto;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 2.5rem 3rem 3rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+        header {
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+        }
+    .home-link { font-weight: 600; color: var(--text); }
+        .doc-title {
+            display: block;
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-top: 0.4rem;
+        }
+        .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-top: 1rem;
+            font-size: 0.95rem;
+            color: var(--muted);
+        }
+    main { font-size: 1rem; }
+    main h1 { font-size: 2rem; margin-top: 2.5rem; }
+        main h2 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.3rem;
+        }
+    main h3 { font-size: 1.2rem; margin-top: 1.5rem; }
+    main p { margin: 1rem 0; }
+        pre {
+            background: #0a0b0d;
+            padding: 1rem;
+            border-radius: 10px;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    code { font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; }
+        th, td {
+            border: 1px solid var(--border);
+            padding: 0.6rem 0.8rem;
+            text-align: left;
+        }
+        blockquote {
+            border-left: 4px solid var(--accent);
+            margin: 1.5rem 0;
+            padding: 0.2rem 1rem;
+            color: var(--muted);
+            background: rgba(255, 255, 255, 0.02);
+        }
+        footer {
+            border-top: 1px solid var(--border);
+            margin-top: 2.5rem;
+            padding-top: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--muted);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: space-between;
+        }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <a class="home-link" href="/TNFR-Python-Engine/">TNFR Python Engine</a>
+      <span class="doc-title">Cosmological Nodal Dynamics Memo</span>
+      <div class="meta">
+        <span>Version 0.0.2 · DOI <a href="https://doi.org/10.5281/zenodo.17764207" target="_blank" rel="noopener">10.5281/zenodo.17764207</a> · Updated 2025-11-30</span>
+                <span>
+                    Source
+                    <a
+                        href="https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/COSMOLOGICAL_NODAL_DYNAMICS.md"
+                        target="_blank"
+                        rel="noopener"
+                    >
+                        theory/COSMOLOGICAL_NODAL_DYNAMICS.md
+                    </a>
+                </span>
+      </div>
+    </header>
+    <main>
+      <h1 id="cosmological-nodal-dynamics-memo">Cosmological Nodal Dynamics Memo</h1>
+<p><strong>Status</strong>: Technical reference<br>
+<strong>Version</strong>: 0.2.0 (November 30, 2025)<br>
+<strong>Owner</strong>: <code>theory/COSMOLOGICAL_NODAL_DYNAMICS.md</code></p>
+<hr>
+<h2 id="1-scope">1. Scope</h2>
+<p>Quantify stability criteria for large-scale TNFR configurations (rotating spheres, plane-symmetric limits, resonant modes) using reproducible telemetry and operator schedules. The memo documents modeling assumptions, benchmarks, and validation workflows without endorsing a cosmological narrative.</p>
+<hr>
+<h2 id="2-modeling-framework">2. Modeling Framework</h2>
+<ul>
+<li>Represent planetary-scale systems as nodes with effective EPI states; evolve via (\partial_t \text{EPI} = \nu_f \Delta \text{NFR}).  </li>
+<li>Telemetry requirements: (C(t)), (\Phi_s), (K_\phi), (|\nabla \phi|), and (\xi_C).  </li>
+<li>Operator contracts: destabilizers (<code>OZ</code>, <code>VAL</code>) must be paired with stabilizers (<code>IL</code>, <code>THOL</code>) per U2; coupling operations must pass U3 checks.  </li>
+<li>All simulations should store seeds, step sizes, and boundary data under <code>results/cosmological_nodal_dynamics/</code>.</li>
+</ul>
+<hr>
+<h2 id="3-rotating-sphere-benchmark">3. Rotating-Sphere Benchmark</h2>
+<p>Assume an oblate spheroid with angular velocity (\omega).</p>
+<table>
+<thead>
+<tr>
+<th>Quantity</th>
+<th>Expression</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Centripetal stress</td>
+<td>(a_c = \omega^2 r)</td>
+<td>Input from geodetic data.</td>
+</tr>
+<tr>
+<td>Structural pressure</td>
+<td>(\Delta \text{NFR} \propto \rho a_c)</td>
+<td>Requires density profile.</td>
+</tr>
+<tr>
+<td>Stability check</td>
+<td>Bounded (C(t)), (\Phi_s)</td>
+<td>Apply <code>IL</code> when thresholds exceeded.</td>
+</tr>
+</tbody>
+</table>
+<p>Workflow:</p>
+<ol>
+<li>Load rotation rate and density from observational datasets.  </li>
+<li>Compute induced (\Delta \text{NFR}) and compare against stabilizer capacity.  </li>
+<li>Report intervals where U2 remains satisfied; flag dissonant segments for follow-up.</li>
+</ol>
+<hr>
+<h2 id="4-plane-symmetric-reference">4. Plane-Symmetric Reference</h2>
+<p>Idealized configuration with (K_\phi = 0) and negligible lateral flow. Use as a lower-bound energy state to compare against rotating models. Structural potential evolves via external fields only (gravity, etheric gradients). Document assumptions and show how deviations in (K_\phi) or (|\nabla \phi|) increase energy budgets.</p>
+<hr>
+<h2 id="5-resonant-mode-analysis">5. Resonant Mode Analysis</h2>
+<p>Model luminaries as eigenmodes of the surrounding medium:</p>
+<p>[
+\mathcal{L}(r) = 0 \; \Rightarrow \; r_n.
+]</p>
+<ul>
+<li>Define (\mathcal{L}) using medium parameters (density, stiffness, rotation).  </li>
+<li>Solve numerically and compare (r_n) with observed orbital radii.  </li>
+<li>Store solver configuration and residuals under <code>results/cosmological_modes/</code>.</li>
+</ul>
+<hr>
+<h2 id="6-validation-strategy">6. Validation Strategy</h2>
+<ol>
+<li>Acquire telemetry: gravity field models, seismology, atmospheric resonances.  </li>
+<li>Derive TNFR field quantities using documented transforms.  </li>
+<li>Cross-check grammar compliance (U1–U6) and report deviations with timestamps/locations.  </li>
+<li>Provide scripts or notebooks that regenerate every figure/table referenced in this file.</li>
+</ol>
+<hr>
+<h2 id="7-outstanding-work">7. Outstanding Work</h2>
+<ol>
+<li>Integrate rotating-sphere and plane benchmarks into <code>benchmarks/</code> for CI execution.  </li>
+<li>Publish a parameter-sensitivity study for (\mathcal{L}(r)) solutions.  </li>
+<li>Expand telemetry ingestion to include satellite laser ranging for (\Phi_s) validation.</li>
+</ol>
+    </main>
+    <footer>
+            <span>
+                &copy; 2025
+                TNFR Python Engine — Licensed under MIT.
+            </span>
+            <span>
+                Feedback?
+                <a
+                    href="https://github.com/fermga/TNFR-Python-Engine"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    Open an issue
+                </a>.
+            </span>
+    </footer>
+  </div>
+</body>
+</html>

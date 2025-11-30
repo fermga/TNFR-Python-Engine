@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TNFR Documentation Hub — TNFR Python Engine</title>
+  <meta name="description" content="TNFR documentation: TNFR Documentation Hub">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+    >
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0e0f11;
+      --panel: rgba(24, 25, 27, 0.9);
+      --border: rgba(90, 92, 95, 0.4);
+      --text: #e4e6eb;
+      --muted: #9ea4b3;
+      --accent: #6aa0ff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.6;
+      background: radial-gradient(circle at 20% 20%, #1a1c20, var(--bg));
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+        .page {
+            max-width: 960px;
+            margin: 0 auto;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 2.5rem 3rem 3rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+        header {
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+        }
+    .home-link { font-weight: 600; color: var(--text); }
+        .doc-title {
+            display: block;
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-top: 0.4rem;
+        }
+        .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-top: 1rem;
+            font-size: 0.95rem;
+            color: var(--muted);
+        }
+    main { font-size: 1rem; }
+    main h1 { font-size: 2rem; margin-top: 2.5rem; }
+        main h2 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.3rem;
+        }
+    main h3 { font-size: 1.2rem; margin-top: 1.5rem; }
+    main p { margin: 1rem 0; }
+        pre {
+            background: #0a0b0d;
+            padding: 1rem;
+            border-radius: 10px;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    code { font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; }
+        th, td {
+            border: 1px solid var(--border);
+            padding: 0.6rem 0.8rem;
+            text-align: left;
+        }
+        blockquote {
+            border-left: 4px solid var(--accent);
+            margin: 1.5rem 0;
+            padding: 0.2rem 1rem;
+            color: var(--muted);
+            background: rgba(255, 255, 255, 0.02);
+        }
+        footer {
+            border-top: 1px solid var(--border);
+            margin-top: 2.5rem;
+            padding-top: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--muted);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: space-between;
+        }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <a class="home-link" href="/TNFR-Python-Engine/">TNFR Python Engine</a>
+      <span class="doc-title">TNFR Documentation Hub</span>
+      <div class="meta">
+        <span>Version 0.0.2 · DOI <a href="https://doi.org/10.5281/zenodo.17764207" target="_blank" rel="noopener">10.5281/zenodo.17764207</a> · Updated 2025-11-29</span>
+                <span>
+                    Source
+                    <a
+                        href="https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/README.md"
+                        target="_blank"
+                        rel="noopener"
+                    >
+                        docs/README.md
+                    </a>
+                </span>
+      </div>
+    </header>
+    <main>
+      <h1 id="tnfr-documentation-hub">TNFR Documentation Hub</h1>
+<h2 id="documentation-structure">📚 Documentation Structure</h2>
+<p>The <code>docs/</code> folder contains specialized technical documentation for TNFR theory and implementation:</p>
+<h3 id="core-documentation-files">Core Documentation Files</h3>
+<table>
+<thead>
+<tr>
+<th>Document</th>
+<th>Status</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><a href="/TNFR-Python-Engine/AGENTS/">AGENTS.md</a></strong></td>
+<td>✅ <strong>CANONICAL</strong></td>
+<td>Primary reference for TNFR theory</td>
+</tr>
+<tr>
+<td><strong><a href="/TNFR-Python-Engine/STRUCTURAL_FIELDS_TETRAD/">STRUCTURAL_FIELDS_TETRAD.md</a></strong></td>
+<td>✅ <strong>CANONICAL</strong></td>
+<td>Formal field definitions (Φ_s, |∇φ|, K_φ, ξ_C)</td>
+</tr>
+<tr>
+<td><strong><a href="/TNFR-Python-Engine/CANONICAL_OZ_SEQUENCES/">CANONICAL_OZ_SEQUENCES.md</a></strong></td>
+<td>✅ Active</td>
+<td>Guide to dissonance-based operator sequences</td>
+</tr>
+<tr>
+<td><strong><a href="/TNFR-Python-Engine/API_CONTRACTS/">API_CONTRACTS.md</a></strong></td>
+<td>✅ Active</td>
+<td>Formal contracts for 13 canonical operators</td>
+</tr>
+<tr>
+<td><strong><a href="/TNFR-Python-Engine/TROUBLESHOOTING/">TROUBLESHOOTING.md</a></strong></td>
+<td>✅ Active</td>
+<td>Solutions for operator sequence validation</td>
+</tr>
+<tr>
+<td><strong><a href="/TNFR-Python-Engine/TNFR_FORCES_EMERGENCE/">TNFR_FORCES_EMERGENCE.md</a></strong></td>
+<td>🔬 Research</td>
+<td>Emergent force-like interactions (non-canonical)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="utility-documentation">Utility Documentation</h3>
+<ul>
+<li><strong><a href="/TNFR-Python-Engine/TNFR_MATHEMATICS_REFERENCE/">TNFR_MATHEMATICS_REFERENCE.md</a></strong>: Mathematical foundations aggregator</li>
+<li><strong><a href="/TNFR-Python-Engine/STRUCTURAL_HEALTH/">STRUCTURAL_HEALTH.md</a></strong>: Validation and health assessment</li>
+<li><strong><a href="/TNFR-Python-Engine/SCALABILITY/">SCALABILITY.md</a></strong>: Multi-scale hierarchical networks</li>
+<li><strong><a href="/TNFR-Python-Engine/REPRODUCIBILITY/">REPRODUCIBILITY.md</a></strong>: Reproducibility infrastructure</li>
+<li><strong><a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/SECURITY_CONFIG_GUIDE.md">SECURITY_CONFIG_GUIDE.md</a></strong>: Security configuration</li>
+<li><strong><a href="/TNFR-Python-Engine/OPERATOR_COMPLETENESS/">OPERATOR_COMPLETENESS.md</a></strong>: Operator coverage analysis</li>
+</ul>
+<h3 id="obsolete-files">Obsolete Files</h3>
+<ul>
+<li><strong><a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/INTERACTIONS_GUIDE.md">INTERACTIONS_GUIDE.md</a></strong>: ⚠️ <strong>OBSOLETE</strong> - References non-existent assets (see file for migration path)</li>
+</ul>
+<hr>
+<h2 id="quick-navigation">📋 Quick Navigation</h2>
+<h3 id="for-newcomers">For Newcomers</h3>
+<ol>
+<li>Start with <strong><a href="/TNFR-Python-Engine/AGENTS/">AGENTS.md</a></strong> - Complete TNFR theory</li>
+<li>Explore <strong><a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/examples">examples/</a></strong> - Sequential tutorials 01-10</li>
+<li>Practice with <strong><a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/sdk/simple.py">SDK</a></strong> - Simplified API</li>
+</ol>
+<h3 id="for-developers">For Developers</h3>
+<ol>
+<li><strong><a href="/TNFR-Python-Engine/API_CONTRACTS/">API_CONTRACTS.md</a></strong> - Operator specifications</li>
+<li><strong><a href="/TNFR-Python-Engine/TROUBLESHOOTING/">TROUBLESHOOTING.md</a></strong> - Common issues and solutions</li>
+<li><strong><a href="/TNFR-Python-Engine/STRUCTURAL_FIELDS_TETRAD/">STRUCTURAL_FIELDS_TETRAD.md</a></strong> - Mathematical foundations</li>
+</ol>
+<h3 id="for-researchers">For Researchers</h3>
+<ol>
+<li><strong><a href="/TNFR-Python-Engine/TNFR_FORCES_EMERGENCE/">TNFR_FORCES_EMERGENCE.md</a></strong> - Force-like interactions</li>
+<li><strong><a href="/TNFR-Python-Engine/CANONICAL_OZ_SEQUENCES/">CANONICAL_OZ_SEQUENCES.md</a></strong> - Dissonance patterns</li>
+<li><strong><a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/benchmarks">benchmarks/</a></strong> - Experimental validation</li>
+</ol>
+<hr>
+<h2 id="documentation-status-summary">📊 Documentation Status Summary</h2>
+<table>
+<thead>
+<tr>
+<th>Category</th>
+<th>Count</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Canonical</strong></td>
+<td>2</td>
+<td>✅ AGENTS.md + STRUCTURAL_FIELDS_TETRAD.md</td>
+</tr>
+<tr>
+<td><strong>Active</strong></td>
+<td>8</td>
+<td>Current and maintained</td>
+</tr>
+<tr>
+<td><strong>Research</strong></td>
+<td>1</td>
+<td>Exploratory (TNFR_FORCES_EMERGENCE.md)</td>
+</tr>
+<tr>
+<td><strong>Obsolete</strong></td>
+<td>1</td>
+<td>Asset references broken (INTERACTIONS_GUIDE.md)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Total Active Documentation</strong>: 11 files providing complete TNFR coverage</p>
+    </main>
+    <footer>
+            <span>
+                &copy; 2025
+                TNFR Python Engine — Licensed under MIT.
+            </span>
+            <span>
+                Feedback?
+                <a
+                    href="https://github.com/fermga/TNFR-Python-Engine"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    Open an issue
+                </a>.
+            </span>
+    </footer>
+  </div>
+</body>
+</html>

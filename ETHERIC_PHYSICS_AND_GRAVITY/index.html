@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Etheric Physics &amp; Gravity Memo — TNFR Python Engine</title>
+  <meta name="description" content="TNFR documentation: Etheric Physics &amp; Gravity Memo">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+    >
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0e0f11;
+      --panel: rgba(24, 25, 27, 0.9);
+      --border: rgba(90, 92, 95, 0.4);
+      --text: #e4e6eb;
+      --muted: #9ea4b3;
+      --accent: #6aa0ff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.6;
+      background: radial-gradient(circle at 20% 20%, #1a1c20, var(--bg));
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+        .page {
+            max-width: 960px;
+            margin: 0 auto;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 2.5rem 3rem 3rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+        header {
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+        }
+    .home-link { font-weight: 600; color: var(--text); }
+        .doc-title {
+            display: block;
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-top: 0.4rem;
+        }
+        .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-top: 1rem;
+            font-size: 0.95rem;
+            color: var(--muted);
+        }
+    main { font-size: 1rem; }
+    main h1 { font-size: 2rem; margin-top: 2.5rem; }
+        main h2 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.3rem;
+        }
+    main h3 { font-size: 1.2rem; margin-top: 1.5rem; }
+    main p { margin: 1rem 0; }
+        pre {
+            background: #0a0b0d;
+            padding: 1rem;
+            border-radius: 10px;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    code { font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; }
+        th, td {
+            border: 1px solid var(--border);
+            padding: 0.6rem 0.8rem;
+            text-align: left;
+        }
+        blockquote {
+            border-left: 4px solid var(--accent);
+            margin: 1.5rem 0;
+            padding: 0.2rem 1rem;
+            color: var(--muted);
+            background: rgba(255, 255, 255, 0.02);
+        }
+        footer {
+            border-top: 1px solid var(--border);
+            margin-top: 2.5rem;
+            padding-top: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--muted);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: space-between;
+        }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <a class="home-link" href="/TNFR-Python-Engine/">TNFR Python Engine</a>
+      <span class="doc-title">Etheric Physics &amp; Gravity Memo</span>
+      <div class="meta">
+        <span>Version 0.0.2 · DOI <a href="https://doi.org/10.5281/zenodo.17764207" target="_blank" rel="noopener">10.5281/zenodo.17764207</a> · Updated 2025-11-30</span>
+                <span>
+                    Source
+                    <a
+                        href="https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/ETHERIC_PHYSICS_AND_GRAVITY.md"
+                        target="_blank"
+                        rel="noopener"
+                    >
+                        theory/ETHERIC_PHYSICS_AND_GRAVITY.md
+                    </a>
+                </span>
+      </div>
+    </header>
+    <main>
+      <h1 id="etheric-physics-gravity-memo">Etheric Physics &amp; Gravity Memo</h1>
+<p><strong>Status</strong>: Technical reference<br>
+<strong>Version</strong>: 0.3.0 (November 30, 2025)<br>
+<strong>Owner</strong>: <code>theory/ETHERIC_PHYSICS_AND_GRAVITY.md</code></p>
+<hr>
+<h2 id="1-scope">1. Scope</h2>
+<p>Formalize the etheric medium hypothesis within TNFR using measurable structural fields (\Phi_s, |\nabla \phi|, K_\phi, \xi_C). The memo specifies constitutive relations, experimental validation targets, and simulation workflows. All results must cite raw data stored under <code>results/etheric_physics/</code> with manifest hashes.</p>
+<hr>
+<h2 id="2-medium-model">2. Medium Model</h2>
+<ul>
+<li>Represent space as a structured medium whose effective permittivity/permeability are functions of (\Phi_s) and (\xi_C).  </li>
+<li>Derive constitutive relations ((\mathbf{D} = \epsilon(\Phi_s) \mathbf{E}), (\mathbf{B} = \mu(|\nabla \phi|) \mathbf{H})) and document calibration steps.  </li>
+<li>Benchmark predictions against Michelson–Morley and Sagnac experiments by simulating path-dependent phase shifts; store comparison tables in <code>results/etheric_physics/interferometry.csv</code>.</li>
+</ul>
+<hr>
+<h2 id="3-vertical-field-gradients">3. Vertical Field Gradients</h2>
+<p>Ground-based measurements report ~100 V/m vertical electric fields. Within TNFR this contributes to (\Phi_s) variation and adds a structural-pressure term to forces:</p>
+<p>[
+\mathbf{F} = q \mathbf{E} + \alpha \nabla \Phi_s,
+]</p>
+<p>where (\alpha) encodes coupling to structural potential. Experiments should log electric field readings, (\Phi_s) gradients inferred from TNFR simulations, and resulting force measurements. Collate results in <code>results/etheric_physics/vertical_field/*.parquet</code> with uncertainty budgets.</p>
+<hr>
+<h2 id="4-vortexmhd-analogy">4. Vortex/MHD Analogy</h2>
+<p>Large-scale flows are modeled with vortex equations applied to structural fields. <code>examples/27_etheric_vortex_physics.py</code> must document:</p>
+<ol>
+<li>Boundary conditions and seed values.  </li>
+<li>Applied operator sequences.  </li>
+<li>Validation metrics (rotation curves, coherence statistics) saved in <code>results/etheric_physics/vortex_runs/</code>.</li>
+</ol>
+<hr>
+<h2 id="5-outstanding-work">5. Outstanding Work</h2>
+<ol>
+<li>Derive dispersion relations for etheric waves and compare with cavity resonator and interferometry data.  </li>
+<li>Quantify how (\Phi_s)-dependent permittivity influences gravitational measurements; publish regression analysis with uncertainty estimates.  </li>
+<li>Release complete code/data packages (scripts + notebooks) with reproducibility instructions covering all experiments above.</li>
+</ol>
+    </main>
+    <footer>
+            <span>
+                &copy; 2025
+                TNFR Python Engine — Licensed under MIT.
+            </span>
+            <span>
+                Feedback?
+                <a
+                    href="https://github.com/fermga/TNFR-Python-Engine"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    Open an issue
+                </a>.
+            </span>
+    </footer>
+  </div>
+</body>
+</html>

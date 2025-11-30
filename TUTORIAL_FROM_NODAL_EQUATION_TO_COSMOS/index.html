@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nodal Equation to Macroscopic Systems Tutorial — TNFR Python Engine</title>
+  <meta name="description" content="TNFR documentation: Nodal Equation to Macroscopic Systems Tutorial">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+    >
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0e0f11;
+      --panel: rgba(24, 25, 27, 0.9);
+      --border: rgba(90, 92, 95, 0.4);
+      --text: #e4e6eb;
+      --muted: #9ea4b3;
+      --accent: #6aa0ff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.6;
+      background: radial-gradient(circle at 20% 20%, #1a1c20, var(--bg));
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+        .page {
+            max-width: 960px;
+            margin: 0 auto;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 2.5rem 3rem 3rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+        header {
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+        }
+    .home-link { font-weight: 600; color: var(--text); }
+        .doc-title {
+            display: block;
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-top: 0.4rem;
+        }
+        .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-top: 1rem;
+            font-size: 0.95rem;
+            color: var(--muted);
+        }
+    main { font-size: 1rem; }
+    main h1 { font-size: 2rem; margin-top: 2.5rem; }
+        main h2 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.3rem;
+        }
+    main h3 { font-size: 1.2rem; margin-top: 1.5rem; }
+    main p { margin: 1rem 0; }
+        pre {
+            background: #0a0b0d;
+            padding: 1rem;
+            border-radius: 10px;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    code { font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; }
+        th, td {
+            border: 1px solid var(--border);
+            padding: 0.6rem 0.8rem;
+            text-align: left;
+        }
+        blockquote {
+            border-left: 4px solid var(--accent);
+            margin: 1.5rem 0;
+            padding: 0.2rem 1rem;
+            color: var(--muted);
+            background: rgba(255, 255, 255, 0.02);
+        }
+        footer {
+            border-top: 1px solid var(--border);
+            margin-top: 2.5rem;
+            padding-top: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--muted);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: space-between;
+        }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <a class="home-link" href="/TNFR-Python-Engine/">TNFR Python Engine</a>
+      <span class="doc-title">Nodal Equation to Macroscopic Systems Tutorial</span>
+      <div class="meta">
+        <span>Version 0.0.2 · DOI <a href="https://doi.org/10.5281/zenodo.17764207" target="_blank" rel="noopener">10.5281/zenodo.17764207</a> · Updated 2025-11-30</span>
+                <span>
+                    Source
+                    <a
+                        href="https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/TUTORIAL_FROM_NODAL_EQUATION_TO_COSMOS.md"
+                        target="_blank"
+                        rel="noopener"
+                    >
+                        theory/TUTORIAL_FROM_NODAL_EQUATION_TO_COSMOS.md
+                    </a>
+                </span>
+      </div>
+    </header>
+    <main>
+      <h1 id="nodal-equation-to-macroscopic-systems-tutorial">Nodal Equation to Macroscopic Systems Tutorial</h1>
+<p><strong>Status</strong>: Technical reference<br>
+<strong>Version</strong>: 0.2.0 (November 30, 2025)<br>
+<strong>Owner</strong>: <code>theory/TUTORIAL_FROM_NODAL_EQUATION_TO_COSMOS.md</code></p>
+<hr>
+<h2 id="1-scope">1. Scope</h2>
+<p>Provide a reproducible roadmap showing how the nodal equation</p>
+<p>[
+\frac{\partial \text{EPI}}{\partial t} = \nu_f \Delta \text{NFR}
+]</p>
+<p>produces macroscopic transport equations across microscopic, biological, planetary, and neural regimes. The tutorial points to calculators, benchmarks, and telemetry requirements rather than offering speculative narratives.</p>
+<hr>
+<h2 id="2-baseline-derivation">2. Baseline Derivation</h2>
+<ol>
+<li><strong>Decomposition</strong> – Split (\Delta \text{NFR}) into diffusive (stabilizing) and solenoidal (transport) components.  </li>
+<li><strong>Averaging</strong> – Apply spatial/temporal averaging to obtain coarse-grained PDEs used in <code>docs/TNFR_MATHEMATICS_REFERENCE.md</code>.  </li>
+<li><strong>Operator Mapping</strong> – Associate TNFR operators with PDE source terms (e.g., <code>AL</code> as generation, <code>IL</code> as damping) and document grammar requirements.  </li>
+<li><strong>Telemetry Projection</strong> – Express the resulting fields in terms of (\Phi_s), (|\nabla \phi|), (K_\phi), and (\xi_C) so experiments expose consistent metrics.</li>
+</ol>
+<p>Mathematical steps should be paired with executable notebooks (<code>notebooks/nodal_to_macro_*.ipynb</code>) to maintain traceability.</p>
+<hr>
+<h2 id="3-regime-templates">3. Regime Templates</h2>
+<table>
+<thead>
+<tr>
+<th>Regime</th>
+<th>Key assumption</th>
+<th>Governing reduction</th>
+<th>Reference artifacts</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Microscopic (atomic)</td>
+<td>Stationary limit (\partial_t \text{EPI} \approx 0)</td>
+<td>Eigenvalue problems on bounded domains leading to discrete (\nu_f) spectra</td>
+<td><code>examples/38_tnfr_master_class.py</code>, <code>results/micro_modes/*.png</code></td>
+</tr>
+<tr>
+<td>Biological (flux capture)</td>
+<td>Operator loop <code>[AL, VAL, OZ, THOL, IL]</code> with U2 enforcement</td>
+<td>Nonlinear transport with competition constraints</td>
+<td><code>examples/08_emergent_phenomena.py</code>, <code>results/biology_flux/*.csv</code></td>
+</tr>
+<tr>
+<td>Planetary (vortex mechanics)</td>
+<td>Carrier-modulator decomposition of (\phi) fields</td>
+<td>Coupled oscillator models compared against ephemerides</td>
+<td><code>examples/22_planetary_mandalas.py</code>, <code>benchmarks/universality_clusters.py</code></td>
+</tr>
+<tr>
+<td>Neural (coherence)</td>
+<td>High-dissonance regime with synchronization thresholds</td>
+<td>Kuramoto-style reductions plus telemetry of (C(t)) and (\nu_f) distributions</td>
+<td><code>examples/19_neuroscience_demo.py</code>, <code>results/neural_coherence/*.json</code></td>
+</tr>
+</tbody>
+</table>
+<p>Each template lists the files required to regenerate figures and the telemetry that must accompany publications (seeds, integration steps, boundary data).</p>
+<hr>
+<h2 id="4-implementation-assets">4. Implementation Assets</h2>
+<ul>
+<li><strong>Symbolic derivations</strong>: <code>notebooks/nodal_to_macro.ipynb</code> (links to <code>sympy</code> outputs).  </li>
+<li><strong>Core libraries</strong>: <code>src/tnfr/mathematics/operators.py</code>, <code>src/tnfr/dynamics/symplectic.py</code>.  </li>
+<li><strong>Benchmarks</strong>: <code>benchmarks/phase_curvature_investigation.py</code>, <code>benchmarks/benchmark_optimization_tracks.py</code>.  </li>
+<li><strong>Tests</strong>: <code>tests/test_classical_mechanics.py</code>, <code>tests/test_operator_sequences.py</code>, <code>tests/test_quantum_examples.py</code>.</li>
+</ul>
+<p>All intermediate data should be stored under <code>results/tutorial_nodal_to_macro/</code> with metadata (seed, lattice spacing, operator schedule).</p>
+<hr>
+<h2 id="5-validation-checklist">5. Validation Checklist</h2>
+<ol>
+<li><strong>Symbolic</strong> – Confirm that reduction steps match notebook outputs and that assumptions (e.g., (|\nabla \phi|) bounds) are documented.  </li>
+<li><strong>Numerical</strong> – Reproduce example scripts covering each regime and compare against recorded telemetry.  </li>
+<li><strong>Regression</strong> – Ensure changes are caught by monotonicity/bifurcation tests in <code>tests/</code>.  </li>
+<li><strong>Telemetry</strong> – Verify each dataset exposes (C(t)), (\Phi_s), (|\nabla \phi|), and (K_\phi).</li>
+</ol>
+<hr>
+<h2 id="6-open-actions">6. Open Actions</h2>
+<ol>
+<li>Publish short reference notebooks showing each reduction step with inline explanations.  </li>
+<li>Add CI jobs that run representative scripts for every regime with fixed seeds.  </li>
+<li>Document limitations (e.g., sensitivity to lattice regularity, boundary reflections) so contributors can prioritize extensions.  </li>
+<li>Create a troubleshooting appendix describing common failure modes (unbounded (\Delta \text{NFR}), missing stabilizers, telemetry gaps).</li>
+</ol>
+<hr>
+<h2 id="7-contact">7. Contact</h2>
+<p>For questions or contributions, open issues referencing this file and include links to the supporting notebooks, benchmarks, or telemetry artifacts.</p>
+    </main>
+    <footer>
+            <span>
+                &copy; 2025
+                TNFR Python Engine — Licensed under MIT.
+            </span>
+            <span>
+                Feedback?
+                <a
+                    href="https://github.com/fermga/TNFR-Python-Engine"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    Open an issue
+                </a>.
+            </span>
+    </footer>
+  </div>
+</body>
+</html>

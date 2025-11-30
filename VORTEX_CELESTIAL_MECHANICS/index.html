@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vortex Celestial Mechanics Memo — TNFR Python Engine</title>
+  <meta name="description" content="TNFR documentation: Vortex Celestial Mechanics Memo">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+    >
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0e0f11;
+      --panel: rgba(24, 25, 27, 0.9);
+      --border: rgba(90, 92, 95, 0.4);
+      --text: #e4e6eb;
+      --muted: #9ea4b3;
+      --accent: #6aa0ff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.6;
+      background: radial-gradient(circle at 20% 20%, #1a1c20, var(--bg));
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+        .page {
+            max-width: 960px;
+            margin: 0 auto;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 2.5rem 3rem 3rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+        header {
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+        }
+    .home-link { font-weight: 600; color: var(--text); }
+        .doc-title {
+            display: block;
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-top: 0.4rem;
+        }
+        .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-top: 1rem;
+            font-size: 0.95rem;
+            color: var(--muted);
+        }
+    main { font-size: 1rem; }
+    main h1 { font-size: 2rem; margin-top: 2.5rem; }
+        main h2 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.3rem;
+        }
+    main h3 { font-size: 1.2rem; margin-top: 1.5rem; }
+    main p { margin: 1rem 0; }
+        pre {
+            background: #0a0b0d;
+            padding: 1rem;
+            border-radius: 10px;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    code { font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; }
+        th, td {
+            border: 1px solid var(--border);
+            padding: 0.6rem 0.8rem;
+            text-align: left;
+        }
+        blockquote {
+            border-left: 4px solid var(--accent);
+            margin: 1.5rem 0;
+            padding: 0.2rem 1rem;
+            color: var(--muted);
+            background: rgba(255, 255, 255, 0.02);
+        }
+        footer {
+            border-top: 1px solid var(--border);
+            margin-top: 2.5rem;
+            padding-top: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--muted);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: space-between;
+        }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <a class="home-link" href="/TNFR-Python-Engine/">TNFR Python Engine</a>
+      <span class="doc-title">Vortex Celestial Mechanics Memo</span>
+      <div class="meta">
+        <span>Version 0.0.2 · DOI <a href="https://doi.org/10.5281/zenodo.17764207" target="_blank" rel="noopener">10.5281/zenodo.17764207</a> · Updated 2025-11-30</span>
+                <span>
+                    Source
+                    <a
+                        href="https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/VORTEX_CELESTIAL_MECHANICS.md"
+                        target="_blank"
+                        rel="noopener"
+                    >
+                        theory/VORTEX_CELESTIAL_MECHANICS.md
+                    </a>
+                </span>
+      </div>
+    </header>
+    <main>
+      <h1 id="vortex-celestial-mechanics-memo">Vortex Celestial Mechanics Memo</h1>
+<p><strong>Status</strong>: Analytical reference<br>
+<strong>Version</strong>: 0.3.0 (November 30, 2025)<br>
+<strong>Owner</strong>: <code>theory/VORTEX_CELESTIAL_MECHANICS.md</code></p>
+<hr>
+<p>This memo documents requirements for evaluating vortex-style celestial coordinate models without making cosmological claims. The objective is to test whether a vortex parameterization explains observed geocentric trajectories better than standard orbital descriptions.</p>
+<h2 id="1-scope">1. Scope</h2>
+<ul>
+<li>Define the mathematical form of the carrier-modulator decomposition used to generate Lissajous-style trajectories.</li>
+<li>Provide inputs for both heliocentric (Keplerian) and vortex parameterizations so that comparisons share identical ephemeris data.</li>
+<li>Identify telemetry needed to determine whether one model offers measurable improvements (e.g., lower residuals between simulation and observation).</li>
+</ul>
+<h2 id="2-data-and-models">2. Data and Models</h2>
+<ul>
+<li>Source daily heliocentric positions from JPL DE-series ephemerides; convert to geocentric using standard transforms.</li>
+<li>Express the vortex hypothesis as a set of coupled phase oscillators with carrier period $T_c$ (sidereal frame) and modulator period $T_m$ (planet-specific drift).</li>
+<li>Record all parameters (frequencies, amplitudes, phase offsets) in a JSON or YAML artifact so the comparison is reproducible.</li>
+</ul>
+<h2 id="3-evaluation-procedure">3. Evaluation Procedure</h2>
+<ul>
+<li>For each planet, integrate both models over a multi-year window and compute geocentric trajectories projected on the ecliptic plane.</li>
+<li>Measure deviation from observed right ascension/declination pairs using RMS error and spectral leakage metrics.</li>
+<li>Document whether vortex-specific parameters (e.g., inferred carrier amplitude) remain stable across windows; unstable parameters indicate overfitting.</li>
+</ul>
+<h2 id="4-outstanding-work">4. Outstanding Work</h2>
+<ol>
+<li>Automate the comparison in a benchmark (preferably under <code>benchmarks/</code>) so the pipeline can run in CI.  </li>
+<li>Publish plots and residual tables in <code>results/</code> with metadata describing data sources and processing scripts.  </li>
+<li>Document open technical questions (e.g., how to constrain modulator amplitudes) so future contributors can extend the study systematically.</li>
+</ol>
+    </main>
+    <footer>
+            <span>
+                &copy; 2025
+                TNFR Python Engine — Licensed under MIT.
+            </span>
+            <span>
+                Feedback?
+                <a
+                    href="https://github.com/fermga/TNFR-Python-Engine"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    Open an issue
+                </a>.
+            </span>
+    </footer>
+  </div>
+</body>
+</html>

@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TNFR: Resonant Fractal Nature Theory — TNFR Python Engine</title>
+  <meta name="description" content="TNFR documentation: TNFR: Resonant Fractal Nature Theory">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+    >
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0e0f11;
+      --panel: rgba(24, 25, 27, 0.9);
+      --border: rgba(90, 92, 95, 0.4);
+      --text: #e4e6eb;
+      --muted: #9ea4b3;
+      --accent: #6aa0ff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.6;
+      background: radial-gradient(circle at 20% 20%, #1a1c20, var(--bg));
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+        .page {
+            max-width: 960px;
+            margin: 0 auto;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 2.5rem 3rem 3rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+        header {
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+        }
+    .home-link { font-weight: 600; color: var(--text); }
+        .doc-title {
+            display: block;
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-top: 0.4rem;
+        }
+        .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-top: 1rem;
+            font-size: 0.95rem;
+            color: var(--muted);
+        }
+    main { font-size: 1rem; }
+    main h1 { font-size: 2rem; margin-top: 2.5rem; }
+        main h2 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.3rem;
+        }
+    main h3 { font-size: 1.2rem; margin-top: 1.5rem; }
+    main p { margin: 1rem 0; }
+        pre {
+            background: #0a0b0d;
+            padding: 1rem;
+            border-radius: 10px;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    code { font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; }
+        th, td {
+            border: 1px solid var(--border);
+            padding: 0.6rem 0.8rem;
+            text-align: left;
+        }
+        blockquote {
+            border-left: 4px solid var(--accent);
+            margin: 1.5rem 0;
+            padding: 0.2rem 1rem;
+            color: var(--muted);
+            background: rgba(255, 255, 255, 0.02);
+        }
+        footer {
+            border-top: 1px solid var(--border);
+            margin-top: 2.5rem;
+            padding-top: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--muted);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: space-between;
+        }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <a class="home-link" href="/TNFR-Python-Engine/">TNFR Python Engine</a>
+      <span class="doc-title">TNFR: Resonant Fractal Nature Theory</span>
+      <div class="meta">
+        <span>Version 0.0.2 · DOI <a href="https://doi.org/10.5281/zenodo.17764207" target="_blank" rel="noopener">10.5281/zenodo.17764207</a> · Updated 2025-11-30</span>
+                <span>
+                    Source
+                    <a
+                        href="https://github.com/fermga/TNFR-Python-Engine/blob/main/README.md"
+                        target="_blank"
+                        rel="noopener"
+                    >
+                        README.md
+                    </a>
+                </span>
+      </div>
+    </header>
+    <main>
+      <h1 id="tnfr-resonant-fractal-nature-theory">TNFR: Resonant Fractal Nature Theory</h1>
+<h2 id="computational-framework-for-coherent-pattern-analysis">Computational Framework for Coherent Pattern Analysis</h2>
+<p><a href="https://doi.org/10.5281/zenodo.17764207"><img alt="DOI" src="https://zenodo.org/badge/DOI/10.5281/zenodo.17764207.svg"></a>
+<a href="https://pypi.org/project/tnfr/"><img alt="PyPI version" src="https://badge.fury.io/py/tnfr.svg"></a>
+<a href="https://www.python.org/downloads/"><img alt="Python 3.10+" src="https://img.shields.io/badge/python-3.10+-blue.svg"></a>
+<a href="https://opensource.org/licenses/MIT"><img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-yellow.svg"></a></p>
+<p><strong>TNFR (Resonant Fractal Nature Theory)</strong> provides a mathematical framework for modeling coherent patterns in complex systems through resonance-based dynamics.</p>
+<p><strong>Version</strong>: 0.0.2 (November 29, 2025)<br>
+<strong>Theoretical Foundation</strong>: Universal Tetrahedral Correspondence (φ↔Φ_s, γ↔|∇φ|, π↔K_φ, e↔ξ_C)<br>
+<strong>Installation</strong>: <code>pip install tnfr</code></p>
+<h2 id="getting-started">Getting Started</h2>
+<h3 id="getting-started_1">Getting Started</h3>
+<p><strong>Installation</strong>: <code>pip install tnfr</code></p>
+<p><strong>Essential Concepts</strong>:
+- <strong>Nodal Equation</strong>: <code>∂EPI/∂t = νf · ΔNFR(t)</code> - fundamental evolution law
+- <strong>Canonical Operators</strong>: 13 structural operators for system modification
+- <strong>Unified Grammar</strong>: U1-U6 constraint rules derived from theoretical physics
+- <strong>Structural Fields</strong>: Tetrahedral field system (Φ_s, |∇φ|, K_φ, ξ_C)</p>
+<p><strong>First Steps</strong>:
+1. Install package: <code>pip install tnfr</code>
+2. Read theoretical foundation: <a href="/TNFR-Python-Engine/AGENTS/">AGENTS.md</a>
+3. Run basic example: <code>python examples/01_hello_world.py</code>
+4. Study terminology: <a href="/TNFR-Python-Engine/GLOSSARY_theory_2/">theory/GLOSSARY.md</a></p>
+<h3 id="learning-path">Learning Path</h3>
+<p><strong>Beginner</strong> (2 hours):
+1. Install TNFR: <code>pip install tnfr</code>
+2. Read <a href="/TNFR-Python-Engine/AGENTS/">AGENTS.md</a> - complete theoretical foundation
+3. Run <code>python examples/01_hello_world.py</code></p>
+<p><strong>Intermediate</strong> (1 week):
+1. Study <a href="/TNFR-Python-Engine/UNIFIED_GRAMMAR_RULES/">theory/UNIFIED_GRAMMAR_RULES.md</a> - physics derivations
+2. Work through <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/examples">examples/</a> sequential tutorials (01-10)
+3. Explore <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/fields.py">src/tnfr/physics/fields.py</a> - field implementations</p>
+<p><strong>Advanced</strong> (ongoing):
+1. <strong>TNFR-Riemann Program</strong>: <a href="/TNFR-Python-Engine/TNFR_RIEMANN_RESEARCH_NOTES/">theory/TNFR_RIEMANN_RESEARCH_NOTES.md</a> - Complete framework connecting discrete operators to Riemann Hypothesis
+2. Technical derivations: <a href="/TNFR-Python-Engine/TUTORIAL_FROM_NODAL_EQUATION_TO_COSMOS/">theory/TUTORIAL_FROM_NODAL_EQUATION_TO_COSMOS.md</a>
+3. Contribute following <a href="/TNFR-Python-Engine/CONTRIBUTING/">CONTRIBUTING.md</a></p>
+<h2 id="what-is-tnfr">What is TNFR?</h2>
+<p><strong>Resonant Fractal Nature Theory</strong> provides a mathematical framework for modeling coherent patterns in complex systems. The theory establishes correspondence between four universal mathematical constants (φ, γ, π, e) and four structural fields that characterize system dynamics.</p>
+<p><strong>Core Principle</strong>: Systems are modeled as coherent patterns maintained through resonant coupling rather than as discrete objects with independent properties.</p>
+<p><strong>Theoretical Foundation</strong>: <a href="/TNFR-Python-Engine/AGENTS/">AGENTS.md</a> - Complete theory reference<br>
+<strong>Mathematical Details</strong>: <a href="/TNFR-Python-Engine/FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE/">Structural Fields and Universal Tetrahedral Correspondence</a><br>
+<strong>Theory Hub</strong>: <a href="/TNFR-Python-Engine/README_theory_2/">theory/README.md</a> - Comprehensive theoretical documentation<br>
+<strong>Implementation</strong>: This repository provides computational tools for TNFR analysis</p>
+<p><strong>Theoretical Approach</strong>:
+- <strong>Pattern analysis</strong> over discrete objects
+- <strong>Resonant coupling</strong> over causal relationships
+- <strong>Dynamic processes</strong> over static properties
+- <strong>Network coherence</strong> over isolated systems</p>
+<h2 id="key-features">Key Features</h2>
+<h3 id="the-13-canonical-structural-operators">The 13 Canonical Structural Operators</h3>
+<p>TNFR provides a complete set of 13 operators for modeling structural dynamics. All system evolution occurs through these operators according to unified grammar rules (U1-U6).</p>
+<ul>
+<li><strong>AL (Emission)</strong> - Pattern creation from vacuum</li>
+<li><strong>EN (Reception)</strong> - Information capture and integration</li>
+<li><strong>IL (Coherence)</strong> - Stabilization through negative feedback</li>
+<li><strong>OZ (Dissonance)</strong> - Controlled instability and exploration</li>
+<li><strong>UM (Coupling)</strong> - Network formation via phase sync</li>
+<li><strong>RA (Resonance)</strong> - Pattern amplification and propagation</li>
+<li><strong>SHA (Silence)</strong> - Temporal pause, observation windows</li>
+<li><strong>VAL (Expansion)</strong> - Structural complexity increase</li>
+<li><strong>NUL (Contraction)</strong> - Dimensionality reduction</li>
+<li><strong>THOL (Self-organization)</strong> - Spontaneous autopoietic structuring</li>
+<li><strong>ZHIR (Mutation)</strong> - Phase transformation at threshold</li>
+<li><strong>NAV (Transition)</strong> - Regime shift, state changes</li>
+<li><strong>REMESH (Recursivity)</strong> - Multi-scale fractal operations</li>
+</ul>
+<h3 id="unified-grammar-u1-u6">Unified Grammar (U1-U6)</h3>
+<p>Physics-derived constraints for valid operator sequences:</p>
+<ul>
+<li><strong>U1</strong>: Structural Initiation &amp; Closure</li>
+<li><strong>U2</strong>: Convergence &amp; Boundedness</li>
+<li><strong>U3</strong>: Resonant Coupling (phase verification)</li>
+<li><strong>U4</strong>: Bifurcation Dynamics</li>
+<li><strong>U5</strong>: Multi-Scale Coherence</li>
+<li><strong>U6</strong>: Structural Potential Confinement</li>
+</ul>
+<p><strong>Reference</strong>: <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/UNIFIED_GRAMMAR_RULES.md">UNIFIED_GRAMMAR_RULES.md</a> for complete derivations</p>
+<h3 id="structural-field-tetrad-canonical">Structural Field Tetrad (Canonical)</h3>
+<p>Four fields characterizing system state:</p>
+<ul>
+<li><strong>Φ_s</strong>: Structural potential (global field)</li>
+<li><strong>|∇φ|</strong>: Phase gradient (local desynchronization)</li>
+<li><strong>K_φ</strong>: Phase curvature (geometric confinement)</li>
+<li><strong>ξ_C</strong>: Coherence length (spatial correlations)</li>
+</ul>
+<p><strong>Implementation</strong>: <code>tnfr.physics.fields</code><br>
+<strong>Documentation</strong>: <a href="/TNFR-Python-Engine/STRUCTURAL_FIELDS_TETRAD/">docs/STRUCTURAL_FIELDS_TETRAD.md</a></p>
+<h3 id="tnfr-engines-hub">TNFR Engines Hub</h3>
+<p>Centralized mathematical and optimization engines for advanced TNFR applications:</p>
+<h4 id="self-optimization-engine-tnfrenginesself_optimization"><strong>Self-Optimization Engine</strong> (<code>tnfr.engines.self_optimization</code>)</h4>
+<ul>
+<li><strong>TNFRSelfOptimizingEngine</strong>: Automatic network optimization using TNFR operators</li>
+<li><strong>Physics</strong>: Based on ∂EPI/∂t = νf · ΔNFR(t) nodal equation</li>
+<li><strong>Capabilities</strong>: Smart node targeting, multi-operator optimization, real-time metrics</li>
+<li><strong>Usage</strong>: Direct engine or via SDK <code>auto_optimize()</code></li>
+</ul>
+<h4 id="pattern-discovery-engines-tnfrenginespattern_discovery"><strong>Pattern Discovery Engines</strong> (<code>tnfr.engines.pattern_discovery</code>)</h4>
+<ul>
+<li><strong>TNFREmergentPatternEngine</strong>: Mathematical pattern detection and emergence analysis</li>
+<li><strong>UnifiedPatternDetector</strong>: Operator sequence pattern recognition</li>
+<li><strong>Discoveries</strong>: Eigenmodes, spectral cascades, fractal scaling, symmetry breaking</li>
+<li><strong>Applications</strong>: Research insights, system analysis, predictive modeling</li>
+</ul>
+<h4 id="computation-engines-tnfrenginescomputation"><strong>Computation Engines</strong> (<code>tnfr.engines.computation</code>)</h4>
+<ul>
+<li><strong>GPUEngine</strong>: GPU-accelerated TNFR computations for high-performance analysis</li>
+<li><strong>FFTEngine</strong>: Fast Fourier Transform processing for spectral analysis</li>
+<li><strong>Performance</strong>: Parallel processing, optimized algorithms</li>
+</ul>
+<h4 id="integration-engines-tnfrenginesintegration"><strong>Integration Engines</strong> (<code>tnfr.engines.integration</code>)</h4>
+<ul>
+<li><strong>EmergentIntegrationEngine</strong>: Multi-scale analysis and hierarchical coupling</li>
+<li><strong>Capabilities</strong>: Cross-scale information flow, emergent behavior detection</li>
+</ul>
+<p><strong>Quick Usage</strong>:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Via SDK (recommended)</span>
+<span class="kn">from</span> <span class="nn">tnfr.sdk</span> <span class="kn">import</span> <span class="n">TNFR</span>
+<span class="n">net</span> <span class="o">=</span> <span class="n">TNFR</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="mf">0.3</span><span class="p">)</span><span class="o">.</span><span class="n">auto_optimize</span><span class="p">()</span>
+
+<span class="c1"># Direct engine access</span>
+<span class="kn">from</span> <span class="nn">tnfr.engines.self_optimization</span> <span class="kn">import</span> <span class="n">TNFRSelfOptimizingEngine</span>
+<span class="n">engine</span> <span class="o">=</span> <span class="n">TNFRSelfOptimizingEngine</span><span class="p">(</span><span class="n">network</span><span class="p">)</span>
+<span class="n">success</span><span class="p">,</span> <span class="n">metrics</span> <span class="o">=</span> <span class="n">engine</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">node_id</span><span class="p">)</span>
+</code></pre></div>
+
+<p><strong>Documentation</strong>: <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/engines/README.md">src/tnfr/engines/README.md</a></p>
+<h3 id="core-metrics">Core Metrics</h3>
+<p>Structural system telemetry:</p>
+<ul>
+<li><strong>C(t)</strong>: Total coherence [0, 1]</li>
+<li><strong>Si</strong>: Sense index (reorganization capacity)</li>
+<li><strong>ΔNFR</strong>: Internal reorganization operator</li>
+<li><strong>νf</strong>: Structural frequency (Hz_str)</li>
+<li><strong>φ</strong>: Phase synchrony [0, 2π]</li>
+</ul>
+<h3 id="validation-health-monitoring">Validation &amp; Health Monitoring</h3>
+<p>Structural validation and monitoring tools:</p>
+<ul>
+<li><code>run_structural_validation</code>: Grammar validation with field thresholds</li>
+<li><code>compute_structural_health</code>: Health assessment and recommendations</li>
+<li><code>TelemetryEmitter</code>: Comprehensive telemetry streaming</li>
+<li><code>PerformanceRegistry</code>: Performance monitoring</li>
+</ul>
+<p>Usage:</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">tnfr.validation.aggregator</span> <span class="kn">import</span> <span class="n">run_structural_validation</span>
+<span class="kn">from</span> <span class="nn">tnfr.validation.health</span> <span class="kn">import</span> <span class="n">compute_structural_health</span>
+<span class="kn">from</span> <span class="nn">tnfr.performance.guardrails</span> <span class="kn">import</span> <span class="n">PerformanceRegistry</span>
+
+<span class="n">perf</span> <span class="o">=</span> <span class="n">PerformanceRegistry</span><span class="p">()</span>
+<span class="n">report</span> <span class="o">=</span> <span class="n">run_structural_validation</span><span class="p">(</span>
+  <span class="n">G</span><span class="p">,</span>
+  <span class="n">sequence</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;AL&quot;</span><span class="p">,</span><span class="s2">&quot;UM&quot;</span><span class="p">,</span><span class="s2">&quot;IL&quot;</span><span class="p">,</span><span class="s2">&quot;SHA&quot;</span><span class="p">],</span>
+  <span class="n">perf_registry</span><span class="o">=</span><span class="n">perf</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">health</span> <span class="o">=</span> <span class="n">compute_structural_health</span><span class="p">(</span><span class="n">report</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">report</span><span class="o">.</span><span class="n">risk_level</span><span class="p">,</span> <span class="n">health</span><span class="o">.</span><span class="n">recommendations</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">perf</span><span class="o">.</span><span class="n">summary</span><span class="p">())</span>
+</code></pre></div>
+
+<p>Telemetry:</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">tnfr.metrics.telemetry</span> <span class="kn">import</span> <span class="n">TelemetryEmitter</span>
+
+<span class="k">with</span> <span class="n">TelemetryEmitter</span><span class="p">(</span><span class="s2">&quot;results/run.telemetry.jsonl&quot;</span><span class="p">,</span> <span class="n">human_mirror</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">as</span> <span class="n">em</span><span class="p">:</span>
+  <span class="k">for</span> <span class="n">step</span><span class="p">,</span> <span class="n">op</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">([</span><span class="s2">&quot;AL&quot;</span><span class="p">,</span><span class="s2">&quot;UM&quot;</span><span class="p">,</span><span class="s2">&quot;IL&quot;</span><span class="p">,</span><span class="s2">&quot;SHA&quot;</span><span class="p">]):</span>
+    <span class="n">em</span><span class="o">.</span><span class="n">record</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="n">step</span><span class="p">,</span> <span class="n">operator</span><span class="o">=</span><span class="n">op</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;sequence_id&quot;</span><span class="p">:</span> <span class="s2">&quot;demo&quot;</span><span class="p">})</span>
+</code></pre></div>
+
+<p>Risk levels:</p>
+<ul>
+<li><code>low</code> – Grammar valid; no thresholds exceeded.</li>
+<li><code>elevated</code> – Local stress: max |∇φ|, |K_φ| pocket, ξ_C watch.</li>
+<li><code>critical</code> – Grammar invalid or ΔΦ_s / ξ_C critical breach.</li>
+</ul>
+<p>CLI health report:</p>
+<div class="codehilite"><pre><span></span><code>python<span class="w"> </span>scripts/structural_health_report.py<span class="w"> </span>--graph<span class="w"> </span>random:50:0.15<span class="w"> </span>--sequence<span class="w"> </span>AL,UM,IL,SHA
+</code></pre></div>
+
+<p>All instrumentation preserves TNFR physics (no state mutation).</p>
+<h2 id="installation">Installation</h2>
+<h3 id="from-pypi-stable">From PyPI (Stable)</h3>
+<div class="codehilite"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>tnfr
+</code></pre></div>
+
+<h3 id="from-source-development">From Source (Development)</h3>
+<div class="codehilite"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/fermga/TNFR-Python-Engine.git
+<span class="nb">cd</span><span class="w"> </span>TNFR-Python-Engine
+pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[dev-minimal]&quot;</span>
+</code></pre></div>
+
+<h3 id="dependency-profiles">Dependency Profiles</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Core functionality only</span>
+pip<span class="w"> </span>install<span class="w"> </span>.
+
+<span class="c1"># Development tools (linting, formatting, type checking)</span>
+pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[dev-minimal]&quot;</span>
+
+<span class="c1"># Full test suite</span>
+pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[test-all]&quot;</span>
+
+<span class="c1"># Documentation building</span>
+pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[docs]&quot;</span>
+
+<span class="c1"># Visualization support</span>
+pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[viz-basic]&quot;</span>
+
+<span class="c1"># Alternative backends</span>
+pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[compute-jax]&quot;</span><span class="w">   </span><span class="c1"># JAX backend</span>
+pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[compute-torch]&quot;</span><span class="w">  </span><span class="c1"># PyTorch backend</span>
+</code></pre></div>
+
+<h2 id="quick-start">Quick Start</h2>
+<h3 id="basic-usage">Basic Usage</h3>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">tnfr.sdk</span> <span class="kn">import</span> <span class="n">TNFRNetwork</span>
+
+<span class="c1"># Create and configure network</span>
+<span class="n">network</span> <span class="o">=</span> <span class="n">TNFRNetwork</span><span class="p">(</span><span class="s2">&quot;example&quot;</span><span class="p">)</span>
+<span class="n">network</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span><span class="o">.</span><span class="n">connect_nodes</span><span class="p">(</span><span class="mf">0.3</span><span class="p">,</span> <span class="s2">&quot;random&quot;</span><span class="p">)</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">apply_sequence</span><span class="p">(</span><span class="s2">&quot;basic_activation&quot;</span><span class="p">,</span> <span class="n">repeat</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">measure</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Coherence: </span><span class="si">{</span><span class="n">results</span><span class="o">.</span><span class="n">coherence</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+
+<h3 id="using-operators-directly">Using Operators Directly</h3>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">from</span> <span class="nn">tnfr.operators.definitions</span> <span class="kn">import</span> <span class="n">Emission</span><span class="p">,</span> <span class="n">Coherence</span><span class="p">,</span> <span class="n">Resonance</span>
+<span class="kn">from</span> <span class="nn">tnfr.operators.grammar</span> <span class="kn">import</span> <span class="n">validate_sequence</span>
+<span class="kn">from</span> <span class="nn">tnfr.metrics.coherence</span> <span class="kn">import</span> <span class="n">compute_coherence</span>
+
+<span class="c1"># Create network</span>
+<span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">erdos_renyi_graph</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">)</span>
+
+<span class="c1"># Apply operator sequence</span>
+<span class="n">sequence</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;AL&quot;</span><span class="p">,</span> <span class="s2">&quot;IL&quot;</span><span class="p">,</span> <span class="s2">&quot;RA&quot;</span><span class="p">,</span> <span class="s2">&quot;SHA&quot;</span><span class="p">]</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">validate_sequence</span><span class="p">(</span><span class="n">sequence</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">valid</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">():</span>
+        <span class="n">Emission</span><span class="p">()</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
+        <span class="n">Coherence</span><span class="p">()</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
+        <span class="n">Resonance</span><span class="p">()</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
+
+    <span class="c1"># Measure</span>
+    <span class="n">C_t</span> <span class="o">=</span> <span class="n">compute_coherence</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Network coherence: </span><span class="si">{</span><span class="n">C_t</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+
+<h3 id="domain-applications">Domain Applications</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Therapeutic patterns (crisis, trauma, healing)</span>
+python<span class="w"> </span>examples/domain_applications/therapeutic_patterns.py
+
+<span class="c1"># Educational patterns (learning, mastery, breakthrough)</span>
+python<span class="w"> </span>examples/domain_applications/educational_patterns.py
+
+<span class="c1"># Biological systems (metabolism, evolution)</span>
+python<span class="w"> </span>examples/domain_applications/biological_patterns.py
+</code></pre></div>
+
+<h2 id="documentation">Documentation</h2>
+<p><strong>Complete Documentation</strong>: <a href="https://fermga.github.io/TNFR-Python-Engine/">fermga.github.io/TNFR-Python-Engine</a></p>
+<h3 id="primary-references">Primary References</h3>
+<p><strong>Theoretical Foundation</strong>:
+- <strong><a href="/TNFR-Python-Engine/AGENTS/">AGENTS.md</a></strong> - Primary theoretical reference and development guide
+- <strong><a href="/TNFR-Python-Engine/UNIFIED_GRAMMAR_RULES/">theory/UNIFIED_GRAMMAR_RULES.md</a></strong> - Grammar constraint derivations (U1-U6)
+- <strong><a href="/TNFR-Python-Engine/FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE/">Structural Fields and Universal Tetrahedral Correspondence</a></strong> - Mathematical foundations</p>
+<p><strong>Implementation Guide</strong>:
+- <strong><a href="/TNFR-Python-Engine/ARCHITECTURE/">ARCHITECTURE.md</a></strong> - System architecture and design
+- <strong><a href="/TNFR-Python-Engine/STRUCTURAL_FIELDS_TETRAD/">docs/STRUCTURAL_FIELDS_TETRAD.md</a></strong> - Field implementation specifications
+- <strong><a href="/TNFR-Python-Engine/GLOSSARY_theory_2/">theory/GLOSSARY.md</a></strong> - Technical definitions and terminology</p>
+<p><strong>Development Resources</strong>:
+- <strong><a href="/TNFR-Python-Engine/CONTRIBUTING/">CONTRIBUTING.md</a></strong> - Development workflow and standards
+- <strong><a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/examples">examples/</a></strong> - Sequential tutorials and usage examples
+- <strong><a href="/TNFR-Python-Engine/TESTING/">TESTING.md</a></strong> - Testing framework and requirements</p>
+<h2 id="repository-structure">Repository Structure</h2>
+<div class="codehilite"><pre><span></span><code>TNFR-Python-Engine/
+├── src/tnfr/              # Core TNFR implementation
+│   ├── operators/         # Canonical operator system (immutable registry)
+│   │   ├── definitions.py        # Facade (backward compatibility)
+│   │   ├── definitions_base.py   # Operator base class (no dynamic metaclass)
+│   │   ├── emission.py           # AL operator
+│   │   ├── coherence.py          # IL operator
+│   │   └── ... (13 operators)    # Individual operator modules (canonical)
+│   ├── operators/grammar/ # Unified grammar constraints (Phase 1)
+│   │   ├── grammar.py            # Facade (unified validation)
+│   │   ├── u1_initiation_closure.py
+│   │   ├── u2_convergence_boundedness.py
+│   │   └── ... (8 constraint modules)
+│   ├── metrics/           # Modular metrics system (Phase 1)
+│   │   ├── metrics.py            # Facade (backward compatibility)
+│   │   ├── coherence.py          # C(t) computation
+│   │   ├── sense_index.py        # Si measurement
+│   │   ├── phase_sync.py         # Phase synchronization
+│   │   └── telemetry.py          # Execution tracing
+│   ├── physics/           # Canonical fields (Φ_s, |∇φ|, K_φ, ξ_C)
+│   ├── dynamics/          # Nodal equation integration
+│   ├── sdk/               # High-level API
+│   └── tutorials/         # Educational modules
+├── tests/                 # Comprehensive test suite (975/976 passing)
+├── examples/              # Domain applications
+├── docs/                  # Documentation source
+├── notebooks/             # Jupyter notebooks
+├── benchmarks/            # Performance testing
+└── scripts/               # Maintenance utilities
+</code></pre></div>
+
+<h2 id="testing">Testing</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Run all tests</span>
+pytest
+
+<span class="c1"># Fast smoke tests (examples + telemetry)</span>
+make<span class="w"> </span>smoke-tests<span class="w">          </span><span class="c1"># Unix/Linux</span>
+.<span class="se">\m</span>ake.cmd<span class="w"> </span>smoke-tests<span class="w">    </span><span class="c1"># Windows</span>
+
+<span class="c1"># Specific test suites</span>
+pytest<span class="w"> </span>tests/unit/mathematics/<span class="w">         </span><span class="c1"># Math tests</span>
+pytest<span class="w"> </span>tests/examples/<span class="w">                 </span><span class="c1"># Example validation</span>
+pytest<span class="w"> </span>tests/integration/<span class="w">              </span><span class="c1"># Integration tests</span>
+</code></pre></div>
+
+<h2 id="repository-maintenance">Repository Maintenance</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Clean generated artifacts</span>
+make<span class="w"> </span>clean<span class="w">                </span><span class="c1"># Unix/Linux</span>
+.<span class="se">\m</span>ake.cmd<span class="w"> </span>clean<span class="w">          </span><span class="c1"># Windows</span>
+
+<span class="c1"># Check repository health</span>
+python<span class="w"> </span>scripts/repo_health_check.py
+
+<span class="c1"># Verify documentation references</span>
+python<span class="w"> </span>scripts/verify_internal_references.py
+
+<span class="c1"># Security audit</span>
+pip-audit
+</code></pre></div>
+
+<p>See <strong><a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/REPO_OPTIMIZATION_PLAN.md">REPO_OPTIMIZATION_PLAN.md</a></strong> for cleanup routines and targeted test bundles.</p>
+<h2 id="performance-characteristics">Performance Characteristics</h2>
+<ul>
+<li><strong>Sequence validation</strong>: &lt;1ms for typical sequences (10-20 operators)</li>
+<li><strong>Coherence computation</strong>: O(N) for N nodes</li>
+<li><strong>Phase gradient</strong>: O(E) for E edges</li>
+<li><strong>Memory footprint</strong>: ~50MB for 10k-node networks</li>
+</ul>
+<p>Benchmarking tools: <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/tools/performance">tools/performance/</a></p>
+<p>Note on Python executable for local runs</p>
+<ul>
+<li>Windows: prefer <code>./test-env/Scripts/python.exe</code></li>
+<li>macOS/Linux: prefer <code>./test-env/bin/python</code></li>
+</ul>
+<p>Using the workspace virtual environment avoids mismatches with system Pythons
+that may lack the latest telemetry aliases or configuration.</p>
+<h3 id="parse-precision_modes-drift-benchmark_resultsjson">Parse precision_modes drift (benchmark_results.json)</h3>
+<p>After running <code>./test-env/Scripts/python.exe run_benchmark.py</code> (Windows) or
+<code>./test-env/bin/python run_benchmark.py</code> (macOS/Linux), parse numeric drift for
+the <code>precision_modes</code> track:</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">json</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;benchmark_results.json&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+  <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+<span class="n">drift_entries</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;precision_modes&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;drift&quot;</span><span class="p">,</span> <span class="p">[])</span>
+<span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">drift_entries</span><span class="p">:</span>
+  <span class="n">size</span> <span class="o">=</span> <span class="n">entry</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;size&quot;</span><span class="p">)</span>
+  <span class="n">phi_s</span> <span class="o">=</span> <span class="n">entry</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;phi_s_max_abs&quot;</span><span class="p">)</span>
+  <span class="n">grad</span> <span class="o">=</span> <span class="n">entry</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;grad_max_abs&quot;</span><span class="p">)</span>
+  <span class="n">curv</span> <span class="o">=</span> <span class="n">entry</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;curv_max_abs&quot;</span><span class="p">)</span>
+  <span class="n">xi_c</span> <span class="o">=</span> <span class="n">entry</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;xi_c_abs&quot;</span><span class="p">)</span>
+  <span class="nb">print</span><span class="p">(</span>
+    <span class="sa">f</span><span class="s2">&quot;N=</span><span class="si">{</span><span class="n">size</span><span class="si">:</span><span class="s2">&gt;4</span><span class="si">}</span><span class="s2">  ΔΦ_s_max=</span><span class="si">{</span><span class="n">phi_s</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2">  |∇φ|_max=</span><span class="si">{</span><span class="n">grad</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2">  &quot;</span>
+    <span class="sa">f</span><span class="s2">&quot;K_φ_max=</span><span class="si">{</span><span class="n">curv</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2">  ξ_C_abs=</span><span class="si">{</span><span class="n">xi_c</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">xi_c</span><span class="w"> </span><span class="ow">is</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="kc">None</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;nan&#39;</span><span class="si">}</span><span class="s2">&quot;</span>
+  <span class="p">)</span>
+</code></pre></div>
+
+<p>This reports the maximum absolute difference between <code>standard</code> and <code>high</code> precision modes for the canonical fields per graph size.</p>
+<p>PowerShell one-liners (Windows)</p>
+<div class="codehilite"><pre><span></span><code><span class="c"># Largest ΔΦ_s drift row</span>
+<span class="nb">Get-Content</span> <span class="p">.\</span><span class="n">benchmark_results</span><span class="p">.</span><span class="n">json</span> <span class="p">|</span> <span class="nb">ConvertFrom-Json</span> <span class="p">|</span>
+  <span class="nb">Select-Object</span> <span class="n">-ExpandProperty</span> <span class="n">precision_modes</span> <span class="p">|</span>
+  <span class="nb">Select-Object</span> <span class="n">-ExpandProperty</span> <span class="n">drift</span> <span class="p">|</span>
+  <span class="nb">Sort-Object</span> <span class="n">-Property</span> <span class="n">phi_s_max_abs</span> <span class="n">-Descending</span> <span class="p">|</span>
+  <span class="nb">Select-Object</span> <span class="n">-First</span> <span class="n">1</span>
+
+<span class="c"># Largest |∇φ| drift row</span>
+<span class="nb">Get-Content</span> <span class="p">.\</span><span class="n">benchmark_results</span><span class="p">.</span><span class="n">json</span> <span class="p">|</span> <span class="nb">ConvertFrom-Json</span> <span class="p">|</span>
+  <span class="nb">Select-Object</span> <span class="n">-ExpandProperty</span> <span class="n">precision_modes</span> <span class="p">|</span>
+  <span class="nb">Select-Object</span> <span class="n">-ExpandProperty</span> <span class="n">drift</span> <span class="p">|</span>
+  <span class="nb">Sort-Object</span> <span class="n">-Property</span> <span class="n">grad_max_abs</span> <span class="n">-Descending</span> <span class="p">|</span>
+  <span class="nb">Select-Object</span> <span class="n">-First</span> <span class="n">1</span>
+
+<span class="c"># Largest K_φ drift row</span>
+<span class="nb">Get-Content</span> <span class="p">.\</span><span class="n">benchmark_results</span><span class="p">.</span><span class="n">json</span> <span class="p">|</span> <span class="nb">ConvertFrom-Json</span> <span class="p">|</span>
+  <span class="nb">Select-Object</span> <span class="n">-ExpandProperty</span> <span class="n">precision_modes</span> <span class="p">|</span>
+  <span class="nb">Select-Object</span> <span class="n">-ExpandProperty</span> <span class="n">drift</span> <span class="p">|</span>
+  <span class="nb">Sort-Object</span> <span class="n">-Property</span> <span class="n">curv_max_abs</span> <span class="n">-Descending</span> <span class="p">|</span>
+  <span class="nb">Select-Object</span> <span class="n">-First</span> <span class="n">1</span>
+
+<span class="c"># Largest ξ_C drift row (skip NaNs)</span>
+<span class="nb">Get-Content</span> <span class="p">.\</span><span class="n">benchmark_results</span><span class="p">.</span><span class="n">json</span> <span class="p">|</span> <span class="nb">ConvertFrom-Json</span> <span class="p">|</span>
+  <span class="nb">Select-Object</span> <span class="n">-ExpandProperty</span> <span class="n">precision_modes</span> <span class="p">|</span>
+  <span class="nb">Select-Object</span> <span class="n">-ExpandProperty</span> <span class="n">drift</span> <span class="p">|</span>
+  <span class="nb">Where-Object</span> <span class="p">{</span> <span class="nv">$_</span><span class="p">.</span><span class="n">xi_c_abs</span> <span class="o">-ne</span> <span class="nv">$null</span> <span class="o">-and</span> <span class="o">-not</span> <span class="no">[double]</span><span class="p">::</span><span class="n">IsNaN</span><span class="p">(</span><span class="no">[double]</span><span class="nv">$_</span><span class="p">.</span><span class="n">xi_c_abs</span><span class="p">)</span> <span class="p">}</span> <span class="p">|</span>
+  <span class="nb">Sort-Object</span> <span class="n">-Property</span> <span class="n">xi_c_abs</span> <span class="n">-Descending</span> <span class="p">|</span>
+  <span class="nb">Select-Object</span> <span class="n">-First</span> <span class="n">1</span>
+</code></pre></div>
+
+<h2 id="contributing">Contributing</h2>
+<p>See <a href="/TNFR-Python-Engine/CONTRIBUTING/">CONTRIBUTING.md</a> for development guidelines:</p>
+<ul>
+<li>Development workflow and standards</li>
+<li>Testing requirements and procedures</li>
+<li>Documentation standards and formatting</li>
+<li>Pull request process and review criteria</li>
+</ul>
+<p><strong>Theoretical Development</strong>: Follow theoretical integrity guidelines in <a href="/TNFR-Python-Engine/AGENTS/">AGENTS.md</a>.</p>
+<p><strong>Technical References</strong>:
+- <a href="/TNFR-Python-Engine/STRUCTURAL_FIELDS_TETRAD/">docs/STRUCTURAL_FIELDS_TETRAD.md</a> - Field implementation specifications
+- <a href="/TNFR-Python-Engine/TESTING/">TESTING.md</a> - Testing framework requirements</p>
+<h2 id="citation">Citation</h2>
+<p>To cite this software:</p>
+<div class="codehilite"><pre><span></span><code><span class="nc">@software</span><span class="p">{</span><span class="nl">tnfr_python_engine</span><span class="p">,</span>
+<span class="w">  </span><span class="na">author</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{Martinez Gamo, F. F.}</span><span class="p">,</span>
+<span class="w">  </span><span class="na">title</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{TNFR-Python-Engine: Resonant Fractal Nature Theory Implementation}</span><span class="p">,</span>
+<span class="w">  </span><span class="na">year</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{2025}</span><span class="p">,</span>
+<span class="w">  </span><span class="na">version</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{0.0.2}</span><span class="p">,</span>
+<span class="w">  </span><span class="na">doi</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{10.5281/zenodo.17764207}</span><span class="p">,</span>
+<span class="w">  </span><span class="na">url</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{https://github.com/fermga/TNFR-Python-Engine}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>See <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/CITATION.cff">CITATION.cff</a> for machine-readable citation metadata.</p>
+<h2 id="license">License</h2>
+<p>This project is licensed under the <strong>MIT License</strong> - see <a href="/TNFR-Python-Engine/LICENSE/">LICENSE.md</a> for details.</p>
+<h2 id="support-community">Support &amp; Community</h2>
+<ul>
+<li><strong>Issues</strong>: <a href="https://github.com/fermga/TNFR-Python-Engine/issues">GitHub Issues</a></li>
+<li><strong>Discussions</strong>: <a href="https://github.com/fermga/TNFR-Python-Engine/discussions">GitHub Discussions</a></li>
+<li><strong>PyPI</strong>: <a href="https://pypi.org/project/tnfr/">pypi.org/project/tnfr</a></li>
+<li><strong>Documentation</strong>: <a href="https://fermga.github.io/TNFR-Python-Engine/">fermga.github.io/TNFR-Python-Engine</a></li>
+</ul>
+<h2 id="theoretical-foundation">Theoretical Foundation</h2>
+<p>TNFR implements pattern-based modeling principles:
+- <strong>Pattern coherence</strong> over discrete objects
+- <strong>Resonant coupling</strong> over causal relationships
+- <strong>Dynamic processes</strong> over static properties
+- <strong>Network structures</strong> over isolated entities</p>
+<p>Implementation follows theoretical foundations in <a href="/TNFR-Python-Engine/AGENTS/">AGENTS.md</a> with adherence to canonical invariants and unified grammar constraints.</p>
+    </main>
+    <footer>
+            <span>
+                &copy; 2025
+                TNFR Python Engine — Licensed under MIT.
+            </span>
+            <span>
+                Feedback?
+                <a
+                    href="https://github.com/fermga/TNFR-Python-Engine"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    Open an issue
+                </a>.
+            </span>
+    </footer>
+  </div>
+</body>
+</html>

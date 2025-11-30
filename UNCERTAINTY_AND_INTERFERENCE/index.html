@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Structural Uncertainty &amp; Interference Memo — TNFR Python Engine</title>
+  <meta name="description" content="TNFR documentation: Structural Uncertainty &amp; Interference Memo">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+    >
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0e0f11;
+      --panel: rgba(24, 25, 27, 0.9);
+      --border: rgba(90, 92, 95, 0.4);
+      --text: #e4e6eb;
+      --muted: #9ea4b3;
+      --accent: #6aa0ff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.6;
+      background: radial-gradient(circle at 20% 20%, #1a1c20, var(--bg));
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+        .page {
+            max-width: 960px;
+            margin: 0 auto;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 2.5rem 3rem 3rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+        header {
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+        }
+    .home-link { font-weight: 600; color: var(--text); }
+        .doc-title {
+            display: block;
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-top: 0.4rem;
+        }
+        .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-top: 1rem;
+            font-size: 0.95rem;
+            color: var(--muted);
+        }
+    main { font-size: 1rem; }
+    main h1 { font-size: 2rem; margin-top: 2.5rem; }
+        main h2 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.3rem;
+        }
+    main h3 { font-size: 1.2rem; margin-top: 1.5rem; }
+    main p { margin: 1rem 0; }
+        pre {
+            background: #0a0b0d;
+            padding: 1rem;
+            border-radius: 10px;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    code { font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; }
+        th, td {
+            border: 1px solid var(--border);
+            padding: 0.6rem 0.8rem;
+            text-align: left;
+        }
+        blockquote {
+            border-left: 4px solid var(--accent);
+            margin: 1.5rem 0;
+            padding: 0.2rem 1rem;
+            color: var(--muted);
+            background: rgba(255, 255, 255, 0.02);
+        }
+        footer {
+            border-top: 1px solid var(--border);
+            margin-top: 2.5rem;
+            padding-top: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--muted);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: space-between;
+        }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <a class="home-link" href="/TNFR-Python-Engine/">TNFR Python Engine</a>
+      <span class="doc-title">Structural Uncertainty &amp; Interference Memo</span>
+      <div class="meta">
+        <span>Version 0.0.2 · DOI <a href="https://doi.org/10.5281/zenodo.17764207" target="_blank" rel="noopener">10.5281/zenodo.17764207</a> · Updated 2025-11-30</span>
+                <span>
+                    Source
+                    <a
+                        href="https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/UNCERTAINTY_AND_INTERFERENCE.md"
+                        target="_blank"
+                        rel="noopener"
+                    >
+                        theory/UNCERTAINTY_AND_INTERFERENCE.md
+                    </a>
+                </span>
+      </div>
+    </header>
+    <main>
+      <h1 id="structural-uncertainty-interference-memo">Structural Uncertainty &amp; Interference Memo</h1>
+<p><strong>Status</strong>: Technical reference<br>
+<strong>Version</strong>: 0.3.0 (November 30, 2025)<br>
+<strong>Owner</strong>: <code>theory/UNCERTAINTY_AND_INTERFERENCE.md</code></p>
+<hr>
+<h2 id="1-scope">1. Scope</h2>
+<p>Define how TNFR captures time–frequency bounds and interference phenomena using structural metrics. This memo documents the governing equations, workflow for <code>examples/14_uncertainty_and_interference.py</code>, required telemetry ((\sigma_t), (\sigma_f), (C(t)), (|\nabla \phi|), (K_\phi)), and artifact locations under <code>results/quantum_demo_2/</code>.</p>
+<hr>
+<h2 id="2-experiment-inputs-and-workflow">2. Experiment Inputs and Workflow</h2>
+<ol>
+<li>Configure packet envelopes (Gaussian default) with width parameter <code>sigma_t</code> saved in <code>configs/uncertainty/*.yaml</code>.  </li>
+<li>Initialize emission nodes with <code>[AL, RA]</code> sequences; record seeds, operator order, and lattice resolution in <code>results/quantum_demo_2/run_&lt;seed&gt;.json</code>.  </li>
+<li>For interference studies, instantiate two emission channels propagating through a shared medium while detectors sample the complex field (\Psi = K_\phi + i J_\phi).  </li>
+<li>Execute <code>python examples/14_uncertainty_and_interference.py --config &lt;file&gt;</code> to generate plots plus telemetry tables.</li>
+</ol>
+<hr>
+<h2 id="3-structural-uncertainty-relation">3. Structural Uncertainty Relation</h2>
+<p>Packets occupying a time window (\Delta t_{\text{EPI}}) with structural frequency spread (\Delta \nu_f) obey</p>
+<p>[
+\Delta t_{\text{EPI}} \cdot \Delta \nu_f \ge K,
+]</p>
+<p>where (K) depends on the analysis window (Gaussian packets yield (K \approx 0.16)). Interpretation:</p>
+<ul>
+<li>Tight temporal localization increases spectral width and structural pressure variance.  </li>
+<li>Stable frequency estimation requires longer observation windows, trading temporal resolution for spectral stability.</li>
+</ul>
+<p>Telemetry checklist:</p>
+<ol>
+<li>Log packet envelope width (\sigma_t) and store alongside configuration hashes.  </li>
+<li>Compute (\sigma_f) via FFT of (\nu_f(t)) with documented windowing parameters.  </li>
+<li>Report (\sigma_t \sigma_f) (mean ± uncertainty) in <code>results/quantum_demo_2/uncertainty_metrics.csv</code>.  </li>
+<li>Track (C(t)), (|\nabla \phi|), and (K_\phi) to ensure canonical thresholds (&lt;0.2904, &lt;2.8274) remain satisfied.</li>
+</ol>
+<hr>
+<h2 id="4-two-path-interference-model">4. Two-Path Interference Model</h2>
+<p>The double-slit experiment maps to two emission nodes running <code>[AL, RA]</code> into a propagation medium. Receiving nodes integrate (\Psi) and log per-pixel telemetry:</p>
+<ul>
+<li>Constructive bands: (\Delta \phi \approx 0) → increased coherence (C(t)) and sense index (Si).  </li>
+<li>Destructive bands: (\Delta \phi \approx \pi) → elevated (|\nabla \phi|) and reduced (C(t)).</li>
+</ul>
+<p>Detector outputs include coherence, phase difference, accumulated intensity, and structural fields; interference is described entirely through phase-coupled dynamics without wave/particle narratives.</p>
+<hr>
+<h2 id="5-reproduction-script-artifacts">5. Reproduction Script &amp; Artifacts</h2>
+<p><code>examples/14_uncertainty_and_interference.py</code> generates:</p>
+<ul>
+<li><code>results/quantum_demo_2/01_uncertainty_principle.png</code> — scatter of (\sigma_t) vs. (\sigma_f) with constant-product reference line.  </li>
+<li><code>results/quantum_demo_2/02_interference_pattern.png</code> — 2D detector intensity map.  </li>
+<li><code>results/quantum_demo_2/03_interference_profile.png</code> — line-out showing fringe spacing.  </li>
+<li><code>results/quantum_demo_2/run_&lt;seed&gt;.csv</code> — tabulated (\sigma_t), (\sigma_f), (\sigma_t \sigma_f), coherence, (|\nabla \phi|), and detector metrics.</li>
+</ul>
+<p>All artifacts must carry metadata (seed, grid size, operator schedules) for reproducibility.</p>
+<hr>
+<h2 id="6-outstanding-work">6. Outstanding Work</h2>
+<ol>
+<li>Extend uncertainty experiments to spatial domains ((\Delta x) vs. (\Delta k)) and compare against analytical bounds.  </li>
+<li>Automate fringe-visibility calculation plus regression tests tied to reference seeds.  </li>
+<li>Perform sensitivity sweeps over detector spacing and medium parameters, logging resultant (C(t)) and (|\nabla \phi|) trends.</li>
+</ol>
+    </main>
+    <footer>
+            <span>
+                &copy; 2025
+                TNFR Python Engine — Licensed under MIT.
+            </span>
+            <span>
+                Feedback?
+                <a
+                    href="https://github.com/fermga/TNFR-Python-Engine"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    Open an issue
+                </a>.
+            </span>
+    </footer>
+  </div>
+</body>
+</html>

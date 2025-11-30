@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TNFR Geocentric Vortex Study — TNFR Python Engine</title>
+  <meta name="description" content="TNFR documentation: TNFR Geocentric Vortex Study">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+    >
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0e0f11;
+      --panel: rgba(24, 25, 27, 0.9);
+      --border: rgba(90, 92, 95, 0.4);
+      --text: #e4e6eb;
+      --muted: #9ea4b3;
+      --accent: #6aa0ff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.6;
+      background: radial-gradient(circle at 20% 20%, #1a1c20, var(--bg));
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+        .page {
+            max-width: 960px;
+            margin: 0 auto;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 2.5rem 3rem 3rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+        header {
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+        }
+    .home-link { font-weight: 600; color: var(--text); }
+        .doc-title {
+            display: block;
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-top: 0.4rem;
+        }
+        .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-top: 1rem;
+            font-size: 0.95rem;
+            color: var(--muted);
+        }
+    main { font-size: 1rem; }
+    main h1 { font-size: 2rem; margin-top: 2.5rem; }
+        main h2 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.3rem;
+        }
+    main h3 { font-size: 1.2rem; margin-top: 1.5rem; }
+    main p { margin: 1rem 0; }
+        pre {
+            background: #0a0b0d;
+            padding: 1rem;
+            border-radius: 10px;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    code { font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; }
+        th, td {
+            border: 1px solid var(--border);
+            padding: 0.6rem 0.8rem;
+            text-align: left;
+        }
+        blockquote {
+            border-left: 4px solid var(--accent);
+            margin: 1.5rem 0;
+            padding: 0.2rem 1rem;
+            color: var(--muted);
+            background: rgba(255, 255, 255, 0.02);
+        }
+        footer {
+            border-top: 1px solid var(--border);
+            margin-top: 2.5rem;
+            padding-top: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--muted);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: space-between;
+        }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <a class="home-link" href="/TNFR-Python-Engine/">TNFR Python Engine</a>
+      <span class="doc-title">TNFR Geocentric Vortex Study</span>
+      <div class="meta">
+        <span>Version 0.0.2 · DOI <a href="https://doi.org/10.5281/zenodo.17764207" target="_blank" rel="noopener">10.5281/zenodo.17764207</a> · Updated 2025-11-30</span>
+                <span>
+                    Source
+                    <a
+                        href="https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/THE_GEOCENTRIC_VORTEX_COSMOLOGY.md"
+                        target="_blank"
+                        rel="noopener"
+                    >
+                        theory/THE_GEOCENTRIC_VORTEX_COSMOLOGY.md
+                    </a>
+                </span>
+      </div>
+    </header>
+    <main>
+      <h1 id="tnfr-geocentric-vortex-study">TNFR Geocentric Vortex Study</h1>
+<h2 id="structural-evaluation-of-the-stationary-plane-scenario">Structural evaluation of the stationary-plane scenario</h2>
+<p><strong>Status</strong>: Analytical memo<br>
+<strong>Version</strong>: 0.3.0 (November 30, 2025)<br>
+<strong>Owner</strong>: <code>theory/THE_GEOCENTRIC_VORTEX_COSMOLOGY.md</code>  </p>
+<hr>
+<h2 id="1-objectives">1. Objectives</h2>
+<ol>
+<li>Quantify how a stationary-plane reference frame scores against the TNFR structural stress metrics ($\Delta NFR$, $C(t)$) when compared with a rotating-sphere frame.</li>
+<li>Document the vortex/ether analog models currently implemented in <code>results/geocentric_vortex_study/</code> so that future runs are reproducible.</li>
+<li>Keep all claims explicitly tied to measured quantities, operator sequences, or telemetry logs—no metaphysical narratives.</li>
+</ol>
+<hr>
+<h2 id="2-modeling-workflow">2. Modeling Workflow</h2>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Description</th>
+<th>Artifacts</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Geometry selection</td>
+<td>Instantiate plane vs. sphere manifolds with identical boundary conditions.</td>
+<td><code>cosmological_stability_comparison.png</code></td>
+</tr>
+<tr>
+<td>Stress evaluation</td>
+<td>Integrate $\int</td>
+<td>\mathbf{T}_{stress}</td>
+</tr>
+<tr>
+<td>Vortex field</td>
+<td>Fit Rankine-style flow to match observed star-trail periods; store parameters with seeds.</td>
+<td><code>etheric_velocity_field.png</code></td>
+</tr>
+<tr>
+<td>Luminary tracing</td>
+<td>Run Lissajous/spiral propagators using coupled operator sequences (NAV, VAL, IL).</td>
+<td><code>sun_moon_spirograph.png</code></td>
+</tr>
+<tr>
+<td>Reporting</td>
+<td>Export PNG/CSV plus markdown summary.</td>
+<td>This file</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="3-structural-stress-comparison">3. Structural Stress Comparison</h2>
+<p>The stationary-plane hypothesis is treated as a mathematical boundary-value problem. We solve the optimization</p>
+<p>$$
+\min_{\vec{v}} \int_V \left\lVert \mathbf{T}_{stress}(\vec{v}) \right\rVert^2 dV
+$$</p>
+<p>subject to TNFR grammar constraints (U1–U6) and kinematic options:</p>
+<ul>
+<li><strong>Plane model</strong>: $\nabla \cdot \vec{v}<em>{ground} = 0$, $\vec{a}</em>{ground}=0$.</li>
+<li><strong>Sphere model</strong>: $\vec{a}_{ground} = \omega^2 r$ with imposed rotational coupling.</li>
+</ul>
+<p>Simulation results show lower integrated stress for the stationary plane under the chosen assumptions. The finding is contingent on the specific boundary conditions (laminar atmosphere, rigid crust). It does <strong>not</strong> assert geophysical fact; it only reports which model minimizes $\Delta NFR$ given the inputs.</p>
+<hr>
+<h2 id="4-vortex-field-approximation">4. Vortex Field Approximation</h2>
+<p>A Rankine vortex profile remains the working approximation for sky rotation telemetry:</p>
+<p>$$
+v_\theta(r) = \frac{\Gamma}{2\pi r} \bigl(1 - e^{-r^2/R_c^2}\bigr)
+$$</p>
+<p>Parameters $(\Gamma, R_c)$ are stored beside each run. The model is used to:</p>
+<ul>
+<li>Match star-trail durations recorded in <code>results/geocentric_vortex_study/polaris_star_trails.png</code>.</li>
+<li>Provide inputs to the ether-pressure gradient calculation $\vec{g} = -\frac{1}{\rho}\nabla P_{ether}$.</li>
+</ul>
+<p>Interpretation remains purely mechanical: the code measures how a vortex field could reproduce observed angular velocities. No claims are made about actual ether media.</p>
+<hr>
+<h2 id="5-luminary-trajectory-generator">5. Luminary Trajectory Generator</h2>
+<p>Luminary paths are produced by coupled oscillator equations with optional Lissajous forcing:</p>
+<p>$$
+\begin{aligned}
+x(t) &amp;= A \sin(\omega_1 t + \delta),\
+y(t) &amp;= B \sin(\omega_2 t).
+\end{aligned}
+$$</p>
+<p>Operator sequences:</p>
+<ol>
+<li><code>NAV</code> initializes the trajectory envelope.</li>
+<li><code>VAL</code> applies radial expansion/contraction.</li>
+<li><code>IL</code> enforces phase coherency after each destabilizing step.</li>
+</ol>
+<p>Outputs feed the figures referenced in <code>results/geocentric_vortex_study/*.png</code>. They are visual diagnostics only.</p>
+<hr>
+<h2 id="6-referenced-visualizations">6. Referenced Visualizations</h2>
+<table>
+<thead>
+<tr>
+<th>Figure</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>celestial_dome_map.png</code></td>
+<td>Polar projection summarizing tracer outputs.</td>
+</tr>
+<tr>
+<td><code>cosmic_circuit_schematic.png</code></td>
+<td>Simplified solid-state analogy for field routing (used strictly as a mnemonic).</td>
+</tr>
+<tr>
+<td><code>solar_analemma_trace.png</code></td>
+<td>Daily noon samples showing the derived analemma path.</td>
+</tr>
+<tr>
+<td><code>sun_moon_spirograph.png</code></td>
+<td>Combined Sun/Moon trajectory overlay for phase-difference analysis.</td>
+</tr>
+<tr>
+<td><code>toroidal_gravity_flow.png</code></td>
+<td>Cross-section of the vortex flow used in ether-pressure experiments.</td>
+</tr>
+</tbody>
+</table>
+<p>All files live in <code>results/geocentric_vortex_study/</code>. Each PNG is backed by a CSV run log specifying seeds, operator order, and telemetry outputs.</p>
+<hr>
+<h2 id="7-limitations-and-open-questions">7. Limitations and Open Questions</h2>
+<ul>
+<li>The stress comparison is sensitive to atmospheric assumptions and the treatment of external torques. Additional cases (e.g., elastic crust, differential rotation) should be evaluated.</li>
+<li>The Rankine vortex lacks multi-layer coupling. Extending to a two-layer or Ekman-style model would better represent observed wind shear.</li>
+<li>Luminary tracers currently ignore GR, refraction, and relativistic effects; they are meant only for structural pattern comparison.</li>
+<li>No measurement made here proves or disproves geophysical claims. These are exploratory TNFR simulations designed to test structural hypotheses.</li>
+</ul>
+<hr>
+<h2 id="8-next-actions">8. Next Actions</h2>
+<ol>
+<li>Re-run the stress integral with recorded seed values to produce confidence intervals.  </li>
+<li>Add unit tests to <code>benchmarks/phase_curvature_investigation.py</code> covering the vortex parameter estimation routine.  </li>
+<li>Document the CSV schema for the geocentric study inside <code>docs/STRUCTURAL_HEALTH.md</code> for easier cross-reference.</li>
+</ol>
+    </main>
+    <footer>
+            <span>
+                &copy; 2025
+                TNFR Python Engine — Licensed under MIT.
+            </span>
+            <span>
+                Feedback?
+                <a
+                    href="https://github.com/fermga/TNFR-Python-Engine"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    Open an issue
+                </a>.
+            </span>
+    </footer>
+  </div>
+</body>
+</html>

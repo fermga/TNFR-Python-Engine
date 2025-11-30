@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cosmogony Initial-Conditions Memo — TNFR Python Engine</title>
+  <meta name="description" content="TNFR documentation: Cosmogony Initial-Conditions Memo">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+    >
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0e0f11;
+      --panel: rgba(24, 25, 27, 0.9);
+      --border: rgba(90, 92, 95, 0.4);
+      --text: #e4e6eb;
+      --muted: #9ea4b3;
+      --accent: #6aa0ff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.6;
+      background: radial-gradient(circle at 20% 20%, #1a1c20, var(--bg));
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+        .page {
+            max-width: 960px;
+            margin: 0 auto;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 2.5rem 3rem 3rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+        header {
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+        }
+    .home-link { font-weight: 600; color: var(--text); }
+        .doc-title {
+            display: block;
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-top: 0.4rem;
+        }
+        .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-top: 1rem;
+            font-size: 0.95rem;
+            color: var(--muted);
+        }
+    main { font-size: 1rem; }
+    main h1 { font-size: 2rem; margin-top: 2.5rem; }
+        main h2 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.3rem;
+        }
+    main h3 { font-size: 1.2rem; margin-top: 1.5rem; }
+    main p { margin: 1rem 0; }
+        pre {
+            background: #0a0b0d;
+            padding: 1rem;
+            border-radius: 10px;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    code { font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; }
+        th, td {
+            border: 1px solid var(--border);
+            padding: 0.6rem 0.8rem;
+            text-align: left;
+        }
+        blockquote {
+            border-left: 4px solid var(--accent);
+            margin: 1.5rem 0;
+            padding: 0.2rem 1rem;
+            color: var(--muted);
+            background: rgba(255, 255, 255, 0.02);
+        }
+        footer {
+            border-top: 1px solid var(--border);
+            margin-top: 2.5rem;
+            padding-top: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--muted);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: space-between;
+        }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <a class="home-link" href="/TNFR-Python-Engine/">TNFR Python Engine</a>
+      <span class="doc-title">Cosmogony Initial-Conditions Memo</span>
+      <div class="meta">
+        <span>Version 0.0.2 · DOI <a href="https://doi.org/10.5281/zenodo.17764207" target="_blank" rel="noopener">10.5281/zenodo.17764207</a> · Updated 2025-11-30</span>
+                <span>
+                    Source
+                    <a
+                        href="https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/COSMOGONY_THE_ORIGIN.md"
+                        target="_blank"
+                        rel="noopener"
+                    >
+                        theory/COSMOGONY_THE_ORIGIN.md
+                    </a>
+                </span>
+      </div>
+    </header>
+    <main>
+      <h1 id="cosmogony-initial-conditions-memo">Cosmogony Initial-Conditions Memo</h1>
+<p><strong>Status</strong>: Analytical reference (structured initial conditions)<br>
+<strong>Version</strong>: 0.3.0 (November 30, 2025)<br>
+<strong>Owner</strong>: <code>theory/COSMOGONY_THE_ORIGIN.md</code></p>
+<hr>
+<h2 id="1-scope-and-problem-statement">1. Scope and Problem Statement</h2>
+<p>Recast cosmogony discussions as a boundary-value problem over a domain (\Omega) equipped with the TNFR structural fields (\Phi_s, |\nabla \phi|, K_\phi, \xi_C). The goal is to identify which perturbations of an equilibrium reference state produce self-sustaining coherent structures governed by the nodal equation</p>
+<p>[
+\frac{\partial \text{EPI}}{\partial t} = \nu_f \cdot \Delta \text{NFR}(t).
+]</p>
+<p>All hypotheses must specify initial field values, excitation operators, telemetry outputs, and validation comparisons. Narrative cosmology is out of scope.</p>
+<hr>
+<h2 id="2-reference-configuration">2. Reference Configuration</h2>
+<ul>
+<li><strong>Field values</strong>: (\Phi_s = 0), (|\nabla \phi| = 0), (K_\phi = 0), (\xi_C \to \infty).</li>
+<li><strong>Boundary conditions</strong>: Neumann boundaries impose zero net flux on (\partial \Omega), modeling a uniform medium.  </li>
+<li><strong>Energy functional</strong>: (\mathcal{E}<em>0 = \int</em>\Omega (\Phi_s^2 + |\nabla \phi|^2) \, dV = 0), recorded as the baseline telemetry snapshot.</li>
+</ul>
+<p>Store configuration files (<code>configs/cosmogony/base_state.yaml</code>) with hash-tracked values for reproducibility.</p>
+<hr>
+<h2 id="3-minimal-excitation-protocol">3. Minimal Excitation Protocol</h2>
+<p>Seed perturbations (\delta \text{EPI}(\mathbf{x}, t_0)) must satisfy:</p>
+<ol>
+<li><strong>Compact support</strong> (finite-volume injection).  </li>
+<li><strong>Spectral localization</strong> near a target structural frequency (\nu_f^*).  </li>
+<li><strong>Phase compliance</strong> with U3 so coupled nodes remain resonant.</li>
+</ol>
+<p>Linearized response obeys</p>
+<p>[
+\frac{\partial}{\partial t} \delta \text{EPI} = \nu_f^* \cdot \Delta \text{NFR}(\delta \text{EPI}).
+]</p>
+<p>Record the operator stack (<code>AL</code> → <code>UM</code> → <code>IL</code>) plus random seeds inside run logs (<code>results/cosmogony/init_logs/*.json</code>).</p>
+<hr>
+<h2 id="4-resonant-cavity-formation">4. Resonant Cavity Formation</h2>
+<p>Standing-wave structures emerge when reflected waves satisfy field thresholds</p>
+<p>[
+|\nabla \phi| &lt; 0.2904, \quad |K_\phi| &lt; 2.8274.
+]</p>
+<p>These bounds ensure convergence (U2) and keep curvature within canonical limits. Simulations should output eigenmode tables (frequency, Q-factor, coherence) stored in <code>results/cosmogony/modes.csv</code>.</p>
+<hr>
+<h2 id="5-field-differentiation-dynamics">5. Field Differentiation Dynamics</h2>
+<p>Spatial gradients create regions with distinct (\Phi_s) and (\xi_C) characteristics. Dense zones (low (\xi_C)) accumulate potential and behave like matter analogs, while high-(\xi_C) regions act as transport channels. Quantify this through the invariant</p>
+<p>[
+\mathcal{C} = \Phi_s \cdot |\Psi|,
+]</p>
+<p>and report voxel-wise statistics (mean, variance) per simulation.</p>
+<hr>
+<h2 id="6-sustained-dynamics-and-telemetry">6. Sustained Dynamics and Telemetry</h2>
+<p>Coherence persists if the integrated structural pressure remains bounded:</p>
+<p>[
+\int_{t_0}^{t} \nu_f(\tau) \Delta \text{NFR}(\tau)\, d\tau &lt; \infty.
+]</p>
+<p>Maintain negative-feedback operators (<code>IL</code>, <code>THOL</code>) after any destabilizers (<code>OZ</code>, <code>VAL</code>). Export telemetry traces (<code>C(t)</code>, (\nu_f), (\Phi_s)) for each experiment to <code>results/cosmogony/telemetry.parquet</code>. Tie observable signatures (e.g., Schumann-like oscillations) to measured spectra.</p>
+<hr>
+<h2 id="7-usage-guidelines">7. Usage Guidelines</h2>
+<ul>
+<li>Avoid metaphysical narratives; limit conclusions to measured field behavior.  </li>
+<li>Any cosmological proposal must list initial field files, operator sequences, telemetry artifacts, and validation comparisons (e.g., observational spectra).  </li>
+<li>Reference supporting theory documents: <code>AGENTS.md</code> (Foundational Physics) and <code>theory/FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md</code>.</li>
+</ul>
+<hr>
+<h2 id="8-outstanding-work">8. Outstanding Work</h2>
+<ol>
+<li>Publish canonical initial-condition datasets (HDF5 + metadata) for multiple domain geometries (torus, sphere, slab).  </li>
+<li>Automate stability scans covering a grid of (\nu_f^*, \delta\text{EPI}) amplitudes and log convergence statistics.  </li>
+<li>Link cosmogony simulations to observational constraints (e.g., background spectral densities) and document residuals.</li>
+</ol>
+    </main>
+    <footer>
+            <span>
+                &copy; 2025
+                TNFR Python Engine — Licensed under MIT.
+            </span>
+            <span>
+                Feedback?
+                <a
+                    href="https://github.com/fermga/TNFR-Python-Engine"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    Open an issue
+                </a>.
+            </span>
+    </footer>
+  </div>
+</body>
+</html>

@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TNFR Thermodynamics and Entropy Memo — TNFR Python Engine</title>
+  <meta name="description" content="TNFR documentation: TNFR Thermodynamics and Entropy Memo">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+    >
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0e0f11;
+      --panel: rgba(24, 25, 27, 0.9);
+      --border: rgba(90, 92, 95, 0.4);
+      --text: #e4e6eb;
+      --muted: #9ea4b3;
+      --accent: #6aa0ff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.6;
+      background: radial-gradient(circle at 20% 20%, #1a1c20, var(--bg));
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+        .page {
+            max-width: 960px;
+            margin: 0 auto;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 2.5rem 3rem 3rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+        header {
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+        }
+    .home-link { font-weight: 600; color: var(--text); }
+        .doc-title {
+            display: block;
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-top: 0.4rem;
+        }
+        .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-top: 1rem;
+            font-size: 0.95rem;
+            color: var(--muted);
+        }
+    main { font-size: 1rem; }
+    main h1 { font-size: 2rem; margin-top: 2.5rem; }
+        main h2 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.3rem;
+        }
+    main h3 { font-size: 1.2rem; margin-top: 1.5rem; }
+    main p { margin: 1rem 0; }
+        pre {
+            background: #0a0b0d;
+            padding: 1rem;
+            border-radius: 10px;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    code { font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; }
+        th, td {
+            border: 1px solid var(--border);
+            padding: 0.6rem 0.8rem;
+            text-align: left;
+        }
+        blockquote {
+            border-left: 4px solid var(--accent);
+            margin: 1.5rem 0;
+            padding: 0.2rem 1rem;
+            color: var(--muted);
+            background: rgba(255, 255, 255, 0.02);
+        }
+        footer {
+            border-top: 1px solid var(--border);
+            margin-top: 2.5rem;
+            padding-top: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--muted);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: space-between;
+        }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <a class="home-link" href="/TNFR-Python-Engine/">TNFR Python Engine</a>
+      <span class="doc-title">TNFR Thermodynamics and Entropy Memo</span>
+      <div class="meta">
+        <span>Version 0.0.2 · DOI <a href="https://doi.org/10.5281/zenodo.17764207" target="_blank" rel="noopener">10.5281/zenodo.17764207</a> · Updated 2025-11-30</span>
+                <span>
+                    Source
+                    <a
+                        href="https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/THERMODYNAMICS_ENTROPY.md"
+                        target="_blank"
+                        rel="noopener"
+                    >
+                        theory/THERMODYNAMICS_ENTROPY.md
+                    </a>
+                </span>
+      </div>
+    </header>
+    <main>
+      <h1 id="tnfr-thermodynamics-and-entropy-memo">TNFR Thermodynamics and Entropy Memo</h1>
+<p><strong>Status</strong>: Theoretical framework<br>
+<strong>Version</strong>: 0.3.0 (November 30, 2025)  </p>
+<hr>
+<h2 id="1-scope">1. Scope</h2>
+<p>This note outlines how canonical thermodynamic quantities map to TNFR structural metrics. The goal is to provide a reproducible recipe for translating equilibrium, energy flow, and entropy statements into nodal-equation observables so that experiments remain grounded in the unified grammar (U1–U6).</p>
+<hr>
+<h2 id="2-structural-mapping">2. Structural Mapping</h2>
+<table>
+<thead>
+<tr>
+<th>Classical Quantity</th>
+<th>TNFR Interpretation</th>
+<th>Symbol</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Heat ($Q$)</td>
+<td>Incoherent phase noise</td>
+<td>$\sigma_\phi$</td>
+</tr>
+<tr>
+<td>Temperature ($T$)</td>
+<td>Local phase-gradient variance</td>
+<td>$\text{Var}(\lvert \nabla \phi \rvert)$</td>
+</tr>
+<tr>
+<td>Entropy ($S$)</td>
+<td>Structural decoherence</td>
+<td>$S \propto 1/C(t)$</td>
+</tr>
+<tr>
+<td>Equilibrium</td>
+<td>Phase synchronization</td>
+<td>$\Delta \phi \to 0$</td>
+</tr>
+</tbody>
+</table>
+<p>Each column references measurements already exposed by the telemetry stack (<code>C(t)</code>, <code>Si</code>, field tetrad). No additional primitives are introduced.</p>
+<hr>
+<h2 id="3-operational-laws-in-tnfr-form">3. Operational Laws in TNFR Form</h2>
+<h3 id="zeroth-law-resonant-transitivity">Zeroth Law – Resonant Transitivity</h3>
+<p><strong>Classical statement</strong>: Systems sharing a common equilibrium bath are mutually equilibrated.<br>
+<strong>TNFR form</strong>: If node A and node C satisfy $|\phi_A - \phi_C| \leq \Delta \phi_{max}$, and node B satisfies the same relation with C, then $|\phi_A - \phi_B|$ automatically respects the bound. Coupling operators (<code>UM</code>, <code>RA</code>) must enforce this check before activation.</p>
+<h3 id="first-law-structural-balance">First Law – Structural Balance</h3>
+<p><strong>Classical statement</strong>: Energy is conserved.<br>
+<strong>TNFR form</strong>: Structural current is conserved up to explicit operator work. The bookkeeping identity</p>
+<p>$$ \Delta E_{total} = \Delta E_{coherent} + \Delta E_{incoherent} $$</p>
+<p>tracks how resonance-preserving work (coherent) and decohering work (incoherent) partition the same nodal update. In closed experiments the sum over $J_\phi$ remains constant.</p>
+<h3 id="second-law-passive-desynchronization">Second Law – Passive Desynchronization</h3>
+<p><strong>Classical statement</strong>: Entropy of an isolated system does not decrease.<br>
+<strong>TNFR form</strong>: Without stabilizers (<code>IL</code>, <code>THOL</code>), random perturbations push the network toward larger $|\nabla \phi|$ and reduced coherence. Operators that do not include closure steps therefore predictably lose C(t), giving the familiar time arrow without invoking additional hypotheses.</p>
+<hr>
+<h2 id="4-reference-simulation-coffee-cup-cooling">4. Reference Simulation: Coffee-Cup Cooling</h2>
+<p>This sandbox demonstrates how the mapping reproduces Newton’s cooling law from phase dynamics alone.</p>
+<h3 id="setup">Setup</h3>
+<ol>
+<li><strong>Grid</strong> – 2D lattice; tag a central patch as the sample and the outer ring as the bath.  </li>
+<li><strong>Sample</strong> – Initialize with random phases ($\phi \sim U(0, 2\pi)$) and higher structural frequency $\nu_f$.  </li>
+<li><strong>Bath</strong> – Initialize with aligned phases (e.g., $\phi \approx 0$) and lower $\nu_f$.</li>
+</ol>
+<h3 id="dynamics">Dynamics</h3>
+<p>Integrate the coupled-oscillator form of the nodal equation:</p>
+<p>$$ \frac{d\phi_i}{dt} = \omega_i + \frac{K}{N} \sum_{j\in \mathcal{N}(i)} \sin(\phi_j - \phi_i) $$</p>
+<ul>
+<li>$\omega_i$ is the intrinsic frequency (proxy for $\nu_f$).  </li>
+<li>$K$ is the coupling gain chosen so the sequence satisfies U2 (destabilizer followed by stabilizer).</li>
+</ul>
+<h3 id="expected-behavior">Expected Behavior</h3>
+<ol>
+<li><strong>Diffusion</strong> – High-variance phases in the sample drive gradients into the bath.  </li>
+<li><strong>Dissipation</strong> – Bath nodes absorb the variance and raise their own $|\nabla \phi|$ slightly.  </li>
+<li><strong>Exponential cooling</strong> – The mismatch decays approximately as $T(t) = T_{env} + (T_0 - T_{env})e^{-kt}$ because the gradient term feeds back on itself.</li>
+</ol>
+<hr>
+<h2 id="5-outstanding-work">5. Outstanding Work</h2>
+<ol>
+<li>Validate the mapping with the authoritative benchmarks in <code>benchmarks/field_methods_battery.py</code>.  </li>
+<li>Log both $C(t)$ and $\text{Var}(\lvert \nabla \phi \rvert)$ so the inferred temperature trace is auditable.  </li>
+<li>
+<p>Extend the analysis to open systems by injecting controlled <code>OZ</code> operations and measuring how much stabilizer effort is required to re-close the sequence.</p>
+</li>
+<li>
+<p>Validate the mapping with the authoritative benchmarks in <code>benchmarks/field_methods_battery.py</code>.  </p>
+</li>
+<li>Log both $C(t)$ and $\text{Var}(\lvert \nabla \phi \rvert)$ so the inferred temperature trace is auditable.  </li>
+<li>Extend the analysis to open systems by injecting controlled <code>OZ</code> operations and measuring how much stabilizer effort is required to re-close the sequence.</li>
+</ol>
+    </main>
+    <footer>
+            <span>
+                &copy; 2025
+                TNFR Python Engine — Licensed under MIT.
+            </span>
+            <span>
+                Feedback?
+                <a
+                    href="https://github.com/fermga/TNFR-Python-Engine"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    Open an issue
+                </a>.
+            </span>
+    </footer>
+  </div>
+</body>
+</html>
