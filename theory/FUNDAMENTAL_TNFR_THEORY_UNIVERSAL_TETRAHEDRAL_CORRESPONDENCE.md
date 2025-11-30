@@ -148,5 +148,5 @@ These results justify promoting the four fields to *canonical* status in the TNF
 
 ## 8. Summary
 
-TNFR models coherent dynamics through a single nodal equation supplemented by four structural fields. The universal constants φ, γ, π and e provide implementation-independent thresholds for these fields, enabling reproducible monitoring, operator validation and cross-domain transfer. The correspondence is enforced programmatically in the grammar validator as of engine version 9.5 and serves as the baseline for future theoretical extensions.
+TNFR models coherent dynamics through a single nodal equation supplemented by four structural fields. The universal constants φ, γ, π and e provide implementation-independent thresholds for these fields, enabling reproducible monitoring, operator validation and cross-domain transfer. The correspondence is enforced programmatically in the grammar validator as of engine version 0.0.2 and serves as the baseline for future theoretical extensions.
 
