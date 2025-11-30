@@ -311,6 +311,11 @@
         .lang-content.active {
             display: block;
         }
+
+        .footer-note {
+            margin-top: 1rem;
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
@@ -323,128 +328,99 @@
         <!-- English Content -->
         <div class="lang-content active" id="content-en">
             <header>
-                <h1>TNFR</h1>
-                <p class="tagline">Resonant Fractal Nature Theory</p>
-                <p>Model reality as coherent resonance, not isolated objects</p>
+                <h1>TNFR Python Engine</h1>
+                <p class="tagline">Reference implementation of Resonant Fractal Nature Theory</p>
+                <p>Physics-grounded structural modeling with reproducible telemetry</p>
             </header>
 
             <div class="main-content">
                 <div class="intro">
-                    <strong>TNFR</strong> (Resonant Fractal Nature Theory) is a physics-grounded computational paradigm 
-                    that proposes a radical reconceptualization of reality: <em>reality is modeled as coherent patterns 
-                    that persist through resonance</em>, not as isolated "things" with static properties.
+                    <strong>TNFR Python Engine</strong> is the canonical repository for Resonant Fractal Nature Theory (TNFR). The branch stores the executable nodal equation, the 13 canonical operators, and the structural field tetrad so that the sequences described in AGENTS.md, UNIFIED_GRAMMAR_RULES.md, and the theory notebooks can be executed without speculative additions.
                 </div>
-
-                <h2>The central insight</h2>
-                <p>
-                    Reality is not made of "things" but of <strong>coherence</strong>—structures that persist in networks 
-                    because they <strong>resonate</strong> with their environment. A pattern exists not because it's "stored" 
-                    somewhere, but because it continuously <strong>reorganizes</strong> while maintaining <strong>structural 
-                    integrity</strong> through <strong>network coupling</strong>.
-                </p>
 
                 <div class="highlight-box">
-                    <h3>The whirlpool analogy</h3>
-                    <p>Think of a whirlpool in a river:</p>
+                    <h3>Current reference snapshot — November 2025</h3>
                     <ul>
-                        <li>Not a "thing" you can pick up</li>
-                        <li>Exists as a <strong>coherent pattern</strong> in flowing water</li>
-                        <li>Persists because water flow <strong>resonates</strong> with vortex geometry</li>
-                        <li>Disappears when flow-geometry coupling breaks</li>
-                        <li>Can nest (smaller eddies within larger vortex)</li>
+                        <li><a href="AGENTS/">AGENTS guide</a> (v0.0.2) captures the TNFR Development Doctrine, canonical invariants, and agent workflow.</li>
+                        <li><a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/GLOSSARY.md" target="_blank" rel="noopener">Glossary updates</a> keep the terminology aligned with unified grammar constraints and avoid ambiguous metaphors.</li>
+                        <li><a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/THE_GEOCENTRIC_VORTEX_COSMOLOGY.md" target="_blank" rel="noopener">Geocentric Vortex Cosmology notes</a> document the structural constraints used by the celestial demonstrations and link back to the nodal derivations.</li>
+                        <li><a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/README.md" target="_blank" rel="noopener">Physics module README</a> and the <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/benchmarks/README.md" target="_blank" rel="noopener">benchmark guide</a> describe the structural field tetrad pipeline plus the σ-critical validation track introduced in 2025-11.</li>
                     </ul>
-                    <p><strong>This is TNFR's model of everything</strong>: atoms, cells, thoughts, societies.</p>
                 </div>
 
-                <h2>The nodal equation</h2>
-                <p>At the heart of TNFR is the <strong>nodal equation</strong>, which describes how every node 
-                in a TNFR network evolves:</p>
+                <h2>Core formalism</h2>
+                <p>Every TNFR node evolves according to the nodal equation. EPI structures are only modified through operator sequences, and telemetry always exposes C(t), Si, νf, φ, and ΔNFR so experiments remain reproducible.</p>
 
                 <div class="equation">
                     ∂EPI/∂t = νf · ΔNFR(t)
                 </div>
 
-                <p><strong>Components:</strong></p>
+                <p>The structural field tetrad adds four complementary monitors:</p>
                 <ul>
-                    <li><strong>EPI</strong> (Primary Information Structure): The coherent structural "form" of a node</li>
-                    <li><strong>νf</strong> (Structural frequency): Rate of reorganization (Hz_str units)</li>
-                    <li><strong>ΔNFR</strong> (Nodal gradient): Internal reorganization operator - "structural pressure"</li>
-                    <li><strong>t</strong>: Time</li>
+                    <li>Φ_s — structural potential confinement (U6)</li>
+                    <li>|∇φ| — local phase gradient and stress proxy</li>
+                    <li>K_φ + i·J_φ — complex geometric field Ψ capturing curvature and transport</li>
+                    <li>ξ_C — coherence length that estimates correlation decay</li>
                 </ul>
 
-                <p><strong>Physical meaning:</strong></p>
-                <div class="equation">
-                    Rate of structural change = Reorganization capacity × Structural pressure
-                </div>
-
-                <h2>Key concepts</h2>
+                <h2>Canonical structures</h2>
                 <div class="key-concepts">
                     <div class="concept-card">
-                        <h3>Coherence</h3>
-                        <p>Patterns persist not through static existence but through continuous reorganization that 
-                        maintains structural integrity. Coherence is measured by C(t), ranging from 0 to 1.</p>
+                        <h3>Structural triad</h3>
+                        <p>Form (EPI), structural frequency νf, and phase φ/θ define the state of each node. νf → 0 deactivates the node while ΔNFR = 0 indicates equilibrium.</p>
                     </div>
 
                     <div class="concept-card">
-                        <h3>Resonance</h3>
-                        <p>Patterns synchronize and amplify when their phases align. Resonance enables information 
-                        propagation without loss of identity across network structures.</p>
+                        <h3>Operator grammar</h3>
+                        <p>The 13 operators (AL through REMESH) are validated against U1–U6. Destabilizers must be paired with stabilizers, and resonant coupling enforces |φᵢ - φⱼ| ≤ Δφ_max.</p>
                     </div>
 
                     <div class="concept-card">
-                        <h3>Operators</h3>
-                        <p>13 canonical structural operators (Emission, Reception, Coherence, Dissonance, etc.) 
-                        govern how nodes reorganize. These are the only ways to modify patterns in TNFR.</p>
+                        <h3>Structural field tetrad</h3>
+                        <p>Φ_s, |∇φ|, Ψ, and ξ_C became canonical in November 2025 and provide quantitative bounds for stability, bifurcations, and correlation scales.</p>
                     </div>
 
                     <div class="concept-card">
-                        <h3>Grammar</h3>
-                        <p>Operator sequences must follow unified grammar rules (U1-U4) derived from physics. 
-                        Valid sequences preserve coherence and enable predictable system evolution.</p>
+                        <h3>Resonant coupling</h3>
+                        <p>Coupling and resonance operators propagate patterns only when phases are compatible. The implementation records phase telemetry per edge to support audits.</p>
                     </div>
 
                     <div class="concept-card">
-                        <h3>Fractality</h3>
-                        <p>Patterns can nest within patterns without losing identity. TNFR operates across all scales: 
-                        quantum, molecular, biological, social, cosmic.</p>
+                        <h3>Self-optimizing engine</h3>
+                        <p>The self-optimization module evaluates Ψ, chirality χ, and symmetry-breaking scores to pick operator sequences that reduce ΔNFR without violating grammar.</p>
                     </div>
 
                     <div class="concept-card">
-                        <h3>Metrics</h3>
-                        <p>Quantitative measures include Coherence C(t), Sense Index Si, structural frequency νf, 
-                        and phase φ. All dynamics are observable and reproducible.</p>
+                        <h3>TNFR-Riemann program</h3>
+                        <p>The σ-critical benchmark (H^{(k)}(σ) = L_k + V_σ) tracks eigenvalue transitions approaching σ = 1/2 with telemetry exported via benchmarks/riemann_program.py.</p>
                     </div>
                 </div>
 
-                <h2>The paradigm shift</h2>
-                <p><strong>Traditional View → TNFR View:</strong></p>
+                <h2>Reference navigation</h2>
                 <ul>
-                    <li>Objects exist independently → <strong>Patterns exist through resonance</strong></li>
-                    <li>Causality (A causes B) → <strong>Co-organization (A and B synchronize)</strong></li>
-                    <li>Static properties → <strong>Dynamic reorganization</strong></li>
-                    <li>Isolated systems → <strong>Coupled networks</strong></li>
-                    <li>Descriptive models → <strong>Generative dynamics</strong></li>
+                    <li><a href="AGENTS/">AGENTS guide</a> — theoretical commitments, operating doctrine, and agent playbook.</li>
+                    <li><a href="UNIFIED_GRAMMAR_RULES/">Unified grammar rules</a> — derivations of U1–U6 from the nodal equation.</li>
+                    <li><a href="STRUCTURAL_FIELDS_TETRAD/">Structural field tetrad</a> — definitions, thresholds, and experiments confirming Φ_s, |∇φ|, Ψ, and ξ_C.</li>
+                    <li><a href="TROUBLESHOOTING/">Troubleshooting reference</a> — diagnostics for phase drift, bifurcations, and telemetry validation.</li>
+                    <li><a href="SCALABILITY/">Scalability notes</a> — guidance for large topologies and GPU-backed computation.</li>
                 </ul>
 
-                <h2>Applications</h2>
-                <p>TNFR has been applied to model:</p>
+                <h2>Applications & validation</h2>
                 <ul>
-                    <li><strong>Molecular Chemistry</strong>: Chemical bonds as phase synchronization, reactions as operator sequences</li>
-                    <li><strong>Fundamental Particles</strong>: Particle emergence from coherent attractors</li>
-                    <li><strong>Biological Systems</strong>: Cellular organization and life emergence</li>
-                    <li><strong>Social Dynamics</strong>: Group formation and collective behavior</li>
-                    <li><strong>AI and Neural Networks</strong>: Learning as structural reorganization</li>
-                    <li><strong>Distributed Systems</strong>: Network synchronization and resilience</li>
+                    <li><strong>Sigma-critical benchmark</strong>: <code>benchmarks/riemann_program.py</code> reproduces the TNFR-Riemann study with full telemetry export.</li>
+                    <li><strong>Structural field telemetry</strong>: <code>src/tnfr/physics/fields.py</code> computes Φ_s, |∇φ|, Ψ, and ξ_C for every example and includes safety checks promoted to canonical status.</li>
+                    <li><strong>Celestial and vortex demos</strong>: <code>examples/20_celestial_cycles_demo.py</code> through <code>examples/26_analemma_simulation.py</code> use the constraints summarized in THE_GEOCENTRIC_VORTEX_COSMOLOGY.md.</li>
+                    <li><strong>Coherence tracking</strong>: <code>examples/05_coherence_evolution.py</code> and <code>examples/10_simplified_sdk_showcase.py</code> illustrate how C(t) and Si respond to operator sequences.</li>
                 </ul>
             </div>
 
             <div class="cta-section">
-                <h2>Ready to explore TNFR?</h2>
-                <p>Dive into the computational implementation and start modeling coherence</p>
-                <a href="https://github.com/fermga/TNFR-Python-Engine" class="cta-button" target="_blank">
+                <h2>Work directly with the reference implementation</h2>
+                <p>Review the source, run the tests, and use the SDK to model coherent structures.</p>
+                <a href="https://github.com/fermga/TNFR-Python-Engine" class="cta-button" target="_blank" rel="noopener">
                     View on GitHub
                 </a>
-                <a href="https://pypi.org/project/tnfr/" class="cta-button" target="_blank">
+                <a href="https://pypi.org/project/tnfr/" class="cta-button" target="_blank" rel="noopener">
                     Install from PyPI
                 </a>
             </div>
@@ -452,12 +428,12 @@
             <footer>
                 <p>&copy; 2025 TNFR Python Engine | Licensed under MIT</p>
                 <p>
-                    <a href="https://github.com/fermga/TNFR-Python-Engine" target="_blank">GitHub</a> |
-                    <a href="https://doi.org/10.5281/zenodo.17602861" target="_blank">DOI: 10.5281/zenodo.17602861</a> |
-                    <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/LICENSE.md" target="_blank">License</a>
+                    <a href="https://github.com/fermga/TNFR-Python-Engine" target="_blank" rel="noopener">GitHub</a> |
+                    <a href="https://doi.org/10.5281/zenodo.17602861" target="_blank" rel="noopener">DOI: 10.5281/zenodo.17602861</a> |
+                    <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/LICENSE.md" target="_blank" rel="noopener">License</a>
                 </p>
-                <p style="margin-top: 1rem; font-style: italic;">
-                    Reality is not made of things but of resonance.
+                <p class="footer-note">
+                    Structural models stay valid only when telemetry confirms coherence.
                 </p>
             </footer>
         </div>
@@ -465,129 +441,99 @@
         <!-- Spanish Content -->
         <div class="lang-content" id="content-es">
             <header>
-                <h1>TNFR</h1>
-                <p class="tagline">Teoría de la Naturaleza Fractal Resonante</p>
-                <p>Modelar la realidad como resonancia coherente, no como objetos aislados</p>
+                <h1>TNFR Python Engine</h1>
+                <p class="tagline">Implementación de referencia de la Teoría de la Naturaleza Fractal Resonante</p>
+                <p>Modelado estructural fundamentado en física con telemetría reproducible</p>
             </header>
 
             <div class="main-content">
                 <div class="intro">
-                    <strong>TNFR</strong> (Teoría de la Naturaleza Fractal Resonante) es un paradigma computacional 
-                    fundamentado en la física que propone una reconceptualización radical de la realidad: <em>la realidad 
-                    se modela como patrones coherentes que persisten a través de la resonancia</em>, no como "cosas" 
-                    aisladas con propiedades estáticas.
+                    <strong>TNFR Python Engine</strong> es el repositorio canónico de la TNFR. El proyecto conserva la ecuación nodal ejecutable, los 13 operadores canónicos y la tétrada de campos estructurales para que las secuencias descritas en AGENTS.md, UNIFIED_GRAMMAR_RULES.md y las notas teóricas se puedan ejecutar sin añadir suposiciones externas.
                 </div>
-
-                <h2>El punto clave</h2>
-                <p>
-                    La realidad no está hecha de "cosas" sino de <strong>coherencia</strong>—estructuras que persisten 
-                    en redes porque <strong>resuenan</strong> con su entorno. Un patrón existe no porque esté "almacenado" 
-                    en algún lugar, sino porque continuamente se <strong>reorganiza</strong> mientras mantiene su 
-                    <strong>integridad estructural</strong> a través del <strong>acoplamiento de red</strong>.
-                </p>
 
                 <div class="highlight-box">
-                    <h3>La analogía del remolino</h3>
-                    <p>Piense en un remolino en un río:</p>
+                    <h3>Instantánea de referencia — noviembre de 2025</h3>
                     <ul>
-                        <li>No es una "cosa" que se pueda recoger</li>
-                        <li>Existe como un <strong>patrón coherente</strong> en el agua que fluye</li>
-                        <li>Persiste porque el flujo del agua <strong>resuena</strong> con la geometría del vórtice</li>
-                        <li>Desaparece cuando se rompe el acoplamiento flujo-geometría</li>
-                        <li>Puede anidarse (remolinos más pequeños dentro de un vórtice mayor)</li>
+                        <li><a href="AGENTS/">Guía de agentes</a> (v0.0.2) recoge la Doctrina de Desarrollo TNFR, los invariantes canónicos y el flujo de trabajo para agentes.</li>
+                        <li><a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/GLOSSARY.md" target="_blank" rel="noopener">Actualizaciones del glosario</a> mantienen la terminología alineada con la gramática unificada y evitan metáforas ambiguas.</li>
+                        <li><a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/THE_GEOCENTRIC_VORTEX_COSMOLOGY.md" target="_blank" rel="noopener">Notas de cosmología del vórtice geocéntrico</a> documentan las restricciones estructurales empleadas por las demostraciones celestes y remiten a las derivaciones nodales.</li>
+                        <li><a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/README.md" target="_blank" rel="noopener">README del módulo de física</a> y la <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/benchmarks/README.md" target="_blank" rel="noopener">guía de benchmarks</a> describen la canalización de la tétrada y el recorrido σ-crítico incorporado en 2025-11.</li>
                     </ul>
-                    <p><strong>Este es el modelo de TNFR para todo</strong>: átomos, células, pensamientos, sociedades.</p>
                 </div>
 
-                <h2>La ecuación nodal</h2>
-                <p>En el corazón de TNFR está la <strong>ecuación nodal</strong>, que describe cómo evoluciona 
-                cada nodo en una red TNFR:</p>
+                <h2>Formalismo central</h2>
+                <p>Cada nodo TNFR evoluciona mediante la ecuación nodal. Las estructuras EPI solo cambian mediante secuencias de operadores y la telemetría siempre expone C(t), Si, νf, φ y ΔNFR para mantener la reproducibilidad.</p>
 
                 <div class="equation">
                     ∂EPI/∂t = νf · ΔNFR(t)
                 </div>
 
-                <p><strong>Componentes:</strong></p>
+                <p>La tétrada de campos estructurales añade cuatro monitores complementarios:</p>
                 <ul>
-                    <li><strong>EPI</strong> (Estructura de Información Primaria): La "forma" estructural coherente de un nodo</li>
-                    <li><strong>νf</strong> (Frecuencia estructural): Tasa de reorganización (unidades Hz_str)</li>
-                    <li><strong>ΔNFR</strong> (Gradiente nodal): Operador de reorganización interna - "presión estructural"</li>
-                    <li><strong>t</strong>: Tiempo</li>
+                    <li>Φ_s — confinamiento del potencial estructural (U6)</li>
+                    <li>|∇φ| — gradiente de fase local y proxy de esfuerzo</li>
+                    <li>K_φ + i·J_φ — campo geométrico complejo Ψ que captura curvatura y transporte</li>
+                    <li>ξ_C — longitud de coherencia que estima la atenuación de correlaciones</li>
                 </ul>
 
-                <p><strong>Significado físico:</strong></p>
-                <div class="equation">
-                    Tasa de cambio estructural = Capacidad de reorganización × Presión estructural
-                </div>
-
-                <h2>Conceptos clave</h2>
+                <h2>Estructuras canónicas</h2>
                 <div class="key-concepts">
                     <div class="concept-card">
-                        <h3>Coherencia</h3>
-                        <p>Los patrones persisten no a través de la existencia estática sino mediante la reorganización 
-                        continua que mantiene la integridad estructural. La coherencia se mide por C(t), con rango de 0 a 1.</p>
+                        <h3>Tríada estructural</h3>
+                        <p>La forma (EPI), la frecuencia estructural νf y la fase φ/θ definen el estado de cada nodo. νf → 0 lo desactiva mientras que ΔNFR = 0 indica equilibrio.</p>
                     </div>
 
                     <div class="concept-card">
-                        <h3>Resonancia</h3>
-                        <p>Los patrones se sincronizan y amplifican cuando sus fases se alinean. La resonancia permite 
-                        la propagación de información sin pérdida de identidad a través de estructuras de red.</p>
+                        <h3>Gramática de operadores</h3>
+                        <p>Los 13 operadores (AL hasta REMESH) se validan frente a U1–U6. Los desestabilizadores deben acompañarse de estabilizadores y el acoplamiento resonante respeta |φᵢ - φⱼ| ≤ Δφ_max.</p>
                     </div>
 
                     <div class="concept-card">
-                        <h3>Operadores</h3>
-                        <p>13 operadores estructurales canónicos (Emisión, Recepción, Coherencia, Disonancia, etc.) 
-                        gobiernan cómo se reorganizan los nodos. Estas son las únicas formas de modificar patrones en TNFR.</p>
+                        <h3>Tétrada de campos</h3>
+                        <p>Φ_s, |∇φ|, Ψ y ξ_C alcanzaron estatus canónico en noviembre de 2025 y entregan cotas cuantitativas para estabilidad, bifurcaciones y escalas de correlación.</p>
                     </div>
 
                     <div class="concept-card">
-                        <h3>Gramática</h3>
-                        <p>Las secuencias de operadores deben seguir reglas gramaticales unificadas (U1-U4) derivadas 
-                        de la física. Las secuencias válidas preservan la coherencia y permiten una evolución predecible del sistema.</p>
+                        <h3>Acoplamiento resonante</h3>
+                        <p>Los operadores de acoplamiento y resonancia solo propagan patrones cuando las fases son compatibles. La implementación registra la telemetría de fase por arista para facilitar auditorías.</p>
                     </div>
 
                     <div class="concept-card">
-                        <h3>Fractalidad</h3>
-                        <p>Los patrones pueden anidarse dentro de patrones sin perder identidad. TNFR opera a través de 
-                        todas las escalas: cuántica, molecular, biológica, social, cósmica.</p>
+                        <h3>Motor de auto-optimización</h3>
+                        <p>El motor de auto-optimización evalúa Ψ, la quiralidad χ y los indicadores de ruptura de simetría para elegir secuencias que reduzcan ΔNFR sin violar la gramática.</p>
                     </div>
 
                     <div class="concept-card">
-                        <h3>Métricas</h3>
-                        <p>Las medidas cuantitativas incluyen Coherencia C(t), Índice de Sentido Si, frecuencia estructural 
-                        νf y fase φ. Todas las dinámicas son observables y reproducibles.</p>
+                        <h3>Programa TNFR-Riemann</h3>
+                        <p>El benchmark σ-crítico (H^{(k)}(σ) = L_k + V_σ) sigue las transiciones de autovalores que convergen a σ = 1/2 con telemetría exportada por benchmarks/riemann_program.py.</p>
                     </div>
                 </div>
 
-                <h2>El cambio de paradigma</h2>
-                <p><strong>Visión Tradicional → Visión TNFR:</strong></p>
+                <h2>Navegación de referencia</h2>
                 <ul>
-                    <li>Los objetos existen independientemente → <strong>Los patrones existen a través de la resonancia</strong></li>
-                    <li>Causalidad (A causa B) → <strong>Co-organización (A y B se sincronizan)</strong></li>
-                    <li>Propiedades estáticas → <strong>Reorganización dinámica</strong></li>
-                    <li>Sistemas aislados → <strong>Redes acopladas</strong></li>
-                    <li>Modelos descriptivos → <strong>Dinámicas generativas</strong></li>
+                    <li><a href="AGENTS/">Guía de agentes</a> — compromisos teóricos, doctrina operativa y manual para agentes.</li>
+                    <li><a href="UNIFIED_GRAMMAR_RULES/">Gramática unificada</a> — derivaciones de U1–U6 a partir de la ecuación nodal.</li>
+                    <li><a href="STRUCTURAL_FIELDS_TETRAD/">Tétrada de campos</a> — definiciones, umbrales y experimentos que validan Φ_s, |∇φ|, Ψ y ξ_C.</li>
+                    <li><a href="TROUBLESHOOTING/">Guía de diagnóstico</a> — procedimientos para deriva de fase, bifurcaciones y verificación de telemetría.</li>
+                    <li><a href="SCALABILITY/">Notas de escalabilidad</a> — recomendaciones para topologías grandes y cómputo con GPU.</li>
                 </ul>
 
-                <h2>Aplicaciones</h2>
-                <p>TNFR se ha aplicado para modelar:</p>
+                <h2>Aplicaciones y validación</h2>
                 <ul>
-                    <li><strong>Química Molecular</strong>: Enlaces químicos como sincronización de fase, reacciones como secuencias de operadores</li>
-                    <li><strong>Partículas Fundamentales</strong>: Emergencia de partículas desde atractores coherentes</li>
-                    <li><strong>Sistemas Biológicos</strong>: Organización celular y emergencia de vida</li>
-                    <li><strong>Dinámicas Sociales</strong>: Formación de grupos y comportamiento colectivo</li>
-                    <li><strong>IA y Redes Neuronales</strong>: Aprendizaje como reorganización estructural</li>
-                    <li><strong>Sistemas Distribuidos</strong>: Sincronización de red y resiliencia</li>
+                    <li><strong>Benchmark σ-crítico</strong>: <code>benchmarks/riemann_program.py</code> reproduce el estudio TNFR-Riemann con exportación completa de telemetría.</li>
+                    <li><strong>Telemetría de campos</strong>: <code>src/tnfr/physics/fields.py</code> calcula Φ_s, |∇φ|, Ψ y ξ_C para todos los ejemplos e incluye verificaciones promovidas a canónicas.</li>
+                    <li><strong>Demos celestes y de vórtices</strong>: <code>examples/20_celestial_cycles_demo.py</code> a <code>examples/26_analemma_simulation.py</code> emplean las restricciones descritas en THE_GEOCENTRIC_VORTEX_COSMOLOGY.md.</li>
+                    <li><strong>Seguimiento de coherencia</strong>: <code>examples/05_coherence_evolution.py</code> y <code>examples/10_simplified_sdk_showcase.py</code> muestran cómo reaccionan C(t) y Si ante cada secuencia.</li>
                 </ul>
             </div>
 
             <div class="cta-section">
-                <h2>¿Listo para explorar la TNFR?</h2>
-                <p>Sumérjase en la implementación computacional y comience a modelar coherencia</p>
-                <a href="https://github.com/fermga/TNFR-Python-Engine" class="cta-button" target="_blank">
+                <h2>Trabaje directamente con la implementación de referencia</h2>
+                <p>Revise el código fuente, ejecute las pruebas y utilice el SDK para modelar estructuras coherentes.</p>
+                <a href="https://github.com/fermga/TNFR-Python-Engine" class="cta-button" target="_blank" rel="noopener">
                     Ver en GitHub
                 </a>
-                <a href="https://pypi.org/project/tnfr/" class="cta-button" target="_blank">
+                <a href="https://pypi.org/project/tnfr/" class="cta-button" target="_blank" rel="noopener">
                     Instalar desde PyPI
                 </a>
             </div>
@@ -595,12 +541,12 @@
             <footer>
                 <p>&copy; 2025 TNFR Python Engine | Licenciado bajo MIT</p>
                 <p>
-                    <a href="https://github.com/fermga/TNFR-Python-Engine" target="_blank">GitHub</a> |
-                    <a href="https://doi.org/10.5281/zenodo.17602861" target="_blank">DOI: 10.5281/zenodo.17602861</a> |
-                    <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/LICENSE.md" target="_blank">Licencia</a>
+                    <a href="https://github.com/fermga/TNFR-Python-Engine" target="_blank" rel="noopener">GitHub</a> |
+                    <a href="https://doi.org/10.5281/zenodo.17602861" target="_blank" rel="noopener">DOI: 10.5281/zenodo.17602861</a> |
+                    <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/LICENSE.md" target="_blank" rel="noopener">Licencia</a>
                 </p>
-                <p style="margin-top: 1rem; font-style: italic;">
-                    La realidad no está hecha de cosas—está hecha de resonancia.
+                <p class="footer-note">
+                    Los modelos estructurales solo son válidos cuando la telemetría confirma la coherencia.
                 </p>
             </footer>
         </div>
