@@ -1,41 +1,75 @@
-# Structural Uncertainty & Interference
+# Structural Uncertainty & Interference Memo
 
-TNFR demonstrates that "Quantum Weirdness" (Uncertainty, Duality) is simply the behavior of coherent wave-packets in the Nodal Dynamics framework.
+**Status**: Technical reference  
+**Version**: 0.3.0 (November 30, 2025)  
+**Owner**: `theory/UNCERTAINTY_AND_INTERFERENCE.md`
 
-## 1. The Structural Uncertainty Principle
+---
 
-In Quantum Mechanics, $\Delta x \cdot \Delta p \ge \hbar/2$.
-In TNFR, this is a property of the **EPI (Form) vs. Frequency ($\nu_f$)** relationship.
+## 1. Scope
 
-- **EPI** is a structural configuration (Form).
-- **$\nu_f$** is the rate of reorganization (Frequency).
+Define how TNFR captures time–frequency bounds and interference phenomena using structural metrics. This memo documents the governing equations, workflow for `examples/14_uncertainty_and_interference.py`, required telemetry (\(\sigma_t\), \(\sigma_f\), \(C(t)\), \(|\nabla \phi|\), \(K_\phi\)), and artifact locations under `results/quantum_demo_2/`.
 
-To define a precise "Frequency", a pattern must repeat for a long time (High $\Delta t$).
-To define a precise "Time/Position", a pattern must be localized (Low $\Delta t$).
+---
 
-**Derivation**:
-Since EPI evolution is driven by $\nu_f$, the spectral analysis of the EPI trajectory reveals that:
-$$ \Delta t_{EPI} \cdot \Delta \nu_f \ge K $$
-This is not a physical law imposed from outside, but a mathematical necessity of signal processing (Gabor Limit) applied to structural information.
+## 2. Experiment Inputs and Workflow
 
-## 2. Structural Interference (The Double Slit)
+1. Configure packet envelopes (Gaussian default) with width parameter `sigma_t` saved in `configs/uncertainty/*.yaml`.  
+2. Initialize emission nodes with `[AL, RA]` sequences; record seeds, operator order, and lattice resolution in `results/quantum_demo_2/run_<seed>.json`.  
+3. For interference studies, instantiate two emission channels propagating through a shared medium while detectors sample the complex field \(\Psi = K_\phi + i J_\phi\).  
+4. Execute `python examples/14_uncertainty_and_interference.py --config <file>` to generate plots plus telemetry tables.
 
-When a TNFR node emits a structural pattern (Operator `AL` + `RA`), it propagates as a phase wave through the network.
+---
 
-- **Wave Nature**: The phase coupling ($\phi_i \to \phi_j$) creates wavefronts.
-- **Interference**: When wavefronts from two paths (e.g., two "slit" nodes) meet, they add vectorially (Complex Structural Field $\Psi$).
-    - **Constructive**: $\Delta \phi \approx 0$. Coherence increases.
-    - **Destructive**: $\Delta \phi \approx \pi$. Coherence cancels out (Dissonance).
+## 3. Structural Uncertainty Relation
 
-This produces interference fringes in the "Sense Index" ($Si$) or Coherence ($C(t)$) of the receiving nodes, reproducing the double-slit experiment without assuming particles are waves. They *are* structural waves.
+Packets occupying a time window \(\Delta t_{\text{EPI}}\) with structural frequency spread \(\Delta \nu_f\) obey
 
-## Visual Proofs
+\[
+\Delta t_{\text{EPI}} \cdot \Delta \nu_f \ge K,
+\]
 
-The script `examples/14_uncertainty_and_interference.py` demonstrates:
+where \(K\) depends on the analysis window (Gaussian packets yield \(K \approx 0.16\)). Interpretation:
 
-- `results/quantum_demo_2/01_uncertainty_principle.png`: Shows that as the Structural Packet width ($\sigma_t$) increases, the Frequency Spectrum width ($\sigma_f$) decreases, maintaining a constant product $\sigma_t \cdot \sigma_f \approx 0.16$.
-- `results/quantum_demo_2/02_interference_pattern.png`: Displays the 2D wave field and the accumulated intensity, revealing clear interference fringes behind the double slit.
-- `results/quantum_demo_2/03_interference_profile.png`: The intensity profile at the screen shows the characteristic peaks and troughs of wave interference.
+- Tight temporal localization increases spectral width and structural pressure variance.  
+- Stable frequency estimation requires longer observation windows, trading temporal resolution for spectral stability.
 
-These results confirm that **Uncertainty and Interference are intrinsic properties of Nodal Dynamics**, emerging from the wave-like nature of structural propagation and the Fourier limits of information processing.
+Telemetry checklist:
+
+1. Log packet envelope width \(\sigma_t\) and store alongside configuration hashes.  
+2. Compute \(\sigma_f\) via FFT of \(\nu_f(t)\) with documented windowing parameters.  
+3. Report \(\sigma_t \sigma_f\) (mean ± uncertainty) in `results/quantum_demo_2/uncertainty_metrics.csv`.  
+4. Track \(C(t)\), \(|\nabla \phi|\), and \(K_\phi\) to ensure canonical thresholds (<0.2904, <2.8274) remain satisfied.
+
+---
+
+## 4. Two-Path Interference Model
+
+The double-slit experiment maps to two emission nodes running `[AL, RA]` into a propagation medium. Receiving nodes integrate \(\Psi\) and log per-pixel telemetry:
+
+- Constructive bands: \(\Delta \phi \approx 0\) → increased coherence \(C(t)\) and sense index \(Si\).  
+- Destructive bands: \(\Delta \phi \approx \pi\) → elevated \(|\nabla \phi|\) and reduced \(C(t)\).
+
+Detector outputs include coherence, phase difference, accumulated intensity, and structural fields; interference is described entirely through phase-coupled dynamics without wave/particle narratives.
+
+---
+
+## 5. Reproduction Script & Artifacts
+
+`examples/14_uncertainty_and_interference.py` generates:
+
+- `results/quantum_demo_2/01_uncertainty_principle.png` — scatter of \(\sigma_t\) vs. \(\sigma_f\) with constant-product reference line.  
+- `results/quantum_demo_2/02_interference_pattern.png` — 2D detector intensity map.  
+- `results/quantum_demo_2/03_interference_profile.png` — line-out showing fringe spacing.  
+- `results/quantum_demo_2/run_<seed>.csv` — tabulated \(\sigma_t\), \(\sigma_f\), \(\sigma_t \sigma_f\), coherence, \(|\nabla \phi|\), and detector metrics.
+
+All artifacts must carry metadata (seed, grid size, operator schedules) for reproducibility.
+
+---
+
+## 6. Outstanding Work
+
+1. Extend uncertainty experiments to spatial domains (\(\Delta x\) vs. \(\Delta k\)) and compare against analytical bounds.  
+2. Automate fringe-visibility calculation plus regression tests tied to reference seeds.  
+3. Perform sensitivity sweeps over detector spacing and medium parameters, logging resultant \(C(t)\) and \(|\nabla \phi|\) trends.
 

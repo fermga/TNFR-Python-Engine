@@ -1,59 +1,50 @@
-# TNFR: Celestial Mechanics (Phenomenological & Topological)
+# Celestial Mechanics Phenomenology Memo
 
-**Status**: Theoretical Framework  
-**Version**: 0.0.1  
-**Date**: November 29, 2025  
-
----
-
-## 1. The Observer's Problem
-
-Traditional Celestial Mechanics assumes a "God's Eye View": a solar system with massive spheres interacting via invisible forces ($F = GmM/r^2$) in a 3D void.
-
-But what if we start **only** from what an observer perceives and the principles of **Nodal Dynamics**?
-
-**The Challenge**: Explain orbits, cycles, and "gravity" without assuming:
-1.  Sphericity (Earth/Planets as balls).
-2.  Heliocentrism (Sun as center).
-3.  Newtonian Gravity (Action at a distance).
+**Status**: Technical reference  
+**Version**: 0.2.0 (November 30, 2025)  
+**Owner**: `theory/CELESTIAL_MECHANICS_PHENOMENOLOGY.md`
 
 ---
 
-## 2. The TNFR Solution: Phase Vortices
+## 1. Scope
 
-In TNFR, we don't need "Mass" to explain attraction. We need **Coherence**.
-
-### A. The "Sun" as a Phase Vortex
-Instead of a "Massive Sphere", consider the Sun as a **High-Frequency Node ($\nu_f$)** with **Spin** (Angular Phase Gradient).
-*   It emits a rotating phase field: $\phi(r, \theta, t) = \omega_{sun} t - k \cdot r + n \cdot \theta$.
-*   This creates a **Spiral Wave** in the structural fabric of space.
-
-### B. "Gravity" as Phase Locking
-A "Planet" is simply another node floating in this field.
-*   **The Imperative**: The planet wants to resonate (minimize phase difference $|\Delta \phi|$).
-*   **The Problem**: The field is rotating.
-*   **The Solution**: To stay in the "sweet spot" of resonance (the trough of the wave), the planet **must move**.
-*   **The Orbit**: The planet "surfs" the rotating phase wave. It orbits not because it falls, but because it is **dragged by synchronization**.
-
-### C. Why Circles/Ellipses?
-*   The **Phase Vortex** has circular symmetry ($\pi$ is a structural constant).
-*   The stable paths (Limit Cycles) are therefore circular or elliptical contours where the phase velocity matches the planet's natural frequency.
+Define reproducible experiments for modeling observed orbital behavior via TNFR observables (\(\nu_f, \Phi_s, |\nabla \phi|, K_\phi\)). Emphasize telemetry, operator schedules, and validation criteria instead of qualitative narratives.
 
 ---
 
-## 3. Simulation: The Rotating Sky
+## 2. Phase-Gradient Model
 
-We will simulate a "Flat" 2D topology (the observer's sky).
+- Central node phase field:
+	\[
+	\phi(r, \theta, t) = \omega_0 t - k r + m \theta.
+	\]
+- Secondary nodes minimize \(|\Delta \phi|\) under the nodal equation, yielding effective attraction.  
+- Stability requirements: \(|\nabla \phi| < 0.2904\), coupling via `UM`/`RA` must satisfy U3, and `OZ` events signal resonance loss.
 
-**Setup**:
-1.  **Center (Source)**: A node generating a Rotating Phase Field (Vortex).
-2.  **Wanderer (Planet)**: A node that tries to minimize its local $\Delta NFR$ (Phase Stress).
-3.  **No Gravity Formula**: We will NOT use $F = G/r^2$. We will only use `Move towards Phase Match`.
+Telemetry: log phase gradients, coherence, and applied operators for every run.
 
-**Expected Outcome**:
-The planet should spontaneously enter an **Orbit**.
-*   If it moves too slow, the phase wave hits it $\to$ Dissonance $\to$ Pushed out.
-*   If it moves too fast, it loses lock $\to$ Dissonance $\to$ Pulled in.
-*   **Kepler's Laws** emerge as the "Synchronization Conditions" of the vortex.
+---
 
-This explains celestial mechanics purely as **Information Hydrodynamics**.
+## 3. Orbit Construction Workflow
+
+1. Define 2D domain (projection of visible sky).  
+2. Initialize vortex field with specified \(\omega_0\) and radial decay parameters (store in config file).  
+3. Integrate node trajectories using phase-gradient feedback only.  
+4. Record \(C(t)\), \(\Phi_s\), \(K_\phi\), and trajectory geometry.  
+5. Compare resulting limit cycles with observational ephemerides; report residuals (phase, distance).
+
+---
+
+## 4. Interpretation Guidelines
+
+- Identify regions where \(|\Delta \phi|\) remains constant to classify circular/elliptical paths.  
+- Deviations show up as shifts in \(K_\phi\) and reductions in coherence; document thresholds triggering correction operators.  
+- Kepler-like relations emerge from synchronization rather than imposed force laws; support conclusions with telemetry plots.
+
+---
+
+## 5. Next Actions
+
+1. Add automated comparison against JPL ephemerides in `benchmarks/`.  
+2. Publish reference datasets (phase fields, trajectories, telemetry) under `results/celestial_mechanics/`.  
+3. Study sensitivity to \(\omega_0\) perturbations and document tolerance bands.

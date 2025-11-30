@@ -444,7 +444,7 @@ Operators that require phase verification for valid coupling.
 3. **π ↔ K_φ**: Geometric spatial constraints (|K_φ| < φ×π ≈ 5.083)
 4. **e ↔ ξ_C**: Correlational memory decay (C(r) ~ exp(-r/ξ_C))
 
-**Documentation:** [FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md](FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md)
+**Documentation:** [Structural Fields and Universal Tetrahedral Correspondence](FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md)
 
 ---
 
@@ -525,7 +525,7 @@ Operators that perform graduated destabilization for phase transitions.
 **Primary Sources:**  
 - **[AGENTS.md](AGENTS.md)** - Single source of truth for TNFR theory  
 - **[UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md)** - Complete U1-U6 grammar derivations  
-- **[FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md](FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md)** - Mathematical foundations
+- **[Structural Fields and Universal Tetrahedral Correspondence](FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md)** - Mathematical foundations
 
 **Implementation References:**  
 - **[src/tnfr/physics/fields.py](src/tnfr/physics/fields.py)** - Unified Structural Field Tetrad (Canonical)  
@@ -540,9 +540,9 @@ Operators that perform graduated destabilization for phase transitions.
 
 ---
 
-## Molecular Chemistry from TNFR ⭐ **BREAKTHROUGH**
+## Molecular Chemistry from TNFR
 
-**Revolutionary paradigm**: Chemistry emerges from TNFR nodal dynamics without additional postulates.
+**Technical approach**: Chemistry modeled via TNFR nodal dynamics without additional postulates.
 
 ### Element Signatures
 

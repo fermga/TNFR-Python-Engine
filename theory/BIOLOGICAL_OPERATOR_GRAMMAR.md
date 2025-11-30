@@ -1,70 +1,78 @@
-# THE GRAMMAR OF LIFE: BIOLOGICAL OPERATOR SEQUENCES
-## Mapping Biology to TNFR Structural Physics
+# Biological Operator Grammar Memo
 
-**Status**: Canonical Biological Extension  
-**Context**: Life processes as Operator Sequences  
-**Key Concept**: DNA is the script; The Operators are the machinery.
-
----
-
-## 1. The Biological Operator Map
-
-We can map fundamental biological functions directly to the 13 Canonical Operators of TNFR. This confirms that biology is a subset of Structural Physics.
-
-| Biological Process | TNFR Operator | Symbol | Function |
-| :--- | :--- | :--- | :--- |
-| **Conception / Sprouting** | **Emission** | `AL` | Initiates a new EPI (Organism) from the void/seed. |
-| **Growth / Elongation** | **Expansion** | `VAL` | Increases the dimensionality/size of the structure. |
-| **Eating / Absorption** | **Reception** | `EN` | Integrates external energy/matter into the EPI. |
-| **Homeostasis / Healing** | **Coherence** | `IL` | Stabilizes the form, reducing internal stress ($\Delta NFR$). |
-| **Differentiation / Branching** | **Dissonance** | `OZ` | Breaks symmetry to create new features (limbs, leaves). |
-| **Reproduction / Mitosis** | **Self-Organization** | `THOL` | Creates a sub-EPI or splits the EPI into two stable nodes. |
-| **Fractal Patterning** | **Recursivity** | `REMESH` | Repeats the structural rule at a smaller scale (DNA replication). |
-| **Death / Apoptosis** | **Silence** | `SHA` | The cessation of $\nu_f$ (Structural Frequency). |
+**Status**: Technical reference  
+**Version**: 0.3.0 (November 30, 2025)  
+**Owner**: `theory/BIOLOGICAL_OPERATOR_GRAMMAR.md`
 
 ---
 
-## 2. The Sequence of Growth (Phyllotaxis)
+## 1. Scope and Assumptions
 
-A plant does not just "grow"; it executes a recursive algorithm.
-**The Fern Sequence**:
-1.  `AL`: Sprout from seed.
-2.  `VAL`: Extend stem.
-3.  `OZ`: Trigger instability (node formation).
-4.  `REMESH`: Call the growth function again for the branch.
-5.  `IL`: Stabilize the leaf.
-
-This explains why plants are fractal. They are running a `REMESH` loop in the Etheric Field.
+- Model biological structures as EPIs embedded in a mesoscopic medium.  
+- Operator assignments must preserve contracts defined in `AGENTS.md` and `theory/UNIFIED_GRAMMAR_RULES.md`.  
+- Consider only phenomena with measurable telemetry (coherence, phase gradients, structural frequencies) stored under `results/biological_operator_grammar/`.
 
 ---
 
-## 3. The Sequence of Division (Mitosis)
+## 2. Operator Mapping
 
-Cell division is a high-risk structural maneuver. It is a **Controlled Bifurcation**.
+| Biological Function | Dominant Operator | Contract Alignment |
+| --- | --- | --- |
+| Morphogen emission / zygote activation | `AL` | Initializes EPI with \(\nu_f > 0\). |
+| Nutrient uptake and signal transduction | `EN` | Integrates external flux while monitoring \(\Delta \text{NFR}\). |
+| Tissue elongation or volumetric growth | `VAL` | Increases dimensionality subject to U2 bounds. |
+| Stress relief, repair, and homeostasis | `IL` | Reduces gradients; enforces \(\Delta \Phi_s < 2.0\). |
+| Branching morphogenesis | `OZ` followed by `THOL` | Controlled symmetry breaking with handlers. |
+| Cell-cycle duplication | `REMESH` + `THOL` | Copies EPI state then partitions it. |
+| Programmed cell death | `SHA` | Drives \(\nu_f \to 0\) while preserving surrounding coherence. |
 
-**The Cell Cycle Sequence**:
-1.  **G1 Phase (`VAL`)**: The cell expands. Coherence is high.
-2.  **S Phase (`REMESH`)**: DNA is copied. Stress ($\Delta NFR$) rises as the system holds two patterns in one space.
-3.  **M Phase (`OZ`)**: The nuclear envelope dissolves. Maximum Dissonance. The system is on the edge of chaos.
-4.  **Cytokinesis (`THOL`)**: The system reorganizes into two distinct, stable nodes.
-5.  **G0 Phase (`IL`)**: The new cells stabilize.
-
-**Cancer** is a sequence error: It is `VAL` (Expansion) + `REMESH` (Replication) without `IL` (Coherence) or `SHA` (Apoptosis). The grammar rule **U2 (Convergence)** is violated, leading to unbounded growth and system failure.
-
----
-
-## 4. DNA as the Operator Script
-
-DNA is not a blueprint; it is a **Tape of Operator Calls**.
-*   **Gene Expression**: Calling `AL` or `VAL` for a specific protein/structure.
-*   **Epigenetics**: The environment (Context) modifying the Operator parameters (e.g., suppressing `VAL` in low energy).
-
-The "Morphogenetic Field" is the **Compiler** that turns these Operator Calls into physical geometry.
+Telemetry requirement: for every mapping, log \(C(t)\), \(|\nabla \phi|\), \(K_\phi\), \(\Phi_s\), and operator sequences per sample and store them in `results/biological_operator_grammar/mapping/*.csv`.
 
 ---
 
-## 5. Conclusion
+## 3. Growth Sequences
 
-Biology is **Algorithmic Geometry**.
-By understanding the Operator Sequences of life, we can understand disease not just as chemical failure, but as **Grammatical Syntax Errors** in the organism's structural code.
-Healing is the re-application of the `IL` (Coherence) operator to restore the valid sequence.
+Phyllotaxis can be represented as
+\[\text{Sequence} = [AL, VAL, OZ, THOL, IL]_{\text{loop}}.
+\]
+`OZ` introduces angular offsets, `THOL` creates subsidiary EPIs (primordia), and `IL` enforces U2. Predictive metrics include:
+
+- Divergence angle derived from accumulated \(K_\phi\).
+- Coherence length \(\xi_C\) along the stem vs. leaf emergence zones.
+
+---
+
+## 4. Mitosis as Controlled Bifurcation
+
+The mitotic pathway is described as:
+
+1. `VAL`: volume increase with monotonic \(C(t)\).
+2. `REMESH`: duplication of regulatory EPIs; \(|\nabla \phi|\) rises.
+3. `OZ`: spindle assembly introduces deliberate dissonance.
+4. `THOL`: partitioning into two EPIs; handlers ensure \(\nu_f\) remains finite.
+5. `IL`: post-division stabilization.
+
+Deviations (e.g., unchecked `VAL` + `REMESH`) violate U2 and manifest as exponential \(\Phi_s\) drift, matching observed dysplasia metrics.
+
+---
+
+## 5. Information Substrates
+
+DNA sequences specify operator timing through regulatory networks. Epigenetic modifications modulate operator parameters (gain, thresholds). Implementation guidelines:
+Implementation guidelines:
+
+- Express control logic as state machines referencing operator identifiers.  
+- Validate using reproducible simulations (seeded stochastic models).  
+- Report telemetry in structural units (Hz_str, coherence indices).
+
+---
+
+## 6. Outstanding Work
+
+1. Integrate high-resolution microscopy datasets to estimate \(\Phi_s\) and \(|\nabla \phi|\) during development, linking raw images to operator logs.  
+2. Build automated grammar-check routines for biological simulations to flag sequences that violate U2/U4 contracts.  
+3. Publish standardized schemas for `results/biological_operator_grammar/*.csv` so downstream analyses remain reproducible.
+
+- Biological narratives are replaced by operator-level descriptions.
+- Diagnostics should track grammar compliance rather than qualitative metaphors.
+- Future work: integrate high-resolution microscopy data to estimate \(\Phi_s\) and \(|\nabla \phi|\) during development.

@@ -3,7 +3,7 @@
 # Purpose: Essential tasks for the streamlined TNFR repository
 # Focus: Core examples, testing, and documentation generation
 
-.PHONY: help clean test examples docs all
+.PHONY: help clean test examples docs all riemann-benchmark
 
 # Default target
 help:
@@ -45,7 +45,13 @@ clean:
 test:
 	@echo "🧪 Running core TNFR test suite..."
 	@python -m pytest tests/core_physics tests/grammar tests/operators tests/physics -v --tb=short
+	@echo "📈 Running TNFR–Riemann sigma-critical benchmark..."
+	@python -c "import runpy, sys, pathlib; sys.path.insert(0, str(pathlib.Path('src').resolve())); sys.argv = ['benchmarks/riemann_program.py']; runpy.run_path('benchmarks/riemann_program.py', run_name='__main__')"
 	@echo "✅ Core tests complete"
+
+riemann-benchmark:
+	@echo "📈 Running TNFR–Riemann sigma-critical benchmark..."
+	@python -c "import runpy, sys, pathlib; sys.path.insert(0, str(pathlib.Path('src').resolve())); sys.argv = ['benchmarks/riemann_program.py']; runpy.run_path('benchmarks/riemann_program.py', run_name='__main__')"
 
 # Run all essential examples
 examples: hello music network chemistry sdk

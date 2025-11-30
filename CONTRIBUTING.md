@@ -5,7 +5,7 @@
 **Authority**: Canonical constants derived from TNFR theory  
 **Quality**: Production-ready with comprehensive test coverage  
 
-This document provides guidelines for contributing to the TNFR (Resonant Fractal Nature Theory) project. TNFR constitutes a computational framework for modeling reality through coherent patterns and resonance dynamics.
+This document provides guidelines for contributing to the TNFR (Resonant Fractal Nature Theory) project. TNFR constitutes a computational framework for modeling complex systems through coherent patterns and resonance dynamics.
 
 ## Mathematical Foundation Requirement
 

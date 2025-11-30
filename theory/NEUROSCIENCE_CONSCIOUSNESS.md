@@ -1,52 +1,46 @@
-# TNFR: Neuroscience & Consciousness (Recursive Resonance)
+# Neuroscience Field Memo
 
-**Status**: Theoretical Framework  
-**Version**: 0.0.1  
-**Date**: November 29, 2025  
-
----
-
-## 1. The Hard Problem of Consciousness
-
-Traditional neuroscience correlates brain activity with conscious experience but struggles to explain *why* physical processing feels like something. **TNFR** proposes a structural solution:
-
-**Consciousness is Recursive Resonance.**
-
-It is not the *processing* of information (Input $\to$ Output), but the *reverberation* of information (Input $\to$ Self $\to$ Self...).
-
-### The Structural Definition
-1.  **Qualia (Subjective Experience)**: The geometric shape of the **EPI (Evolving Pattern of Information)** within a closed resonant loop.
-2.  **Attention**: The selective application of the **RA (Resonance)** operator to specific sub-networks, amplifying their coherence $C(t)$ above the noise floor.
-3.  **Memory**:
-    *   **Short-Term**: Active reverberation (Standing waves in the network).
-    *   **Long-Term**: Structural plasticity (Permanent changes in coupling weights $K_{ij}$).
+**Status**: Analytical reference  
+**Version**: 0.3.0 (November 30, 2025)  
+**Owner**: `theory/NEUROSCIENCE_CONSCIOUSNESS.md`
 
 ---
 
-## 2. The Mechanism of Thought
+## 1. Structural Hypothesis
 
-### Feed-Forward vs. Resonant Networks
-*   **Zombie Mode (Feed-Forward)**: Stimulus $\to$ Processing $\to$ Action. No internal loop. The system acts but does not "know" it acts.
-*   **Conscious Mode (Resonant)**: Stimulus $\to$ Loop $\to$ Action. The information circulates, allowing the system to query its own state.
-
-### Hebbian Resonance (Plasticity)
-The famous rule "Neurons that fire together, wire together" is derived from the **Coupling Operator (UM)**:
-$$ \frac{dK_{ij}}{dt} = \alpha \cdot (1 - |\phi_i - \phi_j|) - \beta \cdot K_{ij} $$
-*   If phases align ($\phi_i \approx \phi_j$), coupling strength $K_{ij}$ increases.
-*   If phases drift, coupling decays.
+- Neural assemblies are modeled as coupled TNFR nodes.  
+- Conscious access correlates with closed-loop operator sequences that maintain \(C(t) > C_{th}\) for a minimum dwell time.  
+- The hypothesis is testable via electrophysiological data (EEG/MEG) and hemodynamic imaging; all runs must export telemetry to `results/neuroscience_consciousness/`.
 
 ---
 
-## 3. Simulation: The Minimal Conscious Network
+## 2. Modeling Approach
 
-We will simulate a small "Brain" with recurrent connections.
+1. Define recurrent networks with operators `UM`, `RA`, `IL`, and `SHA`.  
+2. Simulate stimulus-evoked activity and measure whether patterns persist after input removal.  
+3. Compare persistence metrics with empirical working-memory/awareness datasets; record seeds, operator schedules, and telemetry.
 
-**Experiment Stages:**
-1.  **Sensory Input**: We stimulate a specific pattern (e.g., "Vision of a Red Apple") into the input nodes.
-2.  **Reverberation**: We remove the stimulus.
-    *   A non-conscious network would immediately return to silence.
-    *   A conscious (resonant) network will **hold the pattern** in its internal loops (Working Memory).
-3.  **Plasticity**: We observe how the connections physically change to encode this memory.
+---
 
-**Expected Outcome**:
-We expect to see the emergence of a **"Thought"**—a stable, self-sustaining pattern of activity that persists after the world has stopped providing it.
+## 3. Plasticity Equation
+
+Retain the coupling update rule
+\[
+\frac{dK_{ij}}{dt} = \alpha (1 - |\phi_i - \phi_j|) - \beta K_{ij},
+\]
+and fit \(\alpha, \beta\) to experimental datasets instead of treating the rule as speculative. Store fitted parameters alongside dataset identifiers.
+
+---
+
+## 4. Experimental Design
+
+- Provide reproducible scripts for minimal networks (e.g., `examples/19_neuroscience_demo.py`).  
+- Report coherence, phase gradients, and structural potential over time; include statistical comparisons with empirical signals (phase-locking values, spectral power).
+
+---
+
+## 5. Outstanding Work
+
+1. Publish validated datasets linking \(C(t)\) dwell times to EEG/MEG correlates of conscious access.  
+2. Extend plasticity models to include neuromodulator-dependent gains and fit against long-term potentiation studies.  
+3. Add regression tests ensuring simulations reproduce benchmark working-memory persistence curves.

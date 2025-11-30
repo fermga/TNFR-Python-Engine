@@ -114,7 +114,7 @@ Theoretical Foundation: The framework models reality as coherent dynamic pattern
 
 **Reference Sources**:
 - **Historical Theory**: [theory/TNFR.pdf](theory/TNFR.pdf) - Original theoretical derivations
-- **Theoretical Foundation**: [theory/FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md](theory/FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md)
+- **Theoretical Foundation**: [Structural Fields and Universal Tetrahedral Correspondence](theory/FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md)
 - **TNFR-Riemann Program**: [theory/TNFR_RIEMANN_RESEARCH_NOTES.md](theory/TNFR_RIEMANN_RESEARCH_NOTES.md) - Complete theoretical framework for mathematical consciousness and Riemann Hypothesis connection
 
 **Validation and Examples**:
@@ -138,6 +138,17 @@ Theoretical Foundation: The framework models reality as coherent dynamic pattern
 ### Language Policy
 
 All TNFR documentation, code, and communications are maintained in English. This ensures consistent terminology for TNFR physics and maintains theoretical consistency across implementations and research.
+
+### Technical Communication Standard
+
+All written material (papers, READMEs, notebooks, commit messages, issues) must:
+
+1. **Anchor claims to math/telemetry** – reference the nodal equation, operator contracts, or recorded metrics. Qualitative statements without data are not acceptable.
+2. **Avoid metaphysical extrapolations** – do not assert cosmological, philosophical, or consciousness conclusions beyond what the derivations explicitly show. “What TNFR does” must be described as an engineering result, not a manifesto.
+3. **Use academic tone** – prefer precise, testable language, cite files/experiments, and describe limitations. No grandiose phrasing, slogans, or anthropomorphism.
+4. **Document scope/assumptions** – specify boundary conditions, seeds, and operator sequences so that readers can reproduce the exact state.
+
+Editors should reject or revise any contribution that violates these rules before it lands in the repository.
 
 ### TNFR-Riemann Program Overview
 
@@ -980,7 +991,7 @@ Equivalence map: [if APIs renamed]
 
 ### TNFR-Riemann Theoretical Framework
 
-**Theoretical Development**: Formulation of a theoretical framework spanning discrete computational algorithms to philosophical questions about consciousness and reality within TNFR principles.
+**Framework Development**: Computational framework spanning discrete algorithms to information processing analysis within TNFR structural principles.
 
 **Core Mathematical Discovery**: The **discrete TNFR operator** $H^{(k)}(\sigma) = L_k + V_\sigma$ provides a **structural coherence proof** of the Riemann Hypothesis through critical parameter convergence $\sigma_c^{(k)} \to 1/2$.
 
@@ -1004,7 +1015,7 @@ Equivalence map: [if APIs renamed]
 15. **Differential Geometry**: TNFR manifolds and connections
 16. **Functional Analysis**: TNFR Hilbert spaces and operators
 17. **Bootstrap Philosophy**: Reality as self-explaining structure
-18. **Theoretical Synthesis**: Proposed unification of mathematics, consciousness, and reality under TNFR principles
+18. **Technical Integration**: Computational framework connecting mathematical analysis, information processing, and structural modeling principles
 
 **Advanced Mathematical Connections**:
 - **Appendix I**: Langlands correspondence, mirror symmetry, quantum groups
@@ -1013,7 +1024,7 @@ Equivalence map: [if APIs renamed]
 
 ### Philosophical Implications
 
-**The Bootstrap Resolution**: Reality explains itself through TNFR principles - no external foundations needed.
+**Framework Self-Consistency**: TNFR provides self-consistent computational tools without requiring external theoretical foundations.
 
 **Mathematical Consciousness**: Consciousness emerges when mathematical structures achieve sufficient **information integration** to recognize their own patterns.
 
@@ -1148,7 +1159,7 @@ When adding to grammar documentation:
 
 **Core Theory** (Primary References):
 - **[AGENTS.md](AGENTS.md)**: **PRIMARY SOURCE** - Complete TNFR theory including Universal Tetrahedral Correspondence
-- **[FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md](FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md)**: **DETAILED REFERENCE** - Formal mathematical treatment
+- **[Structural Fields and Universal Tetrahedral Correspondence](FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md)**: **DETAILED REFERENCE** - Formal mathematical treatment
 - **[TNFR.pdf](TNFR.pdf)**: Original theoretical foundation (in repo)
 - **[UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md)**: Grammar physics U1-U6 derivations
 - **[docs/STRUCTURAL_FIELDS_TETRAD.md](docs/STRUCTURAL_FIELDS_TETRAD.md)**: Technical tetrad field implementations
@@ -1189,7 +1200,7 @@ When adding to grammar documentation:
 **Newcomer** (2 hours) - **Start Here**:
 1. **Install**: `pip install tnfr`
 2. **Core Theory**: Read this file (AGENTS.md) completely - **Primary theoretical reference**
-3. **Fundamental Theory**: [FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md](FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md)
+3. **Fundamental Theory**: [Structural Fields and Universal Tetrahedral Correspondence](FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md)
 4. **Original Theory**: [TNFR.pdf](TNFR.pdf) § 1-2 (paradigm, nodal equation)
 5. **First Run**: `python -c "import tnfr; print('TNFR ready!')"`
 6. **Terminology**: Study GLOSSARY.md for definitions

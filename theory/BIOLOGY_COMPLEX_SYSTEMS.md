@@ -1,56 +1,94 @@
-# TNFR: Biology & Complex Systems (The Emergence of Life)
+# TNFR Biology & Complex Systems Memo
 
-**Status**: Theoretical Framework  
-**Version**: 0.0.1  
-**Date**: November 29, 2025  
-
----
-
-## 1. What is Life in TNFR?
-
-In traditional biology, life is defined by traits like metabolism, reproduction, and homeostasis. In **TNFR**, we define life structurally:
-
-**Life is a Self-Stabilizing Resonant Pattern.**
-
-It is a region of the network that actively maintains **High Coherence ($C(t) \approx 1$)** against the thermodynamic tendency towards disorder ($C(t) \to 0$).
-
-### The Structural Definition of a Living System
-1.  **Autopoiesis (Self-Creation)**: The pattern generates the operators needed to maintain itself.
-2.  **Homeostasis (Stability)**: It uses the **IL (Coherence)** operator to minimize internal Phase Gradient ($|\nabla \phi|$).
-3.  **Metabolism (Energy Usage)**: It consumes **Structural Frequency ($\nu_f$)** to power these operators.
-4.  **Reproduction (Bifurcation)**: When the pattern's complexity (EPI size) exceeds its Coherence Length ($\xi_C$), it triggers a controlled **Structural Bifurcation (Mitosis)**.
+**Status**: Analytical memo  
+**Version**: 0.3.0 (November 30, 2025)  
+**Owner**: `theory/BIOLOGY_COMPLEX_SYSTEMS.md`
 
 ---
 
-## 2. The Mechanism of Emergence
+## 1. Purpose and Definitions
 
-How does order arise from the "Primordial Soup" of random noise?
+This note specifies how “life-like” behavior is evaluated inside TNFR simulations. Life is treated as a self-stabilizing region of the structural field where coherence remains above a configured threshold while the rest of the lattice relaxes. No philosophical claims are made; only reproducible criteria are accepted.
 
-### Phase 1: Spontaneous Fluctuation
-In a random network, small clusters of nodes will occasionally synchronize by pure chance.
-$$ P(sync) \propto e^{-N} $$
+### Working Definition
 
-### Phase 2: The Feedback Loop (The Spark of Life)
-If a cluster achieves a critical coherence threshold ($C > C_{crit}$), it "unlocks" the **Resonance (RA)** operator.
-*   **Resonance amplifies coherence**: The synchronized nodes pull neighbors into alignment stronger than random noise can disrupt them.
-*   **Positive Feedback**: More coherence $\to$ Stronger Resonance $\to$ More Coherence.
+An aggregate qualifies as “biologically active” when:
 
-### Phase 3: Structural Bifurcation (Mitosis)
-As the cluster grows, the distance from the center increases. Eventually, the **Phase Gradient** at the edges exceeds the stability limit ($\gamma/\pi$).
-*   Instead of collapsing, the system splits into two smaller, stable clusters.
-*   This is **Reproduction**.
+1. \(C(t) \geq C_{th}\) over a dwell window \(\Delta t\).
+2. The operators used to maintain the state conform to grammar rules (e.g., destabilizers followed by stabilizers per U2/U4).
+3. Telemetry shows bounded structural pressure: \(\int_{t_0}^{t_0+\Delta t} \nu_f(\tau) \Delta \text{NFR}(\tau) d\tau < \kappa\).
+
+These are measurable conditions implementable in code/tests.
 
 ---
 
-## 3. Simulation: The Game of Life (Continuous Version)
+## 2. Modeling Stack
 
-We will simulate a "Primordial Soup" grid.
+| Layer | Description | Implementation Notes |
+| --- | --- | --- |
+| Lattice | Discrete grid or graph hosting TNFR nodes. | Define boundary conditions (periodic/Neumann) and seed. |
+| Operator scheduler | Applies sequences such as `[AL, VAL, IL]`. | Must log operator order for audit trails. |
+| Telemetry engine | Computes \(C(t)\), \(\lvert \nabla \phi \rvert\), \(K_\phi\), \(\xi_C\). | Required for validation and comparisons. |
+| Analysis suite | Detects “life-like” regions using coherence thresholds. | Provide CSV + plots in `results/biology_complex_systems/`. |
 
-**Rules:**
-1.  **Thermodynamics**: All nodes naturally diffuse phase (tend towards disorder).
-2.  **Metabolism**: Nodes consume "Nutrients" (Frequency potential) from the background.
-3.  **Active Stabilization**: If a node's local coherence is high ($> 0.8$), it actively aligns its neighbors (The "Life" rule).
-4.  **Death**: If a node runs out of nutrients or coherence drops too low, it becomes inert noise.
+All components should expose deterministic seeds so experiments can be rerun.
 
-**Expected Outcome**:
-We expect to see **Cellular Automata-like behavior** emerging not from discrete rules (like Conway's Game of Life), but from continuous **Phase Dynamics**. "Cells" should form, stabilize, and potentially divide.
+---
+
+## 3. Emergence Experiments
+
+### 3.1 Random Synchronization Baseline
+
+Run a lattice with stochastic initial phases and no feedback operators to quantify background synchronization probability.
+
+- Input: lattice size \(N\), noise spectrum, diffusion coefficient.  
+- Output: histogram of cluster sizes surpassing \(C_{th}\) and their lifetimes.  
+- Purpose: establishes the null model for comparison.
+
+### 3.2 Feedback-enabled Growth
+
+Introduce operator sequences `[AL, EN, IL, RA]` to study whether coherence persists longer than the baseline. All parameters (gain, frequency, nutrient budget) must be recorded. Analyze:
+
+- Change in average \(C(t)\) relative to control.  
+- Energy budget: cumulative \(\nu_f \Delta \text{NFR}\).  
+- Sensitivity to threshold variations.
+
+### 3.3 Controlled Bifurcation
+
+Implement `[VAL, OZ, THOL, IL]` to test whether expansion leads to repeatable division events. Criteria:
+
+1. `OZ` must elevate \(|\nabla \phi|\) beyond a scripted limit.  
+2. `THOL` should create child EPIs whose coherence remains within tolerance of the parent.  
+3. `IL` must restore \(C(t)\) above \(C_{th}\) within a fixed recovery time.
+
+Record the before/after coherence lengths \(\xi_C\) and publish the time-series data.
+
+---
+
+## 4. Simulation Template
+
+1. Initialize lattice and set random seed.  
+2. Apply emission (`AL`) to the seed region.  
+3. Loop through operator schedule, logging after every iteration.  
+4. Compute telemetry and annotate frames when criteria for activity/bifurcation are met.  
+5. Export artifacts:  
+   - `results/biology_complex_systems/run_<seed>.csv` (telemetry).  
+   - `results/biology_complex_systems/run_<seed>.mp4` (optional visualization).  
+6. Document configuration in `results/biology_complex_systems/run_<seed>.yml` including operator parameters, thresholds, and boundary conditions.
+
+---
+
+## 5. Validation and Reporting
+
+- Include control runs for every experiment.  
+- Provide statistical comparisons (e.g., differences in survival time) with p-values or confidence intervals.  
+- Share notebooks/scripts used for analysis under `notebooks/biology_complex_systems/`.  
+- Avoid extrapolating results beyond what telemetry supports; statements about “purpose” or “meaning” are out of scope.
+
+---
+
+## 6. Outstanding Work
+
+1. Add automated regression tests verifying that benchmark simulations reproduce expected coherence curves.  
+2. Extend the telemetry module to report nutrient/energy budgets so metabolic analogies are quantitative.  
+3. Investigate adaptive scheduling strategies (time-varying operator gains) and report whether they improve stability.

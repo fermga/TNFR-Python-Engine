@@ -59,6 +59,7 @@ The reproducibility script ensures:
 | `neighbor_phase_mean.py` | Fast phase averaging for neighbourhoods (`tnfr.metrics.trig.neighbor_phase_mean`). | Includes a `NodeNX`-based reference to highlight the benefit of the shared `trig_cache` module. |
 | `prepare_dnfr_data.py` | ΔNFR data preparation reuse (`tnfr.dynamics._prepare_dnfr_data`). | Exercises cache reuse when assembling phase/EPI/νf arrays. |
 | `neighbor_accumulation_comparison.py` | Broadcast neighbour accumulation (`tnfr.dynamics.dnfr._accumulate_neighbors_numpy`). | Benchmarks the single `np.add.at` accumulator against the legacy stack kernel; on 320 random nodes (p=0.65) with Python 3.11/NumPy 2.3.4 it delivered ~1.9× lower median runtime (0.097 s vs 0.185 s). |
+| `riemann_program.py` | TNFR–Riemann σ-critical regression. | Scans `H_TNFR` over a σ grid, estimates σ_c^{(k)}, and exports telemetry via `tnfr.riemann.telemetry` to populate `results/riemann_program/`; executed automatically by `make test` (target `riemann-benchmark`). |
 
 ### Evolution backend speed-ups
 
@@ -165,7 +166,7 @@ that vectorisation shifts time into array primitives rather than Python loops.
 
 ### Full pipeline profiling (Si + ΔNFR)
 
-```
+```bash
 PYTHONPATH=src python benchmarks/full_pipeline_profile.py \
   --nodes 384 --edge-probability 0.28 --loops 6 --output-dir profiles \
   --si-chunk-sizes auto 2048 --dnfr-chunk-sizes auto 4096
@@ -263,16 +264,18 @@ PYTHONPATH=src python benchmarks/comprehensive_cache_profiler.py \
 ```
 
 **Key Metrics Reported:**
-- **Buffer Reuse Rate**: Should remain near 100% (indicates effective buffer caching)
-- **Edge Cache Hit Rate**: Per-hot-path buffer allocation cache effectiveness
-- **TNFR Cache Hit Rate**: DNFR preparation state and structural cache hits
-- **Cache Entry Count**: Memory usage tracking
+
+* **Buffer Reuse Rate**: Should remain near 100% (indicates effective buffer caching)
+* **Edge Cache Hit Rate**: Per-hot-path buffer allocation cache effectiveness
+* **TNFR Cache Hit Rate**: DNFR preparation state and structural cache hits
+* **Cache Entry Count**: Memory usage tracking
 
 **Sample Results** (100 nodes, 20 steps):
-- `coherence_matrix`: 97.5% hit rate, 100% buffer reuse ⭐
-- `default_compute_delta_nfr`: 96.7% hit rate, 100% buffer reuse ⭐
-- `sense_index`: 0.7% hit rate, 100% buffer reuse (expected - creates new structural arrays)
-- `dnfr_laplacian`: 0.0% hit rate, 100% buffer reuse (by design - stateless gradients)
+
+* `coherence_matrix`: 97.5% hit rate, 100% buffer reuse ⭐
+* `default_compute_delta_nfr`: 96.7% hit rate, 100% buffer reuse ⭐
+* `sense_index`: 0.7% hit rate, 100% buffer reuse (expected - creates new structural arrays)
+* `dnfr_laplacian`: 0.0% hit rate, 100% buffer reuse (by design - stateless gradients)
 
 For detailed analysis see `docs/CACHE_OPTIMIZATION_ANALYSIS.md` and `ARCHITECTURE.md`.
 

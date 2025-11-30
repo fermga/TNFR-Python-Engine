@@ -54,7 +54,7 @@
 **Core Principle**: Systems are modeled as coherent patterns maintained through resonant coupling rather than as discrete objects with independent properties.
 
 **Theoretical Foundation**: [AGENTS.md](AGENTS.md) - Complete theory reference  
-**Mathematical Details**: [theory/FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md](theory/FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md)  
+**Mathematical Details**: [Structural Fields and Universal Tetrahedral Correspondence](theory/FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md)  
 **Theory Hub**: [theory/README.md](theory/README.md) - Comprehensive theoretical documentation  
 **Implementation**: This repository provides computational tools for TNFR analysis
 
@@ -311,7 +311,7 @@ python examples/domain_applications/biological_patterns.py
 **Theoretical Foundation**:
 - **[AGENTS.md](AGENTS.md)** - Primary theoretical reference and development guide
 - **[theory/UNIFIED_GRAMMAR_RULES.md](theory/UNIFIED_GRAMMAR_RULES.md)** - Grammar constraint derivations (U1-U6)
-- **[theory/FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md](theory/FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md)** - Mathematical foundations
+- **[Structural Fields and Universal Tetrahedral Correspondence](theory/FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md)** - Mathematical foundations
 
 **Implementation Guide**:
 - **[ARCHITECTURE.md](ARCHITECTURE.md)** - System architecture and design

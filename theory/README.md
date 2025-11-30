@@ -5,7 +5,7 @@ Comprehensive theoretical documentation for Resonant Fractal Nature Theory (TNFR
 ## 📚 **Core Theory Documents**
 
 ### **Primary References**
-- **[FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md](FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md)** - Mathematical foundation and Universal Tetrahedral Correspondence
+- **[Structural Fields and Universal Tetrahedral Correspondence](FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md)** - Mathematical foundation and Universal Tetrahedral Correspondence
 - **[UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md)** - Complete U1-U6 physics derivations and operator constraints
 - **[TNFR_RIEMANN_RESEARCH_NOTES.md](TNFR_RIEMANN_RESEARCH_NOTES.md)** - **TNFR-Riemann Theoretical Framework** (18 sections + 11 appendices)
 - **[TUTORIAL_FROM_NODAL_EQUATION_TO_COSMOS.md](TUTORIAL_FROM_NODAL_EQUATION_TO_COSMOS.md)** - Technical mathematical derivations from nodal equation to macroscopic phenomena
@@ -61,7 +61,7 @@ Complete set of structural transformation operators:
 
 ### **TNFR–Riemann Program (COMPLETE FRAMEWORK)**
 - **[TNFR_RIEMANN_RESEARCH_NOTES.md](TNFR_RIEMANN_RESEARCH_NOTES.md)** – **Theoretical Framework** connecting discrete TNFR operators to Riemann Hypothesis via structural coherence. **Status**: Theoretical framework spanning mathematics and computational analysis (18 sections + 11 appendices A-K)
-- **Key Achievement**: Mathematical consciousness as emergent information integration + bootstrap resolution of reality as self-explaining structure
+- **Key Development**: Information integration analysis frameworks + self-consistent mathematical structure modeling
 - **Implementation**: `src/tnfr/riemann/operator.py` and `examples/39_riemann_operator_demo.py` - Computational validation of critical behavior at σ = 1/2
 
 ### **Computational Implementation**
@@ -75,7 +75,7 @@ Complete set of structural transformation operators:
 ### **Newcomer Path** (2-4 hours)
 1. **[../AGENTS.md](../AGENTS.md)** - Complete overview and paradigm
 2. **[GLOSSARY.md](GLOSSARY.md)** - Essential terminology
-3. **[FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md](FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md)** - Mathematical foundation
+3. **[Structural Fields and Universal Tetrahedral Correspondence](FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md)** - Mathematical foundation
 
 ### **Guided Tutorial: From Nodal Equation to Cosmos**
 

@@ -1,45 +1,54 @@
-# TNFR: Geocentric Planetary Dynamics (The Spirograph Sky)
+# Geocentric Dynamics Memo
 
-**Status**: Theoretical Framework  
-**Version**: 0.0.1  
-**Date**: November 29, 2025  
-
----
-
-## 1. The Geocentric Challenge
-
-Modeling the Solar System from Earth's perspective is topologically complex. We observe:
-1.  **The Sun**: A simple annual circle.
-2.  **The Moon**: A simple monthly circle.
-3.  **The Planets**: Complex **Epicycles** (Retrograde Motion). They move forward, stop, go backward, and move forward again.
-
-**Traditional Explanation**:
-*   **Ptolemy**: Circles on circles (Epicycles).
-*   **Copernicus/Kepler**: It's an illusion caused by Earth's motion around the Sun.
-
-**TNFR Explanation**:
-It is **Multi-Frequency Resonance**.
-*   The "Ether" (Phase Field) has multiple overlapping frequencies (Harmonics).
-*   Planets are nodes resonating with **Interference Patterns** between the Solar Cycle and the Zodiacal Cycle.
+**Status**: Technical reference  
+**Version**: 0.2.0 (November 30, 2025)  
+**Owner**: `theory/GEOCENTRIC_DYNAMICS.md`
 
 ---
 
-## 2. The Simulation Setup
+## 1. Scope
 
-We will simulate the sky as a **Composite Phase Field**.
+Model apparent planetary motion from Earth using TNFR phase-field representations with reproducible simulation steps and telemetry. This memo specifies inputs, integration workflow, and validation criteria.
 
-**Center**: Earth (Observer) at (0,0).
+---
 
-**The Fields**:
-1.  **The Carrier Wave (The Zodiac)**: A slow background rotation ($\omega_{stars}$).
-2.  **The Driver (The Sun)**: A strong, faster vortex ($\omega_{sun}$).
-3.  **The Perturbation (The Planet)**: A node caught between these two influences.
+## 2. Phase-Field Formulation
 
-**Dynamics**:
-*   **Sun**: Driven purely by the Daily/Annual cycle.
-*   **Moon**: Driven by the Lunar cycle.
-*   **Mars (Planet)**: Driven by the Solar cycle BUT with a **Phase Lag** (Resonance offset).
-    *   When the Sun passes Mars, the phase interference creates a "loop" in the trajectory (Retrograde Motion).
+Parameterize the sky plane in polar coordinates \((r, \theta)\) and define:
 
-**Expected Outcome**:
-We should see the classic **Spirograph Patterns** (Epicycles) emerging naturally from the interaction of two simple circular frequencies, without needing to program "spheres" or "gravity".
+1. Background rotation \(\phi_{bg}(\theta, t) = \omega_{bg} t\).  
+2. Solar driver \(\phi_{\odot}(t) = \omega_{\odot} t + \phi_0\).  
+3. Planetary evolution:
+	\[
+	\frac{d}{dt} \text{EPI}_p = \nu_f^p \Delta \text{NFR}(\phi_{bg}, \phi_{\odot}).
+	\]
+
+Retrograde loops appear when \(\dot{\phi}_{\odot} - \dot{\phi}_{bg}\) changes sign locally.
+
+Telemetry requirements: track \(C(t)\), \(\Phi_s\), \(|\nabla \phi|\), applied operators, and ephemeris references.
+
+---
+
+## 3. Simulation Workflow
+
+1. Load \(\omega_{bg}\) and \(\omega_{\odot}\) from astronomical datasets.  
+2. Configure operator sequences satisfying U1–U6; record seeds and schedules.  
+3. Integrate planetary nodes across the desired time window.  
+4. Produce trajectory plots (e.g., spirograph patterns) and store data under `results/geocentric_dynamics/`.  
+5. Document assumptions (projection, coordinate transforms, observation site).
+
+---
+
+## 4. Validation
+
+- Compare simulated retrograde intervals with JPL ephemerides; report phase/timing residuals.  
+- Run statistical checks to ensure deviations stay within configured tolerances.  
+- Include raw comparison tables (CSV) for peer review.
+
+---
+
+## 5. Outstanding Tasks
+
+1. Automate ephemeris ingestion and comparison in `benchmarks/`.  
+2. Add sensitivity analysis for \(\omega_{bg}\) perturbations.  
+3. Document limitations (atmospheric refraction, observation geometry) affecting telemetry.

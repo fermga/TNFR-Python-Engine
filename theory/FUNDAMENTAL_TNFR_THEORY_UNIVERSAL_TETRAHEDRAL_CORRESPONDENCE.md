@@ -1,4 +1,4 @@
-# TNFR Structural Fields and Universal Tetrahedral Correspondence
+# Structural Fields and Universal Tetrahedral Correspondence
 
 **Status**: Technical reference  
 **Date**: November 30, 2025  

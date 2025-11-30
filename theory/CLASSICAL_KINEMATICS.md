@@ -1,32 +1,64 @@
-# Classical Kinematics from Nodal Dynamics
+# Classical Kinematics Memo
 
-TNFR is a superset of Classical Mechanics. This means it can trivially solve standard kinematic problems (like the "Two Trains" problem) by configuring nodes in the **Inertial Regime**.
+**Status**: Technical memo  
+**Version**: 0.3.0 (November 30, 2025)  
+**Owner**: `theory/CLASSICAL_KINEMATICS.md`
 
-## The Inertial Regime
+---
 
-In TNFR, "Inertia" is the persistence of a structural pattern's propagation through the manifold when no external pressure ($\Delta NFR$) acts on it.
+## 1. Scope and Inertial Regime
 
-- **Condition**: $\Delta NFR = 0$ (Zero Structural Pressure).
-- **Nodal Equation**: $\partial EPI / \partial t = \nu_f \cdot 0 = 0$ (in the co-moving frame).
-- **Result**: The node maintains its "Phase Current" ($J_\phi$) or Momentum ($p$).
+When nodes experience zero structural pressure the nodal equation reduces to the classical constant-velocity form:
 
-## The Two Trains Problem
+\[
+\Delta \text{NFR} = 0 \quad \Rightarrow \quad \frac{\partial \text{EPI}}{\partial t} = 0 \text{ (co-moving frame)}.
+\]
 
-**Scenario**:
-- Train A leaves Madrid ($x=0$) at $v_A = 300$ km/h.
-- Train B leaves Barcelona ($x=600$ km) at $v_B = -250$ km/h.
-- **Question**: When and where do they cross?
+Practical checklist:
 
-**TNFR Solution**:
-We model the trains as two nodes ($N_A, N_B$) in a 1D structural manifold.
-1.  **Initialize**: Set initial positions ($q$) and momenta ($p = m \cdot v$).
-2.  **Evolve**: Use the Symplectic Integrator with `force_func = zero_force`.
-3.  **Detect**: Monitor the topological intersection $q_A(t) = q_B(t)$.
+- Ensure operator schedules exclude destabilizers (no OZ/VAL) so \(\Delta \text{NFR} = 0\).  
+- Confirm telemetry shows \(|\nabla \phi| < 10^{-4}\) and \(K_\phi \approx 0\) over the interval.  
+- Record initial phase current \(J_\phi\) as the momentum analog and log \(C(t)\) to verify coherence remains >0.99.
 
-## Visual Proofs
+---
 
-The script `examples/15_train_crossing_demo.py` demonstrates this exact scenario.
+## 2. Worked Example: Two-Train Scenario
 
-- `results/kinematics_demo/01_train_crossing.png`: Plot of the trajectories $x_A(t)$ and $x_B(t)$ intersecting at the precise analytical solution ($t \approx 65.45$ min, $x \approx 327.27$ km).
+| Parameter | Train A | Train B |
+| --- | --- | --- |
+| Initial position | \(x=0\,\text{km}\) | \(x=600\,\text{km}\) |
+| Velocity | \(+300\,\text{km/h}\) | \(-250\,\text{km/h}\) |
+| Operators | `[AL, IL, SHA]` | `[AL, IL, SHA]` |
 
-**Accuracy**: The simulation matches the analytical solution with **zero error** ($< 10^{-6}$), proving that Nodal Dynamics correctly reduces to Galilean Kinematics in the limit of zero structural pressure.
+Simulation workflow:
+
+1. Initialize two nodes in a 1D manifold with the parameters above; store configuration in `configs/kinematics/train_pair.yaml`.  
+2. Integrate using the zero-force symplectic kernel (see `examples/15_train_crossing_demo.py`).  
+3. Detect the time \(t_c\) when positions intersect and log \(C(t)\), \(\Phi_s\), and \(J_\phi\) histories to `results/kinematics_demo/run_<seed>.csv`.
+
+Analytical prediction for the intersection:
+
+\[
+t_c = \frac{600}{300 + 250} \text{ h} \approx 1.0909 \text{ h}, \quad x_c = v_A t_c \approx 327.27 \text{ km}.
+\]
+
+Numerical runs should match these values within integration tolerance (baseline example uses \(\Delta t = 0.1\,\text{min}\)). Deviations larger than \(10^{-3}\) indicate insufficient resolution or unintended structural forces (check for sneaky OZ/VAL events).
+
+---
+
+## 3. Artifacts and Telemetry
+
+Running `python examples/15_train_crossing_demo.py` produces:
+
+- `results/kinematics_demo/01_train_crossing.png` – overlay of simulated trajectories with the analytical intersection point.  
+- `results/kinematics_demo/run_<seed>.csv` – time series containing \(x_A\), \(x_B\), \(J_\phi\), and \(C(t)\).
+
+Artifacts must include metadata (seed, \(\Delta t\), integrator) plus telemetry columns for \(|\nabla \phi|\), \(K_\phi\), and \(C(t)\). Store SHA256 manifests under `results/kinematics_demo/manifest.json`.
+
+---
+
+## 4. Outstanding Work
+
+1. Document how non-zero \(\Delta \text{NFR}\) reintroduces acceleration and cross-link to `theory/CLASSICAL_MECHANICS_CORRESPONDENCE.md`.  
+2. Add regression tests comparing simulated crossings against analytic solutions for multiple velocity pairs (store expected values in `tests/data/kinematics_cases.json`).  
+3. Report floating-point sensitivity (single vs. double precision) for long trajectories and note any impacts on \(C(t)\) or \(J_\phi\).

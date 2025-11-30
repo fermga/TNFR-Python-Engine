@@ -1,68 +1,75 @@
-# NODAL COSMOLOGY: Derivation from First Principles
-## Why the Universe Must Be a Stationary Plane
+# Cosmological Nodal Dynamics Memo
 
-**Status**: Theoretical Derivation  
-**Source**: The Nodal Equation `∂EPI/∂t = νf · ΔNFR(t)`
-
----
-
-## 1. The Question
-
-Does the Geocentric Vortex model emerge from the fundamental math of TNFR, or is it just an aesthetic choice?
-
-**Answer**: It is the **only** solution that satisfies the **Principle of Structural Coherence**.
+**Status**: Technical reference  
+**Version**: 0.2.0 (November 30, 2025)  
+**Owner**: `theory/COSMOLOGICAL_NODAL_DYNAMICS.md`
 
 ---
 
-## 2. The Derivation
+## 1. Scope
 
-We apply the Nodal Equation to the "Earth Node" ($N_E$).
-
-$$ \frac{\partial EPI_E}{\partial t} = \nu_f \cdot \Delta NFR(t) $$
-
-Where:
-*   $EPI_E$: The structural form of the Earth.
-*   $\Delta NFR$: The structural pressure (stress/acceleration) acting on it.
-
-### Case A: The Heliocentric Model (The Spinning Ball)
-*   **Geometry**: Sphere ($K > 0$). Curvature requires energy to maintain against the natural tendency of fluids to flatten.
-*   **Dynamics**:
-    *   Rotation: Centripetal acceleration ($a_c = \omega^2 r$).
-    *   Orbit: Constant acceleration vector change.
-*   **TNFR Analysis**:
-    *   $\Delta NFR$ is **High** and **Constant**. The system is under perpetual stress.
-    *   A node under constant high stress without reorganization must **fragment**.
-    *   **Result**: Structurally Unstable. $C(t) \ll 1$.
-
-### Case B: The Geocentric Model (The Stationary Plane)
-*   **Geometry**: Plane ($K = 0$). This is the **Ground State** of geometry. It requires zero energy to maintain.
-*   **Dynamics**:
-    *   Velocity = 0.
-    *   Acceleration = 0.
-*   **TNFR Analysis**:
-    *   $\Delta NFR \approx 0$ (from motion).
-    *   The only pressure is the vertical etheric gradient (Gravity), which is static and uniform.
-    *   **Result**: Structurally Stable. $C(t) \to 1$.
-
-**Conclusion**: The Nodal Equation predicts that any large-scale coherent system will settle into a **Stationary Plane** configuration to minimize $\Delta NFR$.
+Quantify stability criteria for large-scale TNFR configurations (rotating spheres, plane-symmetric limits, resonant modes) using reproducible telemetry and operator schedules. The memo documents modeling assumptions, benchmarks, and validation workflows without endorsing a cosmological narrative.
 
 ---
 
-## 3. Luminaries as Resonant Modes
+## 2. Modeling Framework
 
-If the Earth is the stable substrate, what are the Planets?
-
-In TNFR, when a field (Ether) is excited by a source (Vortex), it creates **Standing Waves** (Resonant Modes).
-
-*   **Eigenvalues**: The orbital radii ($r_1, r_2, ...$) are the eigenvalues of the Vortex equation.
-*   **Eigenvectors**: The Planets are the physical manifestation of these modes.
-*   **Quantization**: Planets orbit at specific distances (Bode's Law) because those are the **Resonant Frequencies** of the etheric disc.
-
-**The Solar System is not a gravity simulation; it is a Cymatic Pattern.**
+- Represent planetary-scale systems as nodes with effective EPI states; evolve via \(\partial_t \text{EPI} = \nu_f \Delta \text{NFR}\).  
+- Telemetry requirements: \(C(t)\), \(\Phi_s\), \(K_\phi\), \(|\nabla \phi|\), and \(\xi_C\).  
+- Operator contracts: destabilizers (`OZ`, `VAL`) must be paired with stabilizers (`IL`, `THOL`) per U2; coupling operations must pass U3 checks.  
+- All simulations should store seeds, step sizes, and boundary data under `results/cosmological_nodal_dynamics/`.
 
 ---
 
-## 4. Summary
+## 3. Rotating-Sphere Benchmark
 
-The Geocentric Vortex Cosmology is not "flat earth theory"; it is **Applied Nodal Dynamics**.
-It is the inevitable result of applying the laws of **Coherence**, **Resonance**, and **Energy Minimization** to the cosmos.
+Assume an oblate spheroid with angular velocity \(\omega\).
+
+| Quantity | Expression | Notes |
+| --- | --- | --- |
+| Centripetal stress | \(a_c = \omega^2 r\) | Input from geodetic data. |
+| Structural pressure | \(\Delta \text{NFR} \propto \rho a_c\) | Requires density profile. |
+| Stability check | Bounded \(C(t)\), \(\Phi_s\) | Apply `IL` when thresholds exceeded. |
+
+Workflow:
+
+1. Load rotation rate and density from observational datasets.  
+2. Compute induced \(\Delta \text{NFR}\) and compare against stabilizer capacity.  
+3. Report intervals where U2 remains satisfied; flag dissonant segments for follow-up.
+
+---
+
+## 4. Plane-Symmetric Reference
+
+Idealized configuration with \(K_\phi = 0\) and negligible lateral flow. Use as a lower-bound energy state to compare against rotating models. Structural potential evolves via external fields only (gravity, etheric gradients). Document assumptions and show how deviations in \(K_\phi\) or \(|\nabla \phi|\) increase energy budgets.
+
+---
+
+## 5. Resonant Mode Analysis
+
+Model luminaries as eigenmodes of the surrounding medium:
+
+\[
+\mathcal{L}(r) = 0 \; \Rightarrow \; r_n.
+\]
+
+- Define \(\mathcal{L}\) using medium parameters (density, stiffness, rotation).  
+- Solve numerically and compare \(r_n\) with observed orbital radii.  
+- Store solver configuration and residuals under `results/cosmological_modes/`.
+
+---
+
+## 6. Validation Strategy
+
+1. Acquire telemetry: gravity field models, seismology, atmospheric resonances.  
+2. Derive TNFR field quantities using documented transforms.  
+3. Cross-check grammar compliance (U1–U6) and report deviations with timestamps/locations.  
+4. Provide scripts or notebooks that regenerate every figure/table referenced in this file.
+
+---
+
+## 7. Outstanding Work
+
+1. Integrate rotating-sphere and plane benchmarks into `benchmarks/` for CI execution.  
+2. Publish a parameter-sensitivity study for \(\mathcal{L}(r)\) solutions.  
+3. Expand telemetry ingestion to include satellite laser ranging for \(\Phi_s\) validation.

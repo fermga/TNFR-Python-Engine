@@ -1,117 +1,92 @@
-# TNFR-Classical Mechanics Correspondence Theorem
+# Classical Mechanics Correspondence Memo
 
-**Status**: Theoretical Reference  
-**Version**: 0.0.1 (November 29, 2025)  
-**Module**: `tnfr.physics.classical_mechanics`
-
----
-
-## Executive Summary
-
-This document establishes the formal correspondence between **TNFR Nodal Dynamics** and **Classical Mechanics**. It demonstrates that Classical Mechanics is not a separate set of laws but a **limiting case** of TNFR dynamics that emerges under specific conditions of high coherence and low dissonance.
-
-**Core Insight**: The Nodal Equation `∂EPI/∂t = νf · ΔNFR(t)` is the fundamental evolution law. Newton's Second Law `F = ma` is its projection onto the kinematic subspace when structural frequency is interpreted as inverse inertia.
+**Status**: Technical reference  
+**Version**: 0.3.0 (November 30, 2025)  
+**Owner**: `theory/CLASSICAL_MECHANICS_CORRESPONDENCE.md`
 
 ---
 
-## The Correspondence Theorem
+## 1. Scope
 
-**Theorem**: For a TNFR system in the **Low-Dissonance Limit** (|∇φ| → 0) with constant structural frequency (νf), the Nodal Equation is isomorphic to the Euler-Lagrange equations of Classical Mechanics.
-
-### Mapping Dictionary
-
-| Classical Concept | Symbol | TNFR Structural Equivalent | Symbol | Relation |
-|-------------------|--------|----------------------------|--------|----------|
-| **Position** | $q$ | EPI Spatial Component | $EPI_q$ | Direct Mapping |
-| **Velocity** | $\dot{q}$ | EPI Velocity Component | $EPI_v$ | Direct Mapping |
-| **Inertial Mass** | $m$ | Inverse Structural Frequency | $1/\nu_f$ | $m = 1/\nu_f$ |
-| **Force** | $F$ | Structural Pressure | $\Delta NFR$ | $F = \Delta NFR$ |
-| **Action** | $S$ | Phase Accumulation | $\Phi$ | $S \sim \int \phi dt$ |
-| **Potential** | $V$ | Structural Potential | $\Phi_s$ | $V \sim \Phi_s$ |
-
-### Derivation from Nodal Equation
-
-Starting from the Nodal Equation:
-$$ \frac{\partial EPI}{\partial t} = \nu_f \cdot \Delta NFR(t) $$
-
-Decomposing EPI into Form ($q$) and Flow ($v$):
-1. **Kinematic Equation**: $\frac{dq}{dt} = v$ (Definition of flow)
-2. **Dynamic Equation**: $\frac{dv}{dt} = \nu_f \cdot \Delta NFR_{force}$
-
-Substituting $\nu_f = 1/m$ and $\Delta NFR_{force} = F$:
-$$ \frac{dv}{dt} = \frac{1}{m} \cdot F \implies F = m \cdot a $$
-
-Thus, Newton's Second Law emerges naturally from the Nodal Equation when we interpret structural pressure as force and structural frequency as inverse inertia.
+Document the precise conditions under which TNFR nodal dynamics reduce to classical constant-mass mechanics, list implementation hooks, and summarize validation artifacts. The memo confines itself to reproducible limits and telemetry.
 
 ---
 
-## Emergent Forces
+## 2. Mapping Conditions
 
-In TNFR, "forces" are not fundamental entities but **emergent structural mechanisms**.
+Low-dissonance regime:
 
-### 1. Gravity as Coherence Attraction
-**Classical**: Fundamental attractive force between masses.  
-**TNFR**: Emergent attraction due to **Phase Synchronization**.
-- Nodes naturally evolve to minimize phase difference ($|\phi_i - \phi_j|$).
-- This minimization creates a gradient in the structural manifold that pulls coherent structures together.
-- **Correspondence**: $F_g \leftrightarrow -\nabla \Phi_s$ (Coherence Gradient).
+\[
+|\nabla \phi| \rightarrow 0, \qquad \nu_f = \text{constant}, \qquad C(t) \approx 1.
+\]
 
-### 2. Friction as Stabilization
-**Classical**: Dissipative force opposing motion.  
-**TNFR**: Emergent effect of **Coherence Stabilization** (IL Operator).
-- The `Coherence` operator reduces high-frequency fluctuations and aligns flow vectors.
-- This removal of "thermal" noise manifests macroscopically as energy dissipation or friction.
-- **Correspondence**: $F_f \leftrightarrow \text{IL}(EPI)$.
+Under these constraints the nodal equation becomes equivalent to Newton’s equations. The working dictionary is summarized below.
 
-### 3. Harmonic Forces as Confinement
-**Classical**: Restoring force proportional to displacement ($F = -kx$).  
-**TNFR**: Emergent effect of **Phase Gradient Confinement**.
-- Deviations from equilibrium increase the local Phase Gradient ($|\nabla \phi|$).
-- The system generates a restoring pressure to minimize this gradient.
-- **Correspondence**: $F_k \leftrightarrow -k \cdot \nabla |\nabla \phi|$.
+| Classical item | Symbol | TNFR quantity | Notes |
+| --- | --- | --- | --- |
+| Position | \(q\) | Spatial component of EPI | Extract via `ClassicalMechanicsMapper.position`. |
+| Velocity | \(\dot q\) | Flow component | Same accessor. |
+| Mass | \(m\) | \(1/\nu_f\) | Stored in telemetry for audits. |
+| Force | \(F\) | \(\Delta \text{NFR}\) | Must be reported in structural units. |
+| Potential | \(V\) | \(\Phi_s\) | Map gradients directly. |
+| Action | \(S\) | Phase accumulation | Optional for diagnostics. |
 
----
+Derivation sketch:
 
-## Symplectic Structure
+\[
+\frac{\partial \text{EPI}}{\partial t} = \nu_f \Delta \text{NFR} \Rightarrow \frac{dv}{dt} = \nu_f \Delta \text{NFR}_{\text{force}}.
+\]
 
-Classical Mechanics preserves the symplectic form $\omega = dq \wedge dp$ (Liouville's Theorem).
-TNFR Dynamics preserves **Structural Information** (Coherence).
-
-The `TNFRSymplecticIntegrator` (`src/tnfr/dynamics/symplectic.py`) implements evolution schemes (Verlet, Yoshida) that respect this conservation law on the structural manifold.
-
-**Poisson Brackets**:
-The structural commutator $\{f, g\}$ defined in `ClassicalMechanicsMapper` quantifies the relationship between structural observables, mirroring the classical Poisson bracket:
-$$ \{f, g\} = \sum \left( \frac{\partial f}{\partial q} \frac{\partial g}{\partial p} - \frac{\partial f}{\partial p} \frac{\partial g}{\partial q} \right) $$
+Substituting \(\nu_f = 1/m\) yields \(F = m a\). Provide derivation references to `AGENTS.md` (Foundational Physics) when citing this result.
 
 ---
 
-## Implementation
+## 3. Structural Interpretation of Standard Forces
 
-The correspondence is implemented in:
-- **Mapper**: `src/tnfr/physics/classical_mechanics.py`
-- **Integrator**: `src/tnfr/dynamics/symplectic.py`
-- **Validation**: `tests/test_classical_mechanics.py`
+| Classical label | TNFR mechanism | Observable |
+| --- | --- | --- |
+| Gravity | Phase-coherence gradient | Monitor \(-\nabla \Phi_s\) along trajectories. |
+| Friction | Coherence stabilizer (IL) | Track reduction in high-frequency \(\Delta \text{NFR}\). |
+| Harmonic restoring | Phase-gradient confinement | Measure \(\lvert \nabla \phi \rvert\) deviation and resulting pressure. |
 
-This framework allows us to simulate classical systems (Kepler, Harmonic Oscillator) as specific configurations of TNFR nodes, proving that TNFR is a superset of Classical Mechanics.
+Each entry should be backed by telemetry traces before publication; speculative language has been removed.
 
-## Experimental Demonstration
+---
 
-The script `examples/12_classical_mechanics_demo.py` provides a complete end-to-end demonstration of this emergence.
+## 4. Symplectic Structure and Workflow
 
-**Experiment**: Keplerian Orbit (Planet orbiting Star)
+- `src/tnfr/dynamics/symplectic.py` hosts Verlet/Yoshida schemes used for constant-mass integrations.
+- `src/tnfr/physics/classical_mechanics.py` maps TNFR states into \((q, p)\) tuples and exposes Poisson-bracket utilities.
+- `tests/test_classical_mechanics.py` checks conservation of structural invariants and regression outputs.
 
-- **Setup**: A single TNFR node initialized with position and velocity corresponding to an elliptical orbit ($e \approx 0.5$).
-- **Dynamics**: Evolved solely via `TNFRSymplecticIntegrator` using a Coherence Gradient Force ($F = -\nabla \Phi_s$).
-- **Results**:
-  1. **Trajectory**: The node traces a perfect ellipse, confirming the emergence of Kepler's First Law.
-  2. **Phase Space**: The $(q, p)$ plot shows a closed loop, indicating a stable bound state (Grammar Rule U2).
-  3. **Conservation**: Energy ($H$) and Angular Momentum ($L$) are conserved to within symplectic integrator precision ($< 10^{-4}$ relative drift), confirming the structural stability of the mapping.
+Workflow:
 
-**Visual Proofs**:
+1. Select the integrator order (default 4th-order Yoshida) and record it in run metadata.  
+2. Ensure low-dissonance conditions by verifying \(|\nabla \phi|\) and \(K_\phi\) remain within canonical thresholds during integration.  
+3. After each run, export telemetry (`C(t)`, \(\Phi_s\), \(|\nabla \phi|\)) alongside classical observables (`q`, `p`, energy) to `results/classical_demo/run_<seed>.csv`.  
+4. Compare outputs with analytic references; flag deviations beyond tolerances in the regression report.
 
-- `results/classical_demo/01_trajectory.png`: Emergent elliptical orbit.
-- `results/classical_demo/02_phase_space.png`: Stable phase space cycle.
-- `results/classical_demo/03_conservation.png`: Invariant conservation.
+The integrator preserves coherence analogously to Liouville’s theorem; cite test logs rather than informal statements.
 
-This experiment proves that **Classical Mechanics is a native capability of the TNFR Engine**, requiring no external physics engines, only the correct structural configuration.
+---
+
+## 5. Example Experiment (Kepler Benchmark)
+
+`examples/12_classical_mechanics_demo.py` configures a single node in a coherence-gradient potential to approximate an ellipse with eccentricity \(e \approx 0.5\).
+
+Artifacts:
+
+- `results/classical_demo/01_trajectory.png` – orbital path overlay.  
+- `results/classical_demo/02_phase_space.png` – \((q, p)\) loop confirming bounded motion.  
+- `results/classical_demo/03_conservation.png` – relative drift of total energy/ang. momentum (target < \(10^{-4}\)).
+
+Metadata (seed, \(\Delta t\), integrator order) lives in `results/classical_demo/run_<seed>.json`. Runs should be rerun whenever integrator changes occur.
+
+---
+
+## 6. Outstanding Work
+
+1. Extend regression coverage to include oscillators and free-fall trajectories with analytic comparisons.  
+2. Publish a unit-conversion note mapping structural units to SI when benchmarking against laboratory data.  
+3. Automate telemetry capture (`C(t)`, \(\Phi_s\), \(|\nabla \phi|\)) for every example run to document compliance with the low-dissonance assumption.
 
