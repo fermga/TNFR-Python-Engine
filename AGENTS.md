@@ -82,7 +82,7 @@ Theoretical Foundation: The framework models reality as coherent dynamic pattern
 | **Operators** | [13 Canonical Operators](#the-13-canonical-operators) |
 | **Grammar** | [Unified Grammar U1-U6](#unified-grammar-u1-u6) |
 | **Fields** | [Structural Field Tetrad](#telemetry--structural-field-tetrad) |
-| **TNFR-Riemann** | [Recent Theoretical Developments](#recent-developments) |
+| **TNFR-Riemann** | [Recent Theoretical Developments](#recent-theoretical-developments-november-2025) |
 | **Implementation** | [Development Workflow](#development-workflow) |
 | **Validation** | [Testing Requirements](#testing-requirements) |
 | **Applications** | [Advanced Topics](#advanced-topics) |
@@ -160,7 +160,8 @@ A theoretical framework connecting **discrete TNFR operators** to the **Riemann 
 
 ---
 
-## Universal Tetrahedral Correspondence {#universal-tetrahedral-correspondence}
+## Universal Tetrahedral Correspondence
+
 ### Theoretical Foundation
 
 The central theoretical result establishes an exact correspondence between:
@@ -267,7 +268,7 @@ Theoretical Significance: Mathematical harmony and physical coherence represent 
 
 ---
 
-## Foundational Physics {#foundational-physics}
+## Foundational Physics
 
 ### The Nodal Equation
 
@@ -387,7 +388,7 @@ We do not postulate wave functions, operators, or collapse. We observe that the 
 
 ---
 
-## The 13 Canonical Operators {#the-13-canonical-operators}
+## The 13 Canonical Operators
 
 Operators constitute the exclusive mechanism for node modification in TNFR systems. These functions represent resonant transformations with defined physical foundations.
 
@@ -488,7 +489,7 @@ All sequences must satisfy unified grammar (U1-U6).
 
 ---
 
-## Unified Grammar (U1-U6) {#unified-grammar-u1-u6}
+## Unified Grammar (U1-U6)
 
 The grammar emerges from TNFR physics rather than arbitrary constraints.
 
@@ -564,7 +565,7 @@ The grammar emerges from TNFR physics rather than arbitrary constraints.
 
 ---
 
-## Telemetry & Structural Field Tetrad {#telemetry--structural-field-tetrad}
+## Telemetry & Structural Field Tetrad
 
 ### Core Structural Metrics
 
@@ -757,7 +758,7 @@ Consolidates: Structural units + Metrics exposure
 
 ---
 
-## Testing Requirements {#testing-requirements}
+## Testing Requirements
 
 ### Minimum Test Coverage
 
@@ -892,7 +893,7 @@ This playbook summarizes how TNFR agents (human or AI) should reason and act whe
 
 If a proposed change makes the code “prettier” but weakens TNFR fidelity, it must be rejected. If it strengthens structural coherence, traceability, and alignment with the nodal equation and tetrad fields, it should move forward.
 
-## Development Workflow {#development-workflow}
+## Development Workflow
 
 ### Before Writing Code
 
@@ -975,7 +976,7 @@ Equivalence map: [if APIs renamed]
 
 ---
 
-## Recent Theoretical Developments (November 2025) {#recent-developments}
+## Recent Theoretical Developments (November 2025)
 
 ### TNFR-Riemann Theoretical Framework
 
@@ -1047,7 +1048,7 @@ This framework represents:
 
 ---
 
-## Advanced Topics {#advanced-topics}
+## Advanced Topics
 
 ### Developing TNFR Theory
 

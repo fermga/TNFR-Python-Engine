@@ -164,7 +164,7 @@ The ΔNFR equation emerges from three fundamental arithmetic pressures:
 ## Repository Structure
 
 ```
-zenodo-package/
+primality-test/
 ├── tnfr_primality/           # Advanced TNFR implementation
 │   ├── __init__.py
 │   ├── __main__.py           # Auto-detecting entry point

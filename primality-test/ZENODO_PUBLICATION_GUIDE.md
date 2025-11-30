@@ -7,7 +7,7 @@ This directory contains a complete, publication-ready package for **TNFR-Based P
 ## Package Structure
 
 ```
-zenodo-package/
+primality-test/
 ├── tnfr_primality/           # Main package implementation
 │   ├── __init__.py           # Package initialization and exports
 │   ├── core.py               # Core TNFR primality algorithms
@@ -59,7 +59,7 @@ zenodo-package/
 
 ### From Source
 ```bash
-cd zenodo-package
+cd primality-test
 pip install -e .
 
 # Verify installation
@@ -83,9 +83,9 @@ python benchmarks/comprehensive_benchmark.py
 ### 1. Prepare Archive
 ```bash
 cd TNFR-Python-Engine
-zip -r tnfr-primality-v1.0.0.zip zenodo-package/
+zip -r tnfr-primality-v1.0.0.zip primality-test/
 # OR
-tar -czf tnfr-primality-v1.0.0.tar.gz zenodo-package/
+tar -czf tnfr-primality-v1.0.0.tar.gz primality-test/
 ```
 
 ### 2. Upload to Zenodo

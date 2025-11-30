@@ -5,7 +5,7 @@
 ### **📁 Estructura del Paquete Completo**
 
 ```
-C:\TNFR-Python-Engine\zenodo-package\
+C:\TNFR-Python-Engine\primality-test\
 ├── 🧮 tnfr_primality/              # Implementación principal
 │   ├── __init__.py                 # Exportaciones del paquete
 │   ├── core.py                     # Algoritmos TNFR fundamentales
@@ -128,7 +128,7 @@ Teorema: n es primo ⟺ ΔNFR(n) = 0
 #### **1. Crear Archivo para Zenodo**
 ```bash
 cd C:\TNFR-Python-Engine
-zip -r tnfr-primality-v1.0.0.zip zenodo-package/
+zip -r tnfr-primality-v1.0.0.zip primality-test/
 ```
 
 #### **2. Subir a Zenodo**

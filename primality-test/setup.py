@@ -14,8 +14,8 @@ setup(
     project_urls={
         "Repository": "https://github.com/fermga/TNFR-Python-Engine",
         "Bug Tracker": "https://github.com/fermga/TNFR-Python-Engine/issues",
-        "Documentation": "https://github.com/fermga/TNFR-Python-Engine/tree/main/zenodo-package/docs",
-        "Source": "https://github.com/fermga/TNFR-Python-Engine/tree/main/zenodo-package",
+        "Documentation": "https://github.com/fermga/TNFR-Python-Engine/tree/main/primality-test/docs",
+        "Source": "https://github.com/fermga/TNFR-Python-Engine/tree/main/primality-test",
     },
     classifiers=[
         "Development Status :: 5 - Production/Stable",
