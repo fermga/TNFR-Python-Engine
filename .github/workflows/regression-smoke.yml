@@ -55,7 +55,7 @@ jobs:
           fi
 
       - name: Upload artifact (JSONL + summary)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: bifurcation-smoke-results
           path: |
