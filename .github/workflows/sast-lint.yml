@@ -51,7 +51,7 @@ jobs:
           category: bandit
 
       - name: Upload Bandit SARIF artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: bandit-sarif
           path: bandit.sarif
@@ -111,7 +111,7 @@ jobs:
           category: semgrep
 
       - name: Upload Semgrep SARIF artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: semgrep-sarif
           path: semgrep.sarif
