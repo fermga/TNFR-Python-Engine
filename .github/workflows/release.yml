@@ -165,7 +165,7 @@ jobs:
 
       - name: Upload validation logs
         if: ${{ always() && steps.qa.outcome != 'skipped' }}
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: qa-validation-${{ needs.prepare.outputs.version }}
           path: artifacts/qa-validation.log
@@ -220,7 +220,7 @@ jobs:
 
       - name: Upload signed distributions
         if: ${{ always() && steps.build.outcome == 'success' }}
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: tnfr-${{ needs.prepare.outputs.version }}-dist
           path: dist/*
