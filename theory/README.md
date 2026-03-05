@@ -7,6 +7,7 @@ Comprehensive theoretical documentation for Resonant Fractal Nature Theory (TNFR
 ### **Primary References**
 - **[Structural Fields and Universal Tetrahedral Correspondence](FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md)** - Mathematical foundation and Universal Tetrahedral Correspondence
 - **[UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md)** - Complete U1-U6 physics derivations and operator constraints
+- **[STRUCTURAL_CONSERVATION_THEOREM.md](STRUCTURAL_CONSERVATION_THEOREM.md)** - **Noether-like conservation laws** from the nodal equation: continuity theorem, two-sector decomposition, Ward identities, Lyapunov stability
 - **[TNFR_RIEMANN_RESEARCH_NOTES.md](TNFR_RIEMANN_RESEARCH_NOTES.md)** - **TNFR-Riemann Theoretical Framework** (18 sections + 11 appendices)
 - **[TUTORIAL_FROM_NODAL_EQUATION_TO_COSMOS.md](TUTORIAL_FROM_NODAL_EQUATION_TO_COSMOS.md)** - Technical mathematical derivations from nodal equation to macroscopic phenomena
 - **[GLOSSARY.md](GLOSSARY.md)** - Operational definitions and terminology reference
@@ -50,6 +51,7 @@ Complete set of structural transformation operators:
 ### **Mathematical Foundations**
 - Complex field unification (Ψ = K_φ + i·J_φ)
 - Emergent invariants and conservation laws
+- **Structural Conservation Theorem** — Noether correspondence: grammar U1-U6 ↔ conserved charges
 - Tensor analysis and topological charges
 - Spectral theory and resonance cascades
 
@@ -113,7 +115,7 @@ For a structured, equation-driven tour of how macroscopic order emerges from the
 
 ## 🏛️ **Theoretical Status**
 
-**Version**: 0.0.1 (November 29, 2025)  
+**Version**: 0.0.3 (March 2026)  
 **Maturity**: Production-ready theoretical framework  
 **Validation**: 2,400+ experiments across multiple topologies  
 **Authority**: AGENTS.md serves as canonical theoretical reference  

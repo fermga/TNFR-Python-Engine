@@ -922,8 +922,8 @@ class GrammarValidator:
         self,
         G: Any,
         *,
-        phi_grad_threshold: float = 0.2904,
-        kphi_abs_threshold: float = 3.0,
+        phi_grad_threshold: float = 0.183736807,  # γ/π canonical
+        kphi_abs_threshold: float = 2.8274,  # 0.9×π canonical hotspot flag
         kphi_multiscale: bool = True,
         kphi_alpha_hint: float | None = 2.76,
         xi_regime_multipliers: tuple[float, float] = (1.0, 3.0),

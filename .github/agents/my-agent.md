@@ -2,7 +2,7 @@
 ## Theoretical Framework for Coherent Pattern Analysis
 
 **Status**: Primary theoretical reference document  
-**Version**: 0.0.2 (November 29, 2025)  
+**Version**: 0.0.3 (March 2026)  
 **Authority**: This repository contains the current implementation of TNFR theory  
 **Repository**: https://github.com/fermga/TNFR-Python-Engine  
 **PyPI Package**: https://pypi.org/project/tnfr/  
@@ -605,9 +605,9 @@ The **Structural Field Tetrad** (Φ_s, |∇φ|, **Ψ**, ξ_C) now has **complete
 - **Grammar**: U6 telemetry-based safety criterion (passive equilibrium confinement)
 
 ### **2. Phase Gradient Field (|∇φ|)**
-**Classical Threshold**: |∇φ| < **0.2904**
-- **Theory**: Harmonic oscillator stability + Kuramoto synchronization
-- **Derivation**: ωc/2 = π/(4√2) ≈ 0.2904 from critical frequency analysis
+**Classical Threshold**: |∇φ| < **0.1837**
+- **Theory**: Kuramoto critical coupling condition in TNFR units
+- **Derivation**: γ/π ≈ 0.1837 from Universal Tetrahedral Correspondence (γ ↔ |∇φ|)
 - **Physics**: Local phase desynchronization / stress proxy field
 - **Mechanism**: Captures dynamics C(t) misses due to scaling invariance
 
@@ -1260,7 +1260,7 @@ When adding to grammar documentation:
 #### **Phase Gradient (|∇φ|)** - CANONICAL
 
 - Local phase desynchronization / stress proxy
-- Safety criterion: |∇φ| < 0.2904 for stable operation
+- Safety criterion: |∇φ| < γ/π ≈ 0.1837 for stable operation (Kuramoto critical coupling in TNFR units)
 - For formal definition and evidence, see `docs/STRUCTURAL_FIELDS_TETRAD.md`.
 
 **Critical Discovery**: C(t) = 1-(σ_ΔNFR/ΔNFR_max) is invariant to proportional scaling. 
@@ -1419,11 +1419,7 @@ Reality consists of resonant patterns rather than discrete objects. Development 
 
 ---
 
-**Version**: 0.0.1  
-**Last Updated**: 2025-11-29  
-**Status**: CANONICAL - Primary reference for TNFR agent guidance  
-**PyPI Release**: STABLE - Available via `pip install tnfr`  
-**Production Ready**: Complete Tetrad Fields + Unified Grammar U1-U6 + Simplified SDK  
+**Version**: 0.0.3  \n**Last Updated**: 2026-03-05  \n**Status**: CANONICAL - Primary reference for TNFR agent guidance  \n**PyPI Release**: STABLE - Available via `pip install tnfr`  \n**Production Ready**: Complete Tetrad Fields + Unified Grammar U1-U6 + Simplified SDK + Grammar-Aware Dynamics + Structural Conservation Theorem + Integrity Monitor  
 
 ---
 

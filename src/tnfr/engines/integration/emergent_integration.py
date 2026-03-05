@@ -99,8 +99,8 @@ except ImportError:
 
 # Import physics for mathematical validation
 try:
-    from ..physics.canonical import compute_structural_potential, compute_phase_gradient
-    from ..physics.canonical import compute_phase_curvature, compute_coherence_length
+    from ...physics.canonical import compute_structural_potential, compute_phase_gradient
+    from ...physics.canonical import compute_phase_curvature, compute_coherence_length
     HAS_PHYSICS = True
 except ImportError:
     HAS_PHYSICS = False

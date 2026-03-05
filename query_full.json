@@ -1,0 +1,3362 @@
+{
+  "data": {
+    "__type": {
+      "fields": [
+        {
+          "name": "platformStats",
+          "args": [
+            {
+              "name": "where",
+              "type": {
+                "name": "PlatformStatsWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            },
+            {
+              "name": "orderBy",
+              "type": {
+                "name": null,
+                "kind": "LIST"
+              }
+            },
+            {
+              "name": "offset",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "limit",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "platformStatsById",
+          "args": [
+            {
+              "name": "id",
+              "type": {
+                "name": null,
+                "kind": "NON_NULL"
+              }
+            }
+          ],
+          "type": {
+            "name": "PlatformStats",
+            "kind": "OBJECT",
+            "ofType": null
+          }
+        },
+        {
+          "name": "platformStatsConnection",
+          "args": [
+            {
+              "name": "orderBy",
+              "type": {
+                "name": null,
+                "kind": "NON_NULL"
+              }
+            },
+            {
+              "name": "after",
+              "type": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "first",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "where",
+              "type": {
+                "name": "PlatformStatsWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "PlatformStatsConnection",
+              "kind": "OBJECT"
+            }
+          }
+        },
+        {
+          "name": "accountStats",
+          "args": [
+            {
+              "name": "where",
+              "type": {
+                "name": "AccountStatWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            },
+            {
+              "name": "orderBy",
+              "type": {
+                "name": null,
+                "kind": "LIST"
+              }
+            },
+            {
+              "name": "offset",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "limit",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "accountStatById",
+          "args": [
+            {
+              "name": "id",
+              "type": {
+                "name": null,
+                "kind": "NON_NULL"
+              }
+            }
+          ],
+          "type": {
+            "name": "AccountStat",
+            "kind": "OBJECT",
+            "ofType": null
+          }
+        },
+        {
+          "name": "accountStatsConnection",
+          "args": [
+            {
+              "name": "orderBy",
+              "type": {
+                "name": null,
+                "kind": "NON_NULL"
+              }
+            },
+            {
+              "name": "after",
+              "type": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "first",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "where",
+              "type": {
+                "name": "AccountStatWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "AccountStatsConnection",
+              "kind": "OBJECT"
+            }
+          }
+        },
+        {
+          "name": "positions",
+          "args": [
+            {
+              "name": "where",
+              "type": {
+                "name": "PositionWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            },
+            {
+              "name": "orderBy",
+              "type": {
+                "name": null,
+                "kind": "LIST"
+              }
+            },
+            {
+              "name": "offset",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "limit",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "positionById",
+          "args": [
+            {
+              "name": "id",
+              "type": {
+                "name": null,
+                "kind": "NON_NULL"
+              }
+            }
+          ],
+          "type": {
+            "name": "Position",
+            "kind": "OBJECT",
+            "ofType": null
+          }
+        },
+        {
+          "name": "positionsConnection",
+          "args": [
+            {
+              "name": "orderBy",
+              "type": {
+                "name": null,
+                "kind": "NON_NULL"
+              }
+            },
+            {
+              "name": "after",
+              "type": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "first",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "where",
+              "type": {
+                "name": "PositionWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "PositionsConnection",
+              "kind": "OBJECT"
+            }
+          }
+        },
+        {
+          "name": "prices",
+          "args": [
+            {
+              "name": "where",
+              "type": {
+                "name": "PriceWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            },
+            {
+              "name": "orderBy",
+              "type": {
+                "name": null,
+                "kind": "LIST"
+              }
+            },
+            {
+              "name": "offset",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "limit",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "priceById",
+          "args": [
+            {
+              "name": "id",
+              "type": {
+                "name": null,
+                "kind": "NON_NULL"
+              }
+            }
+          ],
+          "type": {
+            "name": "Price",
+            "kind": "OBJECT",
+            "ofType": null
+          }
+        },
+        {
+          "name": "pricesConnection",
+          "args": [
+            {
+              "name": "orderBy",
+              "type": {
+                "name": null,
+                "kind": "NON_NULL"
+              }
+            },
+            {
+              "name": "after",
+              "type": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "first",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "where",
+              "type": {
+                "name": "PriceWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "PricesConnection",
+              "kind": "OBJECT"
+            }
+          }
+        },
+        {
+          "name": "markets",
+          "args": [
+            {
+              "name": "where",
+              "type": {
+                "name": "MarketWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            },
+            {
+              "name": "orderBy",
+              "type": {
+                "name": null,
+                "kind": "LIST"
+              }
+            },
+            {
+              "name": "offset",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "limit",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "marketById",
+          "args": [
+            {
+              "name": "id",
+              "type": {
+                "name": null,
+                "kind": "NON_NULL"
+              }
+            }
+          ],
+          "type": {
+            "name": "Market",
+            "kind": "OBJECT",
+            "ofType": null
+          }
+        },
+        {
+          "name": "marketsConnection",
+          "args": [
+            {
+              "name": "orderBy",
+              "type": {
+                "name": null,
+                "kind": "NON_NULL"
+              }
+            },
+            {
+              "name": "after",
+              "type": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "first",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "where",
+              "type": {
+                "name": "MarketWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "MarketsConnection",
+              "kind": "OBJECT"
+            }
+          }
+        },
+        {
+          "name": "positionChanges",
+          "args": [
+            {
+              "name": "where",
+              "type": {
+                "name": "PositionChangeWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            },
+            {
+              "name": "orderBy",
+              "type": {
+                "name": null,
+                "kind": "LIST"
+              }
+            },
+            {
+              "name": "offset",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "limit",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "positionChangeById",
+          "args": [
+            {
+              "name": "id",
+              "type": {
+                "name": null,
+                "kind": "NON_NULL"
+              }
+            }
+          ],
+          "type": {
+            "name": "PositionChange",
+            "kind": "OBJECT",
+            "ofType": null
+          }
+        },
+        {
+          "name": "positionChangesConnection",
+          "args": [
+            {
+              "name": "orderBy",
+              "type": {
+                "name": null,
+                "kind": "NON_NULL"
+              }
+            },
+            {
+              "name": "after",
+              "type": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "first",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "where",
+              "type": {
+                "name": "PositionChangeWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "PositionChangesConnection",
+              "kind": "OBJECT"
+            }
+          }
+        },
+        {
+          "name": "collectedFeesInfos",
+          "args": [
+            {
+              "name": "where",
+              "type": {
+                "name": "CollectedFeesInfoWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            },
+            {
+              "name": "orderBy",
+              "type": {
+                "name": null,
+                "kind": "LIST"
+              }
+            },
+            {
+              "name": "offset",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "limit",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "collectedFeesInfoById",
+          "args": [
+            {
+              "name": "id",
+              "type": {
+                "name": null,
+                "kind": "NON_NULL"
+              }
+            }
+          ],
+          "type": {
+            "name": "CollectedFeesInfo",
+            "kind": "OBJECT",
+            "ofType": null
+          }
+        },
+        {
+          "name": "collectedFeesInfosConnection",
+          "args": [
+            {
+              "name": "orderBy",
+              "type": {
+                "name": null,
+                "kind": "NON_NULL"
+              }
+            },
+            {
+              "name": "after",
+              "type": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "first",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "where",
+              "type": {
+                "name": "CollectedFeesInfoWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "CollectedFeesInfosConnection",
+              "kind": "OBJECT"
+            }
+          }
+        },
+        {
+          "name": "onChainSettings",
+          "args": [
+            {
+              "name": "where",
+              "type": {
+                "name": "OnChainSettingWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            },
+            {
+              "name": "orderBy",
+              "type": {
+                "name": null,
+                "kind": "LIST"
+              }
+            },
+            {
+              "name": "offset",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "limit",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "onChainSettingById",
+          "args": [
+            {
+              "name": "id",
+              "type": {
+                "name": null,
+                "kind": "NON_NULL"
+              }
+            }
+          ],
+          "type": {
+            "name": "OnChainSetting",
+            "kind": "OBJECT",
+            "ofType": null
+          }
+        },
+        {
+          "name": "onChainSettingsConnection",
+          "args": [
+            {
+              "name": "orderBy",
+              "type": {
+                "name": null,
+                "kind": "NON_NULL"
+              }
+            },
+            {
+              "name": "after",
+              "type": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "first",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "where",
+              "type": {
+                "name": "OnChainSettingWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "OnChainSettingsConnection",
+              "kind": "OBJECT"
+            }
+          }
+        },
+        {
+          "name": "marketInfos",
+          "args": [
+            {
+              "name": "where",
+              "type": {
+                "name": "MarketInfoWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            },
+            {
+              "name": "orderBy",
+              "type": {
+                "name": null,
+                "kind": "LIST"
+              }
+            },
+            {
+              "name": "offset",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "limit",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "marketInfoById",
+          "args": [
+            {
+              "name": "id",
+              "type": {
+                "name": null,
+                "kind": "NON_NULL"
+              }
+            }
+          ],
+          "type": {
+            "name": "MarketInfo",
+            "kind": "OBJECT",
+            "ofType": null
+          }
+        },
+        {
+          "name": "marketInfosConnection",
+          "args": [
+            {
+              "name": "orderBy",
+              "type": {
+                "name": null,
+                "kind": "NON_NULL"
+              }
+            },
+            {
+              "name": "after",
+              "type": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "first",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "where",
+              "type": {
+                "name": "MarketInfoWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "MarketInfosConnection",
+              "kind": "OBJECT"
+            }
+          }
+        },
+        {
+          "name": "borrowingRateSnapshots",
+          "args": [
+            {
+              "name": "where",
+              "type": {
+                "name": "BorrowingRateSnapshotWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            },
+            {
+              "name": "orderBy",
+              "type": {
+                "name": null,
+                "kind": "LIST"
+              }
+            },
+            {
+              "name": "offset",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "limit",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "borrowingRateSnapshotById",
+          "args": [
+            {
+              "name": "id",
+              "type": {
+                "name": null,
+                "kind": "NON_NULL"
+              }
+            }
+          ],
+          "type": {
+            "name": "BorrowingRateSnapshot",
+            "kind": "OBJECT",
+            "ofType": null
+          }
+        },
+        {
+          "name": "borrowingRateSnapshotsConnection",
+          "args": [
+            {
+              "name": "orderBy",
+              "type": {
+                "name": null,
+                "kind": "NON_NULL"
+              }
+            },
+            {
+              "name": "after",
+              "type": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "first",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "where",
+              "type": {
+                "name": "BorrowingRateSnapshotWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "BorrowingRateSnapshotsConnection",
+              "kind": "OBJECT"
+            }
+          }
+        },
+        {
+          "name": "aprSnapshots",
+          "args": [
+            {
+              "name": "where",
+              "type": {
+                "name": "AprSnapshotWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            },
+            {
+              "name": "orderBy",
+              "type": {
+                "name": null,
+                "kind": "LIST"
+              }
+            },
+            {
+              "name": "offset",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "limit",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "aprSnapshotById",
+          "args": [
+            {
+              "name": "id",
+              "type": {
+                "name": null,
+                "kind": "NON_NULL"
+              }
+            }
+          ],
+          "type": {
+            "name": "AprSnapshot",
+            "kind": "OBJECT",
+            "ofType": null
+          }
+        },
+        {
+          "name": "aprSnapshotsConnection",
+          "args": [
+            {
+              "name": "orderBy",
+              "type": {
+                "name": null,
+                "kind": "NON_NULL"
+              }
+            },
+            {
+              "name": "after",
+              "type": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "first",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "where",
+              "type": {
+                "name": "AprSnapshotWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "AprSnapshotsConnection",
+              "kind": "OBJECT"
+            }
+          }
+        },
+        {
+          "name": "pnlAprSnapshots",
+          "args": [
+            {
+              "name": "where",
+              "type": {
+                "name": "PnlAprSnapshotWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            },
+            {
+              "name": "orderBy",
+              "type": {
+                "name": null,
+                "kind": "LIST"
+              }
+            },
+            {
+              "name": "offset",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "limit",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "pnlAprSnapshotById",
+          "args": [
+            {
+              "name": "id",
+              "type": {
+                "name": null,
+                "kind": "NON_NULL"
+              }
+            }
+          ],
+          "type": {
+            "name": "PnlAprSnapshot",
+            "kind": "OBJECT",
+            "ofType": null
+          }
+        },
+        {
+          "name": "pnlAprSnapshotsConnection",
+          "args": [
+            {
+              "name": "orderBy",
+              "type": {
+                "name": null,
+                "kind": "NON_NULL"
+              }
+            },
+            {
+              "name": "after",
+              "type": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "first",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "where",
+              "type": {
+                "name": "PnlAprSnapshotWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "PnlAprSnapshotsConnection",
+              "kind": "OBJECT"
+            }
+          }
+        },
+        {
+          "name": "glvs",
+          "args": [
+            {
+              "name": "where",
+              "type": {
+                "name": "GlvWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            },
+            {
+              "name": "orderBy",
+              "type": {
+                "name": null,
+                "kind": "LIST"
+              }
+            },
+            {
+              "name": "offset",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "limit",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "glvById",
+          "args": [
+            {
+              "name": "id",
+              "type": {
+                "name": null,
+                "kind": "NON_NULL"
+              }
+            }
+          ],
+          "type": {
+            "name": "Glv",
+            "kind": "OBJECT",
+            "ofType": null
+          }
+        },
+        {
+          "name": "glvsConnection",
+          "args": [
+            {
+              "name": "orderBy",
+              "type": {
+                "name": null,
+                "kind": "NON_NULL"
+              }
+            },
+            {
+              "name": "after",
+              "type": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "first",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "where",
+              "type": {
+                "name": "GlvWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "GlvsConnection",
+              "kind": "OBJECT"
+            }
+          }
+        },
+        {
+          "name": "cumulativePoolValues",
+          "args": [
+            {
+              "name": "where",
+              "type": {
+                "name": "CumulativePoolValueWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            },
+            {
+              "name": "orderBy",
+              "type": {
+                "name": null,
+                "kind": "LIST"
+              }
+            },
+            {
+              "name": "offset",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "limit",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "cumulativePoolValueById",
+          "args": [
+            {
+              "name": "id",
+              "type": {
+                "name": null,
+                "kind": "NON_NULL"
+              }
+            }
+          ],
+          "type": {
+            "name": "CumulativePoolValue",
+            "kind": "OBJECT",
+            "ofType": null
+          }
+        },
+        {
+          "name": "cumulativePoolValuesConnection",
+          "args": [
+            {
+              "name": "orderBy",
+              "type": {
+                "name": null,
+                "kind": "NON_NULL"
+              }
+            },
+            {
+              "name": "after",
+              "type": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "first",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "where",
+              "type": {
+                "name": "CumulativePoolValueWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "CumulativePoolValuesConnection",
+              "kind": "OBJECT"
+            }
+          }
+        },
+        {
+          "name": "transactions",
+          "args": [
+            {
+              "name": "where",
+              "type": {
+                "name": "TransactionWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            },
+            {
+              "name": "orderBy",
+              "type": {
+                "name": null,
+                "kind": "LIST"
+              }
+            },
+            {
+              "name": "offset",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "limit",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "transactionById",
+          "args": [
+            {
+              "name": "id",
+              "type": {
+                "name": null,
+                "kind": "NON_NULL"
+              }
+            }
+          ],
+          "type": {
+            "name": "Transaction",
+            "kind": "OBJECT",
+            "ofType": null
+          }
+        },
+        {
+          "name": "transactionsConnection",
+          "args": [
+            {
+              "name": "orderBy",
+              "type": {
+                "name": null,
+                "kind": "NON_NULL"
+              }
+            },
+            {
+              "name": "after",
+              "type": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "first",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "where",
+              "type": {
+                "name": "TransactionWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "TransactionsConnection",
+              "kind": "OBJECT"
+            }
+          }
+        },
+        {
+          "name": "tradeActions",
+          "args": [
+            {
+              "name": "where",
+              "type": {
+                "name": "TradeActionWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            },
+            {
+              "name": "orderBy",
+              "type": {
+                "name": null,
+                "kind": "LIST"
+              }
+            },
+            {
+              "name": "offset",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "limit",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "tradeActionById",
+          "args": [
+            {
+              "name": "id",
+              "type": {
+                "name": null,
+                "kind": "NON_NULL"
+              }
+            }
+          ],
+          "type": {
+            "name": "TradeAction",
+            "kind": "OBJECT",
+            "ofType": null
+          }
+        },
+        {
+          "name": "tradeActionsConnection",
+          "args": [
+            {
+              "name": "orderBy",
+              "type": {
+                "name": null,
+                "kind": "NON_NULL"
+              }
+            },
+            {
+              "name": "after",
+              "type": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "first",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "where",
+              "type": {
+                "name": "TradeActionWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "TradeActionsConnection",
+              "kind": "OBJECT"
+            }
+          }
+        },
+        {
+          "name": "claimActions",
+          "args": [
+            {
+              "name": "where",
+              "type": {
+                "name": "ClaimActionWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            },
+            {
+              "name": "orderBy",
+              "type": {
+                "name": null,
+                "kind": "LIST"
+              }
+            },
+            {
+              "name": "offset",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "limit",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "claimActionById",
+          "args": [
+            {
+              "name": "id",
+              "type": {
+                "name": null,
+                "kind": "NON_NULL"
+              }
+            }
+          ],
+          "type": {
+            "name": "ClaimAction",
+            "kind": "OBJECT",
+            "ofType": null
+          }
+        },
+        {
+          "name": "claimActionsConnection",
+          "args": [
+            {
+              "name": "orderBy",
+              "type": {
+                "name": null,
+                "kind": "NON_NULL"
+              }
+            },
+            {
+              "name": "after",
+              "type": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "first",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "where",
+              "type": {
+                "name": "ClaimActionWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "ClaimActionsConnection",
+              "kind": "OBJECT"
+            }
+          }
+        },
+        {
+          "name": "orders",
+          "args": [
+            {
+              "name": "where",
+              "type": {
+                "name": "OrderWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            },
+            {
+              "name": "orderBy",
+              "type": {
+                "name": null,
+                "kind": "LIST"
+              }
+            },
+            {
+              "name": "offset",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "limit",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "orderById",
+          "args": [
+            {
+              "name": "id",
+              "type": {
+                "name": null,
+                "kind": "NON_NULL"
+              }
+            }
+          ],
+          "type": {
+            "name": "Order",
+            "kind": "OBJECT",
+            "ofType": null
+          }
+        },
+        {
+          "name": "ordersConnection",
+          "args": [
+            {
+              "name": "orderBy",
+              "type": {
+                "name": null,
+                "kind": "NON_NULL"
+              }
+            },
+            {
+              "name": "after",
+              "type": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "first",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "where",
+              "type": {
+                "name": "OrderWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "OrdersConnection",
+              "kind": "OBJECT"
+            }
+          }
+        },
+        {
+          "name": "swapInfos",
+          "args": [
+            {
+              "name": "where",
+              "type": {
+                "name": "SwapInfoWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            },
+            {
+              "name": "orderBy",
+              "type": {
+                "name": null,
+                "kind": "LIST"
+              }
+            },
+            {
+              "name": "offset",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "limit",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "swapInfoById",
+          "args": [
+            {
+              "name": "id",
+              "type": {
+                "name": null,
+                "kind": "NON_NULL"
+              }
+            }
+          ],
+          "type": {
+            "name": "SwapInfo",
+            "kind": "OBJECT",
+            "ofType": null
+          }
+        },
+        {
+          "name": "swapInfosConnection",
+          "args": [
+            {
+              "name": "orderBy",
+              "type": {
+                "name": null,
+                "kind": "NON_NULL"
+              }
+            },
+            {
+              "name": "after",
+              "type": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "first",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "where",
+              "type": {
+                "name": "SwapInfoWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "SwapInfosConnection",
+              "kind": "OBJECT"
+            }
+          }
+        },
+        {
+          "name": "positionFeesEntities",
+          "args": [
+            {
+              "name": "where",
+              "type": {
+                "name": "PositionFeesEntityWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            },
+            {
+              "name": "orderBy",
+              "type": {
+                "name": null,
+                "kind": "LIST"
+              }
+            },
+            {
+              "name": "offset",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "limit",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "positionFeesEntityById",
+          "args": [
+            {
+              "name": "id",
+              "type": {
+                "name": null,
+                "kind": "NON_NULL"
+              }
+            }
+          ],
+          "type": {
+            "name": "PositionFeesEntity",
+            "kind": "OBJECT",
+            "ofType": null
+          }
+        },
+        {
+          "name": "positionFeesEntitiesConnection",
+          "args": [
+            {
+              "name": "orderBy",
+              "type": {
+                "name": null,
+                "kind": "NON_NULL"
+              }
+            },
+            {
+              "name": "after",
+              "type": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "first",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "where",
+              "type": {
+                "name": "PositionFeesEntityWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "PositionFeesEntitiesConnection",
+              "kind": "OBJECT"
+            }
+          }
+        },
+        {
+          "name": "claimableCollateralGroups",
+          "args": [
+            {
+              "name": "where",
+              "type": {
+                "name": "ClaimableCollateralGroupWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            },
+            {
+              "name": "orderBy",
+              "type": {
+                "name": null,
+                "kind": "LIST"
+              }
+            },
+            {
+              "name": "offset",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "limit",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "claimableCollateralGroupById",
+          "args": [
+            {
+              "name": "id",
+              "type": {
+                "name": null,
+                "kind": "NON_NULL"
+              }
+            }
+          ],
+          "type": {
+            "name": "ClaimableCollateralGroup",
+            "kind": "OBJECT",
+            "ofType": null
+          }
+        },
+        {
+          "name": "claimableCollateralGroupsConnection",
+          "args": [
+            {
+              "name": "orderBy",
+              "type": {
+                "name": null,
+                "kind": "NON_NULL"
+              }
+            },
+            {
+              "name": "after",
+              "type": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "first",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "where",
+              "type": {
+                "name": "ClaimableCollateralGroupWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "ClaimableCollateralGroupsConnection",
+              "kind": "OBJECT"
+            }
+          }
+        },
+        {
+          "name": "claimableCollaterals",
+          "args": [
+            {
+              "name": "where",
+              "type": {
+                "name": "ClaimableCollateralWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            },
+            {
+              "name": "orderBy",
+              "type": {
+                "name": null,
+                "kind": "LIST"
+              }
+            },
+            {
+              "name": "offset",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "limit",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "claimableCollateralById",
+          "args": [
+            {
+              "name": "id",
+              "type": {
+                "name": null,
+                "kind": "NON_NULL"
+              }
+            }
+          ],
+          "type": {
+            "name": "ClaimableCollateral",
+            "kind": "OBJECT",
+            "ofType": null
+          }
+        },
+        {
+          "name": "claimableCollateralsConnection",
+          "args": [
+            {
+              "name": "orderBy",
+              "type": {
+                "name": null,
+                "kind": "NON_NULL"
+              }
+            },
+            {
+              "name": "after",
+              "type": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "first",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "where",
+              "type": {
+                "name": "ClaimableCollateralWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "ClaimableCollateralsConnection",
+              "kind": "OBJECT"
+            }
+          }
+        },
+        {
+          "name": "claimableFundingFeeInfos",
+          "args": [
+            {
+              "name": "where",
+              "type": {
+                "name": "ClaimableFundingFeeInfoWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            },
+            {
+              "name": "orderBy",
+              "type": {
+                "name": null,
+                "kind": "LIST"
+              }
+            },
+            {
+              "name": "offset",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "limit",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "claimableFundingFeeInfoById",
+          "args": [
+            {
+              "name": "id",
+              "type": {
+                "name": null,
+                "kind": "NON_NULL"
+              }
+            }
+          ],
+          "type": {
+            "name": "ClaimableFundingFeeInfo",
+            "kind": "OBJECT",
+            "ofType": null
+          }
+        },
+        {
+          "name": "claimableFundingFeeInfosConnection",
+          "args": [
+            {
+              "name": "orderBy",
+              "type": {
+                "name": null,
+                "kind": "NON_NULL"
+              }
+            },
+            {
+              "name": "after",
+              "type": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "first",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "where",
+              "type": {
+                "name": "ClaimableFundingFeeInfoWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "ClaimableFundingFeeInfosConnection",
+              "kind": "OBJECT"
+            }
+          }
+        },
+        {
+          "name": "claimRefs",
+          "args": [
+            {
+              "name": "where",
+              "type": {
+                "name": "ClaimRefWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            },
+            {
+              "name": "orderBy",
+              "type": {
+                "name": null,
+                "kind": "LIST"
+              }
+            },
+            {
+              "name": "offset",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "limit",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "claimRefById",
+          "args": [
+            {
+              "name": "id",
+              "type": {
+                "name": null,
+                "kind": "NON_NULL"
+              }
+            }
+          ],
+          "type": {
+            "name": "ClaimRef",
+            "kind": "OBJECT",
+            "ofType": null
+          }
+        },
+        {
+          "name": "claimRefsConnection",
+          "args": [
+            {
+              "name": "orderBy",
+              "type": {
+                "name": null,
+                "kind": "NON_NULL"
+              }
+            },
+            {
+              "name": "after",
+              "type": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "first",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "where",
+              "type": {
+                "name": "ClaimRefWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "ClaimRefsConnection",
+              "kind": "OBJECT"
+            }
+          }
+        },
+        {
+          "name": "cumulativePnls",
+          "args": [
+            {
+              "name": "where",
+              "type": {
+                "name": "CumulativePnlWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            },
+            {
+              "name": "orderBy",
+              "type": {
+                "name": null,
+                "kind": "LIST"
+              }
+            },
+            {
+              "name": "offset",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "limit",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "cumulativePnlById",
+          "args": [
+            {
+              "name": "id",
+              "type": {
+                "name": null,
+                "kind": "NON_NULL"
+              }
+            }
+          ],
+          "type": {
+            "name": "CumulativePnl",
+            "kind": "OBJECT",
+            "ofType": null
+          }
+        },
+        {
+          "name": "cumulativePnlsConnection",
+          "args": [
+            {
+              "name": "orderBy",
+              "type": {
+                "name": null,
+                "kind": "NON_NULL"
+              }
+            },
+            {
+              "name": "after",
+              "type": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "first",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "where",
+              "type": {
+                "name": "CumulativePnlWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "CumulativePnlsConnection",
+              "kind": "OBJECT"
+            }
+          }
+        },
+        {
+          "name": "processorStatuses",
+          "args": [
+            {
+              "name": "where",
+              "type": {
+                "name": "ProcessorStatusWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            },
+            {
+              "name": "orderBy",
+              "type": {
+                "name": null,
+                "kind": "LIST"
+              }
+            },
+            {
+              "name": "offset",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "limit",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "processorStatusById",
+          "args": [
+            {
+              "name": "id",
+              "type": {
+                "name": null,
+                "kind": "NON_NULL"
+              }
+            }
+          ],
+          "type": {
+            "name": "ProcessorStatus",
+            "kind": "OBJECT",
+            "ofType": null
+          }
+        },
+        {
+          "name": "processorStatusesConnection",
+          "args": [
+            {
+              "name": "orderBy",
+              "type": {
+                "name": null,
+                "kind": "NON_NULL"
+              }
+            },
+            {
+              "name": "after",
+              "type": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "first",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "where",
+              "type": {
+                "name": "ProcessorStatusWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "ProcessorStatusesConnection",
+              "kind": "OBJECT"
+            }
+          }
+        },
+        {
+          "name": "multichainFundingSendEvents",
+          "args": [
+            {
+              "name": "where",
+              "type": {
+                "name": "MultichainFundingSendEventWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            },
+            {
+              "name": "orderBy",
+              "type": {
+                "name": null,
+                "kind": "LIST"
+              }
+            },
+            {
+              "name": "offset",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "limit",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "multichainFundingSendEventById",
+          "args": [
+            {
+              "name": "id",
+              "type": {
+                "name": null,
+                "kind": "NON_NULL"
+              }
+            }
+          ],
+          "type": {
+            "name": "MultichainFundingSendEvent",
+            "kind": "OBJECT",
+            "ofType": null
+          }
+        },
+        {
+          "name": "multichainFundingSendEventsConnection",
+          "args": [
+            {
+              "name": "orderBy",
+              "type": {
+                "name": null,
+                "kind": "NON_NULL"
+              }
+            },
+            {
+              "name": "after",
+              "type": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "first",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "where",
+              "type": {
+                "name": "MultichainFundingSendEventWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "MultichainFundingSendEventsConnection",
+              "kind": "OBJECT"
+            }
+          }
+        },
+        {
+          "name": "multichainFundingReceiveEvents",
+          "args": [
+            {
+              "name": "where",
+              "type": {
+                "name": "MultichainFundingReceiveEventWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            },
+            {
+              "name": "orderBy",
+              "type": {
+                "name": null,
+                "kind": "LIST"
+              }
+            },
+            {
+              "name": "offset",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "limit",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "multichainFundingReceiveEventById",
+          "args": [
+            {
+              "name": "id",
+              "type": {
+                "name": null,
+                "kind": "NON_NULL"
+              }
+            }
+          ],
+          "type": {
+            "name": "MultichainFundingReceiveEvent",
+            "kind": "OBJECT",
+            "ofType": null
+          }
+        },
+        {
+          "name": "multichainFundingReceiveEventsConnection",
+          "args": [
+            {
+              "name": "orderBy",
+              "type": {
+                "name": null,
+                "kind": "NON_NULL"
+              }
+            },
+            {
+              "name": "after",
+              "type": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "first",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "where",
+              "type": {
+                "name": "MultichainFundingReceiveEventWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "MultichainFundingReceiveEventsConnection",
+              "kind": "OBJECT"
+            }
+          }
+        },
+        {
+          "name": "multichainMetadata",
+          "args": [
+            {
+              "name": "where",
+              "type": {
+                "name": "MultichainMetadataWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            },
+            {
+              "name": "orderBy",
+              "type": {
+                "name": null,
+                "kind": "LIST"
+              }
+            },
+            {
+              "name": "offset",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "limit",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "multichainMetadataById",
+          "args": [
+            {
+              "name": "id",
+              "type": {
+                "name": null,
+                "kind": "NON_NULL"
+              }
+            }
+          ],
+          "type": {
+            "name": "MultichainMetadata",
+            "kind": "OBJECT",
+            "ofType": null
+          }
+        },
+        {
+          "name": "multichainMetadataConnection",
+          "args": [
+            {
+              "name": "orderBy",
+              "type": {
+                "name": null,
+                "kind": "NON_NULL"
+              }
+            },
+            {
+              "name": "after",
+              "type": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "first",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "where",
+              "type": {
+                "name": "MultichainMetadataWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "MultichainMetadataConnection",
+              "kind": "OBJECT"
+            }
+          }
+        },
+        {
+          "name": "distributions",
+          "args": [
+            {
+              "name": "where",
+              "type": {
+                "name": "DistributionWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            },
+            {
+              "name": "orderBy",
+              "type": {
+                "name": null,
+                "kind": "LIST"
+              }
+            },
+            {
+              "name": "offset",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "limit",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "distributionById",
+          "args": [
+            {
+              "name": "id",
+              "type": {
+                "name": null,
+                "kind": "NON_NULL"
+              }
+            }
+          ],
+          "type": {
+            "name": "Distribution",
+            "kind": "OBJECT",
+            "ofType": null
+          }
+        },
+        {
+          "name": "distributionsConnection",
+          "args": [
+            {
+              "name": "orderBy",
+              "type": {
+                "name": null,
+                "kind": "NON_NULL"
+              }
+            },
+            {
+              "name": "after",
+              "type": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "first",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "where",
+              "type": {
+                "name": "DistributionWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "DistributionsConnection",
+              "kind": "OBJECT"
+            }
+          }
+        },
+        {
+          "name": "claimableAmounts",
+          "args": [
+            {
+              "name": "where",
+              "type": {
+                "name": "ClaimableAmountWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            },
+            {
+              "name": "orderBy",
+              "type": {
+                "name": null,
+                "kind": "LIST"
+              }
+            },
+            {
+              "name": "offset",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "limit",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "claimableAmountById",
+          "args": [
+            {
+              "name": "id",
+              "type": {
+                "name": null,
+                "kind": "NON_NULL"
+              }
+            }
+          ],
+          "type": {
+            "name": "ClaimableAmount",
+            "kind": "OBJECT",
+            "ofType": null
+          }
+        },
+        {
+          "name": "claimableAmountsConnection",
+          "args": [
+            {
+              "name": "orderBy",
+              "type": {
+                "name": null,
+                "kind": "NON_NULL"
+              }
+            },
+            {
+              "name": "after",
+              "type": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "first",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "where",
+              "type": {
+                "name": "ClaimableAmountWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "ClaimableAmountsConnection",
+              "kind": "OBJECT"
+            }
+          }
+        },
+        {
+          "name": "marketsAprByPeriod",
+          "args": [
+            {
+              "name": "where",
+              "type": {
+                "name": "MarketAprsWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "glvsAprByPeriod",
+          "args": [
+            {
+              "name": "where",
+              "type": {
+                "name": "GlvAprsWhereInputWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "totalPositionChanges",
+          "args": [],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "Float",
+              "kind": "SCALAR"
+            }
+          }
+        },
+        {
+          "name": "periodAccountStats",
+          "args": [
+            {
+              "name": "where",
+              "type": {
+                "name": "WhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            },
+            {
+              "name": "offset",
+              "type": {
+                "name": "Float",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "limit",
+              "type": {
+                "name": "Float",
+                "kind": "SCALAR"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "accountPnlHistoryStats",
+          "args": [
+            {
+              "name": "account",
+              "type": {
+                "name": null,
+                "kind": "NON_NULL"
+              }
+            },
+            {
+              "name": "from",
+              "type": {
+                "name": "Int",
+                "kind": "SCALAR"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "accountPnlSummaryStats",
+          "args": [
+            {
+              "name": "account",
+              "type": {
+                "name": null,
+                "kind": "NON_NULL"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "positionsVolume",
+          "args": [
+            {
+              "name": "where",
+              "type": {
+                "name": "PositionVolumeByAllMarketsWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "positionTotalCollateralAmount",
+          "args": [
+            {
+              "name": "where",
+              "type": {
+                "name": "PositionTotalCollateralAmountWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "marketsPnlAprByPeriod",
+          "args": [
+            {
+              "name": "where",
+              "type": {
+                "name": "MarketPnlAprsWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "glvsPnlAprByPeriod",
+          "args": [
+            {
+              "name": "where",
+              "type": {
+                "name": "GlvPnlAprsWhereInputWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "multichainFunding",
+          "args": [
+            {
+              "name": "where",
+              "type": {
+                "name": "MultichainFundingWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "performanceSnapshots",
+          "args": [
+            {
+              "name": "where",
+              "type": {
+                "name": "PerformanceWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "annualizedPerformance",
+          "args": [
+            {
+              "name": "where",
+              "type": {
+                "name": "PerformanceWhereInput",
+                "kind": "INPUT_OBJECT"
+              }
+            }
+          ],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "squidStatus",
+          "args": [],
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "SquidStatus",
+              "kind": "OBJECT"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Final, Sequence
 
-import numpy as np
+from .unified_numerical import np, TNFRValueError
 from numpy.random import Generator
 
 from .backend import ensure_array, ensure_numpy, get_backend
@@ -54,10 +54,16 @@ def _as_square_matrix(
 
     array = np.asarray(matrix, dtype=np.complex128)
     if array.ndim != 2 or array.shape[0] != array.shape[1]:
-        raise ValueError(f"{label} must be a square matrix.")
+        raise TNFRValueError(
+            f"{label} must be a square matrix.",
+            context={"shape": array.shape},
+            suggestion="Provide a square matrix."
+        )
     if expected_dim is not None and array.shape[0] != expected_dim:
-        raise ValueError(
-            f"{label} dimension mismatch: expected {expected_dim}, received {array.shape[0]}."
+        raise TNFRValueError(
+            f"{label} dimension mismatch.",
+            context={"expected": expected_dim, "received": array.shape[0]},
+            suggestion="Ensure matrix dimension matches expected dimension."
         )
     return array
 
@@ -89,11 +95,19 @@ def build_delta_nfr(
     """
 
     if dim <= 0:
-        raise ValueError("ΔNFR generators require a positive dimensionality.")
+        raise TNFRValueError(
+            "ΔNFR generators require a positive dimensionality.",
+            context={"dim": dim},
+            suggestion="Provide a positive integer for dimension."
+        )
 
     if topology not in _TOPOLOGIES:
         allowed = ", ".join(sorted(_TOPOLOGIES))
-        raise ValueError(f"Unknown ΔNFR topology: {topology}. Expected one of: {allowed}.")
+        raise TNFRValueError(
+            f"Unknown ΔNFR topology: {topology}.",
+            context={"topology": topology, "allowed": list(_TOPOLOGIES)},
+            suggestion=f"Expected one of: {allowed}."
+        )
 
     adjacency = _ring_adjacency(dim)
     if topology == "laplacian":
@@ -170,17 +184,26 @@ def build_lindblad_delta_nfr(
         inferred_dim = _as_square_matrix(operators[0], label="collapse operator[0]").shape[0]
 
     if inferred_dim is None:
-        raise ValueError("dim must be supplied when no operators are provided.")
+        raise TNFRValueError(
+            "dim must be supplied when no operators are provided.",
+            context={"dim": dim, "hamiltonian": hamiltonian, "operators": operators},
+            suggestion="Provide explicit dimension or operators."
+        )
 
     if inferred_dim <= 0:
-        raise ValueError("ΔNFR generators require a positive dimension.")
+        raise TNFRValueError(
+            "ΔNFR generators require a positive dimension.",
+            context={"inferred_dim": inferred_dim},
+            suggestion="Ensure dimension is positive."
+        )
 
     dimension = inferred_dim
 
     if dim is not None and dim != dimension:
-        raise ValueError(
-            "Provided dim is inconsistent with the supplied operators: "
-            f"expected {dimension}, received {dim}."
+        raise TNFRValueError(
+            "Provided dim is inconsistent with the supplied operators.",
+            context={"expected": dimension, "received": dim},
+            suggestion="Ensure explicit dimension matches operators."
         )
 
     if hamiltonian is None:
@@ -188,7 +211,11 @@ def build_lindblad_delta_nfr(
     else:
         hermitian = _as_square_matrix(hamiltonian, expected_dim=dimension, label="hamiltonian")
         if not np.allclose(hermitian, hermitian.conj().T, atol=atol):
-            raise ValueError("Hamiltonian component must be Hermitian within tolerance.")
+            raise TNFRValueError(
+                "Hamiltonian component must be Hermitian within tolerance.",
+                context={"atol": atol},
+                suggestion="Ensure Hamiltonian is Hermitian."
+            )
 
     dissipators = [
         _as_square_matrix(operator, expected_dim=dimension, label=f"collapse operator[{index}]")
@@ -210,7 +237,11 @@ def build_lindblad_delta_nfr(
         identity_vec = identity.reshape(dimension * dimension, order="F")
         left_residual = identity_vec.conj().T @ liouvillian
         if not np.allclose(left_residual, np.zeros_like(left_residual), atol=10 * atol):
-            raise ValueError("Lindblad generator must preserve the trace of density operators.")
+            raise TNFRValueError(
+                "Lindblad generator must preserve the trace of density operators.",
+                context={"residual_norm": np.linalg.norm(left_residual)},
+                suggestion="Check dissipator construction."
+            )
 
     backend = get_backend()
     liouvillian_backend = ensure_array(liouvillian, backend=backend)
@@ -219,8 +250,10 @@ def build_lindblad_delta_nfr(
         eigenvalues_backend, _ = backend.eig(liouvillian_backend)
         eigenvalues = ensure_numpy(eigenvalues_backend, backend=backend)
         if np.max(eigenvalues.real) > atol:
-            raise ValueError(
-                "Lindblad generator is not contractive: spectrum has positive real components."
+            raise TNFRValueError(
+                "Lindblad generator is not contractive: spectrum has positive real components.",
+                context={"max_real_eigenvalue": np.max(eigenvalues.real)},
+                suggestion="Ensure generator is dissipative."
             )
 
     return np.asarray(ensure_numpy(liouvillian_backend, backend=backend), dtype=np.complex128)

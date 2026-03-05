@@ -24,7 +24,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from typing import Sequence, Optional
-import numpy as np
+from ..mathematics.unified_numerical import np
 
 # Public API dataclasses
 
@@ -58,8 +58,8 @@ class LifeTelemetry:
 
 # Core computations
 
-def _safe_div(a: np.ndarray, b: np.ndarray | float, eps: float = 1e-12) -> np.ndarray:
-    return a / (b + eps)
+# Centralised helper — single source of truth in _helpers.py
+from ._helpers import safe_div as _safe_div              # noqa: E402
 
 
 def compute_self_generation(epi_series: np.ndarray, gamma: float, epi_max: float) -> np.ndarray:

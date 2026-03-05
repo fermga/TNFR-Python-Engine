@@ -14,6 +14,24 @@ success, metrics = engine.step(node_id)
 ```
 """
 
-from .engine import TNFRSelfOptimizingEngine
+from .engine import (
+    TNFRSelfOptimizingEngine,
+    OptimizationObjective,
+    LearningStrategy,
+    OptimizationExperience,
+    OptimizationPolicy,
+    SelfOptimizationResult,
+    create_self_optimizing_engine,
+    auto_optimize_tnfr_computation,
+)
 
-__all__ = ["TNFRSelfOptimizingEngine"]
+__all__ = [
+    "TNFRSelfOptimizingEngine",
+    "OptimizationObjective",
+    "LearningStrategy",
+    "OptimizationExperience",
+    "OptimizationPolicy",
+    "SelfOptimizationResult",
+    "create_self_optimizing_engine",
+    "auto_optimize_tnfr_computation",
+]

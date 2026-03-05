@@ -39,7 +39,7 @@ Telemetry checklist:
 1. Log packet envelope width \(\sigma_t\) and store alongside configuration hashes.  
 2. Compute \(\sigma_f\) via FFT of \(\nu_f(t)\) with documented windowing parameters.  
 3. Report \(\sigma_t \sigma_f\) (mean ± uncertainty) in `results/quantum_demo_2/uncertainty_metrics.csv`.  
-4. Track \(C(t)\), \(|\nabla \phi|\), and \(K_\phi\) to ensure canonical thresholds (<0.2904, <2.8274) remain satisfied.
+4. Track \(C(t)\), \(|\nabla \phi|\), and \(K_\phi\) to ensure canonical thresholds (<γ/π ≈ 0.1837, <2.8274) remain satisfied.
 
 ---
 

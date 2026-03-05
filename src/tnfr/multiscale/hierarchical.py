@@ -11,7 +11,7 @@ from dataclasses import dataclass
 from typing import Any, Dict, Optional, Sequence
 
 import networkx as nx
-import numpy as np
+from ..mathematics.unified_numerical import np
 
 from ..types import DeltaNFR, NodeId, TNFRGraph
 from ..dynamics import set_delta_nfr_hook, dnfr_epi_vf_mixed

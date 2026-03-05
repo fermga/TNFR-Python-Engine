@@ -49,7 +49,7 @@ from __future__ import annotations
 import math
 from typing import Any, Dict, List
 
-import numpy as np
+from ..mathematics.unified_numerical import np
 
 try:
     import networkx as nx
@@ -60,19 +60,8 @@ except ImportError:
 from ..config import get_precision_mode
 
 # Import TNFR cache system
-try:
-    from ..utils.cache import cache_tnfr_computation, CacheLevel
-    _CACHE_AVAILABLE = True
-except ImportError:
-    _CACHE_AVAILABLE = False
-
-    def cache_tnfr_computation(*args, **kwargs):
-        def decorator(func):
-            return func
-        return decorator
-
-    class CacheLevel:
-        DERIVED_METRICS = None
+from ..mathematics.unified_cache import cache_tnfr_computation, CacheLevel
+_CACHE_AVAILABLE = True
 
 # Import TNFR aliases
 try:
@@ -92,6 +81,78 @@ try:
     _VECTORIZATION_AVAILABLE = True
 except ImportError:
     _VECTORIZATION_AVAILABLE = False
+
+# Import GPU-aware mathematics backend
+try:
+    from ..mathematics.backend import get_backend
+    _GPU_BACKENDS_AVAILABLE = True
+except ImportError:
+    _GPU_BACKENDS_AVAILABLE = False
+
+
+def _use_gpu_acceleration(n_nodes: int) -> bool:
+    """Determine if GPU acceleration should be used based on problem size.
+    
+    Args:
+        n_nodes: Number of nodes in the graph
+        
+    Returns:
+        True if GPU acceleration is beneficial and available
+    """
+    if not _GPU_BACKENDS_AVAILABLE or n_nodes < 200:
+        return False
+    
+    try:
+        backend = get_backend()
+        return backend.supports_autodiff
+    except Exception:
+        return False
+
+
+def _gpu_distance_matrix(positions: np.ndarray, alpha: float = 2.0) -> np.ndarray:
+    """Compute distance matrix on GPU for large graphs.
+    
+    Args:
+        positions: Node positions array (N, d)
+        alpha: Distance exponent
+        
+    Returns:
+        Distance matrix with 1/d^alpha entries
+    """
+    if not _GPU_BACKENDS_AVAILABLE:
+        raise RuntimeError("GPU backends not available")
+    
+    backend = get_backend()
+    
+    # Convert to backend tensors
+    pos_tensor = backend.as_array(positions)
+    
+    # Compute pairwise distances: ||x_i - x_j||^2
+    # Using broadcasting: (N,1,d) - (1,N,d) -> (N,N,d)
+    pos_i = pos_tensor[:, None, :]  # (N, 1, d)
+    pos_j = pos_tensor[None, :, :]  # (1, N, d)
+    diff = pos_i - pos_j  # (N, N, d)
+    
+    # Squared distances
+    dist_sq = backend.einsum('ijd,ijd->ij', diff, diff)
+    
+    # Add small epsilon to avoid division by zero
+    epsilon = 1e-12
+    dist_sq = dist_sq + epsilon
+    
+    # Compute 1/d^alpha
+    if alpha == 2.0:
+        inv_dist = 1.0 / dist_sq
+    else:
+        dist = backend.einsum('ij->ij', dist_sq ** 0.5)  # sqrt for distance
+        inv_dist = 1.0 / (dist ** alpha)
+    
+    # Set diagonal to zero (self-distances)
+    n = positions.shape[0]
+    eye = backend.as_array(np.eye(n))
+    inv_dist = inv_dist * (1 - eye)
+    
+    return backend.to_numpy(inv_dist)
 
 
 def _get_precision_dtype() -> type:
@@ -117,27 +178,10 @@ def _get_precision_dtype() -> type:
         return np.float64
 
 
-def _wrap_angle(angle: float) -> float:
-    """Map angle to [-π, π]."""
-    return (angle + math.pi) % (2 * math.pi) - math.pi
-
-
-def _get_phase(G: Any, node: Any) -> float:
-    """Retrieve phase value φ for a node (radians in [0, 2π))."""
-    node_data = G.nodes[node]
-    for alias in ALIAS_THETA:
-        if alias in node_data:
-            return float(node_data[alias])
-    return 0.0
-
-
-def _get_dnfr(G: Any, node: Any) -> float:
-    """Retrieve ΔNFR value for a node."""
-    node_data = G.nodes[node]
-    for alias in ALIAS_DNFR:
-        if alias in node_data:
-            return float(node_data[alias])
-    return 0.0
+# Centralised helpers — single source of truth in _helpers.py
+from ._helpers import wrap_angle as _wrap_angle          # noqa: E402
+from ._helpers import get_phase as _get_phase            # noqa: E402
+from ._helpers import get_dnfr as _get_dnfr              # noqa: E402
 
 
 _PHI_S_DISTANCE_CACHE: Dict[tuple, Dict[Any, Dict[Any, float]]] = {}

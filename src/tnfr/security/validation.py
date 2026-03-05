@@ -20,13 +20,15 @@ Example
 >>> validate_structural_frequency(-1.0)  # doctest: +SKIP
 Traceback (most recent call last):
     ...
-ValueError: Structural frequency must be non-negative
+    TNFRValueError: Structural frequency must be non-negative
 """
 
 from __future__ import annotations
 
 import math
 from typing import Any
+
+from ..errors import TNFRValueError
 
 
 def validate_structural_frequency(nu_f: float) -> float:
@@ -47,7 +49,7 @@ def validate_structural_frequency(nu_f: float) -> float:
 
     Raises
     ------
-    ValueError
+    TNFRValueError
         If the frequency is negative, NaN, or infinite
 
     Example
@@ -59,19 +61,25 @@ def validate_structural_frequency(nu_f: float) -> float:
     >>> validate_structural_frequency(-0.1)  # doctest: +SKIP
     Traceback (most recent call last):
         ...
-    ValueError: Structural frequency must be non-negative, got -0.1
+    TNFRValueError: Structural frequency must be non-negative, got -0.1
     """
     if not isinstance(nu_f, (int, float)):
-        raise ValueError(f"Structural frequency must be numeric, got {type(nu_f).__name__}")
+        raise TNFRValueError(
+            f"Structural frequency must be numeric, got {type(nu_f).__name__}",
+            context={"type": type(nu_f).__name__, "value": str(nu_f)},
+        )
 
     if math.isnan(nu_f):
-        raise ValueError("Structural frequency cannot be NaN")
+        raise TNFRValueError("Structural frequency cannot be NaN")
 
     if math.isinf(nu_f):
-        raise ValueError("Structural frequency cannot be infinite")
+        raise TNFRValueError("Structural frequency cannot be infinite")
 
     if nu_f < 0:
-        raise ValueError(f"Structural frequency must be non-negative, got {nu_f}")
+        raise TNFRValueError(
+            f"Structural frequency must be non-negative, got {nu_f}",
+            context={"value": nu_f},
+        )
 
     return float(nu_f)
 
@@ -97,7 +105,7 @@ def validate_phase_value(phase: float, *, allow_wrap: bool = True) -> float:
 
     Raises
     ------
-    ValueError
+    TNFRValueError
         If phase is NaN, infinite, or outside valid range (when allow_wrap=False)
 
     Example
@@ -110,16 +118,19 @@ def validate_phase_value(phase: float, *, allow_wrap: bool = True) -> float:
     >>> validate_phase_value(7.0, allow_wrap=False)  # doctest: +SKIP
     Traceback (most recent call last):
         ...
-    ValueError: Phase must be in range [0, 2π], got 7.0
+    TNFRValueError: Phase must be in range [0, 2π], got 7.0
     """
     if not isinstance(phase, (int, float)):
-        raise ValueError(f"Phase must be numeric, got {type(phase).__name__}")
+        raise TNFRValueError(
+            f"Phase must be numeric, got {type(phase).__name__}",
+            context={"type": type(phase).__name__, "value": str(phase)},
+        )
 
     if math.isnan(phase):
-        raise ValueError("Phase cannot be NaN")
+        raise TNFRValueError("Phase cannot be NaN")
 
     if math.isinf(phase):
-        raise ValueError("Phase cannot be infinite")
+        raise TNFRValueError("Phase cannot be infinite")
 
     two_pi = 2 * math.pi
 
@@ -128,7 +139,10 @@ def validate_phase_value(phase: float, *, allow_wrap: bool = True) -> float:
         phase = phase % two_pi
     else:
         if not 0 <= phase <= two_pi:
-            raise ValueError(f"Phase must be in range [0, 2π], got {phase}")
+            raise TNFRValueError(
+                f"Phase must be in range [0, 2π], got {phase}",
+                context={"value": phase, "range": "[0, 2π]"},
+            )
 
     return float(phase)
 
@@ -151,7 +165,7 @@ def validate_coherence_value(coherence: float) -> float:
 
     Raises
     ------
-    ValueError
+    TNFRValueError
         If coherence is negative, NaN, or infinite
 
     Example
@@ -163,19 +177,25 @@ def validate_coherence_value(coherence: float) -> float:
     >>> validate_coherence_value(-0.1)  # doctest: +SKIP
     Traceback (most recent call last):
         ...
-    ValueError: Coherence must be non-negative, got -0.1
+    TNFRValueError: Coherence must be non-negative, got -0.1
     """
     if not isinstance(coherence, (int, float)):
-        raise ValueError(f"Coherence must be numeric, got {type(coherence).__name__}")
+        raise TNFRValueError(
+            f"Coherence must be numeric, got {type(coherence).__name__}",
+            context={"type": type(coherence).__name__, "value": str(coherence)},
+        )
 
     if math.isnan(coherence):
-        raise ValueError("Coherence cannot be NaN")
+        raise TNFRValueError("Coherence cannot be NaN")
 
     if math.isinf(coherence):
-        raise ValueError("Coherence cannot be infinite")
+        raise TNFRValueError("Coherence cannot be infinite")
 
     if coherence < 0:
-        raise ValueError(f"Coherence must be non-negative, got {coherence}")
+        raise TNFRValueError(
+            f"Coherence must be non-negative, got {coherence}",
+            context={"value": coherence},
+        )
 
     return float(coherence)
 
@@ -198,7 +218,7 @@ def validate_sense_index(si: float) -> float:
 
     Raises
     ------
-    ValueError
+    TNFRValueError
         If Si is negative, NaN, or infinite
 
     Example
@@ -210,19 +230,35 @@ def validate_sense_index(si: float) -> float:
     >>> validate_sense_index(-0.1)  # doctest: +SKIP
     Traceback (most recent call last):
         ...
-    ValueError: Sense index must be non-negative, got -0.1
+    TNFRValueError: Sense index must be non-negative, got -0.1
     """
     if not isinstance(si, (int, float)):
-        raise ValueError(f"Sense index must be numeric, got {type(si).__name__}")
+        raise TNFRValueError(
+            f"Sense index must be numeric, got {type(si).__name__}",
+            context={"si_type": type(si).__name__, "si_value": str(si)},
+            suggestion="Ensure sense index is a float or int."
+        )
 
     if math.isnan(si):
-        raise ValueError("Sense index cannot be NaN")
+        raise TNFRValueError(
+            "Sense index cannot be NaN",
+            context={"si_value": "NaN"},
+            suggestion="Check calculation source for invalid operations."
+        )
 
     if math.isinf(si):
-        raise ValueError("Sense index cannot be infinite")
+        raise TNFRValueError(
+            "Sense index cannot be infinite",
+            context={"si_value": "inf"},
+            suggestion="Check for division by zero or overflow."
+        )
 
     if si < 0:
-        raise ValueError(f"Sense index must be non-negative, got {si}")
+        raise TNFRValueError(
+            f"Sense index must be non-negative, got {si}",
+            context={"si_value": si},
+            suggestion="Sense index represents reorganization capacity and must be >= 0."
+        )
 
     return float(si)
 
@@ -245,7 +281,7 @@ def validate_nodal_input(data: dict[str, Any]) -> dict[str, Any]:
 
     Raises
     ------
-    ValueError
+    TNFRValueError
         If any attribute fails validation
 
     Example

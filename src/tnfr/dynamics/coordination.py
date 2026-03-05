@@ -23,7 +23,7 @@ from ..metrics.trig import neighbor_phase_mean_list
 from ..metrics.trig_cache import get_trig_cache
 from ..observers import DEFAULT_GLYPH_LOAD_SPAN, glyph_load, kuramoto_order
 from ..types import FloatArray, NodeId, Phase, TNFRGraph
-from ..utils import get_numpy
+from ..mathematics.unified_numerical import np
 
 _DequeT = TypeVar("_DequeT")
 
@@ -137,7 +137,6 @@ def _phase_adjust_chunk(args: ChunkArgs) -> list[tuple[NodeId, Phase]]:
                 neigh,
                 cos_map,
                 sin_map,
-                np=None,
                 fallback=th,
             )
         else:
@@ -264,7 +263,6 @@ def coordinate_global_local_phase(
     if jobs is not None and jobs <= 1:
         jobs = None
 
-    np = get_numpy()
     if np is not None:
         jobs = None
 
@@ -273,7 +271,7 @@ def coordinate_global_local_phase(
     if not num_nodes:
         return
 
-    trig = get_trig_cache(G, np=np)
+    trig = get_trig_cache(G)
     theta_map = cast(dict[NodeId, Phase], trig.theta)
     cos_map = cast(dict[NodeId, float], trig.cos)
     sin_map = cast(dict[NodeId, float], trig.sin)
@@ -312,7 +310,6 @@ def coordinate_global_local_phase(
                 neighbors_map.get(n, ()),
                 cos_map,
                 sin_map,
-                np=np,
                 fallback=theta_vals[idx],
             )
             for idx, n in enumerate(nodes)
@@ -336,7 +333,6 @@ def coordinate_global_local_phase(
                     neigh,
                     cos_map,
                     sin_map,
-                    np=None,
                     fallback=th,
                 )
             else:

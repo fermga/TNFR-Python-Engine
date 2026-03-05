@@ -21,10 +21,10 @@ from .metrics.common import compute_coherence
 from .types import Glyph, GlyphLoadDistribution, TNFRGraph
 from .utils import (
     get_logger,
-    get_numpy,
     mix_groups,
     normalize_counter,
 )
+from .mathematics.unified_numerical import np
 from .validation import validate_window
 from .telemetry import ensure_nu_f_telemetry, record_nu_f_window
 
@@ -201,7 +201,6 @@ def phase_sync(
 
     diffs = (angle_diff(_theta(data), psi) for _, data in G.nodes(data=True))
     # Try NumPy for a vectorised population variance
-    np = get_numpy()
     if np is not None:
         arr = np.fromiter(diffs, dtype=float)
         var = float(np.var(arr)) if arr.size else 0.0

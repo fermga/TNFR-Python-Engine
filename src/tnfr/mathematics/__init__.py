@@ -52,6 +52,22 @@ from .transforms import (
     ensure_coherence_monotonicity,
     validate_norm_preservation,
 )
+# Unified numerical and cache systems
+from .unified_numerical import (
+    TNFRConstants, CONSTANTS,
+    TNFRNumericalUtilities, get_unified_numerical_utils,
+    normalize_phase, compute_phase_difference, generate_random_array,
+    safe_divide, compute_circular_mean, is_finite_array, clamp_value,
+    kahan_sum_nd, reset_global_seed,
+    np, npt, NUMPY_AVAILABLE, ArrayLike, ComplexArray,
+    PHI, GAMMA, PI, E
+)
+from .unified_cache import (
+    TNFRUnifiedCacheSystem, get_unified_cache_system,
+    get_cache_region, clear_unified_caches,
+    UnifiedLRUCache, CacheStats,
+    CacheLevel, cache_tnfr_computation
+)
 from .number_theory import (
     ArithmeticTNFRFormalism,
     ArithmeticStructuralTerms,
@@ -120,6 +136,18 @@ __all__ = [
     "available_backends",
     "get_backend",
     "register_backend",
+    # Unified numerical and cache systems
+    "TNFRConstants", "CONSTANTS",
+    "TNFRNumericalUtilities", "get_unified_numerical_utils",
+    "normalize_phase", "compute_phase_difference", "generate_random_array",
+    "safe_divide", "compute_circular_mean", "is_finite_array", "clamp_value",
+    "kahan_sum_nd", "reset_global_seed",
+    "np", "npt", "NUMPY_AVAILABLE", "ArrayLike", "ComplexArray",
+    "PHI", "GAMMA", "PI", "E",
+    "TNFRUnifiedCacheSystem", "get_unified_cache_system",
+    "get_cache_region", "clear_unified_caches",
+    "UnifiedLRUCache", "CacheStats",
+    "CacheLevel", "cache_tnfr_computation",
     # Number theory (prime emergence)
     "ArithmeticTNFRFormalism",
     "ArithmeticStructuralTerms",

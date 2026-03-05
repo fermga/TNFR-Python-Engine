@@ -26,10 +26,11 @@ See docs/CACHING_STRATEGY.md for complete cache documentation.
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Optional
 
 from ..types import GraphLike
-from ..utils import edge_version_cache, get_graph
+from ..utils import edge_version_cache
+from ..mathematics.unified_numerical import np as _unified_np
 
 __all__ = ("ensure_numpy_buffers",)
 
@@ -40,7 +41,6 @@ def ensure_numpy_buffers(
     key_prefix: str,
     count: int,
     buffer_count: int,
-    np: Any,
     dtype: Any = None,
     max_cache_entries: int | None = 128,
 ) -> tuple[Any, ...]:
@@ -56,7 +56,7 @@ def ensure_numpy_buffers(
     - **Key**: ``(key_prefix, count, buffer_count)`` ensures uniqueness
     - **Invalidation**: Automatic on edge version changes
     - **Capacity**: Controlled by ``max_cache_entries`` parameter
-    - **Override**: Graph-level config via ``_cache_config['buffer_max_entries']``
+    - **Override**: Graph-level config via ``configure_hot_path_caches`` or ``CacheManager``
 
     Parameters
     ----------
@@ -72,8 +72,6 @@ def ensure_numpy_buffers(
     buffer_count : int
         Number of buffers to allocate. Each buffer is independent and can be
         used for different intermediate values in the computation.
-    np : Any
-        NumPy module or compatible array backend. Must support ``np.empty``.
     dtype : Any, optional
         Data type for the buffers. Default: ``float``.
     max_cache_entries : int or None, optional
@@ -108,17 +106,16 @@ def ensure_numpy_buffers(
 
     Examples
     --------
-    >>> import numpy as np
     >>> import networkx as nx
     >>> G = nx.Graph([(0, 1)])
     >>> buffers = ensure_numpy_buffers(
-    ...     G, key_prefix="_test", count=10, buffer_count=3, np=np
+    ...     G, key_prefix="_test", count=10, buffer_count=3
     ... )
     >>> len(buffers)
     3
     >>> buffers[0].shape
     (10,)
-    >>> all(isinstance(buf, np.ndarray) for buf in buffers)
+    >>> all(isinstance(buf, _unified_np.ndarray) for buf in buffers)
     True
 
     Allocate workspace for a computation with 100 nodes:
@@ -128,8 +125,7 @@ def ensure_numpy_buffers(
     ...     G_large,
     ...     key_prefix="_my_computation",
     ...     count=100,
-    ...     buffer_count=2,
-    ...     np=np
+    ...     buffer_count=2
     ... )
     >>> workspace[0].size == 100
     True
@@ -139,18 +135,9 @@ def ensure_numpy_buffers(
     edge_version_cache : Underlying cache mechanism
     configure_hot_path_caches : Global cache configuration
     """
-    # Allow graph-level override of max_cache_entries
-    graph = get_graph(G)
-    cache_config = graph.get("_cache_config")
-    if isinstance(cache_config, dict) and max_cache_entries is not None:
-        override = cache_config.get("buffer_max_entries")
-        if override is not None:
-            max_cache_entries = int(override)
-
     if dtype is None:
         dtype = float
-    if count <= 0:
-        count = 1
+    np = _unified_np
 
     def builder() -> tuple[Any, ...]:
         return tuple(np.empty(count, dtype=dtype) for _ in range(buffer_count))

@@ -62,7 +62,6 @@ from collections import defaultdict
 from collections.abc import Iterable, Mapping, MutableMapping, Sized
 from functools import lru_cache, partial
 from threading import Lock
-from types import ModuleType
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -78,6 +77,7 @@ from .compat.dataclass import dataclass
 from .constants.aliases import ALIAS_DNFR, ALIAS_THETA, ALIAS_VF
 from .types import FloatArray, NodeId
 from .utils import convert_value
+from .mathematics.unified_numerical import np
 
 if TYPE_CHECKING:  # pragma: no cover
     import networkx
@@ -309,8 +309,6 @@ def collect_attr(
     nodes: Iterable[NodeId],
     aliases: Iterable[str],
     default: float = 0.0,
-    *,
-    np: ModuleType | None = None,
 ) -> FloatArray | list[float]:
     """Collect attribute values for ``nodes`` from ``G`` using ``aliases``.
 
@@ -324,9 +322,6 @@ def collect_attr(
         Sequence of alias keys passed to :func:`get_attr`.
     default:
         Fallback value when no alias is found for a node.
-    np:
-        Optional NumPy module. When provided, the result is returned as a
-        NumPy array of ``float``; otherwise a Python ``list`` is returned.
 
     Returns
     -------
@@ -345,7 +340,8 @@ def collect_attr(
     nodes_iter, size = _nodes_iter_and_size(nodes)
 
     def _value(node: NodeId) -> float:
-        return float(get_attr(G.nodes[node], aliases, default))
+        val = get_attr(G.nodes[node], aliases, default)
+        return float(val) if val is not None else default
 
     if np is not None:
         values: FloatArray = np.fromiter((_value(n) for n in nodes_iter), float, count=size)
@@ -357,8 +353,6 @@ def collect_theta_attr(
     G: "networkx.Graph",
     nodes: Iterable[NodeId],
     default: float = 0.0,
-    *,
-    np: ModuleType | None = None,
 ) -> FloatArray | list[float]:
     """Collect ``theta`` values honouring the English-only attribute contract."""
 
@@ -373,7 +367,7 @@ def collect_theta_attr(
     nodes_iter, size = _nodes_iter_and_size(nodes)
 
     def _value(node: NodeId) -> float:
-        return float(get_theta_attr(G.nodes[node], default))
+        return cast(float, get_theta_attr(G.nodes[node], default))
 
     if np is not None:
         values: FloatArray = np.fromiter((_value(n) for n in nodes_iter), float, count=size)
@@ -424,6 +418,7 @@ def set_theta_attr(d: MutableMapping[str, Any], value: Any) -> float:
 
 
 @dataclass(slots=True)
+@dataclass
 class AbsMaxResult:
     """Absolute maximum value and the node where it occurs."""
 
@@ -475,7 +470,7 @@ def _compute_abs_max_result(
         max_val = abs(float(value))
     else:
         node, max_val = max(
-            ((n, abs(get_attr(G.nodes[n], aliases, 0.0))) for n in G.nodes()),
+            ((n, abs(cast(float, get_attr(G.nodes[n], aliases, 0.0)))) for n in G.nodes()),
             key=lambda item: item[1],
             default=(None, 0.0),
         )
@@ -503,7 +498,7 @@ def multi_recompute_abs_max(
     items = list(alias_map.items())
     for _, nd in G.nodes(data=True):
         maxima.update(
-            {key: max(maxima[key], abs(get_attr(nd, aliases, 0.0))) for key, aliases in items}
+            {key: max(maxima[key], abs(cast(float, get_attr(nd, aliases, 0.0)))) for key, aliases in items}
         )
     return {k: float(v) for k, v in maxima.items()}
 
@@ -527,7 +522,7 @@ def _update_cached_abs_max(
     node_key = f"{key}_node"
     val = abs(float(value))
     cur = _coerce_abs_value(G.graph.get(key))
-    cur_node = cast(Hashable | None, G.graph.get(node_key))
+    cur_node = cast(Optional[Hashable], G.graph.get(node_key))
 
     if val >= cur:
         return _compute_abs_max_result(G, aliases, key=key, candidate=(n, val))
@@ -663,7 +658,7 @@ for _name, _spec in SCALAR_SETTERS.items():
 del _name, _spec, _make_scalar_setter
 
 _set_theta_impl = cast(
-    Callable[["networkx.Graph", Hashable, float], AbsMaxResult | None],
+    Callable[["networkx.Graph", Hashable, float], Optional[AbsMaxResult]],
     globals()["set_theta"],
 )
 

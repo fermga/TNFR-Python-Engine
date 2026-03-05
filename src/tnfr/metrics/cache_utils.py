@@ -12,6 +12,10 @@ from typing import Any, MutableMapping
 
 from ..types import GraphLike
 from ..utils import get_graph
+from ..utils.cache import (
+    CacheStatistics as CacheStats,
+    configure_graph_cache_limits,
+)
 
 __all__ = (
     "get_cache_config",
@@ -21,38 +25,6 @@ __all__ = (
 )
 
 logger = logging.getLogger(__name__)
-
-
-class CacheStats:
-    """Aggregate cache statistics for telemetry and profiling."""
-
-    __slots__ = ("hits", "misses", "evictions", "hit_rate", "total_accesses")
-
-    def __init__(
-        self,
-        hits: int = 0,
-        misses: int = 0,
-        evictions: int = 0,
-    ) -> None:
-        self.hits = hits
-        self.misses = misses
-        self.evictions = evictions
-        self.total_accesses = hits + misses
-        self.hit_rate = hits / self.total_accesses if self.total_accesses > 0 else 0.0
-
-    def __repr__(self) -> str:
-        return (
-            f"CacheStats(hits={self.hits}, misses={self.misses}, "
-            f"evictions={self.evictions}, hit_rate={self.hit_rate:.2%})"
-        )
-
-    def merge(self, other: CacheStats) -> CacheStats:
-        """Combine statistics from another CacheStats instance."""
-        return CacheStats(
-            hits=self.hits + other.hits,
-            misses=self.misses + other.misses,
-            evictions=self.evictions + other.evictions,
-        )
 
 
 def get_cache_config(
@@ -104,6 +76,10 @@ def configure_hot_path_caches(
     across the metrics computation pipeline. It consolidates configuration
     that would otherwise be scattered across multiple graph attributes.
 
+    It automatically synchronizes with the unified CacheManager to ensure
+    consistent capacity enforcement for shared resources like the edge
+    version cache.
+
     Parameters
     ----------
     G : GraphLike
@@ -134,14 +110,28 @@ def configure_hot_path_caches(
     graph = get_graph(G)
     config: MutableMapping[str, Any] = graph.setdefault("_cache_config", {})
 
+    # Consolidate edge cache capacity requirements
+    edge_capacities = []
     if buffer_max_entries is not None:
         config["buffer_max_entries"] = int(buffer_max_entries)
-
-    if si_chunk_size is not None:
-        graph["SI_CHUNK_SIZE"] = int(si_chunk_size)
+        edge_capacities.append(int(buffer_max_entries))
 
     if trig_cache_size is not None:
         config["trig_cache_size"] = int(trig_cache_size)
+        edge_capacities.append(int(trig_cache_size))
+
+    # If any edge-cache related capacity is set, update the unified CacheManager
+    if edge_capacities:
+        # Use the maximum requested capacity for the shared edge cache
+        # to satisfy the largest requirement
+        max_capacity = max(edge_capacities)
+        configure_graph_cache_limits(
+            G,
+            overrides={"_edge_version_state": max_capacity}
+        )
+
+    if si_chunk_size is not None:
+        graph["SI_CHUNK_SIZE"] = int(si_chunk_size)
 
     if coherence_cache_size is not None:
         config["coherence_cache_size"] = int(coherence_cache_size)

@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass
+from types import SimpleNamespace
+
 from collections.abc import (
     Callable,
     Hashable,
@@ -12,7 +15,7 @@ from collections.abc import (
     Sequence,
 )
 from enum import Enum
-from types import SimpleNamespace
+
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -24,25 +27,90 @@ from typing import (
 
 from numbers import Real
 
+from .errors import TNFRValueError
 from ._compat import TypeAlias
 
 if TYPE_CHECKING:
     from .mathematics import BEPIElement
 
-try:  # pragma: no cover - optional dependency for typing only
-    import numpy as np
-except Exception:  # pragma: no cover - graceful fallback when NumPy is missing
-    np = SimpleNamespace(ndarray=Any, float64=float)  # type: ignore[assignment]
+class CacheLevel(Enum):
+    """Cache levels organized by persistence and computational cost.
 
-if TYPE_CHECKING:  # pragma: no cover - import-time typing hook
+    Levels are ordered from most persistent (rarely changes) to least
+    persistent (frequently recomputed):
+
+    - GRAPH_STRUCTURE: Topology, adjacency matrices (invalidated on add/remove node/edge)
+    - NODE_PROPERTIES: EPI, νf, θ per node (invalidated on property updates)
+    - DERIVED_METRICS: Si, coherence, ΔNFR (invalidated on dependency changes)
+    - TEMPORARY: Intermediate computations (short-lived, frequently evicted)
+    """
+    GRAPH_STRUCTURE = "graph_structure"
+    NODE_PROPERTIES = "node_properties"
+    DERIVED_METRICS = "derived_metrics"
+    TEMPORARY = "temporary"
+
+
+@dataclass
+class CacheStats:
+    """Statistics for a cache region."""
+    hits: int = 0
+    misses: int = 0
+    evictions: int = 0
+    size: int = 0
+    max_size: int = 0
+    timings: int = 0
+    total_time: float = 0.0
+    
+    @property
+    def hit_rate(self) -> float:
+        total = self.hits + self.misses
+        return (self.hits / total) if total > 0 else 0.0
+
+    @property
+    def total_accesses(self) -> int:
+        return self.hits + self.misses
+
+    def merge(self, other: CacheStats) -> CacheStats:
+        """Merge with another stats object."""
+        return CacheStats(
+            hits=self.hits + other.hits,
+            misses=self.misses + other.misses,
+            evictions=self.evictions + other.evictions,
+            size=self.size + other.size,
+            max_size=max(self.max_size, other.max_size),
+            timings=self.timings + other.timings,
+            total_time=self.total_time + other.total_time
+        )
+
+
+if TYPE_CHECKING:
     try:
+        import numpy as np
         import numpy.typing as npt
-    except Exception:  # pragma: no cover - fallback when NumPy typing is missing
+    except ImportError:
+        np = Any  # type: ignore
+        npt = Any  # type: ignore
+else:
+    try:
+        import numpy as _np
+        import numpy.typing as _npt
+    except ImportError:
+        _np = None
+        _npt = None
+
+    if _np is None:
+        np = SimpleNamespace(ndarray=Any, float64=float)  # type: ignore[assignment]
+    else:
+        np = _np
+
+    if _npt is None:
         npt = SimpleNamespace(NDArray=Any)  # type: ignore[assignment]
-else:  # pragma: no cover - runtime fallback without numpy.typing
-    npt = SimpleNamespace(NDArray=Any)  # type: ignore[assignment]
+    else:
+        npt = _npt
 
 __all__ = (
+    "CacheLevel",
+    "CacheStats",
     "TNFRGraph",
     "TNFRNode",
     "Graph",
@@ -222,11 +290,17 @@ def ensure_bepi(value: Any) -> "BEPIElement":
             grid = value["grid"]
         except KeyError as exc:  # pragma: no cover - defensive
             missing = exc.args[0]
-            raise ValueError(f"Missing '{missing}' key for BEPI serialization.") from exc
+            raise TNFRValueError(
+                f"Missing '{missing}' key for BEPI serialization.",
+                context={"missing_key": missing, "received_keys": list(value.keys())},
+            ) from exc
         return _BEPIElement(continuous, discrete, grid)
     if isinstance(value, Sequence) and not isinstance(value, (str, bytes, bytearray)):
         if len(value) != 3:
-            raise ValueError("Sequential BEPI representations must contain 3 elements.")
+            raise TNFRValueError(
+                "Sequential BEPI representations must contain 3 elements.",
+                context={"length": len(value), "value": value},
+            )
         continuous, discrete, grid = value
         return _BEPIElement(continuous, discrete, grid)
     raise TypeError(f"Unsupported BEPI value type: {type(value)!r}")

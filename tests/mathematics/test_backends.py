@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
+from typing import cast
+
 import numpy as np
 import pytest
 
 from tnfr.mathematics import CoherenceOperator, HilbertSpace
-from tnfr.mathematics.backend import ensure_array, ensure_numpy, get_backend
+from tnfr.mathematics.backend import MathematicsBackend, ensure_array, ensure_numpy, get_backend
 from tnfr.mathematics.dynamics import (
     ContractiveDynamicsEngine,
     MathematicalDynamicsEngine,
@@ -15,14 +17,28 @@ from tnfr.mathematics.dynamics import (
 _BACKEND_NAMES = ("numpy", "jax", "torch")
 
 
-def _require_backend(name: str) -> object:
+def _require_backend(name: str) -> MathematicsBackend:
     backend = get_backend(name)
     if backend.name != name:
         pytest.skip(f"Backend '{name}' is unavailable; installed: {backend.name!r}.")
-    return backend
+    return cast(MathematicsBackend, backend)
 
 
-def _to_numpy(value: object, *, backend: object) -> np.ndarray:
+def _adjust_tolerances_for_backend(
+    backend_name: str, tolerances: dict[str, float]
+) -> dict[str, float]:
+    """Relax tolerances for backends that might default to 32-bit precision."""
+    if backend_name == "jax":
+        try:
+            import jax.numpy as jnp
+            if jnp.array([1.0]).dtype == jnp.float32:
+                return {"rtol": 1e-5, "atol": 1e-6}
+        except ImportError:
+            pass
+    return tolerances
+
+
+def _to_numpy(value: object, *, backend: MathematicsBackend) -> np.ndarray:
     return np.asarray(ensure_numpy(value, backend=backend))
 
 
@@ -33,6 +49,9 @@ def test_coherence_operator_matches_numpy(
     """Coherence operators must agree across available numerical backends."""
 
     backend = _require_backend(backend_name)
+    structural_tolerances = _adjust_tolerances_for_backend(
+        backend_name, structural_tolerances
+    )
     reference_backend = get_backend("numpy")
 
     matrix = np.array([[0.9, 0.2 - 0.05j], [0.2 + 0.05j, 0.4]], dtype=np.complex128)
@@ -62,7 +81,9 @@ def test_coherence_operator_matches_numpy(
         == operator.c_min
     )
 
-    expectation_backend = operator.expectation(state)
+    expectation_backend = operator.expectation(
+        state, atol=structural_tolerances["atol"]
+    )
     expectation_reference = reference.expectation(state)
     assert expectation_backend == pytest.approx(
         expectation_reference,
@@ -78,6 +99,9 @@ def test_mathematical_dynamics_matches_numpy(
     """Unitary trajectories should be backend agnostic within tolerance."""
 
     backend = _require_backend(backend_name)
+    structural_tolerances = _adjust_tolerances_for_backend(
+        backend_name, structural_tolerances
+    )
     reference_backend = get_backend("numpy")
 
     hilbert = HilbertSpace(dimension=2)
@@ -115,6 +139,9 @@ def test_contractive_dynamics_matches_numpy(
     """Contractive trajectories should remain invariant across backends."""
 
     backend = _require_backend(backend_name)
+    structural_tolerances = _adjust_tolerances_for_backend(
+        backend_name, structural_tolerances
+    )
     reference_backend = get_backend("numpy")
 
     hilbert = HilbertSpace(dimension=2)
@@ -155,11 +182,15 @@ def test_torch_backend_handles_numpy_complex_dtype() -> None:
 
     backend = _require_backend("torch")
 
-    if not hasattr(backend, "_torch"):
+    # Use getattr to avoid mypy errors since _torch is not in the interface
+    torch_module = getattr(backend, "_torch", None)
+    if torch_module is None:
         pytest.skip("Torch backend unavailable for dtype inspection")
+    
+    assert torch_module is not None
 
     matrix = np.array([[1 + 2j, 3 - 4j], [5 + 6j, 7 - 8j]], dtype=np.complex128)
 
     tensor = ensure_array(matrix, dtype=np.complex128, backend=backend)
 
-    assert tensor.dtype == backend._torch.complex128
+    assert tensor.dtype == torch_module.complex128

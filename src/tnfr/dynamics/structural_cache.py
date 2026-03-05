@@ -15,7 +15,7 @@ Key optimizations:
 Status: CANONICAL STRUCTURAL CACHE
 """
 
-import numpy as np
+from ..mathematics.unified_numerical import np
 from typing import Dict, Any, Optional, Tuple, List, Set
 from dataclasses import dataclass, field
 from functools import wraps

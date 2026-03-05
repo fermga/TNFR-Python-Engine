@@ -8,7 +8,7 @@ Status: PRODUCTION READY (2025-11-12)
 Validation: Multi-topology parameter sweeps with confidence intervals
 """
 
-import numpy as np
+from ..mathematics.unified_numerical import np
 import networkx as nx
 from typing import Dict, Any
 from dataclasses import dataclass

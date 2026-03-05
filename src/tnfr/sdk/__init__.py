@@ -41,6 +41,8 @@ suggest_sequence_for_goal
 
 from __future__ import annotations
 
+from typing import Any
+
 __all__ = [
     "TNFRNetwork",
     "NetworkConfig",
@@ -55,11 +57,15 @@ __all__ = [
     "import_from_json",
     "format_comparison_table",
     "suggest_sequence_for_goal",
+    "run_partition_self_optimization",
+    "run_pattern_discovery_optimization",
+    "run_fractal_partition_optimization",
+    "run_batch_certificate_optimization",
 ]
 
 
 # Lazy imports to avoid circular dependencies and optional dependency issues
-def __getattr__(name: str):
+def __getattr__(name: str) -> Any:
     """Lazy load SDK components."""
     if name == "TNFRNetwork" or name == "NetworkConfig" or name == "NetworkResults":
         from .fluent import TNFRNetwork, NetworkConfig, NetworkResults
@@ -108,4 +114,20 @@ def __getattr__(name: str):
             "suggest_sequence_for_goal": suggest_sequence_for_goal,
         }
         return mapping[name]
+    elif name == "run_partition_self_optimization":
+        from .self_opt import run_partition_self_optimization
+
+        return run_partition_self_optimization
+    elif name == "run_pattern_discovery_optimization":
+        from .self_opt import run_pattern_discovery_optimization
+
+        return run_pattern_discovery_optimization
+    elif name == "run_fractal_partition_optimization":
+        from .self_opt import run_fractal_partition_optimization
+
+        return run_fractal_partition_optimization
+    elif name == "run_batch_certificate_optimization":
+        from .self_opt import run_batch_certificate_optimization
+
+        return run_batch_certificate_optimization
     raise AttributeError(f"module '{__name__}' has no attribute '{name}'")

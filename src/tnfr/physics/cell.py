@@ -38,7 +38,7 @@ See also:
 
 from dataclasses import dataclass
 from typing import Optional, Sequence
-import numpy as np
+from ..mathematics.unified_numerical import np
 import networkx as nx
 from ..metrics.common import compute_coherence
 
@@ -78,12 +78,8 @@ class CellTelemetry:
 
 # Core computations
 
-def _safe_div(numerator: np.ndarray, denominator: np.ndarray, fallback: float = 0.0) -> np.ndarray:
-    """Safe division with fallback for zero denominators."""
-    result = np.full_like(numerator, fallback, dtype=float)
-    mask = np.abs(denominator) > 1e-12
-    result[mask] = numerator[mask] / denominator[mask]
-    return result
+# Centralised helper — single source of truth in _helpers.py
+from ._helpers import safe_div_mask as _safe_div         # noqa: E402
 
 
 def compute_boundary_coherence(

@@ -5,17 +5,19 @@ from __future__ import annotations
 from dataclasses import field
 from typing import TYPE_CHECKING, Any, Sequence
 
-import numpy as np
-
+from ..errors import TNFRValueError
 from ..compat.dataclass import dataclass
 from .backend import MathematicsBackend, ensure_array, ensure_numpy, get_backend
+from .unified_numerical import np
 from ..constants.canonical import MATH_COHERENCE_MIN_CANONICAL, MATH_TOLERANCE_CANONICAL
 
 if TYPE_CHECKING:  # pragma: no cover - typing imports only
     import numpy.typing as npt
-
-    ComplexVector = npt.NDArray[np.complexfloating[np.float64, np.float64]]
-    ComplexMatrix = npt.NDArray[np.complexfloating[np.float64, np.float64]]
+    # We import numpy directly for typing to ensure mypy understands the types
+    import numpy as _np_typing
+    
+    ComplexVector = npt.NDArray[_np_typing.complexfloating[_np_typing.float64, _np_typing.float64]]
+    ComplexMatrix = npt.NDArray[_np_typing.complexfloating[_np_typing.float64, _np_typing.float64]]
 else:  # pragma: no cover - runtime alias
     ComplexVector = np.ndarray
     ComplexMatrix = np.ndarray
@@ -33,7 +35,11 @@ def _as_complex_vector(
 ) -> Any:
     arr = ensure_array(vector, dtype=np.complex128, backend=backend)
     if getattr(arr, "ndim", len(getattr(arr, "shape", ()))) != 1:
-        raise ValueError("Vector input must be one-dimensional.")
+        raise TNFRValueError(
+            "Vector input must be one-dimensional.",
+            context={"ndim": getattr(arr, "ndim", len(getattr(arr, "shape", ())))},
+            suggestion="Provide a 1D vector."
+        )
     return arr
 
 
@@ -45,7 +51,11 @@ def _as_complex_matrix(
     arr = ensure_array(matrix, dtype=np.complex128, backend=backend)
     shape = getattr(arr, "shape", None)
     if shape is None or len(shape) != 2 or shape[0] != shape[1]:
-        raise ValueError("Operator matrix must be square.")
+        raise TNFRValueError(
+            "Operator matrix must be square.",
+            context={"shape": shape},
+            suggestion="Provide a square matrix."
+        )
     return arr
 
 
@@ -98,7 +108,11 @@ class CoherenceOperator:
             if ensure_hermitian:
                 imag = ensure_numpy(eigvals_backend.imag, backend=resolved_backend)
                 if not np.allclose(imag, 0.0, atol=atol):
-                    raise ValueError("Hermitian operators require real eigenvalues.")
+                    raise TNFRValueError(
+                        "Hermitian operators require real eigenvalues.",
+                        context={"max_imag": float(np.max(np.abs(imag))), "atol": atol},
+                        suggestion="Ensure eigenvalues are real."
+                    )
             matrix_backend = _make_diagonal(eigvals_backend, backend=resolved_backend)
             eigenvalues_backend = eigvals_backend
         else:
@@ -106,7 +120,11 @@ class CoherenceOperator:
             if ensure_hermitian and not self._check_hermitian(
                 matrix_backend, atol=atol, backend=resolved_backend
             ):
-                raise ValueError("Coherence operator must be Hermitian.")
+                raise TNFRValueError(
+                    "Coherence operator must be Hermitian.",
+                    context={"is_hermitian": False},
+                    suggestion="Ensure the operator matrix is Hermitian."
+                )
             if ensure_hermitian:
                 eigenvalues_backend, _ = resolved_backend.eigh(matrix_backend)
             else:
@@ -168,13 +186,24 @@ class CoherenceOperator:
     ) -> float:
         vector_backend = _as_complex_vector(state, backend=self.backend)
         if vector_backend.shape != (self.matrix.shape[0],):
-            raise ValueError("State vector dimension mismatch with operator.")
+            raise TNFRValueError(
+                "State vector dimension mismatch with operator.",
+                context={
+                    "operator_shape": self.matrix.shape,
+                    "vector_shape": vector_backend.shape
+                },
+                suggestion="Ensure vector dimension matches operator dimension."
+            )
         working = vector_backend
         if normalise:
             norm_value = ensure_numpy(self.backend.norm(working), backend=self.backend)
             norm = float(norm_value)
             if np.isclose(norm, 0.0):
-                raise ValueError("Cannot normalise a null state vector.")
+                raise TNFRValueError(
+                    "Cannot normalise a null state vector.",
+                    context={"norm": norm},
+                    suggestion="Provide a non-zero state vector."
+                )
             working = working / norm
         column = working[..., None]
         bra = self.backend.conjugate_transpose(column)
@@ -183,12 +212,20 @@ class CoherenceOperator:
         expectation = ensure_numpy(expectation_backend, backend=self.backend)
         expectation_scalar = complex(np.asarray(expectation).reshape(()))
         if abs(expectation_scalar.imag) > atol:
-            raise ValueError("Expectation value carries an imaginary component beyond tolerance.")
+            raise TNFRValueError(
+                "Expectation value carries an imaginary component beyond tolerance.",
+                context={"imag": expectation_scalar.imag, "atol": atol},
+                suggestion="Check operator hermiticity or state vector validity."
+            )
         eps = np.finfo(float).eps
         tol = max(MATH_TOLERANCE_CANONICAL, float(atol / eps)) if atol > 0 else MATH_TOLERANCE_CANONICAL
         real_expectation = np.real_if_close(expectation_scalar, tol=tol)
         if np.iscomplexobj(real_expectation):
-            raise ValueError("Expectation remained complex after coercion.")
+            raise TNFRValueError(
+                "Expectation remained complex after coercion.",
+                context={"value": expectation_scalar},
+                suggestion="Ensure the expectation value is real."
+            )
         return float(real_expectation)
 
 

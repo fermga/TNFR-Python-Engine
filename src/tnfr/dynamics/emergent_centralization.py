@@ -25,7 +25,7 @@ Emergent Centralization Features:
 Status: CANONICAL EMERGENT CENTRALIZATION ENGINE
 """
 
-import numpy as np
+from ..mathematics.unified_numerical import np
 from typing import Dict, Any, List
 from dataclasses import dataclass
 from enum import Enum

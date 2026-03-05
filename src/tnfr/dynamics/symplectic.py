@@ -22,7 +22,7 @@ conservation of Structural Information.
 
 from typing import Callable, Tuple
 
-import numpy as np
+from ..mathematics.unified_numerical import np
 
 from tnfr.constants import DNFR_PRIMARY, EPI_PRIMARY, VF_PRIMARY
 from tnfr.types import TNFRNode

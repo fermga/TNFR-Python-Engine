@@ -19,7 +19,7 @@ The orchestrator automatically selects the best optimization strategy based on:
 Status: CANONICAL OPTIMIZATION ORCHESTRATOR
 """
 
-import numpy as np
+from ..mathematics.unified_numerical import np
 from typing import Dict, Any, Optional, List, Tuple, Union
 from dataclasses import dataclass, field
 from enum import Enum

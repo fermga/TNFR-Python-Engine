@@ -15,8 +15,10 @@ import logging
 import math
 from dataclasses import dataclass
 from typing import Dict, List, Tuple, Optional, Iterable, Union
-import numpy as np
 import networkx as nx
+
+from ..errors import TNFRValueError
+from .unified_numerical import np
 
 from ..config.defaults_core import K_PHI_CURVATURE_THRESHOLD  # 0.9×π ≈ 2.827
 from ..constants.canonical import (
@@ -44,19 +46,8 @@ except ImportError:
     INV_PHI = 1.0 / PHI
 
 # Centralized TNFR cache infrastructure (robust, shared across repo)
-try:
-    from ..utils.cache import cache_tnfr_computation, CacheLevel  # type: ignore
-    _CACHE_OK = True
-except Exception:  # Fallback if utils.cache not available in this context
-    _CACHE_OK = False
-
-    def cache_tnfr_computation(*args, **kwargs):
-        def _deco(f):
-            return f
-        return _deco
-
-    class CacheLevel:
-        DERIVED_METRICS = None
+from .unified_cache import cache_tnfr_computation, CacheLevel
+_CACHE_OK = True
 
 # Import centralized TNFR physics functions for maximum reuse and cache efficiency
 try:
@@ -527,7 +518,11 @@ class ArithmeticTNFRNetwork:
     def get_structural_terms(self, n: int) -> ArithmeticStructuralTerms:
         """Return the canonical structural terms (τ, σ, ω) for node n."""
         if n not in self.graph.nodes:
-            raise ValueError(f"Number {n} not in network (max: {self.max_number})")
+            raise TNFRValueError(
+                f"Number {n} not in network (max: {self.max_number})",
+                context={"number": n, "max_number": self.max_number},
+                suggestion="Ensure the number is within the initialized network range."
+            )
         terms = self.graph.nodes[n].get('structural_terms')
         if isinstance(terms, ArithmeticStructuralTerms):
             return terms
@@ -541,7 +536,11 @@ class ArithmeticTNFRNetwork:
     def get_delta_components(self, n: int) -> Dict[str, float]:
         """Return component-level contributions to ΔNFR for node n."""
         if n not in self.graph.nodes:
-            raise ValueError(f"Number {n} not in network (max: {self.max_number})")
+            raise TNFRValueError(
+                f"Number {n} not in network (max: {self.max_number})",
+                context={"number": n, "max_number": self.max_number},
+                suggestion="Ensure the number is within the initialized network range."
+            )
         components = self.graph.nodes[n].get('delta_components')
         if components is None:
             terms = self.get_structural_terms(n)
@@ -558,7 +557,11 @@ class ArithmeticTNFRNetwork:
     ) -> PrimeCertificate:
         """Generate a PrimeCertificate using the stored TNFR telemetry."""
         if n not in self.graph.nodes:
-            raise ValueError(f"Number {n} not in network (max: {self.max_number})")
+            raise TNFRValueError(
+                f"Number {n} not in network (max: {self.max_number})",
+                context={"number": n, "max_number": self.max_number},
+                suggestion="Ensure the number is within the initialized network range."
+            )
         terms = self.get_structural_terms(n)
         components = self.get_delta_components(n) if include_components else None
         return ArithmeticTNFRFormalism.prime_certificate(
@@ -629,7 +632,11 @@ class ArithmeticTNFRNetwork:
     def get_tnfr_properties(self, n: int) -> Dict[str, float]:
         """Get all TNFR properties for a specific number."""
         if n not in self.graph.nodes():
-            raise ValueError(f"Number {n} not in network (max: {self.max_number})")
+            raise TNFRValueError(
+                f"Number {n} not in network (max: {self.max_number})",
+                context={"number": n, "max_number": self.max_number},
+                suggestion="Ensure the number is within the initialized network range."
+            )
             
         node_data = self.graph.nodes[n]
         return {
@@ -1410,7 +1417,11 @@ class ArithmeticTNFRNetwork:
                     writer.writerow(cert)
                     count += 1
         else:
-            raise ValueError(f"Unsupported format: {fmt}")
+            raise TNFRValueError(
+                f"Unsupported format: {fmt}",
+                context={"format": fmt, "supported": ["csv"]},
+                suggestion="Use 'csv' format."
+            )
         logger.info(
             f"Exported {count} prime certificates to {path} (fmt={fmt})"
         )
@@ -1476,7 +1487,11 @@ class ArithmeticTNFRNetwork:
                 for k, v in xi.items():
                     writer.writerow([k, v])
         else:
-            raise ValueError(f"Unsupported format: {fmt}")
+            raise TNFRValueError(
+                f"Unsupported format: {fmt}",
+                context={"format": fmt, "supported": ["jsonl", "csv"]},
+                suggestion="Use 'jsonl' or 'csv' format."
+            )
         logger.info(
             "Exported structural fields for %d nodes to %s (fmt=%s)" % (
                 count,
@@ -1571,11 +1586,19 @@ def compute_dirichlet_characters(p: int) -> np.ndarray:
     Used for constructing the local Hilbert space H_p.
     """
     if not isprime(p):
-        raise ValueError(f"Modulus {p} must be prime for local field construction.")
+        raise TNFRValueError(
+            f"Modulus {p} must be prime for local field construction.",
+            context={"modulus": p},
+            suggestion="Provide a prime number as modulus."
+        )
         
     g = get_primitive_root(p)
     if g is None:
-        raise ValueError(f"Could not find primitive root for {p}")
+        raise TNFRValueError(
+            f"Could not find primitive root for {p}",
+            context={"modulus": p},
+            suggestion="Ensure the modulus is a prime number."
+        )
 
     # Mapping from value a to index (discrete log)
     val_to_idx = np.zeros(p, dtype=int)
@@ -1628,5 +1651,9 @@ class AdelicOperator:
     def apply(self, wavefunction: np.ndarray) -> np.ndarray:
         """Apply U_p to a wavefunction in the character basis."""
         if len(wavefunction) != self.p - 1:
-            raise ValueError(f"Wavefunction dimension {len(wavefunction)} mismatch for p={self.p}")
+            raise TNFRValueError(
+                f"Wavefunction dimension {len(wavefunction)} mismatch for p={self.p}",
+                context={"dimension": len(wavefunction), "expected": self.p - 1, "modulus": self.p},
+                suggestion="Ensure wavefunction dimension matches p-1."
+            )
         return self.eigenvalues * wavefunction

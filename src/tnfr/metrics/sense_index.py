@@ -183,15 +183,16 @@ from typing import Any, Callable, Iterable, Iterator, Mapping, MutableMapping, c
 
 from ..alias import get_attr, set_attr
 from ..constants.aliases import ALIAS_DNFR, ALIAS_SI, ALIAS_VF
+from ..errors import TNFRValueError
 from ..utils import angle_diff, angle_diff_array, clamp01
 from ..types import GraphLike, NodeAttrMap
 from ..utils import (
     edge_version_cache,
-    get_numpy,
     normalize_weights,
     resolve_chunk_size,
     stable_json,
 )
+from ..mathematics.unified_numerical import np
 from .buffer_cache import ensure_numpy_buffers
 from .common import (
     _coerce_jobs,
@@ -224,8 +225,6 @@ class _SiStructuralCache:
         self,
         node_ids: Iterable[Any],
         node_data: Mapping[Any, NodeAttrMap],
-        *,
-        np: Any,
     ) -> tuple[Any, Any]:
         node_tuple = tuple(node_ids)
         count = len(node_tuple)
@@ -259,21 +258,19 @@ class _SiStructuralCache:
         self,
         node_ids: Iterable[Any],
         node_data: Mapping[Any, NodeAttrMap],
-        *,
-        np: Any,
     ) -> tuple[Any, Any]:
         node_tuple = tuple(node_ids)
         if node_tuple != self.node_ids:
-            return self.rebuild(node_tuple, node_data, np=np)
+            return self.rebuild(node_tuple, node_data)
 
         for idx, node in enumerate(node_tuple):
             nd = node_data[node]
-            vf = float(get_attr(nd, ALIAS_VF, 0.0))
+            vf = cast(float, get_attr(nd, ALIAS_VF, 0.0))
             if vf != self.vf_snapshot[idx]:
-                return self.rebuild(node_tuple, node_data, np=np)
-            dnfr = float(get_attr(nd, ALIAS_DNFR, 0.0))
+                return self.rebuild(node_tuple, node_data)
+            dnfr = cast(float, get_attr(nd, ALIAS_DNFR, 0.0))
             if dnfr != self.dnfr_snapshot[idx]:
-                return self.rebuild(node_tuple, node_data, np=np)
+                return self.rebuild(node_tuple, node_data)
 
         return self.vf_values, self.dnfr_values
 
@@ -281,11 +278,9 @@ class _SiStructuralCache:
 def _build_structural_cache(
     node_ids: Iterable[Any],
     node_data: Mapping[Any, NodeAttrMap],
-    *,
-    np: Any,
 ) -> _SiStructuralCache:
     cache = _SiStructuralCache(tuple(node_ids))
-    cache.rebuild(node_ids, node_data, np=np)
+    cache.rebuild(node_ids, node_data)
     return cache
 
 
@@ -293,23 +288,20 @@ def _ensure_structural_arrays(
     G: GraphLike,
     node_ids: Iterable[Any],
     node_data: Mapping[Any, NodeAttrMap],
-    *,
-    np: Any,
 ) -> tuple[Any, Any]:
     node_key = tuple(node_ids)
 
     def builder() -> _SiStructuralCache:
-        return _build_structural_cache(node_key, node_data, np=np)
+        return _build_structural_cache(node_key, node_data)
 
     cache = edge_version_cache(G, ("_si_structural", node_key), builder)
-    return cache.ensure_current(node_key, node_data, np=np)
+    return cache.ensure_current(node_key, node_data)
 
 
 def _ensure_si_buffers(
     G: GraphLike,
     *,
     count: int,
-    np: Any,
 ) -> tuple[Any, Any, Any]:
     """Return reusable NumPy buffers sized for ``count`` nodes.
 
@@ -321,14 +313,13 @@ def _ensure_si_buffers(
     These buffers are reused across computation steps to minimize allocation
     overhead in the hot path. Cache key: ``("_si_buffers", count, 3)``
     """
-    return ensure_numpy_buffers(G, key_prefix="_si_buffers", count=count, buffer_count=3, np=np)
+    return ensure_numpy_buffers(G, key_prefix="_si_buffers", count=count, buffer_count=3)
 
 
 def _ensure_chunk_workspace(
     G: GraphLike,
     *,
     mask_count: int,
-    np: Any,
 ) -> tuple[Any, Any]:
     """Return reusable scratch buffers sized to the masked neighbours.
 
@@ -340,7 +331,7 @@ def _ensure_chunk_workspace(
     Cache key: ``("_si_chunk_workspace", mask_count, 2)``
     """
     return ensure_numpy_buffers(
-        G, key_prefix="_si_chunk_workspace", count=mask_count, buffer_count=2, np=np
+        G, key_prefix="_si_chunk_workspace", count=mask_count, buffer_count=2
     )
 
 
@@ -348,7 +339,6 @@ def _ensure_neighbor_bulk_buffers(
     G: GraphLike,
     *,
     count: int,
-    np: Any,
 ) -> tuple[Any, Any, Any, Any, Any]:
     """Return reusable buffers for bulk neighbour phase aggregation.
 
@@ -363,7 +353,7 @@ def _ensure_neighbor_bulk_buffers(
     Cache key: ``("_si_neighbor_buffers", count, 5)``
     """
     return ensure_numpy_buffers(
-        G, key_prefix="_si_neighbor_buffers", count=count, buffer_count=5, np=np
+        G, key_prefix="_si_neighbor_buffers", count=count, buffer_count=5
     )
 
 
@@ -387,7 +377,7 @@ def _normalise_si_sensitivity_mapping(
 
     Raises
     ------
-    ValueError
+    TNFRValueError
         If the mapping defines keys outside of the supported sensitivity set.
 
     Examples
@@ -397,7 +387,7 @@ def _normalise_si_sensitivity_mapping(
     >>> _normalise_si_sensitivity_mapping({"unknown": 1.0}, warn=False)
     Traceback (most recent call last):
         ...
-    ValueError: Si sensitivity mappings accept only {dSi_ddnfr_norm, dSi_dphase_disp, dSi_dvf_norm}; unexpected key(s): unknown
+    TNFRValueError: Si sensitivity mappings accept only {dSi_ddnfr_norm, dSi_dphase_disp, dSi_dvf_norm}; unexpected key(s): unknown
     """
 
     normalised = dict(mapping)
@@ -406,8 +396,9 @@ def _normalise_si_sensitivity_mapping(
     if unexpected:
         allowed = ", ".join(sorted(_VALID_SENSITIVITY_KEYS))
         received = ", ".join(unexpected)
-        raise ValueError(
-            "Si sensitivity mappings accept only {%s}; unexpected key(s): %s" % (allowed, received)
+        raise TNFRValueError(
+            "Si sensitivity mappings accept only {%s}; unexpected key(s): %s" % (allowed, received),
+            context={"allowed": allowed, "received": received},
         )
     return normalised
 
@@ -637,7 +628,7 @@ def _compute_si_python_chunk(
     results: dict[Any, float] = {}
     for n, neigh, theta, vf, dnfr in chunk:
         th_bar = neighbor_phase_mean_list(
-            neigh, cos_th=cos_th, sin_th=sin_th, np=None, fallback=theta
+            neigh, cos_th=cos_th, sin_th=sin_th, fallback=theta
         )
         phase_dispersion = abs(angle_diff(theta, th_bar)) / math.pi
         vf_norm = clamp01(abs(vf) / vfmax)
@@ -792,11 +783,10 @@ def compute_Si(
 
     neighbors = ensure_neighbors_map(G)
     alpha, beta, gamma = get_Si_weights(G)
-    np = get_numpy()
-    trig = get_trig_cache(G, np=np)
+    trig = get_trig_cache(G)
     cos_th, sin_th, thetas = trig.cos, trig.sin, trig.theta
 
-    pm_fn = partial(neighbor_phase_mean_list, cos_th=cos_th, sin_th=sin_th, np=np)
+    pm_fn = partial(neighbor_phase_mean_list, cos_th=cos_th, sin_th=sin_th)
 
     if n_jobs is None:
         n_jobs = _coerce_jobs(G.graph.get("SI_N_JOBS"))
@@ -981,14 +971,12 @@ def compute_Si(
         ) = _ensure_neighbor_bulk_buffers(
             G,
             count=count,
-            np=np,
         )
 
         vf_arr, dnfr_arr = _ensure_structural_arrays(
             G,
             node_ids,
             node_mapping,
-            np=np,
         )
         raw_vfmax = float(np.max(np.abs(vf_arr))) if getattr(vf_arr, "size", 0) else 0.0
         raw_dnfrmax = float(np.max(np.abs(dnfr_arr))) if getattr(dnfr_arr, "size", 0) else 0.0
@@ -1004,7 +992,6 @@ def compute_Si(
         ) = _ensure_si_buffers(
             G,
             count=count,
-            np=np,
         )
 
         _profile_stop("cache_rebuild", cache_timer)
@@ -1017,7 +1004,6 @@ def compute_Si(
             sin_values=sin_arr,
             theta_values=theta_arr,
             node_count=count,
-            np=np,
             neighbor_cos_sum=neighbor_cos_sum,
             neighbor_sin_sum=neighbor_sin_sum,
             neighbor_counts=neighbor_counts,
@@ -1072,7 +1058,6 @@ def compute_Si(
             chunk_theta, chunk_values = _ensure_chunk_workspace(
                 G,
                 mask_count=neighbor_count,
-                np=np,
             )
             for start in range(0, neighbor_count, effective_chunk):
                 end = min(start + effective_chunk, neighbor_count)

@@ -15,7 +15,7 @@ from ..constants.canonical import (
 from ..utils import clamp, resolve_chunk_size
 from ..metrics.common import ensure_neighbors_map
 from ..types import CoherenceMetric, DeltaNFR, TNFRGraph
-from ..utils import get_numpy
+from ..mathematics.unified_numerical import np
 from .aliases import ALIAS_DNFR, ALIAS_SI, ALIAS_VF
 
 __all__ = ("adapt_vf_by_coherence",)
@@ -137,19 +137,16 @@ def adapt_vf_by_coherence(G: TNFRGraph, n_jobs: int | None = None) -> None:
             if jobs <= 1:
                 jobs = None
 
-    np_mod = get_numpy()
-    use_np = np_mod is not None
+    use_np = np is not None
 
-    si_values = collect_attr(G, nodes, ALIAS_SI, 0.0, np=np_mod if use_np else None)
-    dnfr_values = collect_attr(G, nodes, ALIAS_DNFR, 0.0, np=np_mod if use_np else None)
-    vf_values = collect_attr(G, nodes, ALIAS_VF, 0.0, np=np_mod if use_np else None)
+    si_values = collect_attr(G, nodes, ALIAS_SI, 0.0)
+    dnfr_values = collect_attr(G, nodes, ALIAS_DNFR, 0.0)
+    vf_values = collect_attr(G, nodes, ALIAS_VF, 0.0)
 
     if use_np:
-        np = np_mod  # type: ignore[assignment]
-        assert np is not None
-        si_arr = si_values.astype(float, copy=False)
-        dnfr_arr = np.abs(dnfr_values.astype(float, copy=False))
-        vf_arr = vf_values.astype(float, copy=False)
+        si_arr = cast(Any, si_values).astype(float, copy=False)
+        dnfr_arr = np.abs(cast(Any, dnfr_values).astype(float, copy=False))
+        vf_arr = cast(Any, vf_values).astype(float, copy=False)
 
         prev_counts = np.fromiter(
             (int(G.nodes[node].get("stable_count", 0)) for node in nodes),

@@ -9,6 +9,7 @@ from itertools import tee, zip_longest
 from typing import Mapping, TextIO
 
 from ..config.constants import GLYPHS_CANONICAL
+from ..errors import TNFRValueError
 from ..glyph_history import ensure_history
 from ..utils import json_dumps, safe_write
 from ..types import Graph, SigmaTrace
@@ -117,7 +118,11 @@ def export_metrics(
     epi_supp: Sequence[Mapping[str, float]] = hist.get("EPI_support", [])
     fmt = fmt.lower()
     if fmt not in {"csv", "json"}:
-        raise ValueError(f"Unsupported export format: {fmt}")
+        raise TNFRValueError(
+            f"Unsupported export format: {fmt}",
+            suggestion="Use 'csv' or 'json'",
+            context={"format": fmt, "supported": ["csv", "json"]},
+        )
     if fmt == "csv":
         specs: list[tuple[str, Sequence[str], Iterable[Sequence[object]]]] = [
             (

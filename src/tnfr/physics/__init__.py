@@ -113,6 +113,78 @@ from .cell import compute_homeostatic_index
 from .cell import compute_membrane_integrity
 from .cell import detect_cell_formation
 from .cell import apply_membrane_flux
+from .conservation import (
+    ConservationSnapshot,
+    ConservationBalance,
+    ConservationTimeSeries,
+    ConservationTracker,
+    WardIdentity,
+    LyapunovResult,
+    SpectralConservation,
+    compute_charge_density,
+    compute_current_divergence,
+    capture_conservation_snapshot,
+    verify_conservation_balance,
+    decompose_conservation_residual,
+    analyze_sector_coupling,
+    compute_grammar_conservation_bounds,
+    detect_grammar_violations_from_conservation,
+    compute_noether_charge,
+    compute_energy_functional,
+    compute_ward_identity,
+    verify_sequence_ward_identity,
+    compute_lyapunov_derivative,
+    compute_spectral_conservation,
+    compute_conservation_scaling,
+)
+from .dissipative_conservation import (
+    DissipativeSnapshot,
+    DissipativeBalance,
+    DissipativeTimeSeries,
+    DissipativeConservationTracker,
+    capture_dissipative_snapshot,
+    compute_dissipation_bound,
+    compute_dissipator_action,
+    compute_purity_decay_bound,
+    verify_dissipative_balance,
+    predict_amplitude_damping_purity,
+    predict_dephasing_purity,
+    analyze_dissipation_rates,
+    classify_dissipative_regime,
+    steady_state_from_generator,
+)
+from .integrity import (
+    StructuralIntegrityMonitor,
+    StructuralIntegrityViolation,
+    MonitorMode,
+    IntegrityReport,
+    IntegritySummary,
+    enable_integrity_monitor,
+)
+from .spectral_conservation import (
+    SpectralConservationBalance,
+    SpectralWardIdentity,
+    SpectralLyapunovResult,
+    SpectralSectorDecomposition,
+    verify_spectral_conservation_balance,
+    compute_spectral_ward_identity,
+    compute_spectral_lyapunov,
+    decompose_spectral_sectors,
+    compute_spectral_energy_conservation,
+    classify_spectral_modes,
+)
+from .unified import (
+    compute_complex_geometric_field,
+    compute_field_magnitude,
+    compute_field_phase,
+    compute_chirality_field,
+    compute_symmetry_breaking_field,
+    compute_coherence_coupling_field,
+    compute_energy_density,
+    compute_action_density,
+    compute_topological_charge,
+    compute_unified_field_suite,
+)
 
 __all__ = []
 __all__ += ["compute_structural_potential"]
@@ -141,3 +213,65 @@ __all__ += ["compute_homeostatic_index"]
 __all__ += ["compute_membrane_integrity"]
 __all__ += ["detect_cell_formation"]
 __all__ += ["apply_membrane_flux"]
+__all__ += ["ConservationSnapshot"]
+__all__ += ["ConservationBalance"]
+__all__ += ["ConservationTimeSeries"]
+__all__ += ["ConservationTracker"]
+__all__ += ["compute_charge_density"]
+__all__ += ["compute_current_divergence"]
+__all__ += ["capture_conservation_snapshot"]
+__all__ += ["verify_conservation_balance"]
+__all__ += ["decompose_conservation_residual"]
+__all__ += ["analyze_sector_coupling"]
+__all__ += ["compute_grammar_conservation_bounds"]
+__all__ += ["detect_grammar_violations_from_conservation"]
+__all__ += ["compute_noether_charge"]
+__all__ += ["compute_energy_functional"]
+__all__ += ["WardIdentity"]
+__all__ += ["LyapunovResult"]
+__all__ += ["SpectralConservation"]
+__all__ += ["compute_ward_identity"]
+__all__ += ["verify_sequence_ward_identity"]
+__all__ += ["compute_lyapunov_derivative"]
+__all__ += ["compute_spectral_conservation"]
+__all__ += ["compute_conservation_scaling"]
+__all__ += ["compute_complex_geometric_field"]
+__all__ += ["compute_field_magnitude"]
+__all__ += ["compute_field_phase"]
+__all__ += ["compute_chirality_field"]
+__all__ += ["compute_symmetry_breaking_field"]
+__all__ += ["compute_coherence_coupling_field"]
+__all__ += ["compute_energy_density"]
+__all__ += ["compute_action_density"]
+__all__ += ["compute_topological_charge"]
+__all__ += ["compute_unified_field_suite"]
+__all__ += ["DissipativeSnapshot"]
+__all__ += ["DissipativeBalance"]
+__all__ += ["DissipativeTimeSeries"]
+__all__ += ["DissipativeConservationTracker"]
+__all__ += ["capture_dissipative_snapshot"]
+__all__ += ["compute_dissipation_bound"]
+__all__ += ["compute_dissipator_action"]
+__all__ += ["compute_purity_decay_bound"]
+__all__ += ["verify_dissipative_balance"]
+__all__ += ["predict_amplitude_damping_purity"]
+__all__ += ["predict_dephasing_purity"]
+__all__ += ["analyze_dissipation_rates"]
+__all__ += ["classify_dissipative_regime"]
+__all__ += ["steady_state_from_generator"]
+__all__ += ["StructuralIntegrityMonitor"]
+__all__ += ["StructuralIntegrityViolation"]
+__all__ += ["MonitorMode"]
+__all__ += ["IntegrityReport"]
+__all__ += ["IntegritySummary"]
+__all__ += ["enable_integrity_monitor"]
+__all__ += ["SpectralConservationBalance"]
+__all__ += ["SpectralWardIdentity"]
+__all__ += ["SpectralLyapunovResult"]
+__all__ += ["SpectralSectorDecomposition"]
+__all__ += ["verify_spectral_conservation_balance"]
+__all__ += ["compute_spectral_ward_identity"]
+__all__ += ["compute_spectral_lyapunov"]
+__all__ += ["decompose_spectral_sectors"]
+__all__ += ["compute_spectral_energy_conservation"]
+__all__ += ["classify_spectral_modes"]

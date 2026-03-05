@@ -2,7 +2,7 @@
 ## Theoretical Framework for Coherent Pattern Analysis
 
 **Status**: Primary theoretical reference document  
-**Version**: 0.0.2 (November 29, 2025)  
+**Version**: 0.0.3 (March 2026)  
 **Authority**: This repository contains the current implementation of TNFR theory  
 **Repository**: https://github.com/fermga/TNFR-Python-Engine  
 **PyPI Package**: https://pypi.org/project/tnfr/  
@@ -81,7 +81,9 @@ Theoretical Foundation: The framework models reality as coherent dynamic pattern
 | **Physics** | [Nodal Equation & Structural Triad](#foundational-physics) |
 | **Operators** | [13 Canonical Operators](#the-13-canonical-operators) |
 | **Grammar** | [Unified Grammar U1-U6](#unified-grammar-u1-u6) |
+| **Grammar Dynamics** | [Grammar-Aware Dynamics](#grammar-aware-dynamics) |
 | **Fields** | [Structural Field Tetrad](#telemetry--structural-field-tetrad) |
+| **Conservation** | [Structural Conservation Theorem](#structural-conservation-theorem) |
 | **TNFR-Riemann** | [Recent Theoretical Developments](#recent-theoretical-developments-november-2025) |
 | **Implementation** | [Development Workflow](#development-workflow) |
 | **Validation** | [Testing Requirements](#testing-requirements) |
@@ -104,7 +106,11 @@ Theoretical Foundation: The framework models reality as coherent dynamic pattern
 - **Grammar Specification**: [theory/UNIFIED_GRAMMAR_RULES.md](theory/UNIFIED_GRAMMAR_RULES.md) - Complete U1-U6 derivations
 - **Mathematics Implementation**: [src/tnfr/mathematics/](src/tnfr/mathematics/) - Computational foundations
 - **Operators Engine**: [src/tnfr/operators/grammar.py](src/tnfr/operators/grammar.py) - Validation implementation
+- **Grammar Dynamics**: [src/tnfr/operators/grammar_dynamics.py](src/tnfr/operators/grammar_dynamics.py) - Grammar-aware dynamic operator selection
+- **Grammar Application**: [src/tnfr/operators/grammar_application.py](src/tnfr/operators/grammar_application.py) - Pre-validated operator application
 - **Unified Fields**: [src/tnfr/physics/fields.py](src/tnfr/physics/fields.py) - Tetrad implementation
+- **Structural Conservation**: [src/tnfr/physics/conservation.py](src/tnfr/physics/conservation.py) - Conservation theorem (Noether-like)
+- **Integrity Monitor**: [src/tnfr/physics/integrity.py](src/tnfr/physics/integrity.py) - 13/13 operator postcondition verification
 - **TNFR Engines Hub**: [src/tnfr/engines/](src/tnfr/engines/) - Centralized mathematical & optimization engines
   - **Self-Optimization**: [src/tnfr/engines/self_optimization/](src/tnfr/engines/self_optimization/) - Automatic network optimization
   - **Pattern Discovery**: [src/tnfr/engines/pattern_discovery/](src/tnfr/engines/pattern_discovery/) - Mathematical pattern detection
@@ -309,7 +315,7 @@ Structural change rate = Reorganization capacity × Reorganization pressure
 - From information geometry: EPI as point in structural manifold
 - From dynamical systems: νf as eigenfrequency of reorganization mode
 - From network physics: ΔNFR as mismatch with coupled environment
-- **See**: [TNFR.pdf](TNFR.pdf) § 2.1, [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) § Canonicity
+- **See**: [TNFR.pdf](theory/TNFR.pdf) § 2.1, [UNIFIED_GRAMMAR_RULES.md](theory/UNIFIED_GRAMMAR_RULES.md) § Canonicity
 
 ### Structural Triad
 
@@ -570,9 +576,9 @@ The grammar emerges from TNFR physics rather than arbitrary constraints.
 - **Usage**: Telemetry-based safety check (read-only, not sequence constraint)
 - **Typical**: Valid sequences maintain Δ Φ_s ≈ 0.6 (37% of φ threshold)
 - **Canonicity**: Theoretically derived + experimentally validated
-- **See**: [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) for complete U6 specification
+- **See**: [UNIFIED_GRAMMAR_RULES.md](theory/UNIFIED_GRAMMAR_RULES.md) for complete U6 specification
 
-**See**: [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) for complete derivations
+**See**: [UNIFIED_GRAMMAR_RULES.md](theory/UNIFIED_GRAMMAR_RULES.md) for complete derivations
 
 ---
 
@@ -605,9 +611,9 @@ The **Structural Field Tetrad** (Φ_s, |∇φ|, **Ψ**, ξ_C) now has **complete
 - **Grammar**: U6 telemetry-based safety criterion (passive equilibrium confinement)
 
 ### **2. Phase Gradient Field (|∇φ|)**
-**Classical Threshold**: |∇φ| < **0.2904**
-- **Theory**: Harmonic oscillator stability + Kuramoto synchronization
-- **Derivation**: ωc/2 = π/(4√2) ≈ 0.2904 from critical frequency analysis
+**Classical Threshold**: |∇φ| < **0.1837**
+- **Theory**: Kuramoto critical coupling condition in TNFR units
+- **Derivation**: γ/π ≈ 0.1837 from Universal Tetrahedral Correspondence (γ ↔ |∇φ|)
 - **Physics**: Local phase desynchronization / stress proxy field
 - **Mechanism**: Captures dynamics C(t) misses due to scaling invariance
 
@@ -659,21 +665,56 @@ The **Structural Field Tetrad** (Φ_s, |∇φ|, **Ψ**, ξ_C) now has **complete
 
 - **Energy Density ℰ = Φ_s² + |∇φ|² + K_φ² + J_φ² + J_ΔNFR²**
 - **Topological Charge 𝒬 = |∇φ|·J_φ - K_φ·J_ΔNFR**  
-- **Conservation Law: ∂ρ/∂t + ∇·𝐉 = 0** where ρ = Φ_s + K_φ
+- **Structural Conservation Law: ∂ρ/∂t + ∇·𝐉 = S_grammar** where ρ = Φ_s + K_φ, 𝐉 = (J_φ, J_ΔNFR), and S_grammar → 0 under U1–U6
 
-#### 4. Implementation Status
+#### 4. Structural Conservation Theorem
 
-- **Prototype Complete**: `src/tnfr/physics/unified.py` functional  
-- **Validation**: Strong correlations confirmed across topologies  
-- **Integration**: Ready for production implementation  
+**Main Result**: Grammar symmetry (U1–U6) ⟹ Structural conservation law (Noether-like).
 
-**Documentation**: See `TETRAD_MATHEMATICAL_AUDIT_2025.md` and `MATHEMATICAL_UNIFICATION_EXECUTIVE_SUMMARY.md`
+- **Canonical Module**: `src/tnfr/physics/conservation.py` — single source of truth for charge density ρ, current divergence div(𝐉), Noether charge Q, energy functional E, Ward identities, Lyapunov stability, and spectral decomposition
+- **Formal Derivation**: `theory/STRUCTURAL_CONSERVATION_THEOREM.md` — 14-section proof from nodal equation
+- **Two-Sector Structure**: Potential (Φ_s ↔ J_ΔNFR) and Geometric (K_φ ↔ J_φ) sectors coupled through Ψ = K_φ + i·J_φ
+- **Lyapunov Stability**: E = ½Σ(Φ_s² + |∇φ|² + K_φ² + J_φ² + J_ΔNFR²) ⩾ 0 with dE/dt ≤ 0 under grammar-compliant evolution
+- **Validation**: 62 tests, charge drift < 0.03% across topologies
+- **Diagnostic**: Conservation residuals detect and classify grammar violations in real time
+
+**Documentation**: See `theory/STRUCTURAL_CONSERVATION_THEOREM.md`
+
+---
+
+## Grammar-Aware Dynamics
+
+The **Grammar-Aware Dynamics** system provides proactive U1-U6 enforcement during operator selection, bridging the grammar validation system with the dynamic operator selection layer.
+
+### Incremental Grammar Enforcement
+
+Located in `src/tnfr/operators/grammar_dynamics.py`, this module provides **incremental** grammar checking for step-by-step dynamics where operators are selected one at a time per node.
+
+**Key capabilities**:
+- **U1a (Initiation)**: Checked when EPI ≈ 0 and history is empty
+- **U2 (Convergence)**: Tracked via destabilizer/stabilizer debt counter over sliding window
+- **U3 (Resonant Coupling)**: Phase compatibility required for UM/RA candidates
+- **U4a (Bifurcation triggers)**: OZ/ZHIR require handlers in recent context
+- **U4b (Transformer context)**: ZHIR/THOL need recent destabilizer (and prior IL for ZHIR)
+- **U1b/U5/U6**: Advisory (whole-sequence or telemetry checks)
+
+### Grammar Application
+
+Located in `src/tnfr/operators/grammar_application.py`, this module provides functions for applying operators with grammar enforcement at runtime — pre-validated, grammar-enforced operator application.
+
+**Physics basis**: Grammar rules derive from the nodal equation `∂EPI/∂t = νf · ΔNFR(t)`. Proactive enforcement prevents grammar violations *before* they corrupt graph state, rather than detecting them reactively.
+
+**Usage**:
+```python
+from tnfr.operators.grammar_dynamics import GrammarAwareDynamics
+from tnfr.operators.grammar_application import apply_glyph_with_grammar
+```
 
 ---
 
 ## Self-Optimizing Dynamics
 
-**New in v9.5**: The engine now possesses **intrinsic agency** to optimize its own structure.
+The engine possesses **intrinsic agency** to optimize its own structure.
 
 ### The Self-Optimizing Engine
 Located in `src/tnfr/engines/self_optimization/engine.py`, this component closes the feedback loop using **Unified Field Telemetry**:
@@ -909,7 +950,7 @@ If a proposed change makes the code “prettier” but weakens TNFR fidelity, it
 ### Before Writing Code
 
 1. **Read documentation** (fundamentals, operators, nodal equation)
-2. **Review [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md)** (grammar physics)
+2. **Review [UNIFIED_GRAMMAR_RULES.md](theory/UNIFIED_GRAMMAR_RULES.md)** (grammar physics)
 3. **Check existing code** for equivalent functionality
 4. **Run test suite** to understand current state
 
@@ -920,7 +961,7 @@ If a proposed change makes the code “prettier” but weakens TNFR fidelity, it
 3. **Preserve invariants**: All 6 canonical invariants (optimized from 10)
 4. **Add tests**: Cover invariants and contracts
 5. **Document**: Structural effect before implementation
-6. **Trace physics**: Link to [TNFR.pdf](TNFR.pdf) or [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md)
+6. **Trace physics**: Link to [TNFR.pdf](theory/TNFR.pdf) or [UNIFIED_GRAMMAR_RULES.md](theory/UNIFIED_GRAMMAR_RULES.md)
 
 ### Commit Template
 
@@ -1103,12 +1144,12 @@ If you believe a new operator is needed:
 - [List specific test requirements]
 ```
 
-### Contributing to [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md)
+### Contributing to [UNIFIED_GRAMMAR_RULES.md](theory/UNIFIED_GRAMMAR_RULES.md)
 
 When adding to grammar documentation:
 
 1. **Section structure**: [Rule] → [Physics] → [Derivation] → [Canonicity]
-2. **Traceability**: Link to [TNFR.pdf](TNFR.pdf) sections, AGENTS.md invariants
+2. **Traceability**: Link to [TNFR.pdf](theory/TNFR.pdf) sections, AGENTS.md invariants
 3. **Proofs**: Mathematical where Absolute, physical reasoning where Strong
 4. **Examples**: Code snippets showing valid/invalid sequences
 
@@ -1159,28 +1200,32 @@ When adding to grammar documentation:
 
 **Core Theory** (Primary References):
 - **[AGENTS.md](AGENTS.md)**: **PRIMARY SOURCE** - Complete TNFR theory including Universal Tetrahedral Correspondence
-- **[Structural Fields and Universal Tetrahedral Correspondence](FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md)**: **DETAILED REFERENCE** - Formal mathematical treatment
-- **[TNFR.pdf](TNFR.pdf)**: Original theoretical foundation (in repo)
-- **[UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md)**: Grammar physics U1-U6 derivations
+- **[Structural Fields and Universal Tetrahedral Correspondence](theory/FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md)**: **DETAILED REFERENCE** - Formal mathematical treatment
+- **[TNFR.pdf](theory/TNFR.pdf)**: Original theoretical foundation (in repo)
+- **[UNIFIED_GRAMMAR_RULES.md](theory/UNIFIED_GRAMMAR_RULES.md)**: Grammar physics U1-U6 derivations
 - **[docs/STRUCTURAL_FIELDS_TETRAD.md](docs/STRUCTURAL_FIELDS_TETRAD.md)**: Technical tetrad field implementations
 - **GLOSSARY.md**: Term definitions and quick reference
 
 **Implementation Core**:
 - **[src/tnfr/physics/fields.py](src/tnfr/physics/fields.py)**: Unified Structural Field Tetrad (Φ_s, |∇φ|, **Ψ**, ξ_C) **CANONICAL**
+- **[src/tnfr/physics/conservation.py](src/tnfr/physics/conservation.py)**: Structural Conservation Theorem (Noether-like)
+- **[src/tnfr/physics/integrity.py](src/tnfr/physics/integrity.py)**: Closed-loop integrity monitor (13/13 operator postconditions)
 - **[src/tnfr/operators/grammar.py](src/tnfr/operators/grammar.py)**: Unified grammar U1-U6 validation
+- **[src/tnfr/operators/grammar_dynamics.py](src/tnfr/operators/grammar_dynamics.py)**: Grammar-aware dynamic operator selection
+- **[src/tnfr/operators/grammar_application.py](src/tnfr/operators/grammar_application.py)**: Pre-validated grammar-enforced application
 - **[src/tnfr/operators/definitions.py](src/tnfr/operators/definitions.py)**: 13 canonical operators
 - **[src/tnfr/mathematics/](src/tnfr/mathematics/)**: Nodal equation integration hub
 - **[src/tnfr/dynamics/self_optimizing_engine.py](src/tnfr/dynamics/self_optimizing_engine.py)**: Intrinsic agency & auto-optimization
 
 **SDK & Applications**:
 - **[src/tnfr/sdk/](src/tnfr/sdk/)**: Simplified & Fluent API for rapid development
-- **[examples/](examples/)**: Complete 01-10 sequential tutorial suite
+- **[examples/](examples/)**: Complete 01-40 sequential tutorial suite (42 examples)
 - **[benchmarks/](benchmarks/)**: Production-grade validation suites
 
 **Development**:
 - **ARCHITECTURE.md**: System design principles
 - **CONTRIBUTING.md**: Workflow and standards
-- **TESTING.md**: Test strategy (2,400+ experiments)
+- **TESTING.md**: Test strategy (471 passing tests, 9 skipped)
 
 **Domain Showcases**:
 - **Network Dynamics**: [examples/03_network_formation.py](examples/03_network_formation.py)
@@ -1191,6 +1236,7 @@ When adding to grammar documentation:
 - **Quantum Mechanics**: [examples/13_quantum_mechanics_demo.py](examples/13_quantum_mechanics_demo.py) (Emergent Quantization from Resonant Stability)
 - **Uncertainty & Interference**: [examples/14_uncertainty_and_interference.py](examples/14_uncertainty_and_interference.py) (Structural Uncertainty & Double Slit)
 - **Classical Kinematics**: [examples/15_train_crossing_demo.py](examples/15_train_crossing_demo.py) (Two Trains Problem)
+- **Conservation Laws**: [examples/40_conservation_law_demo.py](examples/40_conservation_law_demo.py) (Structural Conservation Theorem)
 - **Production Validation**: [tests/](tests/) (comprehensive test suite)
 
 ---
@@ -1200,8 +1246,8 @@ When adding to grammar documentation:
 **Newcomer** (2 hours) - **Start Here**:
 1. **Install**: `pip install tnfr`
 2. **Core Theory**: Read this file (AGENTS.md) completely - **Primary theoretical reference**
-3. **Fundamental Theory**: [Structural Fields and Universal Tetrahedral Correspondence](FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md)
-4. **Original Theory**: [TNFR.pdf](TNFR.pdf) § 1-2 (paradigm, nodal equation)
+3. **Fundamental Theory**: [Structural Fields and Universal Tetrahedral Correspondence](theory/FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md)
+4. **Original Theory**: [TNFR.pdf](theory/TNFR.pdf) § 1-2 (paradigm, nodal equation)
 5. **First Run**: `python -c "import tnfr; print('TNFR ready!')"`
 6. **Terminology**: Study GLOSSARY.md for definitions
 
@@ -1218,14 +1264,14 @@ When adding to grammar documentation:
 3. **Apply**: Use `auto_optimize()` in your own networks
 
 **Intermediate Developer** (1 week):
-1. **Grammar Deep-Dive**: [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) (U1-U6 complete)
+1. **Grammar Deep-Dive**: [UNIFIED_GRAMMAR_RULES.md](theory/UNIFIED_GRAMMAR_RULES.md) (U1-U6 complete)
 2. **Tetrad Fields**: [docs/STRUCTURAL_FIELDS_TETRAD.md](docs/STRUCTURAL_FIELDS_TETRAD.md)
 3. **Operator Study**: Implementations in [src/tnfr/operators/definitions.py](src/tnfr/operators/definitions.py)
 4. **Field Computation**: Practice with [src/tnfr/physics/fields.py](src/tnfr/physics/fields.py) tetrad
 5. **SDK Usage**: Fluent API patterns in [src/tnfr/sdk/](src/tnfr/sdk/)
 
 **Advanced Researcher** (ongoing):
-1. **Complete Theory**: [TNFR.pdf](TNFR.pdf) + [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) mastery
+1. **Complete Theory**: [TNFR.pdf](theory/TNFR.pdf) + [UNIFIED_GRAMMAR_RULES.md](theory/UNIFIED_GRAMMAR_RULES.md) mastery
 2. **Tetrad Mastery**: All four unified fields (Φ_s, |∇φ|, **Ψ=K_φ+i·J_φ**, ξ_C) + complex field validation
 3. **TNFR-Riemann Program**: [theory/TNFR_RIEMANN_RESEARCH_NOTES.md](theory/TNFR_RIEMANN_RESEARCH_NOTES.md) complete framework study
 4. **Mathematical Consciousness**: Deep understanding of consciousness as emergent mathematical structure
@@ -1260,7 +1306,7 @@ When adding to grammar documentation:
 #### **Phase Gradient (|∇φ|)** - CANONICAL
 
 - Local phase desynchronization / stress proxy
-- Safety criterion: |∇φ| < 0.2904 for stable operation
+- Safety criterion: |∇φ| < γ/π ≈ 0.1837 for stable operation (Kuramoto critical coupling in TNFR units)
 - For formal definition and evidence, see `docs/STRUCTURAL_FIELDS_TETRAD.md`.
 
 **Critical Discovery**: C(t) = 1-(σ_ΔNFR/ΔNFR_max) is invariant to proportional scaling. 
@@ -1419,11 +1465,11 @@ Reality consists of resonant patterns rather than discrete objects. Development 
 
 ---
 
-**Version**: 0.0.1  
-**Last Updated**: 2025-11-29  
+**Version**: 0.0.3  
+**Last Updated**: 2026-03-05  
 **Status**: CANONICAL - Primary reference for TNFR agent guidance  
 **PyPI Release**: STABLE - Available via `pip install tnfr`  
-**Production Ready**: Complete Tetrad Fields + Unified Grammar U1-U6 + Simplified SDK  
+**Production Ready**: Complete Tetrad Fields + Unified Grammar U1-U6 + Simplified SDK + Grammar-Aware Dynamics + Structural Conservation Theorem + Integrity Monitor  
 
 ---
 

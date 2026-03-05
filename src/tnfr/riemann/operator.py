@@ -32,7 +32,8 @@ from __future__ import annotations
 
 from typing import Callable, Tuple
 
-import numpy as np
+from ..errors import TNFRValueError
+from ..mathematics.unified_numerical import np
 import networkx as nx
 
 
@@ -169,7 +170,11 @@ def build_h_tnfr(
         i = index[node]
         label = G.nodes[node].get("label")
         if label is None:
-            raise ValueError("All nodes must have an integer 'label' attribute")
+            raise TNFRValueError(
+                "All nodes must have an integer 'label' attribute",
+                context={"node": node},
+                suggestion="Assign integer labels to all nodes."
+            )
         v_val = float(potential_fn(int(label), sigma))
         diag_V[i, i] = v_val
 

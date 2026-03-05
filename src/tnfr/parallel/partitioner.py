@@ -8,18 +8,13 @@ to preserve the fractal organization inherent in TNFR.
 from __future__ import annotations
 
 import math
-from typing import TYPE_CHECKING, Any, List, Optional, Set, Tuple
+from pathlib import Path
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Set, Tuple
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..types import TNFRGraph
 
-try:
-    import numpy as np
-
-    HAS_NUMPY = True
-except ImportError:
-    np = None  # type: ignore
-    HAS_NUMPY = False
+from ..mathematics.unified_numerical import np, NUMPY_AVAILABLE as HAS_NUMPY
 
 try:
     from scipy.spatial import KDTree
@@ -448,3 +443,138 @@ class FractalPartitioner:
             coherences.append(0.6 * vf_coherence + 0.4 * phase_coherence)
 
         return sum(coherences) / len(coherences) if coherences else 0.0
+
+    def partition_with_manifest(
+        self,
+        graph: TNFRGraph,
+        output_dir: Path,
+        partition_id: str,
+    ) -> Dict[str, Any]:
+        """Partition network and export manifest for self-optimization.
+
+        Parameters
+        ----------
+        graph : TNFRGraph
+            TNFR network to partition.
+        output_dir : Path
+            Directory where manifests will be written.
+        partition_id : str
+            Unique identifier for this fractal partition operation.
+
+        Returns
+        -------
+        Dict[str, Any]
+            Dictionary with keys:
+            - 'partitions': List[(node_set, subgraph)] from partition_network
+            - 'manifest_absolute': Path to partition manifest
+            - 'summary_absolute': Path to partition summary
+
+        Notes
+        -----
+        Manifest format compatible with self_opt_support pipeline:
+        - operation_type: 'fractal_partition'
+        - partition_id: unique identifier
+        - communities: list of community metadata with coherence scores
+        - telemetry: global coherence, sense_index, phase metrics
+        - network_metadata: node count, edge count, partition count
+        """
+        import json
+        from datetime import datetime, timezone
+        from pathlib import Path
+
+        output_dir = Path(output_dir)
+        output_dir.mkdir(parents=True, exist_ok=True)
+
+        # Perform partitioning
+        partitions = self.partition_network(graph)
+
+        # Compute telemetry metrics
+        telemetry = {}
+        try:
+            from ..physics import compute_coherence, compute_sense_index
+            telemetry["coherence"] = float(compute_coherence(graph))
+            telemetry["sense_index"] = float(compute_sense_index(graph))
+        except Exception:
+            telemetry["coherence"] = None
+            telemetry["sense_index"] = None
+
+        try:
+            from ..physics.fields import compute_structural_potential_field
+            phi_s_values = compute_structural_potential_field(graph)
+            if phi_s_values:
+                telemetry["structural_potential_range"] = [
+                    float(min(phi_s_values.values())),
+                    float(max(phi_s_values.values())),
+                ]
+            else:
+                telemetry["structural_potential_range"] = None
+        except Exception:
+            telemetry["structural_potential_range"] = None
+
+        # Extract network metadata
+        node_count = len(graph.nodes()) if hasattr(graph, "nodes") else 0
+        edge_count = len(graph.edges()) if hasattr(graph, "edges") else 0
+
+        # Serialize partition communities
+        communities_serialized = []
+        for partition_idx, (node_set, subgraph) in enumerate(partitions):
+            # Compute community-level coherence
+            community_coherence = None
+            try:
+                from ..physics import compute_coherence
+                community_coherence = float(compute_coherence(subgraph))
+            except Exception:
+                pass
+
+            community_data = {
+                "partition_index": partition_idx,
+                "node_count": len(node_set),
+                "edge_count": len(subgraph.edges()) if hasattr(subgraph, "edges") else 0,
+                "node_ids": [str(n) for n in sorted(node_set)],
+                "community_coherence": community_coherence,
+            }
+            communities_serialized.append(community_data)
+
+        # Build manifest
+        manifest = {
+            "operation_type": "fractal_partition",
+            "partition_id": partition_id,
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "network_metadata": {
+                "node_count": node_count,
+                "edge_count": edge_count,
+                "partition_count": len(partitions),
+            },
+            "telemetry": telemetry,
+            "communities": communities_serialized,
+            "partitioner_config": {
+                "max_partition_size": self.max_partition_size,
+                "coherence_threshold": self.coherence_threshold,
+                "use_spatial_index": self.use_spatial_index,
+                "adaptive": self.adaptive,
+            },
+        }
+
+        # Write manifest
+        manifest_path = output_dir / "fractal_partition_manifest.json"
+        with open(manifest_path, "w") as f:
+            json.dump(manifest, f, indent=2)
+
+        # Write summary
+        summary = {
+            "operation_type": "fractal_partition",
+            "partition_id": partition_id,
+            "partition_count": len(partitions),
+            "coherence": telemetry.get("coherence"),
+            "sense_index": telemetry.get("sense_index"),
+            "average_community_size": node_count / len(partitions) if partitions else 0,
+        }
+        summary_path = output_dir / "fractal_partition_summary.json"
+        with open(summary_path, "w") as f:
+            json.dump(summary, f, indent=2)
+
+        return {
+            "partitions": partitions,
+            "manifest_absolute": manifest_path.resolve(),
+            "summary_absolute": summary_path.resolve(),
+        }

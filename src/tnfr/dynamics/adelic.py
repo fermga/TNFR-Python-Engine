@@ -8,7 +8,7 @@ via the gradient flow of the Trace Mismatch Potential.
 Status: CANONICAL (Post-Critical Analysis)
 """
 
-import numpy as np
+from ..mathematics.unified_numerical import np
 from typing import List, Tuple, Optional, Dict, Any
 from dataclasses import dataclass
 
@@ -24,19 +24,8 @@ except ImportError:
     nx = None
 
 # Import TNFR Cache
-try:
-    from ..utils.cache import cache_tnfr_computation, CacheLevel
-    _CACHE_AVAILABLE = True
-except ImportError:
-    _CACHE_AVAILABLE = False
-
-    def cache_tnfr_computation(*args, **kwargs):
-        def decorator(func):
-            return func
-        return decorator
-
-    class CacheLevel:
-        DERIVED_METRICS = None
+from ..mathematics.unified_cache import cache_tnfr_computation, CacheLevel
+_CACHE_AVAILABLE = True
 
 try:
     from ..mathematics.number_theory import AdelicOperator

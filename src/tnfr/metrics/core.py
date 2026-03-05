@@ -7,6 +7,7 @@ from typing import Any, NamedTuple, cast
 
 from ..utils import CallbackEvent, callback_manager
 from ..constants import get_param
+from ..errors import TNFRValueError
 from ..glyph_history import append_metric, ensure_history
 from ..telemetry import ensure_nu_f_telemetry
 from ..units import get_hz_bridge
@@ -90,12 +91,13 @@ _METRICS_VERBOSITY_PRESETS: dict[str, MetricsVerbositySpec] = {}
 
 def _register_metrics_preset(spec: MetricsVerbositySpec) -> None:
     if spec.name not in TELEMETRY_VERBOSITY_LEVELS:
-        raise ValueError(
+        raise TNFRValueError(
             "Unknown metrics verbosity '%s'; use %s"
             % (
                 spec.name,
                 ", ".join(TELEMETRY_VERBOSITY_LEVELS),
-            )
+            ),
+            context={"verbosity": spec.name, "allowed": TELEMETRY_VERBOSITY_LEVELS},
         )
     _METRICS_VERBOSITY_PRESETS[spec.name] = spec
 
@@ -219,9 +221,11 @@ def _metrics_step(G: TNFRGraph, ctx: dict[str, Any] | None = None) -> None:
     spec = _resolve_metrics_verbosity(cfg)
     hist = ensure_history(G)
     if "glyph_load_estab" in hist:
-        raise ValueError(
+        raise TNFRValueError(
             "History payloads using 'glyph_load_estab' are no longer supported. "
-            "Rename the series to 'glyph_load_stabilizers' before loading the graph."
+            "Rename the series to 'glyph_load_stabilizers' before loading the graph.",
+            suggestion="Rename 'glyph_load_estab' to 'glyph_load_stabilizers'",
+            context={"deprecated_key": "glyph_load_estab"},
         )
     metrics_sentinel_key = "_metrics_history_id"
     history_id = id(hist)
@@ -255,9 +259,9 @@ def _metrics_step(G: TNFRGraph, ctx: dict[str, Any] | None = None) -> None:
         metrics_jobs = None if raw_jobs is None else int(raw_jobs)
     except (TypeError, ValueError):
         metrics_jobs = None
-    else:
-        if metrics_jobs <= 0:
-            metrics_jobs = None
+
+    if metrics_jobs is not None and metrics_jobs <= 0:
+        metrics_jobs = None
 
     _track_stability(
         G,

@@ -10,7 +10,8 @@ from ..constants import DEFAULTS
 from ..constants.aliases import ALIAS_D2EPI, ALIAS_DEPI, ALIAS_DNFR, ALIAS_VF
 from ..utils import clamp01, kahan_sum_nd, normalize_optional_int
 from ..types import GraphLike, NodeAttrMap
-from ..utils import edge_version_cache, get_numpy, normalize_weights
+from ..utils import edge_version_cache, normalize_weights
+from ..mathematics.unified_numerical import np
 
 __all__ = (
     "GraphLike",
@@ -36,9 +37,8 @@ def compute_coherence(
         return (0.0, 0.0, 0.0) if return_means else 0.0
 
     nodes = G.nodes
-    np = get_numpy()
-    dnfr_values = collect_attr(G, nodes, ALIAS_DNFR, 0.0, np=np)
-    depi_values = collect_attr(G, nodes, ALIAS_DEPI, 0.0, np=np)
+    dnfr_values = collect_attr(G, nodes, ALIAS_DNFR, 0.0)
+    depi_values = collect_attr(G, nodes, ALIAS_DEPI, 0.0)
 
     if np is not None:
         dnfr_mean = float(np.mean(np.abs(dnfr_values)))

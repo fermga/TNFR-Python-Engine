@@ -32,7 +32,8 @@ from __future__ import annotations
 from typing import Dict, Any, List, Optional, Union
 from dataclasses import dataclass
 import networkx as nx
-import numpy as np
+from ..errors import TNFRValueError
+from ..mathematics.unified_numerical import np
 
 # TNFR core imports
 from ..structural import create_nfr, run_sequence
@@ -302,7 +303,14 @@ class TNFR:
         
         if template_name not in templates:
             available = ', '.join(templates.keys())
-            raise ValueError(f"Unknown template '{template_name}'. Available: {available}")
+            raise TNFRValueError(
+                f"Unknown template '{template_name}'.",
+                context={
+                    "requested": template_name,
+                    "available": list(templates.keys())
+                },
+                suggestion=f"Choose from: {available}"
+            )
         
         return templates[template_name]()
     

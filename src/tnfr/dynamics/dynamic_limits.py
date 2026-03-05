@@ -61,7 +61,7 @@ from ..alias import collect_attr
 from ..constants.aliases import ALIAS_SI
 from ..metrics.common import compute_coherence
 from ..observers import kuramoto_order
-from ..utils import get_numpy
+from ..mathematics.unified_numerical import np
 
 if TYPE_CHECKING:
     from ..types import TNFRGraph
@@ -199,15 +199,14 @@ def compute_dynamic_limits(
     # Compute average sense index (OPTIMIZED: Mathematical backend)
     if _HAS_OPTIMIZATIONS:
         backend = get_backend()
-        si_values = collect_attr(G, G.nodes, ALIAS_SI, DEFAULT_SI_FALLBACK, np=None)
+        si_values = collect_attr(G, G.nodes, ALIAS_SI, DEFAULT_SI_FALLBACK)
         si_array = backend.as_array(si_values)
         Si_avg = float(backend.to_numpy(si_array).mean())
     else:
         # Fallback to original implementation
-        np_module = get_numpy()
-        si_values = collect_attr(G, G.nodes, ALIAS_SI, DEFAULT_SI_FALLBACK, np=np_module)
-        if np_module is not None:
-            Si_avg = float(np_module.mean(si_values))
+        si_values = collect_attr(G, G.nodes, ALIAS_SI, DEFAULT_SI_FALLBACK)
+        if np is not None:
+            Si_avg = float(np.mean(si_values))
         else:
             Si_avg = sum(si_values) / len(si_values) if si_values else DEFAULT_SI_FALLBACK
 

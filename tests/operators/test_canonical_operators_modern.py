@@ -267,17 +267,24 @@ class TestOperatorStructuralPreservation:
             Contraction(), SelfOrganization(), Mutation(),
             Transition(), Recursivity()
         ]
-        
+
+        base_nodes = [(node, dict(attrs)) for node, attrs in self.G.nodes(data=True)]
+        base_edges = list(self.G.edges())
+
         for op in operators:
-            # Apply operator
+            # Use a fresh graph per operator to avoid latent state carry-over
+            G = nx.Graph()
+            G.add_nodes_from(base_nodes)
+            G.add_edges_from(base_edges)
+
             try:
-                op(self.G, 1)
+                op(G, 1)
             except Exception:
                 # Some operators might have preconditions - skip if they fail
                 continue
-                
-            vf_after = get_attr(self.G.nodes[1], ALIAS_VF)
-            
+
+            vf_after = get_attr(G.nodes[1], ALIAS_VF)
+
             # νf should remain positive (Hz_str units preserved)
             assert vf_after >= 0, f"{op.__class__.__name__} should preserve non-negative νf"
             assert isinstance(vf_after, (int, float)), f"{op.__class__.__name__} should return numeric νf"

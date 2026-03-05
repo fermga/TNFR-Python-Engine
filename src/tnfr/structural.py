@@ -51,10 +51,11 @@ See: run_sequence() context detection, grammar_patterns._check_start_rule()
 from __future__ import annotations
 
 from copy import deepcopy
-from typing import Iterable, Mapping, Sequence, cast
+from typing import Any, Dict, Iterable, Mapping, Optional, Sequence, cast
 
 import networkx as nx
 
+from .errors import TNFRValueError
 from .constants import EPI_PRIMARY, THETA_PRIMARY, VF_PRIMARY
 from .dynamics import (
     dnfr_epi_vf_mixed,
@@ -98,10 +99,7 @@ from .operators.registry import OPERATORS
 from .types import DeltaNFRHook, NodeId, TNFRGraph
 from .utils import get_logger
 
-try:  # pragma: no cover - optional dependency path exercised in CI extras
-    import numpy as np
-except ImportError:  # pragma: no cover - optional dependency path exercised in CI extras
-    np = None  # type: ignore[assignment]
+from .mathematics.unified_numerical import np
 
 logger = get_logger(__name__)
 
@@ -206,14 +204,16 @@ def create_nfr(
     # Validate input parameters
     try:
         validate_node_id(name)
-        config = graph.graph if graph is not None else None
-        epi = validate_epi_value(epi, config=config, allow_complex=False)
-        vf = validate_vf_value(vf, config=config)
-        theta = validate_theta_value(theta, normalize=False)
+        epi = validate_epi_value(epi)
+        vf = validate_vf_value(vf)
+        theta = validate_theta_value(theta)
         if graph is not None:
             validate_tnfr_graph(graph)
     except ValidationError as e:
-        raise ValueError(f"Invalid parameters for create_nfr: {e}") from e
+        raise TNFRValueError(
+            f"Invalid parameters for create_nfr: {e}",
+            context={"epi": epi, "vf": vf, "theta": theta, "error": str(e)},
+        ) from e
 
     G = graph if graph is not None else nx.Graph()
     G.add_node(
@@ -238,7 +238,10 @@ def _resolve_dimension(
     if hilbert_space is not None:
         resolved = int(getattr(hilbert_space, "dimension", 0) or 0)
         if resolved <= 0:
-            raise ValueError("Hilbert space dimension must be positive.")
+            raise TNFRValueError(
+                "Hilbert space dimension must be positive.",
+                context={"dimension": resolved},
+            )
         return resolved
 
     if dimension is None and existing_cfg:
@@ -255,7 +258,10 @@ def _resolve_dimension(
 
     resolved = int(dimension)
     if resolved <= 0:
-        raise ValueError("Hilbert space dimension must be positive.")
+        raise TNFRValueError(
+            "Hilbert space dimension must be positive.",
+            context={"dimension": resolved},
+        )
     return resolved
 
 
@@ -273,7 +279,10 @@ def _ensure_coherence_operator(
     if spectrum is not None:
         spectrum_array = np.asarray(spectrum, dtype=np.complex128)
         if spectrum_array.ndim != 1:
-            raise ValueError("Coherence spectrum must be one-dimensional.")
+            raise TNFRValueError(
+                "Coherence spectrum must be one-dimensional.",
+                context={"ndim": spectrum_array.ndim},
+            )
         kwargs["spectrum"] = spectrum_array
     if c_min is not None:
         kwargs["c_min"] = float(c_min)
@@ -294,9 +303,15 @@ def _ensure_frequency_operator(
     else:
         diag_array = np.asarray(diagonal, dtype=float)
         if diag_array.ndim != 1:
-            raise ValueError("Frequency diagonal must be one-dimensional.")
+            raise TNFRValueError(
+                "Frequency diagonal must be one-dimensional.",
+                context={"ndim": diag_array.ndim},
+            )
         if diag_array.shape[0] != int(dimension):
-            raise ValueError("Frequency diagonal size must match Hilbert dimension.")
+            raise TNFRValueError(
+                "Frequency diagonal size must match Hilbert dimension.",
+                context={"size": diag_array.shape[0], "dimension": dimension},
+            )
         matrix = np.diag(diag_array)
     return make_frequency_operator(np.asarray(matrix, dtype=np.complex128))
 
@@ -310,9 +325,15 @@ def _ensure_generator_matrix(
         return np.zeros((dimension, dimension), dtype=np.complex128)
     diag_array = np.asarray(diagonal, dtype=np.complex128)
     if diag_array.ndim != 1:
-        raise ValueError("Generator diagonal must be one-dimensional.")
+        raise TNFRValueError(
+            "Generator diagonal must be one-dimensional.",
+            context={"ndim": diag_array.ndim},
+        )
     if diag_array.shape[0] != int(dimension):
-        raise ValueError("Generator diagonal size must match Hilbert dimension.")
+        raise TNFRValueError(
+            "Generator diagonal size must match Hilbert dimension.",
+            context={"size": diag_array.shape[0], "dimension": dimension},
+        )
     return np.diag(diag_array)
 
 
@@ -563,7 +584,12 @@ __all__ = (
 )
 
 
-def run_sequence(G: TNFRGraph, node: NodeId, ops: Iterable[Operator]) -> None:
+def run_sequence(
+    G: TNFRGraph,
+    node: NodeId,
+    ops: Iterable[Operator],
+    context: Optional[Dict[str, Any]] = None,
+) -> None:
     """Drive structural sequences that rebalance EPI, νf, phase and ΔNFR.
 
     The function enforces the canonical operator grammar, then executes each
@@ -584,6 +610,8 @@ def run_sequence(G: TNFRGraph, node: NodeId, ops: Iterable[Operator]) -> None:
     ops : Iterable[Operator]
         Iterable of canonical structural operators to apply. Their
         concatenation must respect the validated TNFR grammar.
+    context : dict, optional
+        Additional context for sequence validation (e.g. 'initial_epi_nonzero').
 
     Returns
     -------
@@ -645,20 +673,24 @@ def run_sequence(G: TNFRGraph, node: NodeId, ops: Iterable[Operator]) -> None:
         # Birth context detection: if node already has non-zero EPI and
         # sequence begins with a non-generator we allow context override.
         epi_val = G.nodes[node].get(EPI_PRIMARY, 0.0)
+        
+        validation_context = context.copy() if context else {}
+        
         if names[0] not in VALID_START_OPERATORS and epi_val:
             logger.info(
                 "U1a override (EPI≠0) node=%s; start=%s",
                 node,
                 names[0],
             )
-            outcome = validate_sequence(
-                names, context={"initial_epi_nonzero": True}
-            )
-        else:
-            outcome = validate_sequence(names)
+            validation_context["initial_epi_nonzero"] = True
+            
+        outcome = validate_sequence(names, context=validation_context)
         if not outcome.passed:
             summary_message = outcome.summary.get("message", "validation failed")
-            raise ValueError(f"Invalid sequence: {summary_message}")
+            raise TNFRValueError(
+                f"Invalid sequence: {summary_message}",
+                context={"sequence": names, "outcome": outcome.summary},
+            )
 
         # Semantic validation of sequence (if enabled)
         if validation_config.enable_semantic_validation:
@@ -678,7 +710,10 @@ def run_sequence(G: TNFRGraph, node: NodeId, ops: Iterable[Operator]) -> None:
                 # Always raise on errors
                 if error_violations:
                     report = run_sequence._invariant_validator.generate_report(error_violations)  # type: ignore[attr-defined]
-                    raise ValueError(f"Semantic sequence violations:\n{report}")
+                    raise TNFRValueError(
+                        f"Semantic sequence violations:\n{report}",
+                        context={"violations": [v.to_dict() for v in error_violations]},
+                    )
 
                 # Show warnings if allowed
                 if warning_violations and validation_config.allow_semantic_warnings:
@@ -722,7 +757,13 @@ def run_sequence(G: TNFRGraph, node: NodeId, ops: Iterable[Operator]) -> None:
             )
             if violations:
                 report = run_sequence._invariant_validator.generate_report(violations)  # type: ignore[attr-defined]
-                raise ValueError(f"Invariant violations after {op.name}:\n{report}")
+                raise TNFRValueError(
+                    f"Invariant violations after {op.name}:\n{report}",
+                    context={
+                        "operator": op.name,
+                        "violations": [v.to_dict() for v in violations],
+                    },
+                )
 
         # ``update_epi_via_nodal_equation`` was previously invoked here to
         # recalculate the EPI value after each operator. The responsibility for

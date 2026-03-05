@@ -4,7 +4,8 @@ from __future__ import annotations
 
 from typing import Any, Sequence
 
-import numpy as np
+from ..errors import TNFRValueError
+from .unified_numerical import np
 
 from ..config import get_flags
 from ..utils import get_logger
@@ -36,9 +37,11 @@ def _as_vector(
         getattr(vector, "ndim", len(getattr(vector, "shape", ()))) != 1
         or vector.shape[0] != dimension
     ):
-        raise ValueError(
+        raise TNFRValueError(
             "State vector dimension mismatch: "
-            f"expected ({dimension},), received {vector.shape!r}."
+            f"expected ({dimension},), received {vector.shape!r}.",
+            context={"expected_dimension": dimension, "actual_shape": vector.shape},
+            suggestion="Ensure the state vector matches the expected dimension."
         )
     return vector
 
@@ -164,7 +167,11 @@ def stable_unitary(
         norm_backend = backend.norm(vector)
         norm = float(np.asarray(ensure_numpy(norm_backend, backend=backend)))
         if np.isclose(norm, 0.0, atol=atol):
-            raise ValueError("Cannot normalise a null state vector.")
+            raise TNFRValueError(
+                "Cannot normalise a null state vector.",
+                context={"norm": norm, "atol": atol},
+                suggestion="Ensure the state vector is non-zero."
+            )
         vector = vector / norm
     generator = -1j * matrix_backend
     unitary = backend.matrix_exp(generator)

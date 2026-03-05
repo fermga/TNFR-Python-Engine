@@ -11,12 +11,13 @@ from __future__ import annotations
 
 from typing import Any
 
+from ..mathematics.unified_numerical import np
 from ..config.defaults_core import K_PHI_CURVATURE_THRESHOLD  # 0.9×π ≈ 2.827 canonical threshold
 
 def warn_phase_gradient_telemetry(
     G: Any,
     *,
-    threshold: float = 0.38,
+    threshold: float = 0.183736807,  # γ/π canonical (Kuramoto critical coupling)
 ) -> tuple[bool, dict[str, float], str, list[Any]]:
     """Emit non-blocking telemetry warning for |∇φ| (phase gradient).
 
@@ -27,13 +28,12 @@ def warn_phase_gradient_telemetry(
     Returns (safe, stats, message, flagged_nodes) where safe indicates
     mean and max are below threshold (stable regime). Always non-blocking.
 
-    Safety criterion: |∇φ| < 0.2904 (stable operation)
+    Safety criterion: |∇φ| < γ/π ≈ 0.1837 (Kuramoto critical coupling)
 
     References: AGENTS.md Structural Fields; fields.compute_phase_gradient
     """
     try:
         from ..physics.fields import compute_phase_gradient
-        import numpy as np  # type: ignore
     except Exception:  # pragma: no cover
         # If dependencies missing, be conservative but non-blocking
         return True, {"max": 0.0, "mean": 0.0, "frac_over": 0.0}, (
@@ -91,7 +91,6 @@ def warn_phase_curvature_telemetry(
             compute_phase_curvature,
             k_phi_multiscale_safety,
         )
-        import numpy as np  # type: ignore
     except Exception:  # pragma: no cover
         return True, {"hotspots": 0, "max_abs": 0.0, "multiscale_safe": True}, (
             "U6 (K_φ): telemetry unavailable (skipping)"
@@ -164,7 +163,6 @@ def warn_coherence_length_telemetry(
     try:
         from ..physics.fields import estimate_coherence_length
         import networkx as nx  # type: ignore
-        import numpy as np  # type: ignore
     except Exception:  # pragma: no cover
         return True, {"xi_c": 0.0, "severity": "unknown"}, (
             "U6 (ξ_C): telemetry unavailable (skipping)"

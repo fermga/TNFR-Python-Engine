@@ -27,7 +27,7 @@ Key Features:
 Status: CANONICAL COMPUTATIONAL CENTRALIZATION HUB
 """
 
-import numpy as np
+from ..mathematics.unified_numerical import np
 from typing import Dict, Any, Optional, Union, Callable, Set
 from dataclasses import dataclass, field
 from enum import Enum
@@ -36,6 +36,8 @@ import threading
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from queue import Queue, PriorityQueue
 import uuid
+
+from ..errors import TNFRValueError
 
 try:
     import networkx as nx
@@ -218,7 +220,11 @@ class TNFRComputationalHub:
         """
         # Validate request
         if not self._validate_request(request):
-            raise ValueError(f"Invalid computation request: {request}")
+            raise TNFRValueError(
+                f"Invalid computation request: {request}",
+                context={"request": str(request)},
+                suggestion="Ensure request has valid operation and parameters.",
+            )
             
         # Add to queue with priority
         timestamp = time.time()
@@ -320,7 +326,11 @@ class TNFRComputationalHub:
                 result_data = self._execute_adelic_dynamics(request)
                 
             else:
-                raise ValueError(f"Unknown engine type: {selected_engine}")
+                raise TNFRValueError(
+                    f"Unknown engine type: {selected_engine}",
+                    context={"engine": selected_engine, "available": [e.name for e in EngineType]},
+                    suggestion="Use a valid EngineType enum value.",
+                )
                 
         except Exception as e:
             return ComputationResult(
@@ -435,7 +445,11 @@ class TNFRComputationalHub:
             if graph2:
                 result = engine.cross_spectral_coherence(request.graph, graph2)
             else:
-                raise ValueError("Coherence analysis requires second graph")
+                raise TNFRValueError(
+                    "Coherence analysis requires second graph",
+                    context={"parameters": request.parameters.keys()},
+                    suggestion="Provide 'graph2' in request parameters for coherence analysis.",
+                )
         else:
             result = engine.spectral_convolution(request.graph, **request.parameters)
             

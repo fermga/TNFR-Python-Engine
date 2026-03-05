@@ -2,6 +2,76 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.3] - 2026-03-05
+
+### Structural Conservation Theorem
+
+- **conservation.py**: Complete structural conservation module implementing Noether-like conservation law derived from grammar symmetry (U1-U6)
+- **Charge density** ρ, **current divergence** div(J), **Noether charge** Q, **energy functional** E, **Ward identities**, **Lyapunov stability**, and **spectral decomposition**
+- Two-sector structure: Potential (Φ_s ↔ J_ΔNFR) and Geometric (K_φ ↔ J_φ) coupled through Ψ = K_φ + i·J_φ
+- 62 validation tests, charge drift < 0.03% across topologies
+
+### Dissipative Conservation
+
+- **dissipative_conservation.py**: GPU-accelerated dissipative conservation analysis with PyTorch backend
+- Phase field computation, dissipation rate tracking, and energy budget monitoring
+
+### Closed-Loop Integrity Monitor
+
+- **integrity.py**: `StructuralIntegrityMonitor` with complete postconditions for all 13 canonical operators
+- Each operator (AL, EN, IL, OZ, UM, RA, SHA, VAL, NUL, THOL, ZHIR, NAV, REMESH) has verified pre/postcondition contracts
+- Automatic violation detection and reporting
+
+### Grammar-Aware Dynamics
+
+- **grammar_dynamics.py**: Bridge between grammar validation (U1-U6) and dynamic operator selection
+- Incremental U1-U6 checks: `validate_candidate()`, `filter_candidates()`, `suggest_alternative()`, `enforce_grammar_on_glyph()`
+- Priority-based operator substitution with fallback logic
+- **grammar_application.py**: Pre-validation in `apply_glyph_with_grammar()` for grammar enforcement before operator application
+- **selectors.py**: `_soft_grammar_prefilter()` wired with grammar_dynamics for operator filtering
+
+### Shared Test Infrastructure
+
+- **tests/conftest.py**: Centralized test fixtures (`make_ring_graph`, `make_node_data`, `ring3`, `ring5`, `small_graph`)
+- DRY reduction across 16+ test files that previously duplicated `_make_graph` helpers
+
+### Code Quality
+
+- Fixed bare `except:` clauses in grammar_dynamics.py (now `except Exception:`)
+- NAV bypass fix for grammar validation edge case
+- Redundancy elimination across physics helpers
+- Rich operator postconditions (13/13 coverage)
+
+### Cross-Codebase Constant Unification (Round 1)
+
+- **grammar_types.py**: Eliminated duplicate operator sets (single canonical definition)
+- **THOL_MIN_COLLECTIVE_COHERENCE**: Unified to canonical 0.2413 (was 0.3)
+- **MIN_BUSINESS_COHERENCE**: Centralized to canonical formula (e×φ)/(π+e) ≈ 0.7506
+- **health_analyzer.py / self_organization.py**: Aligned fallback values to canonical
+
+### Phase Gradient Threshold Unification
+
+- **Canonical value**: γ/π ≈ 0.1837 (Kuramoto critical coupling in TNFR units)
+- **Unified across 9 code files**: Replaced competing values (0.2904, 0.2886, 0.2915, 0.38) with single canonical derivation
+- **Updated 8 documentation files**: Consistent threshold references throughout
+
+### Cross-Codebase Constant Unification (Round 2)
+
+- **compute_structural_potential_field**: Added alias in physics/fields.py (was silently missing, imported in 2 files)
+- **SHA_VF_FACTOR comment**: Fixed from ≈ 0.8476 to correct ≈ 0.9015 in defaults_core.py
+- **Operator fallback values**: SHA (0.85→0.9015), NUL (0.85→0.9015), VAL (1.05→1.0676) aligned to canonical
+- **K_φ hotspot formula**: Fixed in conservation.py from 2π/√5 ≈ 2.8099 to canonical 0.9×π ≈ 2.8274
+- **grammar_core.py K_φ default**: Fixed from 3.0 to canonical 2.8274
+- **telemetry/constants.py**: Removed dead try/except ImportError fallback; direct canonical imports
+- **config.py**: Structural field thresholds now derive from constants.canonical (was hardcoded)
+- **pyproject.toml**: Added mpmath to core dependencies (was required but unlisted)
+- **Documentation sync**: Updated 7 doc files with correct threshold values and test counts
+
+### Test Suite
+
+- **471 passing tests**, 9 skipped, 0 failing
+- Coverage spans operators, physics, dynamics, grammar, conservation, integrity, and factorization
+
 ## [0.0.2] - 2025-11-29
 
 ### TNFR Development Doctrine Establishment

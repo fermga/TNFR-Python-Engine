@@ -138,9 +138,10 @@ from collections.abc import Callable, Iterable, Mapping, Sequence
 from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass
 from types import ModuleType
-from typing import Any, MutableMapping, cast
+from typing import Any, MutableMapping, Optional, Union, cast
 
 from .._compat import TypeAlias
+from ..errors import TNFRValueError
 from ..alias import collect_attr, collect_theta_attr, get_attr, set_attr
 from ..utils import CallbackEvent, callback_manager
 from ..constants import get_param
@@ -178,10 +179,10 @@ from ..types import (
 from ..utils import (
     ensure_node_index_map,
     get_logger,
-    get_numpy,
     normalize_weights,
     resolve_chunk_size,
 )
+from ..mathematics.unified_numerical import np
 from .common import compute_coherence, min_max_range
 from .trig_cache import compute_theta_trig, get_trig_cache
 
@@ -198,26 +199,26 @@ class SimilarityInputs:
     epi_vals: Sequence[float]
     vf_vals: Sequence[float]
     si_vals: Sequence[float]
-    cos_vals: Sequence[float] | None = None
-    sin_vals: Sequence[float] | None = None
+    cos_vals: Optional[Sequence[float]] = None
+    sin_vals: Optional[Sequence[float]] = None
 
 
 CoherenceMatrixDense = list[list[float]]
 CoherenceMatrixSparse = list[tuple[int, int, float]]
-CoherenceMatrixPayload = CoherenceMatrixDense | CoherenceMatrixSparse
-PhaseSyncWeights: TypeAlias = Sequence[float] | CoherenceMatrixSparse | CoherenceMatrixDense
+CoherenceMatrixPayload = Union[CoherenceMatrixDense, CoherenceMatrixSparse]
+PhaseSyncWeights: TypeAlias = Union[Sequence[float], CoherenceMatrixSparse, CoherenceMatrixDense]
 
 SimilarityComponents = tuple[float, float, float, float]
 VectorizedComponents: TypeAlias = tuple[FloatMatrix, FloatMatrix, FloatMatrix, FloatMatrix]
-ScalarOrArray: TypeAlias = float | FloatArray
+ScalarOrArray: TypeAlias = Union[float, FloatArray]
 StabilityChunkArgs = tuple[
     Sequence[float],
     Sequence[float],
     Sequence[float],
-    Sequence[float | None],
+    Sequence[Optional[float]],
     Sequence[float],
-    Sequence[float | None],
-    Sequence[float | None],
+    Sequence[Optional[float]],
+    Sequence[Optional[float]],
     float,
     float,
     float,
@@ -245,7 +246,6 @@ def _compute_wij_phase_epi_vf_si_vectorized(
     sin_th: FloatArray,
     epi_range: float,
     vf_range: float,
-    np: ModuleType,
 ) -> VectorizedComponents:
     """Vectorized computation of similarity components.
 
@@ -273,7 +273,6 @@ def compute_wij_phase_epi_vf_si(
     nodes: Sequence[NodeId] | None = None,
     epi_range: float = 1.0,
     vf_range: float = 1.0,
-    np: ModuleType | None = None,
 ) -> SimilarityComponents | VectorizedComponents:
     r"""Compute structural similarity components for coherence matrix elements.
 
@@ -350,9 +349,6 @@ def compute_wij_phase_epi_vf_si(
     vf_range : float, default=1.0
         Normalization range :math:`\Delta_{\nu_f}` for frequency similarity.
         Should be :math:`\nu_{f,\max} - \nu_{f,\min}`.
-    np : ModuleType | None, optional
-        NumPy-like module (numpy, jax.numpy, torch) for vectorized computation.
-        If provided with `i=None, j=None`, returns vectorized arrays for all pairs.
 
     Returns
     -------
@@ -421,7 +417,7 @@ def compute_wij_phase_epi_vf_si(
 
     >>> import numpy as np
     >>> S_phase, S_epi, S_vf, S_si = compute_wij_phase_epi_vf_si(
-    ...     inputs, epi_range=1.0, vf_range=1.0, np=np
+    ...     inputs, epi_range=1.0, vf_range=1.0
     ... )
     >>> S_phase.shape  # All pairwise similarities
     (2, 2)
@@ -436,17 +432,17 @@ def compute_wij_phase_epi_vf_si(
     >>> G.add_edge(0, 1)
     >>> G.nodes[0].update({"phase": 0.0, "EPI": 0.5, "nu_f": 0.8, "Si": 0.7})
     >>> G.nodes[1].update({"phase": 0.1, "EPI": 0.6, "nu_f": 0.7, "Si": 0.8})
-    >>> trig = get_trig_cache(G, np=np)  # Precompute cos/sin
+    >>> trig = get_trig_cache(G)  # Precompute cos/sin
     >>> # ... use trig in repeated calls for efficiency
     """
 
-    trig = trig or (get_trig_cache(G, np=np) if G is not None else None)
+    trig = trig or (get_trig_cache(G) if G is not None else None)
     cos_vals = inputs.cos_vals
     sin_vals = inputs.sin_vals
     if cos_vals is None or sin_vals is None:
         th_vals = inputs.th_vals
         pairs = zip(nodes or range(len(th_vals)), th_vals)
-        trig_local = compute_theta_trig(pairs, np=np)
+        trig_local = compute_theta_trig(pairs)
         index_iter = nodes if nodes is not None else range(len(th_vals))
         if trig is not None and nodes is not None:
             cos_vals = [trig.cos.get(n, trig_local.cos[n]) for n in nodes]
@@ -475,11 +471,10 @@ def compute_wij_phase_epi_vf_si(
             sin_th,
             epi_range,
             vf_range,
-            np,
         )
 
     if i is None or j is None:
-        raise ValueError("i and j are required for non-vectorized computation")
+        raise TNFRValueError("i and j are required for non-vectorized computation")
     epi_range = epi_range if epi_range > 0 else 1.0
     vf_range = vf_range if vf_range > 0 else 1.0
     cos_i = cos_vals[i]
@@ -502,7 +497,6 @@ def _combine_similarity(
     epi_w: float,
     vf_w: float,
     si_w: float,
-    np: ModuleType | None = None,
 ) -> ScalarOrArray:
     """Combine similarity components into coherence weight wᵢⱼ ≈ ⟨i|Ĉ|j⟩.
 
@@ -525,7 +519,6 @@ def _wij_components_weights(
     j: int | None = None,
     epi_range: float = 1.0,
     vf_range: float = 1.0,
-    np: ModuleType | None = None,
 ) -> tuple[
     ScalarOrArray,
     ScalarOrArray,
@@ -551,7 +544,6 @@ def _wij_components_weights(
         nodes=nodes,
         epi_range=epi_range,
         vf_range=vf_range,
-        np=np,
     )
     phase_w = wnorm["phase"]
     epi_w = wnorm["epi"]
@@ -570,7 +562,6 @@ def _wij_vectorized(
     vf_min: float,
     vf_max: float,
     self_diag: bool,
-    np: ModuleType,
 ) -> FloatMatrix:
     epi_range = epi_max - epi_min if epi_max > epi_min else 1.0
     vf_range = vf_max - vf_min if vf_max > vf_min else 1.0
@@ -590,11 +581,10 @@ def _wij_vectorized(
         wnorm,
         epi_range=epi_range,
         vf_range=vf_range,
-        np=np,
     )
     wij_matrix = cast(
         FloatMatrix,
-        _combine_similarity(s_phase, s_epi, s_vf, s_si, phase_w, epi_w, vf_w, si_w, np=np),
+        _combine_similarity(s_phase, s_epi, s_vf, s_si, phase_w, epi_w, vf_w, si_w),
     )
     if self_diag:
         np.fill_diagonal(wij_matrix, 1.0)
@@ -803,7 +793,6 @@ def _compute_stats(
     row_sum: Iterable[float] | Any,
     n: int,
     self_diag: bool,
-    np: ModuleType | None = None,
 ) -> tuple[float, float, float, list[float], int]:
     """Return aggregate statistics for ``values`` and normalized row sums.
 
@@ -847,7 +836,6 @@ def _coherence_numpy(
     wij: Any,
     mode: str,
     thr: float,
-    np: ModuleType,
 ) -> tuple[int, Any, Any, CoherenceMatrixPayload]:
     """Aggregate coherence weights using vectorized operations.
 
@@ -974,7 +962,6 @@ def _finalize_wij(
     thr: float,
     scope: str,
     self_diag: bool,
-    np: ModuleType | None = None,
     *,
     n_jobs: int = 1,
 ) -> tuple[list[NodeId], CoherenceMatrixPayload]:
@@ -988,12 +975,12 @@ def _finalize_wij(
     use_np = np is not None and isinstance(wij, np.ndarray)
     if use_np:
         assert np is not None
-        n, values, row_sum, W = _coherence_numpy(wij, mode, thr, np)
+        n, values, row_sum, W = _coherence_numpy(wij, mode, thr)
     else:
         n, values, row_sum, W = _coherence_python(wij, mode, thr, n_jobs=n_jobs)
 
     min_val, max_val, mean_val, Wi, count_val = _compute_stats(
-        values, row_sum, n, self_diag, np if use_np else None
+        values, row_sum, n, self_diag
     )
     stats = {
         "min": min_val,
@@ -1067,7 +1054,6 @@ def coherence_matrix(
         return nodes, []
 
     # NumPy handling for optional vectorized operations
-    np = get_numpy()
     use_np = np is not None if use_numpy is None else (use_numpy and np is not None)
 
     cfg_jobs = cfg.get("n_jobs")
@@ -1075,10 +1061,10 @@ def coherence_matrix(
 
     # Precompute indices to avoid repeated list.index calls within loops
 
-    th_vals = collect_theta_attr(G, nodes, 0.0, np=np if use_np else None)
-    epi_vals = collect_attr(G, nodes, ALIAS_EPI, 0.0, np=np if use_np else None)
-    vf_vals = collect_attr(G, nodes, ALIAS_VF, 0.0, np=np if use_np else None)
-    si_vals = collect_attr(G, nodes, ALIAS_SI, 0.0, np=np if use_np else None)
+    th_vals = collect_theta_attr(G, nodes, 0.0)
+    epi_vals = collect_attr(G, nodes, ALIAS_EPI, 0.0)
+    vf_vals = collect_attr(G, nodes, ALIAS_VF, 0.0)
+    si_vals = collect_attr(G, nodes, ALIAS_SI, 0.0)
     if use_np:
         assert np is not None
         si_vals = np.clip(si_vals, 0.0, 1.0)
@@ -1099,9 +1085,9 @@ def coherence_matrix(
     thr = float(cfg.get("threshold", 0.0))
     if mode not in ("sparse", "dense"):
         mode = "sparse"
-    trig = get_trig_cache(G, np=np)
+    trig = get_trig_cache(G)
     cos_map, sin_map = trig.cos, trig.sin
-    trig_local = compute_theta_trig(zip(nodes, th_vals), np=np)
+    trig_local = compute_theta_trig(zip(nodes, th_vals))
     cos_vals = [cos_map.get(n, trig_local.cos[n]) for n in nodes]
     sin_vals = [sin_map.get(n, trig_local.sin[n]) for n in nodes]
     inputs = SimilarityInputs(
@@ -1124,7 +1110,6 @@ def coherence_matrix(
             vf_min,
             vf_max,
             self_diag,
-            np,
         )
         if neighbors_only:
             adj = np.eye(n, dtype=bool)
@@ -1159,7 +1144,6 @@ def coherence_matrix(
         thr,
         scope,
         self_diag,
-        np,
         n_jobs=parallel_jobs if not use_np else 1,
     )
 
@@ -1178,7 +1162,7 @@ def local_phase_sync_weighted(
     sparse list of ``(i, j, w)`` tuples for the whole matrix.
     """
     if W_row is None or nodes_order is None:
-        raise ValueError("nodes_order and W_row are required for weighted phase synchrony")
+        raise TNFRValueError("nodes_order and W_row are required for weighted phase synchrony")
 
     if node_to_index is None:
         node_to_index = ensure_node_index_map(G)
@@ -1235,7 +1219,7 @@ def local_phase_sync_weighted(
 
         dense_matrix = cast(CoherenceMatrixDense, W_row)
         if i is None:
-            raise ValueError("node index resolution failed for dense weights")
+            raise TNFRValueError("node index resolution failed for dense weights")
         row_vals = cast(Sequence[float], dense_matrix[i])
         for w, nj in zip(row_vals, nodes_order):
             if nj == n:
@@ -1357,9 +1341,10 @@ def _update_sigma(G: TNFRGraph, hist: HistoryState) -> None:
 
     metrics = cast(MutableMapping[str, list[Any]], hist)
     if "glyph_load_estab" in metrics:
-        raise ValueError(
+        raise TNFRValueError(
             "History payloads using 'glyph_load_estab' are no longer supported. "
-            "Rename the series to 'glyph_load_stabilizers' before loading the graph."
+            "Rename the series to 'glyph_load_stabilizers' before loading the graph.",
+            suggestion="Rename the series to 'glyph_load_stabilizers' before loading the graph.",
         )
     if metrics.get(GLYPH_LOAD_STABILIZERS_KEY) is None:
         metrics.setdefault(GLYPH_LOAD_STABILIZERS_KEY, [])
@@ -1461,12 +1446,10 @@ def _track_stability(
         hist.setdefault("B", []).append(0.0)
         return
 
-    np_mod = get_numpy()
-
-    dnfr_vals = collect_attr(G, nodes, ALIAS_DNFR, 0.0, np=np_mod)
-    depi_vals = collect_attr(G, nodes, ALIAS_DEPI, 0.0, np=np_mod)
-    si_curr_vals = collect_attr(G, nodes, ALIAS_SI, 0.0, np=np_mod)
-    vf_curr_vals = collect_attr(G, nodes, ALIAS_VF, 0.0, np=np_mod)
+    dnfr_vals = collect_attr(G, nodes, ALIAS_DNFR, 0.0)
+    depi_vals = collect_attr(G, nodes, ALIAS_DEPI, 0.0)
+    si_curr_vals = collect_attr(G, nodes, ALIAS_SI, 0.0)
+    vf_curr_vals = collect_attr(G, nodes, ALIAS_VF, 0.0)
 
     prev_si_data = [G.nodes[n].get("_prev_Si") for n in nodes]
     prev_vf_data = [G.nodes[n].get("_prev_vf") for n in nodes]
@@ -1474,8 +1457,7 @@ def _track_stability(
 
     inv_dt = (1.0 / dt) if dt else 0.0
 
-    if np_mod is not None:
-        np = np_mod
+    if np is not None:
         dnfr_arr = dnfr_vals
         depi_arr = depi_vals
         si_curr_arr = si_curr_vals
@@ -1739,15 +1721,14 @@ def _aggregate_si(
             except (TypeError, ValueError):
                 sis.append(math.nan)
 
-        np_mod = get_numpy()
-        if np_mod is not None:
-            sis_array = np_mod.asarray(sis, dtype=float)
-            valid = sis_array[~np_mod.isnan(sis_array)]
+        if np is not None:
+            sis_array = np.asarray(sis, dtype=float)
+            valid = sis_array[~np.isnan(sis_array)]
             n = int(valid.size)
             if n:
                 hist["Si_mean"].append(float(valid.mean()))
-                hi_frac = np_mod.count_nonzero(valid >= si_hi) / n
-                lo_frac = np_mod.count_nonzero(valid <= si_lo) / n
+                hi_frac = np.count_nonzero(valid >= si_hi) / n
+                lo_frac = np.count_nonzero(valid <= si_lo) / n
                 hist["Si_hi_frac"].append(float(hi_frac))
                 hist["Si_lo_frac"].append(float(lo_frac))
             else:
@@ -1852,12 +1833,11 @@ def compute_global_coherence(G: TNFRGraph) -> float:
     True
     """
     # Collect all ΔNFR values
-    dnfr_values = [float(get_attr(G.nodes[n], ALIAS_DNFR, 0.0)) for n in G.nodes()]
+    dnfr_values = [cast(float, get_attr(G.nodes[n], ALIAS_DNFR, 0.0)) for n in G.nodes()]
 
     if not dnfr_values or all(v == 0 for v in dnfr_values):
         return 1.0  # Perfect coherence when no reorganization pressure
 
-    np = get_numpy()
     if np is not None:
         dnfr_array = np.array(dnfr_values)
         sigma_dnfr = float(np.std(dnfr_array))
@@ -1955,12 +1935,11 @@ def compute_local_coherence(G: TNFRGraph, node: Any, radius: int = 1) -> float:
         neighbors = set(nx.single_source_shortest_path_length(G, node, cutoff=radius).keys())
 
     # Collect ΔNFR for neighborhood
-    dnfr_values = [float(get_attr(G.nodes[n], ALIAS_DNFR, 0.0)) for n in neighbors]
+    dnfr_values = [cast(float, get_attr(G.nodes[n], ALIAS_DNFR, 0.0)) for n in neighbors]
 
     if not dnfr_values or all(v == 0 for v in dnfr_values):
         return 1.0
 
-    np = get_numpy()
     if np is not None:
         dnfr_array = np.array(dnfr_values)
         sigma_dnfr = float(np.std(dnfr_array))

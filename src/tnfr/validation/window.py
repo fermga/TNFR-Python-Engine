@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import numbers
 
+from ..errors import TNFRValueError
+
 __all__ = ["validate_window"]
 
 
@@ -27,7 +29,7 @@ def validate_window(window: int, *, positive: bool = False) -> int:
     ------
     TypeError
         If ``window`` is not an integer value.
-    ValueError
+    TNFRValueError
         If ``window`` violates the positivity constraint.
     """
 
@@ -35,5 +37,9 @@ def validate_window(window: int, *, positive: bool = False) -> int:
         raise TypeError("'window' must be an integer")
     if window < 0 or (positive and window == 0):
         kind = "positive" if positive else "non-negative"
-        raise ValueError(f"'window'={window} must be {kind}")
+        raise TNFRValueError(
+            f"'window'={window} must be {kind}",
+            context={"window": window, "constraint": kind},
+            suggestion=f"Provide a {kind} integer for the window size.",
+        )
     return int(window)

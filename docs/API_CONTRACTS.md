@@ -197,7 +197,7 @@ This document formalizes the **structural invariants** and **API contracts** for
 - **Preconditions**:
   - Node has νf (structural frequency) attribute
 - **Postconditions**:
-  - `νf_new = SHA_vf_factor * νf_old` where `0 < SHA_vf_factor < 1` (default: 0.85)
+  - `νf_new = SHA_vf_factor * νf_old` where `0 < SHA_vf_factor < 1` (default: 0.9015 = 1 - γ/(π+e))
   - `νf_new < νf_old` (monotonic decrease)
   - `EPI`, `θ`, `ΔNFR` remain unchanged
   - Node enters reduced evolution state (`νf ≈ 0` limit)
@@ -221,7 +221,7 @@ This document formalizes the **structural invariants** and **API contracts** for
 - **Preconditions**:
   - Node has νf attribute
 - **Postconditions**:
-  - `νf_new = VAL_scale * νf_old` where `VAL_scale > 1` (default: 1.15)
+  - `νf_new = VAL_scale * νf_old` where `VAL_scale > 1` (default: 1.0676 = 1 + γ/(π×e))
   - `νf_new > νf_old` (monotonic increase)
   - `EPI`, `θ`, `ΔNFR` remain unchanged
 - **Structural Effect**: Increases reorganization rate
@@ -243,7 +243,7 @@ This document formalizes the **structural invariants** and **API contracts** for
 - **Preconditions**:
   - Node has νf attribute
 - **Postconditions**:
-  - `νf_new = NUL_scale * νf_old` where `0 < NUL_scale < 1` (default: 0.85)
+  - `νf_new = NUL_scale * νf_old` where `0 < NUL_scale < 1` (default: 0.9015 = 1 - γ/(π+e))
   - `νf_new < νf_old` (monotonic decrease)
   - `EPI`, `θ`, `ΔNFR` remain unchanged
 - **Structural Effect**: Decreases reorganization rate

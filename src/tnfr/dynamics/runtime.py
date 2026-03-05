@@ -24,7 +24,7 @@ from . import adaptation, coordination, integrators, selectors
 from .aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_SI, ALIAS_THETA, ALIAS_VF
 
 try:  # pragma: no cover - optional NumPy dependency
-    import numpy as np
+    from ..mathematics.unified_numerical import np
 except ImportError:  # pragma: no cover - optional dependency missing
     np = None  # type: ignore[assignment]
 

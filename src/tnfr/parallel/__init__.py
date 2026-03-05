@@ -24,6 +24,10 @@ All engines maintain TNFR invariants:
 from __future__ import annotations
 
 # Import all core components
+from .partitioner import FractalPartitioner
+from .engine import TNFRParallelEngine
+from .auto_scaler import TNFRAutoScaler
+from .monitoring import ParallelExecutionMonitor, PerformanceMetrics
 
 __all__ = (
     "FractalPartitioner",
@@ -43,8 +47,7 @@ except ImportError:
 
 # Optional GPU backend
 try:
-    from .gpu_engine import TNFRGPUEngine
-
-    __all__ = __all__ + ("TNFRGPUEngine",)
+    # GPU functionality moved to tnfr.engines.computation.unified_gpu_system
+    pass
 except ImportError:
     pass

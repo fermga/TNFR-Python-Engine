@@ -11,6 +11,7 @@ from __future__ import annotations
 
 from typing import Any, ClassVar
 
+from ..errors import TNFRValueError
 from ..config.operator_names import RECURSIVITY
 from ..types import Glyph, TNFRGraph
 from .definitions_base import Operator
@@ -29,7 +30,10 @@ class Recursivity(Operator):
     def __init__(self, depth: int = 1):
         """Set recursion depth (>=1)."""
         if depth < 1:
-            raise ValueError(f"depth must be >= 1, got {depth}")
+            raise TNFRValueError(
+                f"depth must be >= 1, got {depth}",
+                context={"depth": depth},
+            )
         self.depth = depth
 
     def _validate_preconditions(self, G: TNFRGraph, node: Any) -> None:

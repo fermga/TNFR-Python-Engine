@@ -43,22 +43,9 @@ __all__ = [
 
 
 # Import cache utilities for performance optimization
-try:
-    from ..utils.cache import cache_tnfr_computation, CacheLevel
+from ..mathematics.unified_cache import cache_tnfr_computation, CacheLevel
 
-    _CACHING_AVAILABLE = True
-except ImportError:  # pragma: no cover - defensive import for testing
-    _CACHING_AVAILABLE = False
-
-    # Dummy decorator if caching unavailable
-    def cache_tnfr_computation(level, dependencies, cost_estimator=None):
-        def decorator(func):
-            return func
-
-        return decorator
-
-    class CacheLevel:  # type: ignore
-        DERIVED_METRICS = "derived_metrics"
+_CACHING_AVAILABLE = True
 
 
 def _estimate_cascade_cost(G: TNFRGraph) -> float:

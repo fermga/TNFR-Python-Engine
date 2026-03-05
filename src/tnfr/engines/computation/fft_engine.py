@@ -32,18 +32,15 @@ except ImportError:
 
 # Import existing modules
 try:
-    from ..mathematics.spectral import get_laplacian_spectrum, gft, igft
+    from ...mathematics.spectral import get_laplacian_spectrum, gft, igft  # noqa: F401
     from .structural_cache import get_structural_cache, StructuralCacheEntry
     HAS_SPECTRAL = True
 except ImportError:
     HAS_SPECTRAL = False
 
 # Import cache system
-try:
-    from ..utils.cache import cache_tnfr_computation, CacheLevel
-    _CACHE_AVAILABLE = True
-except ImportError:
-    _CACHE_AVAILABLE = False
+from ...mathematics.unified_cache import cache_tnfr_computation, CacheLevel
+_CACHE_AVAILABLE = True
 
 # Import FFT cache coordinator
 try:

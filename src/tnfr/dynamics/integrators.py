@@ -30,9 +30,11 @@ from typing import Any, Literal, cast
 import networkx as nx
 
 from .._compat import TypeAlias
+from ..mathematics.unified_numerical import np
 from ..alias import collect_attr, get_attr, get_attr_str, set_attr, set_attr_str
 from ..constants import DEFAULTS
 from ..config.defaults_core import PI
+from ..errors.contextual import NetworkConfigError, TNFRUserError, TNFRValueError
 from ..constants.canonical import (
     INTEGRATORS_RK4_SIXTH_CANONICAL,
     INTEGRATORS_HALF_STEP_CANONICAL,
@@ -54,7 +56,7 @@ from ..constants.aliases import (
 )
 from ..gamma import _get_gamma_spec, eval_gamma, eval_gamma_vectorized
 from ..types import NodeId, TNFRGraph
-from ..utils import get_numpy, resolve_chunk_size
+from ..utils import resolve_chunk_size
 from .structural_clip import structural_clip
 
 __all__ = (
@@ -186,8 +188,8 @@ def prepare_integration_params(
     """Validate and normalise ``dt``, ``t`` and ``method`` for integration.
 
     The function raises :class:`TypeError` when ``dt`` cannot be coerced to a
-    number, :class:`ValueError` if ``dt`` is negative, and another
-    :class:`ValueError` when an unsupported method is requested.  When ``dt``
+    number, :class:`NetworkConfigError` if ``dt`` is negative, and another
+    :class:`NetworkConfigError` when an unsupported method is requested.  When ``dt``
     exceeds a positive ``DT_MIN`` stored on ``G`` the span is deterministically
     subdivided into integer steps so that the resulting ``dt_step`` never falls
     below that minimum threshold.
@@ -203,9 +205,17 @@ def prepare_integration_params(
         dt = float(G.graph.get("DT", DEFAULTS.get("DT", dt_canonical)))
     else:
         if not isinstance(dt, (int, float)):
-            raise TypeError("dt must be a number")
+            raise NetworkConfigError(
+                parameter="dt",
+                value=dt,
+                reason="Time step must be numeric"
+            )
         if dt < 0:
-            raise ValueError("dt must be non-negative")
+            raise NetworkConfigError(
+                parameter="dt",
+                value=dt,
+                reason="Time step must be non-negative"
+            )
         dt = float(dt)
 
     if t is None:
@@ -217,7 +227,11 @@ def prepare_integration_params(
         method or G.graph.get("INTEGRATOR_METHOD", DEFAULTS.get("INTEGRATOR_METHOD", "euler"))
     ).lower()
     if method_value not in ("euler", "rk4"):
-        raise ValueError("method must be 'euler' or 'rk4'")
+        raise NetworkConfigError(
+            parameter="method",
+            value=method_value,
+            reason="Integration method must be 'euler' or 'rk4'"
+        )
 
     dt_min = float(G.graph.get("DT_MIN", DEFAULTS.get("DT_MIN", 0.0)))
     steps = 1
@@ -245,8 +259,6 @@ def _apply_increments(
     if not nodes:
         return {}
 
-    np = get_numpy()
-
     epi_initial: list[float] = []
     dEPI_prev: list[float] = []
     ordered_increments: list[tuple[float, ...]] = []
@@ -265,7 +277,11 @@ def _apply_increments(
 
         if method == "rk4":
             if k_arr.ndim != 2 or k_arr.shape[1] != 4:
-                raise ValueError("rk4 increments require four staged values")
+                raise TNFRUserError(
+                    message="RK4 integration requires four staged increments",
+                    suggestion="Check integrator implementation logic",
+                    context={"shape": str(k_arr.shape)}
+                )
             dt_factor = dt_step / INTEGRATORS_RK4_SIXTH_CANONICAL
             k1 = k_arr[:, 0]
             k2 = k_arr[:, 1]
@@ -375,15 +391,22 @@ def _collect_nodal_increments(
     elif method == "euler":
         expected_maps = 1
     else:
-        raise ValueError("method must be 'euler' or 'rk4'")
+        raise TNFRValueError(
+            "method must be 'euler' or 'rk4'",
+            context={"method": method, "available": ["euler", "rk4"]},
+            suggestion="Use 'euler' or 'rk4' as the integration method.",
+        )
 
     if len(gamma_maps) != expected_maps:
-        raise ValueError(f"{method} integration requires {expected_maps} gamma maps")
+        raise TNFRValueError(
+            f"{method} integration requires {expected_maps} gamma maps",
+            context={"method": method, "required": expected_maps, "provided": len(gamma_maps)},
+            suggestion=f"Provide exactly {expected_maps} gamma maps for {method} integration.",
+        )
 
-    np = get_numpy()
     if np is not None:
-        vf = collect_attr(G, nodes, ALIAS_VF, 0.0, np=np)
-        dnfr = collect_attr(G, nodes, ALIAS_DNFR, 0.0, np=np)
+        vf = cast(Any, collect_attr(G, nodes, ALIAS_VF, 0.0))
+        dnfr = cast(Any, collect_attr(G, nodes, ALIAS_DNFR, 0.0))
         # CANONICAL TNFR EQUATION: ∂EPI/∂t = νf · ΔNFR(t)
         # This implements the fundamental nodal equation explicitly
         base = vf * dnfr
@@ -441,7 +464,11 @@ def _build_gamma_increments(
     elif method == "euler":
         gamma_count = 1
     else:
-        raise ValueError("method must be 'euler' or 'rk4'")
+        raise TNFRValueError(
+            "method must be 'euler' or 'rk4'",
+            context={"method": method, "available": ["euler", "rk4"]},
+            suggestion="Use 'euler' or 'rk4' as the integration method.",
+        )
 
     gamma_spec = G.graph.get("_gamma_spec")
     if gamma_spec is None:
@@ -541,13 +568,13 @@ def _integrate_vectorized_step(
         return t0
 
     # 1. Extract state into arrays
-    vf = collect_attr(G, nodes, ALIAS_VF, 0.0, np=np)
-    dnfr = collect_attr(G, nodes, ALIAS_DNFR, 0.0, np=np)
-    epi = collect_attr(G, nodes, ALIAS_EPI, 0.0, np=np)
-    dEPI = collect_attr(G, nodes, ALIAS_DEPI, 0.0, np=np)
+    vf = cast(Any, collect_attr(G, nodes, ALIAS_VF, 0.0))
+    dnfr = cast(Any, collect_attr(G, nodes, ALIAS_DNFR, 0.0))
+    epi = cast(Any, collect_attr(G, nodes, ALIAS_EPI, 0.0))
+    dEPI = cast(Any, collect_attr(G, nodes, ALIAS_DEPI, 0.0))
 
     # For gamma, we need theta
-    theta = collect_theta_attr(G, nodes, 0.0, np=np)
+    theta = collect_theta_attr(G, nodes, 0.0)
 
     # Base term: dEPI/dt = vf * dnfr
     # Assumed constant during the step (dnfr doesn't change)
@@ -677,7 +704,6 @@ class DefaultIntegrator(AbstractIntegrator):
             graph, dt, t, cast(IntegratorMethod | None, method)
         )
 
-        np = get_numpy()
         if np is not None:
             t_final = _integrate_vectorized_step(
                 graph, dt_step, steps, t0, resolved_method, np
@@ -739,7 +765,7 @@ def update_epi_via_nodal_equation(
     Implements either:
     
     **Classical**: ∂EPI/∂t = νf · ΔNFR(t) + Γi(R)
-      - EPI is the node's Primary Information Structure  
+      - EPI is the node's Primary Information Structure
       - νf is the node's structural frequency (Hz_str)
       - ΔNFR(t) is the nodal gradient (reorganisation need)
       - Γi(R) is optional network coupling via Kuramoto order
@@ -749,14 +775,14 @@ def update_epi_via_nodal_equation(
       - ∂θ/∂t = f(νf, ΔNFR, J_φ) [Phase evolution with transport]
       - ∂ΔNFR/∂t = g(∇·J_ΔNFR) [ΔNFR conservation dynamics]
       
-    The extended system includes canonical flux fields J_φ (phase current) 
-    and J_ΔNFR (reorganization flux) that enable directed transport and 
+    The extended system includes canonical flux fields J_φ (phase current)
+    and J_ΔNFR (reorganization flux) that enable directed transport and
     conservation dynamics while preserving all TNFR invariants.
 
     Args:
         G: TNFR graph with nodes containing structural attributes
         dt: Integration time step (uses graph default if None)
-        t: Current time (uses graph default if None)  
+        t: Current time (uses graph default if None)
         method: Integration method ('euler' or 'rk4')
         n_jobs: Number of parallel jobs for integration
 
@@ -832,7 +858,7 @@ def _update_extended_nodal_system(
     
     This function implements the coupled system:
     1. ∂EPI/∂t = νf · ΔNFR(t)     [Classical nodal equation]
-    2. ∂θ/∂t = f(νf, ΔNFR, J_φ)   [Phase evolution with transport] 
+    2. ∂θ/∂t = f(νf, ΔNFR, J_φ)   [Phase evolution with transport]
     3. ∂ΔNFR/∂t = g(∇·J_ΔNFR)     [ΔNFR conservation dynamics]
     
     The extended system requires canonical flux fields to be computed
@@ -870,7 +896,7 @@ def _update_extended_nodal_system(
     
     # Import flux field computations
     try:
-        from ..physics.extended_canonical_fields import (
+        from ..physics.extended import (
             compute_phase_current,
             compute_dnfr_flux
         )
@@ -1006,21 +1032,18 @@ def compute_flux_divergence_vectorized(
         Node -> divergence value mapping
     """
     try:
-        import numpy as np
         from scipy import sparse
         SCIPY_AVAILABLE = True
     except ImportError:
         SCIPY_AVAILABLE = False
-        try:
-            import numpy as np
-        except ImportError:
-            pass
+
+    if not SCIPY_AVAILABLE or np is None:
         # Fallback to node-by-node computation
         return {
-            node: _compute_flux_divergence_centralized(G, flux_dict, node) 
+            node: _compute_flux_divergence_centralized(G, flux_dict, node)
             for node in G.nodes()
         }
-    
+
     if not G.nodes() or not G.edges():
         return {node: 0.0 for node in G.nodes()}
     
@@ -1041,17 +1064,17 @@ def compute_flux_divergence_vectorized(
             # Neighbor mean fluxes using sparse matrix multiplication
             neighbor_sums = A @ flux_array  # Sum of neighbor fluxes
             neighbor_means = np.divide(
-                neighbor_sums, degrees, 
-                out=np.zeros_like(neighbor_sums), 
-                where=degrees!=0
+                neighbor_sums, degrees,
+                out=np.zeros_like(neighbor_sums),
+                where=degrees != 0
             )
-            
+
             # Vectorized divergence computation
             # spacing = 1.0 / sqrt(degree) for each node
             spacings = np.divide(
-                1.0, np.sqrt(degrees), 
-                out=np.ones_like(degrees), 
-                where=degrees!=0
+                1.0, np.sqrt(degrees),
+                out=np.ones_like(degrees),
+                where=degrees != 0
             )
             
             divergence_array = (flux_array - neighbor_means) / spacings

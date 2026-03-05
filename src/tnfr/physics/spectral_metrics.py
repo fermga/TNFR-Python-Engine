@@ -10,7 +10,7 @@ Validation: r(νf_variance, Φ_s) = +0.478
 Integration with Extended Canonical Hexad for comprehensive TNFR analysis.
 """
 
-import numpy as np
+from ..mathematics.unified_numerical import np
 import networkx as nx
 from typing import Dict, Any
 

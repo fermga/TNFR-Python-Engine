@@ -15,6 +15,8 @@ from itertools import islice
 from statistics import StatisticsError, fmean
 from typing import TYPE_CHECKING, Any
 
+from ..errors import TNFRValueError
+
 from tnfr import glyph_history
 
 from ..alias import get_attr
@@ -990,7 +992,7 @@ def _op_SHA(node: NodeProtocol, gf: GlyphFactors) -> None:  # SHA — Silence
     node : NodeProtocol
         Node whose νf is being attenuated.
     gf : GlyphFactors
-        Provides ``SHA_vf_factor`` to scale νf (default 0.85 for gradual reduction).
+        Provides ``SHA_vf_factor`` to scale νf (default ≈ 0.9015, canonical 1-γ/(π+e)).
 
     Examples
     --------
@@ -1002,14 +1004,14 @@ def _op_SHA(node: NodeProtocol, gf: GlyphFactors) -> None:  # SHA — Silence
     >>> node.vf
     0.5
     """
-    factor = get_factor(gf, "SHA_vf_factor", 0.85)
+    factor = get_factor(gf, "SHA_vf_factor", 0.9015)  # 1 - γ/(π+e) canonical
     # Canonical SHA effect: reduce structural frequency toward zero
     # This implements: νf → νf_min ≈ 0 ⇒ ∂EPI/∂t → 0 (structural preservation)
     node.vf = factor * node.vf
 
 
-factor_val = 1.05  # Conservative scale prevents EPI overflow near boundaries
-factor_nul = 0.85
+factor_val = 1.0676  # 1 + γ/(π×e) canonical expansion rate
+factor_nul = 0.9015  # 1 - γ/(π+e) canonical contraction factor
 _SCALE_FACTORS = {Glyph.VAL: factor_val, Glyph.NUL: factor_nul}
 
 
@@ -1150,7 +1152,7 @@ def _compute_nul_edge_aware_scale(
     epi_current : float
         Current EPI value
     scale : float
-        Desired contraction scale factor (e.g., NUL_scale = 0.85)
+        Desired contraction scale factor (e.g., NUL_scale ≈ 0.9015)
     epi_min : float
         Lower EPI boundary (typically -1.0)
     epsilon : float
@@ -1171,7 +1173,7 @@ def _compute_nul_edge_aware_scale(
     or negative. Edge-awareness is only needed if scale could somehow push
     EPI beyond boundaries.
 
-    In practice, with NUL_scale = 0.85 < 1.0:
+    In practice, with NUL_scale ≈ 0.9015 < 1.0:
     - Positive EPI contracts toward zero: safe
     - Negative EPI contracts toward zero: safe
 
@@ -1180,10 +1182,10 @@ def _compute_nul_edge_aware_scale(
     Examples
     --------
     >>> # Normal contraction (always safe with scale < 1.0)
-    >>> _compute_nul_edge_aware_scale(0.5, 0.85, -1.0, 1e-12)
-    0.85
-    >>> _compute_nul_edge_aware_scale(-0.5, 0.85, -1.0, 1e-12)
-    0.85
+    >>> _compute_nul_edge_aware_scale(0.5, 0.9015, -1.0, 1e-12)
+    0.9015
+    >>> _compute_nul_edge_aware_scale(-0.5, 0.9015, -1.0, 1e-12)
+    0.9015
     """
     # With NUL_scale < 1.0, contraction moves toward zero (always safe)
     # No adaptation needed in typical case
@@ -1219,7 +1221,7 @@ def _make_scale_op(glyph: Glyph) -> GlyphOperation:
             # Result: ΔNFR' = ΔNFR · densification_factor
             #
             # Physics: When volume contracts by factor λ < 1, structural pressure
-            # concentrates by factor 1/λ > 1. For NUL_scale = 0.85, densification ≈ 1.176
+            # concentrates by factor 1/λ > 1. For NUL_scale ≈ 0.9015, densification ≈ 1.109
             #
             # Default densification_factor from config (typically 1.3-1.5) provides
             # additional canonical amplification beyond geometric 1/λ to account for
@@ -1578,7 +1580,7 @@ def apply_glyph_obj(node: NodeProtocol, glyph: Glyph | str, *, window: int | Non
                 },
             ),
         )
-        raise ValueError(f"invalid glyph: {e}") from e
+        raise TNFRValueError(f"invalid glyph: {e}", context={"error": str(e)}) from e
 
     # Try direct glyph code first
     try:
@@ -1601,11 +1603,11 @@ def apply_glyph_obj(node: NodeProtocol, glyph: Glyph | str, *, window: int | Non
                     },
                 ),
             )
-            raise ValueError(f"unknown glyph: {glyph}")
+            raise TNFRValueError(f"unknown glyph: {glyph}", context={"glyph": glyph})
 
     op = GLYPH_OPERATIONS.get(g)
     if op is None:
-        raise ValueError(f"glyph has no registered operator: {g}")
+        raise TNFRValueError(f"glyph has no registered operator: {g}", context={"glyph": g})
     if window is None:
         window = int(get_param(node, "GLYPH_HYSTERESIS_WINDOW"))
     gf = get_glyph_factors(node)
@@ -1627,7 +1629,7 @@ def apply_glyph(G: TNFRGraph, n: NodeId, glyph: Glyph | str, *, window: int | No
         validate_tnfr_graph(G)
         validate_node_id(n)
     except ValidationError as e:
-        raise ValueError(f"Invalid parameters for apply_glyph: {e}") from e
+        raise TNFRValueError(f"Invalid parameters for apply_glyph: {e}", context={"error": str(e)}) from e
 
     NodeNX = get_nodenx()
     if NodeNX is None:

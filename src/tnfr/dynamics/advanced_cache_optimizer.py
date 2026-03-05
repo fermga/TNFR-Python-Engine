@@ -21,7 +21,7 @@ Advanced Optimizations:
 Status: CANONICAL CACHE OPTIMIZATION ENGINE
 """
 
-import numpy as np
+from ..mathematics.unified_numerical import np
 from typing import Dict, Any, Optional, Set, List, Tuple, Callable
 from dataclasses import dataclass, field
 from enum import Enum

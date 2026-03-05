@@ -64,7 +64,6 @@ from concurrent.futures import ProcessPoolExecutor
 from ..metrics.sense_index import compute_Si
 from ..operators import apply_glyph
 from ..types import GlyphCode
-from ..utils import get_numpy
 from . import canonical, coordination, dnfr, integrators, metabolism
 from .adaptation import adapt_vf_by_coherence
 from .bifurcation import get_bifurcation_paths, compute_bifurcation_score
@@ -212,7 +211,6 @@ __all__ = (
     "dnfr_epi_vf_mixed",
     "dnfr_laplacian",
     "dnfr_phase_only",
-    "get_numpy",
     "apply_glyph",
     "parametric_glyph_selector",
     "AbstractIntegrator",

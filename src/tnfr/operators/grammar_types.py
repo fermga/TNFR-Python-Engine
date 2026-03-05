@@ -241,39 +241,6 @@ __all__ = [
 
 
 # ============================================================================
-# Operator Sets (Derived from TNFR Physics)
-# ============================================================================
-
-# U1a: Generators - Create EPI from null/dormant states
-GENERATORS = frozenset({"emission", "transition", "recursivity"})
-
-# U1b: Closures - Leave system in coherent attractor states
-CLOSURES = frozenset({"silence", "transition", "recursivity", "dissonance"})
-
-# U2: Stabilizers - Provide negative feedback for convergence
-STABILIZERS = frozenset({"coherence", "self_organization", "reception"})
-
-# U2: Destabilizers - Increase |ΔNFR| (positive feedback)
-DESTABILIZERS = frozenset({"dissonance", "mutation", "expansion", "contraction"})
-
-# U3: Coupling/Resonance - Require phase verification
-COUPLING_RESONANCE = frozenset({"coupling", "resonance"})
-
-# U4a: Bifurcation triggers - May initiate phase transitions
-BIFURCATION_TRIGGERS = frozenset({"dissonance", "mutation"})
-
-# U4a: Bifurcation handlers - Manage reorganization when ∂²EPI/∂t² > τ
-BIFURCATION_HANDLERS = frozenset({"self_organization", "coherence"})
-
-# U4b: Transformers - Execute structural bifurcations
-TRANSFORMERS = frozenset({"mutation", "self_organization"})
-
-# U5: Multi-Scale Coherence - Recursive generators and scale stabilizers
-RECURSIVE_GENERATORS = frozenset({"recursivity"})
-SCALE_STABILIZERS = frozenset({"coherence", "self_organization"})
-
-
-# ============================================================================
 # Grammar Errors
 # ============================================================================
 

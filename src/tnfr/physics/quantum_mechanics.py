@@ -1,4 +1,4 @@
-import numpy as np
+from ..mathematics.unified_numerical import np
 import networkx as nx
 from typing import Dict, Tuple, List, Optional
 

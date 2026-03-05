@@ -5,7 +5,8 @@ from __future__ import annotations
 from ..compat.dataclass import dataclass
 from typing import Any, Mapping, Sequence
 
-import numpy as np
+from ..errors import TNFRValueError
+from ..mathematics.unified_numerical import np
 
 from ..mathematics.operators import CoherenceOperator, FrequencyOperator
 from ..mathematics.spaces import HilbertSpace
@@ -42,7 +43,11 @@ class NFRValidator(Validator[np.ndarray]):
             vector, self.hilbert_space, atol=self.atol
         )
         if np.isclose(norm_value, 0.0, atol=self.atol):
-            raise ValueError("Cannot normalise a null state vector.")
+            raise TNFRValueError(
+                "Cannot normalise a null state vector.",
+                context={"norm_value": float(norm_value)},
+                suggestion="Ensure the state vector is non-zero.",
+            )
         normalised_vector = vector / norm_value
 
         coherence_passed, coherence_value = runtime_coherence(
@@ -73,7 +78,11 @@ class NFRValidator(Validator[np.ndarray]):
             }
             frequency_summary.pop("enforce", None)
         elif enforce_frequency_positivity:
-            raise ValueError("Frequency positivity enforcement requested without operator.")
+            raise TNFRValueError(
+                "Frequency positivity enforcement requested without operator.",
+                context={"enforce_frequency_positivity": enforce_frequency_positivity},
+                suggestion="Provide a frequency_operator to NFRValidator.",
+            )
 
         unitary_passed, unitary_norm = runtime_stable_unitary(
             normalised_vector,

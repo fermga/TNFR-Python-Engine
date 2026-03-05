@@ -5,7 +5,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Callable, Sequence
 
-import numpy as np
+from ..errors import TNFRValueError
+from .unified_numerical import np, trapezoid
 
 from .epi import BEPIElement, _EPIValidators
 
@@ -26,7 +27,11 @@ class HilbertSpace:
 
     def __post_init__(self) -> None:
         if self.dimension <= 0:
-            raise ValueError("Hilbert spaces require a positive dimension.")
+            raise TNFRValueError(
+                "Hilbert spaces require a positive dimension.",
+                context={"dimension": self.dimension},
+                suggestion="Provide a positive integer for dimension."
+            )
 
     @property
     def basis(self) -> np.ndarray:
@@ -37,7 +42,11 @@ class HilbertSpace:
     def _as_vector(self, value: Sequence[complex] | np.ndarray) -> np.ndarray:
         vector = np.asarray(value, dtype=self.dtype)
         if vector.shape != (self.dimension,):
-            raise ValueError(f"Vector must have shape ({self.dimension},), got {vector.shape!r}.")
+            raise TNFRValueError(
+                f"Vector must have shape ({self.dimension},), got {vector.shape!r}.",
+                context={"expected_shape": (self.dimension,), "actual_shape": vector.shape},
+                suggestion="Ensure the vector shape matches the Hilbert space dimension."
+            )
         return vector
 
     def inner_product(
@@ -66,14 +75,22 @@ class HilbertSpace:
     def _validate_basis(self, basis: Sequence[Sequence[complex] | np.ndarray]) -> np.ndarray:
         basis_list = list(basis)
         if len(basis_list) == 0:
-            raise ValueError("An orthonormal basis must contain at least one vector.")
+            raise TNFRValueError(
+                "An orthonormal basis must contain at least one vector.",
+                context={"basis_length": 0},
+                suggestion="Provide a non-empty basis."
+            )
 
         basis_vectors = [self._as_vector(vector) for vector in basis_list]
         matrix = np.vstack(basis_vectors)
         gram = matrix @ matrix.conj().T
         identity = np.eye(matrix.shape[0], dtype=self.dtype)
         if not np.allclose(gram, identity, atol=1e-10):
-            raise ValueError("Provided basis is not orthonormal within tolerance.")
+            raise TNFRValueError(
+                "Provided basis is not orthonormal within tolerance.",
+                context={"tolerance": 1e-10},
+                suggestion="Ensure the basis vectors are orthonormal."
+            )
         return matrix
 
     def project(
@@ -124,7 +141,11 @@ class BanachSpaceEPI(_EPIValidators):
         """Return the neutral element for the direct sum."""
 
         if continuous_size < 2:
-            raise ValueError("continuous_size must be at least two samples.")
+            raise TNFRValueError(
+                "continuous_size must be at least two samples.",
+                context={"continuous_size": continuous_size},
+                suggestion="Provide a continuous_size of at least 2."
+            )
         grid = (
             np.asarray(x_grid, dtype=float)
             if x_grid is not None
@@ -146,11 +167,23 @@ class BanachSpaceEPI(_EPIValidators):
         """Generate a canonical basis element for the Banach space."""
 
         if continuous_size < 2:
-            raise ValueError("continuous_size must be at least two samples.")
+            raise TNFRValueError(
+                "continuous_size must be at least two samples.",
+                context={"continuous_size": continuous_size},
+                suggestion="Provide a continuous_size of at least 2."
+            )
         if not (0 <= continuous_index < continuous_size):
-            raise ValueError("continuous_index out of range.")
+            raise TNFRValueError(
+                "continuous_index out of range.",
+                context={"continuous_index": continuous_index, "continuous_size": continuous_size},
+                suggestion="Ensure continuous_index is within [0, continuous_size)."
+            )
         if not (0 <= discrete_index < discrete_size):
-            raise ValueError("discrete_index out of range.")
+            raise TNFRValueError(
+                "discrete_index out of range.",
+                context={"discrete_index": discrete_index, "discrete_size": discrete_size},
+                suggestion="Ensure discrete_index is within [0, discrete_size)."
+            )
 
         grid = (
             np.asarray(x_grid, dtype=float)
@@ -208,17 +241,25 @@ class BanachSpaceEPI(_EPIValidators):
             f_continuous, np.array([0.0], dtype=np.complex128), x_grid
         )
         if grid is None:
-            raise ValueError("x_grid must be provided for coherence evaluations.")
+            raise TNFRValueError(
+                "x_grid must be provided for coherence evaluations.",
+                context={"x_grid": x_grid},
+                suggestion="Provide a valid x_grid."
+            )
 
         derivative = np.gradient(
             f_array,
             grid,
             edge_order=2 if f_array.size > 2 else 1,
         )
-        numerator = np.trapz(np.abs(derivative) ** 2, grid)
-        denominator = 1.0 + np.trapz(np.abs(f_array) ** 2, grid)
+        numerator = trapezoid(np.abs(derivative) ** 2, grid)
+        denominator = 1.0 + trapezoid(np.abs(f_array) ** 2, grid)
         if denominator <= 0:
-            raise ValueError("Denominator of coherence functional must be positive.")
+            raise TNFRValueError(
+                "Denominator of coherence functional must be positive.",
+                context={"denominator": denominator},
+                suggestion="Check the input function for validity."
+            )
         return float(np.real_if_close(numerator / denominator))
 
     def coherence_norm(
@@ -234,11 +275,19 @@ class BanachSpaceEPI(_EPIValidators):
         """Return ``α‖f‖_∞ + β‖a‖_2 + γ CF(f)`` for positive weights."""
 
         if alpha <= 0 or beta <= 0 or gamma <= 0:
-            raise ValueError("alpha, beta and gamma must be strictly positive.")
+            raise TNFRValueError(
+                "alpha, beta and gamma must be strictly positive.",
+                context={"alpha": alpha, "beta": beta, "gamma": gamma},
+                suggestion="Provide strictly positive weights."
+            )
 
         f_array, a_array, grid = self.validate_domain(f_continuous, a_discrete, x_grid)
         if grid is None:
-            raise ValueError("x_grid must be supplied when evaluating the norm.")
+            raise TNFRValueError(
+                "x_grid must be supplied when evaluating the norm.",
+                context={"x_grid": x_grid},
+                suggestion="Provide a valid x_grid."
+            )
 
         sup_norm = float(np.max(np.abs(f_array))) if f_array.size else 0.0
         l2_norm = float(np.linalg.norm(a_array))

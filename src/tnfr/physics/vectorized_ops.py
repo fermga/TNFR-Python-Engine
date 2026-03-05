@@ -4,7 +4,7 @@ This module provides optimized NumPy implementations of structural field computa
 to replace slow Python loops in canonical.py.
 """
 
-import numpy as np
+from ..mathematics.unified_numerical import np
 from typing import Any, Dict, List, Optional, Tuple
 import math
 

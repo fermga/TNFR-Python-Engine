@@ -33,12 +33,11 @@ structures that can be unified across computational domains:
 Status: CANONICAL EMERGENT INTEGRATION ENGINE
 """
 
-import numpy as np
+from ..mathematics.unified_numerical import np
 from typing import Dict, Any, Optional, List, Tuple, Set
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import Enum
 import time
-import hashlib
 from collections import defaultdict
 import threading
 
@@ -85,22 +84,19 @@ from ..constants.canonical import (
 # Import all TNFR engines for integration analysis
 try:
     from .unified_mathematical_cache_orchestrator import TNFRUnifiedMathematicalCacheOrchestrator
-    from .optimization_orchestrator import TNFROptimizationOrchestrator, OptimizationStrategy
-    from .self_optimizing_engine import TNFRSelfOptimizingMathematicalEngine, OptimizationObjective
+    from .optimization_orchestrator import TNFROptimizationOrchestrator
+    from .self_optimizing_engine import TNFRSelfOptimizingMathematicalEngine
     from .spectral_structural_fusion import TNFRSpectralStructuralFusionEngine
     from .emergent_centralization import TNFREmergentCentralizationEngine
-    from .coordination import compute_kuramoto_order_parameter, adaptive_phase_coupling
-    from .nodal_optimizer import NodalEquationOptimizer, create_nodal_optimizer
-    from .structural_cache import StructuralCoherenceCache, get_structural_cache
-    from .fft_cache_coordinator import FFTCacheCoordinator, get_fft_cache_coordinator
+    from .nodal_optimizer import create_nodal_optimizer
+    from .structural_cache import get_structural_cache
+    from .fft_cache_coordinator import get_fft_cache_coordinator
     HAS_ALL_ENGINES = True
 except ImportError:
     HAS_ALL_ENGINES = False
 
 # Import physics for mathematical validation
 try:
-    from ..physics.canonical import compute_structural_potential, compute_phase_gradient
-    from ..physics.canonical import compute_phase_curvature, compute_coherence_length
     HAS_PHYSICS = True
 except ImportError:
     HAS_PHYSICS = False

@@ -15,7 +15,7 @@ from __future__ import annotations
 import math
 from typing import List, Tuple, Optional
 
-import numpy as np
+from ..mathematics.unified_numerical import np
 import networkx as nx
 
 _TWO_PI = 2.0 * math.pi

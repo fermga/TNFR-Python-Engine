@@ -25,36 +25,28 @@ Self-Optimization Mechanisms:
 Status: CANONICAL SELF-OPTIMIZING ENGINE
 """
 
-import numpy as np
-from typing import Dict, Any, Optional, List, Tuple
+import hashlib
+import json
+from ..errors import TNFRValueError
+from ..mathematics.unified_numerical import np
+import re
+from pathlib import Path
+from datetime import datetime, timezone
+from typing import Dict, Any, Optional, List, Tuple, Sequence, Mapping
 from dataclasses import dataclass
 from enum import Enum
 import time
 from collections import defaultdict, deque
 import threading
-
-try:
-    import networkx as nx
-    HAS_NETWORKX = True
-except ImportError:
-    HAS_NETWORKX = False
-    nx = None
-
-HAS_SCIPY = True  # Assume available for mathematical analysis
+from statistics import fmean
 
 # Import canonical constants for Phase 6 magic number elimination
 from ..constants.canonical import (
-    SELF_OPT_CACHE_SIZE_CANONICAL,
     SELF_OPT_COMPRESSION_HIGH_CANONICAL,
-    SELF_OPT_HORIZON_HIGH_CANONICAL,
     SELF_OPT_CHIRALITY_THRESHOLD_CANONICAL,
     SELF_OPT_SYMMETRY_THRESHOLD_CANONICAL,
     SELF_OPT_COUPLING_LOW_CANONICAL,
-    SELF_OPT_CHARGE_THRESHOLD_CANONICAL,
     SELF_OPT_ENERGY_HIGH_CANONICAL,
-    SELF_OPT_EPI_VARIANCE_LOW_CANONICAL,
-    SELF_OPT_VF_RANGE_LOW_CANONICAL,
-    SELF_OPT_DNFR_HIGH_CANONICAL,
     SELF_OPT_DENSITY_SPARSE_CANONICAL,
     SELF_OPT_DENSITY_DENSE_CANONICAL,
     SELF_OPT_IMPROVEMENT_SIGNIFICANT_CANONICAL,
@@ -68,6 +60,17 @@ from ..constants.canonical import (
     PI,                               # π ≈ 3.1416 (3.0 → canonical)
     NODAL_OPT_COUPLING_CANONICAL,     # γ/(π+e) ≈ 0.0985 (0.1 → canonical)
 )
+
+from ..operators.grammar import validate_sequence, glyph_function_name
+
+try:
+    import networkx as nx
+    HAS_NETWORKX = True
+except ImportError:
+    HAS_NETWORKX = False
+    nx = None
+
+HAS_SCIPY = True  # Assume available for mathematical analysis
 
 
 def _extract_scalar_epi(val: Any) -> float:
@@ -87,25 +90,111 @@ def _extract_scalar_epi(val: Any) -> float:
 
 # Import Unified Fields (New Nov 2025)
 try:
-    from ..physics.fields import (
-        compute_unified_telemetry,
-        compute_complex_geometric_field,
-        compute_tensor_invariants
-    )
+    from ..physics.fields import compute_unified_telemetry
     HAS_UNIFIED_FIELDS = True
 except ImportError:
     HAS_UNIFIED_FIELDS = False
+
+# Import Structural Integrity Monitor (closed-loop conservation)
+try:
+    from ..physics.integrity import StructuralIntegrityMonitor
+    HAS_INTEGRITY_MONITOR = True
+except ImportError:
+    HAS_INTEGRITY_MONITOR = False
+
+try:
+    from ..metrics.common import compute_coherence
+    from ..metrics.sense_index import compute_Si
+    HAS_METRIC_OPERATORS = True
+except ImportError:  # pragma: no cover - optional dependency in trimmed builds
+    HAS_METRIC_OPERATORS = False
+    compute_coherence = None  # type: ignore
+    compute_Si = None  # type: ignore
 
 # Import TNFR engines
 try:
     from .unified_backend import TNFRUnifiedBackend
     from .optimization_orchestrator import TNFROptimizationOrchestrator, OptimizationStrategy
-    from .emergent_mathematical_patterns import TNFREmergentPatternEngine, EmergentPatternType
+    from ..engines.pattern_discovery.mathematical_patterns import TNFREmergentPatternEngine, EmergentPatternType
     HAS_ENGINES = True
 except ImportError:
     HAS_ENGINES = False
 
 HAS_MATH_BACKENDS = True  # Assume available
+
+_SAFE_LABEL_RE = re.compile(r"[^A-Za-z0-9._-]+")
+_DEFAULT_OUTPUT_DIR = Path("results") / "self_optimization"
+
+
+def _sanitize_label(value: Optional[Any], default: str) -> str:
+    """Convert arbitrary identifiers to filesystem-safe labels."""
+    if value is None:
+        text = default
+    else:
+        text = str(value).strip()
+    if not text:
+        text = default
+    sanitized = _SAFE_LABEL_RE.sub("_", text)
+    return sanitized[:64] or default
+
+
+def _mean_numeric(values: Sequence[float]) -> Optional[float]:
+    """Compute mean for numeric sequences with graceful fallback."""
+    data = [float(v) for v in values if isinstance(v, (int, float))]
+    if not data:
+        return None
+    try:
+        return fmean(data)
+    except Exception:
+        return float(sum(data) / len(data))
+
+
+def _sense_index_mean(payload: Any) -> Optional[float]:
+    """Reduce compute_Si outputs (dict, array) to a scalar average."""
+    if payload is None:
+        return None
+    if isinstance(payload, dict):
+        return _mean_numeric(list(payload.values()))
+    try:
+        array = np.asarray(payload, dtype=float)
+    except Exception:
+        return None
+    if array.size == 0:
+        return None
+    return float(np.mean(array))
+
+
+def _json_safe(value: Any) -> Any:
+    """Convert complex objects (NumPy, mappings) to JSON-safe structures."""
+    if isinstance(value, (str, int, float, bool)) or value is None:
+        return value
+    if isinstance(value, np.generic):
+        return value.item()
+    if isinstance(value, np.ndarray):
+        return value.tolist()
+    if isinstance(value, Mapping):
+        return {str(k): _json_safe(v) for k, v in value.items()}
+    if isinstance(value, (list, tuple, set, frozenset)):
+        return [_json_safe(v) for v in value]
+    if hasattr(value, "__dict__"):
+        return {str(k): _json_safe(v) for k, v in vars(value).items()}
+    return repr(value)
+
+
+def _canonicalize_sequence_tokens(sequence: Sequence[Any]) -> List[str]:
+    """Normalize operator or glyph tokens into canonical operator names."""
+    tokens: List[str] = []
+    for entry in sequence:
+        if entry is None:
+            continue
+        candidate = getattr(entry, "name", entry)
+        text = str(candidate).strip()
+        if not text:
+            continue
+        canonical = glyph_function_name(text, default=None)
+        normalized = canonical or text
+        tokens.append(normalized.lower())
+    return tokens
 
 
 class OptimizationObjective(Enum):
@@ -282,6 +371,13 @@ class TNFRSelfOptimizingEngine:
                 # Fallback if computation fails
                 insights["unified_field_error"] = str(e)
 
+        # Conservation Integrity Feedback (closed-loop)
+        if HAS_INTEGRITY_MONITOR:
+            monitor = StructuralIntegrityMonitor.get(G) if G is not None else None
+            if monitor is not None:
+                fv = monitor.feedback_vector()
+                insights["conservation_feedback"] = fv
+
         # Mathematical structure analysis
         insights["graph_structure"] = {
             "nodes": num_nodes,
@@ -347,6 +443,18 @@ class TNFRSelfOptimizingEngine:
             # Energy density optimization
             if ufa.get("energy_density", 0) > SELF_OPT_ENERGY_HIGH_CANONICAL:
                 recommendations.append("high_energy_stabilization")
+
+        # Conservation-based recommendations (closed-loop)
+        cf = insights.get("conservation_feedback")
+        if cf is not None:
+            if cf.get("conservation_quality", 1.0) < 0.7:
+                recommendations.append("conservation_quality_low_stabilize")
+            if cf.get("energy_derivative", 0.0) > 0:
+                recommendations.append("lyapunov_unstable_add_IL")
+            if cf.get("charge_drift", 0.0) > 0.1:
+                recommendations.append("noether_charge_drift_correction")
+            if cf.get("violation_rate", 0.0) > 0.2:
+                recommendations.append("high_violation_rate_grammar_review")
 
         if epi_variance < 0.01:
             recommendations.append("low_variance_epi_optimization")
@@ -445,8 +553,17 @@ class TNFRSelfOptimizingEngine:
                             "expected_improvement": best_avg_improvement
                         },
                         confidence=min(len(experiences) / 10.0, 1.0),
-                        success_rate=len(experiences) / len([e for e in self.experience_history 
-                                                           if self._matches_conditions(e, condition_key)]),
+                        success_rate=len(experiences)
+                        / max(
+                            1,
+                            len(
+                                [
+                                    e
+                                    for e in self.experience_history
+                                    if self._matches_conditions(e, condition_key)
+                                ]
+                            ),
+                        ),
                         average_improvement=best_avg_improvement
                     )
                     new_policies.append(policy)
@@ -469,9 +586,11 @@ class TNFRSelfOptimizingEngine:
         exp_size_bucket = "small" if graph_size < 20 else "medium" if graph_size < 100 else "large"
         exp_density_bucket = "sparse" if density < SELF_OPT_DENSITY_SPARSE_CANONICAL else "medium" if density < SELF_OPT_DENSITY_DENSE_CANONICAL else "dense"
         
-        return (exp_size_bucket == size_bucket and 
-                exp_density_bucket == density_bucket and
-                experience.operation_type == operation)
+        return (
+            exp_size_bucket == size_bucket
+            and exp_density_bucket == density_bucket
+            and experience.operation_type == operation
+        )
         
     def _update_adaptive_configuration(self) -> None:
         """Update adaptive configuration based on learned patterns."""
@@ -486,10 +605,14 @@ class TNFRSelfOptimizingEngine:
             return
             
         # Update cache size based on memory vs performance tradeoff
-        memory_usage = [e.performance_metrics.get("memory_used_mb", 0) 
-                       for e in successful_experiences]
-        speedups = [e.performance_metrics.get("speedup_factor", 1.0) 
-                   for e in successful_experiences]
+        memory_usage = [
+            e.performance_metrics.get("memory_used_mb", 0)
+            for e in successful_experiences
+        ]
+        speedups = [
+            e.performance_metrics.get("speedup_factor", 1.0)
+            for e in successful_experiences
+        ]
         
         if len(memory_usage) > 0 and len(speedups) > 0:
             # Simple heuristic: increase cache if low memory usage but good speedup
@@ -509,8 +632,10 @@ class TNFRSelfOptimizingEngine:
             backend_performance[backend].append(speedup)
             
         if backend_performance:
-            best_backend = max(backend_performance.keys(), 
-                             key=lambda b: np.mean(backend_performance[b]))
+            best_backend = max(
+                backend_performance.keys(),
+                key=lambda b: np.mean(backend_performance[b]),
+            )
             self.adaptive_config["backend_preference"] = best_backend
             
     def recommend_optimization_strategy(
@@ -596,8 +721,62 @@ class TNFRSelfOptimizingEngine:
         Uses learned policies and mathematical analysis to select and apply
         the optimal strategy.
         """
+        exec_kwargs = dict(kwargs)
+        dry_run = bool(exec_kwargs.pop("dry_run", False))
+        capture_snapshots = bool(exec_kwargs.pop("capture_snapshots", dry_run))
+        seed_value = exec_kwargs.pop("seed", exec_kwargs.pop("random_seed", None))
+        node_label = (
+            exec_kwargs.pop("node", None)
+            or exec_kwargs.pop("node_id", None)
+            or exec_kwargs.pop("target_node", None)
+            or exec_kwargs.pop("focus_node", None)
+        )
+        output_dir = exec_kwargs.pop("output_dir", _DEFAULT_OUTPUT_DIR)
+        operator_sequence = exec_kwargs.pop("operator_sequence", None)
+        glyph_sequence = exec_kwargs.pop("glyph_sequence", None)
+        sequence_context = exec_kwargs.pop("sequence_context", None)
+
         # Get recommendations
         recommendations = self.recommend_optimization_strategy(G, operation_type)
+        baseline_snapshot = self._capture_structural_snapshot(G) if capture_snapshots else None
+        validation_report = self._prepare_sequence_validation(
+            operator_sequence,
+            glyph_sequence,
+            sequence_context,
+            G=G,
+            node=node_label,
+        )
+
+        if dry_run:
+            payload = self._build_dry_run_payload(
+                recommendations,
+                baseline_snapshot,
+                validation_report,
+                operation_type,
+                seed_value,
+                node_label,
+            )
+            safe_seed = _sanitize_label(seed_value, "unseeded")
+            safe_node = _sanitize_label(node_label, "global")
+            snapshot_path, signature = self._persist_dry_run_payload(
+                payload,
+                output_dir,
+                safe_seed,
+                safe_node,
+            )
+            snapshots = {
+                "before": baseline_snapshot,
+                "after": baseline_snapshot,
+            } if baseline_snapshot else None
+            return {
+                "dry_run": True,
+                "snapshot_path": str(snapshot_path),
+                "signature": signature,
+                "recommendations": recommendations,
+                "learning_updated": False,
+                "telemetry_snapshots": snapshots,
+                "validation": validation_report,
+            }
         
         # Apply best strategy
         if recommendations.recommended_strategies and self.orchestrator:
@@ -623,7 +802,7 @@ class TNFRSelfOptimizingEngine:
             try:
                 profile = self.orchestrator.analyze_optimization_profile(G, operation_type)
                 result = self.orchestrator.execute_optimization(
-                    G, operation_type, optimization_strategy, **kwargs
+                    G, operation_type, optimization_strategy, **exec_kwargs
                 )
                 
                 # Record experience
@@ -635,7 +814,7 @@ class TNFRSelfOptimizingEngine:
                     },
                     operation_type=operation_type,
                     strategy_used=optimization_strategy.value,
-                    parameters=kwargs,
+                    parameters=exec_kwargs,
                     performance_metrics={
                         "speedup_factor": result.speedup_factor,
                         "execution_time": result.execution_time,
@@ -648,25 +827,38 @@ class TNFRSelfOptimizingEngine:
                 )
                 
                 self.learn_from_experience(experience)
-                
+                after_snapshot = self._capture_structural_snapshot(G) if capture_snapshots else None
                 return {
                     "optimization_result": result,
                     "strategy_used": optimization_strategy.value,
                     "recommendations": recommendations,
-                    "learning_updated": True
+                    "learning_updated": True,
+                    "telemetry_snapshots": {
+                        "before": baseline_snapshot,
+                        "after": after_snapshot,
+                    } if capture_snapshots else None,
+                    "validation": validation_report,
                 }
                 
             except Exception as e:
                 return {
                     "error": str(e),
                     "recommendations": recommendations,
-                    "learning_updated": False
+                    "learning_updated": False,
+                    "telemetry_snapshots": {
+                        "before": baseline_snapshot
+                    } if baseline_snapshot else None,
+                    "validation": validation_report,
                 }
         else:
             return {
                 "message": "No optimization applied",
                 "recommendations": recommendations,
-                "learning_updated": False
+                "learning_updated": False,
+                "telemetry_snapshots": {
+                    "before": baseline_snapshot
+                } if baseline_snapshot else None,
+                "validation": validation_report,
             }
             
     def export_learned_knowledge(self) -> Dict[str, Any]:
@@ -722,6 +914,213 @@ class TNFRSelfOptimizingEngine:
             # Import insights
             if "mathematical_insights" in knowledge:
                 self.mathematical_insights.update(knowledge["mathematical_insights"])
+
+    def _capture_structural_snapshot(self, G: Any) -> Optional[Dict[str, Any]]:
+        """Capture graph metrics and unified telemetry for reporting."""
+        timestamp = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+        if G is None or not HAS_NETWORKX:
+            snapshot = {"timestamp": timestamp, "graph": None, "telemetry": None}
+        else:
+            num_nodes = len(G.nodes())
+            num_edges = len(G.edges())
+            density = (2 * num_edges) / (num_nodes * (num_nodes - 1)) if num_nodes > 1 else 0
+            graph_metrics = {
+                "nodes": num_nodes,
+                "edges": num_edges,
+                "density": density,
+                "is_connected": nx.is_connected(G) if HAS_NETWORKX else False,
+            }
+            snapshot = {"timestamp": timestamp, "graph": graph_metrics, "telemetry": None}
+
+        if HAS_UNIFIED_FIELDS and G is not None:
+            try:
+                telemetry = compute_unified_telemetry(G)
+                snapshot["telemetry"] = _json_safe(telemetry)
+            except Exception as exc:  # pragma: no cover - telemetry errors are informational
+                snapshot["telemetry_error"] = str(exc)
+
+        if HAS_METRIC_OPERATORS and G is not None and HAS_NETWORKX:
+            coherence_value: Optional[float] = None
+            sense_value: Optional[float] = None
+            try:
+                coherence_value = float(compute_coherence(G)) if compute_coherence else None
+            except Exception:
+                coherence_value = None
+            try:
+                if compute_Si:
+                    si_payload = compute_Si(G, inplace=False)
+                    sense_value = _sense_index_mean(si_payload)
+            except Exception:
+                sense_value = None
+            if coherence_value is not None:
+                snapshot["coherence"] = coherence_value
+            if sense_value is not None:
+                snapshot["sense_index"] = sense_value
+        return snapshot
+
+    def _prepare_sequence_validation(
+        self,
+        operator_sequence: Any,
+        glyph_sequence: Any,
+        context: Optional[Dict[str, Any]],
+        *,
+        G: Any = None,
+        node: Any = None,
+    ) -> Optional[Dict[str, Any]]:
+        """Validate operator/glyph sequences when provided.
+
+        Performs two layers of validation:
+        1. **Batch** — full-sequence grammar check via ``validate_sequence()``.
+        2. **Incremental** — per-step check against the node's live history
+           via ``validate_sequence_incremental()`` (when *G* and *node* are
+           available).  This catches violations that only become visible in
+           context (e.g. destabilizer debt from prior operations).
+        """
+        sequence = operator_sequence if operator_sequence is not None else glyph_sequence
+        if sequence is None:
+            return None
+        if isinstance(sequence, str):
+            sequence_iterable = [sequence]
+        else:
+            sequence_iterable = list(sequence)
+        tokens = _canonicalize_sequence_tokens(sequence_iterable)
+        if not tokens:
+            return None
+        if context:
+            outcome = validate_sequence(tokens, context=context)
+        else:
+            outcome = validate_sequence(tokens)
+        summary = _json_safe(getattr(outcome, "summary", {}))
+        if not outcome.passed:
+            message = summary.get("message") or outcome.message or "grammar validation failed"
+            raise TNFRValueError(
+                f"Operator sequence failed grammar validation: {message}",
+                context={
+                    "tokens": tokens,
+                    "summary": summary,
+                    "outcome_message": outcome.message
+                },
+                suggestion="Ensure sequence follows U1-U6 grammar rules."
+            )
+
+        # Incremental per-node validation (proactive, GAP #4)
+        incremental_report: Optional[List[Dict[str, Any]]] = None
+        if G is not None and node is not None and node in G.nodes:
+            try:
+                from ..operators.grammar_dynamics import validate_sequence_incremental
+                step_results = validate_sequence_incremental(G, node, tokens)
+                step_violations = [
+                    {
+                        "step": i,
+                        "token": sr.candidate,
+                        "allowed": sr.allowed,
+                        "violations": [
+                            {"rule": v.rule, "message": v.message, "severity": v.severity}
+                            for v in sr.violations
+                        ],
+                        "suggested": sr.suggested_alternative,
+                    }
+                    for i, sr in enumerate(step_results)
+                    if sr.violations
+                ]
+                if step_violations:
+                    incremental_report = step_violations
+            except Exception:
+                pass  # incremental validation is advisory, never blocks
+
+        report: Dict[str, Any] = {
+            "passed": True,
+            "message": outcome.message,
+            "summary": summary,
+            "tokens": _json_safe(list(getattr(outcome, "tokens", tokens))),
+            "canonical_tokens": _json_safe(list(getattr(outcome, "canonical_tokens", tokens))),
+        }
+        if incremental_report:
+            report["incremental_violations"] = incremental_report
+        return report
+
+    def _serialize_recommendations(self, recommendations: SelfOptimizationResult) -> Dict[str, Any]:
+        """Convert recommendation dataclass into JSON-serializable payload."""
+        return {
+            "recommended_strategies": list(recommendations.recommended_strategies),
+            "predicted_speedups": _json_safe(recommendations.predicted_speedups),
+            "optimization_improvements": _json_safe(recommendations.optimization_improvements),
+            "mathematical_insights": _json_safe(recommendations.mathematical_insights),
+            "adaptive_configurations": _json_safe(recommendations.adaptive_configurations),
+            "execution_time": recommendations.execution_time,
+            "learned_policies": [
+                {
+                    "name": policy.policy_name,
+                    "objective": policy.objective.value,
+                    "conditions": _json_safe(policy.conditions),
+                    "actions": _json_safe(policy.actions),
+                    "confidence": policy.confidence,
+                    "success_rate": policy.success_rate,
+                    "average_improvement": policy.average_improvement,
+                    "applications": policy.applications_count,
+                }
+                for policy in recommendations.learned_policies
+            ],
+        }
+
+    def _build_dry_run_payload(
+        self,
+        recommendations: SelfOptimizationResult,
+        baseline_snapshot: Optional[Dict[str, Any]],
+        validation_report: Optional[Dict[str, Any]],
+        operation_type: str,
+        seed_value: Any,
+        node_label: Any,
+    ) -> Dict[str, Any]:
+        """Assemble payload for dry-run persistence."""
+        timestamp = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+        seed_label = _sanitize_label(seed_value, "unseeded")
+        node_name = _sanitize_label(node_label, "global")
+        telemetry_snapshots = None
+        if baseline_snapshot is not None:
+            telemetry_snapshots = {
+                "before": baseline_snapshot,
+                "after": baseline_snapshot,
+            }
+        payload = {
+            "metadata": {
+                "timestamp": timestamp,
+                "operation_type": operation_type,
+                "seed": seed_label,
+                "node": node_name,
+                "dry_run": True,
+                "objective": self.optimization_objective.value,
+                "learning_strategy": self.learning_strategy.value,
+            },
+            "telemetry": telemetry_snapshots,
+            "recommendations": self._serialize_recommendations(recommendations),
+            "validation": validation_report or {"status": "not_provided"},
+            "learning_state": {
+                "experience_count": len(self.experience_history),
+                "policy_count": len(self.learned_policies),
+                "successful_optimizations": self.successful_optimizations,
+            },
+        }
+        return _json_safe(payload)
+
+    def _persist_dry_run_payload(
+        self,
+        payload: Dict[str, Any],
+        output_dir: Any,
+        safe_seed: str,
+        safe_node: str,
+    ) -> Tuple[Path, str]:
+        """Write payload to disk and emit SHA-256 signature."""
+        base_dir = Path(output_dir)
+        target_dir = base_dir / safe_seed
+        target_dir.mkdir(parents=True, exist_ok=True)
+        file_path = target_dir / f"{safe_node}.json"
+        serialized = json.dumps(payload, indent=2, sort_keys=True)
+        file_path.write_text(serialized, encoding="utf-8")
+        signature = hashlib.sha256(serialized.encode("utf-8")).hexdigest()
+        signature_path = file_path.with_suffix(file_path.suffix + ".sha256")
+        signature_path.write_text(f"{signature}  {file_path.name}\n", encoding="utf-8")
+        return file_path, signature
 
 
 # Factory functions

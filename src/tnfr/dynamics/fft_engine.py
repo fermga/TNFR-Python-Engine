@@ -15,7 +15,7 @@ Key insights:
 Status: EXPERIMENTAL → CANONICAL TRANSITION
 """
 
-import numpy as np
+from ..mathematics.unified_numerical import np
 from typing import Dict, Any, Optional, Tuple, List, Union, TYPE_CHECKING
 from dataclasses import dataclass
 import time
@@ -39,11 +39,8 @@ except ImportError:
     HAS_SPECTRAL = False
 
 # Import cache system
-try:
-    from ..utils.cache import cache_tnfr_computation, CacheLevel
-    _CACHE_AVAILABLE = True
-except ImportError:
-    _CACHE_AVAILABLE = False
+from ..mathematics.unified_cache import cache_tnfr_computation, CacheLevel
+_CACHE_AVAILABLE = True
 
 # Import FFT cache coordinator
 try:

@@ -30,6 +30,9 @@ __all__ = [
     "PhaseError",
     "CoherenceError",
     "FrequencyError",
+    "TNFRValueError",
+    "TNFRSecurityError",
+    "TNFRSecurityWarning",
 ]
 
 
@@ -450,14 +453,16 @@ class FrequencyError(TNFRUserError):
 
     def __init__(
         self,
-        node_id: str,
         vf: float,
+        node_id: Optional[str] = None,
         operation: Optional[str] = None,
     ):
+        node_msg = f" for node '{node_id}'" if node_id else ""
+        
         if vf <= 0:
             suggestion = (
                 f"Structural frequency νf must be positive (Hz_str units). "
-                f"Set νf > 0 for node '{node_id}'. "
+                f"Set νf > 0{node_msg}. "
                 f"Typical range: 0.1 to 10.0 Hz_str."
             )
         elif vf > 100:
@@ -467,20 +472,91 @@ class FrequencyError(TNFRUserError):
                 f"Verify this is intentional."
             )
         else:
-            suggestion = f"Verify structural frequency for node '{node_id}'."
+            suggestion = f"Verify structural frequency{node_msg}."
 
         context = {
-            "node_id": node_id,
             "vf": f"{vf:.3f} Hz_str",
             "valid_range": "[0.01, 100.0] Hz_str",
         }
 
+        if node_id:
+            context["node_id"] = node_id
         if operation:
             context["operation"] = operation
 
         super().__init__(
-            message=f"Invalid structural frequency for node '{node_id}'",
+            message=f"Invalid structural frequency{node_msg}",
             suggestion=suggestion,
             docs_url="https://github.com/fermga/Teoria-de-la-naturaleza-fractal-resonante-TNFR-/blob/main/GLOSSARY.md#structural-frequency",
             context=context,
         )
+
+
+class TNFRValueError(TNFRUserError, ValueError):
+    """Error raised when an operation receives an argument with inappropriate value.
+
+    This is a drop-in replacement for ValueError that adds TNFR context.
+    It inherits from both TNFRUserError and ValueError, allowing it to be
+    caught by existing exception handlers while providing enhanced diagnostics.
+
+    Parameters
+    ----------
+    message : str
+        Primary error message.
+    suggestion : str, optional
+        Actionable suggestion for resolution.
+    docs_url : str, optional
+        Link to relevant documentation.
+    context : dict, optional
+        Additional context about the error.
+
+    Examples
+    --------
+    >>> raise TNFRValueError(
+    ...     "Invalid dimension size",
+    ...     suggestion="Dimension must be positive",
+    ...     context={"dim": -1}
+    ... )
+    """
+
+    def __init__(
+        self,
+        message: str,
+        suggestion: Optional[str] = None,
+        docs_url: Optional[str] = None,
+        context: Optional[Dict[str, Any]] = None,
+    ):
+        super().__init__(
+            message=message,
+            suggestion=suggestion,
+            docs_url=docs_url,
+            context=context,
+        )
+
+
+class TNFRSecurityError(TNFRValueError):
+    """Security validation error for input sanitization or integrity failures.
+    
+    Raised when:
+    - Input contains forbidden patterns (injection attempts)
+    - Cache signatures are invalid (tampering detected)
+    - Path traversal attempts are detected
+    """
+    
+    def __init__(
+        self, 
+        message: str, 
+        suspicious_input: Optional[str] = None, 
+        **kwargs
+    ):
+        context = kwargs.get("context", {})
+        if suspicious_input:
+            context["suspicious_input"] = suspicious_input
+        kwargs["context"] = context
+        
+        super().__init__(message, **kwargs)
+        self.suspicious_input = suspicious_input
+
+
+class TNFRSecurityWarning(UserWarning):
+    """Issued when potentially unsafe serialization is used without signing."""

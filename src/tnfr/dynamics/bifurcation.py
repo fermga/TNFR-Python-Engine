@@ -203,9 +203,7 @@ def compute_bifurcation_score(
     get_bifurcation_paths : Determine viable operators after bifurcation
     tnfr.operators.metrics.dissonance_metrics : Uses score in OZ metrics
     """
-    from ..utils import get_numpy
-
-    np = get_numpy()
+    from ..mathematics.unified_numerical import np
 
     # 1. Acceleration factor (primary indicator)
     # Normalized by tau threshold

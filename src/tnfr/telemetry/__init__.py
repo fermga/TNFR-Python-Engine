@@ -1,14 +1,42 @@
-"""Telemetry constants namespace.
+"""TNFR Unified Telemetry System - Consolidated Event Collection and Monitoring.
 
-Centralized thresholds and labels live in ``tnfr.telemetry.constants``.
-Import directly from that module to avoid accidental import-time side effects.
+Provides unified telemetry emission for all TNFR dynamics analysis.
+Telemetry captures observable manifestations of nodal equation evolution
+without perturbing underlying TNFR coherence.
+
+Main Components:
+- TNFRUnifiedTelemetrySystem: Consolidated event collection
+- Structural telemetry: Tetrad field measurements
+- Performance telemetry: Operation monitoring
+- Failure telemetry: Error analysis
+- Correlation tracking: Event relationship analysis
+
+Usage:
+```python
+from tnfr.telemetry import get_unified_telemetry_system, emit_structural_telemetry
+telemetry = get_unified_telemetry_system()
+telemetry.emit_structural_event(coherence=0.85, phi_s=0.6)
+# Or use convenience function
+emit_structural_telemetry(coherence=0.85, phi_s=0.6)
+```
 """
 
-__all__ = [
-    "constants",
-]
-"""Telemetry helpers for shared observability settings."""
+# Unified telemetry system (primary interface)
+from .unified_telemetry_system import (
+    TNFRUnifiedTelemetrySystem,
+    TelemetryConfiguration,
+    StructuralTelemetryEvent,
+    PerformanceTelemetryEvent,
+    FailureTelemetryEvent,
+    get_unified_telemetry_system,
+    emit_structural_telemetry,
+    emit_performance_telemetry,
+    emit_failure_telemetry,
+    flush_unified_telemetry,
+    get_unified_telemetry_stats
+)
 
+# Legacy telemetry components (for compatibility)
 from .cache_metrics import (
     CacheMetricsSnapshot,
     CacheTelemetryPublisher,

@@ -10,6 +10,7 @@ from functools import partial
 from pathlib import Path
 from typing import Any, Callable
 
+from ..errors import TNFRValueError
 from .init import LazyImportProxy, cached_import, get_logger, warn_once
 
 logger = get_logger(__name__)
@@ -269,7 +270,11 @@ def _get_parser(suffix: str) -> Callable[[str], Any]:
     try:
         return PARSERS[suffix]
     except KeyError as exc:
-        raise ValueError(f"Unsupported suffix: {suffix}") from exc
+        raise TNFRValueError(
+            f"Unsupported suffix: {suffix}",
+            context={"suffix": suffix, "supported": list(PARSERS.keys())},
+            suggestion="Use a supported file extension."
+        ) from exc
 
 
 _BASE_ERROR_MESSAGES: dict[type[BaseException], str] = {

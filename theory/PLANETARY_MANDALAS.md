@@ -46,7 +46,7 @@ python examples/22_planetary_mandalas.py
 ## 4. Telemetry and Validation
 
 - **Frequency ratios**: Fit rational approximations `n:m` to angular velocity ratios; report residual < 1e-3 where loops appear closed.
-- **Field thresholds**: Ensure `|∇φ| < 0.2904` and `|K_φ| < 2.8274` throughout the run. Flag frames violating these limits.
+- **Field thresholds**: Ensure `|∇φ| < γ/π ≈ 0.1837` and `|K_φ| < 2.8274` throughout the run. Flag frames violating these limits.
 - **Coherence**: Track `C(t)`; mandala plots are only published when coherence stays above 0.75. Attach `results/geocentric_vortex_study/<planet>_telemetry.parquet` for audit.
 - **Observation comparison**: Overlay simulated polar coordinates with ephemeris samples (monthly) and compute phase drift, amplitude error. Report metrics in validation log.
 

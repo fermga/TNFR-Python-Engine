@@ -88,6 +88,8 @@ class TNFRAutoScaler:
             strategy["workers"] = 1
             strategy["gpu_engine"] = "jax"
             strategy["explanation"] = "Large network with GPU - vectorized acceleration available"
+            strategy["use_gpu_strategies"] = True
+            strategy["preferred_operators"] = ["AL", "RA"]  # Matrix-intensive operations
 
         else:
             strategy["backend"] = "distributed"

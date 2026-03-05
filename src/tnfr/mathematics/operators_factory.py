@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-import numpy as np
+from ..errors import TNFRValueError
+from .unified_numerical import np
 
 from .backend import ensure_array, ensure_numpy, get_backend
 from .operators import CoherenceOperator, FrequencyOperator
@@ -15,9 +16,17 @@ _ATOL = 1e-9
 
 def _validate_dimension(dim: int) -> int:
     if int(dim) != dim:
-        raise ValueError("Operator dimension must be an integer.")
+        raise TNFRValueError(
+            "Operator dimension must be an integer.",
+            context={"dimension": dim},
+            suggestion="Provide an integer dimension."
+        )
     if dim <= 0:
-        raise ValueError("Operator dimension must be strictly positive.")
+        raise TNFRValueError(
+            "Operator dimension must be strictly positive.",
+            context={"dimension": dim},
+            suggestion="Provide a positive integer dimension."
+        )
     return int(dim)
 
 
@@ -50,14 +59,18 @@ def make_coherence_operator(
 
     Raises
     ------
-    ValueError
+    TNFRValueError
         If dimension is invalid, spectrum has wrong shape, or operator
         violates Hermiticity/PSD constraints.
     """
 
     dimension = _validate_dimension(dim)
     if not np.isfinite(c_min):
-        raise ValueError("Coherence threshold ``c_min`` must be finite.")
+        raise TNFRValueError(
+            "Coherence threshold ``c_min`` must be finite.",
+            context={"c_min": c_min},
+            suggestion="Provide a finite value for c_min."
+        )
 
     backend = get_backend()
 
@@ -69,20 +82,40 @@ def make_coherence_operator(
         eigenvalues_backend = ensure_array(spectrum, dtype=np.complex128, backend=backend)
         eigenvalues_np = ensure_numpy(eigenvalues_backend, backend=backend)
         if eigenvalues_np.ndim != 1:
-            raise ValueError("Coherence spectrum must be one-dimensional.")
+            raise TNFRValueError(
+                "Coherence spectrum must be one-dimensional.",
+                context={"ndim": eigenvalues_np.ndim},
+                suggestion="Provide a 1D spectrum array."
+            )
         if eigenvalues_np.shape[0] != dimension:
-            raise ValueError("Coherence spectrum size must match operator dimension.")
+            raise TNFRValueError(
+                "Coherence spectrum size must match operator dimension.",
+                context={"spectrum_size": eigenvalues_np.shape[0], "dimension": dimension},
+                suggestion="Ensure spectrum size matches dimension."
+            )
         if np.any(np.abs(eigenvalues_np.imag) > _ATOL):
-            raise ValueError("Coherence spectrum must be real-valued within tolerance.")
+            raise TNFRValueError(
+                "Coherence spectrum must be real-valued within tolerance.",
+                context={"max_imag": float(np.max(np.abs(eigenvalues_np.imag))), "atol": _ATOL},
+                suggestion="Ensure spectrum is real-valued."
+            )
         eigenvalues_backend = ensure_array(
             eigenvalues_np.real.astype(float, copy=False), backend=backend
         )
 
     operator = CoherenceOperator(eigenvalues_backend, c_min=c_min, backend=backend)
     if not operator.is_hermitian(atol=_ATOL):
-        raise ValueError("Coherence operator must be Hermitian.")
+        raise TNFRValueError(
+            "Coherence operator must be Hermitian.",
+            context={"is_hermitian": False},
+            suggestion="Ensure the operator is Hermitian."
+        )
     if not operator.is_positive_semidefinite(atol=_ATOL):
-        raise ValueError("Coherence operator must be positive semidefinite.")
+        raise TNFRValueError(
+            "Coherence operator must be positive semidefinite.",
+            context={"is_psd": False},
+            suggestion="Ensure the operator is positive semidefinite."
+        )
     return operator
 
 
@@ -105,7 +138,7 @@ def make_frequency_operator(matrix: np.ndarray) -> FrequencyOperator:
 
     Raises
     ------
-    ValueError
+    TNFRValueError
         If matrix is not square, not Hermitian, or not positive semidefinite.
     """
 
@@ -113,11 +146,23 @@ def make_frequency_operator(matrix: np.ndarray) -> FrequencyOperator:
     array_backend = ensure_array(matrix, dtype=np.complex128, backend=backend)
     array_np = ensure_numpy(array_backend, backend=backend)
     if array_np.ndim != 2 or array_np.shape[0] != array_np.shape[1]:
-        raise ValueError("Frequency operator matrix must be square.")
+        raise TNFRValueError(
+            "Frequency operator matrix must be square.",
+            context={"shape": array_np.shape},
+            suggestion="Provide a square matrix."
+        )
     if not np.allclose(array_np, array_np.conj().T, atol=_ATOL):
-        raise ValueError("Frequency operator must be Hermitian within tolerance.")
+        raise TNFRValueError(
+            "Frequency operator must be Hermitian within tolerance.",
+            context={"atol": _ATOL},
+            suggestion="Ensure the matrix is Hermitian."
+        )
 
     operator = FrequencyOperator(array_backend, backend=backend)
     if not operator.is_positive_semidefinite(atol=_ATOL):
-        raise ValueError("Frequency operator must be positive semidefinite.")
+        raise TNFRValueError(
+            "Frequency operator must be positive semidefinite.",
+            context={"is_psd": False},
+            suggestion="Ensure the operator is positive semidefinite."
+        )
     return operator

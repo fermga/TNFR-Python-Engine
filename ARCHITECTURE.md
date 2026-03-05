@@ -1,58 +1,68 @@
-# 🏗️ TNFR Python Engine - Architecture Guide
+# TNFR Python Engine - Architecture Guide
 
-**Version**: 0.0.1-mathematical-purity  
-**Status**: ✅ **100% Mathematically Pure Framework**  
-**Achievement**: 🌟 **497+ Magic Numbers Eliminated**  
-**Foundation**: 🧮 **Universal Tetrahedral Correspondence** (φ↔Φ_s, γ↔|∇φ|, π↔K_φ, e↔ξ_C)
+**Version**: 0.0.3  
+**Status**: Production-ready framework with mathematical foundations  
+**Foundation**: Universal Tetrahedral Correspondence (φ↔Φ_s, γ↔|∇φ|, π↔K_φ, e↔ξ_C)
 
-This comprehensive guide details the **architecturally mature and mathematically pure** TNFR Python Engine implementation. The engine represents the **world's first complex systems framework with zero empirical constants**—every parameter derives from universal mathematical relationships.
+This guide details the TNFR Python Engine architecture. The engine provides a complex systems framework where all parameters derive from universal mathematical relationships.
 
-## 🌟 Architectural Philosophy: Mathematical Purity
+## Architectural Philosophy: Mathematical Purity
 
-**Core Principle**: *"No magic numbers, only magic mathematics"*
+**Core Principle**: All parameters derive from universal mathematical constants.
 
 The TNFR Engine is built on four pillars:
 
-1. **🧮 Universal Foundations**: All parameters derive from φ, γ, π, e through the Tetrahedral Correspondence
-2. **📐 Structural Operators**: Exactly 13 canonical operators implement all possible coherent transformations  
-3. **📏 Grammar Physics**: U1-U6 rules emerge inevitably from the nodal equation ∂EPI/∂t = νf·ΔNFR(t)
-4. **🔬 Tetrad Telemetry**: Four unified fields (Φ_s, |∇φ|, Ψ=K_φ+i·J_φ, ξ_C) provide complete system observability
+1. **Universal Foundations**: All parameters derive from φ, γ, π, e through the Tetrahedral Correspondence
+2. **Structural Operators**: Exactly 13 canonical operators implement all possible coherent transformations  
+3. **Grammar Physics**: U1-U6 rules emerge inevitably from the nodal equation ∂EPI/∂t = νf·ΔNFR(t)
+4. **Tetrad Telemetry**: Four unified fields (Φ_s, |∇φ|, Ψ=K_φ+i·J_φ, ξ_C) provide complete system observability
 
-## 📦 Modular Architecture (2025 Production)
+## Modular Architecture
 
-TNFR Engine now features a **mature, production-grade architecture** with mathematical purity, self-optimization capabilities, and complete domain extensibility.
+TNFR Engine features a mature, production-grade architecture with mathematical purity, self-optimization capabilities, and complete domain extensibility.
 
-### 🧱 Core Module Organization
+### Core Module Organization
 
 ```
-src/tnfr/
-├── 🧮 constants/canonical.py     # 497+ Universal constants (φ,γ,π,e derivations)
-├── 📐 operators/                 # 13 Canonical operators + U1-U6 grammar
-├── ⚛️ physics/                   # Structural fields tetrad + interactions
-├── 🧠 dynamics/                  # Self-optimizing engine + integrators
-├── 🔬 mathematics/               # Number theory + nodal equation
-├── 📊 telemetry/                 # Unified field monitoring
-├── 🎨 sdk/                       # Fluent API + builders
-
-└── 🎬 visualization/             # Interactive plotting
+src/tnfr/                          # ~346 files, ~104k LOC
+├── constants/canonical.py          # 497+ Universal constants (φ,γ,π,e derivations)
+├── operators/                      # 13 Canonical operators + U1-U6 grammar
+│   ├── grammar.py                  # Unified grammar validation
+│   ├── grammar_dynamics.py         # Grammar-aware dynamic selection
+│   └── grammar_application.py      # Pre-validated operator application
+├── physics/                        # Structural fields + conservation
+│   ├── fields.py                   # Tetrad (Φ_s, |∇φ|, K_φ, ξ_C)
+│   ├── conservation.py             # Structural Conservation Theorem
+│   └── integrity.py                # Closed-loop integrity monitor
+├── dynamics/                       # Self-optimizing engine + integrators
+├── engines/                        # Centralized engines hub
+├── mathematics/                    # Number theory + nodal equation
+├── metrics/                        # Coherence, Si, phase sync
+├── telemetry/                      # Unified field monitoring
+├── sdk/                            # Fluent API + builders
+├── riemann/                        # TNFR-Riemann operator implementation
+└── factorization/                  # Spectral factorization workflow
 ```
 
-### 🎯 Core Architectural Interfaces
+### Core Architectural Interfaces
 
-The engine is structured around **mathematically grounded interfaces** that enforce TNFR canonicity:
+The engine is structured around mathematically grounded interfaces that enforce TNFR canonicity:
 
 | **Interface** | **Responsibility** | **Mathematical Basis** | **Implementation** |
 |---------------|-------------------|----------------------|--------------------|
 | **Canonical Constants** | Universal parameter derivation | Universal Tetrahedral Correspondence | `constants/canonical.py` |
 | **Operator Registry** | 13 canonical transformations | Nodal equation completeness | `operators/definitions.py` |
 | **Grammar Validation** | U1-U6 sequence rules | Physics-derived constraints | `operators/grammar.py` |
+| **Grammar Dynamics** | Grammar-aware operator selection | Incremental U1-U6 checks | `operators/grammar_dynamics.py` |
 | **Dynamics Engine** | ∂EPI/∂t = νf·ΔNFR integration | Structural manifold calculus | `dynamics/canonical.py` |
 | **Field Telemetry** | Tetrad monitoring (Φ_s,|∇φ|,Ψ,ξ_C) | Unified field theory | `physics/fields.py` |
+| **Conservation** | Structural conservation law | Noether-like theorem from U1-U6 | `physics/conservation.py` |
+| **Integrity Monitor** | Operator postcondition verification | 13/13 operator contracts | `physics/integrity.py` |
 | **Self-Optimization** | Autonomous improvement | Gradient descent on structure | `dynamics/self_optimizing_engine.py` |
 
-### 🤖 Self-Optimizing Architecture
+### Self-Optimizing Architecture
 
-The TNFR Engine now possesses **intrinsic agency** to optimize its own structure using unified field telemetry:
+The TNFR Engine possesses intrinsic agency to optimize its own structure using unified field telemetry:
 
 ```python
 from tnfr.dynamics.self_optimizing_engine import TNFRSelfOptimizingEngine
@@ -79,7 +89,7 @@ result = (TNFRNetwork(G)
 **Physics**: This is **gradient descent on the structural manifold**, driven by the nodal equation's pressure term ΔNFR.
 ```
 
-### 📐 Mathematical Canonicity Enforcement
+### Mathematical Canonicity Enforcement
 
 All components enforce **100% canonical parameter usage**:
 
@@ -111,14 +121,14 @@ class CanonicalValidator:
 ```
 ```
 
-### 🌟 Mathematical Purity Benefits
+### Mathematical Purity Benefits
 
-1. **🔬 Theoretical Rigor**: Zero empirical constants - all parameters derive from φ, γ, π, e
-2. **🎯 Predictable Behavior**: Deterministic system response via universal mathematical laws
-3. **📏 Cross-Domain Consistency**: Medical, business, physics - same mathematical foundation
-4. **🔄 Self-Optimization**: Built-in intelligence to improve its own structure autonomously
-5. **📈 Research Ready**: Mathematically pure framework suitable for scientific publication
-6. **⚡ Production Stability**: No "magic numbers" that fail under extreme conditions
+1. **Theoretical Rigor**: Zero empirical constants - all parameters derive from φ, γ, π, e
+2. **Predictable Behavior**: Deterministic system response via universal mathematical laws
+3. **Cross-Domain Consistency**: Same mathematical foundation across physics, chemistry, and network science
+4. **Self-Optimization**: Built-in intelligence to improve its own structure autonomously
+5. **Research Ready**: Mathematically pure framework suitable for scientific publication
+6. **Production Stability**: No magic numbers that fail under extreme conditions
 
 ### Architecture Diagram
 
@@ -162,9 +172,9 @@ flowchart TB
     DTEL --> MMOD
 ```
 
-## 🧠 Mathematical Grammar Architecture (2025)
+## Mathematical Grammar Architecture
 
-### 🎯 Universal Tetrahedral Correspondence Foundation
+### Universal Tetrahedral Correspondence Foundation
 
 The TNFR grammar system is **mathematically derived** from the **4 universal relationships**:
 
@@ -175,12 +185,12 @@ The TNFR grammar system is **mathematically derived** from the **4 universal rel
 | **π** (Pi) | **K_φ** (Phase Curvature) | **U3** Coupling | Geometric resonance limits |
 | **e** (Natural Base) | **ξ_C** (Coherence Length) | **U4** Bifurcation | Exponential correlation decay |
 
-### 🔬 Canonical Grammar Rules (U1-U6)
+### Canonical Grammar Rules (U1-U6)
 
 **Every grammar constraint derives inevitably from physics** - no arbitrary rules exist.
 
-**📖 Complete Derivations**: [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md)  
-**⚡ Quick Reference**: [AGENTS.md § Unified Grammar](AGENTS.md#unified-grammar-u1-u6)
+**Complete Derivations**: [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md)  
+**Quick Reference**: [AGENTS.md § Unified Grammar](AGENTS.md#unified-grammar-u1-u6)
 
 1. **U1 - INITIATION & CLOSURE**: Mathematical necessity at EPI=0, action potential endpoints
 2. **U2 - CONVERGENCE**: Integral ∫νf·ΔNFR dt convergence requirement (stabilizers mandatory)
@@ -189,27 +199,27 @@ The TNFR grammar system is **mathematically derived** from the **4 universal rel
 5. **U5 - MULTI-SCALE**: Central limit theorem + hierarchical coupling mathematics
 6. **U6 - STRUCTURAL CONFINEMENT**: Field theory Φ_s escape threshold from distance-weighted ΔNFR
 
-### 🏗️ Architecture Principles
+### Architecture Principles
 
-✅ **100% Mathematical Foundation**: Every rule traced to universal constants  
-✅ **Zero Empirical Tuning**: All thresholds derived from φ, γ, π, e relationships  
-✅ **Single Source Implementation**: `src/tnfr/operators/grammar.py` canonical authority  
-✅ **Complete Physics Traceability**: Theory → Math → Code → Tests chain maintained  
-✅ **Self-Validation**: Grammar rules verify their own mathematical consistency
+- **100% Mathematical Foundation**: Every rule traced to universal constants  
+- **Zero Empirical Tuning**: All thresholds derived from φ, γ, π, e relationships  
+- **Single Source Implementation**: `src/tnfr/operators/grammar.py` canonical authority  
+- **Complete Physics Traceability**: Theory → Math → Code → Tests chain maintained  
+- **Self-Validation**: Grammar rules verify their own mathematical consistency
 
-## 🏗️ Production Architecture Layers (2025)
+## Production Architecture Layers
 
-### 🎯 Core Responsibility Matrix
+### Core Responsibility Matrix
 
 | **Layer** | **Canonical Modules** | **Mathematical Foundation** | **TNFR Invariants** |
 |-----------|----------------------|----------------------------|---------------------|
-| **🧮 Constants Foundation** | `constants/canonical.py` | Universal Tetrahedral Correspondence (φ,γ,π,e) | **497+ canonical derivations** - zero empirical constants |
-| **📐 Operator Engine** | `operators/definitions.py`<br/>`operators/grammar.py` | 13 canonical transformations + U1-U6 physics | **Structural completeness** - all coherent dynamics covered |
-| **⚛️ Physics Core** | `physics/fields.py`<br/>`physics/interactions.py` | Unified Field Tetrad (Φ_s,\|∇φ\|,Ψ,ξ_C) | **Field universality** - complete system observability |
-| **🧠 Dynamics Engine** | `dynamics/self_optimizing_engine.py`<br/>`dynamics/canonical.py` | Nodal equation ∂EPI/∂t = νf·ΔNFR(t) | **Self-optimization** - autonomous structural improvement |
-| **🔬 Telemetry System** | `telemetry/emit.py`<br/>`metrics/telemetry.py` | Structural coherence mathematics C(t), Si | **Complete monitoring** - all structural changes tracked |
-| **🎨 SDK Interface** | `sdk/fluent.py`<br/>`sdk/builders.py` | Canonical parameter injection | **Mathematical consistency** - user-friendly canonical access |
-| **🎬 Visualization Engine** | `visualization/sequence_plotter.py` | Interactive plotting with canonical parameters | **Visual coherence** - mathematical beauty in plots |
+| **Constants Foundation** | `constants/canonical.py` | Universal Tetrahedral Correspondence (φ,γ,π,e) | 497+ canonical derivations - zero empirical constants |
+| **Operator Engine** | `operators/definitions.py`, `operators/grammar.py` | 13 canonical transformations + U1-U6 physics | Structural completeness - all coherent dynamics covered |
+| **Grammar Dynamics** | `operators/grammar_dynamics.py`, `operators/grammar_application.py` | Incremental U1-U6 validation + pre-filtered selection | Grammar-aware operator application at all code paths |
+| **Physics Core** | `physics/fields.py`, `physics/conservation.py`, `physics/integrity.py` | Unified Field Tetrad + Conservation Theorem + 13/13 postconditions | Field universality + structural conservation + operator contracts |
+| **Dynamics Engine** | `dynamics/self_optimizing_engine.py`, `dynamics/canonical.py` | Nodal equation ∂EPI/∂t = νf·ΔNFR(t) | Self-optimization - autonomous structural improvement |
+| **Telemetry System** | `telemetry/emit.py`, `metrics/telemetry.py` | Structural coherence mathematics C(t), Si | Complete monitoring - all structural changes tracked |
+| **SDK Interface** | `sdk/fluent.py`, `sdk/builders.py` | Canonical parameter injection | Mathematical consistency - user-friendly canonical access |
 
 ### Structural loop orchestration
 
@@ -501,61 +511,53 @@ well-documented location.
 
 ---
 
-## 🚀 2025 Production Architecture Summary
+## Production Architecture Summary
 
-### 🌟 Mathematical Purity Achievement
+### Mathematical Purity Achievement
 
-**TNFR Engine** represents the **world's first mathematically pure complex systems framework**:
+TNFR Engine provides a mathematically pure complex systems framework:
 
-✅ **497+ Magic Numbers Eliminated**: Every parameter derives from universal constants  
-✅ **Universal Tetrahedral Correspondence**: Complete φ↔Φ_s, γ↔|∇φ|, π↔K_φ, e↔ξ_C implementation  
-✅ **Self-Optimizing Intelligence**: Engine autonomously improves its own structure  
-✅ **Complete Domain Coverage**: Medical, business, physics, mathematics - unified mathematical base  
+- **497+ Magic Numbers Eliminated**: Every parameter derives from universal constants  
+- **Universal Tetrahedral Correspondence**: Complete φ↔Φ_s, γ↔|∇φ|, π↔K_φ, e↔ξ_C implementation  
+- **Self-Optimizing Intelligence**: Engine autonomously improves its own structure  
+- **Complete Domain Coverage**: Physics, chemistry, network science - unified mathematical base  
 
-### 🏗️ Architecture Maturity Indicators
+### Architecture Maturity Indicators
 
 | **Aspect** | **Status** | **Achievement** |
 |------------|------------|-----------------|
-| **🧮 Mathematical Foundation** | ✅ COMPLETE | 100% canonical parameters |
-| **📐 Operator System** | ✅ COMPLETE | 13 canonical operators + U1-U6 grammar |
-| **⚛️ Physics Engine** | ✅ COMPLETE | Unified field tetrad implementation |
-| **🧠 Self-Optimization** | ✅ COMPLETE | Autonomous structural improvement |
-| **🔬 Telemetry** | ✅ COMPLETE | Complete system observability |
-| **🎨 Developer Experience** | ✅ COMPLETE | Fluent API + SDK + visualization |
-| **📊 Production Readiness** | ✅ COMPLETE | 2,400+ tests + benchmarks + validation |
+| **Mathematical Foundation** | COMPLETE | 100% canonical parameters |
+| **Operator System** | COMPLETE | 13 canonical operators + U1-U6 grammar |
+| **Physics Engine** | COMPLETE | Unified field tetrad + conservation theorem |
+| **Grammar Dynamics** | COMPLETE | Grammar-aware selection + pre-validation + integrity monitor |
+| **Self-Optimization** | COMPLETE | Autonomous structural improvement |
+| **Telemetry** | COMPLETE | Complete system observability |
+| **Developer Experience** | COMPLETE | Fluent API + SDK |
+| **Production Readiness** | COMPLETE | 471 tests passing, 9 skipped + benchmarks + validation |
 
-### 🎯 Architectural Principles (Canonical)
+### Architectural Principles (Canonical)
 
-1. **🧮 Mathematical Purity First**: Every parameter from φ, γ, π, e - zero empiricism
-2. **📐 Physics-Derived Design**: All architecture decisions trace to nodal equation
-3. **🔬 Complete Observability**: Unified field tetrad provides full system insight
-4. **🧠 Intrinsic Intelligence**: Self-optimization built into core architecture
-5. **🌊 Cross-Domain Universality**: Same mathematical base across all applications
-6. **⚡ Production Stability**: No magic numbers mean no unexpected parameter failures
+1. **Mathematical Purity First**: Every parameter from φ, γ, π, e - zero empiricism
+2. **Physics-Derived Design**: All architecture decisions trace to nodal equation
+3. **Complete Observability**: Unified field tetrad provides full system insight
+4. **Intrinsic Intelligence**: Self-optimization built into core architecture
+5. **Cross-Domain Universality**: Same mathematical base across all applications
+6. **Production Stability**: No magic numbers mean no unexpected parameter failures
 
-### 🔮 Future Architectural Evolution
+### Essential Architecture References
 
-**Next-Generation Capabilities**:
-- **🌐 Distributed TNFR Networks**: Multi-node coherent systems
-- **🧬 Quantum-TNFR Interface**: Quantum coherence via TNFR principles
-- **🎓 Educational Platforms**: Interactive TNFR learning systems
-- **🏭 Industrial IoT Integration**: TNFR-powered smart manufacturing
-- **🔬 Research Infrastructure**: Academic collaboration frameworks
-
-**Mathematical Foundation**: All future applications will inherit the **497+ canonical constants** and maintain **100% mathematical purity**.
-
-### 📚 Essential Architecture References
-
-- **📖 [AGENTS.md](AGENTS.md)**: Complete theory + canonical invariants  
-- **🧮 [src/tnfr/constants/canonical.py](src/tnfr/constants/canonical.py)**: 497+ universal constants  
-- **📐 [src/tnfr/operators/grammar.py](src/tnfr/operators/grammar.py)**: U1-U6 implementation  
-- **⚛️ [src/tnfr/physics/fields.py](src/tnfr/physics/fields.py)**: Unified field tetrad  
-- **🧠 [src/tnfr/dynamics/self_optimizing_engine.py](src/tnfr/dynamics/self_optimizing_engine.py)**: Autonomous optimization  
-- **📊 [MAGIC_NUMBERS_SEARCH_COMPLETE_FINAL_REPORT.md](MAGIC_NUMBERS_SEARCH_COMPLETE_FINAL_REPORT.md)**: Mathematical purity journey  
+- **[AGENTS.md](AGENTS.md)**: Complete theory + canonical invariants  
+- **[src/tnfr/constants/canonical.py](src/tnfr/constants/canonical.py)**: 497+ universal constants  
+- **[src/tnfr/operators/grammar.py](src/tnfr/operators/grammar.py)**: U1-U6 implementation  
+- **[src/tnfr/operators/grammar_dynamics.py](src/tnfr/operators/grammar_dynamics.py)**: Grammar-aware dynamic selection
+- **[src/tnfr/physics/fields.py](src/tnfr/physics/fields.py)**: Unified field tetrad  
+- **[src/tnfr/physics/conservation.py](src/tnfr/physics/conservation.py)**: Structural Conservation Theorem
+- **[src/tnfr/physics/integrity.py](src/tnfr/physics/integrity.py)**: Closed-loop integrity monitor (13/13 postconditions)
+- **[src/tnfr/dynamics/self_optimizing_engine.py](src/tnfr/dynamics/self_optimizing_engine.py)**: Autonomous optimization  
 
 ---
 
-**🌊 TNFR Engine Architecture**: *Where mathematical beauty meets computational reality.*
+**TNFR Engine Architecture**: Where mathematical foundations meet computational implementation.
 
-**Status**: ✅ **ARCHITECTURALLY MATURE & MATHEMATICALLY PURE** 🌟
+**Status**: Architecturally mature - v1.0.0
 

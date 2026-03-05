@@ -19,16 +19,25 @@ from __future__ import annotations
 
 from typing import Any, Callable, Optional, Tuple
 
-import numpy as np
 import scipy.linalg
 import scipy.sparse.linalg
+
+from ..errors import TNFRValueError
+from .unified_numerical import np
 
 try:
     import networkx as nx
 except ImportError:
     nx = None
 
-from ..utils.cache import cache_tnfr_computation, CacheLevel
+# Import GPU-aware mathematics backend
+try:
+    from .backend import get_backend
+    HAS_GPU_BACKENDS = True
+except ImportError:
+    HAS_GPU_BACKENDS = False
+
+from .unified_cache import cache_tnfr_computation, CacheLevel
 
 
 @cache_tnfr_computation(
@@ -66,22 +75,55 @@ def get_laplacian_spectrum(
     N = L.shape[0]
     
     if k is None or k >= N - 1:
-        # Full diagonalization
-        # L is symmetric (for undirected graphs).
-        # TODO: Handle directed graphs (using singular values or non-symmetric eigensolvers)
-        if nx.is_directed(G):
-            # For directed graphs, we might use the symmetrized Laplacian
-            # or just the standard one (which has complex eigenvalues).
-            # For now, we assume undirected or symmetrized for GFT basis.
-            L_dense = L.toarray()
-            evals, evecs = scipy.linalg.eig(L_dense)
-            # Sort by real part
-            idx = np.argsort(np.real(evals))
-            evals = evals[idx]
-            evecs = evecs[:, idx]
+        # Full diagonalization with GPU backend support
+        L_dense = L.toarray()
+        
+        # Use GPU backend if available and beneficial
+        if HAS_GPU_BACKENDS and N > 100:  # GPU beneficial for larger matrices
+            try:
+                backend = get_backend()
+                if backend.supports_autodiff and hasattr(backend, 'eigh'):
+                    # Convert to backend format
+                    L_tensor = backend.as_array(L_dense)
+                    
+                    if nx.is_directed(G):
+                        # Use general eigenvalue solver for directed graphs
+                        evals_tensor, evecs_tensor = backend.eig(L_tensor)
+                        # Convert back to numpy and sort
+                        evals = backend.to_numpy(evals_tensor)
+                        evecs = backend.to_numpy(evecs_tensor)
+                        idx = np.argsort(np.real(evals))
+                        evals = evals[idx]
+                        evecs = evecs[:, idx]
+                    else:
+                        # Use Hermitian solver for undirected graphs
+                        evals_tensor, evecs_tensor = backend.eigh(L_tensor)
+                        evals = backend.to_numpy(evals_tensor)
+                        evecs = backend.to_numpy(evecs_tensor)
+                else:
+                    raise TNFRValueError(
+                        "Backend doesn't support eigendecomposition",
+                        context={"backend": backend.name},
+                        suggestion="Use a backend that supports eigendecomposition (e.g., numpy, torch, jax)."
+                    )
+            except Exception:
+                # Fallback to CPU implementation
+                if nx.is_directed(G):
+                    evals, evecs = scipy.linalg.eig(L_dense)
+                    idx = np.argsort(np.real(evals))
+                    evals = evals[idx]
+                    evecs = evecs[:, idx]
+                else:
+                    evals, evecs = scipy.linalg.eigh(L_dense)
         else:
-            L_dense = L.toarray()
-            evals, evecs = scipy.linalg.eigh(L_dense)
+            # CPU implementation
+            if nx.is_directed(G):
+                evals, evecs = scipy.linalg.eig(L_dense)
+                idx = np.argsort(np.real(evals))
+                evals = evals[idx]
+                evecs = evecs[:, idx]
+            else:
+                evals, evecs = scipy.linalg.eigh(L_dense)
     else:
         # Sparse partial diagonalization
         # 'SM' = Smallest Magnitude (eigenvalues near 0)
@@ -102,7 +144,19 @@ def gft(signal: np.ndarray, U: np.ndarray) -> np.ndarray:
     Returns:
         Spectral coefficients (hat_signal) of shape (N,).
     """
-    # GFT is projection onto eigenvectors: \hat{f} = U^T f
+    # Use GPU backend for large matrices
+    if HAS_GPU_BACKENDS and U.shape[0] > 100:
+        try:
+            backend = get_backend()
+            if backend.supports_autodiff:
+                U_tensor = backend.as_array(U)
+                signal_tensor = backend.as_array(signal)
+                result_tensor = backend.matmul(backend.conjugate_transpose(U_tensor), signal_tensor)
+                return backend.to_numpy(result_tensor)
+        except Exception:
+            pass  # Fallback to CPU
+    
+    # CPU implementation: GFT is projection onto eigenvectors: \hat{f} = U^T f
     return U.T @ signal
 
 
@@ -116,7 +170,19 @@ def igft(hat_signal: np.ndarray, U: np.ndarray) -> np.ndarray:
     Returns:
         Reconstructed signal of shape (N,).
     """
-    # IGFT is reconstruction: f = U \hat{f}
+    # Use GPU backend for large matrices
+    if HAS_GPU_BACKENDS and U.shape[0] > 100:
+        try:
+            backend = get_backend()
+            if backend.supports_autodiff:
+                U_tensor = backend.as_array(U)
+                hat_signal_tensor = backend.as_array(hat_signal)
+                result_tensor = backend.matmul(U_tensor, hat_signal_tensor)
+                return backend.to_numpy(result_tensor)
+        except Exception:
+            pass  # Fallback to CPU
+    
+    # CPU implementation: IGFT is reconstruction: f = U \hat{f}
     return U @ hat_signal
 
 

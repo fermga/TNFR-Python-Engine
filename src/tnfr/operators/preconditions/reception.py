@@ -14,7 +14,10 @@ nodes in the appropriate state for coherence integration.
 
 from __future__ import annotations
 
+import warnings
 from typing import TYPE_CHECKING, Any
+
+from ...errors import TNFRValueError
 
 if TYPE_CHECKING:
     from ...types import TNFRGraph
@@ -75,8 +78,6 @@ def validate_reception_strict(G: TNFRGraph, node: Any) -> None:
     tnfr.operators.preconditions : Base precondition validators
     tnfr.operators.definitions.Reception : Reception operator implementation
     """
-    import warnings
-
     from ...alias import get_attr
     from ...constants.aliases import ALIAS_DNFR, ALIAS_EPI
     from ...config.thresholds import DNFR_RECEPTION_MAX, EPI_SATURATION_MAX
@@ -93,21 +94,25 @@ def validate_reception_strict(G: TNFRGraph, node: Any) -> None:
     # Reception integrates external coherence into local structure.
     # If EPI is saturated, node cannot accommodate more coherence.
     if epi >= epi_threshold:
-        raise ValueError(
+        raise TNFRValueError(
             f"EN precondition failed: EPI={epi:.3f} >= {epi_threshold:.3f}. "
             f"Node saturated, cannot receive more coherence. "
             f"Apply IL (Coherence) first to stabilize and compress structure, "
-            f"or apply NUL (Contraction) to reduce complexity if appropriate."
+            f"or apply NUL (Contraction) to reduce complexity if appropriate.",
+            context={"epi": epi, "epi_threshold": epi_threshold},
+            suggestion="Apply IL (Coherence) first to stabilize and compress structure, or apply NUL (Contraction) to reduce complexity if appropriate.",
         )
 
     # Precondition 2: DNFR must be below threshold (minimal dissonance for stable integration)
     # Excessive reorganization pressure prevents effective integration of external coherence.
     # Node must first stabilize before receiving more information.
     if dnfr >= dnfr_threshold:
-        raise ValueError(
+        raise TNFRValueError(
             f"EN precondition failed: DNFR={dnfr:.3f} >= {dnfr_threshold:.3f}. "
             f"Excessive dissonance prevents reception. "
-            f"Consider IL (Coherence) first to reduce reorganization pressure."
+            f"Consider IL (Coherence) first to reduce reorganization pressure.",
+            context={"dnfr": dnfr, "dnfr_threshold": dnfr_threshold},
+            suggestion="Consider IL (Coherence) first to reduce reorganization pressure.",
         )
 
     # Precondition 3: Emission sources check (warning only - not a hard failure)

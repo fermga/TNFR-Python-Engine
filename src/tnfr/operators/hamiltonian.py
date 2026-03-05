@@ -90,6 +90,7 @@ from typing import TYPE_CHECKING, Any, Tuple
 
 from ..alias import get_attr
 from ..constants.aliases import ALIAS_VF
+from ..mathematics.unified_numerical import np
 from ..utils.cache import cached_node_list, CacheManager, _graph_cache_manager
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -170,19 +171,7 @@ class InternalHamiltonian:
         ------
         ValueError
             If any Hamiltonian component fails Hermiticity check
-        ImportError
-            If NumPy is not available
         """
-        # Import NumPy (required for matrix operations)
-        try:
-            import numpy as np
-
-            self._np = np
-        except ImportError as exc:
-            raise ImportError(
-                "NumPy is required for Hamiltonian construction. " "Install with: pip install numpy"
-            ) from exc
-
         self.G = G
         self.hbar_str = float(hbar_str)
 
@@ -230,7 +219,6 @@ class InternalHamiltonian:
         Reuses ``coherence_matrix()`` function to avoid code duplication and
         ensure consistency with existing coherence computations.
         """
-        np = self._np
 
         # Handle empty graph case
         if self.N == 0:
@@ -307,7 +295,6 @@ class InternalHamiltonian:
         Uses ``get_attr()`` with ``ALIAS_VF`` to support attribute aliasing
         and maintain consistency with the rest of the codebase.
         """
-        np = self._np
 
         frequencies = np.zeros(self.N, dtype=float)
 
@@ -344,7 +331,6 @@ class InternalHamiltonian:
         For directed graphs, the matrix may not be Hermitian unless the graph
         is explicitly symmetrized.
         """
-        np = self._np
 
         H_coupling = np.zeros((self.N, self.N), dtype=complex)
 
@@ -388,7 +374,6 @@ class InternalHamiltonian:
         2. Unitary time evolution
         3. Probability conservation
         """
-        np = self._np
 
         # Handle empty graph case
         if self.N == 0:
@@ -479,8 +464,6 @@ class InternalHamiltonian:
                 "Install with: pip install scipy"
             ) from exc
 
-        np = self._np
-
         # Compute matrix exponential
         exponent = -1j * self.H_int * t / self.hbar_str
         U_t = expm(exponent)
@@ -520,7 +503,6 @@ class InternalHamiltonian:
         gives the stationary states :math:`|\phi_n\rangle` with energies :math:`E_n`.
         These are the maximally stable coherent configurations.
         """
-        np = self._np
 
         # Use eigh for Hermitian matrices (more efficient and numerically stable)
         eigenvalues, eigenvectors = np.linalg.eigh(self.H_int)
@@ -559,7 +541,6 @@ class InternalHamiltonian:
         observable value. In practice, numerical precision may introduce small
         real components that represent the actual structural reorganization rate.
         """
-        np = self._np
 
         # Get node index
         try:
@@ -611,7 +592,7 @@ def build_H_coherence(
     H_coh : ndarray, shape (N, N)
         Coherence potential matrix
     """
-    import numpy as np
+    from ..mathematics.unified_numerical import np
 
     # Import here to avoid circular dependency
     from ..metrics.coherence import coherence_matrix
@@ -654,7 +635,7 @@ def build_H_frequency(
     H_freq : ndarray, shape (N, N)
         Diagonal frequency operator
     """
-    import numpy as np
+    from ..mathematics.unified_numerical import np
 
     if nodes is None:
         nodes = cached_node_list(G)
@@ -690,7 +671,7 @@ def build_H_coupling(
     H_coupling : ndarray, shape (N, N)
         Coupling matrix (symmetric for undirected graphs)
     """
-    import numpy as np
+    from ..mathematics.unified_numerical import np
 
     if nodes is None:
         nodes = cached_node_list(G)

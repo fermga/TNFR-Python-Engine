@@ -6,7 +6,7 @@ import math
 from collections.abc import Mapping, MutableMapping, MutableSequence
 from typing import Any, cast
 
-import numpy as np
+from ..mathematics.unified_numerical import np
 
 from ..alias import (
     get_attr,

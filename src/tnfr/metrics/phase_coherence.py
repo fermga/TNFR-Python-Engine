@@ -77,14 +77,14 @@ observers.kuramoto_order : Alternative Kuramoto order parameter implementation
 from __future__ import annotations
 
 import cmath
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
 if TYPE_CHECKING:
     from ..types import TNFRGraph
 
 from ..alias import get_attr
 from ..constants.aliases import ALIAS_THETA
-from ..utils import get_numpy
+from ..mathematics.unified_numerical import np
 
 __all__ = [
     "compute_phase_alignment",
@@ -190,7 +190,7 @@ def compute_phase_alignment(G: TNFRGraph, node: Any, radius: int = 1) -> float:
     phases = []
     for n in neighbors:
         try:
-            theta = float(get_attr(G.nodes[n], ALIAS_THETA, 0.0))
+            theta = cast(float, get_attr(G.nodes[n], ALIAS_THETA, 0.0))
             phases.append(theta)
         except (KeyError, ValueError, TypeError):
             # Skip nodes with invalid phase data
@@ -204,8 +204,6 @@ def compute_phase_alignment(G: TNFRGraph, node: Any, radius: int = 1) -> float:
         return 1.0  # Single node: perfect synchrony
 
     # Compute Kuramoto order parameter using circular statistics
-    np = get_numpy()
-
     if np is not None:
         # NumPy vectorized computation
         phases_array = np.array(phases)
@@ -310,7 +308,7 @@ def compute_global_phase_coherence(G: TNFRGraph) -> float:
     phases = []
     for n in G.nodes():
         try:
-            theta = float(get_attr(G.nodes[n], ALIAS_THETA, 0.0))
+            theta = cast(float, get_attr(G.nodes[n], ALIAS_THETA, 0.0))
             phases.append(theta)
         except (KeyError, ValueError, TypeError):
             # Skip nodes with invalid phase data
@@ -324,8 +322,6 @@ def compute_global_phase_coherence(G: TNFRGraph) -> float:
         return 1.0  # Single node: perfect synchrony
 
     # Compute Kuramoto order parameter using circular statistics
-    np = get_numpy()
-
     if np is not None:
         # NumPy vectorized computation
         phases_array = np.array(phases)

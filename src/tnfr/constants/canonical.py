@@ -552,7 +552,11 @@ ARITHMETIC_FFT_ENHANCEMENT_CANONICAL = 4 * (PHI**2) / (PI**2)        # 4·φ²/�
 # ============================================================================
 
 # Physics interactions canonical thresholds
-PHYSICS_GRAD_THRESHOLD_CANONICAL = 1 / (PI + GAMMA / 2)         # 1/(π+γ/2) ≈ 0.2915 (0.2904 → canonical harmonic threshold)
+# Phase gradient threshold: γ/π from Kuramoto critical coupling in TNFR units
+# (Universal Tetrahedral Correspondence: γ ↔ |∇φ|)
+PHASE_GRADIENT_THRESHOLD_CANONICAL = GAMMA / PI                  # γ/π ≈ 0.1837 (admissible phase gradient limit)
+# Legacy alias for backward compatibility
+PHYSICS_GRAD_THRESHOLD_CANONICAL = PHASE_GRADIENT_THRESHOLD_CANONICAL
 PHYSICS_CURVATURE_HOTSPOT_CANONICAL = 0.9 * PI                  # 0.9×π ≈ 2.8274 (curvature hotspot threshold)  
 PHYSICS_HOTSPOT_FRACTION_CANONICAL = GAMMA / (PI + E)           # γ/(π+e) ≈ 0.0985 (10% → canonical hotspot fraction)
 PHYSICS_CONFIDENCE_LEVEL_CANONICAL = PHI / INV_PHI              # φ/(1/φ) = φ² ≈ 2.618 → normalized to 0.95

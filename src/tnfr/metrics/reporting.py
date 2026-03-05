@@ -7,6 +7,7 @@ from heapq import nlargest
 from statistics import StatisticsError, fmean, mean
 from typing import Any
 
+from ..errors import TNFRValueError
 from ..glyph_history import ensure_history
 from ..sense import sigma_rose
 from ..types import NodeId, TNFRGraph
@@ -99,14 +100,17 @@ def glyph_top(G: TNFRGraph, k: int = 3) -> list[tuple[str, float]]:
 
     k = int(k)
     if k <= 0:
-        raise ValueError("k must be a positive integer")
+        raise TNFRValueError(
+            "k must be a positive integer",
+            context={"k": k},
+        )
     tg = Tg_global(G, normalize=True)
     return nlargest(k, tg.items(), key=lambda kv: kv[1])
 
 
 def build_metrics_summary(
     G: TNFRGraph, *, series_limit: int | None = None
-) -> tuple[dict[str, float | dict[str, float] | dict[str, list[float]] | dict[str, int]], bool]:
+) -> tuple[dict[str, Any], bool]:
     """Collect a compact metrics summary for CLI reporting.
 
     This factory aggregates various TNFR metrics into a unified summary
@@ -124,7 +128,7 @@ def build_metrics_summary(
 
     Returns
     -------
-    tuple[dict, bool]
+    tuple[dict[str, Any], bool]
         A two-element tuple containing:
 
         - **summary** (dict): Metrics dictionary with the following keys:

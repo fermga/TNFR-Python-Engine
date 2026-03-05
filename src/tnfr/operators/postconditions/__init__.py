@@ -6,6 +6,13 @@ postcondition validators for operators that need strict verification.
 
 Postconditions ensure that operators fulfill their contracts and maintain
 canonical TNFR physics.
+
+Exception hierarchy
+-------------------
+``OperatorContractViolation`` inherits from
+``StructuralIntegrityViolation`` (physics.integrity) so that a single
+``except StructuralIntegrityViolation`` catch handles both conservation-law
+and operator-contract failures.
 """
 
 from __future__ import annotations
@@ -15,24 +22,24 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     pass
 
+from ...physics.integrity import StructuralIntegrityViolation
+
 __all__ = [
     "OperatorContractViolation",
 ]
 
 
-class OperatorContractViolation(Exception):
-    """Raised when an operator's postconditions are violated."""
+class OperatorContractViolation(StructuralIntegrityViolation):
+    """Raised when an operator's postconditions are violated.
+
+    Inherits from ``StructuralIntegrityViolation`` so callers can catch
+    both conservation and contract failures with a single base class.
+    """
 
     def __init__(self, operator: str, reason: str) -> None:
-        """Initialize contract violation error.
-
-        Parameters
-        ----------
-        operator : str
-            Name of the operator that violated its contract
-        reason : str
-            Description of why the contract was violated
-        """
-        self.operator = operator
         self.reason = reason
-        super().__init__(f"{operator} contract violation: {reason}")
+        super().__init__(
+            operator=operator,
+            violation_type="postcondition",
+            details={"reason": reason},
+        )

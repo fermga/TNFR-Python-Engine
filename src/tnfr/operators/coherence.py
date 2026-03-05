@@ -16,7 +16,7 @@ from ..alias import get_attr
 from ..config.operator_names import COHERENCE
 from ..constants.aliases import ALIAS_DNFR
 from ..types import Glyph, TNFRGraph
-from ..utils import get_numpy
+from ..mathematics.unified_numerical import np
 from .definitions_base import Operator
 
 
@@ -210,8 +210,6 @@ class Coherence(Operator):
 
         # Compute mean phase using circular mean (angles wrap around 2π)
         # Convert to complex exponentials for circular averaging
-        np = get_numpy()
-
         if np is not None:
             # NumPy vectorized computation
             theta_array = np.array(theta_neighbors)

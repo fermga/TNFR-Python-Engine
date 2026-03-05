@@ -15,6 +15,7 @@ from .metrics_core import (
     EMISSION_TIMESTAMP_TUPLE as _ALIAS_EMISSION_TIMESTAMP_TUPLE,
 )
 from ..alias import get_attr_str
+from ..mathematics.unified_numerical import np
 
 __all__ = [
     "coupling_metrics",
@@ -26,147 +27,6 @@ __all__ = [
     "_compute_reactivation_readiness",
     "_estimate_time_to_collapse",
 ]
-
-
-
-def _compute_epi_variance(G, node) -> float:
-    """Compute EPI variance during silence period.
-
-    Measures the standard deviation of EPI values recorded during silence,
-    validating effective preservation (variance ≈ 0).
-
-    Parameters
-    ----------
-    G : TNFRGraph
-        Graph containing the node
-    node : NodeId
-        Node to compute variance for
-
-    Returns
-    -------
-    float
-        Standard deviation of EPI during silence period
-    """
-    import numpy as np
-
-    epi_history = G.nodes[node].get("epi_history_during_silence", [])
-    if len(epi_history) < 2:
-        return 0.0
-    return float(np.std(epi_history))
-
-
-def _compute_preservation_integrity(preserved_epi: float, epi_after: float) -> float:
-    """Compute preservation integrity ratio.
-
-    Measures structural preservation quality as:
-        integrity = 1 - |EPI_after - EPI_preserved| / EPI_preserved
-
-    Interpretation:
-    - integrity = 1.0: Perfect preservation
-    - integrity < 0.95: Significant degradation
-    - integrity < 0.8: Preservation failure
-
-    Parameters
-    ----------
-    preserved_epi : float
-        EPI value that was preserved at silence start
-    epi_after : float
-        Current EPI value
-
-    Returns
-    -------
-    float
-        Preservation integrity in [0, 1]
-    """
-    if preserved_epi == 0:
-        return 1.0 if epi_after == 0 else 0.0
-
-    integrity = 1.0 - abs(epi_after - preserved_epi) / abs(preserved_epi)
-    return max(0.0, integrity)
-
-
-def _compute_reactivation_readiness(G, node) -> float:
-    """Compute readiness score for reactivation from silence.
-
-    Evaluates if the node can reactivate effectively based on:
-    - νf residual (must be recoverable)
-    - EPI preserved (must be coherent)
-    - Silence duration (not excessive)
-    - Network connectivity (active neighbors)
-
-    Score in [0, 1]:
-    - 1.0: Fully ready to reactivate
-    - 0.5-0.8: Moderate readiness
-    - < 0.3: Risky reactivation
-
-    Parameters
-    ----------
-    G : TNFRGraph
-        Graph containing the node
-    node : NodeId
-        Node to compute readiness for
-
-    Returns
-    -------
-    float
-        Reactivation readiness score in [0, 1]
-    """
-    vf = _get_node_attr(G, node, ALIAS_VF)
-    epi = _get_node_attr(G, node, ALIAS_EPI)
-    duration = G.nodes[node].get("silence_duration", 0.0)
-
-    # Count active neighbors
-    active_neighbors = 0
-    if G.has_node(node):
-        for n in G.neighbors(node):
-            if _get_node_attr(G, n, ALIAS_VF) > 0.1:
-                active_neighbors += 1
-
-    # Scoring components
-    vf_score = min(vf / 0.5, 1.0)  # νf recoverable
-    epi_score = min(epi / 0.3, 1.0)  # EPI coherent
-    duration_score = 1.0 / (1.0 + duration * 0.1)  # Penalize long silence
-    network_score = min(active_neighbors / 3.0, 1.0)  # Network support
-
-    return (vf_score + epi_score + duration_score + network_score) / 4.0
-
-
-def _estimate_time_to_collapse(G, node) -> float:
-    """Estimate time until nodal collapse during silence.
-
-    Estimates how long silence can be maintained before structural collapse
-    based on observed drift rate or default degradation model.
-
-    Model:
-        t_collapse ≈ EPI_preserved / |DRIFT_RATE|
-
-    Parameters
-    ----------
-    G : TNFRGraph
-        Graph containing the node
-    node : NodeId
-        Node to estimate collapse time for
-
-    Returns
-    -------
-    float
-        Estimated time steps until collapse (inf if no degradation)
-    """
-    preserved_epi = G.nodes[node].get("preserved_epi", 0.0)
-    drift_rate = G.nodes[node].get("epi_drift_rate", 0.0)
-
-    if abs(drift_rate) < 1e-10:
-        # No observed degradation - return large value
-        return float("inf")
-
-    if preserved_epi <= 0:
-        # Already at or below collapse threshold
-        return 0.0
-
-    # Estimate time until EPI reaches zero
-    return abs(preserved_epi / drift_rate)
-
-
 
 
 def coupling_metrics(
@@ -458,7 +318,7 @@ def resonance_metrics(
     }
 
 
-def _compute_epi_variance(G, node) -> float:
+def _compute_epi_variance(G: Any, node: Any) -> float:
     """Compute EPI variance during silence period.
 
     Measures the standard deviation of EPI values recorded during silence,
@@ -476,8 +336,6 @@ def _compute_epi_variance(G, node) -> float:
     float
         Standard deviation of EPI during silence period
     """
-    import numpy as np
-
     epi_history = G.nodes[node].get("epi_history_during_silence", [])
     if len(epi_history) < 2:
         return 0.0
@@ -514,7 +372,7 @@ def _compute_preservation_integrity(preserved_epi: float, epi_after: float) -> f
     return max(0.0, integrity)
 
 
-def _compute_reactivation_readiness(G, node) -> float:
+def _compute_reactivation_readiness(G: Any, node: Any) -> float:
     """Compute readiness score for reactivation from silence.
 
     Evaluates if the node can reactivate effectively based on:
@@ -560,7 +418,7 @@ def _compute_reactivation_readiness(G, node) -> float:
     return (vf_score + epi_score + duration_score + network_score) / 4.0
 
 
-def _estimate_time_to_collapse(G, node) -> float:
+def _estimate_time_to_collapse(G: Any, node: Any) -> float:
     """Estimate time until nodal collapse during silence.
 
     Estimates how long silence can be maintained before structural collapse
@@ -596,7 +454,7 @@ def _estimate_time_to_collapse(G, node) -> float:
     return abs(preserved_epi / drift_rate)
 
 
-def silence_metrics(G, node, vf_before, epi_before):
+def silence_metrics(G: Any, node: Any, vf_before: float, epi_before: float) -> dict[str, float]:
     """SHA - Silence metrics: νf reduction, EPI preservation, duration tracking.
 
     Extended metrics for deep analysis of structural preservation effectiveness.

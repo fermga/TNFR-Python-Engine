@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Callable, Mapping, Sequence
 
-import numpy as np
+from .unified_numerical import np, TNFRValueError
 
 if TYPE_CHECKING:
     from .spaces import BanachSpaceEPI
@@ -26,28 +26,60 @@ class _EPIValidators:
     def _as_array(values: Sequence[complex] | np.ndarray, *, dtype: np.dtype) -> np.ndarray:
         array = np.asarray(values, dtype=dtype)
         if array.ndim != 1:
-            raise ValueError("Inputs must be one-dimensional arrays.")
+            raise TNFRValueError(
+                "Inputs must be one-dimensional arrays.",
+                context={"ndim": array.ndim},
+                suggestion="Provide a 1D array."
+            )
         if not np.all(np.isfinite(array)):
-            raise ValueError("Inputs must not contain NaNs or infinities.")
+            raise TNFRValueError(
+                "Inputs must not contain NaNs or infinities.",
+                context={"finite": False},
+                suggestion="Check input data for validity."
+            )
         return array
 
     @classmethod
     def _validate_grid(cls, grid: Sequence[float] | np.ndarray, expected_size: int) -> np.ndarray:
         array = np.asarray(grid, dtype=float)
         if array.ndim != 1:
-            raise ValueError("x_grid must be one-dimensional.")
+            raise TNFRValueError(
+                "x_grid must be one-dimensional.",
+                context={"ndim": array.ndim},
+                suggestion="Provide a 1D grid."
+            )
         if array.size != expected_size:
-            raise ValueError("x_grid length must match continuous component.")
+            raise TNFRValueError(
+                "x_grid length must match continuous component.",
+                context={"grid_size": array.size, "expected_size": expected_size},
+                suggestion="Ensure grid size matches data size."
+            )
         if array.size < 2:
-            raise ValueError("x_grid must contain at least two points.")
+            raise TNFRValueError(
+                "x_grid must contain at least two points.",
+                context={"grid_size": array.size},
+                suggestion="Provide a grid with at least 2 points."
+            )
         if not np.all(np.isfinite(array)):
-            raise ValueError("x_grid must not contain NaNs or infinities.")
+            raise TNFRValueError(
+                "x_grid must not contain NaNs or infinities.",
+                context={"finite": False},
+                suggestion="Check grid data for validity."
+            )
 
         spacings = np.diff(array)
         if np.any(spacings <= 0):
-            raise ValueError("x_grid must be strictly increasing.")
+            raise TNFRValueError(
+                "x_grid must be strictly increasing.",
+                context={"monotonic": False},
+                suggestion="Ensure grid points are sorted and unique."
+            )
         if not np.allclose(spacings, spacings[0], rtol=1e-9, atol=1e-12):
-            raise ValueError("x_grid must be uniform for finite-difference stability.")
+            raise TNFRValueError(
+                "x_grid must be uniform for finite-difference stability.",
+                context={"uniform": False},
+                suggestion="Provide a uniformly spaced grid."
+            )
         return array
 
     @classmethod
@@ -82,18 +114,40 @@ class BEPIElement(_EPIValidators):
             self.f_continuous, self.a_discrete, self.x_grid
         )
         if grid is None:
-            raise ValueError("x_grid is mandatory for BEPIElement instances.")
+            raise TNFRValueError(
+                "x_grid is mandatory for BEPIElement instances.",
+                context={"grid": None},
+                suggestion="Provide a valid x_grid."
+            )
         object.__setattr__(self, "f_continuous", f_array)
         object.__setattr__(self, "a_discrete", a_array)
         object.__setattr__(self, "x_grid", grid)
 
     def _assert_compatible(self, other: BEPIElement) -> None:
         if self.f_continuous.shape != other.f_continuous.shape:
-            raise ValueError("Continuous components must share shape for direct sums.")
+            raise TNFRValueError(
+                "Continuous components must share shape for direct sums.",
+                context={
+                    "self_shape": self.f_continuous.shape,
+                    "other_shape": other.f_continuous.shape
+                },
+                suggestion="Ensure continuous components have matching shapes."
+            )
         if self.a_discrete.shape != other.a_discrete.shape:
-            raise ValueError("Discrete tails must share shape for direct sums.")
+            raise TNFRValueError(
+                "Discrete tails must share shape for direct sums.",
+                context={
+                    "self_shape": self.a_discrete.shape,
+                    "other_shape": other.a_discrete.shape
+                },
+                suggestion="Ensure discrete components have matching shapes."
+            )
         if not np.allclose(self.x_grid, other.x_grid, rtol=1e-12, atol=1e-12):
-            raise ValueError("x_grid must match to combine EPI elements.")
+            raise TNFRValueError(
+                "x_grid must match to combine EPI elements.",
+                context={"grid_match": False},
+                suggestion="Ensure both elements share the same grid."
+            )
 
     def direct_sum(self, other: BEPIElement) -> BEPIElement:
         """Return the algebraic direct sum ``self ⊕ other``."""
@@ -124,9 +178,20 @@ class BEPIElement(_EPIValidators):
     ) -> np.ndarray:
         result = np.asarray(transform(values), dtype=np.complex128)
         if result.shape != values.shape:
-            raise ValueError("Transforms must preserve the element shape.")
+            raise TNFRValueError(
+                "Transforms must preserve the element shape.",
+                context={
+                    "input_shape": values.shape,
+                    "output_shape": result.shape
+                },
+                suggestion="Ensure transform preserves shape."
+            )
         if not np.all(np.isfinite(result)):
-            raise ValueError("Transforms must return finite values.")
+            raise TNFRValueError(
+                "Transforms must return finite values.",
+                context={"finite": False},
+                suggestion="Check transform for singularities."
+            )
         return result
 
     def compose(
@@ -182,7 +247,11 @@ class BEPIElement(_EPIValidators):
             state["continuous"], state["discrete"], state["grid"]
         )
         if grid is None:
-            raise ValueError("x_grid is mandatory for BEPIElement instances.")
+            raise TNFRValueError(
+                "x_grid is mandatory for BEPIElement instances.",
+                context={"grid": None},
+                suggestion="Provide a valid x_grid."
+            )
         object.__setattr__(self, "f_continuous", f_array)
         object.__setattr__(self, "a_discrete", a_array)
         object.__setattr__(self, "x_grid", grid)
@@ -317,9 +386,17 @@ def evaluate_coherence_transform(
     """
 
     if kappa < 0:
-        raise ValueError("kappa must be non-negative.")
+        raise TNFRValueError(
+            "kappa must be non-negative.",
+            context={"kappa": kappa},
+            suggestion="Provide a non-negative kappa."
+        )
     if tolerance < 0:
-        raise ValueError("tolerance must be non-negative.")
+        raise TNFRValueError(
+            "tolerance must be non-negative.",
+            context={"tolerance": tolerance},
+            suggestion="Provide a non-negative tolerance."
+        )
 
     if norm_kwargs is None:
         norm_kwargs = {}

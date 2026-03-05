@@ -28,11 +28,15 @@ Performance:
 Status: CANONICAL SPECTRAL ARITHMETIC ENGINE
 """
 
-import numpy as np
-from typing import Dict, Any, Optional, Tuple, Callable
+from ..errors import TNFRValueError
+
+from ..mathematics.unified_numerical import np
+from typing import Dict, Any, Optional, Tuple
 from dataclasses import dataclass, field
 from enum import Enum
 import time
+
+from ..errors.contextual import NetworkConfigError, TNFRUserError
 
 try:
     import networkx as nx
@@ -81,6 +85,11 @@ try:
 except ImportError:
     HAS_FFT_CACHE = False
     FFTCacheCoordinator = None  # type: ignore
+
+try:
+    from .fft_backend import FFTBackendCapabilities
+except ImportError:  # pragma: no cover - circular import guard during bootstrap
+    FFTBackendCapabilities = None  # type: ignore
 
 
 class SpectralOperation(Enum):
@@ -142,6 +151,7 @@ class TNFRAdvancedFFTEngine:
             if cache_coordinator is not None
             else (get_fft_cache_coordinator() if HAS_FFT_CACHE else None)
         )
+        self.backend_name = f"{self.__class__.__module__}.{self.__class__.__name__}"
         
         # Initialize mathematical backend
         if HAS_MATH_BACKENDS:
@@ -159,6 +169,30 @@ class TNFRAdvancedFFTEngine:
         
         # Precomputed windows for time-frequency analysis
         self._window_cache = {}
+
+    def get_capabilities(self) -> FFTBackendCapabilities:
+        """Return capability metadata for planning purposes."""
+
+        if FFTBackendCapabilities is None:  # pragma: no cover - during import cycle
+            raise TNFRUserError(
+                message="FFTBackendCapabilities unavailable",
+                suggestion="Check import cycles or installation",
+                context={"module": "advanced_fft_arithmetic"}
+            )
+
+        extra = {"default_backend": self.default_backend}
+        if self.cache_coordinator is None:
+            extra["cache_strategy"] = "local"
+        else:
+            extra["cache_strategy"] = "coordinated"
+
+        return FFTBackendCapabilities(
+            backend_name=self.backend_name,
+            max_nodes=None,
+            precision=self.precision,
+            supports_distributed=False,
+            extra=extra,
+        )
     
     def _calculate_attenuation_db(self, filter_response: np.ndarray) -> float:
         """Calculate filter attenuation in dB safely."""
@@ -187,7 +221,11 @@ class TNFRAdvancedFFTEngine:
         This is the fundamental operation that enables all FFT arithmetic.
         """
         if not HAS_NETWORKX or G is None:
-            raise ValueError("Graph required for spectral analysis")
+            raise NetworkConfigError(
+                parameter="graph",
+                value=G,
+                reason="Graph required for spectral analysis"
+            )
             
         spectral_basis = None
 
@@ -208,7 +246,11 @@ class TNFRAdvancedFFTEngine:
                 return self._spectral_cache[graph_id]
             
             if not HAS_SPECTRAL:
-                raise RuntimeError("Spectral analysis not available")
+                raise TNFRUserError(
+                    message="Spectral analysis not available",
+                    suggestion="Install spectral dependencies",
+                    context={"has_spectral": HAS_SPECTRAL}
+                )
                 
             if HAS_UNIFIED_CACHE:
                 cache = get_unified_cache()
@@ -282,29 +324,101 @@ class TNFRAdvancedFFTEngine:
         if signal2 is None:
             signal2 = np.array([G.nodes[node].get('nu_f', 1.0) for node in G.nodes()])
             
-        # Transform to spectral domain
-        spectral1 = gft(signal1, spectral_state.eigenvectors)
-        spectral2 = gft(signal2, spectral_state.eigenvectors)
-        
-        # Perform operation in spectral domain
-        if operation == "multiply":
-            result_spectral = spectral1 * spectral2
-        elif operation == "add":
-            result_spectral = spectral1 + spectral2
-        elif operation == "convolve":
-            # True convolution: multiplication in spectral domain
-            result_spectral = spectral1 * spectral2
+        # Use GPU backend for large signals when available
+        if HAS_MATH_BACKENDS and len(signal1) > 100:
+            try:
+                backend = get_backend()
+                if backend.supports_autodiff:
+                    # Convert to backend tensors
+                    s1_tensor = backend.as_array(signal1)
+                    s2_tensor = backend.as_array(signal2)
+                    U_tensor = backend.as_array(spectral_state.eigenvectors)
+                    
+                    # GPU GFT: spectral = U^T @ signal
+                    spectral1_tensor = backend.matmul(backend.conjugate_transpose(U_tensor), s1_tensor)
+                    spectral2_tensor = backend.matmul(backend.conjugate_transpose(U_tensor), s2_tensor)
+                    
+                    # Perform operation in spectral domain on GPU
+                    if operation == "multiply":
+                        result_spectral_tensor = spectral1_tensor * spectral2_tensor
+                    elif operation == "add":
+                        result_spectral_tensor = spectral1_tensor + spectral2_tensor
+                    elif operation == "convolve":
+                        result_spectral_tensor = spectral1_tensor * spectral2_tensor
+                    else:
+                        raise TNFRUserError(
+                            message=f"Unknown spectral operation: {operation}",
+                            suggestion="Use 'multiply', 'add', or 'convolve'",
+                            context={"operation": operation}
+                        )
+                    
+                    # GPU IGFT: result = U @ spectral
+                    result_spatial_tensor = backend.matmul(U_tensor, result_spectral_tensor)
+                    result_spatial = backend.to_numpy(result_spatial_tensor)
+                    
+                else:
+                    raise TNFRUserError(
+                        message="Backend doesn't support autodiff",
+                        suggestion="Use a backend with autodiff support (e.g., JAX, PyTorch)",
+                        context={"backend": self.backend_name}
+                    )
+            except Exception:
+                # Fallback to CPU implementation
+                spectral1 = gft(signal1, spectral_state.eigenvectors)
+                spectral2 = gft(signal2, spectral_state.eigenvectors)
+                
+                if operation == "multiply":
+                    result_spectral = spectral1 * spectral2
+                elif operation == "add":
+                    result_spectral = spectral1 + spectral2
+                elif operation == "convolve":
+                    result_spectral = spectral1 * spectral2
+                else:
+                    raise TNFRUserError(
+                        message=f"Unknown spectral operation: {operation}",
+                        suggestion="Use 'multiply', 'add', or 'convolve'",
+                        context={"operation": operation}
+                    )
+                    
+                result_spatial = igft(result_spectral, spectral_state.eigenvectors)
         else:
-            raise ValueError(f"Unknown operation: {operation}")
+            # CPU implementation for small signals or when GPU unavailable
+            spectral1 = gft(signal1, spectral_state.eigenvectors)
+            spectral2 = gft(signal2, spectral_state.eigenvectors)
             
-        # Transform back to spatial domain
-        result_spatial = igft(result_spectral, spectral_state.eigenvectors)
+            if operation == "multiply":
+                result_spectral = spectral1 * spectral2
+            elif operation == "add":
+                result_spectral = spectral1 + spectral2
+            elif operation == "convolve":
+                result_spectral = spectral1 * spectral2
+            else:
+                msg = f"Unknown operation: {operation}"
+                raise TNFRValueError(
+                    msg,
+                    context={
+                        "operation": operation,
+                        "allowed": ["multiply", "add", "convolve"],
+                    },
+                    suggestion="Use 'multiply', 'add', or 'convolve'.",
+                )
+                
+            result_spatial = igft(result_spectral, spectral_state.eigenvectors)
         
         execution_time = time.perf_counter() - start_time
         
         # Update statistics
         self.total_operations += 1
         self.total_fft_ops += 2  # Forward + inverse transform
+        
+        # Determine actual backend used
+        actual_backend = self.default_backend
+        if HAS_MATH_BACKENDS and len(signal1) > 100:
+            try:
+                backend = get_backend()
+                actual_backend = f"{self.default_backend}({backend.name})"
+            except Exception:
+                pass
         
         result = FFTArithmeticResult(
             operation=SpectralOperation.CONVOLUTION,
@@ -313,7 +427,7 @@ class TNFRAdvancedFFTEngine:
             spectral_state=spectral_state,
             execution_time=execution_time,
             fft_operations=2,
-            backend_used=self.default_backend
+            backend_used=actual_backend
         )
         
         if self.cache_coordinator is not None:
@@ -509,7 +623,11 @@ class TNFRAdvancedFFTEngine:
             distance = np.abs(frequencies - safe_cutoff)
             response = 1.0 - np.exp(-(bandwidth - distance).clip(min=0.0) * filter_order / safe_cutoff)
         else:
-            raise ValueError(f"Unknown filter type: {filter_type}")
+            raise TNFRUserError(
+                message=f"Unknown filter type: {filter_type}",
+                suggestion="Use 'lowpass', 'highpass', 'bandpass', or 'notch'",
+                context={"filter_type": filter_type}
+            )
 
         return np.clip(response, 0.0, 1.0)
         

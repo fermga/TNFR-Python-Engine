@@ -782,8 +782,8 @@ class SequenceHealthAnalyzer:
         min_coherence = min(coherences)
         max_coherence = max(coherences)
 
-        # Get threshold from graph config
-        threshold = float(G.graph.get("THOL_MIN_COLLECTIVE_COHERENCE", 0.3))
+        # Get threshold from graph config (fallback: canonical 1/(π+1) ≈ 0.2413)
+        threshold = float(G.graph.get("THOL_MIN_COLLECTIVE_COHERENCE", 0.2413))
         nodes_below_threshold = sum(1 for c in coherences if c < threshold)
 
         return {

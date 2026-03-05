@@ -32,7 +32,9 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Callable, Dict, List, Optional
 
-import numpy as np
+from ..errors import TNFRValueError
+
+from ..mathematics.unified_numerical import np
 
 # Canonical constants and keys
 from tnfr.constants import DNFR_PRIMARY, EPI_PRIMARY, VF_PRIMARY
@@ -84,7 +86,7 @@ class ClassicalMechanicsMapper:
             - ΔNFR: Structural pressure (derived from Euler-Lagrange)
         """
         if system.q_dot is None:
-            raise ValueError("Lagrangian mapping requires generalized velocities (q_dot).")
+            raise TNFRValueError("Lagrangian mapping requires generalized velocities (q_dot).")
 
         # 1. Map Mass to Frequency: νf = 1/m
         # We take the mean mass if multiple, or return a vector if supported.
@@ -150,7 +152,7 @@ class ClassicalMechanicsMapper:
             Dict containing TNFR nodal attributes.
         """
         if system.p is None:
-            raise ValueError("Hamiltonian mapping requires generalized momenta (p).")
+            raise TNFRValueError("Hamiltonian mapping requires generalized momenta (p).")
 
         # 1. Map Mass to Frequency
         mass_ref = np.mean(system.masses) if system.masses is not None else 1.0
@@ -348,7 +350,7 @@ class ClassicalForceTranslator:
         # So we can modify in place and restore.
         
         if system.p is None:
-            raise ValueError("Poisson Bracket requires momenta (p).")
+            raise TNFRValueError("Poisson Bracket requires momenta (p).")
             
         for i in range(n):
             df_dq = gradient(f, system, 'q', i)

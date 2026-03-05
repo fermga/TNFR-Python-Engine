@@ -54,7 +54,6 @@ warm_cached_import = _init.warm_cached_import
 LazyImportProxy = _init.LazyImportProxy
 get_logger = _init.get_logger
 get_nodenx = _init.get_nodenx
-get_numpy = _init.get_numpy
 prune_failed_imports = _init.prune_failed_imports
 warn_once = _init.warn_once
 _configure_root = _init._configure_root
@@ -170,7 +169,6 @@ __all__ = (
     "get_logger",
     "get_lock",
     "get_nodenx",
-    "get_numpy",
     "prune_failed_imports",
     "warn_once",
     "convert_value",

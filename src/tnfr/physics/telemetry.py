@@ -16,9 +16,9 @@ try:
 except ImportError:
     nx = None
 
-import numpy as np
+from ..mathematics.unified_numerical import np
 
-from ..utils.cache import cache_tnfr_computation, CacheLevel
+from ..mathematics.unified_cache import cache_tnfr_computation, CacheLevel
 from .canonical import _get_precision_dtype, _get_phase, _get_dnfr
 from .vectorized_ops import (
     compute_phi_s_exact_vectorized,

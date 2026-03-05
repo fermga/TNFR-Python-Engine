@@ -16,7 +16,8 @@ Spectral analysis (eigenvalues, Fiedler value) is NEW functionality.
 from __future__ import annotations
 
 
-import numpy as np
+from ..mathematics.unified_numerical import np
+from ..errors import TNFRValueError
 
 from ..types import Graph as TNFRGraph  # noqa: F401 - used in docstrings
 
@@ -261,9 +262,14 @@ def compute_k_top_spectral(
             from ..constants.canonical import K_TOP_FALLBACK_CANONICAL
             k_top = K_TOP_FALLBACK_CANONICAL
     else:
-        raise ValueError(
-            f"Unknown method '{method}'. "
-            f"Valid: ['fiedler_inverse', 'spectral_gap', 'diameter_scaled']"
+        msg = f"Unknown method '{method}'"
+        raise TNFRValueError(
+            msg,
+            context={
+                "method": method,
+                "allowed": ["fiedler_inverse", "spectral_gap", "diameter_scaled"],
+            },
+            suggestion="Use 'fiedler_inverse', 'spectral_gap', or 'diameter_scaled'.",
         )
 
     # Clamp to canonical range (TNFR tetrahedral bounds)

@@ -64,7 +64,7 @@ def _compute_canonical_gradients_jit_kernel(
 
     It supports both directed and undirected (symmetric) graphs.
     """
-    import numpy as np
+    from ..mathematics.unified_numerical import np
     
     # Allocations (Numba handles these efficiently in nopython mode)
     cos_sum = np.zeros(n_nodes, dtype=np.float64)
@@ -157,7 +157,6 @@ def compute_fused_gradients(
     epi: Any,
     vf: Any,
     weights: Mapping[str, float],
-    np: Any,
     use_jit: bool = True,
 ) -> Any:
     """Compute all ΔNFR gradients in a fused kernel (Directed).
@@ -197,7 +196,6 @@ def compute_fused_gradients(
         epi=epi,
         vf=vf,
         weights=weights,
-        np=np,
         accumulate_both_directions=False,
         use_jit=use_jit,
     )
@@ -211,7 +209,6 @@ def compute_fused_gradients_symmetric(
     epi: Any,
     vf: Any,
     weights: Mapping[str, float],
-    np: Any,
     accumulate_both_directions: bool = True,
     use_jit: bool = True,
 ) -> Any:
@@ -235,8 +232,6 @@ def compute_fused_gradients_symmetric(
         νf values (shape: [N])
     weights : Mapping[str, float]
         Component weights (w_phase, w_epi, w_vf, w_topo)
-    np : module
-        NumPy module
     accumulate_both_directions : bool, optional
         If True (default), each edge (u, v) contributes to both u and v.
         If False, each edge (u, v) only contributes to v (dst).
@@ -249,6 +244,7 @@ def compute_fused_gradients_symmetric(
     ndarray
         ΔNFR gradient vector (shape: [N])
     """
+    from ..mathematics.unified_numerical import np
     n_nodes = phase.shape[0]
     n_edges = edge_src.shape[0]
 

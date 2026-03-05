@@ -43,18 +43,13 @@ from ..operators import grammar as _grammar
 from ..types import Glyph
 from .config import ValidationConfig, configure_validation, validation_config  # noqa: F401
 from .graph import GRAPH_VALIDATORS, run_validators  # noqa: F401
-from .input_validation import (  # noqa: F401
+from .unified_validation_system import (
     ValidationError,
-    validate_dnfr_value,
-    validate_epi_value,
-    validate_glyph,
-    validate_glyph_factors,
-    validate_node_id,
-    validate_operator_parameters,
-    validate_theta_value,
-    validate_tnfr_graph,
-    validate_vf_value,
+    get_unified_validation_system
 )
+# Legacy exports mapped to unified system where possible
+# validate_dnfr_value, validate_epi_value etc are deprecated
+
 from .invariants import (  # noqa: F401
     Invariant10_DomainNeutrality,
     Invariant1_EPIOnlyThroughOperators,
@@ -81,6 +76,20 @@ from .soft_filters import (  # noqa: F401
 )
 from .validator import TNFRValidationError, TNFRValidator  # noqa: F401
 from .window import validate_window  # noqa: F401
+
+# Unified validation system exports
+from .unified_validation_system import (
+    TNFRUnifiedValidationSystem,
+    ValidationConfig,
+    ValidationResult,
+    TNFRSecurityError,
+    get_unified_validation_system,
+    validate_structural_frequency,
+    validate_phase_value,
+    validate_coherence,
+    validate_string_input,
+    get_unified_validation_stats,
+)  # noqa: F401
 
 
 # NOTE: Compatibility module deprecated - grammar emerges from TNFR structural dynamics

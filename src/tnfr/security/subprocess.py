@@ -17,6 +17,8 @@ import subprocess
 from pathlib import Path
 from typing import Any, Sequence
 
+from ..errors import TNFRValueError
+
 __all__ = [
     "validate_git_ref",
     "validate_path_safe",
@@ -29,11 +31,11 @@ __all__ = [
 ]
 
 
-class CommandValidationError(ValueError):
+class CommandValidationError(TNFRValueError):
     """Raised when command input validation fails."""
 
 
-class PathTraversalError(ValueError):
+class PathTraversalError(TNFRValueError):
     """Raised when path traversal attempt is detected."""
 
 
@@ -90,19 +92,25 @@ def validate_git_ref(ref: str) -> str:
     'abc123def'
     """
     if not ref:
-        raise CommandValidationError("Git reference cannot be empty")
+        raise CommandValidationError(
+            "Git reference cannot be empty",
+            context={"ref": ref},
+            suggestion="Provide a valid git branch, tag, or SHA."
+        )
 
     if not GIT_REF_PATTERN.match(ref):
         raise CommandValidationError(
-            f"Invalid git reference: {ref!r}. "
-            "References must contain only alphanumeric characters, "
-            "hyphens, underscores, slashes, and dots."
+            f"Invalid git reference: {ref!r}",
+            context={"ref": ref, "pattern": GIT_REF_PATTERN.pattern},
+            suggestion="References must contain only alphanumeric characters, hyphens, underscores, slashes, and dots."
         )
 
     # Additional security: prevent path traversal patterns
     if ".." in ref or ref.startswith("/") or ref.startswith("~"):
         raise CommandValidationError(
-            f"Invalid git reference: {ref!r}. " "References cannot contain path traversal patterns."
+            f"Invalid git reference: {ref!r}",
+            context={"ref": ref},
+            suggestion="References cannot contain path traversal patterns."
         )
 
     return ref
@@ -136,12 +144,17 @@ def validate_version_string(version: str) -> str:
     '2.0.0-beta.1'
     """
     if not version:
-        raise CommandValidationError("Version string cannot be empty")
+        raise CommandValidationError(
+            "Version string cannot be empty",
+            context={"version": version},
+            suggestion="Provide a valid semantic version string."
+        )
 
     if not VERSION_PATTERN.match(version):
         raise CommandValidationError(
-            f"Invalid version string: {version!r}. "
-            "Version must follow semantic versioning (e.g., '1.0.0' or 'v1.0.0')."
+            f"Invalid version string: {version!r}",
+            context={"version": version, "pattern": VERSION_PATTERN.pattern},
+            suggestion="Version must follow semantic versioning (e.g., '1.0.0' or 'v1.0.0')."
         )
 
     return version
@@ -180,15 +193,27 @@ def validate_path_safe(path: str | Path) -> Path:
 
     # Check for absolute paths in untrusted input
     if path_obj.is_absolute():
-        raise CommandValidationError(f"Absolute paths not allowed in user input: {path_str!r}")
+        raise CommandValidationError(
+            f"Absolute paths not allowed in user input: {path_str!r}",
+            context={"path": path_str},
+            suggestion="Use relative paths within the project directory."
+        )
 
     # Check for path traversal
     if ".." in path_obj.parts:
-        raise CommandValidationError(f"Path traversal not allowed: {path_str!r}")
+        raise CommandValidationError(
+            f"Path traversal not allowed: {path_str!r}",
+            context={"path": path_str},
+            suggestion="Do not use '..' in paths."
+        )
 
     # Check for special characters that could be exploited
     if not SAFE_PATH_PATTERN.match(path_str):
-        raise CommandValidationError(f"Path contains invalid characters: {path_str!r}")
+        raise CommandValidationError(
+            f"Path contains invalid characters: {path_str!r}",
+            context={"path": path_str, "pattern": SAFE_PATH_PATTERN.pattern},
+            suggestion="Path must contain only alphanumeric characters, hyphens, underscores, slashes, and dots."
+        )
 
     return path_obj
 
@@ -233,7 +258,7 @@ def validate_file_path(
     ------
     PathTraversalError
         If path traversal patterns are detected.
-    ValueError
+    TNFRValueError
         If the path is invalid or contains unsafe patterns.
 
     Examples
@@ -250,7 +275,11 @@ def validate_file_path(
     PathTraversalError: Path traversal detected
     """
     if not path:
-        raise ValueError("Path cannot be empty")
+        raise TNFRValueError(
+            "Path cannot be empty",
+            context={"path": path},
+            suggestion="Provide a valid file path."
+        )
 
     # Convert to Path object
     path_obj = Path(path)
@@ -259,13 +288,18 @@ def validate_file_path(
 
     # Check for null bytes (common in exploit attempts) - do this before resolve()
     if "\x00" in path_str:
-        raise ValueError(f"Null byte detected in path: {path!r}")
+        raise TNFRValueError(
+            f"Null byte detected in path: {path!r}",
+            context={"path": path_str},
+            suggestion="Remove null bytes from the path."
+        )
 
     # Check for path traversal attempts in the original path first
     if ".." in path_parts:
         raise PathTraversalError(
-            f"Path traversal detected in {path!r}. "
-            "Relative parent directory references (..) are not allowed."
+            f"Path traversal detected in {path!r}",
+            context={"path": path_str},
+            suggestion="Relative parent directory references (..) are not allowed."
         )
 
     # Normalize the path to resolve any . or .. components
@@ -276,8 +310,16 @@ def validate_file_path(
         # Catch embedded null byte errors from resolve()
         error_msg = str(e)
         if "null byte" in error_msg.lower():
-            raise ValueError(f"Null byte detected in path: {path!r}") from e
-        raise ValueError(f"Invalid path: {path}") from e
+            raise TNFRValueError(
+                f"Null byte detected in path: {path!r}",
+                context={"path": path_str, "error": error_msg},
+                suggestion="Remove null bytes from the path."
+            ) from e
+        raise TNFRValueError(
+            f"Invalid path: {path}",
+            context={"path": path_str, "error": error_msg},
+            suggestion="Check path syntax and permissions."
+        ) from e
 
     # Check for absolute paths if not allowed
     if not allow_absolute and normalized.is_absolute():
@@ -287,9 +329,10 @@ def validate_file_path(
             # We need to check if it contains .. components
             pass
         else:
-            raise ValueError(
-                f"Absolute paths not allowed: {path}. "
-                "Use allow_absolute=True if this is intentional."
+            raise TNFRValueError(
+                f"Absolute paths not allowed: {path}",
+                context={"path": path_str},
+                suggestion="Use allow_absolute=True if this is intentional."
             )
 
     # Check for other dangerous patterns
@@ -301,16 +344,21 @@ def validate_file_path(
 
     for pattern, desc in dangerous_patterns:
         if pattern in path_str:
-            raise ValueError(f"{desc} not allowed in path: {path!r}")
+            raise TNFRValueError(
+                f"{desc} not allowed in path: {path!r}",
+                context={"path": path_str, "pattern": pattern},
+                suggestion=f"Remove {desc.lower()} from the path."
+            )
 
     # Validate file extension if restrictions are specified
     if allowed_extensions is not None:
         suffix = path_obj.suffix.lower()
         allowed_lower = [ext.lower() for ext in allowed_extensions]
         if suffix not in allowed_lower:
-            raise ValueError(
-                f"File extension {suffix!r} not allowed. "
-                f"Allowed extensions: {allowed_extensions}"
+            raise TNFRValueError(
+                f"File extension {suffix!r} not allowed",
+                context={"path": path_str, "suffix": suffix, "allowed": allowed_extensions},
+                suggestion=f"Use one of the allowed extensions: {allowed_extensions}"
             )
 
     return path_obj
@@ -354,7 +402,7 @@ def resolve_safe_path(
     ------
     PathTraversalError
         If the resolved path escapes the base directory.
-    ValueError
+    TNFRValueError
         If the path is invalid or doesn't meet requirements.
 
     Examples
@@ -369,9 +417,17 @@ def resolve_safe_path(
     PathTraversalError: Path escapes base directory
     """
     if not path:
-        raise ValueError("Path cannot be empty")
+        raise TNFRValueError(
+            "Path cannot be empty",
+            context={"path": path},
+            suggestion="Provide a valid file path."
+        )
     if not base_dir:
-        raise ValueError("Base directory cannot be empty")
+        raise TNFRValueError(
+            "Base directory cannot be empty",
+            context={"base_dir": base_dir},
+            suggestion="Provide a valid base directory."
+        )
 
     # First validate the path itself
     path_obj = validate_file_path(
@@ -395,12 +451,18 @@ def resolve_safe_path(
         resolved.relative_to(base_path)
     except ValueError as e:
         raise PathTraversalError(
-            f"Path {path!r} escapes base directory {base_dir!r}. " f"Resolved path: {resolved}"
+            f"Path {path!r} escapes base directory {base_dir!r}",
+            context={"path": str(path), "base_dir": str(base_dir), "resolved": str(resolved)},
+            suggestion="Ensure the path is within the base directory."
         ) from e
 
     # Check existence if required
     if must_exist and not resolved.exists():
-        raise ValueError(f"Path does not exist: {resolved}")
+        raise TNFRValueError(
+            f"Path does not exist: {resolved}",
+            context={"path": str(resolved)},
+            suggestion="Ensure the file or directory exists."
+        )
 
     return resolved
 
@@ -462,13 +524,18 @@ def run_command_safely(
     >>> result = run_command_safely(["git", "log", "-1", "--oneline"])
     """
     if not command:
-        raise CommandValidationError("Command cannot be empty")
+        raise CommandValidationError(
+            "Command cannot be empty",
+            context={"command": command},
+            suggestion="Provide a valid command sequence."
+        )
 
     # Validate all arguments are strings
     if not all(isinstance(arg, str) for arg in command):
         raise CommandValidationError(
-            "All command arguments must be strings. "
-            f"Got: {[type(arg).__name__ for arg in command]}"
+            "All command arguments must be strings",
+            context={"types": [type(arg).__name__ for arg in command]},
+            suggestion="Ensure all command arguments are strings."
         )
 
     # Extract base command (handle paths like /usr/bin/python)
@@ -477,8 +544,9 @@ def run_command_safely(
     # Validate command is in allowlist
     if base_cmd not in ALLOWED_COMMANDS:
         raise CommandValidationError(
-            f"Command not in allowlist: {base_cmd!r}. "
-            f"Allowed commands: {sorted(ALLOWED_COMMANDS)}"
+            f"Command not in allowlist: {base_cmd!r}",
+            context={"command": base_cmd, "allowed": sorted(ALLOWED_COMMANDS)},
+            suggestion=f"Use one of the allowed commands: {sorted(ALLOWED_COMMANDS)}"
         )
 
     # Validate cwd if provided

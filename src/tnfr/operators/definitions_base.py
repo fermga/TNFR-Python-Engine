@@ -16,7 +16,6 @@ from ..alias import get_attr
 from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
 from ..types import Glyph, TNFRGraph
 from .registry import OperatorMetaAuto
-from ..utils import get_numpy  # noqa: F401 (compatibility)
 
 # Metaclass removed – canonical operator set is immutable (see registry).
 # Historical dynamic auto-registration deprecated for TNFR grammar purity.
@@ -97,9 +96,19 @@ class Operator(metaclass=OperatorMetaAuto):
         if collect_metrics or validate_equation:
             state_before = self._capture_state(G, node)
 
+        # Structural Integrity Monitor — pre-operator snapshot
+        _integrity_monitor = G.graph.get("integrity_monitor")
+        if _integrity_monitor is not None:
+            _integrity_monitor.before_operator(G, node)
+
         from . import apply_glyph_with_grammar
 
         apply_glyph_with_grammar(G, [node], self.glyph, kw.get("window"))
+
+        # Structural Integrity Monitor — post-operator evaluation
+        # Conservation quality, Lyapunov dE/dt, postconditions, grammar
+        if _integrity_monitor is not None:
+            _integrity_monitor.after_operator(G, node, self.name)
 
         # Optional nodal equation validation (∂EPI/∂t = νf · ΔNFR(t))
         if validate_equation and state_before is not None:

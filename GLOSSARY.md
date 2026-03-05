@@ -86,7 +86,7 @@
 **What:** Local phase desynchronization / stress proxy field  
 **Status:** **CANONICAL** (Nov 2025)  
 **Physics:** Captures dynamics C(t) misses due to scaling invariance  
-**Threshold:** Classical bound |∇φ| < 0.2904 (harmonic oscillator stability)  
+**Threshold:** Canonical bound |∇φ| < γ/π ≈ 0.1837 (Kuramoto critical coupling in TNFR units)  
 **API:** `tnfr.physics.fields.compute_phase_gradient()`  
 **Usage:** Stress detection, local instability prediction  
 **Documentation:** [docs/STRUCTURAL_FIELDS_TETRAD.md](docs/STRUCTURAL_FIELDS_TETRAD.md)
@@ -651,6 +651,6 @@ When adding new functionality:
 3. Follow [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines  
 4. Test with [TESTING.md](TESTING.md) requirements
 
-**Version**: 0.0.1 (November 29, 2025)  
+**Version**: 0.0.3 (March 2026)  
 **Status**: Complete operational reference for current TNFR implementation  
 **Language**: English only (canonical documentation policy)

@@ -19,6 +19,6 @@ def ensure_numpy_buffers(
     key_prefix: str,
     count: int,
     buffer_count: int,
-    np: Any,
     dtype: Any = None,
+    max_cache_entries: int | None = 128,
 ) -> tuple[Any, ...]: ...

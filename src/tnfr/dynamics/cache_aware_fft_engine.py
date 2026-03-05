@@ -26,12 +26,7 @@ from typing import Any, Dict, Optional, List, Tuple
 from dataclasses import dataclass
 from enum import Enum
 
-try:
-    import numpy as np
-    HAS_NUMPY = True
-except ImportError:
-    HAS_NUMPY = False
-    np = None
+from ..mathematics.unified_numerical import np, NUMPY_AVAILABLE as HAS_NUMPY
 
 try:
     import networkx as nx

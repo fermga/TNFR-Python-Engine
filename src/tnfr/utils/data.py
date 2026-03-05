@@ -19,6 +19,7 @@ from typing import (
     overload,
 )
 
+from ..errors import TNFRValueError
 from .numeric import kahan_sum_nd
 from .init import get_logger
 from .init import warn_once as _warn_once_factory
@@ -74,7 +75,11 @@ def convert_value(
     if isinstance(converted, float) and not math.isfinite(converted):
         if strict:
             target = f"{key!r}" if key is not None else "value"
-            raise ValueError(f"Non-finite value {converted!r} for {target}")
+            raise TNFRValueError(
+                f"Non-finite value {converted!r} for {target}",
+                context={"value": converted, "key": key},
+                suggestion="Ensure value is finite."
+            )
         level = log_level if log_level is not None else logging.DEBUG
         if key is not None:
             _value_logger.log(level, "Non-finite value for %r: %s", key, converted)
@@ -126,8 +131,10 @@ def normalize_optional_int(
         text = str(value).strip()
         if not text:
             if strict:
-                raise ValueError(
-                    error_message or "Empty value is not allowed for configuration options."
+                raise TNFRValueError(
+                    error_message or "Empty value is not allowed for configuration options.",
+                    context={"value": value},
+                    suggestion="Provide a non-empty value."
                 )
             return None
         sentinel_set: set[str] | None = None
@@ -140,13 +147,19 @@ def normalize_optional_int(
             result = int(text)
         except (TypeError, ValueError) as exc:
             if strict:
-                raise ValueError(error_message or f"Invalid integer value: {value!r}") from exc
+                raise TNFRValueError(
+                    error_message or f"Invalid integer value: {value!r}",
+                    context={"value": value, "original_error": str(exc)},
+                    suggestion="Provide a valid integer."
+                ) from exc
             return None
 
     if not allow_non_positive and result <= 0:
         if strict:
-            raise ValueError(
-                error_message or "Non-positive values are not permitted for this option."
+            raise TNFRValueError(
+                error_message or "Non-positive values are not permitted for this option.",
+                context={"value": result},
+                suggestion="Provide a positive integer."
             )
         return None
 
@@ -223,7 +236,11 @@ def normalize_materialize_limit(max_materialize: int | None) -> int | None:
         return None
     limit = int(max_materialize)
     if limit < 0:
-        raise ValueError("'max_materialize' must be non-negative")
+        raise TNFRValueError(
+            "'max_materialize' must be non-negative",
+            context={"max_materialize": max_materialize},
+            suggestion="Provide a non-negative integer or None."
+        )
     return limit
 
 
@@ -302,7 +319,11 @@ def ensure_collection(
             msg = error_msg or (
                 f"Iterable produced {len(preview)} items, exceeds limit {limit}; first items: [{examples}]"
             )
-            raise ValueError(msg)
+            raise TNFRValueError(
+                msg,
+                context={"limit": limit, "count": len(preview), "examples": examples},
+                suggestion="Increase max_materialize or filter the iterable."
+            )
         if not preview:
             return (), iterator
         return preview, chain(preview, iterator)
@@ -318,7 +339,11 @@ def ensure_collection(
         msg = error_msg or (
             f"Iterable produced {len(items)} items, exceeds limit {limit}; first items: [{examples}]"
         )
-        raise ValueError(msg)
+        raise TNFRValueError(
+            msg,
+            context={"limit": limit, "count": len(items), "examples": examples},
+            suggestion="Increase max_materialize or filter the iterable."
+        )
     return items
 
 
@@ -352,7 +377,11 @@ def _convert_and_validate_weights(
 
     if negatives:
         if error_on_negative:
-            raise ValueError(NEGATIVE_WEIGHTS_MSG % negatives)
+            raise TNFRValueError(
+                NEGATIVE_WEIGHTS_MSG % negatives,
+                context={"negative_weights": negatives},
+                suggestion="Ensure all weights are non-negative."
+            )
         warn_negative = _resolve_negative_warn_handler(warn_once)
         warn_negative(negatives)
         for key, weight in negatives.items():

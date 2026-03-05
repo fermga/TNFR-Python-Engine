@@ -30,7 +30,8 @@ from .glyph_history import append_metric, count_glyphs, ensure_history
 from .glyph_runtime import last_glyph
 from .utils import clamp01, kahan_sum_nd
 from .types import NodeId, SigmaVector, TNFRGraph
-from .utils import get_numpy
+from .mathematics.unified_numerical import np
+from .errors import TNFRValueError
 
 # -------------------------
 # Canon: circular glyph order and angles
@@ -159,7 +160,6 @@ def _sigma_from_iterable(
     else:
         iterator = iter((values,))
 
-    np = get_numpy()
     if np is not None:
         iterator, np_iter = tee(iterator)
         arr = np.fromiter((_to_complex(v) for v in np_iter), dtype=np.complex128)
@@ -360,11 +360,15 @@ def sigma_rose(G: TNFRGraph, steps: int | None = None) -> dict[str, int]:
     if steps is not None:
         steps = int(steps)
         if steps < 0:
-            raise ValueError("steps must be non-negative")
+            raise TNFRValueError(
+                "steps must be non-negative",
+                context={"steps": steps},
+                suggestion="Provide a non-negative integer for steps."
+            )
         rows = counts if steps >= len(counts) else counts[-steps:]  # noqa: E203
     else:
         rows = counts
-    counter = Counter()
+    counter: Counter[str] = Counter()
     for row in rows:
         for k, v in row.items():
             if k != "t":

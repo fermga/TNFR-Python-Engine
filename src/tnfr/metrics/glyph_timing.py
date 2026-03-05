@@ -18,6 +18,7 @@ from typing import (
 
 from ..alias import get_attr
 from ..config.constants import GLYPH_GROUPS, GLYPHS_CANONICAL
+from ..mathematics.unified_numerical import np
 from ..constants import get_param
 from ..constants.aliases import ALIAS_EPI
 from ..glyph_history import append_metric
@@ -36,13 +37,6 @@ from ..types import (
 
 LATENT_GLYPH: str = "SHA"
 DEFAULT_EPI_SUPPORT_LIMIT = 0.05
-
-try:  # pragma: no cover - import guard exercised via tests
-    import numpy as _np  # type: ignore[import-not-found]
-except Exception:  # pragma: no cover - numpy optional dependency
-    _np = None
-
-np: ModuleType | None = cast(ModuleType | None, _np)
 
 
 def _has_numpy_support(np_obj: object) -> bool:

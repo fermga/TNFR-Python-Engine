@@ -37,7 +37,7 @@ grammar.
 | Quantity            | Default | Meaning                                          |
 |---------------------|---------|--------------------------------------------------|
 | ΔΦ_s                | 2.0     | Escape threshold (confinement breach)            |
-| max(|∇φ|)           | 0.38    | Local stress / desynchronization warning         |
+| max(|∇φ|)           | 0.1837  | Local stress / desynchronization warning (γ/π)   |
 | max(|K_φ|)          | 2.8274     | Curvature fault pocket (mutation risk locus)     |
 | ξ_C critical        | > diameter * 1.0 | Approaching global correlation divergence |
 | ξ_C watch           | > mean_distance * 3.1416 | Extended local correlation zone (π from RG scaling) |
@@ -158,6 +158,14 @@ validation calls reuse cached tetrad when graph topology/properties unchanged.
 3. Generate health summary; apply stabilizers if elevated/critical.
 4. Log performance stats for regression tracking.
 5. Persist JSONL telemetry + validation payload for reproducibility.
+
+### Self-Optimization Pipeline Hand-off
+
+Auto-optimization payloads (Paley partitions, SDK discovery runs, etc.) now have a
+dedicated guide in [`docs/SELF_OPTIMIZATION_PIPELINE.md`](SELF_OPTIMIZATION_PIPELINE.md).
+Use it when reviewing `results/self_optimization/**` directories so validation output,
+test reruns, and dashboard overlays (ΔΦ_s vs ΔC(t)) stay synchronized with the
+structural health process documented here.
 
 ---
 
@@ -550,7 +558,7 @@ def compute_composite_health_score(G, weights=None):
     metrics = {
         "coherence": compute_global_coherence(G),
         "structural_potential": 1.0 - min(1.0, abs(compute_phi_s(G)) / 2.0),
-        "phase_gradient": 1.0 - min(1.0, max(compute_phase_gradient(G)) / 0.38),
+        "phase_gradient": 1.0 - min(1.0, max(compute_phase_gradient(G)) / 0.1837),
         "phase_curvature": 1.0 - min(1.0, max(abs(compute_phase_curvature(G))) / 2.8274),
         "coherence_length": compute_xi_c_health_score(G),
         "grammar_compliance": 1.0  # Computed from sequence validation
@@ -583,16 +591,19 @@ Standardized health benchmarks for different network types and sizes:
 ## 🔗 Integration Points
 
 ### With Operators
+
 - **Coherence**: Increases composite health score by 0.10-0.25
 - **Dissonance**: Temporarily decreases health by 0.05-0.15 (recovers with stabilizers)
 - **Self-Organization**: Improves long-term health trajectory by 0.15-0.30
 
 ### With Grammar Validation
+
 - **U1 violations**: Immediate health impact -0.20
 - **U2 violations**: Gradual degradation over time
 - **U3 violations**: Phase desynchronization increases health volatility
 
 ### With Performance Monitoring
+
 - Health monitoring overhead: <2% for networks <1K nodes
 - Real-time monitoring: 10Hz sampling rate for networks <10K nodes
 - Alert latency: <100ms for critical health events

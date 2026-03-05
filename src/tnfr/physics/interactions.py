@@ -53,7 +53,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Iterable, List, Dict
 
-import numpy as np
+from ..mathematics.unified_numerical import np
 
 try:
     import networkx as nx  # type: ignore
@@ -172,7 +172,7 @@ def em_like(
     compute_phi_s : bool, default False
         If True, compute Φ_s before/after and report mean drift.
     grad_threshold : float, default PHYSICS_GRAD_THRESHOLD_CANONICAL
-        Threshold for mean |∇φ| warning (π/(4√2) ≈ 0.2904).
+        Threshold for mean |∇φ| warning (γ/π ≈ 0.1837).
 
     Returns
     -------
@@ -251,7 +251,7 @@ def weak_like(
     ensure_stable_base : bool, default True
         Insert IL before OZ→ZHIR to satisfy U4b stable base requirement.
     grad_threshold : float, default PHYSICS_GRAD_THRESHOLD_CANONICAL
-        Threshold for mean |∇φ| warning (π/(4√2) ≈ 0.2904).
+        Threshold for mean |∇φ| warning (γ/π ≈ 0.1837).
 
     Returns
     -------

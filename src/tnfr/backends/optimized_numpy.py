@@ -29,7 +29,8 @@ from typing import Any, MutableMapping
 
 from . import TNFRBackend
 from ..types import TNFRGraph
-from ..utils import get_numpy, get_logger
+from ..utils import get_logger
+from ..mathematics.unified_numerical import np
 
 logger = get_logger(__name__)
 
@@ -61,7 +62,7 @@ class OptimizedNumPyBackend(TNFRBackend):
 
     def __init__(self):
         """Initialize optimized NumPy backend."""
-        self._np = get_numpy()
+        self._np = np
         if self._np is None:
             raise RuntimeError(
                 "OptimizedNumPy backend requires numpy to be installed. "

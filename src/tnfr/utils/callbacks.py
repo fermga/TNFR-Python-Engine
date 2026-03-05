@@ -18,6 +18,7 @@ from typing import Any, NamedTuple
 
 import networkx as nx
 
+from ..errors import TNFRValueError
 from ..constants import DEFAULTS
 from ..locking import get_lock
 from .init import get_logger
@@ -72,7 +73,11 @@ class CallbackManager:
     def set_callback_error_limit(self, limit: int) -> int:
         """Set the maximum number of callback errors retained."""
         if limit < 1:
-            raise ValueError("limit must be positive")
+            raise TNFRValueError(
+                "limit must be positive",
+                context={"limit": limit},
+                suggestion="Provide a positive integer limit."
+            )
         with self._error_limit_lock:
             previous = self._error_limit
             self._error_limit = int(limit)
@@ -276,7 +281,11 @@ def _ensure_known_event(event: str) -> None:
     try:
         CallbackEvent(event)
     except ValueError as exc:  # pragma: no cover - defensive branch
-        raise ValueError(f"Unknown event: {event}") from exc
+        raise TNFRValueError(
+            f"Unknown event: {event}",
+            context={"event": event, "known_events": [e.value for e in CallbackEvent]},
+            suggestion="Use a valid CallbackEvent."
+        ) from exc
 
 
 def _normalize_callback_entry(entry: Any) -> "CallbackSpec | None":
@@ -351,7 +360,11 @@ def _reconcile_callback(
         if existing_spec is not None and existing_spec.func is not spec.func:
             msg = f"Callback {spec.name!r} already registered for {event}"
             if strict:
-                raise ValueError(msg)
+                raise TNFRValueError(
+                    msg,
+                    context={"name": spec.name, "event": event},
+                    suggestion="Use a unique name or set strict=False."
+                )
             logger.warning(msg)
 
     # Remove existing entries under the same key and any other using the same

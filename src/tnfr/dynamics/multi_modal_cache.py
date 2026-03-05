@@ -21,7 +21,7 @@ Key Features:
 Status: CANONICAL UNIFIED CACHE SYSTEM
 """
 
-import numpy as np
+from ..mathematics.unified_numerical import np
 from typing import Dict, Any, Optional, Set, Callable
 from dataclasses import dataclass, field
 from enum import Enum

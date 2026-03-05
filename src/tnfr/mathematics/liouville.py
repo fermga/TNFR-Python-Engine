@@ -37,7 +37,7 @@ from __future__ import annotations
 
 from typing import Any, Sequence
 
-import numpy as np
+from .unified_numerical import np, TNFRValueError
 
 from .backend import ensure_array, ensure_numpy, get_backend
 
@@ -129,9 +129,10 @@ def compute_liouvillian_spectrum(
     if validate_contractivity:
         max_real = np.max(eigenvalues.real)
         if max_real > atol:
-            raise ValueError(
-                f"Liouvillian spectrum violates contractivity: "
-                f"max(Re(λ)) = {max_real:.3e} > {atol:.3e}"
+            raise TNFRValueError(
+                "Liouvillian spectrum violates contractivity.",
+                context={"max_real_eigenvalue": max_real, "tolerance": atol},
+                suggestion="Ensure the Liouvillian represents a valid dissipative process."
             )
 
     if sort:

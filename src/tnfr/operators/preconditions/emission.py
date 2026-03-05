@@ -14,7 +14,10 @@ nodes in the appropriate state for foundational emission.
 
 from __future__ import annotations
 
+import warnings
 from typing import TYPE_CHECKING, Any
+
+from ...errors import TNFRValueError
 
 if TYPE_CHECKING:
     from ...types import TNFRGraph
@@ -74,8 +77,6 @@ def validate_emission_strict(G: TNFRGraph, node: Any) -> None:
     tnfr.operators.preconditions : Base precondition validators
     tnfr.operators.definitions.Emission : Emission operator implementation
     """
-    import warnings
-
     from ...alias import get_attr
     from ...constants.aliases import ALIAS_EPI, ALIAS_VF
     from ...config.thresholds import (
@@ -96,19 +97,23 @@ def validate_emission_strict(G: TNFRGraph, node: Any) -> None:
     # Precondition 1: EPI must be below latent threshold (node in latent state)
     # Emission is for activating nascent/latent structures, not boosting active ones
     if epi >= epi_threshold:
-        raise ValueError(
+        raise TNFRValueError(
             f"AL precondition failed: EPI={epi:.3f} >= {epi_threshold:.3f}. "
             f"AL requires latent state (node not already highly active). "
-            f"Consider IL (Coherence) to stabilize active nodes instead."
+            f"Consider IL (Coherence) to stabilize active nodes instead.",
+            context={"epi": epi, "epi_threshold": epi_threshold},
+            suggestion="Consider IL (Coherence) to stabilize active nodes instead.",
         )
 
     # Precondition 2: νf must exceed basal threshold (sufficient frequency for emission)
     # Below basal frequency, node lacks capacity to sustain structural activation
     if vf < vf_threshold:
-        raise ValueError(
+        raise TNFRValueError(
             f"AL precondition failed: νf={vf:.3f} < {vf_threshold:.3f}. "
             f"Structural frequency too low for emission. "
-            f"Consider NAV (Transition) to increase frequency first."
+            f"Consider NAV (Transition) to increase frequency first.",
+            context={"vf": vf, "vf_threshold": vf_threshold},
+            suggestion="Consider NAV (Transition) to increase frequency first.",
         )
 
     # Precondition 3: Network connectivity (warning only - not a hard failure)

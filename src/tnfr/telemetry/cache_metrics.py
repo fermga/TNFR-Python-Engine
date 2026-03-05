@@ -146,7 +146,8 @@ class CacheTelemetryPublisher:
                 },
                 sort_keys=True,
             )
-            self._logger.warning(warning)
+            # Low hit ratios are noisy in interactive sessions; log at debug to avoid user-facing spam.
+            self._logger.debug(warning)
 
         if (
             snapshot.avg_latency is not None

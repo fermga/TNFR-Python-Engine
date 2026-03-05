@@ -22,6 +22,7 @@ from __future__ import annotations
 
 from typing import Final
 
+from .errors import TNFRValueError
 from .constants import get_param
 from .types import GraphLike
 
@@ -39,7 +40,10 @@ def _coerce_bridge_factor(raw: object) -> float:
         raise TypeError("HZ_STR_BRIDGE must be a real number convertible to float") from exc
 
     if factor <= 0.0:
-        raise ValueError("HZ_STR_BRIDGE must be strictly positive")
+        raise TNFRValueError(
+            "HZ_STR_BRIDGE must be strictly positive",
+            context={"HZ_STR_BRIDGE": factor},
+        )
 
     return factor
 

@@ -10,13 +10,7 @@ from typing import Dict, List, Optional, Tuple, Any
 import json
 from pathlib import Path
 
-try:
-    import numpy as np
-
-    HAS_NUMPY = True
-except ImportError:
-    np = None  # type: ignore[assignment]
-    HAS_NUMPY = False
+from ..mathematics.unified_numerical import np, NUMPY_AVAILABLE as HAS_NUMPY
 
 __all__ = [
     "compare_networks",

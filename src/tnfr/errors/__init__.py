@@ -25,6 +25,9 @@ __all__ = [
     "PhaseError",
     "CoherenceError",
     "FrequencyError",
+    "TNFRValueError",
+    "TNFRSecurityError",
+    "TNFRSecurityWarning",
 ]
 
 from .contextual import (
@@ -34,4 +37,7 @@ from .contextual import (
     PhaseError,
     CoherenceError,
     FrequencyError,
+    TNFRValueError,
+    TNFRSecurityError,
+    TNFRSecurityWarning,
 )

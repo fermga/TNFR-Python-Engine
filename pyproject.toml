@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "tnfr"
-version = "1.0.0"
+version = "0.0.3"
 description = "Resonant Fractal Nature Theory (TNFR) - Computational engine for modeling coherent patterns through resonance dynamics"
 readme = "README.md"
 authors = ["F. F. Martinez Gamo"]
@@ -9,7 +9,7 @@ packages = [{include = "tnfr", from = "src"}]
 
 [project]
 name = "tnfr"
-version = "1.0.0"
+version = "0.0.3"
 description = "Resonant Fractal Nature Theory (TNFR) - Computational engine for modeling coherent patterns through resonance dynamics"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -22,14 +22,15 @@ python = "^3.10"
 # Minimal core - truly minimal for primality testing
 networkx = {version = "^2.6", optional = true}
 cachetools = {version = "^5.0", optional = true}
+mpmath = {version = "^1.3", optional = true}
 numpy = {version = "^1.24", optional = true}
 scipy = {version = "^1.9", optional = true}
 sympy = {version = "^1.10", optional = true}
 
 [tool.poetry.extras]
-full = ["numpy", "scipy", "networkx", "cachetools", "sympy"]
+full = ["numpy", "scipy", "networkx", "cachetools", "sympy", "mpmath"]
 math = ["sympy"]
-tnfr = ["networkx", "cachetools"]
+tnfr = ["networkx", "cachetools", "mpmath"]
 dev = ["pytest", "black", "flake8", "mypy"]
 
 [tool.poetry.scripts]
@@ -59,6 +60,7 @@ classifiers = [
 dependencies = [
   "networkx>=2.6,<4.0",
   "cachetools>=5.0,<7.0",
+  "mpmath>=1.3,<2.0",
 ]
 
 [project.optional-dependencies]

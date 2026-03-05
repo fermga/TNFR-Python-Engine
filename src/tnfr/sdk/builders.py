@@ -26,6 +26,7 @@ from __future__ import annotations
 
 from typing import Dict, Optional
 
+from ..mathematics.unified_numerical import np
 from .fluent import TNFRNetwork, NetworkResults
 from ..constants.canonical import (
     SDK_REWIRING_PROB_DEFAULT,
@@ -303,7 +304,6 @@ class TNFRExperimentBuilder:
         >>> for coupling, res in sorted(transition.items()):
         ...     print(f"Coupling {coupling:.2f}: C(t)={res.coherence:.3f}")
         """
-        import numpy as np
 
         coupling_values = np.linspace(initial_coupling, final_coupling, coupling_levels)
         results = {}

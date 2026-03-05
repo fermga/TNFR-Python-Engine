@@ -63,6 +63,11 @@ class Transition(Operator):
         if collect_metrics or validate_equation:
             state_before = self._capture_state(G, node)
 
+        # Structural Integrity Monitor — pre-operator snapshot
+        _integrity_monitor = G.graph.get("integrity_monitor")
+        if _integrity_monitor is not None:
+            _integrity_monitor.before_operator(G, node)
+
         # 5. Apply grammar
         from . import apply_glyph_with_grammar
 
@@ -70,6 +75,10 @@ class Transition(Operator):
 
         # 6. Execute structural transition (BEFORE metrics collection)
         self._apply_structural_transition(G, node, current_regime, **kw)
+
+        # Structural Integrity Monitor — post-operator evaluation
+        if _integrity_monitor is not None:
+            _integrity_monitor.after_operator(G, node, self.name)
 
         # 7. Optional nodal equation validation
         if validate_equation and state_before is not None:

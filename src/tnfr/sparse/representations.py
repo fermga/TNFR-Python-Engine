@@ -9,7 +9,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Dict, Optional, Sequence
 
-import numpy as np
+from ..errors import TNFRValueError
+from ..mathematics.unified_numerical import np
 from scipy import sparse
 
 from ..types import NodeId
@@ -265,9 +266,15 @@ class SparseTNFRGraph:
         seed: Optional[int] = None,
     ):
         if node_count <= 0:
-            raise ValueError("node_count must be positive")
+            raise TNFRValueError(
+                "node_count must be positive",
+                context={"node_count": node_count},
+            )
         if not 0.0 <= expected_density <= 1.0:
-            raise ValueError("expected_density must be in [0, 1]")
+            raise TNFRValueError(
+                "expected_density must be in [0, 1]",
+                context={"expected_density": expected_density},
+            )
 
         self.node_count = node_count
         self.expected_density = expected_density

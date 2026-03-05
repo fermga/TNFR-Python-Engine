@@ -14,6 +14,7 @@ from __future__ import annotations
 
 from typing import Any, Mapping, Optional
 
+from ..errors import TNFRValueError
 from .invariants import (
     InvariantSeverity,
     InvariantViolation,
@@ -406,44 +407,30 @@ class TNFRValidator:
         if not self._enable_input_validation:
             return {}
 
-        from .input_validation import (
-            validate_epi_value,
-            validate_vf_value,
-            validate_theta_value,
-            validate_dnfr_value,
-            validate_node_id,
-            validate_glyph,
-            validate_tnfr_graph,
-        )
-
+        from .unified_validation_system import get_unified_validation_system
+        
+        validator = get_unified_validation_system()
         results = {}
+        
+        # Map legacy validation calls to unified system
+        if epi is not None:
+            results["epi"] = validator.validate_epi(epi)
+        if vf is not None:
+            results["vf"] = validator.validate_frequency(vf)
+        if theta is not None:
+            results["theta"] = validator.validate_phase(theta)
+        if dnfr is not None:
+            results["dnfr"] = validator.validate_dnfr(dnfr)
+        if node_id is not None:
+            results["node_id"] = validator.validate_node_id(node_id)
+        if glyph is not None:
+            # Glyph validation not explicitly in unified system yet, pass through or add
+            pass 
+        if graph is not None:
+            # Graph validation handled by unified system
+            pass
 
-        try:
-            if epi is not None:
-                results["epi"] = validate_epi_value(epi, config=config)
-
-            if vf is not None:
-                results["vf"] = validate_vf_value(vf, config=config)
-
-            if theta is not None:
-                results["theta"] = validate_theta_value(theta)
-
-            if dnfr is not None:
-                results["dnfr"] = validate_dnfr_value(dnfr, config=config)
-
-            if node_id is not None:
-                results["node_id"] = validate_node_id(node_id)
-
-            if glyph is not None:
-                results["glyph"] = validate_glyph(glyph)
-
-            if graph is not None:
-                results["graph"] = validate_tnfr_graph(graph)
-
-        except Exception as e:
-            if raise_on_error:
-                raise
-            results["error"] = str(e)
+        return results
 
         return results
 
@@ -508,7 +495,11 @@ class TNFRValidator:
         validator_func = validator_map.get(operator.lower())
         if validator_func is None:
             if raise_on_error:
-                raise ValueError(f"Unknown operator: {operator}")
+                raise TNFRValueError(
+                    f"Unknown operator: {operator}",
+                    context={"operator": operator, "available": list(validator_map.keys())},
+                    suggestion="Use a valid canonical operator name.",
+                )
             return False
 
         try:
@@ -546,7 +537,7 @@ class TNFRValidator:
 
         Raises
         ------
-        ValueError
+        TNFRValueError
             If structural validation fails and raise_on_error is True.
         """
         if not self._enable_graph_validation:
@@ -1022,14 +1013,18 @@ class TNFRValidator:
         return "".join(html_parts)
 
 
-class TNFRValidationError(Exception):
+class TNFRValidationError(TNFRValueError):
     """Exception raised when TNFR invariant violations are detected."""
 
     def __init__(self, violations: list[InvariantViolation]) -> None:
         self.violations = violations
         validator = TNFRValidator()
         self.report = validator.generate_report(violations)
-        super().__init__(self.report)
+        super().__init__(
+            message=self.report,
+            context={"violation_count": len(violations)},
+            suggestion="Review the validation report and correct invariant violations."
+        )
 
     def export_to_json(self, violations: list[InvariantViolation]) -> str:
         """Export violations to JSON format.

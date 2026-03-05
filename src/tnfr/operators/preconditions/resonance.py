@@ -19,6 +19,8 @@ from __future__ import annotations
 import warnings
 from typing import TYPE_CHECKING, Any
 
+from ...errors import TNFRValueError
+
 if TYPE_CHECKING:
     from ...types import TNFRGraph
 
@@ -139,18 +141,21 @@ def validate_resonance_strict(
     # 1. Validate coherent source EPI
     epi = abs(float(get_attr(G.nodes[node], ALIAS_EPI, 0.0)))
     if epi < min_epi:
-        raise ValueError(
+        raise TNFRValueError(
             f"RA requires coherent source with EPI >= {min_epi:.1f} "
-            f"(current: {epi:.3f}). Apply IL or THOL first."
+            f"(current: {epi:.3f}). Apply IL or THOL first.",
+            context={"epi": epi, "min_epi": min_epi},
+            suggestion="Apply IL or THOL first.",
         )
 
     # 2. Validate network connectivity
     neighbors = list(G.neighbors(node))
     if require_coupling:
         if not neighbors:
-            raise ValueError(
+            raise TNFRValueError(
                 "RA requires network connectivity (node has no edges). "
-                "Apply UM (Coupling) first to establish resonant links."
+                "Apply UM (Coupling) first to establish resonant links.",
+                suggestion="Apply UM (Coupling) first to establish resonant links.",
             )
     elif not neighbors:
         # Node is isolated but require_coupling=False - issue warning
@@ -164,17 +169,21 @@ def validate_resonance_strict(
     # 3. Validate sufficient structural frequency
     vf = float(get_attr(G.nodes[node], ALIAS_VF, 0.0))
     if vf < min_vf:
-        raise ValueError(
+        raise TNFRValueError(
             f"RA requires sufficient structural frequency νf >= {min_vf:.2f} "
-            f"(current: {vf:.3f}). Apply AL (Emission) or VAL (Expansion) first."
+            f"(current: {vf:.3f}). Apply AL (Emission) or VAL (Expansion) first.",
+            context={"vf": vf, "min_vf": min_vf},
+            suggestion="Apply AL (Emission) or VAL (Expansion) first.",
         )
 
     # 4. Validate controlled dissonance
     dnfr = abs(float(get_attr(G.nodes[node], ALIAS_DNFR, 0.0)))
     if dnfr > max_dissonance:
-        raise ValueError(
+        raise TNFRValueError(
             f"RA requires controlled dissonance with |ΔNFR| <= {max_dissonance:.1f} "
-            f"(current: {dnfr:.3f}). Apply IL (Coherence) first to stabilize."
+            f"(current: {dnfr:.3f}). Apply IL (Coherence) first to stabilize.",
+            context={"dnfr": dnfr, "max_dissonance": max_dissonance},
+            suggestion="Apply IL (Coherence) first to stabilize.",
         )
 
     # 5. Validate phase compatibility (warning only, neighbors exist)

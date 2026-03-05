@@ -5,8 +5,9 @@ from __future__ import annotations
 import sys
 from collections.abc import Sequence
 
-import numpy as np
+from ..mathematics.unified_numerical import np
 
+from ..errors import TNFRValueError
 from ..alias import get_attr
 from ..glyph_runtime import last_glyph
 from ..config.constants import GLYPHS_CANONICAL_SET
@@ -23,42 +24,51 @@ from ..types import (
     ensure_bepi,
 )
 
-NodeData = NodeAttrMap
-"""Read-only node attribute mapping used by validators."""
-
 AliasSequence = Sequence[str]
 """Sequence of accepted attribute aliases."""
 
 __all__ = ("run_validators", "GRAPH_VALIDATORS")
 
 
-def _materialize_node_mapping(data: NodeData) -> dict[str, object]:
+def _materialize_node_mapping(data: NodeAttrMap) -> dict[str, object]:
     if isinstance(data, dict):
         return data
     return dict(data)
 
 
-def _require_attr(data: NodeData, alias: AliasSequence, node: NodeId, name: str) -> float:
+def _require_attr(data: NodeAttrMap, alias: AliasSequence, node: NodeId, name: str) -> float:
     """Return scalar attribute value or raise if missing."""
 
     mapping = _materialize_node_mapping(data)
     val = get_attr(mapping, alias, None)
     if val is None:
-        raise ValueError(f"Missing {name} attribute in node {node}")
+        raise TNFRValueError(
+            f"Missing {name} attribute in node {node}",
+            context={"node": node, "attribute": name, "aliases": alias},
+            suggestion=f"Ensure node {node} has one of {alias} initialized.",
+        )
     return float(val)
 
 
-def _require_epi(data: NodeData, node: NodeId) -> EPIValue:
+def _require_epi(data: NodeAttrMap, node: NodeId) -> EPIValue:
     """Return a validated BEPI element stored in ``data``."""
 
     mapping = _materialize_node_mapping(data)
     value = get_attr(mapping, ALIAS_EPI, None, conv=lambda obj: obj)
     if value is None:
-        raise ValueError(f"Missing EPI attribute in node {node}")
+        raise TNFRValueError(
+            f"Missing EPI attribute in node {node}",
+            context={"node": node, "aliases": ALIAS_EPI},
+            suggestion="Initialize EPI structure for this node.",
+        )
     try:
         return ensure_bepi(value)
     except (TypeError, ValueError) as exc:
-        raise ValueError(f"Invalid EPI payload in node {node}: {exc}") from exc
+        raise TNFRValueError(
+            f"Invalid EPI payload in node {node}: {exc}",
+            context={"node": node, "value_type": type(value).__name__},
+            suggestion="Ensure EPI is a valid BEPI object or compatible structure.",
+        ) from exc
 
 
 def _validate_sigma(graph: TNFRGraph) -> None:
@@ -66,7 +76,11 @@ def _validate_sigma(graph: TNFRGraph) -> None:
 
     sv = sigma_vector_from_graph(graph)
     if sv.get("mag", 0.0) > 1.0 + sys.float_info.epsilon:
-        raise ValueError("σ norm exceeds 1")
+        raise TNFRValueError(
+            "σ norm exceeds 1",
+            context={"sigma_magnitude": sv.get("mag")},
+            suggestion="Normalize the sigma vector so its magnitude is <= 1.",
+        )
 
 
 GRAPH_VALIDATORS: tuple[ValidatorFunc, ...] = (_validate_sigma,)
@@ -92,9 +106,17 @@ def _check_epi(
 
     spacings = np.diff(epi.x_grid)
     if np.any(spacings <= 0.0):
-        raise ValueError(f"EPI grid must be strictly increasing for node {node}")
+        raise TNFRValueError(
+            f"EPI grid must be strictly increasing for node {node}",
+            context={"node": node, "spacings_min": float(np.min(spacings))},
+            suggestion="Sort the EPI grid points.",
+        )
     if not np.allclose(spacings, spacings[0], rtol=1e-9, atol=1e-12):
-        raise ValueError(f"EPI grid must be uniform for node {node}")
+        raise TNFRValueError(
+            f"EPI grid must be uniform for node {node}",
+            context={"node": node, "spacings_variance": float(np.var(spacings))},
+            suggestion="Ensure EPI grid points are uniformly spaced.",
+        )
 
 
 def _out_of_range_msg(name: str, node: NodeId, val: float) -> str:
@@ -110,12 +132,20 @@ def _check_range(
     tol: float = 1e-9,
 ) -> None:
     if not within_range(val, lower, upper, tol):
-        raise ValueError(_out_of_range_msg(name, node, val))
+        raise TNFRValueError(
+            _out_of_range_msg(name, node, val),
+            context={"node": node, "value": val, "range": (lower, upper), "attribute": name},
+            suggestion=f"Ensure {name} is between {lower} and {upper}.",
+        )
 
 
 def _check_glyph(glyph: str | None, node: NodeId) -> None:
     if glyph and glyph not in GLYPHS_CANONICAL_SET:
-        raise KeyError(f"Invalid glyph {glyph} in node {node}")
+        raise TNFRValueError(
+            f"Invalid glyph {glyph} in node {node}",
+            context={"node": node, "glyph": glyph, "allowed": list(GLYPHS_CANONICAL_SET)},
+            suggestion="Use a canonical glyph from the allowed set.",
+        )
 
 
 def run_validators(graph: TNFRGraph) -> None:

@@ -11,6 +11,7 @@ docs/_build/
 .semantic_release/
 src/tnfr/_generated_version.py
 .venv/
+.venv*/
 .env
 .pytest_cache/
 .hypothesis/
@@ -59,6 +60,11 @@ benchmarks/results/*_5000_*.jsonl
 debug_scratch/
 *.tmp
 *.temp
+
+# Runtime data and caches (generated, not needed in repo)
+cache/
+data/
+logs/
 
 # Type checking cache
 .mypy_cache/

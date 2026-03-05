@@ -22,10 +22,11 @@ import time
 from dataclasses import dataclass
 from typing import Dict, List, Tuple, Optional, Union, Any
 from functools import lru_cache
-import numpy as np
+
+from .unified_numerical import np
 
 # Core TNFR infrastructure
-from ..utils.cache import cache_tnfr_computation, CacheLevel
+from .unified_cache import cache_tnfr_computation, CacheLevel
 from ..constants.canonical import (
     MATH_DELTA_NFR_THRESHOLD_CANONICAL,
     PHI, GAMMA, PI, E

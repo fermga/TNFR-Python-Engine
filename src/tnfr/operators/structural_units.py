@@ -12,6 +12,8 @@ from __future__ import annotations
 
 from typing import Any, Union
 
+from ..errors import TNFRValueError
+
 __all__ = [
     "HzStr",
     "StructuralFrequency",
@@ -65,8 +67,9 @@ class HzStr:
             If value is negative (structural frequencies are non-negative)
         """
         if value < MIN_STRUCTURAL_FREQUENCY:
-            raise ValueError(
-                f"Structural frequency must be >= {MIN_STRUCTURAL_FREQUENCY} Hz_str, got {value}"
+            raise TNFRValueError(
+                f"Structural frequency must be >= {MIN_STRUCTURAL_FREQUENCY} Hz_str, got {value}",
+                context={"value": value, "min_frequency": MIN_STRUCTURAL_FREQUENCY},
             )
         self.value = float(value)
         self.unit = "Hz_str"

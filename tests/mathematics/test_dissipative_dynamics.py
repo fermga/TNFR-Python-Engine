@@ -12,6 +12,7 @@ from tnfr.mathematics import (
     build_delta_nfr,
     build_lindblad_delta_nfr,
     make_coherence_operator,
+    ensure_numpy,
 )
 
 
@@ -104,7 +105,7 @@ def test_contractive_engine_preserves_trace_and_contractivity(
     initial /= np.trace(initial)
     steady = _steady_state_from_generator(generator, hilbert_qubit.dimension)
     baseline = _trace_distance(initial, steady)
-    step = engine.step(initial, dt=0.5)
+    step = ensure_numpy(engine.step(initial, dt=0.5))
 
     assert np.isclose(np.trace(step), 1.0, atol=1e-8)
     assert _trace_distance(step, steady) <= baseline + 1e-8
@@ -147,7 +148,7 @@ def test_contractive_engine_matches_qubit_ground_truth(
     initial /= np.trace(initial)
     dt = 0.6
 
-    evolved = engine.step(initial, dt=dt)
+    evolved = ensure_numpy(engine.step(initial, dt=dt))
     expected = _amplitude_damping_exact(initial, gamma=gamma, time=dt)
 
     assert np.allclose(evolved, expected, atol=5e-7)
@@ -186,7 +187,7 @@ def test_qutrit_pure_dephasing_matches_ground_truth(
 
     initial = np.ones((3, 3), dtype=np.complex128) / 3.0
     dt = 0.8
-    evolved = engine.step(initial, dt=dt)
+    evolved = ensure_numpy(engine.step(initial, dt=dt))
 
     rate_matrix = (eigenvalues[:, None] - eigenvalues[None, :]) ** 2 * gamma
     expected = _pure_dephasing_exact(initial, rates=rate_matrix, time=dt)
@@ -194,8 +195,8 @@ def test_qutrit_pure_dephasing_matches_ground_truth(
     assert np.allclose(evolved, expected, atol=5e-7)
 
     steady = _steady_state_from_generator(generator, hilbert_qutrit.dimension)
-    trajectory = engine.evolve(initial, steps=3, dt=dt)
-    distances = [_trace_distance(state, steady) for state in trajectory]
+    trajectory = ensure_numpy(engine.evolve(initial, steps=3, dt=dt))
+    distances = [_trace_distance(trajectory[k], steady) for k in range(len(trajectory))]
     assert all(distances[k] >= distances[k + 1] - 1e-7 for k in range(len(distances) - 1))
 
 
@@ -224,4 +225,4 @@ def test_defective_generator_works_with_scipy(hilbert_qubit: HilbertSpace) -> No
     evolved = engine.step(initial, dt=0.25)
 
     assert evolved.shape == (dim, dim)
-    assert np.all(np.isfinite(evolved))
+    assert np.all(np.isfinite(ensure_numpy(evolved)))

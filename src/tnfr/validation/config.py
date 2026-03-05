@@ -9,6 +9,7 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass
 
+from ..errors import TNFRValueError
 from .invariants import InvariantSeverity
 
 __all__ = [
@@ -56,7 +57,7 @@ def configure_validation(**kwargs: object) -> None:
 
     Raises
     ------
-    ValueError
+    TNFRValueError
         If an unknown configuration key is provided.
 
     Examples
@@ -69,4 +70,8 @@ def configure_validation(**kwargs: object) -> None:
         if hasattr(validation_config, key):
             setattr(validation_config, key, value)
         else:
-            raise ValueError(f"Unknown validation config key: {key}")
+            raise TNFRValueError(
+                f"Unknown validation config key: {key}",
+                context={"key": key, "available": list(validation_config.__dict__.keys())},
+                suggestion="Use a valid configuration key from ValidationConfig.",
+            )

@@ -144,7 +144,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Dict, List, Tuple, Optional
 
-import numpy as np
+from ..mathematics.unified_numerical import np
 from numpy.typing import NDArray
 
 from ..constants.canonical import EPI_MAX_CANONICAL

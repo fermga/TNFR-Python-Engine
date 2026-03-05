@@ -59,10 +59,7 @@ from typing import Any, Iterable, Mapping, MutableMapping
 import json
 import time
 
-try:
-    import numpy as np
-except ImportError:
-    np = None
+from ..mathematics.unified_numerical import np
 
 try:  # Physics field computations (canonical tetrad + extended suite)
     from ..physics.fields import (

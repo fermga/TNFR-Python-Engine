@@ -14,7 +14,7 @@ Key optimizations:
 Status: CANONICAL OPTIMIZATION ENGINE
 """
 
-import numpy as np
+from ..mathematics.unified_numerical import np
 from typing import Dict, List, Tuple, Optional, Any, Union
 from dataclasses import dataclass
 from functools import lru_cache

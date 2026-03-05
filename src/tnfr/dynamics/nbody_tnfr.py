@@ -87,7 +87,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Dict, List, Tuple
 
-import numpy as np
+from ..errors.contextual import NetworkConfigError
+from ..mathematics.unified_numerical import np
 from numpy.typing import NDArray
 
 from ..constants.canonical import EPI_MAX_CANONICAL
@@ -268,16 +269,28 @@ class TNFRNBodySystem:
             If dimensions mismatch or masses non-positive
         """
         if n_bodies < 1:
-            raise ValueError(f"n_bodies must be >= 1, got {n_bodies}")
+            raise NetworkConfigError(
+                parameter="n_bodies",
+                value=n_bodies,
+                reason="Must have at least one body"
+            )
 
         self.n_bodies = n_bodies
         self.masses = np.array(masses, dtype=float)
 
         if len(self.masses) != n_bodies:
-            raise ValueError(f"masses length {len(self.masses)} != n_bodies {n_bodies}")
+            raise NetworkConfigError(
+                parameter="masses",
+                value=len(self.masses),
+                reason=f"Masses length must match n_bodies ({n_bodies})"
+            )
 
         if np.any(self.masses <= 0):
-            raise ValueError("All masses must be positive")
+            raise NetworkConfigError(
+                parameter="masses",
+                value="[contains non-positive]",
+                reason="All masses must be positive"
+            )
 
         # State vectors
         self.positions = np.asarray(positions, dtype=float).copy()
@@ -291,11 +304,23 @@ class TNFRNBodySystem:
         # Validate shapes
         expected_shape = (n_bodies, 3)
         if self.positions.shape != expected_shape:
-            raise ValueError(f"positions shape {self.positions.shape} != {expected_shape}")
+            raise NetworkConfigError(
+                parameter="positions",
+                value=str(self.positions.shape),
+                reason=f"Shape mismatch, expected {expected_shape}"
+            )
         if self.velocities.shape != expected_shape:
-            raise ValueError(f"velocities shape {self.velocities.shape} != {expected_shape}")
+            raise NetworkConfigError(
+                parameter="velocities",
+                value=str(self.velocities.shape),
+                reason=f"Shape mismatch, expected {expected_shape}"
+            )
         if self.phases.shape != (n_bodies,):
-            raise ValueError(f"phases shape {self.phases.shape} != ({n_bodies},)")
+            raise NetworkConfigError(
+                parameter="phases",
+                value=str(self.phases.shape),
+                reason=f"Shape mismatch, expected ({n_bodies},)"
+            )
 
         self.time = 0.0
         self.hbar_str = float(hbar_str)
@@ -590,7 +615,11 @@ class TNFRNBodySystem:
         n_steps = int((t_final - self.time) / dt)
 
         if n_steps < 1:
-            raise ValueError(f"t_final {t_final} <= current time {self.time}")
+            raise NetworkConfigError(
+                parameter="t_final",
+                value=t_final,
+                reason=f"Must be greater than current time {self.time}"
+            )
 
         # Pre-allocate storage
         n_stored = (n_steps // store_interval) + 1

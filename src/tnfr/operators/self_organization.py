@@ -289,9 +289,9 @@ class SelfOrganization(Operator):
         # Always store telemetry value (even if 0.0).
         G.nodes[node]["_thol_collective_coherence"] = coherence
 
-        # Get threshold from graph config
+        # Get threshold from graph config (fallback: canonical 1/(π+1) ≈ 0.2413)
         min_coherence = float(
-            G.graph.get("THOL_MIN_COLLECTIVE_COHERENCE", 0.3)
+            G.graph.get("THOL_MIN_COLLECTIVE_COHERENCE", 0.2413)
         )
 
         # Validate against threshold (only warn if we have multiple sub-EPIs)

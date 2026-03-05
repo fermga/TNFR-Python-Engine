@@ -49,7 +49,7 @@ If you use this software in your research, please cite:
   author = {Martinez Gamo, F. F.},
   title = {TNFR-Python-Engine: Resonant Fractal Nature Theory Implementation},
   year = {2025},
-  version = {0.0.1},
+  version = {0.0.3},
   doi = {10.5281/zenodo.17761312},
   url = {https://github.com/fermga/TNFR-Python-Engine}
 }

@@ -21,11 +21,13 @@ Mathematical Foundation:
 Status: CANONICAL UNIFIED BACKEND
 """
 
-import numpy as np
+from ..mathematics.unified_numerical import np
 from typing import Dict, Any, Optional
 from dataclasses import dataclass, field
 from enum import Enum
 import time
+
+from ..errors import TNFRValueError
 
 try:
     import networkx as nx
@@ -229,7 +231,11 @@ class TNFRUnifiedBackend:
                 results = self._execute_cross_scale_coupling(request, backend_name)
                 
             else:
-                raise ValueError(f"Unknown computation type: {request.computation_type}")
+                raise TNFRValueError(
+                    f"Unknown computation type: {request.computation_type}",
+                    context={"computation_type": request.computation_type, "available": [t.name for t in ComputationType]},
+                    suggestion="Use a valid ComputationType enum value.",
+                )
                 
         except Exception as e:
             # Fallback to basic numpy computation

@@ -40,7 +40,7 @@ if TYPE_CHECKING:
 
 from ..alias import get_attr
 from ..constants.aliases import ALIAS_EPI, ALIAS_THETA
-from ..utils import get_numpy
+from ..mathematics.unified_numerical import np
 from ..utils.numeric import angle_diff
 
 __all__ = [
@@ -98,7 +98,6 @@ def capture_network_signals(G: TNFRGraph, node: NodeId) -> dict[str, Any] | None
     >>> signals["phase_variance"]  # High = complex field
     0.45
     """
-    np = get_numpy()
     from ..metrics.phase_compatibility import compute_phase_coupling_strength
 
     neighbors = list(G.neighbors(node))
@@ -204,8 +203,6 @@ def metabolize_signals_into_subepi(
     >>> metabolize_signals_into_subepi(0.60, signals, d2_epi=0.15)
     0.21  # Enhanced by network context
     """
-    np = get_numpy()
-
     # Base: Internal bifurcation (existing behavior)
     base_sub_epi = parent_epi * scaling_factor
 
@@ -562,8 +559,6 @@ def compute_subepi_collective_coherence(G: TNFRGraph, node: NodeId) -> float:
     >>> compute_subepi_collective_coherence(G_chaotic, node)
     0.23
     """
-    np = get_numpy()
-
     sub_epis = G.nodes[node].get("sub_epis", [])
     if len(sub_epis) < 2:
         return 0.0  # Need ≥2 sub-EPIs to measure coherence

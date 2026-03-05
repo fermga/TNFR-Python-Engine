@@ -9,14 +9,9 @@ Terminology (TNFR semantics):
 
 from __future__ import annotations
 
-from typing import Any, TYPE_CHECKING
+from typing import Any
 
-if TYPE_CHECKING:
-    from ..types import Glyph
-else:
-    from ..types import Glyph
-
-from .grammar_context import GrammarContext
+from ..types import Glyph
 from .grammar_patterns import recognize_il_sequences
 
 
@@ -66,8 +61,11 @@ def apply_glyph_with_grammar(
             nodes_iter = [nodes]
 
     for node in nodes_iter:
+        # Grammar enforcement (single source of truth, U1-U6)
+        glyph = enforce_canonical_grammar(G, node, glyph)
+
         apply_glyph(G, node, glyph, window=window)
-        
+
         # Check for IL sequences in node history after applying glyph
         if "glyph_history" in G.nodes[node]:
             history = G.nodes[node]["glyph_history"]
@@ -120,8 +118,8 @@ def apply_glyph_with_grammar(
                         # Emit warnings for antipatterns if not already done
                         is_antipattern = pattern.get("is_antipattern", False)
                         severity = pattern.get("severity", "")
-                        if (is_antipattern and
-                                severity in ("warning", "error")):
+                        if (is_antipattern
+                                and severity in ("warning", "error")):
                             import warnings
                             pattern_name = pattern["pattern_name"]
                             warnings.warn(
@@ -156,12 +154,11 @@ def enforce_canonical_grammar(
     cand: Any,
     ctx: Any = None,
 ) -> Any:
-    """Minimal stub for backward compatibility.
+    """Enforce incremental grammar rules (U1a, U2, U3, U4) on *cand*.
 
-    This function is a no-op stub maintained for compatibility with existing
-    code that expects this interface. It simply returns the candidate as-is.
-
-    For actual grammar validation, use validate_grammar() from unified_grammar.
+    Delegates to :func:`grammar_dynamics.enforce_grammar_on_glyph` for
+    proactive validation.  If *cand* would violate a grammar rule, it is
+    replaced with a safe alternative.
 
     Parameters
     ----------
@@ -172,25 +169,15 @@ def enforce_canonical_grammar(
     cand : Any
         Candidate glyph/operator
     ctx : Any, optional
-        Grammar context (ignored)
+        Grammar context (unused, kept for backward compatibility)
 
     Returns
     -------
     Any
-        The candidate unchanged
-        
-    Raises
-    ------
-    GrammarConfigurationError
-        If TNFR_GRAMMAR_VALIDATE=1 and graph configuration is invalid
+        The validated (or replaced) glyph code.
     """
-    import os
-    
-    # Validate configuration if validation is enabled  
-    if os.getenv("TNFR_GRAMMAR_VALIDATE") == "1":
-        # Create context to trigger validation
-        GrammarContext.from_graph(G)
-        
-    return cand
+    from .grammar_dynamics import enforce_grammar_on_glyph
+
+    return enforce_grammar_on_glyph(G, n, cand)
 
 

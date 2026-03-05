@@ -28,15 +28,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
 
-try:
-    import numpy as np
-
-    _HAS_NUMPY = True
-except ImportError:
-    np = None  # type: ignore[assignment]
-    _HAS_NUMPY = False
+from ..mathematics.unified_numerical import np, NUMPY_AVAILABLE as _HAS_NUMPY
 
 import networkx as nx
 
@@ -638,6 +632,7 @@ class TNFRNetwork:
         self,
         sequence: Union[str, List[str]],
         repeat: int = 1,
+        context: Optional[Dict[str, Any]] = None,
     ) -> TNFRNetwork:
         """Apply structural operator sequence to evolve the network.
 
@@ -659,6 +654,8 @@ class TNFRNetwork:
             - "consolidation": [recursivity, reception, coherence, resonance, silence]
         repeat : int, default=1
             Number of times to apply the sequence.
+        context : dict, optional
+            Additional context for sequence validation (e.g. 'initial_epi_nonzero').
 
         Returns
         -------
@@ -697,7 +694,7 @@ class TNFRNetwork:
 
         # Validate sequence if configured
         if self._config.validate_invariants:
-            validate_sequence(operator_list)
+            validate_sequence(operator_list, context=context)
 
         # Convert operator names to operator instances
         from ..operators.registry import get_operator_class
@@ -707,7 +704,7 @@ class TNFRNetwork:
         # Apply sequence repeatedly to all nodes
         for _ in range(repeat):
             for node in list(self._graph.nodes()):
-                run_sequence(self._graph, node, operator_instances)
+                run_sequence(self._graph, node, operator_instances, context=context)
 
         return self
     
@@ -754,6 +751,23 @@ class TNFRNetwork:
             
         return self.apply_sequence(selected_sequence)
     
+    def apply_multiple_sequences(self, sequences: List[Tuple[str, Optional[Dict[str, Any]], int]]) -> "TNFRNetwork":
+        """Apply multiple sequences in order.
+
+        Parameters
+        ----------
+        sequences : List[Tuple[str, Optional[Dict[str, Any]], int]]
+            List of (sequence_name, context, repeat) tuples.
+
+        Returns
+        -------
+        TNFRNetwork
+            Self for method chaining.
+        """
+        for seq_name, context, repeat in sequences:
+            self.apply_sequence(seq_name, context=context, repeat=repeat)
+        return self
+
     def apply_sequence_chain(self, chain_pattern: str = "standard") -> "TNFRNetwork":
         """Apply predefined chains of sequences for complex behaviors.
         

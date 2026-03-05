@@ -20,7 +20,7 @@ from typing import (
 )
 from weakref import WeakValueDictionary
 
-import numpy as np
+from .mathematics.unified_numerical import np
 
 from .alias import (
     get_attr,

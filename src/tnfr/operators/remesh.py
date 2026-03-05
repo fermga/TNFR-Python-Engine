@@ -210,9 +210,11 @@ from types import ModuleType
 from typing import Any, cast
 
 from .._compat import TypeAlias
+from ..errors import TNFRValueError
 from ..alias import get_attr, set_attr
 from ..constants import DEFAULTS, REMESH_DEFAULTS, get_param
 from ..constants.aliases import ALIAS_EPI, ALIAS_VF, ALIAS_DNFR
+from ..mathematics.unified_numerical import np
 from ..rng import make_rng
 from ..types import RemeshMeta
 from ..utils import cached_import, edge_version_update, kahan_sum_nd
@@ -481,7 +483,6 @@ def structural_similarity(
     0.97
     """
     # Convert to numpy arrays for consistent handling
-    np = _get_numpy()
     if np is None:
         # Fallback: scalar comparison only
         if isinstance(epi1, (list, tuple)) or isinstance(epi2, (list, tuple)):
@@ -502,7 +503,10 @@ def structural_similarity(
     arr2 = np.atleast_1d(np.asarray(epi2, dtype=float))
 
     if arr1.shape != arr2.shape:
-        raise ValueError(f"EPI patterns must have same shape: {arr1.shape} vs {arr2.shape}")
+        raise TNFRValueError(
+            f"EPI patterns must have same shape: {arr1.shape} vs {arr2.shape}",
+            context={"shape1": arr1.shape, "shape2": arr2.shape},
+        )
 
     if metric == "euclidean":
         distance = np.linalg.norm(arr1 - arr2)
@@ -539,7 +543,11 @@ def structural_similarity(
         return float((correlation + 1.0) / 2.0)
 
     else:
-        raise ValueError(f"Unknown metric '{metric}'. Choose from: euclidean, cosine, correlation")
+        raise TNFRValueError(
+            f"Unknown metric '{metric}'. Choose from: euclidean, cosine, correlation",
+            context={"metric": metric},
+            suggestion="Choose from: euclidean, cosine, correlation",
+        )
 
 
 def structural_memory_match(
@@ -682,7 +690,6 @@ def compute_structural_signature(
     ]
 
     # Try to use NumPy for normalization
-    np = _get_numpy()
     if np is not None:
         signature = np.array(features, dtype=float)
         norm = np.linalg.norm(signature)
@@ -761,7 +768,6 @@ def detect_recursive_patterns(
         signatures[node] = compute_structural_signature(G, node)
 
     # Compute similarity matrix (only upper triangle needed)
-    np = _get_numpy()
     if np is not None:
         # Use NumPy for efficient computation
         sig_array = np.array([signatures[node] for node in nodes])
@@ -785,7 +791,11 @@ def detect_recursive_patterns(
             # Handle NaN (constant signatures)
             similarities = np.nan_to_num(similarities, nan=0.0)
         else:
-            raise ValueError(f"Unknown metric: {metric}")
+            raise TNFRValueError(
+                f"Unknown metric: {metric}",
+                context={"metric": metric},
+                suggestion="Choose from: euclidean, cosine, correlation",
+            )
     else:
         # Fallback: pairwise computation
         similarities = {}
@@ -1007,12 +1017,6 @@ def propagate_structural_identity(
                 "epi_after": new_epi,
             }
         )
-
-
-@cache
-def _get_numpy() -> ModuleType | None:
-    """Get numpy module if available, None otherwise."""
-    return cached_import("numpy")
 
 
 # ==============================================================================

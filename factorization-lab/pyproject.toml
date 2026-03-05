@@ -1,0 +1,27 @@
+[project]
+name = "tnfr-factorization"
+version = "0.0.1"
+description = "Spectral TNFR factorization prototype"
+authors = [
+  { name = "TNFR Research Group" }
+]
+requires-python = ">=3.10"
+readme = "README.md"
+dependencies = [
+  "networkx>=3.2",
+  "numpy>=1.26",
+  "scipy>=1.11",
+]
+
+[project.scripts]
+tnfr-factorize = "tnfr_factorization.cli:main"
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.0",
+  "tnfr>=0.0.2",
+]
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"

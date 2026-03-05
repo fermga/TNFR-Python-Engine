@@ -21,7 +21,7 @@ except ImportError:
 # TNFR Optimizations Integration
 try:
     from ..mathematics.spectral import gft, igft, get_laplacian_spectrum
-    from ..utils.cache import cache_tnfr_computation
+    from ..mathematics.unified_cache import cache_tnfr_computation
     from ..dynamics.advanced_fft_arithmetic import SpectralOperation, SpectralState
     _HAS_SPECTRAL_OPTIMIZATIONS = True
 except ImportError:
@@ -44,7 +44,7 @@ if _HAS_SPECTRAL_OPTIMIZATIONS:
         Uses Graph Fourier Transform for O(N log N) pattern recognition
         instead of O(N²) spatial analysis.
         """
-        import numpy as np
+        from ..mathematics.unified_numerical import np
         
         # Convert to arrays for spectral analysis
         phases = np.array(phase_data)
@@ -118,7 +118,7 @@ def compute_element_signature(G: "nx.Graph", apply_synthetic_step: bool = True) 
         - phi_s_before: structural potential before synthetic step
         - phi_s_after: structural potential after synthetic step (if applied)
         - phi_s_drift: |Δ Φ_s| between before/after (if applied)
-        - phase_gradient_ok: bool, |∇φ| < 0.2904 (canonical threshold)
+        - phase_gradient_ok: bool, |∇φ| < γ/π ≈ 0.1837 (canonical threshold)
         - curvature_hotspots_ok: bool, max |K_φ| < 3.0 (canonical threshold)
         - coherence_length_category: str in {localized, medium, extended}
         - signature_class: str, one of {stable, marginal, unstable}
@@ -183,8 +183,8 @@ def compute_element_signature(G: "nx.Graph", apply_synthetic_step: bool = True) 
             G.nodes[n]['phase'] = original_state[n]['phase']
             G.nodes[n]['delta_nfr'] = original_state[n]['delta_nfr']
 
-    # Canonical threshold checks (already canonical from mathematical derivation)
-    phase_grad_ok = mean_grad < 0.2904  # π/(4√2) - harmonic analysis threshold
+    # Canonical threshold checks (Universal Tetrahedral Correspondence: γ ↔ |∇φ|)
+    phase_grad_ok = mean_grad < 0.183736807  # γ/π - Kuramoto critical coupling threshold
     curv_hotspots_ok = max_curv_abs < 2.8274  # 0.9π - theoretical bounds threshold
 
     # Coherence length categorization (empirical heuristic)

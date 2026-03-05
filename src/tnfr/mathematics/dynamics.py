@@ -5,10 +5,9 @@ from __future__ import annotations
 from dataclasses import field
 from typing import Any, NamedTuple, Sequence
 
-import numpy as np
-
 from ..compat.dataclass import dataclass
 from .backend import MathematicsBackend, ensure_array, ensure_numpy, get_backend
+from .unified_numerical import np, TNFRValueError
 from .spaces import HilbertSpace
 
 try:  # pragma: no cover - optional SciPy dependency
@@ -46,7 +45,11 @@ def _as_matrix(
     arr = ensure_array(matrix, dtype=np.complex128, backend=backend)
     shape = getattr(arr, "shape", None)
     if shape is None or len(shape) != 2 or shape[0] != shape[1]:
-        raise ValueError("Generator matrix must be square.")
+        raise TNFRValueError(
+            "Generator matrix must be square.",
+            context={"shape": shape},
+            suggestion="Provide a square matrix."
+        )
     return arr
 
 
@@ -69,12 +72,16 @@ class TraceValue(NamedTuple):
     """Container for trace evaluations in both backend and NumPy space."""
 
     backend: Any
-    numpy: complex
+    numpy: complex | None
 
 
 def _trace(matrix: Any, *, backend: MathematicsBackend) -> TraceValue:
     traced_backend = backend.einsum("ii->", matrix)
-    traced_numpy = complex(np.asarray(ensure_numpy(traced_backend, backend=backend)))
+    try:
+        traced_numpy = complex(np.asarray(ensure_numpy(traced_backend, backend=backend)))
+    except (ValueError, TypeError, Exception):
+        # Fallback for backends where conversion fails (e.g. JAX tracing)
+        traced_numpy = None
     return TraceValue(traced_backend, traced_numpy)
 
 
@@ -111,9 +118,20 @@ class MathematicalDynamicsEngine:
         matrix = _as_matrix(generator, backend=resolved_backend)
         matrix_np = ensure_numpy(matrix, backend=resolved_backend)
         if matrix_np.shape != (hilbert_space.dimension, hilbert_space.dimension):
-            raise ValueError("Generator dimension must match the Hilbert space.")
+            raise TNFRValueError(
+                "Generator dimension must match the Hilbert space.",
+                context={
+                    "generator_shape": matrix_np.shape,
+                    "hilbert_dimension": hilbert_space.dimension
+                },
+                suggestion="Ensure generator matches Hilbert space dimension."
+            )
         if not _is_hermitian(matrix, atol=atol, backend=resolved_backend):
-            raise ValueError("Dynamics generator must be Hermitian.")
+            raise TNFRValueError(
+                "Dynamics generator must be Hermitian.",
+                context={"atol": atol},
+                suggestion="Ensure generator is Hermitian."
+            )
         self.backend = resolved_backend
         self._generator_backend = matrix
         self._numpy_generator = matrix_np
@@ -154,9 +172,13 @@ class MathematicalDynamicsEngine:
 
         vector = ensure_array(state, dtype=np.complex128, backend=self.backend)
         if vector.shape != (self.hilbert_space.dimension,):
-            raise ValueError(
-                "State dimension mismatch: "
-                f"expected ({self.hilbert_space.dimension},), received {vector.shape!r}."
+            raise TNFRValueError(
+                "State vector dimension mismatch.",
+                context={
+                    "vector_shape": vector.shape,
+                    "expected_dimension": self.hilbert_space.dimension
+                },
+                suggestion="Ensure state vector matches Hilbert space dimension."
             )
         unitary = self._unitary_backend(dt)
         evolved = self.backend.matmul(unitary, vector)
@@ -164,7 +186,11 @@ class MathematicalDynamicsEngine:
             norm_backend = self.backend.norm(evolved)
             norm_numpy = float(np.asarray(ensure_numpy(norm_backend, backend=self.backend)))
             if np.isclose(norm_numpy, 0.0, atol=self.atol):
-                raise ValueError("Cannot normalise a null state vector.")
+                raise TNFRValueError(
+                    "Cannot normalise a null state vector.",
+                    context={"norm": norm_numpy, "atol": self.atol},
+                    suggestion="Provide a non-zero state vector."
+                )
             evolved = evolved / norm_backend
         return evolved
 
@@ -179,12 +205,20 @@ class MathematicalDynamicsEngine:
         """Return trajectory of length ``steps + 1`` starting from ``state``."""
 
         if steps < 0:
-            raise ValueError("steps must be non-negative.")
+            raise TNFRValueError(
+                "steps must be non-negative.",
+                context={"steps": steps},
+                suggestion="Provide a non-negative integer for steps."
+            )
         current = ensure_array(state, dtype=np.complex128, backend=self.backend)
         if current.shape != (self.hilbert_space.dimension,):
-            raise ValueError(
-                "State dimension mismatch: "
-                f"expected ({self.hilbert_space.dimension},), received {current.shape!r}."
+            raise TNFRValueError(
+                "State dimension mismatch.",
+                context={
+                    "expected_dimension": self.hilbert_space.dimension,
+                    "received_shape": current.shape
+                },
+                suggestion="Ensure state vector matches Hilbert space dimension."
             )
         trajectory: list[Any] = [current]
         for _ in range(steps):
@@ -229,9 +263,13 @@ class ContractiveDynamicsEngine:
         matrix_np = ensure_numpy(matrix, backend=resolved_backend)
         expected = hilbert_space.dimension * hilbert_space.dimension
         if matrix_np.shape != (expected, expected):
-            raise ValueError(
-                "Generator must act on vectorised density operators with dimension "
-                f"{expected} × {expected}."
+            raise TNFRValueError(
+                "Generator must act on vectorised density operators.",
+                context={
+                    "expected_dimension": (expected, expected),
+                    "received_shape": matrix_np.shape
+                },
+                suggestion="Ensure generator dimension matches vectorized Hilbert space."
             )
         self.backend = resolved_backend
         self._generator_backend = matrix
@@ -263,8 +301,10 @@ class ContractiveDynamicsEngine:
             eigenvalues_backend, _ = self.backend.eig(self._generator_backend)
             eigenvalues = ensure_numpy(eigenvalues_backend, backend=self.backend)
             if np.max(eigenvalues.real) > self.atol:
-                raise ValueError(
-                    "ΔNFR generator is not contractive: positive real eigenvalues detected."
+                raise TNFRValueError(
+                    "ΔNFR generator is not contractive: positive real eigenvalues detected.",
+                    context={"max_real_eigenvalue": np.max(eigenvalues.real)},
+                    suggestion="Ensure generator is dissipative."
                 )
 
     def _propagator_backend(self, dt: float) -> Any:
@@ -285,10 +325,13 @@ class ContractiveDynamicsEngine:
 
         matrix = ensure_array(density, dtype=np.complex128, backend=self.backend)
         if matrix.shape != (self.hilbert_space.dimension, self.hilbert_space.dimension):
-            raise ValueError(
-                "Density operator dimension mismatch: "
-                f"expected {(self.hilbert_space.dimension, self.hilbert_space.dimension)}, "
-                f"received {matrix.shape!r}."
+            raise TNFRValueError(
+                "Density operator dimension mismatch.",
+                context={
+                    "expected_dimension": (self.hilbert_space.dimension, self.hilbert_space.dimension),
+                    "received_shape": matrix.shape
+                },
+                suggestion="Ensure density operator matches Hilbert space dimension."
             )
         if center:
             trace_value = _trace(matrix, backend=self.backend)
@@ -318,9 +361,13 @@ class ContractiveDynamicsEngine:
         matrix = ensure_array(density, dtype=np.complex128, backend=self.backend)
         dim = self.hilbert_space.dimension
         if matrix.shape != (dim, dim):
-            raise ValueError(
-                "Density operator dimension mismatch: "
-                f"expected {(dim, dim)}, received {matrix.shape!r}."
+            raise TNFRValueError(
+                "Density operator dimension mismatch.",
+                context={
+                    "expected_dimension": (dim, dim),
+                    "received_shape": matrix.shape
+                },
+                suggestion="Ensure density operator matches Hilbert space dimension."
             )
 
         initial_norm = None
@@ -329,9 +376,12 @@ class ContractiveDynamicsEngine:
             trace_backend = trace_value.backend / dim
             centered = matrix - trace_backend * self._identity_backend
             initial_norm_backend = self.backend.norm(centered, ord="fro")
-            initial_norm = float(
-                np.asarray(ensure_numpy(initial_norm_backend, backend=self.backend))
-            )
+            try:
+                initial_norm = float(
+                    np.asarray(ensure_numpy(initial_norm_backend, backend=self.backend))
+                )
+            except (ValueError, TypeError, Exception):
+                initial_norm = None
 
         vector = _vectorize_density(matrix, backend=self.backend)
         propagator = self._propagator_backend(dt)
@@ -343,9 +393,17 @@ class ContractiveDynamicsEngine:
 
         if normalize_trace:
             trace_value = _trace(evolved, backend=self.backend)
-            if np.isclose(trace_value.numpy, 0.0, atol=self.atol):
-                raise ValueError("Trace collapsed below tolerance during evolution.")
-            if not np.isclose(trace_value.numpy, 1.0, atol=10 * self.atol):
+            if trace_value.numpy is not None:
+                if np.isclose(trace_value.numpy, 0.0, atol=self.atol):
+                    raise TNFRValueError(
+                        "Trace collapsed below tolerance during evolution.",
+                        context={"trace": trace_value.numpy, "atol": self.atol},
+                        suggestion="Check generator properties or initial state."
+                    )
+                if not np.isclose(trace_value.numpy, 1.0, atol=10 * self.atol):
+                    evolved = evolved / trace_value.backend
+            else:
+                # Tracing fallback: always normalize
                 evolved = evolved / trace_value.backend
 
         if enforce_contractivity and initial_norm is not None:
@@ -353,14 +411,24 @@ class ContractiveDynamicsEngine:
             trace_backend = trace_value.backend / dim
             centered = evolved - trace_backend * self._identity_backend
             evolved_norm_backend = self.backend.norm(centered, ord="fro")
-            evolved_norm = float(
-                np.asarray(ensure_numpy(evolved_norm_backend, backend=self.backend))
-            )
-            self._last_contractivity_gap = initial_norm - evolved_norm
-            if raise_on_violation and self._last_contractivity_gap < -5 * self.atol:
-                raise ValueError(
-                    "Contractivity violated: Frobenius norm increased beyond tolerance."
+            try:
+                evolved_norm = float(
+                    np.asarray(ensure_numpy(evolved_norm_backend, backend=self.backend))
                 )
+                self._last_contractivity_gap = initial_norm - evolved_norm
+                if raise_on_violation and self._last_contractivity_gap < -5 * self.atol:
+                    raise TNFRValueError(
+                        "Contractivity violated: Frobenius norm increased beyond tolerance.",
+                        context={
+                            "initial_norm": initial_norm,
+                            "evolved_norm": evolved_norm,
+                            "gap": self._last_contractivity_gap,
+                            "atol": self.atol
+                        },
+                        suggestion="Ensure generator is contractive."
+                    )
+            except (ValueError, TypeError, Exception):
+                self._last_contractivity_gap = float("nan")
         else:
             self._last_contractivity_gap = float("nan")
 
@@ -380,14 +448,22 @@ class ContractiveDynamicsEngine:
         """Return trajectory of density operators for the contractive semigroup."""
 
         if steps < 0:
-            raise ValueError("steps must be non-negative.")
+            raise TNFRValueError(
+                "steps must be non-negative.",
+                context={"steps": steps},
+                suggestion="Provide a non-negative number of steps."
+            )
 
         current = ensure_array(density, dtype=np.complex128, backend=self.backend)
         dim = self.hilbert_space.dimension
         if current.shape != (dim, dim):
-            raise ValueError(
-                "Density operator dimension mismatch: "
-                f"expected {(dim, dim)}, received {current.shape!r}."
+            raise TNFRValueError(
+                "Density operator dimension mismatch.",
+                context={
+                    "expected_shape": (dim, dim),
+                    "actual_shape": current.shape
+                },
+                suggestion="Ensure density operator matches Hilbert space dimension."
             )
 
         trajectory: list[Any] = [current]

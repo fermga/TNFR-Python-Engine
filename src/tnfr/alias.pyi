@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Iterable, Mapping, MutableMapping
-from types import ModuleType
 from typing import TYPE_CHECKING, Any, Hashable, TypeVar
 
 from .types import FloatArray, NodeId
@@ -43,15 +42,12 @@ def collect_attr(
     nodes: Iterable[NodeId],
     aliases: Iterable[str],
     default: float = ...,
-    *,
-    np: ModuleType | None = ...,
 ) -> FloatArray | list[float]: ...
+
 def collect_theta_attr(
     G: "nx.Graph",
     nodes: Iterable[NodeId],
     default: float = ...,
-    *,
-    np: ModuleType | None = ...,
 ) -> FloatArray | list[float]: ...
 def set_attr_generic(
     d: dict[str, Any],

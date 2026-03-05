@@ -31,7 +31,15 @@ References:
 from __future__ import annotations
 
 import math
-from typing import TYPE_CHECKING, NamedTuple
+from typing import TYPE_CHECKING, NamedTuple, Dict, Any
+
+from ..mathematics.unified_numerical import np
+from ..errors.contextual import (
+    FrequencyError,
+    NetworkConfigError,
+    TNFRUserError,
+    TNFRValueError,
+)
 
 if TYPE_CHECKING:
     from ..types import GraphLike
@@ -90,7 +98,7 @@ def compute_canonical_nodal_derivative(
         NodalEquationResult containing the computed derivative and metadata
 
     Raises:
-        ValueError: If validation is enabled and inputs are invalid
+        TNFRValueError: If validation is enabled and inputs are invalid
 
     Notes:
         - This function is the canonical reference implementation
@@ -151,7 +159,7 @@ def validate_structural_frequency(
         Validated structural frequency value
 
     Raises:
-        ValueError: If nu_f is negative, infinite, or NaN
+        FrequencyError: If nu_f is negative, infinite, or NaN
         TypeError: If nu_f cannot be converted to float
 
     Notes:
@@ -161,19 +169,19 @@ def validate_structural_frequency(
     """
     try:
         value = float(nu_f)
-    except TypeError as exc:
-        # Non-convertible type (e.g., None, object())
-        raise TypeError(f"Structural frequency must be numeric, got {type(nu_f).__name__}") from exc
-    except ValueError as exc:
-        # Invalid string value (e.g., "invalid")
-        raise ValueError(f"Structural frequency must be a valid number, got {nu_f!r}") from exc
+    except (TypeError, ValueError) as exc:
+        # Non-convertible type or invalid string
+        raise FrequencyError(
+            vf=float('nan'),
+            operation="validation"
+        ) from exc
 
     # Check for NaN or infinity using math.isfinite
     if not math.isfinite(value):
-        raise ValueError(f"Structural frequency must be finite, got νf={value}")
+        raise FrequencyError(vf=value, operation="validation")
 
     if value < 0:
-        raise ValueError(f"Structural frequency must be non-negative, got νf={value}")
+        raise FrequencyError(vf=value, operation="validation")
 
     return value
 
@@ -199,7 +207,7 @@ def validate_nodal_gradient(
         Validated nodal gradient value
 
     Raises:
-        ValueError: If delta_nfr is infinite or NaN
+        NetworkConfigError: If delta_nfr is infinite or NaN
         TypeError: If delta_nfr cannot be converted to float
 
     Notes:
@@ -210,16 +218,21 @@ def validate_nodal_gradient(
     """
     try:
         value = float(delta_nfr)
-    except TypeError as exc:
-        # Non-convertible type (e.g., None, object())
-        raise TypeError(f"Nodal gradient must be numeric, got {type(delta_nfr).__name__}") from exc
-    except ValueError as exc:
-        # Invalid string value (e.g., "invalid")
-        raise ValueError(f"Nodal gradient must be a valid number, got {delta_nfr!r}") from exc
+    except (TypeError, ValueError) as exc:
+        # Non-convertible type or invalid string
+        raise NetworkConfigError(
+            parameter="delta_nfr",
+            value=delta_nfr,
+            reason="Nodal gradient must be numeric"
+        ) from exc
 
     # Check for NaN or infinity using math.isfinite
     if not math.isfinite(value):
-        raise ValueError(f"Nodal gradient must be finite, got ΔNFR={value}")
+        raise NetworkConfigError(
+            parameter="delta_nfr",
+            value=value,
+            reason="Nodal gradient must be finite"
+        )
 
     return value
 
@@ -298,7 +311,7 @@ def compute_extended_nodal_system(
         ExtendedNodalEquationResult with all derivatives and metadata
         
     Raises:
-        ValueError: If validation fails or physics constraints violated
+        TNFRValueError: If validation fails or physics constraints violated
         
     Notes:
         - When J_φ = J_ΔNFR = 0, system reduces to classical TNFR
@@ -368,10 +381,18 @@ def _validate_phase(theta: float) -> float:
     try:
         value = float(theta)
     except (TypeError, ValueError) as exc:
-        raise ValueError(f"Phase θ must be numeric, got {theta!r}") from exc
+        raise NetworkConfigError(
+            parameter="phase",
+            value=theta,
+            reason="Phase θ must be numeric"
+        ) from exc
         
     if not math.isfinite(value):
-        raise ValueError(f"Phase θ must be finite, got θ={value}")
+        raise NetworkConfigError(
+            parameter="phase",
+            value=value,
+            reason="Phase θ must be finite"
+        )
         
     # Normalize to [0, 2π] range
     normalized = value % (2 * math.pi)
@@ -383,10 +404,18 @@ def _validate_flux_field(flux: float, field_name: str) -> float:
     try:
         value = float(flux)
     except (TypeError, ValueError) as exc:
-        raise ValueError(f"Flux field {field_name} must be numeric, got {flux!r}") from exc
+        raise NetworkConfigError(
+            parameter=field_name,
+            value=flux,
+            reason=f"Flux field {field_name} must be numeric"
+        ) from exc
         
     if not math.isfinite(value):
-        raise ValueError(f"Flux field {field_name} must be finite, got {value}")
+        raise NetworkConfigError(
+            parameter=field_name,
+            value=value,
+            reason=f"Flux field {field_name} must be finite"
+        )
         
     # Flux fields can be positive (source) or negative (sink)
     return value
@@ -397,10 +426,18 @@ def _validate_flux_divergence(div_j: float) -> float:
     try:
         value = float(div_j)
     except (TypeError, ValueError) as exc:
-        raise ValueError(f"Flux divergence must be numeric, got {div_j!r}") from exc
+        raise NetworkConfigError(
+            parameter="flux_divergence",
+            value=div_j,
+            reason="Flux divergence must be numeric"
+        ) from exc
         
     if not math.isfinite(value):
-        raise ValueError(f"Flux divergence must be finite, got ∇·J={value}")
+        raise NetworkConfigError(
+            parameter="flux_divergence",
+            value=value,
+            reason="Flux divergence must be finite"
+        )
         
     return value
 
@@ -410,13 +447,25 @@ def _validate_coupling_strength(kappa: float) -> float:
     try:
         value = float(kappa)
     except (TypeError, ValueError) as exc:
-        raise ValueError(f"Coupling strength must be numeric, got {kappa!r}") from exc
+        raise NetworkConfigError(
+            parameter="coupling_strength",
+            value=kappa,
+            reason="Coupling strength must be numeric"
+        ) from exc
         
     if not math.isfinite(value):
-        raise ValueError(f"Coupling strength must be finite, got κ={value}")
+        raise NetworkConfigError(
+            parameter="coupling_strength",
+            value=value,
+            reason="Coupling strength must be finite"
+        )
         
     if value < 0:
-        raise ValueError(f"Coupling strength must be non-negative, got κ={value}")
+        raise NetworkConfigError(
+            parameter="coupling_strength",
+            value=value,
+            reason="Coupling strength must be non-negative"
+        )
         
     # Allow > 1.0 for strong coupling regimes
     return value
@@ -482,3 +531,200 @@ def _compute_dnfr_conservation_derivative(j_dnfr_divergence: float) -> float:
     decay_term = -decay_rate * abs(j_dnfr_divergence) * math.copysign(1.0, j_dnfr_divergence)
     
     return conservation_term + decay_term
+
+
+# ============================================================================
+# UNIFIED NODAL EQUATION INTEGRATION (CANONICAL ENTRY POINT)
+# ============================================================================
+
+def integrate_canonical_nodal_equation(
+    G: Any,
+    *,
+    dt: float | None = None,
+    method: str = "rk4",
+    max_steps: int | None = None,
+    tolerance: float | None = None,
+    use_gpu: bool | None = None,
+) -> Dict[str, Any]:
+    """CANONICAL nodal equation integrator used by all TNFR modules.
+    
+    This is the single source of truth for integrating:
+        ∂EPI/∂t = νf · ΔNFR(t)
+    
+    All other integration functions should delegate to this implementation
+    to maintain theoretical consistency and eliminate redundancy.
+    
+    Parameters
+    ---------- 
+    G : TNFRGraph
+        Graph with TNFR node attributes (EPI, νf, ΔNFR, phase)
+    dt : float, optional
+        Integration timestep (from config if None)
+    method : {"euler", "rk4"}, default="rk4" 
+        Integration method
+    max_steps : int, optional
+        Maximum integration steps (from config if None)
+    tolerance : float, optional
+        Convergence tolerance (from config if None)
+    use_gpu : bool, optional
+        Enable GPU acceleration (from config if None)
+        
+    Returns
+    -------
+    Dict[str, Any]
+        Integration results with metadata
+        
+    Notes
+    -----
+    This function serves as the canonical entry point that all other
+    TNFR modules should use for nodal equation integration. It ensures:
+    - Consistent parameter handling via unified config
+    - GPU acceleration through unified backend
+    - Proper error handling and validation
+    - Reproducible results with deterministic methods
+    """
+    from ..config import get_config
+    from ..engines.computation.unified_gpu_system import execute_with_gpu_fallback
+    
+    # Get configuration defaults
+    config = get_config()
+    integration_config = config.get_integration_config()
+    
+    # Resolve parameters from config
+    dt = dt or integration_config["dt"]
+    max_steps = max_steps or integration_config["max_steps"]
+    tolerance = tolerance or integration_config["tolerance"]
+    use_gpu = use_gpu if use_gpu is not None else (config.gpu_mode != "disabled")
+    
+    # Validate inputs
+    if dt <= 0:
+        raise TNFRValueError(
+            f"Integration timestep must be positive, got {dt}",
+            context={"dt": dt},
+            suggestion="Set a positive timestep (dt > 0).",
+        )
+    if max_steps <= 0:
+        raise TNFRValueError(
+            f"Max steps must be positive, got {max_steps}",
+            context={"max_steps": max_steps},
+            suggestion="Set max_steps to a positive integer.",
+        )
+    
+    # Ensure all parameters are resolved (not None)
+    dt_resolved = float(dt)
+    max_steps_resolved = int(max_steps)
+    tolerance_resolved = float(tolerance)
+    
+    # Define GPU and CPU integration functions
+    def gpu_integration() -> Dict[str, Any]:
+        """GPU-accelerated integration using unified backend."""
+        from ..mathematics.backend import get_backend
+        backend = get_backend()
+        
+        # Use backend for accelerated computation
+        return _integrate_with_backend(G, dt_resolved, method, max_steps_resolved, tolerance_resolved, backend)
+    
+    def cpu_integration() -> Dict[str, Any]:
+        """CPU fallback integration using NumPy."""
+        from ..mathematics.backend import get_backend
+        backend = get_backend("numpy")
+        
+        return _integrate_with_backend(G, dt_resolved, method, max_steps_resolved, tolerance_resolved, backend)
+    
+    # Execute with automatic GPU fallback
+    if use_gpu:
+        result, backend_used = execute_with_gpu_fallback(gpu_integration, cpu_integration)
+    else:
+        result, backend_used = cpu_integration(), "cpu"
+    
+    # Add metadata
+    result["backend_used"] = backend_used
+    result["parameters"] = {
+        "dt": dt,
+        "method": method,
+        "max_steps": max_steps,
+        "tolerance": tolerance,
+    }
+    
+    return result
+
+
+def _integrate_with_backend(
+    G: Any,
+    dt: float,
+    method: str,
+    max_steps: int,
+    tolerance: float,
+    backend: Any
+) -> Dict[str, Any]:
+    """Internal integration implementation using specified backend."""
+    import time
+    start_time = time.perf_counter()
+    
+    # Extract node states
+    nodes = list(G.nodes())
+    n_nodes = len(nodes)
+    
+    if n_nodes == 0:
+        return {"converged": True, "steps": 0, "final_error": 0.0, "time_ms": 0.0}
+    
+    # Initialize arrays using backend
+    epi_values = backend.as_array([G.nodes[node].get("epi", 0.0) for node in nodes])
+    vf_values = backend.as_array([G.nodes[node].get("vf", 1.0) for node in nodes])
+    dnfr_values = backend.as_array([G.nodes[node].get("delta_nfr", 0.0) for node in nodes])
+    
+    converged = False
+    final_error = float('inf')
+    
+    for step in range(max_steps):
+        # Store previous values
+        epi_prev = epi_values
+        
+        # Compute derivatives using canonical nodal equation
+        if method == "euler":
+            # Euler method: EPI_{n+1} = EPI_n + dt * νf * ΔNFR
+            derivatives = backend.as_array([vf * dnfr for vf, dnfr in zip(vf_values, dnfr_values)])
+            epi_values = epi_prev + dt * derivatives
+        
+        elif method == "rk4":
+            # RK4 method for higher accuracy
+            k1 = backend.as_array([vf * dnfr for vf, dnfr in zip(vf_values, dnfr_values)])
+            k2 = k1  # Simplified - assume ΔNFR constant over dt
+            k3 = k1
+            k4 = k1
+            
+            epi_values = epi_prev + (dt / 6.0) * (k1 + 2 * k2 + 2 * k3 + k4)
+        
+        else:
+            raise TNFRValueError(
+                f"Unknown integration method: {method}",
+                context={"method": method, "available": ["euler", "rk4"]},
+                suggestion="Use 'euler' or 'rk4' as the integration method.",
+            )
+        
+        # Check convergence
+        if hasattr(backend, 'norm'):
+            error = backend.norm(epi_values - epi_prev)
+            final_error = backend.to_numpy(error).item()
+        else:
+            # Fallback norm calculation
+            diff = backend.to_numpy(epi_values - epi_prev)
+            final_error = float(np.linalg.norm(diff))
+        
+        if final_error < tolerance:
+            converged = True
+            break
+    
+    # Update graph with final values
+    epi_final = backend.to_numpy(epi_values)
+    for i, node in enumerate(nodes):
+        G.nodes[node]["epi"] = float(epi_final[i])
+    
+    end_time = time.perf_counter()
+    
+    return {
+        "converged": converged,
+        "steps": step + 1,
+        "final_error": final_error,
+        "time_ms": (end_time - start_time) * 1000.0,
+    }

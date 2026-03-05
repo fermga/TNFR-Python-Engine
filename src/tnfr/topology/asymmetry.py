@@ -94,9 +94,7 @@ def compute_topological_asymmetry(G: "TNFRGraph", node: "NodeId") -> float:
     """
     import networkx as nx
 
-    from ..utils import get_numpy
-
-    np = get_numpy()
+    from ..mathematics.unified_numerical import np
 
     # Extract 1-hop ego graph (node + immediate neighbors)
     try:

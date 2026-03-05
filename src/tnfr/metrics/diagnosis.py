@@ -35,7 +35,7 @@ from ..types import (
     NodeId,
     TNFRGraph,
 )
-from ..utils import get_numpy
+from ..mathematics.unified_numerical import np
 from .coherence import CoherenceMatrixPayload, coherence_matrix, local_phase_sync
 from .common import (
     _coerce_jobs,
@@ -52,30 +52,29 @@ CoherenceHistory = Mapping[str, CoherenceSeries]
 def _coherence_matrix_to_numpy(
     weight_matrix: Any,
     size: int,
-    np_mod: Any,
 ) -> Any:
     """Convert stored coherence weights into a dense NumPy array."""
 
-    if weight_matrix is None or np_mod is None or size <= 0:
+    if weight_matrix is None or np is None or size <= 0:
         return None
 
-    ndarray_type: Any = getattr(np_mod, "ndarray", tuple())
+    ndarray_type: Any = getattr(np, "ndarray", tuple())
     if ndarray_type and isinstance(weight_matrix, ndarray_type):
         matrix = weight_matrix.astype(float, copy=True)
     elif isinstance(weight_matrix, (list, tuple)):
         weight_seq = list(weight_matrix)
         if not weight_seq:
-            matrix = np_mod.zeros((size, size), dtype=float)
+            matrix = np.zeros((size, size), dtype=float)
         else:
             first = weight_seq[0]
             if isinstance(first, (list, tuple)) and len(first) == size:
-                matrix = np_mod.array(weight_seq, dtype=float)
+                matrix = np.array(weight_seq, dtype=float)
             elif (
                 isinstance(first, (list, tuple))
                 and len(first) == 3
                 and not isinstance(first[0], (list, tuple))
             ):
-                matrix = np_mod.zeros((size, size), dtype=float)
+                matrix = np.zeros((size, size), dtype=float)
                 for i, j, weight in weight_seq:
                     matrix[int(i), int(j)] = float(weight)
             else:
@@ -85,7 +84,7 @@ def _coherence_matrix_to_numpy(
 
     if matrix.shape != (size, size):
         return None
-    np_mod.fill_diagonal(matrix, 0.0)
+    np.fill_diagonal(matrix, 0.0)
     return matrix
 
 
@@ -93,17 +92,16 @@ def _weighted_phase_sync_vectorized(
     matrix: Any,
     cos_vals: Any,
     sin_vals: Any,
-    np_mod: Any,
 ) -> Any:
     """Vectorised computation of weighted local phase synchrony."""
 
-    denom = np_mod.sum(matrix, axis=1)
-    if np_mod.all(denom == 0.0):
-        return np_mod.zeros_like(denom, dtype=float)
+    denom = np.sum(matrix, axis=1)
+    if np.all(denom == 0.0):
+        return np.zeros_like(denom, dtype=float)
     real = matrix @ cos_vals
     imag = matrix @ sin_vals
-    magnitude = np_mod.hypot(real, imag)
-    safe_denom = np_mod.where(denom == 0.0, 1.0, denom)
+    magnitude = np.hypot(real, imag)
+    safe_denom = np.where(denom == 0.0, 1.0, denom)
     return magnitude / safe_denom
 
 
@@ -113,7 +111,6 @@ def _unweighted_phase_sync_vectorized(
     cos_arr: Any,
     sin_arr: Any,
     index_map: Mapping[Any, int],
-    np_mod: Any,
 ) -> list[float]:
     """Compute unweighted phase synchrony using NumPy helpers."""
 
@@ -127,15 +124,15 @@ def _unweighted_phase_sync_vectorized(
         if not indices:
             results.append(0.0)
             continue
-        cos_vals = np_mod.take(cos_arr, indices)
-        sin_vals = np_mod.take(sin_arr, indices)
-        real = np_mod.sum(cos_vals)
-        imag = np_mod.sum(sin_vals)
+        cos_vals = np.take(cos_arr, indices)
+        sin_vals = np.take(sin_arr, indices)
+        real = np.sum(cos_vals)
+        imag = np.sum(sin_vals)
         denom = float(len(indices))
         if denom == 0.0:
             results.append(0.0)
         else:
-            results.append(float(np_mod.hypot(real, imag) / denom))
+            results.append(float(np.hypot(real, imag) / denom))
     return results
 
 
@@ -144,7 +141,6 @@ def _neighbor_means_vectorized(
     neighbors_map: Mapping[Any, tuple[Any, ...]],
     epi_arr: Any,
     index_map: Mapping[Any, int],
-    np_mod: Any,
 ) -> list[float | None]:
     """Vectorized helper to compute neighbour EPI means."""
 
@@ -158,8 +154,8 @@ def _neighbor_means_vectorized(
         if not indices:
             results.append(None)
             continue
-        values = np_mod.take(epi_arr, indices)
-        results.append(float(np_mod.mean(values)))
+        values = np.take(epi_arr, indices)
+        results.append(float(np.mean(values)))
     return results
 
 
@@ -460,11 +456,10 @@ def _diagnosis_step(
 
     Wi_last, Wm_last = _get_last_weights(G, coherence_hist)
 
-    np_mod = get_numpy()
     supports_vector = bool(
-        np_mod is not None
+        np is not None
         and all(
-            hasattr(np_mod, attr)
+            hasattr(np, attr)
             for attr in (
                 "fromiter",
                 "clip",
@@ -492,17 +487,17 @@ def _diagnosis_step(
     rloc_values: list[float]
 
     if supports_vector:
-        epi_arr = np_mod.fromiter(
+        epi_arr = np.fromiter(
             (cast(float, get_attr(nd, ALIAS_EPI, 0.0)) for _, nd in nodes_data),
             dtype=float,
             count=len(nodes_data),
         )
-        epi_min = float(np_mod.min(epi_arr))
-        epi_max = float(np_mod.max(epi_arr))
+        epi_min = float(np.min(epi_arr))
+        epi_max = float(np.max(epi_arr))
         epi_vals = epi_arr.tolist()
 
-        si_arr = np_mod.clip(
-            np_mod.fromiter(
+        si_arr = np.clip(
+            np.fromiter(
                 (cast(float, get_attr(nd, ALIAS_SI, 0.0)) for _, nd in nodes_data),
                 dtype=float,
                 count=len(nodes_data),
@@ -512,7 +507,7 @@ def _diagnosis_step(
         )
         si_vals = si_arr.tolist()
 
-        vf_arr = np_mod.fromiter(
+        vf_arr = np.fromiter(
             (cast(float, get_attr(nd, ALIAS_VF, 0.0)) for _, nd in nodes_data),
             dtype=float,
             count=len(nodes_data),
@@ -520,8 +515,8 @@ def _diagnosis_step(
         vf_vals = vf_arr.tolist()
 
         if dnfr_max > 0:
-            dnfr_arr = np_mod.clip(
-                np_mod.fromiter(
+            dnfr_arr = np.clip(
+                np.fromiter(
                     (abs(cast(float, get_attr(nd, ALIAS_DNFR, 0.0))) for _, nd in nodes_data),
                     dtype=float,
                     count=len(nodes_data),
@@ -542,8 +537,8 @@ def _diagnosis_step(
 
     epi_map = {node: epi_vals[idx] for idx, node in enumerate(nodes)}
 
-    trig_cache = get_trig_cache(G, np=np_mod)
-    trig_local = compute_theta_trig(nodes_data, np=np_mod)
+    trig_cache = get_trig_cache(G)
+    trig_local = compute_theta_trig(nodes_data)
     cos_map = dict(trig_cache.cos)
     sin_map = dict(trig_cache.sin)
     cos_map.update(trig_local.cos)
@@ -567,14 +562,14 @@ def _diagnosis_step(
 
     if supports_vector:
         size = len(coherence_nodes)
-        matrix_np = _coherence_matrix_to_numpy(weight_matrix, size, np_mod) if size else None
+        matrix_np = _coherence_matrix_to_numpy(weight_matrix, size) if size else None
         if matrix_np is not None and size:
-            cos_weight = np_mod.fromiter(
+            cos_weight = np.fromiter(
                 (float(cos_map.get(node, 0.0)) for node in coherence_nodes),
                 dtype=float,
                 count=size,
             )
-            sin_weight = np_mod.fromiter(
+            sin_weight = np.fromiter(
                 (float(sin_map.get(node, 0.0)) for node in coherence_nodes),
                 dtype=float,
                 count=size,
@@ -583,7 +578,6 @@ def _diagnosis_step(
                 matrix_np,
                 cos_weight,
                 sin_weight,
-                np_mod,
             )
             rloc_map = {coherence_nodes[idx]: float(weighted_sync[idx]) for idx in range(size)}
         else:
@@ -591,12 +585,12 @@ def _diagnosis_step(
 
         node_index_map = {node: idx for idx, node in enumerate(nodes)}
         if not rloc_map:
-            cos_arr = np_mod.fromiter(
+            cos_arr = np.fromiter(
                 (float(cos_map.get(node, 0.0)) for node in nodes),
                 dtype=float,
                 count=len(nodes),
             )
-            sin_arr = np_mod.fromiter(
+            sin_arr = np.fromiter(
                 (float(sin_map.get(node, 0.0)) for node in nodes),
                 dtype=float,
                 count=len(nodes),
@@ -607,7 +601,6 @@ def _diagnosis_step(
                 cos_arr,
                 sin_arr,
                 node_index_map,
-                np_mod,
             )
         else:
             rloc_values = [rloc_map.get(node, 0.0) for node in nodes]
@@ -665,7 +658,6 @@ def _diagnosis_step(
                 neighbors_map,
                 epi_arr,
                 node_index_map,
-                np_mod,
             )
         elif n_jobs and n_jobs > 1 and len(nodes) > 1:
             approx_chunk = math.ceil(len(nodes) / n_jobs) if n_jobs else None

@@ -1,9 +1,9 @@
 # Contributing to TNFR
 
-**Version**: 0.0.1  
+**Version**: 0.0.3  
 **Status**: Complete theoretical framework with Universal Tetrahedral Correspondence  
 **Authority**: Canonical constants derived from TNFR theory  
-**Quality**: Production-ready with comprehensive test coverage  
+**Quality**: Production-ready with 471 passing tests, 9 skipped  
 
 This document provides guidelines for contributing to the TNFR (Resonant Fractal Nature Theory) project. TNFR constitutes a computational framework for modeling complex systems through coherent patterns and resonance dynamics.
 
@@ -501,9 +501,9 @@ If adding features, update:
 
 ## TNFR Alignment
 
-- [ ] Preserves all 10 canonical invariants
+- [ ] Preserves all 6 canonical invariants
 - [ ] Maps to structural operators (specify which)
-- [ ] Derivable from TNFR physics (reference TNFR.pdf or UNIFIED_UNIFIED_GRAMMAR_RULES.md)
+- [ ] Derivable from TNFR physics (reference [theory/TNFR.pdf](theory/TNFR.pdf) or [theory/UNIFIED_GRAMMAR_RULES.md](theory/UNIFIED_GRAMMAR_RULES.md))
 - [ ] Maintains reproducibility (seeds, determinism)
 
 ## Testing
@@ -602,7 +602,7 @@ If proposing new grammar rules:
 
 - **General questions**: [GitHub Discussions](https://github.com/fermga/TNFR-Python-Engine/discussions)
 - **Bug reports**: [GitHub Issues](https://github.com/fermga/TNFR-Python-Engine/issues)
-- **TNFR theory**: Consult [AGENTS.md](AGENTS.md), [UNIFIED_UNIFIED_GRAMMAR_RULES.md), or [TNFR.pdf](TNFR.pdf)
+- **TNFR theory**: Consult [AGENTS.md](AGENTS.md), [UNIFIED_GRAMMAR_RULES.md](theory/UNIFIED_GRAMMAR_RULES.md), or [TNFR.pdf](theory/TNFR.pdf)
 
 ## Final Principle
 

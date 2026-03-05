@@ -13,7 +13,9 @@ from typing import TYPE_CHECKING, Any, cast, overload
 
 from ..utils import kahan_sum_nd
 from ..types import NodeId, Phase, TNFRGraph
-from ..utils import cached_import, get_numpy
+from ..utils import cached_import
+from ..mathematics.unified_numerical import np
+from ..errors import TNFRValueError
 
 if TYPE_CHECKING:  # pragma: no cover - typing only
     from ..node import NodeProtocol
@@ -85,7 +87,6 @@ def _neighbor_phase_mean_core(
     neigh: Sequence[Any],
     cos_map: dict[Any, float],
     sin_map: dict[Any, float],
-    np: Any | None,
     fallback: float,
 ) -> float:
     """Return circular mean of neighbour phases given trig mappings."""
@@ -119,7 +120,6 @@ def _neighbor_phase_mean_generic(
     obj: "NodeProtocol" | Sequence[Any],
     cos_map: dict[Any, float] | None = None,
     sin_map: dict[Any, float] | None = None,
-    np: Any | None = None,
     fallback: float = 0.0,
 ) -> float:
     """Compute the neighbour phase mean via :func:`_neighbor_phase_mean_core`.
@@ -130,9 +130,6 @@ def _neighbor_phase_mean_generic(
     structures. Otherwise ``obj`` is treated as an explicit neighbour
     sequence and ``cos_map``/``sin_map`` must be provided.
     """
-
-    if np is None:
-        np = get_numpy()
 
     if cos_map is None or sin_map is None:
         node = cast("NodeProtocol", obj)
@@ -148,14 +145,13 @@ def _neighbor_phase_mean_generic(
     else:
         neigh = cast(Sequence[Any], obj)
 
-    return _neighbor_phase_mean_core(neigh, cos_map, sin_map, np, fallback)
+    return _neighbor_phase_mean_core(neigh, cos_map, sin_map, fallback)
 
 
 def neighbor_phase_mean_list(
     neigh: Sequence[Any],
     cos_th: dict[Any, float],
     sin_th: dict[Any, float],
-    np: Any | None = None,
     fallback: float = 0.0,
 ) -> float:
     """Return circular mean of neighbour phases from cosine/sine mappings.
@@ -165,7 +161,7 @@ def neighbor_phase_mean_list(
     """
 
     return _neighbor_phase_mean_generic(
-        neigh, cos_map=cos_th, sin_map=sin_th, np=np, fallback=fallback
+        neigh, cos_map=cos_th, sin_map=sin_th, fallback=fallback
     )
 
 
@@ -177,7 +173,6 @@ def neighbor_phase_mean_bulk(
     sin_values: Any,
     theta_values: Any,
     node_count: int,
-    np: Any,
     neighbor_cos_sum: Any | None = None,
     neighbor_sin_sum: Any | None = None,
     neighbor_counts: Any | None = None,
@@ -200,8 +195,6 @@ def neighbor_phase_mean_bulk(
         neighbours reuse this baseline as their mean phase.
     node_count:
         Total number of nodes represented in ``theta_values``.
-    np:
-        Numpy module used to materialise the vectorised operations.
 
     Optional buffers
     -----------------
@@ -228,18 +221,30 @@ def neighbor_phase_mean_bulk(
     edge_dst_arr = np.asarray(edge_dst, dtype=np.intp)
 
     if edge_src_arr.shape != edge_dst_arr.shape:
-        raise ValueError("edge_src and edge_dst must share the same shape")
+        raise TNFRValueError(
+            "edge_src and edge_dst must share the same shape",
+            context={"src_shape": edge_src_arr.shape, "dst_shape": edge_dst_arr.shape},
+        )
 
     theta_arr = np.asarray(theta_values, dtype=float)
     if theta_arr.ndim != 1 or theta_arr.size != node_count:
-        raise ValueError("theta_values must be a 1-D array matching node_count")
+        raise TNFRValueError(
+            "theta_values must be a 1-D array matching node_count",
+            context={"shape": theta_arr.shape, "expected_size": node_count},
+        )
 
     cos_arr = np.asarray(cos_values, dtype=float)
     sin_arr = np.asarray(sin_values, dtype=float)
     if cos_arr.ndim != 1 or cos_arr.size != node_count:
-        raise ValueError("cos_values must be a 1-D array matching node_count")
+        raise TNFRValueError(
+            "cos_values must be a 1-D array matching node_count",
+            context={"shape": cos_arr.shape, "expected_size": node_count},
+        )
     if sin_arr.ndim != 1 or sin_arr.size != node_count:
-        raise ValueError("sin_values must be a 1-D array matching node_count")
+        raise TNFRValueError(
+            "sin_values must be a 1-D array matching node_count",
+            context={"shape": sin_arr.shape, "expected_size": node_count},
+        )
 
     edge_count = edge_dst_arr.size
 
@@ -248,7 +253,10 @@ def neighbor_phase_mean_bulk(
             return None, False
         arr = np.array(buffer, dtype=float, copy=False)
         if arr.ndim != 1 or arr.size != node_count:
-            raise ValueError(f"{name} must be a 1-D array sized node_count")
+            raise TNFRValueError(
+                f"{name} must be a 1-D array sized node_count",
+                context={"name": name, "shape": arr.shape, "expected_size": node_count},
+            )
         arr.fill(0.0)
         return arr, True
 

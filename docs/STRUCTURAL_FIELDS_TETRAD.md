@@ -56,7 +56,7 @@ Wrapped neighbor differences (circular topology):
 \[|\nabla\varphi|(i) = \operatorname{mean}_{j\in N(i)} \big|\operatorname{wrap}(\varphi_j-\varphi_i)\big|\]
 
 - Early warning for fragmentation via local desynchronization
-- Safety criterion: |∇φ| < 0.2904 for stable operation (classical: harmonic analysis + Kuramoto)
+- Safety criterion: |∇φ| < γ/π ≈ 0.1837 for stable operation (Kuramoto critical coupling in TNFR units)
 - Implementation: `compute_phase_gradient(G)`
 
 ### 2.3 Phase Curvature K_φ (Geometric confinement)
@@ -123,7 +123,7 @@ Each function documents parameters and return types inline in `fields.py`.
 
 Canonical telemetry thresholds (empirical, cross-topology):
 - Φ_s: maintain ΔΦ_s < 2.0 (escape threshold)  — see AGENTS.md (U6)
-- |∇φ|: keep < 0.38 for stable operation; track spikes as early warning
+- |∇φ|: keep < γ/π ≈ 0.1837 for stable operation (Kuramoto critical coupling); track spikes as early warning
 - K_φ: flag |K_φ| ≥ 2.8274 as hotspots; assess multiscale decay var(K_φ) ~ 1/r^α
 - ξ_C: monitor divergence around I_c; large ξ_C indicates global reorganization
 
@@ -212,7 +212,7 @@ Q2. Why are phase differences wrapped? Can I just subtract angles?
 Q3. How should I choose α in Φ_s?
 - α = 2.0 is canonical (inverse-square analog) and validated across topologies. Deviations are research-only; if you change α, document and justify the physics in your application.
 
-Q4. Are thresholds (ΔΦ_s < 2.0, |∇φ| < 0.2904, |K_φ| ≥ 2.8274) universal?
+Q4. Are thresholds (ΔΦ_s < 2.0, |∇φ| < γ/π ≈ 0.1837, |K_φ| ≥ 2.8274) universal?
 - They are telemetry-based and robust across the tested families (WS, scale-free, grid, trees) but still empirical. Treat them as safety guidance, not as hard correctness proofs. Monitor trends over time, not just single snapshots.
 
 Q5. What graphs are supported? Weighted? Directed?

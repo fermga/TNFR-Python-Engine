@@ -26,6 +26,7 @@ from typing import (
     Mapping,
 )
 
+from ..errors import TNFRValueError
 from ..compat.dataclass import dataclass
 
 if TYPE_CHECKING:
@@ -37,7 +38,6 @@ __all__ = (
     "warm_cached_import",
     "LazyImportProxy",
     "get_logger",
-    "get_numpy",
     "get_nodenx",
     "prune_failed_imports",
     "WarnOnce",
@@ -691,7 +691,11 @@ def _normalise_warm_specs(
 ) -> list[tuple[str, str | None]]:
     if attr is not None:
         if extra:
-            raise ValueError("'attr' can only be combined with a single module name")
+            raise TNFRValueError(
+                "'attr' can only be combined with a single module name",
+                context={"module": module, "extra": extra, "attr": attr},
+                suggestion="Remove extra module arguments or the 'attr' parameter."
+            )
         if not isinstance(module, str):
             raise TypeError("'attr' requires the first argument to be a module name string")
         return [(module, attr)]
@@ -707,7 +711,11 @@ def _normalise_warm_specs(
         if isinstance(module, Iterable):
             specs = list(module)
             if not specs:
-                raise ValueError("At least one module specification is required")
+                raise TNFRValueError(
+                    "At least one module specification is required",
+                    context={"module": module},
+                    suggestion="Provide a non-empty iterable of module specifications."
+                )
         else:
             raise TypeError("Unsupported module specification for warm_cached_import")
 
@@ -746,7 +754,11 @@ def warm_cached_import(
     """
 
     if resolve and not lazy:
-        raise ValueError("'resolve' can only be used when 'lazy' is True")
+        raise TNFRValueError(
+            "'resolve' can only be used when 'lazy' is True",
+            context={"resolve": resolve, "lazy": lazy},
+            suggestion="Set lazy=True if you want to use resolve=True."
+        )
 
     specs = _normalise_warm_specs(module, extra, attr)
     results: dict[str, Any | None] = {}
@@ -768,32 +780,10 @@ def warm_cached_import(
 
 
 def _clear_default_cache() -> None:
-    global _NP_MISSING_LOGGED
-
     _clear_import_cache()
-    _NP_MISSING_LOGGED = False
 
 
 cached_import.cache_clear = _clear_default_cache  # type: ignore[attr-defined]
-
-_NP_MISSING_LOGGED = False
-
-
-def get_numpy() -> Any | None:
-    """Return the cached :mod:`numpy` module when available."""
-
-    global _NP_MISSING_LOGGED
-
-    np = cached_import("numpy")
-    if np is None:
-        if not _NP_MISSING_LOGGED:
-            logger.debug("Failed to import numpy; continuing in non-vectorised mode")
-            _NP_MISSING_LOGGED = True
-        return None
-
-    if _NP_MISSING_LOGGED:
-        _NP_MISSING_LOGGED = False
-    return np
 
 
 def get_nodenx() -> type | None:

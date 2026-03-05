@@ -19,7 +19,7 @@ Define reproducible experiments for modeling observed orbital behavior via TNFR 
 	\phi(r, \theta, t) = \omega_0 t - k r + m \theta.
 	\]
 - Secondary nodes minimize \(|\Delta \phi|\) under the nodal equation, yielding effective attraction.  
-- Stability requirements: \(|\nabla \phi| < 0.2904\), coupling via `UM`/`RA` must satisfy U3, and `OZ` events signal resonance loss.
+- Stability requirements: \(|\nabla \phi| < \gamma/\pi \approx 0.1837\), coupling via `UM`/`RA` must satisfy U3, and `OZ` events signal resonance loss.
 
 Telemetry: log phase gradients, coherence, and applied operators for every run.
 

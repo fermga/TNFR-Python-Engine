@@ -13,6 +13,7 @@ from ..constants.canonical import (
     SHA_VF_FACTOR, NUL_SCALE_FACTOR, VAL_MIN_EPI, VAL_BIFURCATION_THRESHOLD, VAL_MIN_COHERENCE,
     THOL_MIN_COLLECTIVE_COHERENCE, UM_COMPAT_THRESHOLD, EN_MIX_FACTOR, UM_THETA_PUSH,
     VAL_SCALE_FACTOR, NUL_DENSIFICATION_FACTOR,
+    MIN_BUSINESS_COHERENCE_CANONICAL,
     # Configuration constants (magic number replacements)
     DT_CANONICAL, DT_MIN_CANONICAL, EPI_MAX_CANONICAL, EPI_MIN_CANONICAL,
     VF_MAX_CANONICAL, VF_MIN_CANONICAL, KL_MIN_CANONICAL, KL_MAX_CANONICAL,
@@ -108,7 +109,7 @@ class CoreDefaults:
             "RA_epi_diff": 0.15,
             "RA_vf_amplification": 0.05,
             "RA_phase_coupling": 0.10,  # Canonical phase alignment strengthening
-            "SHA_vf_factor": SHA_VF_FACTOR,  # 1 - γ/(π+e) ≈ 0.8476 (canonical silence factor)
+            "SHA_vf_factor": SHA_VF_FACTOR,  # 1 - γ/(π+e) ≈ 0.9015 (canonical silence factor)
             # Conservative scaling (1.05) prevents EPI overflow near boundaries
             # while maintaining meaningful expansion capacity. Critical threshold:
             # EPI × 1.05 = 1.0 when EPI ≈ 0.952 (vs previous threshold ≈ 0.870).
@@ -238,10 +239,10 @@ REMESH_DEFAULTS = MappingProxyType(_remesh_defaults)
 # Structural Field Thresholds (Research Constants)
 K_PHI_ASYMPTOTIC_ALPHA = 2.76  # Power-law exponent for multiscale K_φ variance
 K_PHI_CURVATURE_THRESHOLD = PI * 0.9  # 0.9×π ≈ 2.827 (90% of theoretical maximum)
-PHASE_GRADIENT_THRESHOLD = GAMMA / 2  # γ/2 ≈ 0.2886 (nodal dynamics phase stress threshold)
+PHASE_GRADIENT_THRESHOLD = GAMMA / PI  # γ/π ≈ 0.1837 (Kuramoto critical coupling in TNFR units)
 
 # Business Domain Thresholds (Tetrahedral Correspondence)
-MIN_BUSINESS_COHERENCE = E * PHI / (PI + E)  # (e×φ)/(π+e) ≈ 0.7506 (exponential-golden vs geometric-exponential balance)
+MIN_BUSINESS_COHERENCE = MIN_BUSINESS_COHERENCE_CANONICAL  # (e×φ)/(π+e) ≈ 0.7506 (from constants.canonical)
 MIN_BUSINESS_SENSE_INDEX = round(1 / PHI + 0.082, 3)  # 1/φ + calibration ≈ 0.700 (golden ratio foundation + empirical adjustment)
 
 # Statistical Analysis Constants

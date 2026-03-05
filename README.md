@@ -8,13 +8,11 @@
 
 **TNFR (Resonant Fractal Nature Theory)** provides a mathematical framework for modeling coherent patterns in complex systems through resonance-based dynamics.
 
-**Version**: 0.0.2 (November 29, 2025)  
+**Version**: 0.0.3 (March 2026)  
 **Theoretical Foundation**: Universal Tetrahedral Correspondence (φ↔Φ_s, γ↔|∇φ|, π↔K_φ, e↔ξ_C)  
 **Installation**: `pip install tnfr`
 
 ## Getting Started
-
-### Getting Started
 
 **Installation**: `pip install tnfr`
 
@@ -39,7 +37,7 @@
 
 **Intermediate** (1 week):
 1. Study [theory/UNIFIED_GRAMMAR_RULES.md](theory/UNIFIED_GRAMMAR_RULES.md) - physics derivations
-2. Work through [examples/](examples/) sequential tutorials (01-10)
+2. Work through [examples/](examples/) sequential tutorials (01-40)
 3. Explore [src/tnfr/physics/fields.py](src/tnfr/physics/fields.py) - field implementations
 
 **Advanced** (ongoing):
@@ -95,7 +93,7 @@ Physics-derived constraints for valid operator sequences:
 - **U5**: Multi-Scale Coherence
 - **U6**: Structural Potential Confinement
 
-**Reference**: [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) for complete derivations
+**Reference**: [UNIFIED_GRAMMAR_RULES.md](theory/UNIFIED_GRAMMAR_RULES.md) for complete derivations
 
 ### Structural Field Tetrad (Canonical)
 
@@ -147,6 +145,32 @@ success, metrics = engine.step(node_id)
 ```
 
 **Documentation**: [src/tnfr/engines/README.md](src/tnfr/engines/README.md)
+
+### Spectral Factorization (Canonical Entry Point)
+
+TNFR ships a canonical Paley spectral factorization workflow that reuses the
+same grammar validator and self-optimization engines described above.
+
+- Import `factorize` from `tnfr.factorization` to call the lab implementation.
+- Certificates are emitted with canonical operator tokens plus optimizer
+  metadata, making results auditable.
+- Works with both the in-tree `factorization-lab/` checkout and the external
+  `tnfr-factorization` package, so downstream tooling has a single API surface.
+- Each `SpectralAnalysisResult` exposes `fft_backend` and
+  `fft_capabilities` so you can see which FFT engine executed the run.
+
+```python
+from tnfr.factorization import factorize
+
+result = factorize(2310, trace_certificates=True)
+print(result.candidate_factors)
+print(result.certificate.canonical_operators)
+print(result.fft_backend, result.fft_capabilities)
+```
+
+See `factorization-lab/README.md` for schematics, CLI usage, and certificate
+formats. The long-term scaling roadmap (partitioned graphs + distributed FFT)
+is tracked in `docs/FACTORIZATION_SCALING_PLAN.md`.
 
 ### Core Metrics
 
@@ -201,11 +225,6 @@ Risk levels:
 - `elevated` – Local stress: max |∇φ|, |K_φ| pocket, ξ_C watch.
 - `critical` – Grammar invalid or ΔΦ_s / ξ_C critical breach.
 
-CLI health report:
-
-```bash
-python scripts/structural_health_report.py --graph random:50:0.15 --sequence AL,UM,IL,SHA
-```
 
 All instrumentation preserves TNFR physics (no state mutation).
 
@@ -291,16 +310,15 @@ if result.valid:
 
 ### Domain Applications
 
-```bash
-# Therapeutic patterns (crisis, trauma, healing)
-python examples/domain_applications/therapeutic_patterns.py
+The [examples/](examples/) directory contains 42 sequential tutorials covering:
 
-# Educational patterns (learning, mastery, breakthrough)
-python examples/domain_applications/educational_patterns.py
+- **Classical Mechanics**: `examples/12_classical_mechanics_demo.py` (Keplerian orbits)
+- **Quantum Mechanics**: `examples/13_quantum_mechanics_demo.py` (emergent quantization)
+- **Biology**: `examples/18_biology_emergence_demo.py` (biological emergence)
+- **Neuroscience**: `examples/19_neuroscience_demo.py` (neural patterns)
+- **Conservation Laws**: `examples/40_conservation_law_demo.py` (structural conservation)
 
-# Biological systems (metabolism, evolution)
-python examples/domain_applications/biological_patterns.py
-```
+See [examples/README.md](examples/README.md) for the full index.
 
 ## Documentation
 
@@ -309,16 +327,19 @@ python examples/domain_applications/biological_patterns.py
 ### Primary References
 
 **Theoretical Foundation**:
+
 - **[AGENTS.md](AGENTS.md)** - Primary theoretical reference and development guide
 - **[theory/UNIFIED_GRAMMAR_RULES.md](theory/UNIFIED_GRAMMAR_RULES.md)** - Grammar constraint derivations (U1-U6)
 - **[Structural Fields and Universal Tetrahedral Correspondence](theory/FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md)** - Mathematical foundations
 
 **Implementation Guide**:
+
 - **[ARCHITECTURE.md](ARCHITECTURE.md)** - System architecture and design
 - **[docs/STRUCTURAL_FIELDS_TETRAD.md](docs/STRUCTURAL_FIELDS_TETRAD.md)** - Field implementation specifications
 - **[theory/GLOSSARY.md](theory/GLOSSARY.md)** - Technical definitions and terminology
 
 **Development Resources**:
+
 - **[CONTRIBUTING.md](CONTRIBUTING.md)** - Development workflow and standards
 - **[examples/](examples/)** - Sequential tutorials and usage examples
 - **[TESTING.md](TESTING.md)** - Testing framework and requirements
@@ -327,33 +348,38 @@ python examples/domain_applications/biological_patterns.py
 
 ```text
 TNFR-Python-Engine/
-├── src/tnfr/              # Core TNFR implementation
-│   ├── operators/         # Canonical operator system (immutable registry)
-│   │   ├── definitions.py        # Facade (backward compatibility)
-│   │   ├── definitions_base.py   # Operator base class (no dynamic metaclass)
-│   │   ├── emission.py           # AL operator
-│   │   ├── coherence.py          # IL operator
-│   │   └── ... (13 operators)    # Individual operator modules (canonical)
-│   ├── operators/grammar/ # Unified grammar constraints (Phase 1)
-│   │   ├── grammar.py            # Facade (unified validation)
-│   │   ├── u1_initiation_closure.py
-│   │   ├── u2_convergence_boundedness.py
-│   │   └── ... (8 constraint modules)
-│   ├── metrics/           # Modular metrics system (Phase 1)
-│   │   ├── metrics.py            # Facade (backward compatibility)
-│   │   ├── coherence.py          # C(t) computation
-│   │   ├── sense_index.py        # Si measurement
-│   │   ├── phase_sync.py         # Phase synchronization
-│   │   └── telemetry.py          # Execution tracing
-│   ├── physics/           # Canonical fields (Φ_s, |∇φ|, K_φ, ξ_C)
+├── src/tnfr/              # Core TNFR implementation (~346 files, ~104k LOC)
+│   ├── operators/         # 13 canonical operators + grammar validation
+│   │   ├── definitions.py        # Operator registry facade
+│   │   ├── grammar.py            # Unified grammar U1-U6 validation
+│   │   ├── grammar_dynamics.py   # Grammar-aware dynamic operator selection
+│   │   └── grammar_application.py # Grammar-enforced operator application
+│   ├── physics/           # Structural fields and conservation
+│   │   ├── fields.py             # Tetrad (Φ_s, |∇φ|, K_φ, ξ_C)
+│   │   ├── conservation.py       # Structural Conservation Theorem
+│   │   ├── integrity.py          # Closed-loop integrity monitor (13/13 postconditions)
+│   │   └── interactions.py       # Force emergence and coupling
 │   ├── dynamics/          # Nodal equation integration
-│   ├── sdk/               # High-level API
-│   └── tutorials/         # Educational modules
-├── tests/                 # Comprehensive test suite (975/976 passing)
-├── examples/              # Domain applications
-├── docs/                  # Documentation source
+│   │   ├── self_optimizing_engine.py  # Autonomous structural optimization
+│   │   ├── canonical.py               # Canonical dynamics
+│   │   └── selectors.py               # Grammar-filtered operator selection
+│   ├── engines/           # Centralized engines hub
+│   │   ├── self_optimization/    # Auto-optimization engine
+│   │   ├── pattern_discovery/    # Mathematical pattern detection
+│   │   ├── computation/          # GPU/FFT acceleration
+│   │   └── integration/          # Multi-scale integration
+│   ├── metrics/           # Coherence, Si, phase sync, telemetry
+│   ├── constants/         # 497+ canonical constants (φ, γ, π, e derivations)
+│   ├── sdk/               # Simplified + Fluent API
+│   ├── riemann/           # TNFR-Riemann operator implementation
+│   ├── factorization/     # Spectral factorization workflow
+│   └── mathematics/       # Nodal equation + number theory
+├── tests/                 # Test suite (471 passing, 9 skipped)
+├── examples/              # 42 sequential tutorials and demos
+├── theory/                # Theoretical documents and derivations
+├── docs/                  # Implementation specifications
 ├── notebooks/             # Jupyter notebooks
-├── benchmarks/            # Performance testing
+├── benchmarks/            # Performance validation suites
 └── scripts/               # Maintenance utilities
 ```
 
@@ -380,17 +406,12 @@ pytest tests/integration/              # Integration tests
 make clean                # Unix/Linux
 .\make.cmd clean          # Windows
 
-# Check repository health
-python scripts/repo_health_check.py
-
 # Verify documentation references
 python scripts/verify_internal_references.py
 
 # Security audit
 pip-audit
 ```
-
-See **[REPO_OPTIMIZATION_PLAN.md](docs/REPO_OPTIMIZATION_PLAN.md)** for cleanup routines and targeted test bundles.
 
 ## Performance Characteristics
 
@@ -399,75 +420,7 @@ See **[REPO_OPTIMIZATION_PLAN.md](docs/REPO_OPTIMIZATION_PLAN.md)** for cleanup 
 - **Phase gradient**: O(E) for E edges
 - **Memory footprint**: ~50MB for 10k-node networks
 
-Benchmarking tools: [tools/performance/](tools/performance/)
-
-Note on Python executable for local runs
-
-- Windows: prefer `./test-env/Scripts/python.exe`
-- macOS/Linux: prefer `./test-env/bin/python`
-
-Using the workspace virtual environment avoids mismatches with system Pythons
-that may lack the latest telemetry aliases or configuration.
-
-### Parse precision_modes drift (benchmark_results.json)
-
-After running `./test-env/Scripts/python.exe run_benchmark.py` (Windows) or
-`./test-env/bin/python run_benchmark.py` (macOS/Linux), parse numeric drift for
-the `precision_modes` track:
-
-```python
-import json
-
-with open("benchmark_results.json", "r", encoding="utf-8") as f:
-  data = json.load(f)
-
-drift_entries = data.get("precision_modes", {}).get("drift", [])
-for entry in drift_entries:
-  size = entry.get("size")
-  phi_s = entry.get("phi_s_max_abs")
-  grad = entry.get("grad_max_abs")
-  curv = entry.get("curv_max_abs")
-  xi_c = entry.get("xi_c_abs")
-  print(
-    f"N={size:>4}  ΔΦ_s_max={phi_s:.3e}  |∇φ|_max={grad:.3e}  "
-    f"K_φ_max={curv:.3e}  ξ_C_abs={xi_c if xi_c is not None else 'nan'}"
-  )
-```
-
-This reports the maximum absolute difference between `standard` and `high` precision modes for the canonical fields per graph size.
-
-PowerShell one-liners (Windows)
-
-```powershell
-# Largest ΔΦ_s drift row
-Get-Content .\benchmark_results.json | ConvertFrom-Json |
-  Select-Object -ExpandProperty precision_modes |
-  Select-Object -ExpandProperty drift |
-  Sort-Object -Property phi_s_max_abs -Descending |
-  Select-Object -First 1
-
-# Largest |∇φ| drift row
-Get-Content .\benchmark_results.json | ConvertFrom-Json |
-  Select-Object -ExpandProperty precision_modes |
-  Select-Object -ExpandProperty drift |
-  Sort-Object -Property grad_max_abs -Descending |
-  Select-Object -First 1
-
-# Largest K_φ drift row
-Get-Content .\benchmark_results.json | ConvertFrom-Json |
-  Select-Object -ExpandProperty precision_modes |
-  Select-Object -ExpandProperty drift |
-  Sort-Object -Property curv_max_abs -Descending |
-  Select-Object -First 1
-
-# Largest ξ_C drift row (skip NaNs)
-Get-Content .\benchmark_results.json | ConvertFrom-Json |
-  Select-Object -ExpandProperty precision_modes |
-  Select-Object -ExpandProperty drift |
-  Where-Object { $_.xi_c_abs -ne $null -and -not [double]::IsNaN([double]$_.xi_c_abs) } |
-  Sort-Object -Property xi_c_abs -Descending |
-  Select-Object -First 1
-```
+Benchmarking tools: [benchmarks/](benchmarks/)
 
 ## Contributing
 
@@ -481,6 +434,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for development guidelines:
 **Theoretical Development**: Follow theoretical integrity guidelines in [AGENTS.md](AGENTS.md).
 
 **Technical References**:
+
 - [docs/STRUCTURAL_FIELDS_TETRAD.md](docs/STRUCTURAL_FIELDS_TETRAD.md) - Field implementation specifications
 - [TESTING.md](TESTING.md) - Testing framework requirements
 
@@ -493,7 +447,7 @@ To cite this software:
   author = {Martinez Gamo, F. F.},
   title = {TNFR-Python-Engine: Resonant Fractal Nature Theory Implementation},
   year = {2025},
-  version = {0.0.2},
+  version = {0.0.3},
   doi = {10.5281/zenodo.17764207},
   url = {https://github.com/fermga/TNFR-Python-Engine}
 }
@@ -515,6 +469,7 @@ This project is licensed under the **MIT License** - see [LICENSE.md](LICENSE.md
 ## Theoretical Foundation
 
 TNFR implements pattern-based modeling principles:
+
 - **Pattern coherence** over discrete objects
 - **Resonant coupling** over causal relationships
 - **Dynamic processes** over static properties

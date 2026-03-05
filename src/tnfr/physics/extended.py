@@ -14,7 +14,7 @@ from __future__ import annotations
 import math
 from typing import Any, Dict, Tuple
 
-import numpy as np
+from ..mathematics.unified_numerical import np
 
 try:
     import networkx as nx
@@ -44,20 +44,8 @@ except ImportError:
         return (angle + math.pi) % (2 * math.pi) - math.pi
 
 # Import TNFR cache system
-try:
-    from ..utils.cache import cache_tnfr_computation, CacheLevel
-    _CACHE_AVAILABLE = True
-except ImportError:
-    _CACHE_AVAILABLE = False
-
-    def cache_tnfr_computation(*args, **kwargs):
-        def decorator(func):
-            return func
-
-        return decorator
-
-    class CacheLevel:
-        DERIVED_METRICS = None
+from ..mathematics.unified_cache import cache_tnfr_computation, CacheLevel
+_CACHE_AVAILABLE = True
 
 
 # Import TNFR aliases

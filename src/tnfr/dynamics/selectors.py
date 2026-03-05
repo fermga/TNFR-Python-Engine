@@ -31,7 +31,7 @@ from ..selector import (
     _selector_thresholds,
 )
 from ..types import Glyph, GlyphCode, GlyphSelector, HistoryState, NodeId, TNFRGraph
-from ..utils import get_numpy
+from ..mathematics.unified_numerical import np
 from ..validation import soft_grammar_filters
 from .aliases import ALIAS_D2EPI, ALIAS_DNFR, ALIAS_DSI, ALIAS_SI
 
@@ -97,11 +97,14 @@ def _soft_grammar_prefilter(
     n: NodeId,
     cand: GlyphCode,
 ) -> GlyphCode:
-    """Soft grammar: avoid repetitions before the canonical one."""
+    """Soft heuristic prefilter: repetition avoidance and force thresholds.
 
+    Full grammar enforcement (U1-U6) is performed once at the apply stage via
+    :func:`enforce_canonical_grammar`, keeping a single source of truth and
+    avoiding double-checking.
+    """
     ctx = GrammarContext.from_graph(G)
-    filtered = soft_grammar_filters(ctx, n, cand)
-    return cast(GlyphCode, filtered)
+    return cast(GlyphCode, soft_grammar_filters(ctx, n, cand))
 
 
 def _selector_normalized_metrics(
@@ -348,22 +351,17 @@ def _collect_selector_metrics(
         return {}
 
     dynamics_module = sys.modules.get("tnfr.dynamics")
-    get_numpy_fn = get_numpy
-    if dynamics_module is not None:
-        get_numpy_fn = getattr(dynamics_module, "get_numpy", get_numpy)
-
-    np_mod = get_numpy_fn()
     dnfr_max = float(norms.get("dnfr_max", 1.0)) or 1.0
     accel_max = float(norms.get("accel_max", 1.0)) or 1.0
 
-    if np_mod is not None:
-        si_seq_np = collect_attr(G, nodes, ALIAS_SI, 0.5, np=np_mod).astype(float)
-        si_seq_np = np_mod.clip(si_seq_np, 0.0, 1.0)
+    if np is not None:
+        si_seq_np = cast(Any, collect_attr(G, nodes, ALIAS_SI, 0.5)).astype(float)
+        si_seq_np = np.clip(si_seq_np, 0.0, 1.0)
         dnfr_seq_np = (
-            np_mod.abs(collect_attr(G, nodes, ALIAS_DNFR, 0.0, np=np_mod).astype(float)) / dnfr_max
+            np.abs(cast(Any, collect_attr(G, nodes, ALIAS_DNFR, 0.0)).astype(float)) / dnfr_max
         )
         accel_seq_np = (
-            np_mod.abs(collect_attr(G, nodes, ALIAS_D2EPI, 0.0, np=np_mod).astype(float))
+            np.abs(cast(Any, collect_attr(G, nodes, ALIAS_D2EPI, 0.0)).astype(float))
             / accel_max
         )
 

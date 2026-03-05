@@ -51,7 +51,7 @@ Record the operator stack (`AL` → `UM` → `IL`) plus random seeds inside run 
 Standing-wave structures emerge when reflected waves satisfy field thresholds
 
 \[
-|\nabla \phi| < 0.2904, \quad |K_\phi| < 2.8274.
+|\nabla \phi| < \gamma/\pi \approx 0.1837, \quad |K_\phi| < 2.8274.
 \]
 
 These bounds ensure convergence (U2) and keep curvature within canonical limits. Simulations should output eigenmode tables (frequency, Q-factor, coherence) stored in `results/cosmogony/modes.csv`.

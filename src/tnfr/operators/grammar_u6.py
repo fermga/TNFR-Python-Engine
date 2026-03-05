@@ -11,6 +11,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from ..mathematics.unified_numerical import np
 from .grammar_types import StructuralPotentialConfinementError
 
 # ============================================================================
@@ -108,7 +109,6 @@ def validate_structural_potential_confinement(
     - src/tnfr/physics/fields.py: compute_structural_potential()
 
     """
-    import numpy as np
 
     # Compute drift as mean absolute change
     nodes = list(G.nodes())

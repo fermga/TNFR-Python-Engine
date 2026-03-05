@@ -2,15 +2,17 @@
 
 from __future__ import annotations
 
+from ..errors import TNFRValueError
 from ..compat.dataclass import dataclass
 from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
-import numpy as np
+from .unified_numerical import np
 
 if TYPE_CHECKING:  # pragma: no cover - typing hook when numpy.typing is available
     import numpy.typing as npt
+    import numpy as _np_typing
 
-    ComplexVector = npt.NDArray[np.complexfloating[np.float64, np.float64]]
+    ComplexVector = npt.NDArray[_np_typing.complexfloating[_np_typing.float64, _np_typing.float64]]
 else:  # pragma: no cover - runtime fallback without numpy.typing
     ComplexVector = np.ndarray  # type: ignore[assignment]
 
@@ -63,7 +65,11 @@ class BasicStateProjector:
         rng: np.random.Generator | None = None,
     ) -> ComplexVector:
         if dim <= 0:
-            raise ValueError("State dimension must be a positive integer.")
+            raise TNFRValueError(
+                "State dimension must be a positive integer.",
+                context={"dimension": dim},
+                suggestion="Provide a positive integer for dimension."
+            )
 
         indices = np.arange(1, dim + 1, dtype=float)
         phase_progression = theta + (nu_f + 1.0) * indices / max(dim, 1)
@@ -79,7 +85,11 @@ class BasicStateProjector:
 
         norm = np.linalg.norm(base_vector)
         if np.isclose(norm, 0.0, atol=self.atol):
-            raise ValueError("Cannot normalise a null state vector.")
+            raise TNFRValueError(
+                "Cannot normalise a null state vector.",
+                context={"norm": norm, "atol": self.atol},
+                suggestion="Ensure the state vector is non-zero."
+            )
 
         normalised = base_vector / norm
         return np.asarray(normalised, dtype=self.dtype)

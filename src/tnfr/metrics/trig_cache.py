@@ -14,7 +14,8 @@ from typing import Any, Iterable, Mapping
 
 from ..alias import get_theta_attr
 from ..types import GraphLike, NodeAttrMap
-from ..utils import edge_version_cache, get_numpy
+from ..utils import edge_version_cache
+from ..mathematics.unified_numerical import np
 
 __all__ = ("TrigCache", "compute_theta_trig", "get_trig_cache", "_compute_trig_python")
 
@@ -91,12 +92,9 @@ def _compute_trig_python(
 
 def compute_theta_trig(
     nodes: Iterable[tuple[Any, NodeAttrMap | float]],
-    np: Any | None = None,
 ) -> TrigCache:
     """Return trigonometric mappings of ``θ`` per node."""
 
-    if np is None:
-        np = get_numpy()
     if np is None or not all(hasattr(np, attr) for attr in ("fromiter", "cos", "sin")):
         return _compute_trig_python(nodes)
 
@@ -142,16 +140,15 @@ def compute_theta_trig(
     )
 
 
-def _build_trig_cache(G: GraphLike, np: Any | None = None) -> TrigCache:
+def _build_trig_cache(G: GraphLike) -> TrigCache:
     """Construct trigonometric cache for ``G``."""
 
-    return compute_theta_trig(G.nodes(data=True), np=np)
+    return compute_theta_trig(G.nodes(data=True))
 
 
 def get_trig_cache(
     G: GraphLike,
     *,
-    np: Any | None = None,
     cache_size: int | None = 128,
 ) -> TrigCache:
     """Return cached cosines and sines of ``θ`` per node.
@@ -174,8 +171,6 @@ def get_trig_cache(
     ----------
     G : GraphLike
         Graph whose node theta attributes are cached.
-    np : Any or None, optional
-        NumPy module for array-based storage. Falls back to dict if None.
     cache_size : int or None, optional
         Maximum cache entries. Default: 128. None for unlimited.
 
@@ -186,14 +181,12 @@ def get_trig_cache(
         See TrigCache dataclass for field documentation.
     """
 
-    if np is None:
-        np = get_numpy()
     graph = G.graph
     version = graph.setdefault("_trig_version", 0)
     key = ("_trig", version)
 
     def builder() -> TrigCache:
-        return _build_trig_cache(G, np=np)
+        return _build_trig_cache(G)
 
     trig = edge_version_cache(G, key, builder, max_entries=cache_size)
     current_checksums = _graph_theta_checksums(G)

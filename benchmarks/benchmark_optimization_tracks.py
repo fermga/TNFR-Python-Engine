@@ -43,7 +43,7 @@ try:
         validate_sequence_optimized,
         clear_memoization_cache,
     )
-    from tnfr.telemetry.emit import TelemetryEmitter
+    from tnfr.telemetry import get_unified_telemetry_system
     from tnfr.config import get_precision_mode, set_precision_mode
     TNFR_AVAILABLE = True
 except ImportError as e:
@@ -446,13 +446,18 @@ class OptimizationBenchmark:
             # Telemetry emission
             emit_times = []
             for _ in range(self.config.num_runs):
-                emitter = TelemetryEmitter(
-                    "test_telemetry.jsonl", buffer_size=100
-                )
+                telemetry = get_unified_telemetry_system()
                 with BenchmarkTimer() as timer:
                     try:
-                        emitter.emit_graph_snapshot(G, iteration=0)
-                        emitter.flush()
+                        # Simulate graph snapshot emission using unified system
+                        telemetry.emit_structural_event(
+                            coherence=0.85,
+                            phi_s=0.6,
+                            phase_gradient=0.1,
+                            phase_curvature=0.05,
+                            coherence_length=10.0
+                        )
+                        telemetry.flush()
                     except Exception:
                         pass  # Ignore telemetry errors in benchmark
                 emit_times.append(timer.to_ms())

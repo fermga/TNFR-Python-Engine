@@ -87,6 +87,16 @@ except ImportError:
 ensure_node_offset_map = _ensure_node_offset_map
 
 
+_GLOBAL_CONFIG = None
+
+def get_config() -> TNFRConfig:
+    """Get the global TNFR configuration singleton."""
+    global _GLOBAL_CONFIG
+    if _GLOBAL_CONFIG is None:
+        _GLOBAL_CONFIG = TNFRConfig()
+    return _GLOBAL_CONFIG
+
+
 # Legacy function wrappers that use TNFRConfig internally
 def inject_defaults(G, defaults=None, override=False):
     """Inject defaults into graph (backward compatible wrapper).
@@ -240,4 +250,5 @@ __all__ = (
     "get_param",
     "get_graph_param",
     "ensure_node_offset_map",
+    "get_config",
 )

@@ -1,0 +1,1092 @@
+{
+  "data": {
+    "__type": {
+      "fields": [
+        {
+          "name": "platformStats",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "platformStatsById",
+          "type": {
+            "name": "PlatformStats",
+            "kind": "OBJECT",
+            "ofType": null
+          }
+        },
+        {
+          "name": "platformStatsConnection",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "PlatformStatsConnection",
+              "kind": "OBJECT"
+            }
+          }
+        },
+        {
+          "name": "accountStats",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "accountStatById",
+          "type": {
+            "name": "AccountStat",
+            "kind": "OBJECT",
+            "ofType": null
+          }
+        },
+        {
+          "name": "accountStatsConnection",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "AccountStatsConnection",
+              "kind": "OBJECT"
+            }
+          }
+        },
+        {
+          "name": "positions",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "positionById",
+          "type": {
+            "name": "Position",
+            "kind": "OBJECT",
+            "ofType": null
+          }
+        },
+        {
+          "name": "positionsConnection",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "PositionsConnection",
+              "kind": "OBJECT"
+            }
+          }
+        },
+        {
+          "name": "prices",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "priceById",
+          "type": {
+            "name": "Price",
+            "kind": "OBJECT",
+            "ofType": null
+          }
+        },
+        {
+          "name": "pricesConnection",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "PricesConnection",
+              "kind": "OBJECT"
+            }
+          }
+        },
+        {
+          "name": "markets",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "marketById",
+          "type": {
+            "name": "Market",
+            "kind": "OBJECT",
+            "ofType": null
+          }
+        },
+        {
+          "name": "marketsConnection",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "MarketsConnection",
+              "kind": "OBJECT"
+            }
+          }
+        },
+        {
+          "name": "positionChanges",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "positionChangeById",
+          "type": {
+            "name": "PositionChange",
+            "kind": "OBJECT",
+            "ofType": null
+          }
+        },
+        {
+          "name": "positionChangesConnection",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "PositionChangesConnection",
+              "kind": "OBJECT"
+            }
+          }
+        },
+        {
+          "name": "collectedFeesInfos",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "collectedFeesInfoById",
+          "type": {
+            "name": "CollectedFeesInfo",
+            "kind": "OBJECT",
+            "ofType": null
+          }
+        },
+        {
+          "name": "collectedFeesInfosConnection",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "CollectedFeesInfosConnection",
+              "kind": "OBJECT"
+            }
+          }
+        },
+        {
+          "name": "onChainSettings",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "onChainSettingById",
+          "type": {
+            "name": "OnChainSetting",
+            "kind": "OBJECT",
+            "ofType": null
+          }
+        },
+        {
+          "name": "onChainSettingsConnection",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "OnChainSettingsConnection",
+              "kind": "OBJECT"
+            }
+          }
+        },
+        {
+          "name": "marketInfos",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "marketInfoById",
+          "type": {
+            "name": "MarketInfo",
+            "kind": "OBJECT",
+            "ofType": null
+          }
+        },
+        {
+          "name": "marketInfosConnection",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "MarketInfosConnection",
+              "kind": "OBJECT"
+            }
+          }
+        },
+        {
+          "name": "borrowingRateSnapshots",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "borrowingRateSnapshotById",
+          "type": {
+            "name": "BorrowingRateSnapshot",
+            "kind": "OBJECT",
+            "ofType": null
+          }
+        },
+        {
+          "name": "borrowingRateSnapshotsConnection",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "BorrowingRateSnapshotsConnection",
+              "kind": "OBJECT"
+            }
+          }
+        },
+        {
+          "name": "aprSnapshots",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "aprSnapshotById",
+          "type": {
+            "name": "AprSnapshot",
+            "kind": "OBJECT",
+            "ofType": null
+          }
+        },
+        {
+          "name": "aprSnapshotsConnection",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "AprSnapshotsConnection",
+              "kind": "OBJECT"
+            }
+          }
+        },
+        {
+          "name": "pnlAprSnapshots",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "pnlAprSnapshotById",
+          "type": {
+            "name": "PnlAprSnapshot",
+            "kind": "OBJECT",
+            "ofType": null
+          }
+        },
+        {
+          "name": "pnlAprSnapshotsConnection",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "PnlAprSnapshotsConnection",
+              "kind": "OBJECT"
+            }
+          }
+        },
+        {
+          "name": "glvs",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "glvById",
+          "type": {
+            "name": "Glv",
+            "kind": "OBJECT",
+            "ofType": null
+          }
+        },
+        {
+          "name": "glvsConnection",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "GlvsConnection",
+              "kind": "OBJECT"
+            }
+          }
+        },
+        {
+          "name": "cumulativePoolValues",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "cumulativePoolValueById",
+          "type": {
+            "name": "CumulativePoolValue",
+            "kind": "OBJECT",
+            "ofType": null
+          }
+        },
+        {
+          "name": "cumulativePoolValuesConnection",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "CumulativePoolValuesConnection",
+              "kind": "OBJECT"
+            }
+          }
+        },
+        {
+          "name": "transactions",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "transactionById",
+          "type": {
+            "name": "Transaction",
+            "kind": "OBJECT",
+            "ofType": null
+          }
+        },
+        {
+          "name": "transactionsConnection",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "TransactionsConnection",
+              "kind": "OBJECT"
+            }
+          }
+        },
+        {
+          "name": "tradeActions",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "tradeActionById",
+          "type": {
+            "name": "TradeAction",
+            "kind": "OBJECT",
+            "ofType": null
+          }
+        },
+        {
+          "name": "tradeActionsConnection",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "TradeActionsConnection",
+              "kind": "OBJECT"
+            }
+          }
+        },
+        {
+          "name": "claimActions",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "claimActionById",
+          "type": {
+            "name": "ClaimAction",
+            "kind": "OBJECT",
+            "ofType": null
+          }
+        },
+        {
+          "name": "claimActionsConnection",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "ClaimActionsConnection",
+              "kind": "OBJECT"
+            }
+          }
+        },
+        {
+          "name": "orders",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "orderById",
+          "type": {
+            "name": "Order",
+            "kind": "OBJECT",
+            "ofType": null
+          }
+        },
+        {
+          "name": "ordersConnection",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "OrdersConnection",
+              "kind": "OBJECT"
+            }
+          }
+        },
+        {
+          "name": "swapInfos",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "swapInfoById",
+          "type": {
+            "name": "SwapInfo",
+            "kind": "OBJECT",
+            "ofType": null
+          }
+        },
+        {
+          "name": "swapInfosConnection",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "SwapInfosConnection",
+              "kind": "OBJECT"
+            }
+          }
+        },
+        {
+          "name": "positionFeesEntities",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "positionFeesEntityById",
+          "type": {
+            "name": "PositionFeesEntity",
+            "kind": "OBJECT",
+            "ofType": null
+          }
+        },
+        {
+          "name": "positionFeesEntitiesConnection",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "PositionFeesEntitiesConnection",
+              "kind": "OBJECT"
+            }
+          }
+        },
+        {
+          "name": "claimableCollateralGroups",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "claimableCollateralGroupById",
+          "type": {
+            "name": "ClaimableCollateralGroup",
+            "kind": "OBJECT",
+            "ofType": null
+          }
+        },
+        {
+          "name": "claimableCollateralGroupsConnection",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "ClaimableCollateralGroupsConnection",
+              "kind": "OBJECT"
+            }
+          }
+        },
+        {
+          "name": "claimableCollaterals",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "claimableCollateralById",
+          "type": {
+            "name": "ClaimableCollateral",
+            "kind": "OBJECT",
+            "ofType": null
+          }
+        },
+        {
+          "name": "claimableCollateralsConnection",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "ClaimableCollateralsConnection",
+              "kind": "OBJECT"
+            }
+          }
+        },
+        {
+          "name": "claimableFundingFeeInfos",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "claimableFundingFeeInfoById",
+          "type": {
+            "name": "ClaimableFundingFeeInfo",
+            "kind": "OBJECT",
+            "ofType": null
+          }
+        },
+        {
+          "name": "claimableFundingFeeInfosConnection",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "ClaimableFundingFeeInfosConnection",
+              "kind": "OBJECT"
+            }
+          }
+        },
+        {
+          "name": "claimRefs",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "claimRefById",
+          "type": {
+            "name": "ClaimRef",
+            "kind": "OBJECT",
+            "ofType": null
+          }
+        },
+        {
+          "name": "claimRefsConnection",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "ClaimRefsConnection",
+              "kind": "OBJECT"
+            }
+          }
+        },
+        {
+          "name": "cumulativePnls",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "cumulativePnlById",
+          "type": {
+            "name": "CumulativePnl",
+            "kind": "OBJECT",
+            "ofType": null
+          }
+        },
+        {
+          "name": "cumulativePnlsConnection",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "CumulativePnlsConnection",
+              "kind": "OBJECT"
+            }
+          }
+        },
+        {
+          "name": "processorStatuses",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "processorStatusById",
+          "type": {
+            "name": "ProcessorStatus",
+            "kind": "OBJECT",
+            "ofType": null
+          }
+        },
+        {
+          "name": "processorStatusesConnection",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "ProcessorStatusesConnection",
+              "kind": "OBJECT"
+            }
+          }
+        },
+        {
+          "name": "multichainFundingSendEvents",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "multichainFundingSendEventById",
+          "type": {
+            "name": "MultichainFundingSendEvent",
+            "kind": "OBJECT",
+            "ofType": null
+          }
+        },
+        {
+          "name": "multichainFundingSendEventsConnection",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "MultichainFundingSendEventsConnection",
+              "kind": "OBJECT"
+            }
+          }
+        },
+        {
+          "name": "multichainFundingReceiveEvents",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "multichainFundingReceiveEventById",
+          "type": {
+            "name": "MultichainFundingReceiveEvent",
+            "kind": "OBJECT",
+            "ofType": null
+          }
+        },
+        {
+          "name": "multichainFundingReceiveEventsConnection",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "MultichainFundingReceiveEventsConnection",
+              "kind": "OBJECT"
+            }
+          }
+        },
+        {
+          "name": "multichainMetadata",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "multichainMetadataById",
+          "type": {
+            "name": "MultichainMetadata",
+            "kind": "OBJECT",
+            "ofType": null
+          }
+        },
+        {
+          "name": "multichainMetadataConnection",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "MultichainMetadataConnection",
+              "kind": "OBJECT"
+            }
+          }
+        },
+        {
+          "name": "distributions",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "distributionById",
+          "type": {
+            "name": "Distribution",
+            "kind": "OBJECT",
+            "ofType": null
+          }
+        },
+        {
+          "name": "distributionsConnection",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "DistributionsConnection",
+              "kind": "OBJECT"
+            }
+          }
+        },
+        {
+          "name": "claimableAmounts",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "claimableAmountById",
+          "type": {
+            "name": "ClaimableAmount",
+            "kind": "OBJECT",
+            "ofType": null
+          }
+        },
+        {
+          "name": "claimableAmountsConnection",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "ClaimableAmountsConnection",
+              "kind": "OBJECT"
+            }
+          }
+        },
+        {
+          "name": "marketsAprByPeriod",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "glvsAprByPeriod",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "totalPositionChanges",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "Float",
+              "kind": "SCALAR"
+            }
+          }
+        },
+        {
+          "name": "periodAccountStats",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "accountPnlHistoryStats",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "accountPnlSummaryStats",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "positionsVolume",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "positionTotalCollateralAmount",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "marketsPnlAprByPeriod",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "glvsPnlAprByPeriod",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "multichainFunding",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "performanceSnapshots",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "annualizedPerformance",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": null,
+              "kind": "LIST"
+            }
+          }
+        },
+        {
+          "name": "squidStatus",
+          "type": {
+            "name": null,
+            "kind": "NON_NULL",
+            "ofType": {
+              "name": "SquidStatus",
+              "kind": "OBJECT"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

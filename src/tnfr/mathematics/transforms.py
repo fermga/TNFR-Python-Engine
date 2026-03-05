@@ -42,7 +42,8 @@ from typing import (
     runtime_checkable,
 )
 
-import numpy as np
+from ..errors import TNFRValueError
+from .unified_numerical import np
 
 from .epi import BEPIElement
 
@@ -173,7 +174,11 @@ def _as_coherence_values(
     norm_kwargs: Mapping[str, float],
 ) -> tuple[float, ...]:
     if not coherence_series:
-        raise ValueError("coherence_series must contain at least one entry.")
+        raise TNFRValueError(
+            "coherence_series must contain at least one entry.",
+            context={"series_length": 0},
+            suggestion="Provide a non-empty sequence of coherence values."
+        )
 
     first = coherence_series[0]
     if isinstance(first, BEPIElement):
@@ -203,7 +208,11 @@ def _as_coherence_values(
             )
         numeric = float(value)
         if not np.isfinite(numeric):
-            raise ValueError("Coherence values must be finite numbers.")
+            raise TNFRValueError(
+                "Coherence values must be finite numbers.",
+                context={"value": numeric},
+                suggestion="Check for NaN or Inf values in the coherence series."
+            )
         values.append(numeric)
     return tuple(values)
 
@@ -242,9 +251,17 @@ def ensure_coherence_monotonicity(
     """
 
     if tolerated_drop < 0:
-        raise ValueError("tolerated_drop must be non-negative.")
+        raise TNFRValueError(
+            "tolerated_drop must be non-negative.",
+            context={"tolerated_drop": tolerated_drop},
+            suggestion="Provide a non-negative value for tolerated_drop."
+        )
     if atol < 0:
-        raise ValueError("atol must be non-negative.")
+        raise TNFRValueError(
+            "atol must be non-negative.",
+            context={"atol": atol},
+            suggestion="Provide a non-negative value for atol."
+        )
 
     if norm_kwargs is None:
         norm_kwargs = {}

@@ -16,25 +16,11 @@ Functions:
 """
 
 from typing import Union, Any, Callable, Set, Optional
-import numpy as np
+from .unified_numerical import np
 
 # Import TNFR Cache Infrastructure
-try:
-    from ..utils.cache import cache_tnfr_computation, CacheLevel
-    _CACHE_AVAILABLE = True
-except ImportError:
-    _CACHE_AVAILABLE = False
-
-    # Fallback if cache not available
-    def cache_tnfr_computation(level: Any, dependencies: Set[str]) -> Callable:
-        def decorator(f: Callable) -> Callable:
-            return f
-        return decorator
-
-    class CacheLevel:
-        DERIVED_METRICS = "derived_metrics"
-        GRAPH_STRUCTURE = "graph_structure"
-        NODE_PROPERTIES = "node_properties"
+from .unified_cache import cache_tnfr_computation, CacheLevel
+_CACHE_AVAILABLE = True
 
 # Import Unified Backend
 try:

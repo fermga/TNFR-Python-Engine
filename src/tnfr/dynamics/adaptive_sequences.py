@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     from ..types import TNFRGraph, NodeId
 
 try:
-    import numpy as np
+    from ..mathematics.unified_numerical import np
 except ImportError:
     np = None  # type: ignore[assignment]
 

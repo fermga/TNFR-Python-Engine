@@ -24,7 +24,10 @@ References
 
 from __future__ import annotations
 
+import warnings
 from typing import TYPE_CHECKING, Any
+
+from ...errors import TNFRValueError
 
 if TYPE_CHECKING:
     from ...types import TNFRGraph
@@ -95,8 +98,6 @@ def validate_dissonance_strict(G: TNFRGraph, node: Any) -> None:
     tnfr.operators.preconditions : Base precondition validators
     tnfr.operators.definitions.Dissonance : Dissonance operator implementation
     """
-    import warnings
-
     from ...alias import get_attr
     from ...constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_VF
 
@@ -115,28 +116,34 @@ def validate_dissonance_strict(G: TNFRGraph, node: Any) -> None:
     # Precondition 1: Minimum coherence base (EPI)
     # OZ requires existing structure to perturb - without it, OZ causes collapse
     if epi < min_epi:
-        raise ValueError(
+        raise TNFRValueError(
             f"OZ precondition failed: EPI={epi:.3f} < {min_epi:.3f}. "
             f"Insufficient coherence base to withstand dissonance. "
-            f"Suggestion: Apply IL (Coherence) first to stabilize node before introducing dissonance."
+            f"Suggestion: Apply IL (Coherence) first to stabilize node before introducing dissonance.",
+            context={"epi": epi, "min_epi": min_epi},
+            suggestion="Apply IL (Coherence) first to stabilize node before introducing dissonance.",
         )
 
     # Precondition 2: ΔNFR not critically high
     # Applying OZ when ΔNFR already extreme creates sobrecarga (overload) → collapse
     if abs(dnfr) > max_dnfr:
-        raise ValueError(
+        raise TNFRValueError(
             f"OZ precondition failed: |ΔNFR|={abs(dnfr):.3f} > {max_dnfr:.3f}. "
             f"Reorganization pressure already critical - applying OZ risks collapse. "
-            f"Suggestion: Apply IL (Coherence) first to reduce ΔNFR before introducing more dissonance."
+            f"Suggestion: Apply IL (Coherence) first to reduce ΔNFR before introducing more dissonance.",
+            context={"dnfr": dnfr, "max_dnfr": max_dnfr},
+            suggestion="Apply IL (Coherence) first to reduce ΔNFR before introducing more dissonance.",
         )
 
     # Precondition 3: Sufficient νf for reorganization response
     # OZ triggers reorganization - node needs capacity (νf) to respond
     if vf < min_vf:
-        raise ValueError(
+        raise TNFRValueError(
             f"OZ precondition failed: νf={vf:.3f} < {min_vf:.3f}. "
             f"Structural frequency too low - node lacks capacity to respond to dissonance. "
-            f"Suggestion: Increase νf before applying OZ."
+            f"Suggestion: Increase νf before applying OZ.",
+            context={"vf": vf, "min_vf": min_vf},
+            suggestion="Increase νf before applying OZ.",
         )
 
     # Precondition 4: Detect OZ overload (sobrecarga disonante)
@@ -225,10 +232,12 @@ def _validate_oz_no_overload(G: TNFRGraph, node: Any) -> None:
         has_resolver = any(name in resolvers for name in recent_names)
 
         if not has_resolver:
-            raise ValueError(
+            raise TNFRValueError(
                 f"OZ precondition failed: Sobrecarga disonante detected. "
                 f"Found {oz_count} OZ in recent history without resolution. "
                 f"Applying another OZ without resolving previous dissonance risks collapse. "
                 f"Suggestion: Apply IL (Coherence), THOL (Self-organization), or NUL (Contraction) "
-                f"to integrate dissonance before introducing more."
+                f"to integrate dissonance before introducing more.",
+                context={"oz_count": oz_count, "recent_history": recent_names},
+                suggestion="Apply IL (Coherence), THOL (Self-organization), or NUL (Contraction) to integrate dissonance before introducing more.",
             )

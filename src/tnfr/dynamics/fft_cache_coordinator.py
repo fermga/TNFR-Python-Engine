@@ -26,7 +26,8 @@ from dataclasses import dataclass
 from typing import Any, Callable, Dict, Optional, Tuple
 import time
 
-import numpy as np
+from ..errors import TNFRValueError
+from ..mathematics.unified_numerical import np
 
 try:  # Optional dependency
     import networkx as nx  # noqa: F401
@@ -113,7 +114,11 @@ class FFTCacheCoordinator:
         """Return (and cache) Laplacian eigensystem for *G*."""
 
         if not HAS_SPECTRAL or G is None:
-            raise ValueError("Spectral analysis unavailable in current environment")
+            raise TNFRValueError(
+                "Spectral analysis unavailable in current environment",
+                context={"HAS_SPECTRAL": HAS_SPECTRAL, "G_is_none": G is None},
+                suggestion="Ensure spectral dependencies are installed and graph is valid.",
+            )
 
         signature = self._graph_signature(G)
         self._stats.spectral_requests += 1

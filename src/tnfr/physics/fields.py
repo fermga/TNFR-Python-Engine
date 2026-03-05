@@ -61,7 +61,7 @@ import math
 import time
 from typing import Any, Dict, List, Optional, Union
 
-import numpy as np
+from ..mathematics.unified_numerical import np
 
 try:
     import networkx as nx
@@ -83,6 +83,9 @@ from .canonical import (
     estimate_coherence_length,
 )
 
+# Backward-compatible alias (used by pattern_discovery and parallel modules)
+compute_structural_potential_field = compute_structural_potential
+
 # Unified Telemetry (Optimized Pass)
 from .telemetry import compute_structural_telemetry
 
@@ -96,20 +99,9 @@ from .extended import (
 # Unified field functions are defined in this module below
 
 # Import TNFR cache system for research functions
-try:
-    from ..utils.cache import cache_tnfr_computation, CacheLevel
-    _CACHE_AVAILABLE = True
-except ImportError:
-    _CACHE_AVAILABLE = False
+from ..mathematics.unified_cache import cache_tnfr_computation, CacheLevel
+_CACHE_AVAILABLE = True
 
-    def cache_tnfr_computation(*args, **kwargs):
-        def decorator(func):
-            return func
-
-        return decorator
-
-    class CacheLevel:
-        DERIVED_METRICS = None
 
 # Import TNFR aliases
 try:
@@ -163,18 +155,9 @@ __all__ = [
 # RESEARCH-PHASE UTILITIES (Not in modular implementations)
 # ============================================================================
 
-def _get_phase(G: Any, node: Any) -> float:
-    """Retrieve phase value φ for a node (radians in [0, 2π))."""
-    node_data = G.nodes[node]
-    for alias in ALIAS_THETA:
-        if alias in node_data:
-            return float(node_data[alias])
-    return 0.0
-
-
-def _wrap_angle(angle: float) -> float:
-    """Map angle to [-π, π]."""
-    return (angle + math.pi) % (2 * math.pi) - math.pi
+# Centralised helpers — single source of truth in _helpers.py
+from ._helpers import get_phase as _get_phase            # noqa: E402
+from ._helpers import wrap_angle as _wrap_angle          # noqa: E402
 
 
 def path_integrated_gradient(
@@ -698,223 +681,129 @@ def _extract_field_values(field_dict_list, G):
     return aligned_arrays
 
 def compute_complex_geometric_field(G: Any) -> Dict[str, Any]:
-    """Compute unified complex geometric field Ψ = K_φ + i·J_φ.
-    
-    Based on mathematical audit discovery of strong anticorrelation 
-    r(K_φ, J_φ) = -0.854 to -0.997, indicating K_φ and J_φ are dual
-    aspects of the same geometric-transport field.
-    
-    Args:
-        G: TNFR network with phase and ΔNFR data
-        
+    """Compute unified complex geometric field Ψ = K_φ + i·J_φ (array form).
+
+    Delegates to :func:`tnfr.physics.unified.compute_complex_geometric_field`
+    (single source of truth) and reshapes the result into aligned numpy arrays
+    with an additional K_φ ↔ J_φ correlation measurement.
+
     Returns:
-        Dict containing:
-        - psi_real: Real part (K_φ curvature field)
-        - psi_imag: Imaginary part (J_φ current field) 
-        - psi_magnitude: |Ψ| unified field magnitude
-        - psi_phase: arg(Ψ) geometric phase angle
-        - correlation: Measured K_φ ↔ J_φ correlation
-        
-    References:
-        - TETRAD_MATHEMATICAL_AUDIT_2025.md § Complex Field Unification
-        - src/tnfr/physics/unified.py (prototype validation)
+        Dict with keys: psi_real, psi_imag, psi_magnitude, psi_phase,
+        correlation, num_nodes.
     """
-    # Compute constituent fields
-    K_phi_dict = compute_phase_curvature(G)
-    J_phi_dict = compute_phase_current(G)
-    
-    # Extract aligned arrays
-    field_arrays = _extract_field_values([K_phi_dict, J_phi_dict], G)
-    if len(field_arrays) != 2 or len(field_arrays[0]) == 0:
+    from .unified import compute_complex_geometric_field as _psi_dict
+
+    psi = _psi_dict(G)
+    if not psi:
         return {
-            "psi_real": np.array([]),
-            "psi_imag": np.array([]),
-            "psi_magnitude": np.array([]),
-            "psi_phase": np.array([]),
-            "correlation": 0.0,
-            "num_nodes": 0
+            "psi_real": np.array([]), "psi_imag": np.array([]),
+            "psi_magnitude": np.array([]), "psi_phase": np.array([]),
+            "correlation": 0.0, "num_nodes": 0,
         }
-    
-    K_phi_aligned, J_phi_aligned = field_arrays
-    
-    # Construct complex field Ψ = K_φ + i·J_φ
-    psi_complex = K_phi_aligned + 1j * J_phi_aligned
-    
-    # Extract components
-    psi_magnitude = np.abs(psi_complex)
-    psi_phase = np.angle(psi_complex)
-    
-    # Measure correlation (validation of theoretical prediction)
+
+    nodes = sorted(psi.keys())
+    k_phi = np.array([psi[n].real for n in nodes])
+    j_phi = np.array([psi[n].imag for n in nodes])
+    psi_complex = k_phi + 1j * j_phi
+
     correlation = 0.0
-    num_nodes = len(K_phi_aligned)
-    if num_nodes > 1 and np.std(K_phi_aligned) > 1e-10 and np.std(J_phi_aligned) > 1e-10:
-        correlation = np.corrcoef(K_phi_aligned, J_phi_aligned)[0, 1]
+    num_nodes = len(nodes)
+    if num_nodes > 1 and np.std(k_phi) > 1e-10 and np.std(j_phi) > 1e-10:
+        correlation = float(np.corrcoef(k_phi, j_phi)[0, 1])
         if np.isnan(correlation):
             correlation = 0.0
-    
+
     return {
-        "psi_real": K_phi_aligned,
-        "psi_imag": J_phi_aligned,
-        "psi_magnitude": psi_magnitude,
-        "psi_phase": psi_phase,
-        "correlation": float(correlation),
-        "num_nodes": int(num_nodes)
+        "psi_real": k_phi,
+        "psi_imag": j_phi,
+        "psi_magnitude": np.abs(psi_complex),
+        "psi_phase": np.angle(psi_complex),
+        "correlation": correlation,
+        "num_nodes": num_nodes,
     }
 
 
 def compute_emergent_fields(G: Any) -> Dict[str, Any]:
-    """Compute emergent fields from unified mathematics.
-    
-    Computes newly discovered fields:
-    - Chirality χ = |∇φ|·K_φ - J_φ·J_ΔNFR (handedness detection)
-    - Symmetry Breaking S = (|∇φ|² - K_φ²) + (J_φ² - J_ΔNFR²) (phase transitions)
-    - Coherence Coupling C = Φ_s · |Ψ| (multi-scale connector)
-    
-    Args:
-        G: TNFR network with complete field data
-        
+    """Compute emergent fields χ, 𝒮, 𝒞 (array form).
+
+    Delegates to the per-node implementations in
+    :mod:`tnfr.physics.unified` and returns aligned numpy arrays.
+
     Returns:
-        Dict containing emergent field values and statistics
-        
-    References:
-        - MATHEMATICAL_UNIFICATION_EXECUTIVE_SUMMARY.md § Emergent Fields
-        - Theoretical derivation in TETRAD_MATHEMATICAL_AUDIT_2025.md
+        Dict with keys: chirality, symmetry_breaking, coherence_coupling,
+        num_nodes.
     """
-    # Gather all required fields (these return dictionaries)
-    phi_s_dict = compute_structural_potential(G)
-    grad_phi_dict = compute_phase_gradient(G)
-    K_phi_dict = compute_phase_curvature(G)
-    J_phi_dict = compute_phase_current(G)
-    J_dnfr_dict = compute_dnfr_flux(G)
-    
-    # Extract field arrays from dictionaries
-    field_arrays = _extract_field_values([phi_s_dict, grad_phi_dict, K_phi_dict, J_phi_dict, J_dnfr_dict], G)
-    if len(field_arrays) >= 5:
-        phi_s, grad_phi, K_phi, J_phi, J_dnfr = field_arrays[:5]
-    else:
-        phi_s = grad_phi = K_phi = J_phi = J_dnfr = np.array([])
-    
-    # Get complex field for coherence coupling
-    psi_data = compute_complex_geometric_field(G)
-    psi_magnitude = psi_data["psi_magnitude"]
-    
-    # Determine array length (minimum for alignment)
-    arrays = [phi_s, grad_phi, K_phi, J_phi, J_dnfr]
-    lengths = [len(arr) for arr in arrays if len(arr) > 0]
-    
-    if not lengths:
+    from .unified import (
+        compute_chirality_field as _chi,
+        compute_symmetry_breaking_field as _sb,
+        compute_coherence_coupling_field as _cc,
+    )
+
+    chi = _chi(G)
+    sb = _sb(G)
+    cc = _cc(G)
+
+    if not chi:
         return {
             "chirality": np.array([]),
             "symmetry_breaking": np.array([]),
             "coherence_coupling": np.array([]),
-            "num_nodes": 0
+            "num_nodes": 0,
         }
-    
-    min_len = min(lengths + [len(psi_magnitude)])
-    
-    # Align all arrays
-    phi_s_aligned = np.array(phi_s[:min_len]) if len(phi_s) > 0 else np.zeros(min_len)
-    grad_phi_aligned = np.array(grad_phi[:min_len]) if len(grad_phi) > 0 else np.zeros(min_len)
-    K_phi_aligned = np.array(K_phi[:min_len]) if len(K_phi) > 0 else np.zeros(min_len)
-    J_phi_aligned = np.array(J_phi[:min_len]) if len(J_phi) > 0 else np.zeros(min_len)
-    J_dnfr_aligned = np.array(J_dnfr[:min_len]) if len(J_dnfr) > 0 else np.zeros(min_len)
-    psi_mag_aligned = np.array(psi_magnitude[:min_len]) if len(psi_magnitude) > 0 else np.zeros(min_len)
-    
-    # Compute emergent fields
-    chirality = grad_phi_aligned * K_phi_aligned - J_phi_aligned * J_dnfr_aligned
-    symmetry_breaking = (grad_phi_aligned**2 - K_phi_aligned**2) + (J_phi_aligned**2 - J_dnfr_aligned**2)
-    coherence_coupling = phi_s_aligned * psi_mag_aligned
-    
+
+    nodes = sorted(chi.keys())
     return {
-        "chirality": chirality,
-        "symmetry_breaking": symmetry_breaking,
-        "coherence_coupling": coherence_coupling,
-        "num_nodes": int(min_len)
+        "chirality": np.array([chi[n] for n in nodes]),
+        "symmetry_breaking": np.array([sb[n] for n in nodes]),
+        "coherence_coupling": np.array([cc[n] for n in nodes]),
+        "num_nodes": len(nodes),
     }
 
 
 def compute_tensor_invariants(G: Any) -> Dict[str, Any]:
-    """Compute tensor invariants from unified field mathematics.
-    
-    Computes discovered invariants:
-    - Energy Density ε = Φ_s² + |∇φ|² + K_φ² + J_φ² + J_ΔNFR²
-    - Topological Charge Q = |∇φ|·J_φ - K_φ·J_ΔNFR  
-    - Conservation Law: ∂ρ/∂t + ∇·J = 0 where ρ = Φ_s + K_φ
-    
-    Args:
-        G: TNFR network with full field data
-        
+    """Compute tensor invariants ℰ, 𝒬, ρ (array form).
+
+    Delegates to the per-node implementations in
+    :mod:`tnfr.physics.unified` and :mod:`tnfr.physics.conservation`,
+    returning aligned numpy arrays.
+
     Returns:
-        Dict containing tensor invariants and conservation metrics
-        
-    References:
-        - MATHEMATICAL_UNIFICATION_EXECUTIVE_SUMMARY.md § Tensor Invariants
-        - Conservation law discovery in unified field analysis
+        Dict with keys: energy_density, topological_charge,
+        conservation_density, conservation_quality, num_nodes.
     """
-    # Gather all fields
-    phi_s_dict = compute_structural_potential(G)
-    grad_phi_dict = compute_phase_gradient(G)
-    K_phi_dict = compute_phase_curvature(G)
-    J_phi_dict = compute_phase_current(G)
-    J_dnfr_dict = compute_dnfr_flux(G)
-    
-    # Extract field arrays
-    field_arrays = _extract_field_values([phi_s_dict, grad_phi_dict, K_phi_dict, J_phi_dict, J_dnfr_dict], G)
-    if len(field_arrays) >= 5:
-        phi_s, grad_phi, K_phi, J_phi, J_dnfr = field_arrays[:5]
-    else:
-        phi_s = grad_phi = K_phi = J_phi = J_dnfr = np.array([])
-    
-    # Alignment
-    arrays = [phi_s, grad_phi, K_phi, J_phi, J_dnfr]
-    lengths = [len(arr) for arr in arrays if len(arr) > 0]
-    
-    if not lengths:
+    from .unified import (
+        compute_energy_density as _ed,
+        compute_topological_charge as _tc,
+    )
+    from .conservation import compute_charge_density as _rho
+
+    ed = _ed(G)
+    tc = _tc(G)
+    rho = _rho(G)
+
+    if not ed:
         return {
             "energy_density": np.array([]),
             "topological_charge": np.array([]),
             "conservation_density": np.array([]),
             "conservation_quality": 0.0,
-            "num_nodes": 0
+            "num_nodes": 0,
         }
-    
-    min_len = min(lengths)
-    
-    # Align arrays
-    phi_s_aligned = np.array(phi_s[:min_len]) if len(phi_s) > 0 else np.zeros(min_len)
-    grad_phi_aligned = np.array(grad_phi[:min_len]) if len(grad_phi) > 0 else np.zeros(min_len)
-    K_phi_aligned = np.array(K_phi[:min_len]) if len(K_phi) > 0 else np.zeros(min_len)
-    J_phi_aligned = np.array(J_phi[:min_len]) if len(J_phi) > 0 else np.zeros(min_len)
-    J_dnfr_aligned = np.array(J_dnfr[:min_len]) if len(J_dnfr) > 0 else np.zeros(min_len)
-    
-    # Energy density ε = Φ_s² + |∇φ|² + K_φ² + J_φ² + J_ΔNFR²
-    energy_density = (
-        phi_s_aligned**2 + 
-        grad_phi_aligned**2 + 
-        K_phi_aligned**2 + 
-        J_phi_aligned**2 + 
-        J_dnfr_aligned**2
-    )
-    
-    # Topological charge Q = |∇φ|·J_φ - K_φ·J_ΔNFR
-    topological_charge = grad_phi_aligned * J_phi_aligned - K_phi_aligned * J_dnfr_aligned
-    
-    # Conservation density ρ = Φ_s + K_φ (discovered pattern)
-    conservation_density = phi_s_aligned + K_phi_aligned
-    
-    # Conservation quality metric (∂ρ/∂t ≈ 0 indicates good conservation)
+
+    nodes = sorted(ed.keys())
+    rho_arr = np.array([rho[n] for n in nodes])
+
     conservation_quality = 0.0
-    if min_len > 1:
-        # Estimate temporal derivative via discrete differences
-        rho_gradient = np.gradient(conservation_density)
-        conservation_quality = 1.0 / (1.0 + np.std(rho_gradient))  # Higher = better conservation
-    
+    if len(rho_arr) > 1:
+        rho_gradient = np.gradient(rho_arr)
+        conservation_quality = float(1.0 / (1.0 + np.std(rho_gradient)))
+
     return {
-        "energy_density": energy_density,
-        "topological_charge": topological_charge,
-        "conservation_density": conservation_density,
-        "conservation_quality": float(conservation_quality),
-        "num_nodes": int(min_len)
+        "energy_density": np.array([ed[n] for n in nodes]),
+        "topological_charge": np.array([tc[n] for n in nodes]),
+        "conservation_density": rho_arr,
+        "conservation_quality": conservation_quality,
+        "num_nodes": len(nodes),
     }
 
 
@@ -949,10 +838,23 @@ def compute_unified_telemetry(G: Any) -> Dict[str, Any]:
     # Extended canonical fields  
     extended_suite = compute_extended_canonical_suite(G)
     
-    # Unified field computations
+    # Unified field computations (delegate to unified.py via array wrappers)
     complex_field = compute_complex_geometric_field(G)
     emergent_fields = compute_emergent_fields(G)
     tensor_invariants = compute_tensor_invariants(G)
+
+    # Conservation telemetry (canonical source: conservation.py)
+    try:
+        from .conservation import (
+            compute_noether_charge,
+            compute_energy_functional,
+        )
+        conservation = {
+            "noether_charge": compute_noether_charge(G),
+            "structural_energy": compute_energy_functional(G),
+        }
+    except Exception:
+        conservation = {}
     
     return {
         "canonical": canonical_telemetry,
@@ -960,6 +862,7 @@ def compute_unified_telemetry(G: Any) -> Dict[str, Any]:
         "complex_field": complex_field,
         "emergent_fields": emergent_fields,
         "tensor_invariants": tensor_invariants,
+        "conservation": conservation,
         "unified_field_version": "1.0.0",  # Track implementation version
     }
 

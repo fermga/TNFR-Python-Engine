@@ -13,19 +13,8 @@ bounds for the diameter of massive graphs"
 import networkx as nx
 from typing import Any, Tuple, Dict
 
-try:
-    from .cache import cache_tnfr_computation, CacheLevel  # type: ignore
-    _CACHE_AVAILABLE = True
-except ImportError:  # pragma: no cover
-    _CACHE_AVAILABLE = False
-    
-    def cache_tnfr_computation(*args, **kwargs):  # type: ignore
-        def decorator(func):  # type: ignore
-            return func
-        return decorator
-    
-    class CacheLevel:  # type: ignore
-        DERIVED_METRICS = None
+from tnfr.mathematics.unified_cache import cache_tnfr_computation, CacheLevel
+_CACHE_AVAILABLE = True
 
 
 def approximate_diameter_2sweep(G: Any) -> int:

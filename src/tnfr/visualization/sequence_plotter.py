@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING, List, Optional, Tuple
 
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
-import numpy as np
+from ..mathematics.unified_numerical import np
 from matplotlib.figure import Figure
 from matplotlib.axes import Axes
 

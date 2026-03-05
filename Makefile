@@ -3,7 +3,13 @@
 # Purpose: Essential tasks for the streamlined TNFR repository
 # Focus: Core examples, testing, and documentation generation
 
-.PHONY: help clean test examples docs all riemann-benchmark
+.PHONY: help clean test examples docs all riemann-benchmark self-optimize self-optimize-validate
+
+SELF_OPT_MANIFEST ?= tests/data/self_optimization/test_run/_manifest.json
+SELF_OPT_MANIFEST_SUMMARY ?= tests/data/self_optimization/test_run/_manifest_summary.json
+SELF_OPT_OUTPUT ?= results/self_optimization
+SELF_OPT_SUMMARY ?= results/self_opt_summary.json
+SELF_OPT_VALIDATION_REPORT ?= results/self_optimization_validation.json
 
 # Default target
 help:
@@ -29,6 +35,11 @@ help:
 	@echo "  lint          - Run code linting"
 	@echo "  format        - Format code"
 	@echo "  security      - Run security checks"
+	@echo "Self-optimization:"
+	@echo "  self-optimize           - Run Paley manifest through the self-optimization runner"
+	@echo "  self-optimize-validate  - Validate self-optimization payloads via pytest subsets"
+	@echo "Benchmark targets:"
+	@echo "  factorization-full-spectrum - Run Paley full-spectrum factorization benchmark"
 
 # Clean generated artifacts
 clean:
@@ -52,6 +63,18 @@ test:
 riemann-benchmark:
 	@echo "📈 Running TNFR–Riemann sigma-critical benchmark..."
 	@python -c "import runpy, sys, pathlib; sys.path.insert(0, str(pathlib.Path('src').resolve())); sys.argv = ['benchmarks/riemann_program.py']; runpy.run_path('benchmarks/riemann_program.py', run_name='__main__')"
+
+factorization-full-spectrum:
+	@echo "🧮 Running TNFR Paley full-spectrum factorization sweep..."
+	@python factorization-lab/benchmarks/full_spectrum_factorization.py
+
+self-optimize:
+	@echo "🧠 Running TNFR self-optimization manifest pipeline..."
+	@python scripts/run_self_optimization.py --manifest $(SELF_OPT_MANIFEST) --manifest-summary $(SELF_OPT_MANIFEST_SUMMARY) --output-dir $(SELF_OPT_OUTPUT) --summary $(SELF_OPT_SUMMARY)
+
+self-optimize-validate:
+	@echo "🧪 Validating TNFR self-optimization payloads..."
+	@python scripts/run_self_opt_validation.py --payload-root $(SELF_OPT_OUTPUT) --report $(SELF_OPT_VALIDATION_REPORT)
 
 # Run all essential examples
 examples: hello music network chemistry sdk

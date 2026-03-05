@@ -22,6 +22,7 @@ from dataclasses import dataclass
 from statistics import NormalDist
 from typing import Any, Deque, Mapping
 
+from ..errors import TNFRValueError
 from ..types import GraphLike
 from ..units import get_hz_bridge, hz_str_to_hz
 
@@ -56,24 +57,37 @@ class NuFWindow:
         object.__setattr__(self, "reorganisations", reorganisations)
         object.__setattr__(self, "duration", duration)
         if reorganisations < 0:
-            raise ValueError("reorganisations must be non-negative")
+            raise TNFRValueError(
+                "reorganisations must be non-negative",
+                context={"reorganisations": reorganisations},
+            )
         if not math.isfinite(duration) or duration <= 0.0:
-            raise ValueError("duration must be a positive finite number")
+            raise TNFRValueError(
+                "duration must be a positive finite number",
+                context={"duration": duration},
+            )
         if self.start is not None and self.end is not None:
             start = float(self.start)
             end = float(self.end)
             object.__setattr__(self, "start", start)
             object.__setattr__(self, "end", end)
             if end < start:
-                raise ValueError("end must be greater than or equal to start")
+                raise TNFRValueError(
+                    "end must be greater than or equal to start",
+                    context={"start": start, "end": end},
+                )
             window = end - start
             if window <= 0.0:
-                raise ValueError("start and end must describe a non-empty window")
+                raise TNFRValueError(
+                    "start and end must describe a non-empty window",
+                    context={"window": window},
+                )
             # Allow minor numerical discrepancies when duration is supplied
             # independently from ``start``/``end``.
             if not math.isclose(window, duration, rel_tol=1e-9, abs_tol=1e-9):
-                raise ValueError(
+                raise TNFRValueError(
                     "duration does not match the difference between start and end",
+                    context={"duration": duration, "window": window},
                 )
 
     @classmethod
@@ -83,7 +97,10 @@ class NuFWindow:
         start_f = float(start)
         end_f = float(end)
         if end_f <= start_f:
-            raise ValueError("end must be greater than start")
+            raise TNFRValueError(
+                "end must be greater than start",
+                context={"start": start_f, "end": end_f},
+            )
         return cls(
             reorganisations=int(reorganisations),
             duration=end_f - start_f,
@@ -150,11 +167,20 @@ class NuFTelemetryAccumulator:
         graph: GraphLike | MutableMapping[str, Any] | None = None,
     ) -> None:
         if not 0.0 < confidence_level < 1.0:
-            raise ValueError("confidence_level must be in the open interval (0, 1)")
+            raise TNFRValueError(
+                "confidence_level must be in the open interval (0, 1)",
+                context={"confidence_level": confidence_level},
+            )
         if history_limit is not None and history_limit <= 0:
-            raise ValueError("history_limit must be positive when provided")
+            raise TNFRValueError(
+                "history_limit must be positive when provided",
+                context={"history_limit": history_limit},
+            )
         if window_limit is not None and window_limit <= 0:
-            raise ValueError("window_limit must be positive when provided")
+            raise TNFRValueError(
+                "window_limit must be positive when provided",
+                context={"window_limit": window_limit},
+            )
 
         self._confidence_level = float(confidence_level)
         self._history_limit = history_limit
