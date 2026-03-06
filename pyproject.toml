@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "tnfr"
-version = "0.0.3"
+version = "0.0.3.1"
 description = "Resonant Fractal Nature Theory (TNFR) - Computational engine for modeling coherent patterns through resonance dynamics"
 readme = "README.md"
 authors = ["F. F. Martinez Gamo"]
@@ -9,7 +9,7 @@ packages = [{include = "tnfr", from = "src"}]
 
 [project]
 name = "tnfr"
-version = "0.0.3"
+version = "0.0.3.1"
 description = "Resonant Fractal Nature Theory (TNFR) - Computational engine for modeling coherent patterns through resonance dynamics"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -199,8 +199,8 @@ tnfr-is-prime = "tnfr.tools.tnfr_is_prime_cli:main"
 Homepage = "https://github.com/fermga/TNFR-Python-Engine"
 Repository = "https://github.com/fermga/TNFR-Python-Engine"
 PyPI = "https://pypi.org/project/tnfr/"
-Citation = "https://doi.org/10.5281/zenodo.18883409"
-Zenodo = "https://zenodo.org/records/18883409"
+Citation = "https://doi.org/10.5281/zenodo.18883589"
+Zenodo = "https://zenodo.org/records/18883589"
 Issues = "https://github.com/fermga/TNFR-Python-Engine/issues"
 Documentation = "https://fermga.github.io/TNFR-Python-Engine/"
 GPT = "https://chatgpt.com/g/g-67abc78885a88191b2d67f94fd60dc97-tnfr-resonant-fractal-nature-theory"

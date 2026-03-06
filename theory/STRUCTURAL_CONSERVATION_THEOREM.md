@@ -4,7 +4,7 @@
 
 **Status**: CANONICAL — Derived from first principles  
 **Date**: March 2026  
-**Version**: 0.0.3  
+**Version**: 0.0.3.1  
 **Prerequisite**: [AGENTS.md](../AGENTS.md) §Foundational Physics, [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) §U2, §U6
 
 ---

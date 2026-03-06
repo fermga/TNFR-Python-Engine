@@ -145,4 +145,4 @@ AL, EN, IL, OZ, UM, RA, SHA, VAL, NUL, THOL, ZHIR, NAV, REMESH
 
 ---
 
-**Version**: 0.0.3 | **Documents**: 14 (6 canonical + 4 consolidated + 4 extended) | **Examples**: 30 + 2 utility | **Authority**: [../AGENTS.md](../AGENTS.md)
+**Version**: 0.0.3.1 | **Documents**: 14 (6 canonical + 4 consolidated + 4 extended) | **Examples**: 30 + 2 utility | **Authority**: [../AGENTS.md](../AGENTS.md)

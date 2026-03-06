@@ -748,6 +748,6 @@ When adding new functionality:
 3. Follow [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines  
 4. Test with [TESTING.md](TESTING.md) requirements
 
-**Version**: 0.0.3 (March 2026)  
+**Version**: 0.0.3.1 (March 2026)  
 **Status**: Complete operational reference for current TNFR implementation  
 **Language**: English only (canonical documentation policy)

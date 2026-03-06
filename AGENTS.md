@@ -2,7 +2,7 @@
 ## Theoretical Framework for Coherent Pattern Analysis
 
 **Status**: Primary theoretical reference document  
-**Version**: 0.0.3 (March 2026)  
+**Version**: 0.0.3.1 (March 2026)  
 **Authority**: This repository contains the current implementation of TNFR theory  
 **Repository**: https://github.com/fermga/TNFR-Python-Engine  
 **PyPI Package**: https://pypi.org/project/tnfr/  
@@ -1549,8 +1549,8 @@ Reality consists of resonant patterns rather than discrete objects. Development 
 
 ---
 
-**Version**: 0.0.3  
-**Last Updated**: 2026-03-05  
+**Version**: 0.0.3.1  
+**Last Updated**: 2026-03-06  
 **Status**: CANONICAL - Primary reference for TNFR agent guidance  
 **PyPI Release**: STABLE - Available via `pip install tnfr`  
 **Production Ready**: Complete Tetrad Fields + Unified Grammar U1-U6 + Simplified SDK + Grammar-Aware Dynamics + Structural Conservation Theorem + Integrity Monitor  
