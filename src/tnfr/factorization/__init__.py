@@ -4,15 +4,21 @@ This module exposes ``factorize`` as the supported interface for Paley-based
 spectral factorizations. It wraps :class:`tnfr_factorization.spectral_paley.SpectralPaleyFactorizer`
 so that downstream code always benefits from the official grammar validator and
 self-optimization engines wired in the factorization lab.
+
+The ``tnfr_factorization`` external package is an **optional** dependency.
+Importing this module always succeeds; errors are deferred until a function
+is actually called without the dependency installed.
 """
 
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Any
 
 import sys
 
-from ..errors import TNFRUserError
+__all__ = ["factorize", "SpectralAnalysisResult", "SpectralPaleyFactorizer"]
+
 
 def _bootstrap_factorization_lab() -> None:
     """Ensure the tnfr_factorization package is importable.
@@ -29,28 +35,45 @@ def _bootstrap_factorization_lab() -> None:
     if lab_root.exists() and str(lab_root) not in sys.path:
         sys.path.insert(0, str(lab_root))
 
-_bootstrap_factorization_lab()
 
-try:  # pragma: no cover - exercised indirectly through factorize()
-    from tnfr_factorization.spectral_paley import (
-        SpectralAnalysisResult,
-        SpectralPaleyFactorizer,
-    )
-except ModuleNotFoundError as exc:  # pragma: no cover - raised when extra missing
-    raise TNFRUserError(
-        "tnfr_factorization is not available. Install the tnfr-factorization package "
-        "or keep the factorization-lab directory in your workspace."
-    ) from exc
+def _load_spectral_paley() -> tuple[Any, Any]:
+    """Lazy-load the spectral_paley module, raising a clear error if missing."""
+    from ..errors import TNFRUserError
 
-__all__ = ["factorize", "SpectralAnalysisResult", "SpectralPaleyFactorizer"]
+    _bootstrap_factorization_lab()
+    try:
+        from tnfr_factorization.spectral_paley import (
+            SpectralAnalysisResult,
+            SpectralPaleyFactorizer,
+        )
+        return SpectralPaleyFactorizer, SpectralAnalysisResult
+    except ModuleNotFoundError as exc:
+        raise TNFRUserError(
+            "tnfr_factorization is not available. Install the tnfr-factorization "
+            "package or keep the factorization-lab directory in your workspace."
+        ) from exc
 
-_DEFAULT_FACTORIZER: SpectralPaleyFactorizer | None = None
 
-def _get_factorizer() -> SpectralPaleyFactorizer:
+# Lazy accessors for type re-exports
+def __getattr__(name: str) -> Any:
+    if name in ("SpectralPaleyFactorizer", "SpectralAnalysisResult"):
+        _Factorizer, _Result = _load_spectral_paley()
+        globals()["SpectralPaleyFactorizer"] = _Factorizer
+        globals()["SpectralAnalysisResult"] = _Result
+        return globals()[name]
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
+
+_DEFAULT_FACTORIZER: Any = None
+
+
+def _get_factorizer() -> Any:
     global _DEFAULT_FACTORIZER
     if _DEFAULT_FACTORIZER is None:
-        _DEFAULT_FACTORIZER = SpectralPaleyFactorizer()
+        _Factorizer, _ = _load_spectral_paley()
+        _DEFAULT_FACTORIZER = _Factorizer()
     return _DEFAULT_FACTORIZER
+
 
 def factorize(
     n: int,
@@ -58,7 +81,7 @@ def factorize(
     modulus: int | None = None,
     trace_certificates: bool = False,
     certificate_dir: Path | None = None,
-) -> SpectralAnalysisResult:
+) -> Any:
     """Run canonical Paley spectral factorization.
 
     Parameters

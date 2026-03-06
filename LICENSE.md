@@ -38,7 +38,7 @@ for modeling coherent patterns through resonance dynamics.
 **Project**: TNFR-Python-Engine  
 **Repository**: <https://github.com/fermga/TNFR-Python-Engine>  
 **PyPI**: <https://pypi.org/project/tnfr/>  
-**DOI**: [10.5281/zenodo.17761312](https://doi.org/10.5281/zenodo.17761312)
+**DOI**: [10.5281/zenodo.18883409](https://doi.org/10.5281/zenodo.18883409)
 
 ### Citation
 
@@ -50,7 +50,7 @@ If you use this software in your research, please cite:
   title = {TNFR-Python-Engine: Resonant Fractal Nature Theory Implementation},
   year = {2025},
   version = {0.0.3},
-  doi = {10.5281/zenodo.17761312},
+  doi = {10.5281/zenodo.18883409},
   url = {https://github.com/fermga/TNFR-Python-Engine}
 }
 ```

@@ -1,6 +1,6 @@
 # TNFR: Resonant Fractal Nature Theory
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18883306.svg)](https://doi.org/10.5281/zenodo.18883306)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18883409.svg)](https://doi.org/10.5281/zenodo.18883409)
 [![PyPI version](https://badge.fury.io/py/tnfr.svg)](https://pypi.org/project/tnfr/)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -162,7 +162,7 @@ make smoke-tests                   # smoke tests (Unix)
   title = {TNFR-Python-Engine: Resonant Fractal Nature Theory Implementation},
   year = {2025},
   version = {0.0.3},
-  doi = {10.5281/zenodo.18883306},
+  doi = {10.5281/zenodo.18883409},
   url = {https://github.com/fermga/TNFR-Python-Engine}
 }
 ```

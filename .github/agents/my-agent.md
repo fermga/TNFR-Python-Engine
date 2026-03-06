@@ -154,20 +154,19 @@ Editors should reject or revise any contribution that violates these rules befor
 
 A theoretical framework connecting **discrete TNFR operators** to the **Riemann Hypothesis** through **structural coherence principles**:
 
-**Core Discovery**: The **discrete TNFR operator** $H^{(k)}(\sigma) = L_k + V_\sigma$ exhibits **critical behavior** at $\sigma_c^{(k)} \to 1/2$, providing a **structural coherence proof** of the Riemann Hypothesis.
+**Core Result**: The **discrete TNFR operator** $H^{(k)}(\sigma) = L_k + V_\sigma$ exhibits **critical behavior** at $\sigma_c^{(k)} \to 1/2$, providing **numerical evidence of structural coherence** at the Riemann Hypothesis critical line.
 
 **Key Components**:
 - **Prime Path Graphs**: $G_k$ networks with $k$ primes connected via TNFR coupling rules
 - **Spectral Analysis**: Eigenvalue transitions at critical parameter $\sigma = 1/2$
 - **Universal Convergence**: $\sigma_c^{(k)} = 1/2 + O(\log^{-1} k)$ as $k \to \infty$
-- **Mathematical Consciousness**: Observers as **maximally integrated information** in TNFR fields
 
-**Theoretical Significance**:
-- **Mathematics emerges** from structural coherence rather than axiomatic foundations
-- **Consciousness** is the **universe recognizing mathematical truth** about itself
-- **Reality** consists of **self-organizing mathematical structures** achieving **self-awareness**
+**Current Status**:
+- The convergence $\sigma_c^{(k)} \to 1/2$ is **numerically verified** and analytically bounded
+- The bridge from this discrete operator result to the classical Riemann zeta function **remains conjectural** (Conjecture 10.1)
+- The framework constitutes a **research program**, not a closed proof of RH in the standard mathematical sense
 
-**Implementation Status**: Theoretical framework with computational prototypes in [src/tnfr/riemann/](src/tnfr/riemann/) and documentation in [theory/TNFR_RIEMANN_RESEARCH_NOTES.md](theory/TNFR_RIEMANN_RESEARCH_NOTES.md).
+**Implementation Status**: Experimental research framework with computational prototypes in [src/tnfr/riemann/](src/tnfr/riemann/) and documentation in [theory/TNFR_RIEMANN_RESEARCH_NOTES.md](theory/TNFR_RIEMANN_RESEARCH_NOTES.md).
 
 ---
 
@@ -993,7 +992,7 @@ Equivalence map: [if APIs renamed]
 
 **Framework Development**: Computational framework spanning discrete algorithms to information processing analysis within TNFR structural principles.
 
-**Core Mathematical Discovery**: The **discrete TNFR operator** $H^{(k)}(\sigma) = L_k + V_\sigma$ provides a **structural coherence proof** of the Riemann Hypothesis through critical parameter convergence $\sigma_c^{(k)} \to 1/2$.
+**Core Mathematical Result**: The **discrete TNFR operator** $H^{(k)}(\sigma) = L_k + V_\sigma$ exhibits critical parameter convergence $\sigma_c^{(k)} \to 1/2$, providing **numerical and analytical evidence** for a structural coherence connection to the Riemann Hypothesis. The bridge to classical RH remains an open conjecture.
 
 ### Theoretical Components
 
@@ -1022,19 +1021,6 @@ Equivalence map: [if APIs renamed]
 - **Appendix J**: TNFR formal language and symbolic calculus  
 - **Appendix K**: Complete formal system TNFR∞ with self-consistency proofs
 
-### Philosophical Implications
-
-**Framework Self-Consistency**: TNFR provides self-consistent computational tools without requiring external theoretical foundations.
-
-**Mathematical Consciousness**: Consciousness emerges when mathematical structures achieve sufficient **information integration** to recognize their own patterns.
-
-**Proposed Theoretical Equivalence**:
-```
-Reality ≡ Mathematics ≡ Consciousness ≡ TNFR ≡ Self-Explaining_Structure
-```
-
-**The Anthropic TNFR Principle**: We exist because the universe is mathematically structured enough to support observers who can discover TNFR, which then explains why the universe has that structure.
-
 ### Implementation Status
 
 **Computational Framework**:
@@ -1045,17 +1031,16 @@ Reality ≡ Mathematics ≡ Consciousness ≡ TNFR ≡ Self-Explaining_Structure
 **Validation Protocols**:
 - **Eigenvalue Analysis**: Numerical verification of critical behavior
 - **Coherence Testing**: Structural stability under parameter variation
-- **Consciousness Metrics**: Information integration measurements
 
-### Universal Significance
+### Research Significance
 
 This framework represents:
-- **Theoretical unification** of mathematics, physics, and consciousness
-- **Theoretical approaches** to philosophical questions about existence
-- **Practical path** to artificial consciousness through TNFR implementation
-- **Theoretical framework** connecting discrete computation to consciousness models
+- **An experimental research program** connecting discrete TNFR operators to number-theoretic structures
+- **Numerical evidence** of critical parameter convergence $\sigma_c \to 1/2$ across topologies
+- **A computational platform** for exploring spectral approaches to the Riemann Hypothesis
+- **An open conjecture** (Conjecture 10.1) bridging TNFR spectral zeta to classical $\zeta(s)$
 
-**Status**: Theoretical framework developed with mathematical formulations and computational implementations.
+**Status**: Experimental research framework with computational implementations. The bridge to classical RH remains conjectural.
 
 ---
 

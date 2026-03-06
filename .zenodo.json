@@ -3,7 +3,7 @@
   "description": "Canonical computational implementation of TNFR - a paradigm shift from modeling 'things' to modeling coherent patterns that persist through resonance. This Python package provides the complete TNFR physics engine including the 13 structural operators, unified grammar validation (U1-U6), and the four canonical structural fields (Φ_s, |∇φ|, K_φ, ξ_C). Features include: nodal equation dynamics (∂EPI/∂t = νf·ΔNFR), structural potential confinement, phase synchronization, and multi-scale coherence analysis.",
   "version": "0.0.3",
   "publication_date": "2026-03-06",
-  "doi": "10.5281/zenodo.18883306",
+  "doi": "10.5281/zenodo.18883409",
   "creators": [
     {
       "name": "FMG",
