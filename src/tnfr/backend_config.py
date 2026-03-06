@@ -186,7 +186,7 @@ def configure(**kwargs: Any) -> None:
         
     Examples
     --------
-    >>> from tnfr.config import configure
+    >>> from tnfr.backend_config import configure
     >>> configure(math_backend="torch", cuda_enabled=True)
     >>> configure(validation_level="strict", enable_telemetry=False)
     """

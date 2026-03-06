@@ -158,7 +158,7 @@ Milestones:
 - **Plan**:
    - Extend `benchmarks/benchmark_optimization_tracks.py` with a layout sweep harness that feeds synthetic AL/IL/RA/SHA workloads (dense edge hubs, boundary-heavy shards, and diagonal-dominant partitions).
    - Capture cache-line utilization, νf drift, ΔNFR error, and memory bandwidth using the existing telemetry hooks (Φ_s, |∇φ|) so results plug directly into the strategy registry.
-   - Document findings in this file and in `docs/TNFR_FORCES_EMERGENCE.md`, including a per-operator layout matrix and migration notes for existing numpy implementations.
+   - Document findings in this file and in `docs/STRUCTURAL_FIELDS_TETRAD.md`, including a per-operator layout matrix and migration notes for existing numpy implementations.
 - **Success Criteria**: chosen layout must keep ΔNFR error < 1e-4 for IL/RA test seeds and improve memory throughput ≥20% vs current dense paths on 64k-node trials.
 
 ### O2.2 – CPU Vectorized Kernels
@@ -221,7 +221,7 @@ Milestones:
 ## References
 
 - `FACTOR_REPLAY_GUIDE.md` – replay workflow for manifest summaries and partition archives.
-- `docs/TNFR_FORCES_EMERGENCE.md` – telemetry derivations referenced by the vectorization milestones.
+- `docs/STRUCTURAL_FIELDS_TETRAD.md` – telemetry derivations referenced by the vectorization milestones.
 - `benchmarks/benchmark_optimization_tracks.py` – layout sweep harness backing O2.x milestones.
 - `scripts/replay/register_manifest.py` – manifest registration helper used in V1 automation.
 

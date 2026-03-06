@@ -440,7 +440,7 @@ def _resolve_backend_name(name: str | None) -> str:
 
     backend_from_config: str | None = None
     try:
-        from ..config import get_config  # Use unified TNFR configuration
+        from ..backend_config import get_config  # Backend/GPU configuration
 
         config = get_config()
         backend_from_config = config.math_backend

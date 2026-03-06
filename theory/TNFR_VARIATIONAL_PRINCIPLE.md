@@ -130,6 +130,16 @@ In the Hamiltonian formulation, each operator acts as a transformation on the ph
 
 **Grammar U2 in variational language**: For every generating (expansive) operator, the sequence must include a dissipative operator to restore energy balance, ensuring $S < \infty$.
 
+**Dual-lever complement**: The Hamiltonian classification above (Generating /
+Canonical / Dissipative) maps onto the experimentally observed **dual-lever
+structure**: operators act through the capacity lever ($\nu_f$) or the pressure
+lever ($\Delta$NFR), and the resulting $\Delta H$ sign follows from which lever
+is engaged. The Generating class corresponds predominantly to pressure-lever
+operators that inject $\Delta$NFR; the Dissipative class corresponds to
+pressure-lever operators that absorb it. See
+[STRUCTURAL_OPERATORS.md §17.1](STRUCTURAL_OPERATORS.md) and
+[example 39](../examples/39_nodal_equation_decomposition.py).
+
 ---
 
 ## 6. Thresholds as Critical Points of $V$

@@ -10,6 +10,10 @@ NetworkResults: Any
 TNFRTemplates: Any
 TNFRExperimentBuilder: Any
 TNFRAdaptiveSystem: Any
+FactorizationReport: Any
+PrimalityReport: Any
+NodalStateReport: Any
+NodalDynamicsReport: Any
 
 compare_networks: Any
 compute_network_statistics: Any

@@ -99,10 +99,10 @@ class CoreDefaults:
     GLYPH_FACTORS: dict[str, float] = field(
         default_factory=lambda: {
             "AL_boost": AL_BOOST_CANONICAL,  # 1/(π×e) ≈ 0.1171 (transcendental emission)
-            "EN_mix": EN_MIX_FACTOR,  # 1/(π+1) ≈ 0.2413 (canonical reception mixing)
+            "EN_mix": EN_MIX_FACTOR,  # 1/(π+1) ≈ 0.2415 (canonical reception mixing)
             "IL_dnfr_factor": round(PHI_GAMMA_NORMALIZED, 3),  # φ/(φ+γ) ≈ 0.737 (golden coherence)
             "OZ_dnfr_factor": round(NUL_DENSIFICATION_FACTOR, 3),  # φ/γ ≈ 2.803 (golden dissonance)
-            "UM_theta_push": UM_THETA_PUSH,  # 1/(π+1) ≈ 0.2413 (canonical coupling phase push)
+            "UM_theta_push": UM_THETA_PUSH,  # 1/(π+1) ≈ 0.2415 (canonical coupling phase push)
             "UM_vf_sync": 0.10,
             "UM_dnfr_reduction": 0.15,
             "RA_epi_diff": 0.15,
@@ -178,7 +178,7 @@ class CoreDefaults:
     THOL_MIN_DEGREE: int = 1  # Minimum network connectivity
     THOL_MIN_HISTORY_LENGTH: int = 3  # Minimum EPI history for acceleration computation
     THOL_ALLOW_ISOLATED: bool = False  # Require network context by default
-    THOL_MIN_COLLECTIVE_COHERENCE: float = THOL_MIN_COLLECTIVE_COHERENCE  # 1/(π+1) ≈ 0.2413 (canonical collective coherence)
+    THOL_MIN_COLLECTIVE_COHERENCE: float = THOL_MIN_COLLECTIVE_COHERENCE  # 1/(π+1) ≈ 0.2415 (canonical collective coherence)
 
     # VAL (Expansion) precondition thresholds
     VAL_MAX_VF: float = 10.0  # Maximum structural frequency threshold
@@ -190,7 +190,7 @@ class CoreDefaults:
     VAL_MAX_NETWORK_SIZE: int = 1000  # Maximum network size if capacity checking enabled
 
     # VAL (Expansion) metric thresholds (Issue #2724)  
-    VAL_BIFURCATION_THRESHOLD: float = VAL_BIFURCATION_THRESHOLD  # 1/(π+1) ≈ 0.2413 (canonical bifurcation detection)
+    VAL_BIFURCATION_THRESHOLD: float = VAL_BIFURCATION_THRESHOLD  # 1/(π+1) ≈ 0.2415 (canonical bifurcation detection)
     VAL_MIN_COHERENCE: float = VAL_MIN_COHERENCE  # sin(π/3) = √3/2 ≈ 0.8660 (canonical harmonic coherence)
     VAL_FRACTAL_RATIO_MIN: float = 0.5  # Minimum vf_growth/epi_growth ratio for fractality
     VAL_FRACTAL_RATIO_MAX: float = PHI  # φ ≈ 1.618 (golden ratio for fractal bounds)

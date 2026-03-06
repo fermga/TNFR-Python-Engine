@@ -25,6 +25,10 @@ and invariant reports so downstream agents can replay the full sequence.
 
 - `operators`, `canonical_operators`: sequence recommended/applied
 - `telemetry`: global TNFR metrics (Φ_s, |∇φ|, K_φ, ξ_C, ΔNFR)
+- `pressure_components`: three-term ΔNFR decomposition — factorization, divisor, sigma pressures (§6)
+- `dual_lever_analysis`: capacity vs pressure lever classification of the operator sequence (§8)
+- `conservation_proxies`: Noether charge Q = Φ_s + K_φ, Lyapunov energy E = 0.5·(Φ_s² + |∇φ|² + K_φ²)
+- `arithmetic_epi`, `arithmetic_nu_f`: nodal equation components for the target integer (§5)
 - `partition_states`: map `partition_id -> {before, after, node_count, boundary_count, candidate_factors}`
 - `strategy_plan_snapshot`: subset of `operator_strategy_plan` covering AL/IL/RA/SHA
 - `nodal_decoding_snapshot`: per-partition decoder log (sequence, ΔNFR convergence, dynamic factors)

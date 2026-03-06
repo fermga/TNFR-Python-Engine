@@ -9,27 +9,36 @@ TNFR (Resonant Fractal Nature Theory) provides a novel framework for understandi
 The core of TNFR primality testing is the arithmetic pressure equation:
 
 ```
-ΔNFR(n) = ζ·(ω(n)−1) + η·(τ(n)−2) + θ·(σ(n)/n − (1+1/n))
+ΔNFR(n) = ζ·(Ω(n)−1) + η·(τ(n)−2) + θ·(σ(n)/n − (1+1/n))
 ```
 
 ### Mathematical components
 
 **Arithmetic functions:**
-- `ω(n)` = number of distinct prime factors of n
+- `Ω(n)` = prime factor count with multiplicity (big Omega)
 - `τ(n)` = total number of divisors of n  
 - `σ(n)` = sum of all divisors of n
 
-**TNFR constants:**
-- `ζ = 1.0` = factorization pressure coefficient
-- `η = 0.8` = divisor pressure coefficient  
-- `θ = 0.6` = abundance pressure coefficient
+**Canonical TNFR coefficients** (derived from φ, γ, π, e — zero empirical fitting):
+- `ζ = φ×γ ≈ 0.9340` = factorization pressure coefficient
+- `η = (γ/φ)×π ≈ 1.1207` = divisor pressure coefficient  
+- `θ = 1/φ ≈ 0.6180` = abundance pressure coefficient
+
+These coefficients emerge from the Universal Tetrahedral Correspondence:
+- ζ = φ×γ links the golden ratio (harmonic proportion) with the Euler constant
+  (harmonic growth rate) to weight factorization complexity
+- η = (γ/φ)×π combines the Kuramoto coupling ratio γ/φ with the geometric
+  constant π to weight divisor structure
+- θ = 1/φ = φ−1 is the golden-ratio reciprocal (recursive self-similarity
+  constant) weighting abundance deviation
 
 ### Pressure components
 
-**1. Factorization pressure: `ζ·(ω(n)−1)`**
-- For primes: ω(p) = 1, so this term = 0
-- For composites: ω(n) > 1, creating positive pressure
-- Measures deviation from prime factorization simplicity
+**1. Factorization pressure: `ζ·(Ω(n)−1)`**
+- For primes: Ω(p) = 1, so this term = 0
+- For composites: Ω(n) > 1, creating positive pressure
+- Uses multiplicity: Ω(8)=3, Ω(12)=3, Ω(30)=3
+- Measures total factorization complexity (structural pressure lever)
 
 **2. Divisor pressure: `η·(τ(n)−2)`**
 - For primes: τ(p) = 2 (divisors: 1, p), so this term = 0
@@ -49,21 +58,30 @@ The core of TNFR primality testing is the arithmetic pressure equation:
 This equivalence holds because:
 1. All three pressure components are zero if and only if n is prime
 2. Any composite structure introduces positive pressure in at least one component
-3. The TNFR constants are calibrated to detect these pressures optimally
+3. The coefficients are derived from (φ, γ, π, e) via Universal Tetrahedral Correspondence
+4. ΔNFR(p) = 0 is independent of coefficient values (all three terms vanish individually for primes)
+5. Coefficient values affect composite separation (TNFR pressure landscape), not prime detection correctness
 
 ## Examples
 
 **Prime example (n = 17):**
-- ω(17) = 1 → Factorization pressure = 1.0 × (1-1) = 0
-- τ(17) = 2 → Divisor pressure = 0.8 × (2-2) = 0  
-- σ(17) = 18 → Abundance pressure = 0.6 × (18/17 - (1+1/17)) = 0
+- Ω(17) = 1 → Factorization pressure = 0.9340 × (1−1) = 0
+- τ(17) = 2 → Divisor pressure = 1.1207 × (2−2) = 0  
+- σ(17) = 18 → Abundance pressure = 0.6180 × (18/17 − (1+1/17)) = 0
 - **Result: ΔNFR(17) = 0 → Prime**
 
 **Composite example (n = 15):**
-- ω(15) = 2 → Factorization pressure = 1.0 × (2-1) = 1.0
-- τ(15) = 4 → Divisor pressure = 0.8 × (4-2) = 1.6
-- σ(15) = 24 → Abundance pressure = 0.6 × (24/15 - (1+1/15)) ≈ 0.32
-- **Result: ΔNFR(15) = 2.92 > 0 → Composite**
+- Ω(15) = 2 → Factorization pressure = 0.9340 × (2−1) = 0.9340
+- τ(15) = 4 → Divisor pressure = 1.1207 × (4−2) = 2.2414
+- σ(15) = 24 → Abundance pressure = 0.6180 × (24/15 − (1+1/15)) ≈ 0.3296
+- **Result: ΔNFR(15) ≈ 3.505 > 0 → Composite**
+
+**Prime power example (n = 8 = 2³):**
+- Ω(8) = 3 → Factorization pressure = 0.9340 × (3−1) = 1.8680
+- τ(8) = 4 → Divisor pressure = 1.1207 × (4−2) = 2.2414
+- σ(8) = 15 → Abundance pressure = 0.6180 × (15/8 − (1+1/8)) ≈ 0.4635
+- **Result: ΔNFR(8) ≈ 4.573 > 0 → Composite**
+- Note: with Ω (multiplicity), prime powers get strong pressure signals
 
 ## Computational complexity
 
@@ -97,5 +115,25 @@ TNFR primality testing represents a paradigm shift from traditional approaches:
 - Analyzes structural coherence in arithmetic systems
 - Answers the question: "Why is this number prime/composite?"
 - Provides insight into the mathematical nature of primality itself
+- Exposes the full structural triad (EPI, νf, ΔNFR) for each number
+- Implements the dual-lever interpretation: νf (capacity) × ΔNFR (pressure)
+- Connects arithmetic to the nodal equation `∂EPI/∂t = νf · ΔNFR(t)`
+
+### Dual-lever interpretation (March 2026 discovery)
+
+The nodal equation `∂EPI/∂t = νf · ΔNFR(t)` decomposes structural evolution
+into two independent levers:
+
+1. **Capacity lever (νf)**: How fast a number *can* reorganize.
+   Depends on divisor structure and factorization complexity.
+2. **Pressure lever (ΔNFR)**: How much reorganization is *demanded*.
+   Zero for primes (perfect equilibrium), positive for composites.
+
+For primes: ΔNFR = 0, so `∂EPI/∂t = 0` regardless of νf. Primes are
+**zero-pressure fixed points** in the arithmetic structural manifold.
+
+Experimental result (example 39): Φ_s responds linearly to ΔNFR
+perturbations with |r| = 1.000, confirming the pressure lever's
+direct connection to the structural potential field.
 
 This deeper understanding makes TNFR valuable not just as a computational tool but as a theoretical framework for understanding the fundamental structure of numbers.

@@ -14,7 +14,12 @@ Date: 2025-11-29
 License: MIT
 
 Mathematical Foundation:
-ΔNFR(n) = ζ·(ω(n)−1) + η·(τ(n)−2) + θ·(σ(n)/n − (1+1/n))
+ΔNFR(n) = ζ·(Ω(n)−1) + η·(τ(n)−2) + θ·(σ(n)/n − (1+1/n))
+
+Canonical coefficients (derived from φ, γ, π, e):
+- ζ = φ×γ ≈ 0.9340  (factorization pressure)
+- η = (γ/φ)×π ≈ 1.1207  (divisor pressure)
+- θ = 1/φ ≈ 0.6180  (abundance pressure)
 
 Advanced Features:
 - Structural field analysis (Φ_s, |∇φ|, K_φ, ξ_C)
@@ -29,6 +34,11 @@ import math
 import time
 import sys
 from functools import lru_cache
+
+from .constants import (
+    ZETA_CANONICAL, ETA_CANONICAL, THETA_CANONICAL,
+    DELTA_NFR_THRESHOLD, PRIMALITY_TOLERANCE,
+)
 
 # Advanced imports - graceful fallback if not available
 HAS_TNFR_INFRASTRUCTURE = False
@@ -100,26 +110,14 @@ def get_infrastructure_status() -> str:
     status += f"\nAdvanced algorithms: {'ENABLED' if HAS_TNFR_INFRASTRUCTURE else 'DISABLED (fallback mode)'}"
     return status
 
-# TNFR Constants - use canonical if available, else theoretical values
-if HAS_TNFR_INFRASTRUCTURE:
-    try:
-        # Use canonical constants from repository
-        ZETA = 1.0    # Factorization pressure coefficient
-        ETA = 0.8     # Divisor pressure coefficient  
-        THETA = 0.6   # Sigma pressure coefficient
-        TOLERANCE = MATH_DELTA_NFR_THRESHOLD_CANONICAL  # γ/(e×π) ≈ 0.0676
-    except:
-        # Fallback constants
-        ZETA = 1.0    
-        ETA = 0.8     
-        THETA = 0.6   
-        TOLERANCE = 1e-12
-else:
-    # Fallback constants
-    ZETA = 1.0    
-    ETA = 0.8     
-    THETA = 0.6   
-    TOLERANCE = 1e-12
+# TNFR Constants - use canonical from constants module
+# Canonical derivation: ζ=φ×γ, η=(γ/φ)×π, θ=1/φ
+# Canonical coefficients (same in all branches)
+ZETA = ZETA_CANONICAL
+ETA = ETA_CANONICAL
+THETA = THETA_CANONICAL
+# Zero-detection tolerance for primality (abs(ΔNFR) ≤ TOLERANCE → prime)
+TOLERANCE = PRIMALITY_TOLERANCE
 
 # Global cache for expensive operations
 _COMPUTATION_CACHE: Optional[Any] = None
@@ -270,9 +268,9 @@ def tnfr_delta_nfr_advanced(
     
     Args:
         n: Positive integer to test
-        zeta: Factorization pressure coefficient (default: 1.0)
-        eta: Divisor pressure coefficient (default: 0.8)
-        theta: Sigma pressure coefficient (default: 0.6)
+        zeta: Factorization pressure coefficient (default: φ×γ ≈ 0.9340)
+        eta: Divisor pressure coefficient (default: (γ/φ)×π ≈ 1.1207)
+        theta: Sigma pressure coefficient (default: 1/φ ≈ 0.6180)
         use_cache: Enable computation caching (default: True)
         
     Returns:

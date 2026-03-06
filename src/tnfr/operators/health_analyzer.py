@@ -24,6 +24,7 @@ from ..config.operator_names import (
     DESTABILIZERS,
     TRANSFORMERS,
 )
+from ..constants.canonical import THOL_MIN_COLLECTIVE_COHERENCE
 
 __all__ = [
     "SequenceHealthMetrics",
@@ -781,8 +782,8 @@ class SequenceHealthAnalyzer:
         min_coherence = min(coherences)
         max_coherence = max(coherences)
 
-        # Get threshold from graph config (fallback: canonical 1/(π+1) ≈ 0.2413)
-        threshold = float(G.graph.get("THOL_MIN_COLLECTIVE_COHERENCE", 0.2413))
+        # Get threshold from graph config (fallback: canonical 1/(π+1) ≈ 0.2415)
+        threshold = float(G.graph.get("THOL_MIN_COLLECTIVE_COHERENCE", THOL_MIN_COLLECTIVE_COHERENCE))
         nodes_below_threshold = sum(1 for c in coherences if c < threshold)
 
         return {

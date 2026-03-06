@@ -1,6 +1,6 @@
 # TNFR Python Engine - Architecture Guide
 
-**Version**: 0.0.3.1  
+**Version**: 0.0.3.2  
 **Status**: Production-ready framework with mathematical foundations  
 **Foundation**: Universal Tetrahedral Correspondence (φ↔Φ_s, γ↔|∇φ|, π↔K_φ, e↔ξ_C)
 
@@ -105,7 +105,7 @@ class CanonicalValidator:
         return validate_u1_through_u6(
             sequence, 
             phase_tolerance=PHASE_SYNC_TOLERANCE,      # Canonical: γ/π ≈ 0.184
-            coherence_minimum=MIN_BUSINESS_COHERENCE   # Canonical: (e×φ)/(π+e) ≈ 0.751
+            coherence_minimum=MIN_BUSINESS_COHERENCE   # Canonical: (e×φ)/(π+e) ≈ 0.7506
         )
     
     def validate_graph_state(self, graph):
@@ -533,7 +533,7 @@ TNFR Engine provides a mathematically pure complex systems framework:
 | **Self-Optimization** | COMPLETE | Autonomous structural improvement |
 | **Telemetry** | COMPLETE | Complete system observability |
 | **Developer Experience** | COMPLETE | Fluent API + Simple SDK (tetrad, conservation, telemetry) |
-| **Production Readiness** | COMPLETE | 1,641 tests passing, 2 skipped + benchmarks + validation |
+| **Production Readiness** | COMPLETE | 1,646+ tests passing, 9 skipped + benchmarks + validation |
 
 ### Architectural Principles (Canonical)
 

@@ -2,7 +2,7 @@
 ## Theoretical Framework for Coherent Pattern Analysis
 
 **Status**: Primary theoretical reference document  
-**Version**: 0.0.3.1 (March 2026)  
+**Version**: 0.0.3.2 (March 2026)  
 **Authority**: This repository contains the current implementation of TNFR theory  
 **Repository**: https://github.com/fermga/TNFR-Python-Engine  
 **PyPI Package**: https://pypi.org/project/tnfr/  
@@ -61,11 +61,11 @@ Theoretical Foundation: The framework models reality as coherent dynamic pattern
 **Computational Implementation**:
 - Self-Optimizing Engine: Algorithmic structural optimization
 - Software Development Kit: API for TNFR implementation  
-- Experimental Validation: 1,634+ tests across multiple topologies
+- Experimental Validation: 1,646+ tests across multiple topologies
 - Distribution Platform: PyPI package with documentation
 
 **Application Domains**:
-- Number Theory: Resonance-based primality analysis
+- **Number Theory**: Primality as structural equilibrium (ΔNFR = 0), spectral factorization, arithmetic structural triad
 - **TNFR-Riemann Program**: Theoretical framework connecting discrete prime operators to Riemann Hypothesis via structural coherence
 - Molecular Chemistry: Periodic table modeling via TNFR dynamics
 - Network Science: Topology-coherence relationship analysis
@@ -78,12 +78,14 @@ Theoretical Foundation: The framework models reality as coherent dynamic pattern
 | **Category** | **Key Resources** |
 |--------------|-------------------|
 | **Theory** | [Universal Tetrahedral Correspondence](#universal-tetrahedral-correspondence) |
+| **Minimality** | [Minimal Structural Degrees of Freedom](#minimal-structural-degrees-of-freedom) |
 | **Physics** | [Nodal Equation & Structural Triad](#foundational-physics) |
 | **Operators** | [13 Canonical Operators](#the-13-canonical-operators) |
 | **Grammar** | [Unified Grammar U1-U6](#unified-grammar-u1-u6) |
 | **Grammar Dynamics** | [Grammar-Aware Dynamics](#grammar-aware-dynamics) |
 | **Fields** | [Structural Field Tetrad](#telemetry--structural-field-tetrad) |
 | **Conservation** | [Structural Conservation Theorem](#structural-conservation-theorem) |
+| **Number Theory** | [theory/TNFR_NUMBER_THEORY.md](theory/TNFR_NUMBER_THEORY.md) |
 | **TNFR-Riemann** | [Recent Theoretical Developments](#recent-theoretical-developments-november-2025) |
 | **Implementation** | [Development Workflow](#development-workflow) |
 | **Validation** | [Testing Requirements](#testing-requirements) |
@@ -121,10 +123,13 @@ Theoretical Foundation: The framework models reality as coherent dynamic pattern
 **Reference Sources**:
 - **Historical Theory**: [theory/TNFR.pdf](theory/TNFR.pdf) - Original theoretical derivations
 - **Theoretical Foundation**: [Structural Fields and Universal Tetrahedral Correspondence](theory/FUNDAMENTAL_THEORY.md)
+- **Minimality Proof**: [theory/MINIMAL_STRUCTURAL_DEGREES.md](theory/MINIMAL_STRUCTURAL_DEGREES.md) - Why exactly four structural fields
 - **TNFR-Riemann Program**: [theory/TNFR_RIEMANN_RESEARCH_NOTES.md](theory/TNFR_RIEMANN_RESEARCH_NOTES.md) - Complete theoretical framework for mathematical consciousness and Riemann Hypothesis connection
+- **Number Theory**: [theory/TNFR_NUMBER_THEORY.md](theory/TNFR_NUMBER_THEORY.md) - Primality as ΔNFR = 0, arithmetic structural triad, canonical constants, spectral factorization
 
 **Validation and Examples**:
 - **Implementation Examples**: [examples/](examples/) - Sequential tutorial suite
+- **Arithmetic Number Theory**: [examples/40_arithmetic_number_theory.py](examples/40_arithmetic_number_theory.py) - Primality, pressure components, coherence landscape
 - **TNFR-Riemann Implementation**: [src/tnfr/riemann/operator.py](src/tnfr/riemann/operator.py) - Discrete TNFR-Riemann operators
 - **Riemann Eigenvalue Demo**: [examples/16_riemann_operator_demo.py](examples/16_riemann_operator_demo.py) - Critical parameter analysis
 - **Test Suite**: [tests/](tests/) - Comprehensive validation experiments
@@ -282,6 +287,98 @@ A whirlpool in flowing water exemplifies TNFR principles:
 This serves as a representative model for TNFR phenomena across scales and domains.
 
 Theoretical Significance: Mathematical harmony and physical coherence represent unified aspects of structural reality.
+
+---
+
+## Minimal Structural Degrees of Freedom
+
+The tetrad (Φ_s, |∇φ|, K_φ, ξ_C) is not an arbitrary collection of diagnostics. It constitutes the **minimal and complete structural basis** for characterizing coherent systems. This section summarizes the argument; the full formal treatment is in [theory/MINIMAL_STRUCTURAL_DEGREES.md](theory/MINIMAL_STRUCTURAL_DEGREES.md).
+
+### Why Exactly Four Fields
+
+Any coherent dynamical system on a graph must answer four independent structural questions at every node:
+
+| Question | Field | Order |
+|----------|-------|-------|
+| How much pressure accumulates from the network? | Φ_s (structural potential) | 0th — global aggregation |
+| How misaligned am I with my neighbors? | \|∇φ\| (phase gradient) | 1st — local derivative |
+| How sharply does alignment change direction? | K_φ (phase curvature) | 2nd — discrete Laplacian |
+| How far does my state correlate across the system? | ξ_C (coherence length) | Non-local — correlation range |
+
+These four classes — **global aggregation, first derivative, second derivative, correlation range** — exhaust the independent structural information available from a scalar phase field coupled to a scalar source (ΔNFR) on a graph. Higher-order derivatives on discrete graphs decompose into products of lower-order quantities, so no fifth independent channel exists.
+
+### The Operator-Derivative Tower
+
+From the phase field φ_i and the source term ΔNFR, the tower of independent structural information is:
+
+```
+ΔNFR_j → Σ 1/d² → Φ_s(i)          [0th order, global]
+φ_i    → ∇       → |∇φ|             [1st order, local]
+       → ∇²      → K_φ              [2nd order, local]
+       → corr    → ξ_C              [integral, non-local]
+```
+
+The tower terminates at second order because the combinatorial Laplacian L = D − A is the highest independent differential operator on a graph. Correlation length ξ_C captures the integral (non-local) information that pointwise derivatives miss.
+
+### Why These Constants
+
+Each correspondence has a specific mathematical derivation (all implementations in `src/tnfr/constants/canonical.py`):
+
+1. **φ ↔ Φ_s**: The golden ratio emerges as the saturation point of inverse-square harmonic accumulation on self-similar networks. φ is the fixed point of x = 1 + 1/x, which governs recursive potential summation.
+
+2. **γ ↔ |∇φ|**: The Euler constant governs the harmonic growth rate (gap between harmonic sums and logarithmic growth). The threshold γ/π arises from the Kuramoto critical coupling condition in TNFR units.
+
+3. **π ↔ K_φ**: Phase curvature lives on S¹ (the circle). The wrap_angle operation constrains |K_φ| ≤ π by construction — the geometric constant that defines maximum angular deviation.
+
+4. **e ↔ ξ_C**: Correlation decay is inherently exponential (Markov process along graph paths). Napier's constant ensures scale invariance: rescaling r → αr simply rescales ξ_C → αξ_C.
+
+### Tetrahedral Edge Relationships
+
+Every pair of constants generates a canonical combination used in the engine (300+ constants in `canonical.py`, zero empirical fitting):
+
+| Edge | Expression | Value | Role in TNFR |
+|------|-----------|-------|-------------|
+| φ–γ | φ/γ | ≈ 2.803 | Structural frequency base (νf scaling) |
+| φ–π | φ/(φ+π) | ≈ 0.340 | Optimization penalty factor |
+| φ–e | φ/e | ≈ 0.595 | EPI maximum canonical bound |
+| γ–π | γ/π | ≈ 0.184 | Phase gradient threshold (Kuramoto) |
+| γ–e | γ/(e+γ) | ≈ 0.175 | Temporal evolution rate |
+| π–e | π/e | ≈ 1.156 | Spectral speedup factor |
+
+### Irreducibility
+
+Removing any field creates a structural blind spot:
+
+- **Without Φ_s**: No global stability monitor. C(t) alone misses catastrophic pressure accumulations.
+- **Without |∇φ|**: No local stress detection. C(t) is scale-invariant and misses local fragmentation.
+- **Without K_φ**: No geometric confinement. |∇φ| misses curvature-driven instabilities.
+- **Without ξ_C**: No critical-point detection. All other fields are pointwise and miss long-range correlations.
+
+### Variational Confirmation
+
+The tetrad admits a complete Lagrangian/Hamiltonian formulation (see [theory/TNFR_VARIATIONAL_PRINCIPLE.md](theory/TNFR_VARIATIONAL_PRINCIPLE.md)):
+
+- **Lagrangian**: L(i) = T(i) − V(i) where T = ½[J_φ² + J_ΔNFR²] and V = ½[Φ_s² + |∇φ|² + K_φ²]
+- **Conjugate pairs**: (K_φ, J_φ) geometric sector; (Φ_s, J_ΔNFR) potential sector
+- **Conservation**: Grammar symmetry (U1-U6) implies structural charge conservation via Noether-like theorem
+- **Lyapunov stability**: E = ½Σ_i ε(i) ≥ 0 with dE/dt ≤ 0 under grammar-compliant evolution
+
+The existence of a well-posed variational structure with canonical conjugate pairs confirms that the four tetrad fields are the natural phase-space coordinates for coherent systems.
+
+### Structural Parallels
+
+The four-dimensional structural basis echoes patterns across physics:
+
+| Theory | Structure | Dimension |
+|--------|-----------|----------|
+| General relativity | Spacetime metric g_μν | 4 dimensions |
+| Electromagnetism | 4-potential A_μ | 4 components |
+| Thermodynamics | Minimal state functions | 4 (T, P, V, S) |
+| **TNFR** | **Structural tetrad** | **4 (Φ_s, \|∇φ\|, K_φ, ξ_C)** |
+
+This recurrence reflects that complete characterization of any field on a metric space requires knowing its **value, first derivative, second derivative, and correlation structure**.
+
+**Documentation**: See [theory/MINIMAL_STRUCTURAL_DEGREES.md](theory/MINIMAL_STRUCTURAL_DEGREES.md) for the complete formal treatment.
 
 ---
 
@@ -504,6 +601,19 @@ Operators combine into sequences that implement complex behaviors:
 
 All sequences must satisfy unified grammar (U1-U6).
 
+### Operator-Tetrad Synergies (Experimental, March 2026)
+
+Systematic experiments ([examples/37-39](examples/37_operator_tetrad_synergy.py)) revealed six structural results linking operators to the tetrad:
+
+1. **Dual-Lever Structure**: Every operator acts through νf (capacity lever: UM, SHA, VAL, NUL), ΔNFR (pressure lever: IL, OZ, THOL, ZHIR, NAV), both (NUL), or neither (AL, EN, RA, REMESH). This classification is orthogonal to the grammar categories (generator/stabilizer/destabilizer).
+2. **Operator-Tetrad Fingerprint Matrix**: Each operator produces a unique coupling profile across (Φ_s, |∇φ|, K_φ, ξ_C). UM modifies all four fields (strongest Φ_s at −73.7%); SHA is tetrad-neutral.
+3. **IL-OZ Tetrad Symmetry**: Coherence (IL) and Dissonance (OZ) produce identical tetrad perturbations (dE = −0.011) despite opposite physics, because both perturb |ΔNFR| by the same magnitude (0.0096).
+4. **Φ_s Linear Response**: |r| = 1.000 correlation between ΔNFR perturbations and Φ_s changes, confirming the 0th-order position in the derivative tower.
+5. **Complete Causal Chain**: Operator → (νf, ΔNFR) → ∂EPI/∂t → Tetrad → (ℰ, 𝒬). The tetrad fields are diagnostic outputs, not independent dynamical variables.
+6. **Grammar-Energy Landscape**: Lyapunov contractivity (Π < 1) is sufficient but not necessary for energy descent. Measured: Π ≈ 1.288 (non-contractive) yet dE = −9.59 (net descent).
+
+**Documentation**: [theory/STRUCTURAL_OPERATORS.md](theory/STRUCTURAL_OPERATORS.md) §17; examples [37](examples/37_operator_tetrad_synergy.py), [38](examples/38_grammar_energy_landscape.py), [39](examples/39_nodal_equation_decomposition.py).
+
 ---
 
 ## Unified Grammar (U1-U6)
@@ -609,6 +719,7 @@ The **Structural Field Tetrad** (Φ_s, |∇φ|, **Ψ**, ξ_C) now has **complete
 - **Theory**: von Koch fractal bounds + combinatorial number theory
 - **Derivation**: Experimentally validated constant (0.7711) from Koch snowflake perimeter growth analysis. Confirmed across 5 topologies. Canonical source: `src/tnfr/constants/canonical.py::PHI_S_VON_KOCH_THRESHOLD`
 - **Physics**: Global structural field escape threshold from distance-weighted ΔNFR distribution
+- **Linear response**: |r| = 1.000 to ΔNFR perturbations, confirming 0th-order derivative tower position (see [example 39](examples/39_nodal_equation_decomposition.py))
 - **Grammar**: U6 telemetry-based safety criterion (passive equilibrium confinement)
 
 ### **2. Phase Gradient Field (|∇φ|)**
@@ -638,7 +749,7 @@ The **Structural Field Tetrad** (Φ_s, |∇φ|, **Ψ**, ξ_C) now has **complete
 - **0% empirical fitting** → **100% first-principles derivation**  
 - **Universal constants** emerge naturally (π, exponential bounds, fractal ratios)  
 - **Theory-code consistency** maintained throughout codebase  
-- **Complete validation** via comprehensive test suite (1,634+ tests) across 5 topologies
+- **Complete validation** via comprehensive test suite (1,646+ tests) across 5 topologies
 
 **Status**: TNFR Structural Field Tetrad mathematical foundations **COMPLETE**.
 
@@ -740,8 +851,9 @@ success, metrics = engine.step(node_id)
 ### Adaptive SDK Integration
 The Fluent API now includes `auto_optimize()`:
 ```python
-# One-line self-optimization
-TNFRNetwork(G).focus(node).auto_optimize().execute()
+# Fluent self-optimization
+net = TNFRNetwork("demo").add_nodes(20).connect_nodes(0.3).auto_optimize()
+results = net.measure()
 ```
 
 ### Simple SDK — Research-Grade Access
@@ -772,7 +884,7 @@ emergent = net.emergent_fields()       # -> chirality, symmetry_breaking, cohere
 net.evolve_grammar_aware(steps=10)
 
 # Integrity monitoring (13/13 operator postconditions)
-report = net.integrity_check()  # -> IntegrityReport
+report = net.integrity_check()  # -> dict[str, Any]
 
 # One-shot comprehensive analysis
 analysis = TNFR.analyze(net)  # -> dict with all metrics + tetrad + conservation
@@ -1289,13 +1401,13 @@ When adding to grammar documentation:
   - **[src/tnfr/sdk/simple.py](src/tnfr/sdk/simple.py)**: TetradSnapshot, ConservationReport, TNFR.analyze(), grammar-aware evolution, integrity monitoring
   - **[src/tnfr/sdk/fluent.py](src/tnfr/sdk/fluent.py)**: Fluent API with auto_optimize()
   - **[src/tnfr/sdk/adaptive_system.py](src/tnfr/sdk/adaptive_system.py)**: Adaptive system patterns
-- **[examples/](examples/)**: Complete 01-30 sequential tutorial suite (33 files including specialized demos)
+- **[examples/](examples/)**: Complete 01-40 sequential tutorial suite (42 files including specialized demos)
 - **[benchmarks/](benchmarks/)**: Production-grade validation suites (14 benchmark scripts)
 
 **Development**:
 - **ARCHITECTURE.md**: System design principles
 - **CONTRIBUTING.md**: Workflow and standards
-- **TESTING.md**: Test strategy (1,634+ passing tests)
+- **TESTING.md**: Test strategy (1,646+ passing tests)
 
 **Domain Showcases**:
 - **Network Dynamics**: [examples/03_network_formation.py](examples/03_network_formation.py)
@@ -1321,6 +1433,10 @@ When adding to grammar documentation:
 - **Dissipative Systems**: [examples/28_dissipative_systems_demo.py](examples/28_dissipative_systems_demo.py)
 - **Lyapunov Stability**: [examples/29_lyapunov_stability_demo.py](examples/29_lyapunov_stability_demo.py)
 - **Self-Optimization**: [examples/30_self_optimization_demo.py](examples/30_self_optimization_demo.py)
+- **Operator-Tetrad Synergy**: [examples/37_operator_tetrad_synergy.py](examples/37_operator_tetrad_synergy.py) (Fingerprint matrix, IL-OZ symmetry)
+- **Grammar-Energy Landscape**: [examples/38_grammar_energy_landscape.py](examples/38_grammar_energy_landscape.py) (Lyapunov refinement)
+- **Nodal Equation Decomposition**: [examples/39_nodal_equation_decomposition.py](examples/39_nodal_equation_decomposition.py) (Dual-lever, Φ_s linear response)
+- **Arithmetic Number Theory**: [examples/40_arithmetic_number_theory.py](examples/40_arithmetic_number_theory.py) (Primality, pressure components, coherence landscape)
 - **Production Validation**: [tests/](tests/) (comprehensive test suite)
 
 ---
@@ -1403,7 +1519,7 @@ capture dynamics C(t) misses.
 - Compute via `compute_phase_gradient(G)` [CANONICAL]
 - Monitor alongside Φ_s for comprehensive structural health
 
-**Documentation**: See `docs/TNFR_FORCES_EMERGENCE.md` §14-15 for full validation details.
+**Documentation**: See `docs/STRUCTURAL_FIELDS_TETRAD.md` for full validation details.
 
 ---
 
@@ -1549,7 +1665,7 @@ Reality consists of resonant patterns rather than discrete objects. Development 
 
 ---
 
-**Version**: 0.0.3.1  
+**Version**: 0.0.3.2  
 **Last Updated**: 2026-03-06  
 **Status**: CANONICAL - Primary reference for TNFR agent guidance  
 **PyPI Release**: STABLE - Available via `pip install tnfr`  

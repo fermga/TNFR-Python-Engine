@@ -93,7 +93,7 @@ NUL_SCALE_FACTOR = SHA_VF_FACTOR            # Same confinement physics as SHA (s
 
 # VAL expansion thresholds (canonical derivations)
 VAL_MIN_EPI = GAMMA / (PI + GAMMA)          # γ/(π+γ) ≈ 0.1550 (minimum structural base)
-VAL_BIFURCATION_THRESHOLD = 1.0 / (PI + 1)  # 1/(π+1) ≈ 0.2413 (bifurcation detection)
+VAL_BIFURCATION_THRESHOLD = 1.0 / (PI + 1)  # 1/(π+1) ≈ 0.2415 (bifurcation detection)
 VAL_MIN_COHERENCE = math.sin(PI / 3)        # sin(π/3) = √3/2 ≈ 0.8660 (60° harmonic coherence)
 
 # THOL self-organization thresholds (canonical derivations)  
@@ -101,7 +101,7 @@ THOL_MIN_COLLECTIVE_COHERENCE = 1.0 / (PI + 1)  # 1/(π+1) ≈ 0.2415 (same phys
 
 # Coupling and mixing thresholds (canonical derivations)
 UM_COMPAT_THRESHOLD = PHI / (PHI + GAMMA)       # φ/(φ+γ) ≈ 0.7371 (golden-Euler compatibility)
-EN_MIX_FACTOR = 1.0 / (PI + 1)                 # 1/(π+1) ≈ 0.2413 (reception mixing fraction)
+EN_MIX_FACTOR = 1.0 / (PI + 1)                 # 1/(π+1) ≈ 0.2415 (reception mixing fraction)
 UM_THETA_PUSH = EN_MIX_FACTOR                  # Same physics as EN mixing (coupling phase push)
 
 # Expansion and contraction scaling (canonical derivations)

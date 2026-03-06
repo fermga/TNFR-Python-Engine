@@ -15,6 +15,10 @@ from tnfr.sdk.simple import (
     Results,
     TetradSnapshot,
     ConservationReport,
+    FactorizationReport,
+    PrimalityReport,
+    NodalStateReport,
+    NodalDynamicsReport,
 )
 
 
@@ -296,3 +300,89 @@ class TestSDKExports:
     def test_import_conservation_report(self):
         from tnfr.sdk import ConservationReport as CR
         assert CR is ConservationReport
+
+    def test_import_factorization_report(self):
+        from tnfr.sdk import FactorizationReport as FR
+        assert FR is FactorizationReport
+
+    def test_import_primality_report(self):
+        from tnfr.sdk import PrimalityReport as PR
+        assert PR is PrimalityReport
+
+    def test_import_nodal_state_report(self):
+        from tnfr.sdk import NodalStateReport as NSR
+        assert NSR is NodalStateReport
+
+    def test_import_nodal_dynamics_report(self):
+        from tnfr.sdk import NodalDynamicsReport as NDR
+        assert NDR is NodalDynamicsReport
+
+
+class TestNodalDynamicsBridge:
+    """SDK nodal-dynamics diagnostics for TNFR equation study."""
+
+    def test_nodal_state_returns_report(self, small_ring: Network):
+        state = small_ring.nodal_state(0)
+        assert isinstance(state, NodalStateReport)
+        assert state.node == 0
+        assert isinstance(state.expected_depi_dt, float)
+        assert isinstance(state.d2epi_dt2, float)
+
+    def test_nodal_scan_returns_report(self, small_ring: Network):
+        report = small_ring.nodal_scan()
+        assert isinstance(report, NodalDynamicsReport)
+        assert len(report.nodes) == len(small_ring.G.nodes())
+        top = report.top_pressure_nodes(3)
+        assert len(top) <= 3
+
+    def test_nodal_profile_returns_dict(self, small_ring: Network):
+        profile = small_ring.nodal_profile(0)
+        assert isinstance(profile, dict)
+        assert 'expected_depi_dt' in profile
+        assert 'delta_nfr' in profile
+
+    def test_tnfr_analyze_includes_nodal_dynamics(self, small_ring: Network):
+        analysis = TNFR.analyze(small_ring)
+        assert 'nodal_dynamics' in analysis
+        assert isinstance(analysis['nodal_dynamics'], NodalDynamicsReport)
+
+
+class TestSDKFactorizationBridge:
+    """SDK bridge between canonical factorization and network telemetry."""
+
+    def test_tnfr_factorize_returns_report(self):
+        report = TNFR.factorize(91)
+        assert isinstance(report, FactorizationReport)
+        assert report.n == 91
+        assert report.modulus > 0
+        assert isinstance(report.candidate_factors, list)
+        assert isinstance(report.telemetry, dict)
+        assert 'delta_nfr' in report.telemetry
+
+    def test_network_factorize_includes_synergy(self, small_ring: Network):
+        report = small_ring.factorize(91)
+        assert isinstance(report, FactorizationReport)
+        assert report.network_synergy is not None
+        assert 'synergy_index' in report.network_synergy
+        assert 'coherence_alignment' in report.network_synergy
+
+
+class TestSDKPrimalityBridge:
+    """SDK bridge between canonical primality module and network telemetry."""
+
+    def test_tnfr_primality_returns_report(self):
+        report = TNFR.primality(97)
+        assert isinstance(report, PrimalityReport)
+        assert report.n == 97
+        assert report.is_prime is True
+        assert abs(report.delta_nfr) <= report.tolerance
+        assert isinstance(report.components, dict)
+        assert isinstance(report.triad, dict)
+
+    def test_network_primality_includes_synergy(self, small_ring: Network):
+        report = small_ring.primality(91)
+        assert isinstance(report, PrimalityReport)
+        assert report.network_synergy is not None
+        assert 'synergy_index' in report.network_synergy
+        assert 'coherence_alignment' in report.network_synergy
+        assert small_ring.is_prime(91) is False

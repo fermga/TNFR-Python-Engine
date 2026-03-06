@@ -1,6 +1,6 @@
 # TNFR: Resonant Fractal Nature Theory
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18883589.svg)](https://doi.org/10.5281/zenodo.18883589)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17602860.svg)](https://doi.org/10.5281/zenodo.17602860)
 [![PyPI version](https://badge.fury.io/py/tnfr.svg)](https://pypi.org/project/tnfr/)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -118,8 +118,8 @@ src/tnfr/
 ├── validation/        # Structural health monitoring
 └── factorization/     # Spectral factorization workflow
 
-examples/              # 33 sequential tutorials (01-30 + extras)
-tests/                 # 1,634+ tests
+examples/              # 42 sequential tutorials (01-40 + extras)
+tests/                 # 1,646+ tests
 theory/                # Theoretical derivations
 benchmarks/            # Performance validation (14 suites)
 ```
@@ -161,8 +161,8 @@ make smoke-tests                   # smoke tests (Unix)
   author = {Martinez Gamo, F. F.},
   title = {TNFR-Python-Engine: Resonant Fractal Nature Theory Implementation},
   year = {2025},
-  version = {0.0.3.1},
-  doi = {10.5281/zenodo.18883589},
+  version = {0.0.3.2},
+  doi = {10.5281/zenodo.17602860},
   url = {https://github.com/fermga/TNFR-Python-Engine}
 }
 ```

@@ -148,6 +148,8 @@ def test_arithmetic_cache_invoked_once(monkeypatch: MonkeyPatch) -> None:
 def test_certificate_emission_obeys_grammar(tmp_path: pathlib.Path, monkeypatch: MonkeyPatch) -> None:
     partition_root = tmp_path / "partition_outputs"
     monkeypatch.setenv("TNFR_PARTITION_OUTPUT_DIR", str(partition_root))
+    monkeypatch.setenv("TNFR_PARTITION_TARGET_SIZE", "13")
+    monkeypatch.setenv("TNFR_PARTITION_OVERLAP", "0")
 
     factorizer = SpectralPaleyFactorizer()
 

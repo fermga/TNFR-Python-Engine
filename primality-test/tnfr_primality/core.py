@@ -5,20 +5,38 @@ This module contains the fundamental TNFR-based primality testing algorithms
 based on the arithmetic pressure equation ΔNFR(n).
 
 Mathematical Foundation:
-ΔNFR(n) = ζ·(ω(n)−1) + η·(τ(n)−2) + θ·(σ(n)/n − (1+1/n))
+ΔNFR(n) = ζ·(Ω(n)−1) + η·(τ(n)−2) + θ·(σ(n)/n − (1+1/n))
 
 Where:
-- ω(n) = number of distinct prime factors  
+- Ω(n) = prime factor count with multiplicity (big Omega)
 - τ(n) = number of divisors
 - σ(n) = sum of divisors
-- ζ=1.0, η=0.8, θ=0.6 = TNFR structural constants
+- ζ = φ×γ ≈ 0.9340  (factorization pressure, canonical)
+- η = (γ/φ)×π ≈ 1.1207  (divisor pressure, canonical)
+- θ = 1/φ ≈ 0.6180  (abundance pressure, canonical)
+
+All coefficients derived from (φ, γ, π, e) via Universal Tetrahedral
+Correspondence — zero empirical fitting.
 
 Theorem: n is prime ⟺ ΔNFR(n) = 0
+
+Dual-lever interpretation (experimental discovery, March 2026):
+- ΔNFR is the pressure lever in the nodal equation ∂EPI/∂t = νf · ΔNFR(t)
+- Primes are zero-pressure nodes (ΔNFR = 0): maximum structural coherence
+- Composites carry positive pressure proportional to factorization complexity
+- Φ_s responds linearly to ΔNFR perturbations (|r| = 1.000)
 """
 from __future__ import annotations
 
-from typing import Tuple
+import math
+from typing import Tuple, Dict
 from functools import lru_cache
+
+from .constants import (
+    ZETA_CANONICAL, ETA_CANONICAL, THETA_CANONICAL,
+    ALPHA_EPI, BETA_EPI, GAMMA_EPI,
+    NU_0, DELTA_FREQ, EPSILON_FREQ,
+)
 
 
 def _divisor_count(n: int) -> int:
@@ -53,95 +71,232 @@ def _divisor_sum(n: int) -> int:
 
 
 def _prime_factor_count(n: int) -> int:
-    """Count distinct prime factors of n."""
+    """Count prime factors of n WITH multiplicity (Ω, big Omega).
+
+    Canonical TNFR uses Ω(n) = total prime factor count including
+    repeated factors.  This gives stronger pressure signals for
+    prime powers (e.g. Ω(8) = 3 vs ω(8) = 1).
+    """
     if n <= 1:
         return 0
     count = 0
     d = 2
     temp_n = n
-    
+
+    while d * d <= temp_n:
+        while temp_n % d == 0:
+            count += 1
+            temp_n //= d
+        d += 1
+
+    if temp_n > 1:
+        count += 1
+
+    return count
+
+
+def _distinct_prime_factor_count(n: int) -> int:
+    """Count distinct prime factors of n (ω, little omega).
+
+    Legacy function kept for backward compatibility.
+    """
+    if n <= 1:
+        return 0
+    count = 0
+    d = 2
+    temp_n = n
+
     while d * d <= temp_n:
         if temp_n % d == 0:
             count += 1
             while temp_n % d == 0:
                 temp_n //= d
         d += 1
-    
+
     if temp_n > 1:
         count += 1
-    
+
     return count
 
 
-def tnfr_delta_nfr(n: int, *, zeta: float = 1.0, eta: float = 0.8, theta: float = 0.6) -> float:
+def tnfr_delta_nfr(
+    n: int,
+    *,
+    zeta: float = ZETA_CANONICAL,
+    eta: float = ETA_CANONICAL,
+    theta: float = THETA_CANONICAL,
+) -> float:
     """
     Calculate TNFR arithmetic pressure ΔNFR(n).
-    
+
     The ΔNFR equation quantifies structural pressure in arithmetic systems.
     For prime numbers, this pressure is exactly zero due to their perfect
     structural coherence.
-    
+
     Args:
         n: Integer to analyze
-        zeta: Factorization pressure coefficient (default: 1.0)
-        eta: Divisor pressure coefficient (default: 0.8) 
-        theta: Abundance pressure coefficient (default: 0.6)
-        
+        zeta: Factorization pressure coefficient (default: φ×γ ≈ 0.9340)
+        eta: Divisor pressure coefficient (default: (γ/φ)×π ≈ 1.1207)
+        theta: Abundance pressure coefficient (default: 1/φ ≈ 0.6180)
+
     Returns:
         ΔNFR value. Zero indicates primality.
-        
+
     Mathematical Derivation:
-        - Factorization pressure: ζ·(ω(n)−1)
-        - Divisor pressure: η·(τ(n)−2)  
+        - Factorization pressure: ζ·(Ω(n)−1)
+        - Divisor pressure: η·(τ(n)−2)
         - Abundance pressure: θ·(σ(n)/n − (1+1/n))
     """
     if n < 2:
         return float('inf')  # Invalid input
-    
+
     # Calculate arithmetic functions
-    tau_n = _divisor_count(n)        # τ(n) 
-    sigma_n = _divisor_sum(n)        # σ(n)
-    omega_n = _prime_factor_count(n)  # ω(n)
-    
-    # TNFR pressure components
+    tau_n = _divisor_count(n)         # τ(n)
+    sigma_n = _divisor_sum(n)         # σ(n)
+    omega_n = _prime_factor_count(n)  # Ω(n) — with multiplicity
+
+    # TNFR pressure components (pressure lever of nodal equation)
     factorization_pressure = zeta * (omega_n - 1)
-    divisor_pressure = eta * (tau_n - 2) 
+    divisor_pressure = eta * (tau_n - 2)
     sigma_pressure = theta * (sigma_n / n - (1 + 1 / n))
-    
+
     return factorization_pressure + divisor_pressure + sigma_pressure
 
 
 def tnfr_is_prime(n: int, *, tolerance: float = 1e-10) -> Tuple[bool, float]:
     """
     TNFR-based primality test using arithmetic pressure analysis.
-    
+
     This function determines primality by calculating the TNFR arithmetic
     pressure ΔNFR(n). Prime numbers exhibit perfect structural coherence
     with ΔNFR(p) = 0, while composite numbers show positive pressure.
-    
+
     Args:
         n: Integer to test for primality
         tolerance: Numerical tolerance for zero detection (default: 1e-10)
-        
+
     Returns:
         Tuple of (is_prime: bool, delta_nfr: float)
-        
+
     Examples:
         >>> tnfr_is_prime(17)
         (True, 0.0)
-        >>> tnfr_is_prime(15)  
-        (False, 2.92)
         >>> tnfr_is_prime(982451653)
         (True, 0.0)
-        
+
     Performance:
         - Time Complexity: O(√n)
-        - Space Complexity: O(1)  
+        - Space Complexity: O(1)
         - Accuracy: 100% (deterministic)
     """
     delta_nfr = tnfr_delta_nfr(n)
     is_prime = abs(delta_nfr) < tolerance
     return (is_prime, delta_nfr)
+
+
+def tnfr_component_breakdown(
+    n: int,
+    *,
+    zeta: float = ZETA_CANONICAL,
+    eta: float = ETA_CANONICAL,
+    theta: float = THETA_CANONICAL,
+) -> Dict[str, float]:
+    """Return per-component ΔNFR breakdown for structural analysis.
+
+    Exposes the three pressure terms individually so that consumers
+    can inspect *which* structural axis drives a composite's pressure.
+
+    Returns:
+        Dictionary with keys:
+            factorization_pressure, divisor_pressure, abundance_pressure,
+            delta_nfr, omega, tau, sigma
+    """
+    if n < 2:
+        return {
+            'factorization_pressure': float('inf'),
+            'divisor_pressure': float('inf'),
+            'abundance_pressure': float('inf'),
+            'delta_nfr': float('inf'),
+            'omega': 0, 'tau': 0, 'sigma': 0,
+        }
+
+    tau_n = _divisor_count(n)
+    sigma_n = _divisor_sum(n)
+    omega_n = _prime_factor_count(n)
+
+    fp = zeta * (omega_n - 1)
+    dp = eta * (tau_n - 2)
+    ap = theta * (sigma_n / n - (1 + 1 / n))
+
+    return {
+        'factorization_pressure': fp,
+        'divisor_pressure': dp,
+        'abundance_pressure': ap,
+        'delta_nfr': fp + dp + ap,
+        'omega': omega_n,
+        'tau': tau_n,
+        'sigma': sigma_n,
+    }
+
+
+def tnfr_structural_triad(
+    n: int,
+    *,
+    zeta: float = ZETA_CANONICAL,
+    eta: float = ETA_CANONICAL,
+    theta: float = THETA_CANONICAL,
+) -> Dict[str, float]:
+    """Compute the full structural triad (EPI, νf, ΔNFR) for a number.
+
+    The structural triad characterizes each number in the three
+    fundamental dimensions of TNFR dynamics:
+      - EPI (form): structural complexity profile
+      - νf  (frequency): reorganization capacity
+      - ΔNFR (pressure): structural coherence pressure
+
+    This implements the dual-lever interpretation: νf is the capacity
+    lever and ΔNFR is the pressure lever of ∂EPI/∂t = νf · ΔNFR(t).
+
+    Returns:
+        Dictionary with EPI, vf, delta_nfr, local_coherence, components.
+    """
+    if n < 2:
+        return {
+            'EPI': 0.0, 'vf': 0.0, 'delta_nfr': float('inf'),
+            'local_coherence': 0.0, 'components': {},
+        }
+
+    tau_n = _divisor_count(n)
+    sigma_n = _divisor_sum(n)
+    omega_n = _prime_factor_count(n)
+    log_n = math.log(max(n, 2))
+
+    # EPI: structural form  (α·Ω + β·ln(τ) + γ·(σ/n − 1))
+    epi = 1.0 + ALPHA_EPI * omega_n + BETA_EPI * math.log(max(tau_n, 1)) + GAMMA_EPI * (sigma_n / n - 1)
+
+    # νf: structural frequency  (ν₀ · (1 + δ·τ/n + ε·Ω/ln(n)))
+    vf = NU_0 * (1 + DELTA_FREQ * tau_n / n + EPSILON_FREQ * omega_n / log_n)
+
+    # ΔNFR: structural pressure
+    fp = zeta * (omega_n - 1)
+    dp = eta * (tau_n - 2)
+    ap = theta * (sigma_n / n - (1 + 1 / n))
+    delta_nfr = fp + dp + ap
+
+    # Local coherence: 1/(1 + |ΔNFR|)
+    local_coherence = 1.0 / (1.0 + abs(delta_nfr))
+
+    return {
+        'EPI': epi,
+        'vf': vf,
+        'delta_nfr': delta_nfr,
+        'local_coherence': local_coherence,
+        'components': {
+            'factorization_pressure': fp,
+            'divisor_pressure': dp,
+            'abundance_pressure': ap,
+        },
+    }
 
 
 # Cached versions for performance
@@ -159,37 +314,41 @@ def _divisor_sum_cached(n: int) -> int:
 
 @lru_cache(maxsize=10000)
 def _prime_factor_count_cached(n: int) -> int:
-    """Cached version of prime factor count."""
+    """Cached version of prime factor count (with multiplicity)."""
     return _prime_factor_count(n)
 
 
 @lru_cache(maxsize=5000)
-def tnfr_delta_nfr_cached(n: int, zeta: float = 1.0, eta: float = 0.8, theta: float = 0.6) -> float:
+def tnfr_delta_nfr_cached(
+    n: int,
+    zeta: float = ZETA_CANONICAL,
+    eta: float = ETA_CANONICAL,
+    theta: float = THETA_CANONICAL,
+) -> float:
     """
     Cached version of TNFR ΔNFR computation for enhanced performance.
-    
+
     Uses LRU caching to avoid recomputing expensive arithmetic functions
-    for previously analyzed numbers. Especially effective when testing
-    multiple numbers with overlapping factor patterns.
+    for previously analyzed numbers.
     """
     if n < 2:
         return float('inf')
-        
+
     tau_n = _divisor_count_cached(n)
-    sigma_n = _divisor_sum_cached(n) 
+    sigma_n = _divisor_sum_cached(n)
     omega_n = _prime_factor_count_cached(n)
-    
+
     factorization_pressure = zeta * (omega_n - 1)
     divisor_pressure = eta * (tau_n - 2)
     sigma_pressure = theta * (sigma_n / n - (1 + 1 / n))
-    
+
     return factorization_pressure + divisor_pressure + sigma_pressure
 
 
 def tnfr_is_prime_cached(n: int, *, tolerance: float = 1e-10) -> Tuple[bool, float]:
     """
     Cached version of TNFR primality test for improved performance.
-    
+
     Uses LRU caching to store results of expensive arithmetic computations.
     Recommended for applications testing many numbers or repeated queries.
     """

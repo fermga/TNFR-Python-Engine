@@ -20,7 +20,7 @@ $$
 |----------|-------|
 | **Physics** | Geometric phase confinement drives directed transport |
 | **Sign convention** | Positive = net inward flow; negative = net outward flow; zero = equilibrium |
-| **Promotion evidence** | 48 samples across WS, BA, Grid topologies; $r(J_\phi, K_\phi) = +0.592 \pm 0.092$; 100% sign consistency |
+| **Promotion evidence** | 48 samples across WS, BA, Grid topologies; anticorrelation $r(J_\phi, K_\phi) \approx -0.854$ to $-0.997$ (see §2.2); 100% sign consistency |
 | **Canonical status** | Promoted November 12, 2025 |
 
 ### 1.2 $\Delta$NFR Flux ($J_{\Delta\mathrm{NFR}}$)
@@ -218,6 +218,13 @@ Core Tetrad (CANONICAL)          Extended Transport (CANONICAL)
          └── Q  (topological charge)
 ```
 
+**Causal chain**: The hierarchy above is *diagnostic*, not dynamical. The
+experimentally confirmed causal chain is:
+Operator → (ν_f, ΔNFR) → dEPI/dt → Tetrad → (ℰ, Q).
+All fields and invariants are uniquely determined by the nodal equation state;
+they do not feed back into the dynamics. See [STRUCTURAL_OPERATORS.md
+§17.5](STRUCTURAL_OPERATORS.md) and [example 39](../examples/39_nodal_equation_decomposition.py).
+
 ---
 
 ## Implementation Reference
@@ -250,6 +257,7 @@ emergent = net.emergent_fields()        # chirality, symmetry_breaking, coherenc
 | Example | Concept from this document |
 |---------|---------------------------|
 | [20_eigenmode_tetrad.py](../examples/20_eigenmode_tetrad.py) | Per-eigenmode structural field tetrad |
+| [33_complex_field_unification.py](../examples/33_complex_field_unification.py) | Ψ = K_φ + i·J_φ anticorrelation, emergent fields χ/𝒮/𝒞, energy decomposition |
 | [unified_fields_showcase.py](../examples/unified_fields_showcase.py) | Ψ = K_φ + i·J_φ, emergent fields χ/𝒮/𝒰, tensor invariants |
 
 ### Key Source Modules

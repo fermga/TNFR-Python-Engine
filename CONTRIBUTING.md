@@ -1,9 +1,9 @@
 # Contributing to TNFR
 
-**Version**: 0.0.3.1  
+**Version**: 0.0.3.2  
 **Status**: Complete theoretical framework with Universal Tetrahedral Correspondence  
 **Authority**: Canonical constants derived from TNFR theory  
-**Quality**: Production-ready with 1,641 passing tests, 2 skipped  
+**Quality**: Production-ready with 1,646+ passing tests, 9 skipped  
 
 This document provides guidelines for contributing to the TNFR (Resonant Fractal Nature Theory) project. TNFR constitutes a computational framework for modeling complex systems through coherent patterns and resonance dynamics.
 
@@ -88,7 +88,7 @@ All development must utilize theoretically derived canonical constants:
 from tnfr.constants.canonical import *
 
 # Correct: Use canonical constants
-threshold = MIN_BUSINESS_COHERENCE  # (e×φ)/(π+e) ≈ 0.751
+threshold = MIN_BUSINESS_COHERENCE  # (e×φ)/(π+e) ≈ 0.7506
 
 # Incorrect: Arbitrary numerical values
 threshold = 0.75  # Lacks theoretical foundation

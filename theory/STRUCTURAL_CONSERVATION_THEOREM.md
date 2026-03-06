@@ -4,7 +4,7 @@
 
 **Status**: CANONICAL — Derived from first principles  
 **Date**: March 2026  
-**Version**: 0.0.3.1  
+**Version**: 0.0.3.2  
 **Prerequisite**: [AGENTS.md](../AGENTS.md) §Foundational Physics, [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) §U2, §U6
 
 ---
@@ -475,6 +475,15 @@ closure (sources created by generators must be absorbed by closures) and U2
 requires convergence (destabilizer sources must be compensated by stabilizer
 sinks).
 
+**Experimental note (Causal Chain)**: The operator-specific Ward signatures in
+§7.2 are consistent with the experimentally observed **complete causal chain**:
+Operator → (ν_f, ΔNFR) → dEPI/dt → Tetrad → (ℰ, Q). Each operator
+produces a unique tetrad fingerprint (see [STRUCTURAL_OPERATORS.md
+§17.2](STRUCTURAL_OPERATORS.md) and [example 37](../examples/37_operator_tetrad_synergy.py)).
+The IL-OZ symmetry (ΔE = −0.011 for both, despite opposite physics)
+confirms that charge source/sink classification depends on signed ΔNFR, not
+the perturbation magnitude.
+
 ---
 
 ## 8. Lyapunov Stability from the Energy Functional
@@ -509,6 +518,15 @@ $$\frac{dE}{dt} \leq 0$$
 
 Therefore $E$ is a **Lyapunov function** for grammar-compliant dynamics,
 proving asymptotic stability of coherent attractors.
+
+**Refinement (Grammar-Energy Landscape)**: The Lyapunov contractivity bound
+($\Pi < 1$) is *sufficient* but not *necessary* for energy descent.
+Experimental evidence ([example 38](../examples/38_grammar_energy_landscape.py))
+shows sequences with $\Pi \approx 1.288$ (non-contractive) that still achieve
+net energy descent ($\Delta E = -9.59$). The formal bound is conservative;
+actual grammar-compliant sequences may descend more steeply than the
+multiplicative product predicts, because operators interact nonlinearly on
+the shared graph state.
 
 ### 8.3 Energy Dissipation Rate
 
@@ -770,6 +788,15 @@ The sector decomposition predicts failure modes:
 - **Geometric sector dominant**: Phase decoherence → U3 risk
 - **Both elevated**: Cascading bifurcation → U4/U5 risk
 
+### 12.5 Operator-Tetrad Fingerprinting
+
+The per-operator Ward identities (§7.2) are experimentally confirmed by the
+**operator-tetrad fingerprint matrix** ([example 37](../examples/37_operator_tetrad_synergy.py)).
+Each operator produces a unique signature across (Φ_s, |∇φ|, K_φ, ξ_C),
+and the causal chain Operator → Tetrad → (ℰ, Q) is unidirectional. This
+fingerprint can serve as a runtime diagnostic to identify which operator was
+applied from conservation residual patterns.
+
 ---
 
 ## 13. Implementation Reference
@@ -871,6 +898,8 @@ print(cons.summary())                # Q, E, dE/dt, stability
 |---------|---------------------------|
 | [17_conservation_law_demo.py](../examples/17_conservation_law_demo.py) | Noether charge, energy functional, Lyapunov stability, Ward identities |
 | [24_spectral_conservation_demo.py](../examples/24_spectral_conservation_demo.py) | Spectral conservation + grammar compliance at σ = 1/2 |
+| [34_conservation_protocol_suite.py](../examples/34_conservation_protocol_suite.py) | Multi-topology conservation protocol: charge drift, q(N) scaling, sector decomposition (§10) |
+| [36_grammar_violation_detector.py](../examples/36_grammar_violation_detector.py) | Grammar violation detection via conservation residuals (§12.1), violation classification |
 
 ### Key Source Modules
 
@@ -881,5 +910,5 @@ print(cons.summary())                # Q, E, dE/dt, stability
 
 **Status**: CANONICAL  
 **Derived from**: Nodal equation + Grammar U1–U6  
-**Validated by**: 62 tests, numerical experiments across topologies  
+**Validated by**: 158 tests (62 conservation + 96 Lyapunov), numerical experiments across topologies  
 **Implementation**: `src/tnfr/physics/conservation.py`

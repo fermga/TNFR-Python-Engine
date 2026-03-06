@@ -31,7 +31,15 @@
 
 **Status**: gcd checks remain available as optional backstops, but publication artifacts (certificates, playbook) now treat TNFR verification as the canonical proof of factor identity.
 
-### Current canonical flow
+### Phase 3.1 — Theory Alignment (March 2026)
+
+- **Arithmetic tetrad recalibration**: `_coherence_score()` now uses arithmetic-specific thresholds (Φ_s<0.7452, |∇φ|<0.2591, K_φ<3.2275) derived from §7.5 of `TNFR_NUMBER_THEORY.md`.
+- **Pressure decomposition**: Three-term ΔNFR breakdown (factorization, divisor, sigma pressures per §6) exposed in certificates and telemetry.
+- **Dual-lever analysis**: Operator sequences classified as capacity-dominated, pressure-dominated, or balanced per §8.
+- **Conservation proxies**: Noether charge Q = Φ_s + K_φ and Lyapunov energy E = 0.5·‖tetrad‖² included in `api.py` telemetry.
+- **Enriched telemetry**: `factorize()` result telemetry expanded from 6 to ~15 fields covering the full TNFR number-theoretic stack.
+
+**Status**: Complete. All code changes landed in `spectral_paley.py`, `api.py`, and `partitioning.py`.
 
 1. **Input** `n`
 2. **Construct** Paley/Jacobi graph for lifted modulus

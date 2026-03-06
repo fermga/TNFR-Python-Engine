@@ -10,17 +10,22 @@ Every theory document maps to executable examples and SDK entry points:
 
 | Theory Document | Examples | SDK Entry Point |
 |-----------------|----------|-----------------|
-| [FUNDAMENTAL_THEORY.md](FUNDAMENTAL_THEORY.md) | [01](../examples/01_hello_world.py)–[03](../examples/03_network_formation.py), [05](../examples/05_coherence_evolution.py), [06](../examples/06_network_topologies.py), [08](../examples/08_emergent_phenomena.py), [09](../examples/09_visualization_suite.py) | `TNFR.create()`, `.evolve()`, `.tetrad()`, `.telemetry()` |
-| [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) | [04](../examples/04_operator_sequences.py), [07](../examples/07_phase_transitions.py) | `.evolve_grammar_aware()`, `GrammarAwareDynamics` |
-| [STRUCTURAL_CONSERVATION_THEOREM.md](STRUCTURAL_CONSERVATION_THEOREM.md) | [17](../examples/17_conservation_law_demo.py), [24](../examples/24_spectral_conservation_demo.py) | `.conservation()`, `ConservationReport` |
+| [FUNDAMENTAL_THEORY.md](FUNDAMENTAL_THEORY.md) | [01](../examples/01_hello_world.py)–[03](../examples/03_network_formation.py), [05](../examples/05_coherence_evolution.py), [06](../examples/06_network_topologies.py), [08](../examples/08_emergent_phenomena.py), [09](../examples/09_visualization_suite.py), [37](../examples/37_operator_tetrad_synergy.py), [39](../examples/39_nodal_equation_decomposition.py) | `TNFR.create()`, `.evolve()`, `.tetrad()`, `.telemetry()` |
+| [MINIMAL_STRUCTURAL_DEGREES.md](MINIMAL_STRUCTURAL_DEGREES.md) | [05](../examples/05_coherence_evolution.py), [10](../examples/10_simplified_sdk_showcase.py), [35](../examples/35_tetrad_irreducibility.py), [39](../examples/39_nodal_equation_decomposition.py) | `.tetrad()`, `.fields()`, `.conservation()` |
+| [MATHEMATICAL_DYNAMICS_BASIS.md](MATHEMATICAL_DYNAMICS_BASIS.md) | [05](../examples/05_coherence_evolution.py), [10](../examples/10_simplified_sdk_showcase.py), [31](../examples/31_mathematical_constants_basis.py) | `.tetrad()`, `.fields()` |
+| [SPIRAL_ATTRACTORS_AND_LOGARITHMIC_DYNAMICS.md](SPIRAL_ATTRACTORS_AND_LOGARITHMIC_DYNAMICS.md) | [08](../examples/08_emergent_phenomena.py), [10](../examples/10_simplified_sdk_showcase.py), [32](../examples/32_spiral_attractors_demo.py) | `.evolve()`, `.tetrad()` |
+| [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) | [04](../examples/04_operator_sequences.py), [07](../examples/07_phase_transitions.py), [36](../examples/36_grammar_violation_detector.py), [38](../examples/38_grammar_energy_landscape.py) | `.evolve_grammar_aware()`, `GrammarAwareDynamics` |
+| [STRUCTURAL_CONSERVATION_THEOREM.md](STRUCTURAL_CONSERVATION_THEOREM.md) | [17](../examples/17_conservation_law_demo.py), [24](../examples/24_spectral_conservation_demo.py), [34](../examples/34_conservation_protocol_suite.py), [36](../examples/36_grammar_violation_detector.py), [37](../examples/37_operator_tetrad_synergy.py), [38](../examples/38_grammar_energy_landscape.py) | `.conservation()`, `ConservationReport` |
 | [TNFR_VARIATIONAL_PRINCIPLE.md](TNFR_VARIATIONAL_PRINCIPLE.md) | [27](../examples/27_variational_principle_demo.py) | `tnfr.physics.variational` |
 | [DISSIPATIVE_AND_OPEN_SYSTEMS.md](DISSIPATIVE_AND_OPEN_SYSTEMS.md) | [28](../examples/28_dissipative_systems_demo.py) | `tnfr.physics.dissipative_conservation` |
-| [STRUCTURAL_STABILITY_AND_DYNAMICS.md](STRUCTURAL_STABILITY_AND_DYNAMICS.md) | [29](../examples/29_lyapunov_stability_demo.py) | `.integrity_check()`, `StructuralIntegrityMonitor` |
+| [STRUCTURAL_STABILITY_AND_DYNAMICS.md](STRUCTURAL_STABILITY_AND_DYNAMICS.md) | [29](../examples/29_lyapunov_stability_demo.py), [38](../examples/38_grammar_energy_landscape.py), [39](../examples/39_nodal_equation_decomposition.py) | `.integrity_check()`, `StructuralIntegrityMonitor` |
 | [GAUGE_SYMMETRY_AND_UNIFICATION.md](GAUGE_SYMMETRY_AND_UNIFICATION.md) | [26](../examples/26_gauge_structure_demo.py) | `tnfr.physics.gauge` |
 | [PHYSICAL_REGIME_CORRESPONDENCES.md](PHYSICAL_REGIME_CORRESPONDENCES.md) | [11](../examples/11_classical_limit_comparison.py)–[15](../examples/15_train_crossing_demo.py) | `tnfr.physics.classical_mechanics`, `tnfr.physics.quantum_mechanics` |
-| [EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md](EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md) | [20](../examples/20_eigenmode_tetrad.py), [unified_fields](../examples/unified_fields_showcase.py) | `.tensor_invariants()`, `.emergent_fields()` |
+| [EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md](EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md) | [20](../examples/20_eigenmode_tetrad.py), [33](../examples/33_complex_field_unification.py), [unified_fields](../examples/unified_fields_showcase.py) | `.tensor_invariants()`, `.emergent_fields()` |
 | [APPLIED_STRUCTURAL_ANALYSIS.md](APPLIED_STRUCTURAL_ANALYSIS.md) | [16](../examples/16_riemann_operator_demo.py)–[25](../examples/25_analytical_convergence_demo.py) | `tnfr.riemann` |
 | [TNFR_RIEMANN_RESEARCH_NOTES.md](TNFR_RIEMANN_RESEARCH_NOTES.md) | [16](../examples/16_riemann_operator_demo.py), [18](../examples/18_riemann_convergence_proof.py)–[23](../examples/23_random_ensemble_rmt_demo.py), [25](../examples/25_analytical_convergence_demo.py) | `tnfr.riemann` |
+| [STRUCTURAL_OPERATORS.md](STRUCTURAL_OPERATORS.md) | [04](../examples/04_operator_sequences.py), [10](../examples/10_simplified_sdk_showcase.py), [29](../examples/29_lyapunov_stability_demo.py), [36](../examples/36_grammar_violation_detector.py), [37](../examples/37_operator_tetrad_synergy.py), [38](../examples/38_grammar_energy_landscape.py), [39](../examples/39_nodal_equation_decomposition.py) | `.evolve_grammar_aware()`, `.integrity_check()`, `Operator.__call__()` |
+| [TNFR_NUMBER_THEORY.md](TNFR_NUMBER_THEORY.md) | [16](../examples/16_riemann_operator_demo.py), [40](../examples/40_arithmetic_number_theory.py) | `tnfr.mathematics.number_theory`, `tnfr.riemann` |
 | [GLOSSARY.md](GLOSSARY.md) | All | All (terminology reference) |
 
 **SDK quick start**: `from tnfr.sdk import TNFR` — see [SDK README](../src/tnfr/sdk/README.md) and [example 10](../examples/10_simplified_sdk_showcase.py).
@@ -34,6 +39,7 @@ Every theory document maps to executable examples and SDK entry points:
 | Document | Scope |
 |----------|-------|
 | [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) | U1–U6 derivations with canonicity proofs |
+| [MINIMAL_STRUCTURAL_DEGREES.md](MINIMAL_STRUCTURAL_DEGREES.md) | Why exactly four structural fields: minimality, completeness, variational confirmation |
 | [STRUCTURAL_CONSERVATION_THEOREM.md](STRUCTURAL_CONSERVATION_THEOREM.md) | Noether-like conservation laws: continuity, Ward identities, Lyapunov stability |
 | [TNFR_VARIATIONAL_PRINCIPLE.md](TNFR_VARIATIONAL_PRINCIPLE.md) | Lagrangian/Hamiltonian formulation of structural dynamics |
 | [TNFR_RIEMANN_RESEARCH_NOTES.md](TNFR_RIEMANN_RESEARCH_NOTES.md) | TNFR–Riemann program (18 sections + 11 appendices) |
@@ -56,13 +62,17 @@ Every theory document maps to executable examples and SDK entry points:
 | [EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md](EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md) | Extended fields (J_φ, J_ΔNFR), complex geometric field Ψ, derived invariants (χ, 𝒮, 𝒞, ℰ, 𝒬), energy decomposition |
 | [DISSIPATIVE_AND_OPEN_SYSTEMS.md](DISSIPATIVE_AND_OPEN_SYSTEMS.md) | Lindblad dissipator, dissipative continuity equation, purity decay, entropy production, dissipation tiers |
 | [STRUCTURAL_STABILITY_AND_DYNAMICS.md](STRUCTURAL_STABILITY_AND_DYNAMICS.md) | Lyapunov per-operator bounds, phase transitions, life/autopoiesis, node lifecycle, Hamiltonian, integrity monitor |
+| [MATHEMATICAL_DYNAMICS_BASIS.md](MATHEMATICAL_DYNAMICS_BASIS.md) | Four constants (φ, γ, π, e) as minimal basis of mathematical dynamics; classification completeness; inter-constant relations; coherence threshold derivation; Mertens connection |
+| [SPIRAL_ATTRACTORS_AND_LOGARITHMIC_DYNAMICS.md](SPIRAL_ATTRACTORS_AND_LOGARITHMIC_DYNAMICS.md) | Logarithmic spiral from nodal equation; golden spiral condition; tetrad signatures; φ as structural attractor; anti-resonance property |
+| [STRUCTURAL_OPERATORS.md](STRUCTURAL_OPERATORS.md) | Complete specification of 13 canonical operators: physics, transformations, constants, energy bounds, postconditions, compositions |
+| [TNFR_NUMBER_THEORY.md](TNFR_NUMBER_THEORY.md) | Arithmetic TNFR: primality as ΔNFR = 0, canonical constants, pressure components, dual-lever decomposition, spectral factorization, Riemann connection |
 
 ### Hierarchy
 
 1. [../AGENTS.md](../AGENTS.md) — Primary theoretical reference (complete framework overview)
 2. **This directory** — Specialized derivations and domain applications
 3. [../docs/](../docs/) — Implementation specifications
-4. [../examples/](../examples/) — Executable demonstrations (01–30)
+4. [../examples/](../examples/) — Executable demonstrations (01–40)
 5. [../src/tnfr/sdk/](../src/tnfr/sdk/) — Simplified SDK API
 
 ---
@@ -119,7 +129,8 @@ AL, EN, IL, OZ, UM, RA, SHA, VAL, NUL, THOL, ZHIR, NAV, REMESH
 ### Domain Specialist
 
 - **Physics**: [PHYSICAL_REGIME_CORRESPONDENCES.md](PHYSICAL_REGIME_CORRESPONDENCES.md) → [examples 11–15](../examples/11_classical_limit_comparison.py)
-- **Number Theory/Factorization**: [APPLIED_STRUCTURAL_ANALYSIS.md](APPLIED_STRUCTURAL_ANALYSIS.md) → [examples 16–25](../examples/16_riemann_operator_demo.py)
+- **Number Theory**: [TNFR_NUMBER_THEORY.md](TNFR_NUMBER_THEORY.md) → [example 40](../examples/40_arithmetic_number_theory.py)
+- **Factorization**: [APPLIED_STRUCTURAL_ANALYSIS.md](APPLIED_STRUCTURAL_ANALYSIS.md) → [examples 16–25](../examples/16_riemann_operator_demo.py)
 - **Gauge Theory / Symmetry**: [GAUGE_SYMMETRY_AND_UNIFICATION.md](GAUGE_SYMMETRY_AND_UNIFICATION.md) → [example 26](../examples/26_gauge_structure_demo.py)
 - **Field Extensions / Invariants**: [EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md](EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md) → [unified_fields_showcase](../examples/unified_fields_showcase.py)
 - **Open Systems / Decoherence**: [DISSIPATIVE_AND_OPEN_SYSTEMS.md](DISSIPATIVE_AND_OPEN_SYSTEMS.md) → [example 28](../examples/28_dissipative_systems_demo.py)
@@ -145,4 +156,4 @@ AL, EN, IL, OZ, UM, RA, SHA, VAL, NUL, THOL, ZHIR, NAV, REMESH
 
 ---
 
-**Version**: 0.0.3.1 | **Documents**: 14 (6 canonical + 4 consolidated + 4 extended) | **Examples**: 30 + 2 utility | **Authority**: [../AGENTS.md](../AGENTS.md)
+**Version**: 0.0.3.2 | **Documents**: 16 (6 canonical + 4 consolidated + 6 extended) | **Examples**: 40 + 2 utility | **Authority**: [../AGENTS.md](../AGENTS.md)

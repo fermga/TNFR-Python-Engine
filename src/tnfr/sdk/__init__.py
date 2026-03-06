@@ -50,6 +50,10 @@ __all__ = [
     "Results",
     "TetradSnapshot",
     "ConservationReport",
+    "FactorizationReport",
+    "PrimalityReport",
+    "NodalStateReport",
+    "NodalDynamicsReport",
     # Fluent API
     "TNFRNetwork",
     "NetworkConfig",
@@ -71,14 +75,40 @@ __all__ = [
 ]
 
 # Lazy imports to avoid circular dependencies and optional dependency issues
+
+
 def __getattr__(name: str) -> Any:
     """Lazy load SDK components."""
-    if name in ("TNFR", "Network", "Results", "TetradSnapshot", "ConservationReport"):
-        from .simple import TNFR, Network, Results, TetradSnapshot, ConservationReport
+    if name in (
+        "TNFR",
+        "Network",
+        "Results",
+        "TetradSnapshot",
+        "ConservationReport",
+        "FactorizationReport",
+        "PrimalityReport",
+        "NodalStateReport",
+        "NodalDynamicsReport",
+    ):
+        from .simple import (
+            TNFR,
+            Network,
+            Results,
+            TetradSnapshot,
+            ConservationReport,
+            FactorizationReport,
+            PrimalityReport,
+            NodalStateReport,
+            NodalDynamicsReport,
+        )
 
         mapping = {
             "TNFR": TNFR, "Network": Network, "Results": Results,
             "TetradSnapshot": TetradSnapshot, "ConservationReport": ConservationReport,
+            "FactorizationReport": FactorizationReport,
+            "PrimalityReport": PrimalityReport,
+            "NodalStateReport": NodalStateReport,
+            "NodalDynamicsReport": NodalDynamicsReport,
         }
         return mapping[name]
     elif name == "TNFRNetwork" or name == "NetworkConfig" or name == "NetworkResults":

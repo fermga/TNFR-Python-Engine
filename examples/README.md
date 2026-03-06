@@ -116,6 +116,19 @@ All dynamics derive from the nodal equation `∂EPI/∂t = νf · ΔNFR(t)`.
 |---|------|---------|
 | — | `unified_fields_showcase.py` | Ψ = K_φ + i·J_φ, emergent fields χ/𝒮/𝒞, tensor invariants |
 
+### Mathematical Foundations — [`MINIMAL_STRUCTURAL_DEGREES.md`](../theory/MINIMAL_STRUCTURAL_DEGREES.md) + [`SPIRAL_ATTRACTORS_AND_LOGARITHMIC_DYNAMICS.md`](../theory/SPIRAL_ATTRACTORS_AND_LOGARITHMIC_DYNAMICS.md)
+
+**SDK**: `net.complex_field()`, `net.j_phi()`, `net.j_dnfr()`, `net.noether_charge()`, `net.energy()`, `net.grammar_violations()`
+
+| # | File | Concept |
+|---|------|---------|
+| 31 | `31_mathematical_constants_basis.py` | (φ, γ, π, e) as irreducible dynamics basis; tetrahedral edges; cross-topology |
+| 32 | `32_spiral_attractors_demo.py` | Golden spiral (b = 2·ln φ/π), U6 confinement, KAM perturbation resilience |
+| 33 | `33_complex_field_unification.py` | Ψ = K_φ + i·J_φ anticorrelation, emergent fields χ/𝒮/𝒞, tensor invariants |
+| 34 | `34_conservation_protocol_suite.py` | Full §10 validation: charge drift, quality tracking, sector decomposition, scaling |
+| 35 | `35_tetrad_irreducibility.py` | Blind spot verification: removing each field exposes undetectable pathology |
+| 36 | `36_grammar_violation_detector.py` | U2/U3/U6 violations detected and classified via conservation residuals (§12) |
+
 ### Computational Infrastructure
 
 | # | File | Concept |
@@ -158,6 +171,16 @@ python 26_gauge_structure_demo.py
 python 28_dissipative_systems_demo.py
 python 29_lyapunov_stability_demo.py
 python 30_self_optimization_demo.py
+```
+
+### Advanced — Mathematical Foundations (1 hr)
+```bash
+python 31_mathematical_constants_basis.py
+python 32_spiral_attractors_demo.py
+python 33_complex_field_unification.py
+python 34_conservation_protocol_suite.py
+python 35_tetrad_irreducibility.py
+python 36_grammar_violation_detector.py
 ```
 
 ---

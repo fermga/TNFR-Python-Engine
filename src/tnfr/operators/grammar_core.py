@@ -798,7 +798,7 @@ class GrammarValidator:
         - U3: Resonant coupling
         - U4: Bifurcation dynamics
         - U5: Multi-scale coherence
-        - U6: Temporal ordering (if experimental_u6=True)
+        - U6: Temporal ordering (experimental; canonical U6 = Φ_s confinement in grammar_u6.py)
 
         Parameters
         ----------
@@ -908,10 +908,14 @@ class GrammarValidator:
         kphi_alpha_hint: float | None = 2.76,
         xi_regime_multipliers: tuple[float, float] = (1.0, 3.0),
     ) -> list[str]:
-        """Compute U6 telemetry warnings for |∇φ|, K_φ, and ξ_C (non-blocking).
+        """Compute structural field tetrad telemetry warnings (non-blocking).
 
-        Returns a list of human-readable messages. Intended as a convenience
-        aggregator; does not affect structural validation outcome (U1–U5).
+        Monitors |∇φ|, K_φ, and ξ_C safety thresholds. These are auxiliary
+        structural health diagnostics from the tetrad, distinct from U6
+        grammar rule (Φ_s structural potential confinement in grammar_u6.py).
+
+        Returns a list of human-readable messages. Does not affect
+        structural validation outcome (U1–U5).
         """
         messages: list[str] = []
 

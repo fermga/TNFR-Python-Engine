@@ -14,14 +14,19 @@ This package implements **advanced TNFR-based primality testing** using the full
 5. **Prime Certificates**: Detailed mathematical explanations via `PrimeCertificate`
 
 ```
-ΔNFR(n) = ζ·(ω(n)−1) + η·(τ(n)−2) + θ·(σ(n)/n − (1+1/n))
+ΔNFR(n) = ζ·(Ω(n)−1) + η·(τ(n)−2) + θ·(σ(n)/n − (1+1/n))
 ```
 
 Where:
-- `ω(n)` = number of distinct prime factors (sieve-optimized)
+- `Ω(n)` = prime factor count with multiplicity (big Omega)
 - `τ(n)` = number of divisors (O(log n) computation)
 - `σ(n)` = sum of divisors (cached + symbolic math)
-- `ζ=1.0, η=0.8, θ=0.6` = TNFR canonical constants from main repository
+- `ζ = φ×γ ≈ 0.9340` — factorization pressure (canonical)
+- `η = (γ/φ)×π ≈ 1.1207` — divisor pressure (canonical)
+- `θ = 1/φ ≈ 0.6180` — abundance pressure (canonical)
+
+All coefficients derived from (φ, γ, π, e) via Universal Tetrahedral Correspondence
+— zero empirical fitting.
 
 ## Advanced Performance Characteristics
 
@@ -75,6 +80,19 @@ from tnfr_primality import tnfr_is_prime
 # Basic usage with infrastructure auto-detection
 is_prime, delta_nfr = tnfr_is_prime(982451653)
 print(f"982451653 is prime: {is_prime}")  # True
+
+# Structural triad: full dual-lever diagnostics (EPI, νf, ΔNFR)
+from tnfr_primality import tnfr_structural_triad
+triad = tnfr_structural_triad(997)
+print(f"EPI={triad['EPI']:.4f}  νf={triad['vf']:.4f}  ΔNFR={triad['delta_nfr']:.6f}")
+print(f"Local coherence: {triad['local_coherence']:.4f}")
+
+# Component breakdown: see which pressure axis dominates
+from tnfr_primality import tnfr_component_breakdown
+bd = tnfr_component_breakdown(30)
+print(f"Factorization: {bd['factorization_pressure']:.4f}")
+print(f"Divisor:       {bd['divisor_pressure']:.4f}")
+print(f"Abundance:     {bd['abundance_pressure']:.4f}")
 
 # Advanced usage with certificates
 from tnfr_primality.advanced_core import tnfr_is_prime_advanced
@@ -147,9 +165,10 @@ This implementation is based on **TNFR (Resonant Fractal Nature Theory)**, which
 
 The ΔNFR equation emerges from three fundamental arithmetic pressures:
 
-1. **Factorization Pressure**: `ζ·(ω(n)−1)` 
-   - Primes have ω(p) = 1, contributing 0 pressure
-   - Composites have ω(n) > 1, contributing positive pressure
+1. **Factorization Pressure**: `ζ·(Ω(n)−1)` 
+   - Primes have Ω(p) = 1, contributing 0 pressure
+   - Composites have Ω(n) > 1, contributing positive pressure
+   - Ω counts with multiplicity: Ω(8)=3, Ω(12)=3, Ω(30)=3
 
 2. **Divisor Pressure**: `η·(τ(n)−2)`
    - Primes have τ(p) = 2 (only 1 and p), contributing 0 pressure  
@@ -168,6 +187,7 @@ primality-test/
 ├── tnfr_primality/           # Advanced TNFR implementation
 │   ├── __init__.py
 │   ├── __main__.py           # Auto-detecting entry point
+│   ├── constants.py          # Canonical constants from (φ, γ, π, e)
 │   ├── core.py               # Standard TNFR primality functions
 │   ├── advanced_core.py      # Advanced TNFR with full repository integration
 │   ├── advanced_cli.py       # Enhanced CLI with infrastructure diagnostics

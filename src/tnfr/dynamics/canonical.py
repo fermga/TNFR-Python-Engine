@@ -569,10 +569,10 @@ def integrate_canonical_nodal_equation(
     - Proper error handling and validation
     - Reproducible results with deterministic methods
     """
-    from ..config import get_config
+    from ..backend_config import get_config
     from ..engines.computation.unified_gpu_system import execute_with_gpu_fallback
     
-    # Get configuration defaults
+    # Get configuration defaults (backend_config provides the @dataclass TNFRConfig)
     config = get_config()
     integration_config = config.get_integration_config()
     

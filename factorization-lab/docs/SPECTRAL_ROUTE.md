@@ -15,10 +15,12 @@
 
 | Paley Concept | TNFR Interpretation |
 |---------------|---------------------|
-| Laplacian eigenvalues | Structural frequencies \(\nu_f\) of the graph-as-network |
+| Laplacian eigenvalues | Structural frequencies $\nu_f$ of the graph-as-network |
 | Eigenvectors | EPI configurations and phase patterns |
-| Spectral gap (\(\lambda_2\)) | Minimum dissonance required to leave the prime attractor |
-| Clusters / communities | Sub-EPIs aligned with factors \(p\), \(q\), ... |
+| Spectral gap ($\lambda_2$) | Minimum dissonance required to leave the prime attractor |
+| Clusters / communities | Sub-EPIs aligned with factors $p$, $q$, ... |
+| Operator sequence analysis | Dual-lever decomposition — capacity (νf) vs pressure (ΔNFR) levers (§8) |
+| Eigenvalue drift magnitude | Arithmetic-recalibrated tetrad thresholds: Φ_s<0.7452, \|∇φ\|<0.2591, K_φ<3.2275 (§7.5) |
 
 ## Algorithm Sketch
 
@@ -41,14 +43,18 @@
 
 ## Open Research Questions
 
-1. **Generalized Paley Graphs**: For composite \(n\) or \(n \not\equiv 1 \pmod 4\), which
+1. **Generalized Paley Graphs**: For composite $n$ or $n \not\equiv 1 \pmod 4$, which
    graph families preserve the spectral rigidity effect?
 2. **Noise Control**: How to distinguish factor-induced spectral drift from measurement
-   noise? Candidate: use TNFR stabilizers (IL) + telemetry thresholds (Φ_s drift < 0.5).
-3. **Higher-Order Factors**: Identify whether clusters can separate \(n = pqr\) or prime
-   powers \(p^k\).
-4. **Complex Field Ψ**: Can the unified field \(Ψ = K_φ + i·J_φ\) provide a clearer
+   noise? Candidate: use TNFR stabilizers (IL) + arithmetic-recalibrated thresholds (§7.5).
+3. **Higher-Order Factors**: Identify whether clusters can separate $n = pqr$ or prime
+   powers $p^k$. The pressure decomposition (§6) may distinguish these cases via the
+   factorization_pressure vs divisor_pressure ratio.
+4. **Complex Field Ψ**: Can the unified field $Ψ = K_φ + i·J_φ$ provide a clearer
    signature of factor multiplicity?
+5. **Full Conservation Integration**: Bridge Paley graph node attributes to the canonical
+   `compute_noether_charge()` / `compute_energy_functional()` from `conservation.py`,
+   replacing the current proxy values (Q = Φ_s + K_φ, E = 0.5·‖tetrad‖²).
 
 ## Immediate Experiments
 

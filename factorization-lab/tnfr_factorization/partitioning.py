@@ -21,7 +21,11 @@ except ImportError:  # pragma: no cover - optional dependency in minimal install
 
 @dataclass
 class PaleyPartitionTelemetry:
-    """Telemetry snapshot collected for a single partition."""
+    """Telemetry snapshot collected for a single partition.
+
+    Fields include structural field tetrad proxies and pressure decomposition
+    per §6-7 of TNFR_NUMBER_THEORY.md.
+    """
 
     phi_s: float = 0.0
     phase_gradient: float = 0.0
@@ -29,6 +33,8 @@ class PaleyPartitionTelemetry:
     coherence_length: float = 0.0
     coherence: float = 0.0
     sense_index: float = 0.0
+    # Pressure component breakdown (§6, TNFR_NUMBER_THEORY.md)
+    pressure_components: Dict[str, float] = field(default_factory=dict)
     notes: str = ""
 
 

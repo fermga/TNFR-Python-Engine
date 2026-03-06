@@ -55,6 +55,15 @@ Each canonical operator changes $E$ by a bounded amount $\Delta E$ whose sign an
 |----------|-----------|-----------|
 | **NUL** (Contraction) | $\kappa \approx 6.854$ (densification) | $\rho \approx 0.187$ (simple contraction) |
 
+**Dual-Lever Interpretation**: The energy bounds above classify operators by
+their *energy effect*, but the underlying mechanism is the **dual-lever
+structure** of the nodal equation: each operator acts through the capacity
+lever ($\nu_f$: UM, SHA, VAL, NUL), the pressure lever ($\Delta$NFR: IL, OZ,
+THOL, ZHIR, NAV), both, or neither (AL, EN, RA, REMESH). The energy class
+(stabiliser/destabiliser/neutral/mixed) is the net consequence of which
+lever(s) the operator engages. See [STRUCTURAL_OPERATORS.md
+§17.1](STRUCTURAL_OPERATORS.md) and [example 39](../examples/39_nodal_equation_decomposition.py).
+
 ### 1.3 Grammar U2 Lyapunov Theorem
 
 Grammar rule U2 (CONVERGENCE & BOUNDEDNESS) requires that every destabiliser be accompanied by a stabiliser. The formal proof shows that the **net** energy change across a grammar-compliant sequence is non-positive:
@@ -64,6 +73,14 @@ $$
 $$
 
 This confirms Lyapunov stability for the full 13-operator algebra.
+
+**Refinement**: The formal bound $\sum \Delta E_{\text{op}} \le 0$ is
+*sufficient* but not *necessary* for energy descent. Experimental
+observation ([example 38](../examples/38_grammar_energy_landscape.py)) shows
+grammar-compliant sequences with cumulative Lyapunov product $\Pi \approx
+1.288$ (formally non-contractive) that still achieve net energy decrease
+($\Delta E = -9.59$). The multiplicative bound is conservative because
+operator interactions on the shared graph state are nonlinear.
 
 ### 1.4 Spectral Gap Characterisation
 

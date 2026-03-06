@@ -49,7 +49,7 @@ distribution.
 References
 ----------
 - UNIFIED_GRAMMAR_RULES.md § U6: STRUCTURAL POTENTIAL CONFINEMENT
-- docs/TNFR_FORCES_EMERGENCE.md § 14-15: Complete validation
+- docs/STRUCTURAL_FIELDS_TETRAD.md: Complete field validation
 - docs/XI_C_CANONICAL_PROMOTION.md: ξ_C experimental validation
 - AGENTS.md § Structural Fields: Canonical tetrad documentation
 - TNFR.pdf § 2.1: Nodal equation foundation
@@ -161,6 +161,7 @@ __all__ = [
 from ._helpers import get_phase as _get_phase            # noqa: E402
 from ._helpers import wrap_angle as _wrap_angle          # noqa: E402
 
+
 def path_integrated_gradient(
     G: Any, source: Any, target: Any
 ) -> float:
@@ -221,6 +222,7 @@ def path_integrated_gradient(
 
     return float(total)
 
+
 def measure_phase_symmetry(G: Any) -> float:
     """Compute a phase symmetry metric in [0, 1].
 
@@ -265,6 +267,7 @@ def measure_phase_symmetry(G: Any) -> float:
     mean_angle = float(np.angle(np.mean(vec)))
     diffs = np.abs(np.sin(arr - mean_angle))
     return float(1.0 - min(1.0, float(np.mean(diffs))))
+
 
 def compute_phase_winding(G: Any, cycle_nodes: list[Any]) -> int:
     """Compute winding number (topological charge) for a closed cycle.
@@ -316,6 +319,7 @@ def compute_phase_winding(G: Any, cycle_nodes: list[Any]) -> int:
     q = int(round(total / (2.0 * math.pi)))
     return q
 
+
 def _ego_mean(values: dict[Any, float], nodes: list) -> float:
     """Mean of values restricted to given nodes; returns 0.0 if empty."""
     if not nodes:
@@ -324,6 +328,7 @@ def _ego_mean(values: dict[Any, float], nodes: list) -> float:
     if not arr:
         return 0.0
     return float(sum(arr) / len(arr))
+
 
 def compute_k_phi_multiscale_variance(
     G: Any,
@@ -386,6 +391,7 @@ def compute_k_phi_multiscale_variance(
         variance_by_scale[scale] = float(np.var(vals))
 
     return variance_by_scale
+
 
 def fit_k_phi_asymptotic_alpha(
     variance_by_scale: dict[int, float], alpha_hint: float = defaults.K_PHI_ASYMPTOTIC_ALPHA
@@ -470,6 +476,7 @@ def fit_k_phi_asymptotic_alpha(
             "prediction_error": 0.0,
         }
 
+
 def k_phi_multiscale_safety(
     G: Any,
     alpha_hint: float = defaults.K_PHI_ASYMPTOTIC_ALPHA,
@@ -521,6 +528,7 @@ def k_phi_multiscale_safety(
         "violations": violations,
         "safe": safe,
     }
+
 
 def fit_correlation_length_exponent(
     intensities: np.ndarray,
@@ -643,9 +651,11 @@ def fit_correlation_length_exponent(
 
     return results
 
+
 # ============================================================================
 # UNIFIED FIELD MATHEMATICS (Nov 28, 2025) - CANONICAL INTEGRATION
 # ============================================================================
+
 
 def _extract_field_values(field_dict_list, G):
     """Extract aligned arrays from field dictionaries.
@@ -672,6 +682,7 @@ def _extract_field_values(field_dict_list, G):
         aligned_arrays.append(np.array([field_dict[key] for key in sorted_keys]))
     
     return aligned_arrays
+
 
 def compute_complex_geometric_field_arrays(G: Any) -> dict[str, Any]:
     """Compute unified complex geometric field Ψ = K_φ + i·J_φ (array form).
@@ -715,8 +726,10 @@ def compute_complex_geometric_field_arrays(G: Any) -> dict[str, Any]:
         "num_nodes": num_nodes,
     }
 
+
 # Backward-compatible alias (prefer compute_complex_geometric_field_arrays)
 compute_complex_geometric_field = compute_complex_geometric_field_arrays
+
 
 def compute_emergent_fields(G: Any) -> dict[str, Any]:
     """Compute emergent fields χ, 𝒮, 𝒞 (array form).
@@ -753,6 +766,7 @@ def compute_emergent_fields(G: Any) -> dict[str, Any]:
         "coherence_coupling": np.array([cc[n] for n in nodes]),
         "num_nodes": len(nodes),
     }
+
 
 def compute_tensor_invariants(G: Any) -> dict[str, Any]:
     """Compute tensor invariants ℰ, 𝒬, ρ (array form).
@@ -800,12 +814,13 @@ def compute_tensor_invariants(G: Any) -> dict[str, Any]:
         "num_nodes": len(nodes),
     }
 
+
 def compute_unified_telemetry(G: Any) -> dict[str, Any]:
     """Compute complete unified field telemetry suite.
     
     Provides comprehensive telemetry combining:
     - Canonical Structural Triad (Φ_s, |∇φ|, K_φ) + ξ_C correlation analysis
-    - Extended canonical (J_φ, J_ΔNFR) 
+    - Extended canonical (J_φ, J_ΔNFR)
     - Unified complex field (Ψ = K_φ + i·J_φ)
     - Emergent fields (χ, S, C)
     - Tensor invariants (ε, Q, conservation)
@@ -828,7 +843,7 @@ def compute_unified_telemetry(G: Any) -> dict[str, Any]:
     # Canonical Structural Triad telemetry (validated post-recalibration)
     canonical_telemetry = compute_structural_telemetry(G)
     
-    # Extended canonical fields  
+    # Extended canonical fields
     extended_suite = compute_extended_canonical_suite(G)
     
     # Unified field computations (delegate to unified.py via array wrappers)
@@ -862,6 +877,7 @@ def compute_unified_telemetry(G: Any) -> dict[str, Any]:
 # ============================================================================
 # SELF-OPTIMIZING MATHEMATICAL ANALYSIS (NEW - Nov 28, 2025)
 # ============================================================================
+
 
 def analyze_optimization_potential(G: Any) -> dict[str, Any]:
     """
@@ -938,6 +954,7 @@ def analyze_optimization_potential(G: Any) -> dict[str, Any]:
         }
     }
 
+
 def recommend_field_optimization_strategy(G: Any, operation_type: str = "unified_telemetry") -> dict[str, Any]:
     """
     Recommend optimization strategy based on unified field analysis.
@@ -986,6 +1003,7 @@ def recommend_field_optimization_strategy(G: Any, operation_type: str = "unified
         "recommended_strategy": field_specific_strategies[0] if field_specific_strategies else "standard_computation"
     }
 
+
 def auto_optimize_field_computation(G: Any, **kwargs) -> dict[str, Any]:
     """
     Automatically optimize field computation using learned strategies.
@@ -1023,7 +1041,7 @@ def auto_optimize_field_computation(G: Any, **kwargs) -> dict[str, Any]:
         
         # Record baseline performance
         baseline_start = time.perf_counter()
-        baseline_result = compute_unified_telemetry(G)
+        baseline_result = compute_unified_telemetry(G)  # noqa: F841
         baseline_time = time.perf_counter() - baseline_start
         
         # Apply automatic optimization

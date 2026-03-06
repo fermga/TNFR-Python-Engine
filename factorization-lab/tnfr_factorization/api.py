@@ -30,7 +30,7 @@ class FactorizationResult:
     composite_signature: Dict[str, Any] | None
     pure_mode: bool
     notes: str
-    telemetry: Dict[str, float]
+    telemetry: Dict[str, Any]
     certificate_path: Optional[str] = None
     partition_manifest_path: Optional[str] = None
     tnfr_verification: Dict[str, Any] | None = None
@@ -88,13 +88,29 @@ def factorize(
 
     pure_mode_active = os.getenv("TNFR_PURE_MODE", "").lower() in {"1", "true", "yes", "on"} if pure is None else pure
 
-    telemetry = {
+    telemetry: Dict[str, Any] = {
+        # Structural Field Tetrad (§7, TNFR_NUMBER_THEORY.md)
         "phi_s": analysis.phi_s,
         "phase_gradient": analysis.phase_gradient,
         "phase_curvature": analysis.phase_curvature,
         "coherence_length": analysis.coherence_length,
         "coherence_score": analysis.coherence_score,
+        # Nodal equation components (§5-6)
         "delta_nfr": analysis.arithmetic_delta_nfr,
+        "epi": analysis.arithmetic_epi,
+        "nu_f": analysis.arithmetic_nu_f,
+        "local_coherence": analysis.arithmetic_local_coherence,
+        # Pressure decomposition (§6, component_breakdown)
+        "pressure_components": analysis.arithmetic_components,
+        # Conservation proxies (Noether charge Q = Φ_s + K_φ, Lyapunov E)
+        "noether_charge_proxy": analysis.phi_s + analysis.phase_curvature,
+        "energy_proxy": 0.5 * (
+            analysis.phi_s ** 2
+            + analysis.phase_gradient ** 2
+            + analysis.phase_curvature ** 2
+        ),
+        # Dual-lever analysis (§8)
+        "dual_lever": analysis.dual_lever_analysis,
     }
 
     result = FactorizationResult(

@@ -453,7 +453,7 @@ U6 is a **read-only safety check**, not a sequence constraint like U1-U5:
 
 **Traceability**: 
 - **TNFR.pdf § 2.1**: Nodal equation ∂EPI/∂t = νf · ΔNFR(t)
-- **docs/TNFR_FORCES_EMERGENCE.md § 14-15**: Complete derivation and validation
+- **docs/STRUCTURAL_FIELDS_TETRAD.md**: Complete derivation and validation
 - **AGENTS.md § Structural Fields**: Φ_s canonical status with safety criteria
 - **src/tnfr/physics/fields.py**: Implementation of compute_structural_potential()
 
@@ -558,7 +558,7 @@ This section provides the comprehensive justification for why each unified rule 
 | U4a | ✅ CANONICAL | Strong   | Contract OZ + bifurcation | Contracts |
 | U4b | ✅ CANONICAL | Strong   | Threshold physics + timing | Bifurcation theory |
 | U5  | ✅ CANONICAL | Strong   | Coherence conservation + hierarchy | Conservation |
-| U6  | ✅ CANONICAL | Strong   | Structural potential field + empirical | TNFR_FORCES_EMERGENCE.md |
+| U6  | ✅ CANONICAL | Strong   | Structural potential field + empirical | STRUCTURAL_FIELDS_TETRAD.md |
 
 **Key**: 
 - **Absolute**: Mathematical necessity (cannot be otherwise)
@@ -667,6 +667,8 @@ With stabilizers:
 4. Stabilizers provide negative feedback → convergence → bounded evolution
 
 **Canonicity Level**: **ABSOLUTE** - Mathematical theorem from integral convergence.
+
+**Experimental refinement (Grammar-Energy Landscape)**: The Lyapunov contractivity bound ($\Pi < 1$) derived from U2 is *sufficient* but not *necessary* for energy descent. Grammar-compliant sequences with $\Pi > 1$ can still achieve net energy decrease due to nonlinear operator interactions on the shared graph state. See [STRUCTURAL_OPERATORS.md §17.6](STRUCTURAL_OPERATORS.md) and [example 38](../examples/38_grammar_energy_landscape.py).
 
 **Traceability**: Analysis (integral convergence) + Nodal equation → Direct mathematical necessity
 
@@ -1056,8 +1058,7 @@ U6 does NOT duplicate any existing rule:
 
 **Traceability**: 
 - **TNFR.pdf § 2.1**: Nodal equation ∂EPI/∂t = νf · ΔNFR(t)
-- **docs/TNFR_FORCES_EMERGENCE.md § 14**: Φ_s drift analysis (corr = -0.822)
-- **docs/TNFR_FORCES_EMERGENCE.md § 15**: Complete canonicity validation
+- **docs/STRUCTURAL_FIELDS_TETRAD.md**: Φ_s drift analysis (corr = -0.822) and canonicity validation
 - **AGENTS.md § Structural Fields**: Φ_s canonical status and usage
 - **src/tnfr/physics/fields.py**: compute_structural_potential() implementation
 
@@ -1225,6 +1226,7 @@ net = TNFR.create(15).random(0.3).evolve_grammar_aware(steps=10)
 |---------|---------------------------|
 | [04_operator_sequences.py](../examples/04_operator_sequences.py) | U1–U6 validation: valid vs invalid sequences |
 | [07_phase_transitions.py](../examples/07_phase_transitions.py) | Bifurcation dynamics (U4), critical thresholds |
+| [36_grammar_violation_detector.py](../examples/36_grammar_violation_detector.py) | Systematic violation detection: conservation residuals diagnose U1–U6 breaches in real time |
 
 ### Key Source Modules
 
@@ -1756,6 +1758,8 @@ The grammar relies on strict categorization of operators:
 *   **Coupling/Resonance (U3)**: `{UM, RA}` - Require phase synchronization.
 *   **Bifurcation Triggers (U4a)**: `{OZ, ZHIR}` - Push system towards instability.
 *   **Transformers (U4b)**: `{ZHIR, THOL}` - Require context (recent destabilization).
+
+**Cross-reference (Dual-Lever Structure)**: The grammar categories above classify operators by their *sequence role*. A complementary classification by *dynamical mechanism* is the **dual-lever structure**: capacity lever ($\nu_f$: UM, SHA, VAL, NUL) vs. pressure lever ($\Delta$NFR: IL, OZ, THOL, ZHIR, NAV). The two classifications are orthogonal and jointly characterise each operator’s physics. See [STRUCTURAL_OPERATORS.md §17.1](STRUCTURAL_OPERATORS.md).
 
 ### Validation Flow
 

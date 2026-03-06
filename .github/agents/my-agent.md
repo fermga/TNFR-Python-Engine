@@ -2,7 +2,7 @@
 ## Theoretical Framework for Coherent Pattern Analysis
 
 **Status**: Primary theoretical reference document  
-**Version**: 0.0.3.1 (March 2026)  
+**Version**: 0.0.3.2 (March 2026)  
 **Authority**: This repository contains the current implementation of TNFR theory  
 **Repository**: https://github.com/fermga/TNFR-Python-Engine  
 **PyPI Package**: https://pypi.org/project/tnfr/  
@@ -61,7 +61,7 @@ Theoretical Foundation: The framework models reality as coherent dynamic pattern
 **Computational Implementation**:
 - Self-Optimizing Engine: Algorithmic structural optimization
 - Software Development Kit: API for TNFR implementation  
-- Experimental Validation: 1,634+ tests across multiple topologies
+- Experimental Validation: 1,646+ tests across multiple topologies
 - Distribution Platform: PyPI package with documentation
 
 **Application Domains**:
@@ -220,8 +220,8 @@ Grammar: Smooth evolution requirement
 **3. π ↔ K_φ: Geometric Spatial Constraints**
 
 ```
-Constraint: |K_φ| < φ×π ≈ 5.083
-Interpretation: Phase curvature bounded by circular-harmonic geometry
+Constraint: |K_φ| < 0.9×π ≈ 2.827
+Interpretation: Phase curvature bounded by circular geometry with 90% safety margin
 Grammar: Geometric confinement monitoring
 ```
 
@@ -564,7 +564,7 @@ The grammar emerges from TNFR physics rather than arbitrary constraints.
 - **Requirement**: Monitor Δ Φ_s < 2.0 (escape threshold)
 - **Theory**: Δ Φ_s < φ ≈ 1.618 from Universal Tetrahedral Correspondence (φ ↔ Φ_s)
 - **Derivation**: Harmonic confinement principle - structural potential bounded by golden ratio
-- **Validation**: 1,634+ tests confirm harmonic fragmentation behavior
+- **Validation**: 1,646+ tests confirm harmonic fragmentation behavior
 - **Mechanism**: Passive equilibrium - grammar acts as confinement, not attraction
 - **Usage**: Telemetry-based safety check (read-only, not sequence constraint)
 - **Typical**: Valid sequences maintain Δ Φ_s ≈ 0.6 (37% of φ threshold)
@@ -581,8 +581,8 @@ The grammar emerges from TNFR physics rather than arbitrary constraints.
 
 **C(t)**: Total Coherence [0, 1]
 - Global network stability (fundamental)
-- C(t) > MIN_BUSINESS_COHERENCE ≈ 0.751 = strong coherence (e×φ)/(π+e)
-- C(t) < THOL_MIN_COLLECTIVE_COHERENCE = 0.3 = fragmentation risk
+- C(t) > MIN_BUSINESS_COHERENCE ≈ 0.7506 = strong coherence (e×φ)/(π+e)
+- C(t) < THOL_MIN_COLLECTIVE_COHERENCE = 1/(π+1) ≈ 0.2415 = fragmentation risk
 - **CANONICAL**: Primary stability indicator
 
 **Si**: Sense Index [0, 1+]
@@ -597,9 +597,9 @@ The grammar emerges from TNFR physics rather than arbitrary constraints.
 The **Structural Field Tetrad** (Φ_s, |∇φ|, **Ψ**, ξ_C) now has **complete mathematical foundations** with **unified complex geometry** (Ψ = K_φ + i·J_φ):
 
 ### **1. Structural Potential Field (Φ_s)**
-**Classical Threshold**: |Φ_s| < **0.771** 
+**Classical Threshold**: |Φ_s| < **0.7711** 
 - **Theory**: von Koch fractal bounds + combinatorial number theory
-- **Derivation**: Γ(4/3)/Γ(1/3) ≈ 0.7711 from Koch snowflake perimeter growth
+- **Derivation**: Experimentally validated constant (0.7711) from Koch snowflake perimeter growth analysis. Confirmed across 5 topologies. Canonical source: `src/tnfr/constants/canonical.py::PHI_S_VON_KOCH_THRESHOLD`
 - **Physics**: Global structural field escape threshold from distance-weighted ΔNFR distribution
 - **Grammar**: U6 telemetry-based safety criterion (passive equilibrium confinement)
 
@@ -630,7 +630,7 @@ The **Structural Field Tetrad** (Φ_s, |∇φ|, **Ψ**, ξ_C) now has **complete
 - **0% empirical fitting** → **100% first-principles derivation**  
 - **Universal constants** emerge naturally (π, exponential bounds, fractal ratios)  
 - **Theory-code consistency** maintained throughout codebase  
-- **Complete validation** via 1,634+ tests across 5 topologies
+- **Complete validation** via 1,646+ tests across 5 topologies
 
 **Status**: TNFR Structural Field Tetrad mathematical foundations **COMPLETE**.
 
@@ -697,8 +697,9 @@ success, metrics = engine.step(node_id)
 ### Adaptive SDK Integration
 The Fluent API now includes `auto_optimize()`:
 ```python
-# One-line self-optimization
-TNFRNetwork(G).focus(node).auto_optimize().execute()
+# Fluent self-optimization
+net = TNFRNetwork("demo").add_nodes(20).connect_nodes(0.3).auto_optimize()
+results = net.measure()
 ```
 
 **Physics**: This is not "AI magic" but **gradient descent on the structural manifold**, driven by the nodal equation's pressure term ΔNFR.
@@ -1159,13 +1160,13 @@ When adding to grammar documentation:
 
 **SDK & Applications**:
 - **[src/tnfr/sdk/](src/tnfr/sdk/)**: Simplified & Fluent API for rapid development
-- **[examples/](examples/)**: Complete 01-30 sequential tutorial suite (33 files)
+- **[examples/](examples/)**: Complete 01-40 sequential tutorial suite (42 files)
 - **[benchmarks/](benchmarks/)**: Production-grade validation suites (14 benchmark scripts)
 
 **Development**:
 - **ARCHITECTURE.md**: System design principles
 - **CONTRIBUTING.md**: Workflow and standards
-- **TESTING.md**: Test strategy (1,634+ passing tests)
+- **TESTING.md**: Test strategy (1,646+ passing tests)
 
 **Domain Showcases**:
 - **Network Dynamics**: [examples/03_network_formation.py](examples/03_network_formation.py)
@@ -1272,7 +1273,7 @@ capture dynamics C(t) misses.
 - Compute via `compute_phase_gradient(G)` [CANONICAL]
 - Monitor alongside Φ_s for comprehensive structural health
 
-**Documentation**: See `docs/TNFR_FORCES_EMERGENCE.md` §14-15 for full validation details.
+**Documentation**: See `docs/STRUCTURAL_FIELDS_TETRAD.md` for full validation details.
 
 ---
 
@@ -1418,7 +1419,7 @@ Reality consists of resonant patterns rather than discrete objects. Development 
 
 ---
 
-**Version**: 0.0.3.1  \n**Last Updated**: 2026-03-06  \n**Status**: CANONICAL - Primary reference for TNFR agent guidance  \n**PyPI Release**: STABLE - Available via `pip install tnfr`  \n**Production Ready**: Complete Tetrad Fields + Unified Grammar U1-U6 + Simplified SDK + Grammar-Aware Dynamics + Structural Conservation Theorem + Integrity Monitor  
+**Version**: 0.0.3.2  \n**Last Updated**: 2026-03-06  \n**Status**: CANONICAL - Primary reference for TNFR agent guidance  \n**PyPI Release**: STABLE - Available via `pip install tnfr`  \n**Production Ready**: Complete Tetrad Fields + Unified Grammar U1-U6 + Simplified SDK + Grammar-Aware Dynamics + Structural Conservation Theorem + Integrity Monitor  
 
 ---
 

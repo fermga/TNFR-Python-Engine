@@ -129,7 +129,7 @@
 **Formula:** \(\Phi_s(i) = \sum_{j \neq i} \frac{\Delta\text{NFR}_j}{d(i,j)^\alpha}\) where \(\alpha = 2\)  
 **What:** Global structural potential field from ΔNFR distribution  
 **Status:** **CANONICAL** (Nov 2025)  
-**Validation:** 1,641+ tests across 5 topologies  
+**Validation:** 1,646+ tests across 5 topologies  
 **Physics:** Passive equilibrium confinement landscape  
 **Grammar:** U6 STRUCTURAL POTENTIAL CONFINEMENT (Δ Φ_s < φ ≈ 1.618 canonical confinement; ceiling 2.0 binary escape)  
 **API:** `tnfr.physics.fields.compute_structural_potential()`  
@@ -330,7 +330,7 @@ The consolidated TNFR grammar system (**U1-U6**) that replaces the old C1-C3 and
 
 **Canonicity Levels:**
 - **ABSOLUTE**: Mathematical necessity (direct consequence of nodal equation)
-- **STRONG**: Strong empirical/theoretical support (1,641+ tests for U6)
+- **STRONG**: Strong empirical/theoretical support (1,646+ tests for U6)
 
 **Recent Updates:**
 - U5 added 2025-11-10 (hierarchical REMESH stabilization)
@@ -349,7 +349,7 @@ The consolidated TNFR grammar system (**U1-U6**) that replaces the old C1-C3 and
 - [AGENTS.md § Unified Grammar](AGENTS.md#-unified-grammar-u1-u6) - Quick reference
 - [docs/grammar/U6_STRUCTURAL_POTENTIAL_CONFINEMENT.md](docs/grammar/U6_STRUCTURAL_POTENTIAL_CONFINEMENT.md) - U6 complete specification
 - [docs/grammar/U6_STRUCTURAL_FIELD_TETRAD.md](docs/grammar/U6_STRUCTURAL_FIELD_TETRAD.md) - Why no U7/U8
-- [TNFR_FORCES_EMERGENCE.md § 14-15](docs/TNFR_FORCES_EMERGENCE.md) - U6 validation details
+- [STRUCTURAL_FIELDS_TETRAD.md](docs/STRUCTURAL_FIELDS_TETRAD.md) - U6 validation details
 - [src/tnfr/physics/fields.py](src/tnfr/physics/fields.py) - Φ_s implementation
 
 ---
@@ -500,7 +500,7 @@ Operators that perform graduated destabilization for phase transitions.
 ### Theory & Physics
 - [TNFR.pdf](TNFR.pdf) - Original theoretical companion (paradigm, nodal equation, foundational physics)
 - [docs/grammar/U6_STRUCTURAL_POTENTIAL_CONFINEMENT.md](docs/grammar/U6_STRUCTURAL_POTENTIAL_CONFINEMENT.md) - U6 complete specification
-- [TNFR_FORCES_EMERGENCE.md](docs/TNFR_FORCES_EMERGENCE.md) - Structural fields validation (Φ_s, phase gradients)
+- [STRUCTURAL_FIELDS_TETRAD.md](docs/STRUCTURAL_FIELDS_TETRAD.md) - Structural fields validation (Φ_s, phase gradients)
 
 
 ### Implementation & API
@@ -631,6 +631,50 @@ Operators that perform graduated destabilization for phase transitions.
 
 ---
 
+## Operator-Tetrad Synergies (Experimental, March 2026)
+
+Six experimentally validated results connecting canonical operators to the structural field tetrad.
+Reference: [STRUCTURAL_OPERATORS.md §17](STRUCTURAL_OPERATORS.md), examples 37-39.
+
+### Dual-Lever Structure
+
+**What:** Operators modify the nodal equation through exactly one of two channels (or both, or neither):
+- **Capacity lever** (vf): UM, SHA, VAL, NUL adjust the reorganization rate.
+- **Pressure lever** (DNFR): IL, OZ, THOL, ZHIR, NAV adjust the structural pressure.
+- **Neutral**: AL, EN, RA, REMESH do not directly modify either lever at the single-node level.
+**Evidence:** Classification from `examples/39_nodal_equation_decomposition.py`.
+
+### Operator-Tetrad Fingerprint Matrix
+
+**What:** Each operator produces a unique signature across the four tetrad fields. The fingerprint matrix tabulates relative changes (dPhi_s, d|grad_phi|, dK_phi, dxi_C) per operator.
+**Example:** UM modifies all four fields (strongest Phi_s at -73.7%); SHA is tetrad-neutral.
+**Evidence:** `examples/37_operator_tetrad_synergy.py`.
+
+### IL-OZ Tetrad Symmetry
+
+**What:** Coherence (IL) and Dissonance (OZ) produce identical tetrad perturbation magnitudes and identical energy changes (dE = -0.011) despite opposite physics. They share the same |d(DNFR)| = 0.0096, differing only in sign.
+**Interpretation:** IL and OZ are structural mirrors on the energy manifold, explaining U2 balancing.
+
+### Linear Response of Phi_s
+
+**What:** Phi_s responds linearly to DNFR perturbations with |r| = 1.000 (Pearson correlation). This confirms its 0th-order position in the operator-derivative tower.
+**Contrast:** xi_C transitions to strongly nonlinear behaviour above DNFR ~ 0.3.
+**Evidence:** `examples/39_nodal_equation_decomposition.py`.
+
+### Complete Causal Chain
+
+**What:** The information flow is strictly unidirectional:
+`Operator -> (vf, DNFR) -> dEPI/dt -> Tetrad -> (E, Q)`.
+Tetrad fields are diagnostic outputs, not independent dynamical variables. They are fully determined by the nodal equation state.
+
+### Grammar-Energy Landscape
+
+**What:** Lyapunov contractivity (cumulative multiplier Pi < 1) is sufficient but not necessary for energy descent. Experimentally: lambda = 1.288 (non-contractive) yet net dE = -9.59 (energy descent).
+**Interpretation:** The Lyapunov bound is conservative; actual grammar-compliant sequences may descend more steeply than the bound predicts.
+**Evidence:** `examples/38_grammar_energy_landscape.py`.
+
+---
+
 ## Structural Conservation Theorem
 
 **Main Result:** Grammar symmetry (U1-U6) implies a Noether-like structural conservation law.
@@ -748,6 +792,6 @@ When adding new functionality:
 3. Follow [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines  
 4. Test with [TESTING.md](TESTING.md) requirements
 
-**Version**: 0.0.3.1 (March 2026)  
+**Version**: 0.0.3.2 (March 2026)  
 **Status**: Complete operational reference for current TNFR implementation  
 **Language**: English only (canonical documentation policy)

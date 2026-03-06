@@ -34,7 +34,8 @@ GENERATORS = frozenset({"emission", "transition", "recursivity"})
 CLOSURES = frozenset({"silence", "transition", "recursivity", "dissonance"})
 
 # U2: Stabilizers - Provide negative feedback for convergence
-STABILIZERS = frozenset({"coherence", "self_organization", "reception"})
+# Canonical set from UNIFIED_GRAMMAR_RULES.md U2: {IL, THOL}
+STABILIZERS = frozenset({"coherence", "self_organization"})
 
 # U2: Destabilizers - Increase |ΔNFR| (positive feedback)
 # Canonical set from AGENTS.md U2: {OZ, ZHIR, VAL} = {dissonance, mutation, expansion}

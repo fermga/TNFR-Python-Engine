@@ -64,7 +64,7 @@ src/tnfr/physics/README.md        : Module hub (Patterns,
 References
 ----------
 - UNIFIED_GRAMMAR_RULES.md (U6: Structural potential confinement)
-- docs/TNFR_FORCES_EMERGENCE.md (§14–15: Φ_s, |∇φ|, K_φ, ξ_C validation)
+- docs/STRUCTURAL_FIELDS_TETRAD.md (Φ_s, |∇φ|, K_φ, ξ_C validation)
 - AGENTS.md (Structural Fields Tetrad: canonical status, thresholds)
 - TNFR.pdf (§2.1: Nodal equation foundation)
 

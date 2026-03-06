@@ -4,9 +4,15 @@ TNFR Arithmetic Network: Prime Numbers as Structural Attractors
 Implementation of the theoretical framework for detecting prime emergence
 from TNFR structural dynamics applied to natural numbers.
 
+Theoretical foundation: theory/TNFR_NUMBER_THEORY.md (Canonical)
+  - Primality as structural equilibrium (ΔNFR = 0)
+  - Arithmetic structural triad (EPI, νf, ΔNFR)
+  - Canonical constants derived from φ, γ, π, e
+  - Spectral factorization via Paley-Jacobi decoding
+
 Author: TNFR Research Team
 Date: 2025-11-13
-Status: IMPLEMENTATION PROTOTYPE
+Status: CANONICAL (theory/TNFR_NUMBER_THEORY.md)
 """
 
 from __future__ import annotations

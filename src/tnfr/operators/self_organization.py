@@ -17,7 +17,7 @@ from ..config.operator_names import SELF_ORGANIZATION
 from ..types import Glyph, TNFRGraph
 from .definitions_base import Operator
 # Import canonical constants
-from ..constants.canonical import HALF_INV_PHI
+from ..constants.canonical import HALF_INV_PHI, THOL_MIN_COLLECTIVE_COHERENCE
 _THOL_SUB_EPI_SCALING = HALF_INV_PHI  # 1/(2φ) ≈ 0.309 (golden fractal scale)
 _THOL_EMERGENCE_CONTRIBUTION = 0.1  # parent epi increment fraction
 
@@ -288,9 +288,9 @@ class SelfOrganization(Operator):
         # Always store telemetry value (even if 0.0).
         G.nodes[node]["_thol_collective_coherence"] = coherence
 
-        # Get threshold from graph config (fallback: canonical 1/(π+1) ≈ 0.2413)
+        # Get threshold from graph config (fallback: canonical 1/(π+1) ≈ 0.2415)
         min_coherence = float(
-            G.graph.get("THOL_MIN_COLLECTIVE_COHERENCE", 0.2413)
+            G.graph.get("THOL_MIN_COLLECTIVE_COHERENCE", THOL_MIN_COLLECTIVE_COHERENCE)
         )
 
         # Validate against threshold (only warn if we have multiple sub-EPIs)

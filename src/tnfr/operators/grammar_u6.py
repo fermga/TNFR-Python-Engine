@@ -109,7 +109,7 @@ def validate_structural_potential_confinement(
     References
     ----------
     - UNIFIED_GRAMMAR_RULES.md § U6: Complete physics derivation
-    - docs/TNFR_FORCES_EMERGENCE.md § 14-15: Validation evidence
+    - docs/STRUCTURAL_FIELDS_TETRAD.md: Validation evidence
     - AGENTS.md § Structural Fields: Canonical status
     - src/tnfr/physics/fields.py: compute_structural_potential()
 

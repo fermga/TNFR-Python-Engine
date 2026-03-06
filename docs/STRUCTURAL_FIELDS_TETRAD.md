@@ -13,7 +13,7 @@ References (single sources of truth):
 - Theory: TNFR.pdf (§1–2), UNIFIED_GRAMMAR_RULES.md (§U1–U6)
 - Canonical status and thresholds: AGENTS.md (Structural Field Tetrad)
 - Implementation: src/tnfr/physics/fields.py
-- Research background: docs/TNFR_FORCES_EMERGENCE.md (§14–15)
+- Research background: docs/STRUCTURAL_FIELDS_TETRAD.md (this document)
  - Physics module overview: src/tnfr/physics/README.md (unified, expandable)
 
 ---
@@ -48,6 +48,8 @@ Definition (α = 2 by default):
 - Long-range, global potential derived from ΔNFR distribution
 - Safety criterion (telemetry-based): ΔΦ_s < 2.0 typical; escape threshold at ~2.0 (classical: von Koch bounds)
 - Implementation: `compute_structural_potential(G, alpha=2.0)`
+
+**Linear response**: Perturbation analysis confirms |r| = 1.000 (Pearson correlation) between DNFR changes and Phi_s response, validating its 0th-order position in the operator-derivative tower. See [example 39](../examples/39_nodal_equation_decomposition.py).
 
 ### 2.2 Phase Gradient |∇φ| (Local stress)
 
@@ -186,7 +188,7 @@ xi = estimate_coherence_length(G, coherence_key='coherence')  # if provided
 - Physics-first: all field definitions derive from nodal equation semantics
 - No ad-hoc mutations: fields are telemetry-only; EPI changes go through operators
 - Units and invariants preserved (see AGENTS.md invariants 1–10)
-- Canonical docs: this page + UNIFIED_GRAMMAR_RULES.md are the reference; research-phase content (e.g., TNFR_FORCES_EMERGENCE.md) is linked but not normative
+- Canonical docs: this page + UNIFIED_GRAMMAR_RULES.md are the reference
 
 ---
 
@@ -194,7 +196,6 @@ xi = estimate_coherence_length(G, coherence_key='coherence')  # if provided
 
 - AGENTS.md — Canonical invariants and field promotions (Φ_s, |∇φ|, K_φ, ξ_C)
 - UNIFIED_GRAMMAR_RULES.md — U1–U6 derivations and constraints
-- TNFR_FORCES_EMERGENCE.md — Historical research path for field validation
 - SHA_ALGEBRA_PHYSICS.md — Supporting mathematical apparatus
 
 ---
@@ -238,6 +239,9 @@ Q11. Reproducibility and randomness?
 
 Q12. Can I extend these fields or add new ones?
 - Yes, but only with physics-first justification. Derive from the nodal equation, preserve invariants, map to operators where applicable, and add tests and documentation. Experimental fields must be clearly labeled non-canonical until validated.
+
+Q13. How do individual operators affect the tetrad?
+- Each operator produces a unique fingerprint across (Phi_s, |grad_phi|, K_phi, xi_C). Coupling (UM) modifies all four fields (strongest Phi_s at -73.7%); Silence (SHA) is tetrad-neutral; Coherence (IL) and Dissonance (OZ) share identical perturbation magnitudes despite opposite physics (IL-OZ symmetry). The complete causal chain is: Operator -> (vf, DNFR) -> dEPI/dt -> Tetrad -> (E, Q). See [STRUCTURAL_OPERATORS.md S17](../theory/STRUCTURAL_OPERATORS.md) and [example 37](../examples/37_operator_tetrad_synergy.py).
 
 ---
 

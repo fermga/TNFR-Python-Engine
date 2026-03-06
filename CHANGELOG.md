@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.3.2] - 2026-03-06
+
+### Documentation & Consistency Fixes
+
+- **Corrected false Γ(4/3)/Γ(1/3) derivation** in MINIMAL_STRUCTURAL_DEGREES.md and FUNDAMENTAL_THEORY.md (Γ(4/3)/Γ(1/3) = 1/3, not 0.7711)
+- **Synchronized .github/agents/my-agent.md** with AGENTS.md (K_φ threshold, MIN_BUSINESS_COHERENCE, THOL_MIN values)
+- **Fixed CHANGELOG version** to match pyproject.toml (0.0.3.2)
+- **Fixed MIN_BUSINESS_COHERENCE precision** in ARCHITECTURE.md and CONTRIBUTING.md (0.751 → 0.7506)
+- **Resolved phantom docs/TNFR_FORCES_EMERGENCE.md** references across 8+ files
+- **Removed dead code** src/tnfr/config.py (shadowed by config/ package)
+- **Cleaned unused imports** in sdk/simple.py
+
 ## [0.0.3] - 2026-03-05
 
 ### Structural Conservation Theorem
@@ -79,7 +91,7 @@ All notable changes to this project will be documented in this file.
 
 ### Test Suite
 
-- **1,641 passing tests**, 2 skipped, 0 failing
+- **1,646+ passing tests**, 9 skipped, 0 failing
 - Coverage spans operators, physics, dynamics, grammar, conservation, integrity, SDK, and factorization
 
 ## [0.0.2] - 2025-11-29

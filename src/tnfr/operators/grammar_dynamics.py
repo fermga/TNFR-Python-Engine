@@ -158,7 +158,7 @@ def _check_u2(
             message=(
                 f"Convergence violation: {destab} destabilizers vs "
                 f"{stab} stabilizers in recent window (debt={debt}). "
-                f"Add a stabilizer (IL/THOL/EN) before more destabilizers."
+                f"Add a stabilizer (IL/THOL) before more destabilizers."
             ),
             severity="error",
         )

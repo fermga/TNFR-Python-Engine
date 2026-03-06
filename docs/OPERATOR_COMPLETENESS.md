@@ -79,5 +79,5 @@ Outputs are written under:
 
 - AGENTS.md (Canonical guidance)
 - UNIFIED_GRAMMAR_RULES.md (derivations)
-- docs/TNFR_FORCES_EMERGENCE.md (field emergence)
+- docs/STRUCTURAL_FIELDS_TETRAD.md (field definitions)
 - src/tnfr/* (operators, dynamics, metrics)

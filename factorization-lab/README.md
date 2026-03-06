@@ -8,6 +8,10 @@ binary primality decisions. The guiding principle is the *Ruta espectral: Paley 
 TNFR*, where spectral rigidity in arithmetic graphs reveals the factor structure of
 \(n\).
 
+**Theoretical foundation**: `theory/TNFR_NUMBER_THEORY.md` §6 (Pressure Decomposition),
+§7 (Arithmetic Tetrad), §8 (Dual-Lever), §9 (Spectral Factorization), §12 (Implementation
+Map), and `theory/APPLIED_STRUCTURAL_ANALYSIS.md` (verification protocols).
+
 ## Why Paley graphs + TNFR?
 
 Recent arithmetic graph results show that the **second Laplacian eigenvalue (\(\lambda_2\))
@@ -128,8 +132,31 @@ factorizer = SpectralPaleyFactorizer()
 result = factorizer.analyze(221)
 
 print(result.candidate_factors)      # → [13, 17]
-print(result.arithmetic_delta_nfr)   # Canonical ΔNFR(n)
+print(result.arithmetic_delta_nfr)   # Canonical ΔNFR(n) — §5-6
 print(result.phi_s, result.phase_gradient, result.coherence_length)
+
+# Pressure decomposition (§6)
+print(result.arithmetic_components)
+# → {'factorization_pressure': ..., 'divisor_pressure': ..., 'sigma_pressure': ...}
+
+# Dual-lever analysis (§8)
+print(result.dual_lever_analysis)
+# → {'classification': 'pressure-dominated', 'pressure_lever': {...}, ...}
+
+# Conservation proxies (Noether charge, Lyapunov energy)
+print(result.arithmetic_epi, result.arithmetic_nu_f)
+```
+
+The high-level `factorize()` API exposes the same enriched telemetry:
+
+```python
+from tnfr_factorization import factorize
+
+r = factorize(221)
+print(r.telemetry["pressure_components"])    # §6 decomposition
+print(r.telemetry["noether_charge_proxy"])   # Q = Φ_s + K_φ
+print(r.telemetry["energy_proxy"])           # E = 0.5·(Φ_s² + |∇φ|² + K_φ²)
+print(r.telemetry["dual_lever"])             # §8 classification
 ```
 
 ### Full-spectrum benchmark & automation
@@ -207,11 +234,31 @@ base64-pickled payloads (`payload` key). The server returns the encoded spectral
 result in the same format, allowing you to plug GPU clusters or managed queues
 into TNFR factorization without changing application code.
 
+## Theory Integration (v0.0.3.2)
+
+The factorization-lab now integrates the full TNFR number-theoretic stack:
+
+| Theory section | Code integration | Module |
+|----------------|------------------|--------|
+| §5 Nodal Equation | `ArithmeticTNFRFormalism` — EPI, νf per integer | `number_theory.py` |
+| §6 Pressure Decomposition | `component_breakdown()` — factorization, divisor, sigma pressures | `spectral_paley.py` |
+| §7 Arithmetic Tetrad | Recalibrated thresholds (Φ_s<0.7452, \|∇φ\|<0.2591, K_φ<3.2275) | `spectral_paley.py` |
+| §8 Dual-Lever | `_classify_dual_lever()` — capacity vs pressure operator classification | `spectral_paley.py` |
+| §9 Spectral Factorization | 8-criterion Paley-Jacobi verification | `spectral_paley.py` |
+| Conservation | Noether charge proxy (Q=Φ_s+K_φ), Lyapunov energy proxy | `api.py` telemetry |
+
+**Cross-repo synergies**:
+- `src/tnfr/mathematics/number_theory.py` — Canonical ΔNFR formula, arithmetic formalism
+- `src/tnfr/physics/conservation.py` — Structural conservation theorem (proxy values used here)
+- `src/tnfr/physics/fields.py` — Structural Field Tetrad computation
+- `theory/TNFR_NUMBER_THEORY.md` — Canonical theoretical reference (14 sections)
+- `theory/STRUCTURAL_OPERATORS.md` §17 — Operator-Tetrad synergies and dual-lever structure
+
 ## Next Steps
 
-1. Validate Paley spectral gap behaviour numerically inside TNFR notebooks.
-2. Extend `spectral_paley.py` with actual graph builders and coherence metrics.
-3. Add experiment scripts mirroring the `primality-test/benchmarks/` workflow.
+1. **Complex field Ψ integration**: Compute Ψ = K_φ + i·J_φ on Paley graphs for unified geometric-transport analysis.
+2. **Full conservation integration**: Bridge Paley graph structure to full `compute_noether_charge()` / `compute_energy_functional()` (currently proxy values).
+3. **Grammar-aware partition sequencing**: Apply `GrammarAwareDynamics` to partition operator chains for U1-U6 compliance.
 4. Publish preliminary results (spectral plots, factor recovery success rates).
 
 For Zenodo-oriented packaging guidance and publication checklists, see

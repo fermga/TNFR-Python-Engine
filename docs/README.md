@@ -10,11 +10,10 @@ The `docs/` folder contains specialized technical documentation for TNFR theory 
 |----------|--------|---------|
 | **[AGENTS.md](../AGENTS.md)** | **CANONICAL** | Primary reference for TNFR theory |
 | **[STRUCTURAL_FIELDS_TETRAD.md](STRUCTURAL_FIELDS_TETRAD.md)** | **CANONICAL** | Formal field definitions (Φ_s, \|∇φ\|, K_φ, ξ_C) |
-| **[grammar/PHYSICS_VERIFICATION.md](grammar/PHYSICS_VERIFICATION.md)** | **CANONICAL** | U1-U6 mathematical proofs from nodal equation |
 | **[API_CONTRACTS.md](API_CONTRACTS.md)** | Active | Formal contracts for 13 canonical operators |
 | **[CANONICAL_OZ_SEQUENCES.md](CANONICAL_OZ_SEQUENCES.md)** | Active | Guide to dissonance-based operator sequences |
 | **[TROUBLESHOOTING.md](TROUBLESHOOTING.md)** | Active | Solutions for operator sequence validation |
-| **[TNFR_FORCES_EMERGENCE.md](TNFR_FORCES_EMERGENCE.md)** | Research | Emergent force-like interactions |
+| **[grammar/PHYSICS_VERIFICATION.md](grammar/PHYSICS_VERIFICATION.md)** | **CANONICAL** | U1-U6 mathematical proofs from nodal equation |
 
 ### Implementation & Operations
 
@@ -63,7 +62,7 @@ self-optimization guidelines.
 
 ### For Researchers
 
-1. **[TNFR_FORCES_EMERGENCE.md](TNFR_FORCES_EMERGENCE.md)** - Force-like interactions
+1. **[STRUCTURAL_FIELDS_TETRAD.md](STRUCTURAL_FIELDS_TETRAD.md)** - Structural field validation
 2. **[CANONICAL_OZ_SEQUENCES.md](CANONICAL_OZ_SEQUENCES.md)** - Dissonance patterns
 3. **[benchmarks/](../benchmarks/)** - Experimental validation
 
@@ -75,6 +74,5 @@ self-optimization guidelines.
 |----------|-------|---------|
 | **Canonical** | 3 | AGENTS.md + STRUCTURAL_FIELDS_TETRAD.md + PHYSICS_VERIFICATION.md |
 | **Active** | 10 | Current and maintained |
-| **Research** | 1 | TNFR_FORCES_EMERGENCE.md |
 
-**Total Active Documentation**: 14 files providing complete TNFR coverage
+**Total Active Documentation**: 13 files providing complete TNFR coverage

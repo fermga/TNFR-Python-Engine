@@ -69,10 +69,6 @@ except ImportError:
     
     # Fallback types
     ArrayLike = list[float] | tuple[float, ...]
-    ComplexArray = list[complex]
-    
-    # Fallback types
-    ArrayLike = list[float] | tuple[float, ...]
     ComplexArray = list[complex] | tuple[complex, ...]
 
 logger = logging.getLogger(__name__)
@@ -106,7 +102,7 @@ class TNFRConstants:
     
     # Coherence thresholds from Universal Tetrahedral Correspondence
     MIN_BUSINESS_COHERENCE: float = float(E * PHI / (PI + E))  # (e×φ)/(π+e) ≈ 0.7506 (canonical)
-    THOL_MIN_COLLECTIVE_COHERENCE: float = float(1.0 / (PI + 1))  # 1/(π+1) ≈ 0.2413 (canonical)
+    THOL_MIN_COLLECTIVE_COHERENCE: float = float(1.0 / (PI + 1))  # 1/(π+1) ≈ 0.2415 (canonical)
     HIGH_CORRELATION_THRESHOLD: float = 0.8  # Excellent stability threshold
     
     # Phase and frequency bounds

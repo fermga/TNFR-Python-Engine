@@ -47,6 +47,9 @@ from ..mathematics.unified_numerical import np
 from ..structural import create_nfr, run_sequence
 from ..metrics.coherence import compute_coherence
 from ..metrics.sense_index import compute_Si
+from ..alias import get_attr
+from ..constants.aliases import ALIAS_EPI, ALIAS_VF, ALIAS_DNFR, ALIAS_THETA
+from ..operators.nodal_equation import compute_expected_depi_dt, compute_d2epi_dt2
 
 try:
     from ..dynamics.self_optimizing_engine import TNFRSelfOptimizingEngine
@@ -96,13 +99,27 @@ except ImportError:
 # Grammar-aware dynamics
 try:
     from ..operators.grammar_dynamics import (
-        validate_candidate,
         filter_candidates,
-        enforce_grammar_on_glyph,
     )
     _HAS_GRAMMAR_DYNAMICS = True
 except ImportError:
     _HAS_GRAMMAR_DYNAMICS = False
+
+
+# Canonical factorization bridge (optional dependency path)
+try:
+    from ..factorization import factorize as canonical_factorize
+    _HAS_FACTORIZATION = True
+except Exception:
+    _HAS_FACTORIZATION = False
+
+
+# Canonical primality bridge (optional dependency path)
+try:
+    from ..primality import analyze as canonical_primality_analyze
+    _HAS_PRIMALITY = True
+except Exception:
+    _HAS_PRIMALITY = False
 
 
 @dataclass
@@ -198,6 +215,303 @@ class ConservationReport:
             f"dE/dt={self.lyapunov_derivative:.4f} ({stable_str}), "
             f"quality={self.conservation_quality:.3f}"
         )
+
+
+@dataclass
+class FactorizationReport:
+    """Unified SDK report for canonical TNFR factorization.
+
+    Bridges `tnfr.factorization.factorize()` with SDK-level telemetry and
+    optional network-coupled synergy diagnostics.
+    """
+
+    n: int
+    modulus: int
+    candidate_factors: list[int] = field(default_factory=list)
+    tnfr_certified_factors: list[int] = field(default_factory=list)
+    coherence_score: float = 0.0
+    arithmetic_delta_nfr: float = 0.0
+    arithmetic_epi: float = 0.0
+    arithmetic_nu_f: float = 0.0
+    certificate_path: str | None = None
+    partition_manifest_path: str | None = None
+    operator_strategy_plan: dict[str, Any] | None = None
+    spectral: dict[str, Any] = field(default_factory=dict)
+    telemetry: dict[str, Any] = field(default_factory=dict)
+    network_synergy: dict[str, Any] | None = None
+
+    def summary(self) -> str:
+        certified = len(self.tnfr_certified_factors)
+        return (
+            f"n={self.n}, candidates={len(self.candidate_factors)}, "
+            f"certified={certified}, coherence={self.coherence_score:.3f}"
+        )
+
+    def to_dict(self) -> dict[str, Any]:
+        """Serialize report to plain dict for JSON/reporting pipelines."""
+        return {
+            'n': int(self.n),
+            'modulus': int(self.modulus),
+            'candidate_factors': list(self.candidate_factors),
+            'tnfr_certified_factors': list(self.tnfr_certified_factors),
+            'coherence_score': float(self.coherence_score),
+            'arithmetic_delta_nfr': float(self.arithmetic_delta_nfr),
+            'arithmetic_epi': float(self.arithmetic_epi),
+            'arithmetic_nu_f': float(self.arithmetic_nu_f),
+            'certificate_path': self.certificate_path,
+            'partition_manifest_path': self.partition_manifest_path,
+            'operator_strategy_plan': self.operator_strategy_plan,
+            'spectral': self.spectral,
+            'telemetry': self.telemetry,
+            'network_synergy': self.network_synergy,
+        }
+
+
+@dataclass
+class PrimalityReport:
+    """Unified SDK report for canonical TNFR primality analysis.
+
+    Bridges `tnfr.primality.analyze()` with SDK-level telemetry and
+    optional network-coupled synergy diagnostics.
+    """
+
+    n: int
+    is_prime: bool
+    delta_nfr: float
+    tolerance: float
+    components: dict[str, Any] = field(default_factory=dict)
+    triad: dict[str, Any] = field(default_factory=dict)
+    network_synergy: dict[str, Any] | None = None
+
+    def summary(self) -> str:
+        status = "prime" if self.is_prime else "composite"
+        return f"n={self.n}, status={status}, delta_nfr={self.delta_nfr:.6g}"
+
+    def to_dict(self) -> dict[str, Any]:
+        """Serialize report to plain dict for JSON/reporting pipelines."""
+        return {
+            'n': int(self.n),
+            'is_prime': bool(self.is_prime),
+            'delta_nfr': float(self.delta_nfr),
+            'tolerance': float(self.tolerance),
+            'components': self.components,
+            'triad': self.triad,
+            'network_synergy': self.network_synergy,
+        }
+
+
+@dataclass
+class NodalStateReport:
+    """Node-level nodal dynamics snapshot based on ∂EPI/∂t = νf·ΔNFR."""
+
+    node: Any
+    epi: float
+    nu_f: float
+    delta_nfr: float
+    phase: float
+    expected_depi_dt: float
+    d2epi_dt2: float
+    degree: int
+    equilibrium: bool
+    active: bool
+    near_bifurcation: bool
+
+    def summary(self) -> str:
+        state = "active" if self.active else "inactive"
+        eq = "equilibrium" if self.equilibrium else "driven"
+        return (
+            f"node={self.node}, {state}, {eq}, "
+            f"∂EPI/∂t={self.expected_depi_dt:.4g}, ∂²EPI/∂t²={self.d2epi_dt2:.4g}"
+        )
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            'node': self.node,
+            'epi': float(self.epi),
+            'nu_f': float(self.nu_f),
+            'delta_nfr': float(self.delta_nfr),
+            'phase': float(self.phase),
+            'expected_depi_dt': float(self.expected_depi_dt),
+            'd2epi_dt2': float(self.d2epi_dt2),
+            'degree': int(self.degree),
+            'equilibrium': bool(self.equilibrium),
+            'active': bool(self.active),
+            'near_bifurcation': bool(self.near_bifurcation),
+        }
+
+
+@dataclass
+class NodalDynamicsReport:
+    """Global nodal-dynamics report for study and diagnostics."""
+
+    nodes: dict[Any, NodalStateReport] = field(default_factory=dict)
+    equilibrium_tolerance: float = 1e-10
+    bifurcation_threshold: float = 0.5
+
+    def summary(self) -> str:
+        n = len(self.nodes)
+        if n == 0:
+            return "Nodal dynamics: empty"
+        values = list(self.nodes.values())
+        active = sum(1 for s in values if s.active)
+        equilibrium = sum(1 for s in values if s.equilibrium)
+        bif = sum(1 for s in values if s.near_bifurcation)
+        mean_abs_rate = sum(abs(s.expected_depi_dt) for s in values) / n
+        return (
+            f"NodalDynamics(N={n}, active={active}, equilibrium={equilibrium}, "
+            f"bifurcation={bif}, mean|∂EPI/∂t|={mean_abs_rate:.4g})"
+        )
+
+    def top_pressure_nodes(self, k: int = 5) -> list[NodalStateReport]:
+        """Nodes with largest |∂EPI/∂t| (highest nodal drive)."""
+        ranked = sorted(self.nodes.values(), key=lambda s: abs(s.expected_depi_dt), reverse=True)
+        return ranked[:max(int(k), 0)]
+
+    def near_equilibrium_nodes(self) -> list[NodalStateReport]:
+        """Nodes with |ΔNFR| <= equilibrium tolerance."""
+        return [s for s in self.nodes.values() if s.equilibrium]
+
+    def to_dict(self) -> dict[str, Any]:
+        values = list(self.nodes.values())
+        n = len(values)
+        mean_abs_rate = sum(abs(s.expected_depi_dt) for s in values) / max(n, 1)
+        max_abs_rate = max((abs(s.expected_depi_dt) for s in values), default=0.0)
+        return {
+            'equilibrium_tolerance': float(self.equilibrium_tolerance),
+            'bifurcation_threshold': float(self.bifurcation_threshold),
+            'nodes': {str(node): report.to_dict() for node, report in self.nodes.items()},
+            'aggregate': {
+                'count': n,
+                'active_count': sum(1 for s in values if s.active),
+                'equilibrium_count': sum(1 for s in values if s.equilibrium),
+                'bifurcation_count': sum(1 for s in values if s.near_bifurcation),
+                'mean_abs_depi_dt': float(mean_abs_rate),
+                'max_abs_depi_dt': float(max_abs_rate),
+            },
+        }
+
+
+def _build_factorization_report(
+    raw_result: Any,
+    network: "Network | None" = None,
+) -> FactorizationReport:
+    """Convert canonical factorization output into SDK-native report."""
+    candidate_factors = list(getattr(raw_result, 'candidate_factors', []) or [])
+    certified = list(getattr(raw_result, 'tnfr_certified_factors', []) or [])
+    coherence_score = float(getattr(raw_result, 'coherence_score', 0.0) or 0.0)
+    delta_nfr = float(getattr(raw_result, 'arithmetic_delta_nfr', 0.0) or 0.0)
+    arithmetic_epi = float(getattr(raw_result, 'arithmetic_epi', 0.0) or 0.0)
+    arithmetic_nu_f = float(getattr(raw_result, 'arithmetic_nu_f', 0.0) or 0.0)
+    n = int(getattr(raw_result, 'n', 0) or 0)
+    modulus = int(getattr(raw_result, 'modulus', 0) or 0)
+
+    telemetry = {
+        'phi_s': float(getattr(raw_result, 'phi_s', 0.0) or 0.0),
+        'phase_gradient': float(getattr(raw_result, 'phase_gradient', 0.0) or 0.0),
+        'phase_curvature': float(getattr(raw_result, 'phase_curvature', 0.0) or 0.0),
+        'coherence_length': float(getattr(raw_result, 'coherence_length', 0.0) or 0.0),
+        'coherence_score': coherence_score,
+        'delta_nfr': delta_nfr,
+        'epi': arithmetic_epi,
+        'nu_f': arithmetic_nu_f,
+    }
+
+    spectral = {
+        'laplacian_gap': float(getattr(raw_result, 'laplacian_gap', 0.0) or 0.0),
+        'fft_backend': getattr(raw_result, 'fft_backend', None),
+        'node_count': int(getattr(raw_result, 'node_count', 0) or 0),
+        'edge_count': int(getattr(raw_result, 'edge_count', 0) or 0),
+        'notes': getattr(raw_result, 'notes', ''),
+    }
+
+    network_synergy: dict[str, Any] | None = None
+    if network is not None:
+        net_coherence = float(network.coherence())
+        net_si = float(network.sense_index())
+        coherence_alignment = max(0.0, 1.0 - abs(net_coherence - coherence_score))
+        nodal_drive = abs(arithmetic_nu_f * delta_nfr)
+        drive_score = nodal_drive / (1.0 + nodal_drive)
+        synergy_index = 0.7 * coherence_alignment + 0.3 * drive_score
+        topology_resonance = [
+            int(f) for f in candidate_factors
+            if f > 1 and len(network.G.nodes()) % int(f) == 0
+        ]
+        network_synergy = {
+            'network_nodes': len(network.G.nodes()),
+            'network_coherence': net_coherence,
+            'network_sense_index': net_si,
+            'coherence_alignment': coherence_alignment,
+            'nodal_drive': nodal_drive,
+            'drive_score': drive_score,
+            'synergy_index': synergy_index,
+            'topology_resonance_factors': sorted(set(topology_resonance)),
+        }
+
+    return FactorizationReport(
+        n=n,
+        modulus=modulus,
+        candidate_factors=candidate_factors,
+        tnfr_certified_factors=certified,
+        coherence_score=coherence_score,
+        arithmetic_delta_nfr=delta_nfr,
+        arithmetic_epi=arithmetic_epi,
+        arithmetic_nu_f=arithmetic_nu_f,
+        certificate_path=getattr(raw_result, 'certificate_path', None),
+        partition_manifest_path=getattr(raw_result, 'partition_manifest_path', None),
+        operator_strategy_plan=getattr(raw_result, 'operator_strategy_plan', None),
+        spectral=spectral,
+        telemetry=telemetry,
+        network_synergy=network_synergy,
+    )
+
+
+def _build_primality_report(
+    n: int,
+    raw_result: dict[str, Any],
+    *,
+    tolerance: float,
+    network: "Network | None" = None,
+) -> PrimalityReport:
+    """Convert canonical primality output into SDK-native report."""
+    is_prime = bool(raw_result.get('is_prime', False))
+    delta_nfr = float(raw_result.get('delta_nfr', float('inf')))
+    components = dict(raw_result.get('components', {}) or {})
+    triad = dict(raw_result.get('triad', {}) or {})
+
+    network_synergy: dict[str, Any] | None = None
+    if network is not None:
+        net_coherence = float(network.coherence())
+        net_si = float(network.sense_index())
+        local_coherence = float(triad.get('local_coherence', 0.0) or 0.0)
+        coherence_alignment = max(0.0, 1.0 - abs(net_coherence - local_coherence))
+        pressure_ratio = abs(delta_nfr) / max(float(tolerance), 1e-15)
+        pressure_score = 1.0 / (1.0 + pressure_ratio)
+        if is_prime:
+            prime_resonance = net_si
+        else:
+            prime_resonance = max(0.0, 1.0 - net_si)
+        synergy_index = 0.5 * coherence_alignment + 0.3 * pressure_score + 0.2 * prime_resonance
+        network_synergy = {
+            'network_nodes': len(network.G.nodes()),
+            'network_coherence': net_coherence,
+            'network_sense_index': net_si,
+            'local_coherence': local_coherence,
+            'coherence_alignment': coherence_alignment,
+            'pressure_ratio': pressure_ratio,
+            'pressure_score': pressure_score,
+            'prime_resonance': prime_resonance,
+            'synergy_index': synergy_index,
+        }
+
+    return PrimalityReport(
+        n=int(n),
+        is_prime=is_prime,
+        delta_nfr=delta_nfr,
+        tolerance=float(tolerance),
+        components=components,
+        triad=triad,
+        network_synergy=network_synergy,
+    )
 
 
 @dataclass
@@ -324,7 +638,64 @@ class Network:
             if node != center:
                 self.G.add_edge(center, node)
         return self
-    
+
+    def small_world(self, k: int = 4, p: float = 0.3, seed: int | None = None) -> Network:
+        """Create Watts-Strogatz small-world topology.
+
+        Parameters
+        ----------
+        k : int
+            Each node is connected to *k* nearest neighbours in ring.
+        p : float
+            Probability of rewiring each edge.
+        seed : int, optional
+            Random seed for reproducibility.
+        """
+        n = len(self.G.nodes())
+        ws = nx.watts_strogatz_graph(n, k, p, seed=seed)
+        self.G.add_edges_from(ws.edges())
+        return self
+
+    def scale_free(self, m: int = 2, seed: int | None = None) -> Network:
+        """Create Barabasi-Albert scale-free topology.
+
+        Parameters
+        ----------
+        m : int
+            Number of edges to attach from a new node to existing nodes.
+        seed : int, optional
+            Random seed for reproducibility.
+        """
+        n = len(self.G.nodes())
+        ba = nx.barabasi_albert_graph(n, m, seed=seed)
+        self.G.add_edges_from(ba.edges())
+        return self
+
+    def grid(self, rows: int | None = None, cols: int | None = None) -> Network:
+        """Create 2-D grid (lattice) topology.
+
+        If *rows* and *cols* are omitted the closest square layout is used.
+        """
+        n = len(self.G.nodes())
+        if rows is None:
+            rows = int(n ** 0.5)
+        if cols is None:
+            cols = rows
+        g2d = nx.grid_2d_graph(rows, cols)
+        mapping = {node: i for i, node in enumerate(g2d.nodes())}
+        g2d = nx.relabel_nodes(g2d, mapping)
+        for u, v in g2d.edges():
+            if u in self.G and v in self.G:
+                self.G.add_edge(u, v)
+        return self
+
+    def path(self) -> Network:
+        """Connect nodes in a linear path (no closing edge)."""
+        nodes = list(self.G.nodes())
+        for i in range(len(nodes) - 1):
+            self.G.add_edge(nodes[i], nodes[i + 1])
+        return self
+
     # === EVOLUTION ===
     
     def evolve(self, steps: int = 5, sequence: str = "basic_activation") -> Network:
@@ -403,7 +774,104 @@ class Network:
             return float(np.asarray(result).flat[0])
         except (IndexError, TypeError):
             return float(result)
-    
+
+    # === NODAL DYNAMICS ===
+
+    def nodal_state(
+        self,
+        node: Any,
+        *,
+        equilibrium_tolerance: float = 1e-10,
+        bifurcation_threshold: float | None = None,
+    ) -> NodalStateReport:
+        """Return node-level state from the canonical nodal equation.
+
+        Computes local triad state and derived dynamics:
+        - expected_depi_dt = νf·ΔNFR
+        - d2epi_dt2 from EPI history (finite differences)
+        """
+        if node not in self.G:
+            raise TNFRValueError(
+                f"Node '{node}' not found in network.",
+                context={"node": node, "nodes": list(self.G.nodes())[:10]},
+                suggestion="Use an existing node id from network.G.nodes().",
+            )
+
+        nd = self.G.nodes[node]
+        epi = float(get_attr(nd, ALIAS_EPI, 0.0) or 0.0)
+        nu_f = float(get_attr(nd, ALIAS_VF, 0.0) or 0.0)
+        delta_nfr = float(get_attr(nd, ALIAS_DNFR, 0.0) or 0.0)
+        phase = float(get_attr(nd, ALIAS_THETA, 0.0) or 0.0)
+        expected_depi_dt = float(compute_expected_depi_dt(self.G, node))
+        d2epi_dt2 = float(compute_d2epi_dt2(self.G, node))
+
+        tau = float(
+            bifurcation_threshold
+            if bifurcation_threshold is not None
+            else self.G.graph.get('OZ_BIFURCATION_THRESHOLD', 0.5)
+        )
+
+        return NodalStateReport(
+            node=node,
+            epi=epi,
+            nu_f=nu_f,
+            delta_nfr=delta_nfr,
+            phase=phase,
+            expected_depi_dt=expected_depi_dt,
+            d2epi_dt2=d2epi_dt2,
+            degree=int(self.G.degree(node)),
+            equilibrium=abs(delta_nfr) <= float(equilibrium_tolerance),
+            active=nu_f > 0.0,
+            near_bifurcation=abs(d2epi_dt2) > tau,
+        )
+
+    def nodal_scan(
+        self,
+        nodes: list[Any] | None = None,
+        *,
+        equilibrium_tolerance: float = 1e-10,
+        bifurcation_threshold: float | None = None,
+    ) -> NodalDynamicsReport:
+        """Scan nodal dynamics over a subset (or all) nodes.
+
+        Useful for research diagnostics, bifurcation watch, and pressure maps.
+        """
+        target_nodes = list(self.G.nodes()) if nodes is None else list(nodes)
+        report_nodes: dict[Any, NodalStateReport] = {}
+        for node in target_nodes:
+            if node not in self.G:
+                continue
+            report_nodes[node] = self.nodal_state(
+                node,
+                equilibrium_tolerance=equilibrium_tolerance,
+                bifurcation_threshold=bifurcation_threshold,
+            )
+
+        tau = float(
+            bifurcation_threshold
+            if bifurcation_threshold is not None
+            else self.G.graph.get('OZ_BIFURCATION_THRESHOLD', 0.5)
+        )
+        return NodalDynamicsReport(
+            nodes=report_nodes,
+            equilibrium_tolerance=float(equilibrium_tolerance),
+            bifurcation_threshold=tau,
+        )
+
+    def nodal_profile(
+        self,
+        node: Any,
+        *,
+        equilibrium_tolerance: float = 1e-10,
+        bifurcation_threshold: float | None = None,
+    ) -> dict[str, Any]:
+        """Convenience dict profile for notebooks/reporting pipelines."""
+        return self.nodal_state(
+            node,
+            equilibrium_tolerance=equilibrium_tolerance,
+            bifurcation_threshold=bifurcation_threshold,
+        ).to_dict()
+
     def results(self) -> Results:
         """Get comprehensive results including tetrad and conservation."""
         tetrad = self.tetrad() if _HAS_FIELDS else None
@@ -562,6 +1030,72 @@ class Network:
             return {}
         return compute_emergent_fields(self.G)
 
+    # === COMPLEX FIELD & EXTENDED ACCESS ===
+
+    def complex_field(self) -> dict[str, Any]:
+        """Compute the unified complex geometric field Psi = K_phi + i*J_phi.
+
+        Returns
+        -------
+        dict[str, Any]
+            psi_real (K_phi), psi_imag (J_phi), magnitude, phase arrays
+            keyed by node.
+        """
+        if not _HAS_FIELDS:
+            return {}
+        arrays = compute_complex_geometric_field_arrays(self.G)
+        return arrays
+
+    def j_phi(self) -> dict:
+        """Phase current J_phi per node (transport companion to K_phi)."""
+        if not _HAS_FIELDS:
+            return {}
+        return compute_phase_current(self.G)
+
+    def j_dnfr(self) -> dict:
+        """DELTA_NFR flux J_DELTA_NFR per node."""
+        if not _HAS_FIELDS:
+            return {}
+        return compute_dnfr_flux(self.G)
+
+    def noether_charge(self) -> float:
+        """Total Noether charge Q = sum_i [Phi_s(i) + K_phi(i)]."""
+        if not _HAS_CONSERVATION:
+            return 0.0
+        return compute_noether_charge(self.G)
+
+    def energy(self) -> float:
+        """Total structural energy E = 0.5 * sum_i energy_density(i)."""
+        if not _HAS_CONSERVATION:
+            return 0.0
+        return compute_energy_functional(self.G)
+
+    def grammar_violations(self, dt: float = 1.0) -> dict[str, Any]:
+        """Detect grammar violations via conservation residuals.
+
+        Requires at least two snapshots.  Takes snapshots before and
+        after a single compliant evolution step (dt) and checks the
+        conservation balance.
+
+        Returns
+        -------
+        dict with violations_detected, violation_types, severity, etc.
+        """
+        if not _HAS_CONSERVATION:
+            return {'violations_detected': False, 'violation_types': [], 'severity': 0.0}
+        from ..physics.conservation import detect_grammar_violations_from_conservation
+        snap_before = capture_conservation_snapshot(self.G)
+        # Small stabilisation step for delta measurement
+        for n in self.G.nodes():
+            neighbors = list(self.G.neighbors(n))
+            if neighbors:
+                mean_ph = float(np.mean([self.G.nodes[nb].get('phase', 0.0) for nb in neighbors]))
+                self.G.nodes[n]['phase'] = self.G.nodes[n].get('phase', 0.0) + dt * 0.05 * (mean_ph - self.G.nodes[n].get('phase', 0.0))
+                self.G.nodes[n]['theta'] = self.G.nodes[n]['phase']
+        snap_after = capture_conservation_snapshot(self.G)
+        balance = verify_conservation_balance(snap_before, snap_after, dt=dt * 0.05)
+        return detect_grammar_violations_from_conservation(balance)
+
     # === GRAMMAR-AWARE DYNAMICS ===
 
     def evolve_grammar_aware(
@@ -675,6 +1209,47 @@ class Network:
                 'optimization': _HAS_OPTIMIZATION,
             },
         }
+
+    # === FACTORIZATION BRIDGE ===
+
+    def factorize(
+        self,
+        n: int,
+        *,
+        modulus: int | None = None,
+        trace_certificates: bool = False,
+        certificate_dir: str | None = None,
+    ) -> FactorizationReport:
+        """Run canonical TNFR factorization and attach network synergy diagnostics.
+
+        This creates an explicit bridge between factorization-lab dynamics and
+        SDK network telemetry, enabling direct cross-module analysis.
+        """
+        return TNFR.factorize(
+            n,
+            modulus=modulus,
+            trace_certificates=trace_certificates,
+            certificate_dir=certificate_dir,
+            network=self,
+        )
+
+    def primality(
+        self,
+        n: int,
+        *,
+        tolerance: float = 1e-10,
+    ) -> PrimalityReport:
+        """Run canonical TNFR primality analysis with network synergy diagnostics."""
+        return TNFR.primality(n, tolerance=tolerance, network=self)
+
+    def is_prime(
+        self,
+        n: int,
+        *,
+        tolerance: float = 1e-10,
+    ) -> bool:
+        """Convenience boolean primality check fused with SDK bridge."""
+        return self.primality(n, tolerance=tolerance).is_prime
 
 class TNFR:
     """🌊 **Static Factory for Instant TNFR Networks** ⭐
@@ -820,6 +1395,7 @@ class TNFR:
             'edges': len(network.G.edges()),
             'density': network.density(),
             'avg_phase': network.avg_phase(),
+            'nodal_dynamics': network.nodal_scan(),
         }
         if _HAS_FIELDS:
             result['tetrad'] = network.tetrad()
@@ -837,6 +1413,81 @@ class TNFR:
             'optimization': _HAS_OPTIMIZATION,
         }
         return result
+
+    @staticmethod
+    def factorize(
+        n: int,
+        *,
+        modulus: int | None = None,
+        trace_certificates: bool = False,
+        certificate_dir: str | None = None,
+        network: Network | None = None,
+    ) -> FactorizationReport:
+        """Canonical factorization via SDK, optionally fused with network telemetry.
+
+        Parameters
+        ----------
+        n : int
+            Integer to factor (>1).
+        modulus : int | None
+            Optional Paley modulus override.
+        trace_certificates : bool
+            Whether to emit operator/partition certificate artifacts.
+        certificate_dir : str | None
+            Optional output directory for certificate artifacts.
+        network : Network | None
+            If provided, computes synergy metrics between the factorization
+            telemetry and this network's structural state.
+        """
+        if not _HAS_FACTORIZATION:
+            raise TNFRValueError(
+                "Factorization bridge is unavailable.",
+                context={"feature": "sdk.factorize", "available": False},
+                suggestion=(
+                    "Ensure the canonical factorization module is present "
+                    "(tnfr.factorization + factorization-lab in this repository)."
+                ),
+            )
+
+        kwargs: dict[str, Any] = {
+            'modulus': modulus,
+            'trace_certificates': trace_certificates,
+        }
+        if certificate_dir is not None:
+            from pathlib import Path
+            kwargs['certificate_dir'] = Path(certificate_dir)
+
+        raw_result = canonical_factorize(n, **kwargs)
+        return _build_factorization_report(raw_result, network=network)
+
+    @staticmethod
+    def primality(
+        n: int,
+        *,
+        tolerance: float = 1e-10,
+        network: Network | None = None,
+    ) -> PrimalityReport:
+        """Canonical primality analysis via SDK, optionally fused with network telemetry."""
+        if not _HAS_PRIMALITY:
+            raise TNFRValueError(
+                "Primality bridge is unavailable.",
+                context={"feature": "sdk.primality", "available": False},
+                suggestion=(
+                    "Ensure the canonical primality module is present "
+                    "(tnfr.primality + primality-test in this repository)."
+                ),
+            )
+        raw = canonical_primality_analyze(n, tolerance=tolerance)
+        return _build_primality_report(n, raw, tolerance=tolerance, network=network)
+
+    @staticmethod
+    def is_prime(
+        n: int,
+        *,
+        tolerance: float = 1e-10,
+    ) -> bool:
+        """Convenience boolean primality check from canonical SDK bridge."""
+        return TNFR.primality(n, tolerance=tolerance).is_prime
 
     @staticmethod
     def guide() -> str:
@@ -859,15 +1510,39 @@ class TNFR:
             "SDK Method                     Theory                                        Example",
             "-" * 100,
             "TNFR.create(n).ring()          FUNDAMENTAL_THEORY.md                         01-03, 05-06, 08",
+            ".small_world(k, p)             FUNDAMENTAL_THEORY.md                         31, 34",
+            ".scale_free(m)                 FUNDAMENTAL_THEORY.md                         34",
+            ".grid(rows, cols)              FUNDAMENTAL_THEORY.md                         34",
+            ".path()                        FUNDAMENTAL_THEORY.md                         —",
             ".tetrad()                      EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md      20, unified_fields_showcase",
-            ".conservation()                STRUCTURAL_CONSERVATION_THEOREM.md             17, 24",
+            ".conservation()                STRUCTURAL_CONSERVATION_THEOREM.md             17, 24, 34",
             ".evolve_grammar_aware(steps)   UNIFIED_GRAMMAR_RULES.md                      04, 07",
             ".integrity_check()             STRUCTURAL_STABILITY_AND_DYNAMICS.md           29",
-            ".tensor_invariants()           EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md      20, unified_fields_showcase",
-            ".emergent_fields()             EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md      unified_fields_showcase",
+            ".complex_field()               EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md      33",
+            ".j_phi() / .j_dnfr()          EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md      33",
+            ".tensor_invariants()           EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md      20, 33",
+            ".emergent_fields()             EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md      33",
+            ".noether_charge()              STRUCTURAL_CONSERVATION_THEOREM.md             34",
+            ".energy()                      STRUCTURAL_CONSERVATION_THEOREM.md             34",
+            ".nodal_state(node)             TNFR.pdf §2.1 (nodal equation)                 04, 05",
+            ".nodal_scan()                  TNFR.pdf §2.1 + U4 bifurcation diagnostics      07",
+            ".nodal_profile(node)           TNFR nodal telemetry bridge                     10",
+            ".grammar_violations()          STRUCTURAL_CONSERVATION_THEOREM.md ss12        36",
             ".telemetry()                   FUNDAMENTAL_THEORY.md                         10",
             ".auto_optimize()               AGENTS.md § Self-Optimizing Dynamics           30",
+            "TNFR.factorize(n)              TNFR_NUMBER_THEORY.md                          40",
+            "Network.factorize(n)           TNFR_NUMBER_THEORY.md + SDK telemetry bridge   40",
+            "TNFR.primality(n)              TNFR_NUMBER_THEORY.md                          40",
+            "Network.primality(n)           TNFR_NUMBER_THEORY.md + SDK telemetry bridge   40",
             "TNFR.analyze(net)              APPLIED_STRUCTURAL_ANALYSIS.md                 10",
+            "",
+            "New theory-experiment links (v0.0.3.2):",
+            "  31 — Mathematical constants basis (phi, gamma, pi, e)",
+            "  32 — Spiral attractors (golden spiral, KAM)",
+            "  33 — Complex field unification (Psi = K_phi + i*J_phi)",
+            "  34 — Conservation protocol suite (Noether, Lyapunov)",
+            "  35 — Tetrad irreducibility (blind spot verification)",
+            "  36 — Grammar violation detector (conservation residuals)",
             "",
             "Riemann program:               TNFR_RIEMANN_RESEARCH_NOTES.md                16, 18-23, 25",
             "Classical/Quantum regimes:      PHYSICAL_REGIME_CORRESPONDENCES.md             11-15",
@@ -889,6 +1564,15 @@ Net = Network  # type alias
 
 # Export main API
 __all__ = [
-    'TNFR', 'Network', 'Results', 'TetradSnapshot', 'ConservationReport',
-    'T', 'Net',
+    'TNFR',
+    'Network',
+    'Results',
+    'TetradSnapshot',
+    'ConservationReport',
+    'FactorizationReport',
+    'PrimalityReport',
+    'NodalStateReport',
+    'NodalDynamicsReport',
+    'T',
+    'Net',
 ]
