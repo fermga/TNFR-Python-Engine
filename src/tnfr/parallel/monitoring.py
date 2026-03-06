@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import time
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 try:
     pass
@@ -16,6 +16,11 @@ try:
 except ImportError:
     HAS_PSUTIL = False
 
+# ---------------------------------------------------------------------------
+# Efficiency alert thresholds
+# ---------------------------------------------------------------------------
+_PARALLELIZATION_EFFICIENCY_ALERT = 0.5
+_MEMORY_EFFICIENCY_CRITICAL = 0.1
 
 @dataclass
 class PerformanceMetrics:
@@ -59,7 +64,6 @@ class PerformanceMetrics:
     parallelization_efficiency: float
     memory_efficiency: float
 
-
 class ParallelExecutionMonitor:
     """Real-time monitoring for parallel TNFR execution.
 
@@ -83,8 +87,8 @@ class ParallelExecutionMonitor:
     """
 
     def __init__(self):
-        self._metrics_history: List[PerformanceMetrics] = []
-        self._current_metrics: Optional[Dict[str, Any]] = None
+        self._metrics_history: list[PerformanceMetrics] = []
+        self._current_metrics: dict[str, Any] | None = None
         self._process = None
         if HAS_PSUTIL:
             try:
@@ -200,13 +204,13 @@ class ParallelExecutionMonitor:
 
         return metrics
 
-    def get_optimization_suggestions(self) -> List[str]:
+    def get_optimization_suggestions(self) -> list[str]:
         """Generate optimization suggestions based on execution history.
 
         Returns
         -------
-        List[str]
-            List of actionable suggestions for improving performance
+        list[str]
+            list of actionable suggestions for improving performance
         """
         if not self._metrics_history:
             return ["No execution history available"]
@@ -214,13 +218,13 @@ class ParallelExecutionMonitor:
         latest = self._metrics_history[-1]
         suggestions = []
 
-        if latest.parallelization_efficiency < 0.5:
+        if latest.parallelization_efficiency < _PARALLELIZATION_EFFICIENCY_ALERT:
             suggestions.append(
                 "⚡ Low parallelization efficiency - consider reducing "
                 "worker count or increasing chunk size"
             )
 
-        if latest.memory_efficiency < 0.1:
+        if latest.memory_efficiency < _MEMORY_EFFICIENCY_CRITICAL:
             suggestions.append(
                 "💾 High memory usage - consider distributed execution " "or memory optimization"
             )
@@ -236,6 +240,6 @@ class ParallelExecutionMonitor:
         return suggestions
 
     @property
-    def history(self) -> List[PerformanceMetrics]:
+    def history(self) -> list[PerformanceMetrics]:
         """Get execution history."""
         return self._metrics_history.copy()

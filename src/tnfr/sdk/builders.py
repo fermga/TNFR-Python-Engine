@@ -24,8 +24,6 @@ Compare different network topologies:
 
 from __future__ import annotations
 
-from typing import Dict, Optional
-
 from ..mathematics.unified_numerical import np
 from .fluent import TNFRNetwork, NetworkResults
 from ..constants.canonical import (
@@ -40,10 +38,10 @@ from ..constants.canonical import (
     GAMMA,
     PI,
     INV_PHI,
+    NODAL_OPT_COUPLING_CANONICAL,
 )
 
 __all__ = ["TNFRExperimentBuilder"]
-
 
 class TNFRExperimentBuilder:
     """Builder pattern for standard TNFR experiments.
@@ -61,7 +59,7 @@ class TNFRExperimentBuilder:
         nodes: int = 50,
         rewiring_prob: float = SDK_REWIRING_PROB_DEFAULT,  # γ/(π+γ) ≈ 0.1552 (canonical rewiring)
         steps: int = 10,
-        random_seed: Optional[int] = None,
+        random_seed: int | None = None,
     ) -> NetworkResults:
         """Study small-world network properties with TNFR dynamics.
 
@@ -108,7 +106,7 @@ class TNFRExperimentBuilder:
         nodes: int = 30,
         coupling_strength: float = SDK_COUPLING_STRENGTH_MODERATE,  # 1/φ - golden moderate coupling
         steps: int = 20,
-        random_seed: Optional[int] = None,
+        random_seed: int | None = None,
     ) -> NetworkResults:
         """Study synchronization in densely coupled TNFR networks.
 
@@ -167,7 +165,7 @@ class TNFRExperimentBuilder:
         nodes: int = 20,
         mutation_intensity: float = GAMMA / (PI + 1),  # γ/(π+1) - controlled mutation
         steps: int = 15,
-        random_seed: Optional[int] = None,
+        random_seed: int | None = None,
     ) -> NetworkResults:
         """Study creative emergence through controlled mutation.
 
@@ -211,9 +209,9 @@ class TNFRExperimentBuilder:
     def compare_topologies(
         node_count: int = 40,
         steps: int = 10,
-        topologies: Optional[list[str]] = None,
-        random_seed: Optional[int] = None,
-    ) -> Dict[str, NetworkResults]:
+        topologies: list[str] | None = None,
+        random_seed: int | None = None,
+    ) -> dict[str, NetworkResults]:
         """Compare TNFR dynamics across different network topologies.
 
         Creates multiple networks with identical node properties but
@@ -227,14 +225,14 @@ class TNFRExperimentBuilder:
         steps : int, default=10
             Number of activation steps to apply.
         topologies : list[str], optional
-            List of topologies to compare. If None, uses
+            list of topologies to compare. If None, uses
             ["random", "ring", "small_world"].
         random_seed : int, optional
             Random seed for reproducibility across all networks.
 
         Returns
         -------
-        Dict[str, NetworkResults]
+        dict[str, NetworkResults]
             Dictionary mapping topology names to their results.
 
         Examples
@@ -266,12 +264,12 @@ class TNFRExperimentBuilder:
     @staticmethod
     def phase_transition_study(
         nodes: int = 50,
-        initial_coupling: float = 0.09850273565687083,  # γ/(π+e) ≈ 0.099
+        initial_coupling: float = NODAL_OPT_COUPLING_CANONICAL,  # γ/(π+e) ≈ 0.099
         final_coupling: float = 1 - INV_PHI,  # 1-1/φ - harmonic maximum canonical
         steps_per_level: int = 5,
         coupling_levels: int = 5,
-        random_seed: Optional[int] = None,
-    ) -> Dict[float, NetworkResults]:
+        random_seed: int | None = None,
+    ) -> dict[float, NetworkResults]:
         """Study phase transitions by varying coupling strength.
 
         Investigates how network coherence changes as coupling strength
@@ -295,7 +293,7 @@ class TNFRExperimentBuilder:
 
         Returns
         -------
-        Dict[float, NetworkResults]
+        dict[float, NetworkResults]
             Mapping from coupling strength to network results.
 
         Examples
@@ -327,8 +325,8 @@ class TNFRExperimentBuilder:
         initial_steps: int = 10,
         perturbation_steps: int = 5,
         recovery_steps: int = 10,
-        random_seed: Optional[int] = None,
-    ) -> Dict[str, NetworkResults]:
+        random_seed: int | None = None,
+    ) -> dict[str, NetworkResults]:
         """Study network resilience to perturbations.
 
         Establishes a stable network, applies dissonance perturbations,
@@ -350,7 +348,7 @@ class TNFRExperimentBuilder:
 
         Returns
         -------
-        Dict[str, NetworkResults]
+        dict[str, NetworkResults]
             Results at 'initial', 'perturbed', and 'recovered' states.
 
         Examples

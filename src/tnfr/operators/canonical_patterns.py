@@ -9,22 +9,19 @@ exists to preserve API stability for legacy imports.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Dict, List
 
 from ..types import Glyph
 from .grammar import StructuralPattern
 
-
 @dataclass(frozen=True)
 class CanonicalSequence:
     name: str
-    glyphs: List[Glyph]
+    glyphs: list[Glyph]
     pattern_type: StructuralPattern
     description: str
-    use_cases: List[str]
+    use_cases: list[str]
     domain: str
-    references: List[str]
-
+    references: list[str]
 
 # Define six archetypal sequences (all include OZ by test contract)
 BIFURCATED_BASE = CanonicalSequence(
@@ -144,9 +141,8 @@ RESONANCE_PEAK_HOLD = CanonicalSequence(
     references=["TNFR.pdf", "high frequency to zero transition"],
 )
 
-
 # Public registry
-CANONICAL_SEQUENCES: Dict[str, CanonicalSequence] = {
+CANONICAL_SEQUENCES: dict[str, CanonicalSequence] = {
     s.name: s
     for s in (
         BIFURCATED_BASE,

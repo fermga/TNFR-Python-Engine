@@ -20,13 +20,12 @@ conserve the symplectic 2-form dEPI ^ d(νf·ΔNFR), which corresponds to the
 conservation of Structural Information.
 """
 
-from typing import Callable, Tuple
+from typing import Callable
 
 from ..mathematics.unified_numerical import np
 
 from tnfr.constants import DNFR_PRIMARY, EPI_PRIMARY, VF_PRIMARY
 from tnfr.types import TNFRNode
-
 
 class TNFRSymplecticIntegrator:
     """

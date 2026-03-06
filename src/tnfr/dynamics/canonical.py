@@ -31,13 +31,12 @@ References:
 from __future__ import annotations
 
 import math
-from typing import TYPE_CHECKING, NamedTuple, Dict, Any
+from typing import TYPE_CHECKING, NamedTuple, Any
 
 from ..mathematics.unified_numerical import np
 from ..errors.contextual import (
     FrequencyError,
     NetworkConfigError,
-    TNFRUserError,
     TNFRValueError,
 )
 
@@ -54,7 +53,6 @@ __all__ = (
     "compute_extended_nodal_system",
 )
 
-
 class NodalEquationResult(NamedTuple):
     """Result of canonical nodal equation evaluation.
 
@@ -69,7 +67,6 @@ class NodalEquationResult(NamedTuple):
     nu_f: float
     delta_nfr: float
     validated: bool
-
 
 def compute_canonical_nodal_derivative(
     nu_f: float,
@@ -138,7 +135,6 @@ def compute_canonical_nodal_derivative(
         validated=validated,
     )
 
-
 def validate_structural_frequency(
     nu_f: float,
     *,
@@ -184,7 +180,6 @@ def validate_structural_frequency(
         raise FrequencyError(vf=value, operation="validation")
 
     return value
-
 
 def validate_nodal_gradient(
     delta_nfr: float,
@@ -236,7 +231,6 @@ def validate_nodal_gradient(
 
     return value
 
-
 # Extended TNFR dynamics with canonical flux fields
 class ExtendedNodalEquationResult(NamedTuple):
     """Result of extended nodal equation system evaluation.
@@ -263,7 +257,6 @@ class ExtendedNodalEquationResult(NamedTuple):
     j_dnfr_divergence: float        # Flux divergence ∇·J_ΔNFR  
     coupling_strength: float        # Local coupling coefficient
     validated: bool                 # Extended validation status
-
 
 def compute_extended_nodal_system(
     nu_f: float,
@@ -375,7 +368,6 @@ def compute_extended_nodal_system(
         validated=validated,
     )
 
-
 def _validate_phase(theta: float) -> float:
     """Validate phase parameter for extended dynamics."""
     try:
@@ -398,7 +390,6 @@ def _validate_phase(theta: float) -> float:
     normalized = value % (2 * math.pi)
     return normalized
 
-
 def _validate_flux_field(flux: float, field_name: str) -> float:
     """Validate flux field (J_φ, J_ΔNFR) for extended dynamics."""
     try:
@@ -420,7 +411,6 @@ def _validate_flux_field(flux: float, field_name: str) -> float:
     # Flux fields can be positive (source) or negative (sink)
     return value
 
-
 def _validate_flux_divergence(div_j: float) -> float:
     """Validate flux divergence ∇·J for conservation equations."""
     try:
@@ -440,7 +430,6 @@ def _validate_flux_divergence(div_j: float) -> float:
         )
         
     return value
-
 
 def _validate_coupling_strength(kappa: float) -> float:
     """Validate coupling strength for transport efficiency."""
@@ -470,7 +459,6 @@ def _validate_coupling_strength(kappa: float) -> float:
     # Allow > 1.0 for strong coupling regimes
     return value
 
-
 def _compute_phase_transport_derivative(
     nu_f: float, 
     delta_nfr: float, 
@@ -493,8 +481,8 @@ def _compute_phase_transport_derivative(
     
     # Physics coefficients (RECALIBRATED from canonical constants)
     alpha = INV_PHI                 # 1/φ ≈ 0.618 (inverse golden self-organization)
-    beta = GAMMA_PI_RATIO           # γ/(π+γ) ≈ 0.155 (sensibilidad euleriana-pi)  
-    gamma = PI_MINUS_E_OVER_PI      # (π-e)/π ≈ 0.135 (eficiencia transcendental)
+    beta = GAMMA_PI_RATIO           # γ/(π+γ) ≈ 0.155 (Euler-pi sensitivity)
+    gamma = PI_MINUS_E_OVER_PI      # (π-e)/π ≈ 0.135 (transcendental efficiency)
     
     # Autoorganization term: nonlinear νf-θ coupling
     autoorg_term = alpha * nu_f * math.sin(math.pi * delta_nfr)
@@ -506,7 +494,6 @@ def _compute_phase_transport_derivative(
     transport_term = gamma * j_phi * coupling_strength
     
     return autoorg_term + pressure_term + transport_term
-
 
 def _compute_dnfr_conservation_derivative(j_dnfr_divergence: float) -> float:
     """Compute ∂ΔNFR/∂t from flux conservation.
@@ -532,7 +519,6 @@ def _compute_dnfr_conservation_derivative(j_dnfr_divergence: float) -> float:
     
     return conservation_term + decay_term
 
-
 # ============================================================================
 # UNIFIED NODAL EQUATION INTEGRATION (CANONICAL ENTRY POINT)
 # ============================================================================
@@ -545,7 +531,7 @@ def integrate_canonical_nodal_equation(
     max_steps: int | None = None,
     tolerance: float | None = None,
     use_gpu: bool | None = None,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """CANONICAL nodal equation integrator used by all TNFR modules.
     
     This is the single source of truth for integrating:
@@ -571,7 +557,7 @@ def integrate_canonical_nodal_equation(
         
     Returns
     -------
-    Dict[str, Any]
+    dict[str, Any]
         Integration results with metadata
         
     Notes
@@ -601,13 +587,13 @@ def integrate_canonical_nodal_equation(
         raise TNFRValueError(
             f"Integration timestep must be positive, got {dt}",
             context={"dt": dt},
-            suggestion="Set a positive timestep (dt > 0).",
+            suggestion="set a positive timestep (dt > 0).",
         )
     if max_steps <= 0:
         raise TNFRValueError(
             f"Max steps must be positive, got {max_steps}",
             context={"max_steps": max_steps},
-            suggestion="Set max_steps to a positive integer.",
+            suggestion="set max_steps to a positive integer.",
         )
     
     # Ensure all parameters are resolved (not None)
@@ -616,7 +602,7 @@ def integrate_canonical_nodal_equation(
     tolerance_resolved = float(tolerance)
     
     # Define GPU and CPU integration functions
-    def gpu_integration() -> Dict[str, Any]:
+    def gpu_integration() -> dict[str, Any]:
         """GPU-accelerated integration using unified backend."""
         from ..mathematics.backend import get_backend
         backend = get_backend()
@@ -624,7 +610,7 @@ def integrate_canonical_nodal_equation(
         # Use backend for accelerated computation
         return _integrate_with_backend(G, dt_resolved, method, max_steps_resolved, tolerance_resolved, backend)
     
-    def cpu_integration() -> Dict[str, Any]:
+    def cpu_integration() -> dict[str, Any]:
         """CPU fallback integration using NumPy."""
         from ..mathematics.backend import get_backend
         backend = get_backend("numpy")
@@ -648,7 +634,6 @@ def integrate_canonical_nodal_equation(
     
     return result
 
-
 def _integrate_with_backend(
     G: Any,
     dt: float,
@@ -656,7 +641,7 @@ def _integrate_with_backend(
     max_steps: int,
     tolerance: float,
     backend: Any
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Internal integration implementation using specified backend."""
     import time
     start_time = time.perf_counter()

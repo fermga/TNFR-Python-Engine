@@ -16,7 +16,6 @@ from ..config.operator_names import CONTRACTION
 from ..types import Glyph, TNFRGraph
 from .definitions_base import Operator
 
-
 class Contraction(Operator):
     """Densify structure; amplify local delta NFR; prep for IL.
 
@@ -44,6 +43,5 @@ class Contraction(Operator):
             state_before["vf"],
             state_before["epi"],
         )
-
 
 __all__ = ["Contraction"]

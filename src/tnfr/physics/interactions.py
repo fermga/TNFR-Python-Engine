@@ -51,7 +51,7 @@ Notes
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Iterable, List, Dict
+from typing import Any, Iterable
 
 from ..mathematics.unified_numerical import np
 
@@ -81,33 +81,29 @@ from .fields import (
     compute_structural_potential,
 )
 
-
 @dataclass
 class InteractionResult:
-    applied: List[str]
-    warnings: List[str]
+    applied: list[str]
+    warnings: list[str]
     grad_before_mean: float | None = None
     grad_after_mean: float | None = None
     kphi_before_abs_mean: float | None = None
     kphi_after_abs_mean: float | None = None
     phi_s_drift_mean: float | None = None
 
-
-def _mean(d: Dict[Any, float]) -> float:
+def _mean(d: dict[Any, float]) -> float:
     return float(np.mean(list(d.values()))) if d else 0.0
-
 
 def _apply_to_nodes(
     G: Any, nodes: Iterable[Any], ops: Iterable[Any]
-) -> List[str]:
+) -> list[str]:
     """Apply operator instances to each node in order; return names applied."""
-    applied: List[str] = []
+    applied: list[str] = []
     for node in nodes:
         for op in ops:
             op(G, node)
             applied.append(op.name)
     return applied
-
 
 def _telemetry_before_after(G: Any, *, compute_phi_s: bool = False) -> dict:
     grad_b = compute_phase_gradient(G)
@@ -118,7 +114,6 @@ def _telemetry_before_after(G: Any, *, compute_phi_s: bool = False) -> dict:
         "kphi_b": kphi_b,
         "phi_b": phi_b,
     }
-
 
 def _telemetry_after(
     G: Any, snap: dict, *, compute_phi_s: bool = False
@@ -140,7 +135,6 @@ def _telemetry_after(
         "phi_a": phi_a,
         "phi_drift": drift,
     }
-
 
 def em_like(
     G: Any,
@@ -194,7 +188,7 @@ def em_like(
         {k: abs(v) for k, v in aft["kphi_a"].items()}
     )  # type: ignore[index]
 
-    warnings: List[str] = []
+    warnings: list[str] = []
     if grad_mean_a >= grad_threshold:
         warnings.append(
             (
@@ -222,7 +216,6 @@ def em_like(
             else None
         ),
     )
-
 
 def weak_like(
     G: Any,
@@ -260,7 +253,7 @@ def weak_like(
     """
     snap = _telemetry_before_after(G, compute_phi_s=compute_phi_s)
 
-    ops: List[Any] = []
+    ops: list[Any] = []
     if ensure_stable_base:
         ops.append(Coherence())
     ops.extend([Dissonance(), Mutation(), Coherence()])
@@ -276,7 +269,7 @@ def weak_like(
         {k: abs(v) for k, v in aft["kphi_a"].items()}
     )  # type: ignore[index]
 
-    warnings: List[str] = []
+    warnings: list[str] = []
     if grad_mean_a >= grad_threshold:
         warnings.append(
             (
@@ -304,7 +297,6 @@ def weak_like(
             else None
         ),
     )
-
 
 def strong_like(
     G: Any,
@@ -353,7 +345,7 @@ def strong_like(
             sum(v >= curvature_hotspot_threshold for v in vals) / len(vals)
         )
 
-    warnings: List[str] = []
+    warnings: list[str] = []
     if hotspot_frac > PHYSICS_HOTSPOT_FRACTION_CANONICAL:  # heuristic
         warnings.append(
             (
@@ -383,7 +375,6 @@ def strong_like(
             else None
         ),
     )
-
 
 def gravity_like(
     G: Any,
@@ -419,13 +410,13 @@ def gravity_like(
     """
     snap = _telemetry_before_after(G, compute_phi_s=compute_phi_s)
 
-    ops: List[Any] = [Coherence()]
+    ops: list[Any] = [Coherence()]
     if quiet:
         ops.append(Silence())
     applied = _apply_to_nodes(G, nodes, ops)
 
     aft = _telemetry_after(G, snap, compute_phi_s=compute_phi_s)
-    warnings: List[str] = []
+    warnings: list[str] = []
     if aft.get("phi_drift") is not None and float(aft["phi_drift"]) >= PHI:
         warnings.append(
             (
@@ -450,7 +441,6 @@ def gravity_like(
             else None
         ),
     )
-
 
 __all__ = [
     "InteractionResult",

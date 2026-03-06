@@ -17,7 +17,6 @@ from ..config.operator_names import MUTATION
 from ..types import Glyph, TNFRGraph
 from .definitions_base import Operator
 
-
 class Mutation(Operator):
     """Controlled phase transform; regime shift with identity preserved.
 
@@ -98,7 +97,7 @@ class Mutation(Operator):
 
         logger = logging.getLogger(__name__)
 
-        # Set telemetry flags for grammar validation
+        # set telemetry flags for grammar validation
         G.nodes[node]["_zhir_bifurcation_potential"] = True
         G.nodes[node]["_zhir_d2epi"] = d2_epi
         G.nodes[node]["_zhir_tau"] = tau

@@ -74,7 +74,6 @@ _FALLBACK_CODE = "IL"
 # How many recent glyphs to consider for incremental grammar context
 _DEFAULT_WINDOW = 6
 
-
 # ── data structures ───────────────────────────────────────────────────────
 
 @dataclass(slots=True)
@@ -84,7 +83,6 @@ class GrammarViolation:
     message: str       # human-readable explanation
     severity: str      # "error" (must fix) or "warning" (advisory)
 
-
 @dataclass(slots=True)
 class CandidateResult:
     """Result of validating a single candidate glyph against recent history."""
@@ -92,7 +90,6 @@ class CandidateResult:
     allowed: bool
     violations: list[GrammarViolation] = field(default_factory=list)
     suggested_alternative: str | None = None
-
 
 # ── core incremental checks ──────────────────────────────────────────────
 
@@ -113,7 +110,6 @@ def _to_code(glyph: Any) -> str:
         return _NAME_TO_CODE[lower]
     return upper  # best effort
 
-
 def _recent_codes(G: Any, node: Any, window: int = _DEFAULT_WINDOW) -> list[str]:
     """Extract the last *window* glyph codes from the node's history."""
     nd = G.nodes[node]
@@ -122,7 +118,6 @@ def _recent_codes(G: Any, node: Any, window: int = _DEFAULT_WINDOW) -> list[str]
         return []
     items = list(raw)[-window:]
     return [_to_code(g) for g in items]
-
 
 def _check_u1a(
     candidate: str,
@@ -142,7 +137,6 @@ def _check_u1a(
             severity="error",
         )
     return None
-
 
 def _check_u2(
     candidate: str,
@@ -170,7 +164,6 @@ def _check_u2(
         )
     return None
 
-
 def _check_u3(
     candidate: str,
     G: Any,
@@ -182,8 +175,9 @@ def _check_u3(
     try:
         from ..alias import get_attr
         from ..constants.aliases import ALIAS_THETA
+        from ..constants.canonical import DELTA_PHI_MAX
         theta_i = float(get_attr(G.nodes[node], ALIAS_THETA, 0.0))
-        delta_phi_max = float(G.graph.get("DELTA_PHI_MAX", 1.5))
+        delta_phi_max = float(G.graph.get("DELTA_PHI_MAX", DELTA_PHI_MAX))
         for nb in G.neighbors(node):
             theta_j = float(get_attr(G.nodes[nb], ALIAS_THETA, 0.0))
             diff = abs(theta_i - theta_j)
@@ -202,7 +196,6 @@ def _check_u3(
         )
     except Exception:
         return None  # graceful degradation
-
 
 def _check_u4a(
     candidate: str,
@@ -224,7 +217,6 @@ def _check_u4a(
             severity="error",
         )
     return None
-
 
 def _check_u4b(
     candidate: str,
@@ -262,7 +254,6 @@ def _check_u4b(
             )
     return None
 
-
 # ── public API ────────────────────────────────────────────────────────────
 
 def _check_violations(
@@ -296,7 +287,6 @@ def _check_violations(
     errors = [v for v in violations if v.severity == "error"]
     allowed = len(errors) == 0
     return allowed, violations
-
 
 def validate_candidate(
     G: Any,
@@ -340,7 +330,6 @@ def validate_candidate(
         suggested_alternative=alt,
     )
 
-
 def filter_candidates(
     G: Any,
     node: Any,
@@ -373,10 +362,8 @@ def filter_candidates(
             result.append(cr.candidate)
     return result
 
-
 _PRIORITY_ORDER = ["IL", "THOL", "EN", "SHA", "RA", "NAV", "AL"]
 """Fallback priority: stabilizers first, then neutral, then generators."""
-
 
 def suggest_alternative(
     G: Any,
@@ -414,7 +401,6 @@ def suggest_alternative(
             return alt
     return _FALLBACK_CODE
 
-
 def enforce_grammar_on_glyph(
     G: Any,
     node: Any,
@@ -448,7 +434,6 @@ def enforce_grammar_on_glyph(
     if cr.allowed:
         return cr.candidate
     return cr.suggested_alternative or _FALLBACK_CODE
-
 
 def validate_sequence_incremental(
     G: Any,
@@ -506,7 +491,6 @@ def validate_sequence_incremental(
         shadow.append(code)
 
     return results
-
 
 __all__ = [
     "GrammarViolation",

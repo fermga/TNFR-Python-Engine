@@ -1,6 +1,6 @@
 """TNFR vs Classical N-body comparison in the low-dissonance regime.
 
-This experiment mirrors the documentation in `docs/TNFR_CLASSICAL_MAPPING.md` by
+This experiment mirrors the documentation in `theory/PHYSICAL_REGIME_CORRESPONDENCES.md` by
 running the classical N-body solver (which assumes Newtonian gravity) and the
 pure TNFR N-body solver (which derives forces from coherence alone) on identical
 initial conditions. When phases remain synchronized and coherence length is

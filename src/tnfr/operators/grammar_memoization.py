@@ -13,23 +13,21 @@ Physics-First Design:
 
 from __future__ import annotations
 
-import hashlib
 from functools import lru_cache
-from typing import Any, Dict, List, Tuple, Optional, NamedTuple
+from typing import Any, NamedTuple
 
 from ..validation.compatibility import CompatibilityLevel, get_compatibility_level
 
 # Static sequence properties that can be safely memoized
 class SequenceSignature(NamedTuple):
     """Immutable signature for sequence memoization."""
-    glyph_names: Tuple[str, ...]
+    glyph_names: tuple[str, ...]
     compatibility_level: str
     epi_zero_start: bool
 
     def __str__(self) -> str:
         sep = ",".join(self.glyph_names)
         return f"Seq({sep}, {self.compatibility_level}, EPI0={self.epi_zero_start})"
-
 
 class StaticValidationResult(NamedTuple):
     """Static validation results that are safe to cache."""
@@ -44,13 +42,12 @@ class StaticValidationResult(NamedTuple):
     u2_needs_check: bool  # Needs dynamic U2 check
     u3_needs_check: bool  # Needs dynamic U3 check
     u4_needs_check: bool  # Needs dynamic U4 check
-    static_errors: List[str]  # Only structural errors
-
+    static_errors: list[str]  # Only structural errors
 
 def create_sequence_signature(
-    sequence: List[Any],
+    sequence: list[Any],
     epi_initial: float = 0.0,
-    compatibility_level: Optional[CompatibilityLevel] = None
+    compatibility_level: CompatibilityLevel | None = None
 ) -> SequenceSignature:
     """Create memoization signature from sequence parameters."""
     # Extract glyph names (assume operators have .name attribute)
@@ -68,7 +65,6 @@ def create_sequence_signature(
         epi_zero_start=(abs(epi_initial) < 1e-9)
     )
 
-
 @lru_cache(maxsize=512)
 def _validate_sequence_static(signature: SequenceSignature) -> StaticValidationResult:
     """Validate static/structural aspects of sequence (CACHED).
@@ -79,7 +75,6 @@ def _validate_sequence_static(signature: SequenceSignature) -> StaticValidationR
     """
     from ..config.operator_names import (
         VALID_START_OPERATORS, VALID_END_OPERATORS,
-        DESTABILIZERS_STRONG, DESTABILIZERS_MODERATE, DESTABILIZERS_WEAK,
         CANONICAL_OPERATOR_NAMES
     )
     from .grammar_types import (
@@ -147,21 +142,20 @@ def _validate_sequence_static(signature: SequenceSignature) -> StaticValidationR
         static_errors=errors
     )
 
-
 def validate_sequence_optimized(
-    sequence: List[Any],
+    sequence: list[Any],
     epi_initial: float = 0.0,
-    compatibility_level: Optional[CompatibilityLevel] = None,
+    compatibility_level: CompatibilityLevel | None = None,
     # Dynamic context (NEVER cached)
-    graph: Optional[Any] = None,
-    recent_destabilizers: Optional[List[str]] = None,
-    bifurcation_window: Optional[int] = None,
-) -> Tuple[bool, List[str]]:
+    graph: Any | None = None,
+    recent_destabilizers: list[str] | None = None,
+    bifurcation_window: int | None = None,
+) -> tuple[bool, list[str]]:
     """Optimized sequence validation with memoization.
 
     Returns
     -------
-    (is_valid, messages) : Tuple[bool, List[str]]
+    (is_valid, messages) : tuple[bool, list[str]]
         Validation result and any error/warning messages
     """
     # Get cached static validation
@@ -223,8 +217,7 @@ def validate_sequence_optimized(
 
     return is_valid, messages
 
-
-def get_memoization_stats() -> Dict[str, Any]:
+def get_memoization_stats() -> dict[str, Any]:
     """Get cache statistics for monitoring."""
     cache_info = _validate_sequence_static.cache_info()
     return {
@@ -240,11 +233,9 @@ def get_memoization_stats() -> Dict[str, Any]:
         }
     }
 
-
 def clear_memoization_cache() -> None:
     """Clear all memoization caches."""
     _validate_sequence_static.cache_clear()
-
 
 __all__ = [
     "SequenceSignature",

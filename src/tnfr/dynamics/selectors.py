@@ -35,6 +35,12 @@ from ..mathematics.unified_numerical import np
 from ..validation import soft_grammar_filters
 from .aliases import ALIAS_D2EPI, ALIAS_DNFR, ALIAS_DSI, ALIAS_SI
 
+# ---------------------------------------------------------------------------
+# Score override thresholds for glyph selector
+# ---------------------------------------------------------------------------
+_SCORE_HIGH_OVERRIDE = 0.66
+_SCORE_LOW_OVERRIDE = 0.33
+
 __all__ = (
     "GlyphCode",
     "AbstractSelector",
@@ -52,7 +58,6 @@ __all__ = (
     "_choose_glyph",
 )
 
-
 class AbstractSelector(ABC):
     """Interface describing glyph selector lifecycle hooks."""
 
@@ -69,7 +74,6 @@ class AbstractSelector(ABC):
         """Allow selectors to be used as legacy callables."""
 
         return self.select(graph, node)
-
 
 def _default_selector_logic(G: TNFRGraph, n: NodeId) -> GlyphCode:
     nd = G.nodes[n]
@@ -91,7 +95,6 @@ def _default_selector_logic(G: TNFRGraph, n: NodeId) -> GlyphCode:
         return "OZ" if dnfr > dnfr_hi else "ZHIR"
     return "NAV" if dnfr > dnfr_hi else "RA"
 
-
 def _soft_grammar_prefilter(
     G: TNFRGraph,
     n: NodeId,
@@ -106,7 +109,6 @@ def _soft_grammar_prefilter(
     ctx = GrammarContext.from_graph(G)
     return cast(GlyphCode, soft_grammar_filters(ctx, n, cand))
 
-
 def _selector_normalized_metrics(
     nd: Mapping[str, Any], norms: Mapping[str, float]
 ) -> tuple[float, float, float]:
@@ -116,7 +118,6 @@ def _selector_normalized_metrics(
     dnfr = abs(get_attr(nd, ALIAS_DNFR, 0.0)) / dnfr_max
     accel = abs(get_attr(nd, ALIAS_D2EPI, 0.0)) / acc_max
     return Si, dnfr, accel
-
 
 def _selector_base_choice(
     Si: float, dnfr: float, accel: float, thr: Mapping[str, float]
@@ -132,7 +133,6 @@ def _selector_base_choice(
         return "NAV"
     return "RA"
 
-
 def _configure_selector_weights(G: TNFRGraph) -> Mapping[str, float]:
     """Load and cache selector weight configuration from graph parameters."""
 
@@ -140,7 +140,6 @@ def _configure_selector_weights(G: TNFRGraph) -> Mapping[str, float]:
     cast_weights = cast(Mapping[str, float], weights)
     G.graph["_selector_weights"] = cast_weights
     return cast_weights
-
 
 def _compute_selector_score(
     G: TNFRGraph,
@@ -164,15 +163,13 @@ def _compute_selector_score(
             score -= 0.05
     return float(score)
 
-
 def _apply_score_override(cand: GlyphCode, score: float, dnfr: float, dnfr_lo: float) -> GlyphCode:
     cand_key = str(cand)
-    if score >= 0.66 and cand_key in ("NAV", "RA", "ZHIR", "OZ"):
+    if score >= _SCORE_HIGH_OVERRIDE and cand_key in ("NAV", "RA", "ZHIR", "OZ"):
         return "IL"
-    if score <= 0.33 and cand_key in ("NAV", "RA", "IL"):
+    if score <= _SCORE_LOW_OVERRIDE and cand_key in ("NAV", "RA", "IL"):
         return "OZ" if dnfr >= dnfr_lo else "ZHIR"
     return cand
-
 
 def _parametric_selector_logic(G: TNFRGraph, n: NodeId) -> GlyphCode:
     nd = G.nodes[n]
@@ -196,7 +193,6 @@ def _parametric_selector_logic(G: TNFRGraph, n: NodeId) -> GlyphCode:
 
     return _soft_grammar_prefilter(G, n, cand)
 
-
 @dataclass(slots=True)
 class _SelectorPreselection:
     """Precomputed selector context shared across glyph decisions."""
@@ -206,7 +202,6 @@ class _SelectorPreselection:
     base_choices: Mapping[Any, GlyphCode]
     thresholds: Mapping[str, float] | None = None
     margin: float | None = None
-
 
 def _build_default_preselection(G: TNFRGraph, nodes: Sequence[NodeId]) -> _SelectorPreselection:
     node_list = list(nodes)
@@ -219,7 +214,6 @@ def _build_default_preselection(G: TNFRGraph, nodes: Sequence[NodeId]) -> _Selec
     metrics = _collect_selector_metrics(G, node_list, norms, n_jobs=n_jobs)
     base_choices = _compute_default_base_choices(metrics, thresholds)
     return _SelectorPreselection("default", metrics, base_choices, thresholds=thresholds)
-
 
 def _build_param_preselection(G: TNFRGraph, nodes: Sequence[NodeId]) -> _SelectorPreselection:
     node_list = list(nodes)
@@ -239,7 +233,6 @@ def _build_param_preselection(G: TNFRGraph, nodes: Sequence[NodeId]) -> _Selecto
         thresholds=thresholds,
         margin=margin,
     )
-
 
 class DefaultGlyphSelector(AbstractSelector):
     """Selector implementing the legacy default glyph heuristic."""
@@ -264,7 +257,6 @@ class DefaultGlyphSelector(AbstractSelector):
         else:
             preselection = None
         return _resolve_preselected_glyph(graph, node, _default_selector_logic, preselection)
-
 
 class ParametricGlyphSelector(AbstractSelector):
     """Selector exposing the parametric scoring pipeline."""
@@ -292,10 +284,8 @@ class ParametricGlyphSelector(AbstractSelector):
             preselection = None
         return _resolve_preselected_glyph(graph, node, _parametric_selector_logic, preselection)
 
-
 default_glyph_selector = DefaultGlyphSelector()
 parametric_glyph_selector = ParametricGlyphSelector()
-
 
 def _choose_glyph(
     G: TNFRGraph,
@@ -326,7 +316,6 @@ def _choose_glyph(
             raise
     return g
 
-
 def _selector_metrics_chunk(
     args: tuple[list[float], list[float], list[float], float, float],
 ) -> tuple[list[float], list[float], list[float]]:
@@ -337,7 +326,6 @@ def _selector_metrics_chunk(
     dnfr_seq = [abs(float(v)) / dnfr_max for v in dnfr_values]
     accel_seq = [abs(float(v)) / accel_max for v in accel_values]
     return si_seq, dnfr_seq, accel_seq
-
 
 def _collect_selector_metrics(
     G: TNFRGraph,
@@ -419,7 +407,6 @@ def _collect_selector_metrics(
 
     return {node: (si_seq[idx], dnfr_seq[idx], accel_seq[idx]) for idx, node in enumerate(nodes)}
 
-
 def _compute_default_base_choices(
     metrics: Mapping[Any, tuple[float, float, float]],
     thresholds: Mapping[str, float],
@@ -438,7 +425,6 @@ def _compute_default_base_choices(
             base[node] = "NAV" if dnfr > dnfr_hi else "RA"
     return base
 
-
 def _param_base_worker(
     args: tuple[Mapping[str, float], list[tuple[Any, tuple[float, float, float]]]],
 ) -> list[tuple[Any, str]]:
@@ -447,7 +433,6 @@ def _param_base_worker(
         (node, _selector_base_choice(Si, dnfr, accel, thresholds))
         for node, (Si, dnfr, accel) in chunk
     ]
-
 
 def _compute_param_base_choices(
     metrics: Mapping[Any, tuple[float, float, float]],
@@ -483,7 +468,6 @@ def _compute_param_base_choices(
                 base[node] = cand
     return base
 
-
 def _prepare_selector_preselection(
     G: TNFRGraph,
     selector: GlyphSelector,
@@ -496,7 +480,6 @@ def _prepare_selector_preselection(
     if selector is parametric_glyph_selector:
         return _build_param_preselection(G, nodes)
     return None
-
 
 def _resolve_preselected_glyph(
     G: TNFRGraph,
@@ -539,7 +522,6 @@ def _resolve_preselected_glyph(
 
     return selector(G, n)
 
-
 def _glyph_proposal_worker(
     args: tuple[
         list[NodeId],
@@ -550,7 +532,6 @@ def _glyph_proposal_worker(
 ) -> list[tuple[NodeId, GlyphCode]]:
     nodes, G, selector, preselection = args
     return [(n, _resolve_preselected_glyph(G, n, selector, preselection)) for n in nodes]
-
 
 def _apply_glyphs(G: TNFRGraph, selector: GlyphSelector, hist: HistoryState) -> None:
     """Apply glyph decisions across the graph updating hysteresis trackers."""
@@ -642,7 +623,6 @@ def _apply_glyphs(G: TNFRGraph, selector: GlyphSelector, hist: HistoryState) -> 
             h_en[n] = min(h_en[n], en_max)
         elif glyph_enum is Glyph.EN:
             h_en[n] = 0
-
 
 def _apply_selector(G: TNFRGraph) -> GlyphSelector:
     """Resolve the glyph selector callable configured on ``G``."""

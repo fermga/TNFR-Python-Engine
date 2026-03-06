@@ -40,16 +40,14 @@ import uuid
 import threading
 from dataclasses import dataclass, asdict, field
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 from collections import deque
 import logging
 
 # Unified configuration and backend integration
 from ..config import get_config
 
-
 logger = logging.getLogger(__name__)
-
 
 @dataclass
 class TelemetryConfiguration:
@@ -77,8 +75,7 @@ class TelemetryConfiguration:
     
     # Filtering
     min_event_level: str = "INFO"  # "DEBUG", "INFO", "WARNING", "ERROR"
-    event_type_filters: List[str] = field(default_factory=list)
-
+    event_type_filters: list[str] = field(default_factory=list)
 
 @dataclass
 class StructuralTelemetryEvent:
@@ -88,29 +85,28 @@ class StructuralTelemetryEvent:
     event_id: str
     correlation_id: str 
     timestamp: float
-    node_id: Optional[str] = None
+    node_id: str | None = None
     
     # Structural field tetrad (Universal Tetrahedral Correspondence)
-    phi_s: Optional[float] = None  # Structural potential
-    phase_gradient: Optional[float] = None  # |∇φ|
-    phase_curvature: Optional[float] = None  # K_φ
-    coherence_length: Optional[float] = None  # ξ_C
+    phi_s: float | None = None  # Structural potential
+    phase_gradient: float | None = None  # |∇φ|
+    phase_curvature: float | None = None  # K_φ
+    coherence_length: float | None = None  # ξ_C
     
     # Core TNFR metrics
-    coherence: Optional[float] = None  # C(t)
-    sense_index: Optional[float] = None  # Si
-    delta_nfr: Optional[float] = None  # ΔNFR
-    vf: Optional[float] = None  # νf
-    phase: Optional[float] = None  # φ/θ
-    epi: Optional[float] = None  # EPI
+    coherence: float | None = None  # C(t)
+    sense_index: float | None = None  # Si
+    delta_nfr: float | None = None  # ΔNFR
+    vf: float | None = None  # νf
+    phase: float | None = None  # φ/θ
+    epi: float | None = None  # EPI
     
     # System state
-    operator_sequence: Optional[List[str]] = None
+    operator_sequence: list[str] | None = None
     system_status: str = "normal"
     
     # Additional context
-    metadata: Dict[str, Any] = field(default_factory=dict)
-
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 @dataclass 
 class PerformanceTelemetryEvent:
@@ -129,21 +125,20 @@ class PerformanceTelemetryEvent:
     gpu_usage_percent: float = 0.0
     
     # Throughput metrics
-    operations_per_second: Optional[float] = None
-    data_throughput_mbps: Optional[float] = None
+    operations_per_second: float | None = None
+    data_throughput_mbps: float | None = None
     
     # Resource utilization
     backend_used: str = "unknown"
-    device_used: Optional[str] = None
-    cache_hit_rate: Optional[float] = None
+    device_used: str | None = None
+    cache_hit_rate: float | None = None
     
     # Quality metrics
     success: bool = True
-    error_message: Optional[str] = None
+    error_message: str | None = None
     
     # Context
-    metadata: Dict[str, Any] = field(default_factory=dict)
-
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 @dataclass
 class FailureTelemetryEvent:
@@ -156,26 +151,25 @@ class FailureTelemetryEvent:
     
     # Failure details
     failure_type: str  # "computational", "memory", "convergence", "validation"
-    error_code: Optional[str] = None
+    error_code: str | None = None
     error_message: str = ""
-    stack_trace: Optional[str] = None
+    stack_trace: str | None = None
     
     # System context at failure
-    system_state: Dict[str, Any] = field(default_factory=dict)
-    operation_context: Dict[str, Any] = field(default_factory=dict)
+    system_state: dict[str, Any] = field(default_factory=dict)
+    operation_context: dict[str, Any] = field(default_factory=dict)
     
     # Recovery information
     recovery_attempted: bool = False
     recovery_successful: bool = False
-    fallback_used: Optional[str] = None
+    fallback_used: str | None = None
     
     # Impact assessment
     severity: str = "medium"  # "low", "medium", "high", "critical"
-    affected_operations: List[str] = field(default_factory=list)
+    affected_operations: list[str] = field(default_factory=list)
     
     # Additional context
-    metadata: Dict[str, Any] = field(default_factory=dict)
-
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 class TNFRUnifiedTelemetrySystem:
     """Unified Telemetry System - Consolidated Metrics and Event Collection.
@@ -223,7 +217,7 @@ class TNFRUnifiedTelemetrySystem:
         - Integrated with unified config system
     """
     
-    def __init__(self, config: Optional[TelemetryConfiguration] = None):
+    def __init__(self, config: TelemetryConfiguration | None = None):
         """Initialize unified telemetry system."""
         self.config = config or TelemetryConfiguration()
         
@@ -234,11 +228,11 @@ class TNFRUnifiedTelemetrySystem:
         
         # Threading for async emission
         self._flush_lock = threading.Lock()
-        self._flush_timer: Optional[threading.Timer] = None
+        self._flush_timer: threading.Timer | None = None
         
         # Correlation tracking
-        self._active_correlations: Dict[str, Dict[str, Any]] = {}
-        self._correlation_counters: Dict[str, int] = {}
+        self._active_correlations: dict[str, dict[str, Any]] = {}
+        self._correlation_counters: dict[str, int] = {}
         
         # Performance statistics
         self._emission_stats = {
@@ -264,8 +258,8 @@ class TNFRUnifiedTelemetrySystem:
     
     def emit_structural_event(
         self,
-        correlation_id: Optional[str] = None,
-        node_id: Optional[str] = None,
+        correlation_id: str | None = None,
+        node_id: str | None = None,
         **kwargs: Any
     ) -> str:
         """Emit structural telemetry event with TNFR field measurements.
@@ -315,7 +309,7 @@ class TNFRUnifiedTelemetrySystem:
         self,
         operation_name: str,
         duration_ms: float,
-        correlation_id: Optional[str] = None,
+        correlation_id: str | None = None,
         **kwargs: Any
     ) -> str:
         """Emit performance telemetry event for operation monitoring.
@@ -368,7 +362,7 @@ class TNFRUnifiedTelemetrySystem:
         self,
         failure_type: str,
         error_message: str = "",
-        correlation_id: Optional[str] = None,
+        correlation_id: str | None = None,
         **kwargs: Any
     ) -> str:
         """Emit failure telemetry event for error analysis.
@@ -376,7 +370,7 @@ class TNFRUnifiedTelemetrySystem:
         Parameters
         ----------
         failure_type : str
-            Type of failure (computational, memory, convergence, etc.)
+            type of failure (computational, memory, convergence, etc.)
         error_message : str
             Description of the failure
         correlation_id : str, optional
@@ -416,7 +410,7 @@ class TNFRUnifiedTelemetrySystem:
         
         return event_id
     
-    def start_correlation(self, correlation_name: str, context: Optional[Dict[str, Any]] = None) -> str:
+    def start_correlation(self, correlation_name: str, context: dict[str, Any] | None = None) -> str:
         """Start a new correlation session for tracking related events.
         
         Parameters
@@ -443,7 +437,7 @@ class TNFRUnifiedTelemetrySystem:
         
         return correlation_id
     
-    def end_correlation(self, correlation_id: str) -> Dict[str, Any]:
+    def end_correlation(self, correlation_id: str) -> dict[str, Any]:
         """End a correlation session and return summary.
         
         Parameters
@@ -522,7 +516,7 @@ class TNFRUnifiedTelemetrySystem:
         filename = self.config.output_directory / f"failure_telemetry_{int(time.time())}.{self.config.file_format}"
         self._write_events_to_file(events, filename)
     
-    def _write_events_to_file(self, events: List[Any], filename: Path) -> None:
+    def _write_events_to_file(self, events: list[Any], filename: Path) -> None:
         """Write events to file in specified format."""
         try:
             if self.config.file_format == "jsonl":
@@ -560,7 +554,7 @@ class TNFRUnifiedTelemetrySystem:
             # Schedule next flush
             self._schedule_flush()
     
-    def get_statistics(self) -> Dict[str, Any]:
+    def get_statistics(self) -> dict[str, Any]:
         """Get telemetry system statistics."""
         stats = self._emission_stats.copy()
         
@@ -593,16 +587,14 @@ class TNFRUnifiedTelemetrySystem:
         
         logger.info("Unified telemetry system cleanup completed")
 
-
 # ============================================================================
 # PUBLIC API - Unified Telemetry Interface
 # ============================================================================
 
 # Global unified telemetry system instance
-_unified_telemetry_system: Optional[TNFRUnifiedTelemetrySystem] = None
+_unified_telemetry_system: TNFRUnifiedTelemetrySystem | None = None
 
-
-def get_unified_telemetry_system(config: Optional[TelemetryConfiguration] = None) -> TNFRUnifiedTelemetrySystem:
+def get_unified_telemetry_system(config: TelemetryConfiguration | None = None) -> TNFRUnifiedTelemetrySystem:
     """Get or create global unified telemetry system.
     
     This provides a singleton interface for all TNFR telemetry operations
@@ -626,30 +618,25 @@ def get_unified_telemetry_system(config: Optional[TelemetryConfiguration] = None
     
     return _unified_telemetry_system
 
-
 # Convenience functions for direct telemetry operations
 def emit_structural_telemetry(**kwargs: Any) -> str:
     """Emit structural telemetry - convenience function."""
     return get_unified_telemetry_system().emit_structural_event(**kwargs)
 
-
 def emit_performance_telemetry(operation_name: str, duration_ms: float, **kwargs: Any) -> str:
     """Emit performance telemetry - convenience function."""
     return get_unified_telemetry_system().emit_performance_event(operation_name, duration_ms, **kwargs)
 
-
 def emit_failure_telemetry(failure_type: str, error_message: str = "", **kwargs: Any) -> str:
     """Emit failure telemetry - convenience function."""
     return get_unified_telemetry_system().emit_failure_event(failure_type, error_message, **kwargs)
-
 
 def flush_unified_telemetry() -> None:
     """Flush unified telemetry buffers - convenience function."""
     if _unified_telemetry_system is not None:
         _unified_telemetry_system.flush_all()
 
-
-def get_unified_telemetry_stats() -> Dict[str, Any]:
+def get_unified_telemetry_stats() -> dict[str, Any]:
     """Get unified telemetry statistics - convenience function."""
     if _unified_telemetry_system is not None:
         return _unified_telemetry_system.get_statistics()

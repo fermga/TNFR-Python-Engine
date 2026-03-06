@@ -116,7 +116,6 @@ __all__ = [
     "compute_network_phase_alignment",
 ]
 
-
 def compute_phase_coupling_strength(
     theta_a: float,
     theta_b: float,
@@ -196,7 +195,6 @@ def compute_phase_coupling_strength(
     phase_diff = abs(angle_diff(theta_b, theta_a))
     return 1.0 - (phase_diff / math.pi)
 
-
 def is_phase_compatible(
     theta_a: float,
     theta_b: float,
@@ -267,7 +265,6 @@ def is_phase_compatible(
     """
     coupling = compute_phase_coupling_strength(theta_a, theta_b)
     return coupling >= threshold
-
 
 def compute_network_phase_alignment(
     G: TNFRGraph,

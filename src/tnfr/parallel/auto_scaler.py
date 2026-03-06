@@ -7,8 +7,13 @@ resources, and hardware capabilities.
 from __future__ import annotations
 
 from multiprocessing import cpu_count
-from typing import Any, Dict, List
+from typing import Any
 
+# ---------------------------------------------------------------------------
+# Efficiency alert thresholds
+# ---------------------------------------------------------------------------
+_PARALLELIZATION_EFFICIENCY_ALERT = 0.5
+_MEMORY_EFFICIENCY_CRITICAL = 0.1
 
 class TNFRAutoScaler:
     """Auto-scaler for TNFR parallel execution strategies.
@@ -30,15 +35,15 @@ class TNFRAutoScaler:
     """
 
     def __init__(self):
-        self.performance_history: Dict[str, Any] = {}
-        self.optimal_configs: Dict[str, Any] = {}
+        self.performance_history: dict[str, Any] = {}
+        self.optimal_configs: dict[str, Any] = {}
 
     def recommend_execution_strategy(
         self,
         graph_size: int,
         available_memory_gb: float = 8.0,
         has_gpu: bool = False,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Recommend optimal execution strategy for given configuration.
 
         Parameters
@@ -52,7 +57,7 @@ class TNFRAutoScaler:
 
         Returns
         -------
-        Dict[str, Any]
+        dict[str, Any]
             Strategy recommendation with keys:
             - backend: str (sequential/multiprocessing/gpu/distributed)
             - workers: int (recommended worker count)
@@ -68,7 +73,7 @@ class TNFRAutoScaler:
         - Large networks (1000-10000) with GPU: Vectorized GPU
         - Massive networks (>10000): Distributed computation required
         """
-        strategy: Dict[str, Any] = {}
+        strategy: dict[str, Any] = {}
 
         # Select backend based on size
         if graph_size < 100:
@@ -178,25 +183,25 @@ class TNFRAutoScaler:
         time_factor = base_time_per_1k.get(backend, 2.0)
         return (graph_size / 1000.0) * time_factor
 
-    def get_optimization_suggestions(self, performance_metrics: Dict[str, Any]) -> List[str]:
+    def get_optimization_suggestions(self, performance_metrics: dict[str, Any]) -> list[str]:
         """Generate optimization suggestions based on observed performance.
 
         Parameters
         ----------
-        performance_metrics : Dict[str, Any]
+        performance_metrics : dict[str, Any]
             Performance data from execution monitoring
 
         Returns
         -------
         list[str]
-            List of actionable optimization suggestions
+            list of actionable optimization suggestions
         """
         suggestions = []
 
         # Check parallelization efficiency
         if "parallelization_efficiency" in performance_metrics:
             eff = performance_metrics["parallelization_efficiency"]
-            if eff < 0.5:
+            if eff < _PARALLELIZATION_EFFICIENCY_ALERT:
                 suggestions.append(
                     "⚡ Low parallelization efficiency - consider reducing "
                     "worker count or increasing partition size"
@@ -205,7 +210,7 @@ class TNFRAutoScaler:
         # Check memory usage
         if "memory_efficiency" in performance_metrics:
             mem_eff = performance_metrics["memory_efficiency"]
-            if mem_eff < 0.1:
+            if mem_eff < _MEMORY_EFFICIENCY_CRITICAL:
                 suggestions.append(
                     "💾 High memory usage - consider distributed execution "
                     "or memory optimization"

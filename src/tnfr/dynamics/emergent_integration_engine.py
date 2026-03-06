@@ -34,7 +34,7 @@ Status: CANONICAL EMERGENT INTEGRATION ENGINE
 """
 
 from ..mathematics.unified_numerical import np
-from typing import Dict, Any, Optional, List, Tuple, Set
+from typing import Any
 from dataclasses import dataclass
 from enum import Enum
 import time
@@ -101,7 +101,6 @@ try:
 except ImportError:
     HAS_PHYSICS = False
 
-
 class IntegrationOpportunity(Enum):
     """Types of integration opportunities that can emerge."""
     SPECTRAL_SHARING = "spectral_sharing"              # Share eigendecompositions
@@ -111,32 +110,29 @@ class IntegrationOpportunity(Enum):
     PHASE_INFORMED_CACHING = "phase_informed_caching"  # Use phase dynamics for cache
     MATHEMATICAL_CONSISTENCY = "mathematical_consistency" # Ensure mathematical invariants
 
-
 @dataclass
 class IntegrationPattern:
     """Discovered integration pattern with mathematical foundation."""
     pattern_id: str
     opportunity_type: IntegrationOpportunity
     mathematical_basis: str  # Mathematical justification
-    involved_engines: Set[str]
-    integration_strategy: Dict[str, Any]
-    expected_benefit: Dict[str, float]  # Performance improvements
-    mathematical_requirements: List[str]  # Invariants that must be preserved
+    involved_engines: set[str]
+    integration_strategy: dict[str, Any]
+    expected_benefit: dict[str, float]  # Performance improvements
+    mathematical_requirements: list[str]  # Invariants that must be preserved
     confidence_score: float
-    validation_results: Optional[Dict[str, Any]] = None
-
+    validation_results: dict[str, Any] | None = None
 
 @dataclass
 class IntegrationResult:
     """Result of applying an integration pattern."""
     pattern_applied: str
     success: bool
-    performance_improvement: Dict[str, float]
+    performance_improvement: dict[str, float]
     mathematical_consistency_maintained: bool
-    resource_savings: Dict[str, float]
-    side_effects: List[str]
+    resource_savings: dict[str, float]
+    side_effects: list[str]
     timestamp: float
-
 
 class TNFREmergentIntegrationEngine:
     """
@@ -174,9 +170,9 @@ class TNFREmergentIntegrationEngine:
             self.fft_cache = None
             
         # Integration state
-        self.discovered_patterns: Dict[str, IntegrationPattern] = {}
-        self.applied_integrations: List[IntegrationResult] = []
-        self.integration_opportunities: List[IntegrationPattern] = []
+        self.discovered_patterns: dict[str, IntegrationPattern] = {}
+        self.applied_integrations: list[IntegrationResult] = []
+        self.integration_opportunities: list[IntegrationPattern] = []
         
         # Mathematical consistency tracking
         self.mathematical_invariants = [
@@ -188,13 +184,13 @@ class TNFREmergentIntegrationEngine:
         ]
         
         # Performance tracking
-        self.performance_baselines: Dict[str, float] = {}
-        self.integration_benefits: Dict[str, List[float]] = defaultdict(list)
+        self.performance_baselines: dict[str, float] = {}
+        self.integration_benefits: dict[str, list[float]] = defaultdict(list)
         
         # Thread safety
         self._lock = threading.RLock()
     
-    def discover_integration_opportunities(self, G: Any) -> List[IntegrationPattern]:
+    def discover_integration_opportunities(self, G: Any) -> list[IntegrationPattern]:
         """
         Discover integration opportunities by analyzing mathematical structure.
         
@@ -233,7 +229,7 @@ class TNFREmergentIntegrationEngine:
             
         return opportunities
     
-    def _analyze_spectral_sharing_opportunities(self, G: Any) -> Optional[IntegrationPattern]:
+    def _analyze_spectral_sharing_opportunities(self, G: Any) -> IntegrationPattern | None:
         """Analyze opportunities for sharing spectral decompositions."""
         if not HAS_ALL_ENGINES or not HAS_NETWORKX or G is None:
             return None
@@ -277,7 +273,7 @@ class TNFREmergentIntegrationEngine:
             
         return None
     
-    def _analyze_cache_coordination_opportunities(self, G: Any) -> Optional[IntegrationPattern]:
+    def _analyze_cache_coordination_opportunities(self, G: Any) -> IntegrationPattern | None:
         """Analyze opportunities for coordinating cache strategies."""
         if not self.cache_orchestrator or G is None:
             return None
@@ -310,7 +306,7 @@ class TNFREmergentIntegrationEngine:
             
         return None
     
-    def _analyze_vectorization_fusion_opportunities(self, G: Any) -> Optional[IntegrationPattern]:
+    def _analyze_vectorization_fusion_opportunities(self, G: Any) -> IntegrationPattern | None:
         """Analyze opportunities for fusing vectorized computations."""
         if not self.nodal_optimizer or G is None:
             return None
@@ -343,7 +339,7 @@ class TNFREmergentIntegrationEngine:
             
         return None
     
-    def _analyze_temporal_prediction_opportunities(self, G: Any) -> Optional[IntegrationPattern]:
+    def _analyze_temporal_prediction_opportunities(self, G: Any) -> IntegrationPattern | None:
         """Analyze opportunities for temporal prediction caching."""
         if not self.nodal_optimizer or G is None:
             return None
@@ -373,7 +369,7 @@ class TNFREmergentIntegrationEngine:
             confidence_score=INTEGRATION_CONFIDENCE_MINIMAL_CANONICAL
         )
     
-    def _analyze_phase_informed_caching_opportunities(self, G: Any) -> Optional[IntegrationPattern]:
+    def _analyze_phase_informed_caching_opportunities(self, G: Any) -> IntegrationPattern | None:
         """Analyze opportunities for using phase dynamics to inform caching."""
         if G is None or not HAS_ALL_ENGINES:
             return None
@@ -479,7 +475,7 @@ class TNFREmergentIntegrationEngine:
                 
         return result
     
-    def _apply_spectral_sharing(self, pattern: IntegrationPattern, G: Any) -> Tuple[bool, Dict[str, Any]]:
+    def _apply_spectral_sharing(self, pattern: IntegrationPattern, G: Any) -> tuple[bool, dict[str, Any]]:
         """Apply spectral sharing integration."""
         try:
             if self.spectral_fusion:
@@ -495,7 +491,7 @@ class TNFREmergentIntegrationEngine:
             
         return False, {"error": "Spectral fusion engine not available"}
     
-    def _apply_cache_coordination(self, pattern: IntegrationPattern, G: Any) -> Tuple[bool, Dict[str, Any]]:
+    def _apply_cache_coordination(self, pattern: IntegrationPattern, G: Any) -> tuple[bool, dict[str, Any]]:
         """Apply cache coordination integration."""
         try:
             if self.centralization and self.cache_orchestrator:
@@ -513,7 +509,7 @@ class TNFREmergentIntegrationEngine:
             
         return False, {"error": "Required engines not available"}
     
-    def _apply_vectorization_fusion(self, pattern: IntegrationPattern, G: Any) -> Tuple[bool, Dict[str, Any]]:
+    def _apply_vectorization_fusion(self, pattern: IntegrationPattern, G: Any) -> tuple[bool, dict[str, Any]]:
         """Apply vectorization fusion integration."""
         try:
             if self.nodal_optimizer and HAS_PHYSICS:
@@ -533,7 +529,7 @@ class TNFREmergentIntegrationEngine:
             
         return False, {"error": "Vectorization components not available"}
     
-    def _apply_temporal_prediction(self, pattern: IntegrationPattern, G: Any) -> Tuple[bool, Dict[str, Any]]:
+    def _apply_temporal_prediction(self, pattern: IntegrationPattern, G: Any) -> tuple[bool, dict[str, Any]]:
         """Apply temporal prediction integration."""
         try:
             if self.nodal_optimizer and self.structural_cache:
@@ -551,7 +547,7 @@ class TNFREmergentIntegrationEngine:
             
         return False, {"error": "Temporal prediction components not available"}
     
-    def _apply_phase_informed_caching(self, pattern: IntegrationPattern, G: Any) -> Tuple[bool, Dict[str, Any]]:
+    def _apply_phase_informed_caching(self, pattern: IntegrationPattern, G: Any) -> tuple[bool, dict[str, Any]]:
         """Apply phase-informed caching integration."""
         try:
             # Simulate phase-guided cache prefetch
@@ -568,7 +564,7 @@ class TNFREmergentIntegrationEngine:
             
         return False, {"error": "Phase coordination not available"}
     
-    def _measure_baseline_performance(self, G: Any, pattern: IntegrationPattern) -> Dict[str, float]:
+    def _measure_baseline_performance(self, G: Any, pattern: IntegrationPattern) -> dict[str, float]:
         """Measure baseline performance metrics."""
         return {
             "computation_time": INTEGRATION_COMPUTATION_BASELINE_CANONICAL,  # Placeholder baseline
@@ -583,7 +579,7 @@ class TNFREmergentIntegrationEngine:
         # In full implementation, would check all mathematical invariants
         return True
     
-    def get_integration_statistics(self) -> Dict[str, Any]:
+    def get_integration_statistics(self) -> dict[str, Any]:
         """Get comprehensive integration statistics."""
         with self._lock:
             successful_integrations = [r for r in self.applied_integrations if r.success]
@@ -618,10 +614,8 @@ class TNFREmergentIntegrationEngine:
                 }
             }
 
-
 # Global integration engine instance
 _global_integration_engine = None
-
 
 def get_emergent_integration_engine() -> TNFREmergentIntegrationEngine:
     """Get or create the global emergent integration engine."""
@@ -630,12 +624,11 @@ def get_emergent_integration_engine() -> TNFREmergentIntegrationEngine:
         _global_integration_engine = TNFREmergentIntegrationEngine()
     return _global_integration_engine
 
-
 def discover_and_apply_integrations(
     G: Any,
     auto_apply: bool = True,
     validate_mathematics: bool = True
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Convenience function to discover and optionally apply integration opportunities.
     

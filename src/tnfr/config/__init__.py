@@ -86,7 +86,6 @@ except ImportError:
 
 ensure_node_offset_map = _ensure_node_offset_map
 
-
 _GLOBAL_CONFIG = None
 
 def get_config() -> TNFRConfig:
@@ -96,7 +95,6 @@ def get_config() -> TNFRConfig:
         _GLOBAL_CONFIG = TNFRConfig()
     return _GLOBAL_CONFIG
 
-
 # Legacy function wrappers that use TNFRConfig internally
 def inject_defaults(G, defaults=None, override=False):
     """Inject defaults into graph (backward compatible wrapper).
@@ -105,7 +103,6 @@ def inject_defaults(G, defaults=None, override=False):
     """
     config = TNFRConfig(defaults=defaults or DEFAULTS, validate_invariants=True)
     config.inject_defaults(G, defaults=defaults or DEFAULTS, override=override)
-
 
 def merge_overrides(G, **overrides):
     """Apply specific overrides to graph configuration.
@@ -134,7 +131,6 @@ def merge_overrides(G, **overrides):
             value if _is_immutable(value) else cast(TNFRConfigValue, copy.deepcopy(value))
         )
 
-
 def get_param(G, key: str):
     """Retrieve parameter from graph or defaults.
 
@@ -161,7 +157,6 @@ def get_param(G, key: str):
         raise KeyError(f"Unknown parameter: '{key}'")
     return DEFAULTS[key]
 
-
 def get_graph_param(G, key: str, cast_fn=float):
     """Return parameter from graph applying cast function.
 
@@ -181,7 +176,6 @@ def get_graph_param(G, key: str, cast_fn=float):
     """
     val = get_param(G, key)
     return None if val is None else cast_fn(val)
-
 
 __all__ = (
     # Main configuration class

@@ -36,7 +36,6 @@ __all__ = (
     "validate_operator_parameters",
 )
 
-
 def validate_glyph(value: Any) -> Glyph:
     """Validate and convert a value to a Glyph.
     
@@ -62,7 +61,6 @@ def validate_glyph(value: Any) -> Glyph:
         return Glyph(str(value))
     except ValueError as e:
         raise ValidationError(f"Invalid glyph value: {value}") from e
-
 
 def validate_node_id(value: Any) -> NodeId:
     """Validate a node ID value.
@@ -93,7 +91,6 @@ def validate_node_id(value: Any) -> NodeId:
         raise ValidationError(f"Node ID must be hashable, got {type(value).__name__}") from e
     
     return value
-
 
 def validate_tnfr_graph(graph: Any) -> TNFRGraph:
     """Validate that an object is a valid TNFR graph.
@@ -126,7 +123,6 @@ def validate_tnfr_graph(graph: Any) -> TNFRGraph:
         )
     
     return graph
-
 
 def validate_epi_value(value: Any, field_name: str = "epi") -> float:
     """Validate an EPI (Primary Information Structure) value.
@@ -165,7 +161,6 @@ def validate_epi_value(value: Any, field_name: str = "epi") -> float:
 
     return fval
 
-
 def validate_vf_value(value: Any, field_name: str = "vf") -> float:
     """Validate a structural frequency (νf) value.
     
@@ -194,7 +189,6 @@ def validate_vf_value(value: Any, field_name: str = "vf") -> float:
     
     return result.validated_value
 
-
 def validate_theta_value(value: Any, field_name: str = "theta") -> float:
     """Validate a phase (θ) value.
     
@@ -222,7 +216,6 @@ def validate_theta_value(value: Any, field_name: str = "theta") -> float:
         raise ValidationError("; ".join(result.error_messages))
     
     return result.validated_value
-
 
 def validate_dnfr_value(value: Any, field_name: str = "dnfr") -> float:
     """Validate a ΔNFR (nodal gradient) value.
@@ -259,7 +252,6 @@ def validate_dnfr_value(value: Any, field_name: str = "dnfr") -> float:
     
     return validated
 
-
 def validate_glyph_factors(factors: Any) -> dict:
     """Validate glyph factors dictionary.
     
@@ -287,7 +279,6 @@ def validate_glyph_factors(factors: Any) -> dict:
         )
     
     return factors
-
 
 def validate_operator_parameters(**params: Any) -> dict:
     """Validate operator parameters.

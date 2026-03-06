@@ -30,7 +30,6 @@ __all__ = [
     "glyph_history_to_operator_names",
 ]
 
-
 def glyph_history_to_operator_names(glyph_history: Sequence[str]) -> list[str]:
     """Convert glyph history to operator names for comparison.
 
@@ -46,7 +45,7 @@ def glyph_history_to_operator_names(glyph_history: Sequence[str]) -> list[str]:
     Returns
     -------
     list[str]
-        List of canonical operator names.
+        list of canonical operator names.
 
     Notes
     -----
@@ -75,7 +74,6 @@ def glyph_history_to_operator_names(glyph_history: Sequence[str]) -> list[str]:
             result.append(glyph_str.lower())
 
     return result
-
 
 def compute_learning_plasticity(
     G: TNFRGraph,
@@ -146,7 +144,6 @@ def compute_learning_plasticity(
     # Normalize by history length
     return plastic_count / max(len(operator_names), 1)
 
-
 def compute_consolidation_index(
     G: TNFRGraph,
     node: Any,
@@ -215,7 +212,6 @@ def compute_consolidation_index(
 
     # Normalize by history length
     return stable_count / max(len(operator_names), 1)
-
 
 def compute_learning_efficiency(
     G: TNFRGraph,

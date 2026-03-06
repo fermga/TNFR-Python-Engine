@@ -34,7 +34,6 @@ from ..mathematics.unified_numerical import np
 
 logger = get_logger(__name__)
 
-
 class OptimizedNumPyBackend(TNFRBackend):
     """Optimized NumPy backend with fused operations.
 
@@ -155,7 +154,7 @@ class OptimizedNumPyBackend(TNFRBackend):
         n_jobs : int or None, optional
             Ignored (optimization uses vectorization)
         profile : MutableMapping[str, float] or None, optional
-            Dict to collect timing metrics, with additional keys:
+            dict to collect timing metrics, with additional keys:
             - "dnfr_fused_compute": Time in fused gradient computation
             - "dnfr_workspace_alloc": Time allocating/reusing workspace
 
@@ -233,7 +232,7 @@ class OptimizedNumPyBackend(TNFRBackend):
         chunk_size : int or None, optional
             Chunk size for memory-constrained environments
         profile : MutableMapping[str, Any] or None, optional
-            Dict to collect timing metrics, with additional keys:
+            dict to collect timing metrics, with additional keys:
             - "si_fused_normalize": Time in fused normalization
 
         Returns

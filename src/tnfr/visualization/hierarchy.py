@@ -35,7 +35,6 @@ __all__ = [
     "get_hierarchy_info",
 ]
 
-
 def print_bifurcation_hierarchy(
     G: TNFRGraph,
     node: NodeId,
@@ -188,7 +187,6 @@ def print_bifurcation_hierarchy(
                             stream=output,
                         )
 
-
 def _print_sub_hierarchy(
     G: TNFRGraph,
     node: NodeId,
@@ -253,12 +251,10 @@ def _print_sub_hierarchy(
                         stream=stream,
                     )
 
-
 def _write_line(stream: TextIO, message: str) -> None:
     """Write a message with newline to the provided stream."""
 
     stream.write(f"{message}\n")
-
 
 def get_bifurcation_hierarchy_text(
     G: TNFRGraph,
@@ -301,7 +297,6 @@ def get_bifurcation_hierarchy_text(
     print_bifurcation_hierarchy(G, node, max_depth=max_depth, stream=buffer)
     return buffer.getvalue()
 
-
 def get_hierarchy_info(G: TNFRGraph, node: NodeId) -> dict:
     """Get hierarchical bifurcation information for a node.
 
@@ -322,7 +317,7 @@ def get_hierarchy_info(G: TNFRGraph, node: NodeId) -> dict:
         - node: Node identifier
         - epi: Current EPI value
         - bifurcation_level: Current bifurcation level
-        - hierarchy_path: List of ancestor nodes
+        - hierarchy_path: list of ancestor nodes
         - sub_epi_count: Number of direct sub-EPIs
         - max_depth: Maximum bifurcation depth from this node
         - total_descendants: Total number of sub-EPIs at all levels

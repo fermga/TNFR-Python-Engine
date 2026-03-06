@@ -8,15 +8,14 @@ from __future__ import annotations
 
 import hashlib
 import hmac
-from typing import Callable, Union
+from typing import Callable
 
 __all__ = [
     "create_hmac_signer",
     "create_hmac_validator",
 ]
 
-
-def create_hmac_signer(secret: Union[bytes, str]) -> Callable[[bytes], bytes]:
+def create_hmac_signer(secret: bytes | str) -> Callable[[bytes], bytes]:
     """Create an HMAC-SHA256 signer for data integrity validation.
 
     Parameters
@@ -36,8 +35,7 @@ def create_hmac_signer(secret: Union[bytes, str]) -> Callable[[bytes], bytes]:
 
     return signer
 
-
-def create_hmac_validator(secret: Union[bytes, str]) -> Callable[[bytes, bytes], bool]:
+def create_hmac_validator(secret: bytes | str) -> Callable[[bytes, bytes], bool]:
     """Create an HMAC-SHA256 validator for data integrity validation.
 
     Parameters

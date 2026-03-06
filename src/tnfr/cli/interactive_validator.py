@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import logging
 import sys
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 logger = logging.getLogger(__name__)
 
@@ -26,6 +26,12 @@ from ..tools.domain_templates import list_domains, list_objectives
 
 __all__ = ["TNFRInteractiveValidator", "run_interactive_validator"]
 
+# ---------------------------------------------------------------------------
+# Health display thresholds
+# ---------------------------------------------------------------------------
+_HEALTH_EXCELLENT = 0.8
+_HEALTH_GOOD = 0.7
+_HEALTH_MODERATE = 0.6
 
 class TNFRInteractiveValidator:
     """Interactive validator for TNFR operator sequences.
@@ -40,7 +46,7 @@ class TNFRInteractiveValidator:
     >>> validator.run_interactive_session()
     """
 
-    def __init__(self, seed: Optional[int] = None):
+    def __init__(self, seed: int | None = None):
         """Initialize the interactive validator.
 
         Parameters
@@ -135,7 +141,7 @@ class TNFRInteractiveValidator:
                 self._display_success(result, sequence)
 
                 # Suggest improvements if health is moderate
-                if result.health_metrics and result.health_metrics.overall_health < 0.8:
+                if result.health_metrics and result.health_metrics.overall_health < _HEALTH_EXCELLENT:
                     self._suggest_improvements(sequence, result.health_metrics)
             else:
                 self._display_error(result)
@@ -308,8 +314,8 @@ class TNFRInteractiveValidator:
         print("EXPLORE")
         print("─" * 60)
         print()
-        print("  [d] List all domains")
-        print("  [o] List objectives for a domain")
+        print("  [d] list all domains")
+        print("  [o] list objectives for a domain")
         print("  [p] Learn about structural patterns")
         print("  [b] Back to main menu")
         print()
@@ -411,20 +417,20 @@ class TNFRInteractiveValidator:
 
     def _health_icon(self, value: float) -> str:
         """Get icon for health value."""
-        if value >= 0.8:
+        if value >= _HEALTH_EXCELLENT:
             return "✓"
-        elif value >= 0.6:
+        elif value >= _HEALTH_MODERATE:
             return "⚠"
         else:
             return "✗"
 
     def _health_status(self, value: float) -> str:
         """Get status text for health value."""
-        if value >= 0.8:
+        if value >= _HEALTH_EXCELLENT:
             return "Excellent"
-        elif value >= 0.7:
+        elif value >= _HEALTH_GOOD:
             return "Good"
-        elif value >= 0.6:
+        elif value >= _HEALTH_MODERATE:
             return "Moderate"
         else:
             return "Needs Improvement"
@@ -436,7 +442,7 @@ class TNFRInteractiveValidator:
         print()
         logger.error(f" {result.message}")
         if result.error:
-            print(f"Type: {type(result.error).__name__}")
+            print(f"type: {type(result.error).__name__}")
         print()
 
     def _suggest_improvements(self, sequence: list[str], health: SequenceHealthMetrics) -> None:
@@ -450,7 +456,7 @@ class TNFRInteractiveValidator:
             print(f"  {i}. {rec}")
         print()
 
-    def _suggest_fixes(self, sequence: list[str], error: Optional[Exception]) -> None:
+    def _suggest_fixes(self, sequence: list[str], error: Exception | None) -> None:
         """Suggest fixes for validation errors."""
         print("💡 Suggestions:")
         print("  - Check operator spelling (e.g., 'emission' not 'emmision')")
@@ -537,7 +543,7 @@ class TNFRInteractiveValidator:
         print()
 
     def _list_domains(self) -> None:
-        """List all available domains."""
+        """list all available domains."""
         domains = list_domains()
         print()
         print("Available Domains:")
@@ -546,7 +552,7 @@ class TNFRInteractiveValidator:
         print()
 
     def _list_objectives_for_domain(self) -> None:
-        """List objectives for a specific domain."""
+        """list objectives for a specific domain."""
         domain = input("\nDomain name: ").strip()
         try:
             objectives = list_objectives(domain)
@@ -578,8 +584,7 @@ class TNFRInteractiveValidator:
         response = input(f"{prompt} (y/n): ").strip().lower()
         return response in ("y", "yes")
 
-
-def run_interactive_validator(seed: Optional[int] = None) -> int:
+def run_interactive_validator(seed: int | None = None) -> int:
     """Run the interactive validator session.
 
     Parameters
@@ -599,7 +604,6 @@ def run_interactive_validator(seed: Optional[int] = None) -> int:
     except Exception as e:
         print(f"\n✗ Fatal error: {e}", file=sys.stderr)
         return 1
-
 
 if __name__ == "__main__":
     sys.exit(run_interactive_validator())

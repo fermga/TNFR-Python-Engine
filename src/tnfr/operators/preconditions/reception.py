@@ -24,7 +24,6 @@ if TYPE_CHECKING:
 
 __all__ = ["validate_reception_strict"]
 
-
 def validate_reception_strict(G: TNFRGraph, node: Any) -> None:
     """Validate strict canonical preconditions for EN (Reception) operator.
 

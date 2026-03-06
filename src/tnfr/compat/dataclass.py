@@ -7,17 +7,16 @@ Python 3.9.
 
 import sys
 from dataclasses import dataclass as _dataclass
-from typing import Type, TypeVar, overload
+from typing import TypeVar, overload
 
 _T = TypeVar("_T")
 
 # Check if slots parameter is supported (Python 3.10+)
 _SLOTS_SUPPORTED = sys.version_info >= (3, 10)
 
-
 @overload
 def dataclass(
-    cls: Type[_T],
+    cls: type[_T],
     /,
     *,
     init: bool = True,
@@ -29,8 +28,7 @@ def dataclass(
     match_args: bool = True,
     kw_only: bool = False,
     slots: bool = False,
-) -> Type[_T]: ...
-
+) -> type[_T]: ...
 
 @overload
 def dataclass(
@@ -46,8 +44,7 @@ def dataclass(
     match_args: bool = True,
     kw_only: bool = False,
     slots: bool = False,
-) -> Type[_T]: ...
-
+) -> type[_T]: ...
 
 def dataclass(
     cls=None,

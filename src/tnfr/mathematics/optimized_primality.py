@@ -20,16 +20,15 @@ import logging
 import math
 import time
 from dataclasses import dataclass
-from typing import Dict, List, Tuple, Optional, Union, Any
-from functools import lru_cache
+from typing import Any
 
 from .unified_numerical import np
 
 # Core TNFR infrastructure
 from .unified_cache import cache_tnfr_computation, CacheLevel
 from ..constants.canonical import (
-    MATH_DELTA_NFR_THRESHOLD_CANONICAL,
-    PHI, GAMMA, PI, E
+    PHI,
+    GAMMA, PI, E
 )
 from ..backends.optimized_numpy import OptimizedNumpyBackend
 from ..physics.fields import compute_structural_potential
@@ -50,7 +49,6 @@ except ImportError:
 
 # Mathematical libraries
 try:
-    import numba
     HAS_NUMBA = True
 except ImportError:
     HAS_NUMBA = False
@@ -84,7 +82,6 @@ THETA_CANONICAL = 0.6 # Sigma pressure coefficient
 # Optimized thresholds from tetrahedral correspondence
 PRIME_THRESHOLD_HP = GAMMA_HP / (E_HP * PI_HP)  # ≈ 0.0676
 
-
 @dataclass
 class PrimalityResult:
     """Enhanced result structure for optimized primality testing."""
@@ -95,9 +92,8 @@ class PrimalityResult:
     computation_time_ms: float
     method: str
     confidence: float = 1.0
-    structural_metrics: Optional[Dict[str, float]] = None
+    structural_metrics: dict[str, float] | None = None
     cache_hit: bool = False
-
 
 class OptimizedTNFRPrimality:
     """
@@ -159,7 +155,7 @@ class OptimizedTNFRPrimality:
             logger.warning(f"Backend {self.backend_name} not available, using numpy")
             return OptimizedNumpyBackend()
     
-    def _build_sieve(self, limit: int) -> Dict[str, np.ndarray]:
+    def _build_sieve(self, limit: int) -> dict[str, np.ndarray]:
         """Build optimized sieve for fast factorization."""
         start_time = time.perf_counter()
         
@@ -439,7 +435,7 @@ class OptimizedTNFRPrimality:
         
         return result
     
-    def _compute_structural_metrics(self, n: int) -> Dict[str, float]:
+    def _compute_structural_metrics(self, n: int) -> dict[str, float]:
         """Compute TNFR structural field metrics for the number."""
         try:
             # Create minimal graph for structural computations
@@ -454,7 +450,7 @@ class OptimizedTNFRPrimality:
                     if abs(i - n) <= 2:  # Connect nearby numbers
                         G.add_edge(n, i)
             
-            # Set phases based on logarithmic scaling
+            # set phases based on logarithmic scaling
             for node in G.nodes():
                 G.nodes[node]['phase'] = math.log(node) if node > 1 else 0.0
                 G.nodes[node]['nu_f'] = 1.0  # Base frequency
@@ -480,21 +476,21 @@ class OptimizedTNFRPrimality:
     
     def batch_test(
         self, 
-        numbers: List[int], 
+        numbers: list[int], 
         *, 
         threshold: float = PRIME_THRESHOLD_HP,
         include_metrics: bool = False
-    ) -> List[PrimalityResult]:
+    ) -> list[PrimalityResult]:
         """
         Batch primality testing with vectorized optimizations.
         
         Args:
-            numbers: List of integers to test
+            numbers: list of integers to test
             threshold: ΔNFR threshold for primality
             include_metrics: Whether to compute structural metrics
             
         Returns:
-            List of PrimalityResult objects
+            list of PrimalityResult objects
         """
         results = []
         
@@ -524,7 +520,7 @@ class OptimizedTNFRPrimality:
         
         return results
     
-    def get_statistics(self) -> Dict[str, Any]:
+    def get_statistics(self) -> dict[str, Any]:
         """Get performance and cache statistics."""
         total_requests = self.cache_hits + self.cache_misses
         hit_rate = self.cache_hits / total_requests if total_requests > 0 else 0
@@ -549,18 +545,17 @@ class OptimizedTNFRPrimality:
         self.cache_misses = 0
         logger.info("All caches cleared")
 
-
 # Convenience functions for backward compatibility
 def tnfr_is_prime_optimized(
     n: int, 
     *, 
     threshold: float = PRIME_THRESHOLD_HP
-) -> Tuple[bool, float]:
+) -> tuple[bool, float]:
     """
     Optimized TNFR primality test (backward compatible interface).
     
     Returns:
-        Tuple of (is_prime, delta_nfr)
+        tuple of (is_prime, delta_nfr)
     """
     # Global instance for stateless usage
     global _global_optimizer
@@ -571,8 +566,7 @@ def tnfr_is_prime_optimized(
     result = _global_optimizer.is_prime_optimized(n, threshold=threshold)
     return result.is_prime, result.delta_nfr
 
-
-def benchmark_optimization(max_n: int = 100000, sample_size: int = 1000) -> Dict[str, Any]:
+def benchmark_optimization(max_n: int = 100000, sample_size: int = 1000) -> dict[str, Any]:
     """
     Benchmark the optimized implementation against baseline.
     
@@ -622,7 +616,6 @@ def benchmark_optimization(max_n: int = 100000, sample_size: int = 1000) -> Dict
         'largest_number_tested': max(test_numbers),
         'backend_used': optimizer.backend_name
     }
-
 
 if __name__ == "__main__":
     # Quick demonstration

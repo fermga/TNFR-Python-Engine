@@ -15,11 +15,9 @@ This module allows for formal analysis and derivation of field properties.
 Physics basis: AGENTS.md § Structural Fields, U6: STRUCTURAL POTENTIAL
 """
 
-from typing import Tuple
 import sympy as sp
 from sympy import symbols, Function, Sum, IndexedBase, Eq, Derivative
 from .symbolic import latex_export, pretty_print
-
 
 # ============================================================================
 # SYMBOLIC VARIABLES
@@ -36,12 +34,11 @@ d = Function('d')
 phi = IndexedBase('phi')
 x, y = symbols('x y', real=True) # For spatial gradients
 
-
 # ============================================================================
 # U6: STRUCTURAL POTENTIAL (Φ_s) - CANONICAL
 # ============================================================================
 
-def get_structural_potential_field_symbolic() -> Tuple[Eq, str]:
+def get_structural_potential_field_symbolic() -> tuple[Eq, str]:
     """
     Return the purely symbolic equation for the Structural Potential Field (Φ_s).
 
@@ -83,12 +80,11 @@ def get_structural_potential_field_symbolic() -> Tuple[Eq, str]:
     
     return equation, interpretation
 
-
 # ============================================================================
 # RESEARCH-PHASE FIELDS
 # ============================================================================
 
-def get_phase_gradient_symbolic() -> Tuple[Eq, str]:
+def get_phase_gradient_symbolic() -> tuple[Eq, str]:
     """
     Return the symbolic equation for the Phase Gradient magnitude (|∇φ|).
 
@@ -117,8 +113,7 @@ def get_phase_gradient_symbolic() -> Tuple[Eq, str]:
     
     return equation, interpretation
 
-
-def get_phase_curvature_symbolic() -> Tuple[Eq, str]:
+def get_phase_curvature_symbolic() -> tuple[Eq, str]:
     """
     Return the symbolic equation for the Phase Curvature (K_φ).
 
@@ -162,7 +157,6 @@ def get_phase_curvature_symbolic() -> Tuple[Eq, str]:
     )
     
     return equation, interpretation
-
 
 # ============================================================================
 # EXAMPLE USAGE

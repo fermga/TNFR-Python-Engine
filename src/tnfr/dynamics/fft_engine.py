@@ -16,7 +16,7 @@ Status: EXPERIMENTAL → CANONICAL TRANSITION
 """
 
 from ..mathematics.unified_numerical import np
-from typing import Dict, Any, Optional, Tuple, List, Union, TYPE_CHECKING
+from typing import Any, TYPE_CHECKING
 from dataclasses import dataclass
 import time
 
@@ -33,7 +33,7 @@ except ImportError:
 # Import existing modules
 try:
     from ..mathematics.spectral import get_laplacian_spectrum, gft, igft
-    from .structural_cache import get_structural_cache, StructuralCacheEntry
+    from .structural_cache import get_structural_cache
     HAS_SPECTRAL = True
 except ImportError:
     HAS_SPECTRAL = False
@@ -53,7 +53,6 @@ except ImportError:
 from ..constants.canonical import (
     FFT_ENGINE_COUPLING_CANONICAL  # γ/(π+e) ≈ 0.0985 (0.1 → canonical)
 )
-
 
 @dataclass
 class FFTDynamicsState:
@@ -77,7 +76,7 @@ class FFTDynamicsEngine:
     def __init__(
         self, 
         enable_caching: bool = True,
-        cache_coordinator: Optional["FFTCacheCoordinator"] = None
+        cache_coordinator: "FFTCacheCoordinator | None" = None
     ):
         self.enable_caching = enable_caching
         self.cache_coordinator = (
@@ -87,7 +86,7 @@ class FFTDynamicsEngine:
         )
         
         # Fallback local cache when coordinator unavailable
-        self._spectral_cache: Dict[str, Tuple[np.ndarray, np.ndarray]] = {} if self.cache_coordinator is None else {}
+        self._spectral_cache: dict[str, tuple[np.ndarray, np.ndarray]] = {} if self.cache_coordinator is None else {}
         
         # Performance tracking
         self.total_operations = 0
@@ -97,7 +96,7 @@ class FFTDynamicsEngine:
         # Integration with structural cache
         self.structural_cache = get_structural_cache()
     
-    def preprocess_graph_for_fft(self, G: Any) -> Tuple[np.ndarray, np.ndarray]:
+    def preprocess_graph_for_fft(self, G: Any) -> tuple[np.ndarray, np.ndarray]:
         """
         Preprocess graph to extract spectral basis for FFT operations.
         
@@ -297,7 +296,7 @@ class FFTDynamicsEngine:
         num_steps: int, 
         dt: float = 0.01,
         return_trajectory: bool = False
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Run complete FFT-accelerated simulation.
         
@@ -378,7 +377,7 @@ class FFTDynamicsEngine:
         energy = np.sum(np.abs(fft_state.spectral_epi) ** 2)
         return float(energy)
     
-    def get_performance_stats(self) -> Dict[str, Any]:
+    def get_performance_stats(self) -> dict[str, Any]:
         """Get performance statistics."""
         return {
             "total_operations": self.total_operations,
@@ -389,19 +388,17 @@ class FFTDynamicsEngine:
             "fft_usage_ratio": self.fft_operations / max(1, self.total_operations)
         }
 
-
 # Factory functions for easy access
 def create_fft_engine(**kwargs) -> FFTDynamicsEngine:
     """Create FFT dynamics engine."""
     return FFTDynamicsEngine(**kwargs)
-
 
 def run_fft_optimized_simulation(
     G: Any, 
     num_steps: int, 
     dt: float = 0.01, 
     **kwargs
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Convenience function for FFT-optimized simulation."""
     engine = create_fft_engine()
     return engine.run_fft_simulation(G, num_steps, dt, **kwargs)

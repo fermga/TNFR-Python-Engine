@@ -12,6 +12,7 @@ consistent behavior and messaging.
 
 from ..constants.canonical import (
     PHI,
+    PI,
     PHASE_GRADIENT_THRESHOLD_CANONICAL,
     PHI_GAMMA_NORMALIZED,
 )
@@ -26,7 +27,7 @@ PHASE_GRADIENT_THRESHOLD: float = float(PHASE_GRADIENT_THRESHOLD_CANONICAL)  # �
 
 # |K_φ|: Phase curvature absolute threshold - Golden-Pi geometry
 # CANONICAL DERIVATION: φ × π maximum geometric curvature before mutation
-PHASE_CURVATURE_ABS_THRESHOLD: float = float(PHI * 3.141592653589793)  # ≈ 5.083 (canonical)
+PHASE_CURVATURE_ABS_THRESHOLD: float = float(PHI * PI)  # ≈ 5.083 (canonical)
 
 # Φ_s: Structural potential field threshold - Golden-Euler balance
 # CANONICAL DERIVATION: φ/(φ+γ) natural coherence target from canonical constants

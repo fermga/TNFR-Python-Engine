@@ -22,7 +22,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from time import perf_counter
-from typing import Any, Callable, Dict, List
+from typing import Any, Callable
 
 __all__ = [
     "PerformanceRegistry",
@@ -30,13 +30,11 @@ __all__ = [
     "compare_overhead",
 ]
 
-
 @dataclass(slots=True)
 class PerformanceRecord:
     label: str
     elapsed: float
-    meta: Dict[str, Any] | None = None
-
+    meta: dict[str, Any] | None = None
 
 @dataclass(slots=True)
 class PerformanceRegistry:
@@ -49,17 +47,17 @@ class PerformanceRegistry:
     filter(label): Return list of records matching label.
     """
 
-    records: List[PerformanceRecord] = field(default_factory=list)
+    records: list[PerformanceRecord] = field(default_factory=list)
 
     def record(
-        self, label: str, elapsed: float, meta: Dict[str, Any] | None = None
+        self, label: str, elapsed: float, meta: dict[str, Any] | None = None
     ) -> None:
         self.records.append(PerformanceRecord(label, float(elapsed), meta))
 
-    def filter(self, label: str) -> List[PerformanceRecord]:
+    def filter(self, label: str) -> list[PerformanceRecord]:
         return [r for r in self.records if r.label == label]
 
-    def summary(self) -> Dict[str, Any]:
+    def summary(self) -> dict[str, Any]:
         if not self.records:
             return {"count": 0}
         total = sum(r.elapsed for r in self.records)
@@ -71,7 +69,6 @@ class PerformanceRegistry:
             "min": min(r.elapsed for r in self.records),
             "labels": sorted({r.label for r in self.records}),
         }
-
 
 def perf_guard(label: str, registry: PerformanceRegistry | None) -> Callable:
     """Decorator adding a single perf_counter measurement if registry provided.
@@ -103,13 +100,12 @@ def perf_guard(label: str, registry: PerformanceRegistry | None) -> Callable:
 
     return decorator
 
-
 def compare_overhead(
     baseline_fn: Callable[[], Any],
     instrumented_fn: Callable[[], Any],
     *,
     runs: int = 5000,
-) -> Dict[str, float]:
+) -> dict[str, float]:
     """Compare overhead ratio between baseline and instrumented call sets.
 
     Returns timing dict with baseline, instrumented and ratio

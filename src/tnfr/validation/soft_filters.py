@@ -22,7 +22,6 @@ __all__ = (
     "soft_grammar_filters",
 )
 
-
 def acceleration_norm(ctx: "GrammarContext", nd: "Mapping[str, Any]") -> float:
     """Return the node acceleration normalised to ``[0, 1]``.
 
@@ -33,7 +32,6 @@ def acceleration_norm(ctx: "GrammarContext", nd: "Mapping[str, Any]") -> float:
 
     max_val = get_norm(ctx, "accel_max")
     return clamp01(abs(get_attr(nd, ALIAS_D2EPI, 0.0)) / max_val)
-
 
 def check_repeats(ctx: "GrammarContext", n: Any, cand: Glyph | str) -> Glyph | str:
     """Swap ``cand`` when it breaches the configured repetition window.
@@ -89,7 +87,6 @@ def check_repeats(ctx: "GrammarContext", n: Any, cand: Glyph | str) -> Glyph | s
         )
     return cand
 
-
 def maybe_force(
     ctx: "GrammarContext",
     n: Any,
@@ -113,7 +110,6 @@ def maybe_force(
         return original
     return cand
 
-
 def _match_template(result: Glyph | str, template: Glyph | str) -> Glyph | str:
     """Coerce ``result`` to mirror ``template``'s representation when possible."""
 
@@ -125,7 +121,6 @@ def _match_template(result: Glyph | str, template: Glyph | str) -> Glyph | str:
         except (TypeError, ValueError):
             return result
     return result
-
 
 def soft_grammar_filters(
     ctx: "GrammarContext",

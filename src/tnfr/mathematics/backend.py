@@ -41,7 +41,6 @@ from ..core.exceptions import BackendUnavailableError
 
 logger = get_logger(__name__)
 
-
 @runtime_checkable
 class MathematicsBackend(Protocol):
     """Structural numerical backend interface.
@@ -94,9 +93,7 @@ class MathematicsBackend(Protocol):
     def get_backend_info(self) -> Mapping[str, Any]:
         """Return detailed backend information."""
 
-
 BackendFactory = Callable[[], MathematicsBackend]
-
 
 @dataclass(slots=True)
 class _NumpyBackend:
@@ -156,7 +153,6 @@ class _NumpyBackend:
             "device": "cpu",
             "accelerated": False
         }
-
 
 @dataclass(slots=True)
 class _JaxBackend:
@@ -222,7 +218,6 @@ class _JaxBackend:
             "device": self.get_device_name(),
             "accelerated": self.is_gpu_available()
         }
-
 
 @dataclass(slots=True)
 class _TorchBackend:
@@ -366,10 +361,8 @@ class _TorchBackend:
             return value.cpu()
         return value
 
-
 def _normalise_name(name: str) -> str:
     return name.strip().lower()
-
 
 _BACKEND_FACTORIES: MutableMapping[str, BackendFactory] = {}
 _BACKEND_ALIASES: MutableMapping[str, str] = {}
@@ -377,7 +370,6 @@ _BACKEND_CACHE: MutableMapping[str, MathematicsBackend] = {}
 
 _AUTO_BACKEND_SENTINEL = "auto"
 _AUTO_BACKEND_PRIORITY = ("jax", "torch", "numpy")
-
 
 def ensure_array(
     value: Any,
@@ -390,13 +382,11 @@ def ensure_array(
     resolved = backend or get_backend()
     return resolved.as_array(value, dtype=dtype)
 
-
 def ensure_numpy(value: Any, *, backend: MathematicsBackend | None = None) -> Any:
     """Export ``value`` from the backend into :class:`numpy.ndarray`."""
 
     resolved = backend or get_backend()
     return resolved.to_numpy(value)
-
 
 def register_backend(
     name: str,
@@ -438,7 +428,6 @@ def register_backend(
                 )
             _BACKEND_ALIASES[alias_key] = key
 
-
 def _resolve_backend_name(name: str | None) -> str:
     if name:
         normalised = _normalise_name(name)
@@ -463,14 +452,12 @@ def _resolve_backend_name(name: str | None) -> str:
 
     return _AUTO_BACKEND_SENTINEL
 
-
 def _resolve_factory(name: str) -> BackendFactory:
     canonical = _BACKEND_ALIASES.get(name, name)
     try:
         return _BACKEND_FACTORIES[canonical]
     except KeyError as exc:  # pragma: no cover - defensive path
         raise LookupError(f"Unknown mathematics backend: {name}") from exc
-
 
 def _construct_backend(name: str) -> MathematicsBackend | None:
     canonical = _BACKEND_ALIASES.get(name, name)
@@ -486,7 +473,6 @@ def _construct_backend(name: str) -> MathematicsBackend | None:
 
     _BACKEND_CACHE[canonical] = backend
     return backend
-
 
 def get_backend(name: str | None = None) -> MathematicsBackend:
     """Return a backend instance using the configured resolution order."""
@@ -523,12 +509,10 @@ def get_backend(name: str | None = None) -> MathematicsBackend:
 
     raise BackendUnavailableError(f"Unable to initialise mathematics backend '{resolved_name}'")
 
-
 def available_backends() -> Mapping[str, BackendFactory]:
     """Return the registered backend factories."""
 
     return dict(_BACKEND_FACTORIES)
-
 
 def _make_numpy_backend() -> MathematicsBackend:
     np_module = cached_import("numpy")
@@ -539,7 +523,6 @@ def _make_numpy_backend() -> MathematicsBackend:
         logger.debug("SciPy not available; falling back to eigen decomposition for expm")
     backend = _NumpyBackend(np_module, scipy_linalg)  # type: ignore[call-arg]
     return cast(MathematicsBackend, backend)
-
 
 def _make_jax_backend() -> MathematicsBackend:
     jnp_module = cached_import("jax.numpy")
@@ -553,7 +536,6 @@ def _make_jax_backend() -> MathematicsBackend:
         raise BackendUnavailableError("jax core module is required")
     backend = _JaxBackend(jnp_module, jax_scipy, jax_module)  # type: ignore[call-arg]
     return cast(MathematicsBackend, backend)
-
 
 def _make_torch_backend() -> MathematicsBackend:
     torch_module = cached_import("torch")
@@ -585,7 +567,6 @@ def _make_torch_backend() -> MathematicsBackend:
     
     backend = _TorchBackend(torch_module, torch_linalg, device, use_cuda)  # type: ignore[call-arg]
     return cast(MathematicsBackend, backend)
-
 
 register_backend("numpy", _make_numpy_backend, aliases=("np",))
 register_backend("jax", _make_jax_backend)

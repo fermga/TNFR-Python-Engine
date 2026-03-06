@@ -14,7 +14,6 @@ from typing import Any, Mapping, Protocol, TYPE_CHECKING
 if TYPE_CHECKING:  # pragma: no cover - import cycle guard
     from .advanced_fft_arithmetic import FFTArithmeticResult, SpectralState
 
-
 @dataclass(frozen=True)
 class FFTBackendCapabilities:
     """Describe resource and feature limits for a backend."""
@@ -24,7 +23,6 @@ class FFTBackendCapabilities:
     precision: str = "float64"
     supports_distributed: bool = False
     extra: Mapping[str, Any] | None = None
-
 
 class FFTBackend(Protocol):
     """Protocol implemented by FFT engines used across TNFR."""

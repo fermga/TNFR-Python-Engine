@@ -22,7 +22,7 @@ Status: CANONICAL UNIFIED CACHE SYSTEM
 """
 
 from ..mathematics.unified_numerical import np
-from typing import Dict, Any, Optional, Set, Callable
+from typing import Any, Callable
 from dataclasses import dataclass, field
 from enum import Enum
 import time
@@ -39,7 +39,6 @@ except ImportError:
 
 # Import existing cache infrastructure
 try:
-    from ..utils.cache import cache_tnfr_computation, CacheLevel, get_global_cache
     _CACHE_AVAILABLE = True
 except ImportError:
     _CACHE_AVAILABLE = False
@@ -50,7 +49,6 @@ from ..constants.canonical import (
     MULTIMODAL_CACHE_SPECTRAL_IMPORTANCE_CANONICAL,  # π/e ≈ 1.1557 (2.0 → canonical)
     MULTIMODAL_CACHE_TETRAD_IMPORTANCE_CANONICAL     # π ≈ 3.1416 (3.0 → canonical)
 )
-
 
 class CacheEntryType(Enum):
     """Types of cached computations."""
@@ -63,7 +61,6 @@ class CacheEntryType(Enum):
     CROSS_CORRELATION = "cross_correlation"         # Inter-field correlations
     FFT_OPERATION = "fft_operation"                 # FFT arithmetic artifacts
 
-
 class CacheInvalidationTrigger(Enum):
     """Events that trigger cache invalidation."""
     TOPOLOGY_CHANGE = "topology_change"             # Graph structure modified
@@ -71,7 +68,6 @@ class CacheInvalidationTrigger(Enum):
     EDGE_WEIGHT_CHANGE = "edge_weight_change"       # Edge weights modified
     OPERATOR_APPLICATION = "operator_applied"       # Structural operator applied
     TIME_EVOLUTION = "time_evolution"               # Temporal step taken
-
 
 @dataclass
 class CacheEntry:
@@ -83,10 +79,9 @@ class CacheEntry:
     access_count: int = 0
     last_access: float = field(default_factory=time.time)
     mathematical_importance: float = 1.0  # Higher = more important to keep
-    dependencies: Set[CacheEntryType] = field(default_factory=set)
+    dependencies: set[CacheEntryType] = field(default_factory=set)
     size_mb: float = 0.0
     computation_time: float = 0.0  # Time it took to compute
-
 
 @dataclass
 class CacheStatistics:
@@ -99,7 +94,6 @@ class CacheStatistics:
     invalidation_count: int = 0
     cross_engine_reuse_count: int = 0
     memory_pressure_events: int = 0
-
 
 class TNFRUnifiedMultiModalCache:
     """
@@ -120,7 +114,7 @@ class TNFRUnifiedMultiModalCache:
         self._graph_signatures: weakref.WeakKeyDictionary = weakref.WeakKeyDictionary()
         
         # Dependency mapping
-        self._dependency_map: Dict[CacheEntryType, Set[CacheEntryType]] = {
+        self._dependency_map: dict[CacheEntryType, set[CacheEntryType]] = {
             # Spectral decomposition is fundamental - many things depend on it
             CacheEntryType.SPECTRAL_DECOMPOSITION: {
                 CacheEntryType.STRUCTURAL_FIELDS,
@@ -146,8 +140,8 @@ class TNFRUnifiedMultiModalCache:
         self._cache_hits = 0
         
         # Prefetching predictions
-        self._access_patterns: Dict[str, int] = {}
-        self._prefetch_queue: Set[str] = set()
+        self._access_patterns: dict[str, int] = {}
+        self._prefetch_queue: set[str] = set()
         
     def compute_graph_signature(self, G: Any) -> str:
         """
@@ -181,7 +175,7 @@ class TNFRUnifiedMultiModalCache:
         signature_elements.extend(node_params[:10])  # Limit to first 10 for performance
         
         # Edge structure (basic connectivity)
-        edge_hash = hashlib.md5()
+        edge_hash = hashlib.md5(usedforsecurity=False)
         for edge in sorted(G.edges()):
             edge_hash.update(f"{edge[0]}_{edge[1]}".encode())
         signature_elements.append(f"edges_hash_{edge_hash.hexdigest()[:8]}")
@@ -198,7 +192,7 @@ class TNFRUnifiedMultiModalCache:
         self, 
         entry_type: CacheEntryType, 
         graph_signature: str, 
-        parameters: Optional[Dict[str, Any]] = None
+        parameters: dict[str, Any] | None = None
     ) -> str:
         """Generate unique cache key."""
         key_parts = [entry_type.value, graph_signature]
@@ -214,8 +208,8 @@ class TNFRUnifiedMultiModalCache:
         self, 
         entry_type: CacheEntryType,
         G: Any,
-        parameters: Optional[Dict[str, Any]] = None,
-        computation_func: Optional[Callable] = None,
+        parameters: dict[str, Any] | None = None,
+        computation_func: Callable | None = None,
         mathematical_importance: float = 1.0
     ) -> Any:
         """
@@ -330,8 +324,8 @@ class TNFRUnifiedMultiModalCache:
     def invalidate(
         self, 
         trigger: CacheInvalidationTrigger,
-        G: Optional[Any] = None,
-        affected_types: Optional[Set[CacheEntryType]] = None
+        G: Any | None = None,
+        affected_types: set[CacheEntryType] | None = None
     ) -> int:
         """
         Invalidate cache entries based on mathematical dependencies.
@@ -372,8 +366,8 @@ class TNFRUnifiedMultiModalCache:
         
     def _invalidate_by_types(
         self, 
-        types_to_invalidate: Set[CacheEntryType], 
-        G: Optional[Any] = None
+        types_to_invalidate: set[CacheEntryType], 
+        G: Any | None = None
     ) -> int:
         """Invalidate entries by type, optionally filtered by graph."""
         graph_signature = self.compute_graph_signature(G) if G else None
@@ -438,7 +432,7 @@ class TNFRUnifiedMultiModalCache:
         self._total_requests = 0
         self._cache_hits = 0
         
-    def get_cache_info(self) -> Dict[str, Any]:
+    def get_cache_info(self) -> dict[str, Any]:
         """Get detailed cache information."""
         return {
             "total_entries": len(self._cache),
@@ -454,10 +448,8 @@ class TNFRUnifiedMultiModalCache:
             "statistics": self.stats
         }
 
-
 # Global unified cache instance
-_global_unified_cache: Optional[TNFRUnifiedMultiModalCache] = None
-
+_global_unified_cache: TNFRUnifiedMultiModalCache | None = None
 
 def get_unified_cache() -> TNFRUnifiedMultiModalCache:
     """Get global unified cache instance."""
@@ -468,11 +460,10 @@ def get_unified_cache() -> TNFRUnifiedMultiModalCache:
         
     return _global_unified_cache
 
-
 def cache_unified_computation(
     entry_type: CacheEntryType,
     mathematical_importance: float = 1.0,
-    parameters_func: Optional[Callable] = None
+    parameters_func: Callable | None = None
 ):
     """
     Decorator for caching unified computations.
@@ -508,7 +499,6 @@ def cache_unified_computation(
         return wrapper
     return decorator
 
-
 # Convenience functions for common cache operations
 def cache_spectral_decomposition(G: Any, computation_func: Callable) -> Any:
     """Cache spectral decomposition with high importance."""
@@ -520,8 +510,7 @@ def cache_spectral_decomposition(G: Any, computation_func: Callable) -> Any:
         mathematical_importance=MULTIMODAL_CACHE_TETRAD_IMPORTANCE_CANONICAL  # π ≈ 3.1416 → canonical (Very important - many things depend on this)
     )
 
-
-def cache_structural_fields(G: Any, computation_func: Callable, field_params: Dict[str, Any]) -> Any:
+def cache_structural_fields(G: Any, computation_func: Callable, field_params: dict[str, Any]) -> Any:
     """Cache structural field computation."""
     cache = get_unified_cache()
     return cache.get(
@@ -532,7 +521,6 @@ def cache_structural_fields(G: Any, computation_func: Callable, field_params: Di
         mathematical_importance=MULTIMODAL_CACHE_SPECTRAL_IMPORTANCE_CANONICAL  # π/e ≈ 1.1557 → canonical
     )
 
-
 def invalidate_after_operator(G: Any, operator_name: str) -> int:
     """Invalidate cache after operator application."""
     cache = get_unified_cache()
@@ -540,7 +528,6 @@ def invalidate_after_operator(G: Any, operator_name: str) -> int:
         CacheInvalidationTrigger.OPERATOR_APPLICATION,
         G=G
     )
-
 
 def invalidate_after_topology_change(G: Any) -> int:
     """Invalidate cache after topology change."""

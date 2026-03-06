@@ -9,7 +9,7 @@ Status: CANONICAL (Post-Critical Analysis)
 """
 
 from ..mathematics.unified_numerical import np
-from typing import List, Tuple, Optional, Dict, Any
+from typing import Any
 from dataclasses import dataclass
 
 from ..constants.canonical import (
@@ -52,7 +52,6 @@ try:
 except ImportError:
     HAS_SPECTRAL_METRICS = False
 
-
 @dataclass
 class AdelicState:
     """
@@ -61,7 +60,7 @@ class AdelicState:
     In TNFR, the EPI (Primary Information Structure) is the coherent
     superposition of prime oscillators.
     """
-    primes: List[int]
+    primes: list[int]
     amplitudes: np.ndarray  # Coefficients in the prime basis (complex)
     time: float = 0.0       # The flow parameter 't'
     
@@ -129,9 +128,9 @@ class AdelicDynamics:
 
         # Optimization: Cached Trace Landscape
         # Stores pre-computed trace values for fast interpolation
-        self._trace_cache: Optional[Tuple[np.ndarray, np.ndarray]] = None
+        self._trace_cache: tuple[np.ndarray, np.ndarray] | None = None
 
-    def _get_primes(self, n: int) -> List[int]:
+    def _get_primes(self, n: int) -> list[int]:
         """Sieve of Eratosthenes."""
         sieve = [True] * (n+1)
         primes = []
@@ -142,7 +141,7 @@ class AdelicDynamics:
                     sieve[i] = False
         return primes
 
-    def compute_structural_fields(self, state: AdelicState) -> Dict[str, float]:
+    def compute_structural_fields(self, state: AdelicState) -> dict[str, float]:
         """
         Compute Canonical Structural Fields (Phi_s, Grad_Phi) for the state.
         This unifies Adelic Dynamics with TNFR Physics.
@@ -305,7 +304,7 @@ class AdelicDynamics:
             time=new_time
         )
 
-    def run_resonance_search(self, start_t: float, end_t: float, dt: float = DYNAMICS_ADELIC_DT_STEP_CANONICAL) -> Dict[str, List[float]]:
+    def run_resonance_search(self, start_t: float, end_t: float, dt: float = DYNAMICS_ADELIC_DT_STEP_CANONICAL) -> dict[str, list[float]]:
         """
         Run the dynamics to find resonances (Zeros).
         Returns the trajectory of the system.

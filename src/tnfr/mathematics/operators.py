@@ -27,7 +27,6 @@ __all__ = ["CoherenceOperator", "FrequencyOperator"]
 DEFAULT_C_MIN: float = MATH_COHERENCE_MIN_CANONICAL
 _C_MIN_UNSET = object()
 
-
 def _as_complex_vector(
     vector: Sequence[complex] | np.ndarray | Any,
     *,
@@ -41,7 +40,6 @@ def _as_complex_vector(
             suggestion="Provide a 1D vector."
         )
     return arr
-
 
 def _as_complex_matrix(
     matrix: Sequence[Sequence[complex]] | np.ndarray | Any,
@@ -58,12 +56,10 @@ def _as_complex_matrix(
         )
     return arr
 
-
 def _make_diagonal(values: Any, *, backend: MathematicsBackend) -> Any:
     dim = int(getattr(values, "shape")[0])
     identity = ensure_array(np.eye(dim, dtype=np.complex128), backend=backend)
     return backend.einsum("i,ij->ij", values, identity)
-
 
 @dataclass(slots=True)
 class CoherenceOperator:
@@ -227,7 +223,6 @@ class CoherenceOperator:
                 suggestion="Ensure the expectation value is real."
             )
         return float(real_expectation)
-
 
 class FrequencyOperator(CoherenceOperator):
     """Operator encoding the structural frequency distribution.

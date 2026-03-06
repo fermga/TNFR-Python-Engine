@@ -90,7 +90,6 @@ from ..validation.compatibility import (  # noqa: F401
     get_compatibility_level,
 )
 
-
 # Re-export all grammar components (backward compatibility)
 from .grammar_types import (
     StructuralPattern,
@@ -212,7 +211,6 @@ _BACKWARD_COMPAT_OPERATORS = (
     Recursivity,
 )
 
-
 def get_grammar_cache_stats() -> dict[str, dict[str, int]]:
     """Return cache statistics for grammar-level cached functions.
 
@@ -237,7 +235,6 @@ def get_grammar_cache_stats() -> dict[str, dict[str, int]]:
             except Exception:  # pragma: no cover
                 pass
     return stats
-
 
 __all__ = [
     # Types
@@ -312,7 +309,6 @@ __all__ = [
     "get_grammar_cache_stats",
 ]
 
-
 # ============================================================================
 # OPTIMIZED VALIDATION WITH CACHING (Performance Enhancement)
 # ============================================================================
@@ -321,7 +317,6 @@ __all__ = [
 _validation_cache: dict[str, tuple[bool, str]] = {}
 _cache_hits = 0
 _cache_misses = 0
-
 
 def _sequence_hash(sequence: list[Glyph], graph_state: str | None = None) -> str:
     """Generate hash key for operator sequence caching."""
@@ -332,8 +327,7 @@ def _sequence_hash(sequence: list[Glyph], graph_state: str | None = None) -> str
     else:
         content = sequence_str
     
-    return hashlib.md5(content.encode()).hexdigest()
-
+    return hashlib.md5(content.encode(), usedforsecurity=False).hexdigest()
 
 @lru_cache(maxsize=1000)
 def _validate_grammar_rules_cached(sequence_tuple: tuple[Glyph, ...]) -> tuple[bool, str]:
@@ -352,7 +346,6 @@ def _validate_grammar_rules_cached(sequence_tuple: tuple[Glyph, ...]) -> tuple[b
         return is_valid, "Valid sequence" if is_valid else "Grammar violation detected"
     except Exception as e:
         return False, f"Validation error: {e}"
-
 
 def validate_sequence_cached(
     sequence: list[Glyph],
@@ -414,7 +407,6 @@ def validate_sequence_cached(
     
     return is_valid, message
 
-
 def clear_validation_cache() -> None:
     """Clear validation cache to free memory."""
     global _validation_cache, _cache_hits, _cache_misses
@@ -422,7 +414,6 @@ def clear_validation_cache() -> None:
     _validate_grammar_rules_cached.cache_clear()
     _cache_hits = 0
     _cache_misses = 0
-
 
 def get_validation_cache_stats() -> dict[str, Any]:
     """Get validation cache performance statistics."""

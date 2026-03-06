@@ -16,6 +16,14 @@ from typing import Any, ClassVar
 from ..config.operator_names import TRANSITION
 from ..types import Glyph, TNFRGraph
 from .definitions_base import Operator
+
+# ---------------------------------------------------------------------------
+# Regime detection thresholds
+# ---------------------------------------------------------------------------
+_VF_LATENT_THRESHOLD = 0.05
+_EPI_RESONANT_THRESHOLD = 0.5
+_VF_RESONANT_THRESHOLD = 0.8
+_EPI_DRIFT_TOLERANCE = 0.01
  
 
 class Transition(Operator):
@@ -114,9 +122,9 @@ class Transition(Operator):
         vf = float(get_attr(G.nodes[node], ALIAS_VF, 0.0))
         latent = G.nodes[node].get("latent", False)
 
-        if latent or vf < 0.05:
+        if latent or vf < _VF_LATENT_THRESHOLD:
             return "latent"
-        elif epi > 0.5 and vf > 0.8:
+        elif epi > _EPI_RESONANT_THRESHOLD and vf > _VF_RESONANT_THRESHOLD:
             return "resonant"
         else:
             return "active"
@@ -149,7 +157,7 @@ class Transition(Operator):
             epi_drift = abs(current_epi - preserved_epi)
 
             # Allow small numerical drift (1% tolerance)
-            if epi_drift > 0.01 * abs(preserved_epi):
+            if epi_drift > _EPI_DRIFT_TOLERANCE * abs(preserved_epi):
                 warnings.warn(
                     (
                         f"Node {node} EPI drift drift={epi_drift:.3f} "

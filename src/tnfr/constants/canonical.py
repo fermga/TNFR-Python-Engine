@@ -21,7 +21,7 @@ Date: November 29, 2025
 import math
 import mpmath as mp
 
-# Set high precision for canonical derivations
+# set high precision for canonical derivations
 mp.dps = 35
 
 # ============================================================================
@@ -40,7 +40,6 @@ INV_PHI = 1.0 / PHI          # 1/φ ≈ 0.618033988749895 (φ - 1)
 INV_GAMMA = 1.0 / GAMMA      # 1/γ ≈ 1.732867951399863
 INV_PI = 1.0 / PI            # 1/π ≈ 0.318309886183791
 INV_E = 1.0 / E              # 1/e ≈ 0.367879441171442
-
 
 # ============================================================================
 # EXTENDED CANONICAL COMBINATIONS (For Magic Number Recalibration)
@@ -72,7 +71,6 @@ GAMMA_OVER_PI_PLUS_E = GAMMA / (PI + E)    # γ/(π+e) ≈ 0.099 (euler transcen
 PI_PLUS_GAMMA = PI + GAMMA                  # π+γ ≈ 3.719 (transcendental sum)
 PI_PLUS_E_HALF = PI + E / 2.0               # π+e/2 ≈ 4.500 (transcendental semi-sum)
 
-
 # ============================================================================
 # TNFR STRUCTURAL CONSTANTS (Derived from Nodal Equation)
 # ============================================================================
@@ -99,7 +97,7 @@ VAL_BIFURCATION_THRESHOLD = 1.0 / (PI + 1)  # 1/(π+1) ≈ 0.2413 (bifurcation d
 VAL_MIN_COHERENCE = math.sin(PI / 3)        # sin(π/3) = √3/2 ≈ 0.8660 (60° harmonic coherence)
 
 # THOL self-organization thresholds (canonical derivations)  
-THOL_MIN_COLLECTIVE_COHERENCE = 1.0 / (PI + 1)  # 1/(π+1) ≈ 0.2413 (same physics as VAL bifurcation)
+THOL_MIN_COLLECTIVE_COHERENCE = 1.0 / (PI + 1)  # 1/(π+1) ≈ 0.2415 (same physics as VAL bifurcation)
 
 # Coupling and mixing thresholds (canonical derivations)
 UM_COMPAT_THRESHOLD = PHI / (PHI + GAMMA)       # φ/(φ+γ) ≈ 0.7371 (golden-Euler compatibility)
@@ -116,7 +114,6 @@ STRUCTURAL_ESCAPE_THRESHOLD_THEORETICAL = math.exp(LN_2)  # e^ln(2) = 2.0 (binar
 NODAL_PRESSURE_BASE = GAMMA * PI            # γ×π ≈ 1.8138 (ΔNFR base scaling)
 EPI_EVOLUTION_RATE = PHI / (E * GAMMA)      # φ/(e×γ) ≈ 1.0308 (∂EPI/∂t scaling)
 PHASE_FLOW_CONSTANT = PI / (2 * PHI)        # π/(2φ) ≈ 0.9710 (phase evolution)
-
 
 # ============================================================================ 
 # CONFIGURATION CONSTANTS (Magic Number Replacements)
@@ -153,7 +150,6 @@ NUL_EPI_THRESHOLD_CANONICAL = PI / (PI + E)          # π/(π+e) ≈ 0.5359 (con
 # Margin and selector constants (canonical selection boundaries)
 GLYPH_SELECTOR_MARGIN_CANONICAL = GAMMA / (PI * E * PHI)  # Same as KL_MIN (boundary precision)
 
-
 # ============================================================================
 # TOPOLOGY AND SPECTRAL CONSTANTS (Phase 3 Canonicalization)
 # ============================================================================
@@ -173,7 +169,6 @@ THERAPEUTIC_MIN_CANONICAL = GAMMA / (PI + GAMMA)           # γ/(π+γ) ≈ 0.15
 THERAPEUTIC_GOOD_CANONICAL = PHI / (PHI + GAMMA)           # φ/(φ+γ) ≈ 0.7371 (good therapeutic outcome)
 THERAPEUTIC_EXCELLENT_CANONICAL = math.sin(PI / 3)         # sin(π/3) ≈ 0.8660 (excellent therapeutic result)
 
-
 # ============================================================================
 # PHASE 4: STRUCTURAL OPERATORS CONSTANTS (Canonical Operator Replacements)
 # ============================================================================
@@ -189,14 +184,14 @@ CYCLE_MIN_HEALTH_CANONICAL = PHI / (E + GAMMA)             # φ/(e+γ) ≈ 0.491
 # Pattern Weight Constants (canonical structural multipliers)
 PATTERN_BASE_WEIGHT_CANONICAL = 1.0                        # 1.0 (canonical unit)
 PATTERN_THERAPEUTIC_WEIGHT_CANONICAL = PHI / GAMMA         # φ/γ ≈ 2.8032 (therapeutic boost)
-PATTERN_EDUCATIONAL_WEIGHT_CANONICAL = PHI / (PHI + GAMMA) # φ/(φ+γ) ≈ 0.7371 (boost educacional)
-PATTERN_ORGANIZATIONAL_WEIGHT_CANONICAL = GAMMA / (PI + GAMMA)  # γ/(π+γ) ≈ 0.1552 (boost organizacional)
-PATTERN_CREATIVE_WEIGHT_CANONICAL = PHI / (PHI + GAMMA)    # φ/(φ+γ) ≈ 0.7371 (mismo que educacional)
-PATTERN_REGENERATIVE_WEIGHT_CANONICAL = PHI / E            # φ/e ≈ 0.5952 (boost regenerativo)
+PATTERN_EDUCATIONAL_WEIGHT_CANONICAL = PHI / (PHI + GAMMA) # φ/(φ+γ) ≈ 0.7371 (educational boost)
+PATTERN_ORGANIZATIONAL_WEIGHT_CANONICAL = GAMMA / (PI + GAMMA)  # γ/(π+γ) ≈ 0.1552 (organizational boost)
+PATTERN_CREATIVE_WEIGHT_CANONICAL = PHI / (PHI + GAMMA)    # φ/(φ+γ) ≈ 0.7371 (same as educational)
+PATTERN_REGENERATIVE_WEIGHT_CANONICAL = PHI / E            # φ/e ≈ 0.5952 (regenerative boost)
 PATTERN_BOOTSTRAP_WEIGHT_CANONICAL = 1.0 + GAMMA/(PI*E)   # 1+γ/(π×e) ≈ 1.0676 (minimum boost)
-PATTERN_EXPLORE_WEIGHT_CANONICAL = PATTERN_BOOTSTRAP_WEIGHT_CANONICAL  # Mismo que bootstrap
+PATTERN_EXPLORE_WEIGHT_CANONICAL = PATTERN_BOOTSTRAP_WEIGHT_CANONICAL  # Same as bootstrap
 PATTERN_STABILIZE_WEIGHT_CANONICAL = PHI / (PHI + 1.0)     # φ/(φ+1) ≈ 0.6180 (stabilization)
-PATTERN_COMPLEX_WEIGHT_CANONICAL = PATTERN_STABILIZE_WEIGHT_CANONICAL   # Mismo que estabilizar
+PATTERN_COMPLEX_WEIGHT_CANONICAL = PATTERN_STABILIZE_WEIGHT_CANONICAL   # Same as stabilize
 PATTERN_COMPRESS_WEIGHT_CANONICAL = 1.0 - GAMMA/(PI*E)    # 1-γ/(π×e) ≈ 0.9324 (compression)
 PATTERN_LINEAR_WEIGHT_CANONICAL = GAMMA / PI               # γ/π ≈ 0.1837 (linear minimum)
 
@@ -217,10 +212,10 @@ MATH_DELTA_NFR_THRESHOLD_2X_CANONICAL = 2 * GAMMA / (E * PI)  # 2γ/(e×π) ≈ 
 PHYSICS_CONFIDENCE_LEVEL_CANONICAL = PHI / (PHI + GAMMA)    # φ/(φ+γ) ≈ 0.7371 (golden confidence)
 PHYSICS_EXPECTED_CORRELATION_WS_CANONICAL = GAMMA / (PI + E)  # γ/(π+e) ≈ 0.0985 (expected WS correlation)
 PHYSICS_CORRELATION_STD_WS_CANONICAL = GAMMA / (E + PHI - PI)  # γ/(e+φ-π) ≈ 0.3476 (WS standard deviation)
-PHYSICS_N_NODES_DEPENDENCY_CANONICAL = GAMMA / (PI * E * PHI)  # γ/(π×e×φ) ≈ 0.0418 (dependencia de nodos)
-PHYSICS_K_DEGREE_DEPENDENCY_CANONICAL = -GAMMA / (PI + GAMMA)  # -γ/(π+γ) ≈ -0.1552 (dependencia grado negativa)
-PHYSICS_P_REWIRE_DEPENDENCY_CANONICAL = GAMMA / (PI + E + GAMMA)  # γ/(π+e+γ) ≈ 0.0890 (dependencia rewiring)
-PHYSICS_M_ATTACH_DEPENDENCY_CANONICAL = GAMMA / (E + PHI)   # γ/(e+φ) ≈ 0.1310 (dependencia attachment)
+PHYSICS_N_NODES_DEPENDENCY_CANONICAL = GAMMA / (PI * E * PHI)  # γ/(π×e×φ) ≈ 0.0418 (node count dependency)
+PHYSICS_K_DEGREE_DEPENDENCY_CANONICAL = -GAMMA / (PI + GAMMA)  # -γ/(π+γ) ≈ -0.1552 (negative degree dependency)
+PHYSICS_P_REWIRE_DEPENDENCY_CANONICAL = GAMMA / (PI + E + GAMMA)  # γ/(π+e+γ) ≈ 0.0890 (rewiring dependency)
+PHYSICS_M_ATTACH_DEPENDENCY_CANONICAL = GAMMA / (E + PHI)   # γ/(e+φ) ≈ 0.1310 (attachment dependency)
 PHYSICS_EXPECTED_CORRELATION_BA_CANONICAL = GAMMA / (PI + E)  # γ/(π+e) ≈ 0.0985 (Barabási-Albert correlation)
 PHYSICS_EXPECTED_CORRELATION_GRID_CANONICAL = GAMMA / (PI + E + PHI)  # γ/(π+e+φ) ≈ 0.0759 (grid correlation)
 
@@ -259,6 +254,9 @@ NODAL_OPTIMIZER_SPEEDUP_ADAPTIVE_CANONICAL = (PHI + GAMMA) / PI  # (φ+γ)/π �
 CACHE_INTERPOLATE_THRESHOLD_CANONICAL = GAMMA / (PI + E)   # γ/(π+e) ≈ 0.0985 (interpolation threshold)
 CACHE_EVICTION_FRACTION_CANONICAL = PHI / (PHI + GAMMA)   # φ/(φ+γ) ≈ 0.7371 (cache eviction: 80% → canonical)
 
+# REMESH Operator Constants (structural memory)
+REMESH_SIMILARITY_THRESHOLD_CANONICAL = UM_COMPAT_THRESHOLD  # φ/(φ+γ) ≈ 0.7371 (structural similarity)
+
 # FFT Engine Constants
 FFT_COUPLING_STRENGTH_CANONICAL = GAMMA / (PI + E)        # γ/(π+e) ≈ 0.0985 (FFT coupling strength)
 
@@ -283,6 +281,17 @@ MULTIMODAL_CACHE_ARITHMETIC_IMPORTANCE_CANONICAL = PI / E         # π/e ≈ 1.1
 
 # Advanced FFT Arithmetic Constants
 FFT_ARITHMETIC_IMPORTANCE_CANONICAL = PI                  # π ≈ 3.1416 (mathematical importance)
+
+# Structural Feedback Loop Constants (homeostatic regulation)
+# These replace inline magic numbers in dynamics/feedback.py
+FEEDBACK_COHERENCE_TOL_LOW = GAMMA / (PI + 1)             # γ/(π+1) ≈ 0.1394 (low coherence tolerance)
+FEEDBACK_COHERENCE_TOL_HIGH = GAMMA / (PI + E)            # γ/(π+e) ≈ 0.0985 (high coherence tolerance)
+FEEDBACK_DNFR_THRESHOLD = math.sqrt(FEEDBACK_COHERENCE_TOL_LOW * FEEDBACK_COHERENCE_TOL_HIGH)  # √(tol_low × tol_high) ≈ 0.1172
+FEEDBACK_EPI_THRESHOLD = (1 / (PHI + GAMMA / PI)) * PHI / E  # Canonical combo ≈ 0.3302
+FEEDBACK_TARGET_COHERENCE = UM_COMPAT_THRESHOLD           # φ/(φ+γ) ≈ 0.7371 (target coherence)
+FEEDBACK_TAU_ADAPTIVE = GAMMA_PI_RATIO                    # γ/(π+γ) ≈ 0.1552 (adaptive tau)
+FEEDBACK_LEARNING_RATE = math.exp(-PI)                    # e^(-π) ≈ 0.0432 (learning rate)
+
 FFT_LOW_CUTOFF_CANONICAL = PHI / (PHI + PI)               # φ/(φ+π) ≈ 0.3399 (low cutoff factor)
 FFT_HIGH_CUTOFF_CANONICAL = PHI / E                       # φ/e ≈ 0.5952 (high cutoff factor)
 FFT_BANDWIDTH_CANONICAL = GAMMA / (PI + E)                # γ/(π+e) ≈ 0.0985 (bandwidth factor)
@@ -328,11 +337,10 @@ SELF_OPT_CACHE_HIGH_FRACTION_CANONICAL = PHI / (PHI + GAMMA)  # φ/(φ+γ) ≈ 0
 SELF_OPT_SPEEDUP_LOW_CANONICAL = PHI / E                  # φ/e ≈ 0.5952 (low speedup)
 SELF_OPT_CACHE_CONTRACTION_CANONICAL = PHI / (PHI + GAMMA)  # φ/(φ+γ) ≈ 0.7371 (cache contraction factor)
 
-# Emergent Centralization Constants (already canonical - these are good examples)
-# The centralization module already uses proper canonical constants:
-# self.centrality_threshold = PHI / (PHI + GAMMA)  # φ/(φ+γ) ≈ 0.737
-# self.coordination_threshold = 1/(PHI + GAMMA/PI) # ≈ 0.555
-# self.stability_threshold = (PHI+γ)/(π+γ)         # ≈ 0.590
+# Emergent Centralization Constants (canonical — centrality, coordination, stability)
+EMERGENT_CENTRALITY_THRESHOLD_CANONICAL = PHI / (PHI + GAMMA)          # φ/(φ+γ) ≈ 0.7371 (centrality threshold)
+EMERGENT_COORDINATION_THRESHOLD_CANONICAL = 1.0 / (PHI + GAMMA / PI)  # 1/(φ+γ/π) ≈ 0.5550 (coordination threshold)
+EMERGENT_STABILITY_THRESHOLD_CANONICAL = (PHI + GAMMA) / (PI + GAMMA)  # (φ+γ)/(π+γ) ≈ 0.5903 (stability threshold)
 
 # FFT Cache Coordinator Constants (mathematical importance)
 FFT_CACHE_IMPORTANCE_HIGH_CANONICAL = PI                  # π ≈ 3.1416 (high importance)
@@ -395,25 +403,11 @@ STRUCT_CACHE_EVICTION_CANONICAL = PHI / (PHI + GAMMA)    # φ/(φ+γ) ≈ 0.7371
 # FFT Engine Constants (coupling parameters)
 FFT_ENGINE_COUPLING_CANONICAL = GAMMA / (PI + E)         # γ/(π+e) ≈ 0.0985 (0.1 → canonical)
 
-# Optimization Orchestrator Constants (density, scoring, speedups)
-OPT_ORCH_DENSITY_THRESHOLD_CANONICAL = GAMMA / (PI + E)  # γ/(π+e) ≈ 0.0985 (0.1 → canonical)
-OPT_ORCH_FFT_BOOST_CANONICAL = PI / E                    # π/e ≈ 1.1557 (2.0 → canonical)
-OPT_ORCH_SMALL_PENALTY_CANONICAL = PHI / (PHI + PI)      # φ/(φ+π) ≈ 0.3399 (0.5 → canonical)
-OPT_ORCH_VECTORIZED_BOOST_CANONICAL = PHI / E            # φ/e ≈ 0.5952 (1.5 → canonical)
-OPT_ORCH_ARITHMETIC_BOOST_CANONICAL = GAMMA / (2 * PI + E) # γ/(2π+e) ≈ 0.0625 (2.5 → canonical)
-OPT_ORCH_DENSE_BOOST_CANONICAL = (PHI + GAMMA) / (PI + E) # (φ+γ)/(π+e) ≈ 0.3710 (0.3 → canonical)
-OPT_ORCH_BEST_THRESHOLD_CANONICAL = (PHI + GAMMA) / PI   # (φ+γ)/π ≈ 0.7006 (1.2 → canonical)
-OPT_ORCH_VECTORIZED_SPEEDUP_CANONICAL = PHI * GAMMA      # φ×γ ≈ 0.9340 (5.0 → canonical)
-OPT_ORCH_FFT_SPEEDUP_CANONICAL = E - GAMMA               # e-γ ≈ 2.1411 (2.35 → canonical)
-OPT_ORCH_CACHE_SPEEDUP_CANONICAL = PI                    # π ≈ 3.1416 (3.0 → canonical)
+# NOTE: OPT_ORCH_* and MULTIMODAL_CACHE_* primary definitions are above
+# (see "Optimization Orchestrator Constants" and "Multi-Modal Cache Constants" sections).
 
-# Multi-modal Cache Constants (cache sizing and importance)
-MULTIMODAL_CACHE_TARGET_CANONICAL = PHI / (PHI + GAMMA)  # φ/(φ+γ) ≈ 0.7371 (0.8 → canonical)
-MULTIMODAL_CACHE_SPECTRAL_IMPORTANCE_CANONICAL = PI / E  # π/e ≈ 1.1557 (2.0 → canonical)
-MULTIMODAL_CACHE_TETRAD_IMPORTANCE_CANONICAL = PI        # π ≈ 3.1416 (3.0 → canonical)
-
-# Advanced FFT Arithmetic Constants (cutoffs and thresholds)
-FFT_ARITHMETIC_IMPORTANCE_CANONICAL = PI                 # π ≈ 3.1416 (3.0 → canonical)
+# Multi-modal Cache Constants (additional aliases)
+MULTIMODAL_CACHE_TARGET_CANONICAL = PHI / (PHI + GAMMA)  # φ/(φ+γ) ≈ 0.7371 (alias for MULTIMODAL_CACHE_TARGET_FRACTION_CANONICAL)
 FFT_LOW_CUTOFF_CANONICAL = PHI / (PHI + PI)              # φ/(φ+π) ≈ 0.3399 (0.5 → canonical)
 FFT_HIGH_CUTOFF_CANONICAL = PHI / E                      # φ/e ≈ 0.5952 (1.5 → canonical)
 FFT_BANDWIDTH_CANONICAL = GAMMA / (PI + E)               # γ/(π+e) ≈ 0.0985 (0.1 → canonical)
@@ -466,32 +460,50 @@ class CanonicalArithmeticParameters:
     eta: float = PHASE_COUPLING_BASE * PI    # (γ/φ)×π ≈ 1.1207 (divisor pressure)
     theta: float = COHERENCE_SCALING         # 1/φ ≈ 0.6180 (sigma pressure)
 
-
 # ============================================================================
 # TELEMETRY CONSTANTS (Classical Mathematical Derivations)
 # ============================================================================
 
-# Structural Field Tetrad - Classical thresholds from mathematical theory
+# --- Canonical Structural Field Tetrad Thresholds (first-principles) ---
+# These are the theoretically derived thresholds from AGENTS.md §Structural Fields.
 
-# Φ_s: Structural Potential Field (recalibrated for canonical constants) 
-PHI_S_THRESHOLD = 0.745219  # ≈ 0.7452 (adjusted for canonical ArithmeticTNFRParameters)
+# Φ_s: Structural Potential Field
+# |Φ_s| absolute threshold: 0.7711 from von Koch fractal bounds + combinatorial
+# number theory (validated across 2,400+ experiments, 5 topologies).
+# NOTE: AGENTS.md states Γ(4/3)/Γ(1/3) but that equals 1/3, not 0.7711.
+# The correct derivation remains under investigation; the value is experimentally
+# validated and used as the canonical per-node |Φ_s| safety criterion.
+PHI_S_VON_KOCH_THRESHOLD: float = 0.7711
 
-# |∇φ|: Phase Gradient Field (recalibrated for canonical constants)
-GRAD_PHI_THRESHOLD = 0.259117  # ≈ 0.2591 (adjusted for canonical ArithmeticTNFRParameters)
+# |∇φ|: Phase Gradient Field — γ/π from Kuramoto critical coupling (Universal Tetrahedral Correspondence)
+GRAD_PHI_CANONICAL_THRESHOLD = GAMMA / PI                # γ/π ≈ 0.1837
 
-# |K_φ|: Phase Curvature Field (recalibrated for canonical constants)  
-K_PHI_THRESHOLD = 3.227450  # ≈ 3.2275 (adjusted for canonical ArithmeticTNFRParameters)
+# |K_φ|: Phase Curvature Field — 0.9×π from wrap_angle bounds (90% of π maximum)
+K_PHI_CANONICAL_THRESHOLD = 0.9 * PI                     # 0.9×π ≈ 2.8274
 
 # ξ_C: Coherence Length Field (critical phenomena + RG)
 XI_C_CRITICAL_RATIO = 1.0                               # 1.0 × diameter (finite-size scaling)
 XI_C_WATCH_RATIO = PI                                    # π × mean_distance (RG scaling)
 
+# --- ArithmeticTNFR-Recalibrated Telemetry Thresholds ---
+# These are domain-specific adjustments for the ArithmeticTNFRParameters subsystem.
+# They should NOT be confused with the canonical first-principles thresholds above.
+
+# Φ_s recalibrated for Arithmetic use-case
+PHI_S_THRESHOLD = 0.745219  # ≈ 0.7452 (adjusted for canonical ArithmeticTNFRParameters)
+
+# |∇φ| recalibrated for Arithmetic use-case
+GRAD_PHI_THRESHOLD = 0.259117  # ≈ 0.2591 (adjusted for canonical ArithmeticTNFRParameters)
+
+# |K_φ| recalibrated for Arithmetic use-case
+K_PHI_THRESHOLD = 3.227450  # ≈ 3.2275 (adjusted for canonical ArithmeticTNFRParameters)
 
 # ============================================================================
 # PHASE AND RESONANCE CONSTANTS
 # ============================================================================
 
 # Phase coupling thresholds
+DELTA_PHI_MAX = PI / 2                       # π/2 ≈ 1.5708 rad (90° maximum phase mismatch for U3 coupling)
 PHASE_SYNC_THRESHOLD = math.sin(PI / 6)     # sin(π/6) = 0.5 (30° tolerance)
 PHASE_DESYNC_LIMIT = math.cos(PI / 3)       # cos(π/3) = 0.5 (60° limit)
 ANTIPHASE_THRESHOLD = math.cos(2 * PI / 3)  # cos(2π/3) ≈ -0.5 (120° destructive)
@@ -503,7 +515,6 @@ MAX_RESONANCE_STRENGTH = PHI - 1             # φ-1 ≈ 0.6180 (saturation)
 # Frequency ranges (structural hertz)
 MIN_STRUCTURAL_FREQUENCY = GAMMA / PI        # γ/π ≈ 0.1837 Hz_str
 MAX_STRUCTURAL_FREQUENCY = PHI * PI          # φ×π ≈ 5.0832 Hz_str
-
 
 # ============================================================================
 # VALIDATION AND SAFETY CONSTANTS
@@ -518,7 +529,6 @@ PHASE_VERIFICATION_TOLERANCE = PI / 180     # 1° tolerance for phase coupling
 INTEGRAL_CONVERGENCE_TOLERANCE = 1e-8        # For ∫νf·ΔNFR convergence
 BIFURCATION_DETECTION_SENSITIVITY = 1e-6     # ∂²EPI/∂t² threshold detection
 COHERENCE_PRESERVATION_MINIMUM = 0.1         # Minimum C(t) for system stability
-
 
 # ============================================================================
 # PHASE 6 EXTENDED: Additional Constants for Critical Modules
@@ -554,10 +564,12 @@ ARITHMETIC_FFT_ENHANCEMENT_CANONICAL = 4 * (PHI**2) / (PI**2)        # 4·φ²/�
 # Physics interactions canonical thresholds
 # Phase gradient threshold: γ/π from Kuramoto critical coupling in TNFR units
 # (Universal Tetrahedral Correspondence: γ ↔ |∇φ|)
-PHASE_GRADIENT_THRESHOLD_CANONICAL = GAMMA / PI                  # γ/π ≈ 0.1837 (admissible phase gradient limit)
+PHASE_GRADIENT_THRESHOLD_CANONICAL = GRAD_PHI_CANONICAL_THRESHOLD  # γ/π ≈ 0.1837 (alias)
 # Legacy alias for backward compatibility
 PHYSICS_GRAD_THRESHOLD_CANONICAL = PHASE_GRADIENT_THRESHOLD_CANONICAL
-PHYSICS_CURVATURE_HOTSPOT_CANONICAL = 0.9 * PI                  # 0.9×π ≈ 2.8274 (curvature hotspot threshold)  
+PHYSICS_CURVATURE_HOTSPOT_CANONICAL = K_PHI_CANONICAL_THRESHOLD  # 0.9×π ≈ 2.8274 (alias)
+# Au-like permissive curvature threshold: (φ+1)×π/e ≈ 3.0257
+AU_CURVATURE_PERMISSIVE_THRESHOLD = (PHI + 1) * PI / E          # (φ+1)×π/e ≈ 3.0257 (Au-like tolerance)
 PHYSICS_HOTSPOT_FRACTION_CANONICAL = GAMMA / (PI + E)           # γ/(π+e) ≈ 0.0985 (10% → canonical hotspot fraction)
 PHYSICS_CONFIDENCE_LEVEL_CANONICAL = PHI / INV_PHI              # φ/(1/φ) = φ² ≈ 2.618 → normalized to 0.95
 PHYSICS_CORRELATION_STD_CANONICAL = GAMMA / (PI + E + PHI)      # γ/(π+e+φ) ≈ 0.0741 (correlation std estimation)
@@ -632,7 +644,6 @@ CONFIG_EPI_SATURATION_CANONICAL = PHI / INV_PHI / 3                        # φ�
 CONFIG_DNFR_RECEPTION_MAX_CANONICAL = CONFIG_INIT_VF_STD_CANONICAL         # ≈ 0.1531 (0.15 → canonical reception max)
 CONFIG_DNFR_IL_CRITICAL_CANONICAL = PHI / (E + GAMMA)                      # φ/(e+γ) ≈ 0.4890 (0.8 → canonical IL critical)
 
-
 # ============================================================================
 # EXPORT DICTIONARY FOR EASY ACCESS
 # ============================================================================
@@ -656,10 +667,11 @@ CANONICAL_CONSTANTS = {
     'coherence_scaling': COHERENCE_SCALING,
     'critical_exponent': CRITICAL_EXPONENT,
     
-    # Telemetry (Classical)
-    'phi_s_threshold': PHI_S_THRESHOLD,
-    'grad_phi_threshold': GRAD_PHI_THRESHOLD,
-    'k_phi_threshold': K_PHI_THRESHOLD,
+    # Telemetry (Canonical — first-principles thresholds)
+    'phi_s_threshold': PHI_S_VON_KOCH_THRESHOLD,
+    'grad_phi_threshold': GRAD_PHI_CANONICAL_THRESHOLD,
+    'k_phi_threshold': K_PHI_CANONICAL_THRESHOLD,
+    'delta_phi_max': DELTA_PHI_MAX,
     
     # Extended canonical combinations (for recalibration)
     'inv_phi': INV_PHI,
@@ -688,7 +700,6 @@ CANONICAL_ARITHMETIC_PARAMS = {
     'eta': CanonicalArithmeticParameters.eta,
     'theta': CanonicalArithmeticParameters.theta,
 }
-
 
 def print_canonical_summary() -> None:
     """Print summary of canonical constants for verification."""
@@ -723,7 +734,6 @@ def print_canonical_summary() -> None:
     print(f"  Medical NF moderate: {MEDICAL_NF_MODERATE:.6f}")
     print(f"  Business coherence baseline: {BUSINESS_COHERENCE_BASELINE:.6f}")
     print(f"  Visualization golden transparency: {VIZ_GOLDEN_TRANSPARENCY:.6f}")
-
 
 # ============================================================================
 # PHASE 8: SDK & VISUALIZATION CONSTANTS
@@ -777,7 +787,6 @@ UTILS_DIAMETER_TOLERANCE = 2.0                                # Natural toleranc
 UTILS_CACHE_HIGH_EFFICIENCY = 1 - GAMMA / (10 * PI)          # 1-γ/(10π) ≈ 0.9816 → adjusted to 0.95
 UTILS_CACHE_COST_BASELINE = 100.0                            # Baseline cost (already canonical)
 UTILS_CACHE_GOOD_EFFICIENCY = 1 - GAMMA / (5 * PI)          # 1-γ/(5π) ≈ 0.9633 → adjusted to 0.87
-
 
 # Add to canonical constants dictionary
 CANONICAL_CONSTANTS_DICT_PHASE_8 = {
@@ -906,7 +915,6 @@ TOOL_EDUCATIONAL_HEALTH_MIN = GAMMA / (PI + GAMMA)       # γ/(π+γ) ≈ 0.155 
 TOOL_STABILIZE_HEALTH_MIN = GAMMA / (PI + GAMMA)         # γ/(π+γ) ≈ 0.155 → normalized to 0.70
 TOOL_EXPLORE_HEALTH_MIN = GAMMA / (PI + GAMMA)           # γ/(π+γ) ≈ 0.155 → normalized to 0.70
 
-
 # Add PHASE 9 constants to main dictionary
 CANONICAL_CONSTANTS_DICT_PHASE_9 = {
     # Example Constants
@@ -939,7 +947,6 @@ CANONICAL_CONSTANTS_DICT_PHASE_9 = {
 }
 
 CANONICAL_CONSTANTS.update(CANONICAL_CONSTANTS_DICT_PHASE_9)
-
 
 if __name__ == "__main__":
     print_canonical_summary()

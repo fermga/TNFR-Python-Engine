@@ -47,7 +47,7 @@ See: tests/unit/operators/test_unified_grammar.py TestU6 for examples
 from __future__ import annotations
 
 import math
-from typing import Any, Dict, List
+from typing import Any
 
 from ..mathematics.unified_numerical import np
 
@@ -89,7 +89,6 @@ try:
 except ImportError:
     _GPU_BACKENDS_AVAILABLE = False
 
-
 def _use_gpu_acceleration(n_nodes: int) -> bool:
     """Determine if GPU acceleration should be used based on problem size.
     
@@ -107,7 +106,6 @@ def _use_gpu_acceleration(n_nodes: int) -> bool:
         return backend.supports_autodiff
     except Exception:
         return False
-
 
 def _gpu_distance_matrix(positions: np.ndarray, alpha: float = 2.0) -> np.ndarray:
     """Compute distance matrix on GPU for large graphs.
@@ -147,13 +145,12 @@ def _gpu_distance_matrix(positions: np.ndarray, alpha: float = 2.0) -> np.ndarra
         dist = backend.einsum('ij->ij', dist_sq ** 0.5)  # sqrt for distance
         inv_dist = 1.0 / (dist ** alpha)
     
-    # Set diagonal to zero (self-distances)
+    # set diagonal to zero (self-distances)
     n = positions.shape[0]
     eye = backend.as_array(np.eye(n))
     inv_dist = inv_dist * (1 - eye)
     
     return backend.to_numpy(inv_dist)
-
 
 def _get_precision_dtype() -> type:
     """Return numpy dtype based on current precision mode.
@@ -177,15 +174,12 @@ def _get_precision_dtype() -> type:
         # High mode uses refined algorithms, not different dtype
         return np.float64
 
-
 # Centralised helpers — single source of truth in _helpers.py
 from ._helpers import wrap_angle as _wrap_angle          # noqa: E402
 from ._helpers import get_phase as _get_phase            # noqa: E402
 from ._helpers import get_dnfr as _get_dnfr              # noqa: E402
 
-
-_PHI_S_DISTANCE_CACHE: Dict[tuple, Dict[Any, Dict[Any, float]]] = {}
-
+_PHI_S_DISTANCE_CACHE: dict[tuple, dict[Any, dict[Any, float]]] = {}
 
 def _graph_topology_hash(G: Any) -> int:
     """Return lightweight topology hash (nodes, edges, degree multiset).
@@ -197,7 +191,6 @@ def _graph_topology_hash(G: Any) -> int:
     num_edges = G.number_of_edges()
     degrees = sorted([d for _, d in G.degree()])
     return hash((num_nodes, num_edges, tuple(degrees)))
-
 
 @cache_tnfr_computation(
     level=CacheLevel.DERIVED_METRICS if _CACHE_AVAILABLE else None,
@@ -212,7 +205,7 @@ def compute_structural_potential(
     error_epsilon: float = 0.05,
     max_refinements: int = 3,
     sample_size: int = 32,
-) -> Dict[Any, float]:
+) -> dict[Any, float]:
     """Compute structural potential Φ_s for each locus [CANONICAL].
 
     Parameters
@@ -237,7 +230,7 @@ def compute_structural_potential(
 
     Returns
     -------
-    Dict[node, float]
+    dict[node, float]
         Mapping of node to Φ_s value.
 
     Canonical Integrity
@@ -285,7 +278,7 @@ def compute_structural_potential(
     cache_key = (topo_hash, effective_ratio)
     cached = _PHI_S_DISTANCE_CACHE.get(cache_key)
 
-    def compute_with_ratio(ratio: float) -> Dict[Any, float]:
+    def compute_with_ratio(ratio: float) -> dict[Any, float]:
         """Inner landmark pass (rebuild distances only if ratio changed)."""
         nonlocal cached
         if cached is None or cache_key[1] != ratio:
@@ -302,7 +295,7 @@ def compute_structural_potential(
             landmarks = random.sample(
                 top_candidates, min(num_landmarks, len(top_candidates))
             )
-            landmark_distances: Dict[Any, Dict[Any, float]] = {}
+            landmark_distances: dict[Any, dict[Any, float]] = {}
             for landmark in landmarks:
                 if G.number_of_edges() > 0:
                     distances = nx.single_source_dijkstra_path_length(
@@ -324,7 +317,7 @@ def compute_structural_potential(
             )
 
         # Approximate potentials (Python fallback)
-        potential: Dict[Any, float] = {}
+        potential: dict[Any, float] = {}
         landmarks = list(landmark_distances.keys())
         for src in nodes:
             total = 0.0
@@ -369,7 +362,7 @@ def compute_structural_potential(
             if len(nodes) <= sample_size
             else _r.sample(nodes, sample_size)
         )
-        exact_subset: Dict[Any, float] = {}
+        exact_subset: dict[Any, float] = {}
         dtype = _get_precision_dtype()
         mode = get_precision_mode()
         for src in subset:
@@ -432,13 +425,12 @@ def compute_structural_potential(
 
     return potential
 
-
 def _compute_phi_s_exact(
     G: Any,
-    nodes: List[Any],
-    delta_nfr: Dict[Any, float],
+    nodes: list[Any],
+    delta_nfr: dict[Any, float],
     alpha: float
-) -> Dict[Any, float]:
+) -> dict[Any, float]:
     """Exact Φ_s computation using all-pairs shortest paths.
     
     Precision-aware: uses dtype from get_precision_mode().
@@ -451,7 +443,7 @@ def _compute_phi_s_exact(
             G, nodes, delta_nfr, alpha, dtype=_get_precision_dtype()
         )
 
-    potential: Dict[Any, float] = {}
+    potential: dict[Any, float] = {}
     dtype = _get_precision_dtype()
     mode = get_precision_mode()
 
@@ -488,15 +480,14 @@ def _compute_phi_s_exact(
 
     return potential
 
-
 def _compute_phi_s_optimized(
     G: Any,
-    nodes: List[Any],
-    delta_nfr: Dict[Any, float],
+    nodes: list[Any],
+    delta_nfr: dict[Any, float],
     alpha: float
-) -> Dict[Any, float]:
+) -> dict[Any, float]:
     """Optimized Φ_s computation using BFS for unweighted graphs."""
-    potential: Dict[Any, float] = {}
+    potential: dict[Any, float] = {}
 
     # Check if graph is unweighted
     has_weights = any('weight' in G[u][v] for u, v in G.edges())
@@ -526,14 +517,13 @@ def _compute_phi_s_optimized(
 
     return potential
 
-
 def _compute_phi_s_landmarks(
     G: Any,
-    nodes: List[Any],
-    delta_nfr: Dict[Any, float],
+    nodes: list[Any],
+    delta_nfr: dict[Any, float],
     alpha: float,
     landmark_ratio: float = 0.1
-) -> Dict[Any, float]:
+) -> dict[Any, float]:
     """Approximate Φ_s computation using landmark sampling."""
     import random
 
@@ -566,7 +556,7 @@ def _compute_phi_s_landmarks(
         landmark_distances[landmark] = distances
 
     # Approximate potential for each node
-    potential: Dict[Any, float] = {}
+    potential: dict[Any, float] = {}
 
     for src in nodes:
         total = 0.0
@@ -612,30 +602,49 @@ def _compute_phi_s_landmarks(
 
     return potential
 
-
 @cache_tnfr_computation(
     level=CacheLevel.DERIVED_METRICS if _CACHE_AVAILABLE else None,
     dependencies={"graph_topology", "node_phase"},
 )
-def compute_phase_gradient(G: Any) -> Dict[Any, float]:
-    """Compute magnitude of discrete phase gradient |∇φ| per locus [CANONICAL]."""
+def compute_phase_gradient(G: Any) -> dict[Any, float]:
+    r"""Compute magnitude of discrete phase gradient |∇φ| per locus [CANONICAL].
+
+    |∇φ|(i) = mean_{j∈N(i)} |wrap(φ_j − φ_i)|
+
+    **Dual interpretation** (both consistent):
+
+    1. **As potential energy component** (variational formulation):
+       V(i) = ½[Φ_s² + |∇φ|² + K_φ²].  Here |∇φ| is a configuration
+       degree of freedom — the system evolves to minimise V, rolling
+       downhill toward |∇φ| = 0 (synchronisation).
+
+    2. **As local disorder metric** (telemetry):
+       High |∇φ| indicates poor local phase synchronisation and correlates
+       with bifurcation risk.  The system naturally minimises |∇φ| through
+       coherence (IL) attraction.
+
+    These are not contradictory: the potential well's minimum *is* the
+    synchronized state (|∇φ| = 0), and high |∇φ| = high potential energy
+    = high stress.
+
+    Safety threshold: |∇φ| < γ/π ≈ 0.1837 (Kuramoto critical coupling
+    in TNFR units, from Universal Tetrahedral Correspondence γ ↔ |∇φ|).
+    """
     grad, _ = _compute_phase_gradient_and_curvature(G)
     return grad
 
-
 @cache_tnfr_computation(
     level=CacheLevel.DERIVED_METRICS if _CACHE_AVAILABLE else None,
     dependencies={"graph_topology", "node_phase"},
 )
-def compute_phase_curvature(G: Any) -> Dict[Any, float]:
+def compute_phase_curvature(G: Any) -> dict[Any, float]:
     """Compute discrete Laplacian curvature K_φ of the phase field [CANONICAL]."""
     _, curvature = _compute_phase_gradient_and_curvature(G)
     return curvature
 
-
 def _compute_phase_gradient_and_curvature(
     G: Any,
-) -> tuple[Dict[Any, float], Dict[Any, float]]:
+) -> tuple[dict[Any, float], dict[Any, float]]:
     """Compute |∇φ| and K_φ in a single neighborhood pass.
     
     Precision-aware: uses dtype from get_precision_mode().
@@ -694,8 +703,8 @@ def _compute_phase_gradient_and_curvature(
             # Fallback
             pass
 
-    grad: Dict[Any, float] = {}
-    curvature: Dict[Any, float] = {}
+    grad: dict[Any, float] = {}
+    curvature: dict[Any, float] = {}
 
     phases = {node: _get_phase(G, node) for node in nodes}
 
@@ -739,7 +748,6 @@ def _compute_phase_gradient_and_curvature(
         curvature[i] = float(_wrap_angle(phi_i - mean_phase))
 
     return grad, curvature
-
 
 @cache_tnfr_computation(
     level=CacheLevel.DERIVED_METRICS if _CACHE_AVAILABLE else None,
@@ -816,7 +824,7 @@ def estimate_coherence_length(G: Any) -> float:
         return float('nan')
 
     # Group by distance and compute mean correlation
-    distance_bins: Dict[int, List[float]] = {}
+    distance_bins: dict[int, list[float]] = {}
     for dist, corr in corr_pairs:
         if dist not in distance_bins:
             distance_bins[dist] = []
@@ -852,7 +860,6 @@ def estimate_coherence_length(G: Any) -> float:
         return float(xi_c) if xi_c > 0 else float('nan')
     except np.linalg.LinAlgError:
         return float('nan')
-
 
 __all__ = [
     "compute_structural_potential",

@@ -16,7 +16,6 @@ from ..config.operator_names import EXPANSION
 from ..types import Glyph, TNFRGraph
 from .definitions_base import Operator
 
-
 class Expansion(Operator):
     """Expand structural scope for exploration.
 

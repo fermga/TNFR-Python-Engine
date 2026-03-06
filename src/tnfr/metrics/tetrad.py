@@ -32,7 +32,6 @@ from ..physics.canonical import (
 if TYPE_CHECKING:
     import networkx as nx
 
-
 def collect_tetrad_snapshot(
     G: nx.Graph,
     include_histograms: bool | None = None,
@@ -100,7 +99,6 @@ def collect_tetrad_snapshot(
 
     return snapshot
 
-
 def _field_statistics(
     values: dict[int, float],
     density: str,
@@ -160,7 +158,6 @@ def _field_statistics(
         }
 
     return stats
-
 
 def get_tetrad_sample_interval(base_dt: float = 1.0) -> float:
     """Compute snapshot interval based on telemetry_density.

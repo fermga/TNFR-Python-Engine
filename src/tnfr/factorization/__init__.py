@@ -9,11 +9,10 @@ self-optimization engines wired in the factorization lab.
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Optional
+
 import sys
 
 from ..errors import TNFRUserError
-
 
 def _bootstrap_factorization_lab() -> None:
     """Ensure the tnfr_factorization package is importable.
@@ -30,7 +29,6 @@ def _bootstrap_factorization_lab() -> None:
     if lab_root.exists() and str(lab_root) not in sys.path:
         sys.path.insert(0, str(lab_root))
 
-
 _bootstrap_factorization_lab()
 
 try:  # pragma: no cover - exercised indirectly through factorize()
@@ -44,19 +42,15 @@ except ModuleNotFoundError as exc:  # pragma: no cover - raised when extra missi
         "or keep the factorization-lab directory in your workspace."
     ) from exc
 
-
 __all__ = ["factorize", "SpectralAnalysisResult", "SpectralPaleyFactorizer"]
 
-
-_DEFAULT_FACTORIZER: Optional[SpectralPaleyFactorizer] = None
-
+_DEFAULT_FACTORIZER: SpectralPaleyFactorizer | None = None
 
 def _get_factorizer() -> SpectralPaleyFactorizer:
     global _DEFAULT_FACTORIZER
     if _DEFAULT_FACTORIZER is None:
         _DEFAULT_FACTORIZER = SpectralPaleyFactorizer()
     return _DEFAULT_FACTORIZER
-
 
 def factorize(
     n: int,

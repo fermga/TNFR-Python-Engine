@@ -17,7 +17,7 @@ Key Features:
 
 from __future__ import annotations
 
-from typing import Any, Callable, Optional, Tuple
+from typing import Any, Callable
 
 import scipy.linalg
 import scipy.sparse.linalg
@@ -39,16 +39,15 @@ except ImportError:
 
 from .unified_cache import cache_tnfr_computation, CacheLevel
 
-
 @cache_tnfr_computation(
     level=CacheLevel.GRAPH_STRUCTURE,
     dependencies={'graph_topology'}
 )
 def get_laplacian_spectrum(
     G: Any,
-    weight: Optional[str] = "weight",
-    k: Optional[int] = None
-) -> Tuple[np.ndarray, np.ndarray]:
+    weight: str | None = "weight",
+    k: int | None = None
+) -> tuple[np.ndarray, np.ndarray]:
     """Compute and cache the Laplacian spectrum of the graph.
     
     Args:
@@ -58,7 +57,7 @@ def get_laplacian_spectrum(
            If None, computes full spectrum.
            
     Returns:
-        Tuple (eigenvalues, eigenvectors).
+        tuple (eigenvalues, eigenvectors).
         eigenvalues: Array of shape (N,) sorted ascending.
         eigenvectors: Array of shape (N, N) or (N, k), where column i is the eigenvector for eval i.
     """
@@ -133,7 +132,6 @@ def get_laplacian_spectrum(
 
     return evals, evecs
 
-
 def gft(signal: np.ndarray, U: np.ndarray) -> np.ndarray:
     """Compute the Graph Fourier Transform of a signal.
 
@@ -159,7 +157,6 @@ def gft(signal: np.ndarray, U: np.ndarray) -> np.ndarray:
     # CPU implementation: GFT is projection onto eigenvectors: \hat{f} = U^T f
     return U.T @ signal
 
-
 def igft(hat_signal: np.ndarray, U: np.ndarray) -> np.ndarray:
     """Compute the Inverse Graph Fourier Transform.
 
@@ -184,7 +181,6 @@ def igft(hat_signal: np.ndarray, U: np.ndarray) -> np.ndarray:
     
     # CPU implementation: IGFT is reconstruction: f = U \hat{f}
     return U @ hat_signal
-
 
 def spectral_filter(
     signal: np.ndarray,
@@ -213,7 +209,6 @@ def spectral_filter(
     # 3. IGFT
     return igft(hat_f_filtered, U)
 
-
 def heat_diffusion(
     signal: np.ndarray,
     U: np.ndarray,
@@ -235,7 +230,6 @@ def heat_diffusion(
         Diffused signal f(t).
     """
     return spectral_filter(signal, U, evals, lambda lam: np.exp(-lam * t))
-
 
 def compute_spectral_smoothness(signal: np.ndarray, L: Any) -> float:
     """Compute the smoothness of a signal on the graph (Dirichlet energy).

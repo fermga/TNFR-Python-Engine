@@ -25,24 +25,20 @@ __all__ = (
     "angle_diff_array",
 )
 
-
 def clamp(x: float, a: float, b: float) -> float:
     """Return ``x`` clamped to the ``[a, b]`` interval."""
     from ..mathematics.unified_numerical import clamp_value
     return float(clamp_value(x, a, b))
-
 
 def clamp01(x: float) -> float:
     """Clamp ``x`` to the ``[0,1]`` interval."""
     from ..mathematics.unified_numerical import clamp_value
     return float(clamp_value(x, 0.0, 1.0))
 
-
 def within_range(val: float, lower: float, upper: float, tol: float = 1e-9) -> bool:
     """Return ``True`` if ``val`` lies in ``[lower, upper]`` within ``tol``."""
     v = float(val)
     return lower <= v <= upper or abs(v - lower) <= tol or abs(v - upper) <= tol
-
 
 def _norm01(x: float, lo: float, hi: float) -> float:
     """Normalize ``x`` to the unit interval given bounds."""
@@ -50,23 +46,19 @@ def _norm01(x: float, lo: float, hi: float) -> float:
         return 0.0
     return clamp01((float(x) - float(lo)) / (float(hi) - float(lo)))
 
-
 def similarity_abs(a: float, b: float, lo: float, hi: float) -> float:
     """Return absolute similarity of ``a`` and ``b`` over ``[lo, hi]``."""
     return 1.0 - _norm01(abs(float(a) - float(b)), 0.0, hi - lo)
-
 
 def kahan_sum_nd(values: Iterable[Sequence[float]], dims: int) -> tuple[float, ...]:
     """Return compensated sums of ``values`` with ``dims`` components."""
     from ..mathematics.unified_numerical import kahan_sum_nd as unified_kahan_sum_nd
     return unified_kahan_sum_nd(values, dims)
 
-
 def angle_diff(a: float, b: float) -> float:
     """Return the minimal difference between two angles in radians."""
     from ..mathematics.unified_numerical import compute_phase_difference
     return float(compute_phase_difference(a, b))
-
 
 def angle_diff_array(
     a: Sequence[float] | "np.ndarray",  # noqa: F821

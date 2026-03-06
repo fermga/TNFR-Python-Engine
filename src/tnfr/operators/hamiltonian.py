@@ -86,7 +86,7 @@ Ground state energy: ...
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Tuple
+from typing import TYPE_CHECKING, Any
 
 from ..alias import get_attr
 from ..constants.aliases import ALIAS_VF
@@ -102,7 +102,6 @@ __all__ = (
     "build_H_frequency",
     "build_H_coupling",
 )
-
 
 class InternalHamiltonian:
     r"""Constructs and manipulates the internal Hamiltonian H_int.
@@ -482,7 +481,7 @@ class InternalHamiltonian:
 
         return U_t
 
-    def get_spectrum(self) -> Tuple[Any, Any]:
+    def get_spectrum(self) -> tuple[Any, Any]:
         r"""Compute eigenvalues and eigenvectors of H_int.
 
         Returns
@@ -567,9 +566,7 @@ class InternalHamiltonian:
 
         return delta_nfr
 
-
 # Standalone builder functions for modular usage
-
 
 def build_H_coherence(
     G: TNFRGraph,
@@ -616,7 +613,6 @@ def build_H_coherence(
 
     return C_0 * W_matrix
 
-
 def build_H_frequency(
     G: TNFRGraph,
     nodes: list | None = None,
@@ -648,7 +644,6 @@ def build_H_frequency(
         frequencies[i] = float(nu_f)
 
     return np.diag(frequencies).astype(complex)
-
 
 def build_H_coupling(
     G: TNFRGraph,

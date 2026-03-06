@@ -17,8 +17,8 @@ Usage
 # Direct engine imports
 from tnfr.engines.self_optimization import TNFRSelfOptimizingEngine
 from tnfr.engines.pattern_discovery import TNFREmergentPatternEngine
-from tnfr.engines.computation import GPUEngine, FFTEngine
-from tnfr.engines.integration import EmergentIntegrationEngine
+from tnfr.engines.computation import FFTDynamicsEngine
+from tnfr.engines.integration import TNFREmergentIntegrationEngine
 
 # Or via SDK (recommended)
 from tnfr.sdk import TNFR
@@ -54,15 +54,14 @@ except ImportError:
     pass
 
 try:
-    from .computation.gpu_engine import GPUEngine
-    from .computation.fft_engine import FFTEngine
-    __all__.extend(["GPUEngine", "FFTEngine"])
+    from .computation.fft_engine import FFTDynamicsEngine
+    __all__.append("FFTDynamicsEngine")
 except ImportError:
     pass
 
 try:
-    from .integration.emergent_integration import EmergentIntegrationEngine
-    __all__.append("EmergentIntegrationEngine")
+    from .integration.emergent_integration import TNFREmergentIntegrationEngine
+    __all__.append("TNFREmergentIntegrationEngine")
 except ImportError:
     pass
 

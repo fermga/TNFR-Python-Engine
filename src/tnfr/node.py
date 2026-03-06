@@ -12,7 +12,6 @@ from typing import (
     Iterable,
     Mapping,
     MutableMapping,
-    Optional,
     Protocol,
     Sequence,
     SupportsFloat,
@@ -90,7 +89,6 @@ __all__ = ("NodeNX", "NodeProtocol", "add_edge")
 
 LOGGER = get_logger(__name__)
 
-
 @dataclass(frozen=True)
 class AttrSpec:
     """Configuration required to expose a ``networkx`` node attribute.
@@ -125,31 +123,25 @@ class AttrSpec:
 
         return property(fget, fset)
 
-
 # Canonical adapters for BEPI storage ------------------------------------
-
 
 def _epi_to_python(value: Any) -> EPIValue:
     if value is None:
         raise ValueError("EPI attribute is required for BEPI nodes")
     return ensure_bepi(value)
 
-
 def _epi_to_storage(
     value: Any,
 ) -> Mapping[str, tuple[complex, ...] | tuple[float, ...]]:
     return serialize_bepi(value)
 
-
 def _get_bepi_attr(mapping: Mapping[str, Any], aliases: tuple[str, ...], default: Any) -> Any:
     return get_attr(mapping, aliases, default, conv=lambda obj: obj)
-
 
 def _set_bepi_attr(
     mapping: MutableMapping[str, Any], aliases: tuple[str, ...], value: Any
 ) -> Mapping[str, tuple[complex, ...] | tuple[float, ...]]:
     return set_attr_generic(mapping, aliases, value, conv=lambda obj: obj)
-
 
 # Mapping of NodeNX attribute specifications used to generate property
 # descriptors. Each entry defines the keyword arguments passed to
@@ -183,12 +175,11 @@ ATTR_SPECS: dict[str, AttrSpec] = {
     "d2EPI": AttrSpec(aliases=ALIAS_D2EPI),
 }
 
-
 def _add_edge_common(
     n1: NodeId,
     n2: NodeId,
     weight: CouplingWeight | SupportsFloat | str,
-) -> Optional[CouplingWeight]:
+) -> CouplingWeight | None:
     """Validate basic edge constraints.
 
     Returns the parsed weight if the edge can be added. ``None`` is returned
@@ -205,7 +196,6 @@ def _add_edge_common(
         raise ValueError("Edge weight must be non-negative")
 
     return weight
-
 
 def add_edge(
     graph: TNFRGraph,
@@ -228,7 +218,6 @@ def add_edge(
 
     graph.add_edge(n1, n2, weight=weight)
     increment_edge_version(graph)
-
 
 class NodeProtocol(Protocol):
     """Minimal protocol for TNFR nodes."""
@@ -277,7 +266,6 @@ class NodeProtocol(Protocol):
         """Iterate all nodes of the attached graph as :class:`NodeProtocol` objects."""
 
         ...
-
 
 class NodeNX(NodeProtocol):
     """Adapter for ``networkx`` nodes."""
@@ -348,7 +336,7 @@ class NodeNX(NodeProtocol):
         n: NodeId,
         *,
         state_projector: StateProjector | None = None,
-        enable_math_validation: Optional[bool] = None,
+        enable_math_validation: bool | None = None,
         hilbert_space: HilbertSpace | None = None,
         coherence_operator: CoherenceOperator | None = None,
         coherence_dim: int | None = None,
@@ -364,7 +352,7 @@ class NodeNX(NodeProtocol):
         self.n: NodeId = n
         self.graph: MutableMapping[str, Any] = G.graph
         self.state_projector: StateProjector = state_projector or BasicStateProjector()
-        self._math_validation_override: Optional[bool] = enable_math_validation
+        self._math_validation_override: bool | None = enable_math_validation
         if enable_math_validation is None:
             effective_validation = get_flags().enable_math_validation
         else:

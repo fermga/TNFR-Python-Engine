@@ -20,7 +20,6 @@ from typing import TYPE_CHECKING, Any
 if TYPE_CHECKING:
     from ..types import NodeId, TNFRGraph
 
-from ..alias import get_attr
 from ..constants.aliases import ALIAS_EPI, ALIAS_VF, ALIAS_DNFR, ALIAS_THETA
 from ..constants.canonical import MAX_STRUCTURAL_FREQUENCY  # φ×π ≈ 5.083 for mutation threshold
 
@@ -34,7 +33,6 @@ __all__ = [
 
 # Default thresholds for lifecycle state determination
 DEFAULT_MIN_PHASE_COUPLING = 0.1  # Minimum phase coupling before decoupling collapse
-
 
 class LifecycleState(Enum):
     """Canonical TNFR node lifecycle states.
@@ -64,7 +62,6 @@ class LifecycleState(Enum):
     COLLAPSED = "collapsed"
     """Node has dissolved (νf → 0 or extreme dissonance)."""
 
-
 class CollapseReason(Enum):
     """Canonical reasons for node collapse in TNFR.
 
@@ -83,13 +80,7 @@ class CollapseReason(Enum):
     EPI_DISSOLUTION = "epi_dissolution"
     """Primary Information Structure lost coherence (EPI → 0)."""
 
-
-def _get_node_attr(
-    G: TNFRGraph, node: NodeId, aliases: tuple[str, ...], default: float = 0.0
-) -> float:
-    """Get node attribute using alias fallback."""
-    return float(get_attr(G.nodes[node], aliases, default))
-
+from .metrics_core import get_node_attr as _get_node_attr
 
 def get_lifecycle_state(
     G: TNFRGraph,
@@ -205,7 +196,6 @@ def get_lifecycle_state(
     # Dormant: Below activation threshold but above collapse
     return LifecycleState.DORMANT
 
-
 def check_collapse_conditions(
     G: TNFRGraph,
     node: NodeId,
@@ -282,7 +272,6 @@ def check_collapse_conditions(
         return (True, CollapseReason.EPI_DISSOLUTION)
 
     return (False, None)
-
 
 def should_collapse(
     G: TNFRGraph,

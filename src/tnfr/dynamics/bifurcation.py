@@ -25,7 +25,6 @@ __all__ = [
     "compute_bifurcation_score",
 ]
 
-
 def get_bifurcation_paths(G: "TNFRGraph", node: "NodeId") -> list["Glyph"]:
     """Return viable structural paths after OZ-induced bifurcation.
 
@@ -43,7 +42,7 @@ def get_bifurcation_paths(G: "TNFRGraph", node: "NodeId") -> list["Glyph"]:
     Returns
     -------
     list[Glyph]
-        List of viable operator glyphs for structural reorganization.
+        list of viable operator glyphs for structural reorganization.
         Empty list if node is not in bifurcation state.
 
     Notes
@@ -64,7 +63,7 @@ def get_bifurcation_paths(G: "TNFRGraph", node: "NodeId") -> list["Glyph"]:
     >>> from tnfr.operators.definitions import Dissonance
     >>> from tnfr.dynamics.bifurcation import get_bifurcation_paths
     >>> G, node = create_nfr("test", epi=0.4, vf=1.0)
-    >>> # Set up bifurcation conditions
+    >>> # set up bifurcation conditions
     >>> G.nodes[node]["epi_history"] = [0.2, 0.35, 0.55]
     >>> Dissonance()(G, node, validate_preconditions=True)
     >>> paths = get_bifurcation_paths(G, node)
@@ -106,7 +105,6 @@ def get_bifurcation_paths(G: "TNFRGraph", node: "NodeId") -> list["Glyph"]:
         paths.append(Glyph.THOL)
 
     return paths
-
 
 def compute_bifurcation_score(
     d2epi: float,

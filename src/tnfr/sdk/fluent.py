@@ -28,7 +28,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any
 
 from ..mathematics.unified_numerical import np, NUMPY_AVAILABLE as _HAS_NUMPY
 
@@ -38,7 +38,16 @@ from ..structural import create_nfr, run_sequence
 from ..metrics.coherence import compute_coherence
 from ..metrics.sense_index import compute_Si
 from ..constants.aliases import ALIAS_DNFR
+from ..constants.canonical import PI as _PI
 from ..validation import validate_sequence
+
+# ---------------------------------------------------------------------------
+# Adaptive coherence thresholds for auto_optimize()
+# ---------------------------------------------------------------------------
+_COHERENCE_HEALING_THRESHOLD = 0.3
+_COHERENCE_STABILIZATION_THRESHOLD = 0.5
+_COHERENCE_INNOVATION_THRESHOLD = 0.8
+_IMPROVEMENT_FACTOR_THRESHOLD = 1.1
 
 # Auto-optimization imports (NEW - Nov 28, 2025)
 try:
@@ -58,7 +67,6 @@ except ImportError:
     _AUTO_OPTIMIZATION_AVAILABLE = False
 
 __all__ = ["TNFRNetwork", "NetworkConfig", "NetworkResults"]
-
 
 # Predefined operator sequences for common patterns (optimized with Grammar 2.0)
 # All sequences must respect TNFR grammar rules:
@@ -140,7 +148,7 @@ NAMED_SEQUENCES = {
         "silence",  # SHA: Sustained stable state
     ],
     
-    # === NUEVAS SECUENCIAS AVANZADAS ===
+    # === ADVANCED OPERATOR SEQUENCES ===
     
     # Healing pattern - for network recovery and coherence restoration
     "healing": [
@@ -245,7 +253,6 @@ NAMED_SEQUENCES = {
     ],
 }
 
-
 @dataclass
 class NetworkConfig:
     """Configuration for TNFR network creation.
@@ -264,12 +271,11 @@ class NetworkConfig:
         Default range for EPI (Primary Information Structure) generation.
     """
 
-    random_seed: Optional[int] = None
+    random_seed: int | None = None
     validate_invariants: bool = True
     auto_stabilization: bool = True
     default_vf_range: tuple[float, float] = (0.1, 1.0)
     default_epi_range: tuple[float, float] = (0.1, 0.9)
-
 
 @dataclass
 class NetworkResults:
@@ -279,9 +285,9 @@ class NetworkResults:
     ----------
     coherence : float
         Global coherence C(t) of the network.
-    sense_indices : Dict[str, float]
+    sense_indices : dict[str, float]
         Sense index Si for each node, measuring stable reorganization capacity.
-    delta_nfr : Dict[str, float]
+    delta_nfr : dict[str, float]
         Internal reorganization gradient ΔNFR for each node.
     graph : TNFRGraph
         The underlying NetworkX graph with full TNFR state.
@@ -292,12 +298,12 @@ class NetworkResults:
     """
 
     coherence: float
-    sense_indices: Dict[str, float]
-    delta_nfr: Dict[str, float]
+    sense_indices: dict[str, float]
+    delta_nfr: dict[str, float]
     graph: Any  # TNFRGraph
-    avg_vf: Optional[float] = None
-    avg_phase: Optional[float] = None
-    unified_fields: Optional[Dict[str, Any]] = None  # Nov 28, 2025 - unified field telemetry
+    avg_vf: float | None = None
+    avg_phase: float | None = None
+    unified_fields: dict[str, Any] | None = None  # Nov 28, 2025 - unified field telemetry
 
     def summary(self) -> str:
         """Generate human-readable summary of network results.
@@ -337,12 +343,12 @@ TNFR Network Results:
   • Avg Phase: {self.avg_phase:.3f} rad{' (computed)' if self.avg_phase else ''}{unified_summary}
 """.strip()
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert results to serializable dictionary.
 
         Returns
         -------
-        Dict[str, Any]
+        dict[str, Any]
             Dictionary containing all metrics and summary statistics.
         """
         si_values = list(self.sense_indices.values())
@@ -360,7 +366,6 @@ TNFR Network Results:
                 "avg_phase": self.avg_phase,
             },
         }
-
 
 class TNFRNetwork:
     """Fluent API for creating and simulating TNFR networks.
@@ -395,12 +400,12 @@ class TNFRNetwork:
     ...            .measure())
     """
 
-    def __init__(self, name: str = "tnfr_network", config: Optional[NetworkConfig] = None):
+    def __init__(self, name: str = "tnfr_network", config: NetworkConfig | None = None):
         """Initialize TNFR network with given name and configuration."""
         self.name = name
         self._config = config if config is not None else NetworkConfig()
-        self._graph: Optional[nx.Graph] = None
-        self._results: Optional[NetworkResults] = None
+        self._graph: nx.Graph | None = None
+        self._results: NetworkResults | None = None
         self._node_counter = 0
 
         # Initialize RNG if seed provided
@@ -416,10 +421,10 @@ class TNFRNetwork:
     def add_nodes(
         self,
         count: int,
-        vf_range: Optional[tuple[float, float]] = None,
-        epi_range: Optional[tuple[float, float]] = None,
-        phase_range: tuple[float, float] = (0.0, 6.283185307179586),  # (0, 2π)
-        random_seed: Optional[int] = None,
+        vf_range: tuple[float, float] | None = None,
+        epi_range: tuple[float, float] | None = None,
+        phase_range: tuple[float, float] = (0.0, 2.0 * _PI),  # (0, 2π)
+        random_seed: int | None = None,
     ) -> TNFRNetwork:
         """Add nodes with random TNFR properties within valid ranges.
 
@@ -630,9 +635,9 @@ class TNFRNetwork:
 
     def apply_sequence(
         self,
-        sequence: Union[str, List[str]],
+        sequence: str | list[str],
         repeat: int = 1,
-        context: Optional[Dict[str, Any]] = None,
+        context: dict[str, Any] | None = None,
     ) -> TNFRNetwork:
         """Apply structural operator sequence to evolve the network.
 
@@ -643,7 +648,7 @@ class TNFRNetwork:
 
         Parameters
         ----------
-        sequence : str or List[str]
+        sequence : str or list[str]
             Either a predefined sequence name or list of operator names.
             Predefined sequences:
             - "basic_activation": [emission, reception, coherence, resonance, silence]
@@ -733,16 +738,16 @@ class TNFRNetwork:
         current_coherence = compute_coherence(self._graph)
         
         # Adaptive sequence selection logic
-        if current_coherence < 0.3:
+        if current_coherence < _COHERENCE_HEALING_THRESHOLD:
             # Low coherence - use healing
             selected_sequence = "healing"
-        elif current_coherence < 0.5:
+        elif current_coherence < _COHERENCE_STABILIZATION_THRESHOLD:
             # Medium coherence - use stabilization
             selected_sequence = "stabilization"
         elif current_coherence < target_coherence:
             # Good coherence but below target - use harmonization
             selected_sequence = "harmonization"
-        elif current_coherence >= 0.8:
+        elif current_coherence >= _COHERENCE_INNOVATION_THRESHOLD:
             # High coherence - ready for innovation or optimization
             selected_sequence = "optimization" if len(self._graph.nodes) > 5 else "innovation"
         else:
@@ -751,13 +756,13 @@ class TNFRNetwork:
             
         return self.apply_sequence(selected_sequence)
     
-    def apply_multiple_sequences(self, sequences: List[Tuple[str, Optional[Dict[str, Any]], int]]) -> "TNFRNetwork":
+    def apply_multiple_sequences(self, sequences: list[tuple[str, dict[str, Any] | None, int]]) -> "TNFRNetwork":
         """Apply multiple sequences in order.
 
         Parameters
         ----------
-        sequences : List[Tuple[str, Optional[Dict[str, Any]], int]]
-            List of (sequence_name, context, repeat) tuples.
+        sequences : list[tuple[str, dict[str, Any] | None, int]]
+            list of (sequence_name, context, repeat) tuples.
 
         Returns
         -------
@@ -774,7 +779,7 @@ class TNFRNetwork:
         Parameters
         ----------
         chain_pattern : str, default="standard"
-            Type of sequence chain: "standard", "learning", "innovation", "recovery"
+            type of sequence chain: "standard", "learning", "innovation", "recovery"
             
         Returns
         -------
@@ -898,7 +903,7 @@ class TNFRNetwork:
     def apply_canonical_sequence(
         self,
         sequence_name: str,
-        node: Optional[int] = None,
+        node: int | None = None,
         collect_metrics: bool = True,
     ) -> TNFRNetwork:
         """Apply a canonical predefined operator sequence from TNFR theory.
@@ -949,7 +954,7 @@ class TNFRNetwork:
 
         See Also
         --------
-        list_canonical_sequences : List available sequences with filters
+        list_canonical_sequences : list available sequences with filters
         apply_sequence : Apply predefined or custom operator sequences
 
         Notes
@@ -1026,10 +1031,10 @@ class TNFRNetwork:
 
     def list_canonical_sequences(
         self,
-        domain: Optional[str] = None,
+        domain: str | None = None,
         with_oz: bool = False,
-    ) -> Dict[str, Any]:
-        """List available canonical sequences with optional filters.
+    ) -> dict[str, Any]:
+        """list available canonical sequences with optional filters.
 
         Returns a dictionary of canonical operator sequences from TNFR theory.
         Sequences can be filtered by domain or by presence of OZ (Dissonance).
@@ -1054,7 +1059,7 @@ class TNFRNetwork:
 
         Examples
         --------
-        List all canonical sequences:
+        list all canonical sequences:
 
         >>> net = TNFRNetwork("explorer")
         >>> sequences = net.list_canonical_sequences()
@@ -1067,13 +1072,13 @@ class TNFRNetwork:
         full_deployment
         mod_stabilizer
 
-        List only sequences with OZ:
+        list only sequences with OZ:
 
         >>> oz_sequences = net.list_canonical_sequences(with_oz=True)
         >>> print(f"Found {len(oz_sequences)} sequences with OZ")
         Found 6 sequences with OZ
 
-        List biomedical domain sequences:
+        list biomedical domain sequences:
 
         >>> bio_sequences = net.list_canonical_sequences(domain="biomedical")
         >>> for name, seq in bio_sequences.items():
@@ -1139,7 +1144,7 @@ class TNFRNetwork:
             "Use NetworkX's drawing functions directly on network._graph for now."
         )
 
-    def save(self, filepath: Union[str, Path]) -> TNFRNetwork:
+    def save(self, filepath: str | Path) -> TNFRNetwork:
         """Save network state and results to file.
 
         Serializes the network graph and computed metrics to a file for
@@ -1315,7 +1320,7 @@ class TNFRNetwork:
     # Auto-optimization methods (NEW - Nov 28, 2025)
     # -------------------------------------------------------------------------
 
-    def analyze_optimization_potential(self) -> Dict[str, Any]:
+    def analyze_optimization_potential(self) -> dict[str, Any]:
         """
         Analyze mathematical optimization potential for the current network.
         
@@ -1324,7 +1329,7 @@ class TNFRNetwork:
         
         Returns
         -------
-        Dict[str, Any]
+        dict[str, Any]
             Analysis results including:
             - field_analysis: Unified field characteristics
             - optimization_recommendations: Specific strategies  
@@ -1380,7 +1385,7 @@ class TNFRNetwork:
         Parameters
         ----------
         operation_type : str, default="network_simulation"
-            Type of operation to optimize for.
+            type of operation to optimize for.
             
         Returns
         -------
@@ -1422,7 +1427,7 @@ class TNFRNetwork:
             if optimization_result.get("optimization_applied", False):
                 print(f"✅ Optimization applied: {optimization_result.get('strategy_used', 'unknown')}")
                 improvement = optimization_result.get("performance_improvement", 1.0)
-                if improvement > 1.1:
+                if improvement > _IMPROVEMENT_FACTOR_THRESHOLD:
                     print(f"   Expected speedup: {improvement:.2f}x")
             else:
                 print("ℹ️ No optimization applied (using standard computation)")
@@ -1434,7 +1439,7 @@ class TNFRNetwork:
 
     def learn_from_performance(
         self, 
-        performance_data: Optional[Dict[str, Any]] = None
+        performance_data: dict[str, Any] | None = None
     ) -> TNFRNetwork:
         """
         Learn optimization strategies from performance data.
@@ -1444,7 +1449,7 @@ class TNFRNetwork:
         
         Parameters
         ----------
-        performance_data : Dict[str, Any], optional
+        performance_data : dict[str, Any], optional
             Performance metrics to learn from. If None, uses internal timing.
             
         Returns
@@ -1496,18 +1501,18 @@ class TNFRNetwork:
             
         return self
 
-    def get_optimization_recommendations(self, operation_type: str = "measurement") -> Dict[str, Any]:
+    def get_optimization_recommendations(self, operation_type: str = "measurement") -> dict[str, Any]:
         """
         Get optimization strategy recommendations for specific operation.
         
         Parameters
         ----------
         operation_type : str, default="measurement"
-            Type of operation to get recommendations for.
+            type of operation to get recommendations for.
             
         Returns
         -------
-        Dict[str, Any]
+        dict[str, Any]
             Optimization recommendations and strategy analysis.
             
         Raises

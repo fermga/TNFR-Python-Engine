@@ -44,6 +44,13 @@ from __future__ import annotations
 from typing import Any
 
 __all__ = [
+    # Simplified API (recommended entry point)
+    "TNFR",
+    "Network",
+    "Results",
+    "TetradSnapshot",
+    "ConservationReport",
+    # Fluent API
     "TNFRNetwork",
     "NetworkConfig",
     "NetworkResults",
@@ -63,11 +70,18 @@ __all__ = [
     "run_batch_certificate_optimization",
 ]
 
-
 # Lazy imports to avoid circular dependencies and optional dependency issues
 def __getattr__(name: str) -> Any:
     """Lazy load SDK components."""
-    if name == "TNFRNetwork" or name == "NetworkConfig" or name == "NetworkResults":
+    if name in ("TNFR", "Network", "Results", "TetradSnapshot", "ConservationReport"):
+        from .simple import TNFR, Network, Results, TetradSnapshot, ConservationReport
+
+        mapping = {
+            "TNFR": TNFR, "Network": Network, "Results": Results,
+            "TetradSnapshot": TetradSnapshot, "ConservationReport": ConservationReport,
+        }
+        return mapping[name]
+    elif name == "TNFRNetwork" or name == "NetworkConfig" or name == "NetworkResults":
         from .fluent import TNFRNetwork, NetworkConfig, NetworkResults
 
         if name == "TNFRNetwork":

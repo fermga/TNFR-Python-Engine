@@ -12,7 +12,7 @@ entry point for all TNFR validation operations. It integrates:
 
 from __future__ import annotations
 
-from typing import Any, Mapping, Optional
+from typing import Any, Mapping
 
 from ..errors import TNFRValueError
 from .invariants import (
@@ -36,7 +36,6 @@ __all__ = [
     "TNFRValidator",
     "TNFRValidationError",
 ]
-
 
 class TNFRValidator:
     """Unified TNFR Validation Pipeline.
@@ -599,7 +598,7 @@ class TNFRValidator:
     def validate_graph(
         self,
         graph: TNFRGraph,
-        severity_filter: Optional[InvariantSeverity] = None,
+        severity_filter: InvariantSeverity | None = None,
         use_cache: bool = True,
         include_graph_validation: bool = True,
         include_runtime_validation: bool = False,
@@ -628,7 +627,7 @@ class TNFRValidator:
         Returns
         -------
         list[InvariantViolation]
-            List of detected violations.
+            list of detected violations.
 
         Examples
         --------
@@ -716,7 +715,7 @@ class TNFRValidator:
             graph_id = id(graph)
             self._validation_cache[graph_id] = all_violations.copy()
 
-        # Filtrar por severidad si se especifica
+        # Filter by severity if specified
         if severity_filter:
             all_violations = [v for v in all_violations if v.severity == severity_filter]
 
@@ -764,7 +763,7 @@ class TNFRValidator:
         Parameters
         ----------
         violations : list[InvariantViolation]
-            List of violations to report.
+            list of violations to report.
 
         Returns
         -------
@@ -776,14 +775,14 @@ class TNFRValidator:
 
         report_lines = ["\n🚨 TNFR Invariant Violations Detected:\n"]
 
-        # Agrupar por severidad
+        # Group by severity
         by_severity: dict[InvariantSeverity, list[InvariantViolation]] = {}
         for v in violations:
             if v.severity not in by_severity:
                 by_severity[v.severity] = []
             by_severity[v.severity].append(v)
 
-        # Reporte por severidad
+        # Report by severity
         severity_icons = {
             InvariantSeverity.INFO: "ℹ️",
             InvariantSeverity.WARNING: "⚠️",
@@ -824,7 +823,7 @@ class TNFRValidator:
         Parameters
         ----------
         violations : list[InvariantViolation]
-            List of violations to export.
+            list of violations to export.
 
         Returns
         -------
@@ -875,7 +874,7 @@ class TNFRValidator:
         Parameters
         ----------
         violations : list[InvariantViolation]
-            List of violations to export.
+            list of violations to export.
 
         Returns
         -------
@@ -1012,7 +1011,6 @@ class TNFRValidator:
 
         return "".join(html_parts)
 
-
 class TNFRValidationError(TNFRValueError):
     """Exception raised when TNFR invariant violations are detected."""
 
@@ -1032,7 +1030,7 @@ class TNFRValidationError(TNFRValueError):
         Parameters
         ----------
         violations : list[InvariantViolation]
-            List of violations to export.
+            list of violations to export.
 
         Returns
         -------
@@ -1083,7 +1081,7 @@ class TNFRValidationError(TNFRValueError):
         Parameters
         ----------
         violations : list[InvariantViolation]
-            List of violations to export.
+            list of violations to export.
 
         Returns
         -------

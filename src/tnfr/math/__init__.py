@@ -14,8 +14,6 @@ Cross-compatibility:
     to both symbolic and numerical mathematical operations.
 """
 
-from typing import List
-
 __version__ = "0.1.0"
 
 # Import main symbolic functions for easy access
@@ -33,7 +31,7 @@ from .symbolic import (
 # Re-export helper modules for discoverability
 from . import grammar_validators, fields_symbolic, optimizer, symbolic
 
-__all__: List[str] = [
+__all__: list[str] = [
     # Symbolic calculus
     "get_nodal_equation",
     "solve_nodal_equation_constant_params",

@@ -18,7 +18,7 @@ Usage:
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
+from typing import Any
 from ...mathematics.unified_numerical import np
 
 try:
@@ -29,16 +29,13 @@ except ImportError:
     TNFRUnifiedGPUSystem = None
 
 from .strategy import (
-    OperatorStrategy,
     StrategyContext,
     ResourceEstimate,
     OperationResult,
     StrategyRegistry,
-    FailureRisk,
     PartitionBlock,
     PreparedBlock
 )
-
 
 class GPUEmissionStrategy:
     """GPU-accelerated Emission (AL) operator implementation."""
@@ -46,7 +43,7 @@ class GPUEmissionStrategy:
     operator = "AL"
     
     def __init__(self):
-        self.gpu_engine: Optional[TNFRUnifiedGPUSystem] = None
+        self.gpu_engine: TNFRUnifiedGPUSystem | None = None
         if HAS_GPU_ENGINE:
             try:
                 self.gpu_engine = get_unified_gpu_system()
@@ -162,8 +159,6 @@ class GPUEmissionStrategy:
     def cleanup(self, prepared: PreparedBlock) -> None:
         """Clean up GPU resources."""
         # GPU memory cleanup is handled by the engine
-        pass
-
 
 class GPUResonanceStrategy:
     """GPU-accelerated Resonance (RA) operator implementation."""
@@ -171,7 +166,7 @@ class GPUResonanceStrategy:
     operator = "RA"
     
     def __init__(self):
-        self.gpu_engine: Optional[TNFRUnifiedGPUSystem] = None
+        self.gpu_engine: TNFRUnifiedGPUSystem | None = None
         if HAS_GPU_ENGINE:
             try:
                 self.gpu_engine = get_unified_gpu_system()
@@ -269,8 +264,6 @@ class GPUResonanceStrategy:
     
     def cleanup(self, prepared: PreparedBlock) -> None:
         """Clean up GPU resources."""
-        pass
-
 
 def register_all_gpu_strategies() -> None:
     """Register all GPU strategies with the strategy registry."""
@@ -297,8 +290,7 @@ def register_all_gpu_strategies() -> None:
     except Exception as e:
         print(f"Failed to register GPU strategies: {e}")
 
-
-def get_gpu_strategy_recommendations(graph_size: int) -> Dict[str, Any]:
+def get_gpu_strategy_recommendations(graph_size: int) -> dict[str, Any]:
     """Get GPU strategy recommendations based on graph characteristics."""
     recommendations = {
         "use_gpu": False,

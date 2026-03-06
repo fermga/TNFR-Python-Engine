@@ -208,7 +208,6 @@ _SI_APPROX_BYTES_PER_NODE = 64
 _VALID_SENSITIVITY_KEYS = frozenset({"dSi_dvf_norm", PHASE_DISPERSION_KEY, "dSi_ddnfr_norm"})
 __all__ = ("get_Si_weights", "compute_Si_node", "compute_Si")
 
-
 class _SiStructuralCache:
     """Cache aligned ``νf`` and ``ΔNFR`` arrays for vectorised Si."""
 
@@ -274,7 +273,6 @@ class _SiStructuralCache:
 
         return self.vf_values, self.dnfr_values
 
-
 def _build_structural_cache(
     node_ids: Iterable[Any],
     node_data: Mapping[Any, NodeAttrMap],
@@ -282,7 +280,6 @@ def _build_structural_cache(
     cache = _SiStructuralCache(tuple(node_ids))
     cache.rebuild(node_ids, node_data)
     return cache
-
 
 def _ensure_structural_arrays(
     G: GraphLike,
@@ -296,7 +293,6 @@ def _ensure_structural_arrays(
 
     cache = edge_version_cache(G, ("_si_structural", node_key), builder)
     return cache.ensure_current(node_key, node_data)
-
 
 def _ensure_si_buffers(
     G: GraphLike,
@@ -315,7 +311,6 @@ def _ensure_si_buffers(
     """
     return ensure_numpy_buffers(G, key_prefix="_si_buffers", count=count, buffer_count=3)
 
-
 def _ensure_chunk_workspace(
     G: GraphLike,
     *,
@@ -333,7 +328,6 @@ def _ensure_chunk_workspace(
     return ensure_numpy_buffers(
         G, key_prefix="_si_chunk_workspace", count=mask_count, buffer_count=2
     )
-
 
 def _ensure_neighbor_bulk_buffers(
     G: GraphLike,
@@ -355,7 +349,6 @@ def _ensure_neighbor_bulk_buffers(
     return ensure_numpy_buffers(
         G, key_prefix="_si_neighbor_buffers", count=count, buffer_count=5
     )
-
 
 def _normalise_si_sensitivity_mapping(
     mapping: Mapping[str, float], *, warn: bool
@@ -401,7 +394,6 @@ def _normalise_si_sensitivity_mapping(
             context={"allowed": allowed, "received": received},
         )
     return normalised
-
 
 def _cache_weights(G: GraphLike) -> tuple[float, float, float]:
     """Normalise and persist Si weights attached to the graph coherence.
@@ -455,7 +447,6 @@ def _cache_weights(G: GraphLike) -> tuple[float, float, float]:
 
     return edge_version_cache(G, ("_Si_weights", cfg_key), builder)
 
-
 def get_Si_weights(G: GraphLike) -> tuple[float, float, float]:
     """Expose the normalised Si weights associated with ``G``.
 
@@ -478,7 +469,6 @@ def get_Si_weights(G: GraphLike) -> tuple[float, float, float]:
     """
 
     return _cache_weights(G)
-
 
 def compute_Si_node(
     n: Any,
@@ -569,7 +559,6 @@ def compute_Si_node(
         set_attr(nd, ALIAS_SI, Si)
     return Si
 
-
 def _compute_si_python_chunk(
     chunk: Iterable[tuple[Any, tuple[Any, ...], float, float, float]],
     *,
@@ -637,7 +626,6 @@ def _compute_si_python_chunk(
         results[n] = clamp01(Si)
     return results
 
-
 def _iter_python_payload_chunks(
     nodes_data: Iterable[tuple[Any, NodeAttrMap]],
     *,
@@ -673,7 +661,6 @@ def _iter_python_payload_chunks(
 
     if buffer:
         yield tuple(buffer)
-
 
 def compute_Si(
     G: GraphLike,

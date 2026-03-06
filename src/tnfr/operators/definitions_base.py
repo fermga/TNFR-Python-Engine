@@ -8,8 +8,6 @@ Base Operator class with common functionality for all structural operators.
 
 from __future__ import annotations
 
-import math
-import warnings
 from typing import Any, ClassVar
 
 from ..alias import get_attr
@@ -27,7 +25,6 @@ __all__ = ["Operator"]
 from ..constants.canonical import HALF_INV_PHI
 _THOL_SUB_EPI_SCALING = HALF_INV_PHI  # 1/(2φ) ≈ 0.309 (golden fractal scale, sub-EPI)
 _THOL_EMERGENCE_CONTRIBUTION = 0.1  # Parent EPI +10% of sub-EPI
-
 
 class Operator(metaclass=OperatorMetaAuto):
     """Base class for TNFR structural operators.

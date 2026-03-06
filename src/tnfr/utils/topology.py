@@ -15,7 +15,6 @@ Spectral analysis (eigenvalues, Fiedler value) is NEW functionality.
 
 from __future__ import annotations
 
-
 from ..mathematics.unified_numerical import np
 from ..errors import TNFRValueError
 
@@ -26,7 +25,6 @@ __all__ = [
     "compute_laplacian_spectrum",
     "compute_fiedler_value",
 ]
-
 
 def compute_laplacian_spectrum(G) -> tuple[np.ndarray, np.ndarray]:
     """Compute eigenvalues and eigenvectors of the normalized graph Laplacian.
@@ -117,7 +115,6 @@ def compute_laplacian_spectrum(G) -> tuple[np.ndarray, np.ndarray]:
 
     return eigenvalues, eigenvectors
 
-
 def compute_fiedler_value(G) -> float:
     """Compute Fiedler value (second-smallest Laplacian eigenvalue).
 
@@ -153,7 +150,6 @@ def compute_fiedler_value(G) -> float:
         return 0.0  # Trivial graph
 
     return float(eigenvalues[1])
-
 
 def compute_k_top_spectral(
     G,

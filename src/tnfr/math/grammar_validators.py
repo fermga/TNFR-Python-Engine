@@ -14,11 +14,8 @@ underlying physics of the nodal equation.
 Physics basis: AGENTS.md § Unified Grammar (U1-U6)
 """
 
-from typing import List, Tuple
-
 from ..types import Glyph
 # from . import symbolic  # Not used directly, but is the conceptual basis
-
 
 # ============================================================================
 # GLYPH CLASSIFICATION (based on physics)
@@ -36,17 +33,16 @@ BIFURCATION_TRIGGERS = {Glyph.OZ, Glyph.ZHIR}
 # U4a: Bifurcation handlers (control high ∂²EPI/∂t²)
 BIFURCATION_HANDLERS = {Glyph.THOL, Glyph.IL}
 
-
 # ============================================================================
 # U2: CONVERGENCE & BOUNDEDNESS VALIDATION
 # ============================================================================
 
 def verify_convergence_for_sequence(
-    sequence: List[Glyph],
+    sequence: list[Glyph],
     initial_growth_rate: float = 0.0,
     destabilizer_effect: float = 0.1,
     stabilizer_effect: float = -0.15,
-) -> Tuple[bool, float, str]:
+) -> tuple[bool, float, str]:
     """
     Verify U2 convergence for a glyph sequence.
 
@@ -54,7 +50,7 @@ def verify_convergence_for_sequence(
     A positive final λ indicates divergence risk.
 
     Args:
-        sequence: List of TNFR Glyphs.
+        sequence: list of TNFR Glyphs.
         initial_growth_rate: Starting growth rate λ.
         destabilizer_effect: Positive value added to λ by a destabilizer.
         stabilizer_effect: Negative value added to λ by a stabilizer.
@@ -92,18 +88,17 @@ def verify_convergence_for_sequence(
         
     return converges, current_growth_rate, explanation
 
-
 # ============================================================================
 # U4: BIFURCATION DYNAMICS VALIDATION
 # ============================================================================
 
 def verify_bifurcation_risk_for_sequence(
-    sequence: List[Glyph],
+    sequence: list[Glyph],
     trigger_effect: float = 0.6,
     handler_effect: float = -0.4,
     risk_threshold: float = 0.5,
     window_size: int = 3,
-) -> Tuple[bool, float, str]:
+) -> tuple[bool, float, str]:
     """
     Verify U4 bifurcation risk for a glyph sequence.
 
@@ -111,7 +106,7 @@ def verify_bifurcation_risk_for_sequence(
     risk, while handlers (IL, THOL) mitigate it.
 
     Args:
-        sequence: List of TNFR Glyphs.
+        sequence: list of TNFR Glyphs.
         trigger_effect: Risk added by a trigger.
         handler_effect: Risk reduced by a handler.
         risk_threshold: The level of risk considered significant.
@@ -125,7 +120,7 @@ def verify_bifurcation_risk_for_sequence(
     This function provides a heuristic measure of that balance.
     """
     risk_level = 0.0
-    pending_triggers: List[int] = []
+    pending_triggers: list[int] = []
 
     for idx, glyph in enumerate(sequence):
         if glyph in BIFURCATION_TRIGGERS:
@@ -167,7 +162,6 @@ def verify_bifurcation_risk_for_sequence(
 
     is_safe = not unhandled_triggers and not risk_is_high
     return is_safe, risk_level, explanation
-
 
 # ============================================================================
 # EXAMPLE USAGE

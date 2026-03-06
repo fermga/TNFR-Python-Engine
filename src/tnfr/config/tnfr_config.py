@@ -43,10 +43,8 @@ ALIASES: dict[str, tuple[str, ...]] = {
     "EMISSION_TIMESTAMP": ("emission_timestamp", "emission_t", "t_al"),
 }
 
-
 class TNFRConfigError(Exception):
     """Raised when TNFR configuration violates structural invariants."""
-
 
 class TNFRConfig:
     """Canonical TNFR configuration with structural invariant validation.
@@ -392,7 +390,6 @@ class TNFRConfig:
         except ImportError:
             pass
 
-
 def get_aliases(key: str) -> tuple[str, ...]:
     """Return alias tuple for canonical TNFR variable ``key``.
 
@@ -404,7 +401,7 @@ def get_aliases(key: str) -> tuple[str, ...]:
     Returns
     -------
     tuple[str, ...]
-        Tuple of aliases for the variable.
+        tuple of aliases for the variable.
 
     Examples
     --------
@@ -412,7 +409,6 @@ def get_aliases(key: str) -> tuple[str, ...]:
     ('νf', 'nu_f', 'nu-f', 'nu', 'freq', 'frequency')
     """
     return ALIASES[key]
-
 
 # Primary aliases for common TNFR variables
 VF_PRIMARY = get_aliases("VF")[0]  # νf
@@ -426,7 +422,6 @@ D2EPI_PRIMARY = get_aliases("D2EPI")[0]  # d2EPI_dt2
 dVF_PRIMARY = get_aliases("DVF")[0]  # dνf_dt
 D2VF_PRIMARY = get_aliases("D2VF")[0]  # d2νf_dt2
 dSI_PRIMARY = get_aliases("DSI")[0]  # δSi
-
 
 def normalise_state_token(token: str) -> str:
     """Return the canonical English token for node state.
@@ -463,7 +458,6 @@ def normalise_state_token(token: str) -> str:
         return lowered
 
     raise ValueError("state token must be one of 'stable', 'transition', or 'dissonant'")
-
 
 __all__ = (
     "TNFRConfig",

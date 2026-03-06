@@ -15,7 +15,6 @@ from ..utils import json_dumps, safe_write
 from ..types import Graph, SigmaTrace
 from .core import glyphogram_series
 
-
 def _write_csv(
     path: str,
     headers: Sequence[str],
@@ -31,7 +30,6 @@ def _write_csv(
 
     safe_write(path, _write, newline="", base_dir=output_dir)
 
-
 def _iter_glif_rows(
     glyph: Mapping[str, Sequence[float]],
 ) -> Iterator[list[float]]:
@@ -43,7 +41,6 @@ def _iter_glif_rows(
     cols = [glyph.get(g, default_col) for g in GLYPHS_CANONICAL]
     for i, t in enumerate(ts):
         yield [t] + [col[i] for col in cols]
-
 
 def export_metrics(
     G: Graph,

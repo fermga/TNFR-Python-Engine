@@ -20,7 +20,6 @@ References
 
 from __future__ import annotations
 
-import math
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -28,14 +27,13 @@ if TYPE_CHECKING:
 
 from ..alias import get_attr
 from ..constants.aliases import ALIAS_DNFR, ALIAS_THETA, ALIAS_VF
-from ..constants.canonical import EMERGENT_FREQ_BALANCE_CANONICAL
+from ..constants.canonical import EMERGENT_FREQ_BALANCE_CANONICAL, DELTA_PHI_MAX
 
 __all__ = [
     "propagate_dissonance",
     "compute_network_dissonance_field",
     "detect_bifurcation_cascade",
 ]
-
 
 def propagate_dissonance(
     G: TNFRGraph,
@@ -67,7 +65,7 @@ def propagate_dissonance(
     Returns
     -------
     set[NodeId]
-        Set of affected neighbor nodes
+        set of affected neighbor nodes
 
     Notes
     -----
@@ -112,7 +110,7 @@ def propagate_dissonance(
     source_vf = float(get_attr(G.nodes[source_node], ALIAS_VF, 1.0))
 
     # Propagation threshold (configurable)
-    phase_threshold = float(G.graph.get("OZ_PHASE_THRESHOLD", math.pi / 2))
+    phase_threshold = float(G.graph.get("OZ_PHASE_THRESHOLD", DELTA_PHI_MAX))
     min_propagation = float(G.graph.get("OZ_MIN_PROPAGATION", 0.05))
 
     for neighbor in neighbors:
@@ -161,7 +159,6 @@ def propagate_dissonance(
             )
 
     return affected
-
 
 def compute_network_dissonance_field(
     G: TNFRGraph,
@@ -229,7 +226,6 @@ def compute_network_dissonance_field(
         field[node] = source_dnfr * decay
 
     return field
-
 
 def detect_bifurcation_cascade(
     G: TNFRGraph,
@@ -311,7 +307,7 @@ def detect_bifurcation_cascade(
                 "threshold": threshold,
             }
 
-            # Set bifurcation_ready flag for path detection
+            # set bifurcation_ready flag for path detection
             G.nodes[neighbor]["_bifurcation_ready"] = True
 
     return cascade_nodes

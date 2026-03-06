@@ -47,6 +47,10 @@ life : Life emergence detection from autopoietic TNFR dynamics
 cell : Cell formation from compartmentalized TNFR life patterns
     - detect_cell_formation, CellTelemetry, membrane selectivity
     - Requires life foundation (A > 1.0) plus spatial organization
+phase_transition : Life/non-life phase transition as universal symmetry breaking
+    - Order parameter 𝒮, chirality χ, susceptibility, coherence length
+    - Critical exponent γ_c = γ/π ≈ 0.1837 from Tetrahedral Correspondence
+    - Second-order transition with divergent ξ_C at criticality
 
 See Also
 --------
@@ -185,93 +189,305 @@ from .unified import (
     compute_topological_charge,
     compute_unified_field_suite,
 )
+from .variational import (
+    ConjugatePair,
+    LagrangianSnapshot,
+    EulerLagrangeResidual,
+    SymplecticCheck,
+    GrammarStationarityAnalysis,
+    CriticalPointAnalysis,
+    VariationalTimeSeries,
+    VariationalTracker,
+    compute_kinetic_density,
+    compute_potential_density,
+    compute_lagrangian_density,
+    compute_hamiltonian_density,
+    compute_interaction_density,
+    translate_sectors,
+    identify_conjugate_pairs,
+    compute_phase_space_volume,
+    compute_poisson_bracket_estimate,
+    capture_lagrangian_snapshot,
+    compute_euler_lagrange_residual,
+    compute_action_functional,
+    check_symplectic_preservation,
+    classify_operator_canonical,
+    analyze_grammar_stationarity,
+    analyze_potential_critical_points,
+    compute_variational_suite,
+)
+from .gauge import (
+    GaugeSnapshot,
+    GaugeInvarianceResult,
+    apply_gauge_transformation,
+    compute_gauge_connection,
+    compute_gauge_curvature,
+    compute_covariant_derivative,
+    compute_covariant_derivative_magnitude,
+    compute_topological_norm,
+    compute_chirality_norm,
+    compute_dual_topological_charge,
+    compute_dual_chirality,
+    verify_gauge_invariance,
+    capture_gauge_snapshot,
+    classify_interaction_regime,
+    classify_network_regimes,
+    compute_yang_mills_action,
+    compute_gauge_energy_decomposition,
+    YangMillsFieldEquations,
+    BianchiIdentityResult,
+    InteractionRegimeMetrics,
+    NetworkInteractionProfile,
+    REGIME_DOMINANCE_THRESHOLD,
+    REGIME_STRONG_THRESHOLD,
+    compute_matter_current,
+    compute_yang_mills_equations,
+    verify_bianchi_identity,
+    compute_gauss_law_residual,
+    compute_gauge_coupling_constant,
+    classify_interaction_regime_formal,
+    compute_network_interaction_profile,
+)
+from .phase_transition import (
+    Phase,
+    PhaseTransitionTelemetry,
+    PhaseSnapshot,
+    GAMMA_C,
+    ORDER_PARAMETER_NOISE_FLOOR,
+    CHIRALITY_THRESHOLD,
+    compute_order_parameter,
+    compute_chirality_statistics,
+    classify_phase,
+    capture_phase_snapshot,
+    detect_phase_transition,
+    fit_critical_exponent,
+)
+from .lyapunov import (
+    EnergyClass,
+    OperatorLyapunovBound,
+    OperatorLyapunovVerification,
+    SpectralGapAnalysis,
+    LyapunovSpectralSummary,
+    SequenceLyapunovProof,
+    OPERATOR_LYAPUNOV_BOUNDS,
+    get_bound,
+    compute_operator_energy_bound,
+    verify_operator_lyapunov,
+    compute_sequence_energy_bound,
+    prove_sequence_lyapunov,
+    analyze_spectral_gap,
+    analyze_operator_convergence,
+)
+from .conservation_gauge_unification import (
+    GrammarSymmetryMapping,
+    ActionEnergyConsistency,
+    NoetherGaugeDecomposition,
+    GaugeConservationCoupling,
+    SymplecticGaugeCompatibility,
+    ConservationGaugeUnification,
+    compute_grammar_symmetry_mapping,
+    verify_action_energy_consistency,
+    compute_noether_gauge_decomposition,
+    compute_gauge_conservation_coupling,
+    verify_symplectic_gauge_compatibility,
+    run_conservation_gauge_unification,
+)
 
-__all__ = []
-__all__ += ["compute_structural_potential"]
-__all__ += ["compute_phase_gradient"]
-__all__ += ["compute_phase_curvature"]
-__all__ += ["estimate_coherence_length"]
-__all__ += ["compute_k_phi_multiscale_variance"]
-__all__ += ["fit_k_phi_asymptotic_alpha"]
-__all__ += ["k_phi_multiscale_safety"]
-__all__ += ["compute_phase_winding"]
-__all__ += ["InteractionResult"]
-__all__ += ["em_like"]
-__all__ += ["weak_like"]
-__all__ += ["strong_like"]
-__all__ += ["gravity_like"]
-__all__ += ["LifeTelemetry"]
-__all__ += ["compute_self_generation"]
-__all__ += ["compute_autopoietic_coefficient"]
-__all__ += ["compute_self_org_index"]
-__all__ += ["compute_stability_margin"]
-__all__ += ["detect_life_emergence"]
-__all__ += ["CellTelemetry"]
-__all__ += ["compute_boundary_coherence"]
-__all__ += ["compute_selectivity_index"]
-__all__ += ["compute_homeostatic_index"]
-__all__ += ["compute_membrane_integrity"]
-__all__ += ["detect_cell_formation"]
-__all__ += ["apply_membrane_flux"]
-__all__ += ["ConservationSnapshot"]
-__all__ += ["ConservationBalance"]
-__all__ += ["ConservationTimeSeries"]
-__all__ += ["ConservationTracker"]
-__all__ += ["compute_charge_density"]
-__all__ += ["compute_current_divergence"]
-__all__ += ["capture_conservation_snapshot"]
-__all__ += ["verify_conservation_balance"]
-__all__ += ["decompose_conservation_residual"]
-__all__ += ["analyze_sector_coupling"]
-__all__ += ["compute_grammar_conservation_bounds"]
-__all__ += ["detect_grammar_violations_from_conservation"]
-__all__ += ["compute_noether_charge"]
-__all__ += ["compute_energy_functional"]
-__all__ += ["WardIdentity"]
-__all__ += ["LyapunovResult"]
-__all__ += ["SpectralConservation"]
-__all__ += ["compute_ward_identity"]
-__all__ += ["verify_sequence_ward_identity"]
-__all__ += ["compute_lyapunov_derivative"]
-__all__ += ["compute_spectral_conservation"]
-__all__ += ["compute_conservation_scaling"]
-__all__ += ["compute_complex_geometric_field"]
-__all__ += ["compute_field_magnitude"]
-__all__ += ["compute_field_phase"]
-__all__ += ["compute_chirality_field"]
-__all__ += ["compute_symmetry_breaking_field"]
-__all__ += ["compute_coherence_coupling_field"]
-__all__ += ["compute_energy_density"]
-__all__ += ["compute_action_density"]
-__all__ += ["compute_topological_charge"]
-__all__ += ["compute_unified_field_suite"]
-__all__ += ["DissipativeSnapshot"]
-__all__ += ["DissipativeBalance"]
-__all__ += ["DissipativeTimeSeries"]
-__all__ += ["DissipativeConservationTracker"]
-__all__ += ["capture_dissipative_snapshot"]
-__all__ += ["compute_dissipation_bound"]
-__all__ += ["compute_dissipator_action"]
-__all__ += ["compute_purity_decay_bound"]
-__all__ += ["verify_dissipative_balance"]
-__all__ += ["predict_amplitude_damping_purity"]
-__all__ += ["predict_dephasing_purity"]
-__all__ += ["analyze_dissipation_rates"]
-__all__ += ["classify_dissipative_regime"]
-__all__ += ["steady_state_from_generator"]
-__all__ += ["StructuralIntegrityMonitor"]
-__all__ += ["StructuralIntegrityViolation"]
-__all__ += ["MonitorMode"]
-__all__ += ["IntegrityReport"]
-__all__ += ["IntegritySummary"]
-__all__ += ["enable_integrity_monitor"]
-__all__ += ["SpectralConservationBalance"]
-__all__ += ["SpectralWardIdentity"]
-__all__ += ["SpectralLyapunovResult"]
-__all__ += ["SpectralSectorDecomposition"]
-__all__ += ["verify_spectral_conservation_balance"]
-__all__ += ["compute_spectral_ward_identity"]
-__all__ += ["compute_spectral_lyapunov"]
-__all__ += ["decompose_spectral_sectors"]
-__all__ += ["compute_spectral_energy_conservation"]
-__all__ += ["classify_spectral_modes"]
+__all__ = [
+    # --- Structural Field Tetrad (Φ_s, |∇φ|, K_φ, ξ_C) ---
+    "compute_structural_potential",
+    "compute_phase_gradient",
+    "compute_phase_curvature",
+    "estimate_coherence_length",
+    "compute_k_phi_multiscale_variance",
+    "fit_k_phi_asymptotic_alpha",
+    "k_phi_multiscale_safety",
+    "compute_phase_winding",
+    # --- Force-like Interactions ---
+    "InteractionResult",
+    "em_like",
+    "weak_like",
+    "strong_like",
+    "gravity_like",
+    # --- Life Emergence ---
+    "LifeTelemetry",
+    "compute_self_generation",
+    "compute_autopoietic_coefficient",
+    "compute_self_org_index",
+    "compute_stability_margin",
+    "detect_life_emergence",
+    # --- Cell / Membrane ---
+    "CellTelemetry",
+    "compute_boundary_coherence",
+    "compute_selectivity_index",
+    "compute_homeostatic_index",
+    "compute_membrane_integrity",
+    "detect_cell_formation",
+    "apply_membrane_flux",
+    # --- Conservation Theorem (Noether-like) ---
+    "ConservationSnapshot",
+    "ConservationBalance",
+    "ConservationTimeSeries",
+    "ConservationTracker",
+    "compute_charge_density",
+    "compute_current_divergence",
+    "capture_conservation_snapshot",
+    "verify_conservation_balance",
+    "decompose_conservation_residual",
+    "analyze_sector_coupling",
+    "compute_grammar_conservation_bounds",
+    "detect_grammar_violations_from_conservation",
+    "compute_noether_charge",
+    "compute_energy_functional",
+    "WardIdentity",
+    "LyapunovResult",
+    "SpectralConservation",
+    "compute_ward_identity",
+    "verify_sequence_ward_identity",
+    "compute_lyapunov_derivative",
+    "compute_spectral_conservation",
+    "compute_conservation_scaling",
+    # --- Unified Complex Fields (Ψ = K_φ + i·J_φ) ---
+    "compute_complex_geometric_field",
+    "compute_field_magnitude",
+    "compute_field_phase",
+    "compute_chirality_field",
+    "compute_symmetry_breaking_field",
+    "compute_coherence_coupling_field",
+    "compute_energy_density",
+    "compute_action_density",
+    "compute_topological_charge",
+    "compute_unified_field_suite",
+    # --- Dissipative Conservation ---
+    "DissipativeSnapshot",
+    "DissipativeBalance",
+    "DissipativeTimeSeries",
+    "DissipativeConservationTracker",
+    "capture_dissipative_snapshot",
+    "compute_dissipation_bound",
+    "compute_dissipator_action",
+    "compute_purity_decay_bound",
+    "verify_dissipative_balance",
+    "predict_amplitude_damping_purity",
+    "predict_dephasing_purity",
+    "analyze_dissipation_rates",
+    "classify_dissipative_regime",
+    "steady_state_from_generator",
+    # --- Structural Integrity Monitor ---
+    "StructuralIntegrityMonitor",
+    "StructuralIntegrityViolation",
+    "MonitorMode",
+    "IntegrityReport",
+    "IntegritySummary",
+    "enable_integrity_monitor",
+    # --- Spectral Conservation ---
+    "SpectralConservationBalance",
+    "SpectralWardIdentity",
+    "SpectralLyapunovResult",
+    "SpectralSectorDecomposition",
+    "verify_spectral_conservation_balance",
+    "compute_spectral_ward_identity",
+    "compute_spectral_lyapunov",
+    "decompose_spectral_sectors",
+    "compute_spectral_energy_conservation",
+    "classify_spectral_modes",
+    # --- Variational Principle (Lagrangian Action) ---
+    "ConjugatePair",
+    "LagrangianSnapshot",
+    "EulerLagrangeResidual",
+    "SymplecticCheck",
+    "GrammarStationarityAnalysis",
+    "CriticalPointAnalysis",
+    "VariationalTimeSeries",
+    "VariationalTracker",
+    "compute_kinetic_density",
+    "compute_potential_density",
+    "compute_lagrangian_density",
+    "compute_hamiltonian_density",
+    "compute_interaction_density",
+    "translate_sectors",
+    "identify_conjugate_pairs",
+    "compute_phase_space_volume",
+    "compute_poisson_bracket_estimate",
+    "capture_lagrangian_snapshot",
+    "compute_euler_lagrange_residual",
+    "compute_action_functional",
+    "check_symplectic_preservation",
+    "classify_operator_canonical",
+    "analyze_grammar_stationarity",
+    "analyze_potential_critical_points",
+    "compute_variational_suite",
+    # --- Gauge Structure (U(1) Symmetry of Ψ = K_φ + i·J_φ) ---
+    "GaugeSnapshot",
+    "GaugeInvarianceResult",
+    "apply_gauge_transformation",
+    "compute_gauge_connection",
+    "compute_gauge_curvature",
+    "compute_covariant_derivative",
+    "compute_covariant_derivative_magnitude",
+    "compute_topological_norm",
+    "compute_chirality_norm",
+    "compute_dual_topological_charge",
+    "compute_dual_chirality",
+    "verify_gauge_invariance",
+    "capture_gauge_snapshot",
+    "classify_interaction_regime",
+    "classify_network_regimes",
+    "compute_yang_mills_action",
+    "compute_gauge_energy_decomposition",
+    # --- Yang-Mills Formalism (complete field equations) ---
+    "YangMillsFieldEquations",
+    "BianchiIdentityResult",
+    "InteractionRegimeMetrics",
+    "NetworkInteractionProfile",
+    "REGIME_DOMINANCE_THRESHOLD",
+    "REGIME_STRONG_THRESHOLD",
+    "compute_matter_current",
+    "compute_yang_mills_equations",
+    "verify_bianchi_identity",
+    "compute_gauss_law_residual",
+    "compute_gauge_coupling_constant",
+    "classify_interaction_regime_formal",
+    "compute_network_interaction_profile",
+    # --- Phase Transition (Life/Non-Life Symmetry Breaking) ---
+    "Phase",
+    "PhaseTransitionTelemetry",
+    "PhaseSnapshot",
+    "GAMMA_C",
+    "ORDER_PARAMETER_NOISE_FLOOR",
+    "CHIRALITY_THRESHOLD",
+    "compute_order_parameter",
+    "compute_chirality_statistics",
+    "classify_phase",
+    "capture_phase_snapshot",
+    "detect_phase_transition",
+    "fit_critical_exponent",
+    # --- Formal Lyapunov Analysis (per-operator bounds + spectral gap) ---
+    "EnergyClass",
+    "OperatorLyapunovBound",
+    "OperatorLyapunovVerification",
+    "SpectralGapAnalysis",
+    "LyapunovSpectralSummary",
+    "SequenceLyapunovProof",
+    "OPERATOR_LYAPUNOV_BOUNDS",
+    "get_bound",
+    "compute_operator_energy_bound",
+    "verify_operator_lyapunov",
+    "compute_sequence_energy_bound",
+    "prove_sequence_lyapunov",
+    "analyze_spectral_gap",
+    "analyze_operator_convergence",
+    # --- Conservation-Gauge Unification ---
+    "GrammarSymmetryMapping",
+    "ActionEnergyConsistency",
+    "NoetherGaugeDecomposition",
+    "GaugeConservationCoupling",
+    "SymplecticGaugeCompatibility",
+    "ConservationGaugeUnification",
+    "compute_grammar_symmetry_mapping",
+    "verify_action_energy_consistency",
+    "compute_noether_gauge_decomposition",
+    "compute_gauge_conservation_coupling",
+    "verify_symplectic_gauge_compatibility",
+    "run_conservation_gauge_unification",
+]

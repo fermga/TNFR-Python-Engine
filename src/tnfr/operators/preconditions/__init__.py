@@ -17,8 +17,8 @@ if TYPE_CHECKING:
     from ...types import NodeId, TNFRGraph
     import logging
 
-from ...alias import get_attr
 from ...constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
+from ...constants.canonical import DELTA_PHI_MAX
 
 __all__ = [
     "OperatorPreconditionError",
@@ -40,7 +40,6 @@ __all__ = [
     "diagnose_mutation_readiness",
 ]
 
-
 class OperatorPreconditionError(Exception):
     """Raised when an operator's preconditions are not met."""
 
@@ -58,13 +57,7 @@ class OperatorPreconditionError(Exception):
         self.reason = reason
         super().__init__(f"{operator}: {reason}")
 
-
-def _get_node_attr(
-    G: "TNFRGraph", node: "NodeId", aliases: tuple[str, ...], default: float = 0.0
-) -> float:
-    """Get node attribute using alias fallback."""
-    return float(get_attr(G.nodes[node], aliases, default))
-
+from ..metrics_core import get_node_attr as _get_node_attr
 
 def validate_emission(G: "TNFRGraph", node: "NodeId") -> None:
     """AL - Emission requires node in latent or low activation state.
@@ -90,7 +83,6 @@ def validate_emission(G: "TNFRGraph", node: "NodeId") -> None:
             "Emission", f"Node already active (EPI={epi:.3f} >= {max_epi:.3f})"
         )
 
-
 def validate_reception(G: "TNFRGraph", node: "NodeId") -> None:
     """EN - Reception requires node to have neighbors to receive from.
 
@@ -109,7 +101,6 @@ def validate_reception(G: "TNFRGraph", node: "NodeId") -> None:
     neighbors = list(G.neighbors(node))
     if not neighbors:
         raise OperatorPreconditionError("Reception", "Node has no neighbors to receive energy from")
-
 
 def validate_coherence(G: "TNFRGraph", node: "NodeId") -> None:
     """IL - Coherence requires active EPI, νf, and manageable ΔNFR.
@@ -148,7 +139,6 @@ def validate_coherence(G: "TNFRGraph", node: "NodeId") -> None:
 
     validate_coherence_strict(G, node)
 
-
 def diagnose_coherence_readiness(G: "TNFRGraph", node: "NodeId") -> dict:
     """Diagnose node readiness for IL (Coherence) operator.
 
@@ -174,7 +164,6 @@ def diagnose_coherence_readiness(G: "TNFRGraph", node: "NodeId") -> dict:
     from .coherence import diagnose_coherence_readiness as _diagnose
 
     return _diagnose(G, node)
-
 
 def validate_dissonance(G: "TNFRGraph", node: "NodeId") -> None:
     """OZ - Dissonance requires comprehensive structural preconditions.
@@ -260,7 +249,6 @@ def validate_dissonance(G: "TNFRGraph", node: "NodeId") -> None:
         # Clear flag if previously set
         G.nodes[node]["_bifurcation_ready"] = False
 
-
 def validate_coupling(G: "TNFRGraph", node: "NodeId") -> None:
     """UM - Coupling requires active nodes with compatible phases.
 
@@ -308,7 +296,7 @@ def validate_coupling(G: "TNFRGraph", node: "NodeId") -> None:
 
     [Legacy note: Previously referenced RC3. See docs/grammar/DEPRECATION-INDEX.md]
 
-    Set UM_STRICT_PHASE_CHECK=False to disable (NOT RECOMMENDED - violates
+    set UM_STRICT_PHASE_CHECK=False to disable (NOT RECOMMENDED - violates
     canonical physics requirements).
 
     Examples
@@ -365,7 +353,7 @@ def validate_coupling(G: "TNFRGraph", node: "NodeId") -> None:
             from ...utils.numeric import angle_diff
 
             theta_i = _get_node_attr(G, node, ALIAS_THETA)
-            max_phase_diff = float(G.graph.get("UM_MAX_PHASE_DIFF", math.pi / 2))
+            max_phase_diff = float(G.graph.get("UM_MAX_PHASE_DIFF", DELTA_PHI_MAX))
 
             # Check if at least one neighbor is phase-compatible
             has_compatible = False
@@ -381,7 +369,6 @@ def validate_coupling(G: "TNFRGraph", node: "NodeId") -> None:
                     "Coupling",
                     f"No phase-compatible neighbors (all |Δθ| > {max_phase_diff:.3f})",
                 )
-
 
 def validate_resonance(G: "TNFRGraph", node: "NodeId") -> None:
     """RA - Resonance requires comprehensive canonical preconditions.
@@ -430,7 +417,6 @@ def validate_resonance(G: "TNFRGraph", node: "NodeId") -> None:
 
     validate_resonance_strict(G, node)
 
-
 def diagnose_resonance_readiness(G: "TNFRGraph", node: "NodeId") -> dict:
     """Diagnose node readiness for RA (Resonance) operator.
 
@@ -457,7 +443,6 @@ def diagnose_resonance_readiness(G: "TNFRGraph", node: "NodeId") -> dict:
 
     return _diagnose(G, node)
 
-
 def validate_silence(G: "TNFRGraph", node: "NodeId") -> None:
     """SHA - Silence requires vf > 0 to reduce.
 
@@ -480,7 +465,6 @@ def validate_silence(G: "TNFRGraph", node: "NodeId") -> None:
             "Silence",
             f"Structural frequency already minimal (νf={vf:.3f} < {min_vf:.3f})",
         )
-
 
 def validate_expansion(G: "TNFRGraph", node: "NodeId") -> None:
     """VAL - Expansion requires comprehensive canonical preconditions.
@@ -592,9 +576,8 @@ def validate_expansion(G: "TNFRGraph", node: "NodeId") -> None:
             raise OperatorPreconditionError(
                 "Expansion",
                 f"Network at capacity (n={current_size} >= {max_network_size}). "
-                f"Cannot support further expansion. Set VAL_CHECK_NETWORK_CAPACITY=False to disable.",
+                f"Cannot support further expansion. set VAL_CHECK_NETWORK_CAPACITY=False to disable.",
             )
-
 
 def validate_contraction(G: "TNFRGraph", node: "NodeId") -> None:
     """NUL - Enhanced precondition validation with over-compression check.
@@ -698,7 +681,6 @@ def validate_contraction(G: "TNFRGraph", node: "NodeId") -> None:
             f"Further contraction risks structural collapse. "
             f"Consider IL (Coherence) to stabilize or reduce ΔNFR first.",
         )
-
 
 def validate_self_organization(G: "TNFRGraph", node: "NodeId") -> None:
     """THOL - Enhanced validation: connectivity, metabolic context, acceleration.
@@ -805,7 +787,7 @@ def validate_self_organization(G: "TNFRGraph", node: "NodeId") -> None:
             "Self-organization",
             f"Node insufficiently connected for network metabolism "
             f"(degree={node_degree} < {min_degree}). "
-            f"Set THOL_ALLOW_ISOLATED=True to enable internal-only bifurcation.",
+            f"set THOL_ALLOW_ISOLATED=True to enable internal-only bifurcation.",
         )
 
     # 5. EPI history validation (for d²EPI/dt² computation)
@@ -869,7 +851,7 @@ def validate_self_organization(G: "TNFRGraph", node: "NodeId") -> None:
             f"Sub-EPIs will not be generated. "
             f"Consider stronger destabilizer (OZ, VAL) to increase acceleration."
         )
-        # Set telemetry flag for post-hoc analysis
+        # set telemetry flag for post-hoc analysis
         G.nodes[node]["_thol_no_bifurcation_expected"] = True
     else:
         # Clear flag if previously set
@@ -879,7 +861,6 @@ def validate_self_organization(G: "TNFRGraph", node: "NodeId") -> None:
             f"(∂²EPI/∂t²={d2_epi:.3f} > τ={tau:.3f}). "
             f"Sub-EPI generation expected."
         )
-
 
 # Moved to mutation.py module for modularity
 # Import here for backward compatibility
@@ -897,7 +878,6 @@ except ImportError:
             "destabilizer_distance": None,
             "recent_history": [],
         }
-
 
 def validate_mutation(G: "TNFRGraph", node: "NodeId") -> None:
     """ZHIR - Mutation requires node to be in valid structural state.
@@ -1059,7 +1039,6 @@ def validate_mutation(G: "TNFRGraph", node: "NodeId") -> None:
                 "Apply Dissonance or Expansion to elevate ΔNFR first.",
             )
 
-
 def validate_transition(G: "TNFRGraph", node: "NodeId") -> None:
     """NAV - Comprehensive canonical preconditions for transition.
 
@@ -1193,7 +1172,6 @@ def validate_transition(G: "TNFRGraph", node: "NodeId") -> None:
                     stacklevel=2,
                 )
 
-
 def validate_recursivity(G: "TNFRGraph", node: "NodeId") -> None:
     """REMESH - Recursivity requires global network coherence threshold.
 
@@ -1216,7 +1194,6 @@ def validate_recursivity(G: "TNFRGraph", node: "NodeId") -> None:
             "Recursivity",
             f"Network too small for remesh (n={G.number_of_nodes()} < {min_nodes})",
         )
-
 
 # Import diagnostic functions from modular implementations
 from .mutation import diagnose_mutation_readiness  # noqa: E402

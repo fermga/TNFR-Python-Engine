@@ -19,7 +19,7 @@ emerges naturally from the underlying physics.
 
 from __future__ import annotations
 
-from typing import Any, Optional, Sequence
+from typing import Any, Sequence
 
 try:  # Optional dependency for typing and validation only
     import networkx as nx  # noqa: F401
@@ -43,7 +43,6 @@ except ImportError:  # pragma: no cover
     HAS_CACHE_OPTIMIZER = False
 
 from .structural_cache import StructuralCacheEntry, get_structural_cache
-
 
 class TNFRSpectralStructuralFusionEngine:
     """Bridge FFT spectral caches with structural field caches."""
@@ -105,7 +104,7 @@ class TNFRSpectralStructuralFusionEngine:
 
         self.cache_optimizer.optimize_cache_strategy(G, strategies)
 
-    def synchronize_structural_and_fft_caches(self, G: Any) -> Optional[str]:
+    def synchronize_structural_and_fft_caches(self, G: Any) -> str | None:
         """Ensure spectral signatures match across caches and return signature."""
         entry = self.compute_structural_fields(G, force_recompute=False)
         return entry.spectral_basis_signature
@@ -118,7 +117,7 @@ class TNFRSpectralStructuralFusionEngine:
     # ------------------------------------------------------------------
     # Internal helpers
     # ------------------------------------------------------------------
-    def _ensure_spectral_basis(self, G: Any, *, force_recompute: bool = False) -> Optional[Any]:
+    def _ensure_spectral_basis(self, G: Any, *, force_recompute: bool = False) -> Any | None:
         if self.fft_cache is None or G is None:
             return None
 
@@ -126,6 +125,5 @@ class TNFRSpectralStructuralFusionEngine:
             return self.fft_cache.get_spectral_basis(G, force_recompute=force_recompute)
         except Exception:
             return None
-
 
 __all__ = ["TNFRSpectralStructuralFusionEngine"]

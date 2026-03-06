@@ -16,7 +16,7 @@ Status: CANONICAL STRUCTURAL CACHE
 """
 
 from ..mathematics.unified_numerical import np
-from typing import Dict, Any, Optional, Tuple, List, Set
+from typing import Any
 from dataclasses import dataclass, field
 from functools import wraps
 import hashlib
@@ -37,7 +37,7 @@ except ImportError:
 
 # Import TNFR Cache Infrastructure
 try:
-    from ..utils.cache import CacheLevel, TNFRHierarchicalCache, get_global_cache
+    from ..utils.cache import get_global_cache
     _CACHE_AVAILABLE = True
 except ImportError:
     _CACHE_AVAILABLE = False
@@ -54,21 +54,20 @@ try:
 except ImportError:
     HAS_PHYSICS = False
 
-
 @dataclass
 class StructuralCacheEntry:
     """Cache entry for structural field computations."""
-    phi_s: Dict[Any, float] = field(default_factory=dict)
-    grad_phi: Dict[Any, float] = field(default_factory=dict)
-    k_phi: Dict[Any, float] = field(default_factory=dict)
+    phi_s: dict[Any, float] = field(default_factory=dict)
+    grad_phi: dict[Any, float] = field(default_factory=dict)
+    k_phi: dict[Any, float] = field(default_factory=dict)
     xi_c: float = 0.0
     coherence: float = 0.0
     timestamp: float = 0.0
     topology_hash: str = ""
     spectral_basis_signature: str = ""
-    eigenvalues: Optional[np.ndarray] = None
-    eigenvectors: Optional[np.ndarray] = None
-    coordination_nodes: List[Any] = field(default_factory=list)
+    eigenvalues: np.ndarray | None = None
+    eigenvectors: np.ndarray | None = None
+    coordination_nodes: list[Any] = field(default_factory=list)
     
 
 @dataclass
@@ -79,7 +78,6 @@ class ResonancePattern:
     phases: np.ndarray
     pattern_hash: str
     usage_count: int = 0
-
 
 class StructuralCoherenceCache:
     """
@@ -92,8 +90,8 @@ class StructuralCoherenceCache:
     def __init__(self, max_entries: int = 500, enable_interpolation: bool = True):
         self.max_entries = max_entries
         self.enable_interpolation = enable_interpolation
-        self._structural_cache: Dict[str, StructuralCacheEntry] = {}
-        self._resonance_cache: Dict[str, ResonancePattern] = {}
+        self._structural_cache: dict[str, StructuralCacheEntry] = {}
+        self._resonance_cache: dict[str, ResonancePattern] = {}
         
         # Performance counters
         self.hits = 0
@@ -125,14 +123,14 @@ class StructuralCoherenceCache:
             node_props.append(prop_str)
         
         combined = f"n{len(nodes)}_e{len(edges)}_props{'_'.join(node_props)}"
-        return hashlib.md5(combined.encode()).hexdigest()[:16]
+        return hashlib.md5(combined.encode(), usedforsecurity=False).hexdigest()[:16]
     
     def get_structural_fields(
         self,
         G: Any,
         force_recompute: bool = False,
         interpolate_threshold: float = STRUCT_CACHE_INTERPOLATE_CANONICAL,  # γ/(π+e) ≈ 0.0985 → canonical
-        spectral_basis: Optional[Any] = None
+        spectral_basis: Any | None = None
     ) -> StructuralCacheEntry:
         """
         Get structural fields with intelligent caching and interpolation.
@@ -174,7 +172,7 @@ class StructuralCoherenceCache:
         self,
         G: Any,
         topology_hash: str,
-        spectral_basis: Optional[Any] = None
+        spectral_basis: Any | None = None
     ) -> StructuralCacheEntry:
         """Compute all structural fields for the graph."""
         if not HAS_PHYSICS:
@@ -209,8 +207,8 @@ class StructuralCoherenceCache:
     def register_coordination_nodes(
         self,
         G: Any,
-        coordination_nodes: List[Any],
-        spectral_basis: Optional[Any] = None
+        coordination_nodes: list[Any],
+        spectral_basis: Any | None = None
     ) -> None:
         """Register nodes that coordinate cache distribution."""
         if not HAS_NETWORKX or G is None:
@@ -227,7 +225,7 @@ class StructuralCoherenceCache:
         entry.coordination_nodes = list(coordination_nodes)
         self._attach_spectral_basis(entry, spectral_basis)
 
-    def _maybe_fetch_spectral_basis(self, G: Any) -> Optional[Any]:
+    def _maybe_fetch_spectral_basis(self, G: Any) -> Any | None:
         """Fetch spectral basis from FFT cache if available."""
         if G is None:
             return None
@@ -241,7 +239,7 @@ class StructuralCoherenceCache:
         except Exception:
             return None
 
-    def _get_fft_cache(self) -> Optional[Any]:
+    def _get_fft_cache(self) -> Any | None:
         """Lazily instantiate FFT cache coordinator."""
         if self._fft_cache_checked:
             return self._fft_cache
@@ -258,8 +256,8 @@ class StructuralCoherenceCache:
 
     def _attach_spectral_basis(
         self,
-        entry: Optional[StructuralCacheEntry],
-        spectral_basis: Optional[Any]
+        entry: StructuralCacheEntry | None,
+        spectral_basis: Any | None
     ) -> None:
         """Attach spectral metadata to cache entry."""
         if entry is None or spectral_basis is None:
@@ -293,7 +291,7 @@ class StructuralCoherenceCache:
         G: Any, 
         new_hash: str, 
         threshold: float
-    ) -> Optional[StructuralCacheEntry]:
+    ) -> StructuralCacheEntry | None:
         """
         Try to interpolate structural fields from similar cached entries.
         
@@ -355,9 +353,9 @@ class StructuralCoherenceCache:
         Returns pattern hash for later retrieval.
         """
         # Generate pattern fingerprint
-        freq_hash = hashlib.md5(frequencies.tobytes()).hexdigest()[:8]
-        amp_hash = hashlib.md5(amplitudes.tobytes()).hexdigest()[:8]
-        phase_hash = hashlib.md5(phases.tobytes()).hexdigest()[:8]
+        freq_hash = hashlib.md5(frequencies.tobytes(), usedforsecurity=False).hexdigest()[:8]
+        amp_hash = hashlib.md5(amplitudes.tobytes(), usedforsecurity=False).hexdigest()[:8]
+        phase_hash = hashlib.md5(phases.tobytes(), usedforsecurity=False).hexdigest()[:8]
         pattern_hash = f"{freq_hash}_{amp_hash}_{phase_hash}"
         
         # Store pattern
@@ -377,7 +375,7 @@ class StructuralCoherenceCache:
         
         return pattern_hash
     
-    def get_resonance_pattern(self, pattern_hash: str) -> Optional[ResonancePattern]:
+    def get_resonance_pattern(self, pattern_hash: str) -> ResonancePattern | None:
         """Retrieve cached resonance pattern."""
         pattern = self._resonance_cache.get(pattern_hash)
         if pattern is not None:
@@ -413,7 +411,7 @@ class StructuralCoherenceCache:
             
         self._resonance_cache = new_cache
     
-    def get_cache_stats(self) -> Dict[str, Any]:
+    def get_cache_stats(self) -> dict[str, Any]:
         """Get caching performance statistics."""
         total_requests = self.hits + self.misses
         hit_rate = self.hits / max(1, total_requests)
@@ -436,10 +434,8 @@ class StructuralCoherenceCache:
         self.misses = 0
         self.interpolations = 0
 
-
 # Global cache instance
 _global_structural_cache = None
-
 
 def get_structural_cache() -> StructuralCoherenceCache:
     """Get or create the global structural cache."""
@@ -448,12 +444,10 @@ def get_structural_cache() -> StructuralCoherenceCache:
         _global_structural_cache = StructuralCoherenceCache()
     return _global_structural_cache
 
-
 def cached_structural_fields(G: Any, **kwargs) -> StructuralCacheEntry:
     """Convenience function for cached structural field computation."""
     cache = get_structural_cache()
     return cache.get_structural_fields(G, **kwargs)
-
 
 # Decorator for automatic structural field caching
 def cache_structural_computation(func):

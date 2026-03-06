@@ -7,10 +7,9 @@ while preserving all TNFR structural invariants.
 from __future__ import annotations
 
 from multiprocessing import cpu_count
-from typing import Any, Dict, Optional
+from typing import Any
 
 from .partitioner import FractalPartitioner
-
 
 class TNFRParallelEngine:
     """Parallel computation engine for TNFR networks.
@@ -56,7 +55,7 @@ class TNFRParallelEngine:
 
     def __init__(
         self,
-        max_workers: Optional[int] = None,
+        max_workers: int | None = None,
         execution_mode: str = "threads",
         partition_size: int = 100,
         cache_aware: bool = True,
@@ -82,14 +81,14 @@ class TNFRParallelEngine:
         Parameters
         ----------
         partitions : list
-            List of work partitions to distribute
+            list of work partitions to distribute
         num_workers : int
             Number of worker processes/threads
 
         Returns
         -------
         list
-            List of work chunks, one per worker, organized for cache efficiency
+            list of work chunks, one per worker, organized for cache efficiency
         """
         if not self.cache_aware or len(partitions) <= num_workers:
             # Simple round-robin distribution
@@ -141,7 +140,7 @@ class TNFRParallelEngine:
 
     def compute_delta_nfr_parallel(
         self, graph: Any, **kwargs: Any
-    ) -> Dict[Any, float]:
+    ) -> dict[Any, float]:
         """Compute ΔNFR in parallel using fractal partitioning.
 
         Delegates to existing default_compute_delta_nfr with n_jobs parameter.
@@ -156,7 +155,7 @@ class TNFRParallelEngine:
 
         Returns
         -------
-        Dict[Any, float]
+        dict[Any, float]
             Mapping from node IDs to ΔNFR values
 
         Notes
@@ -184,7 +183,7 @@ class TNFRParallelEngine:
 
     def compute_si_parallel(
         self, graph: Any, **kwargs: Any
-    ) -> Dict[Any, float]:
+    ) -> dict[Any, float]:
         """Compute sense index in parallel.
 
         Delegates to existing compute_Si with n_jobs parameter.
@@ -199,7 +198,7 @@ class TNFRParallelEngine:
 
         Returns
         -------
-        Dict[Any, float]
+        dict[Any, float]
             Mapping from node IDs to Si values
 
         Notes

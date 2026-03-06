@@ -39,9 +39,7 @@ __all__ = [
     "plot_cascade_timeline",
 ]
 
-
 logger = get_logger(__name__)
-
 
 def plot_cascade_propagation(G: TNFRGraph, figsize: tuple[int, int] = (12, 8)):
     """Visualize THOL cascade propagation across network.
@@ -138,7 +136,6 @@ def plot_cascade_propagation(G: TNFRGraph, figsize: tuple[int, int] = (12, 8)):
     plt.tight_layout()
     return fig
 
-
 def plot_cascade_timeline(G: TNFRGraph, figsize: tuple[int, int] = (10, 5)):
     """Plot temporal evolution of cascade events.
 
@@ -193,7 +190,6 @@ def plot_cascade_timeline(G: TNFRGraph, figsize: tuple[int, int] = (10, 5)):
 
     plt.tight_layout()
     return fig
-
 
 def plot_cascade_metrics_summary(
     G: TNFRGraph,

@@ -26,7 +26,7 @@ Status: CANONICAL EMERGENT CENTRALIZATION ENGINE
 """
 
 from ..mathematics.unified_numerical import np
-from typing import Dict, Any, List
+from typing import Any
 from dataclasses import dataclass
 from enum import Enum
 import time
@@ -57,6 +57,9 @@ from ..constants.canonical import (
     NODAL_OPT_COUPLING_CANONICAL,          # γ/(π+e) ≈ 0.0985 (0.1 → canonical)
     EMERGENT_EFFICIENCY_GAIN_CANONICAL,    # γ/π ≈ 0.1837 (0.2 → canonical)
     EMERGENT_COORDINATION_BOOST_CANONICAL, # 2·φ/π ≈ 1.0309 (2.0 → canonical)
+    EMERGENT_CENTRALITY_THRESHOLD_CANONICAL,     # φ/(φ+γ) ≈ 0.7371 (centrality)
+    EMERGENT_COORDINATION_THRESHOLD_CANONICAL,   # 1/(φ+γ/π) ≈ 0.5550 (coordination)
+    EMERGENT_STABILITY_THRESHOLD_CANONICAL,      # (φ+γ)/(π+γ) ≈ 0.5903 (stability)
 )
 
 try:
@@ -64,7 +67,6 @@ try:
     HAS_SPECTRAL_STRUCTURAL_FUSION = True
 except ImportError:
     HAS_SPECTRAL_STRUCTURAL_FUSION = False
-
 
 class CentralizationStrategy(Enum):
     """Strategies for emergent centralization."""
@@ -75,7 +77,6 @@ class CentralizationStrategy(Enum):
     PHASE_COORDINATION = "phase_coordination"      # Based on phase synchronization
     ADAPTIVE_TOPOLOGY = "adaptive_topology"        # Based on dynamic restructuring
 
-
 @dataclass
 class CentralizationNode:
     """A node identified as a coordination center."""
@@ -83,34 +84,31 @@ class CentralizationNode:
     centrality_score: float
     coordination_capacity: float
     current_load: float
-    specialization: str  # Type of coordination this node excels at
-    connected_cluster: List[Any]  # Nodes coordinated by this center
-    mathematical_signature: Dict[str, Any]
-
+    specialization: str  # type of coordination this node excels at
+    connected_cluster: list[Any]  # Nodes coordinated by this center
+    mathematical_signature: dict[str, Any]
 
 @dataclass
 class CentralizationPattern:
     """Discovered centralization pattern in the network."""
     strategy: CentralizationStrategy
-    coordination_nodes: List[CentralizationNode]
+    coordination_nodes: list[CentralizationNode]
     efficiency_gain: float
     stability_measure: float
     adaptation_rate: float
-    mathematical_basis: Dict[str, Any]
-    load_distribution: Dict[Any, float]
-
+    mathematical_basis: dict[str, Any]
+    load_distribution: dict[Any, float]
 
 @dataclass
 class CentralizationResult:
     """Result of centralization analysis and optimization."""
-    discovered_patterns: List[CentralizationPattern]
+    discovered_patterns: list[CentralizationPattern]
     optimal_strategy: CentralizationStrategy
-    recommended_topology: Dict[str, Any]
-    performance_improvements: Dict[str, float]
+    recommended_topology: dict[str, Any]
+    performance_improvements: dict[str, float]
     coordination_efficiency: float
     fault_tolerance: float
     execution_time: float
-
 
 class TNFREmergentCentralizationEngine:
     """
@@ -129,9 +127,9 @@ class TNFREmergentCentralizationEngine:
         self.performance_history = []
         
         # Mathematical thresholds (canonical derivations from φ, γ, π, e)
-        self.centrality_threshold = 0.7370610757229365  # φ/(φ+γ) ≈ 0.737
-        self.coordination_threshold = 0.5550110513847934  # 1/(φ + γ/π) ≈ 0.555
-        self.stability_threshold = 0.5903096618115984  # (φ+γ)/(π+γ) ≈ 0.590
+        self.centrality_threshold = EMERGENT_CENTRALITY_THRESHOLD_CANONICAL     # φ/(φ+γ) ≈ 0.7371
+        self.coordination_threshold = EMERGENT_COORDINATION_THRESHOLD_CANONICAL # 1/(φ+γ/π) ≈ 0.5550
+        self.stability_threshold = EMERGENT_STABILITY_THRESHOLD_CANONICAL       # (φ+γ)/(π+γ) ≈ 0.5903
         
         # Performance tracking
         self.centralization_attempts = 0
@@ -166,7 +164,7 @@ class TNFREmergentCentralizationEngine:
     def analyze_spectral_centralization(
         self,
         G: Any
-    ) -> List[CentralizationNode]:
+    ) -> list[CentralizationNode]:
         """
         Discover centralization based on spectral properties.
         
@@ -230,7 +228,7 @@ class TNFREmergentCentralizationEngine:
     def analyze_information_flow_centralization(
         self,
         G: Any
-    ) -> List[CentralizationNode]:
+    ) -> list[CentralizationNode]:
         """
         Discover centralization based on information (EPI) flow patterns.
         
@@ -251,7 +249,7 @@ class TNFREmergentCentralizationEngine:
                 epi_fraction = epi / total_epi
                 
                 # High EPI concentration indicates coordination potential
-                if epi_fraction > 0.09850273565687083:  # γ/(π+e) ≈ 0.099 - Significant EPI concentration
+                if epi_fraction > NODAL_OPT_COUPLING_CANONICAL:  # γ/(π+e) ≈ 0.099 - Significant EPI concentration
                     # Analyze information flow capacity
                     neighbors = list(G.neighbors(node))
                     neighbor_epi = [abs(epi_values.get(n, 0.0)) for n in neighbors]
@@ -297,7 +295,7 @@ class TNFREmergentCentralizationEngine:
     def analyze_frequency_hierarchy_centralization(
         self,
         G: Any
-    ) -> List[CentralizationNode]:
+    ) -> list[CentralizationNode]:
         """
         Discover centralization based on frequency (νf) hierarchy.
         
@@ -317,7 +315,7 @@ class TNFREmergentCentralizationEngine:
             vf = vf_values[node]
             relative_frequency = vf / max_vf if max_vf > 0 else 0
             
-            if relative_frequency > 0.5903096618115984:  # (φ+γ)/(π+γ) ≈ 0.590 - Top frequency nodes
+            if relative_frequency > EMERGENT_STABILITY_THRESHOLD_CANONICAL:  # (φ+γ)/(π+γ) ≈ 0.590 - Top frequency nodes
                 # Calculate coordination capacity based on frequency advantage
                 neighbors = list(G.neighbors(node))
                 neighbor_vf = [vf_values.get(n, 1.0) for n in neighbors]
@@ -361,7 +359,7 @@ class TNFREmergentCentralizationEngine:
     def analyze_phase_coordination_centralization(
         self,
         G: Any
-    ) -> List[CentralizationNode]:
+    ) -> list[CentralizationNode]:
         """
         Discover centralization based on phase synchronization potential.
         
@@ -391,7 +389,7 @@ class TNFREmergentCentralizationEngine:
                 vf = G.nodes[node].get('vf', 1.0)
                 coordination_capacity = phase_coherence * len(neighbors) * vf
                 
-                if phase_coherence > 0.7370610757229365 and coordination_capacity > self.coordination_threshold:  # φ/(φ+γ) ≈ 0.737
+                if phase_coherence > EMERGENT_CENTRALITY_THRESHOLD_CANONICAL and coordination_capacity > self.coordination_threshold:  # φ/(φ+γ) ≈ 0.737
                     signature = {
                         "phase_coherence": phase_coherence,
                         "average_phase_difference": avg_phase_diff,
@@ -426,7 +424,7 @@ class TNFREmergentCentralizationEngine:
     def discover_centralization_patterns(
         self,
         G: Any
-    ) -> List[CentralizationPattern]:
+    ) -> list[CentralizationPattern]:
         """
         Discover all centralization patterns in the network.
         """
@@ -564,7 +562,7 @@ class TNFREmergentCentralizationEngine:
             execution_time=execution_time
         )
         
-    def get_centralization_statistics(self) -> Dict[str, Any]:
+    def get_centralization_statistics(self) -> dict[str, Any]:
         """Get statistics about centralization analysis."""
         return {
             "centralization_attempts": self.centralization_attempts,
@@ -586,12 +584,10 @@ class TNFREmergentCentralizationEngine:
             }
         }
 
-
 # Factory functions
 def create_emergent_centralization_engine(**kwargs: Any) -> TNFREmergentCentralizationEngine:
     """Create emergent centralization engine."""
     return TNFREmergentCentralizationEngine(**kwargs)
-
 
 def optimize_network_centralization(
     G: Any,
@@ -602,8 +598,7 @@ def optimize_network_centralization(
     engine = create_emergent_centralization_engine(**kwargs)
     return engine.optimize_centralization(G, objective)
 
-
-def discover_coordination_nodes(G: Any) -> List[CentralizationNode]:
+def discover_coordination_nodes(G: Any) -> list[CentralizationNode]:
     """Convenience function to discover coordination nodes."""
     engine = create_emergent_centralization_engine()
     patterns = engine.discover_centralization_patterns(G)

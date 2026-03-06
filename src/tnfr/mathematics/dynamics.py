@@ -17,7 +17,6 @@ except Exception:  # pragma: no cover - SciPy not installed
 
 __all__ = ["MathematicalDynamicsEngine", "ContractiveDynamicsEngine"]
 
-
 def _has_backend_matrix_exp(backend: MathematicsBackend) -> bool:
     """Return ``True`` when ``backend`` exposes a usable ``matrix_exp``."""
 
@@ -36,7 +35,6 @@ def _has_backend_matrix_exp(backend: MathematicsBackend) -> bool:
         return False
     return True
 
-
 def _as_matrix(
     matrix: Sequence[Sequence[complex]] | np.ndarray | Any,
     *,
@@ -52,28 +50,23 @@ def _as_matrix(
         )
     return arr
 
-
 def _is_hermitian(matrix: Any, *, atol: float = 1e-9, backend: MathematicsBackend) -> bool:
     matrix_np = ensure_numpy(matrix, backend=backend)
     return bool(np.allclose(matrix_np, matrix_np.conj().T, atol=atol))
-
 
 def _vectorize_density(matrix: Any, *, backend: MathematicsBackend) -> Any:
     arr = ensure_array(matrix, dtype=np.complex128, backend=backend)
     return arr.transpose(1, 0).reshape((-1,))
 
-
 def _devectorize_density(vector: Any, dim: int, *, backend: MathematicsBackend) -> Any:
     arr = ensure_array(vector, dtype=np.complex128, backend=backend)
     return arr.reshape((dim, dim)).transpose(1, 0)
-
 
 class TraceValue(NamedTuple):
     """Container for trace evaluations in both backend and NumPy space."""
 
     backend: Any
     numpy: complex | None
-
 
 def _trace(matrix: Any, *, backend: MathematicsBackend) -> TraceValue:
     traced_backend = backend.einsum("ii->", matrix)
@@ -83,7 +76,6 @@ def _trace(matrix: Any, *, backend: MathematicsBackend) -> TraceValue:
         # Fallback for backends where conversion fails (e.g. JAX tracing)
         traced_numpy = None
     return TraceValue(traced_backend, traced_numpy)
-
 
 @dataclass(slots=True)
 class MathematicalDynamicsEngine:
@@ -225,7 +217,6 @@ class MathematicalDynamicsEngine:
             current = self.step(current, dt=dt, normalize=normalize)
             trajectory.append(current)
         return self.backend.stack(trajectory, axis=0)
-
 
 @dataclass(slots=True)
 class ContractiveDynamicsEngine:

@@ -61,7 +61,6 @@ __all__ = [
     "validate_commutativity_nul",
 ]
 
-
 def validate_identity_property(
     G: TNFRGraph,
     node: NodeId,
@@ -139,7 +138,6 @@ def validate_identity_property(
     # Both terminators should leave structure intact after stabilization
     return abs(epi_without_sha - epi_with_sha) < tolerance
 
-
 def validate_idempotence(
     G: TNFRGraph,
     node: NodeId,
@@ -214,7 +212,6 @@ def validate_idempotence(
     consistent = abs(vf_context1 - vf_context2) < tolerance
 
     return both_minimal and consistent
-
 
 def validate_commutativity_nul(
     G: TNFRGraph,

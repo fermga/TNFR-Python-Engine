@@ -10,21 +10,15 @@ Validation: Multi-topology parameter sweeps with confidence intervals
 
 from ..mathematics.unified_numerical import np
 import networkx as nx
-from typing import Dict, Any
+from typing import Any
 from dataclasses import dataclass
 
 from ..constants.canonical import (
-    PHYSICS_CONFIDENCE_LEVEL_CANONICAL,
     PHYSICS_EXPECTED_CORRELATION_WS_CANONICAL,
-    PHYSICS_CORRELATION_STD_WS_CANONICAL,
     PHYSICS_N_NODES_DEPENDENCY_CANONICAL,
     PHYSICS_K_DEGREE_DEPENDENCY_CANONICAL,
     PHYSICS_P_REWIRE_DEPENDENCY_CANONICAL,
-    PHYSICS_M_ATTACH_DEPENDENCY_CANONICAL,
-    PHYSICS_EXPECTED_CORRELATION_BA_CANONICAL,
-    PHYSICS_EXPECTED_CORRELATION_GRID_CANONICAL,
 )
-
 
 @dataclass
 class CalibrationProfile:
@@ -32,19 +26,18 @@ class CalibrationProfile:
     topology_name: str
     expected_correlation: float
     correlation_std: float
-    parameter_dependencies: Dict[str, float]
+    parameter_dependencies: dict[str, float]
     sample_size: int
     confidence_level: float = 0.95
 
-
-def create_topology_calibration_profiles() -> Dict[str, CalibrationProfile]:
+def create_topology_calibration_profiles() -> dict[str, CalibrationProfile]:
     """
     Create parameter-specific calibration profiles.
     
     Based on robustness analysis across multiple topologies and parameters.
     
     Returns:
-        Dict mapping topology_name -> CalibrationProfile
+        dict mapping topology_name -> CalibrationProfile
     """
     
     profiles = {}
@@ -90,22 +83,21 @@ def create_topology_calibration_profiles() -> Dict[str, CalibrationProfile]:
     
     return profiles
 
-
 def calibrate_tc_xi_correlation(
     G: nx.Graph,
     topology_type: str,
-    network_params: Dict[str, Any]
-) -> Dict[str, float]:
+    network_params: dict[str, Any]
+) -> dict[str, float]:
     """
     Provide calibrated expectation for T_C ↔ ξ_C(local) correlation.
     
     Args:
         G: NetworkX graph (used for validation)
         topology_type: Topology family ('WS', 'BA', 'Grid')
-        network_params: Dict with topology-specific parameters
+        network_params: dict with topology-specific parameters
         
     Returns:
-        Dict with calibrated correlation expectation and confidence bounds
+        dict with calibrated correlation expectation and confidence bounds
         
     Network Parameters by Topology:
         WS: {'n_nodes': int, 'k_degree': int, 'p_rewire': float}
@@ -191,12 +183,11 @@ def calibrate_tc_xi_correlation(
         'parameter_coverage': float(param_coverage)
     }
 
-
 def validate_calibration_accuracy(
     actual_correlation: float,
-    calibration_result: Dict[str, float],
+    calibration_result: dict[str, float],
     tolerance: float = 0.1
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Validate calibration accuracy against observed correlation.
     
@@ -206,7 +197,7 @@ def validate_calibration_accuracy(
         tolerance: Acceptable deviation from prediction
         
     Returns:
-        Dict with validation results and accuracy metrics
+        dict with validation results and accuracy metrics
     """
     
     expected = calibration_result['expected_correlation']
@@ -234,7 +225,6 @@ def validate_calibration_accuracy(
                               else 'GOOD' if within_bounds 
                               else 'NEEDS_REFINEMENT'
     }
-
 
 # Supported topology types and their parameter schemas
 SUPPORTED_TOPOLOGIES = {

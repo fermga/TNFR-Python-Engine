@@ -24,7 +24,7 @@ Fields
 OperatorMeta.name          English class name (e.g. Emission)
 OperatorMeta.mnemonic      Glyph code (AL, EN, ...)
 OperatorMeta.category      High-level functional category
-OperatorMeta.grammar_roles List of grammar rule roles (U1a, U1b, U2, ...)
+OperatorMeta.grammar_roles list of grammar rule roles (U1a, U1b, U2, ...)
 OperatorMeta.contracts     Short, stable contract statements
 OperatorMeta.doc           Concise physics rationale (1-2 sentences)
 
@@ -44,7 +44,6 @@ __all__ = [
     "iter_operator_meta",
 ]
 
-
 @dataclass(frozen=True, slots=True)
 class OperatorMeta:
     name: str
@@ -53,7 +52,6 @@ class OperatorMeta:
     grammar_roles: tuple[str, ...]
     contracts: tuple[str, ...]
     doc: str
-
 
 OPERATOR_METADATA: Mapping[str, OperatorMeta] = {
     # Generators ---------------------------------------------------------
@@ -183,7 +181,6 @@ OPERATOR_METADATA: Mapping[str, OperatorMeta] = {
     ),
 }
 
-
 def get_operator_meta(identifier: str) -> OperatorMeta:
     """Return metadata for glyph mnemonic or class name.
 
@@ -202,7 +199,6 @@ def get_operator_meta(identifier: str) -> OperatorMeta:
         if m.name == identifier:
             return m
     raise KeyError(identifier)
-
 
 def iter_operator_meta() -> Iterator[OperatorMeta]:
     """Iterate all operator metadata objects."""

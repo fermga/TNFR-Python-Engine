@@ -10,7 +10,6 @@ from ..alias import collect_attr, set_vf
 from ..constants import get_graph_param
 from ..constants.canonical import (
     DYNAMICS_SI_HI_THRESHOLD_CANONICAL,
-    DYNAMICS_VF_ADAPT_MU_CANONICAL,
 )
 from ..utils import clamp, resolve_chunk_size
 from ..metrics.common import ensure_neighbors_map
@@ -19,7 +18,6 @@ from ..mathematics.unified_numerical import np
 from .aliases import ALIAS_DNFR, ALIAS_SI, ALIAS_VF
 
 __all__ = ("adapt_vf_by_coherence",)
-
 
 def _vf_adapt_chunk(
     args: tuple[list[tuple[Any, int, tuple[int, ...]]], tuple[float, ...], float],
@@ -36,7 +34,6 @@ def _vf_adapt_chunk(
             mean = vf
         updates.append((node, vf + mu * (mean - vf)))
     return updates
-
 
 def adapt_vf_by_coherence(G: TNFRGraph, n_jobs: int | None = None) -> None:
     """Synchronise νf to the neighbour mean once ΔNFR and Si stay coherent.

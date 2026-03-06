@@ -36,7 +36,6 @@ _SIGNATURE_HEADER_SIZE = len(_SIGNATURE_PREFIX) + 1 + 4
 # Environment variable to control security warnings for pickle deserialization
 _TNFR_ALLOW_UNSIGNED_PICKLE = "TNFR_ALLOW_UNSIGNED_PICKLE"
 
-
 def create_secure_shelve_layer(
     path: str,
     secret: bytes | str | None = None,
@@ -90,7 +89,7 @@ def create_secure_shelve_layer(
             raise TNFRValueError(
                 "Secret required for secure cache layer.",
                 context={"env_var": "TNFR_CACHE_SECRET"},
-                suggestion="Set TNFR_CACHE_SECRET environment variable or pass secret parameter."
+                suggestion="set TNFR_CACHE_SECRET environment variable or pass secret parameter."
             )
 
     signer = create_hmac_signer(secret)
@@ -105,7 +104,6 @@ def create_secure_shelve_layer(
         validator=validator,
         require_signature=True,
     )
-
 
 def create_secure_redis_layer(
     client: Any | None = None,
@@ -144,7 +142,7 @@ def create_secure_redis_layer(
 
     Examples
     --------
-    >>> # Set environment variable in production:
+    >>> # set environment variable in production:
     >>> # export TNFR_CACHE_SECRET="your-secure-random-key"
     >>>
     >>> layer = create_secure_redis_layer()
@@ -159,7 +157,7 @@ def create_secure_redis_layer(
             raise TNFRValueError(
                 "Secret required for secure cache layer.",
                 context={"env_var": "TNFR_CACHE_SECRET"},
-                suggestion="Set TNFR_CACHE_SECRET environment variable or pass secret parameter."
+                suggestion="set TNFR_CACHE_SECRET environment variable or pass secret parameter."
             )
 
     signer = create_hmac_signer(secret)
@@ -174,14 +172,12 @@ def create_secure_redis_layer(
         protocol=protocol,
     )
 
-
 def _prepare_payload_bytes(value: Any, *, protocol: int) -> tuple[int, bytes]:
     """Return payload encoding mode and the bytes that should be signed."""
 
     if isinstance(value, (bytes, bytearray, memoryview)):
         return _SIGN_MODE_RAW, bytes(value)
     return _SIGN_MODE_PICKLE, pickle.dumps(value, protocol=protocol)
-
 
 def _pack_signed_envelope(mode: int, payload: bytes, signature: bytes) -> bytes:
     """Pack payload and signature into a self-describing binary envelope."""
@@ -206,12 +202,10 @@ def _pack_signed_envelope(mode: int, payload: bytes, signature: bytes) -> bytes:
     )
     return header + signature + payload
 
-
 def _is_signed_envelope(blob: bytes) -> bool:
     """Return ``True`` when *blob* represents a signed cache entry."""
 
     return blob.startswith(_SIGNATURE_PREFIX)
-
 
 def _unpack_signed_envelope(blob: bytes) -> tuple[int, bytes, bytes]:
     """Return the ``(mode, signature, payload)`` triple encoded in *blob*."""
@@ -230,7 +224,6 @@ def _unpack_signed_envelope(blob: bytes) -> tuple[int, bytes, bytes]:
     payload = blob[payload_start:]
     return mode, signature, payload
 
-
 def _decode_payload(mode: int, payload: bytes) -> Any:
     """Decode payload bytes depending on cache encoding *mode*."""
 
@@ -239,7 +232,6 @@ def _decode_payload(mode: int, payload: bytes) -> Any:
     if mode == _SIGN_MODE_PICKLE:
         return pickle.loads(payload)  # nosec B301 - validated via signature
     raise TNFRSecurityError(f"unknown payload encoding mode: {mode}")
-
 
 class CacheLayer(ABC):
     """Abstract interface implemented by storage backends orchestrated by :class:`CacheManager`."""
@@ -262,7 +254,6 @@ class CacheLayer(ABC):
 
     def close(self) -> None:  # pragma: no cover - optional hook
         """Release resources held by the backend."""
-
 
 class MappingCacheLayer(CacheLayer):
     """In-memory cache layer backed by a mutable mapping."""
@@ -294,7 +285,6 @@ class MappingCacheLayer(CacheLayer):
     def clear(self) -> None:
         with self._lock:
             self._storage.clear()
-
 
 class ShelveCacheLayer(CacheLayer):
     """Persistent cache layer backed by :mod:`shelve`.
@@ -448,7 +438,6 @@ class ShelveCacheLayer(CacheLayer):
             self.delete(name)
             raise TNFRSecurityError(f"unsigned cache entry rejected: {name}")
         return entry
-
 
 class RedisCacheLayer(CacheLayer):
     """Distributed cache layer backed by a Redis client.

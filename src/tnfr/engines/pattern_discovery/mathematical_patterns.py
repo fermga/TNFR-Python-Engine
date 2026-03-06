@@ -38,7 +38,7 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
-from typing import Dict, Any, Optional, List, Tuple, Mapping
+from typing import Any, Mapping
 
 from ...mathematics.unified_numerical import np
 
@@ -66,6 +66,11 @@ from ..constants.canonical import (
     PATTERNS_CONFIDENCE_BROKEN_CANONICAL,
 )
 
+# ---------------------------------------------------------------------------
+# Harmonic resonance detection
+# ---------------------------------------------------------------------------
+_HARMONIC_RATIO_TOLERANCE = 0.05
+
 try:
     import networkx as nx
     HAS_NETWORKX = True
@@ -84,7 +89,6 @@ except ImportError:
 
 # Import GPU-aware mathematics backend for pattern acceleration
 try:
-    from ...mathematics.backend import get_backend
     HAS_GPU_BACKENDS = True
 except ImportError:
     HAS_GPU_BACKENDS = False
@@ -131,21 +135,20 @@ except ImportError:
     ArithmeticTNFRParameters = None  # type: ignore
     ArithmeticStructuralTerms = None  # type: ignore
 
-
 # ---------------------------------------------------------------------------
 # Helper utilities for detector subsystems (spectral, field, arithmetic)
 # ---------------------------------------------------------------------------
 
 try:
-    _GRAPH_STATE_CACHE: "weakref.WeakKeyDictionary[Any, Dict[str, Any]]" = (
+    _GRAPH_STATE_CACHE: "weakref.WeakKeyDictionary[Any, dict[str, Any]]" = (
         weakref.WeakKeyDictionary()
     )
 except Exception:  # pragma: no cover - extremely unlikely
     _GRAPH_STATE_CACHE = None  # type: ignore
-_GRAPH_STATE_FALLBACK: Dict[int, Dict[str, Any]] = {}
-_ARITHMETIC_CONTEXT: Optional[Dict[str, Any]] = None
+_GRAPH_STATE_FALLBACK: dict[int, dict[str, Any]] = {}
+_ARITHMETIC_CONTEXT: dict[str, Any] | None = None
 if HAS_INTEGRATION_HINTS:
-    _INTEGRATION_HINT_MAPPING: Dict[str, Any] = {
+    _INTEGRATION_HINT_MAPPING: dict[str, Any] = {
         "eigenmode_resonance": getattr(
             IntegrationOpportunity,
             "SPECTRAL_SHARING",
@@ -165,8 +168,7 @@ if HAS_INTEGRATION_HINTS:
 else:
     _INTEGRATION_HINT_MAPPING = {}
 
-
-def _graph_cache_for(graph: Any) -> Dict[str, Any]:
+def _graph_cache_for(graph: Any) -> dict[str, Any]:
     """Return mutable cache bucket for a graph instance."""
     if _GRAPH_STATE_CACHE is not None:
         try:
@@ -190,8 +192,7 @@ def _graph_cache_for(graph: Any) -> Dict[str, Any]:
         _GRAPH_STATE_FALLBACK[key] = bucket
     return bucket
 
-
-def _get_spectral_basis(graph: Any) -> Optional[Tuple[np.ndarray, np.ndarray]]:
+def _get_spectral_basis(graph: Any) -> tuple[np.ndarray, np.ndarray] | None:
     """Return (eigenvalues, eigenvectors) with lightweight caching."""
     if not HAS_SPECTRAL:
         return None
@@ -205,8 +206,7 @@ def _get_spectral_basis(graph: Any) -> Optional[Tuple[np.ndarray, np.ndarray]]:
     cache["spectral_basis"] = (eigenvalues, eigenvectors)
     return cache["spectral_basis"]
 
-
-def _field_snapshot(graph: Any) -> Dict[str, Any]:
+def _field_snapshot(graph: Any) -> dict[str, Any]:
     """Capture structural field telemetry when physics fields are available."""
     if not HAS_PHYSICS_FIELDS:
         return {}
@@ -222,7 +222,7 @@ def _field_snapshot(graph: Any) -> Dict[str, Any]:
     except Exception:
         return {}
 
-    def _summaries(values: Any) -> Dict[str, float]:
+    def _summaries(values: Any) -> dict[str, float]:
         if isinstance(values, dict):
             arr = np.array(list(values.values()), dtype=float)
         else:
@@ -243,8 +243,7 @@ def _field_snapshot(graph: Any) -> Dict[str, Any]:
     cache["field_snapshot"] = snapshot
     return snapshot
 
-
-def _get_fft_engine() -> Optional[Any]:
+def _get_fft_engine() -> Any | None:
     """Provide a shared FFT dynamics engine instance."""
     if not HAS_FFT_ENGINE:
         return None
@@ -260,8 +259,7 @@ def _get_fft_engine() -> Optional[Any]:
     cache["fft_engine"] = engine
     return engine
 
-
-def _arithmetic_context() -> Optional[Dict[str, Any]]:
+def _arithmetic_context() -> dict[str, Any] | None:
     """Expose canonical arithmetic formalism references."""
     global _ARITHMETIC_CONTEXT
     if not HAS_ARITHMETIC:
@@ -278,14 +276,13 @@ def _arithmetic_context() -> Optional[Dict[str, Any]]:
             return None
     return _ARITHMETIC_CONTEXT
 
-
 def _make_integration_hint(
     kind: str,
-    metadata: Optional[Dict[str, Any]] = None,
-) -> Optional[Dict[str, Any]]:
+    metadata: dict[str, Any] | None = None,
+) -> dict[str, Any] | None:
     """Create integration hint payload referencing canonical opportunities."""
     metadata = metadata or {}
-    hint: Dict[str, Any] = {"kind": kind, "metadata": metadata}
+    hint: dict[str, Any] = {"kind": kind, "metadata": metadata}
     opportunity = _INTEGRATION_HINT_MAPPING.get(kind)
     if opportunity is not None:
         if hasattr(opportunity, "value"):
@@ -294,18 +291,16 @@ def _make_integration_hint(
             hint["opportunity_type"] = str(opportunity)
     return hint
 
-
 def _augment_signature(
     signature: Mapping[str, Any],
     **updates: Any,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Return a new mathematical signature enriched with optional context."""
     enriched = dict(signature) if signature else {}
     for key, value in updates.items():
         if value is not None:
             enriched[key] = value
     return enriched
-
 
 def _extract_scalar_epi(val: Any) -> float:
     """Extract scalar magnitude from potentially complex/dict EPI value."""
@@ -320,7 +315,6 @@ def _extract_scalar_epi(val: Any) -> float:
                 v = c[0]
                 return float(np.abs(v)) if isinstance(v, complex) else float(v)
     return 0.0
-
 
 class EmergentPatternType(Enum):
     """Types of emergent mathematical patterns."""
@@ -344,35 +338,32 @@ class EmergentPatternType(Enum):
     # Phase transition detection
     CRITICAL_TRANSITION = "critical_transition"
 
-
 @dataclass
 class EmergentPattern:
     """Discovered emergent mathematical pattern."""
     pattern_type: EmergentPatternType
     discovery_confidence: float  # 0.0-1.0
-    mathematical_signature: Dict[str, Any]
+    mathematical_signature: dict[str, Any]
     temporal_scale: float  # Characteristic time scale
     spatial_scale: int     # Characteristic length scale
     prediction_horizon: float  # How far ahead it can predict
     compression_ratio: float   # Information compression achieved
     physical_interpretation: str
-    applications: List[str] = field(default_factory=list)
-
+    applications: list[str] = field(default_factory=list)
 
 @dataclass
 class PatternDiscoveryResult:
     """Result of pattern discovery analysis."""
-    discovered_patterns: List[EmergentPattern]
-    pattern_interactions: Dict[
-        Tuple[EmergentPatternType, EmergentPatternType],
+    discovered_patterns: list[EmergentPattern]
+    pattern_interactions: dict[
+        tuple[EmergentPatternType, EmergentPatternType],
         float,
     ]
-    emergent_optimization_strategies: List[str]
-    mathematical_invariants: Dict[str, float]
+    emergent_optimization_strategies: list[str]
+    mathematical_invariants: dict[str, float]
     compression_potential: float
     predictive_accuracy: float
     execution_time: float
-
 
 class TNFREmergentPatternEngine:
     """
@@ -404,7 +395,7 @@ class TNFREmergentPatternEngine:
         G: Any,
         time_window: float = 10.0,
         frequency_resolution: int = 100
-    ) -> List[EmergentPattern]:
+    ) -> list[EmergentPattern]:
         """
         Discover natural eigenmode resonances in network dynamics.
 
@@ -425,7 +416,7 @@ class TNFREmergentPatternEngine:
             len(G.nodes()) if hasattr(G, "nodes") else 0
         )
         field_info = _field_snapshot(G)
-        fft_state_summary: Optional[Dict[str, Any]] = None
+        fft_state_summary: dict[str, Any] | None = None
         fft_engine = _get_fft_engine()
         if fft_engine is not None:
             try:
@@ -473,7 +464,7 @@ class TNFREmergentPatternEngine:
 
                 # Simple harmonic ratios (1:2, 2:3, 3:4, etc.)
                 for n, m in [(1, 2), (2, 3), (3, 4), (3, 5), (4, 5), (5, 6)]:
-                    if abs(ratio - n / m) < 0.05 or abs(ratio - m / n) < 0.05:
+                    if abs(ratio - n / m) < _HARMONIC_RATIO_TOLERANCE or abs(ratio - m / n) < _HARMONIC_RATIO_TOLERANCE:
                         resonant_pairs.append((i, j, freq1, freq2, n, m))
 
         # Create patterns for each resonance
@@ -535,7 +526,7 @@ class TNFREmergentPatternEngine:
         self,
         G: Any,
         cascade_depth: int = 5
-    ) -> List[EmergentPattern]:
+    ) -> list[EmergentPattern]:
         """
         Discover spectral energy cascades across scales.
 
@@ -667,7 +658,7 @@ class TNFREmergentPatternEngine:
         self,
         G: Any,
         history_length: int = 10
-    ) -> List[EmergentPattern]:
+    ) -> list[EmergentPattern]:
         """
         Discover information-theoretic patterns in EPI evolution.
 
@@ -759,7 +750,7 @@ class TNFREmergentPatternEngine:
     def discover_topological_invariants(
         self,
         G: Any
-    ) -> List[EmergentPattern]:
+    ) -> list[EmergentPattern]:
         """
         Discover topological invariants that constrain TNFR evolution.
 
@@ -846,8 +837,8 @@ class TNFREmergentPatternEngine:
     def discover_fractal_scaling_patterns(
         self,
         G: Any,
-        scale_range: Tuple[int, int] = (2, 10)
-    ) -> List[EmergentPattern]:
+        scale_range: tuple[int, int] = (2, 10)
+    ) -> list[EmergentPattern]:
         """
         Discover fractal self-similarity in network structure.
 
@@ -940,8 +931,8 @@ class TNFREmergentPatternEngine:
 
     def analyze_pattern_interactions(
         self,
-        patterns: List[EmergentPattern]
-    ) -> Dict[Tuple[EmergentPatternType, EmergentPatternType], float]:
+        patterns: list[EmergentPattern]
+    ) -> dict[tuple[EmergentPatternType, EmergentPatternType], float]:
         """
         Analyze interactions between discovered patterns.
 
@@ -1057,7 +1048,7 @@ class TNFREmergentPatternEngine:
             execution_time=execution_time
         )
 
-    def get_discovery_statistics(self) -> Dict[str, Any]:
+    def get_discovery_statistics(self) -> dict[str, Any]:
         """Get statistics about pattern discoveries."""
         return {
             "total_discoveries": self.total_discoveries,
@@ -1073,7 +1064,7 @@ class TNFREmergentPatternEngine:
             }
         }
 
-    def _serialize_discovery_statistics(self) -> Dict[str, Any]:
+    def _serialize_discovery_statistics(self) -> dict[str, Any]:
         """Get JSON-serializable discovery statistics."""
         stats = self.get_discovery_statistics()
         # Convert enum keys to strings in pattern_counts
@@ -1090,7 +1081,7 @@ class TNFREmergentPatternEngine:
         discovery_result: PatternDiscoveryResult,
         output_dir: Path,
         partition_id: str,
-    ) -> Dict[str, Path]:
+    ) -> dict[str, Path]:
         """Export pattern discovery results as manifest for self-optimization.
 
         Parameters
@@ -1106,7 +1097,7 @@ class TNFREmergentPatternEngine:
 
         Returns
         -------
-        Dict[str, Path]
+        dict[str, Path]
             Dictionary with keys 'manifest_absolute' and 'summary_absolute'
             pointing to the generated manifest files.
 
@@ -1217,12 +1208,10 @@ class TNFREmergentPatternEngine:
             "summary_absolute": summary_path.resolve(),
         }
 
-
 # Factory functions for easy access
 def create_emergent_pattern_engine(**kwargs) -> TNFREmergentPatternEngine:
     """Create emergent pattern discovery engine."""
     return TNFREmergentPatternEngine(**kwargs)
-
 
 @cache_unified_computation(
     CacheEntryType.NODAL_STATE,
@@ -1234,8 +1223,7 @@ def discover_mathematical_patterns(G: Any, **kwargs) -> PatternDiscoveryResult:
     engine = create_emergent_pattern_engine()
     return engine.discover_all_patterns(G, **kwargs)
 
-
-def analyze_emergent_symmetries(G: Any) -> Dict[str, Any]:
+def analyze_emergent_symmetries(G: Any) -> dict[str, Any]:
     """Analyze emergent symmetries in TNFR dynamics."""
     engine = create_emergent_pattern_engine()
     result = engine.discover_all_patterns(G)

@@ -11,12 +11,16 @@ from .metrics_core import (
     ALIAS_EPI,
     ALIAS_THETA,
     ALIAS_VF,
-    HAS_EMISSION_TIMESTAMP_ALIAS as _HAS_EMISSION_TIMESTAMP_ALIAS,
-    EMISSION_TIMESTAMP_TUPLE as _ALIAS_EMISSION_TIMESTAMP_TUPLE,
 )
-from ..alias import get_attr_str
 
-
+# --- Regime classification thresholds ---
+_VF_LATENT_THRESHOLD = 0.05      # νf below this → latent node
+_EPI_RESONANT_THRESHOLD = 0.5    # EPI above this (+ high νf) → resonant
+_VF_RESONANT_THRESHOLD = 0.8     # νf above this (+ high EPI) → resonant
+_PHASE_COHERENCE_COUPLING = 0.5  # phase coherence above → network coupled
+_NEIGHBOR_CHANGE_THRESHOLD = 0.05  # neighbor delta above → significant
+_PHASE_SHIFT_THRESHOLD = 0.5     # |Δθ| above → phase change event
+_SIGNIFICANT_PHASE_SHIFT = 0.3   # |Δθ| above → regime transition type
 
 def _detect_regime_from_state(epi: float, vf: float, latent: bool) -> str:
     """Detect structural regime from node state.
@@ -42,15 +46,12 @@ def _detect_regime_from_state(epi: float, vf: float, latent: bool) -> str:
     -----
     Matches logic in Transition._detect_regime (definitions.py).
     """
-    if latent or vf < 0.05:
+    if latent or vf < _VF_LATENT_THRESHOLD:
         return "latent"
-    elif epi > 0.5 and vf > 0.8:
+    elif epi > _EPI_RESONANT_THRESHOLD and vf > _VF_RESONANT_THRESHOLD:
         return "resonant"
     else:
         return "active"
-
-
-
 
 def expansion_metrics(G, node, vf_before: float, epi_before: float) -> dict[str, Any]:
     """VAL - Enhanced expansion metrics with structural indicators (Issue #2724).
@@ -206,7 +207,7 @@ def expansion_metrics(G, node, vf_before: float, epi_before: float) -> dict[str,
         if abs(epi_growth_rate) > 1e-9
         else True
     )
-    network_coupled = neighbor_count > 0 and phase_coherence_neighbors > 0.5
+    network_coupled = neighbor_count > 0 and phase_coherence_neighbors > _PHASE_COHERENCE_COUPLING
 
     # Overall health indicator
     expansion_healthy = (
@@ -250,7 +251,6 @@ def expansion_metrics(G, node, vf_before: float, epi_before: float) -> dict[str,
         # Metadata
         "metrics_version": "3.0_canonical",
     }
-
 
 def contraction_metrics(G, node, vf_before, epi_before):
     """NUL - Contraction metrics: νf decrease, core concentration, ΔNFR densification.
@@ -375,7 +375,6 @@ def contraction_metrics(G, node, vf_before, epi_before):
 
     return metrics
 
-
 def self_organization_metrics(G, node, epi_before, vf_before):
     """THOL - Enhanced metrics with cascade dynamics and collective coherence.
 
@@ -498,9 +497,8 @@ def self_organization_metrics(G, node, epi_before, vf_before):
         "subepi_coherence": subepi_coherence,
         "metabolic_activity_index": metabolic_activity,
         # NEW: Network emergence indicator
-        "network_emergence": (cascade_analysis["is_cascade"] and subepi_coherence > 0.5),
+        "network_emergence": (cascade_analysis["is_cascade"] and subepi_coherence > _PHASE_COHERENCE_COUPLING),
     }
-
 
 def mutation_metrics(
     G,
@@ -723,7 +721,7 @@ def mutation_metrics(
                 neighbor_theta_history = G.nodes[n].get("theta_history", [])
                 if len(neighbor_theta_history) >= 2:
                     neighbor_change = abs(neighbor_theta_history[-1] - neighbor_theta_history[-2])
-                    if neighbor_change > 0.05:  # Neighbor experienced change
+                    if neighbor_change > _NEIGHBOR_CHANGE_THRESHOLD:  # Neighbor experienced change
                         impacted_neighbors += 1
 
         # Phase coherence with neighbors after mutation
@@ -764,7 +762,7 @@ def mutation_metrics(
         "theta_before": theta_before,
         "theta_after": theta_after,
         "theta_final": theta_after,
-        "phase_change": theta_shift_magnitude > 0.5,  # Configurable threshold
+        "phase_change": theta_shift_magnitude > _PHASE_SHIFT_THRESHOLD,
         "transformation_mode": "fixed" if fixed_mode else "canonical",
         # === THRESHOLD VERIFICATION (ENHANCED) ===
         "depi_dt": depi_dt,
@@ -826,7 +824,6 @@ def mutation_metrics(
         # === METADATA ===
         "metrics_version": "2.0_canonical",
     }
-
 
 def transition_metrics(
     G,
@@ -903,7 +900,7 @@ def transition_metrics(
     - **Active**: Default operational state
     - **Resonant**: EPI > 0.5 AND νf > 0.8
 
-    **Transition Type**:
+    **Transition type**:
 
     - **reactivation**: From latent state (SHA → NAV flow)
     - **phase_shift**: Significant phase change (|Δθ| > 0.3 rad)
@@ -968,7 +965,7 @@ def transition_metrics(
     # Classify transition type
     if regime_origin == "latent":
         transition_type = "reactivation"
-    elif abs(phase_shift_raw) > 0.3:
+    elif abs(phase_shift_raw) > _SIGNIFICANT_PHASE_SHIFT:
         transition_type = "phase_shift"
     else:
         transition_type = "regime_change"
@@ -1016,39 +1013,6 @@ def transition_metrics(
         "latency_duration": latency_duration,
     }
 
-
-def _detect_regime_from_state(epi: float, vf: float, latent: bool) -> str:
-    """Detect structural regime from node state.
-
-    Helper function for transition_metrics to classify regime without
-    accessing the Transition operator directly.
-
-    Parameters
-    ----------
-    epi : float
-        EPI value
-    vf : float
-        νf value
-    latent : bool
-        Latent flag
-
-    Returns
-    -------
-    str
-        Regime classification: "latent", "active", or "resonant"
-
-    Notes
-    -----
-    Matches logic in Transition._detect_regime (definitions.py).
-    """
-    if latent or vf < 0.05:
-        return "latent"
-    elif epi > 0.5 and vf > 0.8:
-        return "resonant"
-    else:
-        return "active"
-
-
 def recursivity_metrics(G, node, epi_before, vf_before):
     """REMESH - Recursivity metrics: fractal propagation, multi-scale coherence.
 
@@ -1086,6 +1050,4 @@ def recursivity_metrics(G, node, epi_before, vf_before):
         "fractal_depth": echo_count,
         "multi_scale_active": echo_count > 0,
     }
-
-
 

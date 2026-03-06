@@ -17,7 +17,7 @@ from typing import TYPE_CHECKING, Any
 if TYPE_CHECKING:
     from ..types import NodeId, TNFRGraph
 
-from ..alias import get_attr, set_attr
+from ..alias import set_attr
 from ..constants.aliases import ALIAS_DNFR, ALIAS_VF, ALIAS_D2EPI
 
 __all__ = [
@@ -30,7 +30,6 @@ __all__ = [
 # Default tolerance for nodal equation validation
 DEFAULT_NODAL_EQUATION_TOLERANCE = 1e-3
 DEFAULT_NODAL_EQUATION_CLIP_AWARE = True
-
 
 class NodalEquationViolation(Exception):
     """Raised when operator application violates the nodal equation.
@@ -77,13 +76,7 @@ class NodalEquationViolation(Exception):
             f"  Expected: {expected_depi_dt:.6f}"
         )
 
-
-def _get_node_attr(
-    G: TNFRGraph, node: NodeId, aliases: tuple[str, ...], default: float = 0.0
-) -> float:
-    """Get node attribute using alias fallback."""
-    return float(get_attr(G.nodes[node], aliases, default))
-
+from .metrics_core import get_node_attr as _get_node_attr
 
 def compute_expected_depi_dt(G: TNFRGraph, node: NodeId) -> float:
     """Compute expected ∂EPI/∂t from current νf and ΔNFR values.
@@ -112,7 +105,6 @@ def compute_expected_depi_dt(G: TNFRGraph, node: NodeId) -> float:
     vf = _get_node_attr(G, node, ALIAS_VF)
     dnfr = _get_node_attr(G, node, ALIAS_DNFR)
     return vf * dnfr
-
 
 def validate_nodal_equation(
     G: TNFRGraph,
@@ -288,7 +280,6 @@ def validate_nodal_equation(
             )
 
     return is_valid
-
 
 def compute_d2epi_dt2(G: "TNFRGraph", node: "NodeId") -> float:
     """Compute ∂²EPI/∂t² (structural acceleration).

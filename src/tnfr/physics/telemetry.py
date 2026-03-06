@@ -7,7 +7,7 @@ It minimizes redundant data extraction and distance matrix computations.
 
 from __future__ import annotations
 
-from typing import Any, Dict
+from typing import Any
 
 from ..constants.canonical import PHI  # Golden ratio for structural potential
 
@@ -32,7 +32,7 @@ from .vectorized_ops import (
     level=CacheLevel.DERIVED_METRICS,
     dependencies={'graph_topology', 'node_phase', 'node_dnfr'}
 )
-def compute_structural_telemetry(G: Any) -> Dict[str, Any]:
+def compute_structural_telemetry(G: Any) -> dict[str, Any]:
     """Compute the full Canonical Structural Suite in a single optimized pass.
     
     Includes the Canonical Structural Triad (Φ_s, |∇φ|, K_φ) and the
@@ -40,14 +40,14 @@ def compute_structural_telemetry(G: Any) -> Dict[str, Any]:
     
     Returns
     -------
-    Dict[str, Any]
+    dict[str, Any]
         {
-            'phi_s': Dict[NodeId, float],      # Structural Potential
-            'grad_phi': Dict[NodeId, float],   # Phase Gradient
-            'curv_phi': Dict[NodeId, float],   # Phase Curvature
+            'phi_s': dict[NodeId, float],      # Structural Potential
+            'grad_phi': dict[NodeId, float],   # Phase Gradient
+            'curv_phi': dict[NodeId, float],   # Phase Curvature
             'xi_c': float,                     # Coherence Length
-            'j_phi': Dict[NodeId, float],      # Phase Current
-            'j_dnfr': Dict[NodeId, float]      # ΔNFR Flux
+            'j_phi': dict[NodeId, float],      # Phase Current
+            'j_dnfr': dict[NodeId, float]      # ΔNFR Flux
         }
     """
     dtype = _get_precision_dtype()

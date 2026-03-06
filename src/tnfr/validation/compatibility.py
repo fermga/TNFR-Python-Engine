@@ -38,7 +38,6 @@ __all__ = [
     "get_canon_fallback",
 ]
 
-
 class CompatibilityLevel(Enum):
     """Graduated compatibility levels for structural operator transitions.
 
@@ -67,7 +66,6 @@ class CompatibilityLevel(Enum):
     GOOD = "good"
     CAUTION = "caution"
     AVOID = "avoid"
-
 
 # Graduated compatibility matrix expressing structural operator transition quality
 # Maps each operator to its allowed next operators categorized by compatibility level
@@ -375,7 +373,6 @@ GRADUATED_COMPATIBILITY: dict[str, dict[str, list[str]]] = {
     },
 }
 
-
 def get_compatibility_level(prev: str, next_op: str) -> CompatibilityLevel:
     """Return the compatibility level between two structural operators.
 
@@ -428,7 +425,6 @@ def get_compatibility_level(prev: str, next_op: str) -> CompatibilityLevel:
     else:
         return CompatibilityLevel.AVOID
 
-
 # Generate backward-compatible binary compatibility table from graduated matrix
 # This combines excellent, good, and caution levels as "allowed" transitions
 def _generate_binary_compat() -> dict[str, set[str]]:
@@ -446,11 +442,9 @@ def _generate_binary_compat() -> dict[str, set[str]]:
         compat[operator] = allowed
     return compat
 
-
 # Canonical compatibilities (allowed next operators) expressed via structural names
 # Derived from GRADUATED_COMPATIBILITY for backward compatibility
 _STRUCTURAL_COMPAT: dict[str, set[str]] = _generate_binary_compat()
-
 
 def _name_to_glyph(name: str) -> Glyph:
     # Lazy import to avoid circular dependency
@@ -460,7 +454,6 @@ def _name_to_glyph(name: str) -> Glyph:
     if glyph is None:
         raise KeyError(f"No glyph mapped to structural operator '{name}'")
     return glyph
-
 
 def _translate_structural() -> (
     tuple[dict[Glyph, set[Glyph]], dict[Glyph, Glyph]]
@@ -474,7 +467,6 @@ def _translate_structural() -> (
     for src, target in _STRUCTURAL_FALLBACK.items():
         fallback[_name_to_glyph(src)] = _name_to_glyph(target)
     return compat, fallback
-
 
 # Canonical fallbacks when a transition is not allowed (structural names)
 _STRUCTURAL_FALLBACK: dict[str, str] = {
@@ -497,25 +489,21 @@ _STRUCTURAL_FALLBACK: dict[str, str] = {
 _CANON_COMPAT: dict[Glyph, set[Glyph]] | None = None
 _CANON_FALLBACK: dict[Glyph, Glyph] | None = None
 
-
 def _ensure_translated() -> None:
     """Ensure glyph tables are translated (lazy initialization)."""
     global _CANON_COMPAT, _CANON_FALLBACK
     if _CANON_COMPAT is None or _CANON_FALLBACK is None:
         _CANON_COMPAT, _CANON_FALLBACK = _translate_structural()
 
-
 def get_canon_compat() -> dict[Glyph, set[Glyph]]:
     """Get canonical compatibility table (glyph → allowed next glyphs)."""
     _ensure_translated()
     return _CANON_COMPAT  # type: ignore[return-value]
 
-
 def get_canon_fallback() -> dict[Glyph, Glyph]:
     """Get canonical fallback table (glyph → fallback glyph)."""
     _ensure_translated()
     return _CANON_FALLBACK  # type: ignore[return-value]
-
 
 # For backward compatibility, provide module-level names that trigger lazy init
 def __getattr__(name: str) -> Any:
@@ -524,7 +512,6 @@ def __getattr__(name: str) -> Any:
     elif name == "CANON_FALLBACK":
         return get_canon_fallback()
     raise AttributeError(f"module '{__name__}' has no attribute '{name}'")
-
 
 # Re-export structural tables for internal consumers that operate on functional
 # identifiers without exposing them as part of the public API.

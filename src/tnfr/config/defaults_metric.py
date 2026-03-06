@@ -8,7 +8,6 @@ from typing import Any
 
 from ..compat.dataclass import dataclass
 
-
 @dataclass(frozen=True, slots=True)
 class MetricDefaults:
     """Default parameters for metric computation.
@@ -92,7 +91,6 @@ class MetricDefaults:
             },
         }
     )
-
 
 METRIC_DEFAULTS = asdict(MetricDefaults())
 

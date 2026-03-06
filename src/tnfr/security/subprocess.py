@@ -30,14 +30,11 @@ __all__ = [
     "PathTraversalError",
 ]
 
-
 class CommandValidationError(TNFRValueError):
     """Raised when command input validation fails."""
 
-
 class PathTraversalError(TNFRValueError):
     """Raised when path traversal attempt is detected."""
-
 
 # Allowlisted commands that are safe to execute
 ALLOWED_COMMANDS = frozenset(
@@ -60,7 +57,6 @@ VERSION_PATTERN = re.compile(r"^v?(\d+)\.(\d+)\.(\d+)(-[a-zA-Z0-9\-\.]+)?$")
 
 # Pattern for safe path components (no path traversal)
 SAFE_PATH_PATTERN = re.compile(r"^[a-zA-Z0-9/_\-\.]+$")
-
 
 def validate_git_ref(ref: str) -> str:
     """Validate a git reference (branch, tag, or SHA).
@@ -115,7 +111,6 @@ def validate_git_ref(ref: str) -> str:
 
     return ref
 
-
 def validate_version_string(version: str) -> str:
     """Validate a semantic version string.
 
@@ -158,7 +153,6 @@ def validate_version_string(version: str) -> str:
         )
 
     return version
-
 
 def validate_path_safe(path: str | Path) -> Path:
     """Validate that a path is safe (no path traversal attacks).
@@ -217,7 +211,6 @@ def validate_path_safe(path: str | Path) -> Path:
 
     return path_obj
 
-
 def validate_file_path(
     path: str | Path,
     *,
@@ -246,7 +239,7 @@ def validate_file_path(
     allow_absolute : bool, default=False
         Whether to allow absolute paths. Default is False for user input.
     allowed_extensions : Sequence[str] | None, default=None
-        List of allowed file extensions (e.g., ['.json', '.yaml', '.toml']).
+        list of allowed file extensions (e.g., ['.json', '.yaml', '.toml']).
         If None, any extension is allowed.
 
     Returns
@@ -363,7 +356,6 @@ def validate_file_path(
 
     return path_obj
 
-
 def resolve_safe_path(
     path: str | Path,
     base_dir: str | Path,
@@ -391,7 +383,7 @@ def resolve_safe_path(
     must_exist : bool, default=False
         If True, raise ValueError if the resolved path doesn't exist.
     allowed_extensions : Sequence[str] | None, default=None
-        List of allowed file extensions.
+        list of allowed file extensions.
 
     Returns
     -------
@@ -465,7 +457,6 @@ def resolve_safe_path(
         )
 
     return resolved
-
 
 def run_command_safely(
     command: Sequence[str],

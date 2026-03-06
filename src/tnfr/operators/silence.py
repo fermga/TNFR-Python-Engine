@@ -17,7 +17,6 @@ from ..config.operator_names import SILENCE
 from ..types import Glyph, TNFRGraph
 from .definitions_base import Operator
 
-
 class Silence(Operator):
     """Lower vf; hold epi invariant; set latency tracking attributes.
 
@@ -39,7 +38,7 @@ class Silence(Operator):
         super().__call__(G, node, **kw)
 
     def _mark_latency_state(self, G: TNFRGraph, node: Any) -> None:
-        """Set latent flag, timestamp, preserved epi, duration=0.0.
+        """set latent flag, timestamp, preserved epi, duration=0.0.
         
         Enhanced for initial nodes: respects TNFR nodal dynamics while
         providing appropriate EPI preservation tracking.

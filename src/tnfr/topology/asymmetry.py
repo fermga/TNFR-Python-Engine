@@ -19,7 +19,6 @@ __all__ = [
     "compute_topological_asymmetry",
 ]
 
-
 def compute_topological_asymmetry(G: "TNFRGraph", node: "NodeId") -> float:
     """Measure local topological asymmetry around node.
 

@@ -1,6 +1,6 @@
 """TNFR Grammar: U6 Structural Potential Validation
 
-U6: STRUCTURAL POTENTIAL CONFINEMENT - Validate |Φ_s| < 0.771 (classical threshold).
+U6: STRUCTURAL POTENTIAL CONFINEMENT - Validate Δ Φ_s < φ (drift threshold).
 
 Terminology (TNFR semantics):
 - "node" == resonant locus (structural coherence site); kept for NetworkX compatibility
@@ -12,18 +12,18 @@ from __future__ import annotations
 from typing import Any
 
 from ..mathematics.unified_numerical import np
+from ..constants.canonical import PHI  # φ ≈ 1.618 (golden ratio)
 from .grammar_types import StructuralPotentialConfinementError
 
 # ============================================================================
 # U6: Structural Potential Confinement (CANONICAL as of 2025-11-11)
 # ============================================================================
 
-
 def validate_structural_potential_confinement(
     G: Any,
     phi_s_before: dict[Any, float],
     phi_s_after: dict[Any, float],
-    threshold: float = 1.618,  # φ (golden ratio) - canonical escape threshold
+    threshold: float = PHI,  # φ (golden ratio) - canonical escape threshold
     strict: bool = True,
 ) -> tuple[bool, float, str]:
     """Validate U6: STRUCTURAL POTENTIAL CONFINEMENT.
@@ -40,12 +40,12 @@ def validate_structural_potential_confinement(
     ----------
     G : TNFRGraph
         Network graph (used for node iteration)
-    phi_s_before : Dict[NodeId, float]
+    phi_s_before : dict[NodeId, float]
         Structural potential before sequence application
-    phi_s_after : Dict[NodeId, float]
+    phi_s_after : dict[NodeId, float]
         Structural potential after sequence application
     threshold : float, default=1.618
-        Canonical threshold for |Φ_s|. Above φ (golden ratio), fragmentation risk.
+        Canonical threshold for Δ Φ_s (drift). Above φ (golden ratio), fragmentation risk.
         Rigorously derived from canonical TNFR constants (φ escape threshold).
     strict : bool, default=True
         If True, raises StructuralPotentialConfinementError on violation.
@@ -75,12 +75,17 @@ def validate_structural_potential_confinement(
     - Reduces drift by 85% (valid 0.6 vs violation 3.9)
     - No force pulling back, only resistance to escape
 
-    Safety Criterion (Classical):
-    - |Φ_s| < 0.771: Safe regime (system confined)
-    - |Φ_s| ≥ 0.771: Escape threshold (fragmentation risk)  
-    - Classical foundation: |Φ_s| < 0.771 ⇔ |ψ(x) - x| = O(x^{1/2} · polylog(x))
-    - Valid sequences: |Φ_s| ≈ 0.231 (30% of threshold)
-    - Violations: |Φ_s| ≈ 1.502 (195% of threshold)
+    Safety Criteria (Classical)
+    --------------------------
+    This function validates **drift** Δ Φ_s = mean(|Φ_s_after - Φ_s_before|):
+    - Δ Φ_s < φ ≈ 1.618: Confined (U6 satisfied)
+    - Δ Φ_s ≥ φ ≈ 1.618: Escape risk (U6 violated)
+    - Valid sequences: Δ Φ_s ≈ 0.6 (37% of φ threshold)
+    - Violations: Δ Φ_s ≈ 3.9 (240% of φ threshold)
+
+    Separate criterion (absolute value, checked elsewhere):
+    - |Φ_s| < 0.771 (Von Koch): Safe regime per node
+    - See: PHI_S_VON_KOCH_THRESHOLD in constants/canonical.py
 
     Examples
     --------
@@ -144,5 +149,4 @@ def validate_structural_potential_confinement(
                 sequence=None,  # Sequence not available in this context
             )
         return False, delta_phi_s, msg
-
 

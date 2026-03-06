@@ -13,7 +13,7 @@ from __future__ import annotations
 
 import argparse
 import time
-from typing import List, Tuple
+
 from functools import lru_cache
 
 # Try to import optimized modules
@@ -90,13 +90,11 @@ def tnfr_delta_nfr_cached(n: int, zeta: float = 1.0, eta: float = 0.8, theta: fl
     sigma_pressure = theta * (sigma_n / n - (1 + 1 / n))
     return factorization_pressure + divisor_pressure + sigma_pressure
 
-
 def tnfr_delta_nfr(n: int, *, zeta=1.0, eta=0.8, theta=0.6) -> float:
     """Basic TNFR ΔNFR computation."""
     return tnfr_delta_nfr_cached(n, zeta, eta, theta)
 
-
-def tnfr_is_prime(n: int, *, use_optimized: bool = False) -> Tuple[bool, float]:
+def tnfr_is_prime(n: int, *, use_optimized: bool = False) -> tuple[bool, float]:
     """TNFR primality test."""
     if use_optimized and HAS_OPTIMIZED:
         # Use optimized version if available
@@ -107,13 +105,11 @@ def tnfr_is_prime(n: int, *, use_optimized: bool = False) -> Tuple[bool, float]:
         dnfr = tnfr_delta_nfr(n)
         return (abs(dnfr) == 0.0, dnfr)
 
-
 def _get_optimizer():
     """Get optimizer instance."""
     if HAS_OPTIMIZED:
         return OptimizedTNFRPrimality()
     return None
-
 
 def benchmark_optimization(max_n: int = 10000) -> dict:
     """Benchmark performance."""
@@ -150,8 +146,7 @@ def benchmark_optimization(max_n: int = 10000) -> dict:
     
     return results
 
-
-def main(argv: List[str] | None = None) -> int:
+def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         description="Optimized TNFR primality check using ΔNFR equations",
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -283,7 +278,6 @@ Examples:
                 print(f"{key}: {value}")
     
     return 0
-
 
 if __name__ == "__main__":
     raise SystemExit(main())

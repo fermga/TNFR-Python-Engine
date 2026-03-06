@@ -214,6 +214,7 @@ from ..errors import TNFRValueError
 from ..alias import get_attr, set_attr
 from ..constants import DEFAULTS, REMESH_DEFAULTS, get_param
 from ..constants.aliases import ALIAS_EPI, ALIAS_VF, ALIAS_DNFR
+from ..constants.canonical import REMESH_SIMILARITY_THRESHOLD_CANONICAL
 from ..mathematics.unified_numerical import np
 from ..rng import make_rng
 from ..types import RemeshMeta
@@ -226,11 +227,14 @@ RemeshEdge: TypeAlias = tuple[Hashable, Hashable]
 NetworkxModules: TypeAlias = tuple[NetworkxModule, CommunityModule]
 RemeshConfigValue: TypeAlias = bool | float | int
 
+# ---------------------------------------------------------------------------
+# Latency detection threshold (νf → 0 for SHA-frozen nodes)
+# ---------------------------------------------------------------------------
+_VF_FROZEN_THRESHOLD = 0.05
 
 # ==============================================================================
 # Phase 1: Structural Memory & Pattern Recognition
 # ==============================================================================
-
 
 @dataclass
 class StructuralIdentity:
@@ -324,7 +328,7 @@ class StructuralIdentity:
         if self.frozen_by_sha:
             # SHA-frozen: accept low νf (frozen state) OR original range
             # (pattern may be reactivated after SHA)
-            if node_vf < 0.05:  # Frozen by SHA (νf → 0)
+            if node_vf < _VF_FROZEN_THRESHOLD:  # Frozen by SHA (νf → 0)
                 pass  # Accept - this is expected for SHA-frozen patterns
             elif not (vf_min - tol <= node_vf <= vf_max + tol):
                 return False
@@ -446,7 +450,6 @@ class StructuralIdentity:
 
         return identity
 
-
 def structural_similarity(
     epi1: float | Sequence[float],
     epi2: float | Sequence[float],
@@ -549,13 +552,12 @@ def structural_similarity(
             suggestion="Choose from: euclidean, cosine, correlation",
         )
 
-
 def structural_memory_match(
     G: CommunityGraph,
     source_node: Hashable,
     target_nodes: Iterable[Hashable] | None = None,
     *,
-    threshold: float = 0.75,
+    threshold: float = REMESH_SIMILARITY_THRESHOLD_CANONICAL,
     metric: str = "euclidean",
 ) -> list[tuple[Hashable, float]]:
     """Identify nodes with EPI patterns similar to source node.
@@ -603,7 +605,6 @@ def structural_memory_match(
     # Sort by similarity descending
     matches.sort(key=lambda x: x[1], reverse=True)
     return matches
-
 
 def compute_structural_signature(
     G: CommunityGraph,
@@ -703,10 +704,9 @@ def compute_structural_signature(
             features = [f / norm for f in features]
         return tuple(features)
 
-
 def detect_recursive_patterns(
     G: CommunityGraph,
-    threshold: float = 0.75,
+    threshold: float = REMESH_SIMILARITY_THRESHOLD_CANONICAL,
     metric: str = "cosine",
     min_cluster_size: int = 2,
 ) -> list[list[Hashable]]:
@@ -841,7 +841,6 @@ def detect_recursive_patterns(
 
     return clusters
 
-
 def identify_pattern_origin(
     G: CommunityGraph,
     cluster: Sequence[Hashable],
@@ -901,7 +900,6 @@ def identify_pattern_origin(
     # Return node with maximum strength
     scores.sort(reverse=True)
     return scores[0][1]
-
 
 def propagate_structural_identity(
     G: CommunityGraph,
@@ -1018,11 +1016,9 @@ def propagate_structural_identity(
             }
         )
 
-
 # ==============================================================================
 # Phase 2: Coherence Preservation & Fidelity Validation
 # ==============================================================================
-
 
 class RemeshCoherenceLossError(Exception):
     """Raised when REMESH reorganization loses structural coherence.
@@ -1053,7 +1049,6 @@ class RemeshCoherenceLossError(Exception):
             f"< minimum {min_fidelity:.2%}\n"
             f"  Details: {details}"
         )
-
 
 def validate_coherence_preservation(
     G_before: CommunityGraph,
@@ -1124,11 +1119,9 @@ def validate_coherence_preservation(
 
     return structural_fidelity
 
-
 # ==============================================================================
 # Original Helper Functions
 # ==============================================================================
-
 
 def _as_float(value: Any, default: float = 0.0) -> float:
     """Best-effort conversion to ``float`` returning ``default`` on failure."""
@@ -1140,15 +1133,12 @@ def _as_float(value: Any, default: float = 0.0) -> float:
     except (TypeError, ValueError):
         return default
 
-
 def _ordered_edge(u: Hashable, v: Hashable) -> RemeshEdge:
     """Return a deterministic ordering for an undirected edge."""
 
     return (u, v) if repr(u) <= repr(v) else (v, u)
 
-
 COOLDOWN_KEY = "REMESH_COOLDOWN_WINDOW"
-
 
 @cache
 def _get_networkx_modules() -> NetworkxModules:
@@ -1165,7 +1155,6 @@ def _get_networkx_modules() -> NetworkxModules:
             "operations; install 'networkx' to enable this feature"
         )
     return cast(NetworkxModule, nx), cast(CommunityModule, nx_comm)
-
 
 def _remesh_alpha_info(G: CommunityGraph) -> tuple[float, str]:
     """Return ``(alpha, source)`` with explicit precedence."""
@@ -1185,7 +1174,6 @@ def _remesh_alpha_info(G: CommunityGraph) -> tuple[float, str]:
         "REMESH_DEFAULTS.REMESH_ALPHA",
     )
 
-
 def _snapshot_topology(G: CommunityGraph, nx: NetworkxModule) -> str | None:
     """Return a hash representing the current graph topology."""
     try:
@@ -1196,7 +1184,6 @@ def _snapshot_topology(G: CommunityGraph, nx: NetworkxModule) -> str | None:
         return hashlib.blake2b(topo_str.encode(), digest_size=6).hexdigest()
     except (AttributeError, TypeError, nx.NetworkXError):
         return None
-
 
 def _snapshot_epi(G: CommunityGraph) -> tuple[float, str]:
     """Return ``(mean, checksum)`` of the node EPI values."""
@@ -1211,7 +1198,6 @@ def _snapshot_epi(G: CommunityGraph) -> tuple[float, str]:
     checksum = hashlib.blake2b(buf.getvalue().encode(), digest_size=6).hexdigest()
     return float(mean_val), checksum
 
-
 def _log_remesh_event(G: CommunityGraph, meta: RemeshMeta) -> None:
     """Store remesh metadata and optionally log and trigger callbacks."""
     from ..utils import CallbackEvent, callback_manager
@@ -1222,7 +1208,6 @@ def _log_remesh_event(G: CommunityGraph, meta: RemeshMeta) -> None:
         hist = G.graph.setdefault("history", {})
         append_metric(hist, "remesh_events", dict(meta))
     callback_manager.invoke_callbacks(G, CallbackEvent.ON_REMESH.value, dict(meta))
-
 
 def apply_network_remesh(G: CommunityGraph) -> None:
     """Network-scale REMESH using ``_epi_hist`` with multi-scale memory."""
@@ -1291,12 +1276,11 @@ def apply_network_remesh(G: CommunityGraph) -> None:
 
     _log_remesh_event(G, meta)
 
-
 def apply_network_remesh_with_memory(
     G: CommunityGraph,
     *,
     enable_structural_memory: bool = True,
-    similarity_threshold: float = 0.75,
+    similarity_threshold: float = REMESH_SIMILARITY_THRESHOLD_CANONICAL,
     similarity_metric: str = "cosine",
     propagation_strength: float = 0.5,
     min_cluster_size: int = 2,
@@ -1445,7 +1429,6 @@ def apply_network_remesh_with_memory(
             stacklevel=2,
         )
 
-
 def _mst_edges_from_epi(
     nx: NetworkxModule,
     nodes: Sequence[Hashable],
@@ -1456,7 +1439,6 @@ def _mst_edges_from_epi(
     H.add_nodes_from(nodes)
     H.add_weighted_edges_from((u, v, abs(epi[u] - epi[v])) for u, v in combinations(nodes, 2))
     return {_ordered_edge(u, v) for u, v in nx.minimum_spanning_edges(H, data=False)}
-
 
 def _knn_edges(
     nodes: Sequence[Hashable],
@@ -1485,7 +1467,6 @@ def _knn_edges(
             new_edges.add(_ordered_edge(u, v))
     return new_edges
 
-
 def _community_graph(
     comms: Iterable[Iterable[Hashable]],
     epi: Mapping[Hashable, float],
@@ -1509,7 +1490,6 @@ def _community_graph(
         )
         C.add_edge(i, j, weight=w)
     return cast(CommunityGraph, C)
-
 
 def _community_k_neighbor_edges(
     C: CommunityGraph,
@@ -1556,7 +1536,6 @@ def _community_k_neighbor_edges(
                 rewired.append((u, original_v, v))
             added += 1
     return new_edges, attempts, rewired
-
 
 def _community_remesh(
     G: CommunityGraph,
@@ -1620,7 +1599,6 @@ def _community_remesh(
             },
         )
 
-
 def apply_topological_remesh(
     G: CommunityGraph,
     mode: str | None = None,
@@ -1675,7 +1653,6 @@ def apply_topological_remesh(
         G.clear_edges()
         G.add_edges_from(new_edges)
 
-
 def _extra_gating_ok(
     hist: MutableMapping[str, Sequence[float]],
     cfg: Mapping[str, RemeshConfigValue],
@@ -1698,7 +1675,6 @@ def _extra_gating_ok(
             if not op(avg, threshold):
                 return False
     return True
-
 
 def apply_remesh_if_globally_stable(
     G: CommunityGraph,
@@ -1784,7 +1760,6 @@ def apply_remesh_if_globally_stable(
     apply_network_remesh(G)
     G.graph["_last_remesh_step"] = step_idx
     G.graph["_last_remesh_ts"] = t_now
-
 
 __all__ = [
     # Core remesh functions (existing API)

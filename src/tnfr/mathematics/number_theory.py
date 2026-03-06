@@ -14,7 +14,7 @@ from __future__ import annotations
 import logging
 import math
 from dataclasses import dataclass
-from typing import Dict, List, Tuple, Optional, Iterable, Union
+from typing import Iterable
 import networkx as nx
 
 from ..errors import TNFRValueError
@@ -22,6 +22,7 @@ from .unified_numerical import np
 
 from ..config.defaults_core import K_PHI_CURVATURE_THRESHOLD  # 0.9×π ≈ 2.827
 from ..constants.canonical import (
+    DELTA_PHI_MAX,
     MATH_DELTA_NFR_THRESHOLD_CANONICAL,
     MATH_DELTA_NFR_THRESHOLD_2X_CANONICAL,
 )
@@ -30,20 +31,23 @@ logger = logging.getLogger(__name__)
 
 # TNFR canonical constants (derived from theory - no empirical fitting)
 try:
-    import mpmath as mp
-    mp.dps = 30
-    PHI = float(mp.phi)        # Golden Ratio φ ≈ 1.618
-    GAMMA = float(mp.euler)    # Euler Constant γ ≈ 0.577
-    PI = float(mp.pi)          # Pi π ≈ 3.142
-    E = float(mp.e)           # Euler's Number e ≈ 2.718
-    INV_PHI = 1.0 / PHI       # 1/φ ≈ 0.618 (frequently used)
+    from ..constants.canonical import PHI, GAMMA, PI, E, INV_PHI
 except ImportError:
-    # Fallback to math module
-    PHI = (1 + math.sqrt(5)) / 2
-    GAMMA = 0.5772156649015329
-    PI = math.pi
-    E = math.e
-    INV_PHI = 1.0 / PHI
+    # Fallback to mpmath / math module (e.g. standalone usage)
+    try:
+        import mpmath as mp
+        mp.dps = 35
+        PHI = float(mp.phi)
+        GAMMA = float(mp.euler)
+        PI = float(mp.pi)
+        E = float(mp.e)
+        INV_PHI = 1.0 / PHI
+    except ImportError:
+        PHI = (1 + math.sqrt(5)) / 2
+        GAMMA = 0.5772156649015329
+        PI = math.pi
+        E = math.e
+        INV_PHI = 1.0 / PHI
 
 # Centralized TNFR cache infrastructure (robust, shared across repo)
 from .unified_cache import cache_tnfr_computation, CacheLevel
@@ -71,7 +75,6 @@ except ImportError:
     HAS_SYMPY = False
     logger.warning(" sympy not available. Using basic implementations.")
 
-
 # ============================================================================
 # ARITHMETIC TNFR NETWORK CLASS
 # ============================================================================
@@ -95,7 +98,6 @@ class ArithmeticTNFRParameters:
     eta: float = (GAMMA / PHI) * PI         # (γ/φ)×π ≈ 1.1207 (divisor pressure - CANONICAL)
     theta: float = INV_PHI                  # 1/φ ≈ 0.6180 (sigma pressure - CANONICAL)
 
-
 @dataclass(frozen=True)
 class ArithmeticStructuralTerms:
     """Canonical arithmetic invariants per natural number node."""
@@ -104,9 +106,8 @@ class ArithmeticStructuralTerms:
     sigma: int
     omega: int
 
-    def as_dict(self) -> Dict[str, int]:
+    def as_dict(self) -> dict[str, int]:
         return {'tau': self.tau, 'sigma': self.sigma, 'omega': self.omega}
-
 
 @dataclass(frozen=True)
 class PrimeCertificate:
@@ -120,9 +121,9 @@ class PrimeCertificate:
     sigma: int
     omega: int
     explanation: str
-    components: Optional[Dict[str, float]] = None
+    components: dict[str, float] | None = None
 
-    def as_dict(self) -> Dict[str, object]:
+    def as_dict(self) -> dict[str, object]:
         return {
             'number': self.number,
             'delta_nfr': self.delta_nfr,
@@ -134,7 +135,6 @@ class PrimeCertificate:
             'components': dict(self.components) if self.components is not None else None,
             'explanation': self.explanation,
         }
-
 
 class ArithmeticTNFRFormalism:
     """Explicit formulas that tie TNFR physics to arithmetic invariants."""
@@ -160,7 +160,7 @@ class ArithmeticTNFRFormalism:
         return factorization_pressure + divisor_pressure + sigma_pressure
 
     @staticmethod
-    def component_breakdown(n: int, terms: ArithmeticStructuralTerms, params: ArithmeticTNFRParameters) -> Dict[str, float]:
+    def component_breakdown(n: int, terms: ArithmeticStructuralTerms, params: ArithmeticTNFRParameters) -> dict[str, float]:
         return {
             'factorization_pressure': params.zeta * (terms.omega - 1),
             'divisor_pressure': params.eta * (terms.tau - 2),
@@ -172,7 +172,7 @@ class ArithmeticTNFRFormalism:
         return 1.0 / (1.0 + abs(delta_nfr))
 
     @staticmethod
-    def symbolic_delta_nfr(params: Optional[ArithmeticTNFRParameters] = None):
+    def symbolic_delta_nfr(params: ArithmeticTNFRParameters | None = None):
         params = params or ArithmeticTNFRParameters()
         try:
             import sympy as sp  # type: ignore
@@ -197,7 +197,7 @@ class ArithmeticTNFRFormalism:
         params: ArithmeticTNFRParameters,
         *,
         tolerance: float = 1e-12,
-        components: Optional[Dict[str, float]] = None,
+        components: dict[str, float] | None = None,
     ) -> PrimeCertificate:
         if components is None:
             components = ArithmeticTNFRFormalism.component_breakdown(n, terms, params)
@@ -220,7 +220,6 @@ class ArithmeticTNFRFormalism:
             explanation=explanation,
         )
 
-
 class ArithmeticTNFRNetwork:
     """
     TNFR network where nodes are natural numbers and dynamics reveal prime structure.
@@ -233,7 +232,7 @@ class ArithmeticTNFRNetwork:
     Prime numbers should emerge as structural attractors (ΔNFR ≈ 0).
     """
     
-    def __init__(self, max_number: int = 100, parameters: Optional[ArithmeticTNFRParameters] = None):
+    def __init__(self, max_number: int = 100, parameters: ArithmeticTNFRParameters | None = None):
         """
         Initialize arithmetic TNFR network.
         
@@ -249,7 +248,7 @@ class ArithmeticTNFRNetwork:
         
         # Build the network
         self.graph = self._construct_arithmetic_network()
-        self._graph_undirected_cache: Optional[nx.Graph] = None
+        self._graph_undirected_cache: nx.Graph | None = None
         self._compute_tnfr_properties()
         
     def _precompute_sieve(self, n: int) -> np.ndarray:
@@ -425,7 +424,7 @@ class ArithmeticTNFRNetwork:
                     return False
             return True
 
-    def _get_prime_factors(self, n: int) -> Dict[int, int]:
+    def _get_prime_factors(self, n: int) -> dict[int, int]:
         """Get prime factorization {p: exponent} using Sieve if available."""
         # Use Sieve if within range (O(log n))
         if hasattr(self, '_min_prime_factor') and n <= self.max_number:
@@ -453,7 +452,7 @@ class ArithmeticTNFRNetwork:
                 factors[temp] = factors.get(temp, 0) + 1
             return factors
 
-    def update_phases_from_primes(self, prime_phases: Dict[int, float]) -> None:
+    def update_phases_from_primes(self, prime_phases: dict[int, float]) -> None:
         """
         Update the phase of all numbers based on their prime factorization.
         phi(n) = Sum a_i * phi(p_i)
@@ -486,7 +485,7 @@ class ArithmeticTNFRNetwork:
         *,
         tolerance: float = 1e-12,
         return_certificates: bool = False,
-    ) -> List[Union[Tuple[int, float], PrimeCertificate]]:
+    ) -> list[tuple[int, float] | PrimeCertificate]:
         """
         Detect numbers that behave like primes (low ΔNFR).
         
@@ -496,7 +495,7 @@ class ArithmeticTNFRNetwork:
             return_certificates: When True, return full PrimeCertificate objects
             
         Returns:
-            List of (number, ΔNFR) pairs for prime candidates
+            list of (number, ΔNFR) pairs for prime candidates
         """
         candidates = []
         
@@ -533,7 +532,7 @@ class ArithmeticTNFRNetwork:
             omega=int(self.graph.nodes[n]['omega']),
         )
 
-    def get_delta_components(self, n: int) -> Dict[str, float]:
+    def get_delta_components(self, n: int) -> dict[str, float]:
         """Return component-level contributions to ΔNFR for node n."""
         if n not in self.graph.nodes:
             raise TNFRValueError(
@@ -574,15 +573,15 @@ class ArithmeticTNFRNetwork:
 
     def generate_prime_certificates(
         self,
-        numbers: Optional[Iterable[int]] = None,
+        numbers: Iterable[int] | None = None,
         *,
         tolerance: float = 1e-12,
         include_components: bool = True,
-    ) -> List[PrimeCertificate]:
+    ) -> list[PrimeCertificate]:
         """Return PrimeCertificates for the provided numbers (or all nodes)."""
         if numbers is None:
             numbers = list(self.graph.nodes())
-        certificates: List[PrimeCertificate] = []
+        certificates: list[PrimeCertificate] = []
         for n in numbers:
             if n in self.graph.nodes:
                 certificates.append(
@@ -595,7 +594,7 @@ class ArithmeticTNFRNetwork:
         certificates.sort(key=lambda cert: cert.number)
         return certificates
     
-    def validate_prime_detection(self, delta_nfr_threshold: float = MATH_DELTA_NFR_THRESHOLD_CANONICAL) -> Dict[str, float]:
+    def validate_prime_detection(self, delta_nfr_threshold: float = MATH_DELTA_NFR_THRESHOLD_CANONICAL) -> dict[str, float]:
         """
         Validate TNFR prime detection against known primes.
         
@@ -629,7 +628,7 @@ class ArithmeticTNFRNetwork:
             'false_alarms': sorted(predicted_primes - actual_primes)
         }
     
-    def get_tnfr_properties(self, n: int) -> Dict[str, float]:
+    def get_tnfr_properties(self, n: int) -> dict[str, float]:
         """Get all TNFR properties for a specific number."""
         if n not in self.graph.nodes():
             raise TNFRValueError(
@@ -653,7 +652,7 @@ class ArithmeticTNFRNetwork:
             'coherence_local': node_data.get('coherence_local'),
         }
     
-    def analyze_prime_characteristics(self) -> Dict[str, List[float]]:
+    def analyze_prime_characteristics(self) -> dict[str, list[float]]:
         """Analyze TNFR characteristics of all primes in the network."""
         primes = [n for n in self.graph.nodes() if self.graph.nodes[n]['is_prime']]
         
@@ -672,7 +671,7 @@ class ArithmeticTNFRNetwork:
             
         return characteristics
     
-    def summary_statistics(self) -> Dict[str, float]:
+    def summary_statistics(self) -> dict[str, float]:
         """Compute summary statistics for the entire network."""
         all_nodes = list(self.graph.nodes())
         primes = [n for n in all_nodes if self.graph.nodes[n]['is_prime']]
@@ -723,8 +722,8 @@ class ArithmeticTNFRNetwork:
         alpha: float = PHI,
         distance_mode: str = "topological",
         dnfr_attr: str = 'DELTA_NFR',
-    ) -> Dict[int, float]:
-        phi_s: Dict[int, float] = {}
+    ) -> dict[int, float]:
+        phi_s: dict[int, float] = {}
         if distance_mode == 'topological':
             spl = dict(nx.all_pairs_shortest_path_length(G))
             for i in G.nodes():
@@ -761,9 +760,9 @@ class ArithmeticTNFRNetwork:
         min_pairs: int = 5,
         distance_mode: str = 'topological',
         dnfr_attr: str = 'DELTA_NFR',
-    ) -> Dict[str, object]:
+    ) -> dict[str, object]:
         c = {i: 1.0 / (1.0 + abs(float(G.nodes[i].get(dnfr_attr, 0.0)))) for i in G.nodes()}
-        accum: Dict[int, List[float]] = {}
+        accum: dict[int, list[float]] = {}
         nodes = sorted(G.nodes())
         if distance_mode == 'topological':
             spl = dict(nx.all_pairs_shortest_path_length(G))
@@ -779,8 +778,8 @@ class ArithmeticTNFRNetwork:
                     dist = abs(i - j)
                     accum.setdefault(dist, []).append(c[i] * c[j])
 
-        r_vals: List[int] = []
-        C_vals: List[float] = []
+        r_vals: list[int] = []
+        C_vals: list[float] = []
         for r in sorted(accum.keys()):
             pairs = accum[r]
             if len(pairs) >= min_pairs:
@@ -788,7 +787,7 @@ class ArithmeticTNFRNetwork:
                 if mv > 0:
                     r_vals.append(r)
                     C_vals.append(mv)
-        result: Dict[str, object] = {
+        result: dict[str, object] = {
             'r': r_vals,
             'C_r': C_vals,
             'xi_c': None,
@@ -824,10 +823,10 @@ class ArithmeticTNFRNetwork:
         level=CacheLevel.DERIVED_METRICS if _CACHE_OK else None,
         dependencies={'graph_structure', 'nu_f'},
     )
-    def _cached_compute_phase_helper(self, method: str = "spectral") -> Dict[int, float]:
+    def _cached_compute_phase_helper(self, method: str = "spectral") -> dict[int, float]:
         """Cached helper for phase computation to avoid recomputation."""
         G = self._get_undirected_graph()
-        phi: Dict[int, float] = {}
+        phi: dict[int, float] = {}
 
         if method == "spectral":
             try:
@@ -855,7 +854,7 @@ class ArithmeticTNFRNetwork:
 
         return phi
 
-    def compute_phase(self, method: str = "spectral", store: bool = True) -> Dict[int, float]:
+    def compute_phase(self, method: str = "spectral", store: bool = True) -> dict[int, float]:
         """
         Compute per-node phase φ ∈ [0, 2π).
 
@@ -872,7 +871,7 @@ class ArithmeticTNFRNetwork:
                 self.graph.nodes[n]['phi'] = v
         return phi
 
-    def compute_phase_gradient(self) -> Dict[int, float]:
+    def compute_phase_gradient(self) -> dict[int, float]:
         """Compute |∇φ|(i) = mean_{j∈N(i)} |φ_i - φ_j| (neighbors in undirected graph)."""
         if any('phi' not in self.graph.nodes[i] for i in self.graph.nodes()):
             self.compute_phase(store=True)
@@ -901,7 +900,7 @@ class ArithmeticTNFRNetwork:
             self.graph.nodes[i]['phi_grad'] = val
         return phi_grad
 
-    def compute_phase_curvature(self) -> Dict[int, float]:
+    def compute_phase_curvature(self) -> dict[int, float]:
         """Compute K_φ(i) = φ_i - (1/deg(i)) Σ_{j∈N(i)} φ_j (neighbors undirected)."""
         if any('phi' not in self.graph.nodes[i] for i in self.graph.nodes()):
             self.compute_phase(store=True)
@@ -935,7 +934,7 @@ class ArithmeticTNFRNetwork:
             self.graph.nodes[i]['k_phi'] = val
         return k_phi
 
-    def compute_kphi_safety(self, threshold: float = K_PHI_CURVATURE_THRESHOLD) -> Dict[str, float]:
+    def compute_kphi_safety(self, threshold: float = K_PHI_CURVATURE_THRESHOLD) -> dict[str, float]:
         """Compute simple K_φ safety metric: fraction of nodes with |K_φ| ≥ threshold.
 
         Returns a dict with fields:
@@ -961,10 +960,10 @@ class ArithmeticTNFRNetwork:
         self,
         *,
         distance_mode: str = 'arithmetic',
-        max_r: Optional[int] = None,
+        max_r: int | None = None,
         min_windows: int = 5,
         alpha_hint: float = 2.76,
-    ) -> Dict[str, object]:
+    ) -> dict[str, object]:
         """Estimate multiscale decay of K_φ variance and fit α in var ~ r^{-α}.
 
         For distance_mode='arithmetic', uses sliding windows of size r over the
@@ -982,8 +981,8 @@ class ArithmeticTNFRNetwork:
         nodes = sorted(G.nodes())
         kphi = np.array([float(self.graph.nodes[n]['k_phi']) for n in nodes], dtype=float)
 
-        r_list: List[int] = []
-        var_list: List[float] = []
+        r_list: list[int] = []
+        var_list: list[float] = []
 
         if distance_mode == 'arithmetic':
             # Use contiguous windows over natural index order
@@ -1012,7 +1011,7 @@ class ArithmeticTNFRNetwork:
                 max_r = max(2, min(diam, 10))
             # Build list
             for r in range(1, max_r + 1):
-                means: List[float] = []
+                means: list[float] = []
                 for i in nodes:
                     neighborhood = [j for j, dist in spl[i].items() if dist <= r]
                     if neighborhood:
@@ -1021,10 +1020,10 @@ class ArithmeticTNFRNetwork:
                     r_list.append(r)
                     var_list.append(float(np.var(means)))
 
-        alpha_fit: Optional[float] = None
-        R2_fit: Optional[float] = None
-        intercept: Optional[float] = None
-        slope: Optional[float] = None
+        alpha_fit: float | None = None
+        R2_fit: float | None = None
+        intercept: float | None = None
+        slope: float | None = None
         if len(var_list) >= 3 and all(v > 0 for v in var_list):
             xv = np.log(np.array(r_list, dtype=float))
             yv = np.log(np.array(var_list, dtype=float))
@@ -1060,7 +1059,7 @@ class ArithmeticTNFRNetwork:
             'distance_mode': distance_mode,
         }
 
-    def compute_structural_potential(self, alpha: float = PHI, distance_mode: str = "topological") -> Dict[int, float]:
+    def compute_structural_potential(self, alpha: float = PHI, distance_mode: str = "topological") -> dict[int, float]:
         """
         Compute Φ_s(i) = Σ_{j≠i} ΔNFR_j / d(i,j)^α.
 
@@ -1081,7 +1080,7 @@ class ArithmeticTNFRNetwork:
             self.graph.nodes[i]['phi_s'] = v
         return phi_s
 
-    def estimate_coherence_length(self, min_pairs: int = 5, distance_mode: str = "topological") -> Dict[str, object]:
+    def estimate_coherence_length(self, min_pairs: int = 5, distance_mode: str = "topological") -> dict[str, object]:
         """
         Estimate coherence length ξ_C from spatial autocorrelation of local coherence c_i.
 
@@ -1123,7 +1122,7 @@ class ArithmeticTNFRNetwork:
         res.update(extra)
         return res
 
-    def compute_phase_current(self) -> Dict[int, float]:
+    def compute_phase_current(self) -> dict[int, float]:
         """Compute phase current J_φ (Extended Canonical Field)."""
         G = self._get_undirected_graph()
         if HAS_CENTRALIZED_FIELDS:
@@ -1135,7 +1134,7 @@ class ArithmeticTNFRNetwork:
             self.graph.nodes[i]['phase_current'] = v
         return current
 
-    def compute_dnfr_flux(self) -> Dict[int, float]:
+    def compute_dnfr_flux(self) -> dict[int, float]:
         """Compute ΔNFR flux J_ΔNFR (Extended Canonical Field)."""
         G = self._get_undirected_graph()
         if HAS_CENTRALIZED_FIELDS:
@@ -1147,7 +1146,7 @@ class ArithmeticTNFRNetwork:
             self.graph.nodes[i]['dnfr_flux'] = v
         return flux
 
-    def compute_structural_fields(self, phase_method: str = "spectral") -> Dict[str, object]:
+    def compute_structural_fields(self, phase_method: str = "spectral") -> dict[str, object]:
         """Convenience wrapper to compute all structural telemetry fields (Canonical + Extended)."""
         phi = self.compute_phase(method=phase_method, store=True)
         grad = self.compute_phase_gradient()
@@ -1177,7 +1176,7 @@ class ArithmeticTNFRNetwork:
     # TNFR OPERATORS: COUPLING (UM) AND RESONANCE (RA)
     # ====================================================================
 
-    def apply_coupling(self, delta_phi_max: float = math.pi / 2) -> Dict[Tuple[int, int], bool]:
+    def apply_coupling(self, delta_phi_max: float = DELTA_PHI_MAX) -> dict[tuple[int, int], bool]:
         """Apply UM (Coupling): mark edges as coupled if phase compatible.
 
         Contract (U3): Only valid if |φ_i - φ_j| ≤ Δφ_max (wrapped on circle).
@@ -1189,7 +1188,7 @@ class ArithmeticTNFRNetwork:
             self.compute_phase(store=True)
 
         G = self._get_undirected_graph()
-        coupled: Dict[Tuple[int, int], bool] = {}
+        coupled: dict[tuple[int, int], bool] = {}
 
         for u, v, data in G.edges(data=True):
             d = abs(self.graph.nodes[u]['phi'] - self.graph.nodes[v]['phi'])
@@ -1206,10 +1205,10 @@ class ArithmeticTNFRNetwork:
         self.graph.graph['um_delta_phi_max'] = float(delta_phi_max)
         return coupled
 
-    def _neighbor_contrib(self, i: int, *, delta_phi_max: float) -> List[Tuple[int, float]]:
+    def _neighbor_contrib(self, i: int, *, delta_phi_max: float) -> list[tuple[int, float]]:
         """Helper: list of (j, weight) from neighbors j of i satisfying phase check."""
         G = self._get_undirected_graph()
-        out: List[Tuple[int, float]] = []
+        out: list[tuple[int, float]] = []
         for j in G.neighbors(i):
             d = abs(self.graph.nodes[i].get('phi', 0.0) - self.graph.nodes[j].get('phi', 0.0))
             d = min(d, 2 * math.pi - d)
@@ -1227,13 +1226,13 @@ class ArithmeticTNFRNetwork:
 
     def resonance_step(
         self,
-        activation: Dict[int, float],
+        activation: dict[int, float],
         *,
         gain: float = 1.0,
         decay: float = 0.0,
-        delta_phi_max: float = math.pi / 2,
+        delta_phi_max: float = DELTA_PHI_MAX,
         normalize: bool = True,
-    ) -> Dict[int, float]:
+    ) -> dict[int, float]:
         """Apply one RA (Resonance) step on an activation field.
 
         Physics (RA): Propagates patterns coherently through coupled links, without
@@ -1245,7 +1244,7 @@ class ArithmeticTNFRNetwork:
         if any('phi' not in self.graph.nodes[n] for n in G.nodes()):
             self.compute_phase(store=True)
 
-        new_act: Dict[int, float] = {}
+        new_act: dict[int, float] = {}
         for i in G.nodes():
             acc = 0.0
             contribs = self._neighbor_contrib(i, delta_phi_max=delta_phi_max)
@@ -1270,11 +1269,11 @@ class ArithmeticTNFRNetwork:
         init_value: float = 1.0,
         gain: float = 1.0,
         decay: float = 0.1,
-        delta_phi_max: float = math.pi / 2,
+        delta_phi_max: float = DELTA_PHI_MAX,
         normalize: bool = True,
-        seed: Optional[int] = None,
+        seed: int | None = None,
         jitter: bool = True,
-    ) -> List[Dict[int, float]]:
+    ) -> list[dict[int, float]]:
         """Seed activation on primes and run RA propagation.
 
         Returns a list of activation dicts for steps [0..steps].
@@ -1289,7 +1288,7 @@ class ArithmeticTNFRNetwork:
             n for n in self.graph.nodes()
             if self.graph.nodes[n].get('is_prime', False)
         ]
-        act: Dict[int, float] = {
+        act: dict[int, float] = {
             n: (init_value if n in primes else 0.0)
             for n in self.graph.nodes()
         }
@@ -1304,7 +1303,7 @@ class ArithmeticTNFRNetwork:
             for p in primes:
                 act[p] *= (1.0 + np.random.uniform(-1e-6, 1e-6))
 
-        history: List[Dict[int, float]] = [dict(act)]
+        history: list[dict[int, float]] = [dict(act)]
         # Apply UM for bookkeeping/telemetry
         self.apply_coupling(delta_phi_max=delta_phi_max)
         for _ in range(steps):
@@ -1324,8 +1323,8 @@ class ArithmeticTNFRNetwork:
         return history
 
     def resonance_metrics(
-        self, activation: Dict[int, float]
-    ) -> Dict[str, float]:
+        self, activation: dict[int, float]
+    ) -> dict[str, float]:
         """Compute simple metrics on an activation field for analysis."""
         values = np.array(list(activation.values()), dtype=float)
         mean_act = float(np.mean(values)) if values.size else 0.0
@@ -1501,7 +1500,6 @@ class ArithmeticTNFRNetwork:
         )
         return count
 
-
 # ============================================================================
 # TESTING AND VALIDATION FUNCTIONS
 # ============================================================================
@@ -1554,7 +1552,6 @@ def run_basic_validation(max_number: int = 50) -> None:
             )
         )
 
-
 if __name__ == "__main__":
     # Run basic validation
     run_basic_validation(max_number=100)
@@ -1563,7 +1560,7 @@ if __name__ == "__main__":
 # ADELIC TOOLS (Gap 5 Resolution)
 # ============================================================================
 
-def get_primitive_root(p: int) -> Optional[int]:
+def get_primitive_root(p: int) -> int | None:
     """Find the smallest primitive root modulo p."""
     p = int(p) # Ensure native int for pow()
     if p == 2: return 1

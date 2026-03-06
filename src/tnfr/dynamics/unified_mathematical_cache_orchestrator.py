@@ -23,8 +23,7 @@ from the mathematical structure of nodal equation. It orchestrates:
 Status: EXPERIMENTAL UNIFIED CACHE ORCHESTRATOR
 """
 
-from ..mathematics.unified_numerical import np
-from typing import Dict, Any, Optional, Set, List, Tuple, Callable
+from typing import Any
 from dataclasses import dataclass, field
 from enum import Enum
 import time
@@ -41,8 +40,8 @@ except ImportError:
 
 # Import all cache systems
 try:
-    from ..utils.cache import get_global_cache, CacheLevel
-    from .multi_modal_cache import get_unified_cache, CacheEntryType
+    from ..utils.cache import get_global_cache
+    from .multi_modal_cache import get_unified_cache
     from .structural_cache import get_structural_cache
     from .fft_cache_coordinator import get_fft_cache_coordinator
     from .advanced_cache_optimizer import get_cache_optimizer, CacheOptimizationStrategy
@@ -63,7 +62,6 @@ try:
 except ImportError:
     HAS_FUSION_ENGINES = False
 
-
 class CacheMathematicalDependency(Enum):
     """Mathematical dependencies between cached computations."""
     SPECTRAL_TO_STRUCTURAL = "spectral_to_structural"    # Eigendecomposition → Φ_s, |∇φ|, K_φ, ξ_C
@@ -72,19 +70,17 @@ class CacheMathematicalDependency(Enum):
     TEMPORAL_TO_SPATIAL = "temporal_to_spatial"          # Time evolution → spatial patterns
     PHASE_TO_FREQUENCY = "phase_to_frequency"           # Phase synchrony → frequency locking
 
-
 @dataclass
 class MathematicalCacheEntry:
     """Cache entry with mathematical dependency tracking."""
     data: Any
     computation_signature: str
-    mathematical_dependencies: Set[str] = field(default_factory=set)
+    mathematical_dependencies: set[str] = field(default_factory=set)
     temporal_scale: float = 1.0  # dt scale
     spatial_scale: int = 1  # node count scale
-    coherence_requirements: Dict[str, float] = field(default_factory=dict)
+    coherence_requirements: dict[str, float] = field(default_factory=dict)
     last_accessed: float = field(default_factory=time.time)
     access_count: int = 0
-
 
 @dataclass
 class CacheOrchestrationResult:
@@ -97,7 +93,6 @@ class CacheOrchestrationResult:
     cache_topology_adaptations: int = 0
     total_time_saved: float = 0.0
     total_memory_saved_mb: float = 0.0
-
 
 class TNFRUnifiedMathematicalCacheOrchestrator:
     """
@@ -141,8 +136,8 @@ class TNFRUnifiedMathematicalCacheOrchestrator:
             self.centralization_engine = None
             
         # Mathematical dependency graph
-        self._dependency_graph: Dict[str, Set[str]] = defaultdict(set)
-        self._cache_signatures: Dict[str, MathematicalCacheEntry] = {}
+        self._dependency_graph: dict[str, set[str]] = defaultdict(set)
+        self._cache_signatures: dict[str, MathematicalCacheEntry] = {}
         
         # Performance tracking
         self.orchestration_stats = CacheOrchestrationResult()
@@ -176,9 +171,9 @@ class TNFRUnifiedMathematicalCacheOrchestrator:
         self,
         G: Any,
         computation_type: str,
-        parameters: Dict[str, Any],
+        parameters: dict[str, Any],
         force_recompute: bool = False
-    ) -> Tuple[Any, CacheOrchestrationResult]:
+    ) -> tuple[Any, CacheOrchestrationResult]:
         """
         Orchestrate a computation across all cache systems with mathematical coherence.
         
@@ -231,7 +226,7 @@ class TNFRUnifiedMathematicalCacheOrchestrator:
         self,
         G: Any,
         computation_type: str,
-        parameters: Dict[str, Any]
+        parameters: dict[str, Any]
     ) -> str:
         """Generate signature based on mathematical properties."""
         if not HAS_NETWORKX or G is None:
@@ -257,9 +252,9 @@ class TNFRUnifiedMathematicalCacheOrchestrator:
         params_sig = "_".join(f"{k}={v}" for k, v in sorted(parameters.items())[:3])
         
         combined = f"{computation_type}_{topology_sig}_{props_sig}_{params_sig}"
-        return hashlib.md5(combined.encode()).hexdigest()[:16]
+        return hashlib.md5(combined.encode(), usedforsecurity=False).hexdigest()[:16]
     
-    def _check_mathematical_cache_coherence(self, signature: str) -> Optional[Any]:
+    def _check_mathematical_cache_coherence(self, signature: str) -> Any | None:
         """Check if cached result exists and maintains mathematical coherence."""
         entry = self._cache_signatures.get(signature)
         if entry is None:
@@ -335,9 +330,9 @@ class TNFRUnifiedMathematicalCacheOrchestrator:
         self,
         G: Any,
         computation_type: str,
-        parameters: Dict[str, Any],
+        parameters: dict[str, Any],
         signature: str
-    ) -> Tuple[Any, Dict[str, Any]]:
+    ) -> tuple[Any, dict[str, Any]]:
         """Execute computation with coordination across all cache systems."""
         stats = {"sharing_events": 0, "time_saved": 0.0, "memory_saved": 0.0}
         
@@ -407,7 +402,7 @@ class TNFRUnifiedMathematicalCacheOrchestrator:
             for old_sig, _ in oldest_entries:
                 del self._cache_signatures[old_sig]
     
-    def get_orchestration_statistics(self) -> Dict[str, Any]:
+    def get_orchestration_statistics(self) -> dict[str, Any]:
         """Get comprehensive orchestration statistics."""
         return {
             "cache_hits": self.orchestration_stats.total_cache_hits,
@@ -442,10 +437,8 @@ class TNFRUnifiedMathematicalCacheOrchestrator:
             # Reset orchestration stats
             self.orchestration_stats = CacheOrchestrationResult()
 
-
 # Global orchestrator instance
 _global_orchestrator = None
-
 
 def get_unified_mathematical_cache_orchestrator() -> TNFRUnifiedMathematicalCacheOrchestrator:
     """Get or create the global unified cache orchestrator."""
@@ -454,13 +447,12 @@ def get_unified_mathematical_cache_orchestrator() -> TNFRUnifiedMathematicalCach
         _global_orchestrator = TNFRUnifiedMathematicalCacheOrchestrator()
     return _global_orchestrator
 
-
 def orchestrate_tnfr_computation(
     G: Any,
     computation_type: str,
-    parameters: Optional[Dict[str, Any]] = None,
+    parameters: dict[str, Any] | None = None,
     **kwargs
-) -> Tuple[Any, Dict[str, Any]]:
+) -> tuple[Any, dict[str, Any]]:
     """Convenience function for orchestrated TNFR computation."""
     orchestrator = get_unified_mathematical_cache_orchestrator()
     result, stats = orchestrator.orchestrate_computation(

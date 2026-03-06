@@ -28,7 +28,6 @@ from typing import Any, MutableMapping
 from . import TNFRBackend
 from ..types import TNFRGraph
 
-
 class TorchBackend(TNFRBackend):
     """PyTorch GPU-accelerated implementation of TNFR kernels (Experimental).
 
@@ -115,7 +114,7 @@ class TorchBackend(TNFRBackend):
         n_jobs : int or None, optional
             Ignored (PyTorch uses GPU parallelism)
         profile : MutableMapping[str, float] or None, optional
-            Dict to collect timing metrics
+            dict to collect timing metrics
 
         Notes
         -----
@@ -355,7 +354,7 @@ class TorchBackend(TNFRBackend):
         chunk_size : int or None, optional
             Chunk size hint (currently passed to NumPy backend)
         profile : MutableMapping[str, Any] or None, optional
-            Dict to collect timing metrics
+            dict to collect timing metrics
 
         Returns
         -------

@@ -42,14 +42,14 @@ INTEGRATION POINTS
 
 from __future__ import annotations
 
-import math
 import warnings
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional, Sequence
+from typing import Any, Callable
 
 from ..alias import get_attr
 from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
+from ..constants.canonical import PHI  # φ ≈ 1.618
 from ..types import TNFRGraph
 
 # ---------------------------------------------------------------------------
@@ -63,7 +63,6 @@ _detect_grammar_violations = None
 _compute_noether_charge = None
 _compute_energy_functional = None
 _compute_coherence = None
-
 
 def _ensure_imports() -> None:
     """Lazy-load conservation and metrics modules on first use."""
@@ -95,7 +94,6 @@ def _ensure_imports() -> None:
     _compute_coherence = _cc
     _conservation_loaded = True
 
-
 # ═══════════════════════════════════════════════════════════════════════════
 # Exceptions
 # ═══════════════════════════════════════════════════════════════════════════
@@ -114,7 +112,7 @@ class StructuralIntegrityViolation(Exception):
     """
 
     def __init__(self, operator: str, violation_type: str,
-                 details: Dict[str, Any]) -> None:
+                 details: dict[str, Any]) -> None:
         self.operator = operator
         self.violation_type = violation_type
         self.details = details
@@ -122,7 +120,6 @@ class StructuralIntegrityViolation(Exception):
             f"{operator} violated {violation_type}: "
             f"{details.get('reason', 'see details')}"
         )
-
 
 # ═══════════════════════════════════════════════════════════════════════════
 # Enums and data classes
@@ -133,7 +130,6 @@ class MonitorMode(Enum):
     OFF = "off"            # No monitoring (backward compatible)
     OBSERVE = "observe"    # Record violations, never raise
     ENFORCE = "enforce"    # Raise StructuralIntegrityViolation
-
 
 @dataclass
 class IntegrityReport:
@@ -148,7 +144,7 @@ class IntegrityReport:
     energy_derivative: float = 0.0
     is_lyapunov_stable: bool = True
     noether_charge_drift: float = 0.0
-    grammar_violations: List[str] = field(default_factory=list)
+    grammar_violations: list[str] = field(default_factory=list)
     postcondition_ok: bool = True
     postcondition_detail: str = ""
     corrective_suggestion: str = ""
@@ -163,11 +159,10 @@ class IntegrityReport:
             and self.postcondition_ok
         )
 
-
 @dataclass
 class IntegritySummary:
     """Aggregated integrity report over a sequence of operator applications."""
-    reports: List[IntegrityReport] = field(default_factory=list)
+    reports: list[IntegrityReport] = field(default_factory=list)
     total_operators: int = 0
     violations_count: int = 0
     mean_conservation_quality: float = 1.0
@@ -188,15 +183,14 @@ class IntegritySummary:
         ) / n
         self.total_charge_drift += abs(report.noether_charge_drift)
 
-
 # ═══════════════════════════════════════════════════════════════════════════
 # Operator postcondition registry
 # ═══════════════════════════════════════════════════════════════════════════
 
 def _postcond_coherence(
     G: TNFRGraph, node: Any,
-    before: Dict[str, Any], after: Dict[str, Any],
-) -> Optional[str]:
+    before: dict[str, Any], after: dict[str, Any],
+) -> str | None:
     """IL: C(t) must not decrease; |ΔNFR| must not increase (stabiliser).
 
     Reuses IL_coherence_tracking and IL_dnfr_reductions (written by
@@ -231,11 +225,10 @@ def _postcond_coherence(
         )
     return None
 
-
 def _postcond_dissonance(
     G: TNFRGraph, node: Any,
-    before: Dict[str, Any], after: Dict[str, Any],
-) -> Optional[str]:
+    before: dict[str, Any], after: dict[str, Any],
+) -> str | None:
     """OZ: |ΔNFR| must increase."""
     d_before = abs(before.get("dnfr", 0.0))
     d_after = abs(after.get("dnfr", 0.0))
@@ -246,11 +239,10 @@ def _postcond_dissonance(
         )
     return None
 
-
 def _postcond_silence(
     G: TNFRGraph, node: Any,
-    before: Dict[str, Any], after: Dict[str, Any],
-) -> Optional[str]:
+    before: dict[str, Any], after: dict[str, Any],
+) -> str | None:
     """SHA: EPI must remain unchanged; νf must not increase (freeze)."""
     e_before = before.get("epi", 0.0)
     e_after = after.get("epi", 0.0)
@@ -269,11 +261,10 @@ def _postcond_silence(
         )
     return None
 
-
 def _postcond_reception(
     G: TNFRGraph, node: Any,
-    before: Dict[str, Any], after: Dict[str, Any],
-) -> Optional[str]:
+    before: dict[str, Any], after: dict[str, Any],
+) -> str | None:
     """EN: C(t) must not decrease."""
     c_before = before.get("coherence", 0.0)
     c_after = after.get("coherence", 0.0)
@@ -284,11 +275,10 @@ def _postcond_reception(
         )
     return None
 
-
 def _postcond_resonance(
     G: TNFRGraph, node: Any,
-    before: Dict[str, Any], after: Dict[str, Any],
-) -> Optional[str]:
+    before: dict[str, Any], after: dict[str, Any],
+) -> str | None:
     """RA: EPI must not decrease; νf must not decrease (amplification)."""
     e_before = before.get("epi", 0.0)
     e_after = after.get("epi", 0.0)
@@ -307,11 +297,10 @@ def _postcond_resonance(
         )
     return None
 
-
 def _postcond_emission(
     G: TNFRGraph, node: Any,
-    before: Dict[str, Any], after: Dict[str, Any],
-) -> Optional[str]:
+    before: dict[str, Any], after: dict[str, Any],
+) -> str | None:
     """AL: νf must not decrease; EPI must not decrease (∂EPI/∂t > 0)."""
     vf_before = before.get("vf", 0.0)
     vf_after = after.get("vf", 0.0)
@@ -330,11 +319,10 @@ def _postcond_emission(
         )
     return None
 
-
 def _postcond_expansion(
     G: TNFRGraph, node: Any,
-    before: Dict[str, Any], after: Dict[str, Any],
-) -> Optional[str]:
+    before: dict[str, Any], after: dict[str, Any],
+) -> str | None:
     """VAL: EPI complexity (magnitude) must increase."""
     e_before = abs(before.get("epi", 0.0))
     e_after = abs(after.get("epi", 0.0))
@@ -345,11 +333,10 @@ def _postcond_expansion(
         )
     return None
 
-
 def _postcond_contraction(
     G: TNFRGraph, node: Any,
-    before: Dict[str, Any], after: Dict[str, Any],
-) -> Optional[str]:
+    before: dict[str, Any], after: dict[str, Any],
+) -> str | None:
     """NUL: EPI complexity (magnitude) must decrease."""
     e_before = abs(before.get("epi", 0.0))
     e_after = abs(after.get("epi", 0.0))
@@ -360,11 +347,10 @@ def _postcond_contraction(
         )
     return None
 
-
 def _postcond_mutation(
     G: TNFRGraph, node: Any,
-    before: Dict[str, Any], after: Dict[str, Any],
-) -> Optional[str]:
+    before: dict[str, Any], after: dict[str, Any],
+) -> str | None:
     """ZHIR: Delegates to postconditions/mutation.py for rich verification.
 
     Checks phase transformation, identity preservation, and bifurcation
@@ -385,11 +371,10 @@ def _postcond_mutation(
         return str(exc)
     return None
 
-
 def _postcond_coupling(
     G: TNFRGraph, node: Any,
-    before: Dict[str, Any], after: Dict[str, Any],
-) -> Optional[str]:
+    before: dict[str, Any], after: dict[str, Any],
+) -> str | None:
     """UM: |ΔNFR| must not increase (coupling reduces structural pressure)."""
     d_before = abs(before.get("dnfr", 0.0))
     d_after = abs(after.get("dnfr", 0.0))
@@ -400,11 +385,10 @@ def _postcond_coupling(
         )
     return None
 
-
 def _postcond_self_organization(
     G: TNFRGraph, node: Any,
-    before: Dict[str, Any], after: Dict[str, Any],
-) -> Optional[str]:
+    before: dict[str, Any], after: dict[str, Any],
+) -> str | None:
     """THOL: Global coherence must not catastrophically decrease.
 
     THOL is a stabiliser (U2) that creates sub-EPIs while preserving global
@@ -421,11 +405,10 @@ def _postcond_self_organization(
         )
     return None
 
-
 def _postcond_transition(
     G: TNFRGraph, node: Any,
-    before: Dict[str, Any], after: Dict[str, Any],
-) -> Optional[str]:
+    before: dict[str, Any], after: dict[str, Any],
+) -> str | None:
     """NAV: At least one state variable (νf, θ, ΔNFR) must change."""
     vf_changed = abs(after.get("vf", 0.0) - before.get("vf", 0.0)) > 1e-9
     theta_changed = abs(after.get("theta", 0.0) - before.get("theta", 0.0)) > 1e-9
@@ -437,19 +420,17 @@ def _postcond_transition(
         )
     return None
 
-
 def _postcond_recursivity(
     G: TNFRGraph, node: Any,
-    before: Dict[str, Any], after: Dict[str, Any],
-) -> Optional[str]:
+    before: dict[str, Any], after: dict[str, Any],
+) -> str | None:
     """REMESH: Advisory glyph — structural remesh is verified at network level."""
     return None
-
 
 # Mapping from canonical operator name → postcondition checker.
 # Returns None on success, or a string describing the violation.
 # All 13 canonical operators are covered.
-POSTCONDITIONS: Dict[str, Callable[..., Optional[str]]] = {
+POSTCONDITIONS: dict[str, Callable[..., str | None]] = {
     "coherence":          _postcond_coherence,
     "dissonance":         _postcond_dissonance,
     "silence":            _postcond_silence,
@@ -465,12 +446,11 @@ POSTCONDITIONS: Dict[str, Callable[..., Optional[str]]] = {
     "recursivity":        _postcond_recursivity,
 }
 
-
 # ═══════════════════════════════════════════════════════════════════════════
 # Corrective suggestions
 # ═══════════════════════════════════════════════════════════════════════════
 
-_CORRECTIVE_MAP: Dict[str, str] = {
+_CORRECTIVE_MAP: dict[str, str] = {
     "U6_confinement_breach": "Apply IL (Coherence) to reduce Φ_s below φ threshold",
     "U2_convergence_failure": "Apply IL or THOL to stabilise divergent ΔNFR",
     "U3_phase_incompatibility": "Apply SHA (Silence) then UM with phase-compatible nodes",
@@ -478,25 +458,25 @@ _CORRECTIVE_MAP: Dict[str, str] = {
     "charge_drift": "Apply IL to restore Noether charge Q toward conserved value",
 }
 
+_NOETHER_CHARGE_DRIFT_ALERT = 0.5
 
 def _suggest_correction(report: IntegrityReport) -> str:
     """Derive a corrective operator suggestion from violation diagnostics."""
-    suggestions: List[str] = []
+    suggestions: list[str] = []
     for vtype in report.grammar_violations:
         if vtype in _CORRECTIVE_MAP:
             suggestions.append(_CORRECTIVE_MAP[vtype])
     if not report.is_lyapunov_stable:
         suggestions.append(_CORRECTIVE_MAP["lyapunov_unstable"])
-    if abs(report.noether_charge_drift) > 0.5:
+    if abs(report.noether_charge_drift) > _NOETHER_CHARGE_DRIFT_ALERT:
         suggestions.append(_CORRECTIVE_MAP["charge_drift"])
     return "; ".join(suggestions) if suggestions else ""
-
 
 # ═══════════════════════════════════════════════════════════════════════════
 # Capture helpers
 # ═══════════════════════════════════════════════════════════════════════════
 
-def _capture_node_state(G: TNFRGraph, node: Any) -> Dict[str, Any]:
+def _capture_node_state(G: TNFRGraph, node: Any) -> dict[str, Any]:
     """Capture per-node scalar state for postcondition checking."""
     _ensure_imports()
     state = {
@@ -510,7 +490,6 @@ def _capture_node_state(G: TNFRGraph, node: Any) -> Dict[str, Any]:
     except Exception:
         state["coherence"] = 0.0
     return state
-
 
 # ═══════════════════════════════════════════════════════════════════════════
 # Main class
@@ -533,7 +512,7 @@ class StructuralIntegrityMonitor:
     lyapunov_tolerance : float
         Maximum allowed dE/dt before flagging instability (default 0.1).
     charge_drift_threshold : float
-        Maximum |ΔQ| per step (default 1.618 = φ, from U6).
+        Maximum |ΔQ| per step (default φ ≈ 1.618, from U6).
     """
 
     def __init__(
@@ -541,7 +520,7 @@ class StructuralIntegrityMonitor:
         mode: MonitorMode = MonitorMode.OBSERVE,
         conservation_threshold: float = 0.5,
         lyapunov_tolerance: float = 0.1,
-        charge_drift_threshold: float = 1.618,
+        charge_drift_threshold: float = PHI,
     ) -> None:
         self.mode = mode
         self.conservation_threshold = conservation_threshold
@@ -549,7 +528,7 @@ class StructuralIntegrityMonitor:
         self.charge_drift_threshold = charge_drift_threshold
         self._summary = IntegritySummary()
         self._snapshot_before = None
-        self._node_state_before: Dict[str, Any] = {}
+        self._node_state_before: dict[str, Any] = {}
         self._charge_before: float = 0.0
 
     # ── public API ────────────────────────────────────────────────────────
@@ -560,7 +539,7 @@ class StructuralIntegrityMonitor:
         return self._summary
 
     @property
-    def latest_report(self) -> Optional[IntegrityReport]:
+    def latest_report(self) -> IntegrityReport | None:
         """Most recent integrity report, or None."""
         return self._summary.reports[-1] if self._summary.reports else None
 
@@ -711,13 +690,13 @@ class StructuralIntegrityMonitor:
         G.graph["integrity_monitor"] = self
 
     @staticmethod
-    def get(G: TNFRGraph) -> Optional["StructuralIntegrityMonitor"]:
+    def get(G: TNFRGraph) -> "StructuralIntegrityMonitor | None":
         """Retrieve the monitor attached to *G*, or None."""
         return G.graph.get("integrity_monitor")
 
     # ── feedback for self-optimization ────────────────────────────────────
 
-    def feedback_vector(self) -> Dict[str, float]:
+    def feedback_vector(self) -> dict[str, float]:
         """Return a dict of scalars suitable for the optimization engine.
 
         Keys
@@ -739,7 +718,6 @@ class StructuralIntegrityMonitor:
             "charge_drift": s.total_charge_drift,
             "violation_rate": s.violations_count / n,
         }
-
 
 # ═══════════════════════════════════════════════════════════════════════════
 # Module-level convenience

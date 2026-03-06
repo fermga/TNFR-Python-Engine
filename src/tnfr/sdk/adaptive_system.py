@@ -23,7 +23,6 @@ from ..dynamics.metabolism import StructuralMetabolism
 
 __all__ = ["TNFRAdaptiveSystem"]
 
-
 class TNFRAdaptiveSystem:
     """Complete adaptive system integrating all TNFR dynamic components.
 
@@ -47,7 +46,6 @@ class TNFRAdaptiveSystem:
         Identifier of the adaptive node
     stress_normalization : float, default=γ/(π+e)
         ΔNFR value that corresponds to maximum stress (1.0) - tetrahedral threshold
-
 
     Attributes
     ----------

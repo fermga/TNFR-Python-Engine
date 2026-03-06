@@ -27,7 +27,7 @@ References
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, List, Mapping, Optional, Sequence
+from typing import TYPE_CHECKING, Any, Mapping, Sequence
 
 if TYPE_CHECKING:
     from .grammar import StructuralPattern
@@ -59,7 +59,6 @@ __all__ = [
     "analyze_sequence",
 ]
 
-
 @dataclass
 class PatternMatch:
     """Detected pattern in operator sequence.
@@ -78,7 +77,7 @@ class PatternMatch:
         Which U1-U5 rule this pattern relates to
     description : str
         Human-readable description of pattern
-    structural_pattern : Optional[StructuralPattern]
+    structural_pattern : StructuralPattern | None
         Corresponding StructuralPattern enum if applicable
     """
 
@@ -88,8 +87,7 @@ class PatternMatch:
     confidence: float
     grammar_rule: str
     description: str
-    structural_pattern: Optional[StructuralPattern] = None
-
+    structural_pattern: StructuralPattern | None = None
 
 class UnifiedPatternDetector:
     """Unified pattern detector aligned with grammar rules U1-U5.
@@ -183,7 +181,7 @@ class UnifiedPatternDetector:
         """
         return self._advanced_detector.detect_pattern(sequence)
 
-    def detect_initiation_patterns(self, sequence: Sequence[str]) -> List[PatternMatch]:
+    def detect_initiation_patterns(self, sequence: Sequence[str]) -> list[PatternMatch]:
         """Detect U1a-based initiation patterns.
 
         Patterns that use GENERATORS (emission, transition, recursivity) to
@@ -196,8 +194,8 @@ class UnifiedPatternDetector:
 
         Returns
         -------
-        List[PatternMatch]
-            List of detected initiation patterns
+        list[PatternMatch]
+            list of detected initiation patterns
         """
         patterns = []
 
@@ -242,7 +240,7 @@ class UnifiedPatternDetector:
 
         return patterns
 
-    def detect_closure_patterns(self, sequence: Sequence[str]) -> List[PatternMatch]:
+    def detect_closure_patterns(self, sequence: Sequence[str]) -> list[PatternMatch]:
         """Detect U1b-based closure patterns.
 
         Patterns that use CLOSURES (silence, transition, recursivity, dissonance)
@@ -255,8 +253,8 @@ class UnifiedPatternDetector:
 
         Returns
         -------
-        List[PatternMatch]
-            List of detected closure patterns
+        list[PatternMatch]
+            list of detected closure patterns
         """
         patterns = []
 
@@ -320,7 +318,7 @@ class UnifiedPatternDetector:
 
         return patterns
 
-    def detect_convergence_patterns(self, sequence: Sequence[str]) -> List[PatternMatch]:
+    def detect_convergence_patterns(self, sequence: Sequence[str]) -> list[PatternMatch]:
         """Detect U2-based convergence patterns.
 
         Patterns involving STABILIZERS and DESTABILIZERS to ensure bounded evolution.
@@ -332,8 +330,8 @@ class UnifiedPatternDetector:
 
         Returns
         -------
-        List[PatternMatch]
-            List of detected convergence patterns
+        list[PatternMatch]
+            list of detected convergence patterns
         """
         patterns = []
 
@@ -389,7 +387,7 @@ class UnifiedPatternDetector:
 
         return patterns
 
-    def detect_resonance_patterns(self, sequence: Sequence[str]) -> List[PatternMatch]:
+    def detect_resonance_patterns(self, sequence: Sequence[str]) -> list[PatternMatch]:
         """Detect U3-based resonance patterns.
 
         Patterns involving COUPLING_RESONANCE operators that require phase verification.
@@ -401,8 +399,8 @@ class UnifiedPatternDetector:
 
         Returns
         -------
-        List[PatternMatch]
-            List of detected resonance patterns
+        list[PatternMatch]
+            list of detected resonance patterns
         """
         patterns = []
 
@@ -452,7 +450,7 @@ class UnifiedPatternDetector:
 
         return patterns
 
-    def detect_bifurcation_patterns(self, sequence: Sequence[str]) -> List[PatternMatch]:
+    def detect_bifurcation_patterns(self, sequence: Sequence[str]) -> list[PatternMatch]:
         """Detect U4-based bifurcation patterns.
 
         Patterns involving TRANSFORMERS and BIFURCATION_TRIGGERS.
@@ -464,8 +462,8 @@ class UnifiedPatternDetector:
 
         Returns
         -------
-        List[PatternMatch]
-            List of detected bifurcation patterns
+        list[PatternMatch]
+            list of detected bifurcation patterns
         """
         patterns = []
 
@@ -527,7 +525,7 @@ class UnifiedPatternDetector:
 
         return patterns
 
-    def detect_all_patterns(self, sequence: Sequence[str]) -> List[PatternMatch]:
+    def detect_all_patterns(self, sequence: Sequence[str]) -> list[PatternMatch]:
         """Detect all patterns in sequence.
 
         Parameters
@@ -537,8 +535,8 @@ class UnifiedPatternDetector:
 
         Returns
         -------
-        List[PatternMatch]
-            List of all detected patterns
+        list[PatternMatch]
+            list of all detected patterns
         """
         patterns = []
         patterns.extend(self.detect_initiation_patterns(sequence))
@@ -548,7 +546,7 @@ class UnifiedPatternDetector:
         patterns.extend(self.detect_bifurcation_patterns(sequence))
         return patterns
 
-    def get_grammar_rule_for_pattern(self, pattern_name: str) -> Optional[str]:
+    def get_grammar_rule_for_pattern(self, pattern_name: str) -> str | None:
         """Get the grammar rule associated with a pattern.
 
         Parameters
@@ -558,7 +556,7 @@ class UnifiedPatternDetector:
 
         Returns
         -------
-        Optional[str]
+        str | None
             Grammar rule string (e.g., "U1a", "U2", "U1+U2+U4") or None
         """
         return self._pattern_grammar_map.get(pattern_name.lower())
@@ -580,9 +578,7 @@ class UnifiedPatternDetector:
         """
         return self._advanced_detector.analyze_sequence_composition(sequence)
 
-
 # Convenience functions for backward compatibility
-
 
 def detect_pattern(sequence: Sequence[str]) -> StructuralPattern:
     """Detect structural pattern in operator sequence.
@@ -606,7 +602,6 @@ def detect_pattern(sequence: Sequence[str]) -> StructuralPattern:
     """
     detector = UnifiedPatternDetector()
     return detector.detect_pattern(sequence)
-
 
 def analyze_sequence(sequence: Sequence[str]) -> Mapping[str, Any]:
     """Analyze operator sequence comprehensively.

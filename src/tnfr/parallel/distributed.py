@@ -8,7 +8,7 @@ Requires installation of optional dependencies:
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Dict, List
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..types import TNFRGraph
@@ -31,7 +31,6 @@ except ImportError:
     HAS_DASK = False
     dask = None  # type: ignore
     Client = None  # type: ignore
-
 
 class TNFRDistributedEngine:
     """Distributed computation engine for massive TNFR networks.
@@ -125,7 +124,7 @@ class TNFRDistributedEngine:
 
     def compute_si_distributed(
         self, graph: TNFRGraph, chunk_size: int = 500, **kwargs: Any
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Compute sense index using distributed computation.
 
         Parameters
@@ -139,7 +138,7 @@ class TNFRDistributedEngine:
 
         Returns
         -------
-        Dict[str, Any]
+        dict[str, Any]
             Si values and metadata
 
         Notes
@@ -159,7 +158,7 @@ class TNFRDistributedEngine:
             si_values = engine.compute_si_parallel(graph, **kwargs)
             return {"si_values": si_values, "backend": "multiprocessing"}
 
-    def _compute_si_ray(self, graph: TNFRGraph, chunk_size: int, **kwargs: Any) -> Dict[str, Any]:
+    def _compute_si_ray(self, graph: TNFRGraph, chunk_size: int, **kwargs: Any) -> dict[str, Any]:
         """Compute Si using Ray for distributed execution.
 
         Parameters
@@ -173,7 +172,7 @@ class TNFRDistributedEngine:
 
         Returns
         -------
-        Dict[str, Any]
+        dict[str, Any]
             Results dictionary with si_values and metadata
         """
         if not HAS_RAY:
@@ -233,7 +232,7 @@ class TNFRDistributedEngine:
             "nodes_per_chunk": chunk_size,
         }
 
-    def _compute_si_dask(self, graph: TNFRGraph, chunk_size: int, **kwargs: Any) -> Dict[str, Any]:
+    def _compute_si_dask(self, graph: TNFRGraph, chunk_size: int, **kwargs: Any) -> dict[str, Any]:
         """Compute Si using Dask for distributed execution.
 
         Parameters
@@ -247,7 +246,7 @@ class TNFRDistributedEngine:
 
         Returns
         -------
-        Dict[str, Any]
+        dict[str, Any]
             Results dictionary with si_values and metadata
 
         Notes
@@ -313,9 +312,9 @@ class TNFRDistributedEngine:
         self,
         node_count: int,
         edge_probability: float,
-        operator_sequences: List[List[str]],
+        operator_sequences: list[list[str]],
         chunk_size: int = 500,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Simulate massive network using distributed computation.
 
         Parameters
@@ -324,14 +323,14 @@ class TNFRDistributedEngine:
             Total number of nodes in network
         edge_probability : float
             Edge creation probability for random network
-        operator_sequences : List[List[str]]
+        operator_sequences : list[list[str]]
             Sequences of TNFR operators to apply
         chunk_size : int, default=500
             Nodes per distributed work unit
 
         Returns
         -------
-        Dict[str, Any]
+        dict[str, Any]
             Simulation results with coherence and sense indices
 
         Notes

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Mapping, MutableMapping
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Literal, Protocol
+from typing import Any, Literal, Protocol
 
 OperatorName = Literal["AL", "IL", "RA", "SHA"]
 BackendName = Literal["cpu", "gpu", "remote"]
@@ -12,14 +12,12 @@ FailureRisk = Literal["low", "medium", "high"]
 PartitionBlock = Any
 PreparedBlock = Any
 
-
 @dataclass(frozen=True)
 class StructuralFields:
     phi_s: float
     phase_gradient: float
     phase_curvature: float
     coherence_length: float
-
 
 @dataclass(frozen=True)
 class StrategyContext:
@@ -32,7 +30,6 @@ class StrategyContext:
     boundary_overlap: int
     seed: int
 
-
 @dataclass(frozen=True)
 class ResourceEstimate:
     memory_bytes: int
@@ -41,14 +38,12 @@ class ResourceEstimate:
     phi_s_drift: float
     failure_risk: FailureRisk
 
-
 @dataclass
 class OperationResult:
     block: PartitionBlock
-    telemetry: Dict[str, Any] = field(default_factory=dict)
-    warnings: List[str] = field(default_factory=list)
+    telemetry: dict[str, Any] = field(default_factory=dict)
+    warnings: list[str] = field(default_factory=list)
     proof_hash: str = ""
-
 
 class OperatorStrategy(Protocol):
     operator: OperatorName
@@ -68,18 +63,15 @@ class OperatorStrategy(Protocol):
     def cleanup(self, prepared: PreparedBlock) -> None:
         ...
 
-
 StrategyFactory = Callable[[], OperatorStrategy]
-
 
 class StrategyRegistrationError(RuntimeError):
     """Raised when invalid or duplicate strategy registrations occur."""
 
-
 class StrategyRegistry:
     """In-memory registry for operator strategies."""
 
-    _registry: MutableMapping[OperatorName, Dict[str, StrategyFactory]] = {
+    _registry: MutableMapping[OperatorName, dict[str, StrategyFactory]] = {
         "AL": {},
         "IL": {},
         "RA": {},
@@ -116,7 +108,7 @@ class StrategyRegistry:
         return factory()
 
     @classmethod
-    def available(cls) -> Mapping[OperatorName, List[str]]:
+    def available(cls) -> Mapping[OperatorName, list[str]]:
         return {op: sorted(names.keys()) for op, names in cls._registry.items()}
 
     @classmethod

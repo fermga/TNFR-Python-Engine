@@ -20,7 +20,7 @@ Status: CANONICAL OPTIMIZATION ORCHESTRATOR
 """
 
 from ..mathematics.unified_numerical import np
-from typing import Dict, Any, Optional, List, Tuple, Union
+from typing import Any
 from dataclasses import dataclass, field
 from enum import Enum
 import time
@@ -34,9 +34,9 @@ except ImportError:
 
 # Import all optimization engines
 try:
-    from .nodal_optimizer import NodalEquationOptimizer, create_nodal_optimizer
-    from .structural_cache import StructuralCoherenceCache, get_structural_cache  
-    from .fft_engine import FFTDynamicsEngine, create_fft_engine
+    from .nodal_optimizer import create_nodal_optimizer
+    from .structural_cache import get_structural_cache  
+    from .fft_engine import create_fft_engine
     from .adelic import AdelicDynamics
     HAS_OPTIMIZATION_ENGINES = True
 except ImportError:
@@ -44,7 +44,7 @@ except ImportError:
 
 # Import caching infrastructure
 try:
-    from ..utils.cache import TNFRHierarchicalCache, get_global_cache
+    from ..utils.cache import get_global_cache
     _CACHE_AVAILABLE = True
 except ImportError:
     _CACHE_AVAILABLE = False
@@ -63,7 +63,6 @@ from ..constants.canonical import (
     OPT_ORCH_CACHE_SPEEDUP_CANONICAL         # π ≈ 3.1416 (3.0 → canonical)
 )
 
-
 class OptimizationStrategy(Enum):
     """Optimization strategies for different scenarios."""
     AUTO = "auto"                    # Automatic selection
@@ -72,7 +71,6 @@ class OptimizationStrategy(Enum):
     ADELIC_CACHE = "adelic_cache"    # Cached trace computations
     STRUCTURAL_MEMO = "struct_memo"  # Structural field memoization
     HYBRID = "hybrid"                # Combination approach
-
 
 @dataclass
 class OptimizationProfile:
@@ -84,8 +82,7 @@ class OptimizationProfile:
     memory_budget_mb: float = 256.0
     prefer_accuracy: bool = True
     enable_caching: bool = True
-    available_strategies: List[OptimizationStrategy] = field(default_factory=list)
-
+    available_strategies: list[OptimizationStrategy] = field(default_factory=list)
 
 @dataclass  
 class OptimizationResult:
@@ -97,8 +94,7 @@ class OptimizationResult:
     cache_misses: int
     memory_used_mb: float
     accuracy_preserved: bool
-    details: Dict[str, Any] = field(default_factory=dict)
-
+    details: dict[str, Any] = field(default_factory=dict)
 
 class TNFROptimizationOrchestrator:
     """
@@ -124,8 +120,8 @@ class TNFROptimizationOrchestrator:
             self.adelic_engine = None
         
         # Performance tracking
-        self.optimization_history: List[OptimizationResult] = []
-        self.strategy_performance: Dict[OptimizationStrategy, List[float]] = {}
+        self.optimization_history: list[OptimizationResult] = []
+        self.strategy_performance: dict[OptimizationStrategy, list[float]] = {}
         
         # Global cache integration
         if _CACHE_AVAILABLE:
@@ -179,7 +175,7 @@ class TNFROptimizationOrchestrator:
     def select_optimal_strategy(
         self, 
         profile: OptimizationProfile,
-        force_strategy: Optional[OptimizationStrategy] = None
+        force_strategy: OptimizationStrategy | None = None
     ) -> OptimizationStrategy:
         """
         Select optimal strategy based on profile and performance history.
@@ -494,7 +490,7 @@ class TNFROptimizationOrchestrator:
         self, 
         G: Any, 
         operation: str = "general",
-        strategy: Optional[OptimizationStrategy] = None,
+        strategy: OptimizationStrategy | None = None,
         **kwargs
     ) -> OptimizationResult:
         """
@@ -510,7 +506,7 @@ class TNFROptimizationOrchestrator:
         
         return self.execute_optimization(G, operation, selected_strategy, **kwargs)
     
-    def get_orchestrator_stats(self) -> Dict[str, Any]:
+    def get_orchestrator_stats(self) -> dict[str, Any]:
         """Get comprehensive orchestrator statistics."""
         total_operations = len(self.optimization_history)
         
@@ -543,10 +539,8 @@ class TNFROptimizationOrchestrator:
             "cache_available": _CACHE_AVAILABLE
         }
 
-
 # Global orchestrator instance
 _global_orchestrator = None
-
 
 def get_orchestrator() -> TNFROptimizationOrchestrator:
     """Get or create the global optimization orchestrator."""
@@ -554,7 +548,6 @@ def get_orchestrator() -> TNFROptimizationOrchestrator:
     if _global_orchestrator is None:
         _global_orchestrator = TNFROptimizationOrchestrator()
     return _global_orchestrator
-
 
 def optimize_tnfr_operation(G: Any, operation: str = "general", **kwargs) -> OptimizationResult:
     """Convenience function for TNFR optimization."""

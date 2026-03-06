@@ -12,7 +12,7 @@ dynamics while maintaining read-only telemetry semantics.
 from __future__ import annotations
 
 import math
-from typing import Any, Dict, Tuple
+from typing import Any
 
 from ..mathematics.unified_numerical import np
 
@@ -25,8 +25,7 @@ except ImportError:
 try:
     from .canonical import (
         _get_phase, _get_dnfr, _wrap_angle,
-        compute_phase_gradient,
-        compute_phase_curvature, compute_structural_potential
+        compute_phase_gradient
     )
     from .vectorized_ops import (
         compute_phase_current_vectorized,
@@ -47,7 +46,6 @@ except ImportError:
 from ..mathematics.unified_cache import cache_tnfr_computation, CacheLevel
 _CACHE_AVAILABLE = True
 
-
 # Import TNFR aliases
 try:
     from ..constants.aliases import ALIAS_THETA, ALIAS_DNFR
@@ -55,12 +53,11 @@ except ImportError:
     ALIAS_THETA = ["phase", "theta"]
     ALIAS_DNFR = ["delta_nfr", "dnfr"]
 
-
 @cache_tnfr_computation(
     level=CacheLevel.DERIVED_METRICS if _CACHE_AVAILABLE else None,
     dependencies={'graph_topology', 'node_phase'},
 )
-def compute_phase_current(G: Any) -> Dict[Any, float]:
+def compute_phase_current(G: Any) -> dict[Any, float]:
     """Compute phase current J_φ for each locus [CANONICAL - PROMOTED Nov 12, 2025].
 
     **Canonical Status**: Promoted November 12, 2025 after robust multi-topology
@@ -91,7 +88,7 @@ def compute_phase_current(G: Any) -> Dict[Any, float]:
 
     Returns
     -------
-    Dict[NodeId, float]
+    dict[NodeId, float]
         Phase current per node. Positive = net inward flow,
         negative = net outward flow, zero = equilibrium.
 
@@ -101,7 +98,7 @@ def compute_phase_current(G: Any) -> Dict[Any, float]:
     - Validation data: 48-sample multi-topology experiment
     - Physics: Geometric transport from phase field gradients
     """
-    current: Dict[Any, float] = {}
+    current: dict[Any, float] = {}
 
     nodes = list(G.nodes())
     if not nodes:
@@ -178,12 +175,11 @@ def compute_phase_current(G: Any) -> Dict[Any, float]:
 
     return current
 
-
 @cache_tnfr_computation(
     level=CacheLevel.DERIVED_METRICS if _CACHE_AVAILABLE else None,
     dependencies={'graph_topology', 'node_dnfr'},
 )
-def compute_dnfr_flux(G: Any) -> Dict[Any, float]:
+def compute_dnfr_flux(G: Any) -> dict[Any, float]:
     """Compute ΔNFR flux J_ΔNFR for each locus [CANONICAL - PROMOTED Nov 12, 2025].
 
     **Canonical Status**: Promoted November 12, 2025 after robust multi-topology
@@ -214,7 +210,7 @@ def compute_dnfr_flux(G: Any) -> Dict[Any, float]:
 
     Returns
     -------
-    Dict[NodeId, float]
+    dict[NodeId, float]
         ΔNFR flux per node. Positive = net inward reorganization pressure,
         negative = net outward pressure, zero = equilibrium.
 
@@ -224,7 +220,7 @@ def compute_dnfr_flux(G: Any) -> Dict[Any, float]:
     - Validation data: 48-sample multi-topology experiment
     - Physics: Transport from ΔNFR gradients (potential-driven flow)
     """
-    flux: Dict[Any, float] = {}
+    flux: dict[Any, float] = {}
 
     nodes = list(G.nodes())
     if not nodes:
@@ -293,13 +289,12 @@ def compute_dnfr_flux(G: Any) -> Dict[Any, float]:
 
     return flux
 
-
-def compute_extended_canonical_suite(G: Any) -> Dict[str, Dict[Any, float]]:
+def compute_extended_canonical_suite(G: Any) -> dict[str, dict[Any, float]]:
     """Compute all extended canonical fields in optimized fashion.
 
     Returns
     -------
-    Dict[str, Dict[Any, float]]
+    dict[str, dict[Any, float]]
         Dictionary with keys 'phase_current' and 'dnfr_flux' containing
         the respective field values per node.
     """
@@ -308,12 +303,10 @@ def compute_extended_canonical_suite(G: Any) -> Dict[str, Dict[Any, float]]:
         'dnfr_flux': compute_dnfr_flux(G)
     }
 
-
 # ============================================================================
 # RESEARCH-PHASE EXTENDED FIELDS (Not in canonical tetrad)
 # ============================================================================
 # Additional transport and deformation fields for advanced analysis.
-
 
 def compute_phase_strain(G, scale=1):
     """Compute spatial phase strain rate (research phase).
@@ -345,7 +338,6 @@ def compute_phase_strain(G, scale=1):
             strain[node] = 0.0
 
     return strain
-
 
 def compute_phase_vorticity(G):
     """Compute phase vorticity (rotational circulation).
@@ -384,7 +376,6 @@ def compute_phase_vorticity(G):
 
     return vorticity
 
-
 def compute_reorganization_strain(G):
     """Compute ΔNFR-based reorganization strain.
 
@@ -418,7 +409,6 @@ def compute_reorganization_strain(G):
 
     return strain
 
-
 def compute_extended_dynamics_suite(G):
     """Compute all research-phase extended fields together.
 
@@ -426,7 +416,7 @@ def compute_extended_dynamics_suite(G):
 
     Returns
     -------
-    Dict[str, Dict]
+    dict[str, dict]
         All extended field values keyed by field name
     """
     return {
@@ -434,7 +424,6 @@ def compute_extended_dynamics_suite(G):
         'phase_vorticity': compute_phase_vorticity(G),
         'reorganization_strain': compute_reorganization_strain(G),
     }
-
 
 __all__ = [
     "compute_phase_current",

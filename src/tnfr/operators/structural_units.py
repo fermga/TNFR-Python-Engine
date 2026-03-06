@@ -10,7 +10,7 @@ Key structural units:
 
 from __future__ import annotations
 
-from typing import Any, Union
+from typing import Any
 
 from ..errors import TNFRValueError
 
@@ -23,7 +23,6 @@ __all__ = [
 
 # Default tolerance for structural frequency validation
 MIN_STRUCTURAL_FREQUENCY = 0.0
-
 
 class HzStr:
     """Structural frequency in Hz_str (structural hertz) units.
@@ -152,7 +151,7 @@ class HzStr:
             return HzStr(float(other) - self.value)
         return NotImplemented
 
-    def __mul__(self, other: Any) -> Union[HzStr, float]:
+    def __mul__(self, other: Any) -> HzStr | float:
         """Multiplication.
 
         When multiplied by another HzStr or dimensionless number, returns HzStr.
@@ -165,7 +164,7 @@ class HzStr:
             return self.value * float(other)
         return NotImplemented
 
-    def __rmul__(self, other: Any) -> Union[HzStr, float]:
+    def __rmul__(self, other: Any) -> HzStr | float:
         """Right multiplication."""
         return self.__mul__(other)
 
@@ -185,12 +184,10 @@ class HzStr:
         """Hash for use in sets/dicts."""
         return hash((self.value, self.unit))
 
-
 # Alias for clarity in type hints
 StructuralFrequency = HzStr
 
-
-def ensure_hz_str(value: Union[float, HzStr]) -> HzStr:
+def ensure_hz_str(value: float | HzStr) -> HzStr:
     """Ensure value is in Hz_str units.
 
     Parameters
@@ -213,7 +210,6 @@ def ensure_hz_str(value: Union[float, HzStr]) -> HzStr:
     if isinstance(value, HzStr):
         return value
     return HzStr(float(value))
-
 
 def hz_to_hz_str(
     hz_value: float,

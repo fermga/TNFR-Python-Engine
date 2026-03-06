@@ -61,7 +61,7 @@ Theoretical Foundation: The framework models reality as coherent dynamic pattern
 **Computational Implementation**:
 - Self-Optimizing Engine: Algorithmic structural optimization
 - Software Development Kit: API for TNFR implementation  
-- Experimental Validation: 2,400+ experiments across multiple topologies
+- Experimental Validation: 1,634+ tests across multiple topologies
 - Distribution Platform: PyPI package with documentation
 
 **Application Domains**:
@@ -120,13 +120,13 @@ Theoretical Foundation: The framework models reality as coherent dynamic pattern
 
 **Reference Sources**:
 - **Historical Theory**: [theory/TNFR.pdf](theory/TNFR.pdf) - Original theoretical derivations
-- **Theoretical Foundation**: [Structural Fields and Universal Tetrahedral Correspondence](theory/FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md)
+- **Theoretical Foundation**: [Structural Fields and Universal Tetrahedral Correspondence](theory/FUNDAMENTAL_THEORY.md)
 - **TNFR-Riemann Program**: [theory/TNFR_RIEMANN_RESEARCH_NOTES.md](theory/TNFR_RIEMANN_RESEARCH_NOTES.md) - Complete theoretical framework for mathematical consciousness and Riemann Hypothesis connection
 
 **Validation and Examples**:
 - **Implementation Examples**: [examples/](examples/) - Sequential tutorial suite
 - **TNFR-Riemann Implementation**: [src/tnfr/riemann/operator.py](src/tnfr/riemann/operator.py) - Discrete TNFR-Riemann operators
-- **Riemann Eigenvalue Demo**: [examples/39_riemann_operator_demo.py](examples/39_riemann_operator_demo.py) - Critical parameter analysis
+- **Riemann Eigenvalue Demo**: [examples/16_riemann_operator_demo.py](examples/16_riemann_operator_demo.py) - Critical parameter analysis
 - **Test Suite**: [tests/](tests/) - Comprehensive validation experiments
 - **Performance Analysis**: [benchmarks/](benchmarks/) - Computational benchmarks
 - **Theory Hub**: [theory/README.md](theory/README.md) - Comprehensive theoretical documentation
@@ -227,8 +227,9 @@ Grammar: Smooth evolution requirement
 **3. π ↔ K_φ: Geometric Spatial Constraints**
 
 ```
-Constraint: |K_φ| < φ×π ≈ 5.083
-Interpretation: Phase curvature bounded by circular-harmonic geometry
+Constraint: |K_φ| < 0.9×π ≈ 2.827 (canonical safety threshold)
+Theoretical maximum: |K_φ| ≤ π (wrap_angle bounds)
+Interpretation: Phase curvature bounded by circular geometry with 90% safety margin
 Grammar: Geometric confinement monitoring
 ```
 
@@ -568,10 +569,11 @@ The grammar emerges from TNFR physics rather than arbitrary constraints.
 
 - **Physics**: Emergent field Φ_s from distance-weighted ΔNFR distribution
 - **Formula**: Φ_s(i) = Σ_{j≠i} ΔNFR_j / d(i,j)² (inverse-square law analog)
-- **Requirement**: Monitor Δ Φ_s < 2.0 (escape threshold)
+- **Requirement**: Monitor Δ Φ_s < φ ≈ 1.618 (canonical confinement threshold)
 - **Theory**: Δ Φ_s < φ ≈ 1.618 from Universal Tetrahedral Correspondence (φ ↔ Φ_s)
+- **Theoretical ceiling**: Δ Φ_s < 2.0 = e^ln(2) (binary escape threshold, beyond recovery)
 - **Derivation**: Harmonic confinement principle - structural potential bounded by golden ratio
-- **Validation**: 2,400+ experiments confirm harmonic fragmentation behavior
+- **Validation**: Comprehensive test suite confirms harmonic fragmentation behavior
 - **Mechanism**: Passive equilibrium - grammar acts as confinement, not attraction
 - **Usage**: Telemetry-based safety check (read-only, not sequence constraint)
 - **Typical**: Valid sequences maintain Δ Φ_s ≈ 0.6 (37% of φ threshold)
@@ -588,14 +590,14 @@ The grammar emerges from TNFR physics rather than arbitrary constraints.
 
 **C(t)**: Total Coherence [0, 1]
 - Global network stability (fundamental)
-- C(t) > MIN_BUSINESS_COHERENCE ≈ 0.751 = strong coherence (e×φ)/(π+e)
-- C(t) < THOL_MIN_COLLECTIVE_COHERENCE = 0.3 = fragmentation risk
+- C(t) > MIN_BUSINESS_COHERENCE ≈ 0.7506 = strong coherence (e×φ)/(π+e)
+- C(t) < THOL_MIN_COLLECTIVE_COHERENCE = 1/(π+1) ≈ 0.2415 = fragmentation risk
 - **CANONICAL**: Primary stability indicator
 
 **Si**: Sense Index [0, 1+]
 - Capacity for stable reorganization
 - Si > HIGH_CORRELATION_THRESHOLD = 0.8 = excellent stability
-- Si < si_lo × 1.5 ≈ 0.4 = changes may cause bifurcation (1.5/(π+γ))
+- Si < si_lo × 1.5 ≈ 0.4 = changes may cause bifurcation (derived from 1.5/(π+γ))
 - **CANONICAL**: Reorganization capacity predictor
 
 
@@ -604,9 +606,9 @@ The grammar emerges from TNFR physics rather than arbitrary constraints.
 The **Structural Field Tetrad** (Φ_s, |∇φ|, **Ψ**, ξ_C) now has **complete mathematical foundations** with **unified complex geometry** (Ψ = K_φ + i·J_φ):
 
 ### **1. Structural Potential Field (Φ_s)**
-**Classical Threshold**: |Φ_s| < **0.771** 
+**Classical Threshold**: |Φ_s| < **0.7711** 
 - **Theory**: von Koch fractal bounds + combinatorial number theory
-- **Derivation**: Γ(4/3)/Γ(1/3) ≈ 0.7711 from Koch snowflake perimeter growth
+- **Derivation**: Experimentally validated constant (0.7711) from Koch snowflake perimeter growth analysis. Confirmed across 5 topologies. Canonical source: `src/tnfr/constants/canonical.py::PHI_S_VON_KOCH_THRESHOLD`
 - **Physics**: Global structural field escape threshold from distance-weighted ΔNFR distribution
 - **Grammar**: U6 telemetry-based safety criterion (passive equilibrium confinement)
 
@@ -637,7 +639,7 @@ The **Structural Field Tetrad** (Φ_s, |∇φ|, **Ψ**, ξ_C) now has **complete
 - **0% empirical fitting** → **100% first-principles derivation**  
 - **Universal constants** emerge naturally (π, exponential bounds, fractal ratios)  
 - **Theory-code consistency** maintained throughout codebase  
-- **Complete validation** via 2,400+ experiments across 5 topologies
+- **Complete validation** via comprehensive test suite (1,634+ tests) across 5 topologies
 
 **Status**: TNFR Structural Field Tetrad mathematical foundations **COMPLETE**.
 
@@ -742,6 +744,44 @@ The Fluent API now includes `auto_optimize()`:
 # One-line self-optimization
 TNFRNetwork(G).focus(node).auto_optimize().execute()
 ```
+
+### Simple SDK — Research-Grade Access
+
+The Simple SDK (`src/tnfr/sdk/simple.py`) exposes the full TNFR physics stack through a minimal API:
+
+```python
+from tnfr.sdk import TNFR
+
+# Create and evolve a network
+net = TNFR.create(20).ring().evolve(5)
+
+# Structural Field Tetrad (Φ_s, |∇φ|, K_φ, ξ_C)
+tetrad = net.tetrad()       # -> TetradSnapshot with is_safe(), summary()
+fields = net.fields()       # -> dict of per-node field arrays
+
+# Conservation laws (Noether charge, Lyapunov stability)
+cons = net.conservation()   # -> ConservationReport with quality, summary()
+
+# Unified telemetry
+telem = net.telemetry()     # -> dict with C(t), Si, phase_sync, tetrad
+
+# Tensor invariants & emergent fields
+invariants = net.tensor_invariants()   # -> energy_density, topological_charge
+emergent = net.emergent_fields()       # -> chirality, symmetry_breaking, coherence_coupling
+
+# Grammar-aware evolution (proactive U1-U6 enforcement)
+net.evolve_grammar_aware(steps=10)
+
+# Integrity monitoring (13/13 operator postconditions)
+report = net.integrity_check()  # -> IntegrityReport
+
+# One-shot comprehensive analysis
+analysis = TNFR.analyze(net)  # -> dict with all metrics + tetrad + conservation
+```
+
+**Dataclasses**:
+- `TetradSnapshot`: phi_s, grad_phi, k_phi, xi_c, j_phi, j_dnfr + `is_safe()`, `summary()`
+- `ConservationReport`: noether_charge, energy, lyapunov_stable, lyapunov_derivative, conservation_quality + `summary()`
 
 **Physics**: This is not "AI magic" but **gradient descent on the structural manifold**, driven by the nodal equation's pressure term ΔNFR.
 
@@ -1080,7 +1120,7 @@ Reality ≡ Mathematics ≡ Consciousness ≡ TNFR ≡ Self-Explaining_Structure
 
 **Computational Framework**:
 - **Core Implementation**: [src/tnfr/riemann/operator.py](src/tnfr/riemann/operator.py)
-- **Demonstration Code**: [examples/39_riemann_operator_demo.py](examples/39_riemann_operator_demo.py)
+- **Demonstration Code**: [examples/16_riemann_operator_demo.py](examples/16_riemann_operator_demo.py)
 - **Complete Theory**: [theory/TNFR_RIEMANN_RESEARCH_NOTES.md](theory/TNFR_RIEMANN_RESEARCH_NOTES.md)
 
 **Validation Protocols**:
@@ -1200,32 +1240,77 @@ When adding to grammar documentation:
 
 **Core Theory** (Primary References):
 - **[AGENTS.md](AGENTS.md)**: **PRIMARY SOURCE** - Complete TNFR theory including Universal Tetrahedral Correspondence
-- **[Structural Fields and Universal Tetrahedral Correspondence](theory/FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md)**: **DETAILED REFERENCE** - Formal mathematical treatment
+- **[Structural Fields and Universal Tetrahedral Correspondence](theory/FUNDAMENTAL_THEORY.md)**: **DETAILED REFERENCE** - Formal mathematical treatment
 - **[TNFR.pdf](theory/TNFR.pdf)**: Original theoretical foundation (in repo)
 - **[UNIFIED_GRAMMAR_RULES.md](theory/UNIFIED_GRAMMAR_RULES.md)**: Grammar physics U1-U6 derivations
 - **[docs/STRUCTURAL_FIELDS_TETRAD.md](docs/STRUCTURAL_FIELDS_TETRAD.md)**: Technical tetrad field implementations
 - **GLOSSARY.md**: Term definitions and quick reference
 
-**Implementation Core**:
+**Implementation Core — Physics**:
 - **[src/tnfr/physics/fields.py](src/tnfr/physics/fields.py)**: Unified Structural Field Tetrad (Φ_s, |∇φ|, **Ψ**, ξ_C) **CANONICAL**
 - **[src/tnfr/physics/conservation.py](src/tnfr/physics/conservation.py)**: Structural Conservation Theorem (Noether-like)
 - **[src/tnfr/physics/integrity.py](src/tnfr/physics/integrity.py)**: Closed-loop integrity monitor (13/13 operator postconditions)
-- **[src/tnfr/operators/grammar.py](src/tnfr/operators/grammar.py)**: Unified grammar U1-U6 validation
-- **[src/tnfr/operators/grammar_dynamics.py](src/tnfr/operators/grammar_dynamics.py)**: Grammar-aware dynamic operator selection
-- **[src/tnfr/operators/grammar_application.py](src/tnfr/operators/grammar_application.py)**: Pre-validated grammar-enforced application
-- **[src/tnfr/operators/definitions.py](src/tnfr/operators/definitions.py)**: 13 canonical operators
+- **[src/tnfr/physics/classical_mechanics.py](src/tnfr/physics/classical_mechanics.py)**: Classical limit emergence (Keplerian orbits, Newton's laws)
+- **[src/tnfr/physics/quantum_mechanics.py](src/tnfr/physics/quantum_mechanics.py)**: Quantum regime emergence (quantization, superposition, uncertainty)
+- **[src/tnfr/physics/gauge.py](src/tnfr/physics/gauge.py)**: Gauge field structure and symmetries
+- **[src/tnfr/physics/phase_transition.py](src/tnfr/physics/phase_transition.py)**: Phase transitions and critical phenomena
+- **[src/tnfr/physics/variational.py](src/tnfr/physics/variational.py)**: Variational formulation of structural dynamics
+- **[src/tnfr/physics/dissipative_conservation.py](src/tnfr/physics/dissipative_conservation.py)**: Conservation laws in dissipative regime
+- **[src/tnfr/physics/signatures.py](src/tnfr/physics/signatures.py)**: Structural energy signatures and fingerprints
+- **[src/tnfr/physics/telemetry.py](src/tnfr/physics/telemetry.py)**: Structural field measurement and monitoring
+
+**Implementation Core — Grammar (12 modules)**:
+- **[src/tnfr/operators/grammar.py](src/tnfr/operators/grammar.py)**: Unified grammar U1-U6 validation (public API facade)
+- **[src/tnfr/operators/grammar_validate.py](src/tnfr/operators/grammar_validate.py)**: Main validation entry point (`validate_grammar()`)
+- **[src/tnfr/operators/grammar_core.py](src/tnfr/operators/grammar_core.py)**: Core validator implementation (U1-U4 rule logic)
+- **[src/tnfr/operators/grammar_u6.py](src/tnfr/operators/grammar_u6.py)**: U6 Structural Potential Confinement validation
+- **[src/tnfr/operators/grammar_dynamics.py](src/tnfr/operators/grammar_dynamics.py)**: Incremental grammar-aware dynamic operator selection
+- **[src/tnfr/operators/grammar_application.py](src/tnfr/operators/grammar_application.py)**: Pre-validated grammar-enforced operator application
+- **[src/tnfr/operators/grammar_context.py](src/tnfr/operators/grammar_context.py)**: Runtime context for validation and operator tracking
+- **[src/tnfr/operators/grammar_types.py](src/tnfr/operators/grammar_types.py)**: Enums, exceptions, and validation result types
+- **[src/tnfr/operators/grammar_error_factory.py](src/tnfr/operators/grammar_error_factory.py)**: Introspection-enriched error reporting (U1-U6 → Invariants 1-6 mapping)
+- **[src/tnfr/operators/grammar_patterns.py](src/tnfr/operators/grammar_patterns.py)**: Sequence pattern recognition and diagnostic exemptions
+- **[src/tnfr/operators/grammar_memoization.py](src/tnfr/operators/grammar_memoization.py)**: Validation caching (static aspects only, preserves TNFR semantics)
+- **[src/tnfr/operators/grammar_telemetry.py](src/tnfr/operators/grammar_telemetry.py)**: Grammar constraint telemetry and monitoring
+
+**Implementation Core — Operators (56 modules)**:
+- **[src/tnfr/operators/definitions.py](src/tnfr/operators/definitions.py)**: 13 canonical operators + base class + registry
+- **[src/tnfr/operators/nodal_equation.py](src/tnfr/operators/nodal_equation.py)**: Nodal equation (`∂EPI/∂t = νf·ΔNFR`) implementation
+- **[src/tnfr/operators/canonical_patterns.py](src/tnfr/operators/canonical_patterns.py)**: Bootstrap, Stabilize, Explore, Propagate sequence templates
+- **[src/tnfr/operators/structural_units.py](src/tnfr/operators/structural_units.py)**: Hz_str and structural unit definitions
+- **[src/tnfr/operators/hamiltonian.py](src/tnfr/operators/hamiltonian.py)**: Hamiltonian formulation of nodal dynamics
+- **[src/tnfr/operators/lifecycle.py](src/tnfr/operators/lifecycle.py)**: Node lifecycle management (νf → 0 conditions)
+- **[src/tnfr/operators/health_analyzer.py](src/tnfr/operators/health_analyzer.py)**: Network health diagnostics
+- **[src/tnfr/operators/metrics.py](src/tnfr/operators/metrics.py)**: Operator-level telemetry (C(t), Si, phase, νf)
+- **[src/tnfr/operators/postconditions/](src/tnfr/operators/postconditions/)**: Post-execution contract verification
+- **[src/tnfr/operators/preconditions/](src/tnfr/operators/preconditions/)**: Pre-execution requirement checks
+- **[src/tnfr/operators/strategies/](src/tnfr/operators/strategies/)**: Strategic operator selection algorithms
+- **[src/tnfr/operators/network_analysis/](src/tnfr/operators/network_analysis/)**: Graph topology analysis utilities
+
+**Implementation Core — Mathematics & Engines**:
 - **[src/tnfr/mathematics/](src/tnfr/mathematics/)**: Nodal equation integration hub
 - **[src/tnfr/dynamics/self_optimizing_engine.py](src/tnfr/dynamics/self_optimizing_engine.py)**: Intrinsic agency & auto-optimization
+- **[src/tnfr/riemann/](src/tnfr/riemann/)**: TNFR-Riemann program implementation (14 modules)
+  - **[src/tnfr/riemann/operator.py](src/tnfr/riemann/operator.py)**: Discrete TNFR-Riemann operators
+  - **[src/tnfr/riemann/spectral_proof.py](src/tnfr/riemann/spectral_proof.py)**: Spectral convergence proofs
+  - **[src/tnfr/riemann/complex_extension.py](src/tnfr/riemann/complex_extension.py)**: Complex plane extensions
+  - **[src/tnfr/riemann/spectral_zeta.py](src/tnfr/riemann/spectral_zeta.py)**: Spectral zeta functions
+  - **[src/tnfr/riemann/topology.py](src/tnfr/riemann/topology.py)**: Topology comparison analysis
+  - **[src/tnfr/riemann/spectral_conservation.py](src/tnfr/riemann/spectral_conservation.py)**: Spectral conservation laws
+  - **[src/tnfr/riemann/analytical_convergence.py](src/tnfr/riemann/analytical_convergence.py)**: Analytical convergence analysis
 
 **SDK & Applications**:
-- **[src/tnfr/sdk/](src/tnfr/sdk/)**: Simplified & Fluent API for rapid development
-- **[examples/](examples/)**: Complete 01-40 sequential tutorial suite (42 examples)
-- **[benchmarks/](benchmarks/)**: Production-grade validation suites
+- **[src/tnfr/sdk/](src/tnfr/sdk/)**: Simplified & Fluent API with research-grade access (7 modules)
+  - **[src/tnfr/sdk/simple.py](src/tnfr/sdk/simple.py)**: TetradSnapshot, ConservationReport, TNFR.analyze(), grammar-aware evolution, integrity monitoring
+  - **[src/tnfr/sdk/fluent.py](src/tnfr/sdk/fluent.py)**: Fluent API with auto_optimize()
+  - **[src/tnfr/sdk/adaptive_system.py](src/tnfr/sdk/adaptive_system.py)**: Adaptive system patterns
+- **[examples/](examples/)**: Complete 01-30 sequential tutorial suite (33 files including specialized demos)
+- **[benchmarks/](benchmarks/)**: Production-grade validation suites (14 benchmark scripts)
 
 **Development**:
 - **ARCHITECTURE.md**: System design principles
 - **CONTRIBUTING.md**: Workflow and standards
-- **TESTING.md**: Test strategy (471 passing tests, 9 skipped)
+- **TESTING.md**: Test strategy (1,634+ passing tests)
 
 **Domain Showcases**:
 - **Network Dynamics**: [examples/03_network_formation.py](examples/03_network_formation.py)
@@ -1236,7 +1321,21 @@ When adding to grammar documentation:
 - **Quantum Mechanics**: [examples/13_quantum_mechanics_demo.py](examples/13_quantum_mechanics_demo.py) (Emergent Quantization from Resonant Stability)
 - **Uncertainty & Interference**: [examples/14_uncertainty_and_interference.py](examples/14_uncertainty_and_interference.py) (Structural Uncertainty & Double Slit)
 - **Classical Kinematics**: [examples/15_train_crossing_demo.py](examples/15_train_crossing_demo.py) (Two Trains Problem)
-- **Conservation Laws**: [examples/40_conservation_law_demo.py](examples/40_conservation_law_demo.py) (Structural Conservation Theorem)
+- **Conservation Laws**: [examples/17_conservation_law_demo.py](examples/17_conservation_law_demo.py) (Structural Conservation Theorem)
+- **TNFR-Riemann Program**: [examples/16_riemann_operator_demo.py](examples/16_riemann_operator_demo.py) (Critical parameter analysis)
+- **Riemann Convergence**: [examples/18_riemann_convergence_proof.py](examples/18_riemann_convergence_proof.py) (Spectral convergence proof)
+- **Topology Comparison**: [examples/19_topology_comparison.py](examples/19_topology_comparison.py)
+- **Eigenmode Tetrad**: [examples/20_eigenmode_tetrad.py](examples/20_eigenmode_tetrad.py)
+- **Complex Extension**: [examples/21_complex_extension_demo.py](examples/21_complex_extension_demo.py)
+- **Spectral Zeta**: [examples/22_spectral_zeta_demo.py](examples/22_spectral_zeta_demo.py)
+- **Random Ensemble RMT**: [examples/23_random_ensemble_rmt_demo.py](examples/23_random_ensemble_rmt_demo.py)
+- **Spectral Conservation**: [examples/24_spectral_conservation_demo.py](examples/24_spectral_conservation_demo.py)
+- **Analytical Convergence**: [examples/25_analytical_convergence_demo.py](examples/25_analytical_convergence_demo.py)
+- **Gauge Structure**: [examples/26_gauge_structure_demo.py](examples/26_gauge_structure_demo.py)
+- **Variational Principle**: [examples/27_variational_principle_demo.py](examples/27_variational_principle_demo.py)
+- **Dissipative Systems**: [examples/28_dissipative_systems_demo.py](examples/28_dissipative_systems_demo.py)
+- **Lyapunov Stability**: [examples/29_lyapunov_stability_demo.py](examples/29_lyapunov_stability_demo.py)
+- **Self-Optimization**: [examples/30_self_optimization_demo.py](examples/30_self_optimization_demo.py)
 - **Production Validation**: [tests/](tests/) (comprehensive test suite)
 
 ---
@@ -1246,7 +1345,7 @@ When adding to grammar documentation:
 **Newcomer** (2 hours) - **Start Here**:
 1. **Install**: `pip install tnfr`
 2. **Core Theory**: Read this file (AGENTS.md) completely - **Primary theoretical reference**
-3. **Fundamental Theory**: [Structural Fields and Universal Tetrahedral Correspondence](theory/FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md)
+3. **Fundamental Theory**: [Structural Fields and Universal Tetrahedral Correspondence](theory/FUNDAMENTAL_THEORY.md)
 4. **Original Theory**: [TNFR.pdf](theory/TNFR.pdf) § 1-2 (paradigm, nodal equation)
 5. **First Run**: `python -c "import tnfr; print('TNFR ready!')"`
 6. **Terminology**: Study GLOSSARY.md for definitions
@@ -1298,7 +1397,8 @@ When adding to grammar documentation:
 #### **Structural Potential (Φ_s)** - CANONICAL (First promotion 2025)
 
 - Global structural potential, passive equilibrium states
-- Safety criterion (U6 telemetry): Δ Φ_s < e^ln(2) = 2.0 (binary escape threshold)
+- Safety criterion (U6 telemetry): Δ Φ_s < φ ≈ 1.618 (canonical confinement); theoretical ceiling: 2.0 = e^ln(2) (binary escape)
+- Per-node safety: |Φ_s| < 0.7711 (von Koch fractal bound)
 - For full physics, equations, and validation, see `docs/STRUCTURAL_FIELDS_TETRAD.md`.
 
 ---
@@ -1338,8 +1438,7 @@ capture dynamics C(t) misses.
 - Compute via `compute_phase_curvature(G)` [CANONICAL]
 - Optional multiscale check: `k_phi_multiscale_safety(G, alpha_hint=2.76)`
 
-**Documentation**: See [benchmarks/enhanced_fragmentation_test.py](benchmarks/enhanced_fragmentation_test.py) and
-[benchmarks/phase_curvature_investigation.py](benchmarks/phase_curvature_investigation.py) for empirical validation.
+**Documentation**: See [benchmarks/phase_curvature_investigation.py](benchmarks/phase_curvature_investigation.py) for empirical validation.
 
 ---
 

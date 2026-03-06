@@ -27,7 +27,6 @@ __all__ = [
     "StructuralClipStats",
 ]
 
-
 class StructuralClipStats:
     """Telemetry for structural boundary interventions.
 
@@ -87,20 +86,16 @@ class StructuralClipStats:
             ),
         }
 
-
 # Global statistics instance (optional telemetry)
 _global_stats = StructuralClipStats()
-
 
 def get_clip_stats() -> StructuralClipStats:
     """Return the global clip statistics instance."""
     return _global_stats
 
-
 def reset_clip_stats() -> None:
     """Reset global clip statistics."""
     _global_stats.reset()
-
 
 def structural_clip(
     value: float,

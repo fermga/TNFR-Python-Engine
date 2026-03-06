@@ -16,7 +16,6 @@ from typing import Any
 from ..alias import get_attr
 from ..constants.aliases import ALIAS_DNFR, ALIAS_DEPI
 
-
 def compute_local_coherence_fallback(G: Any, node: Any) -> float:
     """Compute a local coherence proxy from the node's neighborhood.
 

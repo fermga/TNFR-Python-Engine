@@ -30,7 +30,7 @@ See: _check_end_rule() terminal dissonance logic, tests/unit/operators/test_*.py
 
 from __future__ import annotations
 
-from typing import Any, List, Mapping, Sequence
+from typing import Any, Mapping, Sequence
 
 from ..types import Glyph
 from .grammar_types import SequenceValidationResult, SequenceSyntaxError, StructuralPattern
@@ -48,6 +48,12 @@ from ..config.operator_names import (
 )
 from ..validation.compatibility import get_compatibility_level, CompatibilityLevel
 
+# --- State classification thresholds for IL sequence suggestion ---
+_INACTIVE_EPI_THRESHOLD = 0.1        # EPI below this → node inactive
+_HIGH_DNFR_THRESHOLD = 0.8           # ΔNFR above this → high pressure
+_MODERATE_DNFR_LOW = 0.3             # lower bound of moderate ΔNFR range
+_MODERATE_DNFR_HIGH = 0.7            # upper bound of moderate ΔNFR range
+
 __all__ = [
     "validate_sequence",
     "parse_sequence",
@@ -56,7 +62,6 @@ __all__ = [
 ]
 
 # ============================================================================
-
 
 def _canonicalize_tokens(names: Sequence[str]) -> tuple[list[str], list[int]]:
     canonical: list[str] = []
@@ -68,7 +73,6 @@ def _canonicalize_tokens(names: Sequence[str]) -> tuple[list[str], list[int]]:
         else:
             canonical.append(tok)
     return canonical, non_str_indices
-
 
 def _compute_metadata(tokens: list[str]) -> dict[str, object]:
     from .pattern_detection import detect_pattern
@@ -90,7 +94,6 @@ def _compute_metadata(tokens: list[str]) -> dict[str, object]:
     except Exception:
         meta["detected_pattern"] = StructuralPattern.UNKNOWN.value
     return meta
-
 
 def _check_start_rule(
     tokens: list[str], *, context: Mapping[str, Any] | None = None
@@ -123,7 +126,6 @@ def _check_start_rule(
             ),
         )
     return True, None
-
 
 def _check_end_rule(
     tokens: list[str], *, context: Mapping[str, Any] | None = None
@@ -166,7 +168,6 @@ def _check_end_rule(
         )
     return True, None
 
-
 def _check_thol_closure(tokens: list[str]) -> tuple[bool, str | None]:
     if (
         SELF_ORGANIZATION in tokens
@@ -180,7 +181,6 @@ def _check_thol_closure(tokens: list[str]) -> tuple[bool, str | None]:
             ),
         )
     return True, None
-
 
 def _check_adjacent_compatibility(
     tokens: list[str],
@@ -217,7 +217,6 @@ def _check_adjacent_compatibility(
         prev = cur
     return True, None, None
 
-
 def _is_canonical_therapeutic_pattern(tokens: list[str]) -> bool:
     """Check if sequence matches a known canonical therapeutic pattern.
     
@@ -238,7 +237,6 @@ def _is_canonical_therapeutic_pattern(tokens: list[str]) -> bool:
         return True
     
     return False
-
 
 def _check_transformer_windows(
     tokens: list[str],
@@ -282,7 +280,6 @@ def _check_transformer_windows(
 
     return True, None, None
 
-
 def _build_result(
     *,
     names: Sequence[str],
@@ -317,7 +314,6 @@ def _build_result(
         error=error,
     )
 
-
 def validate_sequence(
     names: Any, *, context: Mapping[str, Any] | None = None, **kwargs: Any
 ) -> SequenceValidationResult:
@@ -333,7 +329,7 @@ def validate_sequence(
         bad = ", ".join(sorted(kwargs.keys()))
         raise TypeError(f"unexpected keyword argument(s): {bad}")
 
-    # Type checks and canonicalization
+    # type checks and canonicalization
     if not isinstance(names, (list, tuple)):
         try:
             names = list(names)  # type: ignore[assignment]
@@ -468,10 +464,9 @@ def validate_sequence(
         metadata=meta,
     )
 
-
 def parse_sequence(names: Sequence[str]) -> SequenceValidationResult:
     """Parse and validate sequence; raise on structural errors."""
-    # Type and canonical checks
+    # type and canonical checks
     if not isinstance(names, (list, tuple)):
         names = list(names)  # type: ignore[assignment]
     canon, non_str = _canonicalize_tokens(names)
@@ -545,7 +540,6 @@ def parse_sequence(names: Sequence[str]) -> SequenceValidationResult:
         metadata=meta,
     )
 
-
 class SequenceValidationResultWithHealth:
     """Validation result wrapper that includes health metrics."""
     
@@ -587,7 +581,6 @@ class SequenceValidationResultWithHealth:
         """Validation error."""
         return self._validation_result.error
 
-
 def validate_sequence_with_health(sequence):
     """Validate sequence and compute health metrics.
 
@@ -625,7 +618,6 @@ def validate_sequence_with_health(sequence):
             health_metrics = None
     
     return SequenceValidationResultWithHealth(result, health_metrics)
-
 
 # Compatibility: Canonical IL sequences and helpers
 
@@ -695,10 +687,9 @@ IL_ANTIPATTERNS: Mapping[str, Mapping[str, object]] = {
     },
 }
 
-
 def recognize_il_sequences(
     glyphs: Sequence[Glyph],
-) -> List[Mapping[str, object]]:
+) -> list[Mapping[str, object]]:
     """Recognize canonical two-step IL-related sequences.
 
     Returns matches with names/positions; antipatterns flagged.
@@ -735,7 +726,7 @@ def recognize_il_sequences(
         for v in CANONICAL_IL_SEQUENCES.values()
     }
     
-    results: List[Mapping[str, object]] = []
+    results: list[Mapping[str, object]] = []
     for i in range(len(processed_glyphs) - 1):
         pair = (processed_glyphs[i], processed_glyphs[i + 1])
         name = pattern_by_glyphs.get(pair)
@@ -793,7 +784,6 @@ def recognize_il_sequences(
             )
     return results
 
-
 def optimize_il_sequence(
     pattern: Sequence[Glyph], allow_fusion: bool = True
 ) -> Sequence[Glyph]:
@@ -810,10 +800,9 @@ def optimize_il_sequence(
         return pattern
     return pattern  # For now just return original
 
-
 def suggest_il_sequence(
     current: Mapping[str, float], goal: Mapping[str, object] = None
-) -> List[str]:
+) -> list[str]:
     """Suggest canonical 2-step IL sequence for a starting state."""
     if goal is None:
         goal = {}
@@ -822,17 +811,17 @@ def suggest_il_sequence(
     dnfr = current.get("dnfr", 0.0)
     
     # Inactive node needs activation (low EPI but functioning vf)
-    if epi < 0.1:
+    if epi < _INACTIVE_EPI_THRESHOLD:
         if goal.get("reactivate", False) or goal.get("consolidate", False):
             return ["emission", "coherence"]
     
     # High ΔNFR needs reduction
-    if dnfr > 0.8:
+    if dnfr > _HIGH_DNFR_THRESHOLD:
         if goal.get("dnfr_target") == "low":
             return ["dissonance", "coherence"]
     
     # Moderate ΔNFR, direct coherence
-    if 0.3 < dnfr < 0.7:
+    if _MODERATE_DNFR_LOW < dnfr < _MODERATE_DNFR_HIGH:
         if goal.get("dnfr_target") == "low":
             return ["coherence"]
     
@@ -845,14 +834,13 @@ def suggest_il_sequence(
         return ["coherence"]
     
     # Default fallback - but need to match test case logic
-    if epi < 0.1 and goal.get("consolidate", False):
+    if epi < _INACTIVE_EPI_THRESHOLD and goal.get("consolidate", False):
         # For very low EPI with consolidate goal, suggest activation first
         return ["emission", "coherence"]
     
     return ["emission", "coherence"]
 
 # Duplicate functions removed - main implementations above
-
 
 # Extend __all__ with compatibility symbols
 __all__ += [
@@ -862,7 +850,6 @@ __all__ += [
     "optimize_il_sequence",
     "suggest_il_sequence",
 ]
-
 
 # Grammar Validator Class
 # ============================================================================

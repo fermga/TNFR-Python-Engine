@@ -40,20 +40,19 @@ phase checks (UM prerequisites) aligned with U2/U3.
 
 from __future__ import annotations
 
-from typing import Any, Dict, Sequence, List
+from typing import Any, Sequence
 
 from .aggregator import run_structural_validation
 
 __all__ = ["compute_structural_health"]
 
-
 def compute_structural_health(
     G: Any,
     *,
     sequence: Sequence[str] | None = None,
-    baseline_phi_s: Dict[Any, float] | None = None,
+    baseline_phi_s: dict[Any, float] | None = None,
     **threshold_overrides: Any,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Compute structural health summary.
 
     Parameters
@@ -80,7 +79,7 @@ def compute_structural_health(
         **threshold_overrides,
     )
 
-    recs: List[str] = []
+    recs: list[str] = []
     th = report.thresholds_exceeded
 
     if report.status == "invalid":
@@ -97,7 +96,7 @@ def compute_structural_health(
         recs.append("monitor_scaling")
 
     # Deduplicate while preserving order
-    dedup_recs: List[str] = []
+    dedup_recs: list[str] = []
     seen = set()
     for r in recs:
         if r not in seen:

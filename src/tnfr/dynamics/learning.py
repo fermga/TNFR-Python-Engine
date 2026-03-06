@@ -28,7 +28,6 @@ from ..types import TNFRGraph
 
 __all__ = ["AdaptiveLearningSystem"]
 
-
 class AdaptiveLearningSystem:
     """System for adaptive learning using TNFR operators.
 

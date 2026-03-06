@@ -52,7 +52,6 @@ __all__ = (
     "TraceContext",
 )
 
-
 @runtime_checkable
 class OperatorRegistry(Protocol):
     """Interface for registering and retrieving structural operators.
@@ -92,7 +91,6 @@ class OperatorRegistry(Protocol):
         """
         ...
 
-
 @runtime_checkable
 class ValidationService(Protocol):
     """Interface for validating sequences and graph states.
@@ -131,7 +129,6 @@ class ValidationService(Protocol):
             When node attributes violate canonical bounds or type constraints.
         """
         ...
-
 
 @runtime_checkable
 class DynamicsEngine(Protocol):
@@ -183,7 +180,6 @@ class DynamicsEngine(Protocol):
         """
         ...
 
-
 @runtime_checkable
 class TraceContext(Protocol):
     """Interface for trace context managers used by telemetry collectors."""
@@ -221,7 +217,6 @@ class TraceContext(Protocol):
             State after operator application.
         """
         ...
-
 
 @runtime_checkable
 class TelemetryCollector(Protocol):

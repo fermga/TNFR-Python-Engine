@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import math
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Set, Tuple
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..types import TNFRGraph
@@ -27,6 +27,13 @@ except ImportError:
 from ..alias import get_attr
 from ..constants.aliases import ALIAS_THETA, ALIAS_VF
 
+# ---------------------------------------------------------------------------
+# Network density / clustering thresholds for partition sizing
+# ---------------------------------------------------------------------------
+_DENSITY_DENSE_THRESHOLD = 0.5
+_DENSITY_MEDIUM_THRESHOLD = 0.1
+_CLUSTERING_HIGH_THRESHOLD = 0.6
+_CLUSTERING_LOW_THRESHOLD = 0.2
 
 class FractalPartitioner:
     """Partitions TNFR networks respecting structural coherence.
@@ -75,7 +82,7 @@ class FractalPartitioner:
 
     def __init__(
         self,
-        max_partition_size: Optional[int] = 100,
+        max_partition_size: int | None = 100,
         coherence_threshold: float = 0.3,
         use_spatial_index: bool = True,
         adaptive: bool = True,
@@ -87,7 +94,7 @@ class FractalPartitioner:
         self._kdtree = None
         self._node_index_map = None
 
-    def partition_network(self, graph: TNFRGraph) -> List[Tuple[Set[Any], TNFRGraph]]:
+    def partition_network(self, graph: TNFRGraph) -> list[tuple[set[Any], TNFRGraph]]:
         """Partition network into coherent subgraphs.
 
         Parameters
@@ -97,8 +104,8 @@ class FractalPartitioner:
 
         Returns
         -------
-        List[Tuple[Set[Any], TNFRGraph]]
-            List of (node_set, subgraph) tuples for parallel processing.
+        list[tuple[set[Any], TNFRGraph]]
+            list of (node_set, subgraph) tuples for parallel processing.
 
         Notes
         -----
@@ -183,10 +190,10 @@ class FractalPartitioner:
         # Adjust based on density
         density = nx.density(graph)
 
-        if density > 0.5:
+        if density > _DENSITY_DENSE_THRESHOLD:
             # Dense networks: smaller partitions reduce communication overhead
             size_multiplier = 0.5
-        elif density > 0.1:
+        elif density > _DENSITY_MEDIUM_THRESHOLD:
             # Medium density: balanced partitioning
             size_multiplier = 1.0
         else:
@@ -196,10 +203,10 @@ class FractalPartitioner:
         # Adjust based on clustering
         try:
             avg_clustering = nx.average_clustering(graph)
-            if avg_clustering > 0.6:
+            if avg_clustering > _CLUSTERING_HIGH_THRESHOLD:
                 # High clustering: communities are well-defined, can use smaller partitions
                 size_multiplier *= 0.8
-            elif avg_clustering < 0.2:
+            elif avg_clustering < _CLUSTERING_LOW_THRESHOLD:
                 # Low clustering: use larger partitions
                 size_multiplier *= 1.2
         except (AttributeError, ZeroDivisionError, ValueError, TypeError):
@@ -254,8 +261,8 @@ class FractalPartitioner:
         self._node_index_map = {i: node for i, node in enumerate(nodes)}
 
     def _find_coherent_neighbors_spatial(
-        self, graph: TNFRGraph, seed: Any, available: Set[Any], k: int = 20
-    ) -> List[Any]:
+        self, graph: TNFRGraph, seed: Any, available: set[Any], k: int = 20
+    ) -> list[Any]:
         """Find k nearest coherent neighbors using spatial index.
 
         Uses KDTree for O(log n) nearest neighbor finding instead of O(n).
@@ -266,15 +273,15 @@ class FractalPartitioner:
             Network graph
         seed : Any
             Seed node
-        available : Set[Any]
+        available : set[Any]
             Available nodes to consider
         k : int
             Number of nearest neighbors to find
 
         Returns
         -------
-        List[Any]
-            List of up to k nearest coherent neighbors
+        list[Any]
+            list of up to k nearest coherent neighbors
         """
         if self._kdtree is None or self._node_index_map is None:
             # Fallback to graph neighbors
@@ -306,7 +313,7 @@ class FractalPartitioner:
 
         return neighbors
 
-    def _detect_tnfr_communities(self, graph: TNFRGraph) -> List[Set[Any]]:
+    def _detect_tnfr_communities(self, graph: TNFRGraph) -> list[set[Any]]:
         """Detect communities using TNFR coherence metrics.
 
         Uses structural frequency and phase to grow coherent communities rather
@@ -325,8 +332,8 @@ class FractalPartitioner:
         return communities
 
     def _grow_coherent_community(
-        self, graph: TNFRGraph, seed: Any, available: Set[Any]
-    ) -> Set[Any]:
+        self, graph: TNFRGraph, seed: Any, available: set[Any]
+    ) -> set[Any]:
         """Grow community from seed based on structural coherence.
 
         Parameters
@@ -335,13 +342,13 @@ class FractalPartitioner:
             Full network graph
         seed : Any
             Starting node for community growth
-        available : Set[Any]
+        available : set[Any]
             Nodes that haven't been assigned to communities yet
 
         Returns
         -------
-        Set[Any]
-            Set of nodes forming a coherent community
+        set[Any]
+            set of nodes forming a coherent community
 
         Notes
         -----
@@ -390,7 +397,7 @@ class FractalPartitioner:
         return community
 
     def _compute_community_coherence(
-        self, graph: TNFRGraph, community: Set[Any], candidate: Any
+        self, graph: TNFRGraph, community: set[Any], candidate: Any
     ) -> float:
         """Compute coherence between candidate and existing community.
 
@@ -400,7 +407,7 @@ class FractalPartitioner:
         ----------
         graph : TNFRGraph
             Network graph
-        community : Set[Any]
+        community : set[Any]
             Existing community nodes
         candidate : Any
             Candidate node to evaluate
@@ -449,7 +456,7 @@ class FractalPartitioner:
         graph: TNFRGraph,
         output_dir: Path,
         partition_id: str,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Partition network and export manifest for self-optimization.
 
         Parameters
@@ -463,9 +470,9 @@ class FractalPartitioner:
 
         Returns
         -------
-        Dict[str, Any]
+        dict[str, Any]
             Dictionary with keys:
-            - 'partitions': List[(node_set, subgraph)] from partition_network
+            - 'partitions': list[(node_set, subgraph)] from partition_network
             - 'manifest_absolute': Path to partition manifest
             - 'summary_absolute': Path to partition summary
 

@@ -29,7 +29,7 @@ from __future__ import annotations
 
 import math
 import logging
-from typing import Any, Dict, List, Optional, Union, Tuple, Iterable, Sequence
+from typing import Any, Iterable, Sequence
 from dataclasses import dataclass
 
 from ..errors import TNFRValueError
@@ -58,8 +58,8 @@ try:
         trapezoid = np.trapz
 
     # Standard array types for TNFR operations
-    ArrayLike = Union[np.ndarray, List[float], Tuple[float, ...]]
-    ComplexArray = Union[np.ndarray, List[complex]]
+    ArrayLike = np.ndarray | list[float] | tuple[float, ...]
+    ComplexArray = np.ndarray | list[complex]
     
 except ImportError:
     # Fallback for environments without NumPy
@@ -68,15 +68,14 @@ except ImportError:
     NUMPY_AVAILABLE = False
     
     # Fallback types
-    ArrayLike = Union[List[float], Tuple[float, ...]]
-    ComplexArray = List[complex]
+    ArrayLike = list[float] | tuple[float, ...]
+    ComplexArray = list[complex]
     
     # Fallback types
-    ArrayLike = Union[List[float], Tuple[float, ...]]
-    ComplexArray = Union[List[complex], Tuple[complex, ...]]
+    ArrayLike = list[float] | tuple[float, ...]
+    ComplexArray = list[complex] | tuple[complex, ...]
 
 logger = logging.getLogger(__name__)
-
 
 # ============================================================================
 # UNIVERSAL MATHEMATICAL CONSTANTS - Tetrahedral Correspondence Foundation
@@ -116,10 +115,11 @@ class TNFRConstants:
     MAX_STRUCTURAL_FREQUENCY: float = 1000.0  # Hz_str practical maximum
     
     # Structural field bounds from tetrahedral correspondence
+    # (Canonical source: constants/canonical.py)
     STRUCTURAL_POTENTIAL_ESCAPE_THRESHOLD: float = 2.0  # Δ Φ_s < 2.0 (binary escape)
-    PHASE_GRADIENT_STABILITY_THRESHOLD: float = 0.183736807  # |∇φ| < γ/π (Kuramoto critical coupling)
-    PHASE_CURVATURE_CONFINEMENT_THRESHOLD: float = 2.8274  # |K_φ| < 0.9×π
-    COHERENCE_LENGTH_CRITICAL_RATIO: float = 3.1416  # ξ_C threshold ratio
+    PHASE_GRADIENT_STABILITY_THRESHOLD: float = float(GAMMA / PI)  # |∇φ| < γ/π ≈ 0.1837
+    PHASE_CURVATURE_CONFINEMENT_THRESHOLD: float = float(0.9 * PI)  # |K_φ| < 0.9×π ≈ 2.8274
+    COHERENCE_LENGTH_CRITICAL_RATIO: float = PI  # ξ_C threshold = π
     
     # Numerical precision constants
     FLOAT_TOLERANCE: float = 1e-12  # Numerical precision for TNFR operations
@@ -135,10 +135,8 @@ class TNFRConstants:
     DEFAULT_SEED: int = 42  # Default reproducible seed
     SEED_RANGE_MAX: int = 2**31 - 1  # Maximum valid seed value
 
-
 # Global constants instance
 CONSTANTS = TNFRConstants()
-
 
 # ============================================================================
 # UNIFIED NUMERICAL OPERATIONS
@@ -171,7 +169,7 @@ class TNFRNumericalUtilities:
         coherence = num.compute_coherence_metric(data)
     """
     
-    def __init__(self, seed: Optional[int] = None):
+    def __init__(self, seed: int | None = None):
         """Initialize numerical utilities."""
         self.seed = seed or CONSTANTS.DEFAULT_SEED
         
@@ -240,9 +238,9 @@ class TNFRNumericalUtilities:
     
     def generate_random_array(
         self, 
-        size: Union[int, Tuple[int, ...]], 
+        size: int | tuple[int, ...], 
         distribution: str = "uniform",
-        seed: Optional[int] = None
+        seed: int | None = None
     ) -> ArrayLike:
         """Generate random array with reproducible seeding.
         
@@ -376,7 +374,7 @@ class TNFRNumericalUtilities:
             else:
                 return max(min_val, min(max_val, value))
 
-    def kahan_sum_nd(self, values: Iterable[Sequence[float]], dims: int) -> Tuple[float, ...]:
+    def kahan_sum_nd(self, values: Iterable[Sequence[float]], dims: int) -> tuple[float, ...]:
         """Return compensated sums of ``values`` with ``dims`` components.
         
         TNFR PHYSICS: Essential for high-precision accumulation of structural
@@ -402,7 +400,7 @@ class TNFRNumericalUtilities:
                 totals[i] = t
         return tuple(float(totals[i] + comps[i]) for i in range(dims))
     
-    def get_statistics(self) -> Dict[str, Any]:
+    def get_statistics(self) -> dict[str, Any]:
         """Get numerical utilities performance statistics."""
         return {
             "numpy_available": NUMPY_AVAILABLE,
@@ -424,16 +422,14 @@ class TNFRNumericalUtilities:
         
         logger.info(f"Reset numerical utilities seed to {new_seed}")
 
-
 # ============================================================================
 # GLOBAL UNIFIED NUMERICAL INTERFACE
 # ============================================================================
 
 # Global numerical utilities instance
-_unified_numerical_utils: Optional[TNFRNumericalUtilities] = None
+_unified_numerical_utils: TNFRNumericalUtilities | None = None
 
-
-def get_unified_numerical_utils(seed: Optional[int] = None) -> TNFRNumericalUtilities:
+def get_unified_numerical_utils(seed: int | None = None) -> TNFRNumericalUtilities:
     """Get or create global unified numerical utilities.
     
     This provides a singleton interface for all TNFR numerical operations
@@ -457,7 +453,6 @@ def get_unified_numerical_utils(seed: Optional[int] = None) -> TNFRNumericalUtil
     
     return _unified_numerical_utils
 
-
 # ============================================================================
 # CONVENIENCE FUNCTIONS - Direct access to unified operations
 # ============================================================================
@@ -466,47 +461,38 @@ def normalize_phase(phase: ArrayLike) -> ArrayLike:
     """Normalize phase - convenience function."""
     return get_unified_numerical_utils().normalize_phase(phase)
 
-
 def compute_phase_difference(phase1: ArrayLike, phase2: ArrayLike) -> ArrayLike:
     """Compute phase difference - convenience function."""
     return get_unified_numerical_utils().compute_phase_difference(phase1, phase2)
 
-
-def generate_random_array(size: Union[int, Tuple[int, ...]], **kwargs) -> ArrayLike:
+def generate_random_array(size: int | tuple[int, ...], **kwargs) -> ArrayLike:
     """Generate random array - convenience function."""
     return get_unified_numerical_utils().generate_random_array(size, **kwargs)
-
 
 def safe_divide(numerator: ArrayLike, denominator: ArrayLike, fallback: float = 0.0) -> ArrayLike:
     """Safe division - convenience function."""
     return get_unified_numerical_utils().safe_divide(numerator, denominator, fallback)
 
-
 def compute_circular_mean(angles: ArrayLike) -> float:
     """Compute circular mean - convenience function."""
     return get_unified_numerical_utils().compute_circular_mean(angles)
-
 
 def is_finite_array(arr: ArrayLike) -> bool:
     """Check finite array - convenience function."""
     return get_unified_numerical_utils().is_finite_array(arr)
 
-
 def clamp_value(value: ArrayLike, min_val: float, max_val: float) -> ArrayLike:
     """Clamp value - convenience function."""
     return get_unified_numerical_utils().clamp_value(value, min_val, max_val)
 
-
-def kahan_sum_nd(values: Iterable[Sequence[float]], dims: int) -> Tuple[float, ...]:
+def kahan_sum_nd(values: Iterable[Sequence[float]], dims: int) -> tuple[float, ...]:
     """Kahan summation - convenience function."""
     return get_unified_numerical_utils().kahan_sum_nd(values, dims)
-
 
 def reset_global_seed(seed: int) -> None:
     """Reset global numerical seed - convenience function."""
     utils = get_unified_numerical_utils()
     utils.reset_seed(seed)
-
 
 # ============================================================================
 # LEGACY COMPATIBILITY - Gradual migration support

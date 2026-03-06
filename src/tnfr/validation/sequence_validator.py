@@ -13,7 +13,6 @@ __all__ = [
     "SequenceSemanticValidator",
 ]
 
-
 class SequenceSemanticValidator:
     """Validates semantics of operator sequences."""
 
@@ -55,12 +54,12 @@ class SequenceSemanticValidator:
         Parameters
         ----------
         sequence : list[str]
-            List of operator names in sequence.
+            list of operator names in sequence.
 
         Returns
         -------
         list[InvariantViolation]
-            List of semantic violations found.
+            list of semantic violations found.
         """
         violations: list[InvariantViolation] = []
 
@@ -107,7 +106,7 @@ class SequenceSemanticValidator:
                     )
                     continue
 
-                # Verificar reglas 'not_followed_by'
+                # Verify 'not_followed_by' rules
                 if "not_followed_by" in rule:
                     next_pos = i + len(pattern)
                     if next_pos < len(sequence):
@@ -132,9 +131,9 @@ class SequenceSemanticValidator:
                             )
                         )
 
-                # Verificar reglas 'not_preceded_by'
+                # Verify 'not_preceded_by' rules
                 if "not_preceded_by" in rule:
-                    if i == 0:  # No hay operador anterior
+                    if i == 0:  # No preceding operator
                         violations.append(
                             InvariantViolation(
                                 invariant_id=0,

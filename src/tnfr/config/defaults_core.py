@@ -18,7 +18,7 @@ from ..constants.canonical import (
     DT_CANONICAL, DT_MIN_CANONICAL, EPI_MAX_CANONICAL, EPI_MIN_CANONICAL,
     VF_MAX_CANONICAL, VF_MIN_CANONICAL, KL_MIN_CANONICAL, KL_MAX_CANONICAL,
     UP_CANONICAL, DOWN_CANONICAL, AL_BOOST_CANONICAL, VF_ADAPT_MU_CANONICAL,
-    ZHIR_VF_THRESHOLD_CANONICAL, NUL_EPI_THRESHOLD_CANONICAL, GLYPH_SELECTOR_MARGIN_CANONICAL
+    GLYPH_SELECTOR_MARGIN_CANONICAL
 )
 
 # U6 Structural Potential Confinement Constants
@@ -35,7 +35,6 @@ SELECTOR_THRESHOLD_DEFAULTS: Mapping[str, float] = MappingProxyType(
         "accel_lo": round(GAMMA / (PHI * PI), 3),  # γ/(φ×π) ≈ 0.113 (tetrahedral correspondence: Euler constant constrained by golden-geometric product)
     }
 )
-
 
 @dataclass(frozen=True, slots=True)
 class CoreDefaults:
@@ -58,15 +57,15 @@ class CoreDefaults:
     DNFR_WEIGHTS: dict[str, float] = field(
         default_factory=lambda: {
             "phase": round(PHI_GAMMA_NORMALIZED, 3),      # φ/(φ+γ) ≈ 0.737 (dominant golden-euler)
-            "epi": round(GAMMA_PI_RATIO, 3),             # γ/(π+γ) ≈ 0.155 (euleriana-pi estabilizadora)
-            "vf": round(PI_MINUS_E_OVER_PI * (2 / 3), 3),   # ((π-e)/π) * (2/3) ≈ 0.089 (transcendental moderada)
+            "epi": round(GAMMA_PI_RATIO, 3),             # γ/(π+γ) ≈ 0.155 (Euler-pi stabilizer)
+            "vf": round(PI_MINUS_E_OVER_PI * (2 / 3), 3),   # ((π-e)/π) * (2/3) ≈ 0.089 (moderate transcendental)
             "topo": 0.0,                                 # Topological weight remains zero
         }
     )
     SI_WEIGHTS: dict[str, float] = field(
         default_factory=lambda: {
             "alpha": round(PHI_GAMMA_NORMALIZED, 3),     # φ/(φ+γ) ≈ 0.737 (golden coherence)
-            "beta": round(GAMMA_PI_RATIO, 3),            # γ/(π+γ) ≈ 0.155 (estabilidad euleriana)
+            "beta": round(GAMMA_PI_RATIO, 3),            # γ/(π+γ) ≈ 0.155 (Euler stability)
             "gamma": round(GAMMA / (PHI * PI), 3)  # γ/(φ×π) ≈ 0.113 (tetrahedral reorganization via Euler constant constrained by golden-geometric product)
         }
     )
@@ -196,7 +195,6 @@ class CoreDefaults:
     VAL_FRACTAL_RATIO_MIN: float = 0.5  # Minimum vf_growth/epi_growth ratio for fractality
     VAL_FRACTAL_RATIO_MAX: float = PHI  # φ ≈ 1.618 (golden ratio for fractal bounds)
 
-
 @dataclass(frozen=True, slots=True)
 class RemeshDefaults:
     """Default parameters for the remeshing subsystem.
@@ -224,7 +222,6 @@ class RemeshDefaults:
     REMESH_TAU_LOCAL: int = 4
     REMESH_ALPHA: float = 0.5
     REMESH_ALPHA_HARD: bool = False
-
 
 _core_defaults = asdict(CoreDefaults())
 _remesh_defaults = asdict(RemeshDefaults())

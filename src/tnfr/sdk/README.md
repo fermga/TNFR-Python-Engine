@@ -285,6 +285,32 @@ network.apply_sequence(seq, repeat=5)
 
 All sequences follow TNFR grammar rules and maintain canonical invariants:
 
+---
+
+## Theory ↔ SDK Cross-References
+
+Each SDK feature derives from specific theoretical foundations:
+
+| SDK Method | Physics | Theory Document |
+|------------|---------|-----------------|
+| `TNFR.create(n).ring()` | Network topology, nodal equation | [FUNDAMENTAL_THEORY.md](../../../theory/FUNDAMENTAL_THEORY.md) |
+| `.tetrad()` → `TetradSnapshot` | Φ_s, \|∇φ\|, K_φ, ξ_C | [EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md](../../../theory/EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md) |
+| `.conservation()` → `ConservationReport` | Noether charge, Lyapunov stability | [STRUCTURAL_CONSERVATION_THEOREM.md](../../../theory/STRUCTURAL_CONSERVATION_THEOREM.md) |
+| `.evolve_grammar_aware(steps)` | U1–U6 proactive enforcement | [UNIFIED_GRAMMAR_RULES.md](../../../theory/UNIFIED_GRAMMAR_RULES.md) |
+| `.integrity_check()` → `IntegrityReport` | 13/13 operator postconditions | [STRUCTURAL_STABILITY_AND_DYNAMICS.md](../../../theory/STRUCTURAL_STABILITY_AND_DYNAMICS.md) |
+| `.tensor_invariants()` | Energy density ℰ, topological charge 𝒬 | [EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md](../../../theory/EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md) |
+| `.emergent_fields()` | Chirality χ, symmetry breaking 𝒮 | [EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md](../../../theory/EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md) |
+| `.telemetry()` | C(t), Si, phase, νf | [FUNDAMENTAL_THEORY.md](../../../theory/FUNDAMENTAL_THEORY.md) |
+| `.auto_optimize()` | Gradient descent on structural manifold | [AGENTS.md § Self-Optimizing Dynamics](../../../AGENTS.md) |
+| `TNFR.analyze(net)` | Comprehensive structural analysis | [APPLIED_STRUCTURAL_ANALYSIS.md](../../../theory/APPLIED_STRUCTURAL_ANALYSIS.md) |
+
+### Related Documentation
+
+- **Theory hub**: [theory/README.md](../../../theory/README.md) — all 12 theory documents with SDK pointers
+- **Examples**: [examples/README.md](../../../examples/README.md) — 30+ executable demonstrations with SDK links
+- **Primary reference**: [AGENTS.md](../../../AGENTS.md) — complete TNFR theoretical framework
+- **Glossary**: [theory/GLOSSARY.md](../../../theory/GLOSSARY.md) — canonical terminology definitions
+
 - **`basic_activation`**: `[emission, reception, coherence, resonance, silence]`
   - Initiates network with fundamental operators
   

@@ -40,7 +40,7 @@ breaking existing consumers.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, List, Sequence
+from typing import Any, Sequence
 
 from .definitions import get_operator_meta
 from .grammar_core import GrammarValidator
@@ -52,7 +52,6 @@ __all__ = [
     "make_grammar_error",
 ]
 
-
 _RULE_INVARIANTS = {
     "U1a": (1, 4),
     "U1b": (4,),
@@ -62,7 +61,6 @@ _RULE_INVARIANTS = {
     "U4b": (3, 4, 7),
     "U6_CONFINEMENT": (3, 9),
 }
-
 
 @dataclass(slots=True)
 class ExtendedGrammarError:
@@ -119,7 +117,6 @@ class ExtendedGrammarError:
             },
         )
 
-
 def make_grammar_error(
     *,
     rule: str,
@@ -153,18 +150,17 @@ def make_grammar_error(
         index=index,
     )
 
-
 def collect_grammar_errors(
     sequence: Sequence[Any],
     epi_initial: float = 0.0,
-) -> List[ExtendedGrammarError]:
+) -> list[ExtendedGrammarError]:
     """Run canonical validations and build structured error list.
 
     Only U1-U4 are active fail conditions; U6 confinement would attach
     separately when integrated with telemetry (read-only safety check).
     """
     validator = GrammarValidator()
-    errors: List[ExtendedGrammarError] = []
+    errors: list[ExtendedGrammarError] = []
 
     # Accept glyph strings by wrapping them in lightweight stubs
     # expected by GrammarValidator (which accesses .name / .canonical_name).
@@ -190,7 +186,7 @@ def collect_grammar_errors(
             self.canonical_name = canonical
             self.name = canonical
 
-    normalized: List[Any] = [
+    normalized: list[Any] = [
         (_OpStub(op) if isinstance(op, str) else op) for op in sequence
     ]
 

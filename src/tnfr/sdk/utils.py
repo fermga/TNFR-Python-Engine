@@ -6,7 +6,7 @@ analysis, and visualization support.
 
 from __future__ import annotations
 
-from typing import Dict, List, Optional, Tuple, Any
+from typing import Any
 import json
 from pathlib import Path
 
@@ -19,24 +19,23 @@ __all__ = [
     "import_from_json",
 ]
 
-
 def compare_networks(
-    networks: Dict[str, Any],
-    metrics: Optional[List[str]] = None,
-) -> Dict[str, Dict[str, float]]:
+    networks: dict[str, Any],
+    metrics: list[str] | None = None,
+) -> dict[str, dict[str, float]]:
     """Compare metrics across multiple networks.
 
     Parameters
     ----------
-    networks : Dict[str, NetworkResults]
+    networks : dict[str, NetworkResults]
         Dictionary mapping network names to their results.
-    metrics : List[str], optional
-        List of metrics to compare. If None, compares all available.
+    metrics : list[str], optional
+        list of metrics to compare. If None, compares all available.
         Options: 'coherence', 'avg_si', 'avg_delta_nfr', 'node_count'
 
     Returns
     -------
-    Dict[str, Dict[str, float]]
+    dict[str, dict[str, float]]
         Comparison table with metrics for each network.
 
     Examples
@@ -71,8 +70,7 @@ def compare_networks(
 
     return comparison
 
-
-def compute_network_statistics(results: Any) -> Dict[str, float]:
+def compute_network_statistics(results: Any) -> dict[str, float]:
     """Compute extended statistics for a network.
 
     Parameters
@@ -82,7 +80,7 @@ def compute_network_statistics(results: Any) -> Dict[str, float]:
 
     Returns
     -------
-    Dict[str, float]
+    dict[str, float]
         Dictionary of computed statistics.
 
     Examples
@@ -133,7 +131,6 @@ def compute_network_statistics(results: Any) -> Dict[str, float]:
 
     return stats
 
-
 def export_to_json(
     network_data: Any,
     filepath: Path | str,
@@ -172,8 +169,7 @@ def export_to_json(
     with open(filepath, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=indent, ensure_ascii=False)
 
-
-def import_from_json(filepath: Path | str) -> Dict[str, Any]:
+def import_from_json(filepath: Path | str) -> dict[str, Any]:
     """Import network data from JSON file.
 
     Parameters
@@ -183,7 +179,7 @@ def import_from_json(filepath: Path | str) -> Dict[str, Any]:
 
     Returns
     -------
-    Dict[str, Any]
+    dict[str, Any]
         Dictionary with network data.
 
     Examples
@@ -199,18 +195,17 @@ def import_from_json(filepath: Path | str) -> Dict[str, Any]:
 
     return data
 
-
 def format_comparison_table(
-    comparison: Dict[str, Dict[str, float]],
-    metrics: Optional[List[str]] = None,
+    comparison: dict[str, dict[str, float]],
+    metrics: list[str] | None = None,
 ) -> str:
     """Format network comparison as a readable table.
 
     Parameters
     ----------
-    comparison : Dict[str, Dict[str, float]]
+    comparison : dict[str, dict[str, float]]
         Comparison data from compare_networks().
-    metrics : List[str], optional
+    metrics : list[str], optional
         Metrics to include in table. If None, uses all available.
 
     Returns
@@ -248,8 +243,7 @@ def format_comparison_table(
 
     return "\n".join(lines)
 
-
-def suggest_sequence_for_goal(goal: str) -> Tuple[str, str]:
+def suggest_sequence_for_goal(goal: str) -> tuple[str, str]:
     """Suggest operator sequence for a specific goal.
 
     Parameters
@@ -264,7 +258,7 @@ def suggest_sequence_for_goal(goal: str) -> Tuple[str, str]:
 
     Returns
     -------
-    Tuple[str, str]
+    tuple[str, str]
         (sequence_name, description) tuple.
 
     Examples

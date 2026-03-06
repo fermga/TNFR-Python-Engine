@@ -23,10 +23,19 @@ import math
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 from ..constants import DEFAULTS, DNFR_PRIMARY, EPI_PRIMARY, THETA_PRIMARY, VF_PRIMARY
+from ..constants.canonical import DELTA_PHI_MAX
 from ..types import TNFRGraph
+
+# ---------------------------------------------------------------------------
+# Invariant guardrail thresholds
+# ---------------------------------------------------------------------------
+_VF_MIN_SUSTAINED = 0.001
+_VF_MAX_REASONABLE = 1000.0
+_DNFR_MAGNITUDE_WARNING = 1000.0
+_DNFR_EXTREME_DISSONANCE = 10.0
 
 __all__ = [
     "InvariantSeverity",
@@ -44,7 +53,6 @@ __all__ = [
     "Invariant10_DomainNeutrality",
 ]
 
-
 class InvariantSeverity(Enum):
     """Severity levels for invariant violations."""
 
@@ -53,7 +61,6 @@ class InvariantSeverity(Enum):
     ERROR = "error"  # Violation that prevents execution
     CRITICAL = "critical"  # Data corruption
 
-
 @dataclass
 class InvariantViolation:
     """Detailed description of invariant violation."""
@@ -61,11 +68,10 @@ class InvariantViolation:
     invariant_id: int
     severity: InvariantSeverity
     description: str
-    node_id: Optional[str] = None
-    expected_value: Optional[Any] = None
-    actual_value: Optional[Any] = None
-    suggestion: Optional[str] = None
-
+    node_id: str | None = None
+    expected_value: Any | None = None
+    actual_value: Any | None = None
+    suggestion: str | None = None
 
 class TNFRInvariant(ABC):
     """Base class for TNFR invariant validators."""
@@ -83,7 +89,6 @@ class TNFRInvariant(ABC):
     @abstractmethod
     def validate(self, graph: TNFRGraph) -> list[InvariantViolation]:
         """Validates invariant in the graph, returns found violations."""
-
 
 class Invariant1_EPIOnlyThroughOperators(TNFRInvariant):
     """Invariant 1: EPI changes only through structural operators."""
@@ -156,12 +161,12 @@ class Invariant1_EPIOnlyThroughOperators(TNFRInvariant):
                     )
                 )
 
-            # Detectar cambios no autorizados (requiere tracking)
-            # Solo verificar si hay un operador previo registrado
+            # Detect unauthorized changes (requires tracking)
+            # Only verify if there is a previously registered operator
             if hasattr(graph, "_last_operator_applied"):
                 if node_id in self._previous_epi_values:
                     prev_epi = self._previous_epi_values[node_id]
-                    if abs(current_epi - prev_epi) > 1e-10:  # Cambio detectado
+                    if abs(current_epi - prev_epi) > 1e-10:  # Change detected
                         if not graph._last_operator_applied:
                             violations.append(
                                 InvariantViolation(
@@ -193,7 +198,6 @@ class Invariant1_EPIOnlyThroughOperators(TNFRInvariant):
 
         return violations
 
-
 class Invariant2_VfInHzStr(TNFRInvariant):
     """Invariante 2: νf stays in Hz_str units."""
 
@@ -205,8 +209,8 @@ class Invariant2_VfInHzStr(TNFRInvariant):
 
         # Get configuration bounds
         config = getattr(graph, "graph", {})
-        vf_min = config.get("VF_MIN", DEFAULTS.get("VF_MIN", 0.001))
-        vf_max = config.get("VF_MAX", DEFAULTS.get("VF_MAX", 1000.0))
+        vf_min = config.get("VF_MIN", DEFAULTS.get("VF_MIN", _VF_MIN_SUSTAINED))
+        vf_max = config.get("VF_MAX", DEFAULTS.get("VF_MAX", _VF_MAX_REASONABLE))
 
         for node_id in graph.nodes():
             node_data = graph.nodes[node_id]
@@ -240,7 +244,7 @@ class Invariant2_VfInHzStr(TNFRInvariant):
                     )
                 )
 
-            # Verificar que νf sea positivo (requerimiento estructural)
+            # Verify νf is positive (structural requirement)
             if isinstance(vf, (int, float)) and vf <= 0:
                 violations.append(
                     InvariantViolation(
@@ -256,14 +260,13 @@ class Invariant2_VfInHzStr(TNFRInvariant):
 
         return violations
 
-
 class Invariant5_ExplicitPhaseChecks(TNFRInvariant):
     """Invariante 5: Explicit phase checks for coupling."""
 
     invariant_id = 5
     description = "Explicit phase checks for coupling"
 
-    def __init__(self, phase_coupling_threshold: float = math.pi / 2) -> None:
+    def __init__(self, phase_coupling_threshold: float = DELTA_PHI_MAX) -> None:
         self.phase_coupling_threshold = phase_coupling_threshold
 
     def validate(self, graph: TNFRGraph) -> list[InvariantViolation]:
@@ -288,8 +291,8 @@ class Invariant5_ExplicitPhaseChecks(TNFRInvariant):
                 )
                 continue
 
-            # Verificar rango de fase [0, 2π] o normalizable
-            # TNFR permite fases fuera de este rango si se pueden normalizar
+            # Verify phase range [0, 2π] or normalizable
+            # TNFR allows phases outside this range if they can be normalized
             # Emit warning if phase is not in canonical range
             if not (0.0 <= phase <= 2 * math.pi):
                 violations.append(
@@ -321,10 +324,10 @@ class Invariant5_ExplicitPhaseChecks(TNFRInvariant):
                     continue
 
                 phase_diff = abs(phase1 - phase2)
-                # Considerar periodicidad
+                # Account for periodicity
                 phase_diff = min(phase_diff, 2 * math.pi - phase_diff)
 
-                # Si la diferencia es muy grande, puede indicar desacoplamiento
+                # If the difference is very large, it may indicate decoupling
                 if phase_diff > self.phase_coupling_threshold:
                     violations.append(
                         InvariantViolation(
@@ -339,7 +342,6 @@ class Invariant5_ExplicitPhaseChecks(TNFRInvariant):
                     )
 
         return violations
-
 
 class Invariant3_DNFRSemantics(TNFRInvariant):
     """Invariante 3: ΔNFR semantics - sign and magnitude modulate reorganization rate."""
@@ -368,11 +370,11 @@ class Invariant3_DNFRSemantics(TNFRInvariant):
                     )
                 )
 
-            # Verificar que ΔNFR no se trata como error/loss gradient
+            # Verify ΔNFR is not treated as error/loss gradient
             # (this is more conceptual, but we can verify reasonable ranges)
             if isinstance(dnfr, (int, float)) and math.isfinite(dnfr):
                 # Excessively large ΔNFR could indicate erroneous treatment
-                if abs(dnfr) > 1000.0:
+                if abs(dnfr) > _DNFR_MAGNITUDE_WARNING:
                     violations.append(
                         InvariantViolation(
                             invariant_id=3,
@@ -387,7 +389,6 @@ class Invariant3_DNFRSemantics(TNFRInvariant):
 
         return violations
 
-
 class Invariant4_OperatorClosure(TNFRInvariant):
     """Invariante 4: Operator closure - composition yields valid TNFR states."""
 
@@ -401,7 +402,7 @@ class Invariant4_OperatorClosure(TNFRInvariant):
         for node_id in graph.nodes():
             node_data = graph.nodes[node_id]
 
-            # Verificar que los atributos esenciales existen
+            # Verify essential attributes exist
             required_attrs = [EPI_PRIMARY, VF_PRIMARY, THETA_PRIMARY]
             missing_attrs = [attr for attr in required_attrs if attr not in node_data]
 
@@ -418,7 +419,7 @@ class Invariant4_OperatorClosure(TNFRInvariant):
                     )
                 )
 
-        # Verificar que el grafo tiene hook ΔNFR
+        # Verify the graph has a ΔNFR hook
         if hasattr(graph, "graph"):
             if "compute_delta_nfr" not in graph.graph:
                 violations.append(
@@ -433,7 +434,6 @@ class Invariant4_OperatorClosure(TNFRInvariant):
                 )
 
         return violations
-
 
 class Invariant6_NodeBirthCollapse(TNFRInvariant):
     """Invariante 6: Node birth/collapse - minimal conditions maintained."""
@@ -457,7 +457,7 @@ class Invariant6_NodeBirthCollapse(TNFRInvariant):
                 continue  # Skip complex structures
 
             # Minimum birth conditions: sufficient νf
-            if isinstance(vf, (int, float)) and vf < 0.001:
+            if isinstance(vf, (int, float)) and vf < _VF_MIN_SUSTAINED:
                 violations.append(
                     InvariantViolation(
                         invariant_id=6,
@@ -470,9 +470,9 @@ class Invariant6_NodeBirthCollapse(TNFRInvariant):
                     )
                 )
 
-            # Condiciones de colapso: ΔNFR extremo o νf cercano a cero
+            # Collapse conditions: extreme ΔNFR or νf near zero
             if isinstance(dnfr, (int, float)) and math.isfinite(dnfr):
-                if abs(dnfr) > 10.0:  # Dissonance extrema
+                if abs(dnfr) > _DNFR_EXTREME_DISSONANCE:  # Dissonance extrema
                     violations.append(
                         InvariantViolation(
                             invariant_id=6,
@@ -487,7 +487,6 @@ class Invariant6_NodeBirthCollapse(TNFRInvariant):
 
         return violations
 
-
 class Invariant7_OperationalFractality(TNFRInvariant):
     """Invariante 7: Operational fractality - EPIs can nest without losing identity."""
 
@@ -497,14 +496,14 @@ class Invariant7_OperationalFractality(TNFRInvariant):
     def validate(self, graph: TNFRGraph) -> list[InvariantViolation]:
         violations = []
 
-        # Verificar que estructuras EPI complejas mantienen identidad
+        # Verify complex EPI structures maintain identity
         for node_id in graph.nodes():
             node_data = graph.nodes[node_id]
             epi = node_data.get(EPI_PRIMARY, 0.0)
 
-            # Si EPI es una estructura anidada, verificar integridad
+            # If EPI is a nested structure, verify integrity
             if isinstance(epi, dict):
-                # Verificar que tiene las claves esperadas para fractality
+                # Verify it has the expected keys for fractality
                 expected_keys = {"continuous", "discrete", "grid"}
                 actual_keys = set(epi.keys())
 
@@ -542,7 +541,6 @@ class Invariant7_OperationalFractality(TNFRInvariant):
 
         return violations
 
-
 class Invariant8_ControlledDeterminism(TNFRInvariant):
     """Invariante 8: Controlled determinism - reproducible and traceable."""
 
@@ -552,11 +550,11 @@ class Invariant8_ControlledDeterminism(TNFRInvariant):
     def validate(self, graph: TNFRGraph) -> list[InvariantViolation]:
         violations = []
 
-        # Verificar que hay trazabilidad (history)
+        # Verify traceability (history)
         if hasattr(graph, "graph"):
             config = graph.graph
 
-            # Verificar que hay sistema de history/trace
+            # Verify there is a history/trace system
             if "history" not in config and "HISTORY_MAXLEN" not in config:
                 violations.append(
                     InvariantViolation(
@@ -569,7 +567,7 @@ class Invariant8_ControlledDeterminism(TNFRInvariant):
                     )
                 )
 
-            # Verificar que hay seed configurado para reproducibilidad
+            # Verify seed is configured for reproducibility
             if "RANDOM_SEED" not in config and "seed" not in config:
                 violations.append(
                     InvariantViolation(
@@ -578,12 +576,11 @@ class Invariant8_ControlledDeterminism(TNFRInvariant):
                         description="No random seed configured (reproducibility at risk)",
                         expected_value="RANDOM_SEED or seed in config",
                         actual_value="Not found",
-                        suggestion="Set random seed for deterministic simulations",
+                        suggestion="set random seed for deterministic simulations",
                     )
                 )
 
         return violations
-
 
 class Invariant9_StructuralMetrics(TNFRInvariant):
     """Invariante 9: Structural metrics - expose C(t), Si, phase, νf."""
@@ -639,7 +636,6 @@ class Invariant9_StructuralMetrics(TNFRInvariant):
 
         return violations
 
-
 class Invariant10_DomainNeutrality(TNFRInvariant):
     """Invariante 10: Domain neutrality - trans-scale and trans-domain."""
 
@@ -649,7 +645,7 @@ class Invariant10_DomainNeutrality(TNFRInvariant):
     def validate(self, graph: TNFRGraph) -> list[InvariantViolation]:
         violations = []
 
-        # Verificar que no hay hard-coded domain assumptions
+        # Verify no hard-coded domain assumptions
         if hasattr(graph, "graph"):
             config = graph.graph
 

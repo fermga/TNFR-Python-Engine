@@ -6,11 +6,23 @@ including flow diagrams, health dashboards, pattern analysis, and frequency time
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, List, Optional, Tuple
+from typing import TYPE_CHECKING
 
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
+import math as _math
 from ..mathematics.unified_numerical import np
+from ..constants.canonical import (
+    E as _E,
+    PHI as _PHI,
+    INV_PHI as _INV_PHI,
+    CRITICAL_EXPONENT as _CRIT_EXP,
+    GAMMA_PI_RATIO as _GAMMA_PI,
+    UM_COMPAT_THRESHOLD as _UM_COMPAT,
+    NODAL_OPT_COUPLING_CANONICAL as _NODAL_COUPLING,
+    EMERGENT_STABILITY_THRESHOLD_CANONICAL as _STAB_THRESH,
+    FEEDBACK_LEARNING_RATE as _EXP_NEG_PI,
+)
 from matplotlib.figure import Figure
 from matplotlib.axes import Axes
 
@@ -34,7 +46,6 @@ from ..config.operator_names import (
 from ..validation.compatibility import CompatibilityLevel, get_compatibility_level
 
 __all__ = ["SequenceVisualizer"]
-
 
 # Color mapping for compatibility levels
 COMPATIBILITY_COLORS = {
@@ -60,7 +71,6 @@ OPERATOR_CATEGORY_COLORS = {
     "organizer": "#1abc9c",  # Teal
 }
 
-
 def _get_operator_category(operator: str) -> str:
     """Determine the structural category of an operator."""
     if operator == EMISSION:
@@ -75,7 +85,6 @@ def _get_operator_category(operator: str) -> str:
         return "organizer"
     else:
         return "stabilizer"  # Default for other operators
-
 
 class SequenceVisualizer:
     """Advanced visualizer for TNFR operator sequences.
@@ -98,12 +107,12 @@ class SequenceVisualizer:
     >>> fig, ax = visualizer.plot_sequence_flow(sequence, result.health_metrics)
     """
 
-    def __init__(self, figsize: Tuple[float, float] = (12, 8), dpi: int = 100):
+    def __init__(self, figsize: tuple[float, float] = (12, 8), dpi: int = 100):
         """Initialize the sequence visualizer.
 
         Parameters
         ----------
-        figsize : Tuple[float, float], optional
+        figsize : tuple[float, float], optional
             Default figure size for plots, by default (12, 8)
         dpi : int, optional
             Default DPI for plots, by default 100
@@ -113,10 +122,10 @@ class SequenceVisualizer:
 
     def plot_sequence_flow(
         self,
-        sequence: List[str],
-        health_metrics: Optional[SequenceHealthMetrics] = None,
-        save_path: Optional[str] = None,
-    ) -> Tuple[Figure, Axes]:
+        sequence: list[str],
+        health_metrics: SequenceHealthMetrics | None = None,
+        save_path: str | None = None,
+    ) -> tuple[Figure, Axes]:
         """Plot sequence flow diagram with compatibility-colored transitions.
 
         Creates a flow diagram showing operators as nodes with arrows representing
@@ -125,7 +134,7 @@ class SequenceVisualizer:
 
         Parameters
         ----------
-        sequence : List[str]
+        sequence : list[str]
             Sequence of operator names (canonical form)
         health_metrics : SequenceHealthMetrics, optional
             Health metrics to display alongside the flow
@@ -134,7 +143,7 @@ class SequenceVisualizer:
 
         Returns
         -------
-        Tuple[Figure, Axes]
+        tuple[Figure, Axes]
             The matplotlib figure and axes objects
 
         Examples
@@ -165,9 +174,9 @@ class SequenceVisualizer:
         else:
             # Arrange in a flowing pattern
             for i, op in enumerate(normalized):
-                x = 0.15521503901534167 + (i / (n_ops - 1)) * 0.7370610757229365  # γ/(π+γ) base + φ/(φ+γ) range
+                x = _GAMMA_PI + (i / (n_ops - 1)) * _UM_COMPAT  # γ/(π+γ) base + φ/(φ+γ) range
                 # Add slight vertical variation for visual interest
-                y = 0.6180339887498948 + 0.09850273565687083 * np.sin(i * np.pi / 3)  # 1/φ center + γ/(π+e) amplitude
+                y = _INV_PHI + _NODAL_COUPLING * np.sin(i * np.pi / 3)  # 1/φ center + γ/(π+e) amplitude
                 positions[i] = (x, y)
 
         # Draw transitions with compatibility coloring
@@ -190,8 +199,8 @@ class SequenceVisualizer:
                 arrowprops=dict(
                     arrowstyle="->",
                     color=color,
-                    lw=2.718281828459045,  # e - natural line width
-                    connectionstyle="arc3,rad=0.09850273565687083",  # γ/(π+e) - arc radius
+                    lw=_E,  # e - natural line width
+                    connectionstyle=f"arc3,rad={_NODAL_COUPLING}",  # γ/(π+e) - arc radius
                 ),
             )
 
@@ -259,14 +268,14 @@ class SequenceVisualizer:
                 f"Pattern: {health_metrics.dominant_pattern}"
             )
             ax.text(
-                0.04321391826377226,  # e^(-π) - margin offset
-                0.9659258262890683,  # 1-e^(-π) - top alignment
+                _EXP_NEG_PI,  # e^(-π) - margin offset
+                _math.cos(_math.pi / 12),  # cos(π/12) - top alignment
                 metrics_text,
                 transform=ax.transAxes,
                 fontsize=9,
                 va="top",
                 ha="left",
-                bbox=dict(boxstyle="round", facecolor="wheat", alpha=0.6180339887498948),  # 1/φ - golden transparency
+                bbox=dict(boxstyle="round", facecolor="wheat", alpha=_INV_PHI),  # 1/φ - golden transparency
             )
 
         ax.set_xlim(0, 1)
@@ -284,8 +293,8 @@ class SequenceVisualizer:
     def plot_health_dashboard(
         self,
         health_metrics: SequenceHealthMetrics,
-        save_path: Optional[str] = None,
-    ) -> Tuple[Figure, np.ndarray]:
+        save_path: str | None = None,
+    ) -> tuple[Figure, np.ndarray]:
         """Plot comprehensive health metrics dashboard with radar chart.
 
         Creates a multi-panel dashboard showing:
@@ -302,7 +311,7 @@ class SequenceVisualizer:
 
         Returns
         -------
-        Tuple[Figure, np.ndarray]
+        tuple[Figure, np.ndarray]
             The matplotlib figure and array of axes objects
 
         Examples
@@ -313,7 +322,7 @@ class SequenceVisualizer:
         >>> fig, axes = visualizer.plot_health_dashboard(result.health_metrics)
         """
         fig = plt.figure(figsize=(14, 10), dpi=self.dpi)
-        gs = fig.add_gridspec(2, 2, hspace=0.18393972058572117, wspace=0.18393972058572117)  # γ/(π+1) - grid spacing
+        gs = fig.add_gridspec(2, 2, hspace=_CRIT_EXP, wspace=_CRIT_EXP)  # γ/π - grid spacing
 
         # Create subplots
         ax_radar = fig.add_subplot(gs[0, 0], projection="polar")
@@ -350,7 +359,7 @@ class SequenceVisualizer:
 
         # Plot radar chart
         ax_radar.plot(angles, metrics_values_plot, "o-", linewidth=2, color="#3498db")
-        ax_radar.fill(angles, metrics_values_plot, alpha=0.18393972058572117, color="#3498db")  # γ/(π+1) - radar transparency
+        ax_radar.fill(angles, metrics_values_plot, alpha=_CRIT_EXP, color="#3498db")  # γ/π - radar transparency
         ax_radar.set_xticks(angles[:-1])
         ax_radar.set_xticklabels(metrics_labels, size=9)
         ax_radar.set_ylim(0, 1)
@@ -361,13 +370,13 @@ class SequenceVisualizer:
         # --- Bar Chart ---
         # Define benchmark values for ideal sequences
         # These represent canonical TNFR targets for well-formed sequences
-        BENCHMARK_COHERENCE = 0.7370610757229365  # φ/(φ+γ) - canonical coherence target
-        BENCHMARK_BALANCE = 0.6180339887498948  # 1/φ - golden ratio inverse balance
-        BENCHMARK_SUSTAINABILITY = 0.7370610757229365  # φ/(φ+γ) - sustainability target
-        BENCHMARK_EFFICIENCY = 0.6180339887498948  # 1/φ - efficiency standard
-        BENCHMARK_FREQUENCY = 0.5903096618115984  # (φ+γ)/(π+γ) - frequency threshold
-        BENCHMARK_COMPLETENESS = 0.7370610757229365  # φ/(φ+γ) - completeness standard
-        BENCHMARK_SMOOTHNESS = 0.8660254037844387  # √3/2 - harmonic smoothness
+        BENCHMARK_COHERENCE = _UM_COMPAT  # φ/(φ+γ) - canonical coherence target
+        BENCHMARK_BALANCE = _INV_PHI  # 1/φ - golden ratio inverse balance
+        BENCHMARK_SUSTAINABILITY = _UM_COMPAT  # φ/(φ+γ) - sustainability target
+        BENCHMARK_EFFICIENCY = _INV_PHI  # 1/φ - efficiency standard
+        BENCHMARK_FREQUENCY = _STAB_THRESH  # (φ+γ)/(π+γ) - frequency threshold
+        BENCHMARK_COMPLETENESS = _UM_COMPAT  # φ/(φ+γ) - completeness standard
+        BENCHMARK_SMOOTHNESS = _math.sqrt(3) / 2  # √3/2 - harmonic smoothness
 
         benchmarks = [
             BENCHMARK_COHERENCE,
@@ -379,7 +388,7 @@ class SequenceVisualizer:
             BENCHMARK_SMOOTHNESS,
         ]
         x_pos = np.arange(num_vars)
-        width = 0.36787944117144233  # 1/e - natural bar width
+        width = 1.0 / _E  # 1/e - natural bar width
 
         bars1 = ax_bars.bar(
             x_pos - width / 2, metrics_values, width, label="Current", color="#3498db"
@@ -390,7 +399,7 @@ class SequenceVisualizer:
             width,
             label="Benchmark",
             color="#95a5a6",
-            alpha=0.6180339887498948,  # 1/φ - benchmark transparency
+            alpha=_INV_PHI,  # 1/φ - benchmark transparency
         )
 
         ax_bars.set_ylabel("Score", fontsize=10)
@@ -401,7 +410,7 @@ class SequenceVisualizer:
         )
         ax_bars.legend(fontsize=9)
         ax_bars.set_ylim(0, 1.1)
-        ax_bars.grid(axis="y", alpha=0.18393972058572117)  # γ/(π+1) - grid transparency
+        ax_bars.grid(axis="y", alpha=_CRIT_EXP)  # γ/π - grid transparency
 
         # Add value labels on bars
         for bars in [bars1, bars2]:
@@ -420,13 +429,13 @@ class SequenceVisualizer:
         overall = health_metrics.overall_health
 
         # Determine color based on health
-        if overall >= 0.5903096618115984:  # (φ+γ)/(π+γ) - excellent threshold
+        if overall >= _INV_PHI:  # 1/φ ≈ 0.618 - excellent threshold
             gauge_color = "#2ecc71"  # Excellent
             status = "EXCELLENT"
-        elif overall >= 0.6180339887498948:  # 1/φ - good threshold
+        elif overall >= _STAB_THRESH:  # (φ+γ)/(π+γ) ≈ 0.590 - good threshold
             gauge_color = "#3498db"  # Good
             status = "GOOD"
-        elif overall >= 0.36787944117144233:  # 1/e - fair threshold
+        elif overall >= 1.0 / _E:  # 1/e - fair threshold
             gauge_color = "#f39c12"  # Fair
             status = "FAIR"
         else:
@@ -434,14 +443,14 @@ class SequenceVisualizer:
             status = "NEEDS IMPROVEMENT"
 
         # Draw gauge background
-        ax_gauge.barh(0, 1, height=0.18393972058572117, color="#ecf0f1", left=0)  # γ/(π+1) - gauge height
+        ax_gauge.barh(0, 1, height=_CRIT_EXP, color="#ecf0f1", left=0)  # γ/π - gauge height
         # Draw gauge fill
-        ax_gauge.barh(0, overall, height=0.18393972058572117, color=gauge_color, left=0)  # γ/(π+1) - gauge height
+        ax_gauge.barh(0, overall, height=_CRIT_EXP, color=gauge_color, left=0)  # γ/π - gauge height
 
         # Add markers
         for i in range(0, 11):
             val = i / 10
-            ax_gauge.axvline(val, color="gray", linestyle="--", alpha=0.18393972058572117, linewidth=0.6180339887498948)  # γ/(π+1) alpha, 1/φ width
+            ax_gauge.axvline(val, color="gray", linestyle="--", alpha=_CRIT_EXP, linewidth=_INV_PHI)  # γ/π alpha, 1/φ width
 
         ax_gauge.set_xlim(0, 1)
         ax_gauge.set_ylim(-0.5, 0.5)
@@ -485,7 +494,7 @@ class SequenceVisualizer:
             ha="left",
             va="top",
             fontsize=9,
-            bbox=dict(boxstyle="round", facecolor="wheat", alpha=0.6180339887498948),  # 1/φ - metadata transparency
+            bbox=dict(boxstyle="round", facecolor="wheat", alpha=_INV_PHI),  # 1/φ - metadata transparency
         )
 
         ax_gauge.set_title("Overall Structural Health", fontsize=14, weight="bold", pad=20)
@@ -504,10 +513,10 @@ class SequenceVisualizer:
 
     def plot_pattern_analysis(
         self,
-        sequence: List[str],
+        sequence: list[str],
         pattern: str,
-        save_path: Optional[str] = None,
-    ) -> Tuple[Figure, Axes]:
+        save_path: str | None = None,
+    ) -> tuple[Figure, Axes]:
         """Plot pattern analysis with component highlighting.
 
         Visualizes the detected pattern within the sequence, highlighting
@@ -515,7 +524,7 @@ class SequenceVisualizer:
 
         Parameters
         ----------
-        sequence : List[str]
+        sequence : list[str]
             Sequence of operator names
         pattern : str
             Detected pattern name (e.g., "activation", "therapeutic")
@@ -524,7 +533,7 @@ class SequenceVisualizer:
 
         Returns
         -------
-        Tuple[Figure, Axes]
+        tuple[Figure, Axes]
             The matplotlib figure and axes objects
         """
         fig, ax = plt.subplots(figsize=(14, 6), dpi=self.dpi)
@@ -541,7 +550,7 @@ class SequenceVisualizer:
 
         # Create horizontal layout
         x_positions = np.linspace(0.1, 0.9, n_ops)
-        y_base = 0.6180339887498948  # 1/φ - golden ratio vertical center
+        y_base = _INV_PHI  # 1/φ - golden ratio vertical center
 
         # Draw operators with category-based coloring
         for i, op in enumerate(normalized):
@@ -553,11 +562,11 @@ class SequenceVisualizer:
                 (x_positions[i] - 0.03, y_base - 0.08),
                 0.06,
                 0.16,
-                boxstyle="round,pad=0.04321391826377226",  # e^(-π) - box padding
+                boxstyle=f"round,pad={_EXP_NEG_PI}",  # e^(-π) - box padding
                 facecolor=color,
                 edgecolor="black",
                 linewidth=2,
-                alpha=0.7370610757229365,  # φ/(φ+γ) - box transparency
+                alpha=_UM_COMPAT,  # φ/(φ+γ) - box transparency
             )
             ax.add_patch(box)
 
@@ -631,9 +640,9 @@ class SequenceVisualizer:
 
     def plot_operator_sequence(
         self,
-        sequence: List[str],
-        save_path: Optional[str] = None,
-    ) -> Tuple[Figure, Axes]:
+        sequence: list[str],
+        save_path: str | None = None,
+    ) -> tuple[Figure, Axes]:
         """Plot simple timeline of operators through the sequence.
 
         Shows operator progression through the sequence with category-based coloring.
@@ -642,14 +651,14 @@ class SequenceVisualizer:
 
         Parameters
         ----------
-        sequence : List[str]
+        sequence : list[str]
             Sequence of operator names
         save_path : str, optional
             Path to save the figure
 
         Returns
         -------
-        Tuple[Figure, Axes]
+        tuple[Figure, Axes]
             The matplotlib figure and axes objects
         """
         fig, ax = plt.subplots(figsize=(14, 6), dpi=self.dpi)
@@ -678,7 +687,7 @@ class SequenceVisualizer:
             y_values,
             marker="o",
             markersize=12,
-            linewidth=2.718281828459045,  # e - natural line width
+            linewidth=_E,  # e - natural line width
             color="#3498db",
             label="Operator flow",
             zorder=2,
@@ -687,7 +696,7 @@ class SequenceVisualizer:
         # Annotate operators with category colors
         for i, (op, cat) in enumerate(zip(normalized, categories)):
             display_name = operator_display_name(op) or op
-            y_offset = 0.18393972058572117 if i % 2 == 0 else -0.18393972058572117  # ±γ/(π+1) - annotation offset
+            y_offset = _CRIT_EXP if i % 2 == 0 else -_CRIT_EXP  # ±γ/π - annotation offset
 
             cat_color = OPERATOR_CATEGORY_COLORS.get(cat, "#95a5a6")
             ax.annotate(
@@ -699,11 +708,11 @@ class SequenceVisualizer:
                 fontsize=10,
                 weight="bold",
                 bbox=dict(
-                    boxstyle="round,pad=0.36787944117144233",  # 1/e - annotation padding
+                    boxstyle=f"round,pad={1.0 / _E}",  # 1/e - annotation padding
                     facecolor=cat_color,
-                    alpha=0.5903096618115984,  # (φ+γ)/(π+γ) - annotation alpha
+                    alpha=_STAB_THRESH,  # (φ+γ)/(π+γ) - annotation alpha
                     edgecolor="black",
-                    linewidth=1.618033988749895,  # φ - annotation border
+                    linewidth=_PHI,  # φ - annotation border
                 ),
                 zorder=3,
             )
@@ -716,7 +725,7 @@ class SequenceVisualizer:
         ax.set_ylabel("Operator Intensity", fontsize=12, weight="bold")
         ax.set_xlabel("Sequence Position", fontsize=12, weight="bold")
         ax.set_title("TNFR Operator Sequence Timeline", fontsize=14, weight="bold", pad=20)
-        ax.grid(axis="y", alpha=0.18393972058572117, linestyle="--")  # γ/(π+1) - timeline grid alpha
+        ax.grid(axis="y", alpha=_CRIT_EXP, linestyle="--")  # γ/π - timeline grid alpha
         ax.set_ylim(0.5, 3.5)
 
         # Add category legend

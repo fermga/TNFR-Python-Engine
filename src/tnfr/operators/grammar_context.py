@@ -17,7 +17,6 @@ from .grammar_types import GrammarConfigurationError
 # Grammar Context
 # ============================================================================
 
-
 class GrammarContext:
     """Context object for grammar validation.
 
@@ -143,5 +142,4 @@ class GrammarContext:
                 messages=errors,
                 details=[]
             )
-
 

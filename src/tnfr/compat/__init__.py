@@ -35,7 +35,6 @@ from typing import Any
 # Import stubs so they're available as module attributes
 from . import numpy_stub, matplotlib_stub, jsonschema_stub
 
-
 def get_numpy_or_stub() -> Any:
     """Return numpy module if available, otherwise return a stub.
 
@@ -52,7 +51,6 @@ def get_numpy_or_stub() -> Any:
     except ImportError:
         return numpy_stub
 
-
 def get_matplotlib_or_stub() -> Any:
     """Return matplotlib module if available, otherwise return a stub.
 
@@ -67,7 +65,6 @@ def get_matplotlib_or_stub() -> Any:
         return matplotlib
     except ImportError:
         return matplotlib_stub
-
 
 def get_jsonschema_or_stub() -> Any:
     """Return jsonschema module if available, otherwise return a stub.

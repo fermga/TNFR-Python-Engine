@@ -13,9 +13,8 @@ from __future__ import annotations
 
 import argparse
 import time
-from typing import List, Tuple
-from functools import lru_cache
 
+from functools import lru_cache
 
 # Cached arithmetic functions for optimal performance
 @lru_cache(maxsize=10000)
@@ -31,7 +30,6 @@ def _divisor_count_cached(n: int) -> int:
         i += 1
     return cnt
 
-
 @lru_cache(maxsize=10000)
 def _divisor_sum_cached(n: int) -> int:
     """Optimized divisor sum with LRU caching."""
@@ -45,7 +43,6 @@ def _divisor_sum_cached(n: int) -> int:
                 total += j
         i += 1
     return total
-
 
 @lru_cache(maxsize=10000)
 def _prime_factor_count_cached(n: int) -> int:
@@ -62,7 +59,6 @@ def _prime_factor_count_cached(n: int) -> int:
         count += 1
     return count
 
-
 # Non-cached versions for compatibility
 def _divisor_count(n: int) -> int:
     """Basic divisor count (τ function)."""
@@ -75,7 +71,6 @@ def _divisor_count(n: int) -> int:
                 cnt += 1
         i += 1
     return cnt
-
 
 def _divisor_sum(n: int) -> int:
     """Basic divisor sum (σ function)."""
@@ -90,7 +85,6 @@ def _divisor_sum(n: int) -> int:
         i += 1
     return total
 
-
 def _prime_factor_count(n: int) -> int:
     """Basic prime factor count (ω function)."""
     count = 0
@@ -104,7 +98,6 @@ def _prime_factor_count(n: int) -> int:
     if temp_n > 1:
         count += 1
     return count
-
 
 @lru_cache(maxsize=5000)
 def tnfr_delta_nfr_cached(n: int, zeta: float = 1.0, eta: float = 0.8, theta: float = 0.6) -> float:
@@ -126,7 +119,6 @@ def tnfr_delta_nfr_cached(n: int, zeta: float = 1.0, eta: float = 0.8, theta: fl
     
     return factorization_pressure + divisor_pressure + sigma_pressure
 
-
 def tnfr_delta_nfr(n: int, *, zeta=1.0, eta=0.8, theta=0.6) -> float:
     """Basic TNFR ΔNFR computation."""
     if n < 2:
@@ -139,15 +131,13 @@ def tnfr_delta_nfr(n: int, *, zeta=1.0, eta=0.8, theta=0.6) -> float:
     sigma_pressure = theta * (sigma_n / n - (1 + 1 / n))
     return factorization_pressure + divisor_pressure + sigma_pressure
 
-
-def tnfr_is_prime(n: int, *, use_cached: bool = False) -> Tuple[bool, float]:
+def tnfr_is_prime(n: int, *, use_cached: bool = False) -> tuple[bool, float]:
     """TNFR primality test with optional caching."""
     if use_cached:
         dnfr = tnfr_delta_nfr_cached(n)
     else:
         dnfr = tnfr_delta_nfr(n)
     return (abs(dnfr) == 0.0, dnfr)
-
 
 def benchmark_basic(max_n: int = 10000, sample_size: int = 100) -> dict:
     """Simple benchmark of TNFR primality testing."""
@@ -203,8 +193,7 @@ def benchmark_basic(max_n: int = 10000, sample_size: int = 100) -> dict:
         }
     }
 
-
-def main(argv: List[str] | None = None) -> int:
+def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         description="Optimized TNFR primality check using ΔNFR equations",
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -306,7 +295,6 @@ Examples:
         print(f"\\nAverage time: {avg_time:.2f} μs/number")
     
     return 0
-
 
 if __name__ == "__main__":
     raise SystemExit(main())

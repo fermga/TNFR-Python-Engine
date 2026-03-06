@@ -13,11 +13,10 @@ from typing import Any, ClassVar
 
 from ..alias import get_attr
 from ..config.operator_names import EMISSION
-from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI
+from ..constants.aliases import ALIAS_EPI
 from ..types import Glyph, TNFRGraph
 from .definitions_base import Operator
 from ..dynamics.feedback import StructuralFeedbackLoop
-
 
 class Emission(Operator):
     """Emission structural operator (AL).
@@ -55,7 +54,7 @@ class Emission(Operator):
     - **_structural_lineage**: Genealogical record with:
       - ``origin``: First emission timestamp
       - ``activation_count``: Number of AL applications
-      - ``derived_nodes``: List for tracking EPI emergence (future use)
+      - ``derived_nodes``: list for tracking EPI emergence (future use)
       - ``parent_emission``: Reference to parent node (future use)
 
     Re-activation increments ``activation_count`` while preserving the
@@ -264,12 +263,12 @@ class Emission(Operator):
             # Generate UTC timestamp in ISO format
             emission_timestamp = datetime.now(timezone.utc).isoformat()
 
-            # Set canonical timestamp using alias system (string values)
+            # set canonical timestamp using alias system (string values)
             set_attr_str(
                 G.nodes[node], ALIAS_EMISSION_TIMESTAMP, emission_timestamp
             )
 
-            # Set persistent activation flag (immutable marker)
+            # set persistent activation flag (immutable marker)
             G.nodes[node]["_emission_activated"] = True
 
             # Preserve origin timestamp (never overwritten)

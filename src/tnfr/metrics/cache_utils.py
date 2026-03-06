@@ -26,7 +26,6 @@ __all__ = (
 
 logger = logging.getLogger(__name__)
 
-
 def get_cache_config(
     G: GraphLike,
     *,
@@ -60,7 +59,6 @@ def get_cache_config(
     if not isinstance(config, Mapping):
         return {}
     return dict(config)
-
 
 def configure_hot_path_caches(
     G: GraphLike,
@@ -135,7 +133,6 @@ def configure_hot_path_caches(
 
     if coherence_cache_size is not None:
         config["coherence_cache_size"] = int(coherence_cache_size)
-
 
 def log_cache_metrics(
     G: GraphLike,

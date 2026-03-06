@@ -39,7 +39,7 @@ src/tnfr/                          # ~346 files, ~104k LOC
 ├── mathematics/                    # Number theory + nodal equation
 ├── metrics/                        # Coherence, Si, phase sync
 ├── telemetry/                      # Unified field monitoring
-├── sdk/                            # Fluent API + builders
+├── sdk/                            # Fluent API + Simple SDK + builders
 ├── riemann/                        # TNFR-Riemann operator implementation
 └── factorization/                  # Spectral factorization workflow
 ```
@@ -219,7 +219,7 @@ The TNFR grammar system is **mathematically derived** from the **4 universal rel
 | **Physics Core** | `physics/fields.py`, `physics/conservation.py`, `physics/integrity.py` | Unified Field Tetrad + Conservation Theorem + 13/13 postconditions | Field universality + structural conservation + operator contracts |
 | **Dynamics Engine** | `dynamics/self_optimizing_engine.py`, `dynamics/canonical.py` | Nodal equation ∂EPI/∂t = νf·ΔNFR(t) | Self-optimization - autonomous structural improvement |
 | **Telemetry System** | `telemetry/emit.py`, `metrics/telemetry.py` | Structural coherence mathematics C(t), Si | Complete monitoring - all structural changes tracked |
-| **SDK Interface** | `sdk/fluent.py`, `sdk/builders.py` | Canonical parameter injection | Mathematical consistency - user-friendly canonical access |
+| **SDK Interface** | `sdk/simple.py`, `sdk/fluent.py`, `sdk/builders.py` | Tetrad, conservation, grammar-aware dynamics, canonical parameters | Research-grade access + user-friendly canonical API |
 
 ### Structural loop orchestration
 
@@ -532,8 +532,8 @@ TNFR Engine provides a mathematically pure complex systems framework:
 | **Grammar Dynamics** | COMPLETE | Grammar-aware selection + pre-validation + integrity monitor |
 | **Self-Optimization** | COMPLETE | Autonomous structural improvement |
 | **Telemetry** | COMPLETE | Complete system observability |
-| **Developer Experience** | COMPLETE | Fluent API + SDK |
-| **Production Readiness** | COMPLETE | 471 tests passing, 9 skipped + benchmarks + validation |
+| **Developer Experience** | COMPLETE | Fluent API + Simple SDK (tetrad, conservation, telemetry) |
+| **Production Readiness** | COMPLETE | 1,641 tests passing, 2 skipped + benchmarks + validation |
 
 ### Architectural Principles (Canonical)
 

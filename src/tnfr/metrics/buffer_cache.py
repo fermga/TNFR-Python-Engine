@@ -26,14 +26,13 @@ See docs/CACHING_STRATEGY.md for complete cache documentation.
 
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Any
 
 from ..types import GraphLike
 from ..utils import edge_version_cache
 from ..mathematics.unified_numerical import np as _unified_np
 
 __all__ = ("ensure_numpy_buffers",)
-
 
 def ensure_numpy_buffers(
     G: GraphLike,
@@ -76,13 +75,13 @@ def ensure_numpy_buffers(
         Data type for the buffers. Default: ``float``.
     max_cache_entries : int or None, optional
         Maximum number of cached buffer sets for this key prefix. Default: ``128``.
-        Set to ``None`` for unlimited cache size (use with caution on large graphs).
+        set to ``None`` for unlimited cache size (use with caution on large graphs).
         Can be overridden globally via graph-level configuration.
 
     Returns
     -------
     tuple[Any, ...]
-        Tuple of ``buffer_count`` NumPy arrays each sized to ``count`` elements.
+        tuple of ``buffer_count`` NumPy arrays each sized to ``count`` elements.
         Arrays are reused from cache when available, avoiding repeated allocation.
 
     Notes

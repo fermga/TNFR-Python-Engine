@@ -11,11 +11,10 @@ Magnien, Latapy, Habib (2009): "Fast computation of empirically tight
 bounds for the diameter of massive graphs"
 """
 import networkx as nx
-from typing import Any, Tuple, Dict
+from typing import Any
 
 from tnfr.mathematics.unified_cache import cache_tnfr_computation, CacheLevel
 _CACHE_AVAILABLE = True
-
 
 def approximate_diameter_2sweep(G: Any) -> int:
     """Approximate graph diameter using 2-sweep BFS heuristic.
@@ -81,8 +80,7 @@ def approximate_diameter_2sweep(G: Any) -> int:
 
     return int(max(d1, d2))
 
-
-def approximate_diameter_4sweep(G: Any) -> Tuple[int, int]:
+def approximate_diameter_4sweep(G: Any) -> tuple[int, int]:
     """Improved 4-sweep heuristic for tighter diameter bounds.
 
     Returns both lower and upper bounds on true diameter.
@@ -97,7 +95,7 @@ def approximate_diameter_4sweep(G: Any) -> Tuple[int, int]:
 
     Returns
     -------
-    Tuple[int, int]
+    tuple[int, int]
         (lower_bound, upper_bound) on true diameter.
 
     References
@@ -134,12 +132,11 @@ def approximate_diameter_4sweep(G: Any) -> Tuple[int, int]:
 
     return (int(lower_bound), int(upper_bound))
 
-
 @cache_tnfr_computation(
     level=CacheLevel.DERIVED_METRICS if _CACHE_AVAILABLE else None,
     dependencies={'graph_topology'},
 )
-def compute_eccentricity_cached(G: Any) -> Dict[Any, int]:
+def compute_eccentricity_cached(G: Any) -> dict[Any, int]:
     """Compute node eccentricity with automatic caching. [OPTIMIZED]
 
     **Physics Alignment**: Eccentricity is a topological invariant.
@@ -160,7 +157,7 @@ def compute_eccentricity_cached(G: Any) -> Dict[Any, int]:
 
     Returns
     -------
-    Dict[Any, int]
+    dict[Any, int]
         Mapping node -> eccentricity (max distance to any other node).
 
     Notes
@@ -177,7 +174,6 @@ def compute_eccentricity_cached(G: Any) -> Dict[Any, int]:
     >>> assert ecc == ecc2
     """
     return nx.eccentricity(G)  # type: ignore
-
 
 def validate_diameter_approximation(
     G: Any, true_diameter: int, approx_diameter: int
@@ -217,7 +213,6 @@ def validate_diameter_approximation(
         "nodes": G.number_of_nodes(),
         "edges": G.number_of_edges(),
     }
-
 
 if __name__ == "__main__":
     # Quick validation

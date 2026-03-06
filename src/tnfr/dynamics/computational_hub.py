@@ -28,13 +28,13 @@ Status: CANONICAL COMPUTATIONAL CENTRALIZATION HUB
 """
 
 from ..mathematics.unified_numerical import np
-from typing import Dict, Any, Optional, Union, Callable, Set
+from typing import Any, Callable
 from dataclasses import dataclass, field
 from enum import Enum
 import time
 import threading
-from concurrent.futures import ThreadPoolExecutor, as_completed
-from queue import Queue, PriorityQueue
+from concurrent.futures import ThreadPoolExecutor
+from queue import PriorityQueue
 import uuid
 
 from ..errors import TNFRValueError
@@ -49,9 +49,9 @@ except ImportError:
 # Import all engines
 try:
     from .unified_backend import TNFRUnifiedBackend, ComputationType, UnifiedComputationRequest
-    from .optimization_orchestrator import TNFROptimizationOrchestrator, OptimizationStrategy
-    from .advanced_fft_arithmetic import TNFRAdvancedFFTEngine, SpectralOperation
-    from .multi_modal_cache import TNFRUnifiedMultiModalCache, CacheEntryType
+    from .optimization_orchestrator import TNFROptimizationOrchestrator
+    from .advanced_fft_arithmetic import TNFRAdvancedFFTEngine
+    from .multi_modal_cache import TNFRUnifiedMultiModalCache
     from .nodal_optimizer import NodalEquationOptimizer
     from .fft_engine import FFTDynamicsEngine  
     from .structural_cache import StructuralCoherenceCache
@@ -69,7 +69,6 @@ except ImportError:
     get_backend = None
     available_backends = None
 
-
 class ComputationPriority(Enum):
     """Priority levels for computation requests."""
     CRITICAL = 1      # Real-time operator applications
@@ -77,7 +76,6 @@ class ComputationPriority(Enum):
     NORMAL = 3        # Standard analysis
     LOW = 4           # Background optimization
     BATCH = 5         # Large batch processing
-
 
 class EngineType(Enum):
     """Available computational engines."""
@@ -90,22 +88,20 @@ class EngineType(Enum):
     ADELIC_DYNAMICS = "adelic_dynamics"
     MULTI_MODAL_CACHE = "multi_modal_cache"
 
-
 @dataclass
 class ComputationRequest:
     """Unified computation request."""
     request_id: str = field(default_factory=lambda: str(uuid.uuid4()))
     engine_type: EngineType = EngineType.UNIFIED_BACKEND
     operation: str = "general_computation"
-    graph: Optional[Any] = None
-    parameters: Dict[str, Any] = field(default_factory=dict)
+    graph: Any | None = None
+    parameters: dict[str, Any] = field(default_factory=dict)
     priority: ComputationPriority = ComputationPriority.NORMAL
-    callback: Optional[Callable] = None
-    dependencies: Set[str] = field(default_factory=set)
+    callback: Callable | None = None
+    dependencies: set[str] = field(default_factory=set)
     timeout_seconds: float = 300.0
     enable_cache: bool = True
     require_accuracy: bool = True
-
 
 @dataclass
 class ComputationResult:
@@ -120,10 +116,9 @@ class ComputationResult:
     cache_misses: int = 0
     memory_used_mb: float = 0.0
     backend_used: str = "numpy"
-    accuracy_metrics: Dict[str, float] = field(default_factory=dict)
-    error_message: Optional[str] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
-
+    accuracy_metrics: dict[str, float] = field(default_factory=dict)
+    error_message: str | None = None
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 @dataclass
 class SystemResources:
@@ -135,7 +130,6 @@ class SystemResources:
     active_computations: int = 0
     cache_utilization: float = 0.0
     load_average: float = 0.0
-
 
 class TNFRComputationalHub:
     """
@@ -236,8 +230,8 @@ class TNFRComputationalHub:
     def get_result(
         self, 
         request_id: str, 
-        timeout: Optional[float] = None
-    ) -> Optional[ComputationResult]:
+        timeout: float | None = None
+    ) -> ComputationResult | None:
         """Get computation result by request ID."""
         start_time = time.time()
         
@@ -494,7 +488,7 @@ class TNFRComputationalHub:
             return False
         return True
         
-    def get_system_status(self) -> Dict[str, Any]:
+    def get_system_status(self) -> dict[str, Any]:
         """Get comprehensive system status."""
         return {
             "active_requests": len(self._active_requests),
@@ -529,10 +523,8 @@ class TNFRComputationalHub:
             
         self._executor.shutdown(wait=True)
 
-
 # Global hub instance
-_global_hub: Optional[TNFRComputationalHub] = None
-
+_global_hub: TNFRComputationalHub | None = None
 
 def get_computational_hub() -> TNFRComputationalHub:
     """Get global computational hub."""
@@ -542,7 +534,6 @@ def get_computational_hub() -> TNFRComputationalHub:
         _global_hub = TNFRComputationalHub()
         
     return _global_hub
-
 
 def execute_unified_computation(
     operation: str,
@@ -562,11 +553,10 @@ def execute_unified_computation(
     
     return hub.execute_computation_sync(request)
 
-
 def batch_execute_computations(
     requests: list,
     max_parallel: int = 4
-) -> Dict[str, ComputationResult]:
+) -> dict[str, ComputationResult]:
     """Execute multiple computations in parallel."""
     hub = get_computational_hub()
     

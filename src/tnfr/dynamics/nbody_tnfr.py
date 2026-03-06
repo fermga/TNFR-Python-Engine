@@ -85,7 +85,7 @@ Two-body orbital resonance (no gravitational assumption):
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Dict, List, Tuple
+from typing import TYPE_CHECKING, Any
 
 from ..errors.contextual import NetworkConfigError
 from ..mathematics.unified_numerical import np
@@ -104,7 +104,6 @@ __all__ = (
     "compute_tnfr_coherence_potential",
     "compute_tnfr_delta_nfr",
 )
-
 
 def compute_tnfr_coherence_potential(
     G: TNFRGraph,
@@ -153,10 +152,9 @@ def compute_tnfr_coherence_potential(
 
     return U
 
-
 def compute_tnfr_delta_nfr(
     G: TNFRGraph,
-    node_ids: List[str],
+    node_ids: list[str],
     hbar_str: float = 1.0,
 ) -> NDArray[np.floating]:
     """Compute ΔNFR from Hamiltonian commutator (pure TNFR).
@@ -195,7 +193,6 @@ def compute_tnfr_delta_nfr(
 
     return dnfr
 
-
 class TNFRNBodySystem:
     """N-body system using pure TNFR physics (no classical assumptions).
 
@@ -233,7 +230,7 @@ class TNFRNBodySystem:
     def __init__(
         self,
         n_bodies: int,
-        masses: List[float] | NDArray[np.floating],
+        masses: list[float] | NDArray[np.floating],
         positions: NDArray[np.floating],
         velocities: NDArray[np.floating],
         phases: NDArray[np.floating] | None = None,
@@ -389,7 +386,7 @@ class TNFRNBodySystem:
                 weight = self.coupling_strength
                 self.graph.add_edge(node_i, node_j, weight=weight)
 
-    def compute_energy(self) -> Tuple[float, float, float]:
+    def compute_energy(self) -> tuple[float, float, float]:
         """Compute system energy (kinetic + coherence potential).
 
         Returns
@@ -589,7 +586,7 @@ class TNFRNBodySystem:
         t_final: float,
         dt: float,
         store_interval: int = 1,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Evolve system using pure TNFR dynamics.
 
         Parameters
@@ -683,7 +680,7 @@ class TNFRNBodySystem:
 
     def plot_trajectories(
         self,
-        history: Dict[str, Any],
+        history: dict[str, Any],
         show_energy: bool = True,
         show_phases: bool = True,
     ) -> Figure:

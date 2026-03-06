@@ -1,7 +1,7 @@
 # TNFR–Riemann Program Memo
 
 **Status**: Exploratory research (non-canonical)
-**Version**: 0.4.0 (December 1, 2025)
+**Version**: 0.5.0 (March 2026)
 **Owner**: `theory/TNFR_RIEMANN_RESEARCH_NOTES.md`
 
 ---
@@ -11,7 +11,7 @@ This memo defines the minimum structure required to evaluate TNFR claims about t
 ## 1. Purpose and Scope
 
 - Translate RH questions into TNFR constructs: nodal operators, structural partition functions, and confinement criteria derived from Φ_s, |∇φ|, K_φ, and ξ_C.
-- Maintain reproducible sandboxes (finite prime graphs, spectral benchmarks, telemetry artifacts) that connect theoretical conjectures to code in `src/tnfr/riemann/` and `examples/39_riemann_operator_demo.py`.
+- Maintain reproducible sandboxes (finite prime graphs, spectral benchmarks, telemetry artifacts) that connect theoretical conjectures to code in `src/tnfr/riemann/` and `examples/16_riemann_operator_demo.py`.
 - Document how canonical operators (AL, UM, RA, OZ, IL, THOL) compose to form the discrete TNFR Riemann operator used in experiments.
 
 ## 2. Program Objectives
@@ -37,7 +37,7 @@ This memo defines the minimum structure required to evaluate TNFR claims about t
 2. **Operator execution** – Use SDK helpers (`TNFRRiemannOperator`) to generate spectra while logging ν_f, ΔNFR, Φ_s, |∇φ|, and effective σ(t) trajectories.
 3. **Spectral analysis** – Compute eigenvalue ladders, determinant surrogates, and compare against ζ/ξ predictions. Scripts belong in `scripts/riemann/` or notebooks under `notebooks/Riemann/` with nbconvert support.
 4. **Benchmark enforcement** – Run `python benchmarks/riemann_program.py` (invoked automatically via `make test`/CI) to regress σ_c^{(k)} estimates across graph sizes and emit telemetry in `results/riemann_program/`.
-5. **Validation** – Run targeted tests (e.g., `examples/39_riemann_operator_demo.py`, new `tests/test_riemann_operator.py`) to ensure deterministic seeds and grammar compliance (U1–U6).
+5. **Validation** – Run targeted tests (e.g., `examples/16_riemann_operator_demo.py`, new `tests/test_riemann_operator.py`) to ensure deterministic seeds and grammar compliance (U1–U6).
 
 ## 4. Telemetry & Reproducibility
 
@@ -53,10 +53,32 @@ This memo defines the minimum structure required to evaluate TNFR claims about t
 
 ## 6. Cross-References
 
-- `src/tnfr/riemann/operator.py` – Canonical implementation of $H^{(k)}(\sigma)$ operators.
-- `examples/39_riemann_operator_demo.py` – Reference execution path and plotting routines.
-- `benchmarks/` suite – Location for future automated regressions.
-- `theory/UNIFIED_GRAMMAR_RULES.md` and `docs/STRUCTURAL_FIELDS_TETRAD.md` – Required grammar and telemetry rules referenced throughout this memo.
+### Implementation Modules (`src/tnfr/riemann/`)
+
+- `operator.py` – Canonical implementation of $H^{(k)}(\sigma)$ operators and prime graph construction.
+- `spectral_proof.py` – Spectral convergence proofs ($\sigma_c^{(k)} \to 1/2$).
+- `complex_extension.py` – Complex plane extensions of TNFR operators.
+- `spectral_zeta.py` – Discrete spectral zeta functions.
+- `topology.py` – Topology comparison analysis (path, cycle, star, etc.).
+- `spectral_conservation.py` – Spectral conservation laws.
+- `analytical_convergence.py` – Analytical convergence analysis.
+- `eigenmode_fields.py` – Eigenmode-based tetrad field computation.
+- `random_ensemble.py` – Random matrix ensemble comparisons.
+- `telemetry.py` – Riemann telemetry records and field aggregate helpers.
+
+### Examples
+
+- `examples/16_riemann_operator_demo.py` – Reference execution path, eigenvalue exploration.
+- `examples/18_riemann_convergence_proof.py` – Spectral convergence proof (four lines of attack).
+- `examples/19_topology_comparison.py` – Cross-topology critical parameter comparison.
+- `examples/20_eigenmode_tetrad.py` – Eigenmode-based tetrad field analysis.
+- `examples/24_spectral_conservation_demo.py` – Spectral conservation law demonstration.
+
+### Supporting Infrastructure
+
+- `benchmarks/riemann_program.py` – Automated spectral regression benchmarks.
+- `theory/UNIFIED_GRAMMAR_RULES.md` – Grammar rules referenced throughout.
+- `docs/STRUCTURAL_FIELDS_TETRAD.md` – Tetrad field specifications.
 
 ---
 
@@ -256,7 +278,7 @@ Open task:
 To make the previous ideas completely concrete, we define here a
 finite-dimensional TNFR operator built on a prime-labelled graph. This
 is the theoretical counterpart of the sandbox implemented in
-`src/tnfr/riemann/operator.py` and `examples/39_riemann_operator_demo.py`.
+`src/tnfr/riemann/operator.py` and `examples/16_riemann_operator_demo.py`.
 
 ### 7.1 Prime Graph and Structural Space
 
@@ -530,7 +552,7 @@ the local structural energy of each prime-labelled node:
 - For $\sigma > \tfrac12$ nodes with larger primes receive positive
    shifts, corresponding to an effective Expansion (VAL) in their
    structural energy.
-- For $\sigma < \tfrac12$ ocurre el efecto inverso, análogo a una
+- For $\sigma < \tfrac12$ the effect is reversed, analogous to a
    Contraction (NUL).
 
 Grammar rule U2 (Convergence & Boundedness) requires that such
@@ -641,7 +663,7 @@ graphs.
 
 ### 8.2 Example Script: Eigenvalue Exploration
 
-- Script: `examples/39_riemann_operator_demo.py`.
+- Script: `examples/16_riemann_operator_demo.py`.
 - Behavior:
    - Constructs a prime path graph on the first 10 primes.
    - Builds $H_{\mathrm{TNFR}}$ for several values of $\sigma$ (e.g.
@@ -715,7 +737,7 @@ $$
 This would provide a **discrete structural derivation** of why the Riemann Hypothesis predicts all non-trivial zeros to lie on the critical line $\operatorname{Re}(s) = 1/2$.
 
 **Supporting Evidence from Numerical Sandbox**:
-In `examples/39_riemann_operator_demo.py`, preliminary observations suggest:
+In `examples/16_riemann_operator_demo.py`, preliminary observations suggest:
 - For $\sigma = 0.25$: some negative eigenvalues appear (inadmissible).
 - For $\sigma = 0.5$: eigenvalues cluster around zero (critical behavior).
 - For $\sigma = 0.75$: all eigenvalues positive (admissible).
@@ -894,6 +916,8 @@ From TNFR unified field theory, we have **tensor invariants**:
 
 **Energy Density**: $\mathcal{E}^{(k)} = \Phi_s^2 + |\nabla\phi|^2 + |\Psi|^2$
 **Topological Charge**: $\mathcal{Q}^{(k)} = |\nabla\phi| \cdot \text{Im}(\Psi) - \text{Re}(\Psi) \cdot J_{\Delta NFR}^{(k)}$
+
+**Note**: The general TNFR conservation law takes the form $\partial\rho/\partial t + \nabla\cdot\mathbf{J} = S_{\text{grammar}}$ where $S_{\text{grammar}} \to 0$ under U1–U6 (see `src/tnfr/physics/conservation.py`). In the discrete Riemann context, exact conservation emerges at criticality.
 
 **Conjecture 12.1** (Riemann Invariant Conservation).
 At criticality ($\sigma = 1/2$), the discrete system satisfies:
@@ -2640,3 +2664,29 @@ The document develops a theoretical framework spanning:
 The TNFR-Riemann program provides computational tools for mathematical analysis through structural coherence principles applied to number theory problems.
 
 Technical framework development complete for research program initiation.
+
+---
+
+## Implementation & Examples
+
+### Executable Demonstrations
+
+| Example | Concept from this document |
+|---------|---------------------------|
+| [16_riemann_operator_demo.py](../examples/16_riemann_operator_demo.py) | Discrete TNFR-Riemann eigenvalues, critical σ |
+| [18_riemann_convergence_proof.py](../examples/18_riemann_convergence_proof.py) | Spectral convergence σ_c → 1/2 |
+| [19_topology_comparison.py](../examples/19_topology_comparison.py) | Cross-topology universality |
+| [20_eigenmode_tetrad.py](../examples/20_eigenmode_tetrad.py) | Per-eigenmode structural field tetrad |
+| [21_complex_extension_demo.py](../examples/21_complex_extension_demo.py) | Non-Hermitian operator, complex s |
+| [22_spectral_zeta_demo.py](../examples/22_spectral_zeta_demo.py) | Spectral zeta, heat kernel, Mellin bridge |
+| [23_random_ensemble_rmt_demo.py](../examples/23_random_ensemble_rmt_demo.py) | Random matrix ensembles (GOE/GUE/Poisson) |
+| [25_analytical_convergence_demo.py](../examples/25_analytical_convergence_demo.py) | Analytical proof via PNT + telescoping identity |
+
+### Key Source Modules
+
+- `src/tnfr/riemann/operator.py` — Discrete TNFR-Riemann operators
+- `src/tnfr/riemann/spectral_proof.py` — Spectral convergence proofs
+- `src/tnfr/riemann/complex_extension.py` — Complex plane extensions
+- `src/tnfr/riemann/spectral_zeta.py` — Spectral zeta functions
+- `src/tnfr/riemann/topology.py` — Topology comparison analysis
+- `src/tnfr/riemann/analytical_convergence.py` — Analytical convergence analysis

@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
-from typing import Any, Dict, Optional, Sequence
+from typing import Any, Sequence
 
 import networkx as nx
 from ..mathematics.unified_numerical import np
@@ -18,7 +18,6 @@ from ..dynamics import set_delta_nfr_hook, dnfr_epi_vf_mixed
 from ..utils import get_logger
 
 logger = get_logger(__name__)
-
 
 @dataclass(frozen=True)
 class ScaleDefinition:
@@ -41,14 +40,13 @@ class ScaleDefinition:
     coupling_strength: float
     edge_probability: float = 0.1
 
-
 @dataclass
 class EvolutionResult:
     """Results from multi-scale evolution.
 
     Attributes
     ----------
-    scale_results : Dict[str, Any]
+    scale_results : dict[str, Any]
         Results indexed by scale name
     total_coherence : float
         Aggregated coherence across all scales
@@ -56,10 +54,9 @@ class EvolutionResult:
         Measure of cross-scale synchronization
     """
 
-    scale_results: Dict[str, Any]
+    scale_results: dict[str, Any]
     total_coherence: float = 0.0
     cross_scale_coupling: float = 0.0
-
 
 class HierarchicalTNFRNetwork:
     """Multi-scale TNFR network supporting operational fractality (§3.7).
@@ -109,9 +106,9 @@ class HierarchicalTNFRNetwork:
     def __init__(
         self,
         scales: Sequence[ScaleDefinition],
-        seed: Optional[int] = None,
+        seed: int | None = None,
         parallel: bool = True,
-        max_workers: Optional[int] = None,
+        max_workers: int | None = None,
     ):
         if not scales:
             raise ValueError("At least one scale definition required")
@@ -122,11 +119,11 @@ class HierarchicalTNFRNetwork:
         self.max_workers = max_workers
 
         # Initialize networks for each scale
-        self.networks_by_scale: Dict[str, TNFRGraph] = {}
+        self.networks_by_scale: dict[str, TNFRGraph] = {}
         self._initialize_scales()
 
         # Cross-scale coupling matrix (scale x scale)
-        self.cross_scale_couplings: Dict[tuple[str, str], float] = {}
+        self.cross_scale_couplings: dict[tuple[str, str], float] = {}
         self._initialize_cross_scale_couplings()
 
         logger.info(
@@ -153,7 +150,7 @@ class HierarchicalTNFRNetwork:
                 G.nodes[node]["delta_nfr"] = 0.0
                 G.nodes[node]["si"] = 0.0
 
-            # Set base coupling weights
+            # set base coupling weights
             for u, v in G.edges():
                 G[u][v]["weight"] = scale.coupling_strength * rng.uniform(0.8, 1.2)
 
@@ -182,7 +179,7 @@ class HierarchicalTNFRNetwork:
                 self.cross_scale_couplings[(scale_i, scale_j)] = coupling_strength
 
     def set_cross_scale_coupling(self, from_scale: str, to_scale: str, strength: float) -> None:
-        """Set explicit cross-scale coupling strength.
+        """set explicit cross-scale coupling strength.
 
         Parameters
         ----------
@@ -274,7 +271,7 @@ class HierarchicalTNFRNetwork:
         self,
         dt: float = 0.1,
         steps: int = 10,
-        operators: Optional[Sequence[str]] = None,
+        operators: Sequence[str] | None = None,
     ) -> EvolutionResult:
         """Evolve all scales simultaneously with cross-coupling.
 
@@ -318,7 +315,7 @@ class HierarchicalTNFRNetwork:
             cross_scale_coupling=cross_coupling,
         )
 
-    def _evolve_sequential(self, dt: float, operators: Sequence[str]) -> Dict[str, Any]:
+    def _evolve_sequential(self, dt: float, operators: Sequence[str]) -> dict[str, Any]:
         """Evolve scales sequentially."""
         results = {}
 
@@ -345,7 +342,7 @@ class HierarchicalTNFRNetwork:
 
         return results
 
-    def _evolve_parallel(self, dt: float, operators: Sequence[str]) -> Dict[str, Any]:
+    def _evolve_parallel(self, dt: float, operators: Sequence[str]) -> dict[str, Any]:
         """Evolve scales in parallel using ThreadPoolExecutor.
 
         Note: ThreadPoolExecutor is used instead of ProcessPoolExecutor because:
@@ -373,7 +370,7 @@ class HierarchicalTNFRNetwork:
 
     def _evolve_single_scale(
         self, scale_name: str, dt: float, operators: Sequence[str]
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Evolve a single scale (helper for parallel execution)."""
         G = self.networks_by_scale[scale_name]
 
@@ -479,12 +476,12 @@ class HierarchicalTNFRNetwork:
             raise ValueError(f"Unknown scale: {scale_name}")
         return self.networks_by_scale[scale_name]
 
-    def memory_footprint(self) -> Dict[str, float]:
+    def memory_footprint(self) -> dict[str, float]:
         """Estimate memory usage per scale.
 
         Returns
         -------
-        Dict[str, float]
+        dict[str, float]
             Memory usage in MB for each scale
         """
         footprint = {}

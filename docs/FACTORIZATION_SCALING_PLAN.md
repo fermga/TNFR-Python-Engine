@@ -60,7 +60,7 @@ Key Decisions:
 - Operators must expose resource estimators (memory, ΔNFR impact) to let the
    orchestrator schedule work safely.
 - Strategy interfaces (AL/IL/RA/SHA streaming contracts, resource estimators,
-  telemetry payloads) are defined in [OPERATOR_STRATEGY_SPEC.md](OPERATOR_STRATEGY_SPEC.md)
+  telemetry payloads) are defined in [Appendix A](#appendix-a-operator-strategy-specification-phase-3)
   and serve as the canonical reference for O1 implementation work.
 
 ### 4. Telemetry & Certification
@@ -224,4 +224,105 @@ Milestones:
 - `docs/TNFR_FORCES_EMERGENCE.md` – telemetry derivations referenced by the vectorization milestones.
 - `benchmarks/benchmark_optimization_tracks.py` – layout sweep harness backing O2.x milestones.
 - `scripts/replay/register_manifest.py` – manifest registration helper used in V1 automation.
+
+---
+
+## Appendix A: Operator Strategy Specification (Phase 3)
+
+> **Status**: Draft (2025-11-30)  
+> Originally `docs/OPERATOR_STRATEGY_SPEC.md`, consolidated here as the canonical reference for O1 implementation.
+
+This section defines the contracts required to implement pluggable AL/IL/RA/SHA
+operator strategies that run on streaming partition blocks. Goals:
+
+1. Preserve TNFR grammar compliance (U1–U6) while executing operators on partial graph windows.
+2. Provide deterministic resource estimators so the orchestrator can schedule work without violating Φ_s / |∇φ| budgets.
+3. Enable heterogeneous execution (CPU vectorized, GPU, or remote) via a common interface set.
+
+### A.1 Terminology
+
+- **Partition block** – A streaming window from a `PartitionedPaleyGraph`, possibly overlapping with neighbors to preserve boundary resonance.
+- **Strategy** – Concrete implementation of one TNFR operator (AL, IL, RA, SHA) tuned for a compute substrate.
+- **Context** – Metadata describing structural fields, ΔNFR pressure, and dispatcher capabilities for the current block.
+
+### A.2 Base Interfaces
+
+```python
+class OperatorStrategy(Protocol):
+    operator: Literal["AL", "IL", "RA", "SHA"]
+
+    def supports(self, ctx: StrategyContext) -> bool: ...
+    def resource_estimate(self, ctx: StrategyContext) -> ResourceEstimate: ...
+    def prepare(self, ctx: StrategyContext, block: PartitionBlock) -> PreparedBlock: ...
+    def apply(self, prepared: PreparedBlock) -> OperationResult: ...
+    def cleanup(self, prepared: PreparedBlock) -> None: ...
+```
+
+**StrategyContext**:
+```python
+@dataclass(frozen=True)
+class StrategyContext:
+    partition_id: str
+    operator_sequence_position: int
+    structural_fields: StructuralFields  # Φ_s, |∇φ|, K_φ, ξ_C
+    dispatcher_capabilities: Mapping[str, Any]
+    backend: Literal["cpu", "gpu", "remote"]
+    block_size: int
+    boundary_overlap: int
+    seed: int
+```
+
+**ResourceEstimate**:
+```python
+@dataclass(frozen=True)
+class ResourceEstimate:
+    memory_bytes: int
+    time_ms: float
+    delta_nfr: float
+    phi_s_drift: float
+    failure_risk: Literal["low", "medium", "high"]
+```
+
+Contracts: `delta_nfr` and `phi_s_drift` must derive from telemetry equations in `AGENTS.md` (§ Structural Field Tetrad). `failure_risk` encodes anticipated bifurcation triggers (U4).
+
+### A.3 Operator-Specific Requirements
+
+**AL (Emission)**: Must emit EPI seeds respecting partition boundary phases (U3). Resource estimator flags high ΔNFR when block coherence < 0.5.
+
+**IL (Coherence)**: Requires parent Φ_s baseline to prove ΔΦ_s < φ. Telemetry must include monotonicity proof: `C_after >= C_before`.
+
+**RA (Resonance)**: `supports` must reject contexts where |∇φ| exceeds dispatcher limits. Output includes propagation depth and coupling count.
+
+**SHA (Silence)**: `prepare` may be no-op; `apply` ensures νf → 0 while freezing EPI. Resource estimator exposes release credits when SHA frees buffers.
+
+### A.4 Telemetry Payload
+
+```python
+@dataclass
+class OperationResult:
+    block: PartitionBlock
+    telemetry: Dict[str, Any]  # ΔNFR, Φ_s delta, Si, operator-specific
+    warnings: List[str]
+    proof_hash: str  # SHA3-256 over inputs + outputs
+```
+
+### A.5 Registry & Selection
+
+```python
+StrategyRegistry.register(operator="AL", name="cpu-default", factory=CpuAlStrategy)
+candidates = StrategyRegistry.get(operator="IL")
+strategy = _select_strategy(candidates, ctx)
+```
+
+Selection heuristics: filter `supports(ctx)`, sort by `failure_risk` and ΔNFR magnitude, apply self-optimizing engine hints.
+
+### A.6 Reference Implementations
+
+CPU baseline strategies (`src/tnfr/operators/strategies/defaults.py`) declare deterministic resource estimators, operate in-place on `PartitionBlock`, and emit telemetry covering ΔNFR, Φ_s drift, and proof hash. `SpectralPaleyFactorizer` selects the lowest-risk strategy per partition/operator, storing the plan in `SpectralAnalysisResult.operator_strategy_plan`.
+
+### A.7 Testing Requirements
+
+- Unit tests validate resource estimator sanity bounds.
+- Integration tests execute AL→IL→RA→SHA with mixed strategies to prove partition manifests absorb telemetry correctly.
+- Replay tests use `_manifest_summary.json` artifacts plus strategy names for cross-platform determinism.
 

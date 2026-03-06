@@ -19,7 +19,7 @@ else:
     NodeId = Any  # runtime fallback
     TNFRGraph = Any  # runtime fallback
 
-from ..alias import get_attr, get_attr_str
+from ..alias import get_attr
 from ..constants.aliases import (
     ALIAS_D2EPI,
     ALIAS_DNFR,
@@ -54,7 +54,6 @@ __all__ = [
 HAS_EMISSION_TIMESTAMP_ALIAS = _HAS_EMISSION_TIMESTAMP_ALIAS
 EMISSION_TIMESTAMP_TUPLE = _ALIAS_EMISSION_TIMESTAMP_TUPLE
 
-
 def get_node_attr(G: TNFRGraph, node: NodeId, aliases: tuple[str, ...], default: float = 0.0) -> float:
     """Get node attribute using alias fallback.
 
@@ -68,7 +67,7 @@ def get_node_attr(G: TNFRGraph, node: NodeId, aliases: tuple[str, ...], default:
     node : NodeId
         Node to get attribute from
     aliases : tuple[str, ...]
-        Tuple of possible attribute names (aliases) to try
+        tuple of possible attribute names (aliases) to try
     default : float, optional
         Default value if attribute not found, by default 0.0
 

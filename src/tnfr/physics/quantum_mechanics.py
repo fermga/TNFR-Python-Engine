@@ -1,6 +1,5 @@
 from ..mathematics.unified_numerical import np
 import networkx as nx
-from typing import Dict, Tuple, List, Optional
 
 class QuantumMechanicsMapper:
     """
@@ -13,7 +12,7 @@ class QuantumMechanicsMapper:
     """
     
     @staticmethod
-    def wavefunction_to_tnfr(psi: complex) -> Tuple[float, float]:
+    def wavefunction_to_tnfr(psi: complex) -> tuple[float, float]:
         """
         Maps a quantum wavefunction value to TNFR structural field components.
         
@@ -21,7 +20,7 @@ class QuantumMechanicsMapper:
             psi: Complex wavefunction value
             
         Returns:
-            (K_phi, J_phi): Tuple of Phase Curvature and Phase Current
+            (K_phi, J_phi): tuple of Phase Curvature and Phase Current
         """
         # In TNFR, the complex field Psi is defined as K_phi + i*J_phi
         # We map the wavefunction directly to this field
@@ -61,7 +60,7 @@ class QuantumMechanicsMapper:
         return amplitude * np.exp(1j * phi)
 
     @staticmethod
-    def calculate_theoretical_levels(L: float, n_max: int = 5) -> List[float]:
+    def calculate_theoretical_levels(L: float, n_max: int = 5) -> list[float]:
         """
         Calculates theoretical energy levels for a particle in a 1D box.
         E_n = (n^2 * h^2) / (8 * m * L^2)
@@ -74,7 +73,7 @@ class QuantumMechanicsMapper:
             n_max: Max quantum number
             
         Returns:
-            List of energy levels
+            list of energy levels
         """
         levels = []
         for n in range(1, n_max + 1):

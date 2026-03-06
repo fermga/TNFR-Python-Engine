@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any
 
 __all__ = [
     "run_partition_self_optimization",
@@ -12,15 +12,14 @@ __all__ = [
     "run_batch_certificate_optimization",
 ]
 
-
 def run_partition_self_optimization(
     manifest_path: Path | str,
     *,
     manifest_summary_path: Path | str | None = None,
-    base_name: Optional[str] = None,
+    base_name: str | None = None,
     operation_type: str = "paley_partition",
     output_root: Path | str | None = None,
-) -> Dict[str, Any] | None:
+) -> dict[str, Any] | None:
     """Run the CLI-driven self-optimization pipeline for a partition manifest.
 
     Parameters
@@ -60,14 +59,13 @@ def run_partition_self_optimization(
         output_root=payload_root,
     )
 
-
 def run_pattern_discovery_optimization(
     manifest_path: Path | str,
     *,
     manifest_summary_path: Path | str | None = None,
-    base_name: Optional[str] = None,
+    base_name: str | None = None,
     output_root: Path | str | None = None,
-) -> Dict[str, Any] | None:
+) -> dict[str, Any] | None:
     """Run self-optimization pipeline for pattern discovery results.
 
     Parameters
@@ -83,7 +81,7 @@ def run_pattern_discovery_optimization(
 
     Returns
     -------
-    Dict[str, Any] | None
+    dict[str, Any] | None
         Summary of the self-optimization run, or None if unsuccessful.
 
     Examples
@@ -102,14 +100,13 @@ def run_pattern_discovery_optimization(
         output_root=output_root,
     )
 
-
 def run_fractal_partition_optimization(
     manifest_path: Path | str,
     *,
     manifest_summary_path: Path | str | None = None,
-    base_name: Optional[str] = None,
+    base_name: str | None = None,
     output_root: Path | str | None = None,
-) -> Dict[str, Any] | None:
+) -> dict[str, Any] | None:
     """Run self-optimization pipeline for fractal partition results.
 
     Parameters
@@ -125,7 +122,7 @@ def run_fractal_partition_optimization(
 
     Returns
     -------
-    Dict[str, Any] | None
+    dict[str, Any] | None
         Summary of the self-optimization run, or None if unsuccessful.
 
     Examples
@@ -144,14 +141,13 @@ def run_fractal_partition_optimization(
         output_root=output_root,
     )
 
-
 def run_batch_certificate_optimization(
     manifest_path: Path | str,
     *,
     manifest_summary_path: Path | str | None = None,
-    base_name: Optional[str] = None,
+    base_name: str | None = None,
     output_root: Path | str | None = None,
-) -> Dict[str, Any] | None:
+) -> dict[str, Any] | None:
     """Run self-optimization pipeline for batch certificate processing.
 
     Parameters
@@ -167,7 +163,7 @@ def run_batch_certificate_optimization(
 
     Returns
     -------
-    Dict[str, Any] | None
+    dict[str, Any] | None
         Summary of the self-optimization run, or None if unsuccessful.
 
     Examples

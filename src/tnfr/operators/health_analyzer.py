@@ -7,7 +7,7 @@ canonical TNFR metrics: coherence, balance, sustainability, and efficiency.
 from __future__ import annotations
 
 from functools import lru_cache
-from typing import Any, List, Tuple, TYPE_CHECKING
+from typing import Any, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from ..types import TNFRGraph
@@ -30,11 +30,11 @@ __all__ = [
     "SequenceHealthAnalyzer",
 ]
 
-
-# Operator categories for health analysis
-_STABILIZERS = frozenset({COHERENCE, SELF_ORGANIZATION, SILENCE, RESONANCE})
+# Import canonical stabilizer set from grammar_types (single source of truth)
+from .grammar_types import STABILIZERS as _GRAMMAR_STABILIZERS
+# Extended stabilizers for health analysis include silence & resonance (defensive)
+_STABILIZERS = _GRAMMAR_STABILIZERS | frozenset({SILENCE, RESONANCE})
 _REGENERATORS = frozenset({TRANSITION, RECURSIVITY})  # NAV, REMESH
-
 
 @dataclass
 class SequenceHealthMetrics:
@@ -71,7 +71,7 @@ class SequenceHealthMetrics:
         Number of operators in the sequence.
     dominant_pattern : str
         Detected structural pattern type (e.g., "activation", "therapeutic", "unknown").
-    recommendations : List[str]
+    recommendations : list[str]
         Specific suggestions for improving sequence health.
     """
 
@@ -85,8 +85,7 @@ class SequenceHealthMetrics:
     overall_health: float
     sequence_length: int
     dominant_pattern: str
-    recommendations: List[str]
-
+    recommendations: list[str]
 
 class SequenceHealthAnalyzer:
     """Analyzer for structural health of TNFR operator sequences.
@@ -111,14 +110,14 @@ class SequenceHealthAnalyzer:
 
     def __init__(self) -> None:
         """Initialize the health analyzer with caching support."""
-        self._recommendations: List[str] = []
+        self._recommendations: list[str] = []
         # Cache for single-pass analysis results keyed by sequence tuple
         # Using maxsize=128 to avoid unbounded growth while caching common sequences
         self._analysis_cache = lru_cache(maxsize=128)(self._compute_single_pass)
 
     def _compute_single_pass(
-        self, sequence_tuple: Tuple[str, ...]
-    ) -> Tuple[int, int, int, int, int, List[Tuple[str, str]]]:
+        self, sequence_tuple: tuple[str, ...]
+    ) -> tuple[int, int, int, int, int, list[tuple[str, str]]]:
         """Compute sequence statistics in a single pass for efficiency.
 
         This method scans the sequence once and extracts all the information
@@ -126,18 +125,18 @@ class SequenceHealthAnalyzer:
 
         Parameters
         ----------
-        sequence_tuple : Tuple[str, ...]
+        sequence_tuple : tuple[str, ...]
             Immutable sequence of operators (tuple for hashability in cache).
 
         Returns
         -------
-        Tuple containing:
+        tuple containing:
             - stabilizer_count: int
             - destabilizer_count: int
             - transformer_count: int
             - regenerator_count: int
             - unique_ops: int
-            - problematic_transitions: List[(op1, op2)] pairs
+            - problematic_transitions: list[(op1, op2)] pairs
 
         Notes
         -----
@@ -185,12 +184,12 @@ class SequenceHealthAnalyzer:
             problematic_transitions,
         )
 
-    def analyze_health(self, sequence: List[str]) -> SequenceHealthMetrics:
+    def analyze_health(self, sequence: list[str]) -> SequenceHealthMetrics:
         """Perform complete structural health analysis of a sequence.
 
         Parameters
         ----------
-        sequence : List[str]
+        sequence : list[str]
             Operator sequence to analyze (canonical names like "emission", "coherence").
 
         Returns
@@ -262,7 +261,7 @@ class SequenceHealthAnalyzer:
         )
 
     def _calculate_coherence(
-        self, sequence: List[str], problematic_transitions: List[Tuple[str, str]]
+        self, sequence: list[str], problematic_transitions: list[tuple[str, str]]
     ) -> float:
         """Calculate coherence index: how well the sequence flows.
 
@@ -273,9 +272,9 @@ class SequenceHealthAnalyzer:
 
         Parameters
         ----------
-        sequence : List[str]
+        sequence : list[str]
             Operator sequence
-        problematic_transitions : List[Tuple[str, str]]
+        problematic_transitions : list[tuple[str, str]]
             Pre-computed list of problematic transition pairs
 
         Returns
@@ -304,7 +303,7 @@ class SequenceHealthAnalyzer:
         return (transition_quality + pattern_clarity + structural_closure) / 3.0
 
     def _calculate_balance(
-        self, sequence: List[str], stabilizer_count: int, destabilizer_count: int
+        self, sequence: list[str], stabilizer_count: int, destabilizer_count: int
     ) -> float:
         """Calculate balance score: equilibrium between stabilizers and destabilizers.
 
@@ -313,7 +312,7 @@ class SequenceHealthAnalyzer:
 
         Parameters
         ----------
-        sequence : List[str]
+        sequence : list[str]
             Operator sequence
         stabilizer_count : int
             Pre-computed count of stabilizing operators
@@ -353,7 +352,7 @@ class SequenceHealthAnalyzer:
 
     def _calculate_sustainability(
         self,
-        sequence: List[str],
+        sequence: list[str],
         stabilizer_count: int,
         destabilizer_count: int,
         regenerator_count: int,
@@ -367,7 +366,7 @@ class SequenceHealthAnalyzer:
 
         Parameters
         ----------
-        sequence : List[str]
+        sequence : list[str]
             Operator sequence
         stabilizer_count : int
             Pre-computed count of stabilizing operators
@@ -417,14 +416,14 @@ class SequenceHealthAnalyzer:
 
         return min(1.0, sustainability)
 
-    def _calculate_efficiency(self, sequence: List[str], unique_count: int) -> float:
+    def _calculate_efficiency(self, sequence: list[str], unique_count: int) -> float:
         """Calculate complexity efficiency: value achieved relative to length.
 
         Penalizes unnecessarily long sequences that don't provide proportional value.
 
         Parameters
         ----------
-        sequence : List[str]
+        sequence : list[str]
             Operator sequence
         unique_count : int
             Pre-computed count of unique operators in sequence
@@ -460,7 +459,7 @@ class SequenceHealthAnalyzer:
 
         return pattern_value * length_factor
 
-    def _calculate_frequency_harmony(self, sequence: List[str]) -> float:
+    def _calculate_frequency_harmony(self, sequence: list[str]) -> float:
         """Calculate frequency harmony: smoothness of νf transitions.
 
         Note: Full implementation requires integration with STRUCTURAL_FREQUENCIES
@@ -469,7 +468,7 @@ class SequenceHealthAnalyzer:
 
         Parameters
         ----------
-        sequence : List[str]
+        sequence : list[str]
             Operator sequence
 
         Returns
@@ -483,7 +482,7 @@ class SequenceHealthAnalyzer:
 
     def _calculate_completeness(
         self,
-        sequence: List[str],
+        sequence: list[str],
         stabilizer_count: int,
         destabilizer_count: int,
         transformer_count: int,
@@ -494,7 +493,7 @@ class SequenceHealthAnalyzer:
 
         Parameters
         ----------
-        sequence : List[str]
+        sequence : list[str]
             Operator sequence
         stabilizer_count : int
             Pre-computed count of stabilizing operators
@@ -523,7 +522,7 @@ class SequenceHealthAnalyzer:
         return phase_count / 4.0
 
     def _calculate_smoothness(
-        self, sequence: List[str], problematic_transitions: List[Tuple[str, str]]
+        self, sequence: list[str], problematic_transitions: list[tuple[str, str]]
     ) -> float:
         """Calculate transition smoothness: quality of operator transitions.
 
@@ -531,9 +530,9 @@ class SequenceHealthAnalyzer:
 
         Parameters
         ----------
-        sequence : List[str]
+        sequence : list[str]
             Operator sequence
-        problematic_transitions : List[Tuple[str, str]]
+        problematic_transitions : list[tuple[str, str]]
             Pre-computed list of problematic transition pairs
 
         Returns
@@ -549,12 +548,12 @@ class SequenceHealthAnalyzer:
         penalty = len(problematic_transitions) * 0.5
         return max(0.0, 1.0 - (penalty / total_transitions))
 
-    def _assess_pattern_clarity(self, sequence: List[str]) -> float:
+    def _assess_pattern_clarity(self, sequence: list[str]) -> float:
         """Assess how clearly the sequence forms a recognizable pattern.
 
         Parameters
         ----------
-        sequence : List[str]
+        sequence : list[str]
             Operator sequence
 
         Returns
@@ -575,12 +574,12 @@ class SequenceHealthAnalyzer:
         else:
             return 0.5  # No clear pattern
 
-    def _assess_closure(self, sequence: List[str]) -> float:
+    def _assess_closure(self, sequence: list[str]) -> float:
         """Assess structural closure quality.
 
         Parameters
         ----------
-        sequence : List[str]
+        sequence : list[str]
             Operator sequence
 
         Returns
@@ -604,12 +603,12 @@ class SequenceHealthAnalyzer:
         # Invalid ending
         return 0.3
 
-    def _count_unresolved_dissonance(self, sequence: List[str]) -> int:
+    def _count_unresolved_dissonance(self, sequence: list[str]) -> int:
         """Count destabilizers not followed by stabilizers within reasonable window.
 
         Parameters
         ----------
-        sequence : List[str]
+        sequence : list[str]
             Operator sequence
 
         Returns
@@ -629,7 +628,7 @@ class SequenceHealthAnalyzer:
 
         return unresolved
 
-    def _assess_pattern_value_optimized(self, sequence: List[str], unique_count: int) -> float:
+    def _assess_pattern_value_optimized(self, sequence: list[str], unique_count: int) -> float:
         """Assess the structural value of the pattern using pre-computed unique count.
 
         Value is higher when:
@@ -639,7 +638,7 @@ class SequenceHealthAnalyzer:
 
         Parameters
         ----------
-        sequence : List[str]
+        sequence : list[str]
             Operator sequence
         unique_count : int
             Pre-computed count of unique operators in sequence
@@ -672,12 +671,12 @@ class SequenceHealthAnalyzer:
         # Combine factors
         return (diversity_score * 0.5) + (coverage_score * 0.5)
 
-    def _detect_pattern(self, sequence: List[str]) -> str:
+    def _detect_pattern(self, sequence: list[str]) -> str:
         """Detect the dominant structural pattern type.
 
         Parameters
         ----------
-        sequence : List[str]
+        sequence : list[str]
             Operator sequence
 
         Returns

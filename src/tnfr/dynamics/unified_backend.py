@@ -22,7 +22,7 @@ Status: CANONICAL UNIFIED BACKEND
 """
 
 from ..mathematics.unified_numerical import np
-from typing import Dict, Any, Optional
+from typing import Any
 from dataclasses import dataclass, field
 from enum import Enum
 import time
@@ -74,7 +74,6 @@ try:
 except ImportError:
     HAS_PHYSICS = False
 
-
 class ComputationType(Enum):
     """Types of TNFR computations."""
     NODAL_EVOLUTION = "nodal_evolution"          # ∂EPI/∂t integration
@@ -84,32 +83,29 @@ class ComputationType(Enum):
     OPERATOR_APPLICATION = "operator_application"  # Structural operators
     CROSS_SCALE_COUPLING = "cross_scale_coupling"  # Multi-scale dynamics
 
-
 @dataclass
 class UnifiedComputationRequest:
     """Request for unified computation."""
     computation_type: ComputationType
     graph: Any
-    parameters: Dict[str, Any] = field(default_factory=dict)
-    preferred_backend: Optional[str] = None
+    parameters: dict[str, Any] = field(default_factory=dict)
+    preferred_backend: str | None = None
     enable_cache: bool = True
     return_trajectory: bool = False
     optimization_level: int = 2  # 0=none, 1=basic, 2=aggressive
-
 
 @dataclass
 class UnifiedComputationResult:
     """Result of unified computation."""
     computation_type: ComputationType
-    results: Dict[str, Any]
+    results: dict[str, Any]
     backend_used: str
     execution_time: float
     cache_hits: int = 0
     cache_misses: int = 0
     optimization_strategy: str = "none"
     memory_used_mb: float = 0.0
-    accuracy_metrics: Dict[str, float] = field(default_factory=dict)
-
+    accuracy_metrics: dict[str, float] = field(default_factory=dict)
 
 class TNFRUnifiedBackend:
     """
@@ -258,7 +254,7 @@ class TNFRUnifiedBackend:
         
         return result
         
-    def _execute_nodal_evolution(self, request: UnifiedComputationRequest, backend: str) -> Dict[str, Any]:
+    def _execute_nodal_evolution(self, request: UnifiedComputationRequest, backend: str) -> dict[str, Any]:
         """Execute nodal equation evolution: ∂EPI/∂t = νf · ΔNFR(t)."""
         G = request.graph
         dt = request.parameters.get('dt', 0.01)
@@ -280,7 +276,7 @@ class TNFRUnifiedBackend:
             
         return {"nodal_states": results, "backend": backend}
         
-    def _execute_spectral_analysis(self, request: UnifiedComputationRequest, backend: str) -> Dict[str, Any]:
+    def _execute_spectral_analysis(self, request: UnifiedComputationRequest, backend: str) -> dict[str, Any]:
         """Execute spectral analysis using GFT/IGFT."""
         G = request.graph
         
@@ -325,7 +321,7 @@ class TNFRUnifiedBackend:
             "backend": backend
         }
         
-    def _execute_field_computation(self, request: UnifiedComputationRequest, backend: str) -> Dict[str, Any]:
+    def _execute_field_computation(self, request: UnifiedComputationRequest, backend: str) -> dict[str, Any]:
         """Execute structural field computations."""
         G = request.graph
         
@@ -360,7 +356,7 @@ class TNFRUnifiedBackend:
             
         return results
         
-    def _execute_temporal_integration(self, request: UnifiedComputationRequest, backend: str) -> Dict[str, Any]:
+    def _execute_temporal_integration(self, request: UnifiedComputationRequest, backend: str) -> dict[str, Any]:
         """Execute multi-step temporal integration."""
         G = request.graph
         num_steps = request.parameters.get('num_steps', 10)
@@ -397,7 +393,7 @@ class TNFRUnifiedBackend:
             "backend": backend
         }
         
-    def _execute_operator_application(self, request: UnifiedComputationRequest, backend: str) -> Dict[str, Any]:
+    def _execute_operator_application(self, request: UnifiedComputationRequest, backend: str) -> dict[str, Any]:
         """Execute structural operator application."""
         operator_sequence = request.parameters.get('operators', [])
         
@@ -410,7 +406,7 @@ class TNFRUnifiedBackend:
             
         return results
         
-    def _execute_cross_scale_coupling(self, request: UnifiedComputationRequest, backend: str) -> Dict[str, Any]:
+    def _execute_cross_scale_coupling(self, request: UnifiedComputationRequest, backend: str) -> dict[str, Any]:
         """Execute multi-scale coupling computation."""
         G = request.graph
         
@@ -439,7 +435,7 @@ class TNFRUnifiedBackend:
         
         return results
         
-    def _execute_fallback_computation(self, request: UnifiedComputationRequest, error: str) -> Dict[str, Any]:
+    def _execute_fallback_computation(self, request: UnifiedComputationRequest, error: str) -> dict[str, Any]:
         """Fallback computation when optimized methods fail."""
         return {
             "computation_type": request.computation_type.value,
@@ -448,7 +444,7 @@ class TNFRUnifiedBackend:
             "backend": "fallback"
         }
         
-    def get_performance_statistics(self) -> Dict[str, Any]:
+    def get_performance_statistics(self) -> dict[str, Any]:
         """Get performance statistics across all computations."""
         if not self._computation_history:
             return {"total_computations": 0}
@@ -488,17 +484,15 @@ class TNFRUnifiedBackend:
         if self._nodal_optimizer:
             self._nodal_optimizer.clear_optimization_cache()
 
-
 # Factory functions
 def create_unified_backend(**kwargs) -> TNFRUnifiedBackend:
     """Create unified computational backend."""
     return TNFRUnifiedBackend(**kwargs)
 
-
 def execute_unified_computation(
     computation_type: ComputationType,
     graph: Any,
-    backend: Optional[TNFRUnifiedBackend] = None,
+    backend: TNFRUnifiedBackend | None = None,
     **kwargs
 ) -> UnifiedComputationResult:
     """Convenience function for unified computation."""

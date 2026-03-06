@@ -30,17 +30,14 @@ from ..config.operator_names import (
     RECEPTION,
     RECURSIVITY,
     RESONANCE,
-    SELF_ORGANIZATION,
     SILENCE,
     TRANSITION,
 )
 
-# Define stabilizers using canonical operator names (not glyph codes)
-# These operators provide structural stability in TNFR sequences.
-# Note: This uses canonical names (coherence, resonance, etc.) rather than
-# glyph codes (IL, RA, etc.) from config.constants.STABILIZERS to match
-# the sequence validation format throughout the system.
-_STABILIZERS_SET = frozenset([COHERENCE, SELF_ORGANIZATION, SILENCE, RESONANCE, COUPLING])
+# Import canonical stabilizer set from grammar_types (single source of truth)
+# Extended with silence, resonance, coupling for cycle detection context
+from .grammar_types import STABILIZERS as _GRAMMAR_STABILIZERS
+_STABILIZERS_SET = _GRAMMAR_STABILIZERS | frozenset([SILENCE, RESONANCE, COUPLING])
 
 __all__ = [
     "REGENERATORS",
@@ -58,7 +55,6 @@ REGENERATORS = [TRANSITION, RECURSIVITY, SILENCE]  # NAV, REMESH, SHA
 MIN_CYCLE_LENGTH = 5  # Minimum operators for meaningful cyclic behavior
 MAX_CYCLE_LENGTH = 13  # Maximum = all canonical operators once
 
-
 class CycleType(Enum):
     """Types of regenerative cycles based on dominant regenerator."""
 
@@ -67,7 +63,6 @@ class CycleType(Enum):
     RECURSIVE = "recursive"  # REMESH-driven (fractal regeneration)
     MEDITATIVE = "meditative"  # SHA-driven (paused renewal)
     TRANSFORMATIVE = "transformative"  # NAV-driven (phase transition)
-
 
 @dataclass(slots=True)
 class CycleAnalysis:
@@ -83,7 +78,6 @@ class CycleAnalysis:
     balance_score: float = 0.0
     diversity_score: float = 0.0
     coherence_score: float = 0.0
-
 
 class CycleDetector:
     """Detects and validates regenerative cycles in TNFR sequences.

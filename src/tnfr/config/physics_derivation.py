@@ -30,8 +30,6 @@ A sequence terminates coherently when:
 
 from __future__ import annotations
 
-from typing import FrozenSet
-
 __all__ = [
     "derive_start_operators_from_physics",
     "derive_end_operators_from_physics",
@@ -40,7 +38,6 @@ __all__ = [
     "can_stabilize_reorganization",
     "achieves_operational_closure",
 ]
-
 
 def can_generate_epi_from_null(operator: str) -> bool:
     """Check if operator can generate EPI from null/zero state.
@@ -78,7 +75,6 @@ def can_generate_epi_from_null(operator: str) -> bool:
     # Physical generators: create EPI via field emission
     return operator == "emission"
 
-
 def can_activate_latent_epi(operator: str) -> bool:
     """Check if operator can activate pre-existing latent EPI.
 
@@ -111,7 +107,6 @@ def can_activate_latent_epi(operator: str) -> bool:
     - Requires EPI > 0 in target phase
     """
     return operator in {"recursivity", "transition"}
-
 
 def can_stabilize_reorganization(operator: str) -> bool:
     """Check if operator can reduce ∂EPI/∂t → 0 (stabilize evolution).
@@ -146,7 +141,6 @@ def can_stabilize_reorganization(operator: str) -> bool:
     - Best as intermediate, not terminal
     """
     return operator == "silence"
-
 
 def achieves_operational_closure(operator: str) -> bool:
     """Check if operator provides operational closure (completes cycle).
@@ -195,8 +189,7 @@ def achieves_operational_closure(operator: str) -> bool:
 
     return operator in closures or operator in questionable
 
-
-def derive_start_operators_from_physics() -> FrozenSet[str]:
+def derive_start_operators_from_physics() -> frozenset[str]:
     """Derive valid start operators from TNFR physical principles.
 
     A sequence can start with an operator if it satisfies at least one:
@@ -206,7 +199,7 @@ def derive_start_operators_from_physics() -> FrozenSet[str]:
     Returns
     -------
     frozenset[str]
-        Set of canonical operator names that can validly start sequences
+        set of canonical operator names that can validly start sequences
 
     Examples
     --------
@@ -269,8 +262,7 @@ def derive_start_operators_from_physics() -> FrozenSet[str]:
 
     return frozenset(valid_starts)
 
-
-def derive_end_operators_from_physics() -> FrozenSet[str]:
+def derive_end_operators_from_physics() -> frozenset[str]:
     """Derive valid end operators from TNFR physical principles.
 
     A sequence can end with an operator if it satisfies at least one:
@@ -280,7 +272,7 @@ def derive_end_operators_from_physics() -> FrozenSet[str]:
     Returns
     -------
     frozenset[str]
-        Set of canonical operator names that can validly end sequences
+        set of canonical operator names that can validly end sequences
 
     Examples
     --------

@@ -22,7 +22,7 @@ Status: CANONICAL CACHE-INTEGRATED FFT ENGINE
 """
 
 import time
-from typing import Any, Dict, Optional, List, Tuple
+from typing import Any
 from dataclasses import dataclass
 from enum import Enum
 
@@ -62,7 +62,7 @@ except ImportError:
 
 # Import spectral analysis
 try:
-    from ..mathematics.spectral import gft, igft
+    from ..mathematics.spectral import igft
     HAS_SPECTRAL = True
 except ImportError:
     HAS_SPECTRAL = False
@@ -76,7 +76,6 @@ from ..constants.canonical import (
     ARITHMETIC_FFT_ENHANCEMENT_CANONICAL,   # φ²/π ≈ 0.8326 (4.0 → 4·φ²/π canonical)
 )
 
-
 class FFTOperationType(Enum):
     """Types of cache-optimized FFT operations."""
     SPECTRAL_CONVOLUTION = "spectral_convolution"
@@ -85,7 +84,6 @@ class FFTOperationType(Enum):
     PHASE_SYNCHRONIZATION = "phase_synchronization"
     MULTI_SCALE_DECOMPOSITION = "multi_scale_decomposition"
     CROSS_SPECTRAL_ANALYSIS = "cross_spectral_analysis"
-
 
 @dataclass
 class CacheOptimizedFFTResult:
@@ -98,7 +96,6 @@ class CacheOptimizedFFTResult:
     total_execution_time: float = 0.0
     spectral_basis_reused: bool = False
     kernel_cache_hits: int = 0
-
 
 class TNFRCacheAwareFFTEngine:
     """
@@ -136,8 +133,8 @@ class TNFRCacheAwareFFTEngine:
     def spectral_convolution_cached(
         self,
         G: Any,
-        signal1: Optional[np.ndarray] = None,
-        signal2: Optional[np.ndarray] = None,
+        signal1: np.ndarray | None = None,
+        signal2: np.ndarray | None = None,
         operation: str = "multiply"
     ) -> CacheOptimizedFFTResult:
         """
@@ -199,7 +196,7 @@ class TNFRCacheAwareFFTEngine:
         self,
         G: Any,
         num_harmonics: int = 5,
-        window_size: Optional[int] = None
+        window_size: int | None = None
     ) -> CacheOptimizedFFTResult:
         """
         Perform harmonic analysis with cache optimization.
@@ -251,7 +248,7 @@ class TNFRCacheAwareFFTEngine:
         self,
         G: Any,
         filter_type: str = "lowpass",
-        cutoff_frequency: Optional[float] = None,
+        cutoff_frequency: float | None = None,
         filter_order: int = 4
     ) -> CacheOptimizedFFTResult:
         """
@@ -310,7 +307,7 @@ class TNFRCacheAwareFFTEngine:
     def multi_scale_analysis_cached(
         self,
         G: Any,
-        scales: List[float] = None,
+        scales: list[float] = None,
         analysis_type: str = "wavelet"
     ) -> CacheOptimizedFFTResult:
         """
@@ -388,7 +385,7 @@ class TNFRCacheAwareFFTEngine:
         self,
         G1: Any,
         G2: Any,
-        coherence_bands: List[Tuple[float, float]] = None
+        coherence_bands: list[tuple[float, float]] = None
     ) -> CacheOptimizedFFTResult:
         """
         Compute cross-spectral coherence between two graphs with caching.
@@ -472,7 +469,7 @@ class TNFRCacheAwareFFTEngine:
             spectral_basis_reused=True
         )
     
-    def get_performance_summary(self) -> Dict[str, Any]:
+    def get_performance_summary(self) -> dict[str, Any]:
         """Get comprehensive performance summary."""
         fft_stats = {}
         if hasattr(self.fft_engine, 'cache_coordinator') and self.fft_engine.cache_coordinator:
@@ -497,12 +494,10 @@ class TNFRCacheAwareFFTEngine:
             }
         }
 
-
 # Factory functions
 def create_cache_aware_fft_engine(**kwargs) -> TNFRCacheAwareFFTEngine:
     """Create cache-aware FFT engine."""
     return TNFRCacheAwareFFTEngine(**kwargs)
-
 
 # Convenience functions for common operations
 def cached_spectral_convolution(G: Any, **kwargs) -> CacheOptimizedFFTResult:
@@ -510,12 +505,10 @@ def cached_spectral_convolution(G: Any, **kwargs) -> CacheOptimizedFFTResult:
     engine = create_cache_aware_fft_engine()
     return engine.spectral_convolution_cached(G, **kwargs)
 
-
 def cached_harmonic_analysis(G: Any, **kwargs) -> CacheOptimizedFFTResult:
     """Convenience function for cached harmonic analysis."""
     engine = create_cache_aware_fft_engine()
     return engine.harmonic_analysis_cached(G, **kwargs)
-
 
 def cached_spectral_filtering(G: Any, **kwargs) -> CacheOptimizedFFTResult:
     """Convenience function for cached spectral filtering."""

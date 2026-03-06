@@ -26,7 +26,6 @@ if TYPE_CHECKING:
 
 __all__ = ["validate_resonance_strict", "diagnose_resonance_readiness"]
 
-
 def validate_resonance_strict(
     G: TNFRGraph,
     node: Any,
@@ -205,7 +204,6 @@ def validate_resonance_strict(
         except Exception:
             # Phase validation is optional, don't fail if unavailable
             pass
-
 
 def diagnose_resonance_readiness(G: TNFRGraph, node: Any) -> dict[str, Any]:
     """Diagnose node readiness for RA (Resonance) operator.

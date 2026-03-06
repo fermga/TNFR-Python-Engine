@@ -20,8 +20,9 @@ These errors enforce TNFR invariants from AGENTS.md:
 
 from __future__ import annotations
 
+import math
 from difflib import get_close_matches
-from typing import Optional, List, Dict, Any
+from typing import Any
 
 __all__ = [
     "TNFRUserError",
@@ -34,7 +35,6 @@ __all__ = [
     "TNFRSecurityError",
     "TNFRSecurityWarning",
 ]
-
 
 class TNFRUserError(Exception):
     """Base class for user-facing TNFR errors with helpful context.
@@ -68,9 +68,9 @@ class TNFRUserError(Exception):
     def __init__(
         self,
         message: str,
-        suggestion: Optional[str] = None,
-        docs_url: Optional[str] = None,
-        context: Optional[Dict[str, Any]] = None,
+        suggestion: str | None = None,
+        docs_url: str | None = None,
+        context: dict[str, Any] | None = None,
     ):
         self.message = message
         self.suggestion = suggestion
@@ -96,7 +96,6 @@ class TNFRUserError(Exception):
         full_message += f"{'='*70}\n"
 
         super().__init__(full_message)
-
 
 class OperatorSequenceError(TNFRUserError):
     """Error raised when operator sequence violates TNFR grammar.
@@ -163,8 +162,8 @@ class OperatorSequenceError(TNFRUserError):
     def __init__(
         self,
         invalid_operator: str,
-        sequence_so_far: Optional[List[str]] = None,
-        valid_next: Optional[List[str]] = None,
+        sequence_so_far: list[str] | None = None,
+        valid_next: list[str] | None = None,
     ):
         sequence_so_far = sequence_so_far or []
 
@@ -198,7 +197,6 @@ class OperatorSequenceError(TNFRUserError):
             docs_url="https://github.com/fermga/Teoria-de-la-naturaleza-fractal-resonante-TNFR-/blob/main/docs/source/api/operators.md",
             context=context,
         )
-
 
 class NetworkConfigError(TNFRUserError):
     """Error raised when network configuration violates TNFR constraints.
@@ -240,7 +238,7 @@ class NetworkConfigError(TNFRUserError):
             "description": "Structural frequency (reorganization rate)",
         },
         "phase": {
-            "range": (0.0, 2 * 3.14159),
+            "range": (0.0, 2 * math.pi),
             "unit": "radians",
             "description": "Phase angle for network synchrony",
         },
@@ -275,8 +273,8 @@ class NetworkConfigError(TNFRUserError):
         self,
         parameter: str,
         value: Any,
-        valid_range: Optional[tuple] = None,
-        reason: Optional[str] = None,
+        valid_range: tuple | None = None,
+        reason: str | None = None,
     ):
         # Get constraint info if available
         constraint_info = self.PARAMETER_CONSTRAINTS.get(parameter)
@@ -308,7 +306,6 @@ class NetworkConfigError(TNFRUserError):
             docs_url="https://github.com/fermga/Teoria-de-la-naturaleza-fractal-resonante-TNFR-/blob/main/docs/source/api/overview.md",
             context=context,
         )
-
 
 class PhaseError(TNFRUserError):
     """Error raised when phase synchrony is violated.
@@ -368,7 +365,6 @@ class PhaseError(TNFRUserError):
             context=context,
         )
 
-
 class CoherenceError(TNFRUserError):
     """Error raised when coherence operations violate monotonicity.
 
@@ -398,7 +394,7 @@ class CoherenceError(TNFRUserError):
         operation: str,
         before: float,
         after: float,
-        node_id: Optional[str] = None,
+        node_id: str | None = None,
     ):
         decrease = before - after
         percent_loss = (decrease / before * 100) if before > 0 else 0
@@ -428,7 +424,6 @@ class CoherenceError(TNFRUserError):
             context=context,
         )
 
-
 class FrequencyError(TNFRUserError):
     """Error raised when structural frequency νf is invalid.
 
@@ -454,15 +449,15 @@ class FrequencyError(TNFRUserError):
     def __init__(
         self,
         vf: float,
-        node_id: Optional[str] = None,
-        operation: Optional[str] = None,
+        node_id: str | None = None,
+        operation: str | None = None,
     ):
         node_msg = f" for node '{node_id}'" if node_id else ""
         
         if vf <= 0:
             suggestion = (
                 f"Structural frequency νf must be positive (Hz_str units). "
-                f"Set νf > 0{node_msg}. "
+                f"set νf > 0{node_msg}. "
                 f"Typical range: 0.1 to 10.0 Hz_str."
             )
         elif vf > 100:
@@ -490,7 +485,6 @@ class FrequencyError(TNFRUserError):
             docs_url="https://github.com/fermga/Teoria-de-la-naturaleza-fractal-resonante-TNFR-/blob/main/GLOSSARY.md#structural-frequency",
             context=context,
         )
-
 
 class TNFRValueError(TNFRUserError, ValueError):
     """Error raised when an operation receives an argument with inappropriate value.
@@ -522,9 +516,9 @@ class TNFRValueError(TNFRUserError, ValueError):
     def __init__(
         self,
         message: str,
-        suggestion: Optional[str] = None,
-        docs_url: Optional[str] = None,
-        context: Optional[Dict[str, Any]] = None,
+        suggestion: str | None = None,
+        docs_url: str | None = None,
+        context: dict[str, Any] | None = None,
     ):
         super().__init__(
             message=message,
@@ -532,7 +526,6 @@ class TNFRValueError(TNFRUserError, ValueError):
             docs_url=docs_url,
             context=context,
         )
-
 
 class TNFRSecurityError(TNFRValueError):
     """Security validation error for input sanitization or integrity failures.
@@ -546,7 +539,7 @@ class TNFRSecurityError(TNFRValueError):
     def __init__(
         self, 
         message: str, 
-        suspicious_input: Optional[str] = None, 
+        suspicious_input: str | None = None, 
         **kwargs
     ):
         context = kwargs.get("context", {})
@@ -556,7 +549,6 @@ class TNFRSecurityError(TNFRValueError):
         
         super().__init__(message, **kwargs)
         self.suspicious_input = suspicious_input
-
 
 class TNFRSecurityWarning(UserWarning):
     """Issued when potentially unsafe serialization is used without signing."""

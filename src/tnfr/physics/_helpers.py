@@ -22,7 +22,6 @@ except ImportError:
     ALIAS_THETA = ["phase", "theta"]
     ALIAS_DNFR = ["delta_nfr", "dnfr"]
 
-
 # ---------------------------------------------------------------------------
 # Phase / angle helpers
 # ---------------------------------------------------------------------------
@@ -30,7 +29,6 @@ except ImportError:
 def wrap_angle(angle: float) -> float:
     """Map *angle* to the interval [-π, π]."""
     return (angle + math.pi) % (2 * math.pi) - math.pi
-
 
 def get_phase(G: Any, node: Any) -> float:
     """Retrieve phase value φ for *node* (radians in [0, 2π))."""
@@ -40,7 +38,6 @@ def get_phase(G: Any, node: Any) -> float:
             return float(node_data[alias])
     return 0.0
 
-
 def get_dnfr(G: Any, node: Any) -> float:
     """Retrieve ΔNFR value for *node*."""
     node_data = G.nodes[node]
@@ -48,7 +45,6 @@ def get_dnfr(G: Any, node: Any) -> float:
         if alias in node_data:
             return float(node_data[alias])
     return 0.0
-
 
 # ---------------------------------------------------------------------------
 # Safe division
@@ -65,7 +61,6 @@ def safe_div(
     and sufficient for TNFR telemetry computations.
     """
     return numerator / (denominator + eps)
-
 
 def safe_div_mask(
     numerator: np.ndarray,

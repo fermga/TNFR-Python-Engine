@@ -49,9 +49,9 @@ summarised in AGENTS.md and docs/XI_C_CANONICAL_PROMOTION.md.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Dict, Iterable, List, Sequence
+from typing import Any, Iterable, Sequence
 
-from ..constants.canonical import PHI  # Golden ratio for U6 escape threshold
+from ..constants.canonical import PHI, K_PHI_CANONICAL_THRESHOLD  # Golden ratio + 0.9×π
 
 try:  # Graph dependency (NetworkX-like interface)
     import networkx as nx  # type: ignore
@@ -74,7 +74,6 @@ __all__ = [
     "ValidationReport",
     "run_structural_validation",
 ]
-
 
 @dataclass(slots=True)
 class ValidationReport:
@@ -100,13 +99,13 @@ class ValidationReport:
 
     status: str
     risk_level: str
-    grammar_errors: List[ExtendedGrammarError]
-    field_metrics: Dict[str, Any]
-    thresholds_exceeded: Dict[str, bool]
+    grammar_errors: list[ExtendedGrammarError]
+    field_metrics: dict[str, Any]
+    thresholds_exceeded: dict[str, bool]
     sequence: tuple[str, ...]
-    notes: List[str]
+    notes: list[str]
 
-    def to_dict(self) -> Dict[str, Any]:  # noqa: D401
+    def to_dict(self) -> dict[str, Any]:  # noqa: D401
         return {
             "status": self.status,
             "risk_level": self.risk_level,
@@ -117,11 +116,9 @@ class ValidationReport:
             "notes": self.notes,
         }
 
-
 def _mean(values: Iterable[float]) -> float:
     vals = list(values)
     return sum(vals) / max(len(vals), 1)
-
 
 def run_structural_validation(
     G: Any,
@@ -130,11 +127,11 @@ def run_structural_validation(
     # Threshold overrides
     max_delta_phi_s: float = PHI,
     max_phase_gradient: float = 0.38,
-    k_phi_flag_threshold: float = 2.8274,
+    k_phi_flag_threshold: float = K_PHI_CANONICAL_THRESHOLD,
     xi_c_critical_multiplier: float = 1.0,
     xi_c_watch_multiplier: float = 3.0,
     # Optional baselines for drift calculations
-    baseline_structural_potential: Dict[Any, float] | None = None,
+    baseline_structural_potential: dict[Any, float] | None = None,
     # Performance instrumentation (opt-in)
     perf_registry: PerformanceRegistry | None = None,
 ) -> ValidationReport:
@@ -174,7 +171,7 @@ def run_structural_validation(
         Unified structural validation result.
     """
 
-    notes: List[str] = []
+    notes: list[str] = []
 
     # Performance start (if instrumentation active)
     start_time = None
@@ -186,7 +183,7 @@ def run_structural_validation(
             start_time = None
 
     # Grammar errors (read-only enrichment)
-    grammar_errors: List[ExtendedGrammarError] = []
+    grammar_errors: list[ExtendedGrammarError] = []
     if sequence is not None:
         grammar_errors = collect_grammar_errors(sequence)
     status = "valid" if not grammar_errors else "invalid"
@@ -249,7 +246,7 @@ def run_structural_validation(
         mean_node_distance = 0.0
 
     # Threshold evaluations
-    thresholds_exceeded: Dict[str, bool] = {}
+    thresholds_exceeded: dict[str, bool] = {}
 
     if delta_phi_s is not None:
         exceeded = delta_phi_s >= max_delta_phi_s
@@ -329,7 +326,7 @@ def run_structural_validation(
         else:
             risk_level = "low"
 
-    field_metrics: Dict[str, Any] = {
+    field_metrics: dict[str, Any] = {
         "phi_s": phi_s_map,
         "phase_gradient": grad_map,
         "phase_curvature": curvature_map,

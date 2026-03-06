@@ -11,7 +11,6 @@ from ..constants.canonical import MATH_PRECISION_ENHANCEMENT_CANONICAL
 
 __all__ = ["dcoh"]
 
-
 def _as_coherent_vector(
     state: Sequence[complex] | np.ndarray,
     *,
@@ -31,7 +30,6 @@ def _as_coherent_vector(
         )
     return vector
 
-
 def _normalise_vector(
     vector: np.ndarray,
     *,
@@ -46,7 +44,6 @@ def _normalise_vector(
             suggestion="Provide a non-zero state vector."
         )
     return vector / norm
-
 
 def dcoh(
     psi1: Sequence[complex] | np.ndarray,

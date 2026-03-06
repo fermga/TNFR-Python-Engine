@@ -30,7 +30,6 @@ from typing import Any
 
 from ..errors import TNFRValueError
 
-
 def validate_structural_frequency(nu_f: float) -> float:
     """Validate structural frequency (νf) value.
 
@@ -82,7 +81,6 @@ def validate_structural_frequency(nu_f: float) -> float:
         )
 
     return float(nu_f)
-
 
 def validate_phase_value(phase: float, *, allow_wrap: bool = True) -> float:
     """Validate phase (φ) value.
@@ -146,7 +144,6 @@ def validate_phase_value(phase: float, *, allow_wrap: bool = True) -> float:
 
     return float(phase)
 
-
 def validate_coherence_value(coherence: float) -> float:
     """Validate coherence C(t) value.
 
@@ -198,7 +195,6 @@ def validate_coherence_value(coherence: float) -> float:
         )
 
     return float(coherence)
-
 
 def validate_sense_index(si: float) -> float:
     """Validate sense index (Si) value.
@@ -262,7 +258,6 @@ def validate_sense_index(si: float) -> float:
 
     return float(si)
 
-
 def validate_nodal_input(data: dict[str, Any]) -> dict[str, Any]:
     """Validate a complete nodal data structure.
 
@@ -313,7 +308,6 @@ def validate_nodal_input(data: dict[str, Any]) -> dict[str, Any]:
             validated[key] = value
 
     return validated
-
 
 __all__ = (
     "validate_coherence_value",

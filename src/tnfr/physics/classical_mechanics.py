@@ -22,15 +22,34 @@ Canonical Mappings:
 4. Force / Gradient (-∇V) <--> Structural Pressure (ΔNFR)
 5. Action (S) <--> Structural Phase Accumulation (∫ φ dt)
 
-This module allows defining systems in classical terms (L or H) and converting
-them into valid TNFR operator sequences and nodal states, demonstrating how
-classical behavior emerges from fundamental nodal dynamics.
+Connection to TNFR Conjugate Pairs (variational.py)
+----------------------------------------------------
+The variational formulation identifies two specific conjugate pairs
+from the conservation law structure:
+
+- **Geometric sector**: (K_φ, J_φ)  — maps to spatial DOF
+- **Potential sector**: (Φ_s, J_ΔNFR) — maps to potential DOF
+
+For a single mechanical degree of freedom:
+- Classical generalized coordinate q → K_φ (curvature acts as position-like)
+- Classical velocity qdot → J_φ (current acts as momentum-like / m)
+- Classical inertia m = 1/νf
+- Classical force F → ΔNFR (structural pressure = Euler-Lagrange force)
+
+The mapping is **asymmetric**: Φ_s and K_φ are both part of the potential V,
+but they form different conjugate pairs.  Classical F=ma applies to one DOF;
+TNFR applies to two coupled sectors.
+
+See Also
+--------
+variational.identify_conjugate_pairs : Identifies (K_φ, J_φ) and (Φ_s, J_ΔNFR).
+variational.translate_sectors : Maps between variational and conservation decompositions.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Callable
 
 from ..errors import TNFRValueError
 
@@ -39,15 +58,14 @@ from ..mathematics.unified_numerical import np
 # Canonical constants and keys
 from tnfr.constants import DNFR_PRIMARY, EPI_PRIMARY, VF_PRIMARY
 
-
 @dataclass
 class GeneralizedCoordinateSystem:
     """Represents a system in generalized coordinates (q, p)."""
     
     q: np.ndarray  # Generalized coordinates
-    p: Optional[np.ndarray] = None  # Generalized momenta (for Hamiltonian)
-    q_dot: Optional[np.ndarray] = None  # Generalized velocities (for Lagrangian)
-    masses: Optional[np.ndarray] = None  # Masses associated with coordinates
+    p: np.ndarray | None = None  # Generalized momenta (for Hamiltonian)
+    q_dot: np.ndarray | None = None  # Generalized velocities (for Lagrangian)
+    masses: np.ndarray | None = None  # Masses associated with coordinates
     
     def __post_init__(self):
         if self.p is None and self.q_dot is None:
@@ -61,7 +79,6 @@ class GeneralizedCoordinateSystem:
     def dimension(self) -> int:
         return len(self.q)
 
-
 class ClassicalMechanicsMapper:
     """Translates Classical Mechanics formulations to TNFR Structural Dynamics."""
 
@@ -70,7 +87,7 @@ class ClassicalMechanicsMapper:
         L: Callable[[np.ndarray, np.ndarray, float], float],
         system: GeneralizedCoordinateSystem,
         t: float = 0.0
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Maps a Lagrangian L(q, q_dot, t) to a TNFR Nodal State.
 
@@ -80,7 +97,7 @@ class ClassicalMechanicsMapper:
             t: Current time
 
         Returns:
-            Dict containing TNFR nodal attributes:
+            dict containing TNFR nodal attributes:
             - EPI: Combined state vector [q, q_dot]
             - νf: Structural frequency (derived from mass)
             - ΔNFR: Structural pressure (derived from Euler-Lagrange)
@@ -139,7 +156,7 @@ class ClassicalMechanicsMapper:
         H: Callable[[np.ndarray, np.ndarray, float], float],
         system: GeneralizedCoordinateSystem,
         t: float = 0.0
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Maps a Hamiltonian H(q, p, t) to a TNFR Nodal State.
 
@@ -149,7 +166,7 @@ class ClassicalMechanicsMapper:
             t: Current time
 
         Returns:
-            Dict containing TNFR nodal attributes.
+            dict containing TNFR nodal attributes.
         """
         if system.p is None:
             raise TNFRValueError("Hamiltonian mapping requires generalized momenta (p).")
@@ -182,7 +199,7 @@ class ClassicalMechanicsMapper:
     def equations_of_motion_to_operators(
         forces: np.ndarray,
         masses: np.ndarray
-    ) -> List[str]:
+    ) -> list[str]:
         """
         Translates phenomenological forces into their fundamental Structural Operator equivalents.
         
@@ -199,7 +216,7 @@ class ClassicalMechanicsMapper:
             masses: Array of masses
 
         Returns:
-            List of operator names (e.g., ['OZ', 'IL'])
+            list of operator names (e.g., ['OZ', 'IL'])
         """
         # If forces are non-zero, we have a change in state (acceleration).
         # In TNFR, change is driven by ΔNFR.
@@ -240,7 +257,6 @@ class ClassicalMechanicsMapper:
             p=p,
             masses=np.full_like(q, mass)
         )
-
 
 class ClassicalForceTranslator:
     """
@@ -362,5 +378,4 @@ class ClassicalForceTranslator:
             bracket += (df_dq * dg_dp) - (df_dp * dg_dq)
             
         return bracket
-
 

@@ -19,7 +19,6 @@ from ..types import Glyph, TNFRGraph
 from ..mathematics.unified_numerical import np
 from .definitions_base import Operator
 
-
 class Coherence(Operator):
     """Stabilize alignment; compress delta NFR; boost coherence.
 

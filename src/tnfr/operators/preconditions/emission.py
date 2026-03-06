@@ -24,7 +24,6 @@ if TYPE_CHECKING:
 
 __all__ = ["validate_emission_strict"]
 
-
 def validate_emission_strict(G: TNFRGraph, node: Any) -> None:
     """Validate strict canonical preconditions for AL (Emission) operator.
 

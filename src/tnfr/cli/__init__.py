@@ -5,7 +5,6 @@ from __future__ import annotations
 import argparse
 import logging
 import sys
-from typing import Optional
 
 from .. import __version__
 from ..utils import _configure_root, get_logger
@@ -47,8 +46,7 @@ __all__ = (
     "resolve_program",
 )
 
-
-def main(argv: Optional[list[str]] = None) -> int:
+def main(argv: list[str] | None = None) -> int:
     """Entry point for the ``tnfr`` CLI returning the exit status."""
 
     _configure_root()

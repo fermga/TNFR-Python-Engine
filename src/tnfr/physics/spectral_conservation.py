@@ -63,7 +63,7 @@ References
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Sequence, Tuple
+from typing import Any, Sequence
 
 from ..mathematics.unified_numerical import np
 from ..mathematics.spectral import get_laplacian_spectrum, gft
@@ -72,7 +72,6 @@ from .conservation import (
     ConservationSnapshot,
     capture_conservation_snapshot,
 )
-
 
 # ---------------------------------------------------------------------------
 # Data structures
@@ -114,7 +113,7 @@ class SpectralConservationBalance:
         λ_1 — first non-trivial eigenvalue.
     n_conserved_modes : int
         Number of modes with residual below tolerance.
-    conservation_quality_by_band : Dict[str, float]
+    conservation_quality_by_band : dict[str, float]
         Mean conservation quality per frequency band ('low', 'mid', 'high').
         Quality = 1 / (1 + mean_residual) ∈ [0, 1].
     overall_spectral_quality : float
@@ -133,9 +132,8 @@ class SpectralConservationBalance:
     parseval_drift: float
     spectral_gap: float
     n_conserved_modes: int
-    conservation_quality_by_band: Dict[str, float]
+    conservation_quality_by_band: dict[str, float]
     overall_spectral_quality: float
-
 
 @dataclass(frozen=True)
 class SpectralWardIdentity:
@@ -169,7 +167,6 @@ class SpectralWardIdentity:
     affected_band: str
     spectral_character: str
 
-
 @dataclass(frozen=True)
 class SpectralLyapunovResult:
     r"""Spectral Lyapunov stability — mode-by-mode energy analysis.
@@ -202,7 +199,6 @@ class SpectralLyapunovResult:
     n_unstable_modes: int
     stable_fraction: float
     is_spectrally_stable: bool
-
 
 @dataclass(frozen=True)
 class SpectralSectorDecomposition:
@@ -241,19 +237,17 @@ class SpectralSectorDecomposition:
     dominant_sector: str
     sector_ratio: float
 
-
 # ---------------------------------------------------------------------------
 # Internal helpers
 # ---------------------------------------------------------------------------
 
 # Canonical 5 conservation fields used for Lyapunov energy computation
-_LYAPUNOV_FIELDS: List[str] = ["phi_s", "grad_phi", "k_phi", "j_phi", "j_dnfr"]
-
+_LYAPUNOV_FIELDS: list[str] = ["phi_s", "grad_phi", "k_phi", "j_phi", "j_dnfr"]
 
 def _snapshot_to_vectors(
     snapshot: ConservationSnapshot,
     nodes: Sequence[Any],
-) -> Dict[str, np.ndarray]:
+) -> dict[str, np.ndarray]:
     """Extract ordered arrays from a conservation snapshot."""
     return {
         "rho": np.array([snapshot.charge_density[n] for n in nodes]),
@@ -265,11 +259,10 @@ def _snapshot_to_vectors(
         "grad_phi": np.array([snapshot.grad_phi[n] for n in nodes]),
     }
 
-
 def _gft_fields(
     eigvecs: np.ndarray,
-    fields: Dict[str, np.ndarray],
-) -> Dict[str, np.ndarray]:
+    fields: dict[str, np.ndarray],
+) -> dict[str, np.ndarray]:
     """Project multiple spatial signals onto the Laplacian eigenbasis via GFT.
 
     Uses the canonical ``gft()`` from ``mathematics.spectral`` which supports
@@ -277,13 +270,12 @@ def _gft_fields(
     """
     return {name: gft(signal, eigvecs) for name, signal in fields.items()}
 
-
 def _compute_spectral_field_energies(
-    vecs_before: Dict[str, np.ndarray],
-    vecs_after: Dict[str, np.ndarray],
+    vecs_before: dict[str, np.ndarray],
+    vecs_after: dict[str, np.ndarray],
     eigvecs: np.ndarray,
-    fields: List[str] = _LYAPUNOV_FIELDS,
-) -> Tuple[np.ndarray, np.ndarray, Dict[str, Tuple[float, float]]]:
+    fields: list[str] = _LYAPUNOV_FIELDS,
+) -> tuple[np.ndarray, np.ndarray, dict[str, tuple[float, float]]]:
     r"""Per-mode Lyapunov energy from GFT of conservation fields.
 
     Computes E_k = ½ Σ_f |f̂_k|² for each mode k across the specified fields.
@@ -292,13 +284,13 @@ def _compute_spectral_field_energies(
     -------
     energy_before, energy_after : np.ndarray
         Per-mode energy arrays of shape (N,).
-    per_field : Dict[str, Tuple[float, float]]
+    per_field : dict[str, tuple[float, float]]
         Total spectral energy (before, after) for each field.
     """
     n = eigvecs.shape[0]
     energy_before = np.zeros(n)
     energy_after = np.zeros(n)
-    per_field: Dict[str, Tuple[float, float]] = {}
+    per_field: dict[str, tuple[float, float]] = {}
 
     for field in fields:
         hat_0 = gft(vecs_before[field], eigvecs)
@@ -313,7 +305,6 @@ def _compute_spectral_field_energies(
     energy_after *= 0.5
     return energy_before, energy_after, per_field
 
-
 def _classify_band(k: int, n: int) -> str:
     """Classify eigenmode index into frequency band."""
     if n <= 3:
@@ -326,17 +317,16 @@ def _classify_band(k: int, n: int) -> str:
     else:
         return "high"
 
-
-def _band_quality(residuals: np.ndarray, n: int) -> Dict[str, float]:
+def _band_quality(residuals: np.ndarray, n: int) -> dict[str, float]:
     """Compute conservation quality per frequency band.
 
     Quality = 1/(1 + mean_residual) ∈ [0, 1].
     """
-    bands: Dict[str, list] = {"low": [], "mid": [], "high": []}
+    bands: dict[str, list] = {"low": [], "mid": [], "high": []}
     for k in range(n):
         bands[_classify_band(k, n)].append(float(residuals[k]))
 
-    result: Dict[str, float] = {}
+    result: dict[str, float] = {}
     for name, vals in bands.items():
         if vals:
             mean_r = sum(vals) / len(vals)
@@ -344,7 +334,6 @@ def _band_quality(residuals: np.ndarray, n: int) -> Dict[str, float]:
         else:
             result[name] = 1.0
     return result
-
 
 # ---------------------------------------------------------------------------
 # Core: Spectral conservation balance (two-snapshot)
@@ -449,7 +438,6 @@ def verify_spectral_conservation_balance(
         overall_spectral_quality=overall_quality,
     )
 
-
 # ---------------------------------------------------------------------------
 # Spectral Ward identity (per-operator)
 # ---------------------------------------------------------------------------
@@ -511,7 +499,7 @@ def compute_spectral_ward_identity(
     total_change = float(np.sum(mode_energy_change))
 
     # Determine which band is most affected (by absolute energy change)
-    band_energy: Dict[str, float] = {"low": 0.0, "mid": 0.0, "high": 0.0}
+    band_energy: dict[str, float] = {"low": 0.0, "mid": 0.0, "high": 0.0}
     for k in range(n):
         band = _classify_band(k, n)
         band_energy[band] += abs(float(mode_energy_change[k]))
@@ -535,7 +523,6 @@ def compute_spectral_ward_identity(
         affected_band=affected_band,
         spectral_character=spectral_character,
     )
-
 
 # ---------------------------------------------------------------------------
 # Spectral Lyapunov stability
@@ -601,14 +588,13 @@ def compute_spectral_lyapunov(
         is_spectrally_stable=total_derivative <= stability_threshold,
     )
 
-
 # ---------------------------------------------------------------------------
 # Spectral sector decomposition
 # ---------------------------------------------------------------------------
 
 def decompose_spectral_sectors(
     G: Any,
-    snapshot: Optional[ConservationSnapshot] = None,
+    snapshot: ConservationSnapshot | None = None,
 ) -> SpectralSectorDecomposition:
     r"""Decompose the two conservation sectors in spectral domain.
 
@@ -676,7 +662,6 @@ def decompose_spectral_sectors(
         sector_ratio=ratio,
     )
 
-
 # ---------------------------------------------------------------------------
 # Spectral energy conservation (Parseval-based)
 # ---------------------------------------------------------------------------
@@ -685,7 +670,7 @@ def compute_spectral_energy_conservation(
     before: ConservationSnapshot,
     after: ConservationSnapshot,
     G: Any,
-) -> Dict[str, float]:
+) -> dict[str, float]:
     r"""Measure Parseval energy conservation across all five canonical fields.
 
     For each field f ∈ {Φ_s, |∇φ|, K_φ, J_φ, J_ΔNFR}, the Parseval identity
@@ -703,7 +688,7 @@ def compute_spectral_energy_conservation(
 
     Returns
     -------
-    Dict[str, float]
+    dict[str, float]
         Keys: 'phi_s_drift', 'grad_phi_drift', 'k_phi_drift',
         'j_phi_drift', 'j_dnfr_drift', 'total_energy_before',
         'total_energy_after', 'total_drift'.
@@ -720,7 +705,7 @@ def compute_spectral_energy_conservation(
         vecs_before, vecs_after, eigvecs, _LYAPUNOV_FIELDS,
     )
 
-    result: Dict[str, float] = {}
+    result: dict[str, float] = {}
     total_e0 = 0.0
     total_e1 = 0.0
 
@@ -738,16 +723,15 @@ def compute_spectral_energy_conservation(
 
     return result
 
-
 # ---------------------------------------------------------------------------
 # Mode classification
 # ---------------------------------------------------------------------------
 
 def classify_spectral_modes(
     G: Any,
-    snapshot: Optional[ConservationSnapshot] = None,
-    threshold: Optional[float] = None,
-) -> Dict[str, Any]:
+    snapshot: ConservationSnapshot | None = None,
+    threshold: float | None = None,
+) -> dict[str, Any]:
     r"""Classify spectral modes by their conservation behavior.
 
     Each mode k is classified as:
@@ -767,7 +751,7 @@ def classify_spectral_modes(
 
     Returns
     -------
-    Dict with keys:
+    dict with keys:
         'mode_labels': list of str per mode
         'n_conserved': int
         'n_dissipative': int
@@ -811,7 +795,6 @@ def classify_spectral_modes(
         "n_accumulative": n_acc,
         "mode_transport_rates": transport_rates,
     }
-
 
 # ---------------------------------------------------------------------------
 # Public API

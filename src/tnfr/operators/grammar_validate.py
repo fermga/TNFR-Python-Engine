@@ -9,7 +9,7 @@ Terminology (TNFR semantics):
 
 from __future__ import annotations
 
-from typing import Any, List, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from .definitions import Operator
@@ -22,9 +22,8 @@ from .grammar_core import GrammarValidator
 # Public API: Validation Functions
 # ============================================================================
 
-
 def validate_grammar(
-    sequence: List[Operator],
+    sequence: list[Operator],
     epi_initial: float = 0.0,
     collect_unified_telemetry: bool = False,
 ) -> bool:
@@ -35,7 +34,7 @@ def validate_grammar(
 
     Parameters
     ----------
-    sequence : List[Operator]
+    sequence : list[Operator]
         Sequence of operators to validate
     epi_initial : float, optional
         Initial EPI value (default: 0.0)
@@ -110,5 +109,4 @@ def validate_grammar(
             pass
     
     return is_valid
-
 

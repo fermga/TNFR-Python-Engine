@@ -80,13 +80,11 @@ IntegratorMethod: TypeAlias = Literal["euler", "rk4"]
 
 _PARALLEL_GRAPH: TNFRGraph | None = None
 
-
 def _gamma_worker_init(graph: TNFRGraph) -> None:
     """Initialise process-local graph reference for Γ evaluation."""
 
     global _PARALLEL_GRAPH
     _PARALLEL_GRAPH = graph
-
 
 def _gamma_worker(task: tuple[list[NodeId], float]) -> list[tuple[NodeId, float]]:
     """Evaluate Γ for ``task`` chunk using process-local graph."""
@@ -95,7 +93,6 @@ def _gamma_worker(task: tuple[list[NodeId], float]) -> list[tuple[NodeId, float]
     if _PARALLEL_GRAPH is None:
         raise RuntimeError("Parallel Γ worker initialised without graph reference")
     return [(node, float(eval_gamma(_PARALLEL_GRAPH, node, t))) for node in chunk]
-
 
 def _normalise_jobs(n_jobs: int | None, total: int) -> int | None:
     """Return an effective worker count respecting serial fallbacks."""
@@ -110,13 +107,11 @@ def _normalise_jobs(n_jobs: int | None, total: int) -> int | None:
         return None
     return max(1, min(workers, total))
 
-
 def _chunk_nodes(nodes: list[NodeId], chunk_size: int) -> Iterable[list[NodeId]]:
     """Yield deterministic chunks from ``nodes`` respecting insertion order."""
 
     for idx in range(0, len(nodes), chunk_size):
         yield nodes[idx : idx + chunk_size]
-
 
 def _apply_increment_chunk(
     chunk: list[tuple[NodeId, float, float, tuple[float, ...]]],
@@ -141,7 +136,6 @@ def _apply_increment_chunk(
         results.append((node, (float(epi), float(dEPI_dt), float(d2epi))))
 
     return results
-
 
 def _evaluate_gamma_map(
     G: TNFRGraph,
@@ -178,7 +172,6 @@ def _evaluate_gamma_map(
                 results[node] = value
     return results
 
-
 def prepare_integration_params(
     G: TNFRGraph,
     dt: float | None = None,
@@ -201,7 +194,7 @@ def prepare_integration_params(
     if dt is None:
         # Import canonical time step from constants
         from ..constants.canonical import INV_FOUR_PHI_SQ
-        dt_canonical = INV_FOUR_PHI_SQ  # 1/(4φ²) ≈ 0.095 (tiempo estructural natural)
+        dt_canonical = INV_FOUR_PHI_SQ  # 1/(4φ²) ≈ 0.095 (natural structural time step)
         dt = float(G.graph.get("DT", DEFAULTS.get("DT", dt_canonical)))
     else:
         if not isinstance(dt, (int, float)):
@@ -243,7 +236,6 @@ def prepare_integration_params(
     dt_step = dt / steps if steps else 0.0
 
     return dt_step, steps, t, cast(Literal["euler", "rk4"], method_value)
-
 
 def _apply_increments(
     G: TNFRGraph,
@@ -343,7 +335,6 @@ def _apply_increments(
                 results[node] = value
 
     return {node: results[node] for node in nodes}
-
 
 def _collect_nodal_increments(
     G: TNFRGraph,
@@ -448,7 +439,6 @@ def _collect_nodal_increments(
 
     return increments
 
-
 def _build_gamma_increments(
     G: TNFRGraph,
     dt_step: float,
@@ -499,7 +489,6 @@ def _build_gamma_increments(
 
     return _collect_nodal_increments(G, gamma_maps, method=method)
 
-
 def _integrate_euler(
     G: TNFRGraph,
     dt_step: float,
@@ -523,7 +512,6 @@ def _integrate_euler(
         n_jobs=n_jobs,
     )
 
-
 def _integrate_rk4(
     G: TNFRGraph,
     dt_step: float,
@@ -546,7 +534,6 @@ def _integrate_rk4(
         method="rk4",
         n_jobs=n_jobs,
     )
-
 
 def _integrate_vectorized_step(
     G: TNFRGraph,
@@ -666,7 +653,6 @@ def _integrate_vectorized_step(
 
     return t_local
 
-
 class AbstractIntegrator(ABC):
     """Abstract base class encapsulating nodal equation integration."""
 
@@ -681,7 +667,6 @@ class AbstractIntegrator(ABC):
         n_jobs: int | None,
     ) -> None:
         """Advance ``graph`` coherence states according to the nodal equation."""
-
 
 class DefaultIntegrator(AbstractIntegrator):
     """Explicit integrator combining Euler and RK4 step implementations."""
@@ -751,7 +736,6 @@ class DefaultIntegrator(AbstractIntegrator):
 
         graph.graph["_t"] = t_local
 
-
 def update_epi_via_nodal_equation(
     G: TNFRGraph,
     *,
@@ -814,7 +798,6 @@ def update_epi_via_nodal_equation(
             G, dt=dt, t=t, method=method, n_jobs=n_jobs,
         )
 
-
 def _node_state(nd: dict[str, Any]) -> tuple[float, float, float, float]:
     """Return common node state attributes for canonical equation evaluation.
 
@@ -831,7 +814,7 @@ def _node_state(nd: dict[str, Any]) -> tuple[float, float, float, float]:
         nd: Node data dictionary containing TNFR attributes
 
     Returns:
-        Tuple of (vf, dnfr, dEPI_dt_prev, epi_i) with 0.0 defaults
+        tuple of (vf, dnfr, dEPI_dt_prev, epi_i) with 0.0 defaults
 
     Notes:
         - vf alias maps to VF, frequency, or structural_frequency
@@ -844,7 +827,6 @@ def _node_state(nd: dict[str, Any]) -> tuple[float, float, float, float]:
     dEPI_dt_prev = get_attr(nd, ALIAS_DEPI, 0.0)
     epi_i = get_attr(nd, ALIAS_EPI, 0.0)
     return vf, dnfr, dEPI_dt_prev, epi_i
-
 
 def _update_extended_nodal_system(
     G: TNFRGraph,
@@ -979,9 +961,7 @@ def _update_extended_nodal_system(
     # Update simulation time
     G.graph["_t"] = t + dt
 
-
 # Centralized flux divergence computation
-
 
 def _compute_flux_divergence_centralized(
     G: TNFRGraph, 
@@ -1012,7 +992,6 @@ def _compute_flux_divergence_centralized(
     divergence = (central_flux - mean_neighbor_flux) / spacing
     
     return divergence
-
 
 def compute_flux_divergence_vectorized(
     G: TNFRGraph,
@@ -1103,7 +1082,6 @@ def compute_flux_divergence_vectorized(
     # Convert back to dict
     return {node: float(divergence_array[i]) for i, node in enumerate(nodes)}
 
-
 def _compute_synthetic_phase_current(G: TNFRGraph, node: NodeId) -> float:
     """Compute synthetic J_φ based on phase gradients with neighbors."""
     if G.degree(node) == 0:
@@ -1133,7 +1111,6 @@ def _compute_synthetic_phase_current(G: TNFRGraph, node: NodeId) -> float:
     
     return synthetic_j_phi
 
-
 def _compute_synthetic_dnfr_divergence(G: TNFRGraph, node: NodeId) -> float:
     """Compute synthetic ∇·J_ΔNFR based on ΔNFR gradients."""
     if G.degree(node) == 0:
@@ -1160,7 +1137,6 @@ def _compute_synthetic_dnfr_divergence(G: TNFRGraph, node: NodeId) -> float:
     
     return synthetic_div
 
-
 def _approximate_flux_divergence(G: TNFRGraph, node: NodeId, central_flux: float) -> float:
     """Approximate ∇·J using finite differences with neighbors."""
     if G.degree(node) == 0:
@@ -1185,7 +1161,6 @@ def _approximate_flux_divergence(G: TNFRGraph, node: NodeId, central_flux: float
     
     return divergence
 
-
 def _estimate_local_coupling_strength(G: TNFRGraph, node: NodeId) -> float:
     """Estimate coupling strength from local network topology."""
     degree = G.degree(node)
@@ -1196,7 +1171,7 @@ def _estimate_local_coupling_strength(G: TNFRGraph, node: NodeId) -> float:
     normalized_degree = min(degree / 10.0, 1.0)  # Saturation at degree 10
     # Import canonical coupling factor
     from ..constants.canonical import PI_PLUS_E_HALF
-    coupling_factor = PI_PLUS_E_HALF  # π + e/2 ≈ 4.500 (sensibilidad transcendental)
+    coupling_factor = PI_PLUS_E_HALF  # π + e/2 ≈ 4.500 (transcendental sensitivity)
     coupling = 1.0 / (1.0 + math.exp(-coupling_factor * (normalized_degree - INTEGRATORS_SIGMOID_OFFSET_CANONICAL)))
     
     return coupling

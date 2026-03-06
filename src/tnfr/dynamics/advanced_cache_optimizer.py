@@ -21,13 +21,11 @@ Advanced Optimizations:
 Status: CANONICAL CACHE OPTIMIZATION ENGINE
 """
 
-from ..mathematics.unified_numerical import np
-from typing import Dict, Any, Optional, Set, List, Tuple, Callable
+from typing import Any
 from dataclasses import dataclass, field
 from enum import Enum
 import time
-import hashlib
-from collections import deque, defaultdict
+from collections import deque
 import threading
 
 try:
@@ -65,10 +63,7 @@ from ..constants.canonical import (
 # Import TNFR cache infrastructure
 try:
     from ..utils.cache import (
-        cache_tnfr_computation, 
-        CacheLevel, 
-        get_global_cache,
-        TNFRHierarchicalCache
+        get_global_cache
     )
     HAS_CORE_CACHE = True
 except ImportError:
@@ -77,10 +72,7 @@ except ImportError:
 # Import unified cache
 try:
     from .multi_modal_cache import (
-        get_unified_cache, 
-        CacheEntryType, 
-        CacheInvalidationTrigger,
-        TNFRUnifiedMultiModalCache
+        get_unified_cache
     )
     HAS_UNIFIED_CACHE = True
 except ImportError:
@@ -100,7 +92,6 @@ try:
 except ImportError:
     HAS_STRUCTURAL_CACHE = False
 
-
 class CacheOptimizationStrategy(Enum):
     """Cache optimization strategies based on TNFR physics."""
     PREDICTIVE_PREFETCH = "predictive_prefetch"       # Predict next computations
@@ -110,7 +101,6 @@ class CacheOptimizationStrategy(Enum):
     PATTERN_COMPRESSION = "pattern_compression"       # Compress using TNFR patterns
     TEMPORAL_LOCALITY = "temporal_locality"           # Time-based cache optimization
     SPECTRAL_PERSISTENCE = "spectral_persistence"     # Eigendecomposition reuse
-
 
 @dataclass
 class CacheOptimizationResult:
@@ -124,16 +114,14 @@ class CacheOptimizationResult:
     compression_ratio: float = 1.0
     optimization_time: float = 0.0
 
-
 @dataclass
 class ComputationPattern:
     """Pattern in computational sequence for predictive optimization."""
-    sequence: List[str]
+    sequence: list[str]
     frequency: int = 1
     success_rate: float = 1.0
     mathematical_importance: float = 1.0
     last_seen: float = field(default_factory=time.time)
-
 
 class TNFRAdvancedCacheOptimizer:
     """
@@ -163,9 +151,9 @@ class TNFRAdvancedCacheOptimizer:
         self.structural_cache = get_structural_cache() if HAS_STRUCTURAL_CACHE else None
         
         # Pattern tracking for predictive optimization
-        self._computation_patterns: Dict[str, ComputationPattern] = {}
+        self._computation_patterns: dict[str, ComputationPattern] = {}
         self._recent_computations = deque(maxlen=100)
-        self._prefetch_queue: Set[str] = set()
+        self._prefetch_queue: set[str] = set()
         
         # Performance tracking
         self.total_optimizations = 0
@@ -178,9 +166,9 @@ class TNFRAdvancedCacheOptimizer:
     def optimize_cache_strategy(
         self,
         G: Any,
-        strategies: List[CacheOptimizationStrategy],
-        target_memory_mb: Optional[float] = None
-    ) -> List[CacheOptimizationResult]:
+        strategies: list[CacheOptimizationStrategy],
+        target_memory_mb: float | None = None
+    ) -> list[CacheOptimizationResult]:
         """
         Apply multiple cache optimization strategies.
         
@@ -347,7 +335,7 @@ class TNFRAdvancedCacheOptimizer:
     def _optimize_importance_weighting(
         self, 
         G: Any, 
-        target_memory_mb: Optional[float]
+        target_memory_mb: float | None
     ) -> CacheOptimizationResult:
         """
         Optimize cache eviction using mathematical importance weighting.
@@ -540,7 +528,7 @@ class TNFRAdvancedCacheOptimizer:
         for key in keys_to_remove:
             del self._computation_patterns[key]
     
-    def _predict_next_operations(self, pattern: ComputationPattern) -> List[str]:
+    def _predict_next_operations(self, pattern: ComputationPattern) -> list[str]:
         """Predict next operations based on pattern history."""
         # Simple prediction: look for patterns that start with current pattern
         predictions = []
@@ -582,7 +570,7 @@ class TNFRAdvancedCacheOptimizer:
         self._prefetch_queue.clear()
         return prefetched
     
-    def get_optimization_stats(self) -> Dict[str, Any]:
+    def get_optimization_stats(self) -> dict[str, Any]:
         """Get cache optimization performance statistics."""
         return {
             "total_optimizations": self.total_optimizations,
@@ -599,16 +587,13 @@ class TNFRAdvancedCacheOptimizer:
             }
         }
 
-
 # Factory function for easy access
 def create_advanced_cache_optimizer(**kwargs) -> TNFRAdvancedCacheOptimizer:
     """Create advanced cache optimization engine."""
     return TNFRAdvancedCacheOptimizer(**kwargs)
 
-
 # Global instance for shared optimization
-_global_cache_optimizer: Optional[TNFRAdvancedCacheOptimizer] = None
-
+_global_cache_optimizer: TNFRAdvancedCacheOptimizer | None = None
 
 def get_cache_optimizer() -> TNFRAdvancedCacheOptimizer:
     """Get or create global cache optimizer."""
@@ -616,7 +601,6 @@ def get_cache_optimizer() -> TNFRAdvancedCacheOptimizer:
     if _global_cache_optimizer is None:
         _global_cache_optimizer = TNFRAdvancedCacheOptimizer()
     return _global_cache_optimizer
-
 
 # Decorator for automatic computation recording
 def record_computation(computation_name: str):

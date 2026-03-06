@@ -1,8 +1,8 @@
 # TNFR Glossary
 
-**Purpose**: Operational quick reference for the Resonant Fractal Nature Theory (TNFR) v0.0.1  
+**Purpose**: Operational quick reference for the Resonant Fractal Nature Theory (TNFR) v0.0.3  
 **Status**: Complete reference for current implementation  
-**Version**: November 29, 2025  
+**Version**: March 2026  
 **Authority**: Aligned with [AGENTS.md](AGENTS.md) as single source of truth  
 
 **Scope**: This glossary provides **API-focused definitions** for developers implementing TNFR networks. For complete theoretical foundations, see [AGENTS.md](AGENTS.md) and [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md).
@@ -129,9 +129,9 @@
 **Formula:** \(\Phi_s(i) = \sum_{j \neq i} \frac{\Delta\text{NFR}_j}{d(i,j)^\alpha}\) where \(\alpha = 2\)  
 **What:** Global structural potential field from ΔNFR distribution  
 **Status:** **CANONICAL** (Nov 2025)  
-**Validation:** 2,400+ experiments across 5 topologies  
+**Validation:** 1,641+ tests across 5 topologies  
 **Physics:** Passive equilibrium confinement landscape  
-**Grammar:** U6 STRUCTURAL POTENTIAL CONFINEMENT (Δ Φ_s < 2.0 escape threshold)  
+**Grammar:** U6 STRUCTURAL POTENTIAL CONFINEMENT (Δ Φ_s < φ ≈ 1.618 canonical confinement; ceiling 2.0 binary escape)  
 **API:** `tnfr.physics.fields.compute_structural_potential()`  
 **Threshold:** Classical bound |Φ_s| < 0.771 (von Koch fractal theory)  
 **Documentation:** [docs/STRUCTURAL_FIELDS_TETRAD.md](docs/STRUCTURAL_FIELDS_TETRAD.md)
@@ -139,10 +139,10 @@
 
 **Interpretation:**
 - Φ_s minima = passive equilibrium states
-- Δ Φ_s < 2.0 = system confined (safe regime)
-- Δ Φ_s ≥ 2.0 = escape threshold (fragmentation risk)
-- Valid sequences: Δ Φ_s ≈ 0.6 (30% of threshold)
-- Violations: Δ Φ_s ≈ 3.9 (195% of threshold)
+- Δ Φ_s < φ ≈ 1.618 = canonical confinement (safe regime)
+- Δ Φ_s ≥ 2.0 = binary escape threshold (fragmentation risk)
+- Valid sequences: Δ Φ_s ≈ 0.6 (37% of φ threshold)
+- Violations: Δ Φ_s ≈ 3.9 (240% of φ threshold)
 
 **Mechanism:** Grammar U1-U5 acts as passive confinement (NOT active attractor). Reduces escape drift by 85%.
 
@@ -326,11 +326,11 @@ The consolidated TNFR grammar system (**U1-U6**) that replaces the old C1-C3 and
 | **U3** | RESONANT COUPLING | Phase compatibility required for resonance | If coupling {UM, RA}, verify \|φᵢ - φⱼ\| ≤ Δφ_max | ABSOLUTE |
 | **U4** | BIFURCATION DYNAMICS | ∂²EPI/∂t² > τ requires control | Triggers {OZ, ZHIR} need handlers {THOL, IL}; Transformers need context | STRONG |
 | **U5** | MULTI-SCALE COHERENCE | Hierarchical coupling + chain rule | Nested EPIs require stabilizers {IL, THOL} at each level | ABSOLUTE |
-| **U6** | STRUCTURAL POTENTIAL CONFINEMENT | Emergent Φ_s field: Φ_s(i) = Σ ΔNFR_j/d(i,j)² | Monitor Δ Φ_s < 2.0 (telemetry-based safety) | STRONG |
+| **U6** | STRUCTURAL POTENTIAL CONFINEMENT | Emergent Φ_s field: Φ_s(i) = Σ ΔNFR_j/d(i,j)² | Monitor Δ Φ_s < φ ≈ 1.618 (canonical confinement); ceiling 2.0 | STRONG |
 
 **Canonicity Levels:**
 - **ABSOLUTE**: Mathematical necessity (direct consequence of nodal equation)
-- **STRONG**: Strong empirical/theoretical support (2,400+ experiments for U6)
+- **STRONG**: Strong empirical/theoretical support (1,641+ tests for U6)
 
 **Recent Updates:**
 - U5 added 2025-11-10 (hierarchical REMESH stabilization)
@@ -441,10 +441,10 @@ Operators that require phase verification for valid coupling.
 
 1. **φ ↔ Φ_s**: Global harmonic confinement (Δ Φ_s < φ ≈ 1.618)
 2. **γ ↔ |∇φ|**: Local dynamic evolution (|∇φ| < γ/π ≈ 0.184)
-3. **π ↔ K_φ**: Geometric spatial constraints (|K_φ| < φ×π ≈ 5.083)
+3. **π ↔ K_φ**: Geometric spatial constraints (|K_φ| < 0.9×π ≈ 2.827)
 4. **e ↔ ξ_C**: Correlational memory decay (C(r) ~ exp(-r/ξ_C))
 
-**Documentation:** [Structural Fields and Universal Tetrahedral Correspondence](FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md)
+**Documentation:** [Structural Fields and Universal Tetrahedral Correspondence](FUNDAMENTAL_THEORY.md)
 
 ---
 
@@ -501,7 +501,7 @@ Operators that perform graduated destabilization for phase transitions.
 - [TNFR.pdf](TNFR.pdf) - Original theoretical companion (paradigm, nodal equation, foundational physics)
 - [docs/grammar/U6_STRUCTURAL_POTENTIAL_CONFINEMENT.md](docs/grammar/U6_STRUCTURAL_POTENTIAL_CONFINEMENT.md) - U6 complete specification
 - [TNFR_FORCES_EMERGENCE.md](docs/TNFR_FORCES_EMERGENCE.md) - Structural fields validation (Φ_s, phase gradients)
-- [SHA_ALGEBRA_PHYSICS.md](SHA_ALGEBRA_PHYSICS.md) - Silence operator physical basis
+
 
 ### Implementation & API
 - [ARCHITECTURE.md](ARCHITECTURE.md) - System design and architecture patterns
@@ -511,9 +511,7 @@ Operators that perform graduated destabilization for phase transitions.
 - [Examples](docs/source/examples/README.md) - Runnable scenarios across domains
 
 ### Grammar & Migration
-- [MIGRATION_GUIDE.md](MIGRATION_GUIDE.md) - Migration from C1-C3/RC1-RC4 to U1-U6
 - [docs/grammar/](docs/grammar/) - Grammar documentation directory (U6, fundamental concepts, etc.)
-- [GLYPH_SEQUENCES_GUIDE.md](GLYPH_SEQUENCES_GUIDE.md) - Operator sequence patterns
 
 ### Testing & Development
 - [TESTING.md](TESTING.md) - Test conventions and invariant verification
@@ -525,7 +523,7 @@ Operators that perform graduated destabilization for phase transitions.
 **Primary Sources:**  
 - **[AGENTS.md](AGENTS.md)** - Single source of truth for TNFR theory  
 - **[UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md)** - Complete U1-U6 grammar derivations  
-- **[Structural Fields and Universal Tetrahedral Correspondence](FUNDAMENTAL_TNFR_THEORY_UNIVERSAL_TETRAHEDRAL_CORRESPONDENCE.md)** - Mathematical foundations
+- **[Structural Fields and Universal Tetrahedral Correspondence](FUNDAMENTAL_THEORY.md)** - Mathematical foundations
 
 **Implementation References:**  
 - **[src/tnfr/physics/fields.py](src/tnfr/physics/fields.py)** - Unified Structural Field Tetrad (Canonical)  
@@ -585,7 +583,7 @@ Operators that perform graduated destabilization for phase transitions.
 **Complete Theory:** [MOLECULAR_CHEMISTRY_FROM_NODAL_DYNAMICS.md](docs/examples/MOLECULAR_CHEMISTRY_FROM_NODAL_DYNAMICS.md)  
 **Implementation:** [Physics README § 9-10](src/tnfr/physics/README.md)
 
-## Self-Optimizing Engine (v0.0.1)
+## Self-Optimizing Engine
 
 **Intrinsic Agency:** The TNFR engine possesses self-optimization capabilities using unified field telemetry.
 
@@ -626,10 +624,109 @@ Operators that perform graduated destabilization for phase transitions.
 
 **Energy Density (ℰ):** `ℰ = Φ_s² + |∇φ|² + K_φ² + J_φ² + J_ΔNFR²`  
 **Topological Charge (𝒬):** `𝒬 = |∇φ|·J_φ - K_φ·J_ΔNFR`  
-**Conservation Law:** ∂ρ/∂t + ∇·𝐉 = 0  
+**Conservation Law:** ∂ρ/∂t + ∇·𝐉 = S_grammar where S_grammar → 0 under U1-U6  
 **API:** `compute_tensor_invariants(G)`
 
 **Unified Telemetry:** `compute_unified_telemetry(G)` - Complete field suite
+
+---
+
+## Structural Conservation Theorem
+
+**Main Result:** Grammar symmetry (U1-U6) implies a Noether-like structural conservation law.
+
+**Charge Density:** ρ = Φ_s + K_φ (potential + geometric sectors)  
+**Current:** 𝐉 = (J_φ, J_ΔNFR) (transport channels)  
+**Conservation:** ∂ρ/∂t + ∇·𝐉 = S_grammar where S_grammar → 0 under U1-U6  
+**Two Sectors:** Potential (Φ_s ↔ J_ΔNFR) and Geometric (K_φ ↔ J_φ), coupled through Ψ = K_φ + i·J_φ  
+**Lyapunov:** E = ½Σ(Φ_s² + |∇φ|² + K_φ² + J_φ² + J_ΔNFR²) ≥ 0 with dE/dt ≤ 0 under grammar  
+**Validation:** 62 tests, charge drift < 0.03% across topologies  
+**API:** `tnfr.physics.conservation` — Noether charge Q, energy functional E, Ward identities, spectral decomposition  
+**Documentation:** [theory/STRUCTURAL_CONSERVATION_THEOREM.md](STRUCTURAL_CONSERVATION_THEOREM.md)
+
+---
+
+## Integrity Monitor
+
+**What:** Closed-loop postcondition verification ensuring all 13 canonical operators satisfy their structural contracts after execution.  
+**API:** `tnfr.physics.integrity`  
+**Coverage:** 13/13 operators verified — monotonicity (IL), ΔNFR increase (OZ), phase preservation (SHA), EPI creation (AL), coupling validity (UM/RA), etc.  
+**Usage:** Automatic contract verification in `apply_glyph_with_grammar()` pipeline.  
+**Documentation:** [src/tnfr/physics/integrity.py](src/tnfr/physics/integrity.py)
+
+---
+
+## Grammar-Aware Dynamics
+
+**What:** Incremental U1-U6 enforcement during step-by-step operator selection, bridging grammar validation with the dynamic operator selection layer.  
+**API:** `tnfr.operators.grammar_dynamics.GrammarAwareDynamics`  
+**Checks:** U1a initiation, U2 destabilizer/stabilizer debt tracking, U3 phase compatibility for UM/RA, U4a/U4b bifurcation context  
+**Physics:** Proactive enforcement prevents grammar violations *before* they corrupt graph state.  
+**Documentation:** [src/tnfr/operators/grammar_dynamics.py](src/tnfr/operators/grammar_dynamics.py)
+
+---
+
+## Grammar Application
+
+**What:** Pre-validated, grammar-enforced operator application at runtime.  
+**API:** `tnfr.operators.grammar_application.apply_glyph_with_grammar()`  
+**Pipeline:** Grammar check → operator application → postcondition verification (integrity monitor)  
+**Physics:** Ensures every structural mutation passes U1-U6 before modifying graph state.  
+**Documentation:** [src/tnfr/operators/grammar_application.py](src/tnfr/operators/grammar_application.py)
+
+---
+
+## Von Koch Threshold
+
+**Value:** PHI_S_VON_KOCH_THRESHOLD = 0.7711  
+**What:** Per-node safety threshold for structural potential |Φ_s|.  
+**Derivation:** Experimentally validated constant from Koch snowflake perimeter growth analysis, confirmed across 5 topologies.  
+**Usage:** |Φ_s(i)| < 0.7711 indicates safe per-node structural potential.  
+**API:** `tnfr.constants.canonical.PHI_S_VON_KOCH_THRESHOLD`  
+**Relation to U6:** Part of three-tier Φ_s monitoring: 0.7711 (per-node) → φ ≈ 1.618 (drift confinement) → 2.0 (escape ceiling).
+
+---
+
+## Classical-Quantum Regime Emergence
+
+**Theory:** Classical and quantum mechanics emerge as different structural regimes of nodal dynamics, not distinct sets of laws.
+
+### Classical Limit (High Coherence)
+**Condition:** C(t) → 1, |∇φ| → 0  
+**Correspondence:** m = 1/νf (mass ↔ inverse frequency), F = ΔNFR (force ↔ structural pressure)  
+**API:** `tnfr.physics.classical_mechanics`
+
+### Quantum Regime (High Dissonance)
+**Condition:** |∇φ| ~ π, near phase singularities  
+**Emergent:** Discrete states (resonant eigenmodes), uncertainty (Fourier ΔEPi·Δνf ≥ K), superposition  
+**API:** `tnfr.physics.quantum_mechanics`
+
+---
+
+## TNFR-Riemann Program
+
+**What:** Theoretical framework connecting discrete TNFR operators to the Riemann Hypothesis through structural coherence.  
+**Core Operator:** H^(k)(σ) = L_k + V_σ where L_k = graph Laplacian, V_σ = diagonal potential  
+**Discovery:** Critical parameter σ_c^(k) → 1/2 as k → ∞  
+**Convergence:** σ_c^(k) = 1/2 + O(log⁻¹ k) (universal across topologies)  
+**Implementation:** `src/tnfr/riemann/` — 14 modules (operator, spectral_proof, complex_extension, spectral_zeta, topology, spectral_conservation, analytical_convergence, etc.)  
+**Documentation:** [theory/TNFR_RIEMANN_RESEARCH_NOTES.md](TNFR_RIEMANN_RESEARCH_NOTES.md)
+
+---
+
+## Key Canonical Thresholds
+
+Quick reference for canonical threshold values from `src/tnfr/constants/canonical.py`:
+
+| Threshold | Value | Derivation | Usage |
+|-----------|-------|------------|-------|
+| PHI_S_VON_KOCH_THRESHOLD | 0.7711 | Koch snowflake perimeter growth | Per-node Φ_s safety |
+| PHASE_GRADIENT_THRESHOLD | γ/π ≈ 0.1837 | Kuramoto critical coupling | \|∇φ\| stability |
+| K_PHI_CANONICAL_THRESHOLD | 0.9×π ≈ 2.8274 | 90% of wrap_angle π bound | K_φ fault zone detection |
+| U6 canonical confinement | φ ≈ 1.618 | Universal Tetrahedral Correspondence | ΔΦ_s drift safety |
+| STRUCTURAL_ESCAPE_THRESHOLD | e^ln(2) = 2.0 | Binary escape theory | ΔΦ_s absolute ceiling |
+| MIN_BUSINESS_COHERENCE | (e×φ)/(π+e) ≈ 0.7506 | Tetrahedral correspondence | Strong coherence threshold |
+| THOL_MIN_COLLECTIVE_COHERENCE | 1/(π+1) ≈ 0.2415 | Geometric series bound | Fragmentation risk threshold |
 
 ---
 

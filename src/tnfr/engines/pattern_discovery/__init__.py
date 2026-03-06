@@ -22,7 +22,7 @@ except ImportError:
     __all__ = []
 
 try:
-    from .operator_patterns import UnifiedPatternDetector
+    from ...operators.pattern_detection import UnifiedPatternDetector
     __all__.append("UnifiedPatternDetector")
 except ImportError:
     pass

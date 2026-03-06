@@ -31,7 +31,7 @@ Status: CANONICAL SPECTRAL ARITHMETIC ENGINE
 from ..errors import TNFRValueError
 
 from ..mathematics.unified_numerical import np
-from typing import Dict, Any, Optional, Tuple
+from typing import Any
 from dataclasses import dataclass, field
 from enum import Enum
 import time
@@ -91,7 +91,6 @@ try:
 except ImportError:  # pragma: no cover - circular import guard during bootstrap
     FFTBackendCapabilities = None  # type: ignore
 
-
 class SpectralOperation(Enum):
     """Types of spectral operations."""
     CONVOLUTION = "convolution"              # Spectral convolution (fast ΔNFR)
@@ -101,7 +100,6 @@ class SpectralOperation(Enum):
     HARMONIC_ANALYSIS = "harmonic_analysis"  # Multi-scale harmonics
     PHASE_LOCKING = "phase_locking"          # Phase synchronization
     COHERENCE_ANALYSIS = "coherence_analysis" # Cross-spectral coherence
-
 
 @dataclass
 class SpectralState:
@@ -115,20 +113,18 @@ class SpectralState:
     coherence_length: float = 0.0
     dominant_modes: np.ndarray = field(default_factory=lambda: np.array([]))
 
-
 @dataclass  
 class FFTArithmeticResult:
     """Result of FFT arithmetic operation."""
     operation: SpectralOperation
-    input_shape: Tuple[int, ...]
+    input_shape: tuple[int, ...]
     output_data: Any
-    spectral_state: Optional[SpectralState] = None
+    spectral_state: SpectralState | None = None
     execution_time: float = 0.0
     fft_operations: int = 0
     cache_hits: int = 0
     backend_used: str = "numpy"
-    accuracy_metrics: Dict[str, float] = field(default_factory=dict)
-
+    accuracy_metrics: dict[str, float] = field(default_factory=dict)
 
 class TNFRAdvancedFFTEngine:
     """
@@ -142,7 +138,7 @@ class TNFRAdvancedFFTEngine:
         self,
         default_backend: str = "numpy",
         precision: str = "float64",
-        cache_coordinator: Optional[FFTCacheCoordinator] = None,
+        cache_coordinator: FFTCacheCoordinator | None = None,
     ):
         self.default_backend = default_backend
         self.precision = precision
@@ -304,8 +300,8 @@ class TNFRAdvancedFFTEngine:
     def spectral_convolution(
         self,
         G: Any,
-        signal1: Optional[np.ndarray] = None,
-        signal2: Optional[np.ndarray] = None,
+        signal1: np.ndarray | None = None,
+        signal2: np.ndarray | None = None,
         operation: str = "multiply"
     ) -> FFTArithmeticResult:
         """
@@ -443,7 +439,7 @@ class TNFRAdvancedFFTEngine:
         self,
         G: Any,
         num_harmonics: int = 5,
-        window_size: Optional[int] = None
+        window_size: int | None = None
     ) -> FFTArithmeticResult:
         """
         Perform multi-scale harmonic analysis.
@@ -509,7 +505,7 @@ class TNFRAdvancedFFTEngine:
         self,
         G: Any,
         filter_type: str = "lowpass",
-        cutoff_frequency: Optional[float] = None,
+        cutoff_frequency: float | None = None,
         filter_order: int = 4
     ) -> FFTArithmeticResult:
         """
@@ -635,7 +631,7 @@ class TNFRAdvancedFFTEngine:
         self,
         G1: Any,
         G2: Any,
-        frequency_bands: Optional[int] = 10
+        frequency_bands: int | None = 10
     ) -> FFTArithmeticResult:
         """
         Compute cross-spectral coherence between two graphs.
@@ -727,7 +723,7 @@ class TNFRAdvancedFFTEngine:
             
         return coherence_length
         
-    def get_performance_stats(self) -> Dict[str, Any]:
+    def get_performance_stats(self) -> dict[str, Any]:
         """Get performance statistics."""
         return {
             "total_operations": self.total_operations,
@@ -746,12 +742,10 @@ class TNFRAdvancedFFTEngine:
         self._spectral_cache.clear()
         self._window_cache.clear()
 
-
 # Factory functions
 def create_fft_arithmetic_engine(**kwargs) -> TNFRAdvancedFFTEngine:
     """Create FFT arithmetic engine."""
     return TNFRAdvancedFFTEngine(**kwargs)
-
 
 def fast_spectral_convolution(G: Any, signal1: np.ndarray, signal2: np.ndarray) -> np.ndarray:
     """Convenience function for fast spectral convolution."""
@@ -759,13 +753,11 @@ def fast_spectral_convolution(G: Any, signal1: np.ndarray, signal2: np.ndarray) 
     result = engine.spectral_convolution(G, signal1, signal2, operation="multiply")
     return result.output_data
 
-
-def analyze_graph_harmonics(G: Any, num_harmonics: int = 5) -> Dict[str, Any]:
+def analyze_graph_harmonics(G: Any, num_harmonics: int = 5) -> dict[str, Any]:
     """Convenience function for harmonic analysis."""
     engine = create_fft_arithmetic_engine()
     result = engine.harmonic_analysis(G, num_harmonics)
     return result.output_data
-
 
 def measure_graph_coherence(G1: Any, G2: Any) -> float:
     """Convenience function for measuring cross-graph coherence."""

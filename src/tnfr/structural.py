@@ -51,7 +51,7 @@ See: run_sequence() context detection, grammar_patterns._check_start_rule()
 from __future__ import annotations
 
 from copy import deepcopy
-from typing import Any, Dict, Iterable, Mapping, Optional, Sequence, cast
+from typing import Any, Iterable, Mapping, Sequence, cast
 
 import networkx as nx
 
@@ -106,7 +106,6 @@ logger = get_logger(__name__)
 # ---------------------------------------------------------------------------
 # 1) NFR factory
 # ---------------------------------------------------------------------------
-
 
 def create_nfr(
     name: str,
@@ -227,7 +226,6 @@ def create_nfr(
     set_delta_nfr_hook(G, dnfr_hook)
     return G, name
 
-
 def _resolve_dimension(
     G: TNFRGraph,
     *,
@@ -264,7 +262,6 @@ def _resolve_dimension(
         )
     return resolved
 
-
 def _ensure_coherence_operator(
     *,
     operator: CoherenceOperator | None,
@@ -287,7 +284,6 @@ def _ensure_coherence_operator(
     if c_min is not None:
         kwargs["c_min"] = float(c_min)
     return make_coherence_operator(dimension, **kwargs)
-
 
 def _ensure_frequency_operator(
     *,
@@ -315,7 +311,6 @@ def _ensure_frequency_operator(
         matrix = np.diag(diag_array)
     return make_frequency_operator(np.asarray(matrix, dtype=np.complex128))
 
-
 def _ensure_generator_matrix(
     *,
     dimension: int,
@@ -335,7 +330,6 @@ def _ensure_generator_matrix(
             context={"size": diag_array.shape[0], "dimension": dimension},
         )
     return np.diag(diag_array)
-
 
 def create_math_nfr(
     name: str,
@@ -560,7 +554,6 @@ def create_math_nfr(
 
     return G, node
 
-
 __all__ = (
     "create_nfr",
     "create_math_nfr",
@@ -583,12 +576,11 @@ __all__ = (
     "run_sequence",
 )
 
-
 def run_sequence(
     G: TNFRGraph,
     node: NodeId,
     ops: Iterable[Operator],
-    context: Optional[Dict[str, Any]] = None,
+    context: dict[str, Any] | None = None,
 ) -> None:
     """Drive structural sequences that rebalance EPI, νf, phase and ΔNFR.
 

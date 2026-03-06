@@ -24,7 +24,6 @@ if TYPE_CHECKING:
 
 __all__ = ["validate_coherence_strict", "diagnose_coherence_readiness"]
 
-
 def validate_coherence_strict(G: TNFRGraph, node: Any) -> None:
     """Validate strict canonical preconditions for IL (Coherence) operator.
 
@@ -171,7 +170,6 @@ def validate_coherence_strict(G: TNFRGraph, node: Any) -> None:
             UserWarning,
             stacklevel=3,
         )
-
 
 def diagnose_coherence_readiness(G: TNFRGraph, node: Any) -> dict:
     """Diagnose node readiness for IL (Coherence) operator.

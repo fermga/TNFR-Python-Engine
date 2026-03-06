@@ -28,7 +28,7 @@ class Recursivity(Operator):
     glyph: ClassVar[Glyph] = Glyph.REMESH
 
     def __init__(self, depth: int = 1):
-        """Set recursion depth (>=1)."""
+        """set recursion depth (>=1)."""
         if depth < 1:
             raise TNFRValueError(
                 f"depth must be >= 1, got {depth}",

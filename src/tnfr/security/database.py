@@ -75,10 +75,8 @@ _SQL_KEYWORDS = frozenset(
     }
 )
 
-
 class SQLInjectionError(ValueError):
     """Exception raised when potential SQL injection is detected."""
-
 
 def validate_identifier(identifier: str, *, allow_keywords: bool = False) -> str:
     """Validate a SQL identifier (table or column name).
@@ -136,7 +134,6 @@ def validate_identifier(identifier: str, *, allow_keywords: bool = False) -> str
 
     return identifier
 
-
 def sanitize_string_input(value: str, *, max_length: int = 1000) -> str:
     """Sanitize string input for safe database operations.
 
@@ -184,7 +181,6 @@ def sanitize_string_input(value: str, *, max_length: int = 1000) -> str:
 
     return value
 
-
 class SecureQueryBuilder:
     """Builder for constructing safe, parameterized SQL queries.
 
@@ -231,7 +227,7 @@ class SecureQueryBuilder:
         table : str
             Table name (will be validated)
         columns : list[str], optional
-            List of column names to select (default: all columns with *)
+            list of column names to select (default: all columns with *)
 
         Returns
         -------
@@ -258,7 +254,7 @@ class SecureQueryBuilder:
         table : str
             Table name (will be validated)
         columns : list[str]
-            List of column names
+            list of column names
 
         Returns
         -------
@@ -420,7 +416,6 @@ class SecureQueryBuilder:
         query = " ".join(self._query_parts)
         return query, self._params
 
-
 def execute_parameterized_query(
     query: str, params: list[Any] | tuple[Any, ...] | None = None
 ) -> None:
@@ -486,7 +481,6 @@ def execute_parameterized_query(
     # In a real implementation, this would execute the query
     # For example, with sqlite3:
     # cursor.execute(query, params)
-
 
 __all__ = (
     "SQLInjectionError",

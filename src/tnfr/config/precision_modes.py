@@ -16,7 +16,7 @@ These settings tune HOW we measure and report, never WHAT the physics does.
 from __future__ import annotations
 from typing import Literal
 
-# Type aliases for configuration modes
+# type aliases for configuration modes
 PrecisionMode = Literal["standard", "high", "research"]
 TelemetryDensity = Literal["low", "medium", "high"]
 DiagnosticsLevel = Literal["off", "basic", "rich"]
@@ -25,7 +25,6 @@ DiagnosticsLevel = Literal["off", "basic", "rich"]
 _precision_mode: PrecisionMode = "standard"
 _telemetry_density: TelemetryDensity = "low"
 _diagnostics_level: DiagnosticsLevel = "off"
-
 
 def get_precision_mode() -> PrecisionMode:
     """Return current precision mode.
@@ -37,9 +36,8 @@ def get_precision_mode() -> PrecisionMode:
     """
     return _precision_mode
 
-
 def set_precision_mode(mode: PrecisionMode) -> None:
-    """Set precision mode for canonical field computations.
+    """set precision mode for canonical field computations.
     
     Parameters
     ----------
@@ -69,7 +67,6 @@ def set_precision_mode(mode: PrecisionMode) -> None:
         )
     _precision_mode = mode
 
-
 def get_telemetry_density() -> TelemetryDensity:
     """Return current telemetry density.
     
@@ -80,9 +77,8 @@ def get_telemetry_density() -> TelemetryDensity:
     """
     return _telemetry_density
 
-
 def set_telemetry_density(density: TelemetryDensity) -> None:
-    """Set telemetry density for field snapshots and time-series.
+    """set telemetry density for field snapshots and time-series.
     
     Parameters
     ----------
@@ -109,7 +105,6 @@ def set_telemetry_density(density: TelemetryDensity) -> None:
         )
     _telemetry_density = density
 
-
 def get_diagnostics_level() -> DiagnosticsLevel:
     """Return current diagnostics level.
     
@@ -120,9 +115,8 @@ def get_diagnostics_level() -> DiagnosticsLevel:
     """
     return _diagnostics_level
 
-
 def set_diagnostics_level(level: DiagnosticsLevel) -> None:
-    """Set diagnostics level for stability and safety checks.
+    """set diagnostics level for stability and safety checks.
     
     Parameters
     ----------
@@ -149,7 +143,6 @@ def set_diagnostics_level(level: DiagnosticsLevel) -> None:
             f"Must be one of {valid_levels}"
         )
     _diagnostics_level = level
-
 
 __all__ = [
     "PrecisionMode",

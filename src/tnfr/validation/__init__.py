@@ -91,7 +91,6 @@ from .unified_validation_system import (
     get_unified_validation_stats,
 )  # noqa: F401
 
-
 # NOTE: Compatibility module deprecated - grammar emerges from TNFR structural dynamics
 # Legacy exports kept for backward compatibility but will be removed in future versions
 try:
@@ -130,7 +129,6 @@ except ImportError:
             stacklevel=2,
         )
         return "good"
-
 
 _GRAMMAR_EXPORTS = tuple(getattr(_grammar, "__all__", ()))
 
@@ -191,7 +189,6 @@ __all__ = _GRAMMAR_EXPORTS + _RUNTIME_EXPORTS
 
 _ENFORCE_CANONICAL_GRAMMAR = _grammar.enforce_canonical_grammar
 
-
 def enforce_canonical_grammar(
     G: Any,
     n: Any,
@@ -211,7 +208,6 @@ def enforce_canonical_grammar(
         if translated is not None:
             return translated
     return result
-
 
 def __getattr__(name: str) -> Any:
     if name == "NFRValidator":

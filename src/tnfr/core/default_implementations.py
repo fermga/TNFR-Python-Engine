@@ -32,7 +32,6 @@ __all__ = (
     "DefaultTelemetryCollector",
 )
 
-
 class DefaultValidationService:
     """Default implementation of ValidationService using tnfr.validation.
 
@@ -79,7 +78,6 @@ class DefaultValidationService:
         # run_validators raises on failure by default
         run_validators(graph)
 
-
 class DefaultOperatorRegistry:
     """Default implementation of OperatorRegistry using tnfr.operators.
 
@@ -122,7 +120,6 @@ class DefaultOperatorRegistry:
 
         # Register by operator name
         OPERATORS[operator.name] = operator.__class__
-
 
 class DefaultDynamicsEngine:
     """Default implementation of DynamicsEngine using tnfr.dynamics.
@@ -170,7 +167,6 @@ class DefaultDynamicsEngine:
 
         # Coordinate phase using default parameters
         coordinate_global_local_phase(graph)
-
 
 class DefaultTraceContext:
     """Default trace context for telemetry collection.
@@ -255,7 +251,6 @@ class DefaultTraceContext:
                 "delta_coherence": post_state["coherence"] - pre_state["coherence"],
             }
         )
-
 
 class DefaultTelemetryCollector:
     """Default implementation of TelemetryCollector using tnfr.metrics.

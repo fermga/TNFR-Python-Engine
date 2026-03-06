@@ -23,7 +23,7 @@ without duplicating logic.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Callable, Dict, Optional, Tuple
+from typing import Any, Callable
 import time
 
 from ..errors import TNFRValueError
@@ -67,7 +67,6 @@ try:
 except ImportError:  # pragma: no cover
     HAS_STRUCTURAL_CACHE = False
 
-
 @dataclass
 class SpectralBasis:
     """Cached Laplacian eigensystem."""
@@ -76,7 +75,6 @@ class SpectralBasis:
     eigenvectors: np.ndarray
     signature: str
     computed_at: float
-
 
 @dataclass
 class FFTCacheStats:
@@ -89,13 +87,12 @@ class FFTCacheStats:
     kernel_misses: int = 0
     registered_results: int = 0
 
-
 class FFTCacheCoordinator:
     """Bridge between FFT arithmetic and repo-wide cache subsystems."""
 
     def __init__(self) -> None:
-        self._spectral_cache: Dict[str, SpectralBasis] = {}
-        self._kernel_cache: Dict[str, Any] = {}
+        self._spectral_cache: dict[str, SpectralBasis] = {}
+        self._kernel_cache: dict[str, Any] = {}
         self._stats = FFTCacheStats()
         self._unified_cache = get_unified_cache() if HAS_UNIFIED_CACHE else None
         self._structural_cache = (
@@ -171,7 +168,7 @@ class FFTCacheCoordinator:
         G: Any,
         kernel_name: str,
         builder: Callable[[], Any],
-        kernel_params: Optional[Dict[str, Any]] = None,
+        kernel_params: dict[str, Any] | None = None,
     ) -> Any:
         """Return cached FFT kernel (window, filter, etc.)."""
 
@@ -203,7 +200,7 @@ class FFTCacheCoordinator:
         self,
         G: Any,
         fft_result: Any,
-        metadata: Optional[Dict[str, Any]] = None,
+        metadata: dict[str, Any] | None = None,
     ) -> None:
         """Register FFT arithmetic outputs for cross-engine reuse."""
 
@@ -234,7 +231,7 @@ class FFTCacheCoordinator:
         self._kernel_cache.clear()
         self._stats = FFTCacheStats()
 
-    def get_stats(self) -> Dict[str, int]:
+    def get_stats(self) -> dict[str, int]:
         """Expose telemetry counters for testing and monitoring."""
 
         return {
@@ -256,7 +253,7 @@ class FFTCacheCoordinator:
             return self._structural_cache.get_topology_hash(G)
         return f"graph_{id(G)}"
 
-    def _serialize_params(self, params: Optional[Dict[str, Any]]) -> str:
+    def _serialize_params(self, params: dict[str, Any] | None) -> str:
         if not params:
             return "default"
         return "|".join(f"{k}={v}" for k, v in sorted(params.items()))
@@ -265,7 +262,7 @@ class FFTCacheCoordinator:
         self,
         G: Any,
         signature: str,
-    ) -> Tuple[np.ndarray, np.ndarray]:
+    ) -> tuple[np.ndarray, np.ndarray]:
         if not HAS_SPECTRAL:
             raise RuntimeError("Spectral backends unavailable")
         return self._compute_spectrum_repo_cached(G, graph_signature=signature)
@@ -274,13 +271,11 @@ class FFTCacheCoordinator:
         self,
         G: Any,
         graph_signature: str,
-    ) -> Tuple[np.ndarray, np.ndarray]:
+    ) -> tuple[np.ndarray, np.ndarray]:
         del graph_signature  # Stable cache key already encodes signature
         return get_laplacian_spectrum(G)
 
-
-_global_fft_cache: Optional[FFTCacheCoordinator] = None
-
+_global_fft_cache: FFTCacheCoordinator | None = None
 
 def get_fft_cache_coordinator() -> FFTCacheCoordinator:
     """Return process-wide FFT cache coordinator instance."""
@@ -289,7 +284,6 @@ def get_fft_cache_coordinator() -> FFTCacheCoordinator:
     if _global_fft_cache is None:
         _global_fft_cache = FFTCacheCoordinator()
     return _global_fft_cache
-
 
 if _CORE_CACHE_AVAILABLE:
     FFTCacheCoordinator._compute_spectrum_repo_cached = cache_tnfr_computation(  # type: ignore[attr-defined]

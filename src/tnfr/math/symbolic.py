@@ -13,11 +13,9 @@ Key capabilities:
 Physics basis: AGENTS.md § Foundational Physics, TNFR.pdf § 2.1
 """
 
-from typing import Optional, Tuple
 import sympy as sp
 from sympy import symbols, Function, Eq, Derivative, Integral, simplify
 from sympy import integrate
-
 
 # ============================================================================
 # SYMBOLIC VARIABLES (TNFR canonical)
@@ -40,7 +38,6 @@ C = Function('C')
 
 # Phase
 phi = symbols('phi', real=True)
-
 
 # ============================================================================
 # NODAL EQUATION
@@ -65,7 +62,6 @@ def get_nodal_equation() -> Eq:
     See: AGENTS.md § The Nodal Equation
     """
     return Eq(Derivative(EPI(t), t), nu_f * DELTA_NFR)
-
 
 def solve_nodal_equation_constant_params(
     nu_f_val: float,
@@ -104,7 +100,6 @@ def solve_nodal_equation_constant_params(
     
     return solution_with_ic.rhs
 
-
 # ============================================================================
 # INTEGRATION AND CONVERGENCE (U2 Grammar Rule)
 # ============================================================================
@@ -138,11 +133,10 @@ def integrated_evolution_symbolic() -> sp.Integral:
     
     return Integral(integrand, (tau, t_0, t_f))
 
-
 def check_convergence_exponential(
     growth_rate: float,
     time_horizon: float
-) -> Tuple[bool, str, Optional[float]]:
+) -> tuple[bool, str, float | None]:
     """
     Check convergence for exponential ΔNFR growth.
     
@@ -197,11 +191,10 @@ def check_convergence_exponential(
     
     try:
         val = float(integral_value)
-    except:
+    except (TypeError, ValueError):
         val = None
     
     return converges, explanation, val
-
 
 # ============================================================================
 # BIFURCATION ANALYSIS (U4 Grammar Rule)
@@ -241,14 +234,13 @@ def compute_second_derivative_symbolic() -> Derivative:
     
     return second_deriv
 
-
 def evaluate_bifurcation_risk(
     nu_f_val: float,
     delta_nfr_val: float,
     d_nu_f_dt: float,
     d_delta_nfr_dt: float,
     threshold: float = 1.0
-) -> Tuple[bool, float, str]:
+) -> tuple[bool, float, str]:
     """
     Evaluate if system is near bifurcation threshold.
     
@@ -287,7 +279,6 @@ def evaluate_bifurcation_risk(
     
     return at_risk, second_deriv_val, recommendation
 
-
 # ============================================================================
 # UTILITIES
 # ============================================================================
@@ -304,7 +295,6 @@ def latex_export(expr: sp.Expr) -> str:
     """
     return sp.latex(expr)
 
-
 def pretty_print(expr: sp.Expr) -> str:
     """
     Pretty-print symbolic expression.
@@ -316,7 +306,6 @@ def pretty_print(expr: sp.Expr) -> str:
         Human-readable string representation
     """
     return sp.pretty(expr)
-
 
 # ============================================================================
 # EXAMPLE USAGE AND VALIDATION

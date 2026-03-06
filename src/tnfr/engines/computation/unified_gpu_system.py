@@ -37,21 +37,18 @@ Status: UNIFIED GPU CONSOLIDATION - All GPU operations centralized
 from __future__ import annotations
 
 import gc
-import time
 import psutil
-import warnings
 from dataclasses import dataclass, field
-from typing import Any, Callable, Dict, List, Optional, Tuple, Union
+from typing import Any, Callable
 import logging
 
 from ...mathematics.unified_numerical import np
 
 # Unified mathematics backend integration
-from ...mathematics.backend import get_backend, BackendUnavailableError
+from ...mathematics.backend import get_backend
 from ...config import get_config
 
 logger = logging.getLogger(__name__)
-
 
 @dataclass
 class GPUDeviceInfo:
@@ -63,9 +60,8 @@ class GPUDeviceInfo:
     total_memory_mb: float
     free_memory_mb: float
     utilization_percent: float
-    compute_capability: Optional[str] = None
+    compute_capability: str | None = None
     is_available: bool = True
-
 
 @dataclass
 class GPUOperationResult:
@@ -80,7 +76,7 @@ class GPUOperationResult:
     memory_usage_mb: float
     
     # Optional
-    device_used: Optional[str] = None
+    device_used: str | None = None
     gpu_utilization: float = 0.0
     
     # Execution details
@@ -92,8 +88,7 @@ class GPUOperationResult:
     convergence_achieved: bool = True
     
     # Telemetry
-    operation_metadata: Dict[str, Any] = field(default_factory=dict)
-
+    operation_metadata: dict[str, Any] = field(default_factory=dict)
 
 @dataclass
 class UnifiedGPUConfig:
@@ -124,7 +119,6 @@ class UnifiedGPUConfig:
     # Monitoring
     enable_profiling: bool = False
     log_memory_usage: bool = True
-
 
 class TNFRUnifiedGPUSystem:
     """Unified GPU System - Consolidated Engine and Memory Management.
@@ -160,7 +154,7 @@ class TNFRUnifiedGPUSystem:
         - Integrated with unified config and mathematics backend
     """
     
-    def __init__(self, config: Optional[UnifiedGPUConfig] = None):
+    def __init__(self, config: UnifiedGPUConfig | None = None):
         """Initialize unified GPU system with configuration."""
         self.config = config or UnifiedGPUConfig()
         
@@ -171,13 +165,13 @@ class TNFRUnifiedGPUSystem:
         self.math_backend = get_backend()
         
         # Device management
-        self._available_devices: List[GPUDeviceInfo] = []
-        self._current_device: Optional[GPUDeviceInfo] = None
-        self._device_load_balance: Dict[int, float] = {}
+        self._available_devices: list[GPUDeviceInfo] = []
+        self._current_device: GPUDeviceInfo | None = None
+        self._device_load_balance: dict[int, float] = {}
         
         # Memory management
-        self._memory_pools: Dict[str, Any] = {}
-        self._active_allocations: Dict[str, float] = {}
+        self._memory_pools: dict[str, Any] = {}
+        self._active_allocations: dict[str, float] = {}
         
         # Performance tracking
         self._operation_stats = {
@@ -250,7 +244,7 @@ class TNFRUnifiedGPUSystem:
         if devices:
             self._current_device = self._select_optimal_device()
     
-    def _select_optimal_device(self) -> Optional[GPUDeviceInfo]:
+    def _select_optimal_device(self) -> GPUDeviceInfo | None:
         """Select optimal GPU device based on strategy."""
         if not self._available_devices:
             return None
@@ -384,7 +378,7 @@ class TNFRUnifiedGPUSystem:
             logger.warning(f"GPU structural fields computation failed: {e}")
             return self._fallback_to_cpu(self._compute_structural_fields_cpu, graph_data, **kwargs)
 
-    def compute_delta_nfr_from_graph(self, graph: Any) -> Dict[Any, float]:
+    def compute_delta_nfr_from_graph(self, graph: Any) -> dict[Any, float]:
         """Compute ΔNFR directly from a TNFR graph using GPU acceleration.
 
         Convenience method that extracts matrices from graph and computes
@@ -397,7 +391,7 @@ class TNFRUnifiedGPUSystem:
 
         Returns
         -------
-        Dict[Any, float]
+        dict[Any, float]
             Mapping from node IDs to ΔNFR values
         """
         # Extract node list (maintain order)
@@ -456,7 +450,7 @@ class TNFRUnifiedGPUSystem:
         cpu_fn: Callable[..., Any], 
         *args: Any,
         **kwargs: Any
-    ) -> Tuple[Any, str]:
+    ) -> tuple[Any, str]:
         """Execute with GPU fallback (compatibility method)."""
         try:
             # Try GPU function
@@ -601,13 +595,13 @@ class TNFRUnifiedGPUSystem:
         except Exception as e:
             logger.warning(f"GPU memory cleanup failed: {e}")
     
-    def get_device_info(self) -> List[GPUDeviceInfo]:
+    def get_device_info(self) -> list[GPUDeviceInfo]:
         """Get information about available GPU devices."""
         # Refresh device information
         self._detect_available_devices()
         return self._available_devices.copy()
     
-    def get_memory_info(self) -> Dict[str, Any]:
+    def get_memory_info(self) -> dict[str, Any]:
         """Get detailed memory usage information."""
         info = {
             "total_devices": len(self._available_devices),
@@ -625,7 +619,7 @@ class TNFRUnifiedGPUSystem:
         
         return info
     
-    def get_performance_stats(self) -> Dict[str, Any]:
+    def get_performance_stats(self) -> dict[str, Any]:
         """Get GPU system performance statistics."""
         stats = self._operation_stats.copy()
         
@@ -651,7 +645,7 @@ class TNFRUnifiedGPUSystem:
         )
     
     def set_device(self, device_id: int) -> bool:
-        """Set active GPU device by ID."""
+        """set active GPU device by ID."""
         device = next((d for d in self._available_devices if d.device_id == device_id), None)
         
         if device:
@@ -662,16 +656,14 @@ class TNFRUnifiedGPUSystem:
         logger.warning(f"Device {device_id} not available")
         return False
 
-
 # ============================================================================
 # PUBLIC API - Unified GPU Interface  
 # ============================================================================
 
 # Global unified GPU system instance
-_unified_gpu_system: Optional[TNFRUnifiedGPUSystem] = None
+_unified_gpu_system: TNFRUnifiedGPUSystem | None = None
 
-
-def get_unified_gpu_system(config: Optional[UnifiedGPUConfig] = None) -> TNFRUnifiedGPUSystem:
+def get_unified_gpu_system(config: UnifiedGPUConfig | None = None) -> TNFRUnifiedGPUSystem:
     """Get or create global unified GPU system.
     
     This provides a singleton interface for all TNFR GPU operations
@@ -695,7 +687,6 @@ def get_unified_gpu_system(config: Optional[UnifiedGPUConfig] = None) -> TNFRUni
     
     return _unified_gpu_system
 
-
 # Convenience functions for direct GPU operations
 def compute_unified_delta_nfr(
     adjacency: np.ndarray,
@@ -707,19 +698,16 @@ def compute_unified_delta_nfr(
     """Compute ΔNFR using unified GPU system - convenience function."""
     return get_unified_gpu_system().compute_delta_nfr_gpu(adjacency, epi, vf, phase, **kwargs)
 
-
 def compute_unified_structural_fields(graph_data: np.ndarray, **kwargs: Any) -> GPUOperationResult:
     """Compute structural fields using unified GPU system - convenience function.""" 
     return get_unified_gpu_system().compute_structural_fields(graph_data, **kwargs)
-
 
 def cleanup_unified_gpu_memory() -> None:
     """Clean up unified GPU memory - convenience function."""
     if _unified_gpu_system is not None:
         _unified_gpu_system.cleanup_memory()
 
-
-def get_unified_gpu_stats() -> Dict[str, Any]:
+def get_unified_gpu_stats() -> dict[str, Any]:
     """Get unified GPU system statistics - convenience function."""
     if _unified_gpu_system is not None:
         return {
@@ -729,13 +717,12 @@ def get_unified_gpu_stats() -> Dict[str, Any]:
         }
     return {"status": "system_not_initialized"}
 
-
 def execute_with_gpu_fallback(
     gpu_fn: Callable[..., Any],
     cpu_fn: Callable[..., Any], 
     *args: Any,
     **kwargs: Any
-) -> Tuple[Any, str]:
+) -> tuple[Any, str]:
     """Execute with GPU fallback (compatibility wrapper).
     
     Parameters
@@ -749,7 +736,7 @@ def execute_with_gpu_fallback(
         
     Returns
     -------
-    Tuple[Any, str]
+    tuple[Any, str]
         (result, backend_used)
     """
     try:

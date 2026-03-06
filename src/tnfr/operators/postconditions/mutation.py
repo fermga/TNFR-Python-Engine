@@ -24,7 +24,6 @@ __all__ = [
     "verify_bifurcation_handled",
 ]
 
-
 def verify_phase_transformed(G: TNFRGraph, node: NodeId, theta_before: float) -> None:
     """Verify that phase was actually transformed by ZHIR.
 
@@ -72,7 +71,6 @@ def verify_phase_transformed(G: TNFRGraph, node: NodeId, theta_before: float) ->
             f"θ after={theta_after:.6f}, diff={abs(theta_after - theta_before):.9f}). "
             f"ZHIR must transform phase to fulfill its contract.",
         )
-
 
 def verify_identity_preserved(G: TNFRGraph, node: NodeId, epi_kind_before: str | None) -> None:
     """Verify that structural identity (epi_kind) was preserved through mutation.
@@ -156,13 +154,12 @@ def verify_identity_preserved(G: TNFRGraph, node: NodeId, epi_kind_before: str |
             f"ZHIR must preserve epi_kind while transforming phase.",
         )
 
-
 def verify_bifurcation_handled(G: TNFRGraph, node: NodeId) -> None:
     """Verify that bifurcation was handled if triggered during mutation.
 
     When ZHIR detects bifurcation potential (∂²EPI/∂t² > τ), it must either:
     1. Create a variant node (if bifurcation mode = "variant_creation")
-    2. Set detection flag (if bifurcation mode = "detection")
+    2. set detection flag (if bifurcation mode = "detection")
 
     This ensures that bifurcation events are properly tracked and controlled,
     preventing uncontrolled structural fragmentation.

@@ -46,19 +46,20 @@ References
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 # TNFR Optimizations Integration
 try:
     from ..mathematics.backend import get_backend
-    from ..utils.cache import cache_tnfr_computation
     _HAS_OPTIMIZATIONS = True
 except ImportError:
     _HAS_OPTIMIZATIONS = False
     
 from ..alias import collect_attr
 from ..constants.aliases import ALIAS_SI
+from ..constants.canonical import GAMMA, INV_PHI, PI
 from ..metrics.common import compute_coherence
 from ..observers import kuramoto_order
 from ..mathematics.unified_numerical import np
@@ -75,8 +76,7 @@ __all__ = (
 
 # Default fallback value for sense index when nodes have no Si attribute
 # This represents a "neutral" sense index - neither high stability nor instability
-DEFAULT_SI_FALLBACK = 0.6180339887498948  # 1/φ - neutral golden ratio balance
-
+DEFAULT_SI_FALLBACK = INV_PHI  # 1/φ - neutral golden ratio balance
 
 @dataclass(frozen=True)
 class DynamicLimitsConfig:
@@ -93,11 +93,10 @@ class DynamicLimitsConfig:
 
     base_epi_max: float = 1.0
     base_vf_max: float = 10.0
-    alpha: float = 0.6180339887498948  # 1/φ - golden ratio inverse expansion
-    beta: float = 0.13937045798099476  # γ/(π+1) - frequency expansion coefficient
-    max_expansion_factor: float = 3.141592653589793  # π - natural expansion limit
+    alpha: float = INV_PHI  # 1/φ - golden ratio inverse expansion
+    beta: float = GAMMA / (PI + 1)  # γ/(π+1) - frequency expansion coefficient
+    max_expansion_factor: float = math.pi  # π - natural expansion limit
     enabled: bool = True
-
 
 @dataclass(frozen=True)
 class DynamicLimits:
@@ -120,7 +119,6 @@ class DynamicLimits:
     kuramoto_r: float
     coherence_factor: float
     config: DynamicLimitsConfig
-
 
 def compute_dynamic_limits(
     G: TNFRGraph,

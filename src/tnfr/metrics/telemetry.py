@@ -97,7 +97,6 @@ except Exception:  # pragma: no cover
 
 __all__ = ["TelemetryEmitter", "TelemetryEvent"]
 
-
 @dataclass(frozen=True, slots=True)
 class TelemetryEvent:
     """Immutable telemetry snapshot.
@@ -124,7 +123,6 @@ class TelemetryEvent:
     operator: str | None
     metrics: Mapping[str, Any]
     extra: Mapping[str, Any] | None = None
-
 
 class TelemetryEmitter:
     """Unified telemetry collector for TNFR simulations.
@@ -449,7 +447,7 @@ class TelemetryEmitter:
         Record telemetry event with integrated optimization analysis.
         
         Returns:
-            Tuple of (telemetry_event, optimization_analysis)
+            tuple of (telemetry_event, optimization_analysis)
         """
         # Record baseline telemetry
         start_time = time.perf_counter()
@@ -501,7 +499,6 @@ class TelemetryEmitter:
             stats_data["optimization_analysis_enabled"] = False
             
         return stats_data
-
 
 # Convenience helper -------------------------------------------------------
 def stream_telemetry(

@@ -10,11 +10,6 @@ from .metrics_network import (
     coupling_metrics,
     resonance_metrics,
     silence_metrics,
-    # Private helpers exposed for testing
-    _compute_epi_variance,
-    _compute_preservation_integrity,
-    _compute_reactivation_readiness,
-    _estimate_time_to_collapse,
 )
 from .metrics_structural import (
     expansion_metrics,
@@ -23,8 +18,6 @@ from .metrics_structural import (
     mutation_metrics,
     transition_metrics,
     recursivity_metrics,
-    # Private helper exposed for testing
-    _detect_regime_from_state,
 )
 
 # U6 experimental telemetry

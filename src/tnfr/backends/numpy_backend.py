@@ -24,7 +24,6 @@ from typing import Any, MutableMapping
 from . import TNFRBackend
 from ..types import TNFRGraph
 
-
 class NumPyBackend(TNFRBackend):
     """Vectorized NumPy implementation of TNFR computational kernels.
 
@@ -102,7 +101,7 @@ class NumPyBackend(TNFRBackend):
             Ignored when NumPy vectorization is active.
             None = serial execution, >1 = parallel processing.
         profile : MutableMapping[str, float] or None, optional
-            Dict to collect timing metrics:
+            dict to collect timing metrics:
             - "dnfr_cache_rebuild": Time spent refreshing cached vectors
             - "dnfr_neighbor_accumulation": Time in neighbor sum computation
             - "dnfr_neighbor_means": Time computing phase/EPI/νf means
@@ -187,7 +186,7 @@ class NumPyBackend(TNFRBackend):
             None = automatic sizing based on available memory.
             Useful for controlling memory footprint on large graphs.
         profile : MutableMapping[str, Any] or None, optional
-            Dict to collect timing metrics:
+            dict to collect timing metrics:
             - "cache_rebuild": Time building/refreshing cached arrays
             - "neighbor_phase_mean_bulk": Time computing neighbor phase means
             - "normalize_clamp": Time normalizing and clamping Si values

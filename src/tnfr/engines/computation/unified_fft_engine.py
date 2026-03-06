@@ -41,21 +41,20 @@ from __future__ import annotations
 
 import hashlib
 from dataclasses import dataclass, field
-from typing import Any, Optional, Protocol, Union
+from typing import Any, Protocol
 import logging
 
 from ...mathematics.unified_numerical import np
 from ...errors import TNFRValueError
 
 # Import existing FFT components for consolidation
-from ...dynamics.advanced_fft_arithmetic import TNFRAdvancedFFTEngine, SpectralState, FFTArithmeticResult
+from ...dynamics.advanced_fft_arithmetic import TNFRAdvancedFFTEngine
 from ...dynamics.distributed_fft import DistributedFFTEngine
-from ...dynamics.fft_backend import FFTBackend, FFTBackendCapabilities
+from ...dynamics.fft_backend import FFTBackendCapabilities
 from .unified_gpu_system import get_unified_gpu_system
 from ...config import get_config
 
 logger = logging.getLogger(__name__)
-
 
 @dataclass
 class UnifiedFFTConfig:
@@ -83,7 +82,6 @@ class UnifiedFFTConfig:
     profile_operations: bool = False
     log_backend_selection: bool = True
 
-
 @dataclass 
 class UnifiedFFTResult:
     """Unified result container for all FFT operations."""
@@ -103,13 +101,12 @@ class UnifiedFFTResult:
     convergence_achieved: bool = True
     
     # Advanced results (optional)
-    harmonic_analysis: Optional[dict[str, Any]] = None
-    coherence_matrix: Optional[np.ndarray] = None
-    phase_relationships: Optional[dict[str, float]] = None
+    harmonic_analysis: dict[str, Any] | None = None
+    coherence_matrix: np.ndarray | None = None
+    phase_relationships: dict[str, float] | None = None
     
     # Telemetry
     operation_metadata: dict[str, Any] = field(default_factory=dict)
-
 
 class UnifiedFFTBackend(Protocol):
     """Protocol for unified FFT backend implementations."""
@@ -134,7 +131,6 @@ class UnifiedFFTBackend(Protocol):
     ) -> UnifiedFFTResult:
         """Compute spectral convolution efficiently."""
         ...
-
 
 class TNFRUnifiedFFTEngine:
     """Unified FFT Engine - Single Access Point for All TNFR Spectral Operations.
@@ -163,7 +159,7 @@ class TNFRUnifiedFFTEngine:
         - Integrated with unified config system
     """
     
-    def __init__(self, config: Optional[UnifiedFFTConfig] = None):
+    def __init__(self, config: UnifiedFFTConfig | None = None):
         """Initialize unified FFT engine with configuration."""
         self.config = config or UnifiedFFTConfig()
         
@@ -171,8 +167,8 @@ class TNFRUnifiedFFTEngine:
         self.gpu_manager = get_unified_gpu_system()
         
         # Initialize backend engines
-        self._advanced_engine: Optional[TNFRAdvancedFFTEngine] = None
-        self._distributed_engine: Optional[DistributedFFTEngine] = None
+        self._advanced_engine: TNFRAdvancedFFTEngine | None = None
+        self._distributed_engine: DistributedFFTEngine | None = None
         self._basic_backends: dict[str, UnifiedFFTBackend] = {}
         
         # Caching system
@@ -188,11 +184,11 @@ class TNFRUnifiedFFTEngine:
     def _get_cache_key(self, data: np.ndarray, operation: str, **kwargs: Any) -> str:
         """Generate cache key for spectral operations."""
         # Create deterministic hash from data and parameters
-        data_hash = hashlib.md5(data.tobytes()).hexdigest()[:16]
+        data_hash = hashlib.md5(data.tobytes(), usedforsecurity=False).hexdigest()[:16]
         params_str = ",".join(f"{k}:{v}" for k, v in sorted(kwargs.items()))
         return f"{operation}:{data_hash}:{params_str}"
     
-    def _check_cache(self, cache_key: str) -> Optional[UnifiedFFTResult]:
+    def _check_cache(self, cache_key: str) -> UnifiedFFTResult | None:
         """Check spectral operation cache."""
         if not self.config.cache_spectral_decompositions:
             return None
@@ -273,7 +269,7 @@ class TNFRUnifiedFFTEngine:
     def compute_fft(
         self, 
         data: np.ndarray, 
-        backend: Optional[str] = None,
+        backend: str | None = None,
         **kwargs: Any
     ) -> UnifiedFFTResult:
         """Compute FFT with automatic backend selection and caching.
@@ -471,7 +467,6 @@ class TNFRUnifiedFFTEngine:
             "cache_stats": self.get_cache_statistics()
         }
 
-
 class _BasicNumpyFFTBackend:
     """Basic NumPy-based FFT backend for fallback operations."""
     
@@ -536,16 +531,14 @@ class _BasicNumpyFFTBackend:
             operation_metadata={"backend": "numpy", "algorithm": "spectral_convolution"}
         )
 
-
 # ============================================================================
 # PUBLIC API - Unified FFT Interface
 # ============================================================================
 
 # Global unified FFT engine instance
-_unified_fft_engine: Optional[TNFRUnifiedFFTEngine] = None
+_unified_fft_engine: TNFRUnifiedFFTEngine | None = None
 
-
-def get_unified_fft_engine(config: Optional[UnifiedFFTConfig] = None) -> TNFRUnifiedFFTEngine:
+def get_unified_fft_engine(config: UnifiedFFTConfig | None = None) -> TNFRUnifiedFFTEngine:
     """Get or create global unified FFT engine.
     
     This provides a singleton interface for all TNFR FFT operations
@@ -569,12 +562,10 @@ def get_unified_fft_engine(config: Optional[UnifiedFFTConfig] = None) -> TNFRUni
     
     return _unified_fft_engine
 
-
 # Convenience functions for direct FFT operations
 def compute_unified_fft(data: np.ndarray, **kwargs: Any) -> UnifiedFFTResult:
     """Compute FFT using unified engine - convenience function."""
     return get_unified_fft_engine().compute_fft(data, **kwargs)
-
 
 def compute_unified_spectral_convolution(
     signal1: np.ndarray, 
@@ -584,12 +575,10 @@ def compute_unified_spectral_convolution(
     """Compute spectral convolution using unified engine - convenience function."""
     return get_unified_fft_engine().compute_spectral_convolution(signal1, signal2, **kwargs)
 
-
 def clear_unified_fft_cache() -> None:
     """Clear unified FFT cache - convenience function."""
     if _unified_fft_engine is not None:
         _unified_fft_engine.clear_cache()
-
 
 def get_unified_fft_stats() -> dict[str, Any]:
     """Get unified FFT engine statistics - convenience function."""

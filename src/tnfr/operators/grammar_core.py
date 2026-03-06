@@ -9,25 +9,17 @@ Terminology (TNFR semantics):
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, List
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
-    from ..types import NodeId, TNFRGraph, Glyph
+    from ..types import NodeId, TNFRGraph
     from .definitions import Operator
 else:
     NodeId = Any
     TNFRGraph = Any
-    from ..types import Glyph
     from .definitions import Operator
 
 from .grammar_types import (
-    StructuralGrammarError,
-    RepeatWindowError,
-    MutationPreconditionError,
-    TholClosureError,
-    TransitionCompatibilityError,
-    StructuralPotentialConfinementError,
-    record_grammar_violation,
     GENERATORS,
     CLOSURES,
     STABILIZERS,
@@ -36,25 +28,13 @@ from .grammar_types import (
     BIFURCATION_TRIGGERS,
     BIFURCATION_HANDLERS,
     TRANSFORMERS,
-    RECURSIVE_GENERATORS,
     SCALE_STABILIZERS,
 )
-from .grammar_context import GrammarContext
-from ..config.operator_names import (
-    BIFURCATION_WINDOWS,
-    CANONICAL_OPERATOR_NAMES,
-    DESTABILIZERS_MODERATE,
-    DESTABILIZERS_STRONG,
-    DESTABILIZERS_WEAK,
-    INTERMEDIATE_OPERATORS,
-    SELF_ORGANIZATION,
-    SELF_ORGANIZATION_CLOSURES,
-    VALID_END_OPERATORS,
-    VALID_START_OPERATORS,
-)
-from ..validation.compatibility import (
-    CompatibilityLevel,
-    get_compatibility_level,
+from ..constants.canonical import GRAD_PHI_CANONICAL_THRESHOLD, K_PHI_CANONICAL_THRESHOLD
+from .grammar_telemetry import (
+    warn_phase_gradient_telemetry,
+    warn_phase_curvature_telemetry,
+    warn_coherence_length_telemetry,
 )
 
 class GrammarValidator:
@@ -91,7 +71,7 @@ class GrammarValidator:
 
     @staticmethod
     def validate_initiation(
-        sequence: List[Operator],
+        sequence: list[Operator],
         epi_initial: float = 0.0,
     ) -> tuple[bool, str]:
         """Validate U1a: Structural initiation.
@@ -106,7 +86,7 @@ class GrammarValidator:
 
         Parameters
         ----------
-        sequence : List[Operator]
+        sequence : list[Operator]
             Sequence of operators to validate
         epi_initial : float, optional
             Initial EPI value (default: 0.0)
@@ -141,7 +121,7 @@ class GrammarValidator:
         return True, f"U1a satisfied: starts with generator '{first_op}'"
 
     @staticmethod
-    def validate_closure(sequence: List[Operator]) -> tuple[bool, str]:
+    def validate_closure(sequence: list[Operator]) -> tuple[bool, str]:
         """Validate U1b: Structural closure.
 
         Physical basis: Sequences are bounded action potentials in structural
@@ -156,7 +136,7 @@ class GrammarValidator:
 
         Parameters
         ----------
-        sequence : List[Operator]
+        sequence : list[Operator]
             Sequence of operators to validate
 
         Returns
@@ -185,7 +165,7 @@ class GrammarValidator:
         return True, f"U1b satisfied: ends with closure '{last_op}'"
 
     @staticmethod
-    def validate_convergence(sequence: List[Operator]) -> tuple[bool, str]:
+    def validate_convergence(sequence: list[Operator]) -> tuple[bool, str]:
         """Validate U2: Convergence and boundedness.
 
         Physical basis: Without stabilizers, ∫νf·ΔNFR dt → ∞ (diverges).
@@ -202,7 +182,7 @@ class GrammarValidator:
 
         Parameters
         ----------
-        sequence : List[Operator]
+        sequence : list[Operator]
             Sequence of operators to validate
 
         Returns
@@ -244,7 +224,7 @@ class GrammarValidator:
 
     @staticmethod
     def validate_resonant_coupling(
-        sequence: List[Operator],
+        sequence: list[Operator],
     ) -> tuple[bool, str]:
         """Validate U3: Resonant coupling.
 
@@ -263,7 +243,7 @@ class GrammarValidator:
 
         Parameters
         ----------
-        sequence : List[Operator]
+        sequence : list[Operator]
             Sequence of operators to validate
 
         Returns
@@ -308,7 +288,7 @@ class GrammarValidator:
 
     @staticmethod
     def validate_bifurcation_triggers(
-        sequence: List[Operator],
+        sequence: list[Operator],
     ) -> tuple[bool, str]:
         """Validate U4a: Bifurcation triggers need handlers.
 
@@ -323,7 +303,7 @@ class GrammarValidator:
 
         Parameters
         ----------
-        sequence : List[Operator]
+        sequence : list[Operator]
             Sequence of operators to validate
 
         Returns
@@ -374,7 +354,7 @@ class GrammarValidator:
 
     @staticmethod
     def validate_transformer_context(
-        sequence: List[Operator],
+        sequence: list[Operator],
     ) -> tuple[bool, str]:
         """Validate U4b: Transformers need context.
 
@@ -393,7 +373,7 @@ class GrammarValidator:
 
         Parameters
         ----------
-        sequence : List[Operator]
+        sequence : list[Operator]
             Sequence of operators to validate
 
         Returns
@@ -460,7 +440,7 @@ class GrammarValidator:
 
     @staticmethod
     def validate_remesh_amplification(
-        sequence: List[Operator],
+        sequence: list[Operator],
     ) -> tuple[bool, str]:
         """Validate U2-REMESH: Recursive amplification control.
 
@@ -492,7 +472,7 @@ class GrammarValidator:
 
         Parameters
         ----------
-        sequence : List[Operator]
+        sequence : list[Operator]
             Sequence of operators to validate
 
         Returns
@@ -557,7 +537,7 @@ class GrammarValidator:
         )
 
     @staticmethod
-    def validate_multiscale_coherence(sequence: List[Operator]) -> tuple[bool, str]:
+    def validate_multiscale_coherence(sequence: list[Operator]) -> tuple[bool, str]:
         """Validate U5: Multi-scale coherence preservation.
 
         Physical basis: Multi-scale hierarchical structures created by REMESH
@@ -606,7 +586,7 @@ class GrammarValidator:
 
         Parameters
         ----------
-        sequence : List[Operator]
+        sequence : list[Operator]
             Sequence of operators to validate
 
         Returns
@@ -689,7 +669,7 @@ class GrammarValidator:
 
     @staticmethod
     def validate_temporal_ordering(
-        sequence: List[Operator],
+        sequence: list[Operator],
         vf: float = 1.0,
         k_top: float = 1.0,
     ) -> tuple[bool, str]:
@@ -721,7 +701,7 @@ class GrammarValidator:
 
         Parameters
         ----------
-        sequence : List[Operator]
+        sequence : list[Operator]
             Sequence to validate
         vf : float, optional
             Structural frequency (Hz_str) for time estimation (default: 1.0)
@@ -804,12 +784,12 @@ class GrammarValidator:
 
     def validate(
         self,
-        sequence: List[Operator],
+        sequence: list[Operator],
         epi_initial: float = 0.0,
         vf: float = 1.0,
         k_top: float = 1.0,
         stop_on_first_error: bool = False,
-    ) -> tuple[bool, List[str]]:
+    ) -> tuple[bool, list[str]]:
         """Validate sequence using all unified canonical constraints.
 
         This validates pure TNFR physics:
@@ -822,7 +802,7 @@ class GrammarValidator:
 
         Parameters
         ----------
-        sequence : List[Operator]
+        sequence : list[Operator]
             Sequence to validate
         epi_initial : float, optional
             Initial EPI value (default: 0.0)
@@ -837,10 +817,10 @@ class GrammarValidator:
 
         Returns
         -------
-        tuple[bool, List[str]]
+        tuple[bool, list[str]]
             (is_valid, messages)
             is_valid: True if all constraints satisfied
-            messages: List of validation messages
+            messages: list of validation messages
 
         Performance
         -----------
@@ -922,8 +902,8 @@ class GrammarValidator:
         self,
         G: Any,
         *,
-        phi_grad_threshold: float = 0.183736807,  # γ/π canonical
-        kphi_abs_threshold: float = 2.8274,  # 0.9×π canonical hotspot flag
+        phi_grad_threshold: float = GRAD_PHI_CANONICAL_THRESHOLD,  # γ/π canonical
+        kphi_abs_threshold: float = K_PHI_CANONICAL_THRESHOLD,  # 0.9×π canonical hotspot flag
         kphi_multiscale: bool = True,
         kphi_alpha_hint: float | None = 2.76,
         xi_regime_multipliers: tuple[float, float] = (1.0, 3.0),
@@ -963,5 +943,4 @@ class GrammarValidator:
             messages.append(f"U6 (ξ_C): telemetry error: {e}")
 
         return messages
-
 

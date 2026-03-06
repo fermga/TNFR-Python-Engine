@@ -48,7 +48,6 @@ __all__ = [
     "get_slow_relaxation_mode",
 ]
 
-
 def compute_liouvillian_spectrum(
     liouvillian: np.ndarray | Sequence[Sequence[complex]],
     *,
@@ -141,7 +140,6 @@ def compute_liouvillian_spectrum(
 
     return eigenvalues
 
-
 def store_liouvillian_spectrum(
     G: Any,
     eigenvalues: np.ndarray | Sequence[complex],
@@ -175,7 +173,6 @@ def store_liouvillian_spectrum(
     compatibility. Complex numbers are preserved.
     """
     G.graph[key] = [complex(z) for z in eigenvalues]
-
 
 def get_liouvillian_spectrum(
     G: Any,
@@ -213,7 +210,6 @@ def get_liouvillian_spectrum(
     if cached is None:
         return default
     return np.asarray(cached, dtype=np.complex128)
-
 
 def get_slow_relaxation_mode(
     eigenvalues: np.ndarray | Sequence[complex],

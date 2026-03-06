@@ -7,7 +7,7 @@ maintaining computational efficiency and TNFR semantic fidelity.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Dict, Optional, Sequence
+from typing import Any, Sequence
 
 from ..errors import TNFRValueError
 from ..mathematics.unified_numerical import np
@@ -17,7 +17,6 @@ from ..types import NodeId
 from ..utils import get_logger
 
 logger = get_logger(__name__)
-
 
 @dataclass
 class MemoryReport:
@@ -29,14 +28,13 @@ class MemoryReport:
         Total memory usage in megabytes
     per_node_kb : float
         Memory usage per node in kilobytes
-    breakdown : Dict[str, int]
+    breakdown : dict[str, int]
         Detailed breakdown by component in bytes
     """
 
     total_mb: float
     per_node_kb: float
-    breakdown: Dict[str, int]
-
+    breakdown: dict[str, int]
 
 class SparseCache:
     """Time-to-live cache for sparse computation results.
@@ -55,10 +53,10 @@ class SparseCache:
     def __init__(self, capacity: int, ttl_steps: int = 10):
         self.capacity = capacity
         self.ttl_steps = ttl_steps
-        self._cache: Dict[NodeId, tuple[float, int]] = {}
+        self._cache: dict[NodeId, tuple[float, int]] = {}
         self._current_step = 0
 
-    def get(self, node_id: NodeId) -> Optional[float]:
+    def get(self, node_id: NodeId) -> float | None:
         """Get cached value if not expired."""
         if node_id in self._cache:
             value, cached_step = self._cache[node_id]
@@ -69,7 +67,7 @@ class SparseCache:
                 del self._cache[node_id]
         return None
 
-    def update(self, values: Dict[NodeId, float]) -> None:
+    def update(self, values: dict[NodeId, float]) -> None:
         """Update cache with new values."""
         # Implement simple LRU: if over capacity, remove oldest
         if len(self._cache) + len(values) > self.capacity:
@@ -98,7 +96,6 @@ class SparseCache:
         # Plus dict overhead (~112 bytes per entry)
         return len(self._cache) * (8 + 8 + 8 + 112)
 
-
 class CompactAttributeStore:
     """Compressed storage for node attributes with defaults.
 
@@ -118,11 +115,11 @@ class CompactAttributeStore:
         self.node_count = node_count
 
         # Only store non-default values (sparse dictionaries)
-        self._vf_sparse: Dict[NodeId, np.float32] = {}
-        self._theta_sparse: Dict[NodeId, np.float32] = {}
-        self._si_sparse: Dict[NodeId, np.float32] = {}
-        self._epi_sparse: Dict[NodeId, np.float32] = {}
-        self._dnfr_sparse: Dict[NodeId, np.float32] = {}
+        self._vf_sparse: dict[NodeId, np.float32] = {}
+        self._theta_sparse: dict[NodeId, np.float32] = {}
+        self._si_sparse: dict[NodeId, np.float32] = {}
+        self._epi_sparse: dict[NodeId, np.float32] = {}
+        self._dnfr_sparse: dict[NodeId, np.float32] = {}
 
         # TNFR canonical defaults
         self.default_vf = 1.0  # Hz_str
@@ -132,7 +129,7 @@ class CompactAttributeStore:
         self.default_dnfr = 0.0
 
     def set_vf(self, node_id: NodeId, vf: float) -> None:
-        """Set structural frequency, store only if non-default."""
+        """set structural frequency, store only if non-default."""
         if abs(vf - self.default_vf) > 1e-10:
             self._vf_sparse[node_id] = np.float32(vf)
         else:
@@ -151,7 +148,7 @@ class CompactAttributeStore:
         return result
 
     def set_theta(self, node_id: NodeId, theta: float) -> None:
-        """Set phase, store only if non-default."""
+        """set phase, store only if non-default."""
         if abs(theta - self.default_theta) > 1e-10:
             self._theta_sparse[node_id] = np.float32(theta)
         else:
@@ -170,7 +167,7 @@ class CompactAttributeStore:
         return result
 
     def set_si(self, node_id: NodeId, si: float) -> None:
-        """Set sense index, store only if non-default."""
+        """set sense index, store only if non-default."""
         if abs(si - self.default_si) > 1e-10:
             self._si_sparse[node_id] = np.float32(si)
         else:
@@ -181,7 +178,7 @@ class CompactAttributeStore:
         return float(self._si_sparse.get(node_id, self.default_si))
 
     def set_epi(self, node_id: NodeId, epi: float) -> None:
-        """Set EPI, store only if non-default."""
+        """set EPI, store only if non-default."""
         if abs(epi - self.default_epi) > 1e-10:
             self._epi_sparse[node_id] = np.float32(epi)
         else:
@@ -200,7 +197,7 @@ class CompactAttributeStore:
         return result
 
     def set_dnfr(self, node_id: NodeId, dnfr: float) -> None:
-        """Set ΔNFR, store only if non-default."""
+        """set ΔNFR, store only if non-default."""
         if abs(dnfr - self.default_dnfr) > 1e-10:
             self._dnfr_sparse[node_id] = np.float32(dnfr)
         else:
@@ -222,7 +219,6 @@ class CompactAttributeStore:
         dnfr_memory = len(self._dnfr_sparse) * bytes_per_entry
 
         return vf_memory + theta_memory + si_memory + epi_memory + dnfr_memory
-
 
 class SparseTNFRGraph:
     """Memory-optimized TNFR graph using sparse representations.
@@ -263,7 +259,7 @@ class SparseTNFRGraph:
         self,
         node_count: int,
         expected_density: float = 0.1,
-        seed: Optional[int] = None,
+        seed: int | None = None,
     ):
         if node_count <= 0:
             raise TNFRValueError(
@@ -336,7 +332,7 @@ class SparseTNFRGraph:
         self.adjacency[u, v] = weight
         self.adjacency[v, u] = weight  # Undirected graph
 
-    def compute_dnfr_sparse(self, node_ids: Optional[Sequence[NodeId]] = None) -> np.ndarray:
+    def compute_dnfr_sparse(self, node_ids: Sequence[NodeId] | None = None) -> np.ndarray:
         """Compute ΔNFR using sparse matrix operations.
 
         Implements the TNFR ΔNFR computation efficiently using sparse
@@ -405,7 +401,7 @@ class SparseTNFRGraph:
 
         return dnfr_values
 
-    def evolve_sparse(self, dt: float = 0.1, steps: int = 10) -> Dict[str, Any]:
+    def evolve_sparse(self, dt: float = 0.1, steps: int = 10) -> dict[str, Any]:
         """Evolve graph using sparse operations.
 
         Applies nodal equation: ∂EPI/∂t = νf · ΔNFR(t)
@@ -419,7 +415,7 @@ class SparseTNFRGraph:
 
         Returns
         -------
-        Dict[str, Any]
+        dict[str, Any]
             Evolution metrics
         """
         for step in range(steps):

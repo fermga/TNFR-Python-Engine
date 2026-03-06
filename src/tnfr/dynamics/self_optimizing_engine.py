@@ -32,7 +32,7 @@ from ..mathematics.unified_numerical import np
 import re
 from pathlib import Path
 from datetime import datetime, timezone
-from typing import Dict, Any, Optional, List, Tuple, Sequence, Mapping
+from typing import Any, Sequence, Mapping
 from dataclasses import dataclass
 from enum import Enum
 import time
@@ -72,7 +72,6 @@ except ImportError:
 
 HAS_SCIPY = True  # Assume available for mathematical analysis
 
-
 def _extract_scalar_epi(val: Any) -> float:
     """Extract scalar magnitude from potentially complex/dict EPI value."""
     if isinstance(val, (int, float)):
@@ -87,7 +86,6 @@ def _extract_scalar_epi(val: Any) -> float:
                 return float(np.abs(v)) if isinstance(v, complex) else float(v)
     return 0.0
 
-
 # Import Unified Fields (New Nov 2025)
 try:
     from ..physics.fields import compute_unified_telemetry
@@ -101,6 +99,18 @@ try:
     HAS_INTEGRITY_MONITOR = True
 except ImportError:
     HAS_INTEGRITY_MONITOR = False
+
+# Import conservation functions for closed-loop optimization (P5)
+try:
+    from ..physics.conservation import (
+        capture_conservation_snapshot,
+        verify_conservation_balance,
+        compute_lyapunov_derivative,
+        detect_grammar_violations_from_conservation,
+    )
+    HAS_CONSERVATION = True
+except ImportError:
+    HAS_CONSERVATION = False
 
 try:
     from ..metrics.common import compute_coherence
@@ -125,8 +135,13 @@ HAS_MATH_BACKENDS = True  # Assume available
 _SAFE_LABEL_RE = re.compile(r"[^A-Za-z0-9._-]+")
 _DEFAULT_OUTPUT_DIR = Path("results") / "self_optimization"
 
+# --- Self-optimization safety thresholds ---
+_MIN_CONSERVATION_QUALITY = 0.7   # below → add stabilizers
+_MAX_CHARGE_DRIFT = 0.1           # above → Noether charge drift correction
+_MAX_VIOLATION_RATE = 0.2         # above → grammar review needed
+_MIN_EPI_VARIANCE = 0.01          # below → variance too low, optimize
 
-def _sanitize_label(value: Optional[Any], default: str) -> str:
+def _sanitize_label(value: Any | None, default: str) -> str:
     """Convert arbitrary identifiers to filesystem-safe labels."""
     if value is None:
         text = default
@@ -137,8 +152,7 @@ def _sanitize_label(value: Optional[Any], default: str) -> str:
     sanitized = _SAFE_LABEL_RE.sub("_", text)
     return sanitized[:64] or default
 
-
-def _mean_numeric(values: Sequence[float]) -> Optional[float]:
+def _mean_numeric(values: Sequence[float]) -> float | None:
     """Compute mean for numeric sequences with graceful fallback."""
     data = [float(v) for v in values if isinstance(v, (int, float))]
     if not data:
@@ -148,8 +162,7 @@ def _mean_numeric(values: Sequence[float]) -> Optional[float]:
     except Exception:
         return float(sum(data) / len(data))
 
-
-def _sense_index_mean(payload: Any) -> Optional[float]:
+def _sense_index_mean(payload: Any) -> float | None:
     """Reduce compute_Si outputs (dict, array) to a scalar average."""
     if payload is None:
         return None
@@ -162,7 +175,6 @@ def _sense_index_mean(payload: Any) -> Optional[float]:
     if array.size == 0:
         return None
     return float(np.mean(array))
-
 
 def _json_safe(value: Any) -> Any:
     """Convert complex objects (NumPy, mappings) to JSON-safe structures."""
@@ -180,10 +192,9 @@ def _json_safe(value: Any) -> Any:
         return {str(k): _json_safe(v) for k, v in vars(value).items()}
     return repr(value)
 
-
-def _canonicalize_sequence_tokens(sequence: Sequence[Any]) -> List[str]:
+def _canonicalize_sequence_tokens(sequence: Sequence[Any]) -> list[str]:
     """Normalize operator or glyph tokens into canonical operator names."""
-    tokens: List[str] = []
+    tokens: list[str] = []
     for entry in sequence:
         if entry is None:
             continue
@@ -196,7 +207,6 @@ def _canonicalize_sequence_tokens(sequence: Sequence[Any]) -> List[str]:
         tokens.append(normalized.lower())
     return tokens
 
-
 class OptimizationObjective(Enum):
     """Self-optimization objectives."""
     MINIMIZE_COMPUTATION_TIME = "minimize_time"
@@ -207,7 +217,6 @@ class OptimizationObjective(Enum):
     MAXIMIZE_THROUGHPUT = "maximize_throughput"
     BALANCE_ALL = "balance_all"
 
-
 class LearningStrategy(Enum):
     """Learning strategies for optimization."""
     GRADIENT_DESCENT = "gradient_descent"
@@ -217,44 +226,41 @@ class LearningStrategy(Enum):
     MATHEMATICAL_ANALYSIS = "mathematical"
     HYBRID = "hybrid"
 
-
 @dataclass
 class OptimizationExperience:
     """Experience record for learning."""
-    graph_properties: Dict[str, Any]
+    graph_properties: dict[str, Any]
     operation_type: str
     strategy_used: str
-    parameters: Dict[str, Any]
-    performance_metrics: Dict[str, float]
+    parameters: dict[str, Any]
+    performance_metrics: dict[str, float]
     timestamp: float
     success: bool
-    mathematical_signature: Optional[Dict[str, Any]] = None
-
+    mathematical_signature: dict[str, Any] | None = None
 
 @dataclass
 class OptimizationPolicy:
     """Learned optimization policy."""
     policy_name: str
     objective: OptimizationObjective
-    conditions: Dict[str, Any]  # When to apply this policy
-    actions: Dict[str, Any]     # What to do
+    conditions: dict[str, Any]  # When to apply this policy
+    actions: dict[str, Any]     # What to do
     confidence: float
     success_rate: float
     average_improvement: float
     applications_count: int = 0
 
-
 @dataclass
 class SelfOptimizationResult:
     """Result of self-optimization analysis."""
-    learned_policies: List[OptimizationPolicy]
-    optimization_improvements: Dict[str, float]
-    recommended_strategies: List[str]
-    mathematical_insights: Dict[str, Any]
-    predicted_speedups: Dict[str, float]
-    adaptive_configurations: Dict[str, Any]
+    learned_policies: list[OptimizationPolicy]
+    optimization_improvements: dict[str, float]
+    recommended_strategies: list[str]
+    mathematical_insights: dict[str, Any]
+    predicted_speedups: dict[str, float]
+    adaptive_configurations: dict[str, Any]
     execution_time: float
-
+    conservation_feedback: dict[str, float] | None = None
 
 class TNFRSelfOptimizingEngine:
     """
@@ -276,8 +282,8 @@ class TNFRSelfOptimizingEngine:
         
         # Learning state
         self.experience_history: deque = deque(maxlen=max_experience_history)
-        self.learned_policies: List[OptimizationPolicy] = []
-        self.mathematical_insights: Dict[str, Any] = {}
+        self.learned_policies: list[OptimizationPolicy] = []
+        self.mathematical_insights: dict[str, Any] = {}
         
         # Performance tracking
         self.optimization_attempts = 0
@@ -310,7 +316,7 @@ class TNFRSelfOptimizingEngine:
         self,
         G: Any,
         operation_type: str = "general"
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Analyze mathematical structure to discover optimization opportunities.
         
@@ -447,16 +453,16 @@ class TNFRSelfOptimizingEngine:
         # Conservation-based recommendations (closed-loop)
         cf = insights.get("conservation_feedback")
         if cf is not None:
-            if cf.get("conservation_quality", 1.0) < 0.7:
+            if cf.get("conservation_quality", 1.0) < _MIN_CONSERVATION_QUALITY:
                 recommendations.append("conservation_quality_low_stabilize")
             if cf.get("energy_derivative", 0.0) > 0:
                 recommendations.append("lyapunov_unstable_add_IL")
-            if cf.get("charge_drift", 0.0) > 0.1:
+            if cf.get("charge_drift", 0.0) > _MAX_CHARGE_DRIFT:
                 recommendations.append("noether_charge_drift_correction")
-            if cf.get("violation_rate", 0.0) > 0.2:
+            if cf.get("violation_rate", 0.0) > _MAX_VIOLATION_RATE:
                 recommendations.append("high_violation_rate_grammar_review")
 
-        if epi_variance < 0.01:
+        if epi_variance < _MIN_EPI_VARIANCE:
             recommendations.append("low_variance_epi_optimization")
         if vf_range < NODAL_OPT_COUPLING_CANONICAL:
             recommendations.append("uniform_vf_optimization")
@@ -576,7 +582,7 @@ class TNFRSelfOptimizingEngine:
             self.learned_policies.sort(key=lambda p: p.confidence * p.average_improvement, reverse=True)
             self.learned_policies = self.learned_policies[:20]
             
-    def _matches_conditions(self, experience: OptimizationExperience, condition_key: Tuple) -> bool:
+    def _matches_conditions(self, experience: OptimizationExperience, condition_key: tuple) -> bool:
         """Check if experience matches condition key."""
         size_bucket, density_bucket, operation = condition_key
         
@@ -637,12 +643,21 @@ class TNFRSelfOptimizingEngine:
                 key=lambda b: np.mean(backend_performance[b]),
             )
             self.adaptive_config["backend_preference"] = best_backend
+
+        # Track conservation health across experiences (P5)
+        conservation_drifts = [
+            e.performance_metrics["conservation_charge_drift"]
+            for e in recent_experiences
+            if "conservation_charge_drift" in e.performance_metrics
+        ]
+        if conservation_drifts:
+            self.adaptive_config["mean_conservation_drift"] = float(np.mean(conservation_drifts))
             
     def recommend_optimization_strategy(
         self,
         G: Any,
         operation_type: str = "general",
-        current_performance: Optional[Dict[str, float]] = None
+        current_performance: dict[str, float] | None = None
     ) -> SelfOptimizationResult:
         """
         Recommend optimization strategy based on mathematical analysis and learning.
@@ -691,6 +706,23 @@ class TNFRSelfOptimizingEngine:
         # Remove duplicates while preserving order
         recommended_strategies = list(dict.fromkeys(recommended_strategies))
         
+        # Conservation-aware strategy reordering (P5: closed-loop)
+        # When conservation is stressed, prefer safe computational strategies
+        # to avoid aggressive optimizations that may degrade structural integrity.
+        cf = mathematical_insights.get("conservation_feedback")
+        if cf is not None:
+            cq = cf.get("conservation_quality", 1.0)
+            de_dt = cf.get("energy_derivative", 0.0)
+            if cq < _MIN_CONSERVATION_QUALITY or de_dt > 0:
+                safe = []
+                other = []
+                for s in recommended_strategies:
+                    if any(kw in s.lower() for kw in ("cache", "structural", "stabiliz", "memo")):
+                        safe.append(s)
+                    else:
+                        other.append(s)
+                recommended_strategies = safe + other
+
         # Calculate optimization improvements
         optimization_improvements = {}
         if current_performance:
@@ -706,7 +738,8 @@ class TNFRSelfOptimizingEngine:
             mathematical_insights=mathematical_insights,
             predicted_speedups=predicted_speedups,
             adaptive_configurations=dict(self.adaptive_config),
-            execution_time=execution_time
+            execution_time=execution_time,
+            conservation_feedback=cf,
         )
         
     def optimize_automatically(
@@ -714,7 +747,7 @@ class TNFRSelfOptimizingEngine:
         G: Any,
         operation_type: str = "general",
         **kwargs
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Automatically apply best optimization strategy.
         
@@ -797,7 +830,15 @@ class TNFRSelfOptimizingEngine:
                 if name_part in best_strategy.lower():
                     optimization_strategy = strategy
                     break
-                    
+
+            # Conservation pre-check (P5: capture baseline conserved quantities)
+            conservation_before = None
+            if HAS_CONSERVATION and G is not None:
+                try:
+                    conservation_before = capture_conservation_snapshot(G)
+                except Exception:
+                    conservation_before = None
+
             # Execute optimization
             try:
                 profile = self.orchestrator.analyze_optimization_profile(G, operation_type)
@@ -805,7 +846,43 @@ class TNFRSelfOptimizingEngine:
                     G, operation_type, optimization_strategy, **exec_kwargs
                 )
                 
-                # Record experience
+                # Conservation post-check (P5: verify conservation balance)
+                conservation_result = None
+                conservation_healthy = True
+                if conservation_before is not None and HAS_CONSERVATION and G is not None:
+                    try:
+                        conservation_after = capture_conservation_snapshot(G)
+                        balance = verify_conservation_balance(
+                            conservation_before, conservation_after
+                        )
+                        lyapunov = compute_lyapunov_derivative(
+                            conservation_before, conservation_after
+                        )
+                        violations = detect_grammar_violations_from_conservation(balance)
+                        conservation_result = {
+                            "charge_drift": balance.charge_drift,
+                            "rms_residual": balance.rms_residual,
+                            "lyapunov_stable": lyapunov.is_stable,
+                            "energy_derivative": lyapunov.energy_derivative,
+                            "violations_detected": violations["violations_detected"],
+                            "violation_types": violations.get("violation_types", []),
+                        }
+                        conservation_healthy = not violations["violations_detected"]
+                    except Exception:
+                        pass
+
+                # Record experience (P5: includes conservation metrics)
+                perf_metrics: dict[str, float] = {
+                    "speedup_factor": result.speedup_factor,
+                    "execution_time": result.execution_time,
+                    "memory_used_mb": result.memory_used_mb,
+                    "cache_hits": result.cache_hits,
+                }
+                if conservation_result is not None:
+                    perf_metrics["conservation_charge_drift"] = conservation_result["charge_drift"]
+                    perf_metrics["conservation_energy_derivative"] = conservation_result["energy_derivative"]
+                    perf_metrics["conservation_rms_residual"] = conservation_result["rms_residual"]
+
                 experience = OptimizationExperience(
                     graph_properties={
                         "nodes": len(G.nodes()) if HAS_NETWORKX and G else 0,
@@ -815,14 +892,9 @@ class TNFRSelfOptimizingEngine:
                     operation_type=operation_type,
                     strategy_used=optimization_strategy.value,
                     parameters=exec_kwargs,
-                    performance_metrics={
-                        "speedup_factor": result.speedup_factor,
-                        "execution_time": result.execution_time,
-                        "memory_used_mb": result.memory_used_mb,
-                        "cache_hits": result.cache_hits
-                    },
+                    performance_metrics=perf_metrics,
                     timestamp=time.time(),
-                    success=result.accuracy_preserved,
+                    success=result.accuracy_preserved and conservation_healthy,
                     mathematical_signature=recommendations.mathematical_insights
                 )
                 
@@ -833,6 +905,7 @@ class TNFRSelfOptimizingEngine:
                     "strategy_used": optimization_strategy.value,
                     "recommendations": recommendations,
                     "learning_updated": True,
+                    "conservation": conservation_result,
                     "telemetry_snapshots": {
                         "before": baseline_snapshot,
                         "after": after_snapshot,
@@ -861,7 +934,7 @@ class TNFRSelfOptimizingEngine:
                 "validation": validation_report,
             }
             
-    def export_learned_knowledge(self) -> Dict[str, Any]:
+    def export_learned_knowledge(self) -> dict[str, Any]:
         """Export learned optimization knowledge."""
         return {
             "learned_policies": [
@@ -887,7 +960,7 @@ class TNFRSelfOptimizingEngine:
             "mathematical_insights": dict(self.mathematical_insights)
         }
         
-    def import_learned_knowledge(self, knowledge: Dict[str, Any]) -> None:
+    def import_learned_knowledge(self, knowledge: dict[str, Any]) -> None:
         """Import previously learned optimization knowledge."""
         with self._lock:
             # Import policies
@@ -915,7 +988,7 @@ class TNFRSelfOptimizingEngine:
             if "mathematical_insights" in knowledge:
                 self.mathematical_insights.update(knowledge["mathematical_insights"])
 
-    def _capture_structural_snapshot(self, G: Any) -> Optional[Dict[str, Any]]:
+    def _capture_structural_snapshot(self, G: Any) -> dict[str, Any] | None:
         """Capture graph metrics and unified telemetry for reporting."""
         timestamp = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
         if G is None or not HAS_NETWORKX:
@@ -940,8 +1013,8 @@ class TNFRSelfOptimizingEngine:
                 snapshot["telemetry_error"] = str(exc)
 
         if HAS_METRIC_OPERATORS and G is not None and HAS_NETWORKX:
-            coherence_value: Optional[float] = None
-            sense_value: Optional[float] = None
+            coherence_value: float | None = None
+            sense_value: float | None = None
             try:
                 coherence_value = float(compute_coherence(G)) if compute_coherence else None
             except Exception:
@@ -962,11 +1035,11 @@ class TNFRSelfOptimizingEngine:
         self,
         operator_sequence: Any,
         glyph_sequence: Any,
-        context: Optional[Dict[str, Any]],
+        context: dict[str, Any] | None,
         *,
         G: Any = None,
         node: Any = None,
-    ) -> Optional[Dict[str, Any]]:
+    ) -> dict[str, Any] | None:
         """Validate operator/glyph sequences when provided.
 
         Performs two layers of validation:
@@ -1004,7 +1077,7 @@ class TNFRSelfOptimizingEngine:
             )
 
         # Incremental per-node validation (proactive, GAP #4)
-        incremental_report: Optional[List[Dict[str, Any]]] = None
+        incremental_report: list[dict[str, Any]] | None = None
         if G is not None and node is not None and node in G.nodes:
             try:
                 from ..operators.grammar_dynamics import validate_sequence_incremental
@@ -1028,7 +1101,7 @@ class TNFRSelfOptimizingEngine:
             except Exception:
                 pass  # incremental validation is advisory, never blocks
 
-        report: Dict[str, Any] = {
+        report: dict[str, Any] = {
             "passed": True,
             "message": outcome.message,
             "summary": summary,
@@ -1039,7 +1112,7 @@ class TNFRSelfOptimizingEngine:
             report["incremental_violations"] = incremental_report
         return report
 
-    def _serialize_recommendations(self, recommendations: SelfOptimizationResult) -> Dict[str, Any]:
+    def _serialize_recommendations(self, recommendations: SelfOptimizationResult) -> dict[str, Any]:
         """Convert recommendation dataclass into JSON-serializable payload."""
         return {
             "recommended_strategies": list(recommendations.recommended_strategies),
@@ -1066,12 +1139,12 @@ class TNFRSelfOptimizingEngine:
     def _build_dry_run_payload(
         self,
         recommendations: SelfOptimizationResult,
-        baseline_snapshot: Optional[Dict[str, Any]],
-        validation_report: Optional[Dict[str, Any]],
+        baseline_snapshot: dict[str, Any] | None,
+        validation_report: dict[str, Any] | None,
         operation_type: str,
         seed_value: Any,
         node_label: Any,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Assemble payload for dry-run persistence."""
         timestamp = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
         seed_label = _sanitize_label(seed_value, "unseeded")
@@ -1105,11 +1178,11 @@ class TNFRSelfOptimizingEngine:
 
     def _persist_dry_run_payload(
         self,
-        payload: Dict[str, Any],
+        payload: dict[str, Any],
         output_dir: Any,
         safe_seed: str,
         safe_node: str,
-    ) -> Tuple[Path, str]:
+    ) -> tuple[Path, str]:
         """Write payload to disk and emit SHA-256 signature."""
         base_dir = Path(output_dir)
         target_dir = base_dir / safe_seed
@@ -1122,18 +1195,16 @@ class TNFRSelfOptimizingEngine:
         signature_path.write_text(f"{signature}  {file_path.name}\n", encoding="utf-8")
         return file_path, signature
 
-
 # Factory functions
 def create_self_optimizing_engine(**kwargs) -> TNFRSelfOptimizingEngine:
     """Create self-optimizing engine."""
     return TNFRSelfOptimizingEngine(**kwargs)
 
-
 def auto_optimize_tnfr_computation(
     G: Any, 
     operation_type: str = "general", 
     **kwargs
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Convenience function for automatic optimization."""
     engine = create_self_optimizing_engine()
     return engine.optimize_automatically(G, operation_type, **kwargs)

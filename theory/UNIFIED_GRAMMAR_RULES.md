@@ -1206,6 +1206,35 @@ The canonical TNFR grammar consists of **exactly six rules (U1-U6)**. Extended d
    - U5 (Multi-scale): Stabilization where field stresses amplify across scales
 3. **Flux fields = telemetry**: Add measurements, not prescriptive constraints
 
+---
+
+## Implementation & Examples
+
+### SDK Entry Points
+
+```python
+from tnfr.sdk import TNFR
+
+# Grammar-aware evolution enforces U1-U6 proactively
+net = TNFR.create(15).random(0.3).evolve_grammar_aware(steps=10)
+```
+
+### Executable Demonstrations
+
+| Example | Concept from this document |
+|---------|---------------------------|
+| [04_operator_sequences.py](../examples/04_operator_sequences.py) | U1–U6 validation: valid vs invalid sequences |
+| [07_phase_transitions.py](../examples/07_phase_transitions.py) | Bifurcation dynamics (U4), critical thresholds |
+
+### Key Source Modules
+
+- `src/tnfr/operators/grammar.py` — U1-U6 validation (public API facade)
+- `src/tnfr/operators/grammar_validate.py` — Main validation entry point
+- `src/tnfr/operators/grammar_dynamics.py` — Incremental grammar-aware operator selection
+- `src/tnfr/operators/grammar_application.py` — Pre-validated operator application
+- `src/tnfr/operators/grammar_core.py` — Core validator (U1-U4 rule logic)
+- `src/tnfr/operators/grammar_u6.py` — U6 Structural Potential Confinement
+
 **Structural Field Hexad** (measurements, NOT grammar rules):
 - **Tetrad** (read-only telemetry under U6): Φ_s, |∇φ|, K_φ, ξ_C
 - **Flux Pair** (dynamics variables): J_φ, ∇·J_ΔNFR

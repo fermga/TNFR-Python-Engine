@@ -91,7 +91,6 @@ __all__ = [
     "compute_global_phase_coherence",
 ]
 
-
 def compute_phase_alignment(G: TNFRGraph, node: Any, radius: int = 1) -> float:
     """Compute phase alignment quality for node and neighborhood.
 
@@ -225,7 +224,6 @@ def compute_phase_alignment(G: TNFRGraph, node: Any, radius: int = 1) -> float:
         # Kuramoto order parameter is magnitude of mean phasor
         r = abs(mean_complex)
         return float(r)
-
 
 def compute_global_phase_coherence(G: TNFRGraph) -> float:
     """Compute global phase coherence across entire network.

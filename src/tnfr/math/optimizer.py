@@ -18,7 +18,7 @@ Possible algorithms:
 - Greedy Best-First Search
 """
 
-from typing import List, Callable, Tuple
+from typing import Callable
 
 from ..types import Glyph
 from .grammar_validators import (
@@ -26,12 +26,11 @@ from .grammar_validators import (
     verify_bifurcation_risk_for_sequence,
 )
 
-# Type alias for a sequence of Glyphs
-Sequence = List[Glyph]
+# type alias for a sequence of Glyphs
+Sequence = list[Glyph]
 
-# Type alias for an objective function that scores a sequence
+# type alias for an objective function that scores a sequence
 ObjectiveFunction = Callable[[Sequence], float]
-
 
 def sample_objective_function(sequence: Sequence) -> float:
     """
@@ -51,13 +50,12 @@ def sample_objective_function(sequence: Sequence) -> float:
     score = len(sequence) + len(set(sequence))
     return float(score)
 
-
 def find_optimal_sequence_greedy(
     initial_sequence: Sequence,
-    possible_glyphs: List[Glyph],
+    possible_glyphs: list[Glyph],
     objective_fn: ObjectiveFunction,
     max_iterations: int = 100
-) -> Tuple[Sequence, float]:
+) -> tuple[Sequence, float]:
     """
     Finds an optimal sequence using a simple greedy best-first search.
 

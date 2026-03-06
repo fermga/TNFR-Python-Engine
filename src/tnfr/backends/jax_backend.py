@@ -28,7 +28,6 @@ from typing import Any, MutableMapping
 from . import TNFRBackend
 from ..types import TNFRGraph
 
-
 class JAXBackend(TNFRBackend):
     """JIT-compiled JAX implementation of TNFR kernels (Experimental).
 
@@ -111,7 +110,7 @@ class JAXBackend(TNFRBackend):
         n_jobs : int or None, optional
             Ignored (JAX uses vectorization instead of multiprocessing)
         profile : MutableMapping[str, float] or None, optional
-            Dict to collect timing metrics
+            dict to collect timing metrics
         """
         # JAX implementation planned for v2.0 - high-performance JIT compilation
         # Currently delegates to NumPy backend for compatibility
@@ -152,7 +151,7 @@ class JAXBackend(TNFRBackend):
         chunk_size : int or None, optional
             Chunk size hint (currently passed to NumPy backend)
         profile : MutableMapping[str, Any] or None, optional
-            Dict to collect timing metrics
+            dict to collect timing metrics
 
         Returns
         -------

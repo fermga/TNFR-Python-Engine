@@ -12,7 +12,7 @@ Integration with Extended Canonical Hexad for comprehensive TNFR analysis.
 
 from ..mathematics.unified_numerical import np
 import networkx as nx
-from typing import Dict, Any
+from typing import Any
 
 # Import vectorized operations
 try:
@@ -37,9 +37,8 @@ STANDARD_SPECTRAL_METRICS = [
     'spectral_kurtosis'         # Hypothesis O: Structural Obstruction
 ]
 
-
 def compute_vf_variance(G: nx.Graph, vf_attr: str = 'νf', 
-                       radius: int = 1) -> Dict[Any, float]:
+                       radius: int = 1) -> dict[Any, float]:
     """
     Compute νf Variance (Second Moment) - STANDARD SPECTRAL metric.
     
@@ -55,7 +54,7 @@ def compute_vf_variance(G: nx.Graph, vf_attr: str = 'νf',
         radius: Neighborhood radius for variance computation
     
     Returns:
-        Dict mapping node_id -> vf_variance_value (float)
+        dict mapping node_id -> vf_variance_value (float)
     
     Physics:
         νf_var(i) = Var[νf_j : j ∈ N_r(i)]
@@ -110,7 +109,6 @@ def compute_vf_variance(G: nx.Graph, vf_attr: str = 'νf',
     
     return variance
 
-
 def compute_spectral_kurtosis(G: nx.Graph, normalized: bool = True) -> float:
     """
     Compute Spectral Kurtosis (4th Moment) - Hypothesis O Metric.
@@ -148,7 +146,7 @@ def compute_spectral_kurtosis(G: nx.Graph, normalized: bool = True) -> float:
     except Exception:
         return 0.0
 
-def compute_standard_spectral_suite(G: nx.Graph, **kwargs) -> Dict[str, Any]:
+def compute_standard_spectral_suite(G: nx.Graph, **kwargs) -> dict[str, Any]:
     """
     Compute standard spectral metrics suite.
     
@@ -169,7 +167,6 @@ def compute_standard_spectral_suite(G: nx.Graph, **kwargs) -> Dict[str, Any]:
     results['spectral_kurtosis'] = compute_spectral_kurtosis(G)
     
     return results
-
 
 # Promotion metadata
 SPECTRAL_PROMOTION_METADATA = {

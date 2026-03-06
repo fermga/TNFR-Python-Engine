@@ -9,7 +9,7 @@ and respect TNFR structural semantics.
 
 * :mod:`tnfr.utils.numeric` - Compensated arithmetic, angle operations, clamping
 * :mod:`tnfr.utils.cache` - Cache layers, versioning, graph-level caching
-* :mod:`tnfr.utils.data` - Type conversion, weight normalization, collections
+* :mod:`tnfr.utils.data` - type conversion, weight normalization, collections
 * :mod:`tnfr.utils.io` - JSON/YAML/TOML parsing, atomic file operations
 * :mod:`tnfr.utils.graph` - Graph metadata access, ΔNFR prep management
 * :mod:`tnfr.utils.chunks` - Chunk size computation for parallel operations
@@ -278,12 +278,10 @@ _DYNAMIC_EXPORT_TYPES: Final[dict[str, type[object]]] = {
 }
 _DYNAMIC_EXPORTS: Final[frozenset[str]] = frozenset(_DYNAMIC_EXPORT_TYPES)
 
-
 def __getattr__(name: str) -> Any:  # pragma: no cover - trivial delegation
     if name in _DYNAMIC_EXPORTS:
         return getattr(_init, name)
     raise AttributeError(name)
-
 
 def __dir__() -> list[str]:  # pragma: no cover - trivial delegation
     return sorted(set(globals()) | set(_DYNAMIC_EXPORTS))

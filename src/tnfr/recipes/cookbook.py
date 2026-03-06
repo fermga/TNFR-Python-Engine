@@ -17,18 +17,16 @@ Examples
 
 from __future__ import annotations
 
-from typing import List, Dict, Optional, Any
+from typing import Any
 from ..compat.dataclass import dataclass
 from ..operators.health_analyzer import SequenceHealthMetrics, SequenceHealthAnalyzer
 from ..operators.grammar import validate_sequence_with_health
-
 
 __all__ = [
     "CookbookRecipe",
     "RecipeVariation",
     "TNFRCookbook",
 ]
-
 
 @dataclass
 class RecipeVariation:
@@ -40,7 +38,7 @@ class RecipeVariation:
         Name of the variation
     description : str
         What changes in this variation
-    sequence : List[str]
+    sequence : list[str]
         Modified operator sequence
     health_impact : float
         Expected change in health score (positive or negative)
@@ -50,10 +48,9 @@ class RecipeVariation:
 
     name: str
     description: str
-    sequence: List[str]
+    sequence: list[str]
     health_impact: float
     context: str
-
 
 @dataclass
 class CookbookRecipe:
@@ -65,19 +62,19 @@ class CookbookRecipe:
         Recipe name (e.g., "Crisis Intervention")
     domain : str
         Application domain (therapeutic, educational, organizational, creative)
-    sequence : List[str]
+    sequence : list[str]
         Validated operator sequence
     health_metrics : SequenceHealthMetrics
         Computed health metrics for the sequence
-    use_cases : List[str]
+    use_cases : list[str]
         Specific real-world applications
     when_to_use : str
         Context description for applying this pattern
-    structural_flow : List[str]
+    structural_flow : list[str]
         Operator-by-operator explanation of structural effects
-    key_insights : List[str]
+    key_insights : list[str]
         Critical success factors and mechanisms
-    variations : List[RecipeVariation]
+    variations : list[RecipeVariation]
         Adaptations for related contexts
     pattern_type : str
         Detected TNFR pattern type
@@ -85,15 +82,14 @@ class CookbookRecipe:
 
     name: str
     domain: str
-    sequence: List[str]
+    sequence: list[str]
     health_metrics: SequenceHealthMetrics
-    use_cases: List[str]
+    use_cases: list[str]
     when_to_use: str
-    structural_flow: List[str]
-    key_insights: List[str]
-    variations: List[RecipeVariation]
+    structural_flow: list[str]
+    key_insights: list[str]
+    variations: list[RecipeVariation]
     pattern_type: str
-
 
 class TNFRCookbook:
     """Library of validated TNFR operator sequence recipes.
@@ -109,7 +105,7 @@ class TNFRCookbook:
     >>> print(f"Health: {recipe.health_metrics.overall_health:.3f}")
     Health: 0.786
 
-    >>> # List all recipes in domain
+    >>> # list all recipes in domain
     >>> therapeutic = cookbook.list_recipes(domain="therapeutic")
     >>> len(therapeutic)
     5
@@ -122,7 +118,7 @@ class TNFRCookbook:
 
     def __init__(self) -> None:
         """Initialize the cookbook with all validated recipes."""
-        self._recipes: Dict[str, Dict[str, CookbookRecipe]] = {}
+        self._recipes: dict[str, dict[str, CookbookRecipe]] = {}
         self._analyzer = SequenceHealthAnalyzer()
         self._load_recipes()
 
@@ -413,7 +409,7 @@ class TNFRCookbook:
             ],
         )
 
-    def _load_domain_recipes(self, domain: str, module: Any, recipe_specs: List[tuple]) -> None:
+    def _load_domain_recipes(self, domain: str, module: Any, recipe_specs: list[tuple]) -> None:
         """Load recipes for a specific domain.
 
         Parameters
@@ -422,8 +418,8 @@ class TNFRCookbook:
             Domain name (therapeutic, educational, organizational, creative)
         module : module
             Python module containing pattern functions
-        recipe_specs : List[tuple]
-            List of (function_suffix, display_name, use_cases, when_to_use) tuples
+        recipe_specs : list[tuple]
+            list of (function_suffix, display_name, use_cases, when_to_use) tuples
         """
         if domain not in self._recipes:
             self._recipes[domain] = {}
@@ -500,12 +496,12 @@ class TNFRCookbook:
 
     def list_recipes(
         self,
-        domain: Optional[str] = None,
+        domain: str | None = None,
         min_health: float = 0.0,
-        max_length: Optional[int] = None,
-        pattern_type: Optional[str] = None,
-    ) -> List[CookbookRecipe]:
-        """List recipes with optional filtering.
+        max_length: int | None = None,
+        pattern_type: str | None = None,
+    ) -> list[CookbookRecipe]:
+        """list recipes with optional filtering.
 
         Parameters
         ----------
@@ -520,7 +516,7 @@ class TNFRCookbook:
 
         Returns
         -------
-        List[CookbookRecipe]
+        list[CookbookRecipe]
             Filtered list of recipes
 
         Examples
@@ -557,7 +553,7 @@ class TNFRCookbook:
 
         return results
 
-    def search_recipes(self, query: str) -> List[CookbookRecipe]:
+    def search_recipes(self, query: str) -> list[CookbookRecipe]:
         """Search recipes by text query across names, use cases, and context.
 
         Parameters
@@ -567,7 +563,7 @@ class TNFRCookbook:
 
         Returns
         -------
-        List[CookbookRecipe]
+        list[CookbookRecipe]
             Recipes matching the query, sorted by relevance
 
         Examples
@@ -605,8 +601,8 @@ class TNFRCookbook:
     def recommend_recipe(
         self,
         context: str,
-        constraints: Optional[Dict[str, Any]] = None,
-    ) -> Optional[CookbookRecipe]:
+        constraints: dict[str, Any] | None = None,
+    ) -> CookbookRecipe | None:
         """Recommend a recipe based on context description and constraints.
 
         Uses keyword matching and constraint satisfaction to find the best
@@ -616,7 +612,7 @@ class TNFRCookbook:
         ----------
         context : str
             Description of the situation or need
-        constraints : Dict[str, Any], optional
+        constraints : dict[str, Any], optional
             Additional constraints:
             - max_length: int - maximum sequence length
             - min_health: float - minimum health score
@@ -685,17 +681,17 @@ class TNFRCookbook:
         scored_candidates.sort(key=lambda x: x[1], reverse=True)
         return scored_candidates[0][0]
 
-    def get_all_domains(self) -> List[str]:
+    def get_all_domains(self) -> list[str]:
         """Get list of all available domains.
 
         Returns
         -------
-        List[str]
-            List of domain names
+        list[str]
+            list of domain names
         """
         return list(self._recipes.keys())
 
-    def get_domain_summary(self, domain: str) -> Dict[str, Any]:
+    def get_domain_summary(self, domain: str) -> dict[str, Any]:
         """Get summary statistics for a domain.
 
         Parameters
@@ -705,7 +701,7 @@ class TNFRCookbook:
 
         Returns
         -------
-        Dict[str, Any]
+        dict[str, Any]
             Summary with recipe count, average health, patterns, etc.
         """
         if domain not in self._recipes:

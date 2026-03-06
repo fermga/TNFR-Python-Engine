@@ -6,9 +6,9 @@ including thresholds, performance settings, and validation levels.
 
 from __future__ import annotations
 
-import math
 from dataclasses import dataclass
 
+from ..constants.canonical import DELTA_PHI_MAX
 from ..errors import TNFRValueError
 from .invariants import InvariantSeverity
 
@@ -17,7 +17,6 @@ __all__ = [
     "validation_config",
     "configure_validation",
 ]
-
 
 @dataclass
 class ValidationConfig:
@@ -31,7 +30,7 @@ class ValidationConfig:
     # Numerical thresholds (can be overridden from graph.graph config)
     epi_range: tuple[float, float] = (0.0, 1.0)
     vf_range: tuple[float, float] = (0.001, 1000.0)  # Hz_str
-    phase_coupling_threshold: float = math.pi / 2
+    phase_coupling_threshold: float = DELTA_PHI_MAX
 
     # Semantic validation
     enable_semantic_validation: bool = True
@@ -41,10 +40,8 @@ class ValidationConfig:
     cache_validation_results: bool = False  # Future optimization
     max_validation_time_ms: float = 1000.0  # Timeout (not implemented yet)
 
-
 # Global configuration
 validation_config = ValidationConfig()
-
 
 def configure_validation(**kwargs: object) -> None:
     """Updates global validation configuration.

@@ -162,7 +162,7 @@ validation calls reuse cached tetrad when graph topology/properties unchanged.
 ### Self-Optimization Pipeline Hand-off
 
 Auto-optimization payloads (Paley partitions, SDK discovery runs, etc.) now have a
-dedicated guide in [`docs/SELF_OPTIMIZATION_PIPELINE.md`](SELF_OPTIMIZATION_PIPELINE.md).
+dedicated guide in [`docs/SELF_OPTIMIZATION_INTEGRATION.md`](SELF_OPTIMIZATION_INTEGRATION.md).
 Use it when reviewing `results/self_optimization/**` directories so validation output,
 test reruns, and dashboard overlays (ΔΦ_s vs ΔC(t)) stay synchronized with the
 structural health process documented here.

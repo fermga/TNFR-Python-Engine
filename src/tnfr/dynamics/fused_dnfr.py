@@ -39,7 +39,6 @@ try:
 except ImportError:
     logger.debug("Numba not available, using pure NumPy implementation")
 
-
 def _compute_canonical_gradients_jit_kernel(
     edge_src,
     edge_dst,
@@ -131,7 +130,6 @@ def _compute_canonical_gradients_jit_kernel(
                 g_topo = deg_mean - count[i]
                 delta_nfr[i] += w_topo * g_topo
 
-
 # Create JIT-compiled version if Numba is available
 if _NUMBA_AVAILABLE:
     try:
@@ -147,7 +145,6 @@ if _NUMBA_AVAILABLE:
         _compute_canonical_gradients_jit = _compute_canonical_gradients_jit_kernel
 else:
     _compute_canonical_gradients_jit = _compute_canonical_gradients_jit_kernel
-
 
 def compute_fused_gradients(
     *,
@@ -200,7 +197,6 @@ def compute_fused_gradients(
         use_jit=use_jit,
     )
 
-
 def compute_fused_gradients_symmetric(
     *,
     edge_src: Any,
@@ -235,7 +231,7 @@ def compute_fused_gradients_symmetric(
     accumulate_both_directions : bool, optional
         If True (default), each edge (u, v) contributes to both u and v.
         If False, each edge (u, v) only contributes to v (dst).
-        Set to False if edge_src/edge_dst already contain both (u,v) and (v,u).
+        set to False if edge_src/edge_dst already contain both (u,v) and (v,u).
     use_jit : bool, default=True
         Whether to use JIT compilation if available
 
@@ -361,7 +357,6 @@ def compute_fused_gradients_symmetric(
 
     return delta_nfr
 
-
 def apply_vf_scaling(
     *,
     delta_nfr: Any,
@@ -398,7 +393,6 @@ def apply_vf_scaling(
     array([0.5, 2. , 4.5])
     """
     np.multiply(delta_nfr, vf, out=delta_nfr)
-
 
 __all__ = [
     "compute_fused_gradients",

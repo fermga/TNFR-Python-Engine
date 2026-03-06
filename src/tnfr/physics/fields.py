@@ -59,7 +59,7 @@ from __future__ import annotations
 
 import math
 import time
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
 from ..mathematics.unified_numerical import np
 
@@ -70,6 +70,11 @@ except ImportError:
 
 # Import config defaults for field constants
 from ..config import defaults_core as defaults
+
+# ---------------------------------------------------------------------------
+# Universality classification tolerance
+# ---------------------------------------------------------------------------
+_ISING_2D_EXPONENT_TOLERANCE = 0.15
 
 # ============================================================================
 # PUBLIC API: Import all canonical and extended canonical fields
@@ -99,9 +104,7 @@ from .extended import (
 # Unified field functions are defined in this module below
 
 # Import TNFR cache system for research functions
-from ..mathematics.unified_cache import cache_tnfr_computation, CacheLevel
 _CACHE_AVAILABLE = True
-
 
 # Import TNFR aliases
 try:
@@ -132,7 +135,7 @@ __all__ = [
     "compute_dnfr_flux",
     "compute_extended_canonical_suite",
     # Unified Field Framework (NEWLY INTEGRATED Nov 28, 2025)
-    "compute_complex_geometric_field",
+    "compute_complex_geometric_field_arrays",
     "compute_emergent_fields",
     "compute_tensor_invariants",
     "compute_unified_telemetry",
@@ -150,7 +153,6 @@ __all__ = [
     "measure_phase_symmetry",
 ]
 
-
 # ============================================================================
 # RESEARCH-PHASE UTILITIES (Not in modular implementations)
 # ============================================================================
@@ -158,7 +160,6 @@ __all__ = [
 # Centralised helpers — single source of truth in _helpers.py
 from ._helpers import get_phase as _get_phase            # noqa: E402
 from ._helpers import wrap_angle as _wrap_angle          # noqa: E402
-
 
 def path_integrated_gradient(
     G: Any, source: Any, target: Any
@@ -220,7 +221,6 @@ def path_integrated_gradient(
 
     return float(total)
 
-
 def measure_phase_symmetry(G: Any) -> float:
     """Compute a phase symmetry metric in [0, 1].
 
@@ -246,7 +246,7 @@ def measure_phase_symmetry(G: Any) -> float:
     - Provides backward compatibility for benchmarks expecting this symbol.
     - Invariant #5 respected (phase verification external to this metric).
     """
-    phases: List[float] = []
+    phases: list[float] = []
     # Collect phases from node attributes using alias list
     for node, data in G.nodes(data=True):  # type: ignore[attr-defined]
         for alias in ALIAS_THETA:
@@ -266,8 +266,7 @@ def measure_phase_symmetry(G: Any) -> float:
     diffs = np.abs(np.sin(arr - mean_angle))
     return float(1.0 - min(1.0, float(np.mean(diffs))))
 
-
-def compute_phase_winding(G: Any, cycle_nodes: List[Any]) -> int:
+def compute_phase_winding(G: Any, cycle_nodes: list[Any]) -> int:
     """Compute winding number (topological charge) for a closed cycle.
 
     **Status**: RESEARCH (topological analysis support)
@@ -317,8 +316,7 @@ def compute_phase_winding(G: Any, cycle_nodes: List[Any]) -> int:
     q = int(round(total / (2.0 * math.pi)))
     return q
 
-
-def _ego_mean(values: Dict[Any, float], nodes: list) -> float:
+def _ego_mean(values: dict[Any, float], nodes: list) -> float:
     """Mean of values restricted to given nodes; returns 0.0 if empty."""
     if not nodes:
         return 0.0
@@ -327,13 +325,12 @@ def _ego_mean(values: Dict[Any, float], nodes: list) -> float:
         return 0.0
     return float(sum(arr) / len(arr))
 
-
 def compute_k_phi_multiscale_variance(
     G: Any,
     *,
     scales: tuple = (1, 2, 3, 5),
-    k_phi_field: Optional[Dict[Any, float]] = None,
-) -> Dict[int, float]:
+    k_phi_field: dict[Any, float] | None = None,
+) -> dict[int, float]:
     """Compute variance of coarse-grained K_φ across scales [RESEARCH].
 
     Definition (coarse-graining by r-hop ego neighborhoods):
@@ -346,13 +343,13 @@ def compute_k_phi_multiscale_variance(
         NetworkX-like graph with phase attributes accessible via aliases.
     scales : tuple[int, ...]
         Radii (in hops) at which to compute coarse-grained variance.
-    k_phi_field : Optional[Dict]
+    k_phi_field : dict | None
         Precomputed K_φ per node. If None, computed via
         compute_phase_curvature.
 
     Returns
     -------
-    Dict[int, float]
+    dict[int, float]
         Mapping from radius r to variance of coarse-grained K_φ at scale.
 
     Notes
@@ -390,10 +387,9 @@ def compute_k_phi_multiscale_variance(
 
     return variance_by_scale
 
-
 def fit_k_phi_asymptotic_alpha(
-    variance_by_scale: Dict[int, float], alpha_hint: float = defaults.K_PHI_ASYMPTOTIC_ALPHA
-) -> Dict[str, Any]:
+    variance_by_scale: dict[int, float], alpha_hint: float = defaults.K_PHI_ASYMPTOTIC_ALPHA
+) -> dict[str, Any]:
     """Fit power-law exponent α for multiscale K_φ variance decay.
 
     **Status**: RESEARCH (multiscale analysis support)
@@ -407,14 +403,14 @@ def fit_k_phi_asymptotic_alpha(
 
     Parameters
     ----------
-    variance_by_scale : Dict[int, float]
+    variance_by_scale : dict[int, float]
         Mapping from scale r to variance of coarse-grained K_φ
     alpha_hint : float
         Expected value of α for comparison (default from K_PHI_ASYMPTOTIC_ALPHA research)
 
     Returns
     -------
-    Dict[str, Any]
+    dict[str, Any]
         - alpha: Fitted exponent α
         - c: Fitted constant C (pre-factor)
         - r_squared: Goodness of fit
@@ -474,12 +470,11 @@ def fit_k_phi_asymptotic_alpha(
             "prediction_error": 0.0,
         }
 
-
 def k_phi_multiscale_safety(
     G: Any,
     alpha_hint: float = defaults.K_PHI_ASYMPTOTIC_ALPHA,
     fit_min_r2: float = defaults.STATISTICAL_SIGNIFICANCE_THRESHOLD,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Assess multiscale safety of K_φ field [RESEARCH].
 
     **Status**: RESEARCH (safety analysis support)
@@ -490,10 +485,10 @@ def k_phi_multiscale_safety(
 
     Returns
     -------
-    Dict[str, Any]
-        - variance_by_scale: Dict[int, float] - computed variances
-        - fit: Dict - power-law fitting results
-        - violations: List[int] - scales with |K_φ| >= K_PHI_CURVATURE_THRESHOLD
+    dict[str, Any]
+        - variance_by_scale: dict[int, float] - computed variances
+        - fit: dict - power-law fitting results
+        - violations: list[int] - scales with |K_φ| >= K_PHI_CURVATURE_THRESHOLD
         - safe: bool - overall safety status
     """
     # Compute multiscale variance
@@ -527,13 +522,12 @@ def k_phi_multiscale_safety(
         "safe": safe,
     }
 
-
 def fit_correlation_length_exponent(
     intensities: np.ndarray,
     xi_c_values: np.ndarray,
     I_c: float = defaults.CRITICAL_INFORMATION_DENSITY,
     min_distance: float = defaults.MIN_DISTANCE_THRESHOLD,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Fit critical exponent nu from xi_C ~ |I - I_c|^(-nu) [RESEARCH].
 
     **Status**: RESEARCH (critical phenomena analysis support)
@@ -559,7 +553,7 @@ def fit_correlation_length_exponent(
 
     Returns
     -------
-    Dict[str, Any]
+    dict[str, Any]
         - nu_below: Critical exponent for I < I_c
         - nu_above: Critical exponent for I > I_c
         - r_squared_below: Fit quality below I_c
@@ -644,11 +638,10 @@ def fit_correlation_length_exponent(
             results["universality_class"] = "mean-field"
         elif abs(nu_avg - defaults.ISING_3D_EXPONENT) < defaults.EXPONENT_TOLERANCE:
             results["universality_class"] = "ising-3d"
-        elif abs(nu_avg - 1.0) < 0.15:
+        elif abs(nu_avg - 1.0) < _ISING_2D_EXPONENT_TOLERANCE:
             results["universality_class"] = "ising-2d"
 
     return results
-
 
 # ============================================================================
 # UNIFIED FIELD MATHEMATICS (Nov 28, 2025) - CANONICAL INTEGRATION
@@ -680,7 +673,7 @@ def _extract_field_values(field_dict_list, G):
     
     return aligned_arrays
 
-def compute_complex_geometric_field(G: Any) -> Dict[str, Any]:
+def compute_complex_geometric_field_arrays(G: Any) -> dict[str, Any]:
     """Compute unified complex geometric field Ψ = K_φ + i·J_φ (array form).
 
     Delegates to :func:`tnfr.physics.unified.compute_complex_geometric_field`
@@ -688,7 +681,7 @@ def compute_complex_geometric_field(G: Any) -> Dict[str, Any]:
     with an additional K_φ ↔ J_φ correlation measurement.
 
     Returns:
-        Dict with keys: psi_real, psi_imag, psi_magnitude, psi_phase,
+        dict with keys: psi_real, psi_imag, psi_magnitude, psi_phase,
         correlation, num_nodes.
     """
     from .unified import compute_complex_geometric_field as _psi_dict
@@ -722,15 +715,17 @@ def compute_complex_geometric_field(G: Any) -> Dict[str, Any]:
         "num_nodes": num_nodes,
     }
 
+# Backward-compatible alias (prefer compute_complex_geometric_field_arrays)
+compute_complex_geometric_field = compute_complex_geometric_field_arrays
 
-def compute_emergent_fields(G: Any) -> Dict[str, Any]:
+def compute_emergent_fields(G: Any) -> dict[str, Any]:
     """Compute emergent fields χ, 𝒮, 𝒞 (array form).
 
     Delegates to the per-node implementations in
     :mod:`tnfr.physics.unified` and returns aligned numpy arrays.
 
     Returns:
-        Dict with keys: chirality, symmetry_breaking, coherence_coupling,
+        dict with keys: chirality, symmetry_breaking, coherence_coupling,
         num_nodes.
     """
     from .unified import (
@@ -759,8 +754,7 @@ def compute_emergent_fields(G: Any) -> Dict[str, Any]:
         "num_nodes": len(nodes),
     }
 
-
-def compute_tensor_invariants(G: Any) -> Dict[str, Any]:
+def compute_tensor_invariants(G: Any) -> dict[str, Any]:
     """Compute tensor invariants ℰ, 𝒬, ρ (array form).
 
     Delegates to the per-node implementations in
@@ -768,7 +762,7 @@ def compute_tensor_invariants(G: Any) -> Dict[str, Any]:
     returning aligned numpy arrays.
 
     Returns:
-        Dict with keys: energy_density, topological_charge,
+        dict with keys: energy_density, topological_charge,
         conservation_density, conservation_quality, num_nodes.
     """
     from .unified import (
@@ -806,8 +800,7 @@ def compute_tensor_invariants(G: Any) -> Dict[str, Any]:
         "num_nodes": len(nodes),
     }
 
-
-def compute_unified_telemetry(G: Any) -> Dict[str, Any]:
+def compute_unified_telemetry(G: Any) -> dict[str, Any]:
     """Compute complete unified field telemetry suite.
     
     Provides comprehensive telemetry combining:
@@ -821,7 +814,7 @@ def compute_unified_telemetry(G: Any) -> Dict[str, Any]:
         G: TNFR network with complete state data
         
     Returns:
-        Dict containing all unified field metrics for production telemetry
+        dict containing all unified field metrics for production telemetry
         
     Usage:
         telemetry = compute_unified_telemetry(G)
@@ -839,7 +832,7 @@ def compute_unified_telemetry(G: Any) -> Dict[str, Any]:
     extended_suite = compute_extended_canonical_suite(G)
     
     # Unified field computations (delegate to unified.py via array wrappers)
-    complex_field = compute_complex_geometric_field(G)
+    complex_field = compute_complex_geometric_field_arrays(G)
     emergent_fields = compute_emergent_fields(G)
     tensor_invariants = compute_tensor_invariants(G)
 
@@ -866,12 +859,11 @@ def compute_unified_telemetry(G: Any) -> Dict[str, Any]:
         "unified_field_version": "1.0.0",  # Track implementation version
     }
 
-
 # ============================================================================
 # SELF-OPTIMIZING MATHEMATICAL ANALYSIS (NEW - Nov 28, 2025)
 # ============================================================================
 
-def analyze_optimization_potential(G: Any) -> Dict[str, Any]:
+def analyze_optimization_potential(G: Any) -> dict[str, Any]:
     """
     Analyze mathematical optimization potential using unified field analysis.
     
@@ -879,7 +871,7 @@ def analyze_optimization_potential(G: Any) -> Dict[str, Any]:
     to identify optimization opportunities automatically.
     
     Returns:
-        Dict containing:
+        dict containing:
         - field_analysis: Unified field characteristics
         - mathematical_insights: Structural properties for optimization
         - optimization_recommendations: Specific optimization strategies
@@ -946,14 +938,13 @@ def analyze_optimization_potential(G: Any) -> Dict[str, Any]:
         }
     }
 
-
-def recommend_field_optimization_strategy(G: Any, operation_type: str = "unified_telemetry") -> Dict[str, Any]:
+def recommend_field_optimization_strategy(G: Any, operation_type: str = "unified_telemetry") -> dict[str, Any]:
     """
     Recommend optimization strategy based on unified field analysis.
     
     Args:
         G: TNFR network graph
-        operation_type: Type of field operation to optimize
+        operation_type: type of field operation to optimize
         
     Returns:
         Optimization strategy recommendations with mathematical justification
@@ -995,8 +986,7 @@ def recommend_field_optimization_strategy(G: Any, operation_type: str = "unified
         "recommended_strategy": field_specific_strategies[0] if field_specific_strategies else "standard_computation"
     }
 
-
-def auto_optimize_field_computation(G: Any, **kwargs) -> Dict[str, Any]:
+def auto_optimize_field_computation(G: Any, **kwargs) -> dict[str, Any]:
     """
     Automatically optimize field computation using learned strategies.
     
@@ -1073,11 +1063,9 @@ def auto_optimize_field_computation(G: Any, **kwargs) -> Dict[str, Any]:
             "total_time": time.perf_counter() - start_time
         }
 
-
 # Import extended canonical fields (NEWLY PROMOTED Nov 12, 2025)
 # as fallback for development/testing environments
 # Redundant import block removed (extended canonical already imported)
-
 
 # End of physics field computations.
 #

@@ -30,6 +30,16 @@ All notable changes to this project will be documented in this file.
 - **grammar_application.py**: Pre-validation in `apply_glyph_with_grammar()` for grammar enforcement before operator application
 - **selectors.py**: `_soft_grammar_prefilter()` wired with grammar_dynamics for operator filtering
 
+### Simple SDK — Research-Grade Access
+
+- **simple.py**: Upgraded with full Structural Field Tetrad, conservation laws, and unified telemetry access
+- **TetradSnapshot** dataclass: phi_s, grad_phi, k_phi, xi_c, j_phi, j_dnfr with `is_safe()` and `summary()`
+- **ConservationReport** dataclass: noether_charge, energy, lyapunov_stable, lyapunov_derivative, conservation_quality with `summary()`
+- **10 new Network methods**: `tetrad()`, `fields()`, `conservation()`, `telemetry()`, `tensor_invariants()`, `emergent_fields()`, `evolve_grammar_aware()`, `integrity_check()`, upgraded `results()` and `info()`
+- **TNFR.analyze()**: One-shot comprehensive analysis (coherence, tetrad, conservation, tensor invariants, emergent fields, integrity)
+- Feature-gated imports: `_HAS_FIELDS`, `_HAS_CONSERVATION`, `_HAS_INTEGRITY`, `_HAS_GRAMMAR_DYNAMICS`
+- 29 new tests in `tests/sdk/test_simple_advanced.py`
+
 ### Shared Test Infrastructure
 
 - **tests/conftest.py**: Centralized test fixtures (`make_ring_graph`, `make_node_data`, `ring3`, `ring5`, `small_graph`)
@@ -69,8 +79,8 @@ All notable changes to this project will be documented in this file.
 
 ### Test Suite
 
-- **471 passing tests**, 9 skipped, 0 failing
-- Coverage spans operators, physics, dynamics, grammar, conservation, integrity, and factorization
+- **1,641 passing tests**, 2 skipped, 0 failing
+- Coverage spans operators, physics, dynamics, grammar, conservation, integrity, SDK, and factorization
 
 ## [0.0.2] - 2025-11-29
 

@@ -6,7 +6,6 @@ from typing import Any
 
 from .metrics_core import (
     get_node_attr as _get_node_attr,
-    ALIAS_D2EPI,
     ALIAS_DNFR,
     ALIAS_EPI,
     ALIAS_THETA,
@@ -15,7 +14,6 @@ from .metrics_core import (
     EMISSION_TIMESTAMP_TUPLE as _ALIAS_EMISSION_TIMESTAMP_TUPLE,
 )
 from ..alias import get_attr_str
-
 
 def emission_metrics(G, node, epi_before: float, vf_before: float) -> dict[str, Any]:
     """AL - Emission metrics with structural fidelity indicators.
@@ -110,7 +108,6 @@ def emission_metrics(G, node, epi_before: float, vf_before: float) -> dict[str, 
         "irreversibility_marker": irreversibility_marker,
     }
 
-
 def reception_metrics(G, node, epi_before: float) -> dict[str, Any]:
     """EN - Reception metrics: EPI integration, source tracking, integration efficiency.
 
@@ -201,7 +198,6 @@ def reception_metrics(G, node, epi_before: float) -> dict[str, Any]:
         "stabilization_effective": stabilization_effective,
     }
 
-
 def coherence_metrics(G, node, dnfr_before: float) -> dict[str, Any]:
     """IL - Coherence metrics: ΔC(t), stability gain, ΔNFR reduction, phase alignment.
 
@@ -276,7 +272,6 @@ def coherence_metrics(G, node, dnfr_before: float) -> dict[str, Any]:
         "is_stabilized": abs(dnfr_after) < 0.1,  # Configurable threshold
     }
 
-
 def dissonance_metrics(G, node, dnfr_before, theta_before):
     """OZ - Comprehensive dissonance and bifurcation metrics.
 
@@ -313,7 +308,7 @@ def dissonance_metrics(G, node, dnfr_before, theta_before):
 
         - bifurcation_score: Quantitative potential [0,1]
         - bifurcation_active: Boolean threshold indicator (score > 0.5)
-        - viable_paths: List of viable operator glyph values
+        - viable_paths: list of viable operator glyph values
         - viable_path_count: Number of viable paths
         - mutation_readiness: Boolean indicator for ZHIR viability
 
@@ -429,7 +424,7 @@ def dissonance_metrics(G, node, dnfr_before, theta_before):
     asymmetry_delta = asymmetry_after  # Simplified: assume OZ caused current asymmetry
 
     # 4. Analyze viable post-OZ paths
-    # Set bifurcation_ready flag if score exceeds threshold
+    # set bifurcation_ready flag if score exceeds threshold
     if bifurcation_score > 0.5:
         G.nodes[node]["_bifurcation_ready"] = True
 
@@ -518,5 +513,4 @@ def dissonance_metrics(G, node, dnfr_before, theta_before):
         **propagation_data,
         **field_data,
     }
-
 

@@ -10,13 +10,12 @@ Terminology (TNFR semantics):
 from __future__ import annotations
 
 from enum import Enum
-from typing import TYPE_CHECKING, Any, List, Mapping, Sequence, Tuple
+from typing import TYPE_CHECKING, Any, Mapping, Sequence
 
 from ..constants.canonical import PHI  # Golden ratio for U6 escape threshold
 
 if TYPE_CHECKING:
     from ..types import NodeId, TNFRGraph, Glyph
-    from .definitions import Operator
 else:
     NodeId = Any
     TNFRGraph = Any
@@ -38,7 +37,8 @@ CLOSURES = frozenset({"silence", "transition", "recursivity", "dissonance"})
 STABILIZERS = frozenset({"coherence", "self_organization", "reception"})
 
 # U2: Destabilizers - Increase |ΔNFR| (positive feedback)
-DESTABILIZERS = frozenset({"dissonance", "mutation", "expansion", "contraction"})
+# Canonical set from AGENTS.md U2: {OZ, ZHIR, VAL} = {dissonance, mutation, expansion}
+DESTABILIZERS = frozenset({"dissonance", "mutation", "expansion"})
 
 # U3: Coupling/Resonance - Require phase verification
 COUPLING_RESONANCE = frozenset({"coupling", "resonance"})
@@ -55,7 +55,6 @@ TRANSFORMERS = frozenset({"mutation", "self_organization"})
 # U5: Multi-Scale Coherence - Recursive generators and scale stabilizers
 RECURSIVE_GENERATORS = frozenset({"recursivity"})
 SCALE_STABILIZERS = frozenset({"coherence", "self_organization"})
-
 
 class StructuralPattern(Enum):
     """Classification of structural patterns in TNFR sequences.
@@ -87,7 +86,6 @@ class StructuralPattern(Enum):
     ADAPTIVE_MUTATION = "adaptive_mutation"
     UNKNOWN = "unknown"
 
-
 # ============================================================================
 # Glyph-Function Name Mappings
 # ============================================================================
@@ -111,7 +109,6 @@ GLYPH_TO_FUNCTION = {
 
 # Reverse mapping from function name to Glyph
 FUNCTION_TO_GLYPH = {v: k for k, v in GLYPH_TO_FUNCTION.items()}
-
 
 def glyph_function_name(
     val: Any,
@@ -164,7 +161,6 @@ def glyph_function_name(
     # Unknown type: cannot map safely
     return default
 
-
 def function_name_to_glyph(
     val: Any,
     *,
@@ -190,41 +186,24 @@ def function_name_to_glyph(
         return val
     return FUNCTION_TO_GLYPH.get(val, default)
 
-
 __all__ = [
-    "GrammarValidator",
-    "GrammarContext",
-    "validate_grammar",
-    # U6 telemetry helpers (non-blocking warnings)
-    "warn_phase_gradient_telemetry",
-    "warn_phase_curvature_telemetry",
-    "warn_coherence_length_telemetry",
-    "validate_structural_potential_confinement",
+    # Validation result types
     "SequenceValidationResult",
     "StructuralPattern",
     # Error classes
     "StructuralGrammarError",
+    "StructuralPotentialConfinementError",
     "RepeatWindowError",
     "MutationPreconditionError",
     "TholClosureError",
     "TransitionCompatibilityError",
     "SequenceSyntaxError",
     "GrammarConfigurationError",
-    "record_grammar_violation",
     # Glyph mappings
     "GLYPH_TO_FUNCTION",
     "FUNCTION_TO_GLYPH",
     "glyph_function_name",
     "function_name_to_glyph",
-    # Grammar application functions
-    "apply_glyph_with_grammar",
-    "on_applied_glyph",
-    "enforce_canonical_grammar",  # Deprecated stub for compatibility
-    # Sequence validation (deprecated stubs for compatibility)
-    "validate_sequence",
-    "validate_sequence_with_health",
-    "SequenceValidationResultWithHealth",
-    "parse_sequence",
     # Operator sets
     "GENERATORS",
     "CLOSURES",
@@ -236,14 +215,11 @@ __all__ = [
     "TRANSFORMERS",
     "RECURSIVE_GENERATORS",
     "SCALE_STABILIZERS",
-    # Added compatibility exports appended later
 ]
-
 
 # ============================================================================
 # Grammar Errors
 # ============================================================================
-
 
 class StructuralGrammarError(RuntimeError):
     """Base class for structural grammar violations.
@@ -320,22 +296,17 @@ class StructuralGrammarError(RuntimeError):
             "context": self.context,
         }
 
-
 class RepeatWindowError(StructuralGrammarError):
     """Error for repeated operator within window."""
-
 
 class MutationPreconditionError(StructuralGrammarError):
     """Error for mutation without proper preconditions."""
 
-
 class TholClosureError(StructuralGrammarError):
     """Error for THOL without proper closure."""
 
-
 class TransitionCompatibilityError(StructuralGrammarError):
     """Error for incompatible transition."""
-
 
 class StructuralPotentialConfinementError(StructuralGrammarError):
     """Error for structural potential drift exceeding escape threshold (U6).
@@ -362,7 +333,6 @@ class StructuralPotentialConfinementError(StructuralGrammarError):
             context={"delta_phi_s": delta_phi_s},
         )
 
-
 class SequenceSyntaxError(ValueError):
     """Error in sequence syntax.
 
@@ -382,8 +352,7 @@ class SequenceSyntaxError(ValueError):
         self.message = message
         super().__init__(f"At index {index}, token '{token}': {message}")
 
-
-class SequenceValidationResult(ValidationOutcome[Tuple[str, ...]]):
+class SequenceValidationResult(ValidationOutcome[tuple[str, ...]]):
     """Validation outcome for operator sequences with rich metadata.
     
     Attributes
@@ -448,7 +417,6 @@ class SequenceValidationResult(ValidationOutcome[Tuple[str, ...]]):
         self.metadata = metadata_map
         self.error = error
 
-
 class GrammarConfigurationError(ValueError):
     """Error in grammar configuration.
 
@@ -474,7 +442,6 @@ class GrammarConfigurationError(ValueError):
         self.details = details or []
         msg = f"Configuration error in {section}: {'; '.join(messages)}"
         super().__init__(msg)
-
 
 def record_grammar_violation(
     G,  # TNFRGraph (runtime fallback)
@@ -504,5 +471,4 @@ def record_grammar_violation(
             "error": error.to_payload(),
         }
     )
-
 

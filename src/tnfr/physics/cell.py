@@ -37,11 +37,10 @@ See also:
 """
 
 from dataclasses import dataclass
-from typing import Optional, Sequence
+from typing import Sequence
 from ..mathematics.unified_numerical import np
 import networkx as nx
 from ..metrics.common import compute_coherence
-
 
 @dataclass
 class CellTelemetry:
@@ -63,7 +62,7 @@ class CellTelemetry:
         H = 1 - σ(ΔNFR_internal)/(|μ(ΔNFR_internal)| + ε).
     membrane_integrity : np.ndarray
         I_compartment(t) ∈ [0, 1]. Compartmentalization quality: I = 1 - leakage_rate.
-    cell_formation_time : Optional[float]
+    cell_formation_time : float | None
         First time t where all cellular criteria satisfied (C_boundary > 0.8,
         ρ_selectivity > 0.6, H_index > 0.5, I_compartment > 0.7), else None.
     """
@@ -73,14 +72,11 @@ class CellTelemetry:
     selectivity_index: np.ndarray
     homeostatic_index: np.ndarray
     membrane_integrity: np.ndarray
-    cell_formation_time: Optional[float] = None
-
+    cell_formation_time: float | None = None
 
 # Core computations
 
 # Centralised helper — single source of truth in _helpers.py
-from ._helpers import safe_div_mask as _safe_div         # noqa: E402
-
 
 def compute_boundary_coherence(
     graph: nx.Graph,
@@ -115,7 +111,6 @@ def compute_boundary_coherence(
         return 0.0
         
     return compute_coherence(boundary_subgraph)
-
 
 def compute_selectivity_index(
     graph: nx.Graph,
@@ -175,7 +170,6 @@ def compute_selectivity_index(
     
     return (internal_coupling - external_coupling) / total_coupling
 
-
 def compute_homeostatic_index(
     delta_nfr_internal: np.ndarray,
     epsilon: float = 1e-6
@@ -219,7 +213,6 @@ def compute_homeostatic_index(
     # Clamp to [0, 1] range to ensure valid homeostatic index
     return max(0.0, min(1.0, raw_index))
 
-
 def compute_membrane_integrity(
     flux_internal: float,
     flux_external: float
@@ -258,7 +251,6 @@ def compute_membrane_integrity(
         
     leakage_rate = abs(flux_external) / total_flux
     return 1.0 - leakage_rate
-
 
 def detect_cell_formation(
     graph_sequence: Sequence[nx.Graph],
@@ -359,7 +351,7 @@ def detect_cell_formation(
         membrane_integrity[t_idx] = min(1.0, selectivity_index[t_idx] + 0.2)  # Heuristic
     
     # Detect cell formation time
-    cell_formation_time: Optional[float] = None
+    cell_formation_time: float | None = None
     
     for t_idx in range(n_timesteps):
         criteria_met = (
@@ -382,7 +374,6 @@ def detect_cell_formation(
         membrane_integrity=membrane_integrity,
         cell_formation_time=cell_formation_time
     )
-
 
 def apply_membrane_flux(
     graph: nx.Graph,
@@ -444,7 +435,6 @@ def apply_membrane_flux(
                 current_epi = graph.nodes[boundary_node].get('EPI', 0.0)
                 new_epi = current_epi + 0.01 * flux  # Small time step
                 graph.nodes[boundary_node]['EPI'] = max(0.0, new_epi)  # Keep positive
-
 
 __all__ = [
     "CellTelemetry",

@@ -10,7 +10,6 @@ from .unified_numerical import np, trapezoid
 
 from .epi import BEPIElement, _EPIValidators
 
-
 @dataclass(frozen=True)
 class HilbertSpace:
     r"""Finite section of :math:`\ell^2(\mathbb{N}) \otimes L^2(\mathbb{R})`.
@@ -107,7 +106,6 @@ class HilbertSpace:
         basis_matrix = self._validate_basis(basis)
         coefficients = basis_matrix.conj() @ vec
         return coefficients.astype(self.dtype, copy=False)
-
 
 class BanachSpaceEPI(_EPIValidators):
     r"""Banach space for :math:`C^0([0, 1],\mathbb{C}) \oplus \ell^2(\mathbb{N})`.

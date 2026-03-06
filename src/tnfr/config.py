@@ -16,7 +16,7 @@ from __future__ import annotations
 
 import os
 from dataclasses import dataclass, field
-from typing import Any, Dict, Literal, Optional
+from typing import Any, Literal
 
 from .constants.canonical import (
     PHASE_GRADIENT_THRESHOLD_CANONICAL,
@@ -36,7 +36,6 @@ BackendType = Literal["auto", "jax", "torch", "numpy"]
 ValidationLevel = Literal["strict", "normal", "minimal", "disabled"]
 GPUMode = Literal["auto", "force", "disabled"]
 
-
 @dataclass
 class TNFRConfig:
     """Unified TNFR configuration following nodal dynamics coherence."""
@@ -49,7 +48,7 @@ class TNFRConfig:
     # GPU Acceleration Settings
     gpu_mode: GPUMode = "auto"
     cuda_enabled: bool = True
-    gpu_memory_pool_size_mb: Optional[int] = None
+    gpu_memory_pool_size_mb: int | None = None
     max_gpu_memory_percent: float = 0.9
     enable_mixed_precision: bool = False
     
@@ -89,11 +88,11 @@ class TNFRConfig:
     profile_operations: bool = False
     
     # Environment Variable Overrides
-    _env_overrides: Dict[str, Any] = field(default_factory=dict)
+    _env_overrides: dict[str, Any] = field(default_factory=dict)
     
     def __post_init__(self) -> None:
         """Apply environment variable overrides following TNFR conventions."""
-        env_mappings: Dict[str, tuple[str, Any]] = {
+        env_mappings: dict[str, tuple[str, Any]] = {
             "TNFR_MATH_BACKEND": ("math_backend", str),
             "TNFR_CUDA_ENABLED": ("cuda_enabled", self._parse_bool),
             "TNFR_GPU_MODE": ("gpu_mode", str),
@@ -124,7 +123,7 @@ class TNFRConfig:
         """Parse boolean from environment string."""
         return value.lower() in ("1", "true", "yes", "on", "enable", "enabled")
     
-    def get_backend_config(self) -> Dict[str, Any]:
+    def get_backend_config(self) -> dict[str, Any]:
         """Get configuration dict for mathematics backend."""
         return {
             "backend": self.math_backend,
@@ -134,7 +133,7 @@ class TNFRConfig:
             "mixed_precision": self.enable_mixed_precision,
         }
     
-    def get_validation_config(self) -> Dict[str, Any]:
+    def get_validation_config(self) -> dict[str, Any]:
         """Get configuration dict for validation system."""
         return {
             "level": self.validation_level,
@@ -145,7 +144,7 @@ class TNFRConfig:
             "strict_grammar": self.grammar_validation_strict,
         }
     
-    def get_structural_config(self) -> Dict[str, Any]:
+    def get_structural_config(self) -> dict[str, Any]:
         """Get structural field thresholds (Universal Tetrahedral Correspondence)."""
         return {
             "phi_s_threshold": self.structural_potential_threshold,
@@ -154,7 +153,7 @@ class TNFRConfig:
             "coherence_length_critical": self.coherence_length_critical,
         }
     
-    def get_integration_config(self) -> Dict[str, Any]:
+    def get_integration_config(self) -> dict[str, Any]:
         """Get nodal equation integration parameters."""
         return {
             "dt": self.default_dt,
@@ -163,10 +162,8 @@ class TNFRConfig:
             "tolerance": self.convergence_tolerance,
         }
 
-
 # Global configuration instance
-_global_config: Optional[TNFRConfig] = None
-
+_global_config: TNFRConfig | None = None
 
 def get_config() -> TNFRConfig:
     """Get global TNFR configuration instance.
@@ -178,7 +175,6 @@ def get_config() -> TNFRConfig:
     if _global_config is None:
         _global_config = TNFRConfig()
     return _global_config
-
 
 def configure(**kwargs: Any) -> None:
     """Update global TNFR configuration.
@@ -206,7 +202,6 @@ def configure(**kwargs: Any) -> None:
                 context={"parameter": key},
                 suggestion="Check available configuration options in TNFRConfig."
             )
-
 
 def reset_config() -> None:
     """Reset global configuration to defaults with fresh environment scan."""

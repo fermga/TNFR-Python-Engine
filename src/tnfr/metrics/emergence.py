@@ -24,7 +24,6 @@ __all__ = [
 # Emergence index calculation constant
 _EMERGENCE_INDEX_EPSILON = 1e-6  # Small value to avoid zero in geometric mean
 
-
 def compute_structural_complexity(G: TNFRGraph, node: NodeId) -> int:
     """Measure structural complexity by counting nested sub-EPIs.
 
@@ -63,7 +62,6 @@ def compute_structural_complexity(G: TNFRGraph, node: NodeId) -> int:
     """
     sub_epis = G.nodes[node].get("sub_epis", [])
     return len(sub_epis)
-
 
 def compute_bifurcation_rate(G: TNFRGraph, node: NodeId, window: int = 10) -> float:
     """Calculate frequency of bifurcations in recent history.
@@ -121,7 +119,6 @@ def compute_bifurcation_rate(G: TNFRGraph, node: NodeId, window: int = 10) -> fl
     recent_bifurcations = [s for s in sub_epis if s.get("timestamp", 0) >= (current_time - window)]
 
     return len(recent_bifurcations) / float(window)
-
 
 def compute_metabolic_efficiency(G: TNFRGraph, node: NodeId) -> float:
     """Calculate EPI gain per T'HOL application (metabolic efficiency).
@@ -184,7 +181,6 @@ def compute_metabolic_efficiency(G: TNFRGraph, node: NodeId) -> float:
     epi_gain = current_epi - initial_epi
 
     return epi_gain / float(thol_count)
-
 
 def compute_emergence_index(G: TNFRGraph, node: NodeId) -> float:
     """Composite metric combining complexity, rate, and efficiency.

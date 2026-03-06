@@ -18,7 +18,7 @@ consistency across all TNFR operations.
 Consolidated Features:
 1. Structural Validation: EPI, νf, φ/θ, ΔNFR parameter validation  
 2. Security Validation: Input sanitization and injection prevention
-3. Type Validation: TNFRGraph, NodeId, Glyph type checking
+3. type Validation: TNFRGraph, NodeId, Glyph type checking
 4. Invariant Enforcement: Canonical constraints (C(t), Si, tetrad bounds)
 5. Range Validation: Proper value bounds for all TNFR parameters
 6. Error Reporting: Unified validation error hierarchy
@@ -36,38 +36,35 @@ from __future__ import annotations
 import math
 import re
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Union, Callable
+from typing import Any, Callable
 import logging
 
 from ..mathematics.unified_numerical import np
 
 # Unified configuration integration
 from ..config import get_config
-from ..errors import TNFRValueError, TNFRSecurityError
+from ..errors import TNFRValueError
+from ..errors.contextual import TNFRSecurityError  # noqa: F401 – re-exported via __init__
 
 logger = logging.getLogger(__name__)
 
-
 class ValidationError(Exception):
     """Base exception for all validation errors."""
-    pass
-
 
 @dataclass
 class ValidationResult:
     """Result of validation operation with detailed feedback."""
     
     is_valid: bool
-    error_messages: List[str]
-    warnings: List[str]
+    error_messages: list[str]
+    warnings: list[str]
     validated_value: Any = None
-    validation_metadata: Dict[str, Any] = None
+    validation_metadata: dict[str, Any] = None
     
     def __post_init__(self):
         """Initialize default values."""
         if self.validation_metadata is None:
             self.validation_metadata = {}
-
 
 @dataclass
 class ValidationConfig:
@@ -92,7 +89,7 @@ class ValidationConfig:
     # Security validation
     enable_security_checks: bool = True
     max_string_length: int = 1000
-    forbidden_patterns: List[str] = None
+    forbidden_patterns: list[str] = None
     
     # Performance settings
     enable_caching: bool = True
@@ -110,11 +107,10 @@ class ValidationConfig:
                 r'`.*`'
             ]
 
-
 class TNFRValidationError(TNFRValueError):
     """Unified validation error for TNFR structural constraints."""
     
-    def __init__(self, message: str, field_name: str = None, validation_context: Dict[str, Any] = None, suggestion: str = None):
+    def __init__(self, message: str, field_name: str = None, validation_context: dict[str, Any] = None, suggestion: str = None):
         context = validation_context or {}
         if field_name:
             context["field"] = field_name
@@ -127,7 +123,6 @@ class TNFRValidationError(TNFRValueError):
         self.field_name = field_name
         self.validation_context = context
 
-
 class TNFRUnifiedValidationSystem:
     """Unified Validation System - Consolidated Input and Security Validation.
     
@@ -137,7 +132,7 @@ class TNFRUnifiedValidationSystem:
     Consolidates:
     - Input parameter validation from validation/input_validation.py
     - Security validation from security/validation.py  
-    - Type checking across operators and physics modules
+    - type checking across operators and physics modules
     - Structural invariant enforcement
     
     Usage:
@@ -169,12 +164,12 @@ class TNFRUnifiedValidationSystem:
         - Comprehensive validation reporting
     """
     
-    def __init__(self, config: Optional[ValidationConfig] = None):
+    def __init__(self, config: ValidationConfig | None = None):
         """Initialize unified validation system."""
         self.config = config or ValidationConfig()
         
         # Validation cache for performance
-        self._validation_cache: Dict[str, ValidationResult] = {}
+        self._validation_cache: dict[str, ValidationResult] = {}
         self._cache_stats = {"hits": 0, "misses": 0}
         
         # Global configuration integration
@@ -190,7 +185,7 @@ class TNFRUnifiedValidationSystem:
     
     def validate_structural_frequency(
         self, 
-        vf: Union[float, int], 
+        vf: float | int, 
         field_name: str = "vf"
     ) -> ValidationResult:
         """Validate structural frequency (νf) parameter.
@@ -223,7 +218,7 @@ class TNFRUnifiedValidationSystem:
         warnings = []
         validated_value = vf
         
-        # Type validation
+        # type validation
         if not isinstance(vf, (int, float)):
             errors.append(f"{field_name} must be a number, got {type(vf).__name__}")
         else:
@@ -262,7 +257,7 @@ class TNFRUnifiedValidationSystem:
     
     def validate_phase_value(
         self, 
-        phase: Union[float, int], 
+        phase: float | int, 
         field_name: str = "phase",
         normalize: bool = True
     ) -> ValidationResult:
@@ -297,7 +292,7 @@ class TNFRUnifiedValidationSystem:
         warnings = []
         validated_value = phase
         
-        # Type validation
+        # type validation
         if not isinstance(phase, (int, float)):
             errors.append(f"{field_name} must be a number, got {type(phase).__name__}")
         else:
@@ -334,7 +329,7 @@ class TNFRUnifiedValidationSystem:
     
     def validate_coherence(
         self, 
-        coherence: Union[float, int], 
+        coherence: float | int, 
         field_name: str = "coherence"
     ) -> ValidationResult:
         """Validate coherence C(t) parameter.
@@ -354,7 +349,7 @@ class TNFRUnifiedValidationSystem:
         warnings = []
         validated_value = coherence
         
-        # Type validation
+        # type validation
         if not isinstance(coherence, (int, float)):
             errors.append(f"{field_name} must be a number, got {type(coherence).__name__}")
         else:
@@ -390,7 +385,7 @@ class TNFRUnifiedValidationSystem:
         self, 
         input_string: str, 
         field_name: str = "input",
-        max_length: Optional[int] = None
+        max_length: int | None = None
     ) -> ValidationResult:
         """Validate string input with security checks.
         
@@ -433,7 +428,7 @@ class TNFRUnifiedValidationSystem:
         warnings = []
         validated_value = input_string
         
-        # Type validation
+        # type validation
         if not isinstance(input_string, str):
             errors.append(f"{field_name} must be a string, got {type(input_string).__name__}")
         else:
@@ -472,8 +467,8 @@ class TNFRUnifiedValidationSystem:
         self, 
         array: np.ndarray, 
         field_name: str = "array",
-        expected_shape: Optional[tuple] = None,
-        expected_dtype: Optional[type] = None
+        expected_shape: tuple | None = None,
+        expected_dtype: type | None = None
     ) -> ValidationResult:
         """Validate NumPy array input for TNFR operations.
         
@@ -497,7 +492,7 @@ class TNFRUnifiedValidationSystem:
         warnings = []
         validated_value = array
         
-        # Type validation
+        # type validation
         if not isinstance(array, np.ndarray):
             errors.append(f"{field_name} must be a NumPy array, got {type(array).__name__}")
         else:
@@ -535,9 +530,9 @@ class TNFRUnifiedValidationSystem:
     
     def validate_multiple(
         self, 
-        values: Dict[str, Any],
-        validation_rules: Optional[Dict[str, Callable]] = None
-    ) -> Dict[str, ValidationResult]:
+        values: dict[str, Any],
+        validation_rules: dict[str, Callable] | None = None
+    ) -> dict[str, ValidationResult]:
         """Validate multiple values with unified error handling.
         
         Parameters
@@ -597,7 +592,7 @@ class TNFRUnifiedValidationSystem:
         
         return results
     
-    def get_cache_statistics(self) -> Dict[str, Any]:
+    def get_cache_statistics(self) -> dict[str, Any]:
         """Get validation cache statistics."""
         total_requests = self._cache_stats["hits"] + self._cache_stats["misses"]
         hit_rate = (self._cache_stats["hits"] / total_requests * 100.0) if total_requests > 0 else 0.0
@@ -615,16 +610,14 @@ class TNFRUnifiedValidationSystem:
         self._cache_stats = {"hits": 0, "misses": 0}
         logger.info("Cleared unified validation cache")
 
-
 # ============================================================================
 # PUBLIC API - Unified Validation Interface
 # ============================================================================
 
 # Global unified validation system instance
-_unified_validation_system: Optional[TNFRUnifiedValidationSystem] = None
+_unified_validation_system: TNFRUnifiedValidationSystem | None = None
 
-
-def get_unified_validation_system(config: Optional[ValidationConfig] = None) -> TNFRUnifiedValidationSystem:
+def get_unified_validation_system(config: ValidationConfig | None = None) -> TNFRUnifiedValidationSystem:
     """Get or create global unified validation system.
     
     This provides a singleton interface for all TNFR validation operations
@@ -648,29 +641,24 @@ def get_unified_validation_system(config: Optional[ValidationConfig] = None) -> 
     
     return _unified_validation_system
 
-
 # Convenience functions for direct validation operations
-def validate_structural_frequency(vf: Union[float, int], field_name: str = "vf") -> ValidationResult:
+def validate_structural_frequency(vf: float | int, field_name: str = "vf") -> ValidationResult:
     """Validate structural frequency - convenience function."""
     return get_unified_validation_system().validate_structural_frequency(vf, field_name)
 
-
-def validate_phase_value(phase: Union[float, int], field_name: str = "phase") -> ValidationResult:
+def validate_phase_value(phase: float | int, field_name: str = "phase") -> ValidationResult:
     """Validate phase value - convenience function."""
     return get_unified_validation_system().validate_phase_value(phase, field_name)
 
-
-def validate_coherence(coherence: Union[float, int], field_name: str = "coherence") -> ValidationResult:
+def validate_coherence(coherence: float | int, field_name: str = "coherence") -> ValidationResult:
     """Validate coherence - convenience function."""
     return get_unified_validation_system().validate_coherence(coherence, field_name)
-
 
 def validate_string_input(input_string: str, field_name: str = "input") -> ValidationResult:
     """Validate string input - convenience function."""
     return get_unified_validation_system().validate_string_input(input_string, field_name)
 
-
-def get_unified_validation_stats() -> Dict[str, Any]:
+def get_unified_validation_stats() -> dict[str, Any]:
     """Get unified validation statistics - convenience function."""
     if _unified_validation_system is not None:
         return _unified_validation_system.get_cache_statistics()

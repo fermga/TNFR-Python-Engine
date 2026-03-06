@@ -41,7 +41,6 @@ __all__ = [
 from ...constants.canonical import E_OVER_PI_PLUS_E
 ACTIVE_EMISSION_THRESHOLD = E_OVER_PI_PLUS_E  # e/(π+e) ≈ 0.464 (exponential activation)
 
-
 def detect_emission_sources(
     G: TNFRGraph,
     receiver_node: Any,
@@ -69,7 +68,7 @@ def detect_emission_sources(
     Returns
     -------
     list[tuple[Any, float, float]]
-        List of (source_node, phase_compatibility, coherence_strength) tuples,
+        list of (source_node, phase_compatibility, coherence_strength) tuples,
         sorted by phase compatibility (most compatible first).
 
         - source_node: Node identifier

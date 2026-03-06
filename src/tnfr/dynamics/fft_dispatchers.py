@@ -9,7 +9,7 @@ import queue
 import threading
 import uuid
 from dataclasses import dataclass
-from typing import Any, Callable, Dict, List, Mapping
+from typing import Any, Callable, Mapping
 
 try:  # Optional dependency
     import requests  # type: ignore[import]
@@ -18,8 +18,7 @@ except Exception:  # pragma: no cover - requests not available
 
 from .fft_workers import default_fft_worker
 
-Dispatcher = Callable[[str, Dict[str, Any]], Any]
-
+Dispatcher = Callable[[str, dict[str, Any]], Any]
 
 @dataclass
 class HTTPFFTDispatcher:
@@ -42,11 +41,11 @@ class HTTPFFTDispatcher:
             return self.session_factory()
         return requests.Session()
 
-    def dispatch(self, action: str, payload: Dict[str, Any]) -> Any:
+    def dispatch(self, action: str, payload: dict[str, Any]) -> Any:
         if requests is None:
             raise RuntimeError("requests is required for HTTPFFTDispatcher")
         encoded_payload = _encode_payload(payload)
-        headers = {"Content-Type": "application/json"}
+        headers = {"Content-type": "application/json"}
         if self.auth_token:
             headers["Authorization"] = f"Bearer {self.auth_token}"
         url = f"{self.base_url.rstrip('/')}/{action}"
@@ -58,25 +57,22 @@ class HTTPFFTDispatcher:
             return data
         return _decode_payload(encoded_result)
 
-
 @dataclass
 class LocalWorkerDispatcher:
     """Dispatcher that routes actions to in-process callables."""
 
     registry: Mapping[str, Dispatcher]
 
-    def dispatch(self, action: str, payload: Dict[str, Any]) -> Any:
+    def dispatch(self, action: str, payload: dict[str, Any]) -> Any:
         if action not in self.registry:
             raise KeyError(f"No registered worker for action '{action}'")
         worker = self.registry[action]
         return worker(action, payload)
 
-
-RequestEncoder = Callable[[Dict[str, Any]], Any]
-RequestDecoder = Callable[[Any], Dict[str, Any]]
+RequestEncoder = Callable[[dict[str, Any]], Any]
+RequestDecoder = Callable[[Any], dict[str, Any]]
 ResponseEncoder = Callable[[Any], Any]
 ResponseDecoder = Callable[[Any], Any]
-
 
 class ThreadedQueueDispatcher:
     """Dispatcher backed by one or more background worker threads and queues."""
@@ -96,13 +92,13 @@ class ThreadedQueueDispatcher:
         self._worker = worker or default_fft_worker
         self._timeout = timeout
         self._requests: "queue.Queue[tuple[str, str, Any]]" = queue.Queue(maxsize=queue_maxsize)
-        self._responses: Dict[str, Dict[str, Any]] = {}
+        self._responses: dict[str, dict[str, Any]] = {}
         self._response_lock = threading.Lock()
         self._request_serializer = request_serializer or (lambda payload: payload)
         self._request_deserializer = request_deserializer or (lambda payload: payload)
         self._response_serializer = response_serializer or (lambda payload: payload)
         self._response_deserializer = response_deserializer or (lambda payload: payload)
-        self._threads: List[threading.Thread] = []
+        self._threads: list[threading.Thread] = []
         for index in range(max(1, max_workers)):
             thread = threading.Thread(
                 target=self._loop,
@@ -112,7 +108,7 @@ class ThreadedQueueDispatcher:
             thread.start()
             self._threads.append(thread)
 
-    def dispatch(self, action: str, payload: Dict[str, Any]) -> Any:
+    def dispatch(self, action: str, payload: dict[str, Any]) -> Any:
         request_id = uuid.uuid4().hex
         event = threading.Event()
         serialized = self._request_serializer(payload)
@@ -150,16 +146,13 @@ class ThreadedQueueDispatcher:
                 if isinstance(event, threading.Event):
                     event.set()
 
-
 def _encode_payload(payload: Mapping[str, Any]) -> str:
     blob = pickle.dumps(payload)
     return base64.b64encode(blob).decode("ascii")
 
-
 def _decode_payload(blob: str) -> Any:
     data = base64.b64decode(blob.encode("ascii"))
     return pickle.loads(data)
-
 
 __all__ = [
     "Dispatcher",

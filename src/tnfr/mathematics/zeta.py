@@ -15,7 +15,7 @@ Functions:
 - structural_pressure(s): ΔNFR = |log|χ(s)||.
 """
 
-from typing import Union, Any, Callable, Set, Optional
+from typing import Any
 from .unified_numerical import np
 
 # Import TNFR Cache Infrastructure
@@ -24,7 +24,6 @@ _CACHE_AVAILABLE = True
 
 # Import Unified Backend
 try:
-    from .backend import get_backend
     HAS_BACKEND = True
 except ImportError:
     HAS_BACKEND = False
@@ -40,12 +39,10 @@ except ImportError:
 if HAS_MPMATH:
     mp.dps = 25
 
-
 def _ensure_complex(s: Any) -> Any:
     if HAS_MPMATH:
         return mp.mpc(s)
     return complex(s)
-
 
 @cache_tnfr_computation(level=CacheLevel.DERIVED_METRICS, dependencies=set())
 def zeta_zero(n: int) -> complex:
@@ -56,9 +53,8 @@ def zeta_zero(n: int) -> complex:
         return mp_zetazero(n)
     raise ImportError("mpmath required for zeta zeros.")
 
-
 @cache_tnfr_computation(level=CacheLevel.DERIVED_METRICS, dependencies=set())
-def zeta_function(s: Union[complex, float, Any]) -> Any:
+def zeta_function(s: complex | float | Any) -> Any:
     """
     Compute the Riemann Zeta function ζ(s).
     
@@ -77,9 +73,8 @@ def zeta_function(s: Union[complex, float, Any]) -> Any:
     except ImportError:
         raise ImportError("mpmath or scipy required for zeta function.")
 
-
 @cache_tnfr_computation(level=CacheLevel.DERIVED_METRICS, dependencies=set())
-def chi_factor(s: Union[complex, float, Any]) -> Any:
+def chi_factor(s: complex | float | Any) -> Any:
     """
     Compute the Riemann xi factor χ(s).
     χ(s) = 2^s * π^(s-1) * sin(πs/2) * Γ(1-s)
@@ -92,9 +87,8 @@ def chi_factor(s: Union[complex, float, Any]) -> Any:
     s_c = complex(s)
     return (2**s_c) * (np.pi**(s_c - 1)) * np.sin(np.pi * s_c / 2) * np.math.gamma(1 - s_c)  # type: ignore
 
-
 @cache_tnfr_computation(level=CacheLevel.DERIVED_METRICS, dependencies=set())
-def structural_potential(s: Union[complex, float, Any]) -> float:
+def structural_potential(s: complex | float | Any) -> float:
     """
     Compute the Structural Potential Φ_s = log|ζ(s)|.
     """
@@ -104,9 +98,8 @@ def structural_potential(s: Union[complex, float, Any]) -> float:
         return float(mp_log(mag + 1e-20))
     return float(np.log(mag + 1e-20))
 
-
 @cache_tnfr_computation(level=CacheLevel.DERIVED_METRICS, dependencies=set())
-def structural_pressure(s: Union[complex, float, Any]) -> float:
+def structural_pressure(s: complex | float | Any) -> float:
     """
     Compute the Structural Pressure ΔNFR = |log|χ(s)||.
     This is the derived form from symmetry breaking.

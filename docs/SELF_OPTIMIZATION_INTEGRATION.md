@@ -258,6 +258,145 @@ print(f"Optimization result: {opt_result}")
 
 ---
 
+## CLI Pipeline Workflow
+
+End-to-end workflow that takes partition manifests, produces dry-run recommendations,
+validates them, and feeds qualified operator strategies into downstream orchestration.
+
+### Generate Dry-Run Recommendations
+
+```powershell
+pwsh> python scripts/run_self_optimization.py `
+    --manifest manifests/paley/_manifest.json `
+    --output-dir results/self_optimization/paley_v3 `
+    --operation-type paley_partition `
+    --max-workers 4 `
+    --capture-snapshots `
+    --summary results/self_optimization/paley_v3_summary.json
+```
+
+Key flags:
+- `--manifest` (required) — path to `_manifest.json` describing partitions.
+- `--output-dir` — storage for per-partition payloads + telemetry.
+- `--operation-type` — label recorded in each payload.
+- `--max-workers` — parallelism for partition processing.
+- `--capture-snapshots` — forces telemetry capture even when not in dry-run mode.
+- `--summary` — writes aggregated summary JSON for CI artifacts.
+
+### Validate Recommendations
+
+```powershell
+pwsh> python scripts/run_self_opt_validation.py `
+    --payload-root results/self_optimization/paley_v3 `
+    --report results/self_optimization_validation.json `
+    --fail-on-regression
+```
+
+Arguments:
+- `--payload-root` — root directory containing seed folders.
+- `--report` — summary output (defaults to `results/self_optimization_validation.json`).
+- `--fail-on-regression` — exits with status 1 if any pytest subset fails.
+
+### Directory Layout
+
+```
+results/
+  self_optimization/
+    seed_alpha/
+      paley_partition_0001.json
+      paley_partition_0001.json.sha256
+    seed_beta/
+      ...
+    paley_v3_summary.json
+  self_optimization_validation.json
+```
+
+- **Seed folders** group payloads produced in a single runner invocation.
+- **`.sha256`** files mirror payloads for integrity verification.
+- **Summary JSON** aggregates per-run statistics.
+- **Validation report** lists discovered payloads, mapped tests, and exit codes.
+
+### JSON Schemas
+
+**Partition payload** (`results/self_optimization/**/paley_partition_XXXX.json`):
+
+```json
+{
+  "metadata": {
+    "operation_type": "paley_partition",
+    "partition_id": "0001",
+    "manifest": "manifests/paley/_manifest.json",
+    "seed": 41,
+    "sequence": ["AL", "UM", "IL", "SHA"]
+  },
+  "engine": {
+    "dry_run": true,
+    "operator_strategy_plan": {
+      "per_partition": {},
+      "stabilizers": ["IL", "THOL"],
+      "resonance_budget": 0.18
+    },
+    "telemetry_snapshots": [
+      {
+        "partition_id": "0001",
+        "delta_phi_s": 0.42,
+        "delta_c": 0.07,
+        "fields": {"phi_s": 0.63, "grad_phi": 0.12, "k_phi": 1.46, "xi_c": 0.88}
+      }
+    ]
+  },
+  "telemetry": {
+    "delta_phi_s": 0.42,
+    "delta_c": 0.07,
+    "coherence": 0.82,
+    "sense_index": 0.76
+  }
+}
+```
+
+**Validation summary** (`results/self_optimization_validation.json`):
+
+```json
+{
+  "payload_root": "results/self_optimization/paley_v3",
+  "total_recommendations": 12,
+  "status_counts": {"validated": 8, "regressed": 2, "pending": 2},
+  "results": [
+    {
+      "path": "results/self_optimization/.../paley_partition_0001.json",
+      "operation_type": "paley_partition",
+      "status": "validated",
+      "exit_code": 0
+    }
+  ]
+}
+```
+
+Status meanings: `validated` (pytest passed), `regressed` (pytest failed), `pending` (no mapped tests).
+
+### Promotion Guidance
+
+1. **Confirm validation status** — only promote partitions marked `validated`.
+2. **Telemetry guardrails** — ΔΦ_s < 0.6 and ΔC(t) ≥ +0.05 preferred. Reject payloads violating thresholds from `docs/STRUCTURAL_FIELDS_TETRAD.md`.
+3. **Embed plan** — copy `operator_strategy_plan` into the target manifest or orchestration layer.
+4. **Record provenance** — append manifest ID, git SHA, and validation report path to the promotion log.
+
+### Review Checklist
+
+| Step | Purpose | Command / Artifact |
+|------|---------|--------------------|
+| Telemetry sanity | Confirm Φ_s, \|∇φ\|, K_φ, ξ_C within bounds | Inspect `telemetry_snapshots` |
+| ΔΦ_s / ΔC(t) trend | Coherence gains match potential drift | Plot via dashboard |
+| Operator coverage | Sequences comply with U1-U6 | `tnfr.validation.grammar.collect_grammar_errors` |
+| Validation sweep | Targeted pytest suites cover payloads | `python scripts/run_self_opt_validation.py --fail-on-regression` |
+| Regression nets | Smoke targets green | `./make.cmd smoke-tests` |
+
+### Dashboard Guidance (ΔΦ_s vs ΔC(t))
+
+Extend `HealthVisualizationDashboard` (see `STRUCTURAL_HEALTH.md`) with a scatter overlay plotting ΔΦ_s (x) vs ΔC(t) (y). Color points by validation status; add threshold lines at ΔΦ_s = 1.0 (vertical) and ΔC(t) = 0 (horizontal). Store rendered dashboards under `results/reports/self_opt/`.
+
+---
+
 ## Testing
 
 ### Unit Tests
@@ -423,6 +562,8 @@ opt_result = run_pattern_discovery_optimization(
 - **SDK API**: `src/tnfr/sdk/self_opt.py`
 - **CLI Runners**: `scripts/run_self_optimization.py`, `scripts/run_self_opt_validation.py`
 - **Grammar Validation**: `src/tnfr/operators/grammar.py`
+- **Structural Health Dashboard**: [STRUCTURAL_HEALTH.md](STRUCTURAL_HEALTH.md)
+- **Structural Fields Tetrad**: [STRUCTURAL_FIELDS_TETRAD.md](STRUCTURAL_FIELDS_TETRAD.md)
 
 ---
 

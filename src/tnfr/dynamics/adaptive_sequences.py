@@ -12,7 +12,7 @@ exploration (try new patterns).
 from __future__ import annotations
 
 import random
-from typing import TYPE_CHECKING, Any, Dict, List
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from ..types import TNFRGraph, NodeId
@@ -34,7 +34,6 @@ from ..config.operator_names import (
 )
 
 __all__ = ["AdaptiveSequenceSelector"]
-
 
 class AdaptiveSequenceSelector:
     """Learns and selects optimal operator sequences based on context.
@@ -83,7 +82,7 @@ class AdaptiveSequenceSelector:
 
         # Canonical operator sequences
         # Note: Sequences are designed to comply with TNFR grammar rules
-        self.sequences: Dict[str, List[str]] = {
+        self.sequences: dict[str, list[str]] = {
             "basic_activation": [EMISSION, COHERENCE],
             "deep_learning": [EMISSION, RECEPTION, COHERENCE],
             "exploration": [EMISSION, DISSONANCE, COHERENCE],
@@ -92,9 +91,9 @@ class AdaptiveSequenceSelector:
         }
 
         # Performance history: sequence_name -> [coherence_gains]
-        self.performance: Dict[str, List[float]] = {k: [] for k in self.sequences.keys()}
+        self.performance: dict[str, list[float]] = {k: [] for k in self.sequences.keys()}
 
-    def select_sequence(self, context: Dict[str, Any]) -> List[str]:
+    def select_sequence(self, context: dict[str, Any]) -> list[str]:
         """Select optimal sequence based on context and historical performance.
 
         Uses goal-based filtering and epsilon-greedy selection:

@@ -33,7 +33,6 @@ __all__ = [
     "diagnose_mutation_readiness",
 ]
 
-
 def validate_mutation_strict(G: TNFRGraph, node: NodeId) -> None:
     """Comprehensive canonical validation for ZHIR.
 
@@ -94,7 +93,6 @@ def validate_mutation_strict(G: TNFRGraph, node: NodeId) -> None:
     # 4. History length validation
     _validate_history_length(G, node)
 
-
 def _validate_minimum_vf(G: TNFRGraph, node: NodeId) -> None:
     """Validate minimum structural frequency for phase transformation."""
     vf = float(get_attr(G.nodes[node], ALIAS_VF, 0.0))
@@ -105,7 +103,6 @@ def _validate_minimum_vf(G: TNFRGraph, node: NodeId) -> None:
             "Mutation",
             f"Structural frequency too low for mutation (νf={vf:.3f} < {min_vf:.3f})",
         )
-
 
 def _validate_history_length(G: TNFRGraph, node: NodeId) -> None:
     """Validate sufficient EPI history for velocity calculation."""
@@ -121,7 +118,6 @@ def _validate_history_length(G: TNFRGraph, node: NodeId) -> None:
             f"(need ≥{min_length} points, have {len(epi_history)}). "
             f"Threshold verification may be inaccurate."
         )
-
 
 def validate_threshold_crossing(
     G: TNFRGraph, node: NodeId, logger: logging.Logger | None = None
@@ -205,7 +201,6 @@ def validate_threshold_crossing(
             f"Node {node}: ZHIR threshold crossed (∂EPI/∂t={depi_dt:.3f} > ξ={xi_threshold})"
         )
         G.nodes[node]["_zhir_threshold_met"] = True
-
 
 def validate_grammar_u4b(G: TNFRGraph, node: NodeId, logger: logging.Logger | None = None) -> None:
     """Validate U4b: IL precedence + recent destabilizer.
@@ -298,7 +293,6 @@ def validate_grammar_u4b(G: TNFRGraph, node: NodeId, logger: logging.Logger | No
             f"Recent history: {recent_history}. "
             "Apply Dissonance or Expansion to elevate ΔNFR first.",
         )
-
 
 def record_destabilizer_context(
     G: TNFRGraph, node: NodeId, logger: logging.Logger | None = None
@@ -427,7 +421,6 @@ def record_destabilizer_context(
         )
 
     return context
-
 
 def diagnose_mutation_readiness(G: TNFRGraph, node: NodeId) -> dict:
     """Comprehensive diagnostic for ZHIR readiness.

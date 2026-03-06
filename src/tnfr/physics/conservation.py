@@ -23,53 +23,22 @@ where S(i) is a *source term* of order O(Δt²) that vanishes exactly when:
 This is the TNFR analogue of the Noether theorem:
     Grammar symmetry (U-rules) ⟹ Structural conservation law.
 
-DERIVATION SKETCH
-=================
-1. Φ_s(i,t) = Σ_{j≠i} ΔNFR_j(t) / d(i,j)^α
-   Under nodal equation: ∂Φ_s/∂t = Σ_{j≠i} (∂ΔNFR_j/∂t) / d(i,j)^α
-   The quantity ∂ΔNFR_j/∂t is determined by operator applications.
-   Under U2 (convergence), Σ|∂ΔNFR_j/∂t| is bounded.
+DERIVATION
+==========
+The conservation law derives from the nodal equation ∂EPI/∂t = νf·ΔNFR(t)
+under grammar constraints U1–U6. The complete formal proof, including
+explicit operator norm bounds and scaling analysis, is in:
 
-2. K_φ(i,t) = wrap(φ_i - circmean_{j∈N(i)} φ_j)
-   Under nodal equation, phase evolves as ∂φ/∂t ~ νf · h(ΔNFR)
-   where h is the phase coupling function.
-   ∂K_φ/∂t = ∂φ_i/∂t - Σ w_j ∂φ_j/∂t (linearized)
+    theory/STRUCTURAL_CONSERVATION_THEOREM.md  §4 (Derivation of the Continuity Equation)
 
-3. J_φ(i,t) = mean_{j∈N(i)} sin(φ_j - φ_i)
-   ∂J_φ/∂t involves cos(φ_j - φ_i) · (∂φ_j/∂t - ∂φ_i/∂t)
-   This is the "divergence" of the phase transport.
+Key results from the proof:
 
-4. J_ΔNFR(i,t) = mean_{j∈N(i)} (ΔNFR_j - ΔNFR_i)
-   ∂J_ΔNFR/∂t = mean_{j∈N(i)} (∂ΔNFR_j/∂t - ∂ΔNFR_i/∂t)
-   This is the discrete Laplacian of ∂ΔNFR/∂t.
-
-Combining (1)-(4), the balance equation reads:
-
-    ∂ρ/∂t + div(J) = S_grammar
-
-where S_grammar → 0 when grammar constraints are satisfied, because:
-- U2 bounds the integral of νf·ΔNFR → bounded ∂Φ_s/∂t
-- U6 confines |Φ_s| < φ → bounded charge density
-- U3 phase verification → coherent J_φ transport
-- The remaining residual S is a measure of grammar violation.
-
-PHYSICS INTERPRETATION
-======================
-The conservation law says: *structural charge* (potential + curvature)
-can only change through *structural currents* (phase flow + reorganization
-flux). When grammar is satisfied, charge is neither created nor destroyed
-— it is merely transported. Grammar violations act as "sources" that break
-conservation.
-
-The structural energy functional:
-    E = ½ Σ_i [Φ_s² + |∇φ|² + K_φ² + J_φ² + J_ΔNFR²]
-uses all five canonical fields (consistent with the energy density
-invariant ℰ from AGENTS.md §Tensor Invariants).
-
-This is precisely analogous to:
-- Electrodynamics: ∂ρ/∂t + ∇·J = 0 (charge conservation from U(1) gauge)
-- Fluid dynamics: ∂ρ/∂t + ∇·(ρv) = 0 (mass conservation from translation)
-- TNFR: ∂ρ_s/∂t + div(J_s) ≈ 0 (structural conservation from grammar)
+- §4.5 Step 1: U2+U6 guarantee M_U2 := sup_t Σ|∂ΔNFR_j/∂t| < ∞
+- §4.5 Step 2: U3 guarantees |∂K_φ/∂t| ≤ 2·νf_max =: M_U3
+- §4.5 Step 3: Source S = R_pot + R_geo (potential + geometric residuals)
+- §4.5 Step 4: |R_pot| ~ O(1/D), |R_geo| ~ O(Δφ³_max) under grammar
+- §4.5 Step 5: ||S||_rms bounded independently of N → q(N) ~ 1 - C/√N
+- §4.5 Step 6: S ≠ 0 detects and classifies grammar violations (U2/U3/U6)
 
 STATUS
 ======
@@ -87,7 +56,7 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Sequence, Tuple
+from typing import Any, Sequence
 
 from ..mathematics.unified_numerical import np
 
@@ -96,14 +65,20 @@ try:
 except ImportError:  # pragma: no cover
     nx = None
 
-from ..constants.canonical import PHI, PI
+from ..constants.canonical import K_PHI_CANONICAL_THRESHOLD, PHI, PI
 from .canonical import (
     compute_structural_potential,
     compute_phase_gradient,
     compute_phase_curvature,
 )
 from .extended import compute_phase_current, compute_dnfr_flux
+from .unified import compute_energy_density as _raw_energy_density
 
+# ---------------------------------------------------------------------------
+# Conservation diagnostic thresholds
+# ---------------------------------------------------------------------------
+_BALANCE_RMS_ALERT = 1.0
+_SECTOR_IMBALANCE_RATIO = 1.5
 
 # ---------------------------------------------------------------------------
 # Data structures
@@ -115,47 +90,47 @@ class ConservationSnapshot:
 
     Attributes
     ----------
-    charge_density : Dict[Any, float]
+    charge_density : dict[Any, float]
         ρ(i) = Φ_s(i) + K_φ(i) at each node.
-    phi_s : Dict[Any, float]
+    phi_s : dict[Any, float]
         Structural potential Φ_s per node.
-    k_phi : Dict[Any, float]
+    k_phi : dict[Any, float]
         Phase curvature K_φ per node.
-    j_phi : Dict[Any, float]
+    j_phi : dict[Any, float]
         Phase current J_φ per node.
-    j_dnfr : Dict[Any, float]
+    j_dnfr : dict[Any, float]
         ΔNFR flux J_ΔNFR per node.
-    grad_phi : Dict[Any, float]
+    grad_phi : dict[Any, float]
         Phase gradient |∇φ| per node.
-    divergence : Dict[Any, float]
+    divergence : dict[Any, float]
         Discrete divergence div(J) at each node.
     """
 
-    charge_density: Dict[Any, float]
-    phi_s: Dict[Any, float]
-    k_phi: Dict[Any, float]
-    j_phi: Dict[Any, float]
-    j_dnfr: Dict[Any, float]
-    grad_phi: Dict[Any, float]
-    divergence: Dict[Any, float]
-
+    charge_density: dict[Any, float]
+    phi_s: dict[Any, float]
+    k_phi: dict[Any, float]
+    j_phi: dict[Any, float]
+    j_dnfr: dict[Any, float]
+    grad_phi: dict[Any, float]
+    divergence: dict[Any, float]
 
 @dataclass
 class ConservationBalance:
     """Result of the continuity equation verification across two snapshots.
 
-    The central quantities are:
+    Uses **Crank-Nicolson (trapezoidal)** discretization for O(Δt²)
+    accuracy:
 
-    * ``residual[i] = Δρ(i)/Δt + div J(i)``
+    * ``residual[i] = Δρ(i)/Δt + ½[div J_before(i) + div J_after(i)]``
       — should be ≈ 0 when grammar is satisfied.
     * ``mean_residual``, ``max_residual`` — aggregate diagnostics.
     * ``conservation_quality`` — scalar in [0, 1]; 1 = perfect conservation.
     * ``grammar_violation_index`` — ∝ |mean_residual|;  0 = no violation.
     """
 
-    residual: Dict[Any, float]
-    delta_rho: Dict[Any, float]
-    divergence_after: Dict[Any, float]
+    residual: dict[Any, float]
+    delta_rho: dict[Any, float]
+    divergence_after: dict[Any, float]  # trapezoidal average (before+after)/2
     mean_residual: float
     std_residual: float
     max_residual: float
@@ -166,7 +141,6 @@ class ConservationBalance:
     total_charge_after: float
     charge_drift: float
 
-
 @dataclass
 class ConservationTimeSeries:
     """Full time-series of conservation diagnostics.
@@ -174,13 +148,13 @@ class ConservationTimeSeries:
     Built incrementally via :meth:`ConservationTracker.record`.
     """
 
-    times: List[float] = field(default_factory=list)
-    total_charge: List[float] = field(default_factory=list)
-    mean_residuals: List[float] = field(default_factory=list)
-    rms_residuals: List[float] = field(default_factory=list)
-    conservation_quality: List[float] = field(default_factory=list)
-    grammar_violation_index: List[float] = field(default_factory=list)
-    charge_drift: List[float] = field(default_factory=list)
+    times: list[float] = field(default_factory=list)
+    total_charge: list[float] = field(default_factory=list)
+    mean_residuals: list[float] = field(default_factory=list)
+    rms_residuals: list[float] = field(default_factory=list)
+    conservation_quality: list[float] = field(default_factory=list)
+    grammar_violation_index: list[float] = field(default_factory=list)
+    charge_drift: list[float] = field(default_factory=list)
 
     @property
     def is_conserved(self) -> bool:
@@ -196,12 +170,11 @@ class ConservationTimeSeries:
             return 0.0
         return float(np.mean(self.conservation_quality))
 
-
 # ---------------------------------------------------------------------------
 # Core computation: structural charge density and divergence
 # ---------------------------------------------------------------------------
 
-def compute_charge_density(G: Any) -> Dict[Any, float]:
+def compute_charge_density(G: Any) -> dict[Any, float]:
     r"""Compute structural charge density ρ(i) = Φ_s(i) + K_φ(i).
 
     This is the conserved "charge" of TNFR structural dynamics:
@@ -218,7 +191,7 @@ def compute_charge_density(G: Any) -> Dict[Any, float]:
 
     Returns
     -------
-    Dict[node, float]
+    dict[node, float]
         ρ(i) per node.
     """
     phi_s = compute_structural_potential(G)
@@ -226,8 +199,7 @@ def compute_charge_density(G: Any) -> Dict[Any, float]:
     nodes = list(G.nodes())
     return {n: phi_s.get(n, 0.0) + k_phi.get(n, 0.0) for n in nodes}
 
-
-def compute_current_divergence(G: Any) -> Dict[Any, float]:
+def compute_current_divergence(G: Any) -> dict[Any, float]:
     r"""Compute discrete divergence of structural current div J(i).
 
     The structural current is J = (J_φ, J_ΔNFR).  On a graph, the
@@ -247,14 +219,14 @@ def compute_current_divergence(G: Any) -> Dict[Any, float]:
 
     Returns
     -------
-    Dict[node, float]
+    dict[node, float]
         div J(i) per node.
     """
     j_phi = compute_phase_current(G)
     j_dnfr = compute_dnfr_flux(G)
     nodes = list(G.nodes())
 
-    divergence: Dict[Any, float] = {}
+    divergence: dict[Any, float] = {}
     for i in nodes:
         neighbors = list(G.neighbors(i))
         if not neighbors:
@@ -270,7 +242,6 @@ def compute_current_divergence(G: Any) -> Dict[Any, float]:
         divergence[i] = div_j_phi + div_j_dnfr
 
     return divergence
-
 
 # ---------------------------------------------------------------------------
 # Snapshot capture
@@ -310,7 +281,6 @@ def capture_conservation_snapshot(G: Any) -> ConservationSnapshot:
         divergence=div_j,
     )
 
-
 # ---------------------------------------------------------------------------
 # Conservation balance (two-snapshot comparison)
 # ---------------------------------------------------------------------------
@@ -322,12 +292,15 @@ def verify_conservation_balance(
 ) -> ConservationBalance:
     r"""Verify the structural continuity equation between two snapshots.
 
-    Computes the residual of:
+    Computes the residual of the continuity equation using a
+    **Crank-Nicolson (trapezoidal)** discretization:
 
-        Δρ(i)/Δt + div J_after(i) ≈ 0
+        Δρ(i)/Δt + ½[div J_before(i) + div J_after(i)] ≈ 0
 
-    A small residual means the operator sequence conserved structural
-    charge.  Large residuals indicate grammar violations acting as sources.
+    This gives O(Δt²) accuracy, compared to the O(Δt) of a
+    right-endpoint scheme.  A small residual means the operator
+    sequence conserved structural charge;  large residuals indicate
+    grammar violations acting as sources.
 
     Parameters
     ----------
@@ -345,8 +318,8 @@ def verify_conservation_balance(
     """
     nodes = list(after.charge_density.keys())
 
-    delta_rho: Dict[Any, float] = {}
-    residual: Dict[Any, float] = {}
+    delta_rho: dict[Any, float] = {}
+    residual: dict[Any, float] = {}
 
     for n in nodes:
         rho_before = before.charge_density.get(n, 0.0)
@@ -354,7 +327,10 @@ def verify_conservation_balance(
         d_rho = (rho_after - rho_before) / dt
         delta_rho[n] = d_rho
 
-        div_j = after.divergence.get(n, 0.0)
+        # Crank-Nicolson: trapezoidal average of divergence at both endpoints
+        div_j = 0.5 * (
+            before.divergence.get(n, 0.0) + after.divergence.get(n, 0.0)
+        )
         # Continuity: ∂ρ/∂t + div J = S  →  residual = ∂ρ/∂t + div J
         residual[n] = d_rho + div_j
 
@@ -379,7 +355,9 @@ def verify_conservation_balance(
     return ConservationBalance(
         residual=residual,
         delta_rho=delta_rho,
-        divergence_after=after.divergence,
+        divergence_after={n: 0.5 * (before.divergence.get(n, 0.0)
+                              + after.divergence.get(n, 0.0))
+                        for n in nodes},
         mean_residual=mean_res,
         std_residual=std_res,
         max_residual=max_res,
@@ -390,7 +368,6 @@ def verify_conservation_balance(
         total_charge_after=q_after,
         charge_drift=charge_drift,
     )
-
 
 # ---------------------------------------------------------------------------
 # Conservation tracker (multi-step)
@@ -413,7 +390,7 @@ class ConservationTracker:
 
     def __init__(self, G: Any) -> None:
         self._G = G
-        self._snapshots: List[Tuple[float, ConservationSnapshot]] = []
+        self._snapshots: list[tuple[float, ConservationSnapshot]] = []
         self._series = ConservationTimeSeries()
 
     def record(self, t: float = 0.0) -> ConservationSnapshot:
@@ -466,7 +443,7 @@ class ConservationTracker:
         return self._series
 
     @property
-    def latest_balance(self) -> Optional[ConservationBalance]:
+    def latest_balance(self) -> ConservationBalance | None:
         """Return the most recent balance check, or None."""
         if len(self._snapshots) < 2:
             return None
@@ -474,7 +451,6 @@ class ConservationTracker:
         t_curr, snap_curr = self._snapshots[-1]
         dt = t_curr - t_prev if t_curr != t_prev else 1.0
         return verify_conservation_balance(snap_prev, snap_curr, dt=dt)
-
 
 # ---------------------------------------------------------------------------
 # Decomposed analysis: which field component contributes most to residual
@@ -484,7 +460,7 @@ def decompose_conservation_residual(
     before: ConservationSnapshot,
     after: ConservationSnapshot,
     dt: float = 1.0,
-) -> Dict[str, Dict[Any, float]]:
+) -> dict[str, dict[Any, float]]:
     r"""Decompose the continuity residual into Φ_s and K_φ contributions.
 
     The charge density ρ = Φ_s + K_φ, so:
@@ -495,9 +471,12 @@ def decompose_conservation_residual(
     the residual comes from potential drift (global, grammar-U6 related)
     or curvature drift (local, phase dynamics related).
 
+    Divergence is evaluated using the **Crank-Nicolson (trapezoidal)**
+    average of the before and after snapshots for O(Δt²) accuracy.
+
     Returns
     -------
-    Dict with keys:
+    dict with keys:
         'phi_s_drift'  : per-node ΔΦ_s/Δt
         'k_phi_drift'  : per-node ΔK_φ/Δt
         'j_phi_div'    : per-node div(J_φ) contribution
@@ -507,16 +486,12 @@ def decompose_conservation_residual(
     """
     nodes = list(after.phi_s.keys())
 
-    phi_s_drift: Dict[Any, float] = {}
-    k_phi_drift: Dict[Any, float] = {}
-    j_phi_div: Dict[Any, float] = {}
-    j_dnfr_div: Dict[Any, float] = {}
-    potential_residual: Dict[Any, float] = {}
-    geometric_residual: Dict[Any, float] = {}
-
-    # Compute per-component divergences separately
-    j_phi_after = after.j_phi
-    j_dnfr_after = after.j_dnfr
+    phi_s_drift: dict[Any, float] = {}
+    k_phi_drift: dict[Any, float] = {}
+    j_phi_div: dict[Any, float] = {}
+    j_dnfr_div: dict[Any, float] = {}
+    potential_residual: dict[Any, float] = {}
+    geometric_residual: dict[Any, float] = {}
 
     for n in nodes:
         # Rate of change of each charge component
@@ -525,11 +500,17 @@ def decompose_conservation_residual(
         phi_s_drift[n] = d_phi_s
         k_phi_drift[n] = d_k_phi
 
-        # Divergence components from after-state
-        div_j = after.divergence.get(n, 0.0)
-        # Approximate split: use field magnitudes as proxy
-        j_phi_n = j_phi_after.get(n, 0.0)
-        j_dnfr_n = j_dnfr_after.get(n, 0.0)
+        # Crank-Nicolson: trapezoidal average of divergence
+        div_j = 0.5 * (
+            before.divergence.get(n, 0.0) + after.divergence.get(n, 0.0)
+        )
+        # Approximate split: use field magnitudes as proxy (averaged)
+        j_phi_n = 0.5 * (
+            before.j_phi.get(n, 0.0) + after.j_phi.get(n, 0.0)
+        )
+        j_dnfr_n = 0.5 * (
+            before.j_dnfr.get(n, 0.0) + after.j_dnfr.get(n, 0.0)
+        )
         total_j = abs(j_phi_n) + abs(j_dnfr_n) + 1e-15
         j_phi_fraction = abs(j_phi_n) / total_j
         j_dnfr_fraction = abs(j_dnfr_n) / total_j
@@ -552,12 +533,11 @@ def decompose_conservation_residual(
         'geometric_residual': geometric_residual,
     }
 
-
 # ---------------------------------------------------------------------------
 # Theoretical bounds from grammar constraints
 # ---------------------------------------------------------------------------
 
-def compute_grammar_conservation_bounds(G: Any) -> Dict[str, float]:
+def compute_grammar_conservation_bounds(G: Any) -> dict[str, float]:
     r"""Compute theoretical upper bounds on conservation residual.
 
     From TNFR grammar constraints:
@@ -571,12 +551,12 @@ def compute_grammar_conservation_bounds(G: Any) -> Dict[str, float]:
 
     Returns
     -------
-    Dict[str, float]
+    dict[str, float]
         'max_charge_density'  : theoretical upper bound on |ρ|
         'max_current_magnitude' : theoretical upper bound on |J|
         'max_allowed_residual' : theoretical bound on |Δρ/Δt + div J|
         'phi_s_confinement'   : φ (golden ratio, U6 escape threshold)
-        'k_phi_hotspot'       : 2π/√5 (curvature hotspot threshold)
+        'k_phi_hotspot'       : 0.9×π ≈ 2.8274 (curvature hotspot threshold)
     """
     n_nodes = G.number_of_nodes()
 
@@ -611,10 +591,9 @@ def compute_grammar_conservation_bounds(G: Any) -> Dict[str, float]:
         'max_current_magnitude': max_current,
         'max_allowed_residual': max_residual,
         'phi_s_confinement': phi_s_bound,
-        'k_phi_hotspot': 0.9 * PI,  # 0.9×π ≈ 2.8274 (canonical curvature hotspot threshold)
+        'k_phi_hotspot': K_PHI_CANONICAL_THRESHOLD,  # 0.9×π ≈ 2.8274 (canonical curvature hotspot threshold)
         'average_degree': avg_degree,
     }
-
 
 # ---------------------------------------------------------------------------
 # Grammar violation detection via conservation analysis
@@ -622,8 +601,8 @@ def compute_grammar_conservation_bounds(G: Any) -> Dict[str, float]:
 
 def detect_grammar_violations_from_conservation(
     balance: ConservationBalance,
-    bounds: Optional[Dict[str, float]] = None,
-) -> Dict[str, Any]:
+    bounds: dict[str, float] | None = None,
+) -> dict[str, Any]:
     r"""Detect grammar violations by analyzing conservation residuals.
 
     High conservation residuals indicate that the operator sequence
@@ -634,24 +613,24 @@ def detect_grammar_violations_from_conservation(
     ----------
     balance : ConservationBalance
         Result from verify_conservation_balance.
-    bounds : Dict[str, float], optional
+    bounds : dict[str, float], optional
         Bounds from compute_grammar_conservation_bounds.
 
     Returns
     -------
-    Dict with:
+    dict with:
         'violations_detected' : bool
         'violation_count' : int
-        'violation_types' : List[str]
+        'violation_types' : list[str]
         'severity' : float  (0 = none, 1 = extreme)
-        'nodes_violating' : List  (nodes with |residual| above threshold)
+        'nodes_violating' : list  (nodes with |residual| above threshold)
     """
     threshold = PHI  # Golden ratio as natural threshold (from U6)
     if bounds is not None:
         threshold = bounds.get('max_allowed_residual', PHI)
 
-    violation_types: List[str] = []
-    nodes_violating: List[Any] = []
+    violation_types: list[str] = []
+    nodes_violating: list[Any] = []
 
     for node, res in balance.residual.items():
         if abs(res) > threshold:
@@ -661,7 +640,7 @@ def detect_grammar_violations_from_conservation(
     if balance.charge_drift > PHI:
         violation_types.append("U6_confinement_breach")
 
-    if balance.rms_residual > 1.0:
+    if balance.rms_residual > _BALANCE_RMS_ALERT:
         violation_types.append("U2_convergence_failure")
 
     if balance.max_residual > 2 * threshold:
@@ -676,7 +655,6 @@ def detect_grammar_violations_from_conservation(
         'severity': severity,
         'nodes_violating': nodes_violating,
     }
-
 
 # ---------------------------------------------------------------------------
 # Noether charge: total conserved quantity
@@ -704,15 +682,22 @@ def compute_noether_charge(G: Any) -> float:
     charge = compute_charge_density(G)
     return sum(charge.values())
 
-
 def compute_energy_functional(G: Any) -> float:
     r"""Compute the TNFR structural energy functional.
 
-    E = (1/2) Σ_i [Φ_s(i)² + |∇φ|(i)² + K_φ(i)² + J_φ(i)² + J_ΔNFR(i)²]
+    E = (1/2) Σ_i ℰ(i)
 
-    All five canonical fields contribute — this is the quadratic invariant
-    ℰ from the unified tetrad (see AGENTS.md §Tensor Invariants Found).
-    The ½ prefactor is conventional (analogous to ½(E² + B²) in EM).
+    where ℰ(i) = Φ_s² + |∇φ|² + K_φ² + J_φ² + J_ΔNFR² is the raw
+    energy density from :func:`unified.compute_energy_density`
+    (CANONICAL SOURCE).
+
+    **Single source of truth**: delegates to
+    ``unified.compute_energy_density`` for the per-node quadratic form,
+    then applies the ½ normalisation and sums.
+
+    **Consistency contracts**:
+        ``E == sum(variational.compute_hamiltonian_density(G).values())``
+        ``E == 0.5 * sum(unified.compute_energy_density(G).values())``
 
     Under grammar-compliant evolution (U2 convergence):
         dE/dt ≤ 0  (energy is non-increasing)
@@ -725,24 +710,14 @@ def compute_energy_functional(G: Any) -> float:
     -------
     float
         Total structural energy.
+
+    See Also
+    --------
+    unified.compute_energy_density : Raw ℰ(i) per node.
+    variational.compute_hamiltonian_density : H(i) = ½·ℰ(i) per node.
     """
-    phi_s = compute_structural_potential(G)
-    grad_phi = compute_phase_gradient(G)
-    k_phi = compute_phase_curvature(G)
-    j_phi = compute_phase_current(G)
-    j_dnfr = compute_dnfr_flux(G)
-
-    energy = 0.0
-    for n in G.nodes():
-        energy += 0.5 * (
-            phi_s.get(n, 0.0) ** 2
-            + grad_phi.get(n, 0.0) ** 2
-            + k_phi.get(n, 0.0) ** 2
-            + j_phi.get(n, 0.0) ** 2
-            + j_dnfr.get(n, 0.0) ** 2
-        )
-    return energy
-
+    raw = _raw_energy_density(G)
+    return 0.5 * sum(raw.values())
 
 # ---------------------------------------------------------------------------
 # Sector coupling analysis (the deep physics insight)
@@ -752,7 +727,7 @@ def analyze_sector_coupling(
     before: ConservationSnapshot,
     after: ConservationSnapshot,
     dt: float = 1.0,
-) -> Dict[str, float]:
+) -> dict[str, float]:
     r"""Analyze coupling between potential and geometric conservation sectors.
 
     The full conservation law decomposes into TWO coupled sectors:
@@ -782,7 +757,7 @@ def analyze_sector_coupling(
 
     Returns
     -------
-    Dict with:
+    dict with:
         'potential_sector_residual' : RMS residual of potential sector
         'geometric_sector_residual' : RMS residual of geometric sector
         'cross_coupling_strength' : Correlation between sector residuals
@@ -805,9 +780,9 @@ def analyze_sector_coupling(
         cross_corr = 0.0
 
     # Determine dominant sector
-    if rms_pot > 1.5 * rms_geo:
+    if rms_pot > _SECTOR_IMBALANCE_RATIO * rms_geo:
         dominant = 'potential'
-    elif rms_geo > 1.5 * rms_pot:
+    elif rms_geo > _SECTOR_IMBALANCE_RATIO * rms_pot:
         dominant = 'geometric'
     else:
         dominant = 'balanced'
@@ -821,7 +796,6 @@ def analyze_sector_coupling(
         'dominant_sector': dominant,
         'sector_asymmetry': asymmetry,
     }
-
 
 # ---------------------------------------------------------------------------
 # Ward identities: per-operator conservation signatures
@@ -862,7 +836,6 @@ class WardIdentity:
     conservation_quality: float
     charge_character: str
     energy_character: str
-
 
 def compute_ward_identity(
     before: ConservationSnapshot,
@@ -949,10 +922,9 @@ def compute_ward_identity(
         energy_character=energy_char,
     )
 
-
 def verify_sequence_ward_identity(
     identities: Sequence[WardIdentity],
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     r"""Verify the sequence Ward identity: Σ_k ⟨S_k⟩ ≈ 0.
 
     For a complete grammar-valid sequence, the total source over all steps
@@ -965,18 +937,18 @@ def verify_sequence_ward_identity(
 
     Returns
     -------
-    Dict with:
+    dict with:
         'total_source' : float — Σ⟨S_k⟩ (should be ≈ 0)
         'total_charge_change' : float — net ΔQ
         'total_energy_change' : float — net ΔE
         'sequence_conserved' : bool — True if |total_source| < threshold
-        'operator_summary' : Dict[str, int] — count by charge_character
+        'operator_summary' : dict[str, int] — count by charge_character
     """
     total_source = sum(w.mean_source for w in identities)
     total_dq = sum(w.delta_charge for w in identities)
     total_de = sum(w.delta_energy for w in identities)
 
-    summary: Dict[str, int] = {}
+    summary: dict[str, int] = {}
     for w in identities:
         summary[w.charge_character] = summary.get(w.charge_character, 0) + 1
 
@@ -990,7 +962,6 @@ def verify_sequence_ward_identity(
         "sequence_conserved": abs(total_source) < threshold,
         "operator_summary": summary,
     }
-
 
 # ---------------------------------------------------------------------------
 # Lyapunov stability analysis
@@ -1025,7 +996,6 @@ class LyapunovResult:
     dissipation: float
     is_stable: bool
     is_strongly_stable: bool
-
 
 def compute_lyapunov_derivative(
     before: ConservationSnapshot,
@@ -1081,7 +1051,6 @@ def compute_lyapunov_derivative(
         is_strongly_stable=de_dt < -stability_threshold,
     )
 
-
 # ---------------------------------------------------------------------------
 # Spectral conservation analysis (graph Laplacian decomposition)
 # ---------------------------------------------------------------------------
@@ -1122,10 +1091,9 @@ class SpectralConservation:
     dominant_conservation_modes: int
     spectral_gap: float
 
-
 def compute_spectral_conservation(
     G: Any,
-    snapshot: Optional[ConservationSnapshot] = None,
+    snapshot: ConservationSnapshot | None = None,
 ) -> SpectralConservation:
     r"""Decompose conservation fields in the graph Laplacian eigenbasis.
 
@@ -1201,17 +1169,16 @@ def compute_spectral_conservation(
         spectral_gap=spectral_gap,
     )
 
-
 # ---------------------------------------------------------------------------
 # Conservation scaling: q(N) ~ 1 - C/√N  verification
 # ---------------------------------------------------------------------------
 
 def compute_conservation_scaling(
-    topologies: Sequence[Tuple[Any, str]],
+    topologies: Sequence[tuple[Any, str]],
     dt: float = 0.01,
     n_steps: int = 10,
     seed: int = 42,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     r"""Measure conservation quality scaling with network size.
 
     Verifies the theoretical prediction:
@@ -1223,8 +1190,8 @@ def compute_conservation_scaling(
 
     Parameters
     ----------
-    topologies : Sequence[Tuple[graph, label]]
-        List of (graph, label) pairs at different sizes.
+    topologies : Sequence[tuple[graph, label]]
+        list of (graph, label) pairs at different sizes.
     dt : float
         Integration time step per evolution step.
     n_steps : int
@@ -1234,17 +1201,17 @@ def compute_conservation_scaling(
 
     Returns
     -------
-    Dict with:
-        'sizes' : List[int]
-        'qualities' : List[float]
-        'labels' : List[str]
+    dict with:
+        'sizes' : list[int]
+        'qualities' : list[float]
+        'labels' : list[str]
         'fit_C' : float — estimated C from q(N) ≈ 1 - C/√N
         'fit_R2' : float — goodness of fit
     """
     rng = np.random.default_rng(seed)
-    sizes: List[int] = []
-    qualities: List[float] = []
-    labels: List[str] = []
+    sizes: list[int] = []
+    qualities: list[float] = []
+    labels: list[str] = []
 
     for G, label in topologies:
         n = G.number_of_nodes()
@@ -1302,7 +1269,6 @@ def compute_conservation_scaling(
         "fit_C": fit_C,
         "fit_R2": fit_R2,
     }
-
 
 # ---------------------------------------------------------------------------
 #  Public API

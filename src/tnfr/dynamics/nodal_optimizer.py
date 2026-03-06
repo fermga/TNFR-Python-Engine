@@ -15,10 +15,8 @@ Status: CANONICAL OPTIMIZATION ENGINE
 """
 
 from ..mathematics.unified_numerical import np
-from typing import Dict, List, Tuple, Optional, Any, Union
+from typing import Any
 from dataclasses import dataclass
-from functools import lru_cache
-import warnings
 
 try:
     import networkx as nx
@@ -43,7 +41,6 @@ except ImportError:
 
 # Import Physics Fields
 try:
-    from ..physics.fields import compute_structural_potential, compute_phase_gradient
     HAS_PHYSICS = True
 except ImportError:
     HAS_PHYSICS = False
@@ -58,18 +55,16 @@ from ..constants.canonical import (
     NODAL_OPT_ADAPTIVE_SPEEDUP_CANONICAL   # (φ×γ)/e ≈ 0.3438 (1.8 → canonical)
 )
 
-
 @dataclass
 class NodalOptimizationState:
     """State container for nodal optimization caches."""
     eigenvalues: np.ndarray
     eigenvectors: np.ndarray
     vf_vector: np.ndarray
-    node_index: Dict[Any, int]
+    node_index: dict[Any, int]
     last_topology_hash: str
-    time_step_cache: Dict[float, np.ndarray]
-    spectral_workspace: Optional[np.ndarray] = None
-
+    time_step_cache: dict[float, np.ndarray]
+    spectral_workspace: np.ndarray | None = None
 
 class NodalEquationOptimizer:
     """
@@ -82,7 +77,7 @@ class NodalEquationOptimizer:
     def __init__(self, enable_cache: bool = True, max_cache_size: int = 1000):
         self.enable_cache = enable_cache and _CACHE_AVAILABLE
         self.max_cache_size = max_cache_size
-        self._optimization_states: Dict[int, NodalOptimizationState] = {}
+        self._optimization_states: dict[int, NodalOptimizationState] = {}
         
         # Initialize hierarchical cache if available
         if self.enable_cache:
@@ -154,15 +149,15 @@ class NodalEquationOptimizer:
         self, 
         G: Any, 
         dt: float, 
-        target_time: Optional[float] = None
-    ) -> Dict[Any, Tuple[float, float]]:
+        target_time: float | None = None
+    ) -> dict[Any, tuple[float, float]]:
         """
         Vectorized computation of nodal evolution using spectral methods.
         
         Solves ∂EPI/∂t = νf · ΔNFR(t) in the frequency domain for efficiency.
         
         Returns:
-            Dict mapping node -> (new_EPI, predicted_phase)
+            dict mapping node -> (new_EPI, predicted_phase)
         """
         if not HAS_NETWORKX or G is None:
             return {}
@@ -285,9 +280,9 @@ class NodalEquationOptimizer:
     def optimize_operator_sequence(
         self, 
         G: Any, 
-        operator_sequence: List[str], 
+        operator_sequence: list[str], 
         target_dt: float = NODAL_OPT_TARGET_DT_CANONICAL  # γ/(π+e) ≈ 0.0985 → canonical
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Optimize an entire operator sequence using predictive caching.
         
@@ -340,7 +335,7 @@ class NodalEquationOptimizer:
             "caching_opportunities": len(coherence_ops)
         }
     
-    def get_optimization_stats(self) -> Dict[str, Any]:
+    def get_optimization_stats(self) -> dict[str, Any]:
         """Get statistics about current optimizations."""
         stats = {
             "cached_graphs": len(self._optimization_states),
@@ -359,7 +354,7 @@ class NodalEquationOptimizer:
             
         return stats
     
-    def clear_optimization_cache(self, graph_id: Optional[int] = None) -> None:
+    def clear_optimization_cache(self, graph_id: int | None = None) -> None:
         """Clear optimization caches."""
         if graph_id is not None:
             self._optimization_states.pop(graph_id, None)
@@ -369,19 +364,17 @@ class NodalEquationOptimizer:
         if self._cache is not None:
             self._cache.clear()
 
-
 # Factory function for easy access
 def create_nodal_optimizer(**kwargs) -> NodalEquationOptimizer:
     """Create a nodal equation optimizer with default settings."""
     return NodalEquationOptimizer(**kwargs)
 
-
 # Integration with existing dynamics
 def optimize_nodal_step(
     G: Any, 
     dt: float, 
-    optimizer: Optional[NodalEquationOptimizer] = None
-) -> Dict[Any, Tuple[float, float]]:
+    optimizer: NodalEquationOptimizer | None = None
+) -> dict[Any, tuple[float, float]]:
     """
     Optimized version of a single nodal dynamics step.
     

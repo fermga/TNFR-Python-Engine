@@ -31,7 +31,6 @@ T = TypeVar("T")
 
 __all__ = ("TNFRContainer",)
 
-
 class TNFRContainer:
     """Dependency injection container for TNFR engine components.
 

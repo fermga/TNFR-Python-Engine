@@ -44,7 +44,6 @@ __all__ = [
     "list_objectives",
 ]
 
-
 # =============================================================================
 # THERAPEUTIC DOMAIN - Healing and Personal Transformation
 # =============================================================================
@@ -126,7 +125,6 @@ THERAPEUTIC_TEMPLATES = {
     },
 }
 
-
 # =============================================================================
 # EDUCATIONAL DOMAIN - Learning and Skill Development
 # =============================================================================
@@ -197,7 +195,6 @@ EDUCATIONAL_TEMPLATES = {
         ],
     },
 }
-
 
 # =============================================================================
 # ORGANIZATIONAL DOMAIN - Institutional Change and Team Dynamics
@@ -276,7 +273,6 @@ ORGANIZATIONAL_TEMPLATES = {
         ],
     },
 }
-
 
 # =============================================================================
 # CREATIVE DOMAIN - Artistic Process and Design
@@ -363,7 +359,6 @@ CREATIVE_TEMPLATES = {
     },
 }
 
-
 # =============================================================================
 # MASTER TEMPLATE DICTIONARY
 # =============================================================================
@@ -375,11 +370,9 @@ DOMAIN_TEMPLATES: dict[str, dict[str, dict[str, object]]] = {
     "creative": CREATIVE_TEMPLATES,
 }
 
-
 # =============================================================================
 # UTILITY FUNCTIONS
 # =============================================================================
-
 
 def get_template(domain: str, objective: str | None = None) -> list[str]:
     """Retrieve a template sequence for a specific domain and objective.
@@ -426,14 +419,13 @@ def get_template(domain: str, objective: str | None = None) -> list[str]:
 
     return domain_dict[objective]["sequence"]  # type: ignore[return-value]
 
-
 def list_domains() -> list[str]:
-    """List all available application domains.
+    """list all available application domains.
 
     Returns
     -------
     list[str]
-        List of domain names.
+        list of domain names.
 
     Examples
     --------
@@ -443,9 +435,8 @@ def list_domains() -> list[str]:
     """
     return list(DOMAIN_TEMPLATES.keys())
 
-
 def list_objectives(domain: str) -> list[str]:
-    """List all objectives available for a specific domain.
+    """list all objectives available for a specific domain.
 
     Parameters
     ----------
@@ -455,7 +446,7 @@ def list_objectives(domain: str) -> list[str]:
     Returns
     -------
     list[str]
-        List of objective names for the domain.
+        list of objective names for the domain.
 
     Raises
     ------

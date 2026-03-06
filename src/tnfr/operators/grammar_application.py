@@ -14,7 +14,6 @@ from typing import Any
 from ..types import Glyph
 from .grammar_patterns import recognize_il_sequences
 
-
 def apply_glyph_with_grammar(
     G,  # TNFRGraph
     nodes: Any,
@@ -127,7 +126,6 @@ def apply_glyph_with_grammar(
                                 UserWarning
                             )
 
-
 def on_applied_glyph(G, n, applied: Any) -> None:  # G: TNFRGraph, n: NodeId
     """Record glyph application in node history.
 
@@ -146,7 +144,6 @@ def on_applied_glyph(G, n, applied: Any) -> None:  # G: TNFRGraph, n: NodeId
     if "glyph_history" not in G.nodes[n]:
         G.nodes[n]["glyph_history"] = []
     G.nodes[n]["glyph_history"].append(applied)
-
 
 def enforce_canonical_grammar(
     G,  # TNFRGraph
@@ -179,5 +176,4 @@ def enforce_canonical_grammar(
     from .grammar_dynamics import enforce_grammar_on_glyph
 
     return enforce_grammar_on_glyph(G, n, cand)
-
 

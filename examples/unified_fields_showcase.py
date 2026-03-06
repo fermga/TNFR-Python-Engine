@@ -47,7 +47,7 @@ import networkx as nx
 from tnfr.sdk import TNFRNetwork
 from tnfr.physics.fields import (
     compute_unified_telemetry,
-    compute_complex_geometric_field,
+    compute_complex_geometric_field_arrays,
     compute_emergent_fields,
     compute_tensor_invariants,
 )

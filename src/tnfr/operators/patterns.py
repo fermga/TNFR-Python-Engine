@@ -22,7 +22,7 @@ traceable to TNFR grammar principles:
 from __future__ import annotations
 
 from collections import Counter
-from typing import Dict, Iterable, List, Mapping, Sequence
+from typing import Iterable, Mapping, Sequence
 
 from ..constants.canonical import (
     PATTERN_BASE_WEIGHT_CANONICAL,
@@ -66,7 +66,6 @@ from .grammar import StructuralPattern
 
 __all__ = ["AdvancedPatternDetector"]
 
-
 _CANONICAL_ORDER = (
     EMISSION,
     RECEPTION,
@@ -89,35 +88,33 @@ _INTERMEDIATE = {COUPLING, RESONANCE, DISSONANCE}
 
 _COHERENCE_WEIGHTS = {
     StructuralPattern.THERAPEUTIC: PATTERN_THERAPEUTIC_WEIGHT_CANONICAL,  # φ/γ ≈ 2.8032 (therapeutic boost)
-    StructuralPattern.EDUCATIONAL: PATTERN_EDUCATIONAL_WEIGHT_CANONICAL,  # φ/(φ+γ) ≈ 0.7371 (boost educacional)
-    StructuralPattern.ORGANIZATIONAL: PATTERN_ORGANIZATIONAL_WEIGHT_CANONICAL,  # γ/(π+γ) ≈ 0.1552 (boost organizacional)
-    StructuralPattern.CREATIVE: PATTERN_CREATIVE_WEIGHT_CANONICAL,  # φ/(φ+γ) ≈ 0.7371 (mismo que educacional)
-    StructuralPattern.REGENERATIVE: PATTERN_REGENERATIVE_WEIGHT_CANONICAL,  # φ/e ≈ 0.5952 (boost regenerativo)
+    StructuralPattern.EDUCATIONAL: PATTERN_EDUCATIONAL_WEIGHT_CANONICAL,  # φ/(φ+γ) ≈ 0.7371 (educational boost)
+    StructuralPattern.ORGANIZATIONAL: PATTERN_ORGANIZATIONAL_WEIGHT_CANONICAL,  # γ/(π+γ) ≈ 0.1552 (organizational boost)
+    StructuralPattern.CREATIVE: PATTERN_CREATIVE_WEIGHT_CANONICAL,  # φ/(φ+γ) ≈ 0.7371 (same as educational)
+    StructuralPattern.REGENERATIVE: PATTERN_REGENERATIVE_WEIGHT_CANONICAL,  # φ/e ≈ 0.5952 (regenerative boost)
     StructuralPattern.BOOTSTRAP: PATTERN_BOOTSTRAP_WEIGHT_CANONICAL,  # 1+γ/(π×e) ≈ 1.0676 (minimum boost)
-    StructuralPattern.EXPLORE: PATTERN_EXPLORE_WEIGHT_CANONICAL,  # Mismo que bootstrap
+    StructuralPattern.EXPLORE: PATTERN_EXPLORE_WEIGHT_CANONICAL,  # Same as bootstrap
     StructuralPattern.STABILIZE: PATTERN_STABILIZE_WEIGHT_CANONICAL,  # φ/(φ+1) ≈ 0.6180 (stabilization)
-    StructuralPattern.BIFURCATED: PATTERN_BOOTSTRAP_WEIGHT_CANONICAL,  # Mismo que bootstrap
-    StructuralPattern.FRACTAL: PATTERN_EXPLORE_WEIGHT_CANONICAL,  # Mismo que explore
-    StructuralPattern.HIERARCHICAL: PATTERN_BOOTSTRAP_WEIGHT_CANONICAL,  # Mismo que bootstrap
+    StructuralPattern.BIFURCATED: PATTERN_BOOTSTRAP_WEIGHT_CANONICAL,  # Same as bootstrap
+    StructuralPattern.FRACTAL: PATTERN_EXPLORE_WEIGHT_CANONICAL,  # Same as explore
+    StructuralPattern.HIERARCHICAL: PATTERN_BOOTSTRAP_WEIGHT_CANONICAL,  # Same as bootstrap
     StructuralPattern.CYCLIC: PATTERN_BASE_WEIGHT_CANONICAL,  # 1.0 (canonical unit)
-    StructuralPattern.COMPLEX: PATTERN_COMPLEX_WEIGHT_CANONICAL,  # Mismo que estabilizar
+    StructuralPattern.COMPLEX: PATTERN_COMPLEX_WEIGHT_CANONICAL,  # Same as stabilize
     StructuralPattern.COMPRESS: PATTERN_COMPRESS_WEIGHT_CANONICAL,  # 1-γ/(π×e) ≈ 0.9324 (compression)
-    StructuralPattern.RESONATE: PATTERN_BOOTSTRAP_WEIGHT_CANONICAL,  # Mismo que bootstrap
+    StructuralPattern.RESONATE: PATTERN_BOOTSTRAP_WEIGHT_CANONICAL,  # Same as bootstrap
     StructuralPattern.LINEAR: PATTERN_LINEAR_WEIGHT_CANONICAL,  # γ/π ≈ 0.1837 (linear minimum)
     StructuralPattern.BASIC_LEARNING: PATTERN_BASE_WEIGHT_CANONICAL,  # 1.0 (canonical unit)
-    StructuralPattern.DEEP_LEARNING: PATTERN_EXPLORE_WEIGHT_CANONICAL,  # Mismo que explore
-    StructuralPattern.EXPLORATORY_LEARNING: PATTERN_EXPLORE_WEIGHT_CANONICAL,  # Mismo que explore
+    StructuralPattern.DEEP_LEARNING: PATTERN_EXPLORE_WEIGHT_CANONICAL,  # Same as explore
+    StructuralPattern.EXPLORATORY_LEARNING: PATTERN_EXPLORE_WEIGHT_CANONICAL,  # Same as explore
     StructuralPattern.CONSOLIDATION_CYCLE: PATTERN_COMPRESS_WEIGHT_CANONICAL,  # Same as compression
     StructuralPattern.ADAPTIVE_MUTATION: PATTERN_BASE_WEIGHT_CANONICAL,  # 1.0 (canonical unit)
     StructuralPattern.UNKNOWN: PATTERN_LINEAR_WEIGHT_CANONICAL * 0.5,  # Reduced structural minimum
 }
 
-
-def _canonicalise(sequence: Sequence[str]) -> List[str]:
+def _canonicalise(sequence: Sequence[str]) -> list[str]:
     """Return canonical lower-case operator tokens."""
 
     return [str(token).lower() for token in sequence]
-
 
 class AdvancedPatternDetector:
     """Heuristic detector for high-level structural patterns.
@@ -129,7 +126,7 @@ class AdvancedPatternDetector:
     """
 
     def __init__(self) -> None:  # pragma: no cover - trivial initialiser
-        self._cache: Dict[tuple[str, ...], StructuralPattern] = {}
+        self._cache: dict[tuple[str, ...], StructuralPattern] = {}
 
     # ------------------------------------------------------------------
     # Public API
@@ -525,7 +522,7 @@ class AdvancedPatternDetector:
         raw_score += OPERATORS_PATTERN_DESTABILIZER_WEIGHT_CANONICAL * destabilisers + OPERATORS_PATTERN_STABILIZER_WEIGHT_CANONICAL * stabilisers
         return min(1.0, raw_score / 12.0)
 
-    def _domain_suitability(self, seq: Sequence[str]) -> Dict[str, float]:
+    def _domain_suitability(self, seq: Sequence[str]) -> dict[str, float]:
         scores = {
             "therapeutic": 0.0,
             "educational": 0.0,
@@ -551,7 +548,7 @@ class AdvancedPatternDetector:
             scores["organizational"] = max(scores["organizational"], 0.4)
         return scores
 
-    def _structural_health(self, seq: Sequence[str]) -> Dict[str, object]:
+    def _structural_health(self, seq: Sequence[str]) -> dict[str, object]:
         counter = Counter(seq)
         stabilisers = self._count(seq, _STABILIZERS)
         destabilisers = self._count(seq, _DESTABILIZERS)
@@ -578,7 +575,7 @@ class AdvancedPatternDetector:
         self,
         seq: Sequence[str],
         primary: StructuralPattern,
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         def assign(pattern: StructuralPattern, value: float) -> None:
             if value <= 0.0:
                 return
@@ -586,7 +583,7 @@ class AdvancedPatternDetector:
             current = scores.get(key, 0.0)
             scores[key] = round(max(current, value), 4)
 
-        scores: Dict[str, float] = {}
+        scores: dict[str, float] = {}
 
         # Domain patterns carry highest confidence when matched
         if self._is_therapeutic(seq):
@@ -649,7 +646,7 @@ class AdvancedPatternDetector:
 
         return scores
 
-    def _coherence_weights(self) -> Dict[str, float]:
+    def _coherence_weights(self) -> dict[str, float]:
         return {
             pattern.value: _COHERENCE_WEIGHTS.get(pattern, 1.0)
             for pattern in StructuralPattern

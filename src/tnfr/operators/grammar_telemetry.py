@@ -13,11 +13,12 @@ from typing import Any
 
 from ..mathematics.unified_numerical import np
 from ..config.defaults_core import K_PHI_CURVATURE_THRESHOLD  # 0.9×π ≈ 2.827 canonical threshold
+from ..constants.canonical import GRAD_PHI_CANONICAL_THRESHOLD  # γ/π ≈ 0.1837
 
 def warn_phase_gradient_telemetry(
     G: Any,
     *,
-    threshold: float = 0.183736807,  # γ/π canonical (Kuramoto critical coupling)
+    threshold: float = GRAD_PHI_CANONICAL_THRESHOLD,  # γ/π canonical (Kuramoto critical coupling)
 ) -> tuple[bool, dict[str, float], str, list[Any]]:
     """Emit non-blocking telemetry warning for |∇φ| (phase gradient).
 
@@ -66,7 +67,6 @@ def warn_phase_gradient_telemetry(
 
     stats = {"max": max_v, "mean": mean_v, "frac_over": frac_over}
     return safe, stats, msg, flagged
-
 
 def warn_phase_curvature_telemetry(
     G: Any,
@@ -143,7 +143,6 @@ def warn_phase_curvature_telemetry(
         )
 
     return safe, stats, msg, hotspots
-
 
 def warn_coherence_length_telemetry(
     G: Any,
@@ -254,5 +253,4 @@ def warn_coherence_length_telemetry(
 
     stats = {"xi_c": xi_c, "mean_path_length": mpl, "diameter": diam, "severity": severity}
     return safe, stats, msg
-
 

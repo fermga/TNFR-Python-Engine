@@ -14,9 +14,9 @@ from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 from statistics import fmean
-from typing import Any, Dict, Iterable, List, Sequence
+from typing import Any, Iterable, Sequence
 
-from tnfr.physics.fields import (  # type: ignore
+from ..physics.fields import (  # type: ignore
     compute_phase_curvature,
     compute_phase_gradient,
     compute_structural_potential,
@@ -28,7 +28,6 @@ __all__ = [
     "compute_field_aggregates",
     "write_telemetry_records",
 ]
-
 
 @dataclass
 class RiemannTelemetryRecord:
@@ -57,8 +56,7 @@ class RiemannTelemetryRecord:
         rec["eigenvalues"] = list(self.eigenvalues)
         return rec
 
-
-def _aggregate(values: Dict[Any, float]) -> tuple[float | None, float | None]:
+def _aggregate(values: dict[Any, float]) -> tuple[float | None, float | None]:
     if not values:
         return None, None
     abs_values = [abs(v) for v in values.values()]
@@ -66,8 +64,7 @@ def _aggregate(values: Dict[Any, float]) -> tuple[float | None, float | None]:
         return None, None
     return float(fmean(abs_values)), float(max(abs_values, key=abs))
 
-
-def compute_field_aggregates(G: Any) -> Dict[str, float | None]:
+def compute_field_aggregates(G: Any) -> dict[str, float | None]:
     """Compute Φ_s, |∇φ|, K_φ, ξ_C aggregates for a TNFR graph."""
 
     phi_s = compute_structural_potential(G)
@@ -91,7 +88,6 @@ def compute_field_aggregates(G: Any) -> Dict[str, float | None]:
         "coherence_length": coherence_clean,
     }
 
-
 def write_telemetry_records(
     records: Iterable[RiemannTelemetryRecord],
     export_path: str | Path,
@@ -102,7 +98,7 @@ def write_telemetry_records(
     path.parent.mkdir(parents=True, exist_ok=True)
 
     # Convert to list to avoid one-shot iterables when writing twice later.
-    cached: List[RiemannTelemetryRecord] = list(records)
+    cached: list[RiemannTelemetryRecord] = list(records)
     if not cached:
         raise ValueError("No telemetry records provided")
 

@@ -34,7 +34,6 @@ if TYPE_CHECKING:
 
 __all__ = ["validate_dissonance_strict"]
 
-
 def validate_dissonance_strict(G: TNFRGraph, node: Any) -> None:
     """Validate strict canonical preconditions for OZ (Dissonance) operator.
 
@@ -169,7 +168,6 @@ def validate_dissonance_strict(G: TNFRGraph, node: Any) -> None:
         "degree": degree,
         "validation_passed": True,
     }
-
 
 def _validate_oz_no_overload(G: TNFRGraph, node: Any) -> None:
     """Detect and prevent dissonance overload (sobrecarga disonante).

@@ -19,7 +19,6 @@ from ..constants.aliases import ALIAS_DNFR
 from ..types import Glyph, TNFRGraph
 from .definitions_base import Operator
 
-
 class Dissonance(Operator):
     """Raise dnfr; induce exploratory instability; probe bifurcation.
 

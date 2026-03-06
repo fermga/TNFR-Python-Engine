@@ -142,7 +142,7 @@ Three-body system (Figure-8 orbit):
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Dict, List, Tuple, Optional
+from typing import TYPE_CHECKING, Any
 
 from ..mathematics.unified_numerical import np
 from numpy.typing import NDArray
@@ -160,7 +160,6 @@ __all__ = (
     "gravitational_force",
     "compute_gravitational_dnfr",
 )
-
 
 def gravitational_potential(
     positions: NDArray[np.floating],
@@ -207,7 +206,6 @@ def gravitational_potential(
             U -= G * masses[i] * masses[j] / dist
 
     return U
-
 
 def gravitational_force(
     positions: NDArray[np.floating],
@@ -261,7 +259,6 @@ def gravitational_force(
 
     return forces
 
-
 def compute_gravitational_dnfr(
     positions: NDArray[np.floating],
     masses: NDArray[np.floating],
@@ -304,7 +301,6 @@ def compute_gravitational_dnfr(
 
     return dnfr
 
-
 class NBodySystem:
     """Classical N-body gravitational system in TNFR framework.
 
@@ -346,7 +342,7 @@ class NBodySystem:
     def __init__(
         self,
         n_bodies: int,
-        masses: List[float] | NDArray[np.floating],
+        masses: list[float] | NDArray[np.floating],
         G: float = 1.0,
         softening: float = 0.0,
     ):
@@ -441,7 +437,7 @@ class NBodySystem:
         positions: NDArray[np.floating],
         velocities: NDArray[np.floating],
     ) -> None:
-        """Set system state (positions and velocities).
+        """set system state (positions and velocities).
 
         Parameters
         ----------
@@ -478,7 +474,7 @@ class NBodySystem:
             }
             self.graph.nodes[node_id]["epi"] = epi_state
 
-    def get_state(self) -> Tuple[NDArray[np.floating], NDArray[np.floating]]:
+    def get_state(self) -> tuple[NDArray[np.floating], NDArray[np.floating]]:
         """Get current state (positions and velocities).
 
         Returns
@@ -490,7 +486,7 @@ class NBodySystem:
         """
         return self.positions.copy(), self.velocities.copy()
 
-    def compute_energy(self) -> Tuple[float, float, float]:
+    def compute_energy(self) -> tuple[float, float, float]:
         """Compute system energy (kinetic + potential).
 
         Returns
@@ -602,7 +598,7 @@ class NBodySystem:
         t_final: float,
         dt: float,
         store_interval: int = 1,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Evolve system from current time to t_final.
 
         Parameters
@@ -691,8 +687,8 @@ class NBodySystem:
 
     def plot_trajectories(
         self,
-        history: Dict[str, Any],
-        ax: Optional[Any] = None,
+        history: dict[str, Any],
+        ax: Any | None = None,
         show_energy: bool = True,
     ) -> Figure:
         """Plot trajectories and energy evolution.

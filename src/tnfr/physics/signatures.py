@@ -11,7 +11,7 @@ Development focus: Au (gold-like) emergence from TNFR nodal equation dynamics.
 from __future__ import annotations
 
 import math
-from typing import Dict, Any
+from typing import Any
 
 try:
     import networkx as nx
@@ -20,9 +20,8 @@ except ImportError:
 
 # TNFR Optimizations Integration
 try:
-    from ..mathematics.spectral import gft, igft, get_laplacian_spectrum
+    from ..mathematics.spectral import gft
     from ..mathematics.unified_cache import cache_tnfr_computation
-    from ..dynamics.advanced_fft_arithmetic import SpectralOperation, SpectralState
     _HAS_SPECTRAL_OPTIMIZATIONS = True
 except ImportError:
     _HAS_SPECTRAL_OPTIMIZATIONS = False
@@ -33,12 +32,19 @@ from .fields import (
     compute_phase_curvature,
     estimate_coherence_length,
 )
-
+from ..constants.canonical import (
+    GRAD_PHI_CANONICAL_THRESHOLD,
+    K_PHI_CANONICAL_THRESHOLD,
+    AU_CURVATURE_PERMISSIVE_THRESHOLD,
+    CRITICAL_EXPONENT,
+    EMERGENT_STABILITY_THRESHOLD_CANONICAL,
+    PHI, GAMMA, PI,
+)
 
 # Spectral-optimized element detection cache
 if _HAS_SPECTRAL_OPTIMIZATIONS:
     @cache_tnfr_computation()
-    def _detect_element_patterns_spectral(phase_data: tuple, dnfr_data: tuple, n_nodes: int) -> Dict[str, float]:
+    def _detect_element_patterns_spectral(phase_data: tuple, dnfr_data: tuple, n_nodes: int) -> dict[str, float]:
         """FFT-optimized element pattern detection.
         
         Uses Graph Fourier Transform for O(N log N) pattern recognition
@@ -80,7 +86,7 @@ if _HAS_SPECTRAL_OPTIMIZATIONS:
                 'dnfr_spectral_energy': 1.0,
             }
 else:
-    def _detect_element_patterns_spectral(phase_data: tuple, dnfr_data: tuple, n_nodes: int) -> Dict[str, float]:
+    def _detect_element_patterns_spectral(phase_data: tuple, dnfr_data: tuple, n_nodes: int) -> dict[str, float]:
         """Fallback without spectral optimization."""
         return {
             'spectral_coherence': 0.5,
@@ -88,7 +94,7 @@ else:
             'dnfr_spectral_energy': 1.0,
         }
 
-def compute_element_signature(G: "nx.Graph", apply_synthetic_step: bool = True) -> Dict[str, Any]:
+def compute_element_signature(G: "nx.Graph", apply_synthetic_step: bool = True) -> dict[str, Any]:
     """Compute the Structural Field Tetrad signature for an element-like pattern.
     
     OPTIMIZED: Uses FFT-based spectral analysis for O(N log N) pattern detection.
@@ -119,7 +125,7 @@ def compute_element_signature(G: "nx.Graph", apply_synthetic_step: bool = True) 
         - phi_s_after: structural potential after synthetic step (if applied)
         - phi_s_drift: |Δ Φ_s| between before/after (if applied)
         - phase_gradient_ok: bool, |∇φ| < γ/π ≈ 0.1837 (canonical threshold)
-        - curvature_hotspots_ok: bool, max |K_φ| < 3.0 (canonical threshold)
+        - curvature_hotspots_ok: bool, max |K_φ| < 0.9×π ≈ 2.8274 (canonical threshold)
         - coherence_length_category: str in {localized, medium, extended}
         - signature_class: str, one of {stable, marginal, unstable}
         
@@ -172,8 +178,8 @@ def compute_element_signature(G: "nx.Graph", apply_synthetic_step: bool = True) 
                 'delta_nfr': G.nodes[n].get('delta_nfr', 0.05),
             }
         
-        # Apply synthetic step (canonical parameters from exponential series)
-        apply_synthetic_activation_sequence(G, alpha=0.18393972058572117, dnfr_factor=0.5903096618115984)  # γ/(π+1), (φ+γ)/(π+γ)
+        # Apply synthetic step (canonical parameters from Universal Tetrahedral Correspondence)
+        apply_synthetic_activation_sequence(G, alpha=CRITICAL_EXPONENT, dnfr_factor=EMERGENT_STABILITY_THRESHOLD_CANONICAL)  # γ/π, (φ+γ)/(π+γ)
         phi_s_after = compute_structural_potential(G)
         phi_s_after_mean = sum(phi_s_after.values()) / len(phi_s_after) if phi_s_after else 0.0
         phi_s_drift = abs(phi_s_after_mean - phi_s_before_mean)
@@ -184,8 +190,8 @@ def compute_element_signature(G: "nx.Graph", apply_synthetic_step: bool = True) 
             G.nodes[n]['delta_nfr'] = original_state[n]['delta_nfr']
 
     # Canonical threshold checks (Universal Tetrahedral Correspondence: γ ↔ |∇φ|)
-    phase_grad_ok = mean_grad < 0.183736807  # γ/π - Kuramoto critical coupling threshold
-    curv_hotspots_ok = max_curv_abs < 2.8274  # 0.9π - theoretical bounds threshold
+    phase_grad_ok = mean_grad < GRAD_PHI_CANONICAL_THRESHOLD  # γ/π ≈ 0.1837 Kuramoto critical coupling
+    curv_hotspots_ok = max_curv_abs < K_PHI_CANONICAL_THRESHOLD  # 0.9×π ≈ 2.8274 theoretical bounds
 
     # Coherence length categorization (empirical heuristic)
     n_nodes = len(G.nodes())
@@ -221,8 +227,7 @@ def compute_element_signature(G: "nx.Graph", apply_synthetic_step: bool = True) 
         "signature_class": signature_class,
     }
 
-
-def compute_au_like_signature(G: "nx.Graph") -> Dict[str, Any]:
+def compute_au_like_signature(G: "nx.Graph") -> dict[str, Any]:
     """Compute signature specifically for Au-like (Z≈79) coherent attractors.
     
     This is a specialized version of compute_element_signature with Au-specific
@@ -242,9 +247,9 @@ def compute_au_like_signature(G: "nx.Graph") -> Dict[str, Any]:
         signature["coherence_length_category"] in ["medium", "extended"]
         or len(G.nodes()) > 50  # Complex topology indicates Au-like
     )
-    is_phase_synchronized = signature["mean_phase_gradient"] < 1.5707963267948966  # π/2 - permissive for current patterns
-    is_evolution_stable = signature["phi_s_drift"] < 2.195583139547755  # (φ+γ) - moderate drift tolerance
-    is_curvature_mild = signature["max_phase_curvature_abs"] < 3.025733079779058  # (φ+1)π/e - permissive threshold
+    is_phase_synchronized = signature["mean_phase_gradient"] < PI / 2  # π/2 - permissive for current patterns
+    is_evolution_stable = signature["phi_s_drift"] < PHI + GAMMA  # (φ+γ) - moderate drift tolerance
+    is_curvature_mild = signature["max_phase_curvature_abs"] < AU_CURVATURE_PERMISSIVE_THRESHOLD  # (φ+1)×π/e ≈ 3.0257
     
     signature["is_au_like"] = (
         is_extended_or_complex
@@ -256,7 +261,6 @@ def compute_au_like_signature(G: "nx.Graph") -> Dict[str, Any]:
     )
     
     return signature
-
 
 __all__ = [
     "compute_element_signature",

@@ -13,13 +13,12 @@ coherent-form prototypes to compare tetrad metrics and topological invariants.
 from __future__ import annotations
 
 import math
-from typing import List, Tuple, Optional
 
+from ..constants.canonical import DELTA_PHI_MAX
 from ..mathematics.unified_numerical import np
 import networkx as nx
 
 _TWO_PI = 2.0 * math.pi
-
 
 def _wrap_2pi(x: float) -> float:
     # map real to [0, 2π)
@@ -27,7 +26,6 @@ def _wrap_2pi(x: float) -> float:
     if y < 0.0:
         y += _TWO_PI
     return float(y)
-
 
 def _set_baseline(G: nx.Graph, base_dnfr: float = 0.05) -> None:
     for n in G.nodes():
@@ -37,14 +35,12 @@ def _set_baseline(G: nx.Graph, base_dnfr: float = 0.05) -> None:
         G.nodes[n]["dnfr"] = float(base_dnfr)
         G.nodes[n]["coherence"] = 1.0 / (1.0 + abs(base_dnfr))
 
-
 def reset_baseline(G: nx.Graph, base_dnfr: float = 0.05) -> nx.Graph:
     """Reset all per-node telemetry to a mild baseline.
     Returns the graph for chaining.
     """
     _set_baseline(G, base_dnfr=base_dnfr)
     return G
-
 
 def apply_plane_wave(G: nx.Graph, kx: float = 0.25, ky: float = 0.0) -> None:
     """Photon-like: coherent propagating phase front (Q≈0, K_φ≈0)."""
@@ -58,13 +54,12 @@ def apply_plane_wave(G: nx.Graph, kx: float = 0.25, ky: float = 0.0) -> None:
         G.nodes[n]["theta"] = float(phi)
         G.nodes[n]["phase"] = float(phi)
 
-
 def apply_vortex(
     G: nx.Graph,
-    center: Optional[Tuple[int, int]] = None,
+    center: tuple[int, int] | None = None,
     dnfr_core: float = 0.2,
     decay: float = 4.0,
-) -> Tuple[int, int]:
+) -> tuple[int, int]:
     """Electron-like: localized vortex with winding Q=±1."""
     # infer center for grid graphs
     if center is None:
@@ -93,15 +88,14 @@ def apply_vortex(
         G.nodes[n]["coherence"] = 1.0 / (1.0 + abs(dnfr))
     return (cx, cy)
 
-
 def apply_helical_packet(
     G: nx.Graph,
-    center: Optional[Tuple[int, int]] = None,
+    center: tuple[int, int] | None = None,
     kx: float = 0.2,
     ky: float = 0.0,
     twist: float = 0.3,
     sigma: float = 8.0,
-) -> Tuple[int, int]:
+) -> tuple[int, int]:
     """Massive gauge-like packet: traveling phase with gentle
     helical twist around a center.
     Q≈0, with chirality (sign of twist) and local confinement by
@@ -135,7 +129,6 @@ def apply_helical_packet(
         G.nodes[n]["coherence"] = 1.0 / (1.0 + abs(dnfr))
     return (cx, cy)
 
-
 def apply_global_curvature(G: nx.Graph, a: float = 1e-3) -> None:
     """Graviton-like: very weak global curvature
     (small K_φ, large ξ_C).
@@ -149,13 +142,12 @@ def apply_global_curvature(G: nx.Graph, a: float = 1e-3) -> None:
         G.nodes[n]["theta"] = float(phi)
         G.nodes[n]["phase"] = float(phi)
 
-
 def apply_scalar_bump(
     G: nx.Graph,
-    center: Optional[Tuple[int, int]] = None,
+    center: tuple[int, int] | None = None,
     amp: float = 0.25,
     sigma: float = 6.0,
-) -> Tuple[int, int]:
+) -> tuple[int, int]:
     """Higgs-like: local scalar field that elevates ΔNFR around the
     center with nearly constant phase.
     """
@@ -186,13 +178,12 @@ def apply_scalar_bump(
         G.nodes[n]["coherence"] = 1.0 / (1.0 + abs(dnfr))
     return (cx, cy)
 
-
 def apply_quark_triplet_cluster(
     G: nx.Graph,
-    centers: Optional[List[Tuple[int, int]]] = None,
+    centers: list[tuple[int, int]] | None = None,
     dnfr_core: float = 0.18,
     decay: float = 3.5,
-) -> List[Tuple[int, int]]:
+) -> list[tuple[int, int]]:
     """Quark-like cluster: three localized defects that only
     show coherent stability as an ensemble.
     Implementation: three Q=+1 vortices with nearby cores;
@@ -213,7 +204,6 @@ def apply_quark_triplet_cluster(
         apply_vortex(G, center=c, dnfr_core=dnfr_core, decay=decay)
     return centers
 
-
 def apply_neutrino_like(G: nx.Graph, eps: float = 0.03) -> None:
     """Neutrino-like: faint mode (very low |∇φ|, Q≈0) with weak
     footprint in K_φ.
@@ -227,11 +217,10 @@ def apply_neutrino_like(G: nx.Graph, eps: float = 0.03) -> None:
         G.nodes[n]["theta"] = float(phi)
         G.nodes[n]["phase"] = float(phi)
 
-
 def apply_color_domain_lattice(
     G: nx.Graph,
     period: int = 6,
-    dphi: float = math.pi / 2,
+    dphi: float = DELTA_PHI_MAX,
     wall_dnfr: float = 0.15,
 ) -> None:
     """Gluon-like surrogate: network of phase domains with walls
@@ -256,7 +245,6 @@ def apply_color_domain_lattice(
         G.nodes[n]["dnfr"] = float(dnfr)
         G.nodes[n]["coherence"] = 1.0 / (1.0 + abs(dnfr))
 
-
 __all__ = [
     "reset_baseline",
     "apply_plane_wave",
@@ -268,7 +256,6 @@ __all__ = [
     "apply_neutrino_like",
     "apply_color_domain_lattice",
 ]
-
 
 # --- Element-like radial pattern (centralization) ---------------------------
 
@@ -311,7 +298,7 @@ def build_element_radial_pattern(Z: int, *, seed: int = 42) -> nx.Graph:
     for r in shell1:
         G.add_edge(nucleus, r)
 
-    shell2: List[int] = []
+    shell2: list[int] = []
     if Z >= 3:
         # add a second shell with mild growth
         n2 = max(10, 12 + 2 * (Z - 2))
@@ -341,6 +328,5 @@ def build_element_radial_pattern(Z: int, *, seed: int = 42) -> nx.Graph:
         G.nodes[r]["role"] = "shell2"
 
     return G
-
 
 __all__.append("build_element_radial_pattern")

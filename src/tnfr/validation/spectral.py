@@ -20,7 +20,6 @@ from .base import ValidationOutcome, Validator
 
 __all__ = ("NFRValidator",)
 
-
 @dataclass(slots=True)
 class NFRValidator(Validator[np.ndarray]):
     """Validate spectral states against TNFR canonical invariants."""

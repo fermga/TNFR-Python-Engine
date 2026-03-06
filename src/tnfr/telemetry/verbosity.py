@@ -12,14 +12,12 @@ from __future__ import annotations
 
 from enum import Enum
 
-
 class TelemetryVerbosity(str, Enum):
     """Enumerated verbosity tiers shared by trace and metrics pipelines."""
 
     BASIC = "basic"
     DETAILED = "detailed"
     DEBUG = "debug"
-
 
 TELEMETRY_VERBOSITY_LEVELS: tuple[str, ...] = tuple(level.value for level in TelemetryVerbosity)
 """Ordered tuple of canonical telemetry verbosity identifiers."""

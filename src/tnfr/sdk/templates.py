@@ -24,8 +24,6 @@ Model neural network with TNFR principles:
 
 from __future__ import annotations
 
-from typing import Optional
-
 from .fluent import TNFRNetwork, NetworkResults
 from ..constants.canonical import (
     SDK_CONNECTIVITY_DEFAULT,
@@ -35,11 +33,9 @@ from ..constants.canonical import (
     SDK_VF_RANGE_LOW_MAX,
     SDK_VF_RANGE_MODERATE_MIN,
     SDK_VF_RANGE_MODERATE_MAX,
-    SDK_COUPLING_STRENGTH_WEAK,
 )
 
 __all__ = ["TNFRTemplates"]
-
 
 class TNFRTemplates:
     """Pre-configured templates for common domain-specific use cases.
@@ -58,7 +54,7 @@ class TNFRTemplates:
         people: int = 50,
         connections_per_person: int = 5,
         simulation_steps: int = 20,
-        random_seed: Optional[int] = None,
+        random_seed: int | None = None,
     ) -> NetworkResults:
         """Simulate social network dynamics using TNFR.
 
@@ -122,7 +118,7 @@ class TNFRTemplates:
         neurons: int = 100,
         connectivity: float = SDK_CONNECTIVITY_DEFAULT,  # Canonical neural connectivity
         activation_cycles: int = 30,
-        random_seed: Optional[int] = None,
+        random_seed: int | None = None,
     ) -> NetworkResults:
         """Model neural network using TNFR structural principles.
 
@@ -173,7 +169,7 @@ class TNFRTemplates:
         species: int = 25,
         interaction_strength: float = SDK_INTERACTION_STRENGTH,  # Canonical interaction strength
         evolution_steps: int = 50,
-        random_seed: Optional[int] = None,
+        random_seed: int | None = None,
     ) -> NetworkResults:
         """Model ecosystem dynamics with TNFR structural evolution.
 
@@ -235,7 +231,7 @@ class TNFRTemplates:
         ideas: int = 15,
         inspiration_level: float = SDK_INSPIRATION_LEVEL,  # Canonical creative inspiration
         development_cycles: int = 12,
-        random_seed: Optional[int] = None,
+        random_seed: int | None = None,
     ) -> NetworkResults:
         """Model creative processes using TNFR structural evolution.
 
@@ -294,7 +290,7 @@ class TNFRTemplates:
         agents: int = 40,
         hierarchy_depth: int = 3,
         coordination_steps: int = 25,
-        random_seed: Optional[int] = None,
+        random_seed: int | None = None,
     ) -> NetworkResults:
         """Model organizational networks with hierarchical structure.
 

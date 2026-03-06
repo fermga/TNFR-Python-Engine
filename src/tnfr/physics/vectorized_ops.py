@@ -5,8 +5,7 @@ to replace slow Python loops in canonical.py.
 """
 
 from ..mathematics.unified_numerical import np
-from typing import Any, Dict, List, Optional, Tuple
-import math
+from typing import Any
 
 try:
     import networkx as nx
@@ -15,12 +14,12 @@ except ImportError:
 
 def compute_phi_s_exact_vectorized(
     G: Any,
-    nodes: List[Any],
-    delta_nfr: Dict[Any, float],
+    nodes: list[Any],
+    delta_nfr: dict[Any, float],
     alpha: float,
     dtype: type = np.float64,
-    distance_matrix: Optional[np.ndarray] = None
-) -> Dict[Any, float]:
+    distance_matrix: np.ndarray | None = None
+) -> dict[Any, float]:
     """Vectorized exact Φ_s computation."""
     n = len(nodes)
     node_to_idx = {node: i for i, node in enumerate(nodes)}
@@ -84,13 +83,13 @@ def _compute_phi_s_exact_python_fallback(G, nodes, delta_nfr, alpha, dtype):
 
 def compute_phi_s_landmarks_vectorized(
     G: Any,
-    nodes: List[Any],
-    delta_nfr: Dict[Any, float],
+    nodes: list[Any],
+    delta_nfr: dict[Any, float],
     alpha: float,
-    landmarks: List[Any],
-    landmark_distances: Dict[Any, Dict[Any, float]],
+    landmarks: list[Any],
+    landmark_distances: dict[Any, dict[Any, float]],
     dtype: type = np.float64
-) -> Dict[Any, float]:
+) -> dict[Any, float]:
     """Vectorized landmark approximation for Φ_s."""
     num_nodes = len(nodes)
     num_landmarks = len(landmarks)
@@ -217,7 +216,7 @@ def compute_vf_variance_vectorized(
     G: Any,
     vf_attr: str = 'νf',
     radius: int = 1
-) -> Dict[Any, float]:
+) -> dict[Any, float]:
     """Vectorized computation of νf variance."""
     if radius != 1:
         # Fallback for radius > 1 (complex neighborhood)
@@ -398,7 +397,7 @@ def compute_phase_gradient_and_curvature_vectorized(
     edge_dst: np.ndarray,
     degrees: np.ndarray,
     dtype: type = np.float64
-) -> Tuple[np.ndarray, np.ndarray]:
+) -> tuple[np.ndarray, np.ndarray]:
     """Vectorized computation of |∇φ| and K_φ.
     
     |∇φ|_i = mean(|wrap(θ_i - θ_j)|)
@@ -417,7 +416,7 @@ def compute_phase_gradient_and_curvature_vectorized(
         
     Returns
     -------
-    Tuple[np.ndarray, np.ndarray]
+    tuple[np.ndarray, np.ndarray]
         (gradient_arr, curvature_arr)
     """
     n = len(theta_arr)
@@ -492,13 +491,12 @@ def compute_phase_gradient_and_curvature_vectorized(
     
     return grad_arr, curv_arr
 
-
 def compute_coherence_length_vectorized(
     G: Any,
-    nodes: List[Any],
-    delta_nfr: Dict[Any, float],
+    nodes: list[Any],
+    delta_nfr: dict[Any, float],
     dtype: type = np.float64,
-    distance_matrix: Optional[np.ndarray] = None
+    distance_matrix: np.ndarray | None = None
 ) -> float:
     """Vectorized estimation of coherence length ξ_C.
     
@@ -617,5 +615,4 @@ def compute_coherence_length_vectorized(
         return float(xi_c)
     except Exception:
         return float('nan')
-
 

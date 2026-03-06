@@ -125,18 +125,15 @@ BIFURCATION_WINDOWS = {
     "weak": 1,  # EN requires ZHIR/THOL as immediate successor
 }
 
-
 def canonical_operator_name(name: str) -> str:
     """Return the canonical operator token for ``name``."""
 
     return name
 
-
 def operator_display_name(name: str) -> str:
     """Return the display label for ``name`` (currently the canonical token)."""
 
     return canonical_operator_name(name)
-
 
 __all__ = [
     "EMISSION",
@@ -171,7 +168,6 @@ __all__ = [
     "operator_display_name",
     "validate_physics_derivation",
 ]
-
 
 def validate_physics_derivation() -> dict[str, Any]:
     """Validate that operator sets are consistent with TNFR physics derivation.
@@ -242,7 +238,6 @@ def validate_physics_derivation() -> dict[str, Any]:
         "end_operators_actual": VALID_END_OPERATORS,
         "discrepancies": discrepancies,
     }
-
 
 def __getattr__(name: str) -> Any:
     """Provide a consistent ``AttributeError`` when names are missing."""

@@ -21,7 +21,7 @@ from tnfr.operators.definitions import (
 )
 from tnfr.operators.grammar import validate_sequence
 from tnfr.types import NodeId
-from benchmark_utils import create_tnfr_topology
+from benchmarks.benchmark_utils import create_tnfr_topology
 from tnfr.physics.fields import (
     estimate_coherence_length, 
     compute_structural_potential, 

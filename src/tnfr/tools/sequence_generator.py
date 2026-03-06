@@ -68,7 +68,6 @@ __all__ = [
     "GenerationResult",
 ]
 
-
 # Operator groups for intelligent variation
 _STABILIZERS = [COHERENCE, SELF_ORGANIZATION, SILENCE, RESONANCE]
 _DESTABILIZERS = [DISSONANCE, MUTATION, EXPANSION]
@@ -76,6 +75,12 @@ _ACTIVATORS = [EMISSION, RECEPTION]
 _CONNECTORS = [COUPLING, RESONANCE]
 _TRANSFORMERS = [TRANSITION, RECURSIVITY, MUTATION]
 
+# ---------------------------------------------------------------------------
+# Health improvement thresholds
+# ---------------------------------------------------------------------------
+_MIN_PATTERN_COMPLETENESS = 0.75
+_MIN_BALANCE_SCORE = 0.6
+_HEALTH_IMPROVEMENT_DELTA = 0.01
 
 @dataclass
 class GenerationResult:
@@ -109,7 +114,6 @@ class GenerationResult:
     method: str
     recommendations: list[str]
     metadata: dict[str, object]
-
 
 class ContextualSequenceGenerator:
     """Generator for context-guided TNFR operator sequences.
@@ -434,7 +438,7 @@ class ContextualSequenceGenerator:
         tuple[list[str], list[str]]
             A tuple containing:
             - Improved operator sequence
-            - List of recommendations explaining improvements
+            - list of recommendations explaining improvements
 
         Examples
         --------
@@ -449,11 +453,11 @@ class ContextualSequenceGenerator:
         # Analyze current sequence
         current_health = self.health_analyzer.analyze_health(current)
 
-        # Set target health
+        # set target health
         if target_health is None:
             target_health = min(1.0, current_health.overall_health + 0.15)
 
-        # Set max length
+        # set max length
         if max_length is None:
             max_length = len(current) + 3
 
@@ -727,7 +731,7 @@ class ContextualSequenceGenerator:
 
         # Strategy 1: Add missing phases
         if hasattr(current_health, "pattern_completeness"):
-            if current_health.pattern_completeness < 0.75:  # type: ignore[attr-defined]
+            if current_health.pattern_completeness < _MIN_PATTERN_COMPLETENESS:  # type: ignore[attr-defined]
                 # Try adding activation
                 if not any(op in [EMISSION, RECEPTION] for op in current):
                     for pos in range(min(2, len(current))):
@@ -738,7 +742,7 @@ class ContextualSequenceGenerator:
 
         # Strategy 2: Add stabilizers if unbalanced
         if hasattr(current_health, "balance_score"):
-            if current_health.balance_score < 0.6:  # type: ignore[attr-defined]
+            if current_health.balance_score < _MIN_BALANCE_SCORE:  # type: ignore[attr-defined]
                 for stabilizer in _STABILIZERS:
                     candidate = current.copy()
                     if len(candidate) < max_length:
@@ -778,7 +782,7 @@ class ContextualSequenceGenerator:
 
         # Overall improvement
         health_delta = improved_health.overall_health - original_health.overall_health
-        if health_delta > 0.01:
+        if health_delta > _HEALTH_IMPROVEMENT_DELTA:
             recommendations.append(
                 f"Overall health improved by {health_delta:.2f} "
                 f"(from {original_health.overall_health:.2f} to {improved_health.overall_health:.2f})"

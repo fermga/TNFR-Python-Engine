@@ -28,7 +28,7 @@ from __future__ import annotations
 import time
 import logging
 import threading
-from typing import Any, Dict, Optional, TypeVar, Generic, cast, TYPE_CHECKING
+from typing import Any, TypeVar, Generic, cast, TYPE_CHECKING
 from collections.abc import MutableMapping, Callable, Iterable, Iterator
 from collections import OrderedDict
 
@@ -37,13 +37,11 @@ from ..types import CacheLevel, CacheStats
 if TYPE_CHECKING:
     from .cache import CacheManager
 
-
 # Lazy import wrapper to avoid circular dependencies with utils.cache
 def cache_tnfr_computation(*args: Any, **kwargs: Any) -> Any:
     """Unified cache decorator that delegates to the robust implementation in utils.cache."""
     from .cache import cache_tnfr_computation as real_impl
     return real_impl(*args, **kwargs)
-
 
 logger = logging.getLogger(__name__)
 
@@ -58,7 +56,6 @@ __all__ = [
 K = TypeVar("K")
 V = TypeVar("V")
 
-
 def _normalise_callbacks(
     callbacks: Iterable[Callable[[K, V], None]] | Callable[[K, V], None] | None,
 ) -> tuple[Callable[[K, V], None], ...]:
@@ -67,7 +64,6 @@ def _normalise_callbacks(
     if callable(callbacks):
         return (callbacks,)
     return tuple(callbacks)
-
 
 class UnifiedLRUCache(MutableMapping[K, V], Generic[K, V]):
     """Thread-safe LRU Cache implementation for TNFR unified systems.
@@ -278,7 +274,6 @@ class UnifiedLRUCache(MutableMapping[K, V], Generic[K, V]):
                 total_time=self._stats.total_time
             )
 
-
 class TNFRUnifiedCacheSystem:
     """Unified Cache System - Centralized Memory Management.
     
@@ -298,7 +293,7 @@ class TNFRUnifiedCacheSystem:
     """
     
     def __init__(self) -> None:
-        self._regions: Dict[str, UnifiedLRUCache] = {}
+        self._regions: dict[str, UnifiedLRUCache] = {}
         self._lock = threading.RLock()
         self._global_stats = {"start_time": time.time()}
         
@@ -319,10 +314,10 @@ class TNFRUnifiedCacheSystem:
                 region.clear()
             logger.info("Cleared all unified cache regions")
             
-    def get_system_stats(self) -> Dict[str, Any]:
+    def get_system_stats(self) -> dict[str, Any]:
         """Get aggregated statistics for all regions."""
         with self._lock:
-            stats: Dict[str, Any] = {
+            stats: dict[str, Any] = {
                 "regions": {},
                 "total_hits": 0,
                 "total_misses": 0,
@@ -350,12 +345,11 @@ class TNFRUnifiedCacheSystem:
             
             return stats
 
-
 # ============================================================================
 # PUBLIC API
 # ============================================================================
 
-_unified_cache_system: Optional[TNFRUnifiedCacheSystem] = None
+_unified_cache_system: TNFRUnifiedCacheSystem | None = None
 
 def get_unified_cache_system() -> TNFRUnifiedCacheSystem:
     """Get global unified cache system instance."""

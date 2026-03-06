@@ -28,7 +28,7 @@ Physics Foundation:
 from __future__ import annotations
 
 from ..mathematics.unified_numerical import np
-from typing import Dict, Any
+from typing import Any
 
 from ..constants.canonical import PHI  # noqa: F401 — used by fallback stubs
 
@@ -48,12 +48,11 @@ from .extended import (
     compute_dnfr_flux,
 )
 
-
 # ============================================================================
 # COMPLEX GEOMETRIC FIELD  Ψ = K_φ + i·J_φ
 # ============================================================================
 
-def compute_complex_geometric_field(G: Any) -> Dict[Any, complex]:
+def compute_complex_geometric_field(G: Any) -> dict[Any, complex]:
     """Compute unified complex geometric field Ψ = K_φ + i·J_φ.
 
     K_φ (curvature) and J_φ (current) show strong anticorrelation
@@ -72,29 +71,26 @@ def compute_complex_geometric_field(G: Any) -> Dict[Any, complex]:
 
     Returns
     -------
-    Dict[node_id, complex]
+    dict[node_id, complex]
         Complex field values Ψ(i) = K_φ(i) + i·J_φ(i).
     """
     k_phi = compute_phase_curvature(G)
     j_phi = compute_phase_current(G)
     return {node: complex(k_phi[node], j_phi[node]) for node in G.nodes()}
 
-
-def compute_field_magnitude(complex_field: Dict[Any, complex]) -> Dict[Any, float]:
+def compute_field_magnitude(complex_field: dict[Any, complex]) -> dict[Any, float]:
     """Compute magnitude |Ψ| of complex field."""
     return {node: abs(value) for node, value in complex_field.items()}
 
-
-def compute_field_phase(complex_field: Dict[Any, complex]) -> Dict[Any, float]:
+def compute_field_phase(complex_field: dict[Any, complex]) -> dict[Any, float]:
     """Compute phase angle arg(Ψ) of complex field."""
     return {node: float(np.angle(value)) for node, value in complex_field.items()}
-
 
 # ============================================================================
 # EMERGENT FIELDS
 # ============================================================================
 
-def compute_chirality_field(G: Any) -> Dict[Any, float]:
+def compute_chirality_field(G: Any) -> dict[Any, float]:
     """Compute chirality field χ = |∇φ|·K_φ − J_φ·J_ΔNFR.
 
     High |χ| indicates chiral patterns and broken mirror symmetry.
@@ -108,8 +104,7 @@ def compute_chirality_field(G: Any) -> Dict[Any, float]:
         for n in G.nodes()
     }
 
-
-def compute_symmetry_breaking_field(G: Any) -> Dict[Any, float]:
+def compute_symmetry_breaking_field(G: Any) -> dict[Any, float]:
     """Compute symmetry breaking field 𝒮 = (|∇φ|² − K_φ²) + (J_φ² − J_ΔNFR²).
 
     Quantifies imbalance between conjugate field pairs.  Signals
@@ -124,8 +119,7 @@ def compute_symmetry_breaking_field(G: Any) -> Dict[Any, float]:
         for n in G.nodes()
     }
 
-
-def compute_coherence_coupling_field(G: Any) -> Dict[Any, float]:
+def compute_coherence_coupling_field(G: Any) -> dict[Any, float]:
     """Compute coherence coupling field 𝒞 = Φ_s · |Ψ|.
 
     Connects global structural potential with local geometry-transport
@@ -135,16 +129,39 @@ def compute_coherence_coupling_field(G: Any) -> Dict[Any, float]:
     psi = compute_complex_geometric_field(G)
     return {n: phi_s[n] * abs(psi[n]) for n in G.nodes()}
 
-
 # ============================================================================
 # TENSOR INVARIANTS
 # ============================================================================
 
-def compute_energy_density(G: Any) -> Dict[Any, float]:
-    """Compute energy density ℰ = Φ_s² + |∇φ|² + K_φ² + J_φ² + J_ΔNFR².
+def compute_energy_density(G: Any) -> dict[Any, float]:
+    r"""Compute the raw quadratic energy density per node (CANONICAL SOURCE).
 
-    Quadratic invariant — analogous to electromagnetic energy density.
-    Consistent with the energy functional E = ½Σℰ in conservation.py.
+    .. math::
+
+        \mathcal{E}(i) = \Phi_s^2 + |\nabla\phi|^2 + K_\phi^2
+                         + J_\phi^2 + J_{\Delta NFR}^2
+
+    This is the **unnormalised** quadratic form — the single source of
+    truth from which all other energy quantities derive:
+
+    +------------------------------------+----------------------------------+
+    | Derived quantity                   | Relation to ℰ                   |
+    +====================================+==================================+
+    | Hamiltonian density (variational)  | H(i) = ½·ℰ(i)                  |
+    | Energy functional (conservation)   | E = ½·Σ_i ℰ(i)  = Σ_i H(i)    |
+    | Kinetic density (variational)      | T(i) = ½[J_φ² + J_ΔNFR²]      |
+    | Potential density (variational)    | V(i) = ½[Φ_s² + |∇φ|² + K_φ²] |
+    | Lagrangian density (variational)   | ℒ(i)  = T(i) − V(i)            |
+    +------------------------------------+----------------------------------+
+
+    The ½ factor is the conventional Hamiltonian normalisation (like
+    ½(E² + B²) in electrodynamics).  This function returns the **raw**
+    quadratic form without the ½ so that callers can apply it as needed.
+
+    See Also
+    --------
+    variational.compute_hamiltonian_density : H(i) = ½·ℰ(i)
+    conservation.compute_energy_functional  : E = ½·Σ_i ℰ(i)
     """
     phi_s = compute_structural_potential(G)
     grad_phi = compute_phase_gradient(G)
@@ -157,11 +174,25 @@ def compute_energy_density(G: Any) -> Dict[Any, float]:
         for n in G.nodes()
     }
 
+def compute_action_density(G: Any) -> dict[Any, float]:
+    r"""Compute action density (bilinear coupling) per node (CANONICAL SOURCE).
 
-def compute_action_density(G: Any) -> Dict[Any, float]:
-    """Compute action density 𝒜 = Φ_s·|∇φ| + K_φ·J_φ + |∇φ|·J_ΔNFR.
+    .. math::
 
-    Bilinear field interactions — related to Lagrangian action.
+        \mathcal{A}(i) = \Phi_s \cdot |\nabla\phi|
+                         + K_\phi \cdot J_\phi
+                         + |\nabla\phi| \cdot J_{\Delta NFR}
+
+    This is the **single source of truth** for the bilinear field
+    interaction.  In the variational formulation, 𝒜 represents the
+    **interaction Lagrangian** (cross-sector coupling), distinct from
+    the free Lagrangian ℒ_free = T − V.
+
+    ``variational.compute_interaction_density()`` delegates here.
+
+    See Also
+    --------
+    variational.compute_interaction_density : Alias for this function.
     """
     phi_s = compute_structural_potential(G)
     grad_phi = compute_phase_gradient(G)
@@ -175,8 +206,7 @@ def compute_action_density(G: Any) -> Dict[Any, float]:
         for n in G.nodes()
     }
 
-
-def compute_topological_charge(G: Any) -> Dict[Any, float]:
+def compute_topological_charge(G: Any) -> dict[Any, float]:
     """Compute topological charge 𝒬 = |∇φ|·J_φ − K_φ·J_ΔNFR.
 
     Topological invariant — conserved under continuous deformations.
@@ -191,12 +221,11 @@ def compute_topological_charge(G: Any) -> Dict[Any, float]:
         for n in G.nodes()
     }
 
-
 # ============================================================================
 # COMPREHENSIVE UNIFIED ANALYSIS
 # ============================================================================
 
-def compute_unified_field_suite(G: Any) -> Dict[str, Any]:
+def compute_unified_field_suite(G: Any) -> dict[str, Any]:
     """Compute complete unified field analysis.
 
     Returns all derived fields, tensor invariants, and conservation
@@ -205,7 +234,7 @@ def compute_unified_field_suite(G: Any) -> Dict[str, Any]:
 
     Returns
     -------
-    Dict[str, Any]
+    dict[str, Any]
         - ``psi_magnitude``, ``psi_phase``: Complex field Ψ
         - ``chirality``, ``symmetry_breaking``, ``coherence_coupling``
         - ``energy_density``, ``action_density``, ``topological_charge``
@@ -218,7 +247,7 @@ def compute_unified_field_suite(G: Any) -> Dict[str, Any]:
         compute_energy_functional,
     )
 
-    results: Dict[str, Any] = {}
+    results: dict[str, Any] = {}
 
     # Complex geometric field
     psi = compute_complex_geometric_field(G)
@@ -250,20 +279,19 @@ def compute_unified_field_suite(G: Any) -> Dict[str, Any]:
 
     return results
 
-
 # ============================================================================
 # ANALYSIS UTILITIES
 # ============================================================================
 
 def analyze_field_correlations(
-    results: Dict[str, Dict[Any, float]],
-) -> Dict[str, float]:
+    results: dict[str, dict[Any, float]],
+) -> dict[str, float]:
     """Pairwise Pearson correlations between node-level fields in *results*.
 
     Useful for verifying theoretical predictions (e.g. K_φ ↔ J_φ
     anticorrelation).
     """
-    fields: Dict[str, Any] = {}
+    fields: dict[str, Any] = {}
     first_field = next(
         (v for v in results.values() if isinstance(v, dict)), None
     )
@@ -275,7 +303,7 @@ def analyze_field_correlations(
         if isinstance(data, dict) and sample_nodes[0] in data:
             fields[name] = np.array([data[n] for n in sample_nodes])
 
-    correlations: Dict[str, float] = {}
+    correlations: dict[str, float] = {}
     names = list(fields.keys())
     for i, n1 in enumerate(names):
         for j, n2 in enumerate(names):
@@ -284,12 +312,11 @@ def analyze_field_correlations(
                 correlations[f'{n1}_vs_{n2}'] = float(r) if not np.isnan(r) else 0.0
     return correlations
 
-
 def summary_statistics(
-    results: Dict[str, Dict[Any, float]],
-) -> Dict[str, Dict[str, float]]:
+    results: dict[str, dict[Any, float]],
+) -> dict[str, dict[str, float]]:
     """Summary statistics (mean, std, min, max, range) per field."""
-    stats: Dict[str, Any] = {}
+    stats: dict[str, Any] = {}
     for name, data in results.items():
         if isinstance(data, dict):
             vals = [v for v in data.values() if isinstance(v, (int, float))]

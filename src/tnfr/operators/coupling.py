@@ -17,7 +17,6 @@ from ..config.operator_names import COUPLING
 from ..types import Glyph, TNFRGraph
 from .definitions_base import Operator
 
-
 class Coupling(Operator):
     """Synchronize phases; create/strengthen links; enable resonance.
 

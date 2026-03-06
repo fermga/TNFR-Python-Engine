@@ -14,7 +14,6 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from ..types import NodeId, TNFRGraph
 
-
 __all__ = [
     "StructuralMetabolism",
     "digest_stimulus",
@@ -22,6 +21,10 @@ __all__ = [
     "cascading_reorganization",
 ]
 
+# ---------------------------------------------------------------------------
+# Metabolic stress boundary
+# ---------------------------------------------------------------------------
+_HIGH_STRESS_THRESHOLD = 0.5
 
 class StructuralMetabolism:
     """Implements T'HOL-based structural metabolism cycles.
@@ -134,7 +137,7 @@ class StructuralMetabolism:
             Coherence,
         )
 
-        if stress_level >= 0.5:
+        if stress_level >= _HIGH_STRESS_THRESHOLD:
             # High stress: dissonance + deep reorganization
             # Apply operators individually to avoid grammar restrictions
             # Import canonical constants
@@ -187,7 +190,6 @@ class StructuralMetabolism:
             tau = base_tau * (level_decay**level)
             SelfOrganization()(self.G, self.node, tau=tau)
 
-
 def digest_stimulus(G: TNFRGraph, node: NodeId, tau: float = 0.08) -> None:
     """Functional interface for single metabolic cycle.
 
@@ -212,7 +214,6 @@ def digest_stimulus(G: TNFRGraph, node: NodeId, tau: float = 0.08) -> None:
     metabolism = StructuralMetabolism(G, node)
     metabolism.digest(tau)
 
-
 def adaptive_metabolism(G: TNFRGraph, node: NodeId, stress: float) -> None:
     """Functional interface for adaptive metabolic response.
 
@@ -236,7 +237,6 @@ def adaptive_metabolism(G: TNFRGraph, node: NodeId, stress: float) -> None:
     """
     metabolism = StructuralMetabolism(G, node)
     metabolism.adaptive_metabolism(stress)
-
 
 def cascading_reorganization(G: TNFRGraph, node: NodeId, depth: int = 3) -> None:
     """Functional interface for cascading reorganization.

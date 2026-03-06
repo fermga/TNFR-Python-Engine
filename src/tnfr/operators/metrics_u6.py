@@ -7,10 +7,25 @@ relaxed typing and conservative imports.
 
 from __future__ import annotations
 
-from typing import Any, Dict
+from typing import Any
 
-from tnfr.alias import get_attr
 from tnfr.constants.aliases import ALIAS_DNFR, ALIAS_VF, ALIAS_D2EPI
+from tnfr.operators.metrics_core import get_node_attr as _get_node_attr
+
+# ---------------------------------------------------------------------------
+# Nonlinear accumulation severity thresholds (α boundaries)
+# ---------------------------------------------------------------------------
+_ALPHA_MILD_THRESHOLD = 1.1
+_ALPHA_MODERATE_THRESHOLD = 1.5
+_ALPHA_SEVERE_THRESHOLD = 2.0
+
+# ---------------------------------------------------------------------------
+# Bifurcation index thresholds
+# ---------------------------------------------------------------------------
+_VF_BIFURCATION_FLOOR = 0.01
+_BIFURCATION_STABLE_LIMIT = 0.5
+_BIFURCATION_MODERATE_LIMIT = 1.5
+_BIFURCATION_HIGH_LIMIT = 3.0
 
 __all__ = [
     "measure_tau_relax_observed",
@@ -18,22 +33,13 @@ __all__ = [
     "compute_bifurcation_index",
 ]
 
-
-def _get_node_attr(G: Any, node: Any, aliases: tuple[str, ...], default: float = 0.0) -> float:
-    value = get_attr(G.nodes[node], aliases, default)
-    try:
-        return float(value)  # type: ignore[arg-type]
-    except Exception:
-        return float(default)
-
-
 def measure_tau_relax_observed(
     G: Any,
     node_id: Any,
     coherence_threshold: float = 0.95,
     epsilon_c: float = 0.05,
     max_steps: int = 100,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Measure observed relaxation time τ_relax after destabilizer application.
 
     Returns a snapshot; actual monitoring loop is left to the caller.
@@ -114,14 +120,13 @@ def measure_tau_relax_observed(
         "requires_monitoring_infrastructure": True,
     }
 
-
 def measure_nonlinear_accumulation(
     G: Any,
     node_id: Any,
     dnfr_before_first: float,
     dnfr_before_second: float,
     dt_separation: float,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Measure nonlinear accumulation factor α(Δt) for spacing validation."""
     dnfr_actual = abs(_get_node_attr(G, node_id, ALIAS_DNFR))
     dnfr_linear = dnfr_before_second + abs(dnfr_before_first)
@@ -132,11 +137,11 @@ def measure_nonlinear_accumulation(
     else:
         alpha = (dnfr_actual - dnfr_linear) / denominator
 
-    if alpha <= 1.1:
+    if alpha <= _ALPHA_MILD_THRESHOLD:
         severity = "none"
-    elif alpha <= 1.5:
+    elif alpha <= _ALPHA_MODERATE_THRESHOLD:
         severity = "mild"
-    elif alpha <= 2.0:
+    elif alpha <= _ALPHA_SEVERE_THRESHOLD:
         severity = "moderate"
     else:
         severity = "severe"
@@ -149,27 +154,26 @@ def measure_nonlinear_accumulation(
         "dnfr_before_first": dnfr_before_first,
         "dnfr_before_second": dnfr_before_second,
         "dt_separation": dt_separation,
-        "nonlinear_regime": alpha > 1.1,
+        "nonlinear_regime": alpha > _ALPHA_MILD_THRESHOLD,
         "amplification_severity": severity,
         "node_id": node_id,
     }
 
-
-def compute_bifurcation_index(G: Any, node_id: Any) -> Dict[str, Any]:
+def compute_bifurcation_index(G: Any, node_id: Any) -> dict[str, Any]:
     """Compute bifurcation index B = |d2EPI| / νf^2."""
     vf = _get_node_attr(G, node_id, ALIAS_VF)
     d2_epi = _get_node_attr(G, node_id, ALIAS_D2EPI)
 
-    if vf < 0.01:
+    if vf < _VF_BIFURCATION_FLOOR:
         B = 0.0
     else:
         B = abs(d2_epi) / (vf * vf)
 
-    if B < 0.5:
+    if B < _BIFURCATION_STABLE_LIMIT:
         risk = "stable"
-    elif B < 1.5:
+    elif B < _BIFURCATION_MODERATE_LIMIT:
         risk = "moderate"
-    elif B < 3.0:
+    elif B < _BIFURCATION_HIGH_LIMIT:
         risk = "high"
     else:
         risk = "critical"
@@ -177,7 +181,7 @@ def compute_bifurcation_index(G: Any, node_id: Any) -> Dict[str, Any]:
     return {
         "metric_type": "u6_bifurcation_index",
         "B": B,
-        "B_normalized": B / 3.0,
+        "B_normalized": B / _BIFURCATION_HIGH_LIMIT,
         "d2_epi_dt2": d2_epi,
         "vf": vf,
         "risk_level": risk,
