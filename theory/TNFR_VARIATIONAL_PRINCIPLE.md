@@ -13,7 +13,7 @@ The TNFR nodal equation
 
 $$\frac{\partial \mathrm{EPI}}{\partial t} = \nu_f \cdot \Delta\mathrm{NFR}(t)$$
 
-is **not** an ad-hoc postulate. It is the **Euler-Lagrange equation** of a well-defined action functional in the overdamped (dissipation-dominated) limit.
+admits a consistent variational formulation. It is the **Euler-Lagrange equation** of a well-defined action functional in the overdamped (dissipation-dominated) limit.
 
 ---
 
@@ -72,7 +72,7 @@ Using the EPI-ΔNFR pair with effective mass $m_i = 1/\nu_{f,i}$ (from `classica
 
 $$\frac{1}{\nu_f}\,\frac{\partial^2\,\mathrm{EPI}}{\partial t^2} \;=\; -\frac{\partial V}{\partial \mathrm{EPI}}$$
 
-This is **Newton's second law** on the structural manifold: $F = m\,a$ with force $F = -\partial V/\partial\mathrm{EPI}$ and mass $m = 1/\nu_f$.
+This has the same mathematical form as **Newton's second law** on the structural manifold: $F = m\,a$ with force $F = -\partial V/\partial\mathrm{EPI}$ and mass $m = 1/\nu_f$.
 
 ### 3.4 Overdamped Limit
 
@@ -88,7 +88,7 @@ Identifying $1/\gamma = \nu_f$ and $\Delta\mathrm{NFR} = -\partial V/\partial\ma
 
 $$\boxed{\frac{\partial\,\mathrm{EPI}}{\partial t} = \nu_f \cdot \Delta\mathrm{NFR}(t)}$$
 
-**Key derived result**: $\Delta\mathrm{NFR}$ is the **negative functional gradient** of the structural potential $V$ — not an assumption, but a consequence of the variational principle.
+**Key derived result**: Within this variational formulation, $\Delta\mathrm{NFR}$ is the **negative functional gradient** of the structural potential $V$.
 
 ---
 

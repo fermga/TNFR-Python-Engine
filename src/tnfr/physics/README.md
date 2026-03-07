@@ -2,11 +2,11 @@
 
 **Status**: CANONICAL • **Last Updated**: 2025-11-13
 
-This documentation presents the **unified discourse** of TNFR physics, tracing the natural evolution from the nodal equation to cellular life emergence. Each stage emerges naturally from the previous one, without additional postulates.
+This documentation presents the **unified discourse** of TNFR physics, tracing the progression from the nodal equation through structural fields to autopoietic dynamics. Each stage follows from the previous one within the TNFR formalism.
 
 ---
 
-## 🌊 The Nodal Equation: Foundation of Everything
+## 🌊 The Nodal Equation: Foundation
 
 TNFR dynamics begins with a fundamental equation governing each node:
 
@@ -127,7 +127,7 @@ Upon the autopoietic foundation (A > 1.0), **cellular organization** emerges thr
 - **H, C, N, O**: Fundamental light elements
 - **Au (Gold)**: Optimal multi-scale attractor (computationally verified)
 
-**Physical principle**: Elements are **stable coherence patterns** that emerge naturally from nodal dynamics, not prescribed chemistry.
+**Physical principle**: Elements are **stable coherence patterns** modeled within TNFR nodal dynamics.
 
 **Documentation hub**: [`docs/MOLECULAR_CHEMISTRY_HUB.md`](../../../docs/MOLECULAR_CHEMISTRY_HUB.md)  
 **Validation**: [`examples/elements_signature_study.py`](../../../examples/elements_signature_study.py)

@@ -166,7 +166,7 @@ In TNFR structural dynamics, this convergence appears when the structural potent
 
 The golden ratio has the slowest rational approximation of any irrational number. In KAM theory (Kolmogorov–Arnold–Moser), frequency ratios near φ produce the **most robust invariant tori** — these orbits survive perturbation longer than any other.
 
-**TNFR prediction**: Networks whose internal structural ratios approach φ should exhibit maximum perturbation resilience. This is consistent with (but not derived from) the U6 confinement threshold Δ Φ_s < φ.
+**TNFR-consistent observation**: Networks whose internal structural ratios approach φ should exhibit maximum perturbation resilience. This is consistent with (but not derived from) the U6 confinement threshold Δ Φ_s < φ.
 
 ### 6.3 Testable Prediction
 

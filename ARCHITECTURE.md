@@ -4,15 +4,15 @@
 **Status**: Production-ready framework with mathematical foundations  
 **Foundation**: Universal Tetrahedral Correspondence (φ↔Φ_s, γ↔|∇φ|, π↔K_φ, e↔ξ_C)
 
-This guide details the TNFR Python Engine architecture. The engine provides a complex systems framework where all parameters derive from universal mathematical relationships.
+This guide details the TNFR Python Engine architecture. The engine provides a complex systems framework where all parameters derive from the TNFR constant system (φ, γ, π, e).
 
 ## Architectural Philosophy: Mathematical Purity
 
-**Core Principle**: All parameters derive from universal mathematical constants.
+**Core Principle**: All parameters derive from the TNFR canonical constants.
 
 The TNFR Engine is built on four pillars:
 
-1. **Universal Foundations**: All parameters derive from φ, γ, π, e through the Tetrahedral Correspondence
+1. **Canonical Foundations**: All parameters derive from φ, γ, π, e through the Tetrahedral Correspondence
 2. **Structural Operators**: Exactly 13 canonical operators implement all possible coherent transformations  
 3. **Grammar Physics**: U1-U6 rules emerge inevitably from the nodal equation ∂EPI/∂t = νf·ΔNFR(t)
 4. **Tetrad Telemetry**: Four unified fields (Φ_s, |∇φ|, Ψ=K_φ+i·J_φ, ξ_C) provide complete system observability
@@ -62,7 +62,7 @@ The engine is structured around mathematically grounded interfaces that enforce 
 
 ### Self-Optimizing Architecture
 
-The TNFR Engine possesses intrinsic agency to optimize its own structure using unified field telemetry:
+The TNFR Engine has automated optimization of its own structure using unified field telemetry:
 
 ```python
 from tnfr.dynamics.self_optimizing_engine import TNFRSelfOptimizingEngine
@@ -124,9 +124,9 @@ class CanonicalValidator:
 ### Mathematical Purity Benefits
 
 1. **Theoretical Rigor**: Zero empirical constants - all parameters derive from φ, γ, π, e
-2. **Predictable Behavior**: Deterministic system response via universal mathematical laws
+2. **Predictable Behavior**: Deterministic system response via canonical TNFR constants
 3. **Cross-Domain Consistency**: Same mathematical foundation across physics, chemistry, and network science
-4. **Self-Optimization**: Built-in intelligence to improve its own structure autonomously
+4. **Self-Optimization**: Automated capability to improve its own structure
 5. **Research Ready**: Mathematically pure framework suitable for scientific publication
 6. **Production Stability**: No magic numbers that fail under extreme conditions
 
@@ -517,10 +517,10 @@ well-documented location.
 
 TNFR Engine provides a mathematically pure complex systems framework:
 
-- **497+ Magic Numbers Eliminated**: Every parameter derives from universal constants  
-- **Universal Tetrahedral Correspondence**: Complete φ↔Φ_s, γ↔|∇φ|, π↔K_φ, e↔ξ_C implementation  
-- **Self-Optimizing Intelligence**: Engine autonomously improves its own structure  
-- **Complete Domain Coverage**: Physics, chemistry, network science - unified mathematical base  
+- **497+ Magic Numbers Eliminated**: Every parameter derives from canonical constants  
+- **Tetrahedral Correspondence**: Complete φ↔Φ_s, γ↔|∇φ|, π↔K_φ, e↔ξ_C implementation  
+- **Self-Optimization**: Engine automatically improves its own structure  
+- **Cross-Domain Framework**: Physics, chemistry, network science — unified mathematical base  
 
 ### Architecture Maturity Indicators
 
@@ -533,15 +533,15 @@ TNFR Engine provides a mathematically pure complex systems framework:
 | **Self-Optimization** | COMPLETE | Autonomous structural improvement |
 | **Telemetry** | COMPLETE | Complete system observability |
 | **Developer Experience** | COMPLETE | Fluent API + Simple SDK (tetrad, conservation, telemetry) |
-| **Production Readiness** | COMPLETE | 1,646+ tests passing, 9 skipped + benchmarks + validation |
+| **Production Readiness** | COMPLETE | 1,655 tests passing + benchmarks + validation |
 
 ### Architectural Principles (Canonical)
 
-1. **Mathematical Purity First**: Every parameter from φ, γ, π, e - zero empiricism
+1. **Mathematical Purity First**: Every parameter from φ, γ, π, e — zero empiricism
 2. **Physics-Derived Design**: All architecture decisions trace to nodal equation
 3. **Complete Observability**: Unified field tetrad provides full system insight
-4. **Intrinsic Intelligence**: Self-optimization built into core architecture
-5. **Cross-Domain Universality**: Same mathematical base across all applications
+4. **Self-Optimization**: Automated optimization built into core architecture
+5. **Cross-Domain Applicability**: Same mathematical base across applications
 6. **Production Stability**: No magic numbers mean no unexpected parameter failures
 
 ### Essential Architecture References

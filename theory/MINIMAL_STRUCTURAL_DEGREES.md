@@ -178,7 +178,7 @@ Removing any single field creates a detectable structural blind spot:
 
 **Theorem (Irreducibility)**: For any subset S ⊂ {Φ_s, |∇φ|, K_φ, ξ_C} with |S| = 3, there exists a graph state G that is structurally healthy according to S but structurally pathological according to the missing field.
 
-This has been verified computationally across ring, random, small-world, scale-free, and complete topologies (1,646+ tests).
+This has been verified computationally across ring, random, small-world, scale-free, and complete topologies (1,655 tests).
 
 ---
 
@@ -276,7 +276,7 @@ The four-dimensional structural basis echoes patterns across established physics
 | Thermodynamics | Minimal state description | 4 (T, P, V, S) |
 | **TNFR** | **Structural tetrad** | **4 (Φ_s, \|∇φ\|, K_φ, ξ_C)** |
 
-This recurrence reflects a general structural principle: complete characterization of any field on a metric space requires knowing its **value** (0th order), **first derivative** (1st order), **second derivative** (2nd order), and **correlation structure** (non-local integral).
+This recurrence is suggestive of a structural pattern: within TNFR, complete characterization of a scalar phase field on a graph uses four independent channels — **value** (0th order), **first derivative** (1st order), **second derivative** (2nd order), and **correlation structure** (non-local integral).
 
 ---
 
@@ -291,9 +291,9 @@ The four constants (φ, γ, π, e) are not merely useful numerical values — ea
 | π | Circular geometry | Half-period of exp(ix) (angular closure) |
 | e | Exponential dynamics | Eigenfunction of d/dx (rate proportional to state) |
 
-These four classes are **mutually irreducible**: no constant can be expressed as a simple algebraic combination of the other three. Other important mathematical constants (ln 2, √2, Catalan's G, Apéry's ζ(3)) are either algebraic or derived from these four via standard analytic operations.
+These four classes are **mutually irreducible**: no constant can be expressed as a simple algebraic combination of the other three. Other important mathematical constants (ln 2, √2) are algebraic or simple functions of these four. Constants like Catalan's G and Apéry's ζ(3) have deep connections to π and γ through L-functions and zeta specializations, though closed-form expressions in terms of (φ, γ, π, e) alone are not known in general.
 
-The TNFR tetrad operationalizes this classification:
+The TNFR tetrad maps this classification to measurable fields:
 - Φ_s requires proportionality across scales → **φ**
 - |∇φ| requires summation of discrete fluctuations → **γ**
 - K_φ requires angular confinement → **π**

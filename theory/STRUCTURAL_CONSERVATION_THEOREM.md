@@ -396,6 +396,8 @@ complex field unification $\Psi = K_\phi + i J_\phi$.
 
 ### 6.1 The Correspondence Table
 
+> **Note**: The "Analogy" column lists structural parallels to established physics for intuition. These are naming conventions within TNFR, not claims of deriving those physical conservation laws.
+
 | Grammar Rule | Symmetry Type | Conserved Quantity | Analogy |
 |-------------|---------------|-------------------|---------|
 | **U2** (Convergence) | Temporal translation | Total Noether charge $Q = \sum_i \rho(i)$ | Energy conservation |
@@ -713,6 +715,8 @@ $q \to 1$, i.e., **exact conservation**.
 ---
 
 ## 11. Physical Interpretation and Analogies
+
+> **Note**: The tables in this section draw structural analogies between TNFR conservation quantities and established physical theories. These parallels serve as intuition aids and naming conventions; they are not claims that TNFR derives or replaces those physical theories.
 
 ### 11.1 Electrodynamics Analogy
 

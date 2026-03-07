@@ -27,7 +27,7 @@
 
 ## 1. Introduction
 
-Number theory emerges naturally from TNFR dynamics when the nodal equation
+Number theory can be formulated within the TNFR framework when the nodal equation
 
 $$\frac{\partial\mathrm{EPI}}{\partial t} = \nu_f \cdot \Delta\mathrm{NFR}(t)$$
 
@@ -35,7 +35,7 @@ is applied to a network whose nodes are natural numbers and whose edges encode a
 
 - **Primes are zero-pressure fixed points**: $\Delta\mathrm{NFR}(p) = 0$ for all primes $p$.
 - **Composites carry structural pressure**: $\Delta\mathrm{NFR}(n) > 0$ whenever $n$ is composite, with magnitude proportional to factorization complexity.
-- **Factorization is spectral decoding**: discovering the factors of a composite is equivalent to resolving the coherent sub-modes of its structural pressure field.
+- **Factorization as spectral decoding**: discovering the factors of a composite can be framed as resolving the coherent sub-modes of its structural pressure field.
 
 This document formalizes these observations, derives every constant from the Universal Tetrahedral Correspondence ($\varphi$, $\gamma$, $\pi$, $e$), and maps the theory to its implementations in the repository.
 

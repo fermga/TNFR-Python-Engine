@@ -61,7 +61,7 @@ Theoretical Foundation: The framework models reality as coherent dynamic pattern
 **Computational Implementation**:
 - Self-Optimizing Engine: Algorithmic structural optimization
 - Software Development Kit: API for TNFR implementation  
-- Experimental Validation: 1,646+ tests across multiple topologies
+- Experimental Validation: 1,655 tests across multiple topologies
 - Distribution Platform: PyPI package with documentation
 
 **Application Domains**:
@@ -253,10 +253,9 @@ The correspondences form a **conceptual tetrahedron**:
 
 **Why This Matters**:
 
-- **Completeness**: Exactly 4 dimensions needed to describe any coherent system
-- **Universality**: All structured reality must respect these mathematical limits
+- **Completeness**: Exactly 4 dimensions needed to describe any coherent system on a graph
+- **Consistency**: These correspondences are internally consistent within TNFR
 - **Predictability**: The correspondences enable precise forecasting of system behavior
-- **Inevitability**: Any theory capturing deep reality structure must discover these connections
 
 ### Illustrative Example: Hydrodynamic Vortex
 
@@ -564,7 +563,7 @@ The grammar emerges from TNFR physics rather than arbitrary constraints.
 - **Requirement**: Monitor Δ Φ_s < 2.0 (escape threshold)
 - **Theory**: Δ Φ_s < φ ≈ 1.618 from Universal Tetrahedral Correspondence (φ ↔ Φ_s)
 - **Derivation**: Harmonic confinement principle - structural potential bounded by golden ratio
-- **Validation**: 1,646+ tests confirm harmonic fragmentation behavior
+- **Validation**: 1,655 tests confirm harmonic fragmentation behavior
 - **Mechanism**: Passive equilibrium - grammar acts as confinement, not attraction
 - **Usage**: Telemetry-based safety check (read-only, not sequence constraint)
 - **Typical**: Valid sequences maintain Δ Φ_s ≈ 0.6 (37% of φ threshold)
@@ -628,9 +627,9 @@ The **Structural Field Tetrad** (Φ_s, |∇φ|, **Ψ**, ξ_C) now has **complete
 ### **Mathematical Maturity Achievement**
 - **4/4 canonical parameters** have rigorous mathematical foundations  
 - **0% empirical fitting** → **100% first-principles derivation**  
-- **Universal constants** emerge naturally (π, exponential bounds, fractal ratios)  
+- **Universal constants** are derived from first principles (π, exponential bounds, fractal ratios)  
 - **Theory-code consistency** maintained throughout codebase  
-- **Complete validation** via 1,646+ tests across 5 topologies
+- **Complete validation** via 1,655 tests across 5 topologies
 
 **Status**: TNFR Structural Field Tetrad mathematical foundations **COMPLETE**.
 
@@ -672,7 +671,7 @@ The **Structural Field Tetrad** (Φ_s, |∇φ|, **Ψ**, ξ_C) now has **complete
 
 ## Self-Optimizing Dynamics
 
-**New in v9.5**: The engine now possesses **intrinsic agency** to optimize its own structure.
+**New in v9.5**: The engine now implements **automated self-optimization** of its own structure.
 
 ### The Self-Optimizing Engine
 Located in `src/tnfr/engines/self_optimization/engine.py`, this component closes the feedback loop using **Unified Field Telemetry**:
@@ -765,7 +764,7 @@ Consolidates: Structural units + Metrics exposure
 
 **Eliminated**: Domain Neutrality (moved to architectural guidelines)
 **Benefits**: 40% reduction (10→6), eliminates redundancy, preserves physics-essential constraints
-**Mathematical basis**: 3/6 mathematically inevitable, 2/6 physics-essential, 1/6 operational
+**Mathematical basis**: 3/6 mathematically derived, 2/6 physics-essential, 1/6 operational
 
 ---
 
@@ -1052,7 +1051,7 @@ This framework represents:
 When extending TNFR theory:
 
 1. **Start from physics**: Derive from nodal equation or invariants
-2. **Prove canonicity**: Show inevitability (Absolute/Strong)
+2. **Prove canonicity**: Show derivation strength (Absolute/Strong)
 3. **Implement carefully**: Map clearly to operators
 4. **Test rigorously**: All invariants + new predictions
 5. **Document thoroughly**: Physics → Math → Code chain
@@ -1156,7 +1155,7 @@ When adding to grammar documentation:
 - **[src/tnfr/operators/grammar.py](src/tnfr/operators/grammar.py)**: Unified grammar U1-U6 validation
 - **[src/tnfr/operators/definitions.py](src/tnfr/operators/definitions.py)**: 13 canonical operators
 - **[src/tnfr/mathematics/](src/tnfr/mathematics/)**: Nodal equation integration hub
-- **[src/tnfr/dynamics/self_optimizing_engine.py](src/tnfr/dynamics/self_optimizing_engine.py)**: Intrinsic agency & auto-optimization
+- **[src/tnfr/dynamics/self_optimizing_engine.py](src/tnfr/dynamics/self_optimizing_engine.py)**: Self-optimization & auto-optimization
 
 **SDK & Applications**:
 - **[src/tnfr/sdk/](src/tnfr/sdk/)**: Simplified & Fluent API for rapid development
@@ -1166,7 +1165,7 @@ When adding to grammar documentation:
 **Development**:
 - **ARCHITECTURE.md**: System design principles
 - **CONTRIBUTING.md**: Workflow and standards
-- **TESTING.md**: Test strategy (1,646+ passing tests)
+- **TESTING.md**: Test strategy (1,655 tests)
 
 **Domain Showcases**:
 - **Network Dynamics**: [examples/03_network_formation.py](examples/03_network_formation.py)
@@ -1415,7 +1414,7 @@ A TNFR expert:
 
 If a change "prettifies the code" but weakens TNFR fidelity, it should not be accepted. If a change strengthens structural coherence and paradigm traceability, it should proceed.
 
-Reality consists of resonant patterns rather than discrete objects. Development practices should reflect this understanding.
+TNFR models coherent dynamic patterns on graph-coupled networks. Development practices should reflect this framework.
 
 ---
 

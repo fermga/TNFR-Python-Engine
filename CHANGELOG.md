@@ -91,7 +91,7 @@ All notable changes to this project will be documented in this file.
 
 ### Test Suite
 
-- **1,646+ passing tests**, 9 skipped, 0 failing
+- **1,655 tests** (1,646 passing, 9 skipped), 0 failing
 - Coverage spans operators, physics, dynamics, grammar, conservation, integrity, SDK, and factorization
 
 ## [0.0.2] - 2025-11-29
@@ -137,7 +137,7 @@ All notable changes to this project will be documented in this file.
 
 - **Universal Tetrahedral Correspondence**: Complete mathematical framework establishing exact mapping between four universal constants (φ, γ, π, e) and four structural fields (Φ_s, |∇φ|, K_φ, ξ_C)
 - **Unified Field Framework**: Mathematical unification discovering complex geometric field Ψ = K_φ + i·J_φ with emergent invariants
-- **Self-Optimizing Engine**: Intrinsic agency capabilities with unified field telemetry for autonomous structural optimization
+- **Self-Optimizing Engine**: Self-optimization capabilities with unified field telemetry for automated structural optimization
 - **Complete Academic Documentation**: Comprehensive conversion to formal academic tone across entire documentation ecosystem
 
 ### Canonical Invariants Optimization
@@ -212,4 +212,3 @@ All notable changes to this project will be documented in this file.
 Previous release (see repository history) with foundational operators, unified grammar, metrics, and canonical field tetrad.
 
 ---
-**Reality is not made of things—it's made of resonance.**

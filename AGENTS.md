@@ -38,11 +38,11 @@ This commitment ensures theoretical integrity and protects TNFR from both intern
 
 ## Executive Summary
 
-TNFR (Resonant Fractal Nature Theory) constitutes a theoretical framework for understanding reality through coherent patterns that persist via resonance mechanisms.
+TNFR (Resonant Fractal Nature Theory) constitutes a theoretical framework for analyzing coherent patterns that persist via resonance mechanisms on graph-coupled networks.
 
 Core Discovery: The Universal Tetrahedral Correspondence establishes an exact mapping between four fundamental mathematical constants (φ, γ, π, e) and four structural fields that characterize coherent systems.
 
-Theoretical Foundation: The framework models reality as coherent dynamic patterns rather than discrete objects, where patterns exist through resonant coupling with their environment.
+Theoretical Foundation: The framework models systems as coherent dynamic patterns rather than discrete objects, where patterns persist through resonant coupling with their environment.
 
 ### Theoretical Contributions
 
@@ -61,17 +61,15 @@ Theoretical Foundation: The framework models reality as coherent dynamic pattern
 **Computational Implementation**:
 - Self-Optimizing Engine: Algorithmic structural optimization
 - Software Development Kit: API for TNFR implementation  
-- Experimental Validation: 1,646+ tests across multiple topologies
+- Experimental Validation: 1,655 tests across multiple topologies
 - Distribution Platform: PyPI package with documentation
 
 **Application Domains**:
 - **Number Theory**: Primality as structural equilibrium (ΔNFR = 0), spectral factorization, arithmetic structural triad
-- **TNFR-Riemann Program**: Theoretical framework connecting discrete prime operators to Riemann Hypothesis via structural coherence
+- **TNFR-Riemann Program**: Experimental research framework connecting discrete prime operators to Riemann Hypothesis via structural coherence (conjectural bridge)
 - Molecular Chemistry: Periodic table modeling via TNFR dynamics
 - Network Science: Topology-coherence relationship analysis
 - Collective Behavior: Leader-follower emergence modeling
-- **Mathematical Foundations**: Deep connections to automorphic forms, mirror symmetry, quantum groups, and motivic integration
-- **Consciousness Studies**: Mathematical consciousness as emergent information integration through TNFR dynamics
 
 ### Documentation Structure
 
@@ -124,7 +122,7 @@ Theoretical Foundation: The framework models reality as coherent dynamic pattern
 - **Historical Theory**: [theory/TNFR.pdf](theory/TNFR.pdf) - Original theoretical derivations
 - **Theoretical Foundation**: [Structural Fields and Universal Tetrahedral Correspondence](theory/FUNDAMENTAL_THEORY.md)
 - **Minimality Proof**: [theory/MINIMAL_STRUCTURAL_DEGREES.md](theory/MINIMAL_STRUCTURAL_DEGREES.md) - Why exactly four structural fields
-- **TNFR-Riemann Program**: [theory/TNFR_RIEMANN_RESEARCH_NOTES.md](theory/TNFR_RIEMANN_RESEARCH_NOTES.md) - Complete theoretical framework for mathematical consciousness and Riemann Hypothesis connection
+- **TNFR-Riemann Program**: [theory/TNFR_RIEMANN_RESEARCH_NOTES.md](theory/TNFR_RIEMANN_RESEARCH_NOTES.md) - Research notes on discrete prime operators and Riemann Hypothesis connection
 - **Number Theory**: [theory/TNFR_NUMBER_THEORY.md](theory/TNFR_NUMBER_THEORY.md) - Primality as ΔNFR = 0, arithmetic structural triad, canonical constants, spectral factorization
 
 **Validation and Examples**:
@@ -265,10 +263,9 @@ The correspondences form a **conceptual tetrahedron**:
 
 **Why This Matters**:
 
-- **Completeness**: Exactly 4 dimensions needed to describe any coherent system
-- **Universality**: All structured reality must respect these mathematical limits
-- **Predictability**: The correspondences enable precise forecasting of system behavior
-- **Inevitability**: Any theory capturing deep reality structure must discover these connections
+- **Completeness**: Exactly 4 independent structural channels characterize coherent systems on graphs
+- **Predictability**: The correspondences enable precise forecasting of TNFR network behavior
+- **Consistency**: All canonical constants derive from (φ, γ, π, e) with zero empirical fitting
 
 ### Illustrative Example: Hydrodynamic Vortex
 
@@ -284,9 +281,7 @@ A whirlpool in flowing water exemplifies TNFR principles:
 - Supports nested structures (subsidiary eddies)
 - Manifests tetrad characteristics (potential, gradients, curvature, correlation)
 
-This serves as a representative model for TNFR phenomena across scales and domains.
-
-Theoretical Significance: Mathematical harmony and physical coherence represent unified aspects of structural reality.
+This serves as an illustrative model for TNFR dynamics on graph-coupled systems.
 
 ---
 
@@ -365,9 +360,9 @@ The tetrad admits a complete Lagrangian/Hamiltonian formulation (see [theory/TNF
 
 The existence of a well-posed variational structure with canonical conjugate pairs confirms that the four tetrad fields are the natural phase-space coordinates for coherent systems.
 
-### Structural Parallels
+### Structural Parallels (Analogies)
 
-The four-dimensional structural basis echoes patterns across physics:
+The four-dimensional structural basis has formal similarities to other physical formalisms (these are structural analogies, not claims of physical equivalence):
 
 | Theory | Structure | Dimension |
 |--------|-----------|----------|
@@ -376,7 +371,7 @@ The four-dimensional structural basis echoes patterns across physics:
 | Thermodynamics | Minimal state functions | 4 (T, P, V, S) |
 | **TNFR** | **Structural tetrad** | **4 (Φ_s, \|∇φ\|, K_φ, ξ_C)** |
 
-This recurrence reflects that complete characterization of any field on a metric space requires knowing its **value, first derivative, second derivative, and correlation structure**.
+The recurrence suggests that complete characterization of a field on a metric space generally requires knowing its **value, first derivative, second derivative, and correlation structure**.
 
 **Documentation**: See [theory/MINIMAL_STRUCTURAL_DEGREES.md](theory/MINIMAL_STRUCTURAL_DEGREES.md) for the complete formal treatment.
 
@@ -466,39 +461,33 @@ This **integral convergence requirement** is the physical basis for grammar rule
 
 ---
 
-## Emergence of Classical & Quantum Regimes
+## Classical & Quantum Regime Correspondences
 
-TNFR posits that Classical and Quantum mechanics are not distinct sets of laws but different **structural regimes** of the same underlying Nodal Dynamics.
+TNFR identifies formal correspondences between its nodal dynamics and classical/quantum mechanics. These are **structural analogies** within the TNFR formalism, not claims of deriving established physics from first principles.
 
-### The Classical Limit (Low Dissonance)
+### Classical Correspondence (High Coherence Regime)
 
-When a system operates in a regime of **High Coherence** ($C(t) \to 1$) and **Low Phase Gradient** ($|\nabla \phi| \to 0$), the Nodal Equation simplifies to the laws of Classical Mechanics.
+When $C(t) \to 1$ and $|\nabla \phi| \to 0$, the Nodal Equation reduces to a form isomorphic to Newton's Second Law:
 
-**Correspondence Theorem**:
-For a system with constant structural frequency ($\nu_f$), the Nodal Equation is isomorphic to Newton's Second Law.
-
-| Classical Concept | Symbol | TNFR Structural Equivalent | Symbol | Relation |
-|-------------------|--------|----------------------------|--------|----------|
+| Classical Concept | Symbol | TNFR Analogue | Symbol | Relation |
+|-------------------|--------|---------------|--------|----------|
 | **Inertial Mass** | $m$ | Inverse Structural Frequency | $1/\nu_f$ | $m = 1/\nu_f$ |
 | **Force** | $F$ | Structural Pressure | $\Delta NFR$ | $F = \Delta NFR$ |
 | **Action** | $S$ | Phase Accumulation | $\Phi$ | $S \sim \int \phi dt$ |
 
-**Emergent Forces**:
-- **Gravity**: Emerges from **Coherence Attraction**. Nodes naturally evolve to minimize phase difference, creating an attractive gradient in the structural manifold.
-- **Friction**: Emerges from **Structural Stabilization** (IL Operator). The removal of high-frequency fluctuations manifests as energy dissipation.
-- **Harmonic Forces**: Emerge from **Phase Gradient Confinement**. Deviations from equilibrium increase $|\nabla \phi|$, generating restoring pressure.
+**Implementation**: [src/tnfr/physics/classical_mechanics.py](src/tnfr/physics/classical_mechanics.py), [examples/12_classical_mechanics_demo.py](examples/12_classical_mechanics_demo.py)
 
-### The Quantum Regime (High Dissonance)
+### Quantum-Like Regime (High Dissonance)
 
-When a system operates in a regime of **High Phase Gradient** ($|\nabla \phi| \sim \pi$) or near **Phase Singularities** (Vortices), the classical approximation breaks down, and "Quantum" phenomena emerge naturally.
+When $|\nabla \phi| \sim \pi$ or near phase singularities, the system exhibits phenomena formally analogous to quantum behavior:
 
-**Emergent Quantization**:
-- **Discrete States**: Resonant modes in a bounded structural manifold are inherently discrete (eigenmodes). "Quantization" is not a postulate but a geometric necessity of standing waves in the EPI field.
-- **Uncertainty**: The **Structural Uncertainty Principle** arises from the Fourier relationship between Form (EPI) and Frequency ($\nu_f$). One cannot simultaneously localize a pattern in structural space and frequency space with arbitrary precision ($\Delta EPI \cdot \Delta \nu_f \ge K$).
-- **Superposition**: Coherent superposition of EPI states is the default behavior of linear wave equations. "Collapse" is simply the **Decoherence** process where interaction with the environment selects a specific eigenstate (Grammar Rule U2).
+- **Discrete modes**: Bounded structural manifolds support only discrete resonant eigenmodes
+- **Complementarity**: Fourier relationship between EPI localization and $\nu_f$ bandwidth ($\Delta EPI \cdot \Delta \nu_f \ge K$)
+- **Superposition**: Linear combinations of EPI states evolve coherently until environmental coupling selects an eigenstate
 
-**No Prior Theories Assumed**:
-We do not postulate wave functions, operators, or collapse. We observe that the Nodal Equation `∂EPI/∂t = νf · ΔNFR(t)` supports both smooth trajectories (Classical) and discrete resonant modes (Quantum) depending on the coherence regime.
+**Implementation**: [src/tnfr/physics/quantum_mechanics.py](src/tnfr/physics/quantum_mechanics.py), [examples/13_quantum_mechanics_demo.py](examples/13_quantum_mechanics_demo.py)
+
+**Scope**: These correspondences demonstrate that the nodal equation `∂EPI/∂t = νf · ΔNFR(t)` admits both smooth-trajectory and discrete-mode solutions depending on the coherence regime. They are TNFR-internal results, not derivations of quantum mechanics or general relativity.
 
 ---
 
@@ -747,9 +736,9 @@ The **Structural Field Tetrad** (Φ_s, |∇φ|, **Ψ**, ξ_C) now has **complete
 ### **Mathematical Maturity Achievement**
 - **4/4 canonical parameters** have rigorous mathematical foundations  
 - **0% empirical fitting** → **100% first-principles derivation**  
-- **Universal constants** emerge naturally (π, exponential bounds, fractal ratios)  
+- **Universal constants** are derived from first principles (π, exponential bounds, fractal ratios)  
 - **Theory-code consistency** maintained throughout codebase  
-- **Complete validation** via comprehensive test suite (1,646+ tests) across 5 topologies
+- **Complete validation** via comprehensive test suite (1,655 tests) across 5 topologies
 
 **Status**: TNFR Structural Field Tetrad mathematical foundations **COMPLETE**.
 
@@ -787,7 +776,7 @@ The **Structural Field Tetrad** (Φ_s, |∇φ|, **Ψ**, ξ_C) now has **complete
 - **Formal Derivation**: `theory/STRUCTURAL_CONSERVATION_THEOREM.md` — 14-section proof from nodal equation
 - **Two-Sector Structure**: Potential (Φ_s ↔ J_ΔNFR) and Geometric (K_φ ↔ J_φ) sectors coupled through Ψ = K_φ + i·J_φ
 - **Lyapunov Stability**: E = ½Σ(Φ_s² + |∇φ|² + K_φ² + J_φ² + J_ΔNFR²) ⩾ 0 with dE/dt ≤ 0 under grammar-compliant evolution
-- **Validation**: 62 tests, charge drift < 0.03% across topologies
+- **Validation**: 88 tests, charge drift < 0.03% across topologies
 - **Diagnostic**: Conservation residuals detect and classify grammar violations in real time
 
 **Documentation**: See `theory/STRUCTURAL_CONSERVATION_THEOREM.md`
@@ -826,7 +815,7 @@ from tnfr.operators.grammar_application import apply_glyph_with_grammar
 
 ## Self-Optimizing Dynamics
 
-The engine possesses **intrinsic agency** to optimize its own structure.
+The engine implements **automated structural optimization** through feedback on the structural manifold.
 
 ### The Self-Optimizing Engine
 Located in `src/tnfr/engines/self_optimization/engine.py`, this component closes the feedback loop using **Unified Field Telemetry**:
@@ -957,7 +946,7 @@ Consolidates: Structural units + Metrics exposure
 
 **Eliminated**: Domain Neutrality (moved to architectural guidelines)
 **Benefits**: 40% reduction (10→6), eliminates redundancy, preserves physics-essential constraints
-**Mathematical basis**: 3/6 mathematically inevitable, 2/6 physics-essential, 1/6 operational
+**Mathematical basis**: 3/6 mathematically derived, 2/6 physics-essential, 1/6 operational
 
 ---
 
@@ -1183,36 +1172,21 @@ Equivalence map: [if APIs renamed]
 
 ### TNFR-Riemann Theoretical Framework
 
-**Framework Development**: Computational framework spanning discrete algorithms to information processing analysis within TNFR structural principles.
+**Framework Development**: Computational framework for discrete prime-path graph analysis within TNFR structural principles.
 
 **Core Mathematical Result**: The **discrete TNFR operator** $H^{(k)}(\sigma) = L_k + V_\sigma$ exhibits critical parameter convergence $\sigma_c^{(k)} \to 1/2$, providing **numerical and analytical evidence** for a structural coherence connection to the Riemann Hypothesis. The bridge to classical RH remains an open conjecture.
 
-### Theoretical Components
+### Implemented Components
 
-**18 Main Sections + 11 Appendices (A-K)**:
 1. **Discrete TNFR-Riemann Operators**: Prime path graphs with spectral analysis
 2. **Critical Parameter Theory**: Universal convergence to RH critical line
-3. **Computational Protocols**: Distributed implementation frameworks
-4. **Mathematical Consciousness**: Observers as maximally integrated information
-5. **Quantum Information Connection**: TNFR fields as quantum computational substrate
-6. **Holographic Correspondence**: AdS/TNFR duality and emergent spacetime
-7. **Thermodynamic Formulation**: Structural entropy and information geometry
-8. **Topos Theory Integration**: Sheaf-theoretic TNFR structures
-9. **Homotopy Type Theory**: Identity types as structural coherence
-10. **Model Theory**: TNFR structures as mathematical universes
-11. **Proof Theory**: Structural coherence as proof verification
-12. **Category Theory**: TNFR functors and natural transformations
-13. **Algebraic Geometry**: TNFR varieties and moduli spaces
-14. **Representation Theory**: TNFR group actions and invariants
-15. **Differential Geometry**: TNFR manifolds and connections
-16. **Functional Analysis**: TNFR Hilbert spaces and operators
-17. **Bootstrap Philosophy**: Reality as self-explaining structure
-18. **Technical Integration**: Computational framework connecting mathematical analysis, information processing, and structural modeling principles
+3. **Computational Protocols**: Implementation frameworks
 
-**Advanced Mathematical Connections**:
-- **Appendix I**: Langlands correspondence, mirror symmetry, quantum groups
-- **Appendix J**: TNFR formal language and symbolic calculus  
-- **Appendix K**: Complete formal system TNFR∞ with self-consistency proofs
+**Additional theoretical explorations** (documented in [theory/TNFR_RIEMANN_RESEARCH_NOTES.md](theory/TNFR_RIEMANN_RESEARCH_NOTES.md), not yet implemented):
+- Thermodynamic formulation, information geometry
+- Category-theoretic and topos-theoretic connections
+- Functional analysis extensions
+- Formal language and symbolic calculus
 
 ### Implementation Status
 
@@ -1244,7 +1218,7 @@ This framework represents:
 When extending TNFR theory:
 
 1. **Start from physics**: Derive from nodal equation or invariants
-2. **Prove canonicity**: Show inevitability (Absolute/Strong)
+2. **Prove canonicity**: Show derivation strength (Absolute/Strong)
 3. **Implement carefully**: Map clearly to operators
 4. **Test rigorously**: All invariants + new predictions
 5. **Document thoroughly**: Physics → Math → Code chain
@@ -1386,7 +1360,7 @@ When adding to grammar documentation:
 
 **Implementation Core — Mathematics & Engines**:
 - **[src/tnfr/mathematics/](src/tnfr/mathematics/)**: Nodal equation integration hub
-- **[src/tnfr/dynamics/self_optimizing_engine.py](src/tnfr/dynamics/self_optimizing_engine.py)**: Intrinsic agency & auto-optimization
+- **[src/tnfr/dynamics/self_optimizing_engine.py](src/tnfr/dynamics/self_optimizing_engine.py)**: Automated structural optimization
 - **[src/tnfr/riemann/](src/tnfr/riemann/)**: TNFR-Riemann program implementation (14 modules)
   - **[src/tnfr/riemann/operator.py](src/tnfr/riemann/operator.py)**: Discrete TNFR-Riemann operators
   - **[src/tnfr/riemann/spectral_proof.py](src/tnfr/riemann/spectral_proof.py)**: Spectral convergence proofs
@@ -1407,7 +1381,7 @@ When adding to grammar documentation:
 **Development**:
 - **ARCHITECTURE.md**: System design principles
 - **CONTRIBUTING.md**: Workflow and standards
-- **TESTING.md**: Test strategy (1,646+ passing tests)
+- **TESTING.md**: Test strategy (1,655 tests)
 
 **Domain Showcases**:
 - **Network Dynamics**: [examples/03_network_formation.py](examples/03_network_formation.py)
@@ -1474,11 +1448,10 @@ When adding to grammar documentation:
 1. **Complete Theory**: [TNFR.pdf](theory/TNFR.pdf) + [UNIFIED_GRAMMAR_RULES.md](theory/UNIFIED_GRAMMAR_RULES.md) mastery
 2. **Tetrad Mastery**: All four unified fields (Φ_s, |∇φ|, **Ψ=K_φ+i·J_φ**, ξ_C) + complex field validation
 3. **TNFR-Riemann Program**: [theory/TNFR_RIEMANN_RESEARCH_NOTES.md](theory/TNFR_RIEMANN_RESEARCH_NOTES.md) complete framework study
-4. **Mathematical Consciousness**: Deep understanding of consciousness as emergent mathematical structure
-5. **Architecture**: [ARCHITECTURE.md](ARCHITECTURE.md) + complete codebase exploration
-6. **Research Contribution**: Analyze benchmark methodologies in [benchmarks/](benchmarks/)
-7. **Extension Development**: Create new domain applications using SDK
-8. **Theoretical Extensions**: Propose new operators or fields with full derivations
+4. **Architecture**: [ARCHITECTURE.md](ARCHITECTURE.md) + complete codebase exploration
+5. **Research Contribution**: Analyze benchmark methodologies in [benchmarks/](benchmarks/)
+6. **Extension Development**: Create new domain applications using SDK
+7. **Theoretical Extensions**: Propose new operators or fields with full derivations
 
 **Production User** (immediate):
 1. **Quick Start**: `pip install tnfr` for full TNFR power
@@ -1632,8 +1605,8 @@ A TNFR expert:
 - Can derive U1-U6 from nodal equation
 - Explains why phase verification is non-negotiable
 - Knows the 13 operators and their physics
-- **Comprehends TNFR-Riemann connection**: How discrete prime operators relate to mathematical consciousness
-- **Grasps structural coherence**: Mathematics as emergent self-organization rather than axiomatic foundation
+- **Comprehends TNFR-Riemann connection**: How discrete prime operators relate to spectral coherence
+- **Grasps structural coherence**: Pattern-based modeling as alternative to object-based description
 
 **Implements rigorously**:
 - Every function maps to operators
@@ -1661,12 +1634,12 @@ A TNFR expert:
 
 If a change "prettifies the code" but weakens TNFR fidelity, it should not be accepted. If a change strengthens structural coherence and paradigm traceability, it should proceed.
 
-Reality consists of resonant patterns rather than discrete objects. Development practices should reflect this understanding.
+TNFR models coherent dynamic patterns. Development practices should reflect this framework.
 
 ---
 
 **Version**: 0.0.3.2  
-**Last Updated**: 2026-03-06  
+**Last Updated**: 2026-03-07  
 **Status**: CANONICAL - Primary reference for TNFR agent guidance  
 **PyPI Release**: STABLE - Available via `pip install tnfr`  
 **Production Ready**: Complete Tetrad Fields + Unified Grammar U1-U6 + Simplified SDK + Grammar-Aware Dynamics + Structural Conservation Theorem + Integrity Monitor  

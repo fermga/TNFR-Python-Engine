@@ -129,7 +129,7 @@
 **Formula:** \(\Phi_s(i) = \sum_{j \neq i} \frac{\Delta\text{NFR}_j}{d(i,j)^\alpha}\) where \(\alpha = 2\)  
 **What:** Global structural potential field from ΔNFR distribution  
 **Status:** **CANONICAL** (Nov 2025)  
-**Validation:** 1,646+ tests across 5 topologies  
+**Validation:** 1,655 tests across 5 topologies  
 **Physics:** Passive equilibrium confinement landscape  
 **Grammar:** U6 STRUCTURAL POTENTIAL CONFINEMENT (Δ Φ_s < φ ≈ 1.618 canonical confinement; ceiling 2.0 binary escape)  
 **API:** `tnfr.physics.fields.compute_structural_potential()`  
@@ -285,10 +285,10 @@ Expose in telemetry:
 
 ## Domain Neutrality
 
-TNFR is **trans-scale** and **trans-domain**:
-- Works from quantum to social systems
+TNFR is designed to be **domain-neutral**:
+- Applicable across multiple domains (network science, number theory, chemistry applications)
 - No built-in assumptions about specific domains
-- Structural operators apply universally
+- Structural operators apply to graph-coupled networks
 
 **Guideline:** Avoid domain-specific hard-coding in core engine
 
@@ -330,7 +330,7 @@ The consolidated TNFR grammar system (**U1-U6**) that replaces the old C1-C3 and
 
 **Canonicity Levels:**
 - **ABSOLUTE**: Mathematical necessity (direct consequence of nodal equation)
-- **STRONG**: Strong empirical/theoretical support (1,646+ tests for U6)
+- **STRONG**: Strong empirical/theoretical support (1,655 tests for U6)
 
 **Recent Updates:**
 - U5 added 2025-11-10 (hierarchical REMESH stabilization)
@@ -527,7 +527,7 @@ Operators that perform graduated destabilization for phase transitions.
 
 **Implementation References:**  
 - **[src/tnfr/physics/fields.py](src/tnfr/physics/fields.py)** - Unified Structural Field Tetrad (Canonical)  
-- **[src/tnfr/dynamics/self_optimizing_engine.py](src/tnfr/dynamics/self_optimizing_engine.py)** - Intrinsic agency & auto-optimization  
+- **[src/tnfr/dynamics/self_optimizing_engine.py](src/tnfr/dynamics/self_optimizing_engine.py)** - Self-optimization & auto-optimization  
 - **[docs/STRUCTURAL_FIELDS_TETRAD.md](docs/STRUCTURAL_FIELDS_TETRAD.md)** - Technical field specifications  
 - **[docs/grammar/PHYSICS_VERIFICATION.md](docs/grammar/PHYSICS_VERIFICATION.md)** - Grammar physics verification
 
@@ -540,7 +540,7 @@ Operators that perform graduated destabilization for phase transitions.
 
 ## Molecular Chemistry from TNFR
 
-**Technical approach**: Chemistry modeled via TNFR nodal dynamics without additional postulates.
+**Technical approach**: Chemistry modeled via TNFR nodal dynamics applied to atomic-scale graph networks.
 
 ### Element Signatures
 
@@ -558,14 +558,14 @@ Operators that perform graduated destabilization for phase transitions.
 **Detection:** `compute_au_like_signature()["is_au_like"]`  
 **Physics:** Optimal multi-scale coordination under nodal dynamics  
 
-### Chemical Bonds (TNFR Redefinition)
+### Chemical Bonds (TNFR Structural Analogy)
 
 **Traditional:** Force between atoms  
 **TNFR:** Phase synchronization with U3 verification: |φᵢ - φⱼ| ≤ Δφ_max  
 **API:** Coupling operators with phase compatibility check  
 **Strength:** Determined by phase coherence and coupling stability  
 
-### Chemical Reactions (TNFR Redefinition)
+### Chemical Reactions (TNFR Structural Analogy)
 
 **Traditional:** Collision/transition state theory  
 **TNFR:** Operator sequences: [Dissonance→Mutation→Coupling→Coherence]  
@@ -573,7 +573,7 @@ Operators that perform graduated destabilization for phase transitions.
 **API:** Sequence validation via `grammar.py`  
 **Example:** Bond formation = [OZ, ZHIR, UM, IL] sequence  
 
-### Molecular Geometry (TNFR Redefinition)
+### Molecular Geometry (TNFR Structural Analogy)
 
 **Traditional:** VSEPR, orbital hybridization  
 **TNFR:** ΔNFR minimization in coupled network topology  
@@ -585,7 +585,7 @@ Operators that perform graduated destabilization for phase transitions.
 
 ## Self-Optimizing Engine
 
-**Intrinsic Agency:** The TNFR engine possesses self-optimization capabilities using unified field telemetry.
+**Self-Optimization:** The TNFR engine includes self-optimization capabilities using unified field telemetry.
 
 ### Core Components
 

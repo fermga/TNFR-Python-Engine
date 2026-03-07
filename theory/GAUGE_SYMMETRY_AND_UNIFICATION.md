@@ -1,6 +1,6 @@
 # Gauge Symmetry and Conservation-Gauge Unification
 
-The complex geometric field $\Psi = K_\phi + i \cdot J_\phi$ admits a **local U(1) gauge symmetry** with deep physical consequences. This document derives the gauge structure, identifies gauge-invariant observables, establishes the conservation-gauge unification, and extends conservation laws to the spectral domain.
+The complex geometric field $\Psi = K_\phi + i \cdot J_\phi$ admits a **local U(1) gauge symmetry** with structural consequences within the TNFR formalism. This document derives the gauge structure, identifies gauge-invariant observables, establishes the conservation-gauge unification, and extends conservation laws to the spectral domain.
 
 **Status**: CANONICAL — Derived from the nodal equation and U(1) representation theory.
 

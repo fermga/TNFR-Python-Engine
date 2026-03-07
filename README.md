@@ -119,7 +119,7 @@ src/tnfr/
 └── factorization/     # Spectral factorization workflow
 
 examples/              # 42 sequential tutorials (01-40 + extras)
-tests/                 # 1,646+ tests
+tests/                 # 1,655 tests
 theory/                # Theoretical derivations
 benchmarks/            # Performance validation (14 suites)
 ```
@@ -145,7 +145,7 @@ benchmarks/            # Performance validation (14 suites)
 ## Testing
 
 ```bash
-pytest                             # all tests (1,634+)
+pytest                             # all tests (1,655)
 pytest tests/sdk/                  # SDK tests (tetrad, conservation, grammar)
 pytest tests/unit/                 # unit tests
 .\make.cmd smoke-tests             # smoke tests (Windows)

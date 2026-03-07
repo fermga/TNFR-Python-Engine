@@ -10,9 +10,9 @@
 
 ## Executive Summary
 
-This document provides **rigorous mathematical proof** that the TNFR Unified Grammar (U1-U6) is not arbitrary but emerges **inevitably** from the physics of coherent systems. Each grammar rule derives directly from the nodal equation `∂EPI/∂t = νf · ΔNFR(t)` and fundamental stability requirements.
+This document provides a **mathematical derivation** showing that the TNFR Unified Grammar (U1-U6) is not arbitrary but follows from the physics of coherent systems. Each grammar rule derives directly from the nodal equation `∂EPI/∂t = νf · ΔNFR(t)` and fundamental stability requirements.
 
-**Key Finding**: Grammar violations lead to mathematical divergences that physically correspond to system fragmentation—making the grammar a **natural law** rather than an imposed constraint.
+**Key Finding**: Grammar violations lead to mathematical divergences that physically correspond to system fragmentation—making the grammar a **structural requirement of the nodal equation** rather than an imposed constraint.
 
 ---
 
@@ -287,15 +287,15 @@ Var(ΔNFR_parent) ≈ (1/N) · ∑ᵢ Var(ΔNFR_childᵢ) → bounded
 
 ## Conclusion
 
-The TNFR Unified Grammar U1-U6 represents **discovered natural laws** rather than designed constraints. Each rule emerges inevitably from:
+The TNFR Unified Grammar U1-U6 represents **structural requirements of the nodal equation** rather than arbitrary constraints. Each rule follows from:
 
 1. **Mathematical requirements** (integral convergence, singularity avoidance)
 2. **Physical constraints** (wave interference, bifurcation control)
-3. **Universal principles** (hierarchical dynamics, harmonic confinement)
+3. **Structural principles** (hierarchical dynamics, harmonic confinement)
 
 **Key Insight**: Grammar violations don't just produce "invalid" sequences—they lead to **mathematical divergences** that correspond to **physical system fragmentation**.
 
-This makes TNFR grammar a **physics-based framework** where correctness is enforced by natural law rather than arbitrary rules.
+This makes TNFR grammar a **physics-based framework** where correctness follows from structural constraints rather than arbitrary rules.
 
 **Verification Status**: ✅ COMPLETE - All grammar rules mathematically derived from nodal equation and fundamental physics principles.
 

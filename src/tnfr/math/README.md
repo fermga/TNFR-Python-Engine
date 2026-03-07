@@ -297,5 +297,3 @@ Developed for TNFR-Python-Engine project
 See: CONTRIBUTING.md for contribution guidelines
 
 ---
-
-**Reality is not made of things—it's made of resonance. Compute accordingly.** 🌊

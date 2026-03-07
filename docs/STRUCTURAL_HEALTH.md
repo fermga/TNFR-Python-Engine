@@ -618,4 +618,3 @@ To add new thresholds:
 4. Document physics rationale (AGENTS.md ref + empirical evidence).
 
 ---
-**Reality is not made of things—it's made of resonance. Assess coherence accordingly.**

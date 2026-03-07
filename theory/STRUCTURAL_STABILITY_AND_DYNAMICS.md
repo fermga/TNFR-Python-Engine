@@ -152,7 +152,7 @@ For systems near the transition, the critical exponent can be fit from the scali
 
 ---
 
-## 3. Life and Autopoiesis
+## 3. Self-Sustaining Dynamics and Autopoiesis
 
 ### 3.1 Autopoietic Coefficient
 
@@ -168,13 +168,13 @@ $$
 G(\mathrm{EPI}) = \gamma\,\|\mathrm{EPI}\|\left(1 - \frac{\|\mathrm{EPI}\|}{\mathrm{EPI}_{\max}}\right)
 $$
 
-### 3.2 Life Threshold
+### 3.2 Self-Sustaining Threshold
 
 $$
-A(t) > 1.0 \implies \text{Life emergence}
+A(t) > 1.0 \implies \text{Self-sustaining dynamics}
 $$
 
-When $A > 1$, the system generates more structural change through self-organisation than through external forcing — the hallmark of autopoiesis.
+When $A > 1$, the system generates more structural change through self-organisation than through external forcing — the defining property of autopoietic systems in the sense of Maturana & Varela.
 
 ### 3.3 Auxiliary Indices
 
@@ -184,9 +184,9 @@ When $A > 1$, the system generates more structural change through self-organisat
 | Self-Organisation $S$ | $\varepsilon\,|\partial G/\partial\|\mathrm{EPI}\|| / (|\partial\Delta\mathrm{NFR}_{\text{ext}}/\partial t| + \delta)$ | Sensitivity of self-generation to reorganisation |
 | Stability Margin $M$ | $(\|\mathrm{EPI}\| - \mathrm{EPI}_{\max}/2)/\mathrm{EPI}_{\max}$ | Position relative to carrying capacity |
 
-### 3.4 Life Emergence Detection
+### 3.4 Self-Sustaining Threshold Detection
 
-The life threshold time $t_{\text{life}}$ is found by interpolation at the $A(t) = 1.0$ crossing. The `LifeTelemetry` dataclass records the complete trajectory $(V_i(t), A(t), S(t), M(t))$.
+The threshold time $t_{\text{self}}$ is found by interpolation at the $A(t) = 1.0$ crossing. The `LifeTelemetry` dataclass records the complete trajectory $(V_i(t), A(t), S(t), M(t))$.
 
 **Implementation**: `src/tnfr/physics/life.py` — `detect_life_emergence()`, `LifeTelemetry` dataclass.
 
@@ -355,7 +355,7 @@ When a violation is detected in OBSERVE or ENFORCE mode, the monitor provides co
 |--------|---------|
 | `src/tnfr/physics/lyapunov.py` | Per-operator energy bounds, spectral gap analysis |
 | `src/tnfr/physics/phase_transition.py` | Order parameter, phase classification, critical exponent |
-| `src/tnfr/physics/life.py` | Autopoietic coefficient, life emergence detection |
+| `src/tnfr/physics/life.py` | Autopoietic coefficient, self-sustaining threshold detection |
 | `src/tnfr/operators/lifecycle.py` | Node states, collapse conditions |
 | `src/tnfr/operators/hamiltonian.py` | Internal Hamiltonian, time evolution, spectrum |
 | `src/tnfr/physics/integrity.py` | 13/13 postconditions, monitor modes |
@@ -377,7 +377,7 @@ report = net.integrity_check()    # IntegrityReport (13/13 operators)
 
 | Example | Concept from this document |
 |---------|---------------------------|
-| [29_lyapunov_stability_demo.py](../examples/29_lyapunov_stability_demo.py) | All 13 operator Lyapunov bounds, energy class taxonomy, U2 net-contractivity proof, spectral gap, life/autopoiesis emergence |
+| [29_lyapunov_stability_demo.py](../examples/29_lyapunov_stability_demo.py) | All 13 operator Lyapunov bounds, energy class taxonomy, U2 net-contractivity proof, spectral gap, self-sustaining dynamics/autopoiesis |
 
 ### Key Source Modules
 

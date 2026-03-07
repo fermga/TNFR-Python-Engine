@@ -3,7 +3,7 @@
 **Version**: 0.0.3.2  
 **Status**: Complete theoretical framework with Universal Tetrahedral Correspondence  
 **Authority**: Canonical constants derived from TNFR theory  
-**Quality**: Production-ready with 1,646+ passing tests, 9 skipped  
+**Quality**: Production-ready with 1,655 tests (1,646 passing, 9 skipped)  
 
 This document provides guidelines for contributing to the TNFR (Resonant Fractal Nature Theory) project. TNFR constitutes a computational framework for modeling complex systems through coherent patterns and resonance dynamics.
 
@@ -608,5 +608,3 @@ If proposing new grammar rules:
 
 > **If a change "prettifies the code" but weakens TNFR fidelity, it is NOT accepted.**  
 > **If a change strengthens structural coherence and paradigm traceability, GO AHEAD.**
-
-**Reality is not made of things—it's made of resonance. Contribute accordingly.**

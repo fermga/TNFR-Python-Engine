@@ -31,7 +31,7 @@ $$
 |\nabla\phi| \to 0, \qquad \nu_f = \mathrm{const}, \qquad C(t) \approx 1
 $$
 
-Under these constraints the nodal equation reduces to Newton's second law.
+Under these constraints the nodal equation reduces to a form algebraically identical to Newton's second law.
 
 ### 2.2 Observable Mapping
 
@@ -140,7 +140,7 @@ High phase gradient ($|\nabla\phi| \sim \pi$), boundary reflections, or proximit
 3. **Interference**: Coherent modes form when accumulated phase matches $2\pi w$ ($w \in \mathbb{Z}$); otherwise $|\nabla\phi|$ spikes and coherence degrades.
 4. **Selection**: Stabilizers drive the system toward minimal $\Delta\mathrm{NFR}$, retaining only resonant modes.
 
-Quantized spectra arise without additional axioms. Superposition of EPI states is the default behavior of linear wave dynamics; "collapse" is the decoherence process where environmental coupling selects eigenstates (grammar rule U2).
+Quantized spectra arise from the boundary conditions and resonant mode selection described above, without invoking additional axioms beyond the nodal equation. Superposition of EPI states is the default behavior of linear wave dynamics; "collapse" is the decoherence process where environmental coupling selects eigenstates (grammar rule U2).
 
 ### 4.4 Validation
 
@@ -222,7 +222,7 @@ $$
 T(t) = T_{\mathrm{env}} + (T_0 - T_{\mathrm{env}}) \, e^{-kt}
 $$
 
-recovering Newton's law of cooling from nodal dynamics.
+obtaining a form analogous to Newton's law of cooling from nodal dynamics.
 
 ---
 
@@ -238,7 +238,7 @@ The five regimes form a coherent hierarchy indexed by the degree of structural d
 | Quantum | High | $\sim \pi$ | $\Psi$, winding number | Discrete eigenvalues |
 | Uncertainty | High + localized | Broadband | $\sigma_t \sigma_f$ product | Fourier bound |
 
-All regimes emerge from the same nodal equation without additional postulates.
+All regimes emerge from the same nodal equation as limiting cases under different parameter conditions. The correspondences to established physics are structural analogies that demonstrate the internal consistency of the TNFR formalism, not derivations of those physical theories from first principles.
 
 ---
 
@@ -286,7 +286,7 @@ All regimes emerge from the same nodal equation without additional postulates.
 - Φ_s → potential wells; $\Delta\Phi_s < \varphi$ mirrors bounded energy basins
 - |∇φ| → velocity potential gradient (fluid mechanics analog)
 - K_φ → curvature-induced forces (centripetal/Coriolis terms)
-- ξ_C → interaction range; large ξ_C reproduces gravity/electromagnetism, small ξ_C mimics contact forces
+- ξ_C → interaction range; large ξ_C produces long-range coupling analogous to gravitational/electromagnetic interactions, small ξ_C mimics contact forces
 
 ### Executable Demonstrations
 

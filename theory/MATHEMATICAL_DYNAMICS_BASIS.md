@@ -8,7 +8,7 @@
 
 ## 1. Statement
 
-The four mathematical constants (φ, γ, π, e) that govern the structural field tetrad (Φ_s, |∇φ|, K_φ, ξ_C) are not arbitrary selections. Each constant controls a **distinct and irreducible class of mathematical dynamics**. Together they span the minimal basis required to characterize any coherent dynamical system.
+The four mathematical constants (φ, γ, π, e) that govern the structural field tetrad (Φ_s, |∇φ|, K_φ, ξ_C) are not arbitrary selections. Each constant controls a **distinct and irreducible class of mathematical dynamics**. Together they span the minimal basis used within TNFR to characterize coherent dynamical systems on graphs.
 
 | Constant | Class of dynamics | Mathematical domain |
 |----------|-------------------|---------------------|
@@ -17,7 +17,7 @@ The four mathematical constants (φ, γ, π, e) that govern the structural field
 | π (Archimedes) | Circular geometry | Riemannian geometry, trigonometry |
 | e (Napier) | Exponential growth/decay | Dynamical systems, probability |
 
-This classification is not a TNFR postulate but an observation about the structure of mathematics itself. TNFR's contribution is to **operationalize** this classification through the structural field tetrad.
+This classification reflects well-known properties of the four constants. TNFR's contribution is to **operationalize** this classification through the structural field tetrad.
 
 ---
 
@@ -118,7 +118,7 @@ Constants like √2 are algebraic (roots of polynomials with integer coefficient
 
 ### 4.1 The Structural Requirement
 
-Any coherent dynamical system — a spatially extended pattern that persists through time via internal feedback — requires simultaneous control of four structural aspects:
+Within the TNFR framework, a coherent dynamical system — a spatially extended pattern that persists through time via internal feedback — is characterized through four structural aspects:
 
 1. **Global stability** (proportionality across scales): The system must maintain structural ratios as it evolves. Without a stable proportion between parts and whole, the pattern fragments. → **φ**
 
@@ -270,7 +270,7 @@ Within TNFR, these systems share a common structural signature: **coherent patte
 
 ### 6.5 Implications
 
-The logarithmic spiral demonstrates that three of the four constants (φ, π, e) describe a single geometric object — the most universal growth pattern in nature. The fourth constant γ enters through the discrete-accumulation process that governs **how** the spiral pattern distributes across network nodes (harmonic summation of contributions).
+The logarithmic spiral demonstrates that three of the four constants (φ, π, e) describe a single geometric object — a growth pattern widely observed across physical and biological systems. The fourth constant γ enters through the discrete-accumulation process that governs **how** the spiral pattern distributes across network nodes (harmonic summation of contributions).
 
 ---
 
@@ -399,7 +399,7 @@ The four-dimensional basis (φ, γ, π, e) → (proportion, accumulation, geomet
 | Complex analysis | Real/Imaginary × Analytic/Meromorphic | Four function classes |
 | **TNFR tetrad** | **(φ, γ, π, e)** | **Proportion, accumulation, geometry, dynamics** |
 
-The recurrence of four-fold structure suggests a deep mathematical principle: **complete characterization of a field on a metric space requires exactly four independent channels** — value, first derivative, second derivative, and integral correlation (see [MINIMAL_STRUCTURAL_DEGREES.md](MINIMAL_STRUCTURAL_DEGREES.md) §3).
+The recurrence of four-fold structure is suggestive but should be treated as an analogy rather than a derived result. Within TNFR, **four independent channels** — value, first derivative, second derivative, and integral correlation — suffice to characterize the structural state on graphs (see [MINIMAL_STRUCTURAL_DEGREES.md](MINIMAL_STRUCTURAL_DEGREES.md) §3).
 
 ---
 
@@ -407,13 +407,13 @@ The recurrence of four-fold structure suggests a deep mathematical principle: **
 
 1. The four constants (φ, γ, π, e) each govern a **distinct and irreducible class of mathematical dynamics**: self-similar proportion, discrete accumulation, circular geometry, and exponential growth/decay.
 
-2. These four classes are **complete**: they span proportion, accumulation, geometry, and dynamics, which together cover the structural requirements of any coherent system.
+2. These four classes are **complete within TNFR**: they span proportion, accumulation, geometry, and dynamics, which together cover the structural requirements of coherent systems on graphs.
 
 3. The TNFR structural field tetrad (Φ_s, |∇φ|, K_φ, ξ_C) operationalizes this classification through measurable fields, each governed by its corresponding constant.
 
 4. Inter-constant relations generate the **tetrahedral edge and face values** used throughout the TNFR constant system (300+ constants from algebraic combinations of the four).
 
-5. The logarithmic spiral provides a concrete geometric example where three constants (φ, π, e) interact to produce the most universal growth pattern in nature.
+5. The logarithmic spiral provides a concrete geometric example where three constants (φ, π, e) interact to produce a widely observed growth pattern.
 
 6. φ as an attractor in structural dynamics follows from fixed-point theory and the anti-resonance property of golden-ratio irrationality.
 

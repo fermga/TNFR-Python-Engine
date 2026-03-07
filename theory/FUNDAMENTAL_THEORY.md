@@ -271,7 +271,7 @@ Key observations:
 | Integrity monitor | `src/tnfr/physics/integrity.py` |
 | Canonical constants | `src/tnfr/constants/canonical.py` |
 | SDK access (tetrad, conservation) | `src/tnfr/sdk/simple.py` |
-| Test suite | `tests/` (1,646+ passing) |
+| Test suite | `tests/` (1,655 tests) |
 
 ---
 

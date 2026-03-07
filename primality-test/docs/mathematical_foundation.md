@@ -105,7 +105,7 @@ This equivalence holds because:
 
 ## Theoretical significance
 
-TNFR primality testing represents a paradigm shift from traditional approaches:
+TNFR primality testing takes a different approach from traditional methods:
 
 **Traditional methods:**
 - Focus on divisibility testing or probabilistic verification

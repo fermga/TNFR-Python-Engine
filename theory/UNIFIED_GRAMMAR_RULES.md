@@ -38,7 +38,7 @@ This document defines the **unified canonical grammar** for TNFR that consolidat
 
 ## Unified Grammar: Six Canonical Constraints
 
-All rules derive inevitably from the nodal equation **∂EPI/∂t = νf · ΔNFR(t)**, invariants, and formal contracts.
+All rules are derived from the nodal equation **∂EPI/∂t = νf · ΔNFR(t)**, invariants, and formal contracts.
 
 **Status Summary**:
 - **U1-U5**: CANONICAL (ABSOLUTE/STRONG) - Mathematically derived from nodal equation
@@ -287,7 +287,7 @@ Step 8: Physical necessity of stabilizers
     → C_parent ≥ α·ΣC_child maintained
     → CONSERVATION PRESERVED → Bounded evolution
 
-Conclusion: U5 emerges INEVITABLY from:
+Conclusion: U5 follows from:
   1. Nodal equation: ∂EPI/∂t = νf · ΔNFR(t)
   2. Hierarchical coupling: EPI_parent = f(EPI_child_1, ..., EPI_child_N)
   3. Chain rule: ∂f/∂t must account for all child contributions
@@ -329,7 +329,7 @@ This proves U5 captures a physical constraint (spatial hierarchy) not covered by
 - Research in "El pulso que nos atraviesa.pdf"
 - Direct derivation from nodal equation + hierarchical coupling
 
-**Canonicity Level**: **STRONG** - Mathematical inevitability from nodal equation applied to hierarchical systems. Violating it produces C_parent < α·ΣC_child → fragmentation.
+**Canonicity Level**: **STRONG** - Derived from nodal equation applied to hierarchical systems. Violating it produces C_parent < α·ΣC_child → fragmentation.
 
 **Traceability**: 
 - **TNFR.pdf § 2.1**: Nodal equation ∂EPI/∂t = νf · ΔNFR(t)
@@ -397,7 +397,7 @@ Step 6: Scale-dependent universality
   Different universality classes for different scales (physically expected)
   Φ_s correlation universal across both: corr = -0.822 ± 0.001
 
-Conclusion: U6 emerges INEVITABLY from:
+Conclusion: U6 follows from:
   1. Nodal equation: ΔNFR as structural pressure
   2. Distance-weighted field: Φ_s from network topology
   3. Empirical validation: 2,400+ experiments, 5 topologies
@@ -500,7 +500,7 @@ U6 is a **read-only safety check**, not a sequence constraint like U1-U5:
 │     Evidence: 2,400+ exp, corr = -0.822, CV = 0.1%            │
 └─────────────────────────────────────────────────────────────────┘
 
-All rules emerge inevitably from:
+All rules follow from:
   ∂EPI/∂t = νf · ΔNFR(t) + Invariants + Contracts
 ```
 
@@ -545,12 +545,12 @@ All rules emerge inevitably from:
 
 ## Canonicity and Physical Basis
 
-This section provides the comprehensive justification for why each unified rule (U1-U6) is **canonical** - that is, inevitably derived from TNFR physics rather than organizational convention.
+This section provides the comprehensive justification for why each unified rule (U1-U6) is **canonical** - that is, derived from TNFR physics rather than organizational convention.
 
 ### Summary Table: Canonicity Verification
 
-| Rule | Canonicity | Necessity | Physical Base | Reference |
-|------|------------|-----------|---------------|-----------|
+| Rule | Canonicity | Strength | Physical Base | Reference |
+|------|------------|----------|---------------|-----------|
 | U1a | ✅ CANONICAL | Absolute | ∂EPI/∂t undefined at EPI=0 | Nodal equation |
 | U1b | ✅ CANONICAL | Strong   | Sequences as action potentials | Wave physics |
 | U2  | ✅ CANONICAL | Absolute | Integral convergence theorem | Analysis |
@@ -820,7 +820,7 @@ Step 2: Hierarchical coupling (from Invariant #7: Operational Fractality)
   Physical meaning: Parent structure depends on children
   Example: Cell depends on {nucleus, mitochondria, ribosomes}
 
-Step 3: Chain rule (standard calculus - inevitable)
+Step 3: Chain rule (standard calculus)
   ∂EPI_parent/∂t = Σ (∂f/∂EPI_child_i) · ∂EPI_child_i/∂t
                   = Σ w_i · νf_child_i · ΔNFR_child_i
 
@@ -863,14 +863,14 @@ Step 8: Physical necessity of stabilizers
     → Bounded hierarchical evolution
 ```
 
-**Why This Is Inevitable:**
+**Why This Follows Within TNFR:**
 
-1. **Nodal equation**: Given as axiomatic (∂EPI/∂t = νf · ΔNFR)
+1. **Nodal equation**: Given as foundational (∂EPI/∂t = νf · ΔNFR)
 2. **Hierarchical coupling**: Follows from Invariant #7 (Fractality)
-3. **Chain rule**: Standard calculus - cannot be otherwise
+3. **Chain rule**: Standard calculus
 4. **Coherence definition**: Follows from Invariant #9 (Metrics)
 5. **Conservation inequality**: Mathematical consequence of above
-6. **Stabilizer necessity**: Only way to maintain conservation
+6. **Stabilizer necessity**: Required to maintain conservation
 
 **Physical Analogies:**
 - **Thermodynamics**: Nested systems must exchange energy to maintain local order
@@ -904,8 +904,8 @@ Conclusion: U5 captures SPATIAL (hierarchy) physics
             INDEPENDENT dimensions, INDEPENDENT constraints
 ```
 
-**Canonicity Level**: **STRONG** - Emerges inevitably from:
-1. Nodal equation (axiomatic)
+**Canonicity Level**: **STRONG** - Follows from:
+1. Nodal equation (foundational)
 2. Hierarchical coupling (Invariant #7)
 3. Chain rule (mathematical necessity)
 4. Coherence definition (Invariant #9)
@@ -922,7 +922,7 @@ Conclusion: U5 captures SPATIAL (hierarchy) physics
 **Why "STRONG" not "ABSOLUTE":**
 - Requires Invariant #7 (fractality) which is empirical
 - α factor has empirical component (η_phase, η_coupling)
-- But given fractality, the rest follows inevitably
+- But given fractality, the rest follows by derivation
 
 ---
 
@@ -1088,27 +1088,27 @@ U6 does NOT duplicate any existing rule:
 
 **U6 (Confinement)**: ΔNFR field + empirical validation + universality → **STRONG**
 
-**All eight sub-rules** emerge inevitably from:
+**All eight sub-rules** follow from:
 1. The nodal equation: ∂EPI/∂t = νf · ΔNFR(t)
 2. Mathematical analysis (integrals, chain rule, wave interference, field theory)
-3. Physical laws (resonance, bifurcations, thresholds, conservation, potentials)
+3. Physical constraints (resonance, bifurcations, thresholds, conservation, potentials)
 4. Explicit invariants/contracts (AGENTS.md)
 5. Empirical validation (2,400+ experiments, 5 topologies)
 
-**Conclusion**: The unified grammar (U1-U6) is **100% canonical** - no organizational conventions, only physics.
+**Conclusion**: The unified grammar (U1-U6) is fully canonical within the TNFR framework — all rules derive from the nodal equation and its formal contracts.
 
-**Reproducibility & Legacy**: This analysis provides indisputable scientific basis for grammar rules, ensuring:
-- Theoretical robustness
+**Reproducibility**: This analysis documents the derivation chain for grammar rules, supporting:
+- Theoretical consistency
 - Implementation fidelity
 - Educational clarity
-- Long-term maintenance certainty
+- Long-term maintenance
 
 ---
 
 ## Physics Derivation Summary
 
-| Rule | Source | Type | Inevitability |
-|------|--------|------|---------------|
+| Rule | Source | Type | Derivation Strength |
+|------|--------|------|---------------------|
 | U1a | ∂EPI/∂t undefined at EPI=0 | Mathematical | Absolute |
 | U1b | Sequences as bounded action potentials | Physical | Strong |
 | U2 | Integral convergence theorem | Mathematical | Absolute |
@@ -1118,10 +1118,9 @@ U6 does NOT duplicate any existing rule:
 | U5 | Nodal equation + hierarchical coupling | Mathematical+Physical | Strong |
 | U6 | ΔNFR field + empirical validation | Physical+Empirical | Strong |
 
-**Inevitability Levels:**
+**Derivation Strength Levels:**
 - **Absolute**: Mathematical necessity from nodal equation
 - **Strong**: Physical requirement from invariants/contracts/validation
-- **Moderate**: Physical preference (not used in unified grammar)
 
 ---
 
@@ -1175,17 +1174,17 @@ U6 does NOT duplicate any existing rule:
 
 ## Conclusion
 
-The unified grammar consolidates two previously separate rule systems into a single source of truth. All five rules (U1-U5) emerge inevitably from TNFR physics with no duplication, no inconsistency, and 100% physical basis.
+The unified grammar consolidates two previously separate rule systems into a single source of truth. All six rules (U1-U6) are derived from TNFR physics with no duplication, no inconsistency, and full physical basis.
 
 **Key Improvements:**
 1. **Single source of truth** - No more dual systems
 2. **Complete coverage** - Includes phase verification (U3) and multi-scale coherence (U5)
 3. **Consistent** - U1b restores closure physics (removed with RNC1)
-4. **100% physics** - Every rule derived from equation/invariants/contracts
+4. **Fully physics-based** - Every rule derived from equation/invariants/contracts
 5. **Well-documented** - Clear derivations and physical interpretations
 6. **Dimensionally complete** - Covers temporal (U1-U4), spatial (U5), and field-theoretic (U6) constraints
 
-**Result:** A unified TNFR grammar that is physically inevitable, mathematically rigorous, and practically useful.
+**Result:** A unified TNFR grammar that is physically grounded, mathematically rigorous, and practically useful.
 
 **Extension History:**
 - **2025-11-08**: Original U1-U4 unified grammar

@@ -98,7 +98,7 @@ All dynamics derive from the nodal equation `∂EPI/∂t = νf · ΔNFR(t)`.
 
 | # | File | Concept |
 |---|------|---------|
-| 29 | `29_lyapunov_stability_demo.py` | All 13 operator Lyapunov bounds, energy class taxonomy, U2 net-contractivity proof, spectral gap, life/autopoiesis emergence |
+| 29 | `29_lyapunov_stability_demo.py` | All 13 operator Lyapunov bounds, energy class taxonomy, U2 net-contractivity proof, spectral gap, self-sustaining dynamics/autopoiesis |
 
 ### Self-Optimisation Dynamics — [AGENTS.md § Self-Optimizing Dynamics](../AGENTS.md)
 
