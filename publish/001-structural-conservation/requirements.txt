@@ -1,0 +1,7 @@
+# Pinned dependencies for reproduction.
+# Install via: pip install -r requirements.txt
+
+tnfr>=0.0.3.3
+numpy>=1.24
+networkx>=3.0
+matplotlib>=3.7

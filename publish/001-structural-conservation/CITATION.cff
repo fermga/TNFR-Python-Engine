@@ -1,0 +1,30 @@
+cff-version: 1.2.0
+title: "A Structural Continuity Law for Grammar-Constrained Dynamics in TNFR"
+message: "If you use this work, please cite it as below."
+type: article
+version: "1.0.0"
+date-released: "2026-03-07"
+authors:
+  - given-names: "F. F."
+    family-names: "Martinez Gamo"
+    orcid: "https://orcid.org/0009-0007-6116-0613"
+repository-code: "https://github.com/fermga/TNFR-Python-Engine"
+license: "MIT"
+keywords:
+  - "TNFR"
+  - "structural conservation"
+  - "grammar-constrained dynamics"
+  - "Noether-like theorem"
+  - "graph dynamics"
+  - "Lyapunov stability"
+  - "reproducible experiment"
+abstract: >-
+  We present a structural continuity result for grammar-constrained dynamics
+  on finite graphs within the TNFR (Resonant Fractal Nature Theory) formalism.
+  Admissible operator sequences, restricted by unified grammar rules U1-U6,
+  induce a charge-like structural quantity and an associated current satisfying
+  an approximate discrete continuity equation. We formulate the continuity
+  statement, derive a Lyapunov-type energy corollary, and provide a compact
+  computational benchmark across five graph topologies with fixed seeds.
+  Experiments show bounded conservation under valid sequences and measurable
+  degradation when grammatical constraints are violated.
