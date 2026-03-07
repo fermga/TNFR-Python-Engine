@@ -2,7 +2,7 @@
 ## Theoretical Framework for Coherent Pattern Analysis
 
 **Status**: Primary theoretical reference document  
-**Version**: 0.0.3.2 (March 2026)  
+**Version**: 0.0.3.3 (March 2026)  
 **Authority**: This repository contains the current implementation of TNFR theory  
 **Repository**: https://github.com/fermga/TNFR-Python-Engine  
 **PyPI Package**: https://pypi.org/project/tnfr/  
@@ -1638,7 +1638,7 @@ TNFR models coherent dynamic patterns. Development practices should reflect this
 
 ---
 
-**Version**: 0.0.3.2  
+**Version**: 0.0.3.3  
 **Last Updated**: 2026-03-07  
 **Status**: CANONICAL - Primary reference for TNFR agent guidance  
 **PyPI Release**: STABLE - Available via `pip install tnfr`  

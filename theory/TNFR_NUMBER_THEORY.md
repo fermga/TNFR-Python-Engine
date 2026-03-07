@@ -1,7 +1,7 @@
 # TNFR Number Theory: Arithmetic Emergence from Structural Dynamics
 
 **Status**: Canonical theoretical reference
-**Version**: 0.0.3.2
+**Version**: 0.0.3.3
 **Date**: March 2026
 
 ---
@@ -607,4 +607,4 @@ Structural triad: $\mathrm{EPI}(30) \approx 3.43$, $\nu_f(30) \approx 0.95$, $C_
 
 ---
 
-**Version**: 0.0.3.2 | **Status**: Canonical | **Authority**: [AGENTS.md](../AGENTS.md)
+**Version**: 0.0.3.3 | **Status**: Canonical | **Authority**: [AGENTS.md](../AGENTS.md)

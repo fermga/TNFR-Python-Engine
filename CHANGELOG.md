@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.3.3] - 2026-03-07
+
+### Documentation Audit (Sessions 1-4)
+
+- **Comprehensive tone audit**: Removed speculative/grandiose language across 25+ files
+- **TNFR_RIEMANN_RESEARCH_NOTES.md**: Reduced from 2679 to 1499 lines (removed unfounded claims)
+- **AGENTS.md**: Fixed 'inevitability' → 'derivation strength', updated conservation test count (62 → 88), verified all 40+ cross-reference links
+- **Synced .github/agents/my-agent.md** with AGENTS.md corrections
+- **Updated test counts** to 1,655 across 8 files
+- **Removed orphaned file**: src/train_gmx_optimizer.py
+- **Fixed contradictions** between AGENTS.md and theory/ documents
+- **Validated**: 1653 passed, 2 skipped
+
 ## [0.0.3.2] - 2026-03-06
 
 ### Documentation & Consistency Fixes

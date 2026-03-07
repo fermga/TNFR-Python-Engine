@@ -1,7 +1,7 @@
 # Physical Regime Correspondences
 
 **Status**: Technical reference
-**Version**: 0.0.3.2
+**Version**: 0.0.3.3
 **Date**: March 2026
 
 ---

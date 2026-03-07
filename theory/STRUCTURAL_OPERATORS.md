@@ -4,7 +4,7 @@
 
 **Status**: CANONICAL — All operators derived from the nodal equation  
 **Date**: March 2026  
-**Version**: 0.0.3.2  
+**Version**: 0.0.3.3  
 **Prerequisite**: [FUNDAMENTAL_THEORY.md](FUNDAMENTAL_THEORY.md) §2 (Nodal Equation), [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) (Grammar U1–U6)
 
 ---

@@ -156,4 +156,4 @@ AL, EN, IL, OZ, UM, RA, SHA, VAL, NUL, THOL, ZHIR, NAV, REMESH
 
 ---
 
-**Version**: 0.0.3.2 | **Documents**: 16 (6 canonical + 4 consolidated + 6 extended) | **Examples**: 40 + 2 utility | **Authority**: [../AGENTS.md](../AGENTS.md)
+**Version**: 0.0.3.3 | **Documents**: 16 (6 canonical + 4 consolidated + 6 extended) | **Examples**: 40 + 2 utility | **Authority**: [../AGENTS.md](../AGENTS.md)

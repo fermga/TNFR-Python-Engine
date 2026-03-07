@@ -161,7 +161,7 @@ make smoke-tests                   # smoke tests (Unix)
   author = {Martinez Gamo, F. F.},
   title = {TNFR-Python-Engine: Resonant Fractal Nature Theory Implementation},
   year = {2025},
-  version = {0.0.3.2},
+  version = {0.0.3.3},
   doi = {10.5281/zenodo.17602860},
   url = {https://github.com/fermga/TNFR-Python-Engine}
 }
