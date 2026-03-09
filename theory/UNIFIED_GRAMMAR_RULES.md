@@ -14,28 +14,6 @@ This document defines the **unified canonical grammar** for TNFR that consolidat
 
 ---
 
-## Previous State: Two Separate Systems
-
-### System 1: grammar.py (C1-C3)
-- **C1: EXISTENCE & CLOSURE** - Start with generators, end with closures
-- **C2: BOUNDEDNESS** - Stabilizers prevent divergence
-- **C3: THRESHOLD PHYSICS** - Bifurcations require context
-
-### System 2: canonical_grammar.py (RC1-RC4)
-- **RC1: Initialization** - If EPI=0, start with generator
-- **RC2: Convergence** - If destabilizers, include stabilizer  
-- **RC3: Phase Verification** - Coupling/resonance requires phase check
-- **RC4: Bifurcation Limits** - If bifurcation triggers, require handlers
-
-### Problems with Dual Systems
-1. **Duplication**: C1 ≈ RC1, C2 = RC2, C3 ≈ RC4
-2. **Inconsistency**: C1 includes end states, RC1 doesn't (RNC1 was removed)
-3. **Missing coverage**: RC3 (phase) has no equivalent in C1-C3
-4. **Confusion**: Two sources of truth for the same physics
-5. **Maintenance burden**: Changes must be synchronized across both
-
----
-
 ## Unified Grammar: Six Canonical Constraints
 
 All rules are derived from the nodal equation **∂EPI/∂t = νf · ΔNFR(t)**, invariants, and formal contracts.
