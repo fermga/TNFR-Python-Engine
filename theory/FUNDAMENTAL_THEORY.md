@@ -1,7 +1,7 @@
 # TNFR Fundamental Theory
 
 **Status**: Canonical reference
-**Version**: 0.0.3.3
+**Version**: 0.0.3.1
 **Date**: March 2026
 
 ---
@@ -69,8 +69,6 @@ $$
 
 Measures how surrounding structural pressure accumulates at node $i$ via an inverse-square law. Serves as the global stability monitor for U6 (structural confinement).
 
-**Experimental confirmation**: $\Phi_s$ responds linearly to $\Delta\mathrm{NFR}$ perturbations ($|r| = 1.000$), confirming its 0th-order position in the operator-derivative tower. See [STRUCTURAL_OPERATORS.md §17.4](STRUCTURAL_OPERATORS.md) and [example 39](../examples/39_nodal_equation_decomposition.py).
-
 ### 3.2 Phase Gradient ($|\nabla\phi|$)
 
 $$
@@ -119,16 +117,6 @@ From the tetrad, the following tensor invariants emerge:
 | Symmetry breaking $\mathcal{S}$ | $(|\nabla\phi|^2 - K_\phi^2) + (J_\phi^2 - J_{\Delta\mathrm{NFR}}^2)$ | Phase transition signal |
 | Coherence coupling $\mathcal{C}$ | $\Phi_s \cdot |\Psi|$ | Multi-scale connector |
 
-### 3.7 Operator-Tetrad Coupling (Experimental)
-
-Each canonical operator produces a unique fingerprint across the tetrad fields. The complete causal chain is:
-
-$$
-\text{Operator} \;\to\; (\nu_f,\,\Delta\mathrm{NFR}) \;\to\; \frac{\partial\mathrm{EPI}}{\partial t} \;\to\; \text{Tetrad} \;\to\; (\mathcal{E},\,\mathcal{Q})
-$$
-
-Tetrad fields are diagnostic outputs fully determined by the nodal equation state, not independent dynamical variables. Coupling (UM) modifies all four fields simultaneously; Silence (SHA) is tetrad-neutral; Coherence (IL) and Dissonance (OZ) produce identical perturbation magnitudes despite opposite physics (IL-OZ symmetry). See [STRUCTURAL_OPERATORS.md §17](STRUCTURAL_OPERATORS.md) and [examples 37-39](../examples/37_operator_tetrad_synergy.py) for experimental details.
-
 ---
 
 ## 4. Universal Tetrahedral Correspondence
@@ -165,7 +153,7 @@ The correspondences form a conceptual tetrahedron:
 
 ### 4.3 Derivation Outline
 
-1. **$\Phi_s \leftrightarrow \varphi$**: The golden ratio emerges as the upper bound for aggregated inverse-square potentials on regular lattices. $\Phi_s$ exceeding $\varphi$ correlates with runaway accumulation of $\Delta\mathrm{NFR}$. Per-node safety: $|\Phi_s| < 0.7711$ (von Koch fractal bound; experimentally validated constant confirmed across 5 topologies).
+1. **$\Phi_s \leftrightarrow \varphi$**: The golden ratio emerges as the upper bound for aggregated inverse-square potentials on regular lattices. $\Phi_s$ exceeding $\varphi$ correlates with runaway accumulation of $\Delta\mathrm{NFR}$. Per-node safety: $|\Phi_s| < 0.7711$ (von Koch fractal bound, $\Gamma(4/3)/\Gamma(1/3)$).
 
 2. **$|\nabla\phi| \leftrightarrow \gamma$**: The gradient threshold inherits the ratio $\gamma/\pi$ from the Kuramoto critical coupling condition expressed in TNFR units. This field captures dynamics that $C(t)$ misses due to scaling invariance: $C(t) = 1 - (\sigma_{\Delta\mathrm{NFR}}/\Delta\mathrm{NFR}_{\max})$ is invariant to proportional scaling.
 
@@ -271,7 +259,7 @@ Key observations:
 | Integrity monitor | `src/tnfr/physics/integrity.py` |
 | Canonical constants | `src/tnfr/constants/canonical.py` |
 | SDK access (tetrad, conservation) | `src/tnfr/sdk/simple.py` |
-| Test suite | `tests/` (1,655 tests) |
+| Test suite | `tests/` (1,641+ passing) |
 
 ---
 
@@ -299,12 +287,6 @@ analysis = TNFR.analyze(net)               # Comprehensive analysis
 | [06_network_topologies.py](../examples/06_network_topologies.py) | Topology-dependent dynamics |
 | [08_emergent_phenomena.py](../examples/08_emergent_phenomena.py) | Collective behaviour from nodal equations |
 | [10_simplified_sdk_showcase.py](../examples/10_simplified_sdk_showcase.py) | SDK API: tetrad, conservation, grammar-aware evolution |
-| [31_mathematical_constants_basis.py](../examples/31_mathematical_constants_basis.py) | Four-constant emergence, Universal Tetrahedral Correspondence validation |
-| [32_spiral_attractors_demo.py](../examples/32_spiral_attractors_demo.py) | Spiral attractors from nodal equation, φ-attractor dynamics |
-| [33_complex_field_unification.py](../examples/33_complex_field_unification.py) | Complex geometric field Ψ, emergent invariants (§3.5, §3.6) |
-| [34_conservation_protocol_suite.py](../examples/34_conservation_protocol_suite.py) | Conservation theorem validation, charge drift < 0.03% |
-| [35_tetrad_irreducibility.py](../examples/35_tetrad_irreducibility.py) | Tetrad field irreducibility proof, structural blind spots |
-| [36_grammar_violation_detector.py](../examples/36_grammar_violation_detector.py) | Grammar U1–U6 violation detection via conservation residuals |
 
 ### Key Source Modules
 

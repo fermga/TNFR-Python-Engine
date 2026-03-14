@@ -28,6 +28,12 @@ Thumbs.db
 # Reproducibility artifacts
 artifacts/
 profiles/
+
+# Crypto transient logs
+crypto/extract_debug.txt
+crypto/extract_stderr.txt
+crypto/update_log.txt
+crypto/update_run.txt
 *.pstats
 *.stats
 profile_*.txt
@@ -68,3 +74,7 @@ logs/
 
 # Type checking cache
 .mypy_cache/
+
+# Local-only modules (not published to GitHub)
+crypto/
+publish/

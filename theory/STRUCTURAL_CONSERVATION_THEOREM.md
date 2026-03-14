@@ -37,9 +37,10 @@ operator sequences constrained by grammar rules U1–U6. The question is:
 > **Do the grammar constraints play the role of continuous symmetries and
 > generate conservation laws?**
 
-This document proves that the answer is **yes**. The unified grammar is not
+This document argues that the answer is **yes**, via explicit derivation and
+numerical validation. The unified grammar is not
 merely a validation filter; it is the *structural symmetry* whose invariance
-implies conservation of structural charge.
+implies approximate conservation of structural charge.
 
 ### Main Result
 
@@ -503,13 +504,13 @@ because phase gradient stress is the local driver of K_φ transport.
 
 $E \geq 0$ always (sum of squares).
 
-### 8.2 Lyapunov Theorem for Grammar-Compliant Evolution
+### 8.2 Lyapunov Proposition for Grammar-Compliant Evolution
 
-**Theorem**: Under grammar-compliant evolution (U2 satisfied):
+**Proposition**: Under grammar-compliant evolution (U2 satisfied):
 
 $$\frac{dE}{dt} \leq 0$$
 
-*Proof sketch*:
+*Proof sketch (not a complete formal proof)*:
 
 1. Coherence operators (IL) reduce $|\Delta\text{NFR}|$, hence reduce
    $\Phi_s^2$ and $J_{\Delta\text{NFR}}^2$
@@ -518,8 +519,10 @@ $$\frac{dE}{dt} \leq 0$$
    compensating stabilizers that absorb the excess
 4. Net effect over a complete grammar sequence: energy is non-increasing
 
-Therefore $E$ is a **Lyapunov function** for grammar-compliant dynamics,
-proving asymptotic stability of coherent attractors.
+Therefore $E$ is a **candidate Lyapunov function** for grammar-compliant
+dynamics. A complete formal proof of asymptotic stability would require
+analytic bounds on the nonlinear operator interactions; the per-operator
+bounds in §8.4 provide supporting evidence.
 
 **Refinement (Grammar-Energy Landscape)**: The Lyapunov contractivity bound
 ($\Pi < 1$) is *sufficient* but not *necessary* for energy descent.
@@ -701,7 +704,7 @@ Conservation validated across:
 - **Conservation quality ≈ 0.6** reflects the discrete approximation; improves
   with smaller $\Delta t$ and denser networks
 - **Cross-coupling** ≈ 0.6–0.7 confirms the Ψ unification is physically real
-- **Energy monotonically decreasing** validates Lyapunov theorem
+- **Energy monotonically decreasing** supports Lyapunov proposition
 
 ### 10.4 Scaling Behavior
 
@@ -874,7 +877,7 @@ applied from conservation residual patterns.
 
 4. **Ward Identities**: Each canonical operator has a characteristic conservation signature; complete sequences satisfy $\sum_k \langle \mathcal{S}_k \rangle \approx 0$.
 
-5. **Lyapunov Stability**: The energy functional $E = \frac{1}{2}\sum(\Phi_s^2 + |\nabla\phi|^2 + K_\phi^2 + J_\phi^2 + J_{\Delta\text{NFR}}^2)$ is non-increasing under grammar-compliant evolution, proving asymptotic stability of coherent attractors. Formal per-operator bounds are derived from glyph factors for all 13 canonical operators (§8.4), with explicit spectral gap characterisation (§8.5) giving topology-dependent convergence rates.
+5. **Lyapunov Stability**: The energy functional $E = \frac{1}{2}\sum(\Phi_s^2 + |\nabla\phi|^2 + K_\phi^2 + J_\phi^2 + J_{\Delta\text{NFR}}^2)$ is non-increasing under grammar-compliant evolution in all tested configurations, supporting asymptotic stability of coherent attractors. Formal per-operator bounds are derived from glyph factors for all 13 canonical operators (§8.4), with explicit spectral gap characterisation (§8.5) giving topology-dependent convergence rates. A complete proof of asymptotic stability remains open.
 
 6. **Numerical Validation**: Charge drift < 0.03% across topologies; conservation quality improves toward 1 in the continuum limit.
 

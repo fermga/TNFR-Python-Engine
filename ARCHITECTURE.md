@@ -56,7 +56,7 @@ The engine is structured around mathematically grounded interfaces that enforce 
 | **Grammar Dynamics** | Grammar-aware operator selection | Incremental U1-U6 checks | `operators/grammar_dynamics.py` |
 | **Dynamics Engine** | ∂EPI/∂t = νf·ΔNFR integration | Structural manifold calculus | `dynamics/canonical.py` |
 | **Field Telemetry** | Tetrad monitoring (Φ_s,|∇φ|,Ψ,ξ_C) | Unified field theory | `physics/fields.py` |
-| **Conservation** | Structural conservation law | Noether-like theorem from U1-U6 | `physics/conservation.py` |
+| **Conservation** | Structural conservation law | Noether-like derivation from U1-U6 | `physics/conservation.py` |
 | **Integrity Monitor** | Operator postcondition verification | 13/13 operator contracts | `physics/integrity.py` |
 | **Self-Optimization** | Autonomous improvement | Gradient descent on structure | `dynamics/self_optimizing_engine.py` |
 

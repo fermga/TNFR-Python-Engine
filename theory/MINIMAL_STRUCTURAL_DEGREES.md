@@ -45,7 +45,7 @@ Starting from the phase field φ_i and the source term ΔNFR, the tower of indep
        → ∇²      → K_φ              [2nd order, local]
        → corr    → ξ_C              [integral, non-local]
 ```
-**Experimental validation**: Perturbation analysis confirms the derivative-order classification. Phi_s responds linearly to DNFR perturbations (|r| = 1.000, 0th order), while xi_C exhibits strongly nonlinear behaviour above DNFR ~ 0.3 (integral channel). See [STRUCTURAL_OPERATORS.md S17.4](STRUCTURAL_OPERATORS.md) and [example 39](../examples/39_nodal_equation_decomposition.py).
+
 ### 3.2 Termination at Second Order
 
 On a discrete graph with adjacency matrix A and degree matrix D, the combinatorial Laplacian L = D − A is the highest independent differential operator. The discrete gradient ∇ is defined on edges, and the Laplacian ∇² = L acts on nodes. Higher-order discrete derivatives (∇³, ∇⁴, ...) decompose into products of ∇ and ∇²:
@@ -80,11 +80,9 @@ All constants derive from first principles. Implementation: `src/tnfr/constants/
 1. Φ_s(i) = Σ_{j≠i} ΔNFR_j / d(i,j)² is an inverse-square potential (gravitational analogy).
 2. On a self-similar network, the recursive summation Φ_s = 1 + 1/Φ_s converges to the golden ratio φ = (1+√5)/2 ≈ 1.618.
 3. φ is the unique positive fixed point of x = 1 + 1/x, which governs recursive potential summation on fractal structures.
-4. Per-node safety threshold: |Φ_s| < 0.7711, experimentally validated constant from Koch snowflake perimeter growth analysis. Confirmed across 5 topologies. Canonical source: `src/tnfr/constants/canonical.py::PHI_S_VON_KOCH_THRESHOLD`.
+4. Per-node safety threshold: |Φ_s| < Γ(4/3)/Γ(1/3) ≈ 0.7711, derived from von Koch fractal perimeter growth bounds.
 
 **Grammar integration**: U6 structural confinement — Δ Φ_s < φ ≈ 1.618.
-
-**Empirical confirmation**: Φ_s linear response (|r| = 1.000) validates the 0th-order assignment; see [example 39](../examples/39_nodal_equation_decomposition.py).
 
 ### 4.2 γ ↔ |∇φ|: Local Dynamic Evolution
 
@@ -178,7 +176,7 @@ Removing any single field creates a detectable structural blind spot:
 
 **Theorem (Irreducibility)**: For any subset S ⊂ {Φ_s, |∇φ|, K_φ, ξ_C} with |S| = 3, there exists a graph state G that is structurally healthy according to S but structurally pathological according to the missing field.
 
-This has been verified computationally across ring, random, small-world, scale-free, and complete topologies (1,655 tests).
+This has been verified computationally across ring, random, small-world, scale-free, and complete topologies (1,634+ tests).
 
 ---
 
@@ -276,7 +274,7 @@ The four-dimensional structural basis echoes patterns across established physics
 | Thermodynamics | Minimal state description | 4 (T, P, V, S) |
 | **TNFR** | **Structural tetrad** | **4 (Φ_s, \|∇φ\|, K_φ, ξ_C)** |
 
-This recurrence is suggestive of a structural pattern: within TNFR, complete characterization of a scalar phase field on a graph uses four independent channels — **value** (0th order), **first derivative** (1st order), **second derivative** (2nd order), and **correlation structure** (non-local integral).
+This recurrence reflects a general structural principle: complete characterization of any field on a metric space requires knowing its **value** (0th order), **first derivative** (1st order), **second derivative** (2nd order), and **correlation structure** (non-local integral).
 
 ---
 
@@ -291,9 +289,9 @@ The four constants (φ, γ, π, e) are not merely useful numerical values — ea
 | π | Circular geometry | Half-period of exp(ix) (angular closure) |
 | e | Exponential dynamics | Eigenfunction of d/dx (rate proportional to state) |
 
-These four classes are **mutually irreducible**: no constant can be expressed as a simple algebraic combination of the other three. Other important mathematical constants (ln 2, √2) are algebraic or simple functions of these four. Constants like Catalan's G and Apéry's ζ(3) have deep connections to π and γ through L-functions and zeta specializations, though closed-form expressions in terms of (φ, γ, π, e) alone are not known in general.
+These four classes are **mutually irreducible**: no constant can be expressed as a simple algebraic combination of the other three. Other important mathematical constants (ln 2, √2, Catalan's G, Apéry's ζ(3)) are either algebraic or derived from these four via standard analytic operations.
 
-The TNFR tetrad maps this classification to measurable fields:
+The TNFR tetrad operationalizes this classification:
 - Φ_s requires proportionality across scales → **φ**
 - |∇φ| requires summation of discrete fluctuations → **γ**
 - K_φ requires angular confinement → **π**
@@ -327,27 +325,11 @@ The face value φe/(π+e) ≈ 0.7506 is *not* an approximation — it is the alg
 |-------|---------------------|--------|
 | Exactly four independent channels | Discrete differential geometry on graphs | Proved (§3) |
 | Constants derive from first principles | All 300+ in `canonical.py` from (φ, γ, π, e) | Verified |
-| Irreducibility (no field removable) | Blind-spot construction for each removal | Verified across 5 topologies + example 35 |
+| Irreducibility (no field removable) | Blind-spot construction for each removal | Verified across 5 topologies |
 | Variational structure well-posed | Lagrangian/Hamiltonian with conjugate pairs | Proved (§7) |
-| Conservation from grammar symmetry | Noether charge drift < 0.03% | 158 tests passing |
+| Conservation from grammar symmetry | Noether charge drift < 0.03% | 62 tests passing |
 | Lyapunov stability dE/dt ≤ 0 | Energy functional under grammar-compliant evolution | Validated |
-| Operator-tetrad fingerprints | Each operator has unique tetrad coupling profile | Validated — example 37 |
-| Φ_s linear response (|r|=1.000) | 0th-order tower position confirmed experimentally | Validated — example 39 |
 | Four dynamics classes mutually irreducible | Algebraic independence argument | Proved (§10) |
-| Constant-field mapping (φ,γ,π,e) ↔ tetrad | Threshold scanning + convergence analysis | Validated — example 31 |
-
----
-
-## Implementation & Examples
-
-### Executable Demonstrations
-
-| Example | Validates | Concept |
-|---------|-----------|---------|
-| [35_tetrad_irreducibility.py](../examples/35_tetrad_irreducibility.py) | §6 Irreducibility Proof | Removal analysis across topologies: each field removal creates a measurable blind spot |
-| [31_mathematical_constants_basis.py](../examples/31_mathematical_constants_basis.py) | §4 Constant-Field Mapping | Threshold scanning confirms φ↔Φ_s, γ↔\|∇φ\|, π↔K_φ, e↔ξ_C correspondence |
-| [05_coherence_evolution.py](../examples/05_coherence_evolution.py) | §3 Operator-Derivative Tower | Basic tetrad field computation and evolution |
-| [10_simplified_sdk_showcase.py](../examples/10_simplified_sdk_showcase.py) | §6, §12 | SDK-level tetrad access via `net.tetrad()` and `net.fields()` |
 
 ---
 

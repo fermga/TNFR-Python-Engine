@@ -657,7 +657,7 @@ The **Structural Field Tetrad** (Φ_s, |∇φ|, **Ψ**, ξ_C) now has **complete
 
 - **Energy Density ℰ = Φ_s² + |∇φ|² + K_φ² + J_φ² + J_ΔNFR²**
 - **Topological Charge 𝒬 = |∇φ|·J_φ - K_φ·J_ΔNFR**  
-- **Conservation Law: ∂ρ/∂t + ∇·𝐉 = 0** where ρ = Φ_s + K_φ
+- **Approximate Conservation Law: ∂ρ/∂t + ∇·𝐉 ≈ S_grammar** where ρ = Φ_s + K_φ, S_grammar → 0 under U1–U6
 
 #### 4. Implementation Status
 

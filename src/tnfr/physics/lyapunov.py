@@ -23,9 +23,11 @@ factor.  In TNFR notation:
   small residual term proportional to the frozen/shifted attribute.
 
 Grammar rule U2 (CONVERGENCE & BOUNDEDNESS) requires that every
-destabiliser be accompanied by a stabiliser.  The formal proof shows that
+destabiliser be accompanied by a stabiliser.  The derivation argues that
 the *net* energy change across a grammar-compliant sequence is
-non-positive, confirming the Lyapunov theorem for all 13 operators.
+non-positive, supporting the Lyapunov proposition for all 13 operators.
+A complete formal proof of asymptotic stability remains open (see §8.2 of
+the theory document for the proof sketch and its limitations).
 
 Spectral Gap Characterisation
 -----------------------------
@@ -925,7 +927,7 @@ def prove_sequence_lyapunov(
     - Mixed with rate κ: factor = 1 + κ  (worst case)
 
     The product Π factors gives the net energy ratio.  If ≤ 1, the
-    sequence is Lyapunov stable per the Structural Conservation Theorem.
+    sequence is Lyapunov stable per the Structural Conservation derivation.
 
     Parameters
     ----------

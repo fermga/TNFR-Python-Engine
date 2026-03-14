@@ -355,8 +355,8 @@ The tetrad admits a complete Lagrangian/Hamiltonian formulation (see [theory/TNF
 
 - **Lagrangian**: L(i) = T(i) − V(i) where T = ½[J_φ² + J_ΔNFR²] and V = ½[Φ_s² + |∇φ|² + K_φ²]
 - **Conjugate pairs**: (K_φ, J_φ) geometric sector; (Φ_s, J_ΔNFR) potential sector
-- **Conservation**: Grammar symmetry (U1-U6) implies structural charge conservation via Noether-like theorem
-- **Lyapunov stability**: E = ½Σ_i ε(i) ≥ 0 with dE/dt ≤ 0 under grammar-compliant evolution
+- **Conservation**: Grammar symmetry (U1-U6) implies approximate structural charge conservation via Noether-like derivation
+- **Lyapunov stability**: E = ½Σ_i ε(i) ≥ 0 with dE/dt ≤ 0 observed under grammar-compliant evolution (proof sketch)
 
 The existence of a well-posed variational structure with canonical conjugate pairs confirms that the four tetrad fields are the natural phase-space coordinates for coherent systems.
 
@@ -773,10 +773,10 @@ The **Structural Field Tetrad** (Φ_s, |∇φ|, **Ψ**, ξ_C) now has **complete
 **Main Result**: Grammar symmetry (U1–U6) ⟹ Structural conservation law (Noether-like).
 
 - **Canonical Module**: `src/tnfr/physics/conservation.py` — single source of truth for charge density ρ, current divergence div(𝐉), Noether charge Q, energy functional E, Ward identities, Lyapunov stability, and spectral decomposition
-- **Formal Derivation**: `theory/STRUCTURAL_CONSERVATION_THEOREM.md` — 14-section proof from nodal equation
+- **Formal Derivation**: `theory/STRUCTURAL_CONSERVATION_THEOREM.md` — 14-section derivation from nodal equation
 - **Two-Sector Structure**: Potential (Φ_s ↔ J_ΔNFR) and Geometric (K_φ ↔ J_φ) sectors coupled through Ψ = K_φ + i·J_φ
-- **Lyapunov Stability**: E = ½Σ(Φ_s² + |∇φ|² + K_φ² + J_φ² + J_ΔNFR²) ⩾ 0 with dE/dt ≤ 0 under grammar-compliant evolution
-- **Validation**: 88 tests, charge drift < 0.03% across topologies
+- **Lyapunov Stability**: E = ½Σ(Φ_s² + |∇φ|² + K_φ² + J_φ² + J_ΔNFR²) ⩾ 0 with dE/dt ≤ 0 observed under grammar-compliant evolution (proof sketch; complete proof open)
+- **Validation**: 88 tests, charge drift < 0.03% across tested topologies and seeds
 - **Diagnostic**: Conservation residuals detect and classify grammar violations in real time
 
 **Documentation**: See `theory/STRUCTURAL_CONSERVATION_THEOREM.md`

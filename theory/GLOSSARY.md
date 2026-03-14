@@ -677,14 +677,14 @@ Tetrad fields are diagnostic outputs, not independent dynamical variables. They 
 
 ## Structural Conservation Theorem
 
-**Main Result:** Grammar symmetry (U1-U6) implies a Noether-like structural conservation law.
+**Main Result:** Grammar symmetry (U1-U6) implies an approximate Noether-like structural conservation law.
 
 **Charge Density:** ρ = Φ_s + K_φ (potential + geometric sectors)  
 **Current:** 𝐉 = (J_φ, J_ΔNFR) (transport channels)  
 **Conservation:** ∂ρ/∂t + ∇·𝐉 = S_grammar where S_grammar → 0 under U1-U6  
 **Two Sectors:** Potential (Φ_s ↔ J_ΔNFR) and Geometric (K_φ ↔ J_φ), coupled through Ψ = K_φ + i·J_φ  
-**Lyapunov:** E = ½Σ(Φ_s² + |∇φ|² + K_φ² + J_φ² + J_ΔNFR²) ≥ 0 with dE/dt ≤ 0 under grammar  
-**Validation:** 62 tests, charge drift < 0.03% across topologies  
+**Lyapunov:** E = ½Σ(Φ_s² + |∇φ|² + K_φ² + J_φ² + J_ΔNFR²) ≥ 0 with dE/dt ≤ 0 observed under grammar (proof sketch; complete proof open)  
+**Validation:** 62 tests, charge drift < 0.03% across tested topologies and seeds  
 **API:** `tnfr.physics.conservation` — Noether charge Q, energy functional E, Ward identities, spectral decomposition  
 **Documentation:** [theory/STRUCTURAL_CONSERVATION_THEOREM.md](STRUCTURAL_CONSERVATION_THEOREM.md)
 

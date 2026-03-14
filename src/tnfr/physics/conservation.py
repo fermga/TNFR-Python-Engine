@@ -16,12 +16,16 @@ Then the **discrete structural continuity equation** holds:
 
     Δρ(i)/Δt + div J(i) ≈ S(i)
 
-where S(i) is a *source term* of order O(Δt²) that vanishes exactly when:
+where S(i) is a *source term* that is bounded and small when:
   (a) Grammar U2 is satisfied (convergence: stabilizers balance destabilizers)
   (b) Grammar U6 is satisfied (confinement: |Φ_s| < φ)
 
+The bound ||S||_{ℓ²} ≤ C/√N (§4.5 of the theory document) implies
+  S → 0 in the continuum limit N → ∞.  On finite graphs S is empirically
+  small (charge drift < 0.03%) but does not vanish exactly.
+
 This is the TNFR analogue of the Noether theorem:
-    Grammar symmetry (U-rules) ⟹ Structural conservation law.
+    Grammar symmetry (U-rules) ⟹ Approximate structural conservation law.
 
 DERIVATION
 ==========
@@ -42,7 +46,10 @@ Key results from the proof:
 
 STATUS
 ======
-CANONICAL — Derived from first principles, validated numerically.
+CANONICAL — Derived from the nodal equation under grammar constraints.
+The continuity equation is analytically derived; the bound on the source
+term relies on specific operator-norm constants from the TNFR implementation.
+Numerical validation: charge drift < 0.03% across tested topologies and seeds.
 
 References
 ----------
