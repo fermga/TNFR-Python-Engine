@@ -142,7 +142,7 @@ jobs:
             pyproject.toml
 
       - name: Cache pytest state
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             .pytest_cache
