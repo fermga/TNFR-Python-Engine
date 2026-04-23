@@ -537,8 +537,10 @@ def compute_coherence_length_vectorized(
     valid_dists = D[mask]
     valid_corrs = Corr_matrix[mask]
     
-    # Filter out infinity (disconnected)
-    finite_mask = np.isfinite(valid_dists)
+    # Filter out infinity (disconnected), NaN, and negative sentinels
+    # (e.g. -1 used by some callers to mark "no path"). Negative or non-finite
+    # distances would crash np.bincount after the int cast below.
+    finite_mask = np.isfinite(valid_dists) & (valid_dists >= 0)
     valid_dists = valid_dists[finite_mask]
     valid_corrs = valid_corrs[finite_mask]
     
@@ -553,7 +555,13 @@ def compute_coherence_length_vectorized(
     
     if is_integer_dist:
         d_ints = valid_dists.astype(np.intp)
-        
+
+        # Defensive guard: reject overflow from oversized float distances or
+        # any residual negative entries that slipped past the finite/>=0 mask
+        # (e.g. caller-supplied distance matrices with custom sentinels).
+        if d_ints.size == 0 or np.any(d_ints < 0):
+            return float('nan')
+
         # Sum of correlations per distance
         corr_sums = np.bincount(d_ints, weights=valid_corrs)
         # Count of pairs per distance
