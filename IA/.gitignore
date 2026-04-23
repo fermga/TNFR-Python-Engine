@@ -1,0 +1,11 @@
+# Telemetry caches and large CSV outputs.
+*.csv
+!reports/.gitkeep
+
+# HF / torch caches if accidentally created here.
+.cache/
+__pycache__/
+*.pyc
+
+# Ad-hoc notebooks (use experiments/ for canonical scripts).
+*.ipynb_checkpoints
