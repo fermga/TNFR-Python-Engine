@@ -687,36 +687,46 @@ IL_ANTIPATTERNS: Mapping[str, Mapping[str, object]] = {
     },
 }
 
+# Hot-path normalization map for grammar telemetry/runtime tracking.
+# Hoisted to module scope to avoid per-call dict allocation in
+# recognize_il_sequences().
+_OPERATOR_NAME_TO_GLYPH: dict[str, Glyph] = {
+    "emission": Glyph.AL,
+    "reception": Glyph.EN,
+    "coherence": Glyph.IL,
+    "dissonance": Glyph.OZ,
+    "coupling": Glyph.UM,
+    "resonance": Glyph.RA,
+    "silence": Glyph.SHA,
+    "expansion": Glyph.VAL,
+    "contraction": Glyph.NUL,
+    "self_organization": Glyph.THOL,
+    "mutation": Glyph.ZHIR,
+    "transition": Glyph.NAV,
+    "recursivity": Glyph.REMESH,
+}
+
 def recognize_il_sequences(
     glyphs: Sequence[Glyph],
 ) -> list[Mapping[str, object]]:
     """Recognize canonical two-step IL-related sequences.
 
     Returns matches with names/positions; antipatterns flagged.
+
+    Note
+    ----
+    Pure detection function: classifies sequences without emitting
+    warnings. User-facing warning emission belongs to the runtime
+    layer (``grammar_application.on_glyph_applied``) to avoid
+    duplicate notifications. This separation preserves the
+    detection/emission boundary and matches the TNFR principle that
+    grammar telemetry must not couple to side-effects.
     """
-    import warnings
-    
     # Handle string names by converting to Glyphs
     processed_glyphs = []
     for g in glyphs:
         if isinstance(g, str):
-            # Convert string operator name to Glyph
-            name_to_glyph = {
-                "emission": Glyph.AL,
-                "reception": Glyph.EN,
-                "coherence": Glyph.IL,
-                "dissonance": Glyph.OZ,
-                "coupling": Glyph.UM,
-                "resonance": Glyph.RA,
-                "silence": Glyph.SHA,
-                "expansion": Glyph.VAL,
-                "contraction": Glyph.NUL,
-                "self_organization": Glyph.THOL,
-                "mutation": Glyph.ZHIR,
-                "transition": Glyph.NAV,
-                "recursivity": Glyph.REMESH,
-            }
-            processed_glyphs.append(name_to_glyph.get(g.lower(), g))
+            processed_glyphs.append(_OPERATOR_NAME_TO_GLYPH.get(g.lower(), g))
         else:
             processed_glyphs.append(g)
     
@@ -754,8 +764,6 @@ def recognize_il_sequences(
             )
         elif pair == (Glyph.IL, Glyph.IL):
             anti_info = IL_ANTIPATTERNS["COHERENCE_COHERENCE"]
-            warnings.warn("Anti-pattern detected: coherence → coherence",
-                          UserWarning)
             results.append(
                 {
                     "pattern_name": "coherence_coherence_antipattern",
@@ -769,8 +777,6 @@ def recognize_il_sequences(
             )
         elif pair == (Glyph.SHA, Glyph.IL):
             anti_info = IL_ANTIPATTERNS["SILENCE_COHERENCE"]
-            warnings.warn("Anti-pattern detected: silence → coherence",
-                          UserWarning)
             results.append(
                 {
                     "pattern_name": "silence_coherence_antipattern",

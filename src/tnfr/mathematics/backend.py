@@ -534,6 +534,21 @@ def _make_jax_backend() -> MathematicsBackend:
     jax_module = cached_import("jax")
     if jax_module is None:
         raise BackendUnavailableError("jax core module is required")
+    # Enable 64-bit precision: TNFR is canonical float64 numerical physics
+    # (mpmath-derived constants, conservation residuals, eigenvalue analysis).
+    # Without this, jnp.asarray(x, dtype=float64) silently downcasts to float32
+    # and emits a UserWarning, breaking precision contracts of structural
+    # field telemetry (Phi_s, |grad phi|, K_phi, xi_C). Idempotent call.
+    try:
+        jax_config = getattr(jax_module, "config", None)
+        if jax_config is not None and not bool(
+            getattr(jax_config, "jax_enable_x64", False)
+        ):
+            jax_config.update("jax_enable_x64", True)
+    except Exception:
+        # Non-fatal: if x64 cannot be enabled the backend still works
+        # in 32-bit (with the existing dtype downcast warnings).
+        pass
     backend = _JaxBackend(jnp_module, jax_scipy, jax_module)  # type: ignore[call-arg]
     return cast(MathematicsBackend, backend)
 

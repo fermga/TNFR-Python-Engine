@@ -566,7 +566,15 @@ class TNFREmergentPatternEngine:
             # Fit power law
             if HAS_SCIPY:
                 slope, intercept = np.polyfit(log_freq, log_energy, 1)
-                r_squared = np.corrcoef(log_freq, log_energy)[0, 1] ** 2
+                # Guard against zero-variance inputs (degenerate spectra,
+                # e.g. when energy_spectrum saturates the 1e-12 floor):
+                # np.corrcoef would divide by zero std, yielding nan and a
+                # RuntimeWarning. Physically, a constant spectrum has no
+                # power-law structure -> R^2 = 0.
+                if np.std(log_freq) <= 0.0 or np.std(log_energy) <= 0.0:
+                    r_squared = 0.0
+                else:
+                    r_squared = np.corrcoef(log_freq, log_energy)[0, 1] ** 2
 
                 # Strong power law indicates cascade
                 if (
@@ -784,8 +792,22 @@ class TNFREmergentPatternEngine:
                     eigenvalues, _ = get_laplacian_spectrum(G)
                     # Should equal sum of degrees
                     spectral_trace = np.sum(eigenvalues)
-                    spectral_determinant = np.prod(
-                        eigenvalues[eigenvalues > 1e-10])
+
+                    # Spectral determinant: product of positive eigenvalues.
+                    # Direct np.prod can overflow for larger graphs (warning:
+                    # overflow encountered in reduce). Use log-domain
+                    # aggregation to preserve ordering and avoid warnings.
+                    positive_eigs = eigenvalues[eigenvalues > 1e-10]
+                    if positive_eigs.size == 0:
+                        spectral_determinant = 0.0
+                    else:
+                        log_det = float(np.sum(np.log(positive_eigs)))
+                        max_log = float(np.log(np.finfo(float).max))
+                        spectral_determinant = (
+                            float(np.exp(log_det))
+                            if log_det <= max_log
+                            else float("inf")
+                        )
 
                     # Check if invariants are preserved (they should be for
                     # topology)
@@ -894,7 +916,14 @@ class TNFREmergentPatternEngine:
 
             # Fractal dimension from slope
             slope, intercept = np.polyfit(log_scales, log_boxes, 1)
-            r_squared = np.corrcoef(log_scales, log_boxes)[0, 1] ** 2
+            # Guard against zero-variance inputs (uniform box counts /
+            # single-scale collapse): np.corrcoef would emit a divide-by-zero
+            # RuntimeWarning and return nan. Without scale variance there is
+            # no fractal scaling to fit.
+            if np.std(log_scales) <= 0.0 or np.std(log_boxes) <= 0.0:
+                r_squared = 0.0
+            else:
+                r_squared = np.corrcoef(log_scales, log_boxes)[0, 1] ** 2
 
             # Good fractal scaling
             if r_squared > PATTERNS_RSQUARED_HIGH_CANONICAL and abs(
@@ -1013,8 +1042,32 @@ class TNFREmergentPatternEngine:
         # Compute mathematical invariants
         invariants = {}
         if all_patterns:
-            invariants["total_compression"] = np.prod(
-                [p.compression_ratio for p in all_patterns])
+            compression_ratios = np.asarray(
+                [p.compression_ratio for p in all_patterns],
+                dtype=float,
+            )
+            # Robust multiplicative aggregation:
+            # - explicit inf propagation (some pattern classes intentionally set
+            #   compression_ratio = inf for idealized limits)
+            # - avoid overflow warnings from direct np.prod on large/infinite
+            #   factors by operating in log-domain for finite positive values
+            if np.any(np.isinf(compression_ratios)):
+                total_compression = float("inf")
+            elif np.any(compression_ratios == 0.0):
+                total_compression = 0.0
+            else:
+                safe_ratios = np.clip(
+                    compression_ratios,
+                    np.finfo(float).tiny,
+                    np.finfo(float).max,
+                )
+                log_total = float(np.sum(np.log(safe_ratios)))
+                max_log = float(np.log(np.finfo(float).max))
+                total_compression = (
+                    float(np.exp(log_total)) if log_total <= max_log else float("inf")
+                )
+
+            invariants["total_compression"] = total_compression
             invariants["max_prediction_horizon"] = np.max(
                 [p.prediction_horizon for p in all_patterns])
             invariants["average_confidence"] = np.mean(
