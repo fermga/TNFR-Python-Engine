@@ -631,6 +631,15 @@ The grammar emerges from TNFR physics rather than arbitrary constraints.
 - **Mathematical basis**: Exponential growth without negative feedback
 - **Canonicity**: Integral convergence theorem
 
+**U2-REMESH: Recursive Amplification Control** (sub-rule, enforced as hard constraint)
+- **Physics**: REMESH implements temporal coupling EPI(t) ↔ EPI(t-τ). When combined with destabilizers {OZ, ZHIR, VAL}, recursive feedback amplifies ΔNFR, driving ∫νf·ΔNFR dt → ∞
+- **Requirement**: If {REMESH} ∧ any destabilizer present, include {IL, THOL}
+- **Specific combinations**: REMESH+VAL (recursive expansion), REMESH+OZ (recursive bifurcation), REMESH+ZHIR (replicative mutation)
+- **Rationale**: Without stabilizers, recursive mixing creates unbounded amplification loop; IL/THOL provide negative feedback bounding the integral
+- **Canonicity**: Integral convergence theorem (same physical basis as U2, specialized for REMESH feedback)
+- **Implementation**: `grammar_core.py::validate_remesh_amplification()` — hard rule, updates `all_valid`
+- **Note**: Checks presence only (not ordering). A sequence where IL precedes the destabilizer still passes; see B4 in bug tracker for ordering enforcement status.
+
 ### U3: RESONANT COUPLING
 
 - **Physics**: Resonance requires phase compatibility

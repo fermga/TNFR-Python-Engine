@@ -53,10 +53,12 @@ class GrammarValidator:
     Parameters
     ----------
     experimental_u6 : bool, optional
-        Enable experimental U6: Temporal Ordering validation (default: False).
-        U6 is under research and not yet canonical. When enabled, sequences
-        are checked for temporal spacing violations after destabilizers.
-        Violations log warnings but do not fail validation.
+        Enable experimental temporal-ordering validation (default: False).
+        This check is labelled **U6-EXP** internally to distinguish it from
+        canonical U6 = Φ_s Structural Potential Confinement (grammar_u6.py).
+        When enabled, sequences are checked for temporal spacing violations
+        after destabilizers.  Violations log warnings but do not fail
+        validation (all_valid is NOT updated by this rule).
     """
 
     def __init__(self, experimental_u6: bool = False):
@@ -65,7 +67,8 @@ class GrammarValidator:
         Parameters
         ----------
         experimental_u6 : bool, optional
-            Enable U6 temporal ordering checks (default: False)
+            Enable U6-EXP temporal ordering checks (default: False).
+            Does NOT correspond to canonical U6 (Φ_s confinement).
         """
         self.experimental_u6 = experimental_u6
 
@@ -190,7 +193,13 @@ class GrammarValidator:
         tuple[bool, str]
             (is_valid, message)
         """
-        # Check if sequence contains destabilizers
+        # DESIGN NOTE (B4): This check verifies *presence* of stabilizers in
+        # the sequence, not their ordering relative to destabilizers.  A sequence
+        # such as [AL, OZ, NAV, IL, SHA] passes even though IL appears after the
+        # destabilizer.  The physics ideally requires IL to act *forward* in time
+        # (before or around the destabilizer), but enforcing strict ordering
+        # requires positional analysis not yet implemented.  This is an accepted
+        # design trade-off documented here; see bug B4 for the ordering roadmap.
         destabilizers_present = [
             getattr(op, "canonical_name", op.name.lower())
             for op in sequence
@@ -400,7 +409,13 @@ class GrammarValidator:
         # For each transformer, check context
         violations = []
         for idx, transformer_name in transformer_ops:
-            # Check for recent destabilizer (within 3 operators before)
+            # Check for recent destabilizer within a fixed window of 3 operators.
+            # KNOWN LIMITATION (B5): window_start = max(0, idx - 3) is a fixed
+            # heuristic.  For sequences longer than ~7 operators a destabilizer
+            # near position 0 will not be "recent" for a transformer at position
+            # 4+, which may produce false positives.  The window should scale
+            # with sequence length or structural relaxation time.  Correct for
+            # the current canonical K=5 sequences; revisit when K > 7.  See B5.
             window_start = max(0, idx - 3)
             recent_destabilizers = []
             prior_il = False
@@ -504,7 +519,8 @@ class GrammarValidator:
         if not has_remesh:
             return True, "U2-REMESH: not applicable (no recursivity present)"
 
-        # Check for destabilizers
+        # DESIGN NOTE (B4): Same presence-only limitation as U2 — ordering of
+        # stabilizers relative to destabilizers is not verified here.  See B4.
         destabilizers_present = [
             getattr(op, "canonical_name", op.name.lower())
             for op in sequence
@@ -617,9 +633,12 @@ class GrammarValidator:
         - Contract IL: Reduces |ΔNFR| at all scales
         - Contract THOL: Autopoietic closure across hierarchical levels
         """
-        # Check for deep REMESH (depth > 1)
-        # Note: Currently Recursivity doesn't expose depth parameter in operator
-        # This is a forward-looking validation for when depth is added
+        # KNOWN LIMITATION (B3): No operator currently exposes a 'depth'
+        # attribute; getattr(op, 'depth', 1) always returns the default 1.
+        # As a result this entire function is forward-looking dead code and will
+        # always return "not applicable" until Recursivity (REMESH) exposes
+        # depth > 1.  Do NOT treat the N/A result as a passed check.
+        # Tracking: see bug tracker B3.
         deep_remesh_indices = []
 
         for i, op in enumerate(sequence):
@@ -631,8 +650,12 @@ class GrammarValidator:
                     deep_remesh_indices.append((i, depth))
 
         if not deep_remesh_indices:
-            # No deep REMESH present, U5 not applicable
-            return True, "U5: not applicable (no deep recursivity depth>1 present)"
+            # Always reached today because no operator exposes depth > 1 (B3).
+            return True, (
+                "U5: not applicable — no operator currently exposes 'depth' > 1; "
+                "this check is forward-looking dead code (bug B3) until REMESH "
+                "exposes depth > 1"
+            )
 
         # For each deep REMESH, check for stabilizers in window
         violations = []
@@ -673,7 +696,13 @@ class GrammarValidator:
         vf: float = 1.0,
         k_top: float = 1.0,
     ) -> tuple[bool, str]:
-        """Validate U6: Temporal ordering (EXPERIMENTAL).
+        """Validate U6-EXP: Temporal ordering (EXPERIMENTAL — NOT canonical U6).
+
+        .. warning::
+            This rule is labelled **U6-EXP** (temporal ordering) to avoid
+            confusion with canonical U6 = Φ_s Structural Potential Confinement
+            implemented in grammar_u6.py.  Both share the number "U6" in
+            earlier drafts; the canonical definition wins.
 
         **Status:** RESEARCH PHASE - Not Canonical
         **Canonicity:** MODERATE (40-55% confidence)
@@ -794,11 +823,12 @@ class GrammarValidator:
 
         This validates pure TNFR physics:
         - U1: Structural initiation & closure
-        - U2: Convergence & boundedness
+        - U2: Convergence & boundedness (+ U2-REMESH sub-rule)
         - U3: Resonant coupling
         - U4: Bifurcation dynamics
-        - U5: Multi-scale coherence
-        - U6: Temporal ordering (experimental; canonical U6 = Φ_s confinement in grammar_u6.py)
+        - U5: Multi-scale coherence (forward-looking; always N/A until REMESH exposes depth)
+        - U6-EXP: Temporal ordering (experimental; DISTINCT from canonical U6 = Φ_s
+          confinement in grammar_u6.py — enabled only when experimental_u6=True)
 
         Parameters
         ----------
@@ -886,14 +916,14 @@ class GrammarValidator:
         if stop_on_first_error and not valid_multiscale:
             return False, messages
 
-        # U6: Temporal ordering (experimental)
+        # U6-EXP: Temporal ordering (experimental).
+        # DISTINCT from canonical U6 = Φ_s Structural Potential Confinement
+        # (grammar_u6.py). all_valid is intentionally NOT updated here.
         if self.experimental_u6:
             valid_temporal, msg_temporal = self.validate_temporal_ordering(
                 sequence, vf=vf, k_top=k_top
             )
-            messages.append(f"U6 (experimental): {msg_temporal}")
-            # Note: U6 violations generate warnings, not hard failures
-            # all_valid intentionally not updated for experimental rule
+            messages.append(f"U6-EXP (temporal ordering, experimental): {msg_temporal}")
 
         return all_valid, messages
 
