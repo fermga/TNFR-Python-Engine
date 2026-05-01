@@ -99,7 +99,7 @@ docs = [
 # Testing - modular groups
 test-unit = [
   "pytest>=7,<10",
-  "pytest-cov>=4,<8",
+  "pytest-cov>=7.1.0,<8",
   "pytest-timeout>=2,<3",
 ]
 test-property = [
@@ -120,7 +120,7 @@ test-quality = [
 ]
 test-all = [
   "pytest>=7,<10",
-  "pytest-cov>=4,<8",
+  "pytest-cov>=7.1.0,<8",
   "pytest-timeout>=2,<3",
   "hypothesis>=6,<7",
   "hypothesis-networkx>=0.3,<1.0",
@@ -134,7 +134,7 @@ test-all = [
 ]
 test = [  # Legacy alias
   "pytest>=7,<10",
-  "pytest-cov>=4,<8",
+  "pytest-cov>=7.1.0,<8",
   "pytest-timeout>=2,<3",
   "hypothesis>=6,<7",
   "hypothesis-networkx>=0.3,<1.0",
@@ -159,12 +159,12 @@ dev-minimal = [
   "mypy>=1.8,<2.0",
   "black>=23,<26",
   "pytest>=7,<10",
-  "pytest-cov>=4,<8",
+  "pytest-cov>=7.1.0,<8",
   "pytest-timeout>=2,<3",
 ]
 dev-full = [
   "pytest>=7,<10",
-  "pytest-cov>=4,<8",
+  "pytest-cov>=7.1.0,<8",
   "pytest-timeout>=2,<3",
   "hypothesis>=6,<7",
   "hypothesis-networkx>=0.3,<1.0",
