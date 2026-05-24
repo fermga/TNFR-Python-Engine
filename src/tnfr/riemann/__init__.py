@@ -42,6 +42,10 @@ prime_ladder_hamiltonian
     P14 self-adjoint prime-ladder Hamiltonian whose spectrum and
     weighted spectral trace reproduce the P12 prime-ladder data
     (operational closure of gap G1 in the TNFR-Riemann programme).
+weil_explicit_formula
+    P15 numerical verification of the Weil-Guinand explicit formula
+    using the P14 Hamiltonian for the prime side; operational
+    closure of gap G3 (zeros↔spectrum bridge).
 """
 
 from .operator import (
@@ -338,6 +342,19 @@ from .prime_ladder_hamiltonian import (
     PrimeLadderHamiltonianCertificate,
     verify_hamiltonian_reproduces_prime_ladder,
 )
+from .weil_explicit_formula import (
+    # Test function (P15)
+    GaussianTestFunction,
+    gaussian_test_function,
+    # Individual terms
+    weil_pole_side,
+    weil_archimedean_integral,
+    weil_prime_side_from_hamiltonian,
+    weil_zero_side,
+    # Certificate + driver
+    WeilExplicitFormulaCertificate,
+    verify_weil_explicit_formula,
+)
 
 __all__ = [
     # Graph builders
@@ -554,4 +571,13 @@ __all__ = [
     "weighted_spectral_trace",
     "PrimeLadderHamiltonianCertificate",
     "verify_hamiltonian_reproduces_prime_ladder",
+    # Weil-Guinand explicit formula (P15)
+    "GaussianTestFunction",
+    "gaussian_test_function",
+    "weil_pole_side",
+    "weil_archimedean_integral",
+    "weil_prime_side_from_hamiltonian",
+    "weil_zero_side",
+    "WeilExplicitFormulaCertificate",
+    "verify_weil_explicit_formula",
 ]

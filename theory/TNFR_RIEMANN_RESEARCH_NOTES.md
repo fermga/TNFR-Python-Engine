@@ -542,6 +542,137 @@ without any extension or modification.
 
 ---
 
+## 11. Weil–Guinand Explicit Formula (P15, operational closure of Gap G3)
+
+### 11.1 Problem statement
+
+Gap G3 of the TNFR-Riemann programme asks for an explicit bridge
+between the non-trivial zeros of $\zeta(s)$ and the spectral data
+of a TNFR operator.  The classical *Weil–Guinand explicit formula*
+is precisely such a bridge: a single distributional identity in
+which the zero side and the prime side are made manifest at the
+same time.
+
+In its standard form, for a real even Schwartz test function
+$h(t)$ with Fourier transform
+$g(u) = (2\pi)^{-1}\!\int h(t)\,e^{-itu}\,dt$,
+
+$$\sum_{\gamma} h(\gamma)
+   \;=\; h(i/2)+h(-i/2)
+   \;-\; g(0)\log\pi
+   \;+\; \tfrac{1}{2\pi}\!\int_{-\infty}^{\infty}\! h(t)\,
+            \operatorname{Re}\psi\!\Bigl(\tfrac14 + \tfrac{it}{2}\Bigr)\,dt
+   \;-\; 2\sum_{n\ge 1}\frac{\Lambda(n)}{\sqrt n}\,g(\log n).$$
+
+The left-hand sum runs over imaginary parts $\gamma$ of all
+non-trivial zeros $\rho = 1/2 + i\gamma$ of $\zeta(s)$.
+
+### 11.2 TNFR realisation of the prime side
+
+The von Mangoldt sum on the right is **exactly** a spectral
+functional on the canonical P14 prime-ladder Hamiltonian
+$\hat H_{\mathrm{int}} = \operatorname{diag}(k\log p)$ with weight
+operator $\hat W = \operatorname{diag}(\log p)$:
+
+$$-2 \sum_{n\ge 1} \frac{\Lambda(n)}{\sqrt n}\,g(\log n)
+   \;=\; -2 \operatorname{Tr}\!\bigl(\hat W\,e^{-\hat H/2}\,g(\hat H)\bigr).$$
+
+Indeed, every $n\in\mathbb{N}$ with $\Lambda(n)\ne 0$ is a prime
+power $n = p^k$ and corresponds to a unique eigenstate
+$|p,k\rangle$ of $\hat H_{\mathrm{int}}$ with eigenvalue
+$E_{p,k} = k\log p$ and weight $W_{p,k} = \log p$.  No additional
+arithmetic apparatus is needed: the prime side is read off the P14
+spectrum.
+
+### 11.3 Module and certificate
+
+`src/tnfr/riemann/weil_explicit_formula.py` implements
+
+* `GaussianTestFunction(sigma)` — the Gaussian test family
+  $h_\sigma(t) = \exp(-t^2/(2\sigma^2))$ with closed-form Fourier
+  pair, pole values $h(\pm i/2)$, and $g(0)$.
+* `weil_prime_side_from_hamiltonian(bundle, test)` — evaluates
+  $-2\operatorname{Tr}(\hat W e^{-\hat H/2} g(\hat H))$ via the
+  eigendecomposition of `bundle.hamiltonian`.
+* `weil_archimedean_integral(test)` — numerical quadrature of the
+  digamma-weighted integral via `scipy.integrate.quad` and
+  `mpmath.digamma`.
+* `weil_zero_side(test, n_zeros)` — sum over Riemann zeros via
+  `mpmath.zetazero`, with automatic convergence cutoff.
+* `verify_weil_explicit_formula(bundle, sigma, n_zeros, tol)`
+  returns a `WeilExplicitFormulaCertificate` exposing the four
+  terms, the residual, and a Boolean `verified` flag.
+
+### 11.4 Numerical evidence
+
+Verification on the canonical bundle (50 primes, max power 8, dim
+400), 120 Riemann zeros:
+
+| $\sigma$ | zero side | RHS total | absolute residual | relative |
+|----------|-----------|-----------|-------------------|----------|
+| 2  | $2.85\times 10^{-11}$ | $2.85\times 10^{-11}$ | $1.2\times 10^{-17}$ | $4.3\times 10^{-7}$ |
+| 3  | $3.02\times 10^{-5}$  | $3.02\times 10^{-5}$  | $1.7\times 10^{-16}$ | $5.6\times 10^{-12}$ |
+| 5  | $3.71\times 10^{-2}$  | $3.71\times 10^{-2}$  | $5.7\times 10^{-16}$ | $1.5\times 10^{-14}$ |
+| 8  | $5.00\times 10^{-1}$  | $5.00\times 10^{-1}$  | $1.1\times 10^{-15}$ | $2.2\times 10^{-15}$ |
+| 12 | $1.81$                | $1.81$                | $6.7\times 10^{-16}$ | $3.7\times 10^{-16}$ |
+| 18 | $4.75$                | $4.75$                | $5.3\times 10^{-15}$ | $1.1\times 10^{-15}$ |
+
+The identity holds to machine precision uniformly across the
+tested range.  The $\sigma=2$ entry has high relative error only
+because both sides are at the noise floor ($\sim 10^{-11}$).
+
+### 11.5 What this closes and what remains open
+
+**Closed (operationally)**: Gap **G3**.  Each ingredient of
+Weil's bridge is now expressed inside the canonical TNFR
+formalism:
+
+* Prime side — `weil_prime_side_from_hamiltonian` from P14.
+* Zero side — `mpmath.zetazero` (external) confronted against
+  the TNFR prime side.
+* Archimedean and pole sides — standard analytic objects
+  attached to $\zeta(s)$, computed once and reused.
+
+The cancellation of all four terms to machine precision is a
+numerical witness that the P14 Hamiltonian carries the entire
+prime-side data of the bridge, with no auxiliary number-theoretic
+machinery.
+
+**Still open**:
+
+* **G4 — Riemann Hypothesis**.  The explicit formula is
+  *unconditional*: it holds whatever the locations of the zeros.
+  RH is the further statement that all $\rho = 1/2 + i\gamma$
+  have $\gamma\in\mathbb{R}$.  P15 does not address this.  An RH
+  proof inside TNFR would require either (a) a positivity
+  argument for a TNFR-defined functional of the form
+  $\sum_\gamma h(\gamma) \ge 0$ for all admissible test
+  functions in a class that forces $\gamma\in\mathbb{R}$, or
+  (b) a self-adjoint extension whose eigenvalues *are* the
+  imaginary parts $\gamma$ (the Hilbert–Pólya programme).
+* **G5 — Conjecture 10.1 non-affine bridge** between the
+  TNFR spectral zeta of §6 and classical $\zeta(s)$.  P15 does
+  not affect G5: it operates one level above, on the explicit
+  formula rather than on the zeta functions themselves.
+
+### 11.6 Scope statement
+
+P15 is a **numerical verification of a classical theorem** using
+TNFR machinery on the prime side.  It is not new mathematics in
+the analytic-number-theory sense.  What it delivers is the
+*instrumental* result that the entire spectral apparatus required
+to state the bridge between primes and zeros lives natively
+inside the TNFR formalism, with no extra postulates and no
+empirical fitting.  Combined with P12 (von Mangoldt series),
+P13 (analytic continuation of the TNFR vM zeta) and P14
+(self-adjoint Hamiltonian carrying the spectrum), the TNFR-Riemann
+programme now has an end-to-end computable pipeline from the
+nodal equation to the Weil-Guinand identity.
+
+The remaining obstruction is RH itself.
+
+---
+
 The remainder of this document preserves the legacy research notes verbatim. Keep them synchronized with the active workflow above when adding new results.
 
 ## TNFR–Riemann Research Notes (Legacy Detail)
