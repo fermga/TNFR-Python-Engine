@@ -32,6 +32,9 @@ convergence_proof
     P10 formal machine-verified proof that σ*(k) → 1/2.
 zeta_bridge
     P11 explicit bridge between spectral ζ_H(k) and Riemann ζ_R.
+von_mangoldt
+    P12 TNFR prime-ladder construction reproducing the von Mangoldt
+    series  -ζ'(s)/ζ(s) = Σ_n Λ(n) n^{-s}.
 """
 
 from .operator import (
@@ -288,6 +291,19 @@ from .zeta_bridge import (
     compute_prime_encoding,
     run_zeta_bridge_analysis,
 )
+from .von_mangoldt import (
+    # Classical helpers
+    mangoldt_lambda,
+    classical_log_zeta_derivative,
+    classical_log_zeta_derivative_matched,
+    # Prime-ladder spectrum (P12)
+    PrimeLadderSpectrum,
+    build_prime_ladder_spectrum,
+    tnfr_log_zeta_derivative,
+    # Verification
+    VonMangoldtReproductionResult,
+    verify_von_mangoldt_reproduction,
+)
 
 __all__ = [
     # Graph builders
@@ -478,4 +494,13 @@ __all__ = [
     "extract_scaling_law",
     "compute_prime_encoding",
     "run_zeta_bridge_analysis",
+    # Von Mangoldt construction (P12)
+    "mangoldt_lambda",
+    "classical_log_zeta_derivative",
+    "classical_log_zeta_derivative_matched",
+    "PrimeLadderSpectrum",
+    "build_prime_ladder_spectrum",
+    "tnfr_log_zeta_derivative",
+    "VonMangoldtReproductionResult",
+    "verify_von_mangoldt_reproduction",
 ]

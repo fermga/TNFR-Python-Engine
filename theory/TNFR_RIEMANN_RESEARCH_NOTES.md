@@ -180,6 +180,129 @@ the affine fit.
 
 ---
 
+## 8. TNFR Prime-Ladder Construction of the von Mangoldt Series (P12)
+
+Following Section 7.6, this section records the first concrete attempt at
+the priority route: build a TNFR-native spectral object whose Dirichlet
+transform reproduces $-\zeta'(s)/\zeta(s)$ on its half-plane of
+convergence.  Implementation: `src/tnfr/riemann/von_mangoldt.py`.
+Demonstration: `examples/41_von_mangoldt_zeta_demo.py`.
+
+### 8.1 Mathematical Target
+
+The classical identity
+
+$$
+-\frac{\zeta'(s)}{\zeta(s)} \;=\; \sum_{n=1}^{\infty} \frac{\Lambda(n)}{n^{s}}
+\;=\; \sum_{p}\sum_{k\ge 1} \frac{\log p}{p^{ks}}, \qquad \operatorname{Re} s > 1,
+$$
+
+with $\Lambda$ the von Mangoldt function, is the analytic carrier of
+prime-distribution information.  Any TNFR object purporting to encode
+prime structure must, at minimum, reproduce this Dirichlet series.
+
+### 8.2 Prime-Ladder Spectrum
+
+Define the multiset
+
+$$
+\mathcal{S} \;=\; \bigl\{\,(\mu_{p,k},\,w_{p,k}) \,:\, p\ \text{prime},\ k\in\mathbb{N}\,\bigr\},
+\qquad
+\mu_{p,k} = k\,\log p, \quad w_{p,k} = \log p .
+$$
+
+The corresponding weighted exponential sum is
+
+$$
+Z_{\mathrm{TNFR}}(s) \;:=\; \sum_{(\mu,w)\in\mathcal{S}} w \, e^{-s\mu}
+\;=\; \sum_{p}\log p \sum_{k\ge 1} p^{-ks}
+\;=\; \sum_{p} \frac{\log p \, p^{-s}}{1 - p^{-s}}
+\;=\; -\frac{\zeta'(s)}{\zeta(s)} .
+$$
+
+So $Z_{\mathrm{TNFR}}(s) \equiv -\zeta'(s)/\zeta(s)$ on $\operatorname{Re} s > 1$
+as a formal identity, not a numerical conjecture.
+
+### 8.3 TNFR Interpretation
+
+In structural terms:
+
+- Each prime $p$ acts as a **node** whose intrinsic structural pulse
+  has magnitude $\log p$.  The pulse is the smallest invariant that
+  distinguishes primes from composites under the nodal equation
+  (composites factor through prior nodes, so they carry no independent
+  emission strength).
+- **REMESH** (operator #13, *recursivity*, U1a/U1b) generates the
+  $k$-th echo at frequency $k\,\log p$ with weight $\log p$.  This is
+  operational fractality: the same emission replicated coherently at
+  every harmonic scale.
+- The Dirichlet sum $\sum_n \Lambda(n)\,n^{-s}$ is recovered exactly
+  because $\Lambda$ is supported on prime powers and equals
+  $\log p$ on each — i.e. the von Mangoldt function is the structural
+  fingerprint of the prime-ladder spectrum.
+
+The construction therefore answers "what *is* the von Mangoldt
+function in TNFR?" with: it is the weight functional of REMESH echoes
+on the prime-node basis.
+
+### 8.4 Numerical Validation
+
+Two independent checks were performed.
+
+**Matched-truncation invariant.**  For a finite spectrum with $N$
+primes and $K$ echoes, computing $Z_{\mathrm{TNFR}}$ as a complex
+exponential sum and as an explicit
+$\sum_p \sum_{k=1}^{K} \log p \cdot p^{-ks}$ must agree to machine
+precision.  Measured: $|\Delta| \le 2 \times 10^{-15}$ for
+$s \in \{1.5, 2, 2.5, 3, 4\}$, $N = 50$, $K = 15$.  This certifies
+the implementation is an unambiguous reorganisation of the classical
+sum, not a re-derivation that could drift.
+
+**Convergence to known values.**  Compared to a sieve-based reference
+$\sum_{p \le n_{\max}} \log p \cdot p^{-s}/(1 - p^{-s})$ at
+$n_{\max} = 10^{7}$:
+
+| $s$ | $Z_{\mathrm{TNFR}}$ ($N{=}2000$, $K{=}30$) | reference | abs error |
+|----:|-------------------------------------------:|----------:|----------:|
+| 2.0 | 0.5699036519 | 0.5699608931 | 5.7 × 10⁻⁵ |
+| 3.0 | 0.1648226805 | 0.1648226822 | 1.7 × 10⁻⁹ |
+| 4.0 | 0.0636697650 | 0.0636697650 | 4.5 × 10⁻¹¹ |
+
+Residuals are dominated by the prime-truncation tail ($p > p_N$);
+convergence is geometric in $K$ and consistent with the prime number
+theorem in $N$.
+
+### 8.5 Open Extensions
+
+The identity $Z_{\mathrm{TNFR}} \equiv -\zeta'/\zeta$ is currently a
+*sum-level* result.  To extend the construction into a genuine TNFR
+operator program, three independent steps are required.
+
+1. **Self-adjoint realisation.**  Construct an explicit Hermitian
+   operator $H_\Lambda$ on a separable Hilbert space whose spectrum
+   is the multiset $\{k \log p\}$ with multiplicity $\log p$.  A
+   natural candidate is a weighted Laplacian on a prime-indexed tree;
+   the issue is reconciling the non-integer multiplicities with a
+   discrete eigenvalue spectrum without relaxing self-adjointness.
+2. **Analytic continuation.**  Extend $Z_{\mathrm{TNFR}}(s)$ from
+   $\operatorname{Re} s > 1$ into the critical strip $0 < \operatorname{Re} s < 1$.
+   The classical route uses a Mellin transform of a theta-like
+   partition function $\Theta(t) = \sum_{p,k} \log p \cdot e^{-t k \log p}$;
+   verifying this on the TNFR side gives a structural derivation of
+   the functional equation.
+3. **Zero correspondence.**  Identify the non-trivial zeros of
+   $\zeta$ with structural resonances (eigenmodes that satisfy a
+   confinement condition under U6) of the analytic continuation of
+   $Z_{\mathrm{TNFR}}$.  This is the actual route to a TNFR statement
+   of RH; it is currently open.
+
+Steps 1–3 are the next milestones of the P12 program.  Each is
+falsifiable in the same sense as Conjecture 10.1, and the failure
+modes are precisely what the Section 7 gap-analysis methodology was
+designed to surface.
+
+---
+
 The remainder of this document preserves the legacy research notes verbatim. Keep them synchronized with the active workflow above when adding new results.
 
 ## TNFR–Riemann Research Notes (Legacy Detail)

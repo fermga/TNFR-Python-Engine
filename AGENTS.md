@@ -1204,8 +1204,9 @@ Equivalence map: [if APIs renamed]
 
 **Computational Framework**:
 - **Core Implementation**: [src/tnfr/riemann/operator.py](src/tnfr/riemann/operator.py)
-- **Demonstration Code**: [examples/16_riemann_operator_demo.py](examples/16_riemann_operator_demo.py)
-- **Complete Theory**: [theory/TNFR_RIEMANN_RESEARCH_NOTES.md](theory/TNFR_RIEMANN_RESEARCH_NOTES.md)
+- **Von Mangoldt Construction (P12)**: [src/tnfr/riemann/von_mangoldt.py](src/tnfr/riemann/von_mangoldt.py) — TNFR prime-ladder spectrum reproducing $-\zeta'(s)/\zeta(s) = \sum_n \Lambda(n) n^{-s}$
+- **Demonstration Code**: [examples/16_riemann_operator_demo.py](examples/16_riemann_operator_demo.py), [examples/41_von_mangoldt_zeta_demo.py](examples/41_von_mangoldt_zeta_demo.py)
+- **Complete Theory**: [theory/TNFR_RIEMANN_RESEARCH_NOTES.md](theory/TNFR_RIEMANN_RESEARCH_NOTES.md) — §7 (gap analysis), §8 (prime-ladder construction)
 
 **Validation Protocols**:
 - **Eigenvalue Analysis**: Numerical verification of critical behavior — σ_c^(k) → 1/2 confirmed
