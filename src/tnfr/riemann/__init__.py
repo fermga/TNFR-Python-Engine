@@ -35,6 +35,13 @@ zeta_bridge
 von_mangoldt
     P12 TNFR prime-ladder construction reproducing the von Mangoldt
     series  -ζ'(s)/ζ(s) = Σ_n Λ(n) n^{-s}.
+analytic_continuation
+    P13 analytic continuation of the prime-ladder vM zeta to the
+    whole complex plane; Riemann zeros realised as resonance poles.
+prime_ladder_hamiltonian
+    P14 self-adjoint prime-ladder Hamiltonian whose spectrum and
+    weighted spectral trace reproduce the P12 prime-ladder data
+    (operational closure of gap G1 in the TNFR-Riemann programme).
 """
 
 from .operator import (
@@ -318,6 +325,19 @@ from .analytic_continuation import (
     reconstruct_psi_via_explicit_formula,
     fetch_riemann_zeros,
 )
+from .prime_ladder_hamiltonian import (
+    # Graph + weight operator (P14)
+    build_prime_ladder_graph,
+    build_prime_ladder_weight_operator,
+    # Hamiltonian bundle
+    PrimeLadderHamiltonian,
+    build_prime_ladder_hamiltonian,
+    # Spectral observable
+    weighted_spectral_trace,
+    # Certificate
+    PrimeLadderHamiltonianCertificate,
+    verify_hamiltonian_reproduces_prime_ladder,
+)
 
 __all__ = [
     # Graph builders
@@ -526,4 +546,12 @@ __all__ = [
     "ExplicitFormulaResult",
     "reconstruct_psi_via_explicit_formula",
     "fetch_riemann_zeros",
+    # Prime-ladder Hamiltonian (P14)
+    "build_prime_ladder_graph",
+    "build_prime_ladder_weight_operator",
+    "PrimeLadderHamiltonian",
+    "build_prime_ladder_hamiltonian",
+    "weighted_spectral_trace",
+    "PrimeLadderHamiltonianCertificate",
+    "verify_hamiltonian_reproduces_prime_ladder",
 ]

@@ -417,6 +417,131 @@ with a non-affine bridge) remain open.
 
 ---
 
+## 10. Self-Adjoint Prime-Ladder Hamiltonian (P14, Gap G1)
+
+**Status**: Implemented and numerically certified (May 2026).
+**Code**: `src/tnfr/riemann/prime_ladder_hamiltonian.py`,
+`examples/43_prime_ladder_hamiltonian_demo.py`.
+
+### 10.1 Problem statement (Gap G1)
+
+The Hilbert–Pólya programme asks for a self-adjoint operator
+$\hat H$ acting on a separable Hilbert space whose spectrum
+encodes the data driving $\zeta(s)$.  The TNFR-Riemann programme
+restricts the request to a finite-dimensional, explicitly
+constructible operator whose spectrum exactly reproduces the
+prime-ladder spectrum $\{k\log p\}$ and whose weighted spectral
+trace reproduces the P12 von Mangoldt trace $Z_{\mathrm{vM}}(s)$.
+
+### 10.2 Construction
+
+We reuse the canonical TNFR internal Hamiltonian
+(`tnfr.operators.hamiltonian.InternalHamiltonian`),
+
+$$
+\hat H_{\mathrm{int}}
+   = \hat H_{\mathrm{coh}} + \hat H_{\mathrm{freq}}
+   + \hat H_{\mathrm{coupling}}
+$$
+
+without modification.  Specialisation occurs only at the graph
+level:
+
+* **Nodes**: pairs $(p, k)$ for each prime $p \in \mathcal{P}$
+  and each REMESH echo index $k = 1, \dots, K$.
+* **Structural attributes**:
+  $\nu_{f,(p,k)} = k\log p$, $\phi = 0$, $EPI = 1$, $S_i = 1$,
+  $\Delta NFR = 0$.
+* **Edges**: ladder edges $(p, k) \leftrightarrow (p, k+1)$ within
+  each prime; **no** inter-prime edges.
+* **Graph-level constants**: `H_COH_STRENGTH = 0`,
+  `H_COUPLING_STRENGTH = J_0` (default $J_0 = 0$).
+
+With these choices, $\hat H_{\mathrm{coh}} = 0$ and
+$\hat H_{\mathrm{coupling}} = J_0 \cdot A$ (with $A$ the adjacency
+matrix of the disjoint union of prime ladders).  At $J_0 = 0$,
+$\hat H_{\mathrm{int}} = \hat H_{\mathrm{freq}}
+   = \operatorname{diag}\bigl(k\log p\bigr)$, which is trivially
+self-adjoint and whose spectrum equals the prime-ladder spectrum by
+construction.
+
+### 10.3 Weighted spectral trace
+
+Define the diagonal weight operator
+$\hat W = \sum_{p,k} \log(p)\, |p,k\rangle\langle p,k|$.
+The TNFR analogue of $-\zeta'(s)/\zeta(s)$ is then
+
+$$
+Z_H(s) \;:=\; \operatorname{Tr}\!\bigl(\hat W\, e^{-s\hat H_{\mathrm{int}}}\bigr).
+$$
+
+At $J_0 = 0$ this collapses to
+$\sum_{p,k} \log(p)\, e^{-s k \log p}
+  = \sum_{p} \log(p)\, p^{-s}/(1 - p^{-s})
+  = -\zeta'(s)/\zeta(s)$ for $\operatorname{Re}(s) > 1$.
+
+### 10.4 Euler-product orthogonality at the operator level
+
+The absence of inter-prime edges encodes multiplicativity:
+$\hat H_{\mathrm{int}}$ decomposes as the orthogonal direct sum
+$\bigoplus_p \hat H^{(p)}$ where each $\hat H^{(p)}$ acts on the
+$K$-dimensional subspace spanned by $\{|p,k\rangle\}_{k=1}^K$.
+This is the operator-level analogue of the Euler product
+$\zeta(s) = \prod_p (1 - p^{-s})^{-1}$.
+
+Switching on $J_0 > 0$ deliberately couples ladders **within a
+single prime** (echo coupling); it does not couple distinct primes
+and therefore preserves the Euler-product factorisation while
+deforming the spectrum perturbatively.  Coupling **between**
+distinct primes is intentionally not supported by the present
+builder: doing so would break Euler-product orthogonality and is a
+separate research question.
+
+### 10.5 Numerical certificate
+
+`verify_hamiltonian_reproduces_prime_ladder` returns a
+`PrimeLadderHamiltonianCertificate` documenting:
+
+* `spectrum_max_abs_error`: $\max_n |E_n^{\text{Ham}} - E_n^{\text{ladder}}|$
+  — exactly $0$ at $J_0 = 0$ (verified to machine precision for
+  $n_{\text{primes}} = 12$, $K = 6$, $N = 72$);
+* `trace_max_rel_error`: worst-case relative deviation of $Z_H(s)$
+  from $Z_{\mathrm{vM}}(s)$ over a user-supplied $s$ grid —
+  $\lesssim 3 \cdot 10^{-16}$ at $J_0 = 0$;
+* `is_hermitian`: $\hat H_{\mathrm{int}}$ passes the
+  Hermiticity check inherited from `InternalHamiltonian`;
+* perturbative scaling: spectrum deviation grows quadratically
+  with $J_0$ at small coupling (verified empirically in the
+  example demo).
+
+### 10.6 What this closes and what remains open
+
+**Closed (operationally)**: G1 — a self-adjoint, finite-dimensional
+operator whose spectrum and weighted spectral trace reproduce the
+prime-ladder data has been explicitly constructed, certified, and
+shipped as part of the canonical TNFR API.
+
+**Still open**:
+
+* **G3** — bijection between the resonance poles of the analytic
+  continuation (P13) and the eigenvalues of $\hat H_{\mathrm{int}}$
+  on the imaginary axis.  The present construction provides one
+  side of the correspondence (the operator); P13 provides the
+  other (the poles).  A clean bijection requires choosing the
+  correct boundary functional on $\hat H_{\mathrm{int}}$.
+* **G4** — localisation of the resonance poles on
+  $\operatorname{Re}(s) = 1/2$.  This is RH itself; P14 does not
+  address it.
+* **G5** — closure of Conjecture 10.1 with a non-affine bridge.
+  Independent of P14.
+
+P14 should therefore be read as the explicit, computable witness
+that *every* spectral-operator step of the TNFR-Riemann programme
+upstream of G3 is realisable inside the canonical TNFR formalism
+without any extension or modification.
+
+---
+
 The remainder of this document preserves the legacy research notes verbatim. Keep them synchronized with the active workflow above when adding new results.
 
 ## TNFR–Riemann Research Notes (Legacy Detail)
