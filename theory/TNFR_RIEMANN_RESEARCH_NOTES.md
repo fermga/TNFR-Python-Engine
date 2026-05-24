@@ -82,6 +82,104 @@ This memo defines the minimum structure required to evaluate TNFR claims about t
 
 ---
 
+## 7. Conjecture 10.1 Gap Analysis (May 2026)
+
+**Status**: Negative numerical result — bridge not yet closed.
+
+### 7.1 Experiment
+
+The fit defined by Conjecture 10.1
+
+$$
+\zeta_{H^{(k)}}(1/2,\, u) \;\approx\; C(k)\;\cdot\;\zeta_R(u + \delta(k))
+$$
+
+was tested using `test_conjecture_10_1_sequence` from `src/tnfr/riemann/spectral_zeta.py`
+for $k \in \{10, 20, 50, 100, 200, 500, 1000\}$ over $u \in [1.5, 5.0]$ (30 points).
+
+### 7.2 Numerical Results
+
+| k | C(k) | δ(k) | residual (normalised) | Pearson r |
+|---:|-------------:|------:|---------------------:|----------:|
+| 10 | 2.02 × 10⁷ | 2.0 | 2.4347 | −0.4057 |
+| 20 | 5.46 × 10¹¹ | 2.0 | 3.0692 | −0.3285 |
+| 50 | 8.77 × 10¹⁷ | 2.0 | 3.7082 | −0.2746 |
+| 100 | 3.43 × 10²² | 2.0 | 4.0625 | −0.2516 |
+| 200 | 1.25 × 10²⁷ | 2.0 | 4.3420 | −0.2359 |
+| 500 | 2.06 × 10³³ | 2.0 | 4.6337 | −0.2215 |
+| 1000 | 9.06 × 10³⁷ | 2.0 | 4.7989 | −0.2140 |
+
+### 7.3 Diagnostic Reading
+
+A converging bridge would show: residual → 0, Pearson r → +1,
+δ(k) stabilising at an interior value, and C(k) stabilising after
+correct renormalisation.  The data show the opposite in every metric:
+
+- **Residual rises** monotonically with k.
+- **Correlation is negative** and bounded away from +1 at all tested k.
+- **δ(k) = 2.0** in every row — pinned at the boundary of the search range,
+  indicating no interior minimum was found.
+- **C(k) explodes** (≈10³⁷ at k = 1000), signalling a missing renormalisation.
+
+Conclusion: as currently implemented, `ζ_H^(k)(1/2, u)` is not
+numerically equivalent to `C · ζ_R(u + δ)` under the simple affine fit.
+
+### 7.4 Six Missing Pieces
+
+| # | Missing piece | Current status |
+|---|---|---|
+| 1 | **Euler product reconstruction** `∏_p (1−p⁻ˢ)⁻¹` | Prime-path graphs do not demonstrably reproduce all powers p^m with correct multiplicity. |
+| 2 | **Spectral zeta ≡ ζ(s)** | Tested as a conjecture; numerical fit diverges. |
+| 3 | **Correct spectral renormalisation of C(k)** | C(k) explodes — spectral renormalisation is absent. |
+| 4 | **Convergent δ(k)** | δ(k) does not converge internally; remains pinned at search-range boundary. |
+| 5 | **Analytic continuation to the complex strip** | RH lives in 0 < Re(s) < 1 over ℂ; current tests use only real u > 1. |
+| 6 | **Zero correspondence** | Not shown that non-trivial zeros of ζ(s) equal zeros/modes of ζ_H. |
+
+### 7.5 TNFR-Internal Diagnosis
+
+In TNFR language the finding is:
+
+> The operator $H^{(k)}(\sigma)$ constructs a structural dynamic that is
+> sensitive to the critical line σ = 1/2 (σ_c^(k) → 1/2 is internally
+> validated), but it does not yet encode the full multiplicative arithmetic
+> of ζ(s).  The prime-path graph captures structural coherence near 1/2
+> without closing the bridge to the classical zeta function.
+
+### 7.6 Priority Construction
+
+The mathematical priority is to build a TNFR zeta that reproduces the
+von Mangoldt series
+
+$$
+-\frac{\zeta'(s)}{\zeta(s)} = \sum_{n=1}^{\infty} \Lambda(n)\, n^{-s},
+$$
+
+which encodes prime positions **and** their higher powers with the correct
+multiplicities (Λ = log p for prime powers, 0 otherwise).  Without this,
+TNFR can exhibit σ-criticality but cannot be equated to Riemann.
+
+The required renormalisation takes the form
+
+$$
+R_k \cdot \zeta_{H}^{(k)}\!\left(\tfrac{1}{2}, s\right) \;\longrightarrow\; \zeta(s),
+\qquad \text{or more ambitiously,} \qquad
+\det_{TNFR}(H_k - sI) \;\longrightarrow\; \xi(s),
+$$
+
+where $\xi(s)$ is the completed Riemann zeta and $R_k$ is a holomorphic,
+non-vanishing function to be constructed.
+
+### 7.7 Impact on Program Status
+
+This result does **not** invalidate the σ_c^(k) → 1/2 finding, which
+rests on eigenvalue analysis independent of the spectral-zeta fit.
+It narrows the scope of Conjecture 10.1: the conjecture is open, and the
+simple `C · ζ_R(u + δ)` form is likely insufficient.  Future work should
+target the von Mangoldt / Λ-series route (Section 7.6) before revisiting
+the affine fit.
+
+---
+
 The remainder of this document preserves the legacy research notes verbatim. Keep them synchronized with the active workflow above when adding new results.
 
 ## TNFR–Riemann Research Notes (Legacy Detail)

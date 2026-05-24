@@ -175,6 +175,9 @@ A theoretical framework connecting **discrete TNFR operators** to the **Riemann 
 - The bridge from this discrete operator result to the classical Riemann zeta function **remains conjectural** (Conjecture 10.1)
 - The framework constitutes a **research program**, not a closed proof of RH in the standard mathematical sense
 
+**Conjecture 10.1 Gap (May 2026)**: Systematic numerical tests of the affine fit
+$\zeta_{H^{(k)}}(1/2, u) \approx C(k) \cdot \zeta_R(u + \delta(k))$ for $k \in \{10 \ldots 1000\}$ returned **negative results**: normalised residual rises with $k$, Pearson correlation is negative at all tested sizes, $\delta(k)$ stays pinned at the search-range boundary, and $C(k)$ diverges (~10³⁷ at $k=1000$).  The simple affine bridge is **not numerically closed**.  Six missing pieces are documented in [theory/TNFR_RIEMANN_RESEARCH_NOTES.md §7](theory/TNFR_RIEMANN_RESEARCH_NOTES.md); the priority construction is a TNFR zeta reproducing the von Mangoldt series $-\zeta'(s)/\zeta(s) = \sum_n \Lambda(n) n^{-s}$.
+
 **Implementation Status**: Experimental research framework with computational prototypes in [src/tnfr/riemann/](src/tnfr/riemann/) and documentation in [theory/TNFR_RIEMANN_RESEARCH_NOTES.md](theory/TNFR_RIEMANN_RESEARCH_NOTES.md).
 
 ---
@@ -1205,8 +1208,9 @@ Equivalence map: [if APIs renamed]
 - **Complete Theory**: [theory/TNFR_RIEMANN_RESEARCH_NOTES.md](theory/TNFR_RIEMANN_RESEARCH_NOTES.md)
 
 **Validation Protocols**:
-- **Eigenvalue Analysis**: Numerical verification of critical behavior
+- **Eigenvalue Analysis**: Numerical verification of critical behavior — σ_c^(k) → 1/2 confirmed
 - **Coherence Testing**: Structural stability under parameter variation
+- **Conjecture 10.1 fit**: Tested and **not converging** (May 2026 audit; see §7 of research notes)
 
 ### Research Significance
 
@@ -1214,9 +1218,9 @@ This framework represents:
 - **An experimental research program** connecting discrete TNFR operators to number-theoretic structures
 - **Numerical evidence** of critical parameter convergence $\sigma_c \to 1/2$ across topologies
 - **A computational platform** for exploring spectral approaches to the Riemann Hypothesis
-- **An open conjecture** (Conjecture 10.1) bridging TNFR spectral zeta to classical $\zeta(s)$
+- **An open conjecture** (Conjecture 10.1) bridging TNFR spectral zeta to classical $\zeta(s)$ — the simple affine form is insufficient; priority is the von Mangoldt / Λ-series route
 
-**Status**: Experimental research framework with computational implementations. The bridge to classical RH remains conjectural.
+**Status**: Experimental research framework with computational implementations. The σ_c → 1/2 result is validated; the spectral-zeta bridge to classical RH remains open and numerically unclosed.
 
 ---
 

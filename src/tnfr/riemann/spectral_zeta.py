@@ -643,6 +643,27 @@ def test_conjecture_10_1(
     Finds best-fit C and delta such that
         zeta_{H^(k)}(1/2, u) ~ C * zeta_R(u + delta)
 
+    .. warning::
+        **Negative numerical result (May 2026).**
+        Systematic tests for k in {10, 20, 50, 100, 200, 500, 1000}
+        show that the simple affine fit does NOT converge:
+
+        - Normalised residual *rises* with k (2.43 at k=10 → 4.80 at k=1000).
+        - Pearson correlation is *negative* at all tested k (≈ −0.41 … −0.21).
+        - delta is pinned at the search-range boundary (delta=2.0) for all k,
+          indicating no interior minimum.
+        - C(k) diverges (≈ 2e7 at k=10 → 9e37 at k=1000), signalling a
+          missing spectral renormalisation.
+
+        The bridge between the TNFR spectral zeta and the classical Riemann
+        zeta function is therefore **not numerically closed** in its current
+        form.  Six identified missing pieces are documented in
+        ``theory/TNFR_RIEMANN_RESEARCH_NOTES.md`` § 7.4.
+
+        The sigma_c(k) → 1/2 result from ``spectral_proof.py`` is independent
+        of this fit and remains valid.  This function is kept for further
+        research into corrected renormalisation schemes.
+
     Parameters
     ----------
     k : int
