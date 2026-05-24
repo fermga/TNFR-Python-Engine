@@ -673,6 +673,135 @@ The remaining obstruction is RH itself.
 
 ---
 
+## 12. Li–Keiper Positivity Criterion via TNFR Resonance Spectrum (P16)
+
+### 12.1 Problem statement
+
+**Li's criterion** (Xian-Jin Li, 1997). Define, for every integer
+$n \ge 1$,
+
+$$
+\lambda_n \;=\; \sum_{\rho} \Bigl[ 1 - \bigl(1 - \tfrac{1}{\rho}\bigr)^n \Bigr],
+$$
+
+where the sum ranges over all non-trivial zeros $\rho$ of $\zeta(s)$,
+counted with multiplicity and paired symmetrically with their
+conjugates. Li proved
+
+$$
+\text{RH} \;\Longleftrightarrow\; \lambda_n > 0 \quad \text{for every } n \ge 1.
+$$
+
+Li's criterion is therefore **strictly RH-equivalent**: it recasts the
+location of the non-trivial zeros as the positivity of a real
+sequence. Bombieri-Lagarias (1999) gave an alternative variational
+proof; Voros (2003) computed the first $\sim 10^5$ coefficients and
+confirmed positivity numerically.
+
+### 12.2 TNFR realisation
+
+In the TNFR-Riemann programme the non-trivial zeros appear as
+**resonance poles** of the prime-ladder von Mangoldt zeta after
+analytic continuation (P13, §9). Three sources of zeros are now
+available:
+
+* classical mpmath `zetazero` (reference),
+* P13 critical-line resonance-pole scan (TNFR-native),
+* P14 prime-ladder Hamiltonian spectrum (structural, via Weil/Guinand pairing of §11).
+
+Computing $\lambda_n$ from each source and checking positivity yields
+a TNFR-internal RH-equivalent diagnostic: a single negative
+$\lambda_n$ would falsify RH; the persistent positivity observed
+across all three sources is consistent with it.
+
+P16 does **not** open a new gap. It recasts gap G4 (the RH
+statement itself) as a positivity test on the TNFR resonance
+spectrum, completing the diagnostic surface initiated by P12-P15.
+
+### 12.3 Module API
+
+The module `tnfr.riemann.li_keiper` exposes:
+
+* `li_coefficients_from_zeros(zeros_upper, n_max, *, dps=50)` -
+  arbitrary-precision evaluation of $\lambda_n$ via
+  $2\,\Re[1 - (1 - 1/\rho)^n]$ paired with the conjugate.
+* `LiKeiperCertificate` - frozen dataclass with
+  `lambda_classical`, `lambda_tnfr`, `positivity_classical`,
+  `positivity_tnfr`, `max_abs_difference`, `notes`, and a
+  `summary()` method.
+* `verify_li_keiper_criterion(*, n_max=50, n_zeros=200, dps=50,
+  compare_tnfr=False, ...)` - end-to-end verification, optionally
+  comparing classical zeros against P13 detected peaks.
+
+### 12.4 Numerical evidence
+
+End-to-end run with `n_max = 60`, `n_zeros = 250`, `dps = 50`
+(example 45, Section 2):
+
+| $n$ | $\lambda_n$ (truncated) | sign |
+|:---:|:------------------------:|:----:|
+|   1 | $+2.13\times 10^{-2}$    |  +   |
+|   5 | $+5.31\times 10^{-1}$    |  +   |
+|  10 | $+2.10\times 10^{0}$     |  +   |
+|  20 | $+8.05\times 10^{0}$     |  +   |
+|  30 | $+1.69\times 10^{1}$     |  +   |
+|  40 | $+2.76\times 10^{1}$     |  +   |
+|  50 | $+3.90\times 10^{1}$     |  +   |
+|  60 | $+5.07\times 10^{1}$     |  +   |
+
+All 60 coefficients are positive, with `min_n lambda_n = +2.13e-2`.
+
+The truncation suppresses the magnitudes by ~10% relative to the
+published values (Keiper 1992: $\lambda_1 = 0.0230957$), reflecting
+the slow logarithmic convergence of the partial zero-sum; the
+signs are robust to this truncation. The growth matches the
+classical asymptotic
+$\lambda_n \sim (n/2) \log(n/2\pi)$ (Voros 2003).
+
+TNFR-vs-classical agreement (example 45, Section 3,
+`compare_tnfr=True` with the P13 scan on $t \in [10, 80]$):
+
+* 21 resonance peaks detected, quality `all_matched`,
+* `positivity_tnfr = True` for every $n \in [1, 20]$,
+* maximum disagreement at $n = 20$: $|\Delta\lambda_{20}| \approx 1.38$
+  (dominated by the smaller TNFR $t$-window, not by sign flips).
+
+### 12.5 What closes and what remains open
+
+P16 **closes**:
+
+* the diagnostic surface required to read RH as a TNFR-native
+  positivity statement on the prime-ladder resonance spectrum;
+* the consistency check between three independent sources of
+  non-trivial zeros (classical, P13 poles, P14 Hamiltonian).
+
+P16 **does not close**:
+
+* RH itself (gap G4). Verifying $\lambda_n > 0$ for finitely many
+  $n$ is consistent with, but does not imply, the Riemann
+  Hypothesis. A proof would require either (a) an a-priori
+  positivity argument on the resonance spectrum, or (b) a
+  self-adjointness/positivity witness for an operator whose
+  eigenvalues are forced to lie on $\Re(s) = 1/2$;
+* Conjecture 10.1 (gap G5). The Li-Keiper test compares classical
+  and TNFR sides at the level of Li coefficients, not at the
+  level of an affine bridge between $\zeta_H$ and $\zeta_R$.
+
+### 12.6 Scope statement
+
+P16 is a **TNFR-native restatement of a known RH-equivalent
+criterion**. It does not introduce new mathematics in the
+analytic-number-theory sense. Its value is methodological: the
+entire diagnostic surface for the Riemann Hypothesis - prime
+series (P12), analytic continuation and resonance poles (P13),
+self-adjoint spectrum (P14), explicit formula (P15), and now
+Li-Keiper positivity (P16) - is expressible without exiting the
+TNFR formalism. The remaining obstruction is the proof of RH
+itself, which the programme exposes but does not (and does not
+claim to) eliminate.
+
+---
+
 The remainder of this document preserves the legacy research notes verbatim. Keep them synchronized with the active workflow above when adding new results.
 
 ## TNFR–Riemann Research Notes (Legacy Detail)

@@ -46,6 +46,10 @@ weil_explicit_formula
     P15 numerical verification of the Weil-Guinand explicit formula
     using the P14 Hamiltonian for the prime side; operational
     closure of gap G3 (zeros↔spectrum bridge).
+li_keiper
+    P16 Li-Keiper positivity criterion computed from the TNFR
+    resonance spectrum (RH-equivalent diagnostic; not a new gap
+    closure, but a TNFR-native witness for RH).
 """
 
 from .operator import (
@@ -355,6 +359,12 @@ from .weil_explicit_formula import (
     WeilExplicitFormulaCertificate,
     verify_weil_explicit_formula,
 )
+from .li_keiper import (
+    # P16: Li-Keiper positivity criterion via TNFR resonance spectrum
+    li_coefficients_from_zeros,
+    LiKeiperCertificate,
+    verify_li_keiper_criterion,
+)
 
 __all__ = [
     # Graph builders
@@ -580,4 +590,8 @@ __all__ = [
     "weil_zero_side",
     "WeilExplicitFormulaCertificate",
     "verify_weil_explicit_formula",
+    # P16: Li-Keiper positivity criterion
+    "li_coefficients_from_zeros",
+    "LiKeiperCertificate",
+    "verify_li_keiper_criterion",
 ]
