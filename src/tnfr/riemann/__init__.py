@@ -55,6 +55,12 @@ weil_positivity
     Weil functional W[σ] = Σ_γ h_σ(γ) against the canonical TNFR
     Lyapunov energy E_TNFR[σ] across a Gaussian-width grid.
     Experimental research diagnostic (does NOT close gap G4 = RH).
+alpha_sweep
+    P18 admissibility / gauge sweep of α(σ) = W[σ] / E_TNFR[σ]:
+    dense σ-grid combined with a gauge family parameterising how
+    h_σ is encoded into (ΔNFR, φ, EPI), reusing the gauge-invariant
+    Weil functional.  Stress-tests the P17 bridge against
+    canonical-mapping ambiguity.
 """
 
 from .operator import (
@@ -379,6 +385,14 @@ from .weil_positivity import (
     verify_weil_positivity,
     verify_weil_tnfr_bridge,
 )
+from .alpha_sweep import (
+    # P18: admissibility / gauge sweep for alpha(sigma)
+    GaugeFn,
+    DEFAULT_GAUGES,
+    AlphaSweepCertificate,
+    build_test_state_with_gauge,
+    sweep_alpha,
+)
 
 __all__ = [
     # Graph builders
@@ -615,4 +629,10 @@ __all__ = [
     "tnfr_lyapunov_of_test_state",
     "verify_weil_positivity",
     "verify_weil_tnfr_bridge",
+    # P18: admissibility / gauge sweep
+    "GaugeFn",
+    "DEFAULT_GAUGES",
+    "AlphaSweepCertificate",
+    "build_test_state_with_gauge",
+    "sweep_alpha",
 ]

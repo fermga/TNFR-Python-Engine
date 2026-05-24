@@ -2281,6 +2281,7 @@ piecewise status notes.
 | **P15** Weil–Guinand identity | `weil_explicit_formula.py` | `44_weil_explicit_formula_demo.py` | §11 | **G3** (zeros ↔ spectrum, residual $\le 5 \times 10^{-12}$) |
 | **P16** Li–Keiper positivity | `li_keiper.py` | `45_li_keiper_demo.py` | §12 | RH-equivalent **diagnostic** (not proof) |
 | **P17** Weil–TNFR positivity bridge | `weil_positivity.py` | `46_weil_tnfr_positivity_demo.py` | §14 | TNFR-native witness for **G4** (research prototype, not proof) |
+| **P18** Admissibility / gauge sweep of $\alpha(\sigma)$ | `alpha_sweep.py` | `47_alpha_sweep_demo.py` | §15 | Robustness audit of the P17 bridge under canonical-mapping ambiguity ($\alpha > 0$ across 6 gauges × 12 widths) |
 
 ### 13.2 Gap Balance
 
@@ -2493,4 +2494,147 @@ across the tested grid, with $\alpha_{\min} \approx 3.85 \times 10^{-44}$
 ```powershell
 $env:PYTHONPATH = (Resolve-Path ./src).Path
 & .\.venv312\Scripts\python.exe examples\46_weil_tnfr_positivity_demo.py
+```
+
+
+
+## 15. Admissibility & Gauge Sweep of α(σ) (P18)
+
+### 15.1 Motivation
+
+Section 14.6 identified the **canonical-mapping ambiguity** as the
+sharpest analytic weakness of the P17 bridge: encoding
+$h_\sigma \mapsto (\Delta\mathrm{NFR}, \phi, \mathrm{EPI})$ on the
+P14 graph is canonical but not unique, and lower-boundedness
+$\alpha(\sigma) \ge c > 0$ has only been verified pointwise on a
+six-point Gaussian-width grid under one mapping. P18 stress-tests the
+bridge along both axes:
+
+* **Admissibility axis**: dense, log-spaced $\sigma$-grid covering both
+  the exponentially-small regime ($\sigma \lesssim 1$, where $W$ falls
+  below $10^{-100}$) and the classical regime ($\sigma \sim 10$).
+* **Gauge axis**: a family of six structural mappings that activate
+  different sectors of the Lyapunov functional (the gauge-invariant
+  Weil functional $W[\sigma]$ is reused once per $\sigma$).
+
+### 15.2 Gauge Family
+
+For each prime-ladder node $(p,k)$ let $h = h_\sigma(k\log p)$. The
+following gauges $h \mapsto (\Delta\mathrm{NFR},\ \phi,\ \mathrm{EPI})$
+are probed by default (see `DEFAULT_GAUGES` in
+`src/tnfr/riemann/alpha_sweep.py`):
+
+| Gauge | $(\Delta\mathrm{NFR},\ \phi,\ \mathrm{EPI})$ | Activates |
+|---|---|---|
+| `canonical`          | $(h,\ h,\ h)$        | pressure + phase + EPI |
+| `dnfr_only`          | $(h,\ 0,\ 1)$        | only $\Phi_s$ (via pressure)            |
+| `phase_only`         | $(0,\ h,\ 1)$        | only phase gradient / curvature         |
+| `epi_only`           | $(0,\ 0,\ h)$        | only EPI sector                         |
+| `dnfr_phase`         | $(h,\ h,\ 1)$        | pressure + phase, fixed EPI             |
+| `pressure_amplified` | $(2h,\ h,\ h)$       | scaled pressure, canonical phase/EPI    |
+
+The phase channel is clipped to $[-\pi, \pi]$ via the standard TNFR
+wrap convention; $\nu_f$ is inherited unchanged from P14.
+
+### 15.3 Numerical Results (May 2026 run)
+
+Setup: `build_prime_ladder_hamiltonian(n_primes=18, max_power=5)`
+(Hilbert dimension 90), 50 classical zeros, $\sigma$-grid log-spaced
+on $[0.5, 12]$ ($n_\sigma = 12$), six gauges from §15.2 (72 cells
+total).
+
+Outcome: **$\alpha(\sigma; g) > 0$ across the full $6 \times 12$
+table.** Tightest entry $\alpha_{\min} = 1.37 \times 10^{-173}$
+at $\sigma = 0.5$, $g = $ `canonical`. Maximum
+$\alpha_{\max} = 1.06 \times 10^{1}$ at $\sigma = 12$, $g = $
+`dnfr_only`. $W[\sigma] \ge 0$ on every grid point.
+
+Selected $\alpha$ values (full table in
+`examples/47_alpha_sweep_demo.py` output):
+
+| $\sigma$ | `canonical` | `dnfr_only` | `epi_only` |
+|---:|---:|---:|---:|
+| 0.50  | $1.37 \times 10^{-173}$ | $3.41 \times 10^{-173}$ | $3.41 \times 10^{-173}$ |
+| 1.59  | $6.41 \times 10^{-18}$  | $7.34 \times 10^{-17}$  | $7.34 \times 10^{-17}$  |
+| 2.83  | $1.43 \times 10^{-6}$   | $4.49 \times 10^{-5}$   | $4.49 \times 10^{-5}$   |
+| 5.04  | $8.15 \times 10^{-3}$   | $2.33 \times 10^{-1}$   | $2.33 \times 10^{-1}$   |
+| 12.00 | $1.21$                  | $1.06 \times 10^{1}$    | $1.06 \times 10^{1}$    |
+
+### 15.4 Lyapunov Sector Collapse
+
+A non-trivial empirical observation: the six gauges yield exactly
+**two distinct Lyapunov energy curves**.
+
+* **Phase-active gauges** (`canonical`, `phase_only`, `dnfr_phase`,
+  `pressure_amplified`): $E_{\mathrm{TNFR}}[\sigma]$ peaks at
+  $\approx 6.0$ near $\sigma \approx 3.8$, decaying on both sides.
+* **Phase-inactive gauges** (`dnfr_only`, `epi_only`):
+  $E_{\mathrm{TNFR}}[\sigma] \equiv 0.1709$ — flat in $\sigma$.
+
+Two structural readings:
+
+1. **Phase dominance**. On the P14 prime-ladder topology, the
+   geometric sector of the Lyapunov functional (driven by
+   $|\nabla\phi|^2 + K_\phi^2$) dominates the potential sector (driven
+   by $\Phi_s^2$) once the phase channel is excited; the magnitude of
+   the pressure boost in `pressure_amplified` is invisible against
+   the phase contribution at the tested scale.
+2. **Gauge orbit structure**. The six probed gauges collapse to two
+   $E$-orbits, so the 72-cell table effectively samples 24 independent
+   $\alpha$-values. This sharpens what "robustness under canonical
+   ambiguity" actually establishes — robustness within each of the two
+   phase-on/phase-off orbits, plus persistence of $\alpha > 0$ across
+   the orbit jump.
+
+### 15.5 Status — Honest Reading
+
+* P18 **does not prove RH** and does not change the G4 verdict.
+  $\alpha > 0$ holds with margin $\gtrsim 10^{-173}$ at the worst cell;
+  this is exponentially small (driven by $W[\sigma]$ itself, not by
+  the structural mapping), as expected from the Gaussian decay.
+* What P18 **does** deliver: a quantitative robustness statement for
+  the P17 bridge — across two structurally different Lyapunov orbits
+  and twelve admissibility scales spanning 174 orders of magnitude in
+  $W$, the bridge ratio remains positive.
+* Two concrete future strengthenings remain:
+  1. **Wider gauge orbit**: probe gauges that mix $h$ with $\nu_f$ or
+     introduce non-trivial node-dependent weighting, to escape the
+     two-orbit collapse seen here.
+  2. **Test-function family**: replace the Gaussian by a broader
+     admissible class (Hermite, raised cosine, compactly supported
+     bumps) — required to feed the family-completeness clause of
+     Weil's theorem.
+
+In the §13.2 ledger, G4 stays **OPEN**; the §14.6 "lower-boundedness
+of $\alpha(\sigma)$ on a dense admissible class" target now has its
+first empirical lower bound across two Lyapunov orbits.
+
+### 15.6 Reproducibility
+
+```powershell
+$env:PYTHONPATH = (Resolve-Path ./src).Path
+& .\.venv312\Scripts\python.exe examples\47_alpha_sweep_demo.py
+```
+
+Programmatic access:
+
+```python
+from tnfr.riemann import (
+    build_prime_ladder_hamiltonian,
+    sweep_alpha,
+    DEFAULT_GAUGES,
+)
+import numpy as np
+
+bundle = build_prime_ladder_hamiltonian(n_primes=18, max_power=5)
+sigmas = np.logspace(np.log10(0.5), np.log10(12.0), 12).tolist()
+cert = sweep_alpha(bundle, sigmas)  # uses DEFAULT_GAUGES
+
+assert cert.alpha_all_positive
+print(cert.summary())
+# AlphaSweepCertificate(n_sigma=12, n_gauge=6, W_all_positive=True,
+#                       alpha_all_positive=True,
+#                       alpha_min=+1.3691e-173 @(sigma=0.500,
+#                       gauge='canonical'),
+#                       alpha_max=+1.0593e+01)
 ```
