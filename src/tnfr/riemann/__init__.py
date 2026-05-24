@@ -61,6 +61,10 @@ alpha_sweep
     h_σ is encoded into (ΔNFR, φ, EPI), reusing the gauge-invariant
     Weil functional.  Stress-tests the P17 bridge against
     canonical-mapping ambiguity.
+admissible_family_sweep
+    P19 admissible-family extension of P18: sweeps α over multiple
+    Schwartz-even test families (not only Gaussian), together with
+    gauge and σ grids.
 """
 
 from .operator import (
@@ -393,6 +397,17 @@ from .alpha_sweep import (
     build_test_state_with_gauge,
     sweep_alpha,
 )
+from .admissible_family_sweep import (
+    # P19: admissible-family sweep (family × gauge × sigma)
+    AdmissibleTestFunction,
+    GaussianMixtureTestFunction,
+    gaussian_mixture_test_function,
+    FamilyFactory,
+    DEFAULT_TEST_FAMILIES,
+    build_test_state_from_test_function,
+    AdmissibleFamilySweepCertificate,
+    sweep_alpha_admissible_family,
+)
 
 __all__ = [
     # Graph builders
@@ -635,4 +650,13 @@ __all__ = [
     "AlphaSweepCertificate",
     "build_test_state_with_gauge",
     "sweep_alpha",
+    # P19: admissible-family sweep
+    "AdmissibleTestFunction",
+    "GaussianMixtureTestFunction",
+    "gaussian_mixture_test_function",
+    "FamilyFactory",
+    "DEFAULT_TEST_FAMILIES",
+    "build_test_state_from_test_function",
+    "AdmissibleFamilySweepCertificate",
+    "sweep_alpha_admissible_family",
 ]

@@ -2282,6 +2282,7 @@ piecewise status notes.
 | **P16** Li–Keiper positivity | `li_keiper.py` | `45_li_keiper_demo.py` | §12 | RH-equivalent **diagnostic** (not proof) |
 | **P17** Weil–TNFR positivity bridge | `weil_positivity.py` | `46_weil_tnfr_positivity_demo.py` | §14 | TNFR-native witness for **G4** (research prototype, not proof) |
 | **P18** Admissibility / gauge sweep of $\alpha(\sigma)$ | `alpha_sweep.py` | `47_alpha_sweep_demo.py` | §15 | Robustness audit of the P17 bridge under canonical-mapping ambiguity ($\alpha > 0$ across 6 gauges × 12 widths) |
+| **P19** Admissible-family sweep | `admissible_family_sweep.py` | `48_admissible_family_sweep_demo.py` | §16 | Extends P18 beyond Gaussian-only tests (family × gauge × $\sigma$ positivity audit) |
 
 ### 13.2 Gap Balance
 
@@ -2637,4 +2638,98 @@ print(cert.summary())
 #                       alpha_min=+1.3691e-173 @(sigma=0.500,
 #                       gauge='canonical'),
 #                       alpha_max=+1.0593e+01)
+```
+
+## 16. Admissible-Family Sweep (P19)
+
+### 16.1 Motivation
+
+P18 closed the immediate gauge-robustness objection, but still on a
+single admissible family ($h_\sigma$ Gaussian). The remaining
+family-completeness pressure from §14.6 requires extending the
+positivity audit to multiple Schwartz-even test families. P19 does
+exactly that, operationally:
+
+* keeps the P18 gauge grid (canonical + 5 probes),
+* keeps dense $\sigma$ sweeps,
+* introduces a **family axis** in the certificate.
+
+### 16.2 Implementation
+
+Module: `src/tnfr/riemann/admissible_family_sweep.py`
+
+Core components:
+
+* `GaussianMixtureTestFunction`:
+   $$
+   h(t)=(1-\lambda)e^{-t^2/(2\sigma^2)}
+         +\lambda e^{-t^2/(2(\beta\sigma)^2)}
+   $$
+   with closed-form Fourier profile $g(u)$ (same convention as P15).
+* `DEFAULT_TEST_FAMILIES`:
+   * `gaussian` (P15 baseline)
+   * `gaussian_mixture` (two-scale positive even Schwartz extension)
+* `sweep_alpha_admissible_family(...)`:
+   computes a 3D tensor
+   $$\alpha(\sigma;\,\text{family},\,\text{gauge})
+      = W[\sigma;\,\text{family}] / E_{\mathrm{TNFR}}
+   $$
+   plus global positivity flags and the tightest triple
+   $(\sigma,\text{family},\text{gauge})$.
+
+### 16.3 Numerical Results (May 2026 run)
+
+Run: `examples/48_admissible_family_sweep_demo.py`
+
+Configuration:
+
+* P14 bundle: `n_primes=18`, `max_power=5` (dim 90)
+* $\sigma$ grid: 10 log-spaced points on $[0.5, 8]$
+* families: 2 (`gaussian`, `gaussian_mixture`)
+* gauges: 6 (same as P18)
+
+Observed certificate:
+
+* `W_all_positive = True`
+* `alpha_all_positive = True`
+* $\alpha_{\min} = 1.3691\times 10^{-173}$
+   at $(\sigma=0.5,\ \text{family}=\texttt{gaussian},\ \text{gauge}=\texttt{canonical})$
+* $\alpha_{\max} = 9.4080\times 10^0$
+
+Family-wise extrema (across all gauges and $\sigma$ in this run):
+
+| Family | $\alpha_{\min}$ | $\alpha_{\max}$ |
+|---|---:|---:|
+| `gaussian` | $1.3691\times 10^{-173}$ | $2.9275\times 10^0$ |
+| `gaussian_mixture` | $5.3273\times 10^{-44}$ | $9.4080\times 10^0$ |
+
+### 16.4 Status — Honest Reading
+
+P19 is still **not an RH proof**. It does, however, tighten the G4
+attack surface in exactly the missing direction from §14.6:
+
+* Positivity now survives a non-trivial family extension (not just
+   one Gaussian line).
+* The bridge remains robust on a 3D audit (family × gauge × $\sigma$),
+   not only on the P18 2D audit (gauge × $\sigma$).
+
+What remains open is unchanged in nature: a **uniform analytic lower
+bound** over a dense admissible family class and a structurally
+complete gauge argument.
+
+### 16.5 Reproducibility
+
+```powershell
+$env:PYTHONPATH = (Resolve-Path ./src).Path
+& .\.venv312\Scripts\python.exe examples\48_admissible_family_sweep_demo.py
+```
+
+Programmatic entry points:
+
+```python
+from tnfr.riemann import (
+      sweep_alpha_admissible_family,
+      DEFAULT_TEST_FAMILIES,
+      DEFAULT_GAUGES,
+)
 ```
