@@ -304,6 +304,20 @@ from .von_mangoldt import (
     VonMangoldtReproductionResult,
     verify_von_mangoldt_reproduction,
 )
+from .analytic_continuation import (
+    # Continuation evaluator (P13)
+    von_mangoldt_zeta_continued,
+    # Agreement on Re(s) > 1
+    ContinuationAgreement,
+    verify_continuation_agreement,
+    # Pole detection on the critical line
+    CriticalLinePoleScan,
+    scan_critical_line_for_poles,
+    # Explicit-formula reconstruction of psi(x)
+    ExplicitFormulaResult,
+    reconstruct_psi_via_explicit_formula,
+    fetch_riemann_zeros,
+)
 
 __all__ = [
     # Graph builders
@@ -503,4 +517,13 @@ __all__ = [
     "tnfr_log_zeta_derivative",
     "VonMangoldtReproductionResult",
     "verify_von_mangoldt_reproduction",
+    # Analytic continuation (P13)
+    "von_mangoldt_zeta_continued",
+    "ContinuationAgreement",
+    "verify_continuation_agreement",
+    "CriticalLinePoleScan",
+    "scan_critical_line_for_poles",
+    "ExplicitFormulaResult",
+    "reconstruct_psi_via_explicit_formula",
+    "fetch_riemann_zeros",
 ]

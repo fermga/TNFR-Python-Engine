@@ -1205,8 +1205,9 @@ Equivalence map: [if APIs renamed]
 **Computational Framework**:
 - **Core Implementation**: [src/tnfr/riemann/operator.py](src/tnfr/riemann/operator.py)
 - **Von Mangoldt Construction (P12)**: [src/tnfr/riemann/von_mangoldt.py](src/tnfr/riemann/von_mangoldt.py) — TNFR prime-ladder spectrum reproducing $-\zeta'(s)/\zeta(s) = \sum_n \Lambda(n) n^{-s}$
-- **Demonstration Code**: [examples/16_riemann_operator_demo.py](examples/16_riemann_operator_demo.py), [examples/41_von_mangoldt_zeta_demo.py](examples/41_von_mangoldt_zeta_demo.py)
-- **Complete Theory**: [theory/TNFR_RIEMANN_RESEARCH_NOTES.md](theory/TNFR_RIEMANN_RESEARCH_NOTES.md) — §7 (gap analysis), §8 (prime-ladder construction)
+- **Analytic Continuation (P13)**: [src/tnfr/riemann/analytic_continuation.py](src/tnfr/riemann/analytic_continuation.py) — continuation of the prime-ladder vM zeta to all of $\mathbb{C}$; Riemann zeros realised as resonance poles on $\operatorname{Re}(s) = 1/2$
+- **Demonstration Code**: [examples/16_riemann_operator_demo.py](examples/16_riemann_operator_demo.py), [examples/41_von_mangoldt_zeta_demo.py](examples/41_von_mangoldt_zeta_demo.py), [examples/42_riemann_zeros_as_resonances.py](examples/42_riemann_zeros_as_resonances.py)
+- **Complete Theory**: [theory/TNFR_RIEMANN_RESEARCH_NOTES.md](theory/TNFR_RIEMANN_RESEARCH_NOTES.md) — §7 (gap analysis), §8 (prime-ladder construction), §9 (analytic continuation, P13)
 
 **Validation Protocols**:
 - **Eigenvalue Analysis**: Numerical verification of critical behavior — σ_c^(k) → 1/2 confirmed
