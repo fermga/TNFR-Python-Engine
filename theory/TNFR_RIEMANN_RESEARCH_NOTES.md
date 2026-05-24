@@ -2284,6 +2284,7 @@ piecewise status notes.
 | **P18** Admissibility / gauge sweep of $\alpha(\sigma)$ | `alpha_sweep.py` | `47_alpha_sweep_demo.py` | §15 | Robustness audit of the P17 bridge under canonical-mapping ambiguity ($\alpha > 0$ across 6 gauges × 12 widths) |
 | **P19** Admissible-family sweep | `admissible_family_sweep.py` | `48_admissible_family_sweep_demo.py` | §16 | Extends P18 beyond Gaussian-only tests (family × gauge × $\sigma$ positivity audit) |
 | **P20** Node-aware gauge sweep | `nodeaware_gauge_sweep.py` | `49_nodeaware_gauge_sweep_demo.py` | §17 | Extends P19 with gauges depending on local $\nu_f$ and node-weight channels |
+| **P21** Hermite-family expansion | `admissible_family_sweep.py` | `48_admissible_family_sweep_demo.py` | §18 | Adds Hermite2-Gaussian admissible family and revalidates P19/P20 positivity |
 
 ### 13.2 Gap Balance
 
@@ -2686,7 +2687,7 @@ Configuration:
 
 * P14 bundle: `n_primes=18`, `max_power=5` (dim 90)
 * $\sigma$ grid: 10 log-spaced points on $[0.5, 8]$
-* families: 2 (`gaussian`, `gaussian_mixture`)
+* families: 3 (`gaussian`, `gaussian_mixture`, `hermite2_gaussian`)
 * gauges: 6 (same as P18)
 
 Observed certificate:
@@ -2703,6 +2704,7 @@ Family-wise extrema (across all gauges and $\sigma$ in this run):
 |---|---:|---:|
 | `gaussian` | $1.3691\times 10^{-173}$ | $2.9275\times 10^0$ |
 | `gaussian_mixture` | $5.3273\times 10^{-44}$ | $9.4080\times 10^0$ |
+| `hermite2_gaussian` | $1.6649\times 10^{-171}$ | $5.7431\times 10^0$ |
 
 ### 16.4 Status — Honest Reading
 
@@ -2775,7 +2777,7 @@ Configuration:
 
 * P14 bundle: `n_primes=18`, `max_power=5` (dim 90)
 * $\sigma$ grid: 10 log-spaced points on $[0.5, 8]$
-* families: 2 (`gaussian`, `gaussian_mixture`)
+* families: 3 (`gaussian`, `gaussian_mixture`, `hermite2_gaussian`)
 * node-aware gauges: 4 (`nuf_pressure`, `nuf_phase`,
    `weight_pressure`, `mixed_affine`)
 
@@ -2784,6 +2786,9 @@ Observed certificate:
 * `W_all_positive = True`
 * `alpha_all_positive = True`
 * strict positivity preserved under the tested node-aware mappings.
+* worst-case entry remained in the Gaussian branch:
+   $\alpha_{\min}=1.3689\times 10^{-173}$ at
+   $(\sigma=0.5,\ \text{family}=\texttt{gaussian},\ \text{node\_gauge}=\texttt{nuf\_pressure})$.
 
 ### 17.4 Status — Honest Reading
 
@@ -2812,4 +2817,62 @@ from tnfr.riemann import (
       sweep_alpha_nodeaware,
       DEFAULT_NODEAWARE_GAUGES,
 )
+```
+
+## 18. Hermite-Family Expansion (P21)
+
+### 18.1 Motivation
+
+P19 introduced multi-family auditing and P20 added node-aware gauges.
+To push family-completeness pressure further, P21 expands the default
+admissible-family set with a polynomially deformed Gaussian that
+remains even and Schwartz.
+
+### 18.2 Implementation
+
+Updated module: `src/tnfr/riemann/admissible_family_sweep.py`
+
+New family:
+
+* `Hermite2GaussianTestFunction` with
+   $$
+   h(t)=\left(1+\eta\,(t/\sigma)^2\right)e^{-t^2/(2\sigma^2)},\ \eta\ge 0
+   $$
+   plus closed-form Fourier-side profile under the P15 convention.
+
+API additions:
+
+* `Hermite2GaussianTestFunction`
+* `hermite2_gaussian_test_function(...)`
+* `DEFAULT_TEST_FAMILIES` now includes
+   `hermite2_gaussian` by default.
+
+### 18.3 Numerical Results (May 2026 run)
+
+With the default family set expanded to 3 families, both audits hold:
+
+* P19 (`examples/48_admissible_family_sweep_demo.py`):
+   `W_all_positive=True`, `alpha_all_positive=True`
+* P20 (`examples/49_nodeaware_gauge_sweep_demo.py`):
+   `W_all_positive=True`, `alpha_all_positive=True`
+
+Hermite branch extrema from the P19 run:
+
+* $\alpha_{\min}=1.6649\times 10^{-171}$
+* $\alpha_{\max}=5.7431\times 10^0$
+
+### 18.4 Status — Honest Reading
+
+P21 is still empirical and does not close G4. It strengthens the
+operational evidence in the precise missing direction: positivity of
+the bridge survives a non-trivial polynomial deformation of the base
+Gaussian family, both in scalar-gauge (P19) and node-aware-gauge (P20)
+regimes.
+
+### 18.5 Reproducibility
+
+```powershell
+$env:PYTHONPATH = (Resolve-Path ./src).Path
+& .\.venv312\Scripts\python.exe examples\48_admissible_family_sweep_demo.py
+& .\.venv312\Scripts\python.exe examples\49_nodeaware_gauge_sweep_demo.py
 ```

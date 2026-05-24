@@ -2,7 +2,7 @@
 
 Runs alpha = W / E_TNFR over:
 - sigma grid (log-spaced)
-- default test families (gaussian, gaussian_mixture)
+- default test families (gaussian, gaussian_mixture, hermite2_gaussian)
 - default structural gauges from P18
 
 Goal: stress-test positivity beyond a single Gaussian family.

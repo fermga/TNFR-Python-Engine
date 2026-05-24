@@ -116,12 +116,72 @@ def gaussian_mixture_test_function(
     return GaussianMixtureTestFunction(sigma=float(sigma), mix=mix, beta=beta)
 
 
+@dataclass(frozen=True)
+class Hermite2GaussianTestFunction:
+    r"""Second-order Hermite-Gaussian deformation of the Gaussian family.
+
+    .. math::
+
+        h(t) = \Bigl(1 + \eta\,(t/\sigma)^2\Bigr)
+               e^{-t^2/(2\sigma^2)},\qquad \eta \ge 0.
+
+    This preserves evenness and Schwartz decay, while introducing a
+    non-trivial polynomial envelope.
+    """
+
+    sigma: float
+    eta: float = 0.25
+
+    def __post_init__(self) -> None:
+        if self.sigma <= 0.0:
+            raise ValueError("sigma must be strictly positive")
+        if self.eta < 0.0:
+            raise ValueError("eta must be non-negative")
+
+    def h(self, t: float) -> float:
+        s = self.sigma
+        x = t / s
+        return (1.0 + self.eta * x * x) * math.exp(-(x * x) / 2.0)
+
+    def h_complex(self, t: complex) -> complex:
+        s = self.sigma
+        x = t / s
+        return complex((1.0 + self.eta * x * x) * np.exp(-(x * x) / 2.0))
+
+    def g(self, u: float) -> float:
+        r"""Closed-form Fourier-side profile under the P15 convention."""
+        s = self.sigma
+        base = (s / math.sqrt(2.0 * math.pi))
+        env = math.exp(-(s * s) * u * u / 2.0)
+        poly = 1.0 + self.eta * (1.0 - (s * s) * u * u)
+        return base * env * poly
+
+    def g_zero(self) -> float:
+        s = self.sigma
+        return (s / math.sqrt(2.0 * math.pi)) * (1.0 + self.eta)
+
+    def h_at_half_pole(self) -> float:
+        s = self.sigma
+        pole_poly = 1.0 - self.eta / (4.0 * s * s)
+        return pole_poly * math.exp(1.0 / (8.0 * s * s))
+
+
+def hermite2_gaussian_test_function(
+    sigma: float,
+    *,
+    eta: float = 0.25,
+) -> Hermite2GaussianTestFunction:
+    """Construct second-order Hermite-Gaussian admissible test function."""
+    return Hermite2GaussianTestFunction(sigma=float(sigma), eta=eta)
+
+
 FamilyFactory = Callable[[float], AdmissibleTestFunction]
 
 
 DEFAULT_TEST_FAMILIES: Mapping[str, FamilyFactory] = {
     "gaussian": gaussian_test_function,
     "gaussian_mixture": gaussian_mixture_test_function,
+    "hermite2_gaussian": hermite2_gaussian_test_function,
 }
 
 
@@ -296,6 +356,8 @@ __all__ = [
     "AdmissibleTestFunction",
     "GaussianMixtureTestFunction",
     "gaussian_mixture_test_function",
+    "Hermite2GaussianTestFunction",
+    "hermite2_gaussian_test_function",
     "FamilyFactory",
     "DEFAULT_TEST_FAMILIES",
     "build_test_state_from_test_function",
