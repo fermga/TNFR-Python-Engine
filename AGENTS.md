@@ -178,7 +178,21 @@ A theoretical framework connecting **discrete TNFR operators** to the **Riemann 
 **Conjecture 10.1 Gap (May 2026)**: Systematic numerical tests of the affine fit
 $\zeta_{H^{(k)}}(1/2, u) \approx C(k) \cdot \zeta_R(u + \delta(k))$ for $k \in \{10 \ldots 1000\}$ returned **negative results**: normalised residual rises with $k$, Pearson correlation is negative at all tested sizes, $\delta(k)$ stays pinned at the search-range boundary, and $C(k)$ diverges (~10³⁷ at $k=1000$).  The simple affine bridge is **not numerically closed**.  Six missing pieces are documented in [theory/TNFR_RIEMANN_RESEARCH_NOTES.md §7](theory/TNFR_RIEMANN_RESEARCH_NOTES.md); the priority construction is a TNFR zeta reproducing the von Mangoldt series $-\zeta'(s)/\zeta(s) = \sum_n \Lambda(n) n^{-s}$.
 
-**Implementation Status**: Experimental research framework with computational prototypes in [src/tnfr/riemann/](src/tnfr/riemann/) and documentation in [theory/TNFR_RIEMANN_RESEARCH_NOTES.md](theory/TNFR_RIEMANN_RESEARCH_NOTES.md).
+**G5 Reformulation (§7.8, May 2026)**: The "non-affine bridge" anticipated by Conjecture 10.1 has been **constructed and verified** by the P12–P15 pipeline. G5 in its original affine form is therefore **SUPERSEDED** by the prime-ladder / Λ-series route: P12 reproduces $-\zeta'(s)/\zeta(s)$ exactly on $\operatorname{Re}(s) > 1$, P13 continues it to all of $\mathbb{C}$ with Riemann zeros as resonance poles on $\operatorname{Re}(s) = 1/2$, P14 supplies a self-adjoint Hamiltonian carrying the same data, and P15 numerically verifies the Weil–Guinand identity to machine precision. All six pieces of §7.4 are addressed (see §7.8 table).
+
+**Final Gap Balance (§13.2)**:
+
+| Gap | Description | Status |
+|---|---|---|
+| G1 | Canonical TNFR Hamiltonian for the prime-ladder spectrum | **CLOSED operationally** by P14 |
+| G2 | Analytic continuation of the TNFR vM zeta to $\mathbb{C}$ | **CLOSED operationally** by P13 |
+| G3 | Explicit zeros ↔ spectrum bridge | **CLOSED operationally** by P15 |
+| **G4** | **Riemann Hypothesis** — localisation of poles on $\operatorname{Re}(s) = 1/2$ | **OPEN** (genuine obstruction) |
+| G5 | Bridge TNFR spectral zeta → classical $\zeta(s)$ | **SUPERSEDED** by P12+P13+P15 |
+
+**Net result**: 4 of 5 originally-identified gaps are operationally closed. The only remaining obstruction is **G4 = RH itself**, which is not attackable by any extension of P12–P16 — it requires a structural positivity / self-adjointness argument (Hilbert–Pólya-style) that is genuinely new mathematics.
+
+**Implementation Status**: Experimental research framework with computational prototypes in [src/tnfr/riemann/](src/tnfr/riemann/) and documentation in [theory/TNFR_RIEMANN_RESEARCH_NOTES.md](theory/TNFR_RIEMANN_RESEARCH_NOTES.md) (§13 provides the complete milestone → gap → demo map).
 
 ---
 
