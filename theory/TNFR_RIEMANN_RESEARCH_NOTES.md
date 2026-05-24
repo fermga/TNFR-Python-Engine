@@ -836,6 +836,85 @@ claim to) eliminate.
 
 ---
 
+## 13. Empirical Uniform-Coercivity Certificate (P22)
+
+**Status**: Implemented and numerically evaluated (May 2026).
+**Code**: `src/tnfr/riemann/coercivity_uniform.py`,
+`examples/50_uniform_coercivity_demo.py`.
+
+### 13.1 Motivation
+
+P18-P21 establish robust sampled positivity for
+$\alpha(\sigma) = W[\sigma]/E_{TNFR}[\sigma]$ across dense
+$(\sigma, \text{family}, \text{gauge})$ grids. To move one step closer
+to the G4 target form
+
+$$
+\inf_{\sigma \in [\sigma_{\min},\sigma_{\max}],\,F,\,G} \alpha(\sigma;F,G) > 0,
+$$
+
+P22 adds an interval-level empirical certificate, not just pointwise
+sampling.
+
+### 13.2 Method
+
+On a shared log-spaced $\sigma$ grid, P22 runs both:
+
+1. admissible-family sweep (P19/P21),
+2. node-aware gauge sweep (P20).
+
+From the resulting alpha tables it computes:
+
+- sampled minimum $\alpha_{\min}^{\text{sample}}$,
+- finite-difference slope envelope $L_{\text{proxy}}$,
+- mesh radius $r_h = \tfrac12 \max_i (\sigma_{i+1}-\sigma_i)$,
+
+and reports the mesh-corrected lower bound
+
+$$
+\alpha_{\inf}^{\text{interval}}
+\;\gtrsim\;
+\alpha_{\min}^{\text{sample}} - L_{\text{proxy}}\,r_h.
+$$
+
+The resulting dataclass `UniformCoercivityCertificate` includes both
+sampled and interval-level positivity flags.
+
+### 13.3 Current numerical outcome
+
+Representative run (same P14 base bundle as P18-P21,
+$\sigma \in [0.5, 8.0]$, log grid):
+
+- `sampled_all_positive = True`
+- `alpha_min_sampled = +1.3691e-173`
+- `L_proxy = 2.6554e+00`
+- `mesh_radius = 8.9119e-01`
+- `interval_lb = -2.3665e+00`
+- `interval_lb_positive = False`
+
+### 13.4 Interpretation
+
+P22 upgrades the diagnostics from pointwise positivity to a quantified
+interval certificate framework. However, with the current global slope
+envelope, the mesh-corrected lower bound is negative. Therefore,
+**uniform coercivity is not yet established** at interval level on the
+tested band.
+
+This narrows G4 honestly: empirical positivity remains strong, but the
+coercivity margin is still too weak near the smallest sampled alpha
+region.
+
+### 13.5 Immediate next technical directions
+
+1. Replace global $L_{\text{proxy}}$ with stratified/local envelopes on
+   $(F,G)$ sectors to reduce over-conservatism.
+2. Add adaptive refinement around low-alpha neighborhoods to tighten
+   $r_h$ where it matters.
+3. Derive analytic lower envelopes for the TNFR energy denominator to
+   complement numerical certificates.
+
+---
+
 The remainder of this document preserves the legacy research notes verbatim. Keep them synchronized with the active workflow above when adding new results.
 
 ## TNFR–Riemann Research Notes (Legacy Detail)

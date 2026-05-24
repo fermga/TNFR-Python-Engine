@@ -68,6 +68,10 @@ admissible_family_sweep
 nodeaware_gauge_sweep
     P20 node-aware gauge extension: sweeps α with gauges depending on
     local structural frequency ν_f and node-weight channels.
+coercivity_uniform
+    P22 empirical uniform-coercivity certificate over sigma intervals,
+    combining P19 and P20 alpha surfaces with mesh-corrected lower
+    bound diagnostics.
 """
 
 from .operator import (
@@ -421,6 +425,11 @@ from .nodeaware_gauge_sweep import (
     NodeAwareGaugeSweepCertificate,
     sweep_alpha_nodeaware,
 )
+from .coercivity_uniform import (
+    # P22: empirical interval-level coercivity certificate
+    UniformCoercivityCertificate,
+    verify_uniform_coercivity_empirical,
+)
 
 __all__ = [
     # Graph builders
@@ -680,4 +689,7 @@ __all__ = [
     "build_test_state_nodeaware",
     "NodeAwareGaugeSweepCertificate",
     "sweep_alpha_nodeaware",
+    # P22: empirical uniform-coercivity certificate
+    "UniformCoercivityCertificate",
+    "verify_uniform_coercivity_empirical",
 ]
