@@ -2283,6 +2283,7 @@ piecewise status notes.
 | **P17** Weil–TNFR positivity bridge | `weil_positivity.py` | `46_weil_tnfr_positivity_demo.py` | §14 | TNFR-native witness for **G4** (research prototype, not proof) |
 | **P18** Admissibility / gauge sweep of $\alpha(\sigma)$ | `alpha_sweep.py` | `47_alpha_sweep_demo.py` | §15 | Robustness audit of the P17 bridge under canonical-mapping ambiguity ($\alpha > 0$ across 6 gauges × 12 widths) |
 | **P19** Admissible-family sweep | `admissible_family_sweep.py` | `48_admissible_family_sweep_demo.py` | §16 | Extends P18 beyond Gaussian-only tests (family × gauge × $\sigma$ positivity audit) |
+| **P20** Node-aware gauge sweep | `nodeaware_gauge_sweep.py` | `49_nodeaware_gauge_sweep_demo.py` | §17 | Extends P19 with gauges depending on local $\nu_f$ and node-weight channels |
 
 ### 13.2 Gap Balance
 
@@ -2731,5 +2732,84 @@ from tnfr.riemann import (
       sweep_alpha_admissible_family,
       DEFAULT_TEST_FAMILIES,
       DEFAULT_GAUGES,
+)
+```
+
+## 17. Node-Aware Gauge Sweep (P20)
+
+### 17.1 Motivation
+
+P19 added the family axis, but still used scalar gauges of the form
+$h \mapsto (\Delta\mathrm{NFR},\phi,\mathrm{EPI})$ independent of node
+context. The remaining structural objection is that true TNFR gauges
+may depend on local channels, especially structural frequency
+$\nu_f$ and node-weight scale. P20 introduces this dependence
+explicitly and re-runs the positivity bridge.
+
+### 17.2 Implementation
+
+Module: `src/tnfr/riemann/nodeaware_gauge_sweep.py`
+
+Key additions:
+
+* `NodeAwareGaugeFn`: gauge signature
+   $(h,\nu_{\text{hat}},w_{\text{hat}}) \mapsto
+   (\Delta\mathrm{NFR},\phi,\mathrm{EPI})$.
+* `DEFAULT_NODEAWARE_GAUGES`:
+   * `nuf_pressure`
+   * `nuf_phase`
+   * `weight_pressure`
+   * `mixed_affine`
+* `build_test_state_nodeaware(...)`:
+   computes normalized node channels
+   $\nu_{\text{hat}},w_{\text{hat}}\in[0,1]$ and applies node-aware
+   gauge mappings.
+* `sweep_alpha_nodeaware(...)`:
+   3D sweep over family × node-aware gauge × $\sigma$.
+
+### 17.3 Numerical Results (May 2026 run)
+
+Run: `examples/49_nodeaware_gauge_sweep_demo.py`
+
+Configuration:
+
+* P14 bundle: `n_primes=18`, `max_power=5` (dim 90)
+* $\sigma$ grid: 10 log-spaced points on $[0.5, 8]$
+* families: 2 (`gaussian`, `gaussian_mixture`)
+* node-aware gauges: 4 (`nuf_pressure`, `nuf_phase`,
+   `weight_pressure`, `mixed_affine`)
+
+Observed certificate:
+
+* `W_all_positive = True`
+* `alpha_all_positive = True`
+* strict positivity preserved under the tested node-aware mappings.
+
+### 17.4 Status — Honest Reading
+
+P20 remains empirical and **does not prove RH**. What it adds is
+targeted robustness against a stronger ambiguity class:
+
+* positivity survives not only family and scalar-gauge variation,
+   but also node-aware gauge deformations tied to
+   $(\nu_f,\text{weight})$ channels.
+
+The open mathematical target remains unchanged: a uniform analytic
+lower-bound argument over dense admissible families and a complete
+structural gauge class.
+
+### 17.5 Reproducibility
+
+```powershell
+$env:PYTHONPATH = (Resolve-Path ./src).Path
+& .\.venv312\Scripts\python.exe examples\49_nodeaware_gauge_sweep_demo.py
+```
+
+Programmatic entry points:
+
+```python
+from tnfr.riemann import (
+      sweep_alpha_nodeaware,
+      DEFAULT_NODEAWARE_GAUGES,
 )
 ```

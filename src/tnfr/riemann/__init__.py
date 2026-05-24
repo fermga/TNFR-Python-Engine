@@ -65,6 +65,9 @@ admissible_family_sweep
     P19 admissible-family extension of P18: sweeps α over multiple
     Schwartz-even test families (not only Gaussian), together with
     gauge and σ grids.
+nodeaware_gauge_sweep
+    P20 node-aware gauge extension: sweeps α with gauges depending on
+    local structural frequency ν_f and node-weight channels.
 """
 
 from .operator import (
@@ -408,6 +411,14 @@ from .admissible_family_sweep import (
     AdmissibleFamilySweepCertificate,
     sweep_alpha_admissible_family,
 )
+from .nodeaware_gauge_sweep import (
+    # P20: node-aware gauge sweep (nu_f + node weight)
+    NodeAwareGaugeFn,
+    DEFAULT_NODEAWARE_GAUGES,
+    build_test_state_nodeaware,
+    NodeAwareGaugeSweepCertificate,
+    sweep_alpha_nodeaware,
+)
 
 __all__ = [
     # Graph builders
@@ -659,4 +670,10 @@ __all__ = [
     "build_test_state_from_test_function",
     "AdmissibleFamilySweepCertificate",
     "sweep_alpha_admissible_family",
+    # P20: node-aware gauge sweep
+    "NodeAwareGaugeFn",
+    "DEFAULT_NODEAWARE_GAUGES",
+    "build_test_state_nodeaware",
+    "NodeAwareGaugeSweepCertificate",
+    "sweep_alpha_nodeaware",
 ]
