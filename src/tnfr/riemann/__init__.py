@@ -50,6 +50,11 @@ li_keiper
     P16 Li-Keiper positivity criterion computed from the TNFR
     resonance spectrum (RH-equivalent diagnostic; not a new gap
     closure, but a TNFR-native witness for RH).
+weil_positivity
+    P17 Weil-TNFR positivity bridge: tabulates the RH-equivalent
+    Weil functional W[σ] = Σ_γ h_σ(γ) against the canonical TNFR
+    Lyapunov energy E_TNFR[σ] across a Gaussian-width grid.
+    Experimental research diagnostic (does NOT close gap G4 = RH).
 """
 
 from .operator import (
@@ -365,6 +370,15 @@ from .li_keiper import (
     LiKeiperCertificate,
     verify_li_keiper_criterion,
 )
+from .weil_positivity import (
+    # P17: Weil-TNFR positivity bridge
+    WeilPositivityCertificate,
+    WeilTNFRBridgeCertificate,
+    build_structural_test_state,
+    tnfr_lyapunov_of_test_state,
+    verify_weil_positivity,
+    verify_weil_tnfr_bridge,
+)
 
 __all__ = [
     # Graph builders
@@ -594,4 +608,11 @@ __all__ = [
     "li_coefficients_from_zeros",
     "LiKeiperCertificate",
     "verify_li_keiper_criterion",
+    # P17: Weil-TNFR positivity bridge
+    "WeilPositivityCertificate",
+    "WeilTNFRBridgeCertificate",
+    "build_structural_test_state",
+    "tnfr_lyapunov_of_test_state",
+    "verify_weil_positivity",
+    "verify_weil_tnfr_bridge",
 ]

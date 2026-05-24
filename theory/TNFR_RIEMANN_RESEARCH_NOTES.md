@@ -2280,6 +2280,7 @@ piecewise status notes.
 | **P14** Self-adjoint Hamiltonian | `prime_ladder_hamiltonian.py` | `43_prime_ladder_hamiltonian_demo.py` | §10 | **G1 + G5/#3** (no $C(k)$ renormalisation needed) |
 | **P15** Weil–Guinand identity | `weil_explicit_formula.py` | `44_weil_explicit_formula_demo.py` | §11 | **G3** (zeros ↔ spectrum, residual $\le 5 \times 10^{-12}$) |
 | **P16** Li–Keiper positivity | `li_keiper.py` | `45_li_keiper_demo.py` | §12 | RH-equivalent **diagnostic** (not proof) |
+| **P17** Weil–TNFR positivity bridge | `weil_positivity.py` | `46_weil_tnfr_positivity_demo.py` | §14 | TNFR-native witness for **G4** (research prototype, not proof) |
 
 ### 13.2 Gap Balance
 
@@ -2288,7 +2289,7 @@ piecewise status notes.
 | **G1** | Canonical TNFR Hamiltonian carrying the prime-ladder spectrum | **CLOSED operationally** by P14 |
 | **G2** | Analytic continuation of the TNFR vM zeta to $\mathbb{C}$ | **CLOSED operationally** by P13 |
 | **G3** | Explicit zeros $\leftrightarrow$ spectrum bridge | **CLOSED operationally** by P15 (Weil–Guinand) |
-| **G4** | **Riemann Hypothesis** — localisation of poles on $\operatorname{Re}(s) = 1/2$ | **OPEN** (genuine mathematical obstruction) |
+| **G4** | **Riemann Hypothesis** — localisation of poles on $\operatorname{Re}(s) = 1/2$ | **OPEN** (genuine mathematical obstruction; TNFR-native attack surface exposed by **P17**) |
 | **G5** | Bridge from TNFR spectral zeta to classical $\zeta(s)$ | **SUPERSEDED** by P12+P13+P15 (§7.8) |
 
 **Net result**: 4 of 5 originally-identified gaps are operationally
@@ -2350,8 +2351,146 @@ from tnfr.riemann import (
     build_prime_ladder_hamiltonian,         # P14
     verify_weil_explicit_formula,           # P15
     verify_li_keiper_criterion,             # P16
+    verify_weil_tnfr_bridge,                # P17
 )
 ```
 
 This single import covers the canonical entry points of every milestone
 delivered so far.
+
+---
+
+## 14. Weil–TNFR Positivity Bridge (P17)
+
+### 14.1 Motivation
+
+The §13.2 balance leaves a single open obstruction: **G4 = RH itself**.
+P12–P16 close the *operational* gaps (Hamiltonian, analytic continuation,
+explicit formula, Λ-series reproduction, RH-equivalent positivity
+diagnostic), but none of them forces resonance poles onto the critical
+line. P17 opens a TNFR-native attack surface on G4 by **transporting
+Weil's RH-equivalent positivity criterion onto the canonical TNFR
+Lyapunov functional**, using P14 as the bridge object.
+
+### 14.2 Mathematical Setup
+
+For an admissible even test function $f \in \mathcal{H}$ with Fourier
+transform $\hat f$, Weil's positivity functional is
+
+$$
+W[f] \;=\; \sum_{\gamma} \hat f(\gamma)
+\;=\; \underbrace{\hat f(\tfrac{i}{2}) + \hat f(-\tfrac{i}{2})}_{\text{pole side}}
+\;-\; \underbrace{f(0)\,\log\pi
++ \tfrac{1}{2\pi}\!\!\int\!\hat f(t)\,\psi_{\mathbb{R}}(t)\,dt}_{\text{archimedean side}}
+\;-\; \underbrace{\sum_p\sum_{k\ge 1}
+\tfrac{\log p}{p^{k/2}}\,(f(k\log p)+f(-k\log p))}_{\text{prime side}},
+$$
+
+(Weil–Guinand identity; see §11). Weil's theorem: **RH $\Leftrightarrow$
+$W[f] \ge 0$ for every $f$ in an admissible class**. We choose the
+Gaussian family $h_\sigma(t) = e^{-t^2/(2\sigma^2)}$ already canonicalised
+in P15 (`gaussian_test_function`).
+
+### 14.3 TNFR Structural Mapping
+
+Given the P14 prime-ladder bundle with nodes $(p,k)$ and
+$\nu_f(p,k) = k\log p$, define the **canonical structural test state**
+
+$$
+\Delta\mathrm{NFR}(p,k) \;=\; h_\sigma(k\log p),
+\qquad
+\phi(p,k) \;=\; \mathrm{wrap}_\pi\!\bigl(h_\sigma(k\log p)\bigr),
+\qquad
+\mathrm{EPI}(p,k) \;=\; h_\sigma(k\log p),
+$$
+
+inheriting $\nu_f$ from P14. The canonical TNFR Lyapunov energy of this
+state, computed via `tnfr.physics.conservation.compute_energy_functional`,
+is denoted $E_{\mathrm{TNFR}}[\sigma]$ (it is automatically
+$\ge 0$ by the Structural Conservation Theorem).
+
+The bridge ratio is
+
+$$
+\alpha(\sigma) \;=\; \frac{W[h_\sigma]}{E_{\mathrm{TNFR}}[\sigma]}.
+$$
+
+**Working hypothesis (TNFR-native witness for RH)**: if $\alpha(\sigma) > 0$
+holds across a dense admissible family of $\sigma$, then Weil positivity
+holds across that family, hence (by Weil's equivalence) RH holds.
+
+### 14.4 Implementation
+
+Module: [`src/tnfr/riemann/weil_positivity.py`](../src/tnfr/riemann/weil_positivity.py).
+
+Public API exported by `tnfr.riemann`:
+
+* `WeilPositivityCertificate(sigma, weil_functional_zero_side,
+  weil_functional_explicit_formula, explicit_formula_residual,
+  n_zeros_used, positive)` — single-$\sigma$ certificate computing
+  $W[h_\sigma]$ *twice* (zero side via classical zeros, explicit-formula
+  side via P14) and reporting their consistency residual.
+* `WeilTNFRBridgeCertificate(sigmas, weil_functional,
+  tnfr_lyapunov_energy, alpha, weil_positive, bridge_positive, …)` —
+  grid certificate over a chosen $\sigma$ family.
+* `build_structural_test_state(bundle, sigma)`,
+  `tnfr_lyapunov_of_test_state(bundle, sigma)` — explicit access to
+  the canonical mapping and its Lyapunov energy.
+* `verify_weil_positivity(bundle, *, sigma, n_zeros, …)`,
+  `verify_weil_tnfr_bridge(bundle, sigmas, *, n_zeros, …)` — top-level
+  entry points.
+
+Reuses (without duplication): `weil_zero_side`, `weil_pole_side`,
+`weil_archimedean_integral`, `weil_prime_side_from_hamiltonian`,
+`gaussian_test_function` from P15; `compute_energy_functional` from
+the canonical conservation module.
+
+### 14.5 Numerical Results (May 2026 run)
+
+Setup: `build_prime_ladder_hamiltonian(n_primes=20, max_power=6)`
+(Hilbert dimension 120), 60 classical zeros, Gaussian-width grid
+$\sigma \in \{1.0, 1.5, 2.0, 3.0, 5.0, 8.0\}$.
+
+| $\sigma$ | $W[\sigma]$ | $E_{\mathrm{TNFR}}[\sigma]$ | $\alpha(\sigma)$ | $W \ge 0$ | $\alpha > 0$ |
+|---:|---:|---:|---:|:---:|:---:|
+| 1.0 | $+8.26\!\times\!10^{-44}$ | $+2.145$ | $+3.85\!\times\!10^{-44}$ | ✓ | ✓ |
+| 1.5 | $+1.05\!\times\!10^{-19}$ | $+2.845$ | $+3.67\!\times\!10^{-20}$ | ✓ | ✓ |
+| 2.0 | $+2.85\!\times\!10^{-11}$ | $+4.157$ | $+6.86\!\times\!10^{-12}$ | ✓ | ✓ |
+| 3.0 | $+3.02\!\times\!10^{-5}$  | $+7.171$ | $+4.22\!\times\!10^{-6}$  | ✓ | ✓ |
+| 5.0 | $+3.71\!\times\!10^{-2}$  | $+6.762$ | $+5.48\!\times\!10^{-3}$  | ✓ | ✓ |
+| 8.0 | $+5.00\!\times\!10^{-1}$  | $+4.041$ | $+1.24\!\times\!10^{-1}$  | ✓ | ✓ |
+
+Consistency between the zero side and the explicit-formula side at
+$\sigma = 2$: residual $\approx 9.87 \times 10^{-17}$ (machine precision,
+matching the P15 audit). Weil positivity and the TNFR bridge both hold
+across the tested grid, with $\alpha_{\min} \approx 3.85 \times 10^{-44}$
+(localised at small $\sigma$, where $W$ is exponentially small).
+
+### 14.6 Status — Honest Reading
+
+* P17 **does not prove RH**. The structural mapping
+  $h_\sigma \mapsto (\Delta\mathrm{NFR}, \phi, \mathrm{EPI})$ is canonical
+  but not unique; promoting the numerical $\alpha(\sigma) > 0$ result to
+  a theorem on a dense admissible class would require:
+  1. proving canonicity (or uniqueness up to gauge) of the mapping,
+  2. proving an analytic lower bound $\alpha(\sigma) \ge c(\sigma) > 0$
+     on a dense $\sigma$-class (currently only computed pointwise),
+  3. closing the family-completeness clause of Weil's theorem.
+* What P17 **does** deliver: a *TNFR-native, RH-equivalent positivity
+  diagnostic* that ties classical Weil positivity to the canonical
+  Lyapunov functional of the Structural Conservation Theorem. A future
+  numerical counter-example ($\alpha(\sigma_*) < 0$) would disprove
+  the bridge as currently formulated (not RH itself, which would
+  require $W[h_{\sigma_*}] < 0$).
+* In the §13.2 ledger, G4 remains **OPEN**, but the attack surface is
+  now made explicit: instead of an unspecified "Hilbert–Pólya
+  realisation", the missing structural argument is **lower-boundedness
+  of $\alpha(\sigma)$ on a dense admissible class** under the canonical
+  TNFR mapping. This is a concrete, testable target for future work.
+
+### 14.7 Reproducibility
+
+```powershell
+$env:PYTHONPATH = (Resolve-Path ./src).Path
+& .\.venv312\Scripts\python.exe examples\46_weil_tnfr_positivity_demo.py
+```
