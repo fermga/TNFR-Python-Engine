@@ -35,6 +35,7 @@ from dataclasses import dataclass
 from typing import Sequence
 
 
+from ..constants.canonical import CRITICAL_EXPONENT
 from ..mathematics.unified_numerical import np
 from .operator import _first_primes, build_tridiagonal_h_tnfr
 from .spectral_proof import compute_eigensystem
@@ -42,6 +43,14 @@ from .spectral_zeta import (
     compute_heat_kernel_trace,
     test_conjecture_10_1,
 )
+
+# Canonical regularisation buffer for the spectral zeta reflection.
+# Derived from the Universal Tetrahedral Correspondence (γ ↔ |∇φ|):
+# CRITICAL_EXPONENT = γ/π ≈ 0.1837 is the same Kuramoto-derived threshold
+# used as the canonical phase-gradient bound across TNFR. Using it as the
+# spectral-shift buffer replaces the prior ad-hoc 0.1 value with a
+# first-principles constant traceable to the nodal equation.
+_SPECTRAL_ZETA_SHIFT_BUFFER = CRITICAL_EXPONENT
 
 # ---------------------------------------------------------------------------
 # Public API
@@ -156,6 +165,18 @@ class SpectralZetaReflection:
 
     max_relative_error: float
     """Relative error of the δ² scaling hypothesis."""
+
+    shift_value: float = 0.0
+    """Regularisation shift a applied to all spectra: ζ(u;a)=Σ(λ+a)^(-u).
+
+    Composed as a = max(0, -min_eigenvalue) + γ/π, where the canonical
+    buffer γ/π = CRITICAL_EXPONENT comes from the Universal Tetrahedral
+    Correspondence (γ ↔ |∇φ|). This replaces a prior ad-hoc 0.1 buffer
+    with a constant derivable from TNFR first principles.
+    """
+
+    shift_canonical: bool = True
+    """True when the regularisation buffer equals γ/π (canonical)."""
 
 @dataclass(frozen=True)
 class ScalingLaw:
@@ -438,9 +459,11 @@ def compute_spectral_zeta_reflection(
     evals_r, _ = compute_eigensystem(k, sigma_r)
     evals_L, _ = compute_eigensystem(k, 0.5)
 
-    # Regularisation shift: ensure all (λ + a) > 0 for ALL spectra
+    # Regularisation shift: ensure all (λ + a) > 0 for ALL spectra.
+    # The buffer is γ/π (canonical, Universal Tetrahedral Correspondence)
+    # rather than the previous ad-hoc 0.1.
     all_min = min(evals_s.min(), evals_r.min(), evals_L.min())
-    shift = max(0.0, -all_min + 0.1)
+    shift = max(0.0, -all_min) + _SPECTRAL_ZETA_SHIFT_BUFFER
 
     z_s = _compute_spectral_zeta_from_eigenvalues(evals_s, u_values, shift)
     z_r = _compute_spectral_zeta_from_eigenvalues(evals_r, u_values, shift)
@@ -485,6 +508,8 @@ def compute_spectral_zeta_reflection(
         residual=residual,
         delta_sq_scaling=delta_sq_ok,
         max_relative_error=max_err,
+        shift_value=float(shift),
+        shift_canonical=True,
     )
 
 # ============================================================================

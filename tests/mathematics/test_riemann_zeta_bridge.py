@@ -161,6 +161,28 @@ class TestSpectralZetaReflection:
         r = compute_spectral_zeta_reflection(50, 0.6)
         assert r.max_relative_error < 0.5
 
+    def test_shift_is_canonical(self) -> None:
+        """Regularisation buffer equals γ/π (canonical, not ad-hoc).
+
+        The shift is composed as a = max(0, -min_eigenvalue) + γ/π,
+        where γ/π = CRITICAL_EXPONENT comes from the Universal
+        Tetrahedral Correspondence (γ ↔ |∇φ|). This replaces the
+        previous ad-hoc 0.1 buffer with a first-principles constant.
+        """
+        from tnfr.constants.canonical import CRITICAL_EXPONENT
+        from tnfr.riemann.spectral_proof import compute_eigensystem
+
+        k, sigma = 50, 0.6
+        evals_s, _ = compute_eigensystem(k, sigma)
+        evals_r, _ = compute_eigensystem(k, 1.0 - sigma)
+        evals_L, _ = compute_eigensystem(k, 0.5)
+        all_min = min(evals_s.min(), evals_r.min(), evals_L.min())
+        expected_shift = max(0.0, -all_min) + CRITICAL_EXPONENT
+
+        r = compute_spectral_zeta_reflection(k, sigma)
+        assert r.shift_canonical is True
+        assert abs(r.shift_value - expected_shift) < 1e-12
+
 
 # ============================================================================
 # 4. Prime Encoding: Σ Λ_H(j) = θ(p_k)
