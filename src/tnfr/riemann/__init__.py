@@ -85,6 +85,16 @@ paley_gap_coercivity
     construction and the self-adjoint operator realisation); at
     coupling > 0 it measures structural deformation. Consistency
     diagnostic; does NOT close gap G4.
+lyapunov_spectral_positivity
+    P26 Lyapunov-spectral positivity certificate for the P14
+    Hamiltonian. Combines (i) exact diagonal positivity at coupling=0
+    with explicit gap log(2), (ii) a quantitative Kato-Rellich
+    perturbation envelope guaranteeing strict positivity for
+    |J_0| * ||H_coupling|| < log(2), (iii) trace-class resolvent
+    Schatten norms, and (iv) numerical certification of the unitary
+    flow exp(-i t H). Closes the operator-level positivity question
+    on the finite-dimensional prime-ladder Hilbert space; does NOT
+    close gap G4 (RH localisation on Re(s)=1/2).
 """
 
 from .operator import (
@@ -451,6 +461,16 @@ from .paley_gap_coercivity import (
     paley_gap_cross,
     sweep_paley_gap,
 )
+from .lyapunov_spectral_positivity import (
+    # P26: Lyapunov-spectral positivity certificate for P14
+    LyapunovSpectralCertificate,
+    compute_spectrum,
+    operator_norm,
+    kato_rellich_lower_bound,
+    resolvent_schatten_norms,
+    verify_unitary_flow,
+    compute_lyapunov_spectral_certificate,
+)
 
 __all__ = [
     # Graph builders
@@ -719,4 +739,12 @@ __all__ = [
     "paley_gap_p14",
     "paley_gap_cross",
     "sweep_paley_gap",
+    # P26: Lyapunov-spectral positivity certificate (P14)
+    "LyapunovSpectralCertificate",
+    "compute_spectrum",
+    "operator_norm",
+    "kato_rellich_lower_bound",
+    "resolvent_schatten_norms",
+    "verify_unitary_flow",
+    "compute_lyapunov_spectral_certificate",
 ]

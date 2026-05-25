@@ -1143,6 +1143,165 @@ deformation eventually dominates the truncation error.
 
 ---
 
+## §13quater — P26: Lyapunov-Spectral Positivity Certificate for P14
+
+### 13quater.1 Motivation
+
+AGENTS.md §13.2 lists the final TNFR–Riemann gap balance: G1, G2, G3
+are operationally closed by P14, P13, P15 respectively; G5 is
+superseded by the P12+P13+P15 stack. The only obstruction left is
+**G4 = RH itself**, which AGENTS.md classifies as *"not attackable by
+any extension of P12–P16 — it requires a structural positivity /
+self-adjointness argument (Hilbert–Pólya-style) that is genuinely new
+mathematics."*
+
+Two ingredients required for any Hilbert–Pólya-style attack already
+live in the codebase:
+
+1. The **self-adjoint prime-ladder Hamiltonian**
+   $\hat H = \hat H_{\mathrm{freq}} + J_0\,\hat H_{\mathrm{coupling}}$
+   from P14 ([`src/tnfr/riemann/prime_ladder_hamiltonian.py`](../src/tnfr/riemann/prime_ladder_hamiltonian.py)).
+2. The **structural Lyapunov functional**
+   $E = \tfrac12\sum_i \varepsilon(i) \ge 0$ with $dE/dt \le 0$ from
+   [`src/tnfr/physics/conservation.py`](../src/tnfr/physics/conservation.py),
+   flagged in AGENTS.md as *"proof sketch; complete proof open"*.
+
+P26 fuses both into a single quantitative **positivity certificate**
+for the P14 operator. The module
+[`src/tnfr/riemann/lyapunov_spectral_positivity.py`](../src/tnfr/riemann/lyapunov_spectral_positivity.py)
+returns a frozen dataclass `LyapunovSpectralCertificate` aggregating
+the four ingredients of operator-level Hilbert–Pólya positivity:
+self-adjointness, strict positivity with explicit gap, trace-class
+resolvent, and unitary flow.
+
+### 13quater.2 Method
+
+The certificate combines four checks:
+
+1. **Diagonal positivity at $J_0 = 0$.** $\hat H_{\mathrm{freq}}$ is
+   real-diagonal with entries $\nu_{f,(p,k)} = k\log p$. Because
+   $p \ge 2$ and $k \ge 1$, the spectrum is bounded below by
+   $\log 2 \approx 0.6931$. This is the **unperturbed gap**.
+
+2. **Quantitative Kato–Rellich envelope.** For bounded real-symmetric
+   perturbations $J_0 \hat H_{\mathrm{coupling}}$ of a self-adjoint
+   diagonal operator,
+   $$
+     |\lambda_n(\hat H) - \lambda_n(\hat H_{\mathrm{freq}})|
+       \;\le\; |J_0|\, \|\hat H_{\mathrm{coupling}}\|_{\mathrm{op}}
+   $$
+   for every $n$. The certificate exposes the **guaranteed gap**
+   $\log 2 - |J_0|\,\|\hat H_{\mathrm{coupling}}\|_{\mathrm{op}}$
+   and flags `perturbation_safe = True` when it is strictly positive.
+
+3. **Trace-class resolvent.** On the finite-dimensional prime-ladder
+   space every bounded operator is trace-class; the meaningful
+   reportables are the Schatten norms
+   $\|(\hat H + c\hat I)^{-1}\|_1$ and
+   $\|(\hat H + c\hat I)^{-1}\|_2$ for a shift $c > 0$, so growth
+   with $(N_{\mathrm{primes}}, K)$ can be tracked.
+
+4. **Numerical certification of the unitary flow.** A self-adjoint
+   $\hat H$ generates a unitary propagator $U(t) = e^{-it\hat H}$.
+   The certificate verifies $\|U(t)\psi_0\| = 1$ and
+   $\langle\psi(t)|\hat H^2|\psi(t)\rangle$ to machine precision on a
+   battery of random initial states.
+
+`structural_positivity` is `True` iff numerical positivity, the
+Kato–Rellich envelope, and the unitary flow all agree. The structural
+Lyapunov functional $E$ of `conservation.py` vanishes on the
+prime-ladder graph by construction (neutral structural state), so its
+operator-level analogue is the spectral energy
+$E_{\mathrm{spec}}[\psi] = \langle\psi|\hat H^2|\psi\rangle$, whose
+conservation is exactly the check in step 4.
+
+### 13quater.3 Numerical outcome
+
+Demo: [`examples/53_lyapunov_spectral_positivity_demo.py`](../examples/53_lyapunov_spectral_positivity_demo.py).
+
+Decoupled certificate (`n_primes = 12`, `max_power = 5`, $J_0 = 0$,
+$\dim \mathcal H = 60$, shift $c = 1$):
+
+| Quantity | Value |
+|---|---|
+| `spectrum_min` | $6.931472 \times 10^{-1}$ ($= \log 2$, exact) |
+| `spectrum_max` | $1.805459 \times 10^{1}$ |
+| `spectral_gap` | $6.931472 \times 10^{-1}$ |
+| `schatten_1_norm` | $1.019135 \times 10^{1}$ |
+| `schatten_2_norm` | $1.576613$ |
+| `unperturbed_gap` | $6.931472 \times 10^{-1}$ |
+| `coupling_norm` | $0$ |
+| `guaranteed_gap` | $6.931472 \times 10^{-1}$ |
+| `perturbation_safe` | True |
+| `max_norm_drift` | $1.11 \times 10^{-16}$ |
+| `max_energy_drift` | $3.62 \times 10^{-16}$ |
+| `unitary` | True |
+| `structural_positivity` | **True** |
+
+Coupling sweep over $J_0 \in [0, 0.30]$:
+
+| $J_0$ | `min(λ)` | `guaranteed_gap` | `perturbation_safe` | `unitary` |
+|---:|---:|---:|:---:|:---:|
+| 0.00 | $6.931 \times 10^{-1}$ | $6.931 \times 10^{-1}$ | True | True |
+| 0.05 | $6.895 \times 10^{-1}$ | $6.065 \times 10^{-1}$ | True | True |
+| 0.10 | $6.789 \times 10^{-1}$ | $5.199 \times 10^{-1}$ | True | True |
+| 0.15 | $6.614 \times 10^{-1}$ | $4.333 \times 10^{-1}$ | True | True |
+| 0.20 | $6.376 \times 10^{-1}$ | $3.467 \times 10^{-1}$ | True | True |
+| 0.25 | $6.081 \times 10^{-1}$ | $2.601 \times 10^{-1}$ | True | True |
+| 0.30 | $5.734 \times 10^{-1}$ | $1.735 \times 10^{-1}$ | True | True |
+
+The empirical spectral bottom is uniformly larger than the
+Kato–Rellich envelope, confirming the envelope is conservative
+(as expected). Across the whole sweep `structural_positivity = True`.
+
+### 13quater.4 Honest interpretation
+
+* At $J_0 = 0$ the certificate is a finite-dimensional restatement of
+  the trivial fact $\mathrm{diag}(k\log p) \succ 0$; its value is the
+  explicit numerical gap $\log 2$ and the Schatten templates used to
+  measure perturbative degradation.
+* For $J_0 > 0$ the Kato–Rellich envelope provides a **rigorous
+  quantitative interval** in which positivity is guaranteed: any
+  $J_0$ with $|J_0|\,\|\hat H_{\mathrm{coupling}}\|_{\mathrm{op}} <
+  \log 2$ produces a self-adjoint operator with strictly positive
+  spectrum, trace-class resolvent, and unitary flow.
+* The Lyapunov ingredient $dE/dt \le 0$ of `conservation.py` is
+  itself flagged in AGENTS.md as *"proof sketch; complete proof
+  open."* P26 therefore inherits the same status on the side that
+  invokes the structural Lyapunov bound: the **operator-level**
+  positivity statement is rigorous, but the variational
+  identification of that operator with the generator of the
+  structural Lyapunov flow remains the open piece.
+* Crucially, **P26 does not close gap G4**. RH is a statement about
+  the analytic continuation of the prime-ladder vM zeta (P13) and
+  the localisation of its resonance poles on $\operatorname{Re}(s) =
+  1/2$; the finite-dimensional positivity of $\hat H$ is necessary
+  but not sufficient. What P26 does establish is the
+  **operator-level positivity slot** that any Hilbert–Pólya attack
+  must fill, together with explicit quantitative numbers.
+
+### 13quater.5 Next steps
+
+1. **Promote the Lyapunov sketch to a theorem.** Provide an
+   analytical proof of $dE/dt \le 0$ inside `physics/conservation.py`
+   under grammar-compliant evolution; this would upgrade the P26
+   structural identification from "operationally consistent" to
+   "operationally closed."
+2. **Push the Kato–Rellich envelope to non-perturbative coupling.**
+   Use a Bauer–Fike or pseudospectral argument to extend the
+   quantitative positivity interval beyond $|J_0|\,\|\hat
+   H_{\mathrm{coupling}}\| < \log 2$.
+3. **Connect to P16 (Li–Keiper).** The spectral gap reported by P26
+   is the natural quantitative input for the Li–Keiper coefficients
+   $\lambda_n$ of P16; correlate the two and document any monotone
+   relationship.
+4. **Couple to P15 (Weil–Guinand).** The trace-class resolvent of
+   P26 is the operator-level object whose spectral side is tested by
+   P15. Add a cross-check using the Schatten norms of P26 as a
+   stability witness for the Weil–Guinand identity numerics.
+
+---
+
 The remainder of this document preserves the legacy research notes verbatim. Keep them synchronized with the active workflow above when adding new results.
 
 ## TNFR–Riemann Research Notes (Legacy Detail)
