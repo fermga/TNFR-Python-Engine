@@ -43,10 +43,29 @@ def main() -> None:
     print(f"  sampled_all_positive  = {cert.sampled_all_positive}")
     print(f"  admissible_ok         = {cert.admissible_ok}")
     print(f"  nodeaware_ok          = {cert.nodeaware_ok}")
-    print(f"  interval_lb_positive  = {cert.interval_lower_positive}")
     print(
-        "  interval lower bound  = "
-        f"{cert.interval_lower_bound:+.4e}"
+        "  interval_lb_global+   = "
+        f"{cert.interval_lower_global_positive}"
+    )
+    print(
+        "  interval_lb_strat+    = "
+        f"{cert.interval_lower_stratified_positive}"
+    )
+    print(
+        "  interval_lb_local+    = "
+        f"{cert.interval_lower_local_positive}"
+    )
+    print(
+        "  interval lb (global)  = "
+        f"{cert.interval_lower_bound_global:+.4e}"
+    )
+    print(
+        "  interval lb (strat)   = "
+        f"{cert.interval_lower_bound_stratified:+.4e}"
+    )
+    print(
+        "  interval lb (local)   = "
+        f"{cert.interval_lower_bound_local:+.4e}"
     )
     print(
         "\nNOTE: this is an empirical interval certificate, not a "

@@ -41,6 +41,76 @@ def _max_abs_slope(alpha_table: np.ndarray, sigmas: np.ndarray) -> float:
     return slope_max
 
 
+def _stratified_interval_lower_bound(
+    alpha_table: np.ndarray,
+    sigmas: np.ndarray,
+) -> float:
+    """Lower bound using per-trajectory slope envelopes.
+
+    For each trajectory r(σ):
+
+        lb_r = min(r) - L_r * mesh_radius,
+
+    where L_r = max |Δr/Δσ| on that trajectory.
+    Returns min_r lb_r.
+    """
+    if sigmas.size < 2:
+        finite = alpha_table[np.isfinite(alpha_table)]
+        return float(np.min(finite)) if finite.size else float("nan")
+
+    mesh_radius = 0.5 * float(np.max(np.diff(sigmas)))
+    flat = alpha_table.reshape((-1, sigmas.size))
+    best = float("inf")
+
+    for row in flat:
+        if not np.all(np.isfinite(row)):
+            continue
+        ds = np.diff(sigmas)
+        da = np.diff(row)
+        L_row = float(np.max(np.abs(da / ds)))
+        lb_row = float(np.min(row) - L_row * mesh_radius)
+        if lb_row < best:
+            best = lb_row
+
+    return best if np.isfinite(best) else float("nan")
+
+
+def _segmentwise_interval_lower_bound(
+    alpha_table: np.ndarray,
+    sigmas: np.ndarray,
+) -> float:
+    """Lower bound using segment-local Lipschitz control.
+
+    For each trajectory and each segment [σ_i, σ_{i+1}] (linear envelope):
+
+        lb_i = min(a_i, a_{i+1}) - |Δa/Δσ| * (Δσ/2)
+
+    Returns the minimum over all rows and segments.
+    """
+    if sigmas.size < 2:
+        finite = alpha_table[np.isfinite(alpha_table)]
+        return float(np.min(finite)) if finite.size else float("nan")
+
+    flat = alpha_table.reshape((-1, sigmas.size))
+    best = float("inf")
+
+    for row in flat:
+        if not np.all(np.isfinite(row)):
+            continue
+        for i in range(sigmas.size - 1):
+            ds = float(sigmas[i + 1] - sigmas[i])
+            if ds <= 0.0:
+                continue
+            a0 = float(row[i])
+            a1 = float(row[i + 1])
+            slope = abs((a1 - a0) / ds)
+            lb_seg = min(a0, a1) - slope * (0.5 * ds)
+            if lb_seg < best:
+                best = lb_seg
+
+    return best if np.isfinite(best) else float("nan")
+
+
 @dataclass(frozen=True)
 class UniformCoercivityCertificate:
     """Empirical uniform-coercivity summary over [sigma_min, sigma_max]."""
@@ -52,9 +122,13 @@ class UniformCoercivityCertificate:
     sampled_alpha_max: float
     lipschitz_proxy_max: float
     mesh_radius: float
-    interval_lower_bound: float
+    interval_lower_bound_global: float
+    interval_lower_bound_stratified: float
+    interval_lower_bound_local: float
     sampled_all_positive: bool
-    interval_lower_positive: bool
+    interval_lower_global_positive: bool
+    interval_lower_stratified_positive: bool
+    interval_lower_local_positive: bool
     admissible_ok: bool
     nodeaware_ok: bool
 
@@ -67,9 +141,17 @@ class UniformCoercivityCertificate:
             f"alpha_max_sampled={self.sampled_alpha_max:+.4e}, "
             f"L_proxy={self.lipschitz_proxy_max:.4e}, "
             f"mesh_radius={self.mesh_radius:.4e}, "
-            f"interval_lb={self.interval_lower_bound:+.4e}, "
+            f"interval_lb_global={self.interval_lower_bound_global:+.4e}, "
+            "interval_lb_stratified="
+            f"{self.interval_lower_bound_stratified:+.4e}, "
+            f"interval_lb_local={self.interval_lower_bound_local:+.4e}, "
             f"sampled_all_positive={self.sampled_all_positive}, "
-            f"interval_lb_positive={self.interval_lower_positive}, "
+            "interval_lb_global_positive="
+            f"{self.interval_lower_global_positive}, "
+            "interval_lb_stratified_positive="
+            f"{self.interval_lower_stratified_positive}, "
+            "interval_lb_local_positive="
+            f"{self.interval_lower_local_positive}, "
             f"admissible_ok={self.admissible_ok}, "
             f"nodeaware_ok={self.nodeaware_ok})"
         )
@@ -161,12 +243,22 @@ def verify_uniform_coercivity_empirical(
 
     mesh_step_max = float(np.max(np.diff(sigmas)))
     mesh_radius = 0.5 * mesh_step_max
-    interval_lb = sampled_alpha_min - L_proxy * mesh_radius
+    interval_lb_global = sampled_alpha_min - L_proxy * mesh_radius
+
+    lb_strat_a = _stratified_interval_lower_bound(alpha_a, sigmas)
+    lb_strat_n = _stratified_interval_lower_bound(alpha_n, sigmas)
+    interval_lb_stratified = float(min(lb_strat_a, lb_strat_n))
+
+    lb_local_a = _segmentwise_interval_lower_bound(alpha_a, sigmas)
+    lb_local_n = _segmentwise_interval_lower_bound(alpha_n, sigmas)
+    interval_lb_local = float(min(lb_local_a, lb_local_n))
 
     sampled_all_positive = bool(
         cert_adm.alpha_all_positive and cert_node.alpha_all_positive
     )
-    interval_lb_positive = bool(interval_lb > 0.0)
+    interval_lb_global_positive = bool(interval_lb_global > 0.0)
+    interval_lb_stratified_positive = bool(interval_lb_stratified > 0.0)
+    interval_lb_local_positive = bool(interval_lb_local > 0.0)
 
     return UniformCoercivityCertificate(
         sigma_min=float(sigma_min),
@@ -176,9 +268,13 @@ def verify_uniform_coercivity_empirical(
         sampled_alpha_max=sampled_alpha_max,
         lipschitz_proxy_max=L_proxy,
         mesh_radius=mesh_radius,
-        interval_lower_bound=float(interval_lb),
+        interval_lower_bound_global=float(interval_lb_global),
+        interval_lower_bound_stratified=interval_lb_stratified,
+        interval_lower_bound_local=interval_lb_local,
         sampled_all_positive=sampled_all_positive,
-        interval_lower_positive=interval_lb_positive,
+        interval_lower_global_positive=interval_lb_global_positive,
+        interval_lower_stratified_positive=interval_lb_stratified_positive,
+        interval_lower_local_positive=interval_lb_local_positive,
         admissible_ok=bool(cert_adm.alpha_all_positive),
         nodeaware_ok=bool(cert_node.alpha_all_positive),
     )

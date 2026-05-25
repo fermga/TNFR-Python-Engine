@@ -868,6 +868,8 @@ From the resulting alpha tables it computes:
 - sampled minimum $\alpha_{\min}^{\text{sample}}$,
 - finite-difference slope envelope $L_{\text{proxy}}$,
 - mesh radius $r_h = \tfrac12 \max_i (\sigma_{i+1}-\sigma_i)$,
+- trajectory-stratified slope envelopes,
+- segment-local slope bounds,
 
 and reports the mesh-corrected lower bound
 
@@ -877,8 +879,8 @@ $$
 \alpha_{\min}^{\text{sample}} - L_{\text{proxy}}\,r_h.
 $$
 
-The resulting dataclass `UniformCoercivityCertificate` includes both
-sampled and interval-level positivity flags.
+The resulting dataclass `UniformCoercivityCertificate` reports three
+interval diagnostics: global, stratified, and segment-local.
 
 ### 13.3 Current numerical outcome
 
@@ -889,16 +891,20 @@ $\sigma \in [0.5, 8.0]$, log grid):
 - `alpha_min_sampled = +1.3691e-173`
 - `L_proxy = 2.6554e+00`
 - `mesh_radius = 8.9119e-01`
-- `interval_lb = -2.3665e+00`
-- `interval_lb_positive = False`
+- `interval_lb_global = -2.3665e+00`
+- `interval_lb_stratified = -2.3665e+00`
+- `interval_lb_local = -3.2350e-01`
+- `interval_lb_global_positive = False`
+- `interval_lb_stratified_positive = False`
+- `interval_lb_local_positive = False`
 
 ### 13.4 Interpretation
 
-P22 upgrades the diagnostics from pointwise positivity to a quantified
-interval certificate framework. However, with the current global slope
-envelope, the mesh-corrected lower bound is negative. Therefore,
-**uniform coercivity is not yet established** at interval level on the
-tested band.
+P22/P23 upgrades the diagnostics from pointwise positivity to a
+quantified interval certificate framework. The segment-local envelope is
+substantially tighter than the global one (from about -2.37 to about
+-0.32), but remains negative. Therefore, **uniform coercivity is not yet
+established** at interval level on the tested band.
 
 This narrows G4 honestly: empirical positivity remains strong, but the
 coercivity margin is still too weak near the smallest sampled alpha
@@ -906,12 +912,12 @@ region.
 
 ### 13.5 Immediate next technical directions
 
-1. Replace global $L_{\text{proxy}}$ with stratified/local envelopes on
-   $(F,G)$ sectors to reduce over-conservatism.
-2. Add adaptive refinement around low-alpha neighborhoods to tighten
+1. Add adaptive refinement around low-alpha neighborhoods to tighten
    $r_h$ where it matters.
-3. Derive analytic lower envelopes for the TNFR energy denominator to
+2. Derive analytic lower envelopes for the TNFR energy denominator to
    complement numerical certificates.
+3. Build hybrid certificates combining local slope envelopes with
+   curvature-aware interpolation bounds.
 
 ---
 
