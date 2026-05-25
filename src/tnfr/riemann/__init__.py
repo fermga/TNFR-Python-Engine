@@ -111,6 +111,18 @@ structural_zero_density
     S(T) = (1/pi) arg zeta(1/2 + iT) -- the RH content. Closes
     the structural origin of the smooth zero density; does NOT
     close G4 (bounding S(T) is the open arithmetic problem).
+spectral_emergence
+    P29 Spectral universality emergence under canonical UM+RA
+    coupling. Sweeps three canonical inter-prime coupling laws
+    (Kuramoto-U3, phi-multiscale THOL+REMESH, PNT-logarithmic RA)
+    on the P14 prime-ladder Hamiltonian and measures the
+    Kolmogorov-Smirnov distance of the resulting unfolded
+    nearest-neighbour spacing distribution to the GUE Wigner
+    surmise (the conjectural universality class of the Riemann
+    zeros after Montgomery 1973 / Odlyzko 1987). Exploratory
+    diagnostic; convergence to GUE under some canonical law would
+    constitute structural-compatibility evidence; does NOT close
+    gap G4 (RH localisation on Re(s)=1/2).
 lyapunov_spectral_positivity
     P26 Lyapunov-spectral positivity certificate for the P14
     Hamiltonian. Combines (i) exact diagonal positivity at coupling=0
@@ -519,6 +531,20 @@ from .structural_zero_density import (
     build_structural_t_hp,
     compute_structural_zero_density_certificate,
 )
+from .spectral_emergence import (
+    # P29: Spectral universality emergence under canonical UM+RA coupling
+    CANONICAL_COUPLING_LAWS,
+    InterPrimeCoupling,
+    SpectralEmergenceReport,
+    build_inter_prime_coupling,
+    couple_prime_ladder_hamiltonian,
+    unfold_spectrum,
+    nearest_neighbour_spacings,
+    wigner_surmise_gue_cdf,
+    ks_distance_to_gue,
+    sweep_coupling_strength,
+    compute_spectral_emergence_report,
+)
 
 __all__ = [
     # Graph builders
@@ -813,4 +839,16 @@ __all__ = [
     "derive_smooth_zero_position",
     "build_structural_t_hp",
     "compute_structural_zero_density_certificate",
+    # P29: Spectral universality emergence under canonical UM+RA coupling
+    "CANONICAL_COUPLING_LAWS",
+    "InterPrimeCoupling",
+    "SpectralEmergenceReport",
+    "build_inter_prime_coupling",
+    "couple_prime_ladder_hamiltonian",
+    "unfold_spectrum",
+    "nearest_neighbour_spacings",
+    "wigner_surmise_gue_cdf",
+    "ks_distance_to_gue",
+    "sweep_coupling_strength",
+    "compute_spectral_emergence_report",
 ]
