@@ -1693,6 +1693,108 @@ closure.
 
 ---
 
+## §13octies. Assembled Argument Audit for G4 (Phase B; does NOT close G4=RH)
+
+### 13octies.1 Purpose
+
+This section traces the would-be argument chain for G4 link-by-link
+through TNFR-canonical ingredients, marks each link CLOSED / OPEN /
+NOT-FROM-TNFR, and stamps the precise break-point. It is an honest
+map of what TNFR currently supplies and where the genuine obstacle
+lies. It does **not** prove G4 and does **not** propose a new module;
+it complements §13septies (T-HP conjecture) with the explicit status
+audit.
+
+### 13octies.2 The eight links
+
+| # | Link | TNFR module / theory | Status |
+|---|---|---|---|
+| L1 | Minimal-and-complete structural basis: tetrad $(\Phi_s, |\nabla\phi|, K_\phi, \xi_C)$ exhausts independent structural channels on a graph | [MINIMAL_STRUCTURAL_DEGREES.md](MINIMAL_STRUCTURAL_DEGREES.md) | **CLOSED** |
+| L2 | Positive-definite inner product $\langle\cdot,\cdot\rangle_{\mathcal{E}}$ on tetrad Hilbert space $\mathcal{H}_{\mathrm{tet}}$ | [src/tnfr/physics/conservation.py](../src/tnfr/physics/conservation.py); STRUCTURAL_CONSERVATION_THEOREM.md §8 | **CLOSED** |
+| L3 | Symplectic structure + Noether-like conservation under U1–U6 | [src/tnfr/physics/variational.py](../src/tnfr/physics/variational.py) + conservation.py | **CLOSED** (proof sketch; full proof open per AGENTS.md) |
+| L4 | Self-adjoint operator $H_{P14}$ on $\mathcal{H}_{\mathrm{tet}}$ with real spectrum $\{k\log p\}$ | P14 [prime_ladder_hamiltonian.py](../src/tnfr/riemann/prime_ladder_hamiltonian.py); §10 above | **CLOSED** |
+| L5 | Weil–Guinand identity: prime side equals the P14 spectral trace at machine precision | P15 [weil_explicit_formula.py](../src/tnfr/riemann/weil_explicit_formula.py); §11 above | **CLOSED** |
+| L6 | Lyapunov-spectral positivity for $H_{P14}$: Kato–Rellich gap $\log 2$, trace-class resolvent, unitary flow | P26 [lyapunov_spectral_positivity.py](../src/tnfr/riemann/lyapunov_spectral_positivity.py); §13quater | **CLOSED** on finite-dim prime-ladder |
+| L7 | Smooth half of spectral rescaling map $\mathcal{F}$: $\widetilde\gamma_n = \overline N^{-1}(n)$ derived from the same archimedean kernel as P15 | P28 [structural_zero_density.py](../src/tnfr/riemann/structural_zero_density.py); §13sexies | **CLOSED** (smooth half; W₁ gap drops ~97× vs P27) |
+| L8 | Existence + canonicity of admissible $\mathcal{F}$ from tetrad + $(\varphi,\gamma,\pi,e)$ + U1–U6 such that $\mathcal{F}\,H_{P14}\,\mathcal{F}^{*}$ has spectrum $\{\gamma_n\}$ | NONE — Conjecture T-HP, §13septies.4 | **OPEN** ← BREAK-POINT |
+
+L1–L7 are TNFR-canonical and operationally closed (the proof-sketch
+caveat at L3 is inherited from AGENTS.md and is independent of the
+Riemann programme). L8 is the entire residual content of G4.
+
+### 13octies.3 Structural negative knowledge from P29
+
+P29 ([spectral_emergence.py](../src/tnfr/riemann/spectral_emergence.py))
+swept the three canonical inter-prime coupling laws derivable in
+closed form from $(\varphi,\gamma,\pi,e)$:
+
+* Kuramoto-U3 (UM + U3 gating): best $\mathrm{KS}_{\mathrm{GUE}} = 0.122$ ($-36\,\%$ vs baseline)
+* φ-multiscale (THOL + REMESH): marginal ($-14\,\%$)
+* PNT-logarithmic (RA, PNT-aligned): best $\mathrm{KS}_{\mathrm{GUE}} = 0.131$ ($-31\,\%$)
+
+None reaches the GUE level-statistics threshold
+$\mathrm{KS}_{\mathrm{GUE}} < 0.05$ required for a Hilbert–Pólya-style
+$H_{P14}$-coupling to carry the zero spacings. This is **structural
+negative knowledge**: at L8, no admissible $\mathcal{F}$ that acts
+only by inter-prime coupling within the currently formalised
+operator catalog is sufficient.
+
+### 13octies.4 Three structural branches for the break-point
+
+The L8 break-point splits into three TNFR-canonical branches, each
+testable from the nodal equation
+$\partial\mathrm{EPI}/\partial t = \nu_f \cdot \Delta\mathrm{NFR}$:
+
+* **B1.** The canonical 13-operator catalog is *complete* and the
+  missing piece is non-operator (measure-theoretic, ergodicity, or
+  domain-theoretic). L8 reduces to an existence problem on
+  $\mathcal{H}_{\mathrm{tet}}$ without new operators.
+* **B2.** The canonical catalog is *incomplete*. A new canonical
+  operator derivable from the nodal equation is required. L8 reduces
+  to the operator-discovery problem of
+  [AGENTS.md "Adding New Operators"](../AGENTS.md).
+* **B3.** No TNFR-canonical $\mathcal{F}$ exists. RH escapes the
+  tetrad-Hilbert–Pólya framework entirely. This branch is consistent
+  with P29 (three independent coupling families failing) but is not
+  decidable from finite-dimensional data.
+
+Branch selection is itself an open structural question, not a
+pre-decided verdict.
+
+### 13octies.5 Comparison with the historical AGENTS.md framing
+
+The prior AGENTS.md text stated G4 "requires structural positivity /
+self-adjointness argument (Hilbert–Pólya-style) that is genuinely new
+mathematics." Per L1–L7 of this audit, structural positivity (L2,
+L6) and self-adjointness (L4) **are already supplied** by the
+canonical TNFR engine. The genuine open content is L8, which is
+structurally well-posed and testable inside the engine via the three
+branches B1–B3. The phrase "genuinely new mathematics" was an
+imported consensus claim from the analytic-number-theory literature,
+not a TNFR-derived theorem. The current AGENTS.md §13.2 paragraph
+has been rewritten to reflect this audit.
+
+### 13octies.6 What this section does NOT do
+
+* It does **not** close G4.
+* It does **not** decide which of B1, B2, B3 holds.
+* It does **not** propose a new module; the next exploration
+  direction (B1 vs B2 vs B3 discrimination) is left for P30+.
+* It does **not** replace §13septies — T-HP is the conjecture; §13octies
+  is the link-by-link status audit of the argument that would close it.
+
+### 13octies.7 Cross-references
+
+* L1: [MINIMAL_STRUCTURAL_DEGREES.md](MINIMAL_STRUCTURAL_DEGREES.md)
+* L2, L3: [STRUCTURAL_CONSERVATION_THEOREM.md](STRUCTURAL_CONSERVATION_THEOREM.md) §3–§8, [TNFR_VARIATIONAL_PRINCIPLE.md](TNFR_VARIATIONAL_PRINCIPLE.md) §2–§3
+* L4, L5: §10 (P14), §11 (P15) of this document
+* L6, L7: §13quater (P26), §13sexies (P28) of this document
+* L8: §13septies (T-HP conjecture) of this document
+* P29 negative knowledge: [spectral_emergence.py](../src/tnfr/riemann/spectral_emergence.py)
+* G4 milestone status: [AGENTS.md](../AGENTS.md) §"TNFR-Riemann Program Overview"
+
+---
+
 The remainder of this document preserves the legacy research notes verbatim. Keep them synchronized with the active workflow above when adding new results.
 
 ## TNFR–Riemann Research Notes (Legacy Detail)
