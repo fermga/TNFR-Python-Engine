@@ -1302,6 +1302,131 @@ Kato–Rellich envelope, confirming the envelope is conservative
 
 ---
 
+## §13quinquies. P27 — Hilbert–Pólya scaffold (does NOT close G4=RH)
+
+### 13quinquies.1 Motivation: filling the Hilbert–Pólya slot
+
+The Hilbert–Pólya program asks for a self-adjoint operator $T_{\mathrm{HP}}$
+on a Hilbert space whose spectrum coincides with the imaginary parts
+$\gamma_n$ of the non-trivial zeros of $\zeta(s)$. P26 supplied an
+*operator-level positivity slot* (Lyapunov + Kato–Rellich +
+Schatten-class) compatible with such an attack; P27 now constructs
+the abstract Hilbert–Pólya operator explicitly on the truncated TNFR
+Hilbert space $\ell^2_N(\mathbb{N})$ and certifies its internal
+consistency with the rest of the TNFR–Riemann stack (P14, P15). The
+construction is honestly *scaffolding*, not a derivation: $T_{\mathrm{HP}}$
+is populated by *inputting* the zeros from `mpmath.zetazero`. P27
+quantifies the gap that a genuinely structural derivation would have
+to close.
+
+### 13quinquies.2 Method: $T_{\mathrm{HP}} = \mathrm{diag}(\gamma_1,\ldots,\gamma_N)$
+
+On the truncated Hilbert space $\ell^2_N(\mathbb{N})$ define
+$$
+  T_{\mathrm{HP}} \;:=\; \operatorname{diag}(\gamma_1, \gamma_2, \ldots, \gamma_N),
+  \qquad \gamma_n := \operatorname{Im}(\rho_n),
+$$
+with $\rho_n$ the $n$-th non-trivial zero supplied by `mpmath.zetazero`
+at decimal precision $\mathrm{dps}=30$. The certificate verifies four
+axes:
+
+1. **Self-adjointness.** $T_{\mathrm{HP}}$ real diagonal $\Rightarrow$
+   $\|T_{\mathrm{HP}} - T_{\mathrm{HP}}^{*}\|_F = 0$ exactly.
+2. **Trace-class shifted resolvent.** For shift $s>0$,
+   $R := (T_{\mathrm{HP}}^2 + s^2 I)^{-1/2}$ admits Schatten 1- and
+   2-norms $\sum_n (\gamma_n^2+s^2)^{-1/2}$, $\big(\sum_n
+   (\gamma_n^2+s^2)^{-1}\big)^{1/2}$ which we report and check
+   against finite truncation.
+3. **Weil–Guinand closure with P14.** For a Gaussian test function
+   $h(t) = \exp(-t^2/2\sigma^2)$ the zero side
+   $2\sum_n h(\gamma_n)$ is computed *via* $T_{\mathrm{HP}}$ and
+   compared to the right-hand side
+   $h(i/2) + h(-i/2) - g(0)\log\pi + I_{\mathrm{arch}}(h)
+    - 2\sum_n \Lambda(n) n^{-1/2} g(\log n)$,
+   with the prime side coming from the P14 prime-ladder Hamiltonian.
+4. **Operator-level gap G4.** The Wasserstein-1 distance
+   $W_1\!\big(\sigma(P14),\sigma(T_{\mathrm{HP}})\big)$ between the
+   sorted truncated spectra quantifies the *structural* gap, i.e.,
+   how far the prime-ladder spectrum (growing like $\log n$) is from
+   the zero spectrum (growing like $2\pi n/\log n$).
+
+The orchestrator is `compute_hilbert_polya_certificate` in
+`src/tnfr/riemann/hilbert_polya.py`; the demo lives in
+`examples/54_hilbert_polya_demo.py`.
+
+### 13quinquies.3 Numerical outcome (defaults $n_{\mathrm{primes}}=50$, $K=8$, $N=80$, $\sigma=8$)
+
+| Axis | Quantity | Value | Verdict |
+|---|---|---|---|
+| Self-adjointness | $\|T_{\mathrm{HP}} - T_{\mathrm{HP}}^{*}\|_F$ | $0$ exactly | ✅ |
+| Resolvent ($s=1$) | $\|R\|_1$ | $1.95\times 10^{-2}$ | trace-class ✅ |
+|  | $\|R\|_2$ | $6.07\times 10^{-3}$ | Hilbert–Schmidt ✅ |
+|  | $\|R\|_{\mathrm{op}}$ | $7.06\times 10^{-2}$ | bounded ✅ |
+| Weil–Guinand | zero side via $T_{\mathrm{HP}}$ | $0.500227\,7175$ |  |
+|  | pole side ($+\log\pi$) | $-1.649539\,1417$ |  |
+|  | archimedean side | $2.149767\,5173$ |  |
+|  | prime side via P14 | $-6.58\times 10^{-7}$ |  |
+|  | RHS total | $0.500227\,7175$ |  |
+|  | residual | $9.99\times 10^{-16}$ | machine precision ✅ |
+| Gap G4 | $W_1(\sigma(P14), \sigma(T_{\mathrm{HP}}))$ | $115.24$ | quantified |
+|  | $\sigma(P14)_{\max}/\sigma(T_{\mathrm{HP}})_{\max}$ | $1/26.16$ | $\log n$ vs $2\pi n/\log n$ |
+
+Scaffold-consistency verdict: **`scaffold_consistent = True`** at machine precision.
+
+### 13quinquies.4 Honest interpretation
+
+P27 establishes that the abstract Hilbert–Pólya operator
+$T_{\mathrm{HP}}$, when *defined* on the TNFR truncated Hilbert
+space by inputting the zeros, is
+
+* self-adjoint (trivially, as a real diagonal operator);
+* trace-class after spectral shift;
+* compatible with the Weil–Guinand identity at machine precision, the
+  prime side coming from the P14 prime-ladder Hamiltonian.
+
+This is *consistency*, not *derivation*: $T_{\mathrm{HP}}$ contains
+the zeros only because we put them there. The construction does **not**
+extract the zeros from the nodal equation
+$\partial\,\mathrm{EPI}/\partial t = \nu_f \cdot \Delta\mathrm{NFR}(t)$,
+from the structural conservation theorem, or from grammar U1–U6.
+
+The Wasserstein-1 distance $W_1 = 115.24$ and the asymptotic growth
+ratio $\sim 26$ are not numerical noise: they are the *operator-level
+manifestation of gap G4*. Any genuinely TNFR-native Hilbert–Pólya
+derivation would have to either (i) replace the prime-ladder
+Hamiltonian by an operator whose spectrum equals $\{\gamma_n\}$ up to
+TNFR-compatible spectral rescaling, or (ii) introduce a smooth
+non-linear structural map sending $\sigma(P14)$ to $\sigma(T_{\mathrm{HP}})$
+derivable from the nodal equation. P27 does neither.
+
+In particular P27 does **NOT close G4 = RH**. Per the milestone table
+of §13.2, G4 remains the single open gap; P27 simply makes the
+operator-level statement of that gap explicit and quantitative.
+
+### 13quinquies.5 Next steps
+
+1. **Structural derivation of $T_{\mathrm{HP}}$.** Construct an
+   operator-valued map $\Phi : \mathcal{H}_{P14} \to \ell^2(\mathbb{N})$
+   from variational / conservation principles of `physics/conservation.py`
+   such that $\Phi^{*} T_{\mathrm{HP}} \Phi$ is intrinsic to the
+   prime-ladder bundle. Any such $\Phi$ that does not invoke
+   `mpmath.zetazero` would be a genuine step toward G4.
+2. **Spectral rescaling as a TNFR operator.** Identify a canonical
+   TNFR operator (in the 13-operator catalog) whose action on the P14
+   spectrum reproduces the asymptotic density $\rho(t) \sim
+   \tfrac{1}{2\pi}\log(t/2\pi)$ of the Riemann zeros. Verify
+   compatibility with U1–U6.
+3. **Coupling to P25.** P25 produced an Hermite-projection
+   certificate of structural positivity; cross-check that the
+   resolvent of $T_{\mathrm{HP}}$ admits the same Hermite expansion
+   coefficients within tolerance.
+4. **Cross-validation with P16 (Li–Keiper).** The Li–Keiper
+   coefficients $\lambda_n$ of P16 should agree, within truncation,
+   with quantities computable from the moments of $T_{\mathrm{HP}}$.
+   Correlate the two and document any monotone relationship.
+
+---
+
 The remainder of this document preserves the legacy research notes verbatim. Keep them synchronized with the active workflow above when adding new results.
 
 ## TNFR–Riemann Research Notes (Legacy Detail)

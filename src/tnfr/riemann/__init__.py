@@ -85,6 +85,16 @@ paley_gap_coercivity
     construction and the self-adjoint operator realisation); at
     coupling > 0 it measures structural deformation. Consistency
     diagnostic; does NOT close gap G4.
+hilbert_polya
+    P27 Hilbert-Polya scaffold. Constructs the reference operator
+    T_HP = diag(gamma_1, ..., gamma_N) on ell^2_N(N) populated by
+    the imaginary parts of the non-trivial Riemann zeros from
+    mpmath.zetazero. Certifies self-adjointness, trace-class
+    shifted resolvent, Weil-Guinand closure against P14, and
+    quantifies the operator-level gap G4 via Wasserstein-1
+    distance between spec(P14) = {k log p} and spec(T_HP) =
+    {gamma_n}. Does NOT prove RH: T_HP is populated by inputting
+    the zeros, not derived from TNFR first principles.
 lyapunov_spectral_positivity
     P26 Lyapunov-spectral positivity certificate for the P14
     Hamiltonian. Combines (i) exact diagonal positivity at coupling=0
@@ -471,6 +481,18 @@ from .lyapunov_spectral_positivity import (
     verify_unitary_flow,
     compute_lyapunov_spectral_certificate,
 )
+from .hilbert_polya import (
+    # P27: Hilbert-Polya scaffold
+    HilbertPolyaCertificate,
+    fetch_zero_imaginary_parts,
+    build_hp_operator,
+    verify_hp_self_adjoint,
+    hp_resolvent_schatten_norms,
+    hp_zero_side_from_operator,
+    wasserstein_1_distance,
+    structural_gap_p14_vs_hp,
+    compute_hilbert_polya_certificate,
+)
 
 __all__ = [
     # Graph builders
@@ -747,4 +769,14 @@ __all__ = [
     "resolvent_schatten_norms",
     "verify_unitary_flow",
     "compute_lyapunov_spectral_certificate",
+    # P27: Hilbert-Polya scaffold
+    "HilbertPolyaCertificate",
+    "fetch_zero_imaginary_parts",
+    "build_hp_operator",
+    "verify_hp_self_adjoint",
+    "hp_resolvent_schatten_norms",
+    "hp_zero_side_from_operator",
+    "wasserstein_1_distance",
+    "structural_gap_p14_vs_hp",
+    "compute_hilbert_polya_certificate",
 ]
