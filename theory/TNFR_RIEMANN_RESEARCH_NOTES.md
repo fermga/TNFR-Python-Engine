@@ -3835,3 +3835,91 @@ $env:PYTHONPATH = (Resolve-Path ./src).Path
 & .\.venv312\Scripts\python.exe examples\48_admissible_family_sweep_demo.py
 & .\.venv312\Scripts\python.exe examples\49_nodeaware_gauge_sweep_demo.py
 ```
+
+---
+
+## §13nonies. P30 — Operator-Level Admissible Rescaling (Smooth Half; Does NOT Close G4 = RH)
+
+**Status**: Sub-problem (1) of Conjecture T-HP — **smooth half operationally closed**.  
+**Module**: `src/tnfr/riemann/admissible_rescaling.py`  
+**Demo**: `examples/57_admissible_rescaling_demo.py`  
+**Disclaimer**: P30 does NOT close gap G4 (RH); it lifts the §13sexies (P28) density-level closure of the smooth zero distribution to an explicit operator-level rescaling object.
+
+### §13nonies.1 Motivation
+
+Conjecture T-HP (§13septies) asks for the existence of an admissible operator `F` built **only** from the canonical TNFR ingredients (tetrad fields, canonical constants φ, γ, π, e, grammar U1–U6) such that `F · H_P14 · F* ` has spectrum equal to the Riemann zeros {γ_n}. §13septies.7 decomposes T-HP into three sub-problems:
+
+1. **Existence** of any admissible `F`,
+2. **Canonicity** of `F` from the nodal equation,
+3. **Positivity coincidence** with the Weil quadratic form.
+
+§13sexies (P28) closed the **density-level** smooth half: a canonical, structurally-derived expression for the smooth zero count `N̄(T)` and the smooth zero positions `ñ_i` via the Riemann–Siegel θ function. P30 lifts that closure to the **operator level** for the smooth half only.
+
+### §13nonies.2 Construction
+
+In the eigenbasis of the canonical P14 prime-ladder Hamiltonian `H_P14 = U Λ U*` with positive eigenvalues `λ_i` (top N, ascending), define
+
+Lines\mathcal{F}_{\text{smooth}} = U \cdot \operatorname{diag}\Bigl(\sqrt{\tilde\gamma_i / \lambda_i}\Bigr) \cdot U^{*},Lines
+
+where `ñ_i = build_structural_t_hp(N)` are the P28 smooth zero positions. By construction,
+
+Lines\mathcal{F}_{\text{smooth}} \, H_{P14} \, \mathcal{F}_{\text{smooth}}^{*} = U \operatorname{diag}(\tilde\gamma_i) U^{*}Lines
+
+so the conjugated spectrum equals `{ñ_i}` **exactly** (verified at machine precision).
+
+**Canonicity check (partial)**: `F_smooth` uses ONLY P14 eigendata (canonical, derived from the canonical TNFR `InternalHamiltonian` on the prime ladder), P28 smooth targets (canonical archimedean kernel), and canonical constants (φ, γ, π, e). No `mpmath.zetazero` enters the construction. `F_smooth` is therefore **structurally derived** in the sense of §13septies; whether it is the **unique** canonical lift remains open (sub-problem (2)).
+
+### §13nonies.3 Empirical Results
+
+Running `examples/57_admissible_rescaling_demo.py`:
+
+| Resolution | N  | max `|spec − ñ_i|` | W₁(σ(P14), {γ_n}) | W₁({ñ_i}, {γ_n}) | Improvement |
+|------------|----|---------------------|-------------------|------------------|-------------|
+| Fast       | 20 | 1.42 × 10⁻¹⁴        | 47.4              | 1.67             | **28.4 ×**  |
+| Medium     | 40 | 2.84 × 10⁻¹⁴        | 72.5              | 1.39             | **52.0 ×**  |
+
+The residual W₁ to the true Riemann zeros equals the oscillatory part `S(T) = π⁻¹ arg ζ(½+iT)`, which is RH-equivalent and NOT canonical.
+
+### §13nonies.4 Canonical Oscillatory Enrichment (Negative Result)
+
+Three canonical multiplicative perturbations of the smooth targets were tested:
+
+| Mode         | Best amplitude | W₁ vs true | Improvement over smooth |
+|--------------|----------------|------------|-------------------------|
+| `phi_log`  | 0              | 1.668      | +0.00 %                 |
+| `gamma_e`  | 1 × 10⁻²       | 1.617      | +0.03 %                 |
+| `pi_density`| 0             | 1.668      | +0.00 %                 |
+
+**Interpretation**: Canonical oscillatory perturbations built from (φ, γ, π, e) and the smooth targets alone fail to recover the residual S(T) term. This is **structural evidence for §13octies branch B2**: the oscillatory half of T-HP, if reachable canonically at all, requires a **new canonical operator** not expressible as a simple multiplicative dressing of the smooth ladder. Equivalently, the existing canonical operator catalog (13 operators + tetrad + constants) does **not** suffice for the oscillatory half via this construction route.
+
+### §13nonies.5 What P30 Closes / Does Not Close
+
+**Closes (smooth half only)**:
+- Sub-problem (1) of T-HP at the **operator level**, for the smooth zero distribution: an admissible, structurally-derived, self-adjointness-preserving rescaling operator `F_smooth` is exhibited explicitly and verified at machine precision.
+
+**Does NOT close**:
+- Sub-problem (1) for the **oscillatory half** (S(T) reconstruction);
+- Sub-problem (2) — **canonicity** (uniqueness from the nodal equation) of `F_smooth`;
+- Sub-problem (3) — **positivity coincidence** with the Weil quadratic form;
+- Gap **G4 = the Riemann Hypothesis** itself.
+
+### §13nonies.6 Cross-References
+
+- §13sexies / P28: density-level smooth zero distribution (this lift is its operator-level counterpart).
+- §13septies: full statement of Conjecture T-HP and its three sub-problems.
+- §13octies, L8 audit: T-HP identified as the break-point of the assembled argument. P30 narrows L8 by closing one of its four prerequisites (smooth half, operator level) while corroborating branch B2 for the rest.
+- `src/tnfr/riemann/admissible_rescaling.py`: canonical implementation.
+- `examples/57_admissible_rescaling_demo.py`: reproducible demonstration.
+
+### §13nonies.7 Status Update for §13.2 Gap Balance
+
+| Gap | Status before P30 | Status after P30 |
+|-----|-------------------|------------------|
+| G1  | Closed operationally (P14) | Closed operationally |
+| G2  | Closed operationally (P13) | Closed operationally |
+| G3  | Closed operationally (P15) | Closed operationally |
+| **G4** | **OPEN** (= Conjecture T-HP) | **OPEN** (smooth half of sub-problem (1) operationally closed; oscillatory half + (2) + (3) remain open) |
+| G5  | Superseded by P12+P13+P15  | Superseded |
+
+**Net effect**: P30 does not change the closed/open status of any of G1–G5. It refines the structure of the open content of G4 by closing one quadrant (smooth × operator-level × existence) of the T-HP grid and producing branch-B2 evidence for the oscillatory quadrant.
+

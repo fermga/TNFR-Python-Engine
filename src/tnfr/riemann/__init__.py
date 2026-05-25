@@ -133,6 +133,24 @@ lyapunov_spectral_positivity
     flow exp(-i t H). Closes the operator-level positivity question
     on the finite-dimensional prime-ladder Hilbert space; does NOT
     close gap G4 (RH localisation on Re(s)=1/2).
+admissible_rescaling
+    P30 Candidate admissible spectral-rescaling operator
+    F_cand built ONLY from canonical TNFR ingredients
+    (P14 eigendata + P28 smooth zero positions +
+    canonical constants phi, gamma, pi, e). Constructs the
+    smooth half of F_cand as the explicit operator
+    F_smooth = U * diag(sqrt(tilde_gamma_i / lambda_i)) * U^*
+    in the P14 eigenbasis; verifies self-adjointness of
+    F_smooth H_P14 F_smooth^* and that its spectrum equals
+    {tilde_gamma_i} exactly. Lifts the P28 density-level
+    closure of the smooth zero distribution to an
+    operator-level explicit unitary-rescaling object. Tests
+    one canonical oscillatory enrichment (phi-modulated
+    multiplicative perturbation) and reports the W_1 gap to
+    the true zeros honestly (typically NOT an improvement;
+    structural evidence for branch B2 of section 13octies).
+    Closes sub-problem (1) of Conjecture T-HP for the
+    smooth half only; does NOT close gap G4 = RH.
 """
 
 from .operator import (
@@ -531,6 +549,17 @@ from .structural_zero_density import (
     build_structural_t_hp,
     compute_structural_zero_density_certificate,
 )
+from .admissible_rescaling import (
+    # P30: Candidate admissible spectral-rescaling operator
+    AdmissibleRescalingCertificate,
+    extract_positive_spectrum,
+    build_smooth_rescaling_operator,
+    apply_rescaling,
+    verify_self_adjointness_preserved,
+    verify_spectrum_match,
+    oscillatory_correction_canonical,
+    compute_admissible_rescaling_certificate,
+)
 from .spectral_emergence import (
     # P29: Spectral universality emergence under canonical UM+RA coupling
     CANONICAL_COUPLING_LAWS,
@@ -839,6 +868,15 @@ __all__ = [
     "derive_smooth_zero_position",
     "build_structural_t_hp",
     "compute_structural_zero_density_certificate",
+    # P30: Admissible spectral-rescaling operator (smooth half of F_cand)
+    "AdmissibleRescalingCertificate",
+    "extract_positive_spectrum",
+    "build_smooth_rescaling_operator",
+    "apply_rescaling",
+    "verify_self_adjointness_preserved",
+    "verify_spectrum_match",
+    "oscillatory_correction_canonical",
+    "compute_admissible_rescaling_certificate",
     # P29: Spectral universality emergence under canonical UM+RA coupling
     "CANONICAL_COUPLING_LAWS",
     "InterPrimeCoupling",
