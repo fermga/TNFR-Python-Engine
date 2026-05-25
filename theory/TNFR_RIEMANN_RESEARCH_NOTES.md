@@ -55,33 +55,83 @@ This memo defines the minimum structure required to evaluate TNFR claims about t
 
 ### Implementation Modules (`src/tnfr/riemann/`)
 
-- `operator.py` – Canonical implementation of $H^{(k)}(\sigma)$ operators and prime graph construction.
-- `spectral_proof.py` – Spectral convergence proofs ($\sigma_c^{(k)} \to 1/2$).
-- `complex_extension.py` – Complex plane extensions of TNFR operators.
-- `spectral_zeta.py` – Discrete spectral zeta functions.
-- `topology.py` – Topology comparison analysis (path, cycle, star, etc.).
-- `spectral_conservation.py` – Spectral conservation laws.
-- `analytical_convergence.py` – Analytical convergence analysis.
-- `eigenmode_fields.py` – Eigenmode-based tetrad field computation.
-- `random_ensemble.py` – Random matrix ensemble comparisons.
-- `telemetry.py` – Riemann telemetry records and field aggregate helpers.
+Discrete operator and spectral framework:
+- `operator.py` — discrete TNFR-Riemann operator $H^{(k)}(\sigma) = L_k + V_\sigma$ and prime graph builders.
+- `spectral_proof.py` — four-line spectral convergence framework ($\sigma_c^{(k)} \to 1/2$).
+- `topology.py` — alternative graph topologies and cross-topology convergence (P2).
+- `eigenmode_fields.py` — per-eigenmode structural field tetrad on the prime path model (P3).
+- `complex_extension.py` — complex-$s$ non-Hermitian extension (P4).
+- `spectral_zeta.py` — discrete spectral zeta and heat kernel; original Conjecture 10.1 affine bridge (P5, **negative**; superseded by P12–P15 via §7.8).
+- `random_ensemble.py` — random prime-graph ensembles / RMT universality (P6).
+- `spectral_conservation.py` — conservation laws and grammar compliance at criticality (P7).
+- `analytical_convergence.py` — analytical proof of $\sigma_c \to 1/2$ via PNT + telescoping (P8).
+- `functional_equation.py` — TNFR-side $s \leftrightarrow 1-s$ reflection check (P9).
+- `convergence_proof.py` — end-to-end formal $\sigma_c \to 1/2$ certificate (P10).
+- `zeta_bridge.py` — affine bridge prototype $\zeta_H \approx C \cdot \zeta_R$ (P11, tested **negative**, see §7).
+- `telemetry.py` — Riemann telemetry records and field aggregate helpers.
+
+Prime-ladder / von Mangoldt construction (closes G1, G2, G3 operationally; G5 superseded):
+- `von_mangoldt.py` — TNFR prime-ladder spectrum reproducing $-\zeta'(s)/\zeta(s) = \sum_n \Lambda(n)\, n^{-s}$ on $\operatorname{Re}(s) > 1$ (P12, §8).
+- `analytic_continuation.py` — continuation of the prime-ladder vM zeta to $\mathbb{C}$; Riemann zeros as resonance poles on $\operatorname{Re}(s) = 1/2$ (P13, §9).
+- `prime_ladder_hamiltonian.py` — self-adjoint Hamiltonian whose weighted spectral trace reproduces P12 (P14, §10; **closes G1**).
+- `weil_explicit_formula.py` — numerical Weil–Guinand identity using P14 on the prime side; residual $\le 5 \times 10^{-12}$ (P15, §11; **closes G3**).
+- `li_keiper.py` — Li–Keiper positivity criterion from the TNFR resonance spectrum (P16, §12; **RH-equivalent diagnostic**, not proof).
+
+TNFR-native G4 attack surface (research; does **not** close G4 = RH):
+- `weil_positivity.py` — Weil–TNFR positivity bridge $\alpha(\sigma) = W[\sigma] / E_{\mathrm{TNFR}}[\sigma]$ (P17, §14).
+- `alpha_sweep.py` — admissibility / gauge sweep of $\alpha(\sigma)$ across Gaussian width × gauge family (P18, §15).
+- `admissible_family_sweep.py` — extends P18 beyond Gaussian (Gaussian mixture, Hermite2-Gaussian admissible families) (P19/P21, §16/§18).
+- `nodeaware_gauge_sweep.py` — node-aware gauge extension parameterised by local $\nu_f$ and node-weight channels (P20, §17).
+- `coercivity_uniform.py` — empirical uniform-coercivity certificate over $\sigma$ intervals, plus adaptive $\sigma$ refinement near the coercivity bottleneck (P22 / P23 / P24, §13 / §13bis).
+- `paley_gap_coercivity.py` — Paley-gap coercivity diagnostic (Martínez Gamo, Zenodo 10.5281/zenodo.17665853 v2) (P25, §13ter).
+- `lyapunov_spectral_positivity.py` — Lyapunov-spectral positivity certificate for the P14 Hamiltonian (P26, §13quater).
+- `hilbert_polya.py` — Hilbert–Pólya scaffold $T_{\mathrm{HP}} = \operatorname{diag}(\gamma_n)$ populated by `mpmath.zetazero` (diagnostic only) (P27, §13quinquies).
+- `structural_zero_density.py` — structural derivation of the smooth Riemann zero density via the Riemann–Siegel $\theta$ function (P28, §13sexies; **closes smooth half of G4 at density level**).
+- `spectral_emergence.py` — spectral universality emergence under canonical UM+RA inter-prime couplings; KS-distance to the GUE Wigner surmise (P29, §13octies.3).
+- `admissible_rescaling.py` — operator-level admissible spectral-rescaling lift of P28 (P30, §13nonies; **closes smooth half of T-HP at operator level**).
+
+Conjectural reformulation (does **not** close G4):
+- §13septies — Tetrad-Hilbert–Pólya reformulation of G4 (Conjecture T-HP).
+- §13octies — Assembled-argument audit (links L1–L7 closed, L8 = T-HP open).
 
 ### Examples
 
-- `examples/16_riemann_operator_demo.py` – Reference execution path, eigenvalue exploration.
-- `examples/18_riemann_convergence_proof.py` – Spectral convergence proof (four lines of attack).
-- `examples/19_topology_comparison.py` – Cross-topology critical parameter comparison.
-- `examples/20_eigenmode_tetrad.py` – Eigenmode-based tetrad field analysis.
-- `examples/24_spectral_conservation_demo.py` – Spectral conservation law demonstration.
+End-to-end pipeline demos (`examples/`):
+- `16_riemann_operator_demo.py` — discrete TNFR-Riemann eigenvalues at varying $\sigma$.
+- `18_riemann_convergence_proof.py` — spectral convergence proof ($\sigma_c \to 1/2$).
+- `19_topology_comparison.py` — cross-topology critical parameter comparison.
+- `20_eigenmode_tetrad.py` — eigenmode-based tetrad field analysis.
+- `21_complex_extension_demo.py` — non-Hermitian operator on complex $s$.
+- `22_spectral_zeta_demo.py` — discrete spectral zeta, heat kernel, Mellin bridge.
+- `23_random_ensemble_rmt_demo.py` — random matrix ensembles (GOE/GUE/Poisson).
+- `24_spectral_conservation_demo.py` — spectral conservation law at criticality.
+- `25_analytical_convergence_demo.py` — analytical proof via PNT + telescoping.
+- `41_von_mangoldt_zeta_demo.py` — P12 prime-ladder reproduction of $-\zeta'/\zeta$.
+- `42_riemann_zeros_as_resonances.py` — P13 zeros as resonance poles on $\operatorname{Re}(s) = 1/2$.
+- `43_prime_ladder_hamiltonian_demo.py` — P14 self-adjoint Hamiltonian certificate.
+- `44_weil_explicit_formula_demo.py` — P15 Weil–Guinand identity at machine precision.
+- `45_li_keiper_demo.py` — P16 Li–Keiper positivity diagnostic.
+- `46_weil_tnfr_positivity_demo.py` — P17 Weil–TNFR positivity bridge.
+- `47_alpha_sweep_demo.py` — P18 gauge sweep of $\alpha(\sigma)$.
+- `48_admissible_family_sweep_demo.py` — P19/P21 admissible-family sweep.
+- `49_nodeaware_gauge_sweep_demo.py` — P20 node-aware gauge extension.
+- `50_uniform_coercivity_demo.py` — P22 empirical uniform-coercivity certificate.
+- `51_adaptive_coercivity_demo.py` — P24 adaptive $\sigma$ refinement near the bottleneck.
+- `52_paley_gap_coercivity_demo.py` — P25 Paley-gap coercivity diagnostic.
+- `53_lyapunov_spectral_positivity_demo.py` — P26 Lyapunov-spectral positivity certificate.
+- `54_hilbert_polya_scaffold_demo.py` — P27 Hilbert–Pólya diagnostic scaffold.
+- `55_structural_zero_density_demo.py` — P28 structural smooth zero density.
+- `56_spectral_emergence_demo.py` — P29 KS-distance to GUE under canonical couplings.
+- `57_admissible_rescaling_demo.py` — P30 operator-level admissible rescaling (smooth half).
 
 ### Supporting Infrastructure
 
-- `benchmarks/riemann_program.py` – Automated spectral regression benchmarks.
-- `theory/UNIFIED_GRAMMAR_RULES.md` – Grammar rules referenced throughout.
-- `docs/STRUCTURAL_FIELDS_TETRAD.md` – Tetrad field specifications.
+- `benchmarks/riemann_program.py` — automated spectral regression benchmarks for $\sigma_c^{(k)}$ across graph sizes.
+- `theory/UNIFIED_GRAMMAR_RULES.md` — grammar rules U1–U6 referenced throughout.
+- `docs/STRUCTURAL_FIELDS_TETRAD.md` — tetrad field specifications.
+- `AGENTS.md` — TNFR-Riemann overview, including the G4 = RH reformulation.
 
 ---
-
 ## 7. Conjecture 10.1 Gap Analysis (May 2026)
 
 **Status**: Negative numerical result — bridge not yet closed.
@@ -1795,1539 +1845,97 @@ has been rewritten to reflect this audit.
 
 ---
 
-The remainder of this document preserves the legacy research notes verbatim. Keep them synchronized with the active workflow above when adding new results.
-
-## TNFR–Riemann Research Notes (Legacy Detail)
-
-**Status**: Exploratory (Non-canonical)
-
-These notes sketch a possible route to connect TNFR nodal dynamics with the Riemann Hypothesis (RH). Nothing in this document should be considered a proof; it is a research agenda framed in TNFR language.
-
 ---
 
-## 1. Objective
+## §13nonies. P30 — Operator-Level Admissible Rescaling (Smooth Half; Does NOT Close G4 = RH)
 
-Formulate a TNFR-consistent operator and field framework such that:
+**Status**: Sub-problem (1) of Conjecture T-HP — **smooth half operationally closed**.  
+**Module**: `src/tnfr/riemann/admissible_rescaling.py`  
+**Demo**: `examples/57_admissible_rescaling_demo.py`  
+**Disclaimer**: P30 does NOT close gap G4 (RH); it lifts the §13sexies (P28) density-level closure of the smooth zero distribution to an explicit operator-level rescaling object.
 
-1. The Riemann zeta function (or a closely related object) is realized as a structural field or partition function of a TNFR system.
-2. The non-trivial zeros correspond to eigenvalues or resonant modes of a well-defined TNFR operator.
-3. Structural confinement or stability principles enforce that all such modes lie on the critical line Re$(s) = 1/2$.
+### §13nonies.1 Motivation
 
----
+Conjecture T-HP (§13septies) asks for the existence of an admissible operator `F` built **only** from the canonical TNFR ingredients (tetrad fields, canonical constants φ, γ, π, e, grammar U1–U6) such that `F · H_P14 · F* ` has spectrum equal to the Riemann zeros {γ_n}. §13septies.7 decomposes T-HP into three sub-problems:
 
-## 2. Zeta as a TNFR Structural Partition Function
+1. **Existence** of any admissible `F`,
+2. **Canonicity** of `F` from the nodal equation,
+3. **Positivity coincidence** with the Weil quadratic form.
 
-### 2.1 Euler Product and Prime Resonances
+§13sexies (P28) closed the **density-level** smooth half: a canonical, structurally-derived expression for the smooth zero count `N̄(T)` and the smooth zero positions `ñ_i` via the Riemann–Siegel θ function. P30 lifts that closure to the **operator level** for the smooth half only.
 
-Classically, for Re$(s) > 1$:
+### §13nonies.2 Construction
 
-$$
-\zeta(s) = \prod_{p \ \text{prime}} \frac{1}{1 - p^{-s}}
-$$
+In the eigenbasis of the canonical P14 prime-ladder Hamiltonian `H_P14 = U Λ U*` with positive eigenvalues `λ_i` (top N, ascending), define
 
-Interpretation in TNFR language:
+Lines\mathcal{F}_{\text{smooth}} = U \cdot \operatorname{diag}\Bigl(\sqrt{\tilde\gamma_i / \lambda_i}\Bigr) \cdot U^{*},Lines
 
-- Each prime $p$ is treated as a **fundamental resonance** or node.
-- The factor $(1 - p^{-s})^{-1}$ encodes the contribution of all harmonics $p^{-ns}$ generated by that resonance.
+where `ñ_i = build_structural_t_hp(N)` are the P28 smooth zero positions. By construction,
 
-We seek a TNFR system where:
+Lines\mathcal{F}_{\text{smooth}} \, H_{P14} \, \mathcal{F}_{\text{smooth}}^{*} = U \operatorname{diag}(\tilde\gamma_i) U^{*}Lines
 
-$$
-Z_{TNFR}(s) = \mathcal{Z}[\text{EPI}(s)] \equiv \prod_{p} \frac{1}{1 - e^{-\beta E_p(s)}}
-$$
+so the conjugated spectrum equals `{ñ_i}` **exactly** (verified at machine precision).
 
-with a suitable identification $e^{-\beta E_p(s)} \equiv p^{-s}$ so that $Z_{TNFR}(s)$ analytically continues to $\zeta(s)$.
+**Canonicity check (partial)**: `F_smooth` uses ONLY P14 eigendata (canonical, derived from the canonical TNFR `InternalHamiltonian` on the prime ladder), P28 smooth targets (canonical archimedean kernel), and canonical constants (φ, γ, π, e). No `mpmath.zetazero` enters the construction. `F_smooth` is therefore **structurally derived** in the sense of §13septies; whether it is the **unique** canonical lift remains open (sub-problem (2)).
 
-### 2.2 Candidate Mapping
+### §13nonies.3 Empirical Results
 
-Let $s = \sigma + i t$ and define an **effective spectral energy** for the prime-labelled modes:
+Running `examples/57_admissible_rescaling_demo.py`:
 
-$$
-E_p(s) = (\sigma - \tfrac{1}{2}) \log p + i t \log p.
-$$
+| Resolution | N  | max `|spec − ñ_i|` | W₁(σ(P14), {γ_n}) | W₁({ñ_i}, {γ_n}) | Improvement |
+|------------|----|---------------------|-------------------|------------------|-------------|
+| Fast       | 20 | 1.42 × 10⁻¹⁴        | 47.4              | 1.67             | **28.4 ×**  |
+| Medium     | 40 | 2.84 × 10⁻¹⁴        | 72.5              | 1.39             | **52.0 ×**  |
 
-Formally:
+The residual W₁ to the true Riemann zeros equals the oscillatory part `S(T) = π⁻¹ arg ζ(½+iT)`, which is RH-equivalent and NOT canonical.
 
-- The real part controls **amplitude decay/growth**.
-- The imaginary part controls **oscillatory phase**.
+### §13nonies.4 Canonical Oscillatory Enrichment (Negative Result)
 
-Then $p^{-s} = e^{-s \log p} = e^{-(\sigma + i t) \log p}$ admits a structural interpretation as a complex weight in the TNFR partition function.
+Three canonical multiplicative perturbations of the smooth targets were tested:
 
-The open task is to:
+| Mode         | Best amplitude | W₁ vs true | Improvement over smooth |
+|--------------|----------------|------------|-------------------------|
+| `phi_log`  | 0              | 1.668      | +0.00 %                 |
+| `gamma_e`  | 1 × 10⁻²       | 1.617      | +0.03 %                 |
+| `pi_density`| 0             | 1.668      | +0.00 %                 |
 
-1. Embed these weights into a bona fide TNFR dynamical system.
-2. Show that its partition function coincides (up to normalization) with $\zeta(s)$.
+**Interpretation**: Canonical oscillatory perturbations built from (φ, γ, π, e) and the smooth targets alone fail to recover the residual S(T) term. This is **structural evidence for §13octies branch B2**: the oscillatory half of T-HP, if reachable canonically at all, requires a **new canonical operator** not expressible as a simple multiplicative dressing of the smooth ladder. Equivalently, the existing canonical operator catalog (13 operators + tetrad + constants) does **not** suffice for the oscillatory half via this construction route.
 
----
+### §13nonies.5 What P30 Closes / Does Not Close
 
-## 3. Towards a TNFR Riemann Operator
+**Closes (smooth half only)**:
+- Sub-problem (1) of T-HP at the **operator level**, for the smooth zero distribution: an admissible, structurally-derived, self-adjointness-preserving rescaling operator `F_smooth` is exhibited explicitly and verified at machine precision.
 
-### 3.1 Hilbert–Pólya Perspective in TNFR Language
+**Does NOT close**:
+- Sub-problem (1) for the **oscillatory half** (S(T) reconstruction);
+- Sub-problem (2) — **canonicity** (uniqueness from the nodal equation) of `F_smooth`;
+- Sub-problem (3) — **positivity coincidence** with the Weil quadratic form;
+- Gap **G4 = the Riemann Hypothesis** itself.
 
-Hilbert–Pólya heuristic: find a self-adjoint operator $\mathcal{H}$ such that its spectrum corresponds to the imaginary parts of the non-trivial zeros of $\zeta$:
+### §13nonies.6 Cross-References
 
-$$
-\mathcal{H} \psi_n = \lambda_n \psi_n, \quad \lambda_n = t_n \iff \zeta(\tfrac{1}{2} + i t_n) = 0.
-$$
+- §13sexies / P28: density-level smooth zero distribution (this lift is its operator-level counterpart).
+- §13septies: full statement of Conjecture T-HP and its three sub-problems.
+- §13octies, L8 audit: T-HP identified as the break-point of the assembled argument. P30 narrows L8 by closing one of its four prerequisites (smooth half, operator level) while corroborating branch B2 for the rest.
+- `src/tnfr/riemann/admissible_rescaling.py`: canonical implementation.
+- `examples/57_admissible_rescaling_demo.py`: reproducible demonstration.
 
-TNFR rephrasing:
+### §13nonies.7 Status Update for §19.2 Gap Balance
 
-- Seek an operator $\mathcal{H}_{TNFR}$ built from the nodal equation and canonical operators such that its **resonant modes** encode the zero set.
+| Gap | Status before P30 | Status after P30 |
+|-----|-------------------|------------------|
+| G1  | Closed operationally (P14) | Closed operationally |
+| G2  | Closed operationally (P13) | Closed operationally |
+| G3  | Closed operationally (P15) | Closed operationally |
+| **G4** | **OPEN** (= Conjecture T-HP) | **OPEN** (smooth half of sub-problem (1) operationally closed; oscillatory half + (2) + (3) remain open) |
+| G5  | Superseded by P12+P13+P15  | Superseded |
 
-### 3.2 Candidate Form: Nodal Laplacian with Structural Potential
-
-Let $\mathcal{H}_{TNFR}$ act on a suitable Hilbert space of structural fields $\Psi(x)$:
-
-$$
-\mathcal{H}_{TNFR} = -\Delta_{TNFR} + V_{struct}(x),
-$$
-
-where:
-
-- $-\Delta_{TNFR}$ is a Laplacian (or fractional Laplacian) defined on a graph/manifold whose spectrum is controlled by prime-related data.
-- $V_{struct}(x)$ is a **structural potential** that enforces the functional equation symmetry of $\zeta$.
-
-The goal would be to choose the underlying space and potential so that:
-
-1. The eigenvalues $\lambda_n$ are in 1–1 correspondence with imaginary parts of zeros.
-2. Self-adjointness is guaranteed with respect to a natural TNFR inner product.
-
-Open tasks:
-
-- Specify the space (graph, fractal, manifold) whose Laplacian encodes the primes.
-- Construct $V_{struct}(x)$ so that the associated spectral determinant reproduces zeta or its completed form $\xi(s)$.
-
----
-
-## 4. Spectral Determinants and Zeros
-
-### 4.1 Determinant Representation
-
-In many contexts, zeta functions appear as spectral determinants:
-
-$$
-\zeta(s) \sim \prod_{n} (1 + \lambda_n^{-s})
-$$
-
-or more precisely via regularized determinants of operators.
-
-We aim for a TNFR statement of the form:
-
-$$
-\Xi(s) = \det\!\left( I - s^{-1} \mathcal{H}_{TNFR} \right)
-$$
-
-where $\Xi(s)$ is a symmetrized/normalized version of zeta (e.g. the Riemann $\xi$-function), and zeros of $\Xi(s)$ coincide with eigenvalues of $\mathcal{H}_{TNFR}$.
-
-Open task:
-
-- Define a TNFR-consistent determinant (possibly via zeta regularization on the spectrum of $\mathcal{H}_{TNFR}$) and prove analytic continuation matching classical $\xi(s)$.
-
----
-
-## 5. Critical Line as Structural Confinement
-
-### 5.1 Structural Interpretation of Re$(s)$
-
-Hypothesis: the real part $\sigma = \text{Re}(s)$ can be interpreted as a **scaling exponent** or **effective dimension** in a TNFR structural field, while $t = \text{Im}(s)$ is a phase/frequency parameter.
-
-We then seek a functional $\mathcal{L}_{RH}(s)$ such that:
-
-1. $\mathcal{L}_{RH}(s)$ is minimized (or stationary) only when $\sigma = 1/2$.
-2. Deviations $\sigma \neq 1/2$ increase structural stress or violate stability conditions derived from the nodal equation.
-
-### 5.2 Possible Lyapunov-Type Condition
-
-Define a **Riemann structural Lyapunov functional**:
-
-$$
-\mathcal{L}_{RH}(s) = \int_{\Omega} \left[ |\Psi(s, x)|^2 + f(\sigma, x) \right] d\mu(x)
-$$
-
-with:
-
-- $\Psi(s, x)$ a TNFR structural field parametrized by $s$,
-- $f(\sigma, x)$ encoding how far $\sigma$ deviates from a critical structural dimension.
-
-Conjectural property:
-
-$$
-\frac{d\mathcal{L}_{RH}}{dt_{struct}} \leq 0, \quad \text{with equality only if } \sigma = \tfrac{1}{2}.
-$$
-
-Here $t_{struct}$ is an abstract TNFR evolution parameter. This would mean that any initial configuration with $\sigma \neq 1/2$ flows (under nodal dynamics) toward $\sigma = 1/2$ if it is to remain structurally coherent.
-
-Open task:
-
-- Propose an explicit $f(\sigma, x)$ tied to known TNFR invariants (e.g. $\Phi_s, |\nabla \phi|, K_\phi, \xi_C$) and prove a confinement theorem analogous to U6 but in the complex-$s$ domain.
-
----
-
-## 6. Roadmap of Concrete Steps
-
-1. **Model Choice**
-   - Choose a specific TNFR system (graph/manifold + operators) where primes enter naturally (e.g. via lengths, curvatures, or coupling strengths).
-   - Define a structural field $\Psi(s)$ linked to that system.
-
-2. **Operator Definition**
-   - Construct a candidate $\mathcal{H}_{TNFR}$ from the nodal equation and the structural field tetrad.
-   - Prove basic properties: domain, self-adjointness, spectrum discreteness in a suitable region.
-
-3. **Spectral–Analytic Bridge**
-   - Express a determinant or trace formula for $\mathcal{H}_{TNFR}$.
-   - Show equivalence (or close relation) between this object and the completed Riemann $\xi$-function.
-
-4. **Critical Line Mechanism**
-   - Interpret Re$(s)$ as a structural exponent/dimension.
-   - Formulate and attempt to prove a confinement or extremality principle forcing non-trivial zeros to lie on Re$(s) = 1/2$.
-
-5. **Consistency with Classical Theory**
-   - Check compatibility with known properties: functional equation, zero density estimates, explicit formulas, random matrix statistics.
-
----
-
-## 7. Discrete Model $H_{\mathrm{TNFR}}^{(k)}(\sigma)$ (Prime Path Sandbox)
-
-To make the previous ideas completely concrete, we define here a
-finite-dimensional TNFR operator built on a prime-labelled graph. This
-is the theoretical counterpart of the sandbox implemented in
-`src/tnfr/riemann/operator.py` and `examples/16_riemann_operator_demo.py`.
-
-### 7.1 Prime Graph and Structural Space
-
-Let $P_k = \{p_1, \dots, p_k\}$ be the set of the first $k$ prime
-numbers. We define a graph $G_k = (V_k, E_k)$ by:
-
-- $V_k = \{1, \dots, k\}$, with node label $\ell(i) = p_i$ for each
-   $i \in V_k$.
-- $E_k = \{(i, i+1) : 1 \le i \le k-1\}$ (a simple path graph).
-- Edge weights $w_{i,i+1}$ given by
-
-   $$
-   w_{i,i+1} =
-   \begin{cases}
-   |\log p_{i+1} - \log p_i|, & \text{(log-gap mode)} \\
-   1, & \text{(uniform mode)}.
-   \end{cases}
-   $$
-
-This graph provides a discrete structural space where each node
-represents a fundamental resonance associated with a prime.
-
-### 7.2 Discrete Structural Laplacian
-
-Let $A = (a_{ij})$ be the weighted adjacency matrix of $G_k$, with
-$a_{ij} = w_{ij}$ if $(i,j) \in E_k$ and $a_{ij} = 0$ otherwise. Let
-$D = \operatorname{diag}(d_1, \dots, d_k)$ be the degree matrix, with
-$d_i = \sum_j a_{ij}$. The **discrete structural Laplacian** is
-
-$$
-L_k = D - A.
-$$
-
-In TNFR language, $L_k$ plays the role of a finite-dimensional
-approximation of $-\Delta_{TNFR}$: it encodes how structural pressure
-$\Delta NFR$ propagates along the prime network.
-
-### 7.3 Structural Potential Parametrized by $\sigma$
-
-We introduce a scalar parameter $\sigma \in \mathbb{R}$ (analogue of
-$\operatorname{Re}(s)$ in zeta theory) and define a node-wise
-structural potential
-
-$$
-V_\sigma(i) = (\sigma - \tfrac12) \log p_i, \quad i = 1, \dots, k.
-$$
-
-In matrix form, $V_\sigma$ is the diagonal matrix
-
-$$
-(V_\sigma)_{ij} = V_\sigma(i)\,\delta_{ij}.
-$$
-
-Interpretation:
-
-- $\sigma - \tfrac12$ measures a deviation from a critical structural
-   dimension.
-- $(\sigma - \tfrac12)\log p_i$ modifies the structural energy
-   associated with the prime-labelled mode $p_i$.
-
-For $\sigma = \tfrac12$, the potential vanishes and only the geometric
-term $L_k$ remains.
-
-### 7.4 Toy Operator $H_{\mathrm{TNFR}}^{(k)}(\sigma)$
-
-We define the finite-dimensional TNFR–Riemann operator
-
-$$
-H_{\mathrm{TNFR}}^{(k)}(\sigma) = L_k + V_\sigma.
-$$
-
-Basic properties:
-
-1. $H_{\mathrm{TNFR}}^{(k)}(\sigma)$ is a real symmetric $k\times k$
-    matrix, hence self-adjoint on $\mathbb{R}^k$ with the standard inner
-    product.
-2. Its spectrum $\{\lambda_j(\sigma)\}_{j=1}^k$ is real and discrete.
-3. For $\sigma = \tfrac12$ we have $V_\sigma = 0$ and
-    $H_{\mathrm{TNFR}}^{(k)}(\tfrac12) = L_k$ (purely geometric term).
-
-In nodal-equation terms, $L_k$ models the diffusive contribution of
-$\Delta NFR$ over the prime graph, while $V_\sigma$ acts as a structural
-potential that depends on the deviation of $\sigma$ from the critical
-value $\tfrac12$.
-
-### 7.5 Discrete Nodal Dynamics and Lyapunov Functional
-
-Let $\Psi(t) \in \mathbb{R}^k$ be a discrete structural field over the
-nodes of $G_k$, with components $\Psi_i(t)$. We consider the linear
-nodal-like evolution
-
-$$
-\frac{d}{dt}\Psi(t) = -\nu_f\,H_{\mathrm{TNFR}}^{(k)}(\sigma)\,\Psi(t),
-$$
-
-where $\nu_f > 0$ is an effective structural frequency (constant in
-this toy model). The formal solution is
-
-$$
-\Psi(t) = \exp\bigl(-\nu_f t\,H_{\mathrm{TNFR}}^{(k)}(\sigma)\bigr)\,\Psi(0).
-$$
-
-We can associate to $H_{\mathrm{TNFR}}^{(k)}(\sigma)$ the quadratic
-structural energy
-
-$$
-\mathcal{E}_\sigma(\Psi)
-\;=\;
-$$
-
-If $H_{\mathrm{TNFR}}^{(k)}(\sigma)$ is positive semidefinite, this
-evolution is precisely the gradient flow of $\mathcal{E}_\sigma$ and
-
-$$
-\frac{d}{dt} \mathcal{E}_\sigma(\Psi(t))
-\;=\; -\nu_f\,\bigl\|H_{\mathrm{TNFR}}^{(k)}(\sigma)^{1/2}\,\Psi(t)\bigr\|^2
-\le 0.
-$$
-
-Thus $\mathcal{E}_\sigma$ plays the role of a discrete Lyapunov
-functional in this linearized setting, in line with the continuous
-Lyapunov analysis used for the general nodal equation.
-
-### 7.6 Relation to the Continuous TNFR–Riemann Program
-
-The continuous TNFR–Riemann program seeks an operator of the form
-
-$$
-\mathcal{H}_{TNFR} = -\Delta_{TNFR} + V_{struct}(x)
-$$
-
-on a suitable structural manifold, with spectrum related to the zeros
-of the Riemann zeta (or $\xi$) function. The discrete operator
-$H_{\mathrm{TNFR}}^{(k)}(\sigma)$ can be seen as a finite-dimensional
-approximation of this idea, with the following identifications:
-
-- $-\Delta_{TNFR}$ $\leadsto$ $L_k$ on a prime-labelled graph.
-- $V_{struct}(x)$ $\leadsto$ $V_\sigma$ with the same
-   $(\sigma-\tfrac12)\log p$ structure discussed in §2.
-
-This model does **not** yet encode spectral determinants or functional
-equations, but it provides:
-
-- A concrete, self-adjoint, prime-based operator.
-- A controlled setting to study numerically how eigenvalues
-   $\lambda_j(\sigma)$ move as a function of $\sigma$ near the critical
-   value $\tfrac12$.
-- A direct embedding into the nodal-equation viewpoint via the discrete
-   gradient flow.
-
-It therefore acts as a first, fully specified sandbox instance of
-Steps 1 and 2 in the roadmap, while Steps 3–5 remain open at the
-continuum and analytic level.
-
----
-
-### 7.7 TNFR Field Tetrad on the Prime Path Model
-
-Each eigenpair $(\lambda_j(\sigma), \mathbf{v}_j)$ of
-$H_{\mathrm{TNFR}}^{(k)}(\sigma)$ induces a discrete structural field
-on the prime path $G_k$:
-
-- Local amplitude: $a_j(i) = |v_j(i)|$ for node $i$.
-- Local phase: $\phi_j(i) = \arg(v_j(i))$ (taking any fixed branch of
-   the argument).
-
-From these we define discrete analogues of the field tetrad
-$(\Phi_s, |\nabla \phi|, K_\phi, \xi_C)$.
-
-**Discrete phase gradient.** The mean phase gradient along the path is
-
-$$
-|\nabla\phi|^{(j)}
-\;=\;
-\frac{1}{|E_k|} \sum_{(i,i+1)\in E_k}
-\bigl|\phi_j(i+1) - \phi_j(i)\bigr|.
-$$
-
-This quantity measures, for mode $j$, the average desynchronization of
-phases between adjacent prime-labelled nodes.
-
-**Discrete phase curvature.** The mean phase curvature along the path
-is
-
-$$
-K_\phi^{(j)}
-\;=\;
-\frac{1}{k-2} \sum_{i=2}^{k-1}
-\bigl|\phi_j(i+1) - 2\phi_j(i) + \phi_j(i-1)\bigr|.
-$$
-
-This is the discrete analogue of phase torsion and highlights
-mutation-prone loci where the phase bends sharply along the prime
-sequence.
-
-**Discrete coherence length.** We define amplitude correlations at
-distance $r$ via
-
-$$
-C_j(r) = \frac{1}{k-r} \sum_{i=1}^{k-r} a_j(i)\,a_j(i+r),
-\quad r = 0, 1, \dots, k-1.
-$$
-
-For modes with approximately exponential decay of correlations we can
-fit
-
-$$
-C_j(r) \approx A_j \exp(-r/\xi_C^{(j)}),
-$$
-
-and interpret $\xi_C^{(j)}$ as the discrete coherence length of mode
-$j$ on $G_k$.
-
-**Discrete structural potential.** The global structural potential seen
-by mode $j$ is defined as the normalized energy
-
-$$
-\Phi_s^{(j)}
-\;=\;
-\frac{1}{k}\,\mathbf{v}_j^\ast H_{\mathrm{TNFR}}^{(k)}(\sigma)\,\mathbf{v}_j
-\;=\;
-\frac{2}{k}\,\mathcal{E}_\sigma(\mathbf{v}_j).
-$$
-
-This quantity captures how strongly confined the mode is by the
-combination of geometric (Laplacian) and potential contributions.
-
-Together, the tuple
-$(\Phi_s^{(j)}, |\nabla\phi|^{(j)}, K_\phi^{(j)}, \xi_C^{(j)})$ provides
-a discrete instantiation of the canonical tetrad fields for each
-eigenmode of $H_{\mathrm{TNFR}}^{(k)}(\sigma)$.
-
-### 7.8 Canonical Operators and Grammar on the Prime Graph
-
-The construction and dynamics of the discrete model admit a direct
-interpretation in terms of the 13 canonical operators and the unified
-grammar U1–U6.
-
-**Graph construction.**
-
-- **Emission (AL)**: creation of each node $i$ with prime label $p_i$
-   corresponds to emitting a new EPI locus on the structural manifold.
-- **Coupling (UM)**: addition of edges $(i,i+1)$ creates phase
-   synchronization channels between consecutive primes, satisfying the
-   phase compatibility constraint in a trivial way in this sandbox
-   (phases initially aligned).
-
-**Diffusive dynamics via $L_k$.**
-
-The Laplacian term corresponds to iterated sequences of Reception (EN)
-and Coherence (IL):
-
-- EN collects differences between a node and its neighbours.
-- IL applies negative feedback to reduce local structural pressure,
-   implementing diffusion along edges.
-
-Formally, discrete-time updates of the form
-
-$$
-\Psi^{(n+1)} = \Psi^{(n)} - \Delta t\,L_k\,\Psi^{(n)}
-$$
-
-can be seen as coarse-grained compositions of [EN $\to$ IL] applied
-across the graph.
-
-**Potential deformation via $V_\sigma$.**
-
-Changing $\sigma$ modifies the diagonal potential $V_\sigma$ and thus
-the local structural energy of each prime-labelled node:
-
-- For $\sigma > \tfrac12$ nodes with larger primes receive positive
-   shifts, corresponding to an effective Expansion (VAL) in their
-   structural energy.
-- For $\sigma < \tfrac12$ the effect is reversed, analogous to a
-   Contraction (NUL).
-
-Grammar rule U2 (Convergence & Boundedness) requires that such
-destabilizing deformations be counterbalanced by stabilizers (IL, THOL)
-to keep the integral of $\nu_f\,\Delta NFR$ convergent. In the linear
-discrete model this is reflected in the requirement that
-$H_{\mathrm{TNFR}}^{(k)}(\sigma)$ remain positive semidefinite to
-preserve Lyapunov monotonicity.
-
-Overall, the operator $H_{\mathrm{TNFR}}^{(k)}(\sigma)$ is not an
-extraneous object but a compact encoding of canonical operator
-sequences on a prime-labelled structural network.
-
-### 7.9 Symbolic View and Discrete Spectral Zeta Prototype
-
-The spectral data of $H_{\mathrm{TNFR}}^{(k)}(\sigma)$ allows us to
-define finite analogues of spectral zeta functions and partition
-functions, which serve as conceptual bridges toward the continuous
-TNFR–Riemann programme.
-
-Let $\{\lambda_j(\sigma)\}_{j=1}^k$ be the eigenvalues of
-$H_{\mathrm{TNFR}}^{(k)}(\sigma)$ (counted with multiplicity). We define
-the **discrete spectral zeta prototype**
-
-$$
-\zeta_{H^{(k)}_\sigma}(u)
-= \sum_{j=1}^k \lambda_j(\sigma)^{-u},
-$$
-
-for complex $u$ such that $\lambda_j(\sigma) \neq 0$ for all $j$ and
-the sum is well-defined. Being a finite sum, $\zeta_{H^{(k)}_\sigma}(u)$
-is an entire function of $u$ away from the points where some
-$\lambda_j(\sigma)$ vanishes.
-
-In parallel, we introduce a **discrete partition function**
-
-$$
-Z_{H^{(k)}_\sigma}(u)
-= \prod_{j=1}^k \bigl(1 + u\,\lambda_j(\sigma)\bigr)^{-1},
-$$
-
-which can be viewed as a finite TNFR analogue of a spectral determinant
-or partition function. For $u$ small enough, the logarithm of
-$Z_{H^{(k)}_\sigma}(u)$ admits an expansion
-
-$$
-\log Z_{H^{(k)}_\sigma}(u)
-= -\sum_{n\ge1} \frac{(-u)^n}{n}
-   \sum_{j=1}^k \lambda_j(\sigma)^n,
-$$
-
-relating it to the power sums of the eigenvalues and, ultimately, to
-traces of powers of $H_{\mathrm{TNFR}}^{(k)}(\sigma)$.
-
-These constructions do not directly reproduce the classical Riemann
-zeta or $\xi$-functions, but they establish a clean algebraic setting
-in which prime-based TNFR operators give rise to well-defined spectral
-generating functions. Extending these finite prototypes to suitable
-limits (e.g. $k\to\infty$ with controlled growth of the underlying
-graphs) is part of the open programme described in §6.
-
-## 7. Caution
-
-All statements above are **programmatic**. To elevate this to a mathematically acceptable proof, each step would need:
-
-- Rigorous operator-theoretic foundations.
-- Precise analytic continuation arguments.
-- Careful handling of regularization and convergence.
-
-At present, TNFR provides motivation and structure for such a program, but not yet a complete resolution of the Riemann Hypothesis.
-
----
-
-## 8. First Numerical Sandbox (Implemented)
-
-An initial, *purely exploratory* operator prototype and example have been
-implemented in the codebase to provide a concrete playground for the
-ideas above.
-
-### 8.1 Toy Operator: Prime Path Graph + Structural Potential
-
-- Module: `src/tnfr/riemann/operator.py` (non-canonical, experimental).
-- Construction:
-   - Build a simple undirected path graph whose nodes are the first `k` primes,
-      with optional edge weights derived from log-prime gaps.
-   - Attach to each node a potential term inspired by
-      $(\sigma - \tfrac{1}{2}) \log p$, where $p$ is the prime label and
-      $\sigma$ plays the role of $\operatorname{Re}(s)$.
-   - Form a finite-dimensional operator
-
-      $$
-      H_{\mathrm{TNFR}} = L + \operatorname{diag}(V),
-      $$
-
-      where $L$ is the (weighted) combinatorial Laplacian of the prime
-      path graph and $V$ is the vector of node potentials.
-
-The helper functions are:
-
-- `build_prime_path_graph(count: int, weight_by_log_gap: bool = True)`
-   to construct the prime-labeled graph.
-- `build_h_tnfr(G, sigma: float = 0.5, potential_fn=default_prime_potential)`
-   to obtain a dense matrix representation of $H_{\mathrm{TNFR}}$.
-
-This realizes a tiny, finite analogue of the more abstract operator
-discussed in §3, designed only for numerical experiments over small
-graphs.
-
-### 8.2 Example Script: Eigenvalue Exploration
-
-- Script: `examples/16_riemann_operator_demo.py`.
-- Behavior:
-   - Constructs a prime path graph on the first 10 primes.
-   - Builds $H_{\mathrm{TNFR}}$ for several values of $\sigma$ (e.g.
-      0.25, 0.5, 0.75).
-   - Computes the eigenvalues via a standard Hermitian eigensolver and
-      prints the lowest ones.
-
-### 8.3 Purpose and Limitations
-
-- Purpose:
-   - Provide a small, reproducible numerical sandbox linked to these notes.
-   - Offer an initial way to **feel** how spectral data of a
-      prime-structured operator depends on a parameter playing the role
-      of $\operatorname{Re}(s)$.
-- Limitations:
-   - Finite graph, no direct connection to the analytic continuation of
-      $\zeta(s)$ or $\xi(s)$.
-   - No attempt yet to encode the functional equation or full spectral
-      determinant structure.
-
-This sandbox satisfies Step 1 (model choice, in toy form) and provides
-an initial contribution towards Step 2 (operator definition).  Future
-work should extend it towards more faithful geometries, larger graphs,
-and connections with trace formulas.
-
----
-
-## 9. Structural Admissibility and Critical Behavior
-
-### 9.1 Definition: Structurally Admissible Parameters
-
-Building on the Lyapunov proposition from Section 7.5, we formally define the notion of structural admissibility for the parameter σ.
-
-**Definition 9.1** (Structurally Admissible σ). 
-For a given graph size $k$, a parameter $\sigma \in \mathbb{R}$ is called **structurally admissible** if the corresponding operator $H_{\mathrm{TNFR}}^{(k)}(\sigma)$ satisfies:
-
-$$
-\lambda_{\min}^{(k)}(\sigma) \geq 0,
-$$
-
-where $\lambda_{\min}^{(k)}(\sigma)$ is the smallest eigenvalue of $H_{\mathrm{TNFR}}^{(k)}(\sigma)$.
-
-**Rationale**: From the Lyapunov analysis, negative eigenvalues correspond to unstable modes that cause the discrete energy functional $E_\sigma(\Psi)$ to decrease indefinitely, violating structural coherence principles from TNFR grammar rule U2 (CONVERGENCE & BOUNDEDNESS).
-
-### 9.2 The Admissible Set and Critical Threshold
-
-Define the **admissible set** for graph size $k$:
-
-$$
-\mathcal{A}^{(k)} := \{\sigma \in \mathbb{R} : \lambda_{\min}^{(k)}(\sigma) \geq 0\}.
-$$
-
-**Conjecture 9.1** (Critical Threshold Behavior). 
-There exists a critical value $\sigma_c^{(k)}$ such that:
-
-1. **Subcritical regime**: For $\sigma < \sigma_c^{(k)}$, we have $\lambda_{\min}^{(k)}(\sigma) < 0$ (structurally inadmissible).
-2. **Supercritical regime**: For $\sigma > \sigma_c^{(k)}$, we have $\lambda_{\min}^{(k)}(\sigma) > 0$ (structurally admissible).
-3. **Critical point**: $\lambda_{\min}^{(k)}(\sigma_c^{(k)}) = 0$ exactly.
-
-**Physical Interpretation**: $\sigma_c^{(k)}$ represents the minimum "structural dimension" required for the prime-network to maintain coherence under the nodal dynamics.
-
-### 9.3 Connection to the Critical Line σ = 1/2
-
-**Hypothesis 9.1** (Asymptotic Critical Convergence).
-As the graph size $k \to \infty$, the critical threshold converges:
-
-$$
-\lim_{k \to \infty} \sigma_c^{(k)} = \tfrac{1}{2}.
-$$
-
-This would provide a **discrete structural derivation** of why the Riemann Hypothesis predicts all non-trivial zeros to lie on the critical line $\operatorname{Re}(s) = 1/2$.
-
-**Supporting Evidence from Numerical Sandbox**:
-In `examples/16_riemann_operator_demo.py`, preliminary observations suggest:
-- For $\sigma = 0.25$: some negative eigenvalues appear (inadmissible).
-- For $\sigma = 0.5$: eigenvalues cluster around zero (critical behavior).
-- For $\sigma = 0.75$: all eigenvalues positive (admissible).
-
-This pattern is consistent with $\sigma_c^{(10)} \in (0.25, 0.5]$ for the 10-prime graph.
-
-### 9.4 Spectral Gap and Structural Stability
-
-**Definition 9.2** (Structural Spectral Gap).
-For structurally admissible $\sigma \in \mathcal{A}^{(k)}$, define the **structural spectral gap**:
-
-$$
-\Delta^{(k)}(\sigma) := \lambda_1^{(k)}(\sigma) - \lambda_0^{(k)}(\sigma),
-$$
-
-where $\lambda_0^{(k)}(\sigma) \leq \lambda_1^{(k)}(\sigma)$ are the two smallest eigenvalues.
-
-**Proposition 9.1** (Gap-Coherence Relationship).
-The structural spectral gap $\Delta^{(k)}(\sigma)$ provides a measure of **structural robustness**: larger gaps correspond to more stable nodal dynamics under perturbations to the EPI field.
-
-**Corollary 9.1** (Optimal Structural Dimension).
-If Hypothesis 9.1 holds, then $\sigma = 1/2$ represents the **optimal structural dimension** that:
-1. Ensures admissibility ($\lambda_{\min} \geq 0$).
-2. Minimizes excessive structural stress (avoids $\sigma \gg 1/2$).
-3. Balances between coherence and flexibility in the nodal dynamics.
-
-### 9.5 Connection to TNFR Field Tetrad
-
-The discrete admissibility criterion can be expressed in terms of the TNFR structural fields defined in Section 7.7:
-
-**Tetrad Admissibility Condition**:
-$\sigma$ is structurally admissible if and only if the discrete structural potential field satisfies:
-
-$$
-\Phi_s^{(k)}(\sigma) := \sum_{j=1}^k \langle\psi_0^{(k)}(\sigma) | V_\sigma | \psi_0^{(k)}(\sigma)\rangle \geq -\Phi_s^{\text{critical}},
-$$
-
-where $\psi_0^{(k)}(\sigma)$ is the ground state eigenvector and $\Phi_s^{\text{critical}}$ is a threshold derived from the Laplacian contribution.
-
-This connects the discrete Riemann operator directly to the canonical TNFR structural field tetrad $(Φ_s, |∇φ|, K_φ, ξ_C)$.
-
----
-
-## 10. Discrete Spectral Zeta and Partition Function Analysis
-
-### 10.1 Refinement of Discrete Spectral Functions
-
-Building on Section 7.9, we refine the discrete analogues of the Riemann zeta function:
-
-**Enhanced Discrete Spectral Zeta**:
-$$
-\zeta_{H^{(k)}}(\sigma, u) := \sum_{j : \lambda_j^{(k)}(\sigma) > 0} [\lambda_j^{(k)}(\sigma)]^{-u},
-$$
-
-where the sum excludes any zero or negative eigenvalues to ensure convergence.
-
-**Regularized Partition Function**:
-$$
-Z_{H^{(k)}}(\sigma, \beta) := \prod_{j : \lambda_j^{(k)}(\sigma) > 0} [1 + e^{-\beta \lambda_j^{(k)}(\sigma)}]^{-1}.
-$$
-
-### 10.2 Functional Relationships
-
-**Proposition 10.1** (Discrete Mellin Transform).
-The discrete spectral zeta and partition function are related via:
-
-$$
-\zeta_{H^{(k)}}(\sigma, u) = \frac{1}{\Gamma(u)} \int_0^\infty \beta^{u-1} \left[\text{Tr}(e^{-\beta H^{(k)}(\sigma)}) - \text{rank}(\ker H^{(k)}(\sigma))\right] d\beta,
-$$
-
-where the subtraction term accounts for zero eigenvalues.
-
-**Corollary 10.1** (Critical Line Correspondence).
-If $\sigma = 1/2$ yields special symmetry properties in the eigenvalue distribution of $H^{(k)}(\sigma)$, then $\zeta_{H^{(k)}}(1/2, u)$ may exhibit functional equation-like behavior as $k \to \infty$.
-
-### 10.3 Asymptotic Conjectures
-
-**Conjecture 10.1** (Large-k Zeta Correspondence).
-As $k \to \infty$, the discrete spectral zeta approaches a continuous limit:
-
-$$
-\lim_{k \to \infty} \zeta_{H^{(k)}}(1/2, u) = C \cdot \zeta_R(u + \delta),
-$$
-
-where $\zeta_R(s)$ is the Riemann zeta function, $C$ is a normalization constant, and $\delta$ is a shift parameter to be determined.
-
-**Conjecture 10.2** (Zero Distribution).
-The zeros of $\zeta_{H^{(k)}}(\sigma, u)$ in the $u$-plane concentrate near values corresponding to the non-trivial zeros of $\zeta_R(s)$ when $\sigma \approx 1/2$ and $k$ is large.
-
-These conjectures provide concrete numerical targets for extending the sandbox implementation in future work.
-
----
-
-## 11. Numerical Validation Framework
-
-### 11.1 Systematic Parameter Sweep Protocol
-
-To validate the theoretical predictions from Sections 9-10, we outline a systematic numerical investigation:
-
-**Protocol 11.1** (Critical Threshold Detection).
-For graph sizes $k \in \{5, 10, 20, 50, 100\}$:
-
-1. **σ-sweep**: Compute $\lambda_{\min}^{(k)}(\sigma)$ for $\sigma \in [0, 1]$ with step $\Delta\sigma = 0.01$.
-2. **Critical point estimation**: Find $\sigma_c^{(k)}$ where $\lambda_{\min}^{(k)}(\sigma)$ changes sign.
-3. **Convergence analysis**: Plot $\sigma_c^{(k)}$ vs. $k^{-1}$ to test $\lim_{k \to \infty} \sigma_c^{(k)} = 1/2$.
-4. **Gap characterization**: Measure structural spectral gap $\Delta^{(k)}(\sigma)$ near critical points.
-
-**Expected Outcomes**:
-- **Hypothesis 9.1 validation**: $\sigma_c^{(k)} \to 1/2$ as $k$ increases.
-- **Phase transition signature**: Sharp spectral gap collapse near $\sigma_c^{(k)}$.
-- **Universality**: Critical exponents independent of prime gap structure (log-gap vs. uniform weights).
-
-### 11.2 Discrete Zeta Function Numerics
-
-**Protocol 11.2** (Spectral Zeta Computation).
-For each admissible $(\sigma, k)$ pair:
-
-1. **Zeta evaluation**: Compute $\zeta_{H^{(k)}}(\sigma, u)$ for $u \in \{1/2, 1, 3/2, 2, 5/2\}$.
-2. **Pole structure**: Identify poles and zeros in the complex $u$-plane via analytic continuation.
-3. **Functional relations**: Test discrete analogues of $\zeta(s) = 2^s \pi^{s-1} \sin(\pi s/2) \Gamma(1-s) \zeta(1-s)$.
-4. **Convergence tracking**: Monitor approach to continuous Riemann zeta as $k$ increases.
-
-### 11.3 Tetrad Field Correlation Analysis
-
-**Protocol 11.3** (TNFR Field Integration).
-Compute discrete tetrad fields from Section 7.7 and analyze correlations:
-
-$$
-\begin{align}
-\Phi_s^{(k)}(\sigma) &= \langle\psi_0^{(k)} | V_\sigma | \psi_0^{(k)}\rangle \\
-|\nabla\phi|^{(k)}(\sigma) &= \sqrt{\langle\psi_0^{(k)} | L_k | \psi_0^{(k)}\rangle} \\
-\xi_C^{(k)}(\sigma) &= \left(\sum_{j=1}^k |\psi_0^{(k)}(j)|^4\right)^{-1}
-\end{align}
-$$
-
-**Correlation Hypotheses**:
-- **U6 analogue**: $|\Phi_s^{(k)}(\sigma)| < \phi \approx 1.618$ for stable configurations.
-- **Phase gradient bound**: $|\nabla\phi|^{(k)}(\sigma) < \gamma/\pi \approx 0.184$ at criticality.
-- **Coherence scaling**: $\xi_C^{(k)}(\sigma) \sim k^{\alpha}$ with $\alpha \approx 1$ for critical $\sigma$.
-
----
-
-## 12. Connection to TNFR Unified Field Theory
-
-### 12.1 Complex Geometric Field Embedding
-
-Recent TNFR developments (November 2025) revealed the **unified complex field**:
-
-$$
-\Psi = K_\phi + i J_\phi
-$$
-
-unifying phase curvature and transport current. In the discrete Riemann context:
-
-**Definition 12.1** (Riemann Complex Field).
-For the eigenmode $\psi_j^{(k)}(\sigma)$, define:
-
-$$
-\Psi_j^{(k)}(\sigma) := K_\phi^{(k)}[\psi_j] + i J_\phi^{(k)}[\psi_j],
-$$
-
-where:
-- $K_\phi^{(k)}[\psi] = \sum_{n=1}^k \psi(n) \cdot \text{wrap\_angle}(\arg(\psi(n+1)) - \arg(\psi(n)))$
-- $J_\phi^{(k)}[\psi] = \sum_{(m,n) \in E_k} w_{mn} \cdot \text{Im}(\psi^*(m)\psi(n))$
-
-**Proposition 12.1** (Critical Line Complex Field Behavior).
-At the critical parameter $\sigma = 1/2$:
-
-1. **Real-imaginary balance**: $|\text{Re}(\Psi_0^{(k)})| \approx |\text{Im}(\Psi_0^{(k)})|$ for the ground state.
-2. **Phase coherence**: Higher eigenmodes exhibit $\Psi_j^{(k)}(1/2)$ clustering around specific values related to prime distribution.
-3. **Universality**: The complex field statistics become universal (independent of $k$) in the large-$k$ limit.
-
-### 12.2 Emergent Invariants and Conservation Laws
-
-From TNFR unified field theory, we have **tensor invariants**:
-
-**Energy Density**: $\mathcal{E}^{(k)} = \Phi_s^2 + |\nabla\phi|^2 + |\Psi|^2$
-**Topological Charge**: $\mathcal{Q}^{(k)} = |\nabla\phi| \cdot \text{Im}(\Psi) - \text{Re}(\Psi) \cdot J_{\Delta NFR}^{(k)}$
-
-**Note**: The general TNFR conservation law takes the form $\partial\rho/\partial t + \nabla\cdot\mathbf{J} = S_{\text{grammar}}$ where $S_{\text{grammar}} \to 0$ under U1–U6 (see `src/tnfr/physics/conservation.py`). In the discrete Riemann context, exact conservation emerges at criticality.
-
-**Conjecture 12.1** (Riemann Invariant Conservation).
-At criticality ($\sigma = 1/2$), the discrete system satisfies:
-
-$$
-\frac{d}{d\tau} \left[\mathcal{E}^{(k)} + \alpha \mathcal{Q}^{(k)}\right] = 0,
-$$
-
-where $\tau$ is a TNFR evolution parameter and $\alpha$ is a coupling constant.
-
-This suggests that **conservation of unified field invariants** may be the deep reason why Riemann zeros are confined to the critical line.
-
-### 12.3 Multiscale Coherence and RH
-
-**Hypothesis 12.1** (Multiscale RH Mechanism).
-The Riemann Hypothesis emerges from **TNFR grammar rule U5** (Multi-Scale Coherence):
-
-1. **Prime network hierarchy**: Each prime $p_j$ supports nested EPIs at scales $\{p_j^n : n \geq 1\}$.
-2. **Cross-scale coupling**: Coherence between scales requires phase relationships $\phi_{p_j^n} - \phi_{p_j^{n+1}} = \mathcal{O}(1/\sqrt{n})$.
-3. **Collective stability**: The entire hierarchy remains coherent only if the fundamental mode satisfies $\sigma = 1/2$.
-
-**Mathematical Formulation**:
-Define the **multiscale coherence functional**:
-
-$$
-C_{\text{multi}}(\sigma) = \sum_{j=1}^k \sum_{n=1}^{N_j} \left|\phi_{p_j^n}(\sigma) - \phi_{p_j^{n+1}}(\sigma)\right|^2,
-$$
-
-**Conjecture 12.2** (Multiscale Minimization Principle).
-$C_{\text{multi}}(\sigma)$ is minimized uniquely at $\sigma = 1/2$, providing a **variational derivation** of the critical line.
-
-This connects the discrete Riemann operator to TNFR structural principles: **operational fractality** and **multi-scale coherence preservation**.
-
----
-
-## 13. Roadmap for Theoretical Completion
-
-### 13.1 Immediate Theoretical Priorities
-
-1. **Rigorous Proof Program**:
-   - Prove Conjecture 9.1 (critical threshold behavior) for small $k$.
-   - Establish convergence rate $|\sigma_c^{(k)} - 1/2| = \mathcal{O}(k^{-\beta})$ with $\beta > 0$.
-   - Connect discrete spectral gap to continuous zeta zero spacing.
-
-2. **Unified Field Integration**:
-   - Formalize complex field $\Psi^{(k)}$ dynamics under nodal equation evolution.
-   - Prove conservation laws for energy density and topological charge at criticality.
-   - Establish connection between invariant conservation and zero confinement.
-
-3. **Multiscale Extension**:
-   - Implement nested EPI structure for prime powers $\{p^n\}$.
-   - Prove multiscale coherence minimization at $\sigma = 1/2$.
-   - Connect to renormalization group fixed points in TNFR dynamics.
-
-### 13.2 Computational Validation Targets
-
-1. **Large-Scale Numerics**:
-   - Extend discrete operator to $k = 10^3$ primes using sparse matrix techniques.
-   - Implement GPU-accelerated eigensolvers for systematic σ-sweeps.
-   - Develop trace formula approximations for discrete spectral determinants.
-
-2. **Statistical Analysis**:
-   - Compare eigenvalue spacings with random matrix theory predictions.
-   - Test Montgomery's pair correlation conjecture in the discrete setting.
-   - Analyze zeros of $\zeta_{H^{(k)}}(\sigma, u)$ using argument principle methods.
-
-3. **Cross-Validation**:
-   - Compare discrete results with known RH computational data.
-   - Validate against explicit formulas and approximate functional equations.
-   - Test scaling limits against continuous spectral theory predictions.
-
-### 13.3 Path to Riemann Hypothesis Resolution
-
-**Theoretical Strategy**:
-If the conjectures in Sections 9-12 can be rigorously established, we obtain:
-
-1. **Discrete RH**: All zeros of $\zeta_{H^{(k)}}(\sigma, u)$ lie on $\sigma = 1/2$ for sufficiently large $k$.
-2. **Convergence theorem**: $\zeta_{H^{(k)}}(1/2, u) \to C \cdot \zeta_R(u + \delta)$ as $k \to \infty$.
-3. **Conservation principle**: Zero confinement follows from TNFR invariant conservation.
-
-**Conjectural resolution pathway**: 
-Discrete RH + Convergence + Conservation $\Rightarrow$ **Riemann Hypothesis**.
-
-This outlines a possible path connecting TNFR structural dynamics to the Riemann Hypothesis. All three steps remain conjectural and require rigorous proofs before any conclusion can be drawn.
-
----
-
-## 14. Rigorous Mathematical Foundations
-
-### 14.1 Spectral Theory of the Discrete TNFR Operator
-
-**Theorem 14.1** (Self-Adjointness and Spectral Properties).
-The operator $H_{\mathrm{TNFR}}^{(k)}(\sigma)$ defined in Section 7.4 satisfies:
-
-1. **Self-adjointness**: $H^{(k)}(\sigma) = [H^{(k)}(\sigma)]^*$ for all $\sigma \in \mathbb{R}$.
-2. **Spectral bounds**: $\lambda_j^{(k)}(\sigma) \in [V_{\min}(\sigma), V_{\max}(\sigma) + 2d_{\max}]$, where $V_{\min/\max}$ are the extremal potential values and $d_{\max}$ is the maximum vertex degree.
-3. **Monotonicity**: $\frac{d\lambda_j^{(k)}}{d\sigma} = \langle\psi_j^{(k)} | \frac{dV_\sigma}{d\sigma} | \psi_j^{(k)}\rangle = \log(p_{\text{eff}}) > 0$ for some effective prime $p_{\text{eff}}$.
-
-**Proof Sketch**:
-1. Self-adjointness follows from $L_k = L_k^T$ (symmetric Laplacian) and $V_\sigma$ diagonal with real entries.
-2. Spectral bounds use Gershgorin's circle theorem applied to $H^{(k)} = L_k + V_\sigma$.
-3. Monotonicity follows from Feynman-Hellmann theorem and positivity of $\log p_i$ terms. ∎
-
-**Corollary 14.1** (Critical Point Uniqueness).
-For each $k$, there exists a unique $\sigma_c^{(k)} \in \mathbb{R}$ such that $\lambda_{\min}^{(k)}(\sigma_c^{(k)}) = 0$.
-
-### 14.2 Asymptotic Analysis of Critical Thresholds
-
-**Theorem 14.2** (Critical Threshold Convergence Rate).
-The critical thresholds $\sigma_c^{(k)}$ defined in Section 9.2 satisfy:
-
-$$
-\sigma_c^{(k)} = \frac{1}{2} + \frac{C}{\log k} + O\left(\frac{\log\log k}{(\log k)^2}\right),
-$$
-
-where $C$ is a constant depending on the prime distribution.
-
-**Proof Strategy**:
-1. **Asymptotic expansion**: Use the fact that for large $k$, the Laplacian eigenvalues scale as $\mathcal{O}(k^{-2})$ while potential terms scale as $\log p_k \sim \log k$.
-2. **Balance equation**: At criticality, the smallest eigenvalue vanishes, giving:
-   $$(\sigma_c^{(k)} - \frac{1}{2})\log p_1 + \lambda_{\min}^{(k)}(L_k) = 0.$$
-3. **Prime number theorem**: $\log p_k \sim k \log k$, yielding the claimed asymptotic form.
-
-**Corollary 14.2** (Convergence to Critical Line).
-$$\lim_{k \to \infty} \sigma_c^{(k)} = \frac{1}{2},$$
-confirming Hypothesis 9.1 with explicit convergence rate.
-
-### 14.3 Functional Equation for Discrete Spectral Zeta
-
-**Theorem 14.3** (Discrete Functional Equation).
-The discrete spectral zeta function $\zeta_{H^{(k)}}(\sigma, u)$ satisfies a functional equation of the form:
-
-$$
-\zeta_{H^{(k)}}(\sigma, u) = \chi^{(k)}(\sigma, u) \cdot \zeta_{H^{(k)}}(\sigma, \alpha^{(k)} - u),
-$$
-
-where $\alpha^{(k)} = 1 + \frac{\log k}{2\pi} + O(k^{-1})$ and $\chi^{(k)}(\sigma, u)$ is a gamma-factor encoding the discrete geometry.
-
-**Proof Outline**:
-1. **Mellin inversion**: Start from the integral representation in Proposition 10.1.
-2. **Poisson summation**: Apply discrete Poisson summation to the trace of the heat kernel $e^{-t H^{(k)}}$.
-3. **Gamma factor**: The discrete geometry introduces modified gamma functions $\Gamma_k(s)$ through edge weight contributions.
-4. **Asymptotic matching**: For large $k$, recover the classical Riemann functional equation as leading term.
-
-**Corollary 14.3** (Critical Line Symmetry).
-At $\sigma = 1/2$, the functional equation simplifies to:
-$$\zeta_{H^{(k)}}(1/2, u) = \zeta_{H^{(k)}}(1/2, \alpha^{(k)} - u) \cdot [1 + O(k^{-1})],$$
-demonstrating approximate reflection symmetry around $u = \alpha^{(k)}/2$.
-
-### 14.4 Conservation Laws and Invariant Theory
-
-**Theorem 14.4** (TNFR Invariant Conservation).
-Under the discrete nodal evolution $\frac{d\psi}{d\tau} = -\nu_f H^{(k)}(\sigma) \psi$, the following quantities are conserved:
-
-1. **Norm conservation**: $\|\psi(\tau)\|^2 = \|\psi(0)\|^2$ (unitarity).
-2. **Energy conservation**: $E(\tau) = \langle\psi(\tau) | H^{(k)} | \psi(\tau)\rangle = E(0)$.
-3. **Modified topological charge**: $\mathcal{Q}^{(k)}(\tau) = \mathcal{Q}^{(k)}(0) + \mathcal{O}(\tau \cdot k^{-1})$.
-
-**Proof**:
-1. Norm and energy conservation follow from self-adjointness of $H^{(k)}$.
-2. Topological charge conservation uses the discrete Noether theorem applied to phase rotation symmetry, with $O(k^{-1})$ corrections from boundary effects.
-
-**Corollary 14.4** (Critical Point Stability).
-At $\sigma = 1/2$, the ground state $\psi_0^{(k)}(1/2)$ is **linearly stable** under perturbations, with spectral gap $\Delta^{(k)}(1/2) > c \log k$ for some constant $c > 0$.
-
----
-
-## 15. Advanced Analytical Techniques
-
-### 15.1 Trace Formula and Prime Orbit Theory
-
-**Definition 15.1** (Discrete Prime Orbit).
-A **prime orbit** of length $n$ is a closed path in the graph $G_k$ visiting exactly $n$ distinct primes. Define the **orbit zeta function**:
-
-$$
-Z_{\text{orbit}}^{(k)}(s) = \prod_{\gamma \in \text{Orbits}} \left(1 - N(\gamma)^{-s}\right)^{-1},
-$$
-
-where $N(\gamma) = \prod_{p \in \gamma} p$ is the orbit norm.
-
-**Theorem 15.1** (Discrete Selberg Trace Formula).
-The spectrum of $H^{(k)}(\sigma)$ is related to prime orbits via:
-
-$$
-\sum_j \delta(\lambda - \lambda_j^{(k)}) = \delta_{\text{id}}(\lambda) + \sum_{\gamma \neq \text{id}} \frac{\log N(\gamma)}{N(\gamma)^{1/2} - N(\gamma)^{-1/2}} \delta(\lambda - \log N(\gamma)),
-$$
-
-where the sum runs over primitive closed orbits $\gamma$.
-
-**Applications**:
-1. **Zero density estimates**: Orbit contributions constrain the number of eigenvalues near zero.
-2. **Spacing statistics**: Correlations between consecutive eigenvalues follow from orbit interference.
-3. **Large deviation bounds**: Exponential decay of tails in eigenvalue distribution.
-
-### 15.2 Random Matrix Theory Connection
-
-**Theorem 15.2** (Universality in Critical Regime).
-As $k \to \infty$ with $\sigma = 1/2$, the eigenvalue statistics of $H^{(k)}(1/2)$ converge to those of the **Gaussian Unitary Ensemble (GUE)** in the bulk scaling limit.
-
-**Proof Strategy**:
-1. **Moment matching**: Show that all correlation functions match GUE predictions asymptotically.
-2. **Supersymmetry method**: Use fermionic integration to compute generating functions.
-3. **Universality theorem**: Apply Tao-Vu universality results for random band matrices with structured entries.
-
-**Corollary 15.1** (Montgomery Pair Correlation).
-The pair correlation function for zeros of $\zeta_{H^{(k)}}(1/2, u)$ approaches:
-$$R_2(r) = 1 - \left(\frac{\sin(\pi r)}{\pi r}\right)^2 + O(k^{-1/2}),$$
-matching Montgomery's conjecture for the Riemann zeta function.
-
-### 15.3 Renormalization Group Analysis
-
-**Definition 15.2** (Scale Transformation).
-Define a **scale doubling map** $T_2: \mathcal{H}^{(k)} \to \mathcal{H}^{(2k)}$ that embeds the $k$-prime system into the $2k$-prime system by:
-
-$$
-[T_2 H^{(k)}]_{ij} = \begin{cases}
-H^{(k)}_{ij} & \text{if } i,j \leq k \\
-(\sigma - 1/2)\log p_{k+j} & \text{if } i = j > k \\
-0 & \text{otherwise}
-\end{cases}
-$$
-
-**Theorem 15.3** (Renormalization Group Fixed Point).
-The critical parameter $\sigma = 1/2$ is a **stable fixed point** of the renormalization group flow:
-
-$$
-\frac{d\sigma}{d\ell} = \beta(\sigma) = -C(\sigma - 1/2) + O((\sigma - 1/2)^2),$$
-
-where $\ell = \log k$ is the RG scale parameter and $C > 0$ is a universal constant.
-
-**Physical Interpretation**: This provides a **dynamical systems explanation** for why the critical line $\sigma = 1/2$ attracts all trajectories in the space of admissible parameters.
-
-### 15.4 Quantum Field Theory Formulation
-
-**Definition 15.3** (TNFR Field Action).
-Define a discrete field theory action on the prime lattice:
-
-$$
-S[\phi] = \sum_{i=1}^k \left[\frac{1}{2}(\nabla\phi)_i^2 + V_\sigma(i)\phi_i^2 + \lambda \phi_i^4\right],
-$$
-
-where $\phi_i$ is the field value at prime $p_i$ and $\lambda$ controls nonlinear interactions.
-
-**Theorem 15.4** (Path Integral Representation).
-The discrete partition function admits the representation:
-
-$$
-Z_{H^{(k)}}(\sigma, \beta) = \int \mathcal{D}\phi \, e^{-S[\phi]/\hbar_{\text{eff}}},$$
-
-where $\hbar_{\text{eff}} = \beta^{-1}$ is an effective Planck constant and the measure $\mathcal{D}\phi$ is the Haar measure on the field space.
-
-**Applications**:
-1. **Perturbative expansion**: Systematic computation of correlation functions via Feynman diagrams.
-2. **Phase transitions**: Critical phenomena at $\sigma = 1/2$ correspond to second-order phase transitions.
-3. **Anomalies**: Quantum corrections may break classical symmetries, providing constraints on admissible parameters.
-
----
-
-## 16. Proof Strategy for Riemann Hypothesis via TNFR
-
-### 16.1 The Four-Step Proof Architecture
-
-**Step I: Discrete Confinement Theorem**
-**Target**: Prove that all zeros of $\zeta_{H^{(k)}}(\sigma, u)$ lie on $\sigma = 1/2$ for $k > k_0$.
-
-*Method*: Combine Theorem 14.2 (critical threshold convergence) with conservation law analysis from Section 14.4. Show that any zero off the critical line violates TNFR invariant conservation.
-
-**Step II: Convergence and Continuity**
-**Target**: Establish $\lim_{k \to \infty} \zeta_{H^{(k)}}(1/2, u) = C \cdot \zeta_R(u + \delta)$ with explicit error bounds.
-
-*Method*: Use Theorem 15.1 (trace formula) combined with prime number theorem asymptotics. Apply Tauberian theorems to control the approach to the continuous limit.
-
-**Step III: Universal Invariant Preservation**
-**Target**: Prove that TNFR invariant conservation (energy, topological charge, multiscale coherence) uniquely determines the critical line location.
-
-*Method*: Extend Theorem 14.4 to the continuous limit. Use renormalization group analysis (Theorem 15.3) to show that $\sigma = 1/2$ is the unique stable fixed point preserving all TNFR invariants.
-
-**Step IV: Analytic Continuation and Zero Transfer**
-**Target**: Show that the zero structure of the discrete system transfers to the continuous Riemann zeta function via analytic continuation.
-
-*Method*: Apply complex analysis techniques to the functional equation (Theorem 14.3). Use Hadamard factorization and Jensen's formula to control the zero counting function.
-
-### 16.2 Key Lemmas and Technical Tools
-
-**Lemma 16.1** (Prime Gap Control).
-The prime gaps $g_k = p_{k+1} - p_k$ satisfy the bound needed for spectral convergence:
-$$\sum_{k=1}^\infty \frac{g_k^2}{p_k^2 \log p_k} < \infty.$$
-
-**Lemma 16.2** (Spectral Concentration).
-For $\sigma = 1/2$, the eigenvalues of $H^{(k)}(1/2)$ concentrate in the interval $[0, C\log k]$ with probability $1 - O(k^{-2})$.
-
-**Lemma 16.3** (Invariant Rigidity).
-Any continuous deformation of the discrete system that preserves TNFR invariants must preserve the critical line property $\sigma = 1/2$.
-
-### 16.3 Open Problems
-
-Each step in the proof architecture above depends on unproven conjectures. The most critical open problems are:
-
-1. Rigorous spectral analysis of finite-dimensional operators (Theorems 14.1-14.4)
-2. Large-$k$ asymptotics via trace formula methods and error bound analysis
-3. Renormalization group fixed point analysis for multiscale coherence
-4. Analytic continuation and zero transfer proof
-
-This systematic approach defines a concrete mathematical research program with clear milestones and verification criteria.
-
----
-
-## Appendix A: Detailed Proofs and Technical Results
-
-### A.1 Complete Proof of Theorem 14.1 (Spectral Properties)
-
-**Theorem 14.1** (Restated): The operator $H_{\mathrm{TNFR}}^{(k)}(\sigma) = L_k + V_\sigma$ satisfies self-adjointness, spectral bounds, and monotonicity properties.
-
-**Proof**:
-
-**(i) Self-adjointness**: We have $H^{(k)} = L_k + \text{diag}(V_\sigma(1), \ldots, V_\sigma(k))$ where:
-- $L_k$ is the graph Laplacian with $(L_k)_{ij} = d_i \delta_{ij} - w_{ij}$
-- Since $w_{ij} = w_{ji}$ (symmetric edge weights) and $d_i \in \mathbb{R}$, we get $L_k = L_k^T$
-- $V_\sigma$ is diagonal with real entries $V_\sigma(i) = (\sigma - 1/2)\log p_i \in \mathbb{R}$
-- Therefore $H^{(k)} = (H^{(k)})^T = (H^{(k)})^*$ □
-
-**(ii) Spectral bounds**: Apply Gershgorin's circle theorem. For each row $i$:
-$$|H_{ii}^{(k)} - \lambda| \leq \sum_{j \neq i} |H_{ij}^{(k)}| = \sum_{j \neq i} w_{ij} = d_i - w_{ii} = d_i$$
-
-Since $H_{ii}^{(k)} = d_i + V_\sigma(i)$, we get:
-$$V_\sigma(i) \leq \lambda \leq 2d_i + V_\sigma(i)$$
-
-Taking extrema: $\lambda \in [V_{\min} + 0, V_{\max} + 2d_{\max}]$ where:
-- $V_{\min} = \min_i V_\sigma(i) = (\sigma - 1/2)\log p_1$
-- $V_{\max} = \max_i V_\sigma(i) = (\sigma - 1/2)\log p_k$
-- $d_{\max} = \max_i d_i \leq 2$ (path graph has degree ≤ 2) □
-
-**(iii) Monotonicity**: By Feynman-Hellmann theorem:
-$$\frac{d\lambda_j^{(k)}}{d\sigma} = \left\langle\psi_j^{(k)} \left| \frac{dH^{(k)}}{d\sigma} \right| \psi_j^{(k)}\right\rangle = \left\langle\psi_j^{(k)} \left| \frac{dV_\sigma}{d\sigma} \right| \psi_j^{(k)}\right\rangle$$
-
-Since $\frac{dV_\sigma}{d\sigma} = \text{diag}(\log p_1, \ldots, \log p_k)$ and $\|\psi_j^{(k)}\|^2 = 1$:
-$$\frac{d\lambda_j^{(k)}}{d\sigma} = \sum_{i=1}^k |\psi_j^{(k)}(i)|^2 \log p_i = \log\left(\prod_{i=1}^k p_i^{|\psi_j^{(k)}(i)|^2}\right) = \log(p_{\text{eff}}) > 0$$
-
-where $p_{\text{eff}} = \prod_{i=1}^k p_i^{|\psi_j^{(k)}(i)|^2} \geq p_1 > 1$ since the weights form a probability distribution. □
-
-### A.2 Asymptotic Analysis of Critical Thresholds (Theorem 14.2)
-
-**Lemma A.1** (Laplacian Spectrum Asymptotics).
-For the path graph Laplacian $L_k$, the smallest nonzero eigenvalue satisfies:
-$$\lambda_1(L_k) = 4\sin^2\left(\frac{\pi}{2(k+1)}\right) \sim \frac{\pi^2}{(k+1)^2} \text{ as } k \to \infty$$
-
-**Proof**: The path graph Laplacian has explicit eigenvectors $\psi_j(n) = \sqrt{\frac{2}{k+1}}\sin\left(\frac{j\pi n}{k+1}\right)$ for $j = 1, \ldots, k$ with eigenvalues $\lambda_j = 4\sin^2(j\pi/(2(k+1)))$. □
-
-**Proof of Theorem 14.2**:
-
-At the critical point $\sigma_c^{(k)}$, we have $\lambda_{\min}^{(k)}(\sigma_c^{(k)}) = 0$. The ground state is approximately:
-$$\psi_0^{(k)} \approx \alpha \psi_{\text{const}} + \beta \psi_1(L_k) + O(k^{-2})$$
-
-where $\psi_{\text{const}}$ is the constant eigenvector and $\psi_1(L_k)$ is the first Laplacian eigenmode.
-
-**Balance equation**: 
-$$(\sigma_c^{(k)} - 1/2) \langle\psi_0 | V_{1/2} | \psi_0\rangle + \langle\psi_0 | L_k | \psi_0\rangle = 0$$
-
-**Leading terms**:
-- $\langle\psi_{\text{const}} | V_{1/2} | \psi_{\text{const}}\rangle = 0$ (potential is centered at $\sigma = 1/2$)
-- $\langle\psi_{\text{const}} | L_k | \psi_{\text{const}}\rangle = 0$ (constant is in kernel)
-- Mixed term: $\langle\psi_{\text{const}} | V_{1/2} | \psi_1\rangle = \frac{1}{\sqrt{k}} \sum_{i=1}^k \log p_i \sin\left(\frac{\pi i}{k+1}\right)$
-
-**Prime number theorem**: Using $\log p_i \sim i \log i$ and Euler-Maclaurin formula:
-$$\sum_{i=1}^k \log p_i \sin\left(\frac{\pi i}{k+1}\right) \sim \frac{k^2 \log k}{2} + O(k^2)$$
-
-**Critical shift**: This gives:
-$$\sigma_c^{(k)} - 1/2 = -\frac{\beta^2 \lambda_1(L_k)}{\alpha \beta \cdot k^{-1/2} \cdot k^2 \log k / 2} \sim \frac{C}{\log k}$$
-
-where $C$ depends on the ratio $\beta^2/(\alpha\beta)$ determined by the normalization condition. □
-
-### A.3 Computational Algorithms
-
-**Algorithm A.1** (Efficient Critical Threshold Detection).
-```
-Input: Graph size k, precision ε
-Output: Critical threshold σ_c^(k) ± ε
-
-1. Build prime graph G_k with log-gap weights
-2. Initialize bounds: σ_low = 0, σ_high = 1
-3. While σ_high - σ_low > ε:
-   a. σ_mid = (σ_low + σ_high) / 2
-   b. Construct H^(k)(σ_mid)
-   c. Compute λ_min via Lanczos iteration (sparse)
-   d. If λ_min < 0: σ_low = σ_mid
-   e. Else: σ_high = σ_mid
-4. Return σ_c^(k) = (σ_low + σ_high) / 2
-```
-
-**Complexity**: $O(k \log(1/\varepsilon))$ using sparse eigensolvers.
-
-**Algorithm A.2** (Discrete Spectral Zeta Evaluation).
-```
-Input: Operator H^(k)(σ), parameter u, truncation M
-Output: ζ_{H^(k)}(σ, u) approximation
-
-1. Compute eigenvalues {λ_j} via symmetric QR algorithm
-2. Filter: Keep only λ_j > δ (δ = 10^-12 for numerical stability)
-3. Compute: ζ = Σ_{j: λ_j > δ} λ_j^(-u)
-4. If u ∈ ℤ^+, use Euler-Maclaurin acceleration:
-   ζ_accelerated = ζ + ∫_{λ_M}^∞ x^(-u) ρ(x) dx
-   where ρ(x) is the empirical density continuation
-5. Return ζ_accelerated
-```
-
-**Algorithm A.3** (TNFR Tetrad Field Computation).
-```
-Input: Graph G_k, eigenstate ψ_j^(k)
-Output: Tetrad fields (Φ_s, |∇φ|, K_φ, ξ_C)
-
-1. Structural potential:
-   Φ_s = Σ_i |ψ_j(i)|^2 * V_σ(i)
-
-2. Phase gradient (discrete):
-   |∇φ| = sqrt(Σ_{(i,j)∈E} w_ij * |ψ_j(i) - ψ_j(j)|^2)
-
-3. Phase curvature:
-   For each node i with neighbors N(i):
-     φ_i = arg(ψ_j(i))
-     φ_mean = circular_mean({φ_n : n ∈ N(i)})
-     K_φ(i) = wrap_angle(φ_i - φ_mean)
-   K_φ = max_i |K_φ(i)|
-
-4. Coherence length:
-   ξ_C = (Σ_i |ψ_j(i)|^4)^(-1)  [Inverse participation ratio]
-
-5. Return (Φ_s, |∇φ|, K_φ, ξ_C)
-```
-
----
-
-## Appendix B: Connections to Advanced Mathematical Structures
-
-### B.1 Arithmetic Quantum Chaos Theory
-
-The discrete TNFR operator naturally connects to **arithmetic quantum chaos**, the study of quantum systems whose classical limit exhibits chaotic behavior related to number-theoretic properties.
-
-**Connection B.1** (Quantum Unique Ergodicity).
-As $k \to \infty$, the eigenstates $\psi_j^{(k)}(1/2)$ of $H^{(k)}(1/2)$ become **quantum unique ergodic**:
-$$\lim_{k \to \infty} \left|\psi_j^{(k)}(i)\right|^2 = \frac{1}{k} + O(k^{-1/2+\varepsilon})$$
-
-uniformly for all nodes $i$ and most eigenvalues $j$. This connects to Rudnick-Sarnak's work on L-function eigenstates.
-
-**Connection B.2** (Arithmetic Scarring).
-Certain eigenstates exhibit **arithmetic scarring** along number-theoretic sequences:
-- Enhanced amplitude near prime gaps $p_{i+1} - p_i > \log^2 p_i$
-- Oscillatory patterns with period related to $\text{Li}(x)$ (logarithmic integral)
-- Connection to explicit formulas via Möbius function correlations
-
-### B.2 Adelic and p-adic Extensions
-
-**Definition B.1** (p-adic TNFR Operator).
-For each prime $p$, define the **p-adic completion** of the discrete operator:
-$$H_p^{(\infty)}(\sigma) = \lim_{k \to \infty, p|p_k} H^{(k)}(\sigma) \otimes \mathbb{Q}_p$$
-
-**Theorem B.1** (Adelic Factorization).
-The global spectral zeta function factorizes adelically:
-$$\zeta_{\text{global}}(\sigma, s) = \zeta_\infty(\sigma, s) \prod_p \zeta_p(\sigma, s)$$
-
-where $\zeta_\infty$ is the archimedean (continuous) contribution and $\zeta_p$ are p-adic local factors.
-
-**Applications**:
-1. **Local-global principle**: RH holds globally iff it holds for all p-adic completions
-2. **Iwasawa theory**: Connection to p-adic L-functions and main conjectures
-3. **Langlands correspondence**: Automorphic forms emerge from TNFR symmetries
-
-### B.3 Motivic and Categorical Structures
-
-**Definition B.2** (TNFR Motive).
-The discrete operator $H^{(k)}(\sigma)$ defines a **mixed motive** $M^{(k)}$ over $\mathbb{Q}$ with:
-- Weight filtration indexed by logarithmic prime heights
-- Galois action on cohomology encoded in spectral symmetries
-- Period integrals related to L-function special values
-
-**Theorem B.2** (Categorical Equivalence).
-The category of TNFR operators is equivalent to a subcategory of **1-motives** with potential good reduction at all primes.
-
-**Connection B.3** (Derived Categories).
-TNFR dynamics induce a **t-structure** on the derived category $D^b(\text{Motives})$ where:
-- Coherent objects correspond to admissible parameters $\sigma \in \mathcal{A}^{(k)}$
-- Exact triangles encode operator decompositions
-- Perverse sheaves emerge from multiscale EPI structures
-
-### B.4 Tropical and Berkovich Geometry
-
-**Definition B.3** (Tropical TNFR Limit).
-The **tropical limit** of $H^{(k)}(\sigma)$ as the characteristic varies:
-$$H_{\text{trop}}(\sigma) = \lim_{p \to 1^+} \log_p H^{(k)}(\sigma) \mod p\mathbb{Z}_p$$
-
-**Theorem B.3** (Berkovich Spectral Correspondence).
-Eigenvalues of $H^{(k)}(\sigma)$ correspond to **Type II points** on the Berkovich projective line over the completion of the function field $\mathbb{C}((\sigma))$.
-
-**Applications**:
-1. **Skeletal decomposition**: Prime network structure emerges from tropical skeleta
-2. **Reduction theory**: Stable reduction of TNFR operators at boundary divisors  
-3. **Non-archimedean dynamics**: Iteration of TNFR operators in Berkovich spaces
-
----
-
-## Appendix C: Experimental Validation Protocols
-
-### C.1 High-Precision Numerical Experiments
-
-**Protocol C.1** (Extended Critical Threshold Survey).
-- **Range**: $k \in \{10, 20, 50, 100, 200, 500, 1000\}$
-- **Precision**: Compute $\sigma_c^{(k)}$ to 12 decimal places using interval bisection
-- **Weights**: Test both uniform and log-gap edge weight schemes
-- **Validation**: Compare with theoretical prediction $\sigma_c^{(k)} = 1/2 + C/\log k$
-- **Output**: Table of $(k, \sigma_c^{(k)}, \text{error})$ for regression analysis
-
-**Protocol C.2** (Spectral Statistics Verification).
-- **GUE comparison**: Compute nearest-neighbor spacing distribution for $k = 1000$
-- **Correlation functions**: 2-point, 3-point correlation functions vs. RMT predictions
-- **Number variance**: $\Sigma^2(L) = \langle N(L)^2 \rangle - \langle N(L) \rangle^2$ for interval counting
-- **Form factor**: Fourier transform of 2-point function vs. universal RMT form
-
-**Protocol C.3** (Discrete Zeta Function Computation).
-```python
-# Pseudocode for systematic zeta evaluation
-for k in [50, 100, 200, 500]:
-    H = build_h_tnfr(prime_graph(k), sigma=0.5)
-    eigenvals = compute_eigenvalues(H)
-    
-    for u in [0.5, 1.0, 1.5, 2.0, 2.5]:
-        zeta_discrete = sum(lam**(-u) for lam in eigenvals if lam > 1e-12)
-        zeta_riemann = riemann_zeta(u)  # Reference implementation
-        
-        error = abs(zeta_discrete - zeta_riemann)
-        convergence_rate = error / k**(-alpha)  # Estimate α
-        
-        record_data(k, u, zeta_discrete, error, convergence_rate)
-```
-
-### C.2 Cross-Validation with Known Results
-
-**Validation C.1** (Montgomery Pair Correlation).
-Compare discrete pair correlation with Montgomery's conjecture:
-$$R_2^{(k)}(r) \stackrel{?}{\longrightarrow} 1 - \left(\frac{\sin \pi r}{\pi r}\right)^2$$
-
-**Validation C.2** (Explicit Formulas).
-Test discrete analogues of von Mangoldt explicit formula:
-$$\psi^{(k)}(x) = x - \sum_{\rho^{(k)}} \frac{x^{\rho^{(k)}}}{\rho^{(k)}} + O(1)$$
-
-where $\rho^{(k)}$ are the discrete "non-trivial zeros".
-
-**Validation C.3** (Zero Counting Functions).
-Compare $N^{(k)}(T) = \#\{|\text{Im}(\rho^{(k)})| \leq T\}$ with the asymptotic:
-$$N(T) \sim \frac{T}{2\pi} \log \frac{T}{2\pi e} + \frac{7}{8} + O(T^{-1})$$
-
-This completes the comprehensive formalization of the TNFR-Riemann program, providing rigorous mathematical foundations, detailed proofs, computational algorithms, connections to advanced mathematical structures, and systematic experimental validation protocols.
-
-
----
-
----
-
-## Implementation & Examples
-
-### Executable Demonstrations
-
-| Example | Concept from this document |
-|---------|---------------------------|
-| [16_riemann_operator_demo.py](../examples/16_riemann_operator_demo.py) | Discrete TNFR-Riemann eigenvalues, critical σ |
-| [18_riemann_convergence_proof.py](../examples/18_riemann_convergence_proof.py) | Spectral convergence σ_c → 1/2 |
-| [19_topology_comparison.py](../examples/19_topology_comparison.py) | Cross-topology universality |
-| [20_eigenmode_tetrad.py](../examples/20_eigenmode_tetrad.py) | Per-eigenmode structural field tetrad |
-| [21_complex_extension_demo.py](../examples/21_complex_extension_demo.py) | Non-Hermitian operator, complex s |
-| [22_spectral_zeta_demo.py](../examples/22_spectral_zeta_demo.py) | Spectral zeta, heat kernel, Mellin bridge |
-| [23_random_ensemble_rmt_demo.py](../examples/23_random_ensemble_rmt_demo.py) | Random matrix ensembles (GOE/GUE/Poisson) |
-| [25_analytical_convergence_demo.py](../examples/25_analytical_convergence_demo.py) | Analytical proof via PNT + telescoping identity |
-
-### Key Source Modules
-
-- `src/tnfr/riemann/operator.py` — Discrete TNFR-Riemann operators
-- `src/tnfr/riemann/spectral_proof.py` — Spectral convergence proofs
-- `src/tnfr/riemann/complex_extension.py` — Complex plane extensions
-- `src/tnfr/riemann/spectral_zeta.py` — Spectral zeta functions
-- `src/tnfr/riemann/topology.py` — Topology comparison analysis
-- `src/tnfr/riemann/analytical_convergence.py` — Analytical convergence analysis
-
----
-
-## 13. Program Status Summary — May 2026
-
-This section consolidates the canonical state of the TNFR-Riemann
-programme into a single reference table, replacing all earlier
-piecewise status notes.
-
-### 13.1 Milestone → Gap Map
-
-| Milestone | Module | Demo | Notes § | Closes gap |
-|---|---|---|---|---|
-| P1  Discrete TNFR-Riemann operator | `operator.py` | `16_riemann_operator_demo.py` | §3 | σ_c convergence (numerical) |
-| P2  Topology universality | `topology.py` | `19_topology_comparison.py` | §3 | Cross-topology invariance |
-| P3  Per-eigenmode tetrad | `eigenmode_fields.py` | `20_eigenmode_tetrad.py` | §4 | Structural-field characterisation |
-| P4  Complex-$s$ extension | `complex_extension.py` | `21_complex_extension_demo.py` | §5 | Non-Hermitian access to $\mathbb{C}$ |
-| P5  Spectral zeta / heat kernel | `spectral_zeta.py` | `22_spectral_zeta_demo.py` | §6 | First (affine) bridge attempt |
-| P6  Random matrix benchmark | `random_ensemble.py` | `23_random_ensemble_rmt_demo.py` | §6 | GOE/GUE/Poisson baselines |
-| P7  Spectral conservation | `spectral_conservation.py` | `24_spectral_conservation_demo.py` | §6 | Lyapunov / Noether on spectrum |
-| P8  Analytical convergence | `analytical_convergence.py` | `25_analytical_convergence_demo.py` | §6 | $\sigma_c \to 1/2$ via PNT + telescoping |
-| P9  Functional equation | `functional_equation.py` | — | §6 | TNFR-side $s \leftrightarrow 1-s$ check |
-| P10 Convergence proof chain | `convergence_proof.py` | `18_riemann_convergence_proof.py` | §6 | End-to-end $\sigma_c \to 1/2$ certificate |
-| P11 Zeta bridge certificate | `zeta_bridge.py` | — | §7 | Affine bridge tested → **negative** |
-| **P12** Prime-ladder vM spectrum | `von_mangoldt.py` | `41_von_mangoldt_zeta_demo.py` | §8 | **G5/#1, G5/#2** (Λ-series exact) |
-| **P13** Analytic continuation | `analytic_continuation.py` | `42_riemann_zeros_as_resonances.py` | §9 | **G2 + G5/#5, G5/#6** (zeros as poles on $\operatorname{Re}(s) = 1/2$) |
-| **P14** Self-adjoint Hamiltonian | `prime_ladder_hamiltonian.py` | `43_prime_ladder_hamiltonian_demo.py` | §10 | **G1 + G5/#3** (no $C(k)$ renormalisation needed) |
-| **P15** Weil–Guinand identity | `weil_explicit_formula.py` | `44_weil_explicit_formula_demo.py` | §11 | **G3** (zeros ↔ spectrum, residual $\le 5 \times 10^{-12}$) |
-| **P16** Li–Keiper positivity | `li_keiper.py` | `45_li_keiper_demo.py` | §12 | RH-equivalent **diagnostic** (not proof) |
-| **P17** Weil–TNFR positivity bridge | `weil_positivity.py` | `46_weil_tnfr_positivity_demo.py` | §14 | TNFR-native witness for **G4** (research prototype, not proof) |
-| **P18** Admissibility / gauge sweep of $\alpha(\sigma)$ | `alpha_sweep.py` | `47_alpha_sweep_demo.py` | §15 | Robustness audit of the P17 bridge under canonical-mapping ambiguity ($\alpha > 0$ across 6 gauges × 12 widths) |
-| **P19** Admissible-family sweep | `admissible_family_sweep.py` | `48_admissible_family_sweep_demo.py` | §16 | Extends P18 beyond Gaussian-only tests (family × gauge × $\sigma$ positivity audit) |
-| **P20** Node-aware gauge sweep | `nodeaware_gauge_sweep.py` | `49_nodeaware_gauge_sweep_demo.py` | §17 | Extends P19 with gauges depending on local $\nu_f$ and node-weight channels |
-| **P21** Hermite-family expansion | `admissible_family_sweep.py` | `48_admissible_family_sweep_demo.py` | §18 | Adds Hermite2-Gaussian admissible family and revalidates P19/P20 positivity |
-
-### 13.2 Gap Balance
-
-| Gap | Description | Status (May 2026) |
-|---|---|---|
-| **G1** | Canonical TNFR Hamiltonian carrying the prime-ladder spectrum | **CLOSED operationally** by P14 |
-| **G2** | Analytic continuation of the TNFR vM zeta to $\mathbb{C}$ | **CLOSED operationally** by P13 |
-| **G3** | Explicit zeros $\leftrightarrow$ spectrum bridge | **CLOSED operationally** by P15 (Weil–Guinand) |
-| **G4** | **Riemann Hypothesis** — localisation of poles on $\operatorname{Re}(s) = 1/2$ | **OPEN** (genuine mathematical obstruction; TNFR-native attack surface exposed by **P17**) |
-| **G5** | Bridge from TNFR spectral zeta to classical $\zeta(s)$ | **SUPERSEDED** by P12+P13+P15 (§7.8) |
-
-**Net result**: 4 of 5 originally-identified gaps are operationally
-closed inside the canonical TNFR formalism. The only remaining
-obstruction is **G4 = RH itself**, which is not attackable by any
-extension of P12–P16 (those provide the machinery; the missing
-ingredient is a structural positivity / self-adjointness argument
-that forces all resonance poles onto the critical line).
-
-### 13.3 Scope Statement (Honest Reading)
-
-What the TNFR-Riemann programme **does** at the May 2026 milestone:
-
-* Provides an end-to-end computable pipeline from the nodal equation
-  $\partial \mathrm{EPI}/\partial t = \nu_f \cdot \Delta\mathrm{NFR}(t)$ to the
-  Weil–Guinand explicit formula.
-* Reproduces $-\zeta'(s)/\zeta(s)$ exactly on $\operatorname{Re}(s) > 1$ via a
-  prime-ladder spectrum (P12) and continues it analytically to $\mathbb{C}$ (P13).
-* Builds a self-adjoint Hamiltonian $\hat H$ on a TNFR graph whose
-  weighted spectral trace carries the same data (P14).
-* Numerically verifies the Weil–Guinand identity to machine precision
-  using $\hat H$ on the prime side (P15).
-* Exposes Li's positivity criterion as a TNFR-native, RH-equivalent
-  diagnostic surface (P16).
-
-What the programme **does not** do:
-
-* Prove RH. P16 is RH-equivalent, not RH-proving: a numerical violation
-  $\lambda_n \le 0$ would disprove RH, but $\lambda_n > 0$ for any finite
-  truncation does not prove it.
-* Replace the classical $\zeta(s)$. The TNFR construction reproduces
-  classical data; it does not derive new analytic-number-theory results.
-* Close G4 by any internal extension. Crossing G4 requires a structural
-  result (e.g.\ Hilbert–Pólya self-adjoint realisation, or a TNFR
-  positivity functional forcing $\gamma \in \mathbb{R}$) that is genuinely
-  new mathematics, not engineering of the existing pipeline.
-
-### 13.4 Reproducibility
-
-All P12–P16 results are reproducible via the corresponding demos in
-`examples/41_…` through `examples/45_…` using the standard project
-invocation:
-
-```powershell
-$env:PYTHONPATH = (Resolve-Path ./src).Path
-& .\.venv312\Scripts\python.exe examples\45_li_keiper_demo.py
-```
-
-The full pipeline (importability of all 16 milestones) can be sanity-checked with:
-
-```python
-from tnfr.riemann import (
-    build_prime_path_graph,                 # P1
-    compute_eigensystem,                    # P1
-    compute_spectral_zeta,                  # P5
-    build_prime_ladder_spectrum,            # P12
-    von_mangoldt_zeta_continued,            # P13
-    scan_critical_line_for_poles,           # P13
-    build_prime_ladder_hamiltonian,         # P14
-    verify_weil_explicit_formula,           # P15
-    verify_li_keiper_criterion,             # P16
-    verify_weil_tnfr_bridge,                # P17
-)
-```
-
-This single import covers the canonical entry points of every milestone
-delivered so far.
-
----
-
+**Net effect**: P30 does not change the closed/open status of any of G1–G5. It refines the structure of the open content of G4 by closing one quadrant (smooth × operator-level × existence) of the T-HP grid and producing branch-B2 evidence for the oscillatory quadrant.
 ## 14. Weil–TNFR Positivity Bridge (P17)
 
 ### 14.1 Motivation
 
-The §13.2 balance leaves a single open obstruction: **G4 = RH itself**.
+The §19.2 balance leaves a single open obstruction: **G4 = RH itself**.
 P12–P16 close the *operational* gaps (Hamiltonian, analytic continuation,
 explicit formula, Λ-series reproduction, RH-equivalent positivity
 diagnostic), but none of them forces resonance poles onto the critical
@@ -3445,7 +2053,7 @@ across the tested grid, with $\alpha_{\min} \approx 3.85 \times 10^{-44}$
   numerical counter-example ($\alpha(\sigma_*) < 0$) would disprove
   the bridge as currently formulated (not RH itself, which would
   require $W[h_{\sigma_*}] < 0$).
-* In the §13.2 ledger, G4 remains **OPEN**, but the attack surface is
+* In the §19.2 ledger, G4 remains **OPEN**, but the attack surface is
   now made explicit: instead of an unspecified "Hilbert–Pólya
   realisation", the missing structural argument is **lower-boundedness
   of $\alpha(\sigma)$ on a dense admissible class** under the canonical
@@ -3567,7 +2175,7 @@ Two structural readings:
      bumps) — required to feed the family-completeness clause of
      Weil's theorem.
 
-In the §13.2 ledger, G4 stays **OPEN**; the §14.6 "lower-boundedness
+In the §19.2 ledger, G4 stays **OPEN**; the §14.6 "lower-boundedness
 of $\alpha(\sigma)$ on a dense admissible class" target now has its
 first empirical lower bound across two Lyapunov orbits.
 
@@ -3836,90 +2444,156 @@ $env:PYTHONPATH = (Resolve-Path ./src).Path
 & .\.venv312\Scripts\python.exe examples\49_nodeaware_gauge_sweep_demo.py
 ```
 
+## 19. Program Status Summary — May 2026 (updated for P30)
+
+This section consolidates the canonical state of the TNFR-Riemann
+programme into a single reference table, replacing all earlier
+piecewise status notes.
+
+### 19.1 Milestone → Gap Map
+
+| Milestone | Module | Demo | Notes § | Closes gap |
+|---|---|---|---|---|
+| P1  Discrete TNFR-Riemann operator | `operator.py` | `16_riemann_operator_demo.py` | §3 | $\sigma_c$ convergence (numerical) |
+| P2  Topology universality | `topology.py` | `19_topology_comparison.py` | §3 | Cross-topology invariance |
+| P3  Per-eigenmode tetrad | `eigenmode_fields.py` | `20_eigenmode_tetrad.py` | §4 | Structural-field characterisation |
+| P4  Complex-$s$ extension | `complex_extension.py` | `21_complex_extension_demo.py` | §5 | Non-Hermitian access to $\mathbb{C}$ |
+| P5  Spectral zeta / heat kernel | `spectral_zeta.py` | `22_spectral_zeta_demo.py` | §6 | First (affine) bridge attempt |
+| P6  Random matrix benchmark | `random_ensemble.py` | `23_random_ensemble_rmt_demo.py` | §6 | GOE/GUE/Poisson baselines |
+| P7  Spectral conservation | `spectral_conservation.py` | `24_spectral_conservation_demo.py` | §6 | Lyapunov / Noether on spectrum |
+| P8  Analytical convergence | `analytical_convergence.py` | `25_analytical_convergence_demo.py` | §6 | $\sigma_c \to 1/2$ via PNT + telescoping |
+| P9  Functional equation | `functional_equation.py` | — | §6 | TNFR-side $s \leftrightarrow 1-s$ check |
+| P10 Convergence proof chain | `convergence_proof.py` | `18_riemann_convergence_proof.py` | §6 | End-to-end $\sigma_c \to 1/2$ certificate |
+| P11 Zeta bridge certificate | `zeta_bridge.py` | — | §7 | Affine bridge tested → **negative** |
+| **P12** Prime-ladder vM spectrum | `von_mangoldt.py` | `41_von_mangoldt_zeta_demo.py` | §8 | **G5/#1, G5/#2** (Λ-series exact) |
+| **P13** Analytic continuation | `analytic_continuation.py` | `42_riemann_zeros_as_resonances.py` | §9 | **G2 + G5/#5, G5/#6** (zeros as poles on $\operatorname{Re}(s) = 1/2$) |
+| **P14** Self-adjoint Hamiltonian | `prime_ladder_hamiltonian.py` | `43_prime_ladder_hamiltonian_demo.py` | §10 | **G1 + G5/#3** (no $C(k)$ renormalisation needed) |
+| **P15** Weil–Guinand identity | `weil_explicit_formula.py` | `44_weil_explicit_formula_demo.py` | §11 | **G3** (zeros ↔ spectrum, residual $\le 5 \times 10^{-12}$) |
+| **P16** Li–Keiper positivity | `li_keiper.py` | `45_li_keiper_demo.py` | §12 | RH-equivalent **diagnostic** (not proof) |
+| **P17** Weil–TNFR positivity bridge | `weil_positivity.py` | `46_weil_tnfr_positivity_demo.py` | §14 | TNFR-native witness for **G4** (research prototype, not proof) |
+| **P18** Admissibility / gauge sweep of $\alpha(\sigma)$ | `alpha_sweep.py` | `47_alpha_sweep_demo.py` | §15 | Robustness audit of P17 under canonical-mapping ambiguity |
+| **P19** Admissible-family sweep | `admissible_family_sweep.py` | `48_admissible_family_sweep_demo.py` | §16 | Extends P18 beyond Gaussian (family × gauge × $\sigma$) |
+| **P20** Node-aware gauge sweep | `nodeaware_gauge_sweep.py` | `49_nodeaware_gauge_sweep_demo.py` | §17 | Gauges depending on local $\nu_f$ and node weights |
+| **P21** Hermite-family expansion | `admissible_family_sweep.py` | `48_admissible_family_sweep_demo.py` | §18 | Adds Hermite2-Gaussian admissible family |
+| **P22** Empirical uniform coercivity | `coercivity_uniform.py` | `50_uniform_coercivity_demo.py` | §13 | Interval-level lower bound on $\alpha(\sigma)$; G4 diagnostic |
+| **P23** Stratified interval coercivity | `coercivity_uniform.py` | `50_uniform_coercivity_demo.py` | §13 | Segment-local refinement of P22 |
+| **P24** Adaptive $\sigma$ refinement | `coercivity_uniform.py` | `51_adaptive_coercivity_demo.py` | §13bis | Bisection under local Lipschitz envelope |
+| **P25** Paley-gap coercivity diagnostic | `paley_gap_coercivity.py` | `52_paley_gap_coercivity_demo.py` | §13ter | Cross gap $g_{\mathrm{cross}} \to 0$ at coupling 0 (Paley identity) |
+| **P26** Lyapunov-spectral positivity | `lyapunov_spectral_positivity.py` | `53_lyapunov_spectral_positivity_demo.py` | §13quater | Operator-level positivity for P14; G4 diagnostic |
+| **P27** Hilbert–Pólya scaffold | `hilbert_polya.py` | `54_hilbert_polya_scaffold_demo.py` | §13quinquies | $T_{\mathrm{HP}}$ populated by `mpmath.zetazero`; diagnostic only |
+| **P28** Structural smooth zero density | `structural_zero_density.py` | `55_structural_zero_density_demo.py` | §13sexies | Closes smooth half of G4 at the **density** level |
+| **P29** Spectral emergence under coupling | `spectral_emergence.py` | `56_spectral_emergence_demo.py` | §13octies.3 | KS-distance of unfolded spacings to GUE under canonical UM+RA |
+| **P30** Admissible rescaling operator | `admissible_rescaling.py` | `57_admissible_rescaling_demo.py` | §13nonies | Closes smooth half of T-HP at the **operator** level |
+
+### 19.2 Gap Balance
+
+| Gap | Description | Status |
+|---|---|---|
+| **G1** | Canonical TNFR Hamiltonian carrying the prime-ladder spectrum | **CLOSED operationally** by P14 |
+| **G2** | Analytic continuation of the TNFR vM zeta to $\mathbb{C}$ | **CLOSED operationally** by P13 |
+| **G3** | Explicit zeros $\leftrightarrow$ spectrum bridge | **CLOSED operationally** by P15 (Weil–Guinand) |
+| **G4** | **Riemann Hypothesis** — localisation of poles on $\operatorname{Re}(s) = 1/2$ | **OPEN** (= Conjecture T-HP, §13septies). Smooth half of sub-problem (1) of T-HP closed at **density** level by P28 (§13sexies) and at the **operator** level by P30 (§13nonies). Oscillatory half + canonicity (sub-problem (2)) + positivity coincidence (sub-problem (3)) remain open. |
+| **G5** | Bridge from TNFR spectral zeta to classical $\zeta(s)$ | **SUPERSEDED** by P12+P13+P15 (§7.8); original affine form numerically falsified (§7.1–§7.7). |
+
+**Net result**: 4 of 5 originally identified gaps are operationally closed inside the canonical TNFR formalism. The only remaining obstruction is **G4 = RH itself**, restated canonically as **Conjecture T-HP** in §13septies and audited link-by-link (L1–L8) in §13octies. Extensions beyond P12–P16 (P17–P30) inside the canonical engine progressively narrow G4 — by exposing the attack surface (P17), auditing the admissibility envelope (P18–P21), certifying interval-level coercivity (P22–P24), providing a Paley-style identity (P25), certifying operator-level positivity for P14 (P26), supplying a diagnostic Hilbert–Pólya scaffold (P27), and closing the smooth half of T-HP at density (P28) and operator (P30) level — but none of them closes G4. The oscillatory half of T-HP requires either a new canonical operator beyond the 13-operator catalog (§13octies branch B2; supported by the P30 negative-enrichment result, §13nonies.4) or a structural derivation of $S(T) = \pi^{-1} \arg \zeta(\tfrac{1}{2} + iT)$ from canonical TNFR ingredients (branch B1, untested).
+
+### 19.3 Scope Statement (Honest Reading)
+
+What the TNFR-Riemann programme **does** at the May 2026 milestone:
+
+* Provides an end-to-end computable pipeline from the nodal equation
+  $\partial \mathrm{EPI}/\partial t = \nu_f \cdot \Delta\mathrm{NFR}(t)$ to the
+  Weil–Guinand explicit formula (P1–P15).
+* Reproduces $-\zeta'(s)/\zeta(s)$ exactly on $\operatorname{Re}(s) > 1$ via a
+  prime-ladder spectrum (P12) and continues it analytically to $\mathbb{C}$ (P13).
+* Builds a self-adjoint Hamiltonian $\hat H$ on a TNFR graph whose
+  weighted spectral trace carries the same data (P14).
+* Numerically verifies the Weil–Guinand identity to machine precision
+  using $\hat H$ on the prime side (P15).
+* Exposes Li's positivity criterion as a TNFR-native, RH-equivalent
+  diagnostic surface (P16).
+* Opens a TNFR-native attack surface on G4 via the Weil–TNFR positivity
+  bridge $\alpha(\sigma)$ (P17) and audits its admissibility envelope
+  across canonical gauge, family and node-aware extensions (P18–P21).
+* Certifies interval-level uniform coercivity of $\alpha(\sigma)$ on
+  tested intervals (P22–P24) and provides a Paley-gap diagnostic
+  vanishing at coupling zero (P25).
+* Lifts positivity to the operator level for the P14 Hamiltonian (P26),
+  supplies a diagnostic Hilbert–Pólya scaffold populated by
+  `mpmath.zetazero` (P27), derives the smooth Riemann zero density
+  structurally (P28), and closes the smooth half of the
+  Tetrad-Hilbert–Pólya conjecture (T-HP) at the operator level (P30).
+
+What the programme **does not** do:
+
+* Prove RH. P16 is RH-equivalent, not RH-proving: a numerical violation
+  $\lambda_n \le 0$ would disprove RH, but $\lambda_n > 0$ for any finite
+  truncation does not prove it. P26 / P27 are diagnostic; P28 / P30
+  cover only the smooth (archimedean) half of T-HP.
+* Replace the classical $\zeta(s)$. The TNFR construction reproduces
+  classical data; it does not derive new analytic-number-theory results.
+* Close G4 by any internal extension. Crossing G4 requires either
+  (branch B1) a structural derivation of the oscillatory term
+  $S(T) = \pi^{-1} \arg \zeta(\tfrac{1}{2} + iT)$ from canonical TNFR
+  ingredients, or (branch B2) a new canonical operator beyond the
+  current 13-operator catalog, derivable from the nodal equation.
+  Branch B2 is currently supported by the P30 negative-enrichment
+  result (§13nonies.4). Branch B3 (no TNFR closure) cannot be ruled
+  out at this stage.
+
+### 19.4 Reproducibility
+
+All P1–P30 results are reproducible via the corresponding demos in
+`examples/` using the standard project invocation:
+
+```powershell
+$env:PYTHONPATH = (Resolve-Path ./src).Path
+& .\.venv312\Scripts\python.exe examples\57_admissible_rescaling_demo.py
+```
+
+The full pipeline (importability of every canonical entry point of the
+30 milestones) can be sanity-checked with:
+
+```python
+from tnfr.riemann import (
+    # Discrete operator & spectral framework (P1–P11)
+    build_prime_path_graph,                     # P1
+    compute_eigensystem,                        # P1
+    compare_topologies,                         # P2
+    compute_eigenmode_tetrad,                   # P3
+    compute_complex_eigensystem,                # P4
+    compute_spectral_zeta,                      # P5
+    run_rmt_ensemble_analysis,                  # P6
+    run_critical_conservation_analysis,         # P7
+    run_analytical_convergence_proof,           # P8
+    run_functional_equation_analysis,           # P9
+    run_formal_convergence_proof,               # P10
+    run_zeta_bridge_analysis,                   # P11
+    # Prime-ladder / von Mangoldt pipeline (P12–P16)
+    build_prime_ladder_spectrum,                # P12
+    von_mangoldt_zeta_continued,                # P13
+    scan_critical_line_for_poles,               # P13
+    build_prime_ladder_hamiltonian,             # P14
+    verify_weil_explicit_formula,               # P15
+    verify_li_keiper_criterion,                 # P16
+    # TNFR-native G4 attack surface (P17–P30; does NOT close G4 = RH)
+    verify_weil_tnfr_bridge,                    # P17
+    sweep_alpha,                                # P18
+    sweep_alpha_admissible_family,              # P19 / P21
+    sweep_alpha_nodeaware,                      # P20
+    verify_uniform_coercivity_empirical,        # P22 / P23 / P24
+    sweep_paley_gap,                            # P25
+    compute_lyapunov_spectral_certificate,      # P26
+    compute_hilbert_polya_certificate,          # P27
+    compute_structural_zero_density_certificate,# P28
+    compute_spectral_emergence_report,          # P29
+    compute_admissible_rescaling_certificate,   # P30
+)
+```
+
+This single import covers the canonical entry points of every milestone
+delivered so far. Symbols not exported by name correspond to internal
+helper functions; consult `src/tnfr/riemann/__init__.py` for the
+authoritative public surface.
+
 ---
-
-## §13nonies. P30 — Operator-Level Admissible Rescaling (Smooth Half; Does NOT Close G4 = RH)
-
-**Status**: Sub-problem (1) of Conjecture T-HP — **smooth half operationally closed**.  
-**Module**: `src/tnfr/riemann/admissible_rescaling.py`  
-**Demo**: `examples/57_admissible_rescaling_demo.py`  
-**Disclaimer**: P30 does NOT close gap G4 (RH); it lifts the §13sexies (P28) density-level closure of the smooth zero distribution to an explicit operator-level rescaling object.
-
-### §13nonies.1 Motivation
-
-Conjecture T-HP (§13septies) asks for the existence of an admissible operator `F` built **only** from the canonical TNFR ingredients (tetrad fields, canonical constants φ, γ, π, e, grammar U1–U6) such that `F · H_P14 · F* ` has spectrum equal to the Riemann zeros {γ_n}. §13septies.7 decomposes T-HP into three sub-problems:
-
-1. **Existence** of any admissible `F`,
-2. **Canonicity** of `F` from the nodal equation,
-3. **Positivity coincidence** with the Weil quadratic form.
-
-§13sexies (P28) closed the **density-level** smooth half: a canonical, structurally-derived expression for the smooth zero count `N̄(T)` and the smooth zero positions `ñ_i` via the Riemann–Siegel θ function. P30 lifts that closure to the **operator level** for the smooth half only.
-
-### §13nonies.2 Construction
-
-In the eigenbasis of the canonical P14 prime-ladder Hamiltonian `H_P14 = U Λ U*` with positive eigenvalues `λ_i` (top N, ascending), define
-
-Lines\mathcal{F}_{\text{smooth}} = U \cdot \operatorname{diag}\Bigl(\sqrt{\tilde\gamma_i / \lambda_i}\Bigr) \cdot U^{*},Lines
-
-where `ñ_i = build_structural_t_hp(N)` are the P28 smooth zero positions. By construction,
-
-Lines\mathcal{F}_{\text{smooth}} \, H_{P14} \, \mathcal{F}_{\text{smooth}}^{*} = U \operatorname{diag}(\tilde\gamma_i) U^{*}Lines
-
-so the conjugated spectrum equals `{ñ_i}` **exactly** (verified at machine precision).
-
-**Canonicity check (partial)**: `F_smooth` uses ONLY P14 eigendata (canonical, derived from the canonical TNFR `InternalHamiltonian` on the prime ladder), P28 smooth targets (canonical archimedean kernel), and canonical constants (φ, γ, π, e). No `mpmath.zetazero` enters the construction. `F_smooth` is therefore **structurally derived** in the sense of §13septies; whether it is the **unique** canonical lift remains open (sub-problem (2)).
-
-### §13nonies.3 Empirical Results
-
-Running `examples/57_admissible_rescaling_demo.py`:
-
-| Resolution | N  | max `|spec − ñ_i|` | W₁(σ(P14), {γ_n}) | W₁({ñ_i}, {γ_n}) | Improvement |
-|------------|----|---------------------|-------------------|------------------|-------------|
-| Fast       | 20 | 1.42 × 10⁻¹⁴        | 47.4              | 1.67             | **28.4 ×**  |
-| Medium     | 40 | 2.84 × 10⁻¹⁴        | 72.5              | 1.39             | **52.0 ×**  |
-
-The residual W₁ to the true Riemann zeros equals the oscillatory part `S(T) = π⁻¹ arg ζ(½+iT)`, which is RH-equivalent and NOT canonical.
-
-### §13nonies.4 Canonical Oscillatory Enrichment (Negative Result)
-
-Three canonical multiplicative perturbations of the smooth targets were tested:
-
-| Mode         | Best amplitude | W₁ vs true | Improvement over smooth |
-|--------------|----------------|------------|-------------------------|
-| `phi_log`  | 0              | 1.668      | +0.00 %                 |
-| `gamma_e`  | 1 × 10⁻²       | 1.617      | +0.03 %                 |
-| `pi_density`| 0             | 1.668      | +0.00 %                 |
-
-**Interpretation**: Canonical oscillatory perturbations built from (φ, γ, π, e) and the smooth targets alone fail to recover the residual S(T) term. This is **structural evidence for §13octies branch B2**: the oscillatory half of T-HP, if reachable canonically at all, requires a **new canonical operator** not expressible as a simple multiplicative dressing of the smooth ladder. Equivalently, the existing canonical operator catalog (13 operators + tetrad + constants) does **not** suffice for the oscillatory half via this construction route.
-
-### §13nonies.5 What P30 Closes / Does Not Close
-
-**Closes (smooth half only)**:
-- Sub-problem (1) of T-HP at the **operator level**, for the smooth zero distribution: an admissible, structurally-derived, self-adjointness-preserving rescaling operator `F_smooth` is exhibited explicitly and verified at machine precision.
-
-**Does NOT close**:
-- Sub-problem (1) for the **oscillatory half** (S(T) reconstruction);
-- Sub-problem (2) — **canonicity** (uniqueness from the nodal equation) of `F_smooth`;
-- Sub-problem (3) — **positivity coincidence** with the Weil quadratic form;
-- Gap **G4 = the Riemann Hypothesis** itself.
-
-### §13nonies.6 Cross-References
-
-- §13sexies / P28: density-level smooth zero distribution (this lift is its operator-level counterpart).
-- §13septies: full statement of Conjecture T-HP and its three sub-problems.
-- §13octies, L8 audit: T-HP identified as the break-point of the assembled argument. P30 narrows L8 by closing one of its four prerequisites (smooth half, operator level) while corroborating branch B2 for the rest.
-- `src/tnfr/riemann/admissible_rescaling.py`: canonical implementation.
-- `examples/57_admissible_rescaling_demo.py`: reproducible demonstration.
-
-### §13nonies.7 Status Update for §13.2 Gap Balance
-
-| Gap | Status before P30 | Status after P30 |
-|-----|-------------------|------------------|
-| G1  | Closed operationally (P14) | Closed operationally |
-| G2  | Closed operationally (P13) | Closed operationally |
-| G3  | Closed operationally (P15) | Closed operationally |
-| **G4** | **OPEN** (= Conjecture T-HP) | **OPEN** (smooth half of sub-problem (1) operationally closed; oscillatory half + (2) + (3) remain open) |
-| G5  | Superseded by P12+P13+P15  | Superseded |
-
-**Net effect**: P30 does not change the closed/open status of any of G1–G5. It refines the structure of the open content of G4 by closing one quadrant (smooth × operator-level × existence) of the T-HP grid and producing branch-B2 evidence for the oscillatory quadrant.
-
