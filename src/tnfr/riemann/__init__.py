@@ -151,6 +151,18 @@ admissible_rescaling
     structural evidence for branch B2 of section 13octies).
     Closes sub-problem (1) of Conjecture T-HP for the
     smooth half only; does NOT close gap G4 = RH.
+dirichlet_l
+    P32 First L-function extension: chi-twisted TNFR prime-ladder
+    spectrum reproducing the twisted von Mangoldt series
+    -L'(s, chi) / L(s, chi) = Sum_n chi(n) Lambda(n) n^{-s} for any
+    Dirichlet character chi mod q. Structural analogue of P12 with
+    weights w_{p,k} = chi(p)^k log p; primes p | q drop out of the
+    spectrum (chi(p) = 0). Provides canonical real-character builders
+    chi mod 3, mod 4, mod 5 (recovering Dirichlet beta function as a
+    special case). Structural extension of the canonical TNFR-Riemann
+    representation catalog; does NOT advance the generalised Riemann
+    Hypothesis (GRH is RH-equivalent in every L-function and inherits
+    the same arithmetic obstruction as G4 for zeta).
 oscillatory_correction
     P31 Branch B1 retry: prime-ladder oscillatory correction of the
     P28 / P30 smooth targets. Reconstructs S(T) = pi^{-1} arg zeta(1/2
@@ -580,6 +592,21 @@ from .oscillatory_correction import (
     apply_oscillatory_correction,
     compute_oscillatory_correction_certificate,
 )
+from .dirichlet_l import (
+    # P32: Dirichlet L-function extension (chi-twisted prime ladder)
+    DirichletCharacter,
+    principal_character,
+    real_character_mod_3,
+    real_character_mod_4,
+    real_character_mod_5,
+    TwistedPrimeLadderSpectrum,
+    build_twisted_prime_ladder_spectrum,
+    tnfr_log_l_derivative,
+    classical_log_l_derivative,
+    classical_log_l_derivative_matched,
+    DirichletLReproductionResult,
+    verify_dirichlet_l_reproduction,
+)
 from .spectral_emergence import (
     # P29: Spectral universality emergence under canonical UM+RA coupling
     CANONICAL_COUPLING_LAWS,
@@ -902,6 +929,19 @@ __all__ = [
     "prime_ladder_oscillatory_sum",
     "apply_oscillatory_correction",
     "compute_oscillatory_correction_certificate",
+    # P32: Dirichlet L-function extension (chi-twisted prime ladder)
+    "DirichletCharacter",
+    "principal_character",
+    "real_character_mod_3",
+    "real_character_mod_4",
+    "real_character_mod_5",
+    "TwistedPrimeLadderSpectrum",
+    "build_twisted_prime_ladder_spectrum",
+    "tnfr_log_l_derivative",
+    "classical_log_l_derivative",
+    "classical_log_l_derivative_matched",
+    "DirichletLReproductionResult",
+    "verify_dirichlet_l_reproduction",
     # P29: Spectral universality emergence under canonical UM+RA coupling
     "CANONICAL_COUPLING_LAWS",
     "InterPrimeCoupling",

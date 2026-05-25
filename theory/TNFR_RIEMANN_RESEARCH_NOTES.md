@@ -2001,6 +2001,80 @@ P31 is therefore **stronger branch-B2 evidence than §13nonies.4**: it shows tha
 
 **Net effect**: P31 does not change the closed/open status of any of G1–G5. It refines the open content of G4 by separating *which* aspect of the branch-B1 attempt fails: the basis is canonically correct (improvement is positive at $N = 20$, $d = 1$), but the canonical truncated partial sum systematically undercounts $\lvert S(T) \rvert$ at moderate heights, in agreement with the absolute-convergence boundary at $\operatorname{Re}(s) = 1$.
 
+## §13undecies. P32 — Dirichlet L-Function Extension (Structural; Does NOT Advance G4 or GRH)
+
+### §13undecies.1 Motivation
+
+P12 reproduces the canonical Dirichlet identity
+$$-\frac{\zeta'(s)}{\zeta(s)} = \sum_{n=1}^{\infty} \Lambda(n)\, n^{-s}, \quad \operatorname{Re}(s) > 1,$$
+from the TNFR prime-ladder spectrum $\{(k\log p,\, \log p)\}$.  The same construction extends *structurally* to every Dirichlet character $\chi$ mod $q$: by complete multiplicativity, the logarithmic derivative of $L(s,\chi)$ admits the **twisted von Mangoldt expansion**
+$$-\frac{L'(s,\chi)}{L(s,\chi)} = \sum_{n=1}^{\infty} \chi(n)\, \Lambda(n)\, n^{-s} = \sum_p \sum_{k \ge 1} \chi(p)^k \log(p)\, p^{-ks}, \quad \operatorname{Re}(s) > 1.$$
+
+P32 is the canonical TNFR realisation of this identity: keep the prime-ladder *positions* $\mu_{p,k} = k\log p$ unchanged and replace the bare emission weight $\log p$ by the **χ-twisted weight**
+$$w_{p,k}^{(\chi)} = \chi(p)^k \, \log p.$$
+
+### §13undecies.2 Construction
+
+For a Dirichlet character $\chi$ mod $q$:
+
+* **Active primes**: $\{p : \gcd(p, q) = 1\}$ (the structural REMESH ladder).
+* **Excluded primes**: $\{p : p \mid q\}$ — their $\chi(p) = 0$ kills every echo, so they drop out of the spectrum entirely.  This is the TNFR-native reading of the missing Euler factors in $L(s,\chi)$.
+* **Twisted spectrum**: $\operatorname{Spec}_{\mathrm{TNFR}}(\chi) = \{(k\log p,\; \chi(p)^k\log p) : p \nmid q,\; k = 1, \dots, K\}$.
+* **Twisted Dirichlet trace**: $Z_{\mathrm{TNFR}}(s, \chi) = \sum_{(\mu, w) \in \operatorname{Spec}_{\mathrm{TNFR}}(\chi)} w\, e^{-s\mu}$.
+
+By direct expansion, $Z_{\mathrm{TNFR}}(s, \chi) \xrightarrow[K, n_{\text{primes}} \to \infty]{} -L'(s,\chi)/L(s,\chi)$ for $\operatorname{Re}(s) > 1$.  When the TNFR truncation and the classical truncation cover the same set of prime powers, the per-prime-power correspondence forces machine-precision agreement (analogue of the P12 unit-test invariant).
+
+### §13undecies.3 Empirical Verification (May 2026 run)
+
+`examples/59_dirichlet_l_function_demo.py` runs the canonical verification with $n_{\text{primes}} = 200$, $K = 12$, $n_{\max}^{\mathrm{classical}} = 100\,000$, across four canonical real characters and five complex spectral points with $\operatorname{Re}(s) \in \{2, 3, 5\}$:
+
+| Character | Modulus $q$ | $\max\, \text{rel\_err}$ ($\operatorname{Re}(s)=5$) | $\max\, \text{rel\_err}$ ($\operatorname{Re}(s)=2$) |
+|-----------|-------------|------------------------------------------------------|------------------------------------------------------|
+| $\chi_0$ (principal) | 3 | $4.7 \times 10^{-12}$ | $2.1 \times 10^{-3}$ |
+| $\chi$ real (Legendre $(n/3)$) | 3 | $6.2 \times 10^{-15}$ | $2.3 \times 10^{-5}$ |
+| $\chi$ real (Dirichlet $\beta$) | 4 | $1.3 \times 10^{-12}$ | $2.2 \times 10^{-4}$ |
+| $\chi$ real (Legendre $(n/5)$) | 5 | $2.9 \times 10^{-13}$ | $4.3 \times 10^{-5}$ |
+
+The behaviour matches the P12 reference identically: at large $\operatorname{Re}(s)$ both truncations cover the same effective prime-power set and agree to machine precision; at $\operatorname{Re}(s) = 2$ the rate of decay of $p^{-ks}$ is slow enough that the prime-count truncation tail dominates and produces the observed $10^{-3}$–$10^{-5}$ residual.
+
+### §13undecies.4 What P32 Extends
+
+P32 generalises **only the P12 representation layer** (gap G5 superseded) from $\zeta(s)$ to every $L(s, \chi)$:
+
+* The canonical TNFR-Riemann representation catalog now covers all Dirichlet L-functions, not only $\zeta$.
+* The structural reading "each coprime prime is a TNFR node carrying χ-twisted REMESH echoes" is canonically the same for every $\chi$.
+* The TNFR analogue of $-L'/L$ inherits the same Dirichlet-series structure, the same convergence boundary $\operatorname{Re}(s) > 1$, and the same per-prime-power matching invariant as P12.
+
+### §13undecies.5 What P32 Does NOT Advance
+
+P32 is a **structural extension**, not progress on the open arithmetic content of the program:
+
+* It does **NOT** advance gap G4 (RH localisation on $\operatorname{Re}(s) = 1/2$).
+* It does **NOT** advance the **Generalised Riemann Hypothesis (GRH)**.  Every Dirichlet L-function carries an arithmetic oscillatory residue
+  $$S_\chi(T) = \tfrac{1}{\pi}\, \arg L(\tfrac{1}{2} + iT, \chi),$$
+  the exact analogue of $S(T)$ for $\zeta$ documented in §13octies.  Bounding $S_\chi(T)$ is RH-equivalent in every L-function and inherits the same arithmetic obstruction as G4 for $\zeta$.
+* It does **NOT** supply a Hamiltonian (P14 analogue) for general $L(s,\chi)$, an analytic continuation (P13 analogue), or an explicit-formula verification (P15 analogue).  Those are natural future extensions of the same structural pattern and would close the operational gaps G1$_\chi$, G2$_\chi$, G3$_\chi$ for each Dirichlet L-function — but not GRH.
+
+### §13undecies.6 Cross-References
+
+* §8: P12 prime-ladder construction (the template P32 generalises).
+* §7.8: G5 supersession by P12+P13+P15 (the operational route P32 extends to characters).
+* §13octies: assembled-argument audit for G4; the same audit applies, character by character, to GRH.
+* `src/tnfr/riemann/dirichlet_l.py`: canonical implementation of P32.
+* `examples/59_dirichlet_l_function_demo.py`: reproducible verification across four canonical real characters.
+
+### §13undecies.7 Status Update for §19.2 Gap Balance
+
+| Scope | Status before P32 | Status after P32 |
+|-------|-------------------|------------------|
+| Operational ζ gaps (G1, G2, G3) | Closed operationally (P14, P13, P15) | Closed operationally |
+| G4 = RH | OPEN (Conjecture T-HP) | OPEN, unchanged |
+| G5 (ζ representation) | Superseded by P12+P13+P15 | Superseded, now generalised to all $L(s,\chi)$ at the P12 layer |
+| Operational L-function gaps (G1$_\chi$, G2$_\chi$, G3$_\chi$) | Not addressed | G5$_\chi$ analogue closed at the P12 layer; G1$_\chi$/G2$_\chi$/G3$_\chi$ open (future work) |
+| GRH (G4$_\chi$ for $\chi \neq \chi_0$) | OPEN | OPEN, unchanged |
+
+**Net effect**: P32 extends the canonical TNFR representation catalog from a single L-function ($\zeta$) to the full Dirichlet family.  It does not close, nor narrow, any open arithmetic gap.
+
 ## 14. Weil–TNFR Positivity Bridge (P17)
 
 ### 14.1 Motivation
@@ -2555,6 +2629,7 @@ piecewise status notes.
 | **P29** Spectral emergence under coupling | `spectral_emergence.py` | `56_spectral_emergence_demo.py` | §13octies.3 | KS-distance of unfolded spacings to GUE under canonical UM+RA |
 | **P30** Admissible rescaling operator | `admissible_rescaling.py` | `57_admissible_rescaling_demo.py` | §13nonies | Closes smooth half of T-HP at the **operator** level |
 | **P31** Prime-ladder oscillatory correction | `oscillatory_correction.py` | `58_oscillatory_correction_demo.py` | §13decies | Branch B1 retry with canonical multi-frequency basis; +3.6% at $N$=20 ($d$=1), 0% at $N$=40; stronger branch-B2 corroboration |
+| **P32** Dirichlet L-function extension | `dirichlet_l.py` | `59_dirichlet_l_function_demo.py` | §13undecies | Structural extension of P12 to all $L(s, \chi)$ via χ-twisted prime ladder; G5$_\chi$/P12 layer; **does NOT advance G4 or GRH** |
 
 ### 19.2 Gap Balance
 
