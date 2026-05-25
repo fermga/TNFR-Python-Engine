@@ -75,6 +75,16 @@ coercivity_uniform
     bounds; P24 adds adaptive sigma refinement that bisects worst
     segments under the local Lipschitz envelope to tighten
     interval_lb_local near the coercivity bottleneck.
+paley_gap_coercivity
+    P25 Paley-gap coercivity diagnostic in the style of Martínez
+    Gamo, Zenodo 10.5281/zenodo.17665853 v2 (2025). Defines three
+    Paley-gaps between the P12 closed form, the P14 spectral trace,
+    and the classical von Mangoldt truncation. The cross gap
+    g_cross = |Z_P14 - Z_P12| collapses to machine precision at
+    coupling = 0 (Paley-style identity between the closed-form
+    construction and the self-adjoint operator realisation); at
+    coupling > 0 it measures structural deformation. Consistency
+    diagnostic; does NOT close gap G4.
 """
 
 from .operator import (
@@ -433,6 +443,14 @@ from .coercivity_uniform import (
     UniformCoercivityCertificate,
     verify_uniform_coercivity_empirical,
 )
+from .paley_gap_coercivity import (
+    # P25: Paley-gap coercivity diagnostic (Zenodo 17665853 v2 style)
+    PaleyGapSweep,
+    paley_gap_p12,
+    paley_gap_p14,
+    paley_gap_cross,
+    sweep_paley_gap,
+)
 
 __all__ = [
     # Graph builders
@@ -695,4 +713,10 @@ __all__ = [
     # P22: empirical uniform-coercivity certificate
     "UniformCoercivityCertificate",
     "verify_uniform_coercivity_empirical",
+    # P25: Paley-gap coercivity diagnostic
+    "PaleyGapSweep",
+    "paley_gap_p12",
+    "paley_gap_p14",
+    "paley_gap_cross",
+    "sweep_paley_gap",
 ]

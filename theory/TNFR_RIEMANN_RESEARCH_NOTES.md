@@ -994,6 +994,155 @@ positivity result.
 
 ---
 
+## 13ter. Paley-Gap Coercivity Diagnostic (P25)
+
+### 13ter.1 Motivation
+
+P22–P24 attack the coercivity bottleneck (gap G4) numerically, by
+tightening lower envelopes of $\alpha(\sigma) = W[\sigma] /
+E_{TNFR}[\sigma]$. They do not, however, exploit any *algebraic
+identity* between the TNFR objects involved. The author's own
+*Spectral note: Paley gap via lambda_2 (residue circulants)*
+(Martínez Gamo, Zenodo 17665853 v2, November 20 2025) introduces a
+complementary methodology: build a gap
+
+$$
+g(n) = \Bigl|\lambda_2(\text{residue circulant})
+        - \tfrac{n - \sqrt{n}}{2}\Bigr|
+$$
+
+between a *computed spectral quantity* and a *closed-form algebraic
+reference*. Vanishing of the gap singles out an arithmetic
+structural condition ($n$ prime, $n \equiv 1 \pmod 4$ in the source
+note) up to the tested range, by *identity* rather than by *bound*.
+
+P25 imports this philosophy into the TNFR-Riemann pipeline. The
+prime-ladder data is generated in *three* different but
+mathematically equivalent ways on $\operatorname{Re}(s) > 1$:
+
+1. **Route A (P12 closed form)**:
+   $Z_{P12}(s) = \sum_{(\mu, w)} w\, e^{-s\mu}$, the weighted
+   Dirichlet trace over the prime-ladder spectrum.
+2. **Route B (P14 spectral trace)**:
+   $Z_{P14}(s) = \operatorname{Tr}\bigl(\hat W e^{-s\hat
+   H_{\mathrm{int}}}\bigr)$, the weighted spectral trace of the
+   prime-ladder Hamiltonian.
+3. **Reference (classical)**:
+   $Z_{\mathrm{cls}}(s) = \sum_{n \le N} \Lambda(n)\, n^{-s}$, a
+   direct truncation of the classical von Mangoldt series.
+
+### 13ter.2 Method
+
+P25 defines three Paley-gap quantities per $\sigma$:
+
+$$
+\begin{aligned}
+g_{P12}(\sigma)   &= |Z_{P12}(\sigma)   - Z_{\mathrm{cls}}(\sigma)|, \\
+g_{P14}(\sigma)   &= |Z_{P14}(\sigma)   - Z_{\mathrm{cls}}(\sigma)|, \\
+g_{\mathrm{cross}}(\sigma) &= |Z_{P14}(\sigma) - Z_{P12}(\sigma)|.
+\end{aligned}
+$$
+
+The first two measure *truncation fidelity* of each TNFR route against
+the classical reference; both decay as $(n_{\text{primes}},
+k_{\max}, N)$ grow. The third — the **cross Paley-gap** — is the
+diagnostic of interest: by construction P14 specialises to P12 in the
+decoupled limit ($J_0 = 0$, no inter-prime coupling), so
+$g_{\mathrm{cross}}(\sigma)$ must vanish to machine precision for
+every $\sigma$ when $\texttt{coupling} = 0$. Any non-zero
+$\texttt{coupling}$ deforms the Hamiltonian spectrum and produces a
+measurable $g_{\mathrm{cross}}$ free of classical-truncation noise.
+
+Module: [`src/tnfr/riemann/paley_gap_coercivity.py`](../src/tnfr/riemann/paley_gap_coercivity.py).
+Demo: [`examples/52_paley_gap_coercivity_demo.py`](../examples/52_paley_gap_coercivity_demo.py).
+
+### 13ter.3 Numerical Outcome
+
+Reference configuration: `n_primes = 18`, `max_power = 5`,
+$\sigma \in [1.5, 4.0]$ (11 points), $N = 50{,}000$.
+
+**Bundle A — decoupled (`coupling = 0`)**
+
+$$
+\max_\sigma g_{\mathrm{cross}}(\sigma) = 1.110 \times 10^{-16}
+$$
+
+every entry of $g_{\mathrm{cross}}$ is bounded by $1.2 \times
+10^{-16}$ (machine precision). Truncation gaps:
+$\max g_{P12} = \max g_{P14} = 2.338 \times 10^{-1}$ at
+$\sigma = 1.5$, decaying to $1.25 \times 10^{-6}$ at $\sigma = 4.0$.
+
+The vanishing of $g_{\mathrm{cross}}$ confirms the Paley-style
+algebraic identity $Z_{P14} \equiv Z_{P12}$ in the decoupled limit —
+the P14 self-adjoint operator is a faithful operator-theoretic
+realisation of the P12 closed form.
+
+**Bundle B — weakly coupled (`coupling = 1.0 × 10⁻²`)**
+
+| $\sigma$ | $g_{P12}$    | $g_{P14}$    | $g_{\mathrm{cross}}$ |
+|---------:|-------------:|-------------:|---------------------:|
+|     1.50 | 2.338 × 10⁻¹ | 2.337 × 10⁻¹ | 1.203 × 10⁻⁴         |
+|     2.00 | 1.508 × 10⁻² | 1.499 × 10⁻² | 8.966 × 10⁻⁵         |
+|     2.50 | 1.262 × 10⁻³ | 1.193 × 10⁻³ | 6.832 × 10⁻⁵         |
+|     3.00 | 1.189 × 10⁻⁴ | 6.647 × 10⁻⁵ | 5.242 × 10⁻⁵         |
+|     3.50 | 1.196 × 10⁻⁵ | 2.827 × 10⁻⁵ | 4.023 × 10⁻⁵         |
+|     4.00 | 1.253 × 10⁻⁶ | 2.955 × 10⁻⁵ | 3.080 × 10⁻⁵         |
+
+with $\max_\sigma g_{\mathrm{cross}} = 1.203 \times 10^{-4}$. The
+cross gap is now well above the machine-precision floor, decays
+monotonically with $\sigma$, and is qualitatively distinct from the
+classical truncation gap (which decays exponentially fast in $\sigma$
+because the prime ladder approximates a Dirichlet series). For
+$\sigma \gtrsim 3.5$, $g_{P14}$ exceeds $g_{P12}$: the coupling
+deformation eventually dominates the truncation error.
+
+### 13ter.4 Honest Interpretation
+
+- **What P25 establishes.** A clean, identity-level consistency
+  check between the two TNFR routes (P12 closed form and P14
+  self-adjoint operator) at every tested $\sigma$. At
+  $\texttt{coupling} = 0$ this consistency is a Paley-style
+  algebraic identity ($g_{\mathrm{cross}}$ at machine precision); at
+  $\texttt{coupling} > 0$ it becomes a structural-deformation
+  diagnostic.
+
+- **What P25 does *not* establish.** P25 does not close gap G4
+  (RH localisation on $\operatorname{Re}(s) = 1/2$). The cross gap
+  at $\texttt{coupling} = 0$ vanishes by construction — P14 was
+  built to match P12 in the decoupled limit — so the zero-coupling
+  numbers are a regression test, not a discovery. The Zenodo source
+  note itself states its construction is *reproducible; not a
+  primality proof*; P25 inherits the same scope at the coercivity
+  level. No claim is made that P25 implies analytic uniform
+  positivity of $\alpha(\sigma)$ on any interval, nor that it
+  bridges to the classical $\zeta(s)$.
+
+- **Where the Paley-style signal lives.** The diagnostic value of
+  P25 is the *deformation channel*: $g_{\mathrm{cross}}(\sigma) \to
+  0$ as $\texttt{coupling} \to 0$ at every $\sigma$, while
+  $g_{\mathrm{cross}}(\sigma)$ at fixed $\sigma$ scales smoothly
+  with $\texttt{coupling}$. This is exactly the same epistemic
+  status as $g(n) = 0$ identifying primes in the Zenodo note: an
+  *identity diagnostic* over a tested range, not a closed-form
+  theorem on the entire family.
+
+### 13ter.5 Next Steps
+
+1. Extend the cross gap to a **functional-equation Paley-gap**
+   using [`src/tnfr/riemann/functional_equation.py`](../src/tnfr/riemann/functional_equation.py),
+   tabulating $|Z(\sigma) - Z(1 - \sigma)|$ along the critical
+   strip. A Paley-style identity there would directly engage
+   $\operatorname{Re}(s) = 1/2$.
+2. Sweep $g_{\mathrm{cross}}(\sigma)$ across a $\texttt{coupling}$
+   grid to extract a scaling law and confirm the diagnostic is
+   stable (linear or polynomial in $\texttt{coupling}$).
+3. Combine $g_{\mathrm{cross}}$ with P22–P24 segment-local
+   coercivity envelopes: use the structural-deformation channel as a
+   classifier of which $\sigma$ intervals tolerate coupling without
+   eroding $\alpha(\sigma)$.
+
+---
+
 The remainder of this document preserves the legacy research notes verbatim. Keep them synchronized with the active workflow above when adding new results.
 
 ## TNFR–Riemann Research Notes (Legacy Detail)
