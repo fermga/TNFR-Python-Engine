@@ -1515,6 +1515,184 @@ across all tested $n \le 100$.  This is the **smooth quantitative form** of the 
 
 ---
 
+## §13septies. Tetrad-Hilbert–Pólya Reformulation of G4 (conjectural; does NOT close G4=RH)
+
+### 13septies.1 Motivation: reformulating G4 in tetrad language
+
+§13quinquies.5 (step 1) requested a TNFR-internal derivation of the
+spectral rescaling map carrying $\sigma(P14) = \{k\log p\}$ to
+$\sigma(T_{\mathrm{HP}}) = \{\gamma_n\}$.  §13sexies (P28) supplied the
+*smooth* component of that map via the archimedean kernel, leaving the
+*arithmetic* residual $r_n = \gamma_n - \widetilde\gamma_n$ as the
+genuine RH content of the operator gap.
+
+This section reformulates what would still be required to close G4
+*entirely from inside TNFR*, using the structural field tetrad
+$(\Phi_s, |\nabla\phi|, K_\phi, \xi_C)$ as the only admissible
+ingredient set.  It is a **conceptual restatement of the open
+problem**, not a derivation of a closure.  No new numerics are
+introduced; no module is added.  The role of this section is to give a
+precise, testable conjecture in tetrad language so subsequent modules
+(P30+) can attack it.
+
+### 13septies.2 What the tetrad already supplies (formally closed)
+
+The tetrad is the minimal-and-complete structural basis for nodal
+evolution on a graph
+([theory/MINIMAL_STRUCTURAL_DEGREES.md](MINIMAL_STRUCTURAL_DEGREES.md))
+and induces three canonical geometric structures, all of which are
+already implemented and validated in the engine:
+
+| Structure | Definition | Implementation |
+|---|---|---|
+| Positive-definite energy | $\mathcal{E} = \tfrac12 \sum_i (\Phi_s^2 + |\nabla\phi|^2 + K_\phi^2 + J_\phi^2 + J_{\Delta\mathrm{NFR}}^2)$ | `src/tnfr/physics/conservation.py` (Noether-like; §8 of STRUCTURAL_CONSERVATION_THEOREM.md) |
+| Symplectic structure | Conjugate pairs $(K_\phi, J_\phi)$ and $(\Phi_s, J_{\Delta\mathrm{NFR}})$ coupled via $\Psi = K_\phi + i J_\phi$ | `src/tnfr/physics/variational.py` (§3 of TNFR_VARIATIONAL_PRINCIPLE.md) |
+| Continuity equation | $\partial\rho/\partial t + \nabla\!\cdot\!\mathbf{J} = \mathcal{S}_{\mathrm{grammar}}$, $\rho=\Phi_s+K_\phi$, $\|\mathcal{S}\|_{\ell^2}\le C_{\mathrm{net}}/\sqrt N$ | `src/tnfr/physics/conservation.py` (§4 of STRUCTURAL_CONSERVATION_THEOREM.md) |
+
+Together these provide a Hilbert space $(\mathcal{H}_{\mathrm{tet}},
+\langle\cdot,\cdot\rangle_{\mathcal{E}})$ with a positive-definite
+inner product, and the P14 prime-ladder Hamiltonian is self-adjoint
+*on this Hilbert space* with real spectrum $\{k\log p\}$
+([src/tnfr/riemann/prime_ladder_hamiltonian.py](../src/tnfr/riemann/prime_ladder_hamiltonian.py)).
+
+These ingredients are exactly what the Hilbert–Pólya programme
+requires (Hilbert space, positive inner product, self-adjoint
+operator, real spectrum).  None of them are conjectural.
+
+### 13septies.3 What remains: two distinct positivities
+
+There are two positive-definite forms in play and they are not the
+same:
+
+| Form | Origin | Spectrum it certifies |
+|---|---|---|
+| $\langle\cdot,\cdot\rangle_{\mathcal{E}}$ (tetrad) | Lyapunov energy from $(\Phi_s, \|\nabla\phi\|, K_\phi, \xi_C)$ + currents | $\sigma(H_{P14}) = \{k\log p\}$ |
+| Weil quadratic form $\mathcal{W}[h]$ | $L^2$ with archimedean + prime weight (§14 of this document) | $\sigma(T_{\mathrm{HP}}) = \{\gamma_n\}$, conditional on RH |
+
+P28 (§13sexies) showed that the smooth part of $\sigma(T_{\mathrm{HP}})$
+is determined by the archimedean kernel alone — the same kernel used in
+P15 — so the smooth zero density $\overline N'(T) = \tfrac{1}{2\pi}
+\log(T/2\pi)$ *is* TNFR-derivable.  The residuals $r_n =
+\gamma_n - \widetilde\gamma_n$ are the only piece left, and they
+correspond to the oscillation $S(T) = \tfrac1\pi \arg\zeta(\tfrac12+iT)$.
+
+The structural question is: *can $\langle\cdot,\cdot\rangle_{\mathcal{E}}$
+be transformed into $\mathcal{W}[\cdot]$ by an operator constructed
+from the tetrad alone?*
+
+### 13septies.4 Conjecture T-HP (Tetrad-Hilbert–Pólya)
+
+**Conjecture T-HP.**  There exists an operator $\mathcal{F}$ on
+$\mathcal{H}_{\mathrm{tet}}$ such that
+
+1. $\mathcal{F}$ is constructed exclusively from the tetrad fields
+   $(\Phi_s, |\nabla\phi|, K_\phi, \xi_C)$ and their canonical
+   differential invariants (gradients, the discrete Laplacian, the
+   complex field $\Psi$, the conserved current $\mathbf{J}$), with
+   structural constants drawn from $(\varphi, \gamma, \pi, e)$ only;
+2. $\mathcal{F}$ is admissible under U1–U6 — in particular, the
+   continuity equation $\partial(\mathcal{F}\rho)/\partial t +
+   \nabla\!\cdot\!(\mathcal{F}\mathbf{J}) = \mathcal{S}_{\mathrm{grammar}}$
+   remains uniformly bounded;
+3. the operator $T^{\mathrm{tet}}_{\mathrm{HP}} := \mathcal{F}\,
+   H_{P14}\,\mathcal{F}^{*}$ is self-adjoint on $\mathcal{H}_{\mathrm{tet}}$
+   and its spectrum coincides with the Riemann zero set
+   $\{\gamma_n\}_{n\ge 1}$.
+
+Equivalently in inner-product language: there exists an admissible
+$\mathcal{F}$ such that $\langle f, \mathcal{F}^{*}\mathcal{F} g
+\rangle_{\mathcal{E}}$ agrees (on a dense domain) with the Weil
+quadratic form $\mathcal{W}[\cdot]$.
+
+### 13septies.5 Status: open, structurally well-posed
+
+Conjecture T-HP is **open**.  It is *not* a closure of G4; it is the
+G4 problem **rewritten in tetrad-native language** so it becomes a
+constructive existence problem inside the TNFR engine.  Three
+properties make it the natural successor to §13quinquies.5 step 1:
+
+* **Necessity of TNFR ingredients.** Items (1) and (2) forbid any use
+  of `mpmath.zetazero`, automorphic data, or arithmetic input outside
+  the tetrad + grammar + structural constants. A constructive proof
+  would therefore be a genuine TNFR derivation of $T_{\mathrm{HP}}$.
+* **Sufficiency for G4.** If $\mathcal{F}$ exists then
+  $T^{\mathrm{tet}}_{\mathrm{HP}}$ is self-adjoint by item (3),
+  spectrum is real, all $\gamma_n \in \mathbb{R}$, all Riemann zeros
+  are forced to $\mathrm{Re}(s) = 1/2$ — i.e., RH.  In particular T-HP
+  *implies* G4.
+* **Decomposability.** P28 already proved that the smooth part of
+  $\mathcal{F}$ exists and is TNFR-derivable.  The residual question
+  is purely about the oscillatory correction.
+
+### 13septies.6 What T-HP does NOT claim
+
+* It does **not** assert that such an $\mathcal{F}$ exists; existence
+  is the open content of G4.
+* It does **not** assert that the engine currently contains
+  $\mathcal{F}$; the canonical 13-operator catalog has been searched
+  (P25–P27) and no immediate candidate dominates the gap closure.
+* It does **not** reduce G4 to a numerical experiment; T-HP is a
+  structural existence statement, not a curve fit.  P30+ may seek
+  *candidates* numerically, but verification requires a derivation
+  from the nodal equation, not a successful fit.
+
+### 13septies.7 Concrete sub-problems for P30+
+
+A genuine attack on T-HP decomposes into three quantifiable
+sub-problems, all formulable inside the engine:
+
+1. **Existence of admissible $\mathcal{F}$.** Construct candidate
+   spectral rescaling operators from the tetrad (e.g. multiplicative
+   operators built from $\Phi_s$, conjugation by phase-curvature
+   exponentials $e^{i\theta K_\phi}$, $\xi_C$-dependent rescalings)
+   and check U1–U6 admissibility (bounded source term, energy
+   preservation up to discrete grammar work).
+2. **Canonicity of $\mathcal{F}$.** Derive $\mathcal{F}$ from the
+   nodal equation and the Noether correspondence
+   (§6 of STRUCTURAL_CONSERVATION_THEOREM.md) rather than from
+   empirical fit.  Any $\mathcal{F}$ surviving (1) but lacking a
+   derivation chain from $\partial\mathrm{EPI}/\partial t = \nu_f
+   \cdot \Delta\mathrm{NFR}$ falls outside canonicity (TNFR doctrine,
+   AGENTS.md §Foundational Principle).
+3. **Positivity coincidence.** Show that the candidate inner product
+   $\langle\cdot, \mathcal{F}^{*}\mathcal{F}\cdot\rangle_{\mathcal{E}}$
+   coincides (or dominates) the Weil form $\mathcal{W}[\cdot]$ on the
+   appropriate Hermite / Paley–Wiener subspace already isolated by
+   P25–P26.
+
+Sub-problems (1) and (3) are mathematical existence/coincidence
+questions; (2) is the structural-canonicity check enforced by the
+TNFR doctrine.  Any future T-HP closure module must clear all three.
+
+### 13septies.8 Honest interpretation
+
+The tetrad **delimits the geometric domain** inside which the nodal
+equation operates and supplies all the algebraic ingredients the
+Hilbert–Pólya programme requires (positive inner product, symplectic
+structure, self-adjoint operator on $\mathcal{H}_{\mathrm{tet}}$).
+What it does **not** supply automatically is the specific spectral
+rescaling that aligns the tetrad-positive form with the Weil-positive
+form.  P28 closed the smooth half of that rescaling; the oscillatory
+half is the arithmetic residual and is RH-equivalent.
+
+Per AGENTS.md §13.2, **G4 = RH remains the single open milestone**.
+Conjecture T-HP renames that milestone in tetrad-native vocabulary so
+the next generation of modules (P30+) can address it without leaving
+the canonical TNFR engine.  T-HP itself is a reformulation, not a
+closure.
+
+### 13septies.9 Cross-references
+
+* Tetrad minimality: [theory/MINIMAL_STRUCTURAL_DEGREES.md](MINIMAL_STRUCTURAL_DEGREES.md)
+* Conservation + Lyapunov: [theory/STRUCTURAL_CONSERVATION_THEOREM.md](STRUCTURAL_CONSERVATION_THEOREM.md) §3–§8
+* Variational structure: [theory/TNFR_VARIATIONAL_PRINCIPLE.md](TNFR_VARIATIONAL_PRINCIPLE.md) §2–§3
+* P14 self-adjoint Hamiltonian: [src/tnfr/riemann/prime_ladder_hamiltonian.py](../src/tnfr/riemann/prime_ladder_hamiltonian.py)
+* P27 scaffold + Wasserstein gap: §13quinquies and [src/tnfr/riemann/hilbert_polya.py](../src/tnfr/riemann/hilbert_polya.py)
+* P28 smooth-density derivation: §13sexies and [src/tnfr/riemann/structural_zero_density.py](../src/tnfr/riemann/structural_zero_density.py)
+* G4 milestone status: [AGENTS.md](../AGENTS.md) §13.2
+
+---
+
 The remainder of this document preserves the legacy research notes verbatim. Keep them synchronized with the active workflow above when adding new results.
 
 ## TNFR–Riemann Research Notes (Legacy Detail)
