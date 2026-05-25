@@ -221,6 +221,22 @@ twisted_li_keiper
     does NOT prove GRH (a finite positivity check is necessary but
     not sufficient) and does NOT advance G4 for zeta or the
     arithmetic obstruction of GRH.
+twisted_weil_positivity
+    P37 chi-twisted Weil-TNFR positivity bridge (structural analogue
+    of P17 for primitive real Dirichlet L-functions). Two operations:
+    (1) chi-twisted Weil positivity certificate, computing
+        W_chi[sigma] = 2 sum_{gamma > 0} h_sigma(gamma)
+    over zeros of L(s, chi) two ways -- via the P35 Hardy-Z bisection
+    enumerator (zero side) and via the chi-twisted Weil-Guinand
+    explicit formula with the P34 chi-twisted prime-ladder
+    Hamiltonian for the prime side -- and checking W_chi[sigma] >= 0;
+    (2) chi-twisted TNFR Lyapunov bridge alpha_chi(sigma) :=
+        W_chi[sigma] / E_TNFR_chi[sigma]
+    tabulated across a Gaussian width grid using a canonical
+    structural test state on the P34 graph. Implemented for primitive
+    real characters (chi_3, chi_4, chi_5). GRH_chi-equivalent
+    diagnostic on a finite Gaussian grid; does NOT prove GRH for any
+    L(s, chi) and does NOT advance G4 = RH.
 oscillatory_correction
     P31 Branch B1 retry: prime-ladder oscillatory correction of the
     P28 / P30 smooth targets. Reconstructs S(T) = pi^{-1} arg zeta(1/2
@@ -701,6 +717,15 @@ from .twisted_li_keiper import (
     TwistedLiKeiperCertificate,
     verify_twisted_li_keiper_criterion,
 )
+from .twisted_weil_positivity import (
+    # P37: chi-twisted Weil-TNFR positivity bridge (GRH_chi diagnostic)
+    TwistedWeilPositivityCertificate,
+    TwistedWeilTNFRBridgeCertificate,
+    build_twisted_structural_test_state,
+    twisted_tnfr_lyapunov_of_test_state,
+    verify_twisted_weil_positivity,
+    verify_twisted_weil_tnfr_bridge,
+)
 from .spectral_emergence import (
     # P29: Spectral universality emergence under canonical UM+RA coupling
     CANONICAL_COUPLING_LAWS,
@@ -1064,6 +1089,13 @@ __all__ = [
     "twisted_li_coefficients",
     "TwistedLiKeiperCertificate",
     "verify_twisted_li_keiper_criterion",
+    # P37: chi-twisted Weil-TNFR positivity bridge (GRH_chi diagnostic)
+    "TwistedWeilPositivityCertificate",
+    "TwistedWeilTNFRBridgeCertificate",
+    "build_twisted_structural_test_state",
+    "twisted_tnfr_lyapunov_of_test_state",
+    "verify_twisted_weil_positivity",
+    "verify_twisted_weil_tnfr_bridge",
     # P29: Spectral universality emergence under canonical UM+RA coupling
     "CANONICAL_COUPLING_LAWS",
     "InterPrimeCoupling",

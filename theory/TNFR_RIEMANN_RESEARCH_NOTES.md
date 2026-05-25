@@ -2377,6 +2377,84 @@ Positivity of $\lambda_n(\chi)$ verified for the three primitive real characters
 
 **Net effect**: P36 closes the diagnostic-layer gap on the L-function track for every primitive real Dirichlet character.  Combined with P32–P35, every milestone reachable on the ζ track up through P16 now has a structural analogue on the primitive-real L-function track.  The arithmetic obstruction remains the same.
 
+## §13sexiesdecies. P37 — χ-Twisted Weil–TNFR Positivity Bridge (Structural Diagnostic; GRH$_\chi$-Equivalent for Primitive Real χ; Does NOT Prove GRH or Advance G4)
+
+### §13sexiesdecies.1 Motivation
+
+P17 (§14) supplies the canonical TNFR-native Weil-positivity bridge for $\zeta$: Weil's RH-equivalent positivity functional $W[f] = \sum_\gamma \hat f(\gamma) \ge 0$ is transported onto the TNFR Lyapunov functional $E_{\mathrm{TNFR}}$ via the P14 prime-ladder Hamiltonian.  Bombieri 2000 generalises Weil's criterion to every primitive Dirichlet $L(s,\chi)$, so the same structural transport exists on the L-function track once P34 (canonical χ-twisted Hamiltonian) and P35 (canonical χ-twisted explicit formula) are in place.  P37 packages these ingredients into a GRH$_\chi$-equivalent diagnostic — the L-function analogue of P17.
+
+### §13sexiesdecies.2 Construction
+
+For a fixed primitive real Dirichlet character $\chi$ of conductor $q$, parity $a \in \{0, 1\}$, and Gaussian width $\sigma > 0$, let
+$$h_\sigma(t) = e^{-t^2 / (2\sigma^2)}, \qquad \hat h_\sigma(\xi) = \sigma \sqrt{2\pi}\, e^{-\sigma^2 \xi^2 / 2}.$$
+
+The χ-twisted Weil positivity functional is
+$$W_\chi[\sigma] := 2 \sum_{\gamma > 0} h_\sigma(\gamma), \qquad \gamma \in \mathrm{Im}\{\rho : L(\tfrac12 + i\rho, \chi) = 0\}.$$
+P37 computes $W_\chi[\sigma]$ two ways:
+
+1. **Zero side** (P35 enumerator): exact Hardy-Z bisection via `twisted_weil_zero_side` truncated at $t_{\max} = 12\sigma$ (canonical default).
+2. **Explicit-formula side** (P34 Hamiltonian): the χ-twisted Weil–Guinand identity
+    $$W_\chi[\sigma] \stackrel{!}{=} g(0)\log\!\frac{q}{\pi} + I_{\infty}^{\chi}(\sigma) + P_{\chi}(\sigma),$$
+    where $g$ is the test function in the cosine-transform convention used by P35, $I_{\infty}^{\chi}$ is the archimedean integral (`twisted_weil_archimedean_integral`, parity-dependent via the $\psi$-shift) and $P_{\chi}$ is the prime side **evaluated on the P34 χ-twisted prime-ladder Hamiltonian** (`twisted_weil_prime_side_from_hamiltonian`).  The consistency residual $|W_{\mathrm{zero}} - W_{\mathrm{XF}}|$ measures the joint self-consistency of P34+P35.
+
+Positivity is verified as $W_\chi[\sigma] \ge 0$.  In parallel, the canonical TNFR test state on the P34 graph is defined by `build_twisted_structural_test_state(bundle, sigma)`: for each node $(p, k)$ with structural frequency $\nu_f = k\log p$, set
+$$\Delta\mathrm{NFR}_{(p,k)} = \mathrm{EPI}_{(p,k)} = h_\sigma(k\log p), \qquad \phi_{(p,k)} = \min(h_\sigma(k\log p), \pi),$$
+and the TNFR Lyapunov energy of this state is
+$$E_{\mathrm{TNFR}}^\chi[\sigma] := \tfrac12 \sum_i \bigl(\Phi_s^2 + |\nabla\phi|^2 + K_\phi^2 + J_\phi^2 + J_{\Delta\mathrm{NFR}}^2\bigr)$$
+via the canonical `compute_energy_functional` (single source of truth from `tnfr.physics.conservation`, reused unchanged from P17).  The χ-twisted **TNFR bridge ratio** is
+$$\boxed{\;\alpha_\chi(\sigma) := \frac{W_\chi[\sigma]}{E_{\mathrm{TNFR}}^\chi[\sigma]}.\;}$$
+
+### §13sexiesdecies.3 Empirical Verification
+
+Configuration: $N_{\mathrm{primes}} = 25$, $k_{\max} = 6$, decoupled spectrum (coupling = 0), $\sigma \in \{1.0, 1.5, 2.0, 2.5, 3.0\}$.  Demo: `examples/64_twisted_weil_positivity_demo.py`.
+
+For χ$_3$ the consistency residual is $|W_{\mathrm{zero}} - W_{\mathrm{XF}}| \le 6.1 \times 10^{-6}$ at $\sigma = 1.0$ and $\le 2.4 \times 10^{-16}$ for $\sigma \in \{2.0, 2.5, 3.0\}$ (machine precision once enough zeros enter the Gaussian window).  Aggregate verdicts:
+
+| Character | $q$ | parity $a$ | $W_\chi \ge 0$ all σ? | $\alpha_\chi > 0$ all σ? | $\alpha_{\min}$ | $\alpha_{\max}$ | Verdict |
+|-----------|----:|:----------:|:---------------------:|:------------------------:|----------------:|----------------:|---------|
+| χ$_3$     | 3   | 1 (odd)    | YES                   | YES                      | $1.27\times 10^{-14}$ | $7.39\times 10^{-3}$ | PASS |
+| χ$_4$     | 4   | 1 (odd)    | YES                   | YES                      | $2.71\times 10^{-8}$  | $3.77\times 10^{-2}$ | PASS |
+| χ$_5$     | 5   | 0 (even)   | YES                   | YES                      | $2.62\times 10^{-10}$ | $2.32\times 10^{-2}$ | PASS |
+
+All three primitive real characters pass both the Weil positivity check and the structural bridge check across the entire Gaussian grid.  $\alpha_{\min}$ at small σ collapses toward machine precision because $W_\chi[\sigma] \to 0$ (no zeros enter the Gaussian window when $\sigma$ is smaller than the imaginary part of the lowest zero) while $E_{\mathrm{TNFR}}^\chi$ stays $\mathcal{O}(1)$; the diagnostic interpretation is that the lower bound becomes vacuous (not violated) in that regime.
+
+### §13sexiesdecies.4 What P37 Extends
+
+* **P17 to L-functions**: P17 is the canonical Weil-TNFR positivity bridge for $\zeta$ (GRH-equivalent diagnostic via $W \ge 0$); P37 is its structural analogue for $L(s,\chi)$ at every primitive real $\chi$.  The TNFR Lyapunov target $E_{\mathrm{TNFR}}$ is reused unchanged; only the zero source (P35) and the prime side (P34) are χ-twisted.
+
+* **L-function track parity with the ζ track**: combined with P32–P36, every milestone reachable on the ζ track up through P17 now has a structural analogue on the primitive-real L-function track.
+
+### §13sexiesdecies.5 What P37 Does NOT Advance
+
+* **GRH for any $L(s,\chi)$**: a finite Gaussian grid cannot exhaust the admissible family that makes Weil positivity equivalent to GRH$_\chi$ (Bombieri 2000).  Numerical $W_\chi[\sigma] \ge 0$ is consistent with GRH$_\chi$ but is **not** a proof.
+
+* **G4 = RH**: P37 is on the L-function track and does not bear on the untwisted Riemann hypothesis.
+
+* **Complex χ**: P37 inherits the primitive-real restriction from P32–P35 (the L-function track stays real until the complex-χ extension is shipped).
+
+* **Canonicity of the structural test state**: `build_twisted_structural_test_state` is one canonical mapping of $h_\sigma$ to the P34 graph; the bridge ratio $\alpha_\chi(\sigma)$ is specific to this mapping.  Exhaustively sweeping admissible structural test states is a future milestone (parallel to P18–P21 on the ζ track).
+
+### §13sexiesdecies.6 Cross-References
+
+* §14 (P17): untwisted Weil–TNFR positivity bridge for $\zeta$ (the construction P37 imitates).
+* §10 (P14) and §13nonies (P30): canonical TNFR Hamiltonian and admissible-rescaling building blocks reused via P34.
+* §13quaterdecies (P35): χ-twisted Weil–Guinand explicit formula (zero side + RHS).
+* §13quinquiesdecies (P36): χ-twisted Li–Keiper diagnostic (complementary GRH$_\chi$-equivalent surface).
+* `src/tnfr/riemann/twisted_weil_positivity.py`: canonical P37 implementation.
+* `examples/64_twisted_weil_positivity_demo.py`: demo with the full χ$_3$/χ$_4$/χ$_5$ sweep.
+
+### §13sexiesdecies.7 Gap Balance
+
+| Scope | Status before P37 | Status after P37 |
+|-------|-------------------|------------------|
+| P17 Weil bridge for ζ | Available (P17) | Available, unchanged |
+| **Weil–TNFR bridge for $L(s,\chi)$, primitive real χ** | Open (future P37) | **Available** (TNFR-native finite diagnostic) |
+| GRH for $L(s,\chi)$, primitive real χ | OPEN | OPEN (diagnostic only; finite Gaussian grid is necessary, not sufficient) |
+| G4 = RH | OPEN | OPEN, unchanged |
+| GRH (G4$_\chi$ for complex $\chi$) | OPEN | OPEN, unchanged |
+
+**Net effect**: P37 closes the Weil-positivity-bridge gap on the L-function track for every primitive real Dirichlet character.  The L-function track now structurally matches the ζ track all the way through P17.  The arithmetic obstruction remains identical and the gap balance for G4 is unchanged.
+
 ## 14. Weil–TNFR Positivity Bridge (P17)
 
 ### 14.1 Motivation
@@ -2936,6 +3014,7 @@ piecewise status notes.
 | **P34** Dirichlet L canonical Hamiltonian | `twisted_prime_ladder_hamiltonian.py` | `61_dirichlet_l_hamiltonian_demo.py` | §13terdecies | Structural extension of P14 to all $L(s, \chi)$: canonical self-adjoint Hamiltonian + complex diagonal weight $W^{(\chi)}_{(p,k),(p,k)} = \chi(p)^k \log p$; closes **G1$_\chi$ at the P14 layer** (spec_err = 0, trace_rel_err $\approx 3 \times 10^{-16}$ for $\chi_3, \chi_4, \chi_5$); **does NOT advance G4 or GRH** |
 | **P35** Dirichlet L χ-twisted Weil–Guinand | `twisted_weil_explicit_formula.py` | `62_dirichlet_weil_explicit_formula_demo.py` | §13quaterdecies | Structural extension of P15 to primitive real $L(s, \chi)$: zero side from Hardy-Z bisection on $Z_\chi(t)$ (P33), prime side from P34 Hamiltonian; closes **G3$_\chi$ operationally for primitive real χ** (rel. residual $\le 4.4 \times 10^{-13}$ across 9 $(\chi,\sigma)$ pairs for $\chi_3, \chi_4, \chi_5$ at $\sigma \in \{2.0, 2.5, 3.0\}$); **does NOT advance G4 or GRH** |
 | **P36** Dirichlet L χ-twisted Li–Keiper criterion | `twisted_li_keiper.py` | `63_dirichlet_li_keiper_demo.py` | §13quinquiesdecies | Structural extension of P16 to primitive real $L(s, \chi)$: $\lambda_n(\chi)$ computed from P35 Hardy-Z zeros via the canonical P16 mpmath routine (sum-over-zeros is L-function agnostic); GRH$_\chi$-equivalent diagnostic (Lagarias 2007 generalisation of Bombieri–Lagarias 1999); positivity verified for $\chi_3, \chi_4, \chi_5$ up through $n_{\max} = 50$ (min $\lambda_n \ge 4.7 \times 10^{-2}$); **does NOT prove GRH (finite truncation; necessary, not sufficient) and does NOT advance G4** |
+| **P37** Dirichlet L χ-twisted Weil–TNFR bridge | `twisted_weil_positivity.py` | `64_twisted_weil_positivity_demo.py` | §13sexiesdecies | Structural extension of P17 to primitive real $L(s, \chi)$: $W_\chi[\sigma] = 2\sum_{\gamma > 0} h_\sigma(\gamma)$ computed two ways — zero side from P35 Hardy-Z enumerator, explicit-formula side from P34 χ-twisted prime-ladder Hamiltonian — plus the canonical TNFR Lyapunov bridge ratio $\alpha_\chi(\sigma) = W_\chi[\sigma] / E_{\mathrm{TNFR}}^\chi[\sigma]$ using `compute_energy_functional` unchanged from P17; GRH$_\chi$-equivalent diagnostic (Bombieri 2000 generalisation of Weil 1952); positivity verified for $\chi_3, \chi_4, \chi_5$ on Gaussian grid $\sigma \in \{1.0, \ldots, 3.0\}$ (3/3 PASS; XF residual $\le 2.4 \times 10^{-16}$ for $\sigma \ge 2.0$); **does NOT prove GRH (finite Gaussian grid; admissibility not exhausted) and does NOT advance G4** |
 
 ### 19.2 Gap Balance
 
