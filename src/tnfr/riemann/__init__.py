@@ -330,6 +330,15 @@ twisted_lyapunov_spectral_positivity
     chi_4.  Implemented for primitive real characters (chi_3, chi_4,
     chi_5).  Diagnostic only; does NOT prove GRH for any L(s, chi)
     and does NOT advance G4 = RH.
+twisted_hilbert_polya
+    P45 chi-twisted Hilbert-Polya scaffold.  L-track analogue of P27:
+    builds the explicit reference operator T_HP^(chi) = diag(gamma_n)
+    where gamma_n are positive zeros of L(s, chi) located by Hardy-Z
+    bisection, and certifies self-adjointness, trace-class resolvent,
+    chi-twisted Weil-Guinand consistency with P34, and Wasserstein-1
+    spectral gap against spec(P34 | primes_active).  Implemented for
+    primitive real characters (chi_3, chi_4, chi_5).  Diagnostic only;
+    does NOT prove GRH for any L(s, chi) and does NOT advance G4 = RH.
 oscillatory_correction
     P31 Branch B1 retry: prime-ladder oscillatory correction of the
     P28 / P30 smooth targets. Reconstructs S(T) = pi^{-1} arg zeta(1/2
@@ -864,6 +873,14 @@ from .twisted_lyapunov_spectral_positivity import (
     twisted_kato_rellich_lower_bound,
     twisted_verify_unitary_flow,
 )
+from .twisted_hilbert_polya import (
+    # P45: chi-twisted Hilbert-Polya scaffold
+    TwistedHilbertPolyaCertificate,
+    compute_twisted_hilbert_polya_certificate,
+    fetch_chi_zero_imaginary_parts,
+    twisted_hp_zero_side_from_operator,
+    twisted_structural_gap_p34_vs_hp,
+)
 from .spectral_emergence import (
     # P29: Spectral universality emergence under canonical UM+RA coupling
     CANONICAL_COUPLING_LAWS,
@@ -1265,6 +1282,12 @@ __all__ = [
     "twisted_compute_spectrum",
     "twisted_kato_rellich_lower_bound",
     "twisted_verify_unitary_flow",
+    # P45: chi-twisted Hilbert-Polya scaffold
+    "TwistedHilbertPolyaCertificate",
+    "compute_twisted_hilbert_polya_certificate",
+    "fetch_chi_zero_imaginary_parts",
+    "twisted_hp_zero_side_from_operator",
+    "twisted_structural_gap_p34_vs_hp",
     # P29: Spectral universality emergence under canonical UM+RA coupling
     "CANONICAL_COUPLING_LAWS",
     "InterPrimeCoupling",
