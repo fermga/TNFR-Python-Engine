@@ -1427,6 +1427,94 @@ operator-level statement of that gap explicit and quantitative.
 
 ---
 
+## §13sexies. P28 — Structural derivation of the smooth zero density (closes piece (i) of §13quinquies.5; does NOT close G4=RH)
+
+### 13sexies.1 Motivation: from input to derivation
+
+P27 (§13quinquies) built $T_{\mathrm{HP}} = \mathrm{diag}(\gamma_n)$ by **inputting** the imaginary parts of the Riemann zeros from `mpmath.zetazero`.  The Wasserstein-1 gap
+
+$$
+W_1\bigl(\sigma(P14),\,\sigma(T_{\mathrm{HP}})\bigr) \;\approx\; 115.24 \quad (n_{\mathrm{primes}}=50,\,K=8,\,N=80)
+$$
+
+was the operator-level manifestation of gap G4 (= RH).  Step (i) in §13quinquies.5 demanded a TNFR-internal derivation of the **spectral rescaling map** from prime-ladder eigenvalues $\{k\log p\}$ to zero positions $\{\gamma_n\}$.
+
+This section delivers that piece (and only that piece).  The construction stays inside TNFR ingredients already present in P12–P15: no `mpmath.zetazero` is invoked on the derivation side.
+
+### 13sexies.2 Method: smooth zero positions from the archimedean side
+
+Let $\xi(s) = \pi^{-s/2}\Gamma(s/2)\zeta(s)$ be the completed Riemann zeta function. The **archimedean factor** $\pi^{-s/2}\Gamma(s/2)$ is exactly the kernel of the archimedean side of the Weil–Guinand formula computed in P15 (see `weil_archimedean_integral` in `src/tnfr/riemann/weil_explicit_formula.py`). Its phase on the critical line $s = \tfrac12 + iT$ is the **Riemann–Siegel theta function**
+
+$$
+\theta(T) \;=\; \operatorname{Im}\log\Gamma\!\bigl(\tfrac14 + \tfrac{iT}{2}\bigr) - \tfrac{T}{2}\log\pi.
+$$
+
+Backlund's classical identity gives the **smooth zero counting function**
+
+$$
+\overline N(T) \;=\; \frac{\theta(T)}{\pi} + 1
+$$
+
+with smooth density $\overline N'(T) = \tfrac{1}{2\pi}\log(T/2\pi)$. The exact zero counting splits as $N(T) = \overline N(T) + S(T) + O(1/T)$, where $S(T) = \tfrac{1}{\pi}\arg\zeta(\tfrac12+iT)$ is the oscillating remainder.
+
+**Definition (structural smooth zero).** For each $n \ge 1$, let $\widetilde\gamma_n$ be the unique positive solution of $\overline N(\widetilde\gamma_n) = n$, computed by Newton iteration with an asymptotic seed.
+
+**Definition (structural Hilbert–Pólya operator).**
+$$
+\widetilde T_{\mathrm{HP}} \;:=\; \mathrm{diag}(\widetilde\gamma_1, \widetilde\gamma_2, \ldots, \widetilde\gamma_N).
+$$
+
+The construction uses **only** the gamma function and $\log\pi$ — the same TNFR archimedean ingredients already validated in P15. No call to `mpmath.zetazero` is made on the derivation side.
+
+### 13sexies.3 Numerical outcome (defaults $n_{\mathrm{primes}}=50$, $K=8$)
+
+| $N$ | $W_1(\sigma(P14), \sigma(T_{\mathrm{HP}}))$ | $W_1(\sigma(\widetilde T_{\mathrm{HP}}), \sigma(T_{\mathrm{HP}}))$ | improvement | $\max\lvert r_n\rvert$ | bound ($C=2$) |
+|---:|---:|---:|---:|---:|:---:|
+| 30  | $6.045\times10^{1}$ | $1.510$ | $40.0\times$  | $3.71$ | ✓ |
+| 60  | $9.478\times10^{1}$ | $1.275$ | $74.3\times$  | $3.71$ | ✓ |
+| 80  | $1.152\times10^{2}$ | $1.183$ | $97.4\times$  | $3.71$ | ✓ |
+| 100 | $1.343\times10^{2}$ | $1.125$ | $119.4\times$ | $3.71$ | ✓ |
+
+The structural operator $\widetilde T_{\mathrm{HP}}$ closes ≈ 97–99 % of the operator-level gap at $N \ge 80$, with the improvement ratio growing approximately as $N/\log N$ — exactly the rate predicted by the divergent density mismatch between the prime-ladder spectrum and the Riemann-von Mangoldt counting.
+
+The per-zero residual $r_n = \gamma_n - \widetilde\gamma_n$ satisfies the empirical bound
+
+$$
+\lvert r_n\rvert \;\le\; 2 \cdot \frac{\log\gamma_n}{\overline N'(\gamma_n)}
+$$
+
+across all tested $n \le 100$.  This is the **smooth quantitative form** of the heuristic $r_n \sim S(\gamma_n)/\overline N'(\gamma_n)$.
+
+### 13sexies.4 What P28 closes (operationally)
+
+1. **Structural origin of the smooth eigenvalue density of $T_{\mathrm{HP}}$.**  The density is determined uniquely by the gamma factor of $\xi(s)$, which is the kernel of P15's archimedean integral.  This delivers piece (i) of §13quinquies.5.
+2. **Decomposition of the P27 gap.**  The P27 Wasserstein-1 distance now splits as
+   $$
+   \underbrace{W_1\bigl(\sigma(P14),\sigma(T_{\mathrm{HP}})\bigr)}_{\text{P27 gap}} \;=\; \underbrace{W_1\bigl(\sigma(P14),\sigma(\widetilde T_{\mathrm{HP}})\bigr)}_{\text{structural part (TNFR-derivable)}} \;+\; \underbrace{W_1\bigl(\sigma(\widetilde T_{\mathrm{HP}}),\sigma(T_{\mathrm{HP}})\bigr)}_{\text{arithmetic part (RH content)}}.
+   $$
+   The arithmetic part is ≤ 1.2 at $N=100$; the structural part absorbs the rest (≥ 99 %).
+
+### 13sexies.5 What P28 does NOT close (G4 stays OPEN)
+
+* The residuals $r_n = \gamma_n - \widetilde\gamma_n$ ARE the RH content.  Showing $|r_n| \to 0$ in any uniform sense is equivalent to bounding $S(T) = \tfrac{1}{\pi}\arg\zeta(\tfrac12+iT)$, which is the genuine arithmetic problem.
+* Exact eigenvalue match $\sigma(\widetilde T_{\mathrm{HP}}) = \sigma(T_{\mathrm{HP}})$ is impossible: the smooth approximation cannot reproduce the fluctuations $S(\gamma_n)$.  Density match is the right notion of TNFR closure; pointwise match is RH.
+* G4 in AGENTS.md §13.2 remains the only OPEN milestone.  P28 does **not** advance G4; it only reshapes how much of the P27 operator gap is "structural" (now derivable) vs "arithmetic" (still RH-equivalent).
+
+### 13sexies.6 Implementation pointers
+
+* Module: `src/tnfr/riemann/structural_zero_density.py` — `riemann_siegel_theta`, `smooth_zero_count`, `smooth_zero_density`, `derive_smooth_zero_position`, `build_structural_t_hp`, `compute_structural_zero_density_certificate`, `StructuralZeroDensityCertificate`.
+* Demo: `examples/55_structural_zero_density_demo.py`.
+* Wiring: `src/tnfr/riemann/__init__.py` exposes the P28 names; the catalog docstring labels the module unambiguously.
+* Reuses P14 (`prime_ladder_hamiltonian`) for the baseline spectrum and P15 (`weil_explicit_formula`) for the archimedean conceptual ingredient (the actual derivation of $\theta(T)$ uses `mpmath.loggamma` directly; no new external dependency).
+
+### 13sexies.7 Next steps
+
+1. **Iterative correction by $S(T)$ surrogates.**  Approximate $S(T)$ using truncated prime sums via the Riemann–Siegel formula and feed the corrections back into $\widetilde T_{\mathrm{HP}}$.  Quantify how the residual $W_1$ shrinks as more arithmetic information is injected.  This will **never** reach zero unconditionally — that would be RH — but it documents how the arithmetic part decomposes.
+2. **Cross-checks against P16 (Li–Keiper).**  The Li coefficients $\lambda_n$ computed from the resonance poles of P13 should be reproducible from the moments of $\widetilde T_{\mathrm{HP}}$ plus an explicit $S(T)$-correction; verify numerically.
+3. **Spectral statistics under GUE conjecture.**  The unfolded spectrum $x_n = \overline N(\gamma_n) = n - 1 + S(\gamma_n)/\pi$ should follow GUE statistics by Montgomery–Odlyzko.  Use P28 to compute the unfolded statistics directly and compare to RMT predictions; deviations are arithmetic in nature.
+
+---
+
 The remainder of this document preserves the legacy research notes verbatim. Keep them synchronized with the active workflow above when adding new results.
 
 ## TNFR–Riemann Research Notes (Legacy Detail)

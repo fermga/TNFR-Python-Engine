@@ -95,6 +95,22 @@ hilbert_polya
     distance between spec(P14) = {k log p} and spec(T_HP) =
     {gamma_n}. Does NOT prove RH: T_HP is populated by inputting
     the zeros, not derived from TNFR first principles.
+structural_zero_density
+    P28 Structural derivation of the smooth Riemann zero density.
+    Derives the n-th smooth zero position ~gamma_n by Newton-solving
+    Backlund's smooth counting function bar N(T) = theta(T)/pi + 1,
+    where theta(T) = Im log Gamma(1/4 + iT/2) - (T/2) log pi is the
+    Riemann-Siegel theta function -- exactly the archimedean kernel
+    of the Weil-Guinand formula already computed by P15. Constructs
+    the structural Hilbert-Polya operator tilde T_HP =
+    diag(~gamma_1, ..., ~gamma_N) using ONLY TNFR archimedean
+    ingredients (no mpmath.zetazero on the derivation side) and
+    shows that W_1(spec(tilde T_HP), spec(T_HP)) is orders of
+    magnitude smaller than the P27 P14<->T_HP gap. The residuals
+    r_n = gamma_n - ~gamma_n encode the oscillating part
+    S(T) = (1/pi) arg zeta(1/2 + iT) -- the RH content. Closes
+    the structural origin of the smooth zero density; does NOT
+    close G4 (bounding S(T) is the open arithmetic problem).
 lyapunov_spectral_positivity
     P26 Lyapunov-spectral positivity certificate for the P14
     Hamiltonian. Combines (i) exact diagonal positivity at coupling=0
@@ -493,6 +509,16 @@ from .hilbert_polya import (
     structural_gap_p14_vs_hp,
     compute_hilbert_polya_certificate,
 )
+from .structural_zero_density import (
+    # P28: Structural smooth zero density
+    StructuralZeroDensityCertificate,
+    riemann_siegel_theta,
+    smooth_zero_count,
+    smooth_zero_density,
+    derive_smooth_zero_position,
+    build_structural_t_hp,
+    compute_structural_zero_density_certificate,
+)
 
 __all__ = [
     # Graph builders
@@ -779,4 +805,12 @@ __all__ = [
     "wasserstein_1_distance",
     "structural_gap_p14_vs_hp",
     "compute_hilbert_polya_certificate",
+    # P28: Structural smooth zero density
+    "StructuralZeroDensityCertificate",
+    "riemann_siegel_theta",
+    "smooth_zero_count",
+    "smooth_zero_density",
+    "derive_smooth_zero_position",
+    "build_structural_t_hp",
+    "compute_structural_zero_density_certificate",
 ]
