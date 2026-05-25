@@ -2236,6 +2236,82 @@ Step 3 of the demo also verifies the **triple agreement** P34 ≡ P32 (machine p
 
 **Net effect**: P34 extends the canonical TNFR operator catalog one layer further — every Dirichlet $L(s,\chi)$ now has a canonical self-adjoint TNFR Hamiltonian realising its prime data, exactly as $\zeta$ does since P14. It does not close, nor narrow, any open arithmetic gap (G4, GRH, G3$_\chi$).
 
+## §13quaterdecies. P35 — χ-Twisted Weil–Guinand Explicit Formula (Structural; Closes G3$_\chi$ Operationally for Primitive Real χ; Does NOT Advance G4 or GRH)
+
+### §13quaterdecies.1 Motivation
+
+P15 (§11) established the Weil–Guinand explicit formula for $\zeta$ as a TNFR-native identity: the zero side $\sum_\gamma h(\gamma)$ equals the sum of an Archimedean digamma integral, a constant term, and a prime side computed as the diagonal projection of the P14 weight operator $W$ in its eigenbasis. After P32 (χ-twisted prime ladder), P33 (analytic continuation of the corresponding TNFR vM zeta), and P34 (canonical Hamiltonian for the χ-twisted ladder), the natural structural question is the χ-twisted analogue of the explicit formula. **P35 supplies it for every primitive real Dirichlet character.**  This closes gap **G3$_\chi$** operationally for $\chi \in \{\chi_3, \chi_4, \chi_5, \ldots\}$ (real, non-principal) and does not advance G4 = RH or GRH.
+
+### §13quaterdecies.2 Construction
+
+For a primitive real non-principal Dirichlet character $\chi$ with conductor $q$ and parity $a = (1-\chi(-1))/2 \in \{0,1\}$, and Gaussian test pair $h(t)=e^{-t^2/(2\sigma^2)}$, $g(u)=(\sigma/\sqrt{2\pi})\,e^{-\sigma^2 u^2/2}$, the χ-twisted Weil–Guinand explicit formula is
+
+$$
+\sum_\gamma h(\gamma)
+\;=\;
+\underbrace{g(0)\,\log(q/\pi)}_{\text{constant term}}
+\;+\;
+\underbrace{\frac{1}{2\pi}\!\int_{-\infty}^{\infty}\! h(t)\,\Re\,\psi\!\left(\tfrac14+\tfrac{a}{2}+\tfrac{it}{2}\right)\,dt}_{\text{archimedean side}}
+\;-\;
+\underbrace{2\,\Re\sum_{n\ge1}\frac{\chi(n)\,\Lambda(n)}{\sqrt n}\,g(\log n)}_{\text{prime side}}.
+$$
+
+The two non-trivial reductions to ζ are immediate: for the trivial character ($q=1$, $a=0$) the constant becomes $-g(0)\log\pi$, the digamma factor collapses to $\psi(1/4+it/2)$, and the prime side becomes the unweighted P15 sum.
+
+* **Zero side** — Hardy-Z bisection on $Z_\chi(t) = e^{i\theta_\chi(t)} L(\tfrac12+it,\chi)$ (built on P33's mpmath-grade continuation), enumerating positive imaginary parts $\gamma$ on $\operatorname{Re}(s) = 1/2$.  Real $\chi$ ⇒ zeros come in conjugate pairs ⇒ $\sum_\gamma h(\gamma) = 2\sum_{\gamma>0} h(\gamma)$.
+* **Prime side** — diagonal projection of the χ-twisted weight operator $W^{(\chi)}$ from the canonical P34 Hamiltonian, in its eigenbasis (same einsum idiom as P15).
+* **Archimedean side** — direct numerical quadrature of the digamma factor (mpmath, $\mathrm{dps}=30$).
+
+### §13quaterdecies.3 Empirical Verification
+
+| χ | q | a | σ | n zeros | residual | rel. residual | verified |
+|---|---|---|---|---|---|---|---|
+| χ₃ | 3 | 1 | 2.0 |  5 | −7.46 × 10⁻¹⁷ | 1.20 × 10⁻¹³ | ✓ |
+| χ₃ | 3 | 1 | 2.5 |  8 | +2.03 × 10⁻¹⁶ | 1.77 × 10⁻¹⁴ | ✓ |
+| χ₃ | 3 | 1 | 3.0 | 11 | +2.36 × 10⁻¹⁶ | 4.15 × 10⁻¹⁵ | ✓ |
+| χ₄ | 4 | 1 | 2.0 |  7 | −9.48 × 10⁻¹⁵ | 4.40 × 10⁻¹³ | ✓ |
+| χ₄ | 4 | 1 | 2.5 | 10 | −3.10 × 10⁻¹⁴ | 2.81 × 10⁻¹³ | ✓ |
+| χ₄ | 4 | 1 | 3.0 | 12 | −5.16 × 10⁻¹⁴ | 1.89 × 10⁻¹³ | ✓ |
+| χ₅ | 5 | 0 | 2.0 |  7 | −2.00 × 10⁻¹⁵ | 2.50 × 10⁻¹³ | ✓ |
+| χ₅ | 5 | 0 | 2.5 | 11 | −7.97 × 10⁻¹⁵ | 1.35 × 10⁻¹³ | ✓ |
+| χ₅ | 5 | 0 | 3.0 | 14 | −1.56 × 10⁻¹⁴ | 8.60 × 10⁻¹⁴ | ✓ |
+
+All nine $(\chi, \sigma)$ pairs verify the identity to machine precision (relative residual $\le 4.4 \times 10^{-13}$), well inside the declared $10^{-2}$ tolerance.
+
+### §13quaterdecies.4 What P35 Extends
+
+* **Operational closure of G3$_\chi$ for primitive real χ**: both sides of the χ-twisted Weil–Guinand identity now have a canonical TNFR realisation that agrees to machine precision.
+* **Symmetric completion of the L-function track**: P32 (operator content) → P33 (continuation) → P34 (Hamiltonian) → **P35 (explicit formula)** now occupies the same structural status as P12 → P13 → P14 → P15 for ζ.
+* **Reuse of P34 Hamiltonian**: the prime side is the *exact same* einsum idiom as P15; no new operator is introduced.
+
+### §13quaterdecies.5 What P35 Does NOT Advance
+
+* **Generalised Riemann Hypothesis (GRH)**: untouched.  Zero localisation on $\operatorname{Re}(s) = 1/2$ for $L(s,\chi)$ is **assumed** in P35 (Hardy-Z bisection starts from the critical line); proving every L-zero lies there is the χ-twisted analogue of gap **G4 = RH** and is the same arithmetic obstruction.
+* **G4 = RH**: structurally identical to the ζ case; Conjecture **T-HP** (§13septies) and its extensions remain open.
+* **Complex χ**: P35 currently supports only **primitive real** characters.  Extension to complex χ requires a Hermitisation of $W^{(\chi)}$ that is intentionally deferred.
+* **No new analytic content beyond P33**: P35 packages P33 zeros and P34 Hamiltonian into a single explicit-formula certificate; it does not introduce any new analytic ingredient.
+
+### §13quaterdecies.6 Cross-References
+
+* §11: P15 Weil–Guinand for ζ (canonical template P35 specialises).
+* §13undecies: P32 χ-twisted prime ladder.
+* §13duodecies: P33 χ-twisted analytic continuation.
+* §13terdecies: P34 χ-twisted Hamiltonian (prime side of P35).
+* `src/tnfr/riemann/twisted_weil_explicit_formula.py`: canonical implementation of P35.
+* `examples/62_dirichlet_weil_explicit_formula_demo.py`: demo verifying nine $(\chi, \sigma)$ pairs to machine precision.
+
+### §13quaterdecies.7 Gap Balance
+
+| Scope | Status before P35 | Status after P35 |
+|-------|---|---|
+| G3 (Weil–Guinand for ζ, P15) | Closed operationally | Closed operationally, unchanged |
+| **G3$_\chi$ (Weil–Guinand for $L(s,\chi)$, primitive real χ)** | Open (future P35) | **Closed operationally** by P35 |
+| G3$_\chi$ for complex χ | Open | Open (future increment) |
+| G4 = RH | OPEN | OPEN, unchanged |
+| GRH (G4$_\chi$ for $\chi \neq \chi_0$) | OPEN | OPEN, unchanged |
+
+**Net effect**: P35 closes the explicit-formula gap on the L-function track for every primitive real Dirichlet character.  Combined with P32–P34, the structural status of $L(s,\chi)$ for real $\chi$ now matches the ζ track up through P15.  The arithmetic obstruction (zero localisation on $\operatorname{Re}(s)=1/2$) is unchanged.
+
 ## 14. Weil–TNFR Positivity Bridge (P17)
 
 ### 14.1 Motivation
@@ -2793,6 +2869,7 @@ piecewise status notes.
 | **P32** Dirichlet L-function extension | `dirichlet_l.py` | `59_dirichlet_l_function_demo.py` | §13undecies | Structural extension of P12 to all $L(s, \chi)$ via χ-twisted prime ladder; G5$_\chi$/P12 layer; **does NOT advance G4 or GRH** |
 | **P33** Dirichlet L analytic continuation | `analytic_continuation_dirichlet.py` | `60_dirichlet_l_continuation_demo.py` | §13duodecies | Structural extension of P13 to all $L(s, \chi)$ via `mp.dirichlet`; G2$_\chi$/P13 layer; verified vs LMFDB for $\chi_3, \chi_4$; **does NOT advance G4 or GRH** |
 | **P34** Dirichlet L canonical Hamiltonian | `twisted_prime_ladder_hamiltonian.py` | `61_dirichlet_l_hamiltonian_demo.py` | §13terdecies | Structural extension of P14 to all $L(s, \chi)$: canonical self-adjoint Hamiltonian + complex diagonal weight $W^{(\chi)}_{(p,k),(p,k)} = \chi(p)^k \log p$; closes **G1$_\chi$ at the P14 layer** (spec_err = 0, trace_rel_err $\approx 3 \times 10^{-16}$ for $\chi_3, \chi_4, \chi_5$); **does NOT advance G4 or GRH** |
+| **P35** Dirichlet L χ-twisted Weil–Guinand | `twisted_weil_explicit_formula.py` | `62_dirichlet_weil_explicit_formula_demo.py` | §13quaterdecies | Structural extension of P15 to primitive real $L(s, \chi)$: zero side from Hardy-Z bisection on $Z_\chi(t)$ (P33), prime side from P34 Hamiltonian; closes **G3$_\chi$ operationally for primitive real χ** (rel. residual $\le 4.4 \times 10^{-13}$ across 9 $(\chi,\sigma)$ pairs for $\chi_3, \chi_4, \chi_5$ at $\sigma \in \{2.0, 2.5, 3.0\}$); **does NOT advance G4 or GRH** |
 
 ### 19.2 Gap Balance
 

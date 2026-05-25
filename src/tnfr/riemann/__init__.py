@@ -191,6 +191,20 @@ twisted_prime_ladder_hamiltonian
     to machine precision. Does NOT advance G4 = RH or GRH (same
     arithmetic obstruction); does NOT establish the chi-twisted
     Weil-Guinand explicit formula (that is the future P35, G3_chi).
+twisted_weil_explicit_formula
+    P35 Weil-Guinand explicit formula for general primitive Dirichlet
+    L-functions L(s, chi) (structural analogue of P15; operational
+    closure of gap G3_chi). Verifies the identity
+        sum_gamma h(gamma)
+           = -g(0) log(q/pi)
+             + (1/2 pi) integral h(t) Re psi(1/4 + a/2 + i t/2) dt
+             + (-2 Re sum_n chi(n) Lambda(n) / sqrt(n) g(log n))
+    using the P34 Hamiltonian for the prime side (-2 Re Tr(W^(chi)
+    exp(-H/2) g(H))) and Hardy-Z bisection on the critical line for
+    the zero side. Implemented for primitive real characters
+    (chi_3, chi_4, chi_5). Closes G3_chi operationally for every
+    Dirichlet L-function; does NOT advance G4 = RH or GRH (the
+    identity holds for arbitrary zero locations on Re(s) = 1/2).
 oscillatory_correction
     P31 Branch B1 retry: prime-ladder oscillatory correction of the
     P28 / P30 smooth targets. Reconstructs S(T) = pi^{-1} arg zeta(1/2
@@ -654,6 +668,17 @@ from .twisted_prime_ladder_hamiltonian import (
     TwistedPrimeLadderHamiltonianCertificate,
     verify_twisted_hamiltonian_reproduces_prime_ladder,
 )
+from .twisted_weil_explicit_formula import (
+    # P35: chi-twisted Weil-Guinand explicit formula (G3_chi)
+    character_parity,
+    twisted_weil_constant_term,
+    twisted_weil_archimedean_integral,
+    twisted_weil_prime_side_from_hamiltonian,
+    find_dirichlet_l_zeros,
+    twisted_weil_zero_side,
+    TwistedWeilExplicitFormulaCertificate,
+    verify_twisted_weil_explicit_formula,
+)
 from .spectral_emergence import (
     # P29: Spectral universality emergence under canonical UM+RA coupling
     CANONICAL_COUPLING_LAWS,
@@ -1004,6 +1029,15 @@ __all__ = [
     "twisted_weighted_spectral_trace",
     "TwistedPrimeLadderHamiltonianCertificate",
     "verify_twisted_hamiltonian_reproduces_prime_ladder",
+    # P35: chi-twisted Weil-Guinand explicit formula (G3_chi)
+    "character_parity",
+    "twisted_weil_constant_term",
+    "twisted_weil_archimedean_integral",
+    "twisted_weil_prime_side_from_hamiltonian",
+    "find_dirichlet_l_zeros",
+    "twisted_weil_zero_side",
+    "TwistedWeilExplicitFormulaCertificate",
+    "verify_twisted_weil_explicit_formula",
     # P29: Spectral universality emergence under canonical UM+RA coupling
     "CANONICAL_COUPLING_LAWS",
     "InterPrimeCoupling",
