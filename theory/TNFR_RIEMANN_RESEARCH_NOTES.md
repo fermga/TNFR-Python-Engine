@@ -2160,6 +2160,82 @@ P33 is a **structural extension**, not progress on the open arithmetic content o
 
 **Net effect**: P33 extends the canonical TNFR representation catalog one layer further — the χ-twisted prime ladder of P32 now lives on the whole complex plane.  It does not close, nor narrow, any open arithmetic gap.
 
+## §13terdecies. P34 — Canonical Hamiltonian for the χ-Twisted Prime Ladder (Structural; Closes G1$_\chi$ at the P14 Layer; Does NOT Advance G4 or GRH)
+
+### §13terdecies.1 Motivation
+
+P14 (§10) supplies the canonical self-adjoint TNFR ``InternalHamiltonian`` on the prime-ladder graph whose decoupled spectrum is $\{k \log p\}$ and whose weighted spectral trace $\operatorname{Tr}(W \, e^{-s H_{\mathrm{freq}}})$ reproduces $-\zeta'(s)/\zeta(s)$ to machine precision. After P32 (the χ-twisted prime ladder representing $-L'(s,\chi)/L(s,\chi)$ on $\operatorname{Re}(s) > 1$) and P33 (its analytic continuation), the natural structural question — the explicit content of §13duodecies.5 — is whether the same canonical TNFR Hamiltonian construction admits a χ-twisted analogue for every Dirichlet character. **P34 supplies that analogue.** The construction does not advance GRH or G4; it closes gap **G1$_\chi$** *at the P14 layer* for every $L(s,\chi)$.
+
+### §13terdecies.2 Construction
+
+Let $\chi$ be a Dirichlet character of conductor $q$ and $K \ge 1$ a REMESH echo cut-off. Let $P_\chi = \{p \text{ prime}: \chi(p) \neq 0\} = \{p : p \nmid q\}$ (the canonical primes-coprime-to-$q$ filter introduced at P32).
+
+1. **Graph**: $G_\chi$ is the disjoint union over $p \in P_\chi$ of the per-prime REMESH ladder $L_p$ ($K$ nodes $(p,1), \dots, (p,K)$ chained by REMESH edges). Per-node attributes: $\nu_f((p,k)) = k \log p$, all other TNFR state $\phi = 0$, $\mathrm{EPI} = 1$, $S_i = 1$, $\Delta \mathrm{NFR} = 0$.
+
+2. **Hamiltonian**: $H_\chi$ is the canonical TNFR ``InternalHamiltonian`` on $G_\chi$ with internal-coherence strength $\alpha = 0$ and decoupled limit ($J_0 = 0$). By construction (§10) $H_\chi$ is real symmetric (hence self-adjoint) and $\operatorname{spec}(H_{\chi, \mathrm{freq}}) = \{k \log p : p \in P_\chi, \, 1 \le k \le K\}$ exactly.
+
+3. **χ-twisted weight operator**: $W^{(\chi)}$ is the diagonal $|V(G_\chi)| \times |V(G_\chi)|$ matrix
+
+   $$W^{(\chi)}_{(p,k),(p,k)} = \chi(p)^k \log p \in \mathbb{C}.$$
+
+   For real characters $W^{(\chi)}$ is real-diagonal (Hermitian); for complex characters it is *normal but not Hermitian*, since the entries lie on the unit circle scaled by $\log p$. This is the canonical structural carrier of the χ-phase: $H_\chi$ stays real self-adjoint (so its eigenvectors form a real-orthonormal basis), and the complex content lives exclusively in $W^{(\chi)}$.
+
+4. **χ-twisted weighted spectral trace**: For $s \in \mathbb{C}$,
+
+   $$Z_{\mathrm{TNFR}}^{(\chi)}(s) := \operatorname{Tr}\bigl(W^{(\chi)} \, e^{-s H_{\chi, \mathrm{freq}}}\bigr) = \sum_{p \in P_\chi} \sum_{k=1}^{K} \chi(p)^k (\log p) \, p^{-ks}.$$
+
+   This is exactly the P32 reference trace `tnfr_log_l_derivative`, which converges to $-L'(s,\chi)/L(s,\chi)$ as $K \to \infty$ on $\operatorname{Re}(s) > 1$ and admits the P33 continuation elsewhere.
+
+### §13terdecies.3 Empirical Verification (May 2026 run)
+
+`examples/61_dirichlet_l_hamiltonian_demo.py`, with $n_{\mathrm{primes}} = 20$, $K = 8$ (Hilbert dimension $N = 152$, $19$ active primes, $1$ excluded), $s$-values $\{2, 3, 2+i, 3+2i, 5, 10\}$:
+
+| Character | $N$ | $n_{\mathrm{active}}$ | spectrum_max_abs_error | trace_max_rel_error | overall_ok |
+|-----------|----:|----------------------:|-----------------------:|--------------------:|-----------:|
+| $\chi_3$ (mod 3) | 152 | 19 | $0.000 \times 10^{0}$ | $3.241 \times 10^{-16}$ | **YES** |
+| $\chi_4$ (mod 4) | 152 | 19 | $0.000 \times 10^{0}$ | $3.493 \times 10^{-16}$ | **YES** |
+| $\chi_5$ (mod 5) | 152 | 19 | $0.000 \times 10^{0}$ | $2.313 \times 10^{-16}$ | **YES** |
+
+The spectrum match is **exact** (zero floating-point error: $H_{\chi,\mathrm{freq}}$ is constructed with diagonal entries $\nu_f((p,k)) = k \log p$, hence its eigenvalues coincide bit-for-bit with the reference). The χ-twisted weighted trace matches the P32 reference at the machine-epsilon level for all tested $s$, including non-real $s$.
+
+Step 3 of the demo also verifies the **triple agreement** P34 ≡ P32 (machine precision, by construction) ≡ P33 (mpmath, $O(p_{\max}^{-\operatorname{Re}(s)})$ truncation residual) on $\operatorname{Re}(s) > 1$ for $\chi_3$, including off-axis $s = 2+i$ and $s = 3+2i$.
+
+### §13terdecies.4 What P34 Extends
+
+* **Canonical operator catalog**: every Dirichlet $L(s,\chi)$ now has a TNFR-canonical self-adjoint operator that carries its prime data, exactly as $\zeta$ does at P14.
+* **G1$_\chi$ at the P14 layer**: the obstruction "canonical Hamiltonian whose decoupled spectrum and χ-twisted weighted trace reproduce the P32 χ-twisted ladder data" is now **closed operationally** for every $\chi$.
+* **Structural completeness of the L-function track**: after P32 (operator content), P33 (continuation), and P34 (Hamiltonian realisation), the χ-twisted ladder occupies the same structural status as the ζ ladder before P15.
+
+### §13terdecies.5 What P34 Does NOT Advance
+
+* **Generalised Riemann Hypothesis (GRH)**: no change. RH-equivalent localisation of poles on $\operatorname{Re}(s) = 1/2$ for $L(s,\chi)$ is the same arithmetic obstruction as G4 = RH for $\zeta$; P34 inherits the open status unchanged.
+* **G4 = RH**: untouched. The P34 Hamiltonian is structurally identical to the P14 Hamiltonian on its prime-ladder block; the open content of Conjecture **T-HP** (§13septies) — existence of a canonical admissible spectral-rescaling operator $\mathcal{F}$ built only from the tetrad — is *not* addressed.
+* **G3$_\chi$ (χ-twisted Weil–Guinand explicit formula)**: open. The χ-twisted analogue of P15 — the *explicit-formula* bridge linking the P33 zeros of $L(s,\chi)$ to the P34 Hamiltonian spectrum to machine precision — is the future **P35**.
+* **No new analytic content**: P34 is a canonical operator-theoretic *re-presentation* of P32/P33 data; it does not introduce any analytic ingredient absent from those constructions.
+
+### §13terdecies.6 Cross-References
+
+* §10: P14 prime-ladder Hamiltonian (the canonical template P34 specialises).
+* §13undecies: P32 χ-twisted prime ladder (the spectrum/weight data P34 represents).
+* §13duodecies: P33 analytic continuation of $-L'(s,\chi)/L(s,\chi)$ (the off-$\operatorname{Re}(s) > 1$ extension).
+* `src/tnfr/riemann/twisted_prime_ladder_hamiltonian.py`: canonical implementation of P34.
+* `examples/61_dirichlet_l_hamiltonian_demo.py`: demo verifying spectrum-exact / trace-machine-precision reproduction for $\chi_3, \chi_4, \chi_5$ and triple agreement P34 ≡ P32 ≡ P33 on $\operatorname{Re}(s) > 1$.
+
+### §13terdecies.7 Status Update for §19.2 Gap Balance
+
+| Scope | Status before P34 | Status after P34 |
+|-------|-------------------|------------------|
+| Operational ζ gaps (G1, G2, G3) | Closed operationally | Closed operationally, unchanged |
+| G4 = RH | OPEN (Conjecture T-HP) | OPEN, unchanged |
+| G5 (ζ representation) | Superseded by P12+P13+P15 | Superseded, unchanged |
+| G5$_\chi$ at P12 layer (P32) | Closed | Closed, unchanged |
+| G2$_\chi$ / G5$_\chi$ at P13 layer (P33) | Closed operationally | Closed operationally, unchanged |
+| **G1$_\chi$ (Hamiltonian for $L(s,\chi)$)** | Open | **Closed operationally** by P34 |
+| G3$_\chi$ (Weil–Guinand for $L(s,\chi)$) | Open | Open (future P35) |
+| GRH (G4$_\chi$ for $\chi \neq \chi_0$) | OPEN | OPEN, unchanged |
+
+**Net effect**: P34 extends the canonical TNFR operator catalog one layer further — every Dirichlet $L(s,\chi)$ now has a canonical self-adjoint TNFR Hamiltonian realising its prime data, exactly as $\zeta$ does since P14. It does not close, nor narrow, any open arithmetic gap (G4, GRH, G3$_\chi$).
+
 ## 14. Weil–TNFR Positivity Bridge (P17)
 
 ### 14.1 Motivation
@@ -2716,6 +2792,7 @@ piecewise status notes.
 | **P31** Prime-ladder oscillatory correction | `oscillatory_correction.py` | `58_oscillatory_correction_demo.py` | §13decies | Branch B1 retry with canonical multi-frequency basis; +3.6% at $N$=20 ($d$=1), 0% at $N$=40; stronger branch-B2 corroboration |
 | **P32** Dirichlet L-function extension | `dirichlet_l.py` | `59_dirichlet_l_function_demo.py` | §13undecies | Structural extension of P12 to all $L(s, \chi)$ via χ-twisted prime ladder; G5$_\chi$/P12 layer; **does NOT advance G4 or GRH** |
 | **P33** Dirichlet L analytic continuation | `analytic_continuation_dirichlet.py` | `60_dirichlet_l_continuation_demo.py` | §13duodecies | Structural extension of P13 to all $L(s, \chi)$ via `mp.dirichlet`; G2$_\chi$/P13 layer; verified vs LMFDB for $\chi_3, \chi_4$; **does NOT advance G4 or GRH** |
+| **P34** Dirichlet L canonical Hamiltonian | `twisted_prime_ladder_hamiltonian.py` | `61_dirichlet_l_hamiltonian_demo.py` | §13terdecies | Structural extension of P14 to all $L(s, \chi)$: canonical self-adjoint Hamiltonian + complex diagonal weight $W^{(\chi)}_{(p,k),(p,k)} = \chi(p)^k \log p$; closes **G1$_\chi$ at the P14 layer** (spec_err = 0, trace_rel_err $\approx 3 \times 10^{-16}$ for $\chi_3, \chi_4, \chi_5$); **does NOT advance G4 or GRH** |
 
 ### 19.2 Gap Balance
 

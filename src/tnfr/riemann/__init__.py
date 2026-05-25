@@ -176,6 +176,21 @@ analytic_continuation_dirichlet
     agreement at three-decimal resolution. Structural extension of
     the P13 continuation construct; does NOT advance GRH (same
     arithmetic obstruction as G4 for zeta).
+twisted_prime_ladder_hamiltonian
+    P34 Canonical TNFR Hamiltonian on the chi-twisted prime-ladder
+    graph (structural analogue of P14 for general Dirichlet
+    L-functions; operational closure of gap G1_chi). Instantiates the
+    canonical InternalHamiltonian on the disjoint union of per-prime
+    REMESH echo ladders for primes coprime to the conductor q, then
+    exposes the diagonal chi-twisted weight operator W^(chi) with
+    entries W[(p,k),(p,k)] = chi(p)^k log p (complex for non-real
+    chi). In the decoupled limit the Hamiltonian spectrum matches the
+    P32 chi-twisted prime-ladder eigenvalues exactly, and the
+    chi-twisted weighted spectral trace Tr(W^(chi) exp(-s H_freq))
+    reproduces the P32 twisted Dirichlet trace -L'(s,chi)/L(s,chi)
+    to machine precision. Does NOT advance G4 = RH or GRH (same
+    arithmetic obstruction); does NOT establish the chi-twisted
+    Weil-Guinand explicit formula (that is the future P35, G3_chi).
 oscillatory_correction
     P31 Branch B1 retry: prime-ladder oscillatory correction of the
     P28 / P30 smooth targets. Reconstructs S(T) = pi^{-1} arg zeta(1/2
@@ -629,6 +644,16 @@ from .analytic_continuation_dirichlet import (
     DirichletCriticalLinePoleScan,
     scan_critical_line_for_l_poles,
 )
+from .twisted_prime_ladder_hamiltonian import (
+    # P34: Canonical Hamiltonian for chi-twisted prime ladder (G1_chi)
+    build_twisted_prime_ladder_graph,
+    build_twisted_prime_ladder_weight_operator,
+    TwistedPrimeLadderHamiltonian,
+    build_twisted_prime_ladder_hamiltonian,
+    twisted_weighted_spectral_trace,
+    TwistedPrimeLadderHamiltonianCertificate,
+    verify_twisted_hamiltonian_reproduces_prime_ladder,
+)
 from .spectral_emergence import (
     # P29: Spectral universality emergence under canonical UM+RA coupling
     CANONICAL_COUPLING_LAWS,
@@ -971,6 +996,14 @@ __all__ = [
     "verify_twisted_continuation_agreement",
     "DirichletCriticalLinePoleScan",
     "scan_critical_line_for_l_poles",
+    # P34: Canonical Hamiltonian for chi-twisted prime ladder (G1_chi)
+    "build_twisted_prime_ladder_graph",
+    "build_twisted_prime_ladder_weight_operator",
+    "TwistedPrimeLadderHamiltonian",
+    "build_twisted_prime_ladder_hamiltonian",
+    "twisted_weighted_spectral_trace",
+    "TwistedPrimeLadderHamiltonianCertificate",
+    "verify_twisted_hamiltonian_reproduces_prime_ladder",
     # P29: Spectral universality emergence under canonical UM+RA coupling
     "CANONICAL_COUPLING_LAWS",
     "InterPrimeCoupling",
