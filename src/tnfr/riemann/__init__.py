@@ -280,6 +280,21 @@ twisted_nodeaware_gauge_sweep
     Implemented for primitive real characters (chi_3, chi_4, chi_5).
     Diagnostic only; does NOT prove GRH for any L(s, chi) and does
     NOT advance G4 = RH.
+twisted_hermite_family
+    P41 chi-twisted Hermite2-Gaussian eta-parameter sweep of
+        alpha_chi(sigma; eta, g) = W_chi[sigma; h_{sigma,eta}]
+            / E_TNFR_chi[sigma; eta, g]
+    where h_{sigma,eta}(t) = (1 + eta (t/sigma)^2) exp(-t^2/(2 sigma^2))
+    is the second-order Hermite-Gaussian admissible profile inherited
+    from the zeta-track P21 (admissible_family_sweep). P39 fixed
+    eta = 0.25; P41 sweeps eta over DEFAULT_HERMITE2_ETAS =
+    (0.0, 0.1, 0.25, 0.5, 1.0, 2.0) where eta = 0.0 recovers the
+    pure Gaussian baseline. Structural analogue of P21 on the
+    chi-twisted bundle: probes robustness of the P37 positivity
+    bridge under polynomial-envelope deformation of the test profile.
+    Implemented for primitive real characters (chi_3, chi_4, chi_5).
+    Diagnostic only; does NOT prove GRH for any L(s, chi) and does
+    NOT advance G4 = RH.
 oscillatory_correction
     P31 Branch B1 retry: prime-ladder oscillatory correction of the
     P28 / P30 smooth targets. Reconstructs S(T) = pi^{-1} arg zeta(1/2
@@ -787,6 +802,12 @@ from .twisted_nodeaware_gauge_sweep import (
     build_twisted_test_state_nodeaware,
     sweep_twisted_nodeaware_gauge,
 )
+from .twisted_hermite_family import (
+    # P41: chi-twisted Hermite2 eta-parameter sweep (diagnostic)
+    DEFAULT_HERMITE2_ETAS,
+    TwistedHermite2EtaSweepCertificate,
+    sweep_twisted_hermite2_eta,
+)
 from .spectral_emergence import (
     # P29: Spectral universality emergence under canonical UM+RA coupling
     CANONICAL_COUPLING_LAWS,
@@ -1169,6 +1190,10 @@ __all__ = [
     "TwistedNodeAwareGaugeSweepCertificate",
     "build_twisted_test_state_nodeaware",
     "sweep_twisted_nodeaware_gauge",
+    # P41: chi-twisted Hermite2 eta-parameter sweep (diagnostic)
+    "DEFAULT_HERMITE2_ETAS",
+    "TwistedHermite2EtaSweepCertificate",
+    "sweep_twisted_hermite2_eta",
     # P29: Spectral universality emergence under canonical UM+RA coupling
     "CANONICAL_COUPLING_LAWS",
     "InterPrimeCoupling",

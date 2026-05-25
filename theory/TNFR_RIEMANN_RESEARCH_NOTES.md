@@ -2642,6 +2642,77 @@ P40 is a **finite-grid robustness diagnostic**: positivity of $\alpha_\chi(\sigm
 
 **Net effect**: P40 closes the node-aware canonical-mapping robustness gap on the L-function track for every primitive real Dirichlet character, achieving structural parity with the ζ-track through P20.  The arithmetic obstruction remains identical and the gap balance for G4 is unchanged.
 
+## §13vicies. P41 — χ-Twisted Hermite2-Gaussian η-Parameter Sweep of $\alpha_\chi(\sigma; \eta, g)$ (Hermite2 Envelope-Strength Robustness Diagnostic; GRH$_\chi$-Equivalent for Primitive Real χ; Does NOT Prove GRH or Advance G4)
+
+### §13vicies.1 Motivation
+
+P39 and P40 swept the three admissible Schwartz-even test families `DEFAULT_TEST_FAMILIES` of P19 with the Hermite2-Gaussian profile fixed at its canonical envelope strength $\eta = 0.25$.  The Hermite2 profile
+
+$$
+h_{\sigma,\eta}(t) \;=\; \bigl(1 + \eta (t/\sigma)^2\bigr)\, e^{-t^2/(2\sigma^2)}
+$$
+
+is a one-parameter family of Schwartz-even test functions that recovers the pure Gaussian baseline at $\eta = 0$ and progressively biases the test profile toward the wings as $\eta$ grows.  The ζ-track P21 added the Hermite2-Gaussian to the admissible-family registry but did not separately probe the envelope-strength axis itself.  P41 enriches the L-track sweep along that orthogonal axis: it varies $\eta$ over a finite grid spanning baseline-Gaussian to strongly-deformed envelope for every primitive real Dirichlet character.
+
+### §13vicies.2 Construction
+
+The P41 sweep evaluates
+
+$$
+\alpha_\chi(\sigma; \eta, g) \;=\; \frac{W_\chi[\sigma; \eta]}{E_{\mathrm{TNFR}}^\chi[\sigma; \eta, g]}
+$$
+
+across (i) the Hermite2 envelope-strength grid `DEFAULT_HERMITE2_ETAS = (0.0, 0.1, 0.25, 0.5, 1.0, 2.0)` ($\eta = 0$ recovers the pure Gaussian baseline; $\eta = 0.25$ matches the P19/P39 snapshot); (ii) the six canonical scalar gauges `DEFAULT_GAUGES` inherited unchanged from P18; (iii) the same finite Gaussian-width grid $\sigma \in \{1.0, 1.5, 2.0, 2.5, 3.0\}$.  $W_\chi[\sigma; \eta]$ is gauge-independent and computed once per $(\eta, \sigma)$ via the P35 enumerator `twisted_weil_zero_side`; the canonical TNFR test state is built per $(\eta, g)$ on the P34 χ-twisted bundle via `build_twisted_test_state_from_test_function` (reused from P39), then $E_{\mathrm{TNFR}}^\chi[\sigma; \eta, g]$ is the tetrad energy functional of P17 evaluated on that state.
+
+### §13vicies.3 Empirical Verification
+
+`examples/68_twisted_hermite_family_demo.py` evaluates the sweep for every primitive real Dirichlet character of conductor $q \le 5$ with bundle $(n_{\mathrm{primes}}, k_{\max}, J) = (25, 6, 0)$:
+
+| $\chi$ | $q$ | $W_\chi \ge 0$ | $\alpha_\chi > 0$ | $\alpha_{\min}$ | argmin $(\sigma, \eta, g)$ | $\alpha_{\max}$ |
+|--------|----:|:--------------:|:-----------------:|----------------:|:--------------------------:|----------------:|
+| $\chi_{3}$ | 3 | True | True | $+1.27 \times 10^{-14}$ | $(1.0, 0.0, \text{canonical})$ | $+9.54 \times 10^{-1}$ |
+| $\chi_{4}$ | 4 | True | True | $+2.71 \times 10^{-08}$ | $(1.0, 0.0, \text{canonical})$ | $+6.00 \times 10^{+0}$ |
+| $\chi_{5}$ | 5 | True | True | $+2.62 \times 10^{-10}$ | $(1.0, 0.0, \text{canonical})$ | $+1.79 \times 10^{+0}$ |
+
+Aggregate result: **3/3 characters PASS** across $6 \times 6 \times 5 = 180$ $(\eta, g, \sigma)$ entries each.  $W_\chi[\sigma; \eta]$ is monotone non-decreasing in $\eta$ at each fixed $\sigma$, consistent with the broader-spectral-support character of the deformed envelope; $\alpha_\chi$ increases sharply with $\eta$ along the `dnfr_only` and `epi_only` gauge channels and remains nearly $\eta$-invariant along the four canonical gauges that consume the $h$-channel only.  The argmin is consistently $(\sigma, \eta, g) = (1.0, 0.0, \text{canonical})$ — the Gaussian baseline corner — matching the P38/P39 argmin pattern.
+
+### §13vicies.4 What P41 Extends
+
+| Component | P38 | P39 | P40 | **P41** |
+|-----------|:---:|:---:|:---:|:-------:|
+| Test family axis | single (gaussian) | sweep (3 admissible, $\eta = 0.25$ fixed) | sweep (3 admissible, $\eta = 0.25$ fixed) | **sweep (Hermite2 with 6-point $\eta$-grid)** |
+| Gauge axis | sweep (6 scalar) | sweep (6 scalar) | sweep (4 node-aware) | sweep (6 scalar) |
+| Hermite2 envelope-strength $\eta$ | n/a | fixed at $0.25$ | fixed at $0.25$ | **swept over $\{0.0, 0.1, 0.25, 0.5, 1.0, 2.0\}$** |
+| ζ-track parent | P18 | P19 | P20 | **P21** |
+
+P41 closes the Hermite2 envelope-strength robustness gap on the L-function track for primitive real Dirichlet characters, achieving structural parity with the ζ-track P21 along the envelope-deformation axis.
+
+### §13vicies.5 What P41 Does NOT Advance
+
+P41 is a **finite-grid robustness diagnostic**: positivity of $\alpha_\chi(\sigma; \eta, g)$ on the chosen $(\eta, g, \sigma)$ grid is necessary but not sufficient for GRH$_\chi$, and the GRH-equivalent content is carried entirely by the gauge-independent zero side $W_\chi[\sigma; \eta] \ge 0$ for every admissible Hermite2 profile.  P41 does NOT prove GRH for any $L(s, \chi)$, does NOT extend to complex characters, and does NOT advance the gap balance for G4 = RH (which lives strictly inside the canonical ζ track via P30 → T-HP).  The Hermite2 family is a one-parameter polynomial-envelope deformation of the Gaussian; it is not exhaustive over the full admissible Schwartz-even space.
+
+### §13vicies.6 Cross-References
+
+- Implementation: `src/tnfr/riemann/twisted_hermite_family.py` (module), `src/tnfr/riemann/__init__.py` (canonical exports).
+- Demonstration: `examples/68_twisted_hermite_family_demo.py`.
+- ζ-track parent: P21 (Hermite2 added to `DEFAULT_TEST_FAMILIES`).
+- L-track parents: P34 (χ-twisted bundle), P35 (`twisted_weil_zero_side`), P37 (energy functional), P38 (scalar-gauge twisted sweep), P39 (admissible-family + scalar-gauge twisted sweep; supplies `build_twisted_test_state_from_test_function`), P40 (node-aware twisted sweep).
+- Inherited canonical pieces: `Hermite2GaussianTestFunction` (P19), `DEFAULT_GAUGES` (P18), `compute_energy_functional` (P17).
+- Compendium: §19.1 P41 row.
+
+### §13vicies.7 Gap Balance
+
+| Scope | Status before P41 | Status after P41 |
+|-------|-------------------|------------------|
+| P21 Hermite2 family in ζ-track admissible registry | Available (P21) | Available, unchanged |
+| P39 admissible-family + scalar-gauge sweep for $L(s,\chi)$ at fixed $\eta = 0.25$ | Available (P39) | Available, unchanged |
+| **Hermite2 envelope-strength η-sweep for $L(s,\chi)$, primitive real χ** | Open (future P41) | **Available** (TNFR-native robustness audit across 6 $\eta$ values × 6 scalar gauges × σ grid) |
+| GRH for $L(s,\chi)$, primitive real χ | OPEN | OPEN (diagnostic only; finite $(\eta, g, \sigma)$ grid is necessary, not sufficient) |
+| G4 = RH | OPEN | OPEN, unchanged |
+| GRH (G4$_\chi$ for complex $\chi$) | OPEN | OPEN, unchanged |
+
+**Net effect**: P41 closes the Hermite2 envelope-strength robustness gap on the L-function track for every primitive real Dirichlet character.  The arithmetic obstruction remains identical and the gap balance for G4 is unchanged.
+
 ## 14. Weil–TNFR Positivity Bridge (P17)
 
 ### 14.1 Motivation
@@ -3205,6 +3276,7 @@ piecewise status notes.
 | **P38** Dirichlet L χ-twisted admissibility / gauge sweep | `twisted_alpha_sweep.py` | `65_twisted_alpha_sweep_demo.py` | §13septiesdecies | Structural extension of P18 to primitive real $L(s, \chi)$: sweeps $\alpha_\chi(\sigma; g) = W_\chi[\sigma] / E_{\mathrm{TNFR}}^\chi[\sigma; g]$ across the canonical six-gauge family `DEFAULT_GAUGES` inherited unchanged from P18 (`canonical, dnfr_only, phase_only, epi_only, dnfr_phase, pressure_amplified`); $W_\chi$ computed once per $\sigma$ (gauge-independent) via P35 enumerator; canonical TNFR test state built per gauge on P34 bundle; positivity verified for $\chi_3, \chi_4, \chi_5$ across $\sigma \in \{1.0, \ldots, 3.0\} \times$ 6 gauges (3/3 PASS; $\alpha_{\min}$ at $(\sigma=1.0, \text{canonical})$ in every case); robustness audit of P37 under canonical-mapping ambiguity; **does NOT prove GRH (finite $(\sigma, g)$ grid; admissibility not exhausted) and does NOT advance G4** |
 | **P39** Dirichlet L χ-twisted admissible-family + gauge sweep | `twisted_admissible_family_sweep.py` | `66_twisted_admissible_family_sweep_demo.py` | §13octiesdecies | Joint structural extension of P19 + P18 to primitive real $L(s, \chi)$: sweeps $\alpha_\chi(\sigma; f, g) = W_\chi[\sigma; f] / E_{\mathrm{TNFR}}^\chi[\sigma; f, g]$ across `DEFAULT_TEST_FAMILIES` (gaussian, gaussian_mixture, hermite2_gaussian) inherited unchanged from P19 × `DEFAULT_GAUGES` (6 canonical gauges) inherited unchanged from P18; $W_\chi[\sigma; f]$ computed once per $(family, \sigma)$ via P35 enumerator; canonical TNFR test state built per $(family, gauge)$ on P34 bundle via `build_twisted_test_state_from_test_function`; positivity verified for $\chi_3, \chi_4, \chi_5$ across 3 families × 6 gauges × 5 widths (3/3 PASS; 270 cells total; $\alpha_{\min}$ at $(\sigma=1.0, \mathrm{gaussian}, \mathrm{canonical})$ in every case); joint robustness audit of P37 under test-profile + canonical-mapping ambiguity; **does NOT prove GRH (finite $(family, gauge, \sigma)$ grid; admissibility not exhausted) and does NOT advance G4** |
 | **P40** Dirichlet L χ-twisted node-aware gauge sweep | `twisted_nodeaware_gauge_sweep.py` | `67_twisted_nodeaware_gauge_sweep_demo.py` | §13noniesdecies | Structural extension of P20 to primitive real $L(s, \chi)$: sweeps $\alpha_\chi(\sigma; f, g) = W_\chi[\sigma; f] / E_{\mathrm{TNFR}}^\chi[\sigma; f, g]$ across `DEFAULT_TEST_FAMILIES` (P19) × `DEFAULT_NODEAWARE_GAUGES` (4 node-aware gauges: `nuf_pressure, nuf_phase, weight_pressure, mixed_affine`) inherited unchanged from P20; gauges have signature $g(h(E_n), \hat\nu_f(n), \hat w(n))$ activating the per-node normalised structural-frequency and node-weight channels of the P34 χ-twisted graph; $W_\chi[\sigma; f]$ computed once per $(family, \sigma)$ via P35 enumerator; canonical TNFR test state built per $(family, node\_gauge)$ on P34 bundle via `build_twisted_test_state_nodeaware`; positivity verified for $\chi_3, \chi_4, \chi_5$ across 3 families × 4 node-aware gauges × 5 widths (3/3 PASS; 180 cells total; $\alpha_{\min}$ at $(\sigma=1.0, \mathrm{gaussian}, \mathrm{nuf\_phase})$ for $\chi_3, \chi_4$ and at $(\sigma=1.0, \mathrm{gaussian}, \mathrm{nuf\_pressure})$ for $\chi_5$); node-aware robustness audit of P37 jointly with P19 test-profile sweep; **does NOT prove GRH (finite $(family, node\_gauge, \sigma)$ grid; admissibility not exhausted) and does NOT advance G4** |
+| **P41** Dirichlet L χ-twisted Hermite2-Gaussian η-parameter sweep | `twisted_hermite_family.py` | `68_twisted_hermite_family_demo.py` | §13vicies | Structural extension of P21 (Hermite2 family) to primitive real $L(s, \chi)$ along the envelope-strength axis: sweeps $\alpha_\chi(\sigma; \eta, g) = W_\chi[\sigma; \eta] / E_{\mathrm{TNFR}}^\chi[\sigma; \eta, g]$ across `DEFAULT_HERMITE2_ETAS = (0.0, 0.1, 0.25, 0.5, 1.0, 2.0)` ($\eta = 0$ recovers pure Gaussian; $\eta = 0.25$ matches the P19/P39 snapshot) × `DEFAULT_GAUGES` (6 canonical scalar gauges; P18); $W_\chi[\sigma; \eta]$ computed once per $(\eta, \sigma)$ via P35 enumerator; canonical TNFR test state built per $(\eta, g)$ on P34 bundle via `build_twisted_test_state_from_test_function` (reused from P39); positivity verified for $\chi_3, \chi_4, \chi_5$ across 6 etas × 6 gauges × 5 widths (3/3 PASS; 180 cells per character; $\alpha_{\min}$ at $(\sigma=1.0, \eta=0.0, \mathrm{canonical})$ in every case); envelope-strength robustness audit of P37 along an orthogonal axis to P39/P40; **does NOT prove GRH (finite $(\eta, g, \sigma)$ grid; admissibility not exhausted) and does NOT advance G4** |
 
 ### 19.2 Gap Balance
 
