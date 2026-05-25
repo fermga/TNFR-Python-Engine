@@ -9,6 +9,10 @@ diagnostic by combining:
 
 The result is still empirical (not a proof), but it is substantially
 stronger than a plain sampled positivity statement.
+
+P24 extends this with adaptive sigma refinement: worst segments under
+the local Lipschitz bound are iteratively bisected, tightening the
+empirical interval lower bound near the coercivity bottleneck.
 """
 
 from __future__ import annotations
@@ -111,6 +115,48 @@ def _segmentwise_interval_lower_bound(
     return best if np.isfinite(best) else float("nan")
 
 
+def _worst_segment_indices(
+    alpha_a: np.ndarray,
+    alpha_n: np.ndarray,
+    sigmas: np.ndarray,
+    top_k: int,
+) -> list[int]:
+    """Return indices i of the top_k worst segments [sigma_i, sigma_{i+1}].
+
+    "Worst" means smallest segment-local Lipschitz lower bound
+    min(a0, a1) - |slope| * (dsigma/2), aggregated over all trajectories
+    in both alpha tables.
+    """
+    if sigmas.size < 2 or top_k <= 0:
+        return []
+
+    n_segments = sigmas.size - 1
+    worst_per_segment = np.full(n_segments, np.inf)
+
+    for table in (alpha_a, alpha_n):
+        flat = table.reshape((-1, sigmas.size))
+        for row in flat:
+            if not np.all(np.isfinite(row)):
+                continue
+            for i in range(n_segments):
+                ds = float(sigmas[i + 1] - sigmas[i])
+                if ds <= 0.0:
+                    continue
+                a0 = float(row[i])
+                a1 = float(row[i + 1])
+                slope = abs((a1 - a0) / ds)
+                lb_seg = min(a0, a1) - slope * (0.5 * ds)
+                if lb_seg < worst_per_segment[i]:
+                    worst_per_segment[i] = lb_seg
+
+    order = np.argsort(worst_per_segment)
+    return [
+        int(i)
+        for i in order[:top_k]
+        if np.isfinite(worst_per_segment[int(i)])
+    ]
+
+
 @dataclass(frozen=True)
 class UniformCoercivityCertificate:
     """Empirical uniform-coercivity summary over [sigma_min, sigma_max]."""
@@ -131,6 +177,10 @@ class UniformCoercivityCertificate:
     interval_lower_local_positive: bool
     admissible_ok: bool
     nodeaware_ok: bool
+    n_refinement_rounds: int = 0
+    n_sigma_refined: int = 0
+    interval_lower_bound_local_refined: float = float("nan")
+    interval_lower_local_refined_positive: bool = False
 
     def summary(self) -> str:
         return (
@@ -145,6 +195,10 @@ class UniformCoercivityCertificate:
             "interval_lb_stratified="
             f"{self.interval_lower_bound_stratified:+.4e}, "
             f"interval_lb_local={self.interval_lower_bound_local:+.4e}, "
+            "interval_lb_local_refined="
+            f"{self.interval_lower_bound_local_refined:+.4e}, "
+            f"refinement_rounds={self.n_refinement_rounds}, "
+            f"n_sigma_refined={self.n_sigma_refined}, "
             f"sampled_all_positive={self.sampled_all_positive}, "
             "interval_lb_global_positive="
             f"{self.interval_lower_global_positive}, "
@@ -152,6 +206,8 @@ class UniformCoercivityCertificate:
             f"{self.interval_lower_stratified_positive}, "
             "interval_lb_local_positive="
             f"{self.interval_lower_local_positive}, "
+            "interval_lb_local_refined_positive="
+            f"{self.interval_lower_local_refined_positive}, "
             f"admissible_ok={self.admissible_ok}, "
             f"nodeaware_ok={self.nodeaware_ok})"
         )
@@ -169,6 +225,8 @@ def verify_uniform_coercivity_empirical(
     n_zeros: int = 40,
     convergence_tol: float = 1e-12,
     max_zeros: int = 160,
+    refinement_rounds: int = 0,
+    refinement_per_round: int = 2,
 ) -> UniformCoercivityCertificate:
     """Build empirical interval-level coercivity certificate.
 
@@ -260,6 +318,70 @@ def verify_uniform_coercivity_empirical(
     interval_lb_stratified_positive = bool(interval_lb_stratified > 0.0)
     interval_lb_local_positive = bool(interval_lb_local > 0.0)
 
+    # --- P24: adaptive refinement around worst segments ----------------
+    refined_sigmas = sigmas
+    refined_alpha_a = alpha_a
+    refined_alpha_n = alpha_n
+    interval_lb_local_refined = interval_lb_local
+
+    rounds = max(int(refinement_rounds), 0)
+    per_round = max(int(refinement_per_round), 1)
+
+    for _ in range(rounds):
+        worst = _worst_segment_indices(
+            refined_alpha_a, refined_alpha_n, refined_sigmas, per_round
+        )
+        if not worst:
+            break
+        midpoints = [
+            0.5
+            * (
+                float(refined_sigmas[i])
+                + float(refined_sigmas[i + 1])
+            )
+            for i in worst
+        ]
+        augmented = np.unique(
+            np.concatenate([refined_sigmas, np.asarray(midpoints)])
+        )
+        if augmented.size == refined_sigmas.size:
+            break
+
+        new_cert_adm = sweep_alpha_admissible_family(
+            bundle,
+            augmented,
+            families=fam,
+            gauges=g_scalar,
+            n_zeros=n_zeros,
+            convergence_tol=convergence_tol,
+            max_zeros=max_zeros,
+        )
+        new_cert_node = sweep_alpha_nodeaware(
+            bundle,
+            augmented,
+            families=fam,
+            node_gauges=g_node,
+            n_zeros=n_zeros,
+            convergence_tol=convergence_tol,
+            max_zeros=max_zeros,
+        )
+
+        refined_sigmas = augmented
+        refined_alpha_a = new_cert_adm.alpha_table
+        refined_alpha_n = new_cert_node.alpha_table
+
+        lb_a = _segmentwise_interval_lower_bound(
+            refined_alpha_a, refined_sigmas
+        )
+        lb_n = _segmentwise_interval_lower_bound(
+            refined_alpha_n, refined_sigmas
+        )
+        interval_lb_local_refined = float(min(lb_a, lb_n))
+
+    interval_lb_local_refined_positive = bool(
+        interval_lb_local_refined > 0.0
+    )
+
     return UniformCoercivityCertificate(
         sigma_min=float(sigma_min),
         sigma_max=float(sigma_max),
@@ -277,6 +399,14 @@ def verify_uniform_coercivity_empirical(
         interval_lower_local_positive=interval_lb_local_positive,
         admissible_ok=bool(cert_adm.alpha_all_positive),
         nodeaware_ok=bool(cert_node.alpha_all_positive),
+        n_refinement_rounds=rounds,
+        n_sigma_refined=int(refined_sigmas.size),
+        interval_lower_bound_local_refined=float(
+            interval_lb_local_refined
+        ),
+        interval_lower_local_refined_positive=(
+            interval_lb_local_refined_positive
+        ),
     )
 
 

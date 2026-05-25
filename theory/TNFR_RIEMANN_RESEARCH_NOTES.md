@@ -921,6 +921,79 @@ region.
 
 ---
 
+## 13bis. Adaptive σ Refinement Near the Coercivity Bottleneck (P24)
+
+### 13bis.1 Motivation
+
+Direction (1) of Section 13.5 is the cheapest lever on G4: under the
+segment-local Lipschitz envelope
+$\alpha_{lb}(\sigma) \ge \min(\alpha_i,\alpha_{i+1}) - L_i \cdot \Delta\sigma_i/2$,
+the lower bound is dominated by the *widest segment with smallest
+local α*. Halving that segment shrinks $\Delta\sigma_i/2$ and tightens
+the bound exactly where it hurts, without claiming any new analytic
+control.
+
+### 13bis.2 Method
+
+P24 adds the optional kwargs `refinement_rounds` and
+`refinement_per_round` to `verify_uniform_coercivity_empirical(...)`.
+Each round:
+
+1. Aggregates the segment-local lower bounds across rows of both alpha
+   tables (admissible family and node-aware) via
+   `_worst_segment_indices(alpha_a, alpha_n, sigmas, top_k)`.
+2. Selects the `top_k` worst segments and inserts their midpoints into
+   the σ grid (`np.unique` deduplicates against existing points).
+3. Re-runs `sweep_alpha_admissible_family` and `sweep_alpha_nodeaware`
+   on the augmented grid and recomputes
+   $\inf_i\, \min(\alpha_i,\alpha_{i+1}) - L_i \cdot \Delta\sigma_i/2$.
+4. Stops early if no new point was added.
+
+The result lives in four new fields of `UniformCoercivityCertificate`:
+`n_refinement_rounds`, `n_sigma_refined`,
+`interval_lower_bound_local_refined`,
+`interval_lower_local_refined_positive`.
+
+### 13bis.3 Numerical Outcome (examples/51_adaptive_coercivity_demo.py)
+
+Bundle: `n_primes=18, max_power=5, coupling=0.0`.
+Certificate: `sigma=[0.5, 4.0], n_sigma=10, n_zeros=24, max_zeros=96,
+refinement_rounds=2, refinement_per_round=1`.
+
+- `interval_lb_local        = -6.0163e-02`
+- `interval_lb_local_refined = -2.8515e-02`
+- `improvement (refined - local) = +3.1648e-02`
+- `n_sigma_refined           = 12` (10 base + 2 midpoints)
+- `interval_lb_local_refined_positive = False`
+- `sampled_all_positive       = True`
+- `admissible_ok / nodeaware_ok = True / True`
+
+So two midpoint insertions cut the negative gap roughly in half on this
+band, but the refined empirical lower bound is still negative.
+
+### 13bis.4 Honest Interpretation
+
+P24 does **not** close G4. It is a numerical sharpening of the
+already-empirical segment-local certificate: a tighter `interval_lb_local`
+is evidence consistent with uniform coercivity, but the bound remains
+negative and the underlying Lipschitz envelope is itself only a
+piecewise linear surrogate. As stated in AGENTS.md, only G4=RH stays
+open; P24 narrows the empirical bottleneck without claiming any analytic
+positivity result.
+
+### 13bis.5 Next Steps
+
+1. Combine P24 refinement with directions (2)–(3) of Section 13.5
+   (analytic lower envelopes for $E_{TNFR}$, curvature-aware
+   interpolation) so the surrogate envelope itself improves, not just
+   its sampling.
+2. Try higher `top_k` and bounded total budget on full bands
+   `[0.5, 8.0]` once the underlying sweeps are vectorised.
+3. Track the worst segment across rounds to confirm the bottleneck is a
+   stable σ-neighborhood, not a roaming artifact.
+
+---
+
 The remainder of this document preserves the legacy research notes verbatim. Keep them synchronized with the active workflow above when adding new results.
 
 ## TNFR–Riemann Research Notes (Legacy Detail)

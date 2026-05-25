@@ -71,7 +71,10 @@ nodeaware_gauge_sweep
 coercivity_uniform
     P22 empirical uniform-coercivity certificate over sigma intervals,
     combining P19 and P20 alpha surfaces with mesh-corrected lower
-    bound diagnostics.
+    bound diagnostics. P23 adds stratified and segment-local interval
+    bounds; P24 adds adaptive sigma refinement that bisects worst
+    segments under the local Lipschitz envelope to tighten
+    interval_lb_local near the coercivity bottleneck.
 """
 
 from .operator import (
