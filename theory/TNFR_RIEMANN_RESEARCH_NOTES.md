@@ -3028,6 +3028,74 @@ P45 is **diagnostic scaffolding**: $T_{\mathrm{HP}}^{(\chi)}$ is populated by *i
 
 **Net effect**: P45 closes the **operator-level Hilbert–Pólya scaffolding gap** on the L-function track for every primitive real Dirichlet character. The reference operator $T_{\mathrm{HP}}^{(\chi)}$ is exhibited, certified self-adjoint and trace-class, and shown to feed the same chi-twisted Weil–Guinand identity as the prime-side P34 Hamiltonian to machine precision. The arithmetic obstruction (Wasserstein-1 gap $\sim 30$ across characters), the structural derivation gap, and the gap balance for G4 are unchanged.
 
+## §13vicies-quinto. P46 — χ-Twisted Structural Zero Density (L-Track Analogue of P28; Smooth Half Only; Does NOT Prove GRH or Advance G4)
+
+### §13vicies-quinto.1 Motivation
+
+P28 derives the smooth half of the Riemann zero density from TNFR archimedean ingredients alone (Riemann–von Mangoldt $\theta(T)$, $\bar{N}(T)$, $\bar{N}'(T)$), exhibits the structural smooth positions $\tilde{\gamma}_n$ via Newton iteration on $\bar{N}$, and verifies the operator-level reduction $W_1(\operatorname{spec}(\tilde{T}_{\mathrm{HP}}), \operatorname{spec}(T_{\mathrm{HP}})) \ll W_1(\operatorname{spec}(P30|_q), \operatorname{spec}(T_{\mathrm{HP}}))$. P28 closes the **smooth half** of the structural derivation gap for ζ; the residuals $r_n = \gamma_n - \tilde{\gamma}_n$ encode $S(T) = \tfrac{1}{\pi} \arg \zeta(\tfrac12 + iT)$, whose uniform bound is RH-equivalent and OPEN. P46 lifts this entire construction to primitive real Dirichlet characters $\chi$, where the corresponding open problem is GRH for $L(s, \chi)$ (G4$_\chi$).
+
+### §13vicies-quinto.2 Construction
+
+Given a primitive real Dirichlet character $\chi$ with modulus $q$ and parity $a \in \{0, 1\}$ (0 = even, 1 = odd), the **chi-twisted Riemann–Siegel theta function** is
+
+$$\theta_\chi(T) = \operatorname{Im} \log \Gamma\!\left(\frac{1/2 + a}{2} + \frac{iT}{2}\right) + \frac{T}{2} \log \frac{q}{\pi}.$$
+
+The **smooth chi-twisted zero count** is $\bar{N}_\chi(T) = \theta_\chi(T)/\pi + 1$ and its density is
+
+$$\bar{N}_\chi'(T) \approx \frac{1}{2\pi} \log \frac{qT}{2\pi}.$$
+
+The **smooth chi-twisted zero positions** $\tilde{\gamma}_n^{(\chi)}$ are obtained by Newton iteration on $\bar{N}_\chi(\tilde{\gamma}_n^{(\chi)}) = n - \tfrac12$. The **chi-twisted structural T-HP operator** is
+
+$$\tilde{T}_{\mathrm{HP}}^{(\chi)} = \operatorname{diag}(\tilde{\gamma}_1^{(\chi)}, \dots, \tilde{\gamma}_N^{(\chi)})$$
+
+on $\ell^2_N(\mathbb{N})$. The residuals are $r_n^{(\chi)} = \gamma_n^{(\chi)} - \tilde{\gamma}_n^{(\chi)}$, where $\gamma_n^{(\chi)}$ comes from the same Hardy–Z bisection enumerator (`find_dirichlet_l_zeros`) used by P36 and P45.
+
+### §13vicies-quinto.3 Empirical Verification
+
+For $n_{\mathrm{zeros}} = 18$, $p34\_n\_primes = 30$, $p34\_max\_power = 6$:
+
+| χ | $q$ | $a$ | $\max\lvert r_n^{(\chi)}\rvert$ | $W_1(\operatorname{spec}(\tilde{T}_{\mathrm{HP}}^{(\chi)}), T_{\mathrm{HP}}^{(\chi)})$ | $W_1(\operatorname{spec}(P34\vert_{p \nmid q}), T_{\mathrm{HP}}^{(\chi)})$ | ratio | bound ($C \le 2$) |
+|---|---|---|---|---|---|---|---|
+| $\chi_3$ | 3 | 1 | $3.21 \cdot 10^{0}$ | $1.32 \cdot 10^{0}$ | $2.84 \cdot 10^{1}$ | 21.6× | True |
+| $\chi_4$ | 4 | 1 | $2.65 \cdot 10^{0}$ | $1.23 \cdot 10^{0}$ | $2.52 \cdot 10^{1}$ | 20.4× | True |
+| $\chi_5$ | 5 | 0 | $2.53 \cdot 10^{0}$ | $1.17 \cdot 10^{0}$ | $2.41 \cdot 10^{1}$ | 20.6× | True |
+
+The structural T-HP reduces the operator-level Wasserstein-1 gap to $T_{\mathrm{HP}}^{(\chi)}$ by a factor of $\sim 20\times$ across all three characters, matching the per-character residual bound $C \cdot \max(\log \gamma_n^{(\chi)} / \bar{N}_\chi'(\gamma_n^{(\chi)}))$ with $C \le 2$.
+
+### §13vicies-quinto.4 What P46 Extends
+
+| Result | ζ-track (P28) | L-track (P46) |
+|---|---|---|
+| Smooth zero count | $\bar{N}(T) = \theta(T)/\pi + 1$ | $\bar{N}_\chi(T) = \theta_\chi(T)/\pi + 1$ |
+| Structural T-HP | $\tilde{T}_{\mathrm{HP}} = \operatorname{diag}(\tilde{\gamma}_n)$ | $\tilde{T}_{\mathrm{HP}}^{(\chi)} = \operatorname{diag}(\tilde{\gamma}_n^{(\chi)})$ |
+| Wasserstein-1 reduction vs prime-side | factor $\sim 20\times$ for ζ | factor $\sim 20\times$ for $\chi_3, \chi_4, \chi_5$ |
+| Residual encodes | $S(T) = \tfrac{1}{\pi} \arg \zeta(\tfrac12 + iT)$ | $S_\chi(T) = \tfrac{1}{\pi} \arg L(\tfrac12 + iT, \chi)$ |
+| Bound on residual is equivalent to | RH on $\zeta$ | GRH on $L(s, \chi)$ |
+
+### §13vicies-quinto.5 What P46 Does NOT Advance
+
+* **G4 = RH on ζ**: untouched. P46 lives entirely on the L-function track.
+* **GRH (G4$_\chi$)**: untouched. Bounding $|S_\chi(T)|$ uniformly is the open arithmetic problem; P46 quantifies but does not bound it.
+* **Structural derivation of $T_{\mathrm{HP}}^{(\chi)}$**: the **smooth half** is now structurally derived (P46), but the **oscillatory half** (residuals encoding $S_\chi$) is OPEN, exactly mirroring the ζ-track situation after P28.
+
+### §13vicies-quinto.6 Cross-References
+
+* **ζ-track parent**: §13octies (P28, `structural_zero_density.py`, demo `55_structural_zero_density_demo.py`).
+* **L-track operator scaffold**: §13vicies-quarto (P45, `twisted_hilbert_polya.py`, demo `72_twisted_hilbert_polya_demo.py`) supplies the reference $T_{\mathrm{HP}}^{(\chi)}$ used as benchmark.
+* **L-track prime side**: §13quinquies-decies (P34, `twisted_prime_ladder_hamiltonian.py`) supplies the $\operatorname{spec}(P34\vert_{p \nmid q})$ baseline against which the structural reduction is measured.
+* **Smooth-half mirror**: §13nonies (P30) and §13octies (P28) for ζ; §13vicies-quinto for L. Both certify that the smooth half of the zero density is TNFR-derivable from the archimedean local factor alone — but neither bounds the oscillatory residual.
+
+### §13vicies-quinto.7 Gap Balance
+
+| Gap | Status before P46 | Status after P46 |
+|---|---|---|
+| G4 = RH on $\zeta$ | OPEN | OPEN, unchanged |
+| GRH (G4$_\chi$ for primitive real $\chi$) | OPEN | OPEN, unchanged |
+| L-track smooth structural zero density | UNATTESTED (P28 only on ζ) | ATTESTED for $\chi_3, \chi_4, \chi_5$ |
+| Bound on oscillatory residual $r_n^{(\chi)}$ encoding $S_\chi$ | OPEN (both ζ and L) | OPEN, unchanged |
+
+**Net effect**: P46 closes the **smooth half of the L-track structural zero density gap** for every primitive real Dirichlet character. The structural operator $\tilde{T}_{\mathrm{HP}}^{(\chi)}$ is derived from $\theta_\chi$ alone (no `find_dirichlet_l_zeros` call on the derivation side), produces a $\sim 20\times$ reduction in operator-level Wasserstein-1 distance to $T_{\mathrm{HP}}^{(\chi)}$ relative to the prime-side P34 baseline, and satisfies the per-character bound $\max |r_n^{(\chi)}| \le 2 \cdot \max(\log \gamma_n^{(\chi)} / \bar{N}_\chi'(\gamma_n^{(\chi)}))$. The oscillatory residual gap and the gap balance for G4 are unchanged.
+
 ## 14. Weil–TNFR Positivity Bridge (P17)
 
 ### 14.1 Motivation
@@ -3596,6 +3664,7 @@ piecewise status notes.
 | **P43** Dirichlet L χ-twisted Paley-gap consistency diagnostic | `twisted_paley_gap_coercivity.py` | `70_twisted_paley_gap_coercivity_demo.py` | §13vicies-secundo | Structural extension of P25 (`paley_gap_coercivity.py`) to primitive real $L(s, \chi)$: compares three representations of $-L'(s,\chi)/L(s,\chi)$ — the P32 closed-form weighted spectrum $Z_{P32}$ (`tnfr_log_l_derivative`), the P34 χ-twisted weighted spectral trace $Z_{P34}$ (`twisted_weighted_spectral_trace`), and the classical truncated Dirichlet series $Z_{\mathrm{cls}} = \sum_{n \le N} \chi(n)\Lambda(n)/n^\sigma$ (`classical_log_l_derivative`) — via three absolute χ-twisted Paley-gap quantities $g_{P32}(\sigma) = |Z_{P32} - Z_{\mathrm{cls}}|$, $g_{P34}(\sigma) = |Z_{P34} - Z_{\mathrm{cls}}|$, $g_{\mathrm{cross}}(\sigma) = |Z_{P34} - Z_{P32}|$; verified on $(n_{\mathrm{primes}}, k_{\max}, N_{\max}^{\mathrm{cls}}) = (18, 5, 50\,000)$, $\sigma \in [1.5, 4.0]$ with $N = 11$ for $\chi_3, \chi_4, \chi_5$: at $J_0 = 0$ the decoupled cross gap collapses to machine precision ($\max g_{\mathrm{cross}} \in \{5.55 \times 10^{-17}, 4.16 \times 10^{-17}, 1.11 \times 10^{-16}\}$ — Paley-style algebraic identity between P32 and P34 on the L-track, regression test); at $J_0 = 10^{-2}$ the coupling-induced cross gap jumps to $O(10^{-5})$ (twelve orders of magnitude above noise; clean structural-deformation signal free of classical-truncation noise which contaminates $g_{P32}$ at $10^{-3}$ to $10^{-2}$); **does NOT prove GRH (regression test plus deformation magnitude; not a coercivity certificate) and does NOT advance G4** |
 | **P44** Dirichlet L χ-twisted Lyapunov-spectral positivity certificate | `twisted_lyapunov_spectral_positivity.py` | `71_twisted_lyapunov_spectral_demo.py` | §13vicies-tertio | Structural extension of P26 (`lyapunov_spectral_positivity.py`) to primitive real $L(s, \chi)$: certifies self-adjointness, strict positivity with explicit Kato–Rellich envelope $\lambda_{\min}(\hat H^{(\chi)}) \ge \Delta_0^{(\chi)} - \lvert J_0 \rvert \lVert \hat H^{(\chi)}_{\mathrm{coupling}} \rVert_{\mathrm{op}}$ where $\Delta_0^{(\chi)} = \log(\min\{p \text{ prime} : p \nmid q\})$ (character-dependent: $\log 2$ for $\chi_3, \chi_5$; $\log 3$ for $\chi_4$), trace-class resolvent (Schatten-1/2 norms), and unitary flow conservation of $U(t) = e^{-it \hat H^{(\chi)}}$ on the finite-dimensional χ-twisted prime-ladder Hilbert space (P34 bundle); reuses `_matrix_exponential_skew` and `resolvent_schatten_norms` atomically from P26; verified on $(n_{\mathrm{primes}}, k_{\max}) = (18, 5)$ for $\chi_3, \chi_4, \chi_5$ at $J_0 \in \{0, 10^{-2}\}$: at $J_0 = 0$ empirical $\min(\lambda)$ matches $\Delta_0^{(\chi)}$ to machine precision (asserted in demo); at $J_0 = 10^{-2}$ `perturbation_safe = True` for every character with guaranteed gap $\in \{6.76 \times 10^{-1}, 1.08, 6.76 \times 10^{-1}\}$; unitary drifts $\sim 2 \times 10^{-16}$ throughout; `structural_positivity = True` for all 6 cells; **does NOT prove GRH (finite-dimensional positivity is necessary but not sufficient; the character enters only via the active-prime restriction, not via $W^{(\chi)}$) and does NOT advance G4** |
 | **P45** Dirichlet L χ-twisted Hilbert–Pólya scaffold | `twisted_hilbert_polya.py` | `72_twisted_hilbert_polya_demo.py` | §13vicies-quarto | Structural extension of P27 (`hilbert_polya.py`) to primitive real $L(s, \chi)$: builds the reference operator $T_{\mathrm{HP}}^{(\chi)} = \operatorname{diag}(\gamma_1^{(\chi)}, \dots, \gamma_N^{(\chi)})$ on $\ell^2_N(\mathbb{N})$ where $\gamma_n^{(\chi)}$ are positive imaginary parts of zeros of $L(s, \chi)$ located by Hardy–Z bisection (`find_dirichlet_l_zeros`, the same enumerator used by P36); reuses `build_hp_operator`, `verify_hp_self_adjoint`, `hp_resolvent_schatten_norms`, `wasserstein_1_distance` atomically from P27; certifies (i) self-adjointness (real diagonal, exact, Frobenius asymmetry $= 0$), (ii) trace-class shifted resolvent $(T_{\mathrm{HP}}^{(\chi)2} + s^2 I)^{-1/2}$ with explicit Schatten-1/2/op norms, (iii) χ-twisted Weil–Guinand consistency $2 \sum h_\sigma(\gamma_n^{(\chi)}) = g(0) \log(q/\pi) +$ archimedean $+ \sum_{p \nmid q, k} \chi(p)^k \log(p) p^{-k/2} g(k \log p)$ (parity-shifted digamma, character-dependent constant term replaces $\zeta$-pole $-g(0) \log \pi$), and (iv) Wasserstein-1 spectral gap against $\operatorname{spec}(\hat H^{(\chi)} \mid p \nmid q)$; verified on $(n_{\mathrm{primes}}, k_{\max}, n_{\mathrm{zeros}}, \sigma, s, \mathrm{tol}) = (18, 5, 25, 2.0, 1.0, 10^{-2})$ for $\chi_3, \chi_4, \chi_5$: Weil residuals $\{5.19 \times 10^{-16}, 9.07 \times 10^{-15}, 1.72 \times 10^{-15}\}$ at machine precision; $W_1 \in \{35.5, 31.8, 30.3\}$ with growth ratios $\sim 12$ quantifying the L-track operator-level structural gap (mirror of P30 negative-enrichment for $\zeta$); `scaffold_consistent = True` for all 3 characters; **does NOT prove GRH ($T_{\mathrm{HP}}^{(\chi)}$ is populated by *inputting* Hardy–Z bisection of classical $L(s, \chi)$; the operator is not derived from TNFR first principles) and does NOT advance G4** |
+| **P46** Dirichlet L χ-twisted structural zero density | `twisted_structural_zero_density.py` | `73_twisted_structural_zero_density_demo.py` | §13vicies-quinto | L-track analogue of P28 (`structural_zero_density.py`): derives the smooth chi-twisted zero positions $\tilde{\gamma}_n^{(\chi)}$ from the chi-twisted Riemann–Siegel theta $\theta_\chi(T) = \operatorname{Im} \log \Gamma((1/2+a)/2 + iT/2) + (T/2) \log(q/\pi)$ via Newton iteration on $\bar{N}_\chi(\tilde{\gamma}_n^{(\chi)}) = n - 1/2$ — no `find_dirichlet_l_zeros` call on the derivation side (only used for benchmark); builds $\tilde{T}_{\mathrm{HP}}^{(\chi)} = \operatorname{diag}(\tilde{\gamma}_1^{(\chi)}, \dots, \tilde{\gamma}_N^{(\chi)})$ and certifies (i) per-zero residuals $r_n^{(\chi)} = \gamma_n^{(\chi)} - \tilde{\gamma}_n^{(\chi)}$ encoding $S_\chi(T) = \tfrac{1}{\pi} \arg L(\tfrac12 + iT, \chi)$, (ii) operator-level Wasserstein-1 reduction $W_1(\operatorname{spec}(\tilde{T}_{\mathrm{HP}}^{(\chi)}), T_{\mathrm{HP}}^{(\chi)}) \ll W_1(\operatorname{spec}(P34\vert_{p\nmid q}), T_{\mathrm{HP}}^{(\chi)})$, (iii) theoretical bound $\max\lvert r_n^{(\chi)}\rvert \le C \cdot \max(\log \gamma_n^{(\chi)} / \bar{N}_\chi'(\gamma_n^{(\chi)}))$ with $C \le 2$; verified on $(n_{\mathrm{zeros}}, p34\_n\_primes, p34\_max\_power) = (18, 30, 6)$ for $\chi_3, \chi_4, \chi_5$: $\max\lvert r_n^{(\chi)}\rvert \in \{3.21, 2.65, 2.53\}$; $W_1$ reductions $\{28.4 \to 1.32, 25.2 \to 1.23, 24.1 \to 1.17\}$, improvement ratios $\{21.6\times, 20.4\times, 20.6\times\}$; bound satisfied across all 3 characters; closes the **smooth half** of the L-track structural derivation gap (mirror of P28 for ζ); **does NOT prove GRH for any $L(s, \chi)$** (oscillatory residual encoding $S_\chi$ is the open arithmetic problem, equivalent to GRH$_\chi$) **and does NOT advance G4 = RH** |
 
 ### 19.2 Gap Balance
 

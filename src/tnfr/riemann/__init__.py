@@ -339,6 +339,19 @@ twisted_hilbert_polya
     spectral gap against spec(P34 | primes_active).  Implemented for
     primitive real characters (chi_3, chi_4, chi_5).  Diagnostic only;
     does NOT prove GRH for any L(s, chi) and does NOT advance G4 = RH.
+twisted_structural_zero_density
+    P46 chi-twisted structural zero density.  L-track analogue of P28:
+    derives the smooth zero positions tilde gamma_n^(chi) of L(s, chi)
+    purely from the archimedean phase theta_chi(T) = Im log Gamma(
+    (1/2+a)/2 + iT/2) + (T/2) log(q/pi) of the completed L-function,
+    builds tilde T_HP^(chi) = diag(tilde gamma_n^(chi)), and quantifies
+    the structural reduction
+    W_1(spec(tilde T_HP^(chi)), spec(T_HP^(chi))) vs the P45 baseline
+    W_1(spec(P34|p!|q), spec(T_HP^(chi))).  Residuals r_n^(chi) = gamma_n
+    - tilde gamma_n encode S_chi(T) = (1/pi) arg L(1/2 + iT, chi).
+    Implemented for primitive real characters (chi_3, chi_4, chi_5).
+    Diagnostic only; does NOT prove GRH for any L(s, chi) and does NOT
+    advance G4 = RH.
 oscillatory_correction
     P31 Branch B1 retry: prime-ladder oscillatory correction of the
     P28 / P30 smooth targets. Reconstructs S(T) = pi^{-1} arg zeta(1/2
@@ -881,6 +894,16 @@ from .twisted_hilbert_polya import (
     twisted_hp_zero_side_from_operator,
     twisted_structural_gap_p34_vs_hp,
 )
+from .twisted_structural_zero_density import (
+    # P46: chi-twisted structural zero density (L-track analogue of P28)
+    TwistedStructuralZeroDensityCertificate,
+    build_twisted_structural_t_hp,
+    compute_twisted_structural_zero_density_certificate,
+    derive_twisted_smooth_zero_position,
+    twisted_smooth_zero_count,
+    twisted_smooth_zero_density,
+    twisted_theta,
+)
 from .spectral_emergence import (
     # P29: Spectral universality emergence under canonical UM+RA coupling
     CANONICAL_COUPLING_LAWS,
@@ -1288,6 +1311,14 @@ __all__ = [
     "fetch_chi_zero_imaginary_parts",
     "twisted_hp_zero_side_from_operator",
     "twisted_structural_gap_p34_vs_hp",
+    # P46: chi-twisted structural zero density (L-track analogue of P28)
+    "TwistedStructuralZeroDensityCertificate",
+    "build_twisted_structural_t_hp",
+    "compute_twisted_structural_zero_density_certificate",
+    "derive_twisted_smooth_zero_position",
+    "twisted_smooth_zero_count",
+    "twisted_smooth_zero_density",
+    "twisted_theta",
     # P29: Spectral universality emergence under canonical UM+RA coupling
     "CANONICAL_COUPLING_LAWS",
     "InterPrimeCoupling",
