@@ -363,6 +363,19 @@ twisted_spectral_emergence
     non-trivial zeros of L(s, chi)).  Diagnostic only; KS_GUE -> 0
     would constitute structural-compatibility evidence; does NOT
     prove GRH for any L(s, chi) and does NOT close gap G4 = RH.
+twisted_admissible_rescaling
+    P48 chi-twisted admissible spectral-rescaling operator.  L-track
+    analogue of P30: lifts the P46 chi-twisted smooth zero density
+    from density level to operator level by constructing the
+    canonical diagonal rescaling F^(chi)_smooth = U_P34 *
+    diag(sqrt(tilde gamma_i^(chi) / lambda_i)) * U_P34^*.  Verifies
+    self-adjointness preservation and exact spectrum match against
+    the P46 smooth targets, then measures W_1 gap to true chi-twisted
+    L(s, chi) zeros and sweeps the three canonical oscillatory
+    enrichments (phi_log, gamma_e, pi_density) honestly per
+    character.  Closes sub-problem (1) of Conjecture T-HP for the
+    smooth half only, per primitive real character.  G4 = RH and
+    GRH_chi BOTH remain OPEN.
 oscillatory_correction
     P31 Branch B1 retry: prime-ladder oscillatory correction of the
     P28 / P30 smooth targets. Reconstructs S(T) = pi^{-1} arg zeta(1/2
@@ -925,6 +938,11 @@ from .twisted_spectral_emergence import (
     twisted_sweep_coupling_strength,
     compute_twisted_spectral_emergence_report,
 )
+from .twisted_admissible_rescaling import (
+    # P48: chi-twisted admissible spectral-rescaling operator
+    TwistedAdmissibleRescalingCertificate,
+    compute_twisted_admissible_rescaling_certificate,
+)
 from .spectral_emergence import (
     # P29: Spectral universality emergence under canonical UM+RA coupling
     CANONICAL_COUPLING_LAWS,
@@ -1348,6 +1366,9 @@ __all__ = [
     "couple_twisted_prime_ladder_hamiltonian",
     "twisted_sweep_coupling_strength",
     "compute_twisted_spectral_emergence_report",
+    # P48: chi-twisted admissible spectral-rescaling operator
+    "TwistedAdmissibleRescalingCertificate",
+    "compute_twisted_admissible_rescaling_certificate",
     # P29: Spectral universality emergence under canonical UM+RA coupling
     "CANONICAL_COUPLING_LAWS",
     "InterPrimeCoupling",
