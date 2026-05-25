@@ -1931,6 +1931,76 @@ Three canonical multiplicative perturbations of the smooth targets were tested:
 | G5  | Superseded by P12+P13+P15  | Superseded |
 
 **Net effect**: P30 does not change the closed/open status of any of G1–G5. It refines the structure of the open content of G4 by closing one quadrant (smooth × operator-level × existence) of the T-HP grid and producing branch-B2 evidence for the oscillatory quadrant.
+
+### §13decies Branch B1 Retry — Prime-Ladder Oscillatory Correction (P31)
+
+**Motivation.** §13nonies.4 tested three canonical *multiplicative* enrichments of the smooth rescaling operator built from single-frequency dressings of the canonical constants $(\varphi, \gamma, \pi, e)$. All three returned $\approx 0\%$ Wasserstein-$1$ improvement against the true Riemann zeros. The structural lesson was: $S(T) = \pi^{-1} \arg \zeta(\tfrac{1}{2} + iT)$ is a **prime-indexed multi-frequency arithmetic sum**, not a single-frequency canonical dressing. The natural canonical frequencies for $S(T)$ are $\{k \log p\}$ — exactly the data already carried by the P12 prime-ladder spectrum and the P14 prime-ladder Hamiltonian.
+
+**Construction (canonical).** P31 implements the canonical TNFR partial reconstruction of $S(T)$ obtained by reading off the Riemann–von Mangoldt template through the prime-ladder spectrum $\Sigma_{N,K} = \{(\mu = k \log p,\, w = \log p)\}$:
+
+$$ \pi \cdot S_{\mathrm{TNFR}}^{(N,K)}(T) \;=\; -\!\!\sum_{(\mu, w) \in \Sigma_{N,K}} \frac{w}{\mu} \cdot \frac{\sin(T \mu)}{e^{\mu/2}}. $$
+
+The weights $w = \log p$ are the canonical P12 weights; the frequencies $\mu = k \log p$ are the canonical P14 eigenvalues; the kernel $e^{-\mu/2}$ is the value of the TNFR analytic continuation (P13) on the critical line; $\pi$ is the canonical constant of the K_φ sector of the tetrad. **No element of this construction is empirical or external**; in particular `mpmath.zetazero` is used only as ground truth on the comparison side, never on the construction side.
+
+The position-level correction follows directly from the linearisation of $N(T) = \bar N(T) + S(T) + 1 + O(1/T)$ around the canonical smooth zero $\tilde\gamma_i$ defined by $\bar N(\tilde\gamma_i) = i$:
+
+$$ \gamma_i^{\mathrm{corr}} \;=\; \tilde\gamma_i \;-\; d \cdot \frac{S_{\mathrm{TNFR}}^{(N,K)}(\tilde\gamma_i)}{\bar N'(\tilde\gamma_i)}, $$
+
+with $d$ a non-canonical scalar **diagnostic** damping factor used to map out the local landscape (the structurally canonical value is $d = 1$).
+
+**Empirical result.** Reproduced via `examples/58_oscillatory_correction_demo.py` and `compute_oscillatory_correction_certificate`:
+
+| $N$ | primes | $K$ | $W_1^{\mathrm{smooth}}$ | best $d$ | $W_1^{\mathrm{corrected}}$ | improvement | $\max\,\lvert S_{\mathrm{TNFR}}\rvert$ |
+|---|---|---|---|---|---|---|---|
+| 20 | 200  | 8  | 1.6676 | 3.75 | 1.5076 | +9.60 % | 0.1516 |
+| 20 | 200  | 8  | 1.6676 | 1.00 | 1.6082 | +3.56 % | 0.1516 |
+| 20 | 2000 | 8  | 1.6676 | 2.25 | 1.5790 | +5.32 % | 0.1928 |
+| 40 | 400  | 8  | 1.3946 | 0.00 | 1.3946 | 0.00 %  | 0.1866 |
+| 40 | 2000 | 8  | 1.3946 | 0.00 | 1.3946 | 0.00 %  | 0.1928 |
+| 40 | 5000 | 12 | 1.3946 | 0.00 | 1.3946 | 0.00 %  | 0.2111 |
+
+**Honest reading.**
+
+1. **Sign and structure are correct.** At $N = 20$ the corrected $W_1$ decreases **monotonically** with $d$ across the canonical damping grid. The prime-ladder partial sum points in the right direction — it is *not* uncorrelated noise.
+2. **The canonical $d = 1$ point yields a modest +3.6 % improvement** at $N = 20$. This is the **only** physically canonical reading of the table; values $d \neq 1$ are diagnostic, not canonical.
+3. **The construction collapses at $N = 40$.** No combination of (primes, $K$, $d$) up to (5000, 12, 5.0) yields any improvement. The optimum is $d = 0$, i.e. the smooth baseline.
+4. **Amplitude undercount.** Across the table, $\max \lvert S_{\mathrm{TNFR}} \rvert \le 0.21$, while the classical $\lvert S(T) \rvert$ at the same heights routinely exceeds $0.5$ and spikes well above $1$. The truncated prime-ladder partial sum **systematically underestimates** $\lvert S(T) \rvert$ by a factor of $3$–$5$. Increasing $N$ of primes from $200$ to $5000$ moves $\max \lvert S_{\mathrm{TNFR}} \rvert$ only from $0.15$ to $0.21$ — i.e. the partial sum saturates *well below* the true amplitude.
+5. **Phase decoherence with height.** At $N = 20$ (heights $T \lesssim 77$) the partial-sum phase still tracks the true $S(T)$ phase well enough to extract a positive correction. At $N = 40$ (heights $T \lesssim 140$) the truncation noise dominates and the partial-sum phase is decorrelated from the true $S(T)$ — even with the correct sign, the per-zero correction lands in the wrong direction on average.
+
+**Structural conclusion.** P31 closes a meaningful diagnostic loop that §13nonies.4 left ambiguous:
+
+* §13nonies.4 used **single-frequency** canonical dressings ⟹ $\approx 0\%$ improvement. The result was consistent with two interpretations: (a) wrong frequency basis, (b) no canonical construction works.
+* P31 uses the **correct multi-frequency canonical basis** (prime-ladder spectrum, the genuine arithmetic frequencies of $S(T)$) ⟹ small positive improvement at very low heights, zero at moderate heights, systematic amplitude undercount throughout.
+* This separates the two interpretations: (a) is *partially* the right diagnosis (the prime spectrum *is* the right basis, and yields a positive direction at low $N$), but the deeper obstruction is that the **truncated prime-ladder partial sum does not converge on the critical line** at finite truncation, in the absence of an absolute-convergence guarantee. The transition from absolute convergence on $\operatorname{Re}(s) > 1$ (where P12 closes the gap) to conditional behaviour on $\operatorname{Re}(s) = 1/2$ is exactly the regime where RH itself lives.
+
+P31 is therefore **stronger branch-B2 evidence than §13nonies.4**: it shows that even with the canonically correct ingredients and the canonically correct functional form (the Riemann–Siegel template instantiated through prime-ladder data), the finite-truncation canonical machinery is not sufficient to recover $S(T)$ at the operator level. The obstruction is not in the choice of frequencies but in the **non-trivial analytical content** of the partial-sum-to-critical-line transition — which is structurally equivalent to the open arithmetic content of RH.
+
+**What this does NOT establish.**
+* P31 does NOT close gap G4 = RH.
+* P31 does NOT prove canonicity of the Riemann–Siegel template from the nodal equation alone (sub-problem (2) of Conjecture T-HP). The template is *consistent* with TNFR canonical data but is read off the classical theory, not derived from $\partial \mathrm{EPI}/\partial t = \nu_f \cdot \Delta \mathrm{NFR}(t)$.
+* P31 does NOT establish positivity coincidence with the Weil quadratic form (sub-problem (3)).
+* P31 does NOT change the closed/open status of any of G1–G5.
+
+**Pointers.**
+
+* §13septies: Conjecture T-HP and its three sub-problems.
+* §13octies, L8 audit: branch B1 / B2 / B3 framing of the open content of G4.
+* §13nonies.4: prior single-frequency canonical enrichment with $\approx 0\%$ improvement (now superseded as a *separate* test, not as a result).
+* `src/tnfr/riemann/oscillatory_correction.py`: canonical implementation of P31.
+* `examples/58_oscillatory_correction_demo.py`: reproducible demonstration.
+
+### §13decies.1 Status Update for §19.2 Gap Balance
+
+| Gap | Status before P31 | Status after P31 |
+|-----|-------------------|------------------|
+| G1  | Closed operationally (P14) | Closed operationally |
+| G2  | Closed operationally (P13) | Closed operationally |
+| G3  | Closed operationally (P15) | Closed operationally |
+| **G4** | **OPEN** (= Conjecture T-HP); smooth half of (1) closed at density (P28) and operator (P30) level; oscillatory half + (2) + (3) open | **OPEN** unchanged. Oscillatory half of (1) tested with the canonically correct multi-frequency basis (prime-ladder spectrum) for the first time; partial positive evidence at very low $N$, saturated negative evidence at moderate $N$; stronger branch-B2 corroboration than §13nonies.4 |
+| G5  | Superseded by P12+P13+P15  | Superseded |
+
+**Net effect**: P31 does not change the closed/open status of any of G1–G5. It refines the open content of G4 by separating *which* aspect of the branch-B1 attempt fails: the basis is canonically correct (improvement is positive at $N = 20$, $d = 1$), but the canonical truncated partial sum systematically undercounts $\lvert S(T) \rvert$ at moderate heights, in agreement with the absolute-convergence boundary at $\operatorname{Re}(s) = 1$.
+
 ## 14. Weil–TNFR Positivity Bridge (P17)
 
 ### 14.1 Motivation
@@ -2484,6 +2554,7 @@ piecewise status notes.
 | **P28** Structural smooth zero density | `structural_zero_density.py` | `55_structural_zero_density_demo.py` | §13sexies | Closes smooth half of G4 at the **density** level |
 | **P29** Spectral emergence under coupling | `spectral_emergence.py` | `56_spectral_emergence_demo.py` | §13octies.3 | KS-distance of unfolded spacings to GUE under canonical UM+RA |
 | **P30** Admissible rescaling operator | `admissible_rescaling.py` | `57_admissible_rescaling_demo.py` | §13nonies | Closes smooth half of T-HP at the **operator** level |
+| **P31** Prime-ladder oscillatory correction | `oscillatory_correction.py` | `58_oscillatory_correction_demo.py` | §13decies | Branch B1 retry with canonical multi-frequency basis; +3.6% at $N$=20 ($d$=1), 0% at $N$=40; stronger branch-B2 corroboration |
 
 ### 19.2 Gap Balance
 
@@ -2492,7 +2563,7 @@ piecewise status notes.
 | **G1** | Canonical TNFR Hamiltonian carrying the prime-ladder spectrum | **CLOSED operationally** by P14 |
 | **G2** | Analytic continuation of the TNFR vM zeta to $\mathbb{C}$ | **CLOSED operationally** by P13 |
 | **G3** | Explicit zeros $\leftrightarrow$ spectrum bridge | **CLOSED operationally** by P15 (Weil–Guinand) |
-| **G4** | **Riemann Hypothesis** — localisation of poles on $\operatorname{Re}(s) = 1/2$ | **OPEN** (= Conjecture T-HP, §13septies). Smooth half of sub-problem (1) of T-HP closed at **density** level by P28 (§13sexies) and at the **operator** level by P30 (§13nonies). Oscillatory half + canonicity (sub-problem (2)) + positivity coincidence (sub-problem (3)) remain open. |
+| **G4** | **Riemann Hypothesis** — localisation of poles on $\operatorname{Re}(s) = 1/2$ | **OPEN** (= Conjecture T-HP, §13septies). Smooth half of sub-problem (1) of T-HP closed at **density** level by P28 (§13sexies) and at the **operator** level by P30 (§13nonies). Oscillatory half (P31, §13decies) tested with the canonically correct multi-frequency prime-ladder basis: partial positive evidence at very low $N$ ($+3.6\%$ at $N$=20, $d$=1), zero or negative at $N$=40; corroborates branch B2. Canonicity (sub-problem (2)) and positivity coincidence (sub-problem (3)) remain open. |
 | **G5** | Bridge from TNFR spectral zeta to classical $\zeta(s)$ | **SUPERSEDED** by P12+P13+P15 (§7.8); original affine form numerically falsified (§7.1–§7.7). |
 
 **Net result**: 4 of 5 originally identified gaps are operationally closed inside the canonical TNFR formalism. The only remaining obstruction is **G4 = RH itself**, restated canonically as **Conjecture T-HP** in §13septies and audited link-by-link (L1–L8) in §13octies. Extensions beyond P12–P16 (P17–P30) inside the canonical engine progressively narrow G4 — by exposing the attack surface (P17), auditing the admissibility envelope (P18–P21), certifying interval-level coercivity (P22–P24), providing a Paley-style identity (P25), certifying operator-level positivity for P14 (P26), supplying a diagnostic Hilbert–Pólya scaffold (P27), and closing the smooth half of T-HP at density (P28) and operator (P30) level — but none of them closes G4. The oscillatory half of T-HP requires either a new canonical operator beyond the 13-operator catalog (§13octies branch B2; supported by the P30 negative-enrichment result, §13nonies.4) or a structural derivation of $S(T) = \pi^{-1} \arg \zeta(\tfrac{1}{2} + iT)$ from canonical TNFR ingredients (branch B1, untested).

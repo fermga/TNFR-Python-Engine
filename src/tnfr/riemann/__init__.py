@@ -151,6 +151,19 @@ admissible_rescaling
     structural evidence for branch B2 of section 13octies).
     Closes sub-problem (1) of Conjecture T-HP for the
     smooth half only; does NOT close gap G4 = RH.
+oscillatory_correction
+    P31 Branch B1 retry: prime-ladder oscillatory correction of the
+    P28 / P30 smooth targets. Reconstructs S(T) = pi^{-1} arg zeta(1/2
+    + iT) from the canonical TNFR prime-ladder spectrum {(k log p,
+    log p)} via the Riemann-von Mangoldt template, then applies the
+    Newton step gamma_i = tilde gamma_i - S(tilde gamma_i) / bar N'
+    (tilde gamma_i) on the canonical P28 smooth targets. Uses ONLY
+    canonical TNFR ingredients (no mpmath.zetazero on the
+    construction side). Reports the residual W_1 vs the true Riemann
+    zeros honestly. Positive improvement is branch B1 evidence;
+    negative improvement corroborates branch B2. Does NOT close gap
+    G4 = RH, does NOT close sub-problems (2) and (3) of Conjecture
+    T-HP.
 """
 
 from .operator import (
@@ -560,6 +573,13 @@ from .admissible_rescaling import (
     oscillatory_correction_canonical,
     compute_admissible_rescaling_certificate,
 )
+from .oscillatory_correction import (
+    # P31: Prime-ladder oscillatory correction (branch B1 retry)
+    OscillatoryCorrectionCertificate,
+    prime_ladder_oscillatory_sum,
+    apply_oscillatory_correction,
+    compute_oscillatory_correction_certificate,
+)
 from .spectral_emergence import (
     # P29: Spectral universality emergence under canonical UM+RA coupling
     CANONICAL_COUPLING_LAWS,
@@ -877,6 +897,11 @@ __all__ = [
     "verify_spectrum_match",
     "oscillatory_correction_canonical",
     "compute_admissible_rescaling_certificate",
+    # P31: Prime-ladder oscillatory correction (branch B1 retry)
+    "OscillatoryCorrectionCertificate",
+    "prime_ladder_oscillatory_sum",
+    "apply_oscillatory_correction",
+    "compute_oscillatory_correction_certificate",
     # P29: Spectral universality emergence under canonical UM+RA coupling
     "CANONICAL_COUPLING_LAWS",
     "InterPrimeCoupling",
