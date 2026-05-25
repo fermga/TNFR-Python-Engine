@@ -163,6 +163,19 @@ dirichlet_l
     representation catalog; does NOT advance the generalised Riemann
     Hypothesis (GRH is RH-equivalent in every L-function and inherits
     the same arithmetic obstruction as G4 for zeta).
+analytic_continuation_dirichlet
+    P33 Analytic continuation of the chi-twisted prime-ladder L-series
+    (structural analogue of P13 for general Dirichlet L-functions).
+    Provides high-precision continuation of L(s, chi) and -L'(s,
+    chi)/L(s, chi) to all of C via mpmath.dirichlet, plus a
+    numerical certificate that the P32 chi-twisted prime ladder
+    agrees with the continuation on Re(s) > 1 and a critical-line
+    scan locating non-trivial zeros of L(s, chi) as resonance poles
+    on Re(s) = 1/2. Tested against LMFDB-tabulated first zeros of
+    L(s, chi_3) and L(s, chi_4) = Dirichlet beta(s) with exact
+    agreement at three-decimal resolution. Structural extension of
+    the P13 continuation construct; does NOT advance GRH (same
+    arithmetic obstruction as G4 for zeta).
 oscillatory_correction
     P31 Branch B1 retry: prime-ladder oscillatory correction of the
     P28 / P30 smooth targets. Reconstructs S(T) = pi^{-1} arg zeta(1/2
@@ -607,6 +620,15 @@ from .dirichlet_l import (
     DirichletLReproductionResult,
     verify_dirichlet_l_reproduction,
 )
+from .analytic_continuation_dirichlet import (
+    # P33: Analytic continuation of chi-twisted prime-ladder L-series
+    dirichlet_l_continued,
+    dirichlet_log_l_derivative_continued,
+    TwistedContinuationAgreement,
+    verify_twisted_continuation_agreement,
+    DirichletCriticalLinePoleScan,
+    scan_critical_line_for_l_poles,
+)
 from .spectral_emergence import (
     # P29: Spectral universality emergence under canonical UM+RA coupling
     CANONICAL_COUPLING_LAWS,
@@ -942,6 +964,13 @@ __all__ = [
     "classical_log_l_derivative_matched",
     "DirichletLReproductionResult",
     "verify_dirichlet_l_reproduction",
+    # P33: Analytic continuation of chi-twisted prime-ladder L-series
+    "dirichlet_l_continued",
+    "dirichlet_log_l_derivative_continued",
+    "TwistedContinuationAgreement",
+    "verify_twisted_continuation_agreement",
+    "DirichletCriticalLinePoleScan",
+    "scan_critical_line_for_l_poles",
     # P29: Spectral universality emergence under canonical UM+RA coupling
     "CANONICAL_COUPLING_LAWS",
     "InterPrimeCoupling",

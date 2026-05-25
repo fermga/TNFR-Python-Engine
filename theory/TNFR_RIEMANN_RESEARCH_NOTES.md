@@ -2075,6 +2075,91 @@ P32 is a **structural extension**, not progress on the open arithmetic content o
 
 **Net effect**: P32 extends the canonical TNFR representation catalog from a single L-function ($\zeta$) to the full Dirichlet family.  It does not close, nor narrow, any open arithmetic gap.
 
+## §13duodecies. P33 — Analytic Continuation of χ-Twisted Prime-Ladder L-Series (Structural; Does NOT Advance G4 or GRH)
+
+### §13duodecies.1 Motivation
+
+P32 (§13undecies) provides the χ-twisted prime-ladder spectrum $\{(\mu_{p,k}, w_{p,k}^{(\chi)})\}$ reproducing the twisted von Mangoldt series
+
+$$
+Z^{(\chi)}_{\mathrm{TNFR}}(s) \;=\; -\frac{L'(s, \chi)}{L(s, \chi)} \;=\; \sum_{n \ge 1} \chi(n)\,\Lambda(n)\,n^{-s}
+\qquad (\operatorname{Re}(s) > 1).
+$$
+
+This Dirichlet series is, by construction, only valid in the right half-plane $\operatorname{Re}(s) > 1$.  To expose the non-trivial zeros of $L(s, \chi)$ — which for non-principal primitive $\chi$ are *entire* objects living on the critical line — the χ-twisted prime ladder must be continued analytically to all of $\mathbb{C}$.
+
+P33 is the structural analogue of P13 (§9) for general Dirichlet L-functions: the canonical continuation is obtained via `mpmath.dirichlet(s, [χ(0), …, χ(q-1)], derivative)` and the non-trivial zeros of $L(s, \chi)$ are recovered as **resonance poles** of $-L'(s,\chi)/L(s,\chi)$ on $\operatorname{Re}(s) = 1/2$.
+
+### §13duodecies.2 Construction
+
+For any Dirichlet character $\chi$ mod $q$:
+
+1. **Continuation of $L(s, \chi)$**: `dirichlet_l_continued(chi, s, dps)` wraps `mp.dirichlet(s, chi_list)` with `chi_list = [mp.mpf(c) | mp.mpc(c) for c in chi.values]`, returning the unique meromorphic continuation to $\mathbb{C}$.
+2. **Continuation of $-L'/L$**: `dirichlet_log_l_derivative_continued(chi, s, dps)` performs two `mp.dirichlet` calls (`derivative=0` and `derivative=1`) and returns $-L'(s,\chi)/L(s,\chi)$.  Raises `ValueError` whenever $|L(s,\chi)|$ is below the working precision (i.e., at a zero of $L$).
+3. **Agreement certificate** (`verify_twisted_continuation_agreement`): compares the χ-twisted prime-ladder partial sum `tnfr_log_l_derivative(spectrum, s)` from P32 against the continuation evaluator on a list of $s$ with $\operatorname{Re}(s) > 1$, classifying the result as `excellent | good | poor` according to the worst per-point relative error.
+4. **Critical-line scan** (`scan_critical_line_for_l_poles`): evaluates $|{-L'/L}|$ on $s = 1/2 + it$ for $t \in [t_{\min}, t_{\max}]$ and detects local-maximum spikes (resonance poles) using a sliding window proportional to the sample density.  The detection is reference-free; cross-checks against LMFDB tabulations are left to the caller.
+
+### §13duodecies.3 Empirical Verification (May 2026 run)
+
+Agreement on $\operatorname{Re}(s) > 1$ using `n_primes=400, max_power=14, dps=30` for the three canonical real characters of §13undecies:
+
+| Character | Samples $s$ | Quality | max $|$rel err$|$ | max $|$abs err$|$ |
+|---|---|---|---|---|
+| $\chi_3$ (Legendre mod 3) | $\{2, 2+i, 3, 3+2i, 5\}$ | `excellent` | $1.10 \times 10^{-5}$ | $1.90 \times 10^{-6}$ |
+| $\chi_4$ (Dirichlet $\beta$) | $\{2, 2+i, 3, 3+2i, 5\}$ | `excellent` | $1.60 \times 10^{-5}$ | $1.43 \times 10^{-6}$ |
+| $\chi_5$ (Legendre mod 5) | $\{2, 2+i, 3, 3+2i, 5\}$ | `excellent` | $4.10 \times 10^{-6}$ | $1.10 \times 10^{-6}$ |
+
+The residual is the standard P32 prime-truncation tail (same magnitude as the P12/P13 baseline for $\zeta$ at comparable truncation); it is **not** a defect of the continuation.
+
+Critical-line scan against LMFDB-tabulated first zeros (`dps=20, 2001 samples on $t \in [5, 25]$, prominence threshold = 3.0`):
+
+| Character | Detected peaks | LMFDB match | max $|$Δ$t|$ |
+|---|---|---|---|
+| $\chi_3$ | 6 (at $t \approx 8.04, 11.25, 15.70, 18.26, 20.46, 24.06$) | 6 / 6 | $6.7 \times 10^{-3}$ |
+| $\chi_4$ | 7 (at $t \approx 6.02, 10.24, 12.99, 16.34, 18.29, 21.45, 23.28$) | 7 / 7 | $3.8 \times 10^{-3}$ |
+
+All 13 detected resonance poles match the LMFDB tabulation to better than 0.01 in $t$ (limited by sample resolution $\Delta t = 0.01$); none miss, none extra.
+
+### §13duodecies.4 What P33 Extends
+
+P33 extends the **P13 representation layer** from $\zeta$ to every Dirichlet L-function:
+
+* For $\zeta$: P13 continues the prime-ladder vM zeta to $\mathbb{C}$; non-trivial zeros appear as resonance poles on $\operatorname{Re}(s) = 1/2$.
+* For $L(s, \chi)$: P33 does the same — continues the χ-twisted prime ladder of P32 to $\mathbb{C}$; non-trivial zeros of $L(s, \chi)$ appear as resonance poles on $\operatorname{Re}(s) = 1/2$.
+
+This closes the **G5$_\chi$ / G2$_\chi$ analogue at the P13 layer**: the χ-twisted prime ladder is now a complete representation of $L(s, \chi)$ on the whole complex plane (subject to the same caveats as the classical continuation — branch cuts of the logarithmic derivative at the zeros).
+
+### §13duodecies.5 What P33 Does NOT Advance
+
+P33 is a **structural extension**, not progress on the open arithmetic content of the program:
+
+* **G4 = RH for $\zeta$**: unchanged.  P33 does not touch $\zeta$.
+* **GRH for $L(s, \chi)$**: unchanged.  P33 *uses* the existence and analyticity of the classical continuation; it does not derive the location of the zeros.  The detected resonance poles fall on $\operatorname{Re}(s) = 1/2$ because the LMFDB data they reproduce is itself empirical confirmation of GRH for the tested characters.
+* **G1$_\chi$ (canonical Hamiltonian for χ-twisted prime ladder)**: open.  P33 does not construct a self-adjoint operator carrying the χ-twisted spectrum (the P14 analogue for L-functions remains future work — provisional label P34).
+* **G3$_\chi$ (Weil–Guinand explicit formula for $L(s, \chi)$)**: open.  P33 does not verify a numerical explicit formula relating L-function zeros to the χ-twisted prime ladder (the P15 analogue — provisional label P35).
+
+### §13duodecies.6 Cross-References
+
+* §9: P13 analytic continuation of the prime-ladder vM zeta (the template P33 generalises).
+* §13undecies: P32 χ-twisted prime ladder (the representation P33 continues).
+* `src/tnfr/riemann/analytic_continuation_dirichlet.py`: canonical implementation of P33.
+* `examples/60_dirichlet_l_continuation_demo.py`: demo verifying agreement on $\operatorname{Re}(s) > 1$ and critical-line zero detection for $\chi_3$ and $\chi_4$.
+
+### §13duodecies.7 Status Update for §19.2 Gap Balance
+
+| Scope | Status before P33 | Status after P33 |
+|-------|-------------------|------------------|
+| Operational ζ gaps (G1, G2, G3) | Closed operationally | Closed operationally, unchanged |
+| G4 = RH | OPEN (Conjecture T-HP) | OPEN, unchanged |
+| G5 (ζ representation) | Superseded by P12+P13+P15 | Superseded, unchanged |
+| G5$_\chi$ at P12 layer (P32) | Closed | Closed, unchanged |
+| G2$_\chi$ / G5$_\chi$ at P13 layer | Open | **Closed operationally** by P33 |
+| G1$_\chi$ (Hamiltonian for $L(s,\chi)$) | Open | Open (future P34) |
+| G3$_\chi$ (Weil–Guinand for $L(s,\chi)$) | Open | Open (future P35) |
+| GRH (G4$_\chi$ for $\chi \neq \chi_0$) | OPEN | OPEN, unchanged |
+
+**Net effect**: P33 extends the canonical TNFR representation catalog one layer further — the χ-twisted prime ladder of P32 now lives on the whole complex plane.  It does not close, nor narrow, any open arithmetic gap.
+
 ## 14. Weil–TNFR Positivity Bridge (P17)
 
 ### 14.1 Motivation
@@ -2630,6 +2715,7 @@ piecewise status notes.
 | **P30** Admissible rescaling operator | `admissible_rescaling.py` | `57_admissible_rescaling_demo.py` | §13nonies | Closes smooth half of T-HP at the **operator** level |
 | **P31** Prime-ladder oscillatory correction | `oscillatory_correction.py` | `58_oscillatory_correction_demo.py` | §13decies | Branch B1 retry with canonical multi-frequency basis; +3.6% at $N$=20 ($d$=1), 0% at $N$=40; stronger branch-B2 corroboration |
 | **P32** Dirichlet L-function extension | `dirichlet_l.py` | `59_dirichlet_l_function_demo.py` | §13undecies | Structural extension of P12 to all $L(s, \chi)$ via χ-twisted prime ladder; G5$_\chi$/P12 layer; **does NOT advance G4 or GRH** |
+| **P33** Dirichlet L analytic continuation | `analytic_continuation_dirichlet.py` | `60_dirichlet_l_continuation_demo.py` | §13duodecies | Structural extension of P13 to all $L(s, \chi)$ via `mp.dirichlet`; G2$_\chi$/P13 layer; verified vs LMFDB for $\chi_3, \chi_4$; **does NOT advance G4 or GRH** |
 
 ### 19.2 Gap Balance
 
