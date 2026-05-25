@@ -306,6 +306,19 @@ twisted_coercivity_uniform
     the worst segments.  Implemented for primitive real characters
     (chi_3, chi_4, chi_5).  Diagnostic only; does NOT prove GRH for
     any L(s, chi) and does NOT advance G4 = RH.
+twisted_paley_gap_coercivity
+    P43 chi-twisted Paley-gap consistency diagnostic.  Structural
+    analogue of P25 on the chi-twisted bundle: compares three
+    representations of -L'(s,chi)/L(s,chi) -- the P32 closed-form
+    weighted spectrum, the P34 chi-twisted spectral trace, and the
+    classical truncated Dirichlet series sum chi(n) Lambda(n)/n^s --
+    via three absolute Paley-gap quantities g_P32, g_P34, g_cross.
+    The cross gap vanishes identically at coupling = 0 (Paley-style
+    identity between closed-form and self-adjoint realisations);
+    non-zero coupling exposes the deformation magnitude.  Implemented
+    for primitive real characters (chi_3, chi_4, chi_5).  Diagnostic
+    only; does NOT prove GRH for any L(s, chi) and does NOT advance
+    G4 = RH.
 oscillatory_correction
     P31 Branch B1 retry: prime-ladder oscillatory correction of the
     P28 / P30 smooth targets. Reconstructs S(T) = pi^{-1} arg zeta(1/2
@@ -824,6 +837,14 @@ from .twisted_coercivity_uniform import (
     TwistedUniformCoercivityCertificate,
     verify_twisted_uniform_coercivity_empirical,
 )
+from .twisted_paley_gap_coercivity import (
+    # P43: chi-twisted Paley-gap consistency diagnostic
+    TwistedPaleyGapSweep,
+    sweep_twisted_paley_gap,
+    twisted_paley_gap_cross,
+    twisted_paley_gap_p32,
+    twisted_paley_gap_p34,
+)
 from .spectral_emergence import (
     # P29: Spectral universality emergence under canonical UM+RA coupling
     CANONICAL_COUPLING_LAWS,
@@ -1213,6 +1234,12 @@ __all__ = [
     # P42: chi-twisted uniform-coercivity certificate (diagnostic)
     "TwistedUniformCoercivityCertificate",
     "verify_twisted_uniform_coercivity_empirical",
+    # P43: chi-twisted Paley-gap consistency diagnostic
+    "TwistedPaleyGapSweep",
+    "sweep_twisted_paley_gap",
+    "twisted_paley_gap_cross",
+    "twisted_paley_gap_p32",
+    "twisted_paley_gap_p34",
     # P29: Spectral universality emergence under canonical UM+RA coupling
     "CANONICAL_COUPLING_LAWS",
     "InterPrimeCoupling",

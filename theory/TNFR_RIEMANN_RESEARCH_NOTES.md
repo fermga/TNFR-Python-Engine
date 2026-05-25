@@ -2788,6 +2788,80 @@ P42 is a **finite-grid Lipschitz-mesh interval diagnostic**: positive interval l
 
 **Net effect**: P42 closes the **Lipschitz-mesh interval-certificate construction gap** on the L-function track for every primitive real Dirichlet character (canonical pieces transport without modification; bisection refinement behaves qualitatively as on the ζ-track).  The current empirical interval lower bounds are negative — a HONEST finding, not a failure — and the arithmetic obstruction plus the gap balance for G4 are unchanged.
 
+## §13vicies-secundo. P43 — χ-Twisted Paley-Gap Consistency Diagnostic ($|Z_{P34} - Z_{P32}|$ and Truncation Gaps on the L-Track; Diagnostic; Does NOT Prove GRH or Advance G4)
+
+### §13vicies-secundo.1 Motivation
+
+The ζ-track P25 milestone transported the Paley-gap philosophy of Martínez Gamo, *Spectral note: Paley gap via $\lambda_2$ (residue circulants)*, Zenodo 10.5281/zenodo.17665853 v2 (November 2025), onto the TNFR-Riemann coercivity scaffold by comparing three representations of the von Mangoldt logarithmic derivative — the P12 prime-ladder closed form $Z_{P12}(\sigma)$, the P14 self-adjoint weighted spectral trace $Z_{P14}(\sigma)$, and the classical truncated Dirichlet series $\sum_{n \le N} \Lambda(n)/n^\sigma$ — via three absolute Paley-gap quantities $g_{P12}(\sigma)$, $g_{P14}(\sigma)$, $g_{\mathrm{cross}}(\sigma) = |Z_{P14}(\sigma) - Z_{P12}(\sigma)|$. The Paley-style observation was that at zero inter-ladder coupling the cross gap $g_{\mathrm{cross}}$ collapses to machine precision by a closed-form algebraic identity between the two TNFR realisations, while a non-zero coupling exposes a clean structural-deformation magnitude free of classical-truncation noise.
+
+The χ-twisted track P32–P34 provides the same two realisations for the von Mangoldt logarithmic derivative of $L(s, \chi)$ — the P32 closed-form weighted spectrum (`tnfr_log_l_derivative`) and the P34 self-adjoint χ-twisted weighted spectral trace (`twisted_weighted_spectral_trace`) — alongside the classical truncated reference $\sum_{n \le N} \chi(n)\Lambda(n)/n^\sigma$ (`classical_log_l_derivative`). P43 transports the P25 Paley-gap diagnostic construction to the χ-twisted track for every primitive real Dirichlet character, providing the analogous consistency surface on the L-track.
+
+### §13vicies-secundo.2 Construction
+
+The P43 diagnostic evaluates, on a real $\sigma$-grid, three absolute χ-twisted Paley-gap quantities
+
+$$
+\begin{aligned}
+g_{P32}(\sigma) &= \left|Z_{P32}(\sigma, \chi) - Z_{\mathrm{cls}}(\sigma, \chi)\right|, \\
+g_{P34}(\sigma) &= \left|Z_{P34}(\sigma, \chi) - Z_{\mathrm{cls}}(\sigma, \chi)\right|, \\
+g_{\mathrm{cross}}(\sigma) &= \left|Z_{P34}(\sigma, \chi) - Z_{P32}(\sigma, \chi)\right|,
+\end{aligned}
+$$
+
+where $Z_{P32}(\sigma, \chi) = \sum_{(\mu, w) \in \mathrm{spec}_\chi} w \, e^{-\sigma \mu}$ is the P32 closed-form weighted spectrum, $Z_{P34}(\sigma, \chi) = \mathrm{Tr}(W_\chi e^{-\sigma H_{\mathrm{int}}})$ is the P34 χ-twisted weighted spectral trace, and $Z_{\mathrm{cls}}(\sigma, \chi) = \sum_{n \le N_{\max}} \chi(n) \Lambda(n) / n^\sigma$ is the classical truncated reference, all computed on the same $(n_{\mathrm{primes}}, k_{\max})$ prime-ladder bundle. The driver `sweep_twisted_paley_gap(bundle, chi, sigmas, n_max_classical=...)` returns a `TwistedPaleyGapSweep` dataclass carrying the three gap arrays and their worst-case magnitudes per character.
+
+### §13vicies-secundo.3 Empirical Verification
+
+P43 was run on the canonical config $(n_{\mathrm{primes}}, k_{\max}, N_{\max}^{\mathrm{cls}}) = (18, 5, 50\,000)$, $\sigma \in [1.5, 4.0]$ with $N = 11$, two bundles per character (decoupled $J_0 = 0$ and weakly coupled $J_0 = 10^{-2}$) for $\chi_3, \chi_4, \chi_5$:
+
+| χ | $q$ | $\max g_{\mathrm{cross}}^{[J_0=0]}$ | $\max g_{\mathrm{cross}}^{[J_0=10^{-2}]}$ | $\max g_{P32}$ |
+|---|---|---|---|---|
+| $\chi_3$ | 3 | $5.55 \times 10^{-17}$ | $1.01 \times 10^{-5}$ | $2.22 \times 10^{-3}$ |
+| $\chi_4$ | 4 | $4.16 \times 10^{-17}$ | $8.25 \times 10^{-6}$ | $1.49 \times 10^{-2}$ |
+| $\chi_5$ | 5 | $1.11 \times 10^{-16}$ | $1.51 \times 10^{-5}$ | $1.11 \times 10^{-2}$ |
+
+The decoupled cross gap collapses to machine precision ($O(10^{-17})$) for every character, confirming the Paley-style algebraic identity between P32 and P34 on the L-track (regression test, **not** a discovery: the identity follows from $W_\chi$ being the diagonal lift of the spectrum weights and $H_{\mathrm{int}}$ being block-diagonal at $J_0 = 0$). The coupling-induced cross gap jumps to $O(10^{-5})$ — twelve orders of magnitude above noise — exposing pure coupling-induced deformation of the χ-twisted prime-ladder identity, free of classical-truncation noise (which contaminates $g_{P32}$ at the $10^{-3}$ to $10^{-2}$ level).
+
+### §13vicies-secundo.4 What P43 Extends
+
+| Component | P25 (ζ-track) | P32 | P34 | **P43** |
+|-----------|---------------|-----|-----|---------|
+| Closed-form von Mangoldt logarithmic derivative | $Z_{P12}$ for $-\zeta'/\zeta$ | $Z_{P32}$ for $-L'(s,\chi)/L(s,\chi)$ | — | $Z_{P32}$ reused unchanged |
+| Self-adjoint weighted spectral trace | $Z_{P14}$ for $-\zeta'/\zeta$ | — | $Z_{P34}$ for $-L'(s,\chi)/L(s,\chi)$ | $Z_{P34}$ reused unchanged |
+| Classical truncated reference | $\sum_{n \le N} \Lambda(n)/n^\sigma$ | — | — | $\sum_{n \le N} \chi(n)\Lambda(n)/n^\sigma$ via `classical_log_l_derivative` |
+| Three Paley-gap quantities | $g_{P12}, g_{P14}, g_{\mathrm{cross}}$ | — | — | $g_{P32}, g_{P34}, g_{\mathrm{cross}}$ |
+| Paley-style decoupled identity ($g_{\mathrm{cross}} \to 0$ at $J_0 = 0$) | Empirically $O(10^{-17})$ | — | — | Empirically $O(10^{-17})$ for $\chi_3, \chi_4, \chi_5$ |
+| Coupling-induced deformation signal | $J_0 = 10^{-2} \Rightarrow g_{\mathrm{cross}} \sim 10^{-5}$ | — | — | $J_0 = 10^{-2} \Rightarrow g_{\mathrm{cross}} \sim 10^{-5}$ for $\chi_3, \chi_4, \chi_5$ |
+
+P43 transports the canonical ζ-track Paley-gap diagnostic (P25) to the L-function track for every primitive real Dirichlet character, exhibiting the identical decoupled-identity / coupled-deformation pattern.
+
+### §13vicies-secundo.5 What P43 Does NOT Advance
+
+P43 is a **consistency diagnostic at coupling zero and a deformation magnitude at coupling positive**. Vanishing of $g_{\mathrm{cross}}$ at $J_0 = 0$ is **necessary but not sufficient** for any structural positivity claim and **not connected** to GRH localisation; it is a regression test selecting consistent realisations, not a coercivity certificate. P43 does NOT prove GRH for any $L(s, \chi)$, does NOT extend to complex characters, does NOT advance the P42 interval-coercivity certificate (which lives on the $\alpha_\chi$ axis, not on the von Mangoldt logarithmic derivative axis), and does NOT advance the gap balance for G4 = RH. The Zenodo source note itself disclaims primality proof status; P43 inherits the same scope at the L-track coercivity-diagnostic level.
+
+### §13vicies-secundo.6 Cross-References
+
+- Implementation: `src/tnfr/riemann/twisted_paley_gap_coercivity.py` (module), `src/tnfr/riemann/__init__.py` (canonical exports).
+- Demonstration: `examples/70_twisted_paley_gap_coercivity_demo.py`.
+- ζ-track parent: P25 (`paley_gap_coercivity.py`).
+- L-track parents: P32 (`tnfr_log_l_derivative`, `TwistedPrimeLadderSpectrum`), P34 (`TwistedPrimeLadderHamiltonian`, `twisted_weighted_spectral_trace`).
+- Inherited canonical pieces: `tnfr_log_l_derivative` (P32 Route A), `twisted_weighted_spectral_trace` (P34 Route B), `classical_log_l_derivative` (classical reference), `build_twisted_prime_ladder_hamiltonian` (P34 bundle constructor) reused unchanged.
+- External source: Martínez Gamo, *Spectral note: Paley gap via $\lambda_2$ (residue circulants)*, Zenodo 10.5281/zenodo.17665853 v2 (November 2025).
+- Compendium: §19.1 P43 row.
+
+### §13vicies-secundo.7 Gap Balance
+
+| Scope | Status before P43 | Status after P43 |
+|-------|-------------------|------------------|
+| P25 ζ-track Paley-gap diagnostic | Available (P25) | Available, unchanged |
+| Closed-form / self-adjoint consistency for $-L'(s,\chi)/L(s,\chi)$ on primitive real χ | Implicit in P32 + P34 construction (not empirically separated) | **Empirically separated and quantified** (decoupled cross gap $O(10^{-17})$; coupled cross gap $O(10^{-5})$ at $J_0 = 10^{-2}$) |
+| Truncation-noise separation from coupling-induced deformation | Open | **Available** (cross gap is free of classical-truncation noise by construction) |
+| GRH for $L(s,\chi)$, primitive real χ | OPEN | OPEN (Paley gap is a regression test, not a coercivity certificate) |
+| G4 = RH | OPEN | OPEN, unchanged |
+| GRH (G4$_\chi$ for complex $\chi$) | OPEN | OPEN, unchanged |
+
+**Net effect**: P43 closes the **Paley-gap diagnostic-construction gap** on the L-function track for every primitive real Dirichlet character (canonical pieces transport without modification; the decoupled identity holds to machine precision, the coupled deformation signal is twelve orders of magnitude above noise). The arithmetic obstruction and the gap balance for G4 are unchanged.
+
 ## 14. Weil–TNFR Positivity Bridge (P17)
 
 ### 14.1 Motivation
@@ -3353,6 +3427,7 @@ piecewise status notes.
 | **P40** Dirichlet L χ-twisted node-aware gauge sweep | `twisted_nodeaware_gauge_sweep.py` | `67_twisted_nodeaware_gauge_sweep_demo.py` | §13noniesdecies | Structural extension of P20 to primitive real $L(s, \chi)$: sweeps $\alpha_\chi(\sigma; f, g) = W_\chi[\sigma; f] / E_{\mathrm{TNFR}}^\chi[\sigma; f, g]$ across `DEFAULT_TEST_FAMILIES` (P19) × `DEFAULT_NODEAWARE_GAUGES` (4 node-aware gauges: `nuf_pressure, nuf_phase, weight_pressure, mixed_affine`) inherited unchanged from P20; gauges have signature $g(h(E_n), \hat\nu_f(n), \hat w(n))$ activating the per-node normalised structural-frequency and node-weight channels of the P34 χ-twisted graph; $W_\chi[\sigma; f]$ computed once per $(family, \sigma)$ via P35 enumerator; canonical TNFR test state built per $(family, node\_gauge)$ on P34 bundle via `build_twisted_test_state_nodeaware`; positivity verified for $\chi_3, \chi_4, \chi_5$ across 3 families × 4 node-aware gauges × 5 widths (3/3 PASS; 180 cells total; $\alpha_{\min}$ at $(\sigma=1.0, \mathrm{gaussian}, \mathrm{nuf\_phase})$ for $\chi_3, \chi_4$ and at $(\sigma=1.0, \mathrm{gaussian}, \mathrm{nuf\_pressure})$ for $\chi_5$); node-aware robustness audit of P37 jointly with P19 test-profile sweep; **does NOT prove GRH (finite $(family, node\_gauge, \sigma)$ grid; admissibility not exhausted) and does NOT advance G4** |
 | **P41** Dirichlet L χ-twisted Hermite2-Gaussian η-parameter sweep | `twisted_hermite_family.py` | `68_twisted_hermite_family_demo.py` | §13vicies | Structural extension of P21 (Hermite2 family) to primitive real $L(s, \chi)$ along the envelope-strength axis: sweeps $\alpha_\chi(\sigma; \eta, g) = W_\chi[\sigma; \eta] / E_{\mathrm{TNFR}}^\chi[\sigma; \eta, g]$ across `DEFAULT_HERMITE2_ETAS = (0.0, 0.1, 0.25, 0.5, 1.0, 2.0)` ($\eta = 0$ recovers pure Gaussian; $\eta = 0.25$ matches the P19/P39 snapshot) × `DEFAULT_GAUGES` (6 canonical scalar gauges; P18); $W_\chi[\sigma; \eta]$ computed once per $(\eta, \sigma)$ via P35 enumerator; canonical TNFR test state built per $(\eta, g)$ on P34 bundle via `build_twisted_test_state_from_test_function` (reused from P39); positivity verified for $\chi_3, \chi_4, \chi_5$ across 6 etas × 6 gauges × 5 widths (3/3 PASS; 180 cells per character; $\alpha_{\min}$ at $(\sigma=1.0, \eta=0.0, \mathrm{canonical})$ in every case); envelope-strength robustness audit of P37 along an orthogonal axis to P39/P40; **does NOT prove GRH (finite $(\eta, g, \sigma)$ grid; admissibility not exhausted) and does NOT advance G4** |
 | **P42** Dirichlet L χ-twisted uniform-coercivity certificate | `twisted_coercivity_uniform.py` | `69_twisted_coercivity_uniform_demo.py` | §13vicies-primo | Structural extension of P22 / P23 / P24 (uniform / stratified / adaptive coercivity in `coercivity_uniform.py`) to primitive real $L(s, \chi)$: lifts the finite-grid sample of P39 + P40 to a **Lipschitz-mesh interval-level certificate** by sampling $\alpha_\chi(\sigma; \eta, g)$ on a log-spaced $\sigma$ grid, computing a finite-difference Lipschitz envelope $L^{\mathrm{proxy}}_\chi$, and forming three interval lower bounds (global, stratified, segment-local) via the canonical P22 / P23 helpers `_max_abs_slope`, `_segmentwise_interval_lower_bound`, `_stratified_interval_lower_bound` reused unchanged; optional P24-style adaptive refinement bisects worst-margin segments and re-runs both twisted sweeps; verified for $\chi_3, \chi_4, \chi_5$ on $\sigma \in [1.0, 3.0]$ with $N = 5$ (`sampled_all_positive = True`, `admissible_ok = True`, `nodeaware_ok = True` for every χ; sampled $\alpha^{\mathrm{samp}}_{\chi,\min} \in \{1.26 \times 10^{-14}, 2.70 \times 10^{-8}, 2.62 \times 10^{-10}\}$; interval $\mathrm{lb}_{\mathrm{local}} \in \{-6.06 \times 10^{-2}, -1.30 \times 10^{-1}, -6.51 \times 10^{-2}\}$ — all **negative** because $\alpha^{\mathrm{samp}}_{\chi,\min}$ near $\sigma = 1$ is essentially zero against any finite $L^{\mathrm{proxy}}_\chi$); one round of P24 bisection on the worst character ($\chi_4$, $N = 5 \to 7$) reduces $\mathrm{lb}_{\mathrm{local}}$ from $-1.30 \times 10^{-1}$ to $-3.40 \times 10^{-2}$ (74% margin reduction toward zero), confirming the bisection mechanism transports correctly to the χ-twisted side; **does NOT prove GRH (interval lower bounds currently negative; even when positive, finite log-spaced σ window is necessary, not sufficient) and does NOT advance G4** |
+| **P43** Dirichlet L χ-twisted Paley-gap consistency diagnostic | `twisted_paley_gap_coercivity.py` | `70_twisted_paley_gap_coercivity_demo.py` | §13vicies-secundo | Structural extension of P25 (`paley_gap_coercivity.py`) to primitive real $L(s, \chi)$: compares three representations of $-L'(s,\chi)/L(s,\chi)$ — the P32 closed-form weighted spectrum $Z_{P32}$ (`tnfr_log_l_derivative`), the P34 χ-twisted weighted spectral trace $Z_{P34}$ (`twisted_weighted_spectral_trace`), and the classical truncated Dirichlet series $Z_{\mathrm{cls}} = \sum_{n \le N} \chi(n)\Lambda(n)/n^\sigma$ (`classical_log_l_derivative`) — via three absolute χ-twisted Paley-gap quantities $g_{P32}(\sigma) = |Z_{P32} - Z_{\mathrm{cls}}|$, $g_{P34}(\sigma) = |Z_{P34} - Z_{\mathrm{cls}}|$, $g_{\mathrm{cross}}(\sigma) = |Z_{P34} - Z_{P32}|$; verified on $(n_{\mathrm{primes}}, k_{\max}, N_{\max}^{\mathrm{cls}}) = (18, 5, 50\,000)$, $\sigma \in [1.5, 4.0]$ with $N = 11$ for $\chi_3, \chi_4, \chi_5$: at $J_0 = 0$ the decoupled cross gap collapses to machine precision ($\max g_{\mathrm{cross}} \in \{5.55 \times 10^{-17}, 4.16 \times 10^{-17}, 1.11 \times 10^{-16}\}$ — Paley-style algebraic identity between P32 and P34 on the L-track, regression test); at $J_0 = 10^{-2}$ the coupling-induced cross gap jumps to $O(10^{-5})$ (twelve orders of magnitude above noise; clean structural-deformation signal free of classical-truncation noise which contaminates $g_{P32}$ at $10^{-3}$ to $10^{-2}$); **does NOT prove GRH (regression test plus deformation magnitude; not a coercivity certificate) and does NOT advance G4** |
 
 ### 19.2 Gap Balance
 
