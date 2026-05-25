@@ -205,6 +205,22 @@ twisted_weil_explicit_formula
     (chi_3, chi_4, chi_5). Closes G3_chi operationally for every
     Dirichlet L-function; does NOT advance G4 = RH or GRH (the
     identity holds for arbitrary zero locations on Re(s) = 1/2).
+twisted_li_keiper
+    P36 chi-twisted Li-Keiper positivity criterion (structural
+    analogue of P16 for primitive real Dirichlet L-functions;
+    GRH_chi-equivalent diagnostic). Computes the twisted Li-Keiper
+    coefficients
+        lambda_n(chi) = sum_rho [1 - (1 - 1/rho)^n]
+    where rho runs over non-trivial zeros of L(s, chi) on the
+    critical line, sourced via the P35 Hardy-Z bisection enumerator
+    (find_dirichlet_l_zeros). Checks positivity of every
+    lambda_n(chi) for n = 1, ..., n_max -- Lagarias' generalisation
+    of Li 1997 makes positivity GRH_chi-equivalent. Implemented for
+    primitive real characters (chi_3, chi_4, chi_5). Provides a
+    TNFR-native finite diagnostic witness for GRH on each L(s, chi);
+    does NOT prove GRH (a finite positivity check is necessary but
+    not sufficient) and does NOT advance G4 for zeta or the
+    arithmetic obstruction of GRH.
 oscillatory_correction
     P31 Branch B1 retry: prime-ladder oscillatory correction of the
     P28 / P30 smooth targets. Reconstructs S(T) = pi^{-1} arg zeta(1/2
@@ -679,6 +695,12 @@ from .twisted_weil_explicit_formula import (
     TwistedWeilExplicitFormulaCertificate,
     verify_twisted_weil_explicit_formula,
 )
+from .twisted_li_keiper import (
+    # P36: chi-twisted Li-Keiper positivity criterion (GRH_chi diagnostic)
+    twisted_li_coefficients,
+    TwistedLiKeiperCertificate,
+    verify_twisted_li_keiper_criterion,
+)
 from .spectral_emergence import (
     # P29: Spectral universality emergence under canonical UM+RA coupling
     CANONICAL_COUPLING_LAWS,
@@ -1038,6 +1060,10 @@ __all__ = [
     "twisted_weil_zero_side",
     "TwistedWeilExplicitFormulaCertificate",
     "verify_twisted_weil_explicit_formula",
+    # P36: chi-twisted Li-Keiper positivity criterion (GRH_chi diagnostic)
+    "twisted_li_coefficients",
+    "TwistedLiKeiperCertificate",
+    "verify_twisted_li_keiper_criterion",
     # P29: Spectral universality emergence under canonical UM+RA coupling
     "CANONICAL_COUPLING_LAWS",
     "InterPrimeCoupling",

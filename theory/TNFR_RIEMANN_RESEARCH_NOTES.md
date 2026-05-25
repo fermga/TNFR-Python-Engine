@@ -2312,6 +2312,71 @@ All nine $(\chi, \sigma)$ pairs verify the identity to machine precision (relati
 
 **Net effect**: P35 closes the explicit-formula gap on the L-function track for every primitive real Dirichlet character.  Combined with P32–P34, the structural status of $L(s,\chi)$ for real $\chi$ now matches the ζ track up through P15.  The arithmetic obstruction (zero localisation on $\operatorname{Re}(s)=1/2$) is unchanged.
 
+## §13quinquiesdecies. P36 — χ-Twisted Li–Keiper Positivity Criterion (Structural Diagnostic; GRH$_\chi$-Equivalent for Primitive Real χ; Does NOT Prove GRH or Advance G4)
+
+### §13quinquiesdecies.1 Motivation
+
+P16 (§12) supplies the canonical TNFR-native finite diagnostic surface for RH via Li–Keiper coefficients $\lambda_n$ computed from non-trivial zeros of $\zeta(s)$.  The L-function track now reaches the same level: P35 (§13quaterdecies) supplies a complete Hardy-Z zero enumerator for every primitive real Dirichlet $L(s,\chi)$, and Lagarias 2007 generalises Li 1997 to L-functions.  P36 packages these ingredients into a structural GRH$_\chi$-equivalent diagnostic — the L-function analogue of P16.
+
+### §13quinquiesdecies.2 Construction
+
+For a primitive real Dirichlet character $\chi$ with non-trivial zeros $\rho_k = 1/2 + i\gamma_k$ of $L(s,\chi)$ on the critical line, define the **χ-twisted Li–Keiper coefficients**
+
+$$
+\lambda_n(\chi) \;=\; \sum_{k} 2\,\operatorname{Re}\!\Big[1 - \big(1 - 1/\rho_k\big)^n\Big],\qquad n \ge 1.
+$$
+
+The sum runs over all non-trivial zeros (paired with their complex conjugates via the $2\operatorname{Re}[\cdot]$ factor).  By Lagarias 2007 (generalisation of Li 1997):
+
+$$
+\boxed{\;\text{GRH for } L(s,\chi) \iff \lambda_n(\chi) > 0 \text{ for every } n \ge 1.\;}
+$$
+
+P36 computes $\lambda_n(\chi)$ for $n = 1, \dots, n_{\max}$ from the finite truncation $\{\gamma_k : 0 < \gamma_k < t_{\max}\}$ supplied by the P35 enumerator (`find_dirichlet_l_zeros`).  The sum-over-zeros formula is **L-function agnostic**, so the canonical P16 routine `li_coefficients_from_zeros` is reused unchanged at mpmath precision $\text{dps} = 50$.
+
+### §13quinquiesdecies.3 Empirical Verification
+
+Positivity of $\lambda_n(\chi)$ verified for the three primitive real characters of small modulus across $n_{\max} \in \{20, 30, 50\}$ with $t_{\max} = 80$:
+
+| Character | $q$ | parity $a$ | $\#$ zeros used | $\min_n \lambda_n(\chi)$ | $\lambda_n > 0$ for $n \le 50$? |
+|-----------|-----|-----------|-----------------|--------------------------|-------------------------------|
+| $\chi_3$  | 3   | 1         | 34              | $+4.741 \times 10^{-2}$  | yes                           |
+| $\chi_4$  | 4   | 1         | 37              | $+6.791 \times 10^{-2}$  | yes                           |
+| $\chi_5$  | 5   | 0         | 40              | $+6.802 \times 10^{-2}$  | yes                           |
+
+(Reproduced by `examples/63_dirichlet_li_keiper_demo.py`.)
+
+### §13quinquiesdecies.4 What P36 Extends
+
+* **P16 to L-functions**: P16 is the canonical Li–Keiper diagnostic for $\zeta$; P36 is its structural analogue for $L(s,\chi)$ at every primitive real $\chi$.  Together with P32–P35, the structural TNFR-Riemann program now matches the ζ track all the way through the diagnostic layer.
+* **Numerical witness for GRH$_\chi$**: every positivity row above is a falsifiable finite witness; a single $\lambda_n(\chi) \le 0$ would disprove GRH for the corresponding $L(s,\chi)$.
+
+### §13quinquiesdecies.5 What P36 Does NOT Advance
+
+* **GRH for any $L(s,\chi)$**: a finite check of $\lambda_n > 0$ for $n \le n_{\max}$ is **necessary but not sufficient**.  Rigorous bounds on the truncation tail are required to upgrade the finite check to a proof; P36 does not supply them.  Consistent with Bombieri–Lagarias 1999 and Lagarias 2007.
+* **G4 = RH**: structurally identical to P16; the arithmetic obstruction is untouched.  The zeros are *assumed* to lie on $\operatorname{Re}(s) = 1/2$ via the Hardy-Z bisection on $Z_\chi(t)$ used by P35.
+* **Complex χ**: P36 inherits the primitive-real restriction from P32–P35.
+
+### §13quinquiesdecies.6 Cross-References
+
+* §12: P16 Li–Keiper criterion for ζ (canonical template).
+* §13quaterdecies: P35 χ-twisted Weil–Guinand explicit formula (supplies the zero enumerator).
+* §13septies: Conjecture T-HP (unchanged by P36).
+* `src/tnfr/riemann/twisted_li_keiper.py`: canonical P36 implementation.
+* `examples/63_dirichlet_li_keiper_demo.py`: demo with full positivity sweep.
+
+### §13quinquiesdecies.7 Gap Balance
+
+| Scope | Status before P36 | Status after P36 |
+|-------|-------------------|------------------|
+| P16 diagnostic for ζ | Available (P16) | Available, unchanged |
+| **Li–Keiper diagnostic for $L(s,\chi)$, primitive real χ** | Open (future P36) | **Available** (TNFR-native finite witness) |
+| GRH for $L(s,\chi)$, primitive real χ | OPEN | OPEN (diagnostic only; finite check is necessary, not sufficient) |
+| G4 = RH | OPEN | OPEN, unchanged |
+| GRH (G4$_\chi$ for complex $\chi$) | OPEN | OPEN, unchanged |
+
+**Net effect**: P36 closes the diagnostic-layer gap on the L-function track for every primitive real Dirichlet character.  Combined with P32–P35, every milestone reachable on the ζ track up through P16 now has a structural analogue on the primitive-real L-function track.  The arithmetic obstruction remains the same.
+
 ## 14. Weil–TNFR Positivity Bridge (P17)
 
 ### 14.1 Motivation
@@ -2870,6 +2935,7 @@ piecewise status notes.
 | **P33** Dirichlet L analytic continuation | `analytic_continuation_dirichlet.py` | `60_dirichlet_l_continuation_demo.py` | §13duodecies | Structural extension of P13 to all $L(s, \chi)$ via `mp.dirichlet`; G2$_\chi$/P13 layer; verified vs LMFDB for $\chi_3, \chi_4$; **does NOT advance G4 or GRH** |
 | **P34** Dirichlet L canonical Hamiltonian | `twisted_prime_ladder_hamiltonian.py` | `61_dirichlet_l_hamiltonian_demo.py` | §13terdecies | Structural extension of P14 to all $L(s, \chi)$: canonical self-adjoint Hamiltonian + complex diagonal weight $W^{(\chi)}_{(p,k),(p,k)} = \chi(p)^k \log p$; closes **G1$_\chi$ at the P14 layer** (spec_err = 0, trace_rel_err $\approx 3 \times 10^{-16}$ for $\chi_3, \chi_4, \chi_5$); **does NOT advance G4 or GRH** |
 | **P35** Dirichlet L χ-twisted Weil–Guinand | `twisted_weil_explicit_formula.py` | `62_dirichlet_weil_explicit_formula_demo.py` | §13quaterdecies | Structural extension of P15 to primitive real $L(s, \chi)$: zero side from Hardy-Z bisection on $Z_\chi(t)$ (P33), prime side from P34 Hamiltonian; closes **G3$_\chi$ operationally for primitive real χ** (rel. residual $\le 4.4 \times 10^{-13}$ across 9 $(\chi,\sigma)$ pairs for $\chi_3, \chi_4, \chi_5$ at $\sigma \in \{2.0, 2.5, 3.0\}$); **does NOT advance G4 or GRH** |
+| **P36** Dirichlet L χ-twisted Li–Keiper criterion | `twisted_li_keiper.py` | `63_dirichlet_li_keiper_demo.py` | §13quinquiesdecies | Structural extension of P16 to primitive real $L(s, \chi)$: $\lambda_n(\chi)$ computed from P35 Hardy-Z zeros via the canonical P16 mpmath routine (sum-over-zeros is L-function agnostic); GRH$_\chi$-equivalent diagnostic (Lagarias 2007 generalisation of Bombieri–Lagarias 1999); positivity verified for $\chi_3, \chi_4, \chi_5$ up through $n_{\max} = 50$ (min $\lambda_n \ge 4.7 \times 10^{-2}$); **does NOT prove GRH (finite truncation; necessary, not sufficient) and does NOT advance G4** |
 
 ### 19.2 Gap Balance
 
