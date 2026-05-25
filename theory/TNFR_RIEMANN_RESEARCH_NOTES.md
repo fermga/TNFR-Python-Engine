@@ -119,7 +119,7 @@ End-to-end pipeline demos (`examples/`):
 - `51_adaptive_coercivity_demo.py` — P24 adaptive $\sigma$ refinement near the bottleneck.
 - `52_paley_gap_coercivity_demo.py` — P25 Paley-gap coercivity diagnostic.
 - `53_lyapunov_spectral_positivity_demo.py` — P26 Lyapunov-spectral positivity certificate.
-- `54_hilbert_polya_scaffold_demo.py` — P27 Hilbert–Pólya diagnostic scaffold.
+- `54_hilbert_polya_demo.py` — P27 Hilbert–Pólya diagnostic scaffold.
 - `55_structural_zero_density_demo.py` — P28 structural smooth zero density.
 - `56_spectral_emergence_demo.py` — P29 KS-distance to GUE under canonical couplings.
 - `57_admissible_rescaling_demo.py` — P30 operator-level admissible rescaling (smooth half).
@@ -2480,7 +2480,7 @@ piecewise status notes.
 | **P24** Adaptive $\sigma$ refinement | `coercivity_uniform.py` | `51_adaptive_coercivity_demo.py` | §13bis | Bisection under local Lipschitz envelope |
 | **P25** Paley-gap coercivity diagnostic | `paley_gap_coercivity.py` | `52_paley_gap_coercivity_demo.py` | §13ter | Cross gap $g_{\mathrm{cross}} \to 0$ at coupling 0 (Paley identity) |
 | **P26** Lyapunov-spectral positivity | `lyapunov_spectral_positivity.py` | `53_lyapunov_spectral_positivity_demo.py` | §13quater | Operator-level positivity for P14; G4 diagnostic |
-| **P27** Hilbert–Pólya scaffold | `hilbert_polya.py` | `54_hilbert_polya_scaffold_demo.py` | §13quinquies | $T_{\mathrm{HP}}$ populated by `mpmath.zetazero`; diagnostic only |
+| **P27** Hilbert–Pólya scaffold | `hilbert_polya.py` | `54_hilbert_polya_demo.py` | §13quinquies | $T_{\mathrm{HP}}$ populated by `mpmath.zetazero`; diagnostic only |
 | **P28** Structural smooth zero density | `structural_zero_density.py` | `55_structural_zero_density_demo.py` | §13sexies | Closes smooth half of G4 at the **density** level |
 | **P29** Spectral emergence under coupling | `spectral_emergence.py` | `56_spectral_emergence_demo.py` | §13octies.3 | KS-distance of unfolded spacings to GUE under canonical UM+RA |
 | **P30** Admissible rescaling operator | `admissible_rescaling.py` | `57_admissible_rescaling_demo.py` | §13nonies | Closes smooth half of T-HP at the **operator** level |
