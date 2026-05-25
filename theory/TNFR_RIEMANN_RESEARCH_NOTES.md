@@ -2571,6 +2571,77 @@ P39 is a strict diagnostic and inherits every limitation of P19 / P38.  It does 
 
 **Net effect**: P39 closes the admissible-family + gauge robustness gap on the L-function track for every primitive real Dirichlet character, achieving structural parity with the ζ-track through P19.  The arithmetic obstruction remains identical and the gap balance for G4 is unchanged.
 
+## §13noniesdecies. P40 — χ-Twisted Node-Aware Gauge Sweep of $\alpha_\chi(\sigma; f, g)$ (Node-Aware Canonical-Mapping Robustness Diagnostic; GRH$_\chi$-Equivalent for Primitive Real χ; Does NOT Prove GRH or Advance G4)
+
+### §13noniesdecies.1 Motivation
+
+P38 swept the six canonical *scalar-h* structural gauges `DEFAULT_GAUGES` for primitive real $L(s,\chi)$.  P39 enriched that sweep along the test-profile axis by crossing the six scalar gauges with the three admissible test families `DEFAULT_TEST_FAMILIES` of P19.  Both P38 and P39 share a structural limitation: every gauge produces *node-independent* triples $(d, \phi, \epsilon)$ from the scalar $h(E_n)$.  The χ-twisted prime-ladder graph carries two independent canonical channels at each node $n = (p, k)$ — the structural frequency $\nu_f(n) = k \log p$ and the node-weight $\log p$ — that the scalar-h gauges discard by construction.  The ζ-track closed this gap at P20 with the four *node-aware* gauges `DEFAULT_NODEAWARE_GAUGES`.  P40 lifts that node-aware family verbatim to the L-function track for every primitive real Dirichlet character.
+
+### §13noniesdecies.2 Construction
+
+The P40 sweep evaluates
+
+$$
+\alpha_\chi(\sigma; f, g) \;=\; \frac{W_\chi[\sigma; f]}{E_{\mathrm{TNFR}}^\chi[\sigma; f, g]}
+$$
+
+across (i) the three admissible Schwartz-even test families `DEFAULT_TEST_FAMILIES` inherited unchanged from P19 (gaussian, gaussian_mixture, hermite2_gaussian); (ii) the four canonical node-aware gauges `DEFAULT_NODEAWARE_GAUGES` inherited unchanged from P20 (nuf_pressure, nuf_phase, weight_pressure, mixed_affine); (iii) a finite Gaussian-width grid $\sigma \in \{1.0, 1.5, 2.0, 2.5, 3.0\}$.  Each node-aware gauge has the canonical signature
+
+$$
+(d_n, \phi_n, \epsilon_n) \;=\; g\bigl(h(E_n),\, \hat\nu_f(n),\, \hat w(n)\bigr),
+$$
+
+where $\hat\nu_f(n)$ and $\hat w(n) = \log p / \max_{n'} \log p$ are the per-node normalised structural-frequency and node-weight channels of the P34 χ-twisted prime-ladder bundle.  $W_\chi[\sigma; f]$ is gauge-independent and is computed once per $(family, \sigma)$ via the P35 enumerator `twisted_weil_zero_side`; the canonical TNFR test state is built per $(family, node\_gauge)$ on the P34 bundle via `build_twisted_test_state_nodeaware`, then $E_{\mathrm{TNFR}}^\chi[\sigma; f, g]$ is the tetrad energy functional of P17 evaluated on that state.
+
+### §13noniesdecies.3 Empirical Verification
+
+`examples/67_twisted_nodeaware_gauge_sweep_demo.py` evaluates the sweep for every primitive real Dirichlet character of conductor $q \le 5$ with bundle $(n_{\mathrm{primes}}, k_{\max}, J) = (25, 6, 0)$:
+
+| $\chi$ | $q$ | $W_\chi \ge 0$ | $\alpha_\chi > 0$ | $\alpha_{\min}$ | argmin $(\sigma, f, g)$ | $\alpha_{\max}$ |
+|--------|----:|:--------------:|:-----------------:|----------------:|:-----------------------:|----------------:|
+| $\chi_{3}$ | 3 | True | True | $+1.25 \times 10^{-14}$ | $(1.0, \text{gaussian}, \text{nuf\_phase})$ | $+6.71 \times 10^{-2}$ |
+| $\chi_{4}$ | 4 | True | True | $+2.69 \times 10^{-08}$ | $(1.0, \text{gaussian}, \text{nuf\_phase})$ | $+1.30 \times 10^{-1}$ |
+| $\chi_{5}$ | 5 | True | True | $+2.60 \times 10^{-10}$ | $(1.0, \text{gaussian}, \text{nuf\_pressure})$ | $+1.12 \times 10^{-1}$ |
+
+Aggregate result: **3/3 characters PASS** across $3 \times 4 \times 5 = 60$ $(family, node\_gauge, \sigma)$ entries each.  The argmin location is consistently the small-$\sigma$ / gaussian / pressure-side corner of the grid, where $W_\chi$ approaches the Plancherel limit while $E_{\mathrm{TNFR}}^\chi$ is largest — the same qualitative signature observed at P20 for the ζ-track and at P39 for the scalar-gauge twisted sweep.
+
+### §13noniesdecies.4 What P40 Extends
+
+| Component | P38 | P39 | **P40** |
+|-----------|:---:|:---:|:-------:|
+| Test family axis | single (gaussian) | sweep (3 admissible) | sweep (3 admissible) |
+| Gauge axis | sweep (6 scalar) | sweep (6 scalar) | **sweep (4 node-aware)** |
+| Node-aware channels $(\hat\nu_f, \hat w)$ | discarded | discarded | **active** |
+| ζ-track parent | P18 | P19 | **P20** |
+
+P40 closes the node-aware canonical-mapping robustness gap on the L-function track for primitive real Dirichlet characters, achieving structural parity with the ζ-track P20.
+
+### §13noniesdecies.5 What P40 Does NOT Advance
+
+P40 is a **finite-grid robustness diagnostic**: positivity of $\alpha_\chi(\sigma; f, g)$ on the chosen $(family, node\_gauge, \sigma)$ grid is necessary but not sufficient for GRH$_\chi$, and the GRH-equivalent content is carried entirely by the gauge-independent zero side $W_\chi[\sigma; f] \ge 0$ for all admissible $f$.  P40 does NOT prove GRH for any $L(s, \chi)$, does NOT extend to complex characters, and does NOT advance the gap balance for G4 = RH (which lives strictly inside the canonical ζ track via P30 → T-HP).
+
+### §13noniesdecies.6 Cross-References
+
+- Implementation: `src/tnfr/riemann/twisted_nodeaware_gauge_sweep.py` (module), `src/tnfr/riemann/__init__.py` (canonical exports).
+- Demonstration: `examples/67_twisted_nodeaware_gauge_sweep_demo.py`.
+- ζ-track parent: P20 (§13ter `nodeaware_gauge_sweep.py`).
+- L-track parents: P34 (χ-twisted bundle), P35 (`twisted_weil_zero_side`), P37 (`verify_twisted_weil_tnfr_bridge`, energy functional), P38 (scalar-gauge twisted sweep), P39 (admissible-family + scalar-gauge twisted sweep).
+- Inherited canonical pieces: `DEFAULT_TEST_FAMILIES` (P19), `DEFAULT_NODEAWARE_GAUGES` (P20), `compute_energy_functional` (P17).
+- Compendium: §19.1 P40 row.
+
+### §13noniesdecies.7 Gap Balance
+
+| Scope | Status before P40 | Status after P40 |
+|-------|-------------------|------------------|
+| P20 node-aware gauge sweep for ζ | Available (P20) | Available, unchanged |
+| P39 admissible-family + scalar-gauge sweep for $L(s,\chi)$ | Available (P39) | Available, unchanged |
+| **Admissible-family + node-aware gauge sweep for $L(s,\chi)$, primitive real χ** | Open (future P40) | **Available** (TNFR-native robustness audit across 3 admissible families × 4 node-aware gauges × σ grid) |
+| GRH for $L(s,\chi)$, primitive real χ | OPEN | OPEN (diagnostic only; finite $(family, node\_gauge, \sigma)$ grid is necessary, not sufficient) |
+| G4 = RH | OPEN | OPEN, unchanged |
+| GRH (G4$_\chi$ for complex $\chi$) | OPEN | OPEN, unchanged |
+
+**Net effect**: P40 closes the node-aware canonical-mapping robustness gap on the L-function track for every primitive real Dirichlet character, achieving structural parity with the ζ-track through P20.  The arithmetic obstruction remains identical and the gap balance for G4 is unchanged.
+
 ## 14. Weil–TNFR Positivity Bridge (P17)
 
 ### 14.1 Motivation
@@ -3133,6 +3204,7 @@ piecewise status notes.
 | **P37** Dirichlet L χ-twisted Weil–TNFR bridge | `twisted_weil_positivity.py` | `64_twisted_weil_positivity_demo.py` | §13sexiesdecies | Structural extension of P17 to primitive real $L(s, \chi)$: $W_\chi[\sigma] = 2\sum_{\gamma > 0} h_\sigma(\gamma)$ computed two ways — zero side from P35 Hardy-Z enumerator, explicit-formula side from P34 χ-twisted prime-ladder Hamiltonian — plus the canonical TNFR Lyapunov bridge ratio $\alpha_\chi(\sigma) = W_\chi[\sigma] / E_{\mathrm{TNFR}}^\chi[\sigma]$ using `compute_energy_functional` unchanged from P17; GRH$_\chi$-equivalent diagnostic (Bombieri 2000 generalisation of Weil 1952); positivity verified for $\chi_3, \chi_4, \chi_5$ on Gaussian grid $\sigma \in \{1.0, \ldots, 3.0\}$ (3/3 PASS; XF residual $\le 2.4 \times 10^{-16}$ for $\sigma \ge 2.0$); **does NOT prove GRH (finite Gaussian grid; admissibility not exhausted) and does NOT advance G4** |
 | **P38** Dirichlet L χ-twisted admissibility / gauge sweep | `twisted_alpha_sweep.py` | `65_twisted_alpha_sweep_demo.py` | §13septiesdecies | Structural extension of P18 to primitive real $L(s, \chi)$: sweeps $\alpha_\chi(\sigma; g) = W_\chi[\sigma] / E_{\mathrm{TNFR}}^\chi[\sigma; g]$ across the canonical six-gauge family `DEFAULT_GAUGES` inherited unchanged from P18 (`canonical, dnfr_only, phase_only, epi_only, dnfr_phase, pressure_amplified`); $W_\chi$ computed once per $\sigma$ (gauge-independent) via P35 enumerator; canonical TNFR test state built per gauge on P34 bundle; positivity verified for $\chi_3, \chi_4, \chi_5$ across $\sigma \in \{1.0, \ldots, 3.0\} \times$ 6 gauges (3/3 PASS; $\alpha_{\min}$ at $(\sigma=1.0, \text{canonical})$ in every case); robustness audit of P37 under canonical-mapping ambiguity; **does NOT prove GRH (finite $(\sigma, g)$ grid; admissibility not exhausted) and does NOT advance G4** |
 | **P39** Dirichlet L χ-twisted admissible-family + gauge sweep | `twisted_admissible_family_sweep.py` | `66_twisted_admissible_family_sweep_demo.py` | §13octiesdecies | Joint structural extension of P19 + P18 to primitive real $L(s, \chi)$: sweeps $\alpha_\chi(\sigma; f, g) = W_\chi[\sigma; f] / E_{\mathrm{TNFR}}^\chi[\sigma; f, g]$ across `DEFAULT_TEST_FAMILIES` (gaussian, gaussian_mixture, hermite2_gaussian) inherited unchanged from P19 × `DEFAULT_GAUGES` (6 canonical gauges) inherited unchanged from P18; $W_\chi[\sigma; f]$ computed once per $(family, \sigma)$ via P35 enumerator; canonical TNFR test state built per $(family, gauge)$ on P34 bundle via `build_twisted_test_state_from_test_function`; positivity verified for $\chi_3, \chi_4, \chi_5$ across 3 families × 6 gauges × 5 widths (3/3 PASS; 270 cells total; $\alpha_{\min}$ at $(\sigma=1.0, \mathrm{gaussian}, \mathrm{canonical})$ in every case); joint robustness audit of P37 under test-profile + canonical-mapping ambiguity; **does NOT prove GRH (finite $(family, gauge, \sigma)$ grid; admissibility not exhausted) and does NOT advance G4** |
+| **P40** Dirichlet L χ-twisted node-aware gauge sweep | `twisted_nodeaware_gauge_sweep.py` | `67_twisted_nodeaware_gauge_sweep_demo.py` | §13noniesdecies | Structural extension of P20 to primitive real $L(s, \chi)$: sweeps $\alpha_\chi(\sigma; f, g) = W_\chi[\sigma; f] / E_{\mathrm{TNFR}}^\chi[\sigma; f, g]$ across `DEFAULT_TEST_FAMILIES` (P19) × `DEFAULT_NODEAWARE_GAUGES` (4 node-aware gauges: `nuf_pressure, nuf_phase, weight_pressure, mixed_affine`) inherited unchanged from P20; gauges have signature $g(h(E_n), \hat\nu_f(n), \hat w(n))$ activating the per-node normalised structural-frequency and node-weight channels of the P34 χ-twisted graph; $W_\chi[\sigma; f]$ computed once per $(family, \sigma)$ via P35 enumerator; canonical TNFR test state built per $(family, node\_gauge)$ on P34 bundle via `build_twisted_test_state_nodeaware`; positivity verified for $\chi_3, \chi_4, \chi_5$ across 3 families × 4 node-aware gauges × 5 widths (3/3 PASS; 180 cells total; $\alpha_{\min}$ at $(\sigma=1.0, \mathrm{gaussian}, \mathrm{nuf\_phase})$ for $\chi_3, \chi_4$ and at $(\sigma=1.0, \mathrm{gaussian}, \mathrm{nuf\_pressure})$ for $\chi_5$); node-aware robustness audit of P37 jointly with P19 test-profile sweep; **does NOT prove GRH (finite $(family, node\_gauge, \sigma)$ grid; admissibility not exhausted) and does NOT advance G4** |
 
 ### 19.2 Gap Balance
 

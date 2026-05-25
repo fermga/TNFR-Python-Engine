@@ -265,6 +265,21 @@ twisted_admissible_family_sweep
     Implemented for primitive real characters (chi_3, chi_4, chi_5).
     Diagnostic only; does NOT prove GRH for any L(s, chi) and does
     NOT advance G4 = RH.
+twisted_nodeaware_gauge_sweep
+    P40 chi-twisted node-aware gauge sweep of
+        alpha_chi(sigma; f, g) = W_chi[sigma; f] / E_TNFR_chi[sigma; f, g]
+    where g varies over the node-aware gauges DEFAULT_NODEAWARE_GAUGES
+    inherited unchanged from the zeta-track P20 (nuf_pressure,
+    nuf_phase, weight_pressure, mixed_affine). Each gauge depends on
+    the per-node normalised structural frequency hat nu_f(n) and
+    normalised node-weight hat w(n) = log p / max log p of the P34
+    chi-twisted prime-ladder graph. Structural analogue of P20 for
+    primitive real Dirichlet L-functions: probes robustness of the
+    P37 chi-twisted positivity bridge under node-aware canonical-
+    mapping ambiguity crossed with the admissible-family sweep (P19).
+    Implemented for primitive real characters (chi_3, chi_4, chi_5).
+    Diagnostic only; does NOT prove GRH for any L(s, chi) and does
+    NOT advance G4 = RH.
 oscillatory_correction
     P31 Branch B1 retry: prime-ladder oscillatory correction of the
     P28 / P30 smooth targets. Reconstructs S(T) = pi^{-1} arg zeta(1/2
@@ -766,6 +781,12 @@ from .twisted_admissible_family_sweep import (
     build_twisted_test_state_from_test_function,
     sweep_twisted_admissible_family,
 )
+from .twisted_nodeaware_gauge_sweep import (
+    # P40: chi-twisted node-aware gauge sweep (diagnostic)
+    TwistedNodeAwareGaugeSweepCertificate,
+    build_twisted_test_state_nodeaware,
+    sweep_twisted_nodeaware_gauge,
+)
 from .spectral_emergence import (
     # P29: Spectral universality emergence under canonical UM+RA coupling
     CANONICAL_COUPLING_LAWS,
@@ -1144,6 +1165,10 @@ __all__ = [
     "TwistedAdmissibleFamilySweepCertificate",
     "build_twisted_test_state_from_test_function",
     "sweep_twisted_admissible_family",
+    # P40: chi-twisted node-aware gauge sweep (diagnostic)
+    "TwistedNodeAwareGaugeSweepCertificate",
+    "build_twisted_test_state_nodeaware",
+    "sweep_twisted_nodeaware_gauge",
     # P29: Spectral universality emergence under canonical UM+RA coupling
     "CANONICAL_COUPLING_LAWS",
     "InterPrimeCoupling",
