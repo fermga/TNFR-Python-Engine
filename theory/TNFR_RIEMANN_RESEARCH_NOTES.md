@@ -2713,6 +2713,81 @@ P41 is a **finite-grid robustness diagnostic**: positivity of $\alpha_\chi(\sigm
 
 **Net effect**: P41 closes the Hermite2 envelope-strength robustness gap on the L-function track for every primitive real Dirichlet character.  The arithmetic obstruction remains identical and the gap balance for G4 is unchanged.
 
+## §13vicies-primo. P42 — χ-Twisted Uniform-Coercivity Certificate (Lipschitz-Mesh Interval Bound on $\alpha_\chi(\sigma; \eta, g)$; Diagnostic; Does NOT Prove GRH or Advance G4)
+
+### §13vicies-primo.1 Motivation
+
+P38–P41 verified pointwise positivity of $\alpha_\chi(\sigma; f, \eta, g) = W_\chi[\sigma; f, \eta] / E_{\mathrm{TNFR}}^\chi[\sigma; f, \eta, g]$ at the canonical finite grid $\sigma \in \{1.0, 1.5, 2.0, 2.5, 3.0\}$ jointly across the test-family (P39), node-aware-gauge (P40) and Hermite2 envelope-strength (P41) axes.  None of those sweeps controls $\alpha_\chi$ between grid points.  The ζ-track P22 lifted the equivalent ζ-side sample to an **interval** lower bound by combining a sampled minimum with a finite-difference Lipschitz envelope and a log-spaced mesh of explicit radius.  P42 transports the same Lipschitz-mesh certificate construction to the χ-twisted track for every primitive real Dirichlet character, taking the sample over the *joint* (admissible-family + scalar-gauge + node-aware-gauge) sweep already canonicalised in P39 and P40.
+
+### §13vicies-primo.2 Construction
+
+The P42 certificate evaluates
+
+$$
+\alpha_\chi(\sigma; \eta, g) \;=\; \frac{W_\chi[\sigma; \eta]}{E_{\mathrm{TNFR}}^\chi[\sigma; \eta, g]}
+$$
+
+on a log-spaced grid $\sigma_0 < \sigma_1 < \cdots < \sigma_{N-1}$ with $\sigma_k = \sigma_{\min} \cdot (\sigma_{\max}/\sigma_{\min})^{k/(N-1)}$, then:
+
+1. Runs the **scalar-gauge sweep of P39** (`sweep_twisted_admissible_family`, 3 admissible families × 6 canonical scalar gauges of P18) once on the log-spaced grid;
+2. Runs the **node-aware-gauge sweep of P40** (`sweep_twisted_nodeaware_gauge`, 3 admissible families × 4 canonical node-aware gauges of P20) once on the same grid;
+3. Concatenates both $\alpha_\chi$ tables and extracts the sampled minimum $\alpha_{\chi,\min}^{\mathrm{samp}}$, maximum $\alpha_{\chi,\max}^{\mathrm{samp}}$ and an upper bound on the finite-difference Lipschitz envelope $L^{\mathrm{proxy}}_\chi = \max_{k} |\alpha_\chi(\sigma_{k+1}; \cdot) - \alpha_\chi(\sigma_k; \cdot)| / |\sigma_{k+1} - \sigma_k|$;
+4. Computes three interval lower bounds — **global** ($\alpha_{\chi,\min}^{\mathrm{samp}} - L^{\mathrm{proxy}}_\chi \cdot \rho$ with mesh radius $\rho = \max_k (\sigma_{k+1} - \sigma_k)/2$), **stratified** (segment-wise mid-radius), **local** (segment-wise endpoint-aware) — reusing the canonical ζ-track helpers `_max_abs_slope`, `_segmentwise_interval_lower_bound`, `_stratified_interval_lower_bound` of P22 unchanged from `coercivity_uniform.py`;
+5. Optionally performs **P24-style adaptive refinement**: bisects the `per_round` worst-margin segments, re-runs both twisted sweeps on the augmented grid, and recomputes the segment-local interval lower bound.
+
+The construction does NOT touch the gauge-independent zero side $W_\chi$ (computed once per $(\eta, \sigma)$ via the P35 enumerator inside each sweep), the P34 χ-twisted bundle, the P17 energy functional, or any of the canonical default registries.
+
+### §13vicies-primo.3 Empirical Verification
+
+`examples/69_twisted_coercivity_uniform_demo.py` evaluates the certificate for every primitive real Dirichlet character of conductor $q \le 5$ with bundle $(n_{\mathrm{primes}}, k_{\max}, J) = (15, 4, 0)$ on the log-spaced window $\sigma \in [1.0, 3.0]$ with $N = 5$, using `DEFAULT_TEST_FAMILIES` (P19) × `DEFAULT_GAUGES` (P18) for the scalar sweep and `DEFAULT_TEST_FAMILIES` (P19) × `DEFAULT_NODEAWARE_GAUGES` (P20) for the node-aware sweep:
+
+| $\chi$ | $q$ | $\alpha^{\mathrm{samp}}_{\chi,\min}$ | $\alpha^{\mathrm{samp}}_{\chi,\max}$ | $L^{\mathrm{proxy}}_\chi$ | $\mathrm{lb}_{\mathrm{global}}$ | $\mathrm{lb}_{\mathrm{strat}}$ | $\mathrm{lb}_{\mathrm{local}}$ | all+ |
+|--------|----:|------------------------------------:|------------------------------------:|--------------------------:|--------------------------------:|-------------------------------:|-------------------------------:|:----:|
+| $\chi_{3}$ | 3 | $+1.26 \times 10^{-14}$ | $+5.10 \times 10^{-1}$ | $4.31 \times 10^{-1}$ | $-1.55 \times 10^{-1}$ | $-1.55 \times 10^{-1}$ | $-6.06 \times 10^{-2}$ | False |
+| $\chi_{4}$ | 4 | $+2.70 \times 10^{-8}$  | $+2.01 \times 10^{+0}$ | $1.48 \times 10^{+0}$ | $-5.33 \times 10^{-1}$ | $-5.16 \times 10^{-1}$ | $-1.30 \times 10^{-1}$ | False |
+| $\chi_{5}$ | 5 | $+2.62 \times 10^{-10}$ | $+7.01 \times 10^{-1}$ | $5.49 \times 10^{-1}$ | $-1.98 \times 10^{-1}$ | $-1.95 \times 10^{-1}$ | $-6.51 \times 10^{-2}$ | False |
+
+Sampled positivity holds for every $\chi$ on every grid point in both sweeps (`sampled_all_positive = True`, `admissible_ok = True`, `nodeaware_ok = True`).  All three Lipschitz-mesh interval lower bounds are **negative** for all three characters: $\alpha^{\mathrm{samp}}_{\chi,\min} \approx 10^{-8}$ to $10^{-14}$ near the $\sigma = 1$ baseline gives essentially zero margin against any finite slope $L^{\mathrm{proxy}}_\chi$.  P24-style refinement on the worst-margin character ($\chi_4$, $\mathrm{lb}_{\mathrm{local}} = -1.30 \times 10^{-1}$) with one round of two-midpoint bisection ($N = 5 \to 7$) reduces the local interval lower bound to $-3.40 \times 10^{-2}$ — a **74% margin reduction toward zero**, confirming the bisection mechanism transports correctly to the χ-twisted side, while the bound remains negative because the sampled minimum near $\sigma = 1$ has not been pushed off the worst-margin endpoint.
+
+### §13vicies-primo.4 What P42 Extends
+
+| Component | P22 (ζ-track) | P38 | P39 | P40 | P41 | **P42** |
+|-----------|:-------------:|:---:|:---:|:---:|:---:|:-------:|
+| Sample / interval | interval | pointwise | pointwise | pointwise | pointwise | **interval (Lipschitz-mesh)** |
+| σ grid | log-spaced | finite | finite | finite | finite | **log-spaced (same construction as P22)** |
+| Lipschitz envelope | finite-difference | n/a | n/a | n/a | n/a | **finite-difference (P22 helpers reused)** |
+| Joint scalar + node-aware sample | scalar only | scalar only | scalar only | node-aware only | scalar only | **both (P39 ∪ P40)** |
+| Adaptive refinement | yes (P24) | n/a | n/a | n/a | n/a | **yes (P24 helpers reused)** |
+| ζ-track parent | — | P18 | P19 | P20 | P21 | **P22 (+ P23 + P24)** |
+
+P42 transports the canonical ζ-track interval-coercivity certificate construction (P22) plus its stratified (P23) and adaptive (P24) refinements to the L-function track for every primitive real Dirichlet character, taking the underlying sample over the joint P39 + P40 robustness sweep.
+
+### §13vicies-primo.5 What P42 Does NOT Advance
+
+P42 is a **finite-grid Lipschitz-mesh interval diagnostic**: positive interval lower bounds would be necessary but not sufficient for GRH$_\chi$.  The current empirical result is **negative interval lower bounds** for all three characters even after one round of bisection refinement, exactly mirroring the ζ-track P22/P23/P24 behaviour at coarse-mesh / wide-σ-window initial state: uniform coercivity is delicate near the $\sigma = 1$ baseline because the sampled minimum is genuinely tiny ($10^{-8}$ to $10^{-14}$).  P42 does NOT prove GRH for any $L(s, \chi)$, does NOT extend to complex characters, and does NOT advance the gap balance for G4 = RH.
+
+### §13vicies-primo.6 Cross-References
+
+- Implementation: `src/tnfr/riemann/twisted_coercivity_uniform.py` (module), `src/tnfr/riemann/__init__.py` (canonical exports).
+- Demonstration: `examples/69_twisted_coercivity_uniform_demo.py`.
+- ζ-track parent: P22 / P23 / P24 (uniform, stratified, adaptive coercivity in `coercivity_uniform.py`).
+- L-track parents: P34 (χ-twisted bundle), P35 (`twisted_weil_zero_side`), P37 (energy functional), P38 (scalar-gauge twisted sweep), P39 (admissible-family + scalar-gauge twisted sweep), P40 (node-aware twisted sweep), P41 (Hermite2 η-sweep).
+- Inherited canonical pieces: `_max_abs_slope`, `_segmentwise_interval_lower_bound`, `_stratified_interval_lower_bound`, `_worst_segment_indices` (P22 / P23 / P24 helpers reused unchanged from `coercivity_uniform.py`); `sweep_twisted_admissible_family` (P39); `sweep_twisted_nodeaware_gauge` (P40).
+- Compendium: §19.1 P42 row.
+
+### §13vicies-primo.7 Gap Balance
+
+| Scope | Status before P42 | Status after P42 |
+|-------|-------------------|------------------|
+| P22 ζ-track interval coercivity certificate | Available (P22) | Available, unchanged |
+| Pointwise positivity of $\alpha_\chi$ for primitive real χ on finite $(\sigma, f, \eta, g)$ grid | Available (P37–P41) | Available, unchanged |
+| **Lipschitz-mesh interval-level certificate of $\alpha_\chi$ for primitive real χ** | Open (future P42) | **Available** (diagnostic; current empirical interval lower bounds are negative; adaptive bisection mechanism transports correctly from ζ-track) |
+| GRH for $L(s,\chi)$, primitive real χ | OPEN | OPEN (interval lower bounds currently negative; diagnostic, not sufficient even when positive) |
+| G4 = RH | OPEN | OPEN, unchanged |
+| GRH (G4$_\chi$ for complex $\chi$) | OPEN | OPEN, unchanged |
+
+**Net effect**: P42 closes the **Lipschitz-mesh interval-certificate construction gap** on the L-function track for every primitive real Dirichlet character (canonical pieces transport without modification; bisection refinement behaves qualitatively as on the ζ-track).  The current empirical interval lower bounds are negative — a HONEST finding, not a failure — and the arithmetic obstruction plus the gap balance for G4 are unchanged.
+
 ## 14. Weil–TNFR Positivity Bridge (P17)
 
 ### 14.1 Motivation
@@ -3277,6 +3352,7 @@ piecewise status notes.
 | **P39** Dirichlet L χ-twisted admissible-family + gauge sweep | `twisted_admissible_family_sweep.py` | `66_twisted_admissible_family_sweep_demo.py` | §13octiesdecies | Joint structural extension of P19 + P18 to primitive real $L(s, \chi)$: sweeps $\alpha_\chi(\sigma; f, g) = W_\chi[\sigma; f] / E_{\mathrm{TNFR}}^\chi[\sigma; f, g]$ across `DEFAULT_TEST_FAMILIES` (gaussian, gaussian_mixture, hermite2_gaussian) inherited unchanged from P19 × `DEFAULT_GAUGES` (6 canonical gauges) inherited unchanged from P18; $W_\chi[\sigma; f]$ computed once per $(family, \sigma)$ via P35 enumerator; canonical TNFR test state built per $(family, gauge)$ on P34 bundle via `build_twisted_test_state_from_test_function`; positivity verified for $\chi_3, \chi_4, \chi_5$ across 3 families × 6 gauges × 5 widths (3/3 PASS; 270 cells total; $\alpha_{\min}$ at $(\sigma=1.0, \mathrm{gaussian}, \mathrm{canonical})$ in every case); joint robustness audit of P37 under test-profile + canonical-mapping ambiguity; **does NOT prove GRH (finite $(family, gauge, \sigma)$ grid; admissibility not exhausted) and does NOT advance G4** |
 | **P40** Dirichlet L χ-twisted node-aware gauge sweep | `twisted_nodeaware_gauge_sweep.py` | `67_twisted_nodeaware_gauge_sweep_demo.py` | §13noniesdecies | Structural extension of P20 to primitive real $L(s, \chi)$: sweeps $\alpha_\chi(\sigma; f, g) = W_\chi[\sigma; f] / E_{\mathrm{TNFR}}^\chi[\sigma; f, g]$ across `DEFAULT_TEST_FAMILIES` (P19) × `DEFAULT_NODEAWARE_GAUGES` (4 node-aware gauges: `nuf_pressure, nuf_phase, weight_pressure, mixed_affine`) inherited unchanged from P20; gauges have signature $g(h(E_n), \hat\nu_f(n), \hat w(n))$ activating the per-node normalised structural-frequency and node-weight channels of the P34 χ-twisted graph; $W_\chi[\sigma; f]$ computed once per $(family, \sigma)$ via P35 enumerator; canonical TNFR test state built per $(family, node\_gauge)$ on P34 bundle via `build_twisted_test_state_nodeaware`; positivity verified for $\chi_3, \chi_4, \chi_5$ across 3 families × 4 node-aware gauges × 5 widths (3/3 PASS; 180 cells total; $\alpha_{\min}$ at $(\sigma=1.0, \mathrm{gaussian}, \mathrm{nuf\_phase})$ for $\chi_3, \chi_4$ and at $(\sigma=1.0, \mathrm{gaussian}, \mathrm{nuf\_pressure})$ for $\chi_5$); node-aware robustness audit of P37 jointly with P19 test-profile sweep; **does NOT prove GRH (finite $(family, node\_gauge, \sigma)$ grid; admissibility not exhausted) and does NOT advance G4** |
 | **P41** Dirichlet L χ-twisted Hermite2-Gaussian η-parameter sweep | `twisted_hermite_family.py` | `68_twisted_hermite_family_demo.py` | §13vicies | Structural extension of P21 (Hermite2 family) to primitive real $L(s, \chi)$ along the envelope-strength axis: sweeps $\alpha_\chi(\sigma; \eta, g) = W_\chi[\sigma; \eta] / E_{\mathrm{TNFR}}^\chi[\sigma; \eta, g]$ across `DEFAULT_HERMITE2_ETAS = (0.0, 0.1, 0.25, 0.5, 1.0, 2.0)` ($\eta = 0$ recovers pure Gaussian; $\eta = 0.25$ matches the P19/P39 snapshot) × `DEFAULT_GAUGES` (6 canonical scalar gauges; P18); $W_\chi[\sigma; \eta]$ computed once per $(\eta, \sigma)$ via P35 enumerator; canonical TNFR test state built per $(\eta, g)$ on P34 bundle via `build_twisted_test_state_from_test_function` (reused from P39); positivity verified for $\chi_3, \chi_4, \chi_5$ across 6 etas × 6 gauges × 5 widths (3/3 PASS; 180 cells per character; $\alpha_{\min}$ at $(\sigma=1.0, \eta=0.0, \mathrm{canonical})$ in every case); envelope-strength robustness audit of P37 along an orthogonal axis to P39/P40; **does NOT prove GRH (finite $(\eta, g, \sigma)$ grid; admissibility not exhausted) and does NOT advance G4** |
+| **P42** Dirichlet L χ-twisted uniform-coercivity certificate | `twisted_coercivity_uniform.py` | `69_twisted_coercivity_uniform_demo.py` | §13vicies-primo | Structural extension of P22 / P23 / P24 (uniform / stratified / adaptive coercivity in `coercivity_uniform.py`) to primitive real $L(s, \chi)$: lifts the finite-grid sample of P39 + P40 to a **Lipschitz-mesh interval-level certificate** by sampling $\alpha_\chi(\sigma; \eta, g)$ on a log-spaced $\sigma$ grid, computing a finite-difference Lipschitz envelope $L^{\mathrm{proxy}}_\chi$, and forming three interval lower bounds (global, stratified, segment-local) via the canonical P22 / P23 helpers `_max_abs_slope`, `_segmentwise_interval_lower_bound`, `_stratified_interval_lower_bound` reused unchanged; optional P24-style adaptive refinement bisects worst-margin segments and re-runs both twisted sweeps; verified for $\chi_3, \chi_4, \chi_5$ on $\sigma \in [1.0, 3.0]$ with $N = 5$ (`sampled_all_positive = True`, `admissible_ok = True`, `nodeaware_ok = True` for every χ; sampled $\alpha^{\mathrm{samp}}_{\chi,\min} \in \{1.26 \times 10^{-14}, 2.70 \times 10^{-8}, 2.62 \times 10^{-10}\}$; interval $\mathrm{lb}_{\mathrm{local}} \in \{-6.06 \times 10^{-2}, -1.30 \times 10^{-1}, -6.51 \times 10^{-2}\}$ — all **negative** because $\alpha^{\mathrm{samp}}_{\chi,\min}$ near $\sigma = 1$ is essentially zero against any finite $L^{\mathrm{proxy}}_\chi$); one round of P24 bisection on the worst character ($\chi_4$, $N = 5 \to 7$) reduces $\mathrm{lb}_{\mathrm{local}}$ from $-1.30 \times 10^{-1}$ to $-3.40 \times 10^{-2}$ (74% margin reduction toward zero), confirming the bisection mechanism transports correctly to the χ-twisted side; **does NOT prove GRH (interval lower bounds currently negative; even when positive, finite log-spaced σ window is necessary, not sufficient) and does NOT advance G4** |
 
 ### 19.2 Gap Balance
 

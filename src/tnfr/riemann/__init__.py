@@ -295,6 +295,17 @@ twisted_hermite_family
     Implemented for primitive real characters (chi_3, chi_4, chi_5).
     Diagnostic only; does NOT prove GRH for any L(s, chi) and does
     NOT advance G4 = RH.
+twisted_coercivity_uniform
+    P42 empirical interval-level chi-twisted uniform-coercivity
+    certificate.  Structural analogue of P22 / P23 / P24 on the
+    chi-twisted bundle: samples alpha_chi(sigma; f, g) on a dense
+    log-spaced sigma grid via P39 (scalar gauges) and P40 (node-aware
+    gauges), computes a finite-difference Lipschitz proxy, and lifts
+    pointwise positivity to three interval lower bounds (global,
+    stratified, segment-local) with optional adaptive bisection of
+    the worst segments.  Implemented for primitive real characters
+    (chi_3, chi_4, chi_5).  Diagnostic only; does NOT prove GRH for
+    any L(s, chi) and does NOT advance G4 = RH.
 oscillatory_correction
     P31 Branch B1 retry: prime-ladder oscillatory correction of the
     P28 / P30 smooth targets. Reconstructs S(T) = pi^{-1} arg zeta(1/2
@@ -808,6 +819,11 @@ from .twisted_hermite_family import (
     TwistedHermite2EtaSweepCertificate,
     sweep_twisted_hermite2_eta,
 )
+from .twisted_coercivity_uniform import (
+    # P42: chi-twisted uniform-coercivity certificate (diagnostic)
+    TwistedUniformCoercivityCertificate,
+    verify_twisted_uniform_coercivity_empirical,
+)
 from .spectral_emergence import (
     # P29: Spectral universality emergence under canonical UM+RA coupling
     CANONICAL_COUPLING_LAWS,
@@ -1194,6 +1210,9 @@ __all__ = [
     "DEFAULT_HERMITE2_ETAS",
     "TwistedHermite2EtaSweepCertificate",
     "sweep_twisted_hermite2_eta",
+    # P42: chi-twisted uniform-coercivity certificate (diagnostic)
+    "TwistedUniformCoercivityCertificate",
+    "verify_twisted_uniform_coercivity_empirical",
     # P29: Spectral universality emergence under canonical UM+RA coupling
     "CANONICAL_COUPLING_LAWS",
     "InterPrimeCoupling",
