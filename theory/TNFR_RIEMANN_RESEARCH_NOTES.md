@@ -2514,6 +2514,63 @@ Positivity holds across every $(\sigma, g)$ combination for every tested charact
 
 **Net effect**: P38 closes the admissibility/gauge-sweep gap on the L-function track for every primitive real Dirichlet character.  Combined with P32–P37, the structural TNFR-Riemann program now matches the ζ track all the way through P18.  The arithmetic obstruction remains identical and the gap balance for G4 is unchanged.
 
+## §13octiesdecies. P39 — χ-Twisted Admissible-Family + Gauge Sweep of $\alpha_\chi(\sigma; f, g)$ (Joint Test-Profile / Canonical-Mapping Robustness Diagnostic; GRH$_\chi$-Equivalent for Primitive Real χ; Does NOT Prove GRH or Advance G4)
+
+### §13octiesdecies.1 Motivation
+
+P38 (§13septiesdecies) probed the canonical-mapping ambiguity of the P37 chi-twisted positivity bridge by sweeping the six canonical structural gauges `DEFAULT_GAUGES` against a Gaussian-only test profile.  The ζ-track equivalent (P18) was subsequently extended by P19 (`admissible_family_sweep.py`), which sweeps three admissible Schwartz-even test families — `gaussian`, `gaussian_mixture`, `hermite2_gaussian` — to probe the *test-profile* ambiguity of the P17 bridge.  P39 imports the same admissible-family bundle unchanged and combines it with the P38 gauge sweep, yielding a dense $(family, gauge, \sigma)$ certificate for primitive real Dirichlet characters.
+
+### §13octiesdecies.2 Construction
+
+The chi-twisted Weil–TNFR ratio is defined cell-by-cell as
+$$\alpha_\chi(\sigma; f, g) \;=\; \frac{W_\chi[\sigma; f]}{E_{\mathrm{TNFR}}^\chi[\sigma; f, g]},$$
+where $W_\chi[\sigma; f]$ is the P35 chi-twisted zero-side enumerator evaluated on the admissible test function $f$ at width $\sigma$ (gauge-independent, computed once per $(family, \sigma)$ pair), and $E_{\mathrm{TNFR}}^\chi[\sigma; f, g]$ is the canonical TNFR Lyapunov energy of the structural test state built from $(f, g)$ on the P34 chi-twisted graph via `build_twisted_test_state_from_test_function`.  The admissible families are inherited verbatim from P19 (`DEFAULT_TEST_FAMILIES`); the gauges are inherited verbatim from P18 (`DEFAULT_GAUGES`).  No new canonical object is introduced.
+
+### §13octiesdecies.3 Empirical Verification
+
+Demo `examples/66_twisted_admissible_family_sweep_demo.py` evaluates the sweep for $\chi_3, \chi_4, \chi_5$ across 3 families × 6 gauges × 5 widths $\sigma \in \{1.0, 1.5, 2.0, 2.5, 3.0\}$ (90 cells per character, 270 cells total).  Aggregate result:
+
+| Character | Modulus | $W_\chi \ge 0$ | $\alpha_\chi > 0$ | $\alpha_{\min}$ | @(σ, family, gauge) | $\alpha_{\max}$ |
+|-----------|---------|----------------|-------------------|-----------------|---------------------|-----------------|
+| $\chi_3$  | 3 | True | True | $+1.27 \times 10^{-14}$ | $(1.000, \mathrm{gaussian}, \mathrm{canonical})$ | $+5.04 \times 10^{-1}$ |
+| $\chi_4$  | 4 | True | True | $+2.71 \times 10^{-8}$  | $(1.000, \mathrm{gaussian}, \mathrm{canonical})$ | $+2.00 \times 10^{0}$  |
+| $\chi_5$  | 5 | True | True | $+2.62 \times 10^{-10}$ | $(1.000, \mathrm{gaussian}, \mathrm{canonical})$ | $+6.94 \times 10^{-1}$ |
+
+PASS rate: **3/3 characters**.  The minimum across every character/family/gauge cell occurs at the tightest Gaussian profile, in agreement with the Gaussian zero-side tail behaviour observed in P19 / P38; admissible mixtures and Hermite–Gaussian profiles inflate $\alpha_\chi$ uniformly, as expected from the spectral weight redistribution introduced by their extra mass at moderate frequencies.
+
+### §13octiesdecies.4 What P39 Extends
+
+P39 extends the P38 robustness audit jointly along the admissible-test-family axis (P19) and the canonical-gauge axis (P18), giving the L-track exact structural parity with the ζ-track at the level of P18 + P19 combined diagnostics.  The chi-twisted positivity bridge is shown to be robust under the *joint* perturbation of test profile and structural mapping for every tested primitive real character.
+
+### §13octiesdecies.5 What P39 Does NOT Advance
+
+P39 is a strict diagnostic and inherits every limitation of P19 / P38.  It does **not** prove GRH for any $L(s, \chi)$ (the $(family, gauge, \sigma)$ grid is finite; positivity on a finite grid is necessary but not sufficient for $L$-function admissibility on the full Schwartz cone).  It does **not** advance G4 = RH (the arithmetic obstruction is identical to the untwisted case).  It does **not** address GRH for complex Dirichlet characters (only primitive real $\chi_3, \chi_4, \chi_5$ are implemented).  Negative cells, if encountered at scale, would falsify the bridge *as parameterised by the given test family and gauge*; they would not falsify GRH$_\chi$ itself, which depends only on the gauge-independent quantities $W_\chi[\sigma; f]$.
+
+### §13octiesdecies.6 Cross-References
+
+* P19 (ζ-track admissible-family sweep): `src/tnfr/riemann/admissible_family_sweep.py`, §15 of these notes.
+* P18 (canonical gauge family): `src/tnfr/riemann/alpha_sweep.py`, §14.
+* P34 (chi-twisted prime-ladder Hamiltonian): `src/tnfr/riemann/twisted_prime_ladder_hamiltonian.py`, §13quaterdecies.
+* P35 (chi-twisted Weil–Guinand zero-side enumerator): `src/tnfr/riemann/twisted_weil_explicit_formula.py`, §13quindecies.
+* P37 (chi-twisted Weil–TNFR positivity bridge): `src/tnfr/riemann/twisted_weil_tnfr_bridge.py`, §13septdecies.
+* P38 (chi-twisted gauge sweep): `src/tnfr/riemann/twisted_alpha_sweep.py`, §13septiesdecies.
+* P17 (canonical Weil–TNFR positivity bridge): `src/tnfr/riemann/weil_positivity.py`, §14.
+* Implementation: `src/tnfr/riemann/twisted_admissible_family_sweep.py`.
+* Demo: `examples/66_twisted_admissible_family_sweep_demo.py`.
+
+### §13octiesdecies.7 Gap Balance
+
+| Scope | Status before P39 | Status after P39 |
+|-------|-------------------|------------------|
+| P19 admissible-family sweep for ζ | Available (P19) | Available, unchanged |
+| P38 gauge sweep for $L(s,\chi)$ | Available (P38) | Available, unchanged |
+| **Admissible-family + gauge sweep for $L(s,\chi)$, primitive real χ** | Open (future P39) | **Available** (TNFR-native robustness audit across 3 admissible families × 6 canonical gauges × σ grid) |
+| GRH for $L(s,\chi)$, primitive real χ | OPEN | OPEN (diagnostic only; finite $(family, gauge, \sigma)$ grid is necessary, not sufficient) |
+| G4 = RH | OPEN | OPEN, unchanged |
+| GRH (G4$_\chi$ for complex $\chi$) | OPEN | OPEN, unchanged |
+
+**Net effect**: P39 closes the admissible-family + gauge robustness gap on the L-function track for every primitive real Dirichlet character, achieving structural parity with the ζ-track through P19.  The arithmetic obstruction remains identical and the gap balance for G4 is unchanged.
+
 ## 14. Weil–TNFR Positivity Bridge (P17)
 
 ### 14.1 Motivation
@@ -3075,6 +3132,7 @@ piecewise status notes.
 | **P36** Dirichlet L χ-twisted Li–Keiper criterion | `twisted_li_keiper.py` | `63_dirichlet_li_keiper_demo.py` | §13quinquiesdecies | Structural extension of P16 to primitive real $L(s, \chi)$: $\lambda_n(\chi)$ computed from P35 Hardy-Z zeros via the canonical P16 mpmath routine (sum-over-zeros is L-function agnostic); GRH$_\chi$-equivalent diagnostic (Lagarias 2007 generalisation of Bombieri–Lagarias 1999); positivity verified for $\chi_3, \chi_4, \chi_5$ up through $n_{\max} = 50$ (min $\lambda_n \ge 4.7 \times 10^{-2}$); **does NOT prove GRH (finite truncation; necessary, not sufficient) and does NOT advance G4** |
 | **P37** Dirichlet L χ-twisted Weil–TNFR bridge | `twisted_weil_positivity.py` | `64_twisted_weil_positivity_demo.py` | §13sexiesdecies | Structural extension of P17 to primitive real $L(s, \chi)$: $W_\chi[\sigma] = 2\sum_{\gamma > 0} h_\sigma(\gamma)$ computed two ways — zero side from P35 Hardy-Z enumerator, explicit-formula side from P34 χ-twisted prime-ladder Hamiltonian — plus the canonical TNFR Lyapunov bridge ratio $\alpha_\chi(\sigma) = W_\chi[\sigma] / E_{\mathrm{TNFR}}^\chi[\sigma]$ using `compute_energy_functional` unchanged from P17; GRH$_\chi$-equivalent diagnostic (Bombieri 2000 generalisation of Weil 1952); positivity verified for $\chi_3, \chi_4, \chi_5$ on Gaussian grid $\sigma \in \{1.0, \ldots, 3.0\}$ (3/3 PASS; XF residual $\le 2.4 \times 10^{-16}$ for $\sigma \ge 2.0$); **does NOT prove GRH (finite Gaussian grid; admissibility not exhausted) and does NOT advance G4** |
 | **P38** Dirichlet L χ-twisted admissibility / gauge sweep | `twisted_alpha_sweep.py` | `65_twisted_alpha_sweep_demo.py` | §13septiesdecies | Structural extension of P18 to primitive real $L(s, \chi)$: sweeps $\alpha_\chi(\sigma; g) = W_\chi[\sigma] / E_{\mathrm{TNFR}}^\chi[\sigma; g]$ across the canonical six-gauge family `DEFAULT_GAUGES` inherited unchanged from P18 (`canonical, dnfr_only, phase_only, epi_only, dnfr_phase, pressure_amplified`); $W_\chi$ computed once per $\sigma$ (gauge-independent) via P35 enumerator; canonical TNFR test state built per gauge on P34 bundle; positivity verified for $\chi_3, \chi_4, \chi_5$ across $\sigma \in \{1.0, \ldots, 3.0\} \times$ 6 gauges (3/3 PASS; $\alpha_{\min}$ at $(\sigma=1.0, \text{canonical})$ in every case); robustness audit of P37 under canonical-mapping ambiguity; **does NOT prove GRH (finite $(\sigma, g)$ grid; admissibility not exhausted) and does NOT advance G4** |
+| **P39** Dirichlet L χ-twisted admissible-family + gauge sweep | `twisted_admissible_family_sweep.py` | `66_twisted_admissible_family_sweep_demo.py` | §13octiesdecies | Joint structural extension of P19 + P18 to primitive real $L(s, \chi)$: sweeps $\alpha_\chi(\sigma; f, g) = W_\chi[\sigma; f] / E_{\mathrm{TNFR}}^\chi[\sigma; f, g]$ across `DEFAULT_TEST_FAMILIES` (gaussian, gaussian_mixture, hermite2_gaussian) inherited unchanged from P19 × `DEFAULT_GAUGES` (6 canonical gauges) inherited unchanged from P18; $W_\chi[\sigma; f]$ computed once per $(family, \sigma)$ via P35 enumerator; canonical TNFR test state built per $(family, gauge)$ on P34 bundle via `build_twisted_test_state_from_test_function`; positivity verified for $\chi_3, \chi_4, \chi_5$ across 3 families × 6 gauges × 5 widths (3/3 PASS; 270 cells total; $\alpha_{\min}$ at $(\sigma=1.0, \mathrm{gaussian}, \mathrm{canonical})$ in every case); joint robustness audit of P37 under test-profile + canonical-mapping ambiguity; **does NOT prove GRH (finite $(family, gauge, \sigma)$ grid; admissibility not exhausted) and does NOT advance G4** |
 
 ### 19.2 Gap Balance
 

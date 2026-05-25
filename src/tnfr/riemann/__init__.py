@@ -250,6 +250,21 @@ twisted_alpha_sweep
     Implemented for primitive real characters (chi_3, chi_4, chi_5).
     Diagnostic only; does NOT prove GRH for any L(s, chi) and does
     NOT advance G4 = RH.
+twisted_admissible_family_sweep
+    P39 chi-twisted admissible-family + gauge sweep of
+        alpha_chi(sigma; f, g) = W_chi[sigma; f] / E_TNFR_chi[sigma; f, g]
+    across the three admissible Schwartz-even families inherited
+    from the zeta-track P19 (gaussian, gaussian_mixture,
+    hermite2_gaussian) crossed with the six canonical structural
+    gauges DEFAULT_GAUGES from P18. Structural analogue of P19 for
+    primitive real Dirichlet L-functions: probes robustness of the
+    P37 chi-twisted positivity bridge jointly under (i)
+    canonical-mapping ambiguity (gauge sweep, P38) and (ii)
+    test-profile ambiguity (admissible-family sweep, P19),
+    producing a dense (family, gauge, sigma) certificate.
+    Implemented for primitive real characters (chi_3, chi_4, chi_5).
+    Diagnostic only; does NOT prove GRH for any L(s, chi) and does
+    NOT advance G4 = RH.
 oscillatory_correction
     P31 Branch B1 retry: prime-ladder oscillatory correction of the
     P28 / P30 smooth targets. Reconstructs S(T) = pi^{-1} arg zeta(1/2
@@ -745,6 +760,12 @@ from .twisted_alpha_sweep import (
     build_twisted_test_state_with_gauge,
     sweep_twisted_alpha,
 )
+from .twisted_admissible_family_sweep import (
+    # P39: chi-twisted admissible-family + gauge sweep (diagnostic)
+    TwistedAdmissibleFamilySweepCertificate,
+    build_twisted_test_state_from_test_function,
+    sweep_twisted_admissible_family,
+)
 from .spectral_emergence import (
     # P29: Spectral universality emergence under canonical UM+RA coupling
     CANONICAL_COUPLING_LAWS,
@@ -1119,6 +1140,10 @@ __all__ = [
     "TwistedAlphaSweepCertificate",
     "build_twisted_test_state_with_gauge",
     "sweep_twisted_alpha",
+    # P39: chi-twisted admissible-family + gauge sweep (diagnostic)
+    "TwistedAdmissibleFamilySweepCertificate",
+    "build_twisted_test_state_from_test_function",
+    "sweep_twisted_admissible_family",
     # P29: Spectral universality emergence under canonical UM+RA coupling
     "CANONICAL_COUPLING_LAWS",
     "InterPrimeCoupling",
