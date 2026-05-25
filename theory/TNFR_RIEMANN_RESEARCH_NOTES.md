@@ -2862,6 +2862,100 @@ P43 is a **consistency diagnostic at coupling zero and a deformation magnitude a
 
 **Net effect**: P43 closes the **Paley-gap diagnostic-construction gap** on the L-function track for every primitive real Dirichlet character (canonical pieces transport without modification; the decoupled identity holds to machine precision, the coupled deformation signal is twelve orders of magnitude above noise). The arithmetic obstruction and the gap balance for G4 are unchanged.
 
+## §13vicies-tertio. P44 — χ-Twisted Lyapunov-Spectral Positivity Certificate (L-Track Analogue of P26; Operator-Level; Does NOT Prove GRH or Advance G4)
+
+### §13vicies-tertio.1 Motivation
+
+P26 (`lyapunov_spectral_positivity.py`, §13quater) supplies a four-ingredient certificate for the ζ-track P14 prime-ladder Hamiltonian — self-adjointness, strict positivity with explicit Kato–Rellich envelope, trace-class resolvent, and unitary flow on the finite-dimensional prime-ladder Hilbert space. The L-track development (P32–P34) instantiates the same canonical TNFR `InternalHamiltonian` machinery on the χ-twisted prime-ladder graph: `TwistedPrimeLadderHamiltonian.hamiltonian` exposes the very same `H_int`, `H_freq`, `H_coupling` triplet that P26 consumes. P44 transports the P26 certificate to the χ-twisted bundle for every primitive real Dirichlet character, exhibiting the analogous operator-level positivity surface on the L-track.
+
+### §13vicies-tertio.2 Construction
+
+Let $\hat H^{(\chi)} = \hat H^{(\chi)}_{\mathrm{freq}} + J_0\,\hat H^{(\chi)}_{\mathrm{coupling}}$ on the χ-twisted prime-ladder Hilbert space
+
+$$
+\mathcal{H}_{\mathrm{PL},\chi}
+  \;=\; \bigoplus_{p \in \mathcal{P},\; p \nmid q}\;
+        \bigoplus_{k=1}^{K}\, \mathbb{C}\,|p,k\rangle,
+$$
+
+where $q$ is the conductor of $\chi$ and the primes dividing $q$ are excluded by construction (because $\chi(p^k) = 0$ for those primes; this is the P32 active-prime restriction propagated into P34). The diagonal frequency operator has entries $\nu_{f,(p,k)} = k\log p$ for $p \nmid q$, $k \ge 1$, so the unperturbed gap is
+
+$$
+\Delta_0^{(\chi)} \;=\; \min_{p \nmid q,\;k \ge 1}\, k\log p
+  \;=\; \log\!\bigl(\min\{p \text{ prime} : p \nmid q\}\bigr).
+$$
+
+For the three primitive real characters this evaluates to:
+
+| Character | Conductor $q$ | Smallest active prime | Unperturbed gap $\Delta_0^{(\chi)}$ |
+|---|---|---|---|
+| $\chi_3$ | $3$ | $2$ | $\log 2 \approx 0.6931$ |
+| $\chi_4$ | $4$ | $3$ | $\log 3 \approx 1.0986$ |
+| $\chi_5$ | $5$ | $2$ | $\log 2 \approx 0.6931$ |
+
+The **Kato–Rellich (Weyl)** perturbation theorem applied to bounded symmetric perturbations of a self-adjoint diagonal operator yields the quantitative lower bound
+
+$$
+\lambda_{\min}\!\bigl(\hat H^{(\chi)}\bigr)
+  \;\ge\; \Delta_0^{(\chi)}
+        \;-\; |J_0|\,\bigl\|\hat H^{(\chi)}_{\mathrm{coupling}}\bigr\|_{\mathrm{op}},
+$$
+
+with `perturbation_safe = True` iff the right-hand side is strictly positive. The remaining three ingredients (resolvent Schatten-1/Hilbert-Schmidt norms at shift $c$, unitary norm/energy drifts of $U(t) = e^{-it\hat H^{(\chi)}}$, structural positivity composite) replicate P26 atomically and reuse `resolvent_schatten_norms` and `_matrix_exponential_skew` from `lyapunov_spectral_positivity.py` unchanged.
+
+### §13vicies-tertio.3 Empirical Verification
+
+P44 was run on the canonical config $(n_{\mathrm{primes}}, k_{\max}, c) = (18, 5, 1.0)$ for $\chi_3, \chi_4, \chi_5$ at $J_0 \in \{0, 10^{-2}\}$ (`examples/71_twisted_lyapunov_spectral_demo.py`):
+
+| Character | $J_0$ | $\min(\lambda)$ | $\Delta_0^{(\chi)}$ | $\|\hat V\|$ | Guaranteed gap | `perturbation_safe` | Max norm drift | `unitary` | `structural_positivity` |
+|---|---|---|---|---|---|---|---|---|---|
+| $\chi_3$ | $0$ | $6.931\times 10^{-1}$ | $\log 2$ | $0$ | $\log 2$ | True | $2.22\times 10^{-16}$ | True | True |
+| $\chi_3$ | $10^{-2}$ | $6.930\times 10^{-1}$ | $\log 2$ | $1.73\times 10^{-2}$ | $6.758\times 10^{-1}$ | True | $\sim 10^{-16}$ | True | True |
+| $\chi_4$ | $0$ | $1.099\times 10^{0}$ | $\log 3$ | $0$ | $\log 3$ | True | $2.22\times 10^{-16}$ | True | True |
+| $\chi_4$ | $10^{-2}$ | $1.099\times 10^{0}$ | $\log 3$ | $1.73\times 10^{-2}$ | $1.081\times 10^{0}$ | True | $\sim 10^{-16}$ | True | True |
+| $\chi_5$ | $0$ | $6.931\times 10^{-1}$ | $\log 2$ | $0$ | $\log 2$ | True | $2.22\times 10^{-16}$ | True | True |
+| $\chi_5$ | $10^{-2}$ | $6.930\times 10^{-1}$ | $\log 2$ | $1.73\times 10^{-2}$ | $6.758\times 10^{-1}$ | True | $\sim 10^{-16}$ | True | True |
+
+At $J_0 = 0$ the empirical spectral bottom equals the analytic Kato–Rellich envelope to machine precision; the unperturbed gap matches $\log(\min\{p \nmid q\})$ exactly (asserted in the demo). At $J_0 = 10^{-2}$ the empirical bottom drops by $\sim 1.4\times 10^{-4}$ while the Kato–Rellich envelope drops by the full $\|V\| \approx 1.73\times 10^{-2}$, confirming the envelope is a strict (and loose) lower bound. Unitary flow conservation is verified to machine precision for every character at every tested coupling.
+
+### §13vicies-tertio.4 What P44 Extends
+
+| Component | P26 (ζ-track) | P34 | **P44** |
+|---|---|---|---|
+| Self-adjoint prime-ladder Hamiltonian | $\hat H$ on $\mathcal{H}_{\mathrm{PL}}$ | $\hat H^{(\chi)}$ on $\mathcal{H}_{\mathrm{PL},\chi}$ | reused unchanged |
+| Spectral compute primitive | `compute_spectrum` | — | `twisted_compute_spectrum` |
+| Kato–Rellich envelope | `kato_rellich_lower_bound` (gap $= \log 2$) | — | `twisted_kato_rellich_lower_bound` (gap $= \log(\min\{p\nmid q\})$, character-dependent) |
+| Schatten-norm primitive | `resolvent_schatten_norms` | — | reused unchanged |
+| Unitary-flow verification | `verify_unitary_flow` | — | `twisted_verify_unitary_flow` |
+| Composite certificate | `LyapunovSpectralCertificate` | — | `TwistedLyapunovSpectralCertificate` (adds `character_name`, `character_modulus`) |
+
+P44 transports the canonical ζ-track Lyapunov-spectral positivity certificate (P26) to the L-function track for every primitive real Dirichlet character, exhibiting the identical four-ingredient structure with the character-dependent unperturbed gap $\log(\min\{p \nmid q\})$.
+
+### §13vicies-tertio.5 What P44 Does NOT Advance
+
+P44 is an **operator-level positivity certificate on the finite-dimensional χ-twisted prime-ladder Hilbert space at fixed $(n_{\mathrm{primes}}, k_{\max})$**. Structural positivity at machine precision is **necessary but not sufficient** for any RH-equivalent positivity claim and **not connected** to GRH localisation. Passing to the analytic continuation introduces a non-finite-dimensional limit whose spectrum (in particular the localisation of resonance poles of $L(s,\chi)$ on $\operatorname{Re}(s) = 1/2$) is not addressed here. The χ-twisted weight operator $\hat W^{(\chi)}$ is **not** involved in the certificate: positivity of $\hat H^{(\chi)}_{\mathrm{int}}$ is independent of the character (the character enters only the spectral trace $Z_{\mathrm{TNFR}}(s,\chi)$ and the active-prime restriction in the ladder graph). P44 does NOT prove GRH for any $L(s,\chi)$, does NOT extend to complex characters (the construction is character-agnostic at the Hamiltonian level, but the canonical L-track currently exposes only the three primitive real characters), and does NOT advance the gap balance for G4 = RH.
+
+### §13vicies-tertio.6 Cross-References
+
+- Implementation: `src/tnfr/riemann/twisted_lyapunov_spectral_positivity.py` (module), `src/tnfr/riemann/__init__.py` (canonical exports).
+- Demonstration: `examples/71_twisted_lyapunov_spectral_demo.py`.
+- ζ-track parent: P26 (`lyapunov_spectral_positivity.py`, §13quater) — atomic primitives `_matrix_exponential_skew` and `resolvent_schatten_norms` reused unchanged.
+- L-track parents: P32 (`TwistedPrimeLadderSpectrum` providing the active-prime catalogue), P34 (`TwistedPrimeLadderHamiltonian` providing `H_int`, `H_freq`, `H_coupling`).
+- Compendium: §19.1 P44 row.
+
+### §13vicies-tertio.7 Gap Balance
+
+| Scope | Status before P44 | Status after P44 |
+|-------|-------------------|------------------|
+| P26 ζ-track Lyapunov-spectral positivity certificate | Available (P26) | Available, unchanged |
+| Operator-level positivity certificate for $\hat H^{(\chi)}$ on $\mathcal{H}_{\mathrm{PL},\chi}$ | Implicit in P34 (diagonal $\nu_f > 0$ over active primes; never separated from coupling-perturbed bound) | **Explicit and quantified** (Kato–Rellich envelope $\Delta_0^{(\chi)} = \log(\min\{p\nmid q\})$ certified to machine precision at $J_0 = 0$; `structural_positivity = True` over $J_0 \in \{0, 10^{-2}\}$ for $\chi_3, \chi_4, \chi_5$) |
+| Trace-class resolvent + unitary-flow conservation for $U(t) = e^{-it\hat H^{(\chi)}}$ | Open at the L-track | **Available** (Schatten-1/2 norms reported; unitary drifts $\sim 10^{-16}$) |
+| GRH for $L(s,\chi)$, primitive real χ | OPEN | OPEN (operator-level positivity is necessary but not sufficient) |
+| G4 = RH | OPEN | OPEN, unchanged |
+| GRH (G4$_\chi$ for complex $\chi$) | OPEN | OPEN, unchanged |
+
+**Net effect**: P44 closes the **operator-level Lyapunov-spectral positivity-certificate gap** on the L-function track for every primitive real Dirichlet character. The character-dependent unperturbed gap $\log(\min\{p \nmid q\})$ is exhibited explicitly and certified to machine precision; the Kato–Rellich envelope provides a rigorous quantitative interval for the perturbed regime. The arithmetic obstruction and the gap balance for G4 are unchanged.
+
 ## 14. Weil–TNFR Positivity Bridge (P17)
 
 ### 14.1 Motivation
@@ -3428,6 +3522,7 @@ piecewise status notes.
 | **P41** Dirichlet L χ-twisted Hermite2-Gaussian η-parameter sweep | `twisted_hermite_family.py` | `68_twisted_hermite_family_demo.py` | §13vicies | Structural extension of P21 (Hermite2 family) to primitive real $L(s, \chi)$ along the envelope-strength axis: sweeps $\alpha_\chi(\sigma; \eta, g) = W_\chi[\sigma; \eta] / E_{\mathrm{TNFR}}^\chi[\sigma; \eta, g]$ across `DEFAULT_HERMITE2_ETAS = (0.0, 0.1, 0.25, 0.5, 1.0, 2.0)` ($\eta = 0$ recovers pure Gaussian; $\eta = 0.25$ matches the P19/P39 snapshot) × `DEFAULT_GAUGES` (6 canonical scalar gauges; P18); $W_\chi[\sigma; \eta]$ computed once per $(\eta, \sigma)$ via P35 enumerator; canonical TNFR test state built per $(\eta, g)$ on P34 bundle via `build_twisted_test_state_from_test_function` (reused from P39); positivity verified for $\chi_3, \chi_4, \chi_5$ across 6 etas × 6 gauges × 5 widths (3/3 PASS; 180 cells per character; $\alpha_{\min}$ at $(\sigma=1.0, \eta=0.0, \mathrm{canonical})$ in every case); envelope-strength robustness audit of P37 along an orthogonal axis to P39/P40; **does NOT prove GRH (finite $(\eta, g, \sigma)$ grid; admissibility not exhausted) and does NOT advance G4** |
 | **P42** Dirichlet L χ-twisted uniform-coercivity certificate | `twisted_coercivity_uniform.py` | `69_twisted_coercivity_uniform_demo.py` | §13vicies-primo | Structural extension of P22 / P23 / P24 (uniform / stratified / adaptive coercivity in `coercivity_uniform.py`) to primitive real $L(s, \chi)$: lifts the finite-grid sample of P39 + P40 to a **Lipschitz-mesh interval-level certificate** by sampling $\alpha_\chi(\sigma; \eta, g)$ on a log-spaced $\sigma$ grid, computing a finite-difference Lipschitz envelope $L^{\mathrm{proxy}}_\chi$, and forming three interval lower bounds (global, stratified, segment-local) via the canonical P22 / P23 helpers `_max_abs_slope`, `_segmentwise_interval_lower_bound`, `_stratified_interval_lower_bound` reused unchanged; optional P24-style adaptive refinement bisects worst-margin segments and re-runs both twisted sweeps; verified for $\chi_3, \chi_4, \chi_5$ on $\sigma \in [1.0, 3.0]$ with $N = 5$ (`sampled_all_positive = True`, `admissible_ok = True`, `nodeaware_ok = True` for every χ; sampled $\alpha^{\mathrm{samp}}_{\chi,\min} \in \{1.26 \times 10^{-14}, 2.70 \times 10^{-8}, 2.62 \times 10^{-10}\}$; interval $\mathrm{lb}_{\mathrm{local}} \in \{-6.06 \times 10^{-2}, -1.30 \times 10^{-1}, -6.51 \times 10^{-2}\}$ — all **negative** because $\alpha^{\mathrm{samp}}_{\chi,\min}$ near $\sigma = 1$ is essentially zero against any finite $L^{\mathrm{proxy}}_\chi$); one round of P24 bisection on the worst character ($\chi_4$, $N = 5 \to 7$) reduces $\mathrm{lb}_{\mathrm{local}}$ from $-1.30 \times 10^{-1}$ to $-3.40 \times 10^{-2}$ (74% margin reduction toward zero), confirming the bisection mechanism transports correctly to the χ-twisted side; **does NOT prove GRH (interval lower bounds currently negative; even when positive, finite log-spaced σ window is necessary, not sufficient) and does NOT advance G4** |
 | **P43** Dirichlet L χ-twisted Paley-gap consistency diagnostic | `twisted_paley_gap_coercivity.py` | `70_twisted_paley_gap_coercivity_demo.py` | §13vicies-secundo | Structural extension of P25 (`paley_gap_coercivity.py`) to primitive real $L(s, \chi)$: compares three representations of $-L'(s,\chi)/L(s,\chi)$ — the P32 closed-form weighted spectrum $Z_{P32}$ (`tnfr_log_l_derivative`), the P34 χ-twisted weighted spectral trace $Z_{P34}$ (`twisted_weighted_spectral_trace`), and the classical truncated Dirichlet series $Z_{\mathrm{cls}} = \sum_{n \le N} \chi(n)\Lambda(n)/n^\sigma$ (`classical_log_l_derivative`) — via three absolute χ-twisted Paley-gap quantities $g_{P32}(\sigma) = |Z_{P32} - Z_{\mathrm{cls}}|$, $g_{P34}(\sigma) = |Z_{P34} - Z_{\mathrm{cls}}|$, $g_{\mathrm{cross}}(\sigma) = |Z_{P34} - Z_{P32}|$; verified on $(n_{\mathrm{primes}}, k_{\max}, N_{\max}^{\mathrm{cls}}) = (18, 5, 50\,000)$, $\sigma \in [1.5, 4.0]$ with $N = 11$ for $\chi_3, \chi_4, \chi_5$: at $J_0 = 0$ the decoupled cross gap collapses to machine precision ($\max g_{\mathrm{cross}} \in \{5.55 \times 10^{-17}, 4.16 \times 10^{-17}, 1.11 \times 10^{-16}\}$ — Paley-style algebraic identity between P32 and P34 on the L-track, regression test); at $J_0 = 10^{-2}$ the coupling-induced cross gap jumps to $O(10^{-5})$ (twelve orders of magnitude above noise; clean structural-deformation signal free of classical-truncation noise which contaminates $g_{P32}$ at $10^{-3}$ to $10^{-2}$); **does NOT prove GRH (regression test plus deformation magnitude; not a coercivity certificate) and does NOT advance G4** |
+| **P44** Dirichlet L χ-twisted Lyapunov-spectral positivity certificate | `twisted_lyapunov_spectral_positivity.py` | `71_twisted_lyapunov_spectral_demo.py` | §13vicies-tertio | Structural extension of P26 (`lyapunov_spectral_positivity.py`) to primitive real $L(s, \chi)$: certifies self-adjointness, strict positivity with explicit Kato–Rellich envelope $\lambda_{\min}(\hat H^{(\chi)}) \ge \Delta_0^{(\chi)} - \lvert J_0 \rvert \lVert \hat H^{(\chi)}_{\mathrm{coupling}} \rVert_{\mathrm{op}}$ where $\Delta_0^{(\chi)} = \log(\min\{p \text{ prime} : p \nmid q\})$ (character-dependent: $\log 2$ for $\chi_3, \chi_5$; $\log 3$ for $\chi_4$), trace-class resolvent (Schatten-1/2 norms), and unitary flow conservation of $U(t) = e^{-it \hat H^{(\chi)}}$ on the finite-dimensional χ-twisted prime-ladder Hilbert space (P34 bundle); reuses `_matrix_exponential_skew` and `resolvent_schatten_norms` atomically from P26; verified on $(n_{\mathrm{primes}}, k_{\max}) = (18, 5)$ for $\chi_3, \chi_4, \chi_5$ at $J_0 \in \{0, 10^{-2}\}$: at $J_0 = 0$ empirical $\min(\lambda)$ matches $\Delta_0^{(\chi)}$ to machine precision (asserted in demo); at $J_0 = 10^{-2}$ `perturbation_safe = True` for every character with guaranteed gap $\in \{6.76 \times 10^{-1}, 1.08, 6.76 \times 10^{-1}\}$; unitary drifts $\sim 2 \times 10^{-16}$ throughout; `structural_positivity = True` for all 6 cells; **does NOT prove GRH (finite-dimensional positivity is necessary but not sufficient; the character enters only via the active-prime restriction, not via $W^{(\chi)}$) and does NOT advance G4** |
 
 ### 19.2 Gap Balance
 

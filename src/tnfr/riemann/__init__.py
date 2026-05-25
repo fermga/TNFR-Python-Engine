@@ -319,6 +319,17 @@ twisted_paley_gap_coercivity
     for primitive real characters (chi_3, chi_4, chi_5).  Diagnostic
     only; does NOT prove GRH for any L(s, chi) and does NOT advance
     G4 = RH.
+twisted_lyapunov_spectral_positivity
+    P44 chi-twisted Lyapunov-spectral positivity certificate.
+    L-track analogue of P26 on the chi-twisted prime-ladder
+    Hamiltonian (P34): four-ingredient certificate (self-adjointness,
+    strict positivity with explicit Kato-Rellich envelope, trace-class
+    resolvent, unitary flow) on the finite-dimensional chi-twisted
+    prime-ladder Hilbert space.  The unperturbed gap is
+    log(min prime not dividing q): log 2 for chi_3/chi_5, log 3 for
+    chi_4.  Implemented for primitive real characters (chi_3, chi_4,
+    chi_5).  Diagnostic only; does NOT prove GRH for any L(s, chi)
+    and does NOT advance G4 = RH.
 oscillatory_correction
     P31 Branch B1 retry: prime-ladder oscillatory correction of the
     P28 / P30 smooth targets. Reconstructs S(T) = pi^{-1} arg zeta(1/2
@@ -845,6 +856,14 @@ from .twisted_paley_gap_coercivity import (
     twisted_paley_gap_p32,
     twisted_paley_gap_p34,
 )
+from .twisted_lyapunov_spectral_positivity import (
+    # P44: chi-twisted Lyapunov-spectral positivity certificate
+    TwistedLyapunovSpectralCertificate,
+    compute_twisted_lyapunov_spectral_certificate,
+    twisted_compute_spectrum,
+    twisted_kato_rellich_lower_bound,
+    twisted_verify_unitary_flow,
+)
 from .spectral_emergence import (
     # P29: Spectral universality emergence under canonical UM+RA coupling
     CANONICAL_COUPLING_LAWS,
@@ -1240,6 +1259,12 @@ __all__ = [
     "twisted_paley_gap_cross",
     "twisted_paley_gap_p32",
     "twisted_paley_gap_p34",
+    # P44: chi-twisted Lyapunov-spectral positivity certificate
+    "TwistedLyapunovSpectralCertificate",
+    "compute_twisted_lyapunov_spectral_certificate",
+    "twisted_compute_spectrum",
+    "twisted_kato_rellich_lower_bound",
+    "twisted_verify_unitary_flow",
     # P29: Spectral universality emergence under canonical UM+RA coupling
     "CANONICAL_COUPLING_LAWS",
     "InterPrimeCoupling",
