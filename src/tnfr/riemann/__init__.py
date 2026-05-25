@@ -352,6 +352,17 @@ twisted_structural_zero_density
     Implemented for primitive real characters (chi_3, chi_4, chi_5).
     Diagnostic only; does NOT prove GRH for any L(s, chi) and does NOT
     advance G4 = RH.
+twisted_spectral_emergence
+    P47 chi-twisted spectral emergence under canonical coupling.
+    L-track analogue of P29: sweeps three canonical TNFR inter-prime
+    coupling laws (kuramoto_u3, phi_multiscale, pnt_logarithmic) on
+    the P34 chi-twisted prime-ladder Hamiltonian with explicit
+    chi(p)chi(q) twist factors, then measures Kolmogorov-Smirnov
+    distance of the unfolded nearest-neighbour spacing distribution
+    to the GUE Wigner surmise (conjectural universality class of the
+    non-trivial zeros of L(s, chi)).  Diagnostic only; KS_GUE -> 0
+    would constitute structural-compatibility evidence; does NOT
+    prove GRH for any L(s, chi) and does NOT close gap G4 = RH.
 oscillatory_correction
     P31 Branch B1 retry: prime-ladder oscillatory correction of the
     P28 / P30 smooth targets. Reconstructs S(T) = pi^{-1} arg zeta(1/2
@@ -904,6 +915,16 @@ from .twisted_structural_zero_density import (
     twisted_smooth_zero_density,
     twisted_theta,
 )
+from .twisted_spectral_emergence import (
+    # P47: chi-twisted spectral emergence under canonical coupling
+    TWISTED_CANONICAL_COUPLING_LAWS,
+    TwistedInterPrimeCoupling,
+    TwistedSpectralEmergenceReport,
+    build_twisted_inter_prime_coupling,
+    couple_twisted_prime_ladder_hamiltonian,
+    twisted_sweep_coupling_strength,
+    compute_twisted_spectral_emergence_report,
+)
 from .spectral_emergence import (
     # P29: Spectral universality emergence under canonical UM+RA coupling
     CANONICAL_COUPLING_LAWS,
@@ -1319,6 +1340,14 @@ __all__ = [
     "twisted_smooth_zero_count",
     "twisted_smooth_zero_density",
     "twisted_theta",
+    # P47: chi-twisted spectral emergence under canonical coupling
+    "TWISTED_CANONICAL_COUPLING_LAWS",
+    "TwistedInterPrimeCoupling",
+    "TwistedSpectralEmergenceReport",
+    "build_twisted_inter_prime_coupling",
+    "couple_twisted_prime_ladder_hamiltonian",
+    "twisted_sweep_coupling_strength",
+    "compute_twisted_spectral_emergence_report",
     # P29: Spectral universality emergence under canonical UM+RA coupling
     "CANONICAL_COUPLING_LAWS",
     "InterPrimeCoupling",

@@ -3096,6 +3096,75 @@ The structural T-HP reduces the operator-level Wasserstein-1 gap to $T_{\mathrm{
 
 **Net effect**: P46 closes the **smooth half of the L-track structural zero density gap** for every primitive real Dirichlet character. The structural operator $\tilde{T}_{\mathrm{HP}}^{(\chi)}$ is derived from $\theta_\chi$ alone (no `find_dirichlet_l_zeros` call on the derivation side), produces a $\sim 20\times$ reduction in operator-level Wasserstein-1 distance to $T_{\mathrm{HP}}^{(\chi)}$ relative to the prime-side P34 baseline, and satisfies the per-character bound $\max |r_n^{(\chi)}| \le 2 \cdot \max(\log \gamma_n^{(\chi)} / \bar{N}_\chi'(\gamma_n^{(\chi)}))$. The oscillatory residual gap and the gap balance for G4 are unchanged.
 
+## §13vicies-sexto. P47 — χ-Twisted Spectral Emergence Under Canonical Coupling (L-Track Analogue of P29; Does NOT Prove GRH or Advance G4)
+
+### §13vicies-sexto.1 Motivation
+
+P29 (`spectral_emergence.py`, §13quater on ζ) sweeps three canonical TNFR inter-prime coupling laws on the P14 prime-ladder Hamiltonian and measures the Kolmogorov–Smirnov distance of the unfolded nearest-neighbour spacing distribution to the GUE Wigner surmise — the universality class conjecturally controlling the non-trivial zeros of $\zeta$ (Montgomery–Odlyzko). P47 is the **L-track analogue** on every primitive real Dirichlet character $\chi \in \{\chi_3, \chi_4, \chi_5\}$ via the P34 χ-twisted prime-ladder Hamiltonian. Conjectural GUE-universality of the non-trivial zeros of $L(s,\chi)$ is the predicted target; P47 quantifies how close the χ-twisted spectrum approaches it under each of the three canonical coupling laws.
+
+### §13vicies-sexto.2 Construction
+
+Let $H^{(\chi)}_0$ denote the unperturbed P34 χ-twisted prime-ladder Hamiltonian ($\operatorname{diag}\{k \log p : p \nmid q,\ 1 \le k \le K\}$ with $\chi(p) \in \{\pm 1\}$ encoded in the weight operator). Define the χ-twisted inter-prime coupling matrix by
+
+$$
+J^{(\chi)}_{(p,k),(q,m)} \;=\; \chi(p) \,\chi(q) \cdot \kappa_{\text{law}}(p,k,q,m), \qquad p \neq q,\quad p,q \nmid q_{\text{mod}},
+$$
+
+with the three canonical TNFR kernels
+
+| Law | $\kappa_{\text{law}}(p,k,q,m)$ |
+|---|---|
+| `kuramoto_u3` | $(\gamma/\pi)\exp\bigl(-\lvert k\log p - m\log q\rvert\bigr)$ |
+| `phi_multiscale` | $\varphi^{-(k+m)} / \sqrt{p\,q}$ |
+| `pnt_logarithmic` | $\gamma / \log(1 + p\,q)$ |
+
+All kernel constants $(\varphi, \gamma, \pi)$ are canonical TNFR tetrad constants (AGENTS.md §Universal Tetrahedral Correspondence). The coupled Hamiltonian is $H^{(\chi)}(s) = H^{(\chi)}_0 + s\,J^{(\chi)}$ for $s \in \{0, 0.05, 0.1, 0.2, 0.5, 1.0, 2.0\}$. Eigenvalues are computed via `np.linalg.eigvalsh`, **unfolded** by the degree-5 polynomial fit of the empirical staircase (identical to P29), and the empirical CDF of nearest-neighbour spacings $\hat F$ is compared to the GUE Wigner surmise CDF $F_{\text{GUE}}$ and the Poisson CDF $F_{\text{Poisson}}$ via $\mathrm{KS} = \sup_x |\hat F(x) - F(x)|$.
+
+### §13vicies-sexto.3 Empirical Verification
+
+Demo `examples/74_twisted_spectral_emergence_demo.py` at $(n_{\text{primes}}, K) = (20, 3)$:
+
+| $\chi$ | Law | $\mathrm{KS}_{\text{GUE}}^{\min}$ | $s^*$ | $\mathrm{KS}_{\text{GUE}}\vert_{s=0}$ | Improvement |
+|---|---|---|---|---|---|
+| $\chi_3$ | `pnt_logarithmic` | **0.0972** | 2.0 | 0.1891 | $+48.6\%$ |
+| $\chi_3$ | `kuramoto_u3` | 0.1202 | 1.0 | 0.1891 | $+36.4\%$ |
+| $\chi_3$ | `phi_multiscale` | 0.1845 | 1.0 | 0.1891 | $+2.4\%$ |
+| $\chi_4$ | `pnt_logarithmic` | **0.1157** | 2.0 | 0.1991 | $+41.9\%$ |
+| $\chi_4$ | `kuramoto_u3` | 0.1500 | 1.0 | 0.1991 | $+24.6\%$ |
+| $\chi_4$ | `phi_multiscale` | 0.1991 | 0.0 | 0.1991 | $+0.0\%$ |
+| $\chi_5$ | `pnt_logarithmic` | **0.1347** | 2.0 | 0.2012 | $+33.0\%$ |
+| $\chi_5$ | `kuramoto_u3` | 0.1352 | 1.0 | 0.2012 | $+32.8\%$ |
+| $\chi_5$ | `phi_multiscale` | 0.1900 | 1.0 | 0.2012 | $+5.6\%$ |
+
+**Cross-character pattern**: `pnt_logarithmic` is the strongest emergence kernel across all three primitive real characters, producing $33$–$49\%$ KS-to-GUE reduction at $s^* = 2.0$. `kuramoto_u3` is uniformly second ($25$–$36\%$ reduction at $s^* = 1.0$). `phi_multiscale` is essentially inert on the χ-twisted bundle for $\chi_4$ (zero improvement) and weak for $\chi_3, \chi_5$ ($\le 6\%$). The Poisson distance $\mathrm{KS}_{\text{Poisson}}$ increases monotonically with $s$ on the active laws, corroborating departure from independent levels.
+
+### §13vicies-sexto.4 What P47 Extends
+
+P47 promotes P29's ζ-only spectral-emergence diagnostic to the **full primitive-real Dirichlet bundle** $\{\chi_3, \chi_4, \chi_5\}$ on the P34 χ-twisted prime-ladder Hamiltonian. The χ-twist factor $\chi(p)\chi(q)$ enters as a multiplicative sign on every coupling matrix entry, so the χ-twisted coupling matrices are real-symmetric (since $\chi$ is real-valued) and respect the L-track block decomposition. Cross-character comparability (same $n_{\text{primes}}$, same $K$, same strength grid, same canonical kernels) makes the χ-twisted emergence directly comparable to the ζ baseline and to the cross-character L-track instruments P42–P46.
+
+### §13vicies-sexto.5 What P47 Does NOT Advance
+
+* **G4 = RH**: untouched. P47 is a structural-compatibility diagnostic for GUE-universality of $L(s,\chi)$ zeros, not a proof of GRH for any $L$.
+* **GRH for $L(s, \chi_3), L(s, \chi_4), L(s, \chi_5)$**: untouched. Non-vanishing $\mathrm{KS}_{\text{GUE}}^{\min}$ even after canonical coupling at $K = 3$ documents that the finite truncation does not exhibit asymptotic GUE statistics; the residual is consistent with finite-size effects rather than evidence against GRH.
+* **The oscillatory residual $r_n^{(\chi)}$ from P46**: not bounded by P47. The two diagnostics target distinct aspects of L-track structure (smooth zero positions vs. spacing universality).
+
+### §13vicies-sexto.6 Cross-References
+
+* **ζ analogue**: §13quater (P29 `spectral_emergence.py`) — same construction on the untwisted prime-ladder Hamiltonian.
+* **L-track prime side**: §13quinquies-decies (P34 `twisted_prime_ladder_hamiltonian.py`) supplies $H^{(\chi)}_0$.
+* **L-track smooth side**: §13vicies-quinto (P46 `twisted_structural_zero_density.py`) supplies the predicted smooth zero positions against which one would compare a hypothetical L-track P30 lift.
+
+### §13vicies-sexto.7 Gap Balance
+
+| Gap | Status before P47 | Status after P47 |
+|---|---|---|
+| G4 = RH on $\zeta$ | OPEN | OPEN, unchanged |
+| GRH (G4$_\chi$ for primitive real $\chi$) | OPEN | OPEN, unchanged |
+| L-track spacing-universality diagnostic | UNATTESTED (P29 only on ζ) | ATTESTED for $\chi_3, \chi_4, \chi_5$ |
+| Existence of canonical χ-twisted coupling that drives $\mathrm{KS}_{\text{GUE}} \to 0$ at fixed $K$ | OPEN | OPEN; `pnt_logarithmic` best ($\sim 0.10$–$0.13$ residual at $K=3$) |
+
+**Net effect**: P47 establishes the **L-track spacing-universality diagnostic** for every primitive real Dirichlet character. Among the three canonical TNFR coupling laws, `pnt_logarithmic` is uniformly the strongest emergence kernel ($33$–$49\%$ KS-to-GUE reduction), `kuramoto_u3` is second ($25$–$36\%$), `phi_multiscale` is inert. Both G4 = RH and GRH for $L(s,\chi)$ remain OPEN; P47 is a structural-compatibility diagnostic.
+
 ## 14. Weil–TNFR Positivity Bridge (P17)
 
 ### 14.1 Motivation
@@ -3665,6 +3734,7 @@ piecewise status notes.
 | **P44** Dirichlet L χ-twisted Lyapunov-spectral positivity certificate | `twisted_lyapunov_spectral_positivity.py` | `71_twisted_lyapunov_spectral_demo.py` | §13vicies-tertio | Structural extension of P26 (`lyapunov_spectral_positivity.py`) to primitive real $L(s, \chi)$: certifies self-adjointness, strict positivity with explicit Kato–Rellich envelope $\lambda_{\min}(\hat H^{(\chi)}) \ge \Delta_0^{(\chi)} - \lvert J_0 \rvert \lVert \hat H^{(\chi)}_{\mathrm{coupling}} \rVert_{\mathrm{op}}$ where $\Delta_0^{(\chi)} = \log(\min\{p \text{ prime} : p \nmid q\})$ (character-dependent: $\log 2$ for $\chi_3, \chi_5$; $\log 3$ for $\chi_4$), trace-class resolvent (Schatten-1/2 norms), and unitary flow conservation of $U(t) = e^{-it \hat H^{(\chi)}}$ on the finite-dimensional χ-twisted prime-ladder Hilbert space (P34 bundle); reuses `_matrix_exponential_skew` and `resolvent_schatten_norms` atomically from P26; verified on $(n_{\mathrm{primes}}, k_{\max}) = (18, 5)$ for $\chi_3, \chi_4, \chi_5$ at $J_0 \in \{0, 10^{-2}\}$: at $J_0 = 0$ empirical $\min(\lambda)$ matches $\Delta_0^{(\chi)}$ to machine precision (asserted in demo); at $J_0 = 10^{-2}$ `perturbation_safe = True` for every character with guaranteed gap $\in \{6.76 \times 10^{-1}, 1.08, 6.76 \times 10^{-1}\}$; unitary drifts $\sim 2 \times 10^{-16}$ throughout; `structural_positivity = True` for all 6 cells; **does NOT prove GRH (finite-dimensional positivity is necessary but not sufficient; the character enters only via the active-prime restriction, not via $W^{(\chi)}$) and does NOT advance G4** |
 | **P45** Dirichlet L χ-twisted Hilbert–Pólya scaffold | `twisted_hilbert_polya.py` | `72_twisted_hilbert_polya_demo.py` | §13vicies-quarto | Structural extension of P27 (`hilbert_polya.py`) to primitive real $L(s, \chi)$: builds the reference operator $T_{\mathrm{HP}}^{(\chi)} = \operatorname{diag}(\gamma_1^{(\chi)}, \dots, \gamma_N^{(\chi)})$ on $\ell^2_N(\mathbb{N})$ where $\gamma_n^{(\chi)}$ are positive imaginary parts of zeros of $L(s, \chi)$ located by Hardy–Z bisection (`find_dirichlet_l_zeros`, the same enumerator used by P36); reuses `build_hp_operator`, `verify_hp_self_adjoint`, `hp_resolvent_schatten_norms`, `wasserstein_1_distance` atomically from P27; certifies (i) self-adjointness (real diagonal, exact, Frobenius asymmetry $= 0$), (ii) trace-class shifted resolvent $(T_{\mathrm{HP}}^{(\chi)2} + s^2 I)^{-1/2}$ with explicit Schatten-1/2/op norms, (iii) χ-twisted Weil–Guinand consistency $2 \sum h_\sigma(\gamma_n^{(\chi)}) = g(0) \log(q/\pi) +$ archimedean $+ \sum_{p \nmid q, k} \chi(p)^k \log(p) p^{-k/2} g(k \log p)$ (parity-shifted digamma, character-dependent constant term replaces $\zeta$-pole $-g(0) \log \pi$), and (iv) Wasserstein-1 spectral gap against $\operatorname{spec}(\hat H^{(\chi)} \mid p \nmid q)$; verified on $(n_{\mathrm{primes}}, k_{\max}, n_{\mathrm{zeros}}, \sigma, s, \mathrm{tol}) = (18, 5, 25, 2.0, 1.0, 10^{-2})$ for $\chi_3, \chi_4, \chi_5$: Weil residuals $\{5.19 \times 10^{-16}, 9.07 \times 10^{-15}, 1.72 \times 10^{-15}\}$ at machine precision; $W_1 \in \{35.5, 31.8, 30.3\}$ with growth ratios $\sim 12$ quantifying the L-track operator-level structural gap (mirror of P30 negative-enrichment for $\zeta$); `scaffold_consistent = True` for all 3 characters; **does NOT prove GRH ($T_{\mathrm{HP}}^{(\chi)}$ is populated by *inputting* Hardy–Z bisection of classical $L(s, \chi)$; the operator is not derived from TNFR first principles) and does NOT advance G4** |
 | **P46** Dirichlet L χ-twisted structural zero density | `twisted_structural_zero_density.py` | `73_twisted_structural_zero_density_demo.py` | §13vicies-quinto | L-track analogue of P28 (`structural_zero_density.py`): derives the smooth chi-twisted zero positions $\tilde{\gamma}_n^{(\chi)}$ from the chi-twisted Riemann–Siegel theta $\theta_\chi(T) = \operatorname{Im} \log \Gamma((1/2+a)/2 + iT/2) + (T/2) \log(q/\pi)$ via Newton iteration on $\bar{N}_\chi(\tilde{\gamma}_n^{(\chi)}) = n - 1/2$ — no `find_dirichlet_l_zeros` call on the derivation side (only used for benchmark); builds $\tilde{T}_{\mathrm{HP}}^{(\chi)} = \operatorname{diag}(\tilde{\gamma}_1^{(\chi)}, \dots, \tilde{\gamma}_N^{(\chi)})$ and certifies (i) per-zero residuals $r_n^{(\chi)} = \gamma_n^{(\chi)} - \tilde{\gamma}_n^{(\chi)}$ encoding $S_\chi(T) = \tfrac{1}{\pi} \arg L(\tfrac12 + iT, \chi)$, (ii) operator-level Wasserstein-1 reduction $W_1(\operatorname{spec}(\tilde{T}_{\mathrm{HP}}^{(\chi)}), T_{\mathrm{HP}}^{(\chi)}) \ll W_1(\operatorname{spec}(P34\vert_{p\nmid q}), T_{\mathrm{HP}}^{(\chi)})$, (iii) theoretical bound $\max\lvert r_n^{(\chi)}\rvert \le C \cdot \max(\log \gamma_n^{(\chi)} / \bar{N}_\chi'(\gamma_n^{(\chi)}))$ with $C \le 2$; verified on $(n_{\mathrm{zeros}}, p34\_n\_primes, p34\_max\_power) = (18, 30, 6)$ for $\chi_3, \chi_4, \chi_5$: $\max\lvert r_n^{(\chi)}\rvert \in \{3.21, 2.65, 2.53\}$; $W_1$ reductions $\{28.4 \to 1.32, 25.2 \to 1.23, 24.1 \to 1.17\}$, improvement ratios $\{21.6\times, 20.4\times, 20.6\times\}$; bound satisfied across all 3 characters; closes the **smooth half** of the L-track structural derivation gap (mirror of P28 for ζ); **does NOT prove GRH for any $L(s, \chi)$** (oscillatory residual encoding $S_\chi$ is the open arithmetic problem, equivalent to GRH$_\chi$) **and does NOT advance G4 = RH** |
+| **P47** Dirichlet L χ-twisted spectral emergence under canonical coupling | `twisted_spectral_emergence.py` | `74_twisted_spectral_emergence_demo.py` | §13vicies-sexto | L-track analogue of P29 (`spectral_emergence.py`): sweeps the three canonical TNFR inter-prime coupling laws (`kuramoto_u3`: $(\gamma/\pi)\exp(-\lvert k\log p - m\log q\rvert)$; `phi_multiscale`: $\varphi^{-(k+m)}/\sqrt{pq}$; `pnt_logarithmic`: $\gamma/\log(1+pq)$) on the P34 χ-twisted prime-ladder Hamiltonian with explicit $\chi(p)\chi(q)$ multiplicative twist on every off-diagonal entry; computes the Kolmogorov–Smirnov distance of the unfolded nearest-neighbour spacing distribution to the GUE Wigner surmise (conjectural universality class of zeros of $L(s,\chi)$) and to the Poisson reference; verified on $(n_{\mathrm{primes}}, k_{\max}) = (20, 3)$ for $\chi_3, \chi_4, \chi_5$ over strengths $s \in \{0, 0.05, 0.1, 0.2, 0.5, 1, 2\}$: `pnt_logarithmic` uniformly strongest emergence kernel with $\mathrm{KS}_{\text{GUE}}^{\min} \in \{0.097, 0.116, 0.135\}$ at $s^* = 2$ ($33$–$49\%$ reduction vs baseline); `kuramoto_u3` second with $\mathrm{KS}_{\text{GUE}}^{\min} \in \{0.120, 0.150, 0.135\}$ at $s^* = 1$ ($25$–$36\%$ reduction); `phi_multiscale` weak ($0$–$6\%$ reduction); attests the L-track spacing-universality diagnostic for every primitive real Dirichlet character; **does NOT prove GRH for any $L(s, \chi)$** (KS-GUE residual at finite $K$ is consistent with finite-size effects, not evidence against GRH) **and does NOT advance G4 = RH** |
 
 ### 19.2 Gap Balance
 
