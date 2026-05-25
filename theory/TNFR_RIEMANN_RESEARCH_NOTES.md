@@ -2455,6 +2455,65 @@ All three primitive real characters pass both the Weil positivity check and the 
 
 **Net effect**: P37 closes the Weil-positivity-bridge gap on the L-function track for every primitive real Dirichlet character.  The L-function track now structurally matches the ζ track all the way through P17.  The arithmetic obstruction remains identical and the gap balance for G4 is unchanged.
 
+## §13septiesdecies. P38 — χ-Twisted Admissibility / Gauge Sweep of $\alpha_\chi(\sigma; g)$ (Structural Robustness Diagnostic; GRH$_\chi$-Equivalent for Primitive Real χ; Does NOT Prove GRH or Advance G4)
+
+### §13septiesdecies.1 Motivation
+
+P18 (§15) packages the canonical TNFR-native robustness audit of the P17 Weil–TNFR bridge for $\zeta$: the bridge ratio $\alpha(\sigma) = W[\sigma] / E_{\mathrm{TNFR}}[\sigma; g]$ depends, via the energy denominator, on the structural gauge $g$ that maps a Gaussian width $\sigma$ onto the canonical TNFR test state $(\Delta\mathrm{NFR}, \phi, \mathrm{EPI})$.  The numerator $W[\sigma]$ is gauge-independent (zero-side enumeration), but the denominator is not, so any single-gauge result of $\alpha(\sigma) > 0$ is only as strong as the gauge it is parameterised by.  P18 stress-tests the bridge across the canonical six-gauge family `DEFAULT_GAUGES` = {canonical, dnfr_only, phase_only, epi_only, dnfr_phase, pressure_amplified}.  P37 (§13sexiesdecies) extends P17 to every primitive real Dirichlet $L(s,\chi)$, so the same robustness audit is meaningful on the L-function track once P34 and P35 are in place.  P38 packages these ingredients into the L-function analogue of P18.
+
+### §13septiesdecies.2 Construction
+
+P38 sweeps $\alpha_\chi(\sigma; g) = W_\chi[\sigma] \,/\, E_{\mathrm{TNFR}}^\chi[\sigma; g]$ across a finite Gaussian grid $\{\sigma_i\}$ and the canonical six-gauge family `DEFAULT_GAUGES` inherited unchanged from `alpha_sweep.py` (P18).  Canonical reuse:
+
+* $W_\chi[\sigma]$ is computed once per $\sigma$ (gauge-independent) via the P35 enumerator `twisted_weil_zero_side` at canonical mpmath precision $\mathrm{dps} = 30$.
+* For each gauge $g$, the canonical TNFR test state on the P34 χ-twisted prime-ladder bundle is built by mapping each ladder level $E_n = k \log p$ to $h_n = \exp\!\bigl(-E_n^2/(2\sigma^2)\bigr)$ and then applying $g(h_n) = (\Delta\mathrm{NFR}_n, \phi_n, \mathrm{EPI}_n)$, with phases clipped to $[-\pi, \pi]$.
+* $E_{\mathrm{TNFR}}^\chi[\sigma; g]$ is computed by the canonical conservation routine `compute_energy_functional` unchanged from P17/P18.
+
+The certificate is a frozen `TwistedAlphaSweepCertificate` carrying the $W_\chi$ row, the $(n_\sigma \times n_g)$ $\alpha_\chi$ table, the energy table, the aggregate positivity flags, and the coordinates of $\alpha_{\min}$ / $\alpha_{\max}$.  No new physics is introduced: P38 is a robustness layer over P34, P35, and P37.
+
+### §13septiesdecies.3 Empirical Verification
+
+The reference demo `examples/65_twisted_alpha_sweep_demo.py` sweeps $\sigma \in \{1.0, 1.5, 2.0, 2.5, 3.0\}$ and all six gauges across $\chi_3, \chi_4, \chi_5$ (decoupled spectrum, $n_{\mathrm{primes}} = 25$, $\max_{\mathrm{power}} = 6$):
+
+| χ | $q$ | $W_\chi \ge 0$ | $\alpha_\chi > 0$ | $\alpha_{\min}$ @ $(\sigma, g)$ | $\alpha_{\max}$ |
+|---|---|---|---|---|---|
+| $\chi_3$ | 3 | True | True | $+1.27 \times 10^{-14}$ @ $(1.000, \text{canonical})$ | $+6.04 \times 10^{-2}$ |
+| $\chi_4$ | 4 | True | True | $+2.71 \times 10^{-8}$ @ $(1.000, \text{canonical})$ | $+6.38 \times 10^{-1}$ |
+| $\chi_5$ | 5 | True | True | $+2.62 \times 10^{-10}$ @ $(1.000, \text{canonical})$ | $+1.56 \times 10^{-1}$ |
+
+Positivity holds across every $(\sigma, g)$ combination for every tested character (3/3 PASS).  The smallest $\sigma$ (= 1.0) and the `canonical` gauge consistently produce the most demanding entry, which is the expected behaviour from the P18 ζ-track analogue (narrow Gaussians give the tightest test).
+
+### §13septiesdecies.4 What P38 Extends
+
+* **P18 to L-functions**: P18 is the canonical robustness audit for the ζ-side Weil–TNFR bridge; P38 is its structural analogue for $L(s,\chi)$ at every primitive real χ.  Together with P32–P37, the L-function track now structurally matches the ζ track through the P18 layer.
+* **P37 under canonical-mapping ambiguity**: P37 verified $\alpha_\chi(\sigma) > 0$ for the `canonical` gauge only.  P38 confirms that the positivity persists across the entire `DEFAULT_GAUGES` family, ruling out a single-gauge artefact.
+
+### §13septiesdecies.5 What P38 Does NOT Advance
+
+* **GRH for any $L(s,\chi)$**: a finite sweep across $\{\sigma_i\} \times \{g\}$ is **necessary but not sufficient**.  An exhaustive admissible family (which a finite grid cannot exhaust) would be required to upgrade the diagnostic to a proof.  Consistent with the P17/P18 honesty boundary.
+* **Complex χ**: P38 inherits the primitive-real restriction from P32–P37.
+* **G4 = RH**: $\alpha_\chi(\sigma; g)$ depends on the χ-twisted Hamiltonian (P34) and the χ-twisted explicit formula (P35); neither carries information about the ζ critical line.  G4 is unchanged.
+
+### §13septiesdecies.6 Cross-References
+
+* §13sexiesdecies: P37 (one-shot $\alpha_\chi$ at the `canonical` gauge; P38 generalises across gauges).
+* §15: P18 (ζ-side admissibility / gauge sweep; canonical reference template).
+* §13septies: Conjecture T-HP (unchanged by P38).
+* `src/tnfr/riemann/twisted_alpha_sweep.py`: canonical P38 implementation.
+* `examples/65_twisted_alpha_sweep_demo.py`: reference demo.
+
+### §13septiesdecies.7 Gap Balance
+
+| Scope | Status before P38 | Status after P38 |
+|-------|-------------------|------------------|
+| P18 gauge sweep for ζ | Available (P18) | Available, unchanged |
+| **Gauge sweep for $L(s,\chi)$, primitive real χ** | Open (future P38) | **Available** (TNFR-native robustness audit across 6 canonical gauges) |
+| GRH for $L(s,\chi)$, primitive real χ | OPEN | OPEN (diagnostic only; finite $(\sigma, g)$ grid is necessary, not sufficient) |
+| G4 = RH | OPEN | OPEN, unchanged |
+| GRH (G4$_\chi$ for complex $\chi$) | OPEN | OPEN, unchanged |
+
+**Net effect**: P38 closes the admissibility/gauge-sweep gap on the L-function track for every primitive real Dirichlet character.  Combined with P32–P37, the structural TNFR-Riemann program now matches the ζ track all the way through P18.  The arithmetic obstruction remains identical and the gap balance for G4 is unchanged.
+
 ## 14. Weil–TNFR Positivity Bridge (P17)
 
 ### 14.1 Motivation
@@ -3015,6 +3074,7 @@ piecewise status notes.
 | **P35** Dirichlet L χ-twisted Weil–Guinand | `twisted_weil_explicit_formula.py` | `62_dirichlet_weil_explicit_formula_demo.py` | §13quaterdecies | Structural extension of P15 to primitive real $L(s, \chi)$: zero side from Hardy-Z bisection on $Z_\chi(t)$ (P33), prime side from P34 Hamiltonian; closes **G3$_\chi$ operationally for primitive real χ** (rel. residual $\le 4.4 \times 10^{-13}$ across 9 $(\chi,\sigma)$ pairs for $\chi_3, \chi_4, \chi_5$ at $\sigma \in \{2.0, 2.5, 3.0\}$); **does NOT advance G4 or GRH** |
 | **P36** Dirichlet L χ-twisted Li–Keiper criterion | `twisted_li_keiper.py` | `63_dirichlet_li_keiper_demo.py` | §13quinquiesdecies | Structural extension of P16 to primitive real $L(s, \chi)$: $\lambda_n(\chi)$ computed from P35 Hardy-Z zeros via the canonical P16 mpmath routine (sum-over-zeros is L-function agnostic); GRH$_\chi$-equivalent diagnostic (Lagarias 2007 generalisation of Bombieri–Lagarias 1999); positivity verified for $\chi_3, \chi_4, \chi_5$ up through $n_{\max} = 50$ (min $\lambda_n \ge 4.7 \times 10^{-2}$); **does NOT prove GRH (finite truncation; necessary, not sufficient) and does NOT advance G4** |
 | **P37** Dirichlet L χ-twisted Weil–TNFR bridge | `twisted_weil_positivity.py` | `64_twisted_weil_positivity_demo.py` | §13sexiesdecies | Structural extension of P17 to primitive real $L(s, \chi)$: $W_\chi[\sigma] = 2\sum_{\gamma > 0} h_\sigma(\gamma)$ computed two ways — zero side from P35 Hardy-Z enumerator, explicit-formula side from P34 χ-twisted prime-ladder Hamiltonian — plus the canonical TNFR Lyapunov bridge ratio $\alpha_\chi(\sigma) = W_\chi[\sigma] / E_{\mathrm{TNFR}}^\chi[\sigma]$ using `compute_energy_functional` unchanged from P17; GRH$_\chi$-equivalent diagnostic (Bombieri 2000 generalisation of Weil 1952); positivity verified for $\chi_3, \chi_4, \chi_5$ on Gaussian grid $\sigma \in \{1.0, \ldots, 3.0\}$ (3/3 PASS; XF residual $\le 2.4 \times 10^{-16}$ for $\sigma \ge 2.0$); **does NOT prove GRH (finite Gaussian grid; admissibility not exhausted) and does NOT advance G4** |
+| **P38** Dirichlet L χ-twisted admissibility / gauge sweep | `twisted_alpha_sweep.py` | `65_twisted_alpha_sweep_demo.py` | §13septiesdecies | Structural extension of P18 to primitive real $L(s, \chi)$: sweeps $\alpha_\chi(\sigma; g) = W_\chi[\sigma] / E_{\mathrm{TNFR}}^\chi[\sigma; g]$ across the canonical six-gauge family `DEFAULT_GAUGES` inherited unchanged from P18 (`canonical, dnfr_only, phase_only, epi_only, dnfr_phase, pressure_amplified`); $W_\chi$ computed once per $\sigma$ (gauge-independent) via P35 enumerator; canonical TNFR test state built per gauge on P34 bundle; positivity verified for $\chi_3, \chi_4, \chi_5$ across $\sigma \in \{1.0, \ldots, 3.0\} \times$ 6 gauges (3/3 PASS; $\alpha_{\min}$ at $(\sigma=1.0, \text{canonical})$ in every case); robustness audit of P37 under canonical-mapping ambiguity; **does NOT prove GRH (finite $(\sigma, g)$ grid; admissibility not exhausted) and does NOT advance G4** |
 
 ### 19.2 Gap Balance
 

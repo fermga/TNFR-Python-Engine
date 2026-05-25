@@ -237,6 +237,19 @@ twisted_weil_positivity
     real characters (chi_3, chi_4, chi_5). GRH_chi-equivalent
     diagnostic on a finite Gaussian grid; does NOT prove GRH for any
     L(s, chi) and does NOT advance G4 = RH.
+twisted_alpha_sweep
+    P38 chi-twisted admissibility / gauge sweep of
+        alpha_chi(sigma; g) = W_chi[sigma] / E_TNFR_chi[sigma; g]
+    across a Gaussian width grid and the canonical six-gauge family
+    DEFAULT_GAUGES inherited from the zeta-track P18 stress test.
+    Structural analogue of P18 for primitive real Dirichlet
+    L-functions: probes robustness of the P37 chi-twisted positivity
+    bridge under canonical-mapping ambiguity by computing
+    alpha_chi(sigma; g) over (sigma, gauge) and reporting aggregate
+    flags (W_chi positivity, alpha_chi positivity, alpha_chi extrema).
+    Implemented for primitive real characters (chi_3, chi_4, chi_5).
+    Diagnostic only; does NOT prove GRH for any L(s, chi) and does
+    NOT advance G4 = RH.
 oscillatory_correction
     P31 Branch B1 retry: prime-ladder oscillatory correction of the
     P28 / P30 smooth targets. Reconstructs S(T) = pi^{-1} arg zeta(1/2
@@ -726,6 +739,12 @@ from .twisted_weil_positivity import (
     verify_twisted_weil_positivity,
     verify_twisted_weil_tnfr_bridge,
 )
+from .twisted_alpha_sweep import (
+    # P38: chi-twisted admissibility / gauge sweep (GRH_chi diagnostic)
+    TwistedAlphaSweepCertificate,
+    build_twisted_test_state_with_gauge,
+    sweep_twisted_alpha,
+)
 from .spectral_emergence import (
     # P29: Spectral universality emergence under canonical UM+RA coupling
     CANONICAL_COUPLING_LAWS,
@@ -1096,6 +1115,10 @@ __all__ = [
     "twisted_tnfr_lyapunov_of_test_state",
     "verify_twisted_weil_positivity",
     "verify_twisted_weil_tnfr_bridge",
+    # P38: chi-twisted admissibility / gauge sweep (GRH_chi diagnostic)
+    "TwistedAlphaSweepCertificate",
+    "build_twisted_test_state_with_gauge",
+    "sweep_twisted_alpha",
     # P29: Spectral universality emergence under canonical UM+RA coupling
     "CANONICAL_COUPLING_LAWS",
     "InterPrimeCoupling",
