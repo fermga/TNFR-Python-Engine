@@ -4032,4 +4032,41 @@ The canonical engine therefore **already contains** a global, multi-scale closur
 * **What §13vicies-novies does NOT claim**: does NOT prove RH, does NOT close G4, does NOT close T-HP, does NOT derive `REMESH-∞`, does NOT promote any new operator.
 * **Cross-reference**: mirrored in `theory/TNFR_NAVIER_STOKES_RESEARCH_NOTES.md` §11 (added simultaneously). Both programs share the same canonical REMESH global infrastructure; the analytical study of its `τ → ∞` (Riemann) / scale `→ 0` (NS) asymptotic limit is shared work.
 
+### §13vicies-novies.5 R∞-1a Empirical Baseline (Riemann side)
+
+**Milestone**: R∞-1a — first numerical probe of REMESH-∞ on the Riemann-side prime-ladder dynamics.
+
+**Implementation**: `benchmarks/remesh_infinity_riemann_baseline.py`. Output: `results/remesh_infinity/remesh_infinity_riemann_baseline.json`.
+
+**Setup**:
+* Graph: P14 prime-ladder, `n_primes=10`, `max_power=4` → 40 nodes `(p, k)`, νf = k·log(p).
+* Synthetic deterministic oscillatory field: `EPI(p,k;t) = (log(p)/k)·cos(k·log(p)·t)` evaluated on `t ∈ [0, dt, 2dt, …]`, `dt = 0.05`.
+* History buffer `_epi_hist` populated to `max(τ_g, τ_l)+1` snapshots before each REMESH application; canonical mixing `EPI_new = 0.25·EPI_now + 0.25·EPI[t-τ_l] + 0.5·EPI[t-τ_g]` with `α = 0.5`, `τ_l = 4`.
+* Three tracks executed in one run:
+  * **Track A** — single-application sweep over `τ_g ∈ {4, 8, 16, 32, 64, 128, 256, 512}`, baseline restored between calls. Tests F1 (naive single-application Cesàro projection).
+  * **Track B** — iterated REMESH^N at fixed `τ_g = 16`, `N ∈ [1, 512]`, with `_epi_hist` updated at every iteration (genuine Banach iteration of the canonical operator on this dynamics). Tests F2 (existence of a fixed point).
+  * **Track C** — spectral diagnostic of the late-iterated state at `N = 256`, FFT along the νf-ordered axis after mean removal.
+
+**Falsification criteria (pre-registered)**:
+* **F1** triggered if Track A `dist→time_average` is monotone-decreasing in `τ_g` AND `final_rel < 0.1`. Interpretation: naive single-application B1 = Cesàro projection on time-average ⇒ B1 (naive) refuted.
+* **F2** triggered if Track B `final_step_delta < 1e-6` OR `step_decay_ratio < 0.01`. Interpretation: iterated REMESH has a well-defined fixed point.
+
+**Results (deterministic run; same seedless config reproducible)**:
+* Baseline-to-time-average distance: 5.976e+00.
+* **Track A**: F1 NOT triggered. Distance to time-average plateaus at `rel ∈ [0.392, 0.462]` across the entire sweep, non-monotone in `τ_g`. Confirms analytically that single-application `τ → ∞` is ill-defined on stationary oscillatory snapshots: the output depends on the specific phase of the past snapshot sampled at lag τ_g, not on a global asymptotic limit.
+* **Track B**: F2 **TRIGGERED**. `step_decay_ratio = 6.82e-06`, `final_step_delta = 3.87e-05` at `N = 512`. Step deltas decay through `5.68 → 1.03 → 0.66 → … → 0.15 → 0.012 → 1.2e-4 → 3.9e-5`. The iterated map converges to a fixed point with `‖EPI*‖_L2 = 1.7501`, sitting at relative distance `0.2808` from the time-average (i.e. NOT the time-average).
+* **Track C**: Late state at `N = 256` has structured oscillatory content along the νf-ordered axis. After mean removal, total power = 64.2, DC fraction = 3.07e-33 (numerical zero). Top-3 power bins are `{16, 19, 20}` of 21 rfft bins, with fractions `{10.6%, 9.7%, 9.3%}` — the spectrum is dominated by **high-νf modes**, not the low-νf prime-ladder fundamentals.
+
+**Honest interpretation (R∞-1a)**:
+* **Established** (necessary condition for any non-trivial B1 reframe): iterated REMESH on canonical prime-ladder oscillatory dynamics admits a well-defined fixed point. The fixed point is NOT the time-average and carries non-trivial spectral structure.
+* **Not established** (and must NOT be claimed): (a) any verified correspondence between the fixed-point spectrum and the oscillatory residual `r_n = γ_n - γ̃_n`; (b) sensitivity-independence with respect to the choice of synthetic input field; (c) that high-νf concentration encodes S(T) rather than being a bias of the α-local mixing kernel; (d) closure of T-HP, G4, or RH.
+* **Branch verdict (R∞-1a slice only)**: this baseline does NOT refute B1, and supplies the first necessary positive datum (existence of a non-trivial canonical fixed point). It does NOT confirm B1 either — the spectral comparison with r_n (R∞-1a-spectral, future work) is the next falsifiable test.
+
+**Next milestones (gated on this result)**:
+* **R∞-1a-spectral**: project the Track B fixed-point spectrum onto the basis of r_n via mpmath-computed γ_n; report correlation, cosine similarity, and per-component residual. Pre-register falsification: if no correlation above noise (|r| < 0.2), B1 is empirically refuted at the spectral level even with a non-trivial fixed point.
+* **R∞-1b**: NS-side analogue on the K_φ cascade (N6–N11 milestones), same Track A/B/C structure.
+* **R∞-1c**: cross-program comparison of fixed-point spectra. Required equivariance check before any cross-program B1 claim.
+
+**Status**: R∞-1a baseline complete; primary deliverable is the empirical fact that iterated REMESH is contractive on this dynamics with a non-trivial fixed point. No closure of any gap.
+
 ---
