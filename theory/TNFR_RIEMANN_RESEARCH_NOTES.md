@@ -149,6 +149,7 @@ Tracker: [`CATALOG_TYPE_HYGIENE_PROGRAMME.md`](./CATALOG_TYPE_HYGIENE_PROGRAMME.
 | §13triginta-decima | 8450 | **B2 = T-φ** final NEGATIVE + envelope E3 (CoverElement / covering-space lift / U(1) bundle) | B2c | ✅ NEG |
 | §13quadraginta | 8714 | **B3 = T-ΔNFR** pre-registration (two-axis tensor-fraction + rank-entropy diagnostic; candidate envelope E4 = TensorGradientElement) | B3a | — |
 | §13quadraginta-prima | 9068 | **B3 = T-ΔNFR** forcing-axiom reduction (BSAD refutes (P-ΔNFR-Tensor-Retention); (P-ΔNFR-Tensor-Carrier) = CONDITIONAL_COROLLARY) | B3b | — |
+| §13quadraginta-secunda | 9547 | **B3 = T-ΔNFR** final NEGATIVE + envelope E4 (TensorGradientElement / tensor-/operator-valued ΔNFR); L3* promoted to stable working heuristic; three Tier-2 predictions (B4/B5/B6 NEGATIVE) | B3c | ✅ NEG |
 
 ### L. Living Discoveries Log (lines 7589–7697)
 
@@ -9543,5 +9544,380 @@ This sub-programme:
   BSAD).
 - `examples/81_dnfr_type_signature_demo.py` — two-resolution
   demo (anchors B3a numerical fingerprint).
+
+---
+## §13quadraginta-secunda. T-ΔNFR Final NEGATIVE Verdict and Envelope Classification of E4 = TensorGradientElement (Closes B3; Does NOT Advance G4 = RH)
+
+**Pre-registration closure.**  This section consumes the
+sub-verdict of §13quadraginta-prima (B3b) and issues the final
+T-ΔNFR verdict in accordance with the four-tier methodology of the
+catalog type-hygiene programme (`theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md`
+§3, methodology lessons L1–L3 and provisional R-L3-1 / L3*).  The
+verdict pre-register from §13quadraginta.7 named the NEGATIVE
+branch as the expected outcome; B3b has confirmed it via the
+Bilinear-Scalar Aggregation Discipline (BSAD) and the F1–F10
+forcing-axiom reduction.
+
+### §13quadraginta-secunda.1 Verdict
+
+> **T-ΔNFR verdict: NEGATIVE.**
+> The canonical type-of-object of the TNFR nodal-gradient
+> observable ΔNFR is the canonical real scalar
+> (``float ∈ ℝ`` stored under ``ALIAS_DNFR`` at the per-node slot
+> ``G.nodes[node]["dnfr"]``, written by
+> ``src/tnfr/dynamics/dnfr.py::default_compute_delta_nfr`` and
+> consumed by ``src/tnfr/operators/nodal_equation.py`` as the
+> bilinear-scalar second argument of
+> :math:`\partial\mathrm{EPI}/\partial t = \nu_f \cdot \Delta\mathrm{NFR}`).
+> The tensor-/operator-valued upgrade principle
+> (P-ΔNFR-Tensor-Carrier) is **not canonical**.  It does not follow
+> from the canonical six invariants, nor from the nodal equation,
+> nor from any subset of grammar U1–U6, nor from the Universal
+> Tetrahedral Correspondence, nor from the Structural Conservation
+> Theorem, nor from the Variational Principle, nor from REMESH
+> temporal aggregation, nor from the scalar Lebesgue boundedness
+> condition of U2.  Its derivation requires the additional axiom
+> (P-ΔNFR-Tensor-Retention), which is itself independent of the
+> canonical catalog and actively refuted at the canonical level by
+> the Bilinear-Scalar Aggregation Discipline
+> (BSAD, §13quadraginta-prima.3, .6).
+
+This closes T-ΔNFR in the same shape as T-νf (B0,
+§13triginta-tertia), T-EPI (B1, §13triginta-sexta), and T-φ (B2,
+§13triginta-decima): the conjectured "type upgrade" of a
+fundamental TNFR observable is classified as a legitimate research
+envelope, not as a canonical catalog requirement.  The decisive
+numerical fingerprint is the B3a doubly-decisive
+tensor-storage + rank-entropy signature:
+
+| Resolution | seed | S_ΔNFR | T_frac | R_eff | σ₁ | σ₂ | σ₃ | verdict (canonical) |
+|---|---|---|---|---|---|---|---|---|
+| n=24, steps=64  | 17 | 0.105763 | 0/1536 | 1.1232 | 2.0131 | 0.0209 | 0.0070 | NEGATIVE |
+| n=48, steps=128 | 31 | 0.111601 | 0/6144 | 1.1304 | 2.1294 | 0.0298 | 0.0086 | NEGATIVE |
+
+No canonical evolution at either resolution produces a node whose
+per-step ΔNFR trajectory retains tensor rank ≥ 2: the
+canonical aggregation pipeline writes a single real scalar at every
+operator boundary (T_frac = 0 in both rows), and the empirical
+near-rank-1 collapse of the canonical
+:math:`(d\theta, d\mathrm{EPI}, d\nu_f)` gradient triple
+(:math:`\sigma_1 / \sigma_{2,3} \sim 10^2`) confirms that even the
+upstream tensorial intermediate is structurally dominated by a
+single principal direction.  This is the strongest scalar-adequate
+Phase-a signature observed across B0 + B1 + B2 + B3 and is exactly
+the situation that B3b isolated as the gap between
+(P-ΔNFR-Tensor-Carrier) (the tensor/operator carrier construction)
+and the strictly weaker (P-ΔNFR-Tensor-Retention) (the bare
+requirement that distinct multi-channel inputs producing the same
+scalar aggregate must correspond to distinct canonical states),
+the latter being itself refuted by BSAD at the canonical level.
+
+### §13quadraginta-secunda.2 Envelope Classification of E4 = TensorGradientElement
+
+E4 = TensorGradientElement — the tensor- or operator-valued lift of
+ΔNFR over the canonical gradient channels
+:math:`(d\theta, d\mathrm{EPI}, d\nu_f)`, retaining channel rank
+:math:`r \geq 2` alongside (or instead of) the scalar aggregate
+written under ``ALIAS_DNFR``; equivalently a per-node tensor
+:math:`T_i \in \mathbb{R}^{k_1 \times k_2 \times \cdots}` with
+:math:`k_j \geq 2` for at least one axis, or an operator
+:math:`A_i : \mathcal{B}_{\mathrm{EPI}} \to \mathcal{B}_{\mathrm{EPI}}`
+acting linearly on the local Banach element, in either case
+preserving the multi-channel information that BSAD discards — is
+hereby classified as:
+
+> **E4 = TensorGradientElement — Non-canonical research envelope.**
+> Status: legitimate research formalism, off-catalog.
+> Canonical relationship: **structurally orthogonal** to the
+> canonical scalar ℝ realisation under BSAD — the engine
+> aggregates every multi-channel ΔNFR intermediate to a single real
+> scalar via fixed weighted sum at every operator boundary,
+> bilinearly contracting it with :math:`\nu_f` to evolve
+> :math:`\partial\mathrm{EPI}/\partial t` per the canonical nodal
+> equation.
+> Catalog interaction: **none** required.  The 13 canonical
+> operators do not read, write, preserve, or invoke any tensor
+> rank, channel-retention buffer, singular-value decomposition,
+> operator-valued ΔNFR action, or rank ≥ 2 representation; they
+> operate exclusively through the canonical scalar accessor
+> ``G.nodes[node]["dnfr"]`` (``ALIAS_DNFR``) followed by the
+> bilinear scalar contraction in
+> ``src/tnfr/operators/nodal_equation.py::compute_expected_depi_dt``
+> with the typed signature ``(float, float) -> float``.
+
+The envelope register now records four entries:
+
+| ID | Object | Source | Verdict | Refutation mechanism |
+|---|---|---|---|---|
+| E1 | Pontryagin measure-valued :math:`\nu_f` | §13triginta-tertia | NEGATIVE | Scalar-storage axis + measure-redundancy under canonical νf-update |
+| E2 | ``BEPIElement`` Banach carrier | §13triginta-sexta | NEGATIVE | TMEP (temporal-modal aggregation suffices); BEPI-storage fraction = 0 across two resolutions |
+| E3 | CoverElement (covering-space lift / U(1) bundle / homotopy-retaining φ) | §13triginta-decima | NEGATIVE | PWDP (canonical wrap-discipline at every operator boundary); :math:`w_{\mathrm{frac}} = 0` across two resolutions |
+| E4 | TensorGradientElement (tensor-/operator-valued ΔNFR over canonical gradient channels) | this section | NEGATIVE | BSAD (canonical bilinear-scalar aggregation at every operator boundary); :math:`T_{\mathrm{frac}} = 0` and :math:`\sigma_1 / \sigma_{2,3} \sim 10^2` across two resolutions |
+
+**Structural note on E4 vs. E1, E2, E3.**  E1 and E2 each have a
+concrete code witness in the repo (``Ω_R`` Pontryagin scaffolding
+and ``src/tnfr/mathematics/epi.py:103::BEPIElement`` respectively),
+even though those witnesses are never invoked by the canonical
+13-operator API.  E3 has no source-code witness at all (purely
+conceptual envelope).  E4 sits between these extremes: there is
+**no** ``TensorGradientElement`` class, no ``ALIAS_DNFR_TENSOR``
+alias, no ``rank`` / ``channel`` / ``svd`` parameter in any
+canonical operator signature (verified by repo-wide grep at the
+B3c commit), yet the *upstream* tensorial intermediate that BSAD
+collapses is computationally explicit inside
+``default_compute_delta_nfr`` as the per-channel triple
+:math:`(d\theta_i, d\mathrm{EPI}_i, d\nu_{f,i})` before the
+weighted aggregation step.  E4 is therefore a *latently
+instantiated but structurally discarded* research envelope: the
+tensor data exists transiently during ΔNFR assembly, then is
+projected to ℝ before it can be observed by any canonical operator
+or invariant.  This is a strictly more constraining canonical
+discipline than the E3 case (where the relevant lift never enters
+the canonical pipeline at all).
+
+### §13quadraginta-secunda.3 No Deletion, No Deprecation, No Promotion, No Modification
+
+The verdict does **not** authorise:
+
+- introduction of any ``TensorGradientElement`` class,
+  ``ALIAS_DNFR_TENSOR`` alias, ``rank`` / ``channels`` / ``svd``
+  field on any canonical operator, or tensor-valued ΔNFR module
+  under ``src/tnfr/`` (E4 remains a research envelope; promoting
+  it to a canonical code witness is itself off-catalog and would
+  require a separate, documented research-track commit);
+- deprecation warnings around ``default_compute_delta_nfr``,
+  ``ALIAS_DNFR``, or the bilinear-scalar contract of
+  ``compute_expected_depi_dt`` in
+  ``src/tnfr/dynamics/dnfr.py``, ``src/tnfr/constants/aliases.py``,
+  or ``src/tnfr/operators/nodal_equation.py``;
+- modification of the 13-operator catalog;
+- modification of the canonical contract
+  :math:`(\nu_f, \Delta\mathrm{NFR}) \mapsto \partial\mathrm{EPI}/\partial t`
+  (typed ``(float, float) -> float``);
+- changes to ``src/tnfr/operators/nodal_equation.py``,
+  ``src/tnfr/operators/grammar_core.py``,
+  ``src/tnfr/physics/fields.py``, ``src/tnfr/physics/conservation.py``,
+  or ``src/tnfr/physics/variational.py``;
+- any change to grammar U1–U6;
+- any claim about G4 = RH, T-HP, or the open content of
+  §13septies.
+
+E4 remains available for off-catalog research (e.g.
+operator-valued ΔNFR action on local Banach elements,
+tetrad-channel-retaining cascade analyses, multi-channel anomaly
+detection, tensor-rank diagnostics for grammar-violation
+classification) provided such research is documented as
+off-catalog and does not claim canonical status.  The B3a
+diagnostic module (``src/tnfr/riemann/dnfr_type_signature.py``)
+and its demo (``examples/81_dnfr_type_signature_demo.py``) are
+preserved as off-catalog measurement utilities, exactly as the
+B0a, B1a, and B2a diagnostics were preserved at B0c, B1c, and B2c.
+
+The D-CC-6 catalog citation correction recorded in
+§13triginta-septima at B2a, plus the new D-CC-7 deferred catalog
+citation patch noted at §13quadraginta-prima.9 (covering the
+``ALIAS_DNFR`` / ``dnfr.py`` / ``nodal_equation.py`` typed-bilinear
+contract triple), remain documentation-only findings on this
+commit (one-finding-per-commit rule); both patches stay queued for
+a future dedicated type-hygiene commit.
+
+### §13quadraginta-secunda.4 Programme Bookkeeping
+
+- ``theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md`` §4 row B3: Phase c
+  advances ⏳ → ✅; Verdict column advances "—" → **NEGATIVE**;
+  commit-refs column appends the present commit hash.
+- §3 sub-question registry status: B3 transitions from
+  🟡 IN PROGRESS to ✅ COMPLETE; the B3 spec block gains a closing
+  line analogous to B0/B1/B2: *"Status: ✅ COMPLETE — B3a ✅,
+  B3b ✅, B3c ✅. Final verdict: NEGATIVE."*
+- §3 progress summary advances: 4 sub-questions complete
+  (B0 + B1 + B2 + B3 all NEGATIVE), 0 in progress, 8 pending
+  (B4 – B11 + Final).
+- §6 methodology lessons: an L3 promotion entry is recorded (see
+  §13quadraginta-secunda.5 below) reflecting that the provisional
+  L3* super-pattern (R-L3-1) now holds across all four Tier-1
+  per-node intrinsic types and is promoted to a stable working
+  heuristic.
+
+### §13quadraginta-secunda.5 Methodology Lesson L3 — Promoted to L3* Across B0 ∧ B1 ∧ B2 ∧ B3
+
+T-νf (B0), T-EPI (B1), T-φ (B2), and T-ΔNFR (B3) have all closed
+NEGATIVE with the same five-step structural shape established in
+§13triginta-sexta.5 and confirmed in §13triginta-decima.5:
+
+1. **Anchor** identifies a candidate "type upgrade" of a canonical
+   observable (measure-valued :math:`\nu_f`; Banach-valued EPI;
+   covering-space-lifted φ; tensor-/operator-valued ΔNFR).
+2. **Diagnostic** measures two orthogonal axes: scalar-storage
+   utilisation + spectral/entropy richness.
+3. **Forcing-axiom reduction** finds that no canonical constraint
+   forces the upgrade; isolates a single residual axiom strictly
+   weaker than the upgrade itself ((P-νf-Bijectivity);
+   (P-EPI-Bijectivity); (P-φ-Homotopy-Retention);
+   (P-ΔNFR-Tensor-Retention)).
+4. **Canonical-status check** finds that the residual axiom is itself
+   independent of the catalog and is actively refuted by an existing
+   canonical mechanism (scalar νf-update closure for B0; REMESH/TMEP
+   for B1; PWDP / wrap-discipline for B2; BSAD / bilinear-scalar
+   aggregation for B3).
+5. **Verdict** NEGATIVE; the upgrade-carrier is reclassified as a
+   legitimate non-canonical research envelope (E1; E2; E3; E4).
+
+**L3 (cross-conjecture pattern), confirmed for B0 ∧ B1 ∧ B2 ∧ B3.**
+*Whenever a candidate type-upgrade of a canonical observable can be
+matched by an existing canonical mechanism — Pontryagin-dual scalar
+νf-update closure for the frequency axis, REMESH temporal
+aggregation for the form axis, wrap-discipline for the phase axis,
+bilinear-scalar aggregation for the nodal-gradient axis — the
+upgrade is non-canonical and the existing mechanism is preferred.*
+L3 is now corroborated across **all four** Tier-1 per-node
+intrinsic types.  Tier 1 is closed.
+
+**Promotion: R-L3-1 / L3* is now stable working heuristic.**
+The provisional super-pattern introduced in §13triginta-decima.5 —
+*each canonical observable comes with at least one canonical
+discharge mechanism for the expressivity demand that would
+otherwise force a type upgrade* — has held across all four Tier-1
+sub-questions with four structurally distinct discharge
+mechanisms:
+
+| Sub-question | Axis | Canonical discharge mechanism | Mechanism class |
+|---|---|---|---|
+| B0 (T-νf)    | frequency       | scalar νf-update closure                | *closure* |
+| B1 (T-EPI)   | form            | REMESH temporal aggregation             | *temporal aggregation* |
+| B2 (T-φ)     | phase           | ``wrap_angle`` projection discipline    | *projection discipline* |
+| B3 (T-ΔNFR)  | nodal gradient  | BSAD bilinear-scalar aggregation        | *spatial-channel aggregation* |
+
+The four mechanism classes are structurally orthogonal (closure
+vs. temporal aggregation vs. spatial projection vs. multi-channel
+aggregation) and span the natural axes of expressivity-suppression
+on a graph-coupled scalar field theory.  This is a strong
+indication that L3* is not a coincidence of three or four nearby
+observables but a *catalog-wide property* of the canonical
+13-operator + grammar-U1–U6 + tetrad-:math:`(Φ_s,
+\|∇φ\|, K_φ, ξ_C)` formalism: every canonical observable's
+expressivity demand is matched by a canonical discharge mechanism
+of an appropriate class.  **L3\* is hereby promoted from
+provisional refinement to a stable working heuristic** and will be
+applied predictively at Tier 2 (graph-level parameters, B4–B6) and
+Tier 3 (derived diagnostic fields).
+
+**Predictive use of L3\* for Tier 2 (advisory, not binding).**
+Where Tier 2 sub-questions ask whether a graph-level scalar
+parameter must be replaced by a richer carrier (matrix, fractional,
+edge-dependent, complex-valued), L3* predicts: *if there exists a
+canonical discharge mechanism in the catalog that already absorbs
+the relevant expressivity demand, the upgrade is non-canonical*.
+For example:
+
+- **B4 (T-REMESH-window** :math:`(\tau_l, \tau_g)`**)**: the N15
+  closure (REMESH-∞ derivation, §1–§23 of
+  ``theory/REMESH_INFINITY_DERIVATION.md``) already supplies the
+  asymptotic-limit discharge for continuous-time kernel
+  expressivity; L3* predicts NEGATIVE.
+- **B5 (T-Δφ_max)**: the canonical global ``Δφ_max`` derived from
+  :math:`\gamma/\pi` discharges the per-edge / angle-of-attack
+  expressivity via the U3 single-scalar coupling discipline; L3*
+  predicts NEGATIVE.
+- **B6 (T-coupling-weights)**: ``default_compute_delta_nfr``
+  already aggregates per-edge real weights via fixed weighted sum
+  (the spatial-channel discharge mechanism of B3 generalises);
+  L3* predicts NEGATIVE.
+
+These predictions are recorded for falsifiability; each Tier 2
+sub-question will still be executed in full three-phase form and
+the predictions may be overturned by phase-a empirical fingerprint
+or phase-b forcing-axiom reduction.
+
+### §13quadraginta-secunda.6 Honest Scope (Mandatory)
+
+This section:
+
+- **Does** close T-ΔNFR (B3) with a NEGATIVE verdict.
+- **Does** classify E4 = TensorGradientElement (tensor-/operator-
+  valued ΔNFR over the canonical gradient channels) as legitimate
+  non-canonical research envelope.
+- **Does** advance the catalog type-hygiene programme to
+  4/11+1 complete (B0 + B1 + B2 + B3 all NEGATIVE).
+- **Does** close Tier 1 (per-node intrinsic types) of the
+  programme.
+- **Does** record promotion of the provisional R-L3-1 / L3*
+  super-pattern from "provisional refinement" to "stable working
+  heuristic", on the strength of four structurally distinct
+  canonical discharge mechanisms (closure, temporal aggregation,
+  projection discipline, bilinear-scalar aggregation) all
+  corroborating L3*.
+- **Does** record three falsifiable Tier-2 predictions (B4, B5, B6
+  expected NEGATIVE per L3*).
+- **Does not** advance G4 = RH, does not close T-HP, does not
+  promote any operator/field/constant/alias to canonical status,
+  does not modify the catalog operators/grammar/contracts, does
+  not modify any source file in ``src/tnfr/``, does not introduce
+  a ``TensorGradientElement`` class or ``ALIAS_DNFR_TENSOR``
+  alias, does not modify ``default_compute_delta_nfr`` or the
+  bilinear-scalar contract of ``compute_expected_depi_dt``, does
+  not delete or modify the B3a diagnostic module or its demo.
+- **Does not** make any binding claim about B4 / B5 / B6 or any
+  subsequent sub-question; the Tier-2 predictions in
+  §13quadraginta-secunda.5 are advisory and falsifiable.
+- **Does not** apply the D-CC-6 or D-CC-7 deferred catalog
+  citation patches on this commit (one finding per commit; both
+  remain queued for a future type-hygiene commit).
+
+### §13quadraginta-secunda.7 Cross-references
+
+- §13triginta-prima — T-νf pre-registration (precedent template).
+- §13triginta-secunda — T-νf forcing-axiom reduction (precedent).
+- §13triginta-tertia — T-νf NEGATIVE verdict + E1 classification
+  (precedent for B3c, first envelope).
+- §13triginta-quarta — T-EPI pre-registration (precedent).
+- §13triginta-quinta — T-EPI forcing-axiom reduction (precedent for
+  TMEP-style canonical-mechanism refutation).
+- §13triginta-sexta — T-EPI NEGATIVE verdict + E2 = ``BEPIElement``
+  classification (precedent for B3c, second envelope; L3 first
+  observed across B0 ∧ B1).
+- §13triginta-septima — Living discoveries log; this commit appends
+  D-ENV-4 (E4 = TensorGradientElement, NEGATIVE), promotes D-MP-3 =
+  L3 with the L3* super-pattern from provisional to stable working
+  heuristic, and records three falsifiable Tier-2 predictions
+  (B4, B5, B6); the D-CC-6 and D-CC-7 deferred catalog citation
+  patches remain unchanged on this commit.
+- §13triginta-octava — T-φ pre-registration (precedent).
+- §13triginta-novena — T-φ forcing-axiom reduction (precedent for
+  PWDP-style canonical-mechanism refutation).
+- §13triginta-decima — T-φ NEGATIVE verdict + E3 = CoverElement
+  classification (direct precedent; L3 confirmed across
+  B0 ∧ B1 ∧ B2; R-L3-1 / L3* introduced as provisional).
+- §13quadraginta — T-ΔNFR pre-registration (B3a anchor + two-axis
+  tensor-storage + rank-entropy diagnostic; supplies the
+  doubly-decisive :math:`T_{\mathrm{frac}} = 0` +
+  :math:`\sigma_1 / \sigma_{2,3} \sim 10^2` fingerprint consumed
+  here).
+- §13quadraginta-prima — T-ΔNFR forcing-axiom reduction (B3b;
+  BSAD isolated (P-ΔNFR-Tensor-Retention) as INDEPENDENT_AXIOM and
+  refuted it at the canonical level; supplies the decisive input
+  to this section).
+- §13septies — T-HP open content (independent, untouched by this
+  verdict).
+- §19.1 — Full P1–P49 milestone table.
+- ``theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md`` §3, §4, §6 —
+  programme tracker (advances on this commit at row B3 Phase c +
+  Verdict, B3 spec line, §3 progress summary, §6 L3* promotion,
+  and three Tier-2 predictions).
+- ``src/tnfr/dynamics/dnfr.py::default_compute_delta_nfr`` —
+  canonical scalar ΔNFR assembly (canonical mechanism that
+  collapses any multi-channel intermediate to ℝ before writing
+  ``ALIAS_DNFR``; embodies the BSAD discipline).
+- ``src/tnfr/operators/nodal_equation.py::compute_expected_depi_dt``
+  — canonical bilinear-scalar contract ``(float, float) -> float``
+  (canonical typing witness for the scalar ΔNFR carrier).
+- ``src/tnfr/constants/aliases.py::ALIAS_DNFR`` — canonical scalar
+  storage alias (canonical typing witness).
+- ``src/tnfr/riemann/dnfr_type_signature.py`` — B3a diagnostic
+  implementation (preserved as off-catalog measurement utility).
+- ``examples/81_dnfr_type_signature_demo.py`` — B3a two-resolution
+  demo (preserved; corroborates BSAD empirically with
+  :math:`T_{\mathrm{frac}} = 0` and
+  :math:`\sigma_1 / \sigma_{2,3} \sim 10^2` at both resolutions).
 
 ---
