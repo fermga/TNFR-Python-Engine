@@ -6363,3 +6363,314 @@ The TNFR-Riemann program remains paused at the T-HP / G4 = RH
 boundary as stated in §13septies.
 
 ---
+
+
+## §13triginta-tertia. Resolution of (P-νf-Bijectivity) from the Nodal Equation — Forward Dynamics vs Backward Identifiability (Closes T-νf at the Canonical Level; Does NOT Advance G4 = RH)
+
+**Pre-registration status.**  This section executes Ruta A2 of the
+νf-Type program (§§13triginta-prima, 13triginta-secunda): it tests
+whether the residual axiom (P-νf-Bijectivity) identified at
+§13triginta-secunda.5 is itself a canonical consequence of the
+nodal equation $\partial \mathrm{EPI}/\partial t = \nu_f \cdot \Delta\mathrm{NFR}(t)$
+together with Invariants #1 (Nodal Equation Integrity) and #6
+(Reproducible Dynamics).
+
+The honest verdict is pre-registered as one of:
+
+- `FORWARD_FORCES_BACKWARD`: the forward equation implies backward
+  identifiability of $\nu_f$ from the spectral content of
+  $\partial \mathrm{EPI}/\partial t$.
+- `FORWARD_INDEPENDENT_OF_BACKWARD`: the forward equation does **not**
+  imply backward identifiability; (P-νf-Bijectivity) is a separate
+  observability axiom strictly stronger than the catalog.
+
+Scope: this section does **not** advance G4 = RH, does **not** close
+T-HP, does **not** introduce or modify any canonical operator.  It
+does, however, **close T-νf at the canonical level** by structurally
+demonstrating that the upgrade $\nu_f : \mathbb{R}^+ \to \mathcal{M}^+(\mathbb{Z})$
+is consistent with but not forced by the canonical catalog.
+
+### §13triginta-tertia.1 The Literal Canonical Reading of the Nodal Equation
+
+The nodal equation as canonically implemented in
+`src/tnfr/operators/nodal_equation.py::compute_expected_depi_dt` is:
+
+```python
+def compute_expected_depi_dt(G: TNFRGraph, node: NodeId) -> float:
+    vf = _get_node_attr(G, node, ALIAS_VF)
+    dnfr = _get_node_attr(G, node, ALIAS_DNFR)
+    return vf * dnfr
+```
+
+This is a **scalar product** of two `float` quantities at each node $i$
+and each time $t$:
+
+$$
+\left(\frac{\partial \mathrm{EPI}}{\partial t}\right)_i \;=\; \nu_{f,i}(t) \cdot \Delta\mathrm{NFR}_i(t),
+\qquad \nu_{f,i}, \; \Delta\mathrm{NFR}_i \in \mathbb{R}.
+$$
+
+This is the **literal** canonical reading of the nodal equation.  Any
+upgrade of either factor (scalar → measure, real → complex, pointwise
+→ functional) is a structural extension, not the literal canonical
+content.  The literal reading is what Invariant #1 demands faithful
+adherence to ("EPI evolution constraint: Changes occur only via
+$\partial \mathrm{EPI}/\partial t = \nu_f \cdot \Delta \mathrm{NFR}$").
+
+### §13triginta-tertia.2 What Forward Determinism Requires
+
+A forward-deterministic specification of the nodal evolution requires
+that, at each time $t$ and each node $i$:
+
+- the value $\nu_{f,i}(t)$ is well-defined,
+- the value $\Delta\mathrm{NFR}_i(t)$ is well-defined (computed
+  deterministically from the graph state),
+- their product is real and finite.
+
+These conditions are **fully satisfied** by $\nu_{f,i} \in \mathbb{R}^+$
+(positive scalar) and $\Delta\mathrm{NFR}_i \in \mathbb{R}$ (real scalar).
+The current canonical implementation is precisely this configuration,
+and:
+
+- **Invariant #1** (Nodal Equation Integrity) holds: EPI changes occur
+  only through this scalar product channel.
+- **Invariant #6** (Reproducible Dynamics) holds: identical seeds
+  produce identical trajectories under this evolution rule.
+- **Grammar U2** (Convergence) holds whenever
+  $\int \nu_{f,i}(t) \cdot |\Delta\mathrm{NFR}_i(t)| \, dt < \infty$,
+  which is achievable with scalar $\nu_f$.
+
+Therefore: **forward determinism does not require any non-scalar
+upgrade of $\nu_f$**.
+
+### §13triginta-tertia.3 What Backward Identifiability Would Require
+
+The axiom (P-νf-Bijectivity) — stated at §13triginta-secunda.5 — is:
+
+> $\nu_f$ must bijectively encode the spectral content of the EPI
+> dynamics it drives.
+
+This is an **inverse-problem statement**: given the observed spectral
+content of $\partial \mathrm{EPI}/\partial t$ at node $i$, one should
+be able to **uniquely recover** $\nu_{f,i}$.
+
+For this recovery to be well-defined, the map
+
+$$
+\nu_{f,i} \;\longmapsto\; \mathrm{spec}\left(\frac{\partial \mathrm{EPI}}{\partial t}\bigg|_i\right)
+$$
+
+must be injective.  But the actual map factors through
+$\Delta\mathrm{NFR}_i$:
+
+$$
+\nu_{f,i} \;\longrightarrow\; \nu_{f,i} \cdot \Delta\mathrm{NFR}_i(t) \;=\; \frac{\partial \mathrm{EPI}}{\partial t}\bigg|_i
+\;\longrightarrow\; \mathrm{spec}(\cdot).
+$$
+
+Two distinct scalar values $\nu_{f,i} \neq \nu_{f,i}'$ produce
+trajectories $\nu_{f,i} \cdot \Delta\mathrm{NFR}_i(t)$ and
+$\nu_{f,i}' \cdot \Delta\mathrm{NFR}_i(t)$ that share the same
+spectral support but differ in amplitude.  Amplitude is recoverable
+from the spectral content only if $\Delta\mathrm{NFR}_i(t)$ is known —
+i.e., the inverse problem is **already** well-posed for scalar
+$\nu_f$, but **only relative to a known $\Delta\mathrm{NFR}$**.
+
+So at the forward-dynamics level, identifiability of scalar $\nu_f$ is
+straightforward modulo knowledge of $\Delta\mathrm{NFR}$, and no
+upgrade to $\mathcal{M}^+(\mathbb{Z})$ is needed for the inverse
+problem itself.  The Pontryagin upgrade is required only if one
+demands $\nu_f$ to carry the *spectral support* of the trajectory
+intrinsically — a strictly stronger requirement than forward
+identifiability.
+
+### §13triginta-tertia.4 Forward $\neq$ Backward: the Structural Distinction
+
+The clean structural statement is:
+
+| Property | Statement | Required by canonical catalog? |
+|---|---|---|
+| Forward determinism | $(\nu_{f,i}, \Delta\mathrm{NFR}_i, t) \mapsto \partial \mathrm{EPI}/\partial t\big|_i$ is single-valued | **Yes** (Invariants #1, #6) |
+| Forward reproducibility | Same inputs → same trajectory | **Yes** (Invariant #6) |
+| Backward observability (modulo $\Delta\mathrm{NFR}$) | $\nu_{f,i}$ recoverable from $(\partial\mathrm{EPI}/\partial t, \Delta\mathrm{NFR})$ | **Trivially yes** for scalar $\nu_f$ |
+| Backward observability (intrinsic to $\nu_f$ alone) | $\nu_{f,i}$ recoverable from $\mathrm{spec}(\partial \mathrm{EPI}/\partial t)$ alone | **No** — this is (P-νf-Bijectivity) |
+| Spectral self-encoding of $\nu_f$ | $\nu_f$ intrinsically encodes its own spectral fingerprint | **No** — this is (P-νf-Bijectivity) |
+
+The bottom two rows are the content of (P-νf-Bijectivity).  Neither
+is required by the literal canonical reading of the nodal equation.
+Both are achievable by **adding** (P-νf-Bijectivity), but neither
+follows from the catalog without it.
+
+### §13triginta-tertia.5 Where Spectral Richness Actually Lives
+
+In the literal canonical reading, the spectral richness of the
+trajectory $\partial \mathrm{EPI}/\partial t$ is carried by:
+
+- **$\Delta\mathrm{NFR}_i(t)$**: itself a time-varying scalar whose
+  Fourier transform can have arbitrary support, because it is computed
+  from the graph state (which evolves through grammar U1–U6 and
+  network coupling).
+- **The graph state** (EPI values, phase configuration, coupling
+  topology): produces the time-varying $\Delta\mathrm{NFR}_i(t)$
+  through deterministic feedback.
+- **The operator sequence** (grammar U1–U6): provides the temporal
+  modulation of the entire dynamics.
+
+The scalar $\nu_{f,i}$ acts as a **multiplicative gain** on
+$\Delta\mathrm{NFR}_i(t)$.  It does not generate spectral content; it
+amplifies whatever spectral content already lives in
+$\Delta\mathrm{NFR}_i(t)$.
+
+This is empirically consistent with the P14 prime-ladder construction
+(§8.2 and `src/tnfr/riemann/prime_ladder_hamiltonian.py`): the
+prime-ladder spectrum $\{\log p_k\}$ arises from the **graph
+construction** (REMESH echoes at incommensurate periods), not from any
+intrinsic spectral structure of $\nu_f$.  The current implementation
+uses scalar $\nu_f$ per node (uniform or topologically-modulated by
+$1/\sqrt{\deg(i)}$) and still reproduces the full prime-ladder
+spectrum.  This is a direct demonstration by existence that
+(P-νf-Bijectivity) is not required to produce the observed spectral
+richness.
+
+### §13triginta-tertia.6 Boxed Result — Proposition T-νf-Resolution
+
+> **Proposition T-νf-Resolution.**
+>
+> Let $\nu_f : V(G) \to \mathbb{R}^+$ be a scalar positive function
+> on the graph $G$ (the literal canonical type).  Then:
+>
+> 1. *(Forward consistency)*  The nodal equation
+>    $\partial \mathrm{EPI}/\partial t = \nu_f \cdot \Delta\mathrm{NFR}(t)$
+>    is well-posed under Invariants #1 and #6 with $\nu_f$ scalar.
+>
+> 2. *(Observability)*  The map
+>    $\nu_{f,i} \mapsto \partial \mathrm{EPI}/\partial t\big|_i$
+>    is injective modulo knowledge of $\Delta\mathrm{NFR}_i(t)$, so
+>    scalar $\nu_f$ is identifiable in the operational sense available
+>    to a TNFR observer.
+>
+> 3. *(Sufficiency for observed spectra)*  The full spectral richness
+>    documented in P12–P16 (prime-ladder, von Mangoldt, Weil–Guinand
+>    explicit formula, Li–Keiper positivity) is reproduced under
+>    scalar $\nu_f$ by routing spectral content through
+>    $\Delta\mathrm{NFR}(t)$ and the graph state evolution.
+>
+> 4. *(Independence of (P-νf-Bijectivity))*  The intrinsic
+>    self-encoding requirement (P-νf-Bijectivity) is an
+>    **inverse-problem axiom** that is **independent** of the
+>    forward-dynamics specification given by the canonical catalog.
+>    It is consistent with the catalog (it adds no contradiction) but
+>    is not derivable from it.
+>
+> Therefore the canonical type of $\nu_f$ is **scalar
+> positive-real-valued per node**.  The upgrade
+> $\nu_f \in \mathcal{M}^+(\mathbb{Z})$ proposed in §13triginta-prima
+> is a **non-canonical structural refinement** that requires the
+> additional axiom (P-νf-Bijectivity), which is not in the canonical
+> catalog.
+
+**Verdict on (P-νf-Bijectivity)** (Ruta A2):
+`FORWARD_INDEPENDENT_OF_BACKWARD`.
+
+**Verdict on Conjecture T-νf** (§13triginta-prima.2):
+`CLOSED_NEGATIVELY_AT_CANONICAL_LEVEL` — the conjecture's positive
+form (νf canonically forced to be a positive Radon measure on
+$\mathbb{Z}$) is **refuted** at the canonical level by Proposition
+T-νf-Resolution.  The canonical type of $\nu_f$ is scalar
+positive-real-valued, as the literal nodal equation specifies.
+
+### §13triginta-tertia.7 Consequence for the νf-Type Program
+
+The closed structural picture is:
+
+$$
+\underbrace{\nu_f : V(G) \to \mathbb{R}^+}_{\text{canonical (forced by nodal equation)}}
+\;\;\subsetneq\;\;
+\underbrace{\nu_f \in \mathcal{M}^+(\mathbb{Z})}_{\text{non-canonical (requires P-}\nu_f\text{-Bijectivity)}}
+$$
+
+The Pontryagin / measure-valued upgrade remains a **legitimate
+structural extension** of TNFR, but it must be acknowledged as such:
+an *extension*, not a *canonical consequence*.  This is the same
+status as, for example, the complex-extension of the spectral zeta
+function (P13), which is consistent with the catalog but introduces
+extra structure not present in the bare catalog.
+
+This resolution **does not invalidate** the diagnostic value of
+$\mathcal{S}_{\nu_f}$ defined in §13triginta-prima.6: the binned
+spectral entropy of the P14 prime-ladder spectrum, $S_{\nu_f} \approx 0.95$,
+remains a valid *upper-bound proxy* for the spectral complexity of
+$\Delta\mathrm{NFR}(t)$ (which is what actually carries the spectral
+content under the literal reading).  The diagnostic is reinterpreted:
+it measures complexity of the trajectory $\partial \mathrm{EPI}/\partial t$,
+not of $\nu_f$ intrinsically.
+
+### §13triginta-tertia.8 What Closes and What Remains Open
+
+**Closed by §13triginta-tertia:**
+
+- The νf-Type question at the *canonical* level: $\nu_f$ is scalar
+  positive-real-valued, as the literal nodal equation requires.
+- The status of (P-Pontryagin) and (P-νf-Bijectivity): both are
+  consistent extensions, neither is canonical.
+- The interpretation of the $\mathcal{S}_{\nu_f}$ diagnostic: it
+  measures trajectory complexity, not $\nu_f$ intrinsic complexity.
+
+**Remains open (unchanged by §13triginta-tertia):**
+
+- **G4 = RH** (the central open problem of the program).  The
+  forward/backward distinction established here does not bear on the
+  smooth/oscillatory split of T-HP.  The smooth half (P30) and the
+  oscillatory half (S(T) = (1/π)arg ζ(1/2+iT)) are both formulated
+  using real-valued spectral data, so their status is independent of
+  the canonical type of $\nu_f$.
+- **B1 vs B2 vs B3** (the three branches at §13septies for closing
+  T-HP).  Unaffected by νf-Type resolution.
+- Whether a non-canonical extension of TNFR to measure-valued $\nu_f$
+  would yield additional structural insight on G4.  This is a
+  separate research question, parallel to but independent of the
+  canonical-catalog programme.
+
+### §13triginta-tertia.9 Cross-References
+
+- §13triginta-prima — pre-registration of T-νf; introduction of
+  (P-Pontryagin) meta-axiom; $\mathcal{S}_{\nu_f}$ diagnostic.
+- §13triginta-secunda — reduction of (P-Pontryagin) to
+  (P-νf-Bijectivity); enumeration F1–F10 of canonical candidates.
+- §13septies — T-HP statement; smooth/oscillatory split (independent
+  of νf carrier type).
+- §13nonies — P30 operator-level closure of the smooth half (uses
+  real-valued conjugate momentum, consistent with the canonical
+  scalar $\nu_f$ established here).
+- §13triginta — P50 residue-in-kernel diagnostic.
+- `src/tnfr/operators/nodal_equation.py::compute_expected_depi_dt` —
+  literal canonical implementation `vf * dnfr` with both factors as
+  `float`; this is the implementation whose canonicity is
+  established in §13triginta-tertia.2.
+- `src/tnfr/riemann/prime_ladder_hamiltonian.py` — P14 implementation
+  using scalar $\nu_f$ per node, demonstrating by existence
+  (§13triginta-tertia.5) that the prime-ladder spectrum is generated
+  without (P-νf-Bijectivity).
+
+**Honest scope (final, as of §13triginta-tertia).**
+
+The νf-Type program is **closed at the canonical level** with verdict:
+canonical $\nu_f$ is positive-real-scalar, per the literal nodal
+equation.  The Pontryagin / measure-valued upgrade is a legitimate
+non-canonical extension that requires the additional inverse-problem
+axiom (P-νf-Bijectivity), which is independent of the catalog.
+
+This closure does **not** advance G4 = RH, does **not** close T-HP,
+does **not** introduce or modify any canonical operator, and does
+**not** alter the §13septies pause-at-T-HP status of the larger
+TNFR-Riemann programme.  The smooth/oscillatory split of T-HP and
+its branches B1/B2/B3 remain the genuine open structural content.
+
+The νf-Type sub-programme (§§13triginta-prima → 13triginta-tertia)
+is therefore complete as a self-contained theoretical reduction:
+foundational question raised (A), reduced to a deeper axiom (A1),
+and decided at the canonical level (A2).  The reduction confirms
+that the literal nodal equation is structurally self-sufficient and
+that the canonical catalog does not require the Pontryagin upgrade.
+
+---
