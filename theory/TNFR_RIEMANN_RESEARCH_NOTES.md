@@ -12183,3 +12183,113 @@ L3* heuristic, post-B8c, is promoted to: **"empirically robust working heuristic
 - `src/tnfr/physics/conservation.py:209` (`compute_current_divergence`).
 - `src/tnfr/riemann/currents_closure_signature.py` (B8a diagnostic).
 - `examples/86_currents_closure_signature_demo.py` (B8a demo).
+
+### Sec 13quinquaginta-sexta — B9 Phase a: Aggregates-Closure Signature diagnostic (T-aggregates-closure)
+
+#### .1 Scope
+
+This section pre-registers and discharges Phase a of sub-question B9 = Delta-aggregates-closure of the Catalog Type-Hygiene Programme (third Tier-3 closure sub-question, after B7 and B8). Scope is strictly methodological: it pre-registers the closure question for the four canonical scalar aggregates — global coherence C(t), per-node Sense Index S_i, per-node energy density E, and per-node topological charge Q — and freezes one empirical observable, the **Aggregates-Closure Signature** S_AC. It does NOT promote or modify any canonical operator, does NOT alter the tetrad fields or the currents, does NOT advance G4 = RH (Conjecture T-HP, Sec 13septies), and does NOT by itself emit the closure verdict. Final verdict reserved for Phase c (Sec 13quinquaginta-septima) by direct source-code trace.
+
+#### .2 Pre-registered closure question
+
+> **Q (B9, T-aggregates-closure)**: do the four canonical scalar aggregates — `compute_coherence` (`C(t)`), `compute_Si` (`S_i`), `compute_energy_density` (`E`), `compute_topological_charge` (`Q`) — reduce to scalar-valued functionals of the canonical Tier-1+Tier-2 scalar slots (`nu_f`, `EPI`, `theta`/`phi`, `DeltaNFR` via canonical alias `_get_dnfr`) plus the graph metric (`G.neighbors`, `G.degree`, `G.edges`), with every intermediate scalar or scalar-array (fixed-length, used purely for scalar reduction) and no implicit Banach-derivative apparatus, callable kernel, measure, matrix lift, or operator-valued intermediate introduced along the reduction path?
+
+This is a closure question (Phase b is **n/a**): if Q is answered YES (= NEGATIVE for the catalog-extension hypothesis), no richer envelope is forced; if Q is answered NO, the candidate tenth non-canonical research envelope E_AC = HiddenIntermediateTensorStateOnAggregates is structurally forced and a candidate tenth CDM ACD = Aggregates-Closure Discipline would need to be derived from canonical machinery to discharge it. The expected verdict per L3* is NEGATIVE; the structurally consistent classification of E_AC, conditional on NEGATIVE, is reserved for Phase c.
+
+#### .3 Empirical diagnostic: Aggregates-Closure Signature S_AC
+
+The diagnostic constructs a canonical ring graph at probe size n_nodes, initialises Tier-1+Tier-2 slots from a deterministic seed, and inspects two orthogonal axes:
+
+- **Input-domain-closure axis**: fraction of per-node input values touched by the aggregate pipeline (Tier-1+Tier-2 scalar slots `nu_f`, `EPI`, `theta`, and the resolved `DeltaNFR` payload) that are structurally scalar-coercible (`isinstance(v, (int, float, np.floating, np.integer))` and `float(v)` succeeds).
+- **Output-scalar-closure axis**: fraction of aggregate output values that are structurally scalar-coercible — the single global `float` from `compute_coherence`, plus every per-node entry of the three `dict[node, float]` returns from `compute_Si`, `compute_energy_density`, `compute_topological_charge`.
+
+The signature is `S_AC = (1 - input_scalar_fraction) + (1 - output_scalar_fraction)` (normalised to [0, 2]; 0 = full scalar closure on both axes). Verdict thresholds: `S_AC <= 0.05` -> `SCALAR_CLOSURE_ADEQUATE`; `0.05 < S_AC <= 0.20` -> `SCALAR_CLOSURE_PARTIAL`; `S_AC > 0.20` -> `SCALAR_CLOSURE_DIVERGENT`.
+
+**Frozen empirical signature** (canonical probes; deterministic; seed = 31):
+
+- small  (n_nodes = 24): S_AC = 0.000000, input_scalar_fraction = 1.000000 (96/96), output_scalar_fraction = 1.000000 (73/73), verdict = `SCALAR_CLOSURE_ADEQUATE`. Per-key input nonscalar: nu_f = 0, EPI = 0, theta = 0, DeltaNFR = 0. Per-field output nonscalar: C_t = 0, Si = 0, energy_density = 0, topological_charge = 0.
+- medium (n_nodes = 48): S_AC = 0.000000, input_scalar_fraction = 1.000000 (192/192), output_scalar_fraction = 1.000000 (145/145), verdict = `SCALAR_CLOSURE_ADEQUATE`. Per-key input nonscalar: nu_f = 0, EPI = 0, theta = 0, DeltaNFR = 0. Per-field output nonscalar: C_t = 0, Si = 0, energy_density = 0, topological_charge = 0.
+
+The diagnostic certifies SCALAR_CLOSURE_ADEQUATE on both axes at both probes — necessary structural condition for the NEGATIVE Phase-c verdict. The diagnostic alone is not sufficient; Phase c emits the final verdict by direct source-code trace of the four canonical aggregate implementations.
+
+Note on output denominators: the global scalar `C(t)` contributes a single entry (denominator = 1) per probe; the three per-node aggregates contribute n_nodes entries each (denominator = 3 * n_nodes). Hence total output-axis denominators are 1 + 3 * 24 = 73 and 1 + 3 * 48 = 145.
+
+#### .4 Files
+
+- `src/tnfr/riemann/aggregates_closure_signature.py` (new): `AggregatesClosureSignatureCertificate` + `compute_aggregates_closure_signature`.
+- `examples/87_aggregates_closure_signature_demo.py` (new): two-probe demo (n_nodes = 24, n_nodes = 48; seed = 31).
+- `src/tnfr/riemann/__init__.py`: B9a re-exports.
+- `theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md`: B9 spec block + table row -> IN PROGRESS.
+
+#### .5 Scope guard
+
+Phase a is methodological only. It does NOT modify `compute_coherence`, `compute_Si`, `compute_energy_density`, or `compute_topological_charge`; does NOT alter any U-rule; does NOT change the tetrad or currents fields. It does NOT advance G4 = RH. The aggregates remain the canonical scalar functionals defined at their source-code locations.
+
+### Sec 13quinquaginta-septima — B9 Phase c: NEGATIVE verdict for T-aggregates-closure, ACD promoted as tenth CDM
+
+#### .1 Scope
+
+This section emits the **final Phase-c verdict** for B9 = Delta-aggregates-closure, by direct source-code trace of the four canonical aggregate implementations. Scope is methodological: it closes the third Tier-3 sub-question (after B7 and B8), promotes **ACD = Aggregates-Closure Discipline** as the tenth Catalog-Discharge Mechanism, classifies **E_AC = HiddenIntermediateTensorStateOnAggregates** as the tenth non-canonical research envelope, and updates the cumulative L3* status. It does NOT modify any canonical implementation, does NOT alter the tetrad fields, currents, or any U-rule, and does NOT advance G4 = RH (Conjecture T-HP, Sec 13septies).
+
+#### .2 Per-aggregate source-code closure trace
+
+**(i) `compute_coherence` at `src/tnfr/metrics/common.py:29`.** Reads exactly two per-node attribute streams via canonical aliases: `dnfr_values = collect_attr(G, nodes, ALIAS_DNFR, 0.0)` and `depi_values = collect_attr(G, nodes, ALIAS_DEPI, 0.0)`. NumPy path computes `dnfr_mean = float(np.mean(np.abs(dnfr_values)))` and `depi_mean = float(np.mean(np.abs(depi_values)))` — two fixed-length scalar-array intermediates whose sole purpose is scalar reduction via `np.mean`, both immediately coerced to Python `float`. Fallback path uses `kahan_sum_nd` over a generator of scalar tuples, again followed by scalar division. Final assignment `coherence = 1.0 / (1.0 + dnfr_mean + depi_mean)` is Python float arithmetic. Output type `float` (single global scalar). **No callable kernel, no measure, no operator-valued intermediate, no matrix lift, no Banach-derivative apparatus introduced.**
+
+**(ii) `compute_Si` at `src/tnfr/metrics/sense_index.py:665`.** Reads three canonical per-node attribute streams via canonical aliases (`ALIAS_VF`, `ALIAS_DNFR`, phase via `_get_phase`) plus three scalar weights (`alpha`, `beta`, `gamma`) merged from the `SI_WEIGHTS` graph attribute (already normalised to floats by `merge_and_normalize_weights`). Per-node kernel `compute_Si_node` at line 473 computes a weighted convex combination `Si = alpha * nu_f + beta * phase_alignment(node, neighbors) + gamma * (1 - normalised_DeltaNFR)` followed by `clamp01(...)` — Python/NumPy float arithmetic on per-node scalar inputs plus the local neighbour list. Vectorised path produces a fixed-length `np.ndarray[float64]` of length n_nodes via NumPy ufuncs (purpose: scalar reduction batched across nodes); fallback path produces `dict[node, float]` via Python `float(...)` coercion. The vectorised array's sole purpose is the batched scalar reduction; it does not escape the function as an output type and is not exposed via the public API (the public contract is `dict[node, float]` or, with the in-place fast path, an explicit `np.ndarray` of scalars wrapping the same scalar reduction). Output type `dict[node, float]` (or scalar-array equivalent). **Same closure verdict as (i).**
+
+**(iii) `compute_energy_density` at `src/tnfr/physics/unified.py:136`.** Invokes the five canonical tetrad/currents accessors `compute_structural_potential(G)`, `compute_phase_gradient(G)`, `compute_phase_curvature(G)`, `compute_phase_current(G)`, `compute_dnfr_flux(G)`, each of which has been independently discharged as scalar-closed under B7 (tetrad: Sec 13quinquaginta-tertia) and B8 (currents: Sec 13quinquaginta-quinta). The aggregate is the dict-comprehension `{n: phi_s[n]**2 + grad_phi[n]**2 + k_phi[n]**2 + j_phi[n]**2 + j_dnfr[n]**2 for n in G.nodes()}` — Python float arithmetic on `dict.get`-fetched scalars. Output type `dict[node, float]`. **No Banach-derivative, no measure, no operator-valued lift; the energy density is by construction the same scalar-typed reduction as the tetrad and currents composed pointwise on the graph node set.**
+
+**(iv) `compute_topological_charge` at `src/tnfr/physics/unified.py:209`.** Structurally isomorphic to (iii) with four-factor inputs instead of five: invokes `compute_phase_gradient(G)`, `compute_phase_curvature(G)`, `compute_phase_current(G)`, `compute_dnfr_flux(G)` (all scalar-closed under B7/B8), then dict-comprehension `{n: grad_phi[n] * j_phi[n] - k_phi[n] * j_dnfr[n] for n in G.nodes()}`. Output type `dict[node, float]`. **Same closure verdict as (iii).**
+
+All intermediate NumPy arrays (`dnfr_values`, `depi_values` in (i); the vectorised Si payload arrays in (ii); the four/five tetrad/currents intermediate dicts in (iii)/(iv)) are fixed-length scalar-typed structures whose sole purpose is scalar reduction. None escapes the function or is exposed as an output type. Per the convention frozen at Sec 13quinquaginta-tertia for B7 and reused at Sec 13quinquaginta-quinta for B8, fixed-length scalar-array intermediates used purely for scalar reduction are **not** "richer intermediates" in the type-hygiene sense — they are the standard NumPy idiom for batched scalar computation, and the canonical output types remain the global `float` (i) and the per-node `dict[node, float]` (ii, iii, iv).
+
+#### .3 Phase-c verdict
+
+The closure question posed at Sec 13quinquaginta-sexta is **answered NEGATIVELY**:
+
+> The four canonical scalar aggregates `compute_coherence` (`C(t)`), `compute_Si` (`S_i`), `compute_energy_density` (`E`), and `compute_topological_charge` (`Q`) **do** reduce to scalar-valued functionals of the canonical Tier-1+Tier-2 scalar slots (`nu_f`, `EPI`, `theta`/`phi`, `DeltaNFR` via canonical alias `_get_dnfr`) plus the graph metric (`G.neighbors`, `G.degree`, `G.edges`), with every intermediate scalar or scalar-array (fixed-length, used purely for scalar reduction) and **no implicit Banach-derivative apparatus, callable kernel, measure, matrix lift, or operator-valued intermediate** introduced along the reduction path. (i) and (ii) reduce directly from Tier-1+Tier-2 slots plus the graph metric; (iii) and (iv) reduce from the tetrad and currents, both of which were independently discharged as scalar-closed under B7 (Sec 13quinquaginta-tertia) and B8 (Sec 13quinquaginta-quinta). No richer intermediate type is forced.
+
+NEGATIVE here means: there is no forcing of a non-canonical envelope on the Tier-1+Tier-2-plus-tetrad-plus-currents-to-aggregates reduction surface. The candidate tenth non-canonical research envelope is therefore classified as
+
+**E_AC = HiddenIntermediateTensorStateOnAggregates** = "the would-be envelope that would have appeared if any of the four aggregate implementations had introduced a callable, operator-valued, or measure-valued intermediate on its reduction path; structurally absent in the current canonical implementations".
+
+E_AC joins E1...E_CC as the tenth non-canonical research envelope (cumulative list: B0-E1, B1-E2, B2-E3, B3-E4, B4-E5, B5-E6, B6-E7, B7-E_TC, B8-E_CC, B9-E_AC). The candidate tenth CDM is promoted to canonical status:
+
+**ACD = Aggregates-Closure Discipline**, acting on the **Tier-1+Tier-2-plus-tetrad-plus-currents-to-aggregates reduction surface** (the fourth closure surface, after the Tier-1+Tier-2-to-tetrad reduction surface of B7 and the Tier-1+Tier-2-to-currents reduction surface of B8). ACD is structurally distinct from TRC and CCC: TRC discharges the four tetrad reductions, CCC discharges the three current/divergence reductions, ACD discharges the four scalar-aggregate reductions that **compose** tetrad and currents into the global coherence indicator, sense index, energy density, and topological charge.
+
+#### .4 Catalog-Discharge Mechanism orthogonality (post-B9c)
+
+Ten CDMs, ten structurally distinct surfaces:
+
+| # | CDM | Sub-question | Surface |
+|---|---|---|---|
+| 1 | Pontryagin/measure-nu_f | B0 | field-measure |
+| 2 | TMEP | B1 | element-projection |
+| 3 | PWDP | B2 | phase-wrap |
+| 4 | BSAD | B3 | scalar-aggregation |
+| 5 | DITS | B4 | temporal-sampling |
+| 6 | STD | B5 | coupling-verdict |
+| 7 | SWD | B6 | mixing-aggregation |
+| 8 | TRC | B7 | tetrad-reduction closure |
+| 9 | CCC | B8 | currents-reduction closure |
+| 10 | **ACD** | **B9** | **aggregates-reduction closure** |
+
+Each CDM is unique to the canonical machinery at its surface. No CDM is reused across sub-questions. The orthogonality is structural, not numerical.
+
+#### .5 L3* status (post-B9c)
+
+L3* heuristic, post-B9c, is promoted to: **"empirically robust working heuristic with complete Tier-1/Tier-2 structural-orthogonality coverage and all three Tier-3 closures orthogonally discharged"**. Cumulative ten CDMs (see table above). L3* prediction for remaining Tier-4 sub-questions (B10-B11): each admits its own orthogonal CDM at its own surface.
+
+#### .6 Cross-references
+
+- Sec 13quinquaginta-sexta (B9 Phase a + frozen signature).
+- Sec 13quinquaginta-tertia (B7 Phase c + TRC, the conceptual template for the ACD discharge).
+- Sec 13quinquaginta-quinta (B8 Phase c + CCC, the conceptual template for the ACD discharge).
+- Sec 13septies (Conjecture T-HP, G4 = RH; B9c does NOT advance this).
+- `theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md` Sec 3 row B9, Sec 4 row B9.
+- `src/tnfr/metrics/common.py:29` (`compute_coherence`).
+- `src/tnfr/metrics/sense_index.py:665` (`compute_Si`).
+- `src/tnfr/physics/unified.py:136` (`compute_energy_density`).
+- `src/tnfr/physics/unified.py:209` (`compute_topological_charge`).
+- `src/tnfr/riemann/aggregates_closure_signature.py` (B9a diagnostic).
+- `examples/87_aggregates_closure_signature_demo.py` (B9a demo).
