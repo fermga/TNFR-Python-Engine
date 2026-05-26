@@ -4770,3 +4770,243 @@ those that violate one of the lemma's hypotheses by construction.
   trail used to verify the Case A–D classification.
 
 ---
+### §13vicies-novies.12 R-inf-1c pre-registration: canonically modified $G_{P14}$ with inter-prime edges
+
+This subsection pre-registers the R-inf-1c milestone identified as one of
+the two genuinely open B1-style routes by §13vicies-novies.10 and
+formalised in §13vicies-novies.11 as "the route that breaks hypothesis
+(iii) of the Euler-Orthogonality Lemma by construction." No data is
+collected at commit time. The benchmark script
+`benchmarks/remesh_infinity_riemann_modified_graph.py` is committed
+simultaneously; its first execution will append the Results block as
+§13vicies-novies.13.
+
+**Pre-registration discipline.** This subsection follows the same
+pattern as §13vicies-novies.8 and the pre-registration block of
+§13vicies-novies.9: methodology, parameters, seeds, decision thresholds,
+and verdict logic are all locked *before* any execution. Any deviation
+between the committed script and the published Results block (other than
+documented bug fixes) will be flagged in the post-execution amendment.
+
+**Construction.** Let $G_{P14}^{\mathrm{aug}} = (V, E_{\mathrm{intra}}
+\cup E_{\mathrm{inter}})$ denote the prime-ladder graph $G_{P14}$
+augmented with inter-prime edges, where:
+
+* $V$ and $E_{\mathrm{intra}}$ are unchanged from §13quinquies
+  ($n_{\text{primes}} = 10$, $k_{\max} = 4$, $|V| = 40$, intra-prime
+  edges $(p,k) \leftrightarrow (p,k{+}1)$ only).
+* $E_{\mathrm{inter}}$ is the set of inter-prime edges
+  $\{(p_i,k) \leftrightarrow (p_j,k') : p_i \ne p_j,\
+  |k \log p_i - k' \log p_j| \le \delta_{\mathrm{coh}}\}$.
+
+**Canonical coherence threshold $\delta_{\mathrm{coh}}$.** Derived from
+the Universal Tetrahedral Correspondence (AGENTS.md): the phase-gradient
+threshold $|\nabla \phi| < \gamma/\pi$ applied to the structural
+frequency $\nu_f$ on its native log-energy scale:
+$$
+\delta_{\mathrm{coh}} \;=\; \frac{\gamma}{\pi}\, \cdot \,
+\max_{(p,k) \in V} \nu_f((p,k)) \;=\; \frac{\gamma}{\pi}\, \cdot \,
+k_{\max}\,\log p_{\max}.
+$$
+For the canonical configuration ($p_{\max} = 29$, $k_{\max} = 4$),
+$\max \nu_f = 4 \log 29 \approx 13.4699$, giving
+$\delta_{\mathrm{coh}} \approx 0.18373 \cdot 13.4699 \approx 2.4747$.
+
+This is a *single canonical value* derived from the tetrad
+correspondence; it is not swept and is not fitted to any target. If the
+canonical $\delta_{\mathrm{coh}}$ yields zero or fewer than two
+inter-prime edges, the milestone is INDETERMINATE_DEGENERATE_CONSTRUCTION
+and a documented amendment (canonical reinterpretation of
+$\delta_{\mathrm{coh}}$ or change of $(n_{\text{primes}}, k_{\max})$
+configuration) is required before re-pre-registration.
+
+**Canonical edge weight.** Gaussian decay anchored at
+$\delta_{\mathrm{coh}}$ with prefactor $\gamma/\pi$ (Kuramoto critical
+coupling in TNFR units, AGENTS.md tetrad-edge table):
+$$
+w_{ij} \;=\; \frac{\gamma}{\pi}\, \exp\!\left(
+-\, \frac{|\nu_f(i) - \nu_f(j)|^2}{2\,\delta_{\mathrm{coh}}^2}
+\right),
+\qquad
+\text{for } (i, j) \in E_{\mathrm{inter}}.
+$$
+Intra-prime edges retain unit weight (canonical $G_{P14}$ convention).
+
+This is the *Kuramoto-U3 inter-prime coupling form* already explored at
+the *Hamiltonian-perturbation* level in P29
+(`src/tnfr/riemann/spectral_emergence.py`, §13nonies/§13.2). R-inf-1c
+re-tests the same canonical coupling, but reframed as a *graph
+modification + edge-channel iteration matrix* rather than as a
+perturbation of the P14 internal Hamiltonian. The two reframings probe
+different B1 sub-routes: P29 tested whether canonical inter-prime
+coupling perturbs $\operatorname{spec}(\hat H_{P14})$ toward GUE
+statistics (best result: $\mathrm{KS}_{\mathrm{GUE}} = 0.122$ with
+Kuramoto-U3 at $s^* = 0.5$, threshold $< 0.05$ unreached). R-inf-1c
+tests whether the *iteration-matrix spectrum* of the composed operator
+$S_{\mathrm{IL}}^{\mathrm{aug}} \cdot M_{\mathrm{REMESH}}$ on
+$G_{P14}^{\mathrm{aug}}$ encodes Riemann-zero content.
+
+**Iteration matrix.** Mirror §13vicies-novies.9 construction with the
+augmented Laplacian:
+$$
+T_{\mathrm{aug}} \;=\; S_{\mathrm{IL}}^{\mathrm{aug}} \cdot M_{\mathrm{REMESH}},
+\qquad
+S_{\mathrm{IL}}^{\mathrm{aug}}|_{\text{slot } 0} \;=\; I_N - \eta\,L_{G^{\mathrm{aug}}},
+\qquad
+S_{\mathrm{IL}}^{\mathrm{aug}}|_{\text{slot } s \ge 1} \;=\; I_N,
+$$
+with $L_{G^{\mathrm{aug}}} = D_{\mathrm{aug}} - A_{\mathrm{aug}}$ the
+weighted combinatorial Laplacian and $M_{\mathrm{REMESH}} = M \otimes I_N$
+in slot-major ordering (canonical $\alpha = 0.5$, $\tau_l = 4$,
+$\tau_g = 16$, $\eta = 0.3$, $|V|\cdot(\tau_g+1) = 680$). The choice of
+$L_{G^{\mathrm{aug}}}$ as the weighted Laplacian is the canonical
+generalisation of the §13vicies-novies.9 unweighted construction; no
+other regulariser is added.
+
+**F7-A statistic (decisive, pre-registered).** Mirror F6-A
+(§13vicies-novies.9):
+
+1. Remove trivial fixed-point cluster: $|\lambda - 1| < 10^{-9}$.
+2. Project to 1-D: $\operatorname{Im}(\lambda)$ for the upper-half-plane
+   subset ($\operatorname{Im}(\lambda) \ge 10^{-12}$), sorted ascending.
+   Fallback: $\operatorname{Re}(\lambda)$ sorted ascending if the
+   projection is empty (real spectrum). Both branches are reported in
+   the JSON.
+3. Normalised consecutive spacings: $\delta_k = (s_{k+1} - s_k) /
+   \overline{\Delta}$.
+4. KS sup-distance vs the GUE Wigner surmise $P_{\mathrm{GUE}}(s) =
+   (32/\pi^2)\, s^2 \exp(-4 s^2 / \pi)$.
+
+**F8 structural condition (necessary, pre-registered).** The
+Euler-Orthogonality Lemma (§13vicies-novies.11) commutes with prime
+relabelling because of hypothesis (iii) ($G_{P14}$ unchanged). The
+R-inf-1c construction violates (iii) by adding inter-prime edges whose
+weights *depend on $|\nu_f(i) - \nu_f(j)|$, hence on actual prime
+labels*. The decisive structural test is whether prime relabelling now
+yields a *different* spectrum:
+
+* F8 SATISFIED: $|D_{\mathrm{canonical}} - D_{\mathrm{shuffled}}| \ge 0.01$
+  (numerical floor; lemma hypothesis genuinely broken).
+* F8 FAILED:    $|D_{\mathrm{canonical}} - D_{\mathrm{shuffled}}| < 0.01$
+  (Euler-orthogonality not broken; implementation degeneracy or
+  $\delta_{\mathrm{coh}}$ too small to generate label-dependent inter-prime
+  weights — INDETERMINATE construction).
+
+F8 is a *necessary* condition for R-inf-1c to be a meaningful test of
+its own hypothesis. F8 failure does not refute B1; it refutes the
+specific R-inf-1c construction and requires a documented amendment.
+
+**Pre-registered controls.**
+
+* **N1 GOE** (random symmetric matrix of dimension $|V|\cdot(\tau_g+1) =
+  680$, scaled by $1/\sqrt{2N}$; expected $D_{\mathrm{GUE}} \approx
+  0.10$–$0.20$ — GOE spacings differ from the GUE Wigner surmise).
+* **N2 Poisson** (680 iid uniform points; expected
+  $D_{\mathrm{GUE}} \approx 0.30$–$0.50$).
+* **N3 shuffled-prime** (rebuild $G_{P14}^{\mathrm{aug}}$ with a random
+  permutation of the ten primes among the ladders, re-derive inter-prime
+  weights from $\nu_f$ on the shuffled labels). *Primary discriminator
+  for F8*.
+* **N4 REMESH-isolated** (spectrum of $M$ alone; diagnostic baseline,
+  expected to be degenerate as in §13vicies-novies.9).
+* **N5 random-augmentation** (rebuild $G_{P14}^{\mathrm{aug}}$ with the
+  inter-prime edge set replaced by an Erdős–Rényi random selection of
+  the same edge count, all weights set to the constant $\gamma/\pi$).
+  Tests whether the canonical $\delta_{\mathrm{coh}}$-derived structure
+  matters versus generic random topology of the same density.
+
+**Riemann reference.** External anchor:
+$D_{\mathrm{GUE}}$ for the first 100 Riemann zero imaginary parts via
+`mpmath.zetazero`.
+
+**Pre-registered F7 verdict logic.**
+
+* **SUPPORTED**:    $D_{\mathrm{canonical}} < 0.15$ **AND**
+  $D_{\mathrm{canonical}} < D_{\mathrm{shuffled}} - 0.05$ **AND**
+  $D_{\mathrm{canonical}} < D_{\mathrm{random}} - 0.05$.
+* **REFUTED**:      $D_{\mathrm{canonical}} > 0.30$ **OR**
+  ($D_{\mathrm{canonical}} \ge D_{\mathrm{shuffled}} - 0.05$ **AND**
+  F8 SATISFIED).
+* **INDETERMINATE_DEGENERATE_CONSTRUCTION**: F8 FAILED.
+* **INDETERMINATE_OTHER**: F8 SATISFIED and neither SUPPORTED nor
+  REFUTED conditions hold.
+
+**Pre-registered milestone verdict logic.**
+
+* SUPPORTED $\Rightarrow$
+  `B1_MODIFIED_GRAPH_POTENTIALLY_OPEN_REQUIRES_REPLICATION` (deep
+  diagnostic + independent seeds + alternative compositions REMESH +
+  EN/NAV/OZ before any evidential update on B1).
+* REFUTED $\Rightarrow$
+  `B1_MODIFIED_GRAPH_REFUTED_FOR_CANONICAL_INTER_PRIME_COUPLING`. Closes
+  the R-inf-1c sub-route for the canonical $\delta_{\mathrm{coh}} =
+  (\gamma/\pi) \cdot \max \nu_f$ choice. Does NOT close R-inf-1c for
+  alternative *canonically-derivable* $\delta_{\mathrm{coh}}$ choices
+  (e.g.\ from $\varphi$, $e$, or other tetrad edges); any such
+  alternative would require its own pre-registration.
+* INDETERMINATE_DEGENERATE_CONSTRUCTION $\Rightarrow$ implementation or
+  parameter amendment required; no B1 update.
+* INDETERMINATE_OTHER $\Rightarrow$ status unchanged; design refinement
+  needed before next attempt.
+
+**Pre-registered seeds and parameters.** All random elements (N1 GOE
+draw, N2 Poisson draw, N3 prime shuffle permutation, N5 Erdős–Rényi
+edge selection) use `numpy.random.default_rng(20260526)`. Riemann
+zeros via `mpmath.zetazero` at `mp.dps = 30`. REMESH parameters:
+$\alpha = 0.5$, $\tau_l = 4$, $\tau_g = 16$. IL coupling: $\eta = 0.3$.
+Graph: $n_{\text{primes}} = 10$, $\max\_\text{power} = 4$, intra-prime
+unit weight. Canonical coupling: $\delta_{\mathrm{coh}} = (\gamma/\pi)
+\cdot 4 \log 29$, $w_{ij} = (\gamma/\pi) \exp(-|\Delta\nu_f|^2 /
+(2 \delta_{\mathrm{coh}}^2))$ for $(i,j) \in E_{\mathrm{inter}}$. All
+canonical constants from `src/tnfr/constants/canonical.py` (`GAMMA`,
+`PI`).
+
+**What this milestone CAN establish.**
+
+* A definitive verdict on the canonical Kuramoto-U3 inter-prime
+  augmentation of $G_{P14}$ as a graph-modification route to encode
+  Riemann content in an edge-channel iteration matrix spectrum.
+* Empirical evidence on whether breaking hypothesis (iii) of the
+  Euler-Orthogonality Lemma (the only hypothesis R-inf-1c targets) is
+  by itself sufficient to recover Riemann level statistics in a
+  canonical TNFR construction.
+
+**What this milestone CANNOT establish.**
+
+* R-inf-1c for alternative canonical $\delta_{\mathrm{coh}}$ choices
+  (from $\varphi$, $e$, or tetrad edges other than $\gamma/\pi$).
+* R-inf-1b (spectral-space composition on the P14 internal Hilbert
+  space; orthogonal sub-route that breaks hypothesis (i) instead of
+  (iii)).
+* B1 closure outside the canonical 13-operator catalog (B2 territory).
+* G4 = RH, T-HP, or any closure beyond what F7 + F8 strictly test.
+
+**Why this is not a re-run of P29.** P29
+(`src/tnfr/riemann/spectral_emergence.py`, §13nonies) tested the same
+canonical Kuramoto-U3 coupling but at the *Hamiltonian-perturbation*
+level: $\hat H_{P14}(J) = \hat H_{P14}(0) + J \cdot \hat H_{\mathrm{coupling}}$
+on the prime-indexed internal Hilbert space, with spectrum compared to
+GUE Wigner via KS distance. R-inf-1c uses the *same coupling form* at
+the *graph-modification + edge-channel iteration matrix* level: the
+augmented Laplacian $L_{G^{\mathrm{aug}}}$ enters a slot-0 IL smoother,
+which is composed with $M_{\mathrm{REMESH}}$ on the 680-dimensional
+joint state, and the iteration matrix spectrum is the test object. The
+two milestones probe different mathematical objects (Hamiltonian
+eigenvalues versus iteration-matrix eigenvalues) under the same
+canonical coupling; comparing their verdicts will sharpen the structural
+picture of where canonical Kuramoto-U3 can and cannot transport Riemann
+content.
+
+**Implementation.**
+`benchmarks/remesh_infinity_riemann_modified_graph.py` (committed in the
+same commit as this pre-registration; no data collected at commit time).
+Output JSON written to
+`results/remesh_infinity/remesh_infinity_riemann_modified_graph.json`
+(gitignored, not part of the audit trail; the audit trail is this
+file).
+
+**Status (pre-registration commit)**: methodology locked; no data
+observed; next commit will append results in a Results block as
+§13vicies-novies.13.
+
+---
