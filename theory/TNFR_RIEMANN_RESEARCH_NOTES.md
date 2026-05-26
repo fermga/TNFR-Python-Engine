@@ -152,6 +152,7 @@ Tracker: [`CATALOG_TYPE_HYGIENE_PROGRAMME.md`](./CATALOG_TYPE_HYGIENE_PROGRAMME.
 | §13quadraginta-secunda | 9547 | **B3 = T-ΔNFR** final NEGATIVE + envelope E4 (TensorGradientElement / tensor-/operator-valued ΔNFR); L3* promoted to stable working heuristic; three Tier-2 predictions (B4/B5/B6 NEGATIVE) | B3c | ✅ NEG |
 | §13quadraginta-tertia | 9924 | **B4 = T-REMESH-window** pre-registration (two-axis integer-storage + window-refinement bracket diagnostic; candidate envelope E5 = ContinuousWindowKernel) | B4a | — |
 | §13quadraginta-quarta | 10262 | **B4 = T-REMESH-window** forcing-axiom reduction (F1–F10); residual axiom (P-REMESH-window-Continuous-Retention) isolated and refuted by DITS = Discrete-Integer Temporal Sampling discipline; first Tier-2 confirmation of L3* via predicted N15 REMESH-∞ discharge mechanism | B4b | — |
+| §13quadraginta-quinta | 10806 | **B4 = T-REMESH-window** final NEGATIVE verdict + envelope classification of E5 = ContinuousWindowKernel (continuous-time kernel / fractional-order temporal coupling); first Tier-2 sub-question closed; L3* confirmed across Tier-1 / Tier-2 boundary; two Tier-2 predictions (B5, B6) outstanding | B4c | — |
 
 ### L. Living Discoveries Log (lines 7589–7697)
 
@@ -10801,5 +10802,376 @@ This sub-programme:
   1.0, S_\tau = 0)` empirical corroboration of DITS).
 - `examples/82_remesh_window_type_signature_demo.py` —
   two-resolution demo (anchors B4a numerical fingerprint).
+
+---
+## §13quadraginta-quinta. T-REMESH-window Final NEGATIVE Verdict and Envelope Classification of E5 = ContinuousWindowKernel (Closes B4; Does NOT Advance G4 = RH)
+
+**Pre-registration closure.**  This section consumes the
+sub-verdict of §13quadraginta-quarta (B4b) and issues the final
+T-REMESH-window verdict.  The verdict pre-register from
+§13quadraginta-tertia.7 named the NEGATIVE branch as the expected
+outcome; B4b has confirmed it via the Discrete-Integer Temporal
+Sampling discipline (DITS) and the F1–F10 forcing-axiom
+reduction.  This closes the **first Tier-2 sub-question** of the
+programme.
+
+### §13quadraginta-quinta.1 Verdict
+
+> **T-REMESH-window verdict: NEGATIVE.**
+> The canonical type-of-object of the TNFR REMESH memory window is
+> the canonical integer pair :math:`(\tau_l, \tau_g) \in
+> \mathbb{N}^2`, stored under graph-scope parameters
+> ``REMESH_TAU_LOCAL`` and ``REMESH_TAU_GLOBAL`` at
+> ``src/tnfr/config/defaults_core.py:221-223`` (typed ``int``),
+> coerced to ``int`` via ``int(get_param(...))`` at
+> ``src/tnfr/operators/remesh.py:1212``, and consumed by Python
+> negative-index lookup ``hist[-(tau + 1)]`` against the
+> integer-indexed EPI history deque populated per step by
+> ``src/tnfr/dynamics/runtime.py:413::_update_epi_hist``.  The
+> continuous-time integral-kernel / fractional-order upgrade
+> principle (P-REMESH-window-Continuous-Kernel-Carrier) is **not
+> canonical**.  It does not follow from the canonical six
+> invariants, nor from the nodal equation (which has no
+> memory-window term), nor from any subset of grammar U1–U6
+> (which evaluates U2 boundedness as a discrete Riemann sum at
+> integer time indices), nor from the Universal Tetrahedral
+> Correspondence (all four tetrad fields scalar-valued and
+> integer-time-indexed), nor from the Structural Conservation
+> Theorem (closes on the per-step state at integer time indices),
+> nor from the Variational Principle (Lagrangian / Hamiltonian
+> evaluated at integer time indices), nor from REMESH itself
+> (literal integer-offset Python deque indexing), nor from the
+> N15 REMESH-∞ closure (mean ergodic theorem on the contractive
+> integer-indexed transfer matrix; integer :math:`\tau_g \to
+> \infty`).  Its derivation requires the additional axiom
+> (P-REMESH-window-Continuous-Retention), which is itself
+> independent of the canonical catalog and actively refuted at
+> the canonical level by the Discrete-Integer Temporal Sampling
+> discipline (DITS, §13quadraginta-quarta.3, .6).
+
+This closes T-REMESH-window in the same shape as T-νf (B0,
+§13triginta-tertia), T-EPI (B1, §13triginta-sexta), T-φ (B2,
+§13triginta-decima), and T-ΔNFR (B3, §13quadraginta-secunda):
+the conjectured "type upgrade" of a TNFR canonical object is
+classified as a legitimate research envelope, not a canonical
+catalog requirement.  The decisive numerical fingerprint is the
+B4a doubly-decisive integer-storage + window-refinement-bracket
+signature:
+
+| Resolution | seed | (τ_l, τ_g) | events | F_int | S_τ | bracket L2 | verdict (canonical) |
+|---|---|---|---|---|---|---|---|
+| n=24, warmup=16  | 17 | (4, 8)  | 8  | 1.0000 (48/48) | 0.000000 | 0.000021 | NEGATIVE |
+| n=48, warmup=24  | 31 | (6, 12) | 12 | 1.0000 (72/72) | 0.000000 | 0.000000 | NEGATIVE |
+
+No canonical evolution at either resolution stores any
+non-integer payload at a REMESH-event storage read
+(F_int = 1.0 in both rows), and the bracket of adjacent integer
+windows :math:`\{(\tau_l + j, \tau_g + j) : j = 0, 1, 2\}`
+collapses to a single post-REMESH state (S_τ = 0 in both rows;
+literal machine-zero at the larger resolution).  This is the
+**strongest scalar-adequate Phase-a signature observed across
+B0 + B1 + B2 + B3 + B4** — perfect integer storage at both
+resolutions *and* machine-zero bracket variance under the
+discrete window-refinement axis — and is exactly the situation
+that B4b isolated as the gap between
+(P-REMESH-window-Continuous-Kernel-Carrier) (the continuous-time
+kernel / fractional-order carrier construction) and the strictly
+weaker (P-REMESH-window-Continuous-Retention) (the bare
+requirement that distinct continuous-time intermediates
+producing the same integer-sampled values must correspond to
+distinct canonical states), the latter being itself refuted by
+DITS at the canonical level.
+
+### §13quadraginta-quinta.2 Envelope Classification of E5 = ContinuousWindowKernel
+
+E5 = ContinuousWindowKernel — the continuous-time / fractional-
+order lift of the REMESH memory window, retaining the between-
+slot kernel content :math:`K(t, s)` for non-integer :math:`s`
+alongside (or instead of) the integer pair :math:`(\tau_l,
+\tau_g)`; equivalently a per-graph continuous-time integral
+operator :math:`(\mathcal{R}^{\mathrm{cont}} \mathrm{EPI})(t)
+= \int_0^t K(t, s)\, \mathrm{EPI}(s)\, ds` with :math:`K \in
+L^2(\mathbb{R}_{\ge 0}^2)`, or a fractional-order temporal
+coupling :math:`\partial^\alpha \mathrm{EPI}/\partial t^\alpha`
+with :math:`\alpha \in \mathbb{R}_{>0} \setminus \mathbb{N}`, in
+either case preserving the between-slot information that DITS
+discards — is hereby classified as:
+
+> **E5 = ContinuousWindowKernel — Non-canonical research envelope.**
+> Status: legitimate research formalism, off-catalog.
+> Canonical relationship: **structurally orthogonal** to the
+> canonical integer pair :math:`(\tau_l, \tau_g) \in \mathbb{N}^2`
+> realisation under DITS — the engine samples the EPI history
+> deque at integer offsets ``hist[-(tau+1)]`` at every REMESH
+> event, projecting any continuous-time intermediate (if it
+> existed) onto the canonical integer time grid via the
+> appended-per-step deque-population discipline of
+> ``_update_epi_hist``.
+> Catalog interaction: **none** required.  The 13 canonical
+> operators do not read, write, preserve, or invoke any
+> continuous-time kernel, fractional-order operator, between-slot
+> interpolation, or non-integer offset; REMESH operates
+> exclusively through ``int``-typed window parameters and Python
+> negative-index lookups against the integer-indexed deque.  The
+> N15 REMESH-∞ closure (``theory/REMESH_INFINITY_DERIVATION.md``
+> §§1–8) derives the asymptotic projection of the canonical
+> *integer-indexed contractive transfer matrix* analytically;
+> no continuous-time intermediate appears at any step of the
+> derivation, the mean-ergodic limit is taken over integer
+> :math:`\tau_g \to \infty`, and the resulting REMESH-∞ operator
+> is the orthogonal projector onto the resonant subspace of the
+> integer-indexed phase space.
+
+The envelope register now records five entries:
+
+| ID | Object | Source | Verdict | Refutation mechanism |
+|---|---|---|---|---|
+| E1 | Pontryagin measure-valued :math:`\nu_f` | §13triginta-tertia | NEGATIVE | Scalar-storage axis + measure-redundancy under canonical νf-update |
+| E2 | ``BEPIElement`` Banach carrier | §13triginta-sexta | NEGATIVE | TMEP (temporal-modal aggregation suffices); BEPI-storage fraction = 0 across two resolutions |
+| E3 | CoverElement (covering-space lift / U(1) bundle / homotopy-retaining φ) | §13triginta-decima | NEGATIVE | PWDP (canonical wrap-discipline at every operator boundary); :math:`w_{\mathrm{frac}} = 0` across two resolutions |
+| E4 | TensorGradientElement (tensor-/operator-valued ΔNFR over canonical gradient channels) | §13quadraginta-secunda | NEGATIVE | BSAD (canonical bilinear-scalar aggregation at every operator boundary); :math:`T_{\mathrm{frac}} = 0` and :math:`\sigma_1 / \sigma_{2,3} \sim 10^2` across two resolutions |
+| E5 | ContinuousWindowKernel (continuous-time integral kernel :math:`K(t,s)` / fractional-order temporal coupling) | this section | NEGATIVE | DITS (canonical discrete-integer temporal sampling at every REMESH event); :math:`F_{\mathrm{int}} = 1.0` and :math:`S_\tau = 0` across two resolutions |
+
+**Structural note on E5 vs. E1–E4.**  E1 and E2 have concrete
+code witnesses (``Ω_R`` scaffolding and
+``src/tnfr/mathematics/epi.py:103::BEPIElement`` respectively).
+E3 and E5 have **no** source-code witness at all (purely
+conceptual envelopes; verified by repo-wide grep at this
+commit).  E4 sits between, with a latently instantiated but
+structurally discarded intermediate tensor.  E5 is the cleanest
+case of the five: not only is there no
+``ContinuousWindowKernel`` class, no
+``REMESH_KERNEL_CONTINUOUS`` alias, no
+``REMESH_TAU_FRACTIONAL`` parameter, no interpolation branch in
+``apply_network_remesh``, no fractional-order operator in
+``operators/remesh.py``, and no continuous-time path anywhere in
+``REMESH_INFINITY_DERIVATION.md``, but the very *type system* of
+the canonical REMESH machinery forbids the relevant intermediate:
+``tau_l`` and ``tau_g`` are typed ``int`` at every entry-point,
+coerced to ``int`` even when retrieved via the generic
+``get_param`` reader, and consumed as Python integer indices
+that admit no continuous-time fallback.  E5 is therefore a
+*type-system-excluded* research envelope: stronger exclusion than
+E3 (where the canonical pipeline simply does not invoke the lift)
+and E4 (where the upstream tensor is computed then discarded).
+This is the most decisive canonical-orthogonality classification
+of the programme to date and the appropriate one for the first
+Tier-2 sub-question.
+
+### §13quadraginta-quinta.3 No Deletion, No Deprecation, No Promotion, No Modification
+
+The verdict does **not** authorise:
+
+- introduction of any ``ContinuousWindowKernel`` class,
+  ``REMESH_KERNEL_CONTINUOUS`` alias,
+  ``REMESH_TAU_FRACTIONAL`` parameter, interpolation branch in
+  ``apply_network_remesh``, fractional-order operator in
+  ``operators/remesh.py``, or continuous-time kernel module
+  under ``src/tnfr/`` (E5 remains a research envelope; promoting
+  it to a canonical code witness is itself off-catalog and would
+  require a separate, documented research-track commit);
+- deprecation warnings around ``apply_network_remesh``,
+  ``REMESH_TAU_LOCAL``, ``REMESH_TAU_GLOBAL``, the EPI history
+  deque, or any element of the N15 REMESH-∞ derivation;
+- modification of the 13-operator catalog;
+- modification of the canonical REMESH contract (integer
+  :math:`(\tau_l, \tau_g) \in \mathbb{N}^2`, integer-offset
+  Python deque indexing, mean-ergodic asymptotic at integer
+  :math:`\tau_g \to \infty`);
+- changes to ``src/tnfr/operators/remesh.py``,
+  ``src/tnfr/dynamics/runtime.py``,
+  ``src/tnfr/config/defaults_core.py``,
+  ``theory/REMESH_INFINITY_DERIVATION.md``, or any source file
+  in ``src/tnfr/``;
+- any change to grammar U1–U6;
+- any claim about G4 = RH, T-HP, or the open content of
+  §13septies.
+
+E5 remains available for off-catalog research (e.g.
+continuous-time perturbation analyses of the REMESH-∞ projector,
+fractional-order memory models in non-canonical TNFR variants,
+continuous-time embedding studies that target the canonical
+integer-time discretisation as a structural feature rather than
+an approximation) provided such research is documented as
+off-catalog and does not claim canonical status.  The B4a
+diagnostic module (``src/tnfr/riemann/remesh_window_type_signature.py``)
+and its demo (``examples/82_remesh_window_type_signature_demo.py``)
+are preserved as off-catalog measurement utilities, exactly as
+the B0a, B1a, B2a, and B3a diagnostics were preserved at B0c,
+B1c, B2c, and B3c.
+
+### §13quadraginta-quinta.4 Programme Bookkeeping
+
+- ``theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md`` §4 row B4: Phase c
+  advances ⏳ → ✅; Verdict column advances "—" → **NEGATIVE**;
+  commit-refs column appends the present commit hash.
+- §3 sub-question registry status: B4 transitions from
+  🟡 IN PROGRESS to ✅ COMPLETE.
+- §3 progress summary advances: 5 sub-questions complete
+  (B0 + B1 + B2 + B3 + B4 all NEGATIVE; first Tier-2 sub-question
+  closed), 0 in progress, 7 pending (B5 – B11 + Final).
+- §6 methodology lessons: an L3* confirmation entry is recorded
+  (see §13quadraginta-quinta.5 below) reflecting that L3* has now
+  been confirmed across all four Tier-1 sub-questions **plus the
+  first Tier-2 sub-question**, supplying the first cross-tier
+  empirical evidence that the working heuristic generalises
+  beyond per-node intrinsic types.
+
+### §13quadraginta-quinta.5 Methodology Lesson L3* — First Tier-2 Confirmation
+
+L3* was promoted to stable working heuristic at
+§13quadraginta-secunda.5 on the strength of four structurally
+distinct Tier-1 canonical discharge mechanisms (closure,
+temporal aggregation, projection discipline, bilinear-scalar
+aggregation).  Three falsifiable Tier-2 predictions were
+recorded at §13quadraginta-secunda.5: B4, B5, B6 expected
+NEGATIVE.
+
+**First Tier-2 prediction confirmed.**  B4 has now closed
+NEGATIVE per L3* via the **discrete-integer temporal sampling
+discipline (DITS)** — the fifth orthogonal canonical discharge
+mechanism, supplied analytically by the N15 REMESH-∞ closure on
+the integer-indexed contractive transfer matrix.  The mechanism
+class expands:
+
+| Sub-question | Tier | Axis | Canonical discharge mechanism | Mechanism class |
+|---|---|---|---|---|
+| B0 (T-νf)            | 1 | frequency       | scalar νf-update closure                | *closure* |
+| B1 (T-EPI)           | 1 | form            | REMESH temporal aggregation             | *temporal aggregation* |
+| B2 (T-φ)             | 1 | phase           | ``wrap_angle`` projection discipline    | *projection discipline* |
+| B3 (T-ΔNFR)          | 1 | nodal gradient  | BSAD bilinear-scalar aggregation        | *spatial-channel aggregation* |
+| **B4 (T-REMESH-window)** | **2** | **memory window** | **DITS discrete-integer temporal sampling** | ***temporal-sampling discipline*** |
+
+The five mechanism classes are structurally orthogonal (closure
+vs. temporal aggregation vs. spatial projection vs. multi-channel
+aggregation vs. temporal-sampling discipline).  This is the first
+empirical evidence that L3* generalises across the Tier 1 / Tier 2
+boundary — the working heuristic now spans per-node intrinsic
+types **and** graph-scope parameters, with the canonical discharge
+mechanism for the temporal-window axis (DITS / N15 closure)
+distinct from any of the four Tier-1 mechanisms.
+
+**Updated Tier-2 outlook.**  Two further Tier-2 predictions
+remain pending:
+
+- **B5 (T-Δφ_max)**: L3* predicts NEGATIVE via the U3 single-
+  scalar coupling discipline (``Δφ_max = γ/π``).  Expected
+  canonical discharge: **scalar-threshold discipline** (sixth
+  mechanism class candidate; structurally a degenerate case of
+  the projection discipline of B2, applied at edge level rather
+  than node level — to be verified at B5c).
+- **B6 (T-coupling-weights)**: L3* predicts NEGATIVE via the
+  fixed weighted-sum discipline of ``default_compute_delta_nfr``.
+  Expected canonical discharge: **BSAD generalised to edge
+  weights** (re-use of the B3 mechanism class) — to be verified
+  at B6c.
+
+If both predictions hold, Tier 2 will close with L3* corroborated
+across **all** programme tiers tested to date, and the working
+heuristic will become a *strong* heuristic for the remaining
+Tier 3 sub-questions (B7 – B11).
+
+### §13quadraginta-quinta.6 Honest Scope (Mandatory)
+
+This section:
+
+- **Does** close T-REMESH-window (B4) with a NEGATIVE verdict.
+- **Does** classify E5 = ContinuousWindowKernel (continuous-time
+  integral kernel / fractional-order temporal coupling) as
+  legitimate non-canonical research envelope.
+- **Does** advance the catalog type-hygiene programme to
+  5/11+1 complete (B0 + B1 + B2 + B3 + B4 all NEGATIVE).
+- **Does** close the **first Tier-2 sub-question** of the
+  programme; Tier 1 closure plus this first Tier-2 closure
+  supplies the first cross-tier empirical evidence for L3*.
+- **Does** confirm the first of three pre-registered Tier-2
+  L3* predictions (B4 NEGATIVE), via the predicted canonical
+  discharge mechanism (N15 REMESH-∞ closure / integer-indexed
+  contractive transfer matrix / DITS) and the predicted verdict
+  class (CONDITIONAL_COROLLARY of an independent residual axiom
+  refuted by an orthogonal discipline).
+- **Does** maintain two outstanding falsifiable Tier-2
+  predictions (B5, B6 expected NEGATIVE per L3*).
+- **Does not** advance G4 = RH, does not close T-HP, does not
+  promote any operator/field/constant/alias/parameter to
+  canonical status, does not modify the catalog
+  operators/grammar/contracts, does not modify any source file
+  in ``src/tnfr/``, does not introduce a
+  ``ContinuousWindowKernel`` class or
+  ``REMESH_KERNEL_CONTINUOUS`` alias or
+  ``REMESH_TAU_FRACTIONAL`` parameter, does not modify
+  ``apply_network_remesh`` or the EPI history deque, does not
+  modify ``REMESH_INFINITY_DERIVATION.md``, does not delete or
+  modify the B4a diagnostic module or its demo.
+- **Does not** make any binding claim about B5 / B6 / B7 – B11
+  or any subsequent sub-question; the Tier-2 predictions in
+  §13quadraginta-quinta.5 are advisory and falsifiable.
+- **Does not** apply the D-CC-6 or D-CC-7 deferred catalog
+  citation patches on this commit (one finding per commit; both
+  remain queued for a future type-hygiene commit).
+
+### §13quadraginta-quinta.7 Cross-references
+
+- §13triginta-prima — T-νf pre-registration (precedent template).
+- §13triginta-secunda — T-νf forcing-axiom reduction (precedent).
+- §13triginta-tertia — T-νf NEGATIVE verdict + E1 classification
+  (precedent for B4c, first envelope).
+- §13triginta-quarta — T-EPI pre-registration (precedent).
+- §13triginta-quinta — T-EPI forcing-axiom reduction (precedent
+  for TMEP-style canonical-mechanism refutation).
+- §13triginta-sexta — T-EPI NEGATIVE verdict + E2 = ``BEPIElement``
+  classification.
+- §13triginta-septima — Living discoveries log; this commit
+  appends D-ENV-5 (E5 = ContinuousWindowKernel, NEGATIVE) and
+  confirms D-MP-3 / L3* at the Tier-1 / Tier-2 boundary; D-CC-6
+  and D-CC-7 deferred catalog citation patches remain unchanged.
+- §13triginta-octava — T-φ pre-registration (precedent).
+- §13triginta-novena — T-φ forcing-axiom reduction (precedent for
+  PWDP-style canonical-mechanism refutation).
+- §13triginta-decima — T-φ NEGATIVE verdict + E3 = CoverElement
+  classification.
+- §13quadraginta — T-ΔNFR pre-registration (precedent).
+- §13quadraginta-prima — T-ΔNFR forcing-axiom reduction (precedent
+  for BSAD-style canonical-mechanism refutation).
+- §13quadraginta-secunda — T-ΔNFR NEGATIVE verdict + E4 =
+  ``TensorGradientElement`` classification; L3* promoted to
+  stable working heuristic; three Tier-2 predictions
+  (B4, B5, B6 expected NEGATIVE) pre-registered; this section
+  confirms the first of those three.
+- §13quadraginta-tertia — T-REMESH-window pre-registration (B4a
+  anchor + two-axis integer-storage + window-refinement-bracket
+  diagnostic; supplies the doubly-decisive :math:`F_{\mathrm{int}} =
+  1.0` + :math:`S_\tau = 0` fingerprint consumed here).
+- §13quadraginta-quarta — T-REMESH-window forcing-axiom reduction
+  (B4b; DITS isolated (P-REMESH-window-Continuous-Retention) as
+  INDEPENDENT_AXIOM and refuted it at the canonical level;
+  supplies the decisive input to this section).
+- §13septies — T-HP open content (independent, untouched by this
+  verdict).
+- §19.1 — Full P1–P49 milestone table.
+- ``theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md`` §3, §4, §6 —
+  programme tracker (advances on this commit at row B4 Phase c +
+  Verdict, B4 spec line, §3 progress summary, §6 L3*
+  cross-tier confirmation).
+- ``theory/REMESH_INFINITY_DERIVATION.md`` §§1–8 — N15 REMESH-∞
+  closure (integer-indexed transfer-matrix derivation; predicted
+  canonical discharge mechanism, confirmed at this commit).
+- ``src/tnfr/operators/remesh.py:1212::apply_network_remesh`` —
+  canonical integer-offset REMESH reader (embodies the DITS
+  discipline; canonical typing witness for the
+  :math:`(\tau_l, \tau_g) \in \mathbb{N}^2` carrier).
+- ``src/tnfr/dynamics/runtime.py:413::_update_epi_hist`` —
+  canonical integer-indexed history deque populator
+  (embodies the DITS discipline at the storage level).
+- ``src/tnfr/config/defaults_core.py:221-223`` — canonical
+  integer defaults ``REMESH_TAU_LOCAL: int = 4``,
+  ``REMESH_TAU_GLOBAL: int = 8``, ``REMESH_ALPHA: float = 0.5``
+  (canonical typing witness).
+- ``src/tnfr/riemann/remesh_window_type_signature.py`` — B4a
+  diagnostic implementation (preserved as off-catalog
+  measurement utility).
+- ``examples/82_remesh_window_type_signature_demo.py`` — B4a
+  two-resolution demo (preserved as off-catalog measurement
+  utility).
 
 ---

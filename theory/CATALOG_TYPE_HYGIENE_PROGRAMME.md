@@ -203,7 +203,7 @@ modulate canonical dynamics.
   integer-indexed history slots.
 - **Cross-reference**: N15 closure (`theory/REMESH_INFINITY_DERIVATION.md`)
   already constrains this from the asymptotic side.
-- **Status**: 🔄 IN PROGRESS — B4a ✅, B4b ✅ (forcing-axiom reduction at §13quadraginta-quarta: (P-REMESH-window-Continuous-Kernel-Carrier) reduced to **CONDITIONAL_COROLLARY** of the canonical catalog + a residual axiom (P-REMESH-window-Continuous-Retention) that is itself **INDEPENDENT_AXIOM** at the canonical level, refuted by the **Discrete-Integer Temporal Sampling discipline (DITS)** — the fifth orthogonal canonical discharge mechanism in the programme, supplied analytically by the N15 REMESH-∞ closure on the integer-indexed contractive transfer matrix; first Tier-2 confirmation of L3*), B4c ⏳ pending. Predicted final verdict: **NEGATIVE**.
+- **Status**: ✅ COMPLETE — B4a ✅, B4b ✅, B4c ✅. Final verdict: **NEGATIVE**. E5 = ContinuousWindowKernel classified as non-canonical research envelope at `theory/TNFR_RIEMANN_RESEARCH_NOTES.md` §13quadraginta-quinta. First Tier-2 sub-question closed; first cross-tier confirmation of L3* recorded at §13quadraginta-quinta.5.
 
 #### B5 — T-Δφ_max (Type of resonant-coupling threshold)
 
@@ -313,7 +313,7 @@ Verdict legend: `—` pending · `NEG` negative · `POS` positive · `IND` indet
 | **B2** | T-φ | ✅ | ✅ | ✅ | **NEGATIVE** | `afdf8ef9` (B2a), `a0bc4edd` (B2b), B2c this commit |
 | B3 | T-ΔNFR | ✅ | ✅ | ✅ | NEGATIVE | 1267fbf4 (B3a) + d96eb13d (B3b) + this commit (B3c) |
 | **Tier 2 — Graph-level parameters** | | | | | | |
-| B4 | T-REMESH-window | ✅ | ✅ | ⏳ | DITS = Discrete-Integer Temporal Sampling | this commit (B4b) |
+| B4 | T-REMESH-window | ✅ | ✅ | ✅ | **NEGATIVE** (DITS) | `c647f7d7` (B4a), `6349e425` (B4b), this commit (B4c) |
 | B5 | T-Δφ_max | ⏳ | ⏳ | ⏳ | — | — |
 | B6 | T-coupling-weights | ⏳ | ⏳ | ⏳ | — | — |
 | **Tier 3 — Derived field closure** | | | | | | |
@@ -325,7 +325,7 @@ Verdict legend: `—` pending · `NEG` negative · `POS` positive · `IND` indet
 | B11 | Operator-catalog closure | 🟡 | 🟡 | ⏳ | — | (ref: `OPERATOR_COMPLETENESS.md`) |
 | **Final** | Meta-minimality theorem | ⏳ | ⏳ | ⏳ | — | — |
 
-**Progress as of 2026-05-26**: 4 sub-questions complete (B0, B1, B2, B3 all NEGATIVE; Tier 1 closed), 1 in progress (B4 at Phase b; first Tier-2 sub-question; DITS = Discrete-Integer Temporal Sampling discipline added as the fifth orthogonal canonical discharge mechanism after Pontryagin/measure, TMEP, PWDP, BSAD; first Tier-2 confirmation of L3* recorded at §13quadraginta-quarta.8), 7 pending (B5 – B11 + Final). Living discoveries log at `theory/TNFR_RIEMANN_RESEARCH_NOTES.md` §13triginta-septima; B3 closure at §13quadraginta (pre-reg), §13quadraginta-prima (forcing-axiom reduction; BSAD), §13quadraginta-secunda (NEGATIVE verdict + E4 envelope classification; L3* promoted to stable working heuristic; three Tier-2 predictions B4/B5/B6 expected NEGATIVE); B4 Phase a pre-registration at §13quadraginta-tertia (strongest pre-registration signature observed: $S_\tau = 0$ and $F_{\mathrm{int}} = 1.0$ at both resolutions; candidate envelope E5 = ContinuousWindowKernel); B4 Phase b forcing-axiom reduction at §13quadraginta-quarta (DITS refutation; first Tier-2 L3* confirmation via predicted N15 REMESH-∞ discharge mechanism).
+**Progress as of 2026-05-26**: 5 sub-questions complete (B0, B1, B2, B3, B4 all NEGATIVE; Tier 1 closed; **first Tier-2 sub-question closed**; first cross-tier confirmation of L3*), 0 in progress, 7 pending (B5 – B11 + Final). Living discoveries log at `theory/TNFR_RIEMANN_RESEARCH_NOTES.md` §13triginta-septima; B4 closure at §13quadraginta-tertia (pre-reg), §13quadraginta-quarta (forcing-axiom reduction; DITS), §13quadraginta-quinta (NEGATIVE verdict + E5 = ContinuousWindowKernel envelope classification; first Tier-2 L3* confirmation; two outstanding Tier-2 predictions B5, B6 expected NEGATIVE).
 
 ---
 
