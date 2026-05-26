@@ -12293,3 +12293,113 @@ L3* heuristic, post-B9c, is promoted to: **"empirically robust working heuristic
 - `src/tnfr/physics/unified.py:209` (`compute_topological_charge`).
 - `src/tnfr/riemann/aggregates_closure_signature.py` (B9a diagnostic).
 - `examples/87_aggregates_closure_signature_demo.py` (B9a demo).
+
+---
+
+## §13quinquaginta-octava — B10 Phase a: U-Rules Consistency Signature (URC) diagnostic
+
+#### .1 Question
+
+Do the unified-grammar rule checkers in `src/tnfr/operators/grammar_core.py` and `src/tnfr/operators/grammar_u6.py` consume only operator-name sequences plus scalar telemetry, and return only scalar/string verdicts? Or do they silently introduce a richer canonical envelope (callable kernel, measure, operator-valued intermediate, matrix lift, Banach-derivative apparatus) along the way?
+
+#### .2 Phase a diagnostic
+
+New module `src/tnfr/riemann/urules_consistency_signature.py` defines:
+
+- `URulesConsistencySignatureCertificate` dataclass with per-rule input/output classifications, leakage counters, and the URC signature `S_UR := (leaking_inputs + leaking_outputs) / total_probes`.
+- `compute_urules_consistency_signature(n_nodes, seed)` probes ten rule checkers (U1a, U1b, U2, U3, U4a, U4b, U2-REMESH, U5, temporal_ordering, U6) with synthetic canonical-scalar inputs sourced from `Emission`, `Reception`, `Coherence`, `Coupling`, `Resonance`, `Dissonance`, `Mutation`, `SelfOrganization`, `Recursivity`, `Silence` (a U1-U6-valid sequence) plus per-node Phi_s dicts on an Erdos-Renyi(n=24, p=0.3) graph.
+
+Admissible input classes: `scalar` (int/float/bool/str), `operator_name_sequence` (list whose items expose `name` or `canonical_name`), `scalar_dict` (dict whose values are all scalar), `graph_metric` (a `networkx.Graph`). Admissible output classes: `scalar`, `scalar_tuple` (tuple whose entries are all scalar/None).
+
+#### .3 Probe results (seeds 31, 131)
+
+Both probes return:
+
+- `S_UR = 0.000000`
+- `verdict = TYPE_HYGIENE_ADEQUATE`
+- `leaking_inputs = 0`, `leaking_outputs = 0`
+- `input_scalar_fraction = 1.000`, `output_scalar_fraction = 1.000`
+
+Per-rule classifications (identical across both seeds):
+
+| Rule                                  | Inputs                                                         | Output         |
+|---------------------------------------|----------------------------------------------------------------|----------------|
+| U1a_initiation                        | operator_name_sequence + scalar                                | scalar_tuple   |
+| U1b_closure                           | operator_name_sequence                                         | scalar_tuple   |
+| U2_convergence                        | operator_name_sequence                                         | scalar_tuple   |
+| U3_resonant_coupling                  | operator_name_sequence                                         | scalar_tuple   |
+| U4a_bifurcation_triggers              | operator_name_sequence                                         | scalar_tuple   |
+| U4b_transformer_context               | operator_name_sequence                                         | scalar_tuple   |
+| U2_remesh_amplification               | operator_name_sequence                                         | scalar_tuple   |
+| U5_multiscale_coherence               | operator_name_sequence                                         | scalar_tuple   |
+| temporal_ordering                     | operator_name_sequence                                         | scalar_tuple   |
+| U6_structural_potential_confinement   | graph_metric + scalar_dict + scalar_dict + scalar              | scalar_tuple   |
+
+#### .4 Scope guard
+
+Methodological diagnostic only. Does NOT modify any canonical implementation. Does NOT advance G4 = RH (Conjecture T-HP, Sec 13septies).
+
+#### .5 Cross-references
+
+- `src/tnfr/riemann/urules_consistency_signature.py` (this module).
+- `examples/88_urules_consistency_signature_demo.py` (probe demo).
+- `src/tnfr/operators/grammar_core.py` (U1-U5 + temporal_ordering rule checkers).
+- `src/tnfr/operators/grammar_u6.py` (U6 rule checker).
+- `theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md` Sec 3 row B10.
+
+---
+
+## §13quinquaginta-nona — B10 Phase c: NEGATIVE verdict, promote URC as eleventh CDM
+
+#### .1 Source-code closure trace
+
+Per-rule structural analysis of the ten checkers probed in Sec 13quinquaginta-octava:
+
+- **U1a `validate_initiation`** (`grammar_core.py:76`): branches on `epi_initial <= EPI_BOUND_EPSILON` (scalar comparison), then tests `sequence[0].canonical_name in GENERATORS` (string-frozenset membership). No callable kernel, no measure.
+- **U1b `validate_closure`** (`grammar_core.py:127`): tests `sequence[-1].canonical_name in CLOSURES`. Same pattern.
+- **U2 `validate_convergence`** (`grammar_core.py:171`): counts destabilizer/stabilizer occurrences via list comprehensions over `canonical_name`, computes debt as `int - int`. Pure integer arithmetic on string-frozenset hits.
+- **U3 `validate_resonant_coupling`** (`grammar_core.py:235`): iterates pairs `(prev, curr)` and tests `curr.canonical_name in COUPLING_RESONANCE`. String predicate only.
+- **U4a `validate_bifurcation_triggers`** (`grammar_core.py:299`): for each trigger position, scans a fixed-radius window (integer slice) for handler hits via string-frozenset membership.
+- **U4b `validate_transformer_context`** (`grammar_core.py:365`): same window-slice + string-frozenset pattern.
+- **U2-REMESH `validate_remesh_amplification`** (`grammar_core.py:457`): tests sequence-level presence of REMESH plus any destabilizer plus stabilizers via frozenset membership.
+- **U5 `validate_multiscale_coherence`** (`grammar_core.py:556`): same membership-counting pattern over operator-name strings.
+- **`validate_temporal_ordering`** (`grammar_core.py:694`): inspects index positions (integers) of frozenset-flagged operators.
+- **U6 `validate_structural_potential_confinement`** (`grammar_u6.py:22`): computes `drift = mean(|phi_s_after[i] - phi_s_before[i]|)` over a dict comprehension, compares against scalar threshold `PHI`. Inputs are scalar dicts plus a graph identifier used only for node iteration. No operator-valued intermediate.
+
+Every checker reduces its inputs through a finite sequence of: (a) string-frozenset membership tests, (b) integer index arithmetic, (c) scalar comparison against canonical thresholds (`PHI`, `EPI_BOUND_EPSILON`). No checker introduces a callable kernel `K(x, y)`, a measure `mu`, an operator-valued intermediate, a matrix lift, or a Banach-derivative apparatus.
+
+The frozensets themselves (`GENERATORS`, `CLOSURES`, `STABILIZERS`, `DESTABILIZERS`, `COUPLING_RESONANCE`) are module-level constants populated exclusively with `canonical_name` strings (e.g. `"emission"`, `"silence"`); they carry no richer state.
+
+#### .2 NEGATIVE verdict
+
+The U-rule type-hygiene surface admits no hidden canonical envelope. The Phase a empirical witness (`S_UR = 0.000000`, ten distinct rule checkers, two seeds) is fully reproduced by the source-code trace above.
+
+#### .3 Promote URC as eleventh CDM
+
+The Phase c analysis is structurally distinct from the ten preceding CDMs:
+
+- **URC = U-Rules Consistency Discipline** acts on the **U-rules type-hygiene surface** — i.e. the set of input/output signatures of the rule-checker layer that mediates between operator sequences and the (`bool`, `str`) verdict pair consumed by `validate_grammar`.
+- The ten prior CDMs act on disjoint surfaces: Pontryagin/measure-nu_f (B0), tetrad-membrane-evolution-projection (B1, TMEP), phase-wrap-density-projection (B2, PWDP), bifurcation-state-aggregation-density (B3, BSAD), discrete-injection-time-sampling (B4, DITS), spectral-trace-density (B5, STD), spectrum-weighting-density (B6, SWD), tetrad-reduction-closure (B7, TRC), currents-reduction-closure (B8, CCC), aggregates-reduction-closure (B9, ACD).
+
+Orthogonality is established by surface-disjointness: URC operates on rule-checker signatures, none of the prior ten CDMs do.
+
+#### .4 Eleventh non-canonical envelope
+
+`E_UR = HiddenIntermediateRulecheckerState` — a hypothetical envelope wherein a U-rule checker carries a callable kernel, measure, operator-valued intermediate, matrix lift, or Banach-derivative apparatus between its input and output. The Phase a + Phase c analysis classifies `E_UR` as the eleventh non-canonical research envelope: its hypothetical content is absent from the canonical 13-operator catalog's rule-checker layer.
+
+#### .5 L3* update
+
+L3* heuristic, post-B10c, is promoted to: **"empirically robust working heuristic with complete Tier-1/Tier-2 structural-orthogonality coverage, all three Tier-3 closures, and the first Tier-4 closure orthogonally discharged"**. Cumulative eleven CDMs (Pontryagin/measure-nu_f, TMEP, PWDP, BSAD, DITS, STD, SWD, TRC, CCC, ACD, URC). L3* prediction for the remaining Tier-4 sub-question (B11): admits its own orthogonal CDM at the operator-catalog-completeness surface.
+
+#### .6 Cross-references
+
+- Sec 13quinquaginta-octava (B10 Phase a + frozen signature).
+- Sec 13quinquaginta-tertia (B7 Phase c + TRC, conceptual template).
+- Sec 13quinquaginta-quinta (B8 Phase c + CCC).
+- Sec 13quinquaginta-septima (B9 Phase c + ACD).
+- Sec 13septies (Conjecture T-HP, G4 = RH; B10c does NOT advance this).
+- `theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md` Sec 3 row B10, Sec 4 row B10.
+- `src/tnfr/operators/grammar_core.py` (U1-U5 + temporal_ordering).
+- `src/tnfr/operators/grammar_u6.py` (U6).
+- `src/tnfr/riemann/urules_consistency_signature.py` (Phase a diagnostic).
+- `examples/88_urules_consistency_signature_demo.py` (Phase a demo).
