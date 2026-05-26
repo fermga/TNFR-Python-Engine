@@ -7261,3 +7261,277 @@ This sub-programme:
   temporal aggregation (anchors §13triginta-quinta.3 gap argument).
 
 ---
+
+## §13triginta-sexta. T-EPI Final NEGATIVE Verdict and Envelope Classification of `BEPIElement` (Closes B1; Does NOT Advance G4 = RH)
+
+**Pre-registration closure.**  This section consumes the
+sub-verdict of §13triginta-quinta (B1b) and issues the final
+T-EPI verdict in accordance with the four-tier methodology of the
+catalog type-hygiene programme (`theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md`
+§3, methodology lessons L1–L2).  The verdict pre-register from
+§13triginta-quarta listed three admissible outcomes; B1b has
+selected the NEGATIVE branch.
+
+### §13triginta-sexta.1 Verdict
+
+> **T-EPI verdict: NEGATIVE.**
+> The Banach-EPI carrier principle (P-BEPI-Carrier) is **not canonical**.
+> It does not follow from the canonical six invariants, nor from the
+> nodal equation, nor from any subset of grammar U1–U6, nor from the
+> Universal Tetrahedral Correspondence, nor from the Structural
+> Conservation Theorem, nor from the Variational Principle, nor from
+> REMESH temporal aggregation.  Its derivation requires the additional
+> axiom (P-EPI-Bijectivity), which is itself independent of the
+> canonical catalog and actively refuted at the canonical level by the
+> Temporal-Modal Equivalence Principle (TMEP, §13triginta-quinta.3,
+> .6).
+
+This closes T-EPI in the same shape as T-νf (B0, §13triginta-tertia):
+the conjectured "type upgrade" of a fundamental TNFR observable is
+classified as a legitimate research envelope, not as a canonical
+catalog requirement.
+
+### §13triginta-sexta.2 Envelope Classification of `BEPIElement`
+
+`src/tnfr/mathematics/epi.py:103` (`BEPIElement` frozen dataclass with
+`f_continuous`, `a_discrete`, `x_grid` and the operations
+`direct_sum`, `tensor`, `adjoint`, `compose`) is hereby classified
+as:
+
+> **`BEPIElement` — Non-canonical research envelope (E2).**
+> Status: legitimate research formalism, off-catalog.
+> Canonical relationship: **structurally redundant** with the canonical
+> scalar EPI realisation under TMEP — the same multi-modal expressivity
+> is canonically encoded *temporally* via REMESH on scalar
+> $\mathrm{EPI}(t) \in \mathbb{R}$.
+> Catalog interaction: **none** required.  The 13 canonical operators
+> do not read, write, preserve, or invoke any `BEPIElement` method;
+> they operate exclusively through `_bepi_to_float`
+> (`src/tnfr/alias.py:86`) to a scalar slot.
+
+This mirrors the E1 classification of Pontryagin measure-valued
+$\nu_f$ in §13triginta-tertia.2 (T-νf NEGATIVE).  The envelope
+register now records two entries:
+
+| ID | Object | Source | Verdict | Refutation mechanism |
+|---|---|---|---|---|
+| E1 | Pontryagin measure-valued $\nu_f$ | §13triginta-tertia | NEGATIVE | Scalar-storage axis + measure-redundancy under canonical νf-update |
+| E2 | `BEPIElement` Banach carrier | this section | NEGATIVE | TMEP (temporal-modal aggregation suffices); BEPI-storage fraction = 0 across two resolutions |
+
+### §13triginta-sexta.3 No Deletion, No Deprecation, No Modification
+
+The verdict does **not** authorise:
+
+- deletion of `BEPIElement` or any of its methods;
+- deprecation warnings in `src/tnfr/mathematics/epi.py`;
+- removal of `BEPIElement` from public `__init__.py` exports;
+- modification of the 13-operator catalog;
+- modification of the canonical contract
+  $(\nu_f, \Delta\mathrm{NFR}) \mapsto \partial\mathrm{EPI}/\partial t$;
+- changes to `src/tnfr/operators/nodal_equation.py`,
+  `src/tnfr/operators/__init__.py`, or `src/tnfr/alias.py`;
+- any change to grammar U1–U6;
+- any claim about G4 = RH, T-HP, or the open content of
+  §13septies.
+
+`BEPIElement` remains available for off-catalog research
+(e.g., Banach-internal experimental modelling of structural patterns
+that the researcher wishes to handle spatially rather than temporally),
+provided such research is documented as off-catalog and does not claim
+canonical status.
+
+### §13triginta-sexta.4 Programme Bookkeeping
+
+- `theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md` §4 row B1: Phase c
+  advances ⏳ → ✅; Verdict column advances "(NEG exp.)" → "NEGATIVE";
+  commit-refs column appends the present commit hash.
+- §3 sub-question registry status: B1 transitions from
+  🟡 IN PROGRESS to ✅ COMPLETE.
+- Progress summary advances: 2 sub-questions complete (B0 + B1),
+  0 in progress, 11 pending (B2 – B11 + Final).
+- §6 methodology lessons: an L3 entry is recorded
+  (see §13triginta-sexta.5 below) reflecting the cross-conjecture
+  pattern observed across B0 and B1.
+
+### §13triginta-sexta.5 Methodology Lesson L3 (Cross-Conjecture Pattern)
+
+Both T-νf (B0) and T-EPI (B1) closed NEGATIVE with the same
+structural shape:
+
+1. **Anchor** identifies a candidate "type upgrade" of a canonical
+   observable (measure-valued $\nu_f$; Banach-valued EPI).
+2. **Diagnostic** measures two orthogonal axes: scalar-storage
+   utilisation + spectral/entropy richness.
+3. **Forcing-axiom reduction** finds that no canonical constraint
+   forces the upgrade; isolates a single residual axiom strictly
+   weaker than the upgrade itself ((P-νf-Bijectivity);
+   (P-EPI-Bijectivity)).
+4. **Canonical-status check** finds that the residual axiom is itself
+   independent of the catalog and is actively refuted by an existing
+   canonical mechanism (scalar νf-update closure; REMESH/TMEP).
+5. **Verdict** NEGATIVE; the upgrade-carrier is reclassified as a
+   legitimate non-canonical research envelope.
+
+**L3 (cross-conjecture pattern).**  *Whenever a candidate type-upgrade
+of a canonical observable can be matched by an existing canonical
+aggregation mechanism (νf-update closure for $\nu_f$; REMESH temporal
+aggregation for EPI), the upgrade is non-canonical and the existing
+mechanism is preferred.*  This is the structural analogue of Occam's
+razor specialised to the TNFR catalog: canonical machinery that
+**already** discharges the expressivity demand makes the upgrade
+non-canonical, regardless of whether the upgrade is internally
+consistent.
+
+L3 will be tested against subsequent sub-questions (B2 = T-φ
+onwards).  If it holds across B2 – B11, it becomes a working
+heuristic for the Final synthesis step.
+
+### §13triginta-sexta.6 Honest Scope (Mandatory)
+
+This section:
+
+- **Does** close T-EPI (B1) with a NEGATIVE verdict.
+- **Does** classify `BEPIElement` as legitimate non-canonical
+  research envelope E2.
+- **Does** advance the catalog type-hygiene programme to 2/11+1
+  complete.
+- **Does** record cross-conjecture methodology lesson L3.
+- **Does not** advance G4 = RH, does not close T-HP, does not promote
+  any operator/field/constant to canonical status, does not modify the
+  catalog, does not modify any source file in `src/tnfr/`.
+- **Does not** make any claim about T-φ (B2), T-ΔNFR (B3), or any
+  subsequent sub-question; those are addressed sequentially per the
+  programme tracker.
+
+### §13triginta-sexta.7 Cross-references
+
+- §13triginta-prima — T-νf pre-registration (precedent template).
+- §13triginta-secunda — T-νf forcing-axiom reduction (precedent).
+- §13triginta-tertia — T-νf NEGATIVE verdict + E1 classification
+  (direct precedent; same shape).
+- §13triginta-quarta — T-EPI pre-registration (anchor + B1a
+  diagnostic).
+- §13triginta-quinta — T-EPI forcing-axiom reduction (decisive
+  input to this section).
+- §13septies — T-HP open content (independent, untouched by this
+  verdict).
+- §19.1 — Full P1–P49 milestone table.
+- `theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md` §3, §4, §6 — programme
+  tracker (advances on this commit).
+- `src/tnfr/mathematics/epi.py:103` — `BEPIElement` source (preserved
+  as envelope E2).
+- `src/tnfr/riemann/epi_type_signature.py` — diagnostic (preserved as
+  off-catalog measurement utility).
+- `examples/79_epi_type_signature_demo.py` — demo (preserved; corroborates TMEP empirically).
+
+---
+
+## §13triginta-septima. TNFR Structure & Dynamics Discoveries Log (Living Section)
+
+**Purpose.**  This section is the *single canonical accumulation point*
+for structural / dynamical facts about the TNFR repo and theory that
+have been verified during the catalog type-hygiene programme (and any
+subsequent programme).  It exists so that future maintainers,
+researchers, and AI agents can (a) understand the system in depth,
+(b) modify it without re-deriving facts, (c) optimise it without
+breaking canonical contracts, and (d) leverage it for new experiments
+without rediscovering load-bearing structure.
+
+**Maintenance rule.**  Each entry is anchored to one or more concrete
+locations (file:line, section, or commit hash) and is added only when
+verified empirically (test, demo, or diagnostic run) or proved
+analytically.  Entries are **append-only**; corrections are recorded
+as later entries citing the earlier one, never by overwriting.
+Categories are open — add new ones as discoveries warrant.
+
+### §13triginta-septima.1 Canonical Contracts (Load-Bearing Invariants)
+
+- **D-CC-1.**  The 13 canonical operators read and write EPI via
+  `float(v.EPI)` exclusively (`src/tnfr/operators/__init__.py:190–360`,
+  `src/tnfr/alias.py:86`).  Any code path that bypasses
+  `_bepi_to_float` and writes a non-scalar EPI is off-catalog and
+  must be documented as such.
+- **D-CC-2.**  The nodal equation contract is strictly
+  $(\nu_f, \Delta\mathrm{NFR}) \in \mathbb{R} \times \mathbb{R}
+  \mapsto \partial\mathrm{EPI}/\partial t \in \mathbb{R}$
+  (`src/tnfr/operators/nodal_equation.py:1–160`).  Multi-modal
+  expressivity is exclusively temporal (via REMESH).
+- **D-CC-3.**  Tetrad fields $(\Phi_s, |\nabla\phi|, K_\phi, \xi_C)$
+  are pointwise functionals of scalar $\phi$ and scalar
+  $\Delta\mathrm{NFR}$ only (`src/tnfr/physics/fields.py`).  No tetrad
+  computation invokes Banach inner products on EPI.
+- **D-CC-4.**  Structural conservation (`src/tnfr/physics/conservation.py`)
+  closes on scalar charge density $\rho_i \in \mathbb{R}$ and current
+  vector $\mathbf{J}_i \in \mathbb{R}^2$.  Energy
+  $E = \sum_i \varepsilon_i \geq 0$ is a sum of scalar squares.
+- **D-CC-5.**  REMESH (operator #13) is the **only** canonical
+  mechanism that aggregates multi-component EPI content.  Aggregation
+  is **temporal** ($\mathbb{R}^{T_{\max}+1}$, history vector at one
+  node), **not spatial/modal**.  REMESH writes back a scalar
+  ($\mathrm{EPI}(t+1) = M\, x(t)$) consumed by the next glyph via
+  `float(v.EPI)`.  See `theory/REMESH_INFINITY_DERIVATION.md:50–52`.
+
+### §13triginta-septima.2 Non-Canonical Research Envelopes
+
+- **D-ENV-1.**  E1: Pontryagin measure-valued $\nu_f$ — NEGATIVE
+  verdict (§13triginta-tertia).  Refutation: scalar-storage axis +
+  measure-redundancy under canonical νf-update.  Preserved as
+  research formalism; not invoked by canonical operators.
+- **D-ENV-2.**  E2: `BEPIElement` Banach carrier
+  (`src/tnfr/mathematics/epi.py:103`) — NEGATIVE verdict
+  (§13triginta-sexta).  Refutation: Temporal-Modal Equivalence
+  Principle (TMEP); BEPI-storage fraction = 0 across two empirical
+  resolutions.  Preserved as research formalism; never read or written
+  by any canonical operator.
+
+### §13triginta-septima.3 Methodology Patterns (Validated Across Sub-Questions)
+
+- **D-MP-1 = L1** (B0): Two-axis diagnostic — scalar storage axis +
+  spectral entropy axis.  Necessary-condition pattern: if scalar
+  storage is full *and* spectral entropy is rich on the canonical
+  axis, the upgrade is unforced.
+- **D-MP-2 = L2** (B1a): Temporal-Modal Equivalence Principle —
+  when storage and spectral axes disagree (scalar storage full +
+  rich spectral content), the catalog encodes the expressivity
+  **temporally** (via REMESH), not **spatially** (via Banach internal
+  structure).
+- **D-MP-3 = L3** (B0 ∧ B1): Catalog-Occam pattern — whenever a
+  candidate type upgrade is matched by an existing canonical
+  aggregation mechanism, the upgrade is non-canonical regardless of
+  internal consistency.  See §13triginta-sexta.5.
+
+### §13triginta-septima.4 Operational Conveniences (Repo-Specific)
+
+- **D-OPS-1.**  `Network.G` attribute (`src/tnfr/sdk/simple.py:600`)
+  exposes the underlying NetworkX graph for direct experimentation.
+- **D-OPS-2.**  `inject_defaults(G)` must be invoked before any
+  `step(G)` call in dynamics code (`src/tnfr/dynamics/adaptation.py:99`).
+  Failure surfaces as missing-attribute errors at first operator
+  application.
+- **D-OPS-3.**  Python 3.12 venv at `c:\TNFR-Python-Engine\.venv312\`
+  is the canonical interpreter for benchmarks/demos.  Run prefix:
+  `$env:PYTHONPATH=(Resolve-Path ./src).Path;
+   $env:PYTHONIOENCODING="utf-8"; & ./.venv312/Scripts/python.exe …`.
+
+### §13triginta-septima.5 Open Questions (Tracked for Later Investigation)
+
+- **D-OQ-1.**  G4 = RH (T-HP open content, §13septies); branches
+  B1/B2/B3 undetermined; full attack surface shipped (P12–P49).
+- **D-OQ-2.**  Catalog type-hygiene sub-questions B2 – B11 + Final
+  pending; tracker in `theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md` §4.
+- **D-OQ-3.**  Whether the cross-conjecture pattern L3 holds for all
+  of B2 – B11 (provisional; only tested on B0 ∧ B1 so far).
+
+### §13triginta-septima.6 Maintenance Notes
+
+- Entries use the prefix scheme: `D-<CATEGORY>-<n>` where category is
+  one of CC (canonical contract), ENV (research envelope),
+  MP (methodology pattern), OPS (operational), OQ (open question), or
+  any new category added with rationale.
+- Corrections / refinements append a new entry citing the earlier ID.
+- Entries are *facts*, not opinions; each must cite at least one
+  anchor (file:line, section, demo, or commit hash).
+- This section grows monotonically; rewrites are explicit additions,
+  not silent edits.
+
+---

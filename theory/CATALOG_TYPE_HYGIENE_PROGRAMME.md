@@ -135,7 +135,7 @@ directly.
 - **Research-notes sections**:
   - B1a — `§13triginta-quarta` (DONE, commit `62e207cc`)
   - B1b — `§13triginta-quinta` (DONE; sub-verdict CONDITIONAL_COROLLARY via (P-EPI-Bijectivity); refuted at canonical level by TMEP)
-  - B1c — `§13triginta-sexta` (PENDING)
+  - B1c — `§13triginta-sexta` (DONE; final verdict NEGATIVE; BEPIElement classified as research envelope E2)
 - **Empirical pre-registration data** (from B1a demo):
   | Resolution | n_nodes | n_steps | n_bins | S_EPI | BEPI storage fraction | Verdict (raw) |
   |---|---|---|---|---|---|---|
@@ -147,7 +147,7 @@ directly.
   (scalar EPI(t) trajectory encodes multi-modal content temporally rather
   than spatially-in-modes).
 - **Expected final verdict**: **NEGATIVE** at the canonical level (deferred to B1c).
-- **Status**: 🟡 IN PROGRESS — B1a ✅, B1b ✅, B1c ⏳.
+- **Status**: ✅ COMPLETE — B1a ✅, B1b ✅, B1c ✅. Final verdict: NEGATIVE.
 
 #### B2 — T-φ (Type of phase)
 
@@ -302,7 +302,7 @@ Verdict legend: `—` pending · `NEG` negative · `POS` positive · `IND` indet
 |---|---|:-:|:-:|:-:|:-:|---|
 | **Tier 1 — Per-node intrinsic types** | | | | | | |
 | B0 | T-νf | ✅ | ✅ | ✅ | **NEG** | `a7a095af`, `34dc32fe`, `a6f795b0` |
-| B1 | T-EPI | ✅ | ✅ | ⏳ | (NEG exp.) | `62e207cc` (B1a), B1b this commit |
+| B1 | T-EPI | ✅ | ✅ | ✅ | **NEGATIVE** | `62e207cc` (B1a), `ef4858f3` (B1b), B1c this commit |
 | B2 | T-φ | ⏳ | ⏳ | ⏳ | — | — |
 | B3 | T-ΔNFR | ⏳ | ⏳ | ⏳ | — | — |
 | **Tier 2 — Graph-level parameters** | | | | | | |
@@ -318,7 +318,7 @@ Verdict legend: `—` pending · `NEG` negative · `POS` positive · `IND` indet
 | B11 | Operator-catalog closure | 🟡 | 🟡 | ⏳ | — | (ref: `OPERATOR_COMPLETENESS.md`) |
 | **Final** | Meta-minimality theorem | ⏳ | ⏳ | ⏳ | — | — |
 
-**Progress as of 2026-05-26**: 1 sub-question complete (B0), 1 in progress (B1: a + b done, c pending).
+**Progress as of 2026-05-26**: 2 sub-questions complete (B0, B1 both NEGATIVE), 0 in progress, 11 pending (B2 – B11 + Final). Living discoveries log opened at `theory/TNFR_RIEMANN_RESEARCH_NOTES.md` §13triginta-septima.
 
 ---
 
@@ -386,6 +386,14 @@ Filled in as the programme advances.
   cross-axis interpretation in the pre-registration, not retroactively.
 
 - *(more lessons to be added as B1b, B1c, B2, ... complete)*
+
+- **L3** *(from B0 ∧ B1 cross-conjecture pattern, §13triginta-sexta.5)* —
+  **Catalog-Occam pattern**: whenever a candidate type-upgrade of a
+  canonical observable can be matched by an existing canonical
+  aggregation mechanism (νf-update closure for $\nu_f$; REMESH temporal
+  aggregation for EPI), the upgrade is non-canonical and the existing
+  mechanism is preferred. Provisional heuristic; to be tested against
+  B2 – B11.
 
 ---
 
